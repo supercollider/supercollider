@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.46">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -42,15 +42,16 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: Object</b></p>
 <p class="p3"><br></p>
-<p class="p1">EnvirGui displays all keys and values of an environment, so one can change them</p>
-<p class="p1">flexibly. Single number get displayed with an EZSlider, pairs of numbers with an<span class="Apple-converted-space"> </span></p>
-<p class="p1">EZRanger, and anything else is shown as an EZText (a text field).</p>
+<p class="p1">EnvirGui displays all keys and values of an environment, so one can change them flexibly.<span class="Apple-converted-space"> </span></p>
+<p class="p1">Single number get displayed with an EZSlider, pairs of numbers with an EZRanger,<span class="Apple-converted-space"> </span></p>
+<p class="p1">and anything else is shown as an EZText (a text field).</p>
 <p class="p2"><br></p>
 <p class="p4"><span class="s2"><b>See also:</b> <a href="adclib/EZText.html"><span class="s3">EZText</span></a></span><span class="s4">, <a href="SC://TdefEditor"><span class="s5">TdefEditor</span></a>, <a href="SC://PdefEditor"><span class="s5">PdefEditor</span></a></span></p>
 <p class="p2"><br></p>
+<p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span>*new (envir, parent, bounds, name, num, makeSkip)</b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>*new (object, numItems, parent, bounds, extras, makeSkip)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>create a new EnvirGui</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>envir </b>- the envir to display</p>
@@ -61,16 +62,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>makeSkip </b>- flag whether to make a skipjack to manage updates of the envirgui. default is true.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// simple example</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s6">EnvirGui</span>.new;</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir_((a: 1, b: <span class="s7">\werty</span>, freq: [500, 2000])); <span class="s8">// explanation</span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.put(<span class="s7">\karl</span>, <span class="s7">\otto</span>);</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s6">EnvirGui</span>.new(nil, 5);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// empty with 5 slots</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object_((a: 1, b: <span class="s7">\werty</span>, freq: [500, 2000])); <span class="Apple-tab-span">	</span><span class="s8">// put some things in</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.put(<span class="s7">\karl</span>, <span class="s7">\otto1</span>);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// one more</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.putAll((b: -12, r: 1, s: 2, t: 3, u: 4, v: 5))<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.removeAt(\b)</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.removeAt(\r)<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.removeAt(\s)<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.removeAt(\t)<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.removeAt(\u)<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir.removeAt(\v)<span class="Apple-converted-space"> </span></p>
+<p class="p6"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.parent.close;</p>
-<p class="p8"><br></p>
-<p class="p12"><b>Class Variables</b></p>
-<p class="p8"><br></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span>labelWidth</b><span class="Apple-tab-span">	</span>a classvar that sets how wide the labels will become. Default is 60.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span>valWidth</b><span class="Apple-tab-span">	</span>a classvar that sets how wide the valFields will become. Default is 200.</p>
 <p class="p8"><br></p>
 <p class="p8"><br></p>
 <p class="p12"><b>Instance Variables<span class="Apple-converted-space"> </span></b></p>
@@ -82,7 +86,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>name<span class="Apple-tab-span">	</span></b>the name to display one the parent (if it is a window)</p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>num<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>how many envir items to display - if the envir has more,<span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>they can be shown with a scroller (see scrolly)</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>they can be shown with a scroller (see scroller)</p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>envir<span class="Apple-tab-span">	</span></b>the envir displayed</p>
 <p class="p8"><br></p>
@@ -120,13 +124,13 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><b>Some Methods</b></p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span>envir_ (invir)<span class="Apple-tab-span">	</span></b>set the environment to show</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>object_ (invir)<span class="Apple-tab-span">	</span></b>set the environment to show</p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>invir </b>- Explanation of invir. Default value is nil. Other information.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p13"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s9">EnvirGui</span>.new;<span class="Apple-converted-space"> </span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir_((a: 1, b: [2, 3], c: \symbol, d: [4, 5, 6], f: { "boing".postln }))</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s9">EnvirGui</span>((freq: 120, \amp: 0.2, \pan: -0.5), nil, bounds: Rect(20, 400, 220, 100));<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object_((a: 1, b: [2, 3], c: \symbol, d: [4, 5, 6], f: { "boing".postln }))</p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>getSpec (key, value)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
@@ -137,7 +141,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p13"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// inline example</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s9">EnvirGui</span>.new;</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.getSpec(\freq, 400); // \freq exists as global spec, so use that</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir_((freq: 150));</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object_((freq: 150));</p>
 <p class="p6"><br></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.getSpec(\myFreak, 500); <span class="Apple-tab-span">	</span>// no global spec, so make a new one:</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// exponential from val * 0.05 to val * 20;<span class="Apple-converted-space"> </span></p>
@@ -149,7 +153,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.putSpec(\myFreak, [10, 1000, \exp]);<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.putSpec(\freq, [100, 1000, \exp]);<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.envir_((freq: 200, myFreak: 20));</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object_((freq: 200, myFreak: 20));</p>
 <p class="p8"><br></p>
 <p class="p8"><br></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Some internal methods:</b></p>
