@@ -1,14 +1,4 @@
-+ Server { 
-	storeOn { arg stream;
-		var codeStr = this.switch (
-			thisProcess.interpreter.s, 	{ "s" }, 					Server.default, 			{ "Server.default" },
-			Server.local,				{ "Server.local" },
-			Server.internal,			{ "Server.internal" },
-			{ "Server.fromName(" + name.asCompileString + ")" }
-		);
-			stream << codeStr;
-	}
-}
+
 
 + AbstractPlayControl {
 
