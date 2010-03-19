@@ -621,12 +621,18 @@ SynthDef {
 	
 	
 	memStore { arg libname = \global, completionMsg, keepDef = true;
-		this.add(libname, completionMsg, keepDef);
 		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\add));
+		this.add(libname, completionMsg, keepDef);
 	}
 
 	play { arg target,args,addAction=\addToHead;
+		var synth, msg;
 		this.deprecated(thisMethod, Function.findRespondingMethodFor(\play));
+		target = target.asTarget;
+		synth = Synth.basicNew(name,target.server);
+		msg = synth.newMsg(target, args, addAction);
+		this.send(target.server, msg);
+		^synth
 	}
 	
 }
