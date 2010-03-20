@@ -627,7 +627,7 @@ SynthDef {
 
 	play { arg target,args,addAction=\addToHead;
 		var synth, msg;
-		this.deprecated(thisMethod, Function.findRespondingMethodFor(\play));
+//		this.deprecated(thisMethod, Function.findRespondingMethodFor(\play));
 		target = target.asTarget;
 		synth = Synth.basicNew(name,target.server);
 		msg = synth.newMsg(target, args, addAction);
