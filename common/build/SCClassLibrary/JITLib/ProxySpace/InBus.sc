@@ -99,7 +99,7 @@ Monitor {
 		states = [\playN, \play];
 		#old, new = if (usedPlayN, states, { states.reverse });
 		warn("monitor switched from % to % - channels may be wrong!\n" 
-			"\touts: % amps: % ins: % vol: !".format(old, new, outs, amps, ins, vol)
+			"\touts: % amps: % ins: % vol: %!".format(old, new, outs, amps, ins, vol)
 		);
 		usedPlayN = flag; 
 	}
