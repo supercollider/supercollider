@@ -1,4 +1,5 @@
-/*** abstract superclass for 
+/*** 
+	Abstract superclass for 
 	TdefGui,PdefGui,
 	TdefAllGui, PdefAllGui
 	EnvirGui, 
@@ -30,6 +31,7 @@ JITGui {
 	var <object, <numItems, <parent, <bounds, <zone, <minSize, <defPos, <skin, <font; 
 	var <prevState = #[], <skipjack, <scroller; 
 	var <nameView, <csView;
+	var <config; 
 
 	*initClass {
 		Class.initClassTree(GUI);
@@ -65,17 +67,17 @@ JITGui {
 		^(this.class.name ++ "_" ++ (try { object.key } ? "anon"))
 	}
 	
-	*new { |object, numItems = 0, parent, bounds, makeSkip = true, extras = #[]| 
-		^super.newCopyArgs(object, numItems, parent, bounds).init(makeSkip, extras);
+	*new { |object, numItems = 0, parent, bounds, makeSkip = true, options = #[]| 
+		^super.newCopyArgs(object, numItems, parent, bounds).init(makeSkip, options);
 	}
 		
-	init { |makeSkip, extras|
+	init { |makeSkip, options|
 
 		skin = GUI.skins.jit;
 		font = Font(*skin.fontSpecs);
 
 		// calc bounds - at least minbounds 
-		this.setDefaults;
+		this.setDefaults(options);
 		
 		bounds = if (bounds.isNil) { 
 			Rect.fromPoints(defPos, defPos + minSize + (skin.margin + skin.margin))
@@ -101,7 +103,7 @@ JITGui {
 		
 		
 			// then put all the other gui items on it
-		this.makeViews;
+		this.makeViews(options);
 			// and start watching
 		if (makeSkip) { this.makeSkip };
 	}
@@ -123,7 +125,7 @@ JITGui {
 	
 		// these methods should be overridden in subclasses: 
 
-	setDefaults { 
+	setDefaults { |options|
 		defPos = 10@260;
 		minSize = 250 @ (numItems * skin.buttonHeight + skin.headHeight);
 		"minSize: %\n".postf(minSize);
