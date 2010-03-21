@@ -587,7 +587,7 @@ void Interpret(VMGlobals *g)
 				++sp; SetObject(sp, classobj);
 			} else {
 				postfl("Execution warning: Class '%s' not found\n", slotRawSymbol(&slotRawObject(&g->block->selectors)->slots[op2])->name);
-				slotCopy(++sp, (PyrSlot*)&gSpecialValues[svNil]);
+				slotCopy(++sp, &gSpecialValues[svNil]);
 			}
 			break;
 		case 1 : // opExtended, opPushInstVar
@@ -639,7 +639,7 @@ void Interpret(VMGlobals *g)
 			if (classobj) {
 				++sp; SetObject(sp, classobj);
 			} else {
-				slotCopy(++sp, (PyrSlot*)&gSpecialValues[svNil]);
+				slotCopy(++sp, &gSpecialValues[svNil]);
 			}
 			break;
 		case 7 : // opExtended, opStoreInstVar
@@ -745,7 +745,7 @@ void Interpret(VMGlobals *g)
 					++sp; SetObject(sp, closure);
 					break;
 				default :
-					slotCopy(++sp, (PyrSlot*)&gSpecialValues[svNil]); break;
+					slotCopy(++sp, &gSpecialValues[svNil]); break;
 			}
 			break;
 		// opPushInstVar, 0..15
@@ -896,22 +896,22 @@ void Interpret(VMGlobals *g)
 				g->tailCall = 0;
 #endif
 			} else {
-				slotCopy(++sp, (PyrSlot*)&gSpecialValues[svOne]);
+				slotCopy(++sp, &gSpecialValues[svOne]);
 				g->sp = sp; g->ip = ip;
 				g->primitiveIndex = opSub;
 				prSubNum(g, -1);
 				sp = g->sp; ip = g->ip;
 			}
 			break;
-		case  98 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svNegOne]); break;
-		case  99 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svZero]); break;
-		case 100 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svOne]); break;
-		case 101 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svTwo]); break;
-		case 102 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFHalf]); break;
-		case 103 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFNegOne]); break;
-		case 104 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFZero]); break;
-		case 105 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFOne]); break;
-		case 106 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFTwo]); break;
+		case  98 : slotCopy(++sp, &gSpecialValues[svNegOne]); break;
+		case  99 : slotCopy(++sp, &gSpecialValues[svZero]); break;
+		case 100 : slotCopy(++sp, &gSpecialValues[svOne]); break;
+		case 101 : slotCopy(++sp, &gSpecialValues[svTwo]); break;
+		case 102 : slotCopy(++sp, &gSpecialValues[svFHalf]); break;
+		case 103 : slotCopy(++sp, &gSpecialValues[svFNegOne]); break;
+		case 104 : slotCopy(++sp, &gSpecialValues[svFZero]); break;
+		case 105 : slotCopy(++sp, &gSpecialValues[svFOne]); break;
+		case 106 : slotCopy(++sp, &gSpecialValues[svFTwo]); break;
 		case 107 : // push one and add
 			if (IsInt(sp)) {
 				SetRaw(sp, slotRawInt(sp) + 1);
@@ -919,17 +919,17 @@ void Interpret(VMGlobals *g)
 				g->tailCall = 0;
 #endif
 			} else {
-				slotCopy(++sp, (PyrSlot*)&gSpecialValues[svOne]);
+				slotCopy(++sp, &gSpecialValues[svOne]);
 				g->sp = sp; g->ip = ip;
 				g->primitiveIndex = opAdd;
 				prAddNum(g, -1);
 				sp = g->sp; ip = g->ip;
 			}
 			break;
-		case 108 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svTrue]); break;
-		case 109 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFalse]); break;
-		case 110 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svNil]); break;
-		case 111 : slotCopy(++sp, (PyrSlot*)&gSpecialValues[svInf]); break;
+		case 108 : slotCopy(++sp, &gSpecialValues[svTrue]); break;
+		case 109 : slotCopy(++sp, &gSpecialValues[svFalse]); break;
+		case 110 : slotCopy(++sp, &gSpecialValues[svNil]); break;
+		case 111 : slotCopy(++sp, &gSpecialValues[svInf]); break;
 
 		// opStoreInstVar, 0..15
 #if 1
@@ -1578,7 +1578,7 @@ void Interpret(VMGlobals *g)
 					if ( NotNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
 						ip += jmplen + 2;
-						slotCopy(sp, (PyrSlot*)&gSpecialValues[svNil]);
+						slotCopy(sp, &gSpecialValues[svNil]);
 					} else {
 						ip+=2;
 						--sp;
@@ -1832,7 +1832,7 @@ void Interpret(VMGlobals *g)
 			if (IsNil(&sp[0])) {
 				SetTagRaw(&sp[0], tagTrue);
 			} else {
-				slotCopy(sp, (PyrSlot*)&gSpecialValues[svFalse]);
+				slotCopy(sp, &gSpecialValues[svFalse]);
 			}
 #if TAILCALLOPTIMIZE
 			g->tailCall = 0;
@@ -1840,7 +1840,7 @@ void Interpret(VMGlobals *g)
 			break;
 		case 211 : // opNotNil
 			if (NotNil(&sp[0])) {
-				slotCopy(sp, (PyrSlot*)&gSpecialValues[svTrue]);
+				slotCopy(sp, &gSpecialValues[svTrue]);
 			} else {
 				SetTagRaw(&sp[0], tagFalse);
 			}
@@ -1952,19 +1952,19 @@ void Interpret(VMGlobals *g)
 			sp = g->sp; ip = g->ip;
 			break;
 		case 245 : // opcReturnTrue
-			slotCopy(++sp, (PyrSlot*)&gSpecialValues[svTrue]);
+			slotCopy(++sp, &gSpecialValues[svTrue]);
 			g->sp = sp; g->ip = ip;
 			returnFromMethod(g);
 			sp = g->sp; ip = g->ip;
 			break;
 		case 246 : // opcReturnFalse
-			slotCopy(++sp, (PyrSlot*)&gSpecialValues[svFalse]);
+			slotCopy(++sp, &gSpecialValues[svFalse]);
 			g->sp = sp; g->ip = ip;
 			returnFromMethod(g);
 			sp = g->sp; ip = g->ip;
 			break;
 		case 247 : // opcReturnNil
-			slotCopy(++sp, (PyrSlot*)&gSpecialValues[svNil]);
+			slotCopy(++sp, &gSpecialValues[svNil]);
 			g->sp = sp; g->ip = ip;
 			returnFromMethod(g);
 			sp = g->sp; ip = g->ip;
@@ -1990,7 +1990,7 @@ void Interpret(VMGlobals *g)
 			if ( IsFalse(sp)) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
-				slotCopy(sp, (PyrSlot*)&gSpecialValues[svNil]);
+				slotCopy(sp, &gSpecialValues[svNil]);
 			} else if ( IsTrue(sp)) {
 				--sp;
 				ip+=2;
@@ -2025,7 +2025,7 @@ void Interpret(VMGlobals *g)
 			} else if (IsTrue(sp)) {
 				jmplen = (ip[1]<<8) | ip[2];
 				ip += jmplen + 2;
-				slotCopy(sp, (PyrSlot*)&gSpecialValues[svTrue]);
+				slotCopy(sp, &gSpecialValues[svTrue]);
 			} else {
 				numArgsPushed = 1;
 				selector = gSpecialSelectors[opmNonBooleanError];
@@ -2114,7 +2114,7 @@ void Interpret(VMGlobals *g)
 								slotCopy(&obj->slots[index], &sp[1]);
 								g->gc->GCWrite(obj, sp + 1);
 							} else {
-								slotCopy(&obj->slots[index], (PyrSlot*)&gSpecialValues[svNil]);
+								slotCopy(&obj->slots[index], &gSpecialValues[svNil]);
 							}
 							slotCopy(sp, slot);
 						}
