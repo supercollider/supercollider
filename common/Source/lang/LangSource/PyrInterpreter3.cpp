@@ -97,7 +97,7 @@ bool gTraceInterpreter = false;
 //bool gTraceInterpreter = true;
 
 
-char* byteCodeString(int code);
+const char* byteCodeString(int code);
 
 extern int gNumClasses;
 extern PyrClass *gClassList;
