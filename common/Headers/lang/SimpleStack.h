@@ -18,6 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifndef LANG_SIMPLESTACK_H
+#define LANG_SIMPLESTACK_H
 
 typedef struct {
 	long *stak;
@@ -30,3 +32,5 @@ void growLongStack(LongStack *self);
 void pushls(LongStack *self, long value);
 long popls(LongStack *self);
 int emptyls(LongStack *self);
+
+#endif
