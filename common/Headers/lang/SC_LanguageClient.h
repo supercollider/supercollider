@@ -38,11 +38,7 @@
 struct PyrSymbol;
 struct VMGlobals;
 
-#ifndef SC_WIN32
-extern long compiledOK;
-#else
 extern bool compiledOK;
-#endif
 
 extern pthread_mutex_t gLangMutex;
 extern VMGlobals* gMainVMGlobals;
