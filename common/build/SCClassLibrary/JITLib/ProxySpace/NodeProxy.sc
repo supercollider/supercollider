@@ -404,11 +404,14 @@ NodeProxy : BusPlug {
 		var ctl, rate, numChannels, canBeMapped;
 		if(proxy.isNil) { ^this.unmap(key) };
 		ctl = this.controlNames.detect { |x| x.name == key };
-		rate = ctl.rate ?? { if(this.isNeutral) { \audio } { this.rate } };
-		numChannels = ctl !? { ctl.defaultValue.size } ?? { 
-			if(rate == \audio) { this.class.defaultNumAudio } { this.class.defaultNumControl } 
+		rate = ctl.rate ?? { 
+				if(proxy.isNeutral) { 
+					if(this.isNeutral) { \audio } { this.rate } 
+				} { 
+					proxy.rate 
+				}
 		};
-		canBeMapped = proxy.initBus(rate, numChannels);
+		numChannels = ctl !? { ctl.defaultValue.asArray.size };		canBeMapped = proxy.initBus(rate, numChannels);
 		if(canBeMapped) {
 			if(this.isNeutral) { this.defineBus(rate, numChannels) };
 			this.xmap(key, proxy);
@@ -573,9 +576,10 @@ NodeProxy : BusPlug {
 	
 	controlNames { | except |
 		var all = Array.new; // Set doesn't work, because equality undefined for ControlName
+		var items = [nodeMap] ++ objects; // nodeMap also returns controlNames
 		except = except ? this.internalKeys;
-		objects.do { |el|
-			el.controlNames(nodeMap).do { |item|
+		items.do { |el|
+			el.controlNames.do { |item|
 				if(except.includes(item.name).not and: {
 					all.every { |cn| cn.name !== item.name }
 				}) {
