@@ -80,7 +80,29 @@ Complex : Number {
 
 	neg { ^Complex.new(real.neg, imag.neg) }
 	conjugate { ^Complex.new(real, imag.neg) }
-
+	
+	squared { ^this * this }
+	cubed { ^this * this * this }
+	exp { ^exp(real) * Complex.new(cos(imag), sin(real)) }
+	
+	pow { arg aNumber;
+		var res;
+		aNumber = aNumber.asComplex;
+		// complex to the power of a positive integer
+		if(aNumber.imag == 0 and: { aNumber.real >= 0 } and: { aNumber.real.frac == 0 }) {
+				res = Complex.new(1.0, 0.0);
+				(aNumber.real).do { res = res * this };
+				^res
+		};
+		// a real positive number to the power of a complex number
+		if(imag == 0.0 and: { real >= 0 }) { 
+			^exp(aNumber * log(real)) 
+		} {
+		// stop here for simplicity. Some solutions are ambiguous
+		Error("pow not implemented or undefined for this combination of numbers").throw
+		}
+	}
+	
 	magnitude { ^hypot(real, imag) }
 	rho { ^hypot(real, imag) }
 
