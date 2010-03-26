@@ -163,12 +163,19 @@ NodeProxyEditor {
 				.string_("-").align_(\center).visible_(false)
 				.font_(font);
 				
-			sink.action_({ arg sink; var px;
-				if (sink.object.notNil) { 
-					px = currentEnvironment[sink.object.asSymbol];
-					if(px.isKindOf(NodeProxy)) {
-						proxy.map(editKeys[i], px);
-						this.fullUpdate;
+			sink.action_({ arg drag; 
+				var key = editKeys[i];
+				var dragged = drag.object;
+				if (dragged.isKindOf(String)) { dragged = dragged.interpret };
+				if (dragged.notNil) { 
+					if(dragged.isKindOf(NodeProxy)) { 
+						drag.string = "->" + dragged.key; 
+						proxy.map(key, dragged);
+						this.checkUpdate;
+					} { 
+						if (dragged.isKindOf(SimpleNumber)) { 
+							proxy.set(key, dragged);
+						};
 					}
 				}
 			}); 
