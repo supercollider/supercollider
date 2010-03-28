@@ -80,7 +80,7 @@ void Gendy1_Ctor( Gendy1* unit )
 	SETCALC(Gendy1_next_k);
 
 	unit->mFreqMul = unit->mRate->mSampleDur;
-	unit->mPhase = 1.0f;	//should immediately decide on new target
+	unit->mPhase = 1.0;	//should immediately decide on new target
 	unit->mAmp = 0.0f;
 	unit->mNextAmp = 0.0f;
 	unit->mSpeed = 100.f;
@@ -97,7 +97,7 @@ void Gendy1_Ctor( Gendy1* unit )
 
 	//initialise to zeroes and separations
 	for(int i=0; i<unit->mMemorySize;++i) {
-		unit->mMemoryAmp[i] = 2*rgen.frand() - 1.0;
+		unit->mMemoryAmp[i] = 2*rgen.frand() - 1.0f;
 		unit->mMemoryDur[i] = rgen.frand();
 	}
 }
