@@ -423,18 +423,18 @@ SequenceableCollection : Collection {
 		});
 		^list
 	}
-	
+
 	flopTogether { arg ... moreArrays;
 		var standIn, maxSize = 0, array;
 		array = [this] ++ moreArrays;
-		array.do { |sublist| 
-			sublist.do { |each| 
-				maxSize = max(maxSize, each.size) 
-			} 
+		array.do { |sublist|
+			sublist.do { |each|
+				maxSize = max(maxSize, each.size)
+			}
 		};
 		standIn = 0.dup(maxSize);
 		array = array.collect { |sublist| sublist.add(standIn) };
-		^array.collect { |sublist| 
+		^array.collect { |sublist|
 			sublist.flop.collect { |each| each.drop(-1) } // remove stand-in
 		};
 	}
@@ -537,7 +537,47 @@ SequenceableCollection : Collection {
 		^key.nearestInList(this) + root
 	}
 
-	// supports a variation of Mikael Laurson's rhythm list RTM-notation.	convertRhythm {		var list, tie;		list = List.new;		tie = this.convertOneRhythm(list);		if (tie > 0.0, { list.add(tie) });  // check for tie at end of rhythm		^list	}	sumRhythmDivisions {		var sum = 0;		this.do {|beats|			sum = sum + abs(if (beats.isSequenceableCollection) {				beats[0];			}{				beats			});		};		^sum	}	convertOneRhythm { arg list, tie = 0.0, stretch = 1.0;		var beats, divisions, repeats;		#beats, divisions, repeats = this;		repeats = repeats ? 1;		stretch = stretch * beats / divisions.sumRhythmDivisions;		repeats.do({			divisions.do { |val|				if (val.isSequenceableCollection) {					tie = val.convertOneRhythm(list, tie, stretch)				}{										val = val * stretch;					if (val > 0.0) {						list.add(val + tie);						tie = 0.0;					}{						tie = tie - val					};				};			};		});		^tie	}
+	// supports a variation of Mikael Laurson's rhythm list RTM-notation.
+	convertRhythm {
+		var list, tie;
+		list = List.new;
+		tie = this.convertOneRhythm(list);
+		if (tie > 0.0, { list.add(tie) });  // check for tie at end of rhythm
+		^list
+	}
+	sumRhythmDivisions {
+		var sum = 0;
+		this.do {|beats|
+			sum = sum + abs(if (beats.isSequenceableCollection) {
+				beats[0];
+			}{
+				beats
+			});
+		};
+		^sum
+	}
+	convertOneRhythm { arg list, tie = 0.0, stretch = 1.0;
+		var beats, divisions, repeats;
+		#beats, divisions, repeats = this;
+		repeats = repeats ? 1;
+		stretch = stretch * beats / divisions.sumRhythmDivisions;
+		repeats.do({
+			divisions.do { |val|
+				if (val.isSequenceableCollection) {
+					tie = val.convertOneRhythm(list, tie, stretch)
+				}{
+					val = val * stretch;
+					if (val > 0.0) {
+						list.add(val + tie);
+						tie = 0.0;
+					}{
+						tie = tie - val
+					};
+				};
+			};
+		});
+		^tie
+	}
 
 	isSequenceableCollection { ^true }
 	containsSeqColl { ^this.any(_.isSequenceableCollection) }
@@ -616,10 +656,10 @@ SequenceableCollection : Collection {
 
 	rho { ^this.performUnaryOp('rho') }
 	theta { ^this.performUnaryOp('theta') }
-	
+
 	degrad { ^this.performUnaryOp('degrad') }
 	raddeg { ^this.performUnaryOp('raddeg') }
-	
+
 	// binary math ops
 	+ { arg aNumber, adverb; ^this.performBinaryOp('+', aNumber, adverb) }
 	- { arg aNumber, adverb; ^this.performBinaryOp('-', aNumber, adverb) }
@@ -1129,7 +1169,7 @@ SequenceableCollection : Collection {
 			}
 		}
 	}
-	
+
 
 	// TempoClock play quantization
 	nextTimeOnGrid { arg clock;
@@ -1147,7 +1187,7 @@ SequenceableCollection : Collection {
 			lag = lag.asArray;
 			this.do { |time, i|
 				clock.sched(time, {
-						SystemClock.sched(lag.wrapAt(i), { 
+						SystemClock.sched(lag.wrapAt(i), {
 							server.sendBundle(latency, bundleArray.wrapAt(i)) })
 				})
 			}
