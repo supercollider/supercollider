@@ -367,8 +367,8 @@ void SC_TerminalClient::commandLoop()
 					// If line wasn't empty, store it so that uparrow retrieves it
 					add_history(cmdLine);
 					interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
-					free(cmdLine);
 				}
+				free(cmdLine);
 			}
 			if(cmdLine == NULL){
 				printf("\nExiting sclang (ctrl-D)\n");
