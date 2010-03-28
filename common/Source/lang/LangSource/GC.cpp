@@ -151,14 +151,12 @@ inline int ScanSize(PyrObjectHdr *obj) { return obj->obj_format <= obj_slot ? ob
 
 void PyrGC::ScanSlots(PyrSlot *inSlots, long inNumToScan)
 {
-	int32 rtagObj = tagObj;
 	unsigned char whiteColor = mWhiteColor;
 
 	PyrSlot *slot = inSlots;
 	PyrSlot *endslot = inSlots + inNumToScan;
 	for (; slot < endslot; ++slot) {
-		int32 tag = GetTag(slot);
-		if (tag == rtagObj) {
+		if (IsObj(slot)) {
 			PyrObject *obj = slotRawObject(slot);
 			if (obj->gc_color == whiteColor) {
 				ToGrey2(obj);
@@ -1025,7 +1023,7 @@ bool PyrGC::LinkSanity()
 
 bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 {
-	int j, size, tag;
+	int j, size;
 	PyrSlot *slot;
 	PyrObject *objB;
 
@@ -1036,8 +1034,7 @@ bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 		slot = objA->slots;
 		for (j=size; j--; ++slot) {
 			objB = NULL;
-			tag = GetTag(slot);
-			if (tag == tagObj && slotRawObject(slot)) {
+			if (IsObj(slot) && slotRawObject(slot)) {
 				objB = slotRawObject(slot);
 			}
 			if (objB && (long)objB < 100) {
@@ -1085,9 +1082,9 @@ bool PyrGC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 			for (j=size; j--; ++slot) {
 				objB = NULL;
 				tag = GetTag(slot);
-				if (tag == tagObj && slotRawObject(slot)) {
+				if (tag == tagObj && slotRawObject(slot))
 					objB = slotRawObject(slot);
-				}
+
 				if (objB && (long)objB < 100) {
 					fprintf(stderr, "weird obj ptr\n");
 					return false;
@@ -1127,21 +1124,18 @@ bool PyrGC::SanityMarkObj(PyrObject *objA, PyrObject *fromObj, int level)
 
 bool PyrGC::SanityClearObj(PyrObject *objA, int level)
 {
-	int size;
-
 	if (!(objA->IsMarked())) return true;
 	if (objA->IsPermanent()) return true;
 	objA->ClearMark(); // unmark it
 
 	if (objA->obj_format <= obj_slot) {
 		// scan it
-		size = objA->size;
+		int size = objA->size;
 		if (size > 0) {
 			PyrSlot *slot = objA->slots;
 			for (int j=size; j--; ++slot) {
 				PyrObject *objB = NULL;
-				int tag = GetTag(slot);
-				if (tag == tagObj && slotRawObject(slot)) {
+				if (IsObj(slot) && slotRawObject(slot)) {
 					objB = slotRawObject(slot);
 				}
 				if (objB) {
