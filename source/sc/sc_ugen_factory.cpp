@@ -196,7 +196,7 @@ void sc_ugen_factory::register_ugen(const char *inUnitClassName, size_t inAllocS
                                     UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
 {
     sc_ugen_def * def = new sc_ugen_def(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
-    ugen_map.insert(*def);
+    ugen_set.insert(*def);
 }
 
 void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
@@ -207,7 +207,7 @@ void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
 
 BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
 {
-    bufgen_map_t::iterator it = bufgen_map.find(name,
+    bufgen_set_t::iterator it = bufgen_map.find(name,
                                                 compare_def<sc_bufgen_def>());
     if (it == bufgen_map.end()) {
         std::cerr << "unable to find buffer generator: " << name << std::endl;
@@ -219,9 +219,10 @@ BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
 struct Unit * sc_ugen_factory::allocate_ugen(sc_synth * synth,
                                        sc_synthdef::unit_spec_t const & unit_spec)
 {
-    ugen_map_t::iterator it = ugen_map.find(unit_spec.name,
-                                            compare_def<sc_ugen_def>());
-    if (it == ugen_map.end()) {
+    ugen_set_type::iterator it = ugen_set.find(unit_spec.name,
+                                               hash_def<sc_ugen_def>(), equal_def<sc_ugen_def>());
+
+    if (it == ugen_set.end()) {
         std::cerr << "unable to create ugen: " << unit_spec.name << std::endl;
         throw std::runtime_error("unable to create ugen");
     }
@@ -234,11 +235,11 @@ struct Unit * sc_ugen_factory::allocate_ugen(sc_synth * synth,
     return unit;
 }
 
-bool sc_ugen_factory::ugen_can_alias(const char * name)
+bool sc_ugen_factory::ugen_can_alias(std::string const & name)
 {
-    ugen_map_t::iterator it = ugen_map.find(name,
-                                            compare_def<sc_ugen_def>());
-    if (it == ugen_map.end()) {
+    ugen_set_type::iterator it = ugen_set.find(name,
+                                               hash_def<sc_ugen_def>(), equal_def<sc_ugen_def>());
+    if (it == ugen_set.end()) {
         std::cerr << "ugen not registered: " << name << std::endl;
         return false;
     }

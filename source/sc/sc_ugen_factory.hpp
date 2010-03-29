@@ -20,6 +20,7 @@
 #define SC_UGEN_FACTORY_HPP
 
 #include <boost/intrusive/set.hpp>
+#include <boost/intrusive/unordered_set.hpp>
 #include <boost/checked_delete.hpp>
 
 #include "sc_synthdef.hpp"
@@ -34,7 +35,7 @@ namespace nova
 namespace bi = boost::intrusive;
 
 class sc_ugen_def:
-    public bi::set_base_hook<>
+    public bi::unordered_set_base_hook<>
 {
 private:
     const std::string name_;
@@ -50,6 +51,24 @@ public:
     std::string const & name(void) const
     {
         return name_;
+    }
+
+    static std::size_t hash(std::string const & value)
+    {
+        std::size_t ret = 0;
+        const char * str = value.c_str();
+
+        // sdbm hash ... later try another function!
+        int c;
+        while (c = *str++)
+            ret = c + (ret << 6) + (ret << 16) - ret;
+
+        return ret;
+    }
+
+    friend std::size_t hash_value(sc_ugen_def const & that)
+    {
+        return hash(that.name());
     }
 
     Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world);
@@ -72,6 +91,12 @@ public:
                            sc_ugen_def const & b)
     {
         return a.name_ < b.name_;
+    }
+
+    friend bool operator== (sc_ugen_def const & a,
+                           sc_ugen_def const & b)
+    {
+        return a.name_ == b.name_;
     }
 };
 
@@ -107,8 +132,14 @@ public:
 class sc_ugen_factory:
     public sc_plugin_interface
 {
-    typedef bi::set<sc_ugen_def> ugen_map_t;
-    typedef bi::set<sc_bufgen_def> bufgen_map_t;
+    static const std::size_t ugen_set_bucket_count = 512;
+    typedef bi::unordered_set< sc_ugen_def,
+                               bi::constant_time_size<false>,
+                               bi::power_2_buckets<true>,
+                               bi::store_hash<true>
+                             > ugen_set_type;
+
+    typedef bi::set<sc_bufgen_def> bufgen_set_t;
 
     template<typename def>
     struct compare_def
@@ -138,15 +169,46 @@ class sc_ugen_factory:
         }
     };
 
-    ugen_map_t ugen_map;
-    bufgen_map_t bufgen_map;
+    template<typename def>
+    struct equal_def
+    {
+        bool operator()(def const & lhs,
+                        std::string const & rhs) const
+        {
+            return lhs.name() == rhs;
+        }
+
+        bool operator()(std::string const & lhs,
+                        def const & rhs) const
+        {
+            return lhs == rhs.name();
+        }
+    };
+
+    template<typename def>
+    struct hash_def
+    {
+        std::size_t operator()(std::string const & value)
+        {
+            return def::hash(value);
+        }
+    };
+
+    ugen_set_type::bucket_type node_buckets[ugen_set_bucket_count];
+    ugen_set_type ugen_set;
+
+    bufgen_set_t bufgen_map;
 
     std::vector<void*> open_handles;
 
 public:
+    sc_ugen_factory (void):
+        ugen_set(ugen_set_type::bucket_traits(node_buckets, ugen_set_bucket_count))
+    {}
+
     ~sc_ugen_factory (void)
     {
-        ugen_map.clear_and_dispose(boost::checked_delete<sc_ugen_def>);
+        ugen_set.clear_and_dispose(boost::checked_delete<sc_ugen_def>);
         bufgen_map.clear_and_dispose(boost::checked_delete<sc_bufgen_def>);
         close_handles();
     }
@@ -168,7 +230,7 @@ public:
         return ugen_count_;
     }
 
-    bool ugen_can_alias(const char * name);
+    bool ugen_can_alias(std::string const & name);
 
 private:
     void close_handles(void);

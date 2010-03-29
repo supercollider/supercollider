@@ -273,7 +273,7 @@ void sc_synthdef::assign_buffers(void)
         unit_spec_t & spec = graph[ugen_index];
         spec.buffer_mapping.resize(spec.output_specs.size());
 
-        const bool can_alias = sc_factory.ugen_can_alias(spec.name.c_str());
+        const bool can_alias = sc_factory.ugen_can_alias(spec.name);
 
         for (size_t output_index = 0; output_index != spec.output_specs.size(); ++output_index) {
             int16_t buffer_id;
