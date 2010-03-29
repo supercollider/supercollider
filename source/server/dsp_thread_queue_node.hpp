@@ -62,7 +62,7 @@ private:
 template <typename Alloc = std::allocator<queue_node_data> >
 class dsp_queue_node
 {
-    typedef std::vector<queue_node_data> node_container;
+    typedef std::vector<queue_node_data, Alloc> node_container;
 
     typedef boost::uint_fast16_t node_count_type;
     typedef boost::uint_fast8_t thread_count_type;
