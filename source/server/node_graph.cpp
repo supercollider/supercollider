@@ -321,18 +321,11 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
 
 int parallel_group::tail_nodes(void) const
 {
-    int ret = 0;
-    for(server_node_list::const_iterator it = child_nodes.begin();
-        it != child_nodes.end(); ++it)
+    int ret = child_synths_;
+    for(group_list::const_iterator it = child_groups.begin();
+        it != child_groups.end(); ++it)
     {
-        const server_node & node = *it;
-
-        if (node.is_synth()) {
-            ret += 1;
-        } else {
-            abstract_group const & grp = static_cast<abstract_group const &>(node);
-            ret += grp.tail_nodes();
-        }
+        ret += it->tail_nodes();
     }
     return ret;
 }

@@ -42,7 +42,7 @@ typedef boost::intrusive::list<class server_node,
 server_node_list;
 
 class server_node:
-    public bi::list_base_hook<bi::link_mode<bi::auto_unlink> >, /* group member */
+    public bi::list_base_hook<bi::link_mode<bi::auto_unlink> >,          /* group member */
     public bi::unordered_set_base_hook<bi::link_mode<bi::auto_unlink> >  /* for node_id mapping */
 {
 protected:
