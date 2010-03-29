@@ -26,6 +26,7 @@
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/path.hpp>
 #include "SC_Types.h"
+#include "SC_Wire.h"
 
 namespace nova
 {
@@ -70,6 +71,13 @@ public:
         std::vector<input_spec> input_specs;
         std::vector<char> output_specs;      /* calculation rates */
         std::vector<int16_t> buffer_mapping;
+
+        std::size_t memory_requirement(void)
+        {
+            return input_specs.size()  * (sizeof(Wire*) + sizeof(float*)) +
+                   output_specs.size() * (sizeof(Wire*) + sizeof(float*)) +
+                   output_specs.size() * sizeof(Wire);
+        }
     };
 
     friend class sc_synth_prototype;
@@ -94,6 +102,12 @@ public:
         return parameters.size();
     }
 
+    std::size_t memory_requirement(void) const
+    {
+        assert(memory_requirement_);
+        return memory_requirement_;
+    }
+
 private:
     void read_synthdef(const char *&);
 
@@ -107,6 +121,7 @@ private:
     graph_t graph;
     boost::uint16_t buffer_count;
     calc_units_t calc_unit_indices; /**< indices of the units, that need to be calculated */
+    std::size_t memory_requirement_;
 };
 
 std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr);

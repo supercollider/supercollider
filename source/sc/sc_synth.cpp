@@ -53,7 +53,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
     /* we allocate one memory chunk */
     const size_t alloc_size = parameter_count * (sizeof(float) + sizeof(int) + sizeof(float*))
-                              + constants_count * sizeof(Wire);
+                              + constants_count * sizeof(Wire) + prototype->synthdef.memory_requirement();
     char * chunk = (char*)allocate(alloc_size);
     if (chunk == NULL)
         throw std::bad_alloc();
@@ -87,7 +87,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     for (graph_t::const_iterator it = synthdef.graph.begin();
          it != synthdef.graph.end(); ++it)
     {
-        struct Unit * unit = sc_factory.allocate_ugen(this, *it);
+        struct Unit * unit = sc_factory.allocate_ugen(this, *it, chunk);
         units.push_back(unit);
     }
 

@@ -71,7 +71,7 @@ public:
         return hash(that.name());
     }
 
-    Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world);
+    Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk);
 
     void initialize(Unit * unit)
     {
@@ -83,6 +83,11 @@ public:
     bool cant_alias(void) const
     {
         return flags & kUnitDef_CantAliasInputsToOutputs;
+    }
+
+    std::size_t memory_requirement(void) const
+    {
+        return alloc_size;
     }
 
 public:
@@ -213,7 +218,7 @@ public:
         close_handles();
     }
 
-    struct Unit * allocate_ugen(sc_synth * synth, sc_synthdef::unit_spec_t const & unit_spec);
+    struct Unit * allocate_ugen(sc_synth * synth, sc_synthdef::unit_spec_t const & unit_spec, char *& chunk);
     void free_ugen(struct Unit * unit);
 
     void load_plugin_folder(boost::filesystem::path const & path);
@@ -230,7 +235,7 @@ public:
         return ugen_count_;
     }
 
-    bool ugen_can_alias(std::string const & name);
+    sc_ugen_def * find_ugen(std::string const & name);
 
 private:
     void close_handles(void);

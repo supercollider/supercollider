@@ -218,7 +218,6 @@ namespace
 template <typename Alloc = std::allocator<int16_t> >
 class buffer_allocator
 {
-
     std::vector<size_t, Alloc> buffers; /* index: buffer id, value: last reference */
 
 public:
@@ -265,15 +264,24 @@ public:
 
 void sc_synthdef::assign_buffers(void)
 {
+    memory_requirement_ = 0;
+
     const size_t ugens = graph.size();
 
     buffer_allocator<> allocator;
 
     for (size_t ugen_index = 0; ugen_index != ugens; ++ugen_index) {
         unit_spec_t & spec = graph[ugen_index];
+
+        memory_requirement_ += spec.memory_requirement();
+
         spec.buffer_mapping.resize(spec.output_specs.size());
 
-        const bool can_alias = sc_factory.ugen_can_alias(spec.name);
+        sc_ugen_def * ugen = sc_factory.find_ugen(spec.name);
+        assert(ugen);
+
+        const bool can_alias = !ugen->cant_alias();
+        memory_requirement_ += ugen->memory_requirement();
 
         for (size_t output_index = 0; output_index != spec.output_specs.size(); ++output_index) {
             int16_t buffer_id;

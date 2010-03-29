@@ -42,19 +42,11 @@ sc_ugen_def::sc_ugen_def (const char *inUnitClassName, size_t inAllocSize,
     name_(inUnitClassName), alloc_size(inAllocSize), ctor(inCtor), dtor(inDtor), flags(inFlags)
 {}
 
-Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world)
+Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk)
 {
     const size_t output_count = unit_spec.output_specs.size();
 
     /* size for wires and buffers */
-    const std::size_t mem_size = unit_spec.input_specs.size()  * (sizeof(Wire*) + sizeof(float*)) +
-                                 unit_spec.output_specs.size() * (sizeof(Wire*) + sizeof(float*)) +
-                                 output_count * sizeof(Wire);
-
-    char * chunk = (char*)sc_synth::allocate(alloc_size + mem_size);
-    if (!chunk)
-        return NULL;
-
     Unit * unit = (Unit*)chunk;     chunk += alloc_size;
     unit->mInput  = (Wire**)chunk;  chunk += unit_spec.input_specs.size() * sizeof(Wire*);
     unit->mOutput = (Wire**)chunk;  chunk += unit_spec.output_specs.size() * sizeof(Wire*);
@@ -132,9 +124,6 @@ void sc_ugen_def::destruct(Unit * unit)
 {
     if (dtor)
         (*dtor)(unit);
-
-    /* free */
-    sc_synth::free(unit); /* we only have one memory chunk to free */
 }
 
 void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
@@ -217,33 +206,29 @@ BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
 }
 
 struct Unit * sc_ugen_factory::allocate_ugen(sc_synth * synth,
-                                       sc_synthdef::unit_spec_t const & unit_spec)
+                                       sc_synthdef::unit_spec_t const & unit_spec, char *& chunk)
 {
     ugen_set_type::iterator it = ugen_set.find(unit_spec.name,
                                                hash_def<sc_ugen_def>(), equal_def<sc_ugen_def>());
 
-    if (it == ugen_set.end()) {
-        std::cerr << "unable to create ugen: " << unit_spec.name << std::endl;
-        throw std::runtime_error("unable to create ugen");
-    }
+    /* we have already checked for the existence during the synthdef construction */
+    assert (it != ugen_set.end());
 
-    Unit * unit = it->construct(unit_spec, synth, &world);
-    if (!unit)
-        throw std::runtime_error("cannot allocate ugen, out of memory");
+    Unit * unit = it->construct(unit_spec, synth, &world, chunk);
 
     ++ugen_count_;
     return unit;
 }
 
-bool sc_ugen_factory::ugen_can_alias(std::string const & name)
+sc_ugen_def * sc_ugen_factory::find_ugen(std::string const & name)
 {
     ugen_set_type::iterator it = ugen_set.find(name,
                                                hash_def<sc_ugen_def>(), equal_def<sc_ugen_def>());
     if (it == ugen_set.end()) {
         std::cerr << "ugen not registered: " << name << std::endl;
-        return false;
+        return 0;
     }
-    return !it->cant_alias();
+    return &*it;
 }
 
 
