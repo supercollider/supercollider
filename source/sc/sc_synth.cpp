@@ -54,7 +54,10 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     /* we allocate one memory chunk */
     const size_t alloc_size = parameter_count * (sizeof(float) + sizeof(int) + sizeof(float*))
                               + constants_count * sizeof(Wire) + prototype->synthdef.memory_requirement();
-    char * chunk = (char*)allocate(alloc_size);
+
+    const size_t sample_alloc_size = 64 * synthdef.buffer_count + 64; /* allocate 64 bytes more than required */
+
+    char * chunk = (char*)allocate(alloc_size + sample_alloc_size*sizeof(sample));
     if (chunk == NULL)
         throw std::bad_alloc();
 
@@ -81,7 +84,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         wire->mScalarValue = get_constant(i);
     }
 
-    unit_buffers = allocate<sample>(64 * synthdef.buffer_count + 64); /* allocate 64 bytes more than required */
+    unit_buffers = (sample*)chunk; chunk += sample_alloc_size*sizeof(sample);
 
     /* allocate unit generators */
     for (graph_t::const_iterator it = synthdef.graph.begin();
@@ -99,7 +102,6 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 sc_synth::~sc_synth(void)
 {
     free(mControls);
-    free(unit_buffers);
 
     std::for_each(units.begin(), units.end(), boost::bind(&sc_ugen_factory::free_ugen, &sc_factory, _1));
 }
