@@ -29,6 +29,10 @@ typedef void (*UnitDtorFunc)(struct Unit* inUnit);
 
 typedef void (*UnitCalcFunc)(struct Unit *inThing, int inNumSamples);
 
+struct SC_Unit_Extensions {
+	float * todo; 	
+};
+
 struct Unit
 {
 	struct World *mWorld;
@@ -39,9 +43,9 @@ struct Unit
 	int16 mSpecialIndex;		// used by unary and binary ops
 	int16 mParentIndex;
 	int16 mDone;
-
 	struct Wire **mInput, **mOutput;
 	struct Rate *mRate;
+	SC_Unit_Extensions* mExtensions; //future proofing and backwards compatibility; used to be SC_Dimension struct pointer
 	float **mInBuf, **mOutBuf;
 
 	UnitCalcFunc mCalcFunc;
