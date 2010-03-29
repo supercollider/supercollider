@@ -38,7 +38,7 @@ class node_graph
 private:
     group root_group_;
 
-    static const std::size_t node_set_bucket_count = 2048;
+    static const std::size_t node_set_bucket_count = 4096;
 
 public:
     typedef thread_queue_item dsp_thread_queue_item;
