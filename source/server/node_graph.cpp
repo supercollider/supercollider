@@ -70,6 +70,11 @@ void node_graph::add_node(server_node * n, node_position_constraint const & cons
 
 void node_graph::add_node(server_node * n)
 {
+    node_position_constraint to_root;
+
+    to_root.first = &root_group_;
+    to_root.second = head;
+
     add_node(n, to_root);
 }
 

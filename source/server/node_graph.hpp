@@ -53,9 +53,6 @@ public:
     {
         root_group_.add_ref();
         node_set.insert(root_group_);
-
-        to_root.first = &root_group_;
-        to_root.second = head;
     }
 
     ~node_graph(void)
@@ -85,8 +82,6 @@ public:
     }
 
     std::auto_ptr<dsp_thread_queue> generate_dsp_queue(void);
-
-    node_position_constraint to_root;
 
     server_node * find_node(int32_t node_id)
     {
