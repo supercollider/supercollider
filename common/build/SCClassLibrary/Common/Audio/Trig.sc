@@ -196,9 +196,9 @@ Pitch : MultiOutUGen {
 
 	*kr { arg in = 0.0, initFreq = 440.0, minFreq = 60.0, maxFreq = 4000.0,
 			execFreq = 100.0, maxBinsPerOctave = 16, median = 1,
-			ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1;
+			ampThreshold = 0.01, peakThreshold = 0.5, downSample = 1, clar=0;
 		^this.multiNew('control', in, initFreq, minFreq, maxFreq, execFreq,
-			maxBinsPerOctave, median, ampThreshold, peakThreshold, downSample)
+			maxBinsPerOctave, median, ampThreshold, peakThreshold, downSample, clar)
 	}
 	init { arg ... theInputs;
 		inputs = theInputs;
