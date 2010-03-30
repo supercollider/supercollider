@@ -25,6 +25,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/path.hpp>
+
 #include "SC_Types.h"
 #include "SC_Wire.h"
 
@@ -78,6 +79,8 @@ public:
                    output_specs.size() * (sizeof(Wire*) + sizeof(float*)) +
                    output_specs.size() * sizeof(Wire);
         }
+
+        struct sc_ugen_def * prototype;
     };
 
     friend class sc_synth_prototype;
@@ -111,7 +114,8 @@ public:
 private:
     void read_synthdef(const char *&);
 
-    void assign_buffers(void);
+    /** assign buffers, collect memory requirement & cache ugen prototype */
+    void prepare(void);
 
     string name_;
     fvector constants;

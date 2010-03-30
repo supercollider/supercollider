@@ -208,13 +208,7 @@ BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
 struct Unit * sc_ugen_factory::allocate_ugen(sc_synth * synth,
                                        sc_synthdef::unit_spec_t const & unit_spec, char *& chunk)
 {
-    ugen_set_type::iterator it = ugen_set.find(unit_spec.name,
-                                               hash_def<sc_ugen_def>(), equal_def<sc_ugen_def>());
-
-    /* we have already checked for the existence during the synthdef construction */
-    assert (it != ugen_set.end());
-
-    Unit * unit = it->construct(unit_spec, synth, &world, chunk);
+    Unit * unit = unit_spec.prototype->construct(unit_spec, synth, &world, chunk);
 
     ++ugen_count_;
     return unit;

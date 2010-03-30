@@ -209,7 +209,7 @@ void sc_synthdef::read_synthdef(const char *& ptr)
         }
     }
 
-    assign_buffers();
+    prepare();
 }
 
 namespace
@@ -262,7 +262,7 @@ public:
 
 } /* namespace */
 
-void sc_synthdef::assign_buffers(void)
+void sc_synthdef::prepare(void)
 {
     memory_requirement_ = 0;
 
@@ -279,6 +279,7 @@ void sc_synthdef::assign_buffers(void)
 
         sc_ugen_def * ugen = sc_factory.find_ugen(spec.name);
         assert(ugen);
+        spec.prototype = ugen;
 
         const bool can_alias = !ugen->cant_alias();
         memory_requirement_ += ugen->memory_requirement();
