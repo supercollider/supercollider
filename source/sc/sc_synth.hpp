@@ -78,10 +78,42 @@ public:
     {
         if (likely(trace == 0))
         {
-            for (size_t i = 0; i != calc_units.size(); ++i)
+            size_t count = calc_units.size();
+            Unit ** units = calc_units.data();
+
+            size_t preroll = count & 7;
+
+            for (size_t i = 0; i != preroll; ++i)
             {
-                Unit * unit = calc_units[i];
+                Unit * unit = units[i];
                 (unit->mCalcFunc)(unit, unit->mBufLength);
+            }
+
+            size_t unroll = count >> 3;
+            if (unroll == 0)
+                return;
+
+            units += preroll;
+
+            for (size_t i = 0; i != unroll; ++i)
+            {
+                Unit * unit = units[0];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+                unit = units[1];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+                unit = units[2];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+                unit = units[3];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+                unit = units[4];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+                unit = units[5];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+                unit = units[6];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+                unit = units[7];
+                (unit->mCalcFunc)(unit, unit->mBufLength);
+                units += 8;
             }
         }
         else
