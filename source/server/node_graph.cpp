@@ -215,6 +215,11 @@ group::fill_queue_recursive(thread_queue & queue,
     typedef server_node_list::reverse_iterator r_iterator;
 
     size_t children = child_count();
+
+    typedef std::vector<server_node*, rt_pool_allocator<abstract_synth*> > sequential_child_list;
+    sequential_child_list sequential_children;
+    sequential_children.reserve(child_synths_);
+
     for (r_iterator it = child_nodes.rbegin();
          it != child_nodes.rend(); ++it)
     {
@@ -225,8 +230,10 @@ group::fill_queue_recursive(thread_queue & queue,
             --end_of_node; // one element behind the last
             std::size_t node_count = 1;
 
+            // we fill the child nodes in reverse order to an array
             for(;;)
             {
+                sequential_children.push_back(&*it);
                 ++it;
                 if (it == child_nodes.rend())
                     break; // we found the beginning of this group
@@ -237,13 +244,15 @@ group::fill_queue_recursive(thread_queue & queue,
             }
 
             --it; // we iterated one element too far, so we need to go back to the previous element
-            r_iterator forward_it = it;
+            assert(sequential_children.size() == node_count);
 
-            queue_node q_node(static_cast<abstract_synth*>(&*forward_it--), node_count);
+            sequential_child_list::reverse_iterator seq_it = sequential_children.rbegin();
+            queue_node q_node(static_cast<abstract_synth*>(*seq_it++), node_count);
 
             // now we can add all nodes sequentially
-            for(;forward_it != end_of_node; --forward_it)
-                q_node.add_node(static_cast<abstract_synth*>(&*forward_it));
+            for(;seq_it != sequential_children.rend(); ++seq_it)
+                q_node.add_node(static_cast<abstract_synth*>(*seq_it));
+            sequential_children.clear();
 
             assert(q_node.size() == node_count);
             int activation_limit = get_previous_activation_count(it, child_nodes.rend(), previous_activation_limit);
