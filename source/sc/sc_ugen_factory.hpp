@@ -218,12 +218,24 @@ public:
         close_handles();
     }
 
-    void allocate_ugen(void)
+    /* @{ */
+    /** ugen count handling */
+    void allocate_ugens(uint32_t count)
     {
-        ++ugen_count_;
+        ugen_count_ += count;
     }
 
-    void free_ugen(struct Unit * unit);
+    void free_ugens(uint32_t count)
+    {
+        ugen_count_ -= count;
+    }
+
+    uint32_t ugen_count(void) const
+    {
+        return ugen_count_;
+    }
+    /* @} */
+
 
     void load_plugin_folder(boost::filesystem::path const & path);
     void load_plugin(boost::filesystem::path const & path);
@@ -233,11 +245,6 @@ public:
 
     void register_bufgen(const char * name, BufGenFunc func);
     BufGenFunc find_bufgen(const char * name);
-
-    uint32_t ugen_count(void) const
-    {
-        return ugen_count_;
-    }
 
     sc_ugen_def * find_ugen(std::string const & name);
 

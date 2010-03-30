@@ -91,20 +91,33 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
          it != synthdef.graph.end(); ++it)
     {
         struct Unit * unit = it->prototype->construct(*it, this, &sc_factory.world, chunk);
-        sc_factory.allocate_ugen();
         units.push_back(unit);
     }
+
+    sc_factory.allocate_ugens(synthdef.graph.size());
 
     for (sc_synthdef::calc_units_t::const_iterator it = synthdef.calc_unit_indices.begin();
          it != synthdef.calc_unit_indices.end(); ++it)
         calc_units.push_back(units[*it]);
 }
 
+namespace
+{
+
+void free_ugen(struct Unit * unit)
+{
+    sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+    def->destruct(unit);
+}
+
+} /* namespace */
+
 sc_synth::~sc_synth(void)
 {
     free(mControls);
+    std::for_each(units.begin(), units.end(), free_ugen);
 
-    std::for_each(units.begin(), units.end(), boost::bind(&sc_ugen_factory::free_ugen, &sc_factory, _1));
+    sc_factory.free_ugens(units.size());
 }
 
 void sc_synth::prepare(void)

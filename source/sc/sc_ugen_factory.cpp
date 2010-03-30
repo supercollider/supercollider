@@ -216,12 +216,4 @@ sc_ugen_def * sc_ugen_factory::find_ugen(std::string const & name)
     return &*it;
 }
 
-
-void sc_ugen_factory::free_ugen(struct Unit * unit)
-{
-    sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-    def->destruct(unit);
-    --ugen_count_;
-}
-
 } /* namespace nova */
