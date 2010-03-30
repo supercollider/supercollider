@@ -205,15 +205,6 @@ BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
     return it->func;
 }
 
-struct Unit * sc_ugen_factory::allocate_ugen(sc_synth * synth,
-                                       sc_synthdef::unit_spec_t const & unit_spec, char *& chunk)
-{
-    Unit * unit = unit_spec.prototype->construct(unit_spec, synth, &world, chunk);
-
-    ++ugen_count_;
-    return unit;
-}
-
 sc_ugen_def * sc_ugen_factory::find_ugen(std::string const & name)
 {
     ugen_set_type::iterator it = ugen_set.find(name,

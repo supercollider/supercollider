@@ -90,7 +90,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     for (graph_t::const_iterator it = synthdef.graph.begin();
          it != synthdef.graph.end(); ++it)
     {
-        struct Unit * unit = sc_factory.allocate_ugen(this, *it, chunk);
+        struct Unit * unit = it->prototype->construct(*it, this, &sc_factory.world, chunk);
+        sc_factory.allocate_ugen();
         units.push_back(unit);
     }
 
