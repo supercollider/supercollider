@@ -42,7 +42,7 @@ typedef boost::intrusive::list<class server_node,
 server_node_list;
 
 class server_node:
-    public bi::list_base_hook<bi::link_mode<bi::auto_unlink> >, /* group member */
+    public bi::list_base_hook<bi::link_mode<bi::auto_unlink> >,          /* group member */
     public bi::unordered_set_base_hook<bi::link_mode<bi::auto_unlink> >  /* for node_id mapping */
 {
 protected:
@@ -101,6 +101,11 @@ public:
         return synth_;
     }
 
+    bool is_group(void) const
+    {
+        return !synth_;
+    }
+
     /** set a slot */
     /* @{ */
     virtual void set(const char * slot_str, float val) = 0;
@@ -150,6 +155,8 @@ private:
 
 
 public:
+    /* @{ */
+    /** parent group handling */
     const abstract_group * get_parent(void) const
     {
         return parent_;
@@ -160,19 +167,11 @@ public:
         return parent_;
     }
 
-    void set_parent(abstract_group * parent)
-    {
-        add_ref();
-        assert(parent_ == 0);
-        parent_ = parent;
-    }
+    inline void set_parent(abstract_group * parent);
+    inline void clear_parent(void);
+    /* @} */
 
-    void clear_parent(void)
-    {
-        parent_ = 0;
-        release();
-    }
-
+private:
     abstract_group * parent_;
 
 public:

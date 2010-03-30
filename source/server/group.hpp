@@ -37,18 +37,31 @@ typedef nova::dsp_thread_queue_item<dsp_queue_node<rt_pool_allocator<void*> >,
 typedef nova::dsp_thread_queue<dsp_queue_node<rt_pool_allocator<void*> >,
                                rt_pool_allocator<void*> > thread_queue;
 
+struct abstract_group_tag;
+
+typedef bi::list_base_hook<bi::link_mode<bi::auto_unlink>,
+                           bi::tag<abstract_group_tag>  >
+group_list_hook;
+
+typedef boost::intrusive::list<class abstract_group,
+                               bi::constant_time_size<false>,
+                               bi::base_hook<group_list_hook> >
+group_list;
+
 class abstract_group:
-    public server_node
+    public server_node,
+    public group_list_hook
 {
 public:
     typedef thread_queue_item::successor_list successor_container;
 
 protected:
     server_node_list child_nodes;
+    group_list child_groups;
     const bool is_parallel_;
 
     abstract_group(int node_id, bool is_parallel):
-        server_node(node_id, false), is_parallel_(is_parallel)
+        server_node(node_id, false), is_parallel_(is_parallel), child_synths_(0), child_groups_(0)
     {}
 
 public:
@@ -103,29 +116,23 @@ public:
         return false;
     }
 
-    /** number of direct children */
     std::size_t child_count(void) const
     {
-        return child_nodes.size();
+        return child_synths_ + child_groups_;
     }
 
-    /** number of child synths and groups */
+    /* number of child synths and groups */
     std::pair<std::size_t, std::size_t> child_count_deep(void) const
     {
-        std::size_t synths(0), groups(0);
+        std::size_t synths = child_synths_;
+        std::size_t groups = child_groups_;
 
-        for (server_node_list::const_iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
+        for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
         {
-            if (it->is_synth())
-                synths += 1;
-            else
-            {
-                std::size_t recursive_synths, recursive_groups;
-                const abstract_group * group = static_cast<const abstract_group*>(&*it);
-                boost::tie(recursive_synths, recursive_groups) = group->child_count_deep();
-                groups += 1 + recursive_groups;
-                synths += recursive_synths;
-            }
+            std::size_t recursive_synths, recursive_groups;
+            boost::tie(recursive_synths, recursive_groups) = it->child_count_deep();
+            groups += recursive_groups;
+            synths += recursive_synths;
         }
         return std::make_pair(synths, groups);
     }
@@ -136,6 +143,20 @@ public:
         for (server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
             f(*it);
     }
+    /* @} */
+
+    /* @{ */
+    void register_as_child(void)
+    {
+        parent_->child_groups.push_back(*this);
+    }
+
+    void unregister_as_child(void)
+    {
+        group_list_hook::unlink();
+    }
+    /* @} */
+
 
 public:
     server_node * next_node(server_node * node)
@@ -161,6 +182,8 @@ public:
     void free_children(void)
     {
         child_nodes.clear_and_dispose(boost::mem_fn(&server_node::clear_parent));
+        assert(child_synths_ == 0);
+        assert(child_groups_ == 0);
     }
 
     void free_synths_deep(void)
@@ -173,6 +196,7 @@ public:
             abstract_group * group = static_cast<abstract_group*>(&*it);
             group->free_synths_deep();
         }
+        assert(child_synths_ == 0);
     }
 
     /** remove node from child_nodes, clear node->parent */
@@ -185,7 +209,38 @@ public:
     void set(slot_index_t slot_str, size_t count, float * val);
 
     friend class node_graph;
+    std::size_t child_synths_, child_groups_;
 };
+
+
+inline void server_node::clear_parent(void)
+{
+    if (is_synth())
+        --parent_->child_synths_;
+    else {
+        --parent_->child_groups_;
+        static_cast<abstract_group*>(this)->unregister_as_child();
+    }
+
+    parent_ = 0;
+    release();
+}
+
+inline void server_node::set_parent(abstract_group * parent)
+{
+    add_ref();
+    assert(parent_ == 0);
+    parent_ = parent;
+
+    if (is_synth())
+        ++parent->child_synths_;
+    else {
+        ++parent->child_groups_;
+        static_cast<abstract_group*>(this)->register_as_child();
+    }
+}
+
+
 
 inline server_node * server_node::previous_node(void)
 {
