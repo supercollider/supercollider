@@ -48,7 +48,7 @@ protected:
     const bool is_parallel_;
 
     abstract_group(int node_id, bool is_parallel):
-        server_node(node_id, false), is_parallel_(is_parallel)
+        server_node(node_id, false), is_parallel_(is_parallel), child_synths_(0), child_groups_(0)
     {}
 
 public:
@@ -106,24 +106,22 @@ public:
     /** number of direct children */
     std::size_t child_count(void) const
     {
-        return child_nodes.size();
+        return child_synths_ + child_groups_;
     }
 
     /** number of child synths and groups */
     std::pair<std::size_t, std::size_t> child_count_deep(void) const
     {
-        std::size_t synths(0), groups(0);
+        std::size_t synths = child_synths_;
+        std::size_t groups = child_groups_;
 
         for (server_node_list::const_iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
         {
-            if (it->is_synth())
-                synths += 1;
-            else
-            {
+            if (it->is_group()) {
                 std::size_t recursive_synths, recursive_groups;
                 const abstract_group * group = static_cast<const abstract_group*>(&*it);
                 boost::tie(recursive_synths, recursive_groups) = group->child_count_deep();
-                groups += 1 + recursive_groups;
+                groups += recursive_groups;
                 synths += recursive_synths;
             }
         }
@@ -161,6 +159,8 @@ public:
     void free_children(void)
     {
         child_nodes.clear_and_dispose(boost::mem_fn(&server_node::clear_parent));
+        assert(child_synths_ == 0);
+        assert(child_groups_ == 0);
     }
 
     void free_synths_deep(void)
@@ -173,6 +173,7 @@ public:
             abstract_group * group = static_cast<abstract_group*>(&*it);
             group->free_synths_deep();
         }
+        assert(child_synths_ == 0);
     }
 
     void remove_child(server_node * node);
@@ -182,7 +183,34 @@ public:
     void set(slot_index_t slot_id, float val);
 
     friend class node_graph;
+    std::size_t child_synths_, child_groups_;
 };
+
+
+inline void server_node::clear_parent(void)
+{
+    if (is_synth())
+        --parent_->child_synths_;
+    else
+        --parent_->child_groups_;
+
+    parent_ = 0;
+    release();
+}
+
+inline void server_node::set_parent(abstract_group * parent)
+{
+    add_ref();
+    assert(parent_ == 0);
+    parent_ = parent;
+
+    if (is_synth())
+        ++parent->child_synths_;
+    else
+        ++parent->child_groups_;
+}
+
+
 
 inline server_node * server_node::previous_node(void)
 {

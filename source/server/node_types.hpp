@@ -101,6 +101,11 @@ public:
         return synth_;
     }
 
+    bool is_group(void) const
+    {
+        return !synth_;
+    }
+
     /** set a slot */
     /* @{ */
     virtual void set(const char * slot_str, float val) = 0;
@@ -143,19 +148,25 @@ private:
     friend class group;
     friend class parallel_group;
 
-    void set_parent(abstract_group * parent)
+
+public:
+    /* @{ */
+    /** parent group handling */
+    const abstract_group * get_parent(void) const
     {
-        add_ref();
-        assert(parent_ == 0);
-        parent_ = parent;
+        return parent_;
     }
 
-    void clear_parent(void)
+    abstract_group * get_parent(void)
     {
-        parent_ = 0;
-        release();
+        return parent_;
     }
 
+    inline void set_parent(abstract_group * parent);
+    inline void clear_parent(void);
+    /* @} */
+
+private:
     abstract_group * parent_;
 
 public:

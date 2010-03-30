@@ -157,7 +157,6 @@ bool abstract_group::has_child(server_node * node)
 void abstract_group::remove_child(server_node * node)
 {
     assert (has_child(node));
-/*         child_nodes.remove(&*node); */
     node->server_node::parent_hook::unlink();
     node->clear_parent();
 }
