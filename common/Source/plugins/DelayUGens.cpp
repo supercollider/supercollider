@@ -111,6 +111,7 @@ struct Pitch : public Unit
 	int m_minperiod, m_maxperiod, m_execPeriod, m_index, m_readp, m_size;
 	int m_downsamp, m_maxlog2bins, m_medianSize;
 	int m_state;
+	bool m_getClarity;
 };
 
 struct BufDelayUnit : public Unit
@@ -1629,7 +1630,8 @@ enum {
 	kPitchMedian,
 	kPitchAmpThreshold,
 	kPitchPeakThreshold,
-	kPitchDownsamp
+	kPitchDownsamp,
+	kPitchGetClarity
 };
 
 void Pitch_Ctor(Pitch *unit)
@@ -1675,6 +1677,8 @@ void Pitch_Ctor(Pitch *unit)
 	unit->m_hasfreq = 0.f;
 
 	initMedian(unit->m_values, unit->m_ages, unit->m_medianSize, unit->m_freq);
+	
+	unit->m_getClarity = ZIN0(kPitchGetClarity) > 0.f;
 
 	ZOUT0(0) = 0.f;
 	ZOUT0(1) = 0.f;
@@ -1731,11 +1735,11 @@ void Pitch_next_a(Pitch *unit, int inNumSamples)
 				int maxlog2bins = unit->m_maxlog2bins;
 				int octave;
 				// calculate the zero lag value and compute the threshold based on that
-				float threshold = 0.f;
+				float zerolagval = 0.f;
 				for (int j = 0; j < maxperiod; ++j) {
-					threshold += bufData[j] * bufData[j];
+					zerolagval += bufData[j] * bufData[j];
 				}
-				threshold *= unit->m_peakthresh;
+				float threshold = zerolagval * unit->m_peakthresh;
 
 				// skip until drop below threshold
 				int binstep, peakbinstep = 0;
@@ -1850,7 +1854,10 @@ void Pitch_next_a(Pitch *unit, int inNumSamples)
 						if (unit->m_medianSize > 1) {
 							freq = insertMedian(unit->m_values, unit->m_ages, unit->m_medianSize, freq);
 						}
-						hasfreq = 1.f;
+						if(unit->m_getClarity)
+							hasfreq = maxsum / zerolagval; // "clarity" measure is normalised size of first peak
+						else
+							hasfreq = 1.f;
 
 						startperiod = (ksamps+downsamp-1)/downsamp;
 					}
@@ -1930,11 +1937,11 @@ void Pitch_next_k(Pitch *unit, int inNumSamples)
 				int maxlog2bins = unit->m_maxlog2bins;
 				int octave;
 				// calculate the zero lag value and compute the threshold based on that
-				float threshold = 0.f;
+				float zerolagval = 0.f;
 				for (int j = 0; j < maxperiod; ++j) {
-					threshold += bufData[j] * bufData[j];
+					zerolagval += bufData[j] * bufData[j];
 				}
-				threshold *= unit->m_peakthresh;
+				float threshold = zerolagval * unit->m_peakthresh;
 
 				// skip until drop below threshold
 				int binstep, peakbinstep = 0;
@@ -2049,7 +2056,10 @@ void Pitch_next_k(Pitch *unit, int inNumSamples)
 						if (unit->m_medianSize > 1) {
 							freq = insertMedian(unit->m_values, unit->m_ages, unit->m_medianSize, freq);
 						}
-						hasfreq = 1.f;
+						if(unit->m_getClarity)
+							hasfreq = maxsum / zerolagval; // "clarity" measure is normalised size of first peak
+						else
+							hasfreq = 1.f;
 
 						// nescivi: not sure about this one?
 						startperiod = 1; // (ksamps+downsamp-1)/downsamp;
