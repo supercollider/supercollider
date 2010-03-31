@@ -175,7 +175,7 @@ private:
     boost::atomic<activation_limit_t> activation_count; /**< current activation count */
 
     runnable job;
-    successor_list successors;                                 /**< list of successing nodes */
+    const successor_list successors;                           /**< list of successing nodes */
     const activation_limit_t activation_limit;                 /**< number of precedessors */
 };
 

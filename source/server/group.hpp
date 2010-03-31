@@ -24,6 +24,7 @@
 #include "memory_pool.hpp"
 #include "node_types.hpp"
 #include "utilities/exists.hpp"
+#include "dsp_thread_queue.hpp"
 #include "dsp_thread_queue_node.hpp"
 
 namespace nova
