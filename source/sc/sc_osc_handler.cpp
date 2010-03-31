@@ -23,7 +23,7 @@
 
 #include "sc/supercollider/common/Headers/plugin_interface/sc_msg_iter.h"
 #include "sc_osc_handler.hpp"
-#include "server.hpp"
+#include "../server/server.hpp"
 #include "utilities/sized_array.hpp"
 
 namespace nova
@@ -35,13 +35,13 @@ namespace
 {
 
 int32_t last_generated = 0;
-    
-    
+
+
 server_node * find_node(int32_t target_id)
 {
     if (target_id == -1)
         target_id = last_generated;
-    
+
     server_node * node = instance->find_node(target_id);
 
     if (node == NULL)
@@ -884,22 +884,22 @@ void handle_s_new(received_message const & msg)
 
     const char * def_name = args->AsString(); ++args;
     int32_t id = args->AsInt32(); ++args;
-    
+
     if (id == -1)
         id = instance->generate_node_id();
-    
+
     int32_t action, target;
-    
+
     if (args != msg.ArgumentsEnd()) {
         action = args->AsInt32(); ++args;
     } else
         action = 0;
-    
+
     if (args != msg.ArgumentsEnd()) {
         target = args->AsInt32(); ++args;
     } else
         target = 0;
-    
+
     sc_synth * synth = add_synth(def_name, id, action, target);
 
     if (synth == NULL)
@@ -924,7 +924,7 @@ void insert_group(int node_id, int action, int target_id)
         node_id = instance->generate_node_id();
     else if (!check_node_id(node_id))
         return;
-    
+
     server_node * target = find_node(target_id);
 
     if (!target)

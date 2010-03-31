@@ -24,7 +24,7 @@
 #include "buffer_manager.hpp"
 #include "memory_pool.hpp"
 #include "node_graph.hpp"
-#include "sc_osc_handler.hpp"
+#include "../sc/sc_osc_handler.hpp"
 #include "server_args.hpp"
 #include "server_scheduler.hpp"
 #include "synth_factory.hpp"

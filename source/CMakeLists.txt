@@ -1,6 +1,7 @@
 add_subdirectory(sc)
 
 set(libsupernova_src
+    sc/sc_osc_handler.cpp
     sc/sc_plugin_interface.cpp
     sc/sc_synth.cpp
     sc/sc_synth_prototype.cpp
@@ -12,7 +13,6 @@ set(libsupernova_src
     server/memory_pool.cpp
     server/node_graph.cpp
     server/server.cpp
-    server/sc_osc_handler.cpp
     server/server_args.cpp
 )
 

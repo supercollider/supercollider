@@ -27,10 +27,10 @@
 
 #include "osc/OscReceivedElements.h"
 
-#include "dynamic_endpoint.hpp"
-#include "memory_pool.hpp"
-#include "server_args.hpp"
-#include "server_scheduler.hpp"
+#include "../server/dynamic_endpoint.hpp"
+#include "../server/memory_pool.hpp"
+#include "../server/server_args.hpp"
+#include "../server/server_scheduler.hpp"
 #include "../utilities/osc_server.hpp"
 #include "../utilities/sized_array.hpp"
 #include "../utilities/static_pool.hpp"
