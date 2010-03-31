@@ -197,18 +197,6 @@ void sc_synthdef::read_synthdef(const char *& ptr)
         graph.push_back(data);
     }
 
-    /* assign calc units */
-    for (int i = 0; i != ugens; ++i) {
-        switch (graph[i].rate) {
-        case calc_BufRate:
-        case calc_FullRate:
-            calc_unit_indices.push_back(i);
-
-        default:
-            break;
-        }
-    }
-
     prepare();
 }
 
@@ -272,6 +260,13 @@ void sc_synthdef::prepare(void)
 
     for (size_t ugen_index = 0; ugen_index != ugens; ++ugen_index) {
         unit_spec_t & spec = graph[ugen_index];
+
+        /* calc units are stored in an additional vector */
+        switch (spec.rate) {
+        case calc_BufRate:
+        case calc_FullRate:
+            calc_unit_indices.push_back(ugen_index);
+        }
 
         memory_requirement_ += spec.memory_requirement();
 
