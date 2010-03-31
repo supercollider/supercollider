@@ -309,6 +309,7 @@ void sc_synthdef::prepare(void)
         }
     }
 
+    memory_requirement_ += (graph.size() + calc_unit_indices.size()) * sizeof(Unit*); // reserves space for units
     buffer_count = uint16_t(allocator.buffer_count());
 }
 

@@ -105,6 +105,16 @@ public:
         return parameters.size();
     }
 
+    std::size_t unit_count(void) const
+    {
+        return graph.size();
+    }
+
+    std::size_t calc_unit_count(void) const
+    {
+        return calc_unit_indices.size();
+    }
+
     std::size_t memory_requirement(void) const
     {
         assert(memory_requirement_);

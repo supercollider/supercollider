@@ -78,8 +78,8 @@ public:
     {
         if (likely(trace == 0))
         {
-            size_t count = calc_units.size();
-            Unit ** units = calc_units.data();
+            size_t count = calc_unit_count;
+            Unit ** units = calc_units;
 
             size_t preroll = count & 7;
 
@@ -159,14 +159,15 @@ private:
     friend class sc_ugen_def;
 
     int_fast8_t trace;
-    unit_vector calc_units;
+    Unit ** calc_units;
     sample * unit_buffers;
+    int32_t calc_unit_count, unit_count;
 
     Rate full_rate;
     Rate control_rate;
     RGen rgen;
 
-    unit_vector units;
+    Unit ** units;
 };
 
 } /* namespace nova */

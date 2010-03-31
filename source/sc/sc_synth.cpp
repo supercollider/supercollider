@@ -84,21 +84,25 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         wire->mScalarValue = get_constant(i);
     }
 
+    unit_count = prototype->synthdef.unit_count();
+    calc_unit_count = prototype->synthdef.calc_unit_count();
+    units = (Unit**)chunk; chunk += unit_count * sizeof(Unit*);
+    calc_units = (Unit**)chunk; chunk += calc_unit_count * sizeof(Unit*);
     unit_buffers = (sample*)chunk; chunk += sample_alloc_size*sizeof(sample);
 
     /* allocate unit generators */
-    for (graph_t::const_iterator it = synthdef.graph.begin();
-         it != synthdef.graph.end(); ++it)
+    sc_factory.allocate_ugens(synthdef.graph.size());
+    for (size_t i = 0; i != synthdef.graph.size(); ++i)
     {
-        struct Unit * unit = it->prototype->construct(*it, this, &sc_factory.world, chunk);
-        units.push_back(unit);
+        sc_synthdef::unit_spec_t const & spec = synthdef.graph[i];
+        units[i] = spec.prototype->construct(spec, this, &sc_factory.world, chunk);
     }
 
-    sc_factory.allocate_ugens(synthdef.graph.size());
-
-    for (sc_synthdef::calc_units_t::const_iterator it = synthdef.calc_unit_indices.begin();
-         it != synthdef.calc_unit_indices.end(); ++it)
-        calc_units.push_back(units[*it]);
+    for (size_t i = 0; i != synthdef.calc_unit_indices.size(); ++i)
+    {
+        int32_t index = synthdef.calc_unit_indices[i];
+        calc_units[i] = units[index];
+    }
 }
 
 namespace
@@ -115,14 +119,14 @@ void free_ugen(struct Unit * unit)
 sc_synth::~sc_synth(void)
 {
     free(mControls);
-    std::for_each(units.begin(), units.end(), free_ugen);
+    std::for_each(units, units + unit_count, free_ugen);
 
-    sc_factory.free_ugens(units.size());
+    sc_factory.free_ugens(unit_count);
 }
 
 void sc_synth::prepare(void)
 {
-    for (size_t i = 0; i != units.size(); ++i) {
+    for (size_t i = 0; i != unit_count; ++i) {
         struct Unit * unit = units[i];
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
         def->initialize(unit);
@@ -238,9 +242,9 @@ void sc_synth::run_traced(void)
 {
     using namespace std;
 
-    printf("\nTRACE %d  %s    #units: %zd\n", id(), this->prototype_name(), calc_units.size());
+    printf("\nTRACE %d  %s    #units: %zd\n", id(), this->prototype_name(), calc_unit_count);
 
-    for (size_t i = 0; i != calc_units.size(); ++i)
+    for (size_t i = 0; i != calc_unit_count; ++i)
     {
         Unit * unit = calc_units[i];
 
