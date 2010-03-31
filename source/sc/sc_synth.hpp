@@ -153,7 +153,7 @@ private:
 
     sample get_constant(size_t index)
     {
-        return static_cast<sc_synth_prototype*>(class_ptr.get())->synthdef.constants[index];
+        return static_cast<sc_synth_prototype*>(class_ptr.get())->constants[index];
     }
 
     friend class sc_ugen_def;

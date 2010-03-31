@@ -75,11 +75,11 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
 }
 
 sc_synth_prototype::sc_synth_prototype(sc_synthdef const & sd):
-    synth_prototype(sd.name()), synthdef(sd)
+    synth_prototype(sd.name()), sc_synthdef(sd)
 {
     typedef sc_synthdef::parameter_map_t::const_iterator iterator;
 
-    for (iterator it = sd.parameter_map.begin(); it != sd.parameter_map.end(); ++it)
+    for (iterator it = parameter_map.begin(); it != parameter_map.end(); ++it)
         slot_resolver::register_slot(it->first, it->second);
 }
 

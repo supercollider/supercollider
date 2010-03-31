@@ -36,7 +36,8 @@ std::vector<sc_synthdef> sc_read_synthdefs_file(path const & filename);
 std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir);
 
 class sc_synth_prototype:
-    public synth_prototype
+    public synth_prototype,
+    public sc_synthdef
 {
 public:
     sc_synth_prototype(sc_synthdef const & sd);
@@ -45,8 +46,6 @@ private:
     friend class sc_synth;
 
     virtual abstract_synth * create_instance(int);
-
-    sc_synthdef synthdef;
 };
 
 typedef boost::intrusive_ptr<sc_synth_prototype> sc_synth_prototype_ptr;

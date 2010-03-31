@@ -46,14 +46,14 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
     mNode.mID = node_id;
 
-    sc_synthdef const & synthdef = prototype->synthdef;
+    sc_synthdef const & synthdef = *prototype;
 
     const size_t parameter_count = synthdef.parameter_count();
     const size_t constants_count = synthdef.constants.size();
 
     /* we allocate one memory chunk */
     const size_t alloc_size = parameter_count * (sizeof(float) + sizeof(int) + sizeof(float*))
-                              + constants_count * sizeof(Wire) + prototype->synthdef.memory_requirement();
+                              + constants_count * sizeof(Wire) + prototype->memory_requirement();
 
     const size_t sample_alloc_size = 64 * synthdef.buffer_count + 64; /* allocate 64 bytes more than required */
 
@@ -84,8 +84,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         wire->mScalarValue = get_constant(i);
     }
 
-    unit_count = prototype->synthdef.unit_count();
-    calc_unit_count = prototype->synthdef.calc_unit_count();
+    unit_count = prototype->unit_count();
+    calc_unit_count = prototype->calc_unit_count();
     units = (Unit**)chunk; chunk += unit_count * sizeof(Unit*);
     calc_units = (Unit**)chunk; chunk += calc_unit_count * sizeof(Unit*);
     unit_buffers = (sample*)chunk; chunk += sample_alloc_size*sizeof(sample);
