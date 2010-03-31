@@ -120,12 +120,6 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     return unit;
 }
 
-void sc_ugen_def::destruct(Unit * unit)
-{
-    if (dtor)
-        (*dtor)(unit);
-}
-
 void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
 {
     using namespace boost::filesystem;

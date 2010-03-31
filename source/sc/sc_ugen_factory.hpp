@@ -78,7 +78,11 @@ public:
         (*ctor)(unit);
     }
 
-    void destruct(Unit * unit);
+    void destruct(Unit * unit)
+    {
+        if (dtor)
+            (*dtor)(unit);
+    }
 
     bool cant_alias(void) const
     {
