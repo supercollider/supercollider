@@ -25,9 +25,9 @@ SCWindow {
 		argBounds = argBounds ?? {Rect(128, 64, 400, 400)};
 		allWindows = allWindows.add(this);
 		scroll.if({
-			view = SCScrollTopView(this, argBounds.moveTo(0,0));
+			view = SCScrollTopView(nil, argBounds.moveTo(0,0));
 		},{
-			view = SCTopView(this, argBounds.moveTo(0,0));
+			view = SCTopView(nil, argBounds.moveTo(0,0));
 		});
 		this.prInit(name, argBounds, resizable, border, scroll, view, appmodal);
 		initAction.value(this);
