@@ -7,27 +7,27 @@ SCPen {
 	}
 
 	*string { arg str;
-		str.drawAtPoint( Point( 0, 0 ), font ? SCFont.default, strokeColor ? Color.black );
+		str.drawAtPoint( Point( 0, 0 ), font ? SCFont.default, fillColor ? Color.black );
 	}
 
 	*stringAtPoint { arg str, point;
-		str.drawAtPoint( point, font ? SCFont.default, strokeColor ? Color.black );
+		str.drawAtPoint( point, font ? SCFont.default, fillColor ? Color.black );
 	}
 
 	*stringInRect { arg str, rect;
-		str.drawInRect( rect, font ? SCFont.default, strokeColor ? Color.black );
+		str.drawInRect( rect, font ? SCFont.default, fillColor ? Color.black );
 	}
 
 	*stringCenteredIn { arg str, inRect;
-		str.drawCenteredIn( inRect, font ? SCFont.default, strokeColor ? Color.black );
+		str.drawCenteredIn( inRect, font ? SCFont.default, fillColor ? Color.black );
 	}
 
 	*stringLeftJustIn { arg str, inRect;
-		str.drawLeftJustIn( inRect, font ? SCFont.default, strokeColor ? Color.black );
+		str.drawLeftJustIn( inRect, font ? SCFont.default, fillColor ? Color.black );
 	}
 
 	*stringRightJustIn { arg str, inRect;
-		str.drawRightJustIn( inRect, font ? SCFont.default, strokeColor ? Color.black );
+		str.drawRightJustIn( inRect, font ? SCFont.default, fillColor ? Color.black );
 	}
 	
 	*image { arg img;
