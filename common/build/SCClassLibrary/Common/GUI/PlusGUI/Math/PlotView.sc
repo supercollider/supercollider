@@ -114,9 +114,9 @@ Plot {
 		this.drawOnGridX { |hpos, val, i|
 			var string = val.asStringPrec(5) ++ domainSpec.units;
 			Pen.font = font;
-			Pen.strokeColor = fontColor;
 			Pen.stringAtPoint( string, hpos @ base);
 		};
+		Pen.fillColor = fontColor;
 		Pen.stroke;
 	
 	}
@@ -130,12 +130,10 @@ Plot {
 			var string = val.asStringPrec(5).asString ++ spec.units;
 			if(gridOnX.not or: { i > 0 }) {
 				Pen.font = font;
-				Pen.strokeColor = fontColor;
 				Pen.stringAtPoint( string, left @ vpos);
 			}
 		};
-		
-		Pen.strokeColor = fontColor;
+		Pen.fillColor = fontColor;
 		Pen.stroke;
 
 	}
