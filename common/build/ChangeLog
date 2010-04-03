@@ -65,6 +65,8 @@ Bugfixes:
 * 2010-02-23 Performance fixes for SCUserView - sw
 * 2010-02-25 Fix interpolation / indexing problem in VDiskIn that caused slight pitch fluctuations - jp
 * 2010-03-11 SequenceableCollection:reduce no longer returns nil if the collection has only 1 element - ds
+* 2010-03-28 fix memory leak of empty command line, for interactive sclang mode - tb
+* 2010-03-29 main menu for Mac lang editor app: correction to key for evaluate selection, used to be return, now return+shift - nc
 
 Other additions/improvements:
 -----------------------------
@@ -95,6 +97,10 @@ Other additions/improvements:
 * 2010-02-11 Server:default_ now assigns to s by default. Settable with flag - sw
 * 2010-02-27 removed SCAnimationView and added SCUserView:animate_ - fo
 * 2010-03-10 SCPen:setSmoothing changed to SCPen:smoothing_, harmonised change with swingosc - ds
+* 2010-03-23 exponentiation for Complex numbers - jr
+* 2010-xx-xx many helpfiles improved - various authors
+* 2010-03-30 Image class added, a redirect for SCImage or JSCImage - hr
+* 2010-03-30 Pitch ugen ability to output clarity measure (by default not activated, for backwards compat) - ds
 
 SuperCollider v3.3.1, released 2009-06-19
 =========================================
