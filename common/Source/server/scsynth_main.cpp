@@ -352,9 +352,9 @@ int main(int argc, char* argv[])
 
 	if(options.mVerbosity >=0){
 #ifdef NDEBUG
-		scprintf("SuperCollider 3 server ready..\n");
+		scprintf("SuperCollider 3 server ready.\n");
 #else
-		scprintf("SuperCollider 3 server ready (debug build)..\n");
+		scprintf("SuperCollider 3 server ready (debug build).\n");
 #endif
 	}
 	fflush(stdout);
