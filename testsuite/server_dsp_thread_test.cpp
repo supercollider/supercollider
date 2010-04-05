@@ -92,8 +92,8 @@ void run_test_4(void)
 
     dsp_thread_queue_item * item1 = q->allocate_queue_item(dummy, typename dsp_thread_queue_item::successor_list(), 1);
 
-    typename dsp_thread_queue_item::successor_list sl;
-    sl.push_back(item1);
+    typename dsp_thread_queue_item::successor_list sl(1);
+    sl[0] = item1;
 
     dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
     q->add_initially_runnable(item2);
@@ -130,8 +130,8 @@ void run_test_5(void)
 
     dsp_thread_queue_item * item1 = q->allocate_queue_item(dummy, typename dsp_thread_queue_item::successor_list(), 4);
 
-    typename dsp_thread_queue_item::successor_list sl;
-    sl.push_back(item1);
+    typename dsp_thread_queue_item::successor_list sl(1);
+    sl[0] = item1;
 
     dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
     q->add_initially_runnable(item2);

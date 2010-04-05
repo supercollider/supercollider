@@ -54,7 +54,6 @@ concept runnable
 
     operator()(uint threadindex);
 };
-
 */
 
 /** item of a dsp thread queue
@@ -74,7 +73,71 @@ class dsp_thread_queue_item:
 
 public:
     typedef boost::uint_fast16_t activation_limit_t;
-    typedef std::vector<dsp_thread_queue_item*, Alloc> successor_list;
+
+    struct successor_list
+    {
+        struct data_t
+        {
+            uint32_t count;
+            uint32_t size;
+            dsp_thread_queue_item* content[0];
+        };
+
+        typedef typename Alloc::template rebind<data_t>::other array_allocator;
+
+        /* create instance */
+        explicit successor_list(uint32_t size = 0)
+        {
+            data = array_allocator().allocate(2*sizeof(uint32_t) + size * sizeof(dsp_thread_queue_item*));
+            data->count = 1;
+            data->size = size;
+        }
+
+        successor_list(successor_list const & rhs):
+            data(rhs.data)
+        {
+            data->count++;
+        }
+
+        successor_list & operator=(successor_list const & rhs)
+        {
+            if (--data->count == 0)
+                array_allocator().deallocate(data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*));
+
+            data = rhs.data;
+            data->count++;
+        }
+
+        std::size_t size(void) const
+        {
+            return data->size;
+        }
+
+        bool empty(void) const
+        {
+            return size() == 0;
+        }
+
+        dsp_thread_queue_item *& operator[](std::size_t index)
+        {
+            assert (index < size());
+            return data->content[index];
+        }
+
+        dsp_thread_queue_item * const& operator[](std::size_t index) const
+        {
+            assert (index < size());
+            return data->content[index];
+        }
+
+        ~successor_list(void)
+        {
+            if (--data->count == 0)
+                array_allocator().deallocate(data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*));
+        }
+
+        data_t * data;
+    };
 
     dsp_thread_queue_item(runnable const & job, successor_list const & successors,
                           activation_limit_t activation_limit):
@@ -294,9 +357,8 @@ public:
         assert(runnable_set.empty());
         node_count.store(queue->get_total_node_count(), boost::memory_order_release);
 
-        successor_list const & initially_runnable_items = queue->initially_runnable_items;
-        for (size_t i = 0; i != initially_runnable_items.size(); ++i)
-            mark_as_runnable(initially_runnable_items[i]);
+        for (size_t i = 0; i != queue->initially_runnable_items.size(); ++i)
+            mark_as_runnable(queue->initially_runnable_items[i]);
 
         return true;
     }

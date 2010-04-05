@@ -71,8 +71,8 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_4 )
 
     dsp_thread_queue_item * item1 = q->allocate_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
 
-    dsp_thread_queue_item::successor_list sl;
-    sl.push_back(item1);
+    dsp_thread_queue_item::successor_list sl(1);
+    sl[0] = item1;
 
     dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
     q->add_initially_runnable(item2);
@@ -96,8 +96,8 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_5 )
 
         dsp_thread_queue_item * item1 = q->allocate_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
 
-        dsp_thread_queue_item::successor_list sl;
-        sl.push_back(item1);
+        dsp_thread_queue_item::successor_list sl(1);
+        sl[0] = item1;
 
         dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
 
@@ -119,8 +119,8 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_5 )
 
         dsp_thread_queue_item * item1 = q->allocate_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
 
-        dsp_thread_queue_item::successor_list sl;
-        sl.push_back(item1);
+        dsp_thread_queue_item::successor_list sl(1);
+        sl[0] = item1;
 
         dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
 
