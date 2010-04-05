@@ -1,3 +1,5 @@
+#!/bin/sh
+
 mainfile="build/SCClassLibrary/DefaultLibrary/Main.sc"
 
 # Double-check that there's exactly one in each!
@@ -17,3 +19,4 @@ echo $line
 sed "s/$line/$versionline/" <$mainfile >tempfile
 cp tempfile $mainfile
 rm tempfile
+
