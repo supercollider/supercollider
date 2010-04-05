@@ -17,17 +17,17 @@ p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #a41c14}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #bf0000}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #606060}
 p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0018b8}
+span.s2 {color: #0000bf}
 span.s3 {font: 11.0px Monaco}
 span.s4 {color: #000000}
-span.s5 {color: #356f14}
+span.s5 {color: #007300}
 span.s6 {color: #606060}
-span.s7 {color: #a41c14}
+span.s7 {color: #bf0000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -51,7 +51,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view or window. If the parent is nil, then EZListView will create its own <a href="../Main-GUI/Window.html"><span class="s2">Window</span></a>, and place it conveniently on the screen if the bounds are a <a href="../../Geometry/Point.html"><span class="s2">Point</span></a>. If the bounds are a <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a>, then the Rect determines the window bounds.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a>. Default value is <span class="s3">160@200</span>.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created.<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>items </b>- Default value is nil. An Array of <a href="../../Collections/Association.html"><span class="s2">Association</span></a>s ['label' -&gt; {arg listObj; value}, ].</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>items </b>- Default value is nil. An Array of <a href="../../Collections/Association.html"><span class="s2">Association</span></a>s ['label' -&gt; {arg listObj; value}, ].Or and Array Symbols (if you are only using <b>globalAction</b>).</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>globalAction </b>- a Global function to be performed in addition to the item functions {arg listObj; value}.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- Initial <b>value</b> of the List, i.e. the index selected. Default value is 0.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initAction </b>- An instance of <a href="../../Core/Boolean.html"><span class="s2">Boolean</span></a>. Performs the action at <b>initVal</b> on creation of the list, plus the <b>globalAction</b>. Default value is false.</p>

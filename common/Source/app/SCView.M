@@ -4232,15 +4232,14 @@ void SCUserView::draw(SCRect inDamage)
 
 void SCUserView::clearDrawing()
 {
-	if( !mNSImageForLayering ) 
+	if( mClearOnRefresh ) 
 		return;
 
 	//SCRect bounds = getDrawBounds();
 	//CGContextClearRect ( mNSImageForLayering ,  CGRectMake( 0, 0, bounds.width, bounds.height));
 	[ mNSImageForLayering lockFocus ];
 	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext]graphicsPort];
-	if(mClearOnRefresh) 
-		CGContextClearRect( cgc, CGRectMake( 0.f, 0.f, [mNSImageForLayering size].width, [mNSImageForLayering size].height ) );
+	CGContextClearRect( cgc, CGRectMake( 0.f, 0.f, [mNSImageForLayering size].width, [mNSImageForLayering size].height ) );
 	[ mNSImageForLayering unlockFocus ];
 	
 }

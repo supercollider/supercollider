@@ -5,59 +5,197 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="1038.25">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-span.s1 {text-decoration: underline}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #00831b}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #00831c}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #1135f9}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #1135f9; min-height: 14.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #00831b}
+p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #00831c; min-height: 12.0px}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #1135f9}
+span.s3 {color: #737373}
+span.s4 {color: #00831b}
+span.s5 {color: #00831c}
+span.s6 {font: 12.0px Helvetica}
+span.s7 {font: 9.0px Monaco}
+span.s8 {font: 12.0px Helvetica; color: #000000}
+span.s9 {color: #000000}
+span.s10 {color: #0b28c6}
+span.s11 {text-decoration: underline ; color: #0000ee}
+span.s12 {color: #0b28c5}
+span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
-<p class="p1"><b>Symbol</b></p>
+<p class="p1"><span class="s1"><b>Symbol<span class="Apple-tab-span">	</span></b></span><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>unique name</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>superclass: Object</b></p>
+<p class="p1"><b>superclass: </b><a href="Object.html"><span class="s2"><b>Object</b></span></a></p>
 <p class="p2"><br></p>
-<p class="p3">A Symbol is a name that is guaranteed to be unique. They can be used to represent</p>
-<p class="p3">symbolic constant values, Dictionary keys, etc.</p>
+<p class="p1">A Symbol is a name that is guaranteed to be <b>unique</b>. They can be used to represent</p>
+<p class="p1">symbolic constant values, Dictionary keys, etc.</p>
 <p class="p2"><br></p>
-<p class="p3">Symbols are represented syntactically as literals which are described in [01 Literals] .</p>
+<p class="p1">Symbols are represented syntactically as literals which are described in [<a href="../Language/Literals.html"><span class="s2">Literals</span></a>]</p>
 <p class="p2"><br></p>
-<p class="p4"><b><span class="s1">Testing</span></b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>isClassName</b></p>
+<p class="p3"><b>Creating a Symbol</b></p>
 <p class="p2"><br></p>
-<p class="p3">Answer whether the symbol is a class name.</p>
+<p class="p1"><span class="Apple-tab-span">	</span>A symbol can be written by surrounding characters by single quotes (may include whitespace):</p>
 <p class="p2"><br></p>
-<p class="p3"><b>isSetter</b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>'foo bar'</p>
 <p class="p2"><br></p>
-<p class="p3">Answer whether the symbol has a trailing underscore.</p>
+<p class="p1"><span class="Apple-tab-span">	</span>Or by a preceeding backslash (then it may not include whitespace):</p>
 <p class="p2"><br></p>
-<p class="p4"><b><span class="s1">Conversion</span></b></p>
+<p class="p4"><span class="Apple-tab-span">	</span>\foo</p>
 <p class="p2"><br></p>
-<p class="p3"><b>asString</b></p>
+<p class="p1"><span class="Apple-tab-span">	</span>A String can be converted into a symbol:</p>
 <p class="p2"><br></p>
-<p class="p3">Convert to a String</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s3">"arbeit"</span>.scramble.asSymbol;</p>
 <p class="p2"><br></p>
-<p class="p3"><b>asClass</b></p>
 <p class="p2"><br></p>
-<p class="p3">Answer the Class named by the receiver.</p>
-<p class="p2"><br></p>
-<p class="p3"><b>asSetter</b></p>
-<p class="p2"><br></p>
-<p class="p3">Return a symbol with a trailing underscore added.</p>
-<p class="p2"><br></p>
-<p class="p3"><b>asGetter</b></p>
-<p class="p2"><br></p>
-<p class="p3">Return a symbol with a trailing underscore removed.</p>
-<p class="p2"><br></p>
-<p class="p4"><b><span class="s1">Math</span></b></p>
-<p class="p2"><br></p>
-<p class="p3">Symbols respond to all unary and binary math operations by returning themselves.</p>
-<p class="p3">The result of any math operation between a Number or other math object and a Symbol</p>
-<p class="p3">is to return the Symbol. This allows operations on lists of notes which contain 'rest's</p>
-<p class="p3">to preserve the rests.</p>
-<p class="p2"><br></p>
+<p class="p3"><b>Testing</b></p>
+<p class="p6"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>isClassName / isMetaClassName</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Answer whether the symbol can be a class name / meta class name. This does not say if the class exists.</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\Array</span>.isClassName;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">\Bauxite</span>.isClassName;</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\Meta_Array</span>.isMetaClassName;</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>isSetter</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Answer whether the symbol has a trailing underscore.</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">'_action'</span>.isSetter;</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span><b>isPrimitiveName</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Answer whether the symbol is a valid primitive name</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>'_SymbolIsClassName'<span class="s9">.isPrimitiveName;</span></p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p11"><b>Conversion</b></p>
+<p class="p6"><br></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span>asString</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Convert to a <a href="../Collections/String.html"><span class="s2">String</span></a></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>asInteger</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Convert to an <a href="../Math/Integer.html"><span class="s2">Integer</span></a></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>asClass</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Answer the <a href="Kernel/Class.html"><span class="s2">Class</span></a> named by the receiver.</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>asSetter</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Return a symbol with a trailing underscore added.</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>asGetter</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Return a symbol with a trailing underscore removed.</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>ascii</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>return the ascii codes as an array</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>asSpec</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Convert to a <a href="../Control/ControlSpec.html"><span class="s2">ControlSpec</span></a></p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>asTuning</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Convert to a <a href="../Collections/Tuning.html"><span class="s2">Tuning</span></a></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>asScale</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Convert to a <a href="../Collections/Scale.html"><span class="s2">Scale</span></a></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><br></p>
+<p class="p11"><b>Environments</b></p>
+<p class="p12"><br></p>
+<p class="p7">Symbols are used as keys to look up objects in dictionaries and environments, but also in arrays.<span class="Apple-converted-space"> </span></p>
+<p class="p13"><span class="s9">See <a href="../Collections/IdentityDictionary.html"><span class="s6">IdentityDictionary</span></a>, <a href="../Collections/Environment.html"><span class="s6">Environment</span></a>, <a href="../Collections/Event.html"><span class="s6">Event</span></a></span></p>
+<p class="p14"><br></p>
+<p class="p8"><span class="Apple-tab-span">	</span>a = ();</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.put(<span class="s4">\commune</span>, 1871);</p>
+<p class="p15"><span class="s9"><span class="Apple-tab-span">	</span>a.at(</span>\commune<span class="s9">);</span></p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>envirPut(aValue)</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>put a value to the current environment using receiver as key</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>envirGet</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>return a value from the current environment using receiver as key</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="s4">\foo</span>.envirPut(100);</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="s4">\foo</span>.envirGet;</p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span></span><span class="s4">\foo</span>.envirPut(<span class="s10">nil</span>);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><b>Math</b></p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Symbols respond to all unary and binary math operations by returning themselves. The result of any math operation between a Number or other math object and a Symbol is to return the Symbol. This allows for example operations on lists of notes which contain 'rest's to preserve the rests.</p>
+<p class="p16"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s10">Pseq</span>([1, 3, <span class="s4">\rest</span>, 2, 4] + 8);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>applyTo(firstArg ... args)</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Use the symbol as a method selector and perform the message on <b>firstArg</b>, with <b>args</b> as arguments. This is used for mixing functions with method selectors (see also: <a href="Kernel/Function.html"><span class="s2">Function</span></a>).</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s4">'%'</span>.applyTo(2553, 345<span class="s6">);</span></p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>[<span class="s4">'+'</span>, <span class="s4">'-'</span>, <span class="s4">'*'</span>, { <span class="s10">|a, b|</span> a.rand + b.rand } ].choose.applyTo(2, 3);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><b>Synthesis</b></p>
+<p class="p6"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see:<span class="Apple-converted-space">  </span><a href="../UGens/Synth control/NamedControl.html"><span class="s2">NamedControl</span></a>, <a href="../UGens/Synth control/ControlName.html"><span class="s2">ControlName</span></a><span class="s2">, </span>and<span class="s2"> <a href="../UGens/Synth control/Control.html"><span class="s11">Control</span></a></span>).</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>kr(val, lag)</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Return a control rate <a href="../UGens/Synth control/NamedControl.html"><span class="s2">NamedControl</span></a> input with a default value (<b>val</b>), and if supplied, with a <b>lag</b>. If val is an array, the control will be multichannel.</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>a = { <span class="s10">SinOsc</span>.ar(<span class="s5">\freq</span>.kr(440, 1.2)) }.play;</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.set(<span class="s5">\freq</span>, 330);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.release;</p>
+<p class="p8"><span class="s6"><span class="Apple-tab-span">	</span></span>a = { <span class="s12">SinOsc</span>.ar(<span class="s5">\freq</span>.kr([440, 460], 1.2)) }.play;</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.setn(<span class="s5">\freq</span>, [330, 367]);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.release;</p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s7"><span class="Apple-tab-span">	</span></span><b>ar(val, lag)</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Return an audio rate <a href="../UGens/Synth control/NamedControl.html"><span class="s2">NamedControl</span></a><span class="s2"> </span>input with a default value (<b>val</b>), and if supplied, with a <b>lag</b>. If val is an array, the control will be multichannel.</p>
+<p class="p12"><br></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>ir(val)</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Return an intitalization rate <a href="../UGens/Synth control/NamedControl.html"><span class="s2">NamedControl</span></a><span class="s2"> </span>input with a default value (<b>val</b>). If val is an array, the control will be multichannel.</p>
+<p class="p6"><span class="s7"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>tr(val)</b></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>Return a TrigControl input with a default value (<b>val</b>). If val is an array, the control will be multichannel.</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span>a = { <span class="s10">Ringz</span>.ar(<span class="s10">T2A</span>.ar(<span class="s5">\trig</span>.tr), <span class="s5">\freq</span>.kr(500, 1), 0.8) }.play;</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.set(<span class="s5">\freq</span>, 330, <span class="s5">\trig</span>, 1);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.set(<span class="s5">\freq</span>, 830, <span class="s5">\trig</span>, 1);</p>
+<p class="p8"><span class="Apple-tab-span">	</span>a.release;</p>
+<p class="p9"><br></p>
+<p class="p9"><span class="Apple-tab-span">	</span></p>
 </body>
 </html>

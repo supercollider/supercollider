@@ -1,6 +1,6 @@
 
 SynthDef {
-	var <>name;
+	var <>name, <>func;
 
 	var <>controls, <>controlNames; // ugens add to this
 	var <>allControlNames;
@@ -15,7 +15,7 @@ SynthDef {
 	var <>available;
 	var <>variants;
 
-	var <>metadata;
+	var <>desc, <>metadata;
 
 	classvar <synthDefDir;
 
@@ -41,11 +41,15 @@ SynthDef {
 	*prNew { arg name;
 		^super.new.name_(name.asString)
 	}
+	
+	storeArgs { ^[name.asSymbol, func] }
+	
 	build { arg ugenGraphFunc, rates, prependArgs;
 		protect {
 			this.initBuild;
 			this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
 			this.finishBuild;
+			func = ugenGraphFunc;
 		} {
 			UGen.buildSynthDef = nil;
 		}
@@ -492,57 +496,63 @@ SynthDef {
 			[ugen.dumpName, ugen.rate, inputs].postln;
 		};
 	}
-
-		// these 2 methods warn, not throw fatal error
-		// because loading existing def from disk is a viable alternative
-		// to get the synthdef to the server
-	send { arg server,completionMsg;
-		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
-			server.listSendBundle(nil,[["/d_recv", this.asBytes,completionMsg]]);
-			//server.sendMsg("/d_recv", this.asBytes,completionMsg);
-		} {
-			"This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to send back to the server."
-				.format(name).warn;
-			if(server.isLocal) {
-				"Loading from disk instead.".postln;
-				server.listSendBundle(nil, [["/d_load", metadata[\loadPath], completionMsg]]);
-			} {
-				MethodError("Server is remote, cannot load from disk.", this).throw;
-			};
+	
+	// make SynthDef available to all servers
+	
+	add { arg libname = \global, completionMsg, keepDef = true;
+		var	lib, desc = this.asSynthDesc(libname, keepDef);
+		libname ?? { libname = \global };
+		lib = SynthDescLib.getLib(libname);
+		lib.servers.do { |each|
+			each.value.sendMsg("/d_recv", this.asBytes, completionMsg.value(each))
 		};
 	}
-	load { arg server, completionMsg,dir;
-		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
-				// i should remember what dir i was written to
+	
+	*removeAt { arg name, libname = \global;
+		var lib = SynthDescLib.getLib(libname);
+		lib.removeAt(name);
+		lib.servers.do { |each|
+			each.value.sendMsg("/d_free", name)
+		};
+	}
+	
+	
+	// methods for special optimizations
+	
+	// only send to servers
+	send { arg server, completionMsg;
+	
+		var servers = (server ?? { Server.allRunningServers }).asArray;
+		servers.do { |each|
+			if(each.serverRunning.not) { 
+				"Server % not running, could not send SynthDef.".format(server.name).warn
+			};
+			if(metadata.trueAt(\shouldNotSend)) {
+				this.loadReconstructed(each, completionMsg);
+			} {
+				each.sendMsg("/d_recv", this.asBytes, completionMsg)
+			}
+		}
+	}
+	
+	// send to server and write file
+	load { arg server, completionMsg, dir(synthDefDir);
+		server = server ? Server.default;
+		if(metadata.trueAt(\shouldNotSend)) {
+			this.loadReconstructed(server, completionMsg);
+		} {
+			// should remember what dir synthDef was written to
 			dir = dir ? synthDefDir;
 			this.writeDefFile(dir);
-			server.listSendMsg(
-				["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
-			)
-		} {
-			"This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to load back onto the server. Loading from disk instead."
-				.format(name).warn;
-			server.listSendBundle(nil, [["/d_load", metadata[\loadPath], completionMsg]]);
+			server.sendMsg("/d_load", dir ++ name ++ ".scsyndef", completionMsg)
 		};
 	}
-
-	storeOnce { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
-		var	path = dir ++ name ++ ".scsyndef",
-			lib;
-		if(File.exists(path).not) {
-			this.store(libname, dir, completionMsg, mdPlugin);
-		} {
-				// load synthdesc from disk
-				// because SynthDescLib still needs to have the info
-			lib = SynthDescLib.all[libname] ?? { Error("library" + libname  + "not found").throw };
-			lib.read(path);
-		};
-	}
+	
+	// write to file and make synth description
 	store { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
-		var lib = SynthDescLib.all[libname] ?? { Error("library" + libname  + "not found").throw };
-		var path = dir ++ name ++ ".scsyndef";
-		var file;
-		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
+		var lib = SynthDescLib.getLib(libname);
+		var file, path = dir ++ name ++ ".scsyndef";
+		if(metadata.falseAt(\shouldNotSend)) {
 			protect {
 				var bytes, desc;
 				file = File(path, "w");
@@ -551,36 +561,78 @@ SynthDef {
 				file.close;
 				lib.read(path);
 				lib.servers.do { arg server;
-					server.value.sendBundle(nil, ["/d_recv", bytes] ++ completionMsg)
+					server.value.sendMsg("/d_recv", bytes, completionMsg)
 				};
 				desc = lib[this.name.asSymbol];
 				desc.metadata = metadata;
 				SynthDesc.populateMetadataFunc.value(desc);
-				if(desc.metadata.notNil) {
-					(mdPlugin ?? { SynthDesc.mdPlugin }).writeMetadata(desc.metadata, this, path);
-				} {
-					AbstractMDPlugin.clearMetadata(path);
-				};
+				desc.writeMetadata(path);
 			} {
 				file.close
 			}
 		} {
-			"This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to load back onto the server. Loading from disk instead."
-				.format(name).warn;
 			lib.read(path);
 			lib.servers.do { arg server;
-				server.value.sendBundle(nil, ["/d_load", metadata[\loadPath], completionMsg]);
+				this.loadReconstructed(server, completionMsg);
 			};
 		};
+	}
+	
+	asSynthDesc { |libname=\global, keepDef = true|
+		var	lib, stream = CollStream(this.asBytes);
+		libname ?? { libname = \global };
+		lib = SynthDescLib.getLib(libname);
+		SynthDesc.readFile(stream, keepDef, lib.synthDescs);
+		desc = lib[name.asSymbol];
+		if(keepDef) { desc.def = this };
+		if(metadata.notNil) { desc.metadata = metadata };
+		^desc
+	}
+	
+	// this method warns and does not halt
+	// because loading existing def from disk is a viable alternative
+	// to get the synthdef to the server
+	
+	loadReconstructed { arg server, completionMsg;
+			"SynthDef (%) was reconstructed from a .scsyndef file, "
+			"it does not contain all the required structure to send back to the server."
+				.format(name).warn;
+			if(server.isLocal) {
+				"Loading from disk instead.".postln;
+				server.sendBundle(nil, ["/d_load", metadata[\loadPath], completionMsg]);
+			} {
+				MethodError("Server is remote, cannot load from disk.", this).throw;
+			};
+		
+	}
+	
+	// this method needs a reconsideration
+	storeOnce { arg libname=\global, dir(synthDefDir), completionMsg, mdPlugin;
+		var	path = dir ++ name ++ ".scsyndef", lib;
+		if(File.exists(path).not) {
+			this.store(libname, dir, completionMsg, mdPlugin);
+		} {
+				// load synthdesc from disk
+				// because SynthDescLib still needs to have the info
+			lib = SynthDescLib.getLib(libname);
+			lib.read(path);
+		};
+	}
+	
+	
+	memStore { arg libname = \global, completionMsg, keepDef = true;
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\add));
+		this.add(libname, completionMsg, keepDef);
 	}
 
 	play { arg target,args,addAction=\addToHead;
 		var synth, msg;
+//		this.deprecated(thisMethod, Function.findRespondingMethodFor(\play));
 		target = target.asTarget;
 		synth = Synth.basicNew(name,target.server);
 		msg = synth.newMsg(target, args, addAction);
 		this.send(target.server, msg);
 		^synth
 	}
+	
 }
-

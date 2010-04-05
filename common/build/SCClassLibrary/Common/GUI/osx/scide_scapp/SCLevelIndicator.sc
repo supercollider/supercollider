@@ -75,33 +75,35 @@ SCLevelIndicator : SCView {
 			Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12));
 		});
 
-		// ins
-		StaticText(window, Rect(10, 5, 100, 15))
-			.font_(Font("Helvetica-Bold", 10))
-			.stringColor_(Color.white)
-			.string_("Inputs");
-		inmeters = Array.fill( numIns, { arg i;
-			var comp;
-			comp = CompositeView(view, Rect(0,0,meterWidth,195)).resize_(5);
-			StaticText(comp, Rect(0, 180, meterWidth, 15))
-				.font_(Font("Helvetica-Bold", 9))
+		(numIns > 0).if({
+			// ins
+			StaticText(window, Rect(10, 5, 100, 15))
+				.font_(Font("Helvetica-Bold", 10))
 				.stringColor_(Color.white)
-				.string_(i.asString);
-			LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
-				.drawsPeak_(true)
-				.numTicks_(9)
-				.numMajorTicks_(3);
-		});
-
-		// divider
-		UserView(view, Rect(0,0,meterWidth,180)).drawFunc_({
-			Pen.color = Color.white;
-			Pen.line(((meterWidth + gapWidth) * 0.5)@0, ((meterWidth + gapWidth) * 0.5)@180);
-			Pen.stroke;
+				.string_("Inputs");
+			inmeters = Array.fill( numIns, { arg i;
+				var comp;
+				comp = CompositeView(view, Rect(0,0,meterWidth,195)).resize_(5);
+				StaticText(comp, Rect(0, 180, meterWidth, 15))
+					.font_(Font("Helvetica-Bold", 9))
+					.stringColor_(Color.white)
+					.string_(i.asString);
+				LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+					.drawsPeak_(true)
+					.numTicks_(9)
+					.numMajorTicks_(3);
+			});
+	
+			// divider
+			UserView(view, Rect(0,0,meterWidth,180)).drawFunc_({
+				Pen.color = Color.white;
+				Pen.line(((meterWidth + gapWidth) * 0.5)@0, ((meterWidth + gapWidth) * 0.5)@180);
+				Pen.stroke;
+			});
 		});
 
 		// outs
-		StaticText(window, Rect(10 + ((numIns + 2) * (meterWidth + gapWidth)), 5, 100, 15))
+		StaticText(window, Rect(10 + if(numIns > 0 , ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
 			.font_(Font("Helvetica-Bold", 10))
 			.stringColor_(Color.white)
 			.string_("Outputs");
@@ -123,15 +125,17 @@ SCLevelIndicator : SCView {
 		func = {
 			numRMSSamps = server.sampleRate / updateFreq;
 			numRMSSampsRecip = 1 / numRMSSamps;
-			inresp = OSCresponder(server.addr, "/" ++ server.name ++ "InLevels", { |t, r, msg| 			{try {
-				msg.copyToEnd(3).pairsDo({|val, peak, i|
-					var meter;
-					i = i * 0.5;
-					meter = inmeters[i];
-					meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
-					meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
-				}) }}.defer;
-			}).add;
+			(numIns > 0).if({
+				inresp = OSCresponder(server.addr, "/" ++ server.name ++ "InLevels", { |t, r, msg| 			{try {
+					msg.copyToEnd(3).pairsDo({|val, peak, i|
+						var meter;
+						i = i * 0.5;
+						meter = inmeters[i];
+						meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
+						meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
+					}) }}.defer;
+				}).add;
+			});
 			outresp = OSCresponder(server.addr, "/" ++ server.name ++ "OutLevels", { |t, r, msg| 			{try {
 				msg.copyToEnd(3).pairsDo({|val, peak, i|
 					var meter;
@@ -142,28 +146,26 @@ SCLevelIndicator : SCView {
 				}) }}.defer;
 			}).add;
 			server.bind({
-				insynth = SynthDef(server.name ++ "InputLevels", {
-					var in, imp;
-					in = In.ar(NumOutputBuses.ir, server.options.numInputBusChannels);
-					imp = Impulse.ar(updateFreq);
-					SendReply.ar(imp, "/" ++ server.name ++ "InLevels",
-						//[Amplitude.ar(in, 0.2, 0.2), Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
-	//						.flop.flat
-						// do the mean and sqrt clientside to save CPU
-						[
-							RunningSum.ar(in.squared, numRMSSamps),
-							Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
-						.flop.flat
-					);
-				}).play(RootNode(server), nil, \addToHead);
+				(numIns > 0).if({
+					insynth = SynthDef(server.name ++ "InputLevels", {
+						var in, imp;
+						in = In.ar(NumOutputBuses.ir, numIns);
+						imp = Impulse.ar(updateFreq);
+						SendReply.ar(imp, "/" ++ server.name ++ "InLevels",
+							// do the mean and sqrt clientside to save CPU
+							[
+								RunningSum.ar(in.squared, numRMSSamps),
+								Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
+							.flop.flat
+						);
+					}).play(RootNode(server), nil, \addToHead);
+				});
 
 				outsynth = SynthDef(server.name ++ "OutputLevels", {
 					var in, imp;
-					in = In.ar(0, server.options.numOutputBusChannels);
+					in = In.ar(0, numOuts);
 					imp = Impulse.ar(updateFreq);
 					SendReply.ar(imp, "/" ++ server.name ++ "OutLevels",
-	//					[Amplitude.ar(in, 0.2, 0.2), Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
-	//						.flop.flat
 						// do the mean and sqrt clientside to save CPU
 						[
 							RunningSum.ar(in.squared, numRMSSamps),
@@ -175,7 +177,7 @@ SCLevelIndicator : SCView {
 		};
 
 		window.onClose_({
-			inresp.remove;
+			(server.options.numInputBusChannels > 0).if({ inresp.remove;});
 			outresp.remove;
 			insynth.free;
 			outsynth.free;

@@ -24,6 +24,10 @@ SynthDesc {
 	var <>msgFunc, <>hasGate = false, <>hasArrayArgs, <>hasVariants, <>canFreeSynth = false;
 	var <msgFuncKeepGate = false;
 
+	*newFrom { arg synthdef;
+		^synthdef.asSynthDesc
+	}
+
 	*initClass {
 		mdPlugin = AbstractMDPlugin;	// override in your startup file
 	}
@@ -298,6 +302,11 @@ Use of this synth in Patterns will not detect argument names automatically becau
 			this.makeMsgFunc;
 		}
 	}
+	
+	writeMetadata { arg path;
+		if(metadata.isNil) { AbstractMDPlugin.clearMetadata(path); ^this };
+		this.class.mdPlugin.writeMetadata(metadata, def, path);
+	}
 
 	// parse the def name out of the bytes array sent with /d_recv
 	*defNameFromBytes { arg int8Array;
@@ -343,22 +352,41 @@ SynthDescLib {
 		all = IdentityDictionary.new;
 		global = this.new(\global);
 	}
+	
+	*getLib { arg libname;
+		^all[libname] ?? {
+			Error("library % not found".format(libname)).throw
+		};
+	}
+	
+	*default {
+		^global
+	}
 
 	*send {
 		global.send;
 	}
+	
 	*read { arg path;
 		global.read(path);
 	}
+	
 	at { arg i; ^synthDescs.at(i) }
+	
 	*at { arg i; ^global.at(i) }
 	
 	add { |synthdesc|
 		synthDescs.put(synthdesc.name.asSymbol, synthdesc);
 	}
+	
+	removeAt { |name|
+		^synthDescs.removeAt(name.asSymbol);
+	}
+	
 	addServer { |server|
 		servers = servers.add(server); // IdentitySet = one server only once.
 	}
+	
 	removeServer { |server|
 		servers.remove(server);
 	}

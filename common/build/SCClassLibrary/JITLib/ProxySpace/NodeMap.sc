@@ -4,7 +4,7 @@
 NodeMap {
 	var <>settings; // cache args:
 	var <>upToDate, <>setArgs, <>setnArgs, <>mapArgs, <>mapnArgs, <>mapaArgs, <>mapanArgs;
-
+	var controlNames;
 
 	*new {
 		^super.new.clear
@@ -95,8 +95,11 @@ NodeMap {
 		node = node.asTarget;
 		this.send(node.server, node.nodeID, latency)
 	}
-
-
+	
+	controlNames {
+		this.updateBundle;
+		^controlNames
+	}
 
 	get { arg key;
 		var setting;
@@ -128,7 +131,10 @@ NodeMap {
 				upToDate = true;
 				setArgs = setnArgs = mapArgs = mapnArgs = mapaArgs = mapanArgs = nil;
 				settings.do { arg item; item.updateNodeMap(this) };
-			};
+				controlNames = settings.values.collect { |setting|
+					ControlName(setting.key, nil, setting.mappedRate, setting.value)
+				}
+			}
 	}
 
 	addToBundle { arg bundle, target;

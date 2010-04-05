@@ -68,7 +68,7 @@ NumberEditor : Editor {
 		if(change,{ this.changed });
 	}
 	setUnmappedValue { arg unipolar,change=true;
-		this.value = spec.map(unipolar);
+		value = spec.map(unipolar);
 		if(change,{this.changed});
 		^value
 	}

@@ -196,6 +196,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + UnpackFFT	    { *categories { ^ #["UGens>FFT"] } }
 + Unpack1FFT	    { *categories { ^ #["UGens>FFT"] } }
 + VarSaw          { *categories { ^ #["UGens>Generators>Deterministic"] } }
++ VDiskIn         { *categories { ^ #["UGens>InOut", "UGens>Buffer"] } }
 + Vibrato         { }
 + VOsc            { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + VOsc3           { *categories { ^ #["UGens>Generators>Deterministic"] } }

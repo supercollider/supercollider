@@ -5,25 +5,22 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.46">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000f1}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #c20000}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 span.s1 {color: #000000}
-span.s2 {text-decoration: underline ; color: #3e54c5}
+span.s2 {text-decoration: underline ; color: #0000c1}
 span.s3 {text-decoration: underline}
-span.s4 {color: #505fb1}
-span.s5 {text-decoration: underline ; color: #4b59a5}
-span.s6 {color: #4c5db6}
-span.s7 {color: #0018b8}
+span.s4 {color: #0000c1}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -35,9 +32,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><br></p>
 <p class="p6">The following is a short tutorial on how to make a custom gui widget by subclassing SCUserView. It is assumed that you know how to write classes in SuperCollider. See <a href="../../../Extending and Customizing SC/Writing-Classes.html"><span class="s4">Writing Classes</span></a>.</p>
 <p class="p5"><br></p>
-<p class="p6">You also need to open the template class file, <a href="SCUserViewTutorial.sc"><span class="s5">SCUserViewTutorial.sc</span></a> , first to follow this tutorial.</p>
+<p class="p6">You also need to open the template class file, <a href="SCUserViewTutorial.sc"><span class="s2">SCUserViewTutorial.sc</span></a> , first to follow this tutorial.</p>
 <p class="p5"><br></p>
-<p class="p6">You can use the contents of <a href="SCUserViewTutorial.sc"><span class="s5">SCUserViewTutorial.sc</span></a> as a template for writing your own subclass. Simply copy the file to your SC extensions folder and rename the file and class, <b>MyWidget</b>, to whatever you want to call your class. Then adjust the class methods to fit your design.</p>
+<p class="p6">You can use the contents of <a href="SCUserViewTutorial.sc"><span class="s2">SCUserViewTutorial.sc</span></a> as a template for writing your own subclass. Simply copy the file to your SC extensions folder and rename the file and class, <b>MyWidget</b>, to whatever you want to call your class. Then adjust the class methods to fit your design.</p>
 <p class="p5"><br></p>
 <p class="p6">The following narrates the code in SCUserViewTutorial.sc:</p>
 <p class="p5"><br></p>
@@ -57,7 +54,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span>4. Define a drawing function for SCPen</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is where you will define how the view appears. As of SC3.31, drawing should use relative coordinates. How you draw will<span class="Apple-converted-space">  </span>typically will be dependent on instance variables which you defined such as <b>value</b>, <b>states</b> (for buttons), <b>x</b> and <b>y</b> (for mouse clicks), or anything else you might need for your design. See <a href="../SCPen.html"><span class="s6">SCPen</span></a> for drwaing methods.</p>
+<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>This is where you will define how the view appears. As of SC3.31, drawing should use relative coordinates. How you draw will<span class="Apple-converted-space">  </span>typically will be dependent on instance variables which you defined such as <b>value</b>, <b>states</b> (for buttons), <b>x</b> and <b>y</b> (for mouse clicks), or anything else you might need for your design. See <a href="../SCPen.html"><span class="s4">SCPen</span></a> for drwaing methods.</p>
 <p class="p8"><br></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span>5. Define typical widget methods</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
@@ -65,15 +62,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span>6. Override mouseActions</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>SCView defines <b>mouseDown</b>, <b>mouseMove</b> and <b>mouseUp</b>, as methods, and the corresponding user definable methods, <b>mouseDownAction</b>, <b>mouseMoveAction</b> and <b>mouseUpAction</b>. You should overrider <b>mouseDown</b>, <b>mouseMove</b> or <b>mouseUp</b> as needed, and <b><i>make sure</i></b><i> your method calls the corresponding action as well</i>, so your user can later add user actions, just like in the template. Also see the <a href="../SCView.html"><span class="s6">SCView</span></a> help file.</p>
+<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>SCView defines <b>mouseDown</b>, <b>mouseMove</b> and <b>mouseUp</b>, as methods, and the corresponding user definable methods, <b>mouseDownAction</b>, <b>mouseMoveAction</b> and <b>mouseUpAction</b>. You should overrider <b>mouseDown</b>, <b>mouseMove</b> or <b>mouseUp</b> as needed, and <b><i>make sure</i></b><i> your method calls the corresponding action as well</i>, so your user can later add user actions, just like in the template. Also see the <a href="../SCView.html"><span class="s4">SCView</span></a> help file.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span>7. Define default key actions</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Here you define your default key responses in <b>defaultKeyDownAction</b> or <b>defaultKeyUpAction</b>. Differently than with mouse actions, you do not call the keyAction in your method, since this mechanism is handled by <a href="../SCView.html"><span class="s6">SCView</span></a>. If the user defines a <b>keyDownAction</b>, or <b>keyUpAction</b>, SCView makes it override your default action. See the template, and see the <a href="../SCView.html"><span class="s6">SCView</span></a> help file.</p>
+<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Here you define your default key responses in <b>defaultKeyDownAction</b> or <b>defaultKeyUpAction</b>. Differently than with mouse actions, you do not call the keyAction in your method, since this mechanism is handled by <a href="../SCView.html"><span class="s4">SCView</span></a>. If the user defines a <b>keyDownAction</b>, or <b>keyUpAction</b>, SCView makes it override your default action. See the template, and see the <a href="../SCView.html"><span class="s4">SCView</span></a> help file.</p>
 <p class="p7"><br></p>
-<p class="p2"><b><span class="Apple-tab-span">	</span>8. Define default key actions</b></p>
+<p class="p2"><b><span class="Apple-tab-span">	</span>8. Define default drag and drop actions</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Here you define your drag responses in <b>defaultGetDrag</b>, <b>defaultCanReceiveDrag</b>, and , <b>defaultReceiveDrag</b>. Differently than with mouse actions, you do not call the dragAction in your method, since this mechanism is handled by <a href="../SCView.html"><span class="s6">SCView</span></a>. If your user defines a <b>beginDragAction, canReceiveDragHandler, </b>or <b>receiveDragHandler, </b>SCView makes it override your default action. See the template, and see the <a href="../SCView.html"><span class="s6">SCView</span></a> help file.</p>
+<p class="p2"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Here you define your drag responses in <b>defaultGetDrag</b>, <b>defaultCanReceiveDrag</b>, and , <b>defaultReceiveDrag</b>. Differently than with mouse actions, you do not call the dragAction in your method, since this mechanism is handled by <a href="../SCView.html"><span class="s4">SCView</span></a>. If your user defines a <b>beginDragAction, canReceiveDragHandler, </b>or <b>receiveDragHandler, </b>SCView makes it override your default action. See the template, and see the <a href="../SCView.html"><span class="s4">SCView</span></a> help file.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2">That's it. Now recompile, only to find your first syntax errors. ;-)</p>
@@ -82,11 +79,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p9">//try this after you have added the class to the class library</p>
 <p class="p10">(<span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="s7">GUI</span>.cocoa;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>w=<span class="s7">Window</span>.new.front;</p>
-<p class="p10"><span class="Apple-tab-span">	</span>v=<span class="s7">MyWidget</span>(w, <span class="s7">Rect</span>(10,20,200,20)).valueAction_(0.5);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="s4">GUI</span>.cocoa;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>w=<span class="s4">Window</span>.new.front;</p>
+<p class="p10"><span class="Apple-tab-span">	</span>v=<span class="s4">MyWidget</span>(w, <span class="s4">Rect</span>(10,20,200,20)).valueAction_(0.5);</p>
 <p class="p3"><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span>q=<span class="s7">MyWidget</span>(w, <span class="s7">Rect</span>(10,60,200,20)).valueAction_(0.3);</p>
+<p class="p10"><span class="Apple-tab-span">	</span>q=<span class="s4">MyWidget</span>(w, <span class="s4">Rect</span>(10,60,200,20)).valueAction_(0.3);</p>
 <p class="p10">)</p>
 <p class="p7"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>

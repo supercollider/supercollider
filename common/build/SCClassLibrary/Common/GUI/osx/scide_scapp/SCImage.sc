@@ -109,6 +109,20 @@ SCImage {
 		^this.prFromWindowRect(window, rect);
 	}
 
+	/**
+	 *	Converts a Color instance into
+	 *	a pixel datatype suitable for SCImage.
+	 *	This is a 32bit packed Integer in
+	 *	the RGBA format.
+	 */
+	*colorToPixel { arg col;
+		^Integer.fromRGBA(
+			(col.red * 255 ).asInteger, 
+			(col.green * 255).asInteger, 
+			(col.blue * 255 ).asInteger, 
+			(col.alpha * 255 ).asInteger);
+	}
+
 	*prFromWindowRect {arg window, rect;
 		_SCImage_fromWindowRect
 		^this.primitiveFailed;

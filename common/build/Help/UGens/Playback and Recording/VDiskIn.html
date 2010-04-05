@@ -32,9 +32,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>VDiskIn<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>stream in audio from a file (with variable rate)</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p3"><b>DiskIn.ar(numChannels, bufnum, rate, loop, sendID )</b></p>
+<p class="p3"><b>VDiskIn.ar(numChannels, bufnum, rate, loop, sendID )</b></p>
 <p class="p2"><br></p>
-<p class="p3">Continuously play a longer soundfile from disk.<span class="Apple-converted-space">  </span>This requires a buffer to be preloaded with one buffer size of sound. If loop is set to 1, the soundfile will loop. If a sendID is given, the UGen sends an osc message with this id and the file position each time it reloads the buffer: ["/diskin", sendID, frame]<span class="Apple-converted-space"> </span></p>
+<p class="p3">Continuously play a longer soundfile from disk.<span class="Apple-converted-space">  </span>This requires a buffer to be preloaded with one buffer size of sound. If loop is set to 1, the soundfile will loop. If a sendID is given, the UGen sends an osc message with this id and the file position each time it reloads the buffer: ['/diskin', nodeID, sendID, frame]<span class="Apple-converted-space"> </span></p>
 <p class="p4"><br></p>
 <p class="p3"><b>rate</b> controls the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.</p>
 <p class="p4"><br></p>
