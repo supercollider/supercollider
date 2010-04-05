@@ -59,7 +59,7 @@ concept runnable
 
 /** item of a dsp thread queue
  *
- * \tparam Alloc allocator for successor list and operator new/delete
+ * \tparam Alloc allocator for successor list
  *
  * \todo operator new doesn't support stateful allocators
  */
@@ -68,22 +68,12 @@ template <typename runnable,
 class dsp_thread_queue_item:
     private Alloc
 {
-    typedef boost::uint_fast16_t activation_limit_t;
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
     typedef typename Alloc::template rebind<dsp_thread_queue_item>::other new_allocator;
 
 public:
-    void* operator new(std::size_t size)
-    {
-        return new_allocator().allocate(size);
-    }
-
-    inline void operator delete(void * p)
-    {
-        new_allocator().deallocate((dsp_thread_queue_item*)p, sizeof(dsp_thread_queue_item));
-    }
-
+    typedef boost::uint_fast16_t activation_limit_t;
     typedef std::vector<dsp_thread_queue_item*, Alloc> successor_list;
 
     dsp_thread_queue_item(runnable const & job, successor_list const & successors,
@@ -187,6 +177,8 @@ class dsp_thread_queue
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
     typedef std::vector<dsp_thread_queue_item*, Alloc> item_vector_t;
 
+    typedef typename Alloc::template rebind<dsp_thread_queue_item>::other item_allocator;
+
 public:
 #ifdef DEBUG_DSP_THREADS
     void dump_queue(void)
@@ -205,21 +197,19 @@ public:
     }
 #endif
 
-    dsp_thread_queue(void):
-        total_node_count(0)
-    {}
-
-    dsp_thread_queue(std::size_t reserved_nodes):
+    /** preallocate node_count nodes */
+    dsp_thread_queue(std::size_t node_count):
         total_node_count(0)
     {
-        initially_runnable_items.reserve(reserved_nodes);
-        queue_items.reserve(reserved_nodes);
+        initially_runnable_items.reserve(node_count);
+        queue_items = item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item));
     }
 
     ~dsp_thread_queue(void)
     {
-        for (std::size_t i = 0; i != queue_items.size(); ++i)
-            delete queue_items[i];
+        for (std::size_t i = 0; i != total_node_count; ++i)
+            queue_items[i].~dsp_thread_queue_item();
+        item_allocator().deallocate(queue_items, total_node_count * sizeof(dsp_thread_queue_item));
     }
 
     void add_initially_runnable(dsp_thread_queue_item * item)
@@ -227,21 +217,23 @@ public:
         initially_runnable_items.push_back(item);
     }
 
-    /** takes ownership */
-    void add_queue_item(dsp_thread_queue_item * item)
+    /** return uninitialized queue item */
+    dsp_thread_queue_item * allocate_queue_item(runnable const & job,
+                                                typename dsp_thread_queue_item::successor_list const & successors,
+                                                typename dsp_thread_queue_item::activation_limit_t activation_limit)
     {
-        queue_items.push_back(item);
+        dsp_thread_queue_item * ret = queue_items + total_node_count;
         ++total_node_count;
 
-        assert (total_node_count == queue_items.size());
+        assert (total_node_count <= initially_runnable_items.capacity());
+        new (ret) dsp_thread_queue_item(job, successors, activation_limit);
+        return ret;
     }
 
     void reset_activation_counts(void)
     {
-        assert(total_node_count == queue_items.size());
-
         for (node_count_t i = 0; i != total_node_count; ++i)
-            queue_items[i]->reset_activation_count();
+            queue_items[i].reset_activation_count();
     }
 
     node_count_t get_total_node_count(void) const
@@ -250,9 +242,9 @@ public:
     }
 
 private:
-    node_count_t total_node_count;      /* total number of nodes */
+    node_count_t total_node_count;          /* total number of nodes */
     item_vector_t initially_runnable_items; /* nodes without precedessor */
-    item_vector_t queue_items;              /* all nodes */
+    dsp_thread_queue_item * queue_items;    /* all nodes */
 
     friend class dsp_queue_interpreter<runnable, Alloc>;
 };

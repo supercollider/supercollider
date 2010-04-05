@@ -258,9 +258,7 @@ group::fill_queue_recursive(thread_queue & queue,
             assert(q_node.size() == node_count);
             int activation_limit = get_previous_activation_count(it, child_nodes.rend(), previous_activation_limit);
 
-            thread_queue_item * q_item = new thread_queue_item(q_node, successors, activation_limit);
-
-            queue.add_queue_item(q_item);
+            thread_queue_item * q_item = queue.allocate_queue_item(q_node, successors, activation_limit);
 
             if (successors.empty())
                 successors.push_back(q_item);
@@ -304,9 +302,8 @@ parallel_group::fill_queue_recursive(thread_queue & queue,
 
         if (node.is_synth()) {
             queue_node q_node(static_cast<abstract_synth*>(&node));
-            thread_queue_item * q_item = new thread_queue_item(q_node, successors, activation_limit);
 
-            queue.add_queue_item(q_item);
+            thread_queue_item * q_item = queue.allocate_queue_item(q_node, successors, activation_limit);
 
             if (activation_limit == 0)
                 queue.add_initially_runnable(q_item);

@@ -47,10 +47,10 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_3 )
 {
     dsp_queue_interpreter interpreter(1);
 
-    dsp_thread_queue_item * item = new dsp_thread_queue_item(dummy, dsp_thread_queue_item::successor_list(), 0);
+    std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue(1));
 
-    std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue());
-    q->add_queue_item(item);
+    dsp_thread_queue_item * item = q->allocate_queue_item(dummy, dsp_thread_queue_item::successor_list(), 0);
+
     q->add_initially_runnable(item);
 
     interpreter.reset_queue(q);
@@ -67,16 +67,14 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_4 )
 {
     dsp_queue_interpreter interpreter(1);
 
-    std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue());
+    std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue(2));
 
-    dsp_thread_queue_item * item1 = new dsp_thread_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
-    q->add_queue_item(item1);
+    dsp_thread_queue_item * item1 = q->allocate_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
 
     dsp_thread_queue_item::successor_list sl;
     sl.push_back(item1);
 
-    dsp_thread_queue_item * item2 = new dsp_thread_queue_item(dummy, sl, 0);
-    q->add_queue_item(item2);
+    dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
     q->add_initially_runnable(item2);
 
     interpreter.reset_queue(q);
@@ -94,16 +92,15 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_5 )
     dsp_queue_interpreter interpreter(1);
 
     {
-        std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue());
+        std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue(2));
 
-        dsp_thread_queue_item * item1 = new dsp_thread_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
-        q->add_queue_item(item1);
+        dsp_thread_queue_item * item1 = q->allocate_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
 
         dsp_thread_queue_item::successor_list sl;
         sl.push_back(item1);
 
-        dsp_thread_queue_item * item2 = new dsp_thread_queue_item(dummy, sl, 0);
-        q->add_queue_item(item2);
+        dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
+
         q->add_initially_runnable(item2);
 
         interpreter.reset_queue(q);
@@ -118,16 +115,15 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_5 )
     }
 
     {
-        std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue());
+        std::auto_ptr<dsp_thread_queue> q (new dsp_thread_queue(2));
 
-        dsp_thread_queue_item * item1 = new dsp_thread_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
-        q->add_queue_item(item1);
+        dsp_thread_queue_item * item1 = q->allocate_queue_item(dummy, dsp_thread_queue_item::successor_list(), 1);
 
         dsp_thread_queue_item::successor_list sl;
         sl.push_back(item1);
 
-        dsp_thread_queue_item * item2 = new dsp_thread_queue_item(dummy, sl, 0);
-        q->add_queue_item(item2);
+        dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
+
         q->add_initially_runnable(item2);
 
         interpreter.reset_queue(q);
