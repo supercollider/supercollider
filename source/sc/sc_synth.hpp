@@ -34,26 +34,6 @@
 namespace nova
 {
 
-inline void initialize_rate(Rate & rate, double sample_rate, int blocksize)
-{
-    rate.mSampleRate = sample_rate;
-    rate.mSampleDur = 1. / sample_rate;
-    rate.mRadiansPerSample = 2 * M_PI / sample_rate;
-
-    rate.mBufLength = blocksize;
-    rate.mBufDuration = blocksize / sample_rate;
-    rate.mBufRate = sample_rate / blocksize;
-    rate.mSlopeFactor = 1. / blocksize;
-
-    div_t div_result = std::div(blocksize, 3);
-    rate.mFilterLoops = div_result.quot;
-    rate.mFilterRemain = div_result.rem;
-    if (rate.mFilterLoops == 0.)
-        rate.mFilterSlope = 0.;
-    else
-        rate.mFilterSlope = 1. / rate.mFilterLoops;
-}
-
 class sc_synth:
     public abstract_synth,
     public Graph
