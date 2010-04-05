@@ -104,6 +104,11 @@ public:
         return job;
     }
 
+    runnable & get_job(void)
+    {
+        return job;
+    }
+
 #ifdef DEBUG_DSP_THREADS
     void dump_item(void)
     {
@@ -217,10 +222,11 @@ public:
         initially_runnable_items.push_back(item);
     }
 
-    /** return uninitialized queue item */
-    dsp_thread_queue_item * allocate_queue_item(runnable const & job,
-                                                typename dsp_thread_queue_item::successor_list const & successors,
-                                                typename dsp_thread_queue_item::activation_limit_t activation_limit)
+    /** return initialized queue item */
+    dsp_thread_queue_item *
+    allocate_queue_item(runnable const & job,
+                        typename dsp_thread_queue_item::successor_list const & successors,
+                        typename dsp_thread_queue_item::activation_limit_t activation_limit)
     {
         dsp_thread_queue_item * ret = queue_items + total_node_count;
         ++total_node_count;
