@@ -10,7 +10,24 @@ let g:sclangKillOnExit = 1
 
 "this indicates the terminal emulator command you will use to launch
 "sclangpipe_app
-let g:sclangTerm = "xterm -e"
+let g:sclangTerm = ""     "Leave it blank like this for the autodetect (just below) to kick in
+"let g:sclangTerm = "xterm -e"
+
+
+"if setting is blank, this code checks for popular terminals:
+if g:sclangTerm == ""
+	for termcmd in ["xterm", "urxvtcd", "rxvt"]
+		if executable(termcmd)
+			let g:sclangTerm = termcmd . " -e"
+			break
+		endif
+	endfor
+	if g:sclangTerm == ""
+		echo "scvimrc warning: unable to detect terminal program, hoping xterm exists"
+		let g:sclangTerm = "xterm -e"
+	endif
+endif
+
 
 "the following has worked with osx
 "let g:sclangTerm = "open -a /Applications/Utilities/Terminal.app"
