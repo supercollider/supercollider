@@ -209,6 +209,13 @@ public:
         total_node_count(0)
     {}
 
+    dsp_thread_queue(std::size_t reserved_nodes):
+        total_node_count(0)
+    {
+        initially_runnable_items.reserve(reserved_nodes);
+        queue_items.reserve(reserved_nodes);
+    }
+
     ~dsp_thread_queue(void)
     {
         for (std::size_t i = 0; i != queue_items.size(); ++i)

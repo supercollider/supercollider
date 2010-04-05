@@ -98,7 +98,8 @@ void node_graph::remove_node(server_node * n)
 
 std::auto_ptr<node_graph::dsp_thread_queue> node_graph::generate_dsp_queue(void)
 {
-    node_graph::dsp_thread_queue * ret = new node_graph::dsp_thread_queue();
+    /* pessimize: reserve enough memory for the worst case */
+    node_graph::dsp_thread_queue * ret = new node_graph::dsp_thread_queue(synth_count_);
 
     root_group_.fill_queue(*ret);
     return std::auto_ptr<node_graph::dsp_thread_queue>(ret);
