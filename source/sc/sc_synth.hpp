@@ -163,8 +163,6 @@ private:
     sample * unit_buffers;
     int32_t calc_unit_count, unit_count;
 
-    Rate full_rate;
-    Rate control_rate;
     RGen rgen;
 
     Unit ** units;

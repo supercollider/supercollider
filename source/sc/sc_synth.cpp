@@ -31,8 +31,6 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 {
     World const & world = sc_factory.world;
     mNode.mWorld = &sc_factory.world;
-    initialize_rate(full_rate, world.mSampleRate, world.mBufLength);
-    initialize_rate(control_rate, world.mSampleRate/world.mBufLength, 1);
     rgen.init((uint32_t)(uint64_t)this);
 
     /* initialize sc wrapper class */

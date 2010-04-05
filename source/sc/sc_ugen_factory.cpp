@@ -66,9 +66,9 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     /* initialize members from synth */
     unit->mParent = static_cast<Graph*>(s);
     if (unit_spec.rate == 2)
-        unit->mRate = &s->full_rate;
+        unit->mRate = &world->mFullRate;
     else
-        unit->mRate = &s->control_rate;
+        unit->mRate = &world->mBufRate;
 
     unit->mBufLength = unit->mRate->mBufLength;
 
