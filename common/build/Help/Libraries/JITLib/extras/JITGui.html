@@ -12,18 +12,20 @@ p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0p
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2b30fa}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
-p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
-p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2b30fa; min-height: 14.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
+p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
-span.s4 {color: #2b30fa}
+span.s4 {text-decoration: underline ; color: #0000ee}
 span.s5 {color: #1200c4}
 span.s6 {font: 9.0px Monaco}
 span.Apple-tab-span {white-space:pre}
@@ -37,112 +39,147 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Proxies for synths, tasks and patterns as implemented in JITLib are extremely flexible.<span class="Apple-converted-space"> </span></p>
 <p class="p1">Having guis that represent their changeable states makes it easier to understand<span class="Apple-converted-space"> </span></p>
 <p class="p1">what is going on, especially when using multiple proxies at the same time.<span class="Apple-converted-space"> </span></p>
-<p class="p1">JITGuis follow a special strategy described here.<span class="Apple-converted-space"> </span></p>
+<p class="p1">JITGuis follow a special strategy described below - .<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p1"><b>See also:</b> <span class="Apple-converted-space"> </span></p>
 <p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><a href="SC://EnvirGui"><span class="s3">EnvirGui</span></a>,<span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><a href="TdefGui.html">TdefGui</a>, <a href="SC://TdefAllGui">TdefAllGui</a>,<span class="Apple-converted-space"> </span></span></p>
-<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><a href="PdefGui.html">PdefGui</a>, <a href="SC://PdefAllGui">PdefAllGui</a>,<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="Apple-tab-span">	</span>MonitorGui,<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-tab-span">	</span>NdefGui, NdefMixer,<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-tab-span">	</span>NodeProxyGui, <a href="SC://ProxyMixer"><span class="s4">ProxyMixer</span></a></p>
+<p class="p1"><span class="Apple-tab-span">	</span><a href="TdefGui.html"><span class="s4">TdefGui</span></a>, <a href="SC://TdefAllGui"><span class="s4">TdefAllGui</span></a>, (TaskProxyGui)</p>
+<p class="p1"><span class="Apple-tab-span">	</span><a href="PdefGui.html"><span class="s4">PdefGui</span></a>, <a href="SC://PdefAllGui"><span class="s4">PdefAllGui</span></a>, (TaskProxyAllGui)</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><a href="NPGui.html">NPGui</a>, <a href="MonitorGui.html">MonitorGui</a>, <a href="NPParamGui.html">NPParamGui</a></span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><a href="PxMix.html">PxMix</a>, <a href="NdefMix.html">NdefMix</a><span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span>Previous versions were:</p>
+<p class="p1"><span class="Apple-tab-span">	</span>TdefEditor, PdefEditor, (both gone)</p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><a href="NodeProxyEditor.html">NodeProxyEditor</a>,<span class="Apple-converted-space"> </span></span></p>
+<p class="p5"><span class="s2"><span class="Apple-tab-span">	</span><a href="ProxyMonitorGui.html">ProxyMonitorGui</a>,<span class="Apple-converted-space"> </span></span></p>
+<p class="p4"><span class="s2"><span class="Apple-tab-span">	</span><a href="SC://ProxyMixer"><span class="s3">ProxyMixer</span></a></span></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-tab-span">	</span>still to be done:</p>
+<p class="p1"><span class="Apple-tab-span">	</span>(PxPreset,) PxPresetGui</p>
+<p class="p1"><span class="Apple-tab-span">	</span>(ProxyChain,) ProxyChainGui</p>
+<p class="p1"><span class="Apple-tab-span">	</span>SoftSet ?<span class="Apple-converted-space"> </span></p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p6"><b>Creation</b></p>
-<p class="p7"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>*new (object, numItems, parent, bounds, extras, makeSkip)</b></p>
-<p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Create a new JITGui that will be watching an object and display its state.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>object </b>- <span class="Apple-tab-span">	</span>the object to watch<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>numItems </b>- the number of display items to use, e.g. how many fields for text,<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or how many EZSliders for single-number parameters.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- <span class="Apple-tab-span">	</span>a parent view on which to display. If nil, a new window is created;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>can also be an existing window or a composite view.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- <span class="Apple-tab-span">	</span>a desired size and position where to display a JITGui. can be nil,<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a point, or a rect. JITGuis know their minimum size (<b>minSize),<span class="Apple-converted-space"> </span></b></p>
-<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>and if bounds is nil, minSize is used.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if bounds is a point or rect, it will be set to at least minSize.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>With a rect one can also supply a position where to display.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If a point,shown size is the maximum of bounds and minSize<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>extras - <span class="Apple-tab-span">	</span></b>a list of additional information, e.g. flags about optional buttons.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(this is used is some subclasses)</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>makeSkip </b>- A flag whether to make a skipjack.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s5">JITGui</span>.new(nil, 0);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// make one</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object = 123;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// object gets shown asCompileString</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object = (key: \otto); <span class="Apple-tab-span">	</span>// if it understands .key, key gets shown</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object = Pseq([1, 2, 3], inf);</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.close;</p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p13"><b>Accessing Instance Variables</b></p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><b>object </b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the object to watch<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><b>numItems </b><span class="Apple-tab-span">	</span>the number of display items to use, e.g. how many fields for text,<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or how many EZSliders for single-number parameters.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><b>parent </b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a parent view on which to display. If nil, a new window is created;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><b>bounds </b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the displayed size and position of the JITGui</p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// Appearance:</p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>skin<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the GUI skin to use. by default this is GUI.skins.jit.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>font<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the font taken from JITGui.skin.</p>
-<p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>zone<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a CompositeView inside parent that holds the JITGui's views.</p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>minSize<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a JITGuis calculates its own minimum size based on numItems and extras.</p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>defPos<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the default position where the JITGui is shown if it is in its own window.</p>
-<p class="p9"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// </b>specific in the JITGui class:<span class="Apple-converted-space"> </span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>nameView<span class="Apple-tab-span">	</span></b>displays the object's key if available.</p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>csView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>displays the object's compileString.</p>
-<p class="p9"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// common to JITGuis:<span class="Apple-converted-space"> </span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>skipjack<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the skipjack that watches the object's state so it can be updated.</p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>scroller<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>an EZScroller used for scrolling which of a list of items is shown.<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see e.g. TdefGui for usage.<span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>prevState<span class="Apple-tab-span">	</span></b>the last observed state kept around for comparison.<span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p13"><b>Instance Methods</b></p>
-<p class="p9"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>object_ (obj)<span class="Apple-tab-span">	</span></b>put an object in the gui.<span class="Apple-converted-space"> </span><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></p>
-<p class="p11"><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// if the jitGui is in its own window, you can</p>
-<p class="p10"><b><span class="Apple-tab-span">	</span>moveTo (h, v)<span class="Apple-tab-span">	</span></b>move it to some specific location.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>close<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>close its window.</p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p13"><b>Methods that subclasses should implement</b></p>
-<p class="p9"><br></p>
-<p class="p8"><span class="Apple-tab-span">	</span>You can write your own subclasses to JITGui very efficiently by<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span>implementing proper variants of the following methods in your class.</p>
-<p class="p8"><span class="Apple-tab-span">	</span>For examples of these methods, see TaskProxyGui, EnvirGui, NodeProxyGui.</p>
-<p class="p9"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>setDefaults<span class="Apple-tab-span">	</span></b>used to calculate the required onscreen size for the jitGui's zone.<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>should determine size based on numItems and extras.<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>also, defPos (where to show your jitGui by default) can be set here.</p>
-<p class="p9"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>getName<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a method for generating a name for the jitGui's window.</p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>accepts (obj)</b><span class="Apple-tab-span">	</span>a test whether obj can be shown in the particular kind of JITGui.</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Subclasses of JITGui are made for special objects, e.g. Pdefs,<span class="Apple-converted-space"> </span></p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>so they should test whether obj is of the right kind.</p>
-<p class="p7"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>makeViews<span class="Apple-tab-span">	</span></b>create all the views of the jitGui inside the jitGui's zone.</p>
-<p class="p9"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>getState<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>ask the object for all aspects of its current state that will be displayed,<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>and keep them in <b>prevState.</b></p>
-<p class="p7"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>checkUpdate<span class="Apple-tab-span">	</span></b>get the object's current state, compare it with <b>prevState</b>, and update<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>all gui elements that need to be changed. This method is called in the<span class="Apple-converted-space"> </span></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>skipJack.</p>
-<p class="p7"><br></p>
-<p class="p8"><b><span class="Apple-tab-span">	</span>makeScroller</b><span class="Apple-tab-span">	</span>some objects may have more elements to display than the gui has slots.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>then, only <b>numItems </b>elements are shown, but the others can be scrolled</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>with <b>scroller</b>, an EZScroller next to the slot elements.<span class="Apple-converted-space"> </span></p>
-<p class="p9"><br></p>
+<p class="p7"><b>Creation</b></p>
+<p class="p8"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>*new (object, numItems, parent, bounds, options, makeSkip)</b></p>
+<p class="p10"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Create a new JITGui that will be watching an object and display its state.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>object </b>- <span class="Apple-tab-span">	</span>the object to watch<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>numItems </b>- the number of display items to use, e.g. how many fields for text,<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or how many EZSliders for single-number parameters.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- <span class="Apple-tab-span">	</span>a parent view on which to display. If nil, a new window is created;</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>can also be an existing window or a composite view.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- <span class="Apple-tab-span">	</span>a desired size and position where to display a JITGui. can be nil,<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a point, or a rect. JITGuis know their minimum size (<b>minSize),<span class="Apple-converted-space"> </span></b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>and if bounds is nil, minSize is used.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if bounds is a point or rect, it will be set to at least minSize.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>With a rect one can also supply a position where to display.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If a point,shown size is the maximum of bounds and minSize<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>options - <span class="Apple-tab-span">	</span></b>a list of additional information, e.g. flags about optional buttons.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(this is used is some subclasses)</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>makeSkip </b>- A flag whether to make a skipjack.</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s5">JITGui</span>.new(nil, 0);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// make one</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object = 123;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// object gets shown asCompileString</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object = (key: \otto); <span class="Apple-tab-span">	</span>// if it understands .key, key gets shown</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.object = Pseq([1, 2, 3], inf);</p>
+<p class="p13"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.close;</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p14"><b>Accessing Instance Variables</b></p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><b>object </b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the object to watch<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><b>numItems </b><span class="Apple-tab-span">	</span>the number of display items to use, e.g. how many fields for text,<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>or how many EZSliders for single-number parameters.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><b>parent </b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a parent view on which the gui is displayed.<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><b>bounds </b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the size and position of the JITGui</p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// Appearance:</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>skin<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the GUI skin to use. By default this is GUI.skins.jit.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>font<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the font, also taken from JITGui.skin.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>zone<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a CompositeView inside the parent that holds the JITGui's views.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>minSize<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a JITGuis calculates its own minimum size based on numItems and options.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>defPos<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the default position where the JITGui is shown if it is in its own window.</p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// </b>specific in the JITGui class:<span class="Apple-converted-space"> </span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>nameView<span class="Apple-tab-span">	</span></b>displays the object's key if available.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>csView<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>displays the object's compileString.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// common to all JITGuis:<span class="Apple-converted-space"> </span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>skipjack<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the skipjack that watches the object's state so it can be updated.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>scroller<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>an EZScroller used for scrolling which of a list of items is shown.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>see e.g. TdefGui for usage.<span class="Apple-tab-span">	</span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>prevState<span class="Apple-tab-span">	</span></b>the last observed state kept around for comparison.<span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p14"><b>Instance Methods</b></p>
+<p class="p10"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>object_ (obj)<span class="Apple-tab-span">	</span></b>put an object in the gui - if the gui accepts it.<span class="s6"><span class="Apple-tab-span">	</span></span></p>
+<p class="p12"><span class="Apple-tab-span">	</span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><b>hasWindow</b><span class="Apple-tab-span">	</span>true if the gui has its own window.</p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>moveTo (h, v)<span class="Apple-tab-span">	</span></b>if it has its own window, one can move it to some specific location.</p>
+<p class="p12"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>close<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>close its window.</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p14"><b>How JITGuis work:<span class="Apple-converted-space"> </span></b></p>
+<p class="p9"><span class="Apple-tab-span">	</span>A JITGui watches the state of some object(s) by calling its <b>getState</b> method.</p>
+<p class="p9"><span class="Apple-tab-span">	</span>It compares the new state with the previous state stored in <b>prevState.</b></p>
+<p class="p9"><span class="Apple-tab-span">	</span>When something has changed, all the concerned gui elements are updated.</p>
+<p class="p15"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p9"><b>Methods that subclasses should implement</b></p>
+<p class="p10"><br></p>
+<p class="p9"><span class="Apple-tab-span">	</span>You can write your own subclasses to JITGui very efficiently by<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span>implementing appropriate variants of the following methods in your class.</p>
+<p class="p9"><span class="Apple-tab-span">	</span>For examples of these methods, see TaskProxyGui, EnvirGui, NodeProxyGui.</p>
+<p class="p10"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>setDefaults<span class="Apple-tab-span">	</span></b>used to calculate the required onscreen size for the jitGui's zone.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Should determine zone size based on numItems and options.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>also, defPos (where to show your jitGui by default) can be set here,<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>and possibly modifications to the skin used.<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>accepts (obj)</b><span class="Apple-tab-span">	</span>a test whether <b>obj</b> can be shown in the particular kind of JITGui.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Subclasses of JITGui are made for special objects, e.g. Pdefs,<span class="Apple-converted-space"> </span></p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>so they should test whether obj is the right kind.</p>
+<p class="p8"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>makeViews<span class="Apple-tab-span">	</span></b>create all the views of the jitGui inside the zone.</p>
+<p class="p8"><br></p>
+<p class="p10"><br></p>
+<p class="p9"><b>For updating the JITGui, these are essential:</b></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>getState<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>ask the object for all aspects of its current state that will be displayed,<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>and keep them in <b>prevState.</b></p>
+<p class="p8"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>checkUpdate<span class="Apple-tab-span">	</span></b>get the object's current state, compare it with <b>prevState</b>, and update<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>all gui elements that need to be changed. This method is called in the<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>skipJack.</p>
+<p class="p8"><br></p>
+<p class="p8"><br></p>
+<p class="p9"><b>More methods you may want to overwrite if required:</b></p>
+<p class="p8"><br></p>
+<p class="p9"><span class="Apple-tab-span">	</span><b>calcBounds</b> <span class="Apple-tab-span">	</span>how to calculate the bounds for the zone in which to display</p>
+<p class="p10"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><b>makeWindow<span class="Apple-tab-span">	</span></b>how to make a window when no parent is given</p>
+<p class="p8"><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s6"><span class="Apple-tab-span">	</span></span><b>makeZone<span class="Apple-tab-span">	</span></b>how to initalize the zone within the parent window or view</p>
+<p class="p10"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>getName<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a method for generating a name for the object.</p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>winName<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>a method for generating a name for the JITGui's window.</p>
+<p class="p8"><br></p>
+<p class="p9"><b><span class="Apple-tab-span">	</span>makeScroller</b><span class="Apple-tab-span">	</span>Some objects may have more elements to display than the gui has slots,<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>e.g. a ProxySpace can have more proxies than the mixer has numItems.</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Then, only <b>numItems </b>elements are shown, and the others can be scrolled</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>to with <b>scroller</b> - an EZScroller next to the slot elements.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>The makeScroller method knows where in the zone to put the scroller.</p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
+<p class="p10"><br></p>
 </body>
 </html>
