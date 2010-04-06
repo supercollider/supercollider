@@ -297,7 +297,7 @@ NodeProxy : BusPlug {
 	}
 
 	mapn { | ... args |
-		"NodeProxy: mapn is decrepated, please use map instead".postln;
+		"NodeProxy: mapn is deprecated, please use map instead".postln;
 		^this.map(*args)
 	}
 	
