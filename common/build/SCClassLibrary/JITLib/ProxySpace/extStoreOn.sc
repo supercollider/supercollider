@@ -60,7 +60,7 @@
 		if (nameStr.beginsWith("a = ")) { // anon proxy
 			nameStr = nameStr.keep(1);
 		};
-		usePlayN = usePlayN ?? { if (monitor.notNil) { monitor.usedPlayN ? false } };
+		usePlayN = usePlayN ?? { if (monitor.notNil) { monitor.usedPlayN } ? false };
 			
 		// if they are defaults, don't post them
 		if (usePlayN) { 
@@ -133,7 +133,7 @@
 		^(".playN" ++ setStr ++ ";\n");
 	}
 	
-	playNDialog { | bounds, usePlayN = false |
+	playNDialog { | bounds, usePlayN |
 		var doc = this.playEditString(usePlayN).newTextWindow("edit outs:"); 
 		try { doc.bounds_(bounds) };	// swingosc safe
 	}
@@ -321,10 +321,10 @@
 		str = String.streamContents { arg stream; 
 			stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
 			this.storeOn(stream, keys, includeSettings);
-			this.do { arg px; if(px.monitorGroup.isPlaying) {
-				stream << px.playNDialog << ".play; \n"
-				}
-			};
+//			this.do { arg px; if(px.monitorGroup.isPlaying) {
+//				stream << px.playEditString << ".play; \n"
+//				}
+//			};
 		};
 		^str.newTextWindow((name ? "proxyspace").asString)
 	}
