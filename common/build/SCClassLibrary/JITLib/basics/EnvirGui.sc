@@ -1,31 +1,39 @@
+	// needs a defer for making new EZs after a clearField... 
+	// get rid of this later if possible. 
+
 EnvirGui : JITGui {
 
 	var <name, <valFields, <widgets, labelWidth;
 	var <keysRotation = 0, <specs;
 
-	name_ { } 
+	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]| 
+		^super.new(object, numItems, parent, bounds, makeSkip = true, options);
+	}
 	
 	setDefaults { 
+		if (parent.notNil) { skin = skin.copy.put(\margin, 0@0) };
+
 		defPos = 530@660;
-		minSize = 250 @ (numItems * skin.buttonHeight);
+		minSize = 250 @ (numItems * skin.buttonHeight + (skin.margin.y * 2));
 	}
 	
 	makeViews {
 		var height = skin.buttonHeight;
 
 		specs = ();  
-		prevState = [nil, [], 0, ()];
+		prevState = ( overflow: 0, keysRotation: 0, editKeys: []);
 		
-		labelWidth = zone.bounds.width * 0.15;
+		labelWidth = zone.bounds.width * 0.17;
+				 
 		valFields = {
-			CompositeView(zone, Rect(0, 0, bounds.width - 24, height))
+			CompositeView(zone, Rect(0, 0, bounds.width - 20, height))
 			.resize_(2)
 			.background_(skin.background);
 		}.dup(numItems);
 		
 		widgets = nil.dup(numItems); // keep EZGui types here
 
-		zone.decorator.reset.shift(zone.bounds.width - 24, 0);
+		zone.decorator.reset.shift(zone.bounds.width - 16, 0);
 
 		scroller = EZScroller(zone,
 			Rect(0, 0, 12, numItems * height),
@@ -47,55 +55,56 @@ EnvirGui : JITGui {
 	getState { 
 		var newKeys, overflow;
 		
-		if (object.isNil) { ^[nil, [], 0, ()] }; 
+		if (object.isNil) { ^(editKeys: [], overflow: 0, keysRotation: 0) }; 
 		
 		newKeys = object.keys.asArray.sort;
 		overflow = (newKeys.size - numItems).max(0);
 		keysRotation = keysRotation.clip(0, overflow);
 		newKeys = newKeys.drop(keysRotation).keep(numItems);
 		
-		^[object, newKeys, overflow, keysRotation]
+		^(object: object, editKeys: newKeys, overflow: overflow, keysRotation: keysRotation)
 	}
 	
-	checkUpdate {
+	checkUpdate { |doFull = false| 
 		var newState = this.getState;
-		var newKeys = newState[1];
-		if (newState == prevState) { ^this };
-
+		var newKeys = newState[\editKeys]; 
+		
+		if (doFull.not and: { newState == prevState }) { ^this };
+		
 		if (object.isNil) { 
-			prevState = newState.put(0, nil);
-			^this.clearFields;
+			prevState = newState;
+			^this.clearFields(0);
 		};
 
-		if (newState[2] > 0) {					// overflow
+		if (newState[\overflow] > 0) {
 			scroller.visible_(true);
 			scroller.numItems_(object.size);
-			scroller.value_(newState[3]);		// keysRotation
+			scroller.value_(newState[\keysRotation]);
 			
 		} {
 			scroller.visible_(false);
 		};
 
-		if (newKeys == prevState[1]) { 
+		if (newKeys == prevState[\editKeys]) { 
 			this.setByKeys(newKeys);
 		} {
 			this.setByKeys(newKeys);
-			this.clearFields;
+			if (newState[\overflow] == 0) { this.clearFields(newKeys.size) };
 		};
 		
 //		"newState: %\n".postf(newState);
 //		"prevState: %\n".postf(prevState);
-		prevState = newState.put(0, object.copy);
+		prevState = newState.put(\object, object.copy);
 	}
 
-	clearFields { (object.size .. valFields.size).do(this.clearField(_)) }
+	clearFields { |from = 0| (numItems - 1 .. from).do(this.clearField(_)) }
 
 	setByKeys { |newKeys|
-		var prevEnvir = prevState[0] ?? {()};
+		var prevEnvir = prevState[\object] ?? {()};
 		var newVal, oldVal, oldKey;
 
 		newKeys.do { |newKey, i|
-			oldKey = prevState[1][i];
+			oldKey = prevState[\editKeys][i];
 			newVal = object[newKey];
 			oldVal = prevEnvir[newKey];
 			if (oldKey != newKey or: { oldVal != newVal }) {
@@ -112,21 +121,40 @@ EnvirGui : JITGui {
 			widgets[index] = nil;
 		};
 	}
-
-	setField { |index, key, value, sameKey = false|
-		var area = valFields[index];
+	
+	setFunc { |key|
+		^{ |sl| object.put(key, sl.value) }
+	}
+	
+	setToSlider { |index, key, value, sameKey| 
 		var widget = widgets[index];
-
-		if (value.isKindOf(SimpleNumber) ) {
-			if (widget.isKindOf(EZSlider) and: sameKey) {
-				widget.value = value;
-				^this
+		var area;
+		
+	//	"setToSlider...".postln; 
+		 
+		if (widget.isKindOf(EZSlider)) {
+		//	"was slider already".postln; 
+			if (sameKey.not) { 
+		//		"new key - reset widget ...".postln; 
+				widget.set(key, 
+					this.getSpec(key, value), 
+					this.setFunc(key),
+					value);
 			} {
-				this.clearField(index);
+		//		"old key, just set ...".postln; 
+				widget.value = value;
+			};
+			^this
+		} {
+		//	"make new slider!".postln; 
+			this.clearField(index); 
+				// don't know why, but defer seems needed:
+			{ 
+				area = valFields[index];
 				widget = EZSlider(area, area.bounds.extent,
 					key,
 					this.getSpec(key, value),
-					{ |sl| object.put(key, sl.value) },
+					this.setFunc(key),
 					value,
 					labelWidth: labelWidth, 
 					numberWidth: labelWidth
@@ -134,46 +162,90 @@ EnvirGui : JITGui {
 					.font_(font);
 				widget.view.resize_(2);
 				widgets[index] = widget;
-				^this
-			};
+			}.defer(0.03); 
+			
+			^this
 		};
-
-		if (value.isKindOf(Array) and: (value.size == 2) ) {
-			if (widget.isKindOf(EZRanger) and: sameKey) {
-				widget.value = value;
-				^this
+	}
+	
+	setToRanger { |index, key, value, sameKey| 
+		var widget = widgets[index];
+		var area;
+		
+		if (widget.isKindOf(EZRanger)) {
+			if (sameKey.not) { 
+				widget.set(key, this.getSpec(key), 
+				this.setFunc(key),
+				value);
 			} {
-				this.clearField(index);
-				widget = EZRanger(area, area.bounds.extent, key, 
+				widget.value = value;
+			};
+		} {
+			this.clearField(index);
+			{ 
+				area = valFields[index];
+				widget = EZRanger(valFields[index], valFields[index].bounds.extent, 
+					key, 
 					this.getSpec(key, value.maxItem),
-					{ |sl| object.put(key, sl.value) },
+					this.setFunc(key),
+					value,
 					labelWidth: labelWidth, 
 					numberWidth: labelWidth
 				)
-					.value_(value)
 					.font_(font);
 				widget.view.resize_(2);
 				widgets[index] = widget;
-
-				^this
-			};
+			}.defer(0.03); 
+			^this
 		};
+	}
 
+	setToText { |index, key, value, sameKey = false|
+		var widget = widgets[index];
+		var area; 
+		
 			// default: EZText
-		if (widget.isKindOf(EZText) and: sameKey) {
+		if (widget.isKindOf(EZText)) { 
+			if (sameKey.not) { 
+				widget.labelView.string = key.asString;
+			};
 			widget.value = value;
 			^this
-		} {
+		} { 
 			this.clearField(index);
-
-			widget = EZText(area, area.bounds.extent, key,
-				{ arg ez; object[key] = ez.textField.value.interpret; },
-				value, false, labelWidth, labelHeight: 18);
-				widget.font_(font);
-				widget.view.resize_(2);
-				widgets[index] = widget;
+			{
+				area = valFields[index];
+	
+				widget = EZText(area, area.bounds.extent, key,
+					this.setFunc(key),
+					value, false, labelWidth, labelHeight: 18);
+					widget.font_(font);
+					widget.view.resize_(2);
+					widgets[index] = widget;
+				
+				widget.value_(value);
+			}.defer(0.03); 
 		};
-		^this
+	}
+
+	setField { |index, key, value, sameKey = false|
+		var area = valFields[index];
+		var widget = widgets[index];
+
+		if (value.isKindOf(SimpleNumber) ) {
+			this.setToSlider(index, key, value, sameKey);
+			^this
+		};
+			// Ranger - only if spec exists and value is 2 numbers
+		if (value.size == 2
+			and: { key.asSpec.notNil 
+			and: { value.every(_.isKindOf(SimpleNumber)) }
+		}) {
+			this.setToRanger(index, key, value, sameKey);
+			^this
+		};
+		
+		this.setToText(index, key, value, sameKey);
 	}
 
 	findWidget { |key|
