@@ -480,9 +480,4 @@ SimpleNumber : Number {
 					}
 		})
 	}
-	
-	maxDelta {
-		// the minimum significant network time difference is platform specific
-		^max(this, thisProcess.platform.minimalSignificantNetTimeDiff)
-	}
 }
