@@ -5,20 +5,18 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="1038.29">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001fe8}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d2217}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad1d13}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 10.0px; font: 9.0px Monaco; color: #000000}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p9 {margin: 0.0px 0.0px 0.0px 10.0px; font: 9.0px Monaco}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {text-decoration: underline}
 span.s3 {color: #000000}
@@ -77,7 +75,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// must have power of two framesize</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(0, <span class="s5">Convolution2</span>.ar(input, kernel, t_trig, 2048, 0.5));</p>
-<p class="p6">}).send(s)</p>
+<p class="p6">}).add</p>
 <p class="p2"><br></p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
@@ -173,34 +171,34 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1">Instead of triggering the kernel update yourself, as in the first example, you can use a UGen trigger signal to do so. In the next example, we use two <b>Convolution2</b> UGens in order to continuously and smoothly change the impulse response: <a href="../Playback and Recording/RecordBuf.html"><span class="s8">RecordBuf</span></a> is used to record a random frequency <a href="../Oscillators/Saw.html"><span class="s8">Saw</span></a> oscillator every <b>trigPeriod</b> seconds. Right after the recording (<b>trigPeriod</b> gets delayed by the buffer duration <a href="../Info/BufDur.html"><span class="s8">BufDur</span></a>, using the <a href="../Triggers/TDelay.html"><span class="s8">TDelay</span></a> UGen) the two convolution UGens alternatingly update their kernels (using two triggers <b>convTrigs</b>). At the frequency of the kernel updates a crossfader <a href="../Multichannel/Panners/XFade2.html"><span class="s8">XFade2</span></a> moves between <b>conv1</b> and <b>conv2</b>, using a triangle oscillator <a href="../Oscillators/LFTri.html"><span class="s8">LFTri</span></a> at half the trigger frequency as a panning input. The result is a constantly shifting spectral colorization of the <a href="../Noise/Dust.html"><span class="s8">Dust</span></a> impulses:</p>
 <p class="p3"><br></p>
 <p class="p6">(</p>
-<p class="p9">fork { <span class="s9">var</span> buf;</p>
-<p class="p9"><span class="Apple-tab-span">	</span>buf = <span class="s9">Buffer</span>.alloc( s, 2048, 1, <span class="s9">_</span>.zeroMsg );</p>
-<p class="p9"><span class="Apple-tab-span">	</span>x = { <span class="s9">arg</span> i_kernel, density = 100, trigPeriod = 5.0, cutOff = 1000, minFreq = 200, maxFreq = 2000;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">var</span> input, trigFreq, recTrig, irSig, convTrig, convTrigs, bufFrames, conv1, conv2;</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>input<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">LPF</span>.ar( <span class="s9">Dust</span>.ar( density ), cutOff );</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>trigFreq<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= trigPeriod.reciprocal;</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>recTrig<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">Impulse</span>.kr( trigFreq );</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>irSig<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">Saw</span>.ar( <span class="s9">TExpRand</span>.kr( minFreq, maxFreq, recTrig ), 0.4 );</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">RecordBuf</span>.ar( irSig, i_kernel, recTrig, loop: 0, trigger: recTrig );</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>convTrig<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">TDelay</span>.kr( recTrig, <span class="s9">BufDur</span>.ir( i_kernel ));</p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// split updates across two triggers. Note that [ 1, 0 ] creates</p>
-<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// a <a href="../../Other Topics/MultiChannel.html"><span class="s8">MultiChannel</span></a> expansion!</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>convTrigs<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">PulseDivider</span>.kr( convTrig, 2, [ 1, 0 ]);</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bufFrames<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">BufFrames</span>.ir( i_kernel );</p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// create the two alternatingly updated convolution ugens</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#conv1, conv2<span class="Apple-tab-span">	</span>= <span class="s9">Convolution2</span>.ar( input, i_kernel, convTrigs, bufFrames );</p>
-<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">XFade2</span>.ar( conv1, conv2, <span class="s9">LFTri</span>.kr( trigFreq * 0.5, 1 )) ! 2;</p>
-<p class="p9"><span class="Apple-tab-span">	</span>}.play( s, [ <span class="s10">\i_kernel</span>, buf ]);</p>
-<p class="p10"><span class="Apple-tab-span">	</span></p>
-<p class="p12"><span class="s3"><span class="Apple-tab-span">	</span></span>// automatically free buffer when synth ends</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="s9">Updater</span>( x.register, { <span class="s9">arg</span> node, what; if( what == <span class="s10">\n_end</span>, { buf.free })});</p>
-<p class="p9">}</p>
+<p class="p6">fork { <span class="s9">var</span> buf;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>buf = <span class="s9">Buffer</span>.alloc( s, 2048, 1, <span class="s9">_</span>.zeroMsg );</p>
+<p class="p6"><span class="Apple-tab-span">	</span>x = { <span class="s9">arg</span> i_kernel, density = 100, trigPeriod = 5.0, cutOff = 1000, minFreq = 200, maxFreq = 2000;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">var</span> input, trigFreq, recTrig, irSig, convTrig, convTrigs, bufFrames, conv1, conv2;</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>input<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">LPF</span>.ar( <span class="s9">Dust</span>.ar( density ), cutOff );</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>trigFreq<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= trigPeriod.reciprocal;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>recTrig<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">Impulse</span>.kr( trigFreq );</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>irSig<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">Saw</span>.ar( <span class="s9">TExpRand</span>.kr( minFreq, maxFreq, recTrig ), 0.4 );</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">RecordBuf</span>.ar( irSig, i_kernel, recTrig, loop: 0, trigger: recTrig );</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>convTrig<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">TDelay</span>.kr( recTrig, <span class="s9">BufDur</span>.ir( i_kernel ));</p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// split updates across two triggers. Note that [ 1, 0 ] creates</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// a <a href="../../Other Topics/MultiChannel.html"><span class="s8">MultiChannel</span></a> expansion!</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>convTrigs<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">PulseDivider</span>.kr( convTrig, 2, [ 1, 0 ]);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>bufFrames<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>= <span class="s9">BufFrames</span>.ir( i_kernel );</p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// create the two alternatingly updated convolution ugens</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>#conv1, conv2<span class="Apple-tab-span">	</span>= <span class="s9">Convolution2</span>.ar( input, i_kernel, convTrigs, bufFrames );</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s9">XFade2</span>.ar( conv1, conv2, <span class="s9">LFTri</span>.kr( trigFreq * 0.5, 1 )) ! 2;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}.play( s, [ <span class="s10">\i_kernel</span>, buf ]);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p10"><span class="s3"><span class="Apple-tab-span">	</span></span>// automatically free buffer when synth ends</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s9">Updater</span>( x.register, { <span class="s9">arg</span> node, what; if( what == <span class="s10">\n_end</span>, { buf.free })});</p>
+<p class="p6">}</p>
 <p class="p6">)</p>
 <p class="p2"><br></p>
-<p class="p9">x.set( <span class="s10">\trigPeriod</span>, 0.1 );<span class="Apple-tab-span">	</span><span class="s11">// fast changes</span></p>
-<p class="p9">x.set( <span class="s10">\trigPeriod</span>, 10.0 );<span class="Apple-tab-span">	</span><span class="s11">// slow changes</span></p>
-<p class="p12"><span class="s3">x.free;<span class="Apple-tab-span">	</span></span>// delete synth (and buffer successively)</p>
+<p class="p6">x.set( <span class="s10">\trigPeriod</span>, 0.1 );<span class="Apple-tab-span">	</span><span class="s11">// fast changes</span></p>
+<p class="p6">x.set( <span class="s10">\trigPeriod</span>, 10.0 );<span class="Apple-tab-span">	</span><span class="s11">// slow changes</span></p>
+<p class="p10"><span class="s3">x.free;<span class="Apple-tab-span">	</span></span>// delete synth (and buffer successively)</p>
 </body>
 </html>

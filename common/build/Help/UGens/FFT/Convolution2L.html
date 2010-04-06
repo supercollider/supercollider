@@ -5,19 +5,17 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.29">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {text-decoration: underline}
 span.s3 {color: #000000}
@@ -74,7 +72,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6"><span class="s3"><span class="Apple-tab-span">	</span></span>// must have power of two framesize</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(0, <span class="s5">Convolution2L</span>.ar(input, kernel, t_trig, 2048, 1, 0.5));</p>
-<p class="p5">}).send(s)</p>
+<p class="p5">}).add</p>
 <p class="p2"><br></p>
 <p class="p5">)</p>
 <p class="p2"><br></p>
@@ -98,19 +96,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">// longer crossfade</p>
 <p class="p5">(</p>
-<p class="p7"><span class="s8">SynthDef</span>( <span class="s6">\conv_test2</span>, { <span class="s8">arg</span> kernel, t_trig=0;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s8">var</span> input;</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>input=<span class="s8">Impulse</span>.ar(1);</p>
-<p class="p8"><br></p>
-<p class="p9"><span class="s3"><span class="Apple-tab-span">	</span></span>// must have power of two framesize</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s8">Out</span>.ar(0, <span class="s8">Convolution2L</span>.ar(input, kernel, t_trig, 2048, 5, 0.5));</p>
-<p class="p7">}).send(s)</p>
-<p class="p8"><br></p>
+<p class="p5"><span class="s8">SynthDef</span>( <span class="s6">\conv_test2</span>, { <span class="s8">arg</span> kernel, t_trig=0;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s8">var</span> input;</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span>input=<span class="s8">Impulse</span>.ar(1);</p>
+<p class="p2"><br></p>
+<p class="p7"><span class="s3"><span class="Apple-tab-span">	</span></span>// must have power of two framesize</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s8">Out</span>.ar(0, <span class="s8">Convolution2L</span>.ar(input, kernel, t_trig, 2048, 5, 0.5));</p>
+<p class="p5">}).add</p>
+<p class="p2"><br></p>
 <p class="p5">)</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p10"><span class="s3">x = </span><span class="s8">Synth</span><span class="s3">(</span>\conv_test2<span class="s3">, [</span>\kernel<span class="s3">, b]);</span></p>
+<p class="p8"><span class="s3">x = </span><span class="s8">Synth</span><span class="s3">(</span>\conv_test2<span class="s3">, [</span>\kernel<span class="s3">, b]);</span></p>
 <p class="p2"><br></p>
 <p class="p6">// changing the buffer number:</p>
 <p class="p5">x.set(<span class="s7">\kernel</span>, c);</p>
@@ -129,7 +127,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">// // next example</p>
 <p class="p2"><br></p>
-<p class="p11"><span class="s3">b = </span><span class="s5">Buffer</span><span class="s3">.read(s, </span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
+<p class="p9"><span class="s3">b = </span><span class="s5">Buffer</span><span class="s3">.read(s, </span>"sounds/a11wlk01.wav"<span class="s3">);</span></p>
 <p class="p2"><br></p>
 <p class="p5">(</p>
 <p class="p5"><span class="Apple-tab-span">	</span>{ <span class="s5">var</span> input, kernel;</p>
