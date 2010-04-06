@@ -93,7 +93,7 @@ void LFDNoise0_next(LFDNoise0 *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		phase -= ZXP(freq) * smpdur;
-		if (phase <= 0) {
+		if (phase < 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
 			level = frand2(s1,s2,s3);
 		}
@@ -118,7 +118,7 @@ void LFDNoise0_next_k(LFDNoise0 *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		phase -= dphase;
-		if (phase <= 0) {
+		if (phase < 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
 			level = frand2(s1,s2,s3);
 		}
@@ -159,7 +159,7 @@ void LFDNoise1_next(LFDNoise1 *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		phase -= ZXP(freq) * smpdur;
-		if (phase <= 0) {
+		if (phase < 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
 			prevLevel = nextLevel;
 			nextLevel = frand2(s1,s2,s3);
@@ -186,7 +186,7 @@ void LFDNoise1_next_k(LFDNoise1 *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		phase -= dphase;
-		if (phase <= 0) {
+		if (phase < 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
 			prevLevel = nextLevel;
 			nextLevel = frand2(s1,s2,s3);
@@ -231,7 +231,7 @@ void LFDNoise3_next(LFDNoise3 *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		phase -= ZXP(freq) * smpdur;
-		if (phase <= 0) {
+		if (phase < 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
 			a = b;
 			b = c;
@@ -263,7 +263,7 @@ void LFDNoise3_next_k(LFDNoise3 *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		phase -= dphase;
-		if (phase <= 0) {
+		if (phase < 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
 			a = b;
 			b = c;
@@ -311,7 +311,7 @@ void LFDClipNoise_next(LFDClipNoise *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		phase -= ZXP(freq) * smpdur;
-		if (phase <= 0) {
+		if (phase < 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
 			level = fcoin(s1,s2,s3);
 		}
@@ -337,7 +337,7 @@ void LFDClipNoise_next_k(LFDClipNoise *unit, int inNumSamples)
 
 	LOOP1(inNumSamples,
 		phase -= dphase;
-		if (phase <= 0) {
+		if (phase < 0) {
 			phase = sc_wrap(phase, 0.f, 1.f);
 			level = fcoin(s1,s2,s3);
 		}
