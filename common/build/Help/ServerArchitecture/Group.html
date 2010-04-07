@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -17,25 +17,26 @@ p.p7 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helve
 p.p8 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p9 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #6c3725}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #613829}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #96291a}
-p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6c3725}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #083ba2}
-p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #85301f}
-p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #96291a}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #bf0000}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {font: 9.0px Monaco; color: #5c6430}
+span.s2 {font: 9.0px Monaco; color: #5e6337}
 span.s3 {font: 9.0px Monaco}
 span.s4 {color: #000000}
-span.s5 {color: #083ba2}
-span.s6 {color: #5c6430}
-span.s7 {color: #001dfd}
+span.s5 {color: #1c3e99}
+span.s6 {color: #5e6337}
+span.s7 {color: #0a2cee}
 span.s8 {font: 12.0px Helvetica}
-span.s9 {color: #0045e9}
-span.s10 {color: #606060}
+span.s9 {color: #1f4bdc}
+span.s10 {color: #0000bf}
+span.s11 {color: #606060}
+span.s12 {color: #007300}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -171,130 +172,130 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Post a representation of this group's node subtree. (Sends a message of the type <b>g_dumpTree</b>.) If <b>postControls</b> is true, then the current <a href="../UGens/Synth control/Control.html"><span class="s7">Control</span></a> (arg) values for any synths contained in this group will be posted as well. The default is false.</p>
 <p class="p7"><br></p>
-<p class="p13">// not working yet<span class="Apple-tab-span">	</span><span class="s4"><span class="Apple-tab-span">	</span></span></p>
+<p class="p13">// not working yet<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>queryTree(action)</b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Queries the server for a message describing this group's node subtree. (Sends a message of the type <b>g_queryTree</b>.) This reply is passed to the action function as an argument. See <b>g_queryTree</b> in <a href="Server-Command-Reference.html"><span class="s9">Server-Command-Reference</span></a> or the example below for information on how the reply is structured.</p>
 <p class="p3"><br></p>
 <p class="p3"><br></p>
 <p class="p12"><b>Examples</b></p>
-<p class="p2"><br></p>
-<p class="p14">(</p>
-<p class="p15"><span class="s4">s = </span><span class="s5">Server</span><span class="s4">.default; </span>// just to be sure</p>
-<p class="p14">s.boot;</p>
-<p class="p14">)</p>
-<p class="p2"><br></p>
-<p class="p14">(</p>
-<p class="p14"><span class="s5">SynthDef</span>(<span class="s10">"help-Group-moto-rev"</span>, { <span class="s5">arg</span> out=0,freq=100,ffreq=120;</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s5">var</span> x;</p>
-<p class="p14"><span class="Apple-tab-span">	</span>x = <span class="s5">RLPF</span>.ar(<span class="s5">LFPulse</span>.ar(<span class="s5">SinOsc</span>.kr(0.2, 0, 10, freq), [0,0.1], 0.1),<span class="Apple-converted-space"> </span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq, 0.1).clip2(0.4);</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s5">Out</span>.ar(out, x);</p>
-<p class="p14">}).send(s);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p14"><span class="s5">SynthDef</span>(<span class="s10">"help-Group-wah"</span>, { <span class="s5">arg</span> out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s5">var</span> zin, zout, q;</p>
-<p class="p2"><br></p>
-<p class="p14"><span class="Apple-tab-span">	</span>zin = <span class="s5">In</span>.ar(out, 2);</p>
-<p class="p14"><span class="Apple-tab-span">	</span>cfreq = <span class="s5">Lag3</span>.kr(cfreq, 0.1);</p>
-<p class="p14"><span class="Apple-tab-span">	</span>mfreq = <span class="s5">Lag3</span>.kr(mfreq, 0.1);</p>
-<p class="p14"><span class="Apple-tab-span">	</span>q <span class="Apple-converted-space">  </span>= <span class="s5">Ramp</span>.kr(rq, 0.1);</p>
-<p class="p14"><span class="Apple-tab-span">	</span>zout = <span class="s5">RLPF</span>.ar(zin, <span class="s5">LFNoise1</span>.kr(rate, mfreq, cfreq), q, 10).distort<span class="Apple-converted-space"> </span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* 0.15;</p>
-<p class="p2"><br></p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span></span>// replace the incoming bus with the effected version</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s5">ReplaceOut</span>.ar( out , zout );<span class="Apple-converted-space"> </span></p>
-<p class="p2"><span class="Apple-tab-span">	</span></p>
-<p class="p14">}).send(s);</p>
-<p class="p14">)</p>
-<p class="p2"><br></p>
-<p class="p14">g = <span class="s5">Group</span>.new;</p>
-<p class="p2"><br></p>
-<p class="p14">(</p>
-<p class="p14">l = <span class="s5">Array</span>.fill(3,{</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span></span>// random freq for each synth, added to g at the head</p>
-<p class="p16"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s5">Synth</span><span class="s4">(</span>"help-Group-moto-rev"<span class="s4">,[</span>"out"<span class="s4">,0,</span>"freq"<span class="s4">,rrand(10,120)],g,</span><span class="s6">\addToHead</span><span class="s4">);</span></p>
-<p class="p14">});</p>
-<p class="p14">)</p>
-<p class="p2"><br></p>
-<p class="p15">// set all controls that match "ffreq" in all nodes in g to 90</p>
-<p class="p14">g.set(<span class="s10">"ffreq"</span>,300);</p>
-<p class="p2"><br></p>
-<p class="p14">g.set(<span class="s10">"freq"</span>,80);</p>
-<p class="p2"><br></p>
-<p class="p15">// since we stored the Synths in an Array, we can also control them individually</p>
-<p class="p14">(</p>
-<p class="p17"><span class="s4">r = </span>Routine<span class="s4">({</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="s5">inf</span>.do({</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l.do({ <span class="s5">arg</span> node;</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node.set(<span class="s10">"freq"</span>,rrand(10,120));</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0.wait;</p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p14"><span class="Apple-tab-span">	</span>})</p>
-<p class="p14">});</p>
-<p class="p2"><br></p>
-<p class="p14">r.play;</p>
-<p class="p14">)</p>
-<p class="p2"><br></p>
-<p class="p15">// g is in a group too. Since we didn't specify it's the default group (ID 1) of the default Server</p>
-<p class="p14">g.group.inspect;</p>
-<p class="p2"><br></p>
-<p class="p15">// asking a wah to go order-of-execution after g, in the same group as g.</p>
-<p class="p14">x = <span class="s5">Synth</span>.after(g,<span class="s10">"help-Group-wah"</span>,[<span class="s10">"out"</span>,0]);<span class="Apple-converted-space"> </span></p>
-<p class="p2"><br></p>
-<p class="p18">// now dump my tree to confirm</p>
-<p class="p14">g.dumpTree;</p>
-<p class="p2"><br></p>
-<p class="p14">x.free;</p>
-<p class="p2"><br></p>
-<p class="p15">// free all nodes in g, but not g itself</p>
-<p class="p14">g.freeAll;</p>
-<p class="p2"><br></p>
-<p class="p15">// don't forget the Routine is still running...</p>
-<p class="p14">r.stop;</p>
-<p class="p2"><br></p>
-<p class="p15">// oh, and set l to nil so the Synths and Array can be garbage collected</p>
-<p class="p14">l = <span class="s5">nil</span>;</p>
-<p class="p2"><br></p>
-<p class="p15">// and i'm still on the server, its just my children that were freed</p>
-<p class="p14">g.query;</p>
-<p class="p2"><br></p>
-<p class="p15">// don't need the individual synth objects this time</p>
-<p class="p14">(</p>
-<p class="p14">3.do({</p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span></span>// random freq for each synth, added to g at the head</p>
-<p class="p16"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s5">Synth</span><span class="s4">(</span>"help-Group-moto-rev"<span class="s4">,[</span>"out"<span class="s4">,0,</span>"freq"<span class="s4">,rrand(10,1200)],g,</span><span class="s6">\addToHead</span><span class="s4">);</span></p>
-<p class="p14">});</p>
-<p class="p14">)</p>
-<p class="p2"><br></p>
-<p class="p18">// now query my tree and post a graph of it (duplicates dumpTree)</p>
-<p class="p18">// msg format is ['/g_querytree.reply', node1-ID, numChildren, defName, child1-ID, numChildren, ...]</p>
-<p class="p19">//(</p>
-<p class="p19">//g.queryTree({|msg|<span class="Apple-converted-space"> </span></p>
-<p class="p19">//<span class="Apple-tab-span">	</span>var i = 1, tabs = 0, dumpFunc;</p>
-<p class="p19">//<span class="Apple-tab-span">	</span>("NODE TREE Group" + msg[1]).postln;</p>
-<p class="p19">//<span class="Apple-tab-span">	</span>if(msg[2] &gt; 0, {</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dumpFunc = {|numChildren|</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tabs = tabs + 1;</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>numChildren.do({</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = i + 3;</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tabs.do({ " <span class="Apple-converted-space">  </span>".post });</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>msg[i].post;</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(" " ++ msg[i + 2]).postln;</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(msg[i + 1] &gt; 0, { dumpFunc.value(msg[i + 1]) });<span class="Apple-tab-span">	</span></p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tabs = tabs - 1;</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
-<p class="p19">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dumpFunc.value(msg[2]);</p>
-<p class="p19">//<span class="Apple-tab-span">	</span>});</p>
-<p class="p19">//});</p>
-<p class="p19">//)</p>
-<p class="p2"><br></p>
-<p class="p15">// kill me and my children</p>
-<p class="p14">g.free;</p>
-<p class="p2"><br></p>
-<p class="p15">// see, I'm gone</p>
-<p class="p14">g.query;</p>
+<p class="p14"><br></p>
+<p class="p15">(</p>
+<p class="p16"><span class="s4">s = </span><span class="s10">Server</span><span class="s4">.default; </span>// just to be sure</p>
+<p class="p15">s.boot;</p>
+<p class="p15">)</p>
+<p class="p14"><br></p>
+<p class="p15">(</p>
+<p class="p15"><span class="s10">SynthDef</span>(<span class="s11">"help-Group-moto-rev"</span>, { <span class="s10">arg</span> out=0,freq=100,ffreq=120;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s10">var</span> x;</p>
+<p class="p15"><span class="Apple-tab-span">	</span>x = <span class="s10">RLPF</span>.ar(<span class="s10">LFPulse</span>.ar(<span class="s10">SinOsc</span>.kr(0.2, 0, 10, freq), [0,0.1], 0.1),<span class="Apple-converted-space"> </span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ffreq, 0.1).clip2(0.4);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s10">Out</span>.ar(out, x);</p>
+<p class="p15">}).add;</p>
+<p class="p14"><br></p>
+<p class="p14"><br></p>
+<p class="p15"><span class="s10">SynthDef</span>(<span class="s11">"help-Group-wah"</span>, { <span class="s10">arg</span> out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s10">var</span> zin, zout, q;</p>
+<p class="p14"><br></p>
+<p class="p15"><span class="Apple-tab-span">	</span>zin = <span class="s10">In</span>.ar(out, 2);</p>
+<p class="p15"><span class="Apple-tab-span">	</span>cfreq = <span class="s10">Lag3</span>.kr(cfreq, 0.1);</p>
+<p class="p15"><span class="Apple-tab-span">	</span>mfreq = <span class="s10">Lag3</span>.kr(mfreq, 0.1);</p>
+<p class="p15"><span class="Apple-tab-span">	</span>q <span class="Apple-converted-space">  </span>= <span class="s10">Ramp</span>.kr(rq, 0.1);</p>
+<p class="p15"><span class="Apple-tab-span">	</span>zout = <span class="s10">RLPF</span>.ar(zin, <span class="s10">LFNoise1</span>.kr(rate, mfreq, cfreq), q, 10).distort<span class="Apple-converted-space"> </span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>* 0.15;</p>
+<p class="p14"><br></p>
+<p class="p16"><span class="s4"><span class="Apple-tab-span">	</span></span>// replace the incoming bus with the effected version</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s10">ReplaceOut</span>.ar( out , zout );<span class="Apple-converted-space"> </span></p>
+<p class="p14"><span class="Apple-tab-span">	</span></p>
+<p class="p15">}).add;</p>
+<p class="p15">)</p>
+<p class="p14"><br></p>
+<p class="p15">g = <span class="s10">Group</span>.new;</p>
+<p class="p14"><br></p>
+<p class="p15">(</p>
+<p class="p15">l = <span class="s10">Array</span>.fill(3,{</p>
+<p class="p16"><span class="s4"><span class="Apple-tab-span">	</span></span>// random freq for each synth, added to g at the head</p>
+<p class="p17"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s10">Synth</span><span class="s4">(</span>"help-Group-moto-rev"<span class="s4">,[</span>"out"<span class="s4">,0,</span>"freq"<span class="s4">,rrand(10,120)],g,</span><span class="s12">\addToHead</span><span class="s4">);</span></p>
+<p class="p15">});</p>
+<p class="p15">)</p>
+<p class="p14"><br></p>
+<p class="p16">// set all controls that match "ffreq" in all nodes in g to 90</p>
+<p class="p15">g.set(<span class="s11">"ffreq"</span>,300);</p>
+<p class="p14"><br></p>
+<p class="p15">g.set(<span class="s11">"freq"</span>,80);</p>
+<p class="p14"><br></p>
+<p class="p16">// since we stored the Synths in an Array, we can also control them individually</p>
+<p class="p15">(</p>
+<p class="p18"><span class="s4">r = </span>Routine<span class="s4">({</span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="s10">inf</span>.do({</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>l.do({ <span class="s10">arg</span> node;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>node.set(<span class="s11">"freq"</span>,rrand(10,120));</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.0.wait;</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p15"><span class="Apple-tab-span">	</span>})</p>
+<p class="p15">});</p>
+<p class="p14"><br></p>
+<p class="p15">r.play;</p>
+<p class="p15">)</p>
+<p class="p14"><br></p>
+<p class="p16">// g is in a group too. Since we didn't specify it's the default group (ID 1) of the default Server</p>
+<p class="p15">g.group.inspect;</p>
+<p class="p14"><br></p>
+<p class="p16">// asking a wah to go order-of-execution after g, in the same group as g.</p>
+<p class="p15">x = <span class="s10">Synth</span>.after(g,<span class="s11">"help-Group-wah"</span>,[<span class="s11">"out"</span>,0]);<span class="Apple-converted-space"> </span></p>
+<p class="p14"><br></p>
+<p class="p16">// now dump my tree to confirm</p>
+<p class="p15">g.dumpTree;</p>
+<p class="p14"><br></p>
+<p class="p15">x.free;</p>
+<p class="p14"><br></p>
+<p class="p16">// free all nodes in g, but not g itself</p>
+<p class="p15">g.freeAll;</p>
+<p class="p14"><br></p>
+<p class="p16">// don't forget the Routine is still running...</p>
+<p class="p15">r.stop;</p>
+<p class="p14"><br></p>
+<p class="p16">// oh, and set l to nil so the Synths and Array can be garbage collected</p>
+<p class="p15">l = <span class="s10">nil</span>;</p>
+<p class="p14"><br></p>
+<p class="p16">// and i'm still on the server, its just my children that were freed</p>
+<p class="p15">g.query;</p>
+<p class="p14"><br></p>
+<p class="p16">// don't need the individual synth objects this time</p>
+<p class="p15">(</p>
+<p class="p15">3.do({</p>
+<p class="p16"><span class="s4"><span class="Apple-tab-span">	</span></span>// random freq for each synth, added to g at the head</p>
+<p class="p17"><span class="s4"><span class="Apple-tab-span">	</span></span><span class="s10">Synth</span><span class="s4">(</span>"help-Group-moto-rev"<span class="s4">,[</span>"out"<span class="s4">,0,</span>"freq"<span class="s4">,rrand(10,1200)],g,</span><span class="s12">\addToHead</span><span class="s4">);</span></p>
+<p class="p15">});</p>
+<p class="p15">)</p>
+<p class="p14"><br></p>
+<p class="p16">// now query my tree and post a graph of it (duplicates dumpTree)</p>
+<p class="p16">// msg format is ['/g_querytree.reply', node1-ID, numChildren, defName, child1-ID, numChildren, ...]</p>
+<p class="p16">//(</p>
+<p class="p16">//g.queryTree({|msg|<span class="Apple-converted-space"> </span></p>
+<p class="p16">//<span class="Apple-tab-span">	</span>var i = 1, tabs = 0, dumpFunc;</p>
+<p class="p16">//<span class="Apple-tab-span">	</span>("NODE TREE Group" + msg[1]).postln;</p>
+<p class="p16">//<span class="Apple-tab-span">	</span>if(msg[2] &gt; 0, {</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dumpFunc = {|numChildren|</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tabs = tabs + 1;</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>numChildren.do({</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>i = i + 3;</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tabs.do({ " <span class="Apple-converted-space">  </span>".post });</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>msg[i].post;</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(" " ++ msg[i + 2]).postln;</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(msg[i + 1] &gt; 0, { dumpFunc.value(msg[i + 1]) });<span class="Apple-tab-span">	</span></p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>tabs = tabs - 1;</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>};</p>
+<p class="p16">//<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>dumpFunc.value(msg[2]);</p>
+<p class="p16">//<span class="Apple-tab-span">	</span>});</p>
+<p class="p16">//});</p>
+<p class="p16">//)</p>
+<p class="p14"><br></p>
+<p class="p16">// kill me and my children</p>
+<p class="p15">g.free;</p>
+<p class="p14"><br></p>
+<p class="p16">// see, I'm gone</p>
+<p class="p15">g.query;</p>
 </body>
 </html>
