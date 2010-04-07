@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -19,25 +19,25 @@ p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco
 p.p10 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 12.0px Helvetica}
 p.p11 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica}
 p.p12 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ad140d}
+p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #941f1a}
 p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p15 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #941f1a}
 p.p17 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco}
 p.p18 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p19 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; color: #ad140d}
+p.p19 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; color: #941f1a}
 p.p20 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco}
 p.p21 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; color: #606060}
-p.p22 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; color: #2c7014}
+p.p22 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 9.0px Monaco; color: #426d24}
 p.p23 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #001bb9}
-span.s3 {color: #0000ff}
+span.s2 {color: #0b24ae}
+span.s3 {color: #001ff0}
 span.s4 {font: 12.0px Helvetica}
 span.s5 {color: #000000}
-span.s6 {color: #ad140d}
+span.s6 {color: #941f1a}
 span.s7 {font: 9.0px Monaco}
-span.s8 {color: #2c7014}
+span.s8 {color: #426d24}
 span.s9 {color: #606060}
 span.s10 {font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
@@ -235,7 +235,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar( out,</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">PlayBuf</span>.ar(1,bufnum,<span class="s2">BufRateScale</span>.kr(bufnum))</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
-<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>y = <span class="s2">Synth</span>.basicNew(<span class="s8">\help_Buffer</span>); <span class="s6">// not sent yet</span></p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s2">Buffer</span>.readNoUpdate(s,<span class="s9">"sounds/a11wlk01.wav"</span>,<span class="Apple-converted-space"> </span></p>
@@ -270,7 +270,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">DiskIn</span>.ar( 1, bufnum )</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
-<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
@@ -645,7 +645,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SynthDef</span>(<span class="s8">\help_Buffer_copy</span>, { <span class="s2">arg</span> out=0, buf;</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Line</span>.ar(0, 0, dur: <span class="s2">BufDur</span>.kr(buf), doneAction: 2); <span class="s6">// frees itself</span></p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out, <span class="s2">PlayBuf</span>.ar(1, buf));</p>
-<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).add;</p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p18"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p20"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
