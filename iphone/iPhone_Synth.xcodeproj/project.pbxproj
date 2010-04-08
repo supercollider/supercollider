@@ -51,7 +51,6 @@
 		775D93E60F509D2F00112D87 /* SC_Complex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0B0EABE96E00732A1C /* SC_Complex.cpp */; };
 		775D93E70F509D2F00112D87 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0C0EABE96E00732A1C /* SC_ComPort.cpp */; };
 		775D93E80F509D2F00112D87 /* SC_CoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0D0EABE96E00732A1C /* SC_CoreAudio.cpp */; };
-		775D93E90F509D2F00112D87 /* SC_Dimension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0E0EABE96E00732A1C /* SC_Dimension.cpp */; };
 		775D93EA0F509D2F00112D87 /* SC_Errors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0F0EABE96E00732A1C /* SC_Errors.cpp */; };
 		775D93EB0F509D2F00112D87 /* SC_Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A100EABE96E00732A1C /* SC_Graph.cpp */; };
 		775D93EC0F509D2F00112D87 /* SC_GraphDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A110EABE96E00732A1C /* SC_GraphDef.cpp */; };
@@ -109,7 +108,6 @@
 		77AA93B10EB368B700DC0BCB /* SC_Complex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0B0EABE96E00732A1C /* SC_Complex.cpp */; };
 		77AA93B20EB368B700DC0BCB /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0C0EABE96E00732A1C /* SC_ComPort.cpp */; };
 		77AA93B30EB368B700DC0BCB /* SC_CoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0D0EABE96E00732A1C /* SC_CoreAudio.cpp */; };
-		77AA93B40EB368B700DC0BCB /* SC_Dimension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0E0EABE96E00732A1C /* SC_Dimension.cpp */; };
 		77AA93B50EB368B700DC0BCB /* SC_Errors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A0F0EABE96E00732A1C /* SC_Errors.cpp */; };
 		77AA93B60EB368B700DC0BCB /* SC_Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A100EABE96E00732A1C /* SC_Graph.cpp */; };
 		77AA93B70EB368B700DC0BCB /* SC_GraphDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A110EABE96E00732A1C /* SC_GraphDef.cpp */; };
@@ -272,7 +270,6 @@
 		77724A0B0EABE96E00732A1C /* SC_Complex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Complex.cpp; sourceTree = "<group>"; };
 		77724A0C0EABE96E00732A1C /* SC_ComPort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_ComPort.cpp; sourceTree = "<group>"; };
 		77724A0D0EABE96E00732A1C /* SC_CoreAudio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_CoreAudio.cpp; sourceTree = "<group>"; };
-		77724A0E0EABE96E00732A1C /* SC_Dimension.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Dimension.cpp; sourceTree = "<group>"; };
 		77724A0F0EABE96E00732A1C /* SC_Errors.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Errors.cpp; sourceTree = "<group>"; };
 		77724A100EABE96E00732A1C /* SC_Graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Graph.cpp; sourceTree = "<group>"; };
 		77724A110EABE96E00732A1C /* SC_GraphDef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_GraphDef.cpp; sourceTree = "<group>"; };
@@ -653,7 +650,6 @@
 				77724A0B0EABE96E00732A1C /* SC_Complex.cpp */,
 				77724A0C0EABE96E00732A1C /* SC_ComPort.cpp */,
 				77724A0D0EABE96E00732A1C /* SC_CoreAudio.cpp */,
-				77724A0E0EABE96E00732A1C /* SC_Dimension.cpp */,
 				77724A0F0EABE96E00732A1C /* SC_Errors.cpp */,
 				77724A100EABE96E00732A1C /* SC_Graph.cpp */,
 				77724A110EABE96E00732A1C /* SC_GraphDef.cpp */,
@@ -966,7 +962,6 @@
 				775D93E60F509D2F00112D87 /* SC_Complex.cpp in Sources */,
 				775D93E70F509D2F00112D87 /* SC_ComPort.cpp in Sources */,
 				775D93E80F509D2F00112D87 /* SC_CoreAudio.cpp in Sources */,
-				775D93E90F509D2F00112D87 /* SC_Dimension.cpp in Sources */,
 				775D93EA0F509D2F00112D87 /* SC_Errors.cpp in Sources */,
 				775D93EB0F509D2F00112D87 /* SC_Graph.cpp in Sources */,
 				775D93EC0F509D2F00112D87 /* SC_GraphDef.cpp in Sources */,
@@ -1029,7 +1024,6 @@
 				77AA93B10EB368B700DC0BCB /* SC_Complex.cpp in Sources */,
 				77AA93B20EB368B700DC0BCB /* SC_ComPort.cpp in Sources */,
 				77AA93B30EB368B700DC0BCB /* SC_CoreAudio.cpp in Sources */,
-				77AA93B40EB368B700DC0BCB /* SC_Dimension.cpp in Sources */,
 				77AA93B50EB368B700DC0BCB /* SC_Errors.cpp in Sources */,
 				77AA93B60EB368B700DC0BCB /* SC_Graph.cpp in Sources */,
 				77AA93B70EB368B700DC0BCB /* SC_GraphDef.cpp in Sources */,
