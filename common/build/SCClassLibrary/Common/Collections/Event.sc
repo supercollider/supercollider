@@ -281,8 +281,8 @@ Event : Environment {
 					schedBundleArrayOnClock(offset, thisThread.clock, bundle, lag, server);
 				},
 	
-				schedBundleArray: #{ | lag, offset, server, bundleArray |
-					schedBundleArrayOnClock(offset, thisThread.clock, bundleArray, lag, server);
+				schedBundleArray: #{ | lag, offset, server, bundleArray, latency |
+					schedBundleArrayOnClock(offset, thisThread.clock, bundleArray, lag, server, latency);
 				},
 				
 				schedStrummedNote: {| lag, strumTime, sustain, server, msg, sendGate |
@@ -509,22 +509,22 @@ Event : Environment {
 							// schedule when the bundles are sent
 							
 							if (strum == 0) {
-								schedBundleArrayOnClock(
-									offset, thisThread.clock, bndl, lag, server, ~latency);
+								~schedBundleArray.(offset, lag, server, bndl, ~latency);
 								if (sendGate) {
-									schedBundleArrayOnClock(
-										sustain + offset, thisThread.clock, 
+									~schedBundleArray.(
+										sustain + offset,
+										lag,
+										server,
 										[\n_set, ids, \gate, 0].flop, 
-										lag, server, ~latency
+										~latency
 									);
 								}
 							} {
 								
 								if (strum < 0) { bndl = bndl.reverse };
 								strumOffset = offset + Array.series(bndl.size, 0, strum.abs);
-								schedBundleArrayOnClock(
-									strumOffset, thisThread.clock, bndl, 
-									lag, server, ~latency
+								~schedBundleArray.(
+									strumOffset, lag, server, bndl, ~latency
 								);
 								if (sendGate) {
 									if (~strumEndsTogether) {
@@ -532,10 +532,10 @@ Event : Environment {
 									} {
 											strumOffset = sustain + strumOffset
 									};
-									schedBundleArrayOnClock(
-										strumOffset, thisThread.clock, 
+									~schedBundleArray.(
+										strumOffset, lag, server,
 										[\n_set, ids, \gate, 0].flop, 
-										lag, server, ~latency
+										~latency
 									);
 								}
 							}
@@ -580,12 +580,11 @@ Event : Environment {
 							bndl = msgFunc.valueEnvir;
 							bndl = [\s_new, instrumentName, -1, addAction, ~group] ++ bndl;
 							
-							schedBundleArrayOnClock(
-								~timingOffset, 
-								thisThread.clock, 
-								bndl.flop, 
+							~schedBundleArray.(
 								~lag, 
+								~timingOffset, 
 								server, 
+								bndl.flop, 
 								~latency
 							);
 						}
