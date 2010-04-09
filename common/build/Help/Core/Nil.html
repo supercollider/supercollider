@@ -5,47 +5,63 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.42">
+<meta name="CocoaVersion" content="1038.29">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-span.s1 {text-decoration: underline}
+p.p5 {margin: 0.0px 0.0px 0.0px 42.0px; font: 12.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 42.0px; font: 12.0px Helvetica; min-height: 14.0px}
+span.s1 {color: #1032ee}
+span.s2 {text-decoration: underline}
+span.Apple-tab-span {white-space:pre}
 </style>
 </head>
 <body>
 <p class="p1"><b>Nil</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>Superclass: Object</b></p>
+<p class="p3"><b>Inherits from: </b><a href="Object.html"><span class="s1"><b>Object</b></span></a><b><span class="Apple-converted-space"> </span></b></p>
 <p class="p2"><br></p>
 <p class="p3">Nil has a single instance named nil and is used to represent uninitialized data,</p>
 <p class="p3">bad values, or terminal values such as end-of-stream.</p>
 <p class="p2"><br></p>
-<p class="p4"><b><span class="s1">Instance Methods</span></b></p>
+<p class="p4"><b>Instance Methods</b></p>
 <p class="p2"><br></p>
-<p class="p3"><b>isNil</b></p>
+<p class="p5"><b>isNil</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span>Answers true because this <span class="s2">is</span> nil. In class Object this message is defined to answer false.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>notNil</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span>Answer false. In class Object this message answers true.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>? anObject</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span>? means return first non-nil argument. Since this IS nil then return anObject.</p>
+<p class="p5"><span class="Apple-tab-span">	</span>In class Object, ? is defined to answer the receiver.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>?? aFunction</b></p>
+<p class="p5">If the receiver is nil, value the function and return the result.<span class="Apple-converted-space">  </span>Since this IS nil, then value the function and return the result. In class Object, ?? is defined to answer the receiver.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>add(value)</b></p>
+<p class="p5">Returns an array with the <b>value</b>. This makes it unecessary to initialize when adding to a variable.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>addAll(array)</b></p>
+<p class="p5">Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>remove</b></p>
+<p class="p5">Returns nil. This makes it unecessary to initialize when adding to a variable.</p>
+<p class="p6"><br></p>
+<p class="p5"><b>++ array</b></p>
+<p class="p5">Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.</p>
 <p class="p2"><br></p>
-<p class="p3">Answers true because this <span class="s1">is</span> nil. In class Object this message is defined to answer false.</p>
-<p class="p2"><br></p>
-<p class="p3"><b>notNil</b></p>
-<p class="p2"><br></p>
-<p class="p3">Answer false. In class Object this message answers true.</p>
-<p class="p2"><br></p>
-<p class="p3"><b>? anObject</b></p>
-<p class="p2"><br></p>
-<p class="p3">? means return first non-nil argument. Since this IS nil then return anObject.</p>
-<p class="p3">In class Object, ? is defined to answer the receiver.</p>
-<p class="p2"><br></p>
-<p class="p3"><b>?? aFunction</b></p>
-<p class="p2"><br></p>
-<p class="p3">If the receiver is nil, value the function and return the result.<span class="Apple-converted-space">  </span>Since this IS nil, then value the function and return the result. In class Object, ?? is defined to answer the receiver.</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p4"><b><span class="s1">Dependancy</span></b></p>
+<p class="p4"><b>Dependancy</b></p>
 <p class="p2"><br></p>
 <p class="p3">All the messages for the Dependancy protocol (See class Object) are defined in class Nil<span class="Apple-converted-space"> </span></p>
 <p class="p3">to do nothing. This eliminates the need to check for nil when sending dependancy messages.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Other Methods</b></p>
+<p class="p2"><br></p>
+<p class="p3">Many other messages are defined in class Nil to do nothing. This eliminates the need to check for nil.</p>
+<p class="p2"><br></p>
 <p class="p2"><br></p>
 </body>
 </html>
