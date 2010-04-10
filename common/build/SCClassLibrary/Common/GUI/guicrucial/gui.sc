@@ -193,42 +193,15 @@
 /* layout support */
 + Nil {
 
-	asPageLayout { arg name,bounds,metal=true;
-		^MultiPageLayout(name.asString,bounds, metal: metal ).front
-	}
 	asFlowView { arg bounds;
 		^FlowView(nil,bounds)
 	}
 	remove {}
 }
 
-+ Point {
-	asPageLayout {
-		^MultiPageLayout("",this.asRect ).front
-	}
-}
-+ Rect {
-	asPageLayout {
-		^MultiPageLayout("",this ).front
-	}
-}
-
 
 + FlowView {
 	asFlowView {}
 	asPageLayout {} // should be compatible
-}
-
-+ MultiPageLayout {
-	asFlowView { arg bounds;
-		^if(bounds.notNil,{
-			FlowView(this,bounds)
-		},{
-			this.view
-		})
-
-		//bounds = bounds ?? {this.view.bounds};
-		//^FlowView(this.view,this.layRight(bounds.width - 10,bounds.height - 10))
-	}
 }
 
