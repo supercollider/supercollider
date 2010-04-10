@@ -83,25 +83,6 @@
 	}
 }
 
-+ MultiPageLayout {
-
-	flow { arg func,bounds;
-		^this.view.flow(func,bounds)
-	}
-	vert { arg func,bounds,spacing;
-		^this.view.vert(func,bounds,spacing)
-	}
-	horz { arg func,bounds,spacing;
-		^this.view.horz(func,bounds,spacing)
-	}
-	comp { arg func,bounds;
-		^this.view.comp(func,bounds)
-	}
-	scroll { arg ... args;
-		^this.view.performList(\scroll,args)
-	}
-}
-
 + FlowLayout {
 	// can deprec this since multi page layouts are so old skool
 	wouldExceedBottom { arg aBounds;
