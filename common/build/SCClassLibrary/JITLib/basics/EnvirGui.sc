@@ -3,7 +3,7 @@
 
 EnvirGui : JITGui {
 
-	var <name, <valFields, <widgets, labelWidth;
+	var <valFields, <widgets, labelWidth;
 	var <keysRotation = 0, <specs;
 
 	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]| 
@@ -123,7 +123,7 @@ EnvirGui : JITGui {
 	}
 	
 	setFunc { |key|
-		^{ |sl| object.put(key, sl.value) }
+		^{ |elem| object.put(key, elem.value) }
 	}
 	
 	setToSlider { |index, key, value, sameKey| 
@@ -203,12 +203,13 @@ EnvirGui : JITGui {
 	setToText { |index, key, value, sameKey = false|
 		var widget = widgets[index];
 		var area; 
-		
+
 			// default: EZText
 		if (widget.isKindOf(EZText)) { 
 			if (sameKey.not) { 
 				widget.labelView.string = key.asString;
 			};
+			widget.action = this.setFunc(key);
 			widget.value = value;
 			^this
 		} { 

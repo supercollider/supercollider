@@ -164,8 +164,7 @@ JITGui {
 	makeViews { 
 		var lineheight = max(
 			skin.buttonHeight * numItems + skin.headHeight, 
-			zone.bounds.height - (skin.margin.y * 2)
-		); 
+			zone.bounds.height)  - (skin.margin.y * 2); 
 		
 		nameView = SCDragBoth(zone, Rect(0,0, 60, lineheight))
 			.font_(font).align_(\center)
