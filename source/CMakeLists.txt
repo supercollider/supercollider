@@ -1,10 +1,10 @@
 add_subdirectory(sc)
 
 set(libsupernova_src
+    sc/sc_synth_prototype.cpp
     sc/sc_osc_handler.cpp
     sc/sc_plugin_interface.cpp
     sc/sc_synth.cpp
-    sc/sc_synth_prototype.cpp
     sc/sc_synthdef.cpp
     sc/sc_ugen_factory.cpp
     sc/supercollider/common/Source/server/Samp.cpp
