@@ -29,8 +29,8 @@
 
 JITGui {
 	var <object, <numItems, <parent, <bounds, <zone, <minSize, <defPos, <skin, <font; 
-	var <prevState, <skipjack, <scroller; 
 	var <nameView, <csView;
+	var <prevState, <skipjack, <scroller; 
 	var <config, <hasWindow = false; 
 
 	*initClass {
@@ -152,19 +152,29 @@ JITGui {
 	
 		// these methods should be overridden in subclasses: 
 	setDefaults { |options|
-		defPos = 10@260;
+		if (parent.isNil) { 
+			defPos = 10@260
+		} { 
+			defPos = skin.margin;
+		};
 		minSize = 250 @ (numItems * skin.buttonHeight + skin.headHeight);
-		"minSize: %\n".postf(minSize);
+	//	"minSize: %\n".postf(minSize);
 	}
 
 	makeViews { 
-		nameView = SCDragBoth(zone, Rect(0,0, 60, skin.headHeight))
+		var lineheight = max(
+			skin.buttonHeight * numItems + skin.headHeight, 
+			zone.bounds.height - (skin.margin.y * 2)
+		); 
+		
+		nameView = SCDragBoth(zone, Rect(0,0, 60, lineheight))
 			.font_(font).align_(\center)
 			.receiveDragHandler_({ arg obj; this.object = View.currentDrag });
 			
 		csView = EZText(zone, 
-			Rect(0,0, bounds.width - 65, skin.buttonHeight * numItems + skin.headHeight), 
-			nil, { |ez| object = ez.value; });
+			Rect(0,0, bounds.width - 65, lineheight), 
+			nil, { |ez| object = ez.value; })
+			.font_(font);
 	}
 
 	getState { 
@@ -185,8 +195,7 @@ JITGui {
 	} 
 
 	makeScroller { 
-		// if numItems is exceeded, move sliders by some number... 
-		
+		// if numItems is exceeded, shift items along by some number with an EZScroller
 	}	
 }
 
