@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="1038.25">
+<meta name="CocoaVersion" content="1038.29">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
@@ -29,8 +29,6 @@ p.p19 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helv
 p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #d40c0b}
 p.p21 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
 p.p22 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #cd0b0b}
-p.p23 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
-p.p24 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {font: 9.0px Monaco}
 span.s3 {color: #000000}
@@ -69,7 +67,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">g.close;</p>
 <p class="p2"><br></p>
 <p class="p5"><span class="s3">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// put it in an existing window - margin is 0@0</p>
-<p class="p6">w = <span class="s4">Window</span>("my win", Rect(200, 200, 300, 200)).front; w.addFlowLayout;</p>
+<p class="p6">w = <span class="s4">Window</span>("my win", Rect(200, 200, 300, 200)).front;<span class="Apple-converted-space"> </span></p>
+<p class="p6">w.addFlowLayout;</p>
 <p class="p6"><span class="s4">PdefGui</span>(<span class="s4">Pdef</span>(<span class="s5">\a</span>), 0, w);</p>
 <p class="p6"><span class="s4">PdefGui</span>(<span class="s4">Pdef</span>(<span class="s5">\a</span>), 3, w);</p>
 <p class="p6">)</p>
@@ -167,7 +166,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>nameBut, playBut, pauseBut, srcBut, envBut<span class="Apple-tab-span">	</span></b>the buttons</p>
 <p class="p11"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p10"><b><span class="Apple-tab-span">	</span>envirGui<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the gui for the Pdef's envir - if numItems &gt; 0.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span>envirGui<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the gui for the Pdef's envir - nil if numItems is 0.</p>
 <p class="p11"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p19"><b>Instance Methods</b></p>
@@ -196,20 +195,20 @@ span.Apple-tab-span {white-space:pre}
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>edKey </b>- Explanation of edKey. Default value is nil. Other information.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p22"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// assume g from above is still there</p>
-<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.editString;</p>
-<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pdef</span>(<span class="s5">\a</span>).set(<span class="s5">\foo</span>, <span class="s5">\bar</span>);</p>
-<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.editString(<span class="s5">\foo</span>);</p>
-<p class="p24"><br></p>
-<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.editStrings;</p>
+<p class="p21"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.editString;</p>
+<p class="p21"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Pdef</span>(<span class="s5">\a</span>).set(<span class="s5">\foo</span>, <span class="s5">\bar</span>);</p>
+<p class="p21"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.editString(<span class="s5">\foo</span>);</p>
+<p class="p14"><br></p>
+<p class="p21"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.editStrings;</p>
 <p class="p14"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>getUsedKeys</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>the keys in use in the envir</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.getUsedKeys;</p>
+<p class="p21"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.getUsedKeys;</p>
 <p class="p14"><br></p>
 <p class="p14"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>openDoc (strings, bounds)<span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span></b>open a document with some strings at some location</p>
 <p class="p11"><b><span class="Apple-tab-span">	</span></b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.openDoc(g.editStrings);</p>
+<p class="p21"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.openDoc(g.editStrings);</p>
 <p class="p14"><br></p>
 <p class="p14"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>makeEnvirGui</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>make an envirGui within zone - called internally.</p>
