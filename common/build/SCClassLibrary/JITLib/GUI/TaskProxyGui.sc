@@ -4,14 +4,14 @@ TaskProxyGui : JITGui {
 	var <nameBut, <playBut, <pauseBut, <srcBut, <envBut;
 	var <envirGui, <usedKeys;
 
-	setDefaults { 
-		var xMargin = (numItems.sign + parent.isKindOf(Window.implClass).binaryValue) * (2 * skin.margin.y); 
+	setDefaults { |options|
 		defPos = 10@260;
-		minSize = 250 @ (skin.buttonHeight * (numItems + 1) + xMargin);
-	//	"minSize: %\n".postf(minSize);
+		minSize = 250 @ (skin.buttonHeight * (numItems + 1) + (numItems.sign * 4));
+		if (parent.notNil) { skin = skin.copy.put(\margin, 0@0) };
+	//	"% - minSize: %\n".postf(this.class, minSize);
 	}
 	
-	makeViews {
+	makeViews { |options|
 		var height = skin.buttonHeight;
 		var lineWidth = zone.bounds.width - (skin.margin.y * 2);
 		var width = lineWidth * 0.62 / 4;
@@ -98,19 +98,26 @@ TaskProxyGui : JITGui {
 				["env", skin.fontColor, skin.offColor],
 				["env", skin.fontColor, skin.onColor]
 			])
-			.action_({ |but|
-				if (object.envir.isNil) {
-					this.openDoc(this.editString)
-				} {
-					this.openDoc(this.editStrings)
+			.action_({ |but, mod| 
+				if (mod.isAlt) { 
+					this.class.new(object, max(object.envir.size, 8));
+				} { 
+					if (object.envir.isNil) {
+						this.openDoc(this.editString)
+					} {
+						this.openDoc(this.editStrings)
+					}
 				};
 				but.value_(object.hasEnvir.binaryValue)
 			});
 
 		if (numItems > 0) { this.makeEnvirGui(lineWidth, height) };
+		this.checkUpdate;
 	}
 	
 	makeEnvirGui { |lineWidth, height|
+		zone.decorator.nextLine.shift(0, 2);
+		
 		envirGui = EnvirGui(
 			try { this.object.envir }, 
 			numItems,
@@ -122,57 +129,72 @@ TaskProxyGui : JITGui {
 
 	accepts { |obj| ^obj.isNil or: { obj.isKindOf(this.class.observedClass) } }
 
+
+
+	getState { 
+		if (object.isNil) { 
+			^(playState: 0, hasSource: 0, hasEnvir: 0, canPause: 0, isPaused: 0) 
+		};
+		
+		^(	
+			isPlaying: object.isPlaying, 	// == proxy is playing now or will play
+			isActive: object.isActive,		// == really does something right now
+			hasSource: object.source.notNil,	// has a source
+			hasEnvir: object.envir.notNil, 	// has an envir
+			canPause: object.canPause,
+			isPaused: object.isPaused
+		).collect(_.binaryValue)
+			.put(\name, object.key)
+			.put(\object, object);
+	}
+
 	checkUpdate { 
 		var newState = this.getState;
 		var playState;
+		
 		// compare newState and prevState, update gui items as needed
 		if (newState == prevState) { ^this };
 		
-		if (newState[0].isNil) { 
+		if (newState[\object].isNil) { 
+			prevState = newState;
 			zone.visible_(false);
 			^this; 
 		}; 
 		
-		if (newState[0] != prevState[0]) {  // name
+		if (newState[\name] != prevState[\name]) {  // name
 			zone.visible_(true);
 			nameBut.states_(nameBut.states.collect(_.put(0, object.key.asString))).refresh;
 		};
-
-		if (newState[[1, 2]] != prevState[[1, 2]]) {  
+		
+		playState = newState[\isPlaying] * 2 - newState[\isActive];
+		newState.put(\playState, playState);
+		
+		if (playState != prevState[\playState]) {  
 				// stopped/playing/ended
 				// 0 is stopped, 1 is active, 2 is playing but waiting:
-			playState = newState[1] * 2 - newState[2];
 			playBut.value_(playState).refresh;
 		};
-		if (newState[3] != prevState[3]) {  // has source
-			srcBut.value_(newState[3]).refresh;
+		if (newState[\hasSource] != prevState[\hasSource]) { 
+			srcBut.value_(newState[\hasSource]).refresh;
 		};
-		if (newState[4] != prevState[4]) {  // has envir
-			envBut.value_(newState[4]).refresh;
+		if (newState[\hasEnvir] != prevState[\hasEnvir]) {  // has envir
+			envBut.value_(newState[\hasEnvir]).refresh;
 		};
-		if (newState[[5, 6]] != prevState[[5, 6]]) { 
-			pauseBut.visible_(newState[5] > 0).value_(newState[6]).refresh; // canPause, isPaused
+		if (newState[\canPause] != prevState[\canPause]) { 
+			pauseBut.visible_(newState[\canPause] > 0).refresh; 
 		};
 
-		
-		if (envirGui.notNil) { 
-			envirGui.object_(try { object.envir } { nil });
+		if (newState[\isPaused] != prevState[\isPaused]) { 
+			pauseBut.value_(newState[\isPaused]).refresh;
 		};
+		
+				// object_ does checkUpdate!
+		if (envirGui.notNil) { 
+			envirGui.object_(if (object.isNil) { nil } { object.envir });
+		};
+		prevState = newState
 	}
 	
-	getState { 
-		if (object.isNil) { ^[nil, 0, 0, 0, 0, 0, 0] };
-		
-		^[object.key] ++ [	
-			object.isPlaying, 		// == is playing now or will play
-			object.isActive,		// == really does something right now
-			object.source.notNil,	// has a source
-			object.envir.notNil, 	// has an envir
-			object.canPause,
-			object.isPaused
-		].collect(_.binaryValue);
-	}
-
 	clear { object = nil; this.checkUpdate }
 
 	srcString {
@@ -224,26 +246,27 @@ TaskProxyAllGui :JITGui {
 	var <filtBut, <filTextV, <edits, <tpGui; 
 	var <>prefix = "", <>filtering = false;
 	var <names, <keysRotation=0;
+	var <editZone;
 
-	*new { |numItems = 16, parent, bounds, makeSkip = true, makeEnvir = false| 
-		
-		^super.new(nil, numItems, parent, bounds, makeSkip ); // .init(makeEnvir);
+	*new { |numItems = 16, parent, bounds, makeSkip = true, options = #[]| 
+			^super.new(nil, numItems, parent, bounds, makeSkip, options );
 	}
+	
+			// options could include a TdefGui with EnvirGui ...
+	makeViews { |options|
 
-	makeViews { 
-		zone.decorator.dump;
 		if (parent.isKindOf(Window.implClass)) { 
 			parent.name = this.class.observedClass.name ++ ".all";
 		};
 		
-		filtBut = Button(zone, Rect(0,0, 80,20))
+		filtBut = Button(zone, Rect(0,0, 80, skin.headHeight))
 			.canFocus_(false)
 			.states_([["all"], ["filt"]])
 			.action_({ |btn|
 				this.filtering_(btn.value > 0);
 			});
 
-		filTextV = TextView(zone, Rect(60,0, 80,20))
+		filTextV = TextView(zone, Rect(60,0, 80, skin.headHeight))
 			.string_("")
 			.enterInterpretsSelection_(false)
 			.resize_(2)
@@ -257,27 +280,25 @@ TaskProxyAllGui :JITGui {
 				this.class.tpGuiClass.new(
 					numItems: 0, 
 					parent: zone, 
-					bounds: Rect(0,0, zone.bounds.width - 15, skin.buttonHeight), 
+					bounds: Rect(0,0, zone.bounds.width - 16, skin.buttonHeight), 
 					makeSkip: false
 				) 
 		});
 		
-		parent.view.decorator.left_(zone.bounds.right - 12).top_(zone.bounds.top + 20);
+		parent.view.decorator.left_(zone.bounds.right - 12).top_(zone.bounds.top + skin.headHeight);
 		
 		scroller = EZScroller(parent,
-			Rect(0,0, 12, numItems * 16 - 2),
+			Rect(0, 0, 12, numItems * skin.buttonHeight),
 			numItems, numItems,
 			{ |sc| keysRotation = sc.value.asInteger.max(0) }
 		).visible_(false);
 		
-		scroller.slider.resize_(3);
+		scroller.slider.resize_(3);	
 		
-//		if (makeEdit) { 
-//			zone.resize_(1);
-//			scroller.slider.resize_(1); 
-//			editor = this.class.tpGuiClass.new(nil, numItems: numItems, height: 18, parent: parent.view, makeWatcher: false); 
+//		if (options.includes(\edit)) { 
+//			editZone = CompositeView.new(parent,)
+//			zone.resize_(1);	
 //		};
-	
 	}
 	
 	checkUpdate {
@@ -312,7 +333,7 @@ TdefAllGui : TaskProxyAllGui {
 
 	setDefaults { 
 		defPos = 10@660;
-		minSize = 250 @ (numItems + 1 * 20);		
+		minSize = 260 @ (numItems + 1 * 20);		
 	}
 }
 
@@ -322,6 +343,6 @@ PdefAllGui : TaskProxyAllGui {
 
 	setDefaults { 
 		defPos = 270@660;
-		minSize = 250 @ (numItems + 1 * 20);		
+		minSize = 260 @ (numItems + 1 * 20);		
 	}
 }

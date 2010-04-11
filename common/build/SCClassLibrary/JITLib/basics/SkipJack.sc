@@ -1,6 +1,6 @@
 SkipJack {
 
-	classvar <>verbose = true, <all, <defaultClock;
+	classvar <>verbose = false, <all, <defaultClock;
 	var <updateFunc, <>dt, <>stopTest, <name, <clock, <task, restartFunc;
 
 	*new { arg updateFunc, dt = 0.2, stopTest = false, name = "anon", clock, autostart=true;
