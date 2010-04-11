@@ -2645,19 +2645,11 @@ void handle_c_getn(received_message const & msg, nova_endpoint const & endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    size_t alloc_size = 128;
-
-    while (!args.Eos())
-    {
-        osc::int32 index, bus_count;
-        args >> index >> bus_count;
-
-        alloc_size += 2 * sizeof(int) + bus_count * sizeof(float);
-    }
+    /* we pessimize, but better to allocate too much than too little */
+    const size_t alloc_size = 128 +
+        (2 * sizeof(int) + 128*sizeof(float)) * msg.ArgumentCount();
 
     sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
-
-    args = msg.ArgumentStream();
 
     osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
     p << osc::BeginMessage("/c_setn");
