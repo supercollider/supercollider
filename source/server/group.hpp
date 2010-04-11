@@ -75,7 +75,7 @@ public:
 
 protected:
     virtual successor_container fill_queue_recursive(thread_queue & queue,
-                                                     successor_container,
+                                                     successor_container const &,
                                                      int activation_limit) = 0;
     friend class group;
     friend class parallel_group;
@@ -288,7 +288,7 @@ private:
     void fill_queue(thread_queue & queue);
 
     virtual successor_container fill_queue_recursive(thread_queue & queue,
-                                                     successor_container,
+                                                     successor_container const &,
                                                      int activation_limit);
 
     friend class node_graph;
@@ -328,7 +328,7 @@ private:
     void add_child(server_node * node, node_position);
 
     virtual successor_container fill_queue_recursive(thread_queue & queue,
-                                                     successor_container,
+                                                     successor_container const &,
                                                      int activation_limit);
 
     virtual int tail_nodes(void) const;
