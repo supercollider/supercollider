@@ -180,7 +180,7 @@ NodeProxyEditor {
 				}
 			}); 
 
-			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", nil.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);
+			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", \unipolar.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);
 			ez.visible_(false);
 			ez.labelView.font_(font).align_(\center);
 
@@ -408,8 +408,8 @@ NodeProxyEditor {
 						sinks[i].string_("-");
 					}, { 
 						if (val.isKindOf(BusPlug), { 
-							mapKey = currentEnvironment.findKeyForValue(val) ? "";
-							sinks[i].object_(mapKey).string_(mapKey);
+							mapKey = val.key;
+							sinks[i].object_(val).string_(mapKey);
 							sl.labelView.string = "->" + key;
 						});
 					});
@@ -427,6 +427,7 @@ NodeProxyEditor {
 		^replaced;
 
 	}
+	
 	updateAllEdits {
 	//	var keyPressed = false;
 		if (proxy.isNil) {
