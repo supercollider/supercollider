@@ -117,8 +117,8 @@ public:
 
     typedef std::auto_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
 
-    dsp_threads(thread_count_t count = boost::thread::hardware_concurrency()):
-        interpreter(count)
+    dsp_threads(thread_count_t count):
+        interpreter(std::min(count, (thread_count_t)boost::thread::hardware_concurrency()))
     {
         set_dsp_thread_count(interpreter.get_thread_count());
     }
