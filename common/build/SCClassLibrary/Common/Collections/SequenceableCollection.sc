@@ -77,11 +77,11 @@ SequenceableCollection : Collection {
 
 	// fill with interpolation of values between start and end
 	 *interpolation { arg size, start=0.0, end=1.0;
-		var obj = this.new(size);
+		var obj = this.new(size), step;
 		if(size == 1) { ^obj.add(start) };
+		step = (end - start) / (size - 1);
 		size.do {|i|
-			var t = i / (size-1);
-			obj.add(start + (t * (end - start)));
+			obj.add(start + (i * step));
 		};
 		^obj
  	}
@@ -289,6 +289,10 @@ SequenceableCollection : Collection {
 			function.value(this[i], this[i+1], i);
 		}
 	}
+	keysValuesDo { arg function;
+		^this.pairsDo(function)
+	}
+	
 	doAdjacentPairs { arg function;
 		(this.size - 1).do({ arg i;
 			function.value(this.at(i), this.at(i+1), i);
