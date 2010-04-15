@@ -6,11 +6,23 @@ ProxyMixer : JITGui {
 	var 	<arKeysRotation = 0, <krKeysRotation = 0; 
 	
 	var selectMethod = \existingProxies;
-	
+
+		// easy access methods	
+	atAr { |index| ^prevState[\krNames][index] }
+	atKr { |index| ^prevState[\arNames][index] }
+	arNames { ^prevState[\arNames] }
+	krNames { ^prevState[\krNames] }
+	numArs { ^prevState[\arNames].size }
+	numKrs { ^prevState[\krNames].size }
+
+		// backwards compatibility		
 	proxyspace { ^object }
 	proxyspace_ { |obj| this.object_(obj) }
-	
+	editor { ^editGui }
+	pxMons { ^arGuis }		// should work in some cases
+
 	title { ^this.parent.name }
+
 	
 	accepts { |obj| 
 		^obj.isNil or: { obj.isKindOf(ProxySpace) }
