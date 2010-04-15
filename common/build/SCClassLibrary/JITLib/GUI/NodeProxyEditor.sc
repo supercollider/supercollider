@@ -74,7 +74,7 @@ NodeProxyEditor {
 		
 		var bounds; 
 		ownWindow = inParent.isNil; 				
-		skin = GUI.skins.jit; 		
+		skin = GUI.skins[\jitSmall]; 		
 		font = Font.new(*skin.fontSpecs);
 		nSliders = numSliders;
 		
@@ -548,8 +548,8 @@ RecordProxyMixer {
 		^numChannels
 	}
 	
-	font { ^GUI.font.new(*GUI.skins.jit.fontSpecs) }
-	skin { ^GUI.skins.jit }
+	font { ^GUI.font.new(*GUI.skins[\jitSmall].fontSpecs) }
+	skin { ^GUI.skins[\jitSmall] }
 	
 	server { ^proxymixer.proxyspace.server }
 	
