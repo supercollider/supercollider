@@ -1,3 +1,45 @@
++ Dictionary { 
+
+	*softPut { |param, val, within, mapped = false, lastVal| 
+		var spec, newNormVal, oldVal, oldNormVal, maxDiff;
+
+		oldVal = this.at(param);
+		spec = param.asSpec;
+		
+		if (oldVal.isNil) { 
+			this.put(param, val);
+			^true
+		};
+		if (spec.isNil) { 
+			this.put(param, val);
+			^true
+		};
+
+		oldNormVal = spec.unmap( oldVal );
+		maxDiff = max(within, spec.step);
+
+		if (mapped) {
+			newNormVal = spec.unmap(val);
+		} {
+			newNormVal = val;
+			val = spec.map(val);
+		};
+
+		if (
+			(newNormVal.absdif(oldNormVal) <= maxDiff)   // is Close Enough
+									// or was the last value controller remembers.
+			or: { lastVal.notNil and:
+				{ oldNormVal.absdif(lastVal) <= maxDiff }
+			})
+		{
+			this.put(param, val);
+			^true
+		} {
+			^false
+		}
+	}	
+}
+
 	// Maybe rewrite as SoftSet(what, key, val, within, mapped, oldVal);
 
 + NodeProxy {
@@ -97,3 +139,4 @@
 		}
 	}
 }
+

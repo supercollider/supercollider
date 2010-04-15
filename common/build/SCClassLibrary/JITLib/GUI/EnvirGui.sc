@@ -6,6 +6,10 @@ EnvirGui : JITGui {
 	var <valFields, <widgets, labelWidth;
 	var <keysRotation = 0, <specs;
 
+	editKeys {
+		^prevState[\editKeys]
+	}
+
 	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]| 
 		^super.new(object, numItems, parent, bounds, makeSkip = true, options);
 	}

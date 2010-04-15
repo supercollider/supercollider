@@ -20,6 +20,11 @@ NdefGui : JITGui {
 			ed: 20, rip: 20, poll: 35
 		);
 	}
+	
+	editKeys { 
+		if (paramGui.isNil) { ^[] };
+		^paramGui.editKeys; 
+	}
 		
 	*new { |object, numItems = 4, parent, bounds, makeSkip=true, options|
 		options = options ?? { this.big };

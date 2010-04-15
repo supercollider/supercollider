@@ -35,7 +35,6 @@ JITGui {
 
 	*initClass {
 		Class.initClassTree(GUI);
-		Class.initClassTree(ProxyMixer);
 		
 		GUI.skins.put(\jit, (
 				fontSpecs: 	["Helvetica", 12],
