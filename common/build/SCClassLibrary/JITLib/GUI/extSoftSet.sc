@@ -1,36 +1,34 @@
+
 + Dictionary { 
 
-	*softPut { |param, val, within, mapped = false, lastVal| 
-		var spec, newNormVal, oldVal, oldNormVal, maxDiff;
+	softPut { |param, val, within = 0.025, lastVal, mapped = true, spec| 
+		var curVal, curValNorm, newValNorm, lastValNorm, maxDiff;
 
-		oldVal = this.at(param);
-		spec = param.asSpec;
-		
-		if (oldVal.isNil) { 
-			this.put(param, val);
-			^true
-		};
-		if (spec.isNil) { 
+		curVal = this.at(param);
+		spec = (spec ? param).asSpec;
+				
+		if (curVal.isNil or: spec.isNil) { 
 			this.put(param, val);
 			^true
 		};
 
-		oldNormVal = spec.unmap( oldVal );
+		curValNorm = spec.unmap( curVal );
 		maxDiff = max(within, spec.step);
 
 		if (mapped) {
-			newNormVal = spec.unmap(val);
+			newValNorm = spec.unmap(val);
+			if (lastVal.notNil) { lastValNorm = spec.unmap(lastVal) };
 		} {
-			newNormVal = val;
+			newValNorm = val;
+			lastValNorm = lastVal;
 			val = spec.map(val);
+			lastVal = spec.map(val);
 		};
-
+				
 		if (
-			(newNormVal.absdif(oldNormVal) <= maxDiff)   // is Close Enough
-									// or was the last value controller remembers.
-			or: { lastVal.notNil and:
-				{ oldNormVal.absdif(lastVal) <= maxDiff }
-			})
+			(newValNorm.absdif(curValNorm) <= maxDiff)   // new val is close enough
+									// or controller remembers last value it sent.
+			or: { lastValNorm.notNil and: { curValNorm.absdif(lastValNorm) <= maxDiff } })
 		{
 			this.put(param, val);
 			^true
@@ -40,70 +38,27 @@
 	}	
 }
 
-	// Maybe rewrite as SoftSet(what, key, val, within, mapped, oldVal);
++ PatternProxy { 
+	
+	softSet { |param, val, within = 0.025, lastVal, mapped = true, spec|
+		if(envir.isNil) { 
+			if (mapped.not) { 
+				spec = (spec ? param).asSpec;
+				val = spec.map(val); 
+				^this.set(param, val) 
+			}
+		} { 
+			^this.envir.softPut(param, val, within, lastVal, mapped, spec)
+		}
+	}
+
+}
+
 
 + NodeProxy {
 	
-	nudgeSet { |param, incr = 0.02| 
-		var spec = param.asSpec;
-		var oldval = this.nodeMap.get(param).value ?? { this.getDefaultVal(param) ? 0 };
-		var oldnorm = spec.unmap(oldval);
-		var newnorm = (oldnorm + incr).clip(0, 1);
-		this.set(param, spec.map(newnorm));
-	}
-	
-	nudgeVol { |incr = 0.02| 
-		var spec = \amp.asSpec; 
-		var oldval = spec.unmap(this.vol); 
-		var newVol = spec.map((oldval + incr).clip(0, 1));
-		this.vol_(newVol)
-	}
-
-	softSet { |param, val, within = 0.025, mapped=false, lastVal|
-		var spec, newNormVal, oldVal, oldNormVal, maxDiff;
-
-		oldVal = this.nodeMap.get(param).value ?? { this.getDefaultVal(param) ? 0 };
-
-		spec = param.asSpec;
-
-			// if no spec, guess whether step looks small:
-		if (spec.isNil) {
-					// within is taken linear
-			if ( 	(oldVal.absdif(val) <= within)
-
-					// or also try with an exponential range of ca 1 - 1000
-				or: { max(oldVal / val, val / oldVal) <= (1000 ** within) })
-				{
-					this.set(param, val);
-					^true
-				} {
-					^false
-				}
-		};
-			// simper if we have a valid spec:
-		oldNormVal = spec.unmap( oldVal );
-		maxDiff = max(within, spec.step);
-
-		if (mapped) {
-			newNormVal = spec.unmap(val);
-		//	lastVal = spec.unmap(lastVal); // lastVal is usually normed.
-		} {
-			newNormVal = val;
-			val = spec.map(val);
-		};
-
-		if (
-			(newNormVal.absdif(oldNormVal) <= maxDiff)   // is Close Enough
-									// or was the last value controller remembers.
-			or: { lastVal.notNil and:
-				{ oldNormVal.absdif(lastVal) <= maxDiff }
-			})
-		{
-			this.set(param, val);
-			^true
-		} {
-			^false
-		}
+	get { |param| 
+		^this.nodeMap.get(param).value ?? { this.getDefaultVal(param) };
 	}
 
 	getDefaultVal { |key|
@@ -113,25 +68,97 @@
 			}
 		};
 		^nil
+	}	
+			// must have a spec
+	nudgeSet { |param, incr = 0.02, spec| 
+		var curValNorm, newValNorm; 
+		spec = (spec ? param).asSpec;	
+
+		curValNorm = spec.unmap( this.get(param) );
+		newValNorm = (curValNorm + incr).clip(0, 1);
+		this.set(param, spec.map(newValNorm));
 	}
-		// val and lastVal are assumed to be mapped with amp.asSpec.
+	
+	nudgeVol { |incr = 0.02, spec| 
+		var curVolNorm, newVolNorm;	
+		spec = (spec ? \amp).asSpec; 
+		
+		curVolNorm = spec.unmap(this.vol); 
+		newVolNorm = (curVolNorm + incr).clip(0, 1);
+		this.vol_(spec.map(newVolNorm))
+	}
 
-	softVol_ { |val, within=0.025, pause=true, lastVal|
+	softSet { |param, val, within = 0.025, mapped = true, lastVal, spec|
+		var curVal, curValNorm, newValNorm, maxDiff, hasLast, lastValNorm;
 
-		var spec = \amp.asSpec;
-		var oldPxNormVol = spec.unmap(this.vol);
-		var newNormVol = spec.unmap(val);
-		var myOldNormVol = lastVal !? { spec.unmap(lastVal) };
+		spec = (spec ? param).asSpec.postcs;
+		curVal = this.get(param);
 
-	//	[\oldPxNormVol, oldPxNormVol, \newNormVol, newNormVol, \myOldNormVol, myOldNormVol].postln;
+		if (curVal.isNil or: spec.isNil) { 
+			this.set(param, val);
+			^true
+		};
+		
+		curValNorm = spec.unmap( curVal );
 
-		if ( ((oldPxNormVol - newNormVol).abs < within)
-			or: { myOldNormVol.notNil and: { oldPxNormVol.absdif(myOldNormVol) <= within } }
+		maxDiff = max(within, spec.step);
+		hasLast = lastVal.notNil;
+
+		if (mapped) {
+			newValNorm = spec.unmap(val);
+			if (hasLast) { lastValNorm = spec.unmap(lastVal) };
+		} {
+			newValNorm = val;
+			val = spec.map(val);
+			lastValNorm = lastVal;
+			if (hasLast) { lastVal = spec.map(lastValNorm) };
+		};
+
+		[\hasLast, hasLast, \curVal, curVal, \val, val].postln;
+
+		if (
+			(newValNorm.absdif(curValNorm) <= maxDiff)   // is Close Enough
+									// or was the last value controller remembers.
+			or: { hasLast and:
+				{ curValNorm.absdif(lastValNorm) <= maxDiff }
+			})
+		{
+			this.set(param, val);
+			^true
+		} {
+			^false
+		}
+	}
+	
+		// val and lastVal are assumed to be mapped.
+		// allows pausing when vol is 0. 
+		
+	softVol_ { |val, within=0.025, pause=true, lastVal, spec|
+
+		var curVolNorm, newVolNorm, hasLast, lastVolNorm; 
+		
+		spec = (spec ? \amp).asSpec; 
+		hasLast = lastVal.notNil;
+		
+		curVolNorm = spec.unmap(this.vol); 
+		newVolNorm = spec.unmap(val); 
+		lastVolNorm = if (hasLast) { spec.unmap(lastVal) };
+		
+		if ( (curVolNorm.absdif(newVolNorm) <= within)
+			or: { hasLast and: { curVolNorm.absdif(lastVolNorm) <= within } }
 			)
 		{
+			
 			this.vol_(val);
 			if (pause) {
-				if (val == 0) { this.pause } { this.resume }
+				if (val == 0) { 
+						// wait for vol to go down before pausing
+					fork { 0.2.wait; if (pause) { this.pause } } 
+				} { 
+						// but forget pause if resumed in the meantime.
+					pause = false;
+					this.resume 
+				}
 			};
 			^true
 		} {
