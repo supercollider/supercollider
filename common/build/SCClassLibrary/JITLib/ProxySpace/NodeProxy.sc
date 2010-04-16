@@ -575,7 +575,7 @@ NodeProxy : BusPlug {
 	}
 	
 		// return names in the order they have in .objects
-	controlNames { | except |
+	controlNames { | except, addNodeMap = true |
 		var all = Array.new; // Set doesn't work, because equality undefined for ControlName
 		except = except ? this.internalKeys;
 		objects.do { |el|
@@ -587,7 +587,7 @@ NodeProxy : BusPlug {
 				}
 			};
 		};
-		^if (nodeMap.isNil) { all } { 
+		^if (addNodeMap.not or: nodeMap.isNil) { all } { 
 			this.addNodeMapControlNames(all, except) 
 		};
 	}
@@ -606,6 +606,20 @@ NodeProxy : BusPlug {
 				}
 			};
 		^objCtlNames
+	}
+	
+	resetNodeMap { 
+		this.nodeMap = ProxyNodeMap.new;
+	}
+	
+	cleanNodeMap { 
+		var nodeMapKeys, keysToRemove; 
+		if (nodeMap.isNil) { ^this };
+		
+		nodeMapKeys = nodeMap.settings.keys.difference(this.internalKeys);
+		keysToRemove = nodeMapKeys.difference(this.controlNames(addNodeMap: false).collect(_.name));
+		
+		keysToRemove.do(this.unset(_));
 	}
 
 	controlKeys { | except, noInternalKeys = true |
