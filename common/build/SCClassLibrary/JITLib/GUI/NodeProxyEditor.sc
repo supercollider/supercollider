@@ -206,6 +206,15 @@ NodeProxyEditor {
 		[\scrolly, scrolly.slider.bounds];
 	}
 
+	highlightParams { |parOffset, num| 
+		var onCol = Color(1, 0.5, 0.5);
+		var offCol = Color.clear;
+		{ edits.do { |edi, i| 
+			var col = if (i >= parOffset and: (i < (parOffset + num).max(0)), onCol, offCol); 
+			edi.labelView.background_(col.green_([0.5, 0.7].wrapAt(i - parOffset div: 2)));
+		} }.defer;
+	}
+	
 	makeButtonFuncs {
 		buttonFuncs = (
 			CLR: { Button(zone, 30@20).font_(font)

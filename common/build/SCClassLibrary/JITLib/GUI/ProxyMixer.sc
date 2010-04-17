@@ -1,4 +1,5 @@
 ProxyMixer : JITGui {
+
 	var <sizes; 
 	var <arZone, <krZone, <editZone; 
 	var <arGuis, <krGuis, <editGui;
@@ -21,6 +22,15 @@ ProxyMixer : JITGui {
 	editor { ^editGui }
 	pxMons { ^arGuis }		// should work in some cases
 
+	highlightSlots { |parOffset, num| 
+		var onCol = Color(1, 0.5, 0.5);
+		var offCol = Color.clear;
+		{ arGuis.do { |argui, i| 
+			var col = if (i >= parOffset and: (i < (parOffset + num).max(0)), onCol, offCol); 
+			argui.nameView.background_(col.green_([0.5, 0.7].wrapAt(i - parOffset div: 2)));
+		} }.defer;
+	}
+	
 	title { ^this.parent.name }
 
 	
