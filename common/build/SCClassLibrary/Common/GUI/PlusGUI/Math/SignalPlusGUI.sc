@@ -195,15 +195,23 @@
 			}.defer;
 		})
 	}
+}
 
-	plotGraph { arg n, from = 0.0, to = 1.0, name, bounds, discrete = false, 
++ AbstractFunction{
+
+	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false, 
 				numChannels, minval, maxval, parent, labels = true;
 		var array = Array.interpolation(n, from, to);
 		var res = array.collect { |x| this.value(x) };
 		res.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
 	}
-
-
+	
+	plotGraph2 { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,Ê
+		numChannels, minval, maxval, parent, labels = true;
+		var array = Array.interpolation(n, from, to);
+		var res = array.collect { |x| this.value(x) };
+		res.plot2(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
+	}
 }
 
 
