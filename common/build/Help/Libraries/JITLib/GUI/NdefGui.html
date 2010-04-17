@@ -24,6 +24,10 @@ p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #cd0b0b}
 p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #008417}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1f28c6}
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #cd0b0b}
+p.p19 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p21 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #2b30fa}
 span.s3 {text-decoration: underline ; color: #0000ee}
@@ -79,7 +83,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10">)</p>
 <p class="p12"><br></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="s7">// make an NdefGui. </span>By default, this has a lot of the options on.</p>
-<p class="p10">n = NdefGui.new;<span class="Apple-tab-span">	</span></p>
+<p class="p10">n = NdefGui.new;</p>
 <p class="p10">n.object_(Ndef(\lfo));</p>
 <p class="p10">n.object_(Ndef(\a));</p>
 <p class="p3"><br></p>
@@ -266,5 +270,19 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><b><span class="Apple-tab-span">	</span>sendBut</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p6"><b><span class="Apple-tab-span">	</span>edBut</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p12"><br></p>
+<p class="p12"><br></p>
+<p class="p12"><br></p>
+<p class="p12"><br></p>
+<p class="p18">// test replacing keys:</p>
+<p class="p19"><br></p>
+<p class="p20">(</p>
+<p class="p11">Ndef<span class="s6">(</span><span class="s5">\a</span><span class="s6">, { </span>|freq=300, dens=20, amp=0.1, pan|<span class="s6"><span class="Apple-converted-space"> </span></span></p>
+<p class="p21"><span class="Apple-tab-span">	</span><span class="s4">Pan2</span>.ar(<span class="s4">Ringz</span>.ar(<span class="s4">Dust</span>.ar(dens, amp / (dens.max(1).sqrt)), freq, 0.2), pan)<span class="Apple-converted-space"> </span></p>
+<p class="p21">});</p>
+<p class="p11"><span class="s6">n = </span>NdefGui<span class="s6">(</span>Ndef<span class="s6">(</span><span class="s5">\a</span><span class="s6">));</span></p>
+<p class="p21">)</p>
+<p class="p21">n.addReplaceKey(<span class="s5">\freq</span>, <span class="s5">\myFreak</span>);<span class="Apple-converted-space"> </span></p>
+<p class="p14"><span class="s6"><span class="Apple-tab-span">	</span></span>// ATM needs an extra update:</p>
+<p class="p21">x = n.object; n.object_(<span class="s4">nil</span>); n.object_(x);</p>
 </body>
 </html>
