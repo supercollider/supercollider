@@ -147,7 +147,7 @@ MonitorGui : JITGui {
 			
 	playNMode_ { |flag = true|
 		var playName, stopName, func; 
-		if (flag.isNil) { "MonitorGui.playNMode_ : flag is nil?".postln; flag = false };
+		if (flag.isNil) { "MonitorGui.playNMode_ : flag is nil? should not happen.".postln; flag = false };
 		
 		if (flag) { 
 			playName = \playN; stopName = \stopN; func = { object.playN }; 
@@ -202,28 +202,29 @@ MonitorGui : JITGui {
 		]);
 		
 		monitor = object.monitor;
-		if (monitor.isNil) { ^newState };
-				
+		if (monitor.isNil) { 
+			^newState 
+		};
+		
+		
 		newState.putPairs([
 			\monPlaying,	monitor.isPlaying.binaryValue,
 			\vol, 		monitor.vol,
 			\usedPlayN, 	monitor.usedPlayN,
-			\out, 		monitor.out,
+			\out, 		monitor.out ? 0,
 			\playsSpread,	monitor.hasSeriesOuts.not,
 			\monFade,		monitor.fadeTime
 		]);
 		
-		^newState
+		^newState;
 	}
 	
 	checkUpdate { 
 		var newState = this.getState;
 		
-			// don't know why early exit suppresses changes inplay state. fix later...
-	//	if (newState == prevState) { ^this };
+//			// don't know why early exit suppresses changes in play state. fix later...
+//		if (newState == prevState) { ^this };
 		
-//		"newState has changed: ".post; newState.postcs;
-//		"	   prevState was: ".post; prevState.postcs;
 		
 		if (newState[\object] != prevState[\object]) { 
 			zone.visible_(newState[\object].notNil);
@@ -247,7 +248,7 @@ MonitorGui : JITGui {
 			playBut.value_(newState[\monPlaying]);
 		};
 		if (newState[\usedPlayN] != prevState[\usedPlayN]) {
-			this.playNMode = newState[\usedPlayN];
+			this.playNMode_ (newState[\usedPlayN]);
 		};
 		if (newState[\out] != prevState[\out]) { 
 			setOutBox.value_(newState[\out]);

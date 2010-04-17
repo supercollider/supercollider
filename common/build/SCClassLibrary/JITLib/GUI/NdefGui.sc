@@ -21,11 +21,25 @@ NdefGui : JITGui {
 		);
 	}
 	
+	proxy_ { |proxy| ^this.object_(proxy) }
+	proxy { ^this.object }
+	edits { ^paramGui.widgets }
+	
 	editKeys { 
 		if (paramGui.isNil) { ^[] };
 		^paramGui.editKeys; 
 	}
-		
+
+	highlightParams { |parOffset, num| 
+		var onCol = Color(1, 0.5, 0.5), offCol = Color.clear, col;
+		{ paramGui.widgets.do { |widget, i| 
+			if (widget.notNil) { 
+				col = if (i >= parOffset and: (i < (parOffset + num).max(0)), onCol, offCol); 
+				widget.labelView.background_(col.green_([0.5, 0.7].wrapAt(i - parOffset div: 2)));
+			}
+		} }.defer;
+	}
+
 	*new { |object, numItems = 4, parent, bounds, makeSkip=true, options|
 		options = options ?? { this.big };
 		^super.newCopyArgs(object, numItems, parent, bounds).init(makeSkip, options)
@@ -59,7 +73,7 @@ NdefGui : JITGui {
 		var numLines = 1;
 		if (width > 500) { // two lines, break them up near the middle
 			numLines = 2;
-			xpositions = NdefGui.full.collect( NdefGui.buttonSizes[_] ).integrate; 
+			xpositions = options.collect( NdefGui.buttonSizes[_] ).integrate; 
 			width = width * 0.5 + (xpositions.absdif(width * 0.5).minItem);
 		};
 		
@@ -342,5 +356,13 @@ NdefGui : JITGui {
 
 		prevState = newState;
 	}
+	
+		// support overwriting the param names shown, e.g. for ProxyChain
+	addReplaceKey { |replaced, replacer| 
+		if (paramGui.notNil) { paramGui.addReplaceKey(replaced, replacer) }
+	}
 
+	removeReplaceKey { |replaced| 
+		if (paramGui.notNil) { paramGui.removeReplaceKey(replaced) }
+	}
 }

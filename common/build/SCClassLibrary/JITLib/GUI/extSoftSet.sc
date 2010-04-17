@@ -1,7 +1,20 @@
++ Spec { 
+	*guess { |key, value| 
+		^if (value.abs > 0) {
+			[value/20, value*20, \exp].asSpec
+		} {
+			[-2, 2, \lin].asSpec
+		};
+	}
+	
+	*suggestString { |key, value| 
+		^"Spec.add(" + this.guess.storeArgs + ");"
+	}
+}
 
 + Dictionary { 
 
-	softPut { |param, val, within = 0.025, lastVal, mapped = true, spec| 
+	softPut { |param, val, within = 0.025, mapped = true, lastVal, spec| 
 		var curVal, curValNorm, newValNorm, lastValNorm, maxDiff;
 
 		curVal = this.at(param);
@@ -22,7 +35,6 @@
 			newValNorm = val;
 			lastValNorm = lastVal;
 			val = spec.map(val);
-			lastVal = spec.map(val);
 		};
 				
 		if (
@@ -35,12 +47,16 @@
 		} {
 			^false
 		}
+	}
+	
+	softSet { |param, val, within = 0.025, mapped = true, lastVal, spec| 
+		this.softPut(param, val, within, mapped, lastVal, spec);
 	}	
 }
 
 + PatternProxy { 
 	
-	softSet { |param, val, within = 0.025, lastVal, mapped = true, spec|
+	softSet { |param, val, within = 0.025, mapped = true, lastVal, spec|
 		if(envir.isNil) { 
 			if (mapped.not) { 
 				spec = (spec ? param).asSpec;
@@ -91,7 +107,7 @@
 	softSet { |param, val, within = 0.025, mapped = true, lastVal, spec|
 		var curVal, curValNorm, newValNorm, maxDiff, hasLast, lastValNorm;
 
-		spec = (spec ? param).asSpec.postcs;
+		spec = (spec ? param).asSpec;
 		curVal = this.get(param);
 
 		if (curVal.isNil or: spec.isNil) { 
@@ -114,7 +130,7 @@
 			if (hasLast) { lastVal = spec.map(lastValNorm) };
 		};
 
-		[\hasLast, hasLast, \curVal, curVal, \val, val].postln;
+	//	[\hasLast, hasLast, \curVal, curVal, \val, val].postln;
 
 		if (
 			(newValNorm.absdif(curValNorm) <= maxDiff)   // is Close Enough

@@ -41,6 +41,7 @@ NdefParamGui : EnvirGui {
 		var height = skin.buttonHeight;
 
 		specs = ();  
+		replaceKeys = ();
 		prevState = ( settings: [], overflow: 0, keysRotation: 0, editKeys: []);
 		
 		labelWidth = zone.bounds.width * 0.15; 
@@ -167,6 +168,13 @@ NdefParamGui : EnvirGui {
 		var area = valFields[index];
 		var widget = widgets[index];
 				
+	//	[replaceKeys, key].postcs;
+		if (replaceKeys[key].notNil) { 
+			area.background_(skin.hiliteColor);
+		} { 
+			area.background_(skin.background);
+		};
+
 		if (value.isKindOf(NodeProxy)) { 
 			drags[index].object_(value).string_("->" ++ value.key);
 		} {
