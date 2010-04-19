@@ -97,9 +97,14 @@ TextView : ViewRedirect  {	*key { ^\textView }}
 Font : ViewRedirect  {
 	*key { ^\font }
 	*findFirstAvailable { |fontNames, action|
-		fontNames.do { |name| 
-				if(this.availableFonts.any(_.contains(name))) { ^action.value(name) }
-		}			
+		Routine {
+			fontNames.do { |name| 
+					if(this.availableFonts.any(_.contains(name))) { 
+						action.value(name);
+						nil.alwaysYield;
+					}
+			}
+		}.play(AppClock)		
 	}
 
 }
