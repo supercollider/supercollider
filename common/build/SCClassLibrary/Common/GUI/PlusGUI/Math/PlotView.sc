@@ -125,6 +125,7 @@ Plot {
 	
 		var left = plotBounds.left;
 		var right = plotBounds.right;
+		Pen.fillColor = fontColor;
 		
 		this.drawOnGridY { |vpos, val, i|
 			var string = val.asStringPrec(5).asString ++ spec.units;
@@ -133,7 +134,7 @@ Plot {
 				Pen.stringAtPoint(string, left @ vpos);
 			}
 		};
-		Pen.fillColor = fontColor;
+		
 		Pen.stroke;
 
 	}
