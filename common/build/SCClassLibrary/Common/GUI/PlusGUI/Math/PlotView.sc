@@ -24,7 +24,11 @@ Plot {
 					labelY: "",
 					expertMode: false
 				));
-				GUI.current !? { this.prSetFont(GUI.skin.at(\plot)) };
+				GUI.current !? { 
+					Font.findFirstAvailable(#["Garamond", "Gill Sans", "Times"], { |fontName| 
+						GUI.skin.at(\plot).put(\gridFont, Font(fontName, 9)) 
+					}) 
+				};
 		}
 	}
 	
@@ -357,14 +361,6 @@ Plot {
 			Pen.smoothing_(true);
 			Pen.lineDash_(FloatArray[1, 0]) 
 		};
-	}
-	
-	*prSetFont { |skin|
-			defer {
-				var fontName = #["Garamond", "Gill Sans", "Times"]
-					.detect { |x| Font.availableFonts.any(_.contains(x)) };
-				skin.put(\gridFont, Font(fontName, 9));
-			}
 	}
 
 }

@@ -94,7 +94,15 @@ SoundFileView : ViewRedirect { *key { ^\soundFileView }}
 MovieView : ViewRedirect { *key { ^\movieView }}
 TextView : ViewRedirect  {	*key { ^\textView }}
 
-Font : ViewRedirect  {	*key { ^\font }}
+Font : ViewRedirect  {
+	*key { ^\font }
+	*findFirstAvailable { |fontNames, action|
+		fontNames.do { |name| 
+				if(this.availableFonts.any(_.contains(name))) { ^action.value(name) }
+		}			
+	}
+
+}
 
 Knob : ViewRedirect  {	*key { ^\knob }}
 
