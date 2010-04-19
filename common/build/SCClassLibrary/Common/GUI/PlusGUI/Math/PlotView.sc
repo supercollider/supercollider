@@ -10,22 +10,22 @@ Plot {
 	var valueCache;
 	
 	*initClass {
-		StartUp.add( {
-			GUI.skin.put(\plot, (
-				gridFont: GUI.current !? { Font("Garamond", 9) },
-				gridColorX: Color.grey(0.7),
-				gridColorY: Color.grey(0.7),
-				fontColor: Color.grey(0.3),
-				plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
-				background: Color.new255(235, 235, 235),
-				//gridLinePattern: FloatArray[1, 5],
-				gridLinePattern: FloatArray[1, 0],
-				gridLineSmoothing: false,
-				labelX: "",
-				labelY: "",
-				expertMode: false
-			));
-		} );
+		StartUp.add {
+				GUI.skin.put(\plot, (
+					gridColorX: Color.grey(0.7),
+					gridColorY: Color.grey(0.7),
+					fontColor: Color.grey(0.3),
+					plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
+					background: Color.new255(235, 235, 235),
+					//gridLinePattern: FloatArray[1, 5],
+					gridLinePattern: FloatArray[1, 0],
+					gridLineSmoothing: false,
+					labelX: "",
+					labelY: "",
+					expertMode: false
+				));
+				GUI.current !? { this.prSetFont(GUI.skin.at(\plot)) };
+		}
 	}
 	
 	*new { |plotter|
@@ -110,13 +110,13 @@ Plot {
 	drawNumbersX {
 		var top = plotBounds.top;
 		var base = plotBounds.bottom;
-		
+		Pen.fillColor = fontColor;
 		this.drawOnGridX { |hpos, val, i|
 			var string = val.asStringPrec(5) ++ domainSpec.units;
 			Pen.font = font;
-			Pen.stringAtPoint( string, hpos @ base);
+			Pen.stringAtPoint(string, hpos @ base);
+			Pen.stroke;
 		};
-		Pen.fillColor = fontColor;
 		Pen.stroke;
 	
 	}
@@ -130,7 +130,7 @@ Plot {
 			var string = val.asStringPrec(5).asString ++ spec.units;
 			if(gridOnX.not or: { i > 0 }) {
 				Pen.font = font;
-				Pen.stringAtPoint( string, left @ vpos);
+				Pen.stringAtPoint(string, left @ vpos);
 			}
 		};
 		Pen.fillColor = fontColor;
@@ -185,7 +185,7 @@ Plot {
 			sbounds = try { labelX.bounds(font) } ? 0;
 			Pen.font = font;
 			Pen.strokeColor = fontColor;
-			Pen.stringAtPoint( labelX,
+			Pen.stringAtPoint(labelX,
 				plotBounds.right - sbounds.width @ plotBounds.bottom
 			)
 		};
@@ -193,7 +193,7 @@ Plot {
 			sbounds = try { labelY.bounds(font) } ? 0;
 			Pen.font = font;
 			Pen.strokeColor = fontColor;
-			Pen.stringAtPoint( labelY,
+			Pen.stringAtPoint(labelY,
 				plotBounds.left - sbounds.width - 3 @ plotBounds.top
 			)
 		};
@@ -356,6 +356,14 @@ Plot {
 			Pen.smoothing_(true);
 			Pen.lineDash_(FloatArray[1, 0]) 
 		};
+	}
+	
+	*prSetFont { |skin|
+			defer {
+				var fontName = #["Garamond", "Gill Sans", "Times"]
+					.detect { |x| Font.availableFonts.any(_.contains(x)) };
+				skin.put(\gridFont, Font(fontName, 9));
+			}
 	}
 
 }
