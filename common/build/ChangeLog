@@ -30,7 +30,7 @@ Headlines:
 * 2010-02-18 scvim: now compatible with gnu screen, opens post window using screen, making it compatible with a pure-CLI environment - ds
 * 2010-02-xx add the Deployment32-64 build style for building on OS X (10.5 and greater) - jp
 * 2010-03-10 SynthDef:memStore deprecated in favour of the more coherent and typeable SynthDef:add - jr
-* 2010-04-11 Moved some more experimental JITLib classes to ÒJITLib extensions" Quark - jr
+* 2010-04-11 Moved some more experimental JITLib classes to "JITLib extensions" Quark - jr
 
 
 Bugfixes:
@@ -69,6 +69,7 @@ Bugfixes:
 * 2010-03-11 SequenceableCollection:reduce no longer returns nil if the collection has only 1 element - ds
 * 2010-03-28 fix memory leak of empty command line, for interactive sclang mode - tb
 * 2010-03-29 main menu for Mac lang editor app: correction to key for evaluate selection, used to be return, now return+shift - nc
+* 2010-04-19 fix missing font issue in Plotter -jr 
 
 Other additions/improvements:
 -----------------------------
