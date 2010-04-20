@@ -12,8 +12,9 @@ EnvirGui : JITGui {
 		^prevState[\editKeys]
 	}
 
-	addReplaceKey { |replaced, replacer| 
-		replaceKeys.put(replaced, replacer)
+	addReplaceKey { |replaced, replacer, spec| 
+		replaceKeys.put(replaced, replacer);
+		if (spec.notNil) { specs.put(replaced, spec) };
 	}
 
 	removeReplaceKey { |replaced| 
@@ -130,9 +131,11 @@ EnvirGui : JITGui {
 	}
 
 	clearField { |index|
+		var area = valFields[index];
 		try {
-			valFields[index].children.copy.do { |view| view.remove };
-			valFields[index].refresh;
+			area.children.copy.do { |view| view.remove };
+			area.background_(skin.background);
+			area.refresh;
 			widgets[index] = nil;
 		};
 	}

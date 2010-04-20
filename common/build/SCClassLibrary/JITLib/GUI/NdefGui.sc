@@ -358,8 +358,8 @@ NdefGui : JITGui {
 	}
 	
 		// support overwriting the param names shown, e.g. for ProxyChain
-	addReplaceKey { |replaced, replacer| 
-		if (paramGui.notNil) { paramGui.addReplaceKey(replaced, replacer) }
+	addReplaceKey { |replaced, replacer, spec| 
+		if (paramGui.notNil) { paramGui.addReplaceKey(replaced, replacer, spec) }
 	}
 
 	removeReplaceKey { |replaced| 
