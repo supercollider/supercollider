@@ -21,6 +21,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + BufWr           { *categories { ^ #["UGens>Buffer"] } }
 + ChaosGen        { *categories { ^ #["UGens>Generators>Chaotic"] } }
 + CheckBadValues  { *categories { ^ #["UGens>Info"] } }
++ ClearBuf           { *categories { ^ #["UGens>Buffer"] } }
 + CoinGate        { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + CombN           { *categories { ^ #["UGens>Delays"] } }
 + Compander       { *categories { ^ #["UGens>Analysis>Amplitude"] } }
@@ -92,6 +93,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + Klank           { *categories { ^ #["UGens>Generators>Deterministic", "UGens>Filters>Linear"] } }
 + LastValue       { *categories { ^ #["UGens>Triggers"] } }
 + Latch           { *categories { ^ #["UGens>Triggers"] } }
++ LFGauss        { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + LFNoise0        { *categories { ^ #["UGens>Generators>Stochastic"] } }
 + LFPulse         { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + LFSaw           { *categories { ^ #["UGens>Generators>Deterministic"] } }
@@ -100,9 +102,11 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + LinExp          { *categories { ^ #["UGens>Maths"] } }
 + LinLin          { *categories { ^ #["UGens>Maths"] } }
 + LinRand         { *categories { ^ #["UGens>Generators>Stochastic", "UGens>Generators>Single-value"]} }
++ LocalBuf           { *categories { ^ #["UGens>Buffer"] } }
 + Logistic        { *categories { ^ #["UGens>Generators>Chaotic"] } }
 + Loudness        { *categories { ^ #["UGens>Analysis>Amplitude"] } }
 + MantissaMask    { *categories { ^ #["UGens>Filters>Nonlinear"] } }
++ MaxLocalBufs { *categories { ^ #["UGens>Buffer>Info"] } }
 + Median          { *categories { ^ #["UGens>Filters>Nonlinear"] } }
 + MFCC            { *categories { ^ #["UGens>Analysis"] } }
 + Mix {}
@@ -119,9 +123,11 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + PanB            { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
 + PanB2           { *categories { ^ #["UGens>Multichannel>Ambisonics"] } }
 + Panner          { *categories { ^ #["UGens>Multichannel>Panners"] } }
++ PartConv   { *categories { ^ #["UGens>FFT"] } }
 + Pause           { *categories { ^ #["UGens>Synth control"] } }
 + PauseSelf       { *categories { ^ #["UGens>Synth control"] } }
 + PauseSelfWhenDone {  *categories { ^ #["UGens>Synth control"] } }
++ Peak    { *categories { ^ #["UGens>Analysis>Amplitude"] } }
 + PeakFollower    { *categories { ^ #["UGens>Analysis>Amplitude"] } }
 + Phasor          { *categories { ^ #["UGens>Triggers", "UGens>Buffer"] } }
 + Pitch           { *categories { ^ #["UGens>Analysis>Pitch", "UGens>MachineListening"] } }
@@ -160,12 +166,15 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + RecordBuf       { *categories { ^ #["UGens>Buffer"] } }
 + Rotate2         { *categories { ^ #["UGens>Multichannel>Ambisonics","UGens>Multichannel>Panners"] } }
 + RunningSum      { *categories { ^ #["UGens>Maths"] } }
++ RunningMin      { *categories { ^ #["UGens>Maths"] } }
++ RunningMax      { *categories { ^ #["UGens>Maths"] } }
 + Saw             { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + ScopeOut        { *categories { ^ #["UGens>Buffer"] } }
 + Select          { *categories { ^ #["UGens>Multichannel>Select"] } }
 + SelectX         { *categories { ^ #["UGens>Multichannel>Select"] } }
 + SelectXFocus    { *categories { ^ #["UGens>Multichannel>Select"] } }
 + SendTrig        { *categories { ^ #["UGens>Triggers"] } }
++ SetBuf           { *categories { ^ #["UGens>Buffer"] } }
 + Silent          { *categories { ^ #["UGens>Generators>Single-value"] } }
 + SinOsc          { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + SinOscFB        { *categories { ^ #["UGens>Generators>Deterministic"] } }
@@ -196,8 +205,8 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + UnpackFFT	    { *categories { ^ #["UGens>FFT"] } }
 + Unpack1FFT	    { *categories { ^ #["UGens>FFT"] } }
 + VarSaw          { *categories { ^ #["UGens>Generators>Deterministic"] } }
-+ VDiskIn         { *categories { ^ #["UGens>InOut", "UGens>Buffer"] } }
-+ Vibrato         { }
++ VDiskIn          { *categories { ^ #["UGens>InOut", "UGens>Buffer"] } }
++ Vibrato         { *categories { ^ #["UGens>Filters>Pitch"] } }
 + VOsc            { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + VOsc3           { *categories { ^ #["UGens>Generators>Deterministic"] } }
 + Warp1           { *categories { ^ #["UGens>Buffer", "UGens>Generators>Granular"] } }
@@ -205,3 +214,7 @@ Categorisation of SC UGens, created by Dan Stowell, 2007.
 + XFade           { *categories { ^ #["UGens>Multichannel>Select"] } }
 + XLine           { *categories { ^ #["UGens>Envelopes"] } }
 + ZeroCrossing    { *categories { ^ #["UGens>Analysis>Pitch"] } }
++ Control { *categories { ^#["UGens>Synth control"]}}
++ AudioControl { *categories { ^#["UGens>Synth control"]}}
++ LagControl { *categories { ^#["UGens>Synth control"]}}
++ TrigControl { *categories { ^#["UGens>Synth control"]}}

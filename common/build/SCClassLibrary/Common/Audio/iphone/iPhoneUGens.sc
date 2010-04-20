@@ -10,6 +10,7 @@ AccelerometerX : UGen
 
 		^this.multiNew('control', minval, maxval, warp, lag)
 	}
+	*categories { ^ #["UGens>User interaction"] }
 }
 
 AccelerometerY : AccelerometerX {}
