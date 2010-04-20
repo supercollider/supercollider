@@ -156,10 +156,12 @@ NdefParamGui : EnvirGui {
 	}
 
 	clearField { |index|
+		var area = valFields[index];
 		try {
 			drags[index].visible_(false);
-			valFields[index].children.copy.do { |view| view.remove };
-			valFields[index].refresh;
+			area.children.copy.do { |view| view.remove };
+			area.background_(skin.background);
+			area.refresh;
 			widgets[index] = nil;
 		};
 	}
