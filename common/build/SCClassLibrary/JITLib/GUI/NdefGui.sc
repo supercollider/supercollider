@@ -307,7 +307,7 @@ NdefGui : JITGui {
 			\name, object.key, 
 			\type, object.typeStr, 
 			\isPaused, object.paused,
-			\canSend, object.source.notNil, 
+			\canSend, object.sources.notNil,
 			\fadeTime, object.fadeTime
 		]);
 		
