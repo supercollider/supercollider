@@ -1,5 +1,5 @@
 //  nova server
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -108,10 +108,13 @@ public:
 
     void prepare_backend(void);
 
+    /* @{ */
+    /** io interpreter */
     void add_io_callback(system_callback * cb)
     {
-        system_interpreter.add_callback(cb);
+        io_interpreter.add_callback(cb);
     }
+    /* @} */
 
     /* @{ */
     /** system interpreter */
