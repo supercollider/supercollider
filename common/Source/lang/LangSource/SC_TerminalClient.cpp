@@ -55,6 +55,8 @@
 
 static FILE* gPostDest = stdout;
 
+static const int ticks_per_second = 50; // every 20 milliseconds
+
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mShouldBeRunning(false),
@@ -353,6 +355,7 @@ void SC_TerminalClient::commandLoop()
 		// Set up rl for sclang-specific nicenesses
 		rl_readline_name = "sclang";
 		rl_event_hook = &sc_rl_ticker;
+		rl_set_keyboard_input_timeout(1e6/ticks_per_second);
 		rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
 		//rl_attempted_completion_function = sc_rl_completion;
 		rl_bind_key(0x02, &sc_rl_mainstop); // TODO 0x02 is ctrl-B; ctrl-. would be nicer but keycode not working here (plain "." is 46 (0x2e))
@@ -389,15 +392,15 @@ void SC_TerminalClient::commandLoop()
 
 	while (shouldBeRunning()) {
 		tick();
-		int nfds = poll(&pfds, POLLIN, 50);
+		int nfds = poll(&pfds, POLLIN, 1000/ticks_per_second);
 		if (nfds > 0) {
 			while (readCmdLine(fd, cmdLine));
-			#ifdef SC_DARWIN
+#ifdef SC_DARWIN
 			if(pfds.revents == POLLNVAL){
 				// we reach here when reading directly from CLI, but not if being piped data! (osx 10.4.11 and 10.5.7 at least)
-				usleep(20011);
+				usleep(1e6/ticks_per_second);
 			}
-			#endif
+#endif
 		} else if (nfds == -1) {
 			perror(getName());
 			quit(1);
@@ -420,7 +423,7 @@ void SC_TerminalClient::commandLoop()
 
 void SC_TerminalClient::daemonLoop()
 {
-	struct timespec tv = { 0, 500000 };
+	struct timespec tv = { 0, 1e9 / ticks_per_second };
 
 	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
