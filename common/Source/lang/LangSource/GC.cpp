@@ -403,8 +403,8 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 	int32 credit = 1L << sizeclass;
 	mAllocTotal += credit;
 	mNumAllocs++;
+	mNumToScan += credit;
 	if (inAccount) {
-		mNumToScan += credit;
 		if (mNumToScan >= kScanThreshold) {
 			Collect();
 		}
