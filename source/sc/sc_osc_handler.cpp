@@ -287,17 +287,17 @@ struct cmd_dispatcher
 
     static void fire_done_message(nova_endpoint const & endpoint)
     {
-        fire_system_callback(boost::bind(send_done_message, endpoint));
+        fire_io_callback(boost::bind(send_done_message, endpoint));
     }
 
     static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
     {
-        fire_system_callback(boost::bind(send_done_message, endpoint, cmd));
+        fire_io_callback(boost::bind(send_done_message, endpoint, cmd));
     }
 
     static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
     {
-        fire_system_callback(boost::bind(send_done_message, endpoint, cmd, index));
+        fire_io_callback(boost::bind(send_done_message, endpoint, cmd, index));
     }
 };
 
@@ -306,12 +306,6 @@ struct cmd_dispatcher<false>
 {
     template <typename Functor>
     static void fire_system_callback(Functor f)
-    {
-        f();
-    }
-
-    template <typename Functor>
-    static void fire_io_callback(Functor f)
     {
         f();
     }
@@ -356,7 +350,7 @@ void sc_notify_observers::notify(const char * address_pattern, const server_node
     fill_notification(node, p);
 
     movable_array<char> message(p.Size(), p.Data());
-    cmd_dispatcher<true>::fire_system_callback(boost::bind(fire_notification, message));
+    cmd_dispatcher<true>::fire_io_callback(boost::bind(fire_notification, message));
 }
 
 void fire_trigger(int32_t node_id, int32_t trigger_id, float value)
@@ -1846,7 +1840,7 @@ void handle_b_alloc(received_message const & msg, nova_endpoint const & endpoint
 
     completion_message message = extract_completion_message(args);
 
-    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(b_alloc_1_nrt<realtime>, index, frames,
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_alloc_1_nrt<realtime>, index, frames,
                                                            channels, message, endpoint));
 }
 
@@ -1891,7 +1885,7 @@ void handle_b_free(received_message const & msg, nova_endpoint const & endpoint)
 
     completion_message message = extract_completion_message(args);
 
-    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(b_free_1_nrt<realtime>, index, message, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_free_1_nrt<realtime>, index, message, endpoint));
 }
 
 template <bool realtime>
@@ -2018,7 +2012,7 @@ void handle_b_allocReadChannel(received_message const & msg, nova_endpoint const
     movable_array<uint32_t> channel_mapping(channel_count, channels.c_array());
     movable_string fname(filename);
 
-    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(b_allocReadChannel_1_nrt<realtime>,
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_allocReadChannel_1_nrt<realtime>,
                                                            index, fname, start, frames, channel_mapping,
                                                            message, endpoint));
 }
@@ -2092,7 +2086,7 @@ fire_callback:
     movable_string header_f(header_format);
     movable_string sample_f(sample_format);
 
-    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(b_write_nrt_1<realtime>, index, fname, header_f, sample_f,
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_write_nrt_1<realtime>, index, fname, header_f, sample_f,
                                                start, frames, bool(leave_open), message, endpoint));
 }
 
@@ -2194,7 +2188,7 @@ void b_readChannel_nrt_1(uint32_t index, movable_string & filename, uint32_t sta
 {
     sc_factory.buffer_read_channel(index, filename.c_str(), start_file, frames, start_buffer, leave_open,
                                      channel_map.length(), channel_map.data());
-    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(b_readChannel_rt_2<realtime>, index, msg, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_readChannel_rt_2<realtime>, index, msg, endpoint));
 }
 
 const char * b_readChannel = "/b_readChannel";
@@ -2282,7 +2276,7 @@ fire_callback:
     movable_string fname(filename);
     movable_array<uint32_t> channel_map(channel_count, channel_mapping.c_array());
 
-    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(b_readChannel_nrt_1<realtime>, index, fname,
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_readChannel_nrt_1<realtime>, index, fname,
                                                            start_file, frames, start_buffer,
                                                            bool(leave_open), channel_map, message, endpoint));
 }
@@ -2316,7 +2310,7 @@ void handle_b_zero(received_message const & msg, nova_endpoint const & endpoint)
     args >> index;
     completion_message message = extract_completion_message(args);
 
-    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(b_zero_nrt_1<realtime>, index, message, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_zero_nrt_1<realtime>, index, message, endpoint));
 }
 
 void handle_b_set(received_message const & msg)
@@ -2425,7 +2419,7 @@ void handle_b_close(received_message const & msg, nova_endpoint const & endpoint
 
     args >> index;
 
-    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(b_close_nrt_1, index));
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_close_nrt_1, index));
 }
 
 template <bool realtime>
