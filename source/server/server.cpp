@@ -1,5 +1,5 @@
 //  nova server
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
     scheduler(args.threads), buffer_manager(1024), sc_osc_handler(args),
-    io_interpreter(4, true, thread_priority_interval_rt().first)
+    io_interpreter(1, true, thread_priority_interval_rt().first)
 {
     assert(instance == 0);
     instance = this;
