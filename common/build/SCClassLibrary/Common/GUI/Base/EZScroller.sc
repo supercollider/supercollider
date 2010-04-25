@@ -33,7 +33,8 @@ EZScroller {
 			// swingOSC posts a 'not implemented yet' warning.
 			slider.thumbSize = fractionToShow * maxLength;
 		};
-		slider.step_(1 / numTooMany.max(1));
+	//	slider.step_(1 / numTooMany.max(1));		// this does the action - it should not.
+		slider.setProperty(\step, 1 / numTooMany.max(1));
 		spec.minval_(numTooMany);	// minval to invert spec
 	}
 
