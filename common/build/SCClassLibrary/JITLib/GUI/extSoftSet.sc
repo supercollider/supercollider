@@ -166,13 +166,12 @@
 		{
 			
 			this.vol_(val);
+			
 			if (pause) {
 				if (val == 0) { 
 						// wait for vol to go down before pausing
-					fork { 0.2.wait; if (pause) { this.pause } } 
+					fork { 0.05.wait; this.pause } 
 				} { 
-						// but forget pause if resumed in the meantime.
-					pause = false;
 					this.resume 
 				}
 			};
