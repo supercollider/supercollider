@@ -49,7 +49,7 @@ MonitorGui : JITGui {
 		var levelWid = if (config.level, 60, 0); 
 		var nameWid = if (config.name, 60, 0);
 		var fadeWid = if (config.fade, 60, 0);
-		var playWid = 40, outWid = 20;
+		var playWid = 40, outWid = 30;
 		var playNWid = if (config.playN, 20, 0);
 
 		var sliderWidth = fullWid - (levelWid + playWid + outWid + playNWid + nameWid + fadeWid) - 4;

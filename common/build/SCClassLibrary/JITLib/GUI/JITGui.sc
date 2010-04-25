@@ -167,8 +167,9 @@ JITGui {
 			skin.buttonHeight * numItems + skin.headHeight, 
 			zone.bounds.height)  - (skin.margin.y * 2); 
 		
-		nameView = SCDragBoth(zone, Rect(0,0, 60, lineheight))
-			.font_(font).align_(\center)
+		nameView = DragBoth(zone, Rect(0,0, 60, lineheight))
+			.font_(font)
+			.align_(\center)
 			.receiveDragHandler_({ arg obj; this.object = View.currentDrag });
 			
 		csView = EZText(zone, 

@@ -29,8 +29,9 @@ TaskProxyGui : JITGui {
 			.keyDownAction_({ |btn, char| 
 				char.postcs;
 				if (char.ascii == 127) {
-					object.clear; object = nil;
-					this.class.observedClass.all.removeAt(btn.states.first.first.asSymbol);
+					object.clear;
+					object.class.all.removeAt(btn.states.first.first.asSymbol);
+					 object = nil;
 				};
 			});
 
@@ -249,9 +250,9 @@ TaskProxyAllGui :JITGui {
 	var <editZone;
 
 	*new { |numItems = 16, parent, bounds, makeSkip = true, options = #[]| 
-			^super.new(nil, numItems, parent, bounds, makeSkip, options );
+			^super.new(this.observedClass.all, numItems, parent, bounds, makeSkip, options );
 	}
-	
+		
 			// options could include a TdefGui with EnvirGui ...
 	makeViews { |options|
 
@@ -285,7 +286,8 @@ TaskProxyAllGui :JITGui {
 				) 
 		});
 		
-		parent.view.decorator.left_(zone.bounds.right - 12).top_(zone.bounds.top + skin.headHeight);
+		parent.view.decorator.left_(zone.bounds.right - 12)
+			.top_(zone.bounds.top + skin.headHeight);
 		
 		scroller = EZScroller(parent,
 			Rect(0, 0, 12, numItems * skin.buttonHeight),
@@ -304,7 +306,8 @@ TaskProxyAllGui :JITGui {
 	checkUpdate {
 			var overflow, tooMany;
 
-			names = this.class.observedClass.all.keys.as(Array);
+			names = object.keys.as(Array);
+			
 			try { names.sort };
 			if (filtering) {
 				if (prefix == "") {
@@ -322,7 +325,7 @@ TaskProxyAllGui :JITGui {
 			} {
 				scroller.visible_(false);
 			};
-			edits.do { |edit, i| edit.object_(this.class.observedClass.all[names[i]]) };
+			edits.do { |edit, i| edit.object_(object[names[i]]) };
 			if (tpGui.notNil) { tpGui.checkUpdate };
 	}
 }
