@@ -651,8 +651,10 @@ SCSliderBase : SCControlView {
 	}
 
 	step_ { arg stepSize;
-		this.setPropertyWithAction(\step, stepSize);
+	//	this.setPropertyWithAction(\step, stepSize); // action really needed?
+		this.setProperty(\step, stepSize);
 	}
+	
 	step {
 		^this.getProperty(\step)
 	}
