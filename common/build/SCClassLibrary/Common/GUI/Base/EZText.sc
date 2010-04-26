@@ -55,11 +55,17 @@ EZText : EZGui {
 		initVal = initVal ? "";
 		action = argAction;
 
-		textField = GUI.textField.new(view, textBounds).resize_(2);
+		textField = TextField(view, textBounds).resize_(2);
 
 		textField.action = {
-			var newval = textField.string.interpret;
-			this.valueAction_(newval);
+			var newstr = textField.string;
+			var newval = try { newstr.interpret }; 
+			if (newval.notNil or: { newstr == "" }) { 
+				this.valueAction_(newval);
+			} { 
+			//	"EZText compile failed - reset to prev value.".postln;
+				textField.string = this.value.asCompileString;
+			}			
 		};
 
 		if (initAction) {

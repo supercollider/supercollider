@@ -3,8 +3,23 @@
 
 EnvirGui : JITGui {
 
-	var <name, <valFields, <widgets, labelWidth;
+	var <valFields, <widgets, labelWidth;
 	var <keysRotation = 0, <specs;
+	
+	var <replaceKeys;
+
+	editKeys {
+		^prevState[\editKeys]
+	}
+
+	addReplaceKey { |replaced, replacer, spec| 
+		replaceKeys.put(replaced, replacer);
+		if (spec.notNil) { specs.put(replaced, spec) };
+	}
+
+	removeReplaceKey { |replaced| 
+		replaceKeys.removeAt(replaced)
+	}
 
 	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]| 
 		^super.new(object, numItems, parent, bounds, makeSkip = true, options);
@@ -21,6 +36,7 @@ EnvirGui : JITGui {
 		var height = skin.buttonHeight;
 
 		specs = ();  
+		replaceKeys = ();	
 		prevState = ( overflow: 0, keysRotation: 0, editKeys: []);
 		
 		labelWidth = zone.bounds.width * 0.17;
@@ -60,8 +76,8 @@ EnvirGui : JITGui {
 		newKeys = object.keys.asArray.sort;
 		overflow = (newKeys.size - numItems).max(0);
 		keysRotation = keysRotation.clip(0, overflow);
-		newKeys = newKeys.drop(keysRotation).keep(numItems);
-		
+		newKeys = newKeys.drop(keysRotation).keep(numItems); 
+				
 		^(object: object, editKeys: newKeys, overflow: overflow, keysRotation: keysRotation)
 	}
 	
@@ -115,15 +131,17 @@ EnvirGui : JITGui {
 	}
 
 	clearField { |index|
+		var area = valFields[index];
 		try {
-			valFields[index].children.copy.do { |view| view.remove };
-			valFields[index].refresh;
+			area.children.copy.do { |view| view.remove };
+			area.background_(skin.background);
+			area.refresh;
 			widgets[index] = nil;
 		};
 	}
 	
 	setFunc { |key|
-		^{ |sl| object.put(key, sl.value) }
+		^{ |elem| object.put(key, elem.value) }
 	}
 	
 	setToSlider { |index, key, value, sameKey| 
@@ -136,7 +154,8 @@ EnvirGui : JITGui {
 		//	"was slider already".postln; 
 			if (sameKey.not) { 
 		//		"new key - reset widget ...".postln; 
-				widget.set(key, 
+				widget.set(
+					this.showKeyFor(key), 
 					this.getSpec(key, value), 
 					this.setFunc(key),
 					value);
@@ -152,7 +171,7 @@ EnvirGui : JITGui {
 			{ 
 				area = valFields[index];
 				widget = EZSlider(area, area.bounds.extent,
-					key,
+					this.showKeyFor(key),
 					this.getSpec(key, value),
 					this.setFunc(key),
 					value,
@@ -174,9 +193,12 @@ EnvirGui : JITGui {
 		
 		if (widget.isKindOf(EZRanger)) {
 			if (sameKey.not) { 
-				widget.set(key, this.getSpec(key), 
-				this.setFunc(key),
-				value);
+				widget.set(
+					this.showKeyFor(key), 
+					this.getSpec(key), 
+					this.setFunc(key),
+					value
+				);
 			} {
 				widget.value = value;
 			};
@@ -185,7 +207,7 @@ EnvirGui : JITGui {
 			{ 
 				area = valFields[index];
 				widget = EZRanger(valFields[index], valFields[index].bounds.extent, 
-					key, 
+					this.showKeyFor(key), 
 					this.getSpec(key, value.maxItem),
 					this.setFunc(key),
 					value,
@@ -199,16 +221,20 @@ EnvirGui : JITGui {
 			^this
 		};
 	}
+	
+	showKeyFor { |key| ^(replaceKeys[key] ? key).asString }
 
 	setToText { |index, key, value, sameKey = false|
 		var widget = widgets[index];
 		var area; 
-		
+
 			// default: EZText
 		if (widget.isKindOf(EZText)) { 
 			if (sameKey.not) { 
-				widget.labelView.string = key.asString;
+				
+				widget.labelView.string = this.showKeyFor(key);
 			};
+			widget.action = this.setFunc(key);
 			widget.value = value;
 			^this
 		} { 
@@ -216,7 +242,9 @@ EnvirGui : JITGui {
 			{
 				area = valFields[index];
 	
-				widget = EZText(area, area.bounds.extent, key,
+				widget = EZText(area, 
+					area.bounds.extent, 
+					this.showKeyFor(key),
 					this.setFunc(key),
 					value, false, labelWidth, labelHeight: 18);
 					widget.font_(font);
@@ -232,6 +260,14 @@ EnvirGui : JITGui {
 		var area = valFields[index];
 		var widget = widgets[index];
 
+	//	[\replaceKeys, replaceKeys, key].postcs;
+	
+		if (replaceKeys[key].notNil) { 
+			area.background_(skin.hiliteColor);
+		} { 
+			area.background_(skin.background);
+		};
+
 		if (value.isKindOf(SimpleNumber) ) {
 			this.setToSlider(index, key, value, sameKey);
 			^this
@@ -246,6 +282,7 @@ EnvirGui : JITGui {
 		};
 		
 		this.setToText(index, key, value, sameKey);
+		
 	}
 
 	findWidget { |key|
@@ -256,21 +293,14 @@ EnvirGui : JITGui {
 		var widge, spec;
 		spec = obj.asSpec;
 		specs.put(key, spec);
-		// could check all widgets and update specs if same name ...
+			// could check all widgets and update specs if same name ...
 		widge = this.findWidget(key);
 		if (widge.notNil) { widge.controlSpec_(spec).value_(widge.value) }
 	}
 
 	getSpec { |key, value|
 		var spec = specs[key] ? Spec.specs[key];
-		if (spec.notNil) { ^spec };
-		
-			// guess specs if not given.
-		spec = if (value.abs > 0) {
-			[value/20, value*20, \exp].asSpec
-		} {
-			[-2, 2, \lin].asSpec
-		};
+		spec = spec ?? { Spec.guess(key, value) };
 		specs.put(key, spec);
 		^spec
 	}

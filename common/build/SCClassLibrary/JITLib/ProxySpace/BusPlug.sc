@@ -1,4 +1,3 @@
-
 BusPlug : AbstractFunction {
 
 	var <server, <bus;
@@ -46,11 +45,11 @@ BusPlug : AbstractFunction {
 	isNeutral {
 		^bus.isNil or: { bus.index.isNil and: { bus.numChannels.isNil } }
 	}
-	
-	isMonitoring { 
-		^monitor.isPlaying 
+
+	isMonitoring {
+		^monitor.isPlaying
 	}
-	
+
 	isPlaying {
 		^this.index.notNil and: { server.serverRunning }
 	}
@@ -74,9 +73,9 @@ BusPlug : AbstractFunction {
 		^InBus.kr(bus, numChannels ? bus.numChannels, offset)
 	}
 
-	
+
 	embedInStream { | inval | // for now, force multichannel expansion in streams early.
-		^this.asControlInput.embedInStream(inval); 
+		^this.asControlInput.embedInStream(inval);
 	}
 
 	asControlInput {
@@ -175,7 +174,7 @@ BusPlug : AbstractFunction {
 				{ |i| prefix ++ (index + i) }.dup(numChannels)
 			}
 	}
-	
+
 	wakeUpToBundle {}
 	wakeUp {}
 	asBus { ^if(this.isNeutral) { nil } { bus } }
@@ -194,7 +193,7 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
-		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
+		this.playToBundle(bundle, out.asControlInput, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant)
 	}
@@ -205,13 +204,13 @@ BusPlug : AbstractFunction {
 			("server not running:" + this.homeServer).warn;
 			^this
 		};
-		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
+		this.playNToBundle(bundle, outs.asControlInput, amps, ins, vol, fadeTime, group, addAction);
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant)
 	}
 
 	fadeTime { ^0.02 }
 	quant { ^nil }
-	
+
 	vol { ^if(monitor.isNil) { 1.0 } { monitor.vol } }
 	vol_ { arg val; this.initMonitor(val) }
 
@@ -225,13 +224,13 @@ BusPlug : AbstractFunction {
 		^monitor
 	}
 
-	stop { | fadeTime = 0.1, reset = false | 
-		monitor.stop(fadeTime); 
-		if(reset) { monitor = nil }; 
+	stop { | fadeTime = 0.1, reset = false |
+		monitor.stop(fadeTime);
+		if(reset) { monitor = nil };
 	}
 
-	scope { | bufsize = 4096, zoom | 
-		if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } 
+	scope { | bufsize = 4096, zoom |
+		if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) }
 	}
 
 	record { | path, headerFormat = "aiff", sampleFormat = "int16", numChannels |
@@ -243,8 +242,8 @@ BusPlug : AbstractFunction {
 		^rec
 	}
 
-	
-	
+
+
 
 	// bundling messages
 
@@ -252,12 +251,14 @@ BusPlug : AbstractFunction {
 				group, multi=false, vol, fadeTime, addAction |
 		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
+		monitor.usedPlayN = false;
 		monitor.playToBundle(bundle, bus.index, bus.numChannels, out, numChannels, group,
 			multi, vol, fadeTime, addAction);
 	}
 
 	playNToBundle { | bundle, outs, amps, ins, vol, fadeTime, group, addAction |
 		this.newMonitorToBundle(bundle); // todo: numChannels
+		monitor.usedPlayN = true;
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } { this.homeServer.asGroup } };
 		monitor.playNBusToBundle(bundle, outs, amps, ins, bus, vol, fadeTime, group, addAction);
 
@@ -266,11 +267,12 @@ BusPlug : AbstractFunction {
 	newMonitorToBundle { | bundle, numChannels |
 		this.initBus(\audio, numChannels);
 		this.initMonitor;
+
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
-	
-	
-	
+
+
+
 
 	// netwrk node proxy support
 

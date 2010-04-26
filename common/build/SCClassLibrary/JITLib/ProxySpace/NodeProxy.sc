@@ -297,7 +297,7 @@ NodeProxy : BusPlug {
 	}
 
 	mapn { | ... args |
-		"NodeProxy: mapn is decrepated, please use map instead".postln;
+		"NodeProxy: mapn is deprecated, please use map instead".postln;
 		^this.map(*args)
 	}
 	
@@ -574,11 +574,11 @@ NodeProxy : BusPlug {
 		^#[\out, \i_out, \gate, \fadeTime];
 	}
 	
-	controlNames { | except |
+		// return names in the order they have in .objects
+	controlNames { | except, addNodeMap = true |
 		var all = Array.new; // Set doesn't work, because equality undefined for ControlName
-		var items = [nodeMap] ++ objects; // nodeMap also returns controlNames
 		except = except ? this.internalKeys;
-		items.do { |el|
+		objects.do { |el|
 			el.controlNames.do { |item|
 				if(except.includes(item.name).not and: {
 					all.every { |cn| cn.name !== item.name }
@@ -587,7 +587,39 @@ NodeProxy : BusPlug {
 				}
 			};
 		};
-		^all
+		^if (addNodeMap.not or: nodeMap.isNil) { all } { 
+			this.addNodeMapControlNames(all, except) 
+		};
+	}
+	
+		// if a name is set in nodemap, overwrite the values in objCtlNames;
+		// if a key is set in the nodemap, but is not used in the objects yet, add at the end. 
+	addNodeMapControlNames { |objCtlNames, except = #[]| 
+		nodeMap.controlNames
+			.reject { |ctlname| except.includes(ctlname.name) }
+			.do { |mapCtl|
+				var index = objCtlNames.detectIndex { |objCtl| objCtl.name == mapCtl.name };
+				if (index.notNil) { 
+					objCtlNames.put(index, mapCtl)
+				} { 
+					objCtlNames = objCtlNames.add(mapCtl)
+				}
+			};
+		^objCtlNames
+	}
+	
+	resetNodeMap { 
+		this.nodeMap = ProxyNodeMap.new;
+	}
+	
+	cleanNodeMap { 
+		var nodeMapKeys, keysToRemove; 
+		if (nodeMap.isNil) { ^this };
+		
+		nodeMapKeys = nodeMap.settings.keys.difference(this.internalKeys);
+		keysToRemove = nodeMapKeys.difference(this.controlNames(addNodeMap: false).collect(_.name));
+		
+		keysToRemove.do(this.unset(_));
 	}
 
 	controlKeys { | except, noInternalKeys = true |

@@ -110,4 +110,10 @@ Nil {
 	}
 
 	archiveAsCompileString { ^true }
+
+	asSpec {
+		^ControlSpec.new;
+	}
+
 }
+

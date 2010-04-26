@@ -24,7 +24,7 @@ ProxyMonitorGui { 	classvar <>lastOutBus = 99;
 		var height;
 		var widthSum, sliderWidth, winBounds, viewBounds;
 
-		skin = skin ? GUI.skins.jit;		font = GUI.font.new(*skin.fontSpecs);
+		skin = skin ? GUI.skins[\jitSmall];		font = GUI.font.new(*skin.fontSpecs);
 
 		usesPlayN = showPlayN;
 		usesName = showName;		usesPausSend = showPauseSend;

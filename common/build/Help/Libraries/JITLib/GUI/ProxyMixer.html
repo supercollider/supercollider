@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="1038.29">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 16.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica; min-height: 22.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #cd0b0b}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2024c7}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {text-decoration: underline ; color: #2832ee}
+span.s3 {color: #2b30fa}
+span.s4 {color: #000000}
+span.s5 {text-decoration: underline ; color: #2b30fa}
+span.s6 {text-decoration: underline}
+span.s7 {font: 9.0px Monaco}
+span.s8 {color: #2024c7}
+span.s9 {color: #737373}
+span.s10 {color: #008417}
+span.s11 {color: #cd0b0b}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><br></p>
+<p class="p2"><b>ProxyMixer has been updated - some little adaptations to existing<span class="Apple-converted-space"> </span></b></p>
+<p class="p2"><b>uses may be needed.</b> If you like, you can also replace "ProxyMixer"<span class="Apple-converted-space"> </span></p>
+<p class="p2">with "ProxyMixerOld" to keep using the old style of ProxyMixer.</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Old:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>New:</b></p>
+<p class="p5"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></p>
+<p class="p4"><b>ProxyMixerOld<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>ProxyMixer</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>*new(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>*new(</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>space,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>-&gt;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>object,</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>nProxies,<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>-&gt;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>numItems,</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>title, <span class="Apple-tab-span">	</span>//</b>is inferred from <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent</b>, <span class="Apple-tab-span">	</span>// a view to display proxymixer on,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// ProxySpace.asCode<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// if nil, a new window is made.</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>where </b>// can be set in bounds<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds</b>,<span class="Apple-tab-span">	</span>// can be nil for default size,<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// or a point for a specific location onscreen,</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// or a Rect</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>[makeSkip,<span class="Apple-converted-space"> </span></b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>options]</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>)<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</b></p>
+<p class="p3"><br></p>
+<p class="p6"><b>//////</b></p>
+<p class="p4"><span class="s1"><b>ProxyMixer<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>mix control for a proxyspace</b></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p4"><b>Inherits from:</b> <a href="../../../Core/Object.html"><span class="s2">JITGui</span></a></p>
+<p class="p5"><br></p>
+<p class="p4">ProxyMixer provides controls for handling and editing the node proxies in a proxyspace and their monitors (cross-platform graphics). It replaces the earlier ProxyMixer class. For Ndefs, use <a href="NdefMix.html"><span class="s3">NdefMix</span></a>.</p>
+<p class="p5"><br></p>
+<p class="p7"><span class="s4">See also: <a href="SC://ProxySpace"><span class="s5">ProxySpace</span></a>, <a href="NPGui.html"><span class="s6">NdefGui</span></a><a href="NodeProxyEditor.html"><span class="s6">, </span></a><a href="JITGui.html"><span class="s6">JITGui</span></a><a href="NodeProxyEditor.html"><span class="s6">, </span></a><a href="MonitorGui.html"><span class="s6">MonitorGui</span></a><a href="NodeProxyEditor.html"><span class="s6">, </span></a><a href="NPParamGui.html"><span class="s6">NdefParamGui</span></a></span></p>
+<p class="p4">Overview: <a href="SC://JITLib"><span class="s3">JITLib</span></a></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p8"><b>Creation / Class Methods</b></p>
+<p class="p1"><br></p>
+<p class="p1"><br></p>
+<p class="p4"><b>*new(object, numItems, parent, bounds, makeSkip, options)</b></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>object<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>the proxyspace to show and control</p>
+<p class="p4"><span class="Apple-tab-span">	</span><b>numItems<span class="Apple-tab-span">	</span></b>how many ar and kr proxies can be shown</p>
+<p class="p5"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>parent:<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>by default nil, so a window is made automatically.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if a parent is supplied, the ProxyMixer will be shown there.</p>
+<p class="p4"><b><span class="Apple-tab-span">	</span>bounds</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>window bounds - default is nil, so it determines it size.</p>
+<p class="p4"><span class="s7"><span class="Apple-tab-span">	</span></span><b>makeSkip</b><span class="Apple-tab-span">	</span>a flag whether to make make a skijack</p>
+<p class="p4"><span class="s7"><span class="Apple-tab-span">	</span></span><b>options</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>additional settings - currently none provided.</p>
+<p class="p9"><br></p>
+<p class="p9"><br></p>
+<p class="p8"><b>Example</b><span class="s7"><span class="Apple-tab-span">	</span></span></p>
+<p class="p9"><br></p>
+<p class="p10">(</p>
+<p class="p10">p = <span class="s8">ProxySpace</span>.push(s.boot, p);<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="s9">"abcde"</span>.do { <span class="s8">|k|</span> p[k.asSymbol].ar };</p>
+<p class="p10">m = <span class="s8">ProxyMixer</span>(p, 8, options: [<span class="s10">\playN</span>]);</p>
+<p class="p10">p.do(<span class="s8">_</span>.play(0));</p>
+<p class="p10">)</p>
+<p class="p11"><br></p>
+<p class="p10">m.object_(<span class="s8">nil</span>);</p>
+<p class="p10">m.object_(p);</p>
+<p class="p11"><br></p>
+<p class="p10"><span class="s9">"abcdefghijk"</span>.do { <span class="s8">|k|</span> p[k.asSymbol].ar };</p>
+<p class="p11"><br></p>
+<p class="p10"><span class="s9">"lmnopqrtuvw"</span>.do { <span class="s8">|k|</span> p[k.asSymbol].kr };</p>
+<p class="p11"><br></p>
+<p class="p10"><span class="s9">"abcdefghijk"</span>.do { <span class="s8">|k|</span> p[k.asSymbol].playN };</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// the top left menu sets which proxies will be shown.</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// existingProxies: even an empty proxy is shown</p>
+<p class="p10">~test.ar;<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// activeProxies: proxy appears when it is alive</p>
+<p class="p13"><span class="s4">~test = { </span>|freq=250, intv=19, timescale=1, curve=0, loopnode=0|<span class="s4"><span class="Apple-converted-space"> </span></span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="s8">var</span> env = <span class="s8">EnvGen</span>.kr(</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">Env</span>({ 1.0.rand2 }!11, {1.0.rand}!10, curve, releaseNode: 9, loopNode: loopnode),<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>timeScale: timescale);</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="s8">var</span> pitch = (env * [1, 0.33, -1] * intv).midiratio * freq;</p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="s8">Splay</span>.ar(<span class="s8">Formant</span>.ar(pitch, pitch.scramble * 2, pitch.scramble)) * 0.1;</p>
+<p class="p10">};</p>
+<p class="p10">)</p>
+<p class="p10">~test.lag(<span class="s10">\freq</span>, 4);</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// playingProxies : only those that really play are shown.</p>
+<p class="p10">~test.playN(vol: 1);</p>
+<p class="p11"><br></p>
+<p class="p12">// switch back to active proxies...</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// the reduce button removes all proxies that are not playing</p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// and that are not used as sources in other proxies:</p>
+<p class="p10">~otto = { <span class="s8">|dens=12|</span> <span class="s8">Dust</span>.ar(dens) };</p>
+<p class="p11"><br></p>
+<p class="p10">~otto.clear;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">// remove it</span></p>
+<p class="p10">p.reduce;</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// doc and docSel post the current proxyspace as code</p>
+<p class="p10">p.document;</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// ProxyMixer has three preset widths:<span class="Apple-converted-space"> </span></p>
+<p class="p10">m.switchSize(0);<span class="Apple-tab-span">	</span><span class="s11">// ar zone only</span></p>
+<p class="p10">m.switchSize(1);<span class="Apple-tab-span">	</span><span class="s11">// ar + kr</span></p>
+<p class="p12"><span class="s4">m.switchSize(2);<span class="Apple-tab-span">	</span></span>// ar = kr + edit zone</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// R opens a Record utility, see below.<span class="Apple-converted-space"> </span></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// the line of controls for one proxy and its monitor is<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// a ProxyMonitorGui, so for full details see ProxyMonitorGui.help.</p>
+<p class="p11"><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// it displays current volume,<span class="Apple-converted-space"> </span></p>
+<p class="p10">~test.vol_(0.05);<span class="Apple-tab-span">	</span></p>
+<p class="p10">~test.vol_(0.1);<span class="Apple-tab-span">	</span></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// proxy name; play/stop/end control:</p>
+<p class="p10">~test.playN;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">// playN as is</span></p>
+<p class="p10">~test.stop;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s11">// stop<span class="Apple-converted-space"> </span></span></p>
+<p class="p12"><span class="s4">~test.end;<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// option-click on stop : end the monitor and the proxy itself.</p>
+<p class="p12"><span class="s4">~test.playN(vol: 0);<span class="Apple-tab-span">	</span></span>// option-click on play : start playing with volume zero.</p>
+<p class="p11"><br></p>
+<p class="p10">~test.vol_(0.1);</p>
+<p class="p11"><br></p>
+<p class="p10">s.scope(8);</p>
+<p class="p12"><span class="s4">~test.playN(4);<span class="Apple-tab-span">	</span></span>// set proxy's first output channel:</p>
+<p class="p10">~test.playN(0);<span class="Apple-tab-span">	</span></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// the "-=" / "-&lt;" button supports multichannel monitoring,<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// see ProxyMonitorGui.help</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>//<span class="Apple-tab-span">	</span>paus/rsum toggles pause and resume:</p>
+<p class="p10">~test.pause;</p>
+<p class="p10">~test.resume;<span class="Apple-tab-span">	</span></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// send button resends the proxy,<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// option-click on send rebuilds the proxy</p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// (e.g. for lookup in client-site state)</p>
+<p class="p10">~test.send;<span class="Apple-tab-span">	</span></p>
+<p class="p10">~test.send;<span class="Apple-tab-span">	</span></p>
+<p class="p10">~test.send;<span class="Apple-tab-span">	</span></p>
+<p class="p10">~test.rebuild;<span class="Apple-tab-span">	</span></p>
+<p class="p10">~test.rebuild;<span class="Apple-tab-span">	</span></p>
+<p class="p10">~test.rebuild;<span class="Apple-tab-span">	</span></p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// the ed button sends this proxy to the editor - see below</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// kr proxies show up in the middle</p>
+<p class="p10">~lfo = { <span class="s8">SinOsc</span>.kr(2) };</p>
+<p class="p10">~lfnoyz0 = { <span class="s8">|lofreq = 0.5, mul=1, add|</span> <span class="s8">LFDNoise0</span>.kr(lofreq, mul, add) };</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// the editor zone is a <a href="NodeProxyEditor.html"><span class="s6">NodeProxyEditor</span></a></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// open it and set some params</p>
+<p class="p10">m.switchSize(2);</p>
+<p class="p10">m.editGui.object_(~test);</p>
+<p class="p10">~test.set(<span class="s10">\freq</span>, exprand(80, 1250));<span class="Apple-tab-span">	</span><span class="s11">// set ~tests parameters</span></p>
+<p class="p10">~test.set(<span class="s10">\intv</span>, 1.0.linrand);</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>//<span class="Apple-tab-span">	</span>if you declare global specs for the range of a parameter,<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>//<span class="Apple-tab-span">	</span>they can be used in the editor:</p>
+<p class="p10"><span class="s8">Spec</span>.add(<span class="s10">\intv</span>, [0, 36, <span class="s10">\lin</span>]);</p>
+<p class="p10"><span class="s8">Spec</span>.add(<span class="s10">\timescale</span>, [0.001, 10, <span class="s10">\exp</span>]);</p>
+<p class="p10"><span class="s8">Spec</span>.add(<span class="s10">\loopnode</span>, [0, 7, <span class="s10">\lin</span>, 1]);</p>
+<p class="p10"><span class="s8">Spec</span>.add(<span class="s10">\curve</span>, [-10, 10]);</p>
+<p class="p11"><br></p>
+<p class="p10">m.editGui.object_(~test);</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// you can map a kr proxy to a control param;</p>
+<p class="p10">~test.map(<span class="s10">\intv</span>, ~lfnoyz0);</p>
+<p class="p10">~test.unmap(<span class="s10">\intv</span>);</p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// this also works by dragging the kr proxy name<span class="Apple-converted-space"> </span></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// the field left of the param name.</p>
+<p class="p11"><br></p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>//<span class="Apple-tab-span">	</span>some more tests :</p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// if there are too many ar proxies, a scroller appears</p>
+<p class="p12"><span class="s4">(<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// test too many<span class="Apple-converted-space"> </span></p>
+<p class="p10">10.do { <span class="s8">|i|</span> p[(<span class="s9">"test"</span> ++ i).asSymbol] = {<span class="Apple-converted-space"> </span></p>
+<p class="p10"><span class="Apple-tab-span">	</span><span class="s8">Pan2</span>.ar(<span class="s8">Ringz</span>.ar(<span class="s8">Impulse</span>.ar(exprand(0.5, 4)), exprand(300, 3000), 0.02), 1.0.rand2, 0.2) };<span class="Apple-converted-space"> </span></p>
+<p class="p10">};</p>
+<p class="p10">)</p>
+<p class="p11"><br></p>
+<p class="p10">10.do { <span class="s8">|i|</span> p[(<span class="s9">"test"</span> ++ i).asSymbol].playN(vol: linrand(1.0), fadeTime: exprand(0.01, 5)) };</p>
+<p class="p11"><br></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span></span>// and the same for kr proxies</p>
+<p class="p10">10.do { <span class="s8">|i|</span> p[(<span class="s9">"kr"</span> ++ i).asSymbol] = { <span class="s8">LFNoise0</span>.kr(exprand(5, 50)) }; };</p>
+<p class="p11"><br></p>
+<p class="p10">p.krProxyNames.do { <span class="s8">|key|</span> p.removeAt(key) };</p>
+<p class="p11"><br></p>
+<p class="p10">p.reduce(method: <span class="s10">\clear</span>);</p>
+<p class="p11"><br></p>
+<p class="p10">p.clean;</p>
+<p class="p11"><br></p>
+</body>
+</html>

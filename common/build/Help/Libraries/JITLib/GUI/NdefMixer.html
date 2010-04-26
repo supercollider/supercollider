@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="1038.29">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #2b30fa}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2024c7; min-height: 12.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2024c7}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #000000}
+span.s3 {color: #737373}
+span.s4 {color: #2024c7}
+span.s5 {color: #008417}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>NdefMixer <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>mix control for an Ndef proxyspace</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>NdefMixer is nearly identical to ProxyMixer, except that it looks at the<span class="Apple-converted-space"> </span></b></p>
+<p class="p1"><b>proxyspaces for each server that Ndef.all contains.</b></p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s2"><b>See also </b><a href="ProxyMixer.html"><b>ProxyMixer</b></a><b>, </b><a href="JITGui.html"><b>JITGui</b></a></span><b>, </b><a href="NdefGui.html"><b>NdefGui</b></a></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p5">n = NdefMixer<span class="s2">(s);</span></p>
+<p class="p2"><br></p>
+<p class="p6">s.boot;</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s3">"bcdefghijk"</span>.do { <span class="s4">|k|</span> Ndef(k.asSymbol).ar };</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s3">"lmnopqrtuvw"</span>.do { <span class="s4">|k|</span> Ndef(k.asSymbol).kr };</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s3">"abcdefghijk"</span>.do { <span class="s4">|k|</span> Ndef(k.asSymbol).playN };</p>
+<p class="p6">(</p>
+<p class="p5">Ndef<span class="s2">(</span><span class="s5">\aaaaaa</span><span class="s2">, { </span>|freq=250, intv=19, timescale=1, curve=0, loopnode=0|<span class="s2"><span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">var</span> env = <span class="s4">EnvGen</span>.kr(</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">Env</span>({ 1.0.rand2 }!11, {1.0.rand}!10, curve, releaseNode: 9, loopNode: loopnode),<span class="Apple-converted-space"> </span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>timeScale: timescale);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">var</span> pitch = (env * [1, 0.33, -1] * intv).midiratio * freq;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s4">Splay</span>.ar(<span class="s4">Formant</span>.ar(pitch, pitch.scramble * 2, pitch.scramble)) * 0.1;</p>
+<p class="p6">});</p>
+<p class="p6">)</p>
+<p class="p2"><br></p>
+<p class="p6">n.switchSize(2);</p>
+<p class="p6">n.switchSize(1);</p>
+<p class="p6">n.switchSize(0);</p>
+<p class="p6">n.editGui.object_(Ndef(\aaaaaa));</p>
+<p class="p2"><br></p>
+<p class="p6"><span class="s4">NdefMixer</span>(<span class="s4">Server</span>.internal, 24);</p>
+<p class="p2"><br></p>
+</body>
+</html>

@@ -74,7 +74,7 @@ NodeProxyEditor {
 		
 		var bounds; 
 		ownWindow = inParent.isNil; 				
-		skin = GUI.skins.jit; 		
+		skin = GUI.skins[\jitSmall]; 		
 		font = Font.new(*skin.fontSpecs);
 		nSliders = numSliders;
 		
@@ -173,7 +173,7 @@ NodeProxyEditor {
 				}
 			}); 
 
-			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", nil.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);
+			ez = EZSlider(zone, (330 - sinkWidth)@(skin.buttonHeight), "", \unipolar.asSpec, 				labelWidth: 60, numberWidth: 42, unitWidth: 20);
 			ez.visible_(false);
 			ez.labelView.font_(font).align_(\center);
 
@@ -199,6 +199,15 @@ NodeProxyEditor {
 		[\scrolly, scrolly.slider.bounds];
 	}
 
+	highlightParams { |parOffset, num| 
+		var onCol = Color(1, 0.5, 0.5);
+		var offCol = Color.clear;
+		{ edits.do { |edi, i| 
+			var col = if (i >= parOffset and: (i < (parOffset + num).max(0)), onCol, offCol); 
+			edi.labelView.background_(col.green_([0.5, 0.7].wrapAt(i - parOffset div: 2)));
+		} }.defer;
+	}
+	
 	makeButtonFuncs {
 		buttonFuncs = (
 			CLR: { Button(zone, 30@20).font_(font)
@@ -401,8 +410,8 @@ NodeProxyEditor {
 						sinks[i].string_("-");
 					}, { 
 						if (val.isKindOf(BusPlug), { 
-							mapKey = currentEnvironment.findKeyForValue(val) ? "";
-							sinks[i].object_(mapKey).string_(mapKey);
+							mapKey = val.key;
+							sinks[i].object_(val).string_(mapKey);
 							sl.labelView.string = "->" + key;
 						});
 					});
@@ -420,6 +429,7 @@ NodeProxyEditor {
 		^replaced;
 
 	}
+	
 	updateAllEdits {
 	//	var keyPressed = false;
 		if (proxy.isNil) {
@@ -540,8 +550,8 @@ RecordProxyMixer {
 		^numChannels
 	}
 	
-	font { ^GUI.font.new(*GUI.skins.jit.fontSpecs) }
-	skin { ^GUI.skins.jit }
+	font { ^GUI.font.new(*GUI.skins[\jitSmall].fontSpecs) }
+	skin { ^GUI.skins[\jitSmall] }
 	
 	server { ^proxymixer.proxyspace.server }
 	
