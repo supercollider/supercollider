@@ -213,12 +213,13 @@ NdefGui : JITGui {
 	makeDocBut { |width, height|
 		Button(zone, width@height).font_(font)
 			.states_([[\doc, skin.fontColor, Color.clear]])
-			.action_({ |but, mod|
+			.action_({ |but, mod| 
+				if (object.notNil) { 
 				if (mod.isAlt) {
 					try { ProxySpace.findSpace(object).document(object.key) };
 				} {
 					object.document;
-				}
+				} }
 			})
 	}
 
