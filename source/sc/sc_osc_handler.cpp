@@ -316,6 +316,13 @@ struct cmd_dispatcher<false>
         f();
     }
 
+    template <typename Functor>
+    static void fire_io_callback(Functor f)
+    {
+        f();
+    }
+
+
     static void fire_done_message(nova_endpoint const & endpoint)
     {
         send_done_message (endpoint);
@@ -365,7 +372,7 @@ void fire_trigger(int32_t node_id, int32_t trigger_id, float value)
 
 void sc_notify_observers::send_trigger(int32_t node_id, int32_t trigger_id, float value)
 {
-    fire_trigger(node_id, trigger_id, value);
+    cmd_dispatcher<true>::fire_io_callback(boost::bind(fire_trigger, node_id, trigger_id, value));
 }
 
 void sc_notify_observers::send_notification(const char * data, size_t length)
@@ -749,7 +756,7 @@ void status_perform(nova_endpoint const & endpoint)
 template <bool realtime>
 void handle_status(nova_endpoint const & endpoint)
 {
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(status_perform, endpoint));
+    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(status_perform, endpoint));
 }
 
 void handle_dumpOSC(received_message const & message)
@@ -1069,7 +1076,7 @@ void g_query_tree(int node_id, bool flag, nova_endpoint const & endpoint)
             p << osc::EndMessage;
 
             movable_array<char> message(p.Size(), data.c_array());
-            cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+            cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
             return;
         }
         catch(...)
@@ -1650,7 +1657,7 @@ void handle_s_get(received_message const & msg, nova_endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 template <bool realtime>
@@ -1706,7 +1713,7 @@ void handle_s_getn(received_message const & msg, nova_endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 
@@ -2403,7 +2410,7 @@ void handle_b_query(received_message const & msg, nova_endpoint const & endpoint
 
     movable_array<char> message(p.Size(), data.c_array());
 
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 void b_close_nrt_1(uint32_t index)
@@ -2458,7 +2465,7 @@ void handle_b_get(received_message const & msg, nova_endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 template<typename Alloc>
@@ -2521,7 +2528,7 @@ void handle_b_getn(received_message const & msg, nova_endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 
@@ -2631,7 +2638,7 @@ void handle_c_get(received_message const & msg,
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 template <bool realtime>
@@ -2663,7 +2670,7 @@ void handle_c_getn(received_message const & msg, nova_endpoint const & endpoint)
     p << osc::EndMessage;
 
     movable_array<char> message(p.Size(), return_message.c_array());
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(send_udp_message, message, endpoint));
+    cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
 std::pair<sc_synth_prototype_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> const & defs)
