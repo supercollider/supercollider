@@ -126,11 +126,13 @@ public:
 
     void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
     {
+        boost::mutex::scoped_lock lock(udp_mutex);
         sc_notify_observers::udp_socket.send_to(boost::asio::buffer(data, size), receiver);
     }
 
     void send_tcp(const char * data, unsigned int size, tcp::endpoint const & receiver)
     {
+        boost::mutex::scoped_lock lock(tcp_mutex);
         tcp_socket.connect(receiver);
         boost::asio::write(tcp_socket, boost::asio::buffer(data, size));
     }
@@ -145,6 +147,7 @@ private:
 protected:
     udp::socket udp_socket;
     tcp::socket tcp_socket;
+    boost::mutex udp_mutex, tcp_mutex;
 };
 
 class sc_scheduled_bundles
