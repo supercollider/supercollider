@@ -551,13 +551,17 @@ else:
 
 # libicu
 if env['LANG']:
-    if PLATFORM == 'darwin' or conf.CheckCHeader('unicode/uregex.h'):
-        libraries['libicu'] = Environment(
-             LINKFLAGS = '-licui18n -licuuc -licudata',
-        )
+    # nothing needed if darwin, icucore is linked further down with maccy things
+    if PLATFORM == 'darwin':
+		libraries['libicu'] = Environment()
     else:
-        print "libicu not found"
-        Exit(1)
+        if conf.CheckCHeader('unicode/uregex.h'):
+            libraries['libicu'] = Environment(
+                LINKFLAGS = '-licui18n -licuuc -licudata',
+            )
+        else:
+            print "libicu not found"
+            Exit(1)
 
 # readline
 if env['LANG'] and env['READLINE'] and env['GPL3']:
@@ -1008,7 +1012,7 @@ if PLATFORM == 'darwin':
     langEnv.Append(
                 LIBS = ['icucore'],
                 LINKFLAGS = ['-framework', 'CoreServices'],
-                CPPPATH = ['#include/icu/unicode'])
+                CPPPATH = ['#include/icu'])
 elif PLATFORM == 'linux':
     langEnv.Append(
         LINKFLAGS = ['-Wl,-rpath,build', '-Wl,-rpath,' + FINAL_PREFIX + '/lib'])
