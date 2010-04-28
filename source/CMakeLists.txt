@@ -55,13 +55,6 @@ else()
     target_link_libraries(libsupernova ${SNDFILE})
 endif()
 
-find_library(RT NAMES rt)
-if (NOT RT)
-    message(SEND_ERROR "Cannot find librt")
-else()
-    target_link_libraries(libsupernova ${RT})
-endif()
-
 target_link_libraries(libsupernova oscpack tlsf boost_thread boost_system boost_filesystem boost_program_options)
 target_link_libraries(supernova libsupernova)
 
