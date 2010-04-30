@@ -395,7 +395,8 @@ NodeProxy : BusPlug {
 	// map receiver to proxy input
 	// second argument is an adverb
 	<>> { | proxy, key = \in |
-		^proxy.perform('<<>', this, key)
+		proxy.perform('<<>', this, key);
+		^proxy
 	}
 	
 	// map proxy to receiver input
