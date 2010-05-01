@@ -1927,16 +1927,22 @@ void Wrap_next_aa(Wrap* unit, int inNumSamples)
 
 void Wrap_Ctor(Wrap* unit)
 {
-	if(INRATE(1) == calc_FullRate) {
-		if(INRATE(2) == calc_FullRate)
-			SETCALC(Wrap_next_aa);
-		else
-			SETCALC(Wrap_next_ak);
-    } else {
-		if(INRATE(2) == calc_FullRate)
-			SETCALC(Wrap_next_ka);
-		else
-			SETCALC(Wrap_next_kk);
+	if(BUFLENGTH == 1) {
+			// _aa? Well, yes - that calc func doesn't interpolate
+			// and interpolation is not needed for kr (1 sample/block)
+		SETCALC(Wrap_next_aa);
+	} else {
+		if(INRATE(1) == calc_FullRate) {
+			if(INRATE(2) == calc_FullRate)
+				SETCALC(Wrap_next_aa);
+			else
+				SETCALC(Wrap_next_ak);
+		} else {
+			if(INRATE(2) == calc_FullRate)
+				SETCALC(Wrap_next_ka);
+			else
+				SETCALC(Wrap_next_kk);
+		}
 	}
 
 	unit->m_lo = ZIN0(1);
@@ -2059,16 +2065,22 @@ void Fold_next_aa(Fold* unit, int inNumSamples)
 
 void Fold_Ctor(Fold* unit)
 {
-	if(INRATE(1) == calc_FullRate) {
-		if(INRATE(2) == calc_FullRate)
-			SETCALC(Fold_next_aa);
-		else
-			SETCALC(Fold_next_ak);
+	if(BUFLENGTH == 1) {
+			// _aa? Well, yes - that calc func doesn't interpolate
+			// and interpolation is not needed for kr (1 sample/block)
+		SETCALC(Fold_next_aa);
 	} else {
-		if(INRATE(2) == calc_FullRate)
-			SETCALC(Fold_next_ka);
-		else
-			SETCALC(Fold_next_kk);
+		if(INRATE(1) == calc_FullRate) {
+			if(INRATE(2) == calc_FullRate)
+				SETCALC(Fold_next_aa);
+			else
+				SETCALC(Fold_next_ak);
+		} else {
+			if(INRATE(2) == calc_FullRate)
+				SETCALC(Fold_next_ka);
+			else
+				SETCALC(Fold_next_kk);
+		}
 	}
 
 	unit->m_lo = ZIN0(1);
@@ -2189,16 +2201,22 @@ void Clip_next_aa(Clip* unit, int inNumSamples)
 
 void Clip_Ctor(Clip* unit)
 {
-	if(INRATE(1) == calc_FullRate) {
-		if(INRATE(2) == calc_FullRate)
-			SETCALC(Clip_next_aa);
-		else
-			SETCALC(Clip_next_ak);
+	if(BUFLENGTH == 1) {
+			// _aa? Well, yes - that calc func doesn't interpolate
+			// and interpolation is not needed for kr (1 sample/block)
+		SETCALC(Clip_next_aa);
 	} else {
-		if(INRATE(2) == calc_FullRate)
-			SETCALC(Clip_next_ka);
-		else
-			SETCALC(Clip_next_kk);
+		if(INRATE(1) == calc_FullRate) {
+			if(INRATE(2) == calc_FullRate)
+				SETCALC(Clip_next_aa);
+			else
+				SETCALC(Clip_next_ak);
+		} else {
+			if(INRATE(2) == calc_FullRate)
+				SETCALC(Clip_next_ka);
+			else
+				SETCALC(Clip_next_kk);
+		}
 	}
 
 	unit->m_lo = ZIN0(1);
