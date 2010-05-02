@@ -25,9 +25,10 @@ Help {
 	*initClass {
 		var	dir;
 		cachePath = Platform.userAppSupportDir +/+ "SC_helptree.cache.txt";
-		categoriesSkipThese = [Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen,
-						UnaryOpUGen, BasicOpUGen, LagControl, TrigControl, MultiOutUGen, ChaosGen,
-			Control, OutputProxy, AbstractOut, AbstractIn, Object, Class];
+		categoriesSkipThese = [
+			Filter, BufInfoUGenBase, InfoUGenBase, MulAdd, BinaryOpUGen,
+			UnaryOpUGen, BasicOpUGen, MultiOutUGen, ChaosGen,
+			OutputProxy, AbstractOut, AbstractIn, Object, Class, UGen];
 		if(\SCImageFilter.asClass.notNil) {
 			categoriesSkipThese = categoriesSkipThese.add(\SCImageFilter.asClass)
 		};
