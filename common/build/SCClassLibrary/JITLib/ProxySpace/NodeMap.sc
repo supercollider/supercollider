@@ -136,6 +136,10 @@ NodeMap {
 				}
 			}
 	}
+	
+	addToEvent { arg event;	
+		settings.do { |x| x.addToEvent(event) }
+	}
 
 	addToBundle { arg bundle, target;
 			var msgs;

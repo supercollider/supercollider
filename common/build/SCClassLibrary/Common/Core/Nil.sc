@@ -79,6 +79,7 @@ Nil {
 	addAll { arg array; ^array.asArray }
 	++ { arg array; ^array }
 	asCollection { ^[] }
+	remove {}
 
 	// ControlView support
 	set {}

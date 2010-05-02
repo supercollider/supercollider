@@ -5,12 +5,12 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.46">
+<meta name="CocoaVersion" content="1038.29">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000bf}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
@@ -39,7 +39,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span><a href="../ServerArchitecture/Server-Command-Reference.html"><b>Server-Command-Reference</b></a></span></p>
 <p class="p2"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p2"><br></p>
-<p class="p3">There are two parts to SuperCollider. One part is the language application and another is<span class="Apple-converted-space"> </span>a synthesis server that can run either inside the language application, or as a separate program on the same machine, or run on a different computer across a network connection. The language application sends command messages to the server using a subset of the Open Sound Control protocol.</p>
+<p class="p3">There are two parts to SuperCollider. One part is the language application and another is a synthesis server that can run either inside the language application, or as a separate program on the same machine, or run on a different computer across a network connection. The language application sends command messages to the server using a subset of the Open Sound Control protocol.</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Booting a Server</b></p>
 <p class="p2"><br></p>
@@ -68,7 +68,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">We can also create a server to run. To create a server object we need to provide the IP address or the server and a port number. Port numbers are somewhat arbitrary but they should not conflict with common protocols like telnet, ftp http, etc. The IP address 127.0.0.1 is defined to mean the local host. This is the IP address to use for running a server on your own machine.</p>
 <p class="p2"><br></p>
 <p class="p6">// create a server object that will run on the local host using port #58009</p>
-<p class="p7">s = <span class="s2">Server</span>(<span class="s5">\myServer</span>, <span class="s2">NetAddr</span>(<span class="s6">"127.0.0.1"</span>, 58009));<span class="Apple-converted-space"></span></p>
+<p class="p7">s = <span class="s2">Server</span>(<span class="s5">\myServer</span>, <span class="s2">NetAddr</span>(<span class="s6">"127.0.0.1"</span>, 58009));</p>
 <p class="p8"><br></p>
 <p class="p6"><span class="s1">s.boot; </span>//start the server</p>
 <p class="p8"><br></p>
@@ -76,17 +76,17 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">It is not possible to boot a server on a remote machine, but if you have one running already or you know of one running, you can send messages to it. You create the server object using the IP address of the machine running the server and the port it is using.</p>
 <p class="p2"><br></p>
-<p class="p6">// create a server object for talking to the server running on a machine having<span class="Apple-converted-space"></span></p>
+<p class="p6">// create a server object for talking to the server running on a machine having</p>
 <p class="p6">// IP address 192.168.0.47 using port #57110</p>
-<p class="p7">s = <span class="s2">Server</span>(<span class="s5">\myServer</span>, <span class="s2">NetAddr</span>(<span class="s6">"192.168.0.47"</span>, 57110));<span class="Apple-converted-space"></span></p>
+<p class="p7">s = <span class="s2">Server</span>(<span class="s5">\myServer</span>, <span class="s2">NetAddr</span>(<span class="s6">"192.168.0.47"</span>, 57110));</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Making Sound</b></p>
 <p class="p2"><br></p>
-<p class="p3">(note: This tutorial uses raw OSC commands as described in <a href="../ServerArchitecture/Server-Command-Reference.html"><span class="s2"><b>Server-Command-Reference</b></span></a><b>, </b>rather than the classes <a href="../ServerArchitecture/Synth.html"><span class="s2"><b>Synth</b></span></a> and <a href="../ServerArchitecture/Group.html"><span class="s2"><b>Group</b></span></a>.<span class="Apple-converted-space"> </span>See those helpfiles also for some simpler ways of working with Synths.<span class="Apple-converted-space"> </span>This tutorial explains the basic underlying design of Synths and SynthDefs).</p>
+<p class="p3">(note: This tutorial uses raw OSC commands as described in <a href="../ServerArchitecture/Server-Command-Reference.html"><span class="s2"><b>Server-Command-Reference</b></span></a><b>, </b>rather than the classes <a href="../ServerArchitecture/Synth.html"><span class="s2"><b>Synth</b></span></a> and <a href="../ServerArchitecture/Group.html"><span class="s2"><b>Group</b></span></a>. See those helpfiles also for some simpler ways of working with Synths. This tutorial explains the basic underlying design of Synths and SynthDefs).</p>
 <p class="p2"><br></p>
-<p class="p3">Now lets make some audio.<span class="Apple-converted-space"></span></p>
+<p class="p3">Now lets make some audio.</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s1">s = </span><span class="s2">Server</span><span class="s1">.local; </span>// assign it to interpreter variable 's'<span class="Apple-converted-space"></span></p>
+<p class="p6"><span class="s1">s = </span><span class="s2">Server</span><span class="s1">.local; </span>// assign it to interpreter variable 's'</p>
 <p class="p2"><br></p>
 <p class="p3">Boot it.</p>
 <p class="p2"><br></p>
@@ -102,7 +102,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="s1">}).writeDefFile; </span>// write the def to disk in the default directory synthdefs/</p>
 <p class="p7">)</p>
 <p class="p2"><br></p>
-<p class="p3">Send the SynthDef to the server. <span class="Apple-converted-space"></span></p>
+<p class="p3">Send the SynthDef to the server.</p>
 <p class="p2"><br></p>
 <p class="p7">s.sendSynthDef(<span class="s6">"sine"</span>);</p>
 <p class="p8"><br></p>
@@ -138,9 +138,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p5"><b>Using Arguments</b></p>
 <p class="p9"><br></p>
-<p class="p3">It is useful to be able to specify parameters of a synth when it is created. Here a frequency argument is added to the sine SynthDef so that we can create it<span class="Apple-converted-space"></span></p>
+<p class="p3">It is useful to be able to specify parameters of a synth when it is created. Here a frequency argument is added to the sine SynthDef so that we can create it</p>
 <p class="p2"><br></p>
-<p class="p6"><span class="s1">s = </span><span class="s2">Server</span><span class="s1">.local; </span>// assign it to interpreter variable 's'<span class="Apple-converted-space"></span></p>
+<p class="p6"><span class="s1">s = </span><span class="s2">Server</span><span class="s1">.local; </span>// assign it to interpreter variable 's'</p>
 <p class="p2"><br></p>
 <p class="p7">s.boot;</p>
 <p class="p8"><br></p>
@@ -149,7 +149,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> osc;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>osc = <span class="s2">SinOsc</span>.ar(freq, 0, 0.1); <span class="s7">// 800 Hz sine oscillator</span></p>
 <p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Out</span><span class="s1">.ar(0, osc); </span>// send output to audio bus zero.</p>
-<p class="p7">}).send(s);</p>
+<p class="p7">}).add;</p>
 <p class="p7">)</p>
 <p class="p8"><br></p>
 <p class="p8"><br></p>
@@ -185,7 +185,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">Playing three voices at once using bundles. Bundles allow you to send multiple messages with a time stamp. The messages in the bundle will be scheduled to be performed together. The time argument to sendBundle is an offset into the future from the current thread's logical time.</p>
 <p class="p8"><br></p>
 <p class="p7">(</p>
-<p class="p7">s.sendBundle(0.2,<span class="Apple-converted-space"></span></p>
+<p class="p7">s.sendBundle(0.2,</p>
 <p class="p7"><span class="Apple-tab-span">	</span>[<span class="s6">"/s_new"</span>, <span class="s6">"sine"</span>, x = s.nextNodeID, 1, 1, <span class="s6">"freq"</span>, 800],</p>
 <p class="p7"><span class="Apple-tab-span">	</span>[<span class="s6">"/s_new"</span>, <span class="s6">"sine"</span>, y = s.nextNodeID, 1, 1, <span class="s6">"freq"</span>, 1001],</p>
 <p class="p7"><span class="Apple-tab-span">	</span>[<span class="s6">"/s_new"</span>, <span class="s6">"sine"</span>, z = s.nextNodeID, 1, 1, <span class="s6">"freq"</span>, 1202]);</p>
@@ -219,7 +219,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>trg = <span class="s2">Decay2</span>.ar(<span class="s2">Impulse</span>.ar(rate,0,0.3), 0.01, 0.3);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>osc = {<span class="s2">WhiteNoise</span>.ar(trg)}.dup;</p>
 <p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span><span class="s2">Out</span><span class="s1">.ar(0, osc); </span>// send output to audio bus zero.</p>
-<p class="p7">}).send(s);</p>
+<p class="p7">}).add;</p>
 <p class="p7">)</p>
 <p class="p9"><br></p>
 <p class="p7">(</p>
@@ -229,7 +229,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>in = <span class="s2">In</span>.ar(0,2);</p>
 <p class="p6"><span class="s1"><span class="Apple-tab-span">	</span></span>// use ReplaceOut to overwrite the previous contents of the bus.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">ReplaceOut</span>.ar(0, <span class="s2">CombN</span>.ar(in, 0.5, delay, decay, 1, in));</p>
-<p class="p7">}).send(s);</p>
+<p class="p7">}).add;</p>
 <p class="p7">)</p>
 <p class="p8"><br></p>
 <p class="p6">// start the pulse</p>
@@ -259,7 +259,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6">// define a control</p>
 <p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"line"</span>, { <span class="s2">arg</span> i_bus=10, i_start=1000, i_end=500, i_time=1;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">ReplaceOut</span>.kr(i_bus, <span class="s2">Line</span>.kr(i_start, i_end, i_time, doneAction: 2));</p>
-<p class="p7">}).send(s)</p>
+<p class="p7">}).add</p>
 <p class="p7">)</p>
 <p class="p9"><br></p>
 <p class="p3">Play a 900 Hz sine wave.</p>
@@ -278,7 +278,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p7">s.sendMsg(<span class="s6">"/c_set"</span>, 10, 1200);</p>
 <p class="p8"><br></p>
-<p class="p3">Start a control process that writes to bus #10.<span class="Apple-converted-space"></span></p>
+<p class="p3">Start a control process that writes to bus #10.</p>
 <p class="p3">The EnvGen doneAction will free this node automatically when it finishes.</p>
 <p class="p2"><br></p>
 <p class="p7">s.sendMsg(<span class="s6">"/s_new"</span>, <span class="s6">"line"</span>, s.nextNodeID, 0, 1);</p>
@@ -297,14 +297,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>freq = Lag.kr(freq,0.1);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,<span class="s2">Pan2</span>.ar(<span class="s2">RLPF</span>.ar(<span class="s2">Saw</span>.ar(<span class="s2">[freq,freq*2]</span>,amp),cutoff,rezz),</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pan));</p>
-<p class="p7"><span class="Apple-tab-span">	</span>}).load(s); <span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).load(s);</p>
 <p class="p8"><br></p>
 <p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"envsaw"</span>,{ <span class="s2">arg</span> out=100, pan=0, sustain=0.5, freq=500, amp=1, cutoff=10000, rezz=1;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> env;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>env = <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.perc(0.01, sustain, 0.2), doneAction:0, gate:amp);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(out,<span class="s2">Pan2</span>.ar(<span class="s2">RLPF</span>.ar(<span class="s2">Saw</span>.ar(<span class="s2">Lag</span>.kr(freq,0.1),env),cutoff,rezz)*amp,</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pan));</p>
-<p class="p7"><span class="Apple-tab-span">	</span>}).load(s); <span class="Apple-converted-space"> </span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>}).load(s);</p>
 <p class="p8"><br></p>
 <p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"delay"</span>, { <span class="s2">arg</span> out=0, delay = 0.4, decay = 14;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> in;</p>
@@ -339,8 +339,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span>cutoff = Pfunc({500.rand2+1000}).asStream;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>rezz = 0.5;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">inf</span>.do({saw.set(<span class="s6">"freq"</span>, freq.next.midicps, <span class="s6">"cutoff"</span>, cutoff.next, <span class="s6">"rezz"</span>, rezz, <span class="s6">"amp"</span>, 0.1, <span class="s6">"out"</span>, 0);</p>
-<p class="p7"><span class="Apple-converted-space">  </span>(wait.next*offset).wait});});</p>
-<p class="p7"><span class="Apple-converted-space">  </span>timer.sched(0,r);<span class="Apple-converted-space"></span></p>
+<p class="p7">(wait.next*offset).wait});});</p>
+<p class="p7">timer.sched(0,r);</p>
 <p class="p7">});</p>
 <p class="p8"><br></p>
 <p class="p7">timer.sched(0,{</p>
@@ -348,9 +348,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="s2"><span class="Apple-tab-span">	</span>r=Routine</span>({ <span class="s2">var</span> wait, rate;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>wait = <span class="s2">Pseq</span>([0.25],<span class="s2">inf</span>).asStream;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>rate = Pfunc({0.5.rand}).asStream;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">inf</span>.do({<span class="s2">Synth</span>.before(delay, <span class="s6">"sampler"</span>, [<span class="s5">\bufnum</span>, space, <span class="s5">\trig</span>, 1, <span class="s5">\amp</span>,0.1, <span class="s5">\rate</span>, <span class="s2">rate.next</span>, <span class="s5">\sustain</span>, wait.next]); <span class="Apple-converted-space"> </span></p>
-<p class="p7"><span class="Apple-converted-space">  </span>(wait.next*offset).wait});});</p>
-<p class="p7"><span class="Apple-converted-space">  </span>timer.sched(0,r);<span class="Apple-converted-space"></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">inf</span>.do({<span class="s2">Synth</span>.before(delay, <span class="s6">"sampler"</span>, [<span class="s5">\bufnum</span>, space, <span class="s5">\trig</span>, 1, <span class="s5">\amp</span>,0.1, <span class="s5">\rate</span>, <span class="s2">rate.next</span>, <span class="s5">\sustain</span>, wait.next]);</p>
+<p class="p7">(wait.next*offset).wait});});</p>
+<p class="p7">timer.sched(0,r);</p>
 <p class="p7">});</p>
 <p class="p8"><br></p>
 <p class="p7">)</p>
@@ -358,12 +358,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><br></p>
 <p class="p5"><b>Sequencing with Patterns</b></p>
 <p class="p7">(</p>
-<p class="p6">//sappy emo electronica example...<span class="Apple-converted-space"></span></p>
+<p class="p6">//sappy emo electronica example...</p>
 <p class="p7"><span class="s2">Tempo</span>.bpm = 120;</p>
-<p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"patternefx_Ex"</span>, { <span class="s2">arg</span> out, in;<span class="Apple-converted-space"></span></p>
+<p class="p10"><span class="s2">SynthDef</span><span class="s1">(</span>"patternefx_Ex"<span class="s1">, { </span><span class="s2">arg</span><span class="s1"> out, in;</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> audio, efx;</p>
 <p class="p7"><span class="Apple-tab-span">	</span>audio = <span class="s2">In</span>.ar([20,21],2);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>efx=<span class="s2">CombN</span>.ar(audio, 0.5, [0.24,0.4], 2, 1);<span class="Apple-converted-space"></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>efx=<span class="s2">CombN</span>.ar(audio, 0.5, [0.24,0.4], 2, 1);</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar([0,1], audio+efx);</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).load(s);</p>
 <p class="p8"><br></p>
@@ -376,7 +376,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Pulse</span>.ar(freq,0.05),</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>cut, rez),</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pan) * <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.linen(0.01, 1, 0.3), gate, amp, doneAction:2);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).load(s);</p>
 <p class="p8"><br></p>
 <p class="p7"><span class="s2">SynthDef</span>(<span class="s6">"bass_Ex"</span>, { <span class="s2">arg</span> out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;</p>
@@ -386,7 +386,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">SinOsc</span>.ar(freq,0.05),</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>cut, rez),</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>pan) * <span class="s2">EnvGen</span>.kr(<span class="s2">Env</span>.linen(0.01, 1, 0.3), gate, amp, doneAction:2);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>)<span class="Apple-converted-space"></span></p>
+<p class="p7"><span class="Apple-tab-span">	</span>)</p>
 <p class="p7"><span class="Apple-tab-span">	</span>}).load(s);</p>
 <p class="p8"><br></p>
 <p class="p7"><span class="s2">SynthDescLib</span>.global.read;</p>
@@ -397,7 +397,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">Ptpar<span class="s1">([</span></p>
 <p class="p7">0,<span class="s2">Pbind</span>(<span class="s5">\instrument</span>,<span class="s5">\pattern_Ex</span>, <span class="s5">\out</span>, 20, <span class="s5">\dur</span>,<span class="s2">Pseq</span>([2],16), <span class="s5">\root</span>,[-24,-17], <span class="s5">\degree</span>,<span class="s2">Pseq</span>([0,3,5,7,9,11,5,1],2), <span class="Apple-tab-span">	</span><span class="s5">\pan</span>,1,<span class="s5">\cut</span>,<span class="s2">Pxrand</span>([1000,500,2000,300],16), <span class="s5">\rez</span>,<span class="s2">Pfunc</span>({0.7.rand +0.3}), <span class="s5">\amp</span>,0.12),</p>
 <p class="p8"><br></p>
-<p class="p7">0.5,<span class="s2">Pbind</span>(<span class="s5">\instrument</span>,<span class="s5">\pattern_Ex</span>, <span class="s5">\out</span>, 20, <span class="s5">\dur</span>,<span class="s2">Pseq</span>([<span class="s2">Pseq</span>([2],15),1.5],1),<span class="Apple-converted-space"> </span><span class="s5">\root</span>,-12, <span class="s5">\degree</span>,<span class="s2">Pseq</span>([0,3,5,7,9,11,5,1],2), <span class="s5">\pan</span>,-1,<span class="s5">\cut</span>,2000, <span class="s5">\rez</span>,0.6, <span class="s5">\amp</span>,0.1);</p>
+<p class="p7">0.5,<span class="s2">Pbind</span>(<span class="s5">\instrument</span>,<span class="s5">\pattern_Ex</span>, <span class="s5">\out</span>, 20, <span class="s5">\dur</span>,<span class="s2">Pseq</span>([<span class="s2">Pseq</span>([2],15),1.5],1), <span class="s5">\root</span>,-12, <span class="s5">\degree</span>,<span class="s2">Pseq</span>([0,3,5,7,9,11,5,1],2), <span class="s5">\pan</span>,-1,<span class="s5">\cut</span>,2000, <span class="s5">\rez</span>,0.6, <span class="s5">\amp</span>,0.1);</p>
 <p class="p7">]),</p>
 <p class="p8"><br></p>
 <p class="p11">Ptpar<span class="s1">([</span></p>
