@@ -166,9 +166,6 @@ PatternControl : StreamControl {
 		array = nil;
 	}
 
-	controlNames { arg nodeMap;
-		^nodeMap.settings.collect { |x| ControlName(x.key) }
-	}
 }
 
 
