@@ -72,9 +72,6 @@
 + Pdiff { *categories{ ^ #["Streams-Patterns-Events>Patterns>Math"]  }}
 + Prorate { *categories{ ^ #["Streams-Patterns-Events>Patterns>Math"]  }}
 
-+ Preduce { *categories{ ^ #["Streams-Patterns-Events>Patterns>Math"]  }}
-+ Pperform { *categories{ ^ #["Streams-Patterns-Events>Patterns>Math"]  }}
-
 + Pseq { *categories{ ^ #["Streams-Patterns-Events>Patterns>List"]  }}
 + Prand { *categories{ ^ #["Streams-Patterns-Events>Patterns>List"]  }}
 + Pxrand { *categories{ ^ #["Streams-Patterns-Events>Patterns>List"]  }}
