@@ -196,7 +196,6 @@
 	asFlowView { arg bounds;
 		^FlowView(nil,bounds)
 	}
-	remove {}
 }
 
 
