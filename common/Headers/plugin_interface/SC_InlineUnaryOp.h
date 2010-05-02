@@ -46,7 +46,7 @@ inline float_type trunc(float_type arg)
 
 inline bool sc_isnan(float x)
 {
-#if defined(__cplusplus) && defined(__GNUC__) && __GNUC__ >= 4
+#if defined(__cplusplus) && defined(__GNUC__) && _GLIBCXX_HAVE_ISNAN
 	return std::isnan(x);
 #else
 	return (!(x >= 0.f || x <= 0.f));
