@@ -10,22 +10,26 @@ Plot {
 	var valueCache;
 	
 	*initClass {
-		StartUp.add( {
-			GUI.skin.put(\plot, (
-				gridFont: GUI.current !? { Font("Garamond", 9) },
-				gridColorX: Color.grey(0.7),
-				gridColorY: Color.grey(0.7),
-				fontColor: Color.grey(0.3),
-				plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
-				background: Color.new255(235, 235, 235),
-				//gridLinePattern: FloatArray[1, 5],
-				gridLinePattern: FloatArray[1, 0],
-				gridLineSmoothing: false,
-				labelX: "",
-				labelY: "",
-				expertMode: false
-			));
-		} );
+		StartUp.add {
+				GUI.skin.put(\plot, (
+					gridColorX: Color.grey(0.7),
+					gridColorY: Color.grey(0.7),
+					fontColor: Color.grey(0.3),
+					plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
+					background: Color.new255(235, 235, 235),
+					//gridLinePattern: FloatArray[1, 5],
+					gridLinePattern: FloatArray[1, 0],
+					gridLineSmoothing: false,
+					labelX: "",
+					labelY: "",
+					expertMode: false
+				));
+				GUI.current !? { 
+					Font.findFirstAvailable(#["Garamond", "Gill Sans", "Times"], { |fontName| 
+						GUI.skin.at(\plot).put(\gridFont, Font(fontName, 9)) 
+					}) 
+				};
+		}
 	}
 	
 	*new { |plotter|
@@ -110,12 +114,12 @@ Plot {
 	drawNumbersX {
 		var top = plotBounds.top;
 		var base = plotBounds.bottom;
-		
+		Pen.fillColor = fontColor;
 		this.drawOnGridX { |hpos, val, i|
 			var string = val.asStringPrec(5) ++ domainSpec.units;
 			Pen.font = font;
-			Pen.strokeColor = fontColor;
-			Pen.stringAtPoint( string, hpos @ base);
+			Pen.stringAtPoint(string, hpos @ base);
+			Pen.stroke;
 		};
 		Pen.stroke;
 	
@@ -125,17 +129,16 @@ Plot {
 	
 		var left = plotBounds.left;
 		var right = plotBounds.right;
+		Pen.fillColor = fontColor;
 		
 		this.drawOnGridY { |vpos, val, i|
 			var string = val.asStringPrec(5).asString ++ spec.units;
 			if(gridOnX.not or: { i > 0 }) {
 				Pen.font = font;
-				Pen.strokeColor = fontColor;
-				Pen.stringAtPoint( string, left @ vpos);
+				Pen.stringAtPoint(string, left @ vpos);
 			}
 		};
 		
-		Pen.strokeColor = fontColor;
 		Pen.stroke;
 
 	}
@@ -187,7 +190,7 @@ Plot {
 			sbounds = try { labelX.bounds(font) } ? 0;
 			Pen.font = font;
 			Pen.strokeColor = fontColor;
-			Pen.stringAtPoint( labelX,
+			Pen.stringAtPoint(labelX,
 				plotBounds.right - sbounds.width @ plotBounds.bottom
 			)
 		};
@@ -195,7 +198,7 @@ Plot {
 			sbounds = try { labelY.bounds(font) } ? 0;
 			Pen.font = font;
 			Pen.strokeColor = fontColor;
-			Pen.stringAtPoint( labelY,
+			Pen.stringAtPoint(labelY,
 				plotBounds.left - sbounds.width - 3 @ plotBounds.top
 			)
 		};
