@@ -348,16 +348,6 @@ SCContainerView : SCView { // abstract class
 		children.copy.do { |child| child.remove };
 	}
 
-	relativeOrigin {
-		this.deprecated(thisMethod);
-		^relativeOrigin;
-	}
-	relativeOrigin_ { arg bool;
-		this.deprecated(thisMethod);
-		relativeOrigin = bool;
-		this.setProperty(\relativeOrigin, bool);
-	}
-
 	addFlowLayout { arg margin, gap;
 		relativeOrigin.if
 			 {this.decorator_( FlowLayout( this.bounds.moveTo(0, 0), margin, gap ) )}
@@ -1394,17 +1384,6 @@ SCUserView : SCView {
 	clearOnRefresh_ { |bool|
 		clearOnRefresh = bool;
 		this.setProperty(\clearOnRefresh, bool);			}
-
-	relativeOrigin {
-		this.deprecated(thisMethod);
-		^relativeOrigin;
-	}
-
-	relativeOrigin_ { |bool|
-		this.deprecated(thisMethod);
-		relativeOrigin = bool;
-		this.setProperty(\relativeOrigin, bool);
-	}
 
 	animate_ { |bool|
 		this.setProperty(\animate, bool);
