@@ -23,8 +23,7 @@
 - (void) loadFile:(NSString *)file;
 - (void) showButtons: (BOOL)state;
 - (IBAction) triggerDone: (id)sender;
-- (IBAction) triggerLine: (id)sender;
-- (IBAction) triggerBlock: (id)sender;
 - (IBAction) triggerExecute: (id)sender;
+- (IBAction) triggerExecuteFile: (id)sender;
 
 @end

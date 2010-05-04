@@ -69,7 +69,7 @@ extern void rtf2txt(char *txt);
 	[self showButtons:NO];
 }
 
-- (IBAction) triggerLine: (id)sender
+- (IBAction) triggerExecute: (id)sender
 {
 	NSRange range = [textView selectedRange];
 	NSString *text = [textView text];
@@ -83,13 +83,7 @@ extern void rtf2txt(char *txt);
 	[self showButtons:NO];
 }
 
-- (IBAction) triggerBlock: (id)sender
-{
-	[textView resignFirstResponder];
-	[self showButtons:NO];
-}
-
-- (IBAction) triggerExecute: (id)sender
+- (IBAction) triggerExecuteFile: (id)sender
 {
 	if (target && [target respondsToSelector:selector]) [target performSelector:selector withObject:[textView text]];
 }
