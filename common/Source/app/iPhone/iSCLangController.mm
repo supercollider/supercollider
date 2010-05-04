@@ -316,18 +316,9 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	sc_GetUserAppSupportDirectory(supportpath, 256);
 	NSString *support = [NSString stringWithCString:supportpath encoding:NSASCIIStringEncoding];
 
+	if (![manager fileExistsAtPath:support]) [manager createDirectoryAtPath:support attributes:nil];
+
 	NSString *dir;
-/*
-	NSString *dir = [support stringByAppendingString:@"/SCClassLibrary"];
-	if (![manager fileExistsAtPath:dir])
-	{
-		NSString *from = [s stringByAppendingString:@"/SCClassLibrary"];
-		if ([manager fileExistsAtPath:from])
-		{
-			[manager copyItemAtPath:from toPath:dir error:&error];
-		}
-	}
-*/
 	dir = [support stringByAppendingString:@"/SCClassLibrary"];
 	if (![manager fileExistsAtPath:dir])
 	{
@@ -345,6 +336,9 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		[manager copyItemAtPath:from toPath:dest error:&error];
 		from = [s stringByAppendingString:@"/backwards_compatibility"];
 		dest = [dir stringByAppendingString:@"/backwards_compatibility"];
+		[manager copyItemAtPath:from toPath:dest error:&error];
+		from = [s stringByAppendingString:@"/JITLib"];
+		dest = [dir stringByAppendingString:@"/JITLib"];
 		[manager copyItemAtPath:from toPath:dest error:&error];
 	}
 

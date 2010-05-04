@@ -94,7 +94,8 @@
 		77597B03112332CF00D2A968 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B02112332CF00D2A968 /* MediaPlayer.framework */; };
 		77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B04112332CF00D2A968 /* UIKit.framework */; };
 		77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B09112332ED00D2A968 /* Foundation.framework */; };
-		77597B631123355500D2A968 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEA1123320700D2A968 /* libsndfile_iphone.a */; };
+		776B2A97119075EF001F253D /* JITLib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 776B2A70119075EC001F253D /* JITLib */; };
+		776B2B4A11907A38001F253D /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEA1123320700D2A968 /* libsndfile_iphone.a */; };
 		778F12C00F50A92100CB6629 /* synthdefs in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129E0F50A92100CB6629 /* synthdefs */; };
 		778F12C10F50A92100CB6629 /* sounds in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129F0F50A92100CB6629 /* sounds */; };
 		778F12C20F50A92100CB6629 /* plugins in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12AB0F50A92100CB6629 /* plugins */; };
@@ -147,6 +148,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 7;
 			files = (
+				776B2A97119075EF001F253D /* JITLib in CopyFiles */,
 				778F18480F50B1D000CB6629 /* backwards_compatibility in CopyFiles */,
 				778F18490F50B1D000CB6629 /* Common in CopyFiles */,
 				778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */,
@@ -419,6 +421,7 @@
 		77597B04112332CF00D2A968 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = iphoneos2.2/System/Library/Frameworks/UIKit.framework; sourceTree = "<group>"; };
 		77597B09112332ED00D2A968 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = iphoneos2.2/System/Library/Frameworks/Foundation.framework; sourceTree = "<group>"; };
 		775D93940F509B7A00112D87 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = ../common/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
+		776B2A70119075EC001F253D /* JITLib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = JITLib; path = ../common/build/SCClassLibrary/JITLib; sourceTree = SOURCE_ROOT; };
 		778F129E0F50A92100CB6629 /* synthdefs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = synthdefs; path = "iPhone Resources/synthdefs"; sourceTree = "<group>"; };
 		778F129F0F50A92100CB6629 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = "iPhone Resources/sounds"; sourceTree = "<group>"; };
 		778F12AB0F50A92100CB6629 /* plugins */ = {isa = PBXFileReference; lastKnownFileType = folder; name = plugins; path = "iPhone Resources/plugins"; sourceTree = "<group>"; };
@@ -446,7 +449,7 @@
 				77597B03112332CF00D2A968 /* MediaPlayer.framework in Frameworks */,
 				77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */,
 				77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */,
-				77597B631123355500D2A968 /* libsndfile_iphone.a in Frameworks */,
+				776B2B4A11907A38001F253D /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,6 +494,7 @@
 				778F18470F50B1D000CB6629 /* Platform */,
 				775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */,
 				7708A0AC0FBF9B7A00A151DD /* SuperCollider_Browser.xib */,
+				776B2A70119075EC001F253D /* JITLib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1022,7 +1026,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# shell script goes here\nexport CODESIGN_ALLOCATE=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate\nexport COPYFILE_DISABLE\nexport COPY_EXTENDED_ATTRIBUTES_DISABLE\n\n/usr/local/bin/ldid -S $SYMROOT/Cydia-iphoneos/SuperCollider.app/SuperCollider\nmkdir -p $SYMROOT/Cydia/SuperCollider/Applications\nmkdir -p $SYMROOT/Cydia/SuperCollider/DEBIAN\ncp iPhone\\ Resources/control $SYMROOT/Cydia/SuperCollider/DEBIAN/\ncp -R $SYMROOT/Cydia-iphoneos/SuperCollider.app $SYMROOT/Cydia/SuperCollider/Applications/\n\ncd $SYMROOT/Cydia\nrm -f SuperCollider.deb\n/sw/bin/dpkg-deb -b SuperCollider\nrm -Rf SuperCollider\n";
+			shellScript = "# shell script goes here\nexport CODESIGN_ALLOCATE=/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/codesign_allocate\nexport COPYFILE_DISABLE\nexport COPY_EXTENDED_ATTRIBUTES_DISABLE\n\n/usr/local/bin/ldid -S $SYMROOT/Cydia-iphoneos/SuperCollider.app/SuperCollider\nmkdir -p $SYMROOT/Cydia/SuperCollider/Applications\nmkdir -p $SYMROOT/Cydia/SuperCollider/DEBIAN\ncp iPhone\\ Resources/control $SYMROOT/Cydia/SuperCollider/DEBIAN/\ncp -R $SYMROOT/Cydia-iphoneos/SuperCollider.app $SYMROOT/Cydia/SuperCollider/Applications/\n\ncd $SYMROOT/Cydia\nrm -f SuperCollider.deb\n/sw/bin/dpkg-deb -b SuperCollider\nrm -Rf SuperCollider\n\n#rm -Rf Packages\n#/sw/bin/dpkg-scanpackages . /dev/null > Packages\n#bzip2 Packages";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1133,7 +1137,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1169,7 +1173,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1219,7 +1223,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos3.0;
