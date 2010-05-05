@@ -1,12 +1,12 @@
 //
-//  DirBrowserView.m
+//  FileBrowserViewController.m
 //  iscsynth
 //
 //  Created by Axel Balley on 26/10/08.
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#import "DirBrowserView.h"
+#import "FileBrowserViewController.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,8 +18,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#define TOOLBAR_HEIGHT		44
-
+/*
 #define FILETRANSFER_PORT	15000
 
 struct Header
@@ -30,7 +29,7 @@ struct Header
 
 @implementation FileTransferController
 
-- (id) initWithNibName:(NSString *)name bundle:(NSBundle *)bundle browser:(DirBrowserView *)b
+- (id) initWithNibName:(NSString *)name bundle:(NSBundle *)bundle browser:(FileBrowserViewController *)b
 {
 	if (self=[super initWithNibName:name bundle:bundle])
 	{
@@ -39,11 +38,7 @@ struct Header
 		thread = 0;
 
 		sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-/*
-		unsigned long opt = fcntl(sock, F_GETFL);
-		opt |= O_NONBLOCK;
-		fcntl(sock, F_SETFL, opt); 
-*/		
+
 		int val = 1;
 		if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &val, sizeof(int)))
 		{
@@ -63,7 +58,6 @@ struct Header
 			shutdown(sock, 0);
 			sock = 0;
 			return self;
-			//return 0;
 		}
 
 		if (listen(sock, 1))
@@ -72,7 +66,6 @@ struct Header
 			shutdown(sock, 0);
 			sock = 0;
 			return self;
-			//return 0;
 		}		
 	}
 	return self;
@@ -233,60 +226,80 @@ struct Header
 	[service release];
 	[super dealloc];
 }
-
-
 @end
 
-@implementation DirBrowserViewController
+*/
 
+@implementation FileBrowserViewController
 
-- (id) initWithNibName:(NSString *)name bundle:(NSBundle *)bundle
+- (id)initWithCoder:(NSCoder *)decoder
 {
-    if (self = [super initWithNibName:name bundle:bundle]) {
-        // Initialization code
-		array = 0;
+    if (self = [super initWithCoder:decoder])
+	{
 		target = 0;
 		selector = 0;
-		path = 0;
-		root = 0;
-
-		//controller = 0;
-		
-/*
-		table = [[UITableView alloc] init];
-		[self addSubview:table];
-		[table setScrollEnabled:YES];
-		[table setDelegate:self];
-		[table setDataSource:self];
-		[table setBounces:YES];
-		
-		toolbar = [[UIToolbar alloc] init];
-		refreshItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(triggerRefresh:)];
-		[refreshItem setStyle:UIBarButtonItemStyleBordered];
-		listenItem = [[UIBarButtonItem alloc] initWithTitle:@"Listen" style:UIBarButtonItemStyleBordered target:self action:@selector(triggerListen:)];
-		[toolbar setItems:[NSArray arrayWithObjects:refreshItem,listenItem,nil]];
-*/		
-		fileController = [[FileTransferController alloc] initWithNibName:@"SuperCollider_FileTransfer" bundle:nil browser:self];
-		
-//		[self addSubview:toolbar];
-    
-//		[self layoutSubviews];
+		[self setup];
 	}
     return self;
 }
 
-- (void) setController:(UIViewController *)c
+- (id) initWithNibName:(NSString *)name bundle:(NSBundle *)bundle
 {
-	//controller = c;
+    if (self = [super initWithNibName:name bundle:bundle])
+	{
+		target = 0;
+		selector = 0;
+		[self setup];
+	}
+    return self;
 }
 
-- (void) layoutSubviews
+- (void) setup
 {
-/*
-	CGRect contentRect = [self bounds];
-	[table setFrame:CGRectMake(0,0,contentRect.size.width,contentRect.size.height-TOOLBAR_HEIGHT)];
-	[toolbar setFrame:CGRectMake(0,contentRect.size.height-TOOLBAR_HEIGHT,contentRect.size.width,TOOLBAR_HEIGHT)];
-*/
+	FileBrowserPageViewController *m = [[FileBrowserPageViewController alloc] initWithNibName:@"SuperCollider_BrowserPage" bundle:nil];
+	[self pushViewController:m animated:NO];
+	[m release];
+}
+
+- (void) setPath:(NSString *)p
+{
+	FileBrowserPageViewController *m = (FileBrowserPageViewController *) [self.viewControllers objectAtIndex:0];
+	if (m)
+	{
+		[m setPath:p];
+		m.title = @"Documents";
+	}
+}
+
+- (void) setTarget:(id)t withSelector:(SEL)s
+{
+	target = [t retain];
+	selector = s;
+}
+
+- (void) didSelect:(NSString *) path
+{
+	if (target && [target respondsToSelector:selector]) [target performSelector:selector withObject:path];
+}
+
+- (void) dealloc
+{
+	if (target) [target release];
+	[super dealloc];
+}
+
+@end
+
+@implementation FileBrowserPageViewController
+
+- (id) initWithNibName:(NSString *)name bundle:(NSBundle *)bundle
+{
+    if (self = [super initWithNibName:name bundle:bundle])
+	{
+		array = 0;
+		path = 0;
+	}
+    return self;
 }
 
 - (void) setPath:(NSString *)p
@@ -294,40 +307,16 @@ struct Header
 	if (path) [path release];
 	path = [p retain];
 
-	if (![self view]) return;
-
-	[navItem setTitle:[path lastPathComponent]];
-	[upItem setEnabled:[path compare:root]?YES:NO];
+	self.title = [path lastPathComponent];
 	
 	[self refresh];
 }
-
-- (void) setRoot:(NSString *)p
-{
-	if (root) [root release];
-	root = [p retain];
-	
-	[self setPath:p];	
-}
-
 
 - (void) viewDidLoad
 {
-	[table setDelegate:self];
-	[table setDataSource:self];
+	self.navigationItem.rightBarButtonItem = refreshButton;
 	
 	[self refresh];
-}
-
-- (NSString *) path
-{
-	return path;
-}
-
-- (void) setTarget:(id)t withSelector:(SEL)s
-{
-	target = t;
-	selector = s;
 }
 
 - (void) refresh
@@ -344,34 +333,10 @@ struct Header
 	[self refresh];
 }
 
-- (void) triggerUp:(id)sender
-{
-	if (![path compare:root]) return;
-	NSString *p = [path stringByDeletingLastPathComponent];
-	[self setPath:p];
-}
-
-- (void) triggerListen:(id)sender
-{
-	/*
-	if (!controller) return;
-	[controller presentModalViewController:fileController animated:YES];
-	*/
-	[self presentModalViewController:fileController animated:YES];
-}
-
-- (void) closeListen
-{
-	//[controller dismissModalViewControllerAnimated:YES];
-	[self dismissModalViewControllerAnimated:YES];
-	[self refresh];
-}
-
 - (void) flashScrollIndicators
 {
 	[table flashScrollIndicators];
 }
-
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -405,29 +370,21 @@ struct Header
 	if ([attributes objectForKey:NSFileType]==NSFileTypeDirectory)
 	{
 		[tableView deselectRowAtIndexPath:newIndexPath animated:NO];
-		[self setPath:fullpath];
+		FileBrowserPageViewController *c = [[FileBrowserPageViewController alloc] initWithNibName:@"SuperCollider_BrowserPage" bundle:nil];
+		[c setPath:fullpath];
+		[self.navigationController pushViewController:c animated:YES];
+		[c release];
 		return;
 	}
 	
 	[tableView deselectRowAtIndexPath:newIndexPath animated:YES];
-	if (target && [target respondsToSelector:selector]) [target performSelector:selector withObject:fullpath];
+	[(FileBrowserViewController *) self.navigationController didSelect:fullpath];
 }
 
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-
-
-- (void)dealloc {
+- (void)dealloc
+{
 	if (path) [path release];
-	
-	/*
-	[table release];
-	[toolbar release];
-	[refreshItem release];
-	[listenItem release];
-	*/
-	[fileController release];
+	if (array) [array release];
 	
     [super dealloc];
 }

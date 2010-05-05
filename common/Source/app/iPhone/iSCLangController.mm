@@ -408,11 +408,11 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	NSString *path;
 	//path = [support stringByAppendingString:@"/patches"];
 	[browserViewController setTarget:self withSelector:@selector(selectFile:)];
-	[browserViewController setRoot:support];
+	[browserViewController setPath:support];
 
 	[tabBarController setCustomizableViewControllers:nil];
 
-	[liveView setTarget:self withSelector:@selector(interpret:)];
+	[liveViewController setTarget:self withSelector:@selector(interpret:)];
 /*
 #ifdef START_HTTP_SERVER
 	HTTPServer *httpServer = [HTTPServer new];
@@ -451,7 +451,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 
 - (void) selectPatch:(NSString *)string
 {
-	[liveView loadFile:string];
+	[liveViewController loadFile:string];
 	[tabBarController performSelector:@selector(setSelectedViewController:) withObject:liveViewController afterDelay:0.5f];
 }
 

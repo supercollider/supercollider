@@ -1,36 +1,32 @@
 //
-//  LiveCodingView.m
+//  LiveCodingViewController.m
 //  isclang
 //
 //  Created by Axel Balley on 30/10/08.
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#import "LiveCodingView.h"
+#import "LiveCodingViewController.h"
 
 extern void rtf2txt(char *txt);
 
-@implementation LiveCodingView
+@implementation LiveCodingViewController
 
-
-- (id)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame])
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])
 	{
 		target = 0;
 		selector = 0;
-    }
-    return self;
+	}
+	return self;
 }
 
-- (void) awakeFromNib
+- (void) viewDidLoad
 {
 	[textView setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[textView setAutocorrectionType:UITextAutocorrectionTypeNo];
 	[self showButtons:NO];
-}
-
-- (void)drawRect:(CGRect)rect {
-    [super drawRect:rect];
 }
 
 - (void) setTarget:(id)t withSelector:(SEL)s
@@ -54,8 +50,7 @@ extern void rtf2txt(char *txt);
 - (void) showButtons: (BOOL)state
 {
 	[doneButton setHidden:!state];
-	[lineButton setHidden:!state];
-	[blockButton setHidden:!state];
+	[execButton setHidden:!state];
 }
 
 - (void) textViewDidBeginEditing: (UITextView *)theView
