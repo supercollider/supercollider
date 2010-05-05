@@ -1,5 +1,5 @@
 //
-//  DirBrowserView.h
+//  FileBrowserViewController.h
 //  iscsynth
 //
 //  Created by Axel Balley on 26/10/08.
@@ -7,12 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@class DirBrowserView;
+/*
+@class FileBrowserViewController;
 
 @interface FileTransferController : UIViewController
 {
-	DirBrowserView *browser;
+	FileBrowserViewController *browser;
 	NSNetService *service;
 	NSThread *thread;
 	int sock;
@@ -21,7 +21,7 @@
 	IBOutlet UILabel *label;
 	IBOutlet UIProgressView *progress;
 }
-- (id) initWithNibName:(NSString *)name bundle:(NSBundle *)bundle browser:(DirBrowserView *)b;
+- (id) initWithNibName:(NSString *)name bundle:(NSBundle *)bundle browser:(FileBrowserViewController *)b;
 - (void) close:(id)sender;
 - (void) start;
 - (void) stop;
@@ -30,35 +30,30 @@
 - (void) updateProgress:(NSNumber *)val;
 
 @end
+*/
 
-@interface DirBrowserViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface FileBrowserViewController : UINavigationController
 {
-	FileTransferController *fileController;
-
-	NSArray *array;
-	NSString *root;
-	NSString *path;
-
-	IBOutlet UITableView *table;
-	IBOutlet UINavigationItem *navItem;
-	IBOutlet UIBarButtonItem *upItem;
-	//UIToolbar *toolbar;
-	//UIBarButtonItem *listenItem;
-
 	id target;
 	SEL selector;
 }
+@end
+
+@interface FileBrowserPageViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+{
+	//FileTransferController *fileController;
+
+	NSArray *array;
+	NSString *path;
+
+	IBOutlet UITableView *table;
+	IBOutlet UIBarButtonItem *refreshButton;
+}
 
 - (id)init;
-- (void) setRoot:(NSString *)p;
 - (void) setPath:(NSString *)p;
-- (NSString *) path;
-- (void) setTarget:(id)t withSelector:(SEL)s;
 - (void) refresh;
-- (void) triggerUp:(id)sender;
 - (void) triggerRefresh:(id)sender;
-- (void) triggerListen:(id)sender;
-- (void) closeListen;
 - (void) flashScrollIndicators;
 
 @end

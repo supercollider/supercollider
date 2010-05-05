@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import "DirBrowserView.h"
-#import "LiveCodingView.h"
+#import "FileBrowserViewController.h"
+#import "LiveCodingViewController.h"
 #import "iPhoneSCNSWindow.h"
 
 @interface iSCLangController : NSObject {
@@ -22,10 +22,8 @@
 
 	IBOutlet UITabBarController *tabBarController;
 	IBOutlet UITextView *logView;
-	IBOutlet UIViewController *browserViewController;
-	//IBOutlet UIViewController *recordingsViewController;
-	IBOutlet UIViewController *liveViewController;
-	IBOutlet LiveCodingView *liveView;
+	IBOutlet FileBrowserViewController *browserViewController;
+	IBOutlet LiveCodingViewController *liveViewController;
 	IBOutlet UIBarButtonItem *speakersButton;
 }
 

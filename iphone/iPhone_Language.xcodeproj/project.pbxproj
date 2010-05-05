@@ -22,7 +22,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		7708A0AD0FBF9B7A00A151DD /* SuperCollider_Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7708A0AC0FBF9B7A00A151DD /* SuperCollider_Browser.xib */; };
 		7709038C0F509FAA005C05DC /* iPhoneGUIPrimitives.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */; };
 		7709038D0F509FAA005C05DC /* iPhoneSCGraphView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709037F0F509FAA005C05DC /* iPhoneSCGraphView.mm */; };
 		7709038F0F509FAA005C05DC /* iPhoneSCNSWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 770903820F509FAA005C05DC /* iPhoneSCNSWindow.mm */; };
@@ -30,8 +29,8 @@
 		770903920F509FAA005C05DC /* isclang_main.m in Sources */ = {isa = PBXBuildFile; fileRef = 770903850F509FAA005C05DC /* isclang_main.m */; };
 		770903930F509FAA005C05DC /* isclangAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 770903870F509FAA005C05DC /* isclangAppDelegate.m */; };
 		770903940F509FAA005C05DC /* iSCLangController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 770903890F509FAA005C05DC /* iSCLangController.mm */; };
-		770903950F509FAA005C05DC /* LiveCodingView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709038B0F509FAA005C05DC /* LiveCodingView.mm */; };
-		770903AB0F50A015005C05DC /* DirBrowserView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 770903AA0F50A015005C05DC /* DirBrowserView.mm */; };
+		770903950F509FAA005C05DC /* LiveCodingViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709038B0F509FAA005C05DC /* LiveCodingViewController.mm */; };
+		770903AB0F50A015005C05DC /* FileBrowserViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 770903AA0F50A015005C05DC /* FileBrowserViewController.mm */; };
 		7713C6520F422BE400B0055E /* PyrArrayPrimitives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9740EB36D500051CF38 /* PyrArrayPrimitives.cpp */; };
 		7713C6530F422BE400B0055E /* PyrBitPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9750EB36D500051CF38 /* PyrBitPrim.cpp */; };
 		7713C6540F422BE400B0055E /* PyrCharPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9760EB36D500051CF38 /* PyrCharPrim.cpp */; };
@@ -87,6 +86,7 @@
 		7713C6D70F422F8200B0055E /* SC_StringBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9610EB36D500051CF38 /* SC_StringBuffer.cpp */; };
 		7713C6D80F422F8200B0055E /* SC_Win32Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9630EB36D500051CF38 /* SC_Win32Utils.cpp */; };
 		7713C6D90F422F8300B0055E /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9640EB36D500051CF38 /* scsynthsend.cpp */; };
+		7725B4BD1191E0510056CA2F /* SuperCollider_BrowserPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7725B4BC1191E0510056CA2F /* SuperCollider_BrowserPage.xib */; };
 		775574050FBE45A500192282 /* SuperCollider_FileTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */; };
 		77597AF41123328300D2A968 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AF31123328300D2A968 /* CoreFoundation.framework */; };
 		77597AF8112332A800D2A968 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AF7112332A800D2A968 /* CoreGraphics.framework */; };
@@ -95,7 +95,6 @@
 		77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B04112332CF00D2A968 /* UIKit.framework */; };
 		77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B09112332ED00D2A968 /* Foundation.framework */; };
 		776B2A97119075EF001F253D /* JITLib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 776B2A70119075EC001F253D /* JITLib */; };
-		776B2B4A11907A38001F253D /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEA1123320700D2A968 /* libsndfile_iphone.a */; };
 		778F12C00F50A92100CB6629 /* synthdefs in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129E0F50A92100CB6629 /* synthdefs */; };
 		778F12C10F50A92100CB6629 /* sounds in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129F0F50A92100CB6629 /* sounds */; };
 		778F12C20F50A92100CB6629 /* plugins in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12AB0F50A92100CB6629 /* plugins */; };
@@ -108,6 +107,7 @@
 		778F18490F50B1D000CB6629 /* Common in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18450F50B1D000CB6629 /* Common */; };
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
+		77E5C7701191EB84007AE027 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEA1123320700D2A968 /* libsndfile_iphone.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -164,7 +164,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		7708A0AC0FBF9B7A00A151DD /* SuperCollider_Browser.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_Browser.xib; path = "iPhone Resources/SuperCollider_Browser.xib"; sourceTree = "<group>"; };
 		7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneGUIPrimitives.mm; sourceTree = "<group>"; };
 		7709037F0F509FAA005C05DC /* iPhoneSCGraphView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneSCGraphView.mm; sourceTree = "<group>"; };
 		770903810F509FAA005C05DC /* iPhoneSCNSWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhoneSCNSWindow.h; sourceTree = "<group>"; };
@@ -175,13 +174,14 @@
 		770903870F509FAA005C05DC /* isclangAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = isclangAppDelegate.m; sourceTree = "<group>"; };
 		770903880F509FAA005C05DC /* iSCLangController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iSCLangController.h; sourceTree = "<group>"; };
 		770903890F509FAA005C05DC /* iSCLangController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iSCLangController.mm; sourceTree = "<group>"; };
-		7709038A0F509FAA005C05DC /* LiveCodingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveCodingView.h; sourceTree = "<group>"; };
-		7709038B0F509FAA005C05DC /* LiveCodingView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LiveCodingView.mm; sourceTree = "<group>"; };
-		770903A90F50A015005C05DC /* DirBrowserView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirBrowserView.h; sourceTree = "<group>"; };
-		770903AA0F50A015005C05DC /* DirBrowserView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DirBrowserView.mm; sourceTree = "<group>"; };
+		7709038A0F509FAA005C05DC /* LiveCodingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LiveCodingViewController.h; sourceTree = "<group>"; };
+		7709038B0F509FAA005C05DC /* LiveCodingViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LiveCodingViewController.mm; sourceTree = "<group>"; };
+		770903A90F50A015005C05DC /* FileBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileBrowserViewController.h; sourceTree = "<group>"; };
+		770903AA0F50A015005C05DC /* FileBrowserViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileBrowserViewController.mm; sourceTree = "<group>"; };
 		770903B20F50A04C005C05DC /* iPhoneSCGraphView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhoneSCGraphView.h; sourceTree = "<group>"; };
 		770903B30F50A04C005C05DC /* iPhoneSCView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhoneSCView.h; sourceTree = "<group>"; };
 		7713C6A90F422BE400B0055E /* SuperCollider.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SuperCollider.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7725B4BC1191E0510056CA2F /* SuperCollider_BrowserPage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_BrowserPage.xib; path = "iPhone Resources/SuperCollider_BrowserPage.xib"; sourceTree = "<group>"; };
 		774082050F504E9500F0D047 /* SCNSWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCNSWindow.m; sourceTree = "<group>"; };
 		774082060F504E9500F0D047 /* SCNSWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCNSWindow.h; sourceTree = "<group>"; };
 		7751A9340EB36D500051CF38 /* CocoaBridgePrimitives.M */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CocoaBridgePrimitives.M; sourceTree = "<group>"; };
@@ -449,7 +449,7 @@
 				77597B03112332CF00D2A968 /* MediaPlayer.framework in Frameworks */,
 				77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */,
 				77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */,
-				776B2B4A11907A38001F253D /* libsndfile_iphone.a in Frameworks */,
+				77E5C7701191EB84007AE027 /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,21 +480,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				7725B4AF1191DFA20056CA2F /* Bundled */,
 				778F12C90F50A94600CB6629 /* icon.png */,
-				778F129E0F50A92100CB6629 /* synthdefs */,
-				778F129F0F50A92100CB6629 /* sounds */,
-				778F12AB0F50A92100CB6629 /* plugins */,
-				778F12AD0F50A92100CB6629 /* patches */,
-				778F12BB0F50A92100CB6629 /* Extensions */,
 				778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */,
-				778F17E50F50AE1100CB6629 /* SuperCollider.plist */,
-				778F18440F50B1D000CB6629 /* backwards_compatibility */,
-				778F18450F50B1D000CB6629 /* Common */,
-				778F18460F50B1D000CB6629 /* DefaultLibrary */,
-				778F18470F50B1D000CB6629 /* Platform */,
 				775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */,
-				7708A0AC0FBF9B7A00A151DD /* SuperCollider_Browser.xib */,
-				776B2A70119075EC001F253D /* JITLib */,
+				7725B4BC1191E0510056CA2F /* SuperCollider_BrowserPage.xib */,
+				778F17E50F50AE1100CB6629 /* SuperCollider.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -512,8 +503,8 @@
 				770903870F509FAA005C05DC /* isclangAppDelegate.m */,
 				770903880F509FAA005C05DC /* iSCLangController.h */,
 				770903890F509FAA005C05DC /* iSCLangController.mm */,
-				7709038A0F509FAA005C05DC /* LiveCodingView.h */,
-				7709038B0F509FAA005C05DC /* LiveCodingView.mm */,
+				7709038A0F509FAA005C05DC /* LiveCodingViewController.h */,
+				7709038B0F509FAA005C05DC /* LiveCodingViewController.mm */,
 			);
 			path = iPhone;
 			sourceTree = "<group>";
@@ -521,8 +512,8 @@
 		770903A80F50A015005C05DC /* iPhone */ = {
 			isa = PBXGroup;
 			children = (
-				770903A90F50A015005C05DC /* DirBrowserView.h */,
-				770903AA0F50A015005C05DC /* DirBrowserView.mm */,
+				770903A90F50A015005C05DC /* FileBrowserViewController.h */,
+				770903AA0F50A015005C05DC /* FileBrowserViewController.mm */,
 			);
 			path = iPhone;
 			sourceTree = "<group>";
@@ -534,6 +525,23 @@
 				770903B30F50A04C005C05DC /* iPhoneSCView.h */,
 			);
 			path = iPhone;
+			sourceTree = "<group>";
+		};
+		7725B4AF1191DFA20056CA2F /* Bundled */ = {
+			isa = PBXGroup;
+			children = (
+				778F129E0F50A92100CB6629 /* synthdefs */,
+				778F129F0F50A92100CB6629 /* sounds */,
+				778F12AB0F50A92100CB6629 /* plugins */,
+				778F12AD0F50A92100CB6629 /* patches */,
+				778F12BB0F50A92100CB6629 /* Extensions */,
+				778F18440F50B1D000CB6629 /* backwards_compatibility */,
+				778F18450F50B1D000CB6629 /* Common */,
+				778F18460F50B1D000CB6629 /* DefaultLibrary */,
+				778F18470F50B1D000CB6629 /* Platform */,
+				776B2A70119075EC001F253D /* JITLib */,
+			);
+			name = Bundled;
 			sourceTree = "<group>";
 		};
 		7751A9320EB36D500051CF38 /* Source */ = {
@@ -1008,7 +1016,7 @@
 				778F12CA0F50A94600CB6629 /* icon.png in Resources */,
 				778F17E60F50AE1100CB6629 /* SuperCollider_MainWindow.xib in Resources */,
 				775574050FBE45A500192282 /* SuperCollider_FileTransfer.xib in Resources */,
-				7708A0AD0FBF9B7A00A151DD /* SuperCollider_Browser.xib in Resources */,
+				7725B4BD1191E0510056CA2F /* SuperCollider_BrowserPage.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1097,8 +1105,8 @@
 				770903920F509FAA005C05DC /* isclang_main.m in Sources */,
 				770903930F509FAA005C05DC /* isclangAppDelegate.m in Sources */,
 				770903940F509FAA005C05DC /* iSCLangController.mm in Sources */,
-				770903950F509FAA005C05DC /* LiveCodingView.mm in Sources */,
-				770903AB0F50A015005C05DC /* DirBrowserView.mm in Sources */,
+				770903950F509FAA005C05DC /* LiveCodingViewController.mm in Sources */,
+				770903AB0F50A015005C05DC /* FileBrowserViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1137,7 +1145,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1173,7 +1181,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1223,7 +1231,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos3.0;

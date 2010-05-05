@@ -1,5 +1,5 @@
 //
-//  LiveCodingView.h
+//  LiveCodingViewController.h
 //  isclang
 //
 //  Created by Axel Balley on 30/10/08.
@@ -8,13 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LiveCodingView : UIView <UITextViewDelegate>
+@interface LiveCodingViewController : UIViewController <UITextViewDelegate>
 {
-	IBOutlet UITextField *textField;
 	IBOutlet UITextView *textView;
 	IBOutlet UIButton *doneButton;
-	IBOutlet UIButton *lineButton;
-	IBOutlet UIButton *blockButton;
+	IBOutlet UIButton *execButton;
 
 	id target;
 	SEL selector;
