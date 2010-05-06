@@ -48,7 +48,7 @@ struct buffer_wrapper
             free_aligned(data);
     }
 
-    void allocate(size_t frames, uint channels);
+    void allocate(size_t frames, unsigned int channels);
 
     void free(void)
     {
@@ -68,9 +68,9 @@ struct buffer_wrapper
 
     /** set sample for specific indices */
     template <typename float_type>
-    void set_samples(uint count, const size_t * indices, const float_type * values)
+    void set_samples(unsigned int count, const size_t * indices, const float_type * values)
     {
-        for (uint i = 0; i != count; ++i) {
+        for (unsigned int i = 0; i != count; ++i) {
             size_t index = indices[i];
             if (index < frames_) {
                 sample_t value = values[i];
@@ -81,26 +81,26 @@ struct buffer_wrapper
 
     /** set continuous samples starting at position */
     template <typename float_type>
-    void set_samples(size_t position, uint count, const float_type * values)
+    void set_samples(size_t position, unsigned int count, const float_type * values)
     {
         sample_t * base = data + position;
         size_t avail = frames_ - position;
         count = std::min(size_t(count), avail);
 
-        for (uint i = 0; i != count; ++i)
+        for (unsigned int i = 0; i != count; ++i)
             base[i] = sample_t(values[i]);
     }
 
     /** set continuous samples starting at position to a single value */
     template <typename float_type>
-    void fill_samples(size_t position, uint count, const float_type value)
+    void fill_samples(size_t position, unsigned int count, const float_type value)
     {
         sample_t * base = data + position;
         size_t avail = frames_ - position;
         count = std::min(size_t(count), avail);
 
         sample_t val = sample_t(value);
-        for (uint i = 0; i != count; ++i)
+        for (unsigned int i = 0; i != count; ++i)
             base[i] = val;
     }
 
@@ -113,13 +113,13 @@ struct buffer_wrapper
     void read_file(const char * file, size_t start_frame, size_t frames);
 
     void read_file_channels(std::string const & file, size_t start_frame, size_t frames,
-                            uint channel_count, uint * channels)
+                            unsigned int channel_count, unsigned int * channels)
     {
         read_file_channels(file.c_str(), start_frame, frames, channel_count, channels);
     }
 
     void read_file_channels(const char * file, size_t start_frame, size_t frames,
-                            uint channel_count, uint * channels);
+                            unsigned int channel_count, unsigned int * channels);
     /* @} */
 
     void write_file(const char * file, const char * header_format, const char * sample_format,
@@ -127,14 +127,14 @@ struct buffer_wrapper
 
     sample_t * data;
     size_t frames_;
-    uint channels_;
+    unsigned int channels_;
     int sample_rate_;
 };
 
 class buffer_manager
 {
 public:
-    buffer_manager(uint max_buffers):
+    buffer_manager(unsigned int max_buffers):
         buffers(max_buffers, buffer_wrapper())
     {}
 
@@ -150,7 +150,7 @@ public:
             throw std::runtime_error("buffer is not in use");
     }
 
-    void allocate_buffer(int index, uint frames, uint channels)
+    void allocate_buffer(int index, unsigned int frames, unsigned int channels)
     {
         check_buffer_unused(index);
         buffers[index].allocate(frames, channels);
@@ -163,7 +163,7 @@ public:
     }
 
     void read_buffer_channels_allocate(int index, const char * file, size_t start_frame, size_t frames,
-                                       uint channel_count, uint * channels)
+                                       unsigned int channel_count, unsigned int * channels)
     {
         check_buffer_unused(index);
         buffers[index].read_file_channels(file, start_frame, frames, channel_count, channels);
@@ -188,21 +188,21 @@ public:
     }
 
     template <typename float_type>
-    void set_samples(int index, uint count, const size_t * indices, const float_type * values)
+    void set_samples(int index, unsigned int count, const size_t * indices, const float_type * values)
     {
         check_buffer_in_use(index);
         buffers[index].set_samples(count, indices, values);
     }
 
     template <typename float_type>
-    void set_samples(int index, size_t position, uint count, const float_type * values)
+    void set_samples(int index, size_t position, unsigned int count, const float_type * values)
     {
         check_buffer_in_use(index);
         buffers[index].set_samples(count, position, count, values);
     }
 
     template <typename float_type>
-    void fill_samples(int index, size_t position, uint count, float_type value)
+    void fill_samples(int index, size_t position, unsigned int count, float_type value)
     {
         check_buffer_in_use(index);
         buffers[index].fill_samples(position, count, value);
