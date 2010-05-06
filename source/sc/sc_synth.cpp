@@ -240,7 +240,7 @@ void sc_synth::run_traced(void)
 {
     using namespace std;
 
-    printf("\nTRACE %d  %s    #units: %zd\n", id(), this->prototype_name(), calc_unit_count);
+    printf("\nTRACE %d  %s    #units: %d\n", id(), this->prototype_name(), calc_unit_count);
 
     for (size_t i = 0; i != calc_unit_count; ++i)
     {
