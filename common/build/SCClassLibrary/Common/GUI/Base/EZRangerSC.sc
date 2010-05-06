@@ -102,6 +102,21 @@ EZRanger : EZGui {
 	}
 
 	doAction { action.value(this); }
+	
+	set { arg label, spec, argAction, initVal, initAction = false;
+		labelView.notNil.if { labelView.string = label.asString };
+		spec.notNil.if { controlSpec = spec.asSpec };
+		argAction.notNil.if { action = argAction };
+
+		initVal = initVal ? this.value ? controlSpec.default.dup(2);
+
+		if (initAction) {
+			this.valueAction_(initVal);
+		}{
+			this.value_(initVal);
+		};
+	}
+
 	value { ^[lo, hi] }
 	value_ { |vals| this.lo_(vals[0]).hi_(vals[1]) }
 	valueAction_ { |vals| this.value_(vals).doAction }
