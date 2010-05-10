@@ -30,8 +30,6 @@
 			
 	};
 
-	u.relativeOrigin_( true );
-
 	{
 		while { run } {
 

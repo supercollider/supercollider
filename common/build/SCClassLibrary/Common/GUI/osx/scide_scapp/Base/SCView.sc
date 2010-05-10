@@ -328,11 +328,8 @@ SCView {  // abstract class
 }
 
 SCContainerView : SCView { // abstract class
-		// NOTE: DO NOT CHANGE THE DEFAULT FOR relativeOrigin
-		// Eventually this variable will be removed;
-		// at that time, ALL composite views will measure coordinates
-		// from their own top left (not window top left)
-	var <children, <decorator, relativeOrigin = true;
+
+	var <children, <decorator;
 
 	add { arg child;
 		children = children.add(child);
@@ -341,7 +338,6 @@ SCContainerView : SCView { // abstract class
 
 	init { arg argParent, argBounds;
 		super.init(argParent, argBounds);
-		this.setProperty(\relativeOrigin, relativeOrigin);
 	}
 
 	removeAll {
@@ -349,17 +345,13 @@ SCContainerView : SCView { // abstract class
 	}
 
 	addFlowLayout { arg margin, gap;
-		relativeOrigin.if
-			 {this.decorator_( FlowLayout( this.bounds.moveTo(0, 0), margin, gap ) )}
-			 {this.decorator_( FlowLayout( this.bounds, margin, gap ) )};
+		this.decorator_( FlowLayout( this.bounds.moveTo(0, 0), margin, gap ) );
 		^this.decorator;
 		}
 
 	decorator_ { arg decor;
-		if(relativeOrigin, {
-			decor.bounds = decor.bounds.moveTo(0, 0);
-			decor.reset;
-		});
+		decor.bounds = decor.bounds.moveTo(0, 0);
+		decor.reset;
 		decorator = decor;
 	}
 
@@ -375,13 +367,6 @@ SCContainerView : SCView { // abstract class
 		children.do( { arg item; item.prClose });
 	}
 
-		// NOTE: This TEMPORARY method exists only because some few view classes
-		// need to ask for the relativeOrigin status.
-		// When relativeOrigin is permanently removed, this method
-		// will be removed also.
-		// DO NOT USE THIS METHOD IN YOUR CODE.
-		// If you do, it will break in a future version.
-	prRelativeOrigin { ^relativeOrigin }
 }
 
 SCCompositeView : SCContainerView {
@@ -485,11 +470,7 @@ SCScrollTopView : SCTopView {
 	bounds {
 		var	bounds = this.absoluteBounds;
 		this.getParents.do( { |parent|
-			(parent.tryPerform(\prRelativeOrigin) == true).if( {
-				bounds = bounds.moveBy(parent.bounds.left.neg, parent.bounds.top.neg)
-			}, {
-				^bounds
-			});
+			bounds = bounds.moveBy(parent.bounds.left.neg, parent.bounds.top.neg)
 		});
 		^bounds
 	}
@@ -547,11 +528,7 @@ SCScrollView : SCScrollTopView {
 
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
-
-		relativeOrigin = false; // scroll views are never relative, although they really are ;-)
 	}
-
-	relativeOrigin_ {  }
 
 	handleKeyModifiersChangedBubbling { arg view, modifiers;
 		var result;
@@ -607,10 +584,7 @@ SCLayoutView : SCContainerView {
 		this.setProperty(\spacing, distance)
 	}
 	setProperty { |key, value|
-			// layout views don't recognize relativeOrigin in the backend
-		if(key != \relativeOrigin) {
-			super.setProperty(key, value);
-		};
+		super.setProperty(key, value);
 	}
 }
 
@@ -1360,12 +1334,11 @@ SCDragBoth : SCDragSink {
 SCUserView : SCView {
 	var <>drawFunc;
 //	var <>mouseBeginTrackFunc, <>mouseTrackFunc, <>mouseEndTrackFunc;
-	var < clearOnRefresh = true, relativeOrigin = true;
+	var < clearOnRefresh = true;
 	var < drawingEnabled = true;
 
 	init { |argParent, argBounds|
 		super.init(argParent, argBounds);
-		this.setProperty(\relativeOrigin, relativeOrigin);
 	}
 
 	draw {

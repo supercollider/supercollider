@@ -74,9 +74,6 @@ SCKnob : SCUserView {
 		aw12 = widthDiv2 - (0.12 * size);
 		aw14 = widthDiv2 - (0.14 * size);
 		center = Point(widthDiv2, widthDiv2);
-//		if (relativeOrigin.not) {
-//			center = center + (this.bounds.left @ this.bounds.top);
-//		};
 
 		^rect
 	}

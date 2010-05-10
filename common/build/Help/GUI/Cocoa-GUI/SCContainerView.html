@@ -23,7 +23,8 @@ span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
 span.s3 {color: #000000}
 span.s4 {text-decoration: underline}
-span.s5 {font: 14.0px Helvetica}
+span.s5 {text-decoration: underline ; color: #001bec}
+span.s6 {font: 14.0px Helvetica}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -34,7 +35,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">Users will not normally directly create instances of SCContainerView, but only use it through its subclasses. It provides the basic mechanisms for container views of various kinds, which are used for placing and grouping widgets in a window.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also: </b><a href="SCTopView.html"><span class="s2">SCTopView</span></a><b>,</b> <a href="SCCompositeView.html"><span class="s4">SCCompositeView</span></a>, <a href="SCHLayoutView.html"><span class="s4">SCHLayoutView</span></a>, <a href="SCVLayoutView.html"><span class="s4">SCVLayoutView</span></a>, <a href="SCScrollView.html"><span class="s4">SCScrollView</span></a></span><span class="s2"> <a href="SCScrollTopView.html"><span class="s4">SCScrollTopView</span></a></span></p>
+<p class="p4"><span class="s3"><b>See also: </b><a href="SCTopView.html"><span class="s2">SCTopView</span></a><b>,</b> <a href="SCCompositeView.html"><span class="s4">SCCompositeView</span></a>, <a href="SCHLayoutView.html"><span class="s4">SCHLayoutView</span></a>, <a href="SCVLayoutView.html"><span class="s4">SCVLayoutView</span></a>, <a href="SCScrollView.html"><span class="s4">SCScrollView</span></a></span><span class="s2"> <a href="SCScrollTopView.html"><span class="s5">SCScrollTopView</span></a></span></p>
 <p class="p5"><br></p>
 <p class="p6"><b>Some Important Issues Regarding SCContainerView</b></p>
 <p class="p2"><br></p>
@@ -63,14 +64,14 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>add (child)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds a view to <b>children</b>. The placement of the child view will depend on the the <b>decorator</b>, the <b>relativeOrigin</b> flag, and child's <b>bounds</b>. Nomally you don't need to call this directly, since subviews call it automatically when you create them.</p>
+<p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Adds a view to <b>children</b>. The placement of the child view will depend on the the <b>decorator</b>, and the child's <b>bounds</b>. Nomally you don't need to call this directly, since subviews call it automatically when you create them.</p>
 <p class="p7"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>removeAll</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Removes all children from the view</p>
 <p class="p7"><br></p>
 <p class="p8"><b>Subclassing and Internal Methods</b></p>
-<p class="p10"><span class="s5"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
+<p class="p10"><span class="s6"><span class="Apple-tab-span">	</span></span>The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.</p>
 <p class="p7"><br></p>
 <p class="p10"><b><span class="Apple-tab-span">	</span>init (argParent, argBounds)</b></p>
 <p class="p9"><b><span class="Apple-tab-span">	</span></b></p>
