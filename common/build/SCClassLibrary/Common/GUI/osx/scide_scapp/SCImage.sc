@@ -433,7 +433,6 @@ SCImage {
 		window.acceptsMouseOver = true;
 
 		uview = SCUserView(window, window.view.bounds)
-			.relativeOrigin_(false)
 			.resize_(5)
 			.focusColor_(Color.clear);
 

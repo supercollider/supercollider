@@ -157,7 +157,6 @@ public:
 	virtual bool isSubViewScroller() { return false; }
 	virtual bool isContainer() { return false; }
 	virtual SCRect checkMinimumSize() { return mBounds; }
-	virtual bool relativeOrigin() {return false;}
 
 	bool isTopContainer(){ return (!mParent);};
 
@@ -207,13 +206,11 @@ public:
 	virtual SCRect checkMinimumSize();
 	virtual void setVisibleFromParent();
 	virtual bool isVisible() {return mVisible && mParent->isVisible(); }
-	virtual bool relativeOrigin() {return mRelativeOrigin;}
 	virtual bool isContainer() { return true; }
 
 protected:
 	SCView *mChildren;
 	int mNumChildren;
-	bool mRelativeOrigin;
 };
 
 class SCCompositeView : public SCContainerView
@@ -374,7 +371,6 @@ public:
 	virtual void drawIfNecessary(SCRect inDamage);
 	virtual void drawSubViewIfNecessary(SCRect inDamage);
 	virtual bool isVisible() {return mVisible && mParent->isVisible(); }
-	virtual bool relativeOrigin() {return false;}
 };
 
 inline bool SCView::isFocus() const { return mTop->focusView() == this; }
@@ -809,7 +805,6 @@ public:
 protected:
 	bool mDrawingEnabled;
 	bool mClearOnRefresh;
-	bool mRelativeOrigin;
 	double mFrameLastTimes[kFrameLastTimes];
 	float mFrameRate;
 	int mFrameCounter;
