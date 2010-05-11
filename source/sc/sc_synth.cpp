@@ -231,7 +231,7 @@ void sc_synth::map_control_buses_audio (const char * slot_name, int audio_bus_in
     map_control_buses_audio(index, audio_bus_index, count);
 }
 
-void sc_synth::run(dsp_context const & context)
+void sc_synth::run(void)
 {
     perform();
 }

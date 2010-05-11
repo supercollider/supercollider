@@ -3,6 +3,8 @@
 #include "../source/server/server.hpp"
 #include "../source/server/server_args.hpp"
 
+#include "test_synth.hpp"
+
 using namespace nova;
 using namespace boost;
 
@@ -18,7 +20,7 @@ struct test_synth_prototype:
 
     abstract_synth * create_instance(int node_id)
     {
-        return new synth(node_id, this);
+        return new test_synth(node_id, this);
     }
 };
 }

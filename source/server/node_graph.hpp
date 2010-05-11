@@ -122,11 +122,11 @@ public:
             return static_cast<abstract_group*>(node);
     }
 
-    synth * find_synth(int32_t node_id)
+    abstract_synth * find_synth(int32_t node_id)
     {
         server_node * node = find_node(node_id);
         if (node && node->is_synth())
-            return static_cast<synth*>(node);
+            return static_cast<abstract_synth*>(node);
         else
             return NULL;
     }

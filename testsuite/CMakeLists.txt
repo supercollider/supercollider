@@ -11,9 +11,7 @@ set(simple_tests
     server_node_graph_test.cpp
     server_scheduler_test.cpp
     server_synth_factory_test.cpp
-    server_synth_test.cpp
     server_test.cpp
-    server_ugen_test.cpp
     simple_pool_test.cpp
     sized_array_test.cpp
     sndfile_backend_test.cpp

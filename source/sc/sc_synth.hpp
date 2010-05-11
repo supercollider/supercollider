@@ -100,7 +100,7 @@ public:
             run_traced();
     }
 
-    void run(dsp_context const & context);
+    void run(void);
 
     void set(slot_index_t slot_index, sample val);
     void set(slot_index_t slot_index, size_t count, sample * val);

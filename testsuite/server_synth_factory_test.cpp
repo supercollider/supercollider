@@ -2,6 +2,8 @@
 
 #include "../source/server/synth_factory.hpp"
 
+#include "test_synth.hpp"
+
 using namespace nova;
 using namespace std;
 
@@ -16,7 +18,7 @@ struct test_synth_prototype:
 
     abstract_synth * create_instance(int node_id)
     {
-        return new synth(node_id, this);
+        return new test_synth(node_id, this);
     }
 };
 }
