@@ -31,7 +31,6 @@
 #include "../sc/sc_ugen_factory.hpp"
 #include "../utilities/callback_interpreter.hpp"
 #include "../utilities/static_pooled_class.hpp"
-#include "../utilities/osc_server.hpp"
 
 #ifdef PORTAUDIO_BACKEND
 #include "audio_backend/audio_frontend.hpp"
