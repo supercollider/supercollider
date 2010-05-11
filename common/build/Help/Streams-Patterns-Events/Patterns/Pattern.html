@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="1038.25">
+<meta name="CocoaVersion" content="824.48">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -14,17 +14,17 @@ p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 15.0px Helvetica}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad140d}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf; min-height: 12.0px}
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #2c7014}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001bb9}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 12.0px Monaco}
 span.s2 {font: 14.0px Helvetica}
-span.s3 {color: #001bb9}
+span.s3 {color: #0000bf}
 span.s4 {color: #000000}
-span.s5 {color: #2c7014}
+span.s5 {color: #007300}
 span.s6 {font: 12.0px Helvetica}
 span.s7 {font: 9.0px Monaco}
 span.s8 {font: 12.0px Helvetica; color: #000000}
@@ -154,6 +154,27 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7">p = <span class="s3">Pbind</span>(...).play;</p>
 <p class="p8"><span class="s4">p.stop;<span class="Apple-tab-span">	</span></span>// DOES stop because p is the EventStreamPlayer</p>
 <p class="p2"><br></p>
+<p class="p6"><b>Recording Event Patterns</b></p>
+<p class="p2"><br></p>
+<p class="p3">Patterns may be recorded in realtime or non-realtime.</p>
+<p class="p2"><br></p>
+<p class="p4"><b>Realtime:</b></p>
+<p class="p3"><b>record(path, headerFormat, sampleFormat, numChannels, dur, fadeTime, clock, protoEvent, server, out)</b></p>
+<p class="p2"><br></p>
+<p class="p3">Opens a disk file for recording and plays the pattern into it.</p>
+<p class="p2"><br></p>
+<p class="p3"><b>path</b> - Disk location for the recorded file. If not given, a filename is generated for you and placed in the default recording directory: thisProcess.platform.recordingsDir.</p>
+<p class="p3"><b>headerFormat</b> - File format, default "AIFF" - see <a href="../../Files/SoundFile.html"><span class="s3">SoundFile</span></a> for supported header and sample formats.</p>
+<p class="p3"><b>sampleFormat</b> - Sample format, default "float"</p>
+<p class="p3"><b>numChannels</b> - Number of channels to recorde, default 2</p>
+<p class="p3"><b>dur</b> - How long to run the pattern before stopping. If nil (default), the pattern will run until it finishes on its own; then recording stops. Or, use cmd-period to stop the recording. If a number is given, the pattern will run for that many beats and then stop (using <a href="Pfindur.html"><span class="s3">Pfindur</span></a>), ending the recording as well.</p>
+<p class="p3"><b>fadeTime</b> - How many beats to allow after the last event before stopping the recording. Default = 0.2.</p>
+<p class="p3"><b>clock</b> - Which clock to use for play. Uses TempoClock.default if not otherwise specified.</p>
+<p class="p3"><b>protoEvent</b> - Which event prototype to use for play. Falls back to Event.default if not otherwise specified.</p>
+<p class="p3"><b>server</b> - Which server to play and record. Server.default if not otherwise specified.</p>
+<p class="p3"><b>out</b> - Output bus to hear the pattern while recording, default = 0.</p>
+<p class="p2"><br></p>
+<p class="p3"><span class="s2"><b>Non-realtime:</b></span> See the <a href="../../Control/Score.html"><span class="s3">Score</span></a> helpfile, especially "creating Score from a pattern." It can be tricky, because NRT recording launches a new server instance. That server instance is not aware of buffers or other resources loaded into the realtime server you might have been using for tests. The pattern is responsible for (re)loading any resources (buffers, effects etc.). <a href="Pfset.html"><span class="s3">Pfset</span></a> or <a href="Pproto.html"><span class="s3">Pproto</span></a> may be useful.</p>
 <p class="p2"><br></p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
 <p class="p4"><b>A Summary of Pattern classes</b></p>
