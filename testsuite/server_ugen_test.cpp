@@ -112,15 +112,15 @@ public:
     {
         switch(sig[0])
         {
-        case signal:
+        case nova::signal:
             if (sig.size() == 1)
                 return ugen_runner(new sine_ugen_s());
 
-        case control:
+        case nova::control:
             if (sig.size() == 1)
                 return ugen_runner(new sine_ugen_c());
 
-        case event:
+        case nova::event:
             if (sig.size() == 1)
                 return ugen_runner(new sine_ugen_e());
 

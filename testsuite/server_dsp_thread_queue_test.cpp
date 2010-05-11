@@ -11,7 +11,7 @@ struct dummy_runnable
         i(0)
     {}
 
-    void operator()(uint dummy)
+    void operator()(unsigned int dummy)
     {
         ++i;
     }
