@@ -82,7 +82,7 @@ public:
 
     static int32_t hash(int32_t id)
     {
-        return id * 2654435761; // knuth hash, 32bit should be enough
+        return id * 2654435761U; // knuth hash, 32bit should be enough
     }
 
     friend bool operator< (server_node const & lhs, server_node const & rhs)
