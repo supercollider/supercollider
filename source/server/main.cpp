@@ -1,5 +1,5 @@
 //  nova server
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include "../sc/sc_synth_prototype.hpp"
 #include "../utilities/utils.hpp"
 
+#include <wordexp.h> /**< \todo: this is posix-only */
 
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 # include <sys/resource.h>
@@ -150,9 +151,22 @@ int main(int argc, char * argv[])
 #endif
 
     sc_factory.initialize();
+    
+    wordexp_t wexp;
+    int status = wordexp("~", &wexp, 0);
+    if (status || wexp.we_wordc != 1)
+        throw std::runtime_error("cannot detect home directory");
+    
+    path home (wexp.we_wordv[0]);
+    wordfree(&wexp);
+    
 #ifdef __linux__
     sc_factory.load_plugin_folder("/usr/local/lib/supernova/plugins");
     sc_factory.load_plugin_folder("/usr/lib/supernova/plugins");
+    sc_factory.load_plugin_folder(home / "share/SuperCollider/supernova_plugins");
+#elif defined(__APPLE__)
+    sc_factory.load_plugin_folder(home / "Library/Application Support/SuperCollider/supernova_plugins/");
+    sc_factory.load_plugin_folder("/Library/Application Support/SuperCollider/supernova_plugins/");
 #else
 #error "Don't know how to locate plugins on this platform"
 #endif
