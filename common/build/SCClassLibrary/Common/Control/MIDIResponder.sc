@@ -197,7 +197,7 @@ TouchResponder : MIDIResponder {
 		oneShot = this.class.new({ |src,chan,num,value|
 					this.matchEvent_(MIDIEvent(nil,src,chan,nil,nil));
 					oneShot.remove;
-				},nil,nil,nil,nil,true,true)
+				},nil,nil,nil,true,true)
 	}
 }
 
