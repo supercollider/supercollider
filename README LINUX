@@ -95,13 +95,15 @@ build requirements (debian users)
 on debian (unstable) you can install the following packages and be set
 for building supercollider:
 
-   gcc
+   build-essential
    libjack0.100.0-dev
    libsndfile1-dev
    libasound2-dev
    libavahi-client-dev
+   libicu-dev
    libreadline6-dev
    libfftw3-dev
+   libxt-dev
    pkg-config
    scons
 
