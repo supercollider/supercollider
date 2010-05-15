@@ -5,8 +5,10 @@ EnvirGui : JITGui {
 
 	var <valFields, <widgets, labelWidth;
 	var <keysRotation = 0, <specs;
-	
+	var <protoBut, <parentBut, <knowBut, <docBut;
 	var <replaceKeys;
+
+	var <>useRanger = true;
 
 	editKeys {
 		^prevState[\editKeys]
@@ -32,15 +34,17 @@ EnvirGui : JITGui {
 		minSize = 250 @ (numItems * skin.buttonHeight + (skin.margin.y * 2));
 	}
 	
-	makeViews {
+	makeViews { |options| 
 		var height = skin.buttonHeight;
 
 		specs = ();  
-		replaceKeys = ();	
-		prevState = ( overflow: 0, keysRotation: 0, editKeys: []);
+		replaceKeys = ();
+		prevState = ( overflow: 0, keysRotation: 0, editKeys: []); 
 		
 		labelWidth = zone.bounds.width * 0.17;
-				 
+		
+		this.makeOptionalViews(options);
+				
 		valFields = {
 			CompositeView(zone, Rect(0, 0, bounds.width - 20, height))
 			.resize_(2)
@@ -58,7 +62,83 @@ EnvirGui : JITGui {
 		).visible_(false);
 		scroller.slider.resize_(3);
 	}
+	
+	name_ { |name|
+		if (hasWindow) { parent.name_(this.winName(name)) };
+		if (nameView.notNil) { nameView.string_(name) };
+	}
 
+	makeOptionalViews { |options, height = 20| 
+		var extraFuncs = (
+			name: 	{ this.makeNameView(70, height) }, 
+			CLR: 	{ this.makeClrBut(30, height) },
+			doc: 	{ this.makeDocBut(30, height) },
+			proto: 	{ this.makeProtoBut(40, height) },
+			parent: 	{ this.makeParentBut(40, height) },
+			know: 	{ this.makeKnowBut(70, height) }
+		);
+		options.do { |key| extraFuncs[key].value; };
+	}
+
+	makeNameView { |nameWid, height|
+		nameView = StaticText(zone, Rect(0,0, nameWid, height))
+			.font_(font).align_(0);
+	}
+	
+	makeClrBut { |width, height|
+		Button(zone, width@height).font_(font)
+			.states_([[\CLR, skin.fontColor, Color.clear]])
+			.action_({ arg btn, mod;
+				if (mod.isAlt) { object.clear } {
+					"Safety - use alt-click to clear object.".postln;
+				}
+			})
+	}
+	
+	makeProtoBut { |width, height|
+		protoBut = Button(zone, Rect(0,0, width, height))
+			.font_(font)
+			.resize_(3)
+			.states_([
+				["proto", skin.fontColor, skin.offColor]
+			])
+			.enabled_(false)
+			.action_({ EnvirGui(object.proto) });
+	} 
+	
+	makeParentBut { |width, height|
+
+		parentBut = Button(zone, Rect(0,0, width, height))
+			.font_(font)
+			.resize_(3)
+			.states_([
+				["parent", skin.fontColor, skin.offColor]
+			])
+			.enabled_(false)
+			.action_({ EnvirGui(object.parent) });
+	} 
+	
+	makeKnowBut { |width, height|
+
+		knowBut = Button(zone, Rect(0,0, width, height))
+			.font_(font).resize_(3)
+			.states_([
+				["know: false", skin.fontColor, skin.offColor],
+				["know: true", skin.fontColor, skin.onColor]
+			])
+			.enabled_(false)
+			.action_({ |but| object.know = (but.value > 0) });
+	}
+	
+	makeDocBut { |width, height|
+		docBut = Button(zone, width@height).font_(font)
+			.states_([[\doc, skin.fontColor, Color.clear]])
+			.enabled_(false)
+			.action_({ |but, mod| 
+				if (object.notNil) { object.asCompileString.newTextWindow };
+			})
+	}
+	
 	accepts { |obj|
 		^(obj.isNil or: { obj.isKindOf(Dictionary) })
 	}
@@ -85,6 +165,8 @@ EnvirGui : JITGui {
 		var newState = this.getState;
 		var newKeys = newState[\editKeys]; 
 		
+		this.updateButtons;
+
 		if (doFull.not and: { newState == prevState }) { ^this };
 		
 		if (object.isNil) { 
@@ -112,20 +194,31 @@ EnvirGui : JITGui {
 //		"prevState: %\n".postf(prevState);
 		prevState = newState.put(\object, object.copy);
 	}
-
+	
+	updateButtons { 
+		var flag = object.notNil; 
+		if (protoBut.notNil) { protoBut.enabled_(flag and: { object.proto.notNil }) };
+		if (parentBut.notNil) { parentBut.enabled_(flag and: { object.parent.notNil }) };
+		if (knowBut.notNil) { knowBut.enabled_(flag).value_((flag and: { object.know }).binaryValue) };
+		if (docBut.notNil) { docBut.enabled_(flag) };
+	}
+	
 	clearFields { |from = 0| (numItems - 1 .. from).do(this.clearField(_)) }
 
 	setByKeys { |newKeys|
 		var prevEnvir = prevState[\object] ?? {()};
 		var newVal, oldVal, oldKey;
 
-		newKeys.do { |newKey, i|
-			oldKey = prevState[\editKeys][i];
+		newKeys.do { |newKey, i| 
+			var isSameKey; 
+			
+			oldKey = prevState[\editKeys][i]; 
+			isSameKey = oldKey == newKey;
 			newVal = object[newKey];
 			oldVal = prevEnvir[newKey];
-			if (oldKey != newKey or: { oldVal != newVal }) {
+			if (isSameKey.not or: { oldVal != newVal }) {
 			//	"val for % has changed: %\n".postf(key, newval);
-				this.setField(i, newKey, newVal, newKey == oldKey);
+				this.setField(i, newKey, newVal, isSameKey);
 			};
 		};
 	}
@@ -146,7 +239,8 @@ EnvirGui : JITGui {
 	
 	setToSlider { |index, key, value, sameKey| 
 		var widget = widgets[index];
-		var area;
+		var area = valFields[index];
+		var keyToShow = this.showKeyFor(key);
 		
 	//	"setToSlider...".postln; 
 		 
@@ -155,21 +249,22 @@ EnvirGui : JITGui {
 			if (sameKey.not) { 
 		//		"new key - reset widget ...".postln; 
 				widget.set(
-					this.showKeyFor(key), 
+					keyToShow, 
 					this.getSpec(key, value), 
 					this.setFunc(key),
-					value);
-			} {
+					value
+				);
+				this.colorizeArea(area, keyToShow != key);			} {
 		//		"old key, just set ...".postln; 
 				widget.value = value;
 			};
+
 			^this
 		} {
 		//	"make new slider!".postln; 
 			this.clearField(index); 
 				// don't know why, but defer seems needed:
 			{ 
-				area = valFields[index];
 				widget = EZSlider(area, area.bounds.extent,
 					this.showKeyFor(key),
 					this.getSpec(key, value),
@@ -181,6 +276,9 @@ EnvirGui : JITGui {
 					.font_(font);
 				widget.view.resize_(2);
 				widgets[index] = widget;
+				
+				this.colorizeArea(area, keyToShow != key);
+
 			}.defer(0.03); 
 			
 			^this
@@ -189,23 +287,24 @@ EnvirGui : JITGui {
 	
 	setToRanger { |index, key, value, sameKey| 
 		var widget = widgets[index];
-		var area;
+		var area = valFields[index];
+		var keyToShow = this.showKeyFor(key);
 		
 		if (widget.isKindOf(EZRanger)) {
 			if (sameKey.not) { 
 				widget.set(
-					this.showKeyFor(key), 
+					keyToShow, 
 					this.getSpec(key), 
 					this.setFunc(key),
 					value
 				);
+				this.colorizeArea(area, keyToShow != key);
 			} {
 				widget.value = value;
 			};
 		} {
 			this.clearField(index);
-			{ 
-				area = valFields[index];
+			{
 				widget = EZRanger(valFields[index], valFields[index].bounds.extent, 
 					this.showKeyFor(key), 
 					this.getSpec(key, value.maxItem),
@@ -213,76 +312,78 @@ EnvirGui : JITGui {
 					value,
 					labelWidth: labelWidth, 
 					numberWidth: labelWidth
-				)
-					.font_(font);
+				).font_(font);
+				
 				widget.view.resize_(2);
 				widgets[index] = widget;
+				this.colorizeArea(area, keyToShow != key);
 			}.defer(0.03); 
 			^this
 		};
 	}
 	
-	showKeyFor { |key| ^(replaceKeys[key] ? key).asString }
+	showKeyFor { |key| ^(replaceKeys[key] ? key) }
+	
+	colorizeArea { |area, hilite = true| 
+		if (hilite) { 
+			area.background_(skin.hiliteColor);
+		} { 
+			area.background_(skin.background);
+		};
+	}
 
 	setToText { |index, key, value, sameKey = false|
 		var widget = widgets[index];
-		var area; 
+		var area = valFields[index];
+		var keyToShow = this.showKeyFor(key);
 
 			// default: EZText
 		if (widget.isKindOf(EZText)) { 
-			if (sameKey.not) { 
-				
-				widget.labelView.string = this.showKeyFor(key);
-			};
+			if (sameKey.not) { widget.labelView.string = keyToShow.asString };
 			widget.action = this.setFunc(key);
-			widget.value = value;
+			widget.value = value; 
+			this.colorizeArea(area, keyToShow != key);
+			
 			^this
 		} { 
 			this.clearField(index);
 			{
-				area = valFields[index];
-	
 				widget = EZText(area, 
 					area.bounds.extent, 
 					this.showKeyFor(key),
 					this.setFunc(key),
-					value, false, labelWidth, labelHeight: 18);
-					widget.font_(font);
-					widget.view.resize_(2);
-					widgets[index] = widget;
+					value, false, 
+					labelWidth, labelHeight: 18);
+				widget.font_(font);
+				widget.view.resize_(2);
+				widgets[index] = widget;
 				
 				widget.value_(value);
+				this.colorizeArea(area, keyToShow != key);
+				
 			}.defer(0.03); 
 		};
 	}
 
 	setField { |index, key, value, sameKey = false|
-		var area = valFields[index];
 		var widget = widgets[index];
-
-	//	[\replaceKeys, replaceKeys, key].postcs;
+		var area = valFields[index];
 	
-		if (replaceKeys[key].notNil) { 
-			area.background_(skin.hiliteColor);
-		} { 
-			area.background_(skin.background);
-		};
-
 		if (value.isKindOf(SimpleNumber) ) {
 			this.setToSlider(index, key, value, sameKey);
 			^this
 		};
 			// Ranger - only if spec exists and value is 2 numbers
-		if (value.size == 2
+		if (useRanger 
+			and: { value.size == 2 
 			and: { key.asSpec.notNil 
 			and: { value.every(_.isKindOf(SimpleNumber)) }
-		}) {
+		} }) {
 			this.setToRanger(index, key, value, sameKey);
 			^this
 		};
-		
+			// default
 		this.setToText(index, key, value, sameKey);
-		
 	}
 
 	findWidget { |key|

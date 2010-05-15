@@ -507,7 +507,7 @@ NodeProxy : BusPlug {
 	}
 
 	edit { | nSliders, parent, bounds |
-		^NodeProxyEditor(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds);
+		^NdefGui(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds);
 	}
 
 

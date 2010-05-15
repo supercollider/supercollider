@@ -91,7 +91,10 @@ JITGui {
 	
 	name_ { |name|
 		if (hasWindow) { parent.name_(this.winName(name)) };
-		if (nameView.notNil) { nameView.object_(object).string_(name) };
+		if (nameView.notNil) { 
+			try { nameView.object_(object) };
+			nameView.string_(name);
+		};
 	}
 	
 	getName {	^try { object.key } ? "_anon_" }
