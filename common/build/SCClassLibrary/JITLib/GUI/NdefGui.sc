@@ -4,7 +4,7 @@ NdefGui : JITGui {
 	classvar <buttonSizes;
 	
 	var <typeView, <fadeBox; 
-	var <monitorGui, <pauseBut, <sendBut, <edBut; 
+	var <monitorGui, <pauseBut, <sendBut, <edBut, <wakeBut; 
 	var <paramGui;
 
 	var <config, <buttonFuncs;
@@ -17,7 +17,7 @@ NdefGui : JITGui {
 		buttonSizes = (
 			name: 70, type: 30, CLR: 30, reset: 40, scope: 40, doc: 30, end: 30, fade: 70, 
 			monitor: 200, monitorM: 250, monitorL: 300, playN: 20, pausR: 40, sendR: 40, 
-			ed: 20, rip: 20, poll: 35
+			ed: 20, rip: 20, poll: 35, wake: 50
 		);
 	}
 	
@@ -108,7 +108,8 @@ NdefGui : JITGui {
 			sendR: 	{ this.makeSendBut(buttonSizes[\sendR], height) },
 			rip: 	{ this.makeRipBut(buttonSizes[\rip], height) },
 			ed: 		{ this.makeEdBut(buttonSizes[\ed], height) },
-			poll: 	{ this.makePollBut(buttonSizes[\poll], height) }
+			poll: 	{ this.makePollBut(buttonSizes[\poll], height) }, 
+			wake: 	{ this.makeWakeBut(buttonSizes[\wake], height) }
 		)
 	}
 	
@@ -187,6 +188,13 @@ NdefGui : JITGui {
 					"Safety - use alt-click to clear object.".postln;
 				}
 			})
+	}
+
+	makeWakeBut { |width, height|
+		wakeBut = Button(zone, width@height).font_(font)
+			.states_([[\WAKE, skin.fontColor, Color.clear], 
+				[\WAKE, skin.fontColor, skin.onColor]])
+			.action_({ object.resume.wakeUp; wakeBut.value_(1); })
 	}
 
 	makeResetBut { |width, height|
@@ -309,7 +317,8 @@ NdefGui : JITGui {
 			\type, object.typeStr, 
 			\isPaused, object.paused,
 			\canSend, object.sources.notNil,
-			\fadeTime, object.fadeTime
+			\fadeTime, object.fadeTime, 
+			\isPlaying, object.isPlaying
 		]);
 		
 		^newState
@@ -352,6 +361,11 @@ NdefGui : JITGui {
 		if (sendBut.notNil) { 	
 			if (newState[\canSend] != prevState[\canSend]) { 
 				sendBut.value_(newState[\canSend].binaryValue) 
+			}
+		};
+		if (wakeBut.notNil) { 	
+			if (newState[\isPlaying] != prevState[\isPlaying]) { 
+				wakeBut.value_(newState[\isPlaying].binaryValue) 
 			}
 		};
 
