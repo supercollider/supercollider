@@ -5,24 +5,31 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="1038.29">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0021e7}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12; min-height: 12.0px}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026b4}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #e10000}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
+p.p11 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #d40002}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #e10002}
+p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d1c12; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #3300d3}
 span.s1 {color: #0000ff}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
 span.s4 {color: #0026b4}
 span.s5 {color: #0024f8}
-span.s6 {color: #3d6d1d}
+span.s6 {color: #3300d3}
+span.s7 {color: #008c00}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -80,12 +87,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">// example:</p>
 <p class="p7"><br></p>
-<p class="p8">f = [{ <span class="s4">|a, b|</span> a * b * 100.rand }, { <span class="s4">|a, b|</span> sin(a) * sin(b) }, <span class="s6">'*'</span>, <span class="s6">'/'</span>];</p>
+<p class="p8">f = [{ <span class="s6">|a, b|</span> a * b * 100.rand }, { <span class="s6">|a, b|</span> sin(a) * sin(b) }, <span class="s7">'*'</span>, <span class="s7">'/'</span>];</p>
 <p class="p8">f.choose.postcs.applyTo(3, 4);</p>
 <p class="p7"><br></p>
-<p class="p6">// this is used in <a href="../../Collections/SequenceableCollection.html"><span class="s4">SequenceableCollection</span></a> reduce:</p>
-<p class="p8">(1..10).reduce(<span class="s6">'+'</span>);</p>
-<p class="p8">(1..10).reduce({ <span class="s4">|a, b|</span> a * b * 1.0.rand });</p>
+<p class="p6">// this is used in <a href="../../Collections/SequenceableCollection.html">SequenceableCollection</a> reduce:</p>
+<p class="p8">(1..10).reduce(<span class="s7">'+'</span>);</p>
+<p class="p8">(1..10).reduce({ <span class="s6">|a, b|</span> a * b * 1.0.rand });</p>
 <p class="p2"><br></p>
 <p class="p3"><b>asUGenInput(for)</b></p>
 <p class="p2"><br></p>
@@ -93,12 +100,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p6">// example:</p>
 <p class="p8">(</p>
-<p class="p8"><span class="s4">var</span> f, g, product;</p>
-<p class="p8">f = { <span class="s4">SinOsc</span>.ar(400) };</p>
-<p class="p8">g = { <span class="s4">LFPulse</span>.kr(8)<span class="Apple-converted-space">  </span>};</p>
+<p class="p8"><span class="s6">var</span> f, g, product;</p>
+<p class="p8">f = { <span class="s6">SinOsc</span>.ar(400) };</p>
+<p class="p8">g = { <span class="s6">LFPulse</span>.kr(8)<span class="Apple-converted-space">  </span>};</p>
 <p class="p8">product = f * g * 0.1;</p>
-<p class="p8">{ <span class="s4">Pan2</span>.ar(product, <span class="s4">SinOsc</span>.kr(0.3)) }.play;<span class="Apple-converted-space"> </span></p>
+<p class="p8">{ <span class="s6">Pan2</span>.ar(product, <span class="s6">SinOsc</span>.kr(0.3)) }.play;<span class="Apple-converted-space"> </span></p>
 <p class="p8">)</p>
+<p class="p9"><br></p>
+<p class="p10"><b>sampled (function, n, from, to)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p9"><br></p>
+<p class="p12">//sample a function</p>
+<p class="p13">f = { <span class="s6">|x|</span> sin(3*x)*cos(8*x) }</p>
+<p class="p13">f.plotGraph2(from:0,to:2);</p>
+<p class="p13">f.sampled(10,0,2).plotGraph2(from:0,to:2);</p>
+<p class="p13">f.sampled(80,0,2).plotGraph2(from:0,to:2);</p>
+<p class="p9"><br></p>
+<p class="p14">//on complicated functions a sampled function is less cpy heavy.</p>
+<p class="p13">f = { <span class="s6">|x|</span> 60.collect{ 2**((x-rrand(0.0,1.0))) }.sum/60 };</p>
+<p class="p13">f.plotGraph2(from:0,to:1);</p>
+<p class="p13">g = f.sampled(200);</p>
+<p class="p13">g.plotGraph2(from:0,to:1);</p>
+<p class="p13">{ 200.collect{ f.(rand(0.0,1.0)) } }.bench;</p>
+<p class="p13">{ 200.collect{ g.(rand(0.0,1.0)) } }.bench;</p>
 <p class="p2"><br></p>
 <p class="p3"><b>Function Composition:</b></p>
 <p class="p2"><br></p>
@@ -106,7 +130,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3">this operation, without evaluating the function: UnaryOpFunction, BinaryOpFunction, NAryOpFunction.</p>
 <p class="p3">Note that different subclasses like Pattern or UGen have their own composition scheme analogous to the one of AbstractFunction itself. More about functions, see <a href="Function.html"><span class="s4">Function</span></a></p>
 <p class="p2"><br></p>
-<p class="p9"><br></p>
+<p class="p15"><br></p>
 <p class="p6">// examples</p>
 <p class="p7"><br></p>
 <p class="p8">a = { 1.0.rand } + 8;</p>
@@ -118,43 +142,43 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><br></p>
 <p class="p6">// arguments are passed into both functions</p>
 <p class="p7"><br></p>
-<p class="p8">y = { <span class="s4">|x=0|</span> x } + { 1.0.rand };</p>
+<p class="p8">y = { <span class="s6">|x=0|</span> x } + { 1.0.rand };</p>
 <p class="p8">y.value(10);</p>
 <p class="p7"><br></p>
 <p class="p7"><br></p>
-<p class="p8">y = { <span class="s4">|x=0|</span> x * 3 } + { |x=0| x + 1.0.rand };</p>
+<p class="p8">y = { <span class="s6">|x=0|</span> x * 3 } + { |x=0| x + 1.0.rand };</p>
 <p class="p8">y.value(10);</p>
 <p class="p7"><br></p>
 <p class="p8">y.postcs;</p>
 <p class="p7"><br></p>
-<p class="p8">y = { <span class="s4">|x=0|</span> x * 3 } + { |x=0| x + 1.0.rand } * { <span class="s4">|x=0|</span> [50, 100].choose + x } + 1.0;</p>
+<p class="p8">y = { <span class="s6">|x=0|</span> x * 3 } + { |x=0| x + 1.0.rand } * { <span class="s6">|x=0|</span> [50, 100].choose + x } + 1.0;</p>
 <p class="p8">y.value(10);</p>
 <p class="p7"><br></p>
 <p class="p6">// environments can be used as a lookup with valueEnvir:</p>
 <p class="p7"><br></p>
 <p class="p8">(</p>
-<p class="p10">Environment<span class="s2">.use {</span></p>
+<p class="p16">Environment<span class="s2">.use {</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span>~y = 10;</p>
 <p class="p8"><span class="Apple-tab-span">	</span>~x = 2;</p>
-<p class="p8"><span class="Apple-tab-span">	</span>~z = { <span class="s4">|x=8|</span> x } + { <span class="s4">|y=0|</span> y + 1.0.rand };</p>
+<p class="p8"><span class="Apple-tab-span">	</span>~z = { <span class="s6">|x=8|</span> x } + { <span class="s6">|y=0|</span> y + 1.0.rand };</p>
 <p class="p8"><span class="Apple-tab-span">	</span>~z.valueEnvir;</p>
 <p class="p8">}</p>
 <p class="p8">)</p>
 <p class="p7"><br></p>
 <p class="p6">// n-ary operators:</p>
 <p class="p7"><br></p>
-<p class="p8">a = blend({ 3.0.rand }, { 1000.rand }, { <span class="s4">|frac|</span> frac });</p>
+<p class="p8">a = blend({ 3.0.rand }, { 1000.rand }, { <span class="s6">|frac|</span> frac });</p>
 <p class="p8">a.value(0.5);</p>
 <p class="p7"><br></p>
 <p class="p6"><span class="s2">a.value((0, 0.06..1)); </span>// creates a range of values..</p>
+<p class="p15"><br></p>
+<p class="p15"><br></p>
+<p class="p15"><br></p>
+<p class="p15"><br></p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
 <p class="p9"><br></p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
-<p class="p7"><br></p>
+<p class="p9"><br></p>
 </body>
 </html>
