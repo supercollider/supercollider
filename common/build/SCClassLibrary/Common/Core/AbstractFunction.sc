@@ -190,6 +190,12 @@ AbstractFunction {
 		// function composition
 		^{|...args| this.value(that.value(*args)) }
 	}
+	
+	sampled{ |n=80,from=0.0,to=1.0|
+		var valueArray;
+		valueArray = (from,(to-from)/(n-1) .. to).collect{|x| this.value(x) };
+		^{ |x| valueArray.blendAt( ((x.clip(from,to)-from)/(to-from))*(n-1) ) }
+	}
 
 	// embed in ugen graph
 	asUGenInput { arg for; ^this.value(for) }
