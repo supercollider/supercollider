@@ -509,11 +509,11 @@ Event : Environment {
 							// schedule when the bundles are sent
 							
 							if (strum == 0) {
-								~schedBundleArray.(offset, lag, server, bndl, ~latency);
+								~schedBundleArray.(lag, offset, server, bndl, ~latency);
 								if (sendGate) {
 									~schedBundleArray.(
-										sustain + offset,
 										lag,
+										sustain + offset,
 										server,
 										[\n_set, ids, \gate, 0].flop, 
 										~latency
@@ -524,7 +524,7 @@ Event : Environment {
 								if (strum < 0) { bndl = bndl.reverse };
 								strumOffset = offset + Array.series(bndl.size, 0, strum.abs);
 								~schedBundleArray.(
-									strumOffset, lag, server, bndl, ~latency
+									lag, strumOffset, server, bndl, ~latency
 								);
 								if (sendGate) {
 									if (~strumEndsTogether) {
@@ -533,7 +533,7 @@ Event : Environment {
 											strumOffset = sustain + strumOffset
 									};
 									~schedBundleArray.(
-										strumOffset, lag, server,
+										lag, strumOffset, server,
 										[\n_set, ids, \gate, 0].flop, 
 										~latency
 									);
