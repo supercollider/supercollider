@@ -5,19 +5,16 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.43">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #991a13}
 span.s1 {font: 18.0px Helvetica}
-span.s2 {color: #0000bf}
-span.s3 {color: #000000}
-span.s4 {color: #606060}
+span.s2 {color: #0017ad}
+span.s3 {color: #4d4d4d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -25,10 +22,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><span class="s1"><b>resize</b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><b>resize behavior for SCView and its subclasses</b></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
-<p class="p1"><b>resize</b> takes nine different arguments defining the behavior when window is resized.</p>
-<p class="p3"><br></p>
-<p class="p1">If relativeOrigin is true, then each view responds relatively to the stretches of its parent view.</p>
-<p class="p1">If relativeOrigin is false, then each view responds relatively to the stretches of the top view, even if the top view is not its parent.</p>
+<p class="p1"><b>resize</b> takes nine different arguments defining the behavior when window is resized. Each view responds relatively to the stretches of its parent view.</p>
 <p class="p3"><br></p>
 <p class="p2"><br></p>
 <p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1 2 3</p>
@@ -49,70 +43,68 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p2"><br></p>
 <p class="p1"><b>Examples</b></p>
-<p class="p5"><br></p>
-<p class="p6">// resize behaviours</p>
-<p class="p6">// use the PopUpMenus to mix resize modes</p>
-<p class="p7">(</p>
-<p class="p6"><span class="s2">var</span><span class="s3"> a,<span class="Apple-converted-space">  </span>relative=</span><span class="s2">true</span><span class="s3">; </span>//change to absolute for absolute origin behaviour</p>
-<p class="p5"><br></p>
-<p class="p7">a = { <span class="s2">|i|</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="s2">var</span> w, b, x,k,t,p;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>k=i;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>i = i + 1;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>(<span class="s4">"resize:"</span>+i, <span class="s2">Rect</span>(10 + (k%3 * 220), <span class="s2">Window</span>.screenBounds.height- [250,460,670].at(k/3), 200, 180));</p>
-<p class="p7"><span class="Apple-tab-span">	</span>b = w.view.bounds;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>x = <span class="s2">CompositeView</span>(w, w.view.bounds.insetBy(20,20)).relativeOrigin_(relative)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i);</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>y = <span class="s2">CompositeView</span>(x, x.bounds.insetBy(20,20)).relativeOrigin_(relative)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>relative.if{y.bounds=y.bounds.moveBy(-20,-20)}<span class="Apple-tab-span">	</span>;</p>
-<p class="p5"><br></p>
-<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>y.decorator = <span class="s2">FlowLayout</span>(y.bounds).gap_(0.0 @ 0.0);</p>
-<p class="p5"><br></p>
-<p class="p7"><span class="Apple-tab-span">	</span>t = <span class="s2">StaticText</span>(y, <span class="s2">Rect</span>(0, 0, 40, 40))</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand.alpha_(0.8))</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.string_(i)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_(<span class="s2">Font</span>(<span class="s4">"Helvetica"</span>, 26));</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>p=<span class="s2">PopUpMenu</span>(y,40@40).items_((1..9).collect(<span class="s2">_</span>.asString)).value_(i-1).resize_(i)</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_{<span class="s2">|m|</span> t.string_((m.value+1).asString); [p,t].do(<span class="s2">_</span>.resize_(m.value+1))};</p>
-<p class="p5"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="Apple-tab-span">	</span>w.front;</p>
-<p class="p7"><span class="Apple-tab-span">	</span>w.onClose = {a.do(<span class="s2">_</span>.close) };</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p7">} ! 9;</p>
-<p class="p5"><br></p>
-<p class="p7">)</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p6">// the popupmenu contains the various modes</p>
-<p class="p5"><br></p>
-<p class="p7">(</p>
-<p class="p7">w = <span class="s2">Window</span>(<span class="s4">"soundfile test"</span>, <span class="s2">Rect</span>(200, 200, 720, 250));</p>
-<p class="p5"><br></p>
-<p class="p5"><br></p>
-<p class="p7">p = <span class="s2">PopUpMenu</span>(w, <span class="s2">Rect</span>(10,10,80,24))</p>
-<p class="p7"><span class="Apple-tab-span">	</span>.items_( <span class="s2">Array</span>.fill(9, {<span class="s2">arg</span> i; (i+1).asString;}) )</p>
-<p class="p7"><span class="Apple-tab-span">	</span>.action_({ <span class="s2">arg</span> sbs;</p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.resize_(sbs.value+1);</p>
-<p class="p7"><span class="Apple-tab-span">	</span>});</p>
-<p class="p5"><br></p>
-<p class="p7">f = <span class="s2">SoundFile</span>.new;</p>
-<p class="p7">f.openRead(<span class="s4">"sounds/a11wlk01.wav"</span>.absolutePath);</p>
-<p class="p5"><br></p>
-<p class="p7">a = <span class="s2">SoundFileView</span>(w, <span class="s2">Rect</span>(10,40, 700, 180))</p>
-<p class="p7"><span class="Apple-tab-span">	</span>.soundfile_(f)</p>
-<p class="p7"><span class="Apple-tab-span">	</span>.readWithTask(0, f.numFrames, showProgress: <span class="s2">false</span> )</p>
-<p class="p7"><span class="Apple-tab-span">	</span>.resize_(1);</p>
-<p class="p5"><br></p>
-<p class="p7">w.front;</p>
-<p class="p7">)</p>
+<p class="p2"><br></p>
+<p class="p5">// resize behaviours</p>
+<p class="p5">// use the PopUpMenus to mix resize modes</p>
+<p class="p4">(</p>
+<p class="p4"><span class="s2">var</span> a;</p>
+<p class="p2"><br></p>
+<p class="p4">a = { <span class="s2">|i|</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="s2">var</span> w, b, x,k,t,p;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>k=i;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>i = i + 1;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>w = <span class="s2">Window</span>(<span class="s3">"resize:"</span>+i, <span class="s2">Rect</span>(10 + (k%3 * 220), <span class="s2">Window</span>.screenBounds.height- [250,460,670].at(k/3), 200, 180));</p>
+<p class="p4"><span class="Apple-tab-span">	</span>b = w.view.bounds;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>x = <span class="s2">CompositeView</span>(w, w.view.bounds.insetBy(20,20))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i);</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>y = <span class="s2">CompositeView</span>(x, x.bounds.moveTo(0,0).insetBy(20,20))<span class="Apple-converted-space"> </span></p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i);</p>
+<p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>y.decorator = <span class="s2">FlowLayout</span>(y.bounds).gap_(0.0 @ 0.0);</p>
+<p class="p2"><br></p>
+<p class="p4"><span class="Apple-tab-span">	</span>t = <span class="s2">StaticText</span>(y, <span class="s2">Rect</span>(0, 0, 40, 40))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.background_(<span class="s2">Color</span>.rand.alpha_(0.8))</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.resize_(i)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.string_(i)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.font_(<span class="s2">Font</span>(<span class="s3">"Helvetica"</span>, 26));</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>p=<span class="s2">PopUpMenu</span>(y,40@40).items_((1..9).collect(<span class="s2">_</span>.asString)).value_(i-1).resize_(i)</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_{<span class="s2">|m|</span> t.string_((m.value+1).asString); [p,t].do(<span class="s2">_</span>.resize_(m.value+1))};</p>
+<p class="p2"><span class="Apple-tab-span">	</span></p>
+<p class="p4"><span class="Apple-tab-span">	</span>w.front;</p>
+<p class="p4"><span class="Apple-tab-span">	</span>w.onClose = {a.do(<span class="s2">_</span>.close) };</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">} ! 9;</p>
+<p class="p2"><br></p>
+<p class="p4">)</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p5">// the popupmenu contains the various modes</p>
+<p class="p2"><br></p>
+<p class="p4">(</p>
+<p class="p4">w = <span class="s2">Window</span>(<span class="s3">"soundfile test"</span>, <span class="s2">Rect</span>(200, 200, 720, 250));</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p4">p = <span class="s2">PopUpMenu</span>(w, <span class="s2">Rect</span>(10,10,80,24))</p>
+<p class="p4"><span class="Apple-tab-span">	</span>.items_( <span class="s2">Array</span>.fill(9, {<span class="s2">arg</span> i; (i+1).asString;}) )</p>
+<p class="p4"><span class="Apple-tab-span">	</span>.action_({ <span class="s2">arg</span> sbs;</p>
+<p class="p4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.resize_(sbs.value+1);</p>
+<p class="p4"><span class="Apple-tab-span">	</span>});</p>
+<p class="p2"><br></p>
+<p class="p4">f = <span class="s2">SoundFile</span>.new;</p>
+<p class="p4">f.openRead(<span class="s3">"sounds/a11wlk01.wav"</span>.absolutePath);</p>
+<p class="p2"><br></p>
+<p class="p4">a = <span class="s2">SoundFileView</span>(w, <span class="s2">Rect</span>(10,40, 700, 180))</p>
+<p class="p4"><span class="Apple-tab-span">	</span>.soundfile_(f)</p>
+<p class="p4"><span class="Apple-tab-span">	</span>.readWithTask(0, f.numFrames, showProgress: <span class="s2">false</span> )</p>
+<p class="p4"><span class="Apple-tab-span">	</span>.resize_(1);</p>
+<p class="p2"><br></p>
+<p class="p4">w.front;</p>
+<p class="p4">)</p>
 <p class="p2"><br></p>
 </body>
 </html>

@@ -1166,8 +1166,8 @@ void SCCocoaTextView::setBounds(SCRect inBounds)
 {
 		mBounds = inBounds;
 		[[mScrollView superview] setNeedsDisplayInRect:[mScrollView frame]];
-		if(mParent->relativeOrigin()){
-			SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
+		if(!(mParent->isSubViewScroller())){
+			SCRect pbounds = mParent->getLayout().bounds;
 			mLayout.bounds.x = mBounds.x + pbounds.x;
 			mLayout.bounds.y = mBounds.y + pbounds.y;
 			mLayout.bounds.width = mBounds.width;
@@ -1615,8 +1615,8 @@ void SCMovieView::setBounds(SCRect screct)
 {
 	[[mMovieView superview] setNeedsDisplayInRect:[mMovieView frame]];
 	mBounds = screct;
-	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
+	if(!(mParent->isSubViewScroller())){
+		SCRect pbounds = mParent->getLayout().bounds;
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
@@ -1864,8 +1864,8 @@ void SCQuartzComposerView::setBounds(SCRect screct)
 {
 	[[mQCView superview] setNeedsDisplayInRect:[mQCView frame]];
 	mBounds = screct;
-	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
+	if(!(mParent->isSubViewScroller())){
+		SCRect pbounds = mParent->getLayout().bounds;
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
@@ -2348,8 +2348,8 @@ void SCTextField::setBounds(SCRect screct)
 
 	//[[mTextField superview] setNeedsDisplayInRect:[mTextField frame]];
 	mBounds = screct;
-	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
+	if(!(mParent->isSubViewScroller())){
+		SCRect pbounds = mParent->getLayout().bounds;
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
@@ -2746,8 +2746,8 @@ SCLevelIndicator::~SCLevelIndicator()
 void SCLevelIndicator::setBounds(SCRect screct)
 {
 	mBounds = screct;
-	if(mParent->relativeOrigin()){
-		SCRect pbounds = mParent->getLayout().bounds; 	// relative origin fix
+	if(!(mParent->isSubViewScroller())){
+		SCRect pbounds = mParent->getLayout().bounds;
 		mLayout.bounds.x = mBounds.x + pbounds.x;
 		mLayout.bounds.y = mBounds.y + pbounds.y;
 		mLayout.bounds.width = mBounds.width;
