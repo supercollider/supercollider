@@ -122,11 +122,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>(</p>
 <p class="p6"><span class="Apple-tab-span">	</span>x = {</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span><span class="s2">var</span> in, chain, v;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span><span class="s2">var</span> in, numFrames=2048, chain, v;</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>in = <span class="s2">PlayBuf</span>.ar(1, c, loop: 1);</p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>chain = <span class="s2">FFT</span>(<span class="s2">LocalBuf</span>(2048), in);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>chain = <span class="s2">FFT</span>(<span class="s2">LocalBuf</span>(numFrames), in);</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>chain = chain.pvcalc(b.numFrames, {<span class="s2">|mags, phases|</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>chain = chain.pvcalc(numFrames, {<span class="s2">|mags, phases|</span></p>
 <p class="p8"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">      </span></span>/* Play with the mags and phases, then return them */</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">      </span>[mags, phases].flop.clump(2).flop.flatten</p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-converted-space">  </span>}, tobin: 250);</p>
