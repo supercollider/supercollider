@@ -140,7 +140,7 @@ ClassBrowser {
 				~svnButton.action = {
 					var filename, svnAddr;
 					if(currentState.currentMethod.notNil) {
-						svnAddr = "http://supercollider.svn.sourceforge.net/viewvc/supercollider/trunk/build/";
+						svnAddr = "http://supercollider.svn.sourceforge.net/viewvc/supercollider/trunk/common/build/";
 						filename = currentState.currentClass.filenameSymbol.asString;
 						svnAddr = svnAddr ++ filename.drop(filename.find("SCClassLibrary"));
 						svnAddr = svnAddr ++ "?view=log";
