@@ -111,16 +111,16 @@ EZSlider : EZGui {
 	doAction { action.value(this) }
 
 	set { arg label, spec, argAction, initVal, initAction = false;
-		labelView.notNil.if{labelView.string=label};
-		controlSpec = spec.asSpec;
-		action = argAction;
-		initVal = initVal ? controlSpec.default;
+		labelView.notNil.if { labelView.string = label.asString };
+		spec.notNil.if { controlSpec = spec.asSpec };
+		argAction.notNil.if { action = argAction };
+
+		initVal = initVal ? value ? controlSpec.default;
+
 		if (initAction) {
-			this.value = initVal;
+			this.valueAction_(initVal);
 		}{
-			value = initVal;
-			sliderView.value = controlSpec.unmap(value);
-			numberView.value = value.round(round);
+			this.value_(initVal);
 		};
 	}
 

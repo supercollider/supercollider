@@ -101,13 +101,13 @@ EZKnob : EZGui {
 
 		this.prSetViewParams;
 	}
-
+		// just set, no action
 	value_ { arg val;
 		value = controlSpec.constrain(val);
 		numberView.value = value.round(round);
 		knobView.value = controlSpec.unmap(value);
 	}
-
+		// set and do action
 	valueAction_ { arg val;
 		this.value_(val);
 		this.doAction;
@@ -116,16 +116,15 @@ EZKnob : EZGui {
 	doAction { action.value(this) }
 
 	set { arg label, spec, argAction, initVal, initAction = false;
-		labelView.notNil.if{labelView.string=label};
-		controlSpec = spec.asSpec;
-		action = argAction;
-		initVal = initVal ? controlSpec.default;
+		labelView.notNil.if { labelView.string = label.asString };
+		spec.notNil.if { controlSpec = spec.asSpec };
+		argAction.notNil.if { action = argAction };
+		initVal = initVal ? value ? controlSpec.default;
+		
 		if (initAction) {
-			this.value = initVal;
+			this.valueAction_(initVal);
 		}{
-			value = initVal;
-			knobView.value = controlSpec.unmap(value);
-			numberView.value = value.round(round);
+			this.value_(initVal);
 		};
 	}
 
