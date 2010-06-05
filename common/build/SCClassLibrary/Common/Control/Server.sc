@@ -349,7 +349,7 @@ Server : Model {
 		addr.sendMsg(*msg);
 	}
  	listSendBundle { arg time, msgs;
-		addr.sendBundle(time, *msgs);
+		addr.sendBundle(time, *(msgs.asArray));
 	}
 
 	// load from disk locally, send remote
