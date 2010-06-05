@@ -1076,7 +1076,7 @@ void Latch_Ctor(Latch *unit)
 	unit->m_prevtrig = 0.f;
 	unit->mLevel = 0.f;
 
-	ZOUT0(0) = 0.f;
+	ZOUT0(0) = ZIN0(1) > 0.f ? ZIN0(0) : 0.f;
 }
 
 
