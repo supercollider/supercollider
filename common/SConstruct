@@ -585,7 +585,7 @@ if env['ALTIVEC']:
     libraries['altivec'] = env.Clone()
     libraries['altivec'].Append(
         CCFLAGS = altivec_flags,
-        CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16)])
+        CPPDEFINES = [('SC_MEMORY_ALIGNMENT', 16), 'HAS_ALTIVEC'])
     altiConf = Configure(libraries['altivec'])
     features['altivec'] = altiConf.CheckCHeader('altivec.h')
     altiConf.Finish()
