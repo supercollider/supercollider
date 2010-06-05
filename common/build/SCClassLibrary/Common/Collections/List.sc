@@ -119,5 +119,7 @@ List : SequenceableCollection {
 	writeAsPlist { arg pathname;
 		array.writeAsPlist(pathname);
 	}
+	
+	asList { ^this }
 }
 
