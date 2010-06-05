@@ -172,6 +172,7 @@ Set : Collection {
 	}
 	keyAt { arg index; ^array.at(index) }
 
+	asSet { ^this }
 }
 
 IdentitySet : Set {
