@@ -71,8 +71,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s6">var</span> inA, chainA, inB, chainB, chain ;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>inA = <span class="s6">SinOsc</span>.ar(500, 0, 0.5);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>inB =<span class="Apple-converted-space">  </span><span class="s6">SinOsc</span>.ar(<span class="s6">Line</span>.kr(100, 400, 5), 0, 0.5);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>chainA = <span class="s6">FFT</span>(bufnumA, inA);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>chainB = <span class="s6">FFT</span>(bufnumB, inB);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>chainA = <span class="s6">FFT</span>(<span class="s4">LocalBuf</span>(2048), inA);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>chainB = <span class="s6">FFT</span>(<span class="s4">LocalBuf</span>(2048), inB);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>chain = <span class="s6">PV_Mul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.5 * <span class="s6">IFFT</span>(chain).dup);</p>
 <p class="p6">}).play;</p>
@@ -83,8 +83,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s6">var</span> inA, chainA, inB, chainB, chain ;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>inA = <span class="s6">SinOsc</span>.ar(500, 0, 0.5) * <span class="s6">Line</span>.kr;</p>
 <p class="p6"><span class="Apple-tab-span">	</span>inB = <span class="s6">LFNoise1</span>.ar(20);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>chainA = <span class="s6">FFT</span>(bufnumA, inA);</p>
-<p class="p6"><span class="Apple-tab-span">	</span>chainB = <span class="s6">FFT</span>(bufnumB, inB);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>chainA = <span class="s6">FFT</span>(<span class="s4">LocalBuf</span>(2048), inA);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>chainB = <span class="s6">FFT</span>(<span class="s4">LocalBuf</span>(2048), inB);</p>
 <p class="p6"><span class="Apple-tab-span">	</span>chain = <span class="s6">PV_Mul</span>(chainA, chainB);<span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="s6">Out</span>.ar(out,<span class="Apple-converted-space">  </span>0.5 * <span class="s6">IFFT</span>(chain).dup);</p>
 <p class="p6">}).play;</p>
