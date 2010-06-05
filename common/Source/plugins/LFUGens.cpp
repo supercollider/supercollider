@@ -635,7 +635,9 @@ void LFPar_next_a(LFPar *unit, int inNumSamples)
 			float z = phase;
 			ZXP(out) = 1.f - z*z;
 		}
-		phase += ZXP(freq) * freqmul;
+		// Note: the following two lines were originally one, but seems to compile wrong on mac
+		float phaseadd = ZXP(freq) * freqmul;
+		phase += phaseadd;
 	);
 
 	unit->mPhase = phase;
@@ -700,7 +702,8 @@ void LFCub_next_a(LFCub *unit, int inNumSamples)
 			z = phase;
 		}
 		ZXP(out) = z * z * (6.f - 4.f * z) - 1.f;
-		phase += ZXP(freq) * freqmul;
+		float phaseadd = ZXP(freq);
+		phase += phaseadd * freqmul;
 	);
 
 	unit->mPhase = phase;
