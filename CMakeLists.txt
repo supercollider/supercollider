@@ -21,6 +21,15 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     option(LTO "Use GCC's link time optimizer'.")
 endif()
 
+
+# custom paths
+set(ADDITIONAL_PATH "" CACHE STRING "Additional search path")
+
+if (ADDITIONAL_PATH)
+    set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${ADDITIONAL_PATH})
+endif()
+
+
 # preprocessor paths
 include_directories(source)
 include_directories(libs
