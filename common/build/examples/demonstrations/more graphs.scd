@@ -1,3 +1,5 @@
+Server.local.boot;
+
 (
 
 SynthDef("bubbles", {
@@ -5,20 +7,20 @@ SynthDef("bubbles", {
 	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; // glissando function
 	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(0, zout.postln);
-}).writeDefFile;
+}).add;
 
 SynthDef("moto-rev", {
 	var x;
 	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1), 100, 0.1).clip2(0.4);
 	Out.ar(0, x);
-}).writeDefFile;
+}).add;
 
 SynthDef("thru", { arg out, gate=1;
 	var zin, zout, env;
 	env = Linen.kr(gate, 2, 1, 2);
 	XOut.ar(out, env, ClipNoise.ar([0.1,0.1]));
 	FreeSelfWhenDone.kr(env);
-}).writeDefFile;
+}).add;
 
 SynthDef("wah", { arg out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1, wet=1, gate=1;
 	var zin, zout, env;
@@ -31,7 +33,7 @@ SynthDef("wah", { arg out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1, wet=1
 	zout = RLPF.ar(zin, LFNoise1.kr(rate, mfreq, cfreq), rq, 10).distort * 0.15;
 	XOut.ar(out, wet * env, zout);
 	FreeSelfWhenDone.kr(env);
-}).writeDefFile;
+}).add;
 
 SynthDef("combdist", { arg out, freq = 400, decay=2, wet=1, gate=1;
 	var zin, zout, env;
@@ -42,7 +44,7 @@ SynthDef("combdist", { arg out, freq = 400, decay=2, wet=1, gate=1;
 	zout = CombN.ar(zin, 24.midicps.reciprocal, freq.reciprocal, decay).distort.reverse; 
 	XOut.ar(out, wet * env, zout);
 	FreeSelfWhenDone.kr(env);
-}).writeDefFile;
+}).add;
 
 SynthDef("echo", { arg out, maxdelay = 0.5, delay = 0.4, decay=3, wet=1, gate=1;
 	var zin, zout, env;
@@ -77,7 +79,7 @@ SynthDef("ring-mod", { arg out, freq=800, wet=1, gate=1;
 	zout = zin * SinOsc.ar(freq, [0,0.5pi]);
 	XOut.ar(out, wet * env, zout);
 	FreeSelfWhenDone.kr(env);
-}).writeDefFile;
+}).add;
 
 
 /*
@@ -106,33 +108,30 @@ SynthDef("mixer3", {
 	master = Ramp.kr(In.kr(0, 1), 0.05);
 	faders = Ramp.kr(In.kr(1, 8), 0.05);
 	Out.ar(0, Mix(channels * faders) * master);
-}).writeDefFile;
+}).add;
 
 SynthDef("line", { arg out, start=1, end=0, dur=3;
 	var line;
 	line = Line.kr(start, end, dur);
 	ReplaceOut.kr(out, line);
 	FreeSelfWhenDone.kr(line);
-}).writeDefFile;
+}).add;
 
 SynthDef("xline", { arg out, start=1, end=0.0001, dur=3;
 	var line;
 	line = XLine.kr(start, end, dur);
 	Out.kr(out, line);
 	FreeSelfWhenDone.kr(line);
-}).writeDefFile;
+}).add;
 
 	
 )
 
-Server.local.boot;
-
-Server.local.sendMsg("/d_loadDir", "synthdefs/");
 
 
-patch a control to read from a bus.
+//patch a control to read from a bus.
 
-gradually change a parameter over some period.
+//gradually change a parameter over some period.
 
 
 (
@@ -217,11 +216,12 @@ gradually change a parameter over some period.
 //Ppar([f.value(7),f.value(6), f.value(5)]).play(Event.protoEvent)
 
 Server.default.sendMsg("/notify", 1);
-
+(
 SynthDef("default", { arg freq=440, gate=1, amp=0.2;
 	var e, s;
 	e = EnvGen.kr(Env.linen(0.004,amp,0.5), gate);
 	FreeSelfWhenDone.kr(e);
 	s = SinOsc.ar(freq,0, e);
 	Out.ar(0, s);
-}).writeDefFile;
+}).add;
+)

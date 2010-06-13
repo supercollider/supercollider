@@ -12,7 +12,7 @@ var colorWindow, sortFn, screenBounds, btnWidth;
 colorWindow = {arg colors, btnWidth=60, fontSize=9, bounds, inclGrey=false, winOnClose=true;
 	var w, color, colArr, prevCol, colName, btn, txtCol, isGrey, colsCollect = [];	
 	bounds = bounds ? Rect(10, 10, 252, 240);
-	w = GUI.window.new("Color browser", bounds, scroll: true);
+	w = Window("Color browser", bounds, scroll: true);
 	w.view.decorator = FlowLayout(w.view.bounds, Point(0,0), Point(0,0));
 	colors.do({ arg colAssoc, i;Ê
 		color = colAssoc.value;
@@ -26,8 +26,8 @@ colorWindow = {arg colors, btnWidth=60, fontSize=9, bounds, inclGrey=false, winO
 			});
 			if (isGrey.not, {
 				txtCol = if(colArr.sum < 2.45, {Color.white}, {Color.black});
-				btn = GUI.button.new(w, Rect(0,0, btnWidth, (btnWidth/3).round)); 
-				btn.font = GUI.font.new("Helvetica", fontSize);
+				btn = Button(w, Rect(0,0, btnWidth, (btnWidth/3).round)); 
+				btn.font = Font("Helvetica", fontSize);
 				btn.states = [["", txtCol, color],[colName, txtCol, color]];
 				btn.action_({ arg butt;
 					var name, val256;
@@ -59,7 +59,7 @@ colorWindow = {arg colors, btnWidth=60, fontSize=9, bounds, inclGrey=false, winO
 sortFn = { arg a, b; (a.value.asArray.sum) > (b.value.asArray.sum)};
 
 // calculate window and button sizes relatve to screen resolution
-screenBounds = GUI.window.screenBounds.extent.asArray;
+screenBounds = Window.screenBounds.extent.asArray;
 // 508 colors including grey scale
 btnWidth = (((screenBounds[0]*screenBounds[1])/508).sqrt * 1.6).floor.round;
 

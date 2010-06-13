@@ -13,7 +13,7 @@ SynthDef("deepsea", { arg out, pan=0, amp=0.1, variation=0.9;
 	u = BPF.ar(u, freq, 0.2);
 	DetectSilence.ar(u, doneAction:2);
 	Out.ar(out, Pan2.ar(u, pan, amp));
-}).store;
+}).add;
 )
 
 (
@@ -30,7 +30,7 @@ SynthDef("deepsea", { arg out, pan=0, amp=0.1, variation=0.9;
 	u = BPF.ar(u, freq * (count % LFNoise1.kr(1).range(2, 20) + 1), 0.2);
 	DetectSilence.ar(u, doneAction:2);
 	Out.ar(out, Pan2.ar(u, pan, amp * 10));
-}).store;
+}).add;
 )
 
 

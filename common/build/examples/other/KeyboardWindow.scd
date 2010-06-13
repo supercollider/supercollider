@@ -28,7 +28,7 @@ var offsets = #[42, 48, 57, 117];
 var actions; // an IdentityDictionary mapping keys to action functions.
 var makeKey; // function to create an SCDragSink for a key.
 
-courier = GUI.font.new("Courier", 14).boldVariant;
+courier = Font("Courier", 14).boldVariant;
 
 // an IdentityDictionary is used to map keys to functions so that
 // we can look up the action for a key
@@ -41,28 +41,29 @@ makeKey = {|char, keyname, bounds|
 	keyname = keyname ? char.asString;
 	bounds = bounds ? (24 @ 24);
 
-	v = GUI.dragBoth.new(w, bounds);
+	v = DragBoth(w, bounds);
 	v.font = courier;
 	v.string = keyname;
 	v.align = \center;
 	v.setBoth = false;
-	clz = GUI.view;
+	clz = View;
 	v.canReceiveDragHandler = {
-		clz.currentDrag.isKindOf(Function)
+		clz.currentDrag.isKindOf(String)
 	};
-	v.action = { 
+	v.action = {
+		var function = v.object.interpret;
 		("added key action : " ++ keyname).postln;
 		if (char.isAlpha) {
-			actions[char.toUpper] = v.object;
-			actions[char.toLower] = v.object;
+			actions[char.toUpper] = function;
+			actions[char.toLower] = function;
 		}{
-			actions[char] = v.object;
+			actions[char] = function;
 		};
 		w.front;
 	};
 };
 
-w = GUI.window.new("keyboard", Rect(128, 320, 420, 150));
+w = Window("keyboard", Rect(128, 320, 420, 150));
 
 w.view.decorator = FlowLayout(w.view.bounds);
 

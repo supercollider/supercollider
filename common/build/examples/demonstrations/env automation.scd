@@ -1,5 +1,5 @@
 
-
+(
 SynthDef("env", { arg i_outbus=0;
 	var env, envctl;
 	
@@ -10,13 +10,13 @@ SynthDef("env", { arg i_outbus=0;
 	envctl = Control.names([\env]).kr( env.asArray );
 	
 	ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
-}).load(s);
+}).add;
 
 
 SynthDef("sine", {
 	Out.ar(0, SinOsc.ar(In.kr(0), 0, 0.2));
-}).load(s);
-
+}).add;
+)
 
 s.sendMsg(\c_set, 0, 800);
 

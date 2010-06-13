@@ -45,12 +45,12 @@ linetext= (
 (" ".asSymbol):[[[0,1],[1,1]],[[0,0.8],[0,1]],[[1,0.8],[1,1]]]
 );
 
-w = GUI.window.new("welcome", Rect(40, 500, h, v));
+w = Window("welcome", Rect(40, 500, h, v));
 w.view.background = Color.blue(0.5);
 w.onClose = { run = false };
 w.front;
 
-pen = GUI.pen;
+pen = Pen;
 drawletter={arg which, startx, starty, xscale=100, yscale,prop=1.0;
 var data;
 

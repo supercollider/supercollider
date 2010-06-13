@@ -8,10 +8,10 @@
 	
 	export=false;		// <--- toggle to export frames
 
-	w = SCWindow("animation", Rect(40, 40, h, v));
+	w = Window("animation", Rect(40, 40, h, v));
 	
 	w.view.background_(Color.white);
-	u = GUI.userView.new(w, Rect(0, 0, h, v));
+	u = UserView.new(w, Rect(0, 0, h, v));
 	w.front;
 
 	// image preparation

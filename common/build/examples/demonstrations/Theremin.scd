@@ -25,7 +25,7 @@ SynthDef(\theremin, { arg mod = 7, detune = 0;
 	a = SinOsc.ar(f + (f * SinOsc.ar(mod,0,0.02)), mul: MouseX.kr(0, 0.9));
 	z = Mix.ar(a);
 	Out.ar(0, z) + Out.ar(1, z)
-}).load(s)
+}).add
 )
 
 a = Synth(\theremin);
@@ -33,3 +33,6 @@ a.set(\mod, 12);
 
 b = Synth(\theremin);
 b.set(\mod, 5, \detune, 200); 
+
+a.free;
+b.free;

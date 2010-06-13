@@ -3,7 +3,7 @@ GUI.swing;		// use Java GUI
 
 // Creating a window.
 
-w = GUI.window.new("a control panel", Rect(20, 400, 440, 360));
+w = Window.new("a control panel", Rect(20, 400, 440, 360));
 w.front; // make window visible and front window.
 
 
@@ -44,7 +44,7 @@ w.view.decorator = FlowLayout(w.view.bounds);
 f = {
 	// the arguments for creating a view are the window it is in,
 	// and the bounds of the view
-	b = GUI.button.new(w, 75 @ 24);
+	b = Button(w, 75 @ 24);
 	// states defines the colors and label for the button in different states.
 	b.states = [["Add", Color.black, Color.rand]];
 	b.action = f;
@@ -55,7 +55,7 @@ f.value;
 // A button that changes the background.
 
 (
-b = GUI.button.new(w, 75 @ 24);
+b = Button(w, 75 @ 24);
 b.states = [["Backgnd", Color.white, Color.rand]];
 b.action = {
 		w.view.background = Color.rand(0.0,1.0); // fallback for SwingOSC
@@ -68,7 +68,7 @@ b.action = {
 // A multi-state button.
 
 (
-b = GUI.button.new(w, 75 @ 24);
+b = Button(w, 75 @ 24);
 b.states = [
 	["Red", Color.white, Color.red],
 	["Green", Color.black, Color.green],
@@ -88,7 +88,7 @@ b.action = {| view |
 // works on Mac OS X only
 (
 w.view.decorator.nextLine;
-v = GUI.slider.new(w, 130 @ 24);
+v = Slider(w, 130 @ 24);
 v.action = {| view | 
 	// Sliders output values from zero to one.
 	w.alpha = view.value; 
@@ -103,7 +103,7 @@ w.front;
 
 (
 w.view.decorator.nextLine;
-v = GUI.slider.new(w, 130 @ 24);
+v = Slider(w, 130 @ 24);
 v.action = {| view | 
 	var bounds;
 	bounds = w.bounds;
@@ -135,12 +135,12 @@ SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, g
 		x = x * EnvGen.kr(Env.cutoff, gate, doneAction: 2);
 		Out.ar(0, x);
 	}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]
-).load(s);
+).add;
 )
 
 (
 // make the window
-w = GUI.window.new("another control panel", Rect(20, 400, 440, 360));
+w = Window("another control panel", Rect(20, 400, 440, 360));
 w.front; // make window visible and front window.
 w.view.decorator = FlowLayout(w.view.bounds);
 w.view.background = Color.rand(0.0,1.0); // fallback for SwingOSC
@@ -150,7 +150,7 @@ w.view.background = HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
 
 (
 // add a button to start and stop the sound.
-b = GUI.button.new(w, 75 @ 24);
+b = Button(w, 75 @ 24);
 b.states = [["Start", Color.black, Color.green],["Stop", Color.white, Color.red]];
 b.action = {|view|
 		if (view.value == 1) {
@@ -165,7 +165,7 @@ b.action = {|view|
 (
 // add a label
 w.view.decorator.nextLine;
-v = GUI.staticText.new(w, 80 @ 24);
+v = StaticText(w, 80 @ 24);
 v.string = "Note";
 v.stringColor = Color.white;
 v.align = \right;
@@ -179,8 +179,8 @@ v.align = \right;
 // create a ControlSpec for mapping values to correct range.
 ~noteSpec = ControlSpec(24, 60, \lin, 1);
 // create slider and number views.
-~noteSlider = GUI.slider.new(w, 200 @ 24);
-~noteNumBox = GUI.numberBox.new(w, 64 @ 24);
+~noteSlider = Slider(w, 200 @ 24);
+~noteNumBox = NumberBox(w, 64 @ 24);
 
 ~noteSlider.step = 1/(60-24);
 ~noteSlider.action = {|view|
@@ -252,7 +252,7 @@ var id, cmdPeriodFunc;
 id = s.nextNodeID; // generate a note id.
 
 // make the window
-w = GUI.window.new("another control panel", Rect(20, 400, 440, 180));
+w = Window("another control panel", Rect(20, 400, 440, 180));
 w.front; // make window visible and front window.
 w.view.decorator = FlowLayout(w.view.bounds);
 
@@ -260,7 +260,7 @@ w.view.background = HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
 					[\h,\v].choose, 100, rrand(0.1,0.9));
 
 // add a button to start and stop the sound.
-startButton = GUI.button.new(w, 75 @ 24);
+startButton = Button(w, 75 @ 24);
 startButton.states = [
 	["Start", Color.black, Color.green],
 	["Stop", Color.white, Color.red]

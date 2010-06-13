@@ -20,7 +20,7 @@ SynthDef(\LMFAP, {|combdecay=1, allpassdecay=0.5, wet=0.1, bufnum, rate=1, end=2
 	y = Mix.ar(Array.fill(7,{ CombL.ar(signal, 0.05, rrand(0.03, 0.05), combdecay) })); 
 	6.do({ y = AllpassN.ar(y, 0.050, rrand(0.03, 0.05), allpassdecay) });
 	Out.ar(0, signal+(y*wet));
-}).load(s);
+}).add;
 )
 
 // wait a bit
@@ -36,3 +36,5 @@ c.set(\wet, 0.4) // more reverb
 
 c.set(\end, 44100*3) // 3 sec loop
 
+c.free;
+b.free;

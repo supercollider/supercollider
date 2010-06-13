@@ -8,10 +8,10 @@ GUI.swing;	// use Java GUI
 (
 	var xx, yy, x, y, c, width, z=1, pp, zz=0, mm=10, alph=1.0, pen;
 	width = 1;
-	w = GUI.window.new(Char.bullet, Rect(100, 100, 600, 600)).front;
+	w = Window(Char.bullet, Rect(100, 100, 600, 600)).front;
 	w.view.background_(Color.gray(0.6));
 
-	v = GUI.userView.new(w, w.view.bounds).mouseMoveAction_({|v,ax,ay| 
+	v = UserView(w, w.view.bounds).mouseMoveAction_({|v,ax,ay| 
 		x = ax; y = ay;
 		
 		4.do {
@@ -29,7 +29,7 @@ GUI.swing;	// use Java GUI
 			[xx, yy].choose.value([10, -10, 5, -5, 2, -2].choose * 2);
 			
 	};
-	pen = GUI.pen;
+	pen = Pen;
 	w.drawHook = {
 		// set the Color
 		try { pen.smoothing_(false) };
@@ -37,7 +37,7 @@ GUI.swing;	// use Java GUI
 		z.do { |i|
 			pen.strokeColor = Color.rand.alpha_(i.linexp(0, z-1, 1.0, alph));
 			pen.moveTo(c[0]);
-			c.size.do { |i| GUI.pen.lineTo(c.wrapAt(i)) };
+			c.size.do { |i| Pen.lineTo(c.wrapAt(i)) };
 			pen.stroke;
 			pen.translate([-2, -2, 2, 2] @@ zz, [-2, 2, -2, 2]*2 @@ zz);
 			
@@ -62,7 +62,7 @@ GUI.swing;	// use Java GUI
 		q = q ?? ();
 		
 		width = 1;
-		w = GUI.window.new(Char.bullet, Rect(100, 100, 400, 400)).front;
+		w = Window(Char.bullet, Rect(100, 100, 400, 400)).front;
 		w.view.background_(Color.black);
 	
 		viewheight = w.bounds.height;
@@ -71,7 +71,7 @@ GUI.swing;	// use Java GUI
 		y = 100;
 		steps = #[1, 1, 2, 2, 2, 2, 4];
 		
-		v = GUI.userView.new(w, w.view.bounds);
+		v = UserView(w, w.view.bounds);
 		v.mouseMoveAction_({|v,ax,ay| 
 			x = ax; y = ay;
 			phunz.(8);
@@ -95,7 +95,7 @@ GUI.swing;	// use Java GUI
 		yy = { |d=1| c = c.add(x @ (y = y + d)) };
 		
 		phunz.(20);
-		pen = GUI.pen;
+		pen = Pen;
 		w.drawHook = {
 			
 			try { pen.smoothing_(false) };
