@@ -13,11 +13,11 @@ SynthDef(\drummer, { arg out=0, tempo=4;
 	hihat = 	HPF.ar(WhiteNoise.ar(1), 10000) * Decay2.ar(tempo, 0.005, 0.5);
 	
 	Out.ar(out,(snare + base + hihat) * 0.4 ! 2)
-}).load(s);
+}).add;
 )
 
 a = Synth(\drummer);
 a.set(\tempo, 6);
 a.set(\tempo, 18);
 a.set(\tempo, 180); // check the CPU! no increase.
-
+a.free;

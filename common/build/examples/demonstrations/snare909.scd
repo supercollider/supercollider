@@ -15,7 +15,7 @@
                     
                    ) * mul; 
  Out.ar(out, membrane!2) 
-   }).send(s) 
+   }).add
   )
  
  

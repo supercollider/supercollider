@@ -11,7 +11,7 @@ SynthDef(\scratch, {arg gate = 1, buffer;
 	speed = MouseButton.kr(1, 0, 0.3) + speed ;
 	buf = PlayBuf.ar(1, buffer, speed * BufRateScale.kr(buffer), loop: 1);
 	Out.ar(0, (buf * env).dup );
-}).load(s);
+}).add;
 	
 s.boot;
 

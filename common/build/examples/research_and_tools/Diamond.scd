@@ -35,7 +35,7 @@ SynthDef("tone", { arg freq = 440, amp=0.1, gate =1;
 	env = Linen.kr(gate, 0.01, amp, 0.2, 2);
 	tone = OnePole.ar(Saw.ar(freq + {Rand(-0.05,0.05)}.dup, env), 0.95);
 	Out.ar(0, tone);
-}).load(s);
+}).add;
 
 series = (8..15);
 series.remove(13);
@@ -43,7 +43,7 @@ series.remove(13);
 series2 = series ++ (2 * series) ++ (4 * (series ++ 16));
 series = 4 * (series ++ 16);
 
-w = GUI.window.new("diamond", Rect(200,200,460,560));
+w = Window("diamond", Rect(200,200,460,560));
 w.view.decorator = FlowLayout(w.view.bounds);
 
 series2.reverse.do {|denom|
@@ -60,7 +60,7 @@ series2.reverse.do {|denom|
 		[rnumer, rdenom].postln;
 		ratio = rnumer / rdenom;
 		freq = 50.midicps * ratio;
-		b = GUI.button.new(w, 50 @ 20);
+		b = Button(w, 50 @ 20);
 		label = rnumer.asString ++ " / " ++ rdenom;
 		color = if (rnumer.isPowerOfTwo && rdenom.isPowerOfTwo) {Color.red(1,0.4)}{
 			if(numer.isPowerOfTwo || denom.isPowerOfTwo) {Color.yellow(1,0.4)}{Color.clear}};
@@ -110,7 +110,7 @@ SynthDef("tone", { arg freq = 440, amp=0.1, gate =1;
 	//tone = OnePole.ar(Saw.ar(freq + {Rand(-0.05,0.05)}.dup, env), 0.95);
 	tone = OnePole.ar(Saw.ar(freq + {Rand(-0.05,0.05)}.dup, env), 0.8);
 	Out.ar(0, tone);
-}).load(s);
+}).add;
 
 series = (8..15);
 series.remove(13);
@@ -118,7 +118,7 @@ series.remove(13);
 series2 = series ++ (2 * series) ++ (4 * (series ++ 16));
 series = (series ++ 16);
 
-w = GUI.window.new("diamond", Rect(50,200,980,220));
+w = Window("diamond", Rect(50,200,980,220));
 w.view.decorator = FlowLayout(w.view.bounds);
 
 series.reverse.do {|denom|
@@ -135,7 +135,7 @@ series.reverse.do {|denom|
 		[rnumer, rdenom].postln;
 		ratio = rnumer / rdenom;
 		freq = 50.midicps * ratio;
-		b = GUI.button.new(w, 40 @ 20);
+		b = Button(w, 40 @ 20);
 		label = rnumer.asString ++ "/" ++ rdenom;
 		color = if (rnumer.isPowerOfTwo && rdenom.isPowerOfTwo) 
 {Color.red(1,0.4)}{
@@ -177,7 +177,7 @@ SynthDef("tone", { arg freq = 440, amp=0.1, gate =1;
 	//tone = OnePole.ar(Saw.ar(freq + {Rand(-0.05,0.05)}.dup, env), 0.95);
 	tone = OnePole.ar(Saw.ar(freq + {Rand(-0.05,0.05)}.dup, env), 0.8);
 	Out.ar(0, tone);
-}).load(s);
+}).add;
 
 series = (8..15);
 series.remove(13);
@@ -185,10 +185,10 @@ series.remove(13);
 series2 = series ++ (2 * series) ++ (4 * (series ++ 16));
 series = (series ++ 16);
 
-w = GUI.window.new("diamond", Rect(50,200,980,370), resizable: false);
+w = Window("diamond", Rect(50,200,980,370), resizable: false);
 w.view.decorator = FlowLayout(w.view.bounds);
 
-buttonFont = GUI.font.new("Helvetica", if( GUI.id === \cocoa, 11, 7 )).boldVariant;
+buttonFont = Font("Helvetica", if( GUI.id === \cocoa, 11, 7 )).boldVariant;
 
 series.reverse.do {|denom|
 	series2.do {|numer|
@@ -204,7 +204,7 @@ series.reverse.do {|denom|
 		[rnumer, rdenom].postln;
 		ratio = rnumer / rdenom;
 		freq = 50.midicps * ratio;
-		b = GUI.button.new(w, 40 @ 40);
+		b = Button(w, 40 @ 40);
 		label = rnumer.asString ++ " / " ++ rdenom ++ "\n" ++ 
 ((ratio.ratiomidi * 100).round.asInteger % 1200);
 		color = if (rnumer.isPowerOfTwo && rdenom.isPowerOfTwo) 

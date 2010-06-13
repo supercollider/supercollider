@@ -19,7 +19,7 @@ SynthDef(\atari2600, {|out= 0, gate= 1, tone0= 5,
 	e= EnvGen.kr(Env.asr(0.01, amp, 0.05), gate, doneAction:2);
 	z= Atari2600.ar(tone0, tone1, freq0, freq1, 15, 15);
 	Out.ar(out, Pan2.ar(z*e, pan));
-}).store
+}).add;
 )
 Ê
 // And a pattern to play it:

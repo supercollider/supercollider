@@ -46,11 +46,11 @@ chordKeys = chords.keys.asArray;
 
 // GUI
 
-w = GUI.window.new("seminaire_musical", Rect(10, 250, 750, 250), false);
+w = Window("seminaire_musical", Rect(10, 250, 750, 250), false);
 
 w.view.decorator = dec = FlowLayout(w.view.bounds);
 dec.shift(20, 20);
-v_spiel = GUI.listView.new(w, Rect(0,0, 100, 130))
+v_spiel = ListView(w, Rect(0,0, 100, 130))
 	/*.items_(
 		["noten", "frequenzen", "noten + oktave","intervalle","times","beatings", "akkorde"]
 	);*/
@@ -58,30 +58,30 @@ v_spiel = GUI.listView.new(w, Rect(0,0, 100, 130))
 		["notes", "frequencies", "notes + octaves","intervals","times","beatings", "chords"]
 	);
 dec.shift(5);
-v_klang = GUI.listView.new(w, Rect(0,0, 100, 120)).items_(["sinus", "noise", "pulse", "bell", "piano", "timbre"]);
+v_klang = ListView(w, Rect(0,0, 100, 120)).items_(["sinus", "noise", "pulse", "bell", "piano", "timbre"]);
 dec.shift(20);
-v_neu = GUI.button.new(w, Rect(0,0, 70, 35)).states_([["next try", Color.black, Color.clear]]);
-v_play = GUI.button.new(w, Rect(0,0, 50, 35)).states_([["play", Color.black, Color.clear]]);
+v_neu = Button(w, Rect(0,0, 70, 35)).states_([["next try", Color.black, Color.clear]]);
+v_play = Button(w, Rect(0,0, 50, 35)).states_([["play", Color.black, Color.clear]]);
 SCSlider(w, Rect(0,0, 200, 35)).value_(0.5).action_({ |v| amp = v.value });
-GUI.button.new(w, Rect(0,0, 90, 18))
+Button(w, Rect(0,0, 90, 18))
 	.states_([["boot server", Color.black, Color.clear]]).action_({ Server.default.boot });
 
 dec.shift(-425, 50);
 
-GUI.button.new(w, Rect(0,0, 70,20))
+Button(w, Rect(0,0, 70,20))
 	.states_([["europe","india","numerical"], Color.black, Color.clear].flop)
 	.action_({ |v| mode = [\european, \indian, \numerical][v.value.asInteger]; f_neu.value; });
 
-v_sargam = GUI.button.new(w, Rect(0,0, 50, 20))
+v_sargam = Button(w, Rect(0,0, 50, 20))
 	.states_([["sargam", Color.black, Color.clear], ["sargam", Color.red, Color.clear]]);
  
-GUI.button.new(w, Rect(0,0, 180, 20))
+Button(w, Rect(0,0, 180, 20))
 	.states_([["including low tones", Color.black, Color.clear],["excluding low tones", Color.black, Color.clear]])
 	.action_({ |v|
 		allowBase = v.value < 1;
 	});
 	
-v_display = GUI.staticText.new(w, Rect(0,0,80,20)); //.font_(Font("Helvetica", 18));
+v_display = StaticText(w, Rect(0,0,80,20)); //.font_(Font("Helvetica", 18));
 dec.shift(300, -80);
 
 
@@ -89,7 +89,7 @@ dec.shift(300, -80);
 dec.nextLine;
 dec.shift(20, 30);
 
-GUI.staticText.new(w, Rect(0,0, 300,20))
+StaticText(w, Rect(0,0, 300,20))
 	.string_("find the corresponding value here:")
 	.align_(\left);
 
@@ -97,7 +97,7 @@ dec.nextLine;
 dec.shift(20, 0);
 
 v_guess = Array.fill(13, {
-	GUI.button.new(w, Rect(0,0, 50, 35)).font_(Font("Monaco", 9));
+	Button(w, Rect(0,0, 50, 35)).font_(Font("Monaco", 9));
 
 });
 
@@ -286,7 +286,7 @@ SynthDef("sm_sine", { arg freq=440, amp=0.5;
 		)
 	)
 
-}).store;
+}).add;
 
 SynthDef("sm_noise", { arg freq=440, amp=0.5;
 	var u;
@@ -302,7 +302,7 @@ SynthDef("sm_noise", { arg freq=440, amp=0.5;
 		)
 	)
 
-}).store;
+}).add;
 
 SynthDef("sm_pulse", { arg freq=440, amp=0.5;
 	var u;
@@ -315,7 +315,7 @@ SynthDef("sm_pulse", { arg freq=440, amp=0.5;
 		)
 	)
 
-}).store;
+}).add;
 
 SynthDef("sm_bell", { arg freq=440, amp=0.5;
 	n = 5;
@@ -332,7 +332,7 @@ SynthDef("sm_bell", { arg freq=440, amp=0.5;
 		)
 	)
 
-}).store;
+}).add;
 
 (
 SynthDef("sm_string", { arg freq=440, amp=0.5;
@@ -351,7 +351,7 @@ SynthDef("sm_string", { arg freq=440, amp=0.5;
 		Pan2.ar(u * amp, freq.cpsmidi % 12 / 6 - 1)
 	);
 
-}).store;
+}).add;
 );
 
 SynthDef("sm_click", { arg freq=440, rate=1, amp=0.5;
@@ -365,7 +365,7 @@ SynthDef("sm_click", { arg freq=440, rate=1, amp=0.5;
 		)
 	)
 
-}).store;
+}).add;
 
 SynthDef("sm_beatings", { arg freq=440, rate=1, amp=0.5;
 	var u;
@@ -378,7 +378,7 @@ SynthDef("sm_beatings", { arg freq=440, rate=1, amp=0.5;
 		)
 	)
 
-}).store;
+}).add;
 
 SynthDef("sm_sargam", { arg freq=440, amp=0.5, gate=1.0;
 	var u;
@@ -390,7 +390,7 @@ SynthDef("sm_sargam", { arg freq=440, amp=0.5, gate=1.0;
 			u * EnvGen.kr(Env.asr(1.0, amp, 1.0), gate, doneAction:2)
 	)
 
-}).store;
+}).add;
 
 SynthDef("sm_timbremix", { arg freq=440, amp=0.5;
 	var n = 10, u;
@@ -407,6 +407,6 @@ SynthDef("sm_timbremix", { arg freq=440, amp=0.5;
 	);
 	DetectSilence.ar(u, doneAction:2);
 
-}).store;
+}).add;
 
 )

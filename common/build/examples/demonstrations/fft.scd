@@ -8,7 +8,7 @@ SynthDef("silenceFFT", {
 	in = WhiteNoise.ar(0.01);
 	chain = FFT(0, in);
 	Out.ar(0, IFFT(chain));
-}).load(s);
+}).add;
 )
 
 s.sendMsg("/b_alloc", 0, 2048, 1);
@@ -21,7 +21,7 @@ SynthDef("sineFFT", {
 	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08,0,6,6.2).squared, 0, 100,800));
 	chain = FFT(0, in);
 	Out.ar(0, IFFT(chain));
-}).load(s);
+}).add;
 )
 
 s.sendMsg("/b_alloc", 0, 2048, 1);
@@ -36,7 +36,7 @@ SynthDef("magAbove", {
 	chain = FFT(0, in);
 	chain = PV_MagAbove(chain, 310); 
 	Out.ar(0, 0.5 * IFFT(chain));
-}).load(s);
+}).add;
 )
 
 s.sendMsg("/b_alloc", 0, 2048, 1);
@@ -51,7 +51,7 @@ SynthDef("brick", {
 	chain = FFT(0, in);
 	chain = PV_BrickWall(chain, SinOsc.kr(0.1)); 
 	Out.ar(0, IFFT(chain));
-}).load(s);
+}).add;
 )
 
 s.sendMsg("/b_alloc", 0, 2048, 1);
@@ -66,7 +66,7 @@ SynthDef("randcomb", { arg bufnum=0;
 	chain = FFT(bufnum, in);
 	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4)); 
 	Out.ar(0, IFFT(chain));
-}).load(s);
+}).add;
 )
 
 s.sendMsg("/b_alloc", 1, 2048, 1);
@@ -82,7 +82,7 @@ SynthDef("rectcomb", { arg bufnum=0;
 	chain = PV_RectComb(chain, 8, LFTri.kr(0.097,0,0.4,0.5), 
 		LFTri.kr(0.24,0,-0.5,0.5)); 
 	Out.ar(0, IFFT(chain));
-}).load(s);
+}).add;
 )
 
 s.sendMsg("/b_alloc", 0, 2048, 1);

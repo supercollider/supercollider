@@ -11,7 +11,7 @@ SynthDef("reverb", {
 	in = In.ar(0, 2);
 	5.do({ in = AllpassN.ar(in, 0.05, [0.05.rand, 0.05.rand], 2); });
 	ReplaceOut.ar(0, in);
-}).load(s);
+}).add;
 )
 
 
@@ -95,7 +95,7 @@ modulatorF = { arg freq=440, mix=0, gate=1;
 		
 		DetectSilence.ar(c, doneAction: 2);
 		Out.ar(0, Pan2.ar(c, pan, amp));
-	}).load(s);
+	}).add;
 };
 )
 

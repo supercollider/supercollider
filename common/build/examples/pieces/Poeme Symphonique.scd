@@ -13,7 +13,7 @@ var env, signal;
 	signal = SOS.ar(Impulse.ar(tempo), 1.0, 0.0, 0.0, b1, b2);
 	signal = RHPF.ar(signal, filterfreq, rq);
 	Out.ar(0, Pan2.ar(signal, 0));
-}).load(s)
+}).add;
 )
 
 // and we create 10 different metronomes running in different tempi
