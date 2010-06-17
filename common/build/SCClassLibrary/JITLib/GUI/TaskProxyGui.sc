@@ -101,7 +101,7 @@ TaskProxyGui : JITGui {
 			])
 			.action_({ |but, mod| 
 				if (mod.isAlt) { 
-					this.class.new(object, max(object.envir.size, 8));
+					this.class.new(object, max(object.envir.size, 8), nil, 400@20);
 				} { 
 					if (object.envir.isNil) {
 						this.openDoc(this.editString)
