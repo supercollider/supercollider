@@ -179,6 +179,7 @@ JITGui {
 			Rect(0,0, bounds.width - 65, lineheight), 
 			nil, { |ez| object = ez.value; })
 			.font_(font);
+		csView.bounds.postln;
 	}
 
 	getState { 
@@ -186,16 +187,17 @@ JITGui {
 		^(object: object) 
 	}
 	
-	checkUpdate { |doFull = false|
+	checkUpdate {
 		var newState = this.getState; 
 		
 		// compare newState and prevState, update gui items as needed
-		if (doFull.not and: { newState == prevState }) { ^this };
+		if (newState == prevState) { ^this };
 		
-		if (doFull.not and: { newState[\object] != prevState[\object] }) { 
+		if (newState[\object] != prevState[\object]) { 
 			this.name_(this.getName);
 			if (csView.textField.hasFocus.not) { csView.value_(object) };
-		};		
+		};
+		prevState = newState;	
 	} 
 
 	makeScroller { 
