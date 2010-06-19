@@ -5,7 +5,6 @@ set(simple_tests
     memory-pool_test.cpp
     osc_dispatcher_test.cpp
     osc_server_test.cpp
-    perf_counter_test.cpp
     server_dsp_thread_queue_test.cpp
     server_dsp_thread_test.cpp
     server_node_graph_test.cpp
@@ -24,6 +23,12 @@ set(simple_tests
     timetag_test.cpp
     tl_allocator_test.cpp
 )
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    set(simple_tests ${simple_tests}
+        perf_counter_test.cpp
+    )
+endif()
 
 add_library(boost_test STATIC boost_test.cpp)
 
