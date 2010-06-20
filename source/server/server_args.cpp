@@ -1,5 +1,5 @@
 //  server arguments, implementation
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -16,10 +16,12 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
+#include <iostream>
+
+#include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <boost/thread.hpp>
 
-#include <iostream>
 
 #include "server_args.hpp"
 
@@ -57,7 +59,7 @@ server_arguments::server_arguments(int argc, char * argv[])
                                                             "When using TCP, the session password must be the first command sent.\n"
                                                             "The default is no password.\n"
                                                             "UDP ports never require passwords, so for security use TCP.")
-        ("nrt,N", "non-realtime command string")
+        ("nrt,N", value<std::vector<std::string> >()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
         ("memory-locking,L", "enable memory locking")
         ("hardware-device-name,H", value<std::string>(&hw_name)->default_value(""), "hardware device name")
         ("verbose,v", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
@@ -97,12 +99,31 @@ server_arguments::server_arguments(int argc, char * argv[])
 
     notify(vm);
 
-    memory_locking = (vm.count("memory-locking") > 0);
+    memory_locking = vm.count("memory-locking");
 
     if (vm.count("help"))
     {
         cout << cmdline_options<< endl;
         std::exit(EXIT_SUCCESS);
+    }
+
+    non_rt = vm.count("nrt");
+
+    if (non_rt)
+    {
+        std::vector<std::string> const & nrt_options = vm["nrt"].as<std::vector<std::string> >();
+        if (nrt_options.size() != 6)
+        {
+            cout << "Error when parsing command line:" << endl;
+            std::exit(EXIT_FAILURE);
+        }
+
+        command_file = nrt_options[0];
+        input_file = nrt_options[1];
+        output_file = nrt_options[2];
+        samplerate = boost::lexical_cast<uint32_t>(nrt_options[3]);
+        header_format = nrt_options[4];
+        sample_format = nrt_options[5];
     }
 }
 
