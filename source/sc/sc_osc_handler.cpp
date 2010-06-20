@@ -558,7 +558,6 @@ void sc_osc_handler::handle_packet(const char * data, std::size_t length, nova_e
 template <bool realtime>
 void sc_osc_handler::handle_bundle(received_bundle const & bundle, nova_endpoint const & endpoint)
 {
-    time_tag now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
     time_tag bundle_time = bundle.TimeTag();
 
     typedef osc::ReceivedBundleElementIterator bundle_iterator;

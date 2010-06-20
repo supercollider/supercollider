@@ -227,6 +227,14 @@ public:
     void set_group_slot(node_id, slot_id, float);
 #endif
 
+    void increment_logical_time(void)
+    {
+        sc_osc_handler::increment_logical_time(time_per_tick);
+    }
+
+private:
+    time_tag time_per_tick;
+
 public:
     void operator()(void)
     {
@@ -276,11 +284,13 @@ inline void run_scheduler_tick(void)
 
 inline void realtime_engine_functor::init_tick(void)
 {
+    instance->update_time_from_system();
 }
 
 inline void realtime_engine_functor::run_tick(void )
 {
     run_scheduler_tick();
+    instance->increment_logical_time();
 }
 
 
