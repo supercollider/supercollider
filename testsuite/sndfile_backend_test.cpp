@@ -7,16 +7,27 @@ using namespace nova;
 
 namespace
 {
-void tick(void);
 
-sndfile_backend<tick> be;
 aligned_storage_ptr<float> data(nova::calloc_aligned<float>(64));
 
-void tick(void)
+struct engine_functor;
+
+struct engine_functor
+{
+    void init_tick(void)
+    {}
+
+    void run_tick(void);
+};
+
+sndfile_backend<engine_functor> be;
+
+void engine_functor::run_tick(void)
 {
     float * data_ptr = data.get();
     be.output_mapping(&data_ptr, &data_ptr + 1);
 }
+
 }
 
 BOOST_AUTO_TEST_CASE( sndfile_backend_test_1 )

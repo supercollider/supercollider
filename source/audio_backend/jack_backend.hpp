@@ -42,10 +42,14 @@ namespace nova
  *  \todo later it may be interesting to directly map the io busses to the jack port regions
  *  \todo rethink the use of output port lock
  */
-template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
+template <typename engine_functor,
+          typename sample_type = float,
+          bool blocking = false
+         >
 class jack_backend:
     public detail::audio_delivery_helper<sample_type, jack_default_audio_sample_t, blocking, false>,
-    public detail::audio_settings_basic
+    public detail::audio_settings_basic,
+    protected engine_functor
 {
     typedef detail::audio_delivery_helper<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
@@ -221,6 +225,8 @@ private:
 
     int perform(jack_nframes_t frames)
     {
+        engine_functor::init_tick();
+
         /* get port regions */
         jack_default_audio_sample_t * inputs[input_channels];
         jack_default_audio_sample_t * outputs[output_channels];
@@ -238,7 +244,7 @@ private:
                 inputs[i] += blocksize_;
             }
 
-            (*dsp_cb)();
+            engine_functor::run_tick();
 
             for (uint16_t i = 0; i != output_channels; ++i)
             {

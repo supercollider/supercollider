@@ -42,7 +42,11 @@
 namespace nova
 {
 
-inline void run_scheduler_tick(void);
+struct realtime_engine_functor
+{
+    inline void init_tick(void);
+    inline void run_tick(void);
+};
 
 extern class nova_server * instance;
 
@@ -89,17 +93,15 @@ private:
 class nova_server:
     public node_graph,
     public scheduler,
-#ifdef PORTAUDIO_BACKEND
-    public audio_frontend<&run_scheduler_tick>,
-#elif defined(JACK_BACKEND)
-    public jack_backend<&run_scheduler_tick, float, false>,
+#if defined(JACK_BACKEND)
+    public jack_backend<realtime_engine_functor, float, false>,
 #endif
     public synth_factory,
     public buffer_manager,
     public sc_osc_handler
 {
 public:
-    typedef jack_backend<&run_scheduler_tick, float, false> audio_backend;
+    typedef jack_backend<realtime_engine_functor, float, false> audio_backend;
 
     /* main nova_server function */
     nova_server(server_arguments const & args);
@@ -271,6 +273,16 @@ inline void run_scheduler_tick(void)
             zerovec(sc_factory.world.mAudioBus + blocksize * channel, blocksize);
     }
 }
+
+inline void realtime_engine_functor::init_tick(void)
+{
+}
+
+inline void realtime_engine_functor::run_tick(void )
+{
+    run_scheduler_tick();
+}
+
 
 } /* namespace nova */
 

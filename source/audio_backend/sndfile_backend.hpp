@@ -41,10 +41,14 @@ namespace nova
  *  audio backend, reading/writing sound files via libsndfile
  *
  */
-template <void(*dsp_cb)(void), typename sample_type = float, bool blocking = false>
+template <typename engine_functor,
+          typename sample_type = float,
+          bool blocking = false
+         >
 class sndfile_backend:
     public detail::audio_delivery_helper<sample_type, float, blocking, false>,
-    public detail::audio_settings_basic
+    public detail::audio_settings_basic,
+    private engine_functor
 {
     typedef detail::audio_delivery_helper<sample_type, float, blocking, false> super;
     typedef std::size_t size_t;
@@ -255,7 +259,7 @@ private:
         {
             size_t frames_per_tick = 64;
             /* no need to clear the inputs, since they are not used */
-            (*dsp_cb)();
+            engine_functor::run_tick();
             write_output_buffers(frames_per_tick);
         }
     }
@@ -267,7 +271,7 @@ private:
             size_t frames_per_tick = 64;
             super::clear_outputs(frames_per_tick);
             read_input_buffers(frames_per_tick);
-            (*dsp_cb)();
+            engine_functor::run_tick();
             write_output_buffers(frames_per_tick);
         }
     }
