@@ -755,8 +755,6 @@ int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char *
     return 0;
 }
 
-namespace
-{
 /* directly taken from supercollider sources
    Copyright (c) 2002 James McCartney. All rights reserved.
 */
@@ -821,7 +819,6 @@ int headerFormatFromString(const char *name)
     return 0;
 }
 
-} /* namespace */
 
 int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, const char * header_format, const char * sample_format,
                                       uint32_t start, uint32_t frames, bool leave_open)

@@ -73,7 +73,7 @@ public:
         output_channels = output_channel_count;
         samplerate_ = samplerate = std::floor(samplerate);
 
-        if (input_file_name != "_")
+        if (!input_file_name.empty())
         {
             input_file = SndfileHandle(input_file_name.c_str(), SFM_READ);
             if (!input_file)
@@ -83,6 +83,7 @@ public:
                 throw std::runtime_error("input file: samplerate mismatch");
 
             input_channels = input_file.channels();
+            super::input_samples.resize(input_channels);
         }
         else
             input_channels = 0;
@@ -91,8 +92,10 @@ public:
         output_file = SndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
         if (!output_file)
             throw std::runtime_error("cannot open output file");
+        super::output_samples.resize(output_channel_count);
 
         temp_buffer.reset(calloc_aligned<float>(std::max(input_channels, output_channels) * 64));
+
     }
 
     void close_client(void)
@@ -120,10 +123,6 @@ public:
         }
 
         running.store(true);
-        if (input_file)
-            audio_thread = boost::thread(boost::bind(&sndfile_backend::audio_thread_fn, this));
-        else
-            audio_thread = boost::thread(boost::bind(&sndfile_backend::audio_thread_fn_noinput, this));
 
         writer_running.store(true);
         writer_thread = boost::thread(boost::bind(&sndfile_backend::sndfile_write_thread, this));
@@ -135,7 +134,6 @@ public:
         reader_thread.join();
 
         running.store(false);
-        audio_thread.join();
         write_semaphore.post();
         writer_running.store(false);
         writer_thread.join();
@@ -227,8 +225,12 @@ private:
         const size_t total_samples = output_channels * frames_per_tick;
         size_t remaining = total_samples;
 
+        sample_type * buffer = temp_buffer.get();
+
         do {
-            remaining -= write_frames.enqueue(temp_buffer.get(), remaining);
+            size_t consumed = write_frames.enqueue(buffer, remaining);
+            remaining -= consumed;
+            buffer += consumed;
             write_semaphore.post();
         } while (remaining);
     }
@@ -244,44 +246,39 @@ private:
             for (;;)
             {
                 size_t dequeued = write_frames.dequeue(data_to_write.c_array(), data_to_write.size());
+
                 if (dequeued == 0)
                     break;
-                output_file.write(temp_buffer.get(), dequeued);
+                output_file.write(data_to_write.c_array(), dequeued);
             }
             if (unlikely(writer_running.load(boost::memory_order_acquire) == false))
                 return;
         }
+
     }
 
-    void audio_thread_fn_noinput(void)
+public:
+    void audio_fn_noinput(size_t frames_per_tick)
     {
-        while (running.load(boost::memory_order_acquire))
-        {
-            size_t frames_per_tick = 64;
-            /* no need to clear the inputs, since they are not used */
-            engine_functor::run_tick();
-            write_output_buffers(frames_per_tick);
-        }
+        engine_functor::run_tick();
+        write_output_buffers(frames_per_tick);
     }
 
-    void audio_thread_fn(void)
+    void audio_fn(size_t frames_per_tick)
     {
-        while (running.load(boost::memory_order_acquire))
-        {
-            size_t frames_per_tick = 64;
-            super::clear_outputs(frames_per_tick);
-            read_input_buffers(frames_per_tick);
-            engine_functor::run_tick();
-            write_output_buffers(frames_per_tick);
-        }
+        super::clear_outputs(frames_per_tick);
+        read_input_buffers(frames_per_tick);
+        engine_functor::run_tick();
+        write_output_buffers(frames_per_tick);
     }
 
+private:
     SndfileHandle input_file, output_file;
     std::size_t read_position;
 
     aligned_storage_ptr<sample_type> temp_buffer;
 
-    boost::thread reader_thread, audio_thread, writer_thread;
+    boost::thread reader_thread, writer_thread;
     boost::lockfree::ringbuffer< sample_type, 0 > read_frames, write_frames;
     nova::semaphore read_semaphore, write_semaphore;
     boost::atomic<bool> running, reader_running, writer_running;

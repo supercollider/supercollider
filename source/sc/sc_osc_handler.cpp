@@ -505,19 +505,15 @@ void sc_osc_handler::handle_packet_async(const char * data, size_t length,
     instance->add_sync_callback(p);
 }
 
-void sc_osc_handler::handle_packet_nrt(const char * data, size_t length)
+time_tag sc_osc_handler::handle_bundle_nrt(const char * data, size_t length)
 {
     osc_received_packet packet(data, length);
-    if (packet.IsBundle())
-    {
-        received_bundle bundle(packet);
-        handle_bundle<false> (bundle, nova_endpoint());
-    }
-    else
-    {
-        received_message message(packet);
-        handle_message<false> (message, nova_endpoint());
-    }
+    if (!packet.IsBundle())
+        throw std::runtime_error("packet needs to be an osc bundle");
+
+    received_bundle bundle(packet);
+    handle_bundle<false> (bundle, nova_endpoint());
+    return bundle.TimeTag();
 }
 
 

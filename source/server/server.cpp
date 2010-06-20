@@ -21,6 +21,8 @@
 #include "server.hpp"
 #include "sync_commands.hpp"
 
+#include "nrt_synthesis.hpp"
+
 #include "sc/sc_synth_prototype.hpp"
 #include "sc/sc_ugen_factory.hpp"
 
@@ -120,6 +122,12 @@ void nova_server::free_node(server_node * node)
     notification_node_ended(node);
     node_graph::remove_node(node);
     update_dsp_queue();
+}
+
+void nova_server::run_nonrt_synthesis(server_arguments const & args)
+{
+    non_realtime_synthesis_engine engine(args);
+    engine.run();
 }
 
 namespace

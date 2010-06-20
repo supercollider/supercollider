@@ -136,6 +136,8 @@ public:
     }
     /* @} */
 
+    /** non-rt synthesis */
+    void run_nonrt_synthesis(server_arguments const & arguments);
 
 private:
     template <bool (node_graph::*fn)(abstract_group*)>
@@ -262,9 +264,9 @@ private:
 
 inline void run_scheduler_tick(void)
 {
-    const int blocksize = instance->get_audio_blocksize();
-    const int input_channels = instance->get_input_count();
-    const int output_channels = instance->get_output_count();
+    const int blocksize = sc_factory.world.mBufLength;
+    const int input_channels = sc_factory.world.mNumInputs;
+    const int output_channels = sc_factory.world.mNumOutputs;
     const int buf_counter = ++sc_factory.world.mBufCounter;
 
     /* touch all input buffers */

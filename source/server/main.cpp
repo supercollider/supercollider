@@ -164,24 +164,6 @@ int main(int argc, char * argv[])
     nova_server server(args);
     register_handles();
 
-#if defined (JACK_BACKEND)
-    server.open_client("supernova", args.input_channels, args.output_channels, args.blocksize);
-    server.prepare_backend();
-    server.activate_audio();
-
-    if (args.samplerate == 0)
-        server_arguments::set_samplerate((uint32_t)server.get_samplerate());
-    else
-        if (args.samplerate != server.get_samplerate()) {
-            std::cerr << "samplerate mismatch between command line argument and jack" << endl;
-            server.deactivate_audio();
-            return 1;
-        }
-
-    connect_jack_ports();
-
-#endif
-
     if (args.load_synthdefs) {
         boost::filesystem::path synthdef_path(getenv("HOME"));
         synthdef_path = synthdef_path / "share" / "SuperCollider" / "synthdefs";
@@ -192,11 +174,33 @@ int main(int argc, char * argv[])
     std::cout << "SynthDefs loaded" << std::endl;
 #endif
 
-    std::cout << "Supernova ready" << std::endl;
-    server.run();
+    if (!args.non_rt)
+    {
+#if defined (JACK_BACKEND)
+        server.open_client("supernova", args.input_channels, args.output_channels, args.blocksize);
+        server.prepare_backend();
+        server.activate_audio();
+
+        if (args.samplerate == 0)
+            server_arguments::set_samplerate((uint32_t)server.get_samplerate());
+        else
+            if (args.samplerate != server.get_samplerate()) {
+                std::cerr << "samplerate mismatch between command line argument and jack" << endl;
+                server.deactivate_audio();
+                return 1;
+            }
+
+        connect_jack_ports();
+#endif
+
+        std::cout << "Supernova ready" << std::endl;
+        server.run();
 
 #if defined (JACK_BACKEND)
-    server.deactivate_audio();
+        server.deactivate_audio();
 #endif
+    }
+    else
+        server.run_nonrt_synthesis(args);
     return 0;
 }
