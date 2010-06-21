@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.54">
+<meta name="CocoaVersion" content="1038.29">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -364,8 +364,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>4 - the new node replaces the node specified by the add target ID. The target node is freed.</p>
 <p class="p3">Multiple groups may be created in one command by adding arguments.</p>
 <p class="p2"><br></p>
-<p class="p3"><b>/p_new<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>create
-    a new parallel group</b></p>
+<p class="p3"><b>/p_new<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>create a new parallel group</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - new group ID</p>
 <p class="p3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>int - add action (0,1,2, 3 or 4 see below)</p>
@@ -601,6 +600,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><span class="Apple-tab-span">	</span>int - buffer number</p>
 <p class="p2"><span class="Apple-tab-span">	</span></p>
 <p class="p3">After using a buffer with DiskOut, close the soundfile and write header information.</p>
+<p class="p3"><b>Asynchronous</b>. Replies to sender with <b>/done </b>when complete.</p>
 <p class="p2"><br></p>
 <p class="p3"><b>/b_query</b></p>
 <p class="p3"><span class="Apple-tab-span">	</span>[</p>
