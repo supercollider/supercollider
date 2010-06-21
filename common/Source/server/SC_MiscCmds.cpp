@@ -982,6 +982,12 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 	return kSCErr_None;
 }
 
+SCErr meth_p_new(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_p_new(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{
+	/* we emulate the concept of parallel groups by using sequential groups */
+	return meth_g_new(inWorld, inSize, inData, inReply);
+}
 
 SCErr meth_n_free(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_free(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
@@ -1877,6 +1883,8 @@ void initMiscCommands()
 	NEW_COMMAND(g_tail);
 	NEW_COMMAND(g_freeAll);
 	NEW_COMMAND(g_deepFree);
+
+	NEW_COMMAND(p_new);
 
 	NEW_COMMAND(b_alloc);
 	NEW_COMMAND(b_allocRead);
