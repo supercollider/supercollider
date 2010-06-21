@@ -243,7 +243,7 @@ public:
         if (unlikely(dsp_queue_dirty))
             rebuild_dsp_queue();
 
-        sc_factory.initialize_synths();
+        sc_factory->initialize_synths();
         scheduler::operator()();
     }
 
@@ -264,23 +264,23 @@ private:
 
 inline void run_scheduler_tick(void)
 {
-    const int blocksize = sc_factory.world.mBufLength;
-    const int input_channels = sc_factory.world.mNumInputs;
-    const int output_channels = sc_factory.world.mNumOutputs;
-    const int buf_counter = ++sc_factory.world.mBufCounter;
+    const int blocksize = sc_factory->world.mBufLength;
+    const int input_channels = sc_factory->world.mNumInputs;
+    const int output_channels = sc_factory->world.mNumOutputs;
+    const int buf_counter = ++sc_factory->world.mBufCounter;
 
     /* touch all input buffers */
     for (int channel = 0; channel != input_channels; ++channel)
-        sc_factory.world.mAudioBusTouched[output_channels + channel] = buf_counter;
+        sc_factory->world.mAudioBusTouched[output_channels + channel] = buf_counter;
 
     (*instance)();
 
-    sc_factory.update_nodegraph();
+    sc_factory->update_nodegraph();
 
     /* wipe all untouched output buffers */
     for (int channel = 0; channel != output_channels; ++channel) {
-        if (sc_factory.world.mAudioBusTouched[channel] != buf_counter)
-            zerovec(sc_factory.world.mAudioBus + blocksize * channel, blocksize);
+        if (sc_factory->world.mAudioBusTouched[channel] != buf_counter)
+            zerovec(sc_factory->world.mAudioBus + blocksize * channel, blocksize);
     }
 }
 

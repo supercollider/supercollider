@@ -257,7 +257,7 @@ private:
     uint32_t ugen_count_;
 };
 
-extern sc_ugen_factory sc_factory;
+extern sc_ugen_factory * sc_factory;
 
 } /* namespace nova */
 

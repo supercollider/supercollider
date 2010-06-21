@@ -36,6 +36,7 @@ nova_server::nova_server(server_arguments const & args):
     io_interpreter(1, true, thread_priority_interval_rt().first)
 {
     assert(instance == 0);
+    sc_factory = new sc_ugen_factory;
     instance = this;
 
     /** todo: backend may force sample rate */
@@ -51,12 +52,12 @@ void nova_server::prepare_backend(void)
 
     std::vector<sample*> inputs, outputs;
     for (int channel = 0; channel != input_channels; ++channel)
-        inputs.push_back(sc_factory.world.mAudioBus + (blocksize * (output_channels + channel)));
+        inputs.push_back(sc_factory->world.mAudioBus + (blocksize * (output_channels + channel)));
 
     audio_backend::input_mapping(inputs.begin(), inputs.end());
 
     for (int channel = 0; channel != output_channels; ++channel)
-        outputs.push_back(sc_factory.world.mAudioBus + blocksize * channel);
+        outputs.push_back(sc_factory->world.mAudioBus + blocksize * channel);
 
     audio_backend::output_mapping(outputs.begin(), outputs.end());
 }

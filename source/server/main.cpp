@@ -1,5 +1,5 @@
 //  nova server
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009. 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -149,10 +149,13 @@ int main(int argc, char * argv[])
     std::cout << "compiled for debugging" << std::endl;
 #endif
 
-    sc_factory.initialize();
+    nova_server server(args);
+    register_handles();
+
+    sc_factory->initialize();
 #ifdef __linux__
-    sc_factory.load_plugin_folder("/usr/local/lib/supernova/plugins");
-    sc_factory.load_plugin_folder("/usr/lib/supernova/plugins");
+    sc_factory->load_plugin_folder("/usr/local/lib/supernova/plugins");
+    sc_factory->load_plugin_folder("/usr/lib/supernova/plugins");
 #else
 #error "Don't know how to locate plugins on this platform"
 #endif
@@ -160,9 +163,6 @@ int main(int argc, char * argv[])
 #ifndef NDEBUG
     std::cout << "Unit Generators initialized" << std::endl;
 #endif
-
-    nova_server server(args);
-    register_handles();
 
     if (args.load_synthdefs) {
         boost::filesystem::path synthdef_path(getenv("HOME"));

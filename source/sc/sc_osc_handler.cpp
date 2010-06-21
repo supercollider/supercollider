@@ -735,7 +735,7 @@ void status_perform(nova_endpoint const & endpoint)
     osc::OutboundPacketStream p(buffer, 1024);
     p << osc::BeginMessage("/status.reply")
       << (i32)1                                    /* unused */
-      << (i32)sc_factory.ugen_count()   /* ugens */
+      << (i32)sc_factory->ugen_count()   /* ugens */
       << (i32)instance->synth_count()     /* synths */
       << (i32)instance->group_count()     /* groups */
       << (i32)instance->prototype_count() /* synthdefs */
@@ -1806,16 +1806,16 @@ void b_alloc_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endp
 template <bool realtime>
 void b_alloc_1_nrt(uint32_t index, uint32_t frames, uint32_t channels, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory.buffer_guard(index));
-    sample * free_buf = sc_factory.get_nrt_mirror_buffer(index);
-    sc_factory.allocate_buffer(index, frames, channels);
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
+    sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
+    sc_factory->allocate_buffer(index, frames, channels);
     cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_alloc_2_rt<realtime>, index, msg, free_buf, endpoint));
 }
 
 template <bool realtime>
 void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_sync(index);
+    sc_factory->buffer_sync(index);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_alloc_3_nrt, index, free_buf, endpoint));
 }
@@ -1855,9 +1855,9 @@ void b_free_3_nrt(uint32_t index, sample * free_buf, nova_endpoint const & endpo
 template <bool realtime>
 void b_free_1_nrt(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory.buffer_guard(index));
-    sample * free_buf = sc_factory.get_nrt_mirror_buffer(index);
-    sc_factory.free_buffer(index);
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
+    sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
+    sc_factory->free_buffer(index);
     cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_free_2_rt<realtime>,
                                                            index, free_buf, msg, endpoint));
 }
@@ -1865,7 +1865,7 @@ void b_free_1_nrt(uint32_t index, completion_message & msg, nova_endpoint const 
 template <bool realtime>
 void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_sync(index);
+    sc_factory->buffer_sync(index);
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_free_3_nrt, index, free_buf, endpoint));
     msg.handle(endpoint);
 }
@@ -1898,9 +1898,9 @@ template <bool realtime>
 void b_allocRead_1_nrt(uint32_t index, movable_string & filename, uint32_t start, uint32_t frames, completion_message & msg,
                        nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory.buffer_guard(index));
-    sample * free_buf = sc_factory.get_nrt_mirror_buffer(index);
-    int error = sc_factory.buffer_read_alloc(index, filename.c_str(), start, frames);
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
+    sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
+    int error = sc_factory->buffer_read_alloc(index, filename.c_str(), start, frames);
     if (!error)
         cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_allocRead_2_rt<realtime>, index, msg, free_buf, endpoint));
     else
@@ -1911,7 +1911,7 @@ template <bool realtime>
 void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
                       nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_sync(index);
+    sc_factory->buffer_sync(index);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_allocRead_3_nrt, index, free_buf, endpoint));
 }
@@ -1958,9 +1958,9 @@ void b_allocReadChannel_1_nrt(uint32_t index, movable_string const & filename, u
                               movable_array<uint32_t> const & channels, completion_message & msg,
                               nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory.buffer_guard(index));
-    sample * free_buf = sc_factory.get_nrt_mirror_buffer(index);
-    int error = sc_factory.buffer_alloc_read_channels(index, filename.c_str(), start, frames,
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
+    sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
+    int error = sc_factory->buffer_alloc_read_channels(index, filename.c_str(), start, frames,
                                                         channels.length(), channels.data());
     if (!error)
         cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_allocReadChannel_2_rt<realtime>,
@@ -1971,7 +1971,7 @@ template <bool realtime>
 void b_allocReadChannel_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
                              nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_sync(index);
+    sc_factory->buffer_sync(index);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_allocReadChannel_3_nrt,
                                                                index, free_buf, endpoint));
@@ -2026,8 +2026,8 @@ void b_write_nrt_1(uint32_t index, movable_string const & filename, movable_stri
                    movable_string const & sample_format, uint32_t start, uint32_t frames, bool leave_open,
                    completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory.buffer_guard(index));
-    sc_factory.buffer_write(index, filename.c_str(), header_format.c_str(), sample_format.c_str(), start, frames, leave_open);
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
+    sc_factory->buffer_write(index, filename.c_str(), header_format.c_str(), sample_format.c_str(), start, frames, leave_open);
     msg.trigger_async(endpoint);
     cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, index);
 }
@@ -2099,8 +2099,8 @@ template <bool realtime>
 void b_read_nrt_1(uint32_t index, movable_string & filename, uint32_t start_file, uint32_t frames,
                   uint32_t start_buffer, bool leave_open, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory.buffer_guard(index));
-    sc_factory.buffer_read(index, filename.c_str(), start_file, frames, start_buffer, leave_open);
+    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
+    sc_factory->buffer_read(index, filename.c_str(), start_file, frames, start_buffer, leave_open);
     cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_read_rt_2<realtime>, index, msg, endpoint));
 }
 
@@ -2108,7 +2108,7 @@ const char * b_read = "/b_read";
 template <bool realtime>
 void b_read_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_sync(index);
+    sc_factory->buffer_sync(index);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_done_message(endpoint, b_read, index);
 }
@@ -2188,7 +2188,7 @@ void b_readChannel_nrt_1(uint32_t index, movable_string & filename, uint32_t sta
                          uint32_t start_buffer, bool leave_open, movable_array<uint32_t> & channel_map,
                          completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_read_channel(index, filename.c_str(), start_file, frames, start_buffer, leave_open,
+    sc_factory->buffer_read_channel(index, filename.c_str(), start_file, frames, start_buffer, leave_open,
                                      channel_map.length(), channel_map.data());
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_readChannel_rt_2<realtime>, index, msg, endpoint));
 }
@@ -2197,7 +2197,7 @@ const char * b_readChannel = "/b_readChannel";
 template <bool realtime>
 void b_readChannel_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_sync(index);
+    sc_factory->buffer_sync(index);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_done_message(endpoint, b_readChannel, index);
 }
@@ -2290,7 +2290,7 @@ void b_zero_rt_2(uint32_t index, completion_message & msg, nova_endpoint const &
 template <bool realtime>
 void b_zero_nrt_1(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_zero(index);
+    sc_factory->buffer_zero(index);
     cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_zero_rt_2<realtime>, index, msg, endpoint));
 }
 
@@ -2298,7 +2298,7 @@ const char * b_zero = "/b_zero";
 template <bool realtime>
 void b_zero_rt_2(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
-    sc_factory.increment_write_updates(index);
+    sc_factory->increment_write_updates(index);
     msg.handle(endpoint);
     cmd_dispatcher<realtime>::fire_done_message(endpoint, b_zero, index);
 }
@@ -2322,7 +2322,7 @@ void handle_b_set(received_message const & msg)
     verify_argument(it, end);
     osc::int32 buffer_index = it->AsInt32(); ++it;
 
-    buffer_wrapper::sample_t * data = sc_factory.get_buffer(buffer_index);
+    buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
 
     while (it != end) {
         osc::int32 index = it->AsInt32(); ++it;
@@ -2339,7 +2339,7 @@ void handle_b_setn(received_message const & msg)
     verify_argument(it, end);
     osc::int32 buffer_index = it->AsInt32(); ++it;
 
-    buffer_wrapper::sample_t * data = sc_factory.get_buffer(buffer_index);
+    buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
 
     while (it != end) {
         osc::int32 index = it->AsInt32(); ++it;
@@ -2361,7 +2361,7 @@ void handle_b_fill(received_message const & msg)
     verify_argument(it, end);
     osc::int32 buffer_index = it->AsInt32(); ++it;
 
-    buffer_wrapper::sample_t * data = sc_factory.get_buffer(buffer_index);
+    buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
 
     while (it != end) {
         osc::int32 index = it->AsInt32(); ++it;
@@ -2393,7 +2393,7 @@ void handle_b_query(received_message const & msg, nova_endpoint const & endpoint
         osc::int32 buffer_index;
         args >> buffer_index;
 
-        SndBuf * buf = sc_factory.get_buffer_struct(buffer_index);
+        SndBuf * buf = sc_factory->get_buffer_struct(buffer_index);
 
         p << buffer_index
           << osc::int32(buf->frames)
@@ -2410,7 +2410,7 @@ void handle_b_query(received_message const & msg, nova_endpoint const & endpoint
 
 void b_close_nrt_1(uint32_t index)
 {
-    sc_factory.buffer_close(index);
+    sc_factory->buffer_close(index);
 }
 
 template <bool realtime>
@@ -2437,7 +2437,7 @@ void handle_b_get(received_message const & msg, nova_endpoint const & endpoint)
     osc::int32 buffer_index;
     args >> buffer_index;
 
-    const SndBuf * buf = sc_factory.get_buffer_struct(buffer_index);
+    const SndBuf * buf = sc_factory->get_buffer_struct(buffer_index);
     const sample * data = buf->data;
     const int max_sample = buf->frames * buf->channels;
 
@@ -2489,7 +2489,7 @@ void handle_b_getn(received_message const & msg, nova_endpoint const & endpoint)
     osc::int32 buffer_index;
     args >> buffer_index;
 
-    const SndBuf * buf = sc_factory.get_buffer_struct(buffer_index);
+    const SndBuf * buf = sc_factory->get_buffer_struct(buffer_index);
     const sample * data = buf->data;
     const int max_sample = buf->frames * buf->channels;
 
@@ -2541,14 +2541,14 @@ void b_gen_nrt_1(movable_array<char> & message, nova_endpoint const & endpoint)
     if (!generator)
         return;
 
-    sample * free_buf = sc_factory.buffer_generate(index, generator, msg);
+    sample * free_buf = sc_factory->buffer_generate(index, generator, msg);
     cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_gen_rt_2<realtime>, index, free_buf, endpoint));
 }
 
 template <bool realtime>
 void b_gen_rt_2(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
 {
-    sc_factory.buffer_sync(index);
+    sc_factory->buffer_sync(index);
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_gen_nrt_3, index, free_buf, endpoint));
 }
 
@@ -2575,7 +2575,7 @@ void handle_c_set(received_message const & msg)
         osc::int32 bus_index = it->AsInt32(); ++it;
         float value = extract_float_argument(it++);
 
-        sc_factory.controlbus_set(bus_index, value);
+        sc_factory->controlbus_set(bus_index, value);
     }
 }
 
@@ -2590,7 +2590,7 @@ void handle_c_setn(received_message const & msg)
 
         for (int i = 0; i != bus_count; ++i) {
             float value = extract_float_argument(it++);
-            sc_factory.controlbus_set(bus_index + i, value);
+            sc_factory->controlbus_set(bus_index + i, value);
         }
     }
 }
@@ -2604,7 +2604,7 @@ void handle_c_fill(received_message const & msg)
         bus_index = it->AsInt32(); ++it;
         bus_count = it->AsInt32(); ++it;
         float value = extract_float_argument(it++);
-        sc_factory.controlbus_fill(bus_index, bus_count, value);
+        sc_factory->controlbus_fill(bus_index, bus_count, value);
     }
 }
 
@@ -2627,7 +2627,7 @@ void handle_c_get(received_message const & msg,
         osc::int32 index;
         args >> index;
 
-        p << index << sc_factory.controlbus_get(index);
+        p << index << sc_factory->controlbus_get(index);
     }
 
     p << osc::EndMessage;
@@ -2657,7 +2657,7 @@ void handle_c_getn(received_message const & msg, nova_endpoint const & endpoint)
         p << bus_index << bus_count;
 
         for (int i = 0; i != bus_count; ++i) {
-            float value = sc_factory.controlbus_get(bus_index + i);
+            float value = sc_factory->controlbus_get(bus_index + i);
             p << value;
         }
     }

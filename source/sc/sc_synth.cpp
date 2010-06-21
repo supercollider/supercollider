@@ -29,8 +29,8 @@ namespace nova
 sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     abstract_synth(node_id, prototype), trace(0), unit_buffers(0)
 {
-    World const & world = sc_factory.world;
-    mNode.mWorld = &sc_factory.world;
+    World const & world = sc_factory->world;
+    mNode.mWorld = &sc_factory->world;
     rgen.init((uint32_t)(uint64_t)this);
 
     /* initialize sc wrapper class */
@@ -89,11 +89,11 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     unit_buffers = (sample*)chunk; chunk += sample_alloc_size*sizeof(sample);
 
     /* allocate unit generators */
-    sc_factory.allocate_ugens(synthdef.graph.size());
+    sc_factory->allocate_ugens(synthdef.graph.size());
     for (size_t i = 0; i != synthdef.graph.size(); ++i)
     {
         sc_synthdef::unit_spec_t const & spec = synthdef.graph[i];
-        units[i] = spec.prototype->construct(spec, this, &sc_factory.world, chunk);
+        units[i] = spec.prototype->construct(spec, this, &sc_factory->world, chunk);
     }
 
     for (size_t i = 0; i != synthdef.calc_unit_indices.size(); ++i)
@@ -119,7 +119,7 @@ sc_synth::~sc_synth(void)
     free(mControls);
     std::for_each(units, units + unit_count, free_ugen);
 
-    sc_factory.free_ugens(unit_count);
+    sc_factory->free_ugens(unit_count);
 }
 
 void sc_synth::prepare(void)

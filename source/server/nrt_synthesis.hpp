@@ -70,12 +70,12 @@ struct non_realtime_synthesis_engine
     {
         std::vector<sample*> inputs, outputs;
         for (int channel = 0; channel != input_channels; ++channel)
-            inputs.push_back(sc_factory.world.mAudioBus + (blocksize * (output_channels + channel)));
+            inputs.push_back(sc_factory->world.mAudioBus + (blocksize * (output_channels + channel)));
 
         backend.input_mapping(inputs.begin(), inputs.end());
 
         for (int channel = 0; channel != output_channels; ++channel)
-            outputs.push_back(sc_factory.world.mAudioBus + blocksize * channel);
+            outputs.push_back(sc_factory->world.mAudioBus + blocksize * channel);
 
         backend.output_mapping(outputs.begin(), outputs.end());
     }

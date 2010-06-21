@@ -272,7 +272,7 @@ void sc_synthdef::prepare(void)
 
         spec.buffer_mapping.resize(spec.output_specs.size());
 
-        sc_ugen_def * ugen = sc_factory.find_ugen(spec.name);
+        sc_ugen_def * ugen = sc_factory->find_ugen(spec.name);
         assert(ugen);
         spec.prototype = ugen;
 
