@@ -565,7 +565,7 @@ if env['LANG']:
 
 # readline
 if env['LANG'] and env['READLINE'] and env['GPL3']:
-    if conf.CheckCHeader('readline/readline.h'):
+    if conf.CheckLibWithHeader ('readline', ['stdio.h', 'readline/readline.h', 'readline/history.h'], 'c', 'add_history("testline");'):
         libraries['readline'] = Environment(
              LINKFLAGS = '-lreadline',
         )
