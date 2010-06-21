@@ -258,7 +258,6 @@ void PartConv_next( PartConv *unit, int inNumSamples )
 		return;
 	}
 
-
 	float * input= unit->m_inputbuf;
 	float * output= unit->m_output;
 	int outputpos= unit->m_outputpos;

@@ -28,6 +28,10 @@
 #include "SC_RGen.h"
 #include "SC_Lock.h"
 
+#ifdef SUPERNOVA
+#include "nova-tt/rw_spinlock.hpp"
+#endif
+
 struct World
 {
 	// a pointer to private implementation, not available to plug-ins.
@@ -94,6 +98,10 @@ struct World
 	bool mRendezvous; // Allow user to disable Rendezvous
 
 	const char* mRestrictedPath; // OSC commands to read/write data can only do it within this path, if specified
+
+#ifdef SUPERNOVA
+	nova::rw_spinlock * mAudioBusLocks;
+#endif
 };
 
 extern "C" {

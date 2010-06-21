@@ -194,6 +194,7 @@ void Index_next_a(Index *unit, int inNumSamples)
 			ClearUnitOutputs(unit, inNumSamples); \
 			return; \
 		} \
+		LOCK_SNDBUF(buf); \
 		float *bufData __attribute__((__unused__)) = buf->data; \
 		if (!bufData) { \
 			ClearUnitOutputs(unit, inNumSamples); \

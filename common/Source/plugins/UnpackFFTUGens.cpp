@@ -142,6 +142,7 @@ void Unpack1FFT_Ctor(Unpack1FFT* unit)
 		buf = world->mSndBufs + ibufnum; \
 	} \
 	int binindex = unit->binindex; \
+	LOCK_SNDBUF(buf); \
 	SCComplexBuf *p = ToComplexApx(buf); \
 
 
@@ -255,6 +256,7 @@ void PackFFT_next(PackFFT *unit, int inNumSamples)
 	} else {
 		buf = world->mSndBufs + ibufnum;
 	}
+	LOCK_SNDBUF(buf);
 
 	int numbins = buf->samples - 2 >> 1;
 	/////////////////// cf PV_GET_BUF

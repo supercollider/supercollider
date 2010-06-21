@@ -79,7 +79,7 @@ extern "C"
 	void RunningSum_Dtor(RunningSum* unit);
 }
 
-#define PV_FEAT_GET_BUF \
+#define PV_FEAT_GET_BUF_UNLOCKED \
 	uint32 ibufnum = (uint32)fbufnum; \
 	int bufOK = 1; \
 	World *world = unit->mWorld; \
@@ -99,17 +99,20 @@ extern "C"
 	} \
 	int numbins = buf->samples - 2 >> 1; \
 	if (!buf->data) { \
-			if(unit->mWorld->mVerbosity > -1){ Print("FFT Ctor error: Buffer %i not initialised.\n", ibufnum); } \
+		if(unit->mWorld->mVerbosity > -1){ Print("FFT Ctor error: Buffer %i not initialised.\n", ibufnum); } \
 		bufOK = 0; \
-	} \
+	}
 
+#define PV_FEAT_GET_BUF 		\
+	PV_FEAT_GET_BUF_UNLOCKED	\
+	LOCK_SNDBUF(buf);
 
 
 void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase *unit)
 {
 	float fbufnum = ZIN0(0);
 
-	PV_FEAT_GET_BUF
+	PV_FEAT_GET_BUF_UNLOCKED
 
 	unit->m_numbins = buf->samples - 2 >> 1;
 	int insize = unit->m_numbins * sizeof(float);

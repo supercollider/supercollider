@@ -73,6 +73,7 @@ struct PV_Unit : Unit
 	} else { \
 		buf = world->mSndBufs + ibufnum; \
 	} \
+	LOCK_SNDBUF(buf); \
 	int numbins = buf->samples - 2 >> 1; \
 
 
@@ -109,6 +110,7 @@ struct PV_Unit : Unit
 	} else { \
 		buf2 = world->mSndBufs + ibufnum2; \
 	} \
+	LOCK_SNDBUF2(buf1, buf2); \
 	if (buf1->samples != buf2->samples) return; \
 	int numbins = buf1->samples - 2 >> 1;
 

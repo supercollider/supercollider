@@ -142,12 +142,13 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum)
 	World *world = unit->mWorld;
 	if (ibufnum >= world->mNumSndBufs) ibufnum = 0;
 	SndBuf *buf = world->mSndBufs + ibufnum;
+	LOCK_SNDBUF(buf);
 	int numbins = buf->samples - 2 >> 1;
 
 	//assumed in this representation
 	SCComplexBuf *p = ToComplexApx(buf);
 
-	float * data= buf->data;
+	const float * data= buf->data;
 
 	//memcpy(unit->m_FFTBuf, data, NOVER2);
 

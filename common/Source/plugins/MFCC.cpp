@@ -151,6 +151,7 @@ void MFCC_dofft(MFCC *unit, uint32 ibufnum)
 	} else {
 		buf = world->mSndBufs + ibufnum;
 	}
+	LOCK_SNDBUF(buf);
 
 	//int numbins = buf->samples - 2 >> 1;
 

@@ -104,6 +104,7 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum)
 	} else {
 		buf = world->mSndBufs + ibufnum;
 	}
+	LOCK_SNDBUF(buf);
 
 	float * data= buf->data;
 
