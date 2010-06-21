@@ -225,8 +225,8 @@ Node {
 
 }
 
-
-Group : Node {
+// common base for Group and PGroup classes
+AbstractGroup : Node {
 
 	/** immediately sends **/
 	*new { arg target, addAction=\addToHead;
@@ -236,7 +236,7 @@ Group : Node {
 		group = this.basicNew(server);
 		addNum = addActions[addAction];
 		if((addNum < 2), { group.group = inTarget; }, { group.group = inTarget.group; });
-		server.sendMsg(21, group.nodeID, addNum, inTarget.nodeID);
+		server.sendMsg(this.creationCmd, group.nodeID, addNum, inTarget.nodeID);
 		^group
 	}
 	newMsg { arg target, addAction = \addToHead;
@@ -245,55 +245,57 @@ Group : Node {
 		inTarget = (target ? server.defaultGroup).asTarget;
 		addNum = addActions[addAction];
 		(addNum < 2).if({ group = inTarget; }, { group = inTarget.group; });
-		^[21, nodeID, addNum, inTarget.nodeID]		//"/g_new"
+		^[this.creationCmd, nodeID, addNum, inTarget.nodeID]
 	}
+
+	// for bundling
+	addToHeadMsg { arg aGroup;
+		// if aGroup is nil set to default group of server specified when basicNew was called
+		group = (aGroup ? server.defaultGroup);
+		^[this.creationCmd, nodeID, 0, group.nodeID]
+	}
+	addToTailMsg { arg aGroup;
+		// if aGroup is nil set to default group of server specified when basicNew was called
+		group = (aGroup ? server.defaultGroup);
+		^[this.creationCmd, nodeID, 1, group.nodeID]
+	}
+	addAfterMsg {  arg aNode;
+		group = aNode.group;
+		^[this.creationCmd, nodeID, 3, aNode.nodeID]
+	}
+	addBeforeMsg {  arg aNode;
+		group = aNode.group;
+		^[this.creationCmd, nodeID, 2, aNode.nodeID]
+	}
+	addReplaceMsg { arg nodeToReplace;
+		group = nodeToReplace.group;
+		^[this.creationCmd, nodeID, 4, nodeToReplace.nodeID]
+	}
+
+
 	*after { arg aNode;    ^this.new(aNode, \addAfter) }
 	*before {  arg aNode; 	^this.new(aNode, \addBefore) }
 	*head { arg aGroup; 	^this.new(aGroup, \addToHead) }
 	*tail { arg aGroup; 	^this.new(aGroup, \addToTail) }
 	*replace { arg nodeToReplace; ^this.new(nodeToReplace, \addReplace) }
 
-	// for bundling
-	addToHeadMsg { arg aGroup;
-		// if aGroup is nil set to default group of server specified when basicNew was called
-		group = (aGroup ? server.defaultGroup);
-		^[21, nodeID, 0, group.nodeID] 			//"/g_new"
-	}
-	addToTailMsg { arg aGroup;
-		// if aGroup is nil set to default group of server specified when basicNew was called
-		group = (aGroup ? server.defaultGroup);
-		^[21, nodeID, 1, group.nodeID] 			//"/g_new"
-	}
-	addAfterMsg {  arg aNode;
-		group = aNode.group;
-		^[21, nodeID, 3, aNode.nodeID] 	//"/g_new"
-	}
-	addBeforeMsg {  arg aNode;
-		group = aNode.group;
-		^[21, nodeID, 2, aNode.nodeID] 	//"/g_new"
-	}
-	addReplaceMsg { arg nodeToReplace;
-		group = nodeToReplace.group;
-		^[21, nodeID, 4, nodeToReplace.nodeID] 	//"/g_new"
-	}
-
-	// move Nodes to this group
-	moveNodeToHead { arg aNode;
-		aNode.group = this;
-		server.sendMsg(22, nodeID, aNode.nodeID); //"/g_head"
-	}
-	moveNodeToTail { arg aNode;
-		aNode.group = this;
-		server.sendMsg(23, nodeID, aNode.nodeID); //"/g_tail"
-	}
-	moveNodeToHeadMsg { arg aNode;
-		aNode.group = this;
-		^[22, nodeID, aNode.nodeID]; 			//"/g_head"
-	}
-	moveNodeToTailMsg { arg aNode;
-		aNode.group = this;
-		^[23, nodeID, aNode.nodeID];			//g_tail
-	}
+    // move Nodes to this group
+    moveNodeToHead { arg aNode;
+        aNode.group = this;
+        server.sendMsg(22, nodeID, aNode.nodeID); //"/g_head"
+    }
+    moveNodeToTail { arg aNode;
+        aNode.group = this;
+        server.sendMsg(23, nodeID, aNode.nodeID); //"/g_tail"
+    }
+    moveNodeToHeadMsg { arg aNode;
+        aNode.group = this;
+        ^[22, nodeID, aNode.nodeID];            //"/g_head"
+    }
+    moveNodeToTailMsg { arg aNode;
+        aNode.group = this;
+        ^[23, nodeID, aNode.nodeID];            //g_tail
+    }
 
 	freeAll {
 		// free my children, but this node is still playing
@@ -371,6 +373,8 @@ Group : Node {
 		});
 	}
 
+	*creationCmd { ^this.subclassMustImplementThisMethod }
+
 //	queryTree { |action|
 //		var resp, done = false;
 //		resp = OSCresponderNode(server.addr, '/g_queryTree.reply', { arg time, responder, msg;
@@ -385,7 +389,10 @@ Group : Node {
 //			});
 //		});
 //	}
+}
 
+Group : AbstractGroup {
+	*creationCmd { ^21 }	//"/g_new"
 }
 
 Synth : Node {
@@ -502,7 +509,6 @@ Synth : Node {
 	}
 
 	printOn { arg stream; stream << this.class.name << "(" <<< defName << " : " << nodeID <<")" }
-
 }
 
 RootNode : Group {
@@ -534,3 +540,6 @@ RootNode : Group {
 	}
 }
 
+PGroup : AbstractGroup {
+	*creationCmd { ^63 }	//"/p_new"
+}
