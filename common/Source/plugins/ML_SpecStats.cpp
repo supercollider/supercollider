@@ -81,6 +81,7 @@ struct SpecCentroid : FFTAnalyser_Unit
 	} else { \
 		buf = world->mSndBufs + ibufnum; \
 	} \
+	LOCK_SNDBUF(buf); \
 	int numbins = buf->samples - 2 >> 1;
 
 // Copied from FFT_UGens.cpp

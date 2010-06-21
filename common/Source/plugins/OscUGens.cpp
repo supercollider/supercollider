@@ -346,12 +346,13 @@ void Klank_next(Klank *unit, int inNumSamples);
 		} \
 		unit->m_fbufnum = fbufnum; \
 		} \
-		SndBuf *buf = unit->m_buf; \
+		const SndBuf *buf = unit->m_buf; \
         if(!buf) { \
 			ClearUnitOutputs(unit, inNumSamples); \
 			return; \
 		} \
-		float *bufData __attribute__((__unused__)) = buf->data; \
+		LOCK_SNDBUF_SHARED(buf); \
+		const float *bufData __attribute__((__unused__)) = buf->data; \
 		if (!bufData) { \
 			ClearUnitOutputs(unit, inNumSamples); \
 			return; \
@@ -2096,7 +2097,7 @@ void COsc_next(COsc *unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define VOSC_GET_BUF \
+#define VOSC_GET_BUF_UNLOCKED \
 const SndBuf *bufs;\
 if (bufnum+1 >= world->mNumSndBufs) { \
 			int localBufNum = bufnum - world->mNumSndBufs; \
@@ -2111,6 +2112,9 @@ if (bufnum+1 >= world->mNumSndBufs) { \
 			bufs = world->mSndBufs + sc_max(0, bufnum); \
 		} \
 
+#define VOSC_GET_BUF			\
+	VOSC_GET_BUF_UNLOCKED 		\
+	LOCK_SNDBUF_SHARED(bufs);
 
 void VOsc_Ctor(VOsc *unit)
 {
@@ -2121,7 +2125,7 @@ void VOsc_Ctor(VOsc *unit)
 	uint32 bufnum = (uint32)floor(nextbufpos);
 	World *world = unit->mWorld;
 
-	VOSC_GET_BUF
+	VOSC_GET_BUF_UNLOCKED
 
 	int tableSize = bufs[0].samples;
 

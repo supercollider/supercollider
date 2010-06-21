@@ -394,11 +394,13 @@ void In_next_a_nova(IOUnit *unit, int inNumSamples)
 	int32 bufCounter = unit->mWorld->mBufCounter;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 		float *out = OUT(i);
 		if (touched[i] == bufCounter)
 			nova::copyvec_simd(out, in, inNumSamples);
 		else
 			nova::zerovec_simd(out, inNumSamples);
+		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 	}
 }
 
@@ -458,9 +460,11 @@ void In_next_a(IOUnit *unit, int inNumSamples)
 	int32 bufCounter = unit->mWorld->mBufCounter;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 		float *out = OUT(i);
 		if (touched[i] == bufCounter) Copy(inNumSamples, out, in);
 		else Fill(inNumSamples, out, 0.f);
+		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 	}
 }
 
@@ -488,6 +492,7 @@ void vIn_next_a(IOUnit *unit, int inNumSamples)
 	int32 bufCounter = unit->mWorld->mBufCounter;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 		float *out = OUT(i);
 		if (touched[i] == bufCounter)
 		{
@@ -497,6 +502,7 @@ void vIn_next_a(IOUnit *unit, int inNumSamples)
 		{
 			vfill(out, 0.f, inNumSamples);
 		}
+		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 	}
 }
 #endif
@@ -657,10 +663,12 @@ void InFeedback_next_a(IOUnit *unit, int inNumSamples)
 	int32 bufCounter = unit->mWorld->mBufCounter;
 
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
+		ACQUIRE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 		float *out = OUT(i);
 		int diff = bufCounter - touched[i];
 		if (diff == 1 || diff == 0) Copy(inNumSamples, out, in);
 		else Fill(inNumSamples, out, 0.f);
+		RELEASE_BUS_AUDIO_SHARED((int32)fbusChannel + i);
 	}
 }
 
@@ -748,9 +756,11 @@ void ReplaceOut_next_a(IOUnit *unit, int inNumSamples)
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 		float *in = IN(i+1);
 		Copy(inNumSamples, out, in);
 		touched[i] = bufCounter;
+		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 	}
 }
 
@@ -888,12 +898,14 @@ void Out_next_a(IOUnit *unit, int inNumSamples)
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 		float *in = IN(i+1);
 		if (touched[i] == bufCounter) Accum(inNumSamples, out, in);
 		else {
 			Copy(inNumSamples, out, in);
 			touched[i] = bufCounter;
 		}
+		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		//Print("out %d %g %g\n", i, in[0], out[0]);
 	}
 }
@@ -924,6 +936,7 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 		float *in = IN(i+1);
 		if (touched[i] == bufCounter)
 		{
@@ -935,6 +948,7 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 			touched[i] = bufCounter;
 		}
 		//Print("out %d %g %g\n", i, in[0], out[0]);
+		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 	}
 }
 #endif
@@ -964,6 +978,7 @@ void Out_next_a_nova(IOUnit *unit, int inNumSamples)
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 		float *in = IN(i+1);
 		if (touched[i] == bufCounter)
 			nova::addvec_simd(out, in, inNumSamples);
@@ -971,6 +986,7 @@ void Out_next_a_nova(IOUnit *unit, int inNumSamples)
 			nova::copyvec_simd(out, in, inNumSamples);
 			touched[i] = bufCounter;
 		}
+		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		//Print("out %d %g %g\n", i, in[0], out[0]);
 	}
 }
@@ -1035,6 +1051,7 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out+=bufLength) {
+		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 		float *in = IN(i+1);
 		vfloat32* vin = (vfloat32*)in;
 		vfloat32* vout = (vfloat32*)out;
@@ -1049,6 +1066,7 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 			}
 			touched[i] = bufCounter;
 		}
+		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		//Print("out %d %g %g\n", i, in[0], out[0]);
 	}
 }
@@ -1151,6 +1169,7 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 	if (xfade0 != next_xfade) {
 		float slope = CALCSLOPE(next_xfade, xfade0);
 		for (int i=0; i<numChannels; ++i) {
+			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 			float xfade = xfade0;
 			float *in = IN(i+2);
 			if (touched[i] == bufCounter) {
@@ -1171,17 +1190,21 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 				);
 				touched[i] = bufCounter;
 			}
+			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	} else if (xfade0 == 1.f) {
 		for (int i=0; i<numChannels; ++i, out+=bufLength) {
+			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 			float *in = IN(i+2);
 			Copy(inNumSamples, out, in);
 			touched[i] = bufCounter;
+			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	} else if (xfade0 == 0.f) {
 		// do nothing.
 	} else {
 		for (int i=0; i<numChannels; ++i) {
+			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 			float *in = IN(i+2);
 			if (touched[i] == bufCounter) {
 				LOOP1(inNumSamples,
@@ -1198,6 +1221,7 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 				);
 				touched[i] = bufCounter;
 			}
+			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	}
 	unit->m_xfade = next_xfade;
@@ -1293,6 +1317,7 @@ void vXOut_next_a(XOut *unit, int inNumSamples)
 		float slope = CALCSLOPE(next_xfade, xfade0);
 		vfloat32 vslope = vload(4.f * slope);
 		for (int i=0; i<numChannels; ++i, out+=bufLength) {
+			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 			vfloat32 vxfade = vstart(xfade0, vslope);
 			float *in = IN(i+2);
 			vfloat32* vin = (vfloat32*)in;
@@ -1312,20 +1337,24 @@ void vXOut_next_a(XOut *unit, int inNumSamples)
 				}
 				touched[i] = bufCounter;
 			}
+			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	} else if (xfade0 == 1.f) {
 		for (int i=0; i<numChannels; ++i, out+=bufLength) {
+			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 			vfloat32 *vin = (vfloat32*)IN(i+2);
 			vfloat32* vout = (vfloat32*)out;
 			for (int j=0; j<len; j+=16) {
 				vec_st(vec_ld(j, vin), j, vout);
 			}
 			touched[i] = bufCounter;
+			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	} else if (xfade0 == 0.f) {
 		// do nothing.
 	} else {
 		for (int i=0; i<numChannels; ++i, out+=bufLength) {
+			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 			float *in = IN(i+2);
 			vfloat32* vin = (vfloat32*)in;
 			vfloat32* vout = (vfloat32*)out;
@@ -1343,6 +1372,7 @@ void vXOut_next_a(XOut *unit, int inNumSamples)
 				}
 				touched[i] = bufCounter;
 			}
+			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		}
 	}
 	unit->m_xfade = next_xfade;
@@ -1440,6 +1470,7 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out+=bufLength, saved += offset) {
+		ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 		float *in = IN(i+1);
 		//Print("out %d  %d %d  %d %d\n",
 		//	i, touched[i] == bufCounter, unit->m_empty,
@@ -1463,6 +1494,7 @@ void OffsetOut_next_a(OffsetOut *unit, int inNumSamples)
 			touched[i] = bufCounter;
 		}
 		Copy(offset, saved, in + remain);
+		RELEASE_BUS_AUDIO((int32)fbusChannel + i);
 		//Print("out %d %d %d  %g %g\n", i, in[0], out[0]);
 	}
 	unit->m_empty = false;

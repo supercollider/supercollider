@@ -401,6 +401,7 @@ void BeatTrack_dofft(BeatTrack *unit, uint32 ibufnum)
 	} else {
 		buf = world->mSndBufs + ibufnum;
 	}
+	LOCK_SNDBUF(buf);
 	//int numbins = buf->samples - 2 >> 1;
 
 	unit->m_FFTBuf = buf->data; //just assign it!

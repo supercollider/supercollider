@@ -509,7 +509,7 @@ void NumRunningSynths_next(Unit *unit, int inNumSamples)
 
 void BufSampleRate_next(BufInfoUnit *unit, int inNumSamples)
 {
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->samplerate;
 }
 
@@ -517,14 +517,14 @@ void BufSampleRate_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	SETCALC(BufSampleRate_next);
 	unit->m_fbufnum = -1e9f;
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->samplerate;
 }
 
 
 void BufFrames_next(BufInfoUnit *unit, int inNumSamples)
 {
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->frames;
 }
 
@@ -532,7 +532,7 @@ void BufFrames_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	SETCALC(BufFrames_next);
 	unit->m_fbufnum = -1.f;
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->frames;
 }
 
@@ -547,14 +547,14 @@ void BufDur_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	SETCALC(BufDur_next);
 	unit->m_fbufnum = -1e9f;
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->frames * buf->sampledur;
 }
 
 
 void BufChannels_next(BufInfoUnit *unit, int inNumSamples)
 {
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->channels;
 }
 
@@ -562,14 +562,14 @@ void BufChannels_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	SETCALC(BufChannels_next);
 	unit->m_fbufnum = -1e9f;
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->channels;
 }
 
 
 void BufSamples_next(BufInfoUnit *unit, int inNumSamples)
 {
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->samples;
 }
 
@@ -577,14 +577,14 @@ void BufSamples_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	SETCALC(BufSamples_next);
 	unit->m_fbufnum = -1e9f;
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->samples;
 }
 
 
 void BufRateScale_next(BufInfoUnit *unit, int inNumSamples)
 {
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
 }
 
@@ -592,7 +592,7 @@ void BufRateScale_Ctor(BufInfoUnit *unit, int inNumSamples)
 {
 	SETCALC(BufRateScale_next);
 	unit->m_fbufnum = -1e9f;
-	SIMPLE_GET_BUF
+	SIMPLE_GET_BUF_SHARED
 	ZOUT0(0) = buf->samplerate * unit->mWorld->mFullRate.mSampleDur;
 }
 
@@ -660,6 +660,8 @@ void LocalBuf_Dtor(LocalBuf *unit)
 {
 	RTFree(unit->mWorld, unit->m_buf->data);
 	if(unit->mParent->localBufNum <= 1) { // only the last time.
+		for (int i = 0; i != unit->mParent->localMaxBufNum; ++i)
+			unit->mParent->mLocalSndBufs[i].~SndBuf();
 		RTFree(unit->mWorld, unit->mParent->mLocalSndBufs);
 		unit->mParent->localMaxBufNum = 0;
 	} else {
@@ -682,6 +684,10 @@ void MaxLocalBufs_Ctor(MaxLocalBufs *unit)
 	int maxBufNum = (int)(IN0(0) + .5f);
 	if(!parent->localMaxBufNum) {
 		parent->mLocalSndBufs = (SndBuf*)RTAlloc(unit->mWorld, maxBufNum * sizeof(SndBuf));
+#ifdef SUPERNOVA
+		for	(int i = 0; i != maxBufNum; ++i)
+			new(&parent->mLocalSndBufs[i]) SndBuf();
+#endif
 		parent->localMaxBufNum = maxBufNum;
 	} else {
 		printf("warning: MaxLocalBufs - maximum number of local buffers is already declared (%i) and must remain unchanged.\n", parent->localMaxBufNum);
@@ -945,6 +951,7 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 		unit->m_buf = world->mSndBufs + bufnum;
 	}
 	const SndBuf *buf = unit->m_buf;
+	ACQUIRE_SNDBUF_SHARED(buf);
 	const float *bufData __attribute__((__unused__)) = buf->data;
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels;
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples;
@@ -971,6 +978,8 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 
 		phase += ZXP(ratein);
 	}
+	RELEASE_SNDBUF_SHARED(buf);
+
 	if(unit->mDone)
 		DoneAction((int)ZIN0(5), unit);
 	unit->m_phase = phase;
@@ -992,6 +1001,7 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 		unit->m_buf = world->mSndBufs + bufnum;
 	}
 	const SndBuf *buf = unit->m_buf;
+	ACQUIRE_SNDBUF_SHARED(buf);
 	const float *bufData __attribute__((__unused__)) = buf->data;
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels;
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples;
@@ -1016,6 +1026,7 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 
 		phase += ZXP(ratein);
 	}
+	RELEASE_SNDBUF_SHARED(buf);
 	if(unit->mDone)
 		DoneAction((int)ZIN0(5), unit);
 	unit->m_phase = phase;
@@ -1027,7 +1038,7 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 	float trig     = ZIN0(2);
 	int32 loop     = (int32)ZIN0(4);
 
-	GET_BUF
+	GET_BUF_SHARED
 	CHECK_BUF
 	SETUP_OUT
 
@@ -1055,7 +1066,7 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 	float *trigin  = ZIN(2);
 	int32 loop     = (int32)ZIN0(4);
 
-	GET_BUF
+	GET_BUF_SHARED
 	CHECK_BUF
 	SETUP_OUT
 
@@ -1109,7 +1120,7 @@ void BufRd_next_4(BufRd *unit, int inNumSamples)
 	float *phasein = ZIN(1);
 	int32 loop     = (int32)ZIN0(2);
 
-	GET_BUF
+	GET_BUF_SHARED
 	CHECK_BUF
 	SETUP_OUT
 
@@ -1128,7 +1139,7 @@ void BufRd_next_2(BufRd *unit, int inNumSamples)
 	float *phasein = ZIN(1);
 	int32 loop     = (int32)ZIN0(2);
 
-	GET_BUF
+	GET_BUF_SHARED
 	CHECK_BUF
 	SETUP_OUT
 
@@ -1147,7 +1158,7 @@ void BufRd_next_1(BufRd *unit, int inNumSamples)
 	float *phasein = ZIN(1);
 	int32 loop     = (int32)ZIN0(2);
 
-	GET_BUF
+	GET_BUF_SHARED
 	CHECK_BUF
 	SETUP_OUT
 
@@ -1677,7 +1688,7 @@ void Pitch_Ctor(Pitch *unit)
 	unit->m_hasfreq = 0.f;
 
 	initMedian(unit->m_values, unit->m_ages, unit->m_medianSize, unit->m_freq);
-	
+
 	unit->m_getClarity = ZIN0(kPitchGetClarity) > 0.f;
 
 	ZOUT0(0) = 0.f;
@@ -5400,6 +5411,7 @@ void SimpleLoopBuf_Dtor(SimpleLoopBuf *unit)
 		unit->m_bufupdates = world->mSndBufUpdates + bufnum; \
 	} \
 	SndBuf *buf = unit->m_buf; \
+	LOCK_SNDBUF(buf); \
 	SndBufUpdates *bufupdates = unit->m_bufupdates; \
 	float *bufData __attribute__((__unused__)) = buf->data; \
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
@@ -6029,7 +6041,8 @@ struct GrainTap : public Unit
 void GrainTap_next(GrainTap *unit, int inNumSamples);
 void GrainTap_next(GrainTap *unit, int inNumSamples)
 {
-	float *out, *out0, *dlybuf;
+	float *out, *out0;
+	const float * dlybuf;
 	float sdur, rdur, rdur2;
 	float dsamp, dsamp_slope, fdelaylen, d1, d2, frac;
 	float level, slope, curve;
@@ -6040,7 +6053,7 @@ void GrainTap_next(GrainTap *unit, int inNumSamples)
 	uint32 bufsize;
 	GrainTap1 *grain, *prevGrain, *nextGrain;
 
-	GET_BUF
+	GET_BUF_SHARED
 
 	RGET
 
@@ -6259,6 +6272,7 @@ void GrainTap_Ctor(GrainTap *unit)
 
 #define GRAIN_BUF \
 	const SndBuf *buf = bufs + bufnum; \
+	LOCK_SNDBUF_SHARED(buf); \
 	const float *bufData __attribute__((__unused__)) = buf->data; \
 	uint32 bufChannels __attribute__((__unused__)) = buf->channels; \
 	uint32 bufSamples __attribute__((__unused__)) = buf->samples; \

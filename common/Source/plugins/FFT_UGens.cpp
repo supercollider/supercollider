@@ -100,7 +100,6 @@ static int FFTBase_Ctor(FFTBase *unit, int frmsizinput)
 		buf = world->mSndBufs + bufnum;
 	}
 
-
 	if (!buf->data) {
 		if(unit->mWorld->mVerbosity > -1){ Print("FFTBase_Ctor error: Buffer %i not initialised.\n", bufnum); }
 		return 0;
@@ -228,7 +227,6 @@ void FFT_next(FFT *unit, int wrongNumSamples)
 	} else {
 
 		unit->m_pos = 0;
-
 		if(gate){
 			scfft_dofft(unit->m_scfft);
 			unit->m_fftsndbuf->coord = coord_Complex;
@@ -301,7 +299,6 @@ void IFFT_next(IFFT *unit, int wrongNumSamples)
 
 	// Only run the IFFT if we're receiving a new block of input data - otherwise just output data already received
 	if (fbufnum >= 0.f){
-
 		// Ensure it's in cartesian format, not polar
 		ToComplexApx(unit->m_fftsndbuf);
 
@@ -373,6 +370,7 @@ void FFTTrigger_Ctor(FFTTrigger *unit)
 	} else {
 		buf = world->mSndBufs + bufnum;
 	}
+	LOCK_SNDBUF(buf);
 
 
 	unit->m_fftsndbuf = buf;

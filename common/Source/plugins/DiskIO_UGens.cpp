@@ -197,7 +197,7 @@ void DiskIn_Ctor(DiskIn* unit)
 
 void DiskIn_next(DiskIn *unit, int inNumSamples)
 {
-	GET_BUF
+	GET_BUF_SHARED
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framepos = 0;
 		ClearUnitOutputs(unit, inNumSamples);
@@ -381,7 +381,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	float a, b, c, d, oldBufPos;
 	bool test = false;
 
-	GET_BUF
+	GET_BUF_SHARED
 
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framePos = 0.;
@@ -411,7 +411,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 	float pchRatio = unit->m_pchRatio;
 	float pchSlope = CALCSLOPE(newPchRatio, pchRatio);
 
-	float* tableInit = bufData;
+	const float* tableInit = bufData;
 
 	for (uint32 i = 0; i < bufChannels; i++){
 	    out[i][0] = bufData[0 + i];
@@ -511,7 +511,7 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 	bool test = false;
 	double oldBufPos;
 
-	GET_BUF
+	GET_BUF_SHARED
 	if (!bufData || ((bufFrames & ((unit->mWorld->mBufLength<<1) - 1)) != 0)) {
 		unit->m_framePos = 0.;
 		unit->m_count = 0;

@@ -317,7 +317,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 	SndBuf *buf = ConvGetBuffer(unit,bufnum);
 
 	if(buf) {
-
 		if ( unit->m_insize <= 0 ) // if smaller than zero, equal to size of buffer
 			unit->m_insize=buf->frames;	//could be input parameter
 
@@ -423,7 +422,6 @@ void Convolution2_Dtor(Convolution2 *unit)
 
 void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 {
-
 	float *in1 = IN(0);
 	//float *in2 = IN(1);
 	float curtrig = ZIN0(2);
@@ -449,6 +447,7 @@ void Convolution2_next(Convolution2 *unit, int wrongNumSamples)
 		//SndBuf *buf = world->mSndBufs + bufnum;
 
 		SndBuf *buf = ConvGetBuffer(unit,(uint32)ZIN0(1));
+		LOCK_SNDBUF_SHARED(buf);
 
 		memcpy(unit->m_fftbuf2, buf->data, insize);
 		memset(unit->m_fftbuf2+unit->m_insize, 0, insize);
@@ -652,7 +651,6 @@ void Convolution2L_Ctor(Convolution2L *unit)
 	SndBuf *buf = ConvGetBuffer(unit,bufnum);
 
 	if(buf) {
-
 		unit->m_trbuf = (float*)RTAlloc(unit->mWorld, scfft_trbufsize(unit->m_fftsize));
 		unit->m_scfft1 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
 		unit->m_scfft2 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
@@ -782,6 +780,7 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 		unit->m_cfpos = 0;
 		if ( unit->m_curbuf == 1 )
 		{
+			LOCK_SNDBUF_SHARED(buf);
 			memcpy(unit->m_fftbuf2, buf->data, insize);
 			memset(unit->m_fftbuf2+unit->m_insize, 0, insize);
 
@@ -789,6 +788,7 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 		}
 		else if ( unit->m_curbuf == 0 )
 		{
+			LOCK_SNDBUF_SHARED(buf);
 			memcpy(unit->m_fftbuf3, buf->data, insize);
 			memset(unit->m_fftbuf3+unit->m_insize, 0, insize);
 
@@ -1003,6 +1003,7 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 	SndBuf *buf = ConvGetBuffer(unit,bufnumL);
 
 	if (buf) {
+		LOCK_SNDBUF_SHARED(buf);
 
 		//	if (bufnumL >= world->mNumSndBufs) bufnumL = 0;
 		//	SndBuf *buf = world->mSndBufs + bufnumL;
@@ -1018,6 +1019,7 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 
 	buf = ConvGetBuffer(unit,bufnumR);
 	if (buf) {
+		LOCK_SNDBUF(buf);
 
 		//if (bufnumR >= world->mNumSndBufs) bufnumR = 0;
 		//buf = world->mSndBufs + bufnumR;
@@ -1131,6 +1133,7 @@ void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 		unit->m_cfpos = 0;
 		if ( unit->m_curbuf == 1 )
 		{
+			LOCK_SNDBUF2_SHARED(bufL, bufR);
 			memcpy(unit->m_fftbuf2[0], bufL->data, insize);
 			memset(unit->m_fftbuf2[0]+unit->m_insize, 0, insize);
 			scfft_dofft(unit->m_scfft2[0]);
@@ -1142,6 +1145,7 @@ void StereoConvolution2L_next(StereoConvolution2L *unit, int wrongNumSamples)
 		}
 		else if ( unit->m_curbuf == 0 )
 		{
+			LOCK_SNDBUF2_SHARED(bufL, bufR);
 			memcpy(unit->m_fftbuf3[0], bufL->data, insize);
 			memset(unit->m_fftbuf3[0]+unit->m_insize, 0, insize);
 			//rffts(unit->m_fftbuf3[0], log2n2, 1, cosTable[log2n2]);
@@ -1329,7 +1333,6 @@ void Convolution3_Ctor(Convolution3 *unit)
 	SndBuf *buf = ConvGetBuffer(unit,bufnum);
 
 	if (buf) {
-
 		if ( unit->m_insize <= 0 ) // if smaller than zero, equal to size of buffer
 		{
 			unit->m_insize=buf->frames;	//could be input parameter
@@ -1342,6 +1345,7 @@ void Convolution3_Ctor(Convolution3 *unit)
 		unit->m_inbuf1 = (float*)RTAlloc(unit->mWorld, insize);
 		unit->m_inbuf2 = (float*)RTAlloc(unit->mWorld, insize);
 
+		LOCK_SNDBUF_SHARED(buf);
 		//calculate fft for kernel straight away
 		memcpy(unit->m_inbuf2, buf->data, insize);
 		//test for full input buffer
@@ -1387,6 +1391,7 @@ void Convolution3_next_a(Convolution3 *unit)
 		// 			printf("bufnum %i \n", bufnum);
 		World *world = unit->mWorld;
 		SndBuf *buf = ConvGetBuffer(unit,bufnum);
+		LOCK_SNDBUF_SHARED(buf);
 
 		//if (bufnum >= world->mNumSndBufs) bufnum = 0;
 		//SndBuf *buf = world->mSndBufs + bufnum;
@@ -1449,6 +1454,8 @@ void Convolution3_next_k(Convolution3 *unit)
 		// 			printf("bufnum %i \n", bufnum);
 		World *world = unit->mWorld;
 		SndBuf *buf= ConvGetBuffer(unit,bufnum);
+		LOCK_SNDBUF_SHARED(buf);
+
 		//if (bufnum >= world->mNumSndBufs) bufnum = 0;
 		//SndBuf *buf = world->mSndBufs + bufnum;
 		memcpy(unit->m_inbuf2, buf->data, insize);

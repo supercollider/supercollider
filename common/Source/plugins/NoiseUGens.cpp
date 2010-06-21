@@ -1078,14 +1078,16 @@ void WrapBufRd_next0(Unit *unit, int inNumSamples)
 	int bufnum = (int)ZIN0(0);
 	float *pos = ZIN(1);
 
-	SndBuf *buf = unit->mWorld->mSndBufs + bufnum;
+	const SndBuf *buf = unit->mWorld->mSndBufs + bufnum;
 	int numchan = buf->channels;
 
+	LOCK_SNDBUF_SHARED(buf);
 	if (numchan != unit->mNumOutputs) {
 		ClearUnitOutputs(unit, inNumSamples);
 		return;
 	}
-	float *data = buf->data;
+
+	const float *data = buf->data;
 	int numframes = buf->frames;
 
 	float *out[16];
@@ -1109,14 +1111,16 @@ void ClipBufRd_next0(Unit *unit, int inNumSamples)
 	int bufnum = (int)ZIN0(0);
 	float *pos = ZIN(1);
 
-	SndBuf *buf = unit->mWorld->mSndBufs + bufnum;
+	const SndBuf *buf = unit->mWorld->mSndBufs + bufnum;
+	LOCK_SNDBUF_SHARED(buf);
 	int numchan = buf->channels;
 
 	if (numchan != unit->mNumOutputs) {
 		ClearUnitOutputs(unit, inNumSamples);
 		return;
 	}
-	float *data = buf->data;
+
+	const float *data = buf->data;
 	int numframes = buf->frames;
 	int maxframe = numframes - 2;
 
