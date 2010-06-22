@@ -245,31 +245,31 @@ AbstractGroup : Node {
 		inTarget = (target ? server.defaultGroup).asTarget;
 		addNum = addActions[addAction];
 		(addNum < 2).if({ group = inTarget; }, { group = inTarget.group; });
-		^[this.creationCmd, nodeID, addNum, inTarget.nodeID]
+		^[this.class.creationCmd, nodeID, addNum, inTarget.nodeID]
 	}
 
 	// for bundling
 	addToHeadMsg { arg aGroup;
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
-		^[this.creationCmd, nodeID, 0, group.nodeID]
+		^[this.class.creationCmd, nodeID, 0, group.nodeID]
 	}
 	addToTailMsg { arg aGroup;
 		// if aGroup is nil set to default group of server specified when basicNew was called
 		group = (aGroup ? server.defaultGroup);
-		^[this.creationCmd, nodeID, 1, group.nodeID]
+		^[this.class.creationCmd, nodeID, 1, group.nodeID]
 	}
 	addAfterMsg {  arg aNode;
 		group = aNode.group;
-		^[this.creationCmd, nodeID, 3, aNode.nodeID]
+		^[this.class.creationCmd, nodeID, 3, aNode.nodeID]
 	}
 	addBeforeMsg {  arg aNode;
 		group = aNode.group;
-		^[this.creationCmd, nodeID, 2, aNode.nodeID]
+		^[this.class.creationCmd, nodeID, 2, aNode.nodeID]
 	}
 	addReplaceMsg { arg nodeToReplace;
 		group = nodeToReplace.group;
-		^[this.creationCmd, nodeID, 4, nodeToReplace.nodeID]
+		^[this.class.creationCmd, nodeID, 4, nodeToReplace.nodeID]
 	}
 
 
