@@ -64,7 +64,10 @@ void nova_server::prepare_backend(void)
 
 nova_server::~nova_server(void)
 {
-/*    instance = 0;*/
+#if defined (JACK_BACKEND)
+    deactivate_audio();
+#endif
+    instance = 0;
 }
 
 abstract_synth * nova_server::add_synth(const char * name, int id, node_position_constraint const & constraints)

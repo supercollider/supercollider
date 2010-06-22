@@ -105,6 +105,28 @@ void connect_jack_ports(void)
         }
     }
 }
+
+void start_audio_backend(server_arguments const & args)
+{
+    instance->open_client("supernova", args.input_channels, args.output_channels, args.blocksize);
+    instance->prepare_backend();
+    instance->activate_audio();
+
+    if (args.samplerate && args.samplerate != instance->get_samplerate()) {
+        std::cout << "samplerate mismatch between command line argument and jack" << endl;
+        std::cout << "forcing samplerate of " << instance->get_samplerate() << "Hz" << endl;
+    }
+
+    server_arguments::set_samplerate((uint32_t)instance->get_samplerate());
+    connect_jack_ports();
+}
+
+
+#else
+
+void start_audio_backend(server_arguments const & args)
+{}
+
 #endif
 
 } /* namespace */
@@ -176,29 +198,10 @@ int main(int argc, char * argv[])
 
     if (!args.non_rt)
     {
-#if defined (JACK_BACKEND)
-        server.open_client("supernova", args.input_channels, args.output_channels, args.blocksize);
-        server.prepare_backend();
-        server.activate_audio();
-
-        if (args.samplerate == 0)
-            server_arguments::set_samplerate((uint32_t)server.get_samplerate());
-        else
-            if (args.samplerate != server.get_samplerate()) {
-                std::cerr << "samplerate mismatch between command line argument and jack" << endl;
-                server.deactivate_audio();
-                return 1;
-            }
-
-        connect_jack_ports();
-#endif
+        start_audio_backend(args);
 
         std::cout << "Supernova ready" << std::endl;
         server.run();
-
-#if defined (JACK_BACKEND)
-        server.deactivate_audio();
-#endif
     }
     else
         server.run_nonrt_synthesis(args);
