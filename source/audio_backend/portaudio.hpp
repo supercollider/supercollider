@@ -33,10 +33,11 @@ namespace nova
  *
  *  \ingroup kernel
  *  */
-template <void(*dsp_cb)(void)>
+template <typename engine_functor>
 class portaudio_backend:
     public audio_backend<dsp_cb>,
-    private portaudio::AutoSystem
+    private portaudio::AutoSystem,
+    private engine_functor
 {
     typedef nova::audio_backend<dsp_cb> audio_backend;
 
@@ -181,6 +182,7 @@ private:
     int perform(const void *inputBuffer, void *outputBuffer, unsigned long framesPerBuffer,
                 const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags)
     {
+        engine_functor::init_tick();
         float * const *in = static_cast<float * const *>(inputBuffer);
         for (uint i = 0; i != inchannels; ++i)
         {
@@ -189,7 +191,7 @@ private:
             copyvec_simd_mp<64>(inbuffer, hostbuffer);
         }
 
-        (*dsp_cb)();
+        engine_functor::run_tick();
 
         float **out = static_cast<float **>(outputBuffer);
         for (uint i = 0; i != outchannels; ++i)

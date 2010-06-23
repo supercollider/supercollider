@@ -424,7 +424,7 @@ private:
 public:
     void handle_packet_async(const char* data, size_t length, nova::nova_endpoint const & endpoint);
     void handle_packet(const char* data, size_t length, nova::nova_endpoint const & endpoint);
-    void handle_packet_nrt(const char * data_, std::size_t length);
+    time_tag handle_bundle_nrt(const char * data_, std::size_t length);
 
 private:
     template <bool realtime>
@@ -449,12 +449,27 @@ public:
 
     void execute_scheduled_bundles(void)
     {
-        time_tag now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
         scheduled_bundles.execute_bundles(now);
     }
 
+    void increment_logical_time(time_tag const & diff)
+    {
+        now += diff;
+    }
+
+    void update_time_from_system(void)
+    {
+        now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
+    }
+
+    time_tag const & current_time(void) const
+    {
+        return now;
+    }
+
     sc_scheduled_bundles scheduled_bundles;
-    /* @} */
+    time_tag now;
+/* @} */
 
 private:
     /* @{ */

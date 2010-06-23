@@ -1,5 +1,5 @@
 //  server arguments
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -67,6 +67,10 @@ public:
 
     uint16_t input_channels, output_channels;
     std::string server_password;
+
+    /* for non-rt synthesis */
+    bool non_rt;
+    std::string command_file, input_file, output_file, header_format, sample_format;
 
 private:
     static std::auto_ptr<server_arguments> instance_;

@@ -88,7 +88,7 @@ abstract_synth * sc_synth_prototype::create_instance(int node_id)
 {
     sc_synth * synth = new sc_synth(node_id, this);
 
-    sc_factory.schedule_for_preparation(synth);
+    sc_factory->schedule_for_preparation(synth);
     return synth;
 }
 

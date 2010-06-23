@@ -34,6 +34,10 @@
 namespace nova
 {
 
+int headerFormatFromString(const char *name);
+int sampleFormatFromString(const char* name);
+
+
 class sc_done_action_handler
 {
 public:

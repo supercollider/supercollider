@@ -41,7 +41,11 @@
 namespace nova
 {
 
-inline void run_scheduler_tick(void);
+struct realtime_engine_functor
+{
+    inline void init_tick(void);
+    inline void run_tick(void);
+};
 
 extern class nova_server * instance;
 
@@ -88,17 +92,15 @@ private:
 class nova_server:
     public node_graph,
     public scheduler,
-#ifdef PORTAUDIO_BACKEND
-    public audio_frontend<&run_scheduler_tick>,
-#elif defined(JACK_BACKEND)
-    public jack_backend<&run_scheduler_tick, float, false>,
+#if defined(JACK_BACKEND)
+    public jack_backend<realtime_engine_functor, float, false>,
 #endif
     public synth_factory,
     public buffer_manager,
     public sc_osc_handler
 {
 public:
-    typedef jack_backend<&run_scheduler_tick, float, false> audio_backend;
+    typedef jack_backend<realtime_engine_functor, float, false> audio_backend;
 
     /* main nova_server function */
     nova_server(server_arguments const & args);
@@ -133,6 +135,8 @@ public:
     }
     /* @} */
 
+    /** non-rt synthesis */
+    void run_nonrt_synthesis(server_arguments const & arguments);
 
 private:
     template <bool (node_graph::*fn)(abstract_group*)>
@@ -224,13 +228,21 @@ public:
     void set_group_slot(node_id, slot_id, float);
 #endif
 
+    void increment_logical_time(void)
+    {
+        sc_osc_handler::increment_logical_time(time_per_tick);
+    }
+
+private:
+    time_tag time_per_tick;
+
 public:
     void operator()(void)
     {
         if (unlikely(dsp_queue_dirty))
             rebuild_dsp_queue();
 
-        sc_factory.initialize_synths();
+        sc_factory->initialize_synths();
         scheduler::operator()();
     }
 
@@ -251,25 +263,37 @@ private:
 
 inline void run_scheduler_tick(void)
 {
-    const int blocksize = instance->get_audio_blocksize();
-    const int input_channels = instance->get_input_count();
-    const int output_channels = instance->get_output_count();
-    const int buf_counter = ++sc_factory.world.mBufCounter;
+    const int blocksize = sc_factory->world.mBufLength;
+    const int input_channels = sc_factory->world.mNumInputs;
+    const int output_channels = sc_factory->world.mNumOutputs;
+    const int buf_counter = ++sc_factory->world.mBufCounter;
 
     /* touch all input buffers */
     for (int channel = 0; channel != input_channels; ++channel)
-        sc_factory.world.mAudioBusTouched[output_channels + channel] = buf_counter;
+        sc_factory->world.mAudioBusTouched[output_channels + channel] = buf_counter;
 
     (*instance)();
 
-    sc_factory.update_nodegraph();
+    sc_factory->update_nodegraph();
 
     /* wipe all untouched output buffers */
     for (int channel = 0; channel != output_channels; ++channel) {
-        if (sc_factory.world.mAudioBusTouched[channel] != buf_counter)
-            zerovec(sc_factory.world.mAudioBus + blocksize * channel, blocksize);
+        if (sc_factory->world.mAudioBusTouched[channel] != buf_counter)
+            zerovec(sc_factory->world.mAudioBus + blocksize * channel, blocksize);
     }
 }
+
+inline void realtime_engine_functor::init_tick(void)
+{
+    instance->update_time_from_system();
+}
+
+inline void realtime_engine_functor::run_tick(void )
+{
+    run_scheduler_tick();
+    instance->increment_logical_time();
+}
+
 
 } /* namespace nova */
 

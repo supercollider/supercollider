@@ -21,6 +21,8 @@
 #include "server.hpp"
 #include "sync_commands.hpp"
 
+#include "nrt_synthesis.hpp"
+
 #include "sc/sc_synth_prototype.hpp"
 #include "sc/sc_ugen_factory.hpp"
 
@@ -34,7 +36,11 @@ nova_server::nova_server(server_arguments const & args):
     io_interpreter(1, true, thread_priority_interval_rt().first)
 {
     assert(instance == 0);
+    sc_factory = new sc_ugen_factory;
     instance = this;
+
+    /** todo: backend may force sample rate */
+    time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate);
 }
 
 void nova_server::prepare_backend(void)
@@ -46,19 +52,23 @@ void nova_server::prepare_backend(void)
 
     std::vector<sample*> inputs, outputs;
     for (int channel = 0; channel != input_channels; ++channel)
-        inputs.push_back(sc_factory.world.mAudioBus + (blocksize * (output_channels + channel)));
+        inputs.push_back(sc_factory->world.mAudioBus + (blocksize * (output_channels + channel)));
 
     audio_backend::input_mapping(inputs.begin(), inputs.end());
 
     for (int channel = 0; channel != output_channels; ++channel)
-        outputs.push_back(sc_factory.world.mAudioBus + blocksize * channel);
+        outputs.push_back(sc_factory->world.mAudioBus + blocksize * channel);
 
     audio_backend::output_mapping(outputs.begin(), outputs.end());
 }
 
 nova_server::~nova_server(void)
 {
-/*    instance = 0;*/
+#if defined (JACK_BACKEND)
+    if (audio_is_active())
+        deactivate_audio();
+#endif
+    instance = 0;
 }
 
 abstract_synth * nova_server::add_synth(const char * name, int id, node_position_constraint const & constraints)
@@ -117,6 +127,12 @@ void nova_server::free_node(server_node * node)
     notification_node_ended(node);
     node_graph::remove_node(node);
     update_dsp_queue();
+}
+
+void nova_server::run_nonrt_synthesis(server_arguments const & args)
+{
+    non_realtime_synthesis_engine engine(args);
+    engine.run();
 }
 
 namespace

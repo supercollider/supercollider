@@ -35,7 +35,7 @@ namespace nova
 {
 
 
-sc_ugen_factory sc_factory;
+sc_ugen_factory * sc_factory;
 
 sc_ugen_def::sc_ugen_def (const char *inUnitClassName, size_t inAllocSize,
                           UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags):
