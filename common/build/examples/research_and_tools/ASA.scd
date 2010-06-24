@@ -107,21 +107,21 @@ r2 = Routine.new({
 
 // GUI stuff
 
-w = GUI.window.new("ASA: Streaming", Rect(20, 400, 440, 150)).front;
+w = Window("ASA: Streaming", Rect(20, 400, 440, 150)).front;
 w.view.decorator = FlowLayout(w.view.bounds);
-rateSlide = GUI.ezSlider.new(w, 400 @ 20, "DurEach", ControlSpec(0.05, 2.0, \exp, 0.001, 0.01), 
+rateSlide = EZSlider(w, 400 @ 20, "DurEach", ControlSpec(0.05, 2.0, \exp, 0.001, 0.01), 
 	{arg ez; ez.value;}, 0.1);
-deltaSlide = GUI.ezSlider.new(w, 400 @ 20, "Delta", ControlSpec(0, 1000, \lin, 1, 1), 
+deltaSlide = EZSlider(w, 400 @ 20, "Delta", ControlSpec(0, 1000, \lin, 1, 1), 
 	{arg ez; ez.value;}, 500);
 	
-volumeSlide = GUI.ezSlider.new(w, 400 @ 20, "Volume", ControlSpec(0.0, 1.0, \lin, 0.1, 0.1), 
+volumeSlide = EZSlider(w, 400 @ 20, "Volume", ControlSpec(0.0, 1.0, \lin, 0.1, 0.1), 
 	{arg ez; ez.value;}, 0.5);
 
 
 
 w.view.decorator.nextLine.shift(50, 20);
 
-	pauseButton1 = GUI.button.new(w, 110 @ 30);
+	pauseButton1 = Button(w, 110 @ 30);
 	pauseButton1.states = [
 			["1 now is active",Color.black,Color.red],
 			["1 now is muted",Color.white,Color.black],
@@ -135,7 +135,7 @@ w.view.decorator.nextLine.shift(50, 20);
 w.view.decorator.shift(10, 0);
 		
 
-	pauseButton2 = GUI.button.new(w, 110 @ 30);
+	pauseButton2 = Button(w, 110 @ 30);
 	pauseButton2.states = [
 			["2 now is active",Color.black,Color.red],
 			["2 now is muted",Color.white,Color.black],
@@ -265,31 +265,31 @@ r3 = Routine.new({
 
 // GUI stuff
 
-w = GUI.window.new("ASA: Miniature problem", Rect(20, 400, 440, 220));
+w = Window("ASA: Miniature problem", Rect(20, 400, 440, 220));
 w.front; // make window visible and front window.
 w.view.decorator = FlowLayout(w.view.bounds);
-rateSlide = GUI.ezSlider.new(w, 400 @ 20, "DurEach", ControlSpec(0.2, 2.0, \exp, 0.001, 0.01), 
+rateSlide = EZSlider(w, 400 @ 20, "DurEach", ControlSpec(0.2, 2.0, \exp, 0.001, 0.01), 
 	{arg ez; ez.value;}, 1.0);
-freqASlide = GUI.ezSlider.new(w, 400 @ 20, "Freq A", ControlSpec(50, 2000, \exp, 1, 1), 
+freqASlide = EZSlider(w, 400 @ 20, "Freq A", ControlSpec(50, 2000, \exp, 1, 1), 
 	{arg ez; ez.value;}, 1000);
 w.view.decorator.nextLine.shift(30);
-text = 	GUI.textField.new(w,Rect(0,0,150,30));
+text = 	TextField(w,Rect(0,0,150,30));
 text.string = "Freq B = fixed at 500 Hz";
 text.boxColor_(Color.grey);
 text.stringColor_(Color.white);
 w.view.decorator.nextLine;
-freqCSlide = GUI.ezSlider.new(w, 400 @ 20, "Freq C", ControlSpec(50, 500, \exp, 1, 1), 
+freqCSlide = EZSlider(w, 400 @ 20, "Freq C", ControlSpec(50, 500, \exp, 1, 1), 
 	{arg ez; ez.value;}, 250);	
-shiftCSlide = GUI.ezSlider.new(w, 400 @ 20, "Shift C", ControlSpec(-0.5, 0.0, \lin, 0.01, 0.01), 
+shiftCSlide = EZSlider(w, 400 @ 20, "Shift C", ControlSpec(-0.5, 0.0, \lin, 0.01, 0.01), 
 	{arg ez; ez.value;}, 0.0);		
-volumeSlide = GUI.ezSlider.new(w, 400 @ 20, "Volume", ControlSpec(0.0, 1.0, \lin, 0.1, 0.1), 
+volumeSlide = EZSlider(w, 400 @ 20, "Volume", ControlSpec(0.0, 1.0, \lin, 0.1, 0.1), 
 	{arg ez; ez.value;}, 0.5);
 
 
 
 w.view.decorator.nextLine.shift(50, 20);
 
-	pauseButton1 = GUI.button.new(w, 110 @ 30);
+	pauseButton1 = Button(w, 110 @ 30);
 	pauseButton1.states = [
 			["A now is active",Color.black,Color.red],
 			["A now is muted",Color.white,Color.black],
@@ -303,7 +303,7 @@ w.view.decorator.nextLine.shift(50, 20);
 w.view.decorator.shift(10, 0);
 		
 
-	pauseButton2 = GUI.button.new(w, 110 @ 30);
+	pauseButton2 = Button(w, 110 @ 30);
 	pauseButton2.states = [
 			["C now is active",Color.black,Color.red],
 			["C now is muted",Color.white,Color.black],

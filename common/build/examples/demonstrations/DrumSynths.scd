@@ -31,7 +31,7 @@ SynthDef(\SOSkick,
 	kick_mix = Mix.new([drum_env, beater_env]) * 2 * amp;
 	Out.ar(out, [kick_mix, kick_mix])
 	}
-	).store
+	).add
 )
 Synth(\SOSkick)
 
@@ -72,7 +72,7 @@ SynthDef(\SOSsnare,
 	snare_drum_mix = Mix.new([drum_mode_mix, snare_reson]) * 5 * amp;
 	Out.ar(out, [snare_drum_mix, snare_drum_mix])
 	}
-).store
+).add
 )
 Synth(\SOSsnare)
 
@@ -103,7 +103,7 @@ SynthDef(\SOShats,
 	body_hpf = HPF.ar(in: root_cymbal, freq: Line.kr(9000, 12000, sustain),mul: body_env, add: 0);
 	cymbal_mix = Mix.new([initial_bpf, body_hpf]) * amp;
 	Out.ar(out, [cymbal_mix, cymbal_mix])
-	}).store
+	}).add
 )
 
 Synth(\SOShats)
@@ -135,7 +135,7 @@ SynthDef(\SOStom,
 	tom_mix = Mix.new([drum_mode_mix, stick_env]) * 2 * amp;
 	Out.ar(out, [tom_mix, tom_mix])
 	}
-).store
+).add
 );
 
 Synth(\SOStom)

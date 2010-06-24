@@ -14,7 +14,7 @@ s.boot;
 		osc = FSinOsc.ar(40);
 		env = EnvGen.kr(Env.perc(0, 0.05), doneAction: 2);
 		Out.ar(out, Pan2.ar(osc, 0, env));
-	}).memStore;
+	}).add;
 
 	SynthDef(\sd, { | out=0 |
 		var osc1, osc2, env;
@@ -22,14 +22,14 @@ s.boot;
 		osc2 = FSinOsc.ar(200);
 		env = EnvGen.kr(Env.perc(0, 0.05), doneAction: 2);
 		Out.ar(out, Pan2.ar(LPF.ar(Mix([osc1, osc2]), 12000), 0, env));
-	}).memStore;
+	}).add;
 
 	SynthDef(\hat, { | out=0 |
 		var osc1, env;
 		osc1 = WhiteNoise.ar;
 		env = EnvGen.kr(Env.perc(0, 0.01), doneAction: 2);
 		Out.ar(out, Pan2.ar(osc1, 0, env));
-	}).memStore;
+	}).add;
 
 	SynthDef(\res, { | out=0 gate=1 freq fltBus |
 		var aEnv, osc, flt;
@@ -37,11 +37,11 @@ s.boot;
 		osc = Mix([Saw.ar(freq), Pulse.ar(freq / 2, 0.5)]);
 		flt = RLPF.ar(osc, In.kr(fltBus, 1), 0.1, aEnv);
 		Out.ar(out, Pan2.ar(flt, 0));
-	}).memStore;
+	}).add;
 
 	SynthDef(\resControl, { | fltBus |
 		ReplaceOut.kr(fltBus, LFNoise1.kr(0.3, 1000, 1500));
-	}).memStore;
+	}).add;
 
 	SynthDef(\poly, { | out=0 gate=1 freq |
 		var aEnv, fEnv, osc1, osc2, flt;
@@ -51,7 +51,7 @@ s.boot;
 		osc2 = Pulse.ar(freq / 2, 0.3);
 		flt = RLPF.ar(osc1 + osc2, fEnv, 0.9, aEnv);
 		Out.ar(out, flt);
-	}).memStore;
+	}).add;
 
 	SynthDef(\solo, { | out=0 gate freq |
 		var aEnv, fEnv, osc, flt;
@@ -60,13 +60,13 @@ s.boot;
 		osc = Saw.ar(Lag.kr(freq, 0.1) * [1, 1.005]);
 		flt = LPF.ar(osc, fEnv + 600, aEnv);
 		Out.ar(out, flt);
-	}).memStore;
+	}).add;
 
 	SynthDef(\soloControl, { | gateBus freqBus gate=1 freq |
 		ReplaceOut.kr(gateBus, gate);
 		ReplaceOut.kr(freqBus, freq);
 		EnvGen.kr(Env.asr(0,1,0), gate, doneAction: 2); 
-	}).memStore;
+	}).add;
 
 	SynthDef(\string, { | out=0 gate=1 freq=1000 |
 		var aEnv, osc, flt;
@@ -74,7 +74,7 @@ s.boot;
 		osc = Saw.ar([LFCub.kr(0.3, Rand(0, 1), freq * 0.003, freq), freq, LFCub.kr(0.7, Rand(0, 1), freq * 0.001, freq)]);
 		flt = LPF.ar(osc, 1500, aEnv);
 		Out.ar(out, flt);
-	}).memStore;
+	}).add;
 
 	SynthDef(\bass, { | out=0 gate=1 freq |
 		var aEnv, fEnv, osc, flt;
@@ -83,7 +83,7 @@ s.boot;
 		osc = Mix([Saw.ar(freq * [1, 1.005]), Pulse.ar(freq / 2, 0.5)]);
 		flt = LPF.ar(osc, fEnv + 100, aEnv);
 		Out.ar(out, flt);
-	}).memStore;
+	}).add;
 
 	SynthDef(\intro, { | out=0 |
 		var trig, div, freq, oct, reps, env, osc, flt;
@@ -96,26 +96,26 @@ s.boot;
 		osc = Saw.ar(freq * [1, 1.01], env);
 		flt = RLPF.ar(osc, freq * 2, 0.7);
 		Out.ar(out, flt);
-	}).memStore;
+	}).add;
 
 	SynthDef(\delay, { | bus in mix |
 		var sig, delay;
 		sig = In.ar(bus, 2);
 		delay = CombL.ar(sig, 0.25, [0.25, 0.24], 2);
 		ReplaceOut.ar(bus, XFade2.ar(sig, delay, mix));
-	}).memStore;
+	}).add;
 
 	SynthDef(\fader, { | out=0 in mute=1 amp=1 |
 		Out.ar(out, In.ar(in, 2) * mute * amp)
-	}).memStore;
+	}).add;
 
 	SynthDef(\line, { | bus val time |
 		ReplaceOut.kr(bus, Line.kr(In.kr(bus), val, time, doneAction: 2))
-	}).memStore;
+	}).add;
 
 	SynthDef(\sinenv, { | bus val time |
 		ReplaceOut.kr(bus, EnvGen.kr(Env([In.kr(bus), val], [time], \sin), doneAction: 2))
-	}).memStore;
+	}).add;
 )
 
 

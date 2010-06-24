@@ -91,7 +91,7 @@ Task({
   
   // Set up keyboard handlers
   {
-  	doc = GUI.window.new("Use LEFT and RIGHT arrows and SPACEBAR");
+  	doc = Window("Use LEFT and RIGHT arrows and SPACEBAR");
   	doc.front;
   }.defer;
   

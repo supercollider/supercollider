@@ -9,7 +9,7 @@ SynthDef(\demanding, { arg impulsefreq = 10;
 	signal = (SinOsc.ar(freq + [0,0.7]) + Saw.ar(freq + [0,0.7], 0.3)).distort.log.distort.cubed * 0.1;
 	
 	Out.ar(0, signal);
-}).load(s);
+}).add;
 )
 
 

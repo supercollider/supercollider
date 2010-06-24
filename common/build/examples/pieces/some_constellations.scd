@@ -53,7 +53,7 @@
 (
 SynthDef("ibm", {
 		OffsetOut.ar(0, Pulse.ar(1000, 0.5, EnvGen.ar(Env.linen(0, 0.01, 0, 0.1), doneAction:2)))
-}).store;
+}).add;
 
 fork {
 	var coin = 0.5;
@@ -188,7 +188,7 @@ SynthDef(\strings, { arg out, freq=440, amp=0.1, gate=1, pan, freqLag=0.2;
 					in = Resonz.ar(in, f1, 0.001).abs;
 					in = in * EnvGen.kr(env, gate, doneAction:2);
 					Out.ar(out, Pan2.ar(in, pan, amp));
-}).store;
+}).add;
 
 (
 Pdef(\vi,

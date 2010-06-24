@@ -5,20 +5,20 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.35">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
-p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 21.8px Arial}
-p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.8px Arial; min-height: 15.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.8px Arial}
-p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 22.0px Arial}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Arial; min-height: 15.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px Arial}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #ad1d13}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0000bf}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0019ba}
 span.s1 {text-decoration: underline}
-span.s2 {color: #0000bf}
+span.s2 {color: #0019ba}
 span.s3 {color: #000000}
-span.s4 {color: #bf0000}
-span.s5 {color: #007300}
+span.s4 {color: #ad1d13}
+span.s5 {color: #2b6f11}
 span.s6 {color: #606060}
 span.Apple-tab-span {white-space:pre}
 </style>
@@ -65,7 +65,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>wet = <span class="s2">Osc</span>.ar(bufnum,<span class="s2">Lag</span>.kr(freq,smooth), 0, amp);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>mix = (input * (1-balance)) + (wet * balance);<span class="Apple-converted-space"> <span class="Apple-tab-span">	</span></span></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, <span class="s2">Pan2</span>.ar(mix));</p>
-<p class="p5">}).send(s);</p>
+<p class="p5">}).add;</p>
 <p class="p5">)</p>
 <p class="p6"><br></p>
 <p class="p4">// select a GUI server:</p>
@@ -78,7 +78,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">(</p>
 <p class="p5"><span class="s2">var</span> win,buf,m,harmonics,maxHarmonics=60,theSynth;</p>
 <p class="p6"><br></p>
-<p class="p5">win = <span class="s2">GUI.window.new</span>(<span class="s6">"input harmonica"</span>,<span class="s2">Rect</span>(200,200,420,160)).front;</p>
+<p class="p5">win = <span class="s2">Window</span>(<span class="s6">"input harmonica"</span>,<span class="s2">Rect</span>(200,200,420,160)).front;</p>
 <p class="p6"><br></p>
 <p class="p5">harmonics = <span class="s2">Array</span>.fill(maxHarmonics,0);</p>
 <p class="p4"><span class="s3">harmonics.put(0,1);<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// init array so first partial is alive</p>
@@ -87,7 +87,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><br></p>
 <p class="p5">theSynth = <span class="s2">Synth</span>(<span class="s5">\oscPlayer</span>, [<span class="s5">\bufnum</span>, buf.bufnum], s);</p>
 <p class="p6"><br></p>
-<p class="p5">m = <span class="s2">GUI.multiSliderView.new</span>(win, <span class="s2">Rect</span>(5, 5, 350, 100))</p>
+<p class="p5">m = <span class="s2">MultiSliderView</span>(win, <span class="s2">Rect</span>(5, 5, 350, 100))</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.value_(harmonics)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.isFilled_(<span class="s2">true</span>)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.valueThumbSize_(3.0)</p>
@@ -96,7 +96,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span>.elasticMode_(1)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> buf.sine1(v.value)}); <span class="s4">// fill buffer again</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s2">GUI.button.new</span>(win,<span class="s2">Rect</span>(5,110,70,20))</p>
+<p class="p5"><span class="s2">Button</span>(win,<span class="s2">Rect</span>(5,110,70,20))</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.states_([[<span class="s6">"CLEAR"</span>,<span class="s2">Color</span>.green,<span class="s2">Color</span>.black]])</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">var</span> temp;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>temp = <span class="s2">Array</span>.fill(maxHarmonics,0);</p>
@@ -104,7 +104,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>m.value_(temp);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>});</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s2">GUI.button.new</span>(win,<span class="s2">Rect</span>(80,110,65,20))</p>
+<p class="p5"><span class="s2">Button</span>(win,<span class="s2">Rect</span>(80,110,65,20))</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.states_([[<span class="s6">"RAND"</span>,<span class="s2">Color</span>.green,<span class="s2">Color</span>.black]])</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> <span class="s2">var</span> temp;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>temp = m.value.scramble;</p>
@@ -112,7 +112,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>m.value_(temp);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>});</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s2">GUI.button.new</span>(win,<span class="s2">Rect</span>(150,110,20,20))</p>
+<p class="p5"><span class="s2">Button</span>(win,<span class="s2">Rect</span>(150,110,20,20))</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.states_([[<span class="s6">"&lt;&lt;"</span>,<span class="s2">Color</span>.green,<span class="s2">Color</span>.black]])</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> <span class="s2">var</span> temp;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>temp = m.value.rotate(-1);</p>
@@ -120,7 +120,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>m.value_(temp);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>});</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s2">GUI.button.new</span>(win,<span class="s2">Rect</span>(175,110,20,20))</p>
+<p class="p5"><span class="s2">Button</span>(win,<span class="s2">Rect</span>(175,110,20,20))</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.states_([[<span class="s6">"&gt;&gt;"</span>,<span class="s2">Color</span>.green,<span class="s2">Color</span>.black]])</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> <span class="s2">var</span> temp;</p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>temp = m.value.rotate(1);</p>
@@ -128,11 +128,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>m.value_(temp);</p>
 <p class="p5"><span class="Apple-tab-span">	</span>});</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s2">GUI.slider.new</span>(win, <span class="s2">Rect</span>(365,5,20,100))</p>
+<p class="p5"><span class="s2">Slider</span>(win, <span class="s2">Rect</span>(365,5,20,100))</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.value_(0.1)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> theSynth.set(<span class="s5">\smooth</span>,[0,1,<span class="s5">\lin</span>,0.001].asSpec.unmap(v.value))});</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
-<p class="p5"><span class="s2">GUI.slider.new</span>(win, <span class="s2">Rect</span>(390,5,20,100))</p>
+<p class="p5"><span class="s2">Slider</span>(win, <span class="s2">Rect</span>(390,5,20,100))</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.value_(0.5)</p>
 <p class="p5"><span class="Apple-tab-span">	</span>.action_({<span class="s2">|v|</span> theSynth.set(<span class="s5">\balance</span>,v.value)});</p>
 <p class="p5">)</p>
