@@ -24,7 +24,7 @@ Plot {
 					labelY: "",
 					expertMode: false
 				));
-				GUI.current !? { 
+				if(GUI.current.notNil and: {GUI.current.id == \cocoa}){
 					Font.findFirstAvailable(#["Garamond", "Gill Sans", "Times"], { |fontName| 
 						GUI.skin.at(\plot).put(\gridFont, Font(fontName, 9)) 
 					}) 
@@ -40,7 +40,7 @@ Plot {
 		var skin = GUI.skin.at(\plot);
 		
 		skin.use {
-			font = ~gridFont;
+			font = ~gridFont ?? { Font.default };
 			gridColorX = ~gridColorX;
 			gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
