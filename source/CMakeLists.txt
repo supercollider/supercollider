@@ -73,3 +73,10 @@ if(LTO)
                  PROPERTY LINK_FLAGS "-flto -flto-report"
     )
 endif()
+
+if(APPLE)
+    set_property(DIRECTORY
+                 APPEND
+                 PROPERTY COMPILE_DEFINITIONS SC_DARWIN
+    )
+endif()
