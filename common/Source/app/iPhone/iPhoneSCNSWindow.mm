@@ -28,16 +28,31 @@
 #import "iPhoneSCNSWindow.h"
 #import "iPhoneSCGraphView.h"
 
+@interface SCNSWindowViewController : UIViewController
+{
+}
+@end
+
+@implementation SCNSWindowViewController
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+	return YES;
+}
+
+@end
+
 @implementation SCNSWindow
 - (id) initWithFrame:(CGRect)bounds
 {
 	if (self=[super initWithFrame:bounds])
 	{
 		title = 0;
-		viewController = [[UIViewController alloc] init];
+		viewController = [[SCNSWindowViewController alloc] init];
 		viewController.view = self;
 		viewController.tabBarItem.image = nil;
 		[self setBackgroundColor:[UIColor grayColor]];
+		self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	}
 	return self;
 }
