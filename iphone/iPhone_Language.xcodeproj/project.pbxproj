@@ -107,7 +107,9 @@
 		778F18490F50B1D000CB6629 /* Common in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18450F50B1D000CB6629 /* Common */; };
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
-		77E5C7701191EB84007AE027 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEA1123320700D2A968 /* libsndfile_iphone.a */; };
+		77C11F4E11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77C11F4D11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib */; };
+		77C1204511D67558002067D4 /* PostViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 77C1204411D67558002067D4 /* PostViewController.mm */; };
+		77C1214011D690B4002067D4 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEA1123320700D2A968 /* libsndfile_iphone.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -435,6 +437,9 @@
 		778F18460F50B1D000CB6629 /* DefaultLibrary */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DefaultLibrary; path = ../common/build/SCClassLibrary/DefaultLibrary; sourceTree = "<group>"; };
 		778F18470F50B1D000CB6629 /* Platform */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Platform; path = ../common/build/SCClassLibrary/Platform; sourceTree = "<group>"; };
 		77B294D30ECEFF7500549D47 /* SC_VFP11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_VFP11.h; sourceTree = "<group>"; };
+		77C11F4D11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_MainWindow_iPad.xib; path = "iPhone Resources/SuperCollider_MainWindow_iPad.xib"; sourceTree = "<group>"; };
+		77C1204311D67558002067D4 /* PostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostViewController.h; sourceTree = "<group>"; };
+		77C1204411D67558002067D4 /* PostViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PostViewController.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -449,7 +454,7 @@
 				77597B03112332CF00D2A968 /* MediaPlayer.framework in Frameworks */,
 				77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */,
 				77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */,
-				77E5C7701191EB84007AE027 /* libsndfile_iphone.a in Frameworks */,
+				77C1214011D690B4002067D4 /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -483,6 +488,7 @@
 				7725B4AF1191DFA20056CA2F /* Bundled */,
 				778F12C90F50A94600CB6629 /* icon.png */,
 				778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */,
+				77C11F4D11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib */,
 				775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */,
 				7725B4BC1191E0510056CA2F /* SuperCollider_BrowserPage.xib */,
 				778F17E50F50AE1100CB6629 /* SuperCollider.plist */,
@@ -505,6 +511,8 @@
 				770903890F509FAA005C05DC /* iSCLangController.mm */,
 				7709038A0F509FAA005C05DC /* LiveCodingViewController.h */,
 				7709038B0F509FAA005C05DC /* LiveCodingViewController.mm */,
+				77C1204311D67558002067D4 /* PostViewController.h */,
+				77C1204411D67558002067D4 /* PostViewController.mm */,
 			);
 			path = iPhone;
 			sourceTree = "<group>";
@@ -1017,6 +1025,7 @@
 				778F17E60F50AE1100CB6629 /* SuperCollider_MainWindow.xib in Resources */,
 				775574050FBE45A500192282 /* SuperCollider_FileTransfer.xib in Resources */,
 				7725B4BD1191E0510056CA2F /* SuperCollider_BrowserPage.xib in Resources */,
+				77C11F4E11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1107,6 +1116,7 @@
 				770903940F509FAA005C05DC /* iSCLangController.mm in Sources */,
 				770903950F509FAA005C05DC /* LiveCodingViewController.mm in Sources */,
 				770903AB0F50A015005C05DC /* FileBrowserViewController.mm in Sources */,
+				77C1204511D67558002067D4 /* PostViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1145,13 +1155,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos3.2;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1181,14 +1192,15 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.0;
+				SDKROOT = iphoneos3.2;
 				SEPARATE_STRIP = NO;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1231,7 +1243,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos3.0;

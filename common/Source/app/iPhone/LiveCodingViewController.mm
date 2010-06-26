@@ -26,7 +26,39 @@ extern void rtf2txt(char *txt);
 {
 	[textView setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[textView setAutocorrectionType:UITextAutocorrectionTypeNo];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 	[self showButtons:NO];
+}
+
+- (void) keyboardDidShow:(NSNotification *) notif
+{
+	NSDictionary *info = [notif userInfo];
+	NSValue *val = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
+	CGRect r = [val CGRectValue];
+	
+	CGRect done_frame = doneButton.frame;
+	CGRect exec_frame = execButton.frame;
+	
+	r = [self.view convertRect:r fromView:nil];
+				
+	done_frame.origin.y = r.origin.y - done_frame.size.height - 10;
+	exec_frame.origin.y = done_frame.origin.y;
+	
+	[doneButton setFrame:done_frame];
+	[execButton setFrame:exec_frame];
+	
+	[self showButtons:YES];
+}
+
+- (void) keyboardWillHide:(NSNotification *) notif
+{
+	[self showButtons:NO];
+}
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+	return YES;
 }
 
 - (void) setTarget:(id)t withSelector:(SEL)s
@@ -55,7 +87,7 @@ extern void rtf2txt(char *txt);
 
 - (void) textViewDidBeginEditing: (UITextView *)theView
 {
-	[self showButtons:YES];
+	//[self showButtons:YES];
 }
 
 - (IBAction) triggerDone: (id)sender
@@ -83,7 +115,8 @@ extern void rtf2txt(char *txt);
 	if (target && [target respondsToSelector:selector]) [target performSelector:selector withObject:[textView text]];
 }
 
-- (void)dealloc {
+- (void) dealloc
+{
     [super dealloc];
 }
 

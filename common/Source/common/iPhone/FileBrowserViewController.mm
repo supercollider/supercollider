@@ -254,6 +254,11 @@ struct Header
     return self;
 }
 
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+	return YES;
+}
+
 - (void) setup
 {
 	FileBrowserPageViewController *m = [[FileBrowserPageViewController alloc] initWithNibName:@"SuperCollider_BrowserPage" bundle:nil];
