@@ -12,14 +12,14 @@ EventStreamCleanup {
 	}
 
 	addFunction { |event, function |
-		if(event.respondsTo(\keysValuesDo)) {
+		if(event.isKindOf(Dictionary)) {
 			functions = functions.add(function);
 			event[\addToCleanup] = event[\addToCleanup].add(function);
 		};
 	}
 
 	addNodeCleanup { |event, function |
-		if(event.respondsTo(\keysValuesDo)) {
+		if(event.isKindOf(Dictionary)) {
 			functions = functions.add(function);
 			event[\addToNodeCleanup] = event[\addToNodeCleanup].add(function);
 		};
