@@ -26,7 +26,7 @@ EventStreamCleanup {
 	}
 
 	update { | event |
-		if(event.respondsTo(\keysValuesDo)) {
+		if(event.isKindOf(Dictionary)) {
 			functions = functions.addAll(event[\addToNodeCleanup]);
 			functions = functions.addAll(event[\addToCleanup]);
 			functions = functions.removeAll(event[\removeFromCleanup]);
@@ -35,7 +35,7 @@ EventStreamCleanup {
 	}
 
 	exit { | event, freeNodes = true |
-		if(event.respondsTo(\keysValuesDo)) {
+		if(event.isKindOf(Dictionary)) {
 			this.update(event);
 			functions.do(_.value(freeNodes) );
 			event[\removeFromCleanup] = event[\removeFromCleanup].addAll(functions);
