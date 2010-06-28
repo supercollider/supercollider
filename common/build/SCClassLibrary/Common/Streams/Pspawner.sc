@@ -29,9 +29,9 @@ Spawner : Pattern {
 		priorityQ.put(now, genStream);
 	}
 
-	par { | pattern |
+	par { | pattern, delta = 0 |
 		var stream = pattern.asStream;
-		priorityQ.put(now, stream);
+		priorityQ.put(now + delta, stream);
 		^stream;
 	}
 
@@ -47,7 +47,7 @@ Spawner : Pattern {
 
 		var outevent, stream, nexttime;
 		event = inevent;					// gives genStream access to the event
-		cleanup ?? { EventStreamCleanup.new };
+		cleanup ?? { cleanup = EventStreamCleanup.new };
 
 		while({
 			priorityQ.notEmpty

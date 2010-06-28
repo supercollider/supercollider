@@ -39,9 +39,10 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Spawner</b> responds to the messages:</p>
 <p class="p2"><br></p>
-<p class="p1"><span class="Apple-tab-span">	</span><b>par(pattern)</b></p>
-<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Begin an event stream in parallel to the routine.<span class="Apple-converted-space">  </span>The method returns the stream . This may be called</p>
-<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>from any object</p>
+<p class="p1"><span class="Apple-tab-span">	</span><b>par(pattern, delta = 0)</b></p>
+<p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Begin an event stream in parallel to the routine. If delta is non-zero, the pattern will begin that many beats</p>
+<p class="p1"> <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>after 'now', provided that now + delta is later than the next event that the Spawner will generate. The</p>
+<p class="p1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>method returns the stream. This may be called from any object</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span>seq(pattern)</b></p>
 <p class="p1"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>run the entire pattern and then return control to the routine</p>
