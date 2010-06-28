@@ -409,7 +409,7 @@ void ampmix_kk_nova(MulAdd *unit, int inNumSamples)
 				nova::muladd_vec_simd_r2(OUT(0), IN(0), amp_cur, amp_slope, mix_cur, inNumSamples);
 		} else {
 			float mix_slope = CALCSLOPE(nextMix, mix_cur);
-			nova::muladd_vec_simd_r2r3(OUT(0), IN(0), mix_cur, mix_slope, amp_cur, amp_slope, inNumSamples);
+			nova::muladd_vec_simd_r2r3(OUT(0), IN(0), amp_cur, amp_slope, mix_cur, mix_slope, inNumSamples);
 			unit->mPrevAdd = nextMix;
 		}
 		unit->mPrevMul = nextAmp;
