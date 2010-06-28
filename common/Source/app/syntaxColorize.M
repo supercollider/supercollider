@@ -295,7 +295,11 @@ void SyntaxColorize(NSTextView* textView)
 			do  {
 				prevc = c;
 				c = input0();
-				if(prevc == '\\' && c == '\\' && input0() == '\"') break; 
+				if(prevc == '\\' && c == '\\') {
+					prevc = c;
+					c = input0();
+					if(c == endchar) break;
+				}
 			} while (!(c == endchar && prevc != '\\') && c != 0);
 			if (c == 0 || textpos > textlen) {
 				//postbuf("Open ended string ... started on line %d in file '%s'\n", 
