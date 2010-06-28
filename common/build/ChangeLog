@@ -1,7 +1,10 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
-Recent changes (will be SuperCollider v3.4)
-===========================================
+* 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
+
+
+SuperCollider v3.4, released 2010-07
+====================================
 
 Headlines:
 ----------
