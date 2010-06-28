@@ -41,6 +41,7 @@ Plot {
 		
 		skin.use {
 			font = ~gridFont ?? { Font.default };
+			if(font.class != GUI.font) { font = Font(font.name, font.size) };
 			gridColorX = ~gridColorX;
 			gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
