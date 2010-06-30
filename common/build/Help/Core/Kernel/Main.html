@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.46">
+<meta name="CocoaVersion" content="1038.32">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -81,7 +81,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p4"><span class="s1"><span class="Apple-tab-span">	</span></span>// post all incoming traffic except the server status messages</p>
 <p class="p6"><span class="Apple-tab-span">	</span>(</p>
 <p class="p7"><span class="s1"><span class="Apple-tab-span">	</span></span>thisProcess<span class="s1">.recvOSCfunc = { </span>|time, replyAddr, msg|<span class="s1"><span class="Apple-converted-space"> </span></span></p>
-<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(msg[0] != <span class="s6">'status.reply'</span>) {</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>if(msg[0] != <span class="s6">'/status.reply'</span>) {</p>
 <p class="p8"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"At time %s received message % from %\n"<span class="s1">.postf( time, msg, replyAddr )</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>} <span class="Apple-converted-space"> </span></p>
 <p class="p6"><span class="Apple-tab-span">	</span>}</p>
