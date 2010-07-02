@@ -185,7 +185,12 @@ struct movable_array
         return data_;
     }
 
-    const size_t length(void) const
+    const T & operator[](size_t index) const
+    {
+        return data_[index];
+    }
+
+    const size_t size(void) const
     {
         return length_;
     }
@@ -346,7 +351,7 @@ namespace detail
 
 void fire_notification(movable_array<char> & msg)
 {
-    instance->send_notification(msg.data(), msg.length());
+    instance->send_notification(msg.data(), msg.size());
 }
 
 void sc_notify_observers::notify(const char * address_pattern, const server_node * node)
@@ -373,6 +378,39 @@ void fire_trigger(int32_t node_id, int32_t trigger_id, float value)
 void sc_notify_observers::send_trigger(int32_t node_id, int32_t trigger_id, float value)
 {
     cmd_dispatcher<true>::fire_io_callback(boost::bind(fire_trigger, node_id, trigger_id, value));
+}
+
+void free_mem_callback(movable_string & cmd,
+                     movable_array<float> & values)
+{}
+
+void fire_node_reply(int32_t node_id, int reply_id, movable_string & cmd,
+                     movable_array<float> & values)
+{
+    size_t buffer_size = 128 + strlen(cmd.c_str()) + values.size()*sizeof(float);
+
+    sized_array<char> buffer(buffer_size);
+
+    osc::OutboundPacketStream p(buffer.c_array(), buffer_size);
+    p << osc::BeginMessage(cmd.c_str()) << osc::int32(node_id) << osc::int32(reply_id);
+
+    for (int i = 0; i != values.size(); ++i)
+        p << values[i];
+
+    p << osc::EndMessage;
+
+    instance->send_notification(p.Data(), p.Size());
+
+    cmd_dispatcher<true>::fire_rt_callback(boost::bind(free_mem_callback, cmd, values));
+}
+
+void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const char* command_name,
+                                          int argument_count, const float* values)
+{
+    movable_string cmd(command_name);
+    movable_array<float> value_array(argument_count, values);
+
+    cmd_dispatcher<true>::fire_io_callback(boost::bind(fire_node_reply, node_id, reply_id, cmd, value_array));
 }
 
 void sc_notify_observers::send_notification(const char * data, size_t length)
@@ -686,7 +724,7 @@ enum {
 
 void send_udp_message(movable_array<char> data, nova_endpoint const & endpoint)
 {
-    instance->send(data.data(), data.length(), endpoint);
+    instance->send(data.data(), data.size(), endpoint);
 }
 
 
@@ -1961,7 +1999,7 @@ void b_allocReadChannel_1_nrt(uint32_t index, movable_string const & filename, u
     sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
     sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
     int error = sc_factory->buffer_alloc_read_channels(index, filename.c_str(), start, frames,
-                                                        channels.length(), channels.data());
+                                                        channels.size(), channels.data());
     if (!error)
         cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_allocReadChannel_2_rt<realtime>,
                                                                index, msg, free_buf, endpoint));
@@ -2189,7 +2227,7 @@ void b_readChannel_nrt_1(uint32_t index, movable_string & filename, uint32_t sta
                          completion_message & msg, nova_endpoint const & endpoint)
 {
     sc_factory->buffer_read_channel(index, filename.c_str(), start_file, frames, start_buffer, leave_open,
-                                     channel_map.length(), channel_map.data());
+                                     channel_map.size(), channel_map.data());
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_readChannel_rt_2<realtime>, index, msg, endpoint));
 }
 
@@ -2534,7 +2572,7 @@ void b_gen_nrt_3(uint32_t index, sample * free_buf, nova_endpoint const & endpoi
 template <bool realtime>
 void b_gen_nrt_1(movable_array<char> & message, nova_endpoint const & endpoint)
 {
-    sc_msg_iter msg(message.length(), (char*)message.data());
+    sc_msg_iter msg(message.size(), (char*)message.data());
 
     int index = msg.geti();
     const char * generator = (const char*)msg.gets4();

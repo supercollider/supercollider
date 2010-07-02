@@ -256,6 +256,7 @@ void free_parent_group(Unit * unit)
     sc_factory->add_done_node(group);
 }
 
+
 } /* namespace */
 } /* namespace nova */
 
@@ -464,6 +465,15 @@ void world_unlock(World *world)
     world->mNRTLock->Unlock();
 }
 
+void send_node_reply(Node* node, int reply_id, const char* command_name, int argument_count, const float* values)
+{
+    if (!nova::sc_factory->world.mRealTime)
+        return;
+
+    nova::instance->send_node_reply(node->mID, reply_id, command_name, argument_count, values);
+}
+
+
 } /* extern "C" */
 
 namespace nova
@@ -533,6 +543,7 @@ void sc_plugin_interface::initialize(void)
 
     /* trigger functions */
     sc_interface.fSendTrigger = &send_trigger;
+    sc_interface.fSendNodeReply = &send_node_reply;
 
     /* world locks */
     sc_interface.fNRTLock = &world_lock;

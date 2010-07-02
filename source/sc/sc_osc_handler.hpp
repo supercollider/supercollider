@@ -102,6 +102,8 @@ public:
     }
 
     void send_trigger(int32_t node_id, int32_t trigger_id, float value);
+
+    void send_node_reply(int32_t node_id, int reply_id, const char* command_name, int argument_count, const float* values);
     /* @} */
 
     /** send notifications, should not be called from the real-time thread */
