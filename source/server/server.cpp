@@ -64,10 +64,6 @@ void nova_server::prepare_backend(void)
 
 nova_server::~nova_server(void)
 {
-#if defined (JACK_BACKEND)
-    if (audio_is_active())
-        deactivate_audio();
-#endif
     instance = 0;
 }
 

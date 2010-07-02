@@ -60,6 +60,9 @@ public:
 
     ~jack_backend(void)
     {
+        if (audio_is_active())
+            deactivate_audio();
+
         close_client();
     }
 
