@@ -23,9 +23,7 @@
 
 #include "PyrObject.h"
 #include "FIFOT.h"
-#ifdef SC_WIN32
-#else
-# include <netinet/in.h>
-#endif
+
+#include "../common/SC_Endian.h"
 
 #endif

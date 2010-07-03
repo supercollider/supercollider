@@ -21,8 +21,12 @@
 #ifndef SC_FIFO_H_INCLUDED
 #define SC_FIFO_H_INCLUDED
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 # include <CoreServices/CoreServices.h>
+#endif
+
+#ifdef _WIN32
+# include <windows.h>
 #endif
 
 template <class T, int N>
@@ -44,11 +48,11 @@ public:
 		long next = NextPos(mWriteHead);
 		if (next == mReadHead) return false; // fifo is full
 		mItems[next] = data;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mWriteHead, next, &mWriteHead);
-#elif defined SC_WIN32 && !defined(__MINGW32__)
+#elif defined(_WIN32)
 		InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
 		mWriteHead = next;
@@ -61,11 +65,11 @@ public:
 		//assert(HasData());
 		long next = NextPos(mReadHead);
 		T out = mItems[next];
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mReadHead, next, &mReadHead);
-#elif defined SC_WIN32 && !defined(__MINGW32__)
+#elif  defined(_WIN32)
 		InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
 		mReadHead = next;
@@ -79,7 +83,7 @@ private:
 	int NextPos(int inPos) { return (inPos + 1) & mMask; }
 
 	long mMask;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	UInt32 mReadHead, mWriteHead;
 #else
 	volatile int mReadHead, mWriteHead;

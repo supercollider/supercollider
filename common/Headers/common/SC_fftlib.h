@@ -37,7 +37,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 	// "SC_FFT_NONE" allows compilation without FFT support; only expected to be used on very limited platforms
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 0
-#elif !SC_FFT_FFTW && SC_DARWIN
+#elif !SC_FFT_FFTW && defined(__APPLE__)
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 1
 #else

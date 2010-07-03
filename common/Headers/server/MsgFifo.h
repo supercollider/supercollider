@@ -21,8 +21,12 @@
 #ifndef _MsgFifo_
 #define _MsgFifo_
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 # include <CoreServices/CoreServices.h>
+#endif
+
+#ifdef _WIN32
+# include <windows.h>
 #endif
 
 /////////////////////////////////////////////////////////////////////
@@ -45,15 +49,15 @@ public:
 		unsigned int next = NextPos(mWriteHead);
 		if (next == mFreeHead) return false; // fifo is full
 		mItems[next] = data;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
 		CompareAndSwap(mWriteHead, next, &mWriteHead);
-#elif defined(SC_WIN32) && !defined(__MINGW32__)
-    InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
+#elif defined(_WIN32)
+		InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
-        __sync_synchronize();
+		__sync_synchronize();
 #endif
 		mWriteHead = next;
 #endif
@@ -65,15 +69,15 @@ public:
 		while (HasData()) {
 			unsigned int next = NextPos(mReadHead);
 			mItems[next].Perform();
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
 			CompareAndSwap(mReadHead, next, &mReadHead);
-#elif defined(SC_WIN32) && !defined(__MINGW32__)
+#elif defined(_WIN32)
       InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
-        __sync_synchronize();
+			__sync_synchronize();
 #endif
 			mReadHead = next;
 #endif
@@ -84,17 +88,17 @@ public:
 		while (NeedsFree()) {
 			unsigned int next = NextPos(mFreeHead);
 			mItems[next].Free();
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
 			CompareAndSwap(mFreeHead, next, &mFreeHead);
-#elif defined(SC_WIN32) && !defined(__MINGW32__)
-      InterlockedExchange(reinterpret_cast<volatile LONG*>(&mFreeHead),next);
+#elif defined(_WIN32)
+			InterlockedExchange(reinterpret_cast<volatile LONG*>(&mFreeHead),next);
 #else
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
-        __sync_synchronize();
+			__sync_synchronize();
 #endif
-      mFreeHead = next;
+			mFreeHead = next;
 #endif
 		}
 	}
@@ -102,7 +106,7 @@ public:
 private:
 	int NextPos(int inPos) { return (inPos + 1) & (N - 1); }
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	UInt32 mReadHead, mWriteHead, mFreeHead;
 #else
 	volatile unsigned int mReadHead, mWriteHead, mFreeHead;
@@ -130,15 +134,15 @@ public:
 		unsigned int next = NextPos(mWriteHead);
 		if (next == mReadHead) return false; // fifo is full
 		mItems[next] = data;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
 			CompareAndSwap(mWriteHead, next, &mWriteHead);
-#elif defined(SC_WIN32) && !defined(__MINGW32__)
-      InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
+#elif defined(_WIN32)
+			InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
-        __sync_synchronize();
+			__sync_synchronize();
 #endif
 			mWriteHead = next;
 #endif
@@ -150,15 +154,15 @@ public:
 		while (HasData()) {
 			unsigned int next = NextPos(mReadHead);
 			mItems[next].Perform();
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
 			CompareAndSwap(mReadHead, next, &mReadHead);
-#elif defined(SC_WIN32) && !defined(__MINGW32__)
-      InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
+#elif defined(_WIN32)
+			InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
 #if (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) && ( !defined(__INTEL_COMPILER) || defined(__ia64) )
-        __sync_synchronize();
+			__sync_synchronize();
 #endif
 			mReadHead = next;
 #endif
@@ -168,7 +172,7 @@ public:
 private:
 	int NextPos(int inPos) { return (inPos + 1) & (N - 1); }
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	UInt32 mReadHead, mWriteHead;
 #else
 	volatile unsigned int mReadHead, mWriteHead;
