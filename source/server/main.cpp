@@ -130,6 +130,42 @@ void start_audio_backend(server_arguments const & args)
 
 #endif
 
+void set_plugin_paths(void)
+{
+    server_arguments const & args = server_arguments::instance();
+
+    if (!args.ugen_paths.empty())
+    {
+        foreach(std::string const & path, args.ugen_paths)
+            sc_factory->load_plugin_folder(path);
+    }
+    else
+    {
+        wordexp_t wexp;
+        int status = wordexp("~", &wexp, 0);
+        if (status || wexp.we_wordc != 1)
+            throw std::runtime_error("cannot detect home directory");
+
+        path home (wexp.we_wordv[0]);
+        wordfree(&wexp);
+
+#ifdef __linux__
+        sc_factory->load_plugin_folder("/usr/local/lib/supernova/plugins");
+        sc_factory->load_plugin_folder("/usr/lib/supernova/plugins");
+        sc_factory->load_plugin_folder(home / "share/SuperCollider/supernova_plugins");
+#elif defined(__APPLE__)
+        sc_factory->load_plugin_folder(home / "Library/Application Support/SuperCollider/supernova_plugins/");
+        sc_factory->load_plugin_folder("/Library/Application Support/SuperCollider/supernova_plugins/");
+#else
+        std::cerr << "Don't know how to locate plugins on this platform. Please specify search path in command line."
+#endif
+    }
+
+#ifndef NDEBUG
+    std::cout << "Unit Generators initialized" << std::endl;
+#endif
+}
+
 } /* namespace */
 
 int main(int argc, char * argv[])
@@ -176,29 +212,8 @@ int main(int argc, char * argv[])
     register_handles();
 
     sc_factory->initialize();
-    
-    wordexp_t wexp;
-    int status = wordexp("~", &wexp, 0);
-    if (status || wexp.we_wordc != 1)
-        throw std::runtime_error("cannot detect home directory");
-    
-    path home (wexp.we_wordv[0]);
-    wordfree(&wexp);
-    
-#ifdef __linux__
-    sc_factory->load_plugin_folder("/usr/local/lib/supernova/plugins");
-    sc_factory->load_plugin_folder("/usr/lib/supernova/plugins");
-    sc_factory->load_plugin_folder(home / "share/SuperCollider/supernova_plugins");
-#elif defined(__APPLE__)
-    sc_factory->load_plugin_folder(home / "Library/Application Support/SuperCollider/supernova_plugins/");
-    sc_factory->load_plugin_folder("/Library/Application Support/SuperCollider/supernova_plugins/");
-#else
-#error "Don't know how to locate plugins on this platform"
-#endif
 
-#ifndef NDEBUG
-    std::cout << "Unit Generators initialized" << std::endl;
-#endif
+    set_plugin_paths();
 
     if (args.load_synthdefs) {
         boost::filesystem::path synthdef_path(getenv("HOME"));
