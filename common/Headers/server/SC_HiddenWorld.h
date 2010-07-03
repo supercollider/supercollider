@@ -116,7 +116,7 @@ struct HiddenWorld
 	int32 mHiddenID;
 	int32 mRecentID;
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	const char* mInputStreamsEnabled;
 	const char* mOutputStreamsEnabled;
 #endif
