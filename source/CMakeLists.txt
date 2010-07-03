@@ -74,9 +74,3 @@ if(LTO)
     )
 endif()
 
-if(APPLE)
-    set_property(DIRECTORY
-                 APPEND
-                 PROPERTY COMPILE_DEFINITIONS SC_DARWIN
-    )
-endif()
