@@ -107,9 +107,9 @@ PatternControl : StreamControl {
 		}
 	}
 
-	stopStreams { | streams |
-		var dt;
-		dt = fadeTime.value;
+	stopStreams { | streams, dt |
+		
+		dt = (dt ? fadeTime).value;
 		if(dt <= 0.02) {
 			streams.do { arg item; item.stop  }
 		} {
@@ -127,11 +127,11 @@ PatternControl : StreamControl {
 		^stream.notNil
 	}
 
-	stopToBundle { | bundle |
+	stopToBundle { | bundle, dt |
 		var streams;
 		streams = array.copy;
 		array = nil;
-		bundle.onSend({ this.stopStreams(streams) });
+		bundle.onSend({ this.stopStreams(streams, dt) });
 	}
 
 	pause { 
@@ -233,10 +233,10 @@ SynthControl : AbstractPlayControl {
 		^nodeID
 	}
 
-	stopToBundle { | bundle |
+	stopToBundle { | bundle, fadeTime |
 		if(nodeID.notNil) {
 			if(canReleaseSynth) {
-					bundle.addAll([['/error', -1], [15, nodeID, \gate, 0.0], ['/error', -2]]);
+					bundle.addAll([['/error', -1], [15, nodeID, \gate, 0.0, \fadeTime, fadeTime], ['/error', -2]]);
 			} {
 					if(canFreeSynth.not) { //"/n_free"
 						bundle.addAll([['/error', -1], [11, nodeID], ['/error', -2]]);

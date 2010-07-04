@@ -172,13 +172,15 @@ NodeProxy : BusPlug {
 		this.put(i, \filter -> func)
 	}
 
-	removeLast { this.removeAt(objects.indices.last) }
-	removeAll { this.removeAt(nil) }
-	removeAt { | index |
+	removeFirst { | fadeTime | this.removeAt(objects.indices.first, fadeTime) }
+	removeLast { | fadeTime | this.removeAt(objects.indices.last, fadeTime) }
+	removeAll { | fadeTime | this.removeAt(nil, fadeTime) }
+	removeAt { | index, fadeTime |
 		var bundle = MixedBundle.new;
+		[\removeAt, \fadeTime, fadeTime].postln;
 		if(index.isNil)
-			{ this.removeAllToBundle(bundle) }
-			{ this.removeToBundle(bundle, index) };
+			{ this.removeAllToBundle(bundle, fadeTime) }
+			{ this.removeToBundle(bundle, index, fadeTime) };
 		bundle.schedSend(server);
 	}
 	
@@ -742,21 +744,22 @@ NodeProxy : BusPlug {
 	}
 
 	// bundle: remove single object
-	removeToBundle { | bundle, index |
+	removeToBundle { | bundle, index, fadeTime |
 		var obj, dt, playing;
 		playing = this.isPlaying;
 		obj = objects.removeAt(index);
 
 		if(obj.notNil) {
-				dt = this.fadeTime;
+				dt = fadeTime ? this.fadeTime;
+				[\removeToBundle, \dt, dt].postln;
 				if(playing) { obj.stopToBundle(bundle, dt) };
 				obj.freeToBundle(bundle, dt);
 		}
 	}
 	// bundle: remove all objects
-	removeAllToBundle { | bundle |
+	removeAllToBundle { | bundle, fadeTime |
 		var dt, playing;
-		dt = this.fadeTime;
+		dt = fadeTime ? this.fadeTime;
 		playing = this.isPlaying;
 		objects.do { arg obj;
 				if(playing) { obj.stopToBundle(bundle, dt) };
@@ -766,9 +769,9 @@ NodeProxy : BusPlug {
 	}
 
 	// bundle: stop single process
-	stopAllToBundle { | bundle |
+	stopAllToBundle { | bundle, fadeTime |
 		var obj, dt;
-		dt = this.fadeTime;
+		dt = fadeTime ? this.fadeTime;
 		if(this.isPlaying) { 
 			objects.do { |obj| obj.stopToBundle(bundle, dt) } 
 		}
