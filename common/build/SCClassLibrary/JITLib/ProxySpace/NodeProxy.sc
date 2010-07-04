@@ -45,7 +45,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying) {
 			bundle = MixedBundle.new;
 			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
-			this.stopAllToBundle(bundle);
+			this.stopAllToBundle(bundle, fadeTime);
 			if(freeGroup) {
 				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { group.free });
 			};
@@ -177,7 +177,6 @@ NodeProxy : BusPlug {
 	removeAll { | fadeTime | this.removeAt(nil, fadeTime) }
 	removeAt { | index, fadeTime |
 		var bundle = MixedBundle.new;
-		[\removeAt, \fadeTime, fadeTime].postln;
 		if(index.isNil)
 			{ this.removeAllToBundle(bundle, fadeTime) }
 			{ this.removeToBundle(bundle, index, fadeTime) };
@@ -751,7 +750,6 @@ NodeProxy : BusPlug {
 
 		if(obj.notNil) {
 				dt = fadeTime ? this.fadeTime;
-				[\removeToBundle, \dt, dt].postln;
 				if(playing) { obj.stopToBundle(bundle, dt) };
 				obj.freeToBundle(bundle, dt);
 		}
