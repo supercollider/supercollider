@@ -17,28 +17,30 @@ fi
 
 # First let's detect the special 32/64bit mode
 switchableConfig="Deployment"
+buildArg=$*
 for opt in $*
 do
     if [ $opt == "ARCHS=32_64" ]; then
 		switchableConfig="Deployment32-64"
+		buildArg = ""
         echo "Building 32/64 bit scsynth and plugins"
     fi
 done
 
 # scsynth
 echo "Building scsynth..."
-xcodebuild -project Synth.xcodeproj -target "AllExceptAU" -configuration $switchableConfig $* build || exit
+xcodebuild -project Synth.xcodeproj -target "AllExceptAU" -configuration $switchableConfig $buildArg build || exit
 
 # plugins
 echo "Building plugins..."
-xcodebuild -project Plugins.xcodeproj -target "All" -configuration $switchableConfig $* build || exit
+xcodebuild -project Plugins.xcodeproj -target "All" -configuration $switchableConfig $buildArg build || exit
 
 #sclang - NOTE not currently able to do 32/64
 echo "Building sclang..."
-xcodebuild -project Language.xcodeproj -target "All" -configuration "Deployment" $* build || exit
+xcodebuild -project Language.xcodeproj -target "All" -configuration "Deployment" $buildArg build || exit
 
 # scau
 echo "Building SuperColliderAU..."
-xcodebuild -project Synth.xcodeproj -target "SuperColliderAU" -configuration $switchableConfig $* build || exit
+xcodebuild -project Synth.xcodeproj -target "SuperColliderAU" -configuration $switchableConfig $buildArg build || exit
 
 echo "Done."
