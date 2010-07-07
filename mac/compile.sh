@@ -22,7 +22,7 @@ for opt in $*
 do
     if [ $opt == "ARCHS=32_64" ]; then
 		switchableConfig="Deployment32-64"
-		buildArg = ""
+		buildArg=""
         echo "Building 32/64 bit scsynth and plugins"
     fi
 done
