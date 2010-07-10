@@ -1,6 +1,7 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
 * 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
+* 2010-07-10 protecting the server against malformatted SynthDef names - jr
 
 
 SuperCollider v3.4, released 2010-07
