@@ -770,7 +770,9 @@ SCErr meth_d_free(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 {
 	sc_msg_iter msg(inSize, inData);
 	while (msg.remain()) {
-		GraphDef_Remove(inWorld, msg.gets4());
+		int32* defname = msg.gets4();
+		if (!defname) return kSCErr_SynthDefNotFound;
+		GraphDef_Remove(inWorld, defname);
 	}
 	return kSCErr_None;
 }
