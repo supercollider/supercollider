@@ -502,7 +502,7 @@ SynthDef {
 	add { arg libname, completionMsg, keepDef = true;
 		var	servers, desc = this.asSynthDesc(libname ? \global, keepDef);
 		if(libname.isNil) { 
-			servers = Server.all.select(_.serverRunning) 
+			servers = Server.allRunningServers
 		} {
 			servers = SynthDescLib.getLib(libname).servers
 		};
