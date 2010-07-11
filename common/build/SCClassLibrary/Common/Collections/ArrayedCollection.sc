@@ -297,6 +297,7 @@ ArrayedCollection : SequenceableCollection {
 	}
 
 	perfectShuffle {
+		if(this.size < 2) { ^this.copy };
 		^this[(0 .. this.size div: 2 - 1).stutter + [0, this.size + 1 div: 2]]
 	}
 

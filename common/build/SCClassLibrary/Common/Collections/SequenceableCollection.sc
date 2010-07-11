@@ -215,8 +215,9 @@ SequenceableCollection : Collection {
 	}
 
 	indexInBetween { arg val; // collection is sorted, returns linearly interpolated index
-		var a, b, div;
-		var i = this.indexOfGreaterThan(val);
+		var a, b, div, i;
+		if(this.isEmpty) { ^nil };
+		i = this.indexOfGreaterThan(val);
 		if(i.isNil) { ^this.size - 1 };
 		if(i == 0) { ^i };
 		a = this[i-1]; b = this[i];
@@ -308,7 +309,7 @@ SequenceableCollection : Collection {
 				sublist = this.species.new;
 			});
 		});
-		sublist = sublist.add(this.last);
+		if(this.notEmpty) { sublist = sublist.add(this.last) };
 		list = list.add(sublist);
 		^list
 	}
@@ -905,6 +906,7 @@ SequenceableCollection : Collection {
 	order { arg function;
 		var array, orderFunc;
 		// returns an array of indices that would sort the collection into order.
+		if(this.isEmpty) { ^[] };
 		if (function.isNil) { function = { arg a, b; a <= b }; };
 		array = [this, (0..this.lastIndex)].flop;
 		orderFunc = {|a,b| function.value(a[0], b[0]) };
@@ -1054,6 +1056,7 @@ SequenceableCollection : Collection {
 
 	// Finds the median efficiently, by rearranging the array IN-PLACE.
 	hoareMedian { |function|
+		if(this.isEmpty) { ^nil };
 		^if(this.size.even, {
 			[this.hoareFind(this.size/ 2 - 1, function),
 			 this.hoareFind(this.size/ 2,     function)].mean;
