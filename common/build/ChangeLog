@@ -2,6 +2,9 @@ Changes are listed below, grouped under each point release of SuperCollider.
 
 * 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
 * 2010-07-10 protecting the server against malformatted SynthDef names - jr
+* 2010-07-11 Collections should behave as reasonably as possible when empty - some fixes to better this - jr
+* 2010-07-11 SynthDef:add now sends to all running servers if no libname is given. SynthDescs are still added to the global SynthDescLib. If you want to handle multiple SynthDesc libs, you have to add the servers toeach of them explicitly - jr
+
 
 
 SuperCollider v3.4, released 2010-07
