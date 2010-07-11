@@ -499,13 +499,16 @@ SynthDef {
 	
 	// make SynthDef available to all servers
 	
-	add { arg libname = \global, completionMsg, keepDef = true;
-		var	lib, desc = this.asSynthDesc(libname, keepDef);
-		libname ?? { libname = \global };
-		lib = SynthDescLib.getLib(libname);
-		lib.servers.do { |each|
-			each.value.sendMsg("/d_recv", this.asBytes, completionMsg.value(each))
+	add { arg libname, completionMsg, keepDef = true;
+		var	servers, desc = this.asSynthDesc(libname ? \global, keepDef);
+		if(libname.isNil) { 
+			servers = Server.all.select(_.serverRunning) 
+		} {
+			servers = SynthDescLib.getLib(libname).servers
 		};
+		servers.do { |each|
+			each.value.sendMsg("/d_recv", this.asBytes, completionMsg.value(each))
+		}
 	}
 	
 	*removeAt { arg name, libname = \global;
