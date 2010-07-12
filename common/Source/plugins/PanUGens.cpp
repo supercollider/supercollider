@@ -137,7 +137,8 @@ extern "C"
 	void vDecodeB2_next(DecodeB2 *unit, int inNumSamples);
 	void DecodeB2_Ctor(DecodeB2* unit);
 
-	void PanAz_next(PanAz *unit, int inNumSamples);
+	void PanAz_next_ak(PanAz *unit, int inNumSamples);
+	void PanAz_next_aa(PanAz *unit, int inNumSamples);
 	void PanAz_Ctor(PanAz* unit);
 
 	void Rotate2_next_ak(Rotate2 *unit, int inNumSamples);
@@ -1465,18 +1466,22 @@ void calcPos(float pos, int numOutputs, float width, float orientation)
 }
 */
 
-
+// lfsaw.de: added support for a-rate pos arg
 void PanAz_Ctor(PanAz *unit)
 {
-	int numOutputs = unit->mNumOutputs;
-	for (int i=0; i<numOutputs; ++i) {
-		unit->m_chanamp[i] = 0;
-		ZOUT0(i) = 0.f;
+	if (INRATE(1) == calc_FullRate) {
+		SETCALC(PanAz_next_aa);
+	} else {
+		int numOutputs = unit->mNumOutputs;
+		for (int i=0; i<numOutputs; ++i) {
+			unit->m_chanamp[i] = 0;
+			ZOUT0(i) = 0.f;
+		}
+		SETCALC(PanAz_next_ak);
 	}
-	SETCALC(PanAz_next);
 }
 
-void PanAz_next(PanAz *unit, int inNumSamples)
+void PanAz_next_ak(PanAz *unit, int inNumSamples)
 {
 	float pos = ZIN0(1);
 	float level = ZIN0(2);
@@ -1526,6 +1531,50 @@ void PanAz_next(PanAz *unit, int inNumSamples)
 	}
 }
 
+void PanAz_next_aa(PanAz *unit, int inNumSamples)
+{
+	float level = ZIN0(2);
+	float width = ZIN0(3);
+	float orientation = ZIN0(4);
+
+	int numOutputs = unit->mNumOutputs;
+	float rwidth = 1.f / width;
+	float range = numOutputs * rwidth;
+	float rrange = 1.f / range;
+
+
+	// compute constant parts with which the pos has to be multiplied/added to respect numOutputs, width and orientation
+	// see PanAz_next_ak for details
+	float alignedPosFac = 0.5f * numOutputs;
+	float alignedPosConst = width * 0.5f + orientation;
+
+
+	float *zin0 = ZIN(0);
+	float *pos = ZIN(1);
+
+	for (int i=0; i<numOutputs; ++i) {
+		float *out = ZOUT(i);
+		float chanamp;
+		float chanpos;
+		
+		float *in = zin0;
+		float *thePos = pos;
+
+		LOOP1(inNumSamples,
+			chanpos  = (ZXP(thePos) * alignedPosFac + alignedPosConst) - i * rwidth;
+			chanpos = chanpos - range * floor(rrange * chanpos);
+
+			if (chanpos > 1.f) {
+				chanamp = 0.f;
+			} else {
+				chanamp = level * ft->mSine[(long)(4096.f * chanpos)];
+			}
+						
+			ZXP(out) = ZXP(in) * chanamp;
+
+		)
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
