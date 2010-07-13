@@ -1509,7 +1509,7 @@ void PanAz_next_ak(PanAz *unit, int inNumSamples)
 		float nextchanamp;
 		float chanpos = pos - i;
 		chanpos *= rwidth;
-		chanpos = chanpos - range * floor(rrange * chanpos);
+		chanpos = chanpos - range * std::floor(rrange * chanpos);
 		if (chanpos > 1.f) {
 			nextchanamp = 0.f;
 		} else {
@@ -1561,16 +1561,15 @@ void PanAz_next_aa(PanAz *unit, int inNumSamples)
 
 	for (int i=0; i<numOutputs; ++i) {
 		float *out = ZOUT(i);
-		float chanamp;
-		float chanpos;
 
 		float *in = zin0;
 		float *thePos = pos;
 
 		LOOP1(inNumSamples,
-			chanpos  = (ZXP(thePos) * alignedPosFac + alignedPosConst) - i * rwidth;
-			chanpos = chanpos - range * floor(rrange * chanpos);
+			float chanpos  = (ZXP(thePos) * alignedPosFac + alignedPosConst) - i * rwidth;
+			chanpos = chanpos - range * std::floor(rrange * chanpos);
 
+			float chanamp;
 			if (chanpos > 1.f) {
 				chanamp = 0.f;
 			} else {
