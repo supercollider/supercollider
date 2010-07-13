@@ -81,7 +81,7 @@ struct BiPanB2 : public Unit
 
 struct PanAz : public Unit
 {
-	float m_chanamp[16];
+	float * m_chanamp;
 };
 
 struct DecodeB2 : public Unit
@@ -1466,19 +1466,26 @@ void calcPos(float pos, int numOutputs, float width, float orientation)
 }
 */
 
-// lfsaw.de: added support for a-rate pos arg
 void PanAz_Ctor(PanAz *unit)
 {
 	if (INRATE(1) == calc_FullRate) {
+		unit->m_chanamp = NULL;
 		SETCALC(PanAz_next_aa);
 	} else {
 		int numOutputs = unit->mNumOutputs;
+		unit->m_chanamp = (float*)RTAlloc(unit->mWorld, numOutputs*sizeof(float));
 		for (int i=0; i<numOutputs; ++i) {
 			unit->m_chanamp[i] = 0;
 			ZOUT0(i) = 0.f;
 		}
 		SETCALC(PanAz_next_ak);
 	}
+}
+
+void PanAz_Dtor(PanAz *unit)
+{
+	if (unit->m_chanamp)
+		RTFree(unit->mWorld, unit->m_chanamp);
 }
 
 void PanAz_next_ak(PanAz *unit, int inNumSamples)
@@ -1556,7 +1563,7 @@ void PanAz_next_aa(PanAz *unit, int inNumSamples)
 		float *out = ZOUT(i);
 		float chanamp;
 		float chanpos;
-		
+
 		float *in = zin0;
 		float *thePos = pos;
 
@@ -1569,7 +1576,7 @@ void PanAz_next_aa(PanAz *unit, int inNumSamples)
 			} else {
 				chanamp = level * ft->mSine[(long)(4096.f * chanpos)];
 			}
-						
+
 			ZXP(out) = ZXP(in) * chanamp;
 
 		)
@@ -1748,7 +1755,7 @@ PluginLoad(Pan)
 	DefineSimpleUnit(PanB);
 	DefineSimpleUnit(PanB2);
 	DefineSimpleUnit(BiPanB2);
-	DefineSimpleCantAliasUnit(PanAz);
+	DefineDtorCantAliasUnit(PanAz);
 	DefineSimpleCantAliasUnit(DecodeB2);
 }
 
