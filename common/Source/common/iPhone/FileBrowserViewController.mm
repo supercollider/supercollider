@@ -307,6 +307,11 @@ struct Header
     return self;
 }
 
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+	return YES;
+}
+
 - (void) setPath:(NSString *)p
 {
 	if (path) [path release];
