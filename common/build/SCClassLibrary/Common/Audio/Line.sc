@@ -88,10 +88,10 @@ T2A : K2A { // control rate to audio rate trigger converter.
 
 DC : MultiOutUGen {
 	*ar { arg in=0.0;
-		^this.multiNewList(['audio'] ++ in)
+		^this.multiNew('audio', in)
 	}
 	*kr { arg in=0.0;
-		^this.multiNewList(['control'] ++ in)
+		^this.multiNew('control', in)
 	}
 	init { arg ... argInputs;
 		inputs = argInputs;
