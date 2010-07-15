@@ -22,7 +22,7 @@
 #define _MsgFifo_
 
 #ifdef __APPLE__
-# include <CoreServices/CoreServices.h>
+# include <libkern/OSAtomic.h>
 #endif
 
 #ifdef _WIN32
@@ -52,7 +52,7 @@ public:
 #ifdef __APPLE__
 		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
-		CompareAndSwap(mWriteHead, next, &mWriteHead);
+		OSAtomicCompareAndSwap32Barrier(mWriteHead, next, &mWriteHead);
 #elif defined(_WIN32)
 		InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
@@ -72,7 +72,7 @@ public:
 #ifdef __APPLE__
 			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
-			CompareAndSwap(mReadHead, next, &mReadHead);
+			OSAtomicCompareAndSwap32Barrier(mReadHead, next, &mReadHead);
 #elif defined(_WIN32)
       InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
@@ -91,7 +91,7 @@ public:
 #ifdef __APPLE__
 			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
-			CompareAndSwap(mFreeHead, next, &mFreeHead);
+			OSAtomicCompareAndSwap32Barrier(mFreeHead, next, &mFreeHead);
 #elif defined(_WIN32)
 			InterlockedExchange(reinterpret_cast<volatile LONG*>(&mFreeHead),next);
 #else
@@ -107,9 +107,9 @@ private:
 	int NextPos(int inPos) { return (inPos + 1) & (N - 1); }
 
 #ifdef __APPLE__
-	UInt32 mReadHead, mWriteHead, mFreeHead;
+	int32_t mReadHead, mWriteHead, mFreeHead;
 #else
-	volatile unsigned int mReadHead, mWriteHead, mFreeHead;
+	volatile int mReadHead, mWriteHead, mFreeHead;
 #endif
 	MsgType mItems[N];
 };
@@ -137,7 +137,7 @@ public:
 #ifdef __APPLE__
 			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
-			CompareAndSwap(mWriteHead, next, &mWriteHead);
+			OSAtomicCompareAndSwap32Barrier(mWriteHead, next, &mWriteHead);
 #elif defined(_WIN32)
 			InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
@@ -157,7 +157,7 @@ public:
 #ifdef __APPLE__
 			// we don't really need a compare and swap, but this happens to call
 			// the PowerPC memory barrier instruction lwsync.
-			CompareAndSwap(mReadHead, next, &mReadHead);
+			OSAtomicCompareAndSwap32Barrier(mReadHead, next, &mReadHead);
 #elif defined(_WIN32)
 			InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
@@ -171,11 +171,10 @@ public:
 
 private:
 	int NextPos(int inPos) { return (inPos + 1) & (N - 1); }
-
 #ifdef __APPLE__
-	UInt32 mReadHead, mWriteHead;
+	int32_t mReadHead, mWriteHead;
 #else
-	volatile unsigned int mReadHead, mWriteHead;
+	volatile int mReadHead, mWriteHead;
 #endif
 	MsgType mItems[N];
 };
