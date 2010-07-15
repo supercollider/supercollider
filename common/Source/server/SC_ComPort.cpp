@@ -50,7 +50,7 @@ typedef int socklen_t;
 # include <unistd.h>
 #endif
 
-#ifdef SC_IPHONE
+#if defined(SC_IPHONE) || defined(SC_DARWIN)
 # include <errno.h>
 #endif
 

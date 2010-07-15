@@ -22,7 +22,7 @@
 #define SC_FIFO_H_INCLUDED
 
 #ifdef __APPLE__
-# include <CoreServices/CoreServices.h>
+# include <libkern/OSAtomic.h>
 #endif
 
 #ifdef _WIN32
@@ -51,7 +51,7 @@ public:
 #ifdef __APPLE__
 		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
-		CompareAndSwap(mWriteHead, next, &mWriteHead);
+		OSAtomicCompareAndSwap32Barrier(mWriteHead, next, &mWriteHead);
 #elif defined(_WIN32)
 		InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
 #else
@@ -68,7 +68,7 @@ public:
 #ifdef __APPLE__
 		// we don't really need a compare and swap, but this happens to call
 		// the PowerPC memory barrier instruction lwsync.
-		CompareAndSwap(mReadHead, next, &mReadHead);
+		OSAtomicCompareAndSwap32Barrier(mReadHead, next, &mReadHead);
 #elif  defined(_WIN32)
 		InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
 #else
@@ -83,8 +83,9 @@ private:
 	int NextPos(int inPos) { return (inPos + 1) & mMask; }
 
 	long mMask;
+
 #ifdef __APPLE__
-	UInt32 mReadHead, mWriteHead;
+	int32_t mReadHead, mWriteHead;
 #else
 	volatile int mReadHead, mWriteHead;
 #endif
