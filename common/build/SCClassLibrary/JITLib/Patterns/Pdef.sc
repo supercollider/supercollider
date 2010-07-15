@@ -807,7 +807,7 @@ Pdict : Pattern {
 	embedInStream { arg inval;
 		var keyStream, key;
 		keyStream = which.asStream;
-		repeats.value.do({
+		repeats.value(inval).do({
 			key = keyStream.next(inval);
 			if(key.isNil) { ^inval };
 			inval = (dict.at(key) ? default).embedInStream(inval);
