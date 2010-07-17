@@ -56,18 +56,28 @@ struct audio_sync_callback:
  * */
 struct thread_init_functor
 {
+    thread_init_functor(bool real_time):
+        rt(real_time)
+    {}
+
     void operator()(int thread_index)
     {
-        int min, max;
-        boost::tie(min, max) = thread_priority_interval_rt();
-        int priority = max - 3;
-        priority = std::max(min, priority);
+        if (rt)
+        {
+            int min, max;
+            boost::tie(min, max) = thread_priority_interval_rt();
+            int priority = max - 3;
+            priority = std::max(min, priority);
 
-        thread_set_priority_rt(priority);
+            thread_set_priority_rt(priority);
+        }
 
         if (!thread_set_affinity(thread_index))
             std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
     }
+
+private:
+    bool rt;
 };
 
 
@@ -110,8 +120,8 @@ protected:
 
 public:
     /* start thread_count - 1 scheduler threads */
-    scheduler(dsp_threads::thread_count_t thread_count = 1):
-        threads(thread_count)
+    scheduler(dsp_threads::thread_count_t thread_count = 1, bool realtime = false):
+        threads(thread_count, thread_init_functor(realtime))
     {
         threads.start_threads();
     }

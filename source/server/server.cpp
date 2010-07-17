@@ -32,7 +32,7 @@ namespace nova
 class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
-    scheduler(args.threads), buffer_manager(1024), sc_osc_handler(args),
+    scheduler(args.threads, !args.non_rt), buffer_manager(1024), sc_osc_handler(args),
     io_interpreter(1, true, thread_priority_interval_rt().first)
 {
     assert(instance == 0);
