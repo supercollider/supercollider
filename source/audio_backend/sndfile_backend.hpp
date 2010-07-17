@@ -55,7 +55,7 @@ class sndfile_backend:
 
 public:
     sndfile_backend(void):
-        read_frames(64 * 16), write_frames(64 * 16), running(false), reader_running(false), writer_running(false)
+        read_frames(65536), write_frames(65536), running(false), reader_running(false), writer_running(false)
     {}
 
     ~sndfile_backend(void)
@@ -117,61 +117,36 @@ public:
     void activate_audio(void)
     {
         running.store(true);
-#if 0
+
         if (input_file)
         {
             reader_running.store(true);
             reader_thread = boost::thread(boost::bind(&sndfile_backend::sndfile_read_thread, this));
         }
 
-
         writer_running.store(true);
         writer_thread = boost::thread(boost::bind(&sndfile_backend::sndfile_write_thread, this));
-#endif
     }
 
     void deactivate_audio(void)
     {
         running.store(false);
-#if 0
-        reader_running.store(false);
-        reader_thread.join();
 
-        write_semaphore.post();
+        if (input_file)
+        {
+            reader_running.store(false);
+            reader_thread.join();
+        }
+
         writer_running.store(false);
+        write_semaphore.post();
         writer_thread.join();
-#endif
     }
 
 private:
     /* read input fifo from the rt context */
     void read_input_buffers(size_t frames_per_tick)
     {
-#if 1
-        size_t read_frames = 0;
-        while (read_position < (size_t)input_file.frames())
-        {
-            float tmp[64];
-
-            input_file.readf(tmp, 1);
-
-            read_position += 1;
-            read_frames += 1;
-
-            for (uint16_t channel = 0; channel != input_file.channels(); ++channel)
-                super::input_samples[channel].get()[read_frames] = tmp[channel];
-
-            for (uint16_t channel = input_file.channels(); channel != input_channels; ++channel)
-                super::input_samples[channel].get()[read_frames] = 0;
-        }
-        if (read_frames != frames_per_tick)
-        {
-            /* wipe remaining samples */
-            for (uint16_t channel = 0; channel != input_channels; ++channel)
-                zerovec(super::input_samples[channel].get() + read_frames, frames_per_tick - read_frames);
-        }
-
-#else
         if (reader_running.load(boost::memory_order_acquire))
         {
             const size_t total_samples = input_channels * frames_per_tick;
@@ -206,7 +181,6 @@ private:
         }
         else
             super::clear_inputs(frames_per_tick);
-#endif
     }
 
     void sndfile_read_thread(void)
@@ -255,17 +229,13 @@ private:
         const size_t total_samples = output_channels * frames_per_tick;
         sample_type * buffer = temp_buffer.get();
 
-#if 1
-        output_file.write(buffer, total_samples);
-#else
         size_t count = total_samples;
         do {
             size_t consumed = write_frames.enqueue(buffer, count);
             count -= consumed;
-            count += consumed;
+            buffer += consumed;
             write_semaphore.post();
         } while (count);
-#endif
     }
 
     void sndfile_write_thread(void)
