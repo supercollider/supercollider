@@ -33,18 +33,25 @@
 #include "simd_math.hpp"
 #include "simd_memory.hpp"
 
+#ifdef __GNUC__
+#define inline_functions __attribute__ ((flatten))
+#else
+#define inline_functions
+#endif
+
+
 #define NOVA_BINARY_WRAPPER(SCNAME, NOVANAME)							\
-	void SCNAME##_aa_nova(BinaryOpUGen *unit, int inNumSamples)			\
+	inline_functions void SCNAME##_aa_nova(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		nova::NOVANAME##_vec_simd(OUT(0), IN(0), IN(1), inNumSamples);	\
 	}																	\
 																		\
-	void SCNAME##_aa_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	inline_functions void SCNAME##_aa_nova_64(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
-		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), IN(1));			\
+		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0), IN(1));			\
 	}																	\
 																		\
-	void SCNAME##_ia_nova(BinaryOpUGen *unit, int inNumSamples)			\
+	inline_functions void SCNAME##_ia_nova(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xa = ZIN0(0);												\
 																		\
@@ -52,15 +59,15 @@
 		unit->mPrevA = xa;												\
 	}																	\
 																		\
-	void SCNAME##_ia_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	inline_functions void SCNAME##_ia_nova_64(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xa = ZIN0(0);												\
 																		\
-		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), xa, IN(1));			\
+		nova::NOVANAME##_vec_simd<64>(OUT(0), xa, IN(1));               \
 		unit->mPrevA = xa;												\
 	}																	\
 																		\
-	void SCNAME##_ai_nova(BinaryOpUGen *unit, int inNumSamples)			\
+	inline_functions void SCNAME##_ai_nova(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xb = ZIN0(1);												\
 																		\
@@ -68,26 +75,26 @@
 		unit->mPrevB = xb;												\
 	}																	\
 																		\
-	void SCNAME##_ai_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	inline_functions void SCNAME##_ai_nova_64(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xb = ZIN0(1);												\
 																		\
-		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), xb);			\
+		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0), xb);               \
 		unit->mPrevB = xb;												\
-	}																	\
+	}
 
 #define NOVA_BINARY_WRAPPER_K(SCNAME, NOVANAME)							\
-	void SCNAME##_aa_nova(BinaryOpUGen *unit, int inNumSamples)			\
+	inline_functions void SCNAME##_aa_nova(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		nova::NOVANAME##_vec_simd(OUT(0), IN(0), IN(1), inNumSamples);	\
 	}																	\
 																		\
-	void SCNAME##_aa_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	inline_functions void SCNAME##_aa_nova_64(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
-		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), IN(1));			\
+		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0), IN(1));			\
 	}																	\
 																		\
-	void SCNAME##_ia_nova(BinaryOpUGen *unit, int inNumSamples)			\
+	inline_functions void SCNAME##_ia_nova(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xa = ZIN0(0);												\
 																		\
@@ -95,15 +102,15 @@
 		unit->mPrevA = xa;												\
 	}																	\
 																		\
-	void SCNAME##_ia_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	inline_functions void SCNAME##_ia_nova_64(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xa = ZIN0(0);												\
 																		\
-		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), xa, IN(1));			\
+		nova::NOVANAME##_vec_simd<64>(OUT(0), xa, IN(1));               \
 		unit->mPrevA = xa;												\
 	}																	\
 																		\
-	void SCNAME##_ai_nova(BinaryOpUGen *unit, int inNumSamples)			\
+	inline_functions void SCNAME##_ai_nova(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xb = ZIN0(1);												\
 																		\
@@ -111,15 +118,15 @@
 		unit->mPrevB = xb;												\
 	}																	\
 																		\
-	void SCNAME##_ai_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	inline_functions void SCNAME##_ai_nova_64(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xb = ZIN0(1);												\
 																		\
-		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), xb);			\
+		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0), xb);               \
 		unit->mPrevB = xb;												\
 	}																	\
 																		\
-	void SCNAME##_ak_nova(BinaryOpUGen *unit, int inNumSamples)			\
+	inline_functions void SCNAME##_ak_nova(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xb = unit->mPrevB;										\
 		float next_b = ZIN0(1);											\
@@ -133,13 +140,13 @@
 		}																\
 	}																	\
 																		\
-	void SCNAME##_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)		\
+	inline_functions void SCNAME##_ak_nova_64(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xb = unit->mPrevB;										\
 		float next_b = ZIN0(1);											\
 																		\
 		if (xb == next_b) {												\
-			nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0), xb);        \
+			nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0), xb);           \
 		} else {														\
 			float slope = CALCSLOPE(next_b, xb);						\
 			nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples); \
@@ -147,7 +154,7 @@
 		}																\
 	}																	\
 																		\
-	void SCNAME##_ka_nova(BinaryOpUGen *unit, int inNumSamples)			\
+	inline_functions void SCNAME##_ka_nova(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xa = unit->mPrevA;										\
 		float next_a = ZIN0(0);											\
@@ -160,13 +167,13 @@
 			unit->mPrevA = next_a;										\
 		}																\
 	}                                                                   \
-	void SCNAME##_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)      \
+	inline_functions void SCNAME##_ka_nova_64(BinaryOpUGen *unit, int inNumSamples) \
 	{																	\
 		float xa = unit->mPrevA;										\
 		float next_a = ZIN0(0);											\
 																		\
 		if (xa == next_a) {												\
-			nova::NOVANAME##_vec_simd_mp<64>(OUT(0), xa, IN(1));        \
+			nova::NOVANAME##_vec_simd<64>(OUT(0), xa, IN(1));           \
 		} else {														\
 			float slope = CALCSLOPE(next_a, xa);						\
 			nova::NOVANAME##_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples); \
@@ -1386,7 +1393,7 @@ void firstarg_aa(BinaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void firstarg_aa_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void firstarg_aa_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
 }
@@ -1401,7 +1408,7 @@ void secondarg_aa(BinaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void secondarg_aa_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void secondarg_aa_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	nova::copyvec_simd(OUT(0), IN(1), inNumSamples);
 }
@@ -1498,7 +1505,7 @@ void add_ai(BinaryOpUGen *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 NOVA_BINARY_WRAPPER(add, plus)
 
-void add_ak_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void add_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
@@ -1515,16 +1522,16 @@ void add_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-void add_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void add_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
 		if (xb == 0.f)
-			nova::copyvec_simd_mp<64>(OUT(0), IN(0));
+			nova::copyvec_simd<64>(OUT(0), IN(0));
 		else
-			nova::plus_vec_simd_mp<64>(OUT(0), IN(0), xb);
+			nova::plus_vec_simd<64>(OUT(0), IN(0), xb);
 	} else {
 		float slope =  CALCSLOPE(next_b, xb);
 		nova::plus_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
@@ -1533,7 +1540,7 @@ void add_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 }
 
 
-void add_ka_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void add_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = unit->mPrevA;
 	float next_a = ZIN0(0);
@@ -1550,7 +1557,7 @@ void add_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-void add_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void add_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = unit->mPrevA;
 	float next_a = ZIN0(0);
@@ -1559,7 +1566,7 @@ void add_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 		if (xa == 0.f)
 			nova::copyvec_simd<64>(OUT(0), IN(1));
 		else
-			nova::plus_vec_simd_mp<64>(OUT(0), IN(1), xa);
+			nova::plus_vec_simd<64>(OUT(0), IN(1), xa);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		nova::plus_vec_simd(OUT(0), IN(1), xa, slope, inNumSamples);
@@ -1664,7 +1671,7 @@ void sub_ai(BinaryOpUGen *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 NOVA_BINARY_WRAPPER(sub, minus)
 
-void sub_ak_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void sub_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
@@ -1681,16 +1688,16 @@ void sub_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-void sub_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void sub_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
 
 	if (xb == next_b) {
 		if (xb == 0.f)
-			nova::copyvec_simd<64>(OUT(0), IN(0));
+			nova::copyvec_aa_simd<64>(OUT(0), IN(0));
 		else
-			nova::minus_vec_simd_mp<64>(OUT(0), IN(0), xb);
+			nova::minus_vec_simd<64>(OUT(0), IN(0), xb);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
 		nova::minus_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
@@ -1698,7 +1705,7 @@ void sub_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-void sub_ka_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void sub_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = unit->mPrevA;
 	float next_a = ZIN0(0);
@@ -1715,7 +1722,7 @@ void sub_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-void sub_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void sub_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = unit->mPrevA;
 	float next_a = ZIN0(0);
@@ -1724,7 +1731,7 @@ void sub_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 		if (xa == 0.f)
 			nova::copyvec_simd<64>(OUT(0), IN(1));
 		else
-			nova::minus_vec_simd_mp<64>(OUT(0), xa, IN(1));
+			nova::minus_vec_simd<64>(OUT(0), xa, IN(1));
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		nova::minus_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples);
@@ -1829,7 +1836,7 @@ void mul_ia(BinaryOpUGen *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 NOVA_BINARY_WRAPPER(mul, times)
 
-inline void mul_ka_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void mul_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = unit->mPrevA;
 	float next_a = ZIN0(0);
@@ -1849,7 +1856,7 @@ inline void mul_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-inline void mul_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void mul_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = unit->mPrevA;
 	float next_a = ZIN0(0);
@@ -1860,7 +1867,7 @@ inline void mul_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 		else if (xa == 1.f)
 			nova::copyvec_simd<64>(OUT(0), IN(1));
 		else
-			nova::times_vec_simd_mp<64>(OUT(0), IN(1), xa);
+			nova::times_vec_simd<64>(OUT(0), IN(1), xa);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
 		unit->mPrevA = next_a;
@@ -1869,7 +1876,7 @@ inline void mul_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-inline void mul_ak_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void mul_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
@@ -1889,7 +1896,7 @@ inline void mul_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-inline void mul_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void mul_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
@@ -1900,7 +1907,7 @@ inline void mul_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 		else if (xb == 1.f)
 			nova::copyvec_simd<64>(OUT(0), IN(0));
 		else
-			nova::times_vec_simd_mp<64>(OUT(0), IN(0), xb);
+			nova::times_vec_simd<64>(OUT(0), IN(0), xb);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
 		unit->mPrevB = next_b;
@@ -2003,12 +2010,12 @@ void div_ai(BinaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void div_aa_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void div_aa_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	nova::over_vec_simd(OUT(0), IN(0), IN(1), inNumSamples);
 }
 
-void div_ia_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void div_ia_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = ZIN0(0);
 
@@ -2016,7 +2023,7 @@ void div_ia_nova(BinaryOpUGen *unit, int inNumSamples)
 	unit->mPrevA = xa;
 }
 
-void div_ai_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void div_ai_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = ZIN0(1);
 
@@ -2024,7 +2031,7 @@ void div_ai_nova(BinaryOpUGen *unit, int inNumSamples)
 	unit->mPrevB = xb;
 }
 
-void div_ak_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void div_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = unit->mPrevB;
 	float next_b = ZIN0(1);
@@ -2045,7 +2052,7 @@ void div_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-void div_ka_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void div_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = unit->mPrevA;
 	float next_a = ZIN0(0);
@@ -2896,12 +2903,12 @@ void pow_ai(BinaryOpUGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void pow_aa_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void pow_aa_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	nova::spow_vec_simd(OUT(0), IN(0), IN(1), inNumSamples);
 }
 
-void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *a = ZIN(0);
@@ -2921,7 +2928,7 @@ void pow_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 	}
 }
 
-void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float xa = unit->mPrevA;
@@ -2946,7 +2953,7 @@ void pow_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 }
 
 
-void pow_ia_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void pow_ia_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = ZIN0(0);
 	if (xa > 0.f)
@@ -2957,7 +2964,7 @@ void pow_ia_nova(BinaryOpUGen *unit, int inNumSamples)
 }
 
 
-void pow_ai_nova(BinaryOpUGen *unit, int inNumSamples)
+inline_functions void pow_ai_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = ZIN0(1);
 	nova::spow_vec_simd(OUT(0), IN(0), xb, inNumSamples);

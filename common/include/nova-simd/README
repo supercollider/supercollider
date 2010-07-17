@@ -7,8 +7,14 @@ mainly for computer music applications.
 coding conventions:
 
 nova simd makes use of generic c++ programming. beside a generic
-implementation, platform-specific simdfied implementations are provided
-as template specializations.
+implementation, platform-specific simdfied implementations are provided.
+
+in addition to this interface, functions for compile-time loop
+unrolling may be provided. these functions use template metaprogramming
+for generating sequencial for a known number of iterations. while
+producing larger code, it is usually more efficient than looping code
+on current pipelined cpus.
+
 
 for an unary operation `foo', the following functions must be:
 
@@ -17,68 +23,66 @@ template <typename float_type>
 inline void foo_vec(float_type * out, const float_type * in, unsigned int n);
 
 /* number of iterations must be a multiple of
- * unroll_constraints<float_type>::unroll_constraints
+ * unroll_constraints<float_type>::samples_per_loop
  */
 template <typename float_type>
 inline void foo_vec_simd(float_type * out, const float_type * in, unsigned int n);
 
-in addition to this interface, functions for compile-time loop
-unrolling may be provided. these functions use template metaprogramming
-for generating sequencial for a known number of iterations. while
-producing larger code, it is usually more efficient than looping code
-on current pipelined cpus.
-
 /* number of iterations must be a multiple of
- * unroll_constraints<float_type>::unroll_constraints
+ * unroll_constraints<float_type>::samples_per_loop
  */
-template <int n>
-inline void foo_vec_simd_mp(float * out, const float * in);
-template <int n>
-inline void foo_vec_simd_mp(double * out, const double * in);
+template <int n,
+          typename FloatType
+         >
+inline void foo_vec_simd(FloatType * out, const FloatType * in);
 
 
 for binary and ternary operations, instances are provided for mixed
-vector and scalar arguments. using the suffix _simd provides unrolled
-versions of these operations. also compile-time unrolled versions may
-be provided:
+vector and scalar arguments. using the suffix _simd provides versions for compile-time
+and run-time unrolled code:
 
-template <typename float_type>
-inline void foo_vec(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n);
-template <typename float_type>
-inline void foo_vec(float_type * out, const float_type * arg1, const float_type arg2, unsigned int n);
-template <typename float_type>
-inline void foo_vec(float_type * out, const float_type arg1, const float_type * arg2, unsigned int n);
-template <typename float_type>
-inline void foo_vec_simd(float_type * out, const float_type * arg1, const float_type * arg2, unsigned int n);
-template <typename float_type>
-inline void foo_vec_simd(float_type * out, const float_type * arg1, const float_type arg2, unsigned int n);
-template <typename float_type>
-inline void foo_vec_simd(float_type * out, const float_type arg1, const float_type * arg2, unsigned int n);
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2
+         >
+inline void foo_vec(float_type * out, Arg1 arg1, Arg2 arg2, unsigned int n);
+
+template <typename float_type,
+          typename Arg1,
+          typename Arg2
+         >
+inline void foo_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2, unsigned int n);
+
+template <unsigned int n,
+          typename float_type,
+          typename Arg1,
+          typename Arg2
+         >
+inline void foo_vec_simd(float_type * out, Arg1 arg1, Arg2 arg2);
 
 
 for scalar arguments, an extension is provided to support ramping by
 adding a slope to the scalar after each iteration. for binary functions,
 c++ function overloading is used. compile-time unrolled versions of these
-functions may also be provided:
-
-template <typename float_type>
-inline void foo_vec(float_type * out, const float_type * arg1, float_type arg2,
-                    const float_type arg2_slope, unsigned int n);
-template <typename float_type>
-inline void foo_vec(float_type * out, float_type arg1, const float_type arg1_slope,
-                    const float_type * arg2, unsigned int n)
-template <typename float_type>
-inline void foo_vec_simd(float_type * out, const float_type * arg1, float_type arg2,
-                         const float_type arg2_slope, unsigned int n);
-template <typename float_type>
-inline void foo_vec_simd(float_type * out, float_type arg1, const float_type arg1_slope,
-                         const float_type * arg2, unsigned int n)
+functions are also provided.
 
 
-for ternary operations, a suffix need to be added to specify the
-ramping arguments. the suffix is formatted as _(r[0-9])+. this means,
-that _r1r3 would select a function, ramping the first and the third
-argument, which are implied to be scalar.
+argument wrapper:
+to support different kinds of arguments with a generic interface, nova-simd provides
+argument wrappers. these can be generated with the following functions:
+
+/* wrap a scalar argument */
+template <typename FloatType>
+/unspecified/ nova::wrap_arguments(FloatType f);
+
+/* wrap a vector argument */
+template <typename FloatType>
+/unspecified/ nova::wrap_arguments(const FloatType * f);
+
+/* wrap a ramp argument */
+template <typename FloatType>
+/unspecified/ nova::wrap_arguments(FloatType base, FloatType slope);
 
 
 

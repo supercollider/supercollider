@@ -13,7 +13,7 @@ using namespace nova;
 using namespace std;
 
 
-static const int size = 10000;
+static const int size = 1024;
 
 
 #define COMPARE_TEST(name, low, high)                                   \
@@ -47,7 +47,7 @@ COMPARE_TEST(sin, -1.5, 1.5)
 COMPARE_TEST(cos, -1.5, 1.5)
 COMPARE_TEST(tan, -1.5, 1.5)
 COMPARE_TEST(tanh, -1.5, 1.5)
-COMPARE_TEST(ssqrt, 0, 20)
+COMPARE_TEST(signed_sqrt, 0, 20)
 
 
 /* test range: 0, 20 */

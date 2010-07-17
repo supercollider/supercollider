@@ -1,5 +1,5 @@
 //  binary arithmetic simd functions
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,16 +19,144 @@
 #ifndef SIMD_BINARY_ARITHMETIC_HPP
 #define SIMD_BINARY_ARITHMETIC_HPP
 
-#include "simd_unroll_constraints.hpp"
-#include "simd_binary_arithmetic_generic.hpp"
+#include <functional>
+#include <algorithm>
 
-#ifdef __SSE__
-#include "simd_binary_arithmetic_sse.hpp"
+#include "vec.hpp"
+
+#include "detail/unroll_helpers.hpp"
+#include "detail/define_macros.hpp"
+
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
 #else
-#include "simd_binary_arithmetic_fallbacks_float.hpp"
+#define always_inline inline
 #endif
 
 
-#include "simd_binary_arithmetic_fallbacks_double.hpp"
+namespace nova {
+
+namespace detail
+{
+
+template<typename float_type>
+struct clip2:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & f, float_type const & limit) const
+    {
+        float_type zero(0);
+        float_type neg = zero - float_type(limit);
+        return max_(neg, min_(f, limit));
+    }
+};
+
+template<typename float_type>
+struct min_functor:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & x, float_type const & y) const
+    {
+        return min_(x, y);
+    }
+};
+
+template<typename float_type>
+struct max_functor:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & x, float_type const & y) const
+    {
+        return max_(x, y);
+    }
+};
+
+template<typename float_type>
+struct less:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & x, float_type const & y) const
+    {
+        return x < y;
+    }
+};
+
+template<typename float_type>
+struct less_equal:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & x, float_type const & y) const
+    {
+        return x <= y;
+    }
+};
+
+template<typename float_type>
+struct greater:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & x, float_type const & y) const
+    {
+        return x > y;
+    }
+};
+
+template<typename float_type>
+struct greater_equal:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & x, float_type const & y) const
+    {
+        return x >= y;
+    }
+};
+
+
+template<typename float_type>
+struct equal_to:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & x, float_type const & y) const
+    {
+        return x == y;
+    }
+};
+
+template<typename float_type>
+struct not_equal_to:
+    public std::binary_function<float_type, float_type, float_type>
+{
+    float_type operator()(float_type const & x, float_type const & y) const
+    {
+        return x != y;
+    }
+};
+
+
+} /* namespace detail */
+
+
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(plus, std::plus)
+
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(minus, std::minus)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(times, std::multiplies)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(over, std::divides)
+
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(min, detail::min_functor)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(max, detail::max_functor)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(less, detail::less)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(less_equal, detail::less_equal)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(greater, detail::greater)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(greater_equal, detail::greater_equal)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(equal, detail::equal_to)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(notequal, detail::not_equal_to)
+
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(clip2, detail::clip2)
+
+} /* namespace nova */
+
+#undef always_inline
+
 
 #endif /* SIMD_BINARY_ARITHMETIC_HPP */

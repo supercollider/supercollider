@@ -1,5 +1,5 @@
 //  simd functions for peak metering
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,10 +20,73 @@
 #ifndef SIMD_PEAKMETER_HPP
 #define SIMD_PEAKMETER_HPP
 
-#include "simd_peakmeter_generic.hpp"
+#include "vec.hpp"
 
-#ifdef __SSE__
-#include "simd_peakmeter_sse.hpp"
+#include <cmath>                /* for abs */
+#include <algorithm>            /* for max */
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
 #endif
+
+namespace nova
+{
+
+/* updates peak, returns last abs(in[n-1]) */
+template <typename F>
+F peak_vec(const F * in, F * peak, unsigned int n)
+{
+    F last;
+    F local_peak = *peak;
+    using namespace std;
+
+    do {
+        last = abs(*in++);
+        local_peak = max(local_peak, last);
+    } while(--n);
+
+    *peak = local_peak;
+    return last;
+}
+
+template <typename F>
+inline float peak_vec_simd(const F * in, F * peak, unsigned int n)
+{
+    vec<F> maximum, abs3;
+    maximum.load_first(peak);
+
+    /* loop */
+    n /= 16;
+    do {
+        vec<F> in0, in1, in2, in3;
+        in0.load_aligned(in);
+        in1.load_aligned(in+4);
+        in2.load_aligned(in+8);
+        in3.load_aligned(in+12);
+
+        vec<F> abs0 = abs(in0);
+        vec<F> abs1 = abs(in1);
+        vec<F> abs2 = abs(in2);
+        abs3 = abs(in3);
+
+        vec<F> local_max = max_(max_(abs0, abs1),
+                               max_(abs2, abs3));
+
+        maximum = max_(maximum, local_max);
+        in += 16;
+    } while(--n);
+
+    /* horizonal accumulation */
+    *peak = maximum.horizontal_max();
+
+    /* return absolute of last sample */
+    return abs3.get(vec<F>::size - 1);
+}
+
+} /* namespace nova */
+
+#undef always_inline
 
 #endif /* SIMD_PEAKMETER_HPP */

@@ -50,7 +50,7 @@ void __noinline__ bench_3(unsigned int numSamples)
 
 void __noinline__ bench_5(unsigned int numSamples)
 {
-    clip_vec_simd<float>(out.begin(), in.begin(), -0.5f, 0.5f, numSamples);
+    clip_vec_simd<float>(out.begin(), wrap_argument(in.begin()), wrap_argument(-0.5f), wrap_argument(0.5f), numSamples);
 }
 
 

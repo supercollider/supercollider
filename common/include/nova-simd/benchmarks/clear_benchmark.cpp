@@ -174,7 +174,7 @@ void __noinline__ bench_18(float * out, unsigned int numSamples)
     unsigned int unrolled = numSamples & ~8;
     unsigned int remain = numSamples - unrolled;
     if (unrolled)
-        zerovec_na_simd(out, unrolled);
+        zerovec_na_simd<float>(out, unrolled);
     if (remain)
         zerovec(out, remain);
 }

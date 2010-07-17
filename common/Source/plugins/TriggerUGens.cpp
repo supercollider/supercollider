@@ -26,6 +26,13 @@
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
 #include "simd_peakmeter.hpp"
+
+#ifdef __GNUC__
+#define inline_functions __attribute__ ((flatten))
+#else
+#define inline_functions
+#endif
+
 #endif
 
 static InterfaceTable *ft;
@@ -368,8 +375,8 @@ extern "C"
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-void Trig1_next_nova(Trig1 *unit, int inNumSamples);
-void Trig1_next_k_nova(Trig1 *unit, int inNumSamples);
+inline_functions void Trig1_next_nova(Trig1 *unit, int inNumSamples);
+inline_functions void Trig1_next_k_nova(Trig1 *unit, int inNumSamples);
 #endif
 
 void Trig1_Ctor(Trig1 *unit)
@@ -1119,7 +1126,7 @@ void Latch_next_aa(Latch *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-void Gate_next_ak_nova(Gate *unit, int inNumSamples)
+inline_functions void Gate_next_ak_nova(Gate *unit, int inNumSamples)
 {
 	float *trig = ZIN(1);
 	float level = unit->mLevel;
@@ -1132,7 +1139,7 @@ void Gate_next_ak_nova(Gate *unit, int inNumSamples)
 		nova::setvec_simd(OUT(0), level, inNumSamples);
 }
 
-void Gate_next_ak_nova_64(Gate *unit, int inNumSamples)
+inline_functions void Gate_next_ak_nova_64(Gate *unit, int inNumSamples)
 {
 	float *trig = ZIN(1);
 	float level = unit->mLevel;
@@ -1867,8 +1874,8 @@ void Peak_next_ak_unroll(Peak *unit, int inNumSamples);
 void Peak_next_ai_unroll(Peak *unit, int inNumSamples);
 
 #ifdef NOVA_SIMD
-void Peak_next_ak_k_nova(Peak *unit, int inNumSamples);
-void Peak_next_ai_k_nova(Peak *unit, int inNumSamples);
+inline_functions void Peak_next_ak_k_nova(Peak *unit, int inNumSamples);
+inline_functions void Peak_next_ai_k_nova(Peak *unit, int inNumSamples);
 #endif
 
 void Peak_Ctor(Peak *unit)

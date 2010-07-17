@@ -26,6 +26,15 @@
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
 #include "simd_ternary_arithmetic.hpp"
+
+using nova::wrap_argument;
+
+#ifdef __GNUC__
+#define inline_functions __attribute__ ((flatten))
+#else
+#define inline_functions
+#endif
+
 #endif
 
 static InterfaceTable *ft;
@@ -1271,7 +1280,7 @@ void K2A_next(K2A *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void K2A_next_nova(K2A *unit, int inNumSamples)
+inline_functions void K2A_next_nova(K2A *unit, int inNumSamples)
 {
 	float in = ZIN0(0);
 	float level = unit->mLevel;
@@ -1287,7 +1296,7 @@ void K2A_next_nova(K2A *unit, int inNumSamples)
 	unit->mLevel = in;
 }
 
-void K2A_next_nova_64(K2A *unit, int inNumSamples)
+inline_functions void K2A_next_nova_64(K2A *unit, int inNumSamples)
 {
 	float in = ZIN0(0);
 	float level = unit->mLevel;
@@ -1381,7 +1390,7 @@ void T2A_next(T2A *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void T2A_next_nova(T2A *unit, int inNumSamples)
+inline_functions void T2A_next_nova(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
 	int offset = (int) IN0(1);
@@ -1400,7 +1409,7 @@ void T2A_next_nova(T2A *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-void T2A_next_nova_64(T2A *unit, int inNumSamples)
+inline_functions void T2A_next_nova_64(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
 	int offset = (int) IN0(1);
@@ -1438,13 +1447,13 @@ void T2A_Ctor(T2A* unit)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-static void DC_next_nova(DC *unit, int inNumSamples)
+inline_functions static void DC_next_nova(DC *unit, int inNumSamples)
 {
 	float val = unit->m_val;
 	nova::setvec_simd(OUT(0), val, inNumSamples);
 }
 
-static void DC_next_nova_64(DC *unit, int inNumSamples)
+inline_functions static void DC_next_nova_64(DC *unit, int inNumSamples)
 {
 	float val = unit->m_val;
 	nova::setvec_simd<64>(OUT(0), val);
@@ -1698,7 +1707,7 @@ void XLine_next(XLine *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void XLine_next_nova(XLine *unit, int inNumSamples)
+inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 
@@ -1749,7 +1758,7 @@ void XLine_next_nova(XLine *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-void XLine_next_nova_64(XLine *unit, int inNumSamples)
+inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 
@@ -2645,17 +2654,19 @@ void LinLin_next_ka(LinLin *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void LinLin_next_nova(LinLin *unit, int inNumSamples)
+inline_functions void LinLin_next_nova(LinLin *unit, int inNumSamples)
 {
-	nova::muladd_vec_simd(OUT(0), IN(0), unit->m_scale, unit->m_offset, inNumSamples);
+	nova::muladd_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(unit->m_scale),
+						  wrap_argument(unit->m_offset), inNumSamples);
 }
 
-void LinLin_next_nova_64(LinLin *unit, int inNumSamples)
+inline_functions void LinLin_next_nova_64(LinLin *unit, int inNumSamples)
 {
-	nova::muladd_vec_simd<64>(OUT(0), IN(0), unit->m_scale, unit->m_offset);
+	nova::muladd_vec_simd<64>(OUT(0), wrap_argument(IN(0)),
+							  wrap_argument(unit->m_scale), wrap_argument(unit->m_offset));
 }
 
-void LinLin_next_kk_nova(LinLin *unit, int inNumSamples)
+inline_functions void LinLin_next_kk_nova(LinLin *unit, int inNumSamples)
 {
 	float srclo = ZIN0(1);
 	float srchi = ZIN0(2);
@@ -2664,10 +2675,11 @@ void LinLin_next_kk_nova(LinLin *unit, int inNumSamples)
 	float scale = (dsthi - dstlo) / (srchi - srclo);
 	float offset = dstlo - scale * srclo;
 
-	nova::muladd_vec_simd(OUT(0), IN(0), scale, offset, inNumSamples);
+	nova::muladd_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(scale),
+						  wrap_argument(offset), inNumSamples);
 }
 
-void LinLin_next_kk_nova_64(LinLin *unit, int inNumSamples)
+inline_functions void LinLin_next_kk_nova_64(LinLin *unit, int inNumSamples)
 {
 	float srclo = ZIN0(1);
 	float srchi = ZIN0(2);
@@ -2676,7 +2688,8 @@ void LinLin_next_kk_nova_64(LinLin *unit, int inNumSamples)
 	float scale = (dsthi - dstlo) / (srchi - srclo);
 	float offset = dstlo - scale * srclo;
 
-	nova::muladd_vec_simd<64>(OUT(0), IN(0), scale, offset);
+	nova::muladd_vec_simd<64>(OUT(0), wrap_argument(IN(0)), wrap_argument(scale),
+							  wrap_argument(offset));
 }
 
 #endif
@@ -3267,7 +3280,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
+inline_functions void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float gate = ZIN0(kEnvGen_gate);
@@ -3314,14 +3327,14 @@ void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 			remain = 0;
 			counter -= inNumSamples;
 		} break;
-        case shape_Exponential : {
-            double grow = unit->m_grow;
-            nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, inNumSamples);
-            level *= sc_powi(grow, inNumSamples);
-            remain = 0;
-            counter -= inNumSamples;
-        } break;
-        }
+		case shape_Exponential : {
+			double grow = unit->m_grow;
+			nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, inNumSamples);
+			level *= sc_powi(grow, inNumSamples);
+			remain = 0;
+			counter -= inNumSamples;
+		} break;
+		}
 	}
 
 	while (remain)

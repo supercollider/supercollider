@@ -5,7 +5,7 @@
 
 #include <cmath>
 
-#include "../simd_round.hpp"
+#include "../simd_unary_arithmetic.hpp"
 #include "test_helper.hpp"
 #include "../benchmarks/cache_aligned_array.hpp"
 

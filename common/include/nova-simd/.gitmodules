@@ -1,0 +1,3 @@
+[submodule "libsimdmath"]
+	path = libsimdmath
+	url = git://tim.klingt.org/libsimdmath.git

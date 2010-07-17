@@ -20,14 +20,15 @@
 #ifndef SIMD_UNROLL_CONSTRAINTS_HPP
 #define SIMD_UNROLL_CONSTRAINTS_HPP
 
+#include "vec.hpp"
+
 namespace nova
 {
 
 template <typename float_type>
 struct unroll_constraints
 {
-    static const unsigned int cacheline_size = 64;
-    static const unsigned int samples_per_loop = cacheline_size / sizeof(float_type);
+    static const unsigned int samples_per_loop = vec<float_type>::objects_per_cacheline;
 };
 
 } /* namespace nova */

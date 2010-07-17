@@ -1,6 +1,6 @@
 #include "benchmark_helpers.hpp"
 #include "cache_aligned_array.hpp"
-#include "../ampmod.hpp"
+#include "../simd_ternary_arithmetic.hpp"
 
 using namespace nova;
 using namespace std;
@@ -9,32 +9,32 @@ aligned_array<float, 64> out, in1, in2, in3;
 
 void __noinline__ bench_1(unsigned int n)
 {
-    amp_mod(out.begin(), in1.begin(), in2.begin(), 0.1f, n);
+    ampmod_vec(out.begin(), wrap_arg_signal(in1.begin()), wrap_arg_signal(in2.begin()), wrap_arg_signal(0.1f), n);
 }
 
 void __noinline__ bench_1_simd(unsigned int n)
 {
-    amp_mod_simd(out.begin(), in1.begin(), in2.begin(), 0.1f, n);
+    ampmod_vec_simd(out.begin(), wrap_arg_vector(in1.begin()), wrap_arg_vector(in2.begin()), wrap_arg_vector(0.1f), n);
 }
 
 void __noinline__ bench_2(unsigned int n)
 {
-    amp_mod(out.begin(), in1.begin(), in2.begin(), in3.begin(), n);
+    ampmod_vec(out.begin(), wrap_arg_signal(in1.begin()), wrap_arg_signal(in2.begin()), wrap_arg_signal(in3.begin()), n);
 }
 
 void __noinline__ bench_2_simd(unsigned int n)
 {
-    amp_mod_simd(out.begin(), in1.begin(), in2.begin(), in3.begin(), n);
+    ampmod_vec_simd(out.begin(), wrap_arg_vector(in1.begin()), wrap_arg_vector(in2.begin()), wrap_arg_vector(in3.begin()), n);
 }
 
 void __noinline__ bench_3(unsigned int n)
 {
-    amp_mod(out.begin(), in1.begin(), in2.begin(), 0.1f, 0.001f, n);
+    ampmod_vec(out.begin(), wrap_arg_signal(in1.begin()), wrap_arg_signal(in2.begin()), wrap_arg_signal(0.1f, 0.001f), n);
 }
 
 void __noinline__ bench_3_simd(unsigned int n)
 {
-    amp_mod_simd(out.begin(), in1.begin(), in2.begin(), 0.1f, 0.001f, n);
+    ampmod_vec_simd(out.begin(), wrap_arg_vector(in1.begin()), wrap_arg_vector(in2.begin()), wrap_arg_vector(0.1f, 0.001f), n);
 }
 
 int main(void)
