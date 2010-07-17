@@ -32,9 +32,6 @@
 #define foreach BOOST_FOREACH
 #endif
 
-#include "nova-tt/thread_affinity.hpp"
-#include "nova-tt/thread_priority.hpp"
-
 #include "dsp_thread_queue.hpp"
 
 namespace nova
@@ -75,16 +72,6 @@ public:
     void run(void)
     {
         thread_init_functor::operator()(index);
-
-        int min, max;
-        boost::tie(min, max) = thread_priority_interval_rt();
-        int priority = max - 3;
-        priority = std::max(min, priority);
-
-        thread_set_priority_rt(priority);
-
-        if (!thread_set_affinity(index))
-            std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
 
         for (;;)
         {
