@@ -1,5 +1,5 @@
 //  dsp thread
-//  Copyright (C) 2007, 2008, 2009 Tim Blechmann
+//  Copyright (C) 2007, 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -42,26 +42,40 @@ namespace nova
 
 using boost::uint16_t;
 
+struct nop_thread_init
+{
+    void operator()(int thread_index)
+    {}
+};
+
+
 /** dsp helper thread
  *
  *  the dsp helper threads are running with a high real-time priority and are
  *  pinned to a specific cpu
  */
-template <typename runnable, typename Alloc = std::allocator<void*> >
+template <typename runnable,
+          typename thread_init_functor = nop_thread_init,
+          typename Alloc = std::allocator<void*>
+         >
 class dsp_thread:
-    public boost::noncopyable
+    public boost::noncopyable,
+    public thread_init_functor
 {
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
 public:
-    dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index):
-        interpreter(interpreter), stop(false), index(index)
+    dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index,
+               thread_init_functor const & thread_init = thread_init_functor()):
+        interpreter(interpreter), stop(false), index(index), thread_init_functor(thread_init)
     {}
 
     /** thread function
      * */
     void run(void)
     {
+        thread_init_functor::operator()(index);
+
         int min, max;
         boost::tie(min, max) = thread_priority_interval_rt();
         int priority = max - 3;
@@ -104,12 +118,15 @@ private:
  *  - no care is taken, that dsp_threads::run is executed on a valid instance
  *
  * */
-template <typename runnable, typename Alloc = std::allocator<void*> >
+template <typename runnable,
+          typename thread_init_functor = nop_thread_init,
+          typename Alloc = std::allocator<void*>
+         >
 class dsp_threads
 {
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
-    typedef nova::dsp_thread<runnable, Alloc> dsp_thread;
+    typedef nova::dsp_thread<runnable, thread_init_functor, Alloc> dsp_thread;
 
 public:
     typedef typename dsp_queue_interpreter::node_count_t node_count_t;
@@ -117,10 +134,10 @@ public:
 
     typedef std::auto_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
 
-    dsp_threads(thread_count_t count):
+    dsp_threads(thread_count_t count, thread_init_functor const & init_functor = thread_init_functor()):
         interpreter(std::min(count, (thread_count_t)boost::thread::hardware_concurrency()))
     {
-        set_dsp_thread_count(interpreter.get_thread_count());
+        set_dsp_thread_count(interpreter.get_thread_count(), init_functor);
     }
 
     void run(void)
@@ -148,10 +165,10 @@ public:
     }
 
 private:
-    void set_dsp_thread_count(thread_count_t count)
+    void set_dsp_thread_count(thread_count_t count, thread_init_functor const & init_functor)
     {
         for (thread_count_t i = 1; i != count; ++i)
-            threads.push_back(new dsp_thread(interpreter, i));
+            threads.push_back(new dsp_thread(interpreter, i, init_functor));
         assert(threads.size() == std::size_t(count-1));
     }
 

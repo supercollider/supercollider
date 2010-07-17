@@ -44,9 +44,6 @@ namespace nova
 template <typename runnable, typename Alloc>
 class dsp_queue_interpreter;
 
-template <typename runnable, typename Alloc>
-class dsp_threads;
-
 /*
 concept runnable
 {
@@ -482,8 +479,6 @@ private:
         else
             return remaining_items;
     }
-
-    friend class nova::dsp_threads<runnable, Alloc>;
 
     void mark_as_runnable(dsp_thread_queue_item * item)
     {

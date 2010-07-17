@@ -54,7 +54,7 @@ struct audio_sync_callback:
  * */
 class scheduler
 {
-    typedef nova::dsp_threads<queue_node, rt_pool_allocator<void*> > dsp_threads;
+    typedef nova::dsp_threads<queue_node, nop_thread_init, rt_pool_allocator<void*> > dsp_threads;
 
     struct reset_queue_cb:
         public audio_sync_callback
