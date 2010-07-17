@@ -21,18 +21,82 @@
 #ifndef SIMD_TERNARY_ARITHMETIC_HPP
 #define SIMD_TERNARY_ARITHMETIC_HPP
 
-#include "simd_unroll_constraints.hpp"
-#include "simd_ternary_arithmetic_generic.hpp"
+#include <algorithm>
 
-#ifdef __SSE__
-#include "simd_ternary_arithmetic_sse.hpp"
+#include "vec.hpp"
+
+#include "detail/define_macros.hpp"
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
 #endif
 
-#include "simd_ternary_arithmetic_fallbacks_double.hpp"
 
-#ifndef __SSE__
-#include "simd_ternary_arithmetic_fallbacks_float.hpp"
-#endif
+namespace nova
+{
+namespace detail
+{
 
+template<typename float_type>
+struct clip
+{
+    float_type operator()(float_type value, float_type low, float_type high) const
+    {
+        return max_(min_(value, high),
+                    low);
+    }
+
+    typedef vec<float_type> vec_type;
+
+    vec_type operator()(vec_type value, vec_type low, vec_type high) const
+    {
+        return clip<vec_type>()(value, low, high);
+    }
+};
+
+template<typename float_type>
+struct muladd
+{
+    float_type operator()(float_type value, float_type mul, float_type add) const
+    {
+        return value * mul + add;
+    }
+
+    typedef vec<float_type> vec_type;
+
+    vec_type operator()(vec_type value, vec_type mul, vec_type add) const
+    {
+        return muladd<vec_type>()(value, mul, add);
+    }
+};
+
+template<typename float_type>
+struct ampmod
+{
+    float_type operator()(float_type signal, float_type modulator, float_type amount) const
+    {
+        return signal * (float_type(1) + modulator * amount);
+    }
+
+    typedef vec<float_type> vec_type;
+
+    vec_type operator()(vec_type signal, vec_type modulator, vec_type amount) const
+    {
+        return ampmod<vec_type>()(signal, modulator, amount);
+    }
+};
+
+}
+
+
+NOVA_SIMD_DEFINE_TERNARY_OPERATION(clip, detail::clip)
+NOVA_SIMD_DEFINE_TERNARY_OPERATION(muladd, detail::muladd)
+NOVA_SIMD_DEFINE_TERNARY_OPERATION(ampmod, detail::ampmod)
+
+}
+
+#undef always_inline
 
 #endif /* SIMD_TERNARY_ARITHMETIC_HPP */

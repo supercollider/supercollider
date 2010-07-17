@@ -27,25 +27,33 @@
 #include "simd_ternary_arithmetic.hpp"
 #include "simd_math.hpp"
 #include "simd_memory.hpp"
-#include "simd_round.hpp"
 #include "softclip.hpp"
 #include "simd_unit_conversion.hpp"
 
-#define NOVA_WRAPPER(NAME, NOVANAME)                        \
-	void NAME##_nova(UnaryOpUGen *unit, int inNumSamples)   \
-	{                                                       \
-		nova::NOVANAME##_vec_simd(OUT(0), IN(0), inNumSamples); \
+#ifdef __GNUC__
+#define inline_functions __attribute__ ((flatten))
+#else
+#define inline_functions
+#endif
+
+
+using nova::wrap_argument;
+
+#define NOVA_WRAPPER(NAME, NOVANAME)                                    \
+	inline_functions void NAME##_nova(UnaryOpUGen *unit, int inNumSamples) \
+	{                                                                   \
+		nova::NOVANAME##_vec_simd(OUT(0), IN(0), inNumSamples);         \
 	}
 
-#define NOVA_WRAPPER_CT_UNROLL(NAME, NOVANAME)              \
-	void NAME##_nova(UnaryOpUGen *unit, int inNumSamples)   \
-	{                                                       \
-		nova::NOVANAME##_vec_simd(OUT(0), IN(0), inNumSamples); \
-	}														\
-															\
-	void NAME##_nova_64(UnaryOpUGen *unit, int inNumSamples)\
-	{                                                       \
-		nova::NOVANAME##_vec_simd_mp<64>(OUT(0), IN(0));    \
+#define NOVA_WRAPPER_CT_UNROLL(NAME, NOVANAME)                          \
+	inline_functions void NAME##_nova(UnaryOpUGen *unit, int inNumSamples) \
+	{                                                                   \
+		nova::NOVANAME##_vec_simd(OUT(0), IN(0), inNumSamples);         \
+	}                                                                   \
+                                                                        \
+	inline_functions void NAME##_nova_64(UnaryOpUGen *unit, int inNumSamples) \
+	{                                                                   \
+		nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0));                   \
 	}
 
 #endif
@@ -181,14 +189,14 @@ inline F sc_invert(F x)
 DEFINE_UNARY_OP_FUNCS(invert, sc_invert)
 
 #ifdef NOVA_SIMD
-void invert_nova(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void invert_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::minus_vec_simd(OUT(0), 0.f, IN(0), inNumSamples);
 }
 
-void invert_nova_64(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void invert_nova_64(UnaryOpUGen *unit, int inNumSamples)
 {
-	nova::minus_vec_simd_mp<64>(OUT(0), 0.f, IN(0));
+	nova::minus_vec_simd<64>(OUT(0), 0.f, IN(0));
 }
 
 #endif
@@ -234,32 +242,32 @@ void thru_a(UnaryOpUGen *unit, int inNumSamples)
 DEFINE_UNARY_OP_FUNCS(abs, std::abs)
 
 #ifdef NOVA_SIMD
-void zero_nova(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void zero_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::zerovec_simd(OUT(0), inNumSamples);
 }
 
-void zero_nova_64(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void zero_nova_64(UnaryOpUGen *unit, int inNumSamples)
 {
-	nova::zerovec_simd_mp<64>(OUT(0));
+	nova::zerovec_simd<64>(OUT(0));
 }
 
-void thru_nova(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void thru_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
 }
 
-void thru_nova_64(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void thru_nova_64(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::copyvec_simd<64>(OUT(0), IN(0));
 }
 
-void abs_nova(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void abs_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::abs_vec_simd(OUT(0), IN(0), inNumSamples);
 }
 
-void abs_nova_64(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void abs_nova_64(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::abs_vec_simd<64>(OUT(0), IN(0));
 }
@@ -289,14 +297,14 @@ inline F sc_recip(F x)
 DEFINE_UNARY_OP_FUNCS(recip, sc_recip)
 
 #ifdef NOVA_SIMD
-void recip_nova(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void recip_nova(UnaryOpUGen *unit, int inNumSamples)
 {
 	nova::over_vec_simd(OUT(0), 1.f, IN(0), inNumSamples);
 }
 
-void recip_nova_64(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void recip_nova_64(UnaryOpUGen *unit, int inNumSamples)
 {
-	nova::over_vec_simd_mp<64>(OUT(0), 1.f, IN(0));
+	nova::over_vec_simd<64>(OUT(0), 1.f, IN(0));
 }
 #endif
 
@@ -388,7 +396,7 @@ NOVA_WRAPPER(exp, exp)
 DEFINE_UNARY_OP_FUNCS(sqrt, sc_sqrt)
 
 #ifdef NOVA_SIMD
-NOVA_WRAPPER_CT_UNROLL(sqrt, ssqrt)
+NOVA_WRAPPER_CT_UNROLL(sqrt, signed_sqrt)
 #endif
 
 DEFINE_UNARY_OP_FUNCS(ampdb, sc_ampdb)
@@ -516,14 +524,14 @@ DEFINE_UNARY_OP_FUNCS(ramp, sc_ramp)
 
 
 #ifdef NOVA_SIMD
-void ramp_nova(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void ramp_nova(UnaryOpUGen *unit, int inNumSamples)
 {
-	nova::clip_vec_simd(OUT(0), IN(0), 0.f, 1.f, inNumSamples);
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(0.f), wrap_argument(1.f), inNumSamples);
 }
 
-void ramp_nova_64(UnaryOpUGen *unit, int inNumSamples)
+inline_functions void ramp_nova_64(UnaryOpUGen *unit, int inNumSamples)
 {
-	nova::clip_vec_simd<64>(OUT(0), IN(0), 0.f, 1.f);
+	nova::clip_vec_simd<64>(OUT(0), wrap_argument(IN(0)), wrap_argument(0.f), wrap_argument(1.f));
 }
 #endif
 

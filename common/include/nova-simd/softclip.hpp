@@ -22,37 +22,9 @@
 #include <cassert>
 #include <cmath>
 
-#ifdef __SSE__
-#include <xmmintrin.h>
-#include "simd_utils.hpp"
-#endif
+#include "vec.hpp"
 
-#include "simd_unroll_constraints.hpp"
-
-namespace nova
-{
-
-template <typename float_type>
-inline void softclip_vec(float_type * out, const float_type * in, unsigned int n)
-{
-    for (unsigned int i = 0; i != n; ++i)
-    {
-        float_type x = in[i];
-        float_type abs_x = std::abs(x);
-        if (abs_x <= float_type(0.5))
-            out[i] = x;
-        else
-            out[i] = (abs_x - (float_type)0.25) / x;
-    }
-}
-
-template <typename float_type>
-inline void softclip_vec_simd(float_type * out, const float_type * in, unsigned int n)
-{
-    softclip_vec(out, in, n);
-}
-
-#ifdef __SSE__
+#include "detail/unroll_helpers.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
 #define always_inline inline  __attribute__((always_inline))
@@ -60,33 +32,26 @@ inline void softclip_vec_simd(float_type * out, const float_type * in, unsigned 
 #define always_inline inline
 #endif
 
-#define samples_per_loop nova::unroll_constraints<float>::samples_per_loop
 
-namespace detail {
-
-template <int n>
-always_inline void softclip_vec_simd_mp(float * out, const float * in,
-                                        __m128 const & abs_mask, __m128 const & const05, __m128 const & const025)
+namespace nova
 {
-    __m128 x = _mm_load_ps(in);
-    __m128 abs_x = _mm_and_ps(x, abs_mask);
-    __m128 selecter = _mm_cmplt_ps(abs_x, const05);
-    __m128 alt_ret = _mm_div_ps(_mm_sub_ps(abs_x, const025),
-                                x);
-    __m128 result = detail::select_vector(alt_ret, x, selecter);
+namespace detail
+{
 
-    _mm_store_ps(out, result);
+template <typename FloatType>
+struct softclip
+{
+    always_inline FloatType operator()(FloatType arg) const
+    {
+        FloatType abs = fabs(arg);
+        if (abs < FloatType(0.5))
+            return arg;
+        else
+            return (abs - FloatType(0.25)) / arg;
+    }
+};
 
-    softclip_vec_simd_mp<n-4>(out+4, in+4, abs_mask, const05, const025);
-}
-
-template <>
-always_inline void softclip_vec_simd_mp<0>(float * out, const float * in,
-                                           __m128 const & abs_mask, __m128 const & const05, __m128 const & const025)
-{}
-
-} /* namespace detail */
-
+#ifdef SSE
 
 /* this computes both parts of the branch
  *
@@ -98,59 +63,60 @@ always_inline void softclip_vec_simd_mp<0>(float * out, const float * in,
  *
  * on intel nethalem cpus, the simdfied code is faster than all non-simd code
  * */
+
 template <>
-inline void softclip_vec_simd(float * out, const float * in, unsigned int n)
+struct softclip<vec<float> >
 {
-    n = n / samples_per_loop;
+    typedef vec<float> vec_type;
 
-    const __m128 abs_mask = (__m128)detail::gen_abs_mask();
-    const __m128 const05  = detail::gen_05();
-    const __m128 const025 = detail::gen_025();
-
-    do
+    always_inline vec_type operator()(vec_type arg) const
     {
-        detail::softclip_vec_simd_mp<samples_per_loop>(out, in, abs_mask, const05, const025);
-        in += samples_per_loop;
-        out += samples_per_loop;
+        const vec_type const05  = vec_type::gen_05();
+        const vec_type const025 = vec_type::gen_025();
+
+        vec_type abs = abs(arg);
+        vec_type selecter = mask_lt(abs, const05);
+        vec_type alt_ret = (abs - const025) / arg;
+
+        return select(alt_ret, arg, selecter);
     }
-    while (--n);
+};
+
+#endif
+
 }
 
-template <unsigned int n>
-always_inline void softclip_vec_simd_mp(float * out, const float * in)
+
+template <typename float_type>
+inline void softclip_vec(float_type * out, const float_type * in, unsigned int n)
 {
-    const __m128 abs_mask = (__m128)detail::gen_abs_mask();
-    const __m128 const05  = detail::gen_05();
-    const __m128 const025 = detail::gen_025();
-
-    detail::softclip_vec_simd_mp<n>(out, in, abs_mask, const05, const025);
+    detail::apply_on_vector(out, in, n, detail::softclip<float>());
 }
 
-template <unsigned int n>
-void softclip_vec_simd(float * out, const float * in)
+template <typename float_type>
+inline void softclip_vec_simd(float_type * out, const float_type * in, unsigned int n)
 {
-    softclip_vec_simd_mp<n>(out, in);
+    softclip_vec(out, in, n);
 }
 
-#undef always_inline
-#undef samples_per_loop
-
-#else /* __SSE__ */
-
-template <unsigned int n>
-inline void softclip_vec_simd_mp(float * out, const float * in)
+template <unsigned int n, typename float_type>
+inline void softclip_vec_simd(float_type * out, const float_type * in)
 {
     softclip_vec_simd(out, in, n);
 }
 
-template <unsigned int n>
-inline void softclip_vec_simd(float * out, const float * in)
+#ifdef SSE
+
+template <>
+inline void softclip_vec_simd<float>(float_type * out, const float_type * in, unsigned int n)
 {
-    softclip_vec_simd(out, in, n);
+    detail::generate_simd_loop(out, in, n, detail::softclip<vec<float> >());
 }
 
-#endif /* __SSE__ */
+#endif
 
 } /* namespace nova */
 
-#endif /* SIMD_MATH_HPP */
+#undef always_inline
+
+#endif /* SIMD_SOFTCLIP_HPP */

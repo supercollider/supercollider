@@ -19,64 +19,82 @@ static const int unsigned size = 64;
     template <typename float_type>                                      \
     void function##_compare_vvv(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,          \
+        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,  \
             in0, in1, in2;                                              \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \
         randomize_buffer<float_type>(in2.c_array(), size, +1);          \
                                                                         \
-        function##_vec<float_type>(out.c_array(), in0.c_array(),        \
-                                   in1.c_array(), in2.c_array(), size); \
-        function##_vec_simd<float_type>(out_simd.c_array(),             \
-                                        in0.c_array(),                  \
-                                        in1.c_array(), in2.c_array(),   \
-                                        size);                          \
-        function##_vec_simd<size>(out_mp.c_array(), in0.c_array(),      \
-                                  in1.c_array(), in2.c_array());        \
+        function##_vec<float_type>(out.c_array(),                       \
+                                   wrap_argument(in0.c_array()),        \
+                                   wrap_argument(in1.c_array()),        \
+                                   wrap_argument(in2.c_array()),        \
+                                   size);                               \
                                                                         \
-        compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-4f);\
+        function##_vec_simd<float_type>(out_simd.c_array(),             \
+                                        wrap_argument(in0.c_array()),   \
+                                        wrap_argument(in1.c_array()),   \
+                                        wrap_argument(in2.c_array()),   \
+                                        size);                          \
+                                                                        \
+        function##_vec_simd<size>(out_mp.c_array(),                     \
+                                  wrap_argument(in0.c_array()),         \
+                                  wrap_argument(in1.c_array()),         \
+                                  wrap_argument(in2.c_array()));        \
+                                                                        \
+        compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-4f); \
         compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-4f);  \
     }                                                                   \
     template <typename float_type>                                      \
     void function##_compare_vvs(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,          \
+        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,  \
             in0, in1;                                                   \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \
         float_type in2 = randomize_float<float_type>();                 \
                                                                         \
-        function##_vec<float_type>(out.c_array(), in0.c_array(),        \
-                                   in1.c_array(), in2, size);           \
+        function##_vec<float_type>(out.c_array(),                       \
+                                   wrap_argument(in0.c_array()),        \
+                                   wrap_argument(in1.c_array()),        \
+                                   wrap_argument(in2), size);           \
         function##_vec_simd<float_type>(out_simd.c_array(),             \
-                                        in0.c_array(),                  \
-                                        in1.c_array(), in2,             \
+                                        wrap_argument(in0.c_array()),   \
+                                        wrap_argument(in1.c_array()),   \
+                                        wrap_argument(in2),             \
                                         size);                          \
-        function##_vec_simd<size>(out_mp.c_array(), in0.c_array(),      \
-                                  in1.c_array(), in2);                  \
+        function##_vec_simd<size>(out_mp.c_array(),                     \
+                                  wrap_argument(in0.c_array()),         \
+                                  wrap_argument(in1.c_array()),         \
+                                  wrap_argument(in2));                  \
                                                                         \
-        compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-4f);\
+        compare_buffers(out.c_array(), out_simd.c_array(), size, 1e-4f); \
         compare_buffers(out.c_array(), out_mp.c_array(), size, 1e-4f);  \
     }                                                                   \
     template <typename float_type>                                      \
     void function##_compare_vvr(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,          \
+        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,  \
             in0, in1;                                                   \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \
         float_type in2 = randomize_float<float_type>() + 2;             \
         float_type in2_slope = randomize_float<float_type>() * 0.0001;  \
                                                                         \
-        function##_vec_r3<float_type>(out.c_array(), in0.c_array(),     \
-                                      in1.c_array(), in2, in2_slope,    \
-                                      size);                            \
-        function##_vec_simd_r3<float_type>(out_simd.c_array(),          \
-                                        in0.c_array(),                  \
-                                        in1.c_array(), in2, in2_slope,  \
+        function##_vec<float_type>(out.c_array(),                       \
+                                   wrap_argument(in0.c_array()),        \
+                                   wrap_argument(in1.c_array()),        \
+                                   wrap_argument(in2, in2_slope),       \
+                                   size);                               \
+        function##_vec_simd<float_type>(out_simd.c_array(),             \
+                                        wrap_argument(in0.c_array()),   \
+                                        wrap_argument(in1.c_array()),   \
+                                        wrap_argument(in2, in2_slope),  \
                                         size);                          \
-        function##_vec_simd_r3<size>(out_mp.c_array(), in0.c_array(),   \
-                                     in1.c_array(), in2, in2_slope);    \
+        function##_vec_simd<size>(out_mp.c_array(),                     \
+                                  wrap_argument(in0.c_array()),         \
+                                  wrap_argument(in1.c_array()),         \
+                                  wrap_argument(in2, in2_slope));       \
                                                                         \
         compare_buffers_relative(out.c_array(), out_simd.c_array(),     \
                                  size);                                 \

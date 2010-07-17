@@ -80,7 +80,7 @@ void __noinline__ bench_3(float * in, unsigned int numSamples)
 void __noinline__ bench_4(float * in, unsigned int numSamples)
 {
     float level = 0;
-    float inlevel = nova::peak_vec_simd(in, &level, numSamples);
+    float inlevel = nova::peak_vec_simd<float>(in, &level, numSamples);
 }
 
 int main(void)

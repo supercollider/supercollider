@@ -111,7 +111,7 @@ void __noinline__ bench_5(float * out, float * in, float f, unsigned int n)
     while (--n);
 }
 
-void __noinline__ bench_6(float * out, float * in, float f, unsigned int n)
+/*void __noinline__ bench_6(float * out, float * in, float f, unsigned int n)
 {
     n /= 8;
 
@@ -123,7 +123,7 @@ void __noinline__ bench_6(float * out, float * in, float f, unsigned int n)
     }
     while (--n);
 }
-
+*/
 void __noinline__ bench_7(float * out, float * in, float f, unsigned int n)
 {
     n /= 16;
@@ -163,7 +163,7 @@ int main(void)
     run_bench(boost::bind(bench_3, out.begin(), in.begin(), 1.f, 64), iterations);
     run_bench(boost::bind(bench_4, out.begin(), in.begin(), 1.f, 64), iterations);
     run_bench(boost::bind(bench_5, out.begin(), in.begin(), 1.f, 64), iterations);
-    run_bench(boost::bind(bench_6, out.begin(), in.begin(), 1.f, 64), iterations);
+ /*   run_bench(boost::bind(bench_6, out.begin(), in.begin(), 1.f, 64), iterations);*/
     run_bench(boost::bind(bench_7, out.begin(), in.begin(), 1.f, 64), iterations);
     run_bench(boost::bind(bench_8, out.begin(), in.begin(), 1.f, 64), iterations);
 }

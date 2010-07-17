@@ -135,7 +135,7 @@ void run_cube_test(void)
 BOOST_AUTO_TEST_CASE( cube_test2 )
 {
     run_cube_test<float>();
-    run_square_test<double>();
+    run_cube_test<double>();
 }
 
 COMPARE_TEST(cube)

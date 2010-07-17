@@ -14,7 +14,7 @@ else
 ifeq ($(PROCESSOR),SSE)
 	CC     :=  gcc
 	AR     :=  ar -r
-	CFLAGS :=  -msse3
+	CFLAGS :=  -msse3 -msse4.1
 endif
 endif
 endif

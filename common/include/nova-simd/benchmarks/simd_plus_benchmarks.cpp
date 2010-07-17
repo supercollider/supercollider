@@ -6,6 +6,8 @@
 using namespace nova;
 using namespace std;
 
+namespace {
+
 aligned_array<float, 64> out, in, in2;
 
 typedef float afloat __attribute__ ((__aligned__(16)));
@@ -24,21 +26,21 @@ void __noinline__ bench_2(unsigned int n)
     plus_vec_simd<64>(out.begin(), in.begin(), in2.begin());
 }
 
-void __noinline__ bench_2a(unsigned int n)
-{
-    n /= 8;
-    float * i = in.begin();
-    float * i2 = in2.begin();
-    float * o = out.begin();
-    do
-    {
-        plus_vec_simd<8>(o, i, i2);
-        i += 8;
-        i2 += 8;
-        o += 8;
-    }
-    while (--n);
-}
+// void __noinline__ bench_2a(unsigned int n)
+// {
+//     n /= 8;
+//     float * i = in.begin();
+//     float * i2 = in2.begin();
+//     float * o = out.begin();
+//     do
+//     {
+//         plus_vec_simd<8>(o, i, i2);
+//         i += 8;
+//         i2 += 8;
+//         o += 8;
+//     }
+//     while (--n);
+// }
 
 void __noinline__ bench_2b(unsigned int n)
 {
@@ -204,6 +206,7 @@ void __noinline__ bench_5c(float * __restrict__ out, const float * __restrict__ 
     }
 }
 
+}
 
 int main(void)
 {
@@ -215,7 +218,7 @@ int main(void)
 
     run_bench(boost::bind(bench_1, 64), iterations);
     run_bench(boost::bind(bench_2, 64), iterations);
-    run_bench(boost::bind(bench_2a, 64), iterations);
+/*    run_bench(boost::bind(bench_2a, 64), iterations);*/
     run_bench(boost::bind(bench_2b, 64), iterations);
     run_bench(boost::bind(bench_2c, 64), iterations);
     run_bench(boost::bind(bench_2d, 64), iterations);

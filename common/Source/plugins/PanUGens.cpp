@@ -25,6 +25,13 @@
 #include "simd_binary_arithmetic.hpp"
 #include "simd_pan.hpp"
 #include "simd_mix.hpp"
+
+#ifdef __GNUC__
+#define inline_functions __attribute__ ((flatten))
+#else
+#define inline_functions
+#endif
+
 #endif
 
 static InterfaceTable *ft;
@@ -102,8 +109,8 @@ extern "C"
 
 	void Balance2_next_ak(Balance2 *unit, int inNumSamples);
 #ifdef NOVA_SIMD
-	void Balance2_next_ak_nova(Balance2 *unit, int inNumSamples);
-	void Balance2_next_ak_nova_64(Balance2 *unit, int inNumSamples);
+	inline_functions void Balance2_next_ak_nova(Balance2 *unit, int inNumSamples);
+	inline_functions void Balance2_next_ak_nova_64(Balance2 *unit, int inNumSamples);
 #endif
 	void Balance2_next_aa(Balance2 *unit, int inNumSamples);
 	void Balance2_Ctor(Balance2* unit);
@@ -148,8 +155,8 @@ extern "C"
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-void LinPan2_next_ak_nova(LinPan2 *unit, int inNumSamples);
-void LinPan2_next_ak_nova_64(LinPan2 *unit, int inNumSamples);
+inline_functions void LinPan2_next_ak_nova(LinPan2 *unit, int inNumSamples);
+inline_functions void LinPan2_next_ak_nova_64(LinPan2 *unit, int inNumSamples);
 #endif
 
 void LinPan2_Ctor(LinPan2 *unit)
@@ -257,14 +264,14 @@ void LinPan2_next_ak_nova_64(LinPan2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		nova::pan2_vec_simd_mp<64>(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
+		nova::pan2_vec_simd<64>(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
 								rightamp, rightampslope);
 		unit->m_pos = pos;
 		unit->m_level = level;
 		unit->m_leftamp = nextleftamp;
 		unit->m_rightamp = nextrightamp;
 	} else
-		nova::pan2_vec_simd_mp<64>(OUT(0), OUT(1), IN(0), leftamp, rightamp);
+		nova::pan2_vec_simd<64>(OUT(0), OUT(1), IN(0), leftamp, rightamp);
 }
 #endif
 
@@ -421,8 +428,8 @@ void Balance2_next_ak_nova_64(Balance2 *unit, int inNumSamples)
 		nova::times_vec_simd(OUT(1), IN(1), rightamp, rightampslope, inNumSamples);
 	} else {
 		//nova::times_vec2_simd(OUT(0), IN(0), leftamp, OUT(1), IN(1), rightamp, inNumSamples);
-		nova::times_vec_simd_mp<64>(OUT(0), IN(0), leftamp);
-		nova::times_vec_simd_mp<64>(OUT(1), IN(1), rightamp);
+		nova::times_vec_simd<64>(OUT(0), IN(0), leftamp);
+		nova::times_vec_simd<64>(OUT(1), IN(1), rightamp);
 	}
 }
 #endif
@@ -467,8 +474,8 @@ void Balance2_next_aa(Balance2 *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-void XFade2_next_ak_nova(XFade2 *unit, int inNumSamples);
-void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples);
+inline_functions void XFade2_next_ak_nova(XFade2 *unit, int inNumSamples);
+inline_functions void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples);
 #endif
 
 void XFade2_Ctor(XFade2 *unit)
@@ -580,7 +587,7 @@ void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		nova::mix_vec_simd_mp<64>(OUT(0), IN(0), leftamp, leftampslope,
+		nova::mix_vec_simd<64>(OUT(0), IN(0), leftamp, leftampslope,
 								  IN(1), rightamp, rightampslope);
 
 		unit->m_pos = pos;
@@ -588,7 +595,7 @@ void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples)
 		unit->m_leftamp = nextleftamp;
 		unit->m_rightamp = nextrightamp;
 	} else
-		nova::mix_vec_simd_mp<64>(OUT(0), IN(0), leftamp, IN(1), rightamp);
+		nova::mix_vec_simd<64>(OUT(0), IN(0), leftamp, IN(1), rightamp);
 }
 
 #endif
@@ -784,7 +791,7 @@ void Pan2_next_ak_nova_64(Pan2 *unit, int inNumSamples)
 		float leftampslope = (nextleftamp - leftamp) * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		nova::pan2_vec_simd_mp<64>(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
+		nova::pan2_vec_simd<64>(OUT(0), OUT(1), IN(0), leftamp, leftampslope,
 								   rightamp, rightampslope);
 
 		unit->m_pos = pos;
@@ -792,7 +799,7 @@ void Pan2_next_ak_nova_64(Pan2 *unit, int inNumSamples)
 		unit->m_leftamp = nextleftamp;
 		unit->m_rightamp = nextrightamp;
 	} else
-		nova::pan2_vec_simd_mp<64>(OUT(0), OUT(1), IN(0), leftamp, rightamp);
+		nova::pan2_vec_simd<64>(OUT(0), OUT(1), IN(0), leftamp, rightamp);
 }
 
 #endif

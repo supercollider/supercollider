@@ -23,7 +23,7 @@ void run_peak(void)
     in[40] = 1;
     {
         F peak = 0;
-        F last = nova::peak_vec_simd(in.begin(), &peak, size);
+        F last = nova::peak_vec_simd<F>(in.begin(), &peak, size);
 
         BOOST_REQUIRE_EQUAL( peak, 1 );
         BOOST_REQUIRE_EQUAL( last, 0.5 );
@@ -31,7 +31,7 @@ void run_peak(void)
 
     {
         F peak = 0;
-        F last = nova::peak_vec(in.begin(), &peak, size);
+        F last = nova::peak_vec<F>(in.begin(), &peak, size);
 
         BOOST_REQUIRE_EQUAL( peak, 1 );
         BOOST_REQUIRE_EQUAL( last, 0.5 );

@@ -25,6 +25,13 @@
 #include "simd_memory.hpp"
 #include "simd_mix.hpp"
 #include "simd_binary_arithmetic.hpp"
+
+#ifdef __GNUC__
+#define inline_functions __attribute__ ((flatten))
+#else
+#define inline_functions
+#endif
+
 #endif
 
 static InterfaceTable *ft;
@@ -371,7 +378,7 @@ void LagControl_Ctor(LagControl* unit)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-void In_next_a_nova(IOUnit *unit, int inNumSamples)
+inline_functions void In_next_a_nova(IOUnit *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
@@ -404,7 +411,7 @@ void In_next_a_nova(IOUnit *unit, int inNumSamples)
 	}
 }
 
-void In_next_a_nova_64(IOUnit *unit, int inNumSamples)
+inline_functions void In_next_a_nova_64(IOUnit *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
@@ -792,7 +799,7 @@ void ReplaceOut_next_k(IOUnit *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void ReplaceOut_next_a_nova(IOUnit *unit, int inNumSamples)
+inline_functions void ReplaceOut_next_a_nova(IOUnit *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
@@ -820,7 +827,7 @@ void ReplaceOut_next_a_nova(IOUnit *unit, int inNumSamples)
 	}
 }
 
-void ReplaceOut_next_a_nova_64(IOUnit *unit, int inNumSamples)
+inline_functions void ReplaceOut_next_a_nova_64(IOUnit *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
@@ -955,7 +962,7 @@ void vOut_next_a(IOUnit *unit, int inNumSamples)
 
 
 #ifdef NOVA_SIMD
-void Out_next_a_nova(IOUnit *unit, int inNumSamples)
+inline_functions void Out_next_a_nova(IOUnit *unit, int inNumSamples)
 {
 	//Print("Out_next_a %d\n", unit->mNumInputs);
 	World *world = unit->mWorld;
@@ -991,7 +998,7 @@ void Out_next_a_nova(IOUnit *unit, int inNumSamples)
 	}
 }
 
-void Out_next_a_nova_64(IOUnit *unit, int inNumSamples)
+inline_functions void Out_next_a_nova_64(IOUnit *unit, int inNumSamples)
 {
 	//Print("Out_next_a %d\n", unit->mNumInputs);
 	World *world = unit->mWorld;
@@ -1228,7 +1235,7 @@ void XOut_next_a(XOut *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void XOut_next_a_nova(XOut *unit, int inNumSamples)
+inline_functions void XOut_next_a_nova(XOut *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
@@ -1662,7 +1669,7 @@ void LocalIn_next_a(LocalIn *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void LocalIn_next_a_nova(LocalIn *unit, int inNumSamples)
+inline_functions void LocalIn_next_a_nova(LocalIn *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
@@ -1683,7 +1690,7 @@ void LocalIn_next_a_nova(LocalIn *unit, int inNumSamples)
 	}
 }
 
-void LocalIn_next_a_nova_64(LocalIn *unit, int inNumSamples)
+inline_functions void LocalIn_next_a_nova_64(LocalIn *unit, int inNumSamples)
 {
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
@@ -1801,7 +1808,7 @@ void LocalOut_next_a(IOUnit *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-void LocalOut_next_a_nova(IOUnit *unit, int inNumSamples)
+inline_functions void LocalOut_next_a_nova(IOUnit *unit, int inNumSamples)
 {
 	//Print("LocalOut_next_a %d\n", unit->mNumInputs);
 	World *world = unit->mWorld;

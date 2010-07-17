@@ -19,15 +19,102 @@
 #ifndef SIMD_MATH_HPP
 #define SIMD_MATH_HPP
 
-#include "simd_math_generic.hpp"
+#include "vec.hpp"
 
-#if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
-    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 2))) && defined(__SSE2__)
-#include "simd_math_vec.hpp"
+#include "detail/math.hpp"
+#include "detail/unroll_helpers.hpp"
+#include "detail/define_macros.hpp"
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
 #else
-#include "simd_math_fallback_float.hpp"
+#define always_inline inline
 #endif
 
-#include "simd_math_fallback_double.hpp"
+
+namespace nova {
+
+
+#define DEFINE_UNARY_MATH_FUNCTOR(NAME)                                 \
+namespace detail {                                                      \
+                                                                        \
+template <typename FloatType>                                           \
+struct NAME##_                                                          \
+{                                                                       \
+    always_inline FloatType operator()(FloatType arg) const             \
+    {                                                                   \
+        return NAME<FloatType>(arg);                                    \
+    }                                                                   \
+};                                                                      \
+                                                                        \
+template <typename FloatType>                                           \
+struct NAME##_<vec<FloatType> >                                         \
+{                                                                       \
+    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const \
+    {                                                                   \
+        return NAME(arg);                                               \
+    }                                                                   \
+};                                                                      \
+                                                                        \
+}                                                                       \
+
+#define DEFINE_UNARY_MATH_FUNCTIONS(NAME)               \
+DEFINE_UNARY_MATH_FUNCTOR(NAME)                         \
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(NAME, detail::NAME##_)
+
+
+DEFINE_UNARY_MATH_FUNCTIONS(sin)
+DEFINE_UNARY_MATH_FUNCTIONS(cos)
+DEFINE_UNARY_MATH_FUNCTIONS(tan)
+DEFINE_UNARY_MATH_FUNCTIONS(asin)
+DEFINE_UNARY_MATH_FUNCTIONS(acos)
+DEFINE_UNARY_MATH_FUNCTIONS(atan)
+
+DEFINE_UNARY_MATH_FUNCTIONS(tanh)
+
+DEFINE_UNARY_MATH_FUNCTIONS(log)
+DEFINE_UNARY_MATH_FUNCTIONS(log2)
+DEFINE_UNARY_MATH_FUNCTIONS(log10)
+DEFINE_UNARY_MATH_FUNCTIONS(exp)
+
+DEFINE_UNARY_MATH_FUNCTIONS(signed_sqrt)
+
+
+
+#define DEFINE_BINARY_MATH_FUNCTOR(NAME)                                \
+namespace detail {                                                      \
+                                                                        \
+template <typename FloatType>                                           \
+struct NAME##_                                                          \
+{                                                                       \
+    always_inline FloatType operator()(FloatType lhs, FloatType rhs) const \
+    {                                                                   \
+        return NAME<FloatType>(lhs, rhs);                               \
+    }                                                                   \
+};                                                                      \
+                                                                        \
+template <typename FloatType>                                           \
+struct NAME##_<vec<FloatType> >                                         \
+{                                                                       \
+    always_inline vec<FloatType> operator()(vec<FloatType> const & lhs, vec<FloatType> const & rhs) const \
+    {                                                                   \
+        return NAME(lhs, rhs);                                          \
+    }                                                                   \
+};                                                                      \
+                                                                        \
+}
+
+
+DEFINE_BINARY_MATH_FUNCTOR(pow)
+DEFINE_BINARY_MATH_FUNCTOR(signed_pow)
+
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(pow, detail::pow_)
+NOVA_SIMD_DEFINE_BINARY_FUNCTIONS(spow, detail::signed_pow_)
+
+}
+
+#undef DEFINE_UNARY_MATH_FUNCTIONS
+#undef DEFINE_BINARY_MATH_FUNCTIONS
+#undef always_inline
 
 #endif /* SIMD_MATH_HPP */

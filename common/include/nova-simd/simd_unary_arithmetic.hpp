@@ -1,5 +1,5 @@
 //  unary arithmetic simd functions
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,17 +19,66 @@
 #ifndef SIMD_UNARY_ARITHMETIC_HPP
 #define SIMD_UNARY_ARITHMETIC_HPP
 
-#include "simd_unroll_constraints.hpp"
-#include "simd_unary_arithmetic_generic.hpp"
+#include "vec.hpp"
 
-#ifdef __SSE__
-#include "simd_unary_arithmetic_sse.hpp"
+#include "detail/define_macros.hpp"
+
+#if defined(__GNUC__) && defined(NDEBUG)
+#define always_inline inline  __attribute__((always_inline))
+#else
+#define always_inline inline
 #endif
 
-/* for compile-time loop unrolling */
-#ifndef __SSE__
-#include "simd_unary_arithmetic_fallbacks_float.hpp"
-#endif
-#include "simd_unary_arithmetic_fallbacks_double.hpp"
+namespace nova
+{
+
+namespace detail
+{
+
+#define DEFINE_UNARY_FUNCTOR(NAME, VEC_NAME)                            \
+template <typename FloatType>                                           \
+struct NAME##_                                                          \
+{                                                                       \
+    always_inline FloatType operator()(FloatType arg) const             \
+    {                                                                   \
+        return NAME<FloatType>(arg);                                    \
+    }                                                                   \
+};                                                                      \
+                                                                        \
+template <typename FloatType>                                           \
+struct NAME##_<vec<FloatType> >                                         \
+{                                                                       \
+    always_inline vec<FloatType> operator()(vec<FloatType> const & arg) const \
+    {                                                                   \
+        return VEC_NAME(arg);                                           \
+    }                                                                   \
+};
+
+DEFINE_UNARY_FUNCTOR(fabs, abs)
+DEFINE_UNARY_FUNCTOR(sign, sign)
+DEFINE_UNARY_FUNCTOR(square, square)
+DEFINE_UNARY_FUNCTOR(cube, cube)
+
+DEFINE_UNARY_FUNCTOR(round, round)
+DEFINE_UNARY_FUNCTOR(frac, frac)
+DEFINE_UNARY_FUNCTOR(ceil, ceil)
+DEFINE_UNARY_FUNCTOR(floor, floor)
+
+} /* namespace detail */
+
+
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(abs, detail::fabs_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(sgn, detail::sign_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(square, detail::square_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(cube, detail::cube_)
+
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(round, detail::round_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(frac, detail::frac_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(ceil, detail::ceil_)
+NOVA_SIMD_DEFINE_UNARY_FUNCTIONS(floor, detail::floor_)
+
+} /* namespace nova */
+
+#undef always_inline
 
 #endif /* SIMD_UNARY_ARITHMETIC_HPP */
