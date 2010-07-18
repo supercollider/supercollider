@@ -266,7 +266,11 @@ extern bool compiledOK;
 	int length = [string length];
 	unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
 	[string getCharacters: buffer];
-	bool res = matchBraks(&start, &end, buffer, length, '}', false);
+    
+    if(!blankUnparsedChars(buffer, end, false))
+    	blankUnparsedChars(buffer, length, true);
+    			
+    bool res = matchBraks(&start, &end, buffer, length, '}', false);
 	
 	if(!res) return; // bail
 	unichar spaces[128];
@@ -333,7 +337,11 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
                     start = end = index + 1;
             } else if (c == ']' || c == ')' || c == '}') {
                     start = end = index;
-            }            
+            }
+			
+            if(!blankUnparsedChars(buffer, end, false))
+           		blankUnparsedChars(buffer, length, true);
+           
             bool res = matchBraks(&start, &end, buffer, length, 0, false);
             free(buffer);
             if (res) {
@@ -618,6 +626,70 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
     return true;
 }
 
+bool blankUnparsedChars(unichar* buffer, int length, bool process)
+{
+	unsigned int i;
+	unichar c;
+	
+	bool blankNext = false;
+	bool blankThis = false;
+	
+	bool isString = false;
+	bool isSingleLineComment = false;
+	bool isMultiLineComment = false;
+	bool isSymbol = false;
+	
+	for(i = 0;i<length;i++) {
+		
+		c = GETTEXTCHAR(i, buffer, length);
+		
+		if(blankNext) {
+			blankThis = true;
+			blankNext = false;
+		}
+		
+		if(!blankThis) {
+			
+			if(c == '/' && !isString && !isSymbol && !isSingleLineComment && !isMultiLineComment) {
+				unichar d = GETTEXTCHAR(i+1,buffer,length);
+				if(d == '/')
+					isSingleLineComment = true;
+				
+				if(d == '*')
+					isMultiLineComment = true;
+			}
+			
+			if(isSingleLineComment && c == '\n')
+				isSingleLineComment = false;
+			
+			if(isMultiLineComment && c == '*')
+				if(GETTEXTCHAR(i+1,buffer,length) == '/')
+					isMultiLineComment = false;
+
+			if(c == '\"' && !isSingleLineComment && !isMultiLineComment && !isSymbol)
+				isString = !isString;
+			
+			if(c == '\'' && !isSingleLineComment && !isMultiLineComment && !isString)
+				isSymbol = !isSymbol;
+				
+			if(c == '$')
+				blankNext = true;
+		}
+		
+		if(c == '\\')
+			blankNext = true;
+		
+		
+		if(process && (isString || isSingleLineComment || isMultiLineComment || isSymbol || blankThis))
+		{
+			buffer[i] = ' ';
+		}	
+		
+		blankThis = false;	
+	}
+	
+	return blankNext || isString || isSingleLineComment || isMultiLineComment || isSymbol;
+}
 
 - (void)balanceParens: (id)sender
 {
@@ -631,6 +703,10 @@ bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int
     unsigned int start, end;
     start = selectedRange.location;
     end = start + selectedRange.length;
+    
+    if(!blankUnparsedChars(buffer, end, false))
+    	blankUnparsedChars(buffer, length, true);
+    
     bool res = matchBraks(&start, &end, buffer, length, 0, true);
     free(buffer);
     if (res) {

@@ -66,3 +66,4 @@ typedef unsigned int NSUInteger;
 @end
 
 bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
+bool blankUnparsedChars(unichar* buffer, int length, bool process);
