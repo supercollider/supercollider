@@ -145,9 +145,11 @@ public:
 private:
     void run(semaphore & sync_sem)
     {
+#ifdef NOVA_TT_PRIORITY_RT
         if (rt)
             thread_set_priority_rt(priority);
         else
+#endif
             thread_set_priority(priority);
 
         super::run(sync_sem);

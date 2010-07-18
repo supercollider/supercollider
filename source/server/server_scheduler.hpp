@@ -26,9 +26,6 @@
 #include "utilities/callback_system.hpp"
 #include "utilities/static_pooled_class.hpp"
 
-#include "nova-tt/thread_affinity.hpp"
-#include "nova-tt/thread_priority.hpp"
-
 namespace nova
 {
 
@@ -60,21 +57,7 @@ struct thread_init_functor
         rt(real_time)
     {}
 
-    void operator()(int thread_index)
-    {
-        if (rt)
-        {
-            int min, max;
-            boost::tie(min, max) = thread_priority_interval_rt();
-            int priority = max - 3;
-            priority = std::max(min, priority);
-
-            thread_set_priority_rt(priority);
-        }
-
-        if (!thread_set_affinity(thread_index))
-            std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
-    }
+    void operator()(int thread_index);
 
 private:
     bool rt;

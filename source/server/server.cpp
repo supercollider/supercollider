@@ -18,6 +18,9 @@
 
 #include <stdexcept>
 
+#include "nova-tt/thread_affinity.hpp"
+#include "nova-tt/thread_priority.hpp"
+
 #include "server.hpp"
 #include "sync_commands.hpp"
 
@@ -25,6 +28,12 @@
 
 #include "sc/sc_synth_prototype.hpp"
 #include "sc/sc_ugen_factory.hpp"
+
+#ifdef APPLE
+#include <AvailabilityMacros.h>
+#include <CoreAudio/CoreAudioTypes.h>
+#include <CoreAudioTypes.h>
+#endif
 
 namespace nova
 {
@@ -163,6 +172,41 @@ void nova_server::rebuild_dsp_queue(void)
     std::auto_ptr<dsp_thread_queue> new_queue = node_graph::generate_dsp_queue();
     scheduler::reset_queue_sync(new_queue);
     dsp_queue_dirty = false;
+}
+
+void thread_init_functor::operator()(int thread_index)
+{
+    if (rt)
+    {
+        bool success = false;
+
+#ifdef NOVA_TT_PRIORITY_RT
+        int min, max;
+        boost::tie(min, max) = thread_priority_interval_rt();
+        int priority = max - 3;
+        priority = std::max(min, priority);
+
+        success = thread_set_priority_rt(priority);
+#endif
+
+#if defined(NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT) && defined (APPLE)
+
+        double blocksize = server_arguments::instance().blocksize;
+        double samplerate = server_arguments::instance().samplerate;
+
+        double ns_per_block = 1e9 / samplerate * blocksize;
+
+        success = thread_set_priority_rt(AudioConvertNanosToHostTime(ns_per_block),
+                                         AudioConvertNanosToHostTime(ns_per_block - 2),
+                                         AudioConvertNanosToHostTime(ns_per_block - 1));
+#endif
+
+        if (!success)
+            std::cerr << "Warning: cannot raise thread priority" << std::endl;
+    }
+
+    if (!thread_set_affinity(thread_index))
+        std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
 }
 
 void scheduler::operator()(void)
