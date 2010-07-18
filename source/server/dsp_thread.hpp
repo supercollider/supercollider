@@ -26,7 +26,6 @@
 #include <boost/foreach.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/thread/thread.hpp>
-#include <boost/tuple/tuple.hpp> /* for boost::tie */
 
 #ifndef foreach
 #define foreach BOOST_FOREACH

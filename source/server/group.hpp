@@ -21,6 +21,9 @@
 
 #include <set>
 
+#include <boost/tuple/tuple.hpp> /* for boost::tie */
+
+
 #include "memory_pool.hpp"
 #include "node_types.hpp"
 #include "utilities/exists.hpp"
