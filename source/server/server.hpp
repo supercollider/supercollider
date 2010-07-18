@@ -89,9 +89,38 @@ private:
     const T * const ptr_;
 };
 
+
+/** dsp thread init functor
+ *
+ *  for the real-time use, it should acquire real-time scheduling and pin the thread to a certain CPU
+ *
+ * */
+struct thread_init_functor
+{
+    thread_init_functor(bool real_time):
+        rt(real_time)
+    {}
+
+    void operator()(int thread_index);
+
+private:
+    bool rt;
+};
+
+/** scheduler hook
+ *
+ *  evaluate scheduled bundles
+ *
+ * */
+struct scheduler_hook
+{
+    inline void operator()(void);
+};
+
+
 class nova_server:
     public node_graph,
-    public scheduler,
+    public scheduler<scheduler_hook, thread_init_functor>,
 #if defined(JACK_BACKEND)
     public jack_backend<realtime_engine_functor, float, false>,
 #endif
@@ -288,12 +317,16 @@ inline void realtime_engine_functor::init_tick(void)
     instance->update_time_from_system();
 }
 
-inline void realtime_engine_functor::run_tick(void )
+inline void realtime_engine_functor::run_tick(void)
 {
     run_scheduler_tick();
     instance->increment_logical_time();
 }
 
+inline void scheduler_hook::operator()(void)
+{
+    instance->execute_scheduled_bundles();
+}
 
 } /* namespace nova */
 

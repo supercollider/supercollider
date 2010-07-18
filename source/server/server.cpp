@@ -209,13 +209,6 @@ void thread_init_functor::operator()(int thread_index)
         std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
 }
 
-void scheduler::operator()(void)
-{
-    cbs.run_callbacks();
-    instance->execute_scheduled_bundles();
-    threads.run();
-}
-
 
 void synth_prototype_deleter::dispose(synth_prototype * ptr)
 {

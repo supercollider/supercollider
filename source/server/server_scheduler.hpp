@@ -1,5 +1,5 @@
 //  server scheduler
-//  Copyright (C) 2008 Tim Blechmann
+//  Copyright (C) 2008, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -46,40 +46,38 @@ struct audio_sync_callback:
     virtual void run(void) = 0;
 };
 
-/** dsp thread init functor
- *
- *  for the real-time use, it should acquire real-time scheduling and pin the thread to a certain CPU
- *
- * */
-struct thread_init_functor
+struct nop_hook
 {
-    thread_init_functor(bool real_time):
-        rt(real_time)
-    {}
-
-    void operator()(int thread_index);
-
-private:
-    bool rt;
+    void operator()(void) {}
 };
-
 
 /** scheduler class of the nova server
  *
  *  - provides a callback system to place callbacks in the scheduler
  *  - manages dsp threads, which themselves manage the dsp queue interpreter
  *
+ *  scheduler_hook: functor to be called when after callbacks have been executed
+ *                  and before the threads are executed
+ *
+ *  thread_init_functor: helper thread initialization functor
+ *
  * */
-class scheduler
+template<class scheduler_hook = nop_hook,
+         class thread_init_functor = nop_thread_init
+        >
+class scheduler:
+    scheduler_hook
 {
     typedef nova::dsp_threads<queue_node, thread_init_functor, rt_pool_allocator<void*> > dsp_threads;
+    typedef typename dsp_threads::dsp_thread_queue_ptr dsp_thread_queue_ptr;
+    typedef typename dsp_threads::thread_count_t thread_count_t;
 
     struct reset_queue_cb:
         public audio_sync_callback
     {
     public:
         reset_queue_cb(scheduler * sched,
-                       dsp_threads::dsp_thread_queue_ptr & qptr):
+                       dsp_thread_queue_ptr & qptr):
             sched(sched), qptr(qptr)
         {}
 
@@ -91,19 +89,19 @@ class scheduler
 
     private:
         scheduler * sched;
-        dsp_threads::dsp_thread_queue_ptr qptr;
+        dsp_thread_queue_ptr qptr;
     };
 
 protected:
     /* called from the driver callback */
-    void reset_queue_sync(dsp_threads::dsp_thread_queue_ptr & qptr)
+    void reset_queue_sync(dsp_thread_queue_ptr & qptr)
     {
         threads.reset_queue(qptr);
     }
 
 public:
     /* start thread_count - 1 scheduler threads */
-    scheduler(dsp_threads::thread_count_t thread_count = 1, bool realtime = false):
+    scheduler(thread_count_t thread_count = 1, bool realtime = false):
         threads(thread_count, thread_init_functor(realtime))
     {
         threads.start_threads();
@@ -121,10 +119,15 @@ public:
     }
 
     /* called from the audio driver */
-    void operator()(void);
+    void operator()(void)
+    {
+        cbs.run_callbacks();
+        scheduler_hook::operator()();
+        threads.run();
+    }
 
     /* schedule to set a new queue */
-    void reset_queue(dsp_threads::dsp_thread_queue_ptr & qptr)
+    void reset_queue(dsp_thread_queue_ptr & qptr)
     {
         add_sync_callback(new reset_queue_cb(this, qptr));
     }
