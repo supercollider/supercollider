@@ -23,12 +23,12 @@
 
 #include "boost/tuple/tuple.hpp"
 
-#include "dsp_thread_queue.hpp"
 #include "dsp_thread_queue_node.hpp"
 #include "group.hpp"
 #include "node_types.hpp"
 #include "memory_pool.hpp"
 
+#include "dsp_thread_queue/dsp_thread_queue.hpp"
 
 namespace nova
 {
@@ -108,10 +108,10 @@ public:
         while (!node_id_available(generated_id));
         return generated_id;
     }
-    
+
 private:
     int32_t generated_id;
-    
+
 public:
     abstract_group * find_group(int32_t node_id)
     {

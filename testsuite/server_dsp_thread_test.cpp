@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../source/server/dsp_thread.hpp"
+#include "../source/dsp_thread_queue/dsp_thread.hpp"
 #include "../source/server/memory_pool.hpp"
 
 namespace

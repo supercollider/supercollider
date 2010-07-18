@@ -24,8 +24,7 @@
 
 #include <boost/cstdint.hpp>
 
-#include "node_types.hpp"
-#include "synth.hpp"
+#include "server/synth.hpp"
 #include "../sc/sc_synth.hpp"
 
 namespace nova

@@ -18,11 +18,12 @@
 
 #include <fstream>
 
-#include "dsp_thread_queue.hpp"
 #include "dsp_thread_queue_node.hpp"
 #include "node_graph.hpp"
 #include "synth.hpp"
 #include "utilities/exists.hpp"
+
+#include "dsp_thread_queue/dsp_thread_queue.hpp"
 
 namespace nova
 {
