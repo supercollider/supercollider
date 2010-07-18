@@ -19,10 +19,7 @@
 #ifndef SERVER_GROUP_HPP
 #define SERVER_GROUP_HPP
 
-#include <set>
-
 #include <boost/tuple/tuple.hpp> /* for boost::tie */
-
 
 #include "memory_pool.hpp"
 #include "node_types.hpp"

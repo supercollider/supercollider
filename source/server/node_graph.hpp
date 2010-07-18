@@ -26,7 +26,6 @@
 #include "dsp_thread_queue_node.hpp"
 #include "group.hpp"
 #include "node_types.hpp"
-#include "memory_pool.hpp"
 
 #include "dsp_thread_queue/dsp_thread_queue.hpp"
 
