@@ -190,14 +190,20 @@ NSFont *defaultFont = nil;
 			unsigned int start, end;
 			start = affectedCharRange.location;
 			end = start;
-			bool res = matchBraks(&start, &end, buffer, length, c, false);
-			free(buffer);
-			if (res) {
-				[self flashHighlight: YES atIndex: start wait: 0.33 timesLeft: 1];
-			} else {
-				//NSBeep();
-				[self flashHighlight: NO atIndex: affectedCharRange.location wait: 0.07 timesLeft: 6];
+						
+			bool doMatchBraks = !blankUnparsedChars(buffer, end, true);
+			
+			if(doMatchBraks)
+			{
+				bool res = matchBraks(&start, &end, buffer, length, c, false);
+				if (res) {
+					[self flashHighlight: YES atIndex: start wait: 0.33 timesLeft: 1];
+				} else {
+					//NSBeep();
+					[self flashHighlight: NO atIndex: affectedCharRange.location wait: 0.07 timesLeft: 6];
+				}
 			}
+			free(buffer);
 		}
 	}
 	return YES;
