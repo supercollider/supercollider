@@ -38,20 +38,38 @@
 // FIXES for broken compilers
 #include <boost/config.hpp>
 
-#ifdef __GCC__
-#define ALIGNED __attribute__((aligned(64)))
-#else
-#define ALIGNED
-#endif
+#include "malloc_aligned.hpp"
 
 namespace nova {
 
     template<class T, std::size_t N>
     class aligned_array {
       public:
-        T elems[N] ALIGNED; // fixed-size array of elements of type T
+        T * elems; // fixed-size array of elements of type T
 
       public:
+        aligned_array(void)
+        {
+            elems = (T*)malloc_aligned(N * sizeof(T));
+            for (int i = 0; i != N; ++i)
+                new(elems+i) T();
+        }
+
+        aligned_array(aligned_array const & rhs)
+        {
+            elems = (T*)malloc_aligned(N * sizeof(T));
+            for (int i = 0; i != N; ++i)
+                new(elems+i) T();
+            operator=(rhs);
+        }
+
+        ~aligned_array(void)
+        {
+            for (int i = 0; i != N; ++i)
+                elems[i].~T();
+            free_aligned(elems);
+        }
+
         // type definitions
         typedef T              value_type;
         typedef T*             iterator;
@@ -149,6 +167,12 @@ namespace nova {
         T* c_array() { return elems; }
 
         // assignment with type conversion
+        aligned_array & operator=(const aligned_array & rhs)
+        {
+            std::copy(rhs.begin(),rhs.end(), begin());
+            return *this;
+        }
+
         template <typename T2>
         aligned_array<T,N>& operator= (const aligned_array<T2,N>& rhs) {
             std::copy(rhs.begin(),rhs.end(), begin());

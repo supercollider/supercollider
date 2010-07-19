@@ -19,7 +19,7 @@ static const int unsigned size = 64;
     template <typename float_type>                                      \
     void function##_compare_vvv(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,  \
+        aligned_array<float_type, size> out, out_simd, out_mp,          \
             in0, in1, in2;                                              \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \
@@ -48,7 +48,7 @@ static const int unsigned size = 64;
     template <typename float_type>                                      \
     void function##_compare_vvs(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,  \
+        aligned_array<float_type, size> out, out_simd, out_mp,          \
             in0, in1;                                                   \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \
@@ -74,7 +74,7 @@ static const int unsigned size = 64;
     template <typename float_type>                                      \
     void function##_compare_vvr(void)                                   \
     {                                                                   \
-        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp,  \
+        aligned_array<float_type, size> out, out_simd, out_mp,           \
             in0, in1;                                                   \
         randomize_buffer<float_type>(in0.c_array(), size);              \
         randomize_buffer<float_type>(in1.c_array(), size, -1);          \

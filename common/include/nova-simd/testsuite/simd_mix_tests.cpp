@@ -17,7 +17,7 @@ static const int size = 1024;
 template <typename float_type>
 void test_mix(void)
 {
-    aligned_array<float_type, size> ALIGNED sseval, mpval, generic, args0, args1;
+    aligned_array<float_type, size>  sseval, mpval, generic, args0, args1;
     randomize_buffer<float_type>(args0.c_array(), size);
     randomize_buffer<float_type>(args1.c_array(), size);
 
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( mix_tests )
 template <typename float_type>
 void test_mix_ramp(void)
 {
-    aligned_array<float_type, size> ALIGNED sseval, mpval, generic, args0, args1;
+    aligned_array<float_type, size>  sseval, mpval, generic, args0, args1;
     randomize_buffer<float_type>(args0.c_array(), size);
     randomize_buffer<float_type>(args1.c_array(), size);
 

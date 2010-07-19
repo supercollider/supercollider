@@ -19,7 +19,7 @@ static const unsigned int size = 64;
     template <typename float_type>                                      \
     void function##_compare(void)                                       \
     {                                                                   \
-        aligned_array<float_type, size> ALIGNED out, out_simd, out_mp, in;      \
+        aligned_array<float_type, size> out, out_simd, out_mp, in;      \
         randomize_buffer<float_type>(in.c_array(), size);               \
                                                                         \
         nova::function##_vec<float_type>(out.c_array(), in.c_array(), size); \
@@ -40,8 +40,8 @@ static const unsigned int size = 64;
 template <typename float_type>
 void run_sign_test(void)
 {
-    aligned_array<float_type, size> ALIGNED in;
-    aligned_array<float_type, size> ALIGNED out;
+    aligned_array<float_type, size> in;
+    aligned_array<float_type, size> out;
     in[0] = -2;
     in[1] = in[2] = 0;
     in[3] = 2;
@@ -65,8 +65,8 @@ COMPARE_TEST(sgn)
 template <typename float_type>
 void run_abs_test(void)
 {
-    aligned_array<float_type, size> ALIGNED in;
-    aligned_array<float_type, size> ALIGNED out;
+    aligned_array<float_type, size> in;
+    aligned_array<float_type, size> out;
     in[0] = -2;
     in[1] = in[2] = 0;
     in[3] = 2;
@@ -91,8 +91,8 @@ COMPARE_TEST(abs)
 template <typename float_type>
 void run_square_test(void)
 {
-    aligned_array<float_type, size> ALIGNED in;
-    aligned_array<float_type, size> ALIGNED out;
+    aligned_array<float_type, size> in;
+    aligned_array<float_type, size> out;
     in[0] = -2;
     in[1] = in[2] = 0;
     in[3] = 2;
@@ -117,8 +117,8 @@ COMPARE_TEST(square)
 template <typename float_type>
 void run_cube_test(void)
 {
-    aligned_array<float_type, size> ALIGNED in;
-    aligned_array<float_type, size> ALIGNED out;
+    aligned_array<float_type, size> in;
+    aligned_array<float_type, size> out;
     in[0] = -2;
     in[1] = in[2] = 0;
     in[3] = 2;

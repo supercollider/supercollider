@@ -16,7 +16,7 @@ static const int size = 64;
 template <typename F>
 void run_peak(void)
 {
-    aligned_array<F, size> ALIGNED in;
+    aligned_array<F, size> in;
     in.assign(0);
 
     in[63] = -0.5;
