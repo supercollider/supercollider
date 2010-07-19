@@ -13,28 +13,30 @@ using namespace nova;
 using namespace std;
 
 
-static const int size = 1024;
+static const int size = 10000;
 
 
 #define COMPARE_TEST(name, low, high)                                   \
 template <typename float_type>                                          \
 void test_##name(void)                                                  \
 {                                                                       \
-    aligned_array<float, size> ALIGNED sseval, mpval, libmval, args;    \
+    aligned_array<float_type, size> sseval, mpval, libmval, args;    \
                                                                         \
-    float init = low;                                                   \
+    float_type init = low;                                                   \
+    float_type diff = (float_type(high) - float_type(low)) / float_type(size); \
+    \
     for (int i = 0; i != size; ++i)                                     \
     {                                                                   \
         args[i] = init;                                                 \
-        init += (high - low)/size;                                      \
+        init += diff;                                      \
     }                                                                   \
                                                                         \
     name##_vec(libmval.begin(), args.begin(), size);                    \
     name##_vec_simd(sseval.begin(), args.begin(), size);                \
-    name##_vec_simd<size>(mpval.begin(), args.begin());                 \
+    /*name##_vec_simd<size>(mpval.begin(), args.begin());*/                 \
                                                                         \
-    compare_buffers(sseval.begin(), libmval.begin(), 1e-4f);            \
-    compare_buffers(mpval.begin(), libmval.begin(), 1e-4f);             \
+    compare_buffers(sseval.begin(), libmval.begin(), size, 1e-5f);            \
+    /*compare_buffers(mpval.begin(), libmval.begin(), size, 1e-5f);*/             \
 }                                                                       \
                                                                         \
 BOOST_AUTO_TEST_CASE( name##_tests)                                     \
@@ -46,7 +48,7 @@ BOOST_AUTO_TEST_CASE( name##_tests)                                     \
 COMPARE_TEST(sin, -1.5, 1.5)
 COMPARE_TEST(cos, -1.5, 1.5)
 COMPARE_TEST(tan, -1.5, 1.5)
-COMPARE_TEST(tanh, -1.5, 1.5)
+COMPARE_TEST(tanh, -10, 10)
 COMPARE_TEST(signed_sqrt, 0, 20)
 
 
@@ -55,7 +57,7 @@ BOOST_AUTO_TEST_CASE( pow_tests_float_1 )
 {
     for (float exponent = 0.1; exponent < 2; exponent += 0.1)
     {
-        aligned_array<float, size> ALIGNED sseval, libmval, args;
+        aligned_array<float, size> sseval, libmval, args;
 
         float init = 0;
         for (int i = 0; i != size; ++i)
@@ -77,7 +79,7 @@ BOOST_AUTO_TEST_CASE( spow_tests_float_1 )
 {
     for (float exponent = 0.1; exponent < 2; exponent += 0.1)
     {
-        aligned_array<float, size> ALIGNED sseval, libmval, args;
+        aligned_array<float, size> sseval, libmval, args;
 
         aligned_array<float, 4> exparray;
         exparray.assign(exponent);

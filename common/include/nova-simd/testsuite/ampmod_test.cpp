@@ -17,7 +17,7 @@ static const unsigned int size = 64;
 template <typename float_type>
 void vv_tests(void)
 {
-    aligned_array<float_type, size> ALIGNED out, out_simd, in0, in1, amount;
+    aligned_array<float_type, size> out, out_simd, in0, in1, amount;
     randomize_buffer<float_type>(in0.c_array(), size);
     randomize_buffer<float_type>(in1.c_array(), size);
     randomize_buffer<float_type>(amount.c_array(), size);
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE( vv_test )
 template <typename float_type>
 void vs_tests(void)
 {
-    aligned_array<float_type, size> ALIGNED out, out_simd, in0, in1;
+    aligned_array<float_type, size> out, out_simd, in0, in1;
     float_type amount;
     randomize_buffer<float_type>(in0.c_array(), size);
     randomize_buffer<float_type>(in1.c_array(), size);

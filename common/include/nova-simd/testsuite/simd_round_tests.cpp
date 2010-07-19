@@ -18,7 +18,7 @@ static const int size = 1024;
 template <typename float_type>                                          \
 void test_##name(void)                                                  \
 {                                                                       \
-    aligned_array<float_type, size> ALIGNED sseval, mpval, generic, args; \
+    aligned_array<float_type, size> sseval, mpval, generic, args;       \
     randomize_buffer<float_type>(args.c_array(), size);                 \
                                                                         \
     name##_vec(generic.c_array(), args.c_array(), size);                \
