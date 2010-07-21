@@ -3,6 +3,10 @@ project (nova-simd)
 
 enable_testing()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+endif()
+
 add_subdirectory (benchmarks)
 add_subdirectory (testsuite)
 
