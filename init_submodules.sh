@@ -2,4 +2,7 @@
 git submodule init
 git submodule update
 
-./libs/nova-simd/init_submodules.sh
+
+cd libs/nova-simd
+git submodule init
+git submodule update
