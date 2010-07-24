@@ -282,8 +282,8 @@ SharedOut : AbstractOut {
 		this.multiNewList(['control', bus] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
-	writesToBus { ^false }
 	*numFixedArgs { ^1 }
+	writesToBus { ^false }
 }
 
 SharedIn : AbstractIn {
