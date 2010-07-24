@@ -448,7 +448,10 @@ Object  {
 	// instance specific method support
 	addUniqueMethod { arg selector, function;
 		var methodDict;
-		if (uniqueMethods.isNil, { uniqueMethods = IdentityDictionary.new });
+		if(function.isKindOf(Function).not) { 
+			Error("A method must be defined using a function").throw 
+		};
+		if(uniqueMethods.isNil, { uniqueMethods = IdentityDictionary.new });
 		methodDict = uniqueMethods.at(this);
 		if (methodDict.isNil, {
 			methodDict = IdentityDictionary.new;
