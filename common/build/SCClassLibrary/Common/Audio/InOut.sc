@@ -208,10 +208,12 @@ AbstractOut : UGen {
  	}
 
  	*isOutputUGen { ^true }
-
+	*numFixedArgs { ^this.subclassResponsibility(thisMethod) }
+	
  	numAudioChannels {
  		^inputs.size - this.class.numFixedArgs
  	}
+ 	
  	writesToBus { ^this.subclassResponsibility(thisMethod) }
 }
 
@@ -281,6 +283,7 @@ SharedOut : AbstractOut {
 		^0.0		// Out has no output
 	}
 	writesToBus { ^false }
+	*numFixedArgs { ^1 }
 }
 
 SharedIn : AbstractIn {
