@@ -23,7 +23,6 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/checked_delete.hpp>
-#include <boost/intrusive/set.hpp>
 #include <boost/intrusive/unordered_set.hpp>
 
 #include "utilities/exists.hpp"
@@ -35,6 +34,18 @@ namespace nova
 typedef boost::int_fast16_t slot_index_t;
 typedef std::string slot_identifier_type;
 
+inline std::size_t hash_slot_string(const char * str)
+{
+    std::size_t ret = 0;
+
+    // sdbm hash ... later try another function!
+    int c;
+    while (c = *str++)
+        ret = c + (ret << 6) + (ret << 16) - ret;
+
+    return ret;
+}
+
 namespace detail
 {
 
@@ -43,57 +54,77 @@ class slot_resolver
 {
 protected:
     struct map_type:
-        public boost::intrusive::set_base_hook<>
+        public boost::intrusive::unordered_set_base_hook<>
     {
         map_type(slot_identifier_type const & name, slot_index_t index):
             name(name), index(index)
         {}
 
-        bool operator<(map_type const & rhs) const
+        friend std::size_t hash_value(map_type const & map)
         {
-            return name < rhs.name;
+            return hash_slot_string(map.name.c_str());
         }
 
-        slot_identifier_type name;
+        bool operator==(map_type const & rhs) const
+        {
+            return name != rhs.name;
+        }
+
+        std::string name;
         slot_index_t index;
     };
 
 private:
-    struct comparer
+    struct equal_string
     {
-        bool operator()(map_type const & lhs,
-                        std::string const & rhs) const
+        bool operator()(const char * lhs, map_type const & rhs) const
         {
-            return lhs.name < rhs;
-        }
+            const char * rhstr = rhs.name.c_str();
 
-        bool operator()(std::string const & lhs,
-                        map_type const & rhs) const
-        {
-            return lhs < rhs.name;
-        }
-
-        bool operator()(map_type const & lhs,
-                        const char * rhs) const
-        {
-            return strcmp(lhs.name.c_str(), rhs) < 0;
-        }
-
-        bool operator()(const char * lhs,
-                        map_type const & rhs) const
-        {
-            return strcmp(lhs, rhs.name.c_str()) < 0;
+            for(;;++lhs, ++rhstr)
+            {
+                if (*lhs == 0) {
+                    if (*rhstr == 0)
+                        return true;
+                    else
+                        return false;
+                }
+                if (*rhstr == 0)
+                    return false;
+            }
         }
     };
 
-    template<typename T>
-    bool exists(T const & t) const
+    struct hash_string
     {
-        return slot_resolver_map.find(t, comparer()) != slot_resolver_map.end();
+        std::size_t operator()(const char * str)
+        {
+            return hash_slot_string(str);
+        }
+    };
+
+    struct hash_value
+    {
+        hash_value(std::size_t v):
+            value(v)
+        {}
+
+        std::size_t operator()(const char *) const
+        {
+            return value;
+        }
+
+        std::size_t value;
+    };
+
+    bool exists(const char * str) const
+    {
+        return slot_resolver_map.find(str, hash_string(), equal_string()) != slot_resolver_map.end();
     }
 
 protected:
-    slot_resolver(void)
+    slot_resolver(void):
+        slot_resolver_map(slot_resolver_map_t::bucket_traits(buckets, 1024))
     {}
 
     ~slot_resolver(void)
@@ -101,9 +132,9 @@ protected:
         slot_resolver_map.clear_and_dispose(boost::checked_deleter<map_type>());
     }
 
-    void register_slot(slot_identifier_type const & str, slot_index_t i)
+    void register_slot(std::string const & str, slot_index_t i)
     {
-        assert(not exists(str));
+        assert(not exists(str.c_str()));
         map_type * elem = new map_type(str, i);
         bool success = slot_resolver_map.insert(*elem).second;
         assert(success);
@@ -116,18 +147,15 @@ public:
      *  \return nonnegative index of slot
      *          -1, if symbolic name cannot be resolved
      */
-    slot_index_t resolve_slot(slot_identifier_type const & str) const
-    {
-        slot_resolver_map_t::const_iterator it = slot_resolver_map.find(str, comparer());
-        if (it == slot_resolver_map.end())
-            return -1;
-        else
-            return it->index;
-    }
-
     slot_index_t resolve_slot(const char * str) const
     {
-        slot_resolver_map_t::const_iterator it = slot_resolver_map.find(str, comparer());
+        return resolve_slot(str, hash_slot_string(str));
+    }
+
+    slot_index_t resolve_slot(const char * str, std::size_t hashed_value) const
+    {
+        slot_resolver_map_t::const_iterator it = slot_resolver_map.find(str, hash_value(hashed_value),
+                                                                        equal_string());
         if (it == slot_resolver_map.end())
             return -1;
         else
@@ -136,7 +164,10 @@ public:
     /*@}*/
 
 private:
-    typedef boost::intrusive::set<map_type> slot_resolver_map_t;
+    typedef boost::intrusive::unordered_set<map_type,
+                                            boost::intrusive::power_2_buckets<true>
+                                           > slot_resolver_map_t;
+    slot_resolver_map_t::bucket_type buckets[1024];
     slot_resolver_map_t slot_resolver_map;
 };
 
