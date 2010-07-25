@@ -46,6 +46,11 @@ public:
         return class_ptr->resolve_slot(str);
     }
 
+    slot_index_t resolve_slot(const char * str, std::size_t hashed_str)
+    {
+        return class_ptr->resolve_slot(str, hashed_str);
+    }
+
     const char * prototype_name(void) const
     {
         return class_ptr->name();
@@ -79,24 +84,31 @@ public:
     /* @{ */
     void set(const char * slot_str, sample val)
     {
-        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str);
-        if (unlikely(slot_id < 0))
-            std::cerr << "cannot resolve slot " << slot_str << std::endl;
-        else
-            this->set(slot_id, val);
+        set(slot_str, hash_slot_string(slot_str), val);
     }
 
     void set(const char * slot_str, size_t count, sample * val)
     {
-        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str);
-        if (unlikely(slot_id < 0))
-            std::cerr << "cannot resolve slot " << slot_str << std::endl;
-        else
+        set(slot_str, hash_slot_string(slot_str), count, val);
+    }
+
+    void set(const char * slot_str, size_t hashed_str, sample val)
+    {
+        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str, hashed_str);
+        if (likely(slot_id >= 0))
+            this->set(slot_id, val);
+    }
+
+    void set(const char * slot_str, size_t hashed_str, size_t count, sample * val)
+    {
+        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str, hashed_str);
+        if (likely(slot_id >= 0))
             for (size_t i = 0; i != count; ++i)
                 this->set(slot_id+i, val[i]);
     }
 
-    virtual void set(slot_index_t slot_id, sample val) = 0;
+    virtual void set(slot_index_t slot_id, float val) = 0;
+    virtual void set(slot_index_t slot_str, size_t n, float * values) = 0;
     /* @} */
 };
 

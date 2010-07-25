@@ -204,6 +204,8 @@ public:
 
     void set(const char * slot_str, float val);
     void set(const char * slot_str, size_t count, float * val);
+    void set(const char * slot_str, size_t hashed_str, float val);
+    void set(const char * slot_str, size_t hashed_str, size_t count, float * val);
     void set(slot_index_t slot_id, float val);
     void set(slot_index_t slot_str, size_t count, float * val);
 

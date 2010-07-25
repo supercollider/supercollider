@@ -31,7 +31,7 @@
 namespace nova
 {
 
-typedef boost::int_fast16_t slot_index_t;
+typedef boost::int16_t slot_index_t;
 typedef std::string slot_identifier_type;
 
 inline std::size_t hash_slot_string(const char * str)
