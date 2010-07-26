@@ -1,5 +1,5 @@
 //  supercollider-style synthdef
-//  Copyright (C) 2008, 2009 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -16,14 +16,17 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#include "sc_synthdef.hpp"
-#include "sc_ugen_factory.hpp"
-
-#include <boost/integer/endian.hpp>
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+#undef is // libsimdmath workaround
+#include <boost/format.hpp>
+#include <boost/integer/endian.hpp>
+
+#include "sc_synthdef.hpp"
+#include "sc_ugen_factory.hpp"
+
 #include <utilities/sized_array.hpp>
 
 namespace nova
@@ -98,8 +101,13 @@ std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr)
     std::vector<sc_synthdef> ret;
 
     for (int i = 0; i != definition_count; ++i) {
-        sc_synthdef def(buf_ptr);
-        ret.push_back(def);
+        try {
+            sc_synthdef def(buf_ptr);
+            ret.push_back(def);
+        }
+        catch (std::runtime_error const & e) {
+            std::cerr << "Exception when reading synthdef: " << e.what() << std::endl;
+        }
     }
     return ret;
 }
@@ -273,7 +281,16 @@ void sc_synthdef::prepare(void)
         spec.buffer_mapping.resize(spec.output_specs.size());
 
         sc_ugen_def * ugen = sc_factory->find_ugen(spec.name);
-        assert(ugen);
+
+        if (unlikely(ugen == NULL))
+        {
+            /* we cannot prepare the synthdef, if the ugens are not installed */
+            boost::format frmt("Cannot load synth %1%: Unit generator %2% not installed");
+            frmt % name_ % spec.name;
+
+            throw std::runtime_error(frmt.str());
+        }
+
         spec.prototype = ugen;
 
         const bool can_alias = !ugen->cant_alias();
