@@ -41,7 +41,8 @@ namespace nova
 class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
-    scheduler(args.threads, !args.non_rt), buffer_manager(1024), sc_osc_handler(args),
+    scheduler<scheduler_hook, thread_init_functor>(args.threads, !args.non_rt),
+    buffer_manager(1024), sc_osc_handler(args),
 #ifdef NOVA_TT_PRIORITY_RT
     io_interpreter(1, true, thread_priority_interval_rt().first)
 #else
@@ -166,7 +167,7 @@ struct register_prototype_cb:
 
 void nova_server::register_prototype(synth_prototype_ptr const & prototype)
 {
-    scheduler::add_sync_callback(new register_prototype_cb(prototype));
+    scheduler<scheduler_hook, thread_init_functor>::add_sync_callback(new register_prototype_cb(prototype));
 }
 
 
@@ -174,7 +175,7 @@ void nova_server::rebuild_dsp_queue(void)
 {
     assert(dsp_queue_dirty);
     std::auto_ptr<dsp_thread_queue> new_queue = node_graph::generate_dsp_queue();
-    scheduler::reset_queue_sync(new_queue);
+    scheduler<scheduler_hook, thread_init_functor>::reset_queue_sync(new_queue);
     dsp_queue_dirty = false;
 }
 
