@@ -272,7 +272,7 @@ public:
             rebuild_dsp_queue();
 
         sc_factory->initialize_synths();
-        scheduler::operator()();
+        scheduler<scheduler_hook, thread_init_functor>::operator()();
     }
 
     void rebuild_dsp_queue(void);
