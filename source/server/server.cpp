@@ -42,7 +42,11 @@ class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
     scheduler(args.threads, !args.non_rt), buffer_manager(1024), sc_osc_handler(args),
+#ifdef NOVA_TT_PRIORITY_RT
     io_interpreter(1, true, thread_priority_interval_rt().first)
+#else
+    io_interpreter(1, true, thread_priority_interval().second)
+#endif
 {
     assert(instance == 0);
     sc_factory = new sc_ugen_factory;

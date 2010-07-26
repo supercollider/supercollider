@@ -71,7 +71,9 @@ public:
 private:
     static void start(network_thread * self)
     {
+#ifdef NOVA_TT_PRIORITY_RT
         thread_set_priority_rt(thread_priority_interval_rt().first);
+#endif
         self->run();
     }
 
