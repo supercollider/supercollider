@@ -364,7 +364,7 @@ void VDiskIn_Ctor(VDiskIn* unit)
 	unit->m_buf = unit->mWorld->mSndBufs;
 	unit->m_framePos = 0.;
 	unit->m_bufPos = 0.;
-	unit->m_pchRatio = IN0(1);
+	unit->m_pchRatio = sc_max(IN0(1), 0.f);
 	unit->m_count = 0;
 
 	SETCALC(VDiskIn_first); // should be first
@@ -399,7 +399,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 
 	float framePos = unit->m_framePos;
 	float bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
-	float newPchRatio = IN0(1);
+	float newPchRatio = sc_max(IN0(1), 0.f);
 
 	if ((newPchRatio * inNumSamples * unit->m_rBufSize) >= 0.5) {
 		printf("pitch ratio is greater then max allowed (see VDiskIn help)\n");
@@ -523,7 +523,7 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 
 	double framePos = unit->m_framePos;
 	double bufPos = unit->m_bufPos; // where we are in the DiskIn buffer
-	float newPchRatio = IN0(1);
+	float newPchRatio = sc_max(IN0(1), 0.f);
 	if ((newPchRatio * inNumSamples * unit->m_rBufSize) >= 0.5) {
 		printf("pitch ratio is greater then max allowed (see VDiskIn help)\n");
 		ClearUnitOutputs(unit, inNumSamples);
