@@ -171,6 +171,12 @@ Donce : DUGen {
 	}
 }
 
+Dreset : DUGen {
+	*new { arg in, reset = 0.0;
+		^this.multiNew('demand', in, reset)
+	}
+}
+
 Dpoll : DUGen {
 	*new { arg in, label, run = 1, trigid = -1;
 		^this.multiNew('demand', in, label, run, trigid)

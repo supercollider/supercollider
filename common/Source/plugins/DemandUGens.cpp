@@ -182,6 +182,11 @@ struct Dpoll : public Unit
 	float m_id;
 };
 
+struct Dreset : public Unit
+{
+	float prev_reset;
+};
+
 extern "C"
 {
 void load(InterfaceTable *inTable);
@@ -261,6 +266,9 @@ void Dstutter_next(Dstutter *unit, int inNumSamples);
 void Dpoll_Ctor(Dpoll *unit);
 void Dpoll_Ctor(Dpoll *unit);
 void Dpoll_next(Dpoll *unit, int inNumSamples);
+	
+void Dreset_Ctor(Dreset *unit);
+void Dreset_next(Dreset *unit, int inNumSamples);
 
 void Donce_Ctor(Donce *unit);
 void Donce_next(Donce *unit, int inNumSamples);
@@ -2006,6 +2014,35 @@ void Dpoll_Dtor(Dpoll* unit)
 	RTFree(unit->mWorld, unit->m_id_string);
 }
 
+//////////////////////////////
+
+
+
+void Dreset_next(Dreset *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT_A(0, inNumSamples);
+		float reset = DEMANDINPUT_A(1, inNumSamples);
+		if(sc_isnan(x)) {
+			OUT0(0) = NAN;
+			return;
+		}
+		if(reset > 0.0 && (unit->prev_reset <= 0.0)) { RESETINPUT(0); }
+		unit->prev_reset = reset;
+		OUT0(0) = x;
+	} else {
+		RESETINPUT(0);
+	}
+}
+
+void Dreset_Ctor(Dreset *unit)
+{
+	SETCALC(Dreset_next);
+	unit->prev_reset = 0.0;
+	Dreset_next(unit, 0);
+}
+
+
 
 //////////////////////////////
 
@@ -2241,5 +2278,6 @@ PluginLoad(Demand)
 	DefineSimpleUnit(Dswitch);
 	DefineSimpleUnit(Dstutter);
 	DefineSimpleUnit(Donce);
+	DefineSimpleUnit(Dreset);
 	DefineDtorUnit(Dpoll);
 }
