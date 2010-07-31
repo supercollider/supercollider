@@ -174,7 +174,7 @@ extern "C" void name##_d(UnaryOpUGen *unit, int inNumSamples)	\
 {													\
 	if (inNumSamples) {								\
 		float x = DEMANDINPUT_A(0, inNumSamples);	\
-		OUT0(0) = sc_isnan(x) ? NAN : sc_cpsoct(x);	\
+		OUT0(0) = sc_isnan(x) ? NAN : function(x);	\
 	} else {										\
 		RESETINPUT(0);								\
 	}												\
