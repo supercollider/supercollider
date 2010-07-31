@@ -55,7 +55,7 @@
 			killer.states = [["K", Color.black, Color.clear]];
 			killer.font = font;
 			killer.canFocus = false;
-			killer.action = { Server.killAll };
+			killer.action = { Server.killAll; stopped.value; };
 		};
 
 		active = gui.staticText.new(w, Rect(0,0, 78, 18));
