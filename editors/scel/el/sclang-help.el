@@ -134,12 +134,7 @@
 ;; ========= ADDITION for HTML help files
 (defun sclang-html-file-p (file)
    (let ((case-fold-search t))
-     (string-match ".*\\.html$" file)))
-
-;; not quite working yet: would be better to combine with sclang-html-file-p
-;(defun sclang-htm-file-p (file-name)
-;   (let ((case-fold-search t))
-;     (string-match ".*\\.htm$" file)))
+     (string-match ".*\\.html?$" file)))
 
 (defun sclang-sc-file-p (file)
   (let ((case-fold-search t))
