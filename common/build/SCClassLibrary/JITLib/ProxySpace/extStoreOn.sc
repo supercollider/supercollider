@@ -151,18 +151,20 @@
 		doc !? { doc.front.selectRange(startSel, 0); }
 	}
 	
-	asCode { | includeSettings = true, includeMonitor = true |
+	asCode { | includeSettings = true, includeMonitor = true, envir |
 		var nameStr, srcStr, str, docStr, indexStr, key; 
 		var space, spaceCS;
 		
 		var isAnon, isSingle, isInCurrent, isOnDefault, isMultiline; 
 		
-		nameStr = this.asCompileString; 
+		envir = envir ? currentEnvironment;
+		
+		nameStr = envir.use { this.asCompileString }; 
 		indexStr = nameStr;
 
 		isAnon = nameStr.beginsWith("a = ");
 		isSingle = this.objects.isEmpty or: { this.objects.size == 1 and: { this.objects.indices.first == 0 } };
-		isInCurrent = currentEnvironment.includes(this); 
+		isInCurrent = envir.includes(this); 
 		isOnDefault = server === Server.default;
 
 	//	[\isAnon, isAnon, \isSingle, isSingle, \isInCurrent, isInCurrent, \isOnDefault, isOnDefault].postln;
@@ -303,7 +305,7 @@
 		// add all objects to compilestring
 		keys.do { arg key;
 			var proxy = envir.at(key);
-			stream << proxy.asCode(includeSettings, includeMonitors) << "\n";
+			stream << proxy.asCode(includeSettings, includeMonitors, this.envir) << "\n";
 		};
 		
 		stream << /*(*/ ");\n";
