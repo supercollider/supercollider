@@ -320,11 +320,23 @@ Object  {
 		this.storeModifiersOn(stream);
 	}
 	storeParamsOn { arg stream;
-		var args;
-		args = this.storeArgs;
+		var args = this.storeArgs;
 		if(args.notEmpty) {
-			stream << "(" <<<* args << ")";
-		} { stream << ".new" }
+			stream << "(" <<<* this.simplifyStoreArgs(args) << ")";
+		} { 
+			stream << ".new" 
+		}
+	}
+	simplifyStoreArgs { arg args;
+		var res = Array.new, newMethod, methodArgs;
+		newMethod = this.class.class.findRespondingMethodFor(\new);
+		methodArgs = newMethod.prototypeFrame.drop(1);
+		args.size.reverseDo { |i|
+			if(methodArgs[i] != args[i]) {
+				^args.keep(i + 1)	
+			}
+		}
+		^[]
 	}
 	storeArgs { ^#[] }
 	storeModifiersOn { arg stream;}
