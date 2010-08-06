@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="1038.25">
+<meta name="CocoaVersion" content="1038.32">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -29,7 +29,9 @@ p.p19 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monac
 p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #007300; min-height: 12.0px}
 p.p21 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p22 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica; min-height: 17.0px}
-p.p23 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #0000bf}
+p.p23 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p24 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p25 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #0000bf}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #0000bf}
 span.s3 {color: #000000}
@@ -44,6 +46,10 @@ span.s11 {font: 12.0px Monaco}
 span.s12 {color: #1135f9}
 span.s13 {font: 14.0px Helvetica}
 span.s14 {font: 12.0px Helvetica; color: #000000}
+span.s15 {color: #102ac3}
+span.s16 {font: 9.0px Monaco; color: #000000}
+span.s17 {color: #1738f5}
+span.s18 {color: #008225}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -292,6 +298,29 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="s8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d = (a: 5, b: 7, c: 1, d: 0);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d.powerset;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>merge(that, func, fill)</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Combine two dictionaries into a new one by applying a function to each value. If <b>fill</b> is true (default: true), values missing from one of them are kept as they are.</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p23"><span class="s14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d = (a: 5, b: 7, d: 0);</p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>e = (a: 3, b: -3, c: 1);</p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">merge</span>(d, e, { <span class="s15">|a, b|</span> a + b });</p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s3">merge</span>(d, e, { <span class="s15">|a, b|</span> a + b }, <span class="s15">false</span>);</p>
+<p class="p24"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p24"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s16"><span class="Apple-tab-span">	</span></span><b>blend(that, blend, fill, specs)</b></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Blend two dictionaries into a new one by interpolating each value - <b>blend</b> is the blend ratio. If <b>fill</b> is true (default: true), values missing from one of them are kept as they are, <b>specs</b> is a dictionary of <a href="../Control/Spec.html"><span class="s17">Spec</span></a><span class="s17">s</span> that are apples dto each before blending.<span class="Apple-converted-space"> </span></p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p23"><span class="s14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>d = (a: 5, b: 7, d: 0);</p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>e = (a: 3, b: -3, c: 1);</p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>blend(d, e, 0.3);</p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>blend(d, e, 0.3, <span class="s15">false</span>);</p>
+<p class="p24"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d = (a: 500, b: 0.001);</p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>e = (a: 300, b: 0.1);</p>
+<p class="p23"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>blend(d, e, 0.3, specs: (a: <span class="s18">\freq</span>, b: <span class="s18">\rq</span>));</p>
+<p class="p12"><br></p>
+<p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p5"><span class="s9"><span class="Apple-tab-span">	</span></span><b>asSortedArray</b></p>
 <p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Return the values in a sorted array of key value pairs</p>
 <p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -312,7 +341,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>d = (</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a: 5, b: 7, c: 1,</p>
-<p class="p23"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rout: </span>Routine<span class="s3"> { </span>|inval|</p>
+<p class="p25"><span class="s3"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>rout: </span>Routine<span class="s3"> { </span>|inval|</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>inf.do { |i|</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var event = d.copy.put(\count, i);</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>inval = event.embedInStream(inval)<span class="Apple-converted-space"> </span></p>
