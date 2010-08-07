@@ -373,10 +373,7 @@ extern "C"
 	void BufAllpassC_next(BufAllpassC *unit, int inNumSamples);
 	void BufAllpassC_next_z(BufAllpassC *unit, int inNumSamples);
 
-	void DelayUnit_Reset(DelayUnit *unit);
 	void DelayUnit_Dtor(DelayUnit *unit);
-	void DelayUnit_AllocDelayLine(DelayUnit *unit);
-	void FeedbackDelay_Reset(FeedbackDelay *unit);
 
 	void DelayN_Ctor(DelayN *unit);
 	void DelayN_next(DelayN *unit, int inNumSamples);
@@ -427,9 +424,7 @@ extern "C"
 	void Pluck_next_ka_z(Pluck *unit, int inNumSamples);
 	void Pluck_next_ak(Pluck *unit, int inNumSamples);
 	void Pluck_next_ak_z(Pluck *unit, int inNumSamples);
-
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -604,8 +599,8 @@ inline int32 BUFMASK(int32 x)
 }
 
 
-void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, int numFrames) {
-
+static void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, int numFrames)
+{
 	int numSamples = numFrames * numChannels;
 	// Print("bufnum: %i, allocating %i channels and %i frames. memsize: %i\n", (int)unit->m_fbufnum, numChannels, numFrames, numSamples * sizeof(float));
 	buf->data = (float*)RTAlloc(unit->mWorld, numSamples * sizeof(float));
@@ -624,7 +619,6 @@ void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, int numF
 	buf->mask1    = buf->mask - 1;	// for oscillators
 	buf->samplerate = unit->mWorld->mSampleRate;
 	buf->sampledur = 1. / buf->samplerate;
-
 }
 
 
@@ -3718,7 +3712,7 @@ void BufAllpassC_next_z(BufAllpassC *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void DelayUnit_AllocDelayLine(DelayUnit *unit)
+static void DelayUnit_AllocDelayLine(DelayUnit *unit)
 {
 	long delaybufsize = (long)ceil(unit->m_maxdelaytime * SAMPLERATE + 1.f);
 	delaybufsize = delaybufsize + BUFLENGTH;
@@ -3730,14 +3724,13 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 	unit->m_mask = delaybufsize - 1;
 }
 
-float CalcDelay(DelayUnit *unit, float delaytime);
-float CalcDelay(DelayUnit *unit, float delaytime)
+static float CalcDelay(DelayUnit *unit, float delaytime)
 {
 	float next_dsamp = delaytime * SAMPLERATE;
 	return sc_clip(next_dsamp, 1.f, unit->m_fdelaylen);
 }
 
-void DelayUnit_Reset(DelayUnit *unit)
+static void DelayUnit_Reset(DelayUnit *unit)
 {
 	unit->m_maxdelaytime = ZIN0(1);
 	unit->m_delaytime = ZIN0(2);
@@ -3759,7 +3752,7 @@ void DelayUnit_Dtor(DelayUnit *unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void FeedbackDelay_Reset(FeedbackDelay *unit)
+static void FeedbackDelay_Reset(FeedbackDelay *unit)
 {
 	unit->m_decaytime = ZIN0(3);
 
