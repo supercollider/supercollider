@@ -2115,7 +2115,8 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 }
 #endif
 
-#define BufCalcDelay(delaytime) (sc_clip(delaytime * SAMPLERATE, 1.f, (float)bufSamples))
+#define BufCalcDelay(delaytime) (sc_clip(delaytime * SAMPLERATE, 1.f, \
+										 (float)(PREVIOUSPOWEROFTWO(bufSamples))-1))
 
 static void BufDelayUnit_Reset(BufDelayUnit *unit)
 {
@@ -2171,16 +2172,15 @@ void BufDelayN_next(BufDelayN *unit, int inNumSamples)
 		float* dlybuf1 = bufData - ZOFF;
 		float* dlyrd   = dlybuf1 + (irdphase & mask);
 		float* dlywr   = dlybuf1 + (iwrphase & mask);
-		float* dlyN    = dlybuf1 + bufSamples;
+		float* dlyN    = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
 		long remain = inNumSamples;
 		while (remain) {
 			long rdspace = dlyN - dlyrd;
 			long wrspace = dlyN - dlywr;
 			long nsmps = sc_min(rdspace, wrspace);
-			if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 			nsmps = sc_min(remain, nsmps);
 			remain -= nsmps;
-			LOOP(nsmps,
+			LOOP1(nsmps,
 				ZXP(dlywr) = ZXP(in);
 				ZXP(out) = ZXP(dlyrd);
 			);
@@ -2222,7 +2222,7 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long irdphase = iwrphase - (long)dsamp;
 		float* dlybuf1 = bufData - ZOFF;
-		float* dlyN    = dlybuf1 + bufSamples;
+		float* dlyN    = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
 		long remain = inNumSamples;
 		while (remain) {
 			float* dlywr = dlybuf1 + (iwrphase & mask);
@@ -2230,16 +2230,15 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 			long rdspace = dlyN - dlyrd;
 			long wrspace = dlyN - dlywr;
 			long nsmps = sc_min(rdspace, wrspace);
-			if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 			nsmps = sc_min(remain, nsmps);
 			remain -= nsmps;
 			if (irdphase < 0) {
-				LOOP(nsmps,
+				LOOP1(nsmps,
 					ZXP(dlywr) = ZXP(in);
 					ZXP(out) = 0.f;
 				);
 			} else {
-				LOOP(nsmps,
+				LOOP1(nsmps,
 					ZXP(dlywr) = ZXP(in);
 					ZXP(out) = ZXP(dlyrd);
 				);
@@ -2598,17 +2597,16 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 		float* dlybuf1 = bufData - ZOFF;
 		float* dlyrd   = dlybuf1 + (irdphase & mask);
 		float* dlywr   = dlybuf1 + (iwrphase & mask);
-		float* dlyN    = dlybuf1 + bufSamples;
+		float* dlyN    = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
 		if (decaytime == unit->m_decaytime) {
 			long remain = inNumSamples;
 			while (remain) {
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
-				LOOP(nsmps,
+				LOOP1(nsmps,
 					float value = ZXP(dlyrd);
 					ZXP(dlywr) = value * feedbk + ZXP(in);
 					ZXP(out) = value;
@@ -2624,11 +2622,10 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 
-				LOOP(nsmps,
+				LOOP1(nsmps,
 					float value = ZXP(dlyrd);
 					ZXP(dlywr) = value * feedbk + ZXP(in);
 					ZXP(out) = value;
@@ -2684,7 +2681,7 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long irdphase = iwrphase - (long)dsamp;
 		float* dlybuf1 = bufData - ZOFF;
-		float* dlyN    = dlybuf1 + bufSamples;
+		float* dlyN    = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
 		if (decaytime == unit->m_decaytime) {
 			long remain = inNumSamples;
 			while (remain) {
@@ -2693,16 +2690,15 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				if (irdphase < 0) {
-					LOOP(nsmps,
+					LOOP1(nsmps,
 						ZXP(dlywr) = ZXP(in);
 						ZXP(out) = 0.f;
 					);
 				} else {
-					LOOP(nsmps,
+					LOOP1(nsmps,
 						float value = ZXP(dlyrd);
 						ZXP(dlywr) = value * feedbk + ZXP(in);
 						ZXP(out) = value;
@@ -2721,19 +2717,18 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 
 				if (irdphase < 0) {
 					feedbk += nsmps * feedbk_slope;
 					dlyrd += nsmps;
-					LOOP(nsmps,
+					LOOP1(nsmps,
 						ZXP(dlywr) = ZXP(in);
 						ZXP(out) = 0.f;
 					);
 				} else {
-					LOOP(nsmps,
+					LOOP1(nsmps,
 						float value = ZXP(dlyrd);
 						ZXP(dlywr) = value * feedbk + ZXP(in);
 						ZXP(out) = value;
@@ -3156,17 +3151,16 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 		float* dlybuf1 = bufData - ZOFF;
 		float* dlyrd   = dlybuf1 + (irdphase & mask);
 		float* dlywr   = dlybuf1 + (iwrphase & mask);
-		float* dlyN    = dlybuf1 + bufSamples;
+		float* dlyN    = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
 		if (decaytime == unit->m_decaytime) {
 			long remain = inNumSamples;
 			while (remain) {
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
-				LOOP(nsmps,
+				LOOP1(nsmps,
 					float value = ZXP(dlyrd);
 					float dwr = value * feedbk + ZXP(in);
 					ZXP(dlywr) = dwr;
@@ -3183,11 +3177,10 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 
-				LOOP(nsmps,
+				LOOP1(nsmps,
 					float value = ZXP(dlyrd);
 					float dwr = value * feedbk + ZXP(in);
 					ZXP(dlywr) = dwr;
@@ -3245,7 +3238,7 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		long irdphase = iwrphase - (long)dsamp;
 		float* dlybuf1 = bufData - ZOFF;
-		float* dlyN    = dlybuf1 + bufSamples;
+		float* dlyN    = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
 		if (decaytime == unit->m_decaytime) {
 			long remain = inNumSamples;
 			while (remain) {
@@ -3254,19 +3247,18 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 				if (irdphase < 0) {
 					feedbk = -feedbk;
-					LOOP(nsmps,
+					LOOP1(nsmps,
 						float dwr = ZXP(in);
 						ZXP(dlywr) = dwr;
 						ZXP(out) = feedbk * dwr;
 					);
 					feedbk = -feedbk;
 				} else {
-					LOOP(nsmps,
+					LOOP1(nsmps,
 						float x1 = ZXP(dlyrd);
 						float dwr = x1 * feedbk + ZXP(in);
 						ZXP(dlywr) = dwr;
@@ -3286,20 +3278,19 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 				long rdspace = dlyN - dlyrd;
 				long wrspace = dlyN - dlywr;
 				long nsmps = sc_min(rdspace, wrspace);
-				if (nsmps == 0) NodeEnd(&unit->mParent->mNode); // buffer not allocated.
 				nsmps = sc_min(remain, nsmps);
 				remain -= nsmps;
 
 				if (irdphase < 0) {
 					dlyrd += nsmps;
-					LOOP(nsmps,
+					LOOP1(nsmps,
 						float dwr = ZXP(in);
 						ZXP(dlywr) = dwr;
 						ZXP(out) = -feedbk * dwr;
 						feedbk += feedbk_slope;
 					);
 				} else {
-					LOOP(nsmps,
+					LOOP1(nsmps,
 						float x1 = ZXP(dlyrd);
 						float dwr = x1 * feedbk + ZXP(in);
 						ZXP(dlywr) = dwr;
