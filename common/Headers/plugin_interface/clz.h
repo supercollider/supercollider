@@ -129,6 +129,11 @@ inline int32 NEXTPOWEROFTWO(int32 x)
 	return 1L << LOG2CEIL(x);
 }
 
+inline int32 PREVIOUSPOWEROFTWO(int32 x)
+{
+	return 1L << (LOG2CEIL(x) - 1);
+}
+
 // is x a power of two
 inline bool ISPOWEROFTWO(int32 x)
 {
