@@ -143,4 +143,6 @@ classvar scVersionMajor=3, scVersionMinor=4, scVersionPostfix=0;
 	exitFullScreen { platform.exitFullScreen }
 	
 	setDeferredTaskInterval { |interval| platform.setDeferredTaskInterval(interval) }
+
+	*overwriteMsg {_MainOverwriteMsg ^this.primitiveFailed }
 }
