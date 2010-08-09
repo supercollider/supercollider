@@ -6,6 +6,7 @@ Changes are listed below, grouped under each point release of SuperCollider.
 * 2010-07-11 SynthDef:add now sends to all running servers if no libname is given. SynthDescs are still added to the global SynthDescLib. If you want to handle multiple SynthDesc libs, you have to add the servers toeach of them explicitly - jr
 * 2010-07-12 PanAz: added support for audio-rate pos arg - lfsaw
 * 2010-07-18 improved the sclang syntax highlighting parses - Patrick Borgeat
+* 2010-08-09 method overwrite messages not posted by default, rather a message inviting people to run Main:overwriteMsg for the info - ds
 
 SuperCollider v3.4, released 2010-07
 ====================================

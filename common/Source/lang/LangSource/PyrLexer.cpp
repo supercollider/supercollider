@@ -1880,6 +1880,9 @@ void traverseFullDepTree2()
                         elapsed = elapsedTime() - compileStartTime;
                         post("\tcompiled %d files in %.2f seconds\n",
 				gNumCompiledFiles, elapsed );
+			if(numOverwrites){
+				post("Info: %i methods are currently overwritten by extensions. To see which, execute Main.overwriteMsg\n", numOverwrites);
+			}
 			post("compile done\n");
 		}
 	}

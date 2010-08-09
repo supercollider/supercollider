@@ -71,6 +71,8 @@ bool gGenerateTailCallByteCodes = false;
 long gInliningLevel;
 
 int compileErrors = 0;
+int numOverwrites = 0;
+char overwriteMsg[OVERWRITEMSGBUFSIZE] = "";
 
 extern bool compilingCmdLine;
 extern int errLineOffset, errCharPosOffset;
@@ -140,6 +142,7 @@ PyrGC* compileGC()
 void initParser()
 {
 	compileErrors = 0;
+	numOverwrites = 0;
 }
 
 void finiParser()
@@ -1233,14 +1236,21 @@ void PyrMethodNode::compile(PyrSlot *result)
 	}
 
 	if (oldmethod) {
+		++numOverwrites;
+		
 		char extPath[1024];
 
+		// accumulate overwrite message onto the string buffer
 		asRelativePath(gCompilingFileSym->name, extPath);
-		post("\tExtension overwriting %s:%s\n\t\tin file '%s'.\n",
+		size_t prevMsgSize = strlen(overwriteMsg);
+		snprintf(overwriteMsg + prevMsgSize, OVERWRITEMSGBUFSIZE - prevMsgSize,
+			"%s:%s\t'%s'",
 			slotRawSymbol(&slotRawClass(&oldmethod->ownerclass)->name)->name, slotRawSymbol(&oldmethod->name)->name,
 			extPath);
 		asRelativePath(slotRawSymbol(&oldmethod->filenameSym)->name, extPath);
-		post("\t\tOriginal method in file '%s'.\n", extPath);
+		prevMsgSize = strlen(overwriteMsg);
+		snprintf(overwriteMsg + prevMsgSize, OVERWRITEMSGBUFSIZE - prevMsgSize,
+			"\t'%s'\n", extPath);
 
 		method = oldmethod;
 		freePyrSlot(&method->code);

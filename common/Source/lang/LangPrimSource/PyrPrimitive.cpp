@@ -3371,6 +3371,16 @@ int prBlork(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prOverwriteMsg(struct VMGlobals *g, int numArgsPushed);
+int prOverwriteMsg(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	PyrString* string = newPyrString(g->gc, overwriteMsg, 0, false);
+	SetObject(a, string);
+	return errNone;
+}
+
+
 
 #define PRIMGROWSIZE 480
 PrimitiveTable gPrimitiveTable;
@@ -3923,6 +3933,7 @@ void initPrimitives()
 //	definePrimitive(base, index++, "_IsDemo", prIsDemo, 1, 0);
 	definePrimitive(base, index++, "_Blork", prBlork, 1, 0);
 	definePrimitive(base, index++, "_UGenCodeString", prUGenCodeString, 5, 0);
+	definePrimitive(base, index++, "_MainOverwriteMsg", prOverwriteMsg, 1, 0);
 
 	//void initOscilPrimitives();
 	//void initControllerPrimitives();
