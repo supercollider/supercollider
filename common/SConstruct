@@ -1068,7 +1068,6 @@ Source/lang/LangSource/SC_TerminalClient.cpp
 Source/lang/LangSource/Samp.cpp
 Source/lang/LangSource/SimpleStack.cpp
 Source/lang/LangSource/VMGlobals.cpp
-Source/lang/LangSource/alloca.cpp
 Source/lang/LangSource/dumpByteCodes.cpp
 Source/lang/LangSource/Bison/lang11d_tab.cpp
 Source/lang/LangPrimSource/SC_Wii.cpp
@@ -1144,7 +1143,7 @@ if PLATFORM == 'darwin':
 sclangSources = ['Source/lang/LangSource/cmdLineFuncs.cpp']
 
 if env['LANG']:
-    langEnv.Append(CPPDEFINES=YYSTACK_USE_ALLOCA)
+    langEnv.Append(CPPDEFINES='YYSTACK_USE_ALLOCA')
 
     libsclang = langEnv.SharedLibrary('build/sclang', libsclangSources)
     env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
