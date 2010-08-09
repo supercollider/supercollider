@@ -85,15 +85,60 @@ test_ugen_generator_equivalences {
 	 // Clipping and distortion:
 	 ".clip2() doesn't affect signals that lie within +-1" -> {n=WhiteNoise.ar;   n.clip2(1) - n},
 	 ".clip2() on a loud LFPulse is same as scaling" -> {n=LFPulse.ar(LFNoise0.kr(50), mul:100);   n.clip2(1) - (n/100)},
-	 ".clip2(_) == .clip(-_,_)" -> {n=WhiteNoise.ar;   n.clip2(0.4) - n.clip(-0.4, 0.4)},
+	 ".clip2(_) == .clip(-_,_) (fixed in svn rev 9838)" -> {n=WhiteNoise.ar;   n.clip2(0.4) - n.clip(-0.4, 0.4)},
 	 "_.clip2().abs never greater than _.abs" -> {n=WhiteNoise.ar;   n.clip2(0.3).abs > n.abs },
-	 "_.clip( ).abs never greater than _.abs" -> {n=WhiteNoise.ar;   n.clip(-0.7,0.6).abs > n.abs },
+	 "_.clip( ).abs never greater than _.abs (fixed in svn rev 9838)" -> {n=WhiteNoise.ar;   n.clip(-0.7,0.6).abs > n.abs },
 	 
 	 //////////////////////////////////////////
 	 // FFT:
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n =  PinkNoise.ar(1,0,1); DelayN.ar(n, 1984*SampleDur.ir, 1984*SampleDur.ir) - IFFT(FFT(LocalBuf(2048), n))  },
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n = WhiteNoise.ar(1,0,1); DelayN.ar(n, 4032*SampleDur.ir, 4032*SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n))  },
 	 
+	 //////////////////////////////////////////
+	 // Delay
+	 "DelayN" -> {	var sig = Impulse.ar(4);
+		 sig - DelayN.ar(sig, 1, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "DelayN (audio rate delay time) " -> {	var sig = Impulse.ar(4);
+		 sig - DelayN.ar(sig, 1, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "DelayL" -> {	var sig = Impulse.ar(4);
+		 sig - DelayL.ar(sig, 1, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "DelayL (audio rate delay time) " -> {	var sig = Impulse.ar(4);
+		 sig - DelayL.ar(sig, 1, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "DelayC" -> {	var sig = Impulse.ar(4);
+		 sig - DelayC.ar(sig, 1, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "DelayC (audio rate delay time) " -> {	var sig = Impulse.ar(4);
+		 sig - DelayC.ar(sig, 1, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "BufDelayN" -> { var sig = Impulse.ar(4);
+		 var buf = LocalBuf(SampleRate.ir * 1);
+		 sig - BufDelayN.ar(buf, sig, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "BufDelayN (audio rate delay time) " -> { var sig = Impulse.ar(4);
+		 var buf = LocalBuf(SampleRate.ir * 1);
+		 sig - BufDelayN.ar(buf, sig, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "BufDelayL" -> { var sig = Impulse.ar(4);
+		 var buf = LocalBuf(SampleRate.ir * 1);
+		 sig - BufDelayL.ar(buf, sig, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "BufDelayL (audio rate delay time) " -> { var sig = Impulse.ar(4);
+		 var buf = LocalBuf(SampleRate.ir * 1);
+		 sig - BufDelayL.ar(buf, sig, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "BufDelayC" -> { var sig = Impulse.ar(4);
+		 var buf = LocalBuf(SampleRate.ir * 1);
+		 sig - BufDelayC.ar(buf, sig, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+	 "BufDelayC (audio rate delay time) " -> { var sig = Impulse.ar(4);
+		 var buf = LocalBuf(SampleRate.ir * 1);
+		 sig - BufDelayC.ar(buf, sig, DC.ar(0.25)) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
+	 },
+
 	];
 	var testsIncomplete = tests.size;
 	this.bootServer;
