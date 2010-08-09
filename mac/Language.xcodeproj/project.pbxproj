@@ -133,7 +133,6 @@
 		94442C960C2C8AE40050BF9F /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E10C1921F90018AB50 /* SC_Wii.cpp */; };
 		94442C970C2C8AE40050BF9F /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310E50C1921F90018AB50 /* wiiremote.c */; };
 		94442C980C2C8AE40050BF9F /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E80C1921F90018AB50 /* AdvancingAllocPool.cpp */; };
-		94442C990C2C8AE40050BF9F /* alloca.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E90C1921F90018AB50 /* alloca.cpp */; };
 		94442C9A0C2C8AE40050BF9F /* lang11d_tab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310EC0C1921F90018AB50 /* lang11d_tab.cpp */; };
 		94442C9B0C2C8AE40050BF9F /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310EE0C1921F90018AB50 /* ByteCodeArray.cpp */; };
 		94442C9C0C2C8AE40050BF9F /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310F00C1921F90018AB50 /* dumpByteCodes.cpp */; };
@@ -237,7 +236,6 @@
 		949311800C1921F90018AB50 /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E10C1921F90018AB50 /* SC_Wii.cpp */; };
 		949311830C1921F90018AB50 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310E50C1921F90018AB50 /* wiiremote.c */; };
 		949311840C1921F90018AB50 /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E80C1921F90018AB50 /* AdvancingAllocPool.cpp */; };
-		949311850C1921F90018AB50 /* alloca.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E90C1921F90018AB50 /* alloca.cpp */; };
 		949311870C1921F90018AB50 /* lang11d_tab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310EC0C1921F90018AB50 /* lang11d_tab.cpp */; };
 		949311880C1921F90018AB50 /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310EE0C1921F90018AB50 /* ByteCodeArray.cpp */; };
 		9493118A0C1921F90018AB50 /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310F00C1921F90018AB50 /* dumpByteCodes.cpp */; };
@@ -290,7 +288,6 @@
 		9493151F0C192A6E0018AB50 /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E10C1921F90018AB50 /* SC_Wii.cpp */; };
 		949315200C192A6E0018AB50 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310E50C1921F90018AB50 /* wiiremote.c */; };
 		949315210C192A6E0018AB50 /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E80C1921F90018AB50 /* AdvancingAllocPool.cpp */; };
-		949315220C192A6E0018AB50 /* alloca.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E90C1921F90018AB50 /* alloca.cpp */; };
 		949315230C192A6E0018AB50 /* lang11d_tab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310EC0C1921F90018AB50 /* lang11d_tab.cpp */; };
 		949315240C192A6E0018AB50 /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310EE0C1921F90018AB50 /* ByteCodeArray.cpp */; };
 		949315250C192A6E0018AB50 /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310F00C1921F90018AB50 /* dumpByteCodes.cpp */; };
@@ -540,7 +537,6 @@
 		949310E50C1921F90018AB50 /* wiiremote.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = wiiremote.c; sourceTree = "<group>"; };
 		949310E60C1921F90018AB50 /* wiiremote.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = wiiremote.h; sourceTree = "<group>"; };
 		949310E80C1921F90018AB50 /* AdvancingAllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = AdvancingAllocPool.cpp; sourceTree = "<group>"; };
-		949310E90C1921F90018AB50 /* alloca.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = alloca.cpp; sourceTree = "<group>"; };
 		949310EB0C1921F90018AB50 /* lang11d */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = lang11d; sourceTree = "<group>"; };
 		949310EC0C1921F90018AB50 /* lang11d_tab.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = lang11d_tab.cpp; sourceTree = "<group>"; };
 		949310ED0C1921F90018AB50 /* lang11d_tab.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = lang11d_tab.h; sourceTree = "<group>"; };
@@ -1018,7 +1014,6 @@
 			isa = PBXGroup;
 			children = (
 				949310E80C1921F90018AB50 /* AdvancingAllocPool.cpp */,
-				949310E90C1921F90018AB50 /* alloca.cpp */,
 				949310EA0C1921F90018AB50 /* Bison */,
 				949310EE0C1921F90018AB50 /* ByteCodeArray.cpp */,
 				949310EF0C1921F90018AB50 /* cmdLineFuncs.cpp */,
@@ -1537,7 +1532,6 @@
 				94442C960C2C8AE40050BF9F /* SC_Wii.cpp in Sources */,
 				94442C970C2C8AE40050BF9F /* wiiremote.c in Sources */,
 				94442C980C2C8AE40050BF9F /* AdvancingAllocPool.cpp in Sources */,
-				94442C990C2C8AE40050BF9F /* alloca.cpp in Sources */,
 				94442C9A0C2C8AE40050BF9F /* lang11d_tab.cpp in Sources */,
 				94442C9B0C2C8AE40050BF9F /* ByteCodeArray.cpp in Sources */,
 				94442C9C0C2C8AE40050BF9F /* dumpByteCodes.cpp in Sources */,
@@ -1610,7 +1604,6 @@
 				9493151F0C192A6E0018AB50 /* SC_Wii.cpp in Sources */,
 				949315200C192A6E0018AB50 /* wiiremote.c in Sources */,
 				949315210C192A6E0018AB50 /* AdvancingAllocPool.cpp in Sources */,
-				949315220C192A6E0018AB50 /* alloca.cpp in Sources */,
 				949315230C192A6E0018AB50 /* lang11d_tab.cpp in Sources */,
 				949315240C192A6E0018AB50 /* ByteCodeArray.cpp in Sources */,
 				949315250C192A6E0018AB50 /* dumpByteCodes.cpp in Sources */,
@@ -1704,7 +1697,6 @@
 				949311800C1921F90018AB50 /* SC_Wii.cpp in Sources */,
 				949311830C1921F90018AB50 /* wiiremote.c in Sources */,
 				949311840C1921F90018AB50 /* AdvancingAllocPool.cpp in Sources */,
-				949311850C1921F90018AB50 /* alloca.cpp in Sources */,
 				949311870C1921F90018AB50 /* lang11d_tab.cpp in Sources */,
 				949311880C1921F90018AB50 /* ByteCodeArray.cpp in Sources */,
 				9493118A0C1921F90018AB50 /* dumpByteCodes.cpp in Sources */,
