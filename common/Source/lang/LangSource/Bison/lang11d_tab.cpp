@@ -1,24 +1,23 @@
-/* A Bison parser, made by GNU Bison 2.3.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
-
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
+   
+   This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-
+   
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -29,7 +28,7 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-
+   
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
@@ -47,7 +46,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.3"
+#define YYBISON_VERSION "2.4.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -55,9 +54,62 @@
 /* Pure parsers.  */
 #define YYPURE 0
 
+/* Push parsers.  */
+#define YYPUSH 0
+
+/* Pull parsers.  */
+#define YYPULL 1
+
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
+
+
+/* Copy the first part of user declarations.  */
+
+/* Line 189 of yacc.c  */
+#line 16 "lang11d"
+
+
+#include <stdlib.h>
+#include <string.h>
+#include "PyrLexer.h"
+#include "PyrParseNode.h"
+#include "SC_Constants.h"
+#include "SC_InlineUnaryOp.h"
+#include "SC_InlineBinaryOp.h"
+#include "InitAlloc.h"
+#include "PredefinedSymbols.h"
+#include "SimpleStack.h"
+
+void bcopy(void *src, void *dst, size_t size) ;
+int yyparse();
+extern bool compilingCmdLine;
+extern LongStack generatorStack;
+
+
+
+
+/* Line 189 of yacc.c  */
+#line 95 "lang11d_tab.cpp"
+
+/* Enabling traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+
+/* Enabling verbose error messages.  */
+#ifdef YYERROR_VERBOSE
+# undef YYERROR_VERBOSE
+# define YYERROR_VERBOSE 1
+#else
+# define YYERROR_VERBOSE 0
+#endif
+
+/* Enabling the token table.  */
+#ifndef YYTOKEN_TABLE
+# define YYTOKEN_TABLE 0
+#endif
 
 
 /* Tokens.  */
@@ -99,98 +151,22 @@
      UMINUS = 288
    };
 #endif
-/* Tokens.  */
-#define NAME 258
-#define INTEGER 259
-#define SC_FLOAT 260
-#define ACCIDENTAL 261
-#define SYMBOL 262
-#define STRING 263
-#define ASCII 264
-#define PRIMITIVENAME 265
-#define CLASSNAME 266
-#define CURRYARG 267
-#define VAR 268
-#define ARG 269
-#define CLASSVAR 270
-#define SC_CONST 271
-#define NILOBJ 272
-#define TRUEOBJ 273
-#define FALSEOBJ 274
-#define PSEUDOVAR 275
-#define ELLIPSIS 276
-#define DOTDOT 277
-#define PIE 278
-#define BEGINCLOSEDFUNC 279
-#define BADTOKEN 280
-#define INTERPRET 281
-#define BEGINGENERATOR 282
-#define LEFTARROW 283
-#define WHILE 284
-#define READWRITEVAR 285
-#define KEYBINOP 286
-#define BINOP 287
-#define UMINUS 288
 
 
-
-
-/* Copy the first part of user declarations.  */
-#line 16 "lang11d"
-
-
-#include <stdlib.h>
-#include <string.h>
-#include "PyrLexer.h"
-#include "PyrParseNode.h"
-#include "SC_Constants.h"
-#include "SC_InlineUnaryOp.h"
-#include "SC_InlineBinaryOp.h"
-#include "InitAlloc.h"
-#include "PredefinedSymbols.h"
-#include "SimpleStack.h"
-
-void *alloca(unsigned long size);
-void bcopy(void *src, void *dst, size_t size) ;
-int yyparse();
-extern bool compilingCmdLine;
-extern LongStack generatorStack;
-
-
-
-
-/* Enabling traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 1
-#endif
-
-/* Enabling verbose error messages.  */
-#ifdef YYERROR_VERBOSE
-# undef YYERROR_VERBOSE
-# define YYERROR_VERBOSE 1
-#else
-# define YYERROR_VERBOSE 0
-#endif
-
-/* Enabling the token table.  */
-#ifndef YYTOKEN_TABLE
-# define YYTOKEN_TABLE 0
-#endif
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
 #endif
-
 
 
 /* Copy the second part of user declarations.  */
 
 
-/* Line 216 of yacc.c.  */
-#line 194 "lang11d_tab.cpp"
+/* Line 264 of yacc.c  */
+#line 170 "lang11d_tab.cpp"
 
 #ifdef short
 # undef short
@@ -265,14 +241,14 @@ typedef short int yytype_int16;
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static int
-YYID (int i)
+YYID (int yyi)
 #else
 static int
-YYID (i)
-    int i;
+YYID (yyi)
+    int yyi;
 #endif
 {
-  return i;
+  return yyi;
 }
 #endif
 
@@ -353,9 +329,9 @@ void free (void *); /* INFRINGES ON USER NAME SPACE */
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss;
-  YYSTYPE yyvs;
-  };
+  yytype_int16 yyss_alloc;
+  YYSTYPE yyvs_alloc;
+};
 
 /* The size of the maximum gap between one aligned stack and the next.  */
 # define YYSTACK_GAP_MAXIMUM (sizeof (union yyalloc) - 1)
@@ -389,12 +365,12 @@ union yyalloc
    elements in the stack, and YYPTR gives the new location of the
    stack.  Advance YYPTR to a properly aligned location for the next
    stack.  */
-# define YYSTACK_RELOCATE(Stack)					\
+# define YYSTACK_RELOCATE(Stack_alloc, Stack)				\
     do									\
       {									\
 	YYSIZE_T yynewbytes;						\
-	YYCOPY (&yyptr->Stack, Stack, yysize);				\
-	Stack = &yyptr->Stack;						\
+	YYCOPY (&yyptr->Stack_alloc, Stack, yysize);			\
+	Stack = &yyptr->Stack_alloc;					\
 	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
 	yyptr += yynewbytes / sizeof (*yyptr);				\
       }									\
@@ -605,36 +581,36 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    40,    40,    42,    44,    48,    49,    53,    54,    58,
-      62,    69,    75,    76,    79,    80,    84,    85,    89,    91,
-      93,    97,    98,   102,   105,   108,   111,   116,   117,   120,
-     121,   124,   125,   128,   129,   133,   135,   137,   141,   142,
-     146,   147,   152,   153,   158,   159,   163,   164,   170,   171,
-     174,   175,   178,   182,   186,   190,   195,   199,   204,   222,
-     235,   237,   248,   259,   270,   283,   304,   313,   322,   327,
-     340,   360,   364,   370,   388,   394,   394,   404,   404,   411,
-     432,   436,   470,   508,   522,   533,   537,   562,   563,   564,
-     565,   566,   567,   568,   574,   584,   586,   588,   590,   592,
-     594,   607,   610,   637,   655,   682,   710,   729,   757,   784,
-     802,   827,   855,   874,   902,   921,   940,   957,   971,   992,
-    1011,  1029,  1046,  1062,  1078,  1079,  1080,  1081,  1082,  1095,
-    1109,  1114,  1118,  1129,  1134,  1144,  1149,  1163,  1179,  1180,
-    1181,  1182,  1185,  1186,  1192,  1195,  1196,  1200,  1201,  1203,
-    1208,  1210,  1217,  1225,  1226,  1230,  1232,  1236,  1237,  1241,
-    1245,  1246,  1249,  1251,  1255,  1256,  1261,  1262,  1263,  1264,
-    1265,  1266,  1267,  1268,  1269,  1270,  1273,  1276,  1279,  1280,
-    1281,  1282,  1283,  1284,  1285,  1286,  1287,  1288,  1291,  1292,
-    1293,  1294,  1295,  1296,  1297,  1298,  1299,  1300,  1301,  1304,
-    1307,  1312,  1313,  1317,  1318,  1322,  1326,  1327,  1331,  1335,
-    1339,  1345,  1346,  1350,  1354,  1355,  1358,  1359,  1363,  1365,
-    1367,  1375,  1376,  1379,  1380,  1384,  1386,  1388,  1396,  1398,
-    1405,  1406,  1410,  1411,  1414,  1415,  1419,  1421,  1425,  1429,
-    1433,  1435,  1442,  1443,  1447,  1448,  1453,  1455,  1459,  1461,
-    1465,  1466,  1469,  1470,  1474,  1475,  1477,  1479,  1483,  1484,
-    1488,  1489,  1498,  1499,  1508,  1509,  1520,  1523,  1524,  1525,
-    1531,  1539,  1546,  1555,  1556,  1559,  1562,  1565,  1568,  1571,
-    1574,  1577,  1580,  1583,  1586,  1587,  1588,  1589,  1590,  1591,
-    1592,  1593,  1596,  1599,  1600,  1603
+       0,    39,    39,    41,    43,    47,    48,    52,    53,    57,
+      61,    68,    74,    75,    78,    79,    83,    84,    88,    90,
+      92,    96,    97,   101,   104,   107,   110,   115,   116,   119,
+     120,   123,   124,   127,   128,   132,   134,   136,   140,   141,
+     145,   146,   151,   152,   157,   158,   162,   163,   169,   170,
+     173,   174,   177,   181,   185,   189,   194,   198,   203,   221,
+     234,   236,   247,   258,   269,   282,   303,   312,   321,   326,
+     339,   359,   363,   369,   387,   393,   393,   403,   403,   410,
+     431,   435,   469,   507,   521,   532,   536,   561,   562,   563,
+     564,   565,   566,   567,   573,   583,   585,   587,   589,   591,
+     593,   606,   609,   636,   654,   681,   709,   728,   756,   783,
+     801,   826,   854,   873,   901,   920,   939,   956,   970,   991,
+    1010,  1028,  1045,  1061,  1077,  1078,  1079,  1080,  1081,  1094,
+    1108,  1113,  1117,  1128,  1133,  1143,  1148,  1162,  1178,  1179,
+    1180,  1181,  1184,  1185,  1191,  1194,  1195,  1199,  1200,  1202,
+    1207,  1209,  1216,  1224,  1225,  1229,  1231,  1235,  1236,  1240,
+    1244,  1245,  1248,  1250,  1254,  1255,  1260,  1261,  1262,  1263,
+    1264,  1265,  1266,  1267,  1268,  1269,  1272,  1275,  1278,  1279,
+    1280,  1281,  1282,  1283,  1284,  1285,  1286,  1287,  1290,  1291,
+    1292,  1293,  1294,  1295,  1296,  1297,  1298,  1299,  1300,  1303,
+    1306,  1311,  1312,  1316,  1317,  1321,  1325,  1326,  1330,  1334,
+    1338,  1344,  1345,  1349,  1353,  1354,  1357,  1358,  1362,  1364,
+    1366,  1374,  1375,  1378,  1379,  1383,  1385,  1387,  1395,  1397,
+    1404,  1405,  1409,  1410,  1413,  1414,  1418,  1420,  1424,  1428,
+    1432,  1434,  1441,  1442,  1446,  1447,  1452,  1454,  1458,  1460,
+    1464,  1465,  1468,  1469,  1473,  1474,  1476,  1478,  1482,  1483,
+    1487,  1488,  1497,  1498,  1507,  1508,  1519,  1522,  1523,  1524,
+    1530,  1538,  1545,  1554,  1555,  1558,  1561,  1564,  1567,  1570,
+    1573,  1576,  1579,  1582,  1585,  1586,  1587,  1588,  1589,  1590,
+    1591,  1592,  1595,  1598,  1599,  1602
 };
 #endif
 
@@ -655,7 +631,7 @@ static const char *const yytname[] =
   "superclass", "classvardecls", "classvardecl", "methods", "methoddef",
   "optsemi", "optcomma", "optequal", "funcbody", "cmdlinecode", "methbody",
   "primitive", "retval", "funretval", "blocklist1", "blocklistitem",
-  "blocklist", "msgsend", "generator", "@1", "@2", "nextqual", "qual",
+  "blocklist", "msgsend", "generator", "$@1", "$@2", "nextqual", "qual",
   "expr1", "valrangex1", "valrangeassign", "valrangexd", "valrange2",
   "valrange3", "expr", "adverb", "exprn", "exprseq", "arrayelems",
   "arrayelems1", "arglist1", "arglistv1", "keyarglist1", "keyarg",
@@ -1560,17 +1536,20 @@ yy_symbol_print (yyoutput, yytype, yyvaluep)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_stack_print (yytype_int16 *bottom, yytype_int16 *top)
+yy_stack_print (yytype_int16 *yybottom, yytype_int16 *yytop)
 #else
 static void
-yy_stack_print (bottom, top)
-    yytype_int16 *bottom;
-    yytype_int16 *top;
+yy_stack_print (yybottom, yytop)
+    yytype_int16 *yybottom;
+    yytype_int16 *yytop;
 #endif
 {
   YYFPRINTF (stderr, "Stack now");
-  for (; bottom <= top; ++bottom)
-    YYFPRINTF (stderr, " %d", *bottom);
+  for (; yybottom <= yytop; yybottom++)
+    {
+      int yybot = *yybottom;
+      YYFPRINTF (stderr, " %d", yybot);
+    }
   YYFPRINTF (stderr, "\n");
 }
 
@@ -1604,11 +1583,11 @@ yy_reduce_print (yyvsp, yyrule)
   /* The symbols being reduced.  */
   for (yyi = 0; yyi < yynrhs; yyi++)
     {
-      fprintf (stderr, "   $%d = ", yyi + 1);
+      YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
 		       		       );
-      fprintf (stderr, "\n");
+      YYFPRINTF (stderr, "\n");
     }
 }
 
@@ -1888,10 +1867,8 @@ yydestruct (yymsg, yytype, yyvaluep)
 	break;
     }
 }
-
 
 /* Prevent warnings from -Wmissing-prototypes.  */
-
 #ifdef YYPARSE_PARAM
 #if defined __STDC__ || defined __cplusplus
 int yyparse (void *YYPARSE_PARAM);
@@ -1907,11 +1884,10 @@ int yyparse ();
 #endif /* ! YYPARSE_PARAM */
 
 
-
-/* The look-ahead symbol.  */
+/* The lookahead symbol.  */
 int yychar;
 
-/* The semantic value of the look-ahead symbol.  */
+/* The semantic value of the lookahead symbol.  */
 YYSTYPE yylval;
 
 /* Number of syntax errors so far.  */
@@ -1919,9 +1895,9 @@ int yynerrs;
 
 
 
-/*----------.
-| yyparse.  |
-`----------*/
+/*-------------------------.
+| yyparse or yypush_parse.  |
+`-------------------------*/
 
 #ifdef YYPARSE_PARAM
 #if (defined __STDC__ || defined __C99__FUNC__ \
@@ -1946,13 +1922,38 @@ yyparse ()
 #endif
 {
 
-  int yystate;
+
+    int yystate;
+    /* Number of tokens to shift before error messages enabled.  */
+    int yyerrstatus;
+
+    /* The stacks and their tools:
+       `yyss': related to states.
+       `yyvs': related to semantic values.
+
+       Refer to the stacks thru separate pointers, to allow yyoverflow
+       to reallocate them elsewhere.  */
+
+    /* The state stack.  */
+    yytype_int16 yyssa[YYINITDEPTH];
+    yytype_int16 *yyss;
+    yytype_int16 *yyssp;
+
+    /* The semantic value stack.  */
+    YYSTYPE yyvsa[YYINITDEPTH];
+    YYSTYPE *yyvs;
+    YYSTYPE *yyvsp;
+
+    YYSIZE_T yystacksize;
+
   int yyn;
   int yyresult;
-  /* Number of tokens to shift before error messages enabled.  */
-  int yyerrstatus;
-  /* Look-ahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  /* Lookahead token as an internal (translated) token number.  */
+  int yytoken;
+  /* The variables used to return semantic value and location from the
+     action routines.  */
+  YYSTYPE yyval;
+
 #if YYERROR_VERBOSE
   /* Buffer for error messages, and its allocated size.  */
   char yymsgbuf[128];
@@ -1960,51 +1961,28 @@ yyparse ()
   YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
 #endif
 
-  /* Three stacks and their tools:
-     `yyss': related to states,
-     `yyvs': related to semantic values,
-     `yyls': related to locations.
-
-     Refer to the stacks thru separate pointers, to allow yyoverflow
-     to reallocate them elsewhere.  */
-
-  /* The state stack.  */
-  yytype_int16 yyssa[YYINITDEPTH];
-  yytype_int16 *yyss = yyssa;
-  yytype_int16 *yyssp;
-
-  /* The semantic value stack.  */
-  YYSTYPE yyvsa[YYINITDEPTH];
-  YYSTYPE *yyvs = yyvsa;
-  YYSTYPE *yyvsp;
-
-
-
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
-
-  YYSIZE_T yystacksize = YYINITDEPTH;
-
-  /* The variables used to return semantic value and location from the
-     action routines.  */
-  YYSTYPE yyval;
-
 
   /* The number of symbols on the RHS of the reduced rule.
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
+
+  yytoken = 0;
+  yyss = yyssa;
+  yyvs = yyvsa;
+  yystacksize = YYINITDEPTH;
 
   YYDPRINTF ((stderr, "Starting parse\n"));
 
   yystate = 0;
   yyerrstatus = 0;
   yynerrs = 0;
-  yychar = YYEMPTY;		/* Cause a token to be read.  */
+  yychar = YYEMPTY; /* Cause a token to be read.  */
 
   /* Initialize stack pointers.
      Waste one element of value and location stack
      so that they stay on the same level as the state stack.
      The wasted elements are never initialized.  */
-
   yyssp = yyss;
   yyvsp = yyvs;
 
@@ -2034,7 +2012,6 @@ yyparse ()
 	YYSTYPE *yyvs1 = yyvs;
 	yytype_int16 *yyss1 = yyss;
 
-
 	/* Each stack pointer address is followed by the size of the
 	   data in use in that stack, in bytes.  This used to be a
 	   conditional around just the two extra args, but that might
@@ -2042,7 +2019,6 @@ yyparse ()
 	yyoverflow (YY_("memory exhausted"),
 		    &yyss1, yysize * sizeof (*yyssp),
 		    &yyvs1, yysize * sizeof (*yyvsp),
-
 		    &yystacksize);
 
 	yyss = yyss1;
@@ -2065,9 +2041,8 @@ yyparse ()
 	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
 	if (! yyptr)
 	  goto yyexhaustedlab;
-	YYSTACK_RELOCATE (yyss);
-	YYSTACK_RELOCATE (yyvs);
-
+	YYSTACK_RELOCATE (yyss_alloc, yyss);
+	YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
 	if (yyss1 != yyssa)
 	  YYSTACK_FREE (yyss1);
@@ -2078,7 +2053,6 @@ yyparse ()
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
 
-
       YYDPRINTF ((stderr, "Stack size increased to %lu\n",
 		  (unsigned long int) yystacksize));
 
@@ -2088,6 +2062,9 @@ yyparse ()
 
   YYDPRINTF ((stderr, "Entering state %d\n", yystate));
 
+  if (yystate == YYFINAL)
+    YYACCEPT;
+
   goto yybackup;
 
 /*-----------.
@@ -2096,16 +2073,16 @@ yyparse ()
 yybackup:
 
   /* Do appropriate processing given the current state.  Read a
-     look-ahead token if we need one and don't already have one.  */
+     lookahead token if we need one and don't already have one.  */
 
-  /* First try to decide what to do without reference to look-ahead token.  */
+  /* First try to decide what to do without reference to lookahead token.  */
   yyn = yypact[yystate];
   if (yyn == YYPACT_NINF)
     goto yydefault;
 
-  /* Not known => get a look-ahead token if don't already have one.  */
+  /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid look-ahead symbol.  */
+  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
   if (yychar == YYEMPTY)
     {
       YYDPRINTF ((stderr, "Reading a token: "));
@@ -2137,20 +2114,16 @@ yybackup:
       goto yyreduce;
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   /* Count tokens shifted since error; after three, turn off error
      status.  */
   if (yyerrstatus)
     yyerrstatus--;
 
-  /* Shift the look-ahead token.  */
+  /* Shift the lookahead token.  */
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
 
-  /* Discard the shifted token unless it is eof.  */
-  if (yychar != YYEOF)
-    yychar = YYEMPTY;
+  /* Discard the shifted token.  */
+  yychar = YYEMPTY;
 
   yystate = yyn;
   *++yyvsp = yylval;
@@ -2190,44 +2163,60 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 41 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 40 "lang11d"
     { gRootParseNode = (PyrParseNode*)(yyvsp[(1) - (1)]); gParserResult = 1; ;}
     break;
 
   case 3:
-#line 43 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 42 "lang11d"
     { gRootParseNode = (PyrParseNode*)(yyvsp[(1) - (1)]); gParserResult = 1; ;}
     break;
 
   case 4:
-#line 45 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 44 "lang11d"
     { gRootParseNode = (PyrParseNode*)(yyvsp[(2) - (2)]); gParserResult = 2; ;}
     break;
 
   case 5:
-#line 48 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 47 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 6:
-#line 50 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 49 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 8:
-#line 55 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 54 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 9:
-#line 59 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 58 "lang11d"
     { (yyval) = (long)newPyrClassNode((PyrSlotNode*)(yyvsp[(1) - (6)]), (PyrSlotNode*)(yyvsp[(2) - (6)]),
 					(PyrVarListNode*)(yyvsp[(4) - (6)]), (PyrMethodNode*)(yyvsp[(5) - (6)]), 0);
 				;}
     break;
 
   case 10:
-#line 63 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 62 "lang11d"
     { (yyval) = (long)newPyrClassNode((PyrSlotNode*)(yyvsp[(1) - (9)]), (PyrSlotNode*)(yyvsp[(5) - (9)]),
 					(PyrVarListNode*)(yyvsp[(7) - (9)]), (PyrMethodNode*)(yyvsp[(8) - (9)]),
 					(PyrSlotNode*)(yyvsp[(3) - (9)]));
@@ -2235,176 +2224,240 @@ yyreduce:
     break;
 
   case 11:
-#line 70 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 69 "lang11d"
     {
 					(yyval) = (long)newPyrClassExtNode((PyrSlotNode*)(yyvsp[(2) - (5)]), (PyrMethodNode*)(yyvsp[(4) - (5)]));
 				;}
     break;
 
   case 12:
-#line 75 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 74 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 14:
-#line 79 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 78 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 15:
-#line 81 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 80 "lang11d"
     { (yyval) = (yyvsp[(2) - (2)]); ;}
     break;
 
   case 16:
-#line 84 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 83 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 17:
-#line 86 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 85 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 18:
-#line 90 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 89 "lang11d"
     { (yyval) = (long)newPyrVarListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), varClass); ;}
     break;
 
   case 19:
-#line 92 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 91 "lang11d"
     { (yyval) = (long)newPyrVarListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), varInst); ;}
     break;
 
   case 20:
-#line 94 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 93 "lang11d"
     { (yyval) = (long)newPyrVarListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), varConst); ;}
     break;
 
   case 21:
-#line 97 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 96 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 22:
-#line 99 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 98 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 23:
-#line 103 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 102 "lang11d"
     { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(1) - (7)]), (PyrSlotNode*)(yyvsp[(5) - (7)]),
 					(PyrArgListNode*)(yyvsp[(3) - (7)]), (PyrVarListNode*)(yyvsp[(4) - (7)]), (PyrParseNode*)(yyvsp[(6) - (7)]), 0); ;}
     break;
 
   case 24:
-#line 106 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 105 "lang11d"
     { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrSlotNode*)(yyvsp[(6) - (8)]),
 					(PyrArgListNode*)(yyvsp[(4) - (8)]), (PyrVarListNode*)(yyvsp[(5) - (8)]), (PyrParseNode*)(yyvsp[(7) - (8)]), 1); ;}
     break;
 
   case 25:
-#line 109 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 108 "lang11d"
     { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(1) - (7)]), (PyrSlotNode*)(yyvsp[(5) - (7)]),
 					(PyrArgListNode*)(yyvsp[(3) - (7)]), (PyrVarListNode*)(yyvsp[(4) - (7)]), (PyrParseNode*)(yyvsp[(6) - (7)]), 0); ;}
     break;
 
   case 26:
-#line 112 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 111 "lang11d"
     { (yyval) = (long)newPyrMethodNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrSlotNode*)(yyvsp[(6) - (8)]),
 					(PyrArgListNode*)(yyvsp[(4) - (8)]), (PyrVarListNode*)(yyvsp[(5) - (8)]), (PyrParseNode*)(yyvsp[(7) - (8)]), 1); ;}
     break;
 
   case 34:
-#line 130 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 129 "lang11d"
     { (yyval) = (long)newPyrDropNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 35:
-#line 134 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 133 "lang11d"
     { (yyval) = (long)newPyrBlockNode(NULL, (PyrVarListNode*)(yyvsp[(2) - (4)]), (PyrParseNode*)(yyvsp[(3) - (4)]), false); ;}
     break;
 
   case 36:
-#line 136 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 135 "lang11d"
     { (yyval) = (long)newPyrBlockNode(NULL, (PyrVarListNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)]), false); ;}
     break;
 
   case 37:
-#line 138 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 137 "lang11d"
     { (yyval) = (long)newPyrBlockNode(NULL, NULL, (PyrParseNode*)(yyvsp[(1) - (1)]), false); ;}
     break;
 
   case 39:
-#line 143 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 142 "lang11d"
     { (yyval) = (long)newPyrDropNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 40:
-#line 146 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 145 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 41:
-#line 148 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 147 "lang11d"
     { (yyval) = (yyvsp[(1) - (2)]); ;}
     break;
 
   case 42:
-#line 152 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 151 "lang11d"
     { (yyval) = (long)newPyrReturnNode(NULL); ;}
     break;
 
   case 43:
-#line 154 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 153 "lang11d"
     { (yyval) = (long)newPyrReturnNode((PyrParseNode*)(yyvsp[(2) - (3)])); ;}
     break;
 
   case 44:
-#line 158 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 157 "lang11d"
     { (yyval) = (long)newPyrBlockReturnNode(); ;}
     break;
 
   case 45:
-#line 160 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 159 "lang11d"
     { (yyval) = (long)newPyrReturnNode((PyrParseNode*)(yyvsp[(2) - (3)])); ;}
     break;
 
   case 47:
-#line 165 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 164 "lang11d"
     {
 					(yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)]));
 				;}
     break;
 
   case 50:
-#line 174 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 173 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 52:
-#line 179 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 178 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)]), 0, 0);
 			;}
     break;
 
   case 53:
-#line 183 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 182 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]), 0, 0);
 			;}
     break;
 
   case 54:
-#line 187 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 186 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (4)]), NULL, NULL, (PyrParseNode*)(yyvsp[(4) - (4)]));
 			;}
     break;
 
   case 55:
-#line 191 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 190 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(1) - (6)]), (PyrParseNode*)(yyvsp[(3) - (6)]),
 						(PyrParseNode*)(yyvsp[(4) - (6)]), (PyrParseNode*)(yyvsp[(6) - (6)]));
@@ -2412,14 +2465,18 @@ yyreduce:
     break;
 
   case 56:
-#line 196 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 195 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (6)]), NULL, NULL, (PyrParseNode*)(yyvsp[(6) - (6)]));
 			;}
     break;
 
   case 57:
-#line 200 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 199 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(2) - (8)]), (PyrParseNode*)(yyvsp[(5) - (8)]),
 						(PyrParseNode*)(yyvsp[(6) - (8)]), (PyrParseNode*)(yyvsp[(8) - (8)]));
@@ -2427,7 +2484,9 @@ yyreduce:
     break;
 
   case 58:
-#line 205 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 204 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2448,7 +2507,9 @@ yyreduce:
     break;
 
   case 59:
-#line 223 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 222 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2464,12 +2525,16 @@ yyreduce:
     break;
 
   case 60:
-#line 236 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 235 "lang11d"
     { (yyval) = (long)newPyrDynListNode((PyrParseNode*)(yyvsp[(1) - (4)]), (PyrParseNode*)(yyvsp[(3) - (4)])); ;}
     break;
 
   case 61:
-#line 238 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 237 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2483,7 +2548,9 @@ yyreduce:
     break;
 
   case 62:
-#line 249 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 248 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2497,7 +2564,9 @@ yyreduce:
     break;
 
   case 63:
-#line 260 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 259 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2511,7 +2580,9 @@ yyreduce:
     break;
 
   case 64:
-#line 271 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 270 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2527,7 +2598,9 @@ yyreduce:
     break;
 
   case 65:
-#line 284 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 283 "lang11d"
     {
 				PyrSlotNode *selectornode, *selectornode2;
 				PyrSlot slot, slot2;
@@ -2551,7 +2624,9 @@ yyreduce:
     break;
 
   case 66:
-#line 305 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 304 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2563,7 +2638,9 @@ yyreduce:
     break;
 
   case 67:
-#line 314 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 313 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2575,7 +2652,9 @@ yyreduce:
     break;
 
   case 68:
-#line 323 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 322 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (7)]), (PyrParseNode*)(yyvsp[(1) - (7)]),
 					(PyrParseNode*)(yyvsp[(5) - (7)]), (PyrParseNode*)(yyvsp[(7) - (7)]));
@@ -2583,7 +2662,9 @@ yyreduce:
     break;
 
   case 69:
-#line 328 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 327 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2599,7 +2680,9 @@ yyreduce:
     break;
 
   case 70:
-#line 341 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 340 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot, slot2;
@@ -2622,14 +2705,18 @@ yyreduce:
     break;
 
   case 71:
-#line 361 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 360 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (6)]), (PyrParseNode*)(yyvsp[(1) - (6)]), NULL, (PyrParseNode*)(yyvsp[(6) - (6)]));
 			;}
     break;
 
   case 72:
-#line 365 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 364 "lang11d"
     {
 				PyrParseNode* args;
 				args = linkNextNode((PyrParseNode*)(yyvsp[(1) - (8)]), (PyrParseNode*)(yyvsp[(5) - (8)]));
@@ -2638,7 +2725,9 @@ yyreduce:
     break;
 
   case 73:
-#line 371 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 370 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2659,19 +2748,25 @@ yyreduce:
     break;
 
   case 74:
-#line 389 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 388 "lang11d"
     {
 				(yyval) = (long)newPyrCallNode((PyrSlotNode*)(yyvsp[(3) - (4)]), (PyrParseNode*)(yyvsp[(1) - (4)]), 0, (PyrParseNode*)(yyvsp[(4) - (4)]));
 			;}
     break;
 
   case 75:
-#line 394 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 393 "lang11d"
     { pushls(&generatorStack, (yyvsp[(3) - (3)])); pushls(&generatorStack, 1); ;}
     break;
 
   case 76:
-#line 395 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 394 "lang11d"
     {
 				PyrSlot slot;
 				SetSymbol(&slot, getsym("r"));
@@ -2684,19 +2779,25 @@ yyreduce:
     break;
 
   case 77:
-#line 404 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 403 "lang11d"
     { pushls(&generatorStack, (yyvsp[(3) - (3)])); pushls(&generatorStack, 2); ;}
     break;
 
   case 78:
-#line 405 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 404 "lang11d"
     {
 				(yyval) = (yyvsp[(6) - (7)]);
 			;}
     break;
 
   case 79:
-#line 411 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 410 "lang11d"
     {
 					// innermost part
 					int action = popls(&generatorStack);
@@ -2721,12 +2822,16 @@ yyreduce:
     break;
 
   case 80:
-#line 433 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 432 "lang11d"
     { (yyval) = (yyvsp[(2) - (2)]); ;}
     break;
 
   case 81:
-#line 437 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 436 "lang11d"
     {
 				// later should check if exprseq is a series and optimize it to for loop
 				PyrParseNode *exprseq = (PyrParseNode*)(yyvsp[(3) - (4)]);
@@ -2763,7 +2868,9 @@ yyreduce:
     break;
 
   case 82:
-#line 471 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 470 "lang11d"
     {
 				// later should check if exprseq is a series and optimize it to for loop
 				PyrParseNode *exprseq = (PyrParseNode*)(yyvsp[(4) - (5)]);
@@ -2804,7 +2911,9 @@ yyreduce:
     break;
 
   case 83:
-#line 509 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 508 "lang11d"
     {
 				PyrSlot slot;
 				SetSymbol(&slot, s_value);
@@ -2821,7 +2930,9 @@ yyreduce:
     break;
 
   case 84:
-#line 523 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 522 "lang11d"
     {
 				PyrSlot slot;
 				SetSymbol(&slot, getsym("if"));
@@ -2835,14 +2946,18 @@ yyreduce:
     break;
 
   case 85:
-#line 534 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 533 "lang11d"
     {
 				(yyval) = (long)newPyrDropNode((PyrParseNode*)(yyvsp[(3) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]));
 			;}
     break;
 
   case 86:
-#line 538 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 537 "lang11d"
     {
 				PyrSlot slot;
 				SetSymbol(&slot, getsym("alwaysYield"));
@@ -2868,7 +2983,9 @@ yyreduce:
     break;
 
   case 93:
-#line 569 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 568 "lang11d"
     {
 				PyrParseNode* node = (PyrParseNode*)(yyvsp[(2) - (3)]);
 				node->mParens = 1;
@@ -2877,7 +2994,9 @@ yyreduce:
     break;
 
   case 94:
-#line 575 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 574 "lang11d"
     {
 				PyrParseNode* argnode;
 				PyrSlotNode* selectornode;
@@ -2890,32 +3009,44 @@ yyreduce:
     break;
 
   case 95:
-#line 585 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 584 "lang11d"
     { (yyval) = (long)newPyrDynListNode(0, (PyrParseNode*)(yyvsp[(2) - (3)])); ;}
     break;
 
   case 96:
-#line 587 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 586 "lang11d"
     { (yyval) = (yyvsp[(2) - (3)]); ;}
     break;
 
   case 97:
-#line 589 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 588 "lang11d"
     { (yyval) = (yyvsp[(3) - (4)]); ;}
     break;
 
   case 98:
-#line 591 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 590 "lang11d"
     { (yyval) = (long)newPyrDynDictNode((PyrParseNode*)(yyvsp[(2) - (3)])); ;}
     break;
 
   case 99:
-#line 593 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 592 "lang11d"
     { (yyval) = (long)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 100:
-#line 595 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 594 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -2931,7 +3062,9 @@ yyreduce:
     break;
 
   case 102:
-#line 611 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 610 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -2961,7 +3094,9 @@ yyreduce:
     break;
 
   case 103:
-#line 638 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 637 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -2982,7 +3117,9 @@ yyreduce:
     break;
 
   case 104:
-#line 656 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 655 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -3010,7 +3147,9 @@ yyreduce:
     break;
 
   case 105:
-#line 683 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 682 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3041,7 +3180,9 @@ yyreduce:
     break;
 
   case 106:
-#line 711 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 710 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3063,7 +3204,9 @@ yyreduce:
     break;
 
   case 107:
-#line 730 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 729 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -3092,7 +3235,9 @@ yyreduce:
     break;
 
   case 108:
-#line 758 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 757 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3122,7 +3267,9 @@ yyreduce:
     break;
 
   case 109:
-#line 785 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 784 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3143,7 +3290,9 @@ yyreduce:
     break;
 
   case 110:
-#line 803 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 802 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -3171,7 +3320,9 @@ yyreduce:
     break;
 
   case 111:
-#line 828 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 827 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3202,7 +3353,9 @@ yyreduce:
     break;
 
   case 112:
-#line 856 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 855 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1, *nilnode2;
@@ -3224,7 +3377,9 @@ yyreduce:
     break;
 
   case 113:
-#line 875 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 874 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode1;
@@ -3253,7 +3408,9 @@ yyreduce:
     break;
 
   case 114:
-#line 903 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 902 "lang11d"
     {
 				// if this is not used in a 'do' or list comprehension, then should return an error.
 				PyrSlotNode *selectornode;
@@ -3274,7 +3431,9 @@ yyreduce:
     break;
 
   case 115:
-#line 922 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 921 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *zeronode;
@@ -3295,7 +3454,9 @@ yyreduce:
     break;
 
   case 116:
-#line 941 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 940 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
@@ -3314,7 +3475,9 @@ yyreduce:
     break;
 
   case 117:
-#line 958 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 957 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot selectorSlot;
@@ -3331,7 +3494,9 @@ yyreduce:
     break;
 
   case 118:
-#line 972 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 971 "lang11d"
     {
 				// if this is not used in a 'do' or list comprehension, then should return an error.
 				PyrSlotNode *selectornode;
@@ -3353,7 +3518,9 @@ yyreduce:
     break;
 
   case 119:
-#line 993 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 992 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *zeronode;
@@ -3374,7 +3541,9 @@ yyreduce:
     break;
 
   case 120:
-#line 1012 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1011 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode, *nilnode2;
@@ -3394,7 +3563,9 @@ yyreduce:
     break;
 
   case 121:
-#line 1030 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1029 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
@@ -3413,7 +3584,9 @@ yyreduce:
     break;
 
   case 122:
-#line 1047 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1046 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrPushLitNode *nilnode;
@@ -3432,7 +3605,9 @@ yyreduce:
     break;
 
   case 123:
-#line 1063 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1062 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot selectorSlot;
@@ -3449,12 +3624,16 @@ yyreduce:
     break;
 
   case 127:
-#line 1081 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1080 "lang11d"
     { (yyval) = (long)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 128:
-#line 1083 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1082 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -3470,7 +3649,9 @@ yyreduce:
     break;
 
   case 129:
-#line 1096 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1095 "lang11d"
     {
 				PyrParseNode *node, *args;
 				PyrSlotNode *slotnode;
@@ -3487,7 +3668,9 @@ yyreduce:
     break;
 
   case 130:
-#line 1110 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1109 "lang11d"
     {
 				(yyval) = (long)newPyrBinopCallNode((PyrSlotNode*)(yyvsp[(2) - (4)]),
 						(PyrParseNode*)(yyvsp[(1) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]), (PyrParseNode*)(yyvsp[(3) - (4)]));
@@ -3495,14 +3678,18 @@ yyreduce:
     break;
 
   case 131:
-#line 1115 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1114 "lang11d"
     {
 				(yyval) = (long)newPyrAssignNode((PyrSlotNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)]), 0);
 			;}
     break;
 
   case 132:
-#line 1119 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1118 "lang11d"
     {
 				PyrParseNode *argnode, *args;
 				PyrSlotNode* selectornode;
@@ -3516,7 +3703,9 @@ yyreduce:
     break;
 
   case 133:
-#line 1130 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1129 "lang11d"
     {
 				(yyval) = (long)newPyrSetterNode((PyrSlotNode*)(yyvsp[(3) - (5)]),
 						(PyrParseNode*)(yyvsp[(1) - (5)]), (PyrParseNode*)(yyvsp[(5) - (5)]));
@@ -3524,7 +3713,9 @@ yyreduce:
     break;
 
   case 134:
-#line 1135 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1134 "lang11d"
     {
 				if ((yyvsp[(4) - (7)]) != 0) {
 					error("Setter method called with keyword arguments.\n");
@@ -3537,7 +3728,9 @@ yyreduce:
     break;
 
   case 135:
-#line 1145 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1144 "lang11d"
     {
 				(yyval) = (long)newPyrMultiAssignNode((PyrMultiAssignVarListNode*)(yyvsp[(2) - (4)]),
 					(PyrParseNode*)(yyvsp[(4) - (4)]), 0);
@@ -3545,7 +3738,9 @@ yyreduce:
     break;
 
   case 136:
-#line 1150 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1149 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -3562,7 +3757,9 @@ yyreduce:
     break;
 
   case 137:
-#line 1164 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1163 "lang11d"
     {
 				PyrSlotNode *selectornode;
 				PyrSlot slot;
@@ -3579,49 +3776,67 @@ yyreduce:
     break;
 
   case 138:
-#line 1179 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1178 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 139:
-#line 1180 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1179 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(2) - (2)]), NULL); ;}
     break;
 
   case 140:
-#line 1181 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1180 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(2) - (2)]), NULL); ;}
     break;
 
   case 141:
-#line 1182 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1181 "lang11d"
     { (yyval) = (yyvsp[(3) - (4)]); ;}
     break;
 
   case 143:
-#line 1187 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1186 "lang11d"
     {
 				(yyval) = (long)newPyrDropNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)]));
 			;}
     break;
 
   case 145:
-#line 1195 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1194 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 146:
-#line 1197 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1196 "lang11d"
     { (yyval) = (yyvsp[(1) - (2)]); ;}
     break;
 
   case 148:
-#line 1202 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1201 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 149:
-#line 1204 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1203 "lang11d"
     {
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (2)]), NULL);
 					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)]));
@@ -3629,12 +3844,16 @@ yyreduce:
     break;
 
   case 150:
-#line 1209 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1208 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 151:
-#line 1211 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1210 "lang11d"
     {
 					PyrParseNode* elems;
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)(yyvsp[(3) - (4)]), NULL);
@@ -3644,7 +3863,9 @@ yyreduce:
     break;
 
   case 152:
-#line 1218 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1217 "lang11d"
     {
 					PyrParseNode* elems;
 					elems = (PyrParseNode*)linkNextNode((PyrParseNode*)(yyvsp[(3) - (5)]), (PyrParseNode*)(yyvsp[(5) - (5)]));
@@ -3653,317 +3874,439 @@ yyreduce:
     break;
 
   case 154:
-#line 1227 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1226 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 155:
-#line 1231 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1230 "lang11d"
     { (yyval) = (yyvsp[(2) - (2)]); ;}
     break;
 
   case 156:
-#line 1233 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1232 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)])); ;}
     break;
 
   case 158:
-#line 1238 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1237 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 159:
-#line 1242 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1241 "lang11d"
     { (yyval) = (long)newPyrPushKeyArgNode((PyrSlotNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 160:
-#line 1245 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1244 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 161:
-#line 1246 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1245 "lang11d"
     { (yyval) = (yyvsp[(2) - (2)]); ;}
     break;
 
   case 162:
-#line 1250 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1249 "lang11d"
     { (yyval) = (long)newPyrMultiAssignVarListNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 163:
-#line 1252 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1251 "lang11d"
     { (yyval) = (long)newPyrMultiAssignVarListNode((PyrSlotNode*)(yyvsp[(1) - (3)]), (PyrSlotNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 165:
-#line 1257 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1256 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 166:
-#line 1261 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1260 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 167:
-#line 1262 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1261 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 168:
-#line 1263 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1262 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 169:
-#line 1264 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1263 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 170:
-#line 1265 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1264 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 171:
-#line 1266 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1265 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 172:
-#line 1267 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1266 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 173:
-#line 1268 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1267 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 174:
-#line 1269 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1268 "lang11d"
     { (yyval) = (long)newPyrLiteralNode(NULL, (PyrParseNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 175:
-#line 1270 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1269 "lang11d"
     { (yyval) = (long)newPyrLiteralNode(NULL, (PyrParseNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 176:
-#line 1273 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1272 "lang11d"
     { (yyval) = (long)newPyrPushLitNode(NULL, (PyrParseNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 177:
-#line 1276 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1275 "lang11d"
     { (yyval) = (long)newPyrPushNameNode((PyrSlotNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 178:
-#line 1279 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1278 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 179:
-#line 1280 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1279 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 180:
-#line 1281 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1280 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 181:
-#line 1282 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1281 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 182:
-#line 1283 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1282 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 183:
-#line 1284 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1283 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 184:
-#line 1285 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1284 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 185:
-#line 1286 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1285 "lang11d"
     { (yyval) = (long)newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 186:
-#line 1287 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1286 "lang11d"
     { (yyval) = (long)newPyrPushLitNode(NULL, (PyrParseNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 187:
-#line 1288 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1287 "lang11d"
     { (yyval) = (long)newPyrPushLitNode(NULL, (PyrParseNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 188:
-#line 1291 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1290 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 189:
-#line 1292 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1291 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 190:
-#line 1293 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1292 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 191:
-#line 1294 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1293 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 192:
-#line 1295 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1294 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 193:
-#line 1296 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1295 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 194:
-#line 1297 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1296 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 195:
-#line 1298 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1297 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 196:
-#line 1299 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1298 "lang11d"
     { (yyval) = (long)newPyrLiteralNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL); ;}
     break;
 
   case 197:
-#line 1300 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1299 "lang11d"
     { (yyval) = (long)newPyrLiteralNode(NULL, (PyrParseNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 198:
-#line 1301 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1300 "lang11d"
     { (yyval) = (long)newPyrLiteralNode(NULL, (PyrParseNode*)(yyvsp[(1) - (1)])); ;}
     break;
 
   case 199:
-#line 1305 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1304 "lang11d"
     { (yyval) = (long)newPyrBlockNode((PyrArgListNode*)(yyvsp[(2) - (5)]), (PyrVarListNode*)(yyvsp[(3) - (5)]),
 					(PyrParseNode*)(yyvsp[(4) - (5)]), false); ;}
     break;
 
   case 200:
-#line 1308 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1307 "lang11d"
     { (yyval) = (long)newPyrBlockNode((PyrArgListNode*)(yyvsp[(2) - (5)]), (PyrVarListNode*)(yyvsp[(3) - (5)]),
 					(PyrParseNode*)(yyvsp[(4) - (5)]), true); ;}
     break;
 
   case 201:
-#line 1312 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1311 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 202:
-#line 1314 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1313 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 204:
-#line 1319 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1318 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (2)]), (PyrParseNode*)(yyvsp[(2) - (2)])); ;}
     break;
 
   case 205:
-#line 1323 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1322 "lang11d"
     { (yyval) = (long)newPyrVarListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), varLocal); ;}
     break;
 
   case 206:
-#line 1326 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1325 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 207:
-#line 1328 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1327 "lang11d"
     {
 					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), NULL);
 				;}
     break;
 
   case 208:
-#line 1332 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1331 "lang11d"
     {
 					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (5)]), (PyrSlotNode*)(yyvsp[(4) - (5)]));
 				;}
     break;
 
   case 209:
-#line 1336 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1335 "lang11d"
     {
 					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (3)]), NULL);
 				;}
     break;
 
   case 210:
-#line 1340 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1339 "lang11d"
     {
 					(yyval) = (long)newPyrArgListNode((PyrVarDefNode*)(yyvsp[(2) - (5)]), (PyrSlotNode*)(yyvsp[(4) - (5)]));
 				;}
     break;
 
   case 212:
-#line 1347 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1346 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 213:
-#line 1351 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1350 "lang11d"
     { (yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(2) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]), (yyvsp[(1) - (4)])); ;}
     break;
 
   case 214:
-#line 1354 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1353 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 217:
-#line 1360 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1359 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 218:
-#line 1364 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1363 "lang11d"
     { (yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL, 0); ;}
     break;
 
   case 219:
-#line 1366 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1365 "lang11d"
     { (yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)]), 0); ;}
     break;
 
   case 220:
-#line 1368 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1367 "lang11d"
     {
 					PyrParseNode* node = (PyrParseNode*)(yyvsp[(4) - (5)]);
 					node->mParens = 1;
@@ -3972,27 +4315,37 @@ yyreduce:
     break;
 
   case 221:
-#line 1375 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1374 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 224:
-#line 1381 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1380 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 225:
-#line 1385 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1384 "lang11d"
     { (yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(1) - (1)]), NULL, 0); ;}
     break;
 
   case 226:
-#line 1387 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1386 "lang11d"
     { (yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)]), 0); ;}
     break;
 
   case 227:
-#line 1389 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1388 "lang11d"
     {
 									PyrParseNode* node = (PyrParseNode*)(yyvsp[(3) - (4)]);
 									node->mParens = 1;
@@ -4001,12 +4354,16 @@ yyreduce:
     break;
 
   case 228:
-#line 1397 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1396 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 229:
-#line 1399 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1398 "lang11d"
     {
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (2)]), NULL);
 					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)]));
@@ -4014,47 +4371,65 @@ yyreduce:
     break;
 
   case 231:
-#line 1407 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1406 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 232:
-#line 1410 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1409 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 235:
-#line 1416 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1415 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 236:
-#line 1420 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1419 "lang11d"
     { (yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(2) - (2)]), NULL, (yyvsp[(1) - (2)])); ;}
     break;
 
   case 237:
-#line 1422 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1421 "lang11d"
     { (yyval) = (long)newPyrVarDefNode((PyrSlotNode*)(yyvsp[(2) - (4)]), (PyrParseNode*)(yyvsp[(4) - (4)]), (yyvsp[(1) - (4)])); ;}
     break;
 
   case 238:
-#line 1426 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1425 "lang11d"
     { (yyval) = (long)newPyrLitDictNode((PyrParseNode*)(yyvsp[(3) - (4)])); ;}
     break;
 
   case 239:
-#line 1430 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1429 "lang11d"
     { (yyval) = (long)newPyrLitDictNode((PyrParseNode*)(yyvsp[(2) - (3)])); ;}
     break;
 
   case 240:
-#line 1434 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1433 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 241:
-#line 1436 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1435 "lang11d"
     {
 					PyrParseNode* key = newPyrPushLitNode((PyrSlotNode*)(yyvsp[(1) - (2)]), NULL);
 					(yyval) = (long)linkNextNode(key, (PyrParseNode*)(yyvsp[(2) - (2)]));
@@ -4062,82 +4437,114 @@ yyreduce:
     break;
 
   case 243:
-#line 1444 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1443 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 244:
-#line 1447 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1446 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 246:
-#line 1454 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1453 "lang11d"
     { (yyval) = (long)newPyrLitListNode(0, (PyrParseNode*)(yyvsp[(3) - (4)])); ;}
     break;
 
   case 247:
-#line 1456 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1455 "lang11d"
     { (yyval) = (long)newPyrLitListNode((PyrParseNode*)(yyvsp[(2) - (5)]), (PyrParseNode*)(yyvsp[(4) - (5)])); ;}
     break;
 
   case 248:
-#line 1460 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1459 "lang11d"
     { (yyval) = (long)newPyrLitListNode(0, (PyrParseNode*)(yyvsp[(2) - (3)])); ;}
     break;
 
   case 249:
-#line 1462 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1461 "lang11d"
     { (yyval) = (long)newPyrLitListNode((PyrParseNode*)(yyvsp[(1) - (4)]), (PyrParseNode*)(yyvsp[(3) - (4)])); ;}
     break;
 
   case 250:
-#line 1465 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1464 "lang11d"
     { (yyval) = 0; ;}
     break;
 
   case 253:
-#line 1471 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1470 "lang11d"
     { (yyval) = (long)linkNextNode((PyrParseNode*)(yyvsp[(1) - (3)]), (PyrParseNode*)(yyvsp[(3) - (3)])); ;}
     break;
 
   case 254:
-#line 1474 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1473 "lang11d"
     { (yyval) = rwPrivate; ;}
     break;
 
   case 255:
-#line 1476 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1475 "lang11d"
     { (yyval) = rwReadOnly; ;}
     break;
 
   case 256:
-#line 1478 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1477 "lang11d"
     { (yyval) = rwReadWrite; ;}
     break;
 
   case 257:
-#line 1480 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1479 "lang11d"
     { (yyval) = rwWriteOnly; ;}
     break;
 
   case 258:
-#line 1483 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1482 "lang11d"
     { (yyval) = rwPrivate; ;}
     break;
 
   case 259:
-#line 1485 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1484 "lang11d"
     { (yyval) = rwReadOnly; ;}
     break;
 
   case 260:
-#line 1488 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1487 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 261:
-#line 1490 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1489 "lang11d"
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
@@ -4147,12 +4554,16 @@ yyreduce:
     break;
 
   case 262:
-#line 1498 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1497 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 263:
-#line 1500 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1499 "lang11d"
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
@@ -4162,12 +4573,16 @@ yyreduce:
     break;
 
   case 264:
-#line 1508 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1507 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 265:
-#line 1510 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1509 "lang11d"
     {
 					PyrSlotNode *node;
 					double intval, fracval;
@@ -4180,12 +4595,16 @@ yyreduce:
     break;
 
   case 266:
-#line 1520 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1519 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 269:
-#line 1526 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1525 "lang11d"
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)(yyvsp[(1) - (2)]);
@@ -4194,7 +4613,9 @@ yyreduce:
     break;
 
   case 270:
-#line 1532 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1531 "lang11d"
     {
 				PyrSlotNode *node;
 				double ival;
@@ -4205,7 +4626,9 @@ yyreduce:
     break;
 
   case 271:
-#line 1540 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1539 "lang11d"
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
@@ -4215,7 +4638,9 @@ yyreduce:
     break;
 
   case 272:
-#line 1547 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1546 "lang11d"
     {
 				PyrSlotNode *node;
 				node = (PyrSlotNode*)zzval;
@@ -4225,113 +4650,156 @@ yyreduce:
     break;
 
   case 273:
-#line 1555 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1554 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 274:
-#line 1556 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1555 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 275:
-#line 1559 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1558 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 276:
-#line 1562 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1561 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 277:
-#line 1565 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1564 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 278:
-#line 1568 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1567 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 279:
-#line 1571 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1570 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 280:
-#line 1574 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1573 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 281:
-#line 1577 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1576 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 282:
-#line 1580 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1579 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 283:
-#line 1583 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1582 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 284:
-#line 1586 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1585 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 285:
-#line 1587 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1586 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 286:
-#line 1588 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1587 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 287:
-#line 1589 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1588 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 288:
-#line 1590 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1589 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 289:
-#line 1591 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1590 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 290:
-#line 1592 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1591 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 291:
-#line 1593 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1592 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 292:
-#line 1596 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1595 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
   case 295:
-#line 1603 "lang11d"
+
+/* Line 1455 of yacc.c  */
+#line 1602 "lang11d"
     { (yyval) = zzval; ;}
     break;
 
 
-/* Line 1267 of yacc.c.  */
-#line 4335 "lang11d_tab.cpp"
+
+/* Line 1455 of yacc.c  */
+#line 4803 "lang11d_tab.cpp"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -4341,7 +4809,6 @@ yyreduce:
   YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
-
 
   /* Now `shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
@@ -4407,7 +4874,7 @@ yyerrlab:
 
   if (yyerrstatus == 3)
     {
-      /* If just tried and failed to reuse look-ahead token after an
+      /* If just tried and failed to reuse lookahead token after an
 	 error, discard it.  */
 
       if (yychar <= YYEOF)
@@ -4424,7 +4891,7 @@ yyerrlab:
 	}
     }
 
-  /* Else will try to reuse look-ahead token after shifting the error
+  /* Else will try to reuse lookahead token after shifting the error
      token.  */
   goto yyerrlab1;
 
@@ -4481,9 +4948,6 @@ yyerrlab1:
       YY_STACK_PRINT (yyss, yyssp);
     }
 
-  if (yyn == YYFINAL)
-    YYACCEPT;
-
   *++yyvsp = yylval;
 
 
@@ -4508,7 +4972,7 @@ yyabortlab:
   yyresult = 1;
   goto yyreturn;
 
-#ifndef yyoverflow
+#if !defined(yyoverflow) || YYERROR_VERBOSE
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
@@ -4519,7 +4983,7 @@ yyexhaustedlab:
 #endif
 
 yyreturn:
-  if (yychar != YYEOF && yychar != YYEMPTY)
+  if (yychar != YYEMPTY)
      yydestruct ("Cleanup: discarding lookahead",
 		 yytoken, &yylval);
   /* Do not reclaim the symbols of the rule which action triggered
