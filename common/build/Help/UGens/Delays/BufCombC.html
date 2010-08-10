@@ -33,6 +33,9 @@ span.s2 {color: #091fb1}
 <p class="p3"><b>delaytime</b> - delay time in seconds.</p>
 <p class="p3"><b>decaytime</b> - time for the echoes to decay by 60 decibels. If this time is negative then the feedback</p>
 <p class="p3">coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.</p>
+<p class="p3"><b>Warning:</b> For reasons of efficiency, the effective 
+buffer size is limited to the previous power of two. So, if 44100 
+samples are allocated, the maximum delay would be 32768 samples.</p>
 <p class="p4"><br></p>
 <p class="p5">// These examples compare the variants, so that you can hear the difference in interpolation</p>
 <p class="p4"><br></p>
