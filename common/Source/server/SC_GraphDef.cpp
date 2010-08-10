@@ -33,7 +33,7 @@
 #include <dirent.h>
 #endif //_MSC_VER
 #include <stdexcept>
-#include "ReadWriteMacros.h"
+#include "../server/ReadWriteMacros.h"
 #include "SC_Prototypes.h"
 #include "SC_CoreAudio.h"
 #include "SC_DirUtils.h"
