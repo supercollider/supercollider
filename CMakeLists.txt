@@ -1,13 +1,13 @@
 cmake_minimum_required (VERSION 2.6)
 project (SuperCollider)
 
-include (cmake_modules/FinalFile.cmake)
+include (common/cmake_modules/FinalFile.cmake)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/common/cmake_modules
                       ${CMAKE_MODULE_PATH})
 
 CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/common/cmake_modules/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 
