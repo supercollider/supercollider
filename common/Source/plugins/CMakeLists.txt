@@ -8,11 +8,13 @@ include_directories(../../Headers/plugin_interface
 					../../Headers/common
 					../../Headers/server)
 
-include_directories(../../include/nova-simd)
 
-set_property(DIRECTORY .
-             APPEND
-             PROPERTY COMPILE_DEFINITIONS NOVA_SIMD)
+if (NOVA_SIMD)
+	include_directories(../../include/nova-simd)
+	set_property(DIRECTORY .
+				APPEND
+				PROPERTY COMPILE_DEFINITIONS NOVA_SIMD)
+endif()
 
 set(plugin_sources
 	BinaryOpUGens.cpp

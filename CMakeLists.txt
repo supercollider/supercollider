@@ -22,8 +22,9 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set_property(DIRECTORY
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS SC_LINUX)
-endif(UNIX)
+endif()
 
+option(NOVA_SIMD "Build with nova-simd support." ON)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	option(SC_EL "Build emacs-based IDE." ON)

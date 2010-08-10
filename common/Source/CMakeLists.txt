@@ -6,11 +6,12 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif ()
 
-
-set_property(DIRECTORY
-				APPEND
-				PROPERTY COMPILE_DEFINITIONS NOVA_SIMD)
-include_directories(../include/nova-simd)
+if (NOVA_SIMD)
+	set_property(DIRECTORY
+					APPEND
+					PROPERTY COMPILE_DEFINITIONS NOVA_SIMD)
+	include_directories(../include/nova-simd)
+endif()
 
 set_property(DIRECTORY
 				APPEND
