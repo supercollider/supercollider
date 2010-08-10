@@ -35,6 +35,9 @@ span.Apple-tab-span {white-space:pre}
 <p class="p1"><b>buf</b> - buffer number.</p>
 <p class="p1"><b>in</b> - the input signal.</p>
 <p class="p1"><b>delaytime</b> - delay time in seconds.</p>
+<p class="p3"><b>Warning:</b> For reasons of efficiency, the effective 
+buffer size is limited to the previous power of two. So, if 44100 
+samples are allocated, the maximum delay would be 32768 samples.</p>
 <p class="p3"><br></p>
 <p class="p4"><br></p>
 <p class="p5">// allocate buffer</p>
