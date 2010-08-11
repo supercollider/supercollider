@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.35">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #bf0000}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #007300}
+span.s1 {font: 18.0px Helvetica}
+span.s2 {color: #0000bf}
+span.s3 {color: #007300}
+span.s4 {color: #bf0000}
+span.s5 {color: #000000}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><span class="s1"><b>DelTapWr<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>write to a buffer for a DelTapRd UGen</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>phase = DelTapWr.ar(buffer, in )</b></p>
+<p class="p1"><b>phase = DelTapWr.kr(buffer, in )</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>buffer</b> - the buffer to write signal into. Max delay time is based on buffer size.</p>
+<p class="p1"><b>in</b> - the signal to write to the buffer.</p>
+<p class="p1"><b>phase - </b>DelTapWr outputs its current sample value for use in the <b>phase</b> argument in DelTapRd</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="s1"><b>DelTapRd<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b></span><b>tap a delay line from a DelTapWr UGen</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>DelTapRd.ar(buffer, phase, delTime, interp, mul, add )</b></p>
+<p class="p1"><b>DelTapRd.kr(buffer, phase, delTime, interp, mul, add )</b></p>
+<p class="p2"><br></p>
+<p class="p1"><b>buffer</b> - buffer where DelTapWr has written signal.<span class="Apple-converted-space">  </span>Max delay time is based on buffer size.</p>
+<p class="p1"><b>phase</b> - the current phase of the DelTapWr UGen. This is the output of DelTapWr.</p>
+<p class="p1"><b>delTime</b> - A delay time in seconds.</p>
+<p class="p1"><b>interp</b> - the kind of interpolation to be used. 1 is none, 2 is linear, 4 is cubic.<span class="Apple-converted-space"> </span></p>
+<p class="p3"><br></p>
+<p class="p4">// a Buffer for the UGens to use, one second at the current sample rate</p>
+<p class="p5">b = <span class="s2">Buffer</span>.alloc(s, s.sampleRate * 1, 1);</p>
+<p class="p6"><br></p>
+<p class="p4">// write a signal into a delay, tap it at mutiple times</p>
+<p class="p5"><span class="s2">SynthDef</span>(<span class="s3">\test</span>, {<span class="s2">arg</span> buffer;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> src, tapPhase, tap1, tap2, tap3;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>src = <span class="s2">WhiteNoise</span>.ar(0.2) * <span class="s2">Decay</span>.kr(<span class="s2">Dust</span>.kr(3), 0.2);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>tapPhase = <span class="s2">DelTapWr</span>.ar(buffer, src);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>#tap1, tap2, tap3 = <span class="s2">DelTapRd</span>.ar(buffer, tapPhase,<span class="Apple-converted-space"> </span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[0.2, 0.27, 0.303],<span class="Apple-converted-space">  <span class="Apple-tab-span">	</span></span><span class="s4">// tap times</span></p>
+<p class="p4"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1,<span class="Apple-converted-space">  <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span></span>// no interp</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[1.0, 0.4, 0.2] <span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">// muls for each tap</span></p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, [src + tap2, tap1 + tap3])</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5">x = <span class="s2">Synth</span>(<span class="s3">\test</span>, [<span class="s3">\buffer</span>, b]);</p>
+<p class="p5">x.free;</p>
+<p class="p5">b.free;</p>
+<p class="p6"><br></p>
+<p class="p6"><br></p>
+<p class="p4">// a Buffer for the UGens to use</p>
+<p class="p5">b = <span class="s2">Buffer</span>.alloc(s, 44100, 1);</p>
+<p class="p6"><br></p>
+<p class="p4">// write a signal into a delay, tap it at mutiple times</p>
+<p class="p5"><span class="s2">SynthDef</span>(<span class="s3">\write</span>, {<span class="s2">arg</span> buffer, cout;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> src, tapPhase, tap1, tap2, tap3;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>src = <span class="s2">WhiteNoise</span>.ar(0.2) * <span class="s2">Decay</span>.kr(<span class="s2">Dust</span>.kr(3), 0.7);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>tapPhase = <span class="s2">DelTapWr</span>.ar(buffer, src);</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.kr(cout, tapPhase);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5"><span class="s2">SynthDef</span>(<span class="s3">\readFilt</span>, {<span class="s2">arg</span> buffer, cin;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">var</span> phase, src, filt;</p>
+<p class="p5"><span class="Apple-tab-span">	</span>phase = <span class="s2">In</span>.kr(cin);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>src = <span class="s2">DelTapRd</span>.ar(buffer, phase, [0.01, 0.2]);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>filt = <span class="s2">BPF</span>.ar(src, 880, 0.01) * 10;</p>
+<p class="p5"><span class="Apple-tab-span">	</span><span class="s2">Out</span>.ar(0, filt);</p>
+<p class="p5"><span class="Apple-tab-span">	</span>}).send(s);</p>
+<p class="p6"><span class="Apple-tab-span">	</span></p>
+<p class="p5">c = <span class="s2">Bus</span>.control;</p>
+<p class="p6"><br></p>
+<p class="p5">x = <span class="s2">Synth</span>(<span class="s3">\write</span>, [<span class="s3">\buffer</span>, b, <span class="s3">\cout</span>, c]);</p>
+<p class="p7"><span class="s5">y = </span><span class="s2">Synth</span><span class="s5">(</span>\readFilt<span class="s5">, [</span>\buffer<span class="s5">, b, </span>\cin<span class="s5">, c]);</span></p>
+<p class="p6"><br></p>
+<p class="p5">x.free;</p>
+<p class="p5">b.free;</p>
+</body>
+</html>
