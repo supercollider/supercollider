@@ -150,14 +150,7 @@ classvar scVersionMajor=3, scVersionMinor=4, scVersionPostfix=0;
 
 MethodOverride {
 	var <class, <selector, <activePath, <overriddenPath;
-	classvar <>all;
-	
-	*initClass {
-		var msg = Main.overwriteMsg;
-		var lines = msg.split(Char.nl);
-		all = lines.collect { |line| this.fromLine(line) };
-	}
-	
+		
 	*new { arg class, selector, activePath, overriddenPath;
 		^super.newCopyArgs(class, selector, activePath, overriddenPath)
 	}
@@ -177,18 +170,21 @@ MethodOverride {
 		path2.openTextFile;
 	}
 	
-	classAndSelector {
-		^class.name ++ ":" ++ selector	
+	*all {
+		var msg = Main.overwriteMsg;
+		var lines = msg.split(Char.nl);
+		^lines.collect { |line| this.fromLine(line) };
 	}
 		
 	*printAll {
+		var all = this.all;
 		var classes = all.collect(_.class).as(Set);
 		"Overwritten methods in class library:\n\n".post;
 		classes.do { |class|
 			class.postln;
 			String.fill(class.name.asString.size, $-).postln;
 			all.select { |x| x.class == class }.do { |x|
-				("\t" ++ x.classAndSelector).postln;
+				("\t" ++ x.class.name ++ ":" ++ x.selector).postln;
 				("\t\t" ++ x.activePath).postln;
 				("\t\t" ++ x.overriddenPath).postln;
 			};
@@ -197,6 +193,7 @@ MethodOverride {
 	}
 	
 	*printAllShort {
+		var all = this.all;
 		var classes = all.collect(_.class).as(Set);
 		"Overwritten methods in class library:\n".post;
 		classes.do { |class|
