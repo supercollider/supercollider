@@ -144,5 +144,67 @@ classvar scVersionMajor=3, scVersionMinor=4, scVersionPostfix=0;
 	
 	setDeferredTaskInterval { |interval| platform.setDeferredTaskInterval(interval) }
 
-	*overwriteMsg {_MainOverwriteMsg ^this.primitiveFailed }
+	*overwriteMsg { _MainOverwriteMsg ^this.primitiveFailed }
 }
+
+
+MethodOverride {
+	var <class, <selector, <activePath, <overriddenPath;
+	classvar <>all;
+	
+	*initClass {
+		var msg = Main.overwriteMsg;
+		var lines = msg.split(Char.nl);
+		all = lines.collect { |line| this.fromLine(line) };
+	}
+	
+	*new { arg class, selector, activePath, overriddenPath;
+		^super.newCopyArgs(class, selector, activePath, overriddenPath)
+	}
+	
+	*fromLine { arg string;
+		var parts = string.split(Char.tab);
+		var class, selector;
+		#class, selector = parts[0].split($:);
+		^this.new(class.asSymbol.asClass, selector, parts[1], parts[2])
+	}
+	
+	openFiles {
+		var path2 = if(overriddenPath.beginsWith("/Common")) { 
+			"SCClassLibrary" +/+ overriddenPath 
+			} { overriddenPath };
+		activePath.openTextFile;
+		path2.openTextFile;
+	}
+	
+	classAndSelector {
+		^class.name ++ ":" ++ selector	
+	}
+		
+	*printAll {
+		var classes = all.collect(_.class).as(Set);
+		"Overwritten methods in class library:\n\n".post;
+		classes.do { |class|
+			class.postln;
+			String.fill(class.name.asString.size, $-).postln;
+			all.select { |x| x.class == class }.do { |x|
+				("\t" ++ x.classAndSelector).postln;
+				("\t\t" ++ x.activePath).postln;
+				("\t\t" ++ x.overriddenPath).postln;
+			};
+			"\n\n".post;
+		}	
+	}
+	
+	*printAllShort {
+		var classes = all.collect(_.class).as(Set);
+		"Overwritten methods in class library:\n".post;
+		classes.do { |class|
+			all.select { |x| x.class == class }.collect { |x| x.selector }.as(Set).do { |x|
+				postf("\t%:%\n", class, x);
+			}
+		}
+		
+	}
+}
+
