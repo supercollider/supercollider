@@ -143,6 +143,7 @@ void initParser()
 {
 	compileErrors = 0;
 	numOverwrites = 0;
+	overwriteMsg[0] = NULL;
 }
 
 void finiParser()
