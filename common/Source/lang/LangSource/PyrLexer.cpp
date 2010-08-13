@@ -1881,7 +1881,7 @@ void traverseFullDepTree2()
                         post("\tcompiled %d files in %.2f seconds\n",
 				gNumCompiledFiles, elapsed );
 			if(numOverwrites){
-				post("Info: %i methods are currently overwritten by extensions. To see which, execute Main.overwriteMsg\n", numOverwrites);
+				post("\nInfo: %i methods are currently overwritten by extensions. To see which, execute:\nMethodOverride.printAll\n\n", numOverwrites);
 			}
 			post("compile done\n");
 		}
