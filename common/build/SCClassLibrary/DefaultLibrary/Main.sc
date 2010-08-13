@@ -170,38 +170,55 @@ MethodOverride {
 		path2.openTextFile;
 	}
 	
+	*simplifyPath { arg path;
+		var extDir, sysExtDir, quarkDir;
+		extDir = Platform.userExtensionDir;
+		sysExtDir = Platform.systemExtensionDir;
+		quarkDir = LocalQuarks.globalPath;
+		path = path.replace("'" ++ extDir, "Platform.userExtensionDir ++ '");
+		path = path.replace("'" ++ sysExtDir, "Platform.systemExtensionDir ++ '");
+		path = path.replace("'" ++ quarkDir, "LocalQuarks.globalPath ++ '");
+		^path
+		
+	}
+	
 	*all {
 		var msg = Main.overwriteMsg;
-		var lines = msg.split(Char.nl);
+		var lines = msg.split(Char.nl).drop(-1);
 		^lines.collect { |line| this.fromLine(line) };
 	}
 		
-	*printAll {
+	*printAll { arg simplifyPaths = true;
 		var all = this.all;
 		var classes = all.collect(_.class).as(Set);
-		"Overwritten methods in class library:\n\n".post;
+		("Overwritten methods in class library:".underlined ++ "\n\n").post;
 		classes.do { |class|
-			class.postln;
-			String.fill(class.name.asString.size, $-).postln;
+			class.asString.underlined.postln;
 			all.select { |x| x.class == class }.do { |x|
+				var activePath = x.activePath;
+				var overriddenPath = x.overriddenPath;
+				if(simplifyPaths) { 
+					activePath = this.simplifyPath(x.activePath);
+					overriddenPath = this.simplifyPath(x.overriddenPath);
+				};
 				("\t" ++ x.class.name ++ ":" ++ x.selector).postln;
-				("\t\t" ++ x.activePath).postln;
-				("\t\t" ++ x.overriddenPath).postln;
+				("\t\t" ++ activePath).postln;
+				("\t\t" ++ overriddenPath).postln;
 			};
-			"\n\n".post;
-		}	
+			"\n".post;
+		}
 	}
 	
 	*printAllShort {
 		var all = this.all;
 		var classes = all.collect(_.class).as(Set);
-		"Overwritten methods in class library:\n".post;
+		("Overwritten methods in class library:".underlined ++ "\n").post;
 		classes.do { |class|
 			all.select { |x| x.class == class }.collect { |x| x.selector }.as(Set).do { |x|
 				postf("\t%:%\n", class, x);
 			}
-		}
-		
+		}		
 	}
+	
 }
 

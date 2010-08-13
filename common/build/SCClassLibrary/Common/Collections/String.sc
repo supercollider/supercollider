@@ -273,6 +273,10 @@ String[char] : RawArray {
 	zeroPad {
 		^" " ++ this ++ " "
 	}
+	
+	underlined { arg char = $-;
+		^this ++ "\n" ++ String.fill(this.size, char)
+	}
 
 	scramble {
 		^this.as(Array).scramble.as(String)
