@@ -101,9 +101,9 @@ Signal[float] : FloatArray {
 		_SignalRotate
 		^this.primitiveFailed
 	}
-	zeroPad {
+	zeroPad { arg factor = 2;
 		var size;
-		size = (this.size.nextPowerOfTwo * 2);
+		size = (this.size.nextPowerOfTwo * factor);
 		^this ++ Signal.newClear(size - this.size);
 	}
 
