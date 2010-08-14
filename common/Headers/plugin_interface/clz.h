@@ -123,21 +123,24 @@ inline int32 LOG2CEIL(int32 x)
 	return 32 - CLZ(x - 1);
 }
 
+// is x a power of two
+inline bool ISPOWEROFTWO(int32 x)
+{
+	return (x & (x-1)) == 0;
+}
+
 // next power of two greater than or equal to x
 inline int32 NEXTPOWEROFTWO(int32 x)
 {
 	return 1L << LOG2CEIL(x);
 }
 
+// previous power of two less than or equal to x
 inline int32 PREVIOUSPOWEROFTWO(int32 x)
 {
+	if (ISPOWEROFTWO(x))
+		return x;
 	return 1L << (LOG2CEIL(x) - 1);
-}
-
-// is x a power of two
-inline bool ISPOWEROFTWO(int32 x)
-{
-	return (x & (x-1)) == 0;
 }
 
 // input a series of counting integers, outputs a series of gray codes .
