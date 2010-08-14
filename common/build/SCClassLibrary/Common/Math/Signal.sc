@@ -103,7 +103,7 @@ Signal[float] : FloatArray {
 	}
 	
 	zeroPad { arg minSize;
-		var size = (minSize ? this.size).nextPowerOfTwo;
+		var size = max(minSize ? 0, this.size).nextPowerOfTwo;
 		^this ++ Signal.newClear(size - this.size);
 	}
 
