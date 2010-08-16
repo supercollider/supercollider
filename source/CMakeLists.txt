@@ -74,3 +74,6 @@ if(LTO)
     )
 endif()
 
+if (APPLE)
+    target_link_libraries(${ugen} "-framework CoreAudio")
+endif()

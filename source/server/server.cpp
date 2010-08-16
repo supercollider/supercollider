@@ -203,7 +203,8 @@ void thread_init_functor::operator()(int thread_index)
 
         success = thread_set_priority_rt(AudioConvertNanosToHostTime(ns_per_block),
                                          AudioConvertNanosToHostTime(ns_per_block - 2),
-                                         AudioConvertNanosToHostTime(ns_per_block - 1));
+                                         AudioConvertNanosToHostTime(ns_per_block - 1),
+                                         false);
 #endif
 
         if (!success)
