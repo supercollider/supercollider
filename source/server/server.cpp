@@ -29,7 +29,7 @@
 #include "sc/sc_synth_prototype.hpp"
 #include "sc/sc_ugen_factory.hpp"
 
-#ifdef APPLE
+#ifdef __APPLE__
 #include <AvailabilityMacros.h>
 #include <CoreAudio/CoreAudioTypes.h>
 #include <CoreAudioTypes.h>
@@ -194,7 +194,7 @@ void thread_init_functor::operator()(int thread_index)
         success = thread_set_priority_rt(priority);
 #endif
 
-#if defined(NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT) && defined (APPLE)
+#if defined(NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT) && defined (__APPLE__)
 
         double blocksize = server_arguments::instance().blocksize;
         double samplerate = server_arguments::instance().samplerate;
