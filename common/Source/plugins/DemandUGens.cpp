@@ -1951,7 +1951,7 @@ void Dstutter_next(Dstutter *unit, int inNumSamples)
 				OUT0(0) = NAN;
 				return;
 			} else {
-				unit->m_value = sc_abs(val);
+				unit->m_value = val;
 				unit->m_repeats = floor(repeats + 0.5f);
 				unit->m_repeatCount = 0.f;
 			}
