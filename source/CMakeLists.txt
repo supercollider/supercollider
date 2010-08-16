@@ -75,5 +75,5 @@ if(LTO)
 endif()
 
 if (APPLE)
-    target_link_libraries(${ugen} "-framework CoreAudio")
+    target_link_libraries(supernova "-framework CoreAudio")
 endif()
