@@ -31,8 +31,8 @@
 
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
+#include <CoreAudio/HostTime.h>
 #include <CoreAudio/CoreAudioTypes.h>
-#include <CoreAudioTypes.h>
 #endif
 
 namespace nova
