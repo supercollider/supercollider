@@ -305,6 +305,8 @@ Object  {
 		_ObjectCompileString
 		^String.streamContents({ arg stream; this.storeOn(stream); });
 	}
+	
+	cs { ^this.asCompileString }
 
 	printClassNameOn { arg stream;
 		var title;
