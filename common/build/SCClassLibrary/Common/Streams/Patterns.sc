@@ -332,7 +332,7 @@ Pevent : Pattern {
 	var <>pattern, <>event;
 
 	*new { arg pattern, event;
-		^super.newCopyArgs(pattern, event);
+		^super.newCopyArgs(pattern, event ?? { Event.default });
 	}
 	storeArgs { ^[pattern, event] }
 	embedInStream { arg inval;
@@ -340,7 +340,7 @@ Pevent : Pattern {
 		var stream = pattern.asStream;
 		loop {
 			outval = stream.next(event);
-			if (outval.isNil) {^inval};
+			if (outval.isNil) { ^inval };
 			inval = outval.yield
 		 }
 	}
