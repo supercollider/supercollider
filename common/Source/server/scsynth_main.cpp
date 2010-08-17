@@ -27,7 +27,7 @@
 #include <math.h>
 #include "clz.h"
 #include <stdexcept>
-#ifdef SC_WIN32
+#ifdef _WIN32
 #include <pthread.h>
 #include <winsock2.h>
 #else
@@ -35,7 +35,7 @@
 #endif
 
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 
 // according to this page: http://www.mkssoftware.com/docs/man3/setlinebuf.3.asp
 // setlinebuf is equivalent to the setvbuf call below.
@@ -77,7 +77,7 @@ void Usage()
 		"          The default is no password.\n"
 		"          UDP ports never require passwords, so for security use TCP.\n"
 		"   -N <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>\n"
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		"   -I <input-streams-enabled>\n"
 		"   -O <output-streams-enabled>\n"
 		"   -M <server-mach-port-name> <reply-mach-port-name>\n"
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
 {
     setlinebuf(stdout);
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 #ifdef SC_WIN32_STATIC_PTHREADS
     // initialize statically linked pthreads library
     pthread_win32_process_attach_np();
@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
 				options.mNonRealTimeOutputHeaderFormat = argv[j+5];
 				options.mNonRealTimeOutputSampleFormat = argv[j+6];
 				break;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 			case 'I' :
 				checkNumArgs(2);
 				options.mInputStreamsEnabled = argv[j+1];
@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
 			case 'H' :
 				checkNumArgs(2);
 				options.mInDeviceName = argv[j+1];
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 				if (i+1>argc || argv[j+2][0]=='-')
 				{
 					options.mOutDeviceName = options.mInDeviceName;
@@ -346,7 +346,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
     //World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
 #endif
 
@@ -362,7 +362,7 @@ int main(int argc, char* argv[])
 	World_WaitForQuit(world);
 
 
-#ifdef SC_WIN32
+#ifdef _WIN32
     // clean up winsock
     WSACleanup();
 

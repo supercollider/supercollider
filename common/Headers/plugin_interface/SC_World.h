@@ -105,9 +105,9 @@ struct World
 };
 
 extern "C" {
-#ifdef SC_WIN32
+#ifdef _WIN32
   __declspec(dllexport)
-#endif //SC_WIN32
+#endif //_WIN32
   int scprintf(const char *fmt, ...);
 }
 

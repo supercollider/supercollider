@@ -24,7 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <winsock2.h>
 #else
 #include <netinet/in.h>

@@ -36,7 +36,7 @@
 #define SC_AUDIO_API_COREAUDIOIPHONE	5
 
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # ifndef SC_INNERSC
 #  define SC_AUDIO_API SC_AUDIO_API_PORTAUDIO
 # else

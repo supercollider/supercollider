@@ -19,7 +19,7 @@
 */
 
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <string.h>
 # define strcasecmp( s1, s2 ) stricmp( (s1), (s2) )
 #endif
@@ -39,14 +39,14 @@
 #include "SC_Prototypes.h"
 #include "SC_Samp.h"
 #include "SC_DirUtils.h"
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include "../../headers/server/SC_ComPort.h"
 # include "SC_Win32Utils.h"
 #else
 # include "SC_ComPort.h"
 #endif
 #include "SC_StringParser.h"
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <direct.h>
 #else
 # include <sys/param.h>
@@ -394,7 +394,7 @@ World* World_New(WorldOptions *inOptions)
 			world->hw->mPassword[0] = 0;
 		}
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		world->hw->mInputStreamsEnabled = inOptions->mInputStreamsEnabled;
 		world->hw->mOutputStreamsEnabled = inOptions->mOutputStreamsEnabled;
 #endif
@@ -573,7 +573,7 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 
 	FILE *cmdFile;
 	if (inOptions->mNonRealTimeCmdFilename) {
-#ifdef SC_WIN32
+#ifdef _WIN32
 		cmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "rb");
 #else
 		cmdFile = fopen(inOptions->mNonRealTimeCmdFilename, "r");
@@ -735,7 +735,7 @@ int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int i
 	return false;
 }
 
-#if defined(SC_DARWIN) || defined(SC_IPHONE)
+#if defined(__APPLE__) || defined(SC_IPHONE)
 void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName)
 {
 	try {
@@ -1146,7 +1146,7 @@ int headerFormatFromString(const char *name)
 	if (strcasecmp(name, "SD2")==0) return SF_FORMAT_SD2;
 	if (strcasecmp(name, "FLAC")==0) return SF_FORMAT_FLAC;
 // TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
-#if SC_DARWIN || SC_WIN32 || LIBSNDFILE_1018
+#if defined(__APPLE__) || defined(_WIN32) || LIBSNDFILE_1018
 	if (strcasecmp(name, "vorbis")==0) return SF_FORMAT_VORBIS;
 #endif
 	if (strcasecmp(name, "CAF")==0) return SF_FORMAT_CAF;

@@ -38,7 +38,7 @@
 #endif
 #include <stdlib.h>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 
 // temporarily override __attribute__ for (unused), later we'll remove it
 #ifndef __GNUC__

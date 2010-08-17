@@ -19,11 +19,11 @@
 */
 
 
-#if SC_DARWIN
+#ifdef __APPLE__
 #include <Carbon/Carbon.h>
 #include <unistd.h>
 #else
-# ifndef SC_WIN32
+# ifndef _WIN32
 #  include <time.h>
 #  include <X11/Intrinsic.h>
 # else
@@ -62,7 +62,7 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 # if (__x86_64__)
 
 void* gstate_update_func(void* arg)
@@ -111,7 +111,7 @@ void* gstate_update_func(void* arg)
 
 # endif
 
-#elif defined (SC_WIN32)
+#elif defined (_WIN32)
 
 void* gstate_update_func(void* arg)
 {
@@ -453,7 +453,7 @@ void load(InterfaceTable *inTable)
 }
 
 #ifdef __GNUC__
-#if !defined(SC_DARWIN) && !defined(SC_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
 static void __attribute__ ((destructor)) finalize(void)
 {
 	if (d)

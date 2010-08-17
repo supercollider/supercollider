@@ -23,7 +23,7 @@
 #include "FFT_UGens.h"
 
 // We include vDSP even if not using for FFT, since we want to use some vectorised add/mul tricks
-#if SC_DARWIN
+#ifdef __APPLE__
 #include "vecLib/vDSP.h"
 #endif
 
@@ -313,7 +313,7 @@ void IFFT_next(IFFT *unit, int wrongNumSamples)
 			memcpy(olabuf, olabuf+hopsamps, shuntsamps * sizeof(float));
 
 		// Then mix the "new" time-domain data in - adding at first, then just setting (copying) where the "old" is supposed to be zero.
-		#if SC_DARWIN
+		#ifdef __APPLE__
 			vDSP_vadd(olabuf, 1, fftbuf, 1, olabuf, 1, shuntsamps);
 		#else
 			// NB we re-use the "pos" variable temporarily here for write rather than read

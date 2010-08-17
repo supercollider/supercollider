@@ -25,7 +25,7 @@
 #include "MsgFifo.h"
 #include "SC_SyncCondition.h"
 #include "SC_PlugIn.h"
-#ifdef SC_WIN32
+#ifdef _WIN32
 	#include <sndfile-win.h>
 #else
 	#include <sndfile.h>
@@ -629,7 +629,7 @@ PluginLoad(DiskIO)
 {
 	ft = inTable;
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	new(&gDiskFifo) MsgFifoNoFree<DiskIOMsg, 256>();
 	new(&gDiskFifoHasData)  SC_SyncCondition();
 #endif

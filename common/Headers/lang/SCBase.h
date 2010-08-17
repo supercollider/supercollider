@@ -23,7 +23,7 @@
 
 #include <limits.h>
 #include <stdio.h>
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <stdlib.h>
 # define PATH_MAX _MAX_PATH
 #endif
@@ -44,7 +44,7 @@ void setPostFile(FILE *file); // If file is not NULL, causes all posted text to 
 void debugf(char *fmt, ...);
 void pprintf(unsigned char *str, char *fmt, ...);
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 #pragma export on
 #endif
 
@@ -64,7 +64,7 @@ struct PyrSymbol* getsym(const char *inName);
 struct PyrSymbol* findsym(const char *name);
 }
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 #pragma export off
 #endif
 

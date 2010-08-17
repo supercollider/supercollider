@@ -34,18 +34,18 @@
 #include <dirent.h>
 #endif //_MSC_VER
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 #include <dlfcn.h>
 #endif
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 #include "SC_Win32Utils.h"
 #else
 #include <libgen.h>
 #endif
 
 // Plugin directory in resource directory
-#if defined(SC_WIN32) && defined(_DEBUG)
+#if defined(_WIN32) && defined(_DEBUG)
 # define SC_PLUGIN_DIR_NAME "plugins_debug"
 #else
 # define SC_PLUGIN_DIR_NAME "plugins"
@@ -59,7 +59,7 @@
 // Symbol of initialization routine when loading plugins
 #ifndef SC_PLUGIN_LOAD_SYM
 
-# if defined(SC_DARWIN) || defined(SC_IPHONE)
+# if defined(__APPLE__) || defined(SC_IPHONE)
 #  define SC_PLUGIN_LOAD_SYM "load"
 # else
 #  define SC_PLUGIN_LOAD_SYM "_load"
@@ -67,11 +67,11 @@
 
 #endif
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 # include <sys/param.h>
 #endif
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 extern "C" {
 #include <mach-o/dyld.h>
 #include <mach-o/getsect.h>
@@ -90,7 +90,7 @@ SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 void initMiscCommands();
 bool PlugIn_LoadDir(const char *dirname, bool reportError);
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 void read_section(const struct mach_header *mhp, unsigned long slide, const char *segname, const char *sectname)
 {
 	u_int32_t size;
@@ -208,7 +208,7 @@ void initialize_library(const char *uGensPluginPath)
 			PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
 		}
 	}
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	/* on darwin plugins are lazily loaded (dlopen uses mmap internally), which can produce audible
 		glitches when UGens have to be paged-in. to work around this we preload all the plugins by
 		iterating through their memory space. */
@@ -250,7 +250,7 @@ void initialize_library(const char *uGensPluginPath)
 bool PlugIn_Load(const char *filename);
 bool PlugIn_Load(const char *filename)
 {
-#ifdef SC_WIN32
+#ifdef _WIN32
 
     HINSTANCE hinstance = LoadLibrary( filename );
     if (!hinstance) {

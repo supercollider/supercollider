@@ -27,7 +27,7 @@
 
 #define SANITYCHECK 0
 
-#if defined(SC_WIN32) && !defined(__MINGW32__)
+#if defined(_WIN32) && !defined(__MINGW32__)
 const int64 kMaxInt64 = 0x7FFFFFFFFFFFFFFF;
 #else
 const int64 kMaxInt64 = ~(1LL<<63);

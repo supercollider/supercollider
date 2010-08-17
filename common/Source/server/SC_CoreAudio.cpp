@@ -31,7 +31,7 @@
 #include <pthread.h>
 #include <algorithm>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 
 #else
 #include <sys/time.h>
@@ -42,7 +42,7 @@
 #endif
 
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 #include "SC_Win32Utils.h"
 #endif
 
@@ -375,13 +375,13 @@ void FreeOSCPacket(FifoMsg *inMsg)
 	OSC_Packet *packet = (OSC_Packet*)inMsg->mData;
 	if (packet) {
 		inMsg->mData = 0;
-#ifdef SC_WIN32
+#ifdef _WIN32
 #pragma message("$$$todo fixme hack for the 'uninitialized packet->mData ptr when using MSVC 7.1 debug")
     if (packet->mData != reinterpret_cast<char*>(0xcdcdcdcd))
   		free(packet->mData);
-#else //#ifdef SC_WIN32
+#else //#ifdef _WIN32
     free(packet->mData);
-#endif //#ifdef SC_WIN32
+#endif //#ifdef _WIN32
 		free(packet);
 	}
 }
@@ -1024,7 +1024,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 		int numSamplesPerCallback = NumSamplesPerCallback();
 		mOSCbuftime = oscTime;
 
-#if SC_DARWIN
+#ifdef __APPLE__
 		sc_SetDenormalFlags();
 #endif
 
@@ -1800,7 +1800,7 @@ void SC_iCoreAudioDriver::Run(const AudioBufferList* inInputData,
 		int numSamplesPerCallback = NumSamplesPerCallback();
 		mOSCbuftime = oscTime;
 
-#if SC_DARWIN
+#ifdef __APPLE__
 		sc_SetDenormalFlags();
 #endif
 

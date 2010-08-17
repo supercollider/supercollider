@@ -927,7 +927,7 @@ void FreeVerb2_next(FreeVerb2 *unit, int inNumSamples)
 
 typedef union {
         float f;
-#ifdef SC_WIN32
+#ifdef _WIN32
 	long int i;
 #else
         int32_t i;

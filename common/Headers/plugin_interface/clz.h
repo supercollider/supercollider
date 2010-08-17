@@ -48,7 +48,7 @@ static __inline__ int32 CLZ(int32 arg)
         return 32;
 }
 
-#elif defined(SC_WIN32) && !defined(__GNUC__)
+#elif defined(_WIN32) && !defined(__GNUC__)
 
 static int32 CLZ( int32 arg )
 {

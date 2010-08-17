@@ -3,7 +3,7 @@
 #include <string.h>
 #include "sc_popen.h"
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 
 /*	This code is based on popen() and pclose() from Darwin's
 	libc. The only functional difference is that sc_popen()
@@ -21,7 +21,7 @@
 #include <paths.h>
 
 // allows for linking into a dylib on darwin
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	#include <crt_externs.h>
 	#define environ (*_NSGetEnviron())
 #else

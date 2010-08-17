@@ -38,7 +38,7 @@
 #include "SC_CoreAudio.h"
 #include "SC_DirUtils.h"
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 #include "SC_Win32Utils.h"
 #endif
 
@@ -346,7 +346,7 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 
 GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {
-#ifdef SC_WIN32
+#ifdef _WIN32
 	FILE *file = fopenLocalOrRemote(filename, "rb");
 #else
 	FILE *file = fopenLocalOrRemote(filename, "r");
@@ -364,7 +364,7 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 		return inList;
 	}
 	fseek(file, 0, SEEK_SET);
-#ifdef SC_WIN32
+#ifdef _WIN32
         size_t readSize = fread(buffer, 1, size, file);
         if (readSize!= size)
 			*((int*)0) = 0;
