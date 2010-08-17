@@ -29,7 +29,7 @@ An interface to abstract over different FFT libraries, for SuperCollider 3.
 #include <cstring>
 
 // We include vDSP even if not using for FFT, since we want to use some vectorised add/mul tricks
-#if SC_DARWIN
+#ifdef __APPLE__
 	#include "vecLib/vDSP.h"
 #endif
 
@@ -182,7 +182,7 @@ void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize,
 	if(wintype != WINDOW_RECT){
 		float *win = fftWindow[wintype][log2_winsize];
 		if (!win) return;
-		#if SC_DARWIN
+		#ifdef __APPLE__
 			vDSP_vmul(data, 1, win, 1, data, 1, winsize);
 		#else
 			--win;
@@ -195,7 +195,7 @@ void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize,
 	}
 
 		// scale factor is different for different libs. But the compiler switch here is about using vDSP's fast multiplication method.
-	#if SC_DARWIN
+	#ifdef __APPLE__
 		vDSP_vsmul(data, 1, &scalefac, data, 1, winsize);
 	#else
 		for(int i=0; i<winsize; ++i){

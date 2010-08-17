@@ -1,4 +1,4 @@
-#if defined(SC_DARWIN) || defined(SC_IPHONE)
+#if defined(__APPLE__) || defined(SC_IPHONE)
 
 #include <sys/param.h>
 #include <stdexcept>

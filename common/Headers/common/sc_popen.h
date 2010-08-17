@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 #include <pthread.h>
 #else
 #include <unistd.h>
 #include <sys/wait.h>
 #endif
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 /*
  *	Signal stuff
  *	For WIN32, there is no wait() call so there are no wait() macros

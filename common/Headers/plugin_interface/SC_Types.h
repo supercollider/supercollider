@@ -25,7 +25,7 @@
 
 typedef int SCErr;
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 typedef __int64	int64;
 typedef unsigned __int64 uint64;
 #else

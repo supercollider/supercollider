@@ -21,7 +21,7 @@
 #ifndef _SC_WIN32UTILS_H
 #define _SC_WIN32UTILS_H
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 #include <stdio.h>
 #include <winsock2.h>
 #include <pthread.h>
@@ -46,5 +46,5 @@ int win32_pipe(int handles[2]);
 int win32_piperead(int s, char *buf, int len);
 int win32_pipewrite(int s, char *buf, int len);
 
-#endif //SC_WIN32
+#endif //_WIN32
 #endif // SC_WIN32UTILS_H

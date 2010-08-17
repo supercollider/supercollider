@@ -33,7 +33,7 @@
 #include "SC_Errors.h"
 #include "Unroll.h"
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 // workaround for IN/OUT conflict with Win32 headers. see SC_Unit.h for details
 // (note: the pragma momentarily suppresses compiler warning about such conflict)
 #pragma warning(disable: 4005)

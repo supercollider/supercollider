@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <direct.h>
 # include "SC_Win32Utils.h"
 #else
@@ -37,7 +37,7 @@
 #include <stdexcept>
 #include "SC_DirUtils.h"
 
-#if defined(SC_DARWIN) || defined(SC_IPHONE)
+#if defined(__APPLE__) || defined(SC_IPHONE)
 #ifndef _SC_StandAloneInfo_
 # include "SC_StandAloneInfo_Darwin.h"
 #endif
@@ -59,7 +59,7 @@ char *gIdeName="none";
 
 void sc_AppendToPath(char *path, const char *component)
 {
-#if defined(SC_WIN32)
+#if defined(_WIN32)
 	strncat(path, "\\", PATH_MAX);
 #else
 	strncat(path, "/", PATH_MAX);
@@ -110,7 +110,7 @@ char *sc_StandardizePath(const char *path, char *newpath2) {
 
 bool sc_DirectoryExists(const char *dirname)
 {
-#if defined(SC_WIN32)
+#if defined(_WIN32)
 	DWORD attr = GetFileAttributes(dirname);
 	return ((attr != INVALID_FILE_ATTRIBUTES) &&
 			(attr & FILE_ATTRIBUTE_DIRECTORY));
@@ -123,7 +123,7 @@ bool sc_DirectoryExists(const char *dirname)
 
 bool sc_IsSymlink(const char* path)
 {
-#if defined(SC_WIN32)
+#if defined(_WIN32)
 	// FIXME
 	return false;
 #else
@@ -137,13 +137,13 @@ bool sc_IsNonHostPlatformDir(const char *name)
 {
 #if defined(SC_IPHONE)
 	const char a[] = "linux", b[] = "windows", c[]="osx";
-#elif defined(SC_DARWIN)
+#elif defined(__APPLE__)
 	const char a[] = "linux", b[] = "windows", c[]="iphone";
 #elif defined(SC_LINUX)
 	const char a[] = "osx", b[] = "windows", c[]="iphone";
 #elif defined(SC_FREEBSD)
 	const char a[] = "osx", b[] = "windows", c[]="iphone";
-#elif defined(SC_WIN32)
+#elif defined(_WIN32)
 	const char a[] = "osx", b[] = "linux", c[]="iphone";
 #endif
 	return ((strcmp(name, a) == 0) ||
@@ -176,7 +176,7 @@ bool sc_SkipDirectory(const char *name)
 void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length)
 {
 	isAlias = false;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	FSRef dirRef;
 	OSStatus osStatusErr = FSPathMakeRef ((const UInt8 *) path, &dirRef, NULL);
 	if ( !osStatusErr ) {
@@ -210,7 +210,7 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 
 // Support for Bundles
 
-#if defined(SC_DARWIN)	// running on OS X
+#if defined(__APPLE__)	// running on OS X
 
 // Support for stand-alone applications
 
@@ -263,7 +263,7 @@ void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
 
 void sc_GetUserHomeDirectory(char *str, int size)
 {
-#ifndef SC_WIN32
+#ifndef _WIN32
 	char *home = getenv("HOME");
 	if(home!=NULL){
 		strncpy(str, home, size);
@@ -284,11 +284,11 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 	strncpy(str,
 #if defined(SC_DATA_DIR)
 			SC_DATA_DIR,
-#elif defined(SC_DARWIN)
-			"/Library/Application Support/SuperCollider",
 #elif SC_IPHONE
 			"/",
-#elif defined(SC_WIN32)
+#elif defined(__APPLE__)
+			"/Library/Application Support/SuperCollider",
+#elif defined(_WIN32)
 			( getenv("SC_SYSAPPSUP_PATH")==NULL ) ? "C:\\SuperCollider" : getenv("SC_SYSAPPSUP_PATH"),
 #else
 			"/usr/local/share/SuperCollider",
@@ -306,11 +306,11 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 
 	snprintf(str,
 			 size,
-#ifdef SC_DARWIN
-			 "%s/Library/Application Support/SuperCollider",
-#elif SC_IPHONE
+#if SC_IPHONE
 			"%s/Documents",
-#elif defined(SC_WIN32)
+#elif defined(__APPLE__)
+			 "%s/Library/Application Support/SuperCollider",
+#elif defined(_WIN32)
 			"%s\\SuperCollider",
 #else
 			 "%s/share/SuperCollider",
@@ -345,7 +345,7 @@ void sc_GetUserExtensionDirectory(char *str, int size)
 
 struct SC_DirHandle
 {
-#ifdef SC_WIN32
+#ifdef _WIN32
 	HANDLE mHandle;
 	WIN32_FIND_DATA mEntry;
 	bool mAtEnd;
@@ -360,7 +360,7 @@ SC_DirHandle* sc_OpenDir(const char* dirname)
 	SC_DirHandle* dir = new SC_DirHandle;
 	memset(dir, 0, sizeof(SC_DirHandle));
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	char allInDir[PATH_MAX];
 	snprintf(allInDir, PATH_MAX, "%s\\*.*", dirname);
 
@@ -384,7 +384,7 @@ SC_DirHandle* sc_OpenDir(const char* dirname)
 
 void sc_CloseDir(SC_DirHandle* dir)
 {
-#ifdef SC_WIN32
+#ifdef _WIN32
 	::FindClose(dir->mHandle);
 #else
 	closedir(dir->mHandle);
@@ -394,7 +394,7 @@ void sc_CloseDir(SC_DirHandle* dir)
 
 bool sc_ReadDir(SC_DirHandle* dir, const char* dirname, char* path, bool& skipEntry)
 {
-#ifdef SC_WIN32
+#ifdef _WIN32
 	bool success = true;
 
 	if (dir->mAtEnd)
@@ -457,7 +457,7 @@ bool sc_ReadDir(SC_DirHandle* dir, const char* dirname, char* path, bool& skipEn
 
 struct SC_GlobHandle
 {
-#ifdef SC_WIN32
+#ifdef _WIN32
 	HANDLE mHandle;
 	char mFolder[PATH_MAX];
 	WIN32_FIND_DATA mEntry;
@@ -473,7 +473,7 @@ SC_GlobHandle* sc_Glob(const char* pattern)
 {
 	SC_GlobHandle* glob = new SC_GlobHandle;
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	char patternWin[1024];
 
 	strncpy(patternWin, pattern, 1024);
@@ -491,7 +491,7 @@ SC_GlobHandle* sc_Glob(const char* pattern)
 	glob->mAtEnd = false;
 #else
 	int flags = GLOB_MARK | GLOB_TILDE;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	flags |= GLOB_QUOTE;
 #endif
 
@@ -509,7 +509,7 @@ SC_GlobHandle* sc_Glob(const char* pattern)
 
 void sc_GlobFree(SC_GlobHandle* glob)
 {
-#ifdef SC_WIN32
+#ifdef _WIN32
 	::FindClose(glob->mHandle);
 #else
 	globfree(&glob->mHandle);
@@ -519,7 +519,7 @@ void sc_GlobFree(SC_GlobHandle* glob)
 
 const char* sc_GlobNext(SC_GlobHandle* glob)
 {
-#ifdef SC_WIN32
+#ifdef _WIN32
 	if (glob->mAtEnd)
 		return 0;
 	strncpy(glob->mEntryPath, glob->mFolder, PATH_MAX);

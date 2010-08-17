@@ -51,7 +51,7 @@ bool sc_UseVectorUnit()
 	return false;
 }
 
-#if defined(SC_DARWIN)
+#ifdef __APPLE__
 # include <Carbon/Carbon.h>
 #include <TargetConditionals.h>
 

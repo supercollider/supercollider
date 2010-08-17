@@ -23,7 +23,7 @@
 
 #define SC_MAX_TOKEN_LENGTH 256
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	#define SC_STRPARSE_PATHDELIMITER ';'
 #else
 	#define SC_STRPARSE_PATHDELIMITER ':'

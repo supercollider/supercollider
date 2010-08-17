@@ -25,7 +25,7 @@
 #include <limits.h>
 #include <stdio.h>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <stdio.h>
 # ifndef PATH_MAX
 #  define PATH_MAX _MAX_PATH

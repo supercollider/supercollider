@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Visual C++ doesn't have fpclassify (C99), so define it here if needed
-#ifdef SC_WIN32
+#ifdef _WIN32
 #include <float.h>
 enum { FP_NORMAL, FP_NAN, FP_INFINITE, FP_SUBNORMAL };
 
@@ -68,7 +68,7 @@ inline int sc_fpclassify(float x)
 {
 	return std::fpclassify(x);
 }
-#endif // SC_WIN32
+#endif // _WIN32
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -199,7 +199,7 @@ const char *CheckBadValues_fpclassString(int fpclass)
 		case FP_NORMAL:       return "normal";
 		case FP_NAN:          return "NaN";
 		case FP_INFINITE:     return "infinity";
-#ifndef SC_WIN32
+#ifndef _WIN32
 		case FP_ZERO:         return "zero";
 #endif
 		case FP_SUBNORMAL:    return "denormal";
@@ -207,7 +207,7 @@ const char *CheckBadValues_fpclassString(int fpclass)
 	}
 }
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 inline int CheckBadValues_fold_fpclasses(int fpclass)
 {
 	switch(fpclass) {

@@ -35,7 +35,7 @@ extern "C" {
 	int scprintf(const char *fmt, ...);
 }
 
-#if !SC_DARWIN
+#ifndef __APPLE__
 static const char* kSCRendezvousServiceName = "SuperCollider";
 
 static const char* SCRendezvousProtocolString(SCRendezvousProtocol proto)
@@ -48,7 +48,7 @@ static const char* SCRendezvousProtocolString(SCRendezvousProtocol proto)
 }
 #endif
 
-#if SC_DARWIN
+#ifdef __APPLE__
 #include <CoreServices/CoreServices.h>
 
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
@@ -442,10 +442,10 @@ void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 	gHowlSession.GetSession()->PublishPort(protocol, portNum);
 }
 
-#else // !SC_DARWIN && !HAVE_AVAHI && !HAVE_HOWL
+#else // !__APPLE__ && !HAVE_AVAHI && !HAVE_HOWL
 
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 {
 }
 
-#endif // SC_DARWIN || HAVE_AVAHI || HAVE_HOWL
+#endif // __APPLE__ || HAVE_AVAHI || HAVE_HOWL

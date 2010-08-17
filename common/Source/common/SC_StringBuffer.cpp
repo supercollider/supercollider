@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdexcept>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # define vsnprintf _vsnprintf
 # include <stdio.h>
 # include <stdarg.h>

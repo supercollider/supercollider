@@ -21,7 +21,7 @@ Copyright (c) 2007 Dan Stowell. All rights reserved.
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
 */
-#ifdef SC_WIN32
+#ifdef _WIN32
 #define hypotf _hypotf
 #endif
 

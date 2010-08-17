@@ -21,7 +21,7 @@
 #ifndef _SC_ComPort_
 #define _SC_ComPort_
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <winsock2.h>
 typedef int socklen_t;
 # define bzero( ptr, count ) memset( ptr, 0, count )

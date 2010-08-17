@@ -106,7 +106,7 @@ const WorldOptions kDefaultWorldOptions =
 
 #include "SC_Reply.h"
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # define SC_DLLEXPORT __declspec(dllexport)
 #else
 # define SC_DLLEXPORT

@@ -19,11 +19,11 @@
 */
 
 
-#if SC_DARWIN
+#ifdef __APPLE__
 #include <Carbon/Carbon.h>
 #include <unistd.h>
 #else
-# ifndef SC_WIN32
+# ifndef _WIN32
 #  include <time.h>
 #  include <X11/Intrinsic.h>
 # else
@@ -35,7 +35,7 @@
 static InterfaceTable *ft;
 
 struct KeyboardUGenGlobalState {
-#if SC_DARWIN
+#ifdef __APPLE__
 //	uint8 keys[16];
 	KeyMap keys;
 #else
@@ -61,7 +61,7 @@ extern "C"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#if SC_DARWIN
+#ifdef __APPLE__
 
 void* gstate_update_func(void* arg)
 {
@@ -75,7 +75,7 @@ void* gstate_update_func(void* arg)
 	return 0;
 }
 
-#elif defined(SC_WIN32)
+#elif defined(_WIN32)
 
 void* gstate_update_func(void* arg)
 {
@@ -126,7 +126,7 @@ void KeyState_next(KeyState *unit, int inNumSamples)
 	// minval, maxval, warp, lag
 	uint8 *keys = (uint8*)unit->gstate->keys;
 	int keynum = (int)ZIN0(0);
-#if SC_DARWIN
+#ifdef __APPLE__
 	int byte = (keynum >> 3) & 15;
 #else
 	int byte = (keynum >> 3) & 31;
@@ -170,7 +170,7 @@ void load(InterfaceTable *inTable)
 }
 
 #ifdef __GNUC__
-#if !defined(SC_DARWIN) && !defined(SC_WIN32)
+#if !defined(__APPLE__) && !defined(_WIN32)
 static void __attribute__ ((destructor)) finalize(void)
 {
 	if (d)

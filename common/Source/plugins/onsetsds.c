@@ -17,7 +17,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 #define hypotf _hypotf
 #endif
 
@@ -27,7 +27,7 @@
 #define ODS_DEBUG_POST_CSV 0
 
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 // the MSVC 2005 compiler is not up to date with inline
 float onsetsds_phase_rewrap(float phase);
 float onsetsds_phase_rewrap(float phase){

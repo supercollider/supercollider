@@ -19,7 +19,7 @@
 */
 
 #include <sys/types.h>
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <winsock2.h>
 # define bzero( ptr, count ) memset( ptr, 0, count )
 #else

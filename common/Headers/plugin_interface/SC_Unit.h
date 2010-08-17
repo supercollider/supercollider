@@ -60,7 +60,7 @@ enum {
 };
 
 // easy macros, the unit variable must be named 'unit'.
-#ifndef SC_WIN32
+#ifndef _WIN32
 
 // These return float* pointers to input and output buffers.
 #define IN(index)  (unit->mInBuf[index])
