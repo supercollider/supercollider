@@ -964,7 +964,7 @@ PyrObject* signal_log(VMGlobals *g, PyrObject *inPyrSignal)
 #ifdef SC_WIN32
 // in PyrMathSupport.cpp
 double log2(double x);
-#elif defined(SC_FREEBSD)
+#elif defined(__FreeBSD__)
  double log2(double x);
 #endif
 

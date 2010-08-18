@@ -79,7 +79,7 @@ void sc_SetDenormalFlags()
 
 #endif
 
-#elif defined(SC_LINUX) && defined(__ALTIVEC__)
+#elif defined(__linux__) && defined(__ALTIVEC__)
 # include <stdio.h>
 # include <string.h>
 # include <unistd.h>
@@ -126,7 +126,7 @@ bool sc_HasVectorUnit()
 void sc_SetDenormalFlags()
 {
 }
-#elif (SC_LINUX || SC_FREEBSD) && defined(__SSE__)
+#elif (defined(__linux__) || defined(__FreeBSD__)) && defined(__SSE__)
 # include <xmmintrin.h>
 
 // cpuid function that works with -fPIC from `minor' at http://red-bean.com

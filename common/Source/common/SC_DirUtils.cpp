@@ -139,9 +139,9 @@ bool sc_IsNonHostPlatformDir(const char *name)
 	const char a[] = "linux", b[] = "windows", c[]="osx";
 #elif defined(__APPLE__)
 	const char a[] = "linux", b[] = "windows", c[]="iphone";
-#elif defined(SC_LINUX)
+#elif defined(__linux__)
 	const char a[] = "osx", b[] = "windows", c[]="iphone";
-#elif defined(SC_FREEBSD)
+#elif defined(__FreeBSD__)
 	const char a[] = "osx", b[] = "windows", c[]="iphone";
 #elif defined(_WIN32)
 	const char a[] = "osx", b[] = "linux", c[]="iphone";
@@ -193,12 +193,12 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 			}
 		}
 	}
-#elif defined(SC_LINUX)
+#elif defined(__linux__)
 	isAlias = sc_IsSymlink(path);
 	if (!realpath(path, returnPath))
 		strcpy(returnPath, path);
 	return;
-#elif defined(SC_FREEBSD)
+#elif defined(__FreeBSD__)
 	isAlias = sc_IsSymlink(path);
 	if (!realpath(path, returnPath))
 		strcpy(returnPath, path);

@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#ifdef SC_FREEBSD
+#ifdef __FreeBSD__
 # include <complex.h>
 #endif
 

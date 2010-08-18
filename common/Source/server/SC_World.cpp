@@ -76,7 +76,7 @@ void sc_SetDenormalFlags();
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#if SC_LINUX
+#ifdef __linux__
 
 #if HAVE_CONFIG_H
 # include "config.h"
@@ -166,7 +166,7 @@ void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line)
 #  define zalloc(n, size)		sc_zalloc((n), (size))
 # endif // SC_DEBUG_MEMORY
 
-#else // !SC_LINUX
+#else // !__linux__
 
 // replacement for calloc.
 // calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
@@ -182,7 +182,7 @@ void *zalloc(size_t n, size_t size)
 	}
 	return 0;
 }
-#endif // SC_LINUX
+#endif // __linux__
 
 ////////////////////////////////////////////////////////////////////////////////
 

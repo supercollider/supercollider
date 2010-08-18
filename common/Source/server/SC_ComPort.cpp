@@ -32,30 +32,26 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
+
 #ifdef _WIN32
-# include <winsock2.h>
-typedef int socklen_t;
-# define bzero( ptr, count ) memset( ptr, 0, count )
+	# include <winsock2.h>
+	typedef int socklen_t;
+	# define bzero( ptr, count ) memset( ptr, 0, count )
 #else
-#include <netinet/tcp.h>
+	#include <netinet/tcp.h>
 #endif
 
-#ifdef SC_LINUX
-# include <errno.h>
-# include <unistd.h>
-#endif
-
-#ifdef SC_FREEBSD
-# include <errno.h>
-# include <unistd.h>
+#if defined(__linux__) || defined(__FreeBSD__)
+	#include <errno.h>
+	#include <unistd.h>
 #endif
 
 #if defined(SC_IPHONE) || defined(__APPLE__)
-# include <errno.h>
+	#include <errno.h>
 #endif
 
 #ifdef USE_RENDEZVOUS
-#include "Rendezvous.h"
+	#include "Rendezvous.h"
 #endif
 
 int recvall(int socket, void *msg, size_t len);
@@ -253,7 +249,7 @@ void set_real_time_priority(pthread_t thread)
 	struct sched_param param;
 
 	pthread_getschedparam (thread, &policy, &param);
-#ifdef SC_LINUX
+#ifdef __linux__
 	policy = SCHED_FIFO;
 	const char* env = getenv("SC_SCHED_PRIO");
 	// jack uses a priority of 10 in realtime mode, so this is a good default
