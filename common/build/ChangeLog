@@ -1,12 +1,25 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
-* 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
-* 2010-07-10 protecting the server against malformatted SynthDef names - jr
 * 2010-07-11 Collections should behave as reasonably as possible when empty - some fixes to better this - jr
-* 2010-07-11 SynthDef:add now sends to all running servers if no libname is given. SynthDescs are still added to the global SynthDescLib. If you want to handle multiple SynthDesc libs, you have to add the servers toeach of them explicitly - jr
+* 2010-07-11 SynthDef:add now sends to all running servers if no libname is given. SynthDescs are still added to the global SynthDescLib. If you want to handle multiple SynthDesc libs, you have to add the servers to each of them explicitly - jr
 * 2010-07-12 PanAz: added support for audio-rate pos arg - lfsaw
 * 2010-07-18 improved the sclang syntax highlighting parses - Patrick Borgeat
+* 2010-07-30 Dreset UGen allows to reset the child UGens on its input - jr
+* 2010-08-05 storeOn / asCompileString now simplifies its output. Default arguments that are given in the *new method anyhow are omitted - jr
+* 2010-08-06 Dictionary merge and blend methods - jr
 * 2010-08-09 method overwrite messages not posted by default, rather a message inviting people to run Main:overwriteMsg for the info - ds
+* 2010-08-13 MethodOverride class to encapsule information on overridden messages, inviting people to run MethodOverride.printAll  - jr
+* 2010-08-13 add size arg to Signal:zeroPad - jr and jh
+* 2010-08-18 Pevent now uses default event if no event is passed in - jr
+* 2010-08-18 added a shortcut to the rather tedious .asCompileString method. In analogy to object.postcs, object.cs returns the compile string - jr
+
+Bugfixes:
+---------
+* 2010-07-10 protecting the server against malformatted SynthDef names - jr
+* 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
+* 2010-07-24 catch crash in the case that one tries to define a unique method using a return value directly - jr
+
+
 
 SuperCollider v3.4, released 2010-07
 ====================================
