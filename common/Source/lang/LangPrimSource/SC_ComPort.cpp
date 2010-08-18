@@ -36,7 +36,7 @@
 # include <errno.h>
 #endif
 
-#ifdef SC_FREEBSD
+#ifdef __FreeBSD__
 # include <errno.h>
 #endif
 
