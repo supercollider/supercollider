@@ -2992,7 +2992,7 @@ void BufDelayC_Ctor(BufDelayC *unit)
 }
 
 template <bool checked>
-void BufDelayC_perform(BufDelayC *unit, int inNumSamples)
+inline void BufDelayC_perform(BufDelayC *unit, int inNumSamples)
 {
 	BufDelayX_perform<DelayC_helper<checked> >(unit, inNumSamples, (UnitCalcFunc)BufDelayC_next);
 }
@@ -4008,7 +4008,7 @@ void DelayL_Ctor(DelayL *unit)
 }
 
 template <bool checked>
-void DelayL_perform(DelayL *unit, int inNumSamples)
+inline void DelayL_perform(DelayL *unit, int inNumSamples)
 {
 	DelayX_perform<DelayL_helper<checked> >(unit, inNumSamples, (UnitCalcFunc)DelayL_next);
 }
@@ -4053,7 +4053,7 @@ void DelayC_Ctor(DelayC *unit)
 }
 
 template <bool checked>
-void DelayC_perform(DelayC *unit, int inNumSamples)
+inline void DelayC_perform(DelayC *unit, int inNumSamples)
 {
 	DelayX_perform<DelayC_helper<checked> >(unit, inNumSamples, (UnitCalcFunc)DelayC_next);
 }
