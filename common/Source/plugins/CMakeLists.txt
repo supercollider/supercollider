@@ -1,7 +1,10 @@
-find_package(FFTW3f)
+if (!APPLE)
+	# we use vdsp on osx
+	find_package(FFTW3f)
 
-if (!FFTW3F_FOUND)
-	message(SEND_ERROR "Cannot find libfftw3f")
+	if (!FFTW3F_FOUND)
+		message(SEND_ERROR "Cannot find libfftw3f")
+	endif()
 endif()
 
 include_directories(../../Headers/plugin_interface
@@ -46,7 +49,7 @@ set(plugins "")
 set(CMAKE_SHARED_MODULE_PREFIX "")
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-finite-math-only")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-finite-math-only")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
 endif()
 
@@ -105,7 +108,12 @@ foreach(ugen ${fft_ugens})
 	set_property(TARGET ${ugen}
 					APPEND
 					PROPERTY COMPILE_DEFINITIONS SC_FFT_FFTW)
-	target_link_libraries(${ugen} ${FFTW3F_LIBRARY} m)
+
+	target_link_libraries(${ugen} m)
+
+	if (FFTW3F_FOUND)
+		target_link_libraries(${ugen} ${FFTW3F_LIBRARY})
+	endif()
 
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")
