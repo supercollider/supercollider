@@ -37,10 +37,10 @@ void* zalloc(size_t n, size_t size);
 
 void World_Run(struct World *inWorld);
 void World_Start(World *inWorld);
-void World_Cleanup(World *inWorld);
 void World_SetSampleRate(struct World *inWorld, double inSampleRate);
 
 extern "C" {
+void World_Cleanup(World *inWorld);
 void* World_Alloc(struct World *inWorld, size_t inByteSize);
 void* World_Realloc(struct World *inWorld, void *inPtr, size_t inByteSize);
 void World_Free(struct World *inWorld, void *inPtr);

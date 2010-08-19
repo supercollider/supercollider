@@ -68,9 +68,13 @@ if(UNIX)
 else(UNIX)
 endif(UNIX)
 
-CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
+if(FINAL_BUILD)
+	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
+	add_library(libsclang SHARED libsclang_final.cpp ${sclang_parser_source})
+else()
+	add_library(libsclang SHARED ${sclang_sources} ${sclang_parser_source})
+endif()
 
-add_library(libsclang SHARED libsclang_final.cpp ${sclang_parser_source})
 
 set_property(TARGET libsclang
 	APPEND
