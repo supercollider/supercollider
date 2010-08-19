@@ -51,13 +51,12 @@
 
 
 #ifdef SC_DARWIN
- 	#define HAVE_WII
+	#define HAVE_WII
 	#include <mach/mach.h>
 	#include <mach/mach_error.h>
 
-	//#include "WiiMote_OSX/wiiremote.h"
 	extern "C"{
-	#include "wiiremote.h"
+	#include "WiiMote_OSX/wiiremote.h"
 	}
 #endif // SC_DARWIN
 

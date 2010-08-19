@@ -58,6 +58,7 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 if(UNIX)
 	if(APPLE)
+		list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
