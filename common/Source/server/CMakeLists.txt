@@ -39,7 +39,13 @@ if (JACK_FOUND)
 	include_directories(${JACK_INCLUDE_DIRS})
 endif()
 
-add_library(libscsynth SHARED ${scsynth_sources})
+if (FINAL_BUILD)
+	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources})
+	add_library(libscsynth SHARED libscsynth_final.cpp)
+else()
+	add_library(libscsynth SHARED ${scsynth_sources})
+endif()
+
 target_link_libraries(libscsynth sccommon)
 
 if(SNDFILE_FOUND)

@@ -25,6 +25,8 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 option(NOVA_SIMD "Build with nova-simd support." ON)
+option(FINAL_BUILD "Build as single source file." OFF)
+
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	option(SC_EL "Build emacs-based IDE." ON)
