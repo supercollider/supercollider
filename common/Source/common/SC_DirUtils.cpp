@@ -27,6 +27,7 @@
 # include <direct.h>
 # include "SC_Win32Utils.h"
 #else
+# include <unistd.h>
 # include <dirent.h>
 # include <glob.h>
 # include <sys/param.h>

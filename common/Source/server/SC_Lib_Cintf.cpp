@@ -59,7 +59,7 @@
 // Symbol of initialization routine when loading plugins
 #ifndef SC_PLUGIN_LOAD_SYM
 
-# if defined(__APPLE__) || defined(SC_IPHONE)
+# if defined(__APPLE__) || defined(SC_IPHONE) || defined(SC_ANDROID)
 #  define SC_PLUGIN_LOAD_SYM "load"
 # else
 #  define SC_PLUGIN_LOAD_SYM "_load"
