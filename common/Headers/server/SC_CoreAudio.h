@@ -34,7 +34,7 @@
 #define SC_AUDIO_API_PORTAUDIO  3
 #define SC_AUDIO_API_AUDIOUNITS  4
 #define SC_AUDIO_API_COREAUDIOIPHONE	5
-
+#define SC_AUDIO_API_ANDROIDJNI 6
 
 #ifdef _WIN32
 # ifndef SC_INNERSC
@@ -42,6 +42,10 @@
 # else
 #  define SC_AUDIO_API SC_AUDIO_API_INNERSC_VST
 # endif
+#endif
+
+#ifdef SC_ANDROID
+#define SC_AUDIO_API SC_AUDIO_API_ANDROIDJNI
 #endif
 
 #ifdef SC_IPHONE
@@ -349,5 +353,32 @@ inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
   return new SC_VSTAudioDriver(inWorld); //This gets saved in inWorld->hw->mAudioDriver
 }
 #endif // SC_AUDIO_API == SC_AUDIO_API_INNERSC_VST
+
+#if SC_AUDIO_API == SC_AUDIO_API_ANDROIDJNI
+
+class SC_AndroidJNIAudioDriver : public SC_AudioDriver
+{
+
+protected:
+
+    // Driver interface methods
+        virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
+        virtual bool DriverStart();
+        virtual bool DriverStop();
+        
+public:
+    SC_AndroidJNIAudioDriver(struct World *inWorld);
+        virtual ~SC_AndroidJNIAudioDriver();
+
+        void genaudio(short* arri, int numSamples);
+
+};
+
+inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
+{
+    return new SC_AndroidJNIAudioDriver(inWorld);
+}
+
+#endif // SC_AUDIO_API == SC_AUDIO_API_ANDROIDJNI
 
 #endif

@@ -12,6 +12,7 @@ Changes are listed below, grouped under each point release of SuperCollider.
 * 2010-08-13 add size arg to Signal:zeroPad - jr and jh
 * 2010-08-18 Pevent now uses default event if no event is passed in - jr
 * 2010-08-18 added a shortcut to the rather tedious .asCompileString method. In analogy to object.postcs, object.cs returns the compile string - jr
+* 2010-08-20 audio driver for scsynth running on Android (through JNI) - ds
 
 Bugfixes:
 ---------
