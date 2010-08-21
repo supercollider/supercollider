@@ -85,11 +85,14 @@ Bus {
 	}
 
 	get { arg action; 
-		action = action ? { |vals| "Bus % index: % values: %.\n".postf(rate, index, vals); };
-		OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg;
-			action.value(msg.at(2)); r.remove }).add;
-		server.listSendMsg(["/c_get",index]);
+		if(numChannels == 1, {
+			action = action ? { |vals| "Bus % index: % value: %.\n".postf(rate, index, vals); };
+			OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg;
+				action.value(msg.at(2)); r.remove }).add;
+			server.listSendMsg(["/c_get",index]);
+		}, {this.getn(action)});
 	}
+	
 	getn { arg count, action;
 		action = action ? { |vals| "Bus % index: % values: %.\n".postf(rate, index, vals); };
 		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg;
