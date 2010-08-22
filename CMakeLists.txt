@@ -34,6 +34,9 @@ endif()
 include_directories(source)
 include_directories(libs
                     libs/boost
+                    libs/boost_endian
+                    libs/boost_lockfree
+                    libs/boost_move
                     libs/nova-dsp
                     libs/nova-simd
                     libs/nova-tt
