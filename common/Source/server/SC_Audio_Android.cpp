@@ -43,7 +43,7 @@ bool SC_AndroidJNIAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double
 	*outSampleRate = mPreferredSampleRate;
 
 	int audioDataSize = mPreferredHardwareBufferFrameSize * mWorld->mNumOutputs * sizeof(float);
-#ifndef(NDEBUG)
+#ifndef NDEBUG
 	scprintf("SC_AndroidJNIAudioDriver::DriverSetup: allocating %i bytes for %i frames\n", audioDataSize, mPreferredHardwareBufferFrameSize);
 #endif
 
@@ -93,7 +93,7 @@ void SC_AndroidJNIAudioDriver::genaudio(short* arri, int numSamplesPassed)
     int bufFrames = mWorld->mBufLength;
     int numBufs = numFramesPerCallback / bufFrames;
 
-#ifndef(NDEBUG)
+#ifndef NDEBUG
 	if((numFramesPerCallback * numOutputs) != numSamplesPassed)
 		scprintf("(numFramesPerCallback * numOutputs) != numSamplesPassed, %i %i\n", numFramesPerCallback, numOutputs, numSamplesPassed);
 #endif
