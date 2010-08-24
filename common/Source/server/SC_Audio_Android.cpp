@@ -124,7 +124,7 @@ void SC_AndroidJNIAudioDriver::genaudio(short* arri, int numSamplesPassed)
         {
              float *dst = inBuses + k * bufFrames;
              // OK, so source is an interleaved array of ints, target is noninterleaved floats
-             for (int n = 0; n < bufFrames; ++n) *dst++ = (1.f/32767.f) * (float)arri[n * minInputs + k];
+             for (int frame = 0; frame < bufFrames; ++frame) *dst++ = (1.f/32767.f) * (float)arri[(bufFramePos+frame) * minInputs + k];
              *tch++ = bufCounter;
         }
 
@@ -155,9 +155,9 @@ void SC_AndroidJNIAudioDriver::genaudio(short* arri, int numSamplesPassed)
         	// OK, so the source is noninterleaved floats, target is an interleaved array of ints
             if (*tch++ == bufCounter) {
                 float *src = outBuses + k * bufFrames;
-                for (int n = 0; n < bufFrames; ++n) arri[n * minOutputs + k] = (short)((*src++) * 32767.f);
+                for (int frame = 0; frame < bufFrames; ++frame) arri[(bufFramePos+frame) * minOutputs + k] = (short)((*src++) * 32767.f);
             } else {
-                for (int n = 0; n < bufFrames; ++n) arri[n * minOutputs + k] = 0;
+                for (int frame = 0; frame < bufFrames; ++frame) arri[(bufFramePos+frame) * minOutputs + k] = 0;
             }
         }
 
