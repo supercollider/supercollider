@@ -40,11 +40,34 @@ static float *fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 	static COMPLEX_SPLIT splitBuf; // Temp buf for holding rearranged data
 #endif
 
+#if SC_FFT_GREEN
+	extern "C" {
+		#include "fftlib.h"
+		static float *cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
+	}
+#endif
+
 #define pi 3.1415926535898f
 #define twopi 6.28318530717952646f
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functions
+
+#if SC_FFT_GREEN
+static float* create_cosTable(int log2n);
+static float* create_cosTable(int log2n)
+{
+	int size = 1 << log2n;
+	int size2 = size / 4 + 1;
+	float *win = (float*)malloc(size2 * sizeof(float));
+	double winc = twopi / size;
+	for (int i=0; i<size2; ++i) {
+		double w = i * winc;
+		win[i] = cos(w);
+	}
+	return win;
+}
+#endif
 
 float* scfft_create_fftwindow(int wintype, int log2n);
 float* scfft_create_fftwindow(int wintype, int log2n)
@@ -85,7 +108,15 @@ void scfft_global_init(){
 			fftWindow[wintype][i] = scfft_create_fftwindow(wintype, i);
 		}
 	}
-	#if SC_FFT_VDSP
+	#if SC_FFT_GREEN
+		for (i=0; i< SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
+			cosTable[i] = 0;
+		}
+		for (i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
+			cosTable[i] = create_cosTable(i);
+		}
+		printf("SC FFT global init: cosTable initialised.\n");
+	#elif SC_FFT_VDSP
 		// vDSP inits its twiddle factors
 		for (i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
 			fftSetup[i] = vDSP_create_fftsetup (i, FFT_RADIX2);
@@ -110,6 +141,7 @@ size_t scfft_trbufsize(unsigned int fullsize){
 		return (fullsize+2) * sizeof(float);
 	#else
 		// vDSP packs the nyquist in with the DC, so size is same as input buffer (plus zeropadding)
+		// Green does this too
 		return (fullsize  ) * sizeof(float);
 	#endif
 }
@@ -140,11 +172,15 @@ int scfft_create(scfft *f, unsigned int fullsize, unsigned int winsize, short wi
 	if(forward){
 		#if SC_FFT_VDSP
 			f->scalefac = 0.5f;
-		#else // forward FFTW factor
+		#else // forward FFTW and Green factor
 			f->scalefac = 1.f;
 		#endif
 	}else{ // backward FFTW and VDSP factor
-		f->scalefac = 1.f / fullsize;
+		#if SC_FFT_GREEN
+			f->scalefac = 1.f;
+		#else  // fftw, vdsp
+			f->scalefac = 1.f / fullsize;
+		#endif
 	}
 
 	memset(trbuf, 0, scfft_trbufsize(fullsize));
@@ -174,6 +210,9 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
  	#if SC_FFT_VDSP
 		if(fftSetup[log2_fullsize] == 0)
 			fftSetup[log2_fullsize] = vDSP_create_fftsetup (log2_fullsize, FFT_RADIX2);
+	#elif SC_FFT_GREEN
+		if(cosTable[log2_fullsize] == 0)
+			cosTable[log2_fullsize] = create_cosTable(log2_fullsize);
    	#endif
 }
 
@@ -223,6 +262,11 @@ void scfft_dofft(scfft *f){
 		vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_FORWARD);
 		// Copy the data to the public output buf, transforming it back out of "split" representation
 		vDSP_ztoc(&splitBuf, 1, (DSPComplex*) f->outdata, 2, f->nfull >> 1);
+	#elif SC_FFT_GREEN
+		// Green FFT is in-place
+		rffts(f->trbuf, f->log2nfull, 1, cosTable[f->log2nfull]);
+		// Copy to public buffer
+		memcpy(f->outdata, f->trbuf, f->nfull * sizeof(float));
 	#endif
 }
 
@@ -242,6 +286,14 @@ void scfft_doifft(scfft *f){
 		vDSP_ctoz((COMPLEX*) f->indata, 2, &splitBuf, 1, f->nfull >> 1);
 		vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_INVERSE);
 		vDSP_ztoc(&splitBuf, 1, (DSPComplex*) f->outdata, 2, f->nfull >> 1);
+	#elif SC_FFT_GREEN
+		float *trbuf = f->trbuf;
+		size_t bytesize = f->nfull * sizeof(float);
+		memcpy(trbuf, f->indata, bytesize);
+		// Green FFT is in-place
+		riffts(trbuf, f->log2nfull, 1, cosTable[f->log2nfull]);
+		// Copy to public buffer
+		memcpy(f->outdata, trbuf, f->nwin * sizeof(float));
 	#endif
 	scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nfull, f->wintype, f->scalefac);
 }
