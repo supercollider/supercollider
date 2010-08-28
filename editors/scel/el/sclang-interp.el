@@ -97,7 +97,7 @@ Default behavior is to only scroll when point is not at end of buffer."
 If EOB-P is non-nil, positions cursor at end of buffer."
   (interactive "P")
   (with-sclang-post-buffer
-   (let ((window (display-buffer (current-buffer) :frame t)))
+   (let ((window (display-buffer (current-buffer))))
      (when eob-p
        (goto-char (point-max))
        (save-selected-window
