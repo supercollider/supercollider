@@ -14,6 +14,7 @@ Changes are listed below, grouped under each point release of SuperCollider.
 * 2010-08-18 added a shortcut to the rather tedious .asCompileString method. In analogy to object.postcs, object.cs returns the compile string - jr
 * 2010-08-20 audio driver for scsynth running on Android (through JNI) - ds
 * 2010-08-24 un-deprecate scsynth's ability to use internal "green" FFT lib, for embedded devices etc - ds
+* 2010-08-28 no 'record' button for remote server GUIs, since path not generally known - ds
 
 Bugfixes:
 ---------

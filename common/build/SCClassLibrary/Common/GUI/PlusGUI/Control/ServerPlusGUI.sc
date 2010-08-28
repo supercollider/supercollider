@@ -74,17 +74,18 @@
 
 		//w.view.decorator.nextLine;
 
-		recorder = gui.button.new(w, Rect(0,0, 66, 18));
-		recorder.font = font;
-		recorder.states = [
-			["record >", Color.black, Color.clear],
-			["stop []", Color.black, Color.red.alpha_(0.3)]
-		];
-
-		recorder.action = {
-			if (recorder.value == 1) { this.record } { this.stopRecording };
+		if(isLocal){
+			recorder = gui.button.new(w, Rect(0,0, 66, 18));
+			recorder.font = font;
+			recorder.states = [
+				["record >", Color.black, Color.clear],
+				["stop []", Color.black, Color.red.alpha_(0.3)]
+			];
+			recorder.action = {
+				if (recorder.value == 1) { this.record } { this.stopRecording };
+			};
+			recorder.enabled = false;
 		};
-		recorder.enabled = false;
 
 		w.view.keyDownAction = { arg view, char, modifiers;
 			var startDump, stopDump, stillRunning;
@@ -169,13 +170,10 @@
 				active.stringColor_(Color.new255(74, 120, 74));
 				active.string = "running";
 				active.background = Color.white;
-				recorder.enabled = true;
 			};
 			stopped = {
 				active.stringColor_(Color.grey(0.3));
 				active.string = "inactive";
-				recorder.setProperty(\value,0);
-				recorder.enabled = false;
 
 			};
 			booting = {
@@ -187,7 +185,6 @@
 				active.stringColor = Color.new255(237, 157, 196);
 				active.background = Color.red(0.5);
 				booter.setProperty(\value,1);
-				recorder.enabled = false;
 			};
 
 			w.onClose = {
@@ -324,11 +321,13 @@
 				countsViews.at(4).string = numGroups;
 				countsViews.at(5).string = numSynthDefs;
 			})
-			.put(\cmdPeriod,{
-				recorder.setProperty(\value,0);
-			})
 			.put(\bundling, bundling)
 			.put(\default, showDefault);
+		if(isLocal){
+			ctlr.put(\cmdPeriod,{
+					recorder.setProperty(\value,0);
+				})
+		};
 
 		this.startAliveThread;
 	}
