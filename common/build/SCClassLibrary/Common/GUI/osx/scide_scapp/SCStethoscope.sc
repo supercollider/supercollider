@@ -156,7 +156,7 @@ SCStethoscope {
 	numChannels_ { arg n;
 
 		var isPlaying;
-		if(n > 16) { "cannot display more than 16 channels at once".inform; n = 16 };
+		if(n > 128) { "cannot display more than 128 channels at once".inform; n = 128 };
 		if(n != numChannels and: { n > 0 }) {
 			isPlaying = synth.isPlaying;
 			if(isPlaying) { synth.free; synth.isPlaying = false; synth = nil }; // immediate

@@ -53,7 +53,7 @@ struct SndMinMaxBuf {
 };
 typedef struct SndMinMaxBuf SndMinMaxBuf;
 const int kMaxSndSelections = 64;
-const int kMaxSndChannels = 16;
+const int kMaxSndChannels = 128;
 class SCSoundFileView : public SCView
 {
 public:
