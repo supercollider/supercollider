@@ -177,7 +177,7 @@ int SCSoundFileView::readSndFile(SNDFILE *file, int startFrame, int frames, int 
 	mZoom.x =  ((frames/mResampleFactor)/(mBounds.width-2.f));
 
 	if(err) return err;
-	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+	int channels = sc_min(mSndBuf.channels, kMaxSndChannels);
 
 	if(mSndMinMax.isUsable) {
 		mSndMinMax.isUsable=false;
@@ -355,7 +355,7 @@ void SCSoundFileView::draw0(SCRect inDamage, CGContextRef cgc)
 	SCRect bounds = getDrawBounds();
     CGRect rect = SCtoCGRect(bounds);
 	int width = (int) mBounds.width - 2;
-	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+	int channels = sc_min(mSndBuf.channels, kMaxSndChannels);
 	float chanHeight = (mBounds.height - 2.) / channels;
 	float chanHeight2 = 0.5 * chanHeight;
 	float yScale = mZoom.y * chanHeight2;
@@ -431,7 +431,7 @@ void SCSoundFileView::draw0Buf(SCRect inDamage, CGContextRef cgc)
 	SCRect bounds = getDrawBounds();
     CGRect rect = SCtoCGRect(bounds);
 	int width = (int) bounds.width - 2;
-	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+	int channels = sc_min(mSndBuf.channels, kMaxSndChannels);
 	int widthdisp;
 	int startx = 0;
 	if(inDamage.x > 0)
@@ -493,7 +493,7 @@ void SCSoundFileView::draw1(SCRect inDamage, CGContextRef cgc)
 	// draw scope.
     CGRect rect = SCtoCGRect(bounds);
 	int width = (int) bounds.width - 2;
-	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+	int channels = sc_min(mSndBuf.channels, kMaxSndChannels);
 	//post("channels %d\n", channels);
 	float chanHeight = bounds.height - 2.;
 	float chanHeight2 = 0.5 * chanHeight;
@@ -554,7 +554,7 @@ void SCSoundFileView::draw2(SCRect inDamage, CGContextRef cgc)
 	SCRect bounds = getDrawBounds();
 	// draw scope.
     CGRect rect = SCtoCGRect(bounds);
-	int channels = sc_min(mSndBuf.channels, kMaxScopeChannels);
+	int channels = sc_min(mSndBuf.channels, kMaxSndChannels);
 	float height = rect.size.height - 2.;
 	float height2 = 0.5 * height;
 	float width = rect.size.width - 2.;

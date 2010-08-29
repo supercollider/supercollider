@@ -38,7 +38,7 @@ SCScope : SCView {
 	}
 
 	waveColors {
-		^this.getProperty(\waveColors, Array.fill(16, {Color.new})) // 16 is kMaxScopeChannels
+		^this.getProperty(\waveColors, Array.fill(128, {Color.new})) // 128 is kMaxScopeChannels
 	}
 	waveColors_ { arg arrayOfColors;
 		this.setProperty(\waveColors, arrayOfColors);

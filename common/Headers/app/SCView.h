@@ -491,7 +491,7 @@ SCView* NewSC2DTabletSlider(SCContainerView *inParent, PyrObject* inObj, SCRect 
 
 #include "SC_SndBuf.h"
 
-const int kMaxScopeChannels = 16;
+const int kMaxScopeChannels = 128;
 class SCScope : public SCView
 {
 public:
