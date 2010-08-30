@@ -6,7 +6,7 @@ find_package(Readline)
 find_package(ICU)
 find_package(Sndfile)
 
-if (!ICU_FOUND)
+if (NOT ICU_FOUND)
 	message(SEND_ERROR "cannot find ICU")
 endif()
 
