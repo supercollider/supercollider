@@ -65,3 +65,10 @@ set_property(TARGET libscsynth
 add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth)
 
+install(TARGETS libscsynth
+		DESTINATION "lib"
+		PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+install(TARGETS scsynth
+		DESTINATION "bin"
+		PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
