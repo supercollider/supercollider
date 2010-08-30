@@ -1,8 +1,8 @@
-if (!APPLE)
+if (NOT APPLE)
 	# we use vdsp on osx
 	find_package(FFTW3f)
 
-	if (!FFTW3F_FOUND)
+	if (NOT FFTW3F_FOUND)
 		message(SEND_ERROR "Cannot find libfftw3f")
 	endif()
 endif()
