@@ -76,10 +76,14 @@ else()
 endif()
 
 
-set_property(TARGET libsclang
-	APPEND
-	PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
-	)
+if (SCLANG_SERVER)
+	target_link_libraries(libsclang libscsynth)
+else()
+	set_property(TARGET libsclang
+		APPEND
+		PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
+		)
+endif()
 
 set_property(TARGET libsclang
 	PROPERTY OUTPUT_NAME sclang)
