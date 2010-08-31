@@ -34,6 +34,8 @@ else()
 	option(SC_EL "Build emacs-based IDE." OFF)
 endif()
 
+option(SCLANG_SERVER "Build with internal server." ON)
+
 add_subdirectory(common/Source)
 add_subdirectory(common/build)
 
