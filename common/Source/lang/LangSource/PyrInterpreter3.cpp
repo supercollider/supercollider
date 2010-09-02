@@ -456,6 +456,12 @@ void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
 
 void dumpByteCodes(PyrBlock *theBlock);
 
+static inline void handlePushClassVar(VMGlobals* g, PyrSlot *& sp, unsigned char *& ip, unsigned char op2)
+{
+	unsigned char op3 = ip[1]; ++ip; // get class var index
+	slotCopy(++sp, &g->classvars->slots[(op2<<8)|op3]);
+}
+
 #ifdef __GNUC__
 #define dispatch_opcode \
 	op1 = ip[1];		\
@@ -1165,19 +1171,38 @@ void Interpret(VMGlobals *g)
 		case 79 : handle_op_79: slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[15]); dispatch_opcode;
 
 		// opPushClassVar
-		case 80 :  case 81 :  case 82 :  case 83 :
-		case 84 :  case 85 :  case 86 :  case 87 :
-		case 88 :  case 89 :  case 90 :  case 91 :
-		case 92 :  case 93 :  case 94 :  case 95 :
-		handle_op_80: handle_op_81: handle_op_82: handle_op_83:
-		handle_op_84: handle_op_85: handle_op_86: handle_op_87:
-		handle_op_88: handle_op_89: handle_op_90: handle_op_91:
-		handle_op_92: handle_op_93: handle_op_94: handle_op_95:
-
-			op2 = op1 & 15;
-			op3 = ip[1]; ++ip; // get class var index
-			slotCopy(++sp, &g->classvars->slots[(op2<<8)|op3]);
-			dispatch_opcode;
+		case 80: handle_op_80:
+			handlePushClassVar(g, sp, ip, 0); dispatch_opcode;
+		case 81: handle_op_81:
+			handlePushClassVar(g, sp, ip, 1); dispatch_opcode;
+		case 82: handle_op_82:
+			handlePushClassVar(g, sp, ip, 2); dispatch_opcode;
+		case 83: handle_op_83:
+			handlePushClassVar(g, sp, ip, 3); dispatch_opcode;
+		case 84: handle_op_84:
+			handlePushClassVar(g, sp, ip, 4); dispatch_opcode;
+		case 85: handle_op_85:
+			handlePushClassVar(g, sp, ip, 5); dispatch_opcode;
+		case 86: handle_op_86:
+			handlePushClassVar(g, sp, ip, 6); dispatch_opcode;
+		case 87: handle_op_87:
+			handlePushClassVar(g, sp, ip, 7); dispatch_opcode;
+		case 88: handle_op_88:
+			handlePushClassVar(g, sp, ip, 8); dispatch_opcode;
+		case 89: handle_op_89:
+			handlePushClassVar(g, sp, ip, 9); dispatch_opcode;
+		case 90: handle_op_90:
+			handlePushClassVar(g, sp, ip, 10); dispatch_opcode;
+		case 91: handle_op_91:
+			handlePushClassVar(g, sp, ip, 11); dispatch_opcode;
+		case 92: handle_op_92:
+			handlePushClassVar(g, sp, ip, 12); dispatch_opcode;
+		case 93: handle_op_93:
+			handlePushClassVar(g, sp, ip, 13); dispatch_opcode;
+		case 94: handle_op_94:
+			handlePushClassVar(g, sp, ip, 14); dispatch_opcode;
+		case 95: handle_op_95:
+			handlePushClassVar(g, sp, ip, 15); dispatch_opcode;
 
 		// opPushSpecialValue
 		case  96 : handle_op_96: slotCopy(++sp, &g->receiver); dispatch_opcode;
