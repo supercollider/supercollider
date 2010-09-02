@@ -462,6 +462,18 @@ static inline void handlePushClassVar(VMGlobals* g, PyrSlot *& sp, unsigned char
 	slotCopy(++sp, &g->classvars->slots[(op2<<8)|op3]);
 }
 
+static inline void handleStoreInstVar(VMGlobals* g, PyrSlot *& sp, unsigned char *& ip, unsigned int index)
+{
+	PyrObject* obj = slotRawObject(&g->receiver);
+	if (obj->obj_flags & obj_immutable)
+		StoreToImmutableA(g, sp, ip);
+	else {
+		PyrSlot * slot = obj->slots + index;
+		slotCopy(slot, sp--);
+		g->gc->GCWrite(obj, slot);
+	}
+}
+
 #ifdef __GNUC__
 #define dispatch_opcode \
 	op1 = ip[1];		\
@@ -1251,186 +1263,38 @@ void Interpret(VMGlobals *g)
 		case 111 : handle_op_111: slotCopy(++sp, &gSpecialValues[svInf]); dispatch_opcode;
 
 		// opStoreInstVar, 0..15
-#if 1
-		case 112 :
-		handle_op_112:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 113 :
-		handle_op_113:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 1;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 114 :
-		handle_op_114:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 2;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 115 :
-		handle_op_115:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 3;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 116 :
-		handle_op_116:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 4;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 117 :
-		handle_op_117:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 5;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 118 :
-		handle_op_118:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 6;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 119 :
-		handle_op_119:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 7;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 120 :
-		handle_op_120:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 8;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 121 :
-		handle_op_121:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 9;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 122 :
-		handle_op_122:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 10;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 123 :
-		handle_op_123:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 11;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 124 :
-		handle_op_124:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 12;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 125 :
-		handle_op_125:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 13;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 126 :
-		handle_op_126:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 14;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-		case 127 :
-		handle_op_127:
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + 15;
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-#else
-		case 112 :  case 113 :  case 114 :  case 115 :
-		case 116 :  case 117 :  case 118 :  case 119 :
-		case 120 :  case 121 :  case 122 :  case 123 :
-		case 124 :  case 125 :  case 126 :  case 127 :
-		handle_op_112: handle_op_113: handle_op_114: handle_op_115:
-		handle_op_116: handle_op_117: handle_op_118: handle_op_119:
-		handle_op_120: handle_op_121: handle_op_122: handle_op_123:
-		handle_op_124: handle_op_125: handle_op_126: handle_op_127:
-
-			obj = slotRawObject(&g->receiver);
-			if (obj->obj_flags & obj_immutable) { StoreToImmutableA(g, sp, ip); }
-			else {
-				slot = obj->slots + (op1 & 15);
-				slotCopy(slot, sp--);
-				g->gc->GCWrite(obj, slot);
-			}
-			dispatch_opcode;
-#endif
+		case 112 : handle_op_112:
+			handleStoreInstVar(g, sp, ip, 0); dispatch_opcode;
+		case 113 : handle_op_113:
+			handleStoreInstVar(g, sp, ip, 1); dispatch_opcode;
+		case 114 : handle_op_114:
+			handleStoreInstVar(g, sp, ip, 2); dispatch_opcode;
+		case 115 : handle_op_115:
+			handleStoreInstVar(g, sp, ip, 3); dispatch_opcode;
+		case 116 : handle_op_116:
+			handleStoreInstVar(g, sp, ip, 4); dispatch_opcode;
+		case 117 : handle_op_117:
+			handleStoreInstVar(g, sp, ip, 5); dispatch_opcode;
+		case 118 : handle_op_118:
+			handleStoreInstVar(g, sp, ip, 6); dispatch_opcode;
+		case 119 : handle_op_119:
+			handleStoreInstVar(g, sp, ip, 7); dispatch_opcode;
+		case 120 : handle_op_120:
+			handleStoreInstVar(g, sp, ip, 8); dispatch_opcode;
+		case 121 : handle_op_121:
+			handleStoreInstVar(g, sp, ip, 9); dispatch_opcode;
+		case 122 : handle_op_122:
+			handleStoreInstVar(g, sp, ip, 10); dispatch_opcode;
+		case 123 : handle_op_123:
+			handleStoreInstVar(g, sp, ip, 11); dispatch_opcode;
+		case 124 : handle_op_124:
+			handleStoreInstVar(g, sp, ip, 12); dispatch_opcode;
+		case 125 : handle_op_125:
+			handleStoreInstVar(g, sp, ip, 13); dispatch_opcode;
+		case 126 : handle_op_126:
+			handleStoreInstVar(g, sp, ip, 14); dispatch_opcode;
+		case 127 : handle_op_127:
+			handleStoreInstVar(g, sp, ip, 15); dispatch_opcode;
 
 		// opStoreTempVar
 		case 128 :
