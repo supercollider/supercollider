@@ -482,6 +482,13 @@ static inline void handleSendSpecialUnaryArithMsg(VMGlobals* g, PyrSlot *& sp, u
 	sp = g->sp; ip = g->ip;
 }
 
+static inline void handleSendSpecialBinaryArithMsg(VMGlobals* g, PyrSlot *& sp, unsigned char *& ip, unsigned char op1)
+{
+	g->sp = sp; g->ip = ip;
+	g->primitiveIndex = op1 & 15;
+	doSpecialBinaryArithMsg(g, 2, false);
+	sp = g->sp; ip = g->ip;
+}
 
 #ifdef __GNUC__
 #define dispatch_opcode \
@@ -2196,20 +2203,32 @@ void Interpret(VMGlobals *g)
 			}
 			dispatch_opcode;
 
-		case 227 :
-		case 228 :  case 229 :  case 230 :  case 231 :
-		case 232 :  case 233 :  case 234 :  case 235 :
-		case 236 :  case 237 :  case 238 :  case 239 :
-		handle_op_227:
-		handle_op_228: handle_op_229: handle_op_230: handle_op_231:
-		handle_op_232: handle_op_233: handle_op_234: handle_op_235:
-		handle_op_236: handle_op_237: handle_op_238: handle_op_239:
-
-			g->sp = sp; g->ip = ip;
-			g->primitiveIndex = op1 & 15;
-			doSpecialBinaryArithMsg(g, 2, false);
-			sp = g->sp; ip = g->ip;
-			dispatch_opcode;
+		case 227 : handle_op_227:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 228 : handle_op_228:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 229 : handle_op_229:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 230 : handle_op_230:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 231 : handle_op_231:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 232 : handle_op_232:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 233 : handle_op_233:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 234 : handle_op_234:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 235 : handle_op_235:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 236 : handle_op_236:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 237 : handle_op_237:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 238 : handle_op_238:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 239 : handle_op_239:
+			handleSendSpecialBinaryArithMsg(g, sp, ip, op1); dispatch_opcode;
 
 		// opSpecialOpcodes
 		case 240 :
