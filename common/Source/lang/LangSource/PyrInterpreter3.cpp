@@ -58,12 +58,11 @@
 double timeNow();
 
 
-int32 timeseed();
 int32 timeseed()
 {
 	struct timeval tv;
-  gettimeofday(&tv, 0);
-  return tv.tv_sec ^ tv.tv_usec;
+	gettimeofday(&tv, 0);
+	return tv.tv_sec ^ tv.tv_usec;
 }
 
 VMGlobals gVMGlobals;
@@ -117,28 +116,27 @@ void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 
 	if (initInterpreter(g, selector, numArgsPushed)) {
 #if SANITYCHECKLITE
-	g->gc->SanityCheck();
+		g->gc->SanityCheck();
 #endif
 //        if (strcmp(selector->name, "tick") != 0) post("%s %d  execMethod %d\n", selector->name, numArgsPushed, g->execMethod);
 	//post("->Interpret thread %08X\n", g->thread);
 		if (g->execMethod) Interpret(g);
 	//post("<-Interpret thread %08X\n", g->thread);
 #if SANITYCHECKLITE
-	g->gc->SanityCheck();
+		g->gc->SanityCheck();
 #endif
+	}
 
-        }
-        //postfl(" >endInterpreter\n");
-        endInterpreter(g);
+	//postfl(" >endInterpreter\n");
+	endInterpreter(g);
 #if SANITYCHECKLITE
 	g->gc->SanityCheck();
 #endif
 		//postfl("<-runInterpreter\n");
 	//dumpGCStats(g->gc);
-
 }
 
-bool initAwakeMessage(VMGlobals *g);
+static bool initAwakeMessage(VMGlobals *g);
 
 void runAwakeMessage(VMGlobals *g)
 {
@@ -154,32 +152,23 @@ int32 timeseed();
 
 PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 {
-	PyrProcess *proc;
-	PyrInterpreter *interpreter;
-	PyrClass *classobj;
-	PyrObject *classVars;
-	PyrThread *thread;
-	//PyrDSP *dsp;
-        PyrGC* gc = g->gc;
-
-	int numClassVars;
-
-	proc = (PyrProcess*)instantiateObject(gc, procclassobj, 0, true, false);
+	PyrGC* gc = g->gc;
+	PyrProcess * proc = (PyrProcess*)instantiateObject(gc, procclassobj, 0, true, false);
 
 	PyrObject *sysSchedulerQueue = newPyrArray(gc, 1024, 0, false);
 	SetObject(&proc->sysSchedulerQueue, sysSchedulerQueue);
 
-	classVars = newPyrArray(gc, gNumClassVars, 0, false);
+	PyrObject *classVars = newPyrArray(gc, gNumClassVars, 0, false);
 	classVars->size = gNumClassVars;
 	nilSlots(classVars->slots, gNumClassVars);
 	SetObject(&proc->classVars, classVars);
 	g->classvars = classVars;
 
 	// fill class vars from prototypes:
-	classobj = gClassList;
+	PyrClass * classobj = gClassList;
 	while (classobj) {
 		if (IsObj(&classobj->cprototype)) {
-			numClassVars = slotRawObject(&classobj->cprototype)->size;
+			int numClassVars = slotRawObject(&classobj->cprototype)->size;
 			if (numClassVars > 0) {
 				memcpy(g->classvars->slots + slotRawInt(&classobj->classVarIndex), slotRawObject(&classobj->cprototype)->slots, numClassVars * sizeof(PyrSlot));
 			}
@@ -192,7 +181,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	class_thread = getsym("Thread")->u.classobj;
 	if (class_thread) {
 		SetNil(&proc->curThread);
-		thread = (PyrThread*)instantiateObject(gc, class_thread, 0, true, false);
+		PyrThread * thread = (PyrThread*)instantiateObject(gc, class_thread, 0, true, false);
 		//SetObject(&threadsArray->slots[0], thread);
 		SetObject(&proc->mainThread, thread);
 		PyrInt32Array *rgenArray = newPyrInt32Array(gc, 4, 0, false);
@@ -210,14 +199,10 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 	} else {
 		error("Class Thread not found.\n");
 	}
-	
-	PyrSymbol *contextsym;
-	int index;
-	PyrMethod *meth;
 
-	contextsym = getsym("functionCompileContext");
-	index = slotRawInt(&class_interpreter->classIndex) + contextsym->u.index;
-	meth = gRowTable[index];
+	PyrSymbol * contextsym = getsym("functionCompileContext");
+	int index = slotRawInt(&class_interpreter->classIndex) + contextsym->u.index;
+	PyrMethod * meth = gRowTable[index];
 	if (!meth || slotRawSymbol(&meth->name) != contextsym) {
 		error("compile context method 'functionCompileContext' not found.\n");
 		//SetNil(&proc->interpreter);
@@ -226,7 +211,7 @@ PyrProcess* newPyrProcess(VMGlobals *g, PyrClass *procclassobj)
 		PyrFrame *frame;
 		PyrMethodRaw *methraw;
 
-		interpreter = (PyrInterpreter*)instantiateObject(gc, class_interpreter, 0, true, false);
+		PyrInterpreter * interpreter = (PyrInterpreter*)instantiateObject(gc, class_interpreter, 0, true, false);
 		SetObject(&proc->interpreter, interpreter);
 		proto = slotRawObject(&meth->prototypeFrame);
 
@@ -307,7 +292,7 @@ void initGUI();
 
 #ifndef SC_WIN32
 bool running = true;
-void handleSigUsr1(int param)
+static void handleSigUsr1(int param)
 {
   printf("handleSigUsr1()...\n");
   running = false;
@@ -316,14 +301,13 @@ void handleSigUsr1(int param)
 
 bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 {
-	PyrClass *class_main;
 	/*
 		create a GC environment
 		create a vmachine instance of main
 		initialize VMGlobals
 	*/
 
-	class_main = s_main->u.classobj;
+	PyrClass * class_main = s_main->u.classobj;
 
 	if (!class_main) { error("Class 'Main' not defined.\n"); return false; }
 	if (!isSubclassOf(class_main, class_process)) {
@@ -370,7 +354,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 	return true;
 }
 
-bool initAwakeMessage(VMGlobals *g)
+static bool initAwakeMessage(VMGlobals *g)
 {
 	//post("initAwakeMessage %08X %08X\n", g->thread, slotRawThread(&g->process->mainThread));
 	slotCopy(&g->process->curThread, &g->process->mainThread); //??
@@ -438,8 +422,7 @@ void endInterpreter(VMGlobals *g)
 }
 
 
-void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
-void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
+static void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
 {
 	// only the value is on the stack
 	slotCopy(&sp[1], &sp[0]); // copy value up one
@@ -455,7 +438,6 @@ void StoreToImmutableA(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
 	ip = g->ip;
 }
 
-void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
 void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip)
 {
 	// receiver and value are on the stack.
@@ -2061,12 +2043,12 @@ void Interpret(VMGlobals *g)
 
 			////////////////////////////////////
 
-			class_lookup:
+		class_lookup:
 			// normal class lookup
 			classobj = classOfSlot(slot);
 
 			// message sends handled here:
-			msg_lookup:
+		msg_lookup:
 			index = slotRawInt(&classobj->classIndex) + selector->u.index;
 			meth = gRowTable[index];
 
@@ -2200,12 +2182,12 @@ void Interpret(VMGlobals *g)
 
 			////////////////////////////////////
 
-			key_class_lookup:
+		key_class_lookup:
 			// normal class lookup
 			classobj = classOfSlot(slot);
 
 			// message sends handled here:
-			key_msg_lookup:
+		key_msg_lookup:
 			index = slotRawInt(&classobj->classIndex) + selector->u.index;
 			meth = gRowTable[index];
 
