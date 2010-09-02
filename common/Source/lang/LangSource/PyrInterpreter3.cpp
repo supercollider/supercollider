@@ -1164,7 +1164,7 @@ void Interpret(VMGlobals *g)
 		case 78 : handle_op_78: slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[14]); dispatch_opcode;
 		case 79 : handle_op_79: slotCopy(++sp, &slotRawObject(&g->block->constants)->slots[15]); dispatch_opcode;
 
-		//	opPushClassVar
+		// opPushClassVar
 		case 80 :  case 81 :  case 82 :  case 83 :
 		case 84 :  case 85 :  case 86 :  case 87 :
 		case 88 :  case 89 :  case 90 :  case 91 :
@@ -1576,17 +1576,17 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-				break;
+					dispatch_opcode;
 				case 1 :
 					-- sp ; // Drop
 					SetRaw(&g->frame->vars[2], slotRawInt(&g->frame->vars[2]) + 1); // inc i
 					ip -= 4;
-					break;
+					dispatch_opcode;
 
 				// Integer-reverseDo : 143 2, 143 3, 143 4
 				case 2 :
 					SetRaw(&g->frame->vars[2], slotRawInt(&g->receiver) - 1);
-					break;
+					dispatch_opcode;
 				case 3 :
 					vars = g->frame->vars;
 					if (slotRawInt(&vars[2]) >= 0) {
@@ -1605,14 +1605,14 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-					break;
+					dispatch_opcode;
 				case 4 :
 					-- sp ; // Drop
 					vars = g->frame->vars;
 					SetRaw(&vars[2], slotRawInt(&vars[2]) - 1); // dec i
 					SetRaw(&vars[3], slotRawInt(&vars[3]) + 1); // inc j
 					ip -= 4;
-					break;
+					dispatch_opcode;
 
 				// Integer-for : 143 5, 143 6, 143 16
 				case 5 :
@@ -1642,7 +1642,7 @@ void Interpret(VMGlobals *g)
 					}
 					slotCopy(&vars[3], &g->receiver);
 
-					break;
+					dispatch_opcode;
 				case 6 :
 					vars = g->frame->vars;
 					if ((slotRawInt(&vars[5]) > 0 && slotRawInt(&vars[3]) <= slotRawInt(&vars[1]))
@@ -1663,7 +1663,7 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-					break;
+					dispatch_opcode;
 
 				// Integer-forBy : 143 7, 143 8, 143 9
 				case 7 :
@@ -1687,7 +1687,7 @@ void Interpret(VMGlobals *g)
 						goto class_lookup;
 					}
 					slotCopy(&vars[4], &g->receiver);
-					break;
+					dispatch_opcode;
 				case 8 :
 					vars = g->frame->vars;
 					if ((slotRawInt(&vars[2]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[1]))
@@ -1707,14 +1707,14 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-					break;
+					dispatch_opcode;
 				case 9 :
 					--sp ; // Drop
 					vars = g->frame->vars;
 					SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[2])); // inc i
 					SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
 					ip -= 4;
-					break;
+					dispatch_opcode;
 
 				// ArrayedCollection-do : 143 10, 143 1
 				case 10 :
@@ -1737,12 +1737,12 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-					break;
+					dispatch_opcode;
 
 				// ArrayedCollection-reverseDo : 143 11, 143 12, 143 4
 				case 11 :
 					SetRaw(&g->frame->vars[2], slotRawObject(&g->receiver)->size - 1);
-					break;
+					dispatch_opcode;
 				case 12 :
 					vars = g->frame->vars;
 					if (slotRawInt(&vars[2]) >= 0) {
@@ -1761,7 +1761,7 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-					break;
+					dispatch_opcode;
 
 				// Dictionary-keysValuesArrayDo
 				case 13 :
@@ -1798,12 +1798,12 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-					break;
+					dispatch_opcode;
 				case 14 :
 					-- sp; // Drop
 					SetRaw(&g->frame->vars[3], slotRawInt(&g->frame->vars[3]) + 2); // inc i
 					ip -= 4;
-					break;
+					dispatch_opcode;
 				case 15 :
 					// unused opcode.
 					break;
@@ -1814,7 +1814,7 @@ void Interpret(VMGlobals *g)
 					SetRaw(&vars[3], slotRawInt(&vars[3]) + slotRawInt(&vars[5])); // inc i by stepval
 					SetRaw(&vars[4], slotRawInt(&vars[4]) + 1); // inc j
 					ip -= 4;
-					break;
+					dispatch_opcode;
 
 				// Float-do : 143 17, 143 18
 				case 17 :
@@ -1835,17 +1835,17 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-					break;
+					dispatch_opcode;
 				case 18 :
 					-- sp ; // Drop
 					SetRaw(&g->frame->vars[2], slotRawFloat(&g->frame->vars[2]) + 1.0); // inc i
 					ip -= 4;
-					break;
+					dispatch_opcode;
 
 				// Float-reverseDo : 143 19, 143 20, 143 21
 				case 19 :
 					SetFloat(&g->frame->vars[2], slotRawFloat(&g->receiver) - 1.0);
-					break;
+					dispatch_opcode;
 				case 20 :
 					vars = g->frame->vars;
 					if (slotRawFloat(&vars[2]) + 0.5 >= 0.0) {
@@ -1864,20 +1864,20 @@ void Interpret(VMGlobals *g)
 						returnFromMethod(g);
 						sp = g->sp; ip = g->ip;
 					}
-					break;
+					dispatch_opcode;
 				case 21 :
 					-- sp ; // Drop
 					vars = g->frame->vars;
 					SetRaw(&g->frame->vars[2], slotRawFloat(&g->frame->vars[2]) - 1.0); // dec i
 					SetRaw(&g->frame->vars[3], slotRawFloat(&g->frame->vars[3]) - 1.0); // inc j
 					ip -= 4;
-					break;
+					dispatch_opcode;
 				case 22 : // ? question mark method
 					--sp;
 					if (IsNil(sp)) {
 						*sp = *(sp+1);
 					}
-					break;
+					dispatch_opcode;
 				case 23 : // if not nil push this and jump. used to implement ??
 					if (NotNil(sp)) {
 						jmplen = (ip[1]<<8) | ip[2];
@@ -1886,7 +1886,7 @@ void Interpret(VMGlobals *g)
 						--sp;
 						ip+=2;
 					}
-					break;
+					dispatch_opcode;
 				case 24 : // ifNil
 					if ( NotNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
@@ -1895,7 +1895,7 @@ void Interpret(VMGlobals *g)
 						ip+=2;
 					}
 					--sp;
-					break;
+					dispatch_opcode;
 				case 25 : // ifNotNil
 					if ( IsNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
@@ -1904,7 +1904,7 @@ void Interpret(VMGlobals *g)
 						ip+=2;
 					}
 					--sp;
-					break;
+					dispatch_opcode;
 				case 26 : // ifNotNilPushNil
 					if ( NotNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
@@ -1914,7 +1914,7 @@ void Interpret(VMGlobals *g)
 						ip+=2;
 						--sp;
 					}
-					break;
+					dispatch_opcode;
 				case 27 : // ifNilPushNil
 					if ( IsNil(sp) ) {
 						jmplen = (ip[1]<<8) | ip[2];
@@ -1923,13 +1923,13 @@ void Interpret(VMGlobals *g)
 						ip+=2;
 						--sp;
 					}
-					break;
+					dispatch_opcode;
 				case 28 : // switch
 					obj = slotRawObject(sp);
 					op2 = 1 + arrayAtIdentityHashInPairs(obj, (sp-1));
 					sp-=2;
 					ip += slotRawInt(&obj->slots[op2]);
-					break;
+					dispatch_opcode;
 
 				// Number-forSeries : 143 29, 143 30, 143 31
 				case 29 :
@@ -1985,7 +1985,7 @@ void Interpret(VMGlobals *g)
 							SetFloat(vars+1, slotRawFloat(&vars[1]) - slotRawFloat(&vars[4]));
 						}
 					}
-					break;
+					dispatch_opcode;
 				case 30 :
 					vars = g->frame->vars;
 					tag = GetTag(&vars[1]);
@@ -2026,7 +2026,7 @@ void Interpret(VMGlobals *g)
 							sp = g->sp; ip = g->ip;
 						}
 					}
-					break;
+					dispatch_opcode;
 				case 31 :
 					-- sp ; // Drop
 					vars = g->frame->vars;
@@ -2039,13 +2039,12 @@ void Interpret(VMGlobals *g)
 					}
 					SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
 					ip -= 4;
-					break;
-
+					dispatch_opcode;
 			}
 			dispatch_opcode;
 
 
-		//	opStoreClassVar
+		// opStoreClassVar
 		case 144 :  case 145 :  case 146 :  case 147 :
 		case 148 :  case 149 :  case 150 :  case 151 :
 		case 152 :  case 153 :  case 154 :  case 155 :
