@@ -15,13 +15,13 @@ Changes are listed below, grouped under each point release of SuperCollider.
 * 2010-08-20 audio driver for scsynth running on Android (through JNI) - ds
 * 2010-08-24 un-deprecate scsynth's ability to use internal "green" FFT lib, for embedded devices etc - ds
 * 2010-08-28 no 'record' button for remote server GUIs, since path not generally known - ds
+* 2010-09-02 token threading for sclang interpreter - tb
 
 Bugfixes:
 ---------
 * 2010-07-10 protecting the server against malformatted SynthDef names - jr
 * 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
 * 2010-07-24 catch crash in the case that one tries to define a unique method using a return value directly - jr
-
 
 
 SuperCollider v3.4, released 2010-07
