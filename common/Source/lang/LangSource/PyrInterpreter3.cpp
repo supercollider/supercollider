@@ -474,6 +474,15 @@ static inline void handleStoreInstVar(VMGlobals* g, PyrSlot *& sp, unsigned char
 	}
 }
 
+static inline void handleSendSpecialUnaryArithMsg(VMGlobals* g, PyrSlot *& sp, unsigned char *& ip, unsigned char op1)
+{
+	g->sp = sp; g->ip = ip;
+	g->primitiveIndex = op1 & 15;
+	doSpecialUnaryArithMsg(g, -1);
+	sp = g->sp; ip = g->ip;
+}
+
+
 #ifdef __GNUC__
 #define dispatch_opcode \
 	op1 = ip[1];		\
@@ -2055,7 +2064,8 @@ void Interpret(VMGlobals *g)
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
-			} else goto unary_send;
+			} else
+				handleSendSpecialUnaryArithMsg(g, sp, ip, op1);
 			dispatch_opcode;
 		case 209 : // opNot
 		handle_op_209:
@@ -2069,7 +2079,8 @@ void Interpret(VMGlobals *g)
 #if TAILCALLOPTIMIZE
 				g->tailCall = 0;
 #endif
-			} else goto unary_send;
+			} else
+				handleSendSpecialUnaryArithMsg(g, sp, ip, op1);
 			dispatch_opcode;
 		case 210 : // opIsNil
 		handle_op_210:
@@ -2094,20 +2105,31 @@ void Interpret(VMGlobals *g)
 #endif
 			dispatch_opcode;
 
-		case 212 :  case 213 :  case 214 :  case 215 :
-		case 216 :  case 217 :  case 218 :  case 219 :
-		case 220 :  case 221 :  case 222 :  case 223 :
-		handle_op_212: handle_op_213: handle_op_214: handle_op_215:
-		handle_op_216: handle_op_217: handle_op_218: handle_op_219:
-		handle_op_220: handle_op_221: handle_op_222: handle_op_223:
+		case 212 : handle_op_212:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 213 : handle_op_213:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 214 : handle_op_214:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 215 : handle_op_215:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 216 : handle_op_216:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 217 : handle_op_217:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 218 : handle_op_218:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 219 : handle_op_219:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 220 : handle_op_220:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 221 : handle_op_221:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 222 : handle_op_222:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
+		case 223 : handle_op_223:
+			handleSendSpecialUnaryArithMsg(g, sp, ip, op1); dispatch_opcode;
 
-
-		unary_send:
-			g->sp = sp; g->ip = ip;
-			g->primitiveIndex = op1 & 15;
-			doSpecialUnaryArithMsg(g, -1);
-			sp = g->sp; ip = g->ip;
-			dispatch_opcode;
 
 		// opSendSpecialBinaryArithMsg
 		case 224 : // add
