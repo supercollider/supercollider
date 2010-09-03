@@ -1302,7 +1302,9 @@ SCErr meth_quit(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 SCErr meth_clearSched(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_clearSched(World *inWorld, int inSize, char *inData, ReplyAddress *inReply)
 {
-	inWorld->hw->mAudioDriver->ClearSched();
+	if(inWorld->mRealTime){
+		inWorld->hw->mAudioDriver->ClearSched();
+	}
 	return kSCErr_None;
 }
 
