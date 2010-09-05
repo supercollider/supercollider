@@ -401,7 +401,7 @@ void SC_TerminalClient::commandLoop()
 				usleep(1e6/ticks_per_second);
 			}
 #endif
-		} else if (nfds == -1) {
+		} else if (nfds == -1 && errno != EINTR) {
 			perror(getName());
 			quit(1);
 			return;
