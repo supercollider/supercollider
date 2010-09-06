@@ -95,6 +95,23 @@ test_ugen_generator_equivalences {
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n = WhiteNoise.ar(1,0,1); DelayN.ar(n, 4032*SampleDur.ir, 4032*SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n))  },
 	 
 	 //////////////////////////////////////////
+	 // CheckBadValues:
+	 "CheckBadValues.ar()" -> {
+			var trig=Impulse.ar(10);
+			var f=ToggleFF.ar(trig); 
+			var g=ToggleFF.ar(PulseDivider.ar(trig));
+			var predicted = Demand.ar(trig,0,Dseq([2,0,0,1],inf));
+			CheckBadValues.ar(f/g, post: 0) - predicted
+			},
+	 "CheckBadValues.kr()" -> {
+			var trig=Impulse.kr(10);
+			var f=ToggleFF.kr(trig); 
+			var g=ToggleFF.kr(PulseDivider.kr(trig));
+			var predicted = Demand.kr(trig,0,Dseq([2,0,0,1],inf));
+			CheckBadValues.kr(f/g, post: 0) - predicted
+			},
+
+	 //////////////////////////////////////////
 	 // Delay
 	 "DelayN" -> {	var sig = Impulse.ar(4);
 		 sig - DelayN.ar(sig, 1, 0.25) * EnvGen.kr(Env.new([0, 0, 1], [0.3, 0]))
