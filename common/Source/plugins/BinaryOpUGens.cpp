@@ -2019,7 +2019,7 @@ inline_functions void div_ia_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xa = ZIN0(0);
 
-	nova::over_vec_simd(OUT(0), IN(1), xa, inNumSamples);
+	nova::over_vec_simd(OUT(0), xa, IN(1), inNumSamples);
 	unit->mPrevA = xa;
 }
 
