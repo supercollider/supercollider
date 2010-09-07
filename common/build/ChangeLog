@@ -16,6 +16,9 @@ Changes are listed below, grouped under each point release of SuperCollider.
 * 2010-08-24 un-deprecate scsynth's ability to use internal "green" FFT lib, for embedded devices etc - ds
 * 2010-08-28 no 'record' button for remote server GUIs, since path not generally known - ds
 * 2010-09-02 token threading for sclang interpreter - tb
+* 2010-09-07 when looking for a code file (openCodeFile) or cmd-J, it is now enough to select a full line, instead of having to select both words around the colon - jr
+* 2010-09-07 added methods for better navigation in the class tree (findOverriddenMethod) - jr
+
 
 Bugfixes:
 ---------
