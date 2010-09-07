@@ -80,38 +80,26 @@ UGen : AbstractFunction {
   	}
 
  	clip { arg lo = 0.0, hi = 1.0;
- 		^if(rate == \audio) {
- 			Clip.ar(this, lo, hi)
- 		}{
- 			if(rate == \control) {
- 				Clip.kr(this, lo, hi)
- 			} {
- 				max(lo, min(hi, this))
- 			}
- 		}
+		^if(rate == \demand){
+			max(lo, min(hi, this))
+		}{
+			Clip.perform(Clip.methodSelectorForRate(rate), this, lo, hi)
+		}
  	}
 
  	fold { arg lo = 0.0, hi = 0.0;
- 		^if(rate == \audio) {
- 			Fold.ar(this, lo, hi)
- 		}{
- 			if(rate == \demand) {
- 				this.notYetImplemented(thisMethod)
- 			} {
- 				Fold.kr(this, lo, hi)
- 			}
+		^if(rate == \demand) {
+ 			this.notYetImplemented(thisMethod)
+ 		} {
+			Fold.perform(Fold.methodSelectorForRate(rate), this, lo, hi)
  		}
  	}
  	wrap { arg lo = 0.0, hi = 1.0;
- 		^if(rate == \audio) {
- 			Wrap.ar(this, lo, hi)
- 		}{
- 			if(rate == \demand) {
- 				this.notYetImplemented(thisMethod)
- 			} {
- 				Wrap.kr(this, lo, hi)
- 			}
- 		}
+		^if(rate == \demand) {
+			this.notYetImplemented(thisMethod)
+		} {
+			Wrap.perform(Wrap.methodSelectorForRate(rate), this, lo, hi)
+		}
  	}
 
  	minNyquist { ^min(this, SampleRate.ir * 0.5) }
@@ -279,7 +267,7 @@ UGen : AbstractFunction {
 		if(rate == \audio,{ ^\ar });
 		if(rate == \control, { ^\kr });
 		if(rate == \scalar, {
-			if(this.class.class.respondsTo(\ir),{
+			if(this.respondsTo(\ir),{
 				^\ir
 			},{
 				^\new
@@ -352,7 +340,7 @@ UGen : AbstractFunction {
 		if(rate == \audio,{ ^\ar });
 		if(rate == \control, { ^\kr });
 		if(rate == \scalar, {
-			if(this.class.class.respondsTo(\ir),{
+			if(this.class.respondsTo(\ir),{
 				^\ir
 			},{
 				^\new

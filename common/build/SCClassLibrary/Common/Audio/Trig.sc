@@ -214,6 +214,9 @@ InRange : UGen
 	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
 		^this.multiNew('control', in, lo, hi)
 	}
+	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
+		^this.multiNew('scalar', in, lo, hi)
+	}
 }
 
 InRect : UGen
