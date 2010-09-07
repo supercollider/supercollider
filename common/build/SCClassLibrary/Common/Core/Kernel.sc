@@ -56,15 +56,28 @@ Class {
 		},{ ^nil });
 	}
 	findRespondingMethodFor { arg methodName;
-		var class, method;
-		class = this;
-		while ({class.notNil && (class != Class)}, {
-			method = class.findMethod(methodName);
-			if (method.notNil, { ^method });
-			class = class.superclass;
-		});
+		this.superclassesDo { arg class;
+			var method = class.findMethod(methodName);
+			method !? { ^method };
+		};
 		^nil
 	}
+	findOverriddenMethod { arg methodName;
+		if(this.findMethod(methodName).isNil) { ^nil };
+		this.superclass.superclassesDo { arg class;
+			var method = class.findMethod(methodName);
+			if(method.notNil) { ^method }
+		};
+		^nil
+	}
+	superclassesDo { arg function;
+		var class = this;
+		while ({ class.notNil and: { class != Class} }) {
+			function.value(class);
+			class = class.superclass;
+		}
+	}
+	
 	dumpByteCodes { arg methodName;
 		var meth;
 		meth = this.findMethod(methodName);
@@ -151,11 +164,8 @@ Class {
 		^list
 	}
 	superclasses {
-		var list, class;
-		class = this;
-		while ({ class = class.superclass; class.notNil },{
-			list = list.add(class)
-		});
+		var list;
+		this.superclass.superclassesDo { arg class; list = list.add(class) }
 		^list
 	}
 
@@ -214,6 +224,7 @@ Process {
 		var string, class, method, words;
 		string = interpreter.cmdLine;
 		if (string.includes($:), {
+			string.removeAllSuchThat(_.isSpace);
 			words = string.delimit({ arg c; c == $: });
 			class = words.at(0).asSymbol.asClass;
 			if (class.notNil, {
@@ -235,6 +246,7 @@ Process {
 		var string, class, method, words;
 		string = interpreter.cmdLine;
 		if (string.includes($:), {
+			string.removeAllSuchThat(_.isSpace);
 			words = string.delimit({ arg c; c == $: });
 			class = words.at(0).asSymbol.asClass;
 			if (class.notNil, {
