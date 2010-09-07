@@ -194,6 +194,7 @@ inline bool IsFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) != 0x7F
 inline bool NotFloat(PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) == 0x7FF90000); }
 
 inline bool IsPtr(PyrSlot* slot) { return ((slot)->utag == tagPtr); }
+inline bool NotPtr(PyrSlot* slot) { return ((slot)->utag != tagPtr); }
 
 inline void SetRawChar(PyrSlot* slot, int val) { assert(IsChar(slot)); slot->uc = val; }
 inline void SetRaw(PyrSlot* slot, int val) { assert(IsInt(slot)); slot->ui = val; }
