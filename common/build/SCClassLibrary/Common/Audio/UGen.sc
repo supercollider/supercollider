@@ -83,10 +83,10 @@ UGen : AbstractFunction {
  		^if(rate == \audio) {
  			Clip.ar(this, lo, hi)
  		}{
- 			if(rate == \demand) {
- 				max(lo, min(hi, this))
- 			} {
+ 			if(rate == \control) {
  				Clip.kr(this, lo, hi)
+ 			} {
+ 				max(lo, min(hi, this))
  			}
  		}
  	}
