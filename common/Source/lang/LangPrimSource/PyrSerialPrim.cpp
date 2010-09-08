@@ -513,6 +513,8 @@ done:
 
 static SerialPort* getSerialPort(PyrSlot* slot)
 {
+	if (NotPtr(slot))
+		return NULL;
 	return (SerialPort*)slotRawPtr(&slotRawObject(slot)->slots[0]);
 }
 
