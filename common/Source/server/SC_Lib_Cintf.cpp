@@ -88,7 +88,7 @@ extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
-bool PlugIn_LoadDir(const char *dirname, bool reportError);
+static bool PlugIn_LoadDir(const char *dirname, bool reportError);
 
 #ifdef __APPLE__
 void read_section(const struct mach_header *mhp, unsigned long slide, const char *segname, const char *sectname)
@@ -180,7 +180,6 @@ void initialize_library(const char *uGensPluginPath)
 			PlugIn_LoadDir(SC_PLUGIN_DIR, true);
 		}
 #endif
-
 		// load default plugin directory
 		char pluginDir[MAXPATHLEN];
 		sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
@@ -247,38 +246,37 @@ void initialize_library(const char *uGensPluginPath)
 #endif
 }
 
-bool PlugIn_Load(const char *filename);
-bool PlugIn_Load(const char *filename)
+static bool PlugIn_Load(const char *filename)
 {
 #ifdef _WIN32
 
-    HINSTANCE hinstance = LoadLibrary( filename );
-    if (!hinstance) {
-        char *s;
-        DWORD lastErr = GetLastError();
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                0, lastErr , 0, (char*)&s, 1, 0 );
-        scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename, s);
-        LocalFree( s );
+	HINSTANCE hinstance = LoadLibrary( filename );
+	if (!hinstance) {
+		char *s;
+		DWORD lastErr = GetLastError();
+		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+				0, lastErr , 0, (char*)&s, 1, 0 );
+		scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename, s);
+		LocalFree( s );
 		return false;
 	}
 
-    void *ptr = (void *)GetProcAddress( hinstance, SC_PLUGIN_LOAD_SYM );
-    if (!ptr) {
-        char *s;
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                0, GetLastError(), 0, (char*)&s, 1, 0 );
-        scprintf("*** ERROR: GetProcAddress %s err '%s'\n", SC_PLUGIN_LOAD_SYM, s);
-        LocalFree( s );
+	void *ptr = (void *)GetProcAddress( hinstance, SC_PLUGIN_LOAD_SYM );
+	if (!ptr) {
+		char *s;
+		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+				0, GetLastError(), 0, (char*)&s, 1, 0 );
+		scprintf("*** ERROR: GetProcAddress %s err '%s'\n", SC_PLUGIN_LOAD_SYM, s);
+		LocalFree( s );
 
 		FreeLibrary(hinstance);
 		return false;
 	}
 
-    LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
+	LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
 	(*loadFunc)(&gInterfaceTable);
 
-    // FIXME: at the moment we never call FreeLibrary() on a loaded plugin
+	// FIXME: at the moment we never call FreeLibrary() on a loaded plugin
 
 	return true;
 
@@ -309,7 +307,7 @@ bool PlugIn_Load(const char *filename)
 #endif
 }
 
-bool PlugIn_LoadDir(const char *dirname, bool reportError)
+static bool PlugIn_LoadDir(const char *dirname, bool reportError)
 {
 	bool success = true;
 
