@@ -178,7 +178,8 @@ struct RLPF : public Unit
 
 struct RHPF : public Unit
 {
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq, m_reson;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
+	float m_freq, m_reson;
 };
 
 struct LPF : public Unit
@@ -188,7 +189,8 @@ struct LPF : public Unit
 
 struct HPF : public Unit
 {
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
+	float m_freq;
 };
 
 struct BPF : public Unit
@@ -2118,17 +2120,16 @@ void RLPF_next_1(RLPF* unit, int inNumSamples)
 
 void RHPF_Ctor(RHPF* unit)
 {
-	//printf("RHPF_Reset\n");
-	if (unit->mBufLength == 1) {
+	if (unit->mBufLength == 1)
 		SETCALC(RHPF_next_1);
-	} else {
+	else
 		SETCALC(RHPF_next);
-	};
-	unit->m_a0 = 0.f;
-	unit->m_b1 = 0.f;
-	unit->m_b2 = 0.f;
-	unit->m_y1 = 0.f;
-	unit->m_y2 = 0.f;
+
+	unit->m_a0 = 0.;
+	unit->m_b1 = 0.;
+	unit->m_b2 = 0.;
+	unit->m_y1 = 0.;
+	unit->m_y2 = 0.;
 	unit->m_freq = 0.f;
 	unit->m_reson = 0.f;
 	ZOUT0(0) = 0.f;
@@ -2144,33 +2145,31 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float reson = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
-
 		float qres = sc_max(0.001f, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 
-		float D = tan(pfreq * qres * 0.5f);
-		float C = ((1.f-D)/(1.f+D));
-		float cosf = cos(pfreq);
+		double D = tan(pfreq * qres * 0.5f);
+		double C = ((1.-D)/(1.+D));
+		double cosf = cos(pfreq);
 
-		float next_b1 = (1.f + C) * cosf;
-		float next_b2 = -C;
-		float next_a0 = (1.f + C + next_b1) * .25f;
+		double next_b1 = (1. + C) * cosf;
+		double next_b2 = -C;
+		double next_a0 = (1. + C + next_b1) * .25;
 
 		//post("%g %g %g   %g %g   %g %g %g   %g %g\n", *freq, pfreq, qres, D, C, cosf, next_b1, next_b2, next_a0, y1, y2);
 
-		float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-		float b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
+		double a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
-			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
+			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = y0 - 2.f * y1 + y2;
 
 			y2 = a0 * ZXP(in) + b1 * y0 + b2 * y1;
@@ -2184,7 +2183,7 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 			b2 += b2_slope;
 		);
 		LOOP(unit->mRate->mFilterRemain,
-			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
+			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = y0 - 2.f * y1 + y2;
 			y2 = y1;
 			y1 = y0;
@@ -2197,7 +2196,7 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 		unit->m_b2 = b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
-			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
+			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = y0 - 2.f * y1 + y2;
 
 			y2 = a0 * ZXP(in) + b1 * y0 + b2 * y1;
@@ -2207,7 +2206,7 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 			ZXP(out) = y1 - 2.f * y2 + y0;
 		);
 		LOOP(unit->mRate->mFilterRemain,
-			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
+			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = y0 - 2.f * y1 + y2;
 			y2 = y1;
 			y1 = y0;
@@ -2225,27 +2224,25 @@ void RHPF_next_1(RHPF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float reson = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
-
 		float qres = sc_max(0.001f, reson);
 		float pfreq = freq * unit->mRate->mRadiansPerSample;
 
-		float D = tan(pfreq * qres * 0.5f);
-		float C = ((1.f-D)/(1.f+D));
-		float cosf = cos(pfreq);
+		double D = tan(pfreq * qres * 0.5f);
+		double C = ((1.-D)/(1.+D));
+		double cosf = cos(pfreq);
 
-		b1 = (1.f + C) * cosf;
+		b1 = (1. + C) * cosf;
 		b2 = -C;
-		a0 = (1.f + C + b1) * .25f;
+		a0 = (1. + C + b1) * .25;
 
-		y0 = a0 * in + b1 * y1 + b2 * y2;
+		double y0 = a0 * in + b1 * y1 + b2 * y2;
 		ZOUT0(0) = y0 - 2.f * y1 + y2;
 		y2 = y1;
 		y1 = y0;
@@ -2256,14 +2253,13 @@ void RHPF_next_1(RHPF* unit, int inNumSamples)
 		unit->m_b1 = b1;
 		unit->m_b2 = b2;
 	} else {
-		y0 = a0 * in + b1 * y1 + b2 * y2;
+		double y0 = a0 * in + b1 * y1 + b2 * y2;
 		ZOUT0(0) = y0 - 2.f * y1 + y2;
 		y2 = y1;
 		y1 = y0;
 	}
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
-
 }
 
 
@@ -2364,7 +2360,6 @@ void LPF_next(LPF* unit, int inNumSamples)
 	}
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
-
 }
 
 void LPF_next_1(LPF* unit, int inNumSamples)
@@ -2417,17 +2412,15 @@ void LPF_next_1(LPF* unit, int inNumSamples)
 
 void HPF_Ctor(HPF* unit)
 {
-	//printf("HPF_Reset\n");
-	if (unit->mBufLength == 1) {
+	if (unit->mBufLength == 1)
 		SETCALC(HPF_next_1);
-	} else {
+	else
 		SETCALC(HPF_next);
-	};
-	unit->m_a0 = 0.f;
-	unit->m_b1 = 0.f;
-	unit->m_b2 = 0.f;
-	unit->m_y1 = 0.f;
-	unit->m_y2 = 0.f;
+	unit->m_a0 = 0.;
+	unit->m_b1 = 0.;
+	unit->m_b2 = 0.;
+	unit->m_y1 = 0.;
+	unit->m_y2 = 0.;
 	unit->m_freq = -1e6f;
 	ZOUT0(0) = 0.f;
 }
@@ -2435,52 +2428,48 @@ void HPF_Ctor(HPF* unit)
 
 void HPF_next(HPF* unit, int inNumSamples)
 {
-	//printf("HPF_next\n");
-
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	float freq = ZIN0(1);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq) {
-
 		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = tan(pfreq);
-		float C2 = C * C;
-		float sqrt2C = C * sqrt2_f;
-		float next_a0 = 1.f / (1.f + sqrt2C + C2);
-		float next_b1 = 2.f * (1.f - C2) * next_a0 ;
-		float next_b2 = -(1.f - sqrt2C + C2) * next_a0;
+		double C = tan(pfreq);
+		double C2 = C * C;
+		double sqrt2C = C * sqrt2_f;
+		double next_a0 = 1. / (1. + sqrt2C + C2);
+		double next_b1 = 2. * (1. - C2) * next_a0 ;
+		double next_b2 = -(1. - sqrt2C + C2) * next_a0;
 
 		//post("%g %g %g   %g %g   %g %g %g   %g %g\n", *freq, pfreq, qres, D, C, cosf, next_b1, next_b2, next_a0, y1, y2);
 
-		float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-		float b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
+		double a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 - 2.f * y1 + y2);
+			double y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			ZXP(out) = a0 * (y0 - 2. * y1 + y2);
 
 			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * (y2 - 2.f * y0 + y1);
+			ZXP(out) = a0 * (y2 - 2. * y0 + y1);
 
 			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * (y1 - 2.f * y2 + y0);
+			ZXP(out) = a0 * (y1 - 2. * y2 + y0);
 
 			a0 += a0_slope;
 			b1 += b1_slope;
 			b2 += b2_slope;
 		);
 		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 - 2.f * y1 + y2);
+			double y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			ZXP(out) = a0 * (y0 - 2. * y1 + y2);
 			y2 = y1;
 			y1 = y0;
 		);
@@ -2491,18 +2480,18 @@ void HPF_next(HPF* unit, int inNumSamples)
 		unit->m_b2 = b2;
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 - 2.f * y1 + y2);
+			double y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			ZXP(out) = a0 * (y0 - 2. * y1 + y2);
 
 			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * (y2 - 2.f * y0 + y1);
+			ZXP(out) = a0 * (y2 - 2. * y0 + y1);
 
 			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = a0 * (y1 - 2.f * y2 + y0);
+			ZXP(out) = a0 * (y1 - 2. * y2 + y0);
 		);
 		LOOP(unit->mRate->mFilterRemain,
-			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 - 2.f * y1 + y2);
+			double y0 = ZXP(in) + b1 * y1 + b2 * y2;
+			ZXP(out) = a0 * (y0 - 2. * y1 + y2);
 			y2 = y1;
 			y1 = y0;
 		);
@@ -2513,31 +2502,27 @@ void HPF_next(HPF* unit, int inNumSamples)
 
 void HPF_next_1(HPF* unit, int inNumSamples)
 {
-	//printf("HPF_next\n");
+	double in = ZIN0(0);
+	double freq = ZIN0(1);
 
-	float in = ZIN0(0);
-	float freq = ZIN0(1);
-
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq) {
+		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5f;
 
-		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
+		double C = tan(pfreq);
+		double C2 = C * C;
+		double sqrt2C = C * sqrt2_f;
+		a0 = 1. / (1. + sqrt2C + C2);
+		b1 = 2. * (1. - C2) * a0 ;
+		b2 = -(1. - sqrt2C + C2) * a0;
 
-		float C = tan(pfreq);
-		float C2 = C * C;
-		float sqrt2C = C * sqrt2_f;
-		a0 = 1.f / (1.f + sqrt2C + C2);
-		b1 = 2.f * (1.f - C2) * a0 ;
-		b2 = -(1.f - sqrt2C + C2) * a0;
-
-		y0 = in + b1 * y1 + b2 * y2;
-		ZOUT0(0) = a0 * (y0 - 2.f * y1 + y2);
+		double y0 = in + b1 * y1 + b2 * y2;
+		ZOUT0(0) = a0 * (y0 - 2. * y1 + y2);
 		y2 = y1;
 		y1 = y0;
 
@@ -2546,12 +2531,12 @@ void HPF_next_1(HPF* unit, int inNumSamples)
 		unit->m_b1 = b1;
 		unit->m_b2 = b2;
 	} else {
-		y0 = in + b1 * y1 + b2 * y2;
-		ZOUT0(0) = a0 * (y0 - 2.f * y1 + y2);
+		double y0 = in + b1 * y1 + b2 * y2;
+		ZOUT0(0) = a0 * (y0 - 2. * y1 + y2);
 		y2 = y1;
 		y1 = y0;
-
 	}
+
 	unit->m_y1 = zapgremlins(y1);
 	unit->m_y2 = zapgremlins(y2);
 }
