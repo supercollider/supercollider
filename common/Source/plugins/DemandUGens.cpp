@@ -318,6 +318,9 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 		prevtrig = ztrig;
 		prevreset = zreset;
 	}
+	
+	unit->m_prevtrig = prevtrig;
+	unit->m_prevreset = prevreset;
 }
 
 
