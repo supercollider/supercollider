@@ -26,6 +26,7 @@ Bugfixes:
 * 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
 * 2010-07-24 catch crash in the case that one tries to define a unique method using a return value directly - jr
 * 2010-09-07 UGen:clip, :wrap, :fold now apply correctly to scalar-rate signals; also methodSelectorForRate tweak for which class is asked - ds
+* 2010-09-09 fix a bug for trigger signals in Demand.kr that hold longer than one control period - jr
 
 
 SuperCollider v3.4, released 2010-07
