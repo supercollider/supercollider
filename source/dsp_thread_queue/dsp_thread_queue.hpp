@@ -19,9 +19,10 @@
 #ifndef DSP_THREAD_QUEUE_DSP_THREAD_QUEUE_HPP
 #define DSP_THREAD_QUEUE_DSP_THREAD_QUEUE_HPP
 
-#include <vector>
-#include <memory>
 #include <algorithm>
+#include <iostream>
+#include <memory>
+#include <vector>
 
 #include <boost/atomic.hpp>
 #include <boost/cstdint.hpp>
@@ -30,7 +31,6 @@
 #ifdef DEBUG_DSP_THREADS
 #include <boost/foreach.hpp>
 #include <cstdio>
-#include <iostream>
 #endif
 
 #include <boost/lockfree/stack.hpp>
@@ -334,6 +334,9 @@ public:
     dsp_queue_interpreter(thread_count_t tc):
         runnable_set(1024), node_count(0)
     {
+        if (!runnable_set.is_lock_free())
+            std::cout << "Warning: scheduler queue is not lockfree!" << std::endl;
+
         set_thread_count(tc);
     }
 
