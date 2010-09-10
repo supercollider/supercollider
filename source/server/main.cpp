@@ -130,6 +130,25 @@ void start_audio_backend(server_arguments const & args)
 
 #endif
 
+boost::filesystem::path resolve_home(void)
+{
+#ifdef __linux__
+    wordexp_t wexp;
+    int status = wordexp("~", &wexp, 0);
+    if (status || wexp.we_wordc != 1)
+        throw std::runtime_error("cannot detect home directory");
+
+    path home (wexp.we_wordv[0]);
+    wordfree(&wexp);
+    return home;
+#elif defined(__APPLE__)
+    path home(getenv("HOME"))
+    return home;
+#else
+#error platform not supported
+#endif
+}
+
 void set_plugin_paths(void)
 {
     server_arguments const & args = server_arguments::instance();
@@ -141,13 +160,7 @@ void set_plugin_paths(void)
     }
     else
     {
-        wordexp_t wexp;
-        int status = wordexp("~", &wexp, 0);
-        if (status || wexp.we_wordc != 1)
-            throw std::runtime_error("cannot detect home directory");
-
-        path home (wexp.we_wordv[0]);
-        wordfree(&wexp);
+        path home = resolve_home();
 
 #ifdef __linux__
         sc_factory->load_plugin_folder("/usr/local/lib/supernova/plugins");
@@ -169,12 +182,11 @@ void set_plugin_paths(void)
 void load_synthdefs(nova_server & server, server_arguments const & args)
 {
     if (args.load_synthdefs) {
+        path home = resolve_home();
+
 #ifdef __linux__
-        boost::filesystem::path synthdef_path(getenv("HOME"));
-        synthdef_path = synthdef_path / "share" / "SuperCollider" / "synthdefs";
-        register_synthdefs(server, sc_read_synthdefs_dir(synthdef_path));
+        register_synthdefs(server, sc_read_synthdefs_dir(home / "share/SuperCollider/synthdefs/"));
 #elif defined(__APPLE__)
-        boost::filesystem::path home(getenv("HOME"));
         register_synthdefs(server, sc_read_synthdefs_dir(home / "Library/Application Support/SuperCollider/supernova_plugins/"));
         register_synthdefs(server, sc_read_synthdefs_dir("Library/Application Support/SuperCollider/supernova_plugins/"));
 #else
