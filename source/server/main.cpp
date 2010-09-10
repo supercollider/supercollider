@@ -166,6 +166,26 @@ void set_plugin_paths(void)
 #endif
 }
 
+void load_synthdefs(nova_server & server, server_arguments const & args)
+{
+    if (args.load_synthdefs) {
+#ifdef __linux__
+        boost::filesystem::path synthdef_path(getenv("HOME"));
+        synthdef_path = synthdef_path / "share" / "SuperCollider" / "synthdefs";
+        register_synthdefs(server, sc_read_synthdefs_dir(synthdef_path));
+#elif defined(__APPLE__)
+        boost::filesystem::path home(getenv("HOME"));
+        register_synthdefs(server, sc_read_synthdefs_dir(home / "Library/Application Support/SuperCollider/supernova_plugins/"));
+        register_synthdefs(server, sc_read_synthdefs_dir("Library/Application Support/SuperCollider/supernova_plugins/"));
+#else
+        std::cerr << "Don't know how to locate synthdefs on this platform. Please load them dynamically."
+#endif
+    }
+#ifndef NDEBUG
+    std::cout << "SynthDefs loaded" << std::endl;
+#endif
+}
+
 } /* namespace */
 
 int main(int argc, char * argv[])
@@ -214,16 +234,7 @@ int main(int argc, char * argv[])
     sc_factory->initialize();
 
     set_plugin_paths();
-
-    if (args.load_synthdefs) {
-        boost::filesystem::path synthdef_path(getenv("HOME"));
-        synthdef_path = synthdef_path / "share" / "SuperCollider" / "synthdefs";
-        register_synthdefs(server, sc_read_synthdefs_dir(synthdef_path));
-    }
-
-#ifndef NDEBUG
-    std::cout << "SynthDefs loaded" << std::endl;
-#endif
+    load_synthdefs(server, args);
 
     if (!args.non_rt)
     {
