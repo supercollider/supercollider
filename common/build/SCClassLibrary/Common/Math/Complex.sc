@@ -104,6 +104,7 @@ Complex : Number {
 	}
 	
 	magnitude { ^hypot(real, imag) }
+	abs { ^hypot(real, imag) }
 	rho { ^hypot(real, imag) }
 
 	magnitudeApx { ^hypotApx(real, imag) }
