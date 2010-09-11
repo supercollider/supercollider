@@ -146,6 +146,7 @@ NodeProxy : BusPlug {
 					container.wakeUpParentsToBundle(bundle);
 					this.sendObjectToBundle(bundle, container, extraArgs, index);
 				};
+				nodeMap.wakeUpParentsToBundle(bundle);
 				bundle.schedSend(server, clock ? TempoClock.default, quant);
 			} {
 				loaded = false;
@@ -406,11 +407,11 @@ NodeProxy : BusPlug {
 		var ctl, rate, numChannels, canBeMapped;
 		if(proxy.isNil) { ^this.unmap(key) };
 		ctl = this.controlNames.detect { |x| x.name == key };
-		rate = ctl.rate ?? { 
-				if(proxy.isNeutral) { 
+		rate = ctl.rate ?? {
+				if(proxy.isNeutral) {
 					if(this.isNeutral) { \audio } { this.rate } 
-				} { 
-					proxy.rate 
+				} {
+					proxy.rate
 				}
 		};
 		numChannels = ctl !? { ctl.defaultValue.asArray.size };		canBeMapped = proxy.initBus(rate, numChannels);
@@ -420,7 +421,7 @@ NodeProxy : BusPlug {
 		} {
 			"Could not link node proxies, no matching input found.".warn 
 		};
-		^proxy; // returns first argument for further chaining
+		^proxy // returns first argument for further chaining
 	}
 
 
@@ -803,7 +804,7 @@ NodeProxy : BusPlug {
 			if(loaded.not) { this.loadToBundle(bundle) };
 			if(awake and: { this.isPlaying.not }) {
 				this.prepareToBundle(nil, bundle, \addToHead);
-				this.sendAllToBundle(bundle)
+				this.sendAllToBundle(bundle);
 			};
 		};
 
@@ -811,7 +812,7 @@ NodeProxy : BusPlug {
 
 	wakeUpParentsToBundle { | bundle, checkedAlready |
 			nodeMap.wakeUpParentsToBundle(bundle, checkedAlready);
-			objects.do{ arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
+			objects.do { arg item; item.wakeUpParentsToBundle(bundle, checkedAlready) };
 	}
 
 
