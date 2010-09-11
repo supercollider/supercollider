@@ -142,7 +142,7 @@ boost::filesystem::path resolve_home(void)
     wordfree(&wexp);
     return home;
 #elif defined(__APPLE__)
-    path home(getenv("HOME"))
+    path home(getenv("HOME"));
     return home;
 #else
 #error platform not supported
