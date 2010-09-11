@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.54">
+<meta name="CocoaVersion" content="1038.32">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
@@ -728,25 +728,25 @@ span.Apple-tab-span {white-space:pre}
 <p class="p18"><br></p>
 <p class="p1">These correspond to the various b_gen OSC Commands, which fill the buffer with values for use. See <a href="Server-Command-Reference.html"><span class="s2">Server-Command-Reference</span></a> for more details.</p>
 <p class="p18"><br></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>gen(genCommand, genArgs, normalize, asWaveTable, clearFirst)</b></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>genMsg(genCommand, genArgs, normalize, asWaveTable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>gen(genCommand, genArgs, normalize, asWavetable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>genMsg(genCommand, genArgs, normalize, asWavetable, clearFirst)</b></p>
 <p class="p12"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>This is a generalized version of the commands below.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>genCommand </b>- A <a href="../Collections/String.html"><span class="s2">String</span></a> indicating the name of the command to use. See <a href="Server-Command-Reference.html"><span class="s2">Server-Command-Reference</span></a> for a list of valid command names.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>genArgs</b> - An <a href="../Collections/Array.html"><span class="s2">Array</span></a> containing the corresponding arguments to the command.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>normalize</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to normalize the buffer to a peak value of 1.0. The default is true.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWaveTable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWavetable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clearFirst</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to clear the buffer before writing. The default is true.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>sine1(amps, normalize, asWaveTable, clearFirst)</b></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>sine1Msg(amps, normalize, asWaveTable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>sine1(amps, normalize, asWavetable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>sine1Msg(amps, normalize, asWavetable, clearFirst)</b></p>
 <p class="p12"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Fill this buffer with a series of sine wave harmonics using specified amplitudes.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>amps</b> - An <a href="../Collections/Array.html"><span class="s2">Array</span></a><b> </b>containing amplitudes for the harmonics. The first float value specifies the amplitude of the first partial, the second float value specifies the amplitude of the second partial, and so on.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>normalize</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to normalize the buffer to a peak value of 1.0. The default is true.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWaveTable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWavetable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clearFirst</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to clear the buffer before writing. The default is true.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p20"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>s.boot;</p>
@@ -757,15 +757,15 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.free; b.free;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-converted-space"> </span></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>sine2(freqs, amps, normalize, asWaveTable, clearFirst)</b></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>sine2Msg(freqs, amps, normalize, asWaveTable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>sine2(freqs, amps, normalize, asWavetable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>sine2Msg(freqs, amps, normalize, asWavetable, clearFirst)</b></p>
 <p class="p12"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Fill this buffer with a series of sine wave partials using specified frequencies and amplitudes.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>freqs</b> - An <a href="../Collections/Array.html"><span class="s2">Array</span></a><b> </b>containing frequencies (in cycles per buffer) for the partials.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>amps</b> - An <a href="../Collections/Array.html"><span class="s2">Array</span></a><b> </b>containing amplitudes for the partials. This should contain the same number of items as freqs.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>normalize</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to normalize the buffer to a peak value of 1.0. The default is true.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWaveTable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWavetable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clearFirst</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to clear the buffer before writing. The default is true.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p20"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>s.boot;</p>
@@ -776,8 +776,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.free; b.free;</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>sine3(freqs, amps, phases, normalize, asWaveTable, clearFirst)</b></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>sine3Msg(freqs, amps, phases, normalize, asWaveTable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>sine3(freqs, amps, phases, normalize, asWavetable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>sine3Msg(freqs, amps, phases, normalize, asWavetable, clearFirst)</b></p>
 <p class="p12"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Fill this buffer with a series of sine wave partials using specified frequencies, amplitudes, and initial phases.</p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -785,18 +785,18 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>amps</b> - An <a href="../Collections/Array.html"><span class="s2">Array</span></a><b> </b>containing amplitudes for the partials. This should contain the same number of items as freqs.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>phases</b> - An <a href="../Collections/Array.html"><span class="s2">Array</span></a><b> </b>containing initial phase for the partials (in radians). This should contain the same number of items as freqs.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>normalize</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to normalize the buffer to a peak value of 1.0. The default is true.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWaveTable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWavetable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clearFirst</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to clear the buffer before writing. The default is true.</p>
 <p class="p18"><br></p>
 <p class="p18"><br></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>cheby(amplitudes, normalize, asWaveTable, clearFirst)</b></p>
-<p class="p11"><b><span class="Apple-tab-span">	</span>chebyMsg(amplitudes, normalize, asWaveTable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>cheby(amplitudes, normalize, asWavetable, clearFirst)</b></p>
+<p class="p11"><b><span class="Apple-tab-span">	</span>chebyMsg(amplitudes, normalize, asWavetable, clearFirst)</b></p>
 <p class="p12"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Fill this buffer with a series of chebyshev polynomials, which can be defined as: cheby(n) = amplitude<span class="Apple-converted-space">  </span>* cos(n * acos(x)). To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero.<span class="Apple-converted-space"> </span></p>
 <p class="p12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>amplitudes</b> - An <a href="../Collections/Array.html"><span class="s2">Array</span></a><b> </b>containing amplitudes for the harmonics. The first float value specifies the amplitude for n = 1, the second float value specifies the amplitude for n = 2, and so on.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>normalize</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to normalize the buffer to a peak value of 1.0. The default is true.</p>
-<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWaveTable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
+<p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>asWavetable</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to write to the buffer in wavetable format so that it can be read by interpolating oscillators. The default is true.</p>
 <p class="p11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>clearFirst</b> - A <a href="../Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether or not to clear the buffer before writing. The default is true.</p>
 <p class="p12"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.boot;</p>
