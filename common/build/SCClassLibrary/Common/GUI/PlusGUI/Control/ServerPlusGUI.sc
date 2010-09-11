@@ -16,9 +16,10 @@
 
 	makeGui { arg w;
 		var active, booter, killer, makeDefault, running, booting, stopped, bundling, showDefault;
+		var startDump, stopDump, blockAliveThread, dumping = false;
 		var recorder, scoper;
 		var countsViews, ctlr;
-		var dumping = false, label, gui, font, volumeNum;
+		var label, gui, font, volumeNum;
 
 		if (window.notNil) { ^window.front };
 
@@ -88,7 +89,7 @@
 		};
 
 		w.view.keyDownAction = { arg view, char, modifiers;
-			var startDump, stopDump, stillRunning;
+			
 
 				// if any modifiers except shift key are pressed, skip action
 			if(modifiers & 16515072 == 0) {
@@ -103,23 +104,6 @@
 					GUI.use( gui, { this.scope })}
 				{char == $d } {
 					if(this.isLocal or: { this.inProcess }) {
-						stillRunning = {
-							SystemClock.sched(0.2, { this.stopAliveThread });
-						};
-						startDump = {
-							this.dumpOSC(1);
-							this.stopAliveThread;
-							dumping = true;
-							w.name = "dumping osc: " ++ name.asString;
-							CmdPeriod.add(stillRunning);
-						};
-						stopDump = {
-							this.dumpOSC(0);
-							this.startAliveThread;
-							dumping = false;
-							w.name = label;
-							CmdPeriod.remove(stillRunning);
-						};
 						if(dumping, stopDump, startDump)
 					} {
 						"cannot dump a remote server's messages".inform
@@ -133,7 +117,7 @@
 			};
 		};
 
-		if (isLocal, {
+		if (isLocal) {
 
 			running = {
 				active.stringColor_(Color.new255(74, 120, 74));
@@ -144,6 +128,7 @@
 			stopped = {
 				active.stringColor_(Color.grey(0.3));
 				active.string = "inactive";
+				stopDump.value;
 				booter.setProperty(\value,0);
 				recorder.setProperty(\value,0);
 				recorder.enabled = false;
@@ -159,13 +144,30 @@
 				booter.setProperty(\value,1);
 				recorder.enabled = false;
 			};
+			blockAliveThread = {
+				SystemClock.sched(0.2, { this.stopAliveThread });
+			};
+			startDump = {
+				this.dumpOSC(1);
+				this.stopAliveThread;
+				dumping = true;
+				w.name = "dumping osc: " ++ name.asString;
+				CmdPeriod.add(blockAliveThread);
+			};
+			stopDump = {
+				this.dumpOSC(0);
+				this.startAliveThread;
+				dumping = false;
+				w.name = label;
+				CmdPeriod.remove(blockAliveThread);
+			};
 
 			w.onClose = {
 				window = nil;
 				ctlr.remove;
 			};
 
-		},{
+		} {
 			running = {
 				active.stringColor_(Color.new255(74, 120, 74));
 				active.string = "running";
@@ -193,7 +195,7 @@
 				window = nil;
 				ctlr.remove;
 			};
-		});
+		};
 
 		showDefault = {
 			makeDefault.value = (Server.default == this).binaryValue;
