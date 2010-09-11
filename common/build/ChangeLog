@@ -19,7 +19,7 @@ Changes are listed below, grouped under each point release of SuperCollider.
 * 2010-09-07 when looking for a code file (openCodeFile) or cmd-J, it is now enough to select a full line, instead of having to select both words around the colon - jr
 * 2010-09-07 added methods for better navigation in the class tree (findOverriddenMethod) - jr
 * 2010-09-10 add method: Complex:abs to fit common usage - jr
-
+* 2010-09-11 add method: bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
 
 Bugfixes:
 ---------
