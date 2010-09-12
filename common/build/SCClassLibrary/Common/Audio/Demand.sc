@@ -135,6 +135,14 @@ Dshuf : ListDUGen {}
 Drand : ListDUGen {}
 Dxrand : ListDUGen {}
 
+Dwrand : DUGen {
+	*new { arg list, weights, repeats = 1;
+		var size = list.size;
+		weights = weights.extend(size, 0.0);
+		^this.multiNewList(['demand', repeats, size] ++ weights ++ list)
+	}
+}
+
 Dswitch1 : DUGen {
 	*new { arg list, index;
 		^this.multiNewList(['demand', index] ++ list)
