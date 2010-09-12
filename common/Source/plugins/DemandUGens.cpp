@@ -153,6 +153,11 @@ struct Dxrand : public Dseq
 {
 };
 
+struct Dwrand : public Dseq
+{
+	int32 m_weights_size;
+};
+
 struct Dswitch1 : public Unit
 {
 };
@@ -253,6 +258,9 @@ void Drand_next(Drand *unit, int inNumSamples);
 
 void Dxrand_Ctor(Dxrand *unit);
 void Dxrand_next(Dxrand *unit, int inNumSamples);
+	
+void Dwrand_Ctor(Dwrand *unit);
+void Dwrand_next(Dwrand *unit, int inNumSamples);
 
 void Dswitch1_Ctor(Dswitch1 *unit);
 void Dswitch1_next(Dswitch1 *unit, int inNumSamples);
@@ -1772,6 +1780,77 @@ void Dxrand_Ctor(Dxrand *unit)
 	OUT0(0) = 0.f;
 }
 
+#define WINDEX \
+float w, sum = 0.0; \
+float r = unit->mParent->mRGen->frand(); \
+for (int i=0; i<weights_size; ++i) { \
+	w = IN0(2 + i); \
+	sum += w; \
+	if (sum >= r) { \
+		unit->m_index = i + offset; \
+		break; \
+	} \
+} \
+
+
+void Dwrand_next(Dwrand *unit, int inNumSamples)
+{
+	int offset = unit->m_weights_size + 2;
+	int weights_size = unit->mNumInputs - offset;
+	if (inNumSamples) {
+		
+		if (unit->m_repeats < 0.) {
+			float x = DEMANDINPUT_A(0, inNumSamples);
+			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
+		}
+		while (true) {
+			
+			if (unit->m_repeatCount >= unit->m_repeats) {
+				OUT0(0) = NAN;
+				return;
+			}
+			
+			if (ISDEMANDINPUT(unit->m_index)) {
+				if (unit->m_needToResetChild) {
+					unit->m_needToResetChild = false;
+					RESETINPUT(unit->m_index);
+				}
+				float x = DEMANDINPUT_A(unit->m_index, inNumSamples);
+				if (sc_isnan(x)) {
+					
+					WINDEX;
+					unit->m_repeatCount++;
+					unit->m_needToResetChild = true;
+				} else {
+					OUT0(0) = x;
+					return;
+				}
+			} else {
+				OUT0(0) = DEMANDINPUT_A(unit->m_index, inNumSamples);
+				WINDEX;
+				unit->m_repeatCount++;
+				unit->m_needToResetChild = true;
+				return;
+			}
+		}
+	} else {
+		unit->m_repeats = -1.f;
+		unit->m_repeatCount = 0;
+		unit->m_needToResetChild = true;
+		WINDEX;
+	}
+}
+
+void Dwrand_Ctor(Dwrand *unit)
+{
+	SETCALC(Dwrand_next);
+	unit->m_weights_size = IN0(1);
+	Dwrand_next(unit, 0);
+	OUT0(0) = 0.f;
+}
+
+
+
 static void Dshuf_scramble(Dshuf *unit);
 
 void Dshuf_next(Dshuf *unit, int inNumSamples)
@@ -2275,6 +2354,7 @@ PluginLoad(Demand)
 	DefineSimpleUnit(Dbufrd);
 	DefineSimpleUnit(Dbufwr);
 	DefineSimpleUnit(Drand);
+	DefineSimpleUnit(Dwrand);
 	DefineSimpleUnit(Dxrand);
 	DefineDtorUnit(Dshuf);
 	DefineSimpleUnit(Dswitch1);
