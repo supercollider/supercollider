@@ -60,7 +60,7 @@ target_link_libraries(supernova libsupernova)
 
 install(TARGETS supernova
         DESTINATION "bin"
-        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 if(LTO)
     set_property(TARGET supernova libsupernova
