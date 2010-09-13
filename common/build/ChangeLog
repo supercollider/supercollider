@@ -19,7 +19,8 @@ Changes are listed below, grouped under each point release of SuperCollider.
 * 2010-09-07 when looking for a code file (openCodeFile) or cmd-J, it is now enough to select a full line, instead of having to select both words around the colon - jr
 * 2010-09-07 added methods for better navigation in the class tree (findOverriddenMethod) - jr
 * 2010-09-10 add method: Complex:abs to fit common usage - jr
-* 2010-09-11 add method: bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
+* 2010-09-11 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
+* 2010-09-12 added Dwrand UGen - jr
 
 Bugfixes:
 ---------
@@ -28,6 +29,8 @@ Bugfixes:
 * 2010-07-24 catch crash in the case that one tries to define a unique method using a return value directly - jr
 * 2010-09-07 UGen:clip, :wrap, :fold now apply correctly to scalar-rate signals; also methodSelectorForRate tweak for which class is asked - ds
 * 2010-09-09 fix a bug for trigger signals in Demand.kr that hold longer than one control period - jr
+* 2010-09-12 fix bug: 2994009. LFPar and LFCub audio rate modulation frequency argument work now - jr
+
 
 
 SuperCollider v3.4, released 2010-07
