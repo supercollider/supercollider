@@ -629,28 +629,28 @@ void LFPar_next_a(LFPar *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *freq = ZIN(0);
-	
+
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
 	float z, y;
 	LOOP1(inNumSamples,
-		  if (phase < 1.f) {
-			  z = phase;
-			  y = 1.f - z*z;
-		  } else if (phase < 3.f) {
-			  z = phase - 2.f;
-			  y = z*z - 1.f;
-		  } else {
-			  phase -= 4.f;
-			  z = phase;
-			  y = 1.f - z*z;
-		  }
-		  // Note: the following two lines were originally one, but seems to compile wrong on mac
-		  float phaseadd = ZXP(freq);
-		  phase += phaseadd * freqmul;
-		  ZXP(out) = y;
-		  );
-	
+		if (phase < 1.f) {
+			z = phase;
+			y = 1.f - z*z;
+		} else if (phase < 3.f) {
+			z = phase - 2.f;
+			y = z*z - 1.f;
+		} else {
+			phase -= 4.f;
+			z = phase;
+			y = 1.f - z*z;
+		}
+		// Note: the following two lines were originally one, but seems to compile wrong on mac
+		float phaseadd = ZXP(freq);
+		phase += phaseadd * freqmul;
+		ZXP(out) = y;
+	);
+
 	unit->mPhase = phase;
 }
 
@@ -658,23 +658,23 @@ void LFPar_next_k(LFPar *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float freq = ZIN0(0) * unit->mFreqMul;
-	
+
 	double phase = unit->mPhase;
 	LOOP1(inNumSamples,
-		  if (phase < 1.f) {
-			  float z = phase;
-			  ZXP(out) = 1.f - z*z;
-		  } else if (phase < 3.f) {
-			  float z = phase - 2.f;
-			  ZXP(out) = z*z - 1.f;
-		  } else {
-			  phase -= 4.f;
-			  float z = phase;
-			  ZXP(out) = 1.f - z*z;
-		  }
-		  phase += freq;
-		  );
-	
+		if (phase < 1.f) {
+			float z = phase;
+			ZXP(out) = 1.f - z*z;
+		} else if (phase < 3.f) {
+			float z = phase - 2.f;
+			ZXP(out) = z*z - 1.f;
+		} else {
+			phase -= 4.f;
+			float z = phase;
+			ZXP(out) = 1.f - z*z;
+		}
+		phase += freq;
+	);
+
 	unit->mPhase = phase;
 }
 
@@ -684,10 +684,10 @@ void LFPar_Ctor(LFPar* unit)
 		SETCALC(LFPar_next_a);
 	else
 		SETCALC(LFPar_next_k);
-	
+
 	unit->mFreqMul = 4.0 * unit->mRate->mSampleDur;
 	unit->mPhase = ZIN0(1);
-	
+
 	LFPar_next_k(unit, 1);
 }
 
@@ -699,24 +699,24 @@ void LFCub_next_a(LFCub *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *freq = ZIN(0);
-	
+
 	float freqmul = unit->mFreqMul;
 	double phase = unit->mPhase;
 	LOOP1(inNumSamples,
-		  float z;
-		  if (phase < 1.f) {
-			  z = phase;
-		  } else if (phase < 2.f) {
-			  z = 2.f - phase;
-		  } else {
-			  phase -= 2.f;
-			  z = phase;
-		  }
-		  float phaseadd = ZXP(freq);
-		  phase += phaseadd * freqmul;
-		  ZXP(out) = z * z * (6.f - 4.f * z) - 1.f;
-		  );
-	
+		float z;
+		if (phase < 1.f) {
+			z = phase;
+		} else if (phase < 2.f) {
+			z = 2.f - phase;
+		} else {
+			phase -= 2.f;
+			z = phase;
+		}
+		float phaseadd = ZXP(freq);
+		phase += phaseadd * freqmul;
+		ZXP(out) = z * z * (6.f - 4.f * z) - 1.f;
+	);
+
 	unit->mPhase = phase;
 }
 
@@ -724,22 +724,22 @@ void LFCub_next_k(LFCub *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float freq = ZIN0(0) * unit->mFreqMul;
-	
+
 	double phase = unit->mPhase;
 	LOOP1(inNumSamples,
-		  float z;
-		  if (phase < 1.f) {
-			  z = phase;
-		  } else if (phase < 2.f) {
-			  z = 2.f - phase;
-		  } else {
-			  phase -= 2.f;
-			  z = phase;
-		  }
-		  ZXP(out) = z * z * (6.f - 4.f * z) - 1.f;
-		  phase += freq;
-		  );
-	
+		float z;
+		if (phase < 1.f) {
+			z = phase;
+		} else if (phase < 2.f) {
+			z = 2.f - phase;
+		} else {
+			phase -= 2.f;
+			z = phase;
+		}
+		ZXP(out) = z * z * (6.f - 4.f * z) - 1.f;
+		phase += freq;
+	);
+
 	unit->mPhase = phase;
 }
 
@@ -749,10 +749,10 @@ void LFCub_Ctor(LFCub* unit)
 		SETCALC(LFCub_next_a);
 	else
 		SETCALC(LFCub_next_k);
-	
+
 	unit->mFreqMul = 2.0 * unit->mRate->mSampleDur;
 	unit->mPhase = ZIN0(1) + 0.5;
-	
+
 	LFCub_next_k(unit, 1);
 }
 
@@ -1658,12 +1658,12 @@ void Line_Ctor(Line* unit)
 	int counter = (int)(dur * unit->mRate->mSampleRate + .5f);
 	unit->mCounter = sc_max(1, counter);
 	if(counter == 0){
-	    unit->mLevel = end;
-	    unit->mSlope = 0.;
-	    } else {
-	    unit->mLevel = start;
-	    unit->mSlope = (end - start) / unit->mCounter;
-	    }
+		unit->mLevel = end;
+		unit->mSlope = 0.;
+	} else {
+		unit->mLevel = start;
+		unit->mSlope = (end - start) / unit->mCounter;
+	}
 	unit->mEndLevel = end;
 	ZOUT0(0) = unit->mLevel;
 	unit->mLevel += unit->mSlope;
@@ -1746,7 +1746,7 @@ inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 				remain -= nsmps;
 				LOOP(nsmps,
 					ZXP(out) = level;
-					 level *= grow;
+					level *= grow;
 					);
 				if (counter == 0) {
 					unit->mDone = true;
@@ -1797,7 +1797,7 @@ inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 				remain -= nsmps;
 				LOOP(nsmps,
 					ZXP(out) = level;
-					 level *= grow;
+					level *= grow;
 					);
 				if (counter == 0) {
 					unit->mDone = true;
@@ -3298,8 +3298,8 @@ inline_functions void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 		// cutoff
 		int numstages = (int)ZIN0(kEnvGen_numStages);
 		float dur = -gate - 1.f;
-		counter	 = (int32)(dur * SAMPLERATE);
-		counter	 = sc_max(1, counter);
+		counter = (int32)(dur * SAMPLERATE);
+		counter = sc_max(1, counter);
 		unit->m_stage = numstages;
 		unit->m_shape = shape_Linear;
 		unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
@@ -3381,8 +3381,8 @@ inline_functions void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 				double curve	= *envPtr[3];
 				unit->m_endLevel = endLevel;
 
-				counter	 = (int32)(dur * SAMPLERATE);
-				counter	 = sc_max(1, counter);
+				counter = (int32)(dur * SAMPLERATE);
+				counter = sc_max(1, counter);
 
 				if (counter == 1) unit->m_shape = 1; // shape_Linear
 				switch (unit->m_shape) {
