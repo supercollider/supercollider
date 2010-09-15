@@ -36,6 +36,7 @@ class node_graph
 {
 private:
     group root_group_;
+    friend class dependency_graph_generator;
 
     static const std::size_t node_set_bucket_count = 4096;
 
@@ -150,7 +151,6 @@ public:
         synth_count_ -= synths;
         return true;
     }
-
 
 private:
     struct equal_node

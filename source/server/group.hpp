@@ -52,8 +52,7 @@ class abstract_group:
     public server_node,
     public group_list_hook
 {
-public:
-    typedef thread_queue_item::successor_list successor_container;
+    friend class dependency_graph_generator;
 
 protected:
     server_node_list child_nodes;
@@ -72,12 +71,6 @@ public:
         return is_parallel_;
     }
 
-protected:
-    virtual successor_container fill_queue_recursive(thread_queue & queue,
-                                                     successor_container const &,
-                                                     int activation_limit) = 0;
-    friend class group;
-    friend class parallel_group;
 
 public:
     /* count the tail nodes to get activation count */
@@ -286,14 +279,7 @@ private:
     void add_child(server_node * node, node_position_constraint const & constraint);
     void add_child(server_node * node, node_position);
 
-    void fill_queue(thread_queue & queue);
-
-    virtual successor_container fill_queue_recursive(thread_queue & queue,
-                                                     successor_container const &,
-                                                     int activation_limit);
-
-    friend class node_graph;
-    friend class server_node;
+    friend class dependency_graph_generator;
 
     virtual int tail_nodes(void) const
     {
@@ -328,14 +314,9 @@ private:
     void add_child(server_node * node, node_position_constraint const & constraint);
     void add_child(server_node * node, node_position);
 
-    virtual successor_container fill_queue_recursive(thread_queue & queue,
-                                                     successor_container const &,
-                                                     int activation_limit);
-
     virtual int tail_nodes(void) const;
 
-    friend class node_graph;
-    friend class server_node;
+    friend class dependency_graph_generator;
 };
 
 } /* namespace nova */
