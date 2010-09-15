@@ -60,6 +60,10 @@ struct Index : public BufUnit
 {
 };
 
+struct IndexL : public BufUnit
+{
+};
+
 struct WrapIndex : public BufUnit
 {
 };
@@ -237,6 +241,11 @@ void Index_Ctor(Index *unit);
 void Index_next_1(Index *unit, int inNumSamples);
 void Index_next_k(Index *unit, int inNumSamples);
 void Index_next_a(Index *unit, int inNumSamples);
+	
+void IndexL_Ctor(IndexL *unit);
+void IndexL_next_1(IndexL *unit, int inNumSamples);
+void IndexL_next_k(IndexL *unit, int inNumSamples);
+void IndexL_next_a(IndexL *unit, int inNumSamples);
 
 void FoldIndex_Ctor(FoldIndex *unit);
 void FoldIndex_next_1(FoldIndex *unit, int inNumSamples);
@@ -700,6 +709,88 @@ void Index_next_a(Index *unit, int inNumSamples)
 		index = sc_clip(index, 0, maxindex);
 		ZXP(out) = table[index];
 	);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void IndexL_Ctor(IndexL *unit)
+{
+	unit->m_fbufnum = -1e9f;
+	if (BUFLENGTH == 1) {
+		SETCALC(IndexL_next_1);
+	} else if (INRATE(0) == calc_FullRate) {
+		SETCALC(IndexL_next_a);
+	} else {
+		SETCALC(IndexL_next_k);
+	}
+	IndexL_next_1(unit, 1);
+}
+
+void IndexL_next_1(IndexL *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+	const float *table = bufData;
+	int32 maxindex = tableSize - 1;
+	
+	float findex = ZIN0(1);
+	float frac = sc_frac(findex);
+	
+	int32 index = (int32)findex;
+	index = sc_clip(index, 0, maxindex);
+	
+	float a = table[index];
+	float b = table[sc_clip(index + 1, 0, maxindex)];
+	ZOUT0(0) = lininterp(frac, a, b);
+}
+
+void IndexL_next_k(IndexL *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+	const float *table = bufData;
+	int32 maxindex = tableSize - 1;
+	
+	float *out = ZOUT(0);
+	
+	float findex = ZIN0(1);
+	float frac = sc_frac(findex);
+	
+	int32 index = (int32)findex;
+	index = sc_clip(index, 0, maxindex);
+	
+	
+	float a = table[index];
+	float b = table[sc_clip(index + 1, 0, maxindex)];
+	float val = lininterp(frac, a, b);
+	
+	LOOP1(inNumSamples,
+		ZXP(out) = val;
+	);
+}
+
+
+void IndexL_next_a(IndexL *unit, int inNumSamples)
+{
+	// get table
+	GET_TABLE
+	const float *table = bufData;
+	int32 maxindex = tableSize - 1;
+	
+	float *out = ZOUT(0);
+	float *in = ZIN(1);
+	
+	LOOP1(inNumSamples,
+		float findex = ZXP(in);
+		float frac = sc_frac(findex);
+		int32 i1 = sc_clip((int32)findex, 0, maxindex);
+		int32 i2 = sc_clip(i1 + 1, 0, maxindex);
+		float a = table[i1];
+		float b = table[i2];		  
+		ZXP(out) =  lininterp(frac, a, b);
+	);
+
 }
 
 
@@ -3807,6 +3898,7 @@ PluginLoad(Osc)
 	DefineSimpleUnit(Select);
 	DefineSimpleUnit(TWindex);
 	DefineSimpleUnit(Index);
+	DefineSimpleUnit(IndexL);
 	DefineSimpleUnit(FoldIndex);
 	DefineSimpleUnit(WrapIndex);
 	DefineSimpleUnit(IndexInBetween);
