@@ -397,30 +397,30 @@ void* SerialPort::threadFunc(void* self)
 
 void SerialPort::dataAvailable()
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = s_dataAvailable;
-    if (m_obj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp; SetObject(g->sp, m_obj);
-        runInterpreter(g, method, 1);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = s_dataAvailable;
+	if (m_obj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp; SetObject(g->sp, m_obj);
+		runInterpreter(g, method, 1);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 void SerialPort::doneAction()
 {
-    pthread_mutex_lock (&gLangMutex);
-    PyrSymbol *method = s_doneAction;
-    if (m_obj) {
-        VMGlobals *g = gMainVMGlobals;
-        g->canCallOS = true;
-        ++g->sp; SetObject(g->sp, m_obj);
-        runInterpreter(g, method, 1);
-        g->canCallOS = false;
-    }
-    pthread_mutex_unlock (&gLangMutex);
+	pthread_mutex_lock (&gLangMutex);
+	PyrSymbol *method = s_doneAction;
+	if (m_obj) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp; SetObject(g->sp, m_obj);
+		runInterpreter(g, method, 1);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 void SerialPort::threadLoop()
