@@ -135,6 +135,12 @@ public:
 
     ~callback_interpreter_threadpool(void)
     {
+        if (super::running.load())
+            join_threads();
+    }
+
+    void join_threads(void)
+    {
         super::running.store(false);
 
         for (uint16_t i = 0; i != worker_thread_count_; ++i)

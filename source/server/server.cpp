@@ -78,6 +78,7 @@ void nova_server::prepare_backend(void)
 
 nova_server::~nova_server(void)
 {
+    io_interpreter.join_threads();
     instance = 0;
 }
 
