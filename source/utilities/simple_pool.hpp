@@ -1,5 +1,5 @@
 //  simple pool class
-//  Copyright (C) 2009 Tim Blechmann
+//  Copyright (C) 2009, 2010 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -95,13 +95,36 @@ public:
 
     void init(std::size_t size, bool lock = false)
     {
+#ifndef NOVA_MEMORY_DEBUGGING
         assert(size % sizeof(long) == 0);
         data_.init(size, lock);
+#endif
     }
 
     ~simple_pool() throw()
     {}
 
+#ifdef NOVA_MEMORY_DEBUGGING
+    void * malloc(std::size_t size)
+    {
+        return ::malloc(size);
+    }
+
+    void * realloc(void * p, std::size_t size)
+    {
+        return ::realloc(p, size);
+    }
+
+    void free(void * p)
+    {
+        return ::free(p);
+    }
+
+    std::size_t get_max_size(void)
+    {
+        return std::numeric_limits<std::size_t>::max();
+    }
+#else
     void * malloc(std::size_t size)
     {
         scoped_lock lock(data_);
@@ -124,7 +147,7 @@ public:
     {
         return ::get_max_size(data_.pool);
     }
-
+#endif
 private:
     data data_;
 };
