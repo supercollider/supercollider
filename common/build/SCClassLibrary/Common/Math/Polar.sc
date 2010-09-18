@@ -32,7 +32,13 @@ Polar : Number {
 	/ { arg aNumber;  ^this.asComplex / aNumber  }
 
 	== { arg aPolar;
-		^aPolar respondsTo: #[\rho, \theta] and: { rho == aPolar.rho and: { theta == aPolar.theta } }
+		^aPolar respondsTo: #[\rho, \theta] and: { 
+			rho == aPolar.rho and: { theta == aPolar.theta } 
+		}
+	}
+	
+	hash {
+		^rho.hash bitXor: theta.hash
 	}
 	
 	neg { ^Polar.new(rho, theta + pi) }
