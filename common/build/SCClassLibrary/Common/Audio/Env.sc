@@ -59,7 +59,10 @@ Env {
 		array = nil;
 	}
 	== { arg that;
-		^this.compareObject(that,['levels','times','curves','releaseNode','loopNode'])
+		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode'])
+	}
+	hash {
+		^this.instVarHash(['levels','times','curves','releaseNode','loopNode'])
 	}
 
 	asArray {

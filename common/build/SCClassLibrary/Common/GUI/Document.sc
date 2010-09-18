@@ -487,6 +487,10 @@ Document {
 		}
 	}
 	
+	hash {
+		^(this.path ? this).hash 	
+	}
+	
 	*defaultUsesAutoInOutdent_ {|bool|
 		Document.implementationClass.prDefaultUsesAutoInOutdent_(bool)
 	}

@@ -146,7 +146,7 @@ Object  {
 			properties.every { |selector| this.perform(selector) == that.perform(selector) }
 		}
 	}
-	compareObject { arg that,instVarNames;
+	compareObject { arg that, instVarNames;
 		if(this === that,{ ^true });
 		// possibly ok if one of us isKindOf the other
 		if(this.class !== that.class,{ ^false });
@@ -162,6 +162,15 @@ Object  {
 			});
 		});
 		^true
+	}
+	instVarHash { arg instVarNames;
+		var res;
+		instVarNames = instVarNames ?? { this.instVarSize.collect(this.instVarAt(_)) };
+		instVarNames.do { |varname|
+			var obj = this.instVarAt(varname);
+			if(res.isNil) { res = obj.hash } { res = res bitXor: obj.hash }
+		};
+		^res
 	}
 
 	basicHash { _ObjectHash; ^this.primitiveFailed }
