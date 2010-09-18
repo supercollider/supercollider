@@ -17,12 +17,9 @@ Spec {
 	}
 	== { arg that;
 		^this.compareObject(that)
-//		if(this === that,{ ^true });
-//		if(this.class !== that.class,{ ^false });
-//		this.instVarSize.do({ arg i;
-//			if(this.instVarAt(i) != that.instVarAt(i),{ ^false });
-//		});
-//		^true
+	}
+	hash {
+		^this.instVarHash
 	}
 	findKey {
 		^Spec.specs.findKeyForValue(this)
@@ -279,8 +276,13 @@ CurveWarp : Warp {
 		^log((b - value) / a) / curve
 	}
 	asSpecifier { ^curve }
+	
 	== { arg that;
-		^this.compareObject(that,[\curve])
+		^this.compareObject(that, [\curve])
+	}
+	
+	hash {
+		^this.instVarHash([\curve])
 	}
 }
 
