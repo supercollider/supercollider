@@ -5,29 +5,29 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="824.48">
+<meta name="CocoaVersion" content="949.54">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
 p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #951f1b}
+p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #842620}
 p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p8 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco}
-p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #951f1b; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #842620; min-height: 12.0px}
 p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #951f1b}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #842620}
 p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0026ad}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #1229a9}
 p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #606060}
-span.s1 {color: #0026ad}
+span.s1 {color: #1229a9}
 span.s2 {color: #000000}
 span.s3 {color: #606060}
-span.s4 {color: #0000ff}
+span.s4 {color: #0c16f9}
 span.s5 {font: 9.0px Monaco; color: #606060}
-span.s6 {color: #951f1b}
-span.s7 {color: #436d25}
+span.s6 {color: #842620}
+span.s7 {color: #4d6b29}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -82,7 +82,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p11">// post all incoming traffic except the server status messages</p>
 <p class="p12">(</p>
 <p class="p13">thisProcess<span class="s2">.recvOSCfunc = { </span>|time, addr, msg|<span class="s2"><span class="Apple-converted-space"> </span></span></p>
-<p class="p12"><span class="Apple-tab-span">	</span>if(msg[0] != <span class="s7">'status.reply'</span>) {</p>
+<p class="p12"><span class="Apple-tab-span">	</span>if(msg[0] != <span class="s7">'/status.reply'</span>) {</p>
 <p class="p14"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"time: % sender: %\nmessage: %\n"<span class="s2">.postf(time, addr, msg);<span class="Apple-converted-space"> </span></span></p>
 <p class="p12"><span class="Apple-tab-span">	</span>} <span class="Apple-converted-space"> </span></p>
 <p class="p12">}</p>
