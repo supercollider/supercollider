@@ -532,7 +532,9 @@ Plotter {
 	
 	superpose_ { |flag|
 		superpose = flag;
-		this.setValue(value, false, true);
+		if ( value.notNil ){
+			this.setValue(value, false, true);
+		};
 	}
 	
 	numChannels {
