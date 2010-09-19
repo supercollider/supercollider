@@ -40,7 +40,7 @@ NdefGui : JITGui {
 		} }.defer;
 	}
 
-	*new { |object, numItems = 4, parent, bounds, makeSkip=true, options|
+	*new { |object, numItems = (4), parent, bounds, makeSkip=true, options|
 		options = options ?? { this.big };
 		^super.newCopyArgs(object, numItems, parent, bounds).init(makeSkip, options)
 	}
