@@ -164,11 +164,15 @@ Object  {
 		^true
 	}
 	instVarHash { arg instVarNames;
-		var res;
-		instVarNames = instVarNames ?? { this.instVarSize.collect(this.instVarAt(_)) };
-		instVarNames.do { |varname|
-			var obj = this.instVarAt(varname);
-			if(res.isNil) { res = obj.hash } { res = res bitXor: obj.hash }
+		var res = this.class.hash;
+		var indices = if(instVarNames.notNil) {
+			instVarNames.collect(this.slotIndex(_))
+		} {
+			(0..this.instVarSize-1) 
+		};
+		indices.do { |i|
+			var obj = this.instVarAt(i);
+			res = res bitXor: obj.hash;
 		};
 		^res
 	}
