@@ -10,6 +10,10 @@ if (NOT ICU_FOUND)
 	message(SEND_ERROR "cannot find ICU")
 endif()
 
+if (SC_QT)
+  add_definitions( -DSC_QT )
+endif (SC_QT)
+
 set(sclang_sources
 	LangPrimSource/SC_Wii.cpp
 	LangPrimSource/PyrSignalPrim.cpp
@@ -115,6 +119,10 @@ if(SNDFILE_FOUND)
 else()
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
+
+if (SC_QT)
+  target_link_libraries(libsclang QtCollider)
+endif (SC_QT)
 
 target_link_libraries(libsclang sccommon pthread)
 

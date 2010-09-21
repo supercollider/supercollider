@@ -30,10 +30,42 @@
 #include "SC_TerminalClient.h"
 #include <stdio.h>
 
+void QtService_MainLoop();
+
+#ifdef SC_QT
+extern "C" {
+
+struct sclang_args {
+  int argc;
+  char **argv;
+};
+
+void *sclang_main( void *data )
+{
+  sclang_args *args = (sclang_args*) data;
+  SC_TerminalClient app("sclang");
+  app.run( args->argc, args->argv );
+}
+
+} //extern "C"
+#endif //SC_QT
+
 int main(int argc, char** argv)
 {
-	SC_TerminalClient app("sclang");
-	return app.run(argc, argv);
+#ifdef SC_QT
+  sclang_args args;
+  args.argc = argc;
+  args.argv = argv;
+  pthread_t sclang_thread;
+  pthread_create( &sclang_thread, NULL, sclang_main, (void*) &args );
+
+  QtService_MainLoop();
+#else
+  SC_TerminalClient app("sclang");
+  app.run( argc, argv );
+#endif //SC_QT
+
+  return 0;
 }
 
 #else // !USE_SC_TERMINAL_CLIENT
