@@ -54,6 +54,13 @@ Quark
 		};
 		^this.new(blob, parent)
 	}
+	*fromPath { |path, parent| // if no blob exists, make a generic one
+		var blob = (
+			name: path.basename.splitext,
+			path: path
+		);
+		^this.new(blob, parent)
+	}
 	*new { | blob, parent |
 		^super.new.init(blob, parent)
 	}
