@@ -20,11 +20,13 @@ p.p10 {margin: 0.0px 0.0px 0.0px 85.0px; text-indent: -85.0px; font: 12.0px Helv
 p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p12 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ad140d}
 p.p13 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
-p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
-p.p15 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
-p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
-p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #001bb9}
+p.p14 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000}
+p.p15 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #000000; min-height: 12.0px}
+p.p16 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #ad140d; min-height: 12.0px}
+p.p17 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
+p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; color: #001bb9}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
@@ -34,8 +36,14 @@ span.s6 {color: #2c7014}
 span.s7 {font: 9.0px Monaco}
 span.s8 {color: #606060}
 span.s9 {color: #ad140d}
-span.s10 {font: 9.0px Monaco; color: #ad140d}
-span.s11 {font: 10.0px Monaco}
+span.s10 {font: 12.0px Helvetica; color: #000000}
+span.s11 {color: #102ac3}
+span.s12 {color: #008225}
+span.s13 {color: #cd1713}
+span.s14 {color: #102ac2}
+span.s15 {color: #008325}
+span.s16 {font: 9.0px Monaco; color: #ad140d}
+span.s17 {font: 10.0px Monaco}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -172,6 +180,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>== anotherObject</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>equality: </b>Answer whether the receiver equals <b>anotherObject</b>. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical (see below).</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>Note: </b>Whenever == is overridden in a class, <b>hash</b> should be overridden as well.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>5.0 == 5; <span class="s9">// true</span></p>
 <p class="p9"><span class="s9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>5.0 === 5; <span class="s9">// false</span></p>
@@ -190,7 +199,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span>fuzzyEqual(that, precision)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Retruns the degree of equality between two objects with regard to a given precision. Objects to compare must support max, substraction and division.</p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>Retruns the degree of equality (in the range from 0 to 1) between two objects with regard to a given precision. Objects to compare must support max, substraction and division.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>5.0.fuzzyEqual(5.0, 0.5); <span class="s9">// 1 - full equality</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>5.25.fuzzyEqual(5.0, 0.5); <span class="s9">// 0.5 - 50 % equality</span></p>
@@ -198,7 +207,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><br></p>
 <p class="p7"><span class="Apple-tab-span">	</span><b>compareObject(that, instVarNames)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
-<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Tests if two Objects are the same in a certain respect: It returns true if <b>instVarNames</b> are equal in both. If none are given, all instance variables are tested.</p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Tests if two Objects (of the same class) are the same in a certain respect: It returns true if <b>instVarNames</b> are equal in both. If none are given, all instance variables are tested (see also: <b>instVarHash</b>)</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = <span class="s4">Pseq</span>([1, 2, 3], <span class="s4">inf</span>); b = <span class="s4">Pseq</span>([100, 200, 300], <span class="s4">inf</span>);</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.compareObject(b, [<span class="s6">\repeats</span>]); <span class="s9">// true</span></p>
@@ -211,6 +220,22 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span>identityHash</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Answer a code used to index into a hash table. This method is implemented by a primitive and is not overridden. Objects which are identical === should have the same hash values.</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><b>instVarHash(instVarNames)</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns a combined hash value for the object's instance variables and the object's class. If none are given, all instance variables are tested (see also: <b>compareObject</b>).</p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="s10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = <span class="s11">Pseq</span>([1, 2, 3], <span class="s11">inf</span>); b = <span class="s11">Pseq</span>([100, 200, 300], <span class="s11">inf</span>);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.instVarHash([<span class="s12">\repeats</span>]); <span class="s13">// same</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.instVarHash([<span class="s12">\repeats</span>]);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.instVarHash([<span class="s12">\list</span>]); <span class="s13">// different</span></p>
+<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.instVarHash([<span class="s12">\list</span>]);</p>
+<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>a = <span class="s14">Pseq</span>([1, 2, 3], <span class="s14">inf</span>); b = <span class="s14">Prand</span>([1, 2, 3], <span class="s14">inf</span>);</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.instVarHash([<span class="s15">\list</span>]); <span class="s13">// different</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.instVarHash([<span class="s15">\list</span>]);</p>
 <p class="p8"><br></p>
 <p class="p8"><br></p>
 <p class="p5"><b>Testing</b></p>
@@ -252,8 +277,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c = [1, b, 5];</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.pointsTo(b); <span class="s9">// true</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>c.pointsTo(a); <span class="s9">// false</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span><b>mutable</b></p>
+<p class="p16"><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s16"><span class="Apple-tab-span">	</span></span><b>mutable</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns true if receiver is mutable.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -261,7 +286,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.mutable; <span class="s9">// false</span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b.mutable; <span class="s9">// true</span></p>
 <p class="p8"><br></p>
-<p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span><b>frozen</b></p>
+<p class="p7"><span class="s16"><span class="Apple-tab-span">	</span></span><b>frozen</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Returns true if receiver is frozen.<span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
@@ -270,32 +295,32 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Object implements a switch<b> </b>method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if true. In order for switch to be inlined (and thus be as efficient as nested if statements) the matching values must be literal Integers, Floats, Chars, Symbols and the functions must have no variables or arguments.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">(</span></p>
-<p class="p15"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var</span> x, z;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = [0, 1, 1.1, 1.3, 1.5, 2];</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>switch (z.choose.postln,</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1, <span class="Apple-converted-space">  </span>{ <span class="s6">\no</span> },</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.1, { <span class="s6">\wrong</span> },</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.3, { <span class="s6">\wrong</span> },</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.5, { <span class="s6">\wrong</span> },</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2, <span class="Apple-converted-space">  </span>{ <span class="s6">\wrong</span> },</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0, <span class="Apple-converted-space">  </span>{ <span class="s6">\true</span> }</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>).postln;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p17"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>var</span> x, z;</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = [0, 1, 1.1, 1.3, 1.5, 2];</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>switch (z.choose.postln,</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1, <span class="Apple-converted-space">  </span>{ <span class="s6">\no</span> },</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.1, { <span class="s6">\wrong</span> },</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.3, { <span class="s6">\wrong</span> },</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>1.5, { <span class="s6">\wrong</span> },</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>2, <span class="Apple-converted-space">  </span>{ <span class="s6">\wrong</span> },</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>0, <span class="Apple-converted-space">  </span>{ <span class="s6">\true</span> }</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>).postln;</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p1"><span class="s11"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>or:</p>
-<p class="p16"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">(</span></p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> x, z;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = [0, 1, 1.1, 1.3, 1.5, 2];</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = switch (z.choose)</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{1} <span class="Apple-converted-space">  </span>{ <span class="s6">\no</span> }</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{1.1} { <span class="s6">\wrong</span> }</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{1.3} { <span class="s6">\wrong</span> }</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{1.5} { <span class="s6">\wrong</span> }</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{2} <span class="Apple-converted-space">  </span>{ <span class="s6">\wrong</span> }</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{0} <span class="Apple-converted-space">  </span>{ <span class="s6">\true</span> };</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.postln;</p>
-<p class="p15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p1"><span class="s17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>or:</p>
+<p class="p18"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s7">(</span></p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s4">var</span> x, z;</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>z = [0, 1, 1.1, 1.3, 1.5, 2];</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x = switch (z.choose)</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{1} <span class="Apple-converted-space">  </span>{ <span class="s6">\no</span> }</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{1.1} { <span class="s6">\wrong</span> }</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{1.3} { <span class="s6">\wrong</span> }</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{1.5} { <span class="s6">\wrong</span> }</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{2} <span class="Apple-converted-space">  </span>{ <span class="s6">\wrong</span> }</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>{0} <span class="Apple-converted-space">  </span>{ <span class="s6">\true</span> };</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.postln;</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Messaging</b></p>
 <p class="p11"><br></p>
@@ -447,7 +472,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Throws a DeprecatedError. Use this to indicate that the enclosing method has been replaced by a better one (possibly in another class), and that it will likely be removed in the future. Unlike other errors, DeprecatedError only halts execution if Error.debug == true. In all cases it posts a warning indicating that the method is deprecated and what is the recommended alternative.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p9"><span class="s5"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>foo {</p>
-<p class="p18"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>this<span class="s2">.deprecated(</span>thisMethod<span class="s2">, </span>ThisOrSomeOtherObject<span class="s2">.findMethod(</span><span class="s6">\foo</span><span class="s2">);</span></p>
+<p class="p20"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>this<span class="s2">.deprecated(</span>thisMethod<span class="s2">, </span>ThisOrSomeOtherObject<span class="s2">.findMethod(</span><span class="s6">\foo</span><span class="s2">);</span></p>
 <p class="p12"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>... </span>// execution of this method will continue unless Error.debug == true</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}</p>
 <p class="p6"><br></p>
@@ -534,8 +559,8 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[1, 2, 3].do(f); <span class="s9">// Array.do</span></p>
 <p class="p12"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>10.do(f); </span>// Integer.do</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>($Q).do(f); <span class="s9">// Object.do</span></p>
-<p class="p14"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
-<p class="p7"><span class="s10"><span class="Apple-tab-span">	</span></span><b>generate(func, state)</b></p>
+<p class="p16"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="s16"><span class="Apple-tab-span">	</span></span><b>generate(func, state)</b></p>
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p7"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Object iterates by the message <b>do</b>, sent to the receiver.</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>This method is used internally by list comprehensions.<span class="Apple-converted-space"> </span></p>
