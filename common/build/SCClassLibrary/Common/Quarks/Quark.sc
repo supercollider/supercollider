@@ -17,11 +17,10 @@ QuarkDependency
 		^this.newCopyArgs(name, version, repos)
 	}
 	== { arg that;
-		^that respondsTo: #[name, version]
-			and: {(that.isKindOf(QuarkDependency))
-			and: {this.name  == that.name}
-			and: {this.version  == that.version}
-		}
+		^this.compareObject(that, [\name, \version])
+	}
+	hash { arg that;
+		^this.instVarHash([\name, \version])
 	}
 	asQuark { |parentQuarks|
 		parentQuarks = parentQuarks ? Quarks.global;
@@ -148,7 +147,11 @@ Quark
 		this.longDesc.postln;
 	}
 	== { arg that;
-		^this.compareObject(that,[\name, \summary, \version, \author, \dependencies, \tags, \path]);
+		^this.compareObject(that,
+			[\name, \summary, \version, \author, \dependencies, \tags, \path]);
+	}
+	hash { arg that;
+		^this.instVarHash([\name, \summary, \version, \author, \dependencies, \tags, \path]);
 	}
 	dependencies { |recursive = false, knownList|
 		var deps, quark, selfasdep;
