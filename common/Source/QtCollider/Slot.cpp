@@ -139,9 +139,14 @@ float Slot::toFloat( PyrSlot *slot )
 
 QString Slot::toString( PyrSlot *slot )
 {
-  char cStr[100];
-  if( slotStrVal( slot, cStr, 100 ) ) return QString();
-  return QString( cStr );
+  if( IsSym(slot) ) {
+    return QString( slotRawSymbol(slot)->name );
+  }
+  else if( isKindOfSlot( slot, class_string ) ) {
+    int len = slotRawObject( slot )->size;
+    return QString::fromAscii( slotRawString(slot)->s, len );
+  }
+  return QString();
 }
 
 QPointF Slot::toPoint( PyrSlot *slot )
