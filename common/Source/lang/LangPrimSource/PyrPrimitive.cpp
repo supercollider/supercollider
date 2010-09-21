@@ -3986,6 +3986,11 @@ into an App init primitives section */
 void initGUIPrimitives();
 	initGUIPrimitives();
 
+#ifdef SC_QT
+void initQtGUIPrimitives();
+  initQtGUIPrimitives();
+#endif
+
 void initSCViewPrimitives();
 	initSCViewPrimitives();
 
