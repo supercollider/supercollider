@@ -43,7 +43,7 @@ QtGUI {
   *freqScope { ^QFreqScopeWindow }
   *freqScopeView { ^QFreqScope }
   *scopeView { ^QScopeView }
-  *stethoscope { ^this.prNotImplemented( "QStethoscope"); /*^QStethoscope*/ }
+  *stethoscope { ^QStethoscope }
   *envelopeView { ^this.prNotImplemented( "EnvelopeView"); }
   *tabletView { ^this.prNotImplemented( "TabletView"); }
   *soundFileView { ^this.prNotImplemented( "SoundFileView"); }
