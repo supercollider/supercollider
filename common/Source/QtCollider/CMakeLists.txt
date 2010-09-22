@@ -1,6 +1,7 @@
 set( QT_COLLIDER_HDRS
   QtService.h
   QObjectProxy.h
+  QWidgetProxy.h
   Slot.h
   Common.h
   QObjectDeclarations.cpp
