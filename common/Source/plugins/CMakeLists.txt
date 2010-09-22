@@ -6,6 +6,7 @@ if (NOT APPLE)
 		message(SEND_ERROR "Cannot find libfftw3f")
 	endif()
 endif()
+find_package(Sndfile)
 
 include_directories(../../Headers/plugin_interface
 					../../Headers/common
@@ -115,7 +116,13 @@ add_library(DiskIO_UGens MODULE
 			DiskIO_UGens.cpp
 			../server/SC_SyncCondition.cpp)
 
-target_link_libraries(DiskIO_UGens ${SNDFILE} m pthread)
+if(SNDFILE_FOUND)
+	include_directories(${SNDFILE_INCLUDE_DIR})
+	target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} m pthread)
+	list(APPEND plugins DiskIO_UGens)
+else()
+	message(SEND_ERROR "Cannot find libsndfile")
+endif(SNDFILE_FOUND)
 
 set(fft_ugens FFT_UGens PV_ThirdParty ML_UGens)
 list(APPEND plugins FFT_UGens PV_ThirdParty ML_UGens)
