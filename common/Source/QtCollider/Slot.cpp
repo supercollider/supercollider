@@ -307,7 +307,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
   }
 }
 
-void Slot::set( PyrSlot *slot )
+void Slot::setData( PyrSlot *slot )
 {
   switch (GetTag(slot)) {
     case tagChar :

@@ -42,16 +42,14 @@ struct Slot
       type( QMetaType::Void ),
       ptr(0)
       {}
-    Slot( PyrSlot *slot ) :
-      type( QMetaType::Void ),
-      ptr(0)
-      { Q_UNUSED(slot); }
+    Slot( PyrSlot *slot )
+      { setData( slot ); }
     ~Slot() {
       if( ptr ) {
         QMetaType::destroy( type, ptr );
       }
     }
-    void set( PyrSlot * );
+    void setData( PyrSlot * );
     QGenericArgument asGenericArgument() {
       if( type != QMetaType::Void )
         return QGenericArgument( QMetaType::typeName(type), ptr );
