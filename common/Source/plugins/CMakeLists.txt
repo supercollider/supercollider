@@ -127,21 +127,29 @@ endif(SNDFILE_FOUND)
 set(fft_ugens FFT_UGens PV_ThirdParty ML_UGens)
 list(APPEND plugins FFT_UGens PV_ThirdParty ML_UGens)
 
-include_directories (${FFTW3F_INCLUDE_DIR})
+if (FFTW3F_FOUND)
+	include_directories (${FFTW3F_INCLUDE_DIR})
+endif()
 
 foreach(ugen ${fft_ugens})
-	set_property(TARGET ${ugen}
-					APPEND
-					PROPERTY COMPILE_DEFINITIONS SC_FFT_FFTW)
+	#set_property(TARGET ${ugen}
+	#				APPEND
+	#				PROPERTY COMPILE_DEFINITIONS SC_FFT_GREEN)
 
 	target_link_libraries(${ugen} m)
 
 	if (FFTW3F_FOUND)
 		target_link_libraries(${ugen} ${FFTW3F_LIBRARY})
+		set_property(TARGET ${ugen}
+						APPEND
+						PROPERTY COMPILE_DEFINITIONS SC_FFT_FFTW)
 	endif()
 
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")
+		set_property(TARGET ${ugen}
+						APPEND
+						PROPERTY COMPILE_DEFINITIONS SC_FFT_VDSP)
 	endif()
 
 endforeach()
