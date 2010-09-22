@@ -56,6 +56,7 @@
 */
 
 #include "QObjectProxy.h"
+#include "QWidgetProxy.h"
 #include "widgets/QcScrollArea.h"
 #include <QLayout>
 
@@ -96,7 +97,7 @@ void initWidget( QWidget * widget, const QVariant & args )
   { \
     QWidget *w = new class (); \
     initWidget( w, arguments ); \
-    return new QObjectProxy( w, po ); \
+    return new QWidgetProxy( w, po ); \
   } \
     \
   QcObjectFactory name ##_factory ( #name, create_##name );
