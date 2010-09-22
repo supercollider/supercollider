@@ -348,6 +348,7 @@ SerialPort::~SerialPort()
 {
 	m_running = false;
 //	m_open = false;
+	pthread_mutex_unlock (&gLangMutex);
 	if ( m_open ){
 		tcflush(m_fd, TCIOFLUSH);
 		tcsetattr(m_fd, TCSANOW, &m_oldtermio);
@@ -355,6 +356,7 @@ SerialPort::~SerialPort()
 		m_open = false;
 	};
 	pthread_join(m_thread, 0);
+	pthread_mutex_lock (&gLangMutex);
 }
 
 void SerialPort::stop(){
@@ -403,6 +405,10 @@ void* SerialPort::threadFunc(void* self)
 void SerialPort::dataAvailable()
 {
 	pthread_mutex_lock (&gLangMutex);
+	if (!m_running) {
+		pthread_mutex_unlock (&gLangMutex);
+		return;
+	}
 	PyrSymbol *method = s_dataAvailable;
 	if (m_obj) {
 		VMGlobals *g = gMainVMGlobals;
