@@ -190,7 +190,7 @@ Server : Model {
 	var <name, <>addr, <clientID=0;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 	var <serverRunning = false, <serverBooting = false, bootNotifyFirst = false;
-	var <>options, <>latency = 0.2, <dumpMode = 0, <notified=true;
+	var <>options, <>latency = 0.2, <dumpMode = 0, <notify = true, <notified=false;
 	var <nodeAllocator;
 	var <controlBusAllocator;
 	var <audioBusAllocator;
@@ -397,6 +397,7 @@ Server : Model {
 								NotificationCenter.notify(this,\didQuit);
 							};
 							recordNode = nil;
+							notified = false;
 						})
 
 					}{
@@ -478,6 +479,12 @@ Server : Model {
 		statusWatcher =
 			OSCresponderNode(addr, '/status.reply', { arg time, resp, msg;
 				var cmd, one;
+				if(notify){
+					if(notified.not){
+						this.sendNotifyRequest;
+						"Receiving notification messages from server %\n".postf(this.name);
+					}
+				};
 				alive = true;
 				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 					avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
@@ -562,12 +569,6 @@ Server : Model {
 		if(recover) { this.newNodeAllocators } { this.newAllocators };
 		bootNotifyFirst = true;
 		this.doWhenBooted({
-			if(notified, {
-				this.notify;
-				"notification is on".inform;
-			}, {
-				"notification is off".inform;
-			});
 			serverBooting = false;
 			this.initTree;
 			(volume.volume != 0.0).if({
@@ -614,10 +615,27 @@ Server : Model {
 	status {
 		addr.sendStatusMsg
 	}
-	notify { arg flag=true;
+
+	notify_ { |flag = true|
+		notify = flag;
+		if(flag){
+			if(serverRunning){
+				this.sendNotifyRequest(true);
+				notified = true;
+				"Receiving notification messages from server %\n".postf(this.name);
+			}
+		}{
+			this.sendNotifyRequest(false);
+			notified = false;
+			"Switched off notification messages from server %\n".postf(this.name);
+		}
+	}
+
+	sendNotifyRequest { arg flag=true;
 		notified = flag;
 		addr.sendMsg("/notify", flag.binaryValue);
 	}
+
 	dumpOSC { arg code=1;
 		/*
 			0 - turn dumping OFF.
