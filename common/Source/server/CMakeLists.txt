@@ -55,6 +55,14 @@ else()
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	set_property(DIRECTORY
+				APPEND
+				PROPERTY COMPILE_DEFINITIONS SC_PLUGIN_DIR="${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins")
+else()
+	message(SEND_ERROR "Not implemented")
+endif()
+
 if (JACK_FOUND)
 	target_link_libraries(libscsynth ${JACK_LIBRARIES})
 endif()
