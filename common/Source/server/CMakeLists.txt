@@ -22,7 +22,8 @@ set(scsynth_sources
     SC_SyncCondition.cpp
     SC_Unit.cpp
     SC_UnitDef.cpp
-    SC_World.cpp)
+    SC_World.cpp
+    Rendezvous.cpp)
 
 include_directories(../../Headers/server)
 
@@ -47,6 +48,10 @@ else()
 endif()
 
 target_link_libraries(libscsynth sccommon)
+
+if (APPLE)
+	target_link_libraries(libscsynth "-framework CoreAudio")
+endif()
 
 if(SNDFILE_FOUND)
 	include_directories(${SNDFILE_INCLUDE_DIR})

@@ -1,14 +1,18 @@
 include_directories(../../Headers/lang
 	LangSource/Bison)
 
-find_package(ALSA)
-find_package(Readline)
-find_package(ICU)
-find_package(Sndfile)
-
-if (NOT ICU_FOUND)
-	message(SEND_ERROR "cannot find ICU")
+if(APPLE)
+	include_directories(../../include/icu)
+else()
+	find_package(ALSA)
+	find_package(ICU)
+	if (NOT ICU_FOUND)
+		message(SEND_ERROR "cannot find ICU")
+	endif()
 endif()
+
+find_package(Readline)
+find_package(Sndfile)
 
 set(sclang_sources
 	LangPrimSource/SC_Wii.cpp
@@ -98,8 +102,19 @@ if(READLINE_FOUND)
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
 
-include_directories(${ICU_INCLUDE_DIRS})
-target_link_libraries(libsclang ${ICU_LIBRARIES} ${ICU_I18N_LIBRARIES})
+if (ICU_FOUND)
+	include_directories(${ICU_INCLUDE_DIRS})
+	target_link_libraries(libsclang ${ICU_LIBRARIES} ${ICU_I18N_LIBRARIES})
+else()
+	if (APPLE)
+		target_link_libraries(libsclang libicucore)
+	endif()
+endif()
+
+if (APPLE)
+	target_link_libraries(libscsynth "-framework CoreAudio")
+	target_link_libraries(libscsynth "-framework CoreMidi")
+endif()
 
 if(ALSA_FOUND)
 	message(STATUS "Compiling with ALSA midi support")
