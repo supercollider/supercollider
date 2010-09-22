@@ -11,7 +11,7 @@ add_library(sccommon SHARED
 include_directories(../../Headers/lang)
 
 if (APPLE)
-	target_link_libraries(sclang "-framework CoreServices")
+	target_link_libraries(sccommon "-framework CoreServices")
 endif()
 
 install(TARGETS sccommon
