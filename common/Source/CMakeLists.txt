@@ -5,10 +5,10 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -fschedule-insns2 -fomit-frame-pointer")
 
 	if(APPLE)
-	set_property(DIRECTORY
-					APPEND
-					PROPERTY COMPILE_DEFINITIONS _REENTRANT)
-	else
+		set_property(DIRECTORY
+						APPEND
+						PROPERTY COMPILE_DEFINITIONS _REENTRANT)
+	else()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 	endif()
 endif ()
