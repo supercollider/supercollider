@@ -62,6 +62,9 @@ set(plugin_sources
 set(plugins "")
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
+if(APPLE)
+	set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
+endif()
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-finite-math-only")

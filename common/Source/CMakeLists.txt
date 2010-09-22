@@ -24,9 +24,12 @@ set_property(DIRECTORY
 				APPEND
 				PROPERTY COMPILE_DEFINITIONS SC_PLUGIN_LOAD_SYM=\"load\")
 
-set_property(DIRECTORY
-				APPEND
-				PROPERTY COMPILE_DEFINITIONS SC_PLUGIN_EXT=\".so\")
+if (NOT APPLE)
+	# on apple we leave this undefined so it defaults to .scx (in the code)
+	set_property(DIRECTORY
+					APPEND
+					PROPERTY COMPILE_DEFINITIONS SC_PLUGIN_EXT=\".so\")
+endif()
 
 add_subdirectory(common)
 add_subdirectory(lang)
