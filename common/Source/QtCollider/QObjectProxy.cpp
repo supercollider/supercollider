@@ -121,23 +121,42 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg )
     int size = slotRawObject( arg )->size;
     int i;
     for( i = 0; i<size && i<10; ++i ) {
-      argSlots[i].set( slots );
+      argSlots[i].setData( slots );
       ++slots;
     }
   }
-  else argSlots[0].set( arg );
+  else argSlots[0].setData( arg );
 
-  return QMetaObject::invokeMethod( qObject, method, Qt::QueuedConnection,
-                                    argSlots[0].asGenericArgument(),
-                                    argSlots[1].asGenericArgument(),
-                                    argSlots[2].asGenericArgument(),
-                                    argSlots[3].asGenericArgument(),
-                                    argSlots[4].asGenericArgument(),
-                                    argSlots[5].asGenericArgument(),
-                                    argSlots[6].asGenericArgument(),
-                                    argSlots[7].asGenericArgument(),
-                                    argSlots[8].asGenericArgument(),
-                                    argSlots[9].asGenericArgument());
+  bool success =
+    QMetaObject::invokeMethod( qObject, method, Qt::QueuedConnection,
+                                argSlots[0].asGenericArgument(),
+                                argSlots[1].asGenericArgument(),
+                                argSlots[2].asGenericArgument(),
+                                argSlots[3].asGenericArgument(),
+                                argSlots[4].asGenericArgument(),
+                                argSlots[5].asGenericArgument(),
+                                argSlots[6].asGenericArgument(),
+                                argSlots[7].asGenericArgument(),
+                                argSlots[8].asGenericArgument(),
+                                argSlots[9].asGenericArgument());
+
+  if( !success )
+  {
+    success =
+      QMetaObject::invokeMethod( this, method, Qt::QueuedConnection,
+                                  argSlots[0].asGenericArgument(),
+                                  argSlots[1].asGenericArgument(),
+                                  argSlots[2].asGenericArgument(),
+                                  argSlots[3].asGenericArgument(),
+                                  argSlots[4].asGenericArgument(),
+                                  argSlots[5].asGenericArgument(),
+                                  argSlots[6].asGenericArgument(),
+                                  argSlots[7].asGenericArgument(),
+                                  argSlots[8].asGenericArgument(),
+                                  argSlots[9].asGenericArgument());
+  }
+
+  return success;
 }
 
 void QObjectProxy::objectDestroyed()
