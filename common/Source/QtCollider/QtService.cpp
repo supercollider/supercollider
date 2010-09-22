@@ -192,7 +192,5 @@ void QtService::handleCreation( CreationEvent *e )
     return;
   }
 
-  QObject *qObject = (*createFn)( e->_data.arguments );
-
-  *e->_ret = new QObjectProxy( qObject, e->_data.scObject );
+  *e->_ret = (*createFn)( e->_data.scObject, e->_data.arguments );
 }
