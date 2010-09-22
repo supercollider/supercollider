@@ -14,13 +14,19 @@ set(simple_tests
     simple_pool_test.cpp
     sized_array_test.cpp
     sndfile_backend_test.cpp
-    static_allocator_test.cpp
     static_pool_test.cpp
     ticket_scheduler_test.cpp
     timer_system_test.cpp
     timetag_test.cpp
-    tl_allocator_test.cpp
 )
+
+if(!APPLE)
+    set(simple_tests
+        ${simple_tests}
+        static_allocator_test.cpp
+        tl_allocator_test.cpp
+    )
+endif()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(simple_tests ${simple_tests}
@@ -39,6 +45,10 @@ foreach(test ${simple_tests})
   target_link_libraries(${test_name} pthread)
   target_link_libraries(${test_name} sndfile)
   target_link_libraries(${test_name} libsupernova)
+
+  if(APPLE)
+    target_link_libraries(${test_name} "-framework CoreAudio")
+  endif()
 
   add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 endforeach(test)
