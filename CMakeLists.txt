@@ -35,6 +35,7 @@ else()
 endif()
 
 option(SC_ED "Build gedit-based IDE." OFF)
+option(SC_VIM "Build vim-based IDE." OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
@@ -47,4 +48,8 @@ endif()
 
 if(SC_ED)
 	add_subdirectory(editors/sced)
+endif()
+
+if(SC_VIM)
+	add_subdirectory(editors/scvim)
 endif()
