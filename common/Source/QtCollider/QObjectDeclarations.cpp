@@ -20,8 +20,12 @@
 ************************************************************************/
 
 #define DECLARE_QT_CLASS( name, class ) \
-  QObject *create_##name ( const QVariant & arguments ) \
-    { Q_UNUSED( arguments ); return new class (); } \
+  QObjectProxy *create_##name ( PyrObject *po, const QVariant & arguments ) \
+  { \
+    Q_UNUSED( arguments ); \
+    QObject *qo = new class (); \
+    return new QObjectProxy( qo, po ); \
+  } \
   QcObjectFactory name ##_factory ( #name, create_##name );
 
 /*
@@ -88,11 +92,11 @@ void initWidget( QWidget * widget, const QVariant & args )
 }
 
 #define DECLARE_WIDGET_CLASS( name, class ) \
-  QObject *create_##name ( const QVariant & arguments ) \
+  QObjectProxy *create_##name ( PyrObject * po, const QVariant & arguments ) \
   { \
     QWidget *w = new class (); \
     initWidget( w, arguments ); \
-    return w; \
+    return new QObjectProxy( w, po ); \
   } \
     \
   QcObjectFactory name ##_factory ( #name, create_##name );
@@ -128,7 +132,7 @@ DECLARE_WIDGET_CLASS( QUserView, QcCustomPainted );
 
 #include <QShortcut>
 
-QObject *create_QWindow ( const QVariant & arguments ) {
+QObjectProxy *create_QWindow ( PyrObject *po, const QVariant & arguments ) {
 
   VariantList argList = arguments.value<VariantList>();
   if( argList.data.count() < 5 ) return 0;
@@ -160,7 +164,7 @@ QObject *create_QWindow ( const QVariant & arguments ) {
   QObject::connect( closeShortcut, SIGNAL(activated()),
                     window, SLOT(close()) );
 
-  return window;
+  return new QObjectProxy( window, po );
 }
 
 QcObjectFactory QWindow_factory ( "QWindow", create_QWindow );

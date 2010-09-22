@@ -23,8 +23,11 @@
 #define QC_OBJECT_FACTORY_H
 
 #include <QObject>
+#include <PyrObject.h>
 
-typedef QObject* (*CreateFn) ( const QVariant & arguments );
+class QObjectProxy;
+
+typedef QObjectProxy* (*CreateFn) ( PyrObject *, const QVariant & arguments );
 
 struct QcObjectFactory
 {
