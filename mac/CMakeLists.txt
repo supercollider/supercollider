@@ -53,9 +53,7 @@ set(sclang_sources
 	../common/Source/lang/LangSource/PyrParseNode.cpp
 	../common/Source/lang/LangSource/PyrSignal.cpp
 	../common/Source/lang/LangSource/PyrSymbolTable.cpp
-#rm	../common/Source/lang/LangSource/SC_LanguageClient.cpp
 	../common/Source/lang/LangSource/SC_LibraryConfig.cpp
-#rm	../common/Source/lang/LangSource/SC_TerminalClient.cpp
 	../common/Source/lang/LangSource/Samp.cpp
 	../common/Source/lang/LangSource/SimpleStack.cpp
 	../common/Source/lang/LangSource/VMGlobals.cpp
@@ -103,71 +101,91 @@ set(sclang_sources
 
 set(sclang_parser_source ../common/Source/lang/LangSource/Bison/lang11d_tab.cpp)
 
-set(scappbundlename "supercolliderapp")  #TODO: don't hardcode this?
+set(scappbundlename ${PROJECT_NAME})
 
 # set how it shows up in the Info.plist file
 SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns) 
 # set where in the bundle to put the icns file
-SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns
+	PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 # include the icns file in the target
 SET(scapp_resources ${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns)
-# add all the resources actually
-FILE(GLOB_RECURSE rsrcfiles "${CMAKE_CURRENT_SOURCE_DIR}/Resources/*.*")
-MESSAGE( STATUS "rsrcfiles: " ${rsrcfiles} )
-FILE(INSTALL ${rsrcfiles} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents/Resources)
 
-add_executable(supercolliderapp MACOSX_BUNDLE ${sclang_sources} ${sclang_parser_source} ${scapp_resources} ${rsrcfiles})
+
+
+# add all the resources actually
+macro(addBundleResourceFolder folder)
+	FILE(GLOB thesethings RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${folder}/*)
+	FOREACH(afile ${thesethings})
+		FILE(INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/${afile}
+			DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents/${folder})
+	ENDFOREACH()
+	FOREACH(afile ${thesethings})
+		# TODO: if(isfolder) - does cmake have this?
+		addBundleResourceFolder(${afile})
+	ENDFOREACH()
+endmacro()
+
+addBundleResourceFolder(Resources)
+
+
+add_executable(${scappbundlename} MACOSX_BUNDLE
+	${sclang_sources} ${sclang_parser_source}
+	${scapp_resources}
+	)
 
 if (SCLANG_SERVER)
-	target_link_libraries(supercolliderapp libscsynth)
+	target_link_libraries(${scappbundlename} libscsynth)
 else()
-	set_property(TARGET supercolliderapp
+	set_property(TARGET ${scappbundlename}
 		APPEND
 		PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
 		)
 endif()
 
 #set_property(TARGET supercolliderapp
-#	PROPERTY OUTPUT_NAME sclang)
+#	PROPERTY OUTPUT_NAME ${scappbundlename})
 
 ##set_property(TARGET supercolliderapp
 ##	PROPERTY MACOSX_BUNDLE_INFO_PLIST "Resources/Info.plist")
 
 # for processing into the plist:
-set_property(TARGET supercolliderapp
-	PROPERTY MACOSX_BUNDLE_BUNDLE_NAME scappbundlename)
+set_property(TARGET ${scappbundlename}
+	PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
 # also TODO, separate gui name (currently using MACOSX_BUNDLE_BUNDLE_NAME twice)
 
+target_link_libraries(${scappbundlename} icucore)
 
-target_link_libraries(supercolliderapp icucore)
-
-target_link_libraries(supercolliderapp "-framework ApplicationServices")
-target_link_libraries(supercolliderapp "-framework Carbon")
-target_link_libraries(supercolliderapp "-framework Cocoa")
-target_link_libraries(supercolliderapp "-framework CoreAudio")
-target_link_libraries(supercolliderapp "-framework CoreMidi")
-target_link_libraries(supercolliderapp "-framework CoreServices")
-target_link_libraries(supercolliderapp "-framework IOBluetooth")
-target_link_libraries(supercolliderapp "-framework IOKit")
-target_link_libraries(supercolliderapp "-framework Quartz")
-target_link_libraries(supercolliderapp "-framework QuartzCore")
-target_link_libraries(supercolliderapp "-framework QuickTime")
-target_link_libraries(supercolliderapp "-framework QTKit")
-target_link_libraries(supercolliderapp "-framework WebKit")
+target_link_libraries(${scappbundlename} "-framework ApplicationServices")
+target_link_libraries(${scappbundlename} "-framework Carbon")
+target_link_libraries(${scappbundlename} "-framework Cocoa")
+target_link_libraries(${scappbundlename} "-framework CoreAudio")
+target_link_libraries(${scappbundlename} "-framework CoreMidi")
+target_link_libraries(${scappbundlename} "-framework CoreServices")
+target_link_libraries(${scappbundlename} "-framework IOBluetooth")
+target_link_libraries(${scappbundlename} "-framework IOKit")
+target_link_libraries(${scappbundlename} "-framework Quartz")
+target_link_libraries(${scappbundlename} "-framework QuartzCore")
+target_link_libraries(${scappbundlename} "-framework QuickTime")
+target_link_libraries(${scappbundlename} "-framework QTKit")
+target_link_libraries(${scappbundlename} "-framework WebKit")
 
 if(SNDFILE_FOUND)
 	include_directories(${SNDFILE_INCLUDE_DIR})
-	target_link_libraries(supercolliderapp ${SNDFILE_LIBRARIES})
+	target_link_libraries(${scappbundlename} ${SNDFILE_LIBRARIES})
 else()
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
-target_link_libraries(supercolliderapp sccommon pthread)
+target_link_libraries(${scappbundlename} sccommon pthread)
 
-#set_property(TARGET sclang
-#	APPEND
-#	PROPERTY COMPILE_DEFINITIONS USE_SC_TERMINAL_CLIENT)
-
-install(TARGETS supercolliderapp
+install(TARGETS ${scappbundlename}
 		DESTINATION "Contents/MacOS"
 		PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+FILE(INSTALL ${CMAKE_SOURCE_DIR}/common/build/SCClassLibrary
+	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+FILE(INSTALL ${CMAKE_SOURCE_DIR}/common/build/Help
+	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+FILE(INSTALL ${CMAKE_SOURCE_DIR}/common/build/examples
+	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
