@@ -124,7 +124,7 @@ QView : QObject {
   }
 
   focus { arg flag=true;
-    this.nonimpl("focus");
+    this.invokeMethod( \setFocus, flag );
   }
 
   hasFocus {
