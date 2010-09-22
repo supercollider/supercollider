@@ -128,8 +128,7 @@ QView : QObject {
   }
 
   hasFocus {
-    this.nonimpl("hasFocus");
-    ^false;
+    ^this.getProperty( \focus );
   }
 
   focusColor_ {
