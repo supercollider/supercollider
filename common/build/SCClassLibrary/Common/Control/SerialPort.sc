@@ -56,11 +56,12 @@ SerialPort
 	}
 	initSerialPort { | ... args |
 		semaphore = Semaphore(0);
-		this.prOpen(*args);
-		allPorts = allPorts.add(this);
-
-		doneAction = { ("SerialPort"+args[0]+"was closed").postln; };
+		if ( dataptr.isNil ){
+		  this.prOpen(*args);
+		  allPorts = allPorts.add(this);
+		  doneAction = { ("SerialPort"+args[0]+"was closed").postln; };
 // 		CmdPeriod.add(this);
+		}
 	}
 
 	isOpen {
@@ -82,7 +83,7 @@ SerialPort
 	*cleanupAll {
 		var ports = allPorts;
 		allPorts = Array[];
-		ports.do(_.prCleanup);
+		ports.do(_.primCleanup);
 	}
 
 	// non-blocking read
@@ -105,9 +106,13 @@ SerialPort
 
 	// always blocks
 	put { | byte, timeout=0.005 |
-		while { this.prPut(byte).not } {
-			timeout.wait;
-			timeout = timeout * 2;
+		if ( dataptr.notNil ){
+		    while { this.prPut(byte).not } {
+			    timeout.wait;
+			    timeout = timeout * 2;
+		    }
+		}{
+		  "SerialPort not open".warn;
 		}
 	}
 	putAll { | bytes, timeout=0.005 |
@@ -126,7 +131,7 @@ SerialPort
 // 	}
 
 	// PRIMITIVE
-	prOpen { | port, baudRate |
+	prOpen { | ... args | // was: | port, baudRate | but that misses out on all the other args?
 		_SerialPort_Open
 		^this.primitiveFailed
 	}
