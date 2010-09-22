@@ -187,8 +187,8 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
 #ifdef __linux__
         register_synthdefs(server, sc_read_synthdefs_dir(home / "share/SuperCollider/synthdefs/"));
 #elif defined(__APPLE__)
-        register_synthdefs(server, sc_read_synthdefs_dir(home / "Library/Application Support/SuperCollider/supernova_plugins/"));
-        register_synthdefs(server, sc_read_synthdefs_dir("Library/Application Support/SuperCollider/supernova_plugins/"));
+        register_synthdefs(server, sc_read_synthdefs_dir(home / "Library/Application Support/SuperCollider/synthdefs/"));
+        register_synthdefs(server, sc_read_synthdefs_dir("Library/Application Support/SuperCollider/synthdefs/"));
 #else
         std::cerr << "Don't know how to locate synthdefs on this platform. Please load them dynamically."
 #endif
