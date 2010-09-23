@@ -63,7 +63,6 @@
 		7713C6700F422BE400B0055E /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 7751A95A0EB36D500051CF38 /* fftlib.c */; };
 		7713C6710F422BE400B0055E /* sc_popen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A95E0EB36D500051CF38 /* sc_popen.cpp */; };
 		7713C6720F422BE400B0055E /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9930EB36D500051CF38 /* AdvancingAllocPool.cpp */; };
-		7713C6730F422BE400B0055E /* alloca.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9940EB36D500051CF38 /* alloca.cpp */; };
 		7713C6740F422BE400B0055E /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9990EB36D500051CF38 /* ByteCodeArray.cpp */; };
 		7713C6750F422BE400B0055E /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A99B0EB36D500051CF38 /* dumpByteCodes.cpp */; };
 		7713C6760F422BE400B0055E /* DumpParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A99C0EB36D500051CF38 /* DumpParseNode.cpp */; };
@@ -107,9 +106,10 @@
 		778F18490F50B1D000CB6629 /* Common in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18450F50B1D000CB6629 /* Common */; };
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
+		77ABF4B9124BC3510008A5E0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77ABF4B8124BC3510008A5E0 /* CFNetwork.framework */; };
+		77ABF4BE124BC3670008A5E0 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
 		77C11F4E11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77C11F4D11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib */; };
 		77C1204511D67558002067D4 /* PostViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 77C1204411D67558002067D4 /* PostViewController.mm */; };
-		77C1214011D690B4002067D4 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEA1123320700D2A968 /* libsndfile_iphone.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -266,7 +266,6 @@
 		7751A9900EB36D500051CF38 /* wiiremote.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wiiremote.c; sourceTree = "<group>"; };
 		7751A9910EB36D500051CF38 /* wiiremote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wiiremote.h; sourceTree = "<group>"; };
 		7751A9930EB36D500051CF38 /* AdvancingAllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AdvancingAllocPool.cpp; sourceTree = "<group>"; };
-		7751A9940EB36D500051CF38 /* alloca.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = alloca.cpp; sourceTree = "<group>"; };
 		7751A9960EB36D500051CF38 /* lang11d */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lang11d; sourceTree = "<group>"; };
 		7751A9970EB36D500051CF38 /* lang11d_tab.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lang11d_tab.cpp; sourceTree = "<group>"; };
 		7751A9980EB36D500051CF38 /* lang11d_tab.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lang11d_tab.h; sourceTree = "<group>"; };
@@ -436,6 +435,7 @@
 		778F18450F50B1D000CB6629 /* Common */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Common; path = ../common/build/SCClassLibrary/Common; sourceTree = "<group>"; };
 		778F18460F50B1D000CB6629 /* DefaultLibrary */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DefaultLibrary; path = ../common/build/SCClassLibrary/DefaultLibrary; sourceTree = "<group>"; };
 		778F18470F50B1D000CB6629 /* Platform */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Platform; path = ../common/build/SCClassLibrary/Platform; sourceTree = "<group>"; };
+		77ABF4B8124BC3510008A5E0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = iphoneos2.2/System/Library/Frameworks/CFNetwork.framework; sourceTree = "<group>"; };
 		77B294D30ECEFF7500549D47 /* SC_VFP11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_VFP11.h; sourceTree = "<group>"; };
 		77C11F4D11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_MainWindow_iPad.xib; path = "iPhone Resources/SuperCollider_MainWindow_iPad.xib"; sourceTree = "<group>"; };
 		77C1204311D67558002067D4 /* PostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostViewController.h; sourceTree = "<group>"; };
@@ -454,7 +454,8 @@
 				77597B03112332CF00D2A968 /* MediaPlayer.framework in Frameworks */,
 				77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */,
 				77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */,
-				77C1214011D690B4002067D4 /* libsndfile_iphone.a in Frameworks */,
+				77ABF4B9124BC3510008A5E0 /* CFNetwork.framework in Frameworks */,
+				77ABF4BE124BC3670008A5E0 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -712,7 +713,6 @@
 			isa = PBXGroup;
 			children = (
 				7751A9930EB36D500051CF38 /* AdvancingAllocPool.cpp */,
-				7751A9940EB36D500051CF38 /* alloca.cpp */,
 				7751A9950EB36D500051CF38 /* Bison */,
 				7751A9990EB36D500051CF38 /* ByteCodeArray.cpp */,
 				7751A99A0EB36D500051CF38 /* cmdLineFuncs.cpp */,
@@ -942,6 +942,7 @@
 			children = (
 				77597AEA1123320700D2A968 /* libsndfile_iphone.a */,
 				77597AEF1123323800D2A968 /* scUBlibsndfile.a */,
+				77ABF4B8124BC3510008A5E0 /* CFNetwork.framework */,
 				77597AF31123328300D2A968 /* CoreFoundation.framework */,
 				77597AF7112332A800D2A968 /* CoreGraphics.framework */,
 				77597AFB112332B400D2A968 /* CoreAudio.framework */,
@@ -983,6 +984,9 @@
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "iPhone_Language" */;
 			compatibilityVersion = "Xcode 3.1";
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectReferences = (
@@ -1084,7 +1088,6 @@
 				7713C6700F422BE400B0055E /* fftlib.c in Sources */,
 				7713C6710F422BE400B0055E /* sc_popen.cpp in Sources */,
 				7713C6720F422BE400B0055E /* AdvancingAllocPool.cpp in Sources */,
-				7713C6730F422BE400B0055E /* alloca.cpp in Sources */,
 				7713C6740F422BE400B0055E /* ByteCodeArray.cpp in Sources */,
 				7713C6750F422BE400B0055E /* dumpByteCodes.cpp in Sources */,
 				7713C6760F422BE400B0055E /* DumpParseNode.cpp in Sources */,
@@ -1155,7 +1158,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					../mac/lib,
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1192,7 +1195,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					../mac/lib,
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1243,7 +1246,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
-					"../mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\" \"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					../mac/lib,
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos3.0;
