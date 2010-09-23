@@ -18,6 +18,7 @@ set( QT_COLLIDER_HDRS
   widgets/QcMultiSlider.h
   widgets/QcTextEdit.h
   widgets/QcScope.h
+  widgets/QcGraph.h
   widgets/QcLevelIndicator.h
 )
 
@@ -47,6 +48,7 @@ set( QT_COLLIDER_SRCS
   widgets/QcScope.cpp
   widgets/QcLevelIndicator.cpp
   widgets/QcWindow.cpp
+  widgets/QcGraph.cpp
 )
 
 include(${QT_USE_FILE})
