@@ -20,6 +20,8 @@ option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
 option(MEMORY_DEBUGGING "Build for memory debugging (disable thread pools).")
 
+option(NOVA_SIMD "Build with nova-simd support." ON)
+
 if(CMAKE_COMPILER_IS_GNUCXX)
     option(NATIVE "Optimize binary for this architecture.")
     option(LTO "Use GCC's link time optimizer'.")
