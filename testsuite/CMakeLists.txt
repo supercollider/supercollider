@@ -43,7 +43,7 @@ foreach(test ${simple_tests})
   target_link_libraries(${test_name} boost_thread boost_system boost_test)
   target_link_libraries(${test_name} oscpack tlsf)
   target_link_libraries(${test_name} pthread)
-  target_link_libraries(${test_name} sndfile)
+  target_link_libraries(${test_name} ${SNDFILE})
   target_link_libraries(${test_name} libsupernova)
 
   if(APPLE)
