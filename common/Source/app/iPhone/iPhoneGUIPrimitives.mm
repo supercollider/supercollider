@@ -276,6 +276,25 @@ int prSCWindow_ToFront(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, class_string))) return errWrongType;
+
+    SCGraphView* view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
+    if (!view) return errNone;
+    PyrString *string = slotRawString(b);
+    NSString *title = [NSString stringWithCString: string->s length: string->size];
+    [[view window] setTitle: title];
+    return errNone;
+}
+
+
 int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed);
 int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed)
 {
@@ -321,6 +340,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_SCWindow_Refresh", prSCWindow_Refresh, 1, 0);
 	definePrimitive(base, index++, "_SCWindow_Close", prSCWindow_Close, 1, 0);
 	definePrimitive(base, index++, "_SCWindow_ToFront", prSCWindow_ToFront, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_SetName", prSCWindow_SetName, 2, 0);
 
 	definePrimitive(base, index++, "_Font_AvailableFonts", prFont_AvailableFonts, 1, 0);
 }
