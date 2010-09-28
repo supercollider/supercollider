@@ -64,8 +64,10 @@ ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096 -Wnon-virtual-dtor -Wstrict-overflow")
-   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math -frename-registers -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fomit-frame-pointer")
+    if(NOT APPLE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096 -Wnon-virtual-dtor -Wstrict-overflow")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math -frename-registers -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fomit-frame-pointer")
+    endif()
 
     if(SSE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
