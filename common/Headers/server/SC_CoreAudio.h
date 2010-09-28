@@ -226,9 +226,13 @@ protected:
 	virtual bool DriverStop();
 
 public:
+	int builtinoutputflag_; 
+	
     SC_CoreAudioDriver(struct World *inWorld);
 	virtual ~SC_CoreAudioDriver();
 
+	bool StopStart(); 
+	
     void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
 
 	bool UseInput() { return mInputDevice != kAudioDeviceUnknown; }
