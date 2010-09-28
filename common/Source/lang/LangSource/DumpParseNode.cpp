@@ -637,19 +637,18 @@ void stringFromPyrString(PyrString *obj, char *str, int maxlength)
 
 void pstrncpy(unsigned char *s1, unsigned char *s2, int n);
 
-void pstringFromPyrString(PyrString *obj, unsigned char *str, int maxlength);
 void pstringFromPyrString(PyrString *obj, unsigned char *str, int maxlength)
 {
+	static const char not_a_string[] = "not a string";
+	const char * src;
+	int len;
 	if (obj && obj->classptr == class_string) {
-		int len;
 		len = sc_min(maxlength-1, obj->size);
-		memcpy(str+1, obj->s, len);
-		str[0] = len;
+		src = obj->s;
 	} else {
-#ifdef SC_DARWIN
-		pstrncpy(str, (unsigned char*)"\pnot a string", maxlength-1);
-#else
-		strncpy((char*)str, "not a string", maxlength-1);
-#endif
+		len =  sizeof(not_a_string);
+		src = not_a_string;
 	}
+	memcpy(str+1, src, len);
+	str[0] = len;
 }
