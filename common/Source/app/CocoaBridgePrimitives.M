@@ -1473,7 +1473,7 @@ int prObjcAllocInit(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	[anInvocation setTarget: isInstanceMethod ? [nsclass alloc] : nsclass];
+	[anInvocation setTarget: isInstanceMethod ? [nsclass alloc] : (id)nsclass];
 	[anInvocation setSelector: sel];
 
 	if(IsTrue(defer))
