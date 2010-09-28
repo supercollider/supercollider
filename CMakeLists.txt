@@ -45,6 +45,7 @@ add_subdirectory(common/build)
 if(APPLE)
 	add_subdirectory(mac)
 endif()
+
 if(SC_EL)
 	add_subdirectory(editors/scel)
 endif()

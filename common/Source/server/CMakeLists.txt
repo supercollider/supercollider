@@ -64,7 +64,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set_property(DIRECTORY
 				APPEND
 				PROPERTY COMPILE_DEFINITIONS SC_PLUGIN_DIR="${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins")
-else()
+elseif(NOT APPLE)
 	message(SEND_ERROR "Not implemented")
 endif()
 
@@ -78,10 +78,28 @@ set_property(TARGET libscsynth
 add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth)
 
-install(TARGETS libscsynth
-		DESTINATION "lib"
-		PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-install(TARGETS scsynth
-		DESTINATION "bin"
-		PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+#TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
+
+if(APPLE)
+	# determines the app name and app install location (scappbundlename, scappdir):
+	include (../../cmake_modules/MacAppFolder.cmake)
+
+	install(TARGETS libscsynth
+			DESTINATION ${scappauxresourcesdir}
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE
+			COMPONENT app)
+
+	install(TARGETS scsynth
+			RUNTIME DESTINATION ${scappauxresourcesdir}
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE
+			COMPONENT app)
+else()
+	install(TARGETS libscsynth
+			DESTINATION "lib"
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+	install(TARGETS scsynth
+			RUNTIME DESTINATION "bin"
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
