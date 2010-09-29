@@ -20,6 +20,10 @@ include_directories(../common/include/icu
 
 find_package(Sndfile)
 
+if (SC_QT)
+  add_definitions( -DSC_QT )
+endif (SC_QT)
+
 set(scapp_sources
 	../common/Source/lang/LangPrimSource/SC_Wii.cpp
 	../common/Source/lang/LangPrimSource/PyrSignalPrim.cpp
@@ -132,6 +136,10 @@ else()
 		PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
 		)
 endif()
+
+if (SC_QT)
+  target_link_libraries(${scappbundlename} QtCollider)
+endif (SC_QT)
 
 # for processing into the plist:
 set_property(TARGET ${scappbundlename}
