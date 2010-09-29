@@ -259,6 +259,10 @@ QView : QObject {
     action.value(this);
   }
 
+  defaultKeyDownAction {}
+
+  defaultKeyUpAction {}
+
   keyDown { arg char, modifiers, unicode, keycode;
     if( char.size == 1 ) {char = char[0]; keyTyped = char;};
 
@@ -312,6 +316,8 @@ QView : QObject {
 
   prInitQView { arg parentArg;
 
+    var handleKeyDown, handleKeyUp;
+
     parent = parentArg;
 
     if( parentArg.notNil ) {
@@ -325,15 +331,17 @@ QView : QObject {
 
     this.registerEventHandler( QObject.closeEvent, \handleCloseEvent, true );
 
-    if( this.overrides( \keyModifiersChanged ) ) {
-      this.registerEventHandler( QObject.keyDownEvent, \keyDown, true );
-      this.registerEventHandler( QObject.keyUpEvent, \keyUp, true );
-    } {
-      if( this.respondsTo( \defaultKeyDownAction ) )
-        {this.registerEventHandler( QObject.keyDownEvent, \keyDown, true )};
-      if( this.respondsTo( \defaultKeyUpAction ) )
-        {this.registerEventHandler( QObject.keyUpEvent, \keyUp, true )};
-    };
+    handleKeyDown = handleKeyUp = this.overrides( \keyModifiersChanged );
+    if( handleKeyDown.not )
+      { handleKeyDown = this.overrides( \defaultKeyDownAction ) };
+    if( handleKeyUp.not )
+      { handleKeyUp = this.overrides( \defaultKeyUpAction )};
+
+    if( handleKeyDown )
+      { this.registerEventHandler( QObject.keyDownEvent, \keyDown, true ) };
+    if( handleKeyUp )
+      { this.registerEventHandler( QObject.keyUpEvent, \keyUp, true ) };
+
     if( this.overrides( \mouseDown ) ) {
       this.registerEventHandler( QObject.mouseDownEvent, \mouseDown );
       this.registerEventHandler( QObject.mouseDblClickEvent, \mouseDown )
