@@ -42,16 +42,9 @@ set( QT_COLLIDER_SRCS
   widgets/QcScope.cpp
 )
 
-find_package(Qt4 REQUIRED)
-
 include(${QT_USE_FILE})
 
-if( NOT SC_TRUNK )
-  set( SC_TRUNK ${CMAKE_SOURCE_DIR} )
-endif( NOT SC_TRUNK )
-
-set( SC_HEADERS_DIR "${SC_TRUNK}/common/Headers" )
-set( SC_INCLUDE_DIR "${SC_TRUNK}/common/include" )
+set( SC_HEADERS_DIR "${CMAKE_SOURCE_DIR}/common/Headers" )
 
 include_directories(
   .
@@ -61,14 +54,13 @@ include_directories(
   "${SC_HEADERS_DIR}/plugin_interface"
 )
 
-find_path( SNDFILE_INCLUDE_DIR sndfile.h )
+find_package(Sndfile)
 
-if( SNDFILE_INCLUDE_DIR )
-  include_directories( ${SNDFILE_INCLUDE_DIR} )
-else( SNDFILE_INCLUDE_DIR )
-  message( STATUS "QtCollider: libsndfile not found. Using header provided by SuperCollider." )
-  include_directories( "${SC_INCLUDE_DIR}/libsndfile" )
-endif( SNDFILE_INCLUDE_DIR )
+if(SNDFILE_FOUND)
+  include_directories(${SNDFILE_INCLUDE_DIR})
+else()
+  message(SEND_ERROR "Cannot find libsndfile")
+endif(SNDFILE_FOUND)
 
 qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 
@@ -79,15 +71,12 @@ set_property(
   APPEND PROPERTY COMPILE_DEFINITIONS QT_NO_KEYWORDS
 )
 
-if(SCLANG_SERVER)
-  message(STATUS "Compiling QtCollider for sclang with internal server.")
-else(SCLANG_SERVER)
-  message(STATUS "Compiling QtCollider for sclang without internal server.")
+if(NOT SCLANG_SERVER)
   set_property(
     TARGET QtCollider
     APPEND PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
   )
-endif(SCLANG_SERVER)
+endif(NOT SCLANG_SERVER)
 
 if(APPLE)
   set_property(
