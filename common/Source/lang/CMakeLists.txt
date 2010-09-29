@@ -20,10 +20,6 @@ else()
 endif()
 find_package(Sndfile)
 
-if (SC_QT)
-  add_definitions( -DSC_QT )
-endif (SC_QT)
-
 set(sclang_sources
 	LangPrimSource/SC_Wii.cpp
 	LangPrimSource/PyrSignalPrim.cpp
@@ -91,6 +87,10 @@ if(UNIX)
 else(UNIX)
 endif(UNIX)
 
+if (SC_QT)
+  add_definitions(-DSC_QT)
+endif (SC_QT)
+
 if(FINAL_BUILD)
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
 	add_library(libsclang SHARED libsclang_final.cpp ${sclang_parser_source})
@@ -107,6 +107,10 @@ else()
 		PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
 		)
 endif()
+
+if (SC_QT)
+  target_link_libraries(libsclang QtCollider)
+endif (SC_QT)
 
 set_property(TARGET libsclang
 	PROPERTY OUTPUT_NAME sclang)
@@ -152,10 +156,6 @@ if(SNDFILE_FOUND)
 else()
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
-
-if (SC_QT)
-  target_link_libraries(libsclang QtCollider)
-endif (SC_QT)
 
 target_link_libraries(libsclang sccommon pthread)
 
