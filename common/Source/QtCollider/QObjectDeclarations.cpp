@@ -165,7 +165,7 @@ QObjectProxy *create_QWindow ( PyrObject *po, const QVariant & arguments ) {
   QObject::connect( closeShortcut, SIGNAL(activated()),
                     window, SLOT(close()) );
 
-  return new QObjectProxy( window, po );
+  return new QWidgetProxy( window, po );
 }
 
 QcObjectFactory QWindow_factory ( "QWindow", create_QWindow );
