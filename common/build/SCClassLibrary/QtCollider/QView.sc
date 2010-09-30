@@ -170,7 +170,7 @@ QView : QObject {
   }
 
   front {
-    this.visible_( true );
+    this.invokeMethod( \bringFront );
   }
 
   minimize {
