@@ -40,6 +40,12 @@ class QWidgetProxy : public QObjectProxy
       else
         widget->clearFocus();
     }
+    Q_INVOKABLE void bringFront() {
+      widget->setWindowState( widget->windowState() & ~Qt::WindowMinimized
+                              | Qt::WindowActive );
+      widget->show();
+      widget->raise();
+    }
   private:
     QWidget *widget;
 };
