@@ -18,6 +18,10 @@ if(APPLE)
 	set_property(DIRECTORY
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
+
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpascal-strings")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpascal-strings")
+
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set_property(DIRECTORY
 	APPEND
