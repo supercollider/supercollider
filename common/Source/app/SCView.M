@@ -3327,10 +3327,11 @@ void SCPopUpMenu::draw(SCRect inDamage)
     if (mMenuH) {
 		int numberOfItems = CountMenuItems(mMenuH);
 		if (numberOfItems) {
-			Str255 name;
-			GetMenuItemText(mMenuH, mValue+1, name);
-			char cstring[256];
-			p2cstrcpy(cstring, name);
+			CFStringRef outString;
+			CopyMenuItemTextAsCFString(mMenuH, (MenuItemIndex)(mValue+1), &outString);
+			char *cstring = (char*)CFStringGetCStringPtr(outString, kCFStringEncodingMacRoman);
+			if(cstring == NULL) cstring = "[text not retrieved]";
+			CFRelease(outString);
 			SCRect innerBounds = dbounds;
 			int inset = 2;
 			innerBounds.x += inset + 10;
@@ -3424,7 +3425,7 @@ int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             PyrObject *array = slotRawObject(slot);
             int numItems = array->size;
 
-            mMenuH = NewMenu(1, (const unsigned char*)"\p");
+            CreateNewMenu(1, 0, &mMenuH);
 
             for (int i=0; i<numItems; ++i) {
                 PyrSlot *slot = array->slots + i;
