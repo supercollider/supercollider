@@ -124,7 +124,7 @@ QButton : QView {
 
   valueAction_ { arg anInt;
     this.value_( anInt );
-    action.value;
+    action.value(this);
   }
 
   states_ { arg stateArray;
@@ -151,7 +151,7 @@ QAbstractStepValue : QView {
 
   valueAction_ { arg val;
     this.value_(val);
-    action.value;
+    action.value(this);
   }
 
   shift_scale_ { arg aFloat;
@@ -468,7 +468,7 @@ QItemViewBase : QView
 
   valueAction_ { arg val;
     this.value_(val);
-    action.value;
+    action.value(this);
   }
 }
 
@@ -590,7 +590,7 @@ QMultiSliderView : QView {
 
   valueAction_ { arg val;
     this.value_(val);
-    action.value;
+    action.value(this);
   }
 
   currentvalue {
