@@ -13,6 +13,7 @@ QView : QObject {
   var <>userCanClose=true, <name, <>deleteOnClose = true;
   // actions
   var <>action;
+  var <>toFrontAction, <>endFrontAction;
   var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseMoveAction;
   var <keyDownAction, <keyUpAction, <keyModifiersChangedAction;
   var <>keyTyped;
@@ -57,7 +58,7 @@ QView : QObject {
 
   remove {
     if( qObject.notNil ) {
-      onClose.value;
+      onClose.value(this);
       if( parent.notNil ) {
         parent.prRemoveChild( this );
       } {
@@ -329,7 +330,11 @@ QView : QObject {
 
     palette = QPalette.new;
 
-    this.registerEventHandler( QObject.closeEvent, \handleCloseEvent, true );
+    this.registerEventHandler( QObject.closeEvent, \onCloseEvent, true );
+    this.registerEventHandler( QObject.windowActivateEvent,
+                               \onWindowActivateEvent );
+    this.registerEventHandler( QObject.windowDeactivateEvent,
+                               \onWindowDeactivateEvent );
 
     handleKeyDown = handleKeyUp = this.overrides( \keyModifiersChanged );
     if( handleKeyDown.not )
@@ -358,17 +363,20 @@ QView : QObject {
     children.remove(child);
   }
 
-  prDetachWidget {
-    qObject = nil;
-    //onClose.value(this);
-  }
-
-  handleCloseEvent {
+  onCloseEvent {
     if( userCanClose != false ) {
         if( deleteOnClose != false ) { this.remove; } { ^nil; };
     }{
         ^false;
     };
+  }
+
+  onWindowActivateEvent {
+    toFrontAction.value(this);
+  }
+
+  onWindowDeactivateEvent {
+    endFrontAction.value(this);
   }
 
   overrides { arg symMethod;
