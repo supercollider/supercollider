@@ -1,6 +1,9 @@
 QObject {
   classvar
     < closeEvent = 19,
+    < showEvent = 17,
+    < windowActivateEvent = 24,
+    < windowDeactivateEvent = 25,
     < mouseDownEvent = 2,
     < mouseUpEvent = 3,
     < mouseDblClickEvent = 4,
