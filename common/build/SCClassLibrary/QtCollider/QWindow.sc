@@ -44,6 +44,12 @@ QWindow : QView {
     super.bounds_( aRect );
   }
 
+  bounds {
+    var r = super.bounds;
+    r.top = QWindow.screenBounds.height - r.top - r.height;
+    ^r;
+  }
+
   background_ { arg aColor;
     background = aColor;
     this.setProperty( \background, aColor, true );
