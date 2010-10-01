@@ -3435,17 +3435,6 @@ int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 				if (err) return err;
 
 				AppendMenu(mMenuH, pstr);
-/*
-				char *cstr = new char[256];
-				int err = slotStrVal(slot, cstr, 256);
-				if (err) return err;
-				CFStringRef cfstr;
-				CFStringCreateWithCString(NULL, cstr, kCFStringEncodingMacRoman);
-				AppendMenuItemTextWithCFString(mMenuH, cfstr, 0, 0, NULL);
-				CFRelease(cfstr);
-				delete [] cstr;
-*/
-
             }
 			refresh();
             return errNone;
