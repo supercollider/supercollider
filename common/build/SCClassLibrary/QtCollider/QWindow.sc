@@ -20,7 +20,12 @@ QWindow : QView {
     bounds.top = QWindow.screenBounds.height - bounds.top - bounds.height;
 
     //NOTE we omit server, which is only for compatibility with SwingOSC
-    ^super.newCustom( [name, bounds.asRect, resizable, border, scroll] );
+    ^super.newCustom( [name, bounds.asRect, resizable, border, scroll] )
+          .initQWindow(name);
+  }
+
+  initQWindow { arg argName;
+    name = argName;
   }
 
   *screenBounds {
