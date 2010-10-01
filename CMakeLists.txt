@@ -18,7 +18,7 @@ option(SSE "Compile with support for SSE instructions.")
 # option(SSE2 "Compile with support for SSE2 instructions.")
 option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
-option(MEMORY_DEBUGGING "Build for memory debugging (disable thread pools).")
+option(MEMORY_DEBUGGING "Build for memory debugging (disable memory pools).")
 
 option(NOVA_SIMD "Build with nova-simd support." ON)
 
