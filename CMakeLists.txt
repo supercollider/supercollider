@@ -20,14 +20,7 @@ if(APPLE)
 	PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
 
 	exec_program(${CMAKE_C_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
-	string (REGEX MATCH " [34]\\.[0-9]\\.[0-9]" _gcc_version "${_gcc_version_info}")
-
-	# gcc on mac just reports: "gcc (GCC) 3.3 20030304 ..." without the patch level, handle this here:
-	if (NOT _gcc_version)
-	string (REGEX REPLACE ".*\\(GCC\\).* ([34]\\.[0-9]) .*" "\\1.0" _gcc_version "${_gcc_version_info}")
-	endif (NOT _gcc_version)
-
-	if (${_gcc_version} LESS 4.3.0)
+	if ("${_gcc_version_info}" MATCHES "Apple")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpascal-strings")
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpascal-strings")
 	endif()
