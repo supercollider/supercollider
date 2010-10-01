@@ -751,17 +751,6 @@ serverEnv.Append(
                '#Headers/server'],
     CPPDEFINES = [('SC_PLUGIN_DIR', '\\"' + pkg_lib_dir(FINAL_PREFIX, 'plugins') + '\\"'), ('SC_PLUGIN_EXT', '\\"' + PLUGIN_EXT + '\\"')],
     LIBPATH = 'build')
-libscsynthEnv = serverEnv.Clone(
-    PKGCONFIG_NAME = 'libscsynth',
-    PKGCONFIG_DESC = 'SuperCollider synthesis server library',
-    PKGCONFIG_PREFIX = FINAL_PREFIX,
-    PKGCONFIG_REQUIRES = make_pkgconfig_requires(libraries['sndfile'],
-                                                 libraries['audioapi'],
-                                                 libraries['rendezvous']),
-    PKGCONFIG_LIBS = ['-lscsynth'],
-#     PKGCONFIG_LIBS_PRIVATE = ['-lm', '-lpthread', '-ldl'],
-    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server']
-    )
 
 # platform specific
 
@@ -797,6 +786,21 @@ if env['CURL']:
     serverEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
     merge_lib_info(serverEnv, libraries['libcurl'])
 
+libscsynthEnv = serverEnv.Clone(
+    PKGCONFIG_NAME = 'libscsynth',
+    PKGCONFIG_DESC = 'SuperCollider synthesis server library',
+    PKGCONFIG_PREFIX = FINAL_PREFIX,
+    PKGCONFIG_REQUIRES = make_pkgconfig_requires(libraries['sndfile'],
+                                                 libraries['audioapi'],
+                                                 libraries['rendezvous']),
+    PKGCONFIG_LIBS = ['-lscsynth'],
+#     PKGCONFIG_LIBS_PRIVATE = ['-lm', '-lpthread', '-ldl'],
+    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server']
+    )
+if PLATFORM == 'linux':
+    libscsynthEnv.Append(
+        LINKFLAGS = ['-Wl,-soname,libscsynth.so'])
+
 libscsynthSources = Split('''
 Source/server/Rendezvous.cpp
 Source/server/Samp.cpp
@@ -824,7 +828,7 @@ Source/server/SC_World.cpp
 
 scsynthSources = ['Source/server/scsynth_main.cpp']
 
-libscsynth = serverEnv.SharedLibrary('build/scsynth', libscsynthSources)
+libscsynth = libscsynthEnv.SharedLibrary('build/scsynth', libscsynthSources)
 env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
 
 libscsynthStaticSources = libscsynthSources + make_static_objects(serverEnv, commonSources, "_libscsynthStatic");
@@ -1140,7 +1144,7 @@ if PLATFORM == 'darwin':
 sclangSources = ['Source/lang/LangSource/cmdLineFuncs.cpp']
 
 if env['LANG']:
-    libsclang = langEnv.SharedLibrary('build/sclang', libsclangSources)
+    libsclang = libsclangEnv.SharedLibrary('build/sclang', libsclangSources)
     env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
     if PLATFORM == 'darwin':
         sclangLibs = ['scsynth', 'sclang']
