@@ -200,6 +200,17 @@ int QPen_AddRect (struct VMGlobals *g, int)
   return errNone;
 }
 
+int QPen_AddRoundedRect (struct VMGlobals *g, int)
+{
+	PyrSlot *args = g->sp - 2;
+	QRectF r = Slot::toRect( args+0 );
+	float radiusX, radiusY;
+	if( slotFloatVal( args+1, &radiusX ) ) return errWrongType;
+	if( slotFloatVal( args+2, &radiusY ) ) return errWrongType;
+	QtCollider::currentPen->addRoundedRect( r, radiusX, radiusY );
+	return errNone;
+}
+
 int QPen_AddEllipse (struct VMGlobals *g, int)
 {
   QRectF r = Slot::toRect( g->sp );
@@ -324,6 +335,8 @@ void initQtPenPrimitives()
                   QPen_QuadTo, 3, 0);
   definePrimitive(base, index++, "_QPen_AddRect",
                   QPen_AddRect, 2, 0);
+  definePrimitive(base, index++, "_QPen_AddRoundedRect",
+					QPen_AddRoundedRect, 4, 0);	
   definePrimitive(base, index++, "_QPen_AddEllipse",
                   QPen_AddEllipse, 2, 0);
   definePrimitive(base, index++, "_QPen_AddWedge",

@@ -234,6 +234,17 @@ int QPen_AddRect (struct VMGlobals *g, int)
   return errNone;
 }
 
+int QPen_AddRoundedRect (struct VMGlobals *g, int)
+{
+	PyrSlot *args = g->sp - 2;
+	QRectF r = Slot::toRect( args+0 );
+	float radiusX, radiusY;
+	if( slotFloatVal( args+1, &radiusX ) ) return errWrongType;
+	if( slotFloatVal( args+2, &radiusY ) ) return errWrongType;
+	path.addRoundedRect( r, radiusX, radiusY );
+	return errNone;
+}
+
 int QPen_AddEllipse (struct VMGlobals *g, int)
 {
   QRectF r = Slot::toRect( g->sp );

@@ -168,6 +168,11 @@ QPen {
     _QPen_AddRect
     ^this.primitiveFailed;
   }
+  
+  *addRoundedRect { arg aRect, radiusX, radiusY;
+    _QPen_AddRoundedRect
+    ^this.primitiveFailed;
+  }  
 
   *addOval { arg rect;
     _QPen_AddEllipse
