@@ -141,6 +141,9 @@ class Pen
     inline void addRect( const QRectF &r ) {
       path.addRect( r );
     }
+	inline void addRoundedRect( const QRectF &r, float radiusX, float radiusY ) {
+		path.addRoundedRect(r, radiusX, radiusY);
+	};
     inline void addEllipse( const QRectF &r ) {
       path.addEllipse( r );
     }
