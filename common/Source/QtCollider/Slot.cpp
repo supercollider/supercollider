@@ -253,7 +253,9 @@ VariantList Slot::toVariantList( PyrSlot *slot )
 QObjectProxy* Slot::toObjectProxy( PyrSlot *slot )
 {
   if( !isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) return 0;
-  QObjectProxy *proxy = (QObjectProxy*) slotRawPtr( slotRawObject( slot )->slots );
+  QObjectProxy *proxy = 0;
+  PyrSlot *slots = slotRawObject( slot )->slots;
+  if( IsPtr( slots ) ) proxy = (QObjectProxy*) slotRawPtr( slots );
   return proxy;
 }
 
