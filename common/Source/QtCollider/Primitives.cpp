@@ -26,6 +26,7 @@
 #include "QtService.h"
 #include "Common.h"
 #include "QObjectProxy.h"
+#include "Slot.h"
 
 #include <PyrPrimitive.h>
 #include <PyrObject.h>
