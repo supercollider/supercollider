@@ -18,6 +18,10 @@ QObject {
     ^super.new.prInitQObject( className, argumentArray );
   }
 
+  isValid {
+    ^qObject.notNil;
+  }
+
   getProperty{ arg property, preAllocatedReturn;
     _QObject_GetProperty
     ^this.primitiveFailed
