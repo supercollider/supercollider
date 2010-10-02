@@ -148,9 +148,6 @@ struct ScMethodCallEvent : public QEvent
 };
 
 namespace QtCollider {
-  void execute( PyrObject *obj, PyrSymbol *method,
-                const QList<QVariant> & args = QList<QVariant>(),
-                PyrSlot *result = 0, bool locked = false );
 
   void lockLang();
 
@@ -159,6 +156,7 @@ namespace QtCollider {
     pthread_mutex_unlock(&gLangMutex);
     //printf("UNLOCKED\n");
   }
+
 }
 
 #endif //_SC_QT_COMMON_H
