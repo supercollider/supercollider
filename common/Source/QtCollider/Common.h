@@ -26,9 +26,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-//#define QSC_DEBUG
-
-#ifdef QSC_DEBUG
+#ifdef QC_DEBUG
   #define qscDebugMsg( ... ) printf( "Qt: " __VA_ARGS__)
 #else
   #define qscDebugMsg( ... )

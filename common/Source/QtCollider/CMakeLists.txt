@@ -54,6 +54,10 @@ include_directories(
   "${SC_HEADERS_DIR}/plugin_interface"
 )
 
+if( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
+  add_definitions( -DQC_DEBUG )
+endif( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
+
 find_package(Sndfile)
 
 if(SNDFILE_FOUND)
