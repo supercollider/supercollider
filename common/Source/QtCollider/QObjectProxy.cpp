@@ -164,6 +164,39 @@ void QObjectProxy::objectDestroyed()
   qObject = 0;
 }
 
+void QObjectProxy::invokeScMethod
+( PyrSymbol *method, const QList<QVariant> & args, PyrSlot *result,
+  bool locked )
+{
+  qscDebugMsg("+++ QObjectProxy::invokeScMethod\n");
+
+  if( !locked ) {
+    QtCollider::lockLang();
+  }
+
+  if( scObject ) {
+    VMGlobals *g = gMainVMGlobals;
+    g->canCallOS = true;
+    ++g->sp;  SetObject(g->sp, scObject);
+    Q_FOREACH( QVariant var, args ) {
+      ++g->sp;
+      if( Slot::setVariant( g->sp, var ) )
+        SetNil( g->sp );
+    }
+    runInterpreter(g, method, args.size() + 1);
+    g->canCallOS = false;
+    if (result) slotCopy(result, &g->result);
+  }
+  else {
+    SetNil( result );
+    qscDebugMsg("QObjectProxy::invokeScMethod: no SC object\n");
+  }
+
+  if( !locked ) QtCollider::unlockLang();
+
+  qscDebugMsg("--- QObjectProxy::invokeScMethod\n");
+}
+
 void QObjectProxy::syncRequest( int type, const QVariant& data, QVariant *ret )
 {
   CustomEvent *event = new CustomEvent( type, data, ret );
@@ -258,7 +291,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
       if( eh.direct ) {
         qscDebugMsg("direct!\n");
         PyrSlot result;
-        QtCollider::execute( scObject, symMethod, args, &result );
+        invokeScMethod( symMethod, args, &result );
         if( IsNil( &result ) ) return false;
         else {
           if( IsFalse( &result ) ) event->ignore();
@@ -278,7 +311,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 
 void QObjectProxy::scMethodCallEvent( ScMethodCallEvent *e )
 {
-  QtCollider::execute( scObject, e->method, e->args, 0, e->locked );
+  invokeScMethod( e->method, e->args, 0, e->locked );
 }
 
 #include <QMouseEvent>

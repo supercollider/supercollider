@@ -85,6 +85,9 @@ class QObjectProxy : public QObject
     void objectDestroyed();
 
   private:
+    void invokeScMethod
+      ( PyrSymbol *method, const QList<QVariant> & args = QList<QVariant>(),
+        PyrSlot *result = 0, bool locked = false );
 
     void syncRequest( int type, const QVariant& data = QVariant(),
                       QVariant *ret = 0 );
