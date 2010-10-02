@@ -23,10 +23,12 @@
 #include <QWidget>
 
 #include <PyrKernel.h>
+#include <VMGlobals.h>
 
 #include "QObjectProxy.h"
 #include "QtService.h"
 #include "Common.h"
+#include "Slot.h"
 
 void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
 void interpretKeyEvent( QEvent *e, QList<QVariant> &args );

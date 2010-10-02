@@ -29,8 +29,8 @@
 #include <QEvent>
 
 #include <PyrObject.h>
-
-#include "Slot.h"
+#include <PyrSlot.h>
+#include <PyrSymbol.h>
 
 struct VariantList;
 struct ScMethodCallEvent;

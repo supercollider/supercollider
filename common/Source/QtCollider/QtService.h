@@ -22,7 +22,6 @@
 #ifndef _QT_BRIDGE_H
 #define _QT_BRIDGE_H
 
-#include "Slot.h"
 #include "ScQt.h"
 #include "Common.h"
 
@@ -32,6 +31,8 @@
 #include <cstdio>
 
 #include <PyrObject.h>
+
+class QObjectProxy;
 
 ///////////////////////////// Events ///////////////////////////////////////////
 
