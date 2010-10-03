@@ -24,7 +24,7 @@
 
 void QtService_Start( );
 
-void QtService_MainLoop( );
+void QtService_MainLoop( int, char ** );
 
 #endif
 
