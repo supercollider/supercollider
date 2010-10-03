@@ -179,13 +179,13 @@ void abstract_group::remove_child(server_node * node)
 
 void abstract_group::set(const char * slot_str, float val)
 {
-    size_t hashed_str = hash_slot_string(slot_str);
+    size_t hashed_str = string_hash(slot_str);
     set(slot_str, hashed_str, val);
 }
 
 void abstract_group::set(const char * slot_str, size_t count, float * val)
 {
-    size_t hashed_str = hash_slot_string(slot_str);
+    size_t hashed_str = string_hash(slot_str);
     set(slot_str, hashed_str, count, val);
 }
 

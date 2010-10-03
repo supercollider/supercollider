@@ -84,12 +84,12 @@ public:
     /* @{ */
     void set(const char * slot_str, sample val)
     {
-        set(slot_str, hash_slot_string(slot_str), val);
+        set(slot_str, string_hash(slot_str), val);
     }
 
     void set(const char * slot_str, size_t count, sample * val)
     {
-        set(slot_str, hash_slot_string(slot_str), count, val);
+        set(slot_str, string_hash(slot_str), count, val);
     }
 
     void set(const char * slot_str, size_t hashed_str, sample val)

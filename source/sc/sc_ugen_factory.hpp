@@ -55,15 +55,7 @@ public:
 
     static std::size_t hash(std::string const & value)
     {
-        std::size_t ret = 0;
-        const char * str = value.c_str();
-
-        // sdbm hash ... later try another function!
-        int c;
-        while (c = *str++)
-            ret = c + (ret << 6) + (ret << 16) - ret;
-
-        return ret;
+        return string_hash(value.c_str());
     }
 
     friend std::size_t hash_value(sc_ugen_def const & that)

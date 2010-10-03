@@ -34,17 +34,6 @@ namespace nova
 typedef boost::int16_t slot_index_t;
 typedef std::string slot_identifier_type;
 
-inline std::size_t hash_slot_string(const char * str)
-{
-    std::size_t ret = 0;
-
-    // sdbm hash ... later try another function!
-    int c;
-    while (c = *str++)
-        ret = c + (ret << 6) + (ret << 16) - ret;
-
-    return ret;
-}
 
 namespace detail
 {
@@ -62,7 +51,7 @@ protected:
 
         friend std::size_t hash_value(map_type const & map)
         {
-            return hash_slot_string(map.name.c_str());
+            return string_hash(map.name.c_str());
         }
 
         bool operator==(map_type const & rhs) const
@@ -99,7 +88,7 @@ private:
     {
         std::size_t operator()(const char * str)
         {
-            return hash_slot_string(str);
+            return string_hash(str);
         }
     };
 
@@ -149,7 +138,7 @@ public:
      */
     slot_index_t resolve_slot(const char * str) const
     {
-        return resolve_slot(str, hash_slot_string(str));
+        return resolve_slot(str, string_hash(str));
     }
 
     slot_index_t resolve_slot(const char * str, std::size_t hashed_value) const
@@ -203,14 +192,7 @@ public:
 
     static size_t hash(const char * str)
     {
-        std::size_t ret = 0;
-
-        // sdbm hash ... later try another function!
-        int c;
-        while (c = *str++)
-            ret = c + (ret << 6) + (ret << 16) - ret;
-
-        return ret;
+        return string_hash(str);
     }
 
     virtual ~synth_prototype(void)

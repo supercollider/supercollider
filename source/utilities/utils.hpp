@@ -193,6 +193,19 @@ struct compare_by_instance
 };
 
 
+inline std::size_t string_hash(const char * str)
+{
+    std::size_t ret = 0;
+
+    // sdbm hash ... later try another function!
+    int c;
+    while ((c = *str++))
+        ret = c + (ret << 6) + (ret << 16) - ret;
+
+    return ret;
+}
+
+
 } /* namespace nova */
 
 #endif /* UTILITIES_UTILS_HPP */
