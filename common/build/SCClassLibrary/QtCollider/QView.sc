@@ -13,7 +13,7 @@ QView : QObject {
   var <>userCanClose=true, <name, <>deleteOnClose = true;
   // actions
   var <>action;
-  var <>toFrontAction, <>endFrontAction;
+  var <toFrontAction, <endFrontAction;
   var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseMoveAction;
   var <keyDownAction, <keyUpAction, <keyModifiersChangedAction;
   var <>keyTyped;
@@ -259,6 +259,18 @@ QView : QObject {
     this.registerEventHandler( QObject.mouseOverEvent, \mouseOver );
   }
 
+  toFrontAction_ { arg aFunction;
+    toFrontAction = aFunction;
+    this.registerEventHandler( QObject.windowActivateEvent,
+                               \onWindowActivateEvent );
+  }
+
+  endFrontAction_ { arg aFunction;
+    endFrontAction = aFunction;
+    this.registerEventHandler( QObject.windowDeactivateEvent,
+                               \onWindowDeactivateEvent );
+  }
+
   doAction {
     action.value(this);
   }
@@ -334,10 +346,6 @@ QView : QObject {
     palette = QPalette.new;
 
     this.registerEventHandler( QObject.closeEvent, \onCloseEvent, true );
-    this.registerEventHandler( QObject.windowActivateEvent,
-                               \onWindowActivateEvent );
-    this.registerEventHandler( QObject.windowDeactivateEvent,
-                               \onWindowDeactivateEvent );
 
     handleKeyDown = handleKeyUp = this.overrides( \keyModifiersChanged );
     if( handleKeyDown.not )
