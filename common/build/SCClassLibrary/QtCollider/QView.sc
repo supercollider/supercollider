@@ -39,8 +39,8 @@ QView : QObject {
   }
 
   *new { arg parent, bounds;
-    if( parent.notNil && parent.isValid.not ) {
-      ^nil;
+    if( parent.notNil ) {
+      if( parent.isValid.not ) {^nil;}
     }
     ^super.new( this.viewClass.asString, [parent, bounds.asRect] )
       .prInitQView( parent );
