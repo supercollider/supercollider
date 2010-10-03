@@ -19,20 +19,18 @@
 *
 ************************************************************************/
 
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QMouseEvent>
-
-#include <cstdio>
-#include <pthread.h>
-#include <PyrKernel.h>
-#include <VMGlobals.h>
-
-
 #include "QtService.h"
 #include "QObjectProxy.h"
 #include "Common.h"
 #include "QcObjectFactory.h"
+
+#include <PyrKernel.h>
+#include <VMGlobals.h>
+#include <SC_TerminalClient.h>
+
+#include <QApplication>
+#include <QDesktopWidget>
+#include <QMouseEvent>
 
 ///////////////////// QtService startup ///////////////////////////////////////
 
@@ -41,6 +39,7 @@ pthread_t qt_thread;
 static QtService *qtServiceInstance = 0;
 QMutex qtServiceMutex;
 
+// Actually just creates a QApplication and a QtService
 void QtService_Start( )
 {
   qtServiceMutex.lock();
@@ -65,10 +64,24 @@ void QtService_Start( )
   qtServiceMutex.unlock();
 }
 
-void QtService_MainLoop()
+void QtService_MainLoop( int argc, char **argv )
 {
+  // create language thread
+  QcLangThread langThread( argc, argv );
+
+  // create QApplication
   QtService_Start();
+
+  // quit QApplication when language thread finishes
+  QObject::connect( &langThread, SIGNAL(finished()),
+                    QApplication::instance(), SLOT(quit()) );
+
+  // start them both
+  langThread.start();
   QApplication::instance()->exec();
+
+  // after QApplication quits, thread should have terminated, or we wait for it
+  langThread.wait();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -193,4 +206,17 @@ void QtService::handleCreation( CreationEvent *e )
   }
 
   *e->_ret = (*createFn)( e->_data.scObject, e->_data.arguments );
+}
+
+
+QcLangThread::QcLangThread( int c, char *v[] )
+{
+  argc = c;
+  argv = v;
+}
+
+void QcLangThread::run()
+{
+  SC_TerminalClient app("sclang");
+  app.run( argc, argv );
 }

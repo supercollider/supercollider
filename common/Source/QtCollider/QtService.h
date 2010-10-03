@@ -32,6 +32,8 @@
 
 #include <PyrObject.h>
 
+#include <QThread>
+
 class QObjectProxy;
 
 ///////////////////////////// Events ///////////////////////////////////////////
@@ -79,6 +81,16 @@ class QtService : public QObject
 
     QMutex prMutex;
     friend void QtService_Start();
+};
+
+class QcLangThread : public QThread
+{
+  public:
+    QcLangThread( int argc, char **argv );
+  private:
+    void run();
+    int argc;
+    char **argv;
 };
 
 #endif //_QT_BRIDGE_H
