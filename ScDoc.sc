@@ -102,10 +102,13 @@ ScDocParser {
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
                 
-                'emphasis::',           rangeTag,
-                'link::',               rangeTag,
-                '::emphasis',           closingTag,
-                '::link',               closingTag,
+                'emphasis>>',           rangeTag,
+                'link>>',               rangeTag,
+                '<<',                   closingTag,
+
+                '\\<<', {
+                    this.addText("<<");
+                },
 
                 'code::', {
                     singleline = false;

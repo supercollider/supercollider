@@ -26,6 +26,8 @@ But this could be hard for the renderer to handle.. since we then need to take i
 from and what element we are going to: don't put a <p> for a prose element that comes after an emphasis element that came inside a prose element. But, if we already know that an element is an inline-element, the renderer knows to "stay" in the current element type. This could of course also be done with the current tag:: ... ::tag syntax, by marking the element with an inline:true field
 or something like that..
 
+- for code::, make sure everything is passed through as is, including whitespace. is this currently the case?
+
 - split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
 
 - Missing tags

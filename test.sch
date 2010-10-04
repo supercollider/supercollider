@@ -22,7 +22,7 @@ CLASSMETHOD:: foo
 This is a nonsense method.
 
 SECTION:: This is a named section
-With some emphasis:: normal ::emphasis prose,
+With some emphasis>> normal << prose,
 on multiple lines..
 
 SUBSECTION:: And a subsection
