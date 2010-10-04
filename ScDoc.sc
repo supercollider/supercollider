@@ -101,7 +101,6 @@ ScDocParser {
     }
     
     init {
-        "ScDocParser init".postln;
         root = tree = List.new;
         stack = List.new;
         stack.add(tree);
@@ -140,7 +139,7 @@ ScDocParser {
         this.dumpSubTree(root);
         ^nil;
     }
-    
+
     renderHTML {|filename|
 
     }
