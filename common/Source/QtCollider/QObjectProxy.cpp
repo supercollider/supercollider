@@ -199,30 +199,33 @@ void QObjectProxy::invokeScMethod
 
 void QObjectProxy::syncRequest( int type, const QVariant& data, QVariant *ret )
 {
-  CustomEvent *event = new CustomEvent( type, data, ret );
+  QcGenericEvent *event = new QcGenericEvent( type, data, ret );
   QcApplication::postSyncEvent( event, this );
 }
 
 void QObjectProxy::asyncRequest( int type, const QVariant& data, QVariant *ret )
 {
-  QApplication::postEvent( this, new CustomEvent( type, data, ret ) );
+  QApplication::postEvent( this, new QcGenericEvent( type, data, ret ) );
 }
 
 
 void QObjectProxy::customEvent( QEvent *event )
 {
-  if( event->type() == (QEvent::Type) ScMethodCallType ) {
+  if( event->type() == (QEvent::Type) QtCollider::Event_ScMethodCall ) {
     scMethodCallEvent( static_cast<ScMethodCallEvent*>( event ) );
     return;
   }
 
-  if( event->type() != (QEvent::Type) CustomType ) return;
+  if( event->type() != (QEvent::Type) QtCollider::Event_Sync ) return;
 
-  CustomEvent *e = ( CustomEvent * ) event;
+  QcSyncEvent *se = static_cast<QcSyncEvent*>( event );
+  if( se->syncEventType() != QcSyncEvent::Generic ) return;
+
+  QcGenericEvent *e = static_cast<QcGenericEvent*>( se );
   PropertyData p;
   EventHandlerData eh;
 
-  switch ( e->_type ) {
+  switch ( e->genericEventType() ) {
     case SetProperty:
       p = e->_data.value<PropertyData>();
       doSetProperty( p.name, p.value );
@@ -266,7 +269,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 {
   int type = event->type();
 
-  if( type == ScMethodCallType ) {
+  if( type == QtCollider::Event_ScMethodCall ) {
     ScMethodCallEvent* mce = static_cast<ScMethodCallEvent*>( event );
     qscDebugMsg("executing SC method: %s\n", mce->method->name );
     scMethodCallEvent( mce );

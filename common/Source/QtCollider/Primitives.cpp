@@ -69,10 +69,10 @@ struct CreationData {
   QVariant arguments;
 };
 
-struct CreationEvent : public QtServiceEvent
+struct CreationEvent : public QcSyncEvent
 {
   CreationEvent( const CreationData& data, QObjectProxy** ret )
-  : QtServiceEvent( CreationType ),
+  : QcSyncEvent( QcSyncEvent::CreateQObject ),
     _data ( data ),
     _ret ( ret )
   {}
@@ -80,7 +80,7 @@ struct CreationEvent : public QtServiceEvent
   QObjectProxy **_ret;
 };
 
-void qcCreateQObject( QtServiceEvent *e )
+void qcCreateQObject( QcSyncEvent *e )
 {
   CreationEvent *ce = static_cast<CreationEvent*>(e);
 
@@ -125,9 +125,9 @@ int QObject_New (struct VMGlobals *g, int)
   return errNone;
 }
 
-void qcDestroyQObject( QtServiceEvent *e )
+void qcDestroyQObject( QcSyncEvent *e )
 {
-  CustomEvent *ce = static_cast<CustomEvent*>(e);
+  QcGenericEvent *ce = static_cast<QcGenericEvent*>(e);
   delete ( ce->_data.value<QObjectProxy*>() );
 }
 
@@ -147,7 +147,7 @@ int QObject_Destroy (struct VMGlobals *g, int)
 
   QVariant data = QVariant::fromValue<QObjectProxy*>( proxy );
 
-  CustomEvent *event = new CustomEvent( 0, data );
+  QcGenericEvent *event = new QcGenericEvent( 0, data );
   QcApplication::postSyncEvent( event, &qcDestroyQObject );
 
   return errNone;
@@ -161,7 +161,7 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 
   QVariant data = QVariant::fromValue<QObjectProxy*>( proxy );
 
-  CustomEvent *event = new CustomEvent( 0, data );
+  QcGenericEvent *event = new QcGenericEvent( 0, data );
   QcApplication::postSyncEvent( event, &qcDestroyQObject );
 
   return errNone;
@@ -237,9 +237,9 @@ int QObject_InvokeMethod (struct VMGlobals *g, int)
   return errNone;
 }
 
-void qcScreenBounds( QtServiceEvent *e )
+void qcScreenBounds( QcSyncEvent *e )
 {
-  CustomEvent *ce = static_cast<CustomEvent*>(e);
+  QcGenericEvent *ce = static_cast<QcGenericEvent*>(e);
   *ce->_return = QVariant( QApplication::desktop()->screenGeometry() );
 }
 
@@ -249,7 +249,7 @@ int QWindow_ScreenBounds (struct VMGlobals *g, int)
 
   QVariant var;
 
-  CustomEvent *e = new CustomEvent(0, QVariant(), &var);
+  QcGenericEvent *e = new QcGenericEvent(0, QVariant(), &var);
   QcApplication::postSyncEvent( e, &qcScreenBounds );
 
   QRect r = var.value<QRect>();
