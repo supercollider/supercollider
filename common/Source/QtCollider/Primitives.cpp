@@ -21,9 +21,8 @@
 
 #include <cstdio>
 
-#include <QFontMetrics>
-
-#include "QtService.h"
+#include "QcApplication.h"
+#include "QcObjectFactory.h"
 #include "Common.h"
 #include "QObjectProxy.h"
 #include "Slot.h"
@@ -32,6 +31,9 @@
 #include <PyrObject.h>
 #include <PyrKernel.h>
 #include <VMGlobals.h>
+
+#include <QFontMetrics>
+#include <QDesktopWidget>
 
 extern pthread_mutex_t gLangMutex;
 
@@ -46,11 +48,52 @@ PyrSymbol *s_font, *sym_string, *s_states;
 
 int QtGui_Start(struct VMGlobals *, int)
 {
-  QtService_Start();
+  // FIXME is QApplication::instance() thread-safe??
+  if( !QApplication::instance() ) {
+    #ifdef Q_OS_MAC
+      QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
+    #endif
+    int qcArgc = 0;
+    char **qcArgv = 0;
+    QcApplication *qcApp = new QcApplication( qcArgc, qcArgv  );
+    qcApp->setQuitOnLastWindowClosed( false );
+  }
   return errNone;
 }
 
 int QObject_Finalize( struct VMGlobals *, struct PyrObject * );
+
+struct CreationData {
+  QString scClassName;
+  PyrObject * scObject;
+  QVariant arguments;
+};
+
+struct CreationEvent : public QtServiceEvent
+{
+  CreationEvent( const CreationData& data, QObjectProxy** ret )
+  : QtServiceEvent( CreationType ),
+    _data ( data ),
+    _ret ( ret )
+  {}
+  const CreationData & _data;
+  QObjectProxy **_ret;
+};
+
+void qcCreateQObject( QtServiceEvent *e )
+{
+  CreationEvent *ce = static_cast<CreationEvent*>(e);
+
+  CreateFn createFn = factoryFunction( ce->_data.scClassName );
+
+  if( !createFn ) {
+    qscErrorMsg( "QObject Factory for %s not found!\n",
+                  ce->_data.scClassName.toStdString().c_str() );
+    return;
+  }
+
+  *ce->_ret = (*createFn)( ce->_data.scObject, ce->_data.arguments );
+}
 
 int QObject_New (struct VMGlobals *g, int)
 {
@@ -58,10 +101,9 @@ int QObject_New (struct VMGlobals *g, int)
 
   if( !isKindOfSlot( args, s_QObject->u.classobj ) ) return errFailed;
 
-  if( !QtService::instance() ) {
-    qscErrorMsg("Qt GUI not running!\n");
-    return errFailed;
-  }
+  QString realClassName =
+    Slot::toString( &slotRawObject( args )->classptr->name );
+  qscDebugMsg( "CREATE: %s\n", realClassName.toStdString().c_str() );
 
   CreationData data;
 
@@ -69,7 +111,11 @@ int QObject_New (struct VMGlobals *g, int)
   data.scClassName = Slot::toString( args+1 );
   data.arguments = Slot::toVariant( args+2 );
 
-  QObjectProxy *proxy = QtService::instance()->create( data );
+  QObjectProxy *proxy = 0;
+
+  CreationEvent *event = new CreationEvent( data, &proxy );
+  QcApplication::postSyncEvent( event, &qcCreateQObject );
+
   if( !proxy ) return errFailed;
 
   SetPtr( slotRawObject(args)->slots, proxy );
@@ -79,12 +125,31 @@ int QObject_New (struct VMGlobals *g, int)
   return errNone;
 }
 
+void qcDestroyQObject( QtServiceEvent *e )
+{
+  CustomEvent *ce = static_cast<CustomEvent*>(e);
+  delete ( ce->_data.value<QObjectProxy*>() );
+}
+
 int QObject_Destroy (struct VMGlobals *g, int)
 {
+  /* NOTE we post a synchronous event (waiting for object to be deleted),
+  because the SC object pointer should not be accessed after this call */
+
   if( !isKindOfSlot( g->sp, s_QObject->u.classobj ) ) return errFailed;
   if( IS_OBJECT_NIL( g->sp ) ) return errFailed;
-  QObjectProxy *object = QOBJECT_FROM_SLOT( g->sp );
-  QtService::instance()->destroy( object );
+
+  QString realClassName =
+    Slot::toString( &slotRawObject( g->sp )->classptr->name );
+  qscDebugMsg( "DESTROY: %s\n", realClassName.toStdString().c_str() );
+
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( g->sp );
+
+  QVariant data = QVariant::fromValue<QObjectProxy*>( proxy );
+
+  CustomEvent *event = new CustomEvent( 0, data );
+  QcApplication::postSyncEvent( event, &qcDestroyQObject );
+
   return errNone;
 }
 
@@ -92,8 +157,13 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 {
   qscDebugMsg("Finalizing a QObject\n");
   if( IsNil( obj->slots ) ) return errNone;
-  QObjectProxy *qObject = (QObjectProxy*) slotRawPtr( obj->slots );
-  QtService::instance()->destroy( qObject );
+  QObjectProxy *proxy = (QObjectProxy*) slotRawPtr( obj->slots );
+
+  QVariant data = QVariant::fromValue<QObjectProxy*>( proxy );
+
+  CustomEvent *event = new CustomEvent( 0, data );
+  QcApplication::postSyncEvent( event, &qcDestroyQObject );
+
   return errNone;
 }
 
@@ -167,16 +237,22 @@ int QObject_InvokeMethod (struct VMGlobals *g, int)
   return errNone;
 }
 
+void qcScreenBounds( QtServiceEvent *e )
+{
+  CustomEvent *ce = static_cast<CustomEvent*>(e);
+  *ce->_return = QVariant( QApplication::desktop()->screenGeometry() );
+}
+
 int QWindow_ScreenBounds (struct VMGlobals *g, int)
 {
-  if( !QtService::instance() ) {
-    qscErrorMsg("Qt GUI not running!\n");
-    return errFailed;
-  }
-
   if( !isKindOfSlot( g->sp, s_rect->u.classobj ) ) return errWrongType;
 
-  QRect r = QtService::instance()->screenBounds();
+  QVariant var;
+
+  CustomEvent *e = new CustomEvent(0, QVariant(), &var);
+  QcApplication::postSyncEvent( e, &qcScreenBounds );
+
+  QRect r = var.value<QRect>();
 
   int err = Slot::setRect( g->sp, r );
   if( err ) return err;

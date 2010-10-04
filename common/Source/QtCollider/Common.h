@@ -83,6 +83,8 @@ enum QcCustomEventType {
 
 struct QtServiceEvent : public QEvent
 {
+  friend class QcApplication;
+
   QtServiceEvent( QtEventType type )
     : QEvent( (QEvent::Type) (type) ),
     _cond( 0 ),
@@ -97,8 +99,9 @@ struct QtServiceEvent : public QEvent
       _mutex->unlock();
     }
   }
+
   private:
-    friend class QtService;
+
     QWaitCondition *_cond;
     QMutex *_mutex;
     EventHandlerFn _handler;

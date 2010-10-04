@@ -19,16 +19,16 @@
 *
 ************************************************************************/
 
+#include "QObjectProxy.h"
+#include "QcApplication.h"
+#include "Common.h"
+#include "Slot.h"
+
 #include <QApplication>
 #include <QWidget>
 
 #include <PyrKernel.h>
 #include <VMGlobals.h>
-
-#include "QObjectProxy.h"
-#include "QtService.h"
-#include "Common.h"
-#include "Slot.h"
 
 void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
 void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
@@ -38,8 +38,6 @@ QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
 {
   qObject->installEventFilter( this );
   connect( qObject, SIGNAL( destroyed() ), this, SLOT( objectDestroyed() ) );
-  // TODO
-  // install finalizer
 }
 
 QObjectProxy::~QObjectProxy()
@@ -202,7 +200,7 @@ void QObjectProxy::invokeScMethod
 void QObjectProxy::syncRequest( int type, const QVariant& data, QVariant *ret )
 {
   CustomEvent *event = new CustomEvent( type, data, ret );
-  QtService::instance()->postSyncEvent( event, this );
+  QcApplication::postSyncEvent( event, this );
 }
 
 void QObjectProxy::asyncRequest( int type, const QVariant& data, QVariant *ret )
