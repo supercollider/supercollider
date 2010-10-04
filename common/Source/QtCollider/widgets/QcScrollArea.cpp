@@ -21,7 +21,6 @@
 
 #include "QcScrollArea.h"
 #include "../Painting.h"
-#include "../QtService.h"
 
 #include <QLayout>
 #include <QScrollBar>

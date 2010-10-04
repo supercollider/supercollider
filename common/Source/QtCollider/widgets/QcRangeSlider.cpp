@@ -20,7 +20,6 @@
 ************************************************************************/
 
 #include "QcRangeSlider.h"
-#include "../QtService.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
