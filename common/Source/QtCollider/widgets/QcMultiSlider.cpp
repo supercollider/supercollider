@@ -20,7 +20,6 @@
 ************************************************************************/
 
 #include "QcMultiSlider.h"
-#include "../QtService.h"
 
 #include <QApplication>
 #include <QMouseEvent>

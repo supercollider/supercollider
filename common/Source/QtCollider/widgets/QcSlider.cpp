@@ -20,7 +20,6 @@
 ************************************************************************/
 
 #include "QcSlider.h"
-#include "../QtService.h"
 
 #include <QApplication>
 

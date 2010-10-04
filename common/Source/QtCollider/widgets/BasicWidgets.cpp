@@ -21,7 +21,6 @@
 
 
 #include "BasicWidgets.h"
-#include "../QtService.h"
 #include "../Common.h"
 
 #include <QApplication>
