@@ -26,11 +26,13 @@ set( QT_COLLIDER_SRCS
   MainLoop.cpp
   Common.cpp
   QObjectProxy.cpp
-  Primitives.cpp
-  PenPrimitives.cpp
   QcPen.cpp
   Slot.cpp
   QcObjectFactory.cpp
+  primitives/primitives.cpp
+  primitives/prim_QObject.cpp
+  primitives/prim_QPen.cpp
+  primitives/prim_misc.cpp
   widgets/QcAbstractLayout.cpp
   widgets/BasicWidgets.cpp
   widgets/QcScrollArea.cpp
