@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "QcObjectFactory.h"
+#include "Common.h"
 
 #include <QMap>
 
@@ -34,7 +35,7 @@ CreateFn factoryFunction( const QString& scClassName )
 
 QcObjectFactory::QcObjectFactory( const QString& scClassName, CreateFn fn )
 {
-  printf("QtCollider: declaring %s\n", scClassName.toStdString().c_str() );
+  qscDebugMsg( "declaring %s\n", scClassName.toStdString().c_str() );
   factories.insert( scClassName, fn );
 }
 
