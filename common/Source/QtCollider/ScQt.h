@@ -22,9 +22,9 @@
 #ifndef _SC_QT_H
 #define _SC_QT_H
 
-void QtService_Start( );
-
-void QtService_MainLoop( int, char ** );
+namespace QtCollider
+{
+  int run( int &, char ** );
+}
 
 #endif
-

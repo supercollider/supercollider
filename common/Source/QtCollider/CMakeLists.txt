@@ -1,5 +1,6 @@
 set( QT_COLLIDER_HDRS
-  QtService.h
+  QcApplication.h
+  MainLoop.h
   QObjectProxy.h
   QWidgetProxy.h
   Slot.h
@@ -21,8 +22,9 @@ set( QT_COLLIDER_HDRS
 )
 
 set( QT_COLLIDER_SRCS
+  QcApplication.cpp
+  MainLoop.cpp
   Common.cpp
-  QtService.cpp
   QObjectProxy.cpp
   Primitives.cpp
   PenPrimitives.cpp

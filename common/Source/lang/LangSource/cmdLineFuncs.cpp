@@ -38,7 +38,7 @@
 int main(int argc, char** argv)
 {
 #ifdef SC_QT
-  QtService_MainLoop( argc, argv );
+  QtCollider::run( argc, argv );
 #else
   SC_TerminalClient app("sclang");
   app.run( argc, argv );
