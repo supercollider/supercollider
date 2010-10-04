@@ -1,6 +1,4 @@
 ScDocParser {
-    var <filename;
-
     var <root;
     var tree;
     var stack;
@@ -8,10 +6,12 @@ ScDocParser {
     var singleline;
     var level;
     
-    *new {|filename|
-        ^super.newCopyArgs(filename).init;
+//    *new {|filename|
+//        ^super.newCopyArgs(filename).init;
+//    }
+    *new {
+        ^super.new.init;
     }
-    
 //    isTag {|word| ^"^(::[a-zA-Z]+|[a-zA-Z]+::)$".matchRegexp(word)}
 //    isOpeningTag {|word| ^"^[a-zA-Z]+::$".matchRegexp(word)}
 //    isClosingTag {|word| ^"^::[a-zA-Z]+$".matchRegexp(word)}
@@ -101,6 +101,7 @@ ScDocParser {
     }
     
     init {
+        "ScDocParser init".postln;
         root = tree = List.new;
         stack = List.new;
         stack.add(tree);
@@ -109,7 +110,7 @@ ScDocParser {
         level = 0;
     }
     
-    parse {
+    parse {|filename|
         var file = File.open(filename,"r");
         var lines = file.readAllString.split($\n);
         lines.do {|line|
@@ -118,7 +119,8 @@ ScDocParser {
                 this.handleWord(word,i);
             };
             this.endLine;
-        }
+        };
+        file.close;
     }
 
     dumpSubTree {|t,i="",lev=1|
@@ -137,6 +139,10 @@ ScDocParser {
     dump {
         this.dumpSubTree(root);
         ^nil;
+    }
+    
+    renderHTML {|filename|
+
     }
 }
 
