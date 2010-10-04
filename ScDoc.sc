@@ -85,6 +85,14 @@ ScDocParser {
             'note::',               simpleTag,
             'warning::',            simpleTag,
             
+            'emphasis::', {
+                singleline = false;
+                this.addTag(tag);
+            },
+            '::emphasis', {
+                this.endCurrent;
+            },
+            
             { //default
                 this.addText(word);
             }
