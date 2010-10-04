@@ -19,47 +19,23 @@
 *
 ************************************************************************/
 
-#include <cstdio>
+#include "PrimitiveDefiner.h"
+#include "../QObjectProxy.h"
+#include "../QcObjectFactory.h"
+#include "../QcApplication.h"
+#include "../Common.h"
+#include "../Slot.h"
 
-#include "QcApplication.h"
-#include "QcObjectFactory.h"
-#include "Common.h"
-#include "QObjectProxy.h"
-#include "Slot.h"
-
-#include <PyrPrimitive.h>
 #include <PyrObject.h>
 #include <PyrKernel.h>
-#include <VMGlobals.h>
 
-#include <QFontMetrics>
-#include <QDesktopWidget>
-
-extern pthread_mutex_t gLangMutex;
+PyrSymbol *s_QObject;
 
 #define IS_OBJECT_NIL( a ) \
   IsNil( slotRawObject(a)->slots )
 
 #define QOBJECT_FROM_SLOT( s ) \
   ((QObjectProxy*) slotRawPtr( slotRawObject( s )->slots ))
-
-PyrSymbol *s_QView, *s_QLayout, *s_QHLayout, *s_QFont, *s_QObject;
-PyrSymbol *s_font, *sym_string, *s_states;
-
-int QtGui_Start(struct VMGlobals *, int)
-{
-  // FIXME is QApplication::instance() thread-safe??
-  if( !QApplication::instance() ) {
-    #ifdef Q_OS_MAC
-      QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
-    #endif
-    int qcArgc = 0;
-    char **qcArgv = 0;
-    QcApplication *qcApp = new QcApplication( qcArgc, qcArgv  );
-    qcApp->setQuitOnLastWindowClosed( false );
-  }
-  return errNone;
-}
 
 int QObject_Finalize( struct VMGlobals *, struct PyrObject * );
 
@@ -237,134 +213,17 @@ int QObject_InvokeMethod (struct VMGlobals *g, int)
   return errNone;
 }
 
-void qcScreenBounds( QcSyncEvent *e )
+void defineQObjectPrimitives()
 {
-  QcGenericEvent *ce = static_cast<QcGenericEvent*>(e);
-  *ce->_return = QVariant( QApplication::desktop()->screenGeometry() );
-}
-
-int QWindow_ScreenBounds (struct VMGlobals *g, int)
-{
-  if( !isKindOfSlot( g->sp, s_rect->u.classobj ) ) return errWrongType;
-
-  QVariant var;
-
-  QcGenericEvent *e = new QcGenericEvent(0, QVariant(), &var);
-  QcApplication::postSyncEvent( e, &qcScreenBounds );
-
-  QRect r = var.value<QRect>();
-
-  int err = Slot::setRect( g->sp, r );
-  if( err ) return err;
-
-  slotCopy( g->sp - 1, g->sp );
-
-  return errNone;
-}
-
-int Qt_StringBounds (struct VMGlobals *g, int)
-{
-  PyrSlot *args = g->sp - 3;
-
-  QString str = Slot::toString( args+1 );
-
-  QFont f = Slot::toFont( args+2 );
-
-  QFontMetrics fm( f );
-  QRect bounds = fm.boundingRect( str );
-
-  Slot::setRect( args+3, bounds );
-  slotCopy( args, args+3 );
-
-  return errNone;
-}
-
-int Crash_Test(struct VMGlobals *, int) {
-  printf("Crash!\n");
-  char *c = 0;
-  c[100] = 'a';
-  return errNone;
-}
-
-int Test_Sleep(struct VMGlobals *, int)
-{
-  sleep(1);
-  return errNone;
-}
-
-int Test_Finalize( struct VMGlobals*, struct PyrObject* )
-{
-  printf("finalize!!\n");
-  return errNone;
-}
-
-int Test_Install_Finalizer(struct VMGlobals *g, int)
-{
-  printf("installing finalizer\n");
-  InstallFinalizer(g, slotRawObject(g->sp), 0, Test_Finalize);
-  return errNone;
-}
-
-int Test_Lang_Lock(struct VMGlobals *, int)
-{
-  printf("locking\n");
-  pthread_mutex_lock (&gLangMutex);
-  printf("locked\n");
-  pthread_mutex_unlock (&gLangMutex);
-  printf("unlocked\n");
-  return errNone;
-}
-
-void initQtPenPrimitives();
-
-void initQtGUIPrimitives () {
-  qscDebugMsg("initializing QtGUI primitives\n");
-
-  int base, index;
-
-  base = nextPrimitiveIndex();
-
-  index = 0;
-
-  definePrimitive(base, index++, "_QtGUI_Start",
-                  QtGui_Start, 1, 0);
-
-  definePrimitive(base, index++, "_QObject_New",
-                  QObject_New, 3, 0);
-  definePrimitive(base, index++, "_QObject_Destroy",
-                  QObject_Destroy, 1, 0);
-  definePrimitive(base, index++, "_QObject_SetProperty",
-                  QObject_SetProperty, 4, 0);
-  definePrimitive(base, index++, "_QObject_GetProperty",
-                  QObject_GetProperty, 3, 0);
-  definePrimitive(base, index++, "_QObject_SetEventHandler",
-                  QObject_SetEventHandler, 4, 0);
-  definePrimitive(base, index++, "_QObject_InvokeMethod",
-                  QObject_InvokeMethod, 3, 0);
-
-  definePrimitive(base, index++, "_QWindow_ScreenBounds",
-                  QWindow_ScreenBounds, 2, 0);
-  definePrimitive(base, index++, "_Qt_StringBounds",
-                  Qt_StringBounds, 4, 0);
-
-  definePrimitive(base, index++, "_Crash_Test",
-                  Crash_Test, 1, 0);
-  definePrimitive(base, index++, "_Test_Sleep",
-                  Test_Sleep, 1, 0);
-  definePrimitive(base, index++, "_Test_Install_Finalizer",
-                  Test_Install_Finalizer, 1, 0);
-  definePrimitive(base, index++, "_Test_Lang_Lock",
-                  Test_Lang_Lock, 1, 0);
+  qscDebugMsg( "defining QObject primitives\n" );
 
   s_QObject = getsym("QObject");
-  s_QView = getsym("QView");
-  s_QLayout = getsym("QLayout");
-  s_QHLayout = getsym("QHLayout");
-  s_QFont = getsym("QFont");
-  s_font = getsym("font");
-  sym_string = getsym("string");
-  s_states = getsym("states");
 
-  initQtPenPrimitives();
+  QtCollider::PrimitiveDefiner d;
+  d.define( "_QObject_New", QObject_New, 3, 0 );
+  d.define( "_QObject_Destroy", QObject_Destroy, 1, 0 );
+  d.define( "_QObject_SetProperty",QObject_SetProperty, 4, 0 );
+  d.define( "_QObject_GetProperty", QObject_GetProperty, 3, 0 );
+  d.define( "_QObject_SetEventHandler", QObject_SetEventHandler, 4, 0 );
+  d.define( "_QObject_InvokeMethod", QObject_InvokeMethod, 3, 0);
 }
-

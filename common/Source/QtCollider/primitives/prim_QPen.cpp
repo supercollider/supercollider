@@ -19,11 +19,9 @@
 *
 ************************************************************************/
 
-#include "QcPen.h"
-#include "Slot.h"
-
-#include <PyrPrimitive.h>
-#include <VMGlobals.h>
+#include "PrimitiveDefiner.h"
+#include "../QcPen.h"
+#include "../Slot.h"
 
 namespace QtCollider {
   static Pen *currentPen = 0;
@@ -283,70 +281,39 @@ int QPen_StringInRect (struct VMGlobals *g, int)
   return errNone;
 }
 
-void initQtPenPrimitives()
+void defineQPenPrimitives()
 {
-  qscDebugMsg( "Initializing pen primitives\n" );
-  int base = nextPrimitiveIndex();
-  int index = 0;
+  qscDebugMsg( "defining QPen primitives\n" );
 
-  /*definePrimitive(base, index++, "_QPen_Begin",
-                  QPen_Begin, 2, 0);
-  definePrimitive(base, index++, "_QPen_End",
-                  QPen_End, 1, 0);*/
-  definePrimitive(base, index++, "_QPen_Save",
-                  QPen_Save, 1, 0);
-  definePrimitive(base, index++, "_QPen_Restore",
-                  QPen_Restore, 1, 0);
-  definePrimitive(base, index++, "_QPen_Clear",
-                  QPen_Clear, 1, 0);
+  QtCollider::PrimitiveDefiner d;
 
-  definePrimitive(base, index++, "_QPen_FillColor",
-                  QPen_FillColor, 2, 0);
-  definePrimitive(base, index++, "_QPen_StrokeColor",
-                  QPen_StrokeColor, 2, 0);
-  definePrimitive(base, index++, "_QPen_Width",
-                  QPen_Width, 2, 0);
-  definePrimitive(base, index++, "_QPen_Clip",
-                  QPen_Clip, 1, 0);
-  definePrimitive(base, index++, "_QPen_AntiAliasing",
-                  QPen_AntiAliasing, 2, 0);
-  definePrimitive(base, index++, "_QPen_SetFont",
-                  QPen_SetFont, 2, 0);
+  d.define( "_QPen_Save", QPen_Save, 1, 0);
+  d.define( "_QPen_Restore", QPen_Restore, 1, 0 );
+  d.define( "_QPen_Clear", QPen_Clear, 1, 0 );
 
-  definePrimitive(base, index++, "_QPen_Translate",
-                  QPen_Translate, 3, 0);
-  definePrimitive(base, index++, "_QPen_Scale",
-                  QPen_Scale, 3, 0);
-  definePrimitive(base, index++, "_QPen_Shear",
-                  QPen_Shear, 3, 0);
-  definePrimitive(base, index++, "_QPen_Rotate",
-                  QPen_Rotate, 4, 0);
-  definePrimitive(base, index++, "_QPen_Transform",
-                  QPen_Transform, 2, 0);
+  d.define( "_QPen_FillColor", QPen_FillColor, 2, 0 );
+  d.define( "_QPen_StrokeColor", QPen_StrokeColor, 2, 0 );
+  d.define( "_QPen_Width", QPen_Width, 2, 0 );
+  d.define( "_QPen_Clip", QPen_Clip, 1, 0 );
+  d.define( "_QPen_AntiAliasing", QPen_AntiAliasing, 2, 0 );
+  d.define( "_QPen_SetFont", QPen_SetFont, 2, 0);
 
+  d.define( "_QPen_Translate", QPen_Translate, 3, 0 );
+  d.define( "_QPen_Scale", QPen_Scale, 3, 0 );
+  d.define( "_QPen_Shear", QPen_Shear, 3, 0 );
+  d.define( "_QPen_Rotate", QPen_Rotate, 4, 0 );
+  d.define( "_QPen_Transform", QPen_Transform, 2, 0 );
 
-  definePrimitive(base, index++, "_QPen_MoveTo",
-                  QPen_MoveTo, 2, 0);
-  definePrimitive(base, index++, "_QPen_LineTo",
-                  QPen_LineTo, 2, 0);
-  definePrimitive(base, index++, "_QPen_CubicTo",
-                  QPen_CubicTo, 4, 0);
-  definePrimitive(base, index++, "_QPen_QuadTo",
-                  QPen_QuadTo, 3, 0);
-  definePrimitive(base, index++, "_QPen_AddRect",
-                  QPen_AddRect, 2, 0);
-  definePrimitive(base, index++, "_QPen_AddRoundedRect",
-					QPen_AddRoundedRect, 4, 0);	
-  definePrimitive(base, index++, "_QPen_AddEllipse",
-                  QPen_AddEllipse, 2, 0);
-  definePrimitive(base, index++, "_QPen_AddWedge",
-                  QPen_AddWedge, 5, 0);
-  definePrimitive(base, index++, "_QPen_AddAnnularWedge",
-                  QPen_AddAnnularWedge, 6, 0);
-  definePrimitive(base, index++, "_QPen_Draw",
-                  QPen_Draw, 2, 0);
-  definePrimitive(base, index++, "_QPen_StringAtPoint",
-                  QPen_StringAtPoint, 3, 0);
-  definePrimitive(base, index++, "_QPen_StringInRect",
-                  QPen_StringInRect, 3, 0);
+  d.define( "_QPen_MoveTo", QPen_MoveTo, 2, 0 );
+  d.define( "_QPen_LineTo", QPen_LineTo, 2, 0 );
+  d.define( "_QPen_CubicTo", QPen_CubicTo, 4, 0 );
+  d.define( "_QPen_QuadTo", QPen_QuadTo, 3, 0 );
+  d.define( "_QPen_AddRect", QPen_AddRect, 2, 0 );
+  d.define( "_QPen_AddRoundedRect", QPen_AddRoundedRect, 4, 0 );
+  d.define( "_QPen_AddEllipse", QPen_AddEllipse, 2, 0 );
+  d.define( "_QPen_AddWedge", QPen_AddWedge, 5, 0 );
+  d.define( "_QPen_AddAnnularWedge", QPen_AddAnnularWedge, 6, 0 );
+  d.define( "_QPen_Draw", QPen_Draw, 2, 0 );
+  d.define( "_QPen_StringAtPoint", QPen_StringAtPoint, 3, 0 );
+  d.define( "_QPen_StringInRect", QPen_StringInRect, 3, 0 );
 }
