@@ -1,0 +1,9 @@
+New SC documentation system, work in progress
+
+The markup language parser is in ScDoc.sc, copy or symlink this to your Extensions folder.
+Try it like this:
+
+p = ScDocParser.new("/home/lijon/Coding/ScDoc/test.sch")
+p.parse
+p.dump
+
