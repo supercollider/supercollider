@@ -52,46 +52,42 @@ struct VariantList {
 Q_DECLARE_METATYPE( VariantList );
 
 
-struct QtServiceEvent;
+struct QcSyncEvent;
 
-typedef void (*EventHandlerFn) ( QtServiceEvent * );
+typedef void (*EventHandlerFn) ( QcSyncEvent * );
 
 namespace QtCollider {
-  enum Type {
+
+  enum MetaType {
     Type_VariantList,
     Type_Count
   };
+
+  enum EventType {
+    Event_Sync = QEvent::User,
+    Event_ScMethodCall
+  };
+
 }
 
-
-//namespace QtCollider {
-
-enum QtEventType {
-  CustomType = QEvent::User,
-  SCMethodType,
-  CreationType,
-  ScMethodCallType
-};
-
-enum QcCustomEventType {
-  ScreenBoundsRequest,
-  DeleteObjectRequest
-};
-
-
-//}
-
-struct QtServiceEvent : public QEvent
+struct QcSyncEvent : public QEvent
 {
   friend class QcApplication;
 
-  QtServiceEvent( QtEventType type )
-    : QEvent( (QEvent::Type) (type) ),
+  enum Type {
+    Generic,
+    CreateQObject
+  };
+
+  QcSyncEvent( Type type )
+    : QEvent( (QEvent::Type) QtCollider::Event_Sync ),
     _cond( 0 ),
     _mutex( 0 ),
-    _handler( 0 )
+    _handler( 0 ),
+    _type( type )
   { }
-  ~QtServiceEvent()
+
+  ~QcSyncEvent()
   {
     if( _cond && _mutex ) {
       _mutex->lock();
@@ -100,27 +96,36 @@ struct QtServiceEvent : public QEvent
     }
   }
 
+  Type syncEventType() { return _type; }
+
   private:
 
     QWaitCondition *_cond;
     QMutex *_mutex;
     EventHandlerFn _handler;
+    Type _type;
 };
 
-struct CustomEvent : public QtServiceEvent
+struct QcGenericEvent : public QcSyncEvent
 {
-  CustomEvent( int type, const QVariant& data = QVariant(), QVariant *ret = 0 )
-    : QtServiceEvent( CustomType ),
+  QcGenericEvent( int type, const QVariant& data = QVariant(), QVariant *ret = 0 )
+    : QcSyncEvent( QcSyncEvent::Generic ),
     _data( data ),
     _return( ret ),
     _type( type )
   {}
+
   template <class T> void returnThis( T arg ) {
     *_return = QVariant::fromValue<T>( arg );
   }
+
+  int genericEventType() { return _type; }
+
   QVariant _data;
   QVariant *_return;
-  int _type;
+
+  private:
+    int _type;
 };
 
 struct ScMethodCallEvent : public QEvent
@@ -128,7 +133,7 @@ struct ScMethodCallEvent : public QEvent
   ScMethodCallEvent( const QString &s,
                      const QList<QVariant> &l = QList<QVariant>(),
                      bool b_locked = false )
-  : QEvent( (QEvent::Type) ScMethodCallType ),
+  : QEvent( (QEvent::Type) QtCollider::Event_ScMethodCall ),
     method( getsym( s.toStdString().c_str() ) ),
     args( l ),
     locked( b_locked )
@@ -137,7 +142,7 @@ struct ScMethodCallEvent : public QEvent
   ScMethodCallEvent( PyrSymbol *m,
                      const QList<QVariant> &l = QList<QVariant>(),
                      bool b_locked = false )
-  : QEvent( (QEvent::Type) ScMethodCallType ),
+  : QEvent( (QEvent::Type) QtCollider::Event_ScMethodCall ),
     method( m ),
     args( l ),
     locked( b_locked )

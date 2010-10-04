@@ -34,7 +34,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _mutex.unlock();
 }
 
-void QcApplication::postSyncEvent( QtServiceEvent *e, QObject *rcv )
+void QcApplication::postSyncEvent( QcSyncEvent *e, QObject *rcv )
 {
   _mutex.lock();
   if( !_instance ) {
@@ -62,7 +62,7 @@ void QcApplication::postSyncEvent( QtServiceEvent *e, QObject *rcv )
   _mutex.unlock();
 }
 
-void QcApplication::postSyncEvent( QtServiceEvent *e, EventHandlerFn handler )
+void QcApplication::postSyncEvent( QcSyncEvent *e, EventHandlerFn handler )
 {
   _mutex.lock();
   if( !_instance ) {
@@ -94,7 +94,7 @@ void QcApplication::postSyncEvent( QtServiceEvent *e, EventHandlerFn handler )
 void QcApplication::customEvent( QEvent *e )
 {
   // FIXME properly check event type
-  QtServiceEvent *qce = static_cast<QtServiceEvent*>(e);
+  QcSyncEvent *qce = static_cast<QcSyncEvent*>(e);
   if( qce->_handler ) {
     (*qce->_handler) ( qce );
   }

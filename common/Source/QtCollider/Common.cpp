@@ -12,8 +12,7 @@ void QtCollider::lockLang()
     /* FIXME Dangerous! This sends to all QObjects. no matter what thread they
       live in */
     msg += QChar('.');
-    QApplication::sendPostedEvents( 0, CreationType );
-    QApplication::sendPostedEvents( 0, CustomType );
+    QApplication::sendPostedEvents( 0, QtCollider::Event_Sync );
     QThread::yieldCurrentThread();
   }
   //msg += "locked\n";
