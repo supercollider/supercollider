@@ -18,18 +18,17 @@ Keep a dictionary with tag occurence count?
 
 - currently there's no support for nested tags. And is this really needed? If not, then we can have a single closing tag
 for everything, like ::
+If it is needed, we need to use a stack for this, or use the same stack as for structural tags??
 
 - differ between inline-tags like emphasis and block-style tags like table? inline tags comes inside normal prose,
 while block tags are separate elements. currently normal prose are split into multiple elements at inline tags..
 But this could be hard for the renderer to handle.. since we then need to take into account what kind of element we came
-from and what element we are going to: don't put a <p> for a prose element that comes after an emphasis element that came inside a prose element.
+from and what element we are going to: don't put a <p> for a prose element that comes after an emphasis element that came inside a prose element. But, if we already know that an element is an inline-element, the renderer knows to "stay" in the current element type. This could of course also be done with the current tag:: ... ::tag syntax, by marking the element with an inline:true field
+or something like that..
 
 - split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
 
 - Missing tags
-emphasis::
-link::
-code::
 table::
 row::
 list::

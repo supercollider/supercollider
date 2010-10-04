@@ -5,6 +5,7 @@ ScDocParser {
     var current;
     var singleline;
     var level;
+    var modalTag;
     
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
@@ -67,36 +68,56 @@ ScDocParser {
                 this.addTag(tag,"",true);
             }        
         };
-
-        switch(tag,
-            'description::',        noNameSection,
-            'methods::',            noNameSection,
-            'examples::',           noNameSection,
-            'classmethod::',        namedSection.(2),
-            'instancemethod::',     namedSection.(2),
-            'argument::',           namedSection.(3),
-            'section::',            namedSection.(1),
-            'subsection::',         namedSection.(2),
-            'class::',              simpleTag,
-            'title::',              simpleTag,
-            'summary::',            simpleTag,
-            'related::',            simpleTag,
-            'keywords::',           simpleTag,
-            'note::',               simpleTag,
-            'warning::',            simpleTag,
-            
-            'emphasis::', {
-                singleline = false;
-                this.addTag(tag);
-            },
-            '::emphasis', {
+        var rangeTag = {
+            singleline = false;
+            this.addTag(tag);
+        };
+        var closingTag = {
+            this.endCurrent;
+        };
+        
+        // modal tags ignore all other tags until their closing tag occurs.
+        if(modalTag.notNil, {
+            if(tag==modalTag,{
                 this.endCurrent;
-            },
-            
-            { //default
+                modalTag = nil;
+            },{
                 this.addText(word);
-            }
-        );
+            });
+        },{
+            switch(tag,
+                'description::',        noNameSection,
+                'methods::',            noNameSection,
+                'examples::',           noNameSection,
+                'classmethod::',        namedSection.(2),
+                'instancemethod::',     namedSection.(2),
+                'argument::',           namedSection.(3),
+                'section::',            namedSection.(1),
+                'subsection::',         namedSection.(2),
+                'class::',              simpleTag,
+                'title::',              simpleTag,
+                'summary::',            simpleTag,
+                'related::',            simpleTag,
+                'keywords::',           simpleTag,
+                'note::',               simpleTag,
+                'warning::',            simpleTag,
+                
+                'emphasis::',           rangeTag,
+                'link::',               rangeTag,
+                '::emphasis',           closingTag,
+                '::link',               closingTag,
+
+                'code::', {
+                    singleline = false;
+                    this.addTag(tag);
+                    modalTag = '::code';
+                },
+                
+                { //default
+                    this.addText(word);
+                }
+            );
+        });
     }
     
     addText {|word|
@@ -120,6 +141,7 @@ ScDocParser {
         current = nil;
         singleline = false;
         level = 0;
+        modalTag = nil;
     }
     
     parse {|filename|
