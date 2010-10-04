@@ -51,7 +51,7 @@ ScDocParser {
 
     handleWord {|word,ofs=0|
         var tag = word.toLower.asSymbol;
-        var docAttribute = {
+        var simpleTag = {
             singleline = true;
             this.addTag(tag);
         };
@@ -71,14 +71,19 @@ ScDocParser {
         switch(tag,
             'description::',        noNameSection,
             'methods::',            noNameSection,
+            'examples::',           noNameSection,
             'classmethod::',        namedSection.(2),
             'instancemethod::',     namedSection.(2),
             'argument::',           namedSection.(3),
             'section::',            namedSection.(1),
             'subsection::',         namedSection.(2),
-            'class::',              docAttribute,
-            'title::',              docAttribute,
-            'summary::',            docAttribute,
+            'class::',              simpleTag,
+            'title::',              simpleTag,
+            'summary::',            simpleTag,
+            'related::',            simpleTag,
+            'keywords::',           simpleTag,
+            'note::',               simpleTag,
+            'warning::',            simpleTag,
             
             { //default
                 this.addText(word);

@@ -1,4 +1,5 @@
 New SC documentation system, work in progress
+=============================================
 
 The markup language parser is in ScDoc.sc, copy or symlink this to your Extensions folder.
 Try it like this:
@@ -6,4 +7,26 @@ Try it like this:
 p = ScDocParser.new
 p.parse("/home/lijon/Coding/ScDoc/test.sch")
 p.dump
+
+TODO
+====
+
+- Some tags should only be allowed once.
+
+- docType::, must be the first tag, so that it can control which tags are allowed?
+
+- Missing tags
+emphasis::
+link::
+code::
+table::
+row::
+list::
+numberedList::
+##
+
+- Grab introspection data for methods, arguments, class inheritance, etc..
+should this be done in the parser, filled into the tree later, or added while rendering?
+
+- HTML renderer.
 
