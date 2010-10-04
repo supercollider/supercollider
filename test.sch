@@ -12,10 +12,10 @@ Here comes some methods:
 
 CLASSMETHOD:: ar
 Create a new instance
-ARGUMENT:: freq
-The Frequency
-ARGUMENT:: amp
-The Amplitude
+    ARGUMENT:: freq
+        The Frequency
+    ARGUMENT:: amp
+        The Amplitude
 
 CLASSMETHOD:: foo
 This is a nonsense method.

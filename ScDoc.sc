@@ -25,17 +25,24 @@ ScDocParser {
         level = n;
     }
     
+    stripWhiteSpace {|str|
+        var a=0, b=str.size-1;
+        while({(str[a]==$\n) or: (str[a]==$\ )},{a=a+1});
+        while({(str[b]==$\n) or: (str[b]==$\ )},{b=b-1});
+        ^str.copyRange(a,b);
+    }
+    
     endCurrent {
         if(current.notNil,{
             if(current.text.notNil, {
-//                current.text = current.text.replace("^[ \n]+|[ \n]+$","");
-// too bad, replace doesn't take regexp.. we need a strip-whitespace function.
+                current.text = this.stripWhiteSpace(current.text);
             });
             current = nil;
         });
     }
     
     addTag {|tag, text="", children=false|
+        this.endCurrent;
         current = (tag:tag, text:text, children:if(children,{List.new},{nil}));
         tree.add(current);
         if(children, {tree = current.children}); //recurse into children list
@@ -114,13 +121,15 @@ ScDocParser {
         }
     }
 
-    dumpSubTree {|t,i=""|
+    dumpSubTree {|t,i="",lev=1|
         t.do {|e|
+            "".postln;
+            (i++"LEVEL:"+lev).postln;
             (i++"TAG:"+e.tag).postln;
             (i++"TEXT:"+e.text).postln;
             if(e.children.notNil, {
                 (i++"CHILDREN:").postln;
-                this.dumpSubTree(e.children,i++"    ");
+                this.dumpSubTree(e.children,i++"    ",lev+1);
             });
         }
     }
