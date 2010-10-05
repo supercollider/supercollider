@@ -45,6 +45,7 @@ ScDocParser {
     
     addTag {|tag, text="", children=false|
         this.endCurrent;
+        tag = tag.asString.drop(-2).asSymbol;
         current = (tag:tag, text:text, children:if(children,{List.new},{nil}));
         tree.add(current);
         if(children, {tree = current.children}); //recurse into children list
@@ -76,7 +77,13 @@ ScDocParser {
         var closingTag = {
             this.endCurrent;
         };
-        
+/* FIXME: handle inline tags without whitespace?
+       var a,b;
+        a = word.find("[[");
+        b = word.find("]]");
+        word.copyRange(0,a+1)
+        if found, this.handleWord(splitword,...)
+  */      
         // modal tags ignore all other tags until their closing tag occurs.
         if(modalTag.notNil, {
             if(tag==modalTag,{
@@ -102,19 +109,19 @@ ScDocParser {
                 'keywords::',           simpleTag,
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
-                
-                'emphasis>>',           rangeTag,
-                'link>>',               rangeTag,
-                '<<',                   closingTag,
-
-                '\\<<', {
-                    this.addText("<<");
-                },
 
                 'code::', {
                     singleline = false;
                     this.addTag(tag);
                     modalTag = '::code';
+                },
+
+                'emphasis[[',           rangeTag,
+                'link[[',               rangeTag,
+                ']]',                   closingTag,
+
+                '\\]]', {
+                    this.addText("]]");
                 },
                 
                 { //default
@@ -154,7 +161,14 @@ ScDocParser {
         lines.do {|line,l|
             var words = line.split($\ );
             words.do {|word,w|
-                this.handleWord(word,l,w);
+                var split = word.findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])")[1..];
+                if(split.isEmpty, {
+                    this.handleWord(word,l,w);
+                },{
+                    split.do {|x|
+                        this.handleWord(x[1],l,w);
+                    };
+                });
             };
             this.endLine;
         };

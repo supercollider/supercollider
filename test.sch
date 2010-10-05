@@ -6,7 +6,7 @@ This is normal prose before any section..
 
 DESCRIPTION::
 This is normal prose.
-Here's another line with a link:: Link ::link that you can follow.
+Here's another line with a link[[ Link ]] that you can follow.
 
 METHODS::
 Here comes some methods:
@@ -22,7 +22,7 @@ CLASSMETHOD:: foo
 This is a nonsense method.
 
 SECTION:: This is a named section
-With some emphasis>> normal << prose,
+With some emphasis[[normal]] prose,
 on multiple lines..
 
 SUBSECTION:: And a subsection

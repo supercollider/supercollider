@@ -25,6 +25,16 @@ we could handle this for all tags by using a regex to extract the tag and the re
 for example by calling handleWord recursively on it. another aproach would be to not scan the text by word but by character,
 which would probably be too slow..
 
+"link[[Classes/SinOsc]].".findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])")[1..]
+
+Or can we split words by whitespace and tags but include the tag symbol in the tags?
+"See this link[[Classes/SinOsc]] yeah.".findRegexp("")
+
+"See this link[[Classes/SinOsc]] yeah.".findRegexp("\\b[^ \n]+\\b").flop[1]
+
+"See this link[[Classes/SinOsc]] yeah.".findRegexp("\\b[^ \n]+\\b|([a-z]+\\[\\[)(.+)(\\]\\])")
+nah..
+
 - differ between inline-tags like emphasis and block-style tags like table? inline tags comes inside normal prose,
 while block tags are separate elements. currently normal prose are split into multiple elements at inline tags..
 But this could be hard for the renderer to handle.. since we then need to take into account what kind of element we came
@@ -32,9 +42,45 @@ from and what element we are going to: don't put a <p> for a prose element that 
 or something like that..
 
 we could stick with code:: ... ::code but then we need to check if the tag starts a line (or something) to decide if it's
-block or inline style.
+block or inline style. or perhaps better, to see if both opening and closing tag is on the same line?
+
+all block-style tags should start the line.
+
+- tables and lists are actually structural, but with closing tags.
+
+- allow normal prose in tables and lists?
+
+    (tag:'list::', children:[
+        (tag:'##', text:"first item"),
+        (tag:'##', text:"second item")
+    ])
+
+or as children elements:
+
+    (tag:'list::', children:[
+        (tag:'##', children:[
+            (tag:'prose::', text:"first item")
+        ]),
+        (tag:'##', children:[
+            (tag:'prose::', text:"second item")
+        ])
+    ])
+
+or as a flat sequence:
+
+    (tag:'list::', children:[
+        (tag:'##'),
+        (tag:'prose::', text:"first item"),
+        (tag:'##'),
+        (tag:'prose::', text:"second item")
+    ])
+
+We do want to allow inline-tags like link and emphasis inside lists and tables, so the last two alternatives might make more sense.
+Perhaps the second is best? also have a row:: with children, or let first '##' in a line inside a table:: denote row?
 
 - for code::, make sure everything is passed through as is, including whitespace. is this currently the case?
+
+- infer 'introduction::' tag for prose before first section.
 
 - split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
 
