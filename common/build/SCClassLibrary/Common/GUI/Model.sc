@@ -93,8 +93,8 @@ NotificationCenter {
 	}
 	*registerOneShot {  arg object,message,listener,action;
 		registrations.put(object,message,listener,
-			{
-				action.value;
+			{ |args|
+				action.value(args);
 				this.unregister(object,message,listener)
 			})
 	}
