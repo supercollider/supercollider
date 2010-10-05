@@ -97,8 +97,9 @@ ScDocParser {
                 this.endCurrent;
                 modalTag = nil;
             },{
-                //FIXME: handle escaped modalTag
-                this.addText(word);
+                if(word == ("\\"++modalTag.asString),
+                    {this.addText(word.drop(1))},
+                    {this.addText(word)});
             });
         },{
             switch(tag,

@@ -53,3 +53,7 @@ row:: One ## two ## three
 row:: foo ## bar ## zoo
 ::TABLE
 
+Does this code[[ [1,2,3] ]] work?
+And code[[ this \]] ]] too?
+And emphasis[[ this \]] ]] ?
+

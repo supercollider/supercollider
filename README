@@ -48,6 +48,8 @@ Keep a dictionary with tag occurence count?
 THOUGHTS
 ========
 
+- since inline[[ ]] tags dont nest currently, should they be modal?
+
 - currently, table columns and list items are just separated by ## tags.
 One could also put the items as children inside the ## tags.. would this be better? perhaps no..
 Should we do the same for table row::? just put single row:: tags as separators instead of putting the columns
