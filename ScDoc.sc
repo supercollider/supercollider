@@ -28,6 +28,7 @@ ScDocParser {
     
     stripWhiteSpace {|str|
         var a=0, b=str.size-1;
+        //FIXME: how does this handle strings that are empty or single characters?
         while({(str[a]==$\n) or: (str[a]==$\ )},{a=a+1});
         while({(str[b]==$\n) or: (str[b]==$\ )},{b=b-1});
         ^str.copyRange(a,b);
@@ -50,7 +51,7 @@ ScDocParser {
         if(text.isNil, {this.endCurrent}); //we don't have any text field to add to for this tag, so start fresh..    
     }
 
-    handleWord {|word,ofs=0|
+    handleWord {|word,lineno,wordno|
         var tag = word.toLower.asSymbol;
         var simpleTag = {
             singleline = true;
@@ -150,10 +151,10 @@ ScDocParser {
     parse {|filename|
         var file = File.open(filename,"r");
         var lines = file.readAllString.split($\n);
-        lines.do {|line|
+        lines.do {|line,l|
             var words = line.split($\ );
-            words.do {|word,i|
-                this.handleWord(word,i);
+            words.do {|word,w|
+                this.handleWord(word,l,w);
             };
             this.endLine;
         };

@@ -20,11 +20,19 @@ Keep a dictionary with tag occurence count?
 for everything, like ::
 If it is needed, we need to use a stack for this, or use the same stack as for structural tags??
 
+- it would be nice if inline-tags didn't need whitespace.. link::Classes/SinOsc::
+we could handle this for all tags by using a regex to extract the tag and the rest.. but then we need to handle the rest,
+for example by calling handleWord recursively on it. another aproach would be to not scan the text by word but by character,
+which would probably be too slow..
+
 - differ between inline-tags like emphasis and block-style tags like table? inline tags comes inside normal prose,
 while block tags are separate elements. currently normal prose are split into multiple elements at inline tags..
 But this could be hard for the renderer to handle.. since we then need to take into account what kind of element we came
 from and what element we are going to: don't put a <p> for a prose element that comes after an emphasis element that came inside a prose element. But, if we already know that an element is an inline-element, the renderer knows to "stay" in the current element type. This could of course also be done with the current tag:: ... ::tag syntax, by marking the element with an inline:true field
 or something like that..
+
+we could stick with code:: ... ::code but then we need to check if the tag starts a line (or something) to decide if it's
+block or inline style.
 
 - for code::, make sure everything is passed through as is, including whitespace. is this currently the case?
 
