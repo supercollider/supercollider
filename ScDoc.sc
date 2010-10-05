@@ -7,7 +7,6 @@ ScDocParser {
     var level;
     var modalTag;
     var lastTagLine;
-    var doingInlineTag;
     
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
@@ -19,13 +18,20 @@ ScDocParser {
 //    isOpeningTag {|word| ^"^[a-zA-Z]+::$".matchRegexp(word)}
 //    isClosingTag {|word| ^"^::[a-zA-Z]+$".matchRegexp(word)}
     leaveLevel {|n|
+        var p;
         while({level>=n},{
-            var p = stack.pop;
+            p = stack.pop;
             tree = p[0];
             level = p[1];
         });
     }
-
+    
+    popTree {
+        var p = stack.pop;
+        tree = p[0];
+        level = p[1];
+    }
+    
     enterLevel {|n|
         this.leaveLevel(n);
         stack.add([tree,level]);
@@ -77,45 +83,29 @@ ScDocParser {
                 this.addTag(tag,"",true);
             }        
         };
-        var rangeTag = {
+        var modalRangeTag = {
             singleline = false;
             this.addTag(tag);
             lastTagLine = lineno;
-            doingInlineTag = true;
-        };
-        var closingTag = {
-            this.endCurrent;
+            modalTag = '::';
         };
         var listEnter = {
             singleline = false;
-//            this.enterLevel(10);
+//                    this.enterLevel(10);
             stack.add([tree,level]);
             this.addTag(tag,nil,true);
             lastTagLine = lineno;
         };
-//        var listLeave = {
-//            this.leaveLevel(10);
-//            this.endCurrent;
-//        };
 
         // modal tags ignore all other tags until their closing tag occurs.
+        // here we check if we are in a modal tag (code, emphasis, link) and then
+        // if we got the closing tag.
         if(modalTag.notNil, {
-//            current.display = if(lastTagLine==lineno,\inline,\block);
-//            if((tag==modalTag) and: ((wordno==0) or: (current.display==\inline)),{
-//                this.endCurrent;
-//                modalTag = nil;
-            if(tag==modalTag, {
-                if(lastTagLine==lineno,{
-                    current.display = \inline;
-                    this.endCurrent;
-                    modalTag = nil;
-                },{
-                    if(wordno==0,{
-                        current.display = \block;
-                        this.endCurrent;
-                        modalTag = nil;
-                    });
-                }); 
+            //only allow modal block tags to be closed with the closing tag as the first word on a line
+            if((tag==modalTag) and: ((wordno==0) or: (lastTagLine==lineno)),{
+                current.display = if(lastTagLine==lineno,\inline,\block);
+                this.endCurrent;
+                modalTag = nil;
             },{
                 if(word == ("\\"++modalTag.asString),
                     {this.addText(word.drop(1))},
@@ -126,7 +116,6 @@ ScDocParser {
                 'description::',        noNameSection, //level 1
                 'methods::',            noNameSection,
                 'examples::',           noNameSection,
-//                'introduction::',       noNameSection,
                 'section::',            namedSection.(1),
                 'subsection::',         namedSection.(2),
                 'classmethod::',        namedSection.(3),
@@ -140,75 +129,39 @@ ScDocParser {
                 'doctype::',            simpleTag,
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
-
-                'code::', {
-                    singleline = false;
-                    this.addTag(tag);
-                    modalTag = '::';
-                    lastTagLine = lineno;
-                },
-//                'code[[', {
-//                    singleline = false;
-//                    this.addTag(tag);
-//                    modalTag = ']]';
-//                },
-                
-                'list::',               listEnter,
-//                '::list',               listLeave,
-                'numberedlist::',       listEnter,
-//                '::numberedlist',       listLeave,
-                'table::',              listEnter,
-//                '::table',              listLeave,
                 'row::', {
                     singleline = false;
-//                    this.enterLevel(11);
-//                    this.addTag(tag,nil,true); //with children
-                    this.addTag(tag,nil,false); //as separator
+                    this.addTag(tag,nil,false);
                 },
+                
+                'code::',               modalRangeTag,
+                'emphasis::',           modalRangeTag,
+                'link::',               modalRangeTag,
+
+                'list::',               listEnter,
+                'numberedlist::',       listEnter,
+                'table::',              listEnter,
+
                 '##', {
                     singleline = false;
-//                    this.enterLevel(12);
-//                    this.addTag('##::',nil,true); //make it look like an ordinary tag since we drop the :: in the output tree
                     this.addTag('##::',nil,false); //make it look like an ordinary tag since we drop the :: in the output tree
                 },
-
-                'emphasis::',           rangeTag,
-                'link::',               rangeTag,
-                '::', {
-/*                    if(lastTagLine==lineno,{
-                        current.display = \inline;
-                        this.endCurrent;
-                    },{
-                        if(wordno==0, { //perhaps not needed since code is modal
-                            current.display = \block;
-                            this.endCurrent;
-                        },{
-                            this.addText("::");
-                        });
-                    });*/
-//                    this.leaveLevel(10); //this is not right, we should not leave a list if this was closing an emphasis or something.. need to use the stack!
-                    if(doingInlineTag,{
-                        doingInlineTag = false;
-                    },{
-                        var p = stack.pop;
-                        tree = p[0];
-                        level = p[1];
-                    });
+                '::', { //ends tables and lists
+                    this.popTree;
                     current.display = if(lastTagLine==lineno,\inline,\block);
                     this.endCurrent;
                 },
-
                 '\\::', {
                     this.addText("::");
                 },
                 
-                { //default
-                    if("[a-zA-Z]+://.+".matchRegexp(word),{
+                { //default case
+                    if("[a-zA-Z]+://.+".matchRegexp(word),{ //auto link URIs
                         this.addTag('link::',word,false);
                         current.display = \inline;
                         this.endCurrent;
                     },{
-                        this.addText(word);
+                        this.addText(word); //plain text, add the word.
                     });
                 }
             );
@@ -244,7 +197,7 @@ ScDocParser {
         singleline = false;
         level = 0;
         modalTag = nil;
-        doingInlineTag = false;
+//        doingInlineTag = false;
     }
     
     parse {|string|
@@ -278,9 +231,7 @@ ScDocParser {
     dumpSubTree {|t,i="",lev=1|
         t.do {|e|
             "".postln;
-            (i++"LEVEL:"+lev).postln;
-            (i++"TAG:"+e.tag).postln;
-            (i++"DISPLAY:"+e.display).postln;
+            (i++"TAG:"+e.tag+"( level"+lev+e.display+")").postln;
             (i++"TEXT:"+e.text).postln;
             if(e.children.notNil, {
                 (i++"CHILDREN:").postln;

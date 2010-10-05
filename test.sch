@@ -12,7 +12,7 @@ LIST::
 ## one - does emphasis::this:: work?
 ## two:
 Could have multiple lines in here..
-## three some code:: inline code :: hopefully?
+## three - with some code:: inline code :: hopefully.
 ::
 
 We should be back at previous level here?

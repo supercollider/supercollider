@@ -13,14 +13,19 @@ p.parse("section:: foo\nhello").dump
 TODO
 ====
 
-- things got a bit messy with :: closing both inline and block tags.. Perhaps I would prefer this syntax:
+- things got a bit messy with :: closing both inline and block tags.. for example, table row must now be a separator instead
+of a parent element (perhaps not a big deal), and :: will close any tag, including stuff like section:: (could be fixed
+by having a flag for "closable" or something like that? or do we need a stack for this?)
+
+Perhaps I would prefer this syntax:
 
 here is some code::inlined:: stuff.
 code::
   here is a block of code...
 ::code
 
-and let all inline tags be "modal" and not nestable.
+So :: just closes any open inline tag, while ::tag can only close the specified tag...
+for the sake of consistence, inline tags could _optionally_ be closed with an explicit closing tag like link:: this ::link .
 
 - we should handle tabs in a consistent way.. regard them as whitespace? but then we need to pass them through..
 or just convert them to N spaces?
