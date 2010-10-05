@@ -106,7 +106,7 @@ ScDocParser {
                 'description::',        noNameSection, //level 1
                 'methods::',            noNameSection,
                 'examples::',           noNameSection,
-                'introduction::',       noNameSection,
+//                'introduction::',       noNameSection,
                 'section::',            namedSection.(1),
                 'subsection::',         namedSection.(2),
                 'classmethod::',        namedSection.(3),
@@ -175,10 +175,10 @@ ScDocParser {
         if(current.notNil,
             {current.text = current.text + word},
             {
-                if(level==0,{ //if we're before first section, add an introduction section
-                    this.enterLevel(1);
-                    this.addTag('introduction::',nil,true);
-                });
+//                if(level==0,{ //if we're before first section, add an introduction section
+//                    this.enterLevel(1);
+//                    this.addTag('introduction::',nil,true);
+//                });
                 singleline = false;
                 this.addTag('prose::', word)
             }
