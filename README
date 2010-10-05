@@ -1,5 +1,6 @@
 New SC documentation system, work in progress
 =============================================
+Much more information can be read here: https://docs.google.com/document/edit?id=13jY-FLhwFYgzGFVTSb31eTZOsxl77eVLxuCIsXcZ7BE&hl=en&authkey=CJu58MQJ
 
 The markup language parser is in ScDoc.sc, copy or symlink this to your Extensions folder.
 Try it like this:
@@ -8,11 +9,12 @@ p = ScDocParser.new
 p.parse("/home/lijon/Coding/ScDoc/test.sch")
 p.dump
 
+
 TODO
 ====
 - change inline tags[[...]] to this::...:: to be syntactically consistent?
 would need some magic to distinguish code:: blocks from inline code::
-it would be a bit confusing that block-tags close with ::tag while inline-tags close with :: only?
+but, it would be a bit confusing that block-tags close with ::tag while inline-tags close with :: only?
 
 - we should handle tabs in a consistent way.. regard them as whitespace? but then we need to pass them through..
 or just convert them to N spaces?
@@ -31,7 +33,8 @@ should this be done in the parser, filled into the tree later, or added while re
   All ugens by categories
   All methods
 
-- Handle extensions (separate and method additions)
+- Handle extensions (extra classes and method additions)
+should merge stuff into the tree before parsing..
 
 - HTML renderer.
 
@@ -52,53 +55,9 @@ as children to row?
 
 - tables, lists and numberedLists could have a single closing tag like ::end since the closing tags do the exact same thing.
 
-- currently there's no support for nested inline tags. And is this really needed? If not, then we can have a single closing tag
-for everything, like ::
-If it is needed, we need to use a stack for this, or use the same stack as for structural tags??
+- currently there's no support for nested inline tags. And is this really needed?
 
-- differ between inline-tags like emphasis and block-style tags like table? inline tags comes inside normal prose,
-while block tags are separate elements. currently normal prose are split into multiple elements at inline tags..
-But this could be hard for the renderer to handle.. since we then need to take into account what kind of element we came
-from and what element we are going to: don't put a <p> for a prose element that comes after an emphasis element that came inside a prose element. But, if we already know that an element is an inline-element, the renderer knows to "stay" in the current element type. This could of course also be done with the current tag:: ... ::tag syntax, by marking the element with an inline:true field
-or something like that..
-
-we could stick with code:: ... ::code but then we need to check if the tag starts a line (or something) to decide if it's
-block or inline style. or perhaps better, to see if both opening and closing tag is on the same line?
-
-all block-style tags should start the line.
-
-- allow normal prose in tables and lists?
-
-    (tag:'list::', children:[
-        (tag:'##', text:"first item"),
-        (tag:'##', text:"second item")
-    ])
-
-or as children elements:
-
-    (tag:'list::', children:[
-        (tag:'##', children:[
-            (tag:'prose::', text:"first item")
-        ]),
-        (tag:'##', children:[
-            (tag:'prose::', text:"second item")
-        ])
-    ])
-
-or as a flat sequence:
-
-    (tag:'list::', children:[
-        (tag:'##'),
-        (tag:'prose::', text:"first item"),
-        (tag:'##'),
-        (tag:'prose::', text:"second item")
-    ])
-
-We do want to allow inline-tags like link and emphasis inside lists and tables, so the last two alternatives might make more sense.
-Perhaps the second is best? also have a row:: with children, or let first '##' in a line inside a table:: denote row?
-
-
-- for code::, make sure everything is passed through as is, including whitespace. is this currently the case?
+- all block-style tags should start the line.
 
 - split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
 
