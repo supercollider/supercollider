@@ -158,7 +158,12 @@ ScDocParser {
                 },
                 
                 { //default
-                    this.addText(word);
+                    if("[a-zA-Z]+://.+".matchRegexp(word),{
+                        this.addTag('link[[',word,false);
+                        this.endCurrent;
+                    },{
+                        this.addText(word);
+                    });
                 }
             );
         });

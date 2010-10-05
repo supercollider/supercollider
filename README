@@ -10,13 +10,26 @@ p.dump
 
 TODO
 ====
-
 - change inline tags[[...]] to this::...:: to be syntactically consistent?
 would need some magic to distinguish code:: blocks from inline code::
 it would be a bit confusing that block-tags close with ::tag while inline-tags close with :: only?
 
+- we should handle tabs in a consistent way.. regard them as whitespace? but then we need to pass them through..
+or just convert them to N spaces?
+
 - Grab introspection data for methods, arguments, class inheritance, etc..
 should this be done in the parser, filled into the tree later, or added while rendering?
+
+- Overview generations:
+  All documents alphabetically
+  All documents by categories
+  All documents by keywords
+  All classes by inheritance tree
+  All classes alphabetically
+  All classes by categories
+  All ugens alphabetically
+  All ugens by categories
+  All methods
 
 - Handle extensions (separate and method additions)
 
@@ -34,6 +47,8 @@ THOUGHTS
 
 - currently, table columns and list items are just separated by ## tags.
 One could also put the items as children inside the ## tags.. would this be better? perhaps no..
+Should we do the same for table row::? just put single row:: tags as separators instead of putting the columns
+as children to row?
 
 - tables, lists and numberedLists could have a single closing tag like ::end since the closing tags do the exact same thing.
 

@@ -20,7 +20,7 @@ We should be back at previous level here?
 METHODS::
 Here comes some methods:
 
-CLASSMETHOD:: ar
+CLASSMETHOD:: ar kr
 Create a new instance
     ARGUMENT:: freq
         The Frequency
@@ -40,10 +40,13 @@ With some prose...
 EXAMPLES::
 Here is some example code:
 CODE::
-  "in here, even tags like emphasis[[ should be ignored".postln;
+  8.do {
+    "in here, even tags like emphasis[[this]] should be ignored".postln;
+  }
 ::CODE
 But now we are back at normal prose.
-I need to test link[[this]].
+Inline tags don't require whitespace, like link[[this]].
+Also, URLs like http://foo.com/bar.html should be autoconverted to links..
 
 TABLE::
 row:: One ## two ## three
