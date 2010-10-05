@@ -6,14 +6,14 @@ This is normal prose before any section..
 
 DESCRIPTION::
 This is normal prose.
-Here's another line with a link[[ Link ]] that you can follow.
+Here's another line with a link:: Link :: that you can follow.
 
 LIST::
-## one - does emphasis[[this]] work?
+## one - does emphasis::this:: work?
 ## two:
 Could have multiple lines in here..
-## three
-::LIST
+## three some code:: inline code :: hopefully?
+::
 
 We should be back at previous level here?
 
@@ -31,7 +31,7 @@ CLASSMETHOD:: foo
 This is a nonsense method.
 
 SECTION:: This is a named section
-With some emphasis[[normal]] prose,
+With some emphasis::normal:: prose,
 on multiple lines..
 
 SUBSECTION:: And a subsection
@@ -41,19 +41,20 @@ EXAMPLES::
 Here is some example code:
 CODE::
   8.do {
-    "in here, even tags like emphasis[[this]] should be ignored".postln;
+    "in here, even tags like emphasis::this:: should be ignored".postln;
   }
-::CODE
+  a :: b //if :: where a method, it wouldn't end it here since it's not on it's own line...
+    ::
 But now we are back at normal prose.
-Inline tags don't require whitespace, like link[[this]].
+Inline tags don't require whitespace, like link::this::.
 Also, URLs like http://foo.com/bar.html should be autoconverted to links..
 
 TABLE::
 row:: One ## two ## three
 row:: foo ## bar ## zoo
-::TABLE
+::
 
-Does this code[[ [1,2,3] ]] work?
-And code[[ this \]] ]] too?
-And emphasis[[ this \]] ]] ?
+Does this code:: [1,2,3] :: work?
+And code:: this \:: :: too?
+And emphasis:: this \:: :: ?
 

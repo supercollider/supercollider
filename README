@@ -13,13 +13,31 @@ p.parse("section:: foo\nhello").dump
 TODO
 ====
 
-- change inline tags[[...]] to this::...:: to be syntactically consistent?
-would need some magic to distinguish code:: blocks from inline code::
-but, it would be a bit confusing that block-tags close with ::tag while inline-tags close with :: only?
-or like this>>...<< ?
+- things got a bit messy with :: closing both inline and block tags.. Perhaps I would prefer this syntax:
+
+here is some code::inlined:: stuff.
+code::
+  here is a block of code...
+::code
+
+and let all inline tags be "modal" and not nestable.
 
 - we should handle tabs in a consistent way.. regard them as whitespace? but then we need to pass them through..
 or just convert them to N spaces?
+
+- better handling of optional whitespace with inline tags.
+  currently this does not link[[ work ]]!
+  but this link[[does]]!
+  and this link[[ too ]] !
+  this does link[[probably not]] work?
+
+"foo[[bar]]?".findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])(.*)")[1..];
+"foo[[bar]]".findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])(.*)")[1..];
+
+"foo[[bar".findRegexp("([a-z]+\\[\\[)(.+)")[1..];
+
+"bar]]".findRegexp("(.+)(\\]\\])(.*)")[1..];
+"bar]]?".findRegexp("(.+)(\\]\\])(.*)")[1..];
 
 - Grab introspection data for methods, arguments, class inheritance, etc..
 should this be done in the parser, filled into the tree later, or added while rendering?
@@ -34,6 +52,8 @@ should this be done in the parser, filled into the tree later, or added while re
   All ugens alphabetically
   All ugens by categories
   All methods
+
+- Code to traverse a directory tree of doc source files and render into another directory tree, checking time-stamps to see if files need update or not.
 
 - Handle extensions (extra classes and method additions)
 should merge stuff into the tree before parsing..

@@ -6,6 +6,8 @@ ScDocParser {
     var singleline;
     var level;
     var modalTag;
+    var lastTagLine;
+    var doingInlineTag;
     
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
@@ -50,7 +52,8 @@ ScDocParser {
     addTag {|tag, text="", children=false|
         this.endCurrent;
         tag = tag.asString.drop(-2).asSymbol;
-        current = (tag:tag, text:text, children:if(children,{List.new},{nil}));
+        current = (tag:tag, display:\block, text:text, children:if(children,{List.new},{nil}));
+//        current = (tag:tag, text:text, children:if(children,{List.new},{nil}));
         tree.add(current);
         if(children, {tree = current.children}); //recurse into children list
         if(text.isNil, {this.endCurrent}); //we don't have any text field to add to for this tag, so start fresh..    
@@ -77,25 +80,42 @@ ScDocParser {
         var rangeTag = {
             singleline = false;
             this.addTag(tag);
+            lastTagLine = lineno;
+            doingInlineTag = true;
         };
         var closingTag = {
             this.endCurrent;
         };
         var listEnter = {
             singleline = false;
-            this.enterLevel(10);
+//            this.enterLevel(10);
+            stack.add([tree,level]);
             this.addTag(tag,nil,true);
+            lastTagLine = lineno;
         };
-        var listLeave = {
-            this.leaveLevel(10);
-            this.endCurrent;
-        };
+//        var listLeave = {
+//            this.leaveLevel(10);
+//            this.endCurrent;
+//        };
 
         // modal tags ignore all other tags until their closing tag occurs.
         if(modalTag.notNil, {
-            if(tag==modalTag,{
-                this.endCurrent;
-                modalTag = nil;
+//            current.display = if(lastTagLine==lineno,\inline,\block);
+//            if((tag==modalTag) and: ((wordno==0) or: (current.display==\inline)),{
+//                this.endCurrent;
+//                modalTag = nil;
+            if(tag==modalTag, {
+                if(lastTagLine==lineno,{
+                    current.display = \inline;
+                    this.endCurrent;
+                    modalTag = nil;
+                },{
+                    if(wordno==0,{
+                        current.display = \block;
+                        this.endCurrent;
+                        modalTag = nil;
+                    });
+                }); 
             },{
                 if(word == ("\\"++modalTag.asString),
                     {this.addText(word.drop(1))},
@@ -124,24 +144,26 @@ ScDocParser {
                 'code::', {
                     singleline = false;
                     this.addTag(tag);
-                    modalTag = '::code';
+                    modalTag = '::';
+                    lastTagLine = lineno;
                 },
-                'code[[', {
-                    singleline = false;
-                    this.addTag(tag);
-                    modalTag = ']]';
-                },
+//                'code[[', {
+//                    singleline = false;
+//                    this.addTag(tag);
+//                    modalTag = ']]';
+//                },
                 
                 'list::',               listEnter,
-                '::list',               listLeave,
+//                '::list',               listLeave,
                 'numberedlist::',       listEnter,
-                '::numberedlist',       listLeave,
+//                '::numberedlist',       listLeave,
                 'table::',              listEnter,
-                '::table',              listLeave,
+//                '::table',              listLeave,
                 'row::', {
                     singleline = false;
-                    this.enterLevel(11);
-                    this.addTag(tag,nil,true);
+//                    this.enterLevel(11);
+//                    this.addTag(tag,nil,true); //with children
+                    this.addTag(tag,nil,false); //as separator
                 },
                 '##', {
                     singleline = false;
@@ -150,17 +172,40 @@ ScDocParser {
                     this.addTag('##::',nil,false); //make it look like an ordinary tag since we drop the :: in the output tree
                 },
 
-                'emphasis[[',           rangeTag,
-                'link[[',               rangeTag,
-                ']]',                   closingTag,
+                'emphasis::',           rangeTag,
+                'link::',               rangeTag,
+                '::', {
+/*                    if(lastTagLine==lineno,{
+                        current.display = \inline;
+                        this.endCurrent;
+                    },{
+                        if(wordno==0, { //perhaps not needed since code is modal
+                            current.display = \block;
+                            this.endCurrent;
+                        },{
+                            this.addText("::");
+                        });
+                    });*/
+//                    this.leaveLevel(10); //this is not right, we should not leave a list if this was closing an emphasis or something.. need to use the stack!
+                    if(doingInlineTag,{
+                        doingInlineTag = false;
+                    },{
+                        var p = stack.pop;
+                        tree = p[0];
+                        level = p[1];
+                    });
+                    current.display = if(lastTagLine==lineno,\inline,\block);
+                    this.endCurrent;
+                },
 
-                '\\]]', {
-                    this.addText("]]");
+                '\\::', {
+                    this.addText("::");
                 },
                 
                 { //default
                     if("[a-zA-Z]+://.+".matchRegexp(word),{
-                        this.addTag('link[[',word,false);
+                        this.addTag('link::',word,false);
+                        current.display = \inline;
                         this.endCurrent;
                     },{
                         this.addText(word);
@@ -199,6 +244,7 @@ ScDocParser {
         singleline = false;
         level = 0;
         modalTag = nil;
+        doingInlineTag = false;
     }
     
     parse {|string|
@@ -206,10 +252,13 @@ ScDocParser {
         this.init;
         lines.do {|line,l|
             var words = line.split($\ );
+            var w2=0;
             words.do {|word,w|
-                var split = word.findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])(.*)")[1..];
+//                var split = word.findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])(.*)")[1..];
+                var split = word.findRegexp("([a-z]+::)(.+)(::)(.*)")[1..];
                 if(split.isEmpty, {
-                    this.handleWord(word,l,w);
+                    this.handleWord(word,l,w2);
+                    if(word.isEmpty.not,{w2=w2+1});
                 },{
                     split.do {|x|
                         if(x[1].isEmpty.not,{this.handleWord(x[1],l,w)});
@@ -231,6 +280,7 @@ ScDocParser {
             "".postln;
             (i++"LEVEL:"+lev).postln;
             (i++"TAG:"+e.tag).postln;
+            (i++"DISPLAY:"+e.display).postln;
             (i++"TEXT:"+e.text).postln;
             if(e.children.notNil, {
                 (i++"CHILDREN:").postln;
