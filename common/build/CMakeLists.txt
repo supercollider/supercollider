@@ -17,28 +17,24 @@ endif()
 
 install(DIRECTORY SCClassLibrary
 	DESTINATION ${auxresourcesdir}
-	PATTERN *sc
 	PATTERN .svn EXCLUDE
 	PATTERN .git EXCLUDE
 )
 
 install(DIRECTORY Help
 	DESTINATION ${auxresourcesdir}
-	PATTERN *html
 	PATTERN .svn EXCLUDE
 	PATTERN .git EXCLUDE
 )
 
 install(DIRECTORY examples
 	DESTINATION ${auxresourcesdir}
-	PATTERN *scd
 	PATTERN .svn EXCLUDE
 	PATTERN .git EXCLUDE
 )
 
 install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
-	PATTERN *.*
 	PATTERN .svn EXCLUDE
 	PATTERN .git EXCLUDE
 )
