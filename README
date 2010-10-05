@@ -6,15 +6,17 @@ The markup language parser is in ScDoc.sc, copy or symlink this to your Extensio
 Try it like this:
 
 p = ScDocParser.new
-p.parse("/home/lijon/Coding/ScDoc/test.sch")
-p.dump
+p.parseFile("/home/lijon/Coding/ScDoc/test.sch").dump
 
+p.parse("section:: foo\nhello").dump
 
 TODO
 ====
+
 - change inline tags[[...]] to this::...:: to be syntactically consistent?
 would need some magic to distinguish code:: blocks from inline code::
 but, it would be a bit confusing that block-tags close with ::tag while inline-tags close with :: only?
+or like this>>...<< ?
 
 - we should handle tabs in a consistent way.. regard them as whitespace? but then we need to pass them through..
 or just convert them to N spaces?

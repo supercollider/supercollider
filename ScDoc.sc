@@ -201,9 +201,8 @@ ScDocParser {
         modalTag = nil;
     }
     
-    parse {|filename|
-        var file = File.open(filename,"r");
-        var lines = file.readAllString.split($\n);
+    parse {|string|
+        var lines = string.split($\n);
         this.init;
         lines.do {|line,l|
             var words = line.split($\ );
@@ -219,6 +218,11 @@ ScDocParser {
             };
             this.endLine;
         };
+    }
+
+    parseFile {|filename|
+        var file = File.open(filename,"r");
+        this.parse(file.readAllString);
         file.close;
     }
 
