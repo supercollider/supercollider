@@ -8,6 +8,15 @@ DESCRIPTION::
 This is normal prose.
 Here's another line with a link[[ Link ]] that you can follow.
 
+LIST::
+## one - does emphasis[[this]] work?
+## two:
+Could have multiple lines in here..
+## three
+::LIST
+
+We should be back at previous level here?
+
 METHODS::
 Here comes some methods:
 
@@ -34,4 +43,10 @@ CODE::
   "in here, even tags like emphasis[[ should be ignored".postln;
 ::CODE
 But now we are back at normal prose.
+I need to test link[[this]].
+
+TABLE::
+row:: One ## two ## three
+row:: foo ## bar ## zoo
+::TABLE
 

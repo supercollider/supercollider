@@ -10,22 +10,26 @@ ScDocParser {
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
 //    }
-    *new {
-        ^super.new.init;
-    }
+//    *new {
+//        ^super.new.init;
+//    }
 //    isTag {|word| ^"^(::[a-zA-Z]+|[a-zA-Z]+::)$".matchRegexp(word)}
 //    isOpeningTag {|word| ^"^[a-zA-Z]+::$".matchRegexp(word)}
 //    isClosingTag {|word| ^"^::[a-zA-Z]+$".matchRegexp(word)}
+    leaveLevel {|n|
+        while({level>=n},{
+            var p = stack.pop;
+            tree = p[0];
+            level = p[1];
+        });
+    }
 
     enterLevel {|n|
-        while({level>=n},{
-            tree = stack.pop;
-            level = level - 1;
-        });
-        stack.add(tree);
+        this.leaveLevel(n);
+        stack.add([tree,level]);
         level = n;
     }
-    
+
     stripWhiteSpace {|str|
         var a=0, b=str.size-1;
         //FIXME: how does this handle strings that are empty or single characters?
@@ -77,6 +81,15 @@ ScDocParser {
         var closingTag = {
             this.endCurrent;
         };
+        var listEnter = {
+            singleline = false;
+            this.enterLevel(10);
+            this.addTag(tag,nil,true);
+        };
+        var listLeave = {
+            this.leaveLevel(10);
+            this.endCurrent;
+        };
 
         // modal tags ignore all other tags until their closing tag occurs.
         if(modalTag.notNil, {
@@ -89,20 +102,21 @@ ScDocParser {
             });
         },{
             switch(tag,
-                'description::',        noNameSection,
+                'description::',        noNameSection, //level 1
                 'methods::',            noNameSection,
                 'examples::',           noNameSection,
                 'introduction::',       noNameSection,
-                'classmethod::',        namedSection.(2),
-                'instancemethod::',     namedSection.(2),
-                'argument::',           namedSection.(3),
                 'section::',            namedSection.(1),
                 'subsection::',         namedSection.(2),
+                'classmethod::',        namedSection.(3),
+                'instancemethod::',     namedSection.(3),
+                'argument::',           namedSection.(4),
                 'class::',              simpleTag,
                 'title::',              simpleTag,
                 'summary::',            simpleTag,
                 'related::',            simpleTag,
                 'keywords::',           simpleTag,
+                'doctype::',            simpleTag,
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
 
@@ -115,6 +129,24 @@ ScDocParser {
                     singleline = false;
                     this.addTag(tag);
                     modalTag = ']]';
+                },
+                
+                'list::',               listEnter,
+                '::list',               listLeave,
+                'numberedlist::',       listEnter,
+                '::numberedlist',       listLeave,
+                'table::',              listEnter,
+                '::table',              listLeave,
+                'row::', {
+                    singleline = false;
+                    this.enterLevel(11);
+                    this.addTag(tag,nil,true);
+                },
+                '##', {
+                    singleline = false;
+//                    this.enterLevel(12);
+//                    this.addTag('##::',nil,true); //make it look like an ordinary tag since we drop the :: in the output tree
+                    this.addTag('##::',nil,false); //make it look like an ordinary tag since we drop the :: in the output tree
                 },
 
                 'emphasis[[',           rangeTag,
@@ -156,7 +188,7 @@ ScDocParser {
     init {
         root = tree = List.new;
         stack = List.new;
-        stack.add(tree);
+        stack.add([tree,0]);
         current = nil;
         singleline = false;
         level = 0;
@@ -166,15 +198,16 @@ ScDocParser {
     parse {|filename|
         var file = File.open(filename,"r");
         var lines = file.readAllString.split($\n);
+        this.init;
         lines.do {|line,l|
             var words = line.split($\ );
             words.do {|word,w|
-                var split = word.findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])")[1..];
+                var split = word.findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])(.*)")[1..];
                 if(split.isEmpty, {
                     this.handleWord(word,l,w);
                 },{
                     split.do {|x|
-                        this.handleWord(x[1],l,w);
+                        if(x[1].isEmpty.not,{this.handleWord(x[1],l,w)});
                     };
                 });
             };

@@ -11,14 +11,9 @@ p.dump
 TODO
 ====
 
-- Missing tags
-table::
-row::
-list::
-numberedList::
-##
-
-tables and lists are actually structural, but with closing tags..
+- change inline tags[[...]] to this::...:: to be syntactically consistent?
+would need some magic to distinguish code:: blocks from inline code::
+it would be a bit confusing that block-tags close with ::tag while inline-tags close with :: only?
 
 - Grab introspection data for methods, arguments, class inheritance, etc..
 should this be done in the parser, filled into the tree later, or added while rendering?
@@ -27,15 +22,22 @@ should this be done in the parser, filled into the tree later, or added while re
 
 - HTML renderer.
 
-- Some tags should only be allowed once. like class, title, related, keywords, summary, description, methods, examples..
-Keep a dictionary with tag occurence count?
+VALIDATION
+----------
+docType must be the first tag, so that it can control which tags are allowed? Or do a separate validation pass afterwards?
 
-- docType::, must be the first tag, so that it can control which tags are allowed?
+Some tags should only be allowed once. like class, title, related, keywords, summary, description, methods, examples..
+Keep a dictionary with tag occurence count?
 
 THOUGHTS
 ========
 
-- currently there's no support for nested tags. And is this really needed? If not, then we can have a single closing tag
+- currently, table columns and list items are just separated by ## tags.
+One could also put the items as children inside the ## tags.. would this be better? perhaps no..
+
+- tables, lists and numberedLists could have a single closing tag like ::end since the closing tags do the exact same thing.
+
+- currently there's no support for nested inline tags. And is this really needed? If not, then we can have a single closing tag
 for everything, like ::
 If it is needed, we need to use a stack for this, or use the same stack as for structural tags??
 
@@ -79,6 +81,7 @@ or as a flat sequence:
 
 We do want to allow inline-tags like link and emphasis inside lists and tables, so the last two alternatives might make more sense.
 Perhaps the second is best? also have a row:: with children, or let first '##' in a line inside a table:: denote row?
+
 
 - for code::, make sure everything is passed through as is, including whitespace. is this currently the case?
 
