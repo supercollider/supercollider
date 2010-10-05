@@ -77,19 +77,14 @@ ScDocParser {
         var closingTag = {
             this.endCurrent;
         };
-/* FIXME: handle inline tags without whitespace?
-       var a,b;
-        a = word.find("[[");
-        b = word.find("]]");
-        word.copyRange(0,a+1)
-        if found, this.handleWord(splitword,...)
-  */      
+
         // modal tags ignore all other tags until their closing tag occurs.
         if(modalTag.notNil, {
             if(tag==modalTag,{
                 this.endCurrent;
                 modalTag = nil;
             },{
+                //FIXME: handle escaped modalTag
                 this.addText(word);
             });
         },{
@@ -97,6 +92,7 @@ ScDocParser {
                 'description::',        noNameSection,
                 'methods::',            noNameSection,
                 'examples::',           noNameSection,
+                'introduction::',       noNameSection,
                 'classmethod::',        namedSection.(2),
                 'instancemethod::',     namedSection.(2),
                 'argument::',           namedSection.(3),
@@ -114,6 +110,11 @@ ScDocParser {
                     singleline = false;
                     this.addTag(tag);
                     modalTag = '::code';
+                },
+                'code[[', {
+                    singleline = false;
+                    this.addTag(tag);
+                    modalTag = ']]';
                 },
 
                 'emphasis[[',           rangeTag,
@@ -135,7 +136,14 @@ ScDocParser {
         // add to current element text, or if no current element: add to new 'prose' element
         if(current.notNil,
             {current.text = current.text + word},
-            {singleline = false; this.addTag('prose::', word)}
+            {
+                if(level==0,{ //if we're before first section, add an introduction section
+                    this.enterLevel(1);
+                    this.addTag('introduction::',nil,true);
+                });
+                singleline = false;
+                this.addTag('prose::', word)
+            }
         );
     }
 

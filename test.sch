@@ -31,7 +31,7 @@ With some prose...
 EXAMPLES::
 Here is some example code:
 CODE::
-  "in here, even tags like emphasis:: should be ignored".postln;
+  "in here, even tags like emphasis[[ should be ignored".postln;
 ::CODE
 But now we are back at normal prose.
 

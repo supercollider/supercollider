@@ -11,29 +11,33 @@ p.dump
 TODO
 ====
 
+- Missing tags
+table::
+row::
+list::
+numberedList::
+##
+
+tables and lists are actually structural, but with closing tags..
+
+- Grab introspection data for methods, arguments, class inheritance, etc..
+should this be done in the parser, filled into the tree later, or added while rendering?
+
+- Handle extensions (separate and method additions)
+
+- HTML renderer.
+
 - Some tags should only be allowed once. like class, title, related, keywords, summary, description, methods, examples..
 Keep a dictionary with tag occurence count?
 
 - docType::, must be the first tag, so that it can control which tags are allowed?
 
+THOUGHTS
+========
+
 - currently there's no support for nested tags. And is this really needed? If not, then we can have a single closing tag
 for everything, like ::
 If it is needed, we need to use a stack for this, or use the same stack as for structural tags??
-
-- it would be nice if inline-tags didn't need whitespace.. link::Classes/SinOsc::
-we could handle this for all tags by using a regex to extract the tag and the rest.. but then we need to handle the rest,
-for example by calling handleWord recursively on it. another aproach would be to not scan the text by word but by character,
-which would probably be too slow..
-
-"link[[Classes/SinOsc]].".findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])")[1..]
-
-Or can we split words by whitespace and tags but include the tag symbol in the tags?
-"See this link[[Classes/SinOsc]] yeah.".findRegexp("")
-
-"See this link[[Classes/SinOsc]] yeah.".findRegexp("\\b[^ \n]+\\b").flop[1]
-
-"See this link[[Classes/SinOsc]] yeah.".findRegexp("\\b[^ \n]+\\b|([a-z]+\\[\\[)(.+)(\\]\\])")
-nah..
 
 - differ between inline-tags like emphasis and block-style tags like table? inline tags comes inside normal prose,
 while block tags are separate elements. currently normal prose are split into multiple elements at inline tags..
@@ -45,8 +49,6 @@ we could stick with code:: ... ::code but then we need to check if the tag start
 block or inline style. or perhaps better, to see if both opening and closing tag is on the same line?
 
 all block-style tags should start the line.
-
-- tables and lists are actually structural, but with closing tags.
 
 - allow normal prose in tables and lists?
 
@@ -80,21 +82,6 @@ Perhaps the second is best? also have a row:: with children, or let first '##' i
 
 - for code::, make sure everything is passed through as is, including whitespace. is this currently the case?
 
-- infer 'introduction::' tag for prose before first section.
-
 - split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
 
-- Missing tags
-table::
-row::
-list::
-numberedList::
-##
-
-- Grab introspection data for methods, arguments, class inheritance, etc..
-should this be done in the parser, filled into the tree later, or added while rendering?
-
-- Handle extensions (separate and method additions)
-
-- HTML renderer.
 
