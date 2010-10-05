@@ -91,8 +91,7 @@ ScDocParser {
         };
         var listEnter = {
             singleline = false;
-//                    this.enterLevel(10);
-            stack.add([tree,level]);
+            this.enterLevel(10);
             this.addTag(tag,nil,true);
             lastTagLine = lineno;
         };
@@ -129,10 +128,6 @@ ScDocParser {
                 'doctype::',            simpleTag,
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
-                'row::', {
-                    singleline = false;
-                    this.addTag(tag,nil,false);
-                },
                 
                 'code::',               modalRangeTag,
                 'emphasis::',           modalRangeTag,
@@ -141,13 +136,17 @@ ScDocParser {
                 'list::',               listEnter,
                 'numberedlist::',       listEnter,
                 'table::',              listEnter,
-
+                'row::', {
+                    singleline = false;
+                    this.enterLevel(11);
+                    this.addTag(tag,nil,true);
+                },
                 '##', {
                     singleline = false;
                     this.addTag('##::',nil,false); //make it look like an ordinary tag since we drop the :: in the output tree
                 },
                 '::', { //ends tables and lists
-                    this.popTree;
+                    this.leaveLevel(10);
                     current.display = if(lastTagLine==lineno,\inline,\block);
                     this.endCurrent;
                 },
