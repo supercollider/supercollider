@@ -23,24 +23,22 @@
 #include "ScQt.h"
 #include "QcApplication.h"
 
-#include <SC_TerminalClient.h>
-
-QcLangThread::QcLangThread( int c, char *v[] )
+QcLangThread::QcLangThread( int c, char *v[], QtCollider::MainFn mainFn )
 {
   argc = c;
   argv = v;
+  langFn = mainFn;
 }
 
 void QcLangThread::run()
 {
-  SC_TerminalClient app("sclang");
-  app.run( argc, argv );
+  (*langFn)( argc,argv );
 }
 
-int QtCollider::run( int & argc, char **argv )
+int QtCollider::run( int & argc, char **argv, QtCollider::MainFn mainFn )
 {
   // create language thread
-  QcLangThread langThread( argc, argv );
+  QcLangThread langThread( argc, argv, mainFn );
 
   #ifdef Q_OS_MAC
     QApplication::setAttribute( Qt::AA_MacPluginApplication, true );

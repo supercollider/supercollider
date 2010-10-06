@@ -24,7 +24,8 @@
 
 namespace QtCollider
 {
-  int run( int &, char ** );
+  typedef int (*MainFn)( int &, char ** );
+  int run( int &, char **, MainFn );
 }
 
 #endif

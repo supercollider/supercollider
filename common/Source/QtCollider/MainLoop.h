@@ -19,14 +19,17 @@
 *
 ************************************************************************/
 
+#include "ScQt.h"
+
 #include <QThread>
 
 class QcLangThread : public QThread
 {
   public:
-    QcLangThread( int argc, char **argv );
+    QcLangThread( int argc, char **argv, QtCollider::MainFn );
   private:
     void run();
     int argc;
     char **argv;
+    QtCollider::MainFn langFn;
 };

@@ -35,16 +35,19 @@
 
 #include <stdio.h>
 
+int runTerminalClient( int & argc, char ** argv )
+{
+  SC_TerminalClient app("sclang");
+  return app.run( argc, argv );
+}
+
 int main(int argc, char** argv)
 {
 #ifdef SC_QT
-  QtCollider::run( argc, argv );
+  return QtCollider::run( argc, argv, &runTerminalClient );
 #else
-  SC_TerminalClient app("sclang");
-  app.run( argc, argv );
-#endif //SC_QT
-
-  return 0;
+  return runTerminalClient( argc, argv );
+#endif
 }
 
 #else // !USE_SC_TERMINAL_CLIENT
