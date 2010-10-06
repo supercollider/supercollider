@@ -8,27 +8,8 @@ Try it like this:
 p = ScDocParser.new
 p.parseFile("/home/lijon/Coding/ScDoc/test.sch").dump
 
-p.parse("section:: foo\nhello").dump
-
 TODO
 ====
-
-- we should handle tabs in a consistent way.. regard them as whitespace? but then we need to pass them through..
-or just convert them to N spaces?
-
-- better handling of optional whitespace with inline tags.
-  currently this does not link[[ work ]]!
-  but this link[[does]]!
-  and this link[[ too ]] !
-  this does link[[probably not]] work?
-
-"foo[[bar]]?".findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])(.*)")[1..];
-"foo[[bar]]".findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])(.*)")[1..];
-
-"foo[[bar".findRegexp("([a-z]+\\[\\[)(.+)")[1..];
-
-"bar]]".findRegexp("(.+)(\\]\\])(.*)")[1..];
-"bar]]?".findRegexp("(.+)(\\]\\])(.*)")[1..];
 
 - Grab introspection data for methods, arguments, class inheritance, etc..
 should this be done in the parser, filled into the tree later, or added while rendering?
@@ -75,5 +56,4 @@ as children to row?
 - all block-style tags should start the line.
 
 - split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
-
 

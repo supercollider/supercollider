@@ -106,9 +106,16 @@ ScDocParser {
                 this.endCurrent;
                 modalTag = nil;
             },{
-                if(word == ("\\"++modalTag.asString),
-                    {this.addText(word.drop(1))},
-                    {this.addText(word)});
+                if(word == ("\\"++modalTag.asString),{ //escaped end-tag
+                    this.addText(word.drop(1))
+                },{
+                    if("[a-zA-Z]+::".matchRegexp(word), { //unhandled tag-like word
+                        this.addText(word.drop(-2));
+                        this.handleWord("::",lineno,wordno);
+                    },{
+                        this.addText(word);
+                    });
+                });
             });
         },{
             switch(tag,
@@ -170,7 +177,7 @@ ScDocParser {
     addText {|word|
         // add to current element text, or if no current element: add to new 'prose' element
         if(current.notNil,
-            {current.text = current.text + word},
+            {current.text = current.text ++ word},
             {
 //                if(level==0,{ //if we're before first section, add an introduction section
 //                    this.enterLevel(1);
@@ -199,7 +206,7 @@ ScDocParser {
 //        doingInlineTag = false;
     }
     
-    parse {|string|
+/*    parse {|string|
         var lines = string.split($\n);
         this.init;
         lines.do {|line,l|
@@ -214,6 +221,31 @@ ScDocParser {
                 },{
                     split.do {|x|
                         if(x[1].isEmpty.not,{this.handleWord(x[1],l,w)});
+                    };
+                });
+            };
+            this.endLine;
+        };
+    }*/
+
+    parse {|string|
+        var lines = string.split($\n); //split lines
+        var ws, w, split, split2, word;
+        this.init;
+        lines.do {|line,l|
+            split = line.findRegexp("[a-zA-Z]+::[^ \n\t]+::|[a-zA-Z]*::|[ \n\t]+|[^ \n\t]+"); //split words and tags and ws
+            w = 0;
+            split.do {|e|
+                word = e[1];
+                split2 = word.findRegexp("([a-zA-Z]+::)([^ \n\t]+)(::)")[1..]; //split stuff like::this::...
+                if(split2.isEmpty,{
+                    ws = "[ \n\t]+".matchRegexp(word);
+                    this.handleWord(word,l,w);
+                    if(ws.not,{w=w+1});
+                },{
+                    split2.do {|e2|
+                        this.handleWord(e2[1],l,w);
+                        w=w+1;
                     };
                 });
             };
