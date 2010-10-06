@@ -73,7 +73,7 @@ ScDocParser {
             this.addTag(tag);
         };
         var noNameSection = {
-            singleline = true;
+            singleline = true; //this doesn't actually matter here since we don't have a text field?
             this.enterLevel(1);
             this.addTag(tag,nil,true);
         };
@@ -91,7 +91,7 @@ ScDocParser {
             modalTag = '::';
         };
         var listEnter = {
-            singleline = false;
+            singleline = false; //this doesn't actually matter here since we don't have a text field?
 //            this.enterLevel(10);
             stack.add([tree,level]);
             this.addTag(tag,nil,true);
