@@ -12,10 +12,11 @@ p.parse("inline code::code example::.").dump
 TODO
 ====
 
-- Don't split by lines but pass newlines to handleWord and let it call endLine for us? and inc lineno..
+- parser: Don't split by lines but pass newlines to handleWord and let it call endLine for us? and inc lineno..
 important: then we must check if the whitespace-word contains newline... (or create a regex rule that matches single newlines?)
-note: we could also match blank lines by regex "\n\n*" and pass them to handleWord..
 also let handleWord inc wordno..
+note: we could then also match blank lines by regex "\n\n*" and pass them to handleWord to split prose or perhaps insert an internal
+'blankline' tag?
 
 - Grab introspection data for methods, arguments, class inheritance, etc..
 should this be done in the parser, filled into the tree later, or added while rendering?
