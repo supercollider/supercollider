@@ -47,6 +47,7 @@ CODE::
   8.do {
     "in here, even tags like emphasis::this:: should be ignored".postln;
   }
+link::foo::
   a :: b //if :: where a method, it wouldn't end it here since it's not on it's own line...
     ::
 But now we are back at normal prose.

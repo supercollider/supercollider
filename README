@@ -13,6 +13,9 @@ TODO
 ====
 
 - Don't split by lines but pass newlines to handleWord and let it call endLine for us? and inc lineno..
+important: then we must check if the whitespace-word contains newline... (or create a regex rule that matches single newlines?)
+note: we could also match blank lines by regex "\n\n*" and pass them to handleWord..
+also let handleWord inc wordno..
 
 - Grab introspection data for methods, arguments, class inheritance, etc..
 should this be done in the parser, filled into the tree later, or added while rendering?

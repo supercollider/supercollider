@@ -111,9 +111,9 @@ ScDocParser {
                 if(word == ("\\"++modalTag.asString),{ //allow escaped end-tag
                     this.addText(word.drop(1))
                 },{
-                    if("[a-zA-Z]+::".matchRegexp(word), { //split unhandled tag-like word
+                    if(("[a-zA-Z]+::".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
                         this.addText(word.drop(-2));
-                        this.handleWord("::",lineno,wordno);
+                        this.handleWord("::",lineno,wordno+1);
                     },{
                         this.addText(word);
                     });
