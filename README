@@ -7,9 +7,12 @@ Try it like this:
 
 p = ScDocParser.new
 p.parseFile("/home/lijon/Coding/ScDoc/test.sch").dump
+p.parse("inline code::code example::.").dump
 
 TODO
 ====
+
+- Don't split by lines but pass newlines to handleWord and let it call endLine for us? and inc lineno..
 
 - Grab introspection data for methods, arguments, class inheritance, etc..
 should this be done in the parser, filled into the tree later, or added while rendering?
@@ -32,6 +35,8 @@ should merge stuff into the tree before parsing..
 
 - HTML renderer.
 
+- split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
+
 VALIDATION
 ----------
 docType must be the first tag, so that it can control which tags are allowed? Or do a separate validation pass afterwards?
@@ -39,21 +44,4 @@ docType must be the first tag, so that it can control which tags are allowed? Or
 Some tags should only be allowed once. like class, title, related, keywords, summary, description, methods, examples..
 Keep a dictionary with tag occurence count?
 
-THOUGHTS
-========
-
-- since inline[[ ]] tags dont nest currently, should they be modal?
-
-- currently, table columns and list items are just separated by ## tags.
-One could also put the items as children inside the ## tags.. would this be better? perhaps no..
-Should we do the same for table row::? just put single row:: tags as separators instead of putting the columns
-as children to row?
-
-- tables, lists and numberedLists could have a single closing tag like ::end since the closing tags do the exact same thing.
-
-- currently there's no support for nested inline tags. And is this really needed?
-
-- all block-style tags should start the line.
-
-- split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
 

@@ -7,6 +7,7 @@ ScDocParser {
     var level;
     var modalTag;
     var lastTagLine;
+    var isWS;
     
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
@@ -91,7 +92,8 @@ ScDocParser {
         };
         var listEnter = {
             singleline = false;
-            this.enterLevel(10);
+//            this.enterLevel(10);
+            stack.add([tree,level]);
             this.addTag(tag,nil,true);
             lastTagLine = lineno;
         };
@@ -106,10 +108,10 @@ ScDocParser {
                 this.endCurrent;
                 modalTag = nil;
             },{
-                if(word == ("\\"++modalTag.asString),{ //escaped end-tag
+                if(word == ("\\"++modalTag.asString),{ //allow escaped end-tag
                     this.addText(word.drop(1))
                 },{
-                    if("[a-zA-Z]+::".matchRegexp(word), { //unhandled tag-like word
+                    if("[a-zA-Z]+::".matchRegexp(word), { //split unhandled tag-like word
                         this.addText(word.drop(-2));
                         this.handleWord("::",lineno,wordno);
                     },{
@@ -142,18 +144,24 @@ ScDocParser {
 
                 'list::',               listEnter,
                 'numberedlist::',       listEnter,
+                'definitionList::',     listEnter,
                 'table::',              listEnter,
-                'row::', {
-                    singleline = false;
-                    this.enterLevel(11);
-                    this.addTag(tag,nil,true);
-                },
+//                'row::', {
+//                    singleline = false;
+//                    this.enterLevel(11);
+//                    this.addTag(tag,nil,true);
+//                },
                 '##', {
                     singleline = false;
                     this.addTag('##::',nil,false); //make it look like an ordinary tag since we drop the :: in the output tree
                 },
+                '||', {
+                    singleline = false;
+                    this.addTag('||::',nil,false);
+                },
                 '::', { //ends tables and lists
-                    this.leaveLevel(10);
+//                    this.leaveLevel(10);
+                    this.popTree;
                     current.display = if(lastTagLine==lineno,\inline,\block);
                     this.endCurrent;
                 },
@@ -175,18 +183,14 @@ ScDocParser {
     }
     
     addText {|word|
-        // add to current element text, or if no current element: add to new 'prose' element
-        if(current.notNil,
-            {current.text = current.text ++ word},
-            {
-//                if(level==0,{ //if we're before first section, add an introduction section
-//                    this.enterLevel(1);
-//                    this.addTag('introduction::',nil,true);
-//                });
+        if(current.notNil, { // add to current element text
+            current.text = current.text ++ word
+        },{ // no current element, so add to new 'prose' element
+            if(isWS.not, { //don't start a new prose element with whitespace
                 singleline = false;
-                this.addTag('prose::', word)
-            }
-        );
+                this.addTag('prose::', word);
+            });
+        });
     }
 
     endLine {
@@ -203,6 +207,7 @@ ScDocParser {
         singleline = false;
         level = 0;
         modalTag = nil;
+        isWS = false;
 //        doingInlineTag = false;
     }
     
@@ -230,7 +235,7 @@ ScDocParser {
 
     parse {|string|
         var lines = string.split($\n); //split lines
-        var ws, w, split, split2, word;
+        var w, split, split2, word;
         this.init;
         lines.do {|line,l|
             split = line.findRegexp("[a-zA-Z]+::[^ \n\t]+::|[a-zA-Z]*::|[ \n\t]+|[^ \n\t]+"); //split words and tags and ws
@@ -239,9 +244,9 @@ ScDocParser {
                 word = e[1];
                 split2 = word.findRegexp("([a-zA-Z]+::)([^ \n\t]+)(::)")[1..]; //split stuff like::this::...
                 if(split2.isEmpty,{
-                    ws = "[ \n\t]+".matchRegexp(word);
+                    isWS = "[ \n\t]+".matchRegexp(word);
                     this.handleWord(word,l,w);
-                    if(ws.not,{w=w+1});
+                    if(isWS.not,{w=w+1});
                 },{
                     split2.do {|e2|
                         this.handleWord(e2[1],l,w);
@@ -263,7 +268,9 @@ ScDocParser {
         t.do {|e|
             "".postln;
             (i++"TAG:"+e.tag+"( level"+lev+e.display+")").postln;
-            (i++"TEXT:"+e.text).postln;
+            if(e.text.notNil, {
+                (i++"TEXT: \""++e.text++"\"").postln;
+            });
             if(e.children.notNil, {
                 (i++"CHILDREN:").postln;
                 this.dumpSubTree(e.children,i++"    ",lev+1);

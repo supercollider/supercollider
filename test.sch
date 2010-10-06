@@ -6,13 +6,17 @@ This is normal prose before any section..
 
 DESCRIPTION::
 This is normal prose.
-Here's another line with a link:: Link :: that you can follow.
+Here's another line with a link::link:: that you can follow.
 
 LIST::
 ## one - does emphasis::this:: work?
 ## two:
-Could have multiple lines in here..
-## three - with some code:: inline code :: hopefully.
+Could have multiple lines in here.. and nested lists:
+    list::
+    ## nested 1
+    ## nested 2
+    ::
+## three - with some code::inline code:: hopefully.
 ::
 
 We should be back at previous level here?
@@ -49,9 +53,10 @@ But now we are back at normal prose.
 Inline tags don't require whitespace, like link::this::.
 Also, URLs like http://foo.com/bar.html should be autoconverted to links..
 
+
 TABLE::
-row:: One ## two ## three
-row:: foo ## bar ## zoo
+## One || two || three
+## foo || bar || zoo
 ::
 
 Does this code:: [1,2,3] :: work?
