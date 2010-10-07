@@ -72,16 +72,11 @@
 
 void HIDReportErrorNum (char * strError, long numError)
 {
-	char errMsgCStr [256];
-
-	sprintf (errMsgCStr, "%s #%ld (0x%lx)", strError, numError, numError);
 
 	// out as debug string
 #ifdef kVerboseErrors
 	{
-		Str255 strErr = "\p";
-		CopyCStringToPascal (errMsgCStr, strErr);
-		DebugStr (strErr);
+		scprintf ("%s #%ld (0x%lx)", strError, numError, numError);
 	}
 #endif // kVerboseErrors
 }
@@ -90,16 +85,10 @@ void HIDReportErrorNum (char * strError, long numError)
 
 void HIDReportError (char * strError)
 {
-	char errMsgCStr [256];
-
-	sprintf (errMsgCStr, "%s", strError);
-
 	// out as debug string
 #ifdef kVerboseErrors
 	{
-		Str255 strErr = "\p";
-		CopyCStringToPascal (errMsgCStr, strErr);
-		DebugStr (strErr);
+		scprintf ("%s", strError);
 	}
 #endif // kVerboseErrors
 }
