@@ -47,7 +47,8 @@ class QObjectProxy : public QObject
       SetProperty,
       GetProperty,
       SetEventHandler,
-      Destroy
+      Destroy,
+      DestroyProxy
     };
 
   public:
@@ -73,6 +74,8 @@ class QObjectProxy : public QObject
     virtual ~QObjectProxy();
 
     void destroy();
+
+    void destroyProxyOnly();
 
     int setProperty( const char *property, PyrSlot *arg, bool direct = false );
 
