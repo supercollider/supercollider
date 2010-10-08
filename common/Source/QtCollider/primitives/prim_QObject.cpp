@@ -75,8 +75,6 @@ int QObject_New (struct VMGlobals *g, int)
 {
   PyrSlot *args = g->sp - 2;
 
-  if( !isKindOfSlot( args, s_QObject->u.classobj ) ) return errFailed;
-
   QString realClassName =
     Slot::toString( &slotRawObject( args )->classptr->name );
   qscDebugMsg( "CREATE: %s\n", realClassName.toStdString().c_str() );
@@ -101,44 +99,36 @@ int QObject_New (struct VMGlobals *g, int)
   return errNone;
 }
 
-void qcDestroyQObject( QcSyncEvent *e )
-{
-  QcGenericEvent *ce = static_cast<QcGenericEvent*>(e);
-  delete ( ce->_data.value<QObjectProxy*>() );
-}
-
 int QObject_Destroy (struct VMGlobals *g, int)
 {
-  /* NOTE we post a synchronous event (waiting for object to be deleted),
-  because the SC object pointer should not be accessed after this call */
-
-  if( !isKindOfSlot( g->sp, s_QObject->u.classobj ) ) return errFailed;
-  if( IS_OBJECT_NIL( g->sp ) ) return errFailed;
-
   QString realClassName =
     Slot::toString( &slotRawObject( g->sp )->classptr->name );
   qscDebugMsg( "DESTROY: %s\n", realClassName.toStdString().c_str() );
 
+  if( IS_OBJECT_NIL( g->sp ) ) return errFailed;
+
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( g->sp );
 
-  QVariant data = QVariant::fromValue<QObjectProxy*>( proxy );
+  proxy->destroy();
 
-  QcGenericEvent *event = new QcGenericEvent( 0, data );
-  QcApplication::postSyncEvent( event, &qcDestroyQObject );
+  /* NOTE destroy has set QObjectProxy::scObject to 0, so we have to invalidate
+    the SC object ourselves */
+  SetNil( slotRawObject( g->sp )->slots );
 
   return errNone;
 }
 
 int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 {
-  qscDebugMsg("Finalizing a QObject\n");
+  QString realClassName =
+    Slot::toString( &obj->classptr->name );
+  qscDebugMsg("FINALIZE: %s\n", realClassName.toStdString().c_str() );
+
   if( IsNil( obj->slots ) ) return errNone;
+
   QObjectProxy *proxy = (QObjectProxy*) slotRawPtr( obj->slots );
 
-  QVariant data = QVariant::fromValue<QObjectProxy*>( proxy );
-
-  QcGenericEvent *event = new QcGenericEvent( 0, data );
-  QcApplication::postSyncEvent( event, &qcDestroyQObject );
+  proxy->destroy();
 
   return errNone;
 }
@@ -146,8 +136,6 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 int QObject_SetProperty(struct VMGlobals *g, int)
 {
   PyrSlot *args = g->sp - 3;
-
-  if( !isKindOfSlot( args, s_QObject->u.classobj ) ) return errFailed;
 
   if( IS_OBJECT_NIL( args ) ) return errFailed;
 
@@ -164,8 +152,6 @@ int QObject_GetProperty(struct VMGlobals *g, int)
 {
   PyrSlot *args = g->sp - 2;
 
-  if( !isKindOfSlot( args, s_QObject->u.classobj ) ) return errFailed;
-
   if( IS_OBJECT_NIL( args ) ) return errFailed;
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( args );
@@ -180,7 +166,6 @@ int QObject_SetEventHandler (struct VMGlobals *g, int)
 {
   PyrSlot *args = g->sp - 3;
 
-  if( !isKindOfSlot( args, s_QObject->u.classobj ) ) return errFailed;
   if( IS_OBJECT_NIL( args ) ) return errFailed;
 
   if( NotInt( args+1 ) || NotSym( args+2 ) ) return errWrongType;
@@ -200,7 +185,6 @@ int QObject_InvokeMethod (struct VMGlobals *g, int)
 {
   PyrSlot *args = g->sp - 2;
 
-  if( !isKindOfSlot( args, s_QObject->u.classobj ) ) return errFailed;
   if( IS_OBJECT_NIL( args ) ) return errFailed;
 
   if( !IsSym( args+1 ) ) return errWrongType;

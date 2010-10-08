@@ -46,7 +46,8 @@ class QObjectProxy : public QObject
     enum RequestType {
       SetProperty,
       GetProperty,
-      SetEventHandler
+      SetEventHandler,
+      Destroy
     };
 
   public:
@@ -71,6 +72,8 @@ class QObjectProxy : public QObject
 
     virtual ~QObjectProxy();
 
+    void destroy();
+
     int setProperty( const char *property, PyrSlot *arg, bool direct = false );
 
     int getProperty( const char *property, PyrSlot *ret, PyrSlot *retExtra );
@@ -80,9 +83,6 @@ class QObjectProxy : public QObject
     bool invokeMethod( const char *method, PyrSlot *arg );
 
     QObject *object() { return qObject; }
-
-  private Q_SLOTS:
-    void objectDestroyed();
 
   private:
     void invokeScMethod

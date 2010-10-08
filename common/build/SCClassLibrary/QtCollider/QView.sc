@@ -60,18 +60,18 @@ QView : QObject {
   }
 
   remove {
-    if( qObject.notNil ) {
+    if( parent.notNil ) {
+      parent.prRemoveChild( this );
+    } {
+      QWindow.prRemoveWindow( this );
+    };
+
+    this.removeAll;
+
+    if( this.isValid ) {
       onClose.value(this);
-      if( parent.notNil ) {
-        parent.prRemoveChild( this );
-      } {
-        QWindow.prRemoveWindow( this );
-      };
-      this.removeAll;
       this.prDestroy;
-      qObject = nil;
-    }
-    { ^"This view already removed!" }
+    };
   }
 
   // ----------------- properties --------------------------
@@ -201,7 +201,7 @@ QView : QObject {
   }
 
   isClosed {
-    if( qObject.notNil ) {
+    if( this.isValid ) {
       ^this.visible.not;
     } {
       ^true;
