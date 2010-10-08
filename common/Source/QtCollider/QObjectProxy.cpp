@@ -34,16 +34,27 @@ void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
 void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
 
 QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
-: qObject( qObject_ ), scObject( scObject_ )
+: QObject( qObject_ ), qObject( qObject_ ), scObject( scObject_ )
 {
   qObject->installEventFilter( this );
-  connect( qObject, SIGNAL( destroyed() ), this, SLOT( objectDestroyed() ) );
 }
 
 QObjectProxy::~QObjectProxy()
 {
-  qscDebugMsg( "~QObjectProxy\n" );
-  qObject->deleteLater();
+  if( scObject ) {
+    qscDebugMsg( "~QObjectProxy: invalidating SC object\n" );
+    QtCollider::lockLang();
+    SetNil( scObject->slots );
+    QtCollider::unlockLang();
+  }
+  else {
+    qscDebugMsg( "~QObjectProxy: SC object already detached\n" );
+  }
+}
+
+void QObjectProxy::destroy()
+{
+  syncRequest( Destroy );
 }
 
 int QObjectProxy::setProperty( const char *property, PyrSlot *arg, bool direct )
@@ -159,11 +170,6 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg )
   return success;
 }
 
-void QObjectProxy::objectDestroyed()
-{
-  qObject = 0;
-}
-
 void QObjectProxy::invokeScMethod
 ( PyrSymbol *method, const QList<QVariant> & args, PyrSlot *result,
   bool locked )
@@ -189,7 +195,7 @@ void QObjectProxy::invokeScMethod
   }
   else {
     SetNil( result );
-    qscDebugMsg("QObjectProxy::invokeScMethod: no SC object\n");
+    qscDebugMsg("QObjectProxy: no SC object\n");
   }
 
   if( !locked ) QtCollider::unlockLang();
@@ -237,6 +243,10 @@ void QObjectProxy::customEvent( QEvent *event )
     case SetEventHandler:
       eh = e->_data.value<EventHandlerData>();
       doSetEventHandler( eh );
+      break;
+    case Destroy:
+      scObject = 0;
+      qObject->deleteLater();
       break;
     default:
       qscErrorMsg("Unhandled custom event\n");
