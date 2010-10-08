@@ -259,7 +259,7 @@ void QcCustomPainted::rebuildPen()
   QtCollider::lockLang();
 
   QtCollider::beginPen( &pen );
-  QApplication::sendEvent( this, new ScMethodCallEvent( "prDraw", QList<QVariant>(), true ) );
+  QApplication::sendEvent( this, new ScMethodCallEvent( "draw", QList<QVariant>(), true ) );
   QtCollider::endPen();
 
   QtCollider::unlockLang();

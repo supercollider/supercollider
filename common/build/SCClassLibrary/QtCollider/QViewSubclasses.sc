@@ -184,7 +184,7 @@ QSlider : QAbstractStepValue {
   var <> thumbSize;
 
   *new { arg parent, bounds;
-    ^super.new( parent, bounds ).prInitQSlider( bounds.asRect );
+    ^super.new( parent, bounds ).initQSlider( bounds.asRect );
   }
 
   knobColor {
@@ -196,7 +196,7 @@ QSlider : QAbstractStepValue {
     this.setProperty( \palette, palette );
   }
 
-  prInitQSlider { arg bounds;
+  initQSlider { arg bounds;
     if( bounds.notNil ) {
       if( bounds.width > bounds.height ) {
         this.orientation_( \horizontal );
@@ -279,10 +279,10 @@ QSlider2D : QAbstractStepValue {
 QRangeSlider : QAbstractStepValue {
 
   *new { arg parent, bounds;
-    ^super.new( parent, bounds ).prInitQRangeSlider( bounds.asRect );
+    ^super.new( parent, bounds ).initQRangeSlider( bounds.asRect );
   }
 
-  prInitQRangeSlider { arg bounds;
+  initQRangeSlider { arg bounds;
     if( bounds.notNil ) {
       if( bounds.width > bounds.height ) {
         this.orientation_( \horizontal );
@@ -376,11 +376,11 @@ QNumberBox : QAbstractStepValue {
 
   *new { arg aParent, aBounds;
     var obj = super.new( aParent, aBounds );
-    obj.prInitQNumberBox;
+    obj.initQNumberBox;
     ^obj;
   }
 
-  prInitQNumberBox {
+  initQNumberBox {
     clipLo = inf;
     clipHi = inf;
     scroll = true;

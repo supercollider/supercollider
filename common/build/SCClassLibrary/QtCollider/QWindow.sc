@@ -79,15 +79,15 @@ QWindow : QView {
     ^this.primitiveFailed
   }
 
-  *prAddWindow { arg window;
+  *addWindow { arg window;
     allWindows = allWindows.add( window );
   }
 
-  *prRemoveWindow { arg window;
+  *removeWindow { arg window;
     allWindows.remove( window );
   }
 
-  prDraw {
+  draw {
     drawHook.value( this );
   }
 }

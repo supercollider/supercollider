@@ -65,7 +65,7 @@ QKnob : QUserView {
     this.beginDragAction = { value.asFloat; };
     this.canReceiveDragHandler = { SCView.currentDrag.isNumber };*/
 
-    this.drawFunc_( { this.prDrawKnob } );
+    this.drawFunc_( { this.drawKnob } );
   }
 
   calcConsts { arg rect;
@@ -89,7 +89,7 @@ QKnob : QUserView {
     super.bounds_(rect);
   }
 
-  prDrawKnob {
+  drawKnob {
     var startAngle, arcAngle;
 
     QPen.color = color[2];

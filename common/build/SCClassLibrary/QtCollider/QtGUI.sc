@@ -35,7 +35,7 @@ QtGUI {
   *multiSliderView { ^QMultiSliderView }
   *rangeSlider { ^QRangeSlider }
   *slider2D { ^QSlider2D }
-  *tabletSlider2D { ^this.prNotImplemented( "TabletSlider2D"); }
+  *tabletSlider2D { ^this.notImplemented( "TabletSlider2D"); }
   *knob { ^QKnob; }
   *listView { ^QListView }
   *popUpMenu { ^QPopUpMenu }
@@ -44,19 +44,19 @@ QtGUI {
   *freqScopeView { ^QFreqScope }
   *scopeView { ^QScopeView }
   *stethoscope { ^QStethoscope }
-  *envelopeView { ^this.prNotImplemented( "EnvelopeView"); }
-  *tabletView { ^this.prNotImplemented( "TabletView"); }
-  *soundFileView { ^this.prNotImplemented( "SoundFileView"); }
-  *movieView { ^this.prNotImplemented( "MovieView"); }
+  *envelopeView { ^this.notImplemented( "EnvelopeView"); }
+  *tabletView { ^this.notImplemented( "TabletView"); }
+  *soundFileView { ^this.notImplemented( "SoundFileView"); }
+  *movieView { ^this.notImplemented( "MovieView"); }
 
   *userView { ^QUserView }
 
   *pen { ^QPen; }
   *font { ^QFont }
 
-  *dragSource { ^this.prNotImplemented( "DragSource"); }
-  *dragSink { ^this.prNotImplemented( "DragSink"); }
-  *dragBoth { ^this.prNotImplemented( "DragBoth"); }
+  *dragSource { ^this.notImplemented( "DragSource"); }
+  *dragSink { ^this.notImplemented( "DragSink"); }
+  *dragBoth { ^this.notImplemented( "DragBoth"); }
 
   *ezScroller { ^EZScroller }
   *ezSlider { ^EZSlider }
@@ -65,7 +65,7 @@ QtGUI {
   *ezNumber { ^EZNumber}
   *ezRanger { ^EZRanger }
 
-  *prNotImplemented { arg class;
+  *notImplemented { arg class;
     ("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
     ^nil;
   }

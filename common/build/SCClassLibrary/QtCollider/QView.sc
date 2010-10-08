@@ -43,11 +43,11 @@ QView : QObject {
       if( parent.isValid.not ) {^nil;}
     }
     ^super.new( this.viewClass.asString, [parent, bounds.asRect] )
-      .prInitQView( parent );
+      .initQView( parent );
   }
 
   *newCustom { arg customArgs;
-    ^super.new( this.viewClass.asString, customArgs ).prInitQView( nil );
+    ^super.new( this.viewClass.asString, customArgs ).initQView( nil );
   }
 
   *viewClass { ^this }
@@ -61,16 +61,16 @@ QView : QObject {
 
   remove {
     if( parent.notNil ) {
-      parent.prRemoveChild( this );
+      parent.removeChild( this );
     } {
-      QWindow.prRemoveWindow( this );
+      QWindow.removeWindow( this );
     };
 
     this.removeAll;
 
     if( this.isValid ) {
       onClose.value(this);
-      this.prDestroy;
+      this.destroy;
     };
   }
 
@@ -149,6 +149,10 @@ QView : QObject {
   add { arg child;
     children = children.add(child);
     if (decorator.notNil, { decorator.place(child); });
+  }
+
+  removeChild { arg child;
+    children.remove(child);
   }
 
   removeAll {
@@ -330,7 +334,7 @@ QView : QObject {
   }
   /* ---------------- private ----------------------- */
 
-  prInitQView { arg parentArg;
+  initQView { arg parentArg;
 
     var handleKeyDown, handleKeyUp;
 
@@ -339,7 +343,7 @@ QView : QObject {
     if( parentArg.notNil ) {
       parentArg.add( this );
     } {
-      QWindow.prAddWindow( this );
+      QWindow.addWindow( this );
       QWindow.initAction.value( this );
     };
 
@@ -368,10 +372,6 @@ QView : QObject {
       {this.registerEventHandler( QObject.mouseMoveEvent, \mouseMove )};
     if( this.overrides( \mouseOver ) )
       {this.registerEventHandler( QObject.mouseOverEvent, \mouseOver )};
-  }
-
-  prRemoveChild { arg child;
-    children.remove(child);
   }
 
   onCloseEvent {

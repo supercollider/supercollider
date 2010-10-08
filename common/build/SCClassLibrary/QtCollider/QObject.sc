@@ -15,7 +15,17 @@ QObject {
   var qObject, finalizer;
 
   *new { arg className, argumentArray;
-    ^super.new.prInitQObject( className, argumentArray );
+    ^super.new.initQObject( className, argumentArray );
+  }
+
+  initQObject{ arg className, argumentArray;
+    _QObject_New
+    ^this.primitiveFailed;
+  }
+
+  destroy {
+    _QObject_Destroy
+    ^this.primitiveFailed
   }
 
   isValid {
@@ -29,16 +39,6 @@ QObject {
 
   setProperty { arg property, value, direct=true;
     _QObject_SetProperty
-    ^this.primitiveFailed
-  }
-
-  prInitQObject{ arg className, argumentArray;
-    _QObject_New
-    ^this.primitiveFailed;
-  }
-
-  prDestroy {
-    _QObject_Destroy
     ^this.primitiveFailed
   }
 
