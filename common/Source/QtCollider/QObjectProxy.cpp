@@ -57,6 +57,11 @@ void QObjectProxy::destroy()
   syncRequest( Destroy );
 }
 
+void QObjectProxy::destroyProxyOnly()
+{
+  syncRequest( DestroyProxy );
+}
+
 int QObjectProxy::setProperty( const char *property, PyrSlot *arg, bool direct )
 {
   qscDebugMsg("SET: %s\n", property);
@@ -247,6 +252,10 @@ void QObjectProxy::customEvent( QEvent *event )
     case Destroy:
       scObject = 0;
       qObject->deleteLater();
+      break;
+    case DestroyProxy:
+      scObject = 0;
+      deleteLater();
       break;
     default:
       qscErrorMsg("Unhandled custom event\n");
