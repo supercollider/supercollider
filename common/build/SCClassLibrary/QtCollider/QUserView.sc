@@ -27,7 +27,7 @@ QUserView : QView {
     this.setProperty( \background, aColor, true );
   }
 
-  prDraw {
+  draw {
     drawFunc.value( this );
   }
 }
