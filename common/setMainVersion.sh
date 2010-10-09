@@ -16,7 +16,9 @@ line=$( grep "classvar scVersion" $mainfile )
 echo $versionline
 echo $line
 
-sed "s/$line/$versionline/" <$mainfile >tempfile
-cp tempfile $mainfile
-rm tempfile
-
+# only update if they don't already match
+if [ "$versionline" != "$line" ]; then
+	sed "s/$line/$versionline/" <$mainfile >tempfile
+	cp tempfile $mainfile
+	rm tempfile
+fi
