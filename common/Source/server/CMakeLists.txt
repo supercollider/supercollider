@@ -1,5 +1,27 @@
 find_package(Sndfile)
-find_package(Jack)
+
+# Here we work out which audio API to use, from system type and/or user option.
+string(TOLOWER "$ENV{AUDIOAPI}" AUDIOAPI)
+if(AUDIOAPI STREQUAL "")
+	if(APPLE)
+		set(AUDIOAPI coreaudio)
+	else()
+		set(AUDIOAPI jack)
+	endif(APPLE)
+endif()
+
+if(AUDIOAPI STREQUAL jack)
+	find_package(Jack)
+	if(NOT JACK_FOUND)
+		message(FATAL_ERROR "Jack selected as audio API, but development files not found")
+	endif()
+elseif(AUDIOAPI STREQUAL portaudio)
+	find_package(Portaudio)
+	if(NOT PORTAUDIO_FOUND)
+		message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
+	endif()
+endif()
+message(STATUS "Audio API: ${AUDIOAPI}")
 
 set(scsynth_sources
     Samp.cpp
@@ -31,13 +53,13 @@ set_property(DIRECTORY
              APPEND
              PROPERTY COMPILE_DEFINITIONS SC_MEMORY_ALIGNMENT=16)
 
-if (JACK_FOUND)
-	message(STATUS "Compile with Jack support")
+if (AUDIOAPI STREQUAL jack)
 	list(APPEND scsynth_sources SC_Jack.cpp)
-	set_property(DIRECTORY
-				 APPEND
-				 PROPERTY COMPILE_DEFINITIONS SC_AUDIO_API=SC_AUDIO_API_JACK ${JACK_DEFINITIONS})
+	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK" ${JACK_DEFINITIONS})
 	include_directories(${JACK_INCLUDE_DIRS})
+elseif (AUDIOAPI STREQUAL portaudio)
+	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_PORTAUDIO" ${PORTAUDIO_DEFINITIONS})
+	include_directories(${PORTAUDIO_INCLUDE_DIRS})
 endif()
 
 if (FINAL_BUILD)
@@ -49,10 +71,6 @@ endif()
 
 target_link_libraries(libscsynth sccommon)
 
-if (APPLE)
-	target_link_libraries(libscsynth "-framework CoreAudio")
-endif()
-
 if(SNDFILE_FOUND)
 	include_directories(${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(libscsynth ${SNDFILE_LIBRARIES})
@@ -61,15 +79,17 @@ else()
 endif(SNDFILE_FOUND)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	set_property(DIRECTORY
-				APPEND
-				PROPERTY COMPILE_DEFINITIONS SC_PLUGIN_DIR="${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins")
+	add_definitions(SC_PLUGIN_DIR="${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins")
 elseif(NOT APPLE)
 	message(SEND_ERROR "Not implemented")
 endif()
 
-if (JACK_FOUND)
+if (AUDIOAPI STREQUAL jack)
 	target_link_libraries(libscsynth ${JACK_LIBRARIES})
+elseif(AUDIOAPI STREQUAL portaudio)
+	target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
+elseif(AUDIOAPI STREQUAL coreaudio)
+	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
 
 set_property(TARGET libscsynth
