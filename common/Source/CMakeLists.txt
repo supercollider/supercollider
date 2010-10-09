@@ -24,7 +24,7 @@ endif()
 
 add_definitions("-DSC_PLUGIN_LOAD_SYM=\"load\"")
 
-if (NOT APPLE)
+if (NOT APPLE AND NOT WIN32)
 	# on apple we leave this undefined so it defaults to .scx (in the code)
 	add_definitions("-DSC_PLUGIN_EXT=\".so\"")
 endif()
