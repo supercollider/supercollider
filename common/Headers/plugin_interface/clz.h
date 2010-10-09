@@ -29,6 +29,8 @@ count leading zeroes function and those that can be derived from it
 
 #include "SC_Types.h"
 
+#include "SC_Win32Utils.h"
+
 #ifdef __MWERKS__
 
 #define __PPC__ 1
@@ -50,19 +52,15 @@ static __inline__ int32 CLZ(int32 arg)
 
 #elif defined(_WIN32) && !defined(__GNUC__)
 
-static int32 CLZ( int32 arg )
+__forceinline static int32
+CLZ( int32 arg )
 {
-    __asm{
-        bsr    eax, arg
-        jnz    non_zero
-        mov    arg, 32
-        jmp    end
-non_zero:
-        xor    eax, 31
-        mov    arg, eax
-end:
-    }
-    return arg;
+   unsigned long idx;
+   if (BitScanReverse(&idx, (unsigned long)arg))
+   {
+        return (int32)(31-idx);
+   }
+   return 32;
 }
 
 #elif defined(__ppc__) || defined(__powerpc__) || defined(__PPC__)
