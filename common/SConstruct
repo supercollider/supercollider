@@ -706,14 +706,6 @@ commonEnv.Append(
     CXXFLAGS = ['-fPIC']
     )
 
-# strtod
-conf = Configure(commonEnv)
-if conf.CheckFunc('strtod'):
-    commonEnv.Append(
-        CPPDEFINES = 'HAVE_STRTOD'
-        )
-commonEnv = conf.Finish()
-
 
 # ======================================================================
 # back to common
