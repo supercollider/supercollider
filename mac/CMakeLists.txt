@@ -104,6 +104,8 @@ set(scapp_sources
 
 set(scapp_parser_source ../common/Source/lang/LangSource/Bison/lang11d_tab.cpp)
 
+add_definitions(-DYYSTACK_USE_ALLOCA -DHAVE_SPEECH)
+
 # set how it shows up in the Info.plist file
 SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns) 
 # set where in the bundle to put the icns file
@@ -157,7 +159,8 @@ target_link_libraries(${scappbundlename} "-framework WebKit")
 if(SNDFILE_FOUND)
 	include_directories(${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(${scappbundlename} ${SNDFILE_LIBRARIES})
-else()
+	add_definitions("-DLIBSNDFILE_1018")
+elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
