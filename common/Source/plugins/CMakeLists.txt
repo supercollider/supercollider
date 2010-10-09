@@ -1,23 +1,29 @@
-if (NOT APPLE)
-	# we use vdsp on osx
+# here we choose who provides us with the FFT lib
+if (FFT_GREEN)
+	add_definitions("-DSC_FFT_GREEN")
+elseif (APPLE)
+	add_definitions("-DSC_FFT_VDSP")
+else()
 	find_package(FFTW3f)
 
-	if (NOT FFTW3F_FOUND)
+	if (FFTW3F_FOUND)
+		add_definitions("-DSC_FFT_FFTW")
+	else()
 		message(SEND_ERROR "Cannot find libfftw3f")
 	endif()
 endif()
-find_package(Sndfile)
+
+if(NOT NO_LIBSNDFILE)
+	find_package(Sndfile)
+endif()
 
 include_directories(../../Headers/plugin_interface
 					../../Headers/common
 					../../Headers/server)
 
-
 if (NOVA_SIMD)
 	include_directories(../../include/nova-simd)
-	set_property(DIRECTORY .
-				APPEND
-				PROPERTY COMPILE_DEFINITIONS NOVA_SIMD)
+	add_definitions("-DNOVA_SIMD")
 endif()
 
 # large file support
@@ -63,13 +69,12 @@ set(plugin_sources
 set(plugins "")
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
-if(APPLE)
+if(APPLE OR WIN32)
 	set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
 endif()
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-finite-math-only")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
+	add_definitions("-fno-finite-math-only" "-fno-rtti" "-fno-exceptions")
 endif()
 
 
@@ -79,9 +84,10 @@ foreach(plugin ${plugin_sources})
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
-set(scfft_sources
-	../common/SC_fftlib.cpp
-	SCComplex.cpp)
+set(scfft_sources   ../common/SC_fftlib.cpp   SCComplex.cpp)
+if (FFT_GREEN)
+	set(scfft_sources   ${scfft_sources} ../common/fftlib.c)
+endif()
 
 add_library(FFT_UGens MODULE
 			FFTInterfaceTable.cpp
@@ -112,17 +118,19 @@ add_library(ML_UGens MODULE
 			${scfft_sources}
 			)
 
-add_library(DiskIO_UGens MODULE
+if(NOT NO_LIBSNDFILE)
+	add_library(DiskIO_UGens MODULE
 			DiskIO_UGens.cpp
 			../server/SC_SyncCondition.cpp)
 
-if(SNDFILE_FOUND)
-	include_directories(${SNDFILE_INCLUDE_DIR})
-	target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} m pthread)
-	list(APPEND plugins DiskIO_UGens)
-else()
-	message(SEND_ERROR "Cannot find libsndfile")
-endif(SNDFILE_FOUND)
+	if(SNDFILE_FOUND)
+		include_directories(${SNDFILE_INCLUDE_DIR})
+		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} m pthread)
+		list(APPEND plugins DiskIO_UGens)
+	else()
+		message(SEND_ERROR "Cannot find libsndfile")
+	endif(SNDFILE_FOUND)
+endif()
 
 set(fft_ugens FFT_UGens PV_ThirdParty ML_UGens)
 list(APPEND plugins FFT_UGens PV_ThirdParty ML_UGens)
@@ -132,24 +140,14 @@ if (FFTW3F_FOUND)
 endif()
 
 foreach(ugen ${fft_ugens})
-	#set_property(TARGET ${ugen}
-	#				APPEND
-	#				PROPERTY COMPILE_DEFINITIONS SC_FFT_GREEN)
-
 	target_link_libraries(${ugen} m)
 
 	if (FFTW3F_FOUND)
 		target_link_libraries(${ugen} ${FFTW3F_LIBRARY})
-		set_property(TARGET ${ugen}
-						APPEND
-						PROPERTY COMPILE_DEFINITIONS SC_FFT_FFTW)
 	endif()
 
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")
-		set_property(TARGET ${ugen}
-						APPEND
-						PROPERTY COMPILE_DEFINITIONS SC_FFT_VDSP)
 	endif()
 
 endforeach()
@@ -169,11 +167,11 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 elseif (APPLE)
 	target_link_libraries(KeyboardUGens "-framework CoreServices -framework Carbon")
 	target_link_libraries(MouseUGens "-framework CoreServices -framework Carbon")
-	target_link_libraries(DiskIO_UGens "-framework CoreServices")
+	if(NOT NO_LIBSNDFILE)
+		target_link_libraries(DiskIO_UGens "-framework CoreServices")
+	endif()
 
-	set_property(DIRECTORY .
-				APPEND
-				PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
+	add_definitions("-DSC_DARWIN")
 endif()
 
 if (APPLE)
