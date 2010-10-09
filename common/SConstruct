@@ -1103,7 +1103,7 @@ if env['LANG']:
 
 # optional features
 if features['midiapi']:
-    merge_lib_info(langEnv, libraries['midiapi'])
+    merge_lib_info(libsclangEnv, libraries['midiapi'])
     if features['midiapi'] == 'CoreMIDI':
                 libsclangSources += ['Source/lang/LangPrimSource/SC_CoreMIDI.cpp']
     else:
