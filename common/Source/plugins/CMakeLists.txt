@@ -74,9 +74,9 @@ if(APPLE OR WIN32)
 endif()
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
-	add_definitions("-fno-finite-math-only" "-fno-rtti" "-fno-exceptions")
+	add_definitions(-fno-finite-math-only)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
 endif()
-
 
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
