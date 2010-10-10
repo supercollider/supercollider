@@ -41,11 +41,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">EZPopUpMenu is wrapper class which creates an (optional) label and a popUpMenu. It includes per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting menu items are also included . If the parent is nil, then EZPopUpMenu will create its own window.See <a href="EZGui.html"><span class="s2">EZGui</span></a> and <a href="EZLists.html"><span class="s2">EZLists</span></a> for all of the options.</p>
 <p class="p2"><br></p>
-<p class="p4"><span class="s3"><b>See also:</b> <a href="../Cocoa-GUI/SCPopUpMenu.html"><span class="s4">SCPopUpMenu</span></a></span></p>
+<p class="p4"><span class="s3"><b>See also:</b> <a href="../Main-GUI/PopUpMenu.html"><span class="s4">PopUpMenu</span></a></span></p>
 <p class="p2"><br></p>
 <p class="p5"><b>Some Important Issues Regarding EZPopUpMenu</b></p>
 <p class="p2"><br></p>
-<p class="p1">The convenience methods for EZPopUpMenu require that the items array is an array of associations of labels and functions, not like in <a href="../Cocoa-GUI/SCPopUpMenu.html"><span class="s2">SCPopUpMenu</span></a>, where items is simply an array of strings. If <b>label</b> is nil, then no staticText is created. I</p>
+<p class="p1">The convenience methods for EZPopUpMenu require that the items array is an array of associations of labels and functions, not like in <a href="../Main-GUI/PopUpMenu.html"><span class="s2">PopUpMenu</span></a>, where items is simply an array of strings. If <b>label</b> is nil, then no staticText is created. I</p>
 <p class="p2"><br></p>
 <p class="p5"><b>Creation / Class Methods</b></p>
 <p class="p6"><br></p>
@@ -54,7 +54,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parentView </b>- The parent view or window. If the parent is nil, then EZPopUpMenu will create its own <a href="../Main-GUI/Window.html"><span class="s2">Window</span></a>, and place it conveniently on the screen if the bounds are a <a href="../../Geometry/Point.html"><span class="s2">Point</span></a>. If the bounds are a <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a>, then the Rect determines the window bounds.</p>
 <p class="p10"><br></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a>. Default value is <span class="s5">160@22</span>.</p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- the label. Default value is nil. If nil, then no SCStaticText is created.<span class="Apple-converted-space"> </span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- the label. Default value is nil. If nil, then no StaticText is created.<span class="Apple-converted-space"> </span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>items </b>- Default value is nil. An Array of <a href="../../Collections/Association.html"><span class="s2">Association</span></a>s ['label' -&gt; {arg menuObj; value}, ]. Or and Array Symbols (if you are only using <b>globalAction</b>).</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>globalAction </b>- a Global function to be performed in addition to the item functions {arg menuObj; value}.</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- Initial <b>value</b> of the Menu, i.e. the index selected. Default value is 0.</p>
