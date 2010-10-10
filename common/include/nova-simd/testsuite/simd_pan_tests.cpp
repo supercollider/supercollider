@@ -12,7 +12,7 @@
 using namespace nova;
 using namespace std;
 
-static const int size = 1024;
+static const int size = 512;
 
 template <typename float_type>
 void test_pan2(void)
