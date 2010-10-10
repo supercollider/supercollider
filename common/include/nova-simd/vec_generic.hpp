@@ -191,7 +191,7 @@ public:
     friend inline vec NAME(vec const & arg)         \
     {                                               \
         vec ret;                                    \
-        detail::apply_on_vector<float_type, size> (ret.data_, arg.data_,                \
+        detail::apply_on_vector<float_type, size> (ret.data_, wrap_argument(arg.data_),                \
                                                    FUNCTION);    \
         return ret;                                 \
     }
