@@ -23,8 +23,6 @@ ADD_CUSTOM_TARGET(setMainVersion ALL
 #############################################
 # Compiler flags etc
 
-add_definitions("-fPIC")
-
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	add_definitions("-ffast-math" "-fschedule-insns2" "-fomit-frame-pointer")
 
