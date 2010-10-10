@@ -595,7 +595,7 @@ void SCView::draw(SCRect inDamage)
 	if ( mBackground || mBackgroundImage ) {
 		SCRect bounds;
 		bounds = getDrawBounds();
-		NSLog(@"back bounds: %f, %f, %f, %f", bounds.x, bounds.y, bounds.width, bounds.height);
+		// NSLog(@"back bounds: %f, %f, %f, %f", bounds.x, bounds.y, bounds.width, bounds.height);
 		cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 		rect = SCtoCGRect(bounds);
 	}
@@ -1458,7 +1458,7 @@ void SCHLayoutView::setBounds(SCRect inBounds)
     float left = 0.f;  // subviews will automatically offset from window origin
     float top = 0.f;
     float height = absBounds.height;
-	NSLog(@"view bounds: %f, %f, %f, %f", absBounds.x, absBounds.y, absBounds.width, absBounds.height);
+	// NSLog(@"view bounds: %f, %f, %f, %f", absBounds.x, absBounds.y, absBounds.width, absBounds.height);
     scaleWeight = totalWidth * (1.0/totalWeight);
     child = mChildren;
     int i=0;

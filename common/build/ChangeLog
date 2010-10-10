@@ -1,5 +1,8 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
+
+* 2010-07-12 remove accidental debug messages from SCView (on mac, posted a lot of info to Console, could affect performance) - tb
+
 SuperCollider v3.4, released 2010-07
 ====================================
 
