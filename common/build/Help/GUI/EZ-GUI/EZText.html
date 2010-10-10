@@ -38,7 +38,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p1"><b>Inherits from: Object : </b><a href="EZGui.html"><span class="s2"><b>EZGui</b></span></a></p>
 <p class="p3"><br></p>
-<p class="p1">EZText is a wrapper class which creates an (optional) <a href="../Main-GUI/StaticText.html"><span class="s2">StaticText</span></a>, and a <a href="SC://TextField"><span class="s2">TextField</span></a>.</p>
+<p class="p1">EZText is a wrapper class which creates an (optional) <a href="../Main-GUI/StaticText.html"><span class="s2">StaticText</span></a>, and a <a href="../Main-GUI/TextField.html"><span class="s2">TextField</span></a>.</p>
 <p class="p1">The value is displayed as a compileString in the text field for editing.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding EZText</b></p>
@@ -51,7 +51,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view or window. If the parent is nil, then EZText will create its own <a href="../Main-GUI/Window.html"><span class="s2">Window</span></a>, and place it conveniently on the screen if the bounds are a <a href="../../Geometry/Point.html"><span class="s2">Point</span></a>. If the bounds are a <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a>, then the Rect determines the window bounds.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a>. Default value is <span class="s3">160@20</span>.</p>
 <p class="p9"><br></p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no StaticText is created.<span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>action </b>- A <a href="../../Core/Kernel/Function.html"><span class="s2">Function</span></a> called when the value changes. The function is passed the EZText instance as its argument.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- The value to initialize the EZText with.<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initAction </b>- A <a href="../../../../../../SC3/supercollider/trunk/build/Help/Core/Boolean.html"><span class="s2">Boolean</span></a> indicating whether the action function should be called when setting the initial value. The default is false.</p>

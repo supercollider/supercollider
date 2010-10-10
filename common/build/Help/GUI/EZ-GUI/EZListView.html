@@ -38,11 +38,11 @@ span.Apple-tab-span {white-space:pre}
 <p class="p3"><br></p>
 <p class="p1">EZListView is wrapper class which creates an (optional) label and a listView. It includes per item actions as well as a global action which are both evaluated upon selection of an item. Convenience methods for inserting and deleting list items are also included . If the parent is nil, then EZListView will create its own window. See <a href="EZGui.html"><span class="s2">EZGui</span></a> and <a href="EZLists.html"><span class="s2">EZLists</span></a> for all of the options.</p>
 <p class="p2"><br></p>
-<p class="p1"><b>See also:</b> <a href="../Cocoa-GUI/SCListView.html"><span class="s2">SCListView</span></a></p>
+<p class="p1"><b>See also:</b> <a href="../Main-GUI/ListView.html"><span class="s2">ListView</span></a></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Some Important Issues Regarding EZListView</b></p>
 <p class="p2"><br></p>
-<p class="p1">The convenience methods for EZListView require that the items array is an array of associations of labels and functions, not like in <a href="../Cocoa-GUI/SCListView.html"><span class="s2">SCListView</span></a>, where items is simply an array of strings. If <b>label</b> is nil, then no staticText is created.<span class="Apple-converted-space"> </span></p>
+<p class="p1">The convenience methods for EZListView require that the items array is an array of associations of labels and functions, not like in <a href="../Main-GUI/ListView.html"><span class="s2">ListView</span></a>, where items is simply an array of strings. If <b>label</b> is nil, then no staticText is created.<span class="Apple-converted-space"> </span></p>
 <p class="p2"><br></p>
 <p class="p4"><b>Creation / Class Methods</b></p>
 <p class="p5"><br></p>
@@ -50,7 +50,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>parent </b>- The parent view or window. If the parent is nil, then EZListView will create its own <a href="../Main-GUI/Window.html"><span class="s2">Window</span></a>, and place it conveniently on the screen if the bounds are a <a href="../../Geometry/Point.html"><span class="s2">Point</span></a>. If the bounds are a <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a>, then the Rect determines the window bounds.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>bounds </b>- An instance of <a href="../../Geometry/Rect.html"><span class="s2">Rect</span></a> or <a href="../../Geometry/Point.html"><span class="s2">Point</span></a>. Default value is <span class="s3">160@200</span>.</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no SCStaticText is created.<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>label </b>- The label. Default value is nil. If nil, then no StaticText is created.<span class="Apple-converted-space"> </span></p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>items </b>- Default value is nil. An Array of <a href="../../Collections/Association.html"><span class="s2">Association</span></a>s ['label' -&gt; {arg listObj; value}, ].Or and Array Symbols (if you are only using <b>globalAction</b>).</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>globalAction </b>- a Global function to be performed in addition to the item functions {arg listObj; value}.</p>
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><b>initVal </b>- Initial <b>value</b> of the List, i.e. the index selected. Default value is 0.</p>
@@ -68,7 +68,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>w.view.decorator = <span class="s2">FlowLayout</span>(w.view.bounds);</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g = <span class="s2">EZListView</span>.new(w,</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>230@230,</p>
-<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"An SCListView:"<span class="s4">,</span></p>
+<p class="p12"><span class="s4"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>"An ListView:"<span class="s4">,</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>[<span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\item0</span> -&gt;{<span class="s2">|a|</span> (<span class="s6">"this is item 0 of "</span> ++ a).postln},</p>
 <p class="p10"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s5">\item1</span> -&gt;{<span class="s2">|a|</span> (<span class="s6">"this is item 1 of "</span> ++ a).postln},</p>
