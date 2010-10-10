@@ -75,7 +75,7 @@ struct ratio2midi
 {
     always_inline FloatType operator()(const FloatType & ratio) const
     {
-        return FloatType(12) * log2_<FloatType>()(ratio);
+        return FloatType(12.) * log2_<FloatType>()(ratio);
     }
 };
 
@@ -84,7 +84,7 @@ struct oct2freq
 {
     always_inline FloatType operator()(const FloatType & note) const
     {
-        return FloatType(440) * pow_<FloatType>()(FloatType(2), note - FloatType(4.75));
+        return FloatType(440.) * pow_<FloatType>()(FloatType(2.), note - FloatType(4.75));
     }
 };
 
@@ -103,7 +103,7 @@ struct amp2db
 {
     always_inline FloatType operator()(const FloatType & amp) const
     {
-        return log10_<FloatType>()(fabs_<FloatType>()(amp) * FloatType(20));
+        return log10_<FloatType>()(fabs_<FloatType>()(amp) * FloatType(20.));
     }
 };
 
@@ -112,7 +112,7 @@ struct db2amp
 {
     always_inline FloatType operator()(const FloatType & db) const
     {
-        return pow_<FloatType>()(FloatType(10), db * FloatType(0.05));
+        return pow_<FloatType>()(FloatType(10.), db * FloatType(0.05));
     }
 };
 
