@@ -60,7 +60,6 @@ NSFont *defaultFont = nil;
 
 - (id)init
 {
-	NSLog(@"init");
 	if(!defaultFont) {
 		defaultFont = [NSFont fontWithName: @"Monaco" size: 9];
 		[defaultFont retain];
@@ -82,8 +81,6 @@ NSFont *defaultFont = nil;
     SCTextView* aTextView = [[SCTextView alloc] initWithFrame: NSMakeRect(0,0,612,512)];
 	isRichText = YES;
 	[self initialiseTextViewParams: aTextView];
-	NSLog(@"makeTextView");
-	NSLog(@"font: %@", defaultFont);
 	[aTextView setFont: defaultFont];
 	activeTextView = aTextView;
 	return aTextView;
@@ -664,7 +661,6 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 - (IBAction) advancedFindReplaceAction:(id)sender
 {
-	NSLog(@"hi");
 	[[SMLAdvancedFindController sharedInstance] showAdvancedFindWindow];
 }
 
