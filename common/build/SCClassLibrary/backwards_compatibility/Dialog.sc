@@ -18,7 +18,7 @@ GetStringDialog  {
 	*new { arg prompt,defaultString="",func;
 		var b;
 		Sheet({ arg l;
-			b = 	SCTextField(l,Rect(0,0,150,30));
+			b = 	TextField(l,Rect(0,0,150,30));
 			b.string = String.new ++ defaultString;
 			b.action = {arg field; func.value(true,field.value); l.close; };
 		},prompt);
