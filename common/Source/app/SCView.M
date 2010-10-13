@@ -4315,7 +4315,10 @@ bool SCUserView::canReceiveDrag()
 
 void SCUserView::receiveDrag()
 {
-	sendMessage(s_receiveDrag, 0, 0, 0);
+	PyrSlot args[2];
+	SetFloat(args+0, mRealtiveMousePoint.x);
+	SetFloat(args+1, mRealtiveMousePoint.y); 
+	sendMessage(s_receiveDrag, 2, args, 0);
 }
 
 int SCUserView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
