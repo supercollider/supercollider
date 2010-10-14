@@ -17,7 +17,7 @@ SerialPort
 	*devices {
 		^(devicePattern ?? {
 			thisProcess.platform.name.switch(
-				\linux,   "/dev/tty[S,U]*",
+				\linux,   "/dev/tty[A,S,U]*",
 				\osx,     "/dev/tty.*",
 				\windows, "COM"
 			)
