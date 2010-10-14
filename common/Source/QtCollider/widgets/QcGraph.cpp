@@ -46,7 +46,19 @@ QcGraph::QcGraph() :
 
 VariantList QcGraph::value() const
 {
-  return VariantList();
+  VariantList x;
+  VariantList y;
+  Q_FOREACH( Element e, _elems ) {
+    QPointF val = e.value;
+    x.data.append( val.x() );
+    y.data.append( val.y() );
+  }
+
+  VariantList values;
+  values.data.append( QVariant::fromValue<VariantList>(x) );
+  values.data.append( QVariant::fromValue<VariantList>(y) );
+
+  return values;
 }
 
 float QcGraph::currentX() const
