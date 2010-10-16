@@ -16,7 +16,8 @@ let g:sclangTerm = ""     "Leave it blank like this for the autodetect (just bel
 
 "if setting is blank, this code checks for popular terminals:
 if g:sclangTerm == ""
-	for termcmd in ["xterm", "urxvtcd", "rxvt"]
+	" on debians (inc ubuntu) this 'alternatives' entry should point to the user's preferred term
+	for termcmd in ["/etc/alternatives/x-terminal-emulator", "xterm", "urxvtcd", "rxvt"]
 		if executable(termcmd)
 			let g:sclangTerm = termcmd . " -e"
 			break
