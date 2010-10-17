@@ -9,8 +9,8 @@ p = ScDocParser.new
 p.parseFile("/home/lijon/Coding/ScDoc/test.sch").dump
 p.parse("inline code::code example::.").dump
 
-tag             has-text    structural  modal   need-closing    nestable
-------------------------------------------------------------------------
+tag             hasText hasChilds structural needClose modal nestable
+---------------------------------------------------------------------
 title           S
 class           S
 doctype         S
@@ -19,39 +19,53 @@ related         S
 summary         S
 note            S
 warning         S
-section         S           1
-subsection      S           2
-classmethod     S           3
-instancemethod  S           3
-argument        S           4
-description                 1
-methods                     1
-examples                    1
-list                                            x               x
-numberedlist                                    x               x
-definitionlist                                  x               x
-table                                           x               x
-code            V                       x       x
-link            V                       x       x
-emphasis        V                       x       x
+section         S       x         1
+subsection      S       x         2
+classmethod     S       x         3
+instancemethod  S       x         3
+argument        S       x         4
+description             x         1
+methods                 x         1
+examples                x         1
+list                    x                    x               x
+numberedlist            x                    x               x
+definitionlist          x                    x               x
+table                   x                    x               x
+code            V                            x        x
+link            V                            x        x
+emphasis        V                            x        x
 ##
 ||
 (prose)         V
 
-S is single-line (tag is terminated by newline)
-V is variable-line
-1-4 denotes structural level
+hasText: tag captures text
+    S is single-line (terminated by newline)
+    V is variable-line
+hasChilds: tag captures child-elements
+structural: tag has structural level
+needClose: tag needs closing by ::
+modal: tag ignores any other tags than closing tag and do not nest
+nestable: tag can nest
 
-Note that single vs variable line is only applicable for tags that has a text-field. Also note that modal, structural and nestable are exclusive. nestable can be seen as a structural tag without explicit level. It's also because of the explicit level that the structural tag don't need closing.
+Note:
+- modal tags can be written as inline: opening and closing tag on the same line
+  or block-style: where the closing tag must be a single :: on its own line.
+- single vs variable line is only applicable for tags that captures text.
+- modal, level and nestable are exclusive. nestable can be seen as a structural tag
+  without explicit level. It's also because of the explicit level that the structural
+  tags don't need closing.
+- structural-needClose-modal-nestable could be reduced to one column:
+  1-4 : level, no close tag
+  M   : modal, need close tag
+  N   : nestable, need close tag
 
 All in all we have 6 different categories of tags, not counting the internal 'prose' tag:
-
-- singlelinetext
-- singlelinetext-structural
-- structural
-- range-nestable
-- varilinetext-range-modal
-- delimiters
+- hasTextS: line terminated simple tag, captures text
+- hasTextS-hasChilds-structural: line terminated structural tag, captures text and children elements
+- hasChilds-structural: unnamed structural tag, captures children elements
+- hasChilds-needClose-nestable: nestable tag that needs closing, captures children elements
+- hasTextV-needClose-modal: modal tag that needs closing, captures text
+- delimiters: separator tag, does not capture anything
 
 TODO
 ====
@@ -85,11 +99,11 @@ should merge stuff into the tree before parsing..
 
 - split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
 
-VALIDATION
-----------
-docType must be the first tag, so that it can control which tags are allowed? Or do a separate validation pass afterwards?
+- validation pass:
+start by looking up the docType tag in the tree (root level), then we know which tags are allowed and not.
 
 Some tags should only be allowed once. like class, title, related, keywords, summary, description, methods, examples..
 Keep a dictionary with tag occurence count?
 
+Also make sure ## and || only happens inside lists?
 
