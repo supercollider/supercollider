@@ -550,10 +550,17 @@ Interpreter {
 
 	executeFile { arg pathName ... args;
 		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
-		if (File.exists(pathName).not) { ["file \"",pathName,"\" does not exist."].join.postln; ^nil };
+		if (File.exists(pathName).not) { 
+			"file \"%\" does not exist.\n".postf(pathName);
+			^nil
+		};
 		thisProcess.nowExecutingPath = pathName;
-		protect { result = this.compileFile(pathName).valueArray(args) }
-			{ thisProcess.nowExecutingPath = saveExecutingPath };
+		protect { 
+			result = this.compileFile(pathName).valueArray(args) 
+		} { |exception|
+				exception !? { exception.path = pathName };
+				thisProcess.nowExecutingPath = saveExecutingPath 
+		};
 		^result
 	}
 
