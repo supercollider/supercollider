@@ -253,7 +253,10 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket)
 	bool result;
 	inWorld->mDriverLock->Lock();
 		SC_AudioDriver *driver = AudioDriver(inWorld);
-		if (!driver) return false;
+		if (!driver) {
+			inWorld->mDriverLock->Unlock();
+			return false;
+		}
 		inPacket->mIsBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
 		FifoMsg fifoMsg;
 		fifoMsg.Set(inWorld, Perform_ToEngine_Msg, FreeOSCPacket, (void*)inPacket);
