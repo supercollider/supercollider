@@ -569,17 +569,13 @@ const int circDiam = 20;
 }
 
 - (unsigned int)draggingEntered:(id)dragInfo {
-	NSLog(@"dragSource %@", [dragInfo draggingSource]);
 	if (!mTopView) return NSDragOperationNone;
 	NSPasteboard* pboard = [dragInfo draggingPasteboard];
-	NSLog(@"types %@", [pboard types]);
 	if ([[pboard types] containsObject: sSCObjType]) {
 
 	} else if ([[pboard types] containsObject: NSStringPboardType]) {
 		NSString *nsstring = [pboard stringForType: NSStringPboardType];
-		NSLog(@"string %@", nsstring);
 		if (!nsstring) return NSDragOperationNone;
-		NSLog(@"goingto imp");
 		pthread_mutex_lock (&gLangMutex);
 			VMGlobals *g = gMainVMGlobals;
 			PyrString* pstrobj = newPyrString(g->gc, [nsstring UTF8String], 0, true);
