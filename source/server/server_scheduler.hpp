@@ -66,7 +66,7 @@ template<class scheduler_hook = nop_hook,
          class thread_init_functor = nop_thread_init
         >
 class scheduler:
-    scheduler_hook
+    protected scheduler_hook
 {
     typedef nova::dsp_threads<queue_node, thread_init_functor, rt_pool_allocator<void*> > dsp_threads;
     typedef typename dsp_threads::dsp_thread_queue_ptr dsp_thread_queue_ptr;
