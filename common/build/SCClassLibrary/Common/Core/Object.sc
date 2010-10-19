@@ -585,7 +585,7 @@ Object  {
 			var file;
 			dir = dir ? SynthDef.synthDefDir;
 			if (name.isNil) { error("missing SynthDef file name") } {
-				name = dir ++ name ++ ".scsyndef";
+				name = dir +/+ name ++ ".scsyndef";
 				if(overwrite or: { pathMatch(name).isEmpty })
 					{
 					file = File(name, "w");
