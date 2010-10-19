@@ -24,6 +24,7 @@ Changes are listed below, grouped under each point release of SuperCollider.
 * 2010-09-15 SystemClock and TempoClock sched and schedAbs with inf time doesn't schedule the task in the first place - jr
 * 2010-10-07 change the mac HID error-handler code to output errors to sc post window rather than to mac log; removes a pascal-string issue - ds
 * 2010-10-19 Ndef now releses its bus when server was quit or just booted - jr
+* 2010-10-20 retain the path to the file in which an error has occurred and post it - jr
 
 
 Bugfixes:
