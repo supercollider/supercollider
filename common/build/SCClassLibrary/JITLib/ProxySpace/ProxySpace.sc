@@ -28,14 +28,18 @@ ProxySpace : LazyEnvir {
 
 
 	makeProxy {
-			var proxy;
-			proxy = NodeProxy.new(server);
-			proxy.clock = clock;
-			proxy.awake = awake;
-			if(fadeTime.notNil) { proxy.fadeTime = fadeTime };
-			if(group.isPlaying) { proxy.parentGroup = group };
-			if(quant.notNil) { proxy.quant = quant };
+			var proxy = NodeProxy.new;
+			this.initProxy(proxy);
 			^proxy
+	}
+	
+	initProxy { arg proxy;
+		proxy.server = server;
+		proxy.clock = clock;
+		proxy.awake = awake;
+		if(fadeTime.notNil) { proxy.fadeTime = fadeTime };
+		if(group.isPlaying) { proxy.parentGroup = group };
+		if(quant.notNil) { proxy.quant = quant };
 	}
 
 
@@ -111,6 +115,7 @@ ProxySpace : LazyEnvir {
 	clear { arg fadeTime=0.0;
 		this.do({ arg proxy; proxy.clear(fadeTime) });
 		tempoProxy !? { tempoProxy.clear };
+		this.unregisterServer;
 		super.clear;
 	}
 
@@ -130,6 +135,26 @@ ProxySpace : LazyEnvir {
 				proxy.deepWakeUp;
 			});
 		});
+	}
+	
+	// maintaining state
+	
+	registerServer {
+		ServerQuit.add(this, server);
+		ServerBoot.add(this, server);	
+	}
+	
+	unregisterServer {
+		ServerQuit.remove(this, server);
+		ServerBoot.remove(this, server);
+	}
+	
+	doOnServerBoot { arg server;
+		this.do(_.freeBus);
+	}
+	
+	doOnServerQuit { arg server;
+		this.do(_.freeBus);
 	}
 
 	// garbage collector
