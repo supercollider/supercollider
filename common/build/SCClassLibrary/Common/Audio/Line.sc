@@ -17,6 +17,7 @@ XLine : UGen {
 }
 
 LinExp : UGen {
+	checkInputs { ^this.checkSameRateAsFirstInput }
 	*ar { arg in=0.0, srclo = 0.0, srchi = 1.0, dstlo = 1.0, dsthi = 2.0;
 		^this.multiNew('audio', in, srclo, srchi, dstlo, dsthi)
 	}
@@ -26,6 +27,7 @@ LinExp : UGen {
 }
 
 LinLin : UGen {
+	checkInputs { ^this.checkSameRateAsFirstInput }
 	*ar { arg in=0.0, srclo = 0.0, srchi = 1.0, dstlo = 1.0, dsthi = 2.0;
 		^this.multiNew('audio', in, srclo, srchi, dstlo, dsthi)
 	}
