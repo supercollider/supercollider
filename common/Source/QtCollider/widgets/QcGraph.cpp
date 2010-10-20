@@ -48,8 +48,9 @@ VariantList QcGraph::value() const
 {
   VariantList x;
   VariantList y;
-  Q_FOREACH( Element e, _elems ) {
-    QPointF val = e.value;
+  QList<QcGraphElement*> elems = _model.elements();
+  Q_FOREACH( QcGraphElement* e, elems ) {
+    QPointF val = e->value;
     x.data.append( val.x() );
     y.data.append( val.y() );
   }
@@ -64,15 +65,15 @@ VariantList QcGraph::value() const
 float QcGraph::currentX() const
 {
   if( selIndex < 0 ) return 0.f;
-  Element e = _elems[selIndex];
-  return e.value.x();
+  QcGraphElement *e = _model.elementAt(selIndex);
+  return e->value.x();
 }
 
 float QcGraph::currentY() const
 {
   if( selIndex < 0 ) return 0.f;
-  Element e = _elems[selIndex];
-  return e.value.y();
+  QcGraphElement *e = _model.elementAt(selIndex);
+  return e->value.y();
 }
 
 void QcGraph::setValue( const VariantList &list )
@@ -84,11 +85,11 @@ void QcGraph::setValue( const VariantList &list )
   int newc = qMin( xList.data.count(), yList.data.count() );
   if( !newc ) return;
 
-  int c = _elems.count();
+  int c = _model.elementCount();
   while( c > newc )
   {
-    _elems.removeLast();
     --c;
+    _model.removeAt( c );
   }
 
   int i;
@@ -97,14 +98,13 @@ void QcGraph::setValue( const VariantList &list )
     QPointF val( xList.data[i].value<float>(),
                 yList.data[i].value<float>() );
     if( i < c ) {
-      Element e = _elems[i];
+      QcGraphElement *e = _model.elementAt(i);
       setValue( e, val );
-      _elems.replace( i, e );
     }
     else {
-      Element e;
+      QcGraphElement *e = new QcGraphElement();
       setValue( e, val );
-      _elems.append( e );
+      _model.append( e );
     }
   }
 
@@ -116,35 +116,46 @@ void QcGraph::setValue( const VariantList &list )
 void QcGraph::setStrings( const VariantList &list )
 {
   int strc = list.data.count();
-  int c = _elems.count();
+  int c = _model.elementCount();
   int i;
   for( i = 0; i < c && i < strc; ++i ) {
-    Element e = _elems[i];
-    e.text = list.data[i].toString();
-    _elems.replace( i, e );
+    QcGraphElement *e = _model.elementAt(i);
+    e->text = list.data[i].toString();
   }
+  update();
+}
+
+void QcGraph::connectElements( int src, VariantList targets )
+{
+  int c = _model.elementCount();
+  if( src < 0 || src >= c ) return;
+
+  Q_FOREACH( QVariant var, targets.data ) {
+    int trg = var.toInt();
+    if( trg < 0 || trg >= c ) continue;
+    _model.connect( src, trg );
+  }
+
   update();
 }
 
 void QcGraph::setCurrentX( float f )
 {
   if( selIndex < 0 ) return;
-  Element e = _elems[selIndex];
-  QPointF val = e.value;
+  QcGraphElement *e = _model.elementAt(selIndex);
+  QPointF val = e->value;
   val.setX( f );
   setValue( e, val );
-  _elems.replace( selIndex, e );
   update();
 }
 
 void QcGraph::setCurrentY( float f )
 {
   if( selIndex < 0 ) return;
-  Element e = _elems[selIndex];
-  QPointF val = e.value;
+  QcGraphElement *e = _model.elementAt(selIndex);
+  QPointF val = e->value;
   val.setY( f );
   setValue( e, val );
-  _elems.replace( selIndex, e );
   update();
 }
 
@@ -152,20 +163,15 @@ void QcGraph::setStep( float f )
 {
   _step = qMax( 0.f, f );
 
-  int c = _elems.count();
-  if( !c ) return;
-
-  int i;
-  for( i = 0; i < c; ++i ) {
-    Element e = _elems[i];
-    setValue( e, e.value );
-    _elems.replace( i, e );
+  QList<QcGraphElement*> elems = _model.elements();
+  Q_FOREACH( QcGraphElement *e, elems ) {
+    setValue( e, e->value );
   }
 
-  update();
+  if( elems.count() ) update();
 }
 
-inline void QcGraph::setValue( Element &e, const QPointF& pt )
+inline void QcGraph::setValue( QcGraphElement * e, const QPointF& pt )
 {
   float x = pt.x();
   float y = pt.y();
@@ -177,7 +183,7 @@ inline void QcGraph::setValue( Element &e, const QPointF& pt )
 
   x = qMax( 0.f, qMin( 1.f, x ) );
   y = qMax( 0.f, qMin( 1.f, y ) );
-  e.value = QPointF( x, y );
+  e->value = QPointF( x, y );
 }
 
 QPointF QcGraph::pos( const QPointF & value )
@@ -254,54 +260,80 @@ void QcGraph::paintEvent( QPaintEvent * )
     }
   }
 
-  int c = _elems.count();
+  QList<QcGraphElement*> elems = _model.elements();
+
+  int c = elems.count();
   if( !c ) return;
 
   p.setPen( _strokeColor );
 
-  QPointF pt = pos( _elems[0].value );
-  QRectF rect; rect.setSize( _thumbSize );
-  int i;
-
   // draw lines;
   if( _drawLines ) {
+
     QPainterPath lines;
-    lines.moveTo( pt );
-    for( i = 1; i < c; ++i ) {
-      pt = pos( _elems[i].value );
-      lines.lineTo( pt );
+    QList<QcGraphModel::Connection> conns = _model.connections();
+
+    if( conns.count() ) {
+
+      Q_FOREACH( QcGraphModel::Connection c, conns ) {
+        lines.moveTo( pos( c.a->value ) );
+        lines.lineTo( pos( c.b->value ) );
+      }
+
+    }
+    else {
+
+      QPointF pt = pos( elems[0]->value );
+      lines.moveTo( pt );
+      int i;
+
+      for( i = 1; i < c; ++i ) {
+        pt = pos( elems[i]->value );
+        lines.lineTo( pt );
+      }
+
     }
 
     p.setBrush( Qt::NoBrush );
     p.drawPath( lines );
+
   }
 
   // draw rects and strings
   if( _drawRects ) {
+
+    QRectF rect; rect.setSize( _thumbSize );
+    QPointF pt;
+    int i;
+
     for( i = 0; i < c; ++i ) {
-      Element e = _elems[i];
+
+      QcGraphElement *e = elems[i];
 
       if( i == selIndex )
         p.setBrush( _selColor );
       else
         p.setBrush( _fillColor );
 
-      pt = pos( e.value );
+      pt = pos( e->value );
 
       rect.moveCenter( pt );
       p.drawRect( rect.adjusted(0,0,-1,-1) );
 
-      QString text = e.text;
+      QString text = e->text;
       if( !text.isEmpty() ) {
         p.drawText( rect, Qt::AlignCenter, text );
       }
+
     }
+
   }
 }
 
 void QcGraph::mousePressEvent( QMouseEvent *ev )
 {
-  int c = _elems.count();
+  QList<QcGraphElement*> elems = _model.elements();
+  int c = elems.count();
   if( !c ) return;
 
   QPointF mpos = ev->pos();
@@ -311,8 +343,8 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
 
   int i;
   for( i = 0; i < c; ++i ) {
-    Element e = _elems[i];
-    QPointF pt = pos( e.value );
+    QcGraphElement *e = elems[i];
+    QPointF pt = pos( e->value );
     r.moveCenter( pt );
     if( r.contains( mpos ) ) {
       dragIndex = selIndex = i;
@@ -328,26 +360,25 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
 
 void QcGraph::mouseMoveEvent( QMouseEvent *ev )
 {
-  if( dragIndex < 0 || dragIndex >= _elems.count() ) return;
   if( !_editable ) return;
+  if( dragIndex < 0 || dragIndex >= _model.elementCount() ) return;
 
-  Element e = _elems[dragIndex];
-  if( !e.editable ) return;
+  QcGraphElement *e = _model.elementAt(dragIndex);
+  if( !e->editable ) return;
 
   QPointF mpos = ev->pos() - dragDelta;
   setValue( e, value( mpos ) );
-  _elems.replace( dragIndex, e );
   update();
   doAction( ev->modifiers() );
 }
 
-void  QcGraph::keyPressEvent( QKeyEvent *event )
+void QcGraph::keyPressEvent( QKeyEvent *event )
 {
   if( selIndex < 0 ) return;
 
-  Element e = _elems[selIndex];
-  bool edit = _editable && e.editable;
-  QPointF val = e.value;
+  QcGraphElement *e = _model.elementAt(selIndex);
+  bool edit = _editable && e->editable;
+  QPointF val = e->value;
 
   switch( event->key() ) {
     case Qt::Key_Up:
@@ -377,9 +408,8 @@ void  QcGraph::keyPressEvent( QKeyEvent *event )
       break;
   }
 
-  if( val != e.value ) {
+  if( val != e->value ) {
     setValue( e, val );
-    _elems.replace( selIndex, e );
     update();
     doAction( event->modifiers() );
   }

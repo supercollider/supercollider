@@ -27,6 +27,60 @@
 
 #include <QWidget>
 
+struct QcGraphElement {
+  QcGraphElement() : editable( true ) {};
+  QPointF value;
+  QString text;
+  bool editable;
+};
+
+class QcGraphModel
+{
+  public:
+
+    struct Connection {
+      Connection( QcGraphElement * a_ = 0, QcGraphElement * b_ = 0 ) : a(a_), b(b_) {}
+      QcGraphElement * a;
+      QcGraphElement * b;
+    };
+
+    inline QList<QcGraphElement*> elements() const { return _elems; }
+
+    inline QcGraphElement *elementAt( int i ) const { return _elems[i]; }
+
+    inline int elementCount() const { return _elems.count(); }
+
+    inline void append( QcGraphElement * e ) { _elems.append(e); }
+
+    inline QList<Connection> connections() const { return _conns; }
+
+    void removeAt( int i ) {
+      QcGraphElement *e = _elems[i];
+      int ci = _conns.count();
+      while( ci-- ) {
+        Connection c = _conns[ci];
+        if( c.a == e || c.b == e ) _conns.removeAt(ci);
+      }
+      _elems.removeAt(i);
+    }
+
+    void connect( int xi, int yi ) {
+      QcGraphElement *x = _elems[xi];
+      QcGraphElement *y = _elems[yi];
+      int i;
+      for( i = 0; i < _conns.count(); ++i ) {
+        Connection c = _conns[i];
+        if( (c.a==x && c.b==y) || (c.a==y && c.b==x) ) return;
+      }
+      _conns.append( Connection(x,y) );
+    }
+
+  private:
+
+    QList<Connection> _conns;
+    QList<QcGraphElement*> _elems;
+};
+
 class QcGraph : public QWidget, QcHelper
 {
   Q_OBJECT
@@ -49,13 +103,6 @@ class QcGraph : public QWidget, QcHelper
   Q_PROPERTY( QPointF grid READ grid WRITE setGrid );
   Q_PROPERTY( bool gridOn READ dummyBool WRITE setGridOn );
 
-  struct Element {
-    Element() : editable( true ) {};
-    QPointF value;
-    QString text;
-    bool editable;
-  };
-
   public:
     QcGraph();
 
@@ -67,8 +114,9 @@ class QcGraph : public QWidget, QcHelper
 
     void setValue( const VariantList & );
     void setStrings( const VariantList &list );
+    Q_INVOKABLE void connectElements( int, VariantList );
     void setIndex( int i ) {
-      if( i>=0 && i<_elems.count() ) {
+      if( i>=0 && i<_model.elementCount() ) {
         selIndex = i;
         update();
       }
@@ -90,7 +138,7 @@ class QcGraph : public QWidget, QcHelper
     void setGridOn( bool b ) { _gridOn = b; update(); }
 
   private:
-    inline void setValue( Element &, const QPointF & );
+    inline void setValue( QcGraphElement *, const QPointF & );
     QPointF pos( const QPointF & value );
     QPointF value( const QPointF & pos );
     void paintEvent( QPaintEvent * );
@@ -100,7 +148,7 @@ class QcGraph : public QWidget, QcHelper
     QSize sizeHint() const { return QSize( 200,200 ); }
     void doAction( Qt::KeyboardModifiers );
 
-    QList<Element> _elems;
+    QcGraphModel _model;
 
     QSize _thumbSize;
     QColor _strokeColor;
