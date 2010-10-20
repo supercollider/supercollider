@@ -90,6 +90,7 @@ void QcNumberBox::setDecimals( int d )
 
 void QcNumberBox::onEditingFinished()
 {
+  if( isReadOnly() ) return;
   setValue( locale().toDouble( text() ) );
   setLocked( true );
   doAction();
@@ -125,12 +126,12 @@ void QcNumberBox::keyPressEvent ( QKeyEvent * event )
   int key = event->key();
 
   if( key == Qt::Key_Up ){
-    if( !isReadOnly() ) onEditingFinished();
+    onEditingFinished();
     stepBy( 1, step );
     doAction();
   }
   else if( key == Qt::Key_Down ) {
-    if( !isReadOnly() ) onEditingFinished();
+    onEditingFinished();
     stepBy( -1, step );
     doAction();
   }
