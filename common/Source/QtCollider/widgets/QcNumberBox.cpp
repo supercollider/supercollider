@@ -121,26 +121,28 @@ void QcNumberBox::stepBy( int steps, float stepSize )
 void QcNumberBox::keyPressEvent ( QKeyEvent * event )
 {
   int key = event->key();
-  if( isReadOnly() &&
-      ( (key >= Qt::Key_0 && key <= Qt::Key_9)
-        || key == Qt::Key_Comma || key == Qt::Key_Period
-      )
-    )
-  {
-    blockSignals(true);
-    clear();
-    blockSignals( false );
-    setLocked( false );
-  }
-  else if( key == Qt::Key_Up ){
-    _value = text().toDouble();
+
+  if( key == Qt::Key_Up ){
+    if( !isReadOnly() ) onEditingFinished();
     stepBy( 1, step );
     doAction();
   }
   else if( key == Qt::Key_Down ) {
-    _value = text().toDouble();
+    if( !isReadOnly() ) onEditingFinished();
     stepBy( -1, step );
     doAction();
+  }
+  else if( isReadOnly() ) {
+    QString t = event->text();
+    int i = 0;
+    if( !t.isEmpty() &&
+        ( _validator->validate( t, i ) != QValidator::Invalid ) )
+    {
+      blockSignals(true);
+      clear();
+      blockSignals( false );
+      setLocked( false );
+    }
   }
 
   QLineEdit::keyPressEvent( event );
