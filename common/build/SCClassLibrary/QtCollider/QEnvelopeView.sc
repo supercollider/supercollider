@@ -95,7 +95,9 @@ QEnvelopeView : QView
     this.setProperty( \gridColor, aColor );
   }
 
-  connect { this.nonimpl("connect"); }
+  connect { arg source, targets;
+    this.invokeMethod( \connectElements, [source, targets] );
+  }
 
   strokeColor_ { arg aColor;
     strokeColor = aColor;
