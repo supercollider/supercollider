@@ -60,8 +60,10 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     int decimals() const { return _validator->decimals(); }
   Q_SIGNALS:
     void scrolled( int steps );
+    void valueChanged();
   private Q_SLOTS:
     void onEditingFinished();
+    void onValueChanged();
   protected:
     virtual void keyPressEvent ( QKeyEvent * event );
     virtual void mouseDoubleClickEvent ( QMouseEvent * event );

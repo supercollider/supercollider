@@ -39,9 +39,11 @@ QcNumberBox::QcNumberBox()
   _validator->setDecimals( 2 );
   setValidator( _validator );
   setLocked( true );
-  setValue( 0 );
   connect( this, SIGNAL( editingFinished() ),
            this, SLOT( onEditingFinished() ) );
+  connect( this, SIGNAL( valueChanged() ),
+           this, SLOT( onValueChanged() ), Qt::QueuedConnection );
+  setValue( 0 );
 }
 
 void QcNumberBox::setLocked( bool locked )
@@ -70,13 +72,9 @@ void QcNumberBox::setValue( double val )
   if( val > _validator->top() ) val = _validator->top();
   else if ( val < _validator->bottom() ) val = _validator->bottom();
 
-  blockSignals(true);
-
-  setText( QString::number( val, 'f', _validator->decimals() ) );
-
-  blockSignals(false);
-
   _value = val;
+
+  Q_EMIT( valueChanged() );
 }
 
 double QcNumberBox::value () const
@@ -94,6 +92,24 @@ void QcNumberBox::onEditingFinished()
 {
   setValue( text().toDouble() ); setLocked( true );
   doAction();
+}
+
+void QcNumberBox::onValueChanged()
+{
+  QString str = QString::number( _value, 'f', _validator->decimals() );
+  int i = str.indexOf('.');
+  if( i > -1 ) {
+    QString dec = str.mid(i+1);
+    while( dec.endsWith('0') ) dec.chop(1);
+    if( dec.isEmpty() )
+      str = str.left(i);
+    else
+      str = str.left(i+1) + dec;
+  }
+
+  blockSignals(true);
+  setText( str );
+  blockSignals(false);
 }
 
 void QcNumberBox::stepBy( int steps, float stepSize )
