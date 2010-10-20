@@ -90,14 +90,16 @@ void QcNumberBox::setDecimals( int d )
 
 void QcNumberBox::onEditingFinished()
 {
-  setValue( text().toDouble() ); setLocked( true );
+  setValue( locale().toDouble( text() ) );
+  setLocked( true );
   doAction();
 }
 
 void QcNumberBox::onValueChanged()
 {
-  QString str = QString::number( _value, 'f', _validator->decimals() );
-  int i = str.indexOf('.');
+  QLocale loc = locale();
+  QString str = loc.toString( _value, 'f', _validator->decimals() );
+  int i = str.indexOf( loc.decimalPoint() );
   if( i > -1 ) {
     QString dec = str.mid(i+1);
     while( dec.endsWith('0') ) dec.chop(1);
