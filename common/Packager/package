@@ -69,6 +69,7 @@ SuperCollider-Source/common/include/icu
 SuperCollider-Source/mac
 SuperCollider-Source/iphone
 SuperCollider-Source/common/Source/lang/LangPrimSource/HID_Utilities
+SuperCollider-Source/common/Source/lang/LangPrimSource/WiiMote_OSX
 SuperCollider-Source/common/Headers/app
 SuperCollider-Source/common/Source/app' >> LinuxExclusions.txt
     
