@@ -1,3 +1,49 @@
+QAbstractScroll : QView {
+  var <hasHorizontalScroller = true, <hasVerticalScroller = true;
+  var <autohidesScrollers = true;
+
+  autohidesScrollers_ { arg aBool;
+    if( aBool ) {
+      if( hasHorizontalScroller ) {
+        this.setProperty( \horizontalScrollBarPolicy, 0 );
+      };
+      if( hasVerticalScroller ) {
+        this.setProperty( \verticalScrollBarPolicy, 0 );
+      };
+    } {
+      if( hasHorizontalScroller ) {
+        this.setProperty( \horizontalScrollBarPolicy, 2 )
+      };
+      if( hasVerticalScroller ) {
+        this.setProperty( \verticalScrollBarPolicy, 2 );
+      };
+    };
+    autohidesScrollers = aBool;
+  }
+
+  hasHorizontalScroller_ { arg aBool;
+    var policy;
+    if( aBool ) {
+      if( autohidesScrollers ) { policy = 0 } { policy = 2 };
+      this.setProperty( \horizontalScrollBarPolicy, policy );
+    } {
+      this.setProperty( \horizontalScrollBarPolicy, 1 );
+    };
+    hasHorizontalScroller = aBool;
+  }
+
+  hasVerticalScroller_ { arg aBool;
+    var policy;
+    if( aBool ) {
+      if( autohidesScrollers ) { policy = 0 } { policy = 2 };
+      this.setProperty( \verticalScrollBarPolicy, policy );
+    } {
+      this.setProperty( \verticalScrollBarPolicy, 1 );
+    };
+    hasVerticalScroller = aBool;
+  }
+}
+
 /////////////////////// CONTAINERS ////////////////////////////////
 
 QLayout : QView {
@@ -10,7 +56,7 @@ QHLayout : QLayout {
 QVLayout : QLayout {
 }
 
-QScrollArea : QView {
+QScrollArea : QAbstractScroll {
   var <background, <hasBorder=true;
 
   background_ { arg aColor;
@@ -687,7 +733,7 @@ QMultiSliderView : QView {
   }
 }
 
-QTextView : QView {
+QTextView : QAbstractScroll {
   var <stringColor, <font, <editable=true;
 
   /*TODO*/ var <enterInterpretsSelection;
@@ -699,32 +745,6 @@ QTextView : QView {
   editable_ { arg aBool;
     editable = aBool;
     this.setProperty( \readOnly, aBool.not );
-  }
-
-  autohidesScrollers_ { arg aBool;
-    if( aBool ) {
-      this.setProperty( \horizontalScrollBarPolicy, 0 );
-      this.setProperty( \verticalScrollBarPolicy, 0 );
-    } {
-      this.setProperty( \horizontalScrollBarPolicy, 2 );
-      this.setProperty( \verticalScrollBarPolicy, 2 );
-    }
-  }
-
-  hasHorizontalScroller_ { arg aBool;
-    if( aBool ) {
-      this.setProperty( \horizontalScrollBarPolicy, 2 );
-    } {
-      this.setProperty( \horizontalScrollBarPolicy, 1 );
-    }
-  }
-
-  hasVerticalScroller_ { arg aBool;
-    if( aBool ) {
-      this.setProperty( \verticalScrollBarPolicy, 2 );
-    } {
-      this.setProperty( \verticalScrollBarPolicy, 1 );
-    }
   }
 
   usesTabToFocusNextView_ { arg aBool;
