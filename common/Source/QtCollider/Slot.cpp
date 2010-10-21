@@ -347,6 +347,10 @@ void Slot::setData( PyrSlot *slot )
         type = QMetaType::QRectF;
         ptr = new QRectF( toRect(slot) );
       }
+      else if( isKindOfSlot( slot, class_array ) ) {
+        type = qMetaTypeId<VariantList>();
+        ptr = new VariantList( toVariantList(slot) );
+      }
       else {
         qscErrorMsg("Could not interpret slot!\n");
         type = QMetaType::Void;

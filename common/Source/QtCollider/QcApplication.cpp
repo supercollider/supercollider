@@ -32,6 +32,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _mutex.lock();
   _instance = this;
   _mutex.unlock();
+  qRegisterMetaType<VariantList>();
 }
 
 void QcApplication::postSyncEvent( QcSyncEvent *e, QObject *rcv )
