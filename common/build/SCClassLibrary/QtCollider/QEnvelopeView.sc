@@ -10,8 +10,8 @@ QEnvelopeView : QView
     this.setProperty( \editable, aBool );
   }
 
-  setEditable { arg anInt, aBool;
-    this.nonimpl( "setEditable" );
+  setEditable { arg index, flag;
+    this.invokeMethod( \setEditableAt, [index, flag] );
   }
 
   step_ { arg aFloat;
@@ -67,7 +67,7 @@ QEnvelopeView : QView
   }
 
   setString { arg index, string;
-    this.nonimpl( "setString" );
+    this.invokeMethod( \setStringAt, [index, string] );
   }
 
   strings_ { arg anArray;

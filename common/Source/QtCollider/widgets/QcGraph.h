@@ -114,6 +114,7 @@ class QcGraph : public QWidget, QcHelper
 
     void setValue( const VariantList & );
     void setStrings( const VariantList &list );
+    Q_INVOKABLE void setStringAt( int, const QString & );
     Q_INVOKABLE void connectElements( int, VariantList );
     void setIndex( int i ) {
       if( i>=0 && i<_model.elementCount() ) {
@@ -133,6 +134,7 @@ class QcGraph : public QWidget, QcHelper
     void setDrawLines( bool b ) { _drawLines = b; update(); }
     void setDrawRects( bool b ) { _drawRects = b; update(); }
     void setEditable( bool b ) { _editable = b; update(); }
+    Q_INVOKABLE void setEditableAt( int, bool );
     void setStep( float f );
     void setGrid( const QPointF &pt ) { _gridMetrics = pt; update(); }
     void setGridOn( bool b ) { _gridOn = b; update(); }

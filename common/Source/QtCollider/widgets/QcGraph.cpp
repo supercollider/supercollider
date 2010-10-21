@@ -125,6 +125,16 @@ void QcGraph::setStrings( const VariantList &list )
   update();
 }
 
+void QcGraph::setStringAt( int i, const QString & str )
+{
+  int c = _model.elementCount();
+  if( i > 0 && i < c ) {
+    QcGraphElement *e = _model.elementAt(i);
+    e->text = str;
+    update();
+  }
+}
+
 void QcGraph::connectElements( int src, VariantList targets )
 {
   int c = _model.elementCount();
@@ -157,6 +167,15 @@ void QcGraph::setCurrentY( float f )
   val.setY( f );
   setValue( e, val );
   update();
+}
+
+void QcGraph::setEditableAt( int i, bool b )
+{
+  int c = _model.elementCount();
+  if( i > 0 && i < c ) {
+    QcGraphElement *e = _model.elementAt(i);
+    e->editable = b;
+  }
 }
 
 void QcGraph::setStep( float f )
