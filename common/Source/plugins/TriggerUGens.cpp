@@ -805,20 +805,10 @@ void SendReply_Ctor(SendReply *unit)
 	unit->m_valueOffset = kVarOffset + unit->m_cmdNameSize;
 	unit->m_values = (float*)RTAlloc(unit->mWorld, unit->m_valueSize * sizeof(float));
 
-//	if (INRATE(kVarOffset) == calc_FullRate) {
-//		SETCALC(SendReply_next_aka);
-//	} else {
-//		SETCALC(SendReply_next);
-//	}
-
-	SETCALC(SendReply_next);
-	
-	for(int i=0; i<unit->m_valueSize; i++) {
-		if ( INRATE( i + unit->m_valueOffset ) == calc_FullRate ) {
-			SETCALC(SendReply_next_aka);
-		//	Print("SETCALC(SendReply_next_aka)\n");
-			break;
-		}
+	if (INRATE(0) == calc_FullRate) {
+		SETCALC(SendReply_next_aka);
+	} else {
+		SETCALC(SendReply_next);
 	}
 }
 
@@ -861,7 +851,6 @@ void SendReply_next_aka(SendReply *unit, int inNumSamples)
 		float curtrig = trig[j];
 		if (curtrig > 0.f && prevtrig <= 0.f) {
 			for(int i=0; i<valueSize; i++) {
-//				values[i] = IN(i + valueOffset)[j];
 				int offset = INRATE( i + valueOffset ) != calc_FullRate ? 0 : j;
 				values[i] = IN(i + valueOffset)[offset];
 			}
