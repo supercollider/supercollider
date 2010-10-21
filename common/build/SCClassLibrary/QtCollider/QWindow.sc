@@ -17,10 +17,10 @@ QWindow : QView {
          server,
          scroll = false;
 
-    bounds.top = QWindow.screenBounds.height - bounds.top - bounds.height;
+    var b = QWindow.flipY( bounds.asRect );
 
     //NOTE we omit server, which is only for compatibility with SwingOSC
-    ^super.newCustom( [name, bounds.asRect, resizable, border, scroll] )
+    ^super.newCustom( [name, b, resizable, border, scroll] )
           .initQWindow(name);
   }
 
@@ -45,14 +45,11 @@ QWindow : QView {
   }
 
   bounds_ { arg aRect;
-    aRect.top = QWindow.screenBounds.height - aRect.top - aRect.height;
-    super.bounds_( aRect );
+    super.bounds_( QWindow.flipY( aRect.asRect ) );
   }
 
   bounds {
-    var r = super.bounds;
-    r.top = QWindow.screenBounds.height - r.top - r.height;
-    ^r;
+    ^QWindow.flipY( super.bounds );
   }
 
   background_ { arg aColor;
@@ -73,6 +70,11 @@ QWindow : QView {
     super.refresh;
   }
   // ---------------------- private ------------------------------------
+
+  *flipY { arg aRect;
+    var flippedTop = QWindow.screenBounds.height - aRect.top - aRect.height;
+    ^Rect( aRect.left, flippedTop, aRect.width, aRect.height );
+  }
 
   *prScreenBounds { arg return;
     _QWindow_ScreenBounds
