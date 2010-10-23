@@ -263,8 +263,12 @@ Dictionary : Set {
 
 	asSortedArray {
 		var array;
-		this.keysValuesDo({ arg key, value; array = array.add([key,value]); });
-		array = array.sort({ arg a, b; a.at(0) < b.at(0) });
+		if ( this.notEmpty ){
+			this.keysValuesDo({ arg key, value; array = array.add([key,value]); });
+			array = array.sort({ arg a, b; a.at(0) < b.at(0) });
+		}{
+			array = [];
+		};
 		^array;
 	}
 	asKeyValuePairs {
