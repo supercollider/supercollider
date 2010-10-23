@@ -78,7 +78,6 @@ endif()
 target_link_libraries(libscsynth sccommon)
 
 if(CURL)
-	find_package(Curl)
 	if(CURL_FOUND)
 		target_link_libraries(libscsynth ${CURL_LIBRARIES})
 	endif()
