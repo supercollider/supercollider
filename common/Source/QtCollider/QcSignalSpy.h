@@ -77,7 +77,7 @@ public:
   : QObject( proxy ), _proxy( proxy )
   {}
 
-  bool connect( const char *sigName, PyrSymbol * scMethod )
+  bool connect( const char *sigName, PyrSymbol * scMethod, bool direct = false )
   {
     Q_ASSERT( sigName );
 
@@ -97,8 +97,11 @@ public:
 
     int slotId = QObject::staticMetaObject.methodCount() + _dynSlots.size();
 
+    Qt::ConnectionType conType =
+      direct ? Qt::DirectConnection : Qt::QueuedConnection;
+
     if( !QMetaObject::connect( _proxy->object(), sigId, this, slotId,
-                              Qt::DirectConnection, 0) )
+                              conType, 0) )
     {
       qscErrorMsg( "QMetaObject::connect returned false."
                    " Unable to connect.\n");
