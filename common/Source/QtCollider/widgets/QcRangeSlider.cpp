@@ -145,7 +145,7 @@ void QcRangeSlider::mouseMoveEvent ( QMouseEvent * e )
     }
   }
 
-  QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+  Q_EMIT( action() );
 }
 
 void QcRangeSlider::mousePressEvent ( QMouseEvent * e )
@@ -162,7 +162,7 @@ void QcRangeSlider::mousePressEvent ( QMouseEvent * e )
       mouseMode = SetHi;
       setHiValue( val );
     }
-    QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+    Q_EMIT( action() );
   }
   else if( r.contains( e->pos() ) ){
     mouseMode = Drag;
@@ -172,7 +172,7 @@ void QcRangeSlider::mousePressEvent ( QMouseEvent * e )
     _lo = _hi = valueFromPos( e->pos() );
     update();
     mouseMode = SetHi;
-    QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+    Q_EMIT( action() );
   }
 }
 
@@ -201,7 +201,7 @@ void QcRangeSlider::keyPressEvent ( QKeyEvent *e )
       _lo = 0.5; _hi = 0.5; update(); break;
     default: QWidget::keyPressEvent( e );
   }
-  QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+  Q_EMIT( action() );
 }
 
 void QcRangeSlider::paintEvent ( QPaintEvent *e )

@@ -83,8 +83,9 @@ class QcListWidget : public QListWidget, public QcHelper
 
   public:
     QcListWidget();
-  private Q_SLOTS:
-    void doAction();
+  Q_SIGNALS:
+    void action();
+    void returnPressed();
   private:
     void setItems( const VariantList & );
     void keyPressEvent( QKeyEvent * );
@@ -97,6 +98,8 @@ class QcPopUpMenu : public QComboBox, public QcHelper
 
   public:
     QcPopUpMenu();
+  Q_SIGNALS:
+    void action();
   private Q_SLOTS:
     void doAction(int);
   private:
@@ -110,11 +113,10 @@ class QcTextField : public QLineEdit
 
   public:
     QcTextField() {
-      connect( this, SIGNAL(returnPressed()), this, SLOT(doAction()) );
+      connect( this, SIGNAL(returnPressed()), this, SIGNAL(action()) );
     };
-
-  private Q_SLOTS:
-    void doAction();
+  Q_SIGNALS:
+    void action();
 };
 
 class QcButton : public QPushButton, public QcHelper
@@ -124,6 +126,8 @@ class QcButton : public QPushButton, public QcHelper
   Q_PROPERTY( int value READ getValue WRITE setValue );
   public:
     QcButton();
+  Q_SIGNALS:
+    void action();
   private Q_SLOTS:
     void doAction();
   private:

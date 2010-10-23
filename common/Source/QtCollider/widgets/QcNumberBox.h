@@ -61,6 +61,7 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
   Q_SIGNALS:
     void scrolled( int steps );
     void valueChanged();
+    void action();
   private Q_SLOTS:
     void onEditingFinished();
     void onValueChanged();

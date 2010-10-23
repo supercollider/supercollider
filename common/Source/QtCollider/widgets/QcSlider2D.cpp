@@ -72,13 +72,13 @@ void QcSlider2D::setValue( const QPointF val )
 void QcSlider2D::mouseMoveEvent ( QMouseEvent * ev )
 {
   setValue( valueFromPos( ev->pos() ) );
-  QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+  Q_EMIT( action() );
 }
 
 void QcSlider2D::mousePressEvent ( QMouseEvent * ev )
 {
   setValue( valueFromPos( ev->pos() ) );
-  QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+  Q_EMIT( action() );
 }
 
 void QcSlider2D::keyPressEvent ( QKeyEvent *e )
@@ -104,7 +104,7 @@ void QcSlider2D::keyPressEvent ( QKeyEvent *e )
     case Qt::Key_C:
       setValue( QPointF( 0.5f, 0.5f ) ); break;
     case Qt::Key_R:
-      QApplication::postEvent( this, new ScMethodCallEvent( "randomize" ) );
+      Q_EMIT( randomize() );
       break;
     default: QWidget::keyPressEvent( e );
   }

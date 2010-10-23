@@ -65,7 +65,7 @@ void QcSlider::onValueChange( int val )
   Q_UNUSED( val );
   if( bDoAction ) {
     bDoAction = false;
-    QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+    Q_EMIT( action() );
   }
 }
 

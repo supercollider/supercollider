@@ -44,6 +44,9 @@ class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
     void setXValue( float x ) { setValue( QPointF( x, _y ) ); }
     void setYValue( float y ) { setValue( QPointF( _x, y ) ); }
     void setStep( float f ) { _step = f;}
+  Q_SIGNALS:
+    void action();
+    void randomize();
   private:
     QRect thumbRect();
     QPointF valueFromPos( const QPoint pos );

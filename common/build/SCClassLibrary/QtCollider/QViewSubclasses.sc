@@ -263,6 +263,12 @@ QSlider : QAbstractStepValue {
 }
 
 QSlider2D : QAbstractStepValue {
+  *new { arg parent, bounds;
+    var me = super.new( parent, bounds );
+    me.connect( "randomize()", \randomize );
+    ^me;
+  }
+
   x {
     ^this.getProperty( \xValue );
   }
@@ -520,7 +526,7 @@ QItemViewBase : QView
 
 QListView : QItemViewBase {
   var <colors;
-  var <>enterKeyAction;
+  var <enterKeyAction;
 
   value {
     ^this.getProperty( \currentRow );
@@ -555,6 +561,11 @@ QListView : QItemViewBase {
   hiliteColor_ { arg aColor;
     palette.highlightColor = aColor;
     this.setProperty( \palette, palette );
+  }
+
+  enterKeyAction_ { arg func;
+    enterKeyAction = func;
+    this.connect( "returnPressed()", \enterKey );
   }
 
   enterKey {
@@ -592,7 +603,7 @@ QMultiSliderView : QView {
   var <indexIsHorizontal=true, <elasticMode=false;
   var <indexThumbSize=12, <valueThumbSize=12, <gap=1;
   var <drawLines=false, <drawRects=true;
-  var <>metaAction;
+  var <metaAction;
 
   size_ { arg int;
     size = int;
@@ -726,6 +737,11 @@ QMultiSliderView : QView {
   colors_ { arg colorStroke, colorFill;
     this.strokeColor_( colorStroke );
     this.fillColor_ ( colorFill );
+  }
+
+  metaAction_ { arg func;
+    metaAction = func;
+    this.connect( "metaAction()", \doMetaAction );
   }
 
   doMetaAction {

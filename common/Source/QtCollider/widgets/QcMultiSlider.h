@@ -56,6 +56,8 @@ class QcMultiSlider : public QWidget, QcHelper
   Q_SIGNALS:
     void modified();
     void interacted();
+    void action();
+    void metaAction();
   public Q_SLOTS:
     void doAction();
   protected:
