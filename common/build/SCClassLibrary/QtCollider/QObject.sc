@@ -47,6 +47,11 @@ QObject {
     ^this.primitiveFailed
   }
 
+  connect { arg signal, handler;
+    _QObject_Connect
+    ^this.primitiveFailed
+  }
+
   invokeMethod { arg method, arguments;
     _QObject_InvokeMethod
     ^this.primitiveFailed
