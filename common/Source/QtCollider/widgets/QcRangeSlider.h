@@ -57,6 +57,9 @@ class QcRangeSlider :
     void setHiValue( float );
     void setStep( float f ) { _step = f; }
 
+  Q_SIGNALS:
+    void action();
+
   private:
     QRect thumbRect();
     float valueFromPos( const QPoint& pos );

@@ -12,7 +12,7 @@ QView : QObject {
   // top window props
   var <>userCanClose=true, <name, <>deleteOnClose = true;
   // actions
-  var <>action;
+  var <action;
   var <toFrontAction, <endFrontAction;
   var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseMoveAction;
   var <keyDownAction, <keyUpAction, <keyModifiersChangedAction;
@@ -217,6 +217,11 @@ QView : QObject {
   }
 
   // ----------------- actions .....................................
+
+  action_ { arg func;
+    action = func;
+    this.connect( "action()", \doAction );
+  }
 
   addAction { arg func, selector=\action;
     this.perform(selector.asSetter, this.perform(selector).addFunc(func));

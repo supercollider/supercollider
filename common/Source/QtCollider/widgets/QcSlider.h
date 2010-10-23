@@ -38,6 +38,8 @@ class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
 
   public:
     QcSlider();
+  Q_SIGNALS:
+    void action();
   private Q_SLOTS:
     void action( int val );
     void onValueChange( int val );

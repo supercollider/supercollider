@@ -93,7 +93,7 @@ void QcNumberBox::onEditingFinished()
   if( isReadOnly() ) return;
   setValue( locale().toDouble( text() ) );
   setLocked( true );
-  doAction();
+  Q_EMIT( action() );
 }
 
 void QcNumberBox::onValueChanged()
@@ -128,12 +128,12 @@ void QcNumberBox::keyPressEvent ( QKeyEvent * event )
   if( key == Qt::Key_Up ){
     onEditingFinished();
     stepBy( 1, step );
-    doAction();
+    Q_EMIT( action() );
   }
   else if( key == Qt::Key_Down ) {
     onEditingFinished();
     stepBy( -1, step );
-    doAction();
+    Q_EMIT( action() );
   }
   else if( isReadOnly() ) {
     QString t = event->text();
@@ -174,16 +174,11 @@ void QcNumberBox::mouseMoveEvent ( QMouseEvent * event )
       lastPos = event->globalY();
       //Q_EMIT( scrolled( dif * -1 ) );
       stepBy( dif * -1, scrollStep );
-      doAction();
+      Q_EMIT( action() );
     }
   }
   else
     QLineEdit::mouseMoveEvent( event );
-}
-
-inline void QcNumberBox::doAction()
-{
-  QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
 }
 
 #if 0

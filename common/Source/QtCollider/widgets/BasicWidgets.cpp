@@ -129,7 +129,7 @@ void QcVLayout::setGeometry ( const QRect & geom )
 QcListWidget::QcListWidget()
 {
   connect( this, SIGNAL( itemClicked( QListWidgetItem* ) ),
-           this, SLOT( doAction() ) );
+           this, SIGNAL( action() ) );
 }
 
 void QcListWidget::setItems( const VariantList & items )
@@ -144,12 +144,7 @@ void QcListWidget::keyPressEvent( QKeyEvent *e )
 {
   QListWidget::keyPressEvent( e );
   if( e->key() == Qt::Key_Return )
-    QApplication::postEvent( this, new ScMethodCallEvent( "enterKey" ) );
-}
-
-void QcListWidget::doAction()
-{
-  QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+    Q_EMIT( returnPressed() );
 }
 
 ////////////////////////// QcPopUpMenu /////////////////////////////////////////
@@ -171,15 +166,8 @@ void QcPopUpMenu::doAction( int choice )
 {
   if( choice != lastChoice ) {
     lastChoice = choice;
-    QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+    Q_EMIT( action() );
   }
-}
-
-//////////////////////////////// QcTextField //////////////////////////////////
-
-void QcTextField::doAction()
-{
-  QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
 }
 
 /////////////////////////////// QcButton ///////////////////////////////////////
@@ -241,7 +229,7 @@ void QcButton::cycleStates()
 void QcButton::doAction()
 {
   cycleStates();
-  QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+  Q_EMIT( action() );
 }
 
 ////////////////////////////// QcCustomPainted /////////////////////////////////
