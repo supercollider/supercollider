@@ -9,7 +9,7 @@
 	url = git://tim.klingt.org/nova-lockfree
 [submodule "libs/boost"]
 	path = libs/boost
-	url = git://tim.klingt.org/boost.git
+	url = http://github.com/ryppl/boost-svn.git
 [submodule "source/sc/supercollider"]
 	path = source/sc/supercollider
 	url = git://tim.klingt.org/nova-sc.git
