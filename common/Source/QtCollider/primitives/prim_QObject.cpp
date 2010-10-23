@@ -181,6 +181,24 @@ int QObject_SetEventHandler (struct VMGlobals *g, int)
   return errNone;
 }
 
+int QObject_Connect (struct VMGlobals *g, int)
+{
+  PyrSlot *args = g->sp - 2;
+
+  if( IS_OBJECT_NIL( args ) ) return errFailed;
+
+  QString signal = Slot::toString( args+1 );
+  if( signal.isEmpty() || NotSym( args+2 ) ) return errWrongType;
+  PyrSymbol *handler = 0;
+  slotSymbolVal( args+2, &handler );
+
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( args );
+
+  proxy->connect( signal, handler );
+
+  return errNone;
+}
+
 int QObject_InvokeMethod (struct VMGlobals *g, int)
 {
   PyrSlot *args = g->sp - 2;
@@ -209,5 +227,6 @@ void defineQObjectPrimitives()
   d.define( "_QObject_SetProperty",QObject_SetProperty, 4, 0 );
   d.define( "_QObject_GetProperty", QObject_GetProperty, 3, 0 );
   d.define( "_QObject_SetEventHandler", QObject_SetEventHandler, 4, 0 );
+  d.define( "_QObject_Connect", QObject_Connect, 3, 0 );
   d.define( "_QObject_InvokeMethod", QObject_InvokeMethod, 3, 0);
 }

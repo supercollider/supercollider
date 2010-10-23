@@ -36,17 +36,21 @@ struct VariantList;
 struct ScMethodCallEvent;
 
 class QObjectProxy;
+class QcSignalSpy;
 
 typedef void (QObjectProxy::*InterpretEventFn) ( QEvent *, QList<QVariant> & );
 
 class QObjectProxy : public QObject
 {
+  friend class QcSignalSpy;
+
   Q_OBJECT
 
     enum RequestType {
       SetProperty,
       GetProperty,
       SetEventHandler,
+      Connect,
       Destroy,
       DestroyProxy
     };
@@ -69,6 +73,12 @@ class QObjectProxy : public QObject
       InterpretEventFn interpretFn;
     };
 
+    struct ConnectData
+    {
+      PyrSymbol *handler;
+      QString signal;
+    };
+
     QObjectProxy( QObject *qObject, PyrObject *scObject );
 
     virtual ~QObjectProxy();
@@ -83,9 +93,11 @@ class QObjectProxy : public QObject
 
     void setEventHandler( int eventType, PyrSymbol *method, bool direct );
 
+    void connect( const QString & signal, PyrSymbol *handler );
+
     bool invokeMethod( const char *method, PyrSlot *arg );
 
-    QObject *object() { return qObject; }
+    inline QObject *object() const { return qObject; }
 
   private:
     void invokeScMethod
@@ -111,11 +123,13 @@ class QObjectProxy : public QObject
 
     QObject *qObject;
     PyrObject *scObject;
+    QcSignalSpy *sigSpy;
     QMap<int,EventHandlerData> eventHandlers;
 };
 
 Q_DECLARE_METATYPE( QObjectProxy::PropertyData );
 Q_DECLARE_METATYPE( QObjectProxy::EventHandlerData );
+Q_DECLARE_METATYPE( QObjectProxy::ConnectData );
 Q_DECLARE_METATYPE( QObjectProxy * );
 
 #endif //QC_QOBJECT_PROXY_H

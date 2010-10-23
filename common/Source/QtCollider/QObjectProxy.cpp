@@ -23,6 +23,7 @@
 #include "QcApplication.h"
 #include "Common.h"
 #include "Slot.h"
+#include "QcSignalSpy.h"
 
 #include <QApplication>
 #include <QWidget>
@@ -34,7 +35,10 @@ void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
 void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
 
 QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
-: QObject( qObject_ ), qObject( qObject_ ), scObject( scObject_ )
+: QObject( qObject_ ),
+  qObject( qObject_ ),
+  scObject( scObject_ ),
+  sigSpy( new QcSignalSpy( this ) )
 {
   qObject->installEventFilter( this );
 }
@@ -124,6 +128,16 @@ void QObjectProxy::setEventHandler( int eventType, PyrSymbol *method,
 
   asyncRequest( SetEventHandler,
                 QVariant::fromValue<EventHandlerData>( data ) );
+}
+
+void QObjectProxy::connect( const QString & signal, PyrSymbol *handler )
+{
+  ConnectData data;
+  data.handler = handler;
+  data.signal = signal;
+
+  asyncRequest( Connect,
+                QVariant::fromValue<ConnectData>( data ) );
 }
 
 bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg )
@@ -235,6 +249,7 @@ void QObjectProxy::customEvent( QEvent *event )
   QcGenericEvent *e = static_cast<QcGenericEvent*>( se );
   PropertyData p;
   EventHandlerData eh;
+  ConnectData c;
 
   switch ( e->genericEventType() ) {
     case SetProperty:
@@ -248,6 +263,10 @@ void QObjectProxy::customEvent( QEvent *event )
     case SetEventHandler:
       eh = e->_data.value<EventHandlerData>();
       doSetEventHandler( eh );
+      break;
+    case Connect:
+      c = e->_data.value<ConnectData>();
+      sigSpy->connect( c.signal.toStdString().c_str(), c.handler );
       break;
     case Destroy:
       scObject = 0;
