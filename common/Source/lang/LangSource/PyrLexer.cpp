@@ -25,6 +25,7 @@
 #include <new>
 #include <stdlib.h>
 #include <ctype.h>
+#include <cerrno>
 
 #ifdef SC_WIN32
 //# include <wx/wx.h>
@@ -2163,7 +2164,12 @@ bool passOne_ProcessOneFile(char *filenamearg, int level)
 #ifndef SC_WIN32
     // check if this is a symlink
 		char realpathname[MAXPATHLEN];
-		realpath(filename, realpathname);
+		char * resolved_path = realpath(filename, realpathname);
+		if (resolved_path == NULL) {
+			error(strerror(errno));
+			return false;
+		}
+
 		if (strncmp(filename, realpathname, strlen(filename))) {
 			if (sc_DirectoryExists(realpathname))
 				success = passOne_ProcessDir(realpathname, level);
