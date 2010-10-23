@@ -36,10 +36,11 @@
 
 class QcDynamicSlot {
 public:
-  QcDynamicSlot( PyrSymbol *scMethod, const QMetaMethod &signal )
+  QcDynamicSlot( PyrSymbol *scMethod, QObject *obj, int sigId )
   : _scMethod( scMethod ),
-    _signal( signal )
+    _sigId( sigId )
   {
+    QMetaMethod signal = obj->metaObject()->method( sigId );
     QList<QByteArray> params = signal.parameterTypes();
     for( int i = 0; i < params.count(); ++i ) {
       int type = QMetaType::type( params.at(i).constData() );
@@ -51,7 +52,7 @@ public:
     }
   }
 
-  inline QMetaMethod signal() const { return _signal; }
+  inline int signalId() const { return _sigId; }
 
   inline PyrSymbol *scMethod () const { return _scMethod; }
 
@@ -64,7 +65,7 @@ public:
 
 private:
   PyrSymbol *_scMethod;
-  QMetaMethod _signal;
+  int _sigId;
   QList<int> _argTypes;
 };
 
@@ -90,6 +91,10 @@ public:
       return false;
     }
 
+    Q_FOREACH( QcDynamicSlot* ds, _dynSlots ) {
+      if( ds->signalId() == sigId && ds->scMethod() == scMethod ) return true;
+    }
+
     int slotId = QObject::staticMetaObject.methodCount() + _dynSlots.size();
 
     if( !QMetaObject::connect( _proxy->object(), sigId, this, slotId,
@@ -100,7 +105,8 @@ public:
       return false;
     }
 
-    QcDynamicSlot *dynSlot = new QcDynamicSlot( scMethod, mo->method( sigId ) );
+    QcDynamicSlot *dynSlot = new QcDynamicSlot( scMethod,
+                                                _proxy->object(), sigId );
     _dynSlots << dynSlot;
 
     return true;
@@ -121,8 +127,10 @@ public:
       QList<QVariant> args;
       ds->decode( argData, args );
 
+      const QMetaMethod mm =
+        _proxy->object()->metaObject()->method( ds->signalId() );
       qscDebugMsg( "SIGNAL: '%s' handled by method '%s'\n",
-                  ds->signal().signature(), scMethod->name );
+                  mm.signature(), scMethod->name );
 
       _proxy->invokeScMethod( scMethod, args );
 
