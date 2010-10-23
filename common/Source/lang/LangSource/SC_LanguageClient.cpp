@@ -26,6 +26,7 @@
 #include "SC_LanguageClient.h"
 #include "SC_LibraryConfig.h"
 #include <cstring>
+#include <cerrno>
 
 #ifdef SC_WIN32
 # include <stdio.h>
@@ -89,7 +90,11 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 	// start virtual machine
 	if (!mRunning) {
 		mRunning = true;
-		if (opt.mRuntimeDir) chdir(opt.mRuntimeDir);
+		if (opt.mRuntimeDir) {
+			int err = chdir(opt.mRuntimeDir);
+			if (err)
+				error("Cannot change to runtime directory: %s", strerror(errno));
+		}
 		pyr_init_mem_pools(opt.mMemSpace, opt.mMemGrow);
 		init_OSC(opt.mPort);
 		schedInit();

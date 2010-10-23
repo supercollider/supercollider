@@ -143,7 +143,7 @@ void initParser()
 {
 	compileErrors = 0;
 	numOverwrites = 0;
-	overwriteMsg[0] = NULL;
+	overwriteMsg[0] = 0;
 }
 
 void finiParser()
@@ -1238,7 +1238,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 
 	if (oldmethod) {
 		++numOverwrites;
-		
+
 		char extPath[1024];
 
 		// accumulate overwrite message onto the string buffer
