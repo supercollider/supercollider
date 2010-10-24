@@ -48,6 +48,7 @@ QtGUI {
   *tabletView { ^this.notImplemented( "TabletView"); }
   *soundFileView { ^this.notImplemented( "SoundFileView"); }
   *movieView { ^this.notImplemented( "MovieView"); }
+  *levelIndicator { ^QLevelIndicator }
 
   *userView { ^QUserView }
 

@@ -111,6 +111,7 @@ void initWidget( QWidget * widget, const QVariant & args )
 #include "widgets/QcMultiSlider.h"
 #include "widgets/QcTextEdit.h"
 #include "widgets/QcScope.h"
+#include "widgets/QcLevelIndicator.h"
 
 DECLARE_WIDGET_CLASS( QView, QcDefaultWidget );
 DECLARE_WIDGET_CLASS( QHLayout, QcHLayoutWidget );
@@ -130,6 +131,7 @@ DECLARE_WIDGET_CLASS( QTextView, QcTextEdit );
 DECLARE_WIDGET_CLASS( QScopeView, QcScope );
 DECLARE_WIDGET_CLASS( QFreqScope, QcScope );
 DECLARE_WIDGET_CLASS( QUserView, QcCustomPainted );
+DECLARE_WIDGET_CLASS( QLevelIndicator, QcLevelIndicator );
 
 #include <QShortcut>
 
