@@ -58,7 +58,7 @@ QPointF QcSlider2D::valueFromPos( const QPoint pos )
   return QPointF( x, y );
 }
 
-void QcSlider2D::setValue( const QPointF val )
+void QcSlider2D::setValue( const QPointF val, bool doAction )
 {
   float x = qMax( 0.f, qMin( 1.f, (float)val.x() ) );
   float y= qMax( 0.f, qMin( 1.f, (float)val.y() ) );
@@ -66,19 +66,18 @@ void QcSlider2D::setValue( const QPointF val )
     _x = x;
     _y = y;
     update();
+    if( doAction ) Q_EMIT( action() );
   }
 }
 
 void QcSlider2D::mouseMoveEvent ( QMouseEvent * ev )
 {
   setValue( valueFromPos( ev->pos() ) );
-  Q_EMIT( action() );
 }
 
 void QcSlider2D::mousePressEvent ( QMouseEvent * ev )
 {
   setValue( valueFromPos( ev->pos() ) );
-  Q_EMIT( action() );
 }
 
 void QcSlider2D::keyPressEvent ( QKeyEvent *e )

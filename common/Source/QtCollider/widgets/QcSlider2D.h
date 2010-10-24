@@ -41,8 +41,8 @@ class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
     QcSlider2D();
     float xValue() const { return _x; }
     float yValue() const { return _y; }
-    void setXValue( float x ) { setValue( QPointF( x, _y ) ); }
-    void setYValue( float y ) { setValue( QPointF( _x, y ) ); }
+    void setXValue( float x ) { setValue( QPointF( x, _y ), false ); }
+    void setYValue( float y ) { setValue( QPointF( _x, y ), false ); }
     void setStep( float f ) { _step = f;}
   Q_SIGNALS:
     void action();
@@ -50,7 +50,7 @@ class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
   private:
     QRect thumbRect();
     QPointF valueFromPos( const QPoint pos );
-    void setValue( const QPointF val );
+    void setValue( const QPointF val, bool doAction = true );
     void mouseMoveEvent ( QMouseEvent * );
     void mousePressEvent ( QMouseEvent * );
     void keyPressEvent ( QKeyEvent * );
