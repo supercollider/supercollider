@@ -32,12 +32,12 @@ QLevelIndicator : QView {
     this.nonimpl("image");
   }
 
-  numTicks_ {arg ticks;
-    this.nonimpl("numTicks");
+  numTicks_ {arg number;
+    this.setProperty(\ticks, number);
   }
 
-  numMajorTicks_ {arg ticks;
-    this.nonimpl("numMajorTicks");
+  numMajorTicks_ {arg number;
+    this.setProperty(\majorTicks, number);
   }
 
   drawsPeak_ {arg bool;
