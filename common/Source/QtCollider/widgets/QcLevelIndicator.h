@@ -34,24 +34,32 @@ class QcLevelIndicator : public QWidget, public QcHelper
   Q_PROPERTY( float critical READ dummyFloat WRITE setCritical );
   Q_PROPERTY( float peak READ dummyFloat WRITE setPeak );
   Q_PROPERTY( bool drawPeak READ dummyBool WRITE setDrawPeak );
+  Q_PROPERTY( int ticks READ dummyInt WRITE setTicks );
+  Q_PROPERTY( int majorTicks READ dummyInt WRITE setMajorTicks );
+
 public:
   QcLevelIndicator()
   : _value( 0.f ), _warning(0.6), _critical(0.8),
-    _peak( 0.f ), _drawPeak( false )
+    _peak( 0.f ), _drawPeak( false ),
+    _ticks(0), _majorTicks(0)
   {}
   void setValue( float f ) { _value = f; update(); }
   void setWarning( float f ) { _warning = f; update(); }
   void setCritical( float f ) { _critical = f; update(); }
   void setPeak( float f ) { _peak = f; update(); }
   void setDrawPeak( bool b ) { _drawPeak = b; update(); }
+  void setTicks( int i ) { _ticks = qMax(i,0); update(); }
+  void setMajorTicks( int i ) { _majorTicks = qMax(i,0); update(); }
 private:
-  QSize sizeHint() const { return QSize( 15, 80 ); }
+  QSize sizeHint() const { return QSize( 25, 150 ); }
   void paintEvent( QPaintEvent *e );
   float _value;
   float _warning;
   float _critical;
   float _peak;
   bool _drawPeak;
+  int _ticks;
+  int _majorTicks;
 };
 
 #endif

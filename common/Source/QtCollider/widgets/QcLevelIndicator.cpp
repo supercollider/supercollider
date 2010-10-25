@@ -28,8 +28,10 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
   QPainter p(this);
 
   QPalette plt = palette();
+
+  float grooveW = ( _ticks || _majorTicks ) ? width() - 6 : width();
   QRectF r;
-  r.setWidth( width() );
+  r.setWidth( grooveW );
 
   float h = height();
   float y = 0.f;
@@ -65,14 +67,42 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
   }
 
   if( _drawPeak ) {
+    // compensate for border and peak line width
     y = (1.f - _peak) * (h - 4) + 2;
     QPen pen( QColor( 255, 200, 0 ) );
     pen.setWidth( 2 );
     p.setPen( pen );
-    p.drawLine( 0.f, y, width(), y );
+    p.drawLine( 0.f, y, grooveW - 1, y );
   }
 
-  r = rect().adjusted(0,0,-1,-1);
+  if( _ticks ) {
+    p.setPen( QColor( 170, 170, 170 ) );
+    float dy = ( _ticks > 1 ) ? (height()-1) / (float)(_ticks-1) : 0.f;
+    float t = 0;
+    float y;
+    while( t < _ticks ) {
+      y = t * dy;
+      p.drawLine( grooveW, y, (float)width(), y );
+      t++;
+    }
+  }
+
+  if( _majorTicks ) {
+    QPen pen ( QColor( 170, 170, 170 ) );
+    pen.setWidth( 3 );
+    p.setPen( pen );
+    float dy = ( _majorTicks > 1 ) ? (height()-3) / (float)(_majorTicks-1) : 0.f;
+    float t = 0;
+    float y;
+    while( t < _majorTicks ) {
+      y = (int) (t * dy) + 1;
+      p.drawLine( grooveW, y, (float)width(), y );
+      t++;
+    }
+  }
+
+  r = rect().adjusted(0,0,0,-1);
+  r.setWidth( grooveW - 1 );
   p.setBrush( Qt::NoBrush );
   p.setPen( plt.color( QPalette::Dark ) );
   p.drawRect( r );
