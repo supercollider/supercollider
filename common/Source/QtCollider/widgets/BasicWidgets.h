@@ -31,6 +31,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>
+#include <QCheckBox>
 
 ///////////////////////// Layouts /////////////////////////////////////////////
 
@@ -165,6 +166,20 @@ class QcCustomPainted : public QcDefaultWidget, QcHelper
     bool painting;
     QColor bkg;
     QtCollider::Pen pen;
+};
+
+class QcCheckBox : public QCheckBox
+{
+  Q_OBJECT
+  Q_PROPERTY( float value READ value WRITE setValue );
+
+  public:
+    QcCheckBox();
+  Q_SIGNALS:
+    void action();
+  private:
+    bool value() { return isChecked(); }
+    void setValue( bool val ) { setChecked(val); }
 };
 
 #endif // _WIDGETS_H

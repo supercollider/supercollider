@@ -122,6 +122,7 @@ DECLARE_WIDGET_CLASS( QTextField, QcTextField );
 DECLARE_WIDGET_CLASS( QListView, QcListWidget );
 DECLARE_WIDGET_CLASS( QPopUpMenu, QcPopUpMenu );
 DECLARE_WIDGET_CLASS( QButton, QcButton );
+DECLARE_WIDGET_CLASS( QCheckBox, QcCheckBox );
 DECLARE_WIDGET_CLASS( QNumberBox, QcNumberBox );
 DECLARE_WIDGET_CLASS( QSlider, QcSlider );
 DECLARE_WIDGET_CLASS( QSlider2D, QcSlider2D );
