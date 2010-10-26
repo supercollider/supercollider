@@ -179,6 +179,33 @@ QButton : QView {
   }
 }
 
+QCheckBox : QView {
+
+	*new{ |parent,bounds,text|
+		^super.new(parent,bounds).init(text)
+	}
+
+	init{ |text|
+		this.string_(text)
+	}
+
+	value{
+		^this.getProperty(\value).booleanValue
+	}
+
+	value_{ |val|
+		this.setProperty(\value,val).booleanValue
+	}
+
+	string_{ |string|
+		this.setProperty(\text,string)
+	}
+
+	string{
+		^this.getProperty(\text)
+	}
+}
+
 QAbstractStepValue : QView {
   var <step, <shift_scale, <ctrl_scale, <alt_scale;
 
