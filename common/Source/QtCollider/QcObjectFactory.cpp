@@ -19,24 +19,12 @@
 *
 ************************************************************************/
 
+
 #include "QcObjectFactory.h"
-#include "Common.h"
 
-#include <QMap>
-
-#include <cstdio>
-
-static QMap<QString, CreateFn> factories;
-
-CreateFn factoryFunction( const QString& scClassName )
-{
-  return factories.value( scClassName, 0 );
+namespace QtCollider {
+  QcFactoryHash & factories () {
+    static QcFactoryHash *factoryHash = new QcFactoryHash();
+    return *factoryHash;
+  }
 }
-
-QcObjectFactory::QcObjectFactory( const QString& scClassName, CreateFn fn )
-{
-  qscDebugMsg( "declaring %s\n", scClassName.toStdString().c_str() );
-  factories.insert( scClassName, fn );
-}
-
-#include "QObjectDeclarations.cpp"

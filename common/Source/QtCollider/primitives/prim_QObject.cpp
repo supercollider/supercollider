@@ -60,15 +60,24 @@ void qcCreateQObject( QcSyncEvent *e )
 {
   CreationEvent *ce = static_cast<CreationEvent*>(e);
 
-  CreateFn createFn = factoryFunction( ce->_data.scClassName );
+  QcAbstractFactory *f = QtCollider::factories().value( ce->_data.scClassName );
 
-  if( !createFn ) {
-    qscErrorMsg( "QObject Factory for %s not found!\n",
+  if( !f ) {
+    qscErrorMsg( "Factory for class '%s' not found!\n",
                   ce->_data.scClassName.toStdString().c_str() );
     return;
   }
 
-  *ce->_ret = (*createFn)( ce->_data.scObject, ce->_data.arguments );
+  QVariant var( ce->_data.arguments );
+  if( var.userType() == qMetaTypeId<VariantList>() ) {
+    VariantList args = var.value<VariantList>();
+    *ce->_ret = f->newInstance( ce->_data.scObject, args.data );
+  }
+  else {
+    QList<QVariant> args;
+    if( var.isValid() ) args << var;
+    *ce->_ret = f->newInstance( ce->_data.scObject, args );
+  }
 }
 
 int QObject_New (struct VMGlobals *g, int)

@@ -20,8 +20,11 @@
 ************************************************************************/
 
 #include "QcLevelIndicator.h"
+#include "../QcWidgetFactory.h"
 
 #include <QPainter>
+
+static QcWidgetFactory<QcLevelIndicator> factory;
 
 void QcLevelIndicator::paintEvent( QPaintEvent *e )
 {

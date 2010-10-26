@@ -1,5 +1,7 @@
 QLevelIndicator : QView {
 
+  *qtClass {^"QcLevelIndicator"}
+
   value {
     ^this.getProperty(\value)
   }

@@ -5,7 +5,6 @@ set( QT_COLLIDER_HDRS
   QWidgetProxy.h
   Slot.h
   Common.h
-  QObjectDeclarations.cpp
   QcHelper.h
   QcObjectFactory.h
   widgets/QcAbstractLayout.h
@@ -46,6 +45,7 @@ set( QT_COLLIDER_SRCS
   widgets/QcTextEdit.cpp
   widgets/QcScope.cpp
   widgets/QcLevelIndicator.cpp
+  widgets/QcWindow.cpp
 )
 
 include(${QT_USE_FILE})

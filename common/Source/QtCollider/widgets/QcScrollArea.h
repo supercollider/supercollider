@@ -19,6 +19,9 @@
 *
 ************************************************************************/
 
+#ifndef QC_SCROLL_AREA_H
+#define QC_SCROLL_AREA_H
+
 #include "../QcHelper.h"
 #include "../QcPen.h"
 
@@ -64,3 +67,5 @@ class QcScrollArea : public QAbstractScrollArea, public QcHelper
 
     QtCollider::Pen pen;
 };
+
+#endif //QC_SCROLL_AREA_H

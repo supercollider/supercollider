@@ -20,11 +20,14 @@
 ************************************************************************/
 
 #include "QcSlider2D.h"
+#include "../QcWidgetFactory.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QApplication>
 #include <QPainter>
+
+static QcWidgetFactory<QcSlider2D> factory;
 
 QcSlider2D::QcSlider2D() :
   _x( 0.f ),

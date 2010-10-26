@@ -20,11 +20,14 @@
 ************************************************************************/
 
 #include "QcRangeSlider.h"
+#include "../QcWidgetFactory.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QApplication>
 #include <QPainter>
+
+static QcWidgetFactory<QcRangeSlider> factory;
 
 QcRangeSlider::QcRangeSlider() :
   _ort( Qt::Vertical ),

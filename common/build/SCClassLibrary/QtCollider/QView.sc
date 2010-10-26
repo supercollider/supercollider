@@ -42,15 +42,15 @@ QView : QObject {
     if( parent.notNil ) {
       if( parent.isValid.not ) {^nil;}
     }
-    ^super.new( this.viewClass.asString, [parent, bounds.asRect] )
+    ^super.new( this.qtClass, [parent, bounds.asRect] )
       .initQView( parent );
   }
 
   *newCustom { arg customArgs;
-    ^super.new( this.viewClass.asString, customArgs ).initQView( nil );
+    ^super.new( this.qtClass, customArgs ).initQView( nil );
   }
 
-  *viewClass { ^this }
+  *qtClass { ^"QcDefaultWidget" }
 
   asView { ^this }
 

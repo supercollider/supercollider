@@ -21,6 +21,7 @@
 
 #include "QcScrollArea.h"
 #include "../Painting.h"
+#include "../QcWidgetFactory.h"
 
 #include <QLayout>
 #include <QScrollBar>
@@ -28,6 +29,8 @@
 #include <QChildEvent>
 #include <QPainter>
 #include <QApplication>
+
+static QcWidgetFactory<QcScrollArea> factory;
 
 void QcScrollWidget::updateSize() {
   QRect r = childrenRect();

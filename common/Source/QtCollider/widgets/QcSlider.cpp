@@ -20,8 +20,11 @@
 ************************************************************************/
 
 #include "QcSlider.h"
+#include "../QcWidgetFactory.h"
 
 #include <QApplication>
+
+static QcWidgetFactory<QcSlider> factory;
 
 QcSlider::QcSlider()
 : lastVal(0), bDoAction( false )

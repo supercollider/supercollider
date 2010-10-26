@@ -21,10 +21,13 @@
 
 #include "QcNumberBox.h"
 #include "../Common.h"
+#include "../QcWidgetFactory.h"
 
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QApplication>
+
+static QcWidgetFactory<QcNumberBox> factory;
 
 QcNumberBox::QcNumberBox()
 : scroll( true ),

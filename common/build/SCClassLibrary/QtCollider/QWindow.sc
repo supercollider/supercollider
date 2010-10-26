@@ -6,6 +6,8 @@ QWindow : QView {
   //dummy for compatibility
   var <currentSheet;
 
+  *qtClass {^"QcWindow"}
+
   *initClass {
     ShutDown.add( { QWindow.closeAll } );
   }
