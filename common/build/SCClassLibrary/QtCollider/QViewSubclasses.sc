@@ -194,7 +194,7 @@ QCheckBox : QView {
 	}
 
 	value_{ |val|
-		this.setProperty(\value,val).booleanValue
+		this.setProperty(\value,val)
 	}
 
 	string_{ |string|
