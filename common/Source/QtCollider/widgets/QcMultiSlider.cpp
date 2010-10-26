@@ -20,12 +20,15 @@
 ************************************************************************/
 
 #include "QcMultiSlider.h"
+#include "../QcWidgetFactory.h"
 
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPainter>
 
 #include <cmath>
+
+static QcWidgetFactory<QcMultiSlider> factory;
 
 QcMultiSlider::QcMultiSlider() :
   _currentIndex(0),

@@ -47,17 +47,20 @@ QAbstractScroll : QView {
 /////////////////////// CONTAINERS ////////////////////////////////
 
 QLayout : QView {
-
 }
 
 QHLayout : QLayout {
+  *qtClass { ^"QcHLayoutWidget" }
 }
 
 QVLayout : QLayout {
+  *qtClass { ^"QcVLayoutWidget" }
 }
 
 QScrollArea : QAbstractScroll {
   var <background, <hasBorder=true;
+
+  *qtClass { ^"QcScrollArea" }
 
   background_ { arg aColor;
     background = aColor;
@@ -83,6 +86,8 @@ QTextViewBase : QView {
 
 QStaticText : QTextViewBase {
   var <string;
+
+  *qtClass { ^"QLabel" }
 
   *new { arg aParent, aBounds;
     var obj = super.new( aParent, aBounds );
@@ -113,6 +118,8 @@ QStaticText : QTextViewBase {
 }
 
 QTextField : QTextViewBase {
+  *qtClass { ^"QcTextField" }
+
   string {
     ^this.getProperty( \text );
   }
@@ -155,6 +162,8 @@ QTextField : QTextViewBase {
 
 QButton : QView {
   var <states;
+
+  *qtClass { ^"QcButton" }
 
   *properties {
     ^[\string, \states];
@@ -256,6 +265,8 @@ QSlider : QAbstractStepValue {
   var <orientation;
   var <> thumbSize;
 
+  *qtClass { ^"QcSlider" }
+
   *new { arg parent, bounds;
     ^super.new( parent, bounds ).initQSlider( bounds.asRect );
   }
@@ -290,6 +301,8 @@ QSlider : QAbstractStepValue {
 }
 
 QSlider2D : QAbstractStepValue {
+  *qtClass { ^"QcSlider2D" }
+
   *new { arg parent, bounds;
     var me = super.new( parent, bounds );
     me.connect( "randomize()", \randomize );
@@ -356,6 +369,7 @@ QSlider2D : QAbstractStepValue {
 }
 
 QRangeSlider : QAbstractStepValue {
+  *qtClass { ^"QcRangeSlider" }
 
   *new { arg parent, bounds;
     ^super.new( parent, bounds ).initQRangeSlider( bounds.asRect );
@@ -452,6 +466,8 @@ QNumberBox : QAbstractStepValue {
   var <clipLo, <clipHi, <scroll, <scroll_step, <decimals;
   var <align, <buttonsVisible = false;
   var <normalColor, <typingColor;
+
+  *qtClass { ^"QcNumberBox" }
 
   *new { arg aParent, aBounds;
     var obj = super.new( aParent, aBounds );
@@ -555,6 +571,8 @@ QListView : QItemViewBase {
   var <colors;
   var <enterKeyAction;
 
+  *qtClass { ^"QcListWidget" }
+
   value {
     ^this.getProperty( \currentRow );
   }
@@ -606,6 +624,9 @@ QListView : QItemViewBase {
 }
 
 QPopUpMenu : QItemViewBase {
+
+  *qtClass { ^"QcPopUpMenu" }
+
   value {
     ^this.getProperty( \currentIndex );
   }
@@ -631,6 +652,9 @@ QMultiSliderView : QView {
   var <indexThumbSize=12, <valueThumbSize=12, <gap=1;
   var <drawLines=false, <drawRects=true;
   var <metaAction;
+
+
+  *qtClass { ^"QcMultiSlider" }
 
   size_ { arg int;
     size = int;
@@ -781,6 +805,8 @@ QTextView : QAbstractScroll {
 
   /*TODO*/ var <enterInterpretsSelection;
 
+  *qtClass { ^"QcTextEdit" }
+
   enterInterpretsSelection_ {
     this.nonimpl( "enterInterpretsSelection" );
   }
@@ -849,6 +875,8 @@ QTextView : QAbstractScroll {
 QScopeView : QView {
   var <bufnum, <style=0, <xZoom=1.0, <yZoom=1.0, <x=0.0, <y=0.0;
   var <waveColors;
+
+  *qtClass { ^"QcScope" }
 
   bufnum_ { arg anInt;
     bufnum = anInt;

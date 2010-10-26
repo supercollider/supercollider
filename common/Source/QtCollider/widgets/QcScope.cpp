@@ -20,9 +20,12 @@
 ************************************************************************/
 
 #include "QcScope.h"
+#include "../QcWidgetFactory.h"
 
 #include <QPainter>
 #include <QTimer>
+
+static QcWidgetFactory<QcScope> factory;
 
 QcScope::QcScope()
 : bufNum( 0 ),

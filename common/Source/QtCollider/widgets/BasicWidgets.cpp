@@ -19,8 +19,8 @@
 *
 ************************************************************************/
 
-
 #include "BasicWidgets.h"
+#include "../QcWidgetFactory.h"
 #include "../Common.h"
 
 #include <QApplication>
@@ -28,6 +28,12 @@
 #include <QVBoxLayout>
 #include <QKeyEvent>
 #include <QPainter>
+
+QcWidgetFactory<QcDefaultWidget> defaultWidgetFactory;
+QcWidgetFactory<QcHLayoutWidget> hLayoutWidgetFactory;
+QcWidgetFactory<QcVLayoutWidget> vLayoutWidgetFactory;
+QcWidgetFactory<QLabel> labelFactory;
+QcWidgetFactory<QcTextField> textFieldFactory;
 
 void QcDefaultLayout::setGeometry ( const QRect & r )
 {
@@ -126,6 +132,8 @@ void QcVLayout::setGeometry ( const QRect & geom )
 
 //////////////////////////// QcListWidget //////////////////////////////////////
 
+QcWidgetFactory<QcListWidget> listWidgetFactory;
+
 QcListWidget::QcListWidget()
 {
   connect( this, SIGNAL( itemClicked( QListWidgetItem* ) ),
@@ -149,6 +157,8 @@ void QcListWidget::keyPressEvent( QKeyEvent *e )
 
 ////////////////////////// QcPopUpMenu /////////////////////////////////////////
 
+QcWidgetFactory<QcPopUpMenu> popUpMenuFactory;
+
 QcPopUpMenu::QcPopUpMenu()
 : lastChoice( -1 )
 {
@@ -171,6 +181,8 @@ void QcPopUpMenu::doAction( int choice )
 }
 
 /////////////////////////////// QcButton ///////////////////////////////////////
+
+QcWidgetFactory<QcButton> buttonFactory;
 
 QcButton::QcButton()
 : currentState(0)
@@ -234,6 +246,8 @@ void QcButton::doAction()
 
 ////////////////////////////// QcCustomPainted /////////////////////////////////
 
+QcWidgetFactory<QcCustomPainted> customPaintedFactory;
+
 void QcCustomPainted::setBackground ( const QColor &color )
 {
   if( !color.isValid() ) return;
@@ -267,6 +281,8 @@ void QcCustomPainted::paintEvent( QPaintEvent *e )
 
   pen.paint( &p );
 }
+
+QcWidgetFactory<QcCheckBox> checkBoxFactory;
 
 QcCheckBox::QcCheckBox()
 {

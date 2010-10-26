@@ -20,8 +20,11 @@
 ************************************************************************/
 
 #include "QcTextEdit.h"
+#include "../QcWidgetFactory.h"
 
 #include <QFile>
+
+static QcWidgetFactory<QcTextEdit> factory;
 
 QString QcTextEdit::documentFilename() const
 {

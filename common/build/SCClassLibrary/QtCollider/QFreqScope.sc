@@ -10,8 +10,6 @@ QFreqScope : QScopeView {
   var <bufSize; // size of FFT
   var <>specialSynthDef, <specialSynthArgs; // Allows to override the analysis synth
 
-  *viewClass { ^QScopeView }
-
   *initClass { server = Server.internal }
 
   *new { arg parent, bounds;

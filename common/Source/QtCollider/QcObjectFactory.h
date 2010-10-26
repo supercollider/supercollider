@@ -22,18 +22,52 @@
 #ifndef QC_OBJECT_FACTORY_H
 #define QC_OBJECT_FACTORY_H
 
-#include <QObject>
+#include "QObjectProxy.h"
+#include "Common.h"
+
 #include <PyrObject.h>
 
-class QObjectProxy;
+#include <QObject>
+#include <QWidget>
+#include <QHash>
 
-typedef QObjectProxy* (*CreateFn) ( PyrObject *, const QVariant & arguments );
+class QcAbstractFactory;
 
-struct QcObjectFactory
+typedef QHash<QString,QcAbstractFactory*> QcFactoryHash;
+
+namespace QtCollider {
+  QcFactoryHash & factories ();
+}
+
+class QcAbstractFactory
 {
-  QcObjectFactory( const QString& scClassName, CreateFn fn );
+public:
+  QcAbstractFactory( const char *className ) {
+    qscDebugMsg( "Declaring class '%s'\n", className );
+    QtCollider::factories().insert( className, this );
+  }
+  virtual QObjectProxy *newInstance( PyrObject *, QList<QVariant> & arguments ) = 0;
 };
 
-CreateFn factoryFunction( const QString& scClassName );
+
+template <class QOBJECT> class QcObjectFactory : public QcAbstractFactory
+{
+public:
+  QcObjectFactory() : QcAbstractFactory( QOBJECT::staticMetaObject.className() ) {}
+
+  virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments ) {
+    QOBJECT *qobject = new QOBJECT();
+    QObject *qo = qobject; // template parameter type-safety
+
+    initialize( qobject, arguments );
+
+    return new QObjectProxy ( qobject, scObject );
+  }
+
+protected:
+  virtual void initialize( QOBJECT *, QList<QVariant> & arguments ) {};
+};
+
+
 
 #endif //QC_OBJECT_FACTORY_H
