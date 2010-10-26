@@ -267,3 +267,8 @@ void QcCustomPainted::paintEvent( QPaintEvent *e )
 
   pen.paint( &p );
 }
+
+QcCheckBox::QcCheckBox()
+{
+	connect( this, SIGNAL(stateChanged(int)), this, SIGNAL(action()) );
+}
