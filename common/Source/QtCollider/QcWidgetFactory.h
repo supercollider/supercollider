@@ -63,15 +63,10 @@ public:
       if( parentWidget ) {
 
         // Ok, we have the parent, so stuff the child in
+        const QMetaObject *mo = parentWidget->metaObject();
+        bool ok = mo->invokeMethod( parentWidget, "addChild", Q_ARG( QWidget*, w ) );
 
-        QcScrollArea *scrollArea = qobject_cast<QcScrollArea*>( parentWidget );
-
-        if( scrollArea )
-            scrollArea->addWidget( w );
-        else if( parentWidget->layout() )
-            parentWidget->layout()->addWidget( w );
-        else
-          w->setParent( parentWidget );
+        if( !ok ) w->setParent( parentWidget );
 
         w->show();
       }

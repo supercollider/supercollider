@@ -45,6 +45,7 @@ class QcScrollArea : public QAbstractScrollArea, public QcHelper
   Q_PROPERTY( bool paint READ dummyBool WRITE setPaint );
   public:
     QcScrollArea();
+    Q_INVOKABLE void addChild( QWidget* w ) { printf("adding child\n"); w->setParent( scrollWidget ); }
     void addWidget( QWidget* );
     void setBackground ( const QColor &color );
     void setPaint( bool b ) { paint = b; }
