@@ -140,10 +140,23 @@ void QObjectProxy::connect( const QString & signal, PyrSymbol *handler )
                 QVariant::fromValue<ConnectData>( data ) );
 }
 
-bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg )
+bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg, bool synchronous )
 {
-  qscDebugMsg("invoking method '%s'\n", method );
+  if( synchronous ) {
+    MethodData data;
+    data.method = method;
+    data.arg = arg;
+    QVariant ret;
+    syncRequest( InvokeMethod, QVariant::fromValue<MethodData>( data ), &ret );
+    return ret.toBool();
+  }
+  else {
+    return doInvokeMethod( method, arg, Qt::QueuedConnection );
+  }
+}
 
+bool QObjectProxy::doInvokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType ctype )
+{
   Slot argSlots[10];
 
   if ( isKindOfSlot( arg, class_array ) ) {
@@ -158,7 +171,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg )
   else argSlots[0].setData( arg );
 
   bool success =
-    QMetaObject::invokeMethod( qObject, method, Qt::QueuedConnection,
+    QMetaObject::invokeMethod( qObject, method, ctype,
                                 argSlots[0].asGenericArgument(),
                                 argSlots[1].asGenericArgument(),
                                 argSlots[2].asGenericArgument(),
@@ -173,7 +186,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg )
   if( !success )
   {
     success =
-      QMetaObject::invokeMethod( this, method, Qt::QueuedConnection,
+      QMetaObject::invokeMethod( this, method, ctype,
                                   argSlots[0].asGenericArgument(),
                                   argSlots[1].asGenericArgument(),
                                   argSlots[2].asGenericArgument(),
@@ -250,6 +263,7 @@ void QObjectProxy::customEvent( QEvent *event )
   PropertyData p;
   EventHandlerData eh;
   ConnectData c;
+  MethodData md;
 
   switch ( e->genericEventType() ) {
     case SetProperty:
@@ -267,6 +281,10 @@ void QObjectProxy::customEvent( QEvent *event )
     case Connect:
       c = e->_data.value<ConnectData>();
       sigSpy->connect( c.signal.toStdString().c_str(), c.handler );
+      break;
+    case InvokeMethod:
+      md = e->_data.value<MethodData>();
+      e->returnThis<bool>( doInvokeMethod( md.method, md.arg, Qt::DirectConnection ) );
       break;
     case Destroy:
       scObject = 0;
