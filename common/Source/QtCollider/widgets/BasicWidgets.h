@@ -177,7 +177,7 @@ class QcCustomPainted : public QcDefaultWidget, QcHelper
 class QcCheckBox : public QCheckBox
 {
   Q_OBJECT
-  Q_PROPERTY( float value READ value WRITE setValue );
+  Q_PROPERTY( bool value READ value WRITE setValue );
 
   public:
     QcCheckBox();

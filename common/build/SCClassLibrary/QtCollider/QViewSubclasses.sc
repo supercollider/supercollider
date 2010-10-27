@@ -201,7 +201,7 @@ QCheckBox : QView {
 	}
 
 	value{
-		^this.getProperty(\value).booleanValue
+		^this.getProperty(\value)
 	}
 
 	value_{ |val|
