@@ -37,18 +37,32 @@ void QcScrollWidget::updateSize() {
   QSize sz( r.x() + r.width(), r.y() + r.height() );
   resize( sz );
 }
+
 bool QcScrollWidget::event ( QEvent * e ) {
-  if( e->type() == QEvent::ChildAdded ) {
+  int t = e->type();
+  if( t == QEvent::ChildAdded ) {
     QChildEvent *ce = static_cast<QChildEvent*>(e);
     ce->child()->installEventFilter( this );
   }
-  return QWidget::event( e );
-}
-bool QcScrollWidget::eventFilter ( QObject * watched, QEvent * event ) {
-  Q_UNUSED( watched );
-  if( event->type() == QEvent::Resize ) {
+  else if( t == QEvent::ChildRemoved ) {
     updateSize();
   }
+
+  return QWidget::event( e );
+}
+
+bool QcScrollWidget::eventFilter ( QObject * watched, QEvent * event ) {
+  Q_UNUSED( watched );
+
+  switch( event->type() ) {
+    case QEvent::Resize:
+    case QEvent::Move:
+      updateSize();
+      break;
+    default:
+      return false;
+  }
+
   return false;
 }
 
