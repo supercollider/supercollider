@@ -60,20 +60,26 @@ class QcVLayout : public QcAbstractLayout
 
 class QcDefaultWidget : public QWidget
 {
+  Q_OBJECT
   public:
     QcDefaultWidget() { setLayout( new QcDefaultLayout() ); }
+    Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
 };
 
 class QcHLayoutWidget : public QWidget
 {
+  Q_OBJECT
   public:
     QcHLayoutWidget() { setLayout( new QcHLayout() ); }
+    Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
 };
 
 class QcVLayoutWidget : public QWidget
 {
+  Q_OBJECT
   public:
     QcVLayoutWidget() { setLayout( new QcVLayout() ); }
+    Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
 };
 
 
