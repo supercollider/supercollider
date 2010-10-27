@@ -1,7 +1,7 @@
 +SynthDesc {
 
 	makeWindow{
-		this.makeGui;
+		^this.makeGui;
 	}
 
 	makeGui {
@@ -119,7 +119,7 @@
 			CmdPeriod.remove(cmdPeriodFunc);
 		};
 
-		w.front; // make window visible and front window.
+		^w.front; // make window visible and front window.
 	}
 }
 
