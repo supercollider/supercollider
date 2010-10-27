@@ -190,6 +190,8 @@ QButton : QView {
 
 QCheckBox : QView {
 
+  *qtClass { ^"QcCheckBox" }
+
 	*new{ |parent,bounds,text|
 		^super.new(parent,bounds).init(text)
 	}
