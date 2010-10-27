@@ -97,6 +97,14 @@ QView : QObject {
     this.setProperty(\geometry, rect)
   }
 
+  moveTo { arg x, y;
+    this.bounds_( this.bounds.moveTo( x, y ) );
+  }
+
+  resizeTo { arg width, height;
+    this.bounds_( this.bounds.resizeTo( width, height ) );
+  }
+
   visible {
     ^this.getProperty(\visible)
   }
