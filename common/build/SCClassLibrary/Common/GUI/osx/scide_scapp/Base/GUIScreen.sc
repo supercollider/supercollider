@@ -127,8 +127,8 @@ SCWindow {
 	}
 
 	name_ { arg argName;
-		name = argName;
-		this.prSetName(argName);
+		name = argName.asString;
+		this.prSetName(name);
 	}
 	// bounds are relative to the bottom left corner origin
 	bounds_ { arg argBounds;
