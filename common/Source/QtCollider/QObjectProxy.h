@@ -51,6 +51,7 @@ class QObjectProxy : public QObject
       GetProperty,
       SetEventHandler,
       Connect,
+      InvokeMethod,
       Destroy,
       DestroyProxy
     };
@@ -79,6 +80,12 @@ class QObjectProxy : public QObject
       QString signal;
     };
 
+    struct MethodData
+    {
+      const char *method;
+      PyrSlot *arg;
+    };
+
     QObjectProxy( QObject *qObject, PyrObject *scObject );
 
     virtual ~QObjectProxy();
@@ -95,7 +102,7 @@ class QObjectProxy : public QObject
 
     void connect( const QString & signal, PyrSymbol *handler );
 
-    bool invokeMethod( const char *method, PyrSlot *arg );
+    bool invokeMethod( const char *method, PyrSlot *arg, bool synchronous = true );
 
     inline QObject *object() const { return qObject; }
 
@@ -112,6 +119,7 @@ class QObjectProxy : public QObject
     void doSetProperty( const QString &property, const QVariant& data );
     int doGetProperty( const QString &property, PyrSlot *slot );
     void doSetEventHandler( const EventHandlerData & );
+    bool doInvokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType );
 
     void customEvent( QEvent * );
     bool eventFilter( QObject * watched, QEvent * event );
@@ -130,6 +138,7 @@ class QObjectProxy : public QObject
 Q_DECLARE_METATYPE( QObjectProxy::PropertyData );
 Q_DECLARE_METATYPE( QObjectProxy::EventHandlerData );
 Q_DECLARE_METATYPE( QObjectProxy::ConnectData );
+Q_DECLARE_METATYPE( QObjectProxy::MethodData );
 Q_DECLARE_METATYPE( QObjectProxy * );
 
 #endif //QC_QOBJECT_PROXY_H

@@ -210,16 +210,20 @@ int QObject_Connect (struct VMGlobals *g, int)
 
 int QObject_InvokeMethod (struct VMGlobals *g, int)
 {
-  PyrSlot *args = g->sp - 2;
+  PyrSlot *args = g->sp - 3;
 
   if( IS_OBJECT_NIL( args ) ) return errFailed;
 
   if( !IsSym( args+1 ) ) return errWrongType;
 
   const char *method = slotRawSymbol( args+1 )->name;
+  PyrSlot *methodArgs = args+2;
+  bool sync = !IsFalse( args+3 );
+
+  qscDebugMsg( "INVOKE: method '%s'; synchronous = %i\n", method, sync );
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( args );
-  if( !proxy->invokeMethod( method, args+2 ) ) return errFailed;
+  if( !proxy->invokeMethod( method, methodArgs, sync ) ) return errFailed;
 
   return errNone;
 }
@@ -237,5 +241,5 @@ void defineQObjectPrimitives()
   d.define( "_QObject_GetProperty", QObject_GetProperty, 3, 0 );
   d.define( "_QObject_SetEventHandler", QObject_SetEventHandler, 4, 0 );
   d.define( "_QObject_Connect", QObject_Connect, 4, 0 );
-  d.define( "_QObject_InvokeMethod", QObject_InvokeMethod, 3, 0);
+  d.define( "_QObject_InvokeMethod", QObject_InvokeMethod, 4, 0);
 }
