@@ -19,8 +19,6 @@
 *
 ************************************************************************/
 
-#include <QPalette>
-
 #include <PyrObject.h>
 #include <PyrKernel.h>
 #include <GC.h>
@@ -29,6 +27,9 @@
 #include "Slot.h"
 #include "QObjectProxy.h"
 #include "Common.h"
+
+#include <QPalette>
+#include <QWidget>
 
 static QPalette::ColorRole paletteColorRoles[] = {
   QPalette::Window,
@@ -250,17 +251,18 @@ VariantList Slot::toVariantList( PyrSlot *slot )
   return list;
 }
 
-QObjectProxy* Slot::toObjectProxy( PyrSlot *slot )
+QObject* Slot::toObject( PyrSlot *slot )
 {
   if( !isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) return 0;
   QObjectProxy *proxy = 0;
-  PyrSlot *slots = slotRawObject( slot )->slots;
-  if( IsPtr( slots ) ) proxy = (QObjectProxy*) slotRawPtr( slots );
-  return proxy;
+  PyrSlot *proxySlot = slotRawObject( slot )->slots;
+  if( IsPtr( proxySlot ) ) proxy = (QObjectProxy*) slotRawPtr( proxySlot );
+  return ( proxy ? proxy->object() : 0 );
 }
 
 QVariant Slot::toVariant( PyrSlot *slot )
 {
+  QObject *obj;
   switch (GetTag(slot)) {
     case tagChar :
     case tagNil :
@@ -294,7 +296,11 @@ QVariant Slot::toVariant( PyrSlot *slot )
         return QVariant::fromValue<QPalette>( toPalette(slot) );
       }
       else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
-        return QVariant::fromValue<QObjectProxy*>( toObjectProxy(slot) );
+        obj = toObject(slot);
+        if( obj->isWidgetType() )
+          return QVariant::fromValue<QWidget*>( static_cast<QWidget*>(obj) );
+        else
+          return QVariant::fromValue<QObject*>( obj );
       }
       else if( isKindOfSlot( slot, class_array ) ) {
         return QVariant::fromValue<VariantList>( toVariantList(slot) );
@@ -311,6 +317,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
 
 void Slot::setData( PyrSlot *slot )
 {
+  QObject *obj;
   switch (GetTag(slot)) {
     case tagChar :
     case tagNil :
@@ -350,6 +357,17 @@ void Slot::setData( PyrSlot *slot )
       else if( isKindOfSlot( slot, class_array ) ) {
         type = qMetaTypeId<VariantList>();
         ptr = new VariantList( toVariantList(slot) );
+      }
+      else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
+        obj = toObject(slot);
+        if( obj->isWidgetType() ) {
+          type = QMetaType::QWidgetStar;
+          ptr = new QWidget*( static_cast<QWidget*>(obj) );
+        }
+        else {
+          type = QMetaType::QObjectStar;
+          ptr = new QObject*( obj );
+        }
       }
       else {
         qscErrorMsg("Could not interpret slot!\n");

@@ -55,21 +55,18 @@ public:
 
     // set parent
 
-    QObjectProxy *parentProxy = argc > 0 ? arguments[0].value<QObjectProxy*>() : 0;
+    QWidget *parent = argc > 0 ? arguments[0].value<QWidget*>() : 0;
 
-    if( parentProxy ) {
+    if( parent ) {
 
-      QWidget *parentWidget = qobject_cast<QWidget*>( parentProxy->object() );
-      if( parentWidget ) {
+      // Ok, we have the parent, so stuff the child in
 
-        // Ok, we have the parent, so stuff the child in
-        const QMetaObject *mo = parentWidget->metaObject();
-        bool ok = mo->invokeMethod( parentWidget, "addChild", Q_ARG( QWidget*, w ) );
+      const QMetaObject *mo = parent->metaObject();
+      bool ok = mo->invokeMethod( parent, "addChild", Q_ARG( QWidget*, w ) );
 
-        if( !ok ) w->setParent( parentWidget );
+      if( !ok ) w->setParent( parent );
 
-        w->show();
-      }
+      w->show();
     }
 
     return new QWidgetProxy ( w, scObject );
