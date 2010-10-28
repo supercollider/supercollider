@@ -94,7 +94,7 @@ QView : QObject {
     ^this.getProperty(\geometry, Rect.new)
   }
   bounds_ { arg rect;
-    this.setProperty(\geometry, rect)
+    this.setProperty(\geometry, rect.asRect )
   }
 
   moveTo { arg x, y;
