@@ -19,7 +19,7 @@
 *
 ************************************************************************/
 
-#include "PrimitiveDefiner.h"
+#include "primitives.h"
 
 #include "../Common.h"
 #include "../Slot.h"
@@ -30,7 +30,7 @@
 #include <QFontMetrics>
 #include <QDesktopWidget>
 
-int QtGui_Start(struct VMGlobals *, int)
+QC_LANG_PRIMITIVE( QtGUI_Start, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   // FIXME is QApplication::instance() thread-safe??
   if( !QApplication::instance() ) {
@@ -51,48 +51,36 @@ void qcScreenBounds( QcSyncEvent *e )
   *ce->_return = QVariant( QApplication::desktop()->screenGeometry() );
 }
 
-int QWindow_ScreenBounds (struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( QWindow_ScreenBounds, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlobals *g )
 {
-  if( !isKindOfSlot( g->sp, s_rect->u.classobj ) ) return errWrongType;
+  if( !isKindOfSlot( rectSlot, s_rect->u.classobj ) ) return errWrongType;
 
   QVariant var;
 
   QcGenericEvent *e = new QcGenericEvent(0, QVariant(), &var);
   QcApplication::postSyncEvent( e, &qcScreenBounds );
 
-  QRect r = var.value<QRect>();
+  QRect rect = var.value<QRect>();
 
-  int err = Slot::setRect( g->sp, r );
+  int err = Slot::setRect( rectSlot, rect );
   if( err ) return err;
 
-  slotCopy( g->sp - 1, g->sp );
+  slotCopy( r, rectSlot );
 
   return errNone;
 }
 
-int Qt_StringBounds (struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( Qt_StringBounds, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  PyrSlot *args = g->sp - 3;
+  QString str = Slot::toString( a );
 
-  QString str = Slot::toString( args+1 );
-
-  QFont f = Slot::toFont( args+2 );
+  QFont f = Slot::toFont( a+1 );
 
   QFontMetrics fm( f );
   QRect bounds = fm.boundingRect( str );
 
-  Slot::setRect( args+3, bounds );
-  slotCopy( args, args+3 );
+  Slot::setRect( a+2, bounds );
+  slotCopy( r, a+2 );
 
   return errNone;
-}
-
-void defineMiscPrimitives()
-{
-  qscDebugMsg( "defining miscellaneous primitives\n" );
-
-  QtCollider::PrimitiveDefiner d;
-  d.define( "_QtGUI_Start", QtGui_Start, 1, 0 );
-  d.define( "_QWindow_ScreenBounds", QWindow_ScreenBounds, 2, 0 );
-  d.define( "_Qt_StringBounds", Qt_StringBounds, 4, 0);
 }
