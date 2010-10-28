@@ -57,6 +57,8 @@ bool QcScrollWidget::eventFilter ( QObject * watched, QEvent * event ) {
   switch( event->type() ) {
     case QEvent::Resize:
     case QEvent::Move:
+    case QEvent::Show:
+    case QEvent::Hide:
       updateSize();
       break;
     default:
@@ -82,11 +84,6 @@ void QcScrollArea::setHasBorder( bool b ) {
     QFrame::setFrameShape( QFrame::NoFrame );
   else
     QFrame::setFrameShape( QFrame::StyledPanel );
-}
-
-void QcScrollArea::addWidget( QWidget *w ) {
-  w->setParent( scrollWidget );
-  w->show();
 }
 
 void QcScrollArea::updateScrollBars() {
