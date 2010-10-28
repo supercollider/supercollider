@@ -68,6 +68,10 @@ namespace QtCollider {
     Event_ScMethodCall
   };
 
+  enum Synchronicity {
+    Synchronous,
+    Asynchronous
+  };
 }
 
 struct QcSyncEvent : public QEvent
@@ -75,6 +79,7 @@ struct QcSyncEvent : public QEvent
   friend class QcApplication;
 
   enum Type {
+    ProxyRequest,
     Generic,
     CreateQObject
   };

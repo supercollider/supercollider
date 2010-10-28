@@ -22,6 +22,8 @@
 #ifndef QC_QOBJECT_PROXY_H
 #define QC_QOBJECT_PROXY_H
 
+#include "Common.h"
+
 #include <QObject>
 #include <QString>
 #include <QVariant>
@@ -40,6 +42,16 @@ class QcSignalSpy;
 
 typedef void (QObjectProxy::*InterpretEventFn) ( QEvent *, QList<QVariant> & );
 
+namespace QtCollider {
+  struct SetParentEvent;
+  struct SetPropertyEvent;
+  struct GetPropertyEvent;
+  struct SetEventHandlerEvent;
+  struct ConnectEvent;
+  struct InvokeMethodEvent;
+  class DestroyEvent;
+}
+
 class QObjectProxy : public QObject
 {
   friend class QcSignalSpy;
@@ -48,22 +60,9 @@ class QObjectProxy : public QObject
 
   public:
 
-    enum RequestType {
-      SetParent,
-      SetProperty,
-      GetProperty,
-      SetEventHandler,
-      Connect,
-      InvokeMethod,
-      Destroy,
-      DestroyProxy
-    };
-
-    struct PropertyData
-    {
-      QString name;
-      QVariant value;
-      PyrSlot *slot;
+    enum DestroyAction {
+      DestroyProxy,
+      DestroyProxyAndObject
     };
 
     struct EventHandlerData
@@ -71,67 +70,41 @@ class QObjectProxy : public QObject
       EventHandlerData() : type( QEvent::None ) {}
       int type;
       PyrSymbol *method;
-      bool direct;
+      QtCollider::Synchronicity sync;
       InterpretEventFn interpretFn;
-    };
-
-    struct ConnectData
-    {
-      PyrSymbol *handler;
-      QString signal;
-    };
-
-    struct MethodData
-    {
-      const char *method;
-      PyrSlot *arg;
     };
 
     QObjectProxy( QObject *qObject, PyrObject *scObject );
 
     virtual ~QObjectProxy();
 
-    void destroy();
-
-    void destroyProxyOnly();
-
-    int setProperty( const char *property, PyrSlot *arg, bool direct = false );
-
-    int getProperty( const char *property, PyrSlot *ret, PyrSlot *retExtra );
-
-    void setEventHandler( int eventType, PyrSymbol *method, bool direct );
-
-    void connect( const QString & signal, PyrSymbol *handler );
-
-    bool invokeMethod( const char *method, PyrSlot *arg, bool synchronous = true );
-
     inline QObject *object() const { return qObject; }
 
-  protected:
-    virtual void setParent( QObject *parent );
+    virtual bool setParentEvent( QtCollider::SetParentEvent * );
+    bool setPropertyEvent( QtCollider::SetPropertyEvent * );
+    bool getPropertyEvent( QtCollider::GetPropertyEvent * );
+    bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
+    bool connectEvent( QtCollider::ConnectEvent * );
+    bool invokeMethodEvent( QtCollider::InvokeMethodEvent * );
+    bool destroyEvent( QtCollider::DestroyEvent * );
+
+    bool invokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType );
 
   private:
+
     void invokeScMethod
       ( PyrSymbol *method, const QList<QVariant> & args = QList<QVariant>(),
         PyrSlot *result = 0, bool locked = false );
 
-    void syncRequest( int type, const QVariant& data = QVariant(),
-                      QVariant *ret = 0 );
-    void asyncRequest( int type, const QVariant& data = QVariant(),
-                       QVariant *ret = 0 );
-
-    void doSetProperty( const QString &property, const QVariant& data );
-    int doGetProperty( const QString &property, PyrSlot *slot );
-    void doSetEventHandler( const EventHandlerData & );
-    bool doInvokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType );
-
-    void customEvent( QEvent * );
-    bool eventFilter( QObject * watched, QEvent * event );
-
     inline void scMethodCallEvent( ScMethodCallEvent * );
 
     void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
+
     void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
+
+    void customEvent( QEvent * );
+
+    bool eventFilter( QObject * watched, QEvent * event );
 
     QObject *qObject;
     PyrObject *scObject;
@@ -139,10 +112,92 @@ class QObjectProxy : public QObject
     QMap<int,EventHandlerData> eventHandlers;
 };
 
-Q_DECLARE_METATYPE( QObjectProxy::PropertyData );
-Q_DECLARE_METATYPE( QObjectProxy::EventHandlerData );
-Q_DECLARE_METATYPE( QObjectProxy::ConnectData );
-Q_DECLARE_METATYPE( QObjectProxy::MethodData );
+namespace QtCollider {
+
+class RequestEvent : public QcSyncEvent {
+  friend class QObjectProxy;
+
+public:
+  bool send( QObjectProxy *, Synchronicity );
+  virtual bool execute( QObjectProxy * ) = 0;
+protected:
+  RequestEvent() : QcSyncEvent( QcSyncEvent::ProxyRequest ), p_done(0) {}
+  bool *p_done;
+};
+
+template <class T, bool (QObjectProxy::*RESPONSE)( T* )>
+class RequestTemplate : public RequestEvent {
+protected:
+  RequestTemplate() {}
+private:
+  bool execute( QObjectProxy *obj ) {
+    T *data = static_cast<T*>( this );
+    bool done = (obj->*RESPONSE)(data);
+    if( p_done ) *p_done = done;
+    return done;
+  }
+};
+
+struct SetParentEvent
+: public RequestTemplate<SetParentEvent, &QObjectProxy::setParentEvent>
+{
+  QObject *parent;
+};
+
+struct SetPropertyEvent
+: public RequestTemplate<SetPropertyEvent, &QObjectProxy::setPropertyEvent>
+{
+  PyrSymbol *property;
+  QVariant value;
+};
+
+struct GetPropertyEvent
+: public RequestTemplate<GetPropertyEvent, &QObjectProxy::getPropertyEvent>
+{
+  GetPropertyEvent( PyrSymbol *p, QVariant &v ) : property(p), value(v) {}
+  PyrSymbol *property;
+  QVariant &value;
+};
+
+struct SetEventHandlerEvent
+: public RequestTemplate<SetEventHandlerEvent, &QObjectProxy::setEventHandlerEvent>
+{
+  SetEventHandlerEvent( int t, PyrSymbol *m, Synchronicity s )
+  : type(t), method(m), sync(s) {}
+  int type;
+  PyrSymbol *method;
+  Synchronicity sync;
+};
+
+struct ConnectEvent
+: public RequestTemplate<ConnectEvent, &QObjectProxy::connectEvent>
+{
+  PyrSymbol *handler;
+  // QString is necessary, because signal signature can not be a valid PyrSymbol.
+  // Think of brackets and similar...
+  QString signal;
+  Synchronicity sync;
+};
+
+struct InvokeMethodEvent
+: public RequestTemplate<InvokeMethodEvent, &QObjectProxy::invokeMethodEvent>
+{
+  PyrSymbol *method;
+  PyrSlot *arg;
+};
+
+class DestroyEvent
+: public RequestTemplate<DestroyEvent, &QObjectProxy::destroyEvent>
+{
+public:
+  DestroyEvent( QObjectProxy::DestroyAction act ) : _action( act ) {}
+  QObjectProxy::DestroyAction action() { return _action; }
+private:
+  QObjectProxy::DestroyAction _action;
+};
+
+} // namespace
+
 Q_DECLARE_METATYPE( QObjectProxy * );
 
 #endif //QC_QOBJECT_PROXY_H

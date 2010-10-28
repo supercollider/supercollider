@@ -31,6 +31,8 @@
 #include <PyrKernel.h>
 #include <VMGlobals.h>
 
+using namespace QtCollider;
+
 void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
 void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
 
@@ -56,106 +58,7 @@ QObjectProxy::~QObjectProxy()
   }
 }
 
-void QObjectProxy::destroy()
-{
-  syncRequest( Destroy );
-}
-
-void QObjectProxy::destroyProxyOnly()
-{
-  syncRequest( DestroyProxy );
-}
-
-int QObjectProxy::setProperty( const char *property, PyrSlot *arg, bool direct )
-{
-  qscDebugMsg("SET: %s\n", property);
-
-  PropertyData p;
-  p.name = property;
-  p.value = Slot::toVariant( arg );
-
-  QVariant data = QVariant::fromValue<PropertyData>(p);
-
-  if( direct )
-    syncRequest( SetProperty, data );
-  else
-    asyncRequest( SetProperty, data );
-
-  return errNone;
-}
-
-int QObjectProxy::getProperty( const char *property,
-                               PyrSlot *ret, PyrSlot *retExtra )
-{
-  qscDebugMsg("GET: %s\n", property);
-
-  bool haveExtra = !IsNil( retExtra );
-  PropertyData p;
-  p.name = property;
-  p.slot = haveExtra ? retExtra : ret;
-
-  QVariant err( errNone );
-
-  syncRequest( GetProperty, QVariant::fromValue<PropertyData>( p ), &err );
-
-  if( haveExtra ) slotCopy( ret, retExtra );
-
-  qscDebugMsg("GOT: %s\n", property);
-  return err.toInt();
-}
-
-void QObjectProxy::setEventHandler( int eventType, PyrSymbol *method,
-                                    bool direct )
-{
-  qscDebugMsg( "Setting event handler: event: %i / method: %s\n", eventType, method->name );
-  EventHandlerData data;
-  data.type = eventType;
-  data.method = method;
-  data.direct = direct;
-  switch( eventType ) {
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-    case QEvent::Enter:
-      data.interpretFn = &QObjectProxy::interpretMouseEvent; break;
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-      data.interpretFn = &QObjectProxy::interpretKeyEvent; break;
-    default:
-      data.interpretFn = 0;
-  }
-
-  asyncRequest( SetEventHandler,
-                QVariant::fromValue<EventHandlerData>( data ) );
-}
-
-void QObjectProxy::connect( const QString & signal, PyrSymbol *handler )
-{
-  ConnectData data;
-  data.handler = handler;
-  data.signal = signal;
-
-  asyncRequest( Connect,
-                QVariant::fromValue<ConnectData>( data ) );
-}
-
-bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg, bool synchronous )
-{
-  if( synchronous ) {
-    MethodData data;
-    data.method = method;
-    data.arg = arg;
-    QVariant ret;
-    syncRequest( InvokeMethod, QVariant::fromValue<MethodData>( data ), &ret );
-    return ret.toBool();
-  }
-  else {
-    return doInvokeMethod( method, arg, Qt::QueuedConnection );
-  }
-}
-
-bool QObjectProxy::doInvokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType ctype )
+bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType ctype )
 {
   Slot argSlots[10];
 
@@ -219,18 +122,6 @@ void QObjectProxy::invokeScMethod
   qscDebugMsg("--- QObjectProxy::invokeScMethod\n");
 }
 
-void QObjectProxy::syncRequest( int type, const QVariant& data, QVariant *ret )
-{
-  QcGenericEvent *event = new QcGenericEvent( type, data, ret );
-  QcApplication::postSyncEvent( event, this );
-}
-
-void QObjectProxy::asyncRequest( int type, const QVariant& data, QVariant *ret )
-{
-  QApplication::postEvent( this, new QcGenericEvent( type, data, ret ) );
-}
-
-
 void QObjectProxy::customEvent( QEvent *event )
 {
   if( event->type() == (QEvent::Type) QtCollider::Event_ScMethodCall ) {
@@ -241,76 +132,76 @@ void QObjectProxy::customEvent( QEvent *event )
   if( event->type() != (QEvent::Type) QtCollider::Event_Sync ) return;
 
   QcSyncEvent *se = static_cast<QcSyncEvent*>( event );
-  if( se->syncEventType() != QcSyncEvent::Generic ) return;
 
-  QcGenericEvent *e = static_cast<QcGenericEvent*>( se );
-  PropertyData p;
-  EventHandlerData eh;
-  ConnectData c;
-  MethodData md;
-
-  switch ( e->genericEventType() ) {
-    case SetParent:
-      setParent( e->_data.value<QObject*>() );
-      break;
-    case SetProperty:
-      p = e->_data.value<PropertyData>();
-      doSetProperty( p.name, p.value );
-      break;
-    case GetProperty:
-      p = e->_data.value<PropertyData>();
-      *e->_return = QVariant( doGetProperty( p.name, p.slot ) );
-      break;
-    case SetEventHandler:
-      eh = e->_data.value<EventHandlerData>();
-      doSetEventHandler( eh );
-      break;
-    case Connect:
-      c = e->_data.value<ConnectData>();
-      sigSpy->connect( c.signal.toStdString().c_str(), c.handler );
-      break;
-    case InvokeMethod:
-      md = e->_data.value<MethodData>();
-      e->returnThis<bool>( doInvokeMethod( md.method, md.arg, Qt::DirectConnection ) );
-      break;
-    case Destroy:
-      scObject = 0;
-      qObject->deleteLater();
-      break;
-    case DestroyProxy:
-      scObject = 0;
-      deleteLater();
-      break;
-    default:
-      qscErrorMsg("Unhandled custom event\n");
+  if( se->syncEventType() == QcSyncEvent::ProxyRequest ) {
+    QtCollider::RequestEvent *re =  static_cast<QtCollider::RequestEvent*>( event );
+    re->execute( this );
+    return;
   }
-
 }
 
-void QObjectProxy::setParent( QObject *parent )
-{
-  qObject->setParent( parent );
+bool QObjectProxy::setParentEvent( SetParentEvent *e ) {
+  qObject->setParent( e->parent );
+  return true;
 }
 
-void QObjectProxy::doSetProperty( const QString& property, const QVariant& arg )
+bool QObjectProxy::setPropertyEvent( SetPropertyEvent *e )
 {
-  if( !qObject->setProperty( property.toStdString().c_str(), arg ) ) {
+  if( !qObject->setProperty( e->property->name, e->value ) ) {
     qscDebugMsg("WARNING: setting dynamic property\n");
   }
 }
 
-int QObjectProxy::doGetProperty( const QString &property, PyrSlot *slot )
+bool QObjectProxy::getPropertyEvent( GetPropertyEvent *e )
 {
-  int err = errNone;
-  QVariant val = qObject->property( property.toStdString().c_str() );
-  err = Slot::setVariant( slot, val );
-
-  return err;
+  e->value = qObject->property( e->property->name );
+  return true;
 }
 
-void QObjectProxy::doSetEventHandler( const EventHandlerData & data )
+bool QObjectProxy::setEventHandlerEvent( SetEventHandlerEvent *e )
 {
+  EventHandlerData data;
+  data.type = e->type;
+  data.method = e->method;
+  data.sync = e->sync;
+  switch( e->type ) {
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseMove:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+    case QEvent::Enter:
+      data.interpretFn = &QObjectProxy::interpretMouseEvent; break;
+    case QEvent::KeyPress:
+    case QEvent::KeyRelease:
+      data.interpretFn = &QObjectProxy::interpretKeyEvent; break;
+    default:
+      data.interpretFn = 0;
+  }
   eventHandlers.insert( data.type, data );
+  return true;
+}
+
+bool QObjectProxy::connectEvent( ConnectEvent *e )
+{
+  bool direct = e->sync == Synchronous;
+  return sigSpy->connect( e->signal.toStdString().c_str(), e->handler, direct );
+}
+
+bool QObjectProxy::invokeMethodEvent( InvokeMethodEvent *e )
+{
+  return invokeMethod( e->method->name, e->arg, Qt::DirectConnection );
+}
+
+bool QObjectProxy::destroyEvent( DestroyEvent *e )
+{
+  scObject = 0;
+
+  if( e->action() == DestroyProxyAndObject )
+    qObject->deleteLater();
+  else
+    deleteLater();
+
+  return errNone;
 }
 
 bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
@@ -339,7 +230,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
         (this->*interpreter) ( event, args );
       }
 
-      if( eh.direct ) {
+      if( eh.sync == Synchronous ) {
         qscDebugMsg("direct!\n");
         PyrSlot result;
         invokeScMethod( symMethod, args, &result );
@@ -422,4 +313,22 @@ void QObjectProxy::interpretKeyEvent( QEvent *e, QList<QVariant> &args )
   args << (int) ke->modifiers();
   args << unicode;
   args << ke->key();
+}
+
+bool QtCollider::RequestEvent::send( QObjectProxy *proxy, Synchronicity sync )
+{
+  if( sync == Synchronous ) {
+    bool done = false;
+    p_done = &done;
+    QcApplication::postSyncEvent( this, proxy );
+    return done;
+  }
+  else {
+    QApplication::postEvent( proxy, this );
+  }
+
+  // WARNING at this point, the event has been deleted, so "this" pointer and data members are
+  // not valid anymore!
+
+  return true;
 }
