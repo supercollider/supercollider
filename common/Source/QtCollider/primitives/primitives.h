@@ -19,6 +19,50 @@
 *
 ************************************************************************/
 
-void defineQObjectPrimitives();
 void defineQPenPrimitives();
-void defineMiscPrimitives();
+
+#include <PyrPrimitive.h>
+#include <VMGlobals.h>
+#include <PyrSlot.h>
+
+#include <QList>
+
+#include <cstring>
+
+namespace QtCollider {
+
+struct LangPrimitiveData {
+  PrimitiveHandler mediator;
+  char *name;
+  int argc;
+};
+
+typedef QList<LangPrimitiveData> LangPrimitiveList;
+
+LangPrimitiveList& langPrimitives();
+
+template <int FN( PyrSlot*, PyrSlot*, VMGlobals* )>
+class LangPrimitive
+{
+public:
+  LangPrimitive ( const char *name, int argc ) {
+    LangPrimitiveData d;
+    d.mediator = &mediate;
+    d.name = strdup(name);
+    d.argc = argc;
+    langPrimitives().append( d );
+  }
+private:
+  static int mediate( VMGlobals *g, int i ) {
+    PyrSlot *stack = g->sp - i + 1;
+    int ret = (*FN)( stack, i > 1 ? stack+1 : 0, g );
+    return ret;
+  }
+};
+
+} // namespace
+
+#define QC_LANG_PRIMITIVE( name, argc, receiver, args, global ) \
+  int name ( receiver, args, global ); \
+  static QtCollider::LangPrimitive<&name> p_##name( "_" #name, argc ); \
+  int name ( receiver, args, global )

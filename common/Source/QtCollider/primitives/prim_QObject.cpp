@@ -19,7 +19,7 @@
 *
 ************************************************************************/
 
-#include "PrimitiveDefiner.h"
+#include "primitives.h"
 #include "../QObjectProxy.h"
 #include "../QcObjectFactory.h"
 #include "../QcApplication.h"
@@ -80,19 +80,18 @@ void qcCreateQObject( QcSyncEvent *e )
   }
 }
 
-int QObject_New (struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( QObject_New, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  PyrSlot *args = g->sp - 2;
+  PyrObject *scObject = slotRawObject( r );
 
-  QString realClassName =
-    Slot::toString( &slotRawObject( args )->classptr->name );
+  QString realClassName = Slot::toString( &scObject->classptr->name );
   qscDebugMsg( "CREATE: %s\n", realClassName.toStdString().c_str() );
 
   CreationData data;
 
-  data.scObject = slotRawObject( args );
-  data.scClassName = Slot::toString( args+1 );
-  data.arguments = Slot::toVariant( args+2 );
+  data.scObject = scObject;
+  data.scClassName = Slot::toString( a+0 );
+  data.arguments = Slot::toVariant( a+1 );
 
   QObjectProxy *proxy = 0;
 
@@ -101,28 +100,28 @@ int QObject_New (struct VMGlobals *g, int)
 
   if( !proxy ) return errFailed;
 
-  SetPtr( slotRawObject(args)->slots, proxy );
+  SetPtr( scObject->slots, proxy );
 
-  InstallFinalizer( g, slotRawObject( args ), 1, QObject_Finalize );
+  InstallFinalizer( g, scObject, 1, QObject_Finalize );
 
   return errNone;
 }
 
-int QObject_Destroy (struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString realClassName =
-    Slot::toString( &slotRawObject( g->sp )->classptr->name );
+    Slot::toString( &slotRawObject( r )->classptr->name );
   qscDebugMsg( "DESTROY: %s\n", realClassName.toStdString().c_str() );
 
-  if( IS_OBJECT_NIL( g->sp ) ) return errFailed;
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
 
-  QObjectProxy *proxy = QOBJECT_FROM_SLOT( g->sp );
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   proxy->destroy();
 
   /* NOTE destroy has set QObjectProxy::scObject to 0, so we have to invalidate
     the SC object ourselves */
-  SetNil( slotRawObject( g->sp )->slots );
+  SetNil( slotRawObject( r )->slots );
 
   return errNone;
 }
@@ -142,104 +141,78 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
   return errNone;
 }
 
-int QObject_SetProperty(struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  PyrSlot *args = g->sp - 3;
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
 
-  if( IS_OBJECT_NIL( args ) ) return errFailed;
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
-  QObjectProxy *proxy = QOBJECT_FROM_SLOT( args );
-
-  PyrSymbol *symProp = slotRawSymbol( args+1 );
-  PyrSlot *slotVal = args+2;
-  bool direct = IsTrue( args+3 );
+  PyrSymbol *symProp = slotRawSymbol( a+0 );
+  PyrSlot *slotVal = a+1;
+  bool direct = IsTrue( a+2 );
 
   return proxy->setProperty( symProp->name, slotVal, direct );
 }
 
-int QObject_GetProperty(struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  PyrSlot *args = g->sp - 2;
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
 
-  if( IS_OBJECT_NIL( args ) ) return errFailed;
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
-  QObjectProxy *proxy = QOBJECT_FROM_SLOT( args );
+  PyrSymbol *symProp = slotRawSymbol( a+0 );
+  PyrSlot *slotRetExtra = a+1;
 
-  PyrSymbol *symProp = slotRawSymbol( args+1 );
-  PyrSlot *slotRetExtra = args+2;
-
-  return proxy->getProperty( symProp->name, args, slotRetExtra );
+  return proxy->getProperty( symProp->name, r, slotRetExtra );
 }
 
-int QObject_SetEventHandler (struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  PyrSlot *args = g->sp - 3;
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
 
-  if( IS_OBJECT_NIL( args ) ) return errFailed;
-
-  if( NotInt( args+1 ) || NotSym( args+2 ) ) return errWrongType;
-  int eventType = Slot::toInt( args+1 );
+  if( NotInt( a+0 ) || NotSym( a+1 ) ) return errWrongType;
+  int eventType = Slot::toInt( a+0 );
   PyrSymbol *method = 0;
-  slotSymbolVal( args+2, &method );
-  bool direct = IsTrue( args+3 );
+  slotSymbolVal( a+1, &method );
+  bool direct = IsTrue( a+2 );
 
-  QObjectProxy *proxy = QOBJECT_FROM_SLOT( args );
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   proxy->setEventHandler( eventType, method, direct );
 
   return errNone;
 }
 
-int QObject_Connect (struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( QObject_Connect, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  PyrSlot *args = g->sp - 3;
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
 
-  if( IS_OBJECT_NIL( args ) ) return errFailed;
+  QString signal = Slot::toString( a+0 );
+  if( signal.isEmpty() || NotSym( a+1 ) ) return errWrongType;
+  PyrSymbol *handler = 0; slotSymbolVal( a+1, &handler );
+  bool direct = Slot::toBool( a+2 );
 
-  QString signal = Slot::toString( args+1 );
-  if( signal.isEmpty() || NotSym( args+2 ) ) return errWrongType;
-  PyrSymbol *handler = 0; slotSymbolVal( args+2, &handler );
-  bool direct = Slot::toBool( args+3 );
-
-  QObjectProxy *proxy = QOBJECT_FROM_SLOT( args );
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   proxy->connect( signal, handler );
 
   return errNone;
 }
 
-int QObject_InvokeMethod (struct VMGlobals *g, int)
+QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  PyrSlot *args = g->sp - 3;
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
 
-  if( IS_OBJECT_NIL( args ) ) return errFailed;
+  if( !IsSym( a+0 ) ) return errWrongType;
 
-  if( !IsSym( args+1 ) ) return errWrongType;
-
-  const char *method = slotRawSymbol( args+1 )->name;
-  PyrSlot *methodArgs = args+2;
-  bool sync = !IsFalse( args+3 );
+  const char *method = slotRawSymbol( a+0 )->name;
+  PyrSlot *methodArgs = a+1;
+  bool sync = !IsFalse( a+2 );
 
   qscDebugMsg( "INVOKE: method '%s'; synchronous = %i\n", method, sync );
 
-  QObjectProxy *proxy = QOBJECT_FROM_SLOT( args );
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
   if( !proxy->invokeMethod( method, methodArgs, sync ) ) return errFailed;
 
   return errNone;
-}
-
-void defineQObjectPrimitives()
-{
-  qscDebugMsg( "defining QObject primitives\n" );
-
-  s_QObject = getsym("QObject");
-
-  QtCollider::PrimitiveDefiner d;
-  d.define( "_QObject_New", QObject_New, 3, 0 );
-  d.define( "_QObject_Destroy", QObject_Destroy, 1, 0 );
-  d.define( "_QObject_SetProperty",QObject_SetProperty, 4, 0 );
-  d.define( "_QObject_GetProperty", QObject_GetProperty, 3, 0 );
-  d.define( "_QObject_SetEventHandler", QObject_SetEventHandler, 4, 0 );
-  d.define( "_QObject_Connect", QObject_Connect, 4, 0 );
-  d.define( "_QObject_InvokeMethod", QObject_InvokeMethod, 4, 0);
 }

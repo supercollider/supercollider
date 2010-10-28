@@ -22,10 +22,24 @@
 #include "primitives/primitives.h"
 #include "Common.h"
 
+using namespace QtCollider;
+
+LangPrimitiveList& QtCollider::langPrimitives() {
+  static LangPrimitiveList * primitives = new LangPrimitiveList();
+  return *primitives;
+}
+
 void initQtGUIPrimitives () {
   qscDebugMsg("initializing QtGUI primitives\n");
 
-  defineQObjectPrimitives();
   defineQPenPrimitives();
-  defineMiscPrimitives();
+
+  int base = nextPrimitiveIndex();
+  int index = 0;
+  LangPrimitiveList& primitives = langPrimitives();
+
+  Q_FOREACH( LangPrimitiveData p, primitives ) {
+    qscDebugMsg("defining primitive '%s'\n", p.name);
+    definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
+  }
 }
