@@ -250,6 +250,9 @@ void QObjectProxy::customEvent( QEvent *event )
   MethodData md;
 
   switch ( e->genericEventType() ) {
+    case SetParent:
+      setParent( e->_data.value<QObject*>() );
+      break;
     case SetProperty:
       p = e->_data.value<PropertyData>();
       doSetProperty( p.name, p.value );
@@ -282,6 +285,11 @@ void QObjectProxy::customEvent( QEvent *event )
       qscErrorMsg("Unhandled custom event\n");
   }
 
+}
+
+void QObjectProxy::setParent( QObject *parent )
+{
+  qObject->setParent( parent );
 }
 
 void QObjectProxy::doSetProperty( const QString& property, const QVariant& arg )
