@@ -136,7 +136,8 @@ QView : QObject {
   }
 
   focus { arg flag=true;
-    this.invokeMethod( \setFocus, flag );
+    _QWidget_SetFocus
+    ^this.primitiveFailed;
   }
 
   hasFocus {
@@ -186,7 +187,8 @@ QView : QObject {
   }
 
   front {
-    this.invokeMethod( \bringFront );
+    _QWidget_BringFront
+    ^this.primitiveFailed;
   }
 
   minimize {

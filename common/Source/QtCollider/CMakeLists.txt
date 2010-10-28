@@ -33,6 +33,7 @@ set( QT_COLLIDER_SRCS
   primitives/prim_QObject.cpp
   primitives/prim_QPen.cpp
   primitives/prim_misc.cpp
+  primitives/prim_QWidget.cpp
   widgets/QcAbstractLayout.cpp
   widgets/BasicWidgets.cpp
   widgets/QcScrollArea.cpp
