@@ -183,22 +183,6 @@ bool QObjectProxy::doInvokeMethod( const char *method, PyrSlot *arg, Qt::Connect
                                 argSlots[8].asGenericArgument(),
                                 argSlots[9].asGenericArgument());
 
-  if( !success )
-  {
-    success =
-      QMetaObject::invokeMethod( this, method, ctype,
-                                  argSlots[0].asGenericArgument(),
-                                  argSlots[1].asGenericArgument(),
-                                  argSlots[2].asGenericArgument(),
-                                  argSlots[3].asGenericArgument(),
-                                  argSlots[4].asGenericArgument(),
-                                  argSlots[5].asGenericArgument(),
-                                  argSlots[6].asGenericArgument(),
-                                  argSlots[7].asGenericArgument(),
-                                  argSlots[8].asGenericArgument(),
-                                  argSlots[9].asGenericArgument());
-  }
-
   return success;
 }
 
