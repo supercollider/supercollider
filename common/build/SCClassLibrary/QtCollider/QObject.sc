@@ -32,6 +32,11 @@ QObject {
     ^qObject.notNil;
   }
 
+  setParent { arg parent;
+    _QObject_SetParent
+    ^this.primitiveFailed
+  }
+
   getProperty{ arg property, preAllocatedReturn;
     _QObject_GetProperty
     ^this.primitiveFailed

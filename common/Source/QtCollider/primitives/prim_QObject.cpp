@@ -141,6 +141,21 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QObject_SetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+
+  QObject *parent = Slot::toObject( a );
+  if( !parent ) return errWrongType;
+
+  QVariant vParent = QVariant::fromValue<QObject*>(parent);
+  QcGenericEvent *e = new QcGenericEvent( QObjectProxy::SetParent, vParent );
+  QcApplication::postSyncEvent( e, proxy );
+
+  return errNone;
+}
+
 QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( IS_OBJECT_NIL( r ) ) return errFailed;

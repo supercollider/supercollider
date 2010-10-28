@@ -46,6 +46,17 @@ class QWidgetProxy : public QObjectProxy
       widget->show();
       widget->raise();
     }
+  protected:
+    virtual void setParent( QObject *po ) {
+      if( po->isWidgetType() ) {
+        QWidget *pw = qobject_cast<QWidget*>(po);
+        bool ok = pw->metaObject()->invokeMethod( pw, "addChild", Q_ARG( QWidget*, widget ) );
+        if( !ok ) widget->setParent( pw );
+      }
+      else {
+        QObjectProxy::setParent( po );
+      }
+    }
   private:
     QWidget *widget;
 };

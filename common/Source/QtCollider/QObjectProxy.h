@@ -46,7 +46,10 @@ class QObjectProxy : public QObject
 
   Q_OBJECT
 
+  public:
+
     enum RequestType {
+      SetParent,
       SetProperty,
       GetProperty,
       SetEventHandler,
@@ -55,8 +58,6 @@ class QObjectProxy : public QObject
       Destroy,
       DestroyProxy
     };
-
-  public:
 
     struct PropertyData
     {
@@ -105,6 +106,9 @@ class QObjectProxy : public QObject
     bool invokeMethod( const char *method, PyrSlot *arg, bool synchronous = true );
 
     inline QObject *object() const { return qObject; }
+
+  protected:
+    virtual void setParent( QObject *parent );
 
   private:
     void invokeScMethod
