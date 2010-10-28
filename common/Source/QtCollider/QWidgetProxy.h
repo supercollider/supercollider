@@ -47,15 +47,15 @@ class QWidgetProxy : public QObjectProxy
       widget->raise();
     }
   protected:
-    virtual void setParent( QObject *po ) {
+    virtual bool setParentEvent( QtCollider::SetParentEvent *e ) {
+      QObject *po = e->parent;
       if( po->isWidgetType() ) {
         QWidget *pw = qobject_cast<QWidget*>(po);
         bool ok = pw->metaObject()->invokeMethod( pw, "addChild", Q_ARG( QWidget*, widget ) );
         if( !ok ) widget->setParent( pw );
+        return true;
       }
-      else {
-        QObjectProxy::setParent( po );
-      }
+      return false;
     }
   private:
     QWidget *widget;
