@@ -23,9 +23,7 @@
 #define QC_WIDGET_FACTORY_H
 
 #include "QcObjectFactory.h"
-#include "Common.h"
 #include "QWidgetProxy.h"
-#include "widgets/QcScrollArea.h"
 
 #include <QLayout>
 
