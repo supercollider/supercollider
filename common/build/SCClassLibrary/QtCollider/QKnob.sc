@@ -42,12 +42,12 @@ QKnob : QUserView {
   }
 
   *new { arg parent, bounds;
-    ^super.new( parent, bounds ).initQKnob( parent, bounds );
+    ^super.new( parent, bounds ).initQKnob( parent );
   }
 
-  initQKnob { arg argParent, argBounds;
+  initQKnob { arg argParent;
 
-    argBounds = this.calcConsts(argBounds);
+    var argBounds = this.calcConsts( this.bounds );
 
     this.bounds_( argBounds );
 
@@ -82,6 +82,10 @@ QKnob : QUserView {
     center = Point(widthDiv2, widthDiv2);
 
     ^rect
+  }
+
+  sizeHint {
+    ^Point(60,60);
   }
 
   bounds_ { arg rect;
