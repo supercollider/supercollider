@@ -43,7 +43,9 @@ QcGraph::QcGraph() :
   _gridOn( false ),
   selIndex( -1 ),
   dragIndex( -1 )
-{}
+{
+  setFocusPolicy( Qt::StrongFocus );
+}
 
 VariantList QcGraph::value() const
 {
