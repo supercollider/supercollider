@@ -35,7 +35,7 @@ QcGraph::QcGraph() :
   _fillColor( QColor(0,0,0) ),
   _strokeColor( QColor(0,0,0) ),
   _selColor( QColor(255,0,0) ),
-  _gridColor( QColor(200,200,200) ),
+  _gridColor( QColor(225,225,225) ),
   _drawLines( true ),
   _drawRects( true ),
   _editable( true ),
@@ -43,9 +43,7 @@ QcGraph::QcGraph() :
   _gridOn( false ),
   selIndex( -1 ),
   dragIndex( -1 )
-{
-  setAttribute( Qt::WA_OpaquePaintEvent, true );
-}
+{}
 
 VariantList QcGraph::value() const
 {
@@ -251,32 +249,41 @@ QPointF QcGraph::value( const QPointF & pos )
 void QcGraph::paintEvent( QPaintEvent * )
 {
   QPainter p( this );
+  QPalette plt( palette() );
 
-  p.fillRect( rect(), palette().color( QPalette::Base ) );
+  p.setPen( plt.color( QPalette::Mid ) );
+  p.setBrush( Qt::NoBrush );
+  p.drawRect( rect().adjusted(0,0,-1,-1) );
+
+  QRect contentsRect( _thumbSize.width() * 0.5f, _thumbSize.height() * 0.5f,
+                      width() - _thumbSize.width(), height() - _thumbSize.height() );
+  p.setPen( _gridColor );
+  p.setBrush( plt.color( QPalette::Base ) );
+  p.drawRect( contentsRect );
 
   //draw grid;
   if( _gridOn ) {
-    p.setPen( _gridColor );
-
     float dx = _gridMetrics.x();
     float dy = _gridMetrics.y();
+    float cl = contentsRect.left();
+    float cr = contentsRect.right();
+    float ct = contentsRect.top();
+    float cb = contentsRect.bottom();
 
-    float contentsW = width() - _thumbSize.width();
-    if( contentsW > 0.f && dx > 0.f && dx < 1.f ) {
-      dx *= contentsW;
-      float x = _thumbSize.width() * 0.5f;
-      while( x < width() ) {
-        p.drawLine( x, 0, x, height() );
+    if( contentsRect.width() > 0.f && dx > 0.f && dx < 1.f ) {
+      dx *= contentsRect.width();
+      float x = cl;
+      while( x < cr ) {
+        p.drawLine( x, ct, x, cb );
         x += dx;
       }
     }
 
-    float contentsH = height() - _thumbSize.height();
-    if( contentsH > 0.f && dy > 0.f && dy < 1.f ) {
-      dy *= contentsH;
-      float y = height() - ( _thumbSize.height() * 0.5f );
-      while( y >= 0.f ) {
-        p.drawLine( 0, y, width(), y );
+    if( contentsRect.height() > 0.f && dy > 0.f && dy < 1.f ) {
+      dy *= contentsRect.height();
+      float y = cb;
+      while( y > ct ) {
+        p.drawLine( cl, y, cr, y );
         y -= dy;
       }
     }
