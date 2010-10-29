@@ -22,7 +22,7 @@ QEnvelopeView : QView
   }
 
   value {
-    this.nonimpl( "value" );
+    ^this.getProperty( \value );
   }
 
   value_ { arg anArray;
