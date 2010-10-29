@@ -20,12 +20,15 @@
 ************************************************************************/
 
 #include "QcGraph.h"
+#include "../QcWidgetFactory.h"
 
 #include <QPainter>
 #include <QMouseEvent>
 #include <QApplication>
 
 #include <cmath>
+
+static QcWidgetFactory<QcGraph> factory;
 
 QcGraph::QcGraph() :
   _thumbSize( QSize( 8, 8 ) ),
