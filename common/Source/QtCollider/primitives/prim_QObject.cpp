@@ -44,44 +44,37 @@ using namespace QtCollider;
 
 int QObject_Finalize( struct VMGlobals *, struct PyrObject * );
 
-struct CreationData {
-  QString scClassName;
-  PyrObject * scObject;
-  QVariant arguments;
-};
-
 struct CreationEvent : public QcSyncEvent
 {
-  CreationEvent( const CreationData& data, QObjectProxy** ret )
-  : QcSyncEvent( QcSyncEvent::CreateQObject ),
-    _data ( data ),
-    _ret ( ret )
-  {}
-  const CreationData & _data;
-  QObjectProxy **_ret;
+  CreationEvent()
+  : QcSyncEvent( QcSyncEvent::CreateQObject ) {}
+  PyrObject * scObject;
+  QString qtClassName;
+  QVariant arguments;
+  QObjectProxy **proxy;
 };
 
 void qcCreateQObject( QcSyncEvent *e )
 {
   CreationEvent *ce = static_cast<CreationEvent*>(e);
 
-  QcAbstractFactory *f = QtCollider::factories().value( ce->_data.scClassName );
+  QcAbstractFactory *f = QtCollider::factories().value( ce->qtClassName );
 
   if( !f ) {
     qscErrorMsg( "Factory for class '%s' not found!\n",
-                  ce->_data.scClassName.toStdString().c_str() );
+                  ce->qtClassName.toStdString().c_str() );
     return;
   }
 
-  QVariant var( ce->_data.arguments );
+  QVariant var( ce->arguments );
   if( var.userType() == qMetaTypeId<VariantList>() ) {
     VariantList args = var.value<VariantList>();
-    *ce->_ret = f->newInstance( ce->_data.scObject, args.data );
+    *ce->proxy = f->newInstance( ce->scObject, args.data );
   }
   else {
     QList<QVariant> args;
     if( var.isValid() ) args << var;
-    *ce->_ret = f->newInstance( ce->_data.scObject, args );
+    *ce->proxy = f->newInstance( ce->scObject, args );
   }
 }
 
@@ -89,19 +82,17 @@ QC_LANG_PRIMITIVE( QObject_New, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   PyrObject *scObject = slotRawObject( r );
 
-  QString realClassName = Slot::toString( &scObject->classptr->name );
-  qscDebugMsg( "[%s] CREATE\n", realClassName.toStdString().c_str() );
-
-  CreationData data;
-
-  data.scObject = scObject;
-  data.scClassName = Slot::toString( a+0 );
-  data.arguments = Slot::toVariant( a+1 );
-
   QObjectProxy *proxy = 0;
 
-  CreationEvent *event = new CreationEvent( data, &proxy );
-  QcApplication::postSyncEvent( event, &qcCreateQObject );
+  CreationEvent *e = new CreationEvent();
+  e->scObject = scObject;
+  e->qtClassName = Slot::toString( a+0 );
+  e->arguments = Slot::toVariant( a+1 );
+  e->proxy = &proxy;
+
+  qscDebugMsg( "[%s] CREATE: %s\n", CLASS_NAME( r ), e->qtClassName.toStdString().c_str() );
+
+  QcApplication::postSyncEvent( e, &qcCreateQObject );
 
   if( !proxy ) return errFailed;
 
