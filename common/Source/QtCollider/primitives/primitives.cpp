@@ -30,7 +30,7 @@ LangPrimitiveList& QtCollider::langPrimitives() {
 }
 
 void initQtGUIPrimitives () {
-  qscDebugMsg("initializing QtGUI primitives\n");
+  qcDebugMsg(1,"initializing QtGUI primitives");
 
   defineQPenPrimitives();
 
@@ -39,7 +39,7 @@ void initQtGUIPrimitives () {
   LangPrimitiveList& primitives = langPrimitives();
 
   Q_FOREACH( LangPrimitiveData p, primitives ) {
-    qscDebugMsg("defining primitive '%s'\n", p.name);
+    qcDebugMsg(1, QString("defining primitive '%1'").arg(p.name) );
     definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
   }
 }

@@ -45,9 +45,9 @@ public:
     for( int i = 0; i < params.count(); ++i ) {
       int type = QMetaType::type( params.at(i).constData() );
       if( type == QMetaType::Void )
-        qscErrorMsg( "QObject:connect: Don't know how to handle '%s', "
-                     "use qRegisterMetaType to register it.\n",
-                    params.at(i).constData() );
+        qcErrorMsg( QString("QObject:connect: Don't know how to handle '%1', "
+                            "use qRegisterMetaType to register it.")
+                    .arg(params.at(i).constData()) );
       _argTypes << type;
     }
   }
@@ -87,7 +87,7 @@ public:
     int sigId = mo->indexOfSignal( signal );
 
     if( sigId < 0 ) {
-      qscErrorMsg( "No such signal: '%s'\n", signal.constData() );
+      qcErrorMsg( QString("No such signal: '%1'").arg(signal.constData()) );
       return false;
     }
 
@@ -103,8 +103,7 @@ public:
     if( !QMetaObject::connect( _proxy->object(), sigId, this, slotId,
                               conType, 0) )
     {
-      qscErrorMsg( "QMetaObject::connect returned false."
-                   " Unable to connect.\n");
+      qcErrorMsg( "QMetaObject::connect returned false. Unable to connect." );
       return false;
     }
 
@@ -132,8 +131,8 @@ public:
 
       const QMetaMethod mm =
         _proxy->object()->metaObject()->method( ds->signalId() );
-      qscDebugMsg( "SIGNAL: '%s' handled by method '%s'\n",
-                  mm.signature(), scMethod->name );
+      qcDebugMsg( 1, QString("SIGNAL: '%1' handled by method '%2'")
+                      .arg(mm.signature()).arg(scMethod->name) );
 
       _proxy->invokeScMethod( scMethod, args );
 

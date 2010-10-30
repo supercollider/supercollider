@@ -42,17 +42,17 @@ void QcDefaultLayout::setGeometry ( const QRect & r )
     geom = r;
     return;
   }
-  qscDebugMsg("setGeometry\n");
+  qcDebugMsg(2,"QcDefaultLayout::setGeometry");
   QPoint dPos = r.topLeft() - geom.topLeft();
   QSize dSize = r.size() - geom.size();//_geometry.size();
-  //qscDebugMsg("dSize: %i,%i\n", dSize.width(), dSize.height() );
+  //qcDebugMsg(2,"dSize: %i,%i", dSize.width(), dSize.height() );
   Q_FOREACH( QcLayoutItem* item, items ) {
     QRect g = item->qLayoutItem->geometry();
     int x = g.x();
     int y = g.y();
     int w = g.width();
     int h = g.height();
-    //qscDebugMsg("geom: %i %i %i %i\n", x,y,w,h);
+    //qcDebugMsg(2,"geom: %i %i %i %i", x,y,w,h);
 
     if( !dPos.isNull() ) {
       x += dPos.x();

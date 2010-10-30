@@ -76,7 +76,7 @@ void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
   PyrSlot *s = array->slots;
   for( i = 0; i < count; ++i, ++s ) {
     if( Slot::setVariant( s, varList.data[i] ) ) {
-      qscDebugMsg( "WARNING: Could not set a slot of array\n" );
+      qcDebugMsg(1, "WARNING: Could not set one slot of array" );
     }
     array->size++;
     g->gc->GCWrite( array, s );
@@ -306,7 +306,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
         return QVariant::fromValue<VariantList>( toVariantList(slot) );
       }
       else {
-        qscErrorMsg("Could not interpret slot!\n");
+        qcErrorMsg("Could not interpret slot!");
         return QVariant();
       }
     }
@@ -370,7 +370,7 @@ void Slot::setData( PyrSlot *slot )
         }
       }
       else {
-        qscErrorMsg("Could not interpret slot!\n");
+        qcErrorMsg("Could not interpret slot!");
         type = QMetaType::Void;
         ptr = 0;
       }

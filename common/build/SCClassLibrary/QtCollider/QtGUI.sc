@@ -18,6 +18,11 @@ QtGUI {
 
   *stop { }
 
+  *debugLevel_ { arg level;
+    _QtGUI_SetDebugLevel
+    ^this.primitiveFailed;
+  }
+
   ///////////////////// redirection of GUI classes /////////////////////////////
 
   *view { ^QView }

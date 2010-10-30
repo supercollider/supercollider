@@ -37,7 +37,7 @@ namespace QtCollider {
   void beginPainting( QPaintDevice *device )
   {
     if( !painter.begin( device ) )
-      qscErrorMsg( "Cannot begin painting\n");
+      qcErrorMsg( "Cannot begin painting" );
     path = QPainterPath();
     painter.setRenderHint( QPainter::Antialiasing, true );
     QColor black( 0,0,0 );
@@ -354,7 +354,7 @@ int QPen_StringInRect (struct VMGlobals *g, int)
 
 void initQtPenPrimitives()
 {
-  qscDebugMsg( "Initializing painting primitives\n" );
+  qcDebugMsg( 1, "Initializing painting primitives" );
   int base = nextPrimitiveIndex();
   int index = 0;
 

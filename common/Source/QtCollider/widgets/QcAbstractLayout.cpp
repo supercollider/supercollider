@@ -54,7 +54,7 @@ int QcAbstractLayout::count() const {
 }
 
 void QcAbstractLayout::addItem( QLayoutItem* item ) {
-    qscDebugMsg("addItem\n");
+    qcDebugMsg(2,"QcAbstractLayout::addItem");
     QWidget *w = item->widget();
     if( w ) {
       w->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored );

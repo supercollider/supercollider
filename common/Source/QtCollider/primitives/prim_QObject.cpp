@@ -61,8 +61,7 @@ void qcCreateQObject( QcSyncEvent *e )
   QcAbstractFactory *f = QtCollider::factories().value( ce->qtClassName );
 
   if( !f ) {
-    qscErrorMsg( "Factory for class '%s' not found!\n",
-                  ce->qtClassName.toStdString().c_str() );
+    qcErrorMsg( QString("Factory for class '%1' not found!").arg(ce->qtClassName) );
     return;
   }
 
@@ -90,7 +89,7 @@ QC_LANG_PRIMITIVE( QObject_New, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   e->arguments = Slot::toVariant( a+1 );
   e->proxy = &proxy;
 
-  qscDebugMsg( "[%s] CREATE: %s\n", CLASS_NAME( r ), e->qtClassName.toStdString().c_str() );
+  qcSCObjectDebugMsg( 1, scObject, QString("CREATE: %2").arg(e->qtClassName) );
 
   QcApplication::postSyncEvent( e, &qcCreateQObject );
 
@@ -105,7 +104,7 @@ QC_LANG_PRIMITIVE( QObject_New, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  qscDebugMsg( "[%s] DESTROY\n", CLASS_NAME(r) );
+  qcSCObjectDebugMsg( 1, slotRawObject(r), "DESTROY" );
 
   if( IS_OBJECT_NIL( r ) ) return errFailed;
 
@@ -123,7 +122,7 @@ QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 {
-  qscDebugMsg("[%s] FINALIZE\n", slotRawSymbol( &obj->classptr->name )->name );
+  qcSCObjectDebugMsg( 1, obj, "FINALIZE" );
 
   if( IsNil( obj->slots ) ) return errNone;
 
@@ -143,7 +142,7 @@ QC_LANG_PRIMITIVE( QObject_SetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QObject *parent = Slot::toObject( a );
   if( !parent ) return errWrongType;
 
-  qscDebugMsg( "[%s] SET PARENT\n", CLASS_NAME(r) );
+  qcSCObjectDebugMsg( 1, slotRawObject(r), "SET PARENT" );
 
   QtCollider::SetParentEvent *e = new QtCollider::SetParentEvent();
   e->parent = parent;
@@ -161,7 +160,7 @@ QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   PyrSymbol *property = slotRawSymbol( a );
   bool sync = IsTrue( a+2 );
 
-  qscDebugMsg( "[%s] SET: %s\n", CLASS_NAME(r), property->name );
+  qcSCObjectDebugMsg( 1, slotRawObject(r), QString("SET: %1").arg(property->name) );
 
   SetPropertyEvent *e = new SetPropertyEvent();
   e->property = property;
@@ -182,7 +181,7 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   PyrSlot *slotRetExtra = a+1;
   QVariant val;
 
-  qscDebugMsg( "[%s] GET: %s\n", CLASS_NAME(r), property->name );
+  qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(property->name) );
 
   GetPropertyEvent *e = new GetPropertyEvent( property, val );
 
@@ -207,9 +206,10 @@ QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals
   PyrSymbol *method = 0; slotSymbolVal( a+1, &method );
   Synchronicity sync = IsTrue( a+2 ) ? Synchronous : Asynchronous;
 
-  qscDebugMsg( "[%s] EVENT HANDLER: type %i -> %s [%s]\n",
-                CLASS_NAME(r), eventType, method->name,
-                (sync == Synchronous ? "SYNC" : "ASYNC") );
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("EVENT HANDLER: type %1 -> %2 [%3]")
+                      .arg(eventType).arg(method->name)
+                      .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
 
   SetEventHandlerEvent *e = new SetEventHandlerEvent( eventType, method, sync );
 
@@ -227,11 +227,8 @@ QC_LANG_PRIMITIVE( QObject_Connect, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   PyrSymbol *handler = 0; slotSymbolVal( a+1, &handler );
   Synchronicity sync = Slot::toBool( a+2 ) ? Synchronous : Asynchronous;
 
-  qscDebugMsg( "[%s] CONNECT: %s -> %s [%s]\n",
-                CLASS_NAME(r),
-                signal.toStdString().c_str(),
-                handler->name,
-                (sync == Synchronous ? "SYNC" : "ASYNC") );
+  qcDebugMsg( 1, QString("CONNECT: %1 -> %2 [%3]").arg(signal).arg(handler->name)
+                  .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
 
   ConnectEvent *e = new ConnectEvent();
   e->handler = handler;
@@ -254,8 +251,7 @@ QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g
   PyrSlot *methodArgs = a+1;
   bool sync = !IsFalse( a+2 );
 
-  qscDebugMsg( "[%s] INVOKE: '%s' [%s]\n",
-               CLASS_NAME(r), method->name, sync ? "SYNC" : "ASYNC" );
+  qcDebugMsg( 1, QString("INVOKE: '%1' [%2]").arg(method->name).arg(sync ? "SYNC" : "ASYNC") );
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 

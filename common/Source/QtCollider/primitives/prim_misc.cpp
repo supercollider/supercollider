@@ -45,6 +45,12 @@ QC_LANG_PRIMITIVE( QtGUI_Start, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QtGUI_SetDebugLevel, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QtCollider::setDebugLevel( Slot::toInt(a) );
+  return errNone;
+}
+
 void qcScreenBounds( QcSyncEvent *e )
 {
   QcGenericEvent *ce = static_cast<QcGenericEvent*>(e);

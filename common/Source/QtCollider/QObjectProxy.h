@@ -34,6 +34,8 @@
 #include <PyrSlot.h>
 #include <PyrSymbol.h>
 
+#define qcProxyDebugMsg( LEVEL, MSG ) qcSCObjectDebugMsg( LEVEL, scObject, MSG )
+
 struct VariantList;
 struct ScMethodCallEvent;
 
@@ -79,6 +81,8 @@ class QObjectProxy : public QObject
     virtual ~QObjectProxy();
 
     inline QObject *object() const { return qObject; }
+
+    const char *scClassName() const;
 
     virtual bool setParentEvent( QtCollider::SetParentEvent * );
     bool setPropertyEvent( QtCollider::SetPropertyEvent * );
