@@ -2,10 +2,25 @@
 
 #include <QApplication>
 #include <QThread>
+#include <QAtomicInt>
+
+static QAtomicInt& debugLevelInt() {
+  static QAtomicInt *i = new QAtomicInt(1);
+  return *i;
+}
+
+int QtCollider::debugLevel() {
+  int l = debugLevelInt();
+  return l;
+}
+
+void QtCollider::setDebugLevel( int i ) {
+  debugLevelInt() = i;
+}
 
 void QtCollider::lockLang()
 {
-  qscDebugMsg("locking lang!\n");
+  qcDebugMsg(2,"locking lang!");
   //printf("trying to lock\n");
   QString msg;
   while( pthread_mutex_trylock (&gLangMutex) ) {

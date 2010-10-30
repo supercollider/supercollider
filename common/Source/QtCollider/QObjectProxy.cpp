@@ -48,14 +48,19 @@ QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
 QObjectProxy::~QObjectProxy()
 {
   if( scObject ) {
-    qscDebugMsg( "~QObjectProxy: invalidating SC object\n" );
+    qcProxyDebugMsg( 2, "~QObjectProxy: invalidating SC object" );
     QtCollider::lockLang();
     SetNil( scObject->slots );
     QtCollider::unlockLang();
   }
   else {
-    qscDebugMsg( "~QObjectProxy: SC object already detached\n" );
+    qcProxyDebugMsg( 2, "~QObjectProxy: SC object already detached" );
   }
+}
+
+const char *QObjectProxy::scClassName() const {
+  if( scObject ) return slotRawSymbol( &scObject->classptr->name )->name;
+  return 0;
 }
 
 bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType ctype )
@@ -93,7 +98,7 @@ void QObjectProxy::invokeScMethod
 ( PyrSymbol *method, const QList<QVariant> & args, PyrSlot *result,
   bool locked )
 {
-  qscDebugMsg("+++ QObjectProxy::invokeScMethod\n");
+  qcProxyDebugMsg(1, QString("+++ SC METHOD CALL: ") + QString(method->name) );
 
   if( !locked ) {
     QtCollider::lockLang();
@@ -114,12 +119,12 @@ void QObjectProxy::invokeScMethod
   }
   else {
     SetNil( result );
-    qscDebugMsg("QObjectProxy: no SC object\n");
+    qcDebugMsg(1, "WARNING: no SC object");
   }
 
   if( !locked ) QtCollider::unlockLang();
 
-  qscDebugMsg("--- QObjectProxy::invokeScMethod\n");
+  qcProxyDebugMsg(1, QString("--- SC METHOD CALL: ") + QString(method->name) );
 }
 
 void QObjectProxy::customEvent( QEvent *event )
@@ -148,7 +153,8 @@ bool QObjectProxy::setParentEvent( SetParentEvent *e ) {
 bool QObjectProxy::setPropertyEvent( SetPropertyEvent *e )
 {
   if( !qObject->setProperty( e->property->name, e->value ) ) {
-    qscDebugMsg("WARNING: setting dynamic property\n");
+    qcProxyDebugMsg(1, QString("WARNING: Property '%1' not found. Setting dynamic property.")
+                        .arg( e->property->name ) );
   }
 }
 
@@ -210,7 +216,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 
   if( type == QtCollider::Event_ScMethodCall ) {
     ScMethodCallEvent* mce = static_cast<ScMethodCallEvent*>( event );
-    qscDebugMsg("executing SC method: %s\n", mce->method->name );
+    qcProxyDebugMsg(1, QString("ScMethodCallEvent -> ") + QString(mce->method->name ) );
     scMethodCallEvent( mce );
     return true;
   }
@@ -218,20 +224,19 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
     EventHandlerData eh = eventHandlers.value( type, EventHandlerData() );
     if( eh.type == type ) {
       PyrSymbol *symMethod = eh.method;
-      qscDebugMsg("catching event %i with handler '%s'\n",
-                  type, symMethod->name );
+      qcProxyDebugMsg(1,QString("Catched event: type %1 -> '%2'").arg(type).arg(symMethod->name) );
 
       InterpretEventFn interpreter = eh.interpretFn;
 
       QList<QVariant> args;
 
       if( interpreter ) {
-        qscDebugMsg("got interpreter\n");
+        qcProxyDebugMsg(2,"got interpreter");
         (this->*interpreter) ( event, args );
       }
 
       if( eh.sync == Synchronous ) {
-        qscDebugMsg("direct!\n");
+        qcProxyDebugMsg(2,"direct!");
         PyrSlot result;
         invokeScMethod( symMethod, args, &result );
         if( IsNil( &result ) ) return false;
@@ -241,7 +246,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
         }
       }
       else {
-        qscDebugMsg("indirect\n");
+        qcProxyDebugMsg(2,"indirect");
         ScMethodCallEvent *e = new ScMethodCallEvent( symMethod, args );
         QApplication::postEvent( this, e );
       }

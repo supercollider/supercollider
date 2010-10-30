@@ -24,15 +24,30 @@
 #define _SC_QT_COMMON_H
 
 #include <cstdarg>
-#include <cstdio>
+
+namespace QtCollider {
+  int debugLevel();
+  void setDebugLevel( int );
+}
+
+#include <iostream>
+#include <QString>
 
 #ifdef QC_DEBUG
-  #define qscDebugMsg( ... ) printf( "Qt: " __VA_ARGS__)
+  #define qcDebugMsg( LEVEL, MSG ) \
+    if( LEVEL <= QtCollider::debugLevel() ) { \
+      std::cout << "Qt: " << QString(MSG).toStdString() << "\n"; \
+    }
 #else
-  #define qscDebugMsg( ... )
+  #define qcDebugMsg( LEVEL, MSG )
 #endif
 
-#define qscErrorMsg( ... ) printf( "Qt: ERROR: " __VA_ARGS__)
+#define qcSCObjectDebugMsg( LEVEL, OBJ, MSG ) \
+  qcDebugMsg( LEVEL, QString("[%1] %2") \
+                    .arg( OBJ ? slotRawSymbol( &OBJ->classptr->name )->name : "null" ) \
+                    .arg(MSG) )
+
+#define qcErrorMsg( MSG ) { std::cout << "Qt: ERROR: " << QString(MSG).toStdString() << "\n"; }
 
 #include <QList>
 #include <QVariant>

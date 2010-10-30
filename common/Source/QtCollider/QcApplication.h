@@ -33,6 +33,7 @@ class QcApplication : public QApplication
     QcApplication( int & argc, char ** argv );
     static void postSyncEvent( QcSyncEvent *e, QObject *rcv );
     static void postSyncEvent( QcSyncEvent *e, EventHandlerFn handler );
+
   private:
     void customEvent( QEvent * );
 

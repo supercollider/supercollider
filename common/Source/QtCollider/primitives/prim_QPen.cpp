@@ -283,7 +283,7 @@ int QPen_StringInRect (struct VMGlobals *g, int)
 
 void defineQPenPrimitives()
 {
-  qscDebugMsg( "defining QPen primitives\n" );
+  qcDebugMsg( 1, "defining QPen primitives" );
 
   QtCollider::PrimitiveDefiner d;
 

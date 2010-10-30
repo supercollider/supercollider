@@ -190,7 +190,7 @@ void Pen::paint( QPainter *p )
 
       default:
 
-        qscErrorMsg( "Unknown Pen action! Aborting drawing.\n" );
+        qcErrorMsg( "Unknown Pen action! Aborting drawing." );
         path = QPainterPath();
         return;
     }
