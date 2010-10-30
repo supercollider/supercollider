@@ -186,6 +186,7 @@ SCLevelIndicator : SCView {
 
 		ServerTree.add(func);
 		if(server.serverRunning, func); // otherwise starts when booted
+		^window;
 	}
 }
 
