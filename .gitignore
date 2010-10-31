@@ -1,0 +1,7 @@
+# scons specific files
+config.log
+scache.conf
+.sconsign.dblite
+.sconf_temp
+*.os
+*.o
