@@ -67,6 +67,21 @@ void SendFailure(ReplyAddress *inReply, const char *inCommandName, const char *e
 	SendReply(inReply, packet.data(), packet.size());
 };
 
+void SendFailureWithBufnum(ReplyAddress *inReply, const char *inCommandName, const char *errString, uint32 index)
+{
+	small_scpacket packet;
+	packet.adds("/fail");
+	packet.maketags(4);
+	packet.addtag(',');
+	packet.addtag('s');
+	packet.addtag('s');
+	packet.adds(inCommandName);
+	packet.adds(errString);
+	packet.addtag('i');
+	packet.addi((int)index);
+	SendReply(inReply, packet.data(), packet.size());
+};
+
 void ReportLateness(ReplyAddress *inReply, float32 seconds)
 {
 	small_scpacket packet;
