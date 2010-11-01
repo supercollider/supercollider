@@ -39,7 +39,7 @@ void SendDone(ReplyAddress *inReply, const char *inCommandName)
 	packet.addtag('s');
 	packet.adds(inCommandName);
 	SendReply(inReply, packet.data(), packet.size());
-};
+}
 
 void SendDoneWithIntValue(ReplyAddress *inReply, const char *inCommandName, int value)
 {
@@ -52,7 +52,7 @@ void SendDoneWithIntValue(ReplyAddress *inReply, const char *inCommandName, int 
 	packet.addtag('i');
 	packet.addi(value);
 	SendReply(inReply, packet.data(), packet.size());
-};
+}
 
 void SendFailure(ReplyAddress *inReply, const char *inCommandName, const char *errString)
 {
@@ -65,7 +65,7 @@ void SendFailure(ReplyAddress *inReply, const char *inCommandName, const char *e
 	packet.adds(inCommandName);
 	packet.adds(errString);
 	SendReply(inReply, packet.data(), packet.size());
-};
+}
 
 void SendFailureWithBufnum(ReplyAddress *inReply, const char *inCommandName, const char *errString, uint32 index)
 {
@@ -80,7 +80,7 @@ void SendFailureWithBufnum(ReplyAddress *inReply, const char *inCommandName, con
 	packet.addtag('i');
 	packet.addi((int)index);
 	SendReply(inReply, packet.data(), packet.size());
-};
+}
 
 void ReportLateness(ReplyAddress *inReply, float32 seconds)
 {
@@ -91,7 +91,7 @@ void ReportLateness(ReplyAddress *inReply, float32 seconds)
 	packet.addtag('f');
 	packet.addf(seconds);
 	SendReply(inReply, packet.data(), packet.size());
-};
+}
 
 SC_NamedObj::SC_NamedObj()
 {
