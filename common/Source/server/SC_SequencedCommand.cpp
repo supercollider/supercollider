@@ -541,7 +541,7 @@ bool BufAllocReadCmd::Stage2()
 	if (!fp) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailure(&mReplyAddress, "/b_allocRead", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex);	//SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
 	}
@@ -559,7 +559,7 @@ bool BufAllocReadCmd::Stage2()
 		fclose(fp);
 #endif
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailure(&mReplyAddress, "/b_allocRead", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex);	//SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
 	}
@@ -664,7 +664,7 @@ bool BufReadCmd::Stage2()
 	if (!fp) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailure(&mReplyAddress, "/b_read", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
@@ -678,7 +678,7 @@ bool BufReadCmd::Stage2()
 		fclose(fp);
 #endif
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailure(&mReplyAddress, "/b_read", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
@@ -686,7 +686,7 @@ bool BufReadCmd::Stage2()
 		char str[256];
 		sf_close(sf);
 		sprintf(str, "channel mismatch. File'%s' has %d channels. Buffer has %d channels.\n", mFilename, fileinfo.channels, buf->channels);
-		SendFailure(&mReplyAddress, "/b_read", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
@@ -833,7 +833,7 @@ bool BufAllocReadChannelCmd::Stage2()
 	if (!sf) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailure(&mReplyAddress, "/b_allocRead", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
 	}
@@ -853,7 +853,7 @@ bool BufAllocReadChannelCmd::Stage2()
 		// verify channel indexes
 		if (!CheckChannels(fileinfo.channels)) {
             const char* str = "Channel index out of range.\n";
-			SendFailure(&mReplyAddress, "/b_allocRead", str);
+			SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
 			return false;
@@ -959,7 +959,7 @@ bool BufReadChannelCmd::Stage2()
 	if (!sf) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailure(&mReplyAddress, "/b_read", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
@@ -968,7 +968,7 @@ bool BufReadChannelCmd::Stage2()
 		// verify channel indexes
 		if (!( CheckChannels(fileinfo.channels)) ) { // nescivi:  && CheckChannels(buf->channels) (should not check here for buf->channels)
             const char* str = "Channel index out of range.\n";
-			SendFailure(&mReplyAddress, "/b_allocRead", str);
+			SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
 			return false;
@@ -1104,7 +1104,7 @@ bool BufWriteCmd::Stage2()
 		char str[256];
 		sf_error_str(NULL, sferr, 256);
 		sprintf(str, "File '%s' could not be opened. '%s'\n", mFilename, sferr);
-		SendFailure(&mReplyAddress, "/b_write", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_write", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_write", str);
 		scprintf(str);
 		return false;
 	}
