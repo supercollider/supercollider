@@ -33,7 +33,7 @@ done
 shift $(($OPTIND - 1))
 
 revision=`git rev-list HEAD -1`
-if [ "`git st -s -uno`" != "x" ]; then
+if [ "`git status -s -uno`" != "x" ]; then
     echo "WARNING: The working copy has uncommitted changes which will NOT be included in the package."
 fi
 
