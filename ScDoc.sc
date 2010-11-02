@@ -453,12 +453,22 @@ ScDocParser {
         
         f.write("<div id='inheritance'>");
         f.write("Inherits from ");
-        name.postln;
         currentClass.superclasses.do {|c|
             f.write(": <a href=\"../Classes/"++c.name++".html\">"++c.name++"</a> ");
         };
         f.write("</div>");
 
+        x = this.findNode(\related);
+        if(x.text.notEmpty, {
+            f.write("<div id='related'>");
+            f.write("See also: ");
+            x.text.findRegexp("[^ ,]+").flop[1].do {|r,i|
+                if(i>0, {f.write(", ")});
+                f.write("<a href=\"../"++r++".html\">"++r.split($/).last++"</a>");
+            };
+            f.write("</div>");
+        });
+                
         last_display = \block;
         x = this.findNode(\description);
         this.renderHTMLSubTree(f,x);

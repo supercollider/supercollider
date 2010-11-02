@@ -42,7 +42,7 @@ a:hover {
 #summary {
     font-weight: bold;
 }
-#inheritance {
+#inheritance, #related {
     text-align: right;
     margin-left: 0.5em;
 /*    border-top: 1px solid #aaa;*/
