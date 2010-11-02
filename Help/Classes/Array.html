@@ -1,0 +1,278 @@
+<html><head><title>Array</title><link rel='stylesheet' href='../scdoc.css' type='text/css' /></head><body><div class='header'><div id='label'>CLASS</div><h1>Array</h1><div id='summary'> fixed size collection</div></div><div id='inheritance'>Inherits from : <a href="../Classes/ArrayedCollection.html">ArrayedCollection</a> : <a href="../Classes/SequenceableCollection.html">SequenceableCollection</a> : <a href="../Classes/Collection.html">Collection</a> : <a href="../Classes/Object.html">Object</a> </div><a name='description'><h2>Description</h2></a>
+<div id='description'><p>Arrays are <a href="../Classes/ArrayedCollection.html">ArrayedCollection</a>s whose slots may contain any object. Arrays have a fixed maximum size beyond which they cannot grow. For expandable arrays, use the <a href="../Classes/List.html">List</a> class.
+<p>For Arrays, the <code>add</code>
+ method may or may not return the same Array object. It will add the argument to the receiver if there is space, otherwise it returns a new Array object with the argument added. Thus the proper usage of <code>add</code>
+ with an Array is to always assign the result as follows:
+<pre>
+    z = z.add(obj);
+</pre>
+<p>This allows an efficient use of resources, only growing the array when it needs to. The List class manages the Array for you, and in many cases is more suitable.
+<p>Elements can be put into an existing slot with <code>a.put(2,obj)</code>
+ and accessed with
+<code>a.at(2)</code>
+ or <code>a[2]</code>
+See ArrayedCollection for the principal methods: at, put, clipAt, wrapAt, etc...
+<p>Literal Arrays can be created at compile time, and are very efficient. See <a href="../Language/Literals.html">Literals</a> for information.
+</div><a name='classmethods'><h2>Class Methods</h2></a>
+<div id='classmethods'><a name='new'><h3 class='methodname'>new (maxSize = 0)</h3></a>
+<div class='method'><p>Create a new array with size 0 that can grow up to the fixed size.
+<h4 class='argumentname'>size</h4>
+<div class='argument'><p>The maximum size of the array.
+</div></div><a name='newClear'><h3 class='methodname'>newClear (indexedSize = 0)</h3></a>
+<div class='method'><p>Create a new array with all slots filled with nils.
+<h4 class='argumentname'>size</h4>
+<div class='argument'><p>The size of the array.
+</div></div><a name='with'><h3 class='methodname'>with (args = [  ])</h3></a>
+<div class='method'><p>Create a new Array whose slots are filled with the given arguments. 
+This is the same as the method in ArrayedCollection, but is reimplemented here to be more efficient.
+<pre>
+Array.with(7, 'eight',  9).postln;
+</pre>
+</div></div><a name='instancemethods'><h2>Instance Methods</h2></a>
+<div id='instancemethods'><a name='reverse'><h3 class='methodname'>reverse</h3></a>
+<div class='method'><p>Returns a new Array whose elements are reversed. The receiver is unchanged.
+<pre>
+x = [1, 2, 3];
+z = x.reverse;
+x.postln;
+z.postln;
+</pre>
+</div><a name='scramble'><h3 class='methodname'>scramble</h3></a>
+<div class='method'><p>Returns a new Array whose elements have been scrambled. The receiver is unchanged.
+<pre>
+[1, 2, 3, 4, 5, 6].scramble.postln;
+</pre>
+</div><a name='mirror'><h3 class='methodname'>mirror</h3></a>
+<div class='method'><p>Return a new Array which is the receiver made into a palindrome. 
+The receiver is unchanged.
+<pre>
+[1, 2, 3, 4].mirror.postln;
+</pre>
+</div><a name='mirror1'><h3 class='methodname'>mirror1</h3></a>
+<div class='method'><p>Return a new Array which is the receiver made into a palindrome with the last element removed. 
+This is useful if the list will be repeated cyclically, the first element will not get played twice.
+The receiver is unchanged.
+<pre>
+[1, 2, 3, 4].mirror1.postln;
+</pre>
+</div><a name='mirror2'><h3 class='methodname'>mirror2</h3></a>
+<div class='method'><p>Return a new Array which is the receiver concatenated with a reversal of itself. 
+The center element is duplicated. The receiver is unchanged.
+<pre>
+[1, 2, 3, 4].mirror2.postln;
+</pre>
+</div><a name='stutter'><h3 class='methodname'>stutter (n = 2)</h3></a>
+<div class='method'><p>Return a new Array whose elements are repeated n times. The receiver is unchanged.
+<pre>
+[1, 2, 3].stutter(2).postln;
+</pre>
+<h4 class='argumentname'>n</h4>
+<div class='argument'><p>Number of repeats.
+</div></div><a name='rotate'><h3 class='methodname'>rotate (n = 1)</h3></a>
+<div class='method'><p>Return a new Array whose elements are in rotated order. The receiver is unchanged.
+<pre>
+[1, 2, 3, 4, 5].rotate(1).postln;
+[1, 2, 3, 4, 5].rotate(-1).postln;
+[1, 2, 3, 4, 5].rotate(3).postln;
+</pre>
+<h4 class='argumentname'>n</h4>
+<div class='argument'><p>Number of elements to rotate. Negative n values rotate left, postive n values
+rotate right. 
+</div></div><a name='pyramid'><h3 class='methodname'>pyramid (patternType = 1)</h3></a>
+<div class='method'><p>Return a new Array whose elements have been reordered via one of 10 "counting" algorithms.
+Run the examples to see the algorithms.
+<pre>
+10.do({ arg i;
+	[1, 2, 3, 4].pyramid(i + 1).postcs;
+});
+</pre>
+<h4 class='argumentname'>n</h4>
+<div class='argument'><p>Choose counting algorithm. The algorithms are numbered 1 through 10.
+</div></div><a name='pyramidg'><h3 class='methodname'>pyramidg (patternType = 1)</h3></a>
+<div class='method'><p>Like pyramid, but keep the resulting values grouped in subarrays.
+<pre>
+// compare:
+[1, 2, 3, 4].pyramid(1).postln;
+[1, 2, 3, 4].pyramidg(1).postln;
+</pre>
+</div><a name='sputter'><h3 class='methodname'>sputter (probability = 0.250000, maxlen = 100)</h3></a>
+<div class='method'><p>Return a new Array of length maxlen with the items partly repeated (random choice of given probability).
+<pre>
+// compare:
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].sputter(0.5, 16).postln;
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].sputter(0.8, 8).postln;
+</pre>
+<h4 class='argumentname'>probability</h4>
+<div class='argument'><p>Probability of repeat.
+</div><h4 class='argumentname'>maxlen</h4>
+<div class='argument'><p>The length of the new Array.
+</div></div><a name='lace'><h3 class='methodname'>lace (length)</h3></a>
+<div class='method'><p>Returns a new Array whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size length. The receiver is unchanged.
+<pre>
+x = [ [1, 2, 3], 6, List["foo", 'bar']];
+y = x.lace(12);
+x.postln;
+y.postln;
+</pre>
+</div><a name='permute'><h3 class='methodname'>permute (nthPermutation)</h3></a>
+<div class='method'><p>Returns a new Array whose elements are the nthPermutation of the elements of the receiver. The receiver is unchanged.
+<pre>
+x = [ 1, 2, 3];
+6.do({|i| x.permute(i).postln;});
+</pre>
+</div><a name='allTuples'><h3 class='methodname'>allTuples (maxTuples = 16384)</h3></a>
+<div class='method'><p>Returns a new Array whose elements contain all possible combinations of the receiver's subcollections.
+<pre>
+[[1, 2, 3, 4, 5], [10, 20, 30]].allTuples;
+[[1, 2, 3, 4, 5], [10, 20, 30], [5, 6]].allTuples;
+</pre>
+</div><a name='wrapExtend'><h3 class='methodname'>wrapExtend (length)</h3></a>
+<div class='method'><p>Returns a new Array whose elements are repeated sequences of the receiver, up to size length. The receiver is unchanged.
+<pre>
+x = [ 1, 2, 3, "foo", 'bar' ];
+y = x.wrapExtend(9);
+x.postln;
+y.postln;
+</pre>
+</div><a name='foldExtend'><h3 class='methodname'>foldExtend (length)</h3></a>
+<div class='method'><p>Same as wrapExtend but the sequences fold back on the list elements.
+<pre>
+x = [ 1, 2, "foo"];
+y = x.foldExtend(9);
+x.postln;
+y.postln;
+</pre>
+</div><a name='clipExtend'><h3 class='methodname'>clipExtend (length)</h3></a>
+<div class='method'><p>Same as wrapExtend but the sequences "clip" (return their last element) rather than wrapping.
+<pre>
+x = [ 1, 2, "foo"];
+y = x.clipExtend(9);
+x.postln;
+y.postln;
+</pre>
+</div><a name='slide'><h3 class='methodname'>slide (windowLength = 3, stepSize = 1)</h3></a>
+<div class='method'><p>Return a new Array whose elements are repeated subsequences from the receiver. 
+Easier to demonstrate than explain.
+<pre>
+[1, 2, 3, 4, 5, 6].slide(3, 1).postcs;
+[1, 2, 3, 4, 5, 6].slide(3, 2).postcs;
+[1, 2, 3, 4, 5, 6].slide(4, 1).postcs;
+</pre>
+</div><a name='shift'><h3 class='methodname'>shift (n, filler = 0.000000)</h3></a>
+<div class='method'><p>Shift the values of the array n steps to the right (n positive) or to the left(n negative), 
+dropping the excess and filling empty space with zero.
+<pre>
+[1, 2, 3, 4, 5, 6].shift(3).postln;
+[1, 2, 3, 4, 5, 6].shift(-3).postln;
+</pre>
+</div><a name='containsSeqColl'><h3 class='methodname'>containsSeqColl</h3></a>
+<div class='method'><p>Returns true if the receiver Array contains any instance of SequenceableCollection
+<pre>
+[1, 2, 3, 4].containsSeqColl.postln
+[1, 2, [3], 4].containsSeqColl.postln
+</pre>
+</div><a name='powerset'><h3 class='methodname'>powerset</h3></a>
+<div class='method'><p>Returns all possible combinations of the array's elements.
+<pre>
+[1, 2, 3].powerset.postln
+[1, 2, 3].powerset.sort({ |a, b| a.size > b.size }); // sort by size, big first
+[1, 2, 3].powerset.sort({ |a, b| a.size > b.size }).reverse; // by size, small first
+</pre>
+<p>powerset is also supported in Collection:
+<pre>
+Set[1, 2, 3].powerset;
+List[1, 2, 3].powerset
+(a: 1, b: 2, c: 3).powerset;
+</pre>
+</div><a name='envirPairs'><h3 class='methodname'>envirPairs</h3></a>
+<div class='method'><p>Given an array of symbols, this returns an array of pairs of (symbol, value) from the current environment.
+This can then be used as arguments for a Synth, or in an OSC message.
+<pre>
+e = (freq: 340, amp: 0.001, strangeness: 0.85);
+e.use {
+	[\amp, \taste, \strangeness].envirPairs;
+}
+</pre>
+</div><a name='flop'><h3 class='methodname'>flop</h3></a>
+<div class='method'><p>Invert rows and colums in a two dimensional Array (turn inside out).
+See also: Function, SequenceableCollection.
+<pre>
+[[1, 2, 3], [4, 5, 6]].flop;
+[[1, 2, 3], [4, 5, 6], [7, 8]].flop; // shorter array wraps
+[].flop; // result is always 2-d.
+</pre>
+</div><a name='multiChannelExpand'><h3 class='methodname'>multiChannelExpand</h3></a>
+<div class='method'><p>Used by UGens to perform multi channel expansion. Same as flop.
+</div><a name='source'><h3 class='methodname'>source</h3></a>
+<div class='method'><p>Some UGens return Arrays of OutputProxy when instantiated. This method allows you to
+get at the source UGen.
+<pre>
+z = Pan2.ar;
+z.postln;
+z.source.postln;
+</pre>
+</div><a name='fork'><h3 class='methodname'>fork (join, clock, quant = 0.000000, stackSize = 64)</h3></a>
+<div class='method'><p>Used within Routines and assumes an array of functions, from which subroutines are created. The subroutines are played while the outer Routine carries on. The join parameter expresses after how many subroutines complete the outer Routine is allowed to go on. By default this happens after all subroutines have completed.
+<pre>
+// an array of routine functions:
+(
+a = [
+	{ 1.wait; \done_one.postln },
+	{ 0.5.wait; \done_two.postln },
+	{ 0.2.wait; \done_three.postln }
+];
+)
+// join after 0
+(
+Routine { 
+	"join = 0.".postcln;
+	a.fork(0); \doneAll.postln;
+}.play;
+)
+// join after 1
+(
+Routine { 
+	"join = 1.".postcln;
+	a.fork(1); \doneAll.postln;
+}.play;
+)
+// join after all
+(
+Routine { 
+	"join = a.size (default).".postcln;
+	a.fork; \doneAll.postln;
+}.play;
+)
+
+poll(trig, label, trigid)
+apply an array of Poll units to an array of UGens (see those helpfiles for more details).
+
+s.boot;
+(
+x = {
+	SinOsc.ar([0.1, 0.2], 0).poll * 0.1
+}.play;
+)
+x.trace; // By tracing the Synth you can see the two Poll units we created
+x.free
+</pre>
+</div><a name='dpoll'><h3 class='methodname'>dpoll (label, run = 1, trigid = -1)</h3></a>
+<div class='method'><p>apply an array of Dpoll units to an array of UGens (see those helpfiles for more details).
+</div><a name='atIdentityHash'><h3 class='methodname'>atIdentityHash (argKey)</h3></a>
+<div class='method'><p>This method is used by IdentitySet to search for a key among its members.
+</div><a name='atIdentityHashInPairs'><h3 class='methodname'>atIdentityHashInPairs (argKey)</h3></a>
+<div class='method'><p>This method is used by IdentityDictionary to search for a key among its members.
+</div><a name='asShortString'><h3 class='methodname'>asShortString (NOT FOUND)</h3></a>
+<div class='method'><p>Returns a short string representing the Array that only shows how many elements it contains
+</div><a name='asString'><h3 class='methodname'>asString (limit = 512)</h3></a>
+<div class='method'><p>Returns a string representing the Array. May not be compileable due to ellision (...) of excessive arguments. 
+</div><a name='asCompileString'><h3 class='methodname'>asCompileString</h3></a>
+<div class='method'><p>Returns a string that will compile to return an Array equal to the receiver.
+</div><a name='isValidUGenInput'><h3 class='methodname'>isValidUGenInput</h3></a>
+<div class='method'><p>Returns true. Arrays are valid UGen inputs.
+</div><a name='asRawOSC'><h3 class='methodname'>asRawOSC</h3></a>
+<div class='method'><p>Returns the OSC measse as an Int8Array. Receiver must be a bundle.
+<pre>
+[0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC;
+</pre>
+</div></div></body></html>

@@ -1,0 +1,49 @@
+<html><head><title>LFPulse</title><link rel='stylesheet' href='../scdoc.css' type='text/css' /></head><body><div class='header'><div id='label'>CLASS</div><h1>LFPulse</h1><div id='summary'>pulse oscillator</div></div><div id='inheritance'>Inherits from : <a href="../Classes/UGen.html">UGen</a> : <a href="../Classes/AbstractFunction.html">AbstractFunction</a> : <a href="../Classes/Object.html">Object</a> </div><a name='description'><h2>Description</h2></a>
+<div id='description'><p>A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.
+</div><a name='classmethods'><h2>Class Methods</h2></a>
+<div id='classmethods'><a name='ar'><h3 class='methodname'>ar (freq = 440.000000, iphase = 0.000000, width = 0.500000, mul = 1.000000, add = 0.000000)</h3></a>
+<a name='kr'><h3 class='methodname'>kr (freq = 440.000000, iphase = 0.000000, width = 0.500000, mul = 1.000000, add = 0.000000)</h3></a>
+<div class='method'><h4 class='argumentname'>freq</h4>
+<div class='argument'><p>frequency in Hertz
+</div><h4 class='argumentname'>iphase</h4>
+<div class='argument'><p>initial phase offset in cycles ( 0..1 )
+</div><h4 class='argumentname'>width</h4>
+<div class='argument'><p>pulse width duty cycle from zero to one.
+</div></div></div><a name='examples'><h2>Examples</h2></a>
+<div id='examples'>a plot:
+<pre>
+{ LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1);
+</pre>
+<p>50 Hz wave:
+<pre>
+{ LFPulse.ar(50) * 0.1 }.play;
+</pre>
+<p>modulating frequency:
+<pre>
+{ LFPulse.ar(XLine.kr(1, 200, 10), 0, 0.2, 0.1) }.play;
+</pre>
+<p>amplitude modulation:
+<pre>
+{ LFPulse.kr(XLine.kr(1, 200, 10), 0, 0.2) * SinOsc.ar(440) * 0.1 }.play;
+</pre>
+<p>used as both Oscillator and LFO:
+<pre>
+{ LFPulse.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) }.play;
+</pre>
+<p>scope:
+<pre>
+Server.internal.boot;
+{ LFPulse.ar(500, 0, MouseX.kr, 0.5) }.scope;
+</pre>
+<p>compare with band limited Pulse UGen:
+<pre>
+(
+{
+    [
+        Pulse.ar(100, 0.3, 0.5),
+        LFPulse.ar(100, 0, 0.3, 0.5)
+    ] * 0.2
+}.scope(bufsize: 44100, zoom: 5)
+)
+</pre>
+</div></body></html>
