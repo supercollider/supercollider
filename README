@@ -6,10 +6,10 @@ The markup language parser is in ScDoc.sc, copy or symlink this to your Extensio
 Try it like this:
 
 p = ScDocParser.new
-p.parseFile("/home/lijon/Coding/ScDoc/test.sch").dump
+p.parseFile("/home/lijon/Coding/ScDoc/test.schelp").dump
 p.findNode("summary").text
 
-p.parseFile("/home/lijon/Coding/ScDoc/Array.txt")
+p.parseFile("/home/lijon/Coding/ScDoc/Array.schelp")
 p.renderHTML("scdoc_test.html")
 
 p.parse("inline code::code example::.").dump
