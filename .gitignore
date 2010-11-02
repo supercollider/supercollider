@@ -1,3 +1,13 @@
+# mac related files
+.DS_Store
+mac/Intermediate Build Files
+common/build/SuperCollider.app
+common/build/SuperColliderAU.component
+common/build/libscsynth.a
+common/build/plugins
+common/build/sclang
+common/build/scsynth
+
 # scons specific files
 config.log
 scache.conf
