@@ -9,6 +9,9 @@ ScDocParser {
     var lastTagLine;
     var isWS;
     
+    // renderer
+    var last_display;
+    
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
 //    }
@@ -49,9 +52,9 @@ ScDocParser {
     
     endCurrent {
         if(current.notNil,{
-            if(current.text.notNil, {
-                current.text = this.stripWhiteSpace(current.text);
-            });
+//            if(current.text.notNil, {
+//                current.text = this.stripWhiteSpace(current.text);
+//            });
             current = nil;
         });
     }
@@ -122,12 +125,12 @@ ScDocParser {
         },{
             switch(tag,
                 'description::',        noNameSection, //level 1
-                'methods::',            noNameSection,
+                'classmethods::',       noNameSection,
+                'instancemethods::',    noNameSection,                
                 'examples::',           noNameSection,
                 'section::',            namedSection.(1),
                 'subsection::',         namedSection.(2),
-                'classmethod::',        namedSection.(3),
-                'instancemethod::',     namedSection.(3),
+                'method::',             namedSection.(3),
                 'argument::',           namedSection.(4),
                 'class::',              simpleTag,
                 'title::',              simpleTag,
@@ -144,7 +147,7 @@ ScDocParser {
 
                 'list::',               listEnter,
                 'numberedlist::',       listEnter,
-                'definitionList::',     listEnter,
+                'definitionlist::',     listEnter,
                 'table::',              listEnter,
 //                'row::', {
 //                    singleline = false;
@@ -254,6 +257,7 @@ ScDocParser {
                     };
                 });
             };
+            if(modalTag.isNil and: split.isEmpty, { this.endCurrent }); //force a new prose on double blank lines
             this.endLine;
         };
     }
@@ -282,9 +286,198 @@ ScDocParser {
         this.dumpSubTree(root);
         ^nil;
     }
+    
+    findNode {|tag,rootNode=nil|
+        var res = nil;
+        if(rootNode.isNil, { rootNode=root });
+        rootNode.do {|n|
+            if(n.tag == tag.asSymbol, { res = n});
+        };
+        if(res.notNil, {
+            ^res;
+        }, {
+            ^(tag:nil, text:"", children:[]);
+        });
+    }
+
+    renderHTMLSubTree {|file,node,parentTag=false|
+//        var inSubList = inList;
+        
+//        if(node.children.isNil, { node.children = [] });
+       
+        var do_children = {
+            if(node.children.notNil, {
+                node.children.do {|e| this.renderHTMLSubTree(file,e,node.tag) };
+            });
+        };
+
+//        if(node.isNil, {
+//            ^nil;
+//        });
+        
+        switch(node.tag,
+            'prose', {
+                if(last_display == \block, {
+                    file.write("<p>"++node.text);
+                }, {
+                    file.write(node.text);                
+                });
+            },
+            'section', {
+                file.write("<h2>"++node.text++"</h2>\n");
+                do_children.();
+            },
+            'subsection', {
+                file.write("<h3>"++node.text++"</h3>\n");
+                do_children.();
+            },
+            'classmethods', {
+                file.write("<h2>Class Methods</h2>\n<div id='classmethods'>");
+                do_children.();
+                file.write("</div>");
+            },
+            'instancemethods', {
+                file.write("<h2>Instance Methods</h2>\n<div id='instancemethods'>");
+                do_children.();
+                file.write("</div>");
+            },
+            'method', {
+                file.write("<h3 class='methodname'>"++node.text++"</h3>\n");
+                //FIXME: split multiple methods by whitespace
+                //Also add arguments, get them from sclang or from the
+                //argument children in the doc tree?
+                file.write("<div class='method'>");
+                do_children.();
+                file.write("</div>");
+            },
+            'argument', {
+                file.write("<h4 class='argumentname'>"++node.text++"</h4>\n");
+                file.write("<div class='argument'>");
+                do_children.();
+                file.write("</div>");
+            },
+            'description', {
+                file.write("<h2>Description</h2>\n<div id='description'>");
+                do_children.();
+                file.write("</div>");
+            },
+            'examples', {
+                file.write("<h2>Examples</h2>\n<div id='examples'>");
+                do_children.();
+                file.write("</div>");
+            },
+            'emphasis', {
+                file.write("<em>"++node.text++"</em>");
+            },
+            'link', {
+                if("[a-zA-Z]+://.+".matchRegexp(node.text),{
+                    file.write("<a href=\""++node.text++"\">"++node.text++"</a>");
+                },{
+                    file.write("<a href=\"../"++node.text++".html\">"++node.text.split($/).last++"</a>");
+                    //FIXME: need to have relative uri's
+                    //or will ../ always work? depends on the directory structure..
+                    //best would be to keep track, have a currentDir class variable.
+                });
+            },
+            'code', {
+                if(node.display == \block, {
+                    file.write("<pre>"++node.text++"</pre>\n");
+                }, {
+                    file.write("<code>"++node.text++"</code>\n");
+                });
+            },
+            
+            'list', {
+                file.write("<ul>\n");
+                do_children.();
+                file.write("</ul>\n");
+            },
+            'definitionlist', {
+                file.write("<dl>\n");
+                do_children.();
+                file.write("</dl>\n");
+            },
+            'table', {
+                file.write("<table>\n");
+                do_children.();
+                file.write("</table>\n");
+            },
+            '##', {
+                switch(parentTag,
+                    'list',             { file.write("<li>") },
+                    'definitionlist',   { file.write("<dt>") },
+                    'table',            { file.write("<tr><td>") }
+                );
+            },
+            '||', {
+                switch(parentTag,
+                    'definitionlist',   { file.write("<dd>") },
+                    'table',            { file.write("<td>") }
+                );
+            },
+            
+            { //unhandled tag
+//                file.write("(TAG:"++node.tag++")");
+                if(node.text.notNil,{file.write(node.text)});
+            }
+        );
+        last_display = node.display;
+        
+/*        if(node.children.notNil, {
+            node.children.do {|e|
+                this.renderHTMLSubTree(file,e,inSubList);
+            }
+        });
+
+        switch(node.tag,
+            'list', { file.write("</ul>\n") },
+            'table', { file.write("</table>\n") },
+            'definitionlist', { file.write("</dl>\n") }
+        );*/
+    }
 
     renderHTML {|filename|
+        var f = File.open(filename, "w");
+        var x = this.findNode(\class);
+        var name = this.stripWhiteSpace(x.text);
+        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='scdoc.css' type='text/css' /></head><body>");
 
+        f.write("<div class='header'>");
+        f.write("<div id='label'>CLASS</div>");
+        f.write("<h1>"++name++"</h1>");
+
+        x = this.findNode(\summary);
+        f.write("<div id='summary'>"++x.text++"</div>");
+        f.write("</div>");
+        
+        f.write("<div id='inheritance'>");
+        f.write("Inherits from ");
+        name.postln;
+        name.asSymbol.asClass.superclasses.do {|c|
+            f.write(": <a href=\"../Classes/"++c.name++".html\">"++c.name++"</a> ");
+        };
+        f.write("</div>");
+
+//FIXME: handle "see also"
+//FIXME: inheritance..
+//FIXME: handle prose before first section..
+//FIXME: other sections? not allowed in class doc?
+        
+        last_display = \block;
+        x = this.findNode(\description);
+        this.renderHTMLSubTree(f,x);
+
+        x = this.findNode(\classmethods);
+        this.renderHTMLSubTree(f,x);
+
+        x = this.findNode(\instancemethods);
+        this.renderHTMLSubTree(f,x);
+
+        x = this.findNode(\examples);
+        this.renderHTMLSubTree(f,x);
+        
+        f.write("</body></html>");
+        f.close;
     }
 }
 

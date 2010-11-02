@@ -7,6 +7,10 @@ Try it like this:
 
 p = ScDocParser.new
 p.parseFile("/home/lijon/Coding/ScDoc/test.sch").dump
+p.findNode("summary").text
+
+p.renderHTML("scdoc_test.html")
+
 p.parse("inline code::code example::.").dump
 
 tag             hasText hasChilds structural needClose modal nestable
@@ -91,6 +95,8 @@ should this be done in the parser, filled into the tree later, or added while re
   All methods
 
 - Code to traverse a directory tree of doc source files and render into another directory tree, checking time-stamps to see if files need update or not.
+
+generate simple doc for classes not having a doc source file. (list all methods and their args)
 
 - Handle extensions (extra classes and method additions)
 should merge stuff into the tree before parsing..

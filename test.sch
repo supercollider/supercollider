@@ -1,4 +1,4 @@
-CLASS:: Foo
+CLASS:: FooBar
 SUMMARY:: This is a great class!
 RELATED:: Bar
 
@@ -21,18 +21,38 @@ Could have multiple lines in here.. and nested lists:
 
 We should be back at previous level here?
 
-METHODS::
+DefinitionList::
+## one || is the first
+## two || is the second
+::
+
+CLASSMETHODS::
 Here comes some methods:
 
-CLASSMETHOD:: ar kr
+METHOD:: ar kr
 Create a new instance
     ARGUMENT:: freq
-        The Frequency
+        The Frequency.
+        Use this to control pitch...
+        code::
+        What happens here?
+        ::
     ARGUMENT:: amp
         The Amplitude
 
-CLASSMETHOD:: foo
+METHOD:: foo
 This is a nonsense method.
+
+INSTANCEMETHODS::
+METHOD:: bar
+ARGUMENT:: x
+one arg
+ARGUMENT:: y
+another arg
+
+SUBSECTION::Unary messages
+METHOD:: xyz
+yeah yaeh
 
 SECTION:: This is a named section
 With some emphasis::normal:: prose,
@@ -47,9 +67,9 @@ CODE::
   8.do {
     "in here, even tags like emphasis::this:: should be ignored".postln;
   }
-link::foo::
+  link::foo::
   a :: b //if :: where a method, it wouldn't end it here since it's not on it's own line...
-    ::
+::
 But now we are back at normal prose.
 Inline tags don't require whitespace, like link::this::.
 Also, URLs like http://foo.com/bar.html should be autoconverted to links..
