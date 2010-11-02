@@ -79,34 +79,48 @@ All in all we have 6 different categories of tags, not counting the internal 'pr
 
 TODO
 ====
-- split renderer into a separate class? then it's easy to make different renderers that conform to a common interface..
-
 - handle categories::, should it output anything or is it just metadata?
+move this to here from all UGens instead of using the categories class variable.
+Also for all other classes?
+Also for all other docs?
+
+- anchor links? link::Classes/SinOsc#examples::
+  should we have a tag to create anchors? anchor::name::
 
 HTML renderer stuff:
-- handle "see also"
-- handle docType (class/other)
-- handle prose before first section..
-- other sections? not allowed in class doc?
+- split into a separate class, then it's easy to make different renderers that conform to a common interface..
+- handle docType (class/other), just run the whole tree for 'other' without forcing section orders, etc
+- handle "see also" (related::), ignore superclasses (already in "inherits from")
+  related:: Language/Literals Classes/List
+- handle prose before first section in class doc?
+- other sections not allowed in class doc?
 
 - Overview generations:
   All documents alphabetically
   All documents by categories
-  All documents by keywords
+  All documents by keywords (?)
   All classes by inheritance tree
   All classes alphabetically
   All classes by categories
+  All undocumented classes
   All ugens alphabetically
   All ugens by categories
-  All methods
+  All methods index
   
-  should these generate ScDoc markup or the native tree doc structure?
+  should these generate ScDoc markup (probably not) or the native tree doc structure (probably yes)?
+  
+  for methods, the index is just an alphabetical list of links to Methods/methodname.html,
+  which is a generated doc with a list of all classes implementing it (and the description of that method in that class?),
+  if HelpSource/Methods/methodname.schelp exists, merge with this so can write interface style documentation?
 
-- Code to traverse a directory tree of doc source files and render into another directory tree, checking time-stamps to see if files need update or not. keep track of directory level so we can use relative URL's..
-- generate simple doc for classes not having a doc source file. (just list all methods and their args)
+- Code to traverse a directory tree of doc source files and render into another (user location) directory tree,
+checking time-stamps to see if files need update or not. keep track of directory level so we can use relative URL's..
+
+- generate simple doc for classes that don't have a doc source file. (just list all methods and their args)
+put "this class currently lacks documentation" in description::
 
 - Handle extensions (extra classes and method additions)
-should merge stuff into the tree before parsing..
+should merge stuff into the tree before parsing..? and mark method additions somehow so we can distinguish them visually in the rendered output.
 
 - validation pass:
 start by looking up the docType tag in the tree (root level), then we know which tags are allowed and not.

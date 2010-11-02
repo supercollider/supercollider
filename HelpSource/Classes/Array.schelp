@@ -1,6 +1,7 @@
 class:: Array
 summary:: fixed size collection
-
+related:: Language/Literals Classes/List
+  
 description::
 Arrays are link::Classes/ArrayedCollection::s whose slots may contain any object. Arrays have a fixed maximum size beyond which they cannot grow. For expandable arrays, use the link::Classes/List:: class.
 

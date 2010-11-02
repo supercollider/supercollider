@@ -1,5 +1,5 @@
 body {
-    font-family: sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
     margin-left: 2em;
 /*    margin-right: auto;*/
@@ -76,11 +76,17 @@ dd {
     margin-top: -1em;
 }
 
+code, pre {
+    font-family: Andale Mono, monospace;
+    font-size: 9.5pt;
+    font-weight: normal;
+}
+
 .methodname {
     background: #eee;
 /*    border-bottom: 1px solid #bbb;*/
     border: none;
-    font-family: monospace;
+    font-family: Andale Mono, monospace;
     font-weight: bold;
     font-size: 10pt;
     margin-bottom: 0.5em;
