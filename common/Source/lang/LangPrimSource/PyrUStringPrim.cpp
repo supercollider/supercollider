@@ -49,11 +49,8 @@ struct SCRegExRegion {
 };
 typedef struct SCRegExRegion SCRegExRegion;
 
-int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed);
-int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
+static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 {
-	int err;
-
 	PyrSlot *a = g->sp - 2; // source string
 	PyrSlot *b = g->sp - 1; // pattern
 	PyrSlot *c = g->sp;     // offset
@@ -65,7 +62,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int stringsize = slotRawObject(a)->size + 1;
 	int patternsize =  slotRawObject(b)->size + 1;
 	char *string = (char*)malloc(slotRawObject(a)->size + 1);
-	err = slotStrVal(a, string, slotRawObject(a)->size + 1);
+	int err = slotStrVal(a, string, slotRawObject(a)->size + 1);
 	if (err){
 		free(string);
 		return err;
@@ -134,9 +131,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				{
 					result_array->size++;
 					SetNil(result_array->slots+i);
-				}
-				else
-				{
+				} else {
 					result_array->size++;
 
 					int match_start =  what[i].start;
@@ -153,36 +148,34 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 					PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
 					SetObject(array->slots+1, matched_string);
-					g->gc->GCWrite(matched_string, array->slots + 1);
+					g->gc->GCWrite(array, matched_string);
 
 					SetObject(result_array->slots + i, array);
-					g->gc->GCWrite(array, result_array->slots + i);
+					g->gc->GCWrite(result_array, array);
 				}
 			}
 		}
 		else
-		{
 			SetNil(a);
-		}
-		 free(what);
-		 free(pattern);
-		 free(regexStr);
-		 free(ustring);
-		 free(string);
+
+		free(what);
+		free(pattern);
+		free(regexStr);
+		free(ustring);
+		free(string);
 		SetObject(a, result_array);
-		g->gc->GCWrite(result_array,a);
 		//uregex_close(expression);
 		return errNone;
 	}
 
-		nilout:
-			free(string);
-			free(what);
-			free(pattern);
-			free(regexStr);
-			free(ustring);
-			SetNil(a);
-			return errNone;
+nilout:
+	free(string);
+	free(what);
+	free(pattern);
+	free(regexStr);
+	free(ustring);
+	SetNil(a);
+	return errNone;
 }
 
 void initUStringPrimitives();
