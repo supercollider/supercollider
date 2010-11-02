@@ -70,30 +70,24 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	char *pattern = (char*)malloc(slotRawObject(b)->size + 1);
 	err = slotStrVal(b, pattern, slotRawObject(b)->size + 1);
 	if (err) return err;
-	UParseError uerr;
 	UErrorCode status = (UErrorCode)0;
-	UChar *regexStr;
-	UChar *ustring;
 
-	regexStr =  (UChar*)malloc((patternsize)*sizeof(UChar));
+	UChar *regexStr =  (UChar*)malloc((patternsize)*sizeof(UChar));
 	u_charsToUChars (pattern, regexStr, patternsize);
 
-	ustring =  (UChar*)malloc((stringsize)*sizeof(UChar));
+	UChar *ustring =  (UChar*)malloc((stringsize)*sizeof(UChar));
 	u_charsToUChars (string+offset, ustring, stringsize-offset);
 
-
 	unsigned flags = UREGEX_MULTILINE;
-	int groupNumber = 0;
-	SCRegExRegion * what;
-	int indx = 0;
-	int size = 0;
 
+	UParseError uerr;
 	URegularExpression *expression = uregex_open(regexStr, -1, flags, &uerr, &status);
-	if(U_FAILURE(status)) goto nilout;
 
-	 if(!U_FAILURE(status)) {
+	if(!U_FAILURE(status)) {
+		int indx = 0;
+		int size = 0;
 		uregex_setText(expression, ustring, -1, &status);
-		what =  (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
+		SCRegExRegion * what = (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
 		for(int i=0; i< maxfind; i++)
 		{
 			SCRegExRegion range;
@@ -106,7 +100,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 //		post("groups: %i\n", groups);
 		while (uregex_findNext(expression, &status) && size<maxfind)
 		{
-			if(U_FAILURE(status)) return errNone;
+			if(U_FAILURE(status)) goto nilout;
 
 			for(int i=0; i< groups; ++i){
 				what[size].group = i;
@@ -170,15 +164,13 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 nilout:
 	free(string);
-	free(what);
 	free(pattern);
 	free(regexStr);
 	free(ustring);
 	SetNil(a);
-	return errNone;
+	return errFailed;
 }
 
-void initUStringPrimitives();
 void initUStringPrimitives()
 {
 	int base, index = 0;
@@ -186,10 +178,9 @@ void initUStringPrimitives()
 	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
 }
 
-#else // !SC_DARWIN
-void initUStringPrimitives();
+#else
 void initUStringPrimitives()
 {
-	//other platforms? - icu should be running on linux too
+	//other platforms?
 }
-#endif // SC_DARWIN
+#endif
