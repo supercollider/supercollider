@@ -11,6 +11,7 @@ ScDocParser {
     
     // renderer
     var last_display;
+    var currentClass;
     
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
@@ -301,20 +302,13 @@ ScDocParser {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-//        var inSubList = inList;
-        
-//        if(node.children.isNil, { node.children = [] });
-       
+      
         var do_children = {
             if(node.children.notNil, {
                 node.children.do {|e| this.renderHTMLSubTree(file,e,node.tag) };
             });
         };
 
-//        if(node.isNil, {
-//            ^nil;
-//        });
-        
         switch(node.tag,
             'prose', {
                 if(last_display == \block, {
@@ -332,20 +326,33 @@ ScDocParser {
                 do_children.();
             },
             'classmethods', {
-                file.write("<h2>Class Methods</h2>\n<div id='classmethods'>");
+                file.write("<a name='classmethods'><h2>Class Methods</h2></a>\n<div id='classmethods'>");
                 do_children.();
                 file.write("</div>");
             },
             'instancemethods', {
-                file.write("<h2>Instance Methods</h2>\n<div id='instancemethods'>");
+                file.write("<a name='instancemethods'><h2>Instance Methods</h2></a>\n<div id='instancemethods'>");
                 do_children.();
                 file.write("</div>");
             },
             'method', {
-                file.write("<h3 class='methodname'>"++node.text++"</h3>\n");
-                //FIXME: split multiple methods by whitespace
-                //Also add arguments, get them from sclang or from the
-                //argument children in the doc tree?
+                var f = node.text.findRegexp(" *([^( ]+) *(\\(.*\\))?");
+                var mname = f[1][1];//node.text.findRegexp("[^(]+")[0][1];
+                var args = f[2][1];
+
+                if(args.isEmpty, {
+                    var m;
+                    args = "NOT FOUND";
+                    if(parentTag==\instancemethods,{
+                        m = currentClass.findRespondingMethodFor(mname.asSymbol);
+                    },{
+                        m = currentClass.class.findRespondingMethodFor(mname.asSymbol);
+                    });
+                    if(m.notNil, { args = m.argumentString.replace("this, ","").replace("this","") });
+                    if(args.notEmpty,{ args = " ("++args++")" });
+                });
+                                
+                file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++args++"</h3></a>\n");
                 file.write("<div class='method'>");
                 do_children.();
                 file.write("</div>");
@@ -357,12 +364,12 @@ ScDocParser {
                 file.write("</div>");
             },
             'description', {
-                file.write("<h2>Description</h2>\n<div id='description'>");
+                file.write("<a name='description'><h2>Description</h2></a>\n<div id='description'>");
                 do_children.();
                 file.write("</div>");
             },
             'examples', {
-                file.write("<h2>Examples</h2>\n<div id='examples'>");
+                file.write("<a name='examples'><h2>Examples</h2></a>\n<div id='examples'>");
                 do_children.();
                 file.write("</div>");
             },
@@ -375,7 +382,6 @@ ScDocParser {
                 },{
                     file.write("<a href=\"../"++node.text++".html\">"++node.text.split($/).last++"</a>");
                     //FIXME: need to have relative uri's
-                    //or will ../ always work? depends on the directory structure..
                     //best would be to keep track, have a currentDir class variable.
                 });
             },
@@ -422,24 +428,13 @@ ScDocParser {
             }
         );
         last_display = node.display;
-        
-/*        if(node.children.notNil, {
-            node.children.do {|e|
-                this.renderHTMLSubTree(file,e,inSubList);
-            }
-        });
-
-        switch(node.tag,
-            'list', { file.write("</ul>\n") },
-            'table', { file.write("</table>\n") },
-            'definitionlist', { file.write("</dl>\n") }
-        );*/
     }
 
     renderHTML {|filename|
         var f = File.open(filename, "w");
         var x = this.findNode(\class);
         var name = this.stripWhiteSpace(x.text);
+        currentClass = name.asSymbol.asClass;
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='scdoc.css' type='text/css' /></head><body>");
 
         f.write("<div class='header'>");
@@ -453,16 +448,11 @@ ScDocParser {
         f.write("<div id='inheritance'>");
         f.write("Inherits from ");
         name.postln;
-        name.asSymbol.asClass.superclasses.do {|c|
+        currentClass.superclasses.do {|c|
             f.write(": <a href=\"../Classes/"++c.name++".html\">"++c.name++"</a> ");
         };
         f.write("</div>");
 
-//FIXME: handle "see also"
-//FIXME: inheritance..
-//FIXME: handle prose before first section..
-//FIXME: other sections? not allowed in class doc?
-        
         last_display = \block;
         x = this.findNode(\description);
         this.renderHTMLSubTree(f,x);

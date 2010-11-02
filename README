@@ -9,6 +9,7 @@ p = ScDocParser.new
 p.parseFile("/home/lijon/Coding/ScDoc/test.sch").dump
 p.findNode("summary").text
 
+p.parseFile("/home/lijon/Coding/ScDoc/Array.txt")
 p.renderHTML("scdoc_test.html")
 
 p.parse("inline code::code example::.").dump
@@ -73,15 +74,16 @@ All in all we have 6 different categories of tags, not counting the internal 'pr
 
 TODO
 ====
+- split renderer into a separate class? then it's easy to make different renderers that conform to a common interface..
 
-- parser: Don't split by lines but pass newlines to handleWord and let it call endLine for us? and inc lineno..
-important: then we must check if the whitespace-word contains newline... (or create a regex rule that matches single newlines?)
-also let handleWord inc wordno..
-note: we could then also match blank lines by regex "\n\n*" and pass them to handleWord to split prose or perhaps insert an internal
-'blankline' tag?
+- handle categories::, should it output anything or is it just metadata?
 
-- Grab introspection data for methods, arguments, class inheritance, etc..
-should this be done in the parser, filled into the tree later, or added while rendering?
+HTML renderer stuff:
+- handle "see also"
+- handle docType (class/other)
+- handle prose before first section..
+- other sections? not allowed in class doc?
+- split multiple methods by whitespace and/or comma, so one can do "method:: ar kr"
 
 - Overview generations:
   All documents alphabetically
@@ -94,16 +96,11 @@ should this be done in the parser, filled into the tree later, or added while re
   All ugens by categories
   All methods
 
-- Code to traverse a directory tree of doc source files and render into another directory tree, checking time-stamps to see if files need update or not.
-
-generate simple doc for classes not having a doc source file. (list all methods and their args)
+- Code to traverse a directory tree of doc source files and render into another directory tree, checking time-stamps to see if files need update or not. keep track of directory level so we can use relative URL's..
+- generate simple doc for classes not having a doc source file. (just list all methods and their args)
 
 - Handle extensions (extra classes and method additions)
 should merge stuff into the tree before parsing..
-
-- HTML renderer.
-
-- split prose in multiple elements by blank lines in the parser, or handle them in the renderer?
 
 - validation pass:
 start by looking up the docType tag in the tree (root level), then we know which tags are allowed and not.
@@ -112,4 +109,9 @@ Some tags should only be allowed once. like class, title, related, keywords, sum
 Keep a dictionary with tag occurence count?
 
 Also make sure ## and || only happens inside lists?
+
+- parser: Don't split by lines but pass newlines to handleWord and let it call endLine for us? and inc lineno..
+important: then we must check if the whitespace-word contains newline... (or create a regex rule that matches single newlines?)
+also let handleWord inc wordno..
+note: we could then also match blank lines by regex "\n\n*" and pass them to handleWord to split prose nodes.
 
