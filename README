@@ -6,13 +6,18 @@ The markup language parser is in ScDoc.sc, copy or symlink this to your Extensio
 Try it like this:
 
 p = ScDocParser.new
+
+p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/Array.schelp")
+p.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/Array.html")
+
+p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/LFPulse.schelp")
+p.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/LFPulse.html")
+
 p.parseFile("/home/lijon/Coding/ScDoc/test.schelp").dump
 p.findNode("summary").text
 
-p.parseFile("/home/lijon/Coding/ScDoc/Array.schelp")
-p.renderHTML("scdoc_test.html")
-
 p.parse("inline code::code example::.").dump
+p.root
 
 tag             hasText hasChilds structural needClose modal nestable
 ---------------------------------------------------------------------
@@ -83,7 +88,6 @@ HTML renderer stuff:
 - handle docType (class/other)
 - handle prose before first section..
 - other sections? not allowed in class doc?
-- split multiple methods by whitespace and/or comma, so one can do "method:: ar kr"
 
 - Overview generations:
   All documents alphabetically
@@ -95,6 +99,8 @@ HTML renderer stuff:
   All ugens alphabetically
   All ugens by categories
   All methods
+  
+  should these generate ScDoc markup or the native tree doc structure?
 
 - Code to traverse a directory tree of doc source files and render into another directory tree, checking time-stamps to see if files need update or not. keep track of directory level so we can use relative URL's..
 - generate simple doc for classes not having a doc source file. (just list all methods and their args)

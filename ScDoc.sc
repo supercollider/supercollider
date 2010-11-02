@@ -336,23 +336,29 @@ ScDocParser {
                 file.write("</div>");
             },
             'method', {
-                var f = node.text.findRegexp(" *([^( ]+) *(\\(.*\\))?");
-                var mname = f[1][1];//node.text.findRegexp("[^(]+")[0][1];
+                //for multiple methods with same signature and similar function:
+                //ar kr (x = 42, y = 123)
+                
+                var f = node.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
                 var args = f[2][1];
+                var split = f[1][1].findRegexp("[^ ,]+");
+                split.do {|r|
+                    var mname = r[1];
 
-                if(args.isEmpty, {
-                    var m;
-                    args = "NOT FOUND";
-                    if(parentTag==\instancemethods,{
-                        m = currentClass.findRespondingMethodFor(mname.asSymbol);
-                    },{
-                        m = currentClass.class.findRespondingMethodFor(mname.asSymbol);
+                    if(args.isEmpty, {
+                        var m;
+                        args = "NOT FOUND";
+                        if(parentTag==\instancemethods,{
+                            m = currentClass.findRespondingMethodFor(mname.asSymbol);
+                        },{
+                            m = currentClass.class.findRespondingMethodFor(mname.asSymbol);
+                        });
+                        if(m.notNil, { args = m.argumentString.replace("this, ","").replace("this","") });
+                        if(args.notEmpty,{ args = " ("++args++")" });
                     });
-                    if(m.notNil, { args = m.argumentString.replace("this, ","").replace("this","") });
-                    if(args.notEmpty,{ args = " ("++args++")" });
-                });
-                                
-                file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++args++"</h3></a>\n");
+                                    
+                    file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++args++"</h3></a>\n");
+                };
                 file.write("<div class='method'>");
                 do_children.();
                 file.write("</div>");
@@ -435,7 +441,7 @@ ScDocParser {
         var x = this.findNode(\class);
         var name = this.stripWhiteSpace(x.text);
         currentClass = name.asSymbol.asClass;
-        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='scdoc.css' type='text/css' /></head><body>");
+        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='../scdoc.css' type='text/css' /></head><body>");
 
         f.write("<div class='header'>");
         f.write("<div id='label'>CLASS</div>");
