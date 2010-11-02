@@ -427,6 +427,16 @@ ScDocParser {
                     'table',            { file.write("<td>") }
                 );
             },
+            //these are handled explicitly
+            'title', { },
+            'summary', { },
+            'class', { },
+            'related', { },
+            'categories', { },
+            
+            'root', {
+                do_children.();
+            },
             
             { //unhandled tag
 //                file.write("(TAG:"++node.tag++")");
@@ -435,54 +445,74 @@ ScDocParser {
         );
         last_display = node.display;
     }
-
-    renderHTML {|filename|
-        var f = File.open(filename, "w");
-        var x = this.findNode(\class);
-        var name = this.stripWhiteSpace(x.text);
-        currentClass = name.asSymbol.asClass;
+    
+    renderHTMLHeader {|f,name,type|
+        var x;
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='../scdoc.css' type='text/css' /></head><body>");
 
         f.write("<div class='header'>");
-        f.write("<div id='label'>CLASS</div>");
-        f.write("<h1>"++name++"</h1>");
+        f.write("<div id='label'>");
+        f.write(if(type==\class,{"SC CLASS"},{"SC DOC"}));
+        f.write("</div><h1>"++name++"</h1>");
 
         x = this.findNode(\summary);
         f.write("<div id='summary'>"++x.text++"</div>");
         f.write("</div>");
         
-        f.write("<div id='inheritance'>");
-        f.write("Inherits from ");
-        currentClass.superclasses.do {|c|
-            f.write(": <a href=\"../Classes/"++c.name++".html\">"++c.name++"</a> ");
-        };
-        f.write("</div>");
-
+        if(type==\class,{
+            f.write("<div id='inheritance'>");
+            f.write("Inherits from ");
+            currentClass.superclasses.do {|c|
+                f.write(": <a href=\"../Classes/"++c.name++".html\">"++c.name++"</a> ");
+            };
+            f.write("</div>");
+        });
+        
         x = this.findNode(\related);
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
             f.write("See also: ");
             x.text.findRegexp("[^ ,]+").flop[1].do {|r,i|
+                //FIXME: ignore superclasses? since they are already in "inherits from"...
                 if(i>0, {f.write(", ")});
                 f.write("<a href=\"../"++r++".html\">"++r.split($/).last++"</a>");
             };
             f.write("</div>");
         });
-                
-        last_display = \block;
-        x = this.findNode(\description);
-        this.renderHTMLSubTree(f,x);
+    }
 
-        x = this.findNode(\classmethods);
-        this.renderHTMLSubTree(f,x);
-
-        x = this.findNode(\instancemethods);
-        this.renderHTMLSubTree(f,x);
-
-        x = this.findNode(\examples);
-        this.renderHTMLSubTree(f,x);
+    renderHTML {|filename|
+        var f = File.open(filename, "w");
+        var x = this.findNode(\class);
         
-        f.write("</body></html>");
+        last_display = \block;
+        
+        if(x.text.notEmpty, {
+            var name = this.stripWhiteSpace(x.text);
+            currentClass = name.asSymbol.asClass;
+            this.renderHTMLHeader(f,name,\class);
+                    
+            x = this.findNode(\description);
+            this.renderHTMLSubTree(f,x);
+
+            x = this.findNode(\classmethods);
+            this.renderHTMLSubTree(f,x);
+
+            x = this.findNode(\instancemethods);
+            this.renderHTMLSubTree(f,x);
+
+            x = this.findNode(\examples);
+            this.renderHTMLSubTree(f,x);
+            
+            f.write("</body></html>");
+        },{
+            var x = this.findNode(\title);
+            var name = this.stripWhiteSpace(x.text);
+            this.renderHTMLHeader(f,name,\other);
+        
+            this.renderHTMLSubTree(f,(tag:'root',children:root));
+            f.write("</body></html>");
+        });
         f.close;
     }
 }

@@ -13,6 +13,10 @@ p.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/Array.html")
 p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/LFPulse.schelp")
 p.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/LFPulse.html")
 
+p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Language/Literals.schelp")
+p.renderHTML("/home/lijon/Coding/ScDoc/Help/Language/Literals.html")
+
+
 p.parseFile("/home/lijon/Coding/ScDoc/test.schelp").dump
 p.findNode("summary").text
 
@@ -90,8 +94,6 @@ Also for all other docs?
 HTML renderer stuff:
 - split into a separate class, then it's easy to make different renderers that conform to a common interface..
 - handle docType (class/other), just run the whole tree for 'other' without forcing section orders, etc
-- handle "see also" (related::), ignore superclasses (already in "inherits from")
-  related:: Language/Literals Classes/List
 - handle prose before first section in class doc?
 - other sections not allowed in class doc?
 
