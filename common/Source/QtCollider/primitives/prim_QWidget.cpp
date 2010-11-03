@@ -24,6 +24,9 @@
 
 #include <QWidget>
 
+// WARNING these primitives have to always execute asynchronously, or Cocoa language client will
+// hang.
+
 QC_LANG_PRIMITIVE( QWidget_SetFocus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   PyrObject *scObj = slotRawObject( r );
@@ -32,7 +35,7 @@ QC_LANG_PRIMITIVE( QWidget_SetFocus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QObject *proxy = static_cast<QObject*>( slotRawPtr( scObj->slots ) );
   bool b = IsTrue( a );
 
-  int ok = proxy->metaObject()->invokeMethod( proxy, "setFocus", Q_ARG( bool, b ) );
+  int ok = QMetaObject::invokeMethod( proxy, "setFocus", Qt::QueuedConnection, Q_ARG( bool, b ) );
 
   if( !ok ) return errFailed;
   return errNone;
@@ -44,7 +47,7 @@ QC_LANG_PRIMITIVE( QWidget_BringFront, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   QObject *proxy = static_cast<QObject*>( slotRawPtr( scObj->slots ) );
 
-  int ok = proxy->metaObject()->invokeMethod( proxy, "bringFront" );
+  int ok = QMetaObject::invokeMethod( proxy, "bringFront", Qt::QueuedConnection );
 
   if( !ok ) return errFailed;
   return errNone;
