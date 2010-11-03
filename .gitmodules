@@ -12,7 +12,7 @@
 	url = http://github.com/ryppl/boost-svn.git
 [submodule "source/sc/supercollider"]
 	path = source/sc/supercollider
-	url = git://tim.klingt.org/nova-sc.git
+	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/supercollider
 [submodule "libs/nova-tt"]
 	path = libs/nova-tt
 	url = git://tim.klingt.org/nova-tt.git
