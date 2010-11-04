@@ -923,7 +923,7 @@ Ndef : NodeProxy {
 	}
 	
 	*clear { | fadeTime |
-		all.do { arg dict; dict.do { arg item; item.clear(fadeTime) } };
+		all.do(_.clear(fadeTime));
 		all.clear;
 	}
 
@@ -931,7 +931,8 @@ Ndef : NodeProxy {
 		var dict = all.at(server.name);
 		if(dict.isNil) {
 			dict = ProxySpace.new(server); // use a proxyspace for ease of access.
-			all.put(server.name, dict)
+			all.put(server.name, dict);
+			dict.registerServer;
 		};
 		^dict
 	}	

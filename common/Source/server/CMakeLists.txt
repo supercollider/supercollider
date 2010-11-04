@@ -12,7 +12,7 @@ if(AUDIOAPI STREQUAL "")
 	endif(APPLE)
 endif()
 
-if(NOT (AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$"))
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
 	message(WARNING "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
@@ -78,7 +78,6 @@ endif()
 target_link_libraries(libscsynth sccommon)
 
 if(CURL)
-	find_package(Curl)
 	if(CURL_FOUND)
 		target_link_libraries(libscsynth ${CURL_LIBRARIES})
 	endif()

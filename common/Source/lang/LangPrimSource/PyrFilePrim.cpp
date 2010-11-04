@@ -33,6 +33,8 @@ Primitives for File i/o.
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+#include <cerrno>
+
 #ifdef NOCLASSIC
 #include <TextUtils.h>
 #include <Navigation.h>
@@ -1099,7 +1101,11 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(string, class_string))  return errWrongType;
 
-	getcwd(slotRawString(string)->s,255);
+	char * cwd = getcwd(slotRawString(string)->s,255);
+	if (cwd == NULL) {
+		error(strerror(errno));
+		return errFailed;
+	}
 	slotRawString(string)->size = strlen(slotRawString(string)->s);
 
 	return errNone;
