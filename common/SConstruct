@@ -86,7 +86,7 @@ else:
     DEFAULT_OPT_ARCH = None
 
 if PLATFORM != 'windows':
-	subprocess.call(['sh', 'setMainVersion.sh'])
+    subprocess.call(['sh', 'setMainVersion.sh'])
 
 
 # ======================================================================
@@ -379,19 +379,19 @@ if os.path.exists('/usr/lib/ccache/bin'):
 
 env['ENV']['PATH'] = os.environ['PATH']
 if PLATFORM == 'windows':
-	env['ENV']['HOME'] = os.environ['HOMEPATH']
+    env['ENV']['HOME'] = os.environ['HOMEPATH']
 else:
-	env['ENV']['HOME'] = os.environ['HOME']
+    env['ENV']['HOME'] = os.environ['HOME']
 
 if PLATFORM == 'linux':
-	env['amd64'] = 'x86_64' in platform.uname()
-	if env['amd64']:
-		print "we are on amd64 linux"
+    env['amd64'] = 'x86_64' in platform.uname()
+    if env['amd64']:
+        print "we are on amd64 linux"
+    else:
         # include libc-macro to include LFS-support on non-64-bit:
-        if not env['amd64']:
-            lfs_cflags = os.popen("getconf LFS_CFLAGS").read()[:-1]
-            for flag in lfs_cflags.split():
-                env.Append(CPPDEFINES = flag)
+        lfs_cflags = os.popen("getconf LFS_CFLAGS").read()[:-1]
+        for flag in lfs_cflags.split():
+            env.Append(CPPDEFINES = flag)
   
 # ======================================================================
 # installation directories
@@ -555,7 +555,7 @@ else:
 if env['LANG']:
     # nothing needed if darwin, icucore is linked further down with maccy things
     if PLATFORM == 'darwin':
-		libraries['libicu'] = Environment()
+        libraries['libicu'] = Environment()
     else:
         if conf.CheckCHeader('unicode/uregex.h'):
             libraries['libicu'] = Environment(
@@ -705,14 +705,6 @@ commonEnv.Append(
     CCFLAGS = ['-fPIC'],
     CXXFLAGS = ['-fPIC']
     )
-
-# strtod
-conf = Configure(commonEnv)
-if conf.CheckFunc('strtod'):
-    commonEnv.Append(
-        CPPDEFINES = 'HAVE_STRTOD'
-        )
-commonEnv = conf.Finish()
 
 
 # ======================================================================
@@ -919,7 +911,7 @@ plugins.append(
         ['Source/plugins/FFTInterfaceTable.cpp',
          'Source/plugins/FFT_UGens.cpp',
          'Source/plugins/PV_UGens.cpp',
-	 'Source/plugins/PartitionedConvolution.cpp'] + fftSources))
+         'Source/plugins/PartitionedConvolution.cpp'] + fftSources))
 
 plugins.append(
     fftEnv.SharedLibrary(
@@ -1106,7 +1098,7 @@ if env['LANG']:
 
 # optional features
 if features['midiapi']:
-    merge_lib_info(langEnv, libraries['midiapi'])
+    merge_lib_info(libsclangEnv, libraries['midiapi'])
     if features['midiapi'] == 'CoreMIDI':
                 libsclangSources += ['Source/lang/LangPrimSource/SC_CoreMIDI.cpp']
     else:
@@ -1220,8 +1212,8 @@ if is_installing():
     #os.popen ("cat /proc/cpuinfo | grep '^flags'").read()[:-1]
 
 #if env['SCVIM']:
-	#vimenv = env.Clone()
-	#SConscript('editors/test/SConstruct', exports=['vimenv'])
+    #vimenv = env.Clone()
+    #SConscript('editors/test/SConstruct', exports=['vimenv'])
 
 #if env['SCVIM']:
    #print 'installing scvim'

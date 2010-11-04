@@ -25,6 +25,10 @@
 #include "vec_sse.hpp"
 #endif
 
+#ifdef __SSE2__
+#include "vec_sse2.hpp"
+#endif
+
 namespace nova
 {
 

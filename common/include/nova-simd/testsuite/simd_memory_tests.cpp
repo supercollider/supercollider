@@ -112,7 +112,7 @@ void exp_tests(void)
     aligned_array<float_type, size> out, out_simd;
 
     float_type base = std::abs(randomize_float<float_type>());
-    float_type slope = std::abs(randomize_float<float_type>() * 0.01);
+    float_type slope = std::abs(randomize_float<float_type>() * 0.01) + 1;
 
     set_exp_vec<float_type>(out.c_array(), base, slope, size);
     set_exp_vec_simd<float_type>(out_simd.c_array(), base, slope, size);

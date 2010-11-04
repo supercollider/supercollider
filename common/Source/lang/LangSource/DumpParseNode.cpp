@@ -309,7 +309,7 @@ void slotString(PyrSlot *slot, char *str)
 					if (!slotRawFrame(slot)) {
 						sprintf(str, "Frame (%0X)", slotRawInt(slot));
 					} else if (slotRawBlock(&slotRawFrame(slot)->method)->classptr == class_method) {
-						sprintf(str, "Frame (%0X) of %s:%s", slotRawObject(slot),
+						sprintf(str, "Frame (%p) of %s:%s", slotRawObject(slot),
 							slotRawSymbol(&slotRawClass(&slotRawMethod(&slotRawFrame(slot)->method)->ownerclass)->name)->name,
 							slotRawSymbol(&slotRawMethod(&slotRawFrame(slot)->method)->name)->name);
 					} else {

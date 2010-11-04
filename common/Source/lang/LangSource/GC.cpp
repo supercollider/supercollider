@@ -141,7 +141,7 @@ sweep phase:
 void fatalerror(const char*str);
 void fatalerror(const char*str)
 {
-	fprintf(stderr, str);
+	fputs(str, stderr);
 	postfl(str);
 	throw std::runtime_error(str);
 	//exit(-1);

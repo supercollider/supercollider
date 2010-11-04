@@ -1,34 +1,24 @@
 include_directories(../Headers/common
                     ../Headers/plugin_interface)
 
-if (${CMAKE_COMPILER_IS_GNUCXX})
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -fschedule-insns2 -fomit-frame-pointer")
-
-	if(APPLE)
-		set_property(DIRECTORY
-						APPEND
-						PROPERTY COMPILE_DEFINITIONS _REENTRANT)
-	else()
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-	endif()
-endif ()
-
 if (NOVA_SIMD)
-	set_property(DIRECTORY
-					APPEND
-					PROPERTY COMPILE_DEFINITIONS NOVA_SIMD)
+	add_definitions("-DNOVA_SIMD")
 	include_directories(../include/nova-simd)
 endif()
 
-set_property(DIRECTORY
-				APPEND
-				PROPERTY COMPILE_DEFINITIONS SC_PLUGIN_LOAD_SYM=\"load\")
+if(CURL)
+	find_package(Curl)
+	if(CURL_FOUND)
+		add_definitions("-DHAVE_CURL")
+		include_directories(${CURL_INCLUDE_DIRS})
+	endif()
+endif()
+
+add_definitions("-DSC_PLUGIN_LOAD_SYM=\"load\"")
 
 if (NOT APPLE)
 	# on apple we leave this undefined so it defaults to .scx (in the code)
-	set_property(DIRECTORY
-					APPEND
-					PROPERTY COMPILE_DEFINITIONS SC_PLUGIN_EXT=\".so\")
+	add_definitions("-DSC_PLUGIN_EXT=\".so\"")
 endif()
 
 find_package (Qt4)

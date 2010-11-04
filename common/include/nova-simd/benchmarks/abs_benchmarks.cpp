@@ -16,21 +16,26 @@ void __noinline__ bench_1(unsigned int numSamples)
 void __noinline__ bench_2(unsigned int numSamples)
 {
     for (unsigned int i = 0; i != numSamples; ++i)
-        out[i] = std::abs(in[i]);
+        out[i] = std::fabs(in[i]);
 }
 
 void __noinline__ bench_3(unsigned int numSamples)
 {
-    for (unsigned int i = 0; i != numSamples; i += 8)
+    typedef float afloat __attribute__ ((__aligned__(16)));
+
+    float * __restrict__ o = out.data();
+    float * __restrict__ i = in.data();
+
+    for (unsigned int n = 0; n != numSamples; n += 8)
     {
-        out[i] = std::abs(in[i]);
-        out[i+1] = std::abs(in[i+1]);
-        out[i+2] = std::abs(in[i+2]);
-        out[i+3] = std::abs(in[i+3]);
-        out[i+4] = std::abs(in[i+4]);
-        out[i+5] = std::abs(in[i+5]);
-        out[i+6] = std::abs(in[i+6]);
-        out[i+7] = std::abs(in[i+7]);
+        o[n] = std::fabs(i[n]);
+        o[n+1] = std::fabs(i[n+1]);
+        o[n+2] = std::fabs(i[n+2]);
+        o[n+3] = std::fabs(i[n+3]);
+        o[n+4] = std::fabs(i[n+4]);
+        o[n+5] = std::fabs(i[n+5]);
+        o[n+6] = std::fabs(i[n+6]);
+        o[n+7] = std::fabs(i[n+7]);
     }
 }
 

@@ -85,21 +85,6 @@ template <typename FloatType>
 /unspecified/ nova::wrap_arguments(FloatType base, FloatType slope);
 
 
-
-libsimdmath:
-
-nova simd provides a wrapper to the parallel implementation of math
-functions of libsimdmath. the use of libsimdmath introduces some license
-implications, though, since it is using GPL-3. nova simd is licensed as
-GPL-2 or later, however including libsimdmath code makes nova simd GPL-3.
-to avoid this, the code can be compiled with the preprocessor symbol
-NO_GPL3_CODE, which avoids the inclusion of any GPL-3 code.
-
-libsimdmath it maintained in a separate git repository, which is linked
-as git submodule. the script ./init_submodules.sh takes care of fetching
-the code from a nova simd git checkout.
-
-
 building and testing:
 
 nova simd is a header-only library, so it cannot be compiled as

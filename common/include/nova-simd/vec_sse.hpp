@@ -30,20 +30,6 @@
 #include <smmintrin.h>
 #endif
 
-#if !defined(NO_GPL3_CODE) && defined(__GNUC__)                         \
-    && !( (__GNUC__ < 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 2))) && defined(__SSE2__)
-
-#define NOVA_SIMD_USE_LIBSIMDMATH
-
-#include "libsimdmath/lib/sincosf4.h"
-#include "libsimdmath/lib/asinf4.h"
-#include "libsimdmath/lib/atanf4.h"
-#include "libsimdmath/lib/logf4.h"
-#include "libsimdmath/lib/expf4.h"
-#include "libsimdmath/lib/powf4.h"
-
-#endif
-
 #include "detail/vec_math.hpp"
 
 #if defined(__GNUC__) && defined(NDEBUG)
@@ -59,49 +45,43 @@ template <>
 struct vec<float>
 {
     typedef __m128 internal_vector_type;
+    typedef float float_type;
 
 #ifdef __SSE2__
     static inline __m128 gen_sign_mask(void)
     {
-        __m128i x = _mm_setzero_si128();
-        __m128i ones = _mm_cmpeq_epi32(x, x);
+        __m128i ones = (__m128i)gen_ones();
         return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 31), 31);
     }
 
     static inline __m128 gen_abs_mask(void)
     {
-        __m128i x = _mm_setzero_si128();
-        __m128i ones = _mm_cmpeq_epi32(x, x);
+        __m128i ones = (__m128i)gen_ones();
         return (__m128)_mm_srli_epi32 (_mm_slli_epi32(ones, 1), 1);
     }
 
     static inline __m128 gen_one(void)
     {
-        __m128i x = _mm_setzero_si128();
-        __m128i ones = _mm_cmpeq_epi32(x, x);
+        __m128i ones = (__m128i)gen_ones();
         return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 25), 23);
     }
 
+
     static inline __m128 gen_05(void)
     {
-        __m128i x = _mm_setzero_si128();
-        __m128i ones = _mm_cmpeq_epi32(x, x);
+       __m128i ones = (__m128i)gen_ones();
         return (__m128)_mm_slli_epi32 (_mm_srli_epi32(ones, 26), 24);
     }
 #else
     /* SSE fallback */
     static inline __m128 gen_sign_mask(void)
     {
-        static const int sign_mask = 0x80000000;
-        float * casted = (float*)(&sign_mask);
-        return _mm_set_ps1(*casted);
+        return set_bitmask(0x80000000);
     }
 
     static inline __m128 gen_abs_mask(void)
     {
-        static const int abs_mask = 0x7fffffff;
-        float * casted = (float*)(&abs_mask);
-        return _mm_set_ps1(*casted);
+        return set_bitmask(0x7fffffff);
     }
 
     static inline __m128 gen_one(void)
@@ -114,6 +94,32 @@ struct vec<float>
         return _mm_set_ps1(0.5f);
     }
 #endif
+    static inline __m128 set_bitmask(unsigned int mask)
+    {
+        union {
+            unsigned int i;
+            float f;
+        } u;
+        u.i = mask;
+        return _mm_set_ps1(u.f);
+    }
+
+    static inline __m128 gen_exp_mask(void)
+    {
+        return set_bitmask(0x7F800000);
+    }
+
+    static inline __m128 gen_exp_mask_1(void)
+    {
+        return set_bitmask(0x3F000000);
+    }
+
+    static inline __m128 gen_ones(void)
+    {
+        __m128 x = gen_zero();
+        __m128 ones = _mm_cmpeq_ps(x, x);
+        return ones;
+    }
 
     static inline __m128 gen_zero(void)
     {
@@ -134,7 +140,7 @@ public:
     vec(void)
     {}
 
-    explicit vec(float f)
+    vec(float f)
     {
         set_vec(f);
     }
@@ -179,7 +185,7 @@ public:
 
     void clear(void)
     {
-        data_ = _mm_setzero_ps();
+        data_ = gen_zero();
     }
 
     /* @} */
@@ -238,7 +244,7 @@ public:
         return v3 * curve;
     }
 
-    float get (std::size_t index)
+    float get (std::size_t index) const
     {
 #ifdef __SSE4_1__
         union {
@@ -310,12 +316,33 @@ public:
     vec operator op(vec const & rhs) const \
     { \
         return opcode(data_, rhs.data_); \
+    } \
+ \
+    friend vec operator op(vec const & lhs, float f)  \
+    { \
+        return opcode(lhs.data_, vec(f).data_); \
+    } \
+    \
+    friend vec operator op(float f, vec const & rhs)  \
+    { \
+        return opcode(vec(f).data_, rhs.data_); \
     }
 
     ARITHMETIC_OPERATOR(+, _mm_add_ps)
     ARITHMETIC_OPERATOR(-, _mm_sub_ps)
     ARITHMETIC_OPERATOR(*, _mm_mul_ps)
     ARITHMETIC_OPERATOR(/, _mm_div_ps)
+
+    friend vec operator -(const vec & arg)
+    {
+        return _mm_xor_ps(arg.data_, gen_sign_mask());
+    }
+
+    friend vec reciprocal(const vec & arg)
+    {
+        return _mm_rcp_ps(arg.data_);
+    }
+
 
 #define RELATIONAL_OPERATOR(op, opcode) \
     vec operator op(vec const & rhs) const \
@@ -342,6 +369,11 @@ public:
     BITWISE_OPERATOR(|, _mm_or_ps)
     BITWISE_OPERATOR(^, _mm_xor_ps)
 
+    friend inline vec andnot(vec const & lhs, vec const & rhs)
+    {
+        return _mm_andnot_ps(lhs.data_, rhs.data_);
+    }
+
     #define RELATIONAL_MASK_OPERATOR(op, opcode) \
     friend vec mask_##op(vec const & lhs, vec const & rhs) \
     { \
@@ -354,6 +386,8 @@ public:
     RELATIONAL_MASK_OPERATOR(ge, _mm_cmpge_ps)
     RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_ps)
     RELATIONAL_MASK_OPERATOR(neq, _mm_cmpneq_ps)
+
+    #undef RELATIONAL_MASK_OPERATOR
 
     friend inline vec select(vec lhs, vec rhs, vec bitmask)
     {
@@ -448,71 +482,71 @@ public:
     /* @{ */
     /** mathematical functions */
 
-#ifdef NOVA_SIMD_USE_LIBSIMDMATH
-
-#define LIBSIMDMATH_WRAPPER_UNARY(NAME)       \
-    friend inline vec NAME(vec const & arg) \
-    {                                   \
-        return _##NAME##f4(arg.data_);  \
+    friend inline vec exp(vec const & arg)
+    {
+        return detail::vec_exp_float(arg);
     }
 
-    LIBSIMDMATH_WRAPPER_UNARY(sin)
-    LIBSIMDMATH_WRAPPER_UNARY(cos)
-    LIBSIMDMATH_WRAPPER_UNARY(tan)
-    LIBSIMDMATH_WRAPPER_UNARY(asin)
-    LIBSIMDMATH_WRAPPER_UNARY(acos)
-    LIBSIMDMATH_WRAPPER_UNARY(atan)
-
-    LIBSIMDMATH_WRAPPER_UNARY(log)
-    LIBSIMDMATH_WRAPPER_UNARY(exp)
-
-#define LIBSIMDMATH_WRAPPER_BINARY(NAME)                    \
-    friend inline vec NAME(vec const & lhs, vec const & rhs)\
-    {                                                       \
-        return _##NAME##f4(lhs.data_, rhs.data_);           \
+    friend inline vec log(vec const & arg)
+    {
+        return detail::vec_log_float(arg);
     }
 
-    LIBSIMDMATH_WRAPPER_BINARY(pow)
+    friend inline vec pow(vec const & arg1, vec const & arg2)
+    {
+        return detail::vec_pow(arg1, arg2);
+    }
 
-#undef LIBSIMDMATH_WRAPPER_UNARY
-#undef LIBSIMDMATH_WRAPPER_BINARY
+
+#ifdef __SSE2__
+    friend inline vec sin(vec const & arg)
+    {
+        return detail::vec_sin_float(arg);
+    }
+
+    friend inline vec cos(vec const & arg)
+    {
+        return detail::vec_cos_float(arg);
+    }
+
+    friend inline vec tan(vec const & arg)
+    {
+        return detail::vec_tan_float(arg);
+    }
+
+    friend inline vec asin(vec const & arg)
+    {
+        return detail::vec_asin_float(arg);
+    }
+
+    friend inline vec acos(vec const & arg)
+    {
+        return detail::vec_acos_float(arg);
+    }
+
+    friend inline vec atan(vec const & arg)
+    {
+        return detail::vec_atan_float(arg);
+    }
 #else
 
-#define APPLY_UNARY(NAME, FUNCTION)                 \
+#define APPLY_UNARY_FALLBACK(NAME, FUNCTION)        \
     friend inline vec NAME(vec const & arg)         \
     {                                               \
         vec ret;                                    \
-        detail::apply_on_vector<float, size> ((float*)&ret.data_, (float*)&arg.data_,   \
-                                                   FUNCTION);   \
+        for (int i = 0; i != 4; ++i)                \
+            ret.set(i, FUNCTION(arg.get(i)));       \
         return ret;                                 \
     }
 
-#define APPLY_BINARY(NAME, FUNCTION)                            \
-    friend inline vec NAME(vec const & lhs, vec const & rhs)    \
-    {                                                           \
-        vec ret;                                                \
-        detail::apply_on_vector<float, size> ((float*)&ret.data_,\
-                                              wrap_argument((float*)&lhs.data_), \
-                                              wrap_argument((float*)&rhs.data_),  \
-                                              FUNCTION);   \
-        return ret;                                 \
-    }
+    APPLY_UNARY_FALLBACK(sin, detail::sin)
+    APPLY_UNARY_FALLBACK(cos, detail::cos)
+    APPLY_UNARY_FALLBACK(tan, detail::tan)
+    APPLY_UNARY_FALLBACK(asin, detail::asin)
+    APPLY_UNARY_FALLBACK(acos, detail::acos)
+    APPLY_UNARY_FALLBACK(atan, detail::atan)
 
-    APPLY_UNARY(sin, detail::sin<float>)
-    APPLY_UNARY(cos, detail::cos<float>)
-    APPLY_UNARY(tan, detail::tan<float>)
-    APPLY_UNARY(asin, detail::asin<float>)
-    APPLY_UNARY(acos, detail::acos<float>)
-    APPLY_UNARY(atan, detail::atan<float>)
-
-    APPLY_UNARY(log, detail::log<float>)
-    APPLY_UNARY(exp, detail::exp<float>)
-
-    APPLY_BINARY(pow, detail::pow<float>)
-
-#undef APPLY_UNARY
-#undef APPLY_BINARY
-
+#undef APPLY_UNARY_FALLBACK
 #endif
 
     friend inline vec tanh(vec const & arg)
@@ -566,7 +600,103 @@ public:
     }
     /* @} */
 
-private:
+#ifdef __SSE2__
+    /* @{ */
+    struct int_vec
+    {
+        __m128i data_;
+
+        /* cast */
+        explicit int_vec(vec<float> arg):
+            data_((__m128i)arg.data_)
+        {}
+
+        explicit int_vec(int arg):
+            data_(_mm_set1_epi32(arg))
+        {}
+
+        int_vec(__m128i arg):
+            data_(arg)
+        {}
+
+        int_vec(int_vec const & arg):
+            data_(arg.data_)
+        {}
+
+        int_vec(void)
+        {}
+
+        int_vec & operator+(int_vec const & rhs)
+        {
+            data_ = _mm_add_epi32(data_, rhs.data_);
+            return *this;
+        }
+
+        int_vec & operator-(int_vec const & rhs)
+        {
+            data_ = _mm_sub_epi32(data_, rhs.data_);
+            return *this;
+        }
+
+        #define RELATIONAL_MASK_OPERATOR(op, opcode) \
+        friend int_vec mask_##op(int_vec const & lhs, int_vec const & rhs) \
+        { \
+            return opcode(lhs.data_, rhs.data_); \
+        }
+
+        RELATIONAL_MASK_OPERATOR(lt, _mm_cmplt_epi32)
+        RELATIONAL_MASK_OPERATOR(gt, _mm_cmpgt_epi32)
+        RELATIONAL_MASK_OPERATOR(eq, _mm_cmpeq_epi32)
+
+        #undef RELATIONAL_MASK_OPERATOR
+
+        friend int_vec operator&(int_vec const & lhs, int_vec const & rhs)
+        {
+            int_vec ret = int_vec (_mm_and_si128(lhs.data_, rhs.data_));
+            return ret;
+        }
+
+        friend inline int_vec andnot(int_vec const & lhs, int_vec const & rhs)
+        {
+            return int_vec(_mm_andnot_si128(lhs.data_, rhs.data_));
+        }
+
+
+        // shift in zeros
+        friend inline int_vec slli(int_vec const & arg, int count)
+        {
+            int_vec ret (_mm_slli_epi32(arg.data_, count));
+            return ret;
+        }
+
+        // shift in zeros
+        friend inline int_vec srli(int_vec const & arg, int count)
+        {
+            int_vec ret (_mm_srli_epi32(arg.data_, count));
+            return ret;
+        }
+
+        vec convert_to_float(void) const
+        {
+            vec ret(_mm_cvtepi32_ps(data_));
+            return ret;
+        }
+    };
+
+    vec (int_vec const & rhs):
+        data_((__m128)rhs.data_)
+    {}
+
+    int_vec truncate_to_int(void) const
+    {
+        __m128i int_val = _mm_cvttps_epi32(data_);
+        return int_vec(int_val);
+    }
+
+    /* @} */
+#endif // __SSE2__
+
+// private:
     typedef union
     {
         float f[4];

@@ -10,8 +10,16 @@ add_library(sccommon SHARED
 
 include_directories(../../Headers/lang)
 
+
 if (APPLE)
 	target_link_libraries(sccommon "-framework CoreServices")
+endif()
+
+if(CURL)
+	find_package(Curl)
+	if(CURL_FOUND)
+		target_link_libraries(sccommon ${CURL_LIBRARIES})
+	endif()
 endif()
 
 

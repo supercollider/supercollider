@@ -46,7 +46,7 @@ struct clip2:
 {
     float_type operator()(float_type const & f, float_type const & limit) const
     {
-        float_type zero(0);
+        float_type zero = 0.0;
         float_type neg = zero - float_type(limit);
         return max_(neg, min_(f, limit));
     }

@@ -53,7 +53,11 @@
 #endif
 
 #ifndef SC_AUDIO_API
-# define SC_AUDIO_API SC_AUDIO_API_COREAUDIO
+# ifdef __APPLE__ 
+#  define SC_AUDIO_API SC_AUDIO_API_COREAUDIO
+# else
+#  error SC_AUDIO_API undefined, cannot determine audio backend
+# endif
 #endif // SC_AUDIO_API
 
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS

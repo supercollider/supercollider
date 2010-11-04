@@ -40,4 +40,9 @@ int main(void)
     cout << "tanh(200):" << endl;
     run_bench(boost::bind(bench_1, 64), iterations);
     run_bench(boost::bind(bench_1_simd, 64), iterations);
+
+    fill_container(in);
+    cout << "tanh([-1..1]):" << endl;
+    run_bench(boost::bind(bench_1, 64), iterations);
+    run_bench(boost::bind(bench_1_simd, 64), iterations);
 }

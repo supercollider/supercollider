@@ -43,7 +43,7 @@ F peak_vec(const F * in, F * peak, unsigned int n)
     using namespace std;
 
     do {
-        last = abs(*in++);
+        last = std::fabs(*in++);
         local_peak = max(local_peak, last);
     } while(--n);
 
@@ -58,13 +58,15 @@ inline float peak_vec_simd(const F * in, F * peak, unsigned int n)
     maximum.load_first(peak);
 
     /* loop */
-    n /= 16;
+    const size_t vec_size = vec<F>::size;
+    const size_t unroll = 4 * vec_size;
+    n /= unroll;
     do {
         vec<F> in0, in1, in2, in3;
         in0.load_aligned(in);
-        in1.load_aligned(in+4);
-        in2.load_aligned(in+8);
-        in3.load_aligned(in+12);
+        in1.load_aligned(in+vec_size);
+        in2.load_aligned(in+2*vec_size);
+        in3.load_aligned(in+3*vec_size);
 
         vec<F> abs0 = abs(in0);
         vec<F> abs1 = abs(in1);
@@ -75,7 +77,7 @@ inline float peak_vec_simd(const F * in, F * peak, unsigned int n)
                                max_(abs2, abs3));
 
         maximum = max_(maximum, local_max);
-        in += 16;
+        in += unroll;
     } while(--n);
 
     /* horizonal accumulation */
