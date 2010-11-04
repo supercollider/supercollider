@@ -67,6 +67,7 @@ set(plugin_sources
 )
 
 set(plugins "")
+set(supernova_plugins "")
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
 if(APPLE OR WIN32)
@@ -83,6 +84,8 @@ foreach(plugin ${plugin_sources})
 	add_library(${plugin_name} MODULE ${plugin})
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
+
+set(uiugens MouseUGens KeyboardUGens)
 
 set(scfft_sources   ../common/SC_fftlib.cpp   SCComplex.cpp)
 if (FFT_GREEN)
@@ -149,8 +152,70 @@ foreach(ugen ${fft_ugens})
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")
 	endif()
-
 endforeach()
+
+if (supernova)
+	foreach(plugin ${plugin_sources})
+		string(REPLACE .cpp "_supernova" plugin_name ${plugin} )
+		add_library(${plugin_name} MODULE ${plugin})
+		list(APPEND supernova_plugins ${plugin_name})
+		set_property(TARGET ${plugin_name}
+                    APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
+	endforeach(plugin)
+
+	list(APPEND uiugens KeyboardUGens_supernova MouseUGens_supernova)
+
+	add_library(FFT_UGens_supernova MODULE
+				FFTInterfaceTable.cpp
+				FFT_UGens.cpp
+				PV_UGens.cpp
+				PartitionedConvolution.cpp
+				${scfft_sources}
+				)
+
+	add_library(PV_ThirdParty_supernova MODULE
+				Convolution.cpp
+				FFT2InterfaceTable.cpp
+				FeatureDetection.cpp
+				PV_ThirdParty.cpp
+				${scfft_sources}
+				)
+
+	add_library(ML_UGens_supernova MODULE
+				ML.cpp
+				Loudness.cpp
+				BeatTrack.cpp
+				Onsets.cpp
+				onsetsds.c
+				KeyTrack.cpp
+				MFCC.cpp
+				BeatTrack2.cpp
+				ML_SpecStats.cpp
+				${scfft_sources}
+				)
+
+	set_property(TARGET FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova
+				APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
+
+	list(APPEND fft_ugens FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
+	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
+
+	if(NOT NO_LIBSNDFILE)
+		add_library(DiskIO_UGens_supernova MODULE
+				DiskIO_UGens.cpp
+				../server/SC_SyncCondition.cpp)
+		set_property(TARGET DiskIO_UGens_supernova
+					APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
+
+		if(SNDFILE_FOUND)
+			include_directories(${SNDFILE_INCLUDE_DIR})
+			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} m pthread)
+			list(APPEND supernova_plugins DiskIO_UGens_supernova)
+		else()
+			message(SEND_ERROR "Cannot find libsndfile")
+		endif(SNDFILE_FOUND)
+	endif()
+endif(supernova)
 
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -159,14 +224,17 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	if(X11_FOUND)
 		include_directories(X11_INCLUDE_DIR)
 
-		target_link_libraries(KeyboardUGens ${X11_X11_LIB})
-		target_link_libraries(MouseUGens ${X11_X11_LIB})
+		foreach (ugen ${uiugens})
+			target_link_libraries(${ugen} ${X11_X11_LIB})
+		endforeach()
 	elseif()
 		message(SEND_ERROR "Cannot find libx11")
 	endif()
 elseif (APPLE)
-	target_link_libraries(KeyboardUGens "-framework CoreServices -framework Carbon")
-	target_link_libraries(MouseUGens "-framework CoreServices -framework Carbon")
+	foreach (ugen ${uiugens})
+		target_link_libraries(${ugen} "-framework CoreServices -framework Carbon")
+	endforeach()
+
 	if(NOT NO_LIBSNDFILE)
 		target_link_libraries(DiskIO_UGens "-framework CoreServices")
 	endif()
@@ -185,4 +253,10 @@ else()
 	install(TARGETS ${plugins}
 			DESTINATION "lib/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
+	if (supernova)
+		install(TARGETS ${supernova_plugins}
+			DESTINATION "lib/supernova/plugins"
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+	endif()
 endif()
