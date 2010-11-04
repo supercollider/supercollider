@@ -31,12 +31,16 @@ namespace detail {
 ///@{
 template <typename FloatType,
           int VectorSize,
+          typename Arg1Type,
           typename Functor
          >
-inline void apply_on_vector(FloatType * out, const FloatType * in, Functor f)
+inline void apply_on_vector(FloatType * out, Arg1Type in1, Functor f)
 {
     for (int i = 0; i != VectorSize; ++i)
-        out[i] = f(in[i]);
+    {
+        *out++ = f(in1.get());
+        in1.increment();
+    }
 }
 
 template <typename FloatType,
@@ -145,6 +149,7 @@ DEFINE_STD_UNARY_WRAPPER(tanh)
 DEFINE_STD_UNARY_WRAPPER(log)
 DEFINE_STD_UNARY_WRAPPER(log10)
 DEFINE_STD_UNARY_WRAPPER(exp)
+
 
 #define DEFINE_STD_BINARY_WRAPPER(NAME)         \
 template<typename float_type>                   \

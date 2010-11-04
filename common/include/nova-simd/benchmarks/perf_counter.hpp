@@ -647,7 +647,6 @@ public:
                  << setw(10) << setfill(' ') << count[4] << " "
                  << setw(8)  << setfill(' ') << count[5] << " "
                  << setw(12)  << setfill(' ') << count[6] << " "
-                 << setw(12)  << setfill(' ') << count[6] << " "
 /*                  << setw(8)  << setfill(' ') << soft_count[0] << " " */
 /*                  << setw(8)  << setfill(' ') << soft_count[1] */
                  << endl;

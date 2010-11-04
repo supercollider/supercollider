@@ -240,8 +240,6 @@ extern PyrSymbol *s_scview;
 			// it's a bad file:// URL, post a warning and search
 			post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\nSearching help directories for alternative.\n", [[desiredURL path] cString]);
 			// delete extension twice in case something.help.rtf
-			if(!desiredURL) NSLog(@"foo");
-			NSLog(@"url path %@", [desiredURL path]);
 			NSString *desiredHelpName = [[[[desiredURL path] lastPathComponent] stringByDeletingPathExtension] stringByDeletingPathExtension];
 			NSString *helpPath = pathOfHelpFileFor(desiredHelpName);
 			if(!helpPath) {

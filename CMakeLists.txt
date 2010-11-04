@@ -14,38 +14,68 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
+ADD_CUSTOM_TARGET(setMainVersion ALL 
+       sh ${CMAKE_CURRENT_SOURCE_DIR}/common/setMainVersion.sh
+       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/common
+       VERBATIM
+      )
+
+#############################################
+# Compiler flags etc
+
+if (${CMAKE_COMPILER_IS_GNUCXX})
+	add_definitions("-ffast-math" "-fschedule-insns2" "-fomit-frame-pointer")
+
+	if(APPLE)
+		add_definitions("-D_REENTRANT")
+	else()
+		add_definitions("-pthread")
+	endif()
+endif ()
+
 if(APPLE)
 	set_property(DIRECTORY
-	APPEND
-	PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
-
+		APPEND
+		PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
 	exec_program(${CMAKE_C_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
 	if ("${_gcc_version_info}" MATCHES "Apple")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpascal-strings")
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpascal-strings")
+		add_definitions("-fpascal-strings")
 	endif()
-
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	set_property(DIRECTORY
-	APPEND
-	PROPERTY COMPILE_DEFINITIONS SC_LINUX)
+	add_definitions("-DSC_LINUX")
 endif()
 
+if(WIN32)
+		add_definitions("-DSC_WIN32")
+endif()
+
+#############################################
+# Options
 option(NOVA_SIMD "Build with nova-simd support." ON)
 option(FINAL_BUILD "Build as single source file." OFF)
 
+option(CURL "Build with curl for remote file download." ON)
+
+option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
+mark_as_advanced(FFT_GREEN)
+
+option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
+mark_as_advanced(NO_LIBSNDFILE)
+
+if(NOT WIN32)
+	option(SCLANG_SERVER "Build with internal server." ON)
+endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	option(SC_EL "Build emacs-based IDE." ON)
 else()
 	option(SC_EL "Build emacs-based IDE." OFF)
 endif()
-
 option(SC_ED "Build gedit-based IDE." OFF)
 option(SC_VIM "Build vim-based IDE." OFF)
 
-option(SCLANG_SERVER "Build with internal server." ON)
-
+#############################################
+# subdirectories
 add_subdirectory(common/Source)
 add_subdirectory(common/build)
 

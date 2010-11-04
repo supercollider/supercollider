@@ -33,7 +33,8 @@ Bugfixes:
 * 2010-09-09 fix a bug for trigger signals in Demand.kr that hold longer than one control period - jr
 * 2010-09-12 fix bug: 2994009. LFPar and LFCub audio rate modulation frequency argument work now - jr
 * 2010-09-19 fix to JITGui, when numItems is not supplied - jr
-
+* 2010-10-10 remove more crufty NSLog debug messages - ds
+* 2010-10-13 fix SCUserView:receiveDrag to receive mouse co-ordinates; thanks Daniel van den Eijkel - ds
 
 
 SuperCollider v3.4, released 2010-07

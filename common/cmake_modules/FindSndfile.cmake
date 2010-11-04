@@ -10,11 +10,23 @@ if(SNDFILE_INCLUDE_DIR)
     set(SNDFILE_FIND_QUIETLY TRUE)
 endif(SNDFILE_INCLUDE_DIR)
 
-if (APPLE)
+if(NO_LIBSNDFILE)
+	#if(NOT SNDFILE_FIND_QUIETLY)
+	#	message(STATUS "FindSndfile: sndfile deactivated (NO_LIBSNDFILE)")
+	#endif()
+	set(SNDFILE_FOUND False)
+	set(SNDFILE_INCLUDE_DIR "nowhere")  # for onceonly check above
+	set(SNDFILE_LIBRARIES "")
+	add_definitions("-DNO_LIBSNDFILE")
+elseif (APPLE)
 	set(SNDFILE_FOUND TRUE)
 	set(SNDFILE_INCLUDE_DIR ../include/libsndfile)
 	set(SNDFILE_LIBRARIES ${CMAKE_SOURCE_DIR}/mac/lib/scUBlibsndfile.a)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${CMAKE_SOURCE_DIR}/common/include/libsndfile")
+	add_definitions("-isystem ${CMAKE_SOURCE_DIR}/common/include/libsndfile")
+
+	# TODO on non-apple platforms, we need to be able to test for >=1018.
+	# (On apple it is known true, because we bundle a later version.)
+	add_definitions("-DLIBSNDFILE_1018")
 
 else()
 	find_path(SNDFILE_INCLUDE_DIR sndfile.h)
@@ -33,5 +45,5 @@ else()
 		set(SNDFILE_LIBRARIES)
 	endif(SNDFILE_FOUND)
 
-	mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
 endif()
+mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)

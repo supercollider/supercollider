@@ -77,7 +77,8 @@ struct ampmod
 {
     float_type operator()(float_type signal, float_type modulator, float_type amount) const
     {
-        return signal * (float_type(1) + modulator * amount);
+        float_type one = 1.f;
+        return signal * (one + modulator * amount);
     }
 
     typedef vec<float_type> vec_type;

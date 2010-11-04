@@ -29,10 +29,12 @@
 namespace nova
 {
 
-template <typename float_type>
+template <typename FloatType>
 struct vec
 {
 public:
+    typedef FloatType float_type;
+
     static const int size = 4;
     static const int objects_per_cacheline = 64/sizeof(float_type);
 
@@ -44,7 +46,12 @@ public:
     vec(void)
     {}
 
-    explicit vec(float_type f)
+    vec(double f)
+    {
+        set_vec(f);
+    }
+
+    vec(float f)
     {
         set_vec(f);
     }
@@ -184,7 +191,7 @@ public:
     friend inline vec NAME(vec const & arg)         \
     {                                               \
         vec ret;                                    \
-        detail::apply_on_vector<float_type, size> (ret.data_, arg.data_,                \
+        detail::apply_on_vector<float_type, size> (ret.data_, wrap_argument(arg.data_),                \
                                                    FUNCTION);    \
         return ret;                                 \
     }

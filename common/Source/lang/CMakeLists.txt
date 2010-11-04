@@ -66,6 +66,8 @@ set(sclang_sources
 
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
+add_definitions(-DYYSTACK_USE_ALLOCA)
+
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
@@ -77,7 +79,9 @@ if(UNIX)
 			LangPrimSource/HID_Utilities/HID_Error_Handler.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
+			LangPrimSource/SC_Speech.M
 			)
+			add_definitions(-DHAVE_SPEECH)
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
@@ -153,7 +157,7 @@ endif(ALSA_FOUND)
 if(SNDFILE_FOUND)
 	include_directories(${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
-else()
+elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
