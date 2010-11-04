@@ -1943,8 +1943,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -1965,7 +1963,6 @@
 					"-Wstrict-aliasing",
 				);
 				OTHER_LDFLAGS = (
-					"-lQtCollider",
 					"-framework",
 					Foundation,
 					"-framework",
@@ -1989,8 +1986,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -2012,7 +2007,6 @@
 					"-Wstrict-aliasing",
 				);
 				OTHER_LDFLAGS = (
-					"-lQtCollider",
 					"-framework",
 					Foundation,
 					"-framework",
@@ -2033,12 +2027,10 @@
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					SC_QT,
 					"USE_SC_TERMINAL_CLIENT=1",
 					HAVE_SPEECH,
 					"$(inherited)",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2052,7 +2044,6 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = "-lQtCollider";
 				PRODUCT_NAME = sclang;
 			};
 			name = Development;
@@ -2068,12 +2059,10 @@
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					SC_QT,
 					"USE_SC_TERMINAL_CLIENT=1",
 					HAVE_SPEECH,
 					"$(inherited)",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
@@ -2088,7 +2077,6 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = "-lQtCollider";
 				PRODUCT_NAME = sclang;
 				SDKROOT = "";
 			};
@@ -2105,8 +2093,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -2127,7 +2113,6 @@
 					"-Wstrict-aliasing",
 				);
 				OTHER_LDFLAGS = (
-					"-lQtCollider",
 					"-framework",
 					Foundation,
 					"-framework",
@@ -2151,8 +2136,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -2178,7 +2161,6 @@
 					Foundation,
 					"-framework",
 					AppKit,
-					"-lQtCollider",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = "";
@@ -2246,8 +2228,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -2269,7 +2249,6 @@
 					"-Wstrict-aliasing",
 				);
 				OTHER_LDFLAGS = (
-					"-lQtCollider",
 					"-framework",
 					Foundation,
 					"-framework",
@@ -2292,12 +2271,10 @@
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					SC_QT,
 					"USE_SC_TERMINAL_CLIENT=1",
 					HAVE_SPEECH,
 					"$(inherited)",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
@@ -2312,7 +2289,6 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				OTHER_CFLAGS = "$(inherited)";
-				OTHER_LDFLAGS = "-lQtCollider";
 				PRODUCT_NAME = sclang;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
@@ -2331,8 +2307,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = "";
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -2354,7 +2328,6 @@
 					"-Wstrict-aliasing",
 				);
 				OTHER_LDFLAGS = (
-					"-lQtCollider",
 					"-framework",
 					Foundation,
 					"-framework",
