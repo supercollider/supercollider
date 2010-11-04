@@ -10,20 +10,28 @@ if(SNDFILE_INCLUDE_DIR)
     set(SNDFILE_FIND_QUIETLY TRUE)
 endif(SNDFILE_INCLUDE_DIR)
 
-find_path(SNDFILE_INCLUDE_DIR sndfile.h)
+if (APPLE)
+	set(SNDFILE_FOUND TRUE)
+	set(SNDFILE_INCLUDE_DIR ../include/libsndfile)
+	set(SNDFILE_LIBRARIES ${CMAKE_SOURCE_DIR}/mac/lib/scUBlibsndfile.a)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -isystem ${CMAKE_SOURCE_DIR}/common/include/libsndfile")
 
-find_library(SNDFILE_LIBRARY NAMES sndfile)
+else()
+	find_path(SNDFILE_INCLUDE_DIR sndfile.h)
 
-# Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if
-# all listed variables are TRUE.
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SNDFILE DEFAULT_MSG
-    SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
+	find_library(SNDFILE_LIBRARY NAMES sndfile)
 
-if(SNDFILE_FOUND)
-  set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
-else(SNDFILE_FOUND)
-  set(SNDFILE_LIBRARIES)
-endif(SNDFILE_FOUND)
+	# Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if
+	# all listed variables are TRUE.
+	include(FindPackageHandleStandardArgs)
+	find_package_handle_standard_args(SNDFILE DEFAULT_MSG
+		SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
 
-mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
+	if(SNDFILE_FOUND)
+		set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
+	else(SNDFILE_FOUND)
+		set(SNDFILE_LIBRARIES)
+	endif(SNDFILE_FOUND)
+
+	mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
+endif()

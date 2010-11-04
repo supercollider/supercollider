@@ -6,6 +6,7 @@ if (NOT APPLE)
 		message(SEND_ERROR "Cannot find libfftw3f")
 	endif()
 endif()
+find_package(Sndfile)
 
 include_directories(../../Headers/plugin_interface
 					../../Headers/common
@@ -18,6 +19,21 @@ if (NOVA_SIMD)
 				APPEND
 				PROPERTY COMPILE_DEFINITIONS NOVA_SIMD)
 endif()
+
+# large file support
+if (CMAKE_SIZEOF_VOID_P MATCHES "4")
+	execute_process(COMMAND getconf LFS_CFLAGS
+		OUTPUT_VARIABLE LFS_CFLAGS
+		ERROR_QUIET
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+elseif(CMAKE_SIZEOF_VOID_P MATCHES "8")
+	execute_process(COMMAND getconf LFS64_CFLAGS
+		OUTPUT_VARIABLE LFS_CFLAGS
+		ERROR_QUIET
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LFS_CFLAGS}")
 
 set(plugin_sources
 	BinaryOpUGens.cpp
@@ -47,6 +63,9 @@ set(plugin_sources
 set(plugins "")
 
 set(CMAKE_SHARED_MODULE_PREFIX "")
+if(APPLE)
+	set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
+endif()
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-finite-math-only")
@@ -97,26 +116,40 @@ add_library(DiskIO_UGens MODULE
 			DiskIO_UGens.cpp
 			../server/SC_SyncCondition.cpp)
 
-target_link_libraries(DiskIO_UGens ${SNDFILE} m pthread)
+if(SNDFILE_FOUND)
+	include_directories(${SNDFILE_INCLUDE_DIR})
+	target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} m pthread)
+	list(APPEND plugins DiskIO_UGens)
+else()
+	message(SEND_ERROR "Cannot find libsndfile")
+endif(SNDFILE_FOUND)
 
 set(fft_ugens FFT_UGens PV_ThirdParty ML_UGens)
 list(APPEND plugins FFT_UGens PV_ThirdParty ML_UGens)
 
-include_directories (${FFTW3F_INCLUDE_DIR})
+if (FFTW3F_FOUND)
+	include_directories (${FFTW3F_INCLUDE_DIR})
+endif()
 
 foreach(ugen ${fft_ugens})
-	set_property(TARGET ${ugen}
-					APPEND
-					PROPERTY COMPILE_DEFINITIONS SC_FFT_FFTW)
+	#set_property(TARGET ${ugen}
+	#				APPEND
+	#				PROPERTY COMPILE_DEFINITIONS SC_FFT_GREEN)
 
 	target_link_libraries(${ugen} m)
 
 	if (FFTW3F_FOUND)
 		target_link_libraries(${ugen} ${FFTW3F_LIBRARY})
+		set_property(TARGET ${ugen}
+						APPEND
+						PROPERTY COMPILE_DEFINITIONS SC_FFT_FFTW)
 	endif()
 
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")
+		set_property(TARGET ${ugen}
+						APPEND
+						PROPERTY COMPILE_DEFINITIONS SC_FFT_VDSP)
 	endif()
 
 endforeach()

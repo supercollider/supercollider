@@ -122,25 +122,25 @@ protected:
 
 private:
 	// language interface
-	PyrObject*			m_obj;
+	PyrObject*		m_obj;
 
 	volatile bool		m_dodone;
 
 	// serial interface
-	Options				m_options;
-	int					m_fd;
+	Options			m_options;
+	int			m_fd;
 	volatile bool		m_open;
 	struct termios		m_termio;
 	struct termios		m_oldtermio;
 
 	// rx buffers
-	int					m_rxErrors[2];
-	FIFO				m_rxfifo;
-	uint8_t				m_rxbuffer[kBufferSize];
+	int			m_rxErrors[2];
+	FIFO			m_rxfifo;
+	uint8_t			m_rxbuffer[kBufferSize];
 
 	// rx thread
 	volatile bool		m_running;
-	pthread_t			m_thread;
+	pthread_t		m_thread;
 };
 
 PyrSymbol* SerialPort::s_dataAvailable = 0;
@@ -347,24 +347,31 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 SerialPort::~SerialPort()
 {
 	m_running = false;
-	m_open = false;
-	pthread_join(m_thread, 0);
-}
-
-void SerialPort::stop(){
-  m_running = false;
-}
-
-void SerialPort::cleanup(){
-	m_running = false;
-	m_dodone = false;
-/*	if ( m_open ){
+//	m_open = false;
+	pthread_mutex_unlock (&gLangMutex);
+	if ( m_open ){
 		tcflush(m_fd, TCIOFLUSH);
 		tcsetattr(m_fd, TCSANOW, &m_oldtermio);
 		close(m_fd);
 		m_open = false;
 	};
-*/
+	pthread_join(m_thread, 0);
+	pthread_mutex_lock (&gLangMutex);
+}
+
+void SerialPort::stop(){
+	m_running = false;
+}
+
+void SerialPort::cleanup(){
+	m_running = false;
+	m_dodone = false;
+	if ( m_open ){
+		tcflush(m_fd, TCIOFLUSH);
+		tcsetattr(m_fd, TCSANOW, &m_oldtermio);
+		close(m_fd);
+		m_open = false;
+	};
 }
 
 bool SerialPort::put(uint8_t byte)
@@ -398,6 +405,10 @@ void* SerialPort::threadFunc(void* self)
 void SerialPort::dataAvailable()
 {
 	pthread_mutex_lock (&gLangMutex);
+	if (!m_running) {
+		pthread_mutex_unlock (&gLangMutex);
+		return;
+	}
 	PyrSymbol *method = s_dataAvailable;
 	if (m_obj) {
 		VMGlobals *g = gMainVMGlobals;
@@ -425,86 +436,86 @@ void SerialPort::doneAction()
 
 void SerialPort::threadLoop()
 {
-	const int fd = m_fd;
-	const int max_fd = fd+1;
+  const int fd = m_fd;
+  const int max_fd = fd+1;
+  
+  m_running = true;
+  m_rxErrors[1] = 0;
+	
+  while (true) {
+    fd_set rfds;
+    
+    FD_ZERO(   &rfds);
+    FD_SET(fd, &rfds);
+    
+    struct timeval timeout;
+    timeout.tv_sec = kReadTimeoutMs/1000;
+    timeout.tv_usec = (kReadTimeoutMs%1000)*1000;
 
-	m_running = true;
-	m_rxErrors[1] = 0;
-
-	while (true) {
-		fd_set rfds;
-
-		FD_ZERO(   &rfds);
-		FD_SET(fd, &rfds);
-
-		struct timeval timeout;
-		timeout.tv_sec = kReadTimeoutMs/1000;
-		timeout.tv_usec = (kReadTimeoutMs%1000)*1000;
-
-		int n = select(max_fd, &rfds, 0, 0, &timeout);
-// 		int fdset = FD_ISSET(fd, &rfds);
-// 		printf( "fdset %i, n %i, errno %i\n", fdset, n, errno );
-		if ( m_open ){
-			if ((n > 0) && FD_ISSET(fd, &rfds)) {
-	// 				printf("poll input\n");
-				int nr = 0;
-				while (true) {
-					if ( m_open ){
-						int n2 = read(fd, m_rxbuffer, kBufferSize);
-		//  					printf("read %d, errno %i, errbadf %i, %i, %i\n", n2, errno, EBADF, EAGAIN, EIO);
-						if (n2 > 0) {
-							// write data to ringbuffer
-							for (int i=0; i < n2; ++i) {
-								if (!m_rxfifo.Put(m_rxbuffer[i])) {
-									m_rxErrors[1]++;
-									break;
-								}
-							}
-							nr += n2;
-						} else if ((n2 == 0) && (n == 1) ) { // added by nescivi, to check for disconnected device. In this case the read is 0 all the time and otherwise eats up the CPU
-		// 					printf( "done\n" );
-							goto done;
-						} else if ((n2 == 0) || ((n2 == -1) && (errno == EAGAIN))) {
-		// 					printf( "break\n");
-							break;
-						} else {
-		#ifndef NDEBUG
-							printf("SerialPort HUP\n");
-		#endif
-							goto done;
-						}
-					}
-				}
-				if (!m_running) {
-					// close and cleanup
-					goto done;
-				}
-				if (nr > 0) {
-					dataAvailable();
-				}
-			} else if (n == -1) {
-				goto done;
-			}
-		}
-		if (!m_running) {
-			// close and cleanup
-				goto done;
-		}
+    int n = select(max_fd, &rfds, 0, 0, &timeout);
+    // 	int fdset = FD_ISSET(fd, &rfds);
+    // 	printf( "fdset %i, n %i, errno %i\n", fdset, n, errno );
+    if ( m_open ){
+      if ((n > 0) && FD_ISSET(fd, &rfds)) {
+	// printf("poll input\n");
+	int nr = 0;
+	// while (true) {
+	if ( m_open ){
+	  int n2 = read(fd, m_rxbuffer, kBufferSize);
+	  //  printf("read %d, errno %i, errbadf %i, %i, %i\n", n2, errno, EBADF, EAGAIN, EIO);
+	  if (n2 > 0) {
+	    // write data to ringbuffer
+	    for (int i=0; i < n2; ++i) {
+	      if (!m_rxfifo.Put(m_rxbuffer[i])) {
+		m_rxErrors[1]++;
+		break;
+	      }
+	    }
+	    nr += n2;
+	  } else if ((n2 == 0) && (n == 1) ) { // added by nescivi, to check for disconnected device. In this case the read is 0 all the time and otherwise eats up the CPU
+	    //	printf( "done\n" );
+	    goto done;
+	  } else if ((n2 == 0) || ((n2 == -1) && (errno == EAGAIN))) {
+	    //	printf( "break\n");
+	    break;
+	  } else {
+#ifndef NDEBUG
+	    printf("SerialPort HUP\n");
+#endif
+	    goto done;
+	  }
 	}
+	//}
+	if (!m_running) {
+	  // close and cleanup
+	  goto done;
+	}
+	if (nr > 0) {
+	  dataAvailable();
+	}
+      } else if (n == -1) {
+	goto done;
+      }
+    }
+    if (!m_running) {
+      // close and cleanup
+      goto done;
+    }
+  }
 
 done:
-	// doneAction();
-	if ( m_open ){
-		tcflush(fd, TCIOFLUSH);
-		tcsetattr(fd, TCSANOW, &m_oldtermio);
-		close(fd);
-	};
-	m_open = false;
-	m_running = false;
-	if ( m_dodone )
-		{ doneAction(); }
+  // doneAction();
+  if ( m_open ){
+    tcflush(fd, TCIOFLUSH);
+    tcsetattr(fd, TCSANOW, &m_oldtermio);
+    close(fd);
+  };
+  m_open = false;
+  m_running = false;
+  if ( m_dodone )
+    { doneAction(); }
 #ifndef NDEBUG
-	printf("SerialPort closed\n");
+  printf("SerialPort closed\n");
 #endif
 }
 
@@ -525,11 +536,13 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	int err;
 
 	PyrSlot* self = args+0;
+
 	if (getSerialPort(self) != 0)
 		return errFailed;
 
 	char portName[PATH_MAX];
 	err = slotStrVal(args+1, portName, sizeof(portName));
+	printf("portName %s\n", portName);
 	if (err) return err;
 
 	SerialPort::Options options;
@@ -585,8 +598,6 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot* self = g->sp;
 	SerialPort* port = (SerialPort*)getSerialPort(self);
 
-// 	printf("SerialPort Cleanup %i\n", port);
-
 	if (port == 0) return errFailed;
 
 	port->cleanup();
@@ -602,6 +613,7 @@ static int prSerialPort_Next(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
 	SerialPort* port = (SerialPort*)getSerialPort(self);
+//	printf( "port %i", port );
 	if (port == 0) return errFailed;
 
 	uint8_t byte;

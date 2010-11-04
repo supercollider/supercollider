@@ -1,14 +1,24 @@
 include_directories(../../Headers/lang
 	LangSource/Bison)
 
-find_package(ALSA)
-find_package(Readline)
-find_package(ICU)
-find_package(Sndfile)
-
-if (NOT ICU_FOUND)
-	message(SEND_ERROR "cannot find ICU")
+if(APPLE)
+	include_directories(../../include/icu
+		LangPrimSource/HID_Utilities)
+else()
+	find_package(ALSA)
+	find_package(ICU)
+	if (NOT ICU_FOUND)
+		message(SEND_ERROR "cannot find ICU")
+	endif()
 endif()
+
+if(APPLE)
+	# apple bundles an old nongpl readline so we say no even though it is usually detectable
+	set(READLINE_FOUND false)
+else()
+	find_package(Readline)
+endif()
+find_package(Sndfile)
 
 if (SC_QT)
   add_definitions( -DSC_QT )
@@ -62,7 +72,16 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 if(UNIX)
 	if(APPLE)
-		list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
+		list(APPEND sclang_sources
+			LangPrimSource/WiiMote_OSX/wiiremote.c
+			LangPrimSource/SC_HID.cpp
+			LangPrimSource/HID_Utilities/HID_Utilities.c
+			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
+			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
+			LangPrimSource/HID_Utilities/HID_Error_Handler.c
+			LangPrimSource/SC_CoreMIDI.cpp
+			LangPrimSource/SC_CoreAudioPrim.cpp
+			)
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
@@ -102,8 +121,22 @@ if(READLINE_FOUND)
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
 
-include_directories(${ICU_INCLUDE_DIRS})
-target_link_libraries(libsclang ${ICU_LIBRARIES} ${ICU_I18N_LIBRARIES})
+if (ICU_FOUND)
+	include_directories(${ICU_INCLUDE_DIRS})
+	target_link_libraries(libsclang ${ICU_LIBRARIES} ${ICU_I18N_LIBRARIES})
+else()
+	if (APPLE)
+		target_link_libraries(libsclang icucore)
+	endif()
+endif()
+
+if (APPLE)
+	target_link_libraries(libsclang "-framework Carbon")
+	target_link_libraries(libsclang "-framework CoreAudio")
+	target_link_libraries(libsclang "-framework CoreMidi")
+	target_link_libraries(libsclang "-framework IOBluetooth")
+	target_link_libraries(libsclang "-framework IOKit")
+endif()
 
 if(ALSA_FOUND)
 	message(STATUS "Compiling with ALSA midi support")
