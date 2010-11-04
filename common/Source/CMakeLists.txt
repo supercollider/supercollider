@@ -7,7 +7,7 @@ if (NOVA_SIMD)
 endif()
 
 if(CURL)
-	find_package(Curl)
+	find_package(CURL)
 	if(CURL_FOUND)
 		add_definitions("-DHAVE_CURL")
 		include_directories(${CURL_INCLUDE_DIRS})

@@ -16,7 +16,6 @@ if (APPLE)
 endif()
 
 if(CURL)
-	find_package(Curl)
 	if(CURL_FOUND)
 		target_link_libraries(sccommon ${CURL_LIBRARIES})
 	endif()

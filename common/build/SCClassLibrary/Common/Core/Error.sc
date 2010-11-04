@@ -3,7 +3,7 @@ Exception {
 	classvar <>handling = false;
 	classvar <>debug = false;
 
-	var <>what, <>backtrace;
+	var <>what, <>backtrace, <>path;
 
 	*new { arg what;
 		var backtrace;
@@ -24,6 +24,9 @@ Error : Exception {
 	errorString {
 		^"ERROR: " ++ what
 	}
+	errorPathString {
+		^if(path.isNil) { "" } { "PATH:" + path ++ "\n" }
+	}
 }
 
 MethodError : Error {
@@ -36,6 +39,7 @@ MethodError : Error {
 		this.errorString.postln;
 		"RECEIVER:\n".post;
 		receiver.dump;
+		this.errorPathString.post;
 		this.dumpBackTrace;
 	}
 }
@@ -48,7 +52,7 @@ PrimitiveFailedError : MethodError {
 			.failedPrimitiveName_(thisThread.failedPrimitiveName)
 	}
 	errorString {
-		^"ERROR: Primitive '" ++ failedPrimitiveName ++ "' failed.\n" ++ what
+		^"ERROR: Primitive '%' failed.\n%".format(failedPrimitiveName, what ? "")
 	}
 }
 
@@ -89,6 +93,7 @@ DoesNotUnderstandError : MethodError {
 		receiver.dump;
 		"ARGS:\n".post;
 		args.dumpAll;
+		this.errorPathString.post;
 		this.dumpBackTrace;
 	}
 }

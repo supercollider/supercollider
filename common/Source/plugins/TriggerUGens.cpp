@@ -805,7 +805,7 @@ void SendReply_Ctor(SendReply *unit)
 	unit->m_valueOffset = kVarOffset + unit->m_cmdNameSize;
 	unit->m_values = (float*)RTAlloc(unit->mWorld, unit->m_valueSize * sizeof(float));
 
-	if (INRATE(kVarOffset) == calc_FullRate) {
+	if (INRATE(0) == calc_FullRate) {
 		SETCALC(SendReply_next_aka);
 	} else {
 		SETCALC(SendReply_next);
@@ -851,7 +851,8 @@ void SendReply_next_aka(SendReply *unit, int inNumSamples)
 		float curtrig = trig[j];
 		if (curtrig > 0.f && prevtrig <= 0.f) {
 			for(int i=0; i<valueSize; i++) {
-				values[i] = IN(i + valueOffset)[j];
+				int offset = INRATE( i + valueOffset ) != calc_FullRate ? 0 : j;
+				values[i] = IN(i + valueOffset)[offset];
 			}
 			SendNodeReply(&unit->mParent->mNode, (int)ZIN0(1), unit->m_cmdName, unit->m_valueSize, values);
 		}
