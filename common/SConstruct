@@ -36,8 +36,6 @@ import platform   # Seems to have more portable uname() than os
 
 PACKAGE = 'SuperCollider'
 
-
-
 f = open('../VERSION')
 VERSION = f.readline()
 f.close()
@@ -389,8 +387,12 @@ if PLATFORM == 'linux':
 	env['amd64'] = 'x86_64' in platform.uname()
 	if env['amd64']:
 		print "we are on amd64 linux"
-
-
+        # include libc-macro to include LFS-support on non-64-bit:
+        if not env['amd64']:
+            lfs_cflags = os.popen("getconf LFS_CFLAGS").read()[:-1]
+            for flag in lfs_cflags.split():
+                env.Append(CPPDEFINES = flag)
+  
 # ======================================================================
 # installation directories
 # ======================================================================
