@@ -34,6 +34,9 @@ else()
 	option(SC_EL "Build emacs-based IDE." OFF)
 endif()
 
+option(SC_ED "Build gedit-based IDE." OFF)
+option(SC_VIM "Build vim-based IDE." OFF)
+
 option(SCLANG_SERVER "Build with internal server." ON)
 
 add_subdirectory(common/Source)
@@ -41,4 +44,12 @@ add_subdirectory(common/build)
 
 if(SC_EL)
 	add_subdirectory(editors/scel)
+endif()
+
+if(SC_ED)
+	add_subdirectory(editors/sced)
+endif()
+
+if(SC_VIM)
+	add_subdirectory(editors/scvim)
 endif()

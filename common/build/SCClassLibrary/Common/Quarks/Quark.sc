@@ -17,11 +17,10 @@ QuarkDependency
 		^this.newCopyArgs(name, version, repos)
 	}
 	== { arg that;
-		^that respondsTo: #[name, version]
-			and: {(that.isKindOf(QuarkDependency))
-			and: {this.name  == that.name}
-			and: {this.version  == that.version}
-		}
+		^this.compareObject(that, [\name, \version])
+	}
+	hash { arg that;
+		^this.instVarHash([\name, \version])
 	}
 	asQuark { |parentQuarks|
 		parentQuarks = parentQuarks ? Quarks.global;
@@ -53,6 +52,13 @@ Quark
 		if (blob.isNil or: { blob.isKindOf(IdentityDictionary).not }) {
 			Error("invalid quark").throw;
 		};
+		^this.new(blob, parent)
+	}
+	*fromPath { |path, parent| // if no blob exists, make a generic one
+		var blob = (
+			name: path.basename.splitext,
+			path: path
+		);
 		^this.new(blob, parent)
 	}
 	*new { | blob, parent |
@@ -148,7 +154,11 @@ Quark
 		this.longDesc.postln;
 	}
 	== { arg that;
-		^this.compareObject(that,[\name, \summary, \version, \author, \dependencies, \tags, \path]);
+		^this.compareObject(that,
+			[\name, \summary, \version, \author, \dependencies, \tags, \path]);
+	}
+	hash { arg that;
+		^this.instVarHash([\name, \summary, \version, \author, \dependencies, \tags, \path]);
 	}
 	dependencies { |recursive = false, knownList|
 		var deps, quark, selfasdep;
