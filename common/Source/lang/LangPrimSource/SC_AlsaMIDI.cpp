@@ -239,33 +239,33 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				break;
 			// system realtime events
 			case SND_SEQ_EVENT_CLOCK:			// clock
-				++g->sp; SetInt(g->sp, 0);
 				++g->sp; SetInt(g->sp, 0x8);
+				++g->sp; SetInt(g->sp, 0);
 				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
 			case SND_SEQ_EVENT_START:			// start
-				++g->sp; SetInt(g->sp, 0);
 				++g->sp; SetInt(g->sp, 0xA);
+				++g->sp; SetInt(g->sp, 0);
 				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
 			case SND_SEQ_EVENT_CONTINUE:		// continue
-				++g->sp; SetInt(g->sp, 0);
 				++g->sp; SetInt(g->sp, 0xB);
+				++g->sp; SetInt(g->sp, 0);
 				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
 			case SND_SEQ_EVENT_STOP:			// stop
-				++g->sp; SetInt(g->sp, 0);
 				++g->sp; SetInt(g->sp, 0xC);
+				++g->sp; SetInt(g->sp, 0);
 				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
 			case SND_SEQ_EVENT_SENSING:			// active sensing
-				++g->sp; SetInt(g->sp, 0);
 				++g->sp; SetInt(g->sp, 0xE);
+				++g->sp; SetInt(g->sp, 0);
 				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
 			case SND_SEQ_EVENT_RESET:			// system reset
-				++g->sp; SetInt(g->sp, 0);
 				++g->sp; SetInt(g->sp, 0xF);
+				++g->sp; SetInt(g->sp, 0);
 				runInterpreter(g, s_midiSysrtAction, 4);
 				break;
 			// sysex events

@@ -53,7 +53,7 @@ JITGui {
 		);
 	}
 
-	*new { |object, numItems = 0, parent, bounds, makeSkip = true, options = #[]| 
+	*new { |object, numItems = (0), parent, bounds, makeSkip = true, options = #[]| 
 		^super.newCopyArgs(nil, numItems, parent, bounds)
 			.init(makeSkip, options)
 			.object_(object);

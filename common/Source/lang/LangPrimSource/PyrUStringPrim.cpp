@@ -49,11 +49,8 @@ struct SCRegExRegion {
 };
 typedef struct SCRegExRegion SCRegExRegion;
 
-int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed);
-int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
+static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 {
-	int err;
-
 	PyrSlot *a = g->sp - 2; // source string
 	PyrSlot *b = g->sp - 1; // pattern
 	PyrSlot *c = g->sp;     // offset
@@ -65,7 +62,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int stringsize = slotRawObject(a)->size + 1;
 	int patternsize =  slotRawObject(b)->size + 1;
 	char *string = (char*)malloc(slotRawObject(a)->size + 1);
-	err = slotStrVal(a, string, slotRawObject(a)->size + 1);
+	int err = slotStrVal(a, string, slotRawObject(a)->size + 1);
 	if (err){
 		free(string);
 		return err;
@@ -73,30 +70,24 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	char *pattern = (char*)malloc(slotRawObject(b)->size + 1);
 	err = slotStrVal(b, pattern, slotRawObject(b)->size + 1);
 	if (err) return err;
-	UParseError uerr;
 	UErrorCode status = (UErrorCode)0;
-	UChar *regexStr;
-	UChar *ustring;
 
-	regexStr =  (UChar*)malloc((patternsize)*sizeof(UChar));
+	UChar *regexStr =  (UChar*)malloc((patternsize)*sizeof(UChar));
 	u_charsToUChars (pattern, regexStr, patternsize);
 
-	ustring =  (UChar*)malloc((stringsize)*sizeof(UChar));
+	UChar *ustring =  (UChar*)malloc((stringsize)*sizeof(UChar));
 	u_charsToUChars (string+offset, ustring, stringsize-offset);
 
-
 	unsigned flags = UREGEX_MULTILINE;
-	int groupNumber = 0;
-	SCRegExRegion * what;
-	int indx = 0;
-	int size = 0;
 
+	UParseError uerr;
 	URegularExpression *expression = uregex_open(regexStr, -1, flags, &uerr, &status);
-	if(U_FAILURE(status)) goto nilout;
 
-	 if(!U_FAILURE(status)) {
+	if(!U_FAILURE(status)) {
+		int indx = 0;
+		int size = 0;
 		uregex_setText(expression, ustring, -1, &status);
-		what =  (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
+		SCRegExRegion * what = (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
 		for(int i=0; i< maxfind; i++)
 		{
 			SCRegExRegion range;
@@ -109,7 +100,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 //		post("groups: %i\n", groups);
 		while (uregex_findNext(expression, &status) && size<maxfind)
 		{
-			if(U_FAILURE(status)) return errNone;
+			if(U_FAILURE(status)) goto nilout;
 
 			for(int i=0; i< groups; ++i){
 				what[size].group = i;
@@ -134,9 +125,7 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				{
 					result_array->size++;
 					SetNil(result_array->slots+i);
-				}
-				else
-				{
+				} else {
 					result_array->size++;
 
 					int match_start =  what[i].start;
@@ -153,39 +142,35 @@ int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 					PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
 					SetObject(array->slots+1, matched_string);
-					g->gc->GCWrite(matched_string, array->slots + 1);
+					g->gc->GCWrite(array, matched_string);
 
 					SetObject(result_array->slots + i, array);
-					g->gc->GCWrite(array, result_array->slots + i);
+					g->gc->GCWrite(result_array, array);
 				}
 			}
 		}
 		else
-		{
 			SetNil(a);
-		}
-		 free(what);
-		 free(pattern);
-		 free(regexStr);
-		 free(ustring);
-		 free(string);
+
+		free(what);
+		free(pattern);
+		free(regexStr);
+		free(ustring);
+		free(string);
 		SetObject(a, result_array);
-		g->gc->GCWrite(result_array,a);
 		//uregex_close(expression);
 		return errNone;
 	}
 
-		nilout:
-			free(string);
-			free(what);
-			free(pattern);
-			free(regexStr);
-			free(ustring);
-			SetNil(a);
-			return errNone;
+nilout:
+	free(string);
+	free(pattern);
+	free(regexStr);
+	free(ustring);
+	SetNil(a);
+	return errFailed;
 }
 
-void initUStringPrimitives();
 void initUStringPrimitives()
 {
 	int base, index = 0;
@@ -193,10 +178,9 @@ void initUStringPrimitives()
 	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
 }
 
-#else // !SC_DARWIN
-void initUStringPrimitives();
+#else
 void initUStringPrimitives()
 {
-	//other platforms? - icu should be running on linux too
+	//other platforms?
 }
-#endif // SC_DARWIN
+#endif
