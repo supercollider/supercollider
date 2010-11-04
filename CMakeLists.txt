@@ -18,6 +18,13 @@ if(APPLE)
 	set_property(DIRECTORY
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
+
+	exec_program(${CMAKE_C_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
+	if ("${_gcc_version_info}" MATCHES "Apple")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpascal-strings")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fpascal-strings")
+	endif()
+
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set_property(DIRECTORY
 	APPEND
