@@ -248,6 +248,7 @@ inline int slotRawChar(PyrSlot *slot)
 
 inline int slotRawInt(PyrSlot *slot)
 {
+	assert(IsInt(slot));
 	return slot->u.i;
 }
 
