@@ -81,11 +81,6 @@ static int sendMIDISysex(int port, int destId, int length, uint8* data);
 // Platform declarations (ALSA)
 // =====================================================================
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
-
-#if HAVE_ALSA
 #include <alsa/asoundlib.h>
 #include <pthread.h>
 #include <vector>
@@ -809,73 +804,6 @@ int sendMIDISysex(int port, int uid, int length, uint8* data)
 	snd_seq_ev_set_variable(&evt, length, data);
 	return gMIDIClient.sendEvent(port, uid, &evt, 0.f);
 }
-#endif // HAVE_ALSA
-
-// =====================================================================
-// Platform implementation (fallback)
-// =====================================================================
-
-#if !HAVE_ALSA
-int initMIDI(int numIn, int numOut)
-{
-	return errNone;
-}
-
-int initMIDIClient()
-{
-	return errNone;
-}
-
-int disposeMIDI()
-{
-	return errNone;
-}
-
-int restartMIDI()
-{
-	return errNone;
-}
-
-void cleanUpMIDI()
-{
-}
-
-int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* dst)
-{
-	SetNil(dst);
-    return errNone;
-}
-
-int connectMIDIIn(int inputIndex, int uid)
-{
-	return errNone;
-}
-
-int disconnectMIDIIn(int inputIndex, int uid)
-{
-	return errNone;
-}
-
-int connectMIDIOut(int inputIndex, int uid)
-{
-	return errNone;
-}
-
-int disconnectMIDIOut(int inputIndex, int uid)
-{
-	return errNone;
-}
-
-int sendMIDI(int port, int destId, int length, int hiStatus, int loStatus, int aval, int bval, float late)
-{
-	return errNone;
-}
-
-int sendMIDISysex(int port, int destId, int length, uint8* data)
-{
-	return errNone;
-}
-#endif // !HAVE_ALSA
 
 // =====================================================================
 // Primitives
@@ -1001,12 +929,12 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *his = g->sp - 4;
 	PyrSlot *los = g->sp - 3;
 
-    PyrSlot *a = g->sp - 2;
+	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
-    PyrSlot *plat = g->sp;
+	PyrSlot *plat = g->sp;
 
 	int err, outputIndex, uid, length, hiStatus, loStatus, aval, bval;
-    float late;
+	float late;
 	err = slotIntVal(p, &outputIndex);
 	if (err) return err;
 
@@ -1019,25 +947,25 @@ int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(his, &hiStatus);
 	if (err) return err;
 
-    err = slotIntVal(los, &loStatus);
+	err = slotIntVal(los, &loStatus);
 	if (err) return err;
 
-    err = slotIntVal(a, &aval);
+	err = slotIntVal(a, &aval);
 	if (err) return err;
 
 	err = slotIntVal(b, &bval);
 	if (err) return err;
 
-    err = slotFloatVal(plat, &late);
+	err = slotFloatVal(plat, &late);
 	if (err) return err;
 
-    return sendMIDI(outputIndex, uid, length, hiStatus, loStatus, aval, bval, late);
+	return sendMIDI(outputIndex, uid, length, hiStatus, loStatus, aval, bval, late);
 }
 
 int prSendSysex(VMGlobals *g, int numArgsPushed);
 int prSendSysex(VMGlobals *g, int numArgsPushed)
 {
-    int err, uid, outputIndex;
+	int err, uid, outputIndex;
 	PyrInt8Array* packet;
 
 	// rcvr, uid, packet
@@ -1046,13 +974,13 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(slotRawObject(args)->slots + g_ivx_MIDIOut_port, &outputIndex);
 	if (err) return err;
 
-    err = slotIntVal(args+1, &uid);
-    if (err) return err;
+	err = slotIntVal(args+1, &uid);
+	if (err) return err;
 
 	if( !isKindOfSlot(args+2, s_int8array->u.classobj) )
 		return errWrongType;
 
-    packet = slotRawInt8Array(&args[2]);
+	packet = slotRawInt8Array(&args[2]);
 
 	return sendMIDISysex(outputIndex, uid, packet->size, packet->b);
 }
@@ -1066,17 +994,17 @@ void initMIDIPrimitives()
 
 	s_midiin = getsym("MIDIIn");
 
-    s_domidiaction = getsym("doAction");
-    s_midiNoteOnAction = getsym("doNoteOnAction");
-    s_midiNoteOffAction = getsym("doNoteOffAction");
-    s_midiTouchAction = getsym("doTouchAction");
-    s_midiControlAction = getsym("doControlAction");
-    s_midiPolyTouchAction = getsym("doPolyTouchAction");
-    s_midiProgramAction = getsym("doProgramAction");
-    s_midiBendAction = getsym("doBendAction");
-    s_midiSysexAction = getsym("doSysexAction");
-    s_midiSysrtAction = getsym("doSysrtAction");
-    s_midiSMPTEAction = getsym("doSMPTEaction");
+	s_domidiaction = getsym("doAction");
+	s_midiNoteOnAction = getsym("doNoteOnAction");
+	s_midiNoteOffAction = getsym("doNoteOffAction");
+	s_midiTouchAction = getsym("doTouchAction");
+	s_midiControlAction = getsym("doControlAction");
+	s_midiPolyTouchAction = getsym("doPolyTouchAction");
+	s_midiProgramAction = getsym("doProgramAction");
+	s_midiBendAction = getsym("doBendAction");
+	s_midiSysexAction = getsym("doSysexAction");
+	s_midiSysrtAction = getsym("doSysrtAction");
+	s_midiSMPTEAction = getsym("doSMPTEaction");
 
 	g_ivx_MIDIOut_port = instVarOffset("MIDIOut", "port");
 
@@ -1091,10 +1019,10 @@ void initMIDIPrimitives()
 	definePrimitive(base, index++, "_ConnectMIDIOut", prConnectMIDIOut, 3, 0);
 	definePrimitive(base, index++, "_DisconnectMIDIOut", prDisconnectMIDIOut, 3, 0);
 
-    definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
+	definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
 	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0); // MIDIOut.sysex patch 2007-01-16
 
-    cleanUpMIDI();
+	cleanUpMIDI();
 }
 
 // EOF

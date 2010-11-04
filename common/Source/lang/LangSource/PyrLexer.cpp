@@ -2245,7 +2245,11 @@ bool compileLibrary()
 
 	totalByteCodes = 0;
 
-	postfl("compiling class library..\n");
+#ifdef NDEBUG
+	postfl("compiling class library...\n");
+#else
+	postfl("compiling class library (debug build)...\n");
+#endif
 
 	bool res = passOne();
 	if (res) {

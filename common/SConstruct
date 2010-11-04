@@ -1111,9 +1111,6 @@ if features['midiapi']:
                 libsclangSources += ['Source/lang/LangPrimSource/SC_CoreMIDI.cpp']
     else:
                 libsclangSources += ['Source/lang/LangPrimSource/SC_AlsaMIDI.cpp']
-else:
-    # fallback implementation
-    libsclangSources += ['Source/lang/LangPrimSource/SC_AlsaMIDI.cpp']
 
 if PLATFORM == 'darwin':
     langEnv.Append(
