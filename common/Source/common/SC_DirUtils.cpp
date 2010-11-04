@@ -177,7 +177,7 @@ bool sc_SkipDirectory(const char *name)
 void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length)
 {
 	isAlias = false;
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(SC_IPHONE)
 	FSRef dirRef;
 	OSStatus osStatusErr = FSPathMakeRef ((const UInt8 *) path, &dirRef, NULL);
 	if ( !osStatusErr ) {
@@ -211,7 +211,7 @@ void sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int le
 
 // Support for Bundles
 
-#if defined(__APPLE__)	// running on OS X
+#if defined(__APPLE__) && !defined(SC_IPHONE)	// running on OS X
 
 // Support for stand-alone applications
 
@@ -285,7 +285,7 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 	strncpy(str,
 #if defined(SC_DATA_DIR)
 			SC_DATA_DIR,
-#elif SC_IPHONE
+#elif defined(SC_IPHONE)
 			"/",
 #elif defined(__APPLE__)
 			"/Library/Application Support/SuperCollider",
@@ -307,7 +307,7 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 
 	snprintf(str,
 			 size,
-#if SC_IPHONE
+#if defined(SC_IPHONE)
 			"%s/Documents",
 #elif defined(__APPLE__)
 			 "%s/Library/Application Support/SuperCollider",

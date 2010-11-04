@@ -121,16 +121,16 @@ public:
 		for(;;) {
 			T *item = mItems[index];
 			if (!item) return index;
-                        if (GetHash(item) == inHashID
-                            && strcmp(inKey, GetKey(item)) == 0) return index;
+			if (GetHash(item) == inHashID
+				&& strcmp(inKey, GetKey(item)) == 0) return index;
 			index = (index + 1) & mHashMask;
 		}
 	}
 
 	T* Get(KeyType inKey) const
-        {
-            return Get(Hash(inKey), inKey);
-        }
+	{
+		return Get(Hash(inKey), inKey);
+	}
 
 	T* Get(int32 inHashID, KeyType inKey) const
 	{
@@ -226,16 +226,16 @@ public:
 		for(;;) {
 			T *item = mItems[index];
 			if (!item) return index;
-                        if (GetHash(item) == inHashID
-                            && strcmp(inKey, GetKey(item)) == 0) return index;
+			if (GetHash(item) == inHashID
+				&& strcmp(inKey, GetKey(item)) == 0) return index;
 			index = (index + 1) & mHashMask;
 		}
 	}
 
 	T* Get(KeyType inKey) const
-        {
-            return Get(Hash(inKey), inKey);
-        }
+	{
+		return Get(Hash(inKey), inKey);
+	}
 
 	T* Get(int32 inHashID, KeyType inKey) const
 	{

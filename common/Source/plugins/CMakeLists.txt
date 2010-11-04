@@ -176,6 +176,15 @@ elseif (APPLE)
 				PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
 endif()
 
-install(TARGETS ${plugins}
-		DESTINATION "lib/SuperCollider/plugins"
-		PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+if (APPLE)
+	# determines the app name and app install location (scappbundlename, scappdir):
+	include (../../cmake_modules/MacAppFolder.cmake)
+
+	install(TARGETS ${plugins}
+			DESTINATION "${scappauxresourcesdir}/plugins"
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
+else()
+	install(TARGETS ${plugins}
+			DESTINATION "lib/SuperCollider/plugins"
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()

@@ -21,7 +21,7 @@
 #include <paths.h>
 
 // allows for linking into a dylib on darwin
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(SC_IPHONE)
 	#include <crt_externs.h>
 	#define environ (*_NSGetEnviron())
 #else
