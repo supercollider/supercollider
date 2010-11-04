@@ -34,8 +34,7 @@ void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port)
 {
     toaddr.sin_family = AF_INET;     // host byte order
     toaddr.sin_port = htons(port); // short, network byte order
-	addr = htonl(addr);
-    toaddr.sin_addr = *((struct in_addr *)&addr);
+    toaddr.sin_addr.s_addr = htonl(addr);
     bzero(&(toaddr.sin_zero), 8);    // zero the rest of the struct
 }
 

@@ -51,7 +51,7 @@ bool sc_UseVectorUnit()
 	return false;
 }
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(SC_IPHONE)
 # include <Carbon/Carbon.h>
 #include <TargetConditionals.h>
 

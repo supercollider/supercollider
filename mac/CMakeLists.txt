@@ -2,6 +2,9 @@ if(NOT APPLE)
 		message(SEND_ERROR "mac folder invoked by cmake, but not APPLE platform")
 endif()
 
+# determines the app name and app install location (scappbundlename, scappdir):
+include (../common/cmake_modules/MacAppFolder.cmake)
+
 include_directories(../common/Headers/lang
 	../common/Source/lang/LangSource/Bison
 	../common/Headers/common
@@ -17,7 +20,7 @@ include_directories(../common/include/icu
 
 find_package(Sndfile)
 
-set(sclang_sources
+set(scapp_sources
 	../common/Source/lang/LangPrimSource/SC_Wii.cpp
 	../common/Source/lang/LangPrimSource/PyrSignalPrim.cpp
 	../common/Source/lang/LangPrimSource/PyrSched.cpp
@@ -99,9 +102,7 @@ set(sclang_sources
 	../common/Source/app/SMLAdvancedFind/ICU/NSStringICUAdditions.m
 	)
 
-set(sclang_parser_source ../common/Source/lang/LangSource/Bison/lang11d_tab.cpp)
-
-set(scappbundlename ${PROJECT_NAME})
+set(scapp_parser_source ../common/Source/lang/LangSource/Bison/lang11d_tab.cpp)
 
 # set how it shows up in the Info.plist file
 SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns) 
@@ -111,26 +112,15 @@ SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns
 # include the icns file in the target
 SET(scapp_resources ${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns)
 
-
-
-# add all the resources actually
-macro(addBundleResourceFolder folder)
-	FILE(GLOB thesethings RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${folder}/*)
-	FOREACH(afile ${thesethings})
-		FILE(INSTALL ${CMAKE_CURRENT_SOURCE_DIR}/${afile}
-			DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents/${folder})
-	ENDFOREACH()
-	FOREACH(afile ${thesethings})
-		# TODO: if(isfolder) - does cmake have this?
-		addBundleResourceFolder(${afile})
-	ENDFOREACH()
-endmacro()
-
-addBundleResourceFolder(Resources)
-
+file(COPY Resources
+	DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents
+	PATTERN Info.plist EXCLUDE
+	PATTERN .svn EXCLUDE
+	PATTERN .git EXCLUDE
+)
 
 add_executable(${scappbundlename} MACOSX_BUNDLE
-	${sclang_sources} ${sclang_parser_source}
+	${scapp_sources} ${scapp_parser_source}
 	${scapp_resources}
 	)
 
@@ -143,16 +133,10 @@ else()
 		)
 endif()
 
-#set_property(TARGET supercolliderapp
-#	PROPERTY OUTPUT_NAME ${scappbundlename})
-
-##set_property(TARGET supercolliderapp
-##	PROPERTY MACOSX_BUNDLE_INFO_PLIST "Resources/Info.plist")
-
 # for processing into the plist:
 set_property(TARGET ${scappbundlename}
 	PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
-# also TODO, separate gui name (currently using MACOSX_BUNDLE_BUNDLE_NAME twice)
+# also TODO, separate gui name? (currently using MACOSX_BUNDLE_BUNDLE_NAME twice)
 
 target_link_libraries(${scappbundlename} icucore)
 
@@ -179,13 +163,14 @@ endif(SNDFILE_FOUND)
 
 target_link_libraries(${scappbundlename} sccommon pthread)
 
-install(TARGETS ${scappbundlename}
-		DESTINATION "Contents/MacOS"
-		PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app"
+		DESTINATION ${scappdir}
+		USE_SOURCE_PERMISSIONS
+		)
 
-FILE(INSTALL ${CMAKE_SOURCE_DIR}/common/build/SCClassLibrary
-	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-FILE(INSTALL ${CMAKE_SOURCE_DIR}/common/build/Help
-	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-FILE(INSTALL ${CMAKE_SOURCE_DIR}/common/build/examples
-	DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+if (NOT ("${standalone}" STREQUAL ""))
+	# A synthdefs folder is expected in the bundle
+	file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents/Resources/synthdefs")
+
+	# TODO: Standalones are also given a chance to overwrite things from their specially-manufactured resources dir
+endif()

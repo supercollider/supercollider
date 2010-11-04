@@ -3424,7 +3424,7 @@ int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             PyrObject *array = slotRawObject(slot);
             int numItems = array->size;
 
-			mMenuH = NewMenu(1, "\p");
+            mMenuH = NewMenu(1, (const unsigned char*)"\p");
 
             for (int i=0; i<numItems; ++i) {
                 PyrSlot *slot = array->slots + i;
