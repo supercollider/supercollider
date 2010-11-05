@@ -321,63 +321,63 @@ void Slot::setData( PyrSlot *slot )
   switch (GetTag(slot)) {
     case tagChar :
     case tagNil :
-      type = QMetaType::Void;
-      ptr = 0;
+      _type = QMetaType::Void;
+      _ptr = 0;
       break;
     case tagInt :
-      type = QMetaType::Int;
-      ptr = new int( toInt(slot) );
+      _type = QMetaType::Int;
+      _ptr = new int( toInt(slot) );
       break;
     case tagSym :
-      type = QMetaType::QString;
-      ptr = new QString( toString(slot) );
+      _type = QMetaType::QString;
+      _ptr = new QString( toString(slot) );
       break;
     case tagFalse :
-      type = QMetaType::Bool;
-      ptr = new bool( false );
+      _type = QMetaType::Bool;
+      _ptr = new bool( false );
       break;
     case tagTrue :
-      type = QMetaType::Bool;
-      ptr = new bool( true );
+      _type = QMetaType::Bool;
+      _ptr = new bool( true );
       break;
     case tagObj :
     {
       if( isKindOfSlot( slot, class_string ) ) {
-        type = QMetaType::QString;
-        ptr = new QString( toString(slot) );
+        _type = QMetaType::QString;
+        _ptr = new QString( toString(slot) );
       }
       else if( isKindOfSlot( slot, s_point->u.classobj ) ) {
-        type = QMetaType::QPointF;
-        ptr = new QPointF( toPoint(slot) );
+        _type = QMetaType::QPointF;
+        _ptr = new QPointF( toPoint(slot) );
       }
       else if( isKindOfSlot( slot, s_rect->u.classobj ) ) {
-        type = QMetaType::QRectF;
-        ptr = new QRectF( toRect(slot) );
+        _type = QMetaType::QRectF;
+        _ptr = new QRectF( toRect(slot) );
       }
       else if( isKindOfSlot( slot, class_array ) ) {
-        type = qMetaTypeId<VariantList>();
-        ptr = new VariantList( toVariantList(slot) );
+        _type = qMetaTypeId<VariantList>();
+        _ptr = new VariantList( toVariantList(slot) );
       }
       else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
         obj = toObject(slot);
         if( obj->isWidgetType() ) {
-          type = QMetaType::QWidgetStar;
-          ptr = new QWidget*( static_cast<QWidget*>(obj) );
+          _type = QMetaType::QWidgetStar;
+          _ptr = new QWidget*( static_cast<QWidget*>(obj) );
         }
         else {
-          type = QMetaType::QObjectStar;
-          ptr = new QObject*( obj );
+          _type = QMetaType::QObjectStar;
+          _ptr = new QObject*( obj );
         }
       }
       else {
         qcErrorMsg("Could not interpret slot!");
-        type = QMetaType::Void;
-        ptr = 0;
+        _type = QMetaType::Void;
+        _ptr = 0;
       }
       break;
     }
     default :
-      type = QMetaType::Float;
-      ptr = new float( toFloat(slot) );
+      _type = QMetaType::Float;
+      _ptr = new float( toFloat(slot) );
   }
 }

@@ -38,28 +38,35 @@ class QObjectProxy;
 struct Slot
 {
   public:
+
     Slot() :
-      type( QMetaType::Void ),
-      ptr(0)
+      _type( QMetaType::Void ),
+      _ptr(0)
       {}
+
     Slot( PyrSlot *slot )
       { setData( slot ); }
+
     ~Slot() {
-      if( ptr ) {
-        QMetaType::destroy( type, ptr );
+      if( _ptr ) {
+        QMetaType::destroy( _type, _ptr );
       }
     }
+
     void setData( PyrSlot * );
+
     QGenericArgument asGenericArgument() {
-      if( type != QMetaType::Void )
-        return QGenericArgument( QMetaType::typeName(type), ptr );
+      if( _type != QMetaType::Void )
+        return QGenericArgument( QMetaType::typeName(_type), _ptr );
       else
         return QGenericArgument();
     }
 
+    int type() { return _type; }
+
   private:
-    int type;
-    void *ptr;
+    int _type;
+    void *_ptr;
 
   public:
     static bool toBool( PyrSlot * );
