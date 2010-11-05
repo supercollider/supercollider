@@ -2,16 +2,12 @@ QtGUI {
 
   *initClass {
     GUI.add( this );
+    this.start;
   }
 
   *id { ^\qt }
 
   *start{
-    prStart( this );
-    GUI.fromID(\qt);
-  }
-
-  *prStart{ arg me;
     _QtGUI_Start
     ^this.primitiveFailed;
   }

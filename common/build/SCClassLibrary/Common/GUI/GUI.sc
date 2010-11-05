@@ -80,7 +80,7 @@ GUI {
    *  @return the current (qt) scheme
    */
   *qt {
-    ^this.fromID( \qt ).start;
+    ^this.fromID( \qt );
   }
 
 	/**
