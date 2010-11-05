@@ -227,8 +227,9 @@ QC_LANG_PRIMITIVE( QObject_Connect, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   PyrSymbol *handler = 0; slotSymbolVal( a+1, &handler );
   Synchronicity sync = Slot::toBool( a+2 ) ? Synchronous : Asynchronous;
 
-  qcDebugMsg( 1, QString("CONNECT: %1 -> %2 [%3]").arg(signal).arg(handler->name)
-                  .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("CONNECT: %1 -> %2 [%3]").arg(signal).arg(handler->name)
+                      .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
 
   ConnectEvent *e = new ConnectEvent();
   e->handler = handler;
@@ -251,7 +252,8 @@ QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g
   PyrSlot *methodArgs = a+1;
   bool sync = !IsFalse( a+2 );
 
-  qcDebugMsg( 1, QString("INVOKE: '%1' [%2]").arg(method->name).arg(sync ? "SYNC" : "ASYNC") );
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("INVOKE: '%1' [%2]").arg(method->name).arg(sync ? "SYNC" : "ASYNC") );
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 

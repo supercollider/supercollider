@@ -165,7 +165,7 @@ void QObjectProxy::invokeScMethod
 ( PyrSymbol *method, const QList<QVariant> & args, PyrSlot *result,
   bool locked )
 {
-  qcProxyDebugMsg(1, QString("+++ SC METHOD CALL: ") + QString(method->name) );
+  qcProxyDebugMsg(1, QString("SC METHOD CALL [+++]: ") + QString(method->name) );
 
   if( !locked ) {
     QtCollider::lockLang();
@@ -191,7 +191,7 @@ void QObjectProxy::invokeScMethod
 
   if( !locked ) QtCollider::unlockLang();
 
-  qcProxyDebugMsg(1, QString("--- SC METHOD CALL: ") + QString(method->name) );
+  qcProxyDebugMsg(1, QString("SC METHOD CALL [---]: ") + QString(method->name) );
 }
 
 void QObjectProxy::customEvent( QEvent *event )
