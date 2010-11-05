@@ -230,7 +230,7 @@ QView : QObject {
 
   action_ { arg func;
     action = func;
-    this.connect( "action()", \doAction );
+    this.setSignalHandler( "action()", \doAction );
   }
 
   addAction { arg func, selector=\action;
