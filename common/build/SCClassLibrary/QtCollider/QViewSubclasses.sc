@@ -307,7 +307,7 @@ QSlider2D : QAbstractStepValue {
 
   *new { arg parent, bounds;
     var me = super.new( parent, bounds );
-    me.connect( "randomize()", \randomize );
+    me.setSignalHandler( "randomize()", \randomize );
     ^me;
   }
 
@@ -612,7 +612,7 @@ QListView : QItemViewBase {
 
   enterKeyAction_ { arg func;
     enterKeyAction = func;
-    this.connect( "returnPressed()", \enterKey );
+    this.setSignalHandler( "returnPressed()", \enterKey );
   }
 
   enterKey {
@@ -794,7 +794,7 @@ QMultiSliderView : QView {
 
   metaAction_ { arg func;
     metaAction = func;
-    this.connect( "metaAction()", \doMetaAction );
+    this.setSignalHandler( "metaAction()", \doMetaAction );
   }
 
   doMetaAction {

@@ -52,7 +52,7 @@ QObject {
     ^this.primitiveFailed
   }
 
-  connect { arg signal, handler, direct=false;
+  setSignalHandler { arg signal, handler, direct=false;
     _QObject_Connect
     ^this.primitiveFailed
   }
