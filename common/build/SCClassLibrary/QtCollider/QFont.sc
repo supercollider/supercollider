@@ -4,47 +4,44 @@ QFont {
   /* ----------------- class -------------------*/
 
   *initClass {
-    
+
   }
-  
+
   *new { arg n, s, b = false, i = false;
     ^super.newCopyArgs( n, s, b, i );
   }
 
   *availableFonts {
+    _Qt_AvailableFonts
   }
-  
+
   *antiAliasing_ { arg flag;
   }
-  
+
   *smoothing_ { arg flag;
   }
 
-  //TODO
   *defaultSansFace {
-    ^nil;
+    ^QFont("sans-serif");
   }
 
-  //TODO
   *defaultSerifFace {
-    ^nil;
+    ^QFont("serif");
   }
 
-  //TODO
   *defaultMonoFace {
-    ^nil;
+    ^QFont("monospace");
   }
 
-  //TODO
   *default {
-    ^QFont( nil, nil );
+    ^QFont();
   }
 
   /* ------------------instance------------------*/
 
   setDefault {
   }
-  
+
   boldVariant {
     ^this.class.new( name, size, true, italic );
   }

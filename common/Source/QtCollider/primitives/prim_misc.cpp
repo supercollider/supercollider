@@ -29,6 +29,7 @@
 
 #include <QFontMetrics>
 #include <QDesktopWidget>
+#include <QFontDatabase>
 
 QC_LANG_PRIMITIVE( QtGUI_Start, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
@@ -88,5 +89,16 @@ QC_LANG_PRIMITIVE( Qt_StringBounds, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   Slot::setRect( a+2, bounds );
   slotCopy( r, a+2 );
 
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( Qt_AvailableFonts, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QFontDatabase database;
+  VariantList l;
+  Q_FOREACH( QString family, database.families() ) {
+    l.data << QVariant(family);
+  }
+  Slot::setVariantList( r, l );
   return errNone;
 }
