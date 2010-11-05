@@ -258,13 +258,14 @@ QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g
   if( sync ) {
     InvokeMethodEvent *e = new InvokeMethodEvent();
     e->method = method;
+    e->ret = r;
     e->arg = methodArgs;
 
     bool ok = e->send( proxy, Synchronous );
     return ok ? errNone : errFailed;
   }
   else {
-    proxy->invokeMethod( method->name, methodArgs, Qt::QueuedConnection );
+    proxy->invokeMethod( method->name, 0, methodArgs, Qt::QueuedConnection );
   }
 
   return errNone;

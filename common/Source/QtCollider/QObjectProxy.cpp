@@ -27,6 +27,7 @@
 
 #include <QApplication>
 #include <QWidget>
+#include <QVarLengthArray>
 
 #include <PyrKernel.h>
 #include <VMGlobals.h>
@@ -63,33 +64,99 @@ const char *QObjectProxy::scClassName() const {
   return 0;
 }
 
-bool QObjectProxy::invokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType ctype )
+bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *argSlot,
+                                 Qt::ConnectionType ctype )
 {
+  // the signature char array
+  QVarLengthArray<char, 512> sig;
+
+  // serialize method name
+  int len = qstrlen( method );
+  if( len <= 0 ) return false;
+  sig.append( method, len );
+  sig.append( '(' );
+
+  // get data from argument slots
   Slot argSlots[10];
 
-  if ( isKindOfSlot( arg, class_array ) ) {
-    PyrSlot *slots = slotRawObject( arg )->slots;
-    int size = slotRawObject( arg )->size;
+  if( isKindOfSlot( argSlot, class_array ) ) {
+    PyrSlot *slots = slotRawObject( argSlot )->slots;
+    int size = slotRawObject( argSlot )->size;
     int i;
     for( i = 0; i<size && i<10; ++i ) {
       argSlots[i].setData( slots );
       ++slots;
     }
   }
-  else argSlots[0].setData( arg );
+  else argSlots[0].setData( argSlot );
 
+  // serialize argument types
+  int i;
+  for( i = 0; i < 10; ++i ) {
+    int type = argSlots[i].type();
+    if( type == QMetaType::Void ) break;
+    const char *typeName = QMetaType::typeName( type );
+    int len = qstrlen( typeName );
+    if( len <= 0 ) break;
+    sig.append( typeName, len );
+    sig.append( ',' );
+  }
+
+  // finalize the signature
+  if( i==0 ) sig.append( ')' );
+  else sig[sig.size() - 1] = ')';
+
+  sig.append('\0');
+
+  // get the meta method
+  const QMetaObject *mo = qObject->metaObject();
+
+  int mi = mo->indexOfMethod( sig.constData() );
+  if( mi < 0 ) {
+    QByteArray mnorm = QMetaObject::normalizedSignature( sig.constData() );
+    mi = mo->indexOfMethod( mnorm.constData() );
+  }
+
+  if( mi < 0 || mi >= mo->methodCount()  ) {
+    qcProxyDebugMsg( 1, QString("WARNING: No such method: %1::%2").arg( mo->className() )
+                        .arg( sig.constData() ) );
+    return false;
+  }
+
+  QMetaMethod mm = mo->method( mi );
+
+  // construct the return data object
+  QGenericReturnArgument retGArg;
+  const char *retTypeName = mm.typeName();
+  int retType = QMetaType::type( retTypeName );
+  void *retPtr = 0;
+  if( retSlot ) {
+    retPtr = QMetaType::construct( retType );
+    retGArg = QGenericReturnArgument( retTypeName, retPtr );
+  }
+
+  //do it!
   bool success =
-    QMetaObject::invokeMethod( qObject, method, ctype,
-                                argSlots[0].asGenericArgument(),
-                                argSlots[1].asGenericArgument(),
-                                argSlots[2].asGenericArgument(),
-                                argSlots[3].asGenericArgument(),
-                                argSlots[4].asGenericArgument(),
-                                argSlots[5].asGenericArgument(),
-                                argSlots[6].asGenericArgument(),
-                                argSlots[7].asGenericArgument(),
-                                argSlots[8].asGenericArgument(),
-                                argSlots[9].asGenericArgument());
+    mm.invoke( qObject, ctype, retGArg,
+                argSlots[0].asGenericArgument(),
+                argSlots[1].asGenericArgument(),
+                argSlots[2].asGenericArgument(),
+                argSlots[3].asGenericArgument(),
+                argSlots[4].asGenericArgument(),
+                argSlots[5].asGenericArgument(),
+                argSlots[6].asGenericArgument(),
+                argSlots[7].asGenericArgument(),
+                argSlots[8].asGenericArgument(),
+                argSlots[9].asGenericArgument());
+
+  // store the return data into the return slot
+  if( success && retPtr ) {
+    QVariant retVar( retType, retPtr );
+    Slot::setVariant( retSlot, retVar );
+  };
+
+  if( retPtr )
+    QMetaType::destroy( retType, retPtr );
 
   return success;
 }
@@ -195,7 +262,7 @@ bool QObjectProxy::connectEvent( ConnectEvent *e )
 
 bool QObjectProxy::invokeMethodEvent( InvokeMethodEvent *e )
 {
-  return invokeMethod( e->method->name, e->arg, Qt::DirectConnection );
+  return invokeMethod( e->method->name, e->ret, e->arg, Qt::DirectConnection );
 }
 
 bool QObjectProxy::destroyEvent( DestroyEvent *e )
