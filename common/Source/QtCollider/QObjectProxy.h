@@ -92,7 +92,7 @@ class QObjectProxy : public QObject
     bool invokeMethodEvent( QtCollider::InvokeMethodEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
 
-    bool invokeMethod( const char *method, PyrSlot *arg, Qt::ConnectionType );
+    bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
 
   private:
 
@@ -187,6 +187,7 @@ struct InvokeMethodEvent
 : public RequestTemplate<InvokeMethodEvent, &QObjectProxy::invokeMethodEvent>
 {
   PyrSymbol *method;
+  PyrSlot *ret;
   PyrSlot *arg;
 };
 
