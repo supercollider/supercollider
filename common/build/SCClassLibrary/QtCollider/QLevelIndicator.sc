@@ -70,7 +70,7 @@ QLevelIndicator : QView {
     // dB scale
     UserView(view, Rect(0,0,meterWidth,195)).drawFunc_({
       Pen.color = Color.white;
-      Pen.font = Font("Helvetica-Bold", 10);
+      Pen.font = Font("Helvetica", 10, true);
       Pen.stringCenteredIn("0", Rect(0, 0, meterWidth, 12));
       Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12));
     });
@@ -78,14 +78,14 @@ QLevelIndicator : QView {
     (numIns > 0).if({
       // ins
       StaticText(window, Rect(10, 5, 100, 15))
-        .font_(Font("Helvetica-Bold", 10))
+        .font_(Font("Helvetica", 10, true))
         .stringColor_(Color.white)
         .string_("Inputs");
       inmeters = Array.fill( numIns, { arg i;
         var comp;
         comp = CompositeView(view, Rect(0,0,meterWidth,195)).resize_(5);
         StaticText(comp, Rect(0, 180, meterWidth, 15))
-          .font_(Font("Helvetica-Bold", 9))
+          .font_(Font("Helvetica", 9, true))
           .stringColor_(Color.white)
           .string_(i.asString);
         LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
@@ -104,14 +104,14 @@ QLevelIndicator : QView {
 
     // outs
     StaticText(window, Rect(10 + if(numIns > 0 , ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
-      .font_(Font("Helvetica-Bold", 10))
+      .font_(Font("Helvetica", 10, true))
       .stringColor_(Color.white)
       .string_("Outputs");
     outmeters = Array.fill( numOuts, { arg i;
       var comp;
       comp = CompositeView(view, Rect(0,0,meterWidth,195));
       StaticText(comp, Rect(0, 180, meterWidth, 15))
-        .font_(Font("Helvetica-Bold", 9))
+        .font_(Font("Helvetica", 9, true))
         .stringColor_(Color.white)
         .string_(i.asString);
       LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
