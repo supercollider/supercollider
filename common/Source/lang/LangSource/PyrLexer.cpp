@@ -2045,11 +2045,11 @@ bool passOne_ProcessDir(char *dirname, int level)
 		if (!validItem) break;
 		if (skipItem) continue;
 
-        if (sc_DirectoryExists(diritem)) {
-            success = passOne_ProcessDir(diritem, level + 1);
-        } else {
-            success = passOne_ProcessOneFile(diritem, level + 1);
-        }
+		if (sc_DirectoryExists(diritem)) {
+			success = passOne_ProcessDir(diritem, level + 1);
+		} else {
+			success = passOne_ProcessOneFile(diritem, level + 1);
+		}
 
 		if (!success) break;
 	}
@@ -2125,14 +2125,19 @@ bool isValidSourceFileName(char *filename)
 }
 
 // sekhar's replacement
-bool passOne_ProcessOneFile(char *filenamearg, int level)
+bool passOne_ProcessOneFile(const char * filenamearg, int level)
 {
 	bool success = true;
 
 	bool isAlias = false;
 	// on non-Darwin, sc_ResolveIfAlias always returns original path
 	char filename[MAXPATHLEN];
-	sc_ResolveIfAlias(filenamearg, filename, isAlias, MAXPATHLEN);
+	int status = sc_ResolveIfAlias(filenamearg, filename, isAlias, MAXPATHLEN);
+
+	if (status) {
+		error("skipping invalid symbolic link: %s\n", filenamearg);
+		return success;
+	}
 
 #ifdef ENABLE_LIBRARY_CONFIGURATOR
  	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(filename)) {
@@ -2141,10 +2146,9 @@ bool passOne_ProcessOneFile(char *filenamearg, int level)
  	}
 #endif
 
-	PyrSymbol *fileSym;
 	if (isValidSourceFileName(filename)) {
 		gNumCompiledFiles++;
-		fileSym = getsym(filename);
+		PyrSymbol * fileSym = getsym(filename);
 		fileSym->u.source = NULL;
 		if (startLexer(fileSym, -1, -1, -1)) {
 			while (parseOneClass(fileSym)) { };
@@ -2154,21 +2158,9 @@ bool passOne_ProcessOneFile(char *filenamearg, int level)
 			success = false;
 		}
 	} else {
-#ifndef SC_WIN32
-    // check if this is a symlink
-		char realpathname[MAXPATHLEN];
-		realpath(filename, realpathname);
-		if (strncmp(filename, realpathname, strlen(filename))) {
-			if (sc_DirectoryExists(realpathname))
-				success = passOne_ProcessDir(realpathname, level);
-		}
-#else
-    // under window, we're sure it's a file so wer don't do anything...
-    // maybe processing .lnk files could be interesting...
-    // $$$todo fixme add .lnk file parsing...
-    // (see http://www.thecodeproject.com/managedcpp/mcppshortcuts.asp)
-#endif
-  }
+		if (sc_DirectoryExists(filename))
+			success = passOne_ProcessDir(filename, level);
+	}
 	return success;
 }
 
