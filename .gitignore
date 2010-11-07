@@ -15,3 +15,8 @@ scache.conf
 .sconf_temp
 *.os
 *.o
+
+# working files made by packager script
+common/Packager/LinuxExclusions.txt
+common/Packager/SuperCollider*.tar.gz
+common/Packager/SuperCollider*.dmg
