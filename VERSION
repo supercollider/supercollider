@@ -1,2 +1,2 @@
 3.5.0-git
-classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix=-1;
+classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix=0;
