@@ -146,7 +146,8 @@ ScDocParser {
                 'summary::',            simpleTag,
                 'related::',            simpleTag,
                 'keywords::',           simpleTag,
-                'doctype::',            simpleTag,
+                'categories::',         simpleTag,
+//                'doctype::',            simpleTag,
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
                 
@@ -303,8 +304,9 @@ ScDocRenderer {
     
     var last_display;
     var currentClass;
+    var collectedArgs;
     
-    *new {|p|
+    *new {|p=nil|
         ^super.newCopyArgs(p).init;
     }
 
@@ -370,14 +372,23 @@ ScDocRenderer {
                     file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++args++"</h3></a>\n");
                 };
                 file.write("<div class='method'>");
+                collectedArgs = [];
                 do_children.();
+                file.write("<table class='arguments'>\n");
+                collectedArgs.do {|a|
+                    file.write("<tr><td class='argumentname'>"+a.text+"<td>");
+                    a.children.do {|e| this.renderHTMLSubTree(file,e,a.tag) };
+                };
+                file.write("</table>");
+                
                 file.write("</div>");
             },
             'argument', {
-                file.write("<h4 class='argumentname'>"++node.text++"</h4>\n");
-                file.write("<div class='argument'>");
-                do_children.();
-                file.write("</div>");
+//                file.write("<h4 class='argumentname'>"++node.text++"</h4>\n");
+//                file.write("<div class='argument'>");
+//                do_children.();
+//                file.write("</div>");
+                collectedArgs = collectedArgs.add(node);
             },
             'description', {
                 file.write("<a name='description'><h2>Description</h2></a>\n<div id='description'>");
@@ -388,6 +399,12 @@ ScDocRenderer {
                 file.write("<a name='examples'><h2>Examples</h2></a>\n<div id='examples'>");
                 do_children.();
                 file.write("</div>");
+            },
+            'note', {
+                file.write("<div class='note'><span class='notelabel'>NOTE:</span> "++node.text++"</div>");
+            },
+            'warning', {
+                file.write("<div class='warning'><span class='warninglabel'>WARNING:</span> "++node.text++"</div>");
             },
             'emphasis', {
                 file.write("<em>"++node.text++"</em>");
@@ -419,6 +436,11 @@ ScDocRenderer {
                 do_children.();
                 file.write("</dl>\n");
             },
+            'numberedlist', {
+                file.write("<ol>\n");
+                do_children.();
+                file.write("</ol>\n");
+            },
             'table', {
                 file.write("<table>\n");
                 do_children.();
@@ -427,6 +449,7 @@ ScDocRenderer {
             '##', {
                 switch(parentTag,
                     'list',             { file.write("<li>") },
+                    'numberedlist',     { file.write("<li>") },
                     'definitionlist',   { file.write("<dt>") },
                     'table',            { file.write("<tr><td>") }
                 );
@@ -456,19 +479,22 @@ ScDocRenderer {
         last_display = node.display;
     }
     
-    renderHTMLHeader {|f,name,type|
-        var x;
+    renderHTMLHeader {|f,name,type,folder|
+        var x, cats;
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='../scdoc.css' type='text/css' /></head><body>");
 
-        f.write("<div class='header'>");
-        f.write("<div id='label'>");
-        f.write(if(type==\class,{"SC CLASS"},{"SC DOC"}));
-        f.write("</div><h1>"++name++"</h1>");
+        cats = parser.findNode(\categories).text.findRegexp("[^ ,]+").flop[1].join(", ");
 
+        f.write("<div class='header'>");
+        f.write("<div id='label'>"++folder.asString.toUpper++"</div>");
+//        f.write(if(type==\class,{"SC CLASS"},{"SC DOC"}));
+        f.write("<div id='categories'>"++cats++"</div>");
+        f.write("<h1>"++name++"</h1>");
         x = parser.findNode(\summary);
         f.write("<div id='summary'>"++x.text++"</div>");
         f.write("</div>");
-        
+
+        f.write("<div class='subheader'>\n");
         if(type==\class,{
             f.write("<div id='inheritance'>");
             f.write("Inherits from ");
@@ -489,9 +515,10 @@ ScDocRenderer {
             };
             f.write("</div>");
         });
+        f.write("</div>");
     }
 
-    renderHTML {|filename|
+    renderHTML {|filename, folder|
         var f = File.open(filename, "w");
         var x = parser.findNode(\class);
         
@@ -500,7 +527,7 @@ ScDocRenderer {
         if(x.text.notEmpty, {
             var name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
-            this.renderHTMLHeader(f,name,\class);
+            this.renderHTMLHeader(f,name,\class,folder);
                     
             x = parser.findNode(\description);
             this.renderHTMLSubTree(f,x);
@@ -518,12 +545,64 @@ ScDocRenderer {
         },{
             var x = parser.findNode(\title);
             var name = x.text.stripWhiteSpace;
-            this.renderHTMLHeader(f,name,\other);
+            this.renderHTMLHeader(f,name,\other,folder);
         
             this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
             f.write("</body></html>");
         });
         f.close;
+    }
+}
+
+ScDoc {
+    var <>helpTargetDir;
+    var <>helpSourceDir;
+
+    *new {
+        ^super.new.init;
+    }
+
+    init {
+        helpTargetDir = thisProcess.platform.userAppSupportDir +/+ "/Help";
+        helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
+    }
+    
+    makeOverviews {
+        /* TODO:
+  All documents alphabetically
+  All documents by categories
+  All classes by inheritance tree
+  All classes alphabetically
+  All classes by categories
+  All undocumented classes
+  All ugens alphabetically
+  All ugens by categories
+  All methods index
+        */
+    }
+
+    updateAll {
+        var p = ScDocParser.new;
+        var r = ScDocRenderer.new;
+        PathName(helpSourceDir).filesDo {|path|
+            var source = path.fullPath;
+            var lastDot = source.findBackwards(".");
+            var subtarget = source.copyRange(helpSourceDir.size+1,lastDot-1)++".html";
+            var target = helpTargetDir +/+ subtarget;
+            var folder = target.dirname;
+            var ext = source.copyToEnd(lastDot);
+//            PathName(folder).makeDir;
+            ("mkdir -p"+folder).systemCmd;
+            //FIXME: if source is newer than target:
+            if(ext == ".schelp", {
+                ("Rendering" + source + "to" + target).postln;
+                r.parser = p.parseFile(source);
+                r.renderHTML(target,subtarget.dirname);
+            }, {
+                ("Copying" + source + "to" + folder).postln;
+                ("cp" + source + folder).systemCmd;
+            });
+        };
     }
 }
 

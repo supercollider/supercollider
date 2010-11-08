@@ -1,10 +1,10 @@
 class:: Array
 summary:: fixed size collection
-related:: Language/Literals Classes/List
+related:: Reference/Literals Classes/List
 categories:: Collections
   
 description::
-Arrays are link::Classes/ArrayedCollection::s whose slots may contain any object. Arrays have a fixed maximum size beyond which they cannot grow. For expandable arrays, use the link::Classes/List:: class.
+Arrays are ArrayedCollections whose slots may contain any object. Arrays have a fixed maximum size beyond which they cannot grow. For expandable arrays, use the link::Classes/List:: class.
 
 For Arrays, the code::add:: method may or may not return the same Array object. It will add the argument to the receiver if there is space, otherwise it returns a new Array object with the argument added. Thus the proper usage of code::add:: with an Array is to always assign the result as follows:
 code::
@@ -13,22 +13,22 @@ code::
 This allows an efficient use of resources, only growing the array when it needs to. The List class manages the Array for you, and in many cases is more suitable.
 
 Elements can be put into an existing slot with code::a.put(2,obj):: and accessed with
-code::a.at(2):: or code::a[2]::
+code::a.at(2):: or code::a[2]:: 
 
-See ArrayedCollection for the principal methods: at, put, clipAt, wrapAt, etc...
+See link::Classes/ArrayedCollection:: for the principal methods: at, put, clipAt, wrapAt, etc...
 
-Literal Arrays can be created at compile time, and are very efficient. See link::Language/Literals:: for information.
+Literal Arrays can be created at compile time, and are very efficient. See link::Reference/Literals:: for information.
 
 ClassMethods::
 
 method::new
 Create a new array with size 0 that can grow up to the fixed size.
-argument::size
+argument::maxSize
 The maximum size of the array.
 
 method::newClear
 Create a new array with all slots filled with nils.
-argument::size
+argument::indexedSize
 The size of the array.
 
 method::with

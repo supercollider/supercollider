@@ -3,24 +3,36 @@ New SC documentation system, work in progress
 Much more information can be read here: https://docs.google.com/document/edit?id=13jY-FLhwFYgzGFVTSb31eTZOsxl77eVLxuCIsXcZ7BE&hl=en&authkey=CJu58MQJ
 
 The markup language parser is in ScDoc.sc, copy or symlink this to your Extensions folder.
+
+
 Try it like this:
 
+x = ScDoc.new;
+x.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
+x.updateAll;
+
+Now all your rendered HTML help is in x.helpTargetDir (default is ~/share/SuperCollider/Help on Linux)
+
+
+The parses and renderer can be used individually:
+
 p = ScDocParser.new
-p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/Array.schelp")
-ScDocRenderer(p).renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/Array.html")
+r = ScDocRenderer.new;
 
-p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/LFPulse.schelp")
-ScDocRenderer(p).renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/LFPulse.html")
+r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/Array.schelp")
+r.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/Array.html")
 
-p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Language/Literals.schelp")
-ScDocRenderer(p).renderHTML("/home/lijon/Coding/ScDoc/Help/Language/Literals.html")
+r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/LFPulse.schelp")
+r.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/LFPulse.html")
 
+r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Reference/Literals.schelp")
+r.renderHTML("/home/lijon/Coding/ScDoc/Help/Reference/Literals.html")
 
 p.parseFile("/home/lijon/Coding/ScDoc/test.schelp").dump
 p.findNode("summary").text
-
 p.parse("inline code::code example::.").dump
 p.root
+
 
 tag             hasText hasChilds structural needClose modal nestable
 ---------------------------------------------------------------------
@@ -82,11 +94,6 @@ All in all we have 6 different categories of tags, not counting the internal 'pr
 
 TODO
 ====
-- handle categories::, should it output anything or is it just metadata?
-move this to here from all UGens instead of using the categories class variable.
-Also for all other classes?
-Also for all other docs?
-
 - handle binary/unary op methods somehow, like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we?
 one trick might be to detect if the method has no a-zA-Z and only one arg, and if so skip the parens..
@@ -97,7 +104,6 @@ Also, getters/setters should perhaps be handled specially?
   should we have a tag to create anchors? anchor::name::
 
 HTML renderer stuff:
-- split into a separate class, then it's easy to make different renderers that conform to a common interface..
 - handle prose before first section in class doc?
 - other sections not allowed in class doc?
 
@@ -118,9 +124,6 @@ HTML renderer stuff:
   for methods, the index is just an alphabetical list of links to Methods/methodname.html,
   which is a generated doc with a list of all classes implementing it (and the description of that method in that class?),
   if HelpSource/Methods/methodname.schelp exists, merge with this so can write interface style documentation?
-
-- Code to traverse a directory tree of doc source files and render into another (user location) directory tree,
-checking time-stamps to see if files need update or not. keep track of directory level so we can use relative URL's..
 
 - generate simple doc for classes that don't have a doc source file. (just list all methods and their args)
 put "this class currently lacks documentation" in description::
