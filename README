@@ -28,11 +28,14 @@ r.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/LFPulse.html")
 r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Reference/Literals.schelp")
 r.renderHTML("/home/lijon/Coding/ScDoc/Help/Reference/Literals.html")
 
+r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Help.schelp")
+r.renderHTML("/home/lijon/share/SuperCollider/Help/Help.html")
+
 p.parseFile("/home/lijon/Coding/ScDoc/test.schelp").dump
 p.findNode("summary").text
 p.parse("inline code::code example::.").dump
 p.root
-
+p.dump
 
 tag             hasText hasChilds structural needClose modal nestable
 ---------------------------------------------------------------------

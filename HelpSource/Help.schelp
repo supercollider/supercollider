@@ -1,0 +1,44 @@
+TITLE::Help
+summary::SuperCollider documentation
+
+SuperCollider is an object-oriented language client and a server for sound synthesis and digital signal processing (DSP).
+
+SECTION::Getting Started
+
+These might be useful starting points on getting help with SuperCollider:
+
+list::
+## link::Tutorials/Introductory_tutorial::
+## etc...
+## add more stuff..
+::
+
+SECTION::Documentation index
+
+subsection:: All Documents
+table::
+## Documents alphabetically: || link::Overviews/AllDocuments::
+## Documents by categories: || link::Overviews/DocumentsByCategories::
+::
+
+subsection:: Classes
+table::
+## Classes alphabetically: || link::Overviews/Classes::
+## Classes by inheritance tree: || link::Overviews/ClassTree::
+## Classes by categories: || link::Overviews/ClassesByCategories::
+## Index of all methods: || link::Overviews/Methods::
+::
+A list of all undocumented classes can be found here: link::Overviews/Undocumented::
+
+subsection:: UGens
+table::
+## UGens alphabetically: || link::Overviews/UGens::
+## UGens by categories: || link::Overviews/UGensByCategories::
+::
+
+SECTION::Licensing
+
+SuperCollider is free software published under the GPL: link::Other/Licensing::.
+
+SuperCollider help docs are published under the Creative Commons CC-BY-SA-3 license: link::Other/HelpDocsLicensing::.
+

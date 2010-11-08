@@ -116,7 +116,9 @@ ScDocParser {
         if(modalTag.notNil, {
             //only allow modal block tags to be closed with the closing tag as the first word on a line
             if((tag==modalTag) and: ((wordno==0) or: (lastTagLine==lineno)),{
-                current.display = if(lastTagLine==lineno,\inline,\block);
+                if(current.notNil, {
+                    current.display = if(lastTagLine==lineno,\inline,\block);
+                });
                 this.endCurrent;
                 modalTag = nil;
             },{
@@ -175,7 +177,9 @@ ScDocParser {
                 '::', { //ends tables and lists
 //                    this.leaveLevel(10);
                     this.popTree;
-                    current.display = if(lastTagLine==lineno,\inline,\block);
+                    if(current.notNil, {
+                        current.display = if(lastTagLine==lineno,\inline,\block);
+                    });
                     this.endCurrent;
                 },
                 '\\::', {
@@ -185,7 +189,9 @@ ScDocParser {
                 { //default case
                     if("[a-zA-Z]+://.+".matchRegexp(word),{ //auto link URIs
                         this.addTag('link::',word,false);
-                        current.display = \inline;
+                        if(current.notNil, {
+                            current.display = \inline;
+                        });
                         this.endCurrent;
                     },{
                         this.addText(word); //plain text, add the word.
@@ -524,7 +530,7 @@ ScDocRenderer {
         f.write("</div>");
     }
 
-    renderHTML {|filename, folder|
+    renderHTML {|filename, folder="."|
         var f = File.open(filename, "w");
         var x = parser.findNode(\class);
         var name;
