@@ -62,7 +62,6 @@ build requirements (optional features)
  * libreadline >= 5
    http://savannah.gnu.org/projects/readline
    provides convenient CLI interface for sclang
-   (if unavailable, set READLINE=0 as an argument to scons)
 
  * libhowl (obsolete)
    http://www.porchdogsoft.com/products/howl/
@@ -126,7 +125,7 @@ build/CMakeCache.txt file.
 
 for example to enable a release build run the following in your build
 directory:
-cmake -DCMAKE_BUILD_TYPE=Release .
+cmake -DCMAKE_BUILD_TYPE=Release ..
 
 to install the whole program, run:
 make install
