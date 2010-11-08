@@ -1,5 +1,14 @@
 find_package(Sndfile)
 
+if (APPLE)
+	add_definitions(-DUSE_RENDEZVOUS=1)
+else()
+	find_package(Avahi)
+	if (AVAHI_FOUND)
+		add_definitions(-DUSE_RENDEZVOUS=1)
+	endif()
+endif()
+
 # Here we work out which audio API to use, from system type and/or user option.
 string(TOLOWER "$ENV{AUDIOAPI}" AUDIOAPI)
 if(AUDIOAPI STREQUAL "")
@@ -81,6 +90,12 @@ if(CURL)
 	if(CURL_FOUND)
 		target_link_libraries(libscsynth ${CURL_LIBRARIES})
 	endif()
+endif()
+
+if(AVAHI_FOUND)
+	add_definitions("-DHAVE_AVAHI=1")
+	include_directories(${AVAHI_INCLUDE_DIRS})
+	target_link_libraries(libscsynth ${AVAHI_LIBRARIES})
 endif()
 
 if(SNDFILE_FOUND)

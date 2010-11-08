@@ -76,7 +76,7 @@ int yylex() ;
 void yyerror(char *s) ;
 void fatal() ;
 bool isValidSourceFileName(char *filename);
-bool passOne_ProcessOneFile(char *filename, int level);
+bool passOne_ProcessOneFile(const char *filename, int level);
 
 extern void asRelativePath(char *inPath,char *outPath);
 
