@@ -1,8 +1,6 @@
 -*-text-*---------------------------------------------------------------
 supercollider 3 for linux
 ------------------------------------------------------------------------
-$Id$
-------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
 intro
@@ -10,7 +8,7 @@ intro
 
 SuperCollider is a synthesis engine (scsynth) and programming language
 (sclang), originally Mac-based but now very widely used on Linux
-(since Stefan Kersten ported the code in 2003). SuperCollider is free 
+(since Stefan Kersten ported the code in 2003). SuperCollider is free
 software under the GPL - its main homepage is at
 
    http://supercollider.sourceforge.net
@@ -42,9 +40,9 @@ build requirements
    facilitates checking for installed packages when compiling from
    source
 
- * scons >= 0.96
-   http://www.scons.org/
-   configuration and build tool based on python
+ * cmake >= 2.6
+   http://www.cmake.org/
+   cross-platform build system
 
  * fftw >= 3.0
    http://www.fftw.org/
@@ -63,8 +61,7 @@ build requirements (optional features)
 
  * libreadline >= 5
    http://savannah.gnu.org/projects/readline
-   provides convenient CLI interface for sclang 
-   (if unavailable, set READLINE=0 as an argument to scons)
+   provides convenient CLI interface for sclang
 
  * libhowl (obsolete)
    http://www.porchdogsoft.com/products/howl/
@@ -105,45 +102,37 @@ for building supercollider:
    libfftw3-dev
    libxt-dev
    pkg-config
-   scons
+   cmake
+   cmake-modules
 
 ------------------------------------------------------------------------
 building
 ------------------------------------------------------------------------
 
-building with scons is not really different from building with
-autoconf, automake and related tools.
+to build supercollider with cmake, it is suggested to do out-of-tree
+builds in a specific build directory:
 
-   $ scons -H
+mkdir build
+cd build
+cmake ..
 
-gives an overview of scons options.
+to run the build process run:
+make
 
-   $ scons -h
+the build process can be configured using the cmake program, cmake
+frontends like ccmake or cmake-gui, or by simply editing the
+build/CMakeCache.txt file.
 
-lists package specific options variables and their default values.
-(Note: some options allow to disable the dependencies on fftw and on
-libsndfile, but those dependencies should be considered compulsory for
-most standard setups since they provide much core sc functionality.)
+for example to enable a release build run the following in your build
+directory:
+cmake -DCMAKE_BUILD_TYPE=Release ..
 
-options can be set on the command line
+to install the whole program, run:
+make install
 
-   $ scons VARIABLE=VALUE
+to uninstall:
+make uninstall
 
-and are cached in a file called scache.conf (which can be edited with
-your favorite editor) for use in the next scons invocation.
-
-in order to build the whole package, call scons without arguments
-(apart from option variables). in order to install the package, call
-scons with the `install' target:
-
-   $ scons install
-
-any target (including `install') can be cleaned with the `-c' option
-to scons; note that cleaning the `install' target also removes locally
-built files.
-
-The option SCEL installs the emacs editor. For the sced and scvim editors,
-please use the scons scripts in their respective directories (in editors/).
 
 ------------------------------------------------------------------------
 Building a Debian package
@@ -197,11 +186,11 @@ running sclang
 
 it is recommended to use sclang in combination with your preferred text
 editor out of emacs/vim/gedit. see the README files in `linux/*' for
-installation and usage. as an alternative you can simply run the 
+installation and usage. as an alternative you can simply run the
 `sclang' executable which will provide a readline-based interface.
 
 sclang executes the startup file `~/.sclang.sc' after class library
-initialization. this file can contain statements to set up your 
+initialization. this file can contain statements to set up your
 supercollider environment, like setting default variables. an example can
 be found in `linux/examples/sclang.sc'.
 
@@ -286,6 +275,7 @@ mario lang
 john yates
 nescivi (marije baalman)
 dan stowell
+tim blechmann
 
 ------------------------------------------------------------------------
 outro
