@@ -148,7 +148,7 @@ code::
 
 section::Arrays
 
-Arrays of literals are created at compile time and are written with a # preceeding the array as follows:
+link::Classes/Array::s of literals are created at compile time and are written with a # preceeding the array as follows:
 code::
     #[1, 2, 'abc', "def", 4]
 ::
