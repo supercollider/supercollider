@@ -43,12 +43,20 @@ class QcScrollArea : public QAbstractScrollArea, public QcHelper
   Q_PROPERTY( bool hasBorder READ dummyBool WRITE setHasBorder );
   Q_PROPERTY( QColor background READ dummyColor WRITE setBackground );
   Q_PROPERTY( bool paint READ dummyBool WRITE setPaint );
+  Q_PROPERTY( QRectF innerBounds READ innerBounds );
   public:
     QcScrollArea();
     Q_INVOKABLE void addChild( QWidget* w ) { w->setParent( scrollWidget ); w->show(); }
     void setBackground ( const QColor &color );
     void setPaint( bool b ) { paint = b; }
     void setHasBorder( bool b );
+    QRectF innerBounds() const {
+      QSize vs = viewport()->size();
+      QSize cs = scrollWidget->size();
+      return QRectF(0, 0,
+                    qMax( vs.width(), cs.width() ),
+                    qMax( vs.height(), cs.height() ) );
+    }
     Q_INVOKABLE void rebuildPen();
   public Q_SLOTS:
     void update() { viewport()->update(); }
