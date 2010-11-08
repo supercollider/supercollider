@@ -8,11 +8,19 @@ ScDocParser {
     var modalTag;
     var lastTagLine;
     var isWS;
-    
-    // renderer
-    var last_display;
-    var currentClass;
-    
+
+    init {
+        root = tree = List.new;
+        stack = List.new;
+        stack.add([tree,0]);
+        current = nil;
+        singleline = false;
+        level = 0;
+        modalTag = nil;
+        isWS = false;
+//        doingInlineTag = false;
+    }
+   
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
 //    }
@@ -43,14 +51,14 @@ ScDocParser {
         level = n;
     }
 
-    stripWhiteSpace {|str|
+/*    stripWhiteSpace {|str|
         var a=0, b=str.size-1;
         //FIXME: how does this handle strings that are empty or single characters?
         while({(str[a]==$\n) or: (str[a]==$\ )},{a=a+1});
         while({(str[b]==$\n) or: (str[b]==$\ )},{b=b-1});
         ^str.copyRange(a,b);
     }
-    
+*/    
     endCurrent {
         if(current.notNil,{
 //            if(current.text.notNil, {
@@ -202,19 +210,7 @@ ScDocParser {
         // pass through newlines for vari-line tags.
         if(current.notNil,{current.text = current.text ++ "\n"});
     }
-    
-    init {
-        root = tree = List.new;
-        stack = List.new;
-        stack.add([tree,0]);
-        current = nil;
-        singleline = false;
-        level = 0;
-        modalTag = nil;
-        isWS = false;
-//        doingInlineTag = false;
-    }
-    
+   
 /*    parse {|string|
         var lines = string.split($\n);
         this.init;
@@ -299,6 +295,20 @@ ScDocParser {
         }, {
             ^(tag:nil, text:"", children:[]);
         });
+    }
+}
+
+ScDocRenderer {
+    var <>parser;
+    
+    var last_display;
+    var currentClass;
+    
+    *new {|p|
+        ^super.newCopyArgs(p).init;
+    }
+
+    init {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
@@ -455,7 +465,7 @@ ScDocParser {
         f.write(if(type==\class,{"SC CLASS"},{"SC DOC"}));
         f.write("</div><h1>"++name++"</h1>");
 
-        x = this.findNode(\summary);
+        x = parser.findNode(\summary);
         f.write("<div id='summary'>"++x.text++"</div>");
         f.write("</div>");
         
@@ -468,7 +478,7 @@ ScDocParser {
             f.write("</div>");
         });
         
-        x = this.findNode(\related);
+        x = parser.findNode(\related);
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
             f.write("See also: ");
@@ -483,37 +493,47 @@ ScDocParser {
 
     renderHTML {|filename|
         var f = File.open(filename, "w");
-        var x = this.findNode(\class);
+        var x = parser.findNode(\class);
         
         last_display = \block;
         
         if(x.text.notEmpty, {
-            var name = this.stripWhiteSpace(x.text);
+            var name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
             this.renderHTMLHeader(f,name,\class);
                     
-            x = this.findNode(\description);
+            x = parser.findNode(\description);
             this.renderHTMLSubTree(f,x);
 
-            x = this.findNode(\classmethods);
+            x = parser.findNode(\classmethods);
             this.renderHTMLSubTree(f,x);
 
-            x = this.findNode(\instancemethods);
+            x = parser.findNode(\instancemethods);
             this.renderHTMLSubTree(f,x);
 
-            x = this.findNode(\examples);
+            x = parser.findNode(\examples);
             this.renderHTMLSubTree(f,x);
             
             f.write("</body></html>");
         },{
-            var x = this.findNode(\title);
-            var name = this.stripWhiteSpace(x.text);
+            var x = parser.findNode(\title);
+            var name = x.text.stripWhiteSpace;
             this.renderHTMLHeader(f,name,\other);
         
-            this.renderHTMLSubTree(f,(tag:'root',children:root));
+            this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
             f.write("</body></html>");
         });
         f.close;
+    }
+}
+
++ String {
+    stripWhiteSpace {
+        var a=0, b=this.size-1;
+        //FIXME: how does this handle strings that are empty or single characters?
+        while({(this[a]==$\n) or: (this[a]==$\ )},{a=a+1});
+        while({(this[b]==$\n) or: (this[b]==$\ )},{b=b-1});
+        ^this.copyRange(a,b);
     }
 }
 
