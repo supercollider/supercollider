@@ -97,6 +97,7 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
         else SetFalse( slot );
         return errNone;
     case QMetaType::QRect:
+    case QMetaType::QRectF:
         return Slot::setRect( slot, val.toRect() );
     case QMetaType::QString:
         Slot::setString( slot, val.toString() );
