@@ -20,6 +20,7 @@ set( QT_COLLIDER_HDRS
   widgets/QcScope.h
   widgets/QcGraph.h
   widgets/QcLevelIndicator.h
+  widgets/QcHelpBrowser.hpp
 )
 
 set( QT_COLLIDER_SRCS
@@ -49,9 +50,12 @@ set( QT_COLLIDER_SRCS
   widgets/QcLevelIndicator.cpp
   widgets/QcWindow.cpp
   widgets/QcGraph.cpp
+  widgets/QcHelpBrowser.cpp
 )
 
+set( QT_USE_QTWEBKIT TRUE )
 include(${QT_USE_FILE})
+
 
 set( SC_HEADERS_DIR "${CMAKE_SOURCE_DIR}/common/Headers" )
 
