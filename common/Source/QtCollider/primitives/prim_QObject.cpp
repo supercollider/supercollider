@@ -187,7 +187,7 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   e->send( proxy, Synchronous );
 
-  bool haveExtra = !IsNil( slotRetExtra );
+  bool haveExtra = NotNil( slotRetExtra );
   int err = Slot::setVariant( ( haveExtra ? slotRetExtra : r ), val );
   if( err ) return err;
 
