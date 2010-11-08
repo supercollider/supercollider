@@ -81,9 +81,9 @@ QcScrollArea::QcScrollArea() :
 
 void QcScrollArea::setHasBorder( bool b ) {
   if( b )
-    QFrame::setFrameShape( QFrame::NoFrame );
-  else
     QFrame::setFrameShape( QFrame::StyledPanel );
+  else
+    QFrame::setFrameShape( QFrame::NoFrame );
 }
 
 void QcScrollArea::updateScrollBars() {
