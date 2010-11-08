@@ -20,7 +20,7 @@ ScDocParser {
         isWS = false;
 //        doingInlineTag = false;
     }
-   
+
 //    *new {|filename|
 //        ^super.newCopyArgs(filename).init;
 //    }
@@ -38,13 +38,13 @@ ScDocParser {
             level = p[1];
         });
     }
-    
+
     popTree {
         var p = stack.pop;
         tree = p[0];
         level = p[1];
     }
-    
+
     enterLevel {|n|
         this.leaveLevel(n);
         stack.add([tree,level]);
@@ -67,7 +67,7 @@ ScDocParser {
             current = nil;
         });
     }
-    
+
     addTag {|tag, text="", children=false|
         this.endCurrent;
         tag = tag.asString.drop(-2).asSymbol;
@@ -301,11 +301,13 @@ ScDocParser {
 
 ScDocRenderer {
     var <>parser;
-    
+
     var last_display;
     var currentClass;
     var collectedArgs;
-    
+    var dirLevel;
+    var baseDir;
+
     *new {|p=nil|
         ^super.newCopyArgs(p).init;
     }
@@ -314,7 +316,8 @@ ScDocRenderer {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-      
+        var f, m, mname, args, split;
+
         var do_children = {
             if(node.children.notNil, {
                 node.children.do {|e| this.renderHTMLSubTree(file,e,node.tag) };
@@ -351,14 +354,13 @@ ScDocRenderer {
                 //for multiple methods with same signature and similar function:
                 //ar kr (x = 42, y = 123)
                 
-                var f = node.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
-                var args = f[2][1];
-                var split = f[1][1].findRegexp("[^ ,]+");
+                f = node.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
+                args = f[2][1];
+                split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
-                    var mname = r[1];
+                    mname = r[1];
 
                     if(args.isEmpty, {
-                        var m;
                         args = "NOT FOUND";
                         if(parentTag==\instancemethods,{
                             m = currentClass.findRespondingMethodFor(mname.asSymbol);
@@ -413,7 +415,7 @@ ScDocRenderer {
                 if("[a-zA-Z]+://.+".matchRegexp(node.text),{
                     file.write("<a href=\""++node.text++"\">"++node.text++"</a>");
                 },{
-                    file.write("<a href=\"../"++node.text++".html\">"++node.text.split($/).last++"</a>");
+                    file.write("<a href=\""++baseDir +/+ node.text++".html\">"++node.text.split($/).last++"</a>");
                     //FIXME: need to have relative uri's
                     //best would be to keep track, have a currentDir class variable.
                 });
@@ -481,10 +483,14 @@ ScDocRenderer {
     
     renderHTMLHeader {|f,name,type,folder|
         var x, cats;
-        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='../scdoc.css' type='text/css' /></head><body>");
+        var style = baseDir +/+ "scdoc.css";
+//        dirLevel.do { style = style ++ "../" };
+//        style = style ++ "scdoc.css";
+        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' /></head><body>");
 
-        cats = parser.findNode(\categories).text.findRegexp("[^ ,]+").flop[1].join(", ");
-
+        cats = parser.findNode(\categories).text.findRegexp("[^ ,]+").flop[1];
+        cats = if(cats.notNil, {cats.join(", ")}, {""});
+        if(folder==".",{folder="SuperCollider"});
         f.write("<div class='header'>");
         f.write("<div id='label'>"++folder.asString.toUpper++"</div>");
 //        f.write(if(type==\class,{"SC CLASS"},{"SC DOC"}));
@@ -511,7 +517,7 @@ ScDocRenderer {
             x.text.findRegexp("[^ ,]+").flop[1].do {|r,i|
                 //FIXME: ignore superclasses? since they are already in "inherits from"...
                 if(i>0, {f.write(", ")});
-                f.write("<a href=\"../"++r++".html\">"++r.split($/).last++"</a>");
+                f.write("<a href=\""++baseDir +/+ r++".html\">"++r.split($/).last++"</a>");
             };
             f.write("</div>");
         });
@@ -521,11 +527,20 @@ ScDocRenderer {
     renderHTML {|filename, folder|
         var f = File.open(filename, "w");
         var x = parser.findNode(\class);
+        var name;
         
         last_display = \block;
+
+        //folder is the directory path of the file relative to the help tree,
+        //like 'Classes' or 'Tutorials'.
+        dirLevel = folder.split($/).reject {|y| (y.size<1) or: (y==".")}.size;
+        baseDir = ".";
+        dirLevel.do { baseDir = baseDir +/+ ".." };
+        
+//        ("'"++baseDir++"'").postln;
         
         if(x.text.notEmpty, {
-            var name = x.text.stripWhiteSpace;
+            name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
             this.renderHTMLHeader(f,name,\class,folder);
                     
@@ -543,8 +558,8 @@ ScDocRenderer {
             
             f.write("</body></html>");
         },{
-            var x = parser.findNode(\title);
-            var name = x.text.stripWhiteSpace;
+            x = parser.findNode(\title);
+            name = x.text.stripWhiteSpace;
             this.renderHTMLHeader(f,name,\other,folder);
         
             this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
