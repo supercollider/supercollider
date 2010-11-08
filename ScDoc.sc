@@ -307,13 +307,14 @@ ScDocParser {
     
     dumpClassTree {|node,c|
         var n;
+        if(c.name.asString.find("Meta_")==0, {^nil});
         node.children.add((tag:'##'));
         node.children.add((tag:'link', text:"Classes/"++c.name.asString));
         
         if(c.subclasses.notNil, {
             n = (tag:'tree', children:List.new);
             node.children.add(n);
-            c.subclasses.do {|x|
+            c.subclasses.copy.sort {|a,b| a.name < b.name}.do {|x|
                 this.dumpClassTree(n,x);
             };
         });
@@ -324,6 +325,7 @@ ScDocParser {
         var n = (tag:'tree', children:List.new);
         r.add((tag:'title', text:"Class Tree"));
         r.add((tag:'summary', text:"All classes by inheritance tree"));
+        r.add((tag:'related', text:"Overviews/Classes Overviews/ClassesByCategories Overviews/Methods"));
         r.add((tag:'categories', text:"Classes"));
         r.add(n);
         this.dumpClassTree(n,Object);
