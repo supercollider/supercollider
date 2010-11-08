@@ -90,12 +90,13 @@ dd {
     margin-top: -1em;
 }
 
-ul, ol {
+/*ul, ol {
     margin-bottom: 2em;
 }
 li {
     line-height: 0em;
 }
+*/
 
 code, pre {
     font-family: Andale Mono, monospace;
@@ -167,5 +168,29 @@ td p {
 }
 .warninglabel {
     color: red;
+}
+
+ul.tree, ul.tree ul {
+ list-style-type: none;
+ background: url(images/vline.png) repeat-y;
+ margin: 0;
+ padding: 0;
+}
+
+ul.tree ul {
+ margin-left: 10px;
+}
+
+ul.tree li {
+ margin: 0;
+ padding: 0 12px;
+ line-height: 20px;
+ background: url(images/node.png) no-repeat;
+/* color: #369;
+ font-weight: bold;*/
+}
+
+ul.tree li:last-child {
+ background: #fff url(images/lastnode.png) no-repeat;
 }
 

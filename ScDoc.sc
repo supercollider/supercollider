@@ -158,6 +158,7 @@ ScDocParser {
                 'link::',               modalRangeTag,
 
                 'list::',               listEnter,
+                'tree::',               listEnter,
                 'numberedlist::',       listEnter,
                 'definitionlist::',     listEnter,
                 'table::',              listEnter,
@@ -303,6 +304,31 @@ ScDocParser {
             ^(tag:nil, text:"", children:[]);
         });
     }
+    
+    dumpClassTree {|node,c|
+        var n;
+        node.children.add((tag:'##'));
+        node.children.add((tag:'link', text:"Classes/"++c.name.asString));
+        
+        if(c.subclasses.notNil, {
+            n = (tag:'tree', children:List.new);
+            node.children.add(n);
+            c.subclasses.do {|x|
+                this.dumpClassTree(n,x);
+            };
+        });
+    }
+    
+    overviewClassTree {
+        var r = List.new;
+        var n = (tag:'tree', children:List.new);
+        r.add((tag:'title', text:"Class Tree"));
+        r.add((tag:'summary', text:"All classes by inheritance tree"));
+        r.add((tag:'categories', text:"Classes"));
+        r.add(n);
+        this.dumpClassTree(n,Object);
+        root = r;
+    }
 }
 
 ScDocRenderer {
@@ -439,6 +465,11 @@ ScDocRenderer {
                 do_children.();
                 file.write("</ul>\n");
             },
+            'tree', {
+                file.write("<ul class='tree'>\n");
+                do_children.();
+                file.write("</ul>\n");
+            },
             'definitionlist', {
                 file.write("<dl>\n");
                 do_children.();
@@ -457,6 +488,7 @@ ScDocRenderer {
             '##', {
                 switch(parentTag,
                     'list',             { file.write("<li>") },
+                    'tree',             { file.write("<li>") },
                     'numberedlist',     { file.write("<li>") },
                     'definitionlist',   { file.write("<dt>") },
                     'table',            { file.write("<tr><td>") }
@@ -531,9 +563,12 @@ ScDocRenderer {
     }
 
     renderHTML {|filename, folder="."|
-        var f = File.open(filename, "w");
-        var x = parser.findNode(\class);
-        var name;
+        var f,x,name;
+
+        ("mkdir -p"+filename.dirname).systemCmd;
+                
+        f = File.open(filename, "w");
+        x = parser.findNode(\class);
         
         last_display = \block;
 
@@ -578,7 +613,7 @@ ScDocRenderer {
 ScDoc {
     var <>helpTargetDir;
     var <>helpSourceDir;
-
+    
     *new {
         ^super.new.init;
     }
@@ -587,19 +622,23 @@ ScDoc {
         helpTargetDir = thisProcess.platform.userAppSupportDir +/+ "/Help";
         helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
     }
-    
+        
     makeOverviews {
+        var p = ScDocParser.new;
+        var r = ScDocRenderer.new;
         /* TODO:
-  All documents alphabetically
-  All documents by categories
-  All classes by inheritance tree
-  All classes alphabetically
-  All classes by categories
-  All undocumented classes
-  All ugens alphabetically
-  All ugens by categories
-  All methods index
+          All documents alphabetically
+          All documents by categories
+          All classes alphabetically
+          All classes by categories
+          All undocumented classes
+          All ugens alphabetically
+          All ugens by categories
+          All methods index
         */
+
+        r.parser = p.overviewClassTree;
+        r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
     }
 
     updateAll {
@@ -613,7 +652,7 @@ ScDoc {
             var folder = target.dirname;
             var ext = source.copyToEnd(lastDot);
 //            PathName(folder).makeDir;
-            ("mkdir -p"+folder).systemCmd;
+//            ("mkdir -p"+folder).systemCmd;
             //FIXME: if source is newer than target:
             if(ext == ".schelp", {
                 ("Rendering" + source + "to" + target).postln;
@@ -624,6 +663,7 @@ ScDoc {
                 ("cp" + source + folder).systemCmd;
             });
         };
+        this.makeOverviews;
     }
 }
 

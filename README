@@ -103,6 +103,8 @@ one trick might be to detect if the method has no a-zA-Z and only one arg, and i
 Or, can we infer if a method is binary/unary op?
 Also, getters/setters should perhaps be handled specially?
 
+- It seems that if a paragraph ends with a closing :: (after a code or link tag for example), it is not split by the empty line following it. Added any character after the last :: works around it, even if it's a space character. But this should be fixed..
+
 - anchor links? link::Classes/SinOsc#examples::
   should we have a tag to create anchors? anchor::name::
 
