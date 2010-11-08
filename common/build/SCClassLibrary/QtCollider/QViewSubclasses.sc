@@ -71,6 +71,10 @@ QScrollArea : QAbstractScroll {
     hasBorder = aBool;
     this.setProperty( \hasBorder, aBool );
   }
+
+  innerBounds {
+    ^this.getProperty( \innerBounds, Rect.new );
+  }
 }
 
 /////////////////////////// WIDGETS ///////////////////////////////
