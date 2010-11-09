@@ -7,6 +7,7 @@ ScDocParser {
     var level;
     var modalTag;
     var lastTagLine;
+    var afterClosing;
     var isWS;
 
     init {
@@ -18,6 +19,7 @@ ScDocParser {
         level = 0;
         modalTag = nil;
         isWS = false;
+        afterClosing = false;
 //        doingInlineTag = false;
     }
 
@@ -121,6 +123,7 @@ ScDocParser {
                 });
                 this.endCurrent;
                 modalTag = nil;
+                afterClosing = true;
             },{
                 if(word == ("\\"++modalTag.asString),{ //allow escaped end-tag
                     this.addText(word.drop(1))
@@ -206,7 +209,8 @@ ScDocParser {
         if(current.notNil, { // add to current element text
             current.text = current.text ++ word
         },{ // no current element, so add to new 'prose' element
-            if(isWS.not, { //don't start a new prose element with whitespace
+            if((isWS.not) or: (afterClosing), { //don't start a new prose element with whitespace
+                afterClosing = false;
                 singleline = false;
                 this.addTag('prose::', word);
             });
@@ -257,13 +261,14 @@ ScDocParser {
                     if(isWS.not,{w=w+1});
                 },{
                     split2.do {|e2|
-//                        isWS = "[ \n\t]+".matchRegexp(e2[1]);
+                        isWS = "^[ \n\t]+$".matchRegexp(e2[1]);
                         this.handleWord(e2[1],l,w);
                         w=w+1;
                     };
                 });
             };
             if(modalTag.isNil and: split.isEmpty, { this.endCurrent }); //force a new prose on double blank lines
+//            this.handleWord(" ",l,-1);
             this.endLine;
         };
     }
