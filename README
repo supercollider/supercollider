@@ -98,6 +98,8 @@ All in all we have 6 different categories of tags, not counting the internal 'pr
 
 TODO
 ====
+- better error handling in parser on bogus input, etc..
+
 - handle binary/unary op methods somehow, like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we?
 one trick might be to detect if the method has no a-zA-Z and only one arg, and if so skip the parens..
@@ -128,12 +130,13 @@ HTML renderer stuff:
   which is a generated doc with a list of all classes implementing it (and the description of that method in that class?),
   if HelpSource/Methods/methodname.schelp exists, merge with this so can write interface style documentation?
 
+  to iterate over ugens, find all classes that implements ar, kr or ir.
+  and/or use category 'UGen'?
+
 - generate simple doc for classes that don't have a doc source file. (just list all methods and their args)
 put "(this class currently lacks documentation)" in summary..
 Simply scan through Class.allClasses and check if helpSourceDir +/+ "Classes" +/+ class.name++".schelp" exists.
 we could even generate a code template for the class that can be copied from the generated doc and pasted to sourceFile.schelp..
-
-- Ignore Meta_ classes in class overviews?
 
 - Handle extensions (extra classes and method additions)
 should merge stuff into the tree before parsing..? and mark method additions somehow so we can distinguish them visually in the rendered output.

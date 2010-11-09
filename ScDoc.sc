@@ -170,10 +170,12 @@ ScDocParser {
                 '##', {
                     singleline = false;
                     this.addTag('##::',nil,false); //make it look like an ordinary tag since we drop the :: in the output tree
+                    current.display = \inline;
                 },
                 '||', {
                     singleline = false;
                     this.addTag('||::',nil,false);
+                    current.display = \inline;
                 },
                 '::', { //ends tables and lists
 //                    this.leaveLevel(10);
@@ -528,7 +530,8 @@ ScDocRenderer {
 //        style = style ++ "scdoc.css";
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' /></head><body>");
 
-        cats = parser.findNode(\categories).text.findRegexp("[^ ,]+").flop[1];
+//        cats = parser.findNode(\categories).text.findRegexp("[^ ,]+").flop[1];
+        cats = ScDoc.splitList(parser.findNode(\categories).text);
         cats = if(cats.notNil, {cats.join(", ")}, {""});
         if(folder==".",{folder="SuperCollider"});
         f.write("<div class='header'>");
@@ -554,7 +557,8 @@ ScDocRenderer {
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
             f.write("See also: ");
-            x.text.findRegexp("[^ ,]+").flop[1].do {|r,i|
+//            x.text.findRegexp("[^ ,]+").flop[1].do {|r,i|
+            ScDoc.splitList(x.text).do {|r,i|
                 //FIXME: ignore superclasses? since they are already in "inherits from"...
                 if(i>0, {f.write(", ")});
                 f.write("<a href=\""++baseDir +/+ r++".html\">"++r.split($/).last++"</a>");
@@ -618,6 +622,10 @@ ScDoc {
     
     *new {
         ^super.new.init;
+    }
+    
+    *splitList {|txt|
+        ^txt.findRegexp("[-_a-zA-Z0-9]+[-_a-zA-Z0-9 ]*[-_a-zA-Z0-9]*").flop[1];
     }
 
     init {
