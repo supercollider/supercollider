@@ -1263,7 +1263,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 88332412090ABD1F00A4A7E4 /* Build configuration list for PBXProject "Plugins" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* plugins */;
 			projectDirPath = "";
@@ -1670,6 +1677,7 @@
 		37E291970E2CEBE400CB854E /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = KeyboardUGens;
 			};
@@ -1690,6 +1698,7 @@
 		468DABE30CF1FE1800FA8C88 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MachineListening;
 			};
@@ -1716,6 +1725,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = 4.0;
 				KEEP_PRIVATE_EXTERNS = NO;
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				MACH_O_TYPE = mh_bundle;
@@ -1736,10 +1746,8 @@
 		88332414090ABD1F00A4A7E4 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				EXECUTABLE_EXTENSION = scx;
@@ -1748,6 +1756,7 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = 4.0;
 				KEEP_PRIVATE_EXTERNS = NO;
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				MACH_O_TYPE = mh_bundle;
@@ -1812,6 +1821,7 @@
 		949318AB0C192F540018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FFT_UGens;
 			};
@@ -1832,6 +1842,7 @@
 		949318C20C1931070018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = BinaryOpUGens;
 			};
@@ -1852,6 +1863,7 @@
 		949318D80C19310F0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DelayUGens;
 			};
@@ -1872,6 +1884,7 @@
 		949318E30C1931110018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
@@ -1906,6 +1919,7 @@
 		949318EE0C1931120018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FilterUGens;
 			};
@@ -1926,6 +1940,7 @@
 		949318F90C1931130018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = IOUGens;
 			};
@@ -1946,6 +1961,7 @@
 		949319040C1931150018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = LFUGens;
 			};
@@ -1966,6 +1982,7 @@
 		9493190F0C1931160018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MulAddUGens;
 			};
@@ -1986,6 +2003,7 @@
 		9493191A0C1931180018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = NoiseUGens;
 			};
@@ -2006,6 +2024,7 @@
 		949319250C19311A0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = OSCUGens;
 			};
@@ -2026,6 +2045,7 @@
 		949319300C19311C0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = PanUGens;
 			};
@@ -2046,6 +2066,7 @@
 		9493193B0C19311E0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = TriggerUGens;
 			};
@@ -2066,6 +2087,7 @@
 		949319460C1931260018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = UnaryOpUGens;
 			};
@@ -2086,6 +2108,7 @@
 		949319510C1931280018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = MouseUGens;
 			};
@@ -2106,6 +2129,7 @@
 		9493197C0C1931A30018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = GendynUGens;
 			};
@@ -2126,6 +2150,7 @@
 		949319870C1931A40018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = PhysicalModellingUGens;
 			};
@@ -2146,6 +2171,7 @@
 		949319920C1931A50018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = FFT2_UGens;
 			};
@@ -2166,6 +2192,7 @@
 		9493199D0C1931A60018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DemandUGens;
 			};
@@ -2186,6 +2213,7 @@
 		949319A80C1931A70018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = DynNoiseUGens;
 			};
@@ -2206,6 +2234,7 @@
 		949319B30C1931A80018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = ChaosUGens;
 			};
@@ -2226,6 +2255,7 @@
 		DC43F08D0CB26A670020E8B7 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = UnpackFFTUGens;
 			};
@@ -2246,10 +2276,8 @@
 		F36C2D481125D9DB0099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				EXECUTABLE_EXTENSION = scx;
@@ -2258,6 +2286,7 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = 4.2;
 				KEEP_PRIVATE_EXTERNS = NO;
 				LINK_WITH_STANDARD_LIBRARIES = YES;
 				MACH_O_TYPE = mh_bundle;
@@ -2269,7 +2298,7 @@
 				);
 				OTHER_LDFLAGS = "-lm";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				SYMROOT = build/plugins;
 				USER_HEADER_SEARCH_PATHS = "../common/include/nova-simd";
 			};
@@ -2608,6 +2637,7 @@
 		F3F479160D03BCB0001A470F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = GrainUGens;
 			};
@@ -2628,6 +2658,7 @@
 		F3F479210D03BCDB001A470F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = ReverbUGens;
 			};
@@ -2648,6 +2679,7 @@
 		FE2582C90C2C096A00307453 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_VERSION = 4.0;
 				OTHER_CFLAGS = "$(inherited)";
 				PRODUCT_NAME = TestUGens;
 			};
