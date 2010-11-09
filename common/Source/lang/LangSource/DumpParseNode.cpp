@@ -313,7 +313,7 @@ void slotString(PyrSlot *slot, char *str)
 							slotRawSymbol(&slotRawClass(&slotRawMethod(&slotRawFrame(slot)->method)->ownerclass)->name)->name,
 							slotRawSymbol(&slotRawMethod(&slotRawFrame(slot)->method)->name)->name);
 					} else {
-						sprintf(str, "Frame (%0X) of Function", slotRawInt(slot));
+						sprintf(str, "Frame (%0X) of Function", slotRawFrame(slot));
 					}
 				} else {
 					sprintf(str, "instance of %s (%p, size=%d, set=%d)",
