@@ -9,6 +9,7 @@ ScDocParser {
     var lastTagLine;
     var afterClosing;
     var isWS;
+    var stripFirst;
 
     init {
         root = tree = List.new;
@@ -20,6 +21,7 @@ ScDocParser {
         modalTag = nil;
         isWS = false;
         afterClosing = false;
+        stripFirst = false;
 //        doingInlineTag = false;
     }
 
@@ -85,6 +87,7 @@ ScDocParser {
         var simpleTag = {
             singleline = true;
             this.addTag(tag);
+            stripFirst = true;
         };
         var noNameSection = {
             singleline = true; //this doesn't actually matter here since we don't have a text field?
@@ -96,6 +99,7 @@ ScDocParser {
                 singleline = true;
                 this.enterLevel(lev);
                 this.addTag(tag,"",true);
+                stripFirst = true;
             }        
         };
         var modalRangeTag = {
@@ -206,6 +210,10 @@ ScDocParser {
     }
     
     addText {|word|
+        if(stripFirst, {
+            stripFirst = false;
+            word = word.stripWhiteSpace;
+        });
         if(current.notNil, { // add to current element text
             current.text = current.text ++ word
         },{ // no current element, so add to new 'prose' element
@@ -354,6 +362,10 @@ ScDocRenderer {
 
     init {
     }
+    
+    simplifyName {|txt|
+        ^txt.toLower.tr($\ ,$_);
+    }
 
     renderHTMLSubTree {|file,node,parentTag=false|
         var f, m, mname, args, split;
@@ -373,11 +385,11 @@ ScDocRenderer {
                 });
             },
             'section', {
-                file.write("<h2>"++node.text++"</h2>\n");
+                file.write("<a name='"++this.simplifyName(node.text)++"'><h2>"++node.text++"</h2></a>\n");
                 do_children.();
             },
             'subsection', {
-                file.write("<h3>"++node.text++"</h3>\n");
+                file.write("<a name='"++this.simplifyName(node.text)++"'><h3>"++node.text++"</h3></a>\n");
                 do_children.();
             },
             'classmethods', {

@@ -107,6 +107,7 @@ Or, can we infer if a method is binary/unary op?
 Also, getters/setters should perhaps be handled specially?
 
 - It seems that if a paragraph ends with a closing :: (after a code or link tag for example), it is not split by the empty line following it. Adding any character after the last :: works around it, but this should be fixed..
+Probably because \n is handled differently than other whitespace (this.endLine etc)..
 
 - anchor links? link::Classes/SinOsc#examples::
   should we have a tag to create anchors? anchor::name::
