@@ -4,8 +4,8 @@ QHelpBrowser : QView {
 
   *qtClass {^"QcHelpBrowser"}
 
-  *new {
-    ^super.new.initQHelpBrowser;
+  *new { arg parent, bounds;
+    ^super.new(parent,bounds).initQHelpBrowser;
   }
 
   initQHelpBrowser {

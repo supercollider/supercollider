@@ -5,11 +5,17 @@
     var nodes;
     var fAddNode;
     var searchResults;
+    var bounds;
 
     // Call to ensure the tree has been built
     this.tree( sysext, userext, allowCached );
 
-    browser = QHelpBrowser.new;
+    bounds = Rect(0,0,800,600);
+    bounds = bounds.moveToPoint( bounds.centerIn( QWindow.screenBounds ) );
+    browser = QHelpBrowser.new( nil, bounds );
+
+    browser.bounds = bounds;
+
     listViews = Array.new;
     nodes = Array.new;
 
