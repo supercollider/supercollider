@@ -43,6 +43,7 @@ if(APPLE)
 	endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	add_definitions("-DSC_LINUX")
+	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
 
 if(WIN32)
