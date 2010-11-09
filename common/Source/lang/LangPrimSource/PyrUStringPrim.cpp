@@ -158,7 +158,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		free(ustring);
 		free(string);
 		SetObject(a, result_array);
-		//uregex_close(expression);
+		uregex_close(expression);
 		return errNone;
 	}
 
@@ -168,6 +168,7 @@ nilout:
 	free(regexStr);
 	free(ustring);
 	SetNil(a);
+	uregex_close(expression);
 	return errFailed;
 }
 
