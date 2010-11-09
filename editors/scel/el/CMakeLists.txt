@@ -24,11 +24,12 @@ add_custom_target(sclang-vars.elc ALL
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sclang-vars.elc
 	DESTINATION share/emacs/site-lisp)
 
-
 foreach (el ${scel_sources})
 	configure_file(${el} ${CMAKE_CURRENT_BINARY_DIR}/${el})
 	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${el}c
-		COMMAND ${EMACS_EXECUTABLE} -batch -f batch-byte-compile
+		COMMAND ${EMACS_EXECUTABLE} -batch
+			--eval \"(add-to-list 'load-path (expand-file-name \\\"${CMAKE_CURRENT_SOURCE_DIR}\\\"))\"
+			-f batch-byte-compile
 			${CMAKE_CURRENT_BINARY_DIR}/${el}
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${el}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
