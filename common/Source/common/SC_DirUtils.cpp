@@ -129,6 +129,7 @@ bool sc_IsSymlink(const char* path)
 	return false;
 #else
 	struct stat buf;
+
 	return ((stat(path, &buf) == 0) &&
 			S_ISLNK(buf.st_mode));
 #endif
@@ -184,21 +185,31 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 		Boolean isFolder;
 		Boolean wasAliased;
 		OSErr err = FSResolveAliasFile (&dirRef, true, &isFolder, &wasAliased);
+		if (err)
+		{
+			return -1;
+		}
 		isAlias = wasAliased;
-		if ( !err && wasAliased ) {
+		if (wasAliased)
+		{
 			UInt8 resolvedPath[PATH_MAX];
 			osStatusErr = FSRefMakePath (&dirRef, resolvedPath, length);
-			if ( !osStatusErr ) {
-				strncpy(returnPath, (char *) resolvedPath, length);
-				return 0;
+			if (osStatusErr)
+			{
+				return -1;
 			}
+			strncpy(returnPath, (char *) resolvedPath, length);
+			return 0;
 		}
 	}
-	return -1;
-#elif defined(__linux__) || defined(__FreeBSD__)
+#endif
+
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
 	isAlias = sc_IsSymlink(path);
 	if (realpath(path, returnPath))
+	{
 		return 0;
+	}
 
 	return -1;
 #endif
@@ -444,7 +455,10 @@ bool sc_ReadDir(SC_DirHandle* dir, const char* dirname, char* path, bool& skipEn
 
 	// resolve path
 	bool isAlias = false;
-	sc_ResolveIfAlias(entrypathname, path, isAlias, PATH_MAX);
+	if (sc_ResolveIfAlias(entrypathname, path, isAlias, strlen(entrypathname))<0)
+	{
+		skipEntry = true;
+	}
 
 	return true;
 #endif
