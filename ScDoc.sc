@@ -68,10 +68,10 @@ ScDocParser {
         });
     }
 
-    addTag {|tag, text="", children=false|
+    addTag {|tag, text="", children=false, display=\block|
         this.endCurrent;
         tag = tag.asString.drop(-2).asSymbol;
-        current = (tag:tag, display:\block, text:text, children:if(children,{List.new},{nil}));
+        current = (tag:tag, display:display, text:text, children:if(children,{List.new},{nil}));
 //        current = (tag:tag, text:text, children:if(children,{List.new},{nil}));
         tree.add(current);
         if(children, {tree = current.children}); //recurse into children list
@@ -169,13 +169,11 @@ ScDocParser {
 //                },
                 '##', {
                     singleline = false;
-                    this.addTag('##::',nil,false); //make it look like an ordinary tag since we drop the :: in the output tree
-                    current.display = \inline;
+                    this.addTag('##::',nil,false,\inline); //make it look like an ordinary tag since we drop the :: in the output tree
                 },
                 '||', {
                     singleline = false;
-                    this.addTag('||::',nil,false);
-                    current.display = \inline;
+                    this.addTag('||::',nil,false,\inline);
                 },
                 '::', { //ends tables and lists
 //                    this.leaveLevel(10);
@@ -254,11 +252,12 @@ ScDocParser {
                 word = e[1];
                 split2 = word.findRegexp("([a-zA-Z]+::)([^ \n\t]+)(::)")[1..]; //split stuff like::this::...
                 if(split2.isEmpty,{
-                    isWS = "[ \n\t]+".matchRegexp(word);
+                    isWS = "^[ \n\t]+$".matchRegexp(word);
                     this.handleWord(word,l,w);
                     if(isWS.not,{w=w+1});
                 },{
                     split2.do {|e2|
+//                        isWS = "[ \n\t]+".matchRegexp(e2[1]);
                         this.handleWord(e2[1],l,w);
                         w=w+1;
                     };
