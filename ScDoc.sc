@@ -163,6 +163,7 @@ ScDocParser {
                 'code::',               modalRangeTag,
                 'emphasis::',           modalRangeTag,
                 'link::',               modalRangeTag,
+                'anchor::',             modalRangeTag,                
 
                 'list::',               listEnter,
                 'tree::',               listEnter,
@@ -467,10 +468,16 @@ ScDocRenderer {
                 if("[a-zA-Z]+://.+".matchRegexp(node.text),{
                     file.write("<a href=\""++node.text++"\">"++node.text++"</a>");
                 },{
-                    file.write("<a href=\""++baseDir +/+ node.text++".html\">"++node.text.split($/).last++"</a>");
+                    f = node.text.split($#);
+                    m = "";
+                    if(f[1].notNil, {m = "#"++f[1]});
+                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++node.text.split($/).last++"</a>");
                     //FIXME: need to have relative uri's
                     //best would be to keep track, have a currentDir class variable.
                 });
+            },
+            'anchor', {
+                file.write("<a name='"++node.text++"'</a>");
             },
             'code', {
                 if(node.display == \block, {
