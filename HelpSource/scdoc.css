@@ -159,7 +159,9 @@ td p {
 */
 
 .note, .warning {
-    background: #eec;
+/*    background: #eec;*/
+    background: #ffe;
+    border: 1px solid #dd9;
     padding: 1em;
     margin: 1em;
 }
