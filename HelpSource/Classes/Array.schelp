@@ -1,6 +1,6 @@
 class:: Array
 summary:: fixed size collection
-related:: Reference/Literals Classes/List
+related:: Reference/Literals, Classes/List
 categories:: Collections
   
 description::

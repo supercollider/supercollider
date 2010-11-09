@@ -331,7 +331,7 @@ ScDocParser {
         var n = (tag:'tree', children:List.new);
         r.add((tag:'title', text:"Class Tree"));
         r.add((tag:'summary', text:"All classes by inheritance tree"));
-        r.add((tag:'related', text:"Overviews/Classes Overviews/ClassesByCategories Overviews/Methods"));
+        r.add((tag:'related', text:"Overviews/Classes, Overviews/ClassesByCategories, Overviews/Methods"));
         r.add((tag:'categories', text:"Classes"));
         r.add(n);
         this.dumpClassTree(n,Object);
@@ -629,7 +629,7 @@ ScDoc {
     }
     
     *splitList {|txt|
-        ^txt.findRegexp("[-_a-zA-Z0-9]+[-_a-zA-Z0-9 ]*[-_a-zA-Z0-9]*").flop[1];
+        ^txt.findRegexp("[-_a-zA-Z0-9]+[-_/a-zA-Z0-9 ]*[-_/a-zA-Z0-9]*").flop[1];
     }
 
     init {

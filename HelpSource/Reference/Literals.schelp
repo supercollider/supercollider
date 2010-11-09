@@ -1,6 +1,6 @@
 title:: Literals
 summary:: values with a direct syntactic representation
-related:: Classes/Number Classes/Integer Classes/Float classes/SimpleNumber Classes/String Classes/Array Classes/Symbol
+related:: Classes/Number, Classes/Integer, Classes/Float, classes/SimpleNumber, Classes/String, Classes/Array, Classes/Symbol
 categories:: Language
 
 Literals are values which have a direct syntactic representation. 

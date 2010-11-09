@@ -1,6 +1,7 @@
 class::LFPulse
 summary::pulse oscillator
-categories::UGens>Generators>Deterministic UGens>Oscillators
+categories::UGens>Generators>Deterministic, UGens>Oscillators
+related::Classes/LFSaw
 
 description::
 A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.
