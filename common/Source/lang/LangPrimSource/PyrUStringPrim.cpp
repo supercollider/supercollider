@@ -83,11 +83,11 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	UParseError uerr;
 	URegularExpression *expression = uregex_open(regexStr, -1, flags, &uerr, &status);
 
+	SCRegExRegion * what = NULL;
 	if(!U_FAILURE(status)) {
-		int indx = 0;
 		int size = 0;
 		uregex_setText(expression, ustring, -1, &status);
-		SCRegExRegion * what = (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
+		what = (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
 		for(int i=0; i< maxfind; i++)
 		{
 			SCRegExRegion range;
@@ -109,7 +109,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				what[size].end = sc_clip(uregex_end(expression, i, &status), 0, stringsize);
 				what[size].matched = true;
 //				post("index:%i, size:%i, start %i, end %i\n", i, size, what[i].start, what[i].end);
-				size = indx++ + 1;
+				++size;
 				if(U_FAILURE(status)) goto nilout;
 			}
 		}
@@ -121,7 +121,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		{
 			for (int i = 0; i < size; i++)
 			{
-				if (what[0].matched == false)
+				if (what[i].matched == false)
 				{
 					result_array->size++;
 					SetNil(result_array->slots+i);
@@ -163,6 +163,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	}
 
 nilout:
+	free(what);
 	free(string);
 	free(pattern);
 	free(regexStr);
