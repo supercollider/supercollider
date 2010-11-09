@@ -1014,7 +1014,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 88331E2A090AB77300A4A7E4 /* Build configuration list for PBXProject "Synth" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* common */;
 			projectDirPath = "";
@@ -1284,27 +1291,25 @@
 		88331E2B090AB77300A4A7E4 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				ARCHS = "$(NATIVE_ARCH)";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				COPY_PHASE_STRIP = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = 4.0;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Development;
 		};
 		88331E2C090AB77300A4A7E4 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_AUTO_VECTORIZATION = YES;
@@ -1312,6 +1317,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_VERSION = 4.0;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
 					"-DNDEBUG",
@@ -1325,8 +1331,7 @@
 		942F96FE0B03380E00E00399 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				ARCHS = "$(NATIVE_ARCH)";
 				GCC_VERSION = 4.0;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
@@ -1341,7 +1346,7 @@
 					"-faltivec",
 				);
 				PRODUCT_NAME = scsynth;
-				SDKROOT = "";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Development;
 		};
@@ -1372,6 +1377,7 @@
 		94F5FAD30C1E6BC0005CDF9F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
 				EXECUTABLE_PREFIX = "";
 				EXPORTED_SYMBOLS_FILE = libscsynth_exp;
 				GCC_VERSION = 4.0;
@@ -1387,6 +1393,7 @@
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				ZERO_LINK = YES;
 			};
 			name = Development;
@@ -1529,10 +1536,8 @@
 		F36C2CE01125D6E00099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_AUTO_VECTORIZATION = YES;
@@ -1540,13 +1545,14 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_VERSION = 4.2;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
 					"-DNDEBUG",
 					"-DSC_DARWIN",
 				);
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
 			name = "Deployment32-64";
 		};
@@ -1582,7 +1588,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = 4.0;
+				GCC_VERSION = 4.2;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
