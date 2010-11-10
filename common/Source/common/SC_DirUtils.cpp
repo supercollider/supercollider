@@ -202,9 +202,7 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 			return 0;
 		}
 	}
-#endif
-
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
+#elif defined(__linux__) || defined(__FreeBSD__)
 	isAlias = sc_IsSymlink(path);
 	if (realpath(path, returnPath))
 	{
