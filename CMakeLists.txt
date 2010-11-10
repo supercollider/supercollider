@@ -65,8 +65,8 @@ ADD_CUSTOM_TARGET(uninstall
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     if(NOT APPLE)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096 -Wnon-virtual-dtor -Wstrict-overflow")
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math -frename-registers -funsafe-loop-optimizations -Wunsafe-loop-optimizations -fomit-frame-pointer")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -ffast-math -frename-registers -fomit-frame-pointer")
     endif()
 
     if(SSE)
