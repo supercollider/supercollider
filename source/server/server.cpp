@@ -29,6 +29,11 @@
 #include "sc/sc_synth_prototype.hpp"
 #include "sc/sc_ugen_factory.hpp"
 
+#ifdef JACK_BACKEND
+#include "jack/jack.h"
+#endif
+
+
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
 #include <CoreAudio/HostTime.h>
@@ -184,15 +189,25 @@ void thread_init_functor::operator()(int thread_index)
 {
     if (rt)
     {
-        bool success = false;
-
+        bool success = true;
 #ifdef NOVA_TT_PRIORITY_RT
+
+#ifdef JACK_BACKEND
+        while (!instance)
+            usleep(1000);
+
+        int priority = instance->max_realtime_priority();
+        if (priority < 0)
+            success = false;
+#else
         int min, max;
         boost::tie(min, max) = thread_priority_interval_rt();
         int priority = max - 3;
         priority = std::max(min, priority);
+#endif
 
-        success = thread_set_priority_rt(priority);
+        if (success)
+            success = thread_set_priority_rt(priority);
 #endif
 
 #if defined(NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT) && defined (__APPLE__)

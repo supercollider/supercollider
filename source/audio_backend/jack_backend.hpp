@@ -26,6 +26,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <jack/jack.h>
+#include <jack/thread.h>
 
 #include "nova-tt/thread_affinity.hpp"
 #include "utilities/branch_hints.hpp"
@@ -212,6 +213,13 @@ public:
 
         free(ports);
         return 0;
+    }
+
+    int max_realtime_priority(void) const
+    {
+        while (!client)
+            usleep(1000);
+        return jack_client_max_real_time_priority(client);
     }
 
 private:
