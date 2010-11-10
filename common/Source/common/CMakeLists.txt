@@ -10,6 +10,7 @@ add_library(sccommon SHARED
 
 include_directories(../../Headers/lang)
 
+target_link_libraries(sccommon ${PTHREADS_LIBRARY})
 
 if (APPLE)
 	target_link_libraries(sccommon "-framework CoreServices")
