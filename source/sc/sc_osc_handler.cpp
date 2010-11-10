@@ -909,7 +909,8 @@ void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
             float value = extract_float_argument(it++);
             node->set(str, value);
         }
-    }
+    } else
+        throw runtime_error("invalid argument");
 }
 
 void handle_s_new(received_message const & msg)
@@ -1240,6 +1241,7 @@ void handle_n_##cmd(received_message const & msg)                       \
         catch(std::exception & e)                                       \
         {                                                               \
             cout << "Exception during /n_" #cmd "handler: " << e.what() << endl; \
+            return;                                                     \
         }                                                               \
     }                                                                   \
 }
@@ -1264,7 +1266,8 @@ void set_control_n(server_node * node, osc::ReceivedMessageArgumentIterator & it
             values[i] = extract_float_argument(it++);
 
         node->set(str, count, values.c_array());
-    }
+    } else
+        throw runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(setn, set_control_n)
@@ -1289,7 +1292,8 @@ void fill_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
             values[i] = value;
 
         node->set(str, count, values.c_array());
-    }
+    } else
+        throw runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(fill, fill_control)
@@ -1330,7 +1334,8 @@ void map_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group<const char*>, _1,
                                                                               control_name, control_bus_index));
-    }
+    } else
+        throw runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(map, map_control)
@@ -1348,18 +1353,18 @@ void handle_n_mapn_group(server_node & node, slot_type slot, int control_bus_ind
 
 void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
-        if (it->IsInt32()) {
-            osc::int32 control_index = it->AsInt32Unchecked(); ++it;
-            osc::int32 control_bus_index = it->AsInt32(); ++it;
-            osc::int32 count = it->AsInt32(); ++it;
+    if (it->IsInt32()) {
+        osc::int32 control_index = it->AsInt32Unchecked(); ++it;
+        osc::int32 control_bus_index = it->AsInt32(); ++it;
+        osc::int32 count = it->AsInt32(); ++it;
 
-            if (node->is_synth()) {
-                sc_synth * synth = static_cast<sc_synth*>(node);
-                synth->map_control_buses(control_index, control_bus_index, count);
-            }
-            else
-                static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<slot_index_t>, _1,
-                                                                                  control_index, control_bus_index, count));
+        if (node->is_synth()) {
+            sc_synth * synth = static_cast<sc_synth*>(node);
+            synth->map_control_buses(control_index, control_bus_index, count);
+        }
+        else
+            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<slot_index_t>, _1,
+                                                                                control_index, control_bus_index, count));
     }
     else if (it->IsString()) {
         const char * control_name = it->AsStringUnchecked(); ++it;
@@ -1373,7 +1378,8 @@ void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<const char*>, _1,
                                                                               control_name, control_bus_index, count));
-    }
+    } else
+        throw runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(mapn, mapn_control)
@@ -1413,7 +1419,8 @@ void mapa_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group<const char *>, _1,
                                                                               control_name, audio_bus_index));
-    }
+    } else
+        throw runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(mapa, mapa_control)
@@ -1457,7 +1464,8 @@ void mapan_control(server_node * node, osc::ReceivedMessageArgumentIterator & it
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group<const char *>, _1,
                                                                               control_name, audio_bus_index, count));
         }
-    }
+    } else
+        throw runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(mapan, mapan_control)
