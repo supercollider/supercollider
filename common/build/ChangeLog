@@ -1,9 +1,27 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
+SuperCollider v3.4.1, released 2010-11
+======================================
 
-* 2010-07-12 remove accidental debug messages from SCView (on mac, posted a lot of info to Console, could affect performance) - tb
+Bugfixes:
+---------
+
+* 2010-07-12 remove accidental debug messages from SCView (on mac, posted a lot of info to Console, could affect performance) - ds
 * 2010-09-11 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
 * 2010-10-10 remove more crufty NSLog debug messages - ds
+* 2010-10-19 debian-style scvim-check-if-plugin-is-active, brought upstream - ds
+* 2010-10-19 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
+* 2010-10-19 partial fix for bugs item #2994009 - seems to fix LFPar but not LFCub. More work needed - ds
+* 2010-10-19 DC: fix multichannel expansion - tb
+* 2010-10-19 fix to demand rate unary op ugens, thanks james harkins - tb
+* 2010-10-19 Ugens: LinLin/LinExp fixes - tb
+* 2010-10-19 only /clearSched if RT - to fix tracker item #3033454 - tb
+* 2010-10-19 UGens: binary operators - fix scalar/signal division - tb
+* 2010-10-19 fix bug 2988525: SynthDef:writeDefFile appends path correctly - tb
+* 2010-10-19 ProcessOSCPacket: fix possible deadlock - tb
+* 2010-10-19 fix network address handling - albert graef
+* 2010-11-05 fix memory issues in regular expressions: correct memory management in prString_FindRegexp - tb
+* 2010-11-07 sclang: correct symlink handling - tb, ar
 
 SuperCollider v3.4, released 2010-07
 ====================================
