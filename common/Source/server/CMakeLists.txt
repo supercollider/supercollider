@@ -123,7 +123,7 @@ set_property(TARGET libscsynth
 			 PROPERTY OUTPUT_NAME scsynth)
 
 add_executable(scsynth scsynth_main.cpp)
-target_link_libraries(scsynth libscsynth)
+target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
 
 
 #TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
