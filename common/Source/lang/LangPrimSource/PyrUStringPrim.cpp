@@ -116,48 +116,41 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 		PyrObject *result_array = newPyrArray(g->gc, size, 0, true);
 		result_array->size = 0;
+		SetObject(a, result_array);
 
 		if (size>0) //(matched)
 		{
 			for (int i = 0; i < size; i++)
 			{
-				if (what[i].matched == false)
-				{
-					result_array->size++;
-					SetNil(result_array->slots+i);
-				} else {
-					result_array->size++;
+				assert(what[i].matched);
+				result_array->size++;
 
-					int match_start =  what[i].start;
-					int match_length = what[i].end -  what[i].start;
+				int match_start =  what[i].start;
+				int match_length = what[i].end -  what[i].start;
 //					post("for i:%i, start %i, end %i\n",  i, what[i].start,  what[i].end);
 //					char *match = (char*)malloc(match_length);
-					char match[match_length];
+				char match[match_length];
 
-					strncpy(match, string + offset + match_start, match_length);
-					match[match_length] = 0;
-					PyrObject *array = newPyrArray(g->gc, 2, 0, true);
-					array->size = 2;
-					SetInt(array->slots, match_start + offset);
+				strncpy(match, string + offset + match_start, match_length);
+				match[match_length] = 0;
+				PyrObject *array = newPyrArray(g->gc, 2, 0, true);
+				SetObject(result_array->slots + i, array);
+				g->gc->GCWrite(result_array, array);
 
-					PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
-					SetObject(array->slots+1, matched_string);
-					g->gc->GCWrite(array, matched_string);
+				array->size = 2;
+				SetInt(array->slots, match_start + offset);
 
-					SetObject(result_array->slots + i, array);
-					g->gc->GCWrite(result_array, array);
-				}
+				PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
+				SetObject(array->slots+1, matched_string);
+				g->gc->GCWrite(array, matched_string);
 			}
 		}
-		else
-			SetNil(a);
 
 		free(what);
 		free(pattern);
 		free(regexStr);
 		free(ustring);
 		free(string);
-		SetObject(a, result_array);
 		uregex_close(expression);
 		return errNone;
 	}
