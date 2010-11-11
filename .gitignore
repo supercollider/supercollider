@@ -7,6 +7,7 @@ common/build/libscsynth.a
 common/build/plugins
 common/build/sclang
 common/build/scsynth
+common/build/*.app/
 
 # scons specific files
 config.log
