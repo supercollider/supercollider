@@ -35,6 +35,7 @@ class QcApplication : public QApplication
     static void postSyncEvent( QcSyncEvent *e, EventHandlerFn handler );
 
   private:
+    bool event( QEvent * );
     void customEvent( QEvent * );
 
     static QMutex _mutex;

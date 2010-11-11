@@ -21,7 +21,11 @@
 
 #include "QcApplication.h"
 
+#include <PyrLexer.h>
+#include <VMGlobals.h>
+
 #include <QThread>
+#include <QFileOpenEvent>
 
 QcApplication * QcApplication::_instance = 0;
 QMutex QcApplication::_mutex;
@@ -90,6 +94,31 @@ void QcApplication::postSyncEvent( QcSyncEvent *e, EventHandlerFn handler )
   }
 
   _mutex.unlock();
+}
+
+bool QcApplication::event( QEvent *e )
+{
+  if( e->type() == QEvent::FileOpen ) {
+
+    // open the file dragged onto the application icon on Mac
+
+    QFileOpenEvent *fe = static_cast<QFileOpenEvent*>(e);
+
+    QtCollider::lockLang();
+    gMainVMGlobals->canCallOS = true;
+
+    QString cmdLine = QString("Document.open(\"%1\")").arg(fe->file());
+    char *method = strdup( "interpretPrintCmdLine" );
+    interpretCmdLine( cmdLine.toStdString().c_str(), cmdLine.size(), method );
+    free(method);
+
+    gMainVMGlobals->canCallOS = false;
+    QtCollider::unlockLang();
+
+    return true;
+  }
+
+  return QApplication::event( e );
 }
 
 void QcApplication::customEvent( QEvent *e )
