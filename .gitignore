@@ -20,3 +20,6 @@ scache.conf
 common/Packager/LinuxExclusions.txt
 common/Packager/SuperCollider*.tar.gz
 common/Packager/SuperCollider*.dmg
+
+#build directory
+/build
