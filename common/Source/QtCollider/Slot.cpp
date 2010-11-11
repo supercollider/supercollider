@@ -242,14 +242,27 @@ QPalette Slot::toPalette( PyrSlot *slot )
 
 VariantList Slot::toVariantList( PyrSlot *slot )
 {
-  if ( !isKindOfSlot( slot, class_array ) ) return VariantList();
+  if( isKindOfSlot( slot, class_array ) ) {
+    PyrObject *obj = slotRawObject( slot );
+    PyrSlot *slots = obj->slots;
+    int size = obj->size;
+    VariantList list;
+    for( int i = 0; i < size; ++i, ++slots )
+      list.data << Slot::toVariant( slots );
+    return list;
+  }
+  else if( isKindOfSlot( slot, class_symbolarray ) ) {
+    printf("a SymbolArray");
+    PyrSymbolArray *symarray = slotRawSymbolArray( slot );
+    PyrSymbol **symbols = symarray->symbols;
+    int size = symarray->size;
+    VariantList list;
+    for( int i = 0; i < size; ++i, ++symbols )
+      list.data << QVariant( QString( (*symbols)->name) );
+    return list;
+  }
 
-  PyrSlot *slots = slotRawObject( slot )->slots;
-  int size = slotRawObject( slot )->size;
-  VariantList list;
-  for( int i = 0; i < size; ++i, ++slots )
-    list.data << Slot::toVariant( slots );
-  return list;
+  return VariantList();
 }
 
 QObject* Slot::toObject( PyrSlot *slot )
@@ -303,7 +316,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
         else
           return QVariant::fromValue<QObject*>( obj );
       }
-      else if( isKindOfSlot( slot, class_array ) ) {
+      else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
         return QVariant::fromValue<VariantList>( toVariantList(slot) );
       }
       else {
@@ -355,7 +368,7 @@ void Slot::setData( PyrSlot *slot )
         _type = QMetaType::QRectF;
         _ptr = new QRectF( toRect(slot) );
       }
-      else if( isKindOfSlot( slot, class_array ) ) {
+      else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
         _type = qMetaTypeId<VariantList>();
         _ptr = new VariantList( toVariantList(slot) );
       }
