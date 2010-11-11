@@ -64,23 +64,6 @@
       newListView.setParent( browser );
     };
 
-    browser.fSearch = { arg me, searchString;
-      var resultsData;
-      searchResults = this.search( searchString );
-      resultsData = searchResults.collect ({ |res|
-        [res.docname, res.contextTrimmed];
-      });
-      browser.setSearchResults( resultsData );
-    };
-
-    browser.fSearchResultActivated = { arg me, index;
-      var res;
-      res = searchResults[index];
-      if( res.notNil ) {
-        browser.load( res.path );
-      }
-    };
-
     fAddNode.value( tree );
 
     browser.front;

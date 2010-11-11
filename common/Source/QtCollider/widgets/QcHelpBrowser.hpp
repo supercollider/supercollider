@@ -27,15 +27,28 @@
 #include <QWidget>
 #include <QAbstractScrollArea>
 #include <QTreeWidget>
+#include <QVBoxLayout>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QWebView>
 
-class QWebView;
-class QLineEdit;
-class QLabel;
 class QStackedWidget;
 class QcWidgetScroll;
 
+class SimpleFindTool;
+class ClassView;
+class HelpFileView;
+
 class QcHelpBrowser : public QWidget
 {
+  enum SearchType {
+    Help,
+    Class,
+    Method
+  };
+
   Q_OBJECT
   Q_PROPERTY( int minimumListWidth READ minimumListWidth WRITE setMinimumListWidth );
 
@@ -52,7 +65,10 @@ public:
   void setCurrentIndex( int i );
 
   Q_INVOKABLE
-  void setSearchResults( const VariantList& l );
+  void setSearchResults( const QString &text, int type, const VariantList &data );
+
+  Q_INVOKABLE
+  void setClassReference( const QString &className, const VariantList &data );
 
   int minimumListWidth() const { return 0; }
   void setMinimumListWidth( int i );
@@ -61,24 +77,77 @@ public:
   }
 
 Q_SIGNALS:
-  void searchInvoked( const QString & );
+  void searchRequest( const QString &, int );
   void searchResultActivated( int );
+  void classReferenceRequest( const QString &className );
 
 private Q_SLOTS:
-  void onSearchCurrent();
   void onSearch();
   void onSearchResultActivated( QTreeWidgetItem * item );
   void onLoadFinished( bool ok );
+  void showContent( QWidget *contentView );
 
 private:
-  QWebView *webView;
-  QcWidgetScroll *categoryScroll;
-  QLineEdit *findField;
+  // actions
+  QAction *aShowHelp;
+  QAction *aShowRef;
+
+  // general dialog operation
+  SimpleFindTool *findTool;
   QLineEdit *searchField;
+
+  // content display
+  HelpFileView *helpFileView;
+  ClassView *classRefView;
+  QStackedWidget *contentStack;
+
+  // database browsing and searching
   QLabel *searchResultTitle;
   QTreeWidget *searchResultList;
+  QComboBox *searchTypeChoice;
+  QCheckBox *searchCaseChoice;
   QWidget *searchResultWidget;
+
+  QcWidgetScroll *categoryScroll;
+
   QStackedWidget *browseStack;
+
+  // data
+  int curSearchType;
+
+  int reqSearchType;
+  QString reqSearchString;
+
+  QString reqClassName;
+};
+
+class SimpleFindTool : public QLineEdit
+{
+  Q_OBJECT
+public:
+  SimpleFindTool( QWidget *parent = 0 ) : QLineEdit( parent ) {
+    connect( this, SIGNAL(textEdited(const QString&)), this, SLOT(activate()) );
+    connect( this, SIGNAL(returnPressed()), this, SLOT(activate()) );
+  }
+Q_SIGNALS:
+  void activated( const QString & searchText, bool reversed = false );
+private Q_SLOTS:
+  void activate() {
+    Q_EMIT( activated( text() ) );
+  }
+};
+
+class HelpFileView : public QWebView
+{
+  Q_OBJECT
+public:
+  HelpFileView( QWidget *parent = 0 ) : QWebView( parent ) {}
+public Q_SLOTS:
+  void findText( const QString &searchText, bool reversed = false ) {
+    QWebPage::FindFlags flags( QWebPage::FindWrapsAroundDocument );
+    if( reversed ) flags |= QWebPage::FindBackward;
+    QWebView::findText( searchText, flags );
+  }
 };
 
 class QcWidgetScroll : public QAbstractScrollArea
@@ -103,6 +172,39 @@ private:
   int _minChildWidth;
   //int _currentIndex;
   int _visibleChildrenCount;
+};
+
+class MethodWidget : public QWidget
+{
+public:
+  MethodWidget ( const QString &name, const QStringList args, const QString &html = QString() );
+private:
+  QString _name;
+  QStringList _args;
+  QString _html;
+};
+
+class ClassView : public QWidget
+{
+  Q_OBJECT
+public:
+  ClassView( QWidget *parent = 0 );
+  ~ClassView();
+  void setClassData( const QString &className, const VariantList & );
+  void setClassVariables( const QStringList & );
+  void setInstanceVariables( const QStringList & );
+public Q_SLOTS:
+  void findText( const QString &searchText, bool reversed = false ) {}
+private:
+  void fillLabel( QLabel *, const QStringList & );
+  QLabel *nameLabel;
+  QLabel *cvLabel;
+  QLabel *ivLabel;
+  QVBoxLayout *imLayout;
+  QVBoxLayout *cmLayout;
+  QList<MethodWidget*> cmWidgets;
+  QList<MethodWidget*> imWidgets;
+  QString currentClassName;
 };
 
 #endif
