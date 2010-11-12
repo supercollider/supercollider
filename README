@@ -101,7 +101,9 @@ TODO
 ====
 - better error handling in parser on bogus input, etc..
 
-- handle binary/unary op methods somehow, like ArrayedCollections ++
+- force class ref filename to be equal to class name?
+
+- render binary op methods differently? like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we?
 one trick might be to detect if the method has no a-zA-Z and only one arg, and if so skip the parens..
 Or, can we infer if a method is binary/unary op?

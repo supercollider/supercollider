@@ -569,9 +569,9 @@ ScDocRenderer {
 //        cats = parser.findNode(\categories).text.findRegexp("[^ ,]+").flop[1];
         cats = ScDoc.splitList(parser.findNode(\categories).text);
         cats = if(cats.notNil, {cats.join(", ")}, {""});
-        if(folder==".",{folder="SuperCollider"});
+        if(folder==".",{folder=""});
         f.write("<div class='header'>");
-        f.write("<div id='label'>"++folder.asString.toUpper++"</div>");
+        f.write("<div id='label'>SuperCollider "++folder.asString.toUpper++"</div>");
 //        f.write(if(type==\class,{"SC CLASS"},{"SC DOC"}));
         f.write("<div id='categories'>"++cats++"</div>");
         f.write("<h1>"++name++"</h1>");
