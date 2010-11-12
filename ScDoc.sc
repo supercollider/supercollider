@@ -360,7 +360,7 @@ ScDocRenderer {
     init {
     }
     
-    simplifyName {|txt|
+    *simplifyName {|txt|
         ^txt.toLower.tr($\ ,$_);
     }
 
@@ -382,11 +382,11 @@ ScDocRenderer {
                 });
             },
             'section', {
-                file.write("<a name='"++this.simplifyName(node.text)++"'><h2>"++node.text++"</h2></a>\n");
+                file.write("<a name='"++ScDocRenderer.simplifyName(node.text)++"'><h2>"++node.text++"</h2></a>\n");
                 do_children.();
             },
             'subsection', {
-                file.write("<a name='"++this.simplifyName(node.text)++"'><h3>"++node.text++"</h3></a>\n");
+                file.write("<a name='"++ScDocRenderer.simplifyName(node.text)++"'><h3>"++node.text++"</h3></a>\n");
                 do_children.();
             },
             'classmethods', {

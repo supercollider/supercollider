@@ -1,0 +1,64 @@
+class:: ScDocParser
+summary:: Parse ScDoc markup text
+categories:: Help
+related:: Classes/ScDoc, Classes/ScDocRenderer, Guides/WritingHelp, Reference/ScDocSyntax
+
+description::
+This class is part of the ScDoc help system, and handles the parsing of the help sourcefiles into an internal tree of elements.
+
+The markup language used in the help sourcefile is explained in link::Reference/ScDocSyntax::.
+
+The internal tree representation consists of an array of nodes, each node looks like this:
+code::
+(tag:'tagSymbol', text:"textString", children:[])
+::
+If the tag has text, it is put in the code::text:: field. If it has children, then the code::children:: field contains an array of children nodes.
+
+In normal cases you won't need to use this class directly, link::Classes/ScDoc:: uses this class to parse all help sourcefiles.
+
+classmethods::
+
+method::new
+Create a parser instance.
+
+instancemethods::
+
+method::parseFile
+Parse a help sourcefile written in ScDoc markup language.
+Returns the parser object. The resulting tree is available in code::parser.root::
+argument::filename
+The full path to the file.
+
+method::parse
+Parse a string of ScDoc markup language.
+Returns the parser object. The resulting tree is available in code::parser.root::
+argument::string
+The string to parse.
+
+method::root
+The root array of the internal document tree.
+
+method::dump
+Dump the internal document tree to the console in a human-readable form.
+
+method::findNode
+Find a node. Returns an object representing the node, if the node was not found the resulting object will have code::.tag:: set to nil. Example:
+code::
+p = ScDocParser.new.parseFile("/path/to/myfile.schelp");
+p.findNode("related").text.postln;
+::
+argument::tag
+The tag to search for.
+argument::rootNode
+The array to search, defaults to code::parser.root::.
+
+examples::
+
+code::
+p = ScDocParser.new;
+p.parseFile("/home/lijon/Coding/ScDoc/test.schelp");
+p.dump;
+p.findNode("summary").text.postln;
+p.parse("inline code::code example::.").dump;
+::
+

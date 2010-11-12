@@ -1,0 +1,45 @@
+class:: ScDoc
+summary:: Help system main class
+categories:: Help
+related:: Classes/ScDocParser, Classes/ScDocRenderer, Guides/WritingHelp, Reference/ScDocSyntax
+
+DESCRIPTION::
+ScDoc manages the SuperCollider documentation system, by traversing the directory tree of help sourcefiles and rendering them
+to the help target directory. It also generates different overviews.
+
+In the future, there will probably be a single instance of ScDoc stored somewhere (in thisProcess?), and it will also hold cached metadata and such.
+
+The syntax reference for the documentation markup language can be found here: link::Reference/ScDocSyntax::.
+
+A guide to writing help can be found here: link::Guides/WritingHelp::.
+
+CLASSMETHODS::
+
+method:: new
+Create a new instance.
+
+method:: splitList
+Split a comma-separated string into an array of whitespace-stripped strings, useful to parse the contents of tags like code::categories\:::: and code::related\::::.
+argument:: txt
+The string to split.
+
+INSTANCEMETHODS::
+
+method:: updateAll
+Render all help-files that need updating and generate overviews and cached metadata index. It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
+
+method:: helpSourceDir
+get/set the base directory of help sourcefiles. Defaults to code:: thisProcess.platform.systemAppSupportDir +/+ "/HelpSource" ::
+
+method:: helpTargetDir
+get/set the help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "/Help" ::
+
+EXAMPLES::
+
+Update all help-files and overviews:
+code::
+x = ScDoc.new;
+x.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
+x.updateAll;
+::
+

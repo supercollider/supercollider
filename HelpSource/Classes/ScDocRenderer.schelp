@@ -1,0 +1,42 @@
+class:: ScDocRenderer
+summary:: Render ScDoc markup text
+categories:: Help
+related:: Classes/ScDoc, Classes/ScDocParser, Guides/WritingHelp, Reference/ScDocSyntax
+
+description::
+This class is part of the ScDoc help system, and handles the rendering of the parsed document tree into output such as HTML.
+
+In normal cases you won't need to use this class directly, link::Classes/ScDoc:: uses this class to render all help files.
+
+classmethods::
+method::new
+Create a renderer instance.
+argument::p
+Optional parser object. Can also be set afterwards with code::renderer.parser=p::.
+
+method::simplifyName
+Simplify a textstring by replacing spaces with underscores and making it all lowercase. Used to convert section names to anchor names.
+argument::txt
+The textstring to simplify.
+
+instancemethods::
+
+method:: parser
+get/set the link::Classes/ScDocParser:: object to render.
+
+method:: renderHTML
+Render the tree contained in the code::parser:: instance variable to HTML file.
+argument:: filename
+The full path for the output filename. Any nonexistent intermediate directories will be created.
+argument:: folder
+The directory part relative to the base directory of the help directory tree, like "Classes" or "Reference". This is used as a simple organization for document "kind".
+
+examples::
+code::
+p = ScDocParser.new;
+r = ScDocRenderer.new;
+
+r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/Array.schelp")
+r.renderHTML("/home/lijon/share/SuperCollider/Help/Classes/Array.html")
+::
+
