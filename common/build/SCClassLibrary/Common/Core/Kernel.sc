@@ -299,7 +299,7 @@ Process {
 				if (method.name == name, {
 					found = found + 1;
 					namestring = class.name ++ ":" ++ name;
-					out << "   " << namestring << " :     ";
+					out << "   [" << namestring << "] :     ";
 					if (method.argNames.isNil or: { method.argNames.size == 1 }, {
 						out << "this." << name;
 						if (name.isSetter, { out << "(val)"; });
