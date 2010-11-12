@@ -1297,11 +1297,12 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_VERSION = 4.0;
+				GCC_VERSION = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 			};
 			name = Development;
 		};
@@ -1317,22 +1318,21 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = 4.0;
+				GCC_VERSION = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
 					"-DNDEBUG",
 					"-DSC_DARWIN",
 				);
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
 		942F96FE0B03380E00E00399 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
-				GCC_VERSION = 4.0;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1346,17 +1346,13 @@
 					"-faltivec",
 				);
 				PRODUCT_NAME = scsynth;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Development;
 		};
 		942F96FF0B03380E00E00399 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = 4.0;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1370,17 +1366,14 @@
 					"-faltivec",
 				);
 				PRODUCT_NAME = scsynth;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
 		};
 		94F5FAD30C1E6BC0005CDF9F /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
 				EXECUTABLE_PREFIX = "";
 				EXPORTED_SYMBOLS_FILE = libscsynth_exp;
-				GCC_VERSION = 4.0;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -1393,7 +1386,6 @@
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				ZERO_LINK = YES;
 			};
 			name = Development;
@@ -1401,12 +1393,9 @@
 		94F5FAD40C1E6BC0005CDF9F /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				EXECUTABLE_PREFIX = "";
 				EXPORTED_SYMBOLS_FILE = libscsynth_exp;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = 4.0;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -1419,7 +1408,6 @@
 				OTHER_CFLAGS = "$(inherited)";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				ZERO_LINK = NO;
 			};
 			name = Deployment;
@@ -1435,7 +1423,6 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				GCC_VERSION = 4.0;
 				GENERATE_PKGINFO_FILE = YES;
 				INFOPLIST_FILE = SuperColliderAU/Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
@@ -1447,7 +1434,6 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OPTIMIZATION_FLAGS = "-O0";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
@@ -1461,7 +1447,6 @@
 					/System/Library/Frameworks/CoreServices.framework/Versions/CarbonCore.framework/Versions/A/Headers,
 					"$(PROJECT_DIR)/SuperColliderAU/AUSDK",
 				);
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				WRAPPER_EXTENSION = component;
 				ZERO_LINK = YES;
 			};
@@ -1470,8 +1455,6 @@
 		D55DEB5F0EF32A2E00968B95 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EXPORTED_SYMBOLS_FILE = SuperColliderAU/Source/SuperColliderAU.exp;
@@ -1479,7 +1462,6 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				GCC_VERSION = 4.0;
 				GENERATE_PKGINFO_FILE = YES;
 				INFOPLIST_FILE = SuperColliderAU/Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
@@ -1491,7 +1473,6 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OPTIMIZATION_FLAGS = "-O0";
 				OTHER_CFLAGS = (
 					"$(inherited)",
@@ -1505,7 +1486,6 @@
 					/System/Library/Frameworks/CoreServices.framework/Versions/CarbonCore.framework/Versions/A/Headers,
 					"$(PROJECT_DIR)/SuperColliderAU/AUSDK",
 				);
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				WRAPPER_EXTENSION = component;
 				ZERO_LINK = NO;
 			};
@@ -1546,13 +1526,14 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_VERSION = 4.2;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
 					"-DNDEBUG",
 					"-DSC_DARWIN",
 				);
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT = "";
 			};
 			name = "Deployment32-64";
 		};
@@ -1571,7 +1552,6 @@
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = All;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -1585,10 +1565,7 @@
 		F36C2CE21125D6E00099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = 4.2;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1602,19 +1579,15 @@
 					"-faltivec",
 				);
 				PRODUCT_NAME = scsynth;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
 			name = "Deployment32-64";
 		};
 		F36C2CE31125D6E00099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				EXECUTABLE_PREFIX = "";
 				EXPORTED_SYMBOLS_FILE = libscsynth_exp;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = "";
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
 				LIBRARY_SEARCH_PATHS = (
@@ -1630,7 +1603,6 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				ZERO_LINK = NO;
 			};
 			name = "Deployment32-64";
@@ -1638,8 +1610,6 @@
 		F36C2CE41125D6E00099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EXPORTED_SYMBOLS_FILE = SuperColliderAU/Source/SuperColliderAU.exp;
@@ -1647,7 +1617,6 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				GCC_VERSION = "";
 				GENERATE_PKGINFO_FILE = YES;
 				INFOPLIST_FILE = SuperColliderAU/Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
@@ -1659,7 +1628,6 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_STYLE = Bundle;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OPTIMIZATION_FLAGS = "-O0";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
@@ -1673,7 +1641,6 @@
 					/System/Library/Frameworks/CoreServices.framework/Versions/CarbonCore.framework/Versions/A/Headers,
 					"$(PROJECT_DIR)/SuperColliderAU/AUSDK",
 				);
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				WRAPPER_EXTENSION = component;
 				ZERO_LINK = NO;
 			};
