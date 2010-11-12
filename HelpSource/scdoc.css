@@ -7,6 +7,7 @@ body {
     color: black;
     max-width: 60em;
     text-align: justify;
+    margin-bottom: 3em;
 }
 
 table {
@@ -106,9 +107,9 @@ code, pre {
 }
 
 .methodname {
-    border-bottom: 1px solid #bbb;
-    /*border: none;
+     /*border: none;
     background: #eee;*/
+    border-bottom: 1px solid #bbb;
     font-family: Andale Mono, monospace;
     font-weight: bold;
     font-size: 10pt;
@@ -163,7 +164,7 @@ td p {
     background: #ffe;
     border: 1px solid #dd9;
     padding: 1em;
-    margin: 1em;
+    margin: 1.5em;
 }
 .notelabel, .warninglabel {
     font-weight: bold;

@@ -129,15 +129,11 @@ ScDocParser {
                 modalTag = nil;
                 afterClosing = true;
             },{
-                if(word == ("\\"++modalTag.asString),{ //allow escaped end-tag
-                    this.addText(word.drop(1))
+                if(("[a-zA-Z]+::".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
+                    this.addText(word.drop(-2));
+                    this.handleWord("::",lineno,wordno+1);
                 },{
-                    if(("[a-zA-Z]+::".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
-                        this.addText(word.drop(-2));
-                        this.handleWord("::",lineno,wordno+1);
-                    },{
-                        this.addText(word);
-                    });
+                    this.addText(word.replace("\\::","::"));
                 });
             });
         },{
@@ -369,7 +365,7 @@ ScDocRenderer {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-        var f, m, mname, args, split;
+        var f, m, mname, args, split, mstat;
 
         var do_children = {
             if(node.children.notNil, {
@@ -406,25 +402,42 @@ ScDocRenderer {
             'method', {
                 //for multiple methods with same signature and similar function:
                 //ar kr (x = 42, y = 123)
-                
+
                 f = node.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
-                args = f[2][1];
+//                args = f[2][1];
+                args = "";
+//FIXME: handle overridden argumentnames/defaults?
+//perhaps we should check argument names at least? and only use overriding for "hidden" default values?
+//ignore markup-provided arguments for now..
                 split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
+                    mstat = 0;
                     mname = r[1];
-
-                    if(args.isEmpty, {
-                        args = "NOT FOUND";
-                        if(parentTag==\instancemethods,{
-                            m = currentClass.findRespondingMethodFor(mname.asSymbol);
-                        },{
-                            m = currentClass.class.findRespondingMethodFor(mname.asSymbol);
-                        });
-                        if(m.notNil, { args = m.argumentString.replace("this, ","").replace("this","") });
+                    if(parentTag==\instancemethods,{
+                        m = currentClass.findRespondingMethodFor(mname.asSymbol);
+                    },{
+                        m = currentClass.class.findRespondingMethodFor(mname.asSymbol);
+                    });
+                    if(m.notNil, {
+                        mstat = mstat | 1;
+                        args = (m.argumentString ? "").replace("this, ","").replace("this","");
                         if(args.notEmpty,{ args = " ("++args++")" });
                     });
-                                    
-                    file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++args++"</h3></a>\n");
+                    //check for setter
+                    m = currentClass.findRespondingMethodFor((mname++"_").asSymbol);
+                    if(m.notNil, { mstat = mstat | 2 });
+
+//                    file.write("<div class='methodnames'>\n");
+                    if((mstat & 1) > 0, {
+                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++args++"</h3></a>\n");
+                    });
+                    if((mstat & 2) > 0, {
+                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++" = value</h3></a>\n");
+                    });
+                    if(mstat == 0, {
+                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++": METHOD NOT FOUND!</h3></a>\n");                    
+                    });
+//                    file.write("</div>\n");
                 };
                 file.write("<div class='method'>");
                 collectedArgs = [];
@@ -691,6 +704,8 @@ ScDoc {
                 ("Rendering" + source + "to" + target).postln;
                 r.parser = p.parseFile(source);
                 r.renderHTML(target,subtarget.dirname);
+                //FIXME: add to categories map and/or persistent tree with
+                //file path and metadata (categories, title/class, summary, related, etc..)
             }, {
                 ("Copying" + source + "to" + folder).postln;
                 ("cp" + source + folder).systemCmd;
