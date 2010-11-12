@@ -1,0 +1,283 @@
+title:: ScDocSyntax
+summary:: ScDoc markup language syntax
+categories:: Help
+related:: Guides/WritingHelp, Classes/ScDoc, Classes/ScDocParser, Classes/ScDocRenderer
+
+This ML consists of a specification for writing documents with semantic annotations, in a manner which does not target a specific layout or output format. Its purpose is to allow for human-writable documents to be produced in a variety of formats and for a variety of target platforms. Usability and learnability are paramount, so the syntax is as simple as possible. 
+
+section::Markup Language Syntax
+
+Documents consist of tags and text. Some tags associate text with them, some just denotes a structural location in the document. Untagged text is treated as 'normal prose'.
+
+Tags are of two types, single-line tags and range tags, indicated using code::keyword\::::
+
+Tags are case insensitive, code::FooBar\:::: is the same as code::foobar\:::: or code::FOOBAR\::::.
+
+Some tags might only be meaningful after other tags, like code::argument\:::: after code::method\::::.
+
+Single-line tags are specified like so, and terminated with a newline. They can have a text associated with the tag:
+code::
+foo:: some text associated with this tag
+bar::
+This is "normal prose" and the above tag just denotes a section or location in the document.
+::
+
+Single-line tags that don't associate with text will treat any text starting on the same line after the tag as normal prose:
+code::
+bar:: This is also "normal prose" as above, since this particular tag doesn't take any text.
+::
+
+Any untagged text following the newline will be treated as normal prose. For example:
+code::
+title:: This text will be treated as a 'title'.
+This is 'normal prose' since it's untagged.
+section:: This text is a section title
+This is also normal prose.
+::
+
+Some single-line tags, e.g. code::related\:::: and code::summary\:::: can be understood as floating, i.e. the renderer will decide how and where to place them. Some tags are not even actually rendered to the output but only provides document metadata, e.g. code::categories\::::.
+
+Range tags consist of an opening tag and a closing tag. They can be written as a block:
+code::
+variableTag::
+Some text of a
+variable line tag
+::
+::
+They can also occur on the same line inside normal prose:
+code::
+This is some normal prose containing a code::inline code example::.
+Also see link::Foo:: for more information.
+::
+Some tags are "modal" tags and can't be nested, they would ignore any other tags inside it.
+If they are used as block tags, the closing \:: must be written as a single word on its own line.
+
+subsection:: Structure
+
+Some tags have structural meaning (for instance identifying a document section). They may or may not have text directly associated with them, for example a code:: section\:: section_title ::. Structural tags are hierarchical in nature, and persist until the next tag of the same or higher level.
+code::
+section:: Section 1
+Here's some normal prose.
+subsection:: Subsection 1
+Text in subsection 1.
+subsection:: Subsection 2
+Text in subsection 2.
+examples::
+The examples tag is at the same level in the hierarchy as section,
+so Section 1 ends at the examples tag above.
+::
+
+Structural tags at the same level in the hierarchy may be functionally equivalent, but treated differently for rendering or querying purposes. For example code::examples\:::: is equivalent to code::section\:::: but imply particular formatting or specially identify the examples section for customised uses like concatenating all examples for classes with a given parent class.
+
+section::Tags for use in the new SC Doc system
+
+code::
+tag             hasText hasChilds structural needClose modal nestable
+---------------------------------------------------------------------
+title           S
+class           S
+doctype         S
+keywords        S
+related         S
+summary         S
+note            S
+warning         S
+section         S       x         1
+subsection      S       x         2
+classmethod     S       x         3
+instancemethod  S       x         3
+argument        S       x         4
+description             x         1
+methods                 x         1
+examples                x         1
+list                    x                    x               x
+tree                    x                    x               x
+numberedlist            x                    x               x
+definitionlist          x                    x               x
+table                   x                    x               x
+code            V                            x        x
+link            V                            x        x
+anchor          V                            x        x
+emphasis        V                            x        x
+##
+||
+(prose)         V
+
+hasText: tag captures text
+    S is single-line (terminated by newline)
+    V is variable-line
+hasChilds: tag captures child-elements
+structural: tag has structural level
+needClose: tag needs closing by ::
+modal: tag ignores any other tags than closing tag and do not nest
+nestable: tag can nest
+::
+
+Notes:
+list::
+## modal tags can be written as inline (opening and closing tag on the same line)
+or block-style (the closing tag must be a single \:: on its own line).
+## single vs variable line is only applicable for tags that captures text.
+## modal, level and nestable are exclusive. nestable can be seen as a structural tag
+without explicit level. It's also because of the explicit level that the structural
+tags don't need closing.
+## structural-needClose-modal-nestable could be reduced to one column:
+  table::
+  ## 1-4 || level, no close tag
+  ## M   || modal, need close tag
+  ## N   || nestable, need close tag
+  ::
+::
+
+subsection:: Document attributes
+
+These should only occur once in a document, and might be compulsory.
+code::
+title:: name
+class:: name
+summary:: text
+related:: link(s)
+categories:: name(s)
+::
+
+subsection:: Other tags
+code::
+note:: text
+warning:: text
+::
+
+subsection:: Structural tags
+
+These are grouped by their level in the hierarchy, from high to low:
+code::
+section:: name
+description::
+examples::
+methods::
+
+subsection:: name
+
+instanceMethod:: name(s)
+classMethod:: name(s)
+
+argument:: name
+::
+description, examples and methods are equivalent to code::section\:::: structurally, but used to identify these special sections and render them consistently.
+
+Method signatures and argument defaults are filled in automagically. (TODO: One can also force an argument default by giving it a name like "a=1" instead of just "a" in the cases where the default is filled in later in the method and not given in the argument definition.)
+
+Also, when multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
+
+subsection:: Modal tags
+code::
+code::
+link::
+anchor::
+emphasis::
+::
+All of above are closed with \::
+If they are used as block tags, the closing \:: must be written as a single word on its own line.
+Since they are modal tags, they can't be nested and any other tag than the closing tag is ignored until they are closed.
+
+links can have anchors like this: code::
+link::Foo/Bar#hello::
+::
+
+subsection:: Tables and lists
+code::
+list::
+tree::
+numberedList::
+definitionList::
+table::
+::
+Tables and lists are kind of structural tags, but need to be closed with \::
+They use code::##:: and code::||:: to delimit items/rows and table columns.
+
+code::
+table::
+## one || two || three
+## foo || bar || zoo
+\::
+
+list::
+## first
+## second
+## third
+\::
+::
+
+Lists can be nested:
+code::
+definitionList::
+## one || the first thing has three subthings:
+	list::
+	## one A
+	## one B
+	## one C
+	\::
+## two || the second thing
+\::
+::
+
+subsection:: Links
+
+URL's are automagically converted to links.
+
+The code::link\:::: tag is used for cross-reference between docs. It uses a simple namespace, example:
+code::
+See also link::Classes/SinOsc:: for a nice oscillator. Or take a look at link::Overviews/Ugens:: for a full list.
+The link::Methods/play:: method is often very useful.
+::
+
+Anchors can be inserted manually with code::anchor\::name\:::: 
+
+subsection:: Document types
+
+Document type is inferred by seeing if the document has a code::class\:::: or code::title\:::: tag.
+
+Some tags are only allowed in some types of documents. Tags not mentioned below are allowed in all types:
+table::
+## Class (and UGen) reference docs || tags: class, description, methods, examples, subsection
+## Other docs (tutorials and such) || tags: title, section, subsection
+::
+
+examples::
+
+An example of documentation for LFPulse UGen:
+
+code::
+class::LFPulse
+summary::pulse oscillator
+categories::UGens>Generators>Deterministic, UGens>Oscillators
+related::Classes/LFSaw
+
+description::
+A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.
+
+classmethods::
+
+method::ar kr
+
+argument::freq
+frequency in Hertz
+
+argument::iphase
+initial phase offset in cycles ( 0..1 )
+
+argument::width
+pulse width duty cycle from zero to one.
+
+examples::
+
+a plot:
+code::
+{ LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1);
+\::
+
+50 Hz wave:
+code::
+{ LFPulse.ar(50) * 0.1 }.play;
+\::
+::
+
