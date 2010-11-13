@@ -333,7 +333,6 @@
 		94B6AEFC0AF45DA800E478BB /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
 		94B6AEFD0AF45DA800E478BB /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
 		94B6AEFE0AF45DA800E478BB /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
-		94B6AF000AF45DA800E478BB /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D9ED1C0C2773CF00223DF8 /* WebKit.framework */; };
 		94DFDB4E0DD95B7800EB46BA /* sc_popen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94DFDB4D0DD95B7800EB46BA /* sc_popen.cpp */; };
@@ -771,7 +770,6 @@
 				94B6AEFB0AF45DA800E478BB /* CoreAudio.framework in Frameworks */,
 				94B6AEFC0AF45DA800E478BB /* CoreMIDI.framework in Frameworks */,
 				94B6AEFE0AF45DA800E478BB /* IOKit.framework in Frameworks */,
-				94B6AF000AF45DA800E478BB /* QuickTime.framework in Frameworks */,
 				9415B1780B2B5D1F00C87737 /* Quartz.framework in Frameworks */,
 				94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */,
 				94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */,
