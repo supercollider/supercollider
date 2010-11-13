@@ -1177,7 +1177,7 @@ inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int positi
 
 	// end add //
 
-	int nsmps = sc_min(grain->counter, inNumSamples);
+	int nsmps = sc_min(grain->counter, inNumSamples - position);
 
 	if (grain->winType < 0.)
 		GRAIN_BUF_PLAY_GRAIN(INTERNAL);
