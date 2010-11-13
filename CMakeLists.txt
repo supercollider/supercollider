@@ -92,6 +92,10 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules/")
 
+# find dependencies
+find_package(Pthreads)
+
+
 if(MEMORY_DEBUGGING)
     set_property(DIRECTORY .
                  APPEND

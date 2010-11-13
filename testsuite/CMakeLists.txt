@@ -42,7 +42,7 @@ foreach(test ${simple_tests})
   add_executable(${test_name} ${test})
   target_link_libraries(${test_name} boost_thread boost_system boost_test)
   target_link_libraries(${test_name} oscpack tlsf)
-  target_link_libraries(${test_name} pthread)
+  target_link_libraries(${test_name} ${PTHREADS_LIBRARY})
   target_link_libraries(${test_name} ${SNDFILE})
   target_link_libraries(${test_name} libsupernova)
 
