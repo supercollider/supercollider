@@ -129,7 +129,9 @@ class nova_server:
     public sc_osc_handler
 {
 public:
+#if defined(JACK_BACKEND)
     typedef jack_backend<realtime_engine_functor, float, false> audio_backend;
+#endif
 
     /* main nova_server function */
     nova_server(server_arguments const & args);
