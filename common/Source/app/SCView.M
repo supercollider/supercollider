@@ -3276,7 +3276,7 @@ void SCButton::receiveDrag()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-
+#if 0
 SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
 	return new SCPopUpMenu(inParent, inObj, inBounds);
@@ -3475,7 +3475,7 @@ void SCPopUpMenu::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
-
+#endif
 
 /////////////////////////////////////////////////////////////////
 //SCMultiSliderView by jan trutzschler jan.21.03 //jan.23.03 changed draw added more prop.//jan.28.03 debug
@@ -6572,7 +6572,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCDragSink", NewSCDragSink);
     new SCViewMaker("SCDragBoth", NewSCDragBoth);
     new SCViewMaker("SCUserView", NewSCUserView);
-    new SCViewMaker("SCPopUpMenu", NewSCPopUpMenu);
+    //new SCViewMaker("SCPopUpMenu", NewSCPopUpMenu);
     new SCViewMaker("SCMultiSliderView", NewSCMultiSliderView);
     new SCViewMaker("SCEnvelopeView", NewSCEnvelopeView);
     new SCViewMaker("SCTabletView", NewSCTabletView);
@@ -6581,7 +6581,7 @@ void registerSCViewClasses()
     new SCViewMaker("SCSoundFileView", NewSCSoundFileView);
 	//these can be found in SCCocoaView.M
     new SCViewMaker("SCTextView", NewSCCocoaTextView);
-    new SCViewMaker("SCMovieView", NewSCMovieView);
+    //new SCViewMaker("SCMovieView", NewSCMovieView);
 	new SCViewMaker("SCQuartzComposerView", NewSCQuartzComposerView);
     new SCViewMaker("SCTextField", NewSCTextField);
 	new SCViewMaker("SCNumberBox", NewSCNumberBox);

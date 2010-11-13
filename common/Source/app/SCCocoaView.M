@@ -1585,6 +1585,7 @@ bool SCCocoaTextView::linkAction(NSString *url)
 
 
 ////////////////////
+#if 0
 SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
 	return new SCMovieView(inParent, inObj, inBounds);
@@ -1821,12 +1822,12 @@ void SCMovieView::setVisibleFromParent()
 	mTop->resetFocus();
 	refresh();
 }
+#endif
 
 extern PyrSymbol *s_proto, *s_parent;
 extern int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto, ivxIdentDict_know;
 int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *value);
 extern PyrClass *class_identdict;
-
 ///////////
 /*
 SCQuartzComposerView by Scott Wilson

@@ -728,7 +728,6 @@ const int circDiam = 20;
 
 - (void)drawRect: (NSRect)drawBounds
 {
-
 	if (mTopView) {
 
         SCRect screct;
@@ -765,7 +764,7 @@ const int circDiam = 20;
 
 		const CGRect *dirtyRects;
 		CGRect	curRect;
-		int		numDirtyRects;
+		NSInteger		numDirtyRects;
 
 		[self getRectsBeingDrawn:(const NSRect**)&dirtyRects count:(NSInteger*)&numDirtyRects];
 
@@ -876,7 +875,7 @@ int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, 
  	   drawBounds.origin.y += vdiff;
 	}
 
-    CGRect cgrect = *(CGRect*)&screct;
+    CGRect cgrect = SCtoNSRect(screct);
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGContextClipToRect(cgc, cgrect);
