@@ -219,8 +219,6 @@ public:
 
     int max_realtime_priority(void) const
     {
-        while (!client)
-            usleep(1000);
         return jack_client_max_real_time_priority(client);
     }
 

@@ -120,6 +120,7 @@ void start_audio_backend(server_arguments const & args)
 
     server_arguments::set_samplerate((uint32_t)instance->get_samplerate());
     connect_jack_ports();
+    instance->start_dsp_threads();
 }
 
 

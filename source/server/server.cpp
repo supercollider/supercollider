@@ -199,9 +199,6 @@ void thread_init_functor::operator()(int thread_index)
 #ifdef NOVA_TT_PRIORITY_RT
 
 #ifdef JACK_BACKEND
-        while (!instance)
-            usleep(1000);
-
         int priority = instance->max_realtime_priority();
         if (priority < 0)
             success = false;
