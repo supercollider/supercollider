@@ -2,8 +2,6 @@
 *.o
 *.os
 config.log
-debug
-release
-build
+/build*
 *~
 doxy
