@@ -39,7 +39,7 @@
 
 
 #include "SCCocoaView.h"
-#include "QuickTime/Movies.h"
+#include "QTKit/QTKit.h"
 #import "HTMLRenderer.h"
 #import "MyDocument.h"
 #import "SCImage.h"
@@ -1585,7 +1585,6 @@ bool SCCocoaTextView::linkAction(NSString *url)
 
 
 ////////////////////
-#if 0
 SCView* NewSCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
 	return new SCMovieView(inParent, inObj, inBounds);
@@ -1595,12 +1594,12 @@ SCMovieView::SCMovieView(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 	: SCView(inParent, inObj, inBounds)
 {
 		NSRect matrect = SCtoNSRect(getDrawBounds());
-		mMovieView = [[NSMovieView alloc] initWithFrame:matrect];
+		mMovieView = [[QTMovieView alloc] initWithFrame:matrect];
+		[mMovieView setStepButtonsVisible:YES];
+		[mMovieView setTranslateButtonVisible:YES];
 		NSView *view = mTop->GetNSView();
 		[view addSubview: mMovieView];
 
-		//need to call EnterMovies for other qt c calls
-		EnterMovies();
 		setVisibleFromParent();
 }
 
@@ -1642,22 +1641,23 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 
 	if (strcmp(name, "stop")==0) {
-		[mMovieView stop: nil];
+		[mMovie stop];
 		return errNone;
 	}
 
 	if (strcmp(name, "start")==0) {
-		[mMovieView start: nil];
+		[mMovie play];
 		return errNone;
 	}
 	if (strcmp(name, "stepForward")==0) {
-		[mMovieView stepForward: nil];
+		[mMovie stepForward];
 		return errNone;
 	}
 	if (strcmp(name, "stepBack")==0) {
-		[mMovieView stepBack: nil];
+		[mMovie stepBackward];
 		return errNone;
 	}
+/*
 	if (strcmp(name, "resizeWithMagnification")==0) {
 		float mag;
 		err = slotFloatVal(slot, &mag);
@@ -1668,6 +1668,7 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		mBounds.height = size.height;
 		return errNone;
 	}
+*/
 	if (strcmp(name, "bounds")==0) {
 		SCRect screct;
 		err = slotGetSCRect(slot, &screct);
@@ -1682,28 +1683,26 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(!pstring) return errNone;
 		NSString *string = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		NSURL * url = [[NSURL alloc] initFileURLWithPath: string];
-		NSMovie *movie = [[NSMovie alloc] initWithURL: url byReference: YES];
+		QTMovie *movie = [[QTMovie alloc] initWithURL: url error:nil];
 		if(!movie) return errFailed;
 		//check for current movie:
-		NSMovie *nsmovie = [mMovieView movie];
+		QTMovie *old_movie = [mMovieView movie];
 		[mMovieView setMovie: movie];
-		if(nsmovie){
-			[nsmovie release];
+		if(old_movie){
+			[old_movie release];
 		}
 		[string release];
 		[url release];
 		/* QT: */
-		mMovie = (Movie) [[mMovieView movie] QTMovie];
-		mTimeBase = GetMovieTimeBase (mMovie);
-		mTimeRecord.base = mTimeBase;
-		GetMovieTime(mMovie, &mTimeRecord);
+		mMovie = movie;
+		mTime = [movie currentTime];
 
 		return errNone;
 	}
 
 	if (strcmp(name, "setMuted")==0) {
-		if(IsTrue(slot))[mMovieView setMuted: YES];
-		else [mMovieView setMuted: NO];
+		if(IsTrue(slot))[mMovie setMuted: YES];
+		else [mMovie setMuted: NO];
 		return errNone;
 	}
 
@@ -1714,8 +1713,7 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 
 	if (strcmp(name, "setPlaysSelectionOnly")==0) {
-		if(IsTrue(slot))[mMovieView setPlaysSelectionOnly: YES];
-		else [mMovieView setPlaysSelectionOnly: NO];
+		[mMovie setAttribute:[NSNumber numberWithBool:IsTrue(slot)] forKey:QTMoviePlaysSelectionOnlyAttribute];
 		return errNone;
 	}
 
@@ -1723,38 +1721,41 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		float rate;
 		err = slotFloatVal(slot, &rate);
 		if(err) return err;
-		[mMovieView setRate:rate];
+		[mMovie setRate:rate];
 		return errNone;
 	}
 	if (strcmp(name, "setVolume")==0) {
 		float vol;
 		err = slotFloatVal(slot, &vol);
 		if(err) return err;
-		[mMovieView setVolume:vol];
+		[mMovie setVolume:vol];
 		return errNone;
 	}
 	if (strcmp(name, "setLoopMode")==0) {
 		int mode;
 		err = slotIntVal(slot, &mode);
 		if(err) return err;
-		switch(mode){
-				case 0: [mMovieView setLoopMode:NSQTMovieLoopingBackAndForthPlayback]; break;
-				case 1: [mMovieView setLoopMode:NSQTMovieLoopingPlayback]; break;
-				case 2: [mMovieView setLoopMode:NSQTMovieNormalPlayback]; break;
+		NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithBool:NO], QTMovieLoopsBackAndForthAttribute, [NSNumber numberWithBool:NO], QTMovieLoopsAttribute, nil];
+		switch(mode)
+		{
+				case 0: [dict setObject:[NSNumber numberWithBool:YES] forKey:QTMovieLoopsBackAndForthAttribute]; break;
+				case 1: [dict setObject:[NSNumber numberWithBool:YES] forKey:QTMovieLoopsAttribute]; break;
+				case 2:
+				default: break;
 		}
+		[mMovie setMovieAttributes:dict];
 		return errNone;
 	}
-
 	if (strcmp(name, "gotoEnd")==0) {
-		[mMovieView gotoEnd: NULL];
+		[mMovie gotoEnd];
 		return errNone;
 	}
 
 	if (strcmp(name, "gotoBeginning")==0) {
-		[mMovieView gotoBeginning: NULL];
+		[mMovie gotoBeginning];
 		return errNone;
 	}
-
+/*
 	if (strcmp(name, "showControllerAndAdjustSize")==0) {
 		if(!isKindOfSlot(slot, class_array)) return errWrongType;
 		PyrSlot *slots = slotRawObject(slot)->slots;
@@ -1763,9 +1764,11 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		else showC = NO;
 		if(IsTrue(slots+1)) adjust=YES;
 		else adjust = NO;
-		[mMovieView showController: showC adjustingSize: adjust];
+		[mMovieView setControllerVisible:showC];
+		//[mMovieView showController: showC adjustingSize: adjust];
 		return errNone;
 	}
+*/
 	if (strcmp(name, "copy")==0) {
 		[mMovieView copy: NULL];
 		return errNone;
@@ -1787,7 +1790,9 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		float time;
 		err = slotFloatVal(slot, &time);
 		if(err) return err;
-		SetMovieTimeValue(mMovie, (TimeValue) (time *  mTimeRecord.scale));
+		QTTime qttime = mTime;
+		qttime.timeValue = time * qttime.timeScale;
+		[mMovie setCurrentTime:qttime];
 		return errNone;
 	}
 
@@ -1801,7 +1806,8 @@ int SCMovieView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "getCurrentTime")==0) {
 		float time;
 		//post("timescale: %d  \n",  mTimeRecord.scale);
-		time = (float) ((float)GetMovieTime(mMovie, NULL) / mTimeRecord.scale);
+		QTTime qt_time = [mMovie currentTime];
+		time = (float) ((float)qt_time.timeValue / qt_time.timeScale);
 		SetFloat(slot, time);
 		return errNone;
 	}
@@ -1822,7 +1828,6 @@ void SCMovieView::setVisibleFromParent()
 	mTop->resetFocus();
 	refresh();
 }
-#endif
 
 extern PyrSymbol *s_proto, *s_parent;
 extern int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto, ivxIdentDict_know;

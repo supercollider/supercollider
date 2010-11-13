@@ -28,7 +28,7 @@
 #import "SCCocoaView.h"
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
-#include "QuickTime/Movies.h"
+#include "QTKit/QTKit.h"
 #include <Quartz/Quartz.h>
 
 @interface SCCocoaTextViewResponder : NSResponder
@@ -137,7 +137,6 @@ protected:
 	NSURL *mLastURL;
 };
 
-#if 0
 class SCMovieView : public SCView
 {
 public:
@@ -150,13 +149,10 @@ public:
 	virtual NSView* focusResponder() { return mMovieView; }
 
 protected:
-	NSMovieView *mMovieView;
-	/* QT */
-	TimeBase mTimeBase;
-	TimeRecord mTimeRecord;
-	Movie mMovie;
+	QTMovieView *mMovieView;
+	QTTime mTime;
+	QTMovie *mMovie;
 };
-#endif
 
 //class SCTextField : public SCStaticText
 class SCTextField : public SCView
