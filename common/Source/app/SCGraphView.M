@@ -887,25 +887,25 @@ int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, 
 }
 
 
-int stringDrawInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
+int stringDrawInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
 	NSString *nsstring = [NSString stringWithCString: cString];
 	return nsStringDrawInRect(nsstring, screct, cFontName, fontSize, sccolor);
 }
 
-int stringDrawCenteredInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
+int stringDrawCenteredInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
 	NSString *nsstring = [NSString stringWithCString: cString];
 	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, 0, 0, NULL);
 }
 
-int stringDrawLeftInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
+int stringDrawLeftInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
 	NSString *nsstring = [NSString stringWithCString: cString];
 	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, -1, 0, NULL);
 }
 
-int stringDrawRightInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
+int stringDrawRightInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor)
 {
 	NSString *nsstring = [NSString stringWithCString: cString];
 	return nsStringDrawInRectAlign(nsstring, screct, cFontName, fontSize, sccolor, 1, 0, NULL);
