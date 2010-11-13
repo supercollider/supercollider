@@ -137,6 +137,7 @@ protected:
 	NSURL *mLastURL;
 };
 
+#if 0
 class SCMovieView : public SCView
 {
 public:
@@ -155,6 +156,7 @@ protected:
 	TimeRecord mTimeRecord;
 	Movie mMovie;
 };
+#endif
 
 //class SCTextField : public SCStaticText
 class SCTextField : public SCView
