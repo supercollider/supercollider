@@ -18,7 +18,7 @@ HistoryGui {
 		var closebut, listV, font, flow;
 		bounds = where @ (where + (300@400));
 
-		font = Font("Osaka", 9);				////
+		font = Font(Font.defaultMonoFace, 9);	////
 		w = Window("History", bounds).front;	////
 		flow = w.addFlowLayout(2@2, 1@1);
 		history = inHist;
@@ -76,21 +76,21 @@ HistoryGui {
 			.resize_(3)
 			.canFocus_(false)
 			.action_({ |btn| this.rip(textV.string) });
-		
+
 		Button(w, Rect(0,0, 16, 20))
 			.states_([["v"], ["^"]])
 			.resize_(3)
-			.action_ { |btn| 
-				var views = w.view.children; 
-				var resizes = [ 
-					[2, 1, 1, 1, 2, 3, 3, 3, 5], 
+			.action_ { |btn|
+				var views = w.view.children;
+				var resizes = [
+					[2, 1, 1, 1, 2, 3, 3, 3, 5],
 					[5, 7, 7, 7, 8, 9, 9, 9, 8]
 				][btn.value.asInteger];
-				
+
 				views.do { |v, i| v.resize_(resizes[i]) };
-			
+
 			};
-		
+
 		listV = ListView(w, bounds.copy.insetBy(2).height_(230))
 			.font_(font)
 			.items_([])
@@ -211,11 +211,11 @@ HistoryGui {
 			)
 		)
 	}
-	
-	rip { 
+
+	rip {
 		this.findDoc; doc.view.children.first.string_(textV.string); doc.front;
 	}
-	
+
 	findDoc {
 		if (docFlag == \newDoc) { oldDocs = oldDocs.add(doc) };
 		if (docFlag == \newDoc or: doc.isNil or: { Window.allWindows.includes(doc).not }) {
