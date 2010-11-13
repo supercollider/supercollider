@@ -123,8 +123,10 @@ public:
 
     void close_client(void)
     {
-        if (client)
+        if (client) {
             jack_client_close(client);
+            client = NULL;
+        }
     }
 
     bool audio_is_opened(void)
