@@ -118,7 +118,7 @@ inline static qreal signedAngle( const vec2 &v1, const vec2 &v2 )
   return c.z() > 0.0 ? a : -a;
 }
 
-inline static qreal radToAng( qreal rad )
+inline static qreal radToDeg( qreal rad )
 {
   return rad * 180.0 / PI;
 }
@@ -307,7 +307,7 @@ QC_QPEN_PRIMITIVE( QPen_ArcTo, 3, PyrSlot *r, PyrSlot *arg, VMGlobals *g )
   path.lineTo( start.x(), start.y() );
 
   path.arcTo( center.x() - radius, center.y() - radius, 2*radius, 2*radius,
-              radToAng( arcStart ), radToAng( arcAngle ) );
+              radToDeg( arcStart ), radToDeg( arcAngle ) );
 
   path.lineTo( pt2 );
 
@@ -338,6 +338,28 @@ QC_QPEN_PRIMITIVE( QPen_AddEllipse, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QRectF rect = Slot::toRect( a );
   path.addEllipse( rect );
+  return errNone;
+}
+
+QC_QPEN_PRIMITIVE( QPen_AddArc, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QPointF center = Slot::toPoint( a );
+  float radius, startAngle, arcAngle;
+  if( slotFloatVal( a+1, &radius ) ) return errWrongType;
+  if( slotFloatVal( a+2, &startAngle ) ) return errWrongType;
+  if( slotFloatVal( a+3, &arcAngle ) ) return errWrongType;
+
+  // have to swap angle direction for sinf()
+  QPointF start( radius * cosf( startAngle ), -radius * sinf( startAngle ) );
+  start += center;
+
+  QRectF rect;
+  rect.setSize( QSizeF( 2*radius, 2*radius ) );
+  rect.moveCenter( center );
+
+  path.moveTo( start );
+  path.arcTo( rect, radToDeg( startAngle ), radToDeg( arcAngle ) );
+
   return errNone;
 }
 

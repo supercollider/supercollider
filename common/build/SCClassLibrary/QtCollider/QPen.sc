@@ -161,10 +161,6 @@ QPen {
     ^this.primitiveFailed;
   }
 
-  *addArc { arg center, radius, startAngle, arcAngle;
-    this.nonimpl("addArc");
-  }
-
   *addRect { arg aRect;
     _QPen_AddRect
     ^this.primitiveFailed;
@@ -177,6 +173,15 @@ QPen {
 
   *addOval { arg rect;
     _QPen_AddEllipse
+    ^this.primitiveFailed;
+  }
+
+  *addArc { arg center, radius, startAngle, arcAngle;
+    this.prAddArc( center, radius, startAngle.neg, arcAngle.neg );
+  }
+
+  *prAddArc { arg center, radius, startAngle, arcAngle;
+    _QPen_AddArc
     ^this.primitiveFailed;
   }
 
