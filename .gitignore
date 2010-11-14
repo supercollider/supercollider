@@ -8,6 +8,8 @@ common/build/plugins
 common/build/sclang
 common/build/scsynth
 common/build/*.app/
+mac/*.xcodeproj/*.mode1
+mac/*.xcodeproj/*.pbxuser
 
 # scons specific files
 config.log
