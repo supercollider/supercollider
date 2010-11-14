@@ -20,22 +20,26 @@
 ************************************************************************/
 
 #include "QcScrollArea.h"
-#include "../Painting.h"
 #include "../QcWidgetFactory.h"
 
 #include <QLayout>
 #include <QScrollBar>
 #include <QEvent>
 #include <QChildEvent>
-#include <QPainter>
 #include <QApplication>
 
 static QcWidgetFactory<QcScrollArea> factory;
 
-void QcScrollWidget::updateSize() {
+QcScrollWidget::QcScrollWidget( QWidget *parent ) : QcCanvas( parent )
+{
+  setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+}
+
+QSize QcScrollWidget::sizeHint() const
+{
   QRect r = childrenRect();
   QSize sz( r.x() + r.width(), r.y() + r.height() );
-  resize( sz );
+  return sz;
 }
 
 bool QcScrollWidget::event ( QEvent * e ) {
@@ -45,7 +49,7 @@ bool QcScrollWidget::event ( QEvent * e ) {
     ce->child()->installEventFilter( this );
   }
   else if( t == QEvent::ChildRemoved ) {
-    updateSize();
+    updateGeometry();
   }
 
   return QWidget::event( e );
@@ -59,7 +63,7 @@ bool QcScrollWidget::eventFilter ( QObject * watched, QEvent * event ) {
     case QEvent::Move:
     case QEvent::Show:
     case QEvent::Hide:
-      updateSize();
+      updateGeometry();
       break;
     default:
       return false;
@@ -68,15 +72,12 @@ bool QcScrollWidget::eventFilter ( QObject * watched, QEvent * event ) {
   return false;
 }
 
-
-QcScrollArea::QcScrollArea() :
-  paint(false),
-  painting(false)
+QcScrollArea::QcScrollArea()
 {
-  setViewport( new QWidget() );
   scrollWidget = new QcScrollWidget( viewport() );
-  scrollWidget->installEventFilter( this );
-  updateScrollBars();
+  setWidget( scrollWidget );
+  setWidgetResizable( true );
+  connect( scrollWidget, SIGNAL(painting()), this, SLOT(doDrawFunc()) );
 }
 
 void QcScrollArea::setHasBorder( bool b ) {
@@ -86,75 +87,12 @@ void QcScrollArea::setHasBorder( bool b ) {
     QFrame::setFrameShape( QFrame::NoFrame );
 }
 
-void QcScrollArea::updateScrollBars() {
-  QSize areaSize = viewport()->size();
-  QSize  widgetSize = scrollWidget->size();
-
-  verticalScrollBar()->setPageStep(widgetSize.height());
-  horizontalScrollBar()->setPageStep(widgetSize.width());
-  verticalScrollBar()->setRange(0, widgetSize.height() - areaSize.height());
-  horizontalScrollBar()->setRange(0, widgetSize.width() - areaSize.width());
-  updateWidgetPosition();
-}
-
-void QcScrollArea::updateWidgetPosition() {
-  int hvalue = horizontalScrollBar()->value();
-  int vvalue = verticalScrollBar()->value();
-  QPoint topLeft = viewport()->rect().topLeft();
-  scrollWidget->move(topLeft.x() - hvalue, topLeft.y() - vvalue);
-  viewport()->update();
-}
-
-void QcScrollArea::scrollContentsBy ( int dx, int dy ) {
-  updateWidgetPosition();
-}
-
-void QcScrollArea::resizeEvent( QResizeEvent * ) {
-  updateScrollBars();
-}
-
-bool QcScrollArea::eventFilter ( QObject * watched, QEvent * event ) {
-  if( watched == scrollWidget && event->type() == QEvent::Resize ) {
-    updateScrollBars();
-  }
-  return false;
-}
-
 void QcScrollArea::setBackground ( const QColor &color )
 {
-  if( !color.isValid() ) return;
-  bkg = color;
-  viewport()->setAttribute( Qt::WA_OpaquePaintEvent, true );
-  viewport()->update();
+  scrollWidget->setBackground( color );
 }
 
-void QcScrollArea::rebuildPen()
+void QcScrollArea::doDrawFunc()
 {
-  QtCollider::lockLang();
-
-  QtCollider::beginPen( &pen );
   QApplication::sendEvent( this, new ScMethodCallEvent( "draw", QList<QVariant>(), true ) );
-  QtCollider::endPen();
-
-  QtCollider::unlockLang();
-
-  update();
-}
-
-void QcScrollArea::paintEvent( QPaintEvent *e )
-{
-  Q_UNUSED(e);
-
-  QPainter p(viewport());
-
-  if( bkg.isValid() ) {
-    p.fillRect( viewport()->rect(), bkg );
-  }
-
-  if( !paint ) return;
-
-  int hOffset = horizontalScrollBar()->value();
-  int vOffset = verticalScrollBar()->value();
-  pen.setBaseTransform( QTransform::fromTranslate( -hOffset, -vOffset ) );
-  pen.paint( &p );
 }

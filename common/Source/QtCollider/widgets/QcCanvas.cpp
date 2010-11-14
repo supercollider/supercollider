@@ -19,25 +19,47 @@
 *
 ************************************************************************/
 
-#include "primitives/primitives.h"
-#include "Common.h"
+#include "QcCanvas.h"
+#include "../Painting.h"
+#include "../Common.h"
 
-using namespace QtCollider;
+#include <QPainter>
 
-LangPrimitiveList& QtCollider::langPrimitives() {
-  static LangPrimitiveList * primitives = new LangPrimitiveList();
-  return *primitives;
+QcCanvas::QcCanvas( QWidget *parent )
+: QWidget( parent ), paint( false ), repaintNeeded( true )
+{
+  //_bkgColor = palette().color( QPalette::Background );
 }
 
-void initQtGUIPrimitives () {
-  qcDebugMsg(1,"initializing QtGUI primitives");
+void QcCanvas::repaint()
+{
+  repaintNeeded = true;
+  update();
+}
 
-  int base = nextPrimitiveIndex();
-  int index = 0;
-  LangPrimitiveList& primitives = langPrimitives();
+void QcCanvas::resizeEvent( QResizeEvent * )
+{
+  repaint();
+}
 
-  Q_FOREACH( LangPrimitiveData p, primitives ) {
-    qcDebugMsg(1, QString("defining primitive '%1'").arg(p.name) );
-    definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
+void QcCanvas::paintEvent( QPaintEvent * )
+{
+  if( paint && repaintNeeded ) {
+    _pixmap = QPixmap( size() );
+    _pixmap.fill( QColor(0,0,0,0) );
+
+    QPainter pixPainter( &_pixmap );
+
+    QtCollider::lockLang();
+    QtCollider::beginPainting( &pixPainter );
+    Q_EMIT( painting() );
+    QtCollider::endPainting();
+    QtCollider::unlockLang();
+
+    repaintNeeded = false;
   }
+
+  QPainter p(this);
+  if( _bkgColor.isValid() ) p.fillRect( rect(), _bkgColor );
+  if( paint ) p.drawPixmap( rect(), _pixmap );
 }

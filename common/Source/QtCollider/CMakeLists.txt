@@ -21,6 +21,7 @@ set( QT_COLLIDER_HDRS
   widgets/QcGraph.h
   widgets/QcLevelIndicator.h
   widgets/QcHelpBrowser.hpp
+  widgets/QcCanvas.h
 )
 
 set( QT_COLLIDER_SRCS
@@ -34,6 +35,7 @@ set( QT_COLLIDER_SRCS
   primitives/primitives.cpp
   primitives/prim_QObject.cpp
   primitives/prim_QPen.cpp
+  primitives/prim_QPen_oldskool.cpp
   primitives/prim_misc.cpp
   primitives/prim_QWidget.cpp
   widgets/QcAbstractLayout.cpp
@@ -51,6 +53,7 @@ set( QT_COLLIDER_SRCS
   widgets/QcWindow.cpp
   widgets/QcGraph.cpp
   widgets/QcHelpBrowser.cpp
+  widgets/QcCanvas.cpp
 )
 
 set( QT_USE_QTWEBKIT TRUE )

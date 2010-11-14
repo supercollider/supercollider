@@ -34,6 +34,7 @@ QcWidgetFactory<QcHLayoutWidget> hLayoutWidgetFactory;
 QcWidgetFactory<QcVLayoutWidget> vLayoutWidgetFactory;
 QcWidgetFactory<QLabel> labelFactory;
 QcWidgetFactory<QcTextField> textFieldFactory;
+QcWidgetFactory<QcCustomPainted> customPaintedFactory;
 
 void QcDefaultLayout::setGeometry ( const QRect & r )
 {
@@ -244,47 +245,6 @@ void QcButton::doAction()
   Q_EMIT( action() );
 }
 
-////////////////////////////// QcCustomPainted /////////////////////////////////
-
-QcWidgetFactory<QcCustomPainted> customPaintedFactory;
-
-void QcCustomPainted::setBackground ( const QColor &color )
-{
-  if( !color.isValid() ) return;
-  bkg = color;
-  setAttribute( Qt::WA_OpaquePaintEvent, true );
-  update();
-}
-
-void QcCustomPainted::rebuildPen()
-{
-  QtCollider::lockLang();
-
-  QtCollider::beginPen( &pen );
+void QcCustomPainted::doDrawFunc() {
   QApplication::sendEvent( this, new ScMethodCallEvent( "draw", QList<QVariant>(), true ) );
-  QtCollider::endPen();
-
-  QtCollider::unlockLang();
-
-  update();
-}
-
-void QcCustomPainted::paintEvent( QPaintEvent *e )
-{
-  QPainter p( this );
-
-  if( bkg.isValid() ) {
-    p.fillRect( this->rect(), bkg );
-  }
-
-  if( !paint ) return;
-
-  pen.paint( &p );
-}
-
-QcWidgetFactory<QcCheckBox> checkBoxFactory;
-
-QcCheckBox::QcCheckBox()
-{
-	connect( this, SIGNAL(stateChanged(int)), this, SIGNAL(action()) );
 }

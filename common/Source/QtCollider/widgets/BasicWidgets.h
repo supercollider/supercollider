@@ -23,8 +23,8 @@
 #define _WIDGETS_H
 
 #include "../QcHelper.h"
-#include "../QcPen.h"
 #include "QcAbstractLayout.h"
+#include "QcCanvas.h"
 
 #include <QListWidget>
 #include <QComboBox>
@@ -152,26 +152,24 @@ class QcButton : public QPushButton, public QcHelper
     int currentState;
 };
 
-class QcCustomPainted : public QcDefaultWidget, QcHelper
+class QcCustomPainted : public QcCanvas, QcHelper
 {
   Q_OBJECT
   Q_PROPERTY( QColor background READ dummyColor WRITE setBackground );
   Q_PROPERTY( bool paint READ dummyBool WRITE setPaint );
   public:
-    QcCustomPainted() : paint(false), painting(false) {}
-    Q_INVOKABLE void rebuildPen();
+    QcCustomPainted() {
+      setLayout( new QcDefaultLayout() );
+      connect( this, SIGNAL(painting()), this, SLOT(doDrawFunc()) );
+    }
+    Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
+  private Q_SLOTS:
+    void doDrawFunc();
   private:
     // reimplement event handlers just so events don't propagate
     void mousePressEvent( QMouseEvent * ) {}
     void mouseReleaseEvent( QMouseEvent * ) {}
     void mouseMoveEvent( QMouseEvent * ) {}
-    void setBackground ( const QColor &color );
-    void setPaint( bool b ) { paint = b; }
-    void paintEvent( QPaintEvent * );
-    bool paint;
-    bool painting;
-    QColor bkg;
-    QtCollider::Pen pen;
 };
 
 class QcCheckBox : public QCheckBox

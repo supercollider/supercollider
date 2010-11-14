@@ -19,25 +19,31 @@
 *
 ************************************************************************/
 
-#include "primitives/primitives.h"
-#include "Common.h"
+#ifndef QC_CANVAS_H
+#define QC_CANVAS_H
 
-using namespace QtCollider;
+#include <QWidget>
+#include <QPixmap>
 
-LangPrimitiveList& QtCollider::langPrimitives() {
-  static LangPrimitiveList * primitives = new LangPrimitiveList();
-  return *primitives;
-}
+class QcCanvas : public QWidget
+{
+  Q_OBJECT
+public:
+  QcCanvas( QWidget *parent = 0 );
+  void setBackground( const QColor & c ) { _bkgColor = c; update(); }
+  void setPaint( bool b ) { paint = b; repaint(); }
+public Q_SLOTS:
+  void repaint();
+Q_SIGNALS:
+  void painting();
+protected:
+  virtual void resizeEvent( QResizeEvent * );
+  virtual void paintEvent( QPaintEvent * );
+private:
+  QPixmap _pixmap;
+  QColor _bkgColor;
+  bool paint;
+  bool repaintNeeded;
+};
 
-void initQtGUIPrimitives () {
-  qcDebugMsg(1,"initializing QtGUI primitives");
-
-  int base = nextPrimitiveIndex();
-  int index = 0;
-  LangPrimitiveList& primitives = langPrimitives();
-
-  Q_FOREACH( LangPrimitiveData p, primitives ) {
-    qcDebugMsg(1, QString("defining primitive '%1'").arg(p.name) );
-    definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
-  }
-}
+#endif
