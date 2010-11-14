@@ -179,12 +179,15 @@ QC_QPEN_PRIMITIVE( QPen_Shear, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_QPEN_PRIMITIVE( QPen_Rotate, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  // TODO rotate around the specified point
   float angle, x, y;
   if( slotFloatVal( a, &angle ) ) return errWrongType;
   if( slotFloatVal( a+1, &x ) ) return errWrongType;
   if( slotFloatVal( a+2, &y ) ) return errWrongType;
+
+  painter->translate( x, y );
   painter->rotate( angle );
+  painter->translate( -x, -y );
+
   return errNone;
 }
 
