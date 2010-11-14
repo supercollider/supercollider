@@ -62,14 +62,12 @@ QWindow : QView {
   drawHook_ { arg aFunction;
     drawHook = aFunction;
     this.setProperty( \paint, true );
-    this.refresh;
   }
 
   refresh {
     if( drawHook.notNil ) {
-      this.invokeMethod( \rebuildPen );
+      this.invokeMethod( \repaint );
     };
-    super.refresh;
   }
   // ---------------------- private ------------------------------------
 

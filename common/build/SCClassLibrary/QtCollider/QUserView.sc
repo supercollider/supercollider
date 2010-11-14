@@ -23,14 +23,12 @@ QUserView : QView {
   drawFunc_ { arg aFunction;
     drawFunc = aFunction;
     this.setProperty( \paint, true );
-    this.refresh;
   }
 
   refresh {
     if( drawFunc.notNil ) {
-      this.invokeMethod( \rebuildPen );
+      this.invokeMethod( \repaint );
     };
-    super.refresh;
   }
 
   background_ { arg aColor;

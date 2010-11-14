@@ -22,22 +22,22 @@
 #ifndef QC_SCROLL_AREA_H
 #define QC_SCROLL_AREA_H
 
+#include "QcCanvas.h"
 #include "../QcHelper.h"
-#include "../QcPen.h"
 
-#include <QAbstractScrollArea>
+#include <QScrollArea>
 
-class QcScrollWidget : public QWidget
+class QcScrollWidget : public QcCanvas
 {
-  public:
-    QcScrollWidget( QWidget *parent = 0 ) : QWidget( parent )
-    {}
-    void updateSize();
-    bool event ( QEvent * );
-    bool eventFilter ( QObject *, QEvent * );
+public:
+  QcScrollWidget( QWidget *parent = 0 );
+  QSize sizeHint() const;
+protected:
+  virtual bool event ( QEvent * );
+  virtual bool eventFilter ( QObject *, QEvent * );
 };
 
-class QcScrollArea : public QAbstractScrollArea, public QcHelper
+class QcScrollArea : public QScrollArea, public QcHelper
 {
   Q_OBJECT
   Q_PROPERTY( bool hasBorder READ dummyBool WRITE setHasBorder );
@@ -48,7 +48,7 @@ class QcScrollArea : public QAbstractScrollArea, public QcHelper
     QcScrollArea();
     Q_INVOKABLE void addChild( QWidget* w ) { w->setParent( scrollWidget ); w->show(); }
     void setBackground ( const QColor &color );
-    void setPaint( bool b ) { paint = b; }
+    void setPaint( bool b ) { scrollWidget->setPaint( b ); }
     void setHasBorder( bool b );
     QRectF innerBounds() const {
       QSize vs = viewport()->size();
@@ -57,23 +57,11 @@ class QcScrollArea : public QAbstractScrollArea, public QcHelper
                     qMax( vs.width(), cs.width() ),
                     qMax( vs.height(), cs.height() ) );
     }
-    Q_INVOKABLE void rebuildPen();
+    Q_INVOKABLE void repaint() { scrollWidget->repaint(); }
   public Q_SLOTS:
-    void update() { viewport()->update(); }
+    void doDrawFunc();
   private:
-    void updateScrollBars();
-    void updateWidgetPosition();
-    void scrollContentsBy ( int dx, int dy );
-    void resizeEvent( QResizeEvent * );
-    bool eventFilter ( QObject *, QEvent * );
-    void paintEvent( QPaintEvent * );
-
     QcScrollWidget *scrollWidget;
-    bool paint;
-    bool painting;
-    QColor bkg;
-
-    QtCollider::Pen pen;
 };
 
 #endif //QC_SCROLL_AREA_H
