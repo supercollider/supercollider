@@ -25,9 +25,11 @@
 class QPainter;
 
 namespace QtCollider {
-    void beginPainting( QPaintDevice * );
-    void endPainting();
-    QPainter * globalPainter();
+
+void beginPainting( QPainter * );
+void endPainting();
+QPainter * globalPainter();
+
 }
 
 #endif
