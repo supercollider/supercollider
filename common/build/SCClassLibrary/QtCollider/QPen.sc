@@ -157,7 +157,8 @@ QPen {
   }
 
   *arcTo { arg point1, point2, radius;
-    this.nonimpl("arcTo");
+    _QPen_ArcTo
+    ^this.primitiveFailed;
   }
 
   *addArc { arg center, radius, startAngle, arcAngle;

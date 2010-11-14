@@ -2,6 +2,8 @@
 *
 * Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
 *
+* Copyright 2010 Ivan Leben (ivan.leben@gmail.com) (QPen_ArcTo)
+*
 * This file is part of SuperCollider Qt GUI.
 *
 * This program is free software: you can redistribute it and/or modify
@@ -24,6 +26,9 @@
 #include "../Slot.h"
 
 #include <QPainter>
+#include <QVector2D>
+#include <QVector3D>
+#include <cmath>
 
 namespace QtCollider
 {
@@ -85,6 +90,37 @@ namespace QtCollider {
   {
     return painter;
   }
+}
+
+typedef QVector2D vec2;
+typedef QVector3D vec3;
+static const double PI = 3.14159265358979323846264338327950288419717;
+
+inline static qreal globalAngle( const vec2 &v )
+{
+  //assuming v is normalized
+  qreal cosa = v.x();
+  qreal sina = -v.y();
+  return sina >= 0.0 ? acosf(cosa) : 2.0*PI - acosf(cosa);
+}
+
+inline static qreal vectorAngle( const vec2 &v1, const vec2 &v2 )
+{
+  //assuming v1,v2 are normalized
+  return acosf( vec2::dotProduct( v1, v2 ) );
+}
+
+inline static qreal signedAngle( const vec2 &v1, const vec2 &v2 )
+{
+  //assuming v1,v2 are normalized
+  qreal a = vectorAngle( v1, v2 );
+  vec3 c = vec3::crossProduct( vec3(v1), vec3(v2) );
+  return c.z() > 0.0 ? a : -a;
+}
+
+inline static qreal radToAng( qreal rad )
+{
+  return rad * 180.0 / PI;
 }
 
 QC_QPEN_PRIMITIVE( QPen_Save, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
@@ -236,6 +272,45 @@ QC_QPEN_PRIMITIVE( QPen_QuadTo, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QPointF endPoint = Slot::toPoint( a );
   QPointF cPoint = Slot::toPoint( a+1 );
   path.quadTo( cPoint, endPoint );
+  return errNone;
+}
+
+QC_QPEN_PRIMITIVE( QPen_ArcTo, 3, PyrSlot *r, PyrSlot *arg, VMGlobals *g )
+{
+  QPointF pt1 = Slot::toPoint( arg );
+  QPointF pt2 = Slot::toPoint( arg+1 );
+  float radius;
+  if( slotFloatVal( arg+2, &radius ) ) return errWrongType;
+
+  vec2 a( path.currentPosition() );
+  vec2 b( pt1 );
+  vec2 c( pt2 );
+
+  vec2 va = (a - b).normalized();
+  vec2 vc = (c - b).normalized();
+  vec2 m = (va + vc).normalized();
+
+  qreal lineAngle = vectorAngle( va, vc );
+  qreal dm = radius / sinf( lineAngle * 0.5f );
+  qreal dv = radius / tanf( lineAngle * 0.5f );
+
+  vec2 center = b + dm * m;
+  vec2 start = b + dv * va;
+  vec2 end = b + dv * vc;
+
+  vec2 vs = (start - center).normalized();
+  vec2 ve = (end - center).normalized();
+
+  qreal arcAngle = signedAngle( ve, vs );
+  qreal arcStart = globalAngle( vs );
+
+  path.lineTo( start.x(), start.y() );
+
+  path.arcTo( center.x() - radius, center.y() - radius, 2*radius, 2*radius,
+              radToAng( arcStart ), radToAng( arcAngle ) );
+
+  path.lineTo( pt2 );
+
   return errNone;
 }
 
