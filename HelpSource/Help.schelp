@@ -15,12 +15,12 @@ list::
 ## add more stuff..
 ::
 
-SECTION::Documentation index
+SECTION::Documentation Overviews
 
 subsection:: All Documents
 table::
+## Documents by categories: || link::Overviews/Categories::
 ## Documents alphabetically: || link::Overviews/AllDocuments::
-## Documents by categories: || link::Overviews/DocumentsByCategories::
 ::
 
 subsection:: Classes
@@ -30,7 +30,6 @@ table::
 ## Classes by categories: || link::Overviews/ClassesByCategories::
 ## Index of all methods: || link::Overviews/Methods::
 ::
-A list of all undocumented classes can be found here: link::Overviews/Undocumented::
 
 subsection:: UGens
 table::

@@ -42,27 +42,28 @@ a:hover {
     padding: 0.5em;
 /*    border: 1px solid #aaa;*/
 }
-.subheader {
-    margin-bottom: 2em;
-}
-
-#summary {
-    font-weight: bold;
-}
-#inheritance, #related {
-    text-align: right;
-    margin-left: 0.5em;
-/*    border-top: 1px solid #aaa;*/
-}
-
 #label {
     text-align: left;
     font-weight: bold;
-    color: #888;
+    color: #777;
 /*    font-size: 8pt;*/
 }
+#summary {
+    font-weight: bold;
+}
+
+.subheader {
+    margin-bottom: 2em;
+    text-align: right;
+}
+
+#inheritance, #related {
+/*    margin-left: 0.5em;*/
+/*    border-top: 1px solid #aaa;*/
+}
+
 #categories {
-    color: #888;
+/*    color: #888;*/
 }
 
 h1 {
@@ -82,6 +83,7 @@ h2 {
 h3 {
     border-bottom: 2px solid #bbb;
     margin-bottom: 0.5em;
+    padding-left: 0.15em;
 }
 
 dt {

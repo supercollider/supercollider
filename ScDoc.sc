@@ -159,7 +159,7 @@ ScDocParser {
                 'code::',               modalRangeTag,
                 'emphasis::',           modalRangeTag,
                 'link::',               modalRangeTag,
-                'anchor::',             modalRangeTag,                
+                'anchor::',             modalRangeTag,
 
                 'list::',               listEnter,
                 'tree::',               listEnter,
@@ -340,6 +340,35 @@ ScDocParser {
         r.add((tag:'categories', text:"Classes"));
         r.add(n);
         this.dumpClassTree(n,Object);
+        root = r;
+    }
+    
+    overviewCategories {|catMap|
+        var r = List.new;
+        var n, l, m, kinds, folder, v;
+        r.add((tag:'title', text:"Document Categories"));
+        r.add((tag:'summary', text:"All documents by categories"));
+        r.add((tag:'related', text:"Overviews/AllDocuments"));
+//        catMap.pairsDo {|k,v|
+        catMap.keys.asList.sort {|a,b| a<b}.do {|k|
+            v = catMap[k];
+            r.add((tag:'section', text:k, children:n=List.new));
+            kinds = Dictionary.new;
+            v.do {|doc|
+                folder = doc.path.dirname;
+                if(kinds[folder].isNil, { kinds[folder] = List.new });
+                kinds[folder].add(doc);
+            };
+            kinds.pairsDo {|kind,links|
+                n.add((tag:'subsection', text:kind, children:m=List.new));
+                m.add((tag:'list', children:l=List.new));
+                links.do {|doc|
+                    l.add((tag:'##'));
+                    l.add((tag:'link', text:doc.path));
+                    l.add((tag:'prose', text:" - "++doc.summary));
+                };
+            };
+        };
         root = r;
     }
 }
@@ -562,30 +591,36 @@ ScDocRenderer {
     renderHTMLHeader {|f,name,type,folder|
         var x, cats;
         var style = baseDir +/+ "scdoc.css";
-//        dirLevel.do { style = style ++ "../" };
-//        style = style ++ "scdoc.css";
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' /></head><body>");
 
-//        cats = parser.findNode(\categories).text.findRegexp("[^ ,]+").flop[1];
-        cats = ScDoc.splitList(parser.findNode(\categories).text);
-        cats = if(cats.notNil, {cats.join(", ")}, {""});
+//        cats = ScDoc.splitList(parser.findNode(\categories).text);
+//        cats = if(cats.notNil, {cats.join(", ")}, {""});
         if(folder==".",{folder=""});
         f.write("<div class='header'>");
         f.write("<div id='label'>SuperCollider "++folder.asString.toUpper++"</div>");
-//        f.write(if(type==\class,{"SC CLASS"},{"SC DOC"}));
-        f.write("<div id='categories'>"++cats++"</div>");
+        x = parser.findNode(\categories);
+        if(x.text.notEmpty, {
+            f.write("<div id='categories'>");
+//            f.write("Categories: ");
+            f.write(ScDoc.splitList(x.text).collect {|r|
+                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++ScDocRenderer.simplifyName(r)++"'>"++r++"</a>"
+            }.join(", "));
+            f.write("</div>");
+        });    
+        
         f.write("<h1>"++name++"</h1>");
         x = parser.findNode(\summary);
         f.write("<div id='summary'>"++x.text++"</div>");
         f.write("</div>");
 
         f.write("<div class='subheader'>\n");
+        
         if(type==\class,{
             f.write("<div id='inheritance'>");
-            f.write("Inherits from ");
-            currentClass.superclasses.do {|c|
-                f.write(": <a href=\"../Classes/"++c.name++".html\">"++c.name++"</a> ");
-            };
+            f.write("Inherits from: ");
+            f.write(currentClass.superclasses.collect {|c|
+                "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
+            }.join(" : "));
             f.write("</div>");
         });
         
@@ -593,12 +628,9 @@ ScDocRenderer {
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
             f.write("See also: ");
-//            x.text.findRegexp("[^ ,]+").flop[1].do {|r,i|
-            ScDoc.splitList(x.text).do {|r,i|
-                //FIXME: ignore superclasses? since they are already in "inherits from"...
-                if(i>0, {f.write(", ")});
-                f.write("<a href=\""++baseDir +/+ r++".html\">"++r.split($/).last++"</a>");
-            };
+            f.write(ScDoc.splitList(x.text).collect {|r|
+                "<a href=\""++baseDir +/+ r++".html\">"++r.split($/).last++"</a>"
+            }.join(", "));
             f.write("</div>");
         });
         f.write("</div>");
@@ -655,6 +687,7 @@ ScDocRenderer {
 ScDoc {
     var <>helpTargetDir;
     var <>helpSourceDir;
+    var <categoryMap;
     
     *new {
         ^super.new.init;
@@ -685,16 +718,31 @@ ScDoc {
 
         r.parser = p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
+        
+        r.parser = p.overviewCategories(categoryMap);
+        r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
+    }
+    
+    addToCategoryMap {|parser, path|
+        var cats = parser.findNode(\categories).text;
+        cats = ScDoc.splitList(cats);
+        cats.do {|cat|
+            if(categoryMap[cat].isNil, {
+                categoryMap[cat] = List.new;
+            });
+            categoryMap[cat].add((path:path, summary:parser.findNode(\summary).text));
+        };
     }
 
     updateAll {
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
+        categoryMap = Dictionary.new;
         PathName(helpSourceDir).filesDo {|path|
             var source = path.fullPath;
             var lastDot = source.findBackwards(".");
-            var subtarget = source.copyRange(helpSourceDir.size+1,lastDot-1)++".html";
-            var target = helpTargetDir +/+ subtarget;
+            var subtarget = source.copyRange(helpSourceDir.size+1,lastDot-1);
+            var target = helpTargetDir +/+ subtarget ++".html";
             var folder = target.dirname;
             var ext = source.copyToEnd(lastDot);
 //            PathName(folder).makeDir;
@@ -703,6 +751,7 @@ ScDoc {
             if(ext == ".schelp", {
                 ("Rendering" + source + "to" + target).postln;
                 r.parser = p.parseFile(source);
+                this.addToCategoryMap(p,subtarget);
                 r.renderHTML(target,subtarget.dirname);
                 //FIXME: add to categories map and/or persistent tree with
                 //file path and metadata (categories, title/class, summary, related, etc..)
