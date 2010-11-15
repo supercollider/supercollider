@@ -1,43 +1,18 @@
 + Object {
 
 	guiClass { ^ObjectGui }
-	//guiClass { ^ModelImplementsGuiBody }
-	//guiBody {}
 
+	// create a gui using the guiClass passing in args
+	// by convention the first arg is a window, view or layout
+	// and the second arg is a Rect
 	gui { arg  ... args;
 		^this.guiClass.new(this).performList(\gui,args);
 	}
 
-	topGui { arg ... args;
-		^this.guiClass.new(this).performList(\topGui,args);
-	}
-
-	smallGui { arg  ... args;
-		var class;
-		class = this.guiClass;
-		if(class.findMethod(\smallGui).notNil,{
-			^this.guiClass.new(this).performList(\smallGui,args);
-		});
-		while ({ class = class.superclass; class !== Object },{
-			if(class.findMethod(\smallGui).notNil,{
-				^this.guiClass.new(this).performList(\smallGui,args);
-			});
-		});
-		^Tile(this,args.first.asPageLayout)
-	}
 	// return an array of symbols specifying which vars to put up on the gui
 	*instVarsForGui { ^[] }
 	*publicInstVars {
 		^this.instVarNames.select({ |ivar| this.findRespondingMethodFor(ivar).notNil })
-	}
-
-	// Insp
-	insp { arg  ... args;
-		Insp(this,args);
-	}
-	// gui into the Insp tabbed browser
-	ginsp { arg  ... args;
-		Insp(this,args,true);
 	}
 
 	debug { arg caller;
@@ -98,41 +73,6 @@
 }
 
 
-+ Pattern {
-	// by default gui all public inst vars
-	*instVarsForGui {
-		^this.publicInstVars
-	}
-}
-+ Pbind {
-	guiBody { |f|
-		var endval = patternpairs.size-1;
-		forBy (0, endval, 2) { arg i;
-			f.startRow;
-			ArgNameLabel(patternpairs[i],f);
-			patternpairs[i+1].gui(f);
-		};
-	}
-}
-+ Pswitch  {
-//	guiClass { ^PswitchGui }
-	guiBody { arg layout;
-		this.list.do({ arg l;
-			l.gui(layout.startRow);
-		});
-		this.which.gui(layout);
-	}
-}
-
-+ Pstutter {
-	guiBody { arg layout;
-		pattern.gui(layout);
-		n.gui(layout.startRow);
-	}
-}
-
-
-
 + RawArray { // string, signal
 	debug { arg caller;
 		// by using this rather than just postln
@@ -144,50 +84,6 @@
 		});
 	}
 }
-
-
-+ Class {
-	guiClass { ^ClassGui }
-}
-
-+ Method {
-	guiClass { ^MethodGui }
-}
-
-+ Dictionary {
-	//guiClass { ^DictionaryGui }
-	guiBody { arg layout;
-		this.keysValuesDo({ arg k,v,i;
-			CXLabel(layout.startRow,k,minWidth: 100);
-			Tile(v,layout,200);
-		})
-	}
-}
-
-+ Server {
-	guiClass { ^ServerGui }
-}
-+ Node {
-//	guiClass { ^NodeGui }
-	guiBody { arg layout;
-		Tile(this.server,layout);
-		Tile(this.group,layout);
-		ActionButton(layout,"trace",{
-			this.trace;
-		});
-		ActionButton(layout,"query",{
-			this.query;
-		});
-	}
-}
-+ Synth {
-//	guiClass { ^SynthGui }
-	guiBody { arg layout;
-		CXLabel(layout,this.defName);
-		super.guiBody(layout);
-	}
-}
-
 
 
 /* layout support */
