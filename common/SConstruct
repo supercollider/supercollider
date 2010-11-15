@@ -795,11 +795,13 @@ libscsynthEnv = serverEnv.Clone(
                                                  libraries['rendezvous']),
     PKGCONFIG_LIBS = ['-lscsynth'],
 #     PKGCONFIG_LIBS_PRIVATE = ['-lm', '-lpthread', '-ldl'],
-    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server']
+    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server'],
+    SHLIBSUFFIX='.so.1',
+    LIBSUFFIXES=['.so.1']
     )
 if PLATFORM == 'linux':
     libscsynthEnv.Append(
-        LINKFLAGS = ['-Wl,-soname,libscsynth.so'])
+        LINKFLAGS = ['-Wl,-soname,libscsynth.so.1'])
 
 libscsynthSources = Split('''
 Source/server/Rendezvous.cpp
@@ -1037,11 +1039,13 @@ libsclangEnv = langEnv.Clone(
     PKGCONFIG_PREFIX = FINAL_PREFIX,
     PKGCONFIG_REQUIRES = make_pkgconfig_requires(libraries['sndfile']) + ['libscsynth'],
     PKGCONFIG_LIBS = ['-lsclang'],
-    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/lang', '-I${includedir}/server']
+    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/lang', '-I${includedir}/server'],
+    SHLIBSUFFIX='.so.1',
+    LIBSUFFIXES=['.so.1']
     )
 if PLATFORM == 'linux':
     libsclangEnv.Append(
-        LINKFLAGS = ['-Wl,-soname,libsclang.so'])
+        LINKFLAGS = ['-Wl,-soname,libsclang.so.1'])
 
 # required libraries
 merge_lib_info(langEnv, libraries['sndfile'])
