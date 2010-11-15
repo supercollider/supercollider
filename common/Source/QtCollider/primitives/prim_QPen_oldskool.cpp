@@ -379,30 +379,27 @@ QC_QPEN_PRIMITIVE( QPen_AddWedge, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-QC_QPEN_PRIMITIVE( QPen_AddAnnularWedge, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_QPEN_PRIMITIVE( QPen_AddAnnularWedge, 5, PyrSlot *, PyrSlot *a, VMGlobals *g )
 {
-  QPointF center = Slot::toPoint( a );
-  float innerRadius, outerRadius, startAngle, sweepLength;
+  QPointF c = Slot::toPoint( a );
+  float innerRadius, outerRadius, startAngle, arcAngle;
   if( slotFloatVal( a+1, &innerRadius ) ) return errWrongType;
   if( slotFloatVal( a+2, &outerRadius ) ) return errWrongType;
   if( slotFloatVal( a+3, &startAngle ) ) return errWrongType;
-  if( slotFloatVal( a+4, &sweepLength ) ) return errWrongType;
+  if( slotFloatVal( a+4, &arcAngle ) ) return errWrongType;
 
-  QPainterPath annularWedge;
-  annularWedge.moveTo( center );
-  QRectF rect;
-  rect.setSize( QSizeF( 2*outerRadius, 2*outerRadius ) );
-  rect.moveCenter( center );
-  annularWedge.arcTo( rect, startAngle, sweepLength );
-  annularWedge.closeSubpath();
+  float saDeg = radToDeg( startAngle );
+  float aaDeg = radToDeg( arcAngle );
 
-  QPainterPath circle;
-  QRectF r2( 0,0,2*innerRadius, 2*innerRadius );
-  r2.moveCenter( center );
-  circle.addEllipse( r2 );
+  QPointF start( outerRadius * cosf( startAngle ), -outerRadius * sinf( startAngle ) );
+  start += c;
+  path.moveTo( start );
 
-  //FIXME this is VERY slow!!
-  path.addPath( annularWedge - circle );
+  QPointF pt( innerRadius, innerRadius );
+  path.arcTo( QRectF( c - pt, c + pt ), saDeg, aaDeg );
+
+  pt = QPointF( outerRadius, outerRadius );
+  path.arcTo( QRectF( c - pt, c + pt ), saDeg + aaDeg, -aaDeg );
 
   return errNone;
 }
