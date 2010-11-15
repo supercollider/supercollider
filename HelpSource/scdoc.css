@@ -74,16 +74,16 @@ h1 {
 }
 
 h2 {
-/*    border-bottom: 3px solid #bbb;*/
-    background: #ddd;
-    padding-left: 0.15em;
+    border-bottom: 4px solid #bbb;
+/*    background: #ddd;
+    padding-left: 0.15em;*/
     letter-spacing: 0.05em;
 }
 
 h3 {
     border-bottom: 2px solid #bbb;
     margin-bottom: 0.5em;
-    padding-left: 0.15em;
+/*    padding-left: 0.15em;*/
 }
 
 dt {
