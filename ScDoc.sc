@@ -661,7 +661,7 @@ ScDoc {
     }
     
     *splitList {|txt|
-        ^txt.findRegexp("[-_a-zA-Z0-9]+[-_/a-zA-Z0-9 ]*[-_/a-zA-Z0-9]*").flop[1];
+        ^txt.findRegexp("[-_>a-zA-Z0-9]+[-_>/a-zA-Z0-9 ]*[-_>/a-zA-Z0-9]+").flop[1];
     }
 
     init {

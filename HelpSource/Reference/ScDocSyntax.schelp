@@ -5,6 +5,8 @@ related:: Guides/WritingHelp, Classes/ScDoc, Classes/ScDocParser, Classes/ScDocR
 
 This ML consists of a specification for writing documents with semantic annotations, in a manner which does not target a specific layout or output format. Its purpose is to allow for human-writable documents to be produced in a variety of formats and for a variety of target platforms. Usability and learnability are paramount, so the syntax is as simple as possible. 
 
+A guide to writing help can be found here: link::Guides/WritingHelp::.
+
 section::Markup Language Syntax
 
 Documents consist of tags and text. Some tags associate text with them, some just denotes a structural location in the document. Untagged text is treated as 'normal prose'.
