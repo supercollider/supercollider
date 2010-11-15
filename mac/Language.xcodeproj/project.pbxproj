@@ -1352,7 +1352,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 88332483090AC12E00A4A7E4 /* Build configuration list for PBXProject "Language" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = F50D04F802E68E8201CA2799;
 			productRefGroup = F50D060302E69C2101CA2799 /* Products */;
 			projectDirPath = "";
@@ -1895,12 +1902,14 @@
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = ../common/include/icu;
 				INFOPLIST_FILE = Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = "-DSC_DARWIN";
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 				ZERO_LINK = YES;
 			};
 			name = Development;
@@ -1908,10 +1917,8 @@
 		88332485090AC12E00A4A7E4 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_AUTO_VECTORIZATION = YES;
@@ -1920,15 +1927,17 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = ../common/include/icu;
 				INFOPLIST_FILE = Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-DNDEBUG",
 				);
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 			};
 			name = Deployment;
 		};
@@ -1979,8 +1988,6 @@
 		94442CC70C2C8AE40050BF9F /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -1991,7 +1998,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = 4.0;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -2019,7 +2025,6 @@
 					AppKit,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Deployment;
@@ -2060,8 +2065,6 @@
 		949317D00C192ACC0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -2074,7 +2077,6 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = 4.0;
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2090,7 +2092,6 @@
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "-lQtCollider";
 				PRODUCT_NAME = sclang;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
 		};
@@ -2141,8 +2142,6 @@
 		94B6ABC90AF45D2900E478BB /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -2153,7 +2152,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = 4.0;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -2181,7 +2179,6 @@
 					"-lQtCollider",
 				);
 				PRODUCT_NAME = SuperCollider;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Deployment;
@@ -2189,10 +2186,8 @@
 		F36C2DA71125E2140099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_AUTO_VECTORIZATION = YES;
@@ -2201,15 +2196,17 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = 4.2;
 				HEADER_SEARCH_PATHS = ../common/include/icu;
 				INFOPLIST_FILE = Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-DNDEBUG",
 				);
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "";
 			};
 			name = "Deployment32-64";
 		};
@@ -2236,8 +2233,6 @@
 		F36C2DA91125E2140099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -2248,7 +2243,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = "";
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -2276,7 +2270,6 @@
 					AppKit,
 				);
 				PRODUCT_NAME = SuperCollider;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				WRAPPER_EXTENSION = app;
 			};
 			name = "Deployment32-64";
@@ -2284,8 +2277,6 @@
 		F36C2DAA1125E2140099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -2298,7 +2289,6 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = "";
 				INSTALL_PATH = "$(HOME)/bin";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2314,15 +2304,12 @@
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "-lQtCollider";
 				PRODUCT_NAME = sclang;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 			};
 			name = "Deployment32-64";
 		};
 		F36C2DAB1125E2140099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
@@ -2333,7 +2320,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = SC_QT;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = "";
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -2361,7 +2347,6 @@
 					AppKit,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = "Deployment32-64";

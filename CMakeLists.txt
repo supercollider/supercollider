@@ -3,6 +3,11 @@ project (SuperCollider)
 
 include (common/cmake_modules/FinalFile.cmake)
 
+if (NOT CMAKE_BUILD_TYPE)
+	message(STATUS "Build type defaulting to \"Release\"")
+	set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/common/cmake_modules
                       ${CMAKE_MODULE_PATH})
 

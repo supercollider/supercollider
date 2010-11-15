@@ -56,7 +56,6 @@
 		7713C6680F422BE400B0055E /* PyrSymbolTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9A80EB36D500051CF38 /* PyrSymbolTable.cpp */; };
 		7713C6690F422BE400B0055E /* PyrUnixPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9810EB36D500051CF38 /* PyrUnixPrim.cpp */; };
 		7713C66A0F422BE400B0055E /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9820EB36D500051CF38 /* PyrUStringPrim.cpp */; };
-		7713C66B0F422BE400B0055E /* SC_AlsaMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9830EB36D500051CF38 /* SC_AlsaMIDI.cpp */; };
 		7713C66C0F422BE400B0055E /* SC_LibraryConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9AB0EB36D500051CF38 /* SC_LibraryConfig.cpp */; };
 		7713C66D0F422BE400B0055E /* SimpleStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9AD0EB36D500051CF38 /* SimpleStack.cpp */; };
 		7713C66E0F422BE400B0055E /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9AE0EB36D500051CF38 /* VMGlobals.cpp */; };
@@ -94,6 +93,7 @@
 		77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B04112332CF00D2A968 /* UIKit.framework */; };
 		77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B09112332ED00D2A968 /* Foundation.framework */; };
 		776B2A97119075EF001F253D /* JITLib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 776B2A70119075EC001F253D /* JITLib */; };
+		77785320128DC78300A32135 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
 		778F12C00F50A92100CB6629 /* synthdefs in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129E0F50A92100CB6629 /* synthdefs */; };
 		778F12C10F50A92100CB6629 /* sounds in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129F0F50A92100CB6629 /* sounds */; };
 		778F12C20F50A92100CB6629 /* plugins in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12AB0F50A92100CB6629 /* plugins */; };
@@ -107,7 +107,6 @@
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
 		77ABF4B9124BC3510008A5E0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77ABF4B8124BC3510008A5E0 /* CFNetwork.framework */; };
-		77ABF4BE124BC3670008A5E0 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
 		77C11F4E11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77C11F4D11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib */; };
 		77C1204511D67558002067D4 /* PostViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 77C1204411D67558002067D4 /* PostViewController.mm */; };
 /* End PBXBuildFile section */
@@ -455,7 +454,7 @@
 				77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */,
 				77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */,
 				77ABF4B9124BC3510008A5E0 /* CFNetwork.framework in Frameworks */,
-				77ABF4BE124BC3670008A5E0 /* scUBlibsndfile.a in Frameworks */,
+				77785320128DC78300A32135 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -983,6 +982,7 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "iPhone_Language" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				en,
@@ -1081,7 +1081,6 @@
 				7713C6680F422BE400B0055E /* PyrSymbolTable.cpp in Sources */,
 				7713C6690F422BE400B0055E /* PyrUnixPrim.cpp in Sources */,
 				7713C66A0F422BE400B0055E /* PyrUStringPrim.cpp in Sources */,
-				7713C66B0F422BE400B0055E /* SC_AlsaMIDI.cpp in Sources */,
 				7713C66C0F422BE400B0055E /* SC_LibraryConfig.cpp in Sources */,
 				7713C66D0F422BE400B0055E /* SimpleStack.cpp in Sources */,
 				7713C66E0F422BE400B0055E /* VMGlobals.cpp in Sources */,
@@ -1159,10 +1158,11 @@
 					"$(inherited)",
 					lib,
 					../mac/lib,
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/iphone/lib\"",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/mac/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.2;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1192,14 +1192,16 @@
 				GENERATE_MASTER_OBJECT_FILE = NO;
 				HEADER_SEARCH_PATHS = ../common/include/libsndfile;
 				INFOPLIST_FILE = "iPhone Resources/SuperCollider.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					lib,
 					../mac/lib,
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/iphone/lib\"",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/mac/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.2;
 				SEPARATE_STRIP = NO;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
@@ -1247,6 +1249,8 @@
 					"$(inherited)",
 					lib,
 					../mac/lib,
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/iphone/lib\"",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/mac/lib\"",
 				);
 				PRODUCT_NAME = SuperCollider;
 				SDKROOT = iphoneos3.0;
@@ -1294,7 +1298,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.2;
+				SDKROOT = iphoneos;
 				SYMROOT = build_iphone;
 			};
 			name = Debug;
@@ -1308,7 +1312,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.2;
+				SDKROOT = iphoneos;
 				SYMROOT = build_iphone;
 			};
 			name = Release;

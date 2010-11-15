@@ -1,6 +1,14 @@
 include_directories(../Headers/common
                     ../Headers/plugin_interface)
 
+find_package(Pthreads)
+
+if (NOT PTHREADS_FOUND)
+    message(SEND_ERROR "cannot find libpthreads")
+endif()
+include_directories(${PTHREADS_INCLUDE_DIR})
+
+
 if (NOVA_SIMD)
 	add_definitions("-DNOVA_SIMD")
 	include_directories(../include/nova-simd)

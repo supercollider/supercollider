@@ -3708,7 +3708,7 @@ int prRemoveMenuItem(struct VMGlobals *g, int numArgsPushed)
 	NSMenuItem *menuItem = (NSMenuItem*)(slotRawPtr(slotRawObject(caller)->slots));
 	if(!menuItem) return errFailed;
 	[[menuItem menu] removeItem:menuItem];
-	SetNil(slotRawObject(caller)->slots); // we're now a lame duck
+	SetPtr(slotRawObject(caller)->slots, NULL); // we're now a lame duck
 	//if([menuItem hasSubmenu]) { [[menuItem submenu] release] };
 	[menuItem release];
 	return errNone;

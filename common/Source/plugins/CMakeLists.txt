@@ -128,7 +128,8 @@ if(NOT NO_LIBSNDFILE)
 
 	if(SNDFILE_FOUND)
 		include_directories(${SNDFILE_INCLUDE_DIR})
-		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} m pthread)
+		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} m ${PTHREADS_LIBRARY})
+
 		list(APPEND plugins DiskIO_UGens)
 	else()
 		message(SEND_ERROR "Cannot find libsndfile")
@@ -209,7 +210,7 @@ if (supernova)
 
 		if(SNDFILE_FOUND)
 			include_directories(${SNDFILE_INCLUDE_DIR})
-			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} m pthread)
+			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} m ${PTHREADS_LIBRARY})
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")

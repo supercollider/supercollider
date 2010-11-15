@@ -1178,7 +1178,7 @@ try_again:
 
 	// end add //
 
-	int nsmps = sc_min(grain->counter, inNumSamples);
+	int nsmps = sc_min(grain->counter, inNumSamples - position);
 
 	if (grain->winType < 0.)
 		GRAIN_BUF_PLAY_GRAIN(INTERNAL);

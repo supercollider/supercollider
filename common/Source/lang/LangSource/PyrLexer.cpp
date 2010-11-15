@@ -2141,7 +2141,7 @@ bool passOne_ProcessOneFile(const char * filenamearg, int level)
 	char filename[MAXPATHLEN];
 	int status = sc_ResolveIfAlias(filenamearg, filename, isAlias, MAXPATHLEN);
 
-	if (status) {
+	if (status<0) {
 		printf("WARNING: skipping invalid symbolic link: %s\n", filenamearg);
 		return success;
 	}
