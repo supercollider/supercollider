@@ -195,10 +195,10 @@ QPen {
   }
 
   *addAnnularWedge{ arg center, innerRadius, outerRadius, startAngle, sweepLength;
-    this.addAnnularWedge_Deg( center, innerRadius, outerRadius, (startAngle.neg).raddeg, (sweepLength.neg).raddeg );
+    this.prAddAnnularWedge( center, innerRadius, outerRadius, startAngle.neg, sweepLength.neg );
   }
 
-  *addAnnularWedge_Deg { arg center, innerRadius, outerRadius, startAngle, sweepLength;
+  *prAddAnnularWedge { arg center, innerRadius, outerRadius, startAngle, sweepLength;
     _QPen_AddAnnularWedge
     ^this.primitiveFailed;
   }
