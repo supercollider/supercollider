@@ -83,11 +83,11 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	UParseError uerr;
 	URegularExpression *expression = uregex_open(regexStr, -1, flags, &uerr, &status);
 
+	SCRegExRegion * what = NULL;
 	if(!U_FAILURE(status)) {
-		int indx = 0;
 		int size = 0;
 		uregex_setText(expression, ustring, -1, &status);
-		SCRegExRegion * what = (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
+		what = (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
 		for(int i=0; i< maxfind; i++)
 		{
 			SCRegExRegion range;
@@ -109,65 +109,60 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				what[size].end = sc_clip(uregex_end(expression, i, &status), 0, stringsize);
 				what[size].matched = true;
 //				post("index:%i, size:%i, start %i, end %i\n", i, size, what[i].start, what[i].end);
-				size = indx++ + 1;
+				++size;
 				if(U_FAILURE(status)) goto nilout;
 			}
 		}
 
 		PyrObject *result_array = newPyrArray(g->gc, size, 0, true);
 		result_array->size = 0;
+		SetObject(a, result_array);
 
 		if (size>0) //(matched)
 		{
 			for (int i = 0; i < size; i++)
 			{
-				if (what[0].matched == false)
-				{
-					result_array->size++;
-					SetNil(result_array->slots+i);
-				} else {
-					result_array->size++;
+				assert(what[i].matched);
+				result_array->size++;
 
-					int match_start =  what[i].start;
-					int match_length = what[i].end -  what[i].start;
+				int match_start =  what[i].start;
+				int match_length = what[i].end -  what[i].start;
 //					post("for i:%i, start %i, end %i\n",  i, what[i].start,  what[i].end);
 //					char *match = (char*)malloc(match_length);
-					char match[match_length];
+				char match[match_length];
 
-					strncpy(match, string + offset + match_start, match_length);
-					match[match_length] = 0;
-					PyrObject *array = newPyrArray(g->gc, 2, 0, true);
-					array->size = 2;
-					SetInt(array->slots, match_start + offset);
+				strncpy(match, string + offset + match_start, match_length);
+				match[match_length] = 0;
+				PyrObject *array = newPyrArray(g->gc, 2, 0, true);
+				SetObject(result_array->slots + i, array);
+				g->gc->GCWrite(result_array, array);
 
-					PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
-					SetObject(array->slots+1, matched_string);
-					g->gc->GCWrite(array, matched_string);
+				array->size = 2;
+				SetInt(array->slots, match_start + offset);
 
-					SetObject(result_array->slots + i, array);
-					g->gc->GCWrite(result_array, array);
-				}
+				PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
+				SetObject(array->slots+1, matched_string);
+				g->gc->GCWrite(array, matched_string);
 			}
 		}
-		else
-			SetNil(a);
 
 		free(what);
 		free(pattern);
 		free(regexStr);
 		free(ustring);
 		free(string);
-		SetObject(a, result_array);
-		//uregex_close(expression);
+		uregex_close(expression);
 		return errNone;
 	}
 
 nilout:
+	free(what);
 	free(string);
 	free(pattern);
 	free(regexStr);
 	free(ustring);
 	SetNil(a);
+	uregex_close(expression);
 	return errFailed;
 }
 

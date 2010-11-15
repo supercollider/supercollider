@@ -24,7 +24,7 @@
 		if (window.notNil) { ^window.front };
 
 		gui = GUI.current;
-		font = GUI.font.new("Helvetica", 10);
+		font = GUI.font.new(Font.defaultSansFace, 10);
 
 		if(w.isNil) {
 			label = name.asString + "server";
@@ -89,7 +89,7 @@
 		};
 
 		w.view.keyDownAction = { arg view, char, modifiers;
-			
+
 
 				// if any modifiers except shift key are pressed, skip action
 			if(modifiers & 16515072 == 0) {
@@ -421,7 +421,7 @@
 						var thisSize, rect, endYTabs;
 						xtabs = xtabs + 1;
 						ytabs = ytabs + 1;
-						Pen.font = Font("Helvetica", 11);
+						Pen.font = Font(Font.defaultSansFace, 11);
 						group.do({|node|
 							if(node.value.isArray, {
 

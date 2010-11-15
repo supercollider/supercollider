@@ -161,7 +161,7 @@ elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
-target_link_libraries(libsclang sccommon pthread)
+target_link_libraries(libsclang sccommon ${PTHREADS_LIBRARY})
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
 target_link_libraries(sclang libsclang)

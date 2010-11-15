@@ -182,8 +182,8 @@ int matchRegexp(char *string, char *pattern)
 
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 {
-	int err, start, end, ret;
-	
+	int err, start, end, ret, len;
+
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
 	PyrSlot *c = g->sp - 1;
@@ -193,18 +193,23 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 	if (NotInt(c) || NotInt(d) && NotNil(d)) return errWrongType;
 	start = slotRawInt(c);
 
+	len = slotRawObject(b)->size; // last char index instead of size
+
 	if(IsNil(d)) {
-		end = slotRawObject(b)->size - 1; // last char index instead of size
+		end = len;
 	} else {
 		end = slotRawInt(d);
 	}
+
+	if(end > len)
+		end = len;
 
 	if(end - start <= 0) {
 		SetFalse(a);
 		return errNone;
 	}
 
-	int stringlen = end - start + 1;
+	int stringlen = end - start;
 	char *string = (char*)malloc(stringlen + 1);
 	memcpy(string, (char*)(slotRawString(b)->s) + start, stringlen);
 	string[stringlen] = 0;

@@ -918,7 +918,14 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "iPhone_Synth" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1082,6 +1089,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = ../common/include/libsndfile;
 				INFOPLIST_FILE = "iPhone Resources/iscsynth.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = (
 					lib,
 					../mac/lib,
@@ -1089,7 +1097,6 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = iscsynth;
-				SDKROOT = iphoneos3.0;
 				SYMROOT = build_iphone;
 			};
 			name = Debug;
@@ -1108,6 +1115,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = ../common/include/libsndfile;
 				INFOPLIST_FILE = "iPhone Resources/iscsynth.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				LIBRARY_SEARCH_PATHS = (
 					lib,
 					../mac/lib,
@@ -1115,7 +1123,6 @@
 					"\"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
 				);
 				PRODUCT_NAME = iscsynth;
-				SDKROOT = iphoneos3.0;
 				SYMROOT = build_iphone;
 			};
 			name = Release;
@@ -1138,10 +1145,9 @@
 				GCC_VERSION = 4.2;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				HEADER_SEARCH_PATHS = ../common/include/libsndfile;
-				IPHONEOS_DEPLOYMENT_TARGET = 2.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
-				SDKROOT = iphoneos3.0;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
 			};
@@ -1167,11 +1173,10 @@
 				GCC_VERSION = 4.2;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				HEADER_SEARCH_PATHS = ../common/include/libsndfile;
-				IPHONEOS_DEPLOYMENT_TARGET = 2.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				OBJROOT = "$(SYMROOT)";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
-				SDKROOT = iphoneos3.0;
 				SKIP_INSTALL = NO;
 				SYMROOT = build_iphone;
 				ZERO_LINK = NO;
@@ -1188,7 +1193,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos2.2;
+				SDKROOT = iphoneos;
 				SYMROOT = build_iphone;
 			};
 			name = Debug;
@@ -1202,7 +1207,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.1.2;
+				SDKROOT = iphoneos;
 				SYMROOT = build_iphone;
 			};
 			name = Release;

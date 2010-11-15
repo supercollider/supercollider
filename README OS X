@@ -53,6 +53,40 @@ The package.sh script does several maintenance tasks (fixing creator
 codes, exporting from svn, etc) and creates a ready-to-distribute zip of
 SuperCollider.
 
+
+------------------------------------------------------------------------
+Cmake
+------------------------------------------------------------------------
+
+to build supercollider with cmake, it is suggested to do out-of-tree
+builds in a specific build directory:
+
+mkdir build
+cd build
+cmake ..
+
+to run the build process run:
+make
+
+the build process can be configured using the cmake program, cmake
+frontends like ccmake or cmake-gui, or by simply editing the
+build/CMakeCache.txt file.
+
+for example to enable a release build run the following in your build
+directory:
+cmake -DCMAKE_BUILD_TYPE=Release ..
+
+for a 32bit build on a 64bit machine (i.e. recent Mac systems), you need to configure cmake like this:
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS:STRING=-m32 -DCMAKE_C_FLAGS:STRING=-m32 ..
+
+to install the whole program, run:
+make install
+
+On Mac, this will create a SuperCollider directory in the build directory (rather then installing the program to the CMAKE_INSTALL_PREFIX:PATH=/usr/local)
+
+to uninstall:
+make uninstall
+
 ------------------------------------------------------------------------
 On libsndfile
 ------------------------------------------------------------------------
