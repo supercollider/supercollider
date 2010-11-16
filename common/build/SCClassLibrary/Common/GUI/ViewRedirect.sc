@@ -2,6 +2,10 @@ ViewRedirect { // Abstract class
 
 	classvar <>redirectQueries = false;
 
+	*implScheme{
+		^GUI.scheme
+	}
+
 	*implClass {
 		^GUI.scheme.perform(this.key)
 	}
@@ -17,10 +21,14 @@ ViewRedirect { // Abstract class
 	*browse { ^ClassBrowser(this.implClass ?? { ViewRedirect }) }
 	*doesNotUnderstand{|selector ... args|
 		var	impl;
-		if((impl = this.implClass).notNil) {
-			^this.implClass.perform(selector, *args)
-		} {
-			DoesNotUnderstandError(this, selector, args).throw;
+		if ( this.implScheme.notNil ){
+			if((impl = this.implClass).notNil) {
+				^this.implClass.perform(selector, *args)
+			} {
+				DoesNotUnderstandError(this, selector, args).throw;
+			}
+		}{
+			("No GUI scheme active: " + selector + args ).warn;
 		}
 	}
 	*classRedirect { ^redirectQueries.if({this.implClass ? this}, this)}
@@ -106,19 +114,6 @@ Font : ViewRedirect  {
 			}
 		}.play(AppClock)		
 }
-
-*defaultSansFace {
-if ( GUI.font.notNil ){	GUI.font.defaultSansFace }
-}
-	
-*defaultSerifFace {
-if ( GUI.font.notNil ){	GUI.font.defaultSerifFace }
-}
-	
-*defaultMonoFace {
-if ( GUI.font.notNil ){ GUI.font.defaultMonoFace }
-}
-
 }
 
 Knob : ViewRedirect  {	*key { ^\knob }}
