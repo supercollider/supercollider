@@ -780,13 +780,16 @@ Plotter {
 + Buffer {
 
 	plot2 { |name, bounds, minval, maxval|
-		var plotter = [0].plot2(
+		var plotter;
+		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
+		plotter = [0].plot2(
 			name ? "Buffer plot (bufnum: %)".format(this.bufnum),
 			bounds, minval: minval, maxval: maxval
 		);
 		this.loadToFloatArray(action: { |array, buf|
 			{
-				plotter.value = array.unlace(buf.numChannels)
+				plotter.value = array.unlace(buf.numChannels);
+				plotter.setProperties(\labelX, "frames");
 			}.defer
 		});
 		^plotter
