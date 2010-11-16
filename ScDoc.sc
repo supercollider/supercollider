@@ -854,10 +854,11 @@ ScDoc {
             if(ext == ".schelp", {
                 ("Rendering" + source + "to" + target).postln;
                 r.parser = p.parseFile(source);
-                this.addToCategoryMap(p,subtarget);
-                r.renderHTML(target,subtarget.dirname);
-                //FIXME: add to categories map and/or persistent tree with
-                //file path and metadata (categories, title/class, summary, related, etc..)
+                this.addToCategoryMap(p,subtarget); //we need to parse it to get the categories and stuff..
+
+                if(("test"+source+"-ot"+target).systemCmd!=0, { //update only if needed
+                    r.renderHTML(target,subtarget.dirname);
+                });
             }, {
                 ("Copying" + source + "to" + folder).postln;
                 ("cp" + source + folder).systemCmd;
