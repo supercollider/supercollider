@@ -7,9 +7,6 @@ body {
     color: black;
     max-width: 60em;
     margin-bottom: 3em;
-}
-
-p {
     text-align: justify;
 }
 
@@ -82,12 +79,14 @@ h2 {
     padding-left: 0.15em;*/
     letter-spacing: 0.05em;
     margin-top: 1.5em;
+    text-align: left;
 }
 
 h3 {
     border-bottom: 2px solid #bbb;
     margin-bottom: 0.5em;
 /*    padding-left: 0.15em;*/
+    text-align: left;
 }
 
 dt {
@@ -95,6 +94,7 @@ dt {
 }
 dd {
 /*    margin-top: -1em;*/
+    margin-bottom: 0.5em;
 }
 
 /*ul, ol {
@@ -107,7 +107,7 @@ li {
 
 code, pre {
     font-family: Andale Mono, monospace;
-    font-size: 9.5pt;
+    font-size: 9pt;
     font-weight: normal;
     color: #131;
 }

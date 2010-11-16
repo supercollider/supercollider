@@ -3,15 +3,13 @@ summary::documentation overview
 
 SuperCollider is an object-oriented language client and a server for sound synthesis and digital signal processing (DSP).
 
-NOTE:: This help system is currently work in progress!
-
 SECTION::Getting Started
 
 These might be useful starting points on getting help with SuperCollider:
 
 list::
+## link::Guides/ClientVsServer:: - Explaining the client vs server architecture.
 ## link::Tutorials/Introductory_tutorial::
-## etc...
 ## add more stuff..
 ::
 
@@ -34,6 +32,8 @@ subsection:: UGens and Server stuff
 table::
 ## Server related documents: || link::Overviews/Server::
 ::
+
+NOTE:: This help system is currently work in progress!
 
 SECTION::Licensing
 
