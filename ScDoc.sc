@@ -704,10 +704,12 @@ ScDocRenderer {
         
         if(type==\class,{
             f.write("<div id='inheritance'>");
-            f.write("Inherits from: ");
-            f.write(currentClass.superclasses.collect {|c|
-                "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
-            }.join(" : "));
+            if(currentClass != Object, {
+                f.write("Inherits from: ");
+                f.write(currentClass.superclasses.collect {|c|
+                    "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
+                }.join(" : "));
+            });
             f.write("</div>");
         });
         
@@ -814,6 +816,72 @@ ScDoc {
         r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
     
+    makeMethodList {|c,n|
+        var l, mets, name;
+
+        mets = c.class.methods;
+        if(mets.notNil, {
+            n.add((tag:\classmethods, children:l=List.new));
+            mets.do {|m|
+                name = m.name.asString;
+                l.add((tag:\method, text:name));
+            };
+        });
+
+        mets = c.methods;
+        if(mets.notNil, {                
+            n.add((tag:\instancemethods, children:l=List.new));    
+            mets.do {|m|
+                name = m.name.asString;
+                if(name.last!=$_, {
+                    l.add((tag:\method, text:name));
+                });
+            };
+        });
+    }
+    
+    classHasArKrIr {|c|
+        ^[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
+    }
+    
+    handleUndocumentedClasses {
+        var p = ScDocParser.new;
+        var r = ScDocRenderer.new;
+        var n, m, name, cats;
+        var src, dest;
+        ("Checking for undocumented classes...").postln;
+        Class.allClasses.do {|c|
+            name = c.name.asString;
+            src = helpSourceDir +/+ "Classes" +/+ name++".schelp";
+            dest = helpTargetDir +/+ "Classes" +/+ name ++ ".html";
+            if(File.exists(src).not and: (name.find("Meta_")!=0), {
+                ("Undocumented class: "++name).postln;
+                
+                n = List.new;
+                n.add((tag:\class, text:c.name.asString));
+                n.add((tag:\summary, text:"undocumented"));
+                
+                cats = "Undocumented classes";
+                
+                if(this.classHasArKrIr(c), {cats = cats ++ ", UGens>Undocumented"});
+                
+                n.add((tag:\categories, text:cats));
+                n.add((tag:\description, children:m=List.new));
+                
+                m.add((tag:\prose, text:"This class is missing documentation. "));
+                m.add((tag:\prose, text:"Please create and edit "++src));
+                
+                p.root = n;
+                this.addToCategoryMap(p, "Classes" +/+ name);
+                if(File.exists(dest).not, {
+                    this.makeMethodList(c,n);                
+                    r.parser = p;
+                    r.renderHTML(dest,"Classes");
+                });
+            });
+        };
+    }
+    
     addToCategoryMap {|parser, path|
         var cats = parser.findNode(\categories).text;
         cats = ScDoc.splitList(cats);
@@ -877,8 +945,9 @@ ScDoc {
                 ("cp" + source + folder).systemCmd;
             });
         };
-        this.makeOverviews;
+        this.handleUndocumentedClasses;
         this.writeCategoryMap;
+        this.makeOverviews;
         "Done".postln;
     }
 }
