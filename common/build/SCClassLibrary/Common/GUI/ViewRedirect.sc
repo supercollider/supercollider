@@ -12,10 +12,13 @@ ViewRedirect { // Abstract class
 	*key { ^\viewRedirect }
 	*new { arg parent, bounds;
 		var	impl;
-		if((impl = this.implClass).notNil) {
-			^impl.new(parent, bounds)
-		} {
-			MethodError("ViewRedirect is an abstract class and should not be instantiated directly. *new method not valid.", this).throw;
+		if ( this.implScheme.notNil ){
+			if((impl = this.implClass).notNil) {
+				^impl.new(parent, bounds)
+			} {
+				MethodError("ViewRedirect is an abstract class and should not be instantiated directly. *new method not valid.", this).throw;}
+		}{
+			("No GUI scheme active: " + this.key ++ ".new" + parent ).warn;
 		}
 	}
 	*browse { ^ClassBrowser(this.implClass ?? { ViewRedirect }) }
