@@ -81,6 +81,7 @@ h2 {
 /*    background: #ddd;
     padding-left: 0.15em;*/
     letter-spacing: 0.05em;
+    margin-top: 1.5em;
 }
 
 h3 {
@@ -109,6 +110,16 @@ code, pre {
     font-size: 9.5pt;
     font-weight: normal;
     color: #131;
+}
+
+.image {
+    text-align: center;
+    margin: 2em;
+    font-size: 9pt;
+}
+
+.image img {
+    margin-bottom: 1em;
 }
 
 .methodname {

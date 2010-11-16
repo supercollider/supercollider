@@ -161,6 +161,7 @@ ScDocParser {
                 'strong::',             modalRangeTag,
                 'link::',               modalRangeTag,
                 'anchor::',             modalRangeTag,
+                'image::',              modalRangeTag,
 
                 'list::',               listEnter,
                 'tree::',               listEnter,
@@ -603,7 +604,18 @@ ScDocRenderer {
                     file.write("<code>"++node.text++"</code>\n");
                 });
             },
-            
+            'image', {
+//                if(node.display == \block, {
+                f = node.text.split($#);
+                    file.write("<div class='image'><img src='"++f[0]++"'/>");
+                    if(f[1].notNil, {
+                        file.write("<br><b>"++f[1]++"</b>");
+                    });
+                    file.write("</div>\n");
+//                }, {
+//                    file.write("<span class='image'><img src='"++node.text++"'/></span>\n");
+//                });
+            },
             'list', {
                 file.write("<ul>\n");
                 do_children.();

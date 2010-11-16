@@ -176,6 +176,7 @@ code::
 code::
 link::
 anchor::
+image::
 emphasis::
 strong::
 ::
@@ -235,6 +236,15 @@ Anchors can be inserted manually with code::anchor\::name\:::: and referenced li
 link::Foo/Bar#hello::
 ::
 
+subsection:: Images
+
+Images can be inserted with: code::
+image::filename::
+::
+
+A caption can be added like this: code::
+image::filename#caption::
+::
 
 subsection:: Document types
 
