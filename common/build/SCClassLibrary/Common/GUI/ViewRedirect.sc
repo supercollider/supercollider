@@ -50,9 +50,9 @@ Stethoscope : ViewRedirect {
 	*new {  arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
 		index = index.asControlInput;
 		^this.implClass.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
-		}
+	}
 	*key { ^\stethoscope }
-
+	
 }
 ScopeView : ViewRedirect { *key { ^\scopeView }}
 FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to SCFreqScope
@@ -61,7 +61,7 @@ FreqScope : ViewRedirect { // redirects to SCFreqScopeWindow
 	*new { arg width=512, height=300, busNum=0, scopeColor, bgColor;
 		busNum = busNum.asControlInput;
 		^this.implClass.new(width, height, busNum, scopeColor)
-		}
+	}
 	*key { ^\freqScope }
 }
 
@@ -99,13 +99,25 @@ Font : ViewRedirect  {
 	*findFirstAvailable { |fontNames, action|
 		Routine {
 			fontNames.do { |name| 
-					if(this.availableFonts.any(_.contains(name))) { 
-						action.value(name);
-						nil.alwaysYield;
-					}
+				if(this.availableFonts.any(_.contains(name))) { 
+					action.value(name);
+					nil.alwaysYield;
+				}
 			}
 		}.play(AppClock)		
-	}
+}
+
+*defaultSansFace {
+if ( GUI.font.notNil ){	GUI.font.defaultSansFace }
+}
+	
+*defaultSerifFace {
+if ( GUI.font.notNil ){	GUI.font.defaultSerifFace }
+}
+	
+*defaultMonoFace {
+if ( GUI.font.notNil ){ GUI.font.defaultMonoFace }
+}
 
 }
 
