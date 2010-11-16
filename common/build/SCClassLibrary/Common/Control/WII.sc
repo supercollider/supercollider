@@ -59,8 +59,36 @@ WiiMote {
 		all = [];
 	}
 
+	*devicesMap{
+		^(
+			wii_mote: [
+				\ax, \ay, \az, \ao,
+				\bA, \bB, \bOne, \bTwo,
+				\bMinus, \bHome, \bPlus, \bUp, \bDown, \bLeft, \bRight,
+				\led1, \led2, \led3, \led4,
+				\battery
+			],
+			wii_nunchuk: [
+				\nax, \nay, \naz, \nao, \nsx, \nsy, \nbZ, \nbC
+			],
+			wii_classic: [
+				\cbX, \cbY, \cbA, \cbB, \cbL, \cbR, 
+				\cbZL, \cbZR,
+				\cbUp, \cbDown, \cbLeft, \cbRight,
+				\cbMinus, \cbHome, \cbPlus,
+				\csx1, \csy1, \csx2, \csy2,
+				\caleft, \caright
+			]
+		)
+	}
+
 	deviceSpec {
 		^(
+			battery: { battery },
+			led1: { remote_led[0] },
+			led2: { remote_led[1] },
+			led3: { remote_led[2] },
+			led4: { remote_led[3] },
 			ax: { remote_motion[0] },
 			ay: { remote_motion[1] },
 			az: { remote_motion[2] },
@@ -177,6 +205,7 @@ WiiMote {
 	setLEDState { |id,state|
 		var r;
 		remote_led[id] = state;
+		actionSpec.at( (\led ++ (id+1) ).asSymbol ).value( state );
 		r = this.prWiiSetLED( remote_led );
 		//		this.update;
 		^r;
@@ -394,6 +423,7 @@ WiiMote {
 
 	prHandleBatteryEvent{ |batlevel|
 		battery = batlevel;
+		actionSpec.at( \battery ).value( spec.at( \battery ).value );
 		// battery action
 	}
 
