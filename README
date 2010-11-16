@@ -112,6 +112,7 @@ Or, can we infer if a method is binary/unary op?
 Probably because \n is handled differently than other whitespace (this.endLine etc)..
 
 HTML renderer stuff:
+- render to string instead of directly to file?
 - handle prose before first section in class doc?
 - other sections not allowed in class doc?
 

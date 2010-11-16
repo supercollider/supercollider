@@ -181,10 +181,6 @@ All of above are closed with \::
 If they are used as block tags, the closing \:: must be written as a single word on its own line.
 Since they are modal tags, they can't be nested and any other tag than the closing tag is ignored until they are closed.
 
-links can have anchors like this: code::
-link::Foo/Bar#hello::
-::
-
 subsection:: Tables and lists
 code::
 list::
@@ -213,11 +209,11 @@ Lists can be nested:
 code::
 definitionList::
 ## one || the first thing has three subthings:
-	list::
-	## one A
-	## one B
-	## one C
-	\::
+    list::
+    ## one A
+    ## one B
+    ## one C
+    \::
 ## two || the second thing
 \::
 ::
@@ -232,7 +228,10 @@ See also link::Classes/SinOsc:: for a nice oscillator. Or take a look at link::O
 The link::Methods/play:: method is often very useful.
 ::
 
-Anchors can be inserted manually with code::anchor\::name\:::: 
+Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: code::
+link::Foo/Bar#hello::
+::
+
 
 subsection:: Document types
 
@@ -242,6 +241,16 @@ Some tags are only allowed in some types of documents. Tags not mentioned below 
 table::
 ## Class (and UGen) reference docs || tags: class, description, methods, examples, subsection
 ## Other docs (tutorials and such) || tags: title, section, subsection
+::
+
+Also, documents are organized in a simple directory layout after their "kind":
+list::
+## Classes
+## Reference
+## Guides
+## Overviews
+## Tutorials
+## Other
 ::
 
 examples::

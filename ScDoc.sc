@@ -1,5 +1,5 @@
 ScDocParser {
-    var <root;
+    var <>root;
     var tree;
     var stack;
     var current;
@@ -158,6 +158,7 @@ ScDocParser {
                 
                 'code::',               modalRangeTag,
                 'emphasis::',           modalRangeTag,
+                'strong::',             modalRangeTag,
                 'link::',               modalRangeTag,
                 'anchor::',             modalRangeTag,
 
@@ -345,12 +346,21 @@ ScDocParser {
     
     overviewCategories {|catMap|
         var r = List.new;
-        var n, l, m, kinds, folder, v;
+        var a, p, e, n, l, m, kinds, folder, v, tree, dumpCats;
         r.add((tag:'title', text:"Document Categories"));
         r.add((tag:'summary', text:"All documents by categories"));
         r.add((tag:'related', text:"Overviews/AllDocuments"));
-//        catMap.pairsDo {|k,v|
-        catMap.keys.asList.sort {|a,b| a<b}.do {|k|
+
+/*
+    we can have category > kind,
+    or category with kind as Classes/LFPulse or LFPulse (Classes),
+    or kind > category..
+    
+    also, create tree's for categories with '>' in them..
+*/
+
+        // category - kind
+/*        catMap.keys.asList.sort {|a,b| a<b}.do {|k|
             v = catMap[k];
             r.add((tag:'section', text:k, children:n=List.new));
             kinds = Dictionary.new;
@@ -362,13 +372,101 @@ ScDocParser {
             kinds.pairsDo {|kind,links|
                 n.add((tag:'subsection', text:kind, children:m=List.new));
                 m.add((tag:'list', children:l=List.new));
+//                n.add((tag:'list', children:l=List.new));
                 links.do {|doc|
+                    l.add((tag:'##'));
+                    l.add((tag:'link', text:doc.path));
+//                    l.add((tag:'prose', text:" - "++doc.summary++" ("++kind++")"));
+                    l.add((tag:'prose', text:" - "++doc.summary));
+                };
+            };
+        };*/
+
+        // categories only, with kind as "[Reference]", etc..
+/*        catMap.keys.asList.sort {|a,b| a<b}.do {|k|
+            v = catMap[k];
+            r.add((tag:'section', text:k, children:n=List.new));
+            n.add((tag:'list', children:l=List.new));
+            v.do {|doc|
+                folder = doc.path.dirname;
+                folder = if(folder==".", {""}, {" ["++folder++"]"});
+                l.add((tag:'##'));
+                l.add((tag:'link', text:doc.path));
+                l.add((tag:'prose', text:" - "++doc.summary++folder));
+            };
+        };*/
+        
+        tree = Dictionary.new;
+        catMap.pairsDo {|cat,files|
+            p=tree;
+            cat.split($>).do {|c|
+                if(p[c].isNil,{
+                    p[c]=Dictionary.new;
+                    p[c][\subcats] = Dictionary.new;
+                    p[c][\entries] = List.new;
+                });
+                e=p[c];
+                p=p[c][\subcats];
+            };
+            a=e[\entries];
+            files.do {|f| a.add(f)};
+        };
+        
+        dumpCats = {|x,l,k|
+            var ents = x[\entries];
+            var subs = x[\subcats];
+
+            if(ents.notEmpty, {
+                ents.do {|doc|
+                    folder = doc.path.dirname;
+                    folder = if(folder==".", {""}, {" ["++folder++"]"});
+                    l.add((tag:'##'));
+                    l.add((tag:'link', text:doc.path));
+                    l.add((tag:'prose', text:" - "++doc.summary));
+                    l.add((tag:'emphasis', text:folder));
+                };
+            });
+                        
+            subs.keys.asList.sort {|a,b| a<b}.do {|k|
+                l.add((tag:'##'));
+                l.add((tag:\strong, text:k));
+                l.add((tag:\tree, children:m=List.new));
+                dumpCats.value(subs[k],m,k);
+            };    
+        };
+        
+        tree.keys.asList.sort {|a,b| a<b}.do {|k|
+            r.add((tag:\section, text:k, children:m=List.new));
+            m.add((tag:\tree, children:l=List.new));
+            dumpCats.(tree[k],l,"");
+        };
+        
+        // kind - category
+/*        kinds = Dictionary.new;
+        catMap.pairsDo {|k,v|
+            v.do {|file|
+                folder = file.path.dirname;
+                if(folder!=".", {
+                    if(kinds[folder].isNil, { kinds[folder] = Dictionary.new });
+                    if(kinds[folder][k].isNil, { kinds[folder][k] = List.new });
+                    kinds[folder][k].add(file);
+                });
+            };
+        };
+        kinds.keys.asList.sort {|a,b| a<b}.do {|k|
+            v = kinds[k];
+            r.add((tag:'section', text:k, children:n=List.new));
+            v.keys.asList.sort {|a,b| a<b}.do {|cat|
+                n.add((tag:'subsection', text:cat, children:m=List.new));
+                m.add((tag:'list', children:l=List.new));
+                v[cat].do {|doc|
                     l.add((tag:'##'));
                     l.add((tag:'link', text:doc.path));
                     l.add((tag:'prose', text:" - "++doc.summary));
                 };
             };
-        };
+        };*/
+
         root = r;
     }
 }
@@ -505,6 +603,9 @@ ScDocRenderer {
             },
             'emphasis', {
                 file.write("<em>"++node.text++"</em>");
+            },
+            'strong', {
+                file.write("<strong>"++node.text++"</strong>");
             },
             'link', {
                 if("[a-zA-Z]+://.+".matchRegexp(node.text),{
@@ -716,6 +817,7 @@ ScDoc {
           All methods index
         */
 
+        "Generating Overviews...".postln;
         r.parser = p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
         
@@ -726,6 +828,7 @@ ScDoc {
     addToCategoryMap {|parser, path|
         var cats = parser.findNode(\categories).text;
         cats = ScDoc.splitList(cats);
+        cats = cats ? ["Uncategorized"];
         cats.do {|cat|
             if(categoryMap[cat].isNil, {
                 categoryMap[cat] = List.new;
@@ -761,6 +864,7 @@ ScDoc {
             });
         };
         this.makeOverviews;
+        "Done".postln;
     }
 }
 

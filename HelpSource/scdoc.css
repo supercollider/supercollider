@@ -105,7 +105,7 @@ code, pre {
     font-family: Andale Mono, monospace;
     font-size: 9.5pt;
     font-weight: normal;
-    color: #141;
+    color: #131;
 }
 
 .methodname {
@@ -180,10 +180,11 @@ ul.tree, ul.tree ul {
  background: url(images/vline.png) repeat-y;
  margin: 0;
  padding: 0;
+ margin-left: 1em;
 }
 
 ul.tree ul {
- margin-left: 10px;
+ margin-left: 15px;
 }
 
 ul.tree li {
