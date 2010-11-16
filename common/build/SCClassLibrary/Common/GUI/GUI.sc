@@ -182,7 +182,11 @@ GUI {
 	 *	current scheme.
 	 */
 	*doesNotUnderstand { arg selector ... args;
-		^scheme.performList( selector, args );
+		if ( scheme.notNil ){
+			^scheme.performList( selector, args );
+		}{
+			("No GUI scheme active: " + selector + args ).warn;
+		}
 	}
 
 	/**
