@@ -142,6 +142,10 @@ we could even generate a code template for the class that can be copied from the
 
 If the class has ar/kr/ir methods, set categories to "UGens>undocumented".
 
+Add all undocumented classes to the categoryMap!
+
+- Cache the categoryMap to file, so we don't need to parse all helpfiles!
+But check for file existence, and remove entries in categoryMap for deleted files?
 
 - Handle extensions (extra classes and method additions)
 should merge stuff into the tree before parsing..? and mark method additions somehow so we can distinguish them visually in the rendered output.

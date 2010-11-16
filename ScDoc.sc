@@ -821,15 +821,40 @@ ScDoc {
         cats.do {|cat|
             if(categoryMap[cat].isNil, {
                 categoryMap[cat] = List.new;
+            }, {
+                categoryMap[cat] = categoryMap[cat].reject {|t| t.path==path}.asList; //remove old
             });
             categoryMap[cat].add((path:path, summary:parser.findNode(\summary).text));
         };
     }
 
+    readCategoryMap {
+        var path = helpTargetDir +/+ "scdoc_category_cache";
+        var file;
+        if(File.exists(path), {
+            file = File.open(path,"r");
+            categoryMap = file.readAllString.interpret;
+            file.close;
+            ^false;
+        }, {
+            categoryMap = Dictionary.new;
+            ^true;
+        });
+    }
+
+    writeCategoryMap {
+        var path = helpTargetDir +/+ "scdoc_category_cache";
+        var file = File.open(path,"w");
+        file.write(categoryMap.asCompileString);
+        file.close;
+    }
+
     updateAll {
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
-        categoryMap = Dictionary.new;
+
+        var force = this.readCategoryMap;
+
         PathName(helpSourceDir).filesDo {|path|
             var source = path.fullPath;
             var lastDot = source.findBackwards(".");
@@ -838,22 +863,22 @@ ScDoc {
             var folder = target.dirname;
             var ext = source.copyToEnd(lastDot);
 //            PathName(folder).makeDir;
-//            ("mkdir -p"+folder).systemCmd;
             //FIXME: if source is newer than target:
             if(ext == ".schelp", {
-                ("Rendering" + source + "to" + target).postln;
-                r.parser = p.parseFile(source);
-                this.addToCategoryMap(p,subtarget); //we need to parse it to get the categories and stuff..
-
-                if(("test"+source+"-ot"+target).systemCmd!=0, { //update only if needed
+                if(force or: (("test"+source+"-ot"+target).systemCmd!=0), { //update only if needed
+                    ("Rendering" + source + "to" + target).postln;
+                    r.parser = p.parseFile(source);
+                    this.addToCategoryMap(p,subtarget); //we need to parse it to get the categories and stuff..
                     r.renderHTML(target,subtarget.dirname);
                 });
             }, {
                 ("Copying" + source + "to" + folder).postln;
+                ("mkdir -p"+folder).systemCmd;
                 ("cp" + source + folder).systemCmd;
             });
         };
         this.makeOverviews;
+        this.writeCategoryMap;
         "Done".postln;
     }
 }
