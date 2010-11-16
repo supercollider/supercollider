@@ -344,72 +344,26 @@ ScDocParser {
         root = r;
     }
     
-    overviewCategories {|catMap|
-        var r = List.new;
-        var a, p, e, n, l, m, kinds, folder, v, tree, dumpCats;
-        r.add((tag:'title', text:"Document Categories"));
-        r.add((tag:'summary', text:"All documents by categories"));
-        r.add((tag:'related', text:"Overviews/AllDocuments"));
-
-/*
-    we can have category > kind,
-    or category with kind as Classes/LFPulse or LFPulse (Classes),
-    or kind > category..
-    
-    also, create tree's for categories with '>' in them..
-*/
-
-        // category - kind
-/*        catMap.keys.asList.sort {|a,b| a<b}.do {|k|
-            v = catMap[k];
-            r.add((tag:'section', text:k, children:n=List.new));
-            kinds = Dictionary.new;
-            v.do {|doc|
-                folder = doc.path.dirname;
-                if(kinds[folder].isNil, { kinds[folder] = List.new });
-                kinds[folder].add(doc);
-            };
-            kinds.pairsDo {|kind,links|
-                n.add((tag:'subsection', text:kind, children:m=List.new));
-                m.add((tag:'list', children:l=List.new));
-//                n.add((tag:'list', children:l=List.new));
-                links.do {|doc|
-                    l.add((tag:'##'));
-                    l.add((tag:'link', text:doc.path));
-//                    l.add((tag:'prose', text:" - "++doc.summary++" ("++kind++")"));
-                    l.add((tag:'prose', text:" - "++doc.summary));
-                };
-            };
-        };*/
-
-        // categories only, with kind as "[Reference]", etc..
-/*        catMap.keys.asList.sort {|a,b| a<b}.do {|k|
-            v = catMap[k];
-            r.add((tag:'section', text:k, children:n=List.new));
-            n.add((tag:'list', children:l=List.new));
-            v.do {|doc|
-                folder = doc.path.dirname;
-                folder = if(folder==".", {""}, {" ["++folder++"]"});
-                l.add((tag:'##'));
-                l.add((tag:'link', text:doc.path));
-                l.add((tag:'prose', text:" - "++doc.summary++folder));
-            };
-        };*/
+    makeCategoryTree {|catMap,node,filter=nil|
+        var a, p, e, n, l, m, kinds, folder, v, dumpCats;
+        var tree = Dictionary.new;
         
-        tree = Dictionary.new;
         catMap.pairsDo {|cat,files|
             p=tree;
-            cat.split($>).do {|c|
-                if(p[c].isNil,{
-                    p[c]=Dictionary.new;
-                    p[c][\subcats] = Dictionary.new;
-                    p[c][\entries] = List.new;
-                });
-                e=p[c];
-                p=p[c][\subcats];
-            };
-            a=e[\entries];
-            files.do {|f| a.add(f)};
+            l=cat.split($>);
+            if(if(filter.notNil, {filter.matchRegexp(l.first)}, {true}), {
+                l.do {|c|
+                    if(p[c].isNil,{
+                        p[c]=Dictionary.new;
+                        p[c][\subcats] = Dictionary.new;
+                        p[c][\entries] = List.new;
+                    });
+                    e=p[c];
+                    p=p[c][\subcats];
+                };
+                a=e[\entries];
+                files.do {|f| a.add(f)};
+            });
         };
         
         dumpCats = {|x,l,k|
@@ -436,10 +390,20 @@ ScDocParser {
         };
         
         tree.keys.asList.sort {|a,b| a<b}.do {|k|
-            r.add((tag:\section, text:k, children:m=List.new));
+            node.add((tag:\section, text:k, children:m=List.new));
             m.add((tag:\tree, children:l=List.new));
             dumpCats.(tree[k],l,"");
         };
+    }
+    
+    overviewCategories {|catMap|
+        var r = List.new;
+//        var a, p, e, n, l, m, kinds, folder, v, tree, dumpCats;
+        r.add((tag:'title', text:"Document Categories"));
+        r.add((tag:'summary', text:"All documents by categories"));
+        r.add((tag:'related', text:"Overviews/AllDocuments"));
+       
+        this.makeCategoryTree(catMap,r);
         
         // kind - category
 /*        kinds = Dictionary.new;
@@ -467,6 +431,16 @@ ScDocParser {
             };
         };*/
 
+        root = r;
+    }
+    
+    overviewServer {|catMap|
+        var r = List.new;
+        r.add((tag:'title', text:"Server stuff"));
+        r.add((tag:'summary', text:"Overview of server related stuff"));
+
+        this.makeCategoryTree(catMap,r,"^Server$"); 
+        this.makeCategoryTree(catMap,r,"^UGens$");
         root = r;
     }
 }
@@ -823,6 +797,9 @@ ScDoc {
         
         r.parser = p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
+
+        r.parser = p.overviewServer(categoryMap);
+        r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
     
     addToCategoryMap {|parser, path|

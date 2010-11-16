@@ -132,12 +132,16 @@ HTML renderer stuff:
   if HelpSource/Methods/methodname.schelp exists, merge with this so can write interface style documentation?
 
   to iterate over ugens, find all classes that implements ar, kr or ir.
-  and/or use category 'UGen'?
+  and/or use category 'UGen'? or should we make a special Server overview where we collect
+  all docs for Server, ServerArchitecture, ServerAbstraction, UGens?
 
 - generate simple doc for classes that don't have a doc source file. (just list all methods and their args)
 put "(this class currently lacks documentation)" in summary..
 Simply scan through Class.allClasses and check if helpSourceDir +/+ "Classes" +/+ class.name++".schelp" exists.
 we could even generate a code template for the class that can be copied from the generated doc and pasted to sourceFile.schelp..
+
+If the class has ar/kr/ir methods, set categories to "UGens>undocumented".
+
 
 - Handle extensions (extra classes and method additions)
 should merge stuff into the tree before parsing..? and mark method additions somehow so we can distinguish them visually in the rendered output.

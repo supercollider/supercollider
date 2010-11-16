@@ -27,14 +27,12 @@ subsection:: Classes
 table::
 ## Classes alphabetically: || link::Overviews/Classes::
 ## Classes by inheritance tree: || link::Overviews/ClassTree::
-## Classes by categories: || link::Overviews/ClassesByCategories::
 ## Index of all methods: || link::Overviews/Methods::
 ::
 
-subsection:: UGens
+subsection:: UGens and Server stuff
 table::
-## UGens alphabetically: || link::Overviews/UGens::
-## UGens by categories: || link::Overviews/UGensByCategories::
+## Server related documents: || link::Overviews/Server::
 ::
 
 SECTION::Licensing
