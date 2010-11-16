@@ -1,6 +1,6 @@
 class:: ScDoc
 summary:: Help system main class
-categories:: Help
+categories:: HelpSystem
 related:: Classes/ScDocParser, Classes/ScDocRenderer, Guides/WritingHelp, Reference/ScDocSyntax
 
 DESCRIPTION::
@@ -29,6 +29,9 @@ INSTANCEMETHODS::
 
 method:: updateAll
 Render all help-files that need updating and generate overviews and cached metadata index. It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
+
+argument:: force
+Force updating of all files.
 
 method:: helpSourceDir
 get/set the base directory of help sourcefiles. Defaults to code:: thisProcess.platform.systemAppSupportDir +/+ "/HelpSource" ::

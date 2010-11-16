@@ -1,6 +1,6 @@
 class:: ScDocParser
 summary:: Parse ScDoc markup text
-categories:: Help
+categories:: HelpSystem
 related:: Classes/ScDoc, Classes/ScDocRenderer, Guides/WritingHelp, Reference/ScDocSyntax
 
 description::

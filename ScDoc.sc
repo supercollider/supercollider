@@ -844,7 +844,7 @@ ScDoc {
         ^[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
     }
     
-    handleUndocumentedClasses {
+    handleUndocumentedClasses {|force=false|
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
         var n, m, name, cats;
@@ -873,7 +873,7 @@ ScDoc {
                 
                 p.root = n;
                 this.addToCategoryMap(p, "Classes" +/+ name);
-                if(File.exists(dest).not, {
+                if((force or: File.exists(dest).not), {
                     this.makeMethodList(c,n);                
                     r.parser = p;
                     r.renderHTML(dest,"Classes");
@@ -917,11 +917,15 @@ ScDoc {
         file.close;
     }
 
-    updateAll {
+    updateAll {|force=false|
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
 
-        var force = this.readCategoryMap;
+        if(force.not, {
+            force = this.readCategoryMap;
+        }, {
+            categoryMap = Dictionary.new;
+        });
 
         PathName(helpSourceDir).filesDo {|path|
             var source = path.fullPath;
@@ -945,7 +949,7 @@ ScDoc {
                 ("cp" + source + folder).systemCmd;
             });
         };
-        this.handleUndocumentedClasses;
+        this.handleUndocumentedClasses(force);
         this.writeCategoryMap;
         this.makeOverviews;
         "Done".postln;

@@ -1,6 +1,6 @@
 class:: ScDocRenderer
 summary:: Render ScDoc markup text
-categories:: Help
+categories:: HelpSystem
 related:: Classes/ScDoc, Classes/ScDocParser, Guides/WritingHelp, Reference/ScDocSyntax
 
 description::

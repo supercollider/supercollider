@@ -1,6 +1,6 @@
 title:: ScDocSyntax
 summary:: ScDoc markup language syntax
-categories:: Help
+categories:: HelpSystem
 related:: Guides/WritingHelp, Classes/ScDoc, Classes/ScDocParser, Classes/ScDocRenderer
 
 This ML consists of a specification for writing documents with semantic annotations, in a manner which does not target a specific layout or output format. Its purpose is to allow for human-writable documents to be produced in a variety of formats and for a variety of target platforms. Usability and learnability are paramount, so the syntax is as simple as possible. 

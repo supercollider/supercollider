@@ -9,7 +9,7 @@ Try it like this:
 
 x = ScDoc.new;
 x.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
-x.updateAll;
+x.updateAll(false);
 
 Now all your rendered HTML help is in x.helpTargetDir (default is ~/share/SuperCollider/Help on Linux)
 
