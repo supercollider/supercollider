@@ -6,8 +6,11 @@ body {
     margin-top: 2em;
     color: black;
     max-width: 60em;
-    text-align: justify;
     margin-bottom: 3em;
+}
+
+p {
+    text-align: justify;
 }
 
 table {
@@ -139,6 +142,7 @@ td.argumentname {
 /*    padding-right: 1em;*/
     background: #eee;
     font-family: Andale Mono, monospace;
+    vertical-align: top;
 }
 
 table.arguments td {

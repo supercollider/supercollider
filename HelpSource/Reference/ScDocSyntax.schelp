@@ -101,6 +101,7 @@ code            V                            x        x
 link            V                            x        x
 anchor          V                            x        x
 emphasis        V                            x        x
+strong          V                            x        x
 ##
 ||
 (prose)         V
@@ -176,6 +177,7 @@ code::
 link::
 anchor::
 emphasis::
+strong::
 ::
 All of above are closed with \::
 If they are used as block tags, the closing \:: must be written as a single word on its own line.
@@ -224,7 +226,8 @@ URL's are automagically converted to links.
 
 The code::link\:::: tag is used for cross-reference between docs. It uses a simple namespace, example:
 code::
-See also link::Classes/SinOsc:: for a nice oscillator. Or take a look at link::Overviews/Ugens:: for a full list.
+See also link::Classes/SinOsc:: for a nice oscillator.
+Or take a look at link::Overviews/Ugens:: for a full list.
 The link::Methods/play:: method is often very useful.
 ::
 

@@ -704,7 +704,7 @@ ScDocRenderer {
             f.write("<div id='categories'>");
 //            f.write("Categories: ");
             f.write(ScDoc.splitList(x.text).collect {|r|
-                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++ScDocRenderer.simplifyName(r)++"'>"++r++"</a>"
+                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++ScDocRenderer.simplifyName(r).split($>).first++"'>"++r++"</a>"
             }.join(", "));
             f.write("</div>");
         });    
