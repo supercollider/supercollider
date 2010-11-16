@@ -149,10 +149,10 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 
 
 MethodOverride {
-	var <class, <selector, <activePath, <overriddenPath;
+	var <ownerClass, <selector, <activePath, <overriddenPath;
 		
-	*new { arg class, selector, activePath, overriddenPath;
-		^super.newCopyArgs(class, selector, activePath, overriddenPath)
+	*new { arg ownerClass, selector, activePath, overriddenPath;
+		^super.newCopyArgs(ownerClass, selector, activePath, overriddenPath)
 	}
 	
 	*fromLine { arg string;
@@ -164,7 +164,7 @@ MethodOverride {
 	
 	openFiles {
 		var path2 = if(overriddenPath.beginsWith("/Common")) { 
-			"SCClassLibrary" +/+ overriddenPath 
+			Platform.classLibraryDir +/+ overriddenPath
 			} { overriddenPath };
 		activePath.openTextFile;
 		path2.openTextFile;
@@ -183,25 +183,26 @@ MethodOverride {
 	}
 	
 	*all {
-		var msg = Main.overwriteMsg;
-		var lines = msg.split(Char.nl).drop(-1);
+		var msg = Main.overwriteMsg.drop(-1); // drop last newline
+		var lines = msg.split(Char.nl);
 		^lines.collect { |line| this.fromLine(line) };
 	}
 		
 	*printAll { arg simplifyPaths = true;
 		var all = this.all;
-		var classes = all.collect(_.class).as(Set);
+		var classes = all.collect(_.ownerClass).as(Set);
+		if(all.isEmpty) { "There are no overwritten methods in class library".postln; ^this };
 		("Overwritten methods in class library:".underlined ++ "\n\n").post;
 		classes.do { |class|
 			class.asString.underlined.postln;
-			all.select { |x| x.class == class }.do { |x|
+			all.select { |x| x.ownerClass == class }.do { |x|
 				var activePath = x.activePath;
 				var overriddenPath = x.overriddenPath;
 				if(simplifyPaths) { 
 					activePath = this.simplifyPath(x.activePath);
 					overriddenPath = this.simplifyPath(x.overriddenPath);
 				};
-				("\t" ++ x.class.name ++ ":" ++ x.selector).postln;
+				("\t" ++ x.ownerClass.name ++ ":" ++ x.selector).postln;
 				("\t\t" ++ activePath).postln;
 				("\t\t" ++ overriddenPath).postln;
 			};
@@ -211,10 +212,11 @@ MethodOverride {
 	
 	*printAllShort {
 		var all = this.all;
-		var classes = all.collect(_.class).as(Set);
+		var classes = all.collect(_.ownerClass).as(Set);
+		if(all.isEmpty) { "There are no overwritten methods in class library".postln; ^this };
 		("Overwritten methods in class library:".underlined ++ "\n").post;
 		classes.do { |class|
-			all.select { |x| x.class == class }.collect { |x| x.selector }.as(Set).do { |x|
+			all.select { |x| x.ownerClass == class }.collect { |x| x.selector }.as(Set).do { |x|
 				postf("\t%:%\n", class, x);
 			}
 		}		
