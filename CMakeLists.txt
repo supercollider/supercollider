@@ -19,7 +19,7 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-ADD_CUSTOM_TARGET(setMainVersion ALL 
+ADD_CUSTOM_TARGET(setMainVersion ALL
        sh ${CMAKE_CURRENT_SOURCE_DIR}/common/setMainVersion.sh
        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/common
        VERBATIM
@@ -79,6 +79,10 @@ else()
 endif()
 option(SC_ED "Build gedit-based IDE." OFF)
 option(SC_VIM "Build vim-based IDE." OFF)
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	option(SC_WII "Build sclang with WII support" ON)
+endif()
 
 #############################################
 # subdirectories
