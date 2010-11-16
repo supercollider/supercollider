@@ -367,9 +367,10 @@ ScDocParser {
             });
         };
         
-        dumpCats = {|x,l,k|
+        dumpCats = {|x,l,y|
             var ents = x[\entries];
             var subs = x[\subcats];
+            var z;
 
             if(ents.notEmpty, {
                 ents.do {|doc|
@@ -383,17 +384,19 @@ ScDocParser {
             });
                         
             subs.keys.asList.sort {|a,b| a<b}.do {|k|
+                z = ScDocRenderer.simplifyName(y++">"++k);
                 l.add((tag:'##'));
+                l.add((tag:\anchor, text:z));
                 l.add((tag:\strong, text:k));
                 l.add((tag:\tree, children:m=List.new));
-                dumpCats.value(subs[k],m,k);
+                dumpCats.value(subs[k],m,z);
             };    
         };
         
         tree.keys.asList.sort {|a,b| a<b}.do {|k|
             node.add((tag:\section, text:k, children:m=List.new));
             m.add((tag:\tree, children:l=List.new));
-            dumpCats.(tree[k],l,"");
+            dumpCats.(tree[k],l,k);
         };
     }
     
@@ -690,7 +693,8 @@ ScDocRenderer {
             f.write("<div id='categories'>");
 //            f.write("Categories: ");
             f.write(ScDoc.splitList(x.text).collect {|r|
-                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++ScDocRenderer.simplifyName(r).split($>).first++"'>"++r++"</a>"
+//                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++ScDocRenderer.simplifyName(r).split($>).first++"'>"++r++"</a>"
+                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++ScDocRenderer.simplifyName(r)++"'>"++r++"</a>"
             }.join(", "));
             f.write("</div>");
         });    
@@ -949,8 +953,8 @@ ScDoc {
                 ("cp" + source + folder).systemCmd;
             });
         };
-        this.handleUndocumentedClasses(force);
         this.writeCategoryMap;
+        this.handleUndocumentedClasses(force);
         this.makeOverviews;
         "Done".postln;
     }
