@@ -14,13 +14,6 @@ ObjectGui : SCViewHolder {
 		// if your model implement guiBody then call that
 		if(model.respondsTo(\guiBody) and: {model.isKindOf(ObjectGui).not},{
 			model.guiBody(layout)
-		},{
-			/*
-			or by default we make a gui showing variables that the class allows
-			 see instVarsForGui
-			 by default this is NO variables at all.
-			*/
-			ObjectGui.guiInstVarsOf(model,layout)
 		})
 	}
 
@@ -60,9 +53,6 @@ ObjectGui : SCViewHolder {
 			layout.front;
 		});
 	}
-	topGui { arg ... args;
-		this.performList(\gui, args);
-	}
 
 	background { ^Color.clear }//^Color.yellow(0.2,0.08) }
 
@@ -83,7 +73,7 @@ ObjectGui : SCViewHolder {
 			.align_(\left)
 			.beginDragAction_({ model })
 			.object_(string);
-		InspectorLink.icon(model,layout);
+		// InspectorLink.icon(model,layout);
 	}
 	model_ { |newModel|
 		if(model.notNil,{
@@ -97,39 +87,6 @@ ObjectGui : SCViewHolder {
 		})
 	}
 
-	saveConsole { arg layout;
-		^SaveConsole(model,"",layout).save.saveAs.print;
-	}
-
-
-	*guiInstVarsOf { arg object,layout;
-		// this is an easy default gui system
-		// each class returns instVarsForGui, a list of \symbols
-		// by default an empty array : "don't display any variables"
-		// some classes (Pattern so far) can return all of their instance var names
-		// and thus gui all of their internal vars
-		var varNames,maxWidth=50,font;
-		font = GUI.font.new(*GUI.skin.fontSpecs);
-		object.class.instVarsForGui.do({ |ivar,i|
-			var width;
-			varNames = varNames.add([ivar,object.instVarAt(ivar)]);
-			width = ivar.asString.bounds(font).width + 5;
-			if(width > maxWidth,{ maxWidth = width; });
-		});
-		varNames.do({ |namevar|
-			var guis;
-			layout.startRow;
-			VariableNameLabel(namevar[0],layout,maxWidth);
-			// a safety check so as not to annoy
-			// if there already exists a gui for the object, the simply put a Tile
-			guis = namevar[1].dependants.select({|dep| dep.isKindOf(ObjectGui) and: dep.class !== StringGui });
-			if(guis.size == 0,{
-				namevar[1].gui(layout);
-			},{
-				Tile(namevar[1],layout);
-			});
-		});
-	}
 
 }
 
