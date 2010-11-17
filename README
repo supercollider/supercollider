@@ -37,65 +37,6 @@ p.parse("inline code::code example::.").dump
 p.root
 p.dump
 
-tag             hasText hasChilds structural needClose modal nestable
----------------------------------------------------------------------
-title           S
-class           S
-doctype         S
-keywords        S
-related         S
-summary         S
-note            S
-warning         S
-section         S       x         1
-subsection      S       x         2
-classmethod     S       x         3
-instancemethod  S       x         3
-argument        S       x         4
-description             x         1
-methods                 x         1
-examples                x         1
-list                    x                    x               x
-tree                    x                    x               x
-numberedlist            x                    x               x
-definitionlist          x                    x               x
-table                   x                    x               x
-code            V                            x        x
-link            V                            x        x
-anchor          V                            x        x
-emphasis        V                            x        x
-##
-||
-(prose)         V
-
-hasText: tag captures text
-    S is single-line (terminated by newline)
-    V is variable-line
-hasChilds: tag captures child-elements
-structural: tag has structural level
-needClose: tag needs closing by ::
-modal: tag ignores any other tags than closing tag and do not nest
-nestable: tag can nest
-
-Note:
-- modal tags can be written as inline: opening and closing tag on the same line
-  or block-style: where the closing tag must be a single :: on its own line.
-- single vs variable line is only applicable for tags that captures text.
-- modal, level and nestable are exclusive. nestable can be seen as a structural tag
-  without explicit level. It's also because of the explicit level that the structural
-  tags don't need closing.
-- structural-needClose-modal-nestable could be reduced to one column:
-  1-4 : level, no close tag
-  M   : modal, need close tag
-  N   : nestable, need close tag
-
-All in all we have 6 different categories of tags, not counting the internal 'prose' tag:
-- hasTextS: line terminated simple tag, captures text
-- hasTextS-hasChilds-structural: line terminated structural tag, captures text and children elements
-- hasChilds-structural: unnamed structural tag, captures children elements
-- hasChilds-needClose-nestable: nestable tag that needs closing, captures children elements
-- hasTextV-needClose-modal: modal tag that needs closing, captures text
-- delimiters: separator tag, does not capture anything
 
 TODO
 ====
@@ -104,8 +45,7 @@ TODO
 - force class ref filename to be equal to class name?
 
 - list undocumented methods automagically in each class? At the end of the doc..
-but then, since we don't have any notion of private methods, we would need to be able to ignore those..
-with an ignoreMethod:: tag or something..
+Also make tags for privateClassMethods:: and privateInstanceMethods::, and an option in ScDoc if those should be included or not.
 
 - render binary op methods differently? like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we?

@@ -55,15 +55,20 @@ a:hover {
 .subheader {
     margin-bottom: 2em;
     text-align: right;
+    font-size: 9pt;
 }
 
-#inheritance, #related {
-/*    margin-left: 0.5em;*/
-/*    border-top: 1px solid #aaa;*/
+/*#inheritance, #related {
+    margin-left: 0.5em;
+    border-top: 1px solid #aaa;
 }
-
 #categories {
-/*    color: #888;*/
+    color: #888;
+}
+*/
+
+.soft {
+    color: #777;
 }
 
 h1 {

@@ -1,7 +1,7 @@
 class:: Array
 summary:: fixed size collection
 related:: Reference/Literals, Classes/List
-categories:: Collections
+categories:: Collections>Ordered
   
 description::
 Arrays are ArrayedCollections whose slots may contain any object. Arrays have a fixed maximum size beyond which they cannot grow. For expandable arrays, use the link::Classes/List:: class.

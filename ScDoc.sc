@@ -162,6 +162,7 @@ ScDocParser {
                 'link::',               modalRangeTag,
                 'anchor::',             modalRangeTag,
                 'image::',              modalRangeTag,
+                'soft::',               modalRangeTag,
 
                 'list::',               listEnter,
                 'tree::',               listEnter,
@@ -379,7 +380,7 @@ ScDocParser {
                     l.add((tag:'##'));
                     l.add((tag:'link', text:doc.path));
                     l.add((tag:'prose', text:" - "++doc.summary));
-                    l.add((tag:'emphasis', text:folder));
+                    l.add((tag:'soft', text:folder));
                 };
             });
                         
@@ -486,7 +487,7 @@ ScDocParser {
 //            n.add((tag:'||'));
             n.add((tag:'prose', text: " - "++doc));
 //            n.add((tag:'||'));
-            n.add((tag:'emphasis', text: kind));
+            n.add((tag:'soft', text: kind));
         };
         root = r;
     }
@@ -638,6 +639,9 @@ ScDocRenderer {
             'strong', {
                 file.write("<strong>"++node.text++"</strong>");
             },
+            'soft', {
+                file.write("<span class='soft'>"++node.text++"</span>");
+            },
             'link', {
                 if("[a-zA-Z]+://.+".matchRegexp(node.text),{
                     file.write("<a href=\""++node.text++"\">"++node.text++"</a>");
@@ -732,7 +736,7 @@ ScDocRenderer {
     }
     
     renderHTMLHeader {|f,name,type,folder|
-        var x, cats;
+        var x, cats, m;
         var style = baseDir +/+ "scdoc.css";
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' /></head><body>");
 
@@ -760,6 +764,8 @@ ScDocRenderer {
         f.write("<div class='subheader'>\n");
         
         if(type==\class,{
+            m = currentClass.filenameSymbol.asString;
+            f.write("<div id='filename'>Location: "++m.dirname++"/<a href='file://"++m++"'>"++m.basename++"</a></div>");
             f.write("<div id='inheritance'>");
             if(currentClass != Object, {
                 f.write("Inherits from: ");
@@ -921,7 +927,8 @@ ScDoc {
                 
                 n = List.new;
                 n.add((tag:\class, text:c.name.asString));
-                n.add((tag:\summary, text:"(undocumented)"));
+//                n.add((tag:\summary, text:"(undocumented)"));
+                n.add((tag:\summary, text:""));
                 
                 cats = "Undocumented classes";
                 
