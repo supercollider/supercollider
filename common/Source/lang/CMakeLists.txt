@@ -91,6 +91,16 @@ if(UNIX)
 else(UNIX)
 endif(UNIX)
 
+if (SC_WII)
+	find_package(CWiid)
+	find_package(Bluetooth)
+
+	if (BLUETOOTH_FOUND AND CWIID_FOUND)
+		add_definitions(-DHAVE_WII)
+		include_directories(${CWIID_INCLUDE_DIRS} ${BLUETOOTH_INCLUDE_DIRS})
+	endif()
+endif()
+
 if(FINAL_BUILD)
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
 	add_library(libsclang SHARED libsclang_final.cpp ${sclang_parser_source})
@@ -98,6 +108,9 @@ else()
 	add_library(libsclang SHARED ${sclang_sources} ${sclang_parser_source})
 endif()
 
+if (SC_WII AND BLUETOOTH_FOUND AND CWIID_FOUND)
+	target_link_libraries(libsclang ${BLUETOOTH_LIBRARIES} ${CWIID_LIBRARIES})
+endif()
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
