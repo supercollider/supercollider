@@ -338,7 +338,7 @@ ScDocParser {
         var n = (tag:'tree', children:List.new);
         r.add((tag:'title', text:"Class Tree"));
         r.add((tag:'summary', text:"All classes by inheritance tree"));
-        r.add((tag:'related', text:"Overviews/Classes, Overviews/ClassesByCategories, Overviews/Methods"));
+        r.add((tag:'related', text:"Overviews/AllClasses, Overviews/Categories, Overviews/Methods"));
         r.add((tag:'categories', text:"Classes"));
         r.add(n);
         this.dumpClassTree(n,Object);
@@ -438,6 +438,32 @@ ScDocParser {
         root = r;
     }
     
+    overviewAllClasses {|docMap|
+        var name, doc, link, n, r = List.new, cap, old_cap=nil;
+        r.add((tag:'title', text:"Classes"));
+        r.add((tag:'summary', text:"Alphabetical index of all classes"));
+        r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Categories, Overviews/Methods"));
+        Class.allClasses.do {|c|
+            name = c.name.asString;
+            if(name.find("Meta_")!=0, {
+                link = "Classes" +/+ name;
+                doc = docMap[link];
+                doc = if(doc.notNil, {doc.summary}, {""});
+                cap = name.first;
+                if(cap!=old_cap, {
+                    r.add((tag:'section', text:cap.asString, children:n=List.new));
+                    n.add((tag:'table', children:n=List.new));
+                    old_cap = cap;
+                });
+                n.add((tag:'##'));
+                n.add((tag:'link', text: link));
+                n.add((tag:'||'));
+                n.add((tag:'prose', text: doc));
+            });
+        };
+        root = r;
+    }
+    
     overviewServer {|catMap|
         var r = List.new;
         r.add((tag:'title', text:"Server stuff"));
@@ -470,7 +496,7 @@ ScDocRenderer {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-        var f, m, mname, args, split, mstat;
+        var f, m, n, mname, args, split, mstat;
 
         var do_children = {
             if(node.children.notNil, {
@@ -590,9 +616,9 @@ ScDocRenderer {
                     file.write("<a href=\""++node.text++"\">"++node.text++"</a>");
                 },{
                     f = node.text.split($#);
-                    m = "";
-                    if(f[1].notNil, {m = "#"++f[1]});
-                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++node.text.split($/).last++"</a>");
+                    m = if(f[1].notNil, {"#"++f[1]}, {""});
+//                    n = if(f[1].notNil, {" ["++f[1]++"]"}, {""});
+                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++f[0].split($/).last++" "++m++"</a>");
                     //FIXME: need to have relative uri's
                     //best would be to keep track, have a currentDir class variable.
                 });
@@ -781,6 +807,7 @@ ScDoc {
     var <>helpTargetDir;
     var <>helpSourceDir;
     var <categoryMap;
+    var <docMap;
     
     *new {
         ^super.new.init;
@@ -800,19 +827,20 @@ ScDoc {
         var r = ScDocRenderer.new;
         /* TODO:
           All documents alphabetically
-          All documents by categories
           All classes alphabetically
           All classes by categories
-          All undocumented classes
-          All ugens alphabetically
-          All ugens by categories
           All methods index
         */
 
         "Generating Overviews...".postln;
+        this.makeDocMap;
+                
         r.parser = p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
         
+        r.parser = p.overviewAllClasses(docMap);
+        r.renderHTML(helpTargetDir +/+ "Overviews/AllClasses.html","Overviews");
+
         r.parser = p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
 
@@ -863,7 +891,7 @@ ScDoc {
                 
                 n = List.new;
                 n.add((tag:\class, text:c.name.asString));
-                n.add((tag:\summary, text:"undocumented"));
+                n.add((tag:\summary, text:"(undocumented)"));
                 
                 cats = "Undocumented classes";
                 
@@ -897,6 +925,15 @@ ScDoc {
                 categoryMap[cat] = categoryMap[cat].reject {|t| t.path==path}.asList; //remove old
             });
             categoryMap[cat].add((path:path, summary:parser.findNode(\summary).text));
+        };
+    }
+    
+    makeDocMap {
+        docMap = Dictionary.new;
+        categoryMap.pairsDo {|k,v|
+            v.do {|f|
+                docMap[f.path] = f;
+            };
         };
     }
 

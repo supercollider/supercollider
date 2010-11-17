@@ -103,6 +103,10 @@ TODO
 
 - force class ref filename to be equal to class name?
 
+- list undocumented methods automagically in each class? At the end of the doc..
+but then, since we don't have any notion of private methods, we would need to be able to ignore those..
+with an ignoreMethod:: tag or something..
+
 - render binary op methods differently? like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we?
 one trick might be to detect if the method has no a-zA-Z and only one arg, and if so skip the parens..
