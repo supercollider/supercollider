@@ -13,14 +13,14 @@ p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco; min-height: 14.0px}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 10.0px Monaco}
 p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
-p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #001aa2}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #00168f}
 p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
 p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
-p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #742612}
-p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #742612; min-height: 12.0px}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #571f0d}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #571f0d; min-height: 12.0px}
 span.s1 {color: #000000}
-span.s2 {color: #001aa2}
-span.s3 {color: #742612}
+span.s2 {color: #00168f}
+span.s3 {color: #571f0d}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -35,13 +35,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p3">The default guiClass for an Object is ObjectGui.<span class="Apple-converted-space">  </span>So if a class does not implement guiClass at all, then at least there is a default ObjectGui that will display the name.</p>
 <p class="p2"><br></p>
-<p class="p3">Many subclasses overide the <b>guiClass</b> method to specify a different class.<span class="Apple-converted-space">  </span>All gui classes inherit from ObjectGui.</p>
+<p class="p3">Many subclasses overide the <b>guiClass</b> method to specify a different class, one that subclasses ObjectGui.</p>
 <p class="p4"><br></p>
 <p class="p5">see [gui]</p>
 <p class="p2"><br></p>
 <p class="p3">It is the simplest display, just the the object asString.</p>
 <p class="p2"><br></p>
-<p class="p3">if you click on the "nameplate", you will open object's inspector.</p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
 <p class="p2"><br></p>
@@ -79,11 +78,12 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
 <p class="p10"><span class="s1"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>// using non 'gui' objects</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>r = layout.layRight(300,300); <span class="s3">// allocate yourself some space</span></p>
-<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">ButtonView</span>(layout.win,r)</p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">Button</span>(layout.win,r)</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s2">arg</span> butt;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>model.goApeShit;</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>});</p>
-<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>// note: NumberEditor is a cruciallib class</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>numberEditor = <span class="s2">NumberEditor</span>(model.howFast,[0,100])</p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>.action_({ <span class="s2">arg</span> val;<span class="Apple-converted-space"> </span></p>
 <p class="p9"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>model.howFast = val;<span class="Apple-converted-space"> </span></p>
