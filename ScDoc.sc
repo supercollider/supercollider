@@ -452,14 +452,41 @@ ScDocParser {
                 cap = name.first;
                 if(cap!=old_cap, {
                     r.add((tag:'section', text:cap.asString, children:n=List.new));
-                    n.add((tag:'table', children:n=List.new));
+                    n.add((tag:'list', children:n=List.new));
                     old_cap = cap;
                 });
                 n.add((tag:'##'));
                 n.add((tag:'link', text: link));
-                n.add((tag:'||'));
-                n.add((tag:'prose', text: doc));
+//                n.add((tag:'||'));
+                n.add((tag:'prose', text: " - "++doc));
             });
+        };
+        root = r;
+    }
+
+    overviewAllDocuments {|docMap|
+        var kind, name, doc, link, n, r = List.new, cap, old_cap=nil;
+        r.add((tag:'title', text:"Documents"));
+        r.add((tag:'summary', text:"Alphabetical index of all documents"));
+        r.add((tag:'related', text:"Overviews/Categories"));
+        docMap.keys.asList.sort {|a,b| a.split($/).last<b.split($/).last}.do {|link|
+            doc = docMap[link];
+            doc = if(doc.notNil, {doc.summary}, {""});
+            name = link.split($/).last;
+            kind = link.dirname;
+            kind = if(kind==".", {""}, {" ["++kind++"]"});
+            cap = name.first;
+            if(cap!=old_cap, {
+                r.add((tag:'section', text:cap.asString, children:n=List.new));
+                n.add((tag:'list', children:n=List.new));
+                old_cap = cap;
+            });
+            n.add((tag:'##'));
+            n.add((tag:'link', text: link));
+//            n.add((tag:'||'));
+            n.add((tag:'prose', text: " - "++doc));
+//            n.add((tag:'||'));
+            n.add((tag:'emphasis', text: kind));
         };
         root = r;
     }
@@ -840,6 +867,9 @@ ScDoc {
         
         r.parser = p.overviewAllClasses(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/AllClasses.html","Overviews");
+
+        r.parser = p.overviewAllDocuments(docMap);
+        r.renderHTML(helpTargetDir +/+ "Overviews/AllDocuments.html","Overviews");
 
         r.parser = p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
