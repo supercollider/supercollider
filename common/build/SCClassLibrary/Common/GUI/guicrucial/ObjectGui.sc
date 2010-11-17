@@ -39,16 +39,16 @@ ObjectGui : SCViewHolder {
 		super.viewDidClose;
 	}
 
-	gui { arg lay, bounds ... args;
+	gui { arg parent, bounds ... args;
 		var layout;
-		layout=this.guify(lay,bounds);
+		layout=this.guify(parent,bounds);
 		layout.flow({ arg layout;
 			this.view = layout;
 			this.writeName(layout);
 			this.performList(\guiBody,[layout] ++ args);
 		},bounds).background_(this.background);
 		//if you created it, front it
-		if(lay.isNil,{
+		if(parent.isNil,{
 			layout.resizeToFit(true,true);
 			layout.front;
 		});
@@ -92,16 +92,16 @@ ObjectGui : SCViewHolder {
 
 ModelImplementsGuiBody : ObjectGui {
 
-	gui { arg lay, bounds ... args;
+	gui { arg parent, bounds ... args;
 		var layout;
-		layout=this.guify(lay,bounds);
+		layout=this.guify(parent,bounds);
 		layout.flow({ arg layout;
 			this.view = layout;
 			this.writeName(layout);
 			model.performList(\guiBody,[layout] ++ args);
 		},bounds).background_(this.background);
 		//if you created it, front it
-		if(lay.isNil,{ layout.resizeToFit.front });
+		if(parent.isNil,{ layout.resizeToFit.front });
 	}
 }
 
