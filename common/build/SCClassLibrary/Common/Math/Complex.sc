@@ -83,7 +83,7 @@ Complex : Number {
 	
 	squared { ^this * this }
 	cubed { ^this * this * this }
-	exp { ^exp(real) * Complex.new(cos(imag), sin(real)) }
+	exp { ^exp(real) * Complex.new(cos(imag), sin(imag)) }
 	
 	pow { arg aNumber;
 		var res;
