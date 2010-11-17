@@ -32,9 +32,9 @@ ObjectGui : SCViewHolder {
 	}
 	guify { arg layout,bounds,title;
 		if(layout.isNil,{
-			layout = MultiPageLayout(title ?? {model.asString.copyRange(0,50)},bounds,front:false);
+			layout = FlowView(nil,bounds,windowTitle:title ?? {model.asString.copyRange(0,50)});
 		},{
-			layout = layout.asPageLayout(title,bounds);
+			layout = layout.asFlowView(bounds);
 		});
 		// i am not really a view in the hierarchy
 		layout.removeOnClose(this);
@@ -56,7 +56,8 @@ ObjectGui : SCViewHolder {
 		},bounds).background_(this.background);
 		//if you created it, front it
 		if(lay.isNil,{
-			layout.resizeToFit(true,true).front
+			layout.resizeToFit(true,true);
+			layout.front;
 		});
 	}
 	topGui { arg ... args;
