@@ -3,38 +3,37 @@ summary::documentation overview
 
 SuperCollider is an object-oriented language client and a server for sound synthesis and digital signal processing (DSP).
 
+NOTE:: This help system is currently work in progress. Please help out and convert old helpfiles!
+
 SECTION::Getting Started
 
 These might be useful starting points on getting help with SuperCollider:
 
-list::
-## link::Guides/ClientVsServer:: - Explaining the client vs server architecture.
-## link::Tutorials/Introductory_tutorial::
+definitionlist::
+## link::Guides/ClientVsServer:: || Explaining the client vs server architecture.
+## link::Tutorials/Introductory_tutorial:: || Get started with SuperCollider
 ## add more stuff..
 ::
 
 SECTION::Documentation Overviews
 
-subsection:: All Documents
-table::
-## Documents by categories: || link::Overviews/Categories::
-## Documents alphabetically: || link::Overviews/AllDocuments::
+definitionlist::
+## link::Overviews/Categories:: || All documents by categories
+## link::Overviews/AllDocuments:: || Alphabetical index of all documents
 ::
 
-subsection:: Classes
-table::
-## Classes alphabetically: || link::Overviews/AllClasses::
-## Classes by inheritance tree: || link::Overviews/ClassTree::
-## Index of all methods: || link::Overviews/Methods::
-## Undocumented classes: || link::Overviews/Categories#undocumented_classes::
+section:: Classes
+definitionList::
+## link::Overviews/AllClasses:: || Alphabetical index of all classes
+## link::Overviews/ClassTree:: || All classes by inheritance tree
+## link::Overviews/Methods:: || Alphabetical index of all methods
+## link::Overviews/Categories#undocumented_classes:: || Undocumented classes
 ::
 
-subsection:: UGens and Server stuff
-table::
-## Server related documents: || link::Overviews/Server::
+section:: UGens and Server stuff
+definitionList::
+## link::Overviews/Server:: || Server related documents
 ::
-
-NOTE:: This help system is currently work in progress!
 
 SECTION::Licensing
 
