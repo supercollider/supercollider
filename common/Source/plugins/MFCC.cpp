@@ -232,11 +232,10 @@ float MFCC_prepareMel(MFCC * unit, float * data)
 		//pbands[k] = 10.f * (sc_log10((bsum< 1e-42? 1e-42: bsum)) + 5.f);
 		//or make sure value works as a float: 
 		//pbands[k] = 10.f * (sc_log10((bsum< 1e-20f? 1e-20f: bsum)) + 5.f);
-		//pbands[k] = 10.f * (sc_log10((bsum< 1e-5f? 1e-5f: bsum)) + 5.f);
 		//want to avoid negative values, dynamic range roughly around 11 powers of ten (110dB)
-		pbands[k] = 10.f * (std::log10((bsum< 1e-5f? 1e-5f: bsum)) + 5.f);
-		
-}
+		//pbands[k] = 10.f * (std::log10((bsum< 1e-5f? 1e-5f: bsum)) + 5.f);
+		pbands[k] = 10.f * (std::log10(sc_max(1e-5f, bsum)) +5.f); 
+	}
 
 	//float mult= 0.01; //(1.0/((float)unit->m_numcoefficients)); //0.01*(1.0/((float)unit->m_numcoefficients));
 	return 0.01f;
