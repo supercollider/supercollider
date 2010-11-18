@@ -2,25 +2,36 @@ ViewRedirect { // Abstract class
 
 	classvar <>redirectQueries = false;
 
+	*implScheme{
+		^GUI.scheme
+	}
+
 	*implClass {
 		^GUI.scheme.perform(this.key)
 	}
 	*key { ^\viewRedirect }
 	*new { arg parent, bounds;
 		var	impl;
-		if((impl = this.implClass).notNil) {
-			^impl.new(parent, bounds)
-		} {
-			MethodError("ViewRedirect is an abstract class and should not be instantiated directly. *new method not valid.", this).throw;
+		if ( this.implScheme.notNil ){
+			if((impl = this.implClass).notNil) {
+				^impl.new(parent, bounds)
+			} {
+				MethodError("ViewRedirect is an abstract class and should not be instantiated directly. *new method not valid.", this).throw;}
+		}{
+			("No GUI scheme active: " + this.key ++ ".new" + parent ).warn;
 		}
 	}
 	*browse { ^ClassBrowser(this.implClass ?? { ViewRedirect }) }
 	*doesNotUnderstand{|selector ... args|
 		var	impl;
-		if((impl = this.implClass).notNil) {
-			^this.implClass.perform(selector, *args)
-		} {
-			DoesNotUnderstandError(this, selector, args).throw;
+		if ( this.implScheme.notNil ){
+			if((impl = this.implClass).notNil) {
+				^this.implClass.perform(selector, *args)
+			} {
+				DoesNotUnderstandError(this, selector, args).throw;
+			}
+		}{
+			("No GUI scheme active: " + selector + args ).warn;
 		}
 	}
 	*classRedirect { ^redirectQueries.if({this.implClass ? this}, this)}
@@ -50,9 +61,9 @@ Stethoscope : ViewRedirect {
 	*new {  arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
 		index = index.asControlInput;
 		^this.implClass.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
-		}
+	}
 	*key { ^\stethoscope }
-
+	
 }
 ScopeView : ViewRedirect { *key { ^\scopeView }}
 FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to SCFreqScope
@@ -61,7 +72,7 @@ FreqScope : ViewRedirect { // redirects to SCFreqScopeWindow
 	*new { arg width=512, height=300, busNum=0, scopeColor, bgColor;
 		busNum = busNum.asControlInput;
 		^this.implClass.new(width, height, busNum, scopeColor)
-		}
+	}
 	*key { ^\freqScope }
 }
 
@@ -99,14 +110,13 @@ Font : ViewRedirect  {
 	*findFirstAvailable { |fontNames, action|
 		Routine {
 			fontNames.do { |name| 
-					if(this.availableFonts.any(_.contains(name))) { 
-						action.value(name);
-						nil.alwaysYield;
-					}
+				if(this.availableFonts.any(_.contains(name))) { 
+					action.value(name);
+					nil.alwaysYield;
+				}
 			}
 		}.play(AppClock)		
-	}
-
+}
 }
 
 Knob : ViewRedirect  {	*key { ^\knob }}
