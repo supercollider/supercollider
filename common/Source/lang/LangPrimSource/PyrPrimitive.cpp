@@ -3999,7 +3999,7 @@ void initMIDIPrimitives();
 
 #if !defined(SC_WIN32) && !defined(SC_IPHONE)
 void initHIDPrimitives();
-	//initHIDPrimitives();
+	initHIDPrimitives();
 
 void initSpeechPrimitives();
 	initSpeechPrimitives();
