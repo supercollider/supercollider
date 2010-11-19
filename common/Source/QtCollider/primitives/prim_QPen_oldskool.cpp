@@ -309,7 +309,10 @@ QC_QPEN_PRIMITIVE( QPen_ArcTo, 3, PyrSlot *r, PyrSlot *arg, VMGlobals *g )
   path.arcTo( center.x() - radius, center.y() - radius, 2*radius, 2*radius,
               radToDeg( arcStart ), radToDeg( arcAngle ) );
 
-  path.lineTo( pt2 );
+  // The current SC API does not want to pull the line to the last point.
+  // Personally, I think it would be better:
+
+  // path.lineTo( pt2 );
 
   return errNone;
 }
