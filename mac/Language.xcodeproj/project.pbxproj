@@ -61,6 +61,13 @@
 		6A1C636C0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
 		6A1C63810CFB6D27004ED3DA /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
 		6A1C63820CFB6D27004ED3DA /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
+		77A4923312972374008AB6B2 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AB0C19E79F00634E4D /* HID_Error_Handler.c */; };
+		77A4923412972375008AB6B2 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
+		77A4923512972376008AB6B2 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
+		77A4923612972377008AB6B2 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6B10C19E79F00634E4D /* HID_Utilities.c */; };
+		77A4924B12972489008AB6B2 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924912972488008AB6B2 /* IOHIDDevice_.c */; };
+		77A4924C12972489008AB6B2 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924A12972489008AB6B2 /* IOHIDElement_.c */; };
+		77A49251129724D6008AB6B2 /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DD0C1921F90018AB50 /* SC_HID.cpp */; };
 		94070C5E0C19DEF6002304F7 /* html.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5B0C19DEF6002304F7 /* html.icns */; };
 		94070C5F0C19DEF6002304F7 /* rtf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5C0C19DEF6002304F7 /* rtf.icns */; };
 		94070C600C19DEF6002304F7 /* sc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5D0C19DEF6002304F7 /* sc.icns */; };
@@ -449,6 +456,10 @@
 		6A1C63800CFB6D27004ED3DA /* uversion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uversion.h; sourceTree = "<group>"; };
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		77A4924912972488008AB6B2 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
+		77A4924A12972489008AB6B2 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
+		77A49264129725CC008AB6B2 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
+		77A49265129725CC008AB6B2 /* IOHIDElement_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDElement_.h; sourceTree = "<group>"; };
 		94070C5B0C19DEF6002304F7 /* html.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = html.icns; sourceTree = "<group>"; };
 		94070C5C0C19DEF6002304F7 /* rtf.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rtf.icns; sourceTree = "<group>"; };
 		94070C5D0C19DEF6002304F7 /* sc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = sc.icns; sourceTree = "<group>"; };
@@ -468,7 +479,6 @@
 		9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = HID_Queue_Utilities.c; sourceTree = "<group>"; };
 		9456F6B00C19E79F00634E4D /* HID_Queue_Utilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Queue_Utilities.h; sourceTree = "<group>"; };
 		9456F6B10C19E79F00634E4D /* HID_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = HID_Utilities.c; sourceTree = "<group>"; };
-		9456F6B20C19E79F00634E4D /* HID_Utilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities.h; sourceTree = "<group>"; };
 		9456F6B30C19E79F00634E4D /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_External.h; sourceTree = "<group>"; };
 		9456F6B40C19E79F00634E4D /* HID_Utilities_Internal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_Internal.h; sourceTree = "<group>"; };
 		945D14AF0CD9A73A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = ../common/build/ChangeLog; sourceTree = "<group>"; };
@@ -878,9 +888,12 @@
 				9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */,
 				9456F6B00C19E79F00634E4D /* HID_Queue_Utilities.h */,
 				9456F6B10C19E79F00634E4D /* HID_Utilities.c */,
-				9456F6B20C19E79F00634E4D /* HID_Utilities.h */,
 				9456F6B30C19E79F00634E4D /* HID_Utilities_External.h */,
 				9456F6B40C19E79F00634E4D /* HID_Utilities_Internal.h */,
+				77A4924912972488008AB6B2 /* IOHIDDevice_.c */,
+				77A49264129725CC008AB6B2 /* IOHIDDevice_.h */,
+				77A4924A12972489008AB6B2 /* IOHIDElement_.c */,
+				77A49265129725CC008AB6B2 /* IOHIDElement_.h */,
 			);
 			path = HID_Utilities;
 			sourceTree = "<group>";
@@ -1726,6 +1739,13 @@
 				6A0CC1B20D3D44560080C454 /* NSStringICUAdditions.m in Sources */,
 				94DFDB4F0DD95B7800EB46BA /* sc_popen.cpp in Sources */,
 				172E7CCD0E9C29F300925A8E /* SCImage.M in Sources */,
+				77A4923312972374008AB6B2 /* HID_Error_Handler.c in Sources */,
+				77A4923412972375008AB6B2 /* HID_Name_Lookup.c in Sources */,
+				77A4923512972376008AB6B2 /* HID_Queue_Utilities.c in Sources */,
+				77A4923612972377008AB6B2 /* HID_Utilities.c in Sources */,
+				77A4924B12972489008AB6B2 /* IOHIDDevice_.c in Sources */,
+				77A4924C12972489008AB6B2 /* IOHIDElement_.c in Sources */,
+				77A49251129724D6008AB6B2 /* SC_HID.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
