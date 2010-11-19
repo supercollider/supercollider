@@ -1,18 +1,11 @@
+
 + Object {
 
-	guiClass { ^ObjectGui }
-
 	// create a gui using the guiClass passing in args
-	// by convention the first arg is a window, view or layout
-	// and the second arg is a Rect
+	// the first arg is the parent: a window or view
+	// and the second arg is the bounds: a Rect, Point (width x height), or nil
 	gui { arg  ... args;
 		^this.guiClass.new(this).performList(\gui,args);
-	}
-
-	// return an array of symbols specifying which vars to put up on the gui
-	*instVarsForGui { ^[] }
-	*publicInstVars {
-		^this.instVarNames.select({ |ivar| this.findRespondingMethodFor(ivar).notNil })
 	}
 
 	debug { arg caller;
@@ -35,6 +28,7 @@
 			Error("Type check failed:" + this + "should be kind of:" + shouldBeKindOf).throw;
 		})
 	}
+	guiClass { ^ObjectGui }
 
 }
 
@@ -61,7 +55,7 @@
 + Symbol {
 	guiClass { ^StringGui }
 }
-// though it would be nice to have it indicated what class it is
+// though it would be nice to have it indicated what class it is by color etc
 + SimpleNumber {
 	guiClass { ^StringGui }
 }

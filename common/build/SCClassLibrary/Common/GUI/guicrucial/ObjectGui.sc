@@ -12,6 +12,9 @@ ObjectGui : SCViewHolder {
 		/* implement this method in your gui subclass */
 
 		// if your model implement guiBody then call that
+		// this is a lazy way to write simple guis for simple objects
+		// where model/gui code separation is not especially important
+		// and where the controller class doesn't need to maintain any state or vars
 		if(model.respondsTo(\guiBody) and: {model.isKindOf(ObjectGui).not},{
 			model.guiBody(layout)
 		})
@@ -23,22 +26,7 @@ ObjectGui : SCViewHolder {
 		new.model_(model);
 		^new
 	}
-	guify { arg layout,bounds,title;
-		if(layout.isNil,{
-			layout = FlowView(nil,bounds,windowTitle:title ?? {model.asString.copyRange(0,50)});
-		},{
-			layout = layout.asFlowView(bounds);
-		});
-		// i am not really a view in the hierarchy
-		layout.removeOnClose(this);
-		^layout
-	}
-	viewDidClose {
-		model.removeDependant(this);
-		model = nil;
-		super.viewDidClose;
-	}
-
+	
 	gui { arg parent, bounds ... args;
 		var layout;
 		layout=this.guify(parent,bounds);
@@ -53,8 +41,37 @@ ObjectGui : SCViewHolder {
 			layout.front;
 		});
 	}
+	guify { arg parent,bounds,title;
+		// converts the parent to a FlowView or compatible object
+		// thus creating a window from nil if needed
+		// registers to remove self as dependent on model if window closes
+		if(parent.isNil,{
+			parent = FlowView(nil,bounds,windowTitle:title ?? {model.asString.copyRange(0,50)});
+		},{
+			parent = parent.asFlowView(bounds);
+		});
+		// i am not really a view in the hierarchy
+		parent.removeOnClose(this);
+		^parent
+	}	
+	model_ { |newModel|
+		if(model.notNil,{ // a view has its model swapped with another
+			model.removeDependant(this);
+			model = newModel;
+			model.addDependant(this);
+			this.update;
+		},{
+			model = newModel;
+			model.addDependant(this);
+		})
+	}
+	viewDidClose {
+		model.removeDependant(this);
+		model = nil;
+		super.viewDidClose;
+	}
 
-	background { ^Color.clear }//^Color.yellow(0.2,0.08) }
+	background { ^Color.clear }
 
 	writeName { |layout|
 		this.prWriteName(layout,model.asString)
@@ -75,34 +92,6 @@ ObjectGui : SCViewHolder {
 			.object_(string);
 		// InspectorLink.icon(model,layout);
 	}
-	model_ { |newModel|
-		if(model.notNil,{
-			model.removeDependant(this);
-			model = newModel;
-			model.addDependant(this);
-			this.update;
-		},{
-			model = newModel;
-			model.addDependant(this);
-		})
-	}
-
 
 }
-
-ModelImplementsGuiBody : ObjectGui {
-
-	gui { arg parent, bounds ... args;
-		var layout;
-		layout=this.guify(parent,bounds);
-		layout.flow({ arg layout;
-			this.view = layout;
-			this.writeName(layout);
-			model.performList(\guiBody,[layout] ++ args);
-		},bounds).background_(this.background);
-		//if you created it, front it
-		if(parent.isNil,{ layout.resizeToFit.front });
-	}
-}
-
 
