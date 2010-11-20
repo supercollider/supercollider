@@ -1502,15 +1502,11 @@ void Silent_Ctor(Unit* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Line_next(Line *unit, int inNumSamples)
+static inline void Line_next_loop(Line * unit, int & counter, int remain, double & level)
 {
 	float *out = ZOUT(0);
-
 	double slope = unit->mSlope;
-	double level = unit->mLevel;
-	int counter = unit->mCounter;
 
-	int remain = inNumSamples;
 	do {
 		if (counter==0) {
 			int nsmps = remain;
@@ -1534,20 +1530,25 @@ void Line_next(Line *unit, int inNumSamples)
 			}
 		}
 	} while (remain);
+
+}
+
+
+void Line_next(Line *unit, int inNumSamples)
+{
+	double level = unit->mLevel;
+	int counter = unit->mCounter;
+	Line_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
 
 #ifdef NOVA_SIMD
-void Line_next_nova(Line *unit, int inNumSamples)
+inline_functions void Line_next_nova(Line *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	double slope = unit->mSlope;
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
 
-	int remain = inNumSamples;
 	if (counter == 0)
 	{
 		nova::setvec_simd(OUT(0), unit->mEndLevel, inNumSamples);
@@ -1556,48 +1557,22 @@ void Line_next_nova(Line *unit, int inNumSamples)
 
 	if (counter > inNumSamples)
 	{
+		double slope = unit->mSlope;
 		nova::set_slope_vec_simd(OUT(0), (float)level, (float)slope, inNumSamples);
 		unit->mLevel = level + inNumSamples * slope;
 		unit->mCounter = counter - inNumSamples;
 		return;
 	}
-
-	do {
-		if (counter==0) {
-			int nsmps = remain;
-			remain = 0;
-			float endlevel = unit->mEndLevel;
-			LOOP(nsmps,
-				ZXP(out) = endlevel;
-			);
-		} else {
-			int nsmps = sc_min(remain, counter);
-			counter -= nsmps;
-			remain -= nsmps;
-			LOOP(nsmps,
-				ZXP(out) = level;
-				level += slope;
-			);
-			if (counter == 0) {
-				unit->mDone = true;
-				int doneAction = (int)ZIN0(3);
-				DoneAction(doneAction, unit);
-			}
-		}
-	} while (remain);
+	Line_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
 
-void Line_next_nova_64(Line *unit, int inNumSamples)
+inline_functions void Line_next_nova_64(Line *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	double slope = unit->mSlope;
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
 
-	int remain = 64;
 	if (counter == 0)
 	{
 		nova::setvec_simd<64>(OUT(0), unit->mEndLevel);
@@ -1606,35 +1581,14 @@ void Line_next_nova_64(Line *unit, int inNumSamples)
 
 	if (counter > inNumSamples)
 	{
+		double slope = unit->mSlope;
 		nova::set_slope_vec_simd(OUT(0), (float)level, (float)slope, 64);
 		unit->mLevel = level + inNumSamples * slope;
 		unit->mCounter = counter - inNumSamples;
 		return;
 	}
 
-	do {
-		if (counter==0) {
-			int nsmps = remain;
-			remain = 0;
-			float endlevel = unit->mEndLevel;
-			LOOP(nsmps,
-				ZXP(out) = endlevel;
-			);
-		} else {
-			int nsmps = sc_min(remain, counter);
-			counter -= nsmps;
-			remain -= nsmps;
-			LOOP(nsmps,
-				ZXP(out) = level;
-				level += slope;
-			);
-			if (counter == 0) {
-				unit->mDone = true;
-				int doneAction = (int)ZIN0(3);
-				DoneAction(doneAction, unit);
-			}
-		}
-	} while (remain);
+	Line_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
@@ -1663,10 +1617,10 @@ void Line_Ctor(Line* unit)
 	} else {
 		unit->mLevel = start;
 		unit->mSlope = (end - start) / unit->mCounter;
+		unit->mLevel += unit->mSlope;
 	}
 	unit->mEndLevel = end;
 	ZOUT0(0) = unit->mLevel;
-	unit->mLevel += unit->mSlope;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
