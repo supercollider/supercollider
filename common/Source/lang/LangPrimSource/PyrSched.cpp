@@ -29,6 +29,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits>
+
 #ifdef SC_WIN32
 
 #else
@@ -41,6 +43,9 @@ typedef __int32 int32_t;
 #endif
 
 #define SANITYCHECK 0
+
+
+static const double dInfinity = std::numeric_limits<double>::infinity();
 
 void runAwakeMessage(VMGlobals *g);
 
@@ -1119,7 +1124,8 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(b, &delta);
 	if (err) return errNone; // return nil OK, just don't schedule
 	beats += delta;
-	if(beats == INFINITY) return errNone; // return nil OK, just don't schedule
+	if (beats == dInfinity)
+		return errNone; // return nil OK, just don't schedule
 
 	clock->Add(beats, c);
 
@@ -1140,7 +1146,7 @@ int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	double beats;
-	int err = slotDoubleVal(b, &beats) || (beats == INFINITY);
+	int err = slotDoubleVal(b, &beats) || (beats == dInfinity);
 	if (err) return errNone; // return nil OK, just don't schedule
 
 	clock->Add(beats, c);
@@ -1299,7 +1305,7 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(&g->thread->seconds, &seconds);
 	if (err) return errNone; // return nil OK, just don't schedule
 	seconds += delta;
-	if(seconds == INFINITY) return errNone; // return nil OK, just don't schedule
+	if (seconds == dInfinity) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 
 	schedAdd(g, inQueue, seconds, c);
@@ -1315,7 +1321,7 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 
 	double time;
-	int err = slotDoubleVal(b, &time) || (time == INFINITY);
+	int err = slotDoubleVal(b, &time) || (time == dInfinity);
 	if (err) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 
