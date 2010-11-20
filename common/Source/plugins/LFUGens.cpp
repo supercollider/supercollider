@@ -1369,24 +1369,26 @@ void T2K_Ctor(T2K* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+static inline void T2A_next_loop(T2A * unit, int inNumSamples, float level)
+{
+	float *out = ZOUT(0);
+	int offset = (int) IN0(1);
+	for(int i = 0; i < inNumSamples; i++) {
+		if(i == offset)
+			ZXP(out) = level;
+		else
+			ZXP(out) = 0.f;
+	}
+}
+
 void T2A_next(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
-	int offset = (int) IN0(1);
-	float *out = ZOUT(0);
 
-
-	if((unit->mLevel <= 0.f && level > 0.f)) {
-		for(int i = 0; i < inNumSamples; i++) {
-			if(i == offset) {
-				ZXP(out) = level;
-			} else {
-				ZXP(out) = 0.f;
-			}
-		}
-	} else {
-		LOOP1(inNumSamples, ZXP(out) = 0.f;)
-	}
+	if((unit->mLevel <= 0.f && level > 0.f))
+		T2A_next_loop(unit, inNumSamples, level);
+	else
+		ZClear(inNumSamples, ZOUT(0));
 
 	unit->mLevel = level;
 }
@@ -1395,17 +1397,10 @@ void T2A_next(T2A *unit, int inNumSamples)
 inline_functions void T2A_next_nova(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
-	int offset = (int) IN0(1);
 
-	if((unit->mLevel <= 0.f && level > 0.f)) {
-		float *out = ZOUT(0);
-		for(int i = 0; i < inNumSamples; i++) {
-			if(i == offset)
-				ZXP(out) = level;
-			else
-				ZXP(out) = 0.f;
-		}
-	} else
+	if((unit->mLevel <= 0.f && level > 0.f))
+		T2A_next_loop(unit, inNumSamples, level);
+	else
 		nova::zerovec_simd(OUT(0), inNumSamples);
 
 	unit->mLevel = level;
@@ -1414,17 +1409,10 @@ inline_functions void T2A_next_nova(T2A *unit, int inNumSamples)
 inline_functions void T2A_next_nova_64(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
-	int offset = (int) IN0(1);
 
-	if((unit->mLevel <= 0.f && level > 0.f)) {
-		float *out = ZOUT(0);
-		for(int i = 0; i < inNumSamples; i++) {
-			if(i == offset)
-				ZXP(out) = level;
-			else
-				ZXP(out) = 0.f;
-		}
-	} else
+	if((unit->mLevel <= 0.f && level > 0.f))
+		T2A_next_loop(unit, inNumSamples, level);
+	else
 		nova::zerovec_simd<64>(OUT(0));
 
 	unit->mLevel = level;
