@@ -114,7 +114,7 @@ else()
 	add_library(libsclang SHARED ${sclang_sources} ${sclang_parser_source})
 endif()
 
-if (SC_WII)
+if (SC_WII OR APPLE)
 	if (BLUETOOTH_FOUND AND CWIID_FOUND)
 		target_link_libraries(libsclang ${BLUETOOTH_LIBRARIES} ${CWIID_LIBRARIES})
 	elseif(APPLE)
