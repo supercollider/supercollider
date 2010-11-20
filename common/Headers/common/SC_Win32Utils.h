@@ -34,6 +34,10 @@
 #define nanosleep win32_nanosleep
 #define pipe win32_pipe
 
+#if _MSC_VER
+#define snprintf _snprintf
+#endif
+
 void win32_ReplaceCharInString(char* string, int len, char src, char dst);
 // Finds the parent folder of a specified path pattern (including trailing slash)
 void win32_ExtractContainingFolder(char* folder,const char* pattern,int maxChars);
