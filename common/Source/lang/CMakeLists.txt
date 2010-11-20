@@ -91,7 +91,7 @@ if(UNIX)
 else(UNIX)
 endif(UNIX)
 
-if (SC_WII)
+if (SC_WII OR APPLE)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		find_package(CWiid)
 		find_package(Bluetooth)
