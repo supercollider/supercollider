@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title></title>
+<meta name="Generator" content="Cocoa HTML Writer">
+<meta name="CocoaVersion" content="949.54">
+<style type="text/css">
+p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 18.0px Helvetica}
+p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; min-height: 12.0px}
+p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
+p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p7 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #762810; min-height: 12.0px}
+p.p8 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0018a6; min-height: 12.0px}
+p.p9 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #9d200d}
+p.p10 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #762810}
+p.p11 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #0018a6}
+p.p12 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #87240e}
+p.p13 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #4d4d4d}
+p.p14 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #6a2a14}
+span.s1 {color: #0015ab}
+span.s2 {color: #0018a6}
+span.s3 {color: #87240e}
+span.s4 {color: #0012af}
+span.s5 {color: #9d200d}
+span.s6 {color: #000000}
+span.s7 {color: #4d4d4d}
+span.s8 {color: #001ea1}
+span.Apple-tab-span {white-space:pre}
+</style>
+</head>
+<body>
+<p class="p1"><b>FlowView</b></p>
+<p class="p2">superclass: SCViewHolder</p>
+<p class="p3"><br></p>
+<p class="p2">an SCCompositeView with a FlowLayout as decorator</p>
+<p class="p4"><br></p>
+<p class="p5"><b>FlowView.new(parent,bounds)</b></p>
+<p class="p4"><br></p>
+<p class="p4"><br></p>
+<p class="p2">In the simplest respect this is a lazy contraction of this :</p>
+<p class="p4"><br></p>
+<p class="p6">w = <span class="s1">GUI</span>.window.new;</p>
+<p class="p6">w.view.decorator = <span class="s1">FlowLayout</span>.new( w.bounds );</p>
+<p class="p6">w.front;</p>
+<p class="p4"><br></p>
+<p class="p2">FlowView add some features to this setup.<span class="Apple-converted-space"> </span></p>
+<p class="p4"><br></p>
+<p class="p6">(</p>
+<p class="p6">f = <span class="s2">FlowView</span>.new;</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s2">GUI</span>.slider.new(f,<span class="s2">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="s2">GUI</span>.slider.new(f,<span class="s2">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p6">// the StartRow will be fixed at this point in the children array</p>
+<p class="p6">f.startRow;</p>
+<p class="p7"><br></p>
+<p class="p6"><span class="s2">GUI</span>.slider.new(f,<span class="s2">Rect</span>(0,0,100,100));</p>
+<p class="p6">f.startRow;</p>
+<p class="p8"><br></p>
+<p class="p6"><span class="s2">GUI</span>.slider.new(f,<span class="s2">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p2"><b>indentedRemaining</b></p>
+<p class="p2">the maximum space that is left, starting at the current cursor position</p>
+<p class="p6">(</p>
+<p class="p6">f = <span class="s1">FlowView</span>.new;</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f, f.indentedRemaining)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.background = <span class="s1">Color</span>.blue(alpha:0.2)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6">f = <span class="s1">FlowView</span>.new;</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p6">f.startRow; <span class="s3">// new row</span></p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f, f.indentedRemaining)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.background = <span class="s1">Color</span>.blue(alpha:0.2)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6">f = <span class="s1">FlowView</span>.new;</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f, f.indentedRemaining)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.background = <span class="s1">Color</span>.blue(alpha:0.2)</p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p2"><b>used</b></p>
+<p class="p3"><br></p>
+<p class="p2">the area used so far, rounded up to the nearest rectangle plus margin</p>
+<p class="p6">(</p>
+<p class="p6">w = <span class="s4">GUI</span>.window.new;</p>
+<p class="p6">w.front;</p>
+<p class="p6">f = <span class="s4">FlowView</span>.new(w);</p>
+<p class="p6">f.background = <span class="s4">Color</span>.blue(alpha:0.1);</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s4">GUI</span>.slider.new(f,<span class="s4">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="s4">GUI</span>.slider.new(f,<span class="s4">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p6">f.used.postln;</p>
+<p class="p3"><br></p>
+<p class="p9">// overlaid</p>
+<p class="p6"><span class="s4">GUI</span>.compositeView.new(w,f.used)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.background = <span class="s4">Color</span>.red(alpha: 0.1);</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p6">(</p>
+<p class="p6">w = <span class="s4">GUI</span>.window.new;</p>
+<p class="p6">w.front;</p>
+<p class="p6">f = <span class="s4">FlowView</span>.new(w);</p>
+<p class="p6">f.background = <span class="s4">Color</span>.blue(alpha:0.1);</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s4">GUI</span>.slider.new(f,<span class="s4">Rect</span>(0,0,100,100));</p>
+<p class="p6"><span class="s4">GUI</span>.slider.new(f,<span class="s4">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p6">f.startRow; <span class="s5">// new row</span></p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s4">GUI</span>.slider.new(f,<span class="s4">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p6">f.used.postln;</p>
+<p class="p3"><br></p>
+<p class="p9">// overlaid</p>
+<p class="p6"><span class="s4">GUI</span>.compositeView.new(w,f.used)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>.background = <span class="s4">Color</span>.red(alpha: 0.1);</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p2"><b>flow</b></p>
+<p class="p2">insert a sub flow view into the current view</p>
+<p class="p6">(</p>
+<p class="p6">f = FlowView.new;</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p10">// flow within a flow</p>
+<p class="p6">g = f.flow({ <span class="s2">arg</span> g;</p>
+<p class="p11"><span class="s6"><span class="Apple-tab-span">	</span></span>ActionButton<span class="s6">(g,</span><span class="s7">"a"</span><span class="s6">);</span></p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s2">GUI</span>.slider.new(g,<span class="s2">Rect</span>(0,0,100,100)).background_(<span class="s2">Color</span>.rand);</p>
+<p class="p6">}).background_(<span class="s2">Color</span>.black);</p>
+<p class="p10"><span class="s6"><span class="Apple-tab-span">	</span></span>// shrinks to fit the contents afterwards</p>
+<p class="p6">)</p>
+<p class="p2"><b>comp</b></p>
+<p class="p3"><br></p>
+<p class="p2">insert a sub composite view into the current view</p>
+<p class="p6">(</p>
+<p class="p6">f = <span class="s1">FlowView</span>.new;</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s1">GUI</span>.slider.new(f,<span class="s1">Rect</span>(0,0,100,100));</p>
+<p class="p3"><br></p>
+<p class="p12">// sc composite view</p>
+<p class="p6">g = f.comp({ <span class="s1">arg</span> g;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">GUI</span>.slider.new(g,<span class="s1">Rect</span>(50,30,50,100)).background_(<span class="s1">Color</span>.rand);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="s1">GUI</span>.slider.new(g,<span class="s1">Rect</span>(120,30,50,100)).background_(<span class="s1">Color</span>.rand);</p>
+<p class="p6">},<span class="s1">Rect</span>(0,0,200,200)).background_(<span class="s1">Color</span>.black);</p>
+<p class="p3"><br></p>
+<p class="p6">f.startRow;</p>
+<p class="p13">"Back to flowing"<span class="s6">.gui(f);</span></p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p6">// note: some of the following examples use ActionButton from the crucialib</p>
+<p class="p3"><br></p>
+<p class="p14">// tests</p>
+<p class="p6">(</p>
+<p class="p6"><span class="s8">FlowView</span>.new.flow({ <span class="s8">arg</span> f;</p>
+<p class="p14">//<span class="Apple-tab-span">	</span>b = ActionButton(f,"hi",minWidth:140)</p>
+<p class="p6">}).background_(<span class="s8">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p6">(</p>
+<p class="p6"><span class="s8">FlowView</span>.new.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>b = <span class="s8">ActionButton</span>(f,<span class="s7">"hi"</span>,minWidth:140);</p>
+<p class="p6">}).background_(<span class="s8">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p6">(</p>
+<p class="p6"><span class="s2">FlowView</span>.new.flow({ <span class="s2">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>b = <span class="s2">GUI</span>.slider.new(f,<span class="s2">Rect</span>(0,0,100,100));</p>
+<p class="p6">}).background_(<span class="s2">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p6">(</p>
+<p class="p6"><span class="s8">FlowView</span>.new.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>g = f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p14"><span class="s6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span>//b = ActionButton(f,"hi",minWidth:140)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.white)</p>
+<p class="p6">}).background_(<span class="s8">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s8">FlowView</span>.new.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>g = f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s8">ActionButton</span>(f,<span class="s7">"hi"</span>,minWidth:140)</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.white)</p>
+<p class="p6">}).background_(<span class="s8">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s8">FlowView</span>.new.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>g = f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">ActionButton</span>(f,<span class="s7">"hello"</span>,minWidth:100);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.blue);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s8">ActionButton</span>(f,<span class="s7">"hi"</span>,minWidth:140);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.white)</p>
+<p class="p6">}).background_(<span class="s8">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s8">FlowView</span>.new.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>g = f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">ActionButton</span>(f,<span class="s7">"hello"</span>,minWidth:100);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.blue);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s8">ActionButton</span>(f,<span class="s7">"hi"</span>,minWidth:140);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.white)</p>
+<p class="p6">}).background_(<span class="s8">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s8">FlowView</span>.new.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>g = f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s8">ActionButton</span>(f,<span class="s7">"hi"</span>,minWidth:140);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">ActionButton</span>(f,<span class="s7">"hello"</span>,minWidth:100);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.blue);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.white)</p>
+<p class="p6">}).background_(<span class="s8">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s2">FlowView</span>.new.flow({ <span class="s2">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>g = f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>f.flow({ <span class="s2">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s2">GUI</span>.slider.new(f,<span class="s2">Rect</span>(0,0,140,20));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f.flow({ <span class="s2">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">ActionButton</span>(f,<span class="s7">"hello"</span>,minWidth:100);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).background_(<span class="s2">Color</span>.blue);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).background_(<span class="s2">Color</span>.white)</p>
+<p class="p6">}).background_(<span class="s2">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6"><span class="s2">FlowView</span>.new.flow({ <span class="s2">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = <span class="s2">GUI</span>.slider.new(f,<span class="s2">Rect</span>(0,0,140,20));</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>f.flow({ <span class="s2">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s2">ActionButton</span>(f,<span class="s7">"hello"</span>,minWidth:100);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).background_(<span class="s2">Color</span>.blue);</p>
+<p class="p6">}).background_(<span class="s2">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p6">(</p>
+<p class="p3"><br></p>
+<p class="p6">a = <span class="s8">FlowView</span>.new.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>g = f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span>w = f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = f.flow({ <span class="s8">arg</span> f;</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">ActionButton</span>(f,<span class="s7">"hello"</span>,minWidth:100);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.blue);</p>
+<p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="s8">ActionButton</span>(f,<span class="s7">"hi"</span>,minWidth:140);</p>
+<p class="p6"><span class="Apple-tab-span">	</span>}).background_(<span class="s8">Color</span>.white)</p>
+<p class="p6">}).background_(<span class="s8">Color</span>.grey)</p>
+<p class="p3"><br></p>
+<p class="p6">)</p>
+<p class="p3"><br></p>
+<p class="p6">b.remove(<span class="s8">true</span>);</p>
+<p class="p6">w.resizeToFit(<span class="s8">true</span>,<span class="s8">true</span>);</p>
+<p class="p3"><br></p>
+<p class="p3"><br></p>
+<p class="p12">// add something big back in</p>
+<p class="p6"><span class="s1">ActionButton</span>(w,<span class="s7">"i'm back"</span>,minWidth: 200);</p>
+<p class="p6">w.resizeToFit(<span class="s1">true</span>,<span class="s1">true</span>);</p>
+<p class="p12">// slightly wrong size at the bottom</p>
+<p class="p3"><br></p>
+</body>
+</html>

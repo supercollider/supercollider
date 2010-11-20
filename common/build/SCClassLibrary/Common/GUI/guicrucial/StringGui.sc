@@ -4,10 +4,10 @@
 StringGui : ObjectGui {
 
 	writeName {}
-	gui { arg lay, bounds ... args;
+	gui { arg parent, bounds ... args;
 		var layout,string,font;
 		var width,height;
-		layout=this.guify(lay,bounds);
+		layout=this.guify(parent,bounds);
 		font = GUI.font.new(*GUI.skin.fontSpecs);
 		if(model.isString,{
 			string = " "++model;
@@ -34,7 +34,10 @@ StringGui : ObjectGui {
 			.align_(\left)
 			.object_(string);
 
-		if(lay.isNil,{ layout.resizeToFit(center:true).front });
+		if(parent.isNil,{ 
+			layout.resizeToFit(); 
+			layout.front 
+		});
 	}
 
 }

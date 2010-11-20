@@ -81,7 +81,11 @@ endif()
 
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
-	add_library(${plugin_name} MODULE ${plugin})
+        if(WIN32)
+        	add_library(${plugin_name} MODULE ${plugin} ../../../windows/PlugIns/ExportHelper.cpp)
+        else()
+        	add_library(${plugin_name} MODULE ${plugin})
+        endif()
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
@@ -91,6 +95,10 @@ set(scfft_sources   ../common/SC_fftlib.cpp   SCComplex.cpp)
 if (FFT_GREEN)
 	set(scfft_sources   ${scfft_sources} ../common/fftlib.c)
 endif()
+if (WIN32)
+        set(scfft_sources   ${scfft_sources} ../../../windows/PlugIns/ExportHelper.cpp)
+endif()
+
 
 add_library(FFT_UGens MODULE
 			FFTInterfaceTable.cpp
@@ -122,9 +130,13 @@ add_library(ML_UGens MODULE
 			)
 
 if(NOT NO_LIBSNDFILE)
-	add_library(DiskIO_UGens MODULE
-			DiskIO_UGens.cpp
-			../server/SC_SyncCondition.cpp)
+       set(diskio_sources DiskIO_UGens.cpp ../server/SC_SyncCondition.cpp)
+
+       if(WIN32)
+           set(diskio_sources ${diskio_sources} ../../../windows/PlugIns/ExportHelper.cpp)
+       endif()
+
+	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
 	if(SNDFILE_FOUND)
 		include_directories(${SNDFILE_INCLUDE_DIR})

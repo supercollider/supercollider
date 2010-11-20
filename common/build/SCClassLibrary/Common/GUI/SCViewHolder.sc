@@ -114,14 +114,14 @@ FlowView : SCViewHolder {
 		^v
 	}
 	*viewClass { ^GUI.compositeView }
-	*new { arg parent, bounds,margin,gap;
-		^super.new.init(parent, bounds,margin,gap);
+	*new { arg parent, bounds,margin,gap,windowTitle="";
+		^super.new.init(parent, bounds,margin,gap,windowTitle);
 	}
-	init { arg argParent, bounds,margin,gap;
+	init { arg argParent, bounds,margin,gap,windowTitle="";
 		var w, parentView, iMadeParent = false;
 		parent = argParent ?? {
 			iMadeParent = true;
-			GUI.window.new("",bounds).front
+			GUI.window.new(windowTitle,bounds).front
 		};
 		parentView = parent.asView;
 		if(bounds.notNil,{
@@ -235,13 +235,16 @@ FlowView : SCViewHolder {
 				view.reflowAll.resizeToFit;
 			});
 		});
-//		best way:
-//		enlarge the view to full bounds within its parent.
-// 		this can only be done if you are the last or only child
-//		call deepReflow on shallow children in reverse order
-//		resize self to fit
+		//		best way:
+		//		enlarge the view to full bounds within its parent.
+		// 		this can only be done if you are the last or only child
+		//		call deepReflow on shallow children in reverse order
+		//		resize self to fit
 	}
-
+	front {
+		// window.front 
+		
+	}
 
 	wouldExceedBottom { arg aBounds; ^this.decorator.wouldExceedBottom(aBounds) }
 	anyChildExceeds {
