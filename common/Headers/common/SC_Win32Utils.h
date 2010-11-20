@@ -25,7 +25,6 @@
 #include <stdio.h>
 #include <winsock2.h>
 #include <pthread.h>
-#include <intrin.h>
 
 // wrappers for unix replacements
 #define gettimeofday win32_gettimeofday
