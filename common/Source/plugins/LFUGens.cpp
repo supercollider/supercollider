@@ -1671,16 +1671,11 @@ void Line_Ctor(Line* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-void XLine_next(XLine *unit, int inNumSamples)
+static inline void Xline_next_loop(XLine * unit, int & counter, int remain, double & level)
 {
 	float *out = ZOUT(0);
-
 	double grow = unit->mGrowth;
-	double level = unit->mLevel;
-	int counter = unit->mCounter;
 
-	int remain = inNumSamples;
 	do {
 		if (counter==0) {
 			int nsmps = remain;
@@ -1704,6 +1699,14 @@ void XLine_next(XLine *unit, int inNumSamples)
 			}
 		}
 	} while (remain);
+}
+
+void XLine_next(XLine *unit, int inNumSamples)
+{
+	double level = unit->mLevel;
+	int counter = unit->mCounter;
+
+	Xline_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
@@ -1711,13 +1714,8 @@ void XLine_next(XLine *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	double grow = unit->mGrowth;
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
-
-	int remain = inNumSamples;
 
 	if (counter == 0)
 	{
@@ -1726,49 +1724,20 @@ inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 	}
 	if (counter >= inNumSamples)
 	{
+		double grow = unit->mGrowth;
 		nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, inNumSamples);
 		level *= sc_powi(grow, inNumSamples);
 		counter -= inNumSamples;
-	}
-	else
-	{
-		do {
-			if (counter==0) {
-				int nsmps = remain;
-				remain = 0;
-				LOOP(nsmps,
-					ZXP(out) = level;
-					);
-			} else {
-				int nsmps = sc_min(remain, counter);
-				counter -= nsmps;
-				remain -= nsmps;
-				LOOP(nsmps,
-					ZXP(out) = level;
-					level *= grow;
-					);
-				if (counter == 0) {
-					level = unit->mEndLevel;
-					unit->mDone = true;
-					int doneAction = (int)ZIN0(3);
-					DoneAction(doneAction, unit);
-				}
-			}
-		} while (remain);
-	}
+	} else
+		Xline_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
 
 inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	double grow = unit->mGrowth;
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
-
-	int remain = 64;
 
 	if (counter == 0)
 	{
@@ -1777,36 +1746,12 @@ inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 	}
 	if (counter >= 64)
 	{
+		double grow = unit->mGrowth;
 		nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, 64);
 		level *= sc_powi(grow, inNumSamples);
 		counter -= inNumSamples;
-	}
-	else
-	{
-		do {
-			if (counter==0) {
-				int nsmps = remain;
-				remain = 0;
-				LOOP(nsmps,
-					ZXP(out) = level;
-					);
-			} else {
-				int nsmps = sc_min(remain, counter);
-				counter -= nsmps;
-				remain -= nsmps;
-				LOOP(nsmps,
-					ZXP(out) = level;
-					level *= grow;
-					);
-				if (counter == 0) {
-					level = unit->mEndLevel;
-					unit->mDone = true;
-					int doneAction = (int)ZIN0(3);
-					DoneAction(doneAction, unit);
-				}
-			}
-		} while (remain);
-	}
+	} else
+		Xline_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
