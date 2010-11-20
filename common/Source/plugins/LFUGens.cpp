@@ -1830,19 +1830,19 @@ void XLine_Ctor(XLine* unit)
 
 	int counter = (int)(dur * unit->mRate->mSampleRate + .5f);
 
-	if(counter == 0) {
-		ZOUT0(0) = end;
-
-	} else {
-		ZOUT0(0) = start;
-	}
-
-	unit->mCounter = sc_max(1, counter);
-	unit->mGrowth = pow(end / start, 1.0 / unit->mCounter);
-	unit->mLevel = start;
 	unit->mEndLevel = end;
 
-	unit->mLevel *= unit->mGrowth;
+	if (counter == 0) {
+		ZOUT0(0) = end;
+		unit->mLevel = end;
+		unit->mCounter = 0;
+		unit->mGrowth = 0;
+	} else {
+		ZOUT0(0) = start;
+		unit->mCounter = counter;
+		unit->mGrowth = pow(end / start, 1.0 / counter);
+		unit->mLevel = start * unit->mGrowth;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
