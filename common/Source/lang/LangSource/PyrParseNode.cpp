@@ -36,6 +36,7 @@
 #include "PredefinedSymbols.h"
 #include "SimpleStack.h"
 #include "PyrPrimitive.h"
+#include "SC_Win32Utils.h"
 
 AdvancingAllocPool gParseNodePool;
 

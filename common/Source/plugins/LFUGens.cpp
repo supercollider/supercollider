@@ -1685,9 +1685,8 @@ void XLine_next(XLine *unit, int inNumSamples)
 		if (counter==0) {
 			int nsmps = remain;
 			remain = 0;
-			float endlevel = unit->mEndLevel;
 			LOOP(nsmps,
-				ZXP(out) = endlevel;
+				ZXP(out) = level;
 			);
 		} else {
 			int nsmps = sc_min(remain, counter);
@@ -1698,6 +1697,7 @@ void XLine_next(XLine *unit, int inNumSamples)
 				level *= grow;
 			);
 			if (counter == 0) {
+				level = unit->mEndLevel;
 				unit->mDone = true;
 				int doneAction = (int)ZIN0(3);
 				DoneAction(doneAction, unit);
@@ -1736,9 +1736,8 @@ inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 			if (counter==0) {
 				int nsmps = remain;
 				remain = 0;
-				float endlevel = unit->mEndLevel;
 				LOOP(nsmps,
-					ZXP(out) = endlevel;
+					ZXP(out) = level;
 					);
 			} else {
 				int nsmps = sc_min(remain, counter);
@@ -1749,6 +1748,7 @@ inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 					level *= grow;
 					);
 				if (counter == 0) {
+					level = unit->mEndLevel;
 					unit->mDone = true;
 					int doneAction = (int)ZIN0(3);
 					DoneAction(doneAction, unit);
@@ -1787,9 +1787,8 @@ inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 			if (counter==0) {
 				int nsmps = remain;
 				remain = 0;
-				float endlevel = unit->mEndLevel;
 				LOOP(nsmps,
-					ZXP(out) = endlevel;
+					ZXP(out) = level;
 					);
 			} else {
 				int nsmps = sc_min(remain, counter);
@@ -1800,6 +1799,7 @@ inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 					level *= grow;
 					);
 				if (counter == 0) {
+					level = unit->mEndLevel;
 					unit->mDone = true;
 					int doneAction = (int)ZIN0(3);
 					DoneAction(doneAction, unit);
@@ -1829,13 +1829,20 @@ void XLine_Ctor(XLine* unit)
 	double dur = ZIN0(2);
 
 	int counter = (int)(dur * unit->mRate->mSampleRate + .5f);
-	unit->mCounter = sc_max(1, counter);
-	unit->mGrowth = pow(end / start, 1.0 / counter);
-	unit->mLevel = start;
+
 	unit->mEndLevel = end;
 
-	ZOUT0(0) = unit->mLevel;
-	unit->mLevel *= unit->mGrowth;
+	if (counter == 0) {
+		ZOUT0(0) = end;
+		unit->mLevel = end;
+		unit->mCounter = 0;
+		unit->mGrowth = 0;
+	} else {
+		ZOUT0(0) = start;
+		unit->mCounter = counter;
+		unit->mGrowth = pow(end / start, 1.0 / counter);
+		unit->mLevel = start * unit->mGrowth;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

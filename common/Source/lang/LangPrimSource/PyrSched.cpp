@@ -29,18 +29,18 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <math.h>
-#ifdef SC_WIN32
+#include <limits>
 
-#else
+#ifndef SC_WIN32
 #include <sys/time.h>
 #endif
 
-#ifdef SC_WIN32
-typedef __int32 int32_t;
 #include "SC_Win32Utils.h"
-#endif
 
 #define SANITYCHECK 0
+
+
+static const double dInfinity = std::numeric_limits<double>::infinity();
 
 void runAwakeMessage(VMGlobals *g);
 
@@ -264,7 +264,7 @@ void ElapsedTimeToTimespec(double elapsed, struct timespec *spec)
 	int64 oscTime = ElapsedTimeToOSC(elapsed);
 
 	spec->tv_sec = (time_t)((oscTime >> 32) - kSECONDS_FROM_1900_to_1970);
-	spec->tv_nsec = (int32_t)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
+	spec->tv_nsec = (int32)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
 }
 
 int64 OSCTime()
@@ -1119,7 +1119,8 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(b, &delta);
 	if (err) return errNone; // return nil OK, just don't schedule
 	beats += delta;
-	if(beats == INFINITY) return errNone; // return nil OK, just don't schedule
+	if (beats == dInfinity)
+		return errNone; // return nil OK, just don't schedule
 
 	clock->Add(beats, c);
 
@@ -1140,7 +1141,7 @@ int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	double beats;
-	int err = slotDoubleVal(b, &beats) || (beats == INFINITY);
+	int err = slotDoubleVal(b, &beats) || (beats == dInfinity);
 	if (err) return errNone; // return nil OK, just don't schedule
 
 	clock->Add(beats, c);
@@ -1299,7 +1300,7 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(&g->thread->seconds, &seconds);
 	if (err) return errNone; // return nil OK, just don't schedule
 	seconds += delta;
-	if(seconds == INFINITY) return errNone; // return nil OK, just don't schedule
+	if (seconds == dInfinity) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 
 	schedAdd(g, inQueue, seconds, c);
@@ -1315,7 +1316,7 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 
 	double time;
-	int err = slotDoubleVal(b, &time) || (time == INFINITY);
+	int err = slotDoubleVal(b, &time) || (time == dInfinity);
 	if (err) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 
