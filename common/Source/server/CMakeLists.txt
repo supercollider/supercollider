@@ -56,7 +56,6 @@ set(scsynth_sources
     SC_Rate.cpp
     SC_SequencedCommand.cpp
     SC_Str4.cpp
-    SC_SyncCondition.cpp
     SC_Unit.cpp
     SC_UnitDef.cpp
     SC_World.cpp
