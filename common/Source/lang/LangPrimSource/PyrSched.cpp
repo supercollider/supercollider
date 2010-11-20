@@ -31,16 +31,11 @@
 #include <math.h>
 #include <limits>
 
-#ifdef SC_WIN32
-
-#else
+#ifndef SC_WIN32
 #include <sys/time.h>
 #endif
 
-#ifdef SC_WIN32
-typedef __int32 int32_t;
 #include "SC_Win32Utils.h"
-#endif
 
 #define SANITYCHECK 0
 
@@ -269,7 +264,7 @@ void ElapsedTimeToTimespec(double elapsed, struct timespec *spec)
 	int64 oscTime = ElapsedTimeToOSC(elapsed);
 
 	spec->tv_sec = (time_t)((oscTime >> 32) - kSECONDS_FROM_1900_to_1970);
-	spec->tv_nsec = (int32_t)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
+	spec->tv_nsec = (int32)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
 }
 
 int64 OSCTime()
