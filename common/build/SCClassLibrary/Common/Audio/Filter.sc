@@ -176,7 +176,7 @@ Slope : Filter {
 	}
 }
 
-Changed : UGen {
+Changed : Filter {
 		*kr { arg input, threshold = 0;
 			^HPZ1.kr(input).abs > threshold
 		}
