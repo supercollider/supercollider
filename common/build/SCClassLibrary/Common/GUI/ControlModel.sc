@@ -223,10 +223,11 @@ Warp {
 	== { arg that;
 		if(this === that,{ ^true; });
 		if(that.class !== this.class,{ ^false });
-		^spec == that.spec
+		//^spec == that.spec
+		^true
 	}
 	hash {
-		^this.class.hash bitXor: spec.hash
+		^this.class.hash
 	}
 
 }
