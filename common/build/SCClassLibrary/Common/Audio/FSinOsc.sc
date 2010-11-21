@@ -66,13 +66,17 @@ Klank : UGen {
 DynKlank : UGen {
 
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
-		var inputs = [specificationsArrayRef, input, freqscale, freqoffset, decayscale].flop;
-		^inputs.collect { arg item; this.ar1(*item) }.unbubble
+		^this.multiNew(\audio, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
 	}
-
-	*ar1 { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
+	
+	*kr { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
+		^this.multiNew(\control, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
+	}
+	
+	*new1 { arg rate, specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 		var spec = specificationsArrayRef.value;
-		^Ringz.ar(
+		var selector = this.methodSelectorForRate(rate);
+		^Ringz.perform(selector,
 				input,
 				spec[0] ? #[440.0] * freqscale + freqoffset,
 				spec[2] ? #[1.0] * decayscale,
@@ -84,19 +88,24 @@ DynKlank : UGen {
 DynKlang : UGen {
 
 	*ar { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
-		var inputs = [specificationsArrayRef, freqscale, freqoffset].flop;
-		^inputs.collect { arg item; this.ar1(*item) }.unbubble
+		^this.multiNew(\audio, specificationsArrayRef, freqscale, freqoffset);
 	}
 
-	*ar1 { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
+	*kr { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
+		^this.multiNew(\control, specificationsArrayRef, freqscale, freqoffset);
+	}
+	
+	*new1 { arg rate, specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		var spec = specificationsArrayRef.value;
-		^SinOsc.ar(
+		var selector = this.methodSelectorForRate(rate);
+		^SinOsc.perform(selector,
 				spec[0] ? #[440.0] * freqscale + freqoffset,
 				spec[2] ? #[0.0],
 				spec[1] ? #[1.0]
 		).sum
 	}
 }
+
 
 Blip : UGen {
 	*ar { arg freq=440.0, numharm = 200.0, mul = 1.0, add = 0.0;
