@@ -76,7 +76,7 @@ endif()
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	add_definitions(-fno-finite-math-only)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fvisibility-inlines-hidden")
 endif()
 
 foreach(plugin ${plugin_sources})
