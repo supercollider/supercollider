@@ -88,6 +88,10 @@ Collection {
 		this.do {|item2| if (item1 === item2) {^true} };
 		^false
 	}
+	includesEqual { | item1 |
+		this.do {|item2| if (item1 == item2) {^true} };
+		^false
+	}
 	includesAny { | aCollection |
 		aCollection.do { | item | if (this.includes(item)) {^true} };
 		^false
