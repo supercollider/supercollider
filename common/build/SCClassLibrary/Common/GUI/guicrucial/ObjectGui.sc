@@ -45,10 +45,13 @@ ObjectGui : SCViewHolder {
 		// converts the parent to a FlowView or compatible object
 		// thus creating a window from nil if needed
 		// registers to remove self as dependent on model if window closes
+		if(bounds.notNil,{
+			bounds = bounds.asRect;
+		});
 		if(parent.isNil,{
-			parent = FlowView(nil,bounds,windowTitle:title ?? {model.asString.copyRange(0,50)});
+            parent = PageLayout(title ?? {model.asString.copyRange(0,50)},bounds,front:false);
 		},{
-			parent = parent.asFlowView(bounds);
+			parent = parent.asPageLayout(bounds);
 		});
 		// i am not really a view in the hierarchy
 		parent.removeOnClose(this);
