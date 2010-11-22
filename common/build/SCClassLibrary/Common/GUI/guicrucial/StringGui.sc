@@ -35,7 +35,7 @@ StringGui : ObjectGui {
 			.object_(string);
 
 		if(parent.isNil,{ 
-			layout.resizeToFit(); 
+			layout.resizeToFit; 
 			layout.front 
 		});
 	}

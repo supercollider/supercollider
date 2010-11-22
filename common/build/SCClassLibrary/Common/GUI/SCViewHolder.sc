@@ -227,7 +227,7 @@ FlowView : SCViewHolder {
 		});
 		^new
 	}
-	// i've been trying since 2003 to do this
+
 	reflowDeep {
 		this.allChildren.reverseDo({ |view|
 			if(view.isKindOf(FlowView),{
