@@ -402,7 +402,7 @@ if PLATFORM == 'linux':
         lfs_cflags = os.popen("getconf LFS_CFLAGS").read()[:-1]
         for flag in lfs_cflags.split():
             env.Append(CPPDEFINES = flag)
-  
+
 # ======================================================================
 # installation directories
 # ======================================================================
@@ -831,7 +831,6 @@ Source/server/SC_Node.cpp
 Source/server/SC_Rate.cpp
 Source/server/SC_SequencedCommand.cpp
 Source/server/SC_Str4.cpp
-Source/server/SC_SyncCondition.cpp
 Source/server/SC_Unit.cpp
 Source/server/SC_UnitDef.cpp
 Source/server/SC_World.cpp
@@ -959,7 +958,6 @@ if not env['NO_LIBSNDFILE']:  # (libsndfile needed for all of these, so skip if 
             )
 
     diskIOSources = [
-        diskIOEnv.SharedObject('Source/plugins/SC_SyncCondition', 'Source/server/SC_SyncCondition.cpp'),
         'Source/plugins/DiskIO_UGens.cpp']
     merge_lib_info(diskIOEnv, libraries['sndfile'])
     plugins.append(
