@@ -104,3 +104,10 @@ endif()
 if(SC_VIM)
 	add_subdirectory(editors/scvim)
 endif()
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    install(DIRECTORY common/Headers/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
+        PATTERN app* EXCLUDE
+    )
+endif()
