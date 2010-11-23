@@ -791,7 +791,7 @@ ScDocRenderer {
     renderHTML {|filename, folder="."|
         var f,x,name;
 
-        ("mkdir -p"+filename.dirname).systemCmd;
+        ("mkdir -p"+filename.dirname.escapeChar($ )).systemCmd;
                 
         f = File.open(filename, "w");
         x = parser.findNode(\class);
@@ -1015,7 +1015,7 @@ ScDoc {
 //            PathName(folder).makeDir;
             //FIXME: if source is newer than target:
             if(ext == ".schelp", {
-                if(force or: (("test"+source+"-ot"+target).systemCmd!=0), { //update only if needed
+                if(force or: (("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0), { //update only if needed
                     ("Rendering" + source + "to" + target).postln;
                     r.parser = p.parseFile(source);
                     this.addToCategoryMap(p,subtarget); //we need to parse it to get the categories and stuff..
@@ -1023,8 +1023,8 @@ ScDoc {
                 });
             }, {
                 ("Copying" + source + "to" + folder).postln;
-                ("mkdir -p"+folder).systemCmd;
-                ("cp" + source + folder).systemCmd;
+                ("mkdir -p"+folder.escapeChar($ )).systemCmd;
+                ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
             });
         };
         this.writeCategoryMap;
