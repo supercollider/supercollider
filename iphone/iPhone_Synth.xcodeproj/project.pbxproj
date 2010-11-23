@@ -62,7 +62,6 @@
 		775D93F20F509D2F00112D87 /* SC_SequencedCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A190EABE96E00732A1C /* SC_SequencedCommand.cpp */; };
 		775D93F30F509D2F00112D87 /* SC_Rate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A180EABE96E00732A1C /* SC_Rate.cpp */; };
 		775D93F40F509D2F00112D87 /* SC_Str4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1A0EABE96E00732A1C /* SC_Str4.cpp */; };
-		775D93F50F509D2F00112D87 /* SC_SyncCondition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1B0EABE96E00732A1C /* SC_SyncCondition.cpp */; };
 		775D93F60F509D2F00112D87 /* SC_Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1C0EABE96E00732A1C /* SC_Unit.cpp */; };
 		775D93F70F509D2F00112D87 /* SC_UnitDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1D0EABE96E00732A1C /* SC_UnitDef.cpp */; };
 		775D93F80F509D2F00112D87 /* SC_World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1E0EABE96E00732A1C /* SC_World.cpp */; };
@@ -89,9 +88,7 @@
 		77724C6B0EABF92400732A1C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77724C6A0EABF92400732A1C /* AudioToolbox.framework */; };
 		77724C6D0EABF92400732A1C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77724C6C0EABF92400732A1C /* CoreAudio.framework */; };
 		778F12530F50A72900CB6629 /* synthdefs in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12510F50A72900CB6629 /* synthdefs */; };
-		77A489380FBFA8DA00E909E1 /* SuperCollider_Browser.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77A489360FBFA8DA00E909E1 /* SuperCollider_Browser.xib */; };
 		77A489390FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */; };
-		77A489510FBFA99700E909E1 /* DirBrowserView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 77A489500FBFA99700E909E1 /* DirBrowserView.mm */; };
 		77A4896A0FBFAA1000E909E1 /* iscsynth_MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */; };
 		77AA93A40EB368B700DC0BCB /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249810EABE96E00732A1C /* SC_AllocPool.cpp */; };
 		77AA93A50EB368B700DC0BCB /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249820EABE96E00732A1C /* SC_DirUtils.cpp */; };
@@ -119,7 +116,6 @@
 		77AA93BD0EB368B700DC0BCB /* SC_SequencedCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A190EABE96E00732A1C /* SC_SequencedCommand.cpp */; };
 		77AA93BE0EB368B700DC0BCB /* SC_Rate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A180EABE96E00732A1C /* SC_Rate.cpp */; };
 		77AA93BF0EB368B700DC0BCB /* SC_Str4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1A0EABE96E00732A1C /* SC_Str4.cpp */; };
-		77AA93C00EB368B700DC0BCB /* SC_SyncCondition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1B0EABE96E00732A1C /* SC_SyncCondition.cpp */; };
 		77AA93C10EB368B700DC0BCB /* SC_Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1C0EABE96E00732A1C /* SC_Unit.cpp */; };
 		77AA93C20EB368B700DC0BCB /* SC_UnitDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1D0EABE96E00732A1C /* SC_UnitDef.cpp */; };
 		77AA93C30EB368B700DC0BCB /* SC_World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77724A1E0EABE96E00732A1C /* SC_World.cpp */; };
@@ -128,6 +124,7 @@
 		77AA94C60EB3692900DC0BCB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
 		77AA94C70EB3692900DC0BCB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77724C6A0EABF92400732A1C /* AudioToolbox.framework */; };
 		77AA94C80EB3692900DC0BCB /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77724C6C0EABF92400732A1C /* CoreAudio.framework */; };
+		77BA5027129C364A00CE89DD /* FileBrowserViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 77BA5026129C364A00CE89DD /* FileBrowserViewController.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -252,7 +249,6 @@
 		7751B8650F43603A0044CAC0 /* UnaryOpUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnaryOpUGens.cpp; sourceTree = "<group>"; };
 		7751B8660F43603A0044CAC0 /* UnpackFFTUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnpackFFTUGens.cpp; sourceTree = "<group>"; };
 		7755359A111C959D00534FFB /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = ../mac/lib/scUBlibsndfile.a; sourceTree = "<group>"; };
-		775D94270F509DBE00112D87 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = xtralibs/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		7772497F0EABE96E00732A1C /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fftlib.c; sourceTree = "<group>"; };
 		777249810EABE96E00732A1C /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
 		777249820EABE96E00732A1C /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
@@ -281,7 +277,6 @@
 		77724A180EABE96E00732A1C /* SC_Rate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Rate.cpp; sourceTree = "<group>"; };
 		77724A190EABE96E00732A1C /* SC_SequencedCommand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_SequencedCommand.cpp; sourceTree = "<group>"; };
 		77724A1A0EABE96E00732A1C /* SC_Str4.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Str4.cpp; sourceTree = "<group>"; };
-		77724A1B0EABE96E00732A1C /* SC_SyncCondition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_SyncCondition.cpp; sourceTree = "<group>"; };
 		77724A1C0EABE96E00732A1C /* SC_Unit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_Unit.cpp; sourceTree = "<group>"; };
 		77724A1D0EABE96E00732A1C /* SC_UnitDef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_UnitDef.cpp; sourceTree = "<group>"; };
 		77724A1E0EABE96E00732A1C /* SC_World.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_World.cpp; sourceTree = "<group>"; };
@@ -328,23 +323,6 @@
 		77724A750EABEA3B00732A1C /* SC_StringParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringParser.h; sourceTree = "<group>"; };
 		77724A760EABEA3B00732A1C /* SC_Win32Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Win32Utils.h; sourceTree = "<group>"; };
 		77724A770EABEA3B00732A1C /* scsynthsend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scsynthsend.h; sourceTree = "<group>"; };
-		77724A790EABEA3B00732A1C /* LICENSE.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = LICENSE.html; sourceTree = "<group>"; };
-		77724A7B0EABEA3B00732A1C /* parseerr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parseerr.h; sourceTree = "<group>"; };
-		77724A7C0EABEA3B00732A1C /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
-		77724A7D0EABEA3B00732A1C /* putil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = putil.h; sourceTree = "<group>"; };
-		77724A7E0EABEA3B00732A1C /* uconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uconfig.h; sourceTree = "<group>"; };
-		77724A7F0EABEA3B00732A1C /* udraft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = udraft.h; sourceTree = "<group>"; };
-		77724A800EABEA3B00732A1C /* uiter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uiter.h; sourceTree = "<group>"; };
-		77724A810EABEA3B00732A1C /* umachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = umachine.h; sourceTree = "<group>"; };
-		77724A820EABEA3B00732A1C /* uregex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uregex.h; sourceTree = "<group>"; };
-		77724A830EABEA3B00732A1C /* urename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = urename.h; sourceTree = "<group>"; };
-		77724A840EABEA3B00732A1C /* ustring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ustring.h; sourceTree = "<group>"; };
-		77724A850EABEA3B00732A1C /* utf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf.h; sourceTree = "<group>"; };
-		77724A860EABEA3B00732A1C /* utf16.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf16.h; sourceTree = "<group>"; };
-		77724A870EABEA3B00732A1C /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
-		77724A880EABEA3B00732A1C /* utf_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf_old.h; sourceTree = "<group>"; };
-		77724A890EABEA3B00732A1C /* utypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utypes.h; sourceTree = "<group>"; };
-		77724A8A0EABEA3B00732A1C /* uversion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uversion.h; sourceTree = "<group>"; };
 		77724AC30EABEA3B00732A1C /* clz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
 		77724AC40EABEA3B00732A1C /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
 		77724AC50EABEA3B00732A1C /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
@@ -400,13 +378,14 @@
 		778F12440F50A70400CB6629 /* iscsynth.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = iscsynth.plist; path = "iPhone Resources/iscsynth.plist"; sourceTree = "<group>"; };
 		778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = iscsynth_MainWindow.xib; path = "iPhone Resources/iscsynth_MainWindow.xib"; sourceTree = "<group>"; };
 		778F12510F50A72900CB6629 /* synthdefs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = synthdefs; path = "iPhone Resources/synthdefs"; sourceTree = "<group>"; };
-		778F12670F50A85200CB6629 /* DirBrowserView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DirBrowserView.h; sourceTree = "<group>"; };
 		778F126B0F50A87300CB6629 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = lib/libsndfile_iphone.a; sourceTree = "<group>"; };
 		778F5F4C0ECB9D9200822AF1 /* iPhoneUGens.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneUGens.mm; sourceTree = "<group>"; };
-		77A489360FBFA8DA00E909E1 /* SuperCollider_Browser.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_Browser.xib; path = "iPhone Resources/SuperCollider_Browser.xib"; sourceTree = "<group>"; };
 		77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
-		77A489500FBFA99700E909E1 /* DirBrowserView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DirBrowserView.mm; sourceTree = "<group>"; };
 		77AA93920EB3685400DC0BCB /* libscsynth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libscsynth.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		77BA5025129C364A00CE89DD /* FileBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileBrowserViewController.h; sourceTree = "<group>"; };
+		77BA5026129C364A00CE89DD /* FileBrowserViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileBrowserViewController.mm; sourceTree = "<group>"; };
+		77BA5037129C369300CE89DD /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_SyncCondition.h; sourceTree = "<group>"; };
+		77BA5364129C37A300CE89DD /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = ../common/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -464,7 +443,6 @@
 			children = (
 				778F12440F50A70400CB6629 /* iscsynth.plist */,
 				778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */,
-				77A489360FBFA8DA00E909E1 /* SuperCollider_Browser.xib */,
 				77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */,
 				778F12510F50A72900CB6629 /* synthdefs */,
 			);
@@ -661,7 +639,6 @@
 				77724A180EABE96E00732A1C /* SC_Rate.cpp */,
 				77724A190EABE96E00732A1C /* SC_SequencedCommand.cpp */,
 				77724A1A0EABE96E00732A1C /* SC_Str4.cpp */,
-				77724A1B0EABE96E00732A1C /* SC_SyncCondition.cpp */,
 				77724A1C0EABE96E00732A1C /* SC_Unit.cpp */,
 				77724A1D0EABE96E00732A1C /* SC_UnitDef.cpp */,
 				77724A1E0EABE96E00732A1C /* SC_World.cpp */,
@@ -673,10 +650,9 @@
 		77724A490EABEA3B00732A1C /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				775D94270F509DBE00112D87 /* sndfile.h */,
+				77BA5364129C37A300CE89DD /* sndfile.h */,
 				77724A4A0EABEA3B00732A1C /* app */,
 				77724A680EABEA3B00732A1C /* common */,
-				77724A780EABEA3B00732A1C /* icu */,
 				77724AC20EABEA3B00732A1C /* plugin_interface */,
 				77724ADB0EABEA3B00732A1C /* server */,
 			);
@@ -750,44 +726,12 @@
 				77724A730EABEA3B00732A1C /* SC_StandAloneInfo_Darwin.h */,
 				77724A740EABEA3B00732A1C /* SC_StringBuffer.h */,
 				77724A750EABEA3B00732A1C /* SC_StringParser.h */,
+				77BA5037129C369300CE89DD /* SC_SyncCondition.h */,
 				7713C8120F42370D00B0055E /* SC_VFP11.h */,
 				77724A760EABEA3B00732A1C /* SC_Win32Utils.h */,
 				77724A770EABEA3B00732A1C /* scsynthsend.h */,
 			);
 			path = common;
-			sourceTree = "<group>";
-		};
-		77724A780EABEA3B00732A1C /* icu */ = {
-			isa = PBXGroup;
-			children = (
-				77724A790EABEA3B00732A1C /* LICENSE.html */,
-				77724A7A0EABEA3B00732A1C /* unicode */,
-			);
-			name = icu;
-			path = ../xtralibs/include/icu;
-			sourceTree = "<group>";
-		};
-		77724A7A0EABEA3B00732A1C /* unicode */ = {
-			isa = PBXGroup;
-			children = (
-				77724A7B0EABEA3B00732A1C /* parseerr.h */,
-				77724A7C0EABEA3B00732A1C /* platform.h */,
-				77724A7D0EABEA3B00732A1C /* putil.h */,
-				77724A7E0EABEA3B00732A1C /* uconfig.h */,
-				77724A7F0EABEA3B00732A1C /* udraft.h */,
-				77724A800EABEA3B00732A1C /* uiter.h */,
-				77724A810EABEA3B00732A1C /* umachine.h */,
-				77724A820EABEA3B00732A1C /* uregex.h */,
-				77724A830EABEA3B00732A1C /* urename.h */,
-				77724A840EABEA3B00732A1C /* ustring.h */,
-				77724A850EABEA3B00732A1C /* utf.h */,
-				77724A860EABEA3B00732A1C /* utf16.h */,
-				77724A870EABEA3B00732A1C /* utf8.h */,
-				77724A880EABEA3B00732A1C /* utf_old.h */,
-				77724A890EABEA3B00732A1C /* utypes.h */,
-				77724A8A0EABEA3B00732A1C /* uversion.h */,
-			);
-			path = unicode;
 			sourceTree = "<group>";
 		};
 		77724AC20EABEA3B00732A1C /* plugin_interface */ = {
@@ -857,8 +801,8 @@
 		778F12660F50A85200CB6629 /* iPhone */ = {
 			isa = PBXGroup;
 			children = (
-				778F12670F50A85200CB6629 /* DirBrowserView.h */,
-				77A489500FBFA99700E909E1 /* DirBrowserView.mm */,
+				77BA5025129C364A00CE89DD /* FileBrowserViewController.h */,
+				77BA5026129C364A00CE89DD /* FileBrowserViewController.mm */,
 			);
 			path = iPhone;
 			sourceTree = "<group>";
@@ -941,7 +885,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				77A489380FBFA8DA00E909E1 /* SuperCollider_Browser.xib in Resources */,
 				77A489390FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib in Resources */,
 				77A4896A0FBFAA1000E909E1 /* iscsynth_MainWindow.xib in Resources */,
 			);
@@ -980,7 +923,6 @@
 				775D93F20F509D2F00112D87 /* SC_SequencedCommand.cpp in Sources */,
 				775D93F30F509D2F00112D87 /* SC_Rate.cpp in Sources */,
 				775D93F40F509D2F00112D87 /* SC_Str4.cpp in Sources */,
-				775D93F50F509D2F00112D87 /* SC_SyncCondition.cpp in Sources */,
 				775D93F60F509D2F00112D87 /* SC_Unit.cpp in Sources */,
 				775D93F70F509D2F00112D87 /* SC_UnitDef.cpp in Sources */,
 				775D93F80F509D2F00112D87 /* SC_World.cpp in Sources */,
@@ -1007,8 +949,8 @@
 				770903C60F50A468005C05DC /* iscsynthAppDelegate.m in Sources */,
 				770903C70F50A468005C05DC /* iSCSynthController.mm in Sources */,
 				770903C80F50A468005C05DC /* iscsynthmain.m in Sources */,
-				77A489510FBFA99700E909E1 /* DirBrowserView.mm in Sources */,
 				7742A4B60FEA960D00AE1A03 /* GendynUGens.cpp in Sources */,
+				77BA5027129C364A00CE89DD /* FileBrowserViewController.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1042,7 +984,6 @@
 				77AA93BD0EB368B700DC0BCB /* SC_SequencedCommand.cpp in Sources */,
 				77AA93BE0EB368B700DC0BCB /* SC_Rate.cpp in Sources */,
 				77AA93BF0EB368B700DC0BCB /* SC_Str4.cpp in Sources */,
-				77AA93C00EB368B700DC0BCB /* SC_SyncCondition.cpp in Sources */,
 				77AA93C10EB368B700DC0BCB /* SC_Unit.cpp in Sources */,
 				77AA93C20EB368B700DC0BCB /* SC_UnitDef.cpp in Sources */,
 				77AA93C30EB368B700DC0BCB /* SC_World.cpp in Sources */,
