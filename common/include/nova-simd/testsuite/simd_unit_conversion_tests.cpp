@@ -25,7 +25,7 @@ void test_##name(void)                                                  \
     name##_vec_simd(sseval.c_array(), args0.c_array(), size);           \
                                                                         \
     for (int i = 0; i != size; ++i) {                                   \
-        BOOST_CHECK_CLOSE( sseval[i], generic[i], 0.0002 );             \
+        BOOST_CHECK_CLOSE( sseval[i], generic[i], 0.001 );              \
     }                                                                   \
 }                                                                       \
                                                                         \
