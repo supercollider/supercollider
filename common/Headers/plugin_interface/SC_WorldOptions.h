@@ -23,24 +23,25 @@
 #define _SC_WorldOptions_
 
 #include <stdarg.h>
-#include "SC_Types.h"
+#include <inttypes.h>
+#include "SC_Reply.h"
 
 typedef int (*PrintFunc)(const char *format, va_list ap);
 
 struct WorldOptions
 {
 	const char* mPassword;
-	uint32 mNumBuffers;
-	uint32 mMaxLogins;
-	uint32 mMaxNodes;
-	uint32 mMaxGraphDefs;
-	uint32 mMaxWireBufs;
-	uint32 mNumAudioBusChannels;
-	uint32 mNumInputBusChannels;
-	uint32 mNumOutputBusChannels;
-	uint32 mNumControlBusChannels;
-	uint32 mBufLength;
-	uint32 mRealTimeMemorySize;
+	uint32_t mNumBuffers;
+	uint32_t mMaxLogins;
+	uint32_t mMaxNodes;
+	uint32_t mMaxGraphDefs;
+	uint32_t mMaxWireBufs;
+	uint32_t mNumAudioBusChannels;
+	uint32_t mNumInputBusChannels;
+	uint32_t mNumOutputBusChannels;
+	uint32_t mNumControlBusChannels;
+	uint32_t mBufLength;
+	uint32_t mRealTimeMemorySize;
 
 	int mNumSharedControls;
 	float *mSharedControls;
@@ -54,12 +55,12 @@ struct WorldOptions
 	const char *mNonRealTimeOutputHeaderFormat;
 	const char *mNonRealTimeOutputSampleFormat;
 
-	uint32 mPreferredSampleRate;
-	uint32 mNumRGens;
+	uint32_t mPreferredSampleRate;
+	uint32_t mNumRGens;
 
-	uint32 mPreferredHardwareBufferFrameSize;
+	uint32_t mPreferredHardwareBufferFrameSize;
 
-	uint32 mLoadGraphDefs;
+	uint32_t mLoadGraphDefs;
 
 	const char *mInputStreamsEnabled;
 	const char *mOutputStreamsEnabled;
@@ -93,8 +94,6 @@ const WorldOptions kDefaultWorldOptions =
 	,0
 };
 
-#include "SC_Reply.h"
-
 #ifdef _WIN32
 # define SC_DLLEXPORT __declspec(dllexport)
 #else
@@ -111,7 +110,7 @@ extern "C" {
 	SC_DLLEXPORT void World_WaitForQuit(struct World *inWorld);
 	SC_DLLEXPORT bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 	SC_DLLEXPORT bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);
-	SC_DLLEXPORT int World_CopySndBuf(World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
+	SC_DLLEXPORT int World_CopySndBuf(World *world, uint32_t index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
 	SC_DLLEXPORT int scprintf(const char *fmt, ...);
 }
 
