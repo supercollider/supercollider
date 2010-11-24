@@ -25,10 +25,6 @@
 #include <stdarg.h>
 #include "SC_Types.h"
 
-#ifdef __APPLE__
-#include <CoreFoundation/CFString.h>
-#endif
-
 typedef int (*PrintFunc)(const char *format, va_list ap);
 
 struct WorldOptions
@@ -65,12 +61,8 @@ struct WorldOptions
 
 	uint32 mLoadGraphDefs;
 
-#ifdef __APPLE__
 	const char *mInputStreamsEnabled;
 	const char *mOutputStreamsEnabled;
-	CFStringRef mServerPortName;
-	CFStringRef mReplyPortName;
-#endif
 	const char *mInDeviceName;
 
 	int mVerbosity;
@@ -86,17 +78,14 @@ struct WorldOptions
 
 const WorldOptions kDefaultWorldOptions =
 {
-	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0, 0,0,0,0,0,
+	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0, 0,0,0,0,0
 #if defined(_WIN32)
-	44100,
+	,44100
 #else
-	0,
-#endif
-	64, 0, 1
-#ifdef __APPLE__
-	,0,0,CFSTR("com.audiosynth.scsynth"),NULL
-#endif
 	,0
+#endif
+	,64, 0, 1
+	,0, 0, 0
 	,0
 	,1
 	,0
@@ -119,9 +108,6 @@ extern "C" {
 	SC_DLLEXPORT void World_NonRealTimeSynthesis(struct World *inWorld, WorldOptions *inOptions);
 	SC_DLLEXPORT int World_OpenUDP(struct World *inWorld, int inPort);
 	SC_DLLEXPORT int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
-#ifdef __APPLE__
-	SC_DLLEXPORT void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName);
-#endif
 	SC_DLLEXPORT void World_WaitForQuit(struct World *inWorld);
 	SC_DLLEXPORT bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 	SC_DLLEXPORT bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);

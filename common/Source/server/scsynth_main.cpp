@@ -236,7 +236,7 @@ int main(int argc, char* argv[])
 #endif
 // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
 				checkNumArgs(7);
-                                options.mRealTime = false;
+				options.mRealTime = false;
 				options.mNonRealTimeCmdFilename    = strcmp(argv[j+1], "_") ? argv[j+1] : 0;
 				options.mNonRealTimeInputFilename  = strcmp(argv[j+2], "_") ? argv[j+2] : 0;
 				options.mNonRealTimeOutputFilename = argv[j+3];
@@ -254,11 +254,6 @@ int main(int argc, char* argv[])
 				options.mOutputStreamsEnabled = argv[j+1];
 				break;
             case 'M':
-// -M serverPortName replyPortName
-                checkNumArgs(3);
-                options.mServerPortName = CFStringCreateWithCStringNoCopy(NULL, argv[j + 1], kCFStringEncodingUTF8, kCFAllocatorNull);
-                options.mReplyPortName = CFStringCreateWithCStringNoCopy(NULL, argv[j + 2], kCFStringEncodingUTF8, kCFAllocatorNull);
-                break;
 #endif
 			case 'H' :
 				checkNumArgs(2);
@@ -346,10 +341,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-#ifdef __APPLE__
-    //World_OpenMachPorts(world, options.mServerPortName, options.mReplyPortName);
-#endif
-
 	if(options.mVerbosity >=0){
 #ifdef NDEBUG
 		scprintf("SuperCollider 3 server ready.\n");
@@ -369,8 +360,8 @@ int main(int argc, char* argv[])
 #ifdef SC_WIN32_STATIC_PTHREADS
     // clean up statically linked pthreads
     pthread_win32_process_detach_np();
-#endif
-#endif
+#endif // SC_WIN32_STATIC_PTHREADS
+#endif // _WIN32
 
 	return 0;
 }
