@@ -103,7 +103,7 @@ struct amp2db
 {
     always_inline FloatType operator()(const FloatType & amp) const
     {
-        return log10_<FloatType>()(fabs_<FloatType>()(amp) * FloatType(20.));
+        return log10_<FloatType>()(fabs_<FloatType>()(amp)) * FloatType(20.);
     }
 };
 

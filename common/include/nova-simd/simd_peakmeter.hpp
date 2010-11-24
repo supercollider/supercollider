@@ -52,7 +52,7 @@ F peak_vec(const F * in, F * peak, unsigned int n)
 }
 
 template <typename F>
-inline float peak_vec_simd(const F * in, F * peak, unsigned int n)
+inline F peak_vec_simd(const F * in, F * peak, unsigned int n)
 {
     vec<F> maximum, abs3;
     maximum.load_first(peak);
