@@ -60,6 +60,7 @@ test_ugen_generator_equivalences {
 	 "DC equivalence" -> {DC.ar(2) - K2A.ar(DC.kr(1)) - 1 },
 	 "sum and rescale ar signal is identity" -> {n=WhiteNoise.ar; [n, n].sum.madd(0.5, 0) - n },
 	 "sum and rescale kr signal is identity" -> {n=WhiteNoise.kr; [n, n].sum.madd(0.5, 0) - n },
+	
 
 	 //////////////////////////////////////////
 	 // Panners (linear panners easy to verify - sum should recover original):
@@ -194,6 +195,42 @@ test_ugen_generator_equivalences {
 
 	];
 	var testsIncomplete = tests.size;
+	
+	 
+	 //////////////////////////////////////////
+	 // reversible unary ops:
+	 
+	 [
+	 	
+	 	[\reciprocal, \reciprocal],
+	 	[\squared, \sqrt],
+	 	[\cubed, { |x| x ** (1/3) }],
+	 	[\exp, \log],
+	 	[\midicps, \cpsmidi],
+	 	[\midiratio, \ratiomidi],
+	 	[\dbamp, \ampdb],
+	 	[\octcps, \cpsoct],
+	 	[\sin, \asin],
+	 	[\cos, \acos],
+	 	[\tan, \atan]	 		 	
+	 ].do { |selectors|
+		 [selectors, selectors.reverse].do { |pair|
+			tests = tests.add(
+				 "x == %(%(x)) [control rate]".format(*pair) -> { 
+					 			var n = WhiteNoise.kr.range(0.3, 0.9);
+					 			n - pair[1].applyTo(pair[0].applyTo(n)) 
+				}
+			);
+			tests = tests.add(
+				 "x == %(%(x)) [audio rate]".format(*pair) -> { 
+					 			var n = WhiteNoise.ar.range(0.3, 0.9);
+					 			n - pair[1].applyTo(pair[0].applyTo(n)) 
+				}
+			)
+		 }
+	 };
+	
+	
 	this.bootServer;
 	tests.keysValuesDo{|name, func| 
 		func.loadToFloatArray(1, Server.default, { |data|
