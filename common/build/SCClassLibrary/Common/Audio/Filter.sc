@@ -176,6 +176,15 @@ Slope : Filter {
 	}
 }
 
+Changed : Filter {
+		*kr { arg input, threshold = 0;
+			^HPZ1.kr(input).abs > threshold
+		}
+		*ar { arg input, threshold = 0;
+			^HPZ1.ar(input).abs > threshold
+		}
+}
+
 LPZ2 : Filter {
 
 	*ar { arg in = 0.0, mul = 1.0, add = 0.0;

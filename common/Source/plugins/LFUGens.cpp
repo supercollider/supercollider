@@ -1369,24 +1369,20 @@ void T2K_Ctor(T2K* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+static inline void T2A_write_trigger(T2A * unit, float level)
+{
+	float *out = OUT(0);
+	int offset = (int) IN0(1);
+	out[offset] = level;
+}
+
 void T2A_next(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
-	int offset = (int) IN0(1);
-	float *out = ZOUT(0);
 
-
-	if((unit->mLevel <= 0.f && level > 0.f)) {
-		for(int i = 0; i < inNumSamples; i++) {
-			if(i == offset) {
-				ZXP(out) = level;
-			} else {
-				ZXP(out) = 0.f;
-			}
-		}
-	} else {
-		LOOP1(inNumSamples, ZXP(out) = 0.f;)
-	}
+	ZClear(inNumSamples, ZOUT(0));
+	if((unit->mLevel <= 0.f && level > 0.f))
+		T2A_write_trigger(unit, level);
 
 	unit->mLevel = level;
 }
@@ -1395,18 +1391,10 @@ void T2A_next(T2A *unit, int inNumSamples)
 inline_functions void T2A_next_nova(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
-	int offset = (int) IN0(1);
 
-	if((unit->mLevel <= 0.f && level > 0.f)) {
-		float *out = ZOUT(0);
-		for(int i = 0; i < inNumSamples; i++) {
-			if(i == offset)
-				ZXP(out) = level;
-			else
-				ZXP(out) = 0.f;
-		}
-	} else
-		nova::zerovec_simd(OUT(0), inNumSamples);
+	nova::zerovec_simd(OUT(0), inNumSamples);
+	if((unit->mLevel <= 0.f && level > 0.f))
+		T2A_write_trigger(unit, level);
 
 	unit->mLevel = level;
 }
@@ -1414,18 +1402,10 @@ inline_functions void T2A_next_nova(T2A *unit, int inNumSamples)
 inline_functions void T2A_next_nova_64(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
-	int offset = (int) IN0(1);
 
-	if((unit->mLevel <= 0.f && level > 0.f)) {
-		float *out = ZOUT(0);
-		for(int i = 0; i < inNumSamples; i++) {
-			if(i == offset)
-				ZXP(out) = level;
-			else
-				ZXP(out) = 0.f;
-		}
-	} else
-		nova::zerovec_simd<64>(OUT(0));
+	nova::zerovec_simd<64>(OUT(0));
+	if((unit->mLevel <= 0.f && level > 0.f))
+		T2A_write_trigger(unit, level);
 
 	unit->mLevel = level;
 }
@@ -1502,15 +1482,11 @@ void Silent_Ctor(Unit* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Line_next(Line *unit, int inNumSamples)
+static inline void Line_next_loop(Line * unit, int & counter, int remain, double & level)
 {
 	float *out = ZOUT(0);
-
 	double slope = unit->mSlope;
-	double level = unit->mLevel;
-	int counter = unit->mCounter;
 
-	int remain = inNumSamples;
 	do {
 		if (counter==0) {
 			int nsmps = remain;
@@ -1534,20 +1510,25 @@ void Line_next(Line *unit, int inNumSamples)
 			}
 		}
 	} while (remain);
+
+}
+
+
+void Line_next(Line *unit, int inNumSamples)
+{
+	double level = unit->mLevel;
+	int counter = unit->mCounter;
+	Line_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
 
 #ifdef NOVA_SIMD
-void Line_next_nova(Line *unit, int inNumSamples)
+inline_functions void Line_next_nova(Line *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	double slope = unit->mSlope;
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
 
-	int remain = inNumSamples;
 	if (counter == 0)
 	{
 		nova::setvec_simd(OUT(0), unit->mEndLevel, inNumSamples);
@@ -1556,48 +1537,22 @@ void Line_next_nova(Line *unit, int inNumSamples)
 
 	if (counter > inNumSamples)
 	{
+		double slope = unit->mSlope;
 		nova::set_slope_vec_simd(OUT(0), (float)level, (float)slope, inNumSamples);
 		unit->mLevel = level + inNumSamples * slope;
 		unit->mCounter = counter - inNumSamples;
 		return;
 	}
-
-	do {
-		if (counter==0) {
-			int nsmps = remain;
-			remain = 0;
-			float endlevel = unit->mEndLevel;
-			LOOP(nsmps,
-				ZXP(out) = endlevel;
-			);
-		} else {
-			int nsmps = sc_min(remain, counter);
-			counter -= nsmps;
-			remain -= nsmps;
-			LOOP(nsmps,
-				ZXP(out) = level;
-				level += slope;
-			);
-			if (counter == 0) {
-				unit->mDone = true;
-				int doneAction = (int)ZIN0(3);
-				DoneAction(doneAction, unit);
-			}
-		}
-	} while (remain);
+	Line_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
 
-void Line_next_nova_64(Line *unit, int inNumSamples)
+inline_functions void Line_next_nova_64(Line *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	double slope = unit->mSlope;
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
 
-	int remain = 64;
 	if (counter == 0)
 	{
 		nova::setvec_simd<64>(OUT(0), unit->mEndLevel);
@@ -1606,35 +1561,14 @@ void Line_next_nova_64(Line *unit, int inNumSamples)
 
 	if (counter > inNumSamples)
 	{
+		double slope = unit->mSlope;
 		nova::set_slope_vec_simd(OUT(0), (float)level, (float)slope, 64);
 		unit->mLevel = level + inNumSamples * slope;
 		unit->mCounter = counter - inNumSamples;
 		return;
 	}
 
-	do {
-		if (counter==0) {
-			int nsmps = remain;
-			remain = 0;
-			float endlevel = unit->mEndLevel;
-			LOOP(nsmps,
-				ZXP(out) = endlevel;
-			);
-		} else {
-			int nsmps = sc_min(remain, counter);
-			counter -= nsmps;
-			remain -= nsmps;
-			LOOP(nsmps,
-				ZXP(out) = level;
-				level += slope;
-			);
-			if (counter == 0) {
-				unit->mDone = true;
-				int doneAction = (int)ZIN0(3);
-				DoneAction(doneAction, unit);
-			}
-		}
-	} while (remain);
+	Line_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
@@ -1663,24 +1597,19 @@ void Line_Ctor(Line* unit)
 	} else {
 		unit->mLevel = start;
 		unit->mSlope = (end - start) / unit->mCounter;
+		unit->mLevel += unit->mSlope;
 	}
 	unit->mEndLevel = end;
 	ZOUT0(0) = unit->mLevel;
-	unit->mLevel += unit->mSlope;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-void XLine_next(XLine *unit, int inNumSamples)
+static inline void Xline_next_loop(XLine * unit, int & counter, int remain, double & level)
 {
 	float *out = ZOUT(0);
-
 	double grow = unit->mGrowth;
-	double level = unit->mLevel;
-	int counter = unit->mCounter;
 
-	int remain = inNumSamples;
 	do {
 		if (counter==0) {
 			int nsmps = remain;
@@ -1704,6 +1633,14 @@ void XLine_next(XLine *unit, int inNumSamples)
 			}
 		}
 	} while (remain);
+}
+
+void XLine_next(XLine *unit, int inNumSamples)
+{
+	double level = unit->mLevel;
+	int counter = unit->mCounter;
+
+	Xline_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
@@ -1711,13 +1648,8 @@ void XLine_next(XLine *unit, int inNumSamples)
 #ifdef NOVA_SIMD
 inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	double grow = unit->mGrowth;
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
-
-	int remain = inNumSamples;
 
 	if (counter == 0)
 	{
@@ -1726,49 +1658,20 @@ inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 	}
 	if (counter >= inNumSamples)
 	{
+		double grow = unit->mGrowth;
 		nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, inNumSamples);
 		level *= sc_powi(grow, inNumSamples);
 		counter -= inNumSamples;
-	}
-	else
-	{
-		do {
-			if (counter==0) {
-				int nsmps = remain;
-				remain = 0;
-				LOOP(nsmps,
-					ZXP(out) = level;
-					);
-			} else {
-				int nsmps = sc_min(remain, counter);
-				counter -= nsmps;
-				remain -= nsmps;
-				LOOP(nsmps,
-					ZXP(out) = level;
-					level *= grow;
-					);
-				if (counter == 0) {
-					level = unit->mEndLevel;
-					unit->mDone = true;
-					int doneAction = (int)ZIN0(3);
-					DoneAction(doneAction, unit);
-				}
-			}
-		} while (remain);
-	}
+	} else
+		Xline_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
 
 inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-
-	double grow = unit->mGrowth;
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
-
-	int remain = 64;
 
 	if (counter == 0)
 	{
@@ -1777,36 +1680,12 @@ inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 	}
 	if (counter >= 64)
 	{
+		double grow = unit->mGrowth;
 		nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, 64);
 		level *= sc_powi(grow, inNumSamples);
 		counter -= inNumSamples;
-	}
-	else
-	{
-		do {
-			if (counter==0) {
-				int nsmps = remain;
-				remain = 0;
-				LOOP(nsmps,
-					ZXP(out) = level;
-					);
-			} else {
-				int nsmps = sc_min(remain, counter);
-				counter -= nsmps;
-				remain -= nsmps;
-				LOOP(nsmps,
-					ZXP(out) = level;
-					level *= grow;
-					);
-				if (counter == 0) {
-					level = unit->mEndLevel;
-					unit->mDone = true;
-					int doneAction = (int)ZIN0(3);
-					DoneAction(doneAction, unit);
-				}
-			}
-		} while (remain);
-	}
+	} else
+		Xline_next_loop(unit, counter, inNumSamples, level);
 	unit->mCounter = counter;
 	unit->mLevel = level;
 }
