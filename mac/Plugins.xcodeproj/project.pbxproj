@@ -86,7 +86,6 @@
 		949319C70C19323E0018AB50 /* DiskIO_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05D702E69B6B01CA2799 /* DiskIO_UGens.cpp */; };
 		949319C80C1932450018AB50 /* FilterUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05DB02E69B6B01CA2799 /* FilterUGens.cpp */; };
 		949319C90C19324A0018AB50 /* IOUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05DC02E69B6B01CA2799 /* IOUGens.cpp */; };
-		949319CA0C19326B0018AB50 /* SC_SyncCondition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */; };
 		949319CB0C1932730018AB50 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92CCC51F045B4BDE00CA2167 /* Carbon.framework */; };
 		949319F40C19333B0018AB50 /* LFUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05DD02E69B6B01CA2799 /* LFUGens.cpp */; };
 		949319F70C19334B0018AB50 /* MulAddUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F50D05DE02E69B6B01CA2799 /* MulAddUGens.cpp */; };
@@ -305,6 +304,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		098CE888129C22960062B0C6 /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SC_SyncCondition.h; path = ../common/Headers/common/SC_SyncCondition.h; sourceTree = SOURCE_ROOT; };
 		372EFD1E0CFAFB3A00265BE0 /* Onsets.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Onsets.cpp; path = ../../Source/plugins/Onsets.cpp; sourceTree = "<group>"; };
 		372EFD1F0CFAFB3A00265BE0 /* onsetsds.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = onsetsds.c; path = ../../Source/plugins/onsetsds.c; sourceTree = "<group>"; };
 		372EFD200CFAFB3A00265BE0 /* onsetsds.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = onsetsds.h; path = ../../Source/plugins/onsetsds.h; sourceTree = "<group>"; };
@@ -410,9 +410,7 @@
 		F50D05E502E69B6B01CA2799 /* UnaryOpUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = UnaryOpUGens.cpp; sourceTree = "<group>"; };
 		F5499A1103A3023A01BA7E76 /* vecLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vecLib.framework; path = /System/Library/Frameworks/vecLib.framework; sourceTree = "<absolute>"; };
 		F5959CF80339983301A80099 /* MsgFifo.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = MsgFifo.h; sourceTree = "<group>"; };
-		F5959CF90339983301A80099 /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_SyncCondition.h; sourceTree = "<group>"; };
 		F5959CFD03399CED01A80099 /* SC_Lock.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Lock.h; sourceTree = "<group>"; };
-		F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = SC_SyncCondition.cpp; sourceTree = "<group>"; };
 		F5D127DA03355EE10164B34C /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SC_Sem.h; path = common/SC_Sem.h; sourceTree = "<group>"; };
 		FE2582CB0C2C096A00307453 /* TestUGens.scx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = TestUGens.scx; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE25830C0C2C13E400307453 /* TestUGens.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TestUGens.cpp; path = ../../Source/plugins/TestUGens.cpp; sourceTree = "<group>"; };
@@ -809,8 +807,8 @@
 		F5959CFC0339983D01A80099 /* server */ = {
 			isa = PBXGroup;
 			children = (
+				098CE888129C22960062B0C6 /* SC_SyncCondition.h */,
 				F5959CF80339983301A80099 /* MsgFifo.h */,
-				F5959CF90339983301A80099 /* SC_SyncCondition.h */,
 				F5959CFD03399CED01A80099 /* SC_Lock.h */,
 			);
 			path = server;
@@ -819,7 +817,6 @@
 		F5959D010339A71301A80099 /* server */ = {
 			isa = PBXGroup;
 			children = (
-				F5959CFF0339A70A01A80099 /* SC_SyncCondition.cpp */,
 			);
 			path = server;
 			sourceTree = "<group>";
@@ -1366,7 +1363,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				949319CA0C19326B0018AB50 /* SC_SyncCondition.cpp in Sources */,
 				949319C70C19323E0018AB50 /* DiskIO_UGens.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

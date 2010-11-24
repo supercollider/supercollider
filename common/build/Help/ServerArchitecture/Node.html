@@ -5,11 +5,11 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title></title>
 <meta name="Generator" content="Cocoa HTML Writer">
-<meta name="CocoaVersion" content="949.46">
+<meta name="CocoaVersion" content="1038.35">
 <style type="text/css">
 p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
 p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #001ee6}
+p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; color: #0000ee}
 p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica}
 p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 14.0px Helvetica; min-height: 17.0px}
 p.p6 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 12.0px Helvetica}
@@ -24,7 +24,9 @@ p.p14 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monac
 p.p15 {margin: 0.0px 0.0px 0.0px 56.0px; text-indent: -56.0px; font: 9.0px Monaco; color: #a41c14}
 p.p16 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a41c14}
 p.p17 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 9.0px Monaco; min-height: 12.0px}
-p.p18 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
+p.p18 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco; color: #a71e14}
+p.p19 {margin: 0.0px 0.0px 0.0px 0.0px; font: 9.0px Monaco}
+p.p20 {margin: 0.0px 0.0px 0.0px 57.0px; text-indent: -57.0px; font: 14.0px Helvetica}
 span.s1 {font: 18.0px Helvetica}
 span.s2 {color: #000000}
 span.s3 {text-decoration: underline}
@@ -36,7 +38,10 @@ span.s8 {color: #356f14}
 span.s9 {color: #a41c14}
 span.s10 {font: 14.0px Helvetica}
 span.s11 {font: 9.0px Monaco; color: #356f14}
-span.s12 {font: 12.0px Helvetica; color: #000000}
+span.s12 {color: #0034fd}
+span.s13 {color: #0926b7}
+span.s14 {color: #a71e14}
+span.s15 {font: 12.0px Helvetica; color: #000000}
 span.Apple-tab-span {white-space:pre}
 </style>
 </head>
@@ -51,7 +56,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p2"><br></p>
 <p class="p4"><b>Freed Nodes and Node Status</b></p>
 <p class="p2"><br></p>
-<p class="p1">Nodes which you explicitly free using the methods free or release will have their group instance variable set to nil. However Nodes which are automatically freed after a certain time (for instance by an <a href="../UGens/Synth control/Envelopes/EnvGen.html"><span class="s4">EnvGen</span></a> with a doneAction of 2) will not. This keeps the implementation of the classes simple and lightweight. To have the current state of a Node tracked you can register it with an instance of <a href="../Control/NodeWatcher.html"><span class="s4">NodeWatcher</span></a>. This will enable two variables, isPlaying and isRunning, which you can use for checking purposes.</p>
+<p class="p1">Nodes which you explicitly free using the methods free or release will have their group instance variable set to nil. However Nodes which are automatically freed after a certain time (for instance by an <a href="../UGens/Synth control/Envelopes/EnvGen.html"><span class="s4">EnvGen</span></a> with a doneAction of 2) will not. This keeps the implementation of the classes simple and lightweight. To have the current state of a Node tracked you can register it with an instance of <a href="../Control/NodeWatcher.html"><span class="s4">NodeWatcher</span></a><span class="s4">,</span><span class="s2"> either by calling register on the Node instance or on the NodeWatcher singleton</span>. This will enable two variables, isPlaying and isRunning, which you can use for checking purposes.</p>
 <p class="p2"><br></p>
 <p class="p4"><b>Bundling</b></p>
 <p class="p2"><br></p>
@@ -216,8 +221,28 @@ span.Apple-tab-span {white-space:pre}
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.trace;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g.trace;</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>x.free; g.free;</p>
+<p class="p17"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p6"><span class="s7"><span class="Apple-tab-span">	</span></span><b>register(assumePlaying)</b></p>
+<p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
+<p class="p6"><b><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></b>Registers the node at the <a href="../Control/NodeWatcher.html"><span class="s12">NodeWatcher</span></a><span class="s12"> </span>object. This will enable two variables, isPlaying and isRunning, which you can use for checking purposes.<span class="Apple-converted-space"> </span></p>
+<p class="p8"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>(<span class="Apple-tab-span">	</span></p>
+<p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>b = s.makeBundle(<span class="s13">false</span>, {</p>
+<p class="p18"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a = </span><span class="s13">Group</span><span class="s2">.new(s); </span>//create a node object</p>
+<p class="p18"><span class="Apple-tab-span">	</span><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.register; </span>// register before creating on the server</p>
+<p class="p19"><span class="s14"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>});</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>)</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.isPlaying;</p>
+<p class="p18"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.listSendBundle(nil, b); </span>//start the node on the server</p>
+<p class="p19"><span class="s14"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>a.isPlaying;</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.isRunning;</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.run(<span class="s13">false</span>);</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.isRunning;</p>
+<p class="p18"><span class="s2"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>s.freeAll; </span>//free all nodes</p>
+<p class="p19"><span class="s14"><span class="Apple-tab-span">	</span></span><span class="Apple-tab-span">	</span>a.isPlaying;</p>
+<p class="p19"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>a.isRunning;</p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p18"><b>Changing the order of execution</b></p>
+<p class="p20"><b>Changing the order of execution</b></p>
 <p class="p8"><br></p>
 <p class="p1">The following methods can be used to change the Node's place in the order of execution. See the <b>Order-of-execution</b> help file for more information on this important topic. See <b>Server-Command-Reference</b> for the OSC equivalents of these methods.</p>
 <p class="p8"><br></p>
@@ -241,7 +266,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><b><span class="Apple-tab-span">	</span></b></p>
 <p class="p6"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>If <b>aGroup</b> is a <b>Group</b> then this method will move this Node to the tail of that Group. If it is nil this will move this Node to the tail of the <b>default_group</b> of this Node's <b>Server</b>.</p>
 <p class="p8"><br></p>
-<p class="p18"><b>Other Methods</b></p>
+<p class="p20"><b>Other Methods</b></p>
 <p class="p8"><br></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>asTarget</b> - Returns this Node. See the <b>asTarget</b> help file for more details.</p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
@@ -251,7 +276,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p8"><span class="Apple-tab-span">	</span></p>
 <p class="p6"><span class="Apple-tab-span">	</span><b>== aNode </b>- Returns true if this Node and aNode have the same nodeID and the same Server object, otherwise returns false. Under certain circumstances this Node and aNode might not be the same object, even though this returns true.</p>
 <p class="p8"><span class="Apple-tab-span">	</span></p>
-<p class="p10"><span class="s12"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">g = </span><span class="s4">Group</span><span class="s2">.basicNew(s, 1); </span>// the default group of s</p>
+<p class="p10"><span class="s15"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span></span><span class="s2">g = </span><span class="s4">Group</span><span class="s2">.basicNew(s, 1); </span>// the default group of s</p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>h = <span class="s4">Group</span>.basicNew(s, 1); <span class="s9">// and again</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g == h; <span class="Apple-tab-span">	</span><span class="s9">// true</span></p>
 <p class="p7"><span class="Apple-tab-span">	</span><span class="Apple-tab-span">	</span>g === h;<span class="Apple-tab-span">	</span><span class="s9">// false</span></p>
