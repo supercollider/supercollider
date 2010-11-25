@@ -80,7 +80,6 @@ void Usage()
 #ifdef __APPLE__
 		"   -I <input-streams-enabled>\n"
 		"   -O <output-streams-enabled>\n"
-		"   -M <server-mach-port-name> <reply-mach-port-name>\n"
 #endif
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 		"   -L enable memory locking\n"

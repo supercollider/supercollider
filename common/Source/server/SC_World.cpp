@@ -735,18 +735,6 @@ int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int i
 	return false;
 }
 
-#if defined(__APPLE__) || defined(SC_IPHONE)
-void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName)
-{
-	try {
-		new SC_MachMessagePort(inWorld, localName, remoteName);
-	} catch (std::exception& exc) {
-		scprintf("Exception in World_OpenMachPorts: %s\n", exc.what());
-	} catch (...) {
-	}
-}
-#endif
-
 void World_WaitForQuit(struct World *inWorld)
 {
 	try {
@@ -764,8 +752,6 @@ void World_SetSampleRate(World *inWorld, double inSampleRate)
 	Rate_Init(&inWorld->mFullRate, inSampleRate, inWorld->mBufLength);
 	Rate_Init(&inWorld->mBufRate, inSampleRate / inWorld->mBufLength, 1);
 }
-
-////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 
