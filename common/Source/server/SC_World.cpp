@@ -445,12 +445,12 @@ World* World_New(WorldOptions *inOptions)
 	return world;
 }
 
-int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool &didChange)
+int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool *outDidChange)
 {
 	if (index > world->mNumSndBufs) return kSCErr_IndexOutOfRange;
 
 	SndBufUpdates *updates = world->mSndBufUpdates + index;
-	didChange = updates->reads != updates->writes;
+	bool didChange = updates->reads != updates->writes;
 
 	if (!onlyIfChanged || didChange)
 	{
@@ -494,6 +494,8 @@ int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChan
 
 		world->mNRTLock->Unlock();
 	}
+
+	if (outDidChange) *outDidChange = didChange;
 
 	return kSCErr_None;
 }
