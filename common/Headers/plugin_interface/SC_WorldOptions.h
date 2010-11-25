@@ -23,7 +23,8 @@
 #define _SC_WorldOptions_
 
 #include <stdarg.h>
-#include <inttypes.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include "SC_Reply.h"
 
 typedef int (*PrintFunc)(const char *format, va_list ap);
@@ -77,7 +78,7 @@ struct WorldOptions
 	const char *mRestrictedPath;
 };
 
-const WorldOptions kDefaultWorldOptions =
+const struct WorldOptions kDefaultWorldOptions =
 {
 	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0, 0,0,0,0,0
 #if defined(_WIN32)
@@ -100,18 +101,24 @@ const WorldOptions kDefaultWorldOptions =
 # define SC_DLLEXPORT
 #endif
 
+struct SndBuf;
+
+#if defined(__cplusplus)
 extern "C" {
+#endif // __cplusplus
 	SC_DLLEXPORT void SetPrintFunc(PrintFunc func);
-	SC_DLLEXPORT struct World* World_New(WorldOptions *inOptions);
-	SC_DLLEXPORT void World_Cleanup(World *inWorld);
-	SC_DLLEXPORT void World_NonRealTimeSynthesis(struct World *inWorld, WorldOptions *inOptions);
+	SC_DLLEXPORT struct World* World_New(struct WorldOptions *inOptions);
+	SC_DLLEXPORT void World_Cleanup(struct World *inWorld);
+	SC_DLLEXPORT void World_NonRealTimeSynthesis(struct World *inWorld, struct WorldOptions *inOptions);
 	SC_DLLEXPORT int World_OpenUDP(struct World *inWorld, int inPort);
 	SC_DLLEXPORT int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
 	SC_DLLEXPORT void World_WaitForQuit(struct World *inWorld);
 	SC_DLLEXPORT bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 	SC_DLLEXPORT bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);
-	SC_DLLEXPORT int World_CopySndBuf(World *world, uint32_t index, struct SndBuf *outBuf, bool onlyIfChanged, bool &didChange);
+	SC_DLLEXPORT int World_CopySndBuf(struct World *world, uint32_t index, struct SndBuf *outBuf, bool onlyIfChanged, bool *didChange);
 	SC_DLLEXPORT int scprintf(const char *fmt, ...);
+#if defined(__cplusplus)
 }
+#endif // __cplusplus
 
 #endif // _SC_WorldOptions_

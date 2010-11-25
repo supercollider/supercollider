@@ -910,7 +910,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange)
 {
 	if (gInternalSynthServer.mWorld) {
-		int serverErr = World_CopySndBuf(gInternalSynthServer.mWorld, index, buf, true, didChange);
+		int serverErr = World_CopySndBuf(gInternalSynthServer.mWorld, index, buf, true, &didChange);
 		if (serverErr) return errFailed;
 	} else {
 		didChange = false;
