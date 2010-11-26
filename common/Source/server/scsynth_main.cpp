@@ -21,6 +21,7 @@
 
 #include "SC_WorldOptions.h"
 
+#include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
