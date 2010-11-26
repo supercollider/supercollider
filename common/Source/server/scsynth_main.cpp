@@ -29,10 +29,10 @@
 #include "clz.h"
 #include <stdexcept>
 #ifdef _WIN32
-#include <pthread.h>
-#include <winsock2.h>
+# include <pthread.h>
+# include <winsock2.h>
 #else
-#include <sys/wait.h>
+# include <sys/wait.h>
 #endif
 
 
