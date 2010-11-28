@@ -734,6 +734,11 @@ int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char *
     if (!f)
         return -1; /* file cannot be opened */
 
+    uint32_t sf_channels = uint32_t(f.channels());
+    const uint32_t * max_chan = std::max_element(channel_data, channel_data + channel_count);
+    if (*max_chan >= sf_channels)
+        return -2;
+
     const size_t sf_frames = f.frames();
 
     if (start > sf_frames)
@@ -931,6 +936,12 @@ int sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filena
 
     if (!sf)
         return -1;
+
+    uint32_t sf_channels = uint32_t(info.channels);
+    const uint32_t * max_chan = std::max_element(channel_data, channel_data + channel_count);
+    if (*max_chan >= sf_channels)
+        return -2;
+
 
     if (info.frames >= start_file)
     {
