@@ -8,8 +8,6 @@ add_library(sccommon SHARED
 			scsynthsend.cpp
 			sc_popen.cpp)
 
-include_directories(../../Headers/lang)
-
 target_link_libraries(sccommon ${PTHREADS_LIBRARY})
 
 if (APPLE)
