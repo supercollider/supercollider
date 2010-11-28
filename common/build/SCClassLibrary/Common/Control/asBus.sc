@@ -1,6 +1,6 @@
 
 + Server {
-	asBus { arg rate,numChannels;
+	asBus { arg rate,numChannels=1;
 		^Bus.alloc(rate,this,numChannels)
 	}
 }
@@ -16,7 +16,7 @@
 }
 
 + Nil {
-	asBus { arg rate,numChannels,server;
+	asBus { arg rate,numChannels=1,server;
 		^if(rate == \audio,{
 			Bus(\audio,0,numChannels,server); // out yer speakers
 		},{
