@@ -111,3 +111,12 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         PATTERN app* EXCLUDE
     )
 endif()
+
+
+#############################################
+# CPack support
+
+set(CPACK_PACKAGE_VERSION_MAJOR 3)
+set(CPACK_PACKAGE_VERSION_MINOR 5)
+set(CPACK_PACKAGE_VERSION_PATCH dev)
+include(CPack)
