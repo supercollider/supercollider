@@ -61,7 +61,9 @@ set(scsynth_sources
     SC_World.cpp
     Rendezvous.cpp)
 
-include_directories(../../Headers/server ../../Headers/plugin_interface)
+include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/include/server
+                    ${CMAKE_SOURCE_DIR}/include/plugin_interface)
 
 set_property(DIRECTORY
              APPEND

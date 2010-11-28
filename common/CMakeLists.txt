@@ -1,3 +1,5 @@
+include_directories(${CMAKE_SOURCE_DIR}/include/common)
+
 add_library(sccommon SHARED
 			SC_AllocPool.cpp
 			SC_DirUtils.cpp
@@ -7,6 +9,8 @@ add_library(sccommon SHARED
 			SC_StringParser.cpp
 			scsynthsend.cpp
 			sc_popen.cpp)
+
+include_directories(${CMAKE_SOURCE_DIR}/include/common)
 
 target_link_libraries(sccommon ${PTHREADS_LIBRARY})
 
