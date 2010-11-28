@@ -1,0 +1,97 @@
+title:: Writing Help
+summary:: Get started with writing help
+categories:: HelpSystem
+related:: Reference/ScDocSyntax
+
+section:: Converting old helpfiles
+
+Currently there is no automated process for this, but for most help files it's really simple to do it manually:
+
+numberedlist::
+## open the old helpfile in your web browser
+## copy the text and insert it in a new textfile: FileName.schelp
+## add the appropriate tags, like title, sections, etc.. (see below)
+## save the file to the right subdirectory under HelpSource, depending on the document kind:
+definitionlist::
+## Classes || class reference, file must be named as the class.
+## Reference || other reference documentation.
+## Tutorials || yes, tutorials.
+## Guides || guides that explain stuff but without beeing a real tutorial.
+## Overviews || overviews of other documents, these are mostly auto-generated.
+## Other || stuff that don't fit in any other directory.
+::
+::
+
+A list of all undocumented classes can be seen here: link::Overviews/Categories#undocumented_classes:: (auto-generated).
+
+section:: Tags
+There are some difference between class reference and other documents, explained here:
+
+subsection:: Normal documents
+Example header:
+code::
+title:: My help file
+summary:: A short single-line summary of what this is
+categories:: HelpSystem, Language>Conditionals, AndSoOn
+::
+
+Then use normal text in sections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/ScDocSyntax:: for tag reference.
+
+subsection:: Class reference
+Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and text can only be written inside special sections.
+
+code::
+class:: MyClass
+summary:: a nice class to do that and this
+categories:: Collections>SuperCollections, OtherCategories, AndSoOn
+related:: Classes/AnotherClass, Reference/MyClassCommandReference
+
+description::
+Here goes a long description of what the class does and why, etc..
+
+classmethods::
+
+method:: foo
+here goes a description of the class method foo
+argument:: x
+here goes a description of argument x of method foo
+argument:: y
+here goes a description of argument y of method foo
+
+method:: bar
+another class method, etc..
+
+instancemethods::
+
+method:: zoo
+here goes a description of the instance method zoo
+argument:: x
+here goes a description of argument x of method zoo
+argument:: y
+here goes a description of argument y of method zoo
+
+examples::
+
+An example of how to use this and that:
+code::
+  ...insert code here...
+\::
+
+Another example:
+code::
+  ...insert code here...
+\::
+::
+
+::
+
+section:: Categories
+Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See link::Overviews/Categories:: (auto-generated) for existing categories.
+
+For UGens, you should use the existing categories like UGens>Filter>Nonlinear>Ball.
+
+For other documents, you could base it on the old directory layout, or come up with better ones. like Scheduling, Sequencing, Patterns, Streams, Server, etc..
+
+Documents can exist in multiple categories, and also have hierarchical categories, like Sequencing>Patterns.
+
+
