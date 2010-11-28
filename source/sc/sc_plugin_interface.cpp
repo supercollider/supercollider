@@ -753,20 +753,32 @@ int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char *
     sample * data = buf->data;
     f.seek(start, SEEK_SET);
 
-    sized_array<sample> read_frame(f.channels());
+    const unsigned int frames_per_read = 1024;
+    sized_array<sample> read_frame(f.channels() * frames_per_read);
 
-    for (size_t i = 0; i != frames; ++i)
-    {
-        f.readf(read_frame.c_array(), 1);
+    if (channel_count == 1)
+        // fast-path for single-channel read
+        for (size_t i = 0; i < frames; i += frames_per_read) {
+            size_t read = f.readf(read_frame.c_array(), frames_per_read);
 
-        for (size_t c = 0; c != channel_count; ++c)
-        {
-            size_t channel_mapping = channel_data[c];
-            data[channel_mapping] = read_frame[c];
+            size_t channel_mapping = channel_data[0];
+            for (size_t frame = 0; frame != read; ++frame) {
+                data[channel_mapping] = read_frame[0];
+                data += channel_count;
+            }
         }
+    else
+        for (size_t i = 0; i < frames; i += frames_per_read) {
+            size_t read = f.readf(read_frame.c_array(), frames_per_read);
 
-        data += channel_count;
-    }
+            for (size_t frame = 0; frame != read; ++frame) {
+                for (size_t c = 0; c != channel_count; ++c) {
+                    size_t channel_mapping = channel_data[c];
+                    data[channel_mapping] = read_frame[c];
+                }
+                data += channel_count;
+            }
+        }
 
     return 0;
 }
