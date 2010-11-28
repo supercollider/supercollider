@@ -27,7 +27,7 @@ definitionList::
 ## link::Overviews/Classes:: || Alphabetical index of all classes
 ## link::Overviews/ClassTree:: || All classes by inheritance tree
 ## link::Overviews/Methods:: || Alphabetical index of all methods
-## link::Overviews/Categories#undocumented_classes:: || Undocumented classes
+## link::Overviews/Categories#undocumented_classes:: (#undocumented_classes) || Undocumented classes
 ::
 
 section:: UGens and Server stuff

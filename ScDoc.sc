@@ -494,10 +494,11 @@ ScDocParser {
             m.add((tag:'##'));
             m.add((tag:'prose', text:name));
             m.add((tag:'||'));
+            if(name.last==$_, {name=name.drop(-1)});
             t[k].do {|c,i|
                 if(c.find("Meta_")==0, {c = c.drop(5)});
-//                if(i!=0, {m.add((tag:'prose', text:","))});
-                m.add((tag:'link', text: "Classes" +/+ c));
+                if(i!=0, {m.add((tag:'prose', text:", "))});
+                m.add((tag:'link', text: "Classes" +/+ c ++ "#" ++ ScDocRenderer.simplifyName(name)));
             };
         };
         
@@ -693,9 +694,8 @@ ScDocRenderer {
                     f = node.text.split($#);
                     m = if(f[1].notNil, {"#"++f[1]}, {""});
 //                    n = if(f[1].notNil, {" ["++f[1]++"]"}, {""});
-                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++f[0].split($/).last++" "++m++"</a>");
-                    //FIXME: need to have relative uri's
-                    //best would be to keep track, have a currentDir class variable.
+//                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++f[0].split($/).last++" "++m++"</a>");
+                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++f[0].split($/).last++"</a>");
                 });
             },
             'anchor', {
@@ -993,6 +993,7 @@ ScDoc {
 //                this.addToCategoryMap(p, "Classes" +/+ name);
                 this.addToDocMap(p, "Classes" +/+ name);
                 if((force or: File.exists(dest).not), {
+                    ("Generating doc for class: "++name).postln;
                     this.makeMethodList(c,n);                
                     r.parser = p;
                     r.renderHTML(dest,"Classes");
