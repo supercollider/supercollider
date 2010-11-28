@@ -339,8 +339,8 @@ ScDocParser {
         var n = (tag:'tree', children:List.new);
         r.add((tag:'title', text:"Class Tree"));
         r.add((tag:'summary', text:"All classes by inheritance tree"));
-        r.add((tag:'related', text:"Overviews/AllClasses, Overviews/Categories, Overviews/Methods"));
-        r.add((tag:'categories', text:"Classes"));
+        r.add((tag:'related', text:"Overviews/Classes, Overviews/Categories, Overviews/Methods"));
+//        r.add((tag:'categories', text:"Classes"));
         r.add(n);
         this.dumpClassTree(n,Object);
         root = r;
@@ -374,7 +374,7 @@ ScDocParser {
             var z;
 
             if(ents.notEmpty, {
-                ents.do {|doc|
+                ents.sort {|a,b| a.path<b.path }.do {|doc|
                     folder = doc.path.dirname;
                     folder = if(folder==".", {""}, {" ["++folder++"]"});
                     l.add((tag:'##'));
@@ -406,7 +406,7 @@ ScDocParser {
 //        var a, p, e, n, l, m, kinds, folder, v, tree, dumpCats;
         r.add((tag:'title', text:"Document Categories"));
         r.add((tag:'summary', text:"All documents by categories"));
-        r.add((tag:'related', text:"Overviews/AllDocuments"));
+        r.add((tag:'related', text:"Overviews/Documents"));
        
         this.makeCategoryTree(catMap,r);
         
@@ -444,6 +444,7 @@ ScDocParser {
         r.add((tag:'title', text:"Classes"));
         r.add((tag:'summary', text:"Alphabetical index of all classes"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Categories, Overviews/Methods"));
+//        r.add((tag:'categories', text:"Classes"));
         Class.allClasses.do {|c|
             name = c.name.asString;
             if(name.find("Meta_")!=0, {
@@ -464,7 +465,7 @@ ScDocParser {
         };
         root = r;
     }
-
+    
     overviewAllDocuments {|docMap|
         var kind, name, doc, link, n, r = List.new, cap, old_cap=nil;
         r.add((tag:'title', text:"Documents"));
@@ -744,7 +745,7 @@ ScDocRenderer {
 //        cats = if(cats.notNil, {cats.join(", ")}, {""});
         if(folder==".",{folder=""});
         f.write("<div class='header'>");
-        f.write("<div id='label'>SuperCollider "++folder.asString.toUpper++"</div>");
+        f.write("<div id='label'><a href='"++baseDir+/+"Help.html"++"'>SuperCollider</a> "++folder.asString.toUpper++"</div>");
         x = parser.findNode(\categories);
         if(x.text.notEmpty, {
             f.write("<div id='categories'>");
@@ -866,16 +867,16 @@ ScDoc {
         */
 
         "Generating Overviews...".postln;
-        this.makeDocMap;
+//        this.makeDocMap;
                 
         r.parser = p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
         
         r.parser = p.overviewAllClasses(docMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/AllClasses.html","Overviews");
+        r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews");
 
         r.parser = p.overviewAllDocuments(docMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/AllDocuments.html","Overviews");
+        r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews");
 
         r.parser = p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
@@ -923,11 +924,10 @@ ScDoc {
             src = helpSourceDir +/+ "Classes" +/+ name++".schelp";
             dest = helpTargetDir +/+ "Classes" +/+ name ++ ".html";
             if(File.exists(src).not and: (name.find("Meta_")!=0), {
-                ("Undocumented class: "++name).postln;
+//                ("Undocumented class: "++name).postln;
                 
                 n = List.new;
                 n.add((tag:\class, text:c.name.asString));
-//                n.add((tag:\summary, text:"(undocumented)"));
                 n.add((tag:\summary, text:""));
                 
                 cats = "Undocumented classes";
@@ -941,7 +941,8 @@ ScDoc {
                 m.add((tag:\prose, text:"Please create and edit "++src));
                 
                 p.root = n;
-                this.addToCategoryMap(p, "Classes" +/+ name);
+//                this.addToCategoryMap(p, "Classes" +/+ name);
+                this.addToDocMap(p, "Classes" +/+ name);
                 if((force or: File.exists(dest).not), {
                     this.makeMethodList(c,n);                
                     r.parser = p;
@@ -951,6 +952,30 @@ ScDoc {
         };
     }
     
+    addToDocMap {|parser, path|
+        docMap[path] = (
+            path:path,
+            summary:parser.findNode(\summary).text,
+            categories:parser.findNode(\categories).text
+        );
+    }
+    
+    makeCategoryMap {
+        var cats;
+        ("Creating category map...").postln;
+        categoryMap = Dictionary.new;
+        docMap.pairsDo {|k,v|
+            cats = ScDoc.splitList(v.categories);
+            cats = cats ? ["Uncategorized"];
+            cats.do {|cat|
+                if(categoryMap[cat].isNil, {
+                    categoryMap[cat] = List.new;
+                });
+                categoryMap[cat].add(v);
+            };
+        };
+    }
+/*    
     addToCategoryMap {|parser, path|
         var cats = parser.findNode(\categories).text;
         cats = ScDoc.splitList(cats);
@@ -994,15 +1019,36 @@ ScDoc {
         file.write(categoryMap.asCompileString);
         file.close;
     }
+*/
+    readDocMap {
+        var path = helpTargetDir +/+ "scdoc_cache";
+        var file;
+        if(File.exists(path), {
+            file = File.open(path,"r");
+            docMap = file.readAllString.interpret;
+            file.close;
+            ^false;
+        }, {
+            docMap = Dictionary.new;
+            ^true;
+        });
+    }
+
+    writeDocMap {
+        var path = helpTargetDir +/+ "scdoc_cache";
+        var file = File.open(path,"w");
+        file.write(docMap.asCompileString);
+        file.close;
+    }
 
     updateAll {|force=false|
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
 
         if(force.not, {
-            force = this.readCategoryMap;
+            force = this.readDocMap;
         }, {
-            categoryMap = Dictionary.new;
+            docMap = Dictionary.new;
         });
 
         PathName(helpSourceDir).filesDo {|path|
@@ -1018,7 +1064,8 @@ ScDoc {
                 if(force or: (("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0), { //update only if needed
                     ("Rendering" + source + "to" + target).postln;
                     r.parser = p.parseFile(source);
-                    this.addToCategoryMap(p,subtarget); //we need to parse it to get the categories and stuff..
+//                    this.addToCategoryMap(p,subtarget); //we need to parse it to get the categories and stuff..
+                    this.addToDocMap(p,subtarget);
                     r.renderHTML(target,subtarget.dirname);
                 });
             }, {
@@ -1027,8 +1074,10 @@ ScDoc {
                 ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
             });
         };
-        this.writeCategoryMap;
+//        this.writeCategoryMap;
+        this.writeDocMap;
         this.handleUndocumentedClasses(force);
+        this.makeCategoryMap;
         this.makeOverviews;
         "Done".postln;
     }

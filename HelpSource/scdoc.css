@@ -42,7 +42,7 @@ a:hover {
     padding: 0.5em;
 /*    border: 1px solid #aaa;*/
 }
-#label {
+#label, #label a {
     text-align: left;
     font-weight: bold;
     color: #777;
