@@ -1,5 +1,4 @@
-include_directories(../Headers/common
-                    ../Headers/plugin_interface)
+include_directories(../Headers/common)
 
 find_package(Pthreads)
 
