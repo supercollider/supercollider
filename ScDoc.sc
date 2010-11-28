@@ -465,6 +465,44 @@ ScDocParser {
         };
         root = r;
     }
+
+    overviewAllMethods {|docMap|
+        var name, n, r = List.new, cap, old_cap=nil, t, m, meta;
+        r.add((tag:'title', text:"Methods"));
+        r.add((tag:'summary', text:"Alphabetical index of all methods"));
+        r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
+        
+        t = Dictionary.new;
+
+        Class.allClasses.do {|c|
+            name = c.name.asString;
+            c.methods.do {|x|
+                if(t[x.name]==nil, {t[x.name] = List.new});
+                t[x.name].add(name);
+            };
+        };
+
+        t.keys.asList.sort {|a,b| a<b}.do {|k|
+            name = k.asString;
+                cap = name.first;
+                if(cap!=old_cap, {
+                    r.add((tag:'section', text:cap.asString, children:n=List.new));
+                    n.add((tag:'definitionlist', children:m=List.new));
+                    old_cap = cap;
+                });
+
+            m.add((tag:'##'));
+            m.add((tag:'prose', text:name));
+            m.add((tag:'||'));
+            t[k].do {|c,i|
+                if(c.find("Meta_")==0, {c = c.drop(5)});
+//                if(i!=0, {m.add((tag:'prose', text:","))});
+                m.add((tag:'link', text: "Classes" +/+ c));
+            };
+        };
+        
+        root = r;
+    }
     
     overviewAllDocuments {|docMap|
         var kind, name, doc, link, n, r = List.new, cap, old_cap=nil;
@@ -523,6 +561,11 @@ ScDocRenderer {
     *simplifyName {|txt|
         ^txt.toLower.tr($\ ,$_);
     }
+    
+    escapeSpecialChars {|str|
+//        ^str.replace("\"","&quot;").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+        ^str.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+    }
 
     renderHTMLSubTree {|file,node,parentTag=false|
         var f, m, n, mname, args, split, mstat;
@@ -532,21 +575,21 @@ ScDocRenderer {
                 node.children.do {|e| this.renderHTMLSubTree(file,e,node.tag) };
             });
         };
-
+        
         switch(node.tag,
             'prose', {
                 if(last_display == \block, {
-                    file.write("<p>"++node.text);
+                    file.write("<p>"++this.escapeSpecialChars(node.text));
                 }, {
-                    file.write(node.text);                
+                    file.write(this.escapeSpecialChars(node.text));                
                 });
             },
             'section', {
-                file.write("<a name='"++ScDocRenderer.simplifyName(node.text)++"'><h2>"++node.text++"</h2></a>\n");
+                file.write("<a name='"++ScDocRenderer.simplifyName(node.text)++"'><h2>"++this.escapeSpecialChars(node.text)++"</h2></a>\n");
                 do_children.();
             },
             'subsection', {
-                file.write("<a name='"++ScDocRenderer.simplifyName(node.text)++"'><h3>"++node.text++"</h3></a>\n");
+                file.write("<a name='"++ScDocRenderer.simplifyName(node.text)++"'><h3>"++this.escapeSpecialChars(node.text)++"</h3></a>\n");
                 do_children.();
             },
             'classmethods', {
@@ -589,13 +632,13 @@ ScDocRenderer {
 
 //                    file.write("<div class='methodnames'>\n");
                     if((mstat & 1) > 0, {
-                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++args++"</h3></a>\n");
+                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++args++"</h3></a>\n");
                     });
                     if((mstat & 2) > 0, {
-                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++" = value</h3></a>\n");
+                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++" = value</h3></a>\n");
                     });
                     if(mstat == 0, {
-                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++mname++": METHOD NOT FOUND!</h3></a>\n");                    
+                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++": METHOD NOT FOUND!</h3></a>\n");                    
                     });
 //                    file.write("</div>\n");
                 };
@@ -629,23 +672,23 @@ ScDocRenderer {
                 file.write("</div>");
             },
             'note', {
-                file.write("<div class='note'><span class='notelabel'>NOTE:</span> "++node.text++"</div>");
+                file.write("<div class='note'><span class='notelabel'>NOTE:</span> "++this.escapeSpecialChars(node.text)++"</div>");
             },
             'warning', {
-                file.write("<div class='warning'><span class='warninglabel'>WARNING:</span> "++node.text++"</div>");
+                file.write("<div class='warning'><span class='warninglabel'>WARNING:</span> "++this.escapeSpecialChars(node.text)++"</div>");
             },
             'emphasis', {
-                file.write("<em>"++node.text++"</em>");
+                file.write("<em>"++this.escapeSpecialChars(node.text)++"</em>");
             },
             'strong', {
-                file.write("<strong>"++node.text++"</strong>");
+                file.write("<strong>"++this.escapeSpecialChars(node.text)++"</strong>");
             },
             'soft', {
-                file.write("<span class='soft'>"++node.text++"</span>");
+                file.write("<span class='soft'>"++this.escapeSpecialChars(node.text)++"</span>");
             },
             'link', {
                 if("[a-zA-Z]+://.+".matchRegexp(node.text),{
-                    file.write("<a href=\""++node.text++"\">"++node.text++"</a>");
+                    file.write("<a href=\""++node.text++"\">"++this.escapeSpecialChars(node.text)++"</a>");
                 },{
                     f = node.text.split($#);
                     m = if(f[1].notNil, {"#"++f[1]}, {""});
@@ -730,7 +773,7 @@ ScDocRenderer {
             
             { //unhandled tag
 //                file.write("(TAG:"++node.tag++")");
-                if(node.text.notNil,{file.write(node.text)});
+                if(node.text.notNil,{file.write(this.escapeSpecialChars(node.text))});
             }
         );
         last_display = node.display;
@@ -759,7 +802,7 @@ ScDocRenderer {
         
         f.write("<h1>"++name++"</h1>");
         x = parser.findNode(\summary);
-        f.write("<div id='summary'>"++x.text++"</div>");
+        f.write("<div id='summary'>"++this.escapeSpecialChars(x.text)++"</div>");
         f.write("</div>");
 
         f.write("<div class='subheader'>\n");
@@ -866,21 +909,27 @@ ScDoc {
           All methods index
         */
 
-        "Generating Overviews...".postln;
-//        this.makeDocMap;
-                
+        "Generating ClassTree...".postln;
         r.parser = p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
-        
+
+        "Generating Class overview...".postln;        
         r.parser = p.overviewAllClasses(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews");
 
+        "Generating Methods overview...".postln;
+        r.parser = p.overviewAllMethods(docMap);
+        r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews");
+
+        "Generating Documents overview...".postln;
         r.parser = p.overviewAllDocuments(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews");
 
+        "Generating Categories overview...".postln;
         r.parser = p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
 
+        "Generating Server overview...".postln;
         r.parser = p.overviewServer(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
