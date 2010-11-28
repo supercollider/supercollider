@@ -17,12 +17,11 @@ if(NOT NO_LIBSNDFILE)
 	find_package(Sndfile)
 endif()
 
-include_directories(../../Headers/plugin_interface
-					../../Headers/common
-					../../Headers/server)
+include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/include/plugin_interface)
 
 if (NOVA_SIMD)
-	include_directories(../../include/nova-simd)
+	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/nova-simd)
 	add_definitions("-DNOVA_SIMD")
 endif()
 
@@ -91,9 +90,9 @@ endforeach(plugin)
 
 set(uiugens MouseUGens KeyboardUGens)
 
-set(scfft_sources   ../common/SC_fftlib.cpp   SCComplex.cpp)
+set(scfft_sources   ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp   SCComplex.cpp)
 if (FFT_GREEN)
-	set(scfft_sources   ${scfft_sources} ../common/fftlib.c)
+	set(scfft_sources   ${scfft_sources} ${CMAKE_SOURCE_DIR}/common/fftlib.c)
 endif()
 if (WIN32)
         set(scfft_sources   ${scfft_sources} ../../../windows/PlugIns/ExportHelper.cpp)

@@ -1,9 +1,11 @@
-include_directories(../../Headers/lang
-	../../Headers/plugin_interface
+include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/include/lang
+                     ${CMAKE_SOURCE_DIR}/include/server
+                    ${CMAKE_SOURCE_DIR}/include/plugin_interface
 	LangSource/Bison)
 
 if(APPLE)
-	include_directories(../../include/icu
+	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/icu
 		LangPrimSource/HID_Utilities)
 else()
 	find_package(ALSA)
