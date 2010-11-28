@@ -61,7 +61,7 @@ set(scsynth_sources
     SC_World.cpp
     Rendezvous.cpp)
 
-include_directories(../../Headers/server)
+include_directories(../../Headers/server ../../Headers/plugin_interface)
 
 set_property(DIRECTORY
              APPEND

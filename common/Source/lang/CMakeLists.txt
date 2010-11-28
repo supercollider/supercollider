@@ -1,4 +1,5 @@
 include_directories(../../Headers/lang
+	../../Headers/plugin_interface
 	LangSource/Bison)
 
 if(APPLE)
