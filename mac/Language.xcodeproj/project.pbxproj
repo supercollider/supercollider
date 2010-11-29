@@ -61,6 +61,8 @@
 		6A1C636C0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
 		6A1C63810CFB6D27004ED3DA /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
 		6A1C63820CFB6D27004ED3DA /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
+		770A243512A44FCE009F3228 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924912972488008AB6B2 /* IOHIDDevice_.c */; };
+		770A243612A44FD0009F3228 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924A12972489008AB6B2 /* IOHIDElement_.c */; };
 		77A4923312972374008AB6B2 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AB0C19E79F00634E4D /* HID_Error_Handler.c */; };
 		77A4923412972375008AB6B2 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
 		77A4923512972376008AB6B2 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
@@ -1642,6 +1644,8 @@
 				172CD77D0DD7D2AE0089A2F4 /* SC_LanguageClient.cpp in Sources */,
 				172CD77E0DD7D2B10089A2F4 /* SC_TerminalClient.cpp in Sources */,
 				94DFDB500DD95B7800EB46BA /* sc_popen.cpp in Sources */,
+				770A243512A44FCE009F3228 /* IOHIDDevice_.c in Sources */,
+				770A243612A44FD0009F3228 /* IOHIDElement_.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
