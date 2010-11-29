@@ -25,6 +25,7 @@ definitionlist::
 A list of all undocumented classes can be seen here: link::Overviews/Categories#undocumented_classes:: (auto-generated).
 
 section:: Tags
+
 There are some difference between class reference and other documents, explained here:
 
 subsection:: Normal documents
@@ -83,6 +84,16 @@ code::
 \::
 ::
 
+::
+
+section:: Metadata
+All tags that are used for document metadata should be entered at the top of the document source file, before any section. These include:
+code::
+title::
+class::
+summary::
+related::
+categories::
 ::
 
 section:: Categories
