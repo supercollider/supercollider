@@ -52,6 +52,12 @@
 # include <sys/param.h>
 #endif
 
+// undefine the shadowed scfft functions
+#undef scfft_create
+#undef scfft_dofft
+#undef scfft_doifft
+#undef scfft_destroy
+
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 # include <sys/resource.h>
 # include <sys/mman.h>
@@ -242,6 +248,11 @@ void InterfaceTable_Init()
 	ft->fDoneAction = &Unit_DoneAction;
 	ft->fDoAsynchronousCommand = &PerformAsynchronousCommand;
 	ft->fBufAlloc = &bufAlloc;
+
+	ft->fSCfftCreate = &scfft_create;
+	ft->fSCfftDestroy = &scfft_destroy;
+	ft->fSCfftDoFFT = &scfft_dofft;
+	ft->fSCfftDoIFFT = &scfft_doifft;
 }
 
 void initialize_library(const char *mUGensPluginPath);

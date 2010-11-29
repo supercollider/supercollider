@@ -1,17 +1,3 @@
-# here we choose who provides us with the FFT lib
-if (FFT_GREEN)
-	add_definitions("-DSC_FFT_GREEN")
-elseif (APPLE)
-	add_definitions("-DSC_FFT_VDSP")
-else()
-	find_package(FFTW3f)
-
-	if (FFTW3F_FOUND)
-		add_definitions("-DSC_FFT_FFTW")
-	else()
-		message(SEND_ERROR "Cannot find libfftw3f")
-	endif()
-endif()
 
 if(NOT NO_LIBSNDFILE)
 	find_package(Sndfile)
@@ -91,10 +77,6 @@ endforeach(plugin)
 
 set(uiugens MouseUGens KeyboardUGens)
 
-set(scfft_sources   ../common/SC_fftlib.cpp)
-if (FFT_GREEN)
-	set(scfft_sources   ${scfft_sources} ../common/fftlib.c)
-endif()
 if (WIN32)
         set(scfft_sources   ${scfft_sources} ../../../windows/PlugIns/ExportHelper.cpp)
 endif()
@@ -157,10 +139,6 @@ endif()
 
 foreach(ugen ${fft_ugens})
 	target_link_libraries(${ugen} m)
-
-	if (FFTW3F_FOUND)
-		target_link_libraries(${ugen} ${FFTW3F_LIBRARY})
-	endif()
 
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")

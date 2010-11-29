@@ -48,7 +48,6 @@ struct PartConv : public Unit {
 	float * m_inputbuf2;
 	float * m_spectrum2;
 	scfft* m_scifft; //inverse
-	float * m_transformbuf;
 	int m_outputpos;
 	float * m_output;
 
@@ -60,7 +59,6 @@ struct PartConv : public Unit {
 	int m_amortcount;
 	int m_partitionsdone;
 };
-
 
 extern "C" {
 
@@ -86,16 +84,15 @@ void PartConv_Ctor( PartConv* unit )
 
 	unit->m_inputbuf= (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
 	unit->m_spectrum= (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
-	unit->m_transformbuf = (float*)RTAlloc(unit->mWorld, scfft_trbufsize(unit->m_fftsize));
-	unit->m_scfft = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	scfft_create(unit->m_scfft, unit->m_fftsize, unit->m_fftsize, WINDOW_RECT, unit->m_inputbuf, unit->m_spectrum, unit->m_transformbuf, true);
+
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	unit->m_scfft = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_inputbuf, unit->m_spectrum, kForward, alloc);
 
 	//inverse
 	unit->m_inputbuf2= (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
 	unit->m_spectrum2= (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
-	unit->m_scifft = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
 	//in place this time
-	scfft_create(unit->m_scifft, unit->m_fftsize, unit->m_fftsize, WINDOW_RECT, unit->m_inputbuf2, unit->m_spectrum2, unit->m_transformbuf, false);
+	unit->m_scifft = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_inputbuf2, unit->m_spectrum2, kBackward, alloc);
 
 	//debug test: changing scale factors in case amplitude summation is a problem
 	//unit->m_scfft->scalefac=1.0/45.254833995939;
@@ -176,29 +173,29 @@ void PartConv_Ctor( PartConv* unit )
 		return;
 	} else {
 
-	//must be exact divisor
-	int blocksperpartition = unit->m_nover2/unit->m_blocksize;
+		//must be exact divisor
+		int blocksperpartition = unit->m_nover2/unit->m_blocksize;
 
-	unit->m_spareblocks = blocksperpartition-1;
+		unit->m_spareblocks = blocksperpartition-1;
 
-	if(unit->m_spareblocks<1) {
-		printf("PartConv Error: no spareblocks, amortisation not possible! \n");
-		SETCALC(*ClearUnitOutputs);
-		unit->mDone = true;
-		return;
-	}
+		if(unit->m_spareblocks<1) {
+			printf("PartConv Error: no spareblocks, amortisation not possible! \n");
+			SETCALC(*ClearUnitOutputs);
+			unit->mDone = true;
+			return;
+		}
 
-	//won't be exact
-	unit->m_numamort = (unit->m_partitions-1)/unit->m_spareblocks; //will relate number of partitions to number of spare blocks
-	unit->m_lastamort= (unit->m_partitions-1)- ((unit->m_spareblocks-1)*(unit->m_numamort)); //allow for error on last one
-	unit->m_amortcount= -1; //starts as flag to avoid any amortisation before have first fft done
-	unit->m_partitionsdone=1;
+		//won't be exact
+		unit->m_numamort = (unit->m_partitions-1)/unit->m_spareblocks; //will relate number of partitions to number of spare blocks
+		unit->m_lastamort= (unit->m_partitions-1)- ((unit->m_spareblocks-1)*(unit->m_numamort)); //allow for error on last one
+		unit->m_amortcount= -1; //starts as flag to avoid any amortisation before have first fft done
+		unit->m_partitionsdone=1;
 
-	//printf("Amortisation stats partitions %d nover2 %d blocksize %d spareblocks %d numamort %d lastamort %d \n", unit->m_partitions,unit->m_nover2, unit->m_blocksize, unit->m_spareblocks, unit->m_numamort, unit->m_lastamort);
+		//printf("Amortisation stats partitions %d nover2 %d blocksize %d spareblocks %d numamort %d lastamort %d \n", unit->m_partitions,unit->m_nover2, unit->m_blocksize, unit->m_spareblocks, unit->m_numamort, unit->m_lastamort);
 
-	unit->m_fd_accumulate= (float*)RTAlloc(unit->mWorld, unit->m_fullsize * sizeof(float));
-	memset(unit->m_fd_accumulate, 0, unit->m_fullsize * sizeof(float));
-	unit->m_fd_accum_pos=0;
+		unit->m_fd_accumulate= (float*)RTAlloc(unit->mWorld, unit->m_fullsize * sizeof(float));
+		memset(unit->m_fd_accumulate, 0, unit->m_fullsize * sizeof(float));
+		unit->m_fd_accum_pos=0;
 
 //	used to be passed in as buffer, simplified interface
 //	bufnum = (uint32)ZIN0(3);
@@ -217,7 +214,7 @@ void PartConv_Ctor( PartConv* unit )
 //	unit->m_fd_accumulate = buf->data;
 
 
-	SETCALC(PartConv_next);
+		SETCALC(PartConv_next);
 	}
 }
 
@@ -227,19 +224,15 @@ void PartConv_Dtor(PartConv *unit)
 	RTFree(unit->mWorld, unit->m_inputbuf2);
 	RTFree(unit->mWorld, unit->m_spectrum);
 	RTFree(unit->mWorld, unit->m_spectrum2);
-	RTFree(unit->mWorld, unit->m_transformbuf);
 	RTFree(unit->mWorld, unit->m_output);
 	if (unit->m_fd_accumulate) RTFree(unit->mWorld, unit->m_fd_accumulate);
 
-	if(unit->m_scfft){
-		scfft_destroy(unit->m_scfft);
-		RTFree(unit->mWorld, unit->m_scfft);
-	}
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	if(unit->m_scfft)
+		scfft_destroy(unit->m_scfft, alloc);
 
-	if(unit->m_scifft){
-		scfft_destroy(unit->m_scifft);
-		RTFree(unit->mWorld, unit->m_scifft);
-	}
+	if(unit->m_scifft)
+		scfft_destroy(unit->m_scifft, alloc);
 }
 
 void PartConv_next( PartConv *unit, int inNumSamples )
@@ -522,9 +515,9 @@ void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 
 	float * inputbuf= (float*)RTAlloc(world, fftsize * sizeof(float));
 	float * spectrum= (float*)RTAlloc(world, fftsize * sizeof(float));
-	float * transformbuf = (float*)RTAlloc(world, scfft_trbufsize(fftsize));
-	scfft* m_scfft = (scfft*)RTAlloc(world, sizeof(scfft));
-	scfft_create(m_scfft, fftsize, fftsize, -1, inputbuf,spectrum,transformbuf, true);
+
+	SCWorld_Allocator alloc(ft, world);
+	scfft* m_scfft = scfft_create(fftsize, fftsize, kRectWindow, inputbuf, spectrum, kForward, alloc);
 
 	//for zero padding
 	memset(inputbuf, 0, sizeof(float)*fftsize);
@@ -559,12 +552,9 @@ void PreparePartConv(World *world, struct SndBuf *buf, struct sc_msg_iter *msg)
 	//clean up
 	RTFree(world, inputbuf);
 	RTFree(world, spectrum);
-	RTFree(world, transformbuf);
 
-	if(m_scfft){
-		scfft_destroy(m_scfft);
-		RTFree(world, m_scfft);
-	}
+	if(m_scfft)
+		scfft_destroy(m_scfft, alloc);
 }
 
 
