@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2005,2006 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2005-2010 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** All rights reserved.
 **
@@ -54,6 +54,7 @@
 
 #include <sndfile.h>
 
+#include <string>
 #include <new> // for std::nothrow
 
 class SndfileHandle
@@ -73,6 +74,10 @@ class SndfileHandle
 			/* Default constructor */
 			SndfileHandle (void) : p (NULL) {} ;
 			SndfileHandle (const char *path, int mode = SFM_READ,
+							int format = 0, int channels = 0, int samplerate = 0) ;
+			SndfileHandle (std::string const & path, int mode = SFM_READ,
+							int format = 0, int channels = 0, int samplerate = 0) ;
+			SndfileHandle (int fd, bool close_desc, int mode = SFM_READ,
 							int format = 0, int channels = 0, int samplerate = 0) ;
 			~SndfileHandle (void) ;
 
@@ -104,6 +109,8 @@ class SndfileHandle
 
 		const char* getString (int str_type) const ;
 
+		static int formatCheck (int format, int channels, int samplerate) ;
+
 		sf_count_t read (short *ptr, sf_count_t items) ;
 		sf_count_t read (int *ptr, sf_count_t items) ;
 		sf_count_t read (float *ptr, sf_count_t items) ;
@@ -127,6 +134,8 @@ class SndfileHandle
 		sf_count_t	readRaw		(void *ptr, sf_count_t bytes) ;
 		sf_count_t	writeRaw	(const void *ptr, sf_count_t bytes) ;
 
+		SNDFILE * rawHandle(void);		/**< raw access to the handle. SndfileHandle keeps ownership */
+		SNDFILE * takeOwnership(void);	/**< take ownership of handle, iff reference count is 1 */
 } ;
 
 /*==============================================================================
@@ -158,12 +167,58 @@ SndfileHandle::SndfileHandle (const char *path, int mode, int fmt, int chans, in
 		p->sfinfo.sections = 0 ;
 		p->sfinfo.seekable = 0 ;
 
-		if ((p->sf = sf_open (path, mode, &p->sfinfo)) == NULL)
-		{	delete p ;
-			p = NULL ;
-			} ;
+		p->sf = sf_open (path, mode, &p->sfinfo) ;
 		} ;
-} /* SndfileHandle constructor */
+
+	return ;
+} /* SndfileHandle const char * constructor */
+
+inline
+SndfileHandle::SndfileHandle (std::string const & path, int mode, int fmt, int chans, int srate)
+: p (NULL)
+{
+	p = new (std::nothrow) SNDFILE_ref () ;
+
+	if (p != NULL)
+	{	p->ref = 1 ;
+
+		p->sfinfo.frames = 0 ;
+		p->sfinfo.channels = chans ;
+		p->sfinfo.format = fmt ;
+		p->sfinfo.samplerate = srate ;
+		p->sfinfo.sections = 0 ;
+		p->sfinfo.seekable = 0 ;
+
+		p->sf = sf_open (path.c_str (), mode, &p->sfinfo) ;
+		} ;
+
+	return ;
+} /* SndfileHandle std::string constructor */
+
+inline
+SndfileHandle::SndfileHandle (int fd, bool close_desc, int mode, int fmt, int chans, int srate)
+: p (NULL)
+{
+	if (fd < 0)
+		return ;
+
+	p = new (std::nothrow) SNDFILE_ref () ;
+
+	if (p != NULL)
+	{	p->ref = 1 ;
+
+		p->sfinfo.frames = 0 ;
+		p->sfinfo.channels = chans ;
+		p->sfinfo.format = fmt ;
+		p->sfinfo.samplerate = srate ;
+		p->sfinfo.sections = 0 ;
+		p->sfinfo.seekable = 0 ;
+
+		p->sf = sf_open_fd (fd, mode, &p->sfinfo, close_desc) ;
+		} ;
+
+	return ;
+} /* SndfileHandle fd constructor */
 
 inline
 SndfileHandle::~SndfileHandle (void)
@@ -222,6 +277,20 @@ inline const char*
 SndfileHandle::getString (int str_type) const
 {	return sf_get_string (p->sf, str_type) ; }
 
+inline int
+SndfileHandle::formatCheck (int fmt, int chans, int srate)
+{
+	SF_INFO sfinfo ;
+
+	sfinfo.frames = 0 ;
+	sfinfo.channels = chans ;
+	sfinfo.format = fmt ;
+	sfinfo.samplerate = srate ;
+	sfinfo.sections = 0 ;
+	sfinfo.seekable = 0 ;
+
+	return sf_format_check (&sfinfo) ;
+}
 
 /*---------------------------------------------------------------------*/
 
@@ -297,13 +366,53 @@ inline sf_count_t
 SndfileHandle::writeRaw (const void *ptr, sf_count_t bytes)
 {	return sf_write_raw (p->sf, ptr, bytes) ; }
 
+inline SNDFILE *
+SndfileHandle::rawHandle(void)
+{
+	if (p)
+		return p->sf;
+	else
+		return NULL;
+}
+
+inline SNDFILE *
+SndfileHandle::takeOwnership(void)
+{
+	if (!p || (p->ref != 1))
+		return NULL;
+
+	SNDFILE * ret = p->sf;
+	p->sf = NULL;
+	delete p;
+	p = NULL;
+	return ret;
+}
+
+#ifdef ENABLE_SNDFILE_WINDOWS_PROTOTYPES
+
+inline
+SndfileHandle::SndfileHandle (LPCWSTR wpath, int mode, int fmt, int chans, int srate)
+: p (NULL)
+{
+	p = new (std::nothrow) SNDFILE_ref () ;
+
+	if (p != NULL)
+	{	p->ref = 1 ;
+
+		p->sfinfo.frames = 0 ;
+		p->sfinfo.channels = chans ;
+		p->sfinfo.format = fmt ;
+		p->sfinfo.samplerate = srate ;
+		p->sfinfo.sections = 0 ;
+		p->sfinfo.seekable = 0 ;
+
+		p->sf = sf_wchar_open (wpath, mode, &p->sfinfo) ;
+		} ;
+
+	return ;
+} /* SndfileHandle const wchar_t * constructor */
+
+#endif
 
 #endif	/* SNDFILE_HH */
 
-/*
-** Do not edit or modify anything in this comment block.
-** The following line is a file identity tag for the GNU Arch
-** revision control system.
-**
-** arch-tag: a0e9d996-73d7-47c4-a78d-79a3232a9eef
-*/
