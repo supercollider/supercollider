@@ -53,14 +53,9 @@ SCComplexBuf* ToComplexApx(SndBuf *buf)
 
 
 
-
-void init_SCComplex(InterfaceTable *inTable);
-
 extern "C" void load(InterfaceTable *inTable)
 {
 	ft = inTable;
-
-	init_SCComplex(inTable);
 
 	DefineDtorCantAliasUnit(BeatTrack);
 	DefineDtorUnit(Loudness);

@@ -323,8 +323,6 @@ void load(InterfaceTable *inTable)
 {
 	ft= inTable;
 
-	init_SCComplex(inTable);
-
 	DefineSimpleUnit(Unpack1FFT);
 	DefineSimpleUnit(PackFFT);
 }

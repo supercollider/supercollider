@@ -401,8 +401,6 @@ void FFTTrigger_next(FFTTrigger *unit, int inNumSamples)
 
 }
 
-void init_SCComplex(InterfaceTable *inTable);
-
 void initFFT(InterfaceTable *inTable)
 {
 	ft = inTable;
