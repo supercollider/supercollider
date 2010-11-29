@@ -340,20 +340,10 @@ int prHIDSetValue(VMGlobals *g, int numArgsPushed)
 
 	if (pCurrentHIDElement)
     {
-		IOHIDEventStruct event =
-		{
-			kIOHIDElementTypeOutput,
-			IOHIDElementGetCookie(pCurrentHIDElement),
-			value,
-			{0},
-			sizeof(int),
-			NULL
-		};
-		SInt32 value = HIDSetElementValue (pCurrentHIDDevice, pCurrentHIDElement, &event);
-		 // if it's not a button and it's not a hatswitch then calibrate
-	//	if(( pCurrentHIDElement->type != kIOHIDElementTypeInput_Button ) &&
-	//		( pCurrentHIDElement->usagePage == 0x01 && pCurrentHIDElement->usage != kHIDUsage_GD_Hatswitch))
-	//		value = HIDCalibrateValue ( value, pCurrentHIDElement );
+		IOHIDValueRef valueref = IOHIDValueCreateWithIntegerValue(0, pCurrentHIDElement, 0, value);
+		IOHIDDeviceSetValue(pCurrentHIDDevice, pCurrentHIDElement, valueref);
+		CFRelease(valueref);
+
 		SetInt(a, value);
 	}
 	else SetNil(a);
@@ -364,18 +354,19 @@ int prHIDSetValue(VMGlobals *g, int numArgsPushed)
 void PushQueueEvents_RawValue ();
 void PushQueueEvents_RawValue (){
 
-	IOHIDEventStruct event;
+	IOHIDValueRef value_ref = 0;
 	IOHIDDeviceRef  pCurrentHIDDevice = HIDGetFirstDevice ();
 	int numdevs = gNumberOfHIDDevices;
 	unsigned char result;
 	for(int i=0; i< numdevs; i++){
-		result = HIDGetEvent(pCurrentHIDDevice, (void*) &event);
+		result = HIDGetEvent(pCurrentHIDDevice, &value_ref);
 		if(result && compiledOK) {
-			SInt32 value = event.value;
-			int vendorID = pCurrentHIDDevice->vendorID;
-			int productID = pCurrentHIDDevice->productID;
-			int locID = pCurrentHIDDevice->locID;
-			IOHIDElementCookie cookie = (IOHIDElementCookie) event.elementCookie;
+			SInt32 value = IOHIDValueGetIntegerValue(value_ref);
+			int vendorID = IOHIDDevice_GetVendorID(pCurrentHIDDevice);;
+			int productID = IOHIDDevice_GetProductID(pCurrentHIDDevice);
+			int locID = IOHIDDevice_GetLocationID(pCurrentHIDDevice);
+			IOHIDElementCookie cookie = IOHIDElementGetCookie(IOHIDValueGetElement(value_ref));
+			CFRelease(value_ref);
 			VMGlobals *g = gMainVMGlobals;
 			pthread_mutex_lock (&gLangMutex);
 			g->canCallOS = false; // cannot call the OS
@@ -413,28 +404,28 @@ void PushQueueEvents_RawValue (){
 void PushQueueEvents_CalibratedValue ();
 void PushQueueEvents_CalibratedValue (){
 
-	IOHIDEventStruct event;
+	IOHIDValueRef value_ref = 0;
 	IOHIDDeviceRef  pCurrentHIDDevice = HIDGetFirstDevice ();
 
 	int numdevs = gNumberOfHIDDevices;
 	unsigned char result;
 	for(int i=0; i< numdevs; i++){
 
-		result = HIDGetEvent(pCurrentHIDDevice, (void*) &event);
+		result = HIDGetEvent(pCurrentHIDDevice, &value_ref);
 		if(result && compiledOK) {
-			SInt32 value = event.value;
-			int vendorID = pCurrentHIDDevice->vendorID;
-			int productID = pCurrentHIDDevice->productID;
-			int locID = pCurrentHIDDevice->locID;
-			IOHIDElementCookie cookie = (IOHIDElementCookie) event.elementCookie;
+			SInt32 value = IOHIDValueGetScaledValue(value_ref, kIOHIDValueScaleTypeCalibrated);
+			int vendorID = IOHIDDevice_GetVendorID(pCurrentHIDDevice);;
+			int productID = IOHIDDevice_GetProductID(pCurrentHIDDevice);
+			int locID = IOHIDDevice_GetLocationID(pCurrentHIDDevice);
+			IOHIDElementCookie cookie = IOHIDElementGetCookie(IOHIDValueGetElement(value_ref));
+			CFRelease(value_ref);
 			IOHIDElementRef pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
 	// use gElementCookie to find current element
-			while (pCurrentHIDElement && ( (pCurrentHIDElement->cookie) != cookie))
+			while (pCurrentHIDElement && ( (IOHIDElementGetCookie(pCurrentHIDElement)) != cookie))
 			pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeAll);
 
 			if (pCurrentHIDElement)
 			{
-			value = HIDCalibrateValue(value, pCurrentHIDElement);
 			//find element to calibrate
 			VMGlobals *g = gMainVMGlobals;
 			pthread_mutex_lock (&gLangMutex);
@@ -531,7 +522,7 @@ int prHIDQueueDevice(VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 	//look for the right device:
     IOHIDDeviceRef  pCurrentHIDDevice = HIDGetFirstDevice ();
-	while (pCurrentHIDDevice && (pCurrentHIDDevice->locID !=locID))
+	while (pCurrentHIDDevice && (IOHIDDevice_GetLocationID(pCurrentHIDDevice) !=locID))
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	HIDQueueDevice(pCurrentHIDDevice);
@@ -553,13 +544,13 @@ int prHIDQueueElement(VMGlobals *g, int numArgsPushed)
 	IOHIDElementCookie cookie = (IOHIDElementCookie) cookieNum;
 	//look for the right device:
     IOHIDDeviceRef  pCurrentHIDDevice = HIDGetFirstDevice ();
-	while (pCurrentHIDDevice && (pCurrentHIDDevice->locID !=locID))
+	while (pCurrentHIDDevice && (IOHIDDevice_GetLocationID(pCurrentHIDDevice) !=locID))
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	//look for the right element:
 	IOHIDElementRef pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
 	// use gElementCookie to find current element
-    while (pCurrentHIDElement && (pCurrentHIDElement->cookie != cookie))
+    while (pCurrentHIDElement && (IOHIDElementGetCookie(pCurrentHIDElement) != cookie))
         pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeAll);
 	if(!pCurrentHIDElement) return errFailed;
 	HIDQueueElement(pCurrentHIDDevice, pCurrentHIDElement);
@@ -581,12 +572,12 @@ int prHIDDequeueElement(VMGlobals *g, int numArgsPushed)
 	IOHIDElementCookie cookie = (IOHIDElementCookie) cookieNum;
 	//look for the right device:
     IOHIDDeviceRef  pCurrentHIDDevice = HIDGetFirstDevice ();
-	while (pCurrentHIDDevice && (pCurrentHIDDevice->locID !=locID))
+	while (pCurrentHIDDevice && (IOHIDDevice_GetLocationID(pCurrentHIDDevice) !=locID))
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	//look for the right element:
 	IOHIDElementRef pCurrentHIDElement =  HIDGetFirstDeviceElement (pCurrentHIDDevice, kHIDElementTypeAll);
-    while (pCurrentHIDElement && (pCurrentHIDElement->cookie != cookie))
+    while (pCurrentHIDElement && (IOHIDElementGetCookie(pCurrentHIDElement) != cookie))
         pCurrentHIDElement = HIDGetNextDeviceElement (pCurrentHIDElement, kHIDElementTypeAll);
 	if(!pCurrentHIDElement) return errFailed;
 	HIDDequeueElement(pCurrentHIDDevice, pCurrentHIDElement);
@@ -604,7 +595,7 @@ int prHIDDequeueDevice(VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 	//look for the right device:
     IOHIDDeviceRef  pCurrentHIDDevice = HIDGetFirstDevice ();
-	while (pCurrentHIDDevice && (pCurrentHIDDevice->locID !=locID))
+	while (pCurrentHIDDevice && (IOHIDDevice_GetLocationID(pCurrentHIDDevice) !=locID))
         pCurrentHIDDevice = HIDGetNextDevice (pCurrentHIDDevice);
 	if(!pCurrentHIDDevice) return errFailed;
 	HIDDequeueDevice(pCurrentHIDDevice);
