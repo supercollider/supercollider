@@ -174,7 +174,6 @@
 		94442CBC0C2C8AE40050BF9F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069902E6A1C601CA2799 /* CoreAudio.framework */; };
 		94442CBD0C2C8AE40050BF9F /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
 		94442CBE0C2C8AE40050BF9F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
-		94442CBF0C2C8AE40050BF9F /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		94442CC00C2C8AE40050BF9F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
 		94442CC10C2C8AE40050BF9F /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		94442CC20C2C8AE40050BF9F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
@@ -318,7 +317,6 @@
 		949317B30C192A7A0018AB50 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069902E6A1C601CA2799 /* CoreAudio.framework */; };
 		949317B40C192A7A0018AB50 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
 		949317B50C192A7A0018AB50 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
-		949317B60C192A7A0018AB50 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		949317B70C192A7A0018AB50 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
 		949317B80C192A7A0018AB50 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		949317B90C192A7A0018AB50 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
@@ -455,7 +453,6 @@
 		6A1C637F0CFB6D27004ED3DA /* utypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utypes.h; sourceTree = "<group>"; };
 		6A1C63800CFB6D27004ED3DA /* uversion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uversion.h; sourceTree = "<group>"; };
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
-		6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		77A4924912972488008AB6B2 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
 		77A4924A12972489008AB6B2 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
 		77A49264129725CC008AB6B2 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
@@ -735,7 +732,6 @@
 				94442CBC0C2C8AE40050BF9F /* CoreAudio.framework in Frameworks */,
 				94442CBD0C2C8AE40050BF9F /* CoreMIDI.framework in Frameworks */,
 				94442CBE0C2C8AE40050BF9F /* IOKit.framework in Frameworks */,
-				94442CBF0C2C8AE40050BF9F /* QuickTime.framework in Frameworks */,
 				94442CC00C2C8AE40050BF9F /* Quartz.framework in Frameworks */,
 				94442CC10C2C8AE40050BF9F /* QTKit.framework in Frameworks */,
 				94442CC20C2C8AE40050BF9F /* QuartzCore.framework in Frameworks */,
@@ -758,7 +754,6 @@
 				949317B30C192A7A0018AB50 /* CoreAudio.framework in Frameworks */,
 				949317B40C192A7A0018AB50 /* CoreMIDI.framework in Frameworks */,
 				949317B50C192A7A0018AB50 /* IOKit.framework in Frameworks */,
-				949317B60C192A7A0018AB50 /* QuickTime.framework in Frameworks */,
 				949317B70C192A7A0018AB50 /* Quartz.framework in Frameworks */,
 				949317B80C192A7A0018AB50 /* QTKit.framework in Frameworks */,
 				949317B90C192A7A0018AB50 /* QuartzCore.framework in Frameworks */,
@@ -1289,7 +1284,6 @@
 				F50D069B02E6A1C601CA2799 /* CoreServices.framework */,
 				F50D069C02E6A1C601CA2799 /* Foundation.framework */,
 				6AB6FFA10538A90A0000009F /* IOKit.framework */,
-				6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
