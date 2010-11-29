@@ -30,8 +30,6 @@ extern "C"
 
 InterfaceTable *ft;
 
-void init_SCComplex(InterfaceTable *inTable);
-
 //these are defined in the relevant files
 extern void initConvolution(InterfaceTable *);
 extern void initPV_ThirdParty(InterfaceTable *);
@@ -40,7 +38,6 @@ extern void initFeatureDetectors(InterfaceTable *it);
 void load(InterfaceTable *inTable)
 {
 	ft= inTable;
-	init_SCComplex(inTable);
 
 	initConvolution(inTable);
 	initPV_ThirdParty(inTable);

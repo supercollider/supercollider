@@ -42,7 +42,7 @@ set(scsynth_sources
     Samp.cpp
     SC_BufGen.cpp
     SC_Carbon.cpp
-    SC_Complex.cpp
+
     SC_ComPort.cpp
     SC_CoreAudio.cpp
     SC_Errors.cpp

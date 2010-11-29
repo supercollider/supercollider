@@ -60,9 +60,6 @@ SCComplexBuf* ToComplexApx(SndBuf *buf)
 	return (SCComplexBuf*)buf->data;
 }
 
-
-void init_SCComplex(InterfaceTable *inTable);
-
 //these are defined in the relevant files
 extern void initFFT(InterfaceTable *inTable);
 extern void initPV(InterfaceTable *inTable);
@@ -71,7 +68,6 @@ extern void initPartConv(InterfaceTable *inTable);
 void load(InterfaceTable *inTable)
 {
 	ft= inTable;
-	init_SCComplex(inTable);
 
 	initFFT(inTable);
 	initPV(inTable);

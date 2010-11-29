@@ -91,7 +91,7 @@ endforeach(plugin)
 
 set(uiugens MouseUGens KeyboardUGens)
 
-set(scfft_sources   ../common/SC_fftlib.cpp   SCComplex.cpp)
+set(scfft_sources   ../common/SC_fftlib.cpp)
 if (FFT_GREEN)
 	set(scfft_sources   ${scfft_sources} ../common/fftlib.c)
 endif()

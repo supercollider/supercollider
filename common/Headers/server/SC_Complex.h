@@ -22,12 +22,55 @@
 #ifndef _SC_Complex_
 #define _SC_Complex_
 
+#include <cmath>
+
 #include "SC_Types.h"
+#include "SC_Constants.h"
 #include "float.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
+namespace detail {
+
+const int kSineSize = 8192;
+const int kSineMask = kSineSize - 1;
+const double kSinePhaseScale = kSineSize / twopi;
+const int32 kPolarLUTSize = 2049;
+const int32 kPolarLUTSize2 = kPolarLUTSize >> 1;
+
+
+/* each object file that is including this header will have separate lookup tables */
+namespace {
+
+float gMagLUT[kPolarLUTSize];
+float gPhaseLUT[kPolarLUTSize];
+float gSine[kSineSize+1];
+
+static bool initTables(void)
+{
+	double sineIndexToPhase = twopi / kSineSize;
+	double pmf = (1L << 29) / twopi;
+	for (int i=0; i <= kSineSize; ++i) {
+		double phase = i * sineIndexToPhase;
+		float32 d = sin(phase);
+		gSine[i] = d;
+	}
+
+	double rPolarLUTSize2 = 1. / kPolarLUTSize2;
+	for (int i=0; i < kPolarLUTSize; ++i) {
+		double slope = (i - kPolarLUTSize2) * rPolarLUTSize2;
+		double angle = atan(slope);
+		gPhaseLUT[i] = (float)angle;
+		gMagLUT[i] = (float)(1.f / cos(angle));
+	}
+}
+
+bool dummy = initTables();
+
+}
+
 struct Polar;
+
 
 struct Complex
 {
@@ -39,9 +82,16 @@ struct Complex
 	Complex& operator=(float b) { real = b; imag = 0.; return *this; }
 
 	Polar ToPolar();
+
+	/**
+	* Converts cartesian to polar representation, using lookup tables.
+	* Note: in this implementation the phase values returned lie in the range [-pi/4, 7pi/4]
+	* rather than the more conventional [0, 2pi] or [-pi, pi].
+	*/
 	Polar ToPolarApx();
 
 	void ToPolarInPlace();
+
 	void ToPolarApxInPlace();
 
 	float real, imag;
@@ -53,14 +103,87 @@ struct Polar
 	Polar(float m, float p) : mag(m), phase(p) {}
 	void Set(float m, float p) { mag = m; phase = p; }
 
-	Complex ToComplex();
-	Complex ToComplexApx();
+	Complex ToComplex()
+    {
+        return Complex(mag * std::cos(phase), mag * std::sin(phase));
+    }
 
-	void ToComplexInPlace();
-	void ToComplexApxInPlace();
+	Complex ToComplexApx()
+	{
+		uint32 sinindex = (int32)(kSinePhaseScale * phase) & kSineMask;
+		uint32 cosindex = (sinindex + (kSineSize>>2)) & kSineMask;
+		return Complex(mag * gSine[cosindex], mag * gSine[sinindex]);
+	}
+
+	void ToComplexInPlace()
+	{
+		Complex complx = ToComplex();
+		mag = complx.real;
+		phase = complx.imag;
+	}
+
+	void ToComplexApxInPlace()
+	{
+		Complex complx = ToComplexApx();
+		mag = complx.real;
+		phase = complx.imag;
+	}
 
 	float mag, phase;
 };
+
+inline Polar Complex::ToPolar()
+{
+	return Polar(hypot(imag, real), std::atan2(imag, real));
+}
+
+inline Polar Complex::ToPolarApx()
+{
+	int32 index;
+	float absreal = fabs(real);
+	float absimag = fabs(imag);
+	float mag, phase, slope;
+	if (absreal > absimag) {
+		slope = imag/real;
+		index = (int32)(kPolarLUTSize2 + kPolarLUTSize2 * slope);
+		mag = gMagLUT[index] * absreal;
+		phase = gPhaseLUT[index];
+		if (real > 0) {
+			return Polar(mag, phase);
+		} else {
+			return Polar(mag, (float)(pi + phase));
+		}
+	} else {
+		slope = real/imag;
+		index = (int32)(kPolarLUTSize2 + kPolarLUTSize2 * slope);
+		mag = gMagLUT[index] * absimag;
+		phase = gPhaseLUT[index];
+		if (imag > 0) {
+			return Polar(mag, (float)(pi2 - phase));
+		} else {
+			return Polar(mag, (float)(pi32 - phase));
+		}
+	}
+}
+
+inline void Complex::ToPolarInPlace()
+{
+	Polar polar = ToPolar();
+	real = polar.mag;
+	imag = polar.phase;
+}
+
+inline void Complex::ToPolarApxInPlace()
+{
+	Polar polar = ToPolarApx();
+	real = polar.mag;
+	imag = polar.phase;
+}
+
+}
+
+using detail::Polar;
+using detail::Complex;
 
 struct ComplexFT
 {
@@ -137,6 +260,5 @@ inline Polar operator*=(Polar a, float b)
 	a.mag *= b;
 	return a;
 }
-
 
 #endif
