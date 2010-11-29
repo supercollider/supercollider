@@ -46,7 +46,6 @@ struct Convolution : Unit
 	//int m_log2n;
 	float *m_inbuf1,*m_inbuf2, *m_fftbuf1, *m_fftbuf2, *m_outbuf,*m_overlapbuf;
 	scfft *m_scfft1, *m_scfft2, *m_scfftR;
-	float *m_trbuf;
 };
 
 
@@ -57,7 +56,6 @@ struct Convolution2 : Unit
 	float m_prevtrig;
 	float *m_inbuf1, *m_fftbuf1, *m_fftbuf2, *m_outbuf,*m_overlapbuf;
 	scfft *m_scfft1, *m_scfft2, *m_scfftR;
-	float *m_trbuf;
 };
 
 struct Convolution2L : Unit
@@ -70,7 +68,6 @@ struct Convolution2L : Unit
 	float *m_tempbuf, *m_fftbuf3;		// for crossfading
 
 	scfft *m_scfft1, *m_scfft2, *m_scfft3, *m_scfftR, *m_scfftR2; //source plus two kernels forwards, and two inverse from outbuf and from tempbuf
-	float *m_trbuf;	//shared temporary buffer for fft code
 };
 
 
@@ -86,7 +83,6 @@ struct StereoConvolution2L : Unit
 	float *m_tempbuf[2], *m_fftbuf3[2];		// for crossfading
 
 	scfft *m_scfft1, *m_scfft2[2], *m_scfft3[2], *m_scfftR[2], *m_scfftR2[2];
-	float *m_trbuf;	//shared temporary buffer for fft code
 };
 
 struct Convolution3 : Unit
@@ -124,7 +120,6 @@ extern "C"
 }
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //PROPER CONVOLVER
@@ -157,13 +152,10 @@ void Convolution_Ctor(Convolution *unit)
 
 	unit->m_pos = 0;
 
-	unit->m_trbuf = (float*)RTAlloc(unit->mWorld, scfft_trbufsize(unit->m_fftsize));
-	unit->m_scfft1 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfft2 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfftR = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	scfft_create(unit->m_scfft1, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf1, unit->m_fftbuf1, unit->m_trbuf, true);
-	scfft_create(unit->m_scfft2, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf2, unit->m_fftbuf2, unit->m_trbuf, true);
-	scfft_create(unit->m_scfftR, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf1, unit->m_outbuf, unit->m_trbuf, false);
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
+	unit->m_scfft2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2, unit->m_fftbuf2, kForward, alloc);
+	unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_outbuf, kBackward, alloc);
 
 	SETCALC(Convolution_next);
 }
@@ -177,13 +169,10 @@ void Convolution_Dtor(Convolution *unit)
 	RTFree(unit->mWorld, unit->m_fftbuf2);
 	RTFree(unit->mWorld, unit->m_outbuf);
 	RTFree(unit->mWorld, unit->m_overlapbuf);
-	RTFree(unit->mWorld, unit->m_trbuf);
-	scfft_destroy(unit->m_scfft1);
-	scfft_destroy(unit->m_scfft2);
-	scfft_destroy(unit->m_scfftR);
-	RTFree(unit->mWorld, unit->m_scfft1);
-	RTFree(unit->mWorld, unit->m_scfft2);
-	RTFree(unit->mWorld, unit->m_scfftR);
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	scfft_destroy(unit->m_scfft1, alloc);
+	scfft_destroy(unit->m_scfft2, alloc);
+	scfft_destroy(unit->m_scfftR, alloc);
 }
 
 
@@ -347,18 +336,13 @@ void Convolution2_Ctor(Convolution2 *unit)
 		//unit->m_log2n = LOG2CEIL(unit->m_fftsize);
 
 		unit->m_pos = 0;
-
-		unit->m_trbuf = (float*)RTAlloc(world, scfft_trbufsize(unit->m_fftsize));
-		unit->m_scfft1 = (scfft*)RTAlloc(world, sizeof(scfft));
-		unit->m_scfft2 = (scfft*)RTAlloc(world, sizeof(scfft));
-		unit->m_scfftR = (scfft*)RTAlloc(world, sizeof(scfft));
-
 		memset(unit->m_outbuf, 0, fftsize);
 		memset(unit->m_overlapbuf, 0, insize);
 
-		scfft_create(unit->m_scfft1, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf1, unit->m_fftbuf1, unit->m_trbuf, true);
-		scfft_create(unit->m_scfft2, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf2, unit->m_fftbuf2, unit->m_trbuf, true);
-		scfft_create(unit->m_scfftR, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf1, unit->m_outbuf, unit->m_trbuf, false);
+		SCWorld_Allocator alloc(ft, unit->mWorld);
+		unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
+		unit->m_scfft2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2, unit->m_fftbuf2, kForward, alloc);
+		unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_outbuf, kBackward, alloc);
 
 		//calculate fft for kernel straight away
 		memcpy(unit->m_fftbuf2, buf->data, insize);
@@ -409,14 +393,10 @@ void Convolution2_Dtor(Convolution2 *unit)
 	RTFree(unit->mWorld, unit->m_outbuf);
 	RTFree(unit->mWorld, unit->m_overlapbuf);
 
-	RTFree(unit->mWorld, unit->m_trbuf);
-
-	scfft_destroy(unit->m_scfft1);
-	scfft_destroy(unit->m_scfft2);
-	scfft_destroy(unit->m_scfftR);
-	RTFree(unit->mWorld, unit->m_scfft1);
-	RTFree(unit->mWorld, unit->m_scfft2);
-	RTFree(unit->mWorld, unit->m_scfftR);
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	scfft_destroy(unit->m_scfft1, alloc);
+	scfft_destroy(unit->m_scfft2, alloc);
+	scfft_destroy(unit->m_scfftR, alloc);
 }
 
 
@@ -651,12 +631,12 @@ void Convolution2L_Ctor(Convolution2L *unit)
 	SndBuf *buf = ConvGetBuffer(unit,bufnum);
 
 	if(buf) {
-		unit->m_trbuf = (float*)RTAlloc(unit->mWorld, scfft_trbufsize(unit->m_fftsize));
-		unit->m_scfft1 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-		unit->m_scfft2 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-		unit->m_scfft3 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-		unit->m_scfftR = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-		unit->m_scfftR2 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
+		SCWorld_Allocator alloc(ft, unit->mWorld);
+		unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
+		unit->m_scfft2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2, unit->m_fftbuf2, kForward, alloc);
+		unit->m_scfft3 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3, unit->m_fftbuf3, kForward, alloc);
+		unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf, unit->m_outbuf, kBackward, alloc);
+		unit->m_scfftR2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf, unit->m_tempbuf, kBackward, alloc);
 
 		unit->m_outbuf = (float*)RTAlloc(unit->mWorld, fftsize);
 		unit->m_overlapbuf = (float*)RTAlloc(unit->mWorld, insize);
@@ -664,11 +644,6 @@ void Convolution2L_Ctor(Convolution2L *unit)
 		memset(unit->m_outbuf, 0, fftsize);
 		memset(unit->m_overlapbuf, 0, insize);
 
-		scfft_create(unit->m_scfft1, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf1, unit->m_fftbuf1, unit->m_trbuf, true);
-		scfft_create(unit->m_scfft2, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf2, unit->m_fftbuf2, unit->m_trbuf, true);
-		scfft_create(unit->m_scfft3, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf3, unit->m_fftbuf3, unit->m_trbuf, true);
-		scfft_create(unit->m_scfftR, unit->m_fftsize, unit->m_fftsize, -1, unit->m_outbuf, unit->m_outbuf, unit->m_trbuf, false);
-		scfft_create(unit->m_scfftR2, unit->m_fftsize, unit->m_fftsize, -1, unit->m_tempbuf, unit->m_tempbuf, unit->m_trbuf, false);
 
 		//calculate fft for kernel straight away
 		memcpy(unit->m_fftbuf2, buf->data, insize);
@@ -715,19 +690,13 @@ void Convolution2L_Ctor(Convolution2L *unit)
 
 void Convolution2L_Dtor(Convolution2L *unit)
 {
-	scfft_destroy(unit->m_scfft1);
-	scfft_destroy(unit->m_scfft2);
-	scfft_destroy(unit->m_scfft3);
-	scfft_destroy(unit->m_scfftR);
-	scfft_destroy(unit->m_scfftR2);
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	scfft_destroy(unit->m_scfft1, alloc);
+	scfft_destroy(unit->m_scfft2, alloc);
+	scfft_destroy(unit->m_scfft3, alloc);
+	scfft_destroy(unit->m_scfftR, alloc);
+	scfft_destroy(unit->m_scfftR2, alloc);
 
-	RTFree(unit->mWorld, unit->m_scfft1);
-	RTFree(unit->mWorld, unit->m_scfft2);
-	RTFree(unit->mWorld, unit->m_scfft3);
-	RTFree(unit->mWorld, unit->m_scfftR);
-	RTFree(unit->mWorld, unit->m_scfftR2);
-
-	RTFree(unit->mWorld, unit->m_trbuf);
 
 	RTFree(unit->mWorld, unit->m_inbuf1);
 	// 	RTFree(unit->mWorld, unit->m_inbuf2);
@@ -957,16 +926,16 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 	// 		unit->m_tempfftbuf[0] = (float*)RTAlloc(unit->mWorld, fftsize);
 	// 		unit->m_tempfftbuf[1] = (float*)RTAlloc(unit->mWorld, fftsize);
 
-	unit->m_trbuf = (float*)RTAlloc(unit->mWorld, scfft_trbufsize(unit->m_fftsize));
-	unit->m_scfft1 = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfft2[0] = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfft3[0] = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfftR[0] = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfftR2[0] = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfft2[1] = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfft3[1] = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfftR[1] = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
-	unit->m_scfftR2[1] = (scfft*)RTAlloc(unit->mWorld, sizeof(scfft));
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
+	unit->m_scfft2[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2[0], unit->m_fftbuf2[0], kForward, alloc);
+	unit->m_scfft3[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2[1], unit->m_fftbuf2[1], kForward, alloc);
+	unit->m_scfftR[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3[0], unit->m_fftbuf3[0], kForward, alloc);
+	unit->m_scfftR2[0] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf3[1], unit->m_fftbuf3[1], kForward, alloc);
+	unit->m_scfft2[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf[0], unit->m_outbuf[0], kBackward, alloc);
+	unit->m_scfft3[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf[0], unit->m_tempbuf[0], kBackward, alloc);
+	unit->m_scfftR[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_outbuf[1], unit->m_outbuf[1], kBackward, alloc);
+	unit->m_scfftR2[1] = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_tempbuf[1], unit->m_tempbuf[1], kBackward, alloc);
 
 	unit->m_outbuf[0] = (float*)RTAlloc(unit->mWorld, fftsize);
 	unit->m_overlapbuf[0] = (float*)RTAlloc(unit->mWorld, insize);
@@ -977,16 +946,6 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 	memset(unit->m_overlapbuf[0], 0, insize);
 	memset(unit->m_outbuf[1], 0, fftsize);
 	memset(unit->m_overlapbuf[1], 0, insize);
-
-	scfft_create(unit->m_scfft1, unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf1, unit->m_fftbuf1, unit->m_trbuf, true);
-	scfft_create(unit->m_scfft2[0], unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf2[0], unit->m_fftbuf2[0], unit->m_trbuf, true);
-	scfft_create(unit->m_scfft2[1], unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf2[1], unit->m_fftbuf2[1], unit->m_trbuf, true);
-	scfft_create(unit->m_scfft3[0], unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf3[0], unit->m_fftbuf3[0], unit->m_trbuf, true);
-	scfft_create(unit->m_scfft3[1], unit->m_fftsize, unit->m_fftsize, -1, unit->m_fftbuf3[1], unit->m_fftbuf3[1], unit->m_trbuf, true);
-	scfft_create(unit->m_scfftR[0], unit->m_fftsize, unit->m_fftsize, -1, unit->m_outbuf[0], unit->m_outbuf[0], unit->m_trbuf, false);
-	scfft_create(unit->m_scfftR2[0], unit->m_fftsize, unit->m_fftsize, -1, unit->m_tempbuf[0], unit->m_tempbuf[0], unit->m_trbuf, false);
-	scfft_create(unit->m_scfftR[1], unit->m_fftsize, unit->m_fftsize, -1, unit->m_outbuf[1], unit->m_outbuf[1], unit->m_trbuf, false);
-	scfft_create(unit->m_scfftR2[1], unit->m_fftsize, unit->m_fftsize, -1, unit->m_tempbuf[1], unit->m_tempbuf[1], unit->m_trbuf, false);
 
 
 	float fbufnum  = ZIN0(1);
@@ -1054,28 +1013,16 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 
 void StereoConvolution2L_Dtor(StereoConvolution2L *unit)
 {
-	scfft_destroy(unit->m_scfft1);
-	scfft_destroy(unit->m_scfft2[0]);
-	scfft_destroy(unit->m_scfft3[0]);
-	scfft_destroy(unit->m_scfftR[0]);
-	scfft_destroy(unit->m_scfftR2[0]);
-	scfft_destroy(unit->m_scfft2[1]);
-	scfft_destroy(unit->m_scfft3[1]);
-	scfft_destroy(unit->m_scfftR[1]);
-	scfft_destroy(unit->m_scfftR2[1]);
-
-	RTFree(unit->mWorld, unit->m_scfft1);
-	RTFree(unit->mWorld, unit->m_scfft2[0]);
-	RTFree(unit->mWorld, unit->m_scfft3[0]);
-	RTFree(unit->mWorld, unit->m_scfftR[0]);
-	RTFree(unit->mWorld, unit->m_scfftR2[0]);
-	RTFree(unit->mWorld, unit->m_scfft2[1]);
-	RTFree(unit->mWorld, unit->m_scfft3[1]);
-	RTFree(unit->mWorld, unit->m_scfftR[1]);
-	RTFree(unit->mWorld, unit->m_scfftR2[1]);
-
-	RTFree(unit->mWorld, unit->m_trbuf);
-
+	SCWorld_Allocator alloc(ft, unit->mWorld);
+	scfft_destroy(unit->m_scfft1, alloc);
+	scfft_destroy(unit->m_scfft2[0], alloc);
+	scfft_destroy(unit->m_scfft3[0], alloc);
+	scfft_destroy(unit->m_scfftR[0], alloc);
+	scfft_destroy(unit->m_scfftR2[0], alloc);
+	scfft_destroy(unit->m_scfft2[1], alloc);
+	scfft_destroy(unit->m_scfft3[1], alloc);
+	scfft_destroy(unit->m_scfftR[1], alloc);
+	scfft_destroy(unit->m_scfftR2[1], alloc);
 
 	RTFree(unit->mWorld, unit->m_inbuf1);
 	// 	RTFree(unit->mWorld, unit->m_inbuf2);
@@ -1541,7 +1488,6 @@ void Convolution3_next_k(Convolution3 *unit)
 void initConvolution(InterfaceTable *it)
 {
 	//init_ffts();
-	scfft_global_init();
 	DefineDtorUnit(Convolution);
 	DefineDtorUnit(Convolution2);
 	DefineDtorUnit(Convolution2L);
