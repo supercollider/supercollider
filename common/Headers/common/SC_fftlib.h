@@ -42,7 +42,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 0
 	#define SC_FFT_GREEN 1
-#elif !SC_FFT_FFTW && defined(__APPLE__)
+#elif !SC_FFT_FFTW && defined(__APPLE__) && !defined(SUPERNOVA)
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 1
 	#define SC_FFT_GREEN 0
