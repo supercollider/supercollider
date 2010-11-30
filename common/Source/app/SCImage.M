@@ -731,7 +731,7 @@ failure:
 	return [[self bitmapRepresentation] bitmapData];
 }
 
--(void)setPixel:(unsigned long[])pixel atX:(int)x y:(int)y
+-(void)setPixel:(NSUInteger *)pixel atX:(int)x y:(int)y
 {
 	if([self isAccelerated])
 		[self syncBitmap];
@@ -747,7 +747,7 @@ failure:
 	[self setShouldSyncCIImage:YES];
 }
 
--(void)getPixel:(unsigned long[])pixel atX:(int)x y:(int)y
+-(void)getPixel:(NSUInteger *)pixel atX:(int)x y:(int)y
 {
 	if([self isAccelerated])
 		[self syncBitmap];
@@ -1550,7 +1550,7 @@ int prSCImage_pixelAt(struct VMGlobals *g, int numArgsPushed)
 
 	int x, y, err;
 	SCImage *image;
-	unsigned long pixelAsArray[4] = {0, 0, 0, 0};
+	NSUInteger pixelAsArray[4] = {0, 0, 0, 0};
 
 	err = errNone;
 
@@ -1599,7 +1599,7 @@ int prSCImage_setPixelAt(struct VMGlobals *g, int numArgsPushed)
 
 	int x, y, err;
 	uint32 pixel;
-	unsigned long pixelData[4]={0, 0, 0, 0};
+	NSUInteger pixelData[4]={0, 0, 0, 0};
 
 	err = slotIntVal(pixelSlot, (int*)&pixel);
 	if(err) return err;
@@ -1756,7 +1756,7 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 	height = region.size.height;
 	width = region.size.width;
 	pixelsData = (uint32*)allocatedPixelArray->i + startIndex;
-	unsigned long pixel[4]={0, 0, 0, 0};
+	NSUInteger pixel[4]={0, 0, 0, 0};
 
 	if((allocatedPixelArray->size - startIndex) < ( height * width /** 4*/ )  ) {
 		post("Error: pixel array is not of good size ! should be %i bytes long\n", height * width /** 4*/);

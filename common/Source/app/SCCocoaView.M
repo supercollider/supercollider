@@ -1774,7 +1774,7 @@ int SCMovieView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	if (strcmp(name, "clear")==0) {
-		[mMovieView clear: NULL];
+		[mMovieView delete: NULL];
 		return errNone;
 	}
 	if (strcmp(name, "cut")==0) {
