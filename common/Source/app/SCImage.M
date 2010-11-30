@@ -731,11 +731,11 @@ failure:
 	return [[self bitmapRepresentation] bitmapData];
 }
 
--(void)setPixel:(unsigned int[])pixel atX:(unsigned int)x y:(unsigned int)y
+-(void)setPixel:(NSUInteger *)pixel atX:(int)x y:(int)y
 {
 	if([self isAccelerated])
 		[self syncBitmap];
-	[[self bitmapRepresentation] setPixel:pixel atX:x y:y];
+	[[self bitmapRepresentation] setPixel:pixel atX:(long)x y:(long)y];
 	[self setShouldSyncCIImage:YES];
 }
 
@@ -747,7 +747,7 @@ failure:
 	[self setShouldSyncCIImage:YES];
 }
 
--(void)getPixel:(unsigned int[])pixel atX:(unsigned int)x y:(unsigned int)y
+-(void)getPixel:(NSUInteger *)pixel atX:(int)x y:(int)y
 {
 	if([self isAccelerated])
 		[self syncBitmap];
@@ -1550,7 +1550,7 @@ int prSCImage_pixelAt(struct VMGlobals *g, int numArgsPushed)
 
 	int x, y, err;
 	SCImage *image;
-	uint32 pixelAsArray[4] = {0, 0, 0, 0};
+	NSUInteger pixelAsArray[4] = {0, 0, 0, 0};
 
 	err = errNone;
 
@@ -1599,7 +1599,7 @@ int prSCImage_setPixelAt(struct VMGlobals *g, int numArgsPushed)
 
 	int x, y, err;
 	uint32 pixel;
-	unsigned int pixelData[4]={0, 0, 0, 0};
+	NSUInteger pixelData[4]={0, 0, 0, 0};
 
 	err = slotIntVal(pixelSlot, (int*)&pixel);
 	if(err) return err;
@@ -1756,7 +1756,7 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 	height = region.size.height;
 	width = region.size.width;
 	pixelsData = (uint32*)allocatedPixelArray->i + startIndex;
-	unsigned int pixel[4]={0, 0, 0, 0};
+	NSUInteger pixel[4]={0, 0, 0, 0};
 
 	if((allocatedPixelArray->size - startIndex) < ( height * width /** 4*/ )  ) {
 		post("Error: pixel array is not of good size ! should be %i bytes long\n", height * width /** 4*/);
@@ -2112,7 +2112,7 @@ BOOL nsClassIsKindOfClass(Class currentClass, Class match)
 		return YES;
 
 	Class superClass;
-	while( (superClass = currentClass->super_class) ) {
+	while( (superClass = class_getSuperclass(currentClass)) ) {
 		if(superClass == match)
 			return YES;
 	}
@@ -2123,12 +2123,14 @@ BOOL nsClassIsKindOfClass(Class currentClass, Class match)
 id		ciVectorFromSlot(PyrObject* slot);
 id		ciVectorFromSlot(PyrObject* slot)
 {
-	float values[4] = {0.f, 0.f, 0.f, 0.f};
+	CGFloat values[4] = {0.f, 0.f, 0.f, 0.f};
 	int size = slot->size, err;
 
 	for (int i=0; i < size; ++i) {
-		err = slotFloatVal(slot->slots + i, &values[i]);
+		float val;
+		err = slotFloatVal(slot->slots + i, &val);
 		if(err) return nil;
+		values[i] = val;
 	}
 
 	return [CIVector vectorWithValues:values count:(size_t)4];
@@ -2424,7 +2426,7 @@ int prSCImageFilter_ApplyMultiple(struct VMGlobals *g, int numArgsPushed)
 			}
 			else
 			{
-				post("Error: bad (nil) slot value for Filter: %s key %s, NSObject conversion failed for class %s !", slotRawSymbol(&scFilter->slots[0])->name, [nskey UTF8String], valueClass->name);
+				post("Error: bad (nil) slot value for Filter: %s key %s, NSObject conversion failed for class %s !", slotRawSymbol(&scFilter->slots[0])->name, [nskey UTF8String], class_getName(valueClass));
 			}
 		}
 
@@ -2591,7 +2593,7 @@ int prSCImageFilter_Apply(struct VMGlobals *g, int numArgsPushed)
 		#endif
 			[ciFilter setValue:nsvalue forKey:nskey];
 		}else{
-			post("Error: bad (nil) slot value for key %s, NSObject conversion failed for class %s !", [nskey UTF8String], valueClass->name);
+			post("Error: bad (nil) slot value for key %s, NSObject conversion failed for class %s !", [nskey UTF8String], class_getName(valueClass));
 		}
 	}
 

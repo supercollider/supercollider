@@ -61,6 +61,17 @@
 		6A1C636C0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
 		6A1C63810CFB6D27004ED3DA /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
 		6A1C63820CFB6D27004ED3DA /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = 6A1C636F0CFB6D27004ED3DA /* LICENSE.html */; };
+		770A243512A44FCE009F3228 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924912972488008AB6B2 /* IOHIDDevice_.c */; };
+		770A243612A44FD0009F3228 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924A12972489008AB6B2 /* IOHIDElement_.c */; };
+		770A248012A57CD2009F3228 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924912972488008AB6B2 /* IOHIDDevice_.c */; };
+		770A248112A57CD3009F3228 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924A12972489008AB6B2 /* IOHIDElement_.c */; };
+		77A4923312972374008AB6B2 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AB0C19E79F00634E4D /* HID_Error_Handler.c */; };
+		77A4923412972375008AB6B2 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
+		77A4923512972376008AB6B2 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
+		77A4923612972377008AB6B2 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6B10C19E79F00634E4D /* HID_Utilities.c */; };
+		77A4924B12972489008AB6B2 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924912972488008AB6B2 /* IOHIDDevice_.c */; };
+		77A4924C12972489008AB6B2 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924A12972489008AB6B2 /* IOHIDElement_.c */; };
+		77A49251129724D6008AB6B2 /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DD0C1921F90018AB50 /* SC_HID.cpp */; };
 		94070C5E0C19DEF6002304F7 /* html.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5B0C19DEF6002304F7 /* html.icns */; };
 		94070C5F0C19DEF6002304F7 /* rtf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5C0C19DEF6002304F7 /* rtf.icns */; };
 		94070C600C19DEF6002304F7 /* sc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5D0C19DEF6002304F7 /* sc.icns */; };
@@ -167,7 +178,6 @@
 		94442CBC0C2C8AE40050BF9F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069902E6A1C601CA2799 /* CoreAudio.framework */; };
 		94442CBD0C2C8AE40050BF9F /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
 		94442CBE0C2C8AE40050BF9F /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
-		94442CBF0C2C8AE40050BF9F /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		94442CC00C2C8AE40050BF9F /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
 		94442CC10C2C8AE40050BF9F /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		94442CC20C2C8AE40050BF9F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
@@ -175,10 +185,6 @@
 		94442CC40C2C8AE40050BF9F /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D9ED1C0C2773CF00223DF8 /* WebKit.framework */; };
 		9456F6820C19E6E500634E4D /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6800C19E6E500634E4D /* SC_ComPort.cpp */; };
 		9456F6840C19E6E500634E4D /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6800C19E6E500634E4D /* SC_ComPort.cpp */; };
-		9456F6B50C19E79F00634E4D /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AB0C19E79F00634E4D /* HID_Error_Handler.c */; };
-		9456F6B70C19E79F00634E4D /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
-		9456F6B90C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
-		9456F6BB0C19E79F00634E4D /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6B10C19E79F00634E4D /* HID_Utilities.c */; };
 		9456F6BF0C19E79F00634E4D /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AB0C19E79F00634E4D /* HID_Error_Handler.c */; };
 		9456F6C00C19E79F00634E4D /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AD0C19E79F00634E4D /* HID_Name_Lookup.c */; };
 		9456F6C10C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */; };
@@ -231,7 +237,6 @@
 		949311790C1921F90018AB50 /* PyrSymbolPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DA0C1921F90018AB50 /* PyrSymbolPrim.cpp */; };
 		9493117A0C1921F90018AB50 /* PyrUnixPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DB0C1921F90018AB50 /* PyrUnixPrim.cpp */; };
 		9493117B0C1921F90018AB50 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DC0C1921F90018AB50 /* SC_CoreMIDI.cpp */; };
-		9493117C0C1921F90018AB50 /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DD0C1921F90018AB50 /* SC_HID.cpp */; };
 		9493117F0C1921F90018AB50 /* SC_Speech.M in Sources */ = {isa = PBXBuildFile; fileRef = 949310E00C1921F90018AB50 /* SC_Speech.M */; };
 		949311800C1921F90018AB50 /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310E10C1921F90018AB50 /* SC_Wii.cpp */; };
 		949311830C1921F90018AB50 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = 949310E50C1921F90018AB50 /* wiiremote.c */; };
@@ -316,7 +321,6 @@
 		949317B30C192A7A0018AB50 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069902E6A1C601CA2799 /* CoreAudio.framework */; };
 		949317B40C192A7A0018AB50 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
 		949317B50C192A7A0018AB50 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
-		949317B60C192A7A0018AB50 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		949317B70C192A7A0018AB50 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9415B1730B2B5CD700C87737 /* Quartz.framework */; };
 		949317B80C192A7A0018AB50 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		949317B90C192A7A0018AB50 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94E114FE0B163B040033537C /* QuartzCore.framework */; };
@@ -338,7 +342,6 @@
 		94B6AEFC0AF45DA800E478BB /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069A02E6A1C601CA2799 /* CoreMIDI.framework */; };
 		94B6AEFD0AF45DA800E478BB /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F50D069B02E6A1C601CA2799 /* CoreServices.framework */; };
 		94B6AEFE0AF45DA800E478BB /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AB6FFA10538A90A0000009F /* IOKit.framework */; };
-		94B6AF000AF45DA800E478BB /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */; };
 		94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B8F16C0B463EC000097F2D /* QTKit.framework */; };
 		94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94D9ED1C0C2773CF00223DF8 /* WebKit.framework */; };
 		94DFDB4E0DD95B7800EB46BA /* sc_popen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 94DFDB4D0DD95B7800EB46BA /* sc_popen.cpp */; };
@@ -454,7 +457,10 @@
 		6A1C637F0CFB6D27004ED3DA /* utypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utypes.h; sourceTree = "<group>"; };
 		6A1C63800CFB6D27004ED3DA /* uversion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uversion.h; sourceTree = "<group>"; };
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
-		6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		77A4924912972488008AB6B2 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
+		77A4924A12972489008AB6B2 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
+		77A49264129725CC008AB6B2 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
+		77A49265129725CC008AB6B2 /* IOHIDElement_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDElement_.h; sourceTree = "<group>"; };
 		94070C5B0C19DEF6002304F7 /* html.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = html.icns; sourceTree = "<group>"; };
 		94070C5C0C19DEF6002304F7 /* rtf.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rtf.icns; sourceTree = "<group>"; };
 		94070C5D0C19DEF6002304F7 /* sc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = sc.icns; sourceTree = "<group>"; };
@@ -474,7 +480,6 @@
 		9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = HID_Queue_Utilities.c; sourceTree = "<group>"; };
 		9456F6B00C19E79F00634E4D /* HID_Queue_Utilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Queue_Utilities.h; sourceTree = "<group>"; };
 		9456F6B10C19E79F00634E4D /* HID_Utilities.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = HID_Utilities.c; sourceTree = "<group>"; };
-		9456F6B20C19E79F00634E4D /* HID_Utilities.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities.h; sourceTree = "<group>"; };
 		9456F6B30C19E79F00634E4D /* HID_Utilities_External.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_External.h; sourceTree = "<group>"; };
 		9456F6B40C19E79F00634E4D /* HID_Utilities_Internal.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = HID_Utilities_Internal.h; sourceTree = "<group>"; };
 		945D14AF0CD9A73A00464EBF /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog; path = ../common/build/ChangeLog; sourceTree = "<group>"; };
@@ -731,7 +736,6 @@
 				94442CBC0C2C8AE40050BF9F /* CoreAudio.framework in Frameworks */,
 				94442CBD0C2C8AE40050BF9F /* CoreMIDI.framework in Frameworks */,
 				94442CBE0C2C8AE40050BF9F /* IOKit.framework in Frameworks */,
-				94442CBF0C2C8AE40050BF9F /* QuickTime.framework in Frameworks */,
 				94442CC00C2C8AE40050BF9F /* Quartz.framework in Frameworks */,
 				94442CC10C2C8AE40050BF9F /* QTKit.framework in Frameworks */,
 				94442CC20C2C8AE40050BF9F /* QuartzCore.framework in Frameworks */,
@@ -754,7 +758,6 @@
 				949317B30C192A7A0018AB50 /* CoreAudio.framework in Frameworks */,
 				949317B40C192A7A0018AB50 /* CoreMIDI.framework in Frameworks */,
 				949317B50C192A7A0018AB50 /* IOKit.framework in Frameworks */,
-				949317B60C192A7A0018AB50 /* QuickTime.framework in Frameworks */,
 				949317B70C192A7A0018AB50 /* Quartz.framework in Frameworks */,
 				949317B80C192A7A0018AB50 /* QTKit.framework in Frameworks */,
 				949317B90C192A7A0018AB50 /* QuartzCore.framework in Frameworks */,
@@ -776,7 +779,6 @@
 				94B6AEFB0AF45DA800E478BB /* CoreAudio.framework in Frameworks */,
 				94B6AEFC0AF45DA800E478BB /* CoreMIDI.framework in Frameworks */,
 				94B6AEFE0AF45DA800E478BB /* IOKit.framework in Frameworks */,
-				94B6AF000AF45DA800E478BB /* QuickTime.framework in Frameworks */,
 				9415B1780B2B5D1F00C87737 /* Quartz.framework in Frameworks */,
 				94B8F16D0B463EC000097F2D /* QTKit.framework in Frameworks */,
 				94E114FF0B163B040033537C /* QuartzCore.framework in Frameworks */,
@@ -885,9 +887,12 @@
 				9456F6AF0C19E79F00634E4D /* HID_Queue_Utilities.c */,
 				9456F6B00C19E79F00634E4D /* HID_Queue_Utilities.h */,
 				9456F6B10C19E79F00634E4D /* HID_Utilities.c */,
-				9456F6B20C19E79F00634E4D /* HID_Utilities.h */,
 				9456F6B30C19E79F00634E4D /* HID_Utilities_External.h */,
 				9456F6B40C19E79F00634E4D /* HID_Utilities_Internal.h */,
+				77A4924912972488008AB6B2 /* IOHIDDevice_.c */,
+				77A49264129725CC008AB6B2 /* IOHIDDevice_.h */,
+				77A4924A12972489008AB6B2 /* IOHIDElement_.c */,
+				77A49265129725CC008AB6B2 /* IOHIDElement_.h */,
 			);
 			path = HID_Utilities;
 			sourceTree = "<group>";
@@ -1283,7 +1288,6 @@
 				F50D069B02E6A1C601CA2799 /* CoreServices.framework */,
 				F50D069C02E6A1C601CA2799 /* Foundation.framework */,
 				6AB6FFA10538A90A0000009F /* IOKit.framework */,
-				6AC9B2DA08ABF480001EBDF6 /* QuickTime.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1573,6 +1577,8 @@
 				6A0CC1B60D3D44560080C454 /* NSStringICUAdditions.m in Sources */,
 				94DFDB4E0DD95B7800EB46BA /* sc_popen.cpp in Sources */,
 				172E7CCC0E9C29EE00925A8E /* SCImage.M in Sources */,
+				770A248012A57CD2009F3228 /* IOHIDDevice_.c in Sources */,
+				770A248112A57CD3009F3228 /* IOHIDElement_.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1642,6 +1648,8 @@
 				172CD77D0DD7D2AE0089A2F4 /* SC_LanguageClient.cpp in Sources */,
 				172CD77E0DD7D2B10089A2F4 /* SC_TerminalClient.cpp in Sources */,
 				94DFDB500DD95B7800EB46BA /* sc_popen.cpp in Sources */,
+				770A243512A44FCE009F3228 /* IOHIDDevice_.c in Sources */,
+				770A243612A44FD0009F3228 /* IOHIDElement_.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1699,7 +1707,6 @@
 				9493117A0C1921F90018AB50 /* PyrUnixPrim.cpp in Sources */,
 				9493117B0C1921F90018AB50 /* SC_CoreMIDI.cpp in Sources */,
 				3799DA850E3502F000AE51A3 /* SC_CoreAudioPrim.cpp in Sources */,
-				9493117C0C1921F90018AB50 /* SC_HID.cpp in Sources */,
 				9493117F0C1921F90018AB50 /* SC_Speech.M in Sources */,
 				949311800C1921F90018AB50 /* SC_Wii.cpp in Sources */,
 				949311830C1921F90018AB50 /* wiiremote.c in Sources */,
@@ -1726,10 +1733,6 @@
 				949311A30C1921F90018AB50 /* VMGlobals.cpp in Sources */,
 				9493143A0C1925B90018AB50 /* fftlib.c in Sources */,
 				9456F6820C19E6E500634E4D /* SC_ComPort.cpp in Sources */,
-				9456F6B50C19E79F00634E4D /* HID_Error_Handler.c in Sources */,
-				9456F6B70C19E79F00634E4D /* HID_Name_Lookup.c in Sources */,
-				9456F6B90C19E79F00634E4D /* HID_Queue_Utilities.c in Sources */,
-				9456F6BB0C19E79F00634E4D /* HID_Utilities.c in Sources */,
 				6A1C635E0CFB6B72004ED3DA /* PyrUStringPrim.cpp in Sources */,
 				6A0CC1760D3D41F40080C454 /* SMLAdvancedFindController.m in Sources */,
 				6A0CC1770D3D41F40080C454 /* SMLStatusBarTextFieldCell.m in Sources */,
@@ -1738,6 +1741,13 @@
 				6A0CC1B20D3D44560080C454 /* NSStringICUAdditions.m in Sources */,
 				94DFDB4F0DD95B7800EB46BA /* sc_popen.cpp in Sources */,
 				172E7CCD0E9C29F300925A8E /* SCImage.M in Sources */,
+				77A4923312972374008AB6B2 /* HID_Error_Handler.c in Sources */,
+				77A4923412972375008AB6B2 /* HID_Name_Lookup.c in Sources */,
+				77A4923512972376008AB6B2 /* HID_Queue_Utilities.c in Sources */,
+				77A4923612972377008AB6B2 /* HID_Utilities.c in Sources */,
+				77A4924B12972489008AB6B2 /* IOHIDDevice_.c in Sources */,
+				77A4924C12972489008AB6B2 /* IOHIDElement_.c in Sources */,
+				77A49251129724D6008AB6B2 /* SC_HID.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1854,6 +1864,160 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		77785342128EBB0100A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1 = x86_64;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = ../common/include/icu;
+				INFOPLIST_FILE = Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				PREBINDING = NO;
+				SDKROOT = "";
+				ZERO_LINK = YES;
+			};
+			name = "Development 64";
+		};
+		77785343128EBB0100A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = All;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = YES;
+			};
+			name = "Development 64";
+		};
+		77785344128EBB0100A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				INFOPLIST_FILE = Resources/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wstrict-aliasing",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PRODUCT_NAME = SuperCollider;
+				WRAPPER_EXTENSION = app;
+			};
+			name = "Development 64";
+		};
+		77785345128EBB0100A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"USE_SC_TERMINAL_CLIENT=1",
+					HAVE_SPEECH,
+					"$(inherited)",
+				);
+				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				OTHER_CFLAGS = "$(inherited)";
+				PRODUCT_NAME = sclang;
+			};
+			name = "Development 64";
+		};
+		77785346128EBB0100A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				INFOPLIST_FILE = Resources/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-Wstrict-aliasing",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = "Development 64";
+		};
 		88332478090AC12E00A4A7E4 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2333,6 +2497,7 @@
 				88332478090AC12E00A4A7E4 /* Development */,
 				88332479090AC12E00A4A7E4 /* Deployment */,
 				F36C2DA81125E2140099DB2B /* Deployment32-64 */,
+				77785343128EBB0100A32135 /* Development 64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2343,6 +2508,7 @@
 				88332484090AC12E00A4A7E4 /* Development */,
 				88332485090AC12E00A4A7E4 /* Deployment */,
 				F36C2DA71125E2140099DB2B /* Deployment32-64 */,
+				77785342128EBB0100A32135 /* Development 64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2353,6 +2519,7 @@
 				94442CC60C2C8AE40050BF9F /* Development */,
 				94442CC70C2C8AE40050BF9F /* Deployment */,
 				F36C2DAB1125E2140099DB2B /* Deployment32-64 */,
+				77785346128EBB0100A32135 /* Development 64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2363,6 +2530,7 @@
 				949317CF0C192ACC0018AB50 /* Development */,
 				949317D00C192ACC0018AB50 /* Deployment */,
 				F36C2DAA1125E2140099DB2B /* Deployment32-64 */,
+				77785345128EBB0100A32135 /* Development 64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;
@@ -2373,6 +2541,7 @@
 				94B6ABC80AF45D2900E478BB /* Development */,
 				94B6ABC90AF45D2900E478BB /* Deployment */,
 				F36C2DA91125E2140099DB2B /* Deployment32-64 */,
+				77785344128EBB0100A32135 /* Development 64 */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Deployment;

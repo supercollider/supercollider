@@ -66,9 +66,9 @@ PyrSymbol* s_toggleEditMode;
 
 extern pthread_mutex_t gLangMutex;
 
-int stringDrawCenteredInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
-int stringDrawLeftInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
-int stringDrawRightInRect(char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
+int stringDrawCenteredInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
+int stringDrawLeftInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
+int stringDrawRightInRect(const char *cString, SCRect screct, char *cFontName, float fontSize, SCColor sccolor);
 
 int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, float fontSize, SCColor sccolor, int hAlign, int vAlign, NSSize *outSize);
 
@@ -3276,6 +3276,28 @@ void SCButton::receiveDrag()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
+@implementation SCNSMenu
+- (id) init
+{
+	if ([super init])
+	{
+		current = 0;
+	}
+
+	return self;
+}
+
+- (void) selectedItem:(id)item
+{
+	NSMenuItem *s = (NSMenuItem *) item;
+	current = [s tag];
+}
+
+- (int) current
+{
+	return current;
+}
+@end
 
 SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
 {
@@ -3283,7 +3305,7 @@ SCView* NewSCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBou
 }
 
 SCPopUpMenu::SCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
-	: SCView(inParent, inObj, inBounds), mValue(0), mMenuH(0)
+	: SCView(inParent, inObj, inBounds), mValue(0), mMenu(0)
 {
 	mStringColor = SCMakeColor(0,0,0,1);
 	//mArrowColor = SCMakeColor(0,0,0,0);
@@ -3293,7 +3315,7 @@ SCPopUpMenu::SCPopUpMenu(SCContainerView *inParent, PyrObject* inObj, SCRect inB
 
 SCPopUpMenu::~SCPopUpMenu()
 {
-    if (mMenuH) DisposeMenu(mMenuH);
+    if (mMenu) [mMenu release];
 }
 
 void SCPopUpMenu::draw(SCRect inDamage)
@@ -3324,31 +3346,39 @@ void SCPopUpMenu::draw(SCRect inDamage)
 
     CGContextRestoreGState(cgc);
 
-    if (mMenuH) {
-		int numberOfItems = CountMenuItems(mMenuH);
+    if (mMenu) {
+		int numberOfItems = [mMenu numberOfItems];
 		if (numberOfItems) {
-			CFStringRef outString;
-			CopyMenuItemTextAsCFString(mMenuH, (MenuItemIndex)(mValue+1), &outString);
-			char *cstring = (char*)CFStringGetCStringPtr(outString, kCFStringEncodingMacRoman);
-			if(cstring == NULL) cstring = "[text not retrieved]";
-			CFRelease(outString);
+			char *cstring = NULL;
+			NSMenuItem *item = [mMenu itemAtIndex:mValue];
+			if (item)
+			{
+				NSString *title = [item title];
+				if (title)
+				{
+					int length = [title lengthOfBytesUsingEncoding:NSMacOSRomanStringEncoding];
+					cstring = (char *) malloc(length+1);
+					[title getCString:cstring maxLength:length+1 encoding:NSMacOSRomanStringEncoding];
+				}
+			}
 			SCRect innerBounds = dbounds;
 			int inset = 2;
 			innerBounds.x += inset + 10;
 			innerBounds.y += inset;
 			innerBounds.width -= inset * 2 + 10;
 			innerBounds.height -= inset * 2;
-			stringDrawCenteredInRect(cstring, innerBounds, mFontName, mFontSize, mStringColor);
+			stringDrawCenteredInRect((const char *) (cstring ? cstring : "[text not retrieved]"), innerBounds, mFontName, mFontSize, mStringColor);
+			if (cstring) free(cstring);
 		}
     }
 }
 
 bool SCPopUpMenu::setValue(int inValue, bool send)
 {
-	if (!mMenuH) return false;
+	if (!mMenu) return false;
 
     bool changed = inValue != mValue;
-	int numberOfItems = CountMenuItems(mMenuH);
+	int numberOfItems = [mMenu numberOfItems];
 	inValue = sc_mod(inValue, numberOfItems);
     if (inValue != mValue || numberOfItems < 2) {
         mValue = inValue;
@@ -3364,29 +3394,20 @@ void SCPopUpMenu::mouseBeginTrack(SCPoint where, int modifiers, NSEvent *theEven
 	if (modifiers & NSCommandKeyMask) {
         beginDrag(where);
     } else {
-		if (!mMenuH) return;
+		if (!mMenu) return;
 		SCRect bounds = getDrawBounds();
 
 		[(SCGraphView*)mTop->GetNSView() startMenuTracking: this];
 
-		int numberOfItems = CountMenuItems(mMenuH);
+		int numberOfItems = [mMenu numberOfItems];
 		for (int i=0; i<numberOfItems; ++i) {
-			MacCheckMenuItem(mMenuH, i+1, mValue == i);
+			[[mMenu itemAtIndex:i] setState:mValue==i];
 		}
 
 		NSPoint p = NSMakePoint(bounds.x, bounds.y);
 		NSView *view = mTop->GetNSView();
-		p = [view convertPoint: p toView: nil];
-		p = [[view window] convertBaseToScreen: p];
-
-		// cocoa to carbon y flip
-		float screenHeight = [[NSScreen mainScreen] frame].size.height;
-		p.y = screenHeight - p.y;
-
-		int val = PopUpMenuSelect(mMenuH, (short)p.y, (short)p.x, mValue + 1);
-		if (val == 0) return;
-		val = (val & 0xFFFF) - 1;
-		setValue(val, true);
+		[NSMenu popUpContextMenu:mMenu withEvent:theEvent forView:view];
+		setValue([mMenu current], true);
 	}
 }
 
@@ -3420,21 +3441,24 @@ int SCPopUpMenu::setProperty(PyrSymbol *symbol, PyrSlot *slot)
             if (!isKindOfSlot(slot, class_array)) return errWrongType;
 
             // wipe out old
-            if (mMenuH) DisposeMenu(mMenuH);
+            if (mMenu) [mMenu release];
 
             PyrObject *array = slotRawObject(slot);
             int numItems = array->size;
 
-            CreateNewMenu(1, 0, &mMenuH);
+            mMenu = [[SCNSMenu alloc] init];
 
             for (int i=0; i<numItems; ++i) {
                 PyrSlot *slot = array->slots + i;
 
-				Str255 pstr;
-				int err = slotPStrVal(slot, pstr);
+				char title[256];
+				int err = slotStrVal(slot, title, 255);
 				if (err) return err;
 
-				AppendMenu(mMenuH, pstr);
+				NSString *t = [NSString stringWithCString:(const char *)title encoding:NSMacOSRomanStringEncoding];
+				NSMenuItem *item = [mMenu addItemWithTitle:t action:@selector(selectedItem:) keyEquivalent:@""];
+				[item setTarget:mMenu];
+				[item setTag:i];
             }
 			refresh();
             return errNone;
@@ -3475,7 +3499,6 @@ void SCPopUpMenu::receiveDrag()
 {
     sendMessage(s_receiveDrag, 0, 0, 0);
 }
-
 
 /////////////////////////////////////////////////////////////////
 //SCMultiSliderView by jan trutzschler jan.21.03 //jan.23.03 changed draw added more prop.//jan.28.03 debug
