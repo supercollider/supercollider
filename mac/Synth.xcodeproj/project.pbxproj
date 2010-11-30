@@ -1238,6 +1238,138 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		77785351128EBB3900A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_64_BIT_PRE_XCODE_3_1 = x86_64;
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
+				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
+				COPY_PHASE_STRIP = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = "";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				PREBINDING = NO;
+				SDKROOT = "";
+			};
+			name = "Development 64";
+		};
+		77785352128EBB3900A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRODUCT_NAME = All;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				ZERO_LINK = YES;
+			};
+			name = "Development 64";
+		};
+		77785353128EBB3900A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INSTALL_PATH = "$(HOME)/bin";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				OTHER_CFLAGS = (
+					"$(inherited)",
+					"-faltivec",
+				);
+				PRODUCT_NAME = scsynth;
+			};
+			name = "Development 64";
+		};
+		77785354128EBB3900A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = "";
+				EXPORTED_SYMBOLS_FILE = libscsynth_exp;
+				GENERATE_MASTER_OBJECT_FILE = YES;
+				INSTALL_PATH = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				OTHER_CFLAGS = "-DSC_DARWIN";
+				PREBINDING = NO;
+				PRODUCT_NAME = libscsynth;
+				ZERO_LINK = YES;
+			};
+			name = "Development 64";
+		};
+		77785355128EBB3900A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				EXPORTED_SYMBOLS_FILE = SuperColliderAU/Source/SuperColliderAU.exp;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G4;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GENERATE_PKGINFO_FILE = YES;
+				INFOPLIST_FILE = SuperColliderAU/Resources/Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)/mac/lib\"";
+				LIBRARY_STYLE = Bundle;
+				OPTIMIZATION_FLAGS = "-O0";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-DSC_AUDIO_API=SC_AUDIO_API_AUDIOUNITS",
+				);
+				OTHER_LDFLAGS = "-bundle";
+				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I /Developer/Examples/CoreAudio/AudioUnits/AUPublic/AUBase";
+				PREBINDING = YES;
+				PRODUCT_NAME = SuperColliderAU;
+				REZ_SEARCH_PATHS = (
+					/System/Library/Frameworks/CoreServices.framework/Versions/CarbonCore.framework/Versions/A/Headers,
+					"$(PROJECT_DIR)/SuperColliderAU/AUSDK",
+				);
+				WRAPPER_EXTENSION = component;
+				ZERO_LINK = YES;
+			};
+			name = "Development 64";
+		};
+		77785356128EBB3900A32135 /* Development 64 */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = AllExceptAU;
+			};
+			name = "Development 64";
+		};
 		88331E27090AB77300A4A7E4 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1656,6 +1788,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				88331E27090AB77300A4A7E4 /* Development */,
+				77785352128EBB3900A32135 /* Development 64 */,
 				88331E28090AB77300A4A7E4 /* Deployment */,
 				F36C2CE11125D6E00099DB2B /* Deployment32-64 */,
 			);
@@ -1666,6 +1799,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				88331E2B090AB77300A4A7E4 /* Development */,
+				77785351128EBB3900A32135 /* Development 64 */,
 				88331E2C090AB77300A4A7E4 /* Deployment */,
 				F36C2CE01125D6E00099DB2B /* Deployment32-64 */,
 			);
@@ -1676,6 +1810,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				942F96FE0B03380E00E00399 /* Development */,
+				77785353128EBB3900A32135 /* Development 64 */,
 				942F96FF0B03380E00E00399 /* Deployment */,
 				F36C2CE21125D6E00099DB2B /* Deployment32-64 */,
 			);
@@ -1686,6 +1821,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				94F5FAD30C1E6BC0005CDF9F /* Development */,
+				77785354128EBB3900A32135 /* Development 64 */,
 				94F5FAD40C1E6BC0005CDF9F /* Deployment */,
 				F36C2CE31125D6E00099DB2B /* Deployment32-64 */,
 			);
@@ -1696,6 +1832,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D55DEB5E0EF32A2E00968B95 /* Development */,
+				77785355128EBB3900A32135 /* Development 64 */,
 				D55DEB5F0EF32A2E00968B95 /* Deployment */,
 				F36C2CE41125D6E00099DB2B /* Deployment32-64 */,
 			);
@@ -1706,6 +1843,7 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				DCB51FAA0FA6F5D200C7FD87 /* Development */,
+				77785356128EBB3900A32135 /* Development 64 */,
 				DCB51FAB0FA6F5D200C7FD87 /* Deployment */,
 				F36C2CE51125D6E00099DB2B /* Deployment32-64 */,
 			);

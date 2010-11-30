@@ -575,6 +575,14 @@ protected:
 SCView* NewSCButton(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
 
 
+@interface SCNSMenu : NSMenu
+{
+	int current;
+}
+- (void) selectedItem:(id)item;
+- (int) current;
+@end
+
 class SCPopUpMenu : public SCView
 {
 public:
@@ -596,7 +604,7 @@ public:
 protected:
 
 	int mValue;
-	MenuHandle mMenuH;
+	SCNSMenu *mMenu;
 	char mFontName[kFontNameSize];
 	float mFontSize;
 	SCColor mStringColor;
