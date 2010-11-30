@@ -36,6 +36,8 @@ typedef int NSInteger;
 typedef unsigned int NSUInteger;
 #endif
 
+CGRect SCtoCGRect(SCRect screct);
+
 extern PyrSymbol *s_draw;
 extern PyrSymbol *s_scview;
 extern PyrSymbol *s_closed;
@@ -875,7 +877,7 @@ int nsStringDrawInRectAlign(NSString *nsstring, SCRect screct, char *cFontName, 
  	   drawBounds.origin.y += vdiff;
 	}
 
-    CGRect cgrect = SCtoNSRect(screct);
+    CGRect cgrect = SCtoCGRect(screct);
     CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
     CGContextSaveGState(cgc);
     CGContextClipToRect(cgc, cgrect);
