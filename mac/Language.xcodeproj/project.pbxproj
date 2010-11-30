@@ -457,6 +457,30 @@
 		6A1C637F0CFB6D27004ED3DA /* utypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utypes.h; sourceTree = "<group>"; };
 		6A1C63800CFB6D27004ED3DA /* uversion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uversion.h; sourceTree = "<group>"; };
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
+		770A24CB12A58CB3009F3228 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
+		770A24CC12A58CB3009F3228 /* dfftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
+		770A24CD12A58CB3009F3228 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
+		770A24CE12A58CB3009F3228 /* MsgFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgFifo.h; sourceTree = "<group>"; };
+		770A24CF12A58CB3009F3228 /* SC_AllocPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
+		770A24D012A58CB3009F3228 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Altivec.h; sourceTree = "<group>"; };
+		770A24D112A58CB3009F3228 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
+		770A24D212A58CB3009F3228 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
+		770A24D312A58CB3009F3228 /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
+		770A24D412A58CB3009F3228 /* SC_fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_fftlib.h; sourceTree = "<group>"; };
+		770A24D512A58CB3009F3228 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_FIFO.h; sourceTree = "<group>"; };
+		770A24D612A58CB3009F3228 /* SC_List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_List.h; sourceTree = "<group>"; };
+		770A24D712A58CB3009F3228 /* SC_Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Lock.h; sourceTree = "<group>"; };
+		770A24D812A58CB3009F3228 /* sc_popen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc_popen.h; sourceTree = "<group>"; };
+		770A24D912A58CB3009F3228 /* SC_Reply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Reply.h; sourceTree = "<group>"; };
+		770A24DA12A58CB3009F3228 /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Sem.h; sourceTree = "<group>"; };
+		770A24DB12A58CB3009F3228 /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
+		770A24DC12A58CB3009F3228 /* SC_StringBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringBuffer.h; sourceTree = "<group>"; };
+		770A24DD12A58CB3009F3228 /* SC_StringParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringParser.h; sourceTree = "<group>"; };
+		770A24DE12A58CB3009F3228 /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_SyncCondition.h; sourceTree = "<group>"; };
+		770A24DF12A58CB3009F3228 /* SC_Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Types.h; sourceTree = "<group>"; };
+		770A24E012A58CB3009F3228 /* SC_VFP11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_VFP11.h; sourceTree = "<group>"; };
+		770A24E112A58CB3009F3228 /* SC_Win32Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Win32Utils.h; sourceTree = "<group>"; };
+		770A24E212A58CB3009F3228 /* scsynthsend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scsynthsend.h; sourceTree = "<group>"; };
 		77A4924912972488008AB6B2 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
 		77A4924A12972489008AB6B2 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
 		77A49264129725CC008AB6B2 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
@@ -587,20 +611,6 @@
 		949312800C19222B0018AB50 /* TabletEvents.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TabletEvents.h; sourceTree = "<group>"; };
 		949312810C19222B0018AB50 /* TextFinder.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = TextFinder.h; sourceTree = "<group>"; };
 		949312820C19222B0018AB50 /* UserPanel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = UserPanel.h; sourceTree = "<group>"; };
-		949312840C19222B0018AB50 /* dfftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
-		949312860C19222B0018AB50 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
-		949312870C19222B0018AB50 /* SC_AllocPool.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
-		949312880C19222B0018AB50 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Altivec.h; sourceTree = "<group>"; };
-		949312890C19222B0018AB50 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
-		9493128A0C19222B0018AB50 /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
-		9493128B0C19222B0018AB50 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_FIFO.h; sourceTree = "<group>"; };
-		9493128C0C19222B0018AB50 /* SC_Reply.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Reply.h; sourceTree = "<group>"; };
-		9493128D0C19222B0018AB50 /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Sem.h; sourceTree = "<group>"; };
-		9493128E0C19222B0018AB50 /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
-		9493128F0C19222B0018AB50 /* SC_StringBuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_StringBuffer.h; sourceTree = "<group>"; };
-		949312900C19222B0018AB50 /* SC_StringParser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_StringParser.h; sourceTree = "<group>"; };
-		949312910C19222B0018AB50 /* SC_Win32Utils.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Win32Utils.h; sourceTree = "<group>"; };
-		949312920C19222B0018AB50 /* scsynthsend.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = scsynthsend.h; sourceTree = "<group>"; };
 		949312940C19222B0018AB50 /* AdvancingAllocPool.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AdvancingAllocPool.h; sourceTree = "<group>"; };
 		949312950C19222B0018AB50 /* AllocPools.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AllocPools.h; sourceTree = "<group>"; };
 		949312960C19222B0018AB50 /* bullet.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = bullet.h; sourceTree = "<group>"; };
@@ -655,9 +665,7 @@
 		949312C70C19222B0018AB50 /* SFHeaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SFHeaders.h; sourceTree = "<group>"; };
 		949312C80C19222B0018AB50 /* SimpleStack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SimpleStack.h; sourceTree = "<group>"; };
 		949312C90C19222B0018AB50 /* VMGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VMGlobals.h; sourceTree = "<group>"; };
-		949312CB0C19222B0018AB50 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
 		949312CC0C19222B0018AB50 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
-		949312CD0C19222B0018AB50 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
 		949312CE0C19222B0018AB50 /* SC_BufGen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_BufGen.h; sourceTree = "<group>"; };
 		949312CF0C19222B0018AB50 /* SC_Constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Constants.h; sourceTree = "<group>"; };
 		949312D00C19222B0018AB50 /* SC_DemandUnit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DemandUnit.h; sourceTree = "<group>"; };
@@ -672,7 +680,6 @@
 		949312DA0C19222B0018AB50 /* SC_Rate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Rate.h; sourceTree = "<group>"; };
 		949312DB0C19222B0018AB50 /* SC_RGen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_RGen.h; sourceTree = "<group>"; };
 		949312DC0C19222B0018AB50 /* SC_SndBuf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_SndBuf.h; sourceTree = "<group>"; };
-		949312DD0C19222B0018AB50 /* SC_Types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Types.h; sourceTree = "<group>"; };
 		949312DE0C19222B0018AB50 /* SC_Unit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Unit.h; sourceTree = "<group>"; };
 		949312DF0C19222B0018AB50 /* SC_Wire.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Wire.h; sourceTree = "<group>"; };
 		949312E00C19222B0018AB50 /* SC_World.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_World.h; sourceTree = "<group>"; };
@@ -701,7 +708,6 @@
 		94B8F16C0B463EC000097F2D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		94D9ED1C0C2773CF00223DF8 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = /System/Library/Frameworks/WebKit.framework; sourceTree = "<absolute>"; };
 		94DFDB4D0DD95B7800EB46BA /* sc_popen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sc_popen.cpp; sourceTree = "<group>"; };
-		94DFDB510DD95B8700EB46BA /* sc_popen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc_popen.h; sourceTree = "<group>"; };
 		94E114FE0B163B040033537C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		94F5FC7E0C1E6F7F005CDF9F /* libscsynth.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libscsynth.a; path = build/libscsynth.a; sourceTree = "<group>"; };
 		F31B262E0DE604180003691B /* Info copy 12.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Info copy 12.plist"; sourceTree = "<group>"; };
@@ -1103,21 +1109,30 @@
 		949312830C19222B0018AB50 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				94DFDB510DD95B8700EB46BA /* sc_popen.h */,
-				949312840C19222B0018AB50 /* dfftlib.h */,
-				949312860C19222B0018AB50 /* fftlib.h */,
-				949312870C19222B0018AB50 /* SC_AllocPool.h */,
-				949312880C19222B0018AB50 /* SC_Altivec.h */,
-				949312890C19222B0018AB50 /* SC_DirUtils.h */,
-				9493128A0C19222B0018AB50 /* SC_Endian.h */,
-				9493128B0C19222B0018AB50 /* SC_FIFO.h */,
-				9493128C0C19222B0018AB50 /* SC_Reply.h */,
-				9493128D0C19222B0018AB50 /* SC_Sem.h */,
-				9493128E0C19222B0018AB50 /* SC_StandAloneInfo_Darwin.h */,
-				9493128F0C19222B0018AB50 /* SC_StringBuffer.h */,
-				949312900C19222B0018AB50 /* SC_StringParser.h */,
-				949312910C19222B0018AB50 /* SC_Win32Utils.h */,
-				949312920C19222B0018AB50 /* scsynthsend.h */,
+				770A24CB12A58CB3009F3228 /* clz.h */,
+				770A24CC12A58CB3009F3228 /* dfftlib.h */,
+				770A24CD12A58CB3009F3228 /* fftlib.h */,
+				770A24CE12A58CB3009F3228 /* MsgFifo.h */,
+				770A24CF12A58CB3009F3228 /* SC_AllocPool.h */,
+				770A24D012A58CB3009F3228 /* SC_Altivec.h */,
+				770A24D112A58CB3009F3228 /* SC_BoundsMacros.h */,
+				770A24D212A58CB3009F3228 /* SC_DirUtils.h */,
+				770A24D312A58CB3009F3228 /* SC_Endian.h */,
+				770A24D412A58CB3009F3228 /* SC_fftlib.h */,
+				770A24D512A58CB3009F3228 /* SC_FIFO.h */,
+				770A24D612A58CB3009F3228 /* SC_List.h */,
+				770A24D712A58CB3009F3228 /* SC_Lock.h */,
+				770A24D812A58CB3009F3228 /* sc_popen.h */,
+				770A24D912A58CB3009F3228 /* SC_Reply.h */,
+				770A24DA12A58CB3009F3228 /* SC_Sem.h */,
+				770A24DB12A58CB3009F3228 /* SC_StandAloneInfo_Darwin.h */,
+				770A24DC12A58CB3009F3228 /* SC_StringBuffer.h */,
+				770A24DD12A58CB3009F3228 /* SC_StringParser.h */,
+				770A24DE12A58CB3009F3228 /* SC_SyncCondition.h */,
+				770A24DF12A58CB3009F3228 /* SC_Types.h */,
+				770A24E012A58CB3009F3228 /* SC_VFP11.h */,
+				770A24E112A58CB3009F3228 /* SC_Win32Utils.h */,
+				770A24E212A58CB3009F3228 /* scsynthsend.h */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -1186,9 +1201,7 @@
 		949312CA0C19222B0018AB50 /* plugin_interface */ = {
 			isa = PBXGroup;
 			children = (
-				949312CB0C19222B0018AB50 /* clz.h */,
 				949312CC0C19222B0018AB50 /* Hash.h */,
-				949312CD0C19222B0018AB50 /* SC_BoundsMacros.h */,
 				949312CE0C19222B0018AB50 /* SC_BufGen.h */,
 				949312CF0C19222B0018AB50 /* SC_Constants.h */,
 				949312D00C19222B0018AB50 /* SC_DemandUnit.h */,
@@ -1203,7 +1216,6 @@
 				949312DA0C19222B0018AB50 /* SC_Rate.h */,
 				949312DB0C19222B0018AB50 /* SC_RGen.h */,
 				949312DC0C19222B0018AB50 /* SC_SndBuf.h */,
-				949312DD0C19222B0018AB50 /* SC_Types.h */,
 				949312DE0C19222B0018AB50 /* SC_Unit.h */,
 				949312DF0C19222B0018AB50 /* SC_Wire.h */,
 				949312E00C19222B0018AB50 /* SC_World.h */,
@@ -1873,7 +1885,10 @@
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = ../common/include/icu;
+				HEADER_SEARCH_PATHS = (
+					../common/include/icu,
+					../common/Headers/common,
+				);
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -2067,7 +2082,10 @@
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = ../common/include/icu;
+				HEADER_SEARCH_PATHS = (
+					../common/include/icu,
+					../common/Headers/common,
+				);
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -2092,7 +2110,10 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = ../common/include/icu;
+				HEADER_SEARCH_PATHS = (
+					../common/include/icu,
+					../common/Headers/common,
+				);
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -2343,7 +2364,10 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_VERSION = 4.2;
-				HEADER_SEARCH_PATHS = ../common/include/icu;
+				HEADER_SEARCH_PATHS = (
+					../common/include/icu,
+					../common/Headers/common,
+				);
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
