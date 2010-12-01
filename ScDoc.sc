@@ -705,7 +705,7 @@ ScDocRenderer {
                 if(node.display == \block, {
                     file.write("<pre>"++this.escapeSpecialChars(node.text)++"</pre>\n");
                 }, {
-                    file.write("<code>"++node.text++"</code>\n");
+                    file.write("<code>"++this.escapeSpecialChars(node.text)++"</code>\n");
                 });
             },
             'image', {

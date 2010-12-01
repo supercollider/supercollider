@@ -15,6 +15,8 @@ The syntax reference for the documentation markup language can be found here: li
 
 A guide to writing help can be found here: link::Guides/WritingHelp::.
 
+warning:: Currently there is a limitation on line length. You should split up long paragraphs on multiple lines.
+
 CLASSMETHODS::
 
 method:: new
