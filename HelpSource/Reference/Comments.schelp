@@ -1,0 +1,19 @@
+title:: Comments 
+categories:: Language
+summary:: source-code comments
+
+Comments begin with code:://:: and go until the end of the line. Comments can also be delimited with code::/*:: and code::*/::.
+
+Examples:
+code::
+// single line comment
+
+/*
+	multi
+	line
+	comment
+*/
+
+/* Unlike C, you can have /* nested */ comments */
+::
+
