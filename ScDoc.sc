@@ -703,7 +703,7 @@ ScDocRenderer {
             },
             'code', {
                 if(node.display == \block, {
-                    file.write("<pre>"++node.text++"</pre>\n");
+                    file.write("<pre>"++this.escapeSpecialChars(node.text)++"</pre>\n");
                 }, {
                     file.write("<code>"++node.text++"</code>\n");
                 });
