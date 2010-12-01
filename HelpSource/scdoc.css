@@ -135,14 +135,14 @@ code, pre {
     font-family: Andale Mono, monospace;
     font-weight: bold;
     font-size: 10pt;
-    margin-bottom: 0.5em;
-    margin-top: 0em;
+    margin-bottom: 0.2em;
+    margin-top: 1em;
     padding-left: 0.2em;
 }
 
 .method {
     margin-left: 2em;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
 }
 
 table.arguments {

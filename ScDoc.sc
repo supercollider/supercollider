@@ -571,9 +571,9 @@ ScDocRenderer {
     renderHTMLSubTree {|file,node,parentTag=false|
         var f, m, n, mname, args, split, mstat;
 
-        var do_children = {
+        var do_children = {|p=false|
             if(node.children.notNil, {
-                node.children.do {|e| this.renderHTMLSubTree(file,e,node.tag) };
+                node.children.do {|e| this.renderHTMLSubTree(file,e,if(p,{node.tag},{parentTag})) };
             });
         };
         
@@ -595,12 +595,12 @@ ScDocRenderer {
             },
             'classmethods', {
                 file.write("<a name='classmethods'><h2>Class Methods</h2></a>\n<div id='classmethods'>");
-                do_children.();
+                do_children.(true);
                 file.write("</div>");
             },
             'instancemethods', {
                 file.write("<a name='instancemethods'><h2>Instance Methods</h2></a>\n<div id='instancemethods'>");
-                do_children.();
+                do_children.(true);
                 file.write("</div>");
             },
             'method', {
@@ -722,27 +722,27 @@ ScDocRenderer {
             },
             'list', {
                 file.write("<ul>\n");
-                do_children.();
+                do_children.(true);
                 file.write("</ul>\n");
             },
             'tree', {
                 file.write("<ul class='tree'>\n");
-                do_children.();
+                do_children.(true);
                 file.write("</ul>\n");
             },
             'definitionlist', {
                 file.write("<dl>\n");
-                do_children.();
+                do_children.(true);
                 file.write("</dl>\n");
             },
             'numberedlist', {
                 file.write("<ol>\n");
-                do_children.();
+                do_children.(true);
                 file.write("</ol>\n");
             },
             'table', {
                 file.write("<table>\n");
-                do_children.();
+                do_children.(true);
                 file.write("</table>\n");
             },
             '##', {

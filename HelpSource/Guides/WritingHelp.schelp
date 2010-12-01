@@ -39,7 +39,7 @@ categories:: HelpSystem, Language>Conditionals, AndSoOn
 Then use normal text in sections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/ScDocSyntax:: for tag reference.
 
 subsection:: Class reference
-Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and text can only be written inside special sections.
+Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and text can only be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. Thus, named sections are not allowed, but custom subsections can be made under each special section just mentioned.
 
 code::
 class:: MyClass
