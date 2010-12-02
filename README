@@ -1,11 +1,14 @@
-New SC documentation system, work in progress
-=============================================
-Much more information can be read here: https://docs.google.com/document/edit?id=13jY-FLhwFYgzGFVTSb31eTZOsxl77eVLxuCIsXcZ7BE&hl=en&authkey=CJu58MQJ
+New SC documentation system
+===========================
 
-The markup language parser is in ScDoc.sc, copy or symlink this to your Extensions folder.
+INSTALLATION
+------------
+All ScDoc classes are in ScDoc.sc, copy or symlink this to your Extensions folder.
 
 
-Try it like this:
+USAGE
+-----
+To render and generate all docs:
 
 x = ScDoc.new;
 x.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
@@ -13,33 +16,20 @@ x.updateAll(false);
 
 Now all your rendered HTML help is in x.helpTargetDir (default is ~/share/SuperCollider/Help on Linux)
 
+See these generated helpfiles for more info about ScDoc:
 
-The parses and renderer can be used individually:
-
-p = ScDocParser.new
-r = ScDocRenderer.new;
-
-r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/Array.schelp")
-r.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/Array.html")
-
-r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Classes/LFPulse.schelp")
-r.renderHTML("/home/lijon/Coding/ScDoc/Help/Classes/LFPulse.html")
-
-r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Reference/Literals.schelp")
-r.renderHTML("/home/lijon/Coding/ScDoc/Help/Reference/Literals.html")
-
-r.parser = p.parseFile("/home/lijon/Coding/ScDoc/HelpSource/Help.schelp")
-r.renderHTML("/home/lijon/share/SuperCollider/Help/Help.html")
-
-p.parseFile("/home/lijon/Coding/ScDoc/test.schelp").dump
-p.findNode("summary").text
-p.parse("inline code::code example::.").dump
-p.root
-p.dump
-
+- Help/Reference/ScDocSyntax.html
+- Help/Guides/WritingHelp.html
+- Help/Classes/ScDoc.html
+- Help/Classes/ScDocParser.html
+- Help/Classes/ScDocRenderer.html
 
 TODO
-====
+----
+- too long lines are truncated since findRegexp has a fixed limit of 256 matches. Need to fix or workaround.
+
+- cross-platform: check all uses of systemCmd.
+
 - better error handling in parser on bogus input, etc..
 
 - force class ref filename to be equal to class name?
@@ -51,8 +41,7 @@ Also make tags for privateClassMethods:: and privateInstanceMethods::, and an op
 
 - render binary op methods differently? like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we?
-one trick might be to detect if the method has no a-zA-Z and only one arg, and if so skip the parens..
-Or, can we infer if a method is binary/unary op?
+binary ops only uses chars from this list: !@%&*-+=|<>?/
 
 - Render the argument string in method overview? Could be different for different classes though..
   One way would be that the index is just an alphabetical list of links to Methods/methodname,
@@ -68,17 +57,9 @@ HTML renderer stuff:
 - handle prose before first section in class doc?
 - other sections not allowed in class doc?
 
-- generate simple doc for classes that don't have a doc source file. (just list all methods and their args)
-put "(this class currently lacks documentation)" in summary..
-Simply scan through Class.allClasses and check if helpSourceDir +/+ "Classes" +/+ class.name++".schelp" exists.
-we could even generate a code template for the class that can be copied from the generated doc and pasted to sourceFile.schelp..
-
-If the class has ar/kr/ir methods, set categories to "UGens>undocumented".
-
-Add all undocumented classes to the categoryMap!
-
 - Handle extensions (extra classes and method additions)
-should merge stuff into the tree before parsing..? and mark method additions somehow so we can distinguish them visually in the rendered output.
+should merge stuff into the tree before parsing..? and mark method additions somehow so we can distinguish them visually in the rendered output. perhaps name the files +ClassName.schelp and only document the added methods, and let scdoc merge these..
+from where?
 
 - validation pass:
 start by looking up the docType tag in the tree (root level), then we know which tags are allowed and not.
