@@ -1,0 +1,206 @@
+class:: Point
+summary:: Cartesian point
+
+
+description::
+Defines a point on the Cartesian plane.
+
+subsection:: Creation
+
+
+method::new
+Defines a new point.
+argument:: inX 
+argument:: inY
+
+
+
+
+
+subsection:: Accessing
+
+
+method::x
+
+
+Get the x coordinate value.
+
+
+method::y
+
+
+Get the y coordinate value.
+
+
+method::x_
+Set the x coordinate value.
+argument:: aValue
+
+
+
+
+method::y_
+Set the y coordinate value.
+argument:: aValue
+
+
+
+
+method::set
+Sets the point x and y values.
+argument:: inX 
+argument:: inY
+
+
+
+
+
+subsection:: Testing
+
+
+method::== 
+Answers a Boolean whether the receiver equals the argument.
+argument:: aPoint
+
+
+
+
+method::hash
+
+
+Returns a hash value for the receiver.
+
+
+
+subsection:: Math
+
+
+method::+ 
+Addition.
+argument:: aPointOrScalar
+
+
+
+
+method::- 
+Subtraction.
+argument:: aPointOrScalar
+
+
+
+
+method::* 
+Multiplication.
+argument:: aPointOrScalar
+
+
+
+
+method::/ 
+Division.
+argument:: aPointOrScalar
+
+
+
+
+method::translate
+Addition by a Point.
+argument:: aPoint
+
+
+
+
+method::scale
+Multiplication by a Point.
+argument:: aPoint
+
+
+
+
+method::rotate
+Rotation about the origin by the angle given in radians.
+argument:: angle
+
+
+
+
+method::abs
+
+
+Absolute value of the point.
+
+
+method::rho
+
+
+Return the polar coordinate radius of the receiver.
+
+
+method::theta
+
+
+Return the polar coordinate angle of the receiver.
+
+
+method::dist
+Return the distance from the receiver to aPoint.
+argument:: aPoint
+
+
+
+
+method::transpose
+
+
+Return a Point whose x and y coordinates are swapped.
+
+
+method::round
+Round the coordinate values to a multiple of quantum.
+argument:: quantum
+
+
+
+
+method::trunc
+Truncate the coordinate values to a multiple of quantum.
+argument:: quantum
+
+
+
+
+
+subsection:: Conversion
+
+
+method::asPoint
+
+
+Returns the receiver.
+
+
+method::asComplex
+
+
+Returns a complex number with x as the real part and y as the imaginary part.
+
+
+method::asString
+
+
+Return a string representing the receiver.
+
+
+method::asShortString
+
+
+Return a short string representing the receiver.
+
+
+method::paramsCompileString
+
+
+Represent parameters to 'new' as compileable strings. (See Object::asCompileString)
+
+
+
