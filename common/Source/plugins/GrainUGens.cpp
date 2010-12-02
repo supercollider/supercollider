@@ -167,6 +167,9 @@ inline float grain_in_at(Unit* unit, int index, int offset)
 {
 	if (full_rate)
 		return GRAIN_IN_AT(unit, index, offset);
+
+	if (INRATE(index) == calc_DemandRate)
+		return DEMANDINPUT_A(index, offset + 1);
 	else
 		return IN0(index);
 }
