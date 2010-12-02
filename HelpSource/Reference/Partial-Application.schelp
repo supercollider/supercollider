@@ -1,0 +1,70 @@
+title:: Partial Application
+summary:: Create Functions via Partial Application
+categories:: Language
+related:: Reference/Functions
+
+Partial application is a way to create a function by passing only some arguments to a method. The code::_:: character stands in for missing arguments and becomes an argument to the created function.
+It only applies to a single method, list, or dictionary call, not to a more complex nested expression.
+
+for example:
+code::
+f = _ + 2;
+::
+f is now a function of one argument.
+code::
+f.value(7); // returns 9
+::
+it is equivalent to having written:
+code::
+f = {|x| x + 2 };
+::
+(except that there is no name 'x' declared)
+
+code::
+g = Point(_, _);
+::
+g is a function of two arguments.
+code::
+g.value(3, 4);
+::
+
+Here are some example usages of this in a collect message. Below each is written the equivalent function.
+code::
+(1..8).collect(_.isPrime);
+(1..8).collect {|x| x.isPrime };
+
+(1..8).collect(_.hash);
+(1..8).collect {|x| x.hash };
+
+(1..8).collect([\a, \b, _]);
+(1..8).collect {|x| [\a, \b, x] };
+
+(1..8).collect((a:_));
+(1..8).collect {|x| (a:x) };
+
+(1..8).collect(Polar(_, pi));
+(1..8).collect {|x| Polar(x, pi) };
+
+(1..8).collect((1.._));
+(1..8).collect {|x| (1..x) };
+::
+
+code::
+f = (a:_, b:_); // f is a two argument function
+g = f.(_, 5);   // g is a partial application of f
+g.(7);          // get the answer
+
+// equivalent to this:
+f = {|x, y| (a:x, b:y) }
+g = {|z| f.(z, 5) };
+g.value(7);
+::
+
+An example of what you can't do:
+code::
+(1..8).collect( Point(100 * _, 50) ); // nested expression won't work.
+// only the * gets partially applied, not the surrounding expression.
+
+(1..8).collect {|x| Point(100 * x, 50) }; // need to use a function for this.
+::
+

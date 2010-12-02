@@ -1,12 +1,14 @@
 title:: Operators
 categories:: Language
-summary:: list of operators
+summary:: common unary and binary operators
+related:: Reference/Adverbs
 
-SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, Ugens, Collections, and so on. When operators are applied to ugens they result in BinaryOpUGens or UnaryOpUGens, through the methods of AbstractFunction.
+SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, Ugens, Collections, and so on. When operators are applied to ugens they result in link::Classes/BinaryOpUGen::s or link::Classes/UnaryOpUGen::s, through the methods of link::Classes/AbstractFunction::. 
+
+This is a list of some of the common unary and binary operators that are implemented by several classes.
+See the specific classes for details and other operators.
 
 You can see which classes implements a specific operator by looking at the method index: link::Overviews/Methods::. 
-
-note:: This list might be incomplete, and it seems operators are documented in many different places. This should be organized in a better way. 
 
 section:: Unary Operators
 table::
@@ -16,9 +18,9 @@ table::
 ## floor || next lower integer
 ## ceil || next higher integer
 ## frac || fractional part
-## sign || -1 when a < 0, +1 when a > 0, 0 when a is 0
-## squared || a*a
-## cubed || a*a*a
+## sign || { -1 when a < 0, +1 when a > 0, 0 when a is 0 }
+## squared || ( code:: a*a :: )
+## cubed || ( code:: a*a*a :: )
 ## sqrt || square root
 ## exp || exponential
 ## midicps || MIDI note number to cycles per second
@@ -43,9 +45,9 @@ table::
 ## tanh || hyperbolic tangent
 ## distort || distortion
 ## softclip || distortion
-## isPositive || 1 when a >= 0, else 0
-## isNegative || 1 when a < 0, else 0
-## isStrictlyPositive || 1 when a > 0, else 0
+## isPositive || { 1 when a >= 0, else 0 }
+## isNegative || { 1 when a < 0, else 0 }
+## isStrictlyPositive || { 1 when a > 0, else 0 }
 ::
 
 section:: Binary Operators
@@ -68,23 +70,23 @@ table::
 ## round || quantization by rounding
 ## trunc || quantization by truncation
 ## atan2 || arctangent
-## hypot || hypotenuse   sqrt(a*a + b*b)
+## hypot || hypotenuse ( code:: sqrt(a*a + b*b) :: )
 ## hypotApx || hypotenuse approximation
-## ring1 || a*b + a   or equivalently:   a*(b + 1)
-## ring2 || a*b + a + b
-## ring3 || a*a*b
-## ring4 || a*a*b - a*b*b
-## sumsqr || a*a + b*b
-## difsqr || a*a - b*b
-## sqrsum || (a + b)**2
-## sqrdif || (a - b)**2
-## absdif || fabs(a - b)
-## thresh || threshholding   { 0 when a < b, a when a >= b }
-## amclip || two quadrant multiply   { 0 when b <= 0, a*b when b > 0 }
-## scaleneg || nonlinear amplification   { a when a >= 0, a*b when a < 0 }
+## ring1 || ( code:: a*b + a :: ) or equivalently: ( code:: a*(b + 1) :: )
+## ring2 || ( code:: a*b + a + b :: )
+## ring3 || ( code:: a*a*b :: )
+## ring4 || ( code:: a*a*b - a*b*b :: )
+## sumsqr || ( code:: a*a + b*b :: )
+## difsqr || ( code:: a*a - b*b :: )
+## sqrsum || ( code:: (a + b)**2 :: )
+## sqrdif || ( code:: (a - b)**2 :: )
+## absdif || ( code:: fabs(a - b) :: )
+## thresh || threshholding { 0 when a < b, a when a >= b }
+## amclip || two quadrant multiply { 0 when b <= 0, a*b when b > 0 }
+## scaleneg || nonlinear amplification { a when a >= 0, a*b when a < 0 }
 ## clip2  || bilateral clipping { b when a > b, -b when a < -b, else a }
 ## wrap2  || bilateral wrapping
 ## fold2  || bilateral folding
-## excess || residual of clipping   a - clip2(a,b)
+## excess || residual of clipping ( code:: a - clip2(a,b) :: )
 ::
 
