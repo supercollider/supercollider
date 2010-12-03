@@ -65,6 +65,8 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_HID.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Name_Lookup.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/IOHIDElement_.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/IOHIDDevice_.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Error_Handler.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreMIDI.cpp

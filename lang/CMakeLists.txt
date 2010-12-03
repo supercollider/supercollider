@@ -76,6 +76,8 @@ if(UNIX)
 		list(APPEND sclang_sources
 			LangPrimSource/WiiMote_OSX/wiiremote.c
 			LangPrimSource/SC_HID.cpp
+			LangPrimSource/HID_Utilities/IOHIDElement_.c
+			LangPrimSource/HID_Utilities/IOHIDDevice_.c
 			LangPrimSource/HID_Utilities/HID_Utilities.c
 			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
 			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
