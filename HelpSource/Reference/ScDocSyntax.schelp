@@ -97,6 +97,7 @@ tree                    x                    x               x
 numberedlist            x                    x               x
 definitionlist          x                    x               x
 table                   x                    x               x
+footnote                x                    x               x
 code            V                            x        x
 link            V                            x        x
 anchor          V                            x        x
@@ -255,6 +256,21 @@ image::filename::
 
 A caption can be added like this: code::
 image::filename#caption::
+::
+
+subsection:: Footnotes
+Footnotes can be entered like this:
+code::
+Hello I'm a geek footnote::
+According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different
+meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs
+sensationally morbid or disgusting acts"
+\::
+::
+
+The result looks like this:
+Hello I'm a geek footnote::
+According to http://en.wikipedia.org/wiki/Geek the word geek is a slang term, with different meanings ranging from "a computer expert or enthusiast" to "a carnival performer who performs sensationally morbid or disgusting acts"
 ::
 
 subsection:: Document types

@@ -169,6 +169,7 @@ ScDocParser {
                 'numberedlist::',       listEnter,
                 'definitionlist::',     listEnter,
                 'table::',              listEnter,
+                'footnote::',           listEnter,
 //                'row::', {
 //                    singleline = false;
 //                    this.enterLevel(11);
@@ -183,7 +184,6 @@ ScDocParser {
                     this.addTag('||::',nil,false,\inline);
                 },
                 '::', { //ends tables and lists
-//                    this.leaveLevel(10);
                     this.popTree;
                     if(current.notNil, {
                         current.display = if(lastTagLine==lineno,\inline,\block);
@@ -551,7 +551,8 @@ ScDocRenderer {
     var collectedArgs;
     var dirLevel;
     var baseDir;
-
+    var footNotes;
+    
     *new {|p=nil|
         ^super.newCopyArgs(p).init;
     }
@@ -566,6 +567,18 @@ ScDocRenderer {
     escapeSpecialChars {|str|
 //        ^str.replace("\"","&quot;").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
         ^str.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+    }
+    
+    renderFootNotes {|file|
+        file.write("<div class='footnotes'>\n");
+        footNotes.do {|n,i|
+            last_display = \inline;
+            file.write("<a name='footnote_"++(i+1)++"'/><div class='footnote'>");
+            file.write("("++(i+1)++") - ");
+            n.children.do(this.renderHTMLSubTree(file,_));
+            file.write("</div>");
+        };
+        file.write("</div>");
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
@@ -745,6 +758,11 @@ ScDocRenderer {
                 do_children.(true);
                 file.write("</table>\n");
             },
+            'footnote', {
+                last_display = node.display = \inline;
+                footNotes.add(node);
+                file.write("<a class='footnote' href='#footnote_"++footNotes.size++"'><sup>"++footNotes.size++"</sup></a> ");
+            },
             '##', {
                 switch(parentTag,
                     'list',             { file.write("<li>") },
@@ -856,6 +874,8 @@ ScDocRenderer {
         baseDir = ".";
         dirLevel.do { baseDir = baseDir +/+ ".." };
         
+        footNotes = List.new;
+        
 //        ("'"++baseDir++"'").postln;
         
         if(x.text.notEmpty, {
@@ -875,15 +895,17 @@ ScDocRenderer {
             x = parser.findNode(\examples);
             this.renderHTMLSubTree(f,x);
             
-            f.write("</body></html>");
         },{
             x = parser.findNode(\title);
             name = x.text.stripWhiteSpace;
             this.renderHTMLHeader(f,name,\other,folder);
         
             this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
-            f.write("</body></html>");
         });
+
+        this.renderFootNotes(f);
+        f.write("</body></html>");
+
         f.close;
     }
 }

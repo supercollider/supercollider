@@ -59,6 +59,22 @@ a:hover {
     color: #333;
 }
 
+a.footnote {
+    font-size: 9pt;
+    top: -0.1em;
+}
+div.footnotes {
+    border-top: 1px solid black;
+    margin-left: 2em;
+    margin-top: 3em;
+    margin-right: 2em;
+}
+div.footnote {
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+    font-size: 9pt;
+}
+
 /*#inheritance, #related {
     margin-left: 0.5em;
     border-top: 1px solid #aaa;
