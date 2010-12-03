@@ -42,8 +42,6 @@ typedef struct URegularExpression URegularExpression;
 #include <cstring>
 #include <vector>
 
-#define MAXREGEXFIND 256;
-
 
 struct SCRegExRegion
 {
