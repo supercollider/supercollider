@@ -1,51 +1,25 @@
 class:: Rect
 summary:: Rectangle
-related:: 
-categories::
-
-description::
-
+categories:: Geometry
 
 ClassMethods::
-
 
 method::new
 Return a new Rect with the given upper left corner and dimensions.
 
-argument:: left
-argument:: top
-argument:: width
-argument:: height
-
-
-
-
 method::newSides
 Return a new Rect with the given boundaries.
-argument:: inLeft 
-argument:: inTop 
-argument:: inRight
-argument:: inBottom
-
-
-
 
 method::fromPoints
 Return a new Rect defined by the given Points.
-argument:: inPoint1
-argument:: inPoint2
 
-
-
-
-Instance methods:
-
+InstanceMethods::
 
 method::left
-Get the value of the boundary.
+Get or set the value of the boundary.
 
 method::top
-Get the value of the boundary.
+Get or set the value of the boundary.
 
 method::right
 Get the value of the boundary.
@@ -53,178 +27,63 @@ Get the value of the boundary.
 method::bottom
 Get the value of the boundary.
 
-
-method::left_
-Set the value of the boundary.
-argument:: aValue
-
-method::top_
-Set the value of the boundary.
-argument:: aValue
-
-
 method::set
 Set the boundaries to the given values.
-argument:: inLeft 
-argument:: inTop 
-argument:: inWidth 
-argument:: inHeight
-
-
-
 
 method::setExtent
 Set the dimensions.
-argument:: inWidth
-argument:: inHeigh
-
-
-
 
 method::width
-Return the width.
-
+Set or get the width.
 
 method::height
-
-
-Return the height.
-
-
-method::width_
-Set the width.
-argument:: aValue
-
-
-
-
-method::height_
-Set the height.
-argument:: aValue
-
-
-
+Set or get the height.
 
 method::origin
-
-
 Return the upper left corner as a Point.
-
-
-method::corner
-
-
-Return the lower right corner as a Point.
-
 
 method::extent
-
-
 Return a Point whose x value is the height and whose y value is the width.
 
-
 method::leftTop
-
-
 Return the upper left corner as a Point.
 
-
 method::rightTop
-
-
 Return the upper right corner as a Point.
 
-
 method::leftBottom
-
-
 Return the lower left corner as a Point.
 
-
 method::rightBottom
-
-
 Return the lower right corner as a Point.
-
 
 method::moveBy
 Returns a new Rect which is offset by x and y.
-argument:: x
-argument:: y
-
-
-
 
 method::moveTo
-argument:: x 
-argument:: y
-
-
 Returns a new Rect whose upper left corner is moved to (x, y).
-
 
 method::moveToPoint
 Returns a new Rect whose upper left corner is moved to aPoint.
-argument:: aPoint
-
-
-
 
 method::resizeBy
 Returns a new Rect whose dimensions have been changed by (x, y).
-argument:: x 
-argument:: y
-
-
-
 
 method::resizeTo
 Returns a new Rect whose dimensions are (x, y).
-argument:: x 
-argument:: y
-
-
-
 
 method::insetBy
 Returns a new Rect whose boundaries have been inset by (x, y). If only one argument is supplied, it will be used for both x and y.
-argument:: x 
-argument:: y
-
-
-
 
 method::insetAll
 Returns a new Rect whose boundaries have been inset by the given amounts.
-argument:: insetLeft 
-argument:: insetTop 
-argument:: insetRight 
-argument:: insetBottom
-
-
-
 
 method::contains
 Answers whether aPoint is in the receiver.
-argument:: aPoint
 
-
-
-
-method::union
-method::| 
-argument:: aRect
-
-
+method::union, |
 Returns a new Rect which contains the receiver and aRect.
 
-
-method::sect
-method::& 
-argument:: aRect
-
+method::sect, &
 Returns a new Rect which is the intersection of the receiver and aRect.
-
-
-
 
