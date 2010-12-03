@@ -86,11 +86,11 @@ note            S
 warning         S
 section         S       x         1
 subsection      S       x         2
-classmethod     S       x         3
-instancemethod  S       x         3
+method          S       x         3
 argument        S       x         4
 description             x         1
-methods                 x         1
+classmethods            x         1
+instancemethods         x         1
 examples                x         1
 list                    x                    x               x
 tree                    x                    x               x
@@ -158,12 +158,12 @@ code::
 section:: name
 description::
 examples::
-methods::
+instancemethods::
+classmethods::
 
 subsection:: name
 
-instanceMethod:: name(s)
-classMethod:: name(s)
+method:: name(s)
 
 argument:: name
 ::
@@ -172,6 +172,14 @@ description, examples and methods are equivalent to code::section\:::: structura
 Method signatures and argument defaults are filled in automagically. (TODO: One can also force an argument default by giving it a name like "a=1" instead of just "a" in the cases where the default is filled in later in the method and not given in the argument definition.)
 
 Also, when multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
+code::
+method:: ar, kr
+description here...
+argument:: freq
+the frequency
+argument:: amp
+the amplitude
+::
 
 subsection:: Modal tags
 code::

@@ -8,7 +8,7 @@ A non-band-limited pulse oscillator. Outputs a high value of one and a low value
 
 classmethods::
 
-method::ar kr
+method::ar, kr
 
 argument::freq
 frequency in Hertz

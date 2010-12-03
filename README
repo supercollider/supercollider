@@ -28,6 +28,8 @@ TODO
 ----
 - too long lines are truncated since findRegexp has a fixed limit of 256 matches. Need to fix or workaround.
 
+- footnotes
+
 - cross-platform: check all uses of systemCmd.
 
 - better error handling in parser on bogus input, etc..
