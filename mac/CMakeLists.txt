@@ -63,6 +63,8 @@ set(scapp_sources
 	../common/Source/lang/LangSource/dumpByteCodes.cpp
 	../common/Source/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 	../common/Source/lang/LangPrimSource/SC_HID.cpp
+	../common/Source/lang/LangPrimSource/HID_Utilities/IOHIDElement_.c
+	../common/Source/lang/LangPrimSource/HID_Utilities/IOHIDDevice_.c
 	../common/Source/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
 	../common/Source/lang/LangPrimSource/HID_Utilities/HID_Name_Lookup.c
 	../common/Source/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
