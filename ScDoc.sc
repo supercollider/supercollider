@@ -570,15 +570,17 @@ ScDocRenderer {
     }
     
     renderFootNotes {|file|
-        file.write("<div class='footnotes'>\n");
-        footNotes.do {|n,i|
-            last_display = \inline;
-            file.write("<a name='footnote_"++(i+1)++"'/><div class='footnote'>");
-            file.write("("++(i+1)++") - ");
-            n.children.do(this.renderHTMLSubTree(file,_));
+        if (footNotes.notEmpty) {
+            file.write("<div class='footnotes'>\n");
+            footNotes.do {|n,i|
+                last_display = \inline;
+                file.write("<a name='footnote_"++(i+1)++"'/><div class='footnote'>");
+                file.write("("++(i+1)++") - ");
+                n.children.do(this.renderHTMLSubTree(file,_));
+                file.write("</div>");
+            };
             file.write("</div>");
         };
-        file.write("</div>");
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
