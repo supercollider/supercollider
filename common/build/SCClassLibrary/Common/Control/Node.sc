@@ -225,7 +225,7 @@ Node {
 
 }
 
-// common base for Group and PGroup classes
+// common base for Group and ParGroup classes
 AbstractGroup : Node {
 
 	/** immediately sends **/
@@ -540,6 +540,6 @@ RootNode : Group {
 	}
 }
 
-PGroup : AbstractGroup {
+ParGroup : AbstractGroup {
 	*creationCmd { ^63 }	//"/p_new"
 }
