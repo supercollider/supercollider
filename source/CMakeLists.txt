@@ -1,3 +1,13 @@
+find_package(FFTW3f)
+
+if (FFTW3F_FOUND)
+  add_definitions("-DSC_FFT_FFTW")
+  include_directories (${FFTW3F_INCLUDE_DIR})
+else()
+  message(SEND_ERROR "Cannot find libfftw3f")
+endif()
+
+
 add_subdirectory(sc)
 
 set(libsupernova_src
@@ -8,6 +18,7 @@ set(libsupernova_src
     sc/sc_synthdef.cpp
     sc/sc_ugen_factory.cpp
     sc/supercollider/common/Source/server/Samp.cpp
+    sc/supercollider/common/Source/common/SC_fftlib.cpp
     server/buffer_manager.cpp
     server/dsp_context.cpp
     server/memory_pool.cpp
@@ -53,6 +64,10 @@ if (NOT SNDFILE)
     message(SEND_ERROR "Cannot find libsndfile")
 else()
     target_link_libraries(libsupernova ${SNDFILE})
+endif()
+
+if (FFTW3F_FOUND)
+	target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
 endif()
 
 target_link_libraries(libsupernova oscpack tlsf boost_thread boost_system boost_filesystem boost_program_options)

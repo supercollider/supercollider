@@ -36,8 +36,14 @@
 #include "supercollider/common/Headers/server/SC_Samp.h"
 #include "supercollider/common/Headers/server/SC_Prototypes.h"
 #include "supercollider/common/Headers/server/SC_Errors.h"
-#include "supercollider/common/Headers/plugin_interface/clz.h"
-#include "supercollider/common/Headers/plugin_interface/sc_msg_iter.h"
+#include "supercollider/common/Headers/common/clz.h"
+#include "supercollider/common/Headers/plugin_interface/SC_fftlib.h"
+
+// undefine the shadowed scfft functions
+#undef scfft_create
+#undef scfft_dofft
+#undef scfft_doifft
+#undef scfft_destroy
 
 namespace nova
 {
@@ -549,6 +555,13 @@ void sc_plugin_interface::initialize(void)
     sc_interface.fNRTLock = &world_lock;
     sc_interface.fNRTUnlock = &world_unlock;
     world.mNRTLock = new SC_Lock();
+
+    /* fft library */
+    sc_interface.fSCfftCreate = &scfft_create;
+    sc_interface.fSCfftDestroy = &scfft_destroy;
+    sc_interface.fSCfftDoFFT = &scfft_dofft;
+    sc_interface.fSCfftDoIFFT = &scfft_doifft;
+
 
     /* initialize world */
     /* control busses */
