@@ -87,7 +87,7 @@ void post(const char *fmt, ...);
 - (IBAction) panelAction: (id) sender
 {
     id hitThing = sender;
-    post("sender '%s' %d\n", sender->isa->name, [sender tag]);
+    post("sender '%s' %d\n", class_getName(sender->isa), [sender tag]);
     if ([sender respondsToSelector: @selector(selectedCell)]) {
         id cell = [sender selectedCell];
         if (cell) {
@@ -97,7 +97,7 @@ void post(const char *fmt, ...);
         }
     }
     int tag = [hitThing tag];
-    post("hitThing '%s' %d\n", hitThing->isa->name, [sender tag]);
+    post("hitThing '%s' %d\n", class_getName(hitThing->isa), [sender tag]);
     // what kind of value is appropriate?
     double controlValue = 0.;
     if ([hitThing respondsToSelector: @selector(doubleValue)]) {

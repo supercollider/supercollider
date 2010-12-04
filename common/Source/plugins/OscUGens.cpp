@@ -241,7 +241,7 @@ void Index_Ctor(Index *unit);
 void Index_next_1(Index *unit, int inNumSamples);
 void Index_next_k(Index *unit, int inNumSamples);
 void Index_next_a(Index *unit, int inNumSamples);
-	
+
 void IndexL_Ctor(IndexL *unit);
 void IndexL_next_1(IndexL *unit, int inNumSamples);
 void IndexL_next_k(IndexL *unit, int inNumSamples);
@@ -733,13 +733,13 @@ void IndexL_next_1(IndexL *unit, int inNumSamples)
 	GET_TABLE
 	const float *table = bufData;
 	int32 maxindex = tableSize - 1;
-	
+
 	float findex = ZIN0(1);
 	float frac = sc_frac(findex);
-	
+
 	int32 index = (int32)findex;
 	index = sc_clip(index, 0, maxindex);
-	
+
 	float a = table[index];
 	float b = table[sc_clip(index + 1, 0, maxindex)];
 	ZOUT0(0) = lininterp(frac, a, b);
@@ -751,20 +751,20 @@ void IndexL_next_k(IndexL *unit, int inNumSamples)
 	GET_TABLE
 	const float *table = bufData;
 	int32 maxindex = tableSize - 1;
-	
+
 	float *out = ZOUT(0);
-	
+
 	float findex = ZIN0(1);
 	float frac = sc_frac(findex);
-	
+
 	int32 index = (int32)findex;
 	index = sc_clip(index, 0, maxindex);
-	
-	
+
+
 	float a = table[index];
 	float b = table[sc_clip(index + 1, 0, maxindex)];
 	float val = lininterp(frac, a, b);
-	
+
 	LOOP1(inNumSamples,
 		ZXP(out) = val;
 	);
@@ -777,17 +777,17 @@ void IndexL_next_a(IndexL *unit, int inNumSamples)
 	GET_TABLE
 	const float *table = bufData;
 	int32 maxindex = tableSize - 1;
-	
+
 	float *out = ZOUT(0);
 	float *in = ZIN(1);
-	
+
 	LOOP1(inNumSamples,
 		float findex = ZXP(in);
 		float frac = sc_frac(findex);
 		int32 i1 = sc_clip((int32)findex, 0, maxindex);
 		int32 i2 = sc_clip(i1 + 1, 0, maxindex);
 		float a = table[i1];
-		float b = table[i2];		  
+		float b = table[i2];
 		ZXP(out) =  lininterp(frac, a, b);
 	);
 
@@ -1477,51 +1477,6 @@ void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 	unit->m_phase = phase;
 }
 
-/* we disable the vectorized code for the iphone for now, since the regular implementation seems 
-   to be faster (see 43137F3E-3B77-4D7C-9CA2-1E3A13D9FE2B@gmail.com)
- */
-#undef IPHONE_VEC
-#ifdef IPHONE_VEC
-
-void vSinOsc_next_ikk(SinOsc *unit, int inNumSamples)
-{
-	//int64 now = GetMicroseconds();
-
-	float *out = OUT(0);
-	float freqin = ZIN0(0);
-	float phasein = ZIN0(1);
-
-	float *table0 = ft->mSineWavetable;
-	float *table1 = table0 + 1;
-
-	int32 phase = unit->m_phase;
-	int32 lomask = unit->m_lomask;
-
-	int32 freq = (int32)(unit->m_cpstoinc * freqin);
-	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
-	unit->m_phasein = phasein;
-
-	unsigned long frac[64];
-	float a[64];
-	float b[64];
-
-	int i;
-	for (i=0; i<inNumSamples; i++)
-	{
-		frac[i] = 0x3F800000 | (0x007FFF80 & (phase<<7));
-		uint32 index = (phase>>xlobits1)&lomask;
-		a[i] = *(float *) ((char *)table0 + index);
-		b[i] = *(float *) ((char *)table1 + index);
-		phase += phaseinc;
-	}
-	vmuladd(out, (float *) a, (float *) frac, (float *) b, inNumSamples);
-	unit->m_phase = phase;
-
-	//printf("vSinOsc_kk : %d samples, %fms\n", inNumSamples, (float)(GetMicroseconds()-now)/1000);
-}
-#endif
-
-
 #if __VEC__
 
 void vSinOsc_next_ikk(SinOsc *unit, int inNumSamples)
@@ -1693,11 +1648,7 @@ void SinOsc_Ctor(SinOsc *unit)
 			}
 #else
 			//Print("next_ikk\n");
-#ifdef IPHONE_VEC
-			SETCALC(vSinOsc_next_ikk);
-#else
 			SETCALC(SinOsc_next_ikk);
-#endif
 #endif
 			unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
 		}

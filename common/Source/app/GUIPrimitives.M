@@ -222,7 +222,7 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 	if(!view) return errNone;
 	NSColor * color = [view backgroundColor];
 	if(!color) return errNone;
-	float red, green, blue, alpha;
+	CGFloat red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
 	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
@@ -320,7 +320,7 @@ int prTextWindow_GetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPush
 	if(!view) return errNone;
 	NSColor * color = [[[view selectedTextAttributes] objectForKey: NSBackgroundColorAttributeName] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
 	if(!color) return errNone;
-	float red, green, blue, alpha;
+	CGFloat red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
 	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
@@ -2934,7 +2934,12 @@ int prPen_SetShadow(struct VMGlobals *g, int numArgsPushed)
 
 	CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-	CGColorRef col = CGColorCreate(colorSpace, (const float*)&scColor);
+	CGFloat colors[4];
+	colors[0] = scColor.red;
+	colors[1] = scColor.green;
+	colors[2] = scColor.blue;
+	colors[3] = scColor.alpha;
+	CGColorRef col = CGColorCreate(colorSpace, colors);
 	if(!col){
 		CGColorSpaceRelease(colorSpace);
 		return errFailed;
@@ -3223,12 +3228,20 @@ int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
 
 	if( pyrclass == class_floatarray )  // float array only
 	{
+		CGFloat *colors = (CGFloat *) malloc(pyrarray->size*sizeof(CGFloat));
+		int i;
+		float *src = ((PyrFloatArray *)pyrarray)->f;
+		for (i=0; i<pyrarray->size; i++)
+		{
+			colors[i] = (CGFloat) *(src++);
+		}
 		CGContextSetLineDash(
 			(CGContextRef)[gctx graphicsPort],
 			0,
-			((PyrFloatArray*)pyrarray)->f,
+			colors,
 			pyrarray->size
 		);
+		free(colors);
 		return errNone;
 	}
 	else
@@ -3300,7 +3313,7 @@ typedef struct GradientInfo {
 
 static GradientInfo gGradientInfo;
 
-static void					GradientCalcLinear(void *info, const float *in, float *out)
+static void					GradientCalcLinear(void *info, const CGFloat *in, CGFloat *out)
 {
     size_t k;
 	/*
@@ -3311,7 +3324,7 @@ static void					GradientCalcLinear(void *info, const float *in, float *out)
 	}else{
 	*/
 		for (k = 0; k < 4; k++) {
-			*out++ = (((const float*)&gGradientInfo.color1)[k] * (*in)) + (((const float*)&gGradientInfo.color0)[k] * (1-(*in)));
+			*out++ = (CGFloat)(((float *)(&gGradientInfo.color1))[k]) * (*in) + (CGFloat)(((float *)(&gGradientInfo.color0))[k]) * (1-(*in));
 		}
 	//}
 }
@@ -3319,8 +3332,8 @@ static void					GradientCalcLinear(void *info, const float *in, float *out)
 static CGFunctionRef		CreateGradientFunctionRef()
 {
 	size_t components;
-    static const float input_value_range [2] = { 0, 1 };
-    static const float output_value_ranges [8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
+    static const CGFloat input_value_range [2] = { 0, 1 };
+    static const CGFloat output_value_ranges [8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
     static const CGFunctionCallbacks callbacks = { 0,
 									&GradientCalcLinear,
 									NULL};

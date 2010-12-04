@@ -6280,7 +6280,7 @@ PluginLoad(Filter)
 
 	DefineSimpleUnit(Hilbert);
 	DefineSimpleUnit(FreqShift);
-	DefineSimpleCantAliasUnit(MoogFF);
+	DefineSimpleUnit(MoogFF);
 
 	/* BEQSuite UGens */
 	DefineSimpleUnit(BLowPass);

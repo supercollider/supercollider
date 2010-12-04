@@ -19,7 +19,7 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-ADD_CUSTOM_TARGET(setMainVersion ALL 
+ADD_CUSTOM_TARGET(setMainVersion ALL
        sh ${CMAKE_CURRENT_SOURCE_DIR}/common/setMainVersion.sh
        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/common
        VERBATIM
@@ -80,6 +80,10 @@ endif()
 option(SC_ED "Build gedit-based IDE." OFF)
 option(SC_VIM "Build vim-based IDE." OFF)
 
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	option(SC_WII "Build sclang with WII support" ON)
+endif()
+
 #############################################
 # subdirectories
 add_subdirectory(common/Source)
@@ -100,3 +104,19 @@ endif()
 if(SC_VIM)
 	add_subdirectory(editors/scvim)
 endif()
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    install(DIRECTORY common/Headers/
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
+        PATTERN app* EXCLUDE
+    )
+endif()
+
+
+#############################################
+# CPack support
+
+set(CPACK_PACKAGE_VERSION_MAJOR 3)
+set(CPACK_PACKAGE_VERSION_MINOR 5)
+set(CPACK_PACKAGE_VERSION_PATCH dev)
+include(CPack)

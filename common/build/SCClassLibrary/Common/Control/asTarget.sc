@@ -10,7 +10,7 @@
 }
 
 +Nil {
-	asTarget { ^Group.basicNew(Server.default, 1) }
+	asTarget { ^Server.default.asTarget }
 	asNodeID { ^this }
 }
 

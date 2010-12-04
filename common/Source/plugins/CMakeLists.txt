@@ -1,17 +1,3 @@
-# here we choose who provides us with the FFT lib
-if (FFT_GREEN)
-	add_definitions("-DSC_FFT_GREEN")
-elseif (APPLE)
-	add_definitions("-DSC_FFT_VDSP")
-else()
-	find_package(FFTW3f)
-
-	if (FFTW3F_FOUND)
-		add_definitions("-DSC_FFT_FFTW")
-	else()
-		message(SEND_ERROR "Cannot find libfftw3f")
-	endif()
-endif()
 
 if(NOT NO_LIBSNDFILE)
 	find_package(Sndfile)
@@ -76,21 +62,25 @@ endif()
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	add_definitions(-fno-finite-math-only)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -fno-exceptions -fvisibility-inlines-hidden")
 endif()
 
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
-	add_library(${plugin_name} MODULE ${plugin})
+        if(WIN32)
+        	add_library(${plugin_name} MODULE ${plugin} ../../../windows/PlugIns/ExportHelper.cpp)
+        else()
+        	add_library(${plugin_name} MODULE ${plugin})
+        endif()
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
 set(uiugens MouseUGens KeyboardUGens)
 
-set(scfft_sources   ../common/SC_fftlib.cpp   SCComplex.cpp)
-if (FFT_GREEN)
-	set(scfft_sources   ${scfft_sources} ../common/fftlib.c)
+if (WIN32)
+        set(scfft_sources   ${scfft_sources} ../../../windows/PlugIns/ExportHelper.cpp)
 endif()
+
 
 add_library(FFT_UGens MODULE
 			FFTInterfaceTable.cpp
@@ -122,9 +112,13 @@ add_library(ML_UGens MODULE
 			)
 
 if(NOT NO_LIBSNDFILE)
-	add_library(DiskIO_UGens MODULE
-			DiskIO_UGens.cpp
-			../server/SC_SyncCondition.cpp)
+	set(diskio_sources DiskIO_UGens.cpp)
+
+	if(WIN32)
+		set(diskio_sources ${diskio_sources} ../../../windows/PlugIns/ExportHelper.cpp)
+	endif()
+
+	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
 	if(SNDFILE_FOUND)
 		include_directories(${SNDFILE_INCLUDE_DIR})
@@ -145,10 +139,6 @@ endif()
 
 foreach(ugen ${fft_ugens})
 	target_link_libraries(${ugen} m)
-
-	if (FFTW3F_FOUND)
-		target_link_libraries(${ugen} ${FFTW3F_LIBRARY})
-	endif()
 
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")
@@ -203,8 +193,7 @@ if (supernova)
 
 	if(NOT NO_LIBSNDFILE)
 		add_library(DiskIO_UGens_supernova MODULE
-				DiskIO_UGens.cpp
-				../server/SC_SyncCondition.cpp)
+				DiskIO_UGens.cpp)
 		set_property(TARGET DiskIO_UGens_supernova
 					APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
 

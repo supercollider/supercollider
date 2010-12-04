@@ -18,28 +18,57 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifndef _SC_Types_
+#define _SC_Types_
 
-#ifndef _SC_SyncCondition_
-#define _SC_SyncCondition_
+#include <sys/types.h>
 
-#include <pthread.h>
+#if !defined(__cplusplus)
+# include <stdbool.h>
+#endif // __cplusplus
 
-class SC_SyncCondition
-{
-public:
-	SC_SyncCondition();
-	~SC_SyncCondition();
+typedef int SCErr;
 
-	void WaitEach();
-	void WaitOnce();
-	void WaitNext();
-	void Signal();
+#ifdef _WIN32
+typedef __int64	int64;
+typedef unsigned __int64 uint64;
+#else
+typedef long long int64;
+typedef unsigned long long uint64;
+#endif
 
-private:
-	pthread_cond_t available;
-	pthread_mutex_t mutex;
-	int read, write;
-};
+typedef int int32;
+typedef unsigned int uint32;
+
+typedef short int16;
+typedef unsigned short uint16;
+
+typedef signed char int8;
+typedef unsigned char uint8;
+
+typedef float float32;
+typedef double float64;
+
+typedef union {
+	uint32 u;
+	int32 i;
+	float32 f;
+} elem32;
+
+typedef union {
+	uint64 u;
+	int64 i;
+	float64 f;
+} elem64;
+
+const unsigned int kSCNameLen = 8;
+const unsigned int kSCNameByteLen = 8 * sizeof(int32);
+
+#ifdef __GNUC__
+#define sc_typeof_cast(x) (typeof(x))
+#else
+#define sc_typeof_cast(x) /* (typeof(x)) */
+#endif
 
 #endif
 

@@ -86,19 +86,10 @@
 		7713C6D90F422F8300B0055E /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9640EB36D500051CF38 /* scsynthsend.cpp */; };
 		7725B4BD1191E0510056CA2F /* SuperCollider_BrowserPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7725B4BC1191E0510056CA2F /* SuperCollider_BrowserPage.xib */; };
 		775574050FBE45A500192282 /* SuperCollider_FileTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */; };
-		77597AF41123328300D2A968 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AF31123328300D2A968 /* CoreFoundation.framework */; };
-		77597AF8112332A800D2A968 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AF7112332A800D2A968 /* CoreGraphics.framework */; };
-		77597B00112332BE00D2A968 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AFF112332BE00D2A968 /* AudioToolbox.framework */; };
-		77597B03112332CF00D2A968 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B02112332CF00D2A968 /* MediaPlayer.framework */; };
-		77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B04112332CF00D2A968 /* UIKit.framework */; };
-		77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597B09112332ED00D2A968 /* Foundation.framework */; };
 		776B2A97119075EF001F253D /* JITLib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 776B2A70119075EC001F253D /* JITLib */; };
 		77785320128DC78300A32135 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
-		778F12C00F50A92100CB6629 /* synthdefs in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129E0F50A92100CB6629 /* synthdefs */; };
 		778F12C10F50A92100CB6629 /* sounds in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129F0F50A92100CB6629 /* sounds */; };
-		778F12C20F50A92100CB6629 /* plugins in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12AB0F50A92100CB6629 /* plugins */; };
 		778F12C30F50A92100CB6629 /* patches in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12AD0F50A92100CB6629 /* patches */; };
-		778F12C40F50A92100CB6629 /* Extensions in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12BB0F50A92100CB6629 /* Extensions */; };
 		778F12CA0F50A94600CB6629 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 778F12C90F50A94600CB6629 /* icon.png */; };
 		778F12D30F50A9C100CB6629 /* libscsynth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7751B8240F435F700044CAC0 /* libscsynth.a */; };
 		778F17E60F50AE1100CB6629 /* SuperCollider_MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */; };
@@ -106,7 +97,13 @@
 		778F18490F50B1D000CB6629 /* Common in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18450F50B1D000CB6629 /* Common */; };
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
-		77ABF4B9124BC3510008A5E0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77ABF4B8124BC3510008A5E0 /* CFNetwork.framework */; };
+		77BA5223129C371F00CE89DD /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5222129C371F00CE89DD /* CFNetwork.framework */; };
+		77BA5234129C373400CE89DD /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5233129C373400CE89DD /* CoreFoundation.framework */; };
+		77BA5236129C373B00CE89DD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5235129C373B00CE89DD /* CoreGraphics.framework */; };
+		77BA5238129C374100CE89DD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5237129C374100CE89DD /* AudioToolbox.framework */; };
+		77BA523A129C374C00CE89DD /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5239129C374C00CE89DD /* MediaPlayer.framework */; };
+		77BA523C129C375700CE89DD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA523B129C375700CE89DD /* UIKit.framework */; };
+		77BA523E129C376000CE89DD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA523D129C376000CE89DD /* Foundation.framework */; };
 		77C11F4E11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77C11F4D11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib */; };
 		77C1204511D67558002067D4 /* PostViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 77C1204411D67558002067D4 /* PostViewController.mm */; };
 /* End PBXBuildFile section */
@@ -154,11 +151,8 @@
 				778F18490F50B1D000CB6629 /* Common in CopyFiles */,
 				778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */,
 				778F184B0F50B1D000CB6629 /* Platform in CopyFiles */,
-				778F12C00F50A92100CB6629 /* synthdefs in CopyFiles */,
 				778F12C10F50A92100CB6629 /* sounds in CopyFiles */,
-				778F12C20F50A92100CB6629 /* plugins in CopyFiles */,
 				778F12C30F50A92100CB6629 /* patches in CopyFiles */,
-				778F12C40F50A92100CB6629 /* Extensions in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,21 +310,6 @@
 		7751AA200EB36D890051CF38 /* TabletEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabletEvents.h; sourceTree = "<group>"; };
 		7751AA210EB36D890051CF38 /* TextFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextFinder.h; sourceTree = "<group>"; };
 		7751AA220EB36D890051CF38 /* UserPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserPanel.h; sourceTree = "<group>"; };
-		7751AA240EB36D890051CF38 /* dfftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
-		7751AA250EB36D890051CF38 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
-		7751AA260EB36D890051CF38 /* SC_AllocPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
-		7751AA270EB36D890051CF38 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Altivec.h; sourceTree = "<group>"; };
-		7751AA280EB36D890051CF38 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
-		7751AA290EB36D890051CF38 /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
-		7751AA2A0EB36D890051CF38 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_FIFO.h; sourceTree = "<group>"; };
-		7751AA2B0EB36D890051CF38 /* sc_popen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc_popen.h; sourceTree = "<group>"; };
-		7751AA2C0EB36D890051CF38 /* SC_Reply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Reply.h; sourceTree = "<group>"; };
-		7751AA2D0EB36D890051CF38 /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Sem.h; sourceTree = "<group>"; };
-		7751AA2E0EB36D890051CF38 /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
-		7751AA2F0EB36D890051CF38 /* SC_StringBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringBuffer.h; sourceTree = "<group>"; };
-		7751AA300EB36D890051CF38 /* SC_StringParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringParser.h; sourceTree = "<group>"; };
-		7751AA310EB36D890051CF38 /* SC_Win32Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Win32Utils.h; sourceTree = "<group>"; };
-		7751AA320EB36D890051CF38 /* scsynthsend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scsynthsend.h; sourceTree = "<group>"; };
 		7751AA470EB36D890051CF38 /* AdvancingAllocPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdvancingAllocPool.h; sourceTree = "<group>"; };
 		7751AA480EB36D890051CF38 /* AllocPools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AllocPools.h; sourceTree = "<group>"; };
 		7751AA490EB36D890051CF38 /* bullet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bullet.h; sourceTree = "<group>"; };
@@ -375,7 +354,6 @@
 		7751AA700EB36D890051CF38 /* SC_ComPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_ComPort.h; sourceTree = "<group>"; };
 		7751AA710EB36D890051CF38 /* SC_LanguageClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_LanguageClient.h; sourceTree = "<group>"; };
 		7751AA720EB36D890051CF38 /* SC_LibraryConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_LibraryConfig.h; sourceTree = "<group>"; };
-		7751AA730EB36D890051CF38 /* SC_List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_List.h; sourceTree = "<group>"; };
 		7751AA740EB36D890051CF38 /* SC_LogFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_LogFile.h; sourceTree = "<group>"; };
 		7751AA750EB36D890051CF38 /* SC_Msg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Msg.h; sourceTree = "<group>"; };
 		7751AA760EB36D890051CF38 /* SC_SynthImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_SynthImpl.h; sourceTree = "<group>"; };
@@ -385,13 +363,10 @@
 		7751AA7A0EB36D890051CF38 /* SFHeaders.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHeaders.h; sourceTree = "<group>"; };
 		7751AA7B0EB36D890051CF38 /* SimpleStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleStack.h; sourceTree = "<group>"; };
 		7751AA7C0EB36D890051CF38 /* VMGlobals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMGlobals.h; sourceTree = "<group>"; };
-		7751AA7E0EB36D890051CF38 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
 		7751AA7F0EB36D890051CF38 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
-		7751AA800EB36D890051CF38 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
 		7751AA810EB36D890051CF38 /* SC_BufGen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_BufGen.h; sourceTree = "<group>"; };
 		7751AA820EB36D890051CF38 /* SC_Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Constants.h; sourceTree = "<group>"; };
 		7751AA830EB36D890051CF38 /* SC_DemandUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_DemandUnit.h; sourceTree = "<group>"; };
-		7751AA840EB36D890051CF38 /* SC_Dimension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Dimension.h; sourceTree = "<group>"; };
 		7751AA850EB36D890051CF38 /* SC_FifoMsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_FifoMsg.h; sourceTree = "<group>"; };
 		7751AA860EB36D890051CF38 /* SC_Graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Graph.h; sourceTree = "<group>"; };
 		7751AA870EB36D890051CF38 /* SC_InlineBinaryOp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_InlineBinaryOp.h; sourceTree = "<group>"; };
@@ -403,7 +378,6 @@
 		7751AA8D0EB36D890051CF38 /* SC_Rate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Rate.h; sourceTree = "<group>"; };
 		7751AA8E0EB36D890051CF38 /* SC_RGen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_RGen.h; sourceTree = "<group>"; };
 		7751AA8F0EB36D890051CF38 /* SC_SndBuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_SndBuf.h; sourceTree = "<group>"; };
-		7751AA900EB36D890051CF38 /* SC_Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Types.h; sourceTree = "<group>"; };
 		7751AA910EB36D890051CF38 /* SC_Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Unit.h; sourceTree = "<group>"; };
 		7751AA920EB36D890051CF38 /* SC_Wire.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Wire.h; sourceTree = "<group>"; };
 		7751AA930EB36D890051CF38 /* SC_World.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_World.h; sourceTree = "<group>"; };
@@ -413,20 +387,33 @@
 		775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
 		77597AEA1123320700D2A968 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = lib/libsndfile_iphone.a; sourceTree = "<group>"; };
 		77597AEF1123323800D2A968 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = ../mac/lib/scUBlibsndfile.a; sourceTree = SOURCE_ROOT; };
-		77597AF31123328300D2A968 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = iphoneos2.2/System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<group>"; };
-		77597AF7112332A800D2A968 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = iphoneos2.2/System/Library/Frameworks/CoreGraphics.framework; sourceTree = "<group>"; };
-		77597AFB112332B400D2A968 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = iphoneos2.2/System/Library/Frameworks/CoreAudio.framework; sourceTree = "<group>"; };
-		77597AFF112332BE00D2A968 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = iphoneos2.2/System/Library/Frameworks/AudioToolbox.framework; sourceTree = "<group>"; };
-		77597B02112332CF00D2A968 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = iphoneos2.2/System/Library/Frameworks/MediaPlayer.framework; sourceTree = "<group>"; };
-		77597B04112332CF00D2A968 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = iphoneos2.2/System/Library/Frameworks/UIKit.framework; sourceTree = "<group>"; };
-		77597B09112332ED00D2A968 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = iphoneos2.2/System/Library/Frameworks/Foundation.framework; sourceTree = "<group>"; };
 		775D93940F509B7A00112D87 /* sndfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sndfile.h; path = ../common/include/libsndfile/sndfile.h; sourceTree = SOURCE_ROOT; };
 		776B2A70119075EC001F253D /* JITLib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = JITLib; path = ../common/build/SCClassLibrary/JITLib; sourceTree = SOURCE_ROOT; };
-		778F129E0F50A92100CB6629 /* synthdefs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = synthdefs; path = "iPhone Resources/synthdefs"; sourceTree = "<group>"; };
+		778A972412A2BFF500475B52 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
+		778A972512A2BFF500475B52 /* dfftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
+		778A972612A2BFF500475B52 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
+		778A972712A2BFF500475B52 /* SC_AllocPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
+		778A972812A2BFF500475B52 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Altivec.h; sourceTree = "<group>"; };
+		778A972912A2BFF500475B52 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
+		778A972A12A2BFF500475B52 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
+		778A972B12A2BFF500475B52 /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
+		778A972C12A2BFF500475B52 /* SC_fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_fftlib.h; sourceTree = "<group>"; };
+		778A972D12A2BFF500475B52 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_FIFO.h; sourceTree = "<group>"; };
+		778A972E12A2BFF500475B52 /* SC_List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_List.h; sourceTree = "<group>"; };
+		778A972F12A2BFF500475B52 /* SC_Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Lock.h; sourceTree = "<group>"; };
+		778A973012A2BFF500475B52 /* sc_popen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc_popen.h; sourceTree = "<group>"; };
+		778A973112A2BFF500475B52 /* SC_Reply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Reply.h; sourceTree = "<group>"; };
+		778A973212A2BFF500475B52 /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Sem.h; sourceTree = "<group>"; };
+		778A973312A2BFF500475B52 /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
+		778A973412A2BFF500475B52 /* SC_StringBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringBuffer.h; sourceTree = "<group>"; };
+		778A973512A2BFF500475B52 /* SC_StringParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringParser.h; sourceTree = "<group>"; };
+		778A973612A2BFF500475B52 /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_SyncCondition.h; sourceTree = "<group>"; };
+		778A973712A2BFF500475B52 /* SC_Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Types.h; sourceTree = "<group>"; };
+		778A973812A2BFF500475B52 /* SC_VFP11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_VFP11.h; sourceTree = "<group>"; };
+		778A973912A2BFF500475B52 /* SC_Win32Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Win32Utils.h; sourceTree = "<group>"; };
+		778A973A12A2BFF500475B52 /* scsynthsend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scsynthsend.h; sourceTree = "<group>"; };
 		778F129F0F50A92100CB6629 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = "iPhone Resources/sounds"; sourceTree = "<group>"; };
-		778F12AB0F50A92100CB6629 /* plugins */ = {isa = PBXFileReference; lastKnownFileType = folder; name = plugins; path = "iPhone Resources/plugins"; sourceTree = "<group>"; };
 		778F12AD0F50A92100CB6629 /* patches */ = {isa = PBXFileReference; lastKnownFileType = folder; name = patches; path = "iPhone Resources/patches"; sourceTree = "<group>"; };
-		778F12BB0F50A92100CB6629 /* Extensions */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Extensions; path = "iPhone Resources/Extensions"; sourceTree = "<group>"; };
 		778F12C90F50A94600CB6629 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = "iPhone Resources/icon.png"; sourceTree = "<group>"; };
 		778F17E40F50AE1100CB6629 /* SuperCollider_MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_MainWindow.xib; path = "iPhone Resources/SuperCollider_MainWindow.xib"; sourceTree = "<group>"; };
 		778F17E50F50AE1100CB6629 /* SuperCollider.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = SuperCollider.plist; path = "iPhone Resources/SuperCollider.plist"; sourceTree = "<group>"; };
@@ -434,8 +421,13 @@
 		778F18450F50B1D000CB6629 /* Common */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Common; path = ../common/build/SCClassLibrary/Common; sourceTree = "<group>"; };
 		778F18460F50B1D000CB6629 /* DefaultLibrary */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DefaultLibrary; path = ../common/build/SCClassLibrary/DefaultLibrary; sourceTree = "<group>"; };
 		778F18470F50B1D000CB6629 /* Platform */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Platform; path = ../common/build/SCClassLibrary/Platform; sourceTree = "<group>"; };
-		77ABF4B8124BC3510008A5E0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = iphoneos2.2/System/Library/Frameworks/CFNetwork.framework; sourceTree = "<group>"; };
-		77B294D30ECEFF7500549D47 /* SC_VFP11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_VFP11.h; sourceTree = "<group>"; };
+		77BA5222129C371F00CE89DD /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		77BA5233129C373400CE89DD /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		77BA5235129C373B00CE89DD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		77BA5237129C374100CE89DD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		77BA5239129C374C00CE89DD /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		77BA523B129C375700CE89DD /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		77BA523D129C376000CE89DD /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		77C11F4D11D66C47002067D4 /* SuperCollider_MainWindow_iPad.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_MainWindow_iPad.xib; path = "iPhone Resources/SuperCollider_MainWindow_iPad.xib"; sourceTree = "<group>"; };
 		77C1204311D67558002067D4 /* PostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostViewController.h; sourceTree = "<group>"; };
 		77C1204411D67558002067D4 /* PostViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PostViewController.mm; sourceTree = "<group>"; };
@@ -447,14 +439,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				778F12D30F50A9C100CB6629 /* libscsynth.a in Frameworks */,
-				77597AF41123328300D2A968 /* CoreFoundation.framework in Frameworks */,
-				77597AF8112332A800D2A968 /* CoreGraphics.framework in Frameworks */,
-				77597B00112332BE00D2A968 /* AudioToolbox.framework in Frameworks */,
-				77597B03112332CF00D2A968 /* MediaPlayer.framework in Frameworks */,
-				77597B05112332CF00D2A968 /* UIKit.framework in Frameworks */,
-				77597B0A112332ED00D2A968 /* Foundation.framework in Frameworks */,
-				77ABF4B9124BC3510008A5E0 /* CFNetwork.framework in Frameworks */,
 				77785320128DC78300A32135 /* scUBlibsndfile.a in Frameworks */,
+				77BA5223129C371F00CE89DD /* CFNetwork.framework in Frameworks */,
+				77BA5234129C373400CE89DD /* CoreFoundation.framework in Frameworks */,
+				77BA5236129C373B00CE89DD /* CoreGraphics.framework in Frameworks */,
+				77BA5238129C374100CE89DD /* AudioToolbox.framework in Frameworks */,
+				77BA523A129C374C00CE89DD /* MediaPlayer.framework in Frameworks */,
+				77BA523C129C375700CE89DD /* UIKit.framework in Frameworks */,
+				77BA523E129C376000CE89DD /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -538,11 +530,8 @@
 		7725B4AF1191DFA20056CA2F /* Bundled */ = {
 			isa = PBXGroup;
 			children = (
-				778F129E0F50A92100CB6629 /* synthdefs */,
 				778F129F0F50A92100CB6629 /* sounds */,
-				778F12AB0F50A92100CB6629 /* plugins */,
 				778F12AD0F50A92100CB6629 /* patches */,
-				778F12BB0F50A92100CB6629 /* Extensions */,
 				778F18440F50B1D000CB6629 /* backwards_compatibility */,
 				778F18450F50B1D000CB6629 /* Common */,
 				778F18460F50B1D000CB6629 /* DefaultLibrary */,
@@ -815,22 +804,29 @@
 		7751AA230EB36D890051CF38 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				7751AA240EB36D890051CF38 /* dfftlib.h */,
-				7751AA250EB36D890051CF38 /* fftlib.h */,
-				7751AA260EB36D890051CF38 /* SC_AllocPool.h */,
-				7751AA270EB36D890051CF38 /* SC_Altivec.h */,
-				7751AA280EB36D890051CF38 /* SC_DirUtils.h */,
-				7751AA290EB36D890051CF38 /* SC_Endian.h */,
-				7751AA2A0EB36D890051CF38 /* SC_FIFO.h */,
-				7751AA2B0EB36D890051CF38 /* sc_popen.h */,
-				7751AA2C0EB36D890051CF38 /* SC_Reply.h */,
-				7751AA2D0EB36D890051CF38 /* SC_Sem.h */,
-				7751AA2E0EB36D890051CF38 /* SC_StandAloneInfo_Darwin.h */,
-				7751AA2F0EB36D890051CF38 /* SC_StringBuffer.h */,
-				7751AA300EB36D890051CF38 /* SC_StringParser.h */,
-				77B294D30ECEFF7500549D47 /* SC_VFP11.h */,
-				7751AA310EB36D890051CF38 /* SC_Win32Utils.h */,
-				7751AA320EB36D890051CF38 /* scsynthsend.h */,
+				778A972412A2BFF500475B52 /* clz.h */,
+				778A972512A2BFF500475B52 /* dfftlib.h */,
+				778A972612A2BFF500475B52 /* fftlib.h */,
+				778A972712A2BFF500475B52 /* SC_AllocPool.h */,
+				778A972812A2BFF500475B52 /* SC_Altivec.h */,
+				778A972912A2BFF500475B52 /* SC_BoundsMacros.h */,
+				778A972A12A2BFF500475B52 /* SC_DirUtils.h */,
+				778A972B12A2BFF500475B52 /* SC_Endian.h */,
+				778A972C12A2BFF500475B52 /* SC_fftlib.h */,
+				778A972D12A2BFF500475B52 /* SC_FIFO.h */,
+				778A972E12A2BFF500475B52 /* SC_List.h */,
+				778A972F12A2BFF500475B52 /* SC_Lock.h */,
+				778A973012A2BFF500475B52 /* sc_popen.h */,
+				778A973112A2BFF500475B52 /* SC_Reply.h */,
+				778A973212A2BFF500475B52 /* SC_Sem.h */,
+				778A973312A2BFF500475B52 /* SC_StandAloneInfo_Darwin.h */,
+				778A973412A2BFF500475B52 /* SC_StringBuffer.h */,
+				778A973512A2BFF500475B52 /* SC_StringParser.h */,
+				778A973612A2BFF500475B52 /* SC_SyncCondition.h */,
+				778A973712A2BFF500475B52 /* SC_Types.h */,
+				778A973812A2BFF500475B52 /* SC_VFP11.h */,
+				778A973912A2BFF500475B52 /* SC_Win32Utils.h */,
+				778A973A12A2BFF500475B52 /* scsynthsend.h */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -882,7 +878,6 @@
 				7751AA700EB36D890051CF38 /* SC_ComPort.h */,
 				7751AA710EB36D890051CF38 /* SC_LanguageClient.h */,
 				7751AA720EB36D890051CF38 /* SC_LibraryConfig.h */,
-				7751AA730EB36D890051CF38 /* SC_List.h */,
 				7751AA740EB36D890051CF38 /* SC_LogFile.h */,
 				7751AA750EB36D890051CF38 /* SC_Msg.h */,
 				7751AA760EB36D890051CF38 /* SC_SynthImpl.h */,
@@ -899,13 +894,10 @@
 		7751AA7D0EB36D890051CF38 /* plugin_interface */ = {
 			isa = PBXGroup;
 			children = (
-				7751AA7E0EB36D890051CF38 /* clz.h */,
 				7751AA7F0EB36D890051CF38 /* Hash.h */,
-				7751AA800EB36D890051CF38 /* SC_BoundsMacros.h */,
 				7751AA810EB36D890051CF38 /* SC_BufGen.h */,
 				7751AA820EB36D890051CF38 /* SC_Constants.h */,
 				7751AA830EB36D890051CF38 /* SC_DemandUnit.h */,
-				7751AA840EB36D890051CF38 /* SC_Dimension.h */,
 				7751AA850EB36D890051CF38 /* SC_FifoMsg.h */,
 				7751AA860EB36D890051CF38 /* SC_Graph.h */,
 				7751AA870EB36D890051CF38 /* SC_InlineBinaryOp.h */,
@@ -917,7 +909,6 @@
 				7751AA8D0EB36D890051CF38 /* SC_Rate.h */,
 				7751AA8E0EB36D890051CF38 /* SC_RGen.h */,
 				7751AA8F0EB36D890051CF38 /* SC_SndBuf.h */,
-				7751AA900EB36D890051CF38 /* SC_Types.h */,
 				7751AA910EB36D890051CF38 /* SC_Unit.h */,
 				7751AA920EB36D890051CF38 /* SC_Wire.h */,
 				7751AA930EB36D890051CF38 /* SC_World.h */,
@@ -941,14 +932,13 @@
 			children = (
 				77597AEA1123320700D2A968 /* libsndfile_iphone.a */,
 				77597AEF1123323800D2A968 /* scUBlibsndfile.a */,
-				77ABF4B8124BC3510008A5E0 /* CFNetwork.framework */,
-				77597AF31123328300D2A968 /* CoreFoundation.framework */,
-				77597AF7112332A800D2A968 /* CoreGraphics.framework */,
-				77597AFB112332B400D2A968 /* CoreAudio.framework */,
-				77597AFF112332BE00D2A968 /* AudioToolbox.framework */,
-				77597B02112332CF00D2A968 /* MediaPlayer.framework */,
-				77597B04112332CF00D2A968 /* UIKit.framework */,
-				77597B09112332ED00D2A968 /* Foundation.framework */,
+				77BA5222129C371F00CE89DD /* CFNetwork.framework */,
+				77BA5233129C373400CE89DD /* CoreFoundation.framework */,
+				77BA5235129C373B00CE89DD /* CoreGraphics.framework */,
+				77BA5237129C374100CE89DD /* AudioToolbox.framework */,
+				77BA5239129C374C00CE89DD /* MediaPlayer.framework */,
+				77BA523B129C375700CE89DD /* UIKit.framework */,
+				77BA523D129C376000CE89DD /* Foundation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

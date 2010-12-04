@@ -1,5 +1,21 @@
 find_package(Sndfile)
 
+# here we choose who provides us with the FFT lib
+if (FFT_GREEN)
+	add_definitions("-DSC_FFT_GREEN")
+elseif (APPLE)
+	add_definitions("-DSC_FFT_VDSP")
+else()
+	find_package(FFTW3f)
+
+	if (FFTW3F_FOUND)
+		add_definitions("-DSC_FFT_FFTW")
+	else()
+		message(SEND_ERROR "Cannot find libfftw3f")
+	endif()
+endif()
+
+
 if (APPLE)
 	add_definitions(-DUSE_RENDEZVOUS=1)
 else()
@@ -42,7 +58,7 @@ set(scsynth_sources
     Samp.cpp
     SC_BufGen.cpp
     SC_Carbon.cpp
-    SC_Complex.cpp
+
     SC_ComPort.cpp
     SC_CoreAudio.cpp
     SC_Errors.cpp
@@ -56,13 +72,24 @@ set(scsynth_sources
     SC_Rate.cpp
     SC_SequencedCommand.cpp
     SC_Str4.cpp
-    SC_SyncCondition.cpp
     SC_Unit.cpp
     SC_UnitDef.cpp
     SC_World.cpp
-    Rendezvous.cpp)
+    Rendezvous.cpp
 
-include_directories(../../Headers/server)
+    ../common/SC_fftlib.cpp
+)
+
+if (FFT_GREEN)
+	list(APPEND scsynth_sources ../common/fftlib.c)
+endif()
+
+if (FFTW3F_FOUND)
+	include_directories (${FFTW3F_INCLUDE_DIR})
+endif()
+
+
+include_directories(../../Headers/server ../../Headers/plugin_interface)
 
 set_property(DIRECTORY
              APPEND
@@ -122,9 +149,17 @@ endif()
 set_property(TARGET libscsynth
 			 PROPERTY OUTPUT_NAME scsynth)
 
+
+if (FFTW3F_FOUND)
+	target_link_libraries(libscsynth ${FFTW3F_LIBRARY})
+endif()
+
+if (APPLE)
+	target_link_libraries(libscsynth "-framework vecLib")
+endif()
+
 add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
-
 
 #TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
 

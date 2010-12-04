@@ -49,7 +49,7 @@ PLATFORM = platform.uname()[0].lower()
 CPU = short_cpu_name(platform.uname()[4])
 
 ANY_FILE_RE = re.compile('.*')
-HELP_FILE_RE = re.compile('.*\.(rtf(d)?|scd|html)$')
+HELP_FILE_RE = re.compile('.*\.(rtf(d)?|scd|htm(l)?)$')
 SC_FILE_RE = re.compile('.*\.sc$')
 SRC_FILE_RE = re.compile('.*\.(c(pp)|h)$')
 
@@ -265,6 +265,16 @@ def make_static_object(env, source, postfix="_a"):
 def make_static_objects(env, sources, postfix="_a"):
     return map(lambda x: make_static_object(env, x, postfix), sources)
 
+# for linking libX.so => libX.so.1 on *nixy systems. Note, they must be in same dir.
+def make_local_symlink(target, source, env):
+    targetname = os.path.basename(str(target[0]))
+    if os.path.isfile(targetname):
+        if not os.path.islink(targetname):
+            liblog.error("ERROR: cannot create symlink %s because already exists as non-symlink." % (targetname))
+    else:
+	    os.symlink(os.path.basename(str(source[0])), targetname)
+    return None
+
 # ======================================================================
 # command line options
 # ======================================================================
@@ -392,7 +402,7 @@ if PLATFORM == 'linux':
         lfs_cflags = os.popen("getconf LFS_CFLAGS").read()[:-1]
         for flag in lfs_cflags.split():
             env.Append(CPPDEFINES = flag)
-  
+
 # ======================================================================
 # installation directories
 # ======================================================================
@@ -793,11 +803,14 @@ libscsynthEnv = serverEnv.Clone(
                                                  libraries['rendezvous']),
     PKGCONFIG_LIBS = ['-lscsynth'],
 #     PKGCONFIG_LIBS_PRIVATE = ['-lm', '-lpthread', '-ldl'],
-    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server']
+    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server'],
+    SHLIBSUFFIX='.so.1',
+    LIBSUFFIXES=['.so.1']
     )
 if PLATFORM == 'linux':
     libscsynthEnv.Append(
-        LINKFLAGS = ['-Wl,-soname,libscsynth.so'])
+        LINKFLAGS = ['-Wl,-soname,libscsynth.so.1'])
+    libscsynthEnv.Command('build/libscsynth.so', 'build/libscsynth.so.1', make_local_symlink, chdir=1)
 
 libscsynthSources = Split('''
 Source/server/Rendezvous.cpp
@@ -818,7 +831,6 @@ Source/server/SC_Node.cpp
 Source/server/SC_Rate.cpp
 Source/server/SC_SequencedCommand.cpp
 Source/server/SC_Str4.cpp
-Source/server/SC_SyncCondition.cpp
 Source/server/SC_Unit.cpp
 Source/server/SC_UnitDef.cpp
 Source/server/SC_World.cpp
@@ -827,7 +839,7 @@ Source/server/SC_World.cpp
 scsynthSources = ['Source/server/scsynth_main.cpp']
 
 libscsynth = libscsynthEnv.SharedLibrary('build/scsynth', libscsynthSources)
-env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
+env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth, 'build/libscsynth.so']))
 
 libscsynthStaticSources = libscsynthSources + make_static_objects(serverEnv, commonSources, "_libscsynthStatic");
 libscsynthStatic = serverEnv.StaticLibrary('build/scsynth', libscsynthStaticSources)
@@ -946,7 +958,6 @@ if not env['NO_LIBSNDFILE']:  # (libsndfile needed for all of these, so skip if 
             )
 
     diskIOSources = [
-        diskIOEnv.SharedObject('Source/plugins/SC_SyncCondition', 'Source/server/SC_SyncCondition.cpp'),
         'Source/plugins/DiskIO_UGens.cpp']
     merge_lib_info(diskIOEnv, libraries['sndfile'])
     plugins.append(
@@ -1038,11 +1049,15 @@ libsclangEnv = langEnv.Clone(
     PKGCONFIG_PREFIX = FINAL_PREFIX,
     PKGCONFIG_REQUIRES = make_pkgconfig_requires(libraries['sndfile']) + ['libscsynth'],
     PKGCONFIG_LIBS = ['-lsclang'],
-    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/lang', '-I${includedir}/server']
+    PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/lang', '-I${includedir}/server'],
+    SHLIBSUFFIX='.so.1',
+    LIBSUFFIXES=['.so.1']
     )
 if PLATFORM == 'linux':
     libsclangEnv.Append(
-        LINKFLAGS = ['-Wl,-soname,libsclang.so'])
+        LINKFLAGS = ['-Wl,-soname,libsclang.so.1'])
+    libsclangEnv.Command('build/libsclang.so', 'build/libsclang.so.1', make_local_symlink, chdir=1)
+    Requires('build/libsclang.so.1', 'build/libscsynth.so')
 
 # required libraries
 merge_lib_info(langEnv, libraries['sndfile'])
@@ -1127,12 +1142,12 @@ if PLATFORM == 'linux':
     # HAVE_LID does the right thing in SC_LID.cpp source
     libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
     if features['wii']:
-                langEnv.Append(CPPDEFINES = 'HAVE_WII')
-                langEnv.Append(LINKFLAGS = '-lcwiid')
+                libsclangEnv.Append(CPPDEFINES = 'HAVE_WII')
+                libsclangEnv.Append(LINKFLAGS = '-lcwiid')
         #langEnv.Append(LINKFLAGS = '-lbluetooth')
         #langEnv.Append(CPPPATH = '-I/usr/local/include/libcwiimote-0.4.0/libcwiimote/' ) #FIXME: to proper include directory
     if features['lid']:
-            langEnv.Append(CPPDEFINES = 'HAVE_LID')
+            libsclangEnv.Append(CPPDEFINES = 'HAVE_LID')
 
 if PLATFORM == 'darwin':
     langEnv.Append(CPPDEFINES = 'HAVE_SPEECH')
@@ -1144,7 +1159,7 @@ if env['LANG']:
     langEnv.Append(CPPDEFINES='YYSTACK_USE_ALLOCA')
 
     libsclang = libsclangEnv.SharedLibrary('build/sclang', libsclangSources)
-    env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
+    env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang, 'build/libsclang.so']))
     if PLATFORM == 'darwin':
         sclangLibs = ['scsynth', 'sclang']
     else:
@@ -1192,7 +1207,7 @@ if is_installing():
         env.Alias('install-library', install_dir(
             env, '../editors/scel/sc',
             pkg_extension_dir(INSTALL_PREFIX, 'scide_scel'),
-            SC_FILE_RE, 3))
+            SC_FILE_RE, 4))
     # scvim
 #    if env['SCVIM']:
 #        env.Alias('install-library', install_dir(

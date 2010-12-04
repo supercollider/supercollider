@@ -263,15 +263,20 @@ inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32
 
 inline float32 sc_CalcFeedback(float32 delaytime, float32 decaytime)
 {
-	if (delaytime == 0.f) {
+	if (delaytime == 0.f || decaytime == 0.f)
 		return 0.f;
-	} else if (decaytime > 0.f) {
+
+#ifdef HAVE_C99
+	float32 absret = static_cast<float32>(exp(log001 * delaytime / sc_abs(decaytime)));
+	float32 ret = copysignf(absret, decaytime);
+	return ret;
+#else
+	if (decaytime > 0.f)
 		return static_cast<float32>(exp(log001 * delaytime / decaytime));
-	} else if (decaytime < 0.f) {
+	else
 		return static_cast<float32>(-exp(log001 * delaytime / -decaytime));
-	} else {
-		return 0.f;
-	}
+#endif
+
 }
 
 inline float32 sc_wrap1(float32 x)

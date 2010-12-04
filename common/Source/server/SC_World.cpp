@@ -52,6 +52,12 @@
 # include <sys/param.h>
 #endif
 
+// undefine the shadowed scfft functions
+#undef scfft_create
+#undef scfft_dofft
+#undef scfft_doifft
+#undef scfft_destroy
+
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 # include <sys/resource.h>
 # include <sys/mman.h>
@@ -242,6 +248,11 @@ void InterfaceTable_Init()
 	ft->fDoneAction = &Unit_DoneAction;
 	ft->fDoAsynchronousCommand = &PerformAsynchronousCommand;
 	ft->fBufAlloc = &bufAlloc;
+
+	ft->fSCfftCreate = &scfft_create;
+	ft->fSCfftDestroy = &scfft_destroy;
+	ft->fSCfftDoFFT = &scfft_dofft;
+	ft->fSCfftDoIFFT = &scfft_doifft;
 }
 
 void initialize_library(const char *mUGensPluginPath);
@@ -445,12 +456,12 @@ World* World_New(WorldOptions *inOptions)
 	return world;
 }
 
-int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool &didChange)
+int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool *outDidChange)
 {
 	if (index > world->mNumSndBufs) return kSCErr_IndexOutOfRange;
 
 	SndBufUpdates *updates = world->mSndBufUpdates + index;
-	didChange = updates->reads != updates->writes;
+	bool didChange = updates->reads != updates->writes;
 
 	if (!onlyIfChanged || didChange)
 	{
@@ -494,6 +505,8 @@ int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChan
 
 		world->mNRTLock->Unlock();
 	}
+
+	if (outDidChange) *outDidChange = didChange;
 
 	return kSCErr_None;
 }
@@ -735,18 +748,6 @@ int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int i
 	return false;
 }
 
-#if defined(__APPLE__) || defined(SC_IPHONE)
-void World_OpenMachPorts(struct World *inWorld, CFStringRef localName, CFStringRef remoteName)
-{
-	try {
-		new SC_MachMessagePort(inWorld, localName, remoteName);
-	} catch (std::exception& exc) {
-		scprintf("Exception in World_OpenMachPorts: %s\n", exc.what());
-	} catch (...) {
-	}
-}
-#endif
-
 void World_WaitForQuit(struct World *inWorld)
 {
 	try {
@@ -764,8 +765,6 @@ void World_SetSampleRate(World *inWorld, double inSampleRate)
 	Rate_Init(&inWorld->mFullRate, inSampleRate, inWorld->mBufLength);
 	Rate_Init(&inWorld->mBufRate, inSampleRate / inWorld->mBufLength, 1);
 }
-
-////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -40,13 +40,18 @@ typedef struct URegularExpression URegularExpression;
 #include "PyrKernel.h"
 #include "GC.h"
 #include <cstring>
+#include <vector>
 
-#define MAXREGEXFIND 256;
 
+struct SCRegExRegion
+{
+	SCRegExRegion(int start, int end, int group, int matched):
+		start(start), end(end), group(group), matched(matched)
+	{}
 
-struct SCRegExRegion {
-    int start, end, group, matched;
+	int start, end, group, matched;
 };
+
 typedef struct SCRegExRegion SCRegExRegion;
 
 static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
@@ -57,7 +62,6 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(b, class_string) || (NotInt(c))) return errWrongType;
 //	post("prString_FindRegexp\n");
-	int maxfind = MAXREGEXFIND;
 	int offset = slotRawInt(c);
 	int stringsize = slotRawObject(a)->size + 1;
 	int patternsize =  slotRawObject(b)->size + 1;
@@ -83,34 +87,31 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	UParseError uerr;
 	URegularExpression *expression = uregex_open(regexStr, -1, flags, &uerr, &status);
 
-	SCRegExRegion * what = NULL;
 	if(!U_FAILURE(status)) {
 		int size = 0;
 		uregex_setText(expression, ustring, -1, &status);
-		what = (SCRegExRegion*)malloc((maxfind)*sizeof(SCRegExRegion));
-		for(int i=0; i< maxfind; i++)
-		{
-			SCRegExRegion range;
-			range.matched = false;
-			what[i] = range;
-		}
+		std::vector<SCRegExRegion> what;
+		what.reserve(512);
 
 		int32_t groups = uregex_groupCount(expression, &status) + 1;
 		if(U_FAILURE(status)) goto nilout;
 //		post("groups: %i\n", groups);
-		while (uregex_findNext(expression, &status) && size<maxfind)
+		while (uregex_findNext(expression, &status))
 		{
 			if(U_FAILURE(status)) goto nilout;
 
-			for(int i=0; i< groups; ++i){
-				what[size].group = i;
-				what[size].start = sc_clip(uregex_start(expression, i, &status), 0, stringsize) ;
-				if(U_FAILURE(status)) goto nilout;
-				what[size].end = sc_clip(uregex_end(expression, i, &status), 0, stringsize);
-				what[size].matched = true;
-//				post("index:%i, size:%i, start %i, end %i\n", i, size, what[i].start, what[i].end);
+			for(int i=0; i< groups; ++i) {
+				int group = i;
+				int start = sc_clip(uregex_start(expression, i, &status), 0, stringsize) ;
+				if(U_FAILURE(status))
+					goto nilout;
+				int matched = true;
+				int end = sc_clip(uregex_end(expression, i, &status), 0, stringsize);
+				if(U_FAILURE(status))
+					goto nilout;
+
+				what.push_back(SCRegExRegion(start, end, group, matched));
 				++size;
-				if(U_FAILURE(status)) goto nilout;
 			}
 		}
 
@@ -146,7 +147,6 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 			}
 		}
 
-		free(what);
 		free(pattern);
 		free(regexStr);
 		free(ustring);
@@ -156,7 +156,6 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	}
 
 nilout:
-	free(what);
 	free(string);
 	free(pattern);
 	free(regexStr);

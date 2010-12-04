@@ -61,10 +61,16 @@ ServerOptions
 
 	// prevent buffer conflicts in Server-prepareForRecord and Server-scope by
 	// ensuring reserved buffers
-	numBuffers { ^(numBuffers -2) }
-	numBuffers_ { | argNumBuffers | numBuffers = argNumBuffers + 2; }
+	
+	numBuffers {
+		^numBuffers - 2
+	}
+	
+	numBuffers_ { | argNumBuffers |
+		numBuffers = argNumBuffers + 2
+	}
 
-	asOptionsString { arg port=57110;
+	asOptionsString { | port = 57110 |
 		var o;
 		o = if (protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;

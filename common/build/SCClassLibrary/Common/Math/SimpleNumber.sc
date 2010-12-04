@@ -437,22 +437,26 @@ SimpleNumber : Number {
 
 	asQuant { ^Quant(this) }
 
-	// a clock format
-	asTimeString { arg precision=0.1;
-		var hours,mins,secs;
-		mins = this.div(60);
-		if(mins >= 60,{ hours = mins.div(60).asString ++ ":";
-			mins = mins%60;
-			if(mins < 10 ,{ mins = "0"++ mins.asString; },{ mins = mins.asString; });
-		},{
-			hours = "";
-			mins = mins.asString;
-		});
-		secs = (this%60).trunc(precision);
-		if(secs<10,{ secs = "0"++secs.asString; },{ secs=secs.asString;});
-		^(hours ++ mins ++ ":" ++ secs);
+	// a clock format inspired by ISO 8601 time interval display (truncated representation)
+	// receiver is a time in seconds, returns string "ddd:hh:mm:ss:ttt" where t is milliseconds
+	// see String:asSecs for complement
+	
+	asTimeString { arg precision = 0.001, maxDays = 365, dropDaysIfPossible = true;
+		var decimal, days, hours, minutes, seconds, mseconds;
+		decimal = this.asInteger;
+		days = decimal.div(86400).min(maxDays);
+		days = if(dropDaysIfPossible and: { days == 0 }) { 
+			days = "" 
+		} { 
+			days.asString.padLeft(3, "0").add($:); 
+		};
+		hours = (decimal.div(3600) % 24).asString.padLeft(2, "0").add($:);
+		minutes = (decimal.div(60) % 60).asString.padLeft(2, "0").add($:);
+		seconds = (decimal % 60).asString.padLeft(2, "0").add($:);
+		mseconds = (this.frac / precision).round(precision).asInteger.asString.padLeft(3, "0");
+		^days ++ hours ++ minutes ++ seconds ++ mseconds 
 	}
-
+	
 	asFraction {|denominator=100, fasterBetter=true|
 		_AsFraction
 		// asFraction will return a fraction that is the best approximation up to the given

@@ -31,38 +31,6 @@ extern "C"
 InterfaceTable *ft;
 
 
-/// RM
-SCPolarBuf* ToPolarApx(SndBuf *buf);
-SCPolarBuf* ToPolarApx(SndBuf *buf)
-{
-	if (buf->coord == coord_Complex) {
-		SCComplexBuf* p = (SCComplexBuf*)buf->data;
-		int numbins = buf->samples - 2 >> 1;
-		for (int i=0; i<numbins; ++i) {
-			p->bin[i].ToPolarApxInPlace();
-		}
-		buf->coord = coord_Polar;
-	}
-	return (SCPolarBuf*)buf->data;
-}
-
-SCComplexBuf* ToComplexApx(SndBuf *buf);
-SCComplexBuf* ToComplexApx(SndBuf *buf)
-{
-	if (buf->coord == coord_Polar) {
-		SCPolarBuf* p = (SCPolarBuf*)buf->data;
-		int numbins = buf->samples - 2 >> 1;
-		for (int i=0; i<numbins; ++i) {
-			p->bin[i].ToComplexApxInPlace();
-		}
-		buf->coord = coord_Complex;
-	}
-	return (SCComplexBuf*)buf->data;
-}
-
-
-void init_SCComplex(InterfaceTable *inTable);
-
 //these are defined in the relevant files
 extern void initFFT(InterfaceTable *inTable);
 extern void initPV(InterfaceTable *inTable);
@@ -71,7 +39,6 @@ extern void initPartConv(InterfaceTable *inTable);
 void load(InterfaceTable *inTable)
 {
 	ft= inTable;
-	init_SCComplex(inTable);
 
 	initFFT(inTable);
 	initPV(inTable);

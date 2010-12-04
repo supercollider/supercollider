@@ -304,8 +304,6 @@ void load(InterfaceTable *inTable)
 {
 	ft= inTable;
 
-	init_SCComplex(inTable);
-
 	//(*ft->fDefineUnit)("SpecFlatness", sizeof(FFTAnalyser_Unit), (UnitCtorFunc)&SpecFlatness_Ctor, 0, 0);
 	//(*ft->fDefineUnit)("SpecPcile", sizeof(SpecPcile_Unit), (UnitCtorFunc)&SpecPcile_Ctor, (UnitDtorFunc)&SpecPcile_Dtor, 0);
 
