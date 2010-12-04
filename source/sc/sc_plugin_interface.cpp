@@ -669,7 +669,37 @@ inline void sndbuf_copy(SndBuf * dest, const SndBuf * src)
     dest->sndfile = src->sndfile;
 }
 
+void read_channel(SndfileHandle & sf, uint32_t channel_count, const uint32_t * channel_data,
+                  uint32 frames, sample * data)
+{
+    const unsigned int frames_per_read = 1024;
+    sized_array<sample> read_frame(sf.channels() * frames_per_read);
 
+    if (channel_count == 1) {
+        // fast-path for single-channel read
+        for (size_t i = 0; i < frames; i += frames_per_read) {
+            size_t read = sf.readf(read_frame.c_array(), frames_per_read);
+
+            size_t channel_mapping = channel_data[0];
+            for (size_t frame = 0; frame != read; ++frame) {
+                data[channel_mapping] = read_frame[0];
+                data += channel_count;
+            }
+        }
+    } else {
+        for (size_t i = 0; i < frames; i += frames_per_read) {
+            size_t read = sf.readf(read_frame.c_array(), frames_per_read);
+
+            for (size_t frame = 0; frame != read; ++frame) {
+                for (size_t c = 0; c != channel_count; ++c) {
+                    size_t channel_mapping = channel_data[c];
+                    data[channel_mapping] = read_frame[c];
+                }
+                data += channel_count;
+            }
+        }
+    }
+}
 
 } /* namespace */
 
@@ -705,7 +735,6 @@ SndBuf * sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, u
 int sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename, uint32_t start, uint32_t frames)
 {
     SndfileHandle f(filename);
-
     if (!f)
         return -1; /* file cannot be opened */
 
@@ -725,12 +754,12 @@ int sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename
     return 0;
 }
 
+
 int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char * filename, uint32_t start,
                                                     uint32_t frames, uint32_t channel_count,
                                                     const uint32_t * channel_data)
 {
     SndfileHandle f(filename);
-
     if (!f)
         return -1; /* file cannot be opened */
 
@@ -750,35 +779,8 @@ int sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char *
     SndBuf * buf = World_GetNRTBuf(&world, index);
     allocate_buffer(buf, frames, channel_count, f.samplerate());
 
-    sample * data = buf->data;
     f.seek(start, SEEK_SET);
-
-    const unsigned int frames_per_read = 1024;
-    sized_array<sample> read_frame(f.channels() * frames_per_read);
-
-    if (channel_count == 1)
-        // fast-path for single-channel read
-        for (size_t i = 0; i < frames; i += frames_per_read) {
-            size_t read = f.readf(read_frame.c_array(), frames_per_read);
-
-            size_t channel_mapping = channel_data[0];
-            for (size_t frame = 0; frame != read; ++frame) {
-                data[channel_mapping] = read_frame[0];
-                data += channel_count;
-            }
-        }
-    else
-        for (size_t i = 0; i < frames; i += frames_per_read) {
-            size_t read = f.readf(read_frame.c_array(), frames_per_read);
-
-            for (size_t frame = 0; frame != read; ++frame) {
-                for (size_t c = 0; c != channel_count; ++c) {
-                    size_t channel_mapping = channel_data[c];
-                    data[channel_mapping] = read_frame[c];
-                }
-                data += channel_count;
-            }
-        }
+    read_channel(f, channel_count, channel_data, frames, buf->data);
 
     return 0;
 }
@@ -852,16 +854,9 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
                                       uint32_t start, uint32_t frames, bool leave_open)
 {
     SndBuf * buf = World_GetNRTBuf(&world, index);
-
     int format = headerFormatFromString(header_format) | sampleFormatFromString(sample_format);
 
-    SF_INFO info;
-    memset(&info, 0, sizeof(info));
-    info.channels = buf->channels;
-    info.format = format;
-    info.samplerate = buf->samplerate;
-
-    SNDFILE * sf = sf_open(filename, SFM_WRITE, &info);
+    SndfileHandle sf(filename, SFM_WRITE, format, buf->channels, buf->samplerate);
 
     if (!sf)
         return -1;
@@ -873,13 +868,22 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     const uint32_t frames_to_write = std::min(remain, frames);
 
     if (frames_to_write)
-        sf_writef_float(sf, buf->data + start * buf->channels, frames_to_write);
+        sf.writef(buf->data + start * buf->channels, frames_to_write);
 
     if (leave_open && !buf->sndfile)
-        buf->sndfile = sf;
-    else
-        sf_close(sf);
+        buf->sndfile = sf.takeOwnership();
 
+    return 0;
+}
+
+static int buffer_read_verify(SndfileHandle const & sf, size_t min_length, size_t samplerate)
+{
+    if (!sf)
+        return -1;
+    if (sf.frames() < min_length)
+        return -2; /* no more frames to read */
+    if (sf.samplerate() != samplerate)
+        return -3; /* sample rate mismatch */
     return 0;
 }
 
@@ -889,43 +893,25 @@ int sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uint
     SndBuf * buf = World_GetNRTBuf(&world, index);
 
     if (uint32_t(buf->frames) < start_buffer)
-        /* buffer already full */
-        return -2;
+        return -2; /* buffer already full */
 
-    SF_INFO info;
-    SNDFILE * sf = sf_open(filename, SFM_READ, &info);
+    SndfileHandle sf(filename, SFM_READ);
+    int error = buffer_read_verify(sf, start_file, buf->samplerate);
+    if (error)
+        return error;
 
-    if (!sf)
-        return -1;
-
-    if (info.frames < start_file)
-    {
-        /* no more frames to read */
-        sf_close(sf);
-        return -2;
-    }
+    if (sf.channels() != buf->channels)
+        return -3; /* sample rate or channel count mismatch */
 
     const uint32_t buffer_remain = buf->frames - start_buffer;
-    const uint32_t file_remain = info.frames - start_file;
-
+    const uint32_t file_remain = sf.frames() - start_file;
     const uint32_t frames_to_read = std::min(frames, std::min(buffer_remain, file_remain));
 
-    if (info.samplerate != buf->samplerate ||
-        info.channels != buf->channels)
-    {
-        /* sample rate or channel count mismatch */
-        sf_close(sf);
-        return -3;
-    }
-
-    sf_seek(sf, start_file, SEEK_SET);
-
-    sf_readf_float(sf, buf->data + start_buffer*buf->channels, frames_to_read);
+    sf.seek(start_file, SEEK_SET);
+    sf.readf(buf->data + start_buffer*buf->channels, frames_to_read);
 
     if (leave_open)
-        buf->sndfile = sf;
-    else
-        sf_close(sf);
+        buf->sndfile = sf.takeOwnership();
     return 0;
 }
 
@@ -936,67 +922,30 @@ int sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filena
     SndBuf * buf = World_GetNRTBuf(&world, index);
 
     if (channel_count != uint32_t(buf->channels))
-        /* channel count mismatch */
-        return -2;
+        return -2; /* channel count mismatch */
 
     if (uint32_t(buf->frames) >= start_buffer)
-        /* buffer already full */
-        return -2;
+        return -2; /* buffer already full */
 
-    SF_INFO info;
-    SNDFILE * sf = sf_open(filename, SFM_READ, &info);
+    SndfileHandle sf(filename, SFM_READ);
+    int error = buffer_read_verify(sf, start_file, buf->samplerate);
+    if (error)
+        return error;
 
-    if (!sf)
-        return -1;
-
-    uint32_t sf_channels = uint32_t(info.channels);
+    uint32_t sf_channels = uint32_t(sf.channels());
     const uint32_t * max_chan = std::max_element(channel_data, channel_data + channel_count);
     if (*max_chan >= sf_channels)
         return -2;
-
-
-    if (info.frames >= start_file)
-    {
-        /* no more frames to read */
-        sf_close(sf);
-        return -2;
-    }
-
     const uint32_t buffer_remain = buf->frames - start_buffer;
-    const uint32_t file_remain = info.frames - start_file;
+    const uint32_t file_remain = sf.frames() - start_file;
 
     const uint32_t frames_to_read = std::min(frames, std::min(buffer_remain, file_remain));
 
-    if (info.samplerate != buf->samplerate)
-    {
-        /* sample rate or channel count mismatch */
-        sf_close(sf);
-        return -3;
-    }
-
-    sf_seek(sf, start_file, SEEK_SET);
-
-    sized_array<sample> read_frame(channel_count);
-
-    sample * data = buf->data + start_file * channel_count;
-
-    for (size_t i = 0; i != frames_to_read; ++i)
-    {
-        sf_readf_float(sf, read_frame.c_array(), 1);
-
-        for (size_t c = 0; c != channel_count; ++c)
-        {
-            size_t channel_mapping = channel_data[c];
-            data[channel_mapping] = read_frame[c];
-        }
-
-        data += channel_count;
-    }
+    sf.seek(start_file, SEEK_SET);
+    read_channel(sf, channel_count, channel_data, frames, buf->data);
 
     if (leave_open)
-        buf->sndfile = sf;
-    else
-        sf_close(sf);
+        buf->sndfile = sf.takeOwnership();
     return 0;
 }
 
