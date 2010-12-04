@@ -8,6 +8,7 @@ Bugfixes:
 
 * 2010-07-12 remove accidental debug messages from SCView (on mac, posted a lot of info to Console, could affect performance) - ds
 * 2010-09-11 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
+* 2010-09-15 SystemClock and TempoClock sched and schedAbs with inf time doesn't schedule the task in the first place - jr
 * 2010-10-10 remove more crufty NSLog debug messages - ds
 * 2010-10-19 debian-style scvim-check-if-plugin-is-active, brought upstream - ds
 * 2010-10-19 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr

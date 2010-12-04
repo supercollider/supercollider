@@ -1119,6 +1119,7 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(b, &delta);
 	if (err) return errNone; // return nil OK, just don't schedule
 	beats += delta;
+	if(beats == INFINITY) return errNone; // return nil OK, just don't schedule
 
 	clock->Add(beats, c);
 
@@ -1139,7 +1140,7 @@ int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	double beats;
-	int err = slotDoubleVal(b, &beats);
+	int err = slotDoubleVal(b, &beats) || (beats == INFINITY);
 	if (err) return errNone; // return nil OK, just don't schedule
 
 	clock->Add(beats, c);
@@ -1298,6 +1299,7 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(&g->thread->seconds, &seconds);
 	if (err) return errNone; // return nil OK, just don't schedule
 	seconds += delta;
+	if(seconds == INFINITY) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 
 	schedAdd(g, inQueue, seconds, c);
@@ -1313,7 +1315,7 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 
 	double time;
-	int err = slotDoubleVal(b, &time);
+	int err = slotDoubleVal(b, &time) || (time == INFINITY);
 	if (err) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 
