@@ -25,10 +25,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef _WIN32
-#else
-# include <netinet/in.h>
-#endif
+#include "SC_Reply.h"
 #include "sc_msg_iter.h"
 
 class SC_Msg;
@@ -39,21 +36,6 @@ enum { // Handler IDs
     kNonRealTimeAction = 2,
     kEitherTimeAction = 3
 };
-
-typedef void (*ReplyFunc)(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
-
-struct ReplyAddress
-{
-	struct sockaddr_in mSockAddr;
-	int mSockAddrLen;
-	int mSocket;
-	ReplyFunc mReplyFunc;
-};
-
-inline void SendReply(ReplyAddress *inReplyAddr, char* inBuf, int inSize)
-{
-	(inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);
-}
 
 void DumpReplyAddress(ReplyAddress *inReplyAddress);
 int32 Hash(ReplyAddress *inReplyAddress);
@@ -70,5 +52,3 @@ struct OSC_Packet
 void FreeOSCPacket(OSC_Packet *inPacket);
 
 #endif
-
-

@@ -77,9 +77,11 @@ using std::atan2;
 using std::sinh;
 using std::cosh;
 using std::tanh;
+
+#ifndef SC_WIN32
 using std::asinh;
 using std::acosh;
 using std::atanh;
-
+#endif
 
 #endif

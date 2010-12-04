@@ -202,11 +202,13 @@ inline float_type round(float_type const & arg)
     return std::floor(arg + float_type(0.5));
 }
 
+#ifndef _MSC_VER // Fabian Aussems: visual c++ does not have round
 template<>
 inline double round<double>(double const & arg)
 {
     return ::round(arg);
 }
+#endif
 
 #if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE
 template<>

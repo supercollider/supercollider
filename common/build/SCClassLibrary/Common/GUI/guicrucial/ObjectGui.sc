@@ -12,15 +12,11 @@ ObjectGui : SCViewHolder {
 		/* implement this method in your gui subclass */
 
 		// if your model implement guiBody then call that
+		// this is a lazy way to write simple guis for simple objects
+		// where model/gui code separation is not especially important
+		// and where the controller class doesn't need to maintain any state or vars
 		if(model.respondsTo(\guiBody) and: {model.isKindOf(ObjectGui).not},{
 			model.guiBody(layout)
-		},{
-			/*
-			or by default we make a gui showing variables that the class allows
-			 see instVarsForGui
-			 by default this is NO variables at all.
-			*/
-			ObjectGui.guiInstVarsOf(model,layout)
 		})
 	}
 
@@ -30,15 +26,47 @@ ObjectGui : SCViewHolder {
 		new.model_(model);
 		^new
 	}
-	guify { arg layout,bounds,title;
-		if(layout.isNil,{
-			layout = MultiPageLayout(title ?? {model.asString.copyRange(0,50)},bounds,front:false);
+	
+	gui { arg parent, bounds ... args;
+		var layout;
+		layout=this.guify(parent,bounds);
+		layout.flow({ arg layout;
+			this.view = layout;
+			this.writeName(layout);
+			this.performList(\guiBody,[layout] ++ args);
+		},bounds).background_(this.background);
+		//if you created it, front it
+		if(parent.isNil,{
+			layout.resizeToFit(true,true);
+			layout.front;
+		});
+	}
+	guify { arg parent,bounds,title;
+		// converts the parent to a FlowView or compatible object
+		// thus creating a window from nil if needed
+		// registers to remove self as dependent on model if window closes
+		if(bounds.notNil,{
+			bounds = bounds.asRect;
+		});
+		if(parent.isNil,{
+            parent = PageLayout(title ?? {model.asString.copyRange(0,50)},bounds,front:false);
 		},{
-			layout = layout.asPageLayout(title,bounds);
+			parent = parent.asPageLayout(bounds);
 		});
 		// i am not really a view in the hierarchy
-		layout.removeOnClose(this);
-		^layout
+		parent.removeOnClose(this);
+		^parent
+	}	
+	model_ { |newModel|
+		if(model.notNil,{ // a view has its model swapped with another
+			model.removeDependant(this);
+			model = newModel;
+			model.addDependant(this);
+			this.update;
+		},{
+			model = newModel;
+			model.addDependant(this);
+		})
 	}
 	viewDidClose {
 		model.removeDependant(this);
@@ -46,24 +74,7 @@ ObjectGui : SCViewHolder {
 		super.viewDidClose;
 	}
 
-	gui { arg lay, bounds ... args;
-		var layout;
-		layout=this.guify(lay,bounds);
-		layout.flow({ arg layout;
-			this.view = layout;
-			this.writeName(layout);
-			this.performList(\guiBody,[layout] ++ args);
-		},bounds).background_(this.background);
-		//if you created it, front it
-		if(lay.isNil,{
-			layout.resizeToFit(true,true).front
-		});
-	}
-	topGui { arg ... args;
-		this.performList(\gui, args);
-	}
-
-	background { ^Color.clear }//^Color.yellow(0.2,0.08) }
+	background { ^Color.clear }
 
 	writeName { |layout|
 		this.prWriteName(layout,model.asString)
@@ -82,69 +93,8 @@ ObjectGui : SCViewHolder {
 			.align_(\left)
 			.beginDragAction_({ model })
 			.object_(string);
-		InspectorLink.icon(model,layout);
-	}
-	model_ { |newModel|
-		if(model.notNil,{
-			model.removeDependant(this);
-			model = newModel;
-			model.addDependant(this);
-			this.update;
-		},{
-			model = newModel;
-			model.addDependant(this);
-		})
-	}
-
-	saveConsole { arg layout;
-		^SaveConsole(model,"",layout).save.saveAs.print;
-	}
-
-
-	*guiInstVarsOf { arg object,layout;
-		// this is an easy default gui system
-		// each class returns instVarsForGui, a list of \symbols
-		// by default an empty array : "don't display any variables"
-		// some classes (Pattern so far) can return all of their instance var names
-		// and thus gui all of their internal vars
-		var varNames,maxWidth=50,font;
-		font = GUI.font.new(*GUI.skin.fontSpecs);
-		object.class.instVarsForGui.do({ |ivar,i|
-			var width;
-			varNames = varNames.add([ivar,object.instVarAt(ivar)]);
-			width = ivar.asString.bounds(font).width + 5;
-			if(width > maxWidth,{ maxWidth = width; });
-		});
-		varNames.do({ |namevar|
-			var guis;
-			layout.startRow;
-			VariableNameLabel(namevar[0],layout,maxWidth);
-			// a safety check so as not to annoy
-			// if there already exists a gui for the object, the simply put a Tile
-			guis = namevar[1].dependants.select({|dep| dep.isKindOf(ObjectGui) and: dep.class !== StringGui });
-			if(guis.size == 0,{
-				namevar[1].gui(layout);
-			},{
-				Tile(namevar[1],layout);
-			});
-		});
+		// InspectorLink.icon(model,layout);
 	}
 
 }
-
-ModelImplementsGuiBody : ObjectGui {
-
-	gui { arg lay, bounds ... args;
-		var layout;
-		layout=this.guify(lay,bounds);
-		layout.flow({ arg layout;
-			this.view = layout;
-			this.writeName(layout);
-			model.performList(\guiBody,[layout] ++ args);
-		},bounds).background_(this.background);
-		//if you created it, front it
-		if(lay.isNil,{ layout.resizeToFit.front });
-	}
-}
-
 

@@ -19,19 +19,70 @@ An interface to abstract over different FFT libraries, for SuperCollider 3.
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
+NOTE:
+vDSP uses a "SplitBuf" as an intermediate representation of the data.
+For speed we keep this global, although this makes the code non-thread-safe.
+(This is not new to this refactoring. Just worth noting.)
 */
 
-#include "SC_fftlib.h"
 #include "clz.h"
 #include <stdlib.h>
 #include <cmath>
 #include <stdio.h>
 #include <cstring>
+#include <cassert>
+
+#include "SC_fftlib.h"
+
 
 // We include vDSP even if not using for FFT, since we want to use some vectorised add/mul tricks
 #ifdef __APPLE__
 	#include "vecLib/vDSP.h"
 #endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Constants and structs
+
+// Decisions here about which FFT library to use - vDSP only exists on Mac BTW.
+// We include the relevant libs but also ensure that one, and only one, of them is active...
+#if SC_FFT_NONE
+	// "SC_FFT_NONE" allows compilation without FFT support; only expected to be used on very limited platforms
+	#define SC_FFT_FFTW 0
+	#define SC_FFT_VDSP 0
+	#define SC_FFT_GREEN 0
+#elif SC_FFT_GREEN
+	#define SC_FFT_FFTW 0
+	#define SC_FFT_VDSP 0
+	#define SC_FFT_GREEN 1
+#elif !SC_FFT_FFTW && defined(__APPLE__) && !defined(SUPERNOVA)
+	#define SC_FFT_FFTW 0
+	#define SC_FFT_VDSP 1
+	#define SC_FFT_GREEN 0
+#else
+//#elif SC_FFT_FFTW
+	#define SC_FFT_FFTW 1
+	#define SC_FFT_VDSP 0
+	#define SC_FFT_GREEN 0
+	#include <fftw3.h>
+#endif
+
+// Note that things like *fftWindow actually allow for other sizes, to be created on user request.
+#define SC_FFT_ABSOLUTE_MAXSIZE 2147483648
+#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE 31
+#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1 32
+
+// This struct is a bit like FFTW's idea of a "plan": it represents an FFT operation that may be applied once or repeatedly.
+// It should be possible for indata and outdata to be the same, for quasi-in-place operation.
+typedef struct scfft {
+	unsigned int nfull, nwin, log2nfull, log2nwin; // Lengths of full FFT frame, and the (possibly shorter) windowed data frame
+	short wintype;
+	float *indata, *outdata, *trbuf;
+	float scalefac; // Used to rescale the data to unity gain
+	#if SC_FFT_FFTW
+		fftwf_plan plan;
+	#endif
+} scfft;
+
 
 static float *fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 
@@ -69,23 +120,22 @@ static float* create_cosTable(int log2n)
 }
 #endif
 
-float* scfft_create_fftwindow(int wintype, int log2n);
-float* scfft_create_fftwindow(int wintype, int log2n)
+static float* scfft_create_fftwindow(int wintype, int log2n)
 {
 	int size = 1 << log2n;
 	unsigned short i;
 	float *win = (float*)malloc(size * sizeof(float));
 
 	double winc;
-	switch(wintype){
-		case WINDOW_SINE:
+	switch(wintype) {
+		case kSineWindow:
 			winc = pi / size;
 			for (i=0; i<size; ++i) {
 				double w = i * winc;
 				win[i] = sin(w);
 			}
 			break;
-		case WINDOW_HANN:
+		case kHannWindow:
 			winc = twopi / size;
 			for (i=0; i<size; ++i) {
 				double w = i * winc;
@@ -98,55 +148,76 @@ float* scfft_create_fftwindow(int wintype, int log2n)
 
 }
 
-void scfft_global_init(){
-	unsigned short wintype, i;
-	for (wintype=0; wintype<2; ++wintype) {
-		for (i=0; i< SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
+static void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype);
+
+static bool scfft_global_initialization (void)
+{
+	for (int wintype=0; wintype<2; ++wintype) {
+		for (int i=0; i< SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
 			fftWindow[wintype][i] = 0;
 		}
-		for (i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
+		for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
 			fftWindow[wintype][i] = scfft_create_fftwindow(wintype, i);
 		}
 	}
-	#if SC_FFT_GREEN
-		for (i=0; i< SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
-			cosTable[i] = 0;
+#if SC_FFT_GREEN
+	for (int i=0; i< SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1; ++i) {
+		cosTable[i] = 0;
+	}
+	for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
+		cosTable[i] = create_cosTable(i);
+	}
+	printf("SC FFT global init: cosTable initialised.\n");
+#elif SC_FFT_VDSP
+	// vDSP inits its twiddle factors
+	for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
+		fftSetup[i] = vDSP_create_fftsetup (i, FFT_RADIX2);
+		if(fftSetup[i] == NULL){
+			printf("FFT ERROR: Mac vDSP library could not allocate FFT setup for size %i\n", 1<<i);
 		}
-		for (i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
-			cosTable[i] = create_cosTable(i);
-		}
-		printf("SC FFT global init: cosTable initialised.\n");
-	#elif SC_FFT_VDSP
-		// vDSP inits its twiddle factors
-		for (i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
-			fftSetup[i] = vDSP_create_fftsetup (i, FFT_RADIX2);
-			if(fftSetup[i] == NULL){
-				printf("FFT ERROR: Mac vDSP library could not allocate FFT setup for size %i\n", 1<<i);
-			}
-		}
-		// vDSP prepares its memory-aligned buffer for rearranging input data.
-		// Note max size here - meaning max input buffer size is these two sizes added together.
-		// vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
-		splitBuf.realp = (float*) malloc ( SC_FFT_MAXSIZE * sizeof(float) / 2);
-		splitBuf.imagp = (float*) malloc ( SC_FFT_MAXSIZE * sizeof(float) / 2);
-		//printf("SC FFT global init: vDSP initialised.\n");
-	#elif SC_FFT_FFTW
-		//printf("SC FFT global init: FFTW, no init needed.\n");
-	#endif
+	}
+	// vDSP prepares its memory-aligned buffer for rearranging input data.
+	// Note max size here - meaning max input buffer size is these two sizes added together.
+	// vec_malloc used in API docs, but apparently that's deprecated and malloc is sufficient for aligned memory on OSX.
+	splitBuf.realp = (float*) malloc ( SC_FFT_MAXSIZE * sizeof(float) / 2);
+	splitBuf.imagp = (float*) malloc ( SC_FFT_MAXSIZE * sizeof(float) / 2);
+	//printf("SC FFT global init: vDSP initialised.\n");
+#elif SC_FFT_FFTW
+	//printf("SC FFT global init: FFTW, no init needed.\n");
+#endif
+	return false;
 }
 
-size_t scfft_trbufsize(unsigned int fullsize){
-	#if SC_FFT_FFTW
-		// Transform buf is two floats "too big" because of FFTWF's output ordering
-		return (fullsize+2) * sizeof(float);
-	#else
-		// vDSP packs the nyquist in with the DC, so size is same as input buffer (plus zeropadding)
-		// Green does this too
-		return (fullsize  ) * sizeof(float);
-	#endif
+static bool dummy = scfft_global_initialization();
+
+// You need to provide an intermediate "transform buffer". Size will depend on which underlying lib is being used.
+// "fullsize" is the number of samples in the input buffer (inc any padding), aka the number of "points" in the FFT.
+//   Often in an SC plugin you can get this number from buf->samples if you're grabbing an external buffer.
+// The input value is given in samples.
+// The return value is given in bytes.
+static size_t scfft_trbufsize(unsigned int fullsize)
+{
+#if SC_FFT_FFTW
+	// Transform buf is two floats "too big" because of FFTWF's output ordering
+	return (fullsize+2) * sizeof(float);
+#else
+	// vDSP packs the nyquist in with the DC, so size is same as input buffer (plus zeropadding)
+	// Green does this too
+	return (fullsize  ) * sizeof(float);
+#endif
 }
 
-int scfft_create(scfft *f, unsigned int fullsize, unsigned int winsize, short wintype, float *indata, float *outdata, float *trbuf, bool forward){
+
+scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype,
+					 float *indata, float *outdata, SCFFT_Direction forward, SCFFT_Allocator & alloc)
+{
+	char * chunk = (char*) alloc.alloc(sizeof(scfft) + scfft_trbufsize(fullsize));
+	if (!chunk)
+		return NULL;
+
+	scfft * f = (scfft*)chunk;
+	float *trbuf = (float*)(chunk + sizeof(scfft));
+
 	f->nfull = fullsize;
 	f->nwin  =  winsize;
 	f->log2nfull = LOG2CEIL(fullsize);
@@ -157,40 +228,42 @@ int scfft_create(scfft *f, unsigned int fullsize, unsigned int winsize, short wi
 	f->trbuf   = trbuf;
 
 	// Buffer is larger than the range of sizes we provide for at startup; we can get ready just-in-time though
-	if (fullsize > SC_FFT_MAXSIZE){
+	if (fullsize > SC_FFT_MAXSIZE)
 		scfft_ensurewindow(f->log2nfull, f->log2nwin, wintype);
-	}
 
-	#if SC_FFT_FFTW
-		if(forward)
-			f->plan = fftwf_plan_dft_r2c_1d(fullsize, trbuf, (fftwf_complex*) trbuf, FFTW_ESTIMATE);
-		else
-			f->plan = fftwf_plan_dft_c2r_1d(fullsize, (fftwf_complex*) trbuf, outdata, FFTW_ESTIMATE);
-	#endif
+#if SC_FFT_FFTW
+	if(forward)
+		f->plan = fftwf_plan_dft_r2c_1d(fullsize, trbuf, (fftwf_complex*) trbuf, FFTW_ESTIMATE);
+	else
+		f->plan = fftwf_plan_dft_c2r_1d(fullsize, (fftwf_complex*) trbuf, outdata, FFTW_ESTIMATE);
+#endif
 
 	// The scale factors rescale the data to unity gain. The old Green lib did this itself, meaning scalefacs would here be 1...
 	if(forward){
-		#if SC_FFT_VDSP
-			f->scalefac = 0.5f;
-		#else // forward FFTW and Green factor
-			f->scalefac = 1.f;
-		#endif
-	}else{ // backward FFTW and VDSP factor
-		#if SC_FFT_GREEN
-			f->scalefac = 1.f;
-		#else  // fftw, vdsp
-			f->scalefac = 1.f / fullsize;
-		#endif
+#if SC_FFT_VDSP
+		f->scalefac = 0.5f;
+#else // forward FFTW and Green factor
+		f->scalefac = 1.f;
+#endif
+	} else { // backward FFTW and VDSP factor
+#if SC_FFT_GREEN
+		f->scalefac = 1.f;
+#else  // fftw, vdsp
+		f->scalefac = 1.f / fullsize;
+#endif
 	}
 
 	memset(trbuf, 0, scfft_trbufsize(fullsize));
 
-	return 0;
+	return f;
 }
 
 static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
-void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype){
 
+// check the global list of windows incs ours; create if not.
+// Note that expanding the table, if triggered, will cause a CPU hit as things are malloc'ed, realloc'ed, etc.
+void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype)
+{
 	// Ensure we have enough space to do our calcs
 	if(log2_fullsize > largest_log2n){
 		largest_log2n = log2_fullsize;
@@ -216,9 +289,13 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
    	#endif
 }
 
-void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize, unsigned short log2_winsize, short wintype, float scalefac){
+// these do the main jobs.
+// Note: you DON"T need to call the windowing function yourself, it'll be applied by the _dofft and _doifft funcs.
+static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize, unsigned short log2_winsize,
+							  short wintype, float scalefac)
+{
 	int i;
-	if(wintype != WINDOW_RECT){
+	if (wintype != kRectWindow) {
 		float *win = fftWindow[wintype][log2_winsize];
 		if (!win) return;
 		#ifdef __APPLE__
@@ -246,7 +323,8 @@ void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fullsize,
 	memset(data + winsize, 0, (fullsize - winsize) * sizeof(float));
 }
 
-void scfft_dofft(scfft *f){
+void scfft_dofft(scfft * f)
+{
 	// Data goes to transform buf
 	memcpy(f->trbuf, f->indata, f->nwin * sizeof(float));
 	scfft_dowindowing(f->trbuf, f->nwin, f->nfull, f->log2nfull, f->wintype, f->scalefac);
@@ -270,7 +348,8 @@ void scfft_dofft(scfft *f){
 	#endif
 }
 
-void scfft_doifft(scfft *f){
+void scfft_doifft(scfft * f)
+{
 	#if SC_FFT_FFTW
 		float *trbuf = f->trbuf;
 		size_t bytesize = f->nfull * sizeof(float);
@@ -298,8 +377,10 @@ void scfft_doifft(scfft *f){
 	scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nfull, f->wintype, f->scalefac);
 }
 
-void scfft_destroy(scfft *f){
-	#if SC_FFT_FFTW
-		fftwf_destroy_plan(f->plan);
-	#endif
+void scfft_destroy(scfft *f, SCFFT_Allocator & alloc)
+{
+#if SC_FFT_FFTW
+	fftwf_destroy_plan(f->plan);
+#endif
+	alloc.free(f);
 }

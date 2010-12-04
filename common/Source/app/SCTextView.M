@@ -132,7 +132,7 @@ extern bool compiledOK;
     NSString* string = [self string];
     NSRange selectedRange = [self selectedRange];
     if (selectedRange.length <= 0) {
-        unsigned int lineStart, lineEnd;
+        unsigned long lineStart, lineEnd;
         [string getLineStart: (NSUInteger*)&lineStart end: (NSUInteger*)&lineEnd 
             contentsEnd: nil forRange:selectedRange];
         selectedRange = NSMakeRange(lineStart, lineEnd - lineStart);

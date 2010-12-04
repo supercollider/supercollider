@@ -1273,8 +1273,6 @@ void PV_Conj_next(PV_Unit *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void init_SCComplex(InterfaceTable *inTable);
-
 #define DefinePVUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(PV_Unit), (UnitCtorFunc)&name##_Ctor, 0, 0);
 

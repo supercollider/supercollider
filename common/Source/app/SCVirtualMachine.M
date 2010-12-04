@@ -333,7 +333,7 @@ void setupUserPaneViews(id target, id view, int tagsum)
 		int thisTag = [view tag];
 		if (thisTag > 0) newTagSum += thisTag;
 	}
-	post("  view '%s' %d %d\n", view->isa->name, tagsum, newTagSum);
+	post("  view '%s' %d %d\n", class_getName(view->isa), tagsum, newTagSum);
 
 	if ([view respondsToSelector: @selector(setTarget:)]) {
 		[view setTarget: target];

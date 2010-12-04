@@ -26,6 +26,8 @@
 #include "SC_Unit.h"
 #include "SC_BufGen.h"
 #include "SC_FifoMsg.h"
+#include "SC_fftlib.h"
+
 #ifndef NO_LIBSNDFILE
 	#ifdef _WIN32
 		#include <sndfile-win.h>
@@ -132,7 +134,20 @@ struct InterfaceTable
 
 	// fBufAlloc should only be called within a BufGenFunc
 	int (*fBufAlloc)(SndBuf *inBuf, int inChannels, int inFrames, double inSampleRate);
+
+	// To initialise a specific FFT, ensure your input and output buffers exist. Internal data structures
+	// will be allocated using the alloc object,
+	// Both "fullsize" and "winsize" should be powers of two (this is not checked internally).
+	struct scfft * (*fSCfftCreate)(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype,
+					 float *indata, float *outdata, SCFFT_Direction forward, SCFFT_Allocator & alloc);
+
+	void (*fSCfftDoFFT)(scfft *f);
+	void (*fSCfftDoIFFT)(scfft *f);
+
+	// destroy any resources held internally.
+	void (*fSCfftDestroy)(scfft *f, SCFFT_Allocator & alloc);
 };
+
 typedef struct InterfaceTable InterfaceTable;
 
 #define Print (*ft->fPrint)
@@ -195,5 +210,34 @@ typedef struct InterfaceTable InterfaceTable;
 		#define PluginLoad(name) void load(InterfaceTable *inTable)
 	#endif
 #endif
+
+#define scfft_create (*ft->fSCfftCreate)
+#define scfft_dofft (*ft->fSCfftDoFFT)
+#define scfft_doifft (*ft->fSCfftDoIFFT)
+#define scfft_destroy (*ft->fSCfftDestroy)
+
+
+class SCWorld_Allocator:
+	public SCFFT_Allocator
+{
+	InterfaceTable * ft;
+	World * world;
+
+public:
+	SCWorld_Allocator(InterfaceTable * ft, World * world):
+		ft(ft), world(world)
+	{}
+
+	virtual void* alloc(size_t size)
+	{
+		return RTAlloc(world, size);
+	}
+
+	virtual void free(void* ptr)
+	{
+		RTFree(world, ptr);
+	}
+};
+
 
 #endif

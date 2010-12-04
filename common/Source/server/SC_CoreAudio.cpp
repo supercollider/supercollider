@@ -234,6 +234,7 @@ void initializeScheduler()
 bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+PacketStatus PerformOSCPacket(World *world, OSC_Packet *packet, SC_ScheduledEvent::PacketFreeFunc);
 
 void Perform_ToEngine_Msg(FifoMsg *inMsg);
 void FreeOSCPacket(FifoMsg *inMsg);
@@ -315,15 +316,9 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 	//scprintf("<-PerformOSCBundle %d\n", inPacket->mSize);
 }
 
-////////////////////////////////////////////////////////////////////////////
-
-void Perform_ToEngine_Msg(FifoMsg *inMsg)
+PacketStatus PerformOSCPacket(World *world, OSC_Packet *packet, SC_ScheduledEvent::PacketFreeFunc freeFunc)
 {
-	World *world = inMsg->mWorld;
-	OSC_Packet *packet = (OSC_Packet*)inMsg->mData;
-	if (!packet) return;
-
-	SC_AudioDriver *driver = inMsg->mWorld->hw->mAudioDriver;
+	SC_AudioDriver *driver = world->hw->mAudioDriver;
 
 	if (!packet->mIsBundle) {
 		PerformOSCMessage(world, packet->mSize, packet->mData, &packet->mReplyAddr);
@@ -331,12 +326,13 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 //		if(!world->mLocalErrorNotification) {
 //			world->mLocalErrorNotification = world->mErrorNotification;
 //		};
+		return PacketPerformed;
 	} else {
-
 		// in real time engine, schedule the packet
 		int64 time = OSCtime(packet->mData + 8);
 		if (time == 0 || time == 1) {
 			PerformOSCBundle(world, packet);
+			return PacketPerformed;
 		} else {
 			if ((time < driver->mOSCbuftime) && (world->mVerbosity >= 0)) {
 				double seconds = (driver->mOSCbuftime - time)*kOSCtoSecs;
@@ -351,27 +347,40 @@ void Perform_ToEngine_Msg(FifoMsg *inMsg)
 				//	(time-driver->mOSCbuftime)*kOSCtoSecs,
 				//	(time-gStartupOSCTime)*kOSCtoSecs);
 
-			SC_ScheduledEvent event(world, time, packet);
+			SC_ScheduledEvent event(world, time, packet, freeFunc);
 			driver->AddEvent(event);
-			inMsg->mData = 0;
-			inMsg->mFreeFunc = 0;
+			return PacketScheduled;
 		}
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////
 
-void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket);
-void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket)
+void Perform_ToEngine_Msg(FifoMsg *inMsg)
 {
-	bool isBundle = gIsBundle.checkIsBundle((int32*)inPacket->mData);
+	World *world = inMsg->mWorld;
+	OSC_Packet *packet = (OSC_Packet*)inMsg->mData;
+	if (!packet) return;
 
-	if (isBundle) {
-		PerformOSCBundle(inWorld, inPacket);
-	} else {
-		PerformOSCMessage(inWorld, inPacket->mSize, inPacket->mData, &inPacket->mReplyAddr);
+	PacketStatus status = PerformOSCPacket(world, packet, SC_ScheduledEvent::FreeInNRT);
+	if (status == PacketScheduled) {
+		// Transfer ownership
+		inMsg->mData = 0;
+		inMsg->mFreeFunc = 0;
 	}
 }
 
+PacketStatus PerformCompletionMsg(World *inWorld, const OSC_Packet& inPacket)
+{
+	OSC_Packet* packet = (OSC_Packet*)World_Alloc(inWorld, sizeof(OSC_Packet));
+	*packet = inPacket;
+	packet->mIsBundle = gIsBundle.checkIsBundle((int32*)packet->mData);
+	PacketStatus status = PerformOSCPacket(inWorld, packet, SC_ScheduledEvent::FreeInRT);
+	if (status == PacketPerformed) {
+		World_Free(inWorld, packet);
+	}
+	return status;
+}
 
 void FreeOSCPacket(FifoMsg *inMsg)
 {
@@ -472,12 +481,23 @@ bool SC_AudioDriver::SendOscPacketMsgToEngine(FifoMsg& inMsg)
 	return mOscPacketsToEngine.Write(inMsg);
 }
 
+void SC_ScheduledEvent::FreeInRT(struct World* world, OSC_Packet* packet)
+{
+	World_Free(world, packet->mData);
+	World_Free(world, packet);
+}
+
+void SC_ScheduledEvent::FreeInNRT(struct World* world, OSC_Packet* packet)
+{
+	FifoMsg msg;
+	msg.Set(world, FreeOSCPacket, 0, (void*)packet);
+	world->hw->mAudioDriver->SendMsgFromEngine(msg);
+}
+
 void SC_ScheduledEvent::Perform()
 {
 	PerformOSCBundle(mWorld, mPacket);
-	FifoMsg msg;
-	msg.Set(mWorld, FreeOSCPacket, 0, (void*)mPacket);
-	mWorld->hw->mAudioDriver->SendMsgFromEngine(msg);
+	(*mPacketFreeFunc)(mWorld, mPacket);
 }
 
 bool SC_AudioDriver::Setup()

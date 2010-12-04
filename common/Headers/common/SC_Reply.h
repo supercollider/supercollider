@@ -19,17 +19,19 @@
 */
 
 
-#ifndef _SC_Msg_
-#define _SC_Msg_
+#ifndef _SC_Reply_
+#define _SC_Reply_
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef _WIN32
+
+#if defined(_WIN32)
 # include <winsock2.h>
 #else
-#include <netinet/in.h>
-#endif
-#include "sc_msg_iter.h"
+# include <netinet/in.h>
+#endif // _WIN32
+
+struct ReplyAddress;
 
 typedef void (*ReplyFunc)(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
 
@@ -44,13 +46,13 @@ struct ReplyAddress
 	void *mReplyData;
 };
 
+#if defined(__cplusplus)
 bool operator==(const ReplyAddress& a, const ReplyAddress& b);
+#endif // __cplusplus
 
-inline void SendReply(ReplyAddress *inReplyAddr, char* inBuf, int inSize)
+inline void SendReply(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
 	(inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);
 }
 
 #endif
-
-

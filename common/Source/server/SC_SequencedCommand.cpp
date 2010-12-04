@@ -44,7 +44,11 @@ void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket);
 		packet.mData = mMsgData; \
 		packet.mSize = mMsgSize; \
 		packet.mReplyAddr = mReplyAddress; \
-		PerformCompletionMsg(mWorld, &packet); \
+		PacketStatus status = PerformCompletionMsg(mWorld, packet); \
+		if (status == PacketScheduled) { \
+			mMsgSize = 0; \
+			mMsgData = 0; \
+		} \
 	}
 
 void SndBuf_Init(SndBuf *buf);

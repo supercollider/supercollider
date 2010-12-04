@@ -37,8 +37,11 @@
 		var synth, synthDef, bytes, synthMsg, outUGen, server, gui;
 		gui = GUI.current;
 		server = gui.stethoscope.defaultServer;
-		if(server.serverRunning.not) { (server.name.asString ++ " server not running!").postln; ^nil };
-		synthDef = this.asSynthDef(fadeTime:fadeTime);
+		if(server.serverRunning.not) {
+			(server.name.asString ++ " server not running!").postln;
+			^nil
+		};
+		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
 
 		numChannels = numChannels ?? { if(outUGen.notNil) { (outUGen.inputs.size - 1) } { 1 } };

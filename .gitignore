@@ -26,4 +26,4 @@ common/Packager/SuperCollider*.tar.gz
 common/Packager/SuperCollider*.dmg
 
 #build directory
-/build
+/build*

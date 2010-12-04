@@ -141,33 +141,4 @@ public:
         virtual void* Run();
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef __APPLE__
-
-#include <CoreFoundation/CFMessagePort.h>
-
-class SC_MachMessagePort : public SC_CmdPort
-{
-    CFMessagePortRef mServerPort;
-    CFMessagePortRef mReplyPort;
-
-protected:
-    virtual ReplyFunc GetReplyFunc();
-
-public:
-    SC_MachMessagePort(struct World *inWorld, CFStringRef serverPortName, CFStringRef replyPortName);
-    virtual ~SC_MachMessagePort();
-
-    virtual void* Run();
-
-private:
-    static CFDataRef messagePortCallBack(CFMessagePortRef local, SInt32 msgid, CFDataRef data, void *info);
-};
-
-#endif // __APPLE__
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 #endif
-

@@ -1,4 +1,5 @@
 include_directories(../../Headers/lang
+	../../Headers/plugin_interface
 	LangSource/Bison)
 
 if(APPLE)
@@ -73,6 +74,8 @@ if(UNIX)
 		list(APPEND sclang_sources
 			LangPrimSource/WiiMote_OSX/wiiremote.c
 			LangPrimSource/SC_HID.cpp
+			LangPrimSource/HID_Utilities/IOHIDElement_.c
+			LangPrimSource/HID_Utilities/IOHIDDevice_.c
 			LangPrimSource/HID_Utilities/HID_Utilities.c
 			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
 			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
@@ -95,6 +98,22 @@ if (SC_QT)
   add_definitions(-DSC_QT)
 endif (SC_QT)
 
+if (SC_WII OR APPLE)
+	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+		find_package(CWiid)
+		find_package(Bluetooth)
+
+		if (BLUETOOTH_FOUND AND CWIID_FOUND)
+			add_definitions(-DHAVE_WII)
+			include_directories(${CWIID_INCLUDE_DIRS} ${BLUETOOTH_INCLUDE_DIRS})
+		endif()
+	elseif(APPLE)
+		add_definitions(-DHAVE_WII)
+		list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
+		include_directories(LangPrimSource/WiiMote_OSX)
+	endif()
+endif()
+
 if(FINAL_BUILD)
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
 	add_library(libsclang SHARED libsclang_final.cpp ${sclang_parser_source})
@@ -102,6 +121,13 @@ else()
 	add_library(libsclang SHARED ${sclang_sources} ${sclang_parser_source})
 endif()
 
+if (SC_WII OR APPLE)
+	if (BLUETOOTH_FOUND AND CWIID_FOUND)
+		target_link_libraries(libsclang ${BLUETOOTH_LIBRARIES} ${CWIID_LIBRARIES})
+	elseif(APPLE)
+		target_link_libraries(libsclang "-framework IOBluetooth")
+	endif()
+endif()
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
@@ -142,7 +168,6 @@ if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
 	target_link_libraries(libsclang "-framework CoreAudio")
 	target_link_libraries(libsclang "-framework CoreMidi")
-	target_link_libraries(libsclang "-framework IOBluetooth")
 	target_link_libraries(libsclang "-framework IOKit")
 endif()
 
