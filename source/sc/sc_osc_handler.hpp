@@ -432,11 +432,11 @@ private:
     template <bool realtime>
     void handle_bundle(received_bundle const & bundle, nova_endpoint const & endpoint);
     template <bool realtime>
-    void handle_message(received_message const & message, nova_endpoint const & endpoint);
+    void handle_message(received_message const & message, size_t msg_size, nova_endpoint const & endpoint);
     template <bool realtime>
-    void handle_message_int_address(received_message const & message, nova_endpoint const & endpoint);
+    void handle_message_int_address(received_message const & message, size_t msg_size, nova_endpoint const & endpoint);
     template <bool realtime>
-    void handle_message_sym_address(received_message const & message, nova_endpoint const & endpoint);
+    void handle_message_sym_address(received_message const & message, size_t msg_size, nova_endpoint const & endpoint);
 
     friend class sc_scheduled_bundles::bundle_node;
     /* @} */

@@ -449,7 +449,7 @@ void sc_scheduled_bundles::bundle_node::run(void)
         instance->handle_bundle<true>(bundle, endpoint_);
     } else {
         received_message message(element);
-        instance->handle_message<true>(message, endpoint_);
+        instance->handle_message<true>(message, element.Size(), endpoint_);
     }
 }
 
@@ -585,7 +585,7 @@ void sc_osc_handler::handle_packet(const char * data, std::size_t length, nova_e
     else
     {
         received_message message(packet);
-        handle_message<true> (message, endpoint);
+        handle_message<true> (message, packet.Size(), endpoint);
     }
 }
 
@@ -606,7 +606,7 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, nova_endpoint
                 handle_bundle<realtime>(inner_bundle, endpoint);
             } else {
                 received_message message(element);
-                handle_message<realtime>(message, endpoint);
+                handle_message<realtime>(message, element.Size(), endpoint);
             }
         }
     } else {
@@ -618,14 +618,14 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, nova_endpoint
 }
 
 template <bool realtime>
-void sc_osc_handler::handle_message(received_message const & message, nova_endpoint const & endpoint)
+void sc_osc_handler::handle_message(received_message const & message, size_t msg_size,
+                                    nova_endpoint const & endpoint)
 {
-    try
-    {
+    try {
         if (message.AddressPatternIsUInt32())
-            handle_message_int_address<realtime>(message, endpoint);
+            handle_message_int_address<realtime>(message, msg_size, endpoint);
         else
-            handle_message_sym_address<realtime>(message, endpoint);
+            handle_message_sym_address<realtime>(message, msg_size, endpoint);
     }
     catch (std::exception const & e)
     {
@@ -1667,7 +1667,7 @@ int32_t get_control_index(sc_synth * s, osc::ReceivedMessageArgumentIterator & i
 }
 
 template <bool realtime>
-void handle_s_get(received_message const & msg, nova_endpoint const & endpoint)
+void handle_s_get(received_message const & msg, size_t msg_size, nova_endpoint const & endpoint)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -1682,7 +1682,7 @@ void handle_s_get(received_message const & msg, nova_endpoint const & endpoint)
 
     sc_synth * s = static_cast<sc_synth*>(node);
 
-    size_t alloc_size = msg.MessageSize() + sizeof(float) * (msg.ArgumentCount()-1) + 128;
+    size_t alloc_size = msg_size + sizeof(float) * (msg.ArgumentCount()-1) + 128;
 
     sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
 
@@ -1702,7 +1702,7 @@ void handle_s_get(received_message const & msg, nova_endpoint const & endpoint)
 }
 
 template <bool realtime>
-void handle_s_getn(received_message const & msg, nova_endpoint const & endpoint)
+void handle_s_getn(received_message const & msg, size_t msg_size, nova_endpoint const & endpoint)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -1729,7 +1729,7 @@ void handle_s_getn(received_message const & msg, nova_endpoint const & endpoint)
         argument_count += it->AsInt32Unchecked(); ++it;
     }
 
-    size_t alloc_size = msg.MessageSize() + sizeof(float) * (argument_count) + 128;
+    size_t alloc_size = msg_size + sizeof(float) * (argument_count) + 128;
 
     sized_array<char, rt_pool_allocator<char> > return_message(alloc_size);
 
@@ -2606,9 +2606,9 @@ void b_gen_nrt_3(uint32_t index, sample * free_buf, nova_endpoint const & endpoi
 }
 
 template <bool realtime>
-void handle_b_gen(received_message const & msg, nova_endpoint const & endpoint)
+void handle_b_gen(received_message const & msg, size_t msg_size, nova_endpoint const & endpoint)
 {
-    movable_array<char> cmd (msg.MessageSize(), msg.TypeTags()-1);
+    movable_array<char> cmd (msg_size, msg.TypeTags()-1);
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_gen_nrt_1<realtime>, cmd, endpoint));
 }
 
@@ -2915,7 +2915,7 @@ void handle_p_new(received_message const & msg)
 
 template <bool realtime>
 void sc_osc_handler::handle_message_int_address(received_message const & message,
-                                                nova_endpoint const & endpoint)
+                                                size_t msg_size, nova_endpoint const & endpoint)
 {
     uint32_t address = message.AddressPatternAsUInt32();
 
@@ -2934,11 +2934,11 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_s_get:
-        handle_s_get<realtime>(message, endpoint);
+        handle_s_get<realtime>(message, msg_size, endpoint);
         break;
 
     case cmd_s_getn:
-        handle_s_getn<realtime>(message, endpoint);
+        handle_s_getn<realtime>(message, msg_size, endpoint);
         break;
 
     case cmd_notify:
@@ -3106,7 +3106,7 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_b_gen:
-        handle_b_gen<realtime>(message, endpoint);
+        handle_b_gen<realtime>(message, msg_size, endpoint);
         break;
 
     case cmd_c_set:
@@ -3275,7 +3275,7 @@ void dispatch_node_commands(const char * address, received_message const & messa
 
 template <bool realtime>
 void dispatch_buffer_commands(const char * address, received_message const & message,
-                              nova_endpoint const & endpoint)
+                              size_t msg_size, nova_endpoint const & endpoint)
 {
     assert(address[1] == 'b');
     assert(address[2] == '_');
@@ -3350,7 +3350,7 @@ void dispatch_buffer_commands(const char * address, received_message const & mes
     }
 
     if (strcmp(address+3, "gen") == 0) {
-        handle_b_gen<realtime>(message, endpoint);
+        handle_b_gen<realtime>(message, msg_size, endpoint);
         return;
     }
 }
@@ -3417,7 +3417,7 @@ void dispatch_synthdef_commands(const char * address, received_message const & m
 }
 
 template <bool realtime>
-void dispatch_synth_commands(const char * address, received_message const & message,
+void dispatch_synth_commands(const char * address, received_message const & message, size_t msg_size,
                              nova_endpoint const & endpoint)
 {
     assert(address[1] == 's');
@@ -3434,12 +3434,12 @@ void dispatch_synth_commands(const char * address, received_message const & mess
     }
 
     if (strcmp(address+3, "get") == 0) {
-        handle_s_get<realtime>(message, endpoint);
+        handle_s_get<realtime>(message, msg_size, endpoint);
         return;
     }
 
     if (strcmp(address+3, "getn") == 0) {
-        handle_s_getn<realtime>(message, endpoint);
+        handle_s_getn<realtime>(message, msg_size, endpoint);
         return;
     }
 }
@@ -3448,7 +3448,7 @@ void dispatch_synth_commands(const char * address, received_message const & mess
 
 template <bool realtime>
 void sc_osc_handler::handle_message_sym_address(received_message const & message,
-                                                nova_endpoint const & endpoint)
+                                                size_t msg_size, nova_endpoint const & endpoint)
 {
     const char * address = message.AddressPattern();
 
@@ -3469,7 +3469,7 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
         }
 
         if (address[1] == 'b') {
-            dispatch_buffer_commands<realtime>(address, message, endpoint);
+            dispatch_buffer_commands<realtime>(address, message, msg_size, endpoint);
             return;
         }
 
@@ -3484,7 +3484,7 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
         }
 
         if (address[1] == 's') {
-            dispatch_synth_commands<realtime>(address, message, endpoint);
+            dispatch_synth_commands<realtime>(address, message, msg_size, endpoint);
             return;
         }
     }
