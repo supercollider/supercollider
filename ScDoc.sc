@@ -560,7 +560,7 @@ ScDocRenderer {
             file.write("<div class='footnotes'>\n");
             footNotes.do {|n,i|
                 file.write("<a name='footnote_"++(i+1)++"'/><div class='footnote'>");
-                file.write("("++(i+1)++") - ");
+                file.write("(<a href='#footnote_org_"++(i+1)++"'>"++(i+1)++"</a>) - ");
                 n.children.do(this.renderHTMLSubTree(file,_));
                 file.write("</div>");
             };
@@ -774,7 +774,7 @@ ScDocRenderer {
             },
             'footnote', {
                 footNotes.add(node);
-                file.write("<a class='footnote' href='#footnote_"++footNotes.size++"'><sup>"++footNotes.size++"</sup></a> ");
+                file.write("<a class='footnote' name='footnote_org_"++footNotes.size++"' href='#footnote_"++footNotes.size++"'><sup>"++footNotes.size++"</sup></a> ");
             },
             '##', {
                 switch(parentTag,
