@@ -16,7 +16,6 @@ set(simple_tests
     sndfile_backend_test.cpp
     static_pool_test.cpp
     ticket_scheduler_test.cpp
-    timer_system_test.cpp
     timetag_test.cpp
 )
 
