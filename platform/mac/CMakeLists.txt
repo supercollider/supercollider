@@ -10,7 +10,7 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/include/common
 	${CMAKE_SOURCE_DIR}/include/lang
 	${CMAKE_SOURCE_DIR}/include/plugin_interface
-	${CMAKE_SOURCE_DIR}/editors/scapp/app
+	${CMAKE_SOURCE_DIR}/editors/scapp/include
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/
