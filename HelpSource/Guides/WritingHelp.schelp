@@ -99,7 +99,11 @@ categories::
 section:: Categories
 Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See link::Overviews/Categories:: (auto-generated) for existing categories.
 
-For UGens, you should use the existing categories like UGens>Filter>Nonlinear>Ball.
+For UGens, you should use the existing categories like UGens>Filter>Nonlinear. View the current categories like this:
+code::
+Ball.categories
+::
+Or the directory layout if categories was not set.
 
 For other documents, you could base it on the old directory layout, or come up with better ones. like Scheduling, Sequencing, Patterns, Streams, Server, etc..
 

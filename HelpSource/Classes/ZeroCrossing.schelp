@@ -1,0 +1,24 @@
+class:: ZeroCrossing
+summary:: Zero crossing frequency follower
+categories:: UGens>Analysis>Pitch
+
+description::
+Outputs a frequency based upon the distance between interceptions of the X axis. The X intercepts are determined via linear interpolation so this gives better than just integer wavelength resolution. This is a very crude pitch follower, but can be useful in some situations.
+
+classmethods::
+method:: ar, kr
+argument::in
+Input signal.
+
+examples::
+
+code::
+Server.internal.boot;
+(
+{
+    var a;
+    a = SinOsc.ar(SinOsc.kr(1, 0, 600,700), 0, 0.1);
+    [a, ZeroCrossing.ar(a) * 0.0005]
+}.scope;
+)
+::

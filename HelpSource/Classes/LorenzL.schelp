@@ -1,0 +1,57 @@
+class:: LorenzL
+summary:: Lorenz chaotic generator
+categories:: UGens>Generators>Chaotic
+
+description::
+A strange attractor discovered by Edward N. Lorenz while studying mathematical models of the atmosphere. The system is composed of three ordinary differential equations:
+
+code::
+	x' = s * (y - x)
+	y' = x * (r - z) - y
+	z' = x * y - b * z
+::
+warning:: revise formulae converted to c like code (x', y', z'!!!)
+
+The time step amount code::h:: determines the rate at which the ODE is evaluated. Higher values will increase the rate, but cause more instability. A safe choice is the default amount of 0.05.
+
+classmethods::
+method:: ar
+argument:: freq
+Iteration frequency in Hertz
+argument:: s
+Equation variable
+argument:: r
+Equation variable
+argument:: b
+Equation variable
+argument:: h
+Integration time step
+argument:: xi
+Initial value of x
+argument:: yi
+Initial value of y
+argument:: zi
+Initial value of z
+
+examples::
+code::
+// vary frequency
+{ LorenzL.ar(MouseX.kr(20, SampleRate.ir)) * 0.3 }.play(s);
+::
+
+code::
+// randomly modulate params
+(
+{ LorenzL.ar(
+	SampleRate.ir, 
+	LFNoise0.kr(1, 2, 10), 
+	LFNoise0.kr(1, 20, 38),
+	LFNoise0.kr(1, 1.5, 2)
+) * 0.2 }.play(s);
+)
+::
+
+code::
+// as a frequency control
+{ SinOsc.ar(Lag.ar(LorenzL.ar(MouseX.kr(1, 200)),3e-3)*800+900)*0.4 }.play(s);
+::
