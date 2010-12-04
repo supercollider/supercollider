@@ -583,6 +583,32 @@ ScDocRenderer {
         };
     }
 
+    *makeArgString {|m|
+        var res = "";
+        var value;
+        m.argNames.do {|a,i|
+            if (i>0) { //skip 'this' (first arg)
+                if (i>1) { res = res ++ ", " };
+                res = res ++ a;
+                value = m.prototypeFrame[i];
+    			if (value.notNil) {
+        			value = switch(value.class,
+                        Symbol, { "'"++value.asString++"'" },
+                        Char, { "$"++value.asString },
+                        String, { "\""++value.asString++"\"" },
+                        { value.asString }
+                    );
+    				res = res ++ " = " ++ value.asString;
+    			};
+			};
+        };
+        if (res.notEmpty) {
+            ^("("++res++")");
+        } {
+            ^"";
+        };
+    }
+
     renderHTMLSubTree {|file,node,parentTag=false|
         var f, m, n, mname, args, split, mstat;
 
@@ -591,7 +617,7 @@ ScDocRenderer {
                 node.children.do {|e| this.renderHTMLSubTree(file,e,if(p,{node.tag},{parentTag})) };
             });
         };
-        
+
         switch(node.tag,
             'prose', {
                 if(last_display == \block, {
@@ -621,7 +647,6 @@ ScDocRenderer {
             'method', {
                 //for multiple methods with same signature and similar function:
                 //ar kr (x = 42, y = 123)
-
                 f = node.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
 //                args = f[2][1];
                 args = "";
@@ -633,23 +658,25 @@ ScDocRenderer {
                 split.do {|r|
                     mstat = 0;
                     mname = r[1];
-                    if(parentTag==\instancemethods,{
+/*                    if(parentTag==\instancemethods,{
                         m = currentClass.findRespondingMethodFor(mname.asSymbol);
                     },{
                         m = currentClass.class.findRespondingMethodFor(mname.asSymbol);
-                    });
+                    });*/
+                    m = if(parentTag==\instancemethods,{currentClass},{currentClass.class}).findRespondingMethodFor(mname.asSymbol);
                     if(m.notNil, {
                         mstat = mstat | 1;
-                        args = (m.argumentString ? "").replace("this, ","").replace("this","");
-                        if(args.notEmpty,{ args = " ("++args++")" });
+//                        args = (m.argumentString ? "").replace("this, ","").replace("this","");
+//                        if(args.notEmpty,{ args = " ("++args++")" });
+                        args = ScDocRenderer.makeArgString(m);
                     });
                     //check for setter
-                    m = currentClass.findRespondingMethodFor((mname++"_").asSymbol);
+                    m = if(parentTag==\instancemethods,{currentClass},{currentClass.class}).findRespondingMethodFor((mname++"_").asSymbol);
                     if(m.notNil, { mstat = mstat | 2 });
 
                     switch (mstat,
                         // getter only
-                        1, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++args++"</h3></a>\n"); },
+                        1, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++" "++args++"</h3></a>\n"); },
                         // setter only
                         2, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++" = value</h3></a>\n"); },
                         // getter and setter
@@ -876,39 +903,38 @@ ScDocRenderer {
         dirLevel = folder.split($/).reject {|y| (y.size<1) or: (y==".")}.size;
         baseDir = ".";
         dirLevel.do { baseDir = baseDir +/+ ".." };
-        
+
         footNotes = List.new;
         
 //        ("'"++baseDir++"'").postln;
-        
+
         if(x.text.notEmpty, {
             name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
+
             this.renderHTMLHeader(f,name,\class,folder);
-                    
+
             x = parser.findNode(\description);
             this.renderHTMLSubTree(f,x);
 
             x = parser.findNode(\classmethods);
             this.renderHTMLSubTree(f,x);
-
+//crashes here for generated autodocs on IOStream and String, why?
             x = parser.findNode(\instancemethods);
             this.renderHTMLSubTree(f,x);
 
             x = parser.findNode(\examples);
             this.renderHTMLSubTree(f,x);
-            
         },{
             x = parser.findNode(\title);
             name = x.text.stripWhiteSpace;
             this.renderHTMLHeader(f,name,\other,folder);
-        
             this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
         });
 
         this.renderFootNotes(f);
-        f.write("</body></html>");
 
+        f.write("</body></html>");
         f.close;
     }
 }
@@ -984,9 +1010,9 @@ ScDoc {
             n.add((tag:\instancemethods, children:l=List.new));    
             mets.do {|m|
                 name = m.name.asString;
-                if(name.last!=$_, {
+//                if(name.last!=$_, { //what if the class has a setter only?
                     l.add((tag:\method, text:name));
-                });
+//                });
             };
         });
     }
@@ -1026,8 +1052,8 @@ ScDoc {
 //                this.addToCategoryMap(p, "Classes" +/+ name);
                 this.addToDocMap(p, "Classes" +/+ name);
                 if((force or: File.exists(dest).not), {
-                    ("Generating doc for class: "++name).postln;
-                    this.makeMethodList(c,n);                
+                    ("Generating doc for class: "++name++" -> "++dest).postln;
+                    this.makeMethodList(c,n);
                     r.parser = p;
                     r.renderHTML(dest,"Classes");
                 });

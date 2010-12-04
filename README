@@ -26,9 +26,7 @@ See these generated helpfiles for more info about ScDoc:
 
 TODO
 ----
-- too long lines are truncated since findRegexp has a fixed limit of 256 matches. Need to fix or workaround.
-
-- footnotes
+- can setters have more than one arg? if so, we should fix rendering of setters.
 
 - cross-platform: check all uses of systemCmd.
 
