@@ -129,7 +129,7 @@ ScDocParser {
                 modalTag = nil;
                 afterClosing = true;
             },{
-                if(("[a-zA-Z]+::".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
+                if(("[^ ]+::".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
                     this.addText(word.drop(-2));
                     this.handleWord("::",lineno,wordno+1);
                 },{
