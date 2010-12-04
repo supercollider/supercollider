@@ -190,7 +190,7 @@ set_property(TARGET sclang
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
-	include (../../cmake_modules/MacAppFolder.cmake)
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
 	install(TARGETS libsclang
 			DESTINATION "${scappauxresourcesdir}"

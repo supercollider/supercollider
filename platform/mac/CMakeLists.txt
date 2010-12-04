@@ -3,106 +3,106 @@ if(NOT APPLE)
 endif()
 
 # determines the app name and app install location (scappbundlename, scappdir):
-include (../common/cmake_modules/MacAppFolder.cmake)
+include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
-include_directories(../common/Headers/lang
-	../common/Source/lang/LangSource/Bison
-	../common/Headers/common
-	../common/Headers/plugin_interface
-	../common/Headers/app
-	../common/Headers/app/SMLAdvancedFind
-	../common/Headers/app/SMLAdvancedFind/ICU
-	../common/include/icu/unicode/
+include_directories(
+	${CMAKE_SOURCE_DIR}/lang/LangSource/Bison
+	${CMAKE_SOURCE_DIR}/include/common
+	${CMAKE_SOURCE_DIR}/include/lang
+	${CMAKE_SOURCE_DIR}/include/plugin_interface
+	${CMAKE_SOURCE_DIR}/editors/scapp/app
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU
+	${CMAKE_SOURCE_DIR}/external_libraries/icu/
+	${CMAKE_SOURCE_DIR}/external_libraries/icu/unicode/
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities
 	)
-
-include_directories(../common/include/icu
-	../common/Source/lang/LangPrimSource/HID_Utilities)
 
 find_package(Sndfile)
 
 set(scapp_sources
-	../common/Source/lang/LangPrimSource/SC_Wii.cpp
-	../common/Source/lang/LangPrimSource/PyrSignalPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrSched.cpp
-	../common/Source/lang/LangPrimSource/PyrPrimitive.cpp
-	../common/Source/lang/LangPrimSource/PyrMathPrim.cpp
-	../common/Source/lang/LangPrimSource/SC_ComPort.cpp
-	../common/Source/lang/LangPrimSource/OSCData.cpp
-	../common/Source/lang/LangPrimSource/PyrArchiver.cpp
-	../common/Source/lang/LangPrimSource/PyrArrayPrimitives.cpp
-	../common/Source/lang/LangPrimSource/PyrBitPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrCharPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrFilePrim.cpp
-	../common/Source/lang/LangPrimSource/PyrListPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrPlatformPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrSerialPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrStringPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrUStringPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrSymbolPrim.cpp
-	../common/Source/lang/LangPrimSource/PyrUnixPrim.cpp
-	../common/Source/lang/LangPrimSource/SC_Speech.M
-	../common/Source/lang/LangSource/AdvancingAllocPool.cpp
-	../common/Source/lang/LangSource/ByteCodeArray.cpp
-	../common/Source/lang/LangSource/DumpParseNode.cpp
-	../common/Source/lang/LangSource/GC.cpp
-	../common/Source/lang/LangSource/InitAlloc.cpp
-	../common/Source/lang/LangSource/PyrFileUtils.cpp
-	../common/Source/lang/LangSource/PyrInterpreter3.cpp
-	../common/Source/lang/LangSource/PyrLexer.cpp
-	../common/Source/lang/LangSource/PyrMathOps.cpp
-	../common/Source/lang/LangSource/PyrMathSupport.cpp
-	../common/Source/lang/LangSource/PyrMessage.cpp
-	../common/Source/lang/LangSource/PyrObject.cpp
-	../common/Source/lang/LangSource/PyrParseNode.cpp
-	../common/Source/lang/LangSource/PyrSignal.cpp
-	../common/Source/lang/LangSource/PyrSymbolTable.cpp
-	../common/Source/lang/LangSource/SC_LibraryConfig.cpp
-	../common/Source/lang/LangSource/Samp.cpp
-	../common/Source/lang/LangSource/SimpleStack.cpp
-	../common/Source/lang/LangSource/VMGlobals.cpp
-	../common/Source/lang/LangSource/dumpByteCodes.cpp
-	../common/Source/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
-	../common/Source/lang/LangPrimSource/SC_HID.cpp
-	../common/Source/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
-	../common/Source/lang/LangPrimSource/HID_Utilities/HID_Name_Lookup.c
-	../common/Source/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
-	../common/Source/lang/LangPrimSource/HID_Utilities/HID_Error_Handler.c
-	../common/Source/lang/LangPrimSource/SC_CoreMIDI.cpp
-	../common/Source/lang/LangPrimSource/SC_CoreAudioPrim.cpp
-	../common/Source/common/fftlib.c
-	../common/Source/app/CocoaBridgePrimitives.M
-	../common/Source/app/CocoaFilePrimitives.M
-	../common/Source/app/DrawBackground.M
-	../common/Source/app/GUIPrimitives.M
-	../common/Source/app/GetStringFromUser.m
-	../common/Source/app/GoToPanel.M
-	../common/Source/app/HTMLRenderer.m
-	../common/Source/app/MyDocument.M
-	../common/Source/app/RendezvousClient.M
-	../common/Source/app/SCCocoaView.M
-	../common/Source/app/SCDialog.mm
-	../common/Source/app/SCGraphView.M
-	../common/Source/app/SCImage.M
-	../common/Source/app/SCNSWindow.m
-	../common/Source/app/SCService.mm
-	../common/Source/app/SCSoundFileView.M
-	../common/Source/app/SCTextView.M
-	../common/Source/app/SCView.M
-	../common/Source/app/SCVirtualMachine.M
-	../common/Source/app/TabletEvents.m
-	../common/Source/app/TextFinder.m
-	../common/Source/app/UserPanel.M
-	../common/Source/app/main.m
-	../common/Source/app/post_queue.M
-	../common/Source/app/syntaxColorize.M
-	../common/Source/app/SMLAdvancedFind/SMLAdvancedFindController.m
-	../common/Source/app/SMLAdvancedFind/SMLStatusBarTextFieldCell.m
-	../common/Source/app/SMLAdvancedFind/ICU/ICUMatcher.m
-	../common/Source/app/SMLAdvancedFind/ICU/ICUPattern.m
-	../common/Source/app/SMLAdvancedFind/ICU/NSStringICUAdditions.m
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Wii.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSignalPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSched.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrPrimitive.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrMathPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_ComPort.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/OSCData.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrArchiver.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrArrayPrimitives.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrBitPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrCharPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrFilePrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrListPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrPlatformPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSerialPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrStringPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrUStringPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSymbolPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrUnixPrim.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
+	${CMAKE_SOURCE_DIR}/lang/LangSource/AdvancingAllocPool.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/ByteCodeArray.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/DumpParseNode.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/GC.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/InitAlloc.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrFileUtils.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrInterpreter3.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrLexer.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrMathOps.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrMathSupport.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrMessage.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrObject.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrParseNode.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrSignal.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/PyrSymbolTable.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/SC_LibraryConfig.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/Samp.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/SimpleStack.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/VMGlobals.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangSource/dumpByteCodes.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_HID.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Utilities.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Name_Lookup.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Error_Handler.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreMIDI.cpp
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreAudioPrim.cpp
+	${CMAKE_SOURCE_DIR}/common/fftlib.c
+	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaFilePrimitives.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/DrawBackground.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/GUIPrimitives.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/GetStringFromUser.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/GoToPanel.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/HTMLRenderer.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/MyDocument.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/RendezvousClient.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCCocoaView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCDialog.mm
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCGraphView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCImage.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCNSWindow.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCService.mm
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCSoundFileView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCTextView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCVirtualMachine.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/TabletEvents.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/TextFinder.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/UserPanel.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/main.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/post_queue.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/syntaxColorize.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLAdvancedFindController.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLStatusBarTextFieldCell.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/ICUMatcher.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/ICUPattern.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/NSStringICUAdditions.m
 	)
 
-set(scapp_parser_source ../common/Source/lang/LangSource/Bison/lang11d_tab.cpp)
+set(scapp_parser_source ${CMAKE_SOURCE_DIR}/lang/LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA -DHAVE_SPEECH)
 
@@ -117,8 +117,6 @@ SET(scapp_resources ${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns)
 file(COPY Resources
 	DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents
 	PATTERN Info.plist EXCLUDE
-	PATTERN .svn EXCLUDE
-	PATTERN .git EXCLUDE
 )
 
 add_executable(${scappbundlename} MACOSX_BUNDLE
@@ -167,9 +165,8 @@ endif(SNDFILE_FOUND)
 target_link_libraries(${scappbundlename} sccommon pthread)
 
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app"
-		DESTINATION ${scappdir}
-		USE_SOURCE_PERMISSIONS
-		)
+	DESTINATION ${scappdir}
+	USE_SOURCE_PERMISSIONS)
 
 if (NOT ("${standalone}" STREQUAL ""))
 	# A synthdefs folder is expected in the bundle
