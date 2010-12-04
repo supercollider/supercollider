@@ -38,7 +38,7 @@ a:hover {
 .header {
 /*    background: #c6d0c6;*/
 /*    background: #ccc;*/
-    background: #c8cfc8;
+    background: #d8dfd8;
     padding: 0.5em;
     border: 1px solid #bbb;
 }
@@ -129,7 +129,7 @@ li {
 
 code, pre {
     font-family: Andale Mono, monospace;
-    font-size: 9pt;
+    font-size: 9.5pt;
     font-weight: normal;
     color: #121;
 }
@@ -156,7 +156,7 @@ pre {
     border-bottom: 1px solid #bbb;
     font-family: Andale Mono, monospace;
     font-weight: bold;
-    font-size: 10pt;
+    font-size: 9.5pt;
     margin-bottom: 0.2em;
     margin-top: 1em;
     padding-left: 0.2em;
@@ -181,6 +181,7 @@ td.argumentname {
 /*    padding-right: 1em;*/
     background: #eee;
     font-family: Andale Mono, monospace;
+    font-size: 9.5pt;
     vertical-align: top;
 }
 
