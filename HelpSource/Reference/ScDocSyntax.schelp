@@ -13,9 +13,9 @@ Documents consist of tags and text. Some tags associate text with them, some jus
 
 Tags are of two types, single-line tags and range tags, indicated using code::keyword\::::
 
-Tags are case insensitive, code::FooBar\:::: is the same as code::foobar\:::: or code::FOOBAR\::::.
+Tags are case insensitive, code::FooBar\:::: is the same as code::foobar\:::: or code::FOOBAR\::::
 
-Some tags might only be meaningful after other tags, like code::argument\:::: after code::method\::::.
+Some tags might only be meaningful after other tags, like code::argument\:::: after code::method\::::
 
 Single-line tags are specified like so, and terminated with a newline. They can have a text associated with the tag:
 code::
@@ -44,7 +44,7 @@ code::
 variableTag::
 Some text of a
 variable line tag
-::
+\::
 ::
 They can also occur on the same line inside normal prose:
 code::

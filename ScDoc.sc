@@ -10,11 +10,12 @@ ScDocParser {
     var afterClosing;
     var isWS;
     var stripFirst;
+    var proseDisplay;
 
     init {
         root = tree = List.new;
         stack = List.new;
-        stack.add([tree,0]);
+        stack.add([tree,0,nil]);
         current = nil;
         singleline = false;
         level = 0;
@@ -22,6 +23,7 @@ ScDocParser {
         isWS = false;
         afterClosing = false;
         stripFirst = false;
+        proseDisplay = \block;
 //        doingInlineTag = false;
     }
 
@@ -45,41 +47,44 @@ ScDocParser {
 
     popTree {
         var p = stack.pop;
-        tree = p[0];
-        level = p[1];
+        if(p.notNil) {
+            tree = p[0];
+            level = p[1];
+            if(p[2].notNil) {proseDisplay = p[2].display};
+        };
+        ^nil;
+    }
+
+    pushTree {
+        stack.add([tree,level,nil]);
+    }
+
+    setTopNode {|n|
+        stack[stack.size-1][2] = n;
     }
 
     enterLevel {|n|
         this.leaveLevel(n);
-        stack.add([tree,level]);
+        this.pushTree;
         level = n;
     }
 
-/*    stripWhiteSpace {|str|
-        var a=0, b=str.size-1;
-        //FIXME: how does this handle strings that are empty or single characters?
-        while({(str[a]==$\n) or: (str[a]==$\ )},{a=a+1});
-        while({(str[b]==$\n) or: (str[b]==$\ )},{b=b-1});
-        ^str.copyRange(a,b);
-    }
-*/    
     endCurrent {
         if(current.notNil,{
-//            if(current.text.notNil, {
-//                current.text = this.stripWhiteSpace(current.text);
-//            });
+            proseDisplay = current.display;
             current = nil;
         });
     }
 
     addTag {|tag, text="", children=false, display=\block|
+        var node;
         this.endCurrent;
         tag = tag.asString.drop(-2).asSymbol;
-        current = (tag:tag, display:display, text:text, children:if(children,{List.new},{nil}));
-//        current = (tag:tag, text:text, children:if(children,{List.new},{nil}));
+        current = node = (tag:tag, display:display, text:text, children:if(children,{List.new},{nil}));
         tree.add(current);
         if(children, {tree = current.children}); //recurse into children list
         if(text.isNil, {this.endCurrent}); //we don't have any text field to add to for this tag, so start fresh..    
+        ^node;
     }
 
     handleWord {|word,lineno,wordno|
@@ -92,15 +97,15 @@ ScDocParser {
         var noNameSection = {
             singleline = true; //this doesn't actually matter here since we don't have a text field?
             this.enterLevel(1);
-            this.addTag(tag,nil,true);
+            this.setTopNode(this.addTag(tag,nil,true));
         };
         var namedSection = {|lev|
             {
                 singleline = true;
                 this.enterLevel(lev);
-                this.addTag(tag,"",true);
+                this.setTopNode(this.addTag(tag,"",true));
                 stripFirst = true;
-            }        
+            }
         };
         var modalRangeTag = {
             singleline = false;
@@ -110,9 +115,8 @@ ScDocParser {
         };
         var listEnter = {
             singleline = false; //this doesn't actually matter here since we don't have a text field?
-//            this.enterLevel(10);
-            stack.add([tree,level]);
-            this.addTag(tag,nil,true);
+            this.pushTree;
+            this.setTopNode(this.addTag(tag,nil,true));
             lastTagLine = lineno;
         };
 
@@ -129,7 +133,7 @@ ScDocParser {
                 modalTag = nil;
                 afterClosing = true;
             },{
-                if(("[^ ]+::".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
+                if(("[^ ]+[^ \\]::".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
                     this.addText(word.drop(-2));
                     this.handleWord("::",lineno,wordno+1);
                 },{
@@ -152,7 +156,6 @@ ScDocParser {
                 'related::',            simpleTag,
                 'keywords::',           simpleTag,
                 'categories::',         simpleTag,
-//                'doctype::',            simpleTag,
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
                 
@@ -169,12 +172,13 @@ ScDocParser {
                 'numberedlist::',       listEnter,
                 'definitionlist::',     listEnter,
                 'table::',              listEnter,
-                'footnote::',           listEnter,
-//                'row::', {
-//                    singleline = false;
-//                    this.enterLevel(11);
-//                    this.addTag(tag,nil,true);
-//                },
+                'footnote::',           {
+                    singleline = false; //this doesn't actually matter here since we don't have a text field?
+                    this.pushTree;
+                    this.setTopNode(this.addTag(tag,nil,true,\inline));
+                    lastTagLine = lineno;
+                    proseDisplay = \inline;
+                },
                 '##', {
                     singleline = false;
                     this.addTag('##::',nil,false,\inline); //make it look like an ordinary tag since we drop the :: in the output tree
@@ -184,31 +188,30 @@ ScDocParser {
                     this.addTag('||::',nil,false,\inline);
                 },
                 '::', { //ends tables and lists
-                    this.popTree;
-                    if(current.notNil, {
-                        current.display = if(lastTagLine==lineno,\inline,\block);
-                    });
                     this.endCurrent;
+                    this.popTree;
                 },
                 '\\::', {
                     this.addText("::");
                 },
-                
+
                 { //default case
                     if("[a-zA-Z]+://.+".matchRegexp(word),{ //auto link URIs
-                        this.addTag('link::',word,false);
-                        if(current.notNil, {
-                            current.display = \inline;
-                        });
+                        this.addTag('link::',word++" ",false,\inline);
                         this.endCurrent;
                     },{
-                        this.addText(word); //plain text, add the word.
+                        if(("[^ ]+[^ \\]::".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
+                            this.addText(word.drop(-2));
+                            this.handleWord("::",lineno,wordno+1);
+                        },{
+                            this.addText(word); //plain text, add the word.
+                        });
                     });
                 }
             );
         });
     }
-    
+
     addText {|word|
         if(stripFirst, {
             stripFirst = false;
@@ -220,7 +223,7 @@ ScDocParser {
             if((isWS.not) or: (afterClosing), { //don't start a new prose element with whitespace
                 afterClosing = false;
                 singleline = false;
-                this.addTag('prose::', word);
+                this.addTag('prose::', word, false, proseDisplay);
             });
         });
     }
@@ -230,28 +233,6 @@ ScDocParser {
         // pass through newlines for vari-line tags.
         if(current.notNil,{current.text = current.text ++ "\n"});
     }
-   
-/*    parse {|string|
-        var lines = string.split($\n);
-        this.init;
-        lines.do {|line,l|
-            var words = line.split($\ );
-            var w2=0;
-            words.do {|word,w|
-//                var split = word.findRegexp("([a-z]+\\[\\[)(.+)(\\]\\])(.*)")[1..];
-                var split = word.findRegexp("([a-z]+::)(.+)(::)(.*)")[1..];
-                if(split.isEmpty, {
-                    this.handleWord(word,l,w2);
-                    if(word.isEmpty.not,{w2=w2+1});
-                },{
-                    split.do {|x|
-                        if(x[1].isEmpty.not,{this.handleWord(x[1],l,w)});
-                    };
-                });
-            };
-            this.endLine;
-        };
-    }*/
 
     parse {|string|
         var lines = string.split($\n); //split lines
@@ -275,14 +256,14 @@ ScDocParser {
                     };
                 });
             };
-            if(modalTag.isNil and: split.isEmpty, { this.endCurrent }); //force a new prose on double blank lines
-//            this.handleWord(" ",l,-1);
+            if(modalTag.isNil and: split.isEmpty, { this.endCurrent; proseDisplay=\block; }); //force a new prose on double blank lines
             this.endLine;
         };
     }
 
     parseFile {|filename|
         var file = File.open(filename,"r");
+        postln("Parsing "++filename);
         this.parse(file.readAllString);
         file.close;
     }
@@ -300,12 +281,12 @@ ScDocParser {
             });
         }
     }
-    
+
     dump {
         this.dumpSubTree(root);
         ^nil;
     }
-    
+
     findNode {|tag,rootNode=nil|
         var res = nil;
         if(rootNode.isNil, { rootNode=root });
@@ -318,7 +299,7 @@ ScDocParser {
             ^(tag:nil, text:"", children:[]);
         });
     }
-    
+
     dumpClassTree {|node,c|
         var n;
         if(c.name.asString.find("Meta_")==0, {^nil});
@@ -333,7 +314,7 @@ ScDocParser {
             };
         });
     }
-    
+
     overviewClassTree {
         var r = List.new;
         var n = (tag:'tree', children:List.new);
@@ -345,11 +326,11 @@ ScDocParser {
         this.dumpClassTree(n,Object);
         root = r;
     }
-    
+
     makeCategoryTree {|catMap,node,filter=nil|
         var a, p, e, n, l, m, kinds, folder, v, dumpCats;
         var tree = Dictionary.new;
-        
+
         catMap.pairsDo {|cat,files|
             p=tree;
             l=cat.split($>);
@@ -367,7 +348,7 @@ ScDocParser {
                 files.do {|f| a.add(f)};
             });
         };
-        
+
         dumpCats = {|x,l,y|
             var ents = x[\entries];
             var subs = x[\subcats];
@@ -383,7 +364,7 @@ ScDocParser {
                     l.add((tag:'soft', text:folder));
                 };
             });
-                        
+
             subs.keys.asList.sort {|a,b| a<b}.do {|k|
                 z = ScDocRenderer.simplifyName(y++">"++k);
                 l.add((tag:'##'));
@@ -393,14 +374,14 @@ ScDocParser {
                 dumpCats.value(subs[k],m,z);
             };    
         };
-        
+
         tree.keys.asList.sort {|a,b| a<b}.do {|k|
             node.add((tag:\section, text:k, children:m=List.new));
             m.add((tag:\tree, children:l=List.new));
             dumpCats.(tree[k],l,k);
         };
     }
-    
+
     overviewCategories {|catMap|
         var r = List.new;
 //        var a, p, e, n, l, m, kinds, folder, v, tree, dumpCats;
@@ -435,10 +416,9 @@ ScDocParser {
                 };
             };
         };*/
-
         root = r;
     }
-    
+
     overviewAllClasses {|docMap|
         var name, doc, link, n, r = List.new, cap, old_cap=nil;
         r.add((tag:'title', text:"Classes"));
@@ -471,7 +451,7 @@ ScDocParser {
         r.add((tag:'title', text:"Methods"));
         r.add((tag:'summary', text:"Alphabetical index of all methods"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
-        
+
         t = Dictionary.new;
 
         Class.allClasses.do {|c|
@@ -501,10 +481,10 @@ ScDocParser {
                 m.add((tag:'link', text: "Classes" +/+ c ++ "#" ++ ScDocRenderer.simplifyName(name)));
             };
         };
-        
+
         root = r;
     }
-    
+
     overviewAllDocuments {|docMap|
         var kind, name, doc, link, n, r = List.new, cap, old_cap=nil;
         r.add((tag:'title', text:"Documents"));
@@ -531,7 +511,7 @@ ScDocParser {
         };
         root = r;
     }
-    
+
     overviewServer {|catMap|
         var r = List.new;
         r.add((tag:'title', text:"Server stuff"));
@@ -546,34 +526,32 @@ ScDocParser {
 ScDocRenderer {
     var <>parser;
 
-    var last_display;
     var currentClass;
     var collectedArgs;
     var dirLevel;
     var baseDir;
     var footNotes;
-    
+
     *new {|p=nil|
         ^super.newCopyArgs(p).init;
     }
 
     init {
     }
-    
+
     *simplifyName {|txt|
         ^txt.toLower.tr($\ ,$_);
     }
-    
+
     escapeSpecialChars {|str|
 //        ^str.replace("\"","&quot;").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
         ^str.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
     }
-    
+
     renderFootNotes {|file|
         if (footNotes.notEmpty) {
             file.write("<div class='footnotes'>\n");
             footNotes.do {|n,i|
-                last_display = \inline;
                 file.write("<a name='footnote_"++(i+1)++"'/><div class='footnote'>");
                 file.write("("++(i+1)++") - ");
                 n.children.do(this.renderHTMLSubTree(file,_));
@@ -591,16 +569,16 @@ ScDocRenderer {
                 if (i>1) { res = res ++ ", " };
                 res = res ++ a;
                 value = m.prototypeFrame[i];
-    			if (value.notNil) {
-        			value = switch(value.class,
+                if (value.notNil) {
+                    value = switch(value.class,
                         Symbol, { "'"++value.asString++"'" },
                         Char, { "$"++value.asString },
                         String, { "\""++value.asString++"\"" },
                         { value.asString }
                     );
-    				res = res ++ " = " ++ value.asString;
-    			};
-			};
+                    res = res ++ " = " ++ value.asString;
+                };
+            };
         };
         if (res.notEmpty) {
             ^("("++res++")");
@@ -620,7 +598,7 @@ ScDocRenderer {
 
         switch(node.tag,
             'prose', {
-                if(last_display == \block, {
+                if(node.display == \block, {
                     file.write("<p>"++this.escapeSpecialChars(node.text));
                 }, {
                     file.write(this.escapeSpecialChars(node.text));                
@@ -695,7 +673,6 @@ ScDocRenderer {
                     a.children.do {|e| this.renderHTMLSubTree(file,e,a.tag) };
                 };
                 file.write("</table>");
-                
                 file.write("</div>");
             },
             'argument', {
@@ -789,7 +766,6 @@ ScDocRenderer {
                 file.write("</table>\n");
             },
             'footnote', {
-                last_display = node.display = \inline;
                 footNotes.add(node);
                 file.write("<a class='footnote' href='#footnote_"++footNotes.size++"'><sup>"++footNotes.size++"</sup></a> ");
             },
@@ -818,15 +794,14 @@ ScDocRenderer {
             'root', {
                 do_children.();
             },
-            
+
             { //unhandled tag
 //                file.write("(TAG:"++node.tag++")");
                 if(node.text.notNil,{file.write(this.escapeSpecialChars(node.text))});
             }
         );
-        last_display = node.display;
     }
-    
+
     renderHTMLHeader {|f,name,type,folder|
         var x, cats, m;
         var style = baseDir +/+ "scdoc.css";
@@ -847,14 +822,14 @@ ScDocRenderer {
             }.join(", "));
             f.write("</div>");
         });    
-        
+
         f.write("<h1>"++name++"</h1>");
         x = parser.findNode(\summary);
         f.write("<div id='summary'>"++this.escapeSpecialChars(x.text)++"</div>");
         f.write("</div>");
 
         f.write("<div class='subheader'>\n");
-        
+
         if(type==\class,{
             m = currentClass.filenameSymbol.asString;
             f.write("<div id='filename'>Location: "++m.dirname++"/<a href='file://"++m++"'>"++m.basename++"</a></div>");
@@ -875,7 +850,7 @@ ScDocRenderer {
                 f.write("</div>");
             });
         });
-        
+
         x = parser.findNode(\related);
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
@@ -890,13 +865,13 @@ ScDocRenderer {
 
     renderHTML {|filename, folder="."|
         var f,x,name;
+        
+        postln("Rendering "++filename);
 
         ("mkdir -p"+filename.dirname.escapeChar($ )).systemCmd;
-                
+
         f = File.open(filename, "w");
         x = parser.findNode(\class);
-        
-        last_display = \block;
 
         //folder is the directory path of the file relative to the help tree,
         //like 'Classes' or 'Tutorials'.
@@ -905,8 +880,6 @@ ScDocRenderer {
         dirLevel.do { baseDir = baseDir +/+ ".." };
 
         footNotes = List.new;
-        
-//        ("'"++baseDir++"'").postln;
 
         if(x.text.notEmpty, {
             name = x.text.stripWhiteSpace;
@@ -944,11 +917,11 @@ ScDoc {
     var <>helpSourceDir;
     var <categoryMap;
     var <docMap;
-    
+
     *new {
         ^super.new.init;
     }
-    
+
     *splitList {|txt|
         ^txt.findRegexp("[-_>a-zA-Z0-9]+[-_>/a-zA-Z0-9 ]*[-_>/a-zA-Z0-9]+").flop[1];
     }
@@ -957,16 +930,10 @@ ScDoc {
         helpTargetDir = thisProcess.platform.userAppSupportDir +/+ "/Help";
         helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
     }
-        
+
     makeOverviews {
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
-        /* TODO:
-          All documents alphabetically
-          All classes alphabetically
-          All classes by categories
-          All methods index
-        */
 
         "Generating ClassTree...".postln;
         r.parser = p.overviewClassTree;
@@ -992,7 +959,7 @@ ScDoc {
         r.parser = p.overviewServer(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
-    
+
     makeMethodList {|c,n|
         var l, mets, name;
 
@@ -1006,7 +973,7 @@ ScDoc {
         });
 
         mets = c.methods;
-        if(mets.notNil, {                
+        if(mets.notNil, {
             n.add((tag:\instancemethods, children:l=List.new));    
             mets.do {|m|
                 name = m.name.asString;
@@ -1016,11 +983,11 @@ ScDoc {
             };
         });
     }
-    
+
     classHasArKrIr {|c|
         ^[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
     }
-    
+
     handleUndocumentedClasses {|force=false|
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
@@ -1032,27 +999,25 @@ ScDoc {
             src = helpSourceDir +/+ "Classes" +/+ name++".schelp";
             dest = helpTargetDir +/+ "Classes" +/+ name ++ ".html";
             if(File.exists(src).not and: (name.find("Meta_")!=0), {
-//                ("Undocumented class: "++name).postln;
-                
                 n = List.new;
                 n.add((tag:\class, text:c.name.asString));
                 n.add((tag:\summary, text:""));
-                
+
                 cats = "Undocumented classes";
-                
+
                 if(this.classHasArKrIr(c), {cats = cats ++ ", UGens>Undocumented"});
-                
+
                 n.add((tag:\categories, text:cats));
                 n.add((tag:\description, children:m=List.new));
-                
+
                 m.add((tag:\prose, text:"This class is missing documentation. "));
                 m.add((tag:\prose, text:"Please create and edit "++src));
-                
+
                 p.root = n;
-//                this.addToCategoryMap(p, "Classes" +/+ name);
+
                 this.addToDocMap(p, "Classes" +/+ name);
                 if((force or: File.exists(dest).not), {
-                    ("Generating doc for class: "++name++" -> "++dest).postln;
+                    ("Generating doc for class: "++name).postln;
                     this.makeMethodList(c,n);
                     r.parser = p;
                     r.renderHTML(dest,"Classes");
@@ -1060,7 +1025,7 @@ ScDoc {
             });
         };
     }
-    
+
     addToDocMap {|parser, path|
         docMap[path] = (
             path:path,
@@ -1068,7 +1033,7 @@ ScDoc {
             categories:parser.findNode(\categories).text
         );
     }
-    
+
     makeCategoryMap {
         var cats;
         ("Creating category map...").postln;
@@ -1084,51 +1049,7 @@ ScDoc {
             };
         };
     }
-/*    
-    addToCategoryMap {|parser, path|
-        var cats = parser.findNode(\categories).text;
-        cats = ScDoc.splitList(cats);
-        cats = cats ? ["Uncategorized"];
-        cats.do {|cat|
-            if(categoryMap[cat].isNil, {
-                categoryMap[cat] = List.new;
-            }, {
-                categoryMap[cat] = categoryMap[cat].reject {|t| t.path==path}.asList; //remove old
-            });
-            categoryMap[cat].add((path:path, summary:parser.findNode(\summary).text));
-        };
-    }
-    
-    makeDocMap {
-        docMap = Dictionary.new;
-        categoryMap.pairsDo {|k,v|
-            v.do {|f|
-                docMap[f.path] = f;
-            };
-        };
-    }
 
-    readCategoryMap {
-        var path = helpTargetDir +/+ "scdoc_category_cache";
-        var file;
-        if(File.exists(path), {
-            file = File.open(path,"r");
-            categoryMap = file.readAllString.interpret;
-            file.close;
-            ^false;
-        }, {
-            categoryMap = Dictionary.new;
-            ^true;
-        });
-    }
-
-    writeCategoryMap {
-        var path = helpTargetDir +/+ "scdoc_category_cache";
-        var file = File.open(path,"w");
-        file.write(categoryMap.asCompileString);
-        file.close;
-    }
-*/
     readDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
         var file;
@@ -1171,7 +1092,7 @@ ScDoc {
             //FIXME: if source is newer than target:
             if(ext == ".schelp", {
                 if(force or: (("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0), { //update only if needed
-                    ("Rendering" + source + "to" + target).postln;
+//                    ("Rendering" + source + "to" + target).postln;
                     r.parser = p.parseFile(source);
 //                    this.addToCategoryMap(p,subtarget); //we need to parse it to get the categories and stuff..
                     this.addToDocMap(p,subtarget);

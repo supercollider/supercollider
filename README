@@ -40,7 +40,7 @@ TODO
 Also make tags for privateClassMethods:: and privateInstanceMethods::, and an option in ScDoc if those should be included or not.
 
 - render binary op methods differently? like ArrayedCollections ++
-we don't want it to display as "++ (aCollection)" do we?
+we don't want it to display as "++ (aCollection)" do we? rather "++ aCollection" or "this ++ that" or something..
 binary ops only uses chars from this list: !@%&*-+=|<>?/
 
 - Render the argument string in method overview? Could be different for different classes though..
@@ -48,9 +48,6 @@ binary ops only uses chars from this list: !@%&*-+=|<>?/
   which is a generated doc with a list of all classes implementing it (and the description of that method in that class?),
   if HelpSource/Methods/methodname.schelp exists, merge with this so can write interface style documentation?
   This would produce a lot of files though!
-
-- It seems that if a paragraph ends with a closing :: (after a code or link tag for example), it is not split by the empty line following it. Adding any character after the last :: works around it, but this should be fixed..
-Probably because \n is handled differently than other whitespace (this.endLine etc)..
 
 HTML renderer stuff:
 - render to string instead of directly to file?
