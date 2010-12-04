@@ -627,6 +627,7 @@ ScDocRenderer {
                 args = "";
 //FIXME: handle overridden argumentnames/defaults?
 //perhaps we should check argument names at least? and only use overriding for "hidden" default values?
+//also, perhaps better to read the default values from the argument tags?
 //ignore markup-provided arguments for now..
                 split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
@@ -646,18 +647,18 @@ ScDocRenderer {
                     m = currentClass.findRespondingMethodFor((mname++"_").asSymbol);
                     if(m.notNil, { mstat = mstat | 2 });
 
-//                    file.write("<div class='methodnames'>\n");
-                    if((mstat & 1) > 0, {
-                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++args++"</h3></a>\n");
-                    });
-                    if((mstat & 2) > 0, {
-                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++" = value</h3></a>\n");
-                    });
-                    if(mstat == 0, {
-                        file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++": METHOD NOT FOUND!</h3></a>\n");                    
-                    });
-//                    file.write("</div>\n");
+                    switch (mstat,
+                        // getter only
+                        1, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++args++"</h3></a>\n"); },
+                        // setter only
+                        2, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++" = value</h3></a>\n"); },
+                        // getter and setter
+                        3, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++" [= value]</h3></a>\n"); },
+                        // method not found
+                        0, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++": METHOD NOT FOUND!</h3></a>\n"); }
+                    );
                 };
+
                 file.write("<div class='method'>");
                 collectedArgs = [];
                 do_children.();
