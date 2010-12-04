@@ -30,6 +30,10 @@ TODO
 
 - cross-platform: check all uses of systemCmd.
 
+- table of contents? just include a maketoc:: tag in the doc header..
+what we do is find all section, description, classmethods, instancemethods, examples, subsection tags and generate a tree
+of anchor links to these.
+
 - better error handling in parser on bogus input, etc..
 
 - force class ref filename to be equal to class name?

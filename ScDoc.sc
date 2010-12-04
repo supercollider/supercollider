@@ -355,7 +355,7 @@ ScDocParser {
             var z;
 
             if(ents.notEmpty, {
-                ents.sort {|a,b| a.path<b.path }.do {|doc|
+                ents.sort {|a,b| a.path.basename<b.path.basename }.do {|doc|
                     folder = doc.path.dirname;
                     folder = if(folder==".", {""}, {" ["++folder++"]"});
                     l.add((tag:'##'));
