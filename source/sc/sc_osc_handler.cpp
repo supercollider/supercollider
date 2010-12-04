@@ -442,7 +442,7 @@ void sc_scheduled_bundles::bundle_node::run(void)
     typedef osc::ReceivedBundle received_bundle;
     typedef osc::ReceivedMessage received_message;
 
-    bundle_element element(data_); /* odd, but true :/ */
+    bundle_element element(data_);
 
     if (element.IsBundle()) {
         received_bundle bundle(element);
