@@ -89,6 +89,7 @@ ScDocParser {
 
     handleWord {|word,lineno,wordno|
         var tag = word.toLower.asSymbol;
+        var t,x;
         var simpleTag = {
             singleline = true;
             this.addTag(tag);
@@ -173,7 +174,13 @@ ScDocParser {
                 'definitionlist::',     listEnter,
                 'table::',              listEnter,
                 'footnote::',           {
-                    singleline = false; //this doesn't actually matter here since we don't have a text field?
+                    singleline = false;
+                    if (current.notNil) { //strip trailing whitespace from previous text..
+                        t=current.text;
+                        x=t.size-1;
+                        while({(t[x]==$\n) or: (t[x]==$\ )},{x=x-1});
+                        current.text = t.copyRange(0,x);
+                    };
                     this.pushTree;
                     this.setTopNode(this.addTag(tag,nil,true,\inline));
                     lastTagLine = lineno;

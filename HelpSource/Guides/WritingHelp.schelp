@@ -20,6 +20,7 @@ definitionlist::
 ## Overviews || overviews of other documents, these are mostly auto-generated.
 ## Other || stuff that don't fit in any other directory.
 ::
+## Do ScDoc:updateAll or use ScDocParser and ScDocRenderer to generate HTML and check that it rendered OK.
 ::
 
 A list of all undocumented classes can be seen here: link::Overviews/Categories#undocumented_classes:: (auto-generated).
@@ -39,18 +40,20 @@ categories:: HelpSystem, Language>Conditionals, AndSoOn
 Then use normal text in sections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/ScDocSyntax:: for tag reference.
 
 subsection:: Class reference
-Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and text can only be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. Thus, named sections are not allowed, but custom subsections can be made under each special section just mentioned.
+Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text can only be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. Thus, named sections are not allowed, but custom subsections can be made under each special section just mentioned.
+
+Tags are case insensitive, but it might be a good idea to write section tags in uppercase for easier reading.
 
 code::
-class:: MyClass
+CLASS:: MyClass
 summary:: a nice class to do that and this
 categories:: Collections>SuperCollections, OtherCategories, AndSoOn
 related:: Classes/AnotherClass, Reference/MyClassCommandReference
 
-description::
+DESCRIPTION::
 Here goes a long description of what the class does and why, etc..
 
-classmethods::
+CLASSMETHODS::
 
 method:: foo
 here goes a description of the class method foo
@@ -62,7 +65,7 @@ here goes a description of argument y of method foo
 method:: bar
 another class method, etc..
 
-instancemethods::
+INSTANCEMETHODS::
 
 method:: zoo
 here goes a description of the instance method zoo
@@ -71,19 +74,17 @@ here goes a description of argument x of method zoo
 argument:: y
 here goes a description of argument y of method zoo
 
-examples::
+EXAMPLES::
 
 An example of how to use this and that:
 code::
-  ...insert code here...
+...insert code here...
 \::
 
 Another example:
 code::
-  ...insert code here...
+...insert code here...
 \::
-::
-
 ::
 
 section:: Metadata
