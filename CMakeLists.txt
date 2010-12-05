@@ -37,17 +37,17 @@ endif()
 
 # preprocessor paths
 include_directories(source)
-include_directories(libs
-                    libs/boost
-                    libs/boost_endian
-                    libs/boost_lockfree
-                    libs/boost_move
-                    libs/nova-dsp
-                    libs/nova-simd
-                    libs/nova-tt
-                    libs/oscpack
-                    libs/pri_queue
-                    libs/tlsf/src
+include_directories(external_libraries
+                    external_libraries/boost
+                    external_libraries/boost_endian
+                    external_libraries/boost_lockfree
+                    external_libraries/boost_move
+                    external_libraries/nova-dsp
+                    external_libraries/nova-simd
+                    external_libraries/nova-tt
+                    external_libraries/oscpack
+                    external_libraries/pri_queue
+                    external_libraries/tlsf/src
                     )
 
 include_directories(source/sc/supercollider/common/Headers/plugin_interface
@@ -102,6 +102,6 @@ if(MEMORY_DEBUGGING)
                  PROPERTY COMPILE_DEFINITIONS_DEBUG NOVA_MEMORY_DEBUGGING)
 endif()
 
-add_subdirectory (libs)
+add_subdirectory (external_libraries)
 add_subdirectory (source)
 add_subdirectory (testsuite)
