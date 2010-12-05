@@ -64,7 +64,7 @@ a.footnote {
     top: -0.1em;
 }
 div.footnotes {
-    border-top: 1px solid black;
+    border-top: 1px solid #aaa;
     margin-left: 2em;
     margin-top: 3em;
     margin-right: 2em;
@@ -73,6 +73,8 @@ div.footnote {
     margin-bottom: 0.5em;
     margin-top: 0.5em;
     font-size: 9pt;
+/*    text-indent: -2em;
+    padding-left: 2em;*/
 }
 
 /*#inheritance, #related {

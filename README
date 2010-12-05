@@ -30,6 +30,12 @@ TODO
 
 - cross-platform: check all uses of systemCmd.
 
+- add argument:: for all args on methods even if the author didn't document it? also check that argument names are correct.
+
+- move ScDoc:updateAll and stuff like that to classmethods/variables. Also put all utility-functions in ScDoc..
+ScDocRenderer:simplifyName, ScDocRenderer:escapeSpecialChars (?), ScDoc:splitList, 
+also move all overview functions to ScDoc.
+
 - table of contents? just include a maketoc:: tag in the doc header..
 what we do is find all section, description, classmethods, instancemethods, examples, subsection tags and generate a tree
 of anchor links to these.
@@ -38,7 +44,7 @@ of anchor links to these.
 
 - force class ref filename to be equal to class name?
 
-- allow note:: and warning:: to have other tags inside them.. need something like nested single-line that takes text.
+- allow note:: and warning:: to have other tags inside them.. get children until newline, instead of using .text.
 
 - list undocumented methods automagically in each class? At the end of the doc..
 Also make tags for privateClassMethods:: and privateInstanceMethods::, and an option in ScDoc if those should be included or not.

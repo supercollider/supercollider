@@ -47,12 +47,11 @@ ScDocParser {
 
     popTree {
         var p = stack.pop;
-        if(p.notNil) {
+        p !? {
             tree = p[0];
             level = p[1];
-            if(p[2].notNil) {proseDisplay = p[2].display};
+            p[2] !? {proseDisplay = p[2].display};
         };
-        ^nil;
     }
 
     pushTree {
@@ -70,10 +69,10 @@ ScDocParser {
     }
 
     endCurrent {
-        if(current.notNil,{
+        current !? {
             proseDisplay = current.display;
             current = nil;
-        });
+        };
     }
 
     addTag {|tag, text="", children=false, display=\block|
@@ -83,7 +82,7 @@ ScDocParser {
         current = node = (tag:tag, display:display, text:text, children:if(children,{List.new},{nil}));
         tree.add(current);
         if(children, {tree = current.children}); //recurse into children list
-        if(text.isNil, {this.endCurrent}); //we don't have any text field to add to for this tag, so start fresh..    
+        if(text.isNil) {this.endCurrent}; //we don't have any text field to add to for this tag, so start fresh..    
         ^node;
     }
 
@@ -127,9 +126,9 @@ ScDocParser {
         if(modalTag.notNil, {
             //only allow modal block tags to be closed with the closing tag as the first word on a line
             if((tag==modalTag) and: ((wordno==0) or: (lastTagLine==lineno)),{
-                if(current.notNil, {
+                current !? {
                     current.display = if(lastTagLine==lineno,\inline,\block);
-                });
+                };
                 this.endCurrent;
                 modalTag = nil;
                 afterClosing = true;
@@ -175,7 +174,7 @@ ScDocParser {
                 'table::',              listEnter,
                 'footnote::',           {
                     singleline = false;
-                    if (current.notNil) { //strip trailing whitespace from previous text..
+                    current !? { //strip trailing whitespace from previous text..
                         t=current.text;
                         x=t.size-1;
                         while({(t[x]==$\n) or: (t[x]==$\ )},{x=x-1});
@@ -238,7 +237,7 @@ ScDocParser {
     endLine {
         if(singleline,{this.endCurrent});
         // pass through newlines for vari-line tags.
-        if(current.notNil,{current.text = current.text ++ "\n"});
+        current !? {current.text = current.text ++ "\n"};
     }
 
     parse {|string|
@@ -279,13 +278,13 @@ ScDocParser {
         t.do {|e|
             "".postln;
             (i++"TAG:"+e.tag+"( level"+lev+e.display+")").postln;
-            if(e.text.notNil, {
+            e.text !? {
                 (i++"TEXT: \""++e.text++"\"").postln;
-            });
-            if(e.children.notNil, {
+            };
+            e.children !? {
                 (i++"CHILDREN:").postln;
                 this.dumpSubTree(e.children,i++"    ",lev+1);
-            });
+            };
         }
     }
 
@@ -296,8 +295,8 @@ ScDocParser {
 
     findNode {|tag,rootNode=nil|
         var res = nil;
-        if(rootNode.isNil, { rootNode=root });
-        rootNode.do {|n|
+//        if(rootNode.isNil, { rootNode=root });
+        (rootNode ?? { root }).do {|n|
             if(n.tag == tag.asSymbol, { res = n});
         };
         if(res.notNil, {
@@ -313,13 +312,13 @@ ScDocParser {
         node.children.add((tag:'##'));
         node.children.add((tag:'link', text:"Classes/"++c.name.asString));
         
-        if(c.subclasses.notNil, {
+        c.subclasses !? {
             n = (tag:'tree', children:List.new);
             node.children.add(n);
             c.subclasses.copy.sort {|a,b| a.name < b.name}.do {|x|
                 this.dumpClassTree(n,x);
             };
-        });
+        };
     }
 
     overviewClassTree {
@@ -560,7 +559,7 @@ ScDocRenderer {
             file.write("<div class='footnotes'>\n");
             footNotes.do {|n,i|
                 file.write("<a name='footnote_"++(i+1)++"'/><div class='footnote'>");
-                file.write("(<a href='#footnote_org_"++(i+1)++"'>"++(i+1)++"</a>) - ");
+                file.write("[<a href='#footnote_org_"++(i+1)++"'>"++(i+1)++"</a>] - ");
                 n.children.do(this.renderHTMLSubTree(file,_));
                 file.write("</div>");
             };
@@ -598,9 +597,9 @@ ScDocRenderer {
         var f, m, n, mname, args, split, mstat;
 
         var do_children = {|p=false|
-            if(node.children.notNil, {
+            node.children !? {
                 node.children.do {|e| this.renderHTMLSubTree(file,e,if(p,{node.tag},{parentTag})) };
-            });
+            };
         };
 
         switch(node.tag,
@@ -649,15 +648,15 @@ ScDocRenderer {
                         m = currentClass.class.findRespondingMethodFor(mname.asSymbol);
                     });*/
                     m = if(parentTag==\instancemethods,{currentClass},{currentClass.class}).findRespondingMethodFor(mname.asSymbol);
-                    if(m.notNil, {
+                    m !? {
                         mstat = mstat | 1;
 //                        args = (m.argumentString ? "").replace("this, ","").replace("this","");
 //                        if(args.notEmpty,{ args = " ("++args++")" });
                         args = ScDocRenderer.makeArgString(m);
-                    });
+                    };
                     //check for setter
                     m = if(parentTag==\instancemethods,{currentClass},{currentClass.class}).findRespondingMethodFor((mname++"_").asSymbol);
-                    if(m.notNil, { mstat = mstat | 2 });
+                    m !? { mstat = mstat | 2 };
 
                     switch (mstat,
                         // getter only
@@ -739,9 +738,7 @@ ScDocRenderer {
 //                if(node.display == \block, {
                 f = node.text.split($#);
                     file.write("<div class='image'><img src='"++f[0]++"'/>");
-                    if(f[1].notNil, {
-                        file.write("<br><b>"++f[1]++"</b>");
-                    });
+                    f[1] !? { file.write("<br><b>"++f[1]++"</b>") };
                     file.write("</div>\n");
 //                }, {
 //                    file.write("<span class='image'><img src='"++node.text++"'/></span>\n");
@@ -804,7 +801,7 @@ ScDocRenderer {
 
             { //unhandled tag
 //                file.write("(TAG:"++node.tag++")");
-                if(node.text.notNil,{file.write(this.escapeSpecialChars(node.text))});
+                node.text !? {file.write(this.escapeSpecialChars(node.text))};
             }
         );
     }
@@ -970,17 +967,15 @@ ScDoc {
     makeMethodList {|c,n|
         var l, mets, name;
 
-        mets = c.class.methods;
-        if(mets.notNil, {
+        (mets = c.class.methods) !? {
             n.add((tag:\classmethods, children:l=List.new));
             mets.do {|m|
                 name = m.name.asString;
                 l.add((tag:\method, text:name));
             };
-        });
+        };
 
-        mets = c.methods;
-        if(mets.notNil, {
+        (mets = c.methods) !? {
             n.add((tag:\instancemethods, children:l=List.new));    
             mets.do {|m|
                 name = m.name.asString;
@@ -988,7 +983,7 @@ ScDoc {
                     l.add((tag:\method, text:name));
 //                });
             };
-        });
+        };
     }
 
     classHasArKrIr {|c|
@@ -1049,9 +1044,9 @@ ScDoc {
             cats = ScDoc.splitList(v.categories);
             cats = cats ? ["Uncategorized"];
             cats.do {|cat|
-                if(categoryMap[cat].isNil, {
+                if (categoryMap[cat].isNil) {
                     categoryMap[cat] = List.new;
-                });
+                };
                 categoryMap[cat].add(v);
             };
         };

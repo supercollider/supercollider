@@ -278,7 +278,7 @@ subsection:: Document types
 Document type is inferred by seeing if the document has a code::class\:::: or code::title\:::: tag.
 
 Some tags are only allowed in some types of documents. Tags not mentioned below are allowed in all types:
-table::
+definitionlist::
 ## Class (and UGen) reference docs || tags: class, description, methods, examples, subsection
 ## Other docs (tutorials and such) || tags: title, section, subsection
 ::
