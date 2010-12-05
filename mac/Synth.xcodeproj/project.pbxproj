@@ -36,6 +36,7 @@
 /* Begin PBXBuildFile section */
 		098CE870129C221C0062B0C6 /* SC_SyncCondition.h in Headers */ = {isa = PBXBuildFile; fileRef = 098CE86F129C221C0062B0C6 /* SC_SyncCondition.h */; };
 		098CE871129C221C0062B0C6 /* SC_SyncCondition.h in Headers */ = {isa = PBXBuildFile; fileRef = 098CE86F129C221C0062B0C6 /* SC_SyncCondition.h */; };
+		77210B0112ABDA0E00735709 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77FA30FF12ABAF94008A1880 /* vecLib.framework */; };
 		77FA30E012ABAE6B008A1880 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77FA30DF12ABAE6B008A1880 /* SC_fftlib.cpp */; };
 		77FA30E312ABAE73008A1880 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77FA30DF12ABAE6B008A1880 /* SC_fftlib.cpp */; };
 		77FA30E712ABAE84008A1880 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = 77FA30E612ABAE84008A1880 /* fftlib.c */; };
@@ -430,6 +431,7 @@
 				D55DEF140EF333C000968B95 /* CoreServices.framework in Frameworks */,
 				D55DEF1C0EF333C600968B95 /* CoreAudio.framework in Frameworks */,
 				F3B0032B1051D02400929F44 /* scUBlibsndfile.a in Frameworks */,
+				77210B0112ABDA0E00735709 /* vecLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
