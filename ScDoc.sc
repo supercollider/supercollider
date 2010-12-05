@@ -478,6 +478,7 @@ ScDocParser {
                 });
 
             m.add((tag:'##'));
+            m.add((tag:'anchor', text:name));
             m.add((tag:'prose', text:name));
             m.add((tag:'||'));
             if(name.last==$_, {name=name.drop(-1)});
@@ -722,7 +723,7 @@ ScDocRenderer {
                     n = f[2] ?? { f[0].split($/).last };
 //                    n = if(f[1].notNil, {" ["++f[1]++"]"}, {""});
 //                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++f[0].split($/).last++" "++m++"</a>");
-                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++n++"</a>");
+                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++this.escapeSpecialChars(n)++"</a>");
                 });
             },
             'anchor', {
