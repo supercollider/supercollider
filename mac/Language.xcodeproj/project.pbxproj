@@ -72,6 +72,10 @@
 		77A4924B12972489008AB6B2 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924912972488008AB6B2 /* IOHIDDevice_.c */; };
 		77A4924C12972489008AB6B2 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = 77A4924A12972489008AB6B2 /* IOHIDElement_.c */; };
 		77A49251129724D6008AB6B2 /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 949310DD0C1921F90018AB50 /* SC_HID.cpp */; };
+		77FA318912ABB079008A1880 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 77FA318412ABB076008A1880 /* SC_fftlib.cpp */; };
+		77FA31B412ABB16A008A1880 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77FA31B312ABB16A008A1880 /* vecLib.framework */; };
+		77FA31C812ABB19A008A1880 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77FA31B312ABB16A008A1880 /* vecLib.framework */; };
+		77FA31C912ABB19D008A1880 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77FA31B312ABB16A008A1880 /* vecLib.framework */; };
 		94070C5E0C19DEF6002304F7 /* html.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5B0C19DEF6002304F7 /* html.icns */; };
 		94070C5F0C19DEF6002304F7 /* rtf.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5C0C19DEF6002304F7 /* rtf.icns */; };
 		94070C600C19DEF6002304F7 /* sc.icns in Resources */ = {isa = PBXBuildFile; fileRef = 94070C5D0C19DEF6002304F7 /* sc.icns */; };
@@ -457,34 +461,60 @@
 		6A1C637F0CFB6D27004ED3DA /* utypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = utypes.h; sourceTree = "<group>"; };
 		6A1C63800CFB6D27004ED3DA /* uversion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = uversion.h; sourceTree = "<group>"; };
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
-		770A24CB12A58CB3009F3228 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
-		770A24CC12A58CB3009F3228 /* dfftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
-		770A24CD12A58CB3009F3228 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
-		770A24CE12A58CB3009F3228 /* MsgFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgFifo.h; sourceTree = "<group>"; };
-		770A24CF12A58CB3009F3228 /* SC_AllocPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
-		770A24D012A58CB3009F3228 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Altivec.h; sourceTree = "<group>"; };
-		770A24D112A58CB3009F3228 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
-		770A24D212A58CB3009F3228 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
-		770A24D312A58CB3009F3228 /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
-		770A24D412A58CB3009F3228 /* SC_fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_fftlib.h; sourceTree = "<group>"; };
-		770A24D512A58CB3009F3228 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_FIFO.h; sourceTree = "<group>"; };
-		770A24D612A58CB3009F3228 /* SC_List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_List.h; sourceTree = "<group>"; };
-		770A24D712A58CB3009F3228 /* SC_Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Lock.h; sourceTree = "<group>"; };
-		770A24D812A58CB3009F3228 /* sc_popen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc_popen.h; sourceTree = "<group>"; };
-		770A24D912A58CB3009F3228 /* SC_Reply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Reply.h; sourceTree = "<group>"; };
-		770A24DA12A58CB3009F3228 /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Sem.h; sourceTree = "<group>"; };
-		770A24DB12A58CB3009F3228 /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
-		770A24DC12A58CB3009F3228 /* SC_StringBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringBuffer.h; sourceTree = "<group>"; };
-		770A24DD12A58CB3009F3228 /* SC_StringParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringParser.h; sourceTree = "<group>"; };
-		770A24DE12A58CB3009F3228 /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_SyncCondition.h; sourceTree = "<group>"; };
-		770A24DF12A58CB3009F3228 /* SC_Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Types.h; sourceTree = "<group>"; };
-		770A24E012A58CB3009F3228 /* SC_VFP11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_VFP11.h; sourceTree = "<group>"; };
-		770A24E112A58CB3009F3228 /* SC_Win32Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Win32Utils.h; sourceTree = "<group>"; };
-		770A24E212A58CB3009F3228 /* scsynthsend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scsynthsend.h; sourceTree = "<group>"; };
 		77A4924912972488008AB6B2 /* IOHIDDevice_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDDevice_.c; sourceTree = "<group>"; };
 		77A4924A12972489008AB6B2 /* IOHIDElement_.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = IOHIDElement_.c; sourceTree = "<group>"; };
 		77A49264129725CC008AB6B2 /* IOHIDDevice_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDDevice_.h; sourceTree = "<group>"; };
 		77A49265129725CC008AB6B2 /* IOHIDElement_.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IOHIDElement_.h; sourceTree = "<group>"; };
+		77FA30AD12ABAE11008A1880 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
+		77FA30AE12ABAE11008A1880 /* dfftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dfftlib.h; sourceTree = "<group>"; };
+		77FA30AF12ABAE11008A1880 /* fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fftlib.h; sourceTree = "<group>"; };
+		77FA30B012ABAE11008A1880 /* MsgFifo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MsgFifo.h; sourceTree = "<group>"; };
+		77FA30B112ABAE11008A1880 /* SC_AllocPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_AllocPool.h; sourceTree = "<group>"; };
+		77FA30B212ABAE11008A1880 /* SC_Altivec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Altivec.h; sourceTree = "<group>"; };
+		77FA30B312ABAE11008A1880 /* SC_BoundsMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_BoundsMacros.h; sourceTree = "<group>"; };
+		77FA30B412ABAE11008A1880 /* SC_DirUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_DirUtils.h; sourceTree = "<group>"; };
+		77FA30B512ABAE11008A1880 /* SC_Endian.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Endian.h; sourceTree = "<group>"; };
+		77FA30B612ABAE11008A1880 /* SC_FIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_FIFO.h; sourceTree = "<group>"; };
+		77FA30B712ABAE11008A1880 /* SC_List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_List.h; sourceTree = "<group>"; };
+		77FA30B812ABAE11008A1880 /* SC_Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Lock.h; sourceTree = "<group>"; };
+		77FA30B912ABAE11008A1880 /* sc_popen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc_popen.h; sourceTree = "<group>"; };
+		77FA30BA12ABAE11008A1880 /* SC_Reply.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Reply.h; sourceTree = "<group>"; };
+		77FA30BB12ABAE11008A1880 /* SC_Sem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Sem.h; sourceTree = "<group>"; };
+		77FA30BC12ABAE11008A1880 /* SC_StandAloneInfo_Darwin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StandAloneInfo_Darwin.h; sourceTree = "<group>"; };
+		77FA30BD12ABAE11008A1880 /* SC_StringBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringBuffer.h; sourceTree = "<group>"; };
+		77FA30BE12ABAE11008A1880 /* SC_StringParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_StringParser.h; sourceTree = "<group>"; };
+		77FA30BF12ABAE11008A1880 /* SC_SyncCondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_SyncCondition.h; sourceTree = "<group>"; };
+		77FA30C012ABAE11008A1880 /* SC_Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Types.h; sourceTree = "<group>"; };
+		77FA30C112ABAE11008A1880 /* SC_VFP11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_VFP11.h; sourceTree = "<group>"; };
+		77FA30C212ABAE11008A1880 /* SC_Win32Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Win32Utils.h; sourceTree = "<group>"; };
+		77FA30C312ABAE11008A1880 /* scsynthsend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = scsynthsend.h; sourceTree = "<group>"; };
+		77FA30C412ABAE20008A1880 /* FFT_UGens.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFT_UGens.h; sourceTree = "<group>"; };
+		77FA30C512ABAE20008A1880 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
+		77FA30C612ABAE20008A1880 /* SC_BufGen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_BufGen.h; sourceTree = "<group>"; };
+		77FA30C712ABAE20008A1880 /* SC_Complex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Complex.h; sourceTree = "<group>"; };
+		77FA30C812ABAE20008A1880 /* SC_Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Constants.h; sourceTree = "<group>"; };
+		77FA30C912ABAE20008A1880 /* SC_DemandUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_DemandUnit.h; sourceTree = "<group>"; };
+		77FA30CA12ABAE20008A1880 /* SC_fftlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_fftlib.h; sourceTree = "<group>"; };
+		77FA30CB12ABAE20008A1880 /* SC_FifoMsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_FifoMsg.h; sourceTree = "<group>"; };
+		77FA30CC12ABAE20008A1880 /* SC_Graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Graph.h; sourceTree = "<group>"; };
+		77FA30CD12ABAE20008A1880 /* SC_InlineBinaryOp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_InlineBinaryOp.h; sourceTree = "<group>"; };
+		77FA30CE12ABAE20008A1880 /* SC_InlineUnaryOp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_InlineUnaryOp.h; sourceTree = "<group>"; };
+		77FA30CF12ABAE20008A1880 /* SC_InterfaceTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_InterfaceTable.h; sourceTree = "<group>"; };
+		77FA30D012ABAE20008A1880 /* sc_msg_iter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc_msg_iter.h; sourceTree = "<group>"; };
+		77FA30D112ABAE20008A1880 /* SC_Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Node.h; sourceTree = "<group>"; };
+		77FA30D212ABAE20008A1880 /* SC_PlugIn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_PlugIn.h; sourceTree = "<group>"; };
+		77FA30D312ABAE20008A1880 /* SC_Rate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Rate.h; sourceTree = "<group>"; };
+		77FA30D412ABAE20008A1880 /* SC_RGen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_RGen.h; sourceTree = "<group>"; };
+		77FA30D512ABAE20008A1880 /* SC_SndBuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_SndBuf.h; sourceTree = "<group>"; };
+		77FA30D612ABAE20008A1880 /* SC_sndfile_stub.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_sndfile_stub.h; sourceTree = "<group>"; };
+		77FA30D712ABAE20008A1880 /* SC_Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Unit.h; sourceTree = "<group>"; };
+		77FA30D812ABAE20008A1880 /* SC_Wire.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Wire.h; sourceTree = "<group>"; };
+		77FA30D912ABAE20008A1880 /* SC_World.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_World.h; sourceTree = "<group>"; };
+		77FA30DA12ABAE20008A1880 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_WorldOptions.h; sourceTree = "<group>"; };
+		77FA30DB12ABAE20008A1880 /* SCComplex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCComplex.h; sourceTree = "<group>"; };
+		77FA30DC12ABAE20008A1880 /* Unroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unroll.h; sourceTree = "<group>"; };
+		77FA318412ABB076008A1880 /* SC_fftlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_fftlib.cpp; sourceTree = "<group>"; };
+		77FA31B312ABB16A008A1880 /* vecLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vecLib.framework; path = /System/Library/Frameworks/vecLib.framework; sourceTree = "<absolute>"; };
 		94070C5B0C19DEF6002304F7 /* html.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = html.icns; sourceTree = "<group>"; };
 		94070C5C0C19DEF6002304F7 /* rtf.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rtf.icns; sourceTree = "<group>"; };
 		94070C5D0C19DEF6002304F7 /* sc.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = sc.icns; sourceTree = "<group>"; };
@@ -655,7 +685,6 @@
 		949312BD0C19222B0018AB50 /* SC_ComPort.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_ComPort.h; sourceTree = "<group>"; };
 		949312BE0C19222B0018AB50 /* SC_LanguageClient.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_LanguageClient.h; sourceTree = "<group>"; };
 		949312BF0C19222B0018AB50 /* SC_LibraryConfig.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_LibraryConfig.h; sourceTree = "<group>"; };
-		949312C00C19222B0018AB50 /* SC_List.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_List.h; sourceTree = "<group>"; };
 		949312C10C19222B0018AB50 /* SC_LogFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_LogFile.h; sourceTree = "<group>"; };
 		949312C20C19222B0018AB50 /* SC_Msg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Msg.h; sourceTree = "<group>"; };
 		949312C30C19222B0018AB50 /* SC_SynthImpl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_SynthImpl.h; sourceTree = "<group>"; };
@@ -665,26 +694,6 @@
 		949312C70C19222B0018AB50 /* SFHeaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SFHeaders.h; sourceTree = "<group>"; };
 		949312C80C19222B0018AB50 /* SimpleStack.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SimpleStack.h; sourceTree = "<group>"; };
 		949312C90C19222B0018AB50 /* VMGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = VMGlobals.h; sourceTree = "<group>"; };
-		949312CC0C19222B0018AB50 /* Hash.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Hash.h; sourceTree = "<group>"; };
-		949312CE0C19222B0018AB50 /* SC_BufGen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_BufGen.h; sourceTree = "<group>"; };
-		949312CF0C19222B0018AB50 /* SC_Constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Constants.h; sourceTree = "<group>"; };
-		949312D00C19222B0018AB50 /* SC_DemandUnit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_DemandUnit.h; sourceTree = "<group>"; };
-		949312D20C19222B0018AB50 /* SC_FifoMsg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_FifoMsg.h; sourceTree = "<group>"; };
-		949312D30C19222B0018AB50 /* SC_Graph.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Graph.h; sourceTree = "<group>"; };
-		949312D40C19222B0018AB50 /* SC_InlineBinaryOp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_InlineBinaryOp.h; sourceTree = "<group>"; };
-		949312D50C19222B0018AB50 /* SC_InlineUnaryOp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_InlineUnaryOp.h; sourceTree = "<group>"; };
-		949312D60C19222B0018AB50 /* SC_InterfaceTable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_InterfaceTable.h; sourceTree = "<group>"; };
-		949312D70C19222B0018AB50 /* sc_msg_iter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = sc_msg_iter.h; sourceTree = "<group>"; };
-		949312D80C19222B0018AB50 /* SC_Node.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Node.h; sourceTree = "<group>"; };
-		949312D90C19222B0018AB50 /* SC_PlugIn.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_PlugIn.h; sourceTree = "<group>"; };
-		949312DA0C19222B0018AB50 /* SC_Rate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Rate.h; sourceTree = "<group>"; };
-		949312DB0C19222B0018AB50 /* SC_RGen.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_RGen.h; sourceTree = "<group>"; };
-		949312DC0C19222B0018AB50 /* SC_SndBuf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_SndBuf.h; sourceTree = "<group>"; };
-		949312DE0C19222B0018AB50 /* SC_Unit.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Unit.h; sourceTree = "<group>"; };
-		949312DF0C19222B0018AB50 /* SC_Wire.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_Wire.h; sourceTree = "<group>"; };
-		949312E00C19222B0018AB50 /* SC_World.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_World.h; sourceTree = "<group>"; };
-		949312E10C19222B0018AB50 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SC_WorldOptions.h; sourceTree = "<group>"; };
-		949312E20C19222B0018AB50 /* Unroll.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Unroll.h; sourceTree = "<group>"; };
 		949313CB0C19234D0018AB50 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = /System/Library/Frameworks/IOBluetooth.framework; sourceTree = "<absolute>"; };
 		949314390C1925B90018AB50 /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = fftlib.c; sourceTree = "<group>"; };
 		949314DD0C192A550018AB50 /* sclang */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sclang; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -749,6 +758,7 @@
 				94442CC40C2C8AE40050BF9F /* WebKit.framework in Frameworks */,
 				6A1C636C0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
 				F3B003921051D17A00929F44 /* scUBlibsndfile.a in Frameworks */,
+				77FA31C912ABB19D008A1880 /* vecLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -770,6 +780,7 @@
 				949317BA0C192A7A0018AB50 /* IOBluetooth.framework in Frameworks */,
 				6A1C636B0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
 				F3B003911051D16E00929F44 /* scUBlibsndfile.a in Frameworks */,
+				77FA31C812ABB19A008A1880 /* vecLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -792,6 +803,7 @@
 				94D9ED1D0C2773CF00223DF8 /* WebKit.framework in Frameworks */,
 				6A1C636A0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */,
 				F3B0038E1051D15C00929F44 /* scUBlibsndfile.a in Frameworks */,
+				77FA31B412ABB16A008A1880 /* vecLib.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -951,6 +963,7 @@
 		949310BE0C1921F90018AB50 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				77FA318412ABB076008A1880 /* SC_fftlib.cpp */,
 				94DFDB4D0DD95B7800EB46BA /* sc_popen.cpp */,
 				949314390C1925B90018AB50 /* fftlib.c */,
 				949310C20C1921F90018AB50 /* SC_AllocPool.cpp */,
@@ -1109,30 +1122,29 @@
 		949312830C19222B0018AB50 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				770A24CB12A58CB3009F3228 /* clz.h */,
-				770A24CC12A58CB3009F3228 /* dfftlib.h */,
-				770A24CD12A58CB3009F3228 /* fftlib.h */,
-				770A24CE12A58CB3009F3228 /* MsgFifo.h */,
-				770A24CF12A58CB3009F3228 /* SC_AllocPool.h */,
-				770A24D012A58CB3009F3228 /* SC_Altivec.h */,
-				770A24D112A58CB3009F3228 /* SC_BoundsMacros.h */,
-				770A24D212A58CB3009F3228 /* SC_DirUtils.h */,
-				770A24D312A58CB3009F3228 /* SC_Endian.h */,
-				770A24D412A58CB3009F3228 /* SC_fftlib.h */,
-				770A24D512A58CB3009F3228 /* SC_FIFO.h */,
-				770A24D612A58CB3009F3228 /* SC_List.h */,
-				770A24D712A58CB3009F3228 /* SC_Lock.h */,
-				770A24D812A58CB3009F3228 /* sc_popen.h */,
-				770A24D912A58CB3009F3228 /* SC_Reply.h */,
-				770A24DA12A58CB3009F3228 /* SC_Sem.h */,
-				770A24DB12A58CB3009F3228 /* SC_StandAloneInfo_Darwin.h */,
-				770A24DC12A58CB3009F3228 /* SC_StringBuffer.h */,
-				770A24DD12A58CB3009F3228 /* SC_StringParser.h */,
-				770A24DE12A58CB3009F3228 /* SC_SyncCondition.h */,
-				770A24DF12A58CB3009F3228 /* SC_Types.h */,
-				770A24E012A58CB3009F3228 /* SC_VFP11.h */,
-				770A24E112A58CB3009F3228 /* SC_Win32Utils.h */,
-				770A24E212A58CB3009F3228 /* scsynthsend.h */,
+				77FA30AD12ABAE11008A1880 /* clz.h */,
+				77FA30AE12ABAE11008A1880 /* dfftlib.h */,
+				77FA30AF12ABAE11008A1880 /* fftlib.h */,
+				77FA30B012ABAE11008A1880 /* MsgFifo.h */,
+				77FA30B112ABAE11008A1880 /* SC_AllocPool.h */,
+				77FA30B212ABAE11008A1880 /* SC_Altivec.h */,
+				77FA30B312ABAE11008A1880 /* SC_BoundsMacros.h */,
+				77FA30B412ABAE11008A1880 /* SC_DirUtils.h */,
+				77FA30B512ABAE11008A1880 /* SC_Endian.h */,
+				77FA30B612ABAE11008A1880 /* SC_FIFO.h */,
+				77FA30B712ABAE11008A1880 /* SC_List.h */,
+				77FA30B812ABAE11008A1880 /* SC_Lock.h */,
+				77FA30B912ABAE11008A1880 /* sc_popen.h */,
+				77FA30BA12ABAE11008A1880 /* SC_Reply.h */,
+				77FA30BB12ABAE11008A1880 /* SC_Sem.h */,
+				77FA30BC12ABAE11008A1880 /* SC_StandAloneInfo_Darwin.h */,
+				77FA30BD12ABAE11008A1880 /* SC_StringBuffer.h */,
+				77FA30BE12ABAE11008A1880 /* SC_StringParser.h */,
+				77FA30BF12ABAE11008A1880 /* SC_SyncCondition.h */,
+				77FA30C012ABAE11008A1880 /* SC_Types.h */,
+				77FA30C112ABAE11008A1880 /* SC_VFP11.h */,
+				77FA30C212ABAE11008A1880 /* SC_Win32Utils.h */,
+				77FA30C312ABAE11008A1880 /* scsynthsend.h */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -1184,7 +1196,6 @@
 				949312BD0C19222B0018AB50 /* SC_ComPort.h */,
 				949312BE0C19222B0018AB50 /* SC_LanguageClient.h */,
 				949312BF0C19222B0018AB50 /* SC_LibraryConfig.h */,
-				949312C00C19222B0018AB50 /* SC_List.h */,
 				949312C10C19222B0018AB50 /* SC_LogFile.h */,
 				949312C20C19222B0018AB50 /* SC_Msg.h */,
 				949312C30C19222B0018AB50 /* SC_SynthImpl.h */,
@@ -1201,26 +1212,31 @@
 		949312CA0C19222B0018AB50 /* plugin_interface */ = {
 			isa = PBXGroup;
 			children = (
-				949312CC0C19222B0018AB50 /* Hash.h */,
-				949312CE0C19222B0018AB50 /* SC_BufGen.h */,
-				949312CF0C19222B0018AB50 /* SC_Constants.h */,
-				949312D00C19222B0018AB50 /* SC_DemandUnit.h */,
-				949312D20C19222B0018AB50 /* SC_FifoMsg.h */,
-				949312D30C19222B0018AB50 /* SC_Graph.h */,
-				949312D40C19222B0018AB50 /* SC_InlineBinaryOp.h */,
-				949312D50C19222B0018AB50 /* SC_InlineUnaryOp.h */,
-				949312D60C19222B0018AB50 /* SC_InterfaceTable.h */,
-				949312D70C19222B0018AB50 /* sc_msg_iter.h */,
-				949312D80C19222B0018AB50 /* SC_Node.h */,
-				949312D90C19222B0018AB50 /* SC_PlugIn.h */,
-				949312DA0C19222B0018AB50 /* SC_Rate.h */,
-				949312DB0C19222B0018AB50 /* SC_RGen.h */,
-				949312DC0C19222B0018AB50 /* SC_SndBuf.h */,
-				949312DE0C19222B0018AB50 /* SC_Unit.h */,
-				949312DF0C19222B0018AB50 /* SC_Wire.h */,
-				949312E00C19222B0018AB50 /* SC_World.h */,
-				949312E10C19222B0018AB50 /* SC_WorldOptions.h */,
-				949312E20C19222B0018AB50 /* Unroll.h */,
+				77FA30C412ABAE20008A1880 /* FFT_UGens.h */,
+				77FA30C512ABAE20008A1880 /* Hash.h */,
+				77FA30C612ABAE20008A1880 /* SC_BufGen.h */,
+				77FA30C712ABAE20008A1880 /* SC_Complex.h */,
+				77FA30C812ABAE20008A1880 /* SC_Constants.h */,
+				77FA30C912ABAE20008A1880 /* SC_DemandUnit.h */,
+				77FA30CA12ABAE20008A1880 /* SC_fftlib.h */,
+				77FA30CB12ABAE20008A1880 /* SC_FifoMsg.h */,
+				77FA30CC12ABAE20008A1880 /* SC_Graph.h */,
+				77FA30CD12ABAE20008A1880 /* SC_InlineBinaryOp.h */,
+				77FA30CE12ABAE20008A1880 /* SC_InlineUnaryOp.h */,
+				77FA30CF12ABAE20008A1880 /* SC_InterfaceTable.h */,
+				77FA30D012ABAE20008A1880 /* sc_msg_iter.h */,
+				77FA30D112ABAE20008A1880 /* SC_Node.h */,
+				77FA30D212ABAE20008A1880 /* SC_PlugIn.h */,
+				77FA30D312ABAE20008A1880 /* SC_Rate.h */,
+				77FA30D412ABAE20008A1880 /* SC_RGen.h */,
+				77FA30D512ABAE20008A1880 /* SC_SndBuf.h */,
+				77FA30D612ABAE20008A1880 /* SC_sndfile_stub.h */,
+				77FA30D712ABAE20008A1880 /* SC_Unit.h */,
+				77FA30D812ABAE20008A1880 /* SC_Wire.h */,
+				77FA30D912ABAE20008A1880 /* SC_World.h */,
+				77FA30DA12ABAE20008A1880 /* SC_WorldOptions.h */,
+				77FA30DB12ABAE20008A1880 /* SCComplex.h */,
+				77FA30DC12ABAE20008A1880 /* Unroll.h */,
 			);
 			path = plugin_interface;
 			sourceTree = "<group>";
@@ -1283,6 +1299,7 @@
 		F50D069402E6A1C601CA2799 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				77FA31B312ABB16A008A1880 /* vecLib.framework */,
 				F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */,
 				6A1C63690CFB6C50004ED3DA /* libicucore.dylib */,
 				94D9ED1C0C2773CF00223DF8 /* WebKit.framework */,
@@ -1760,6 +1777,7 @@
 				77A4924B12972489008AB6B2 /* IOHIDDevice_.c in Sources */,
 				77A4924C12972489008AB6B2 /* IOHIDElement_.c in Sources */,
 				77A49251129724D6008AB6B2 /* SC_HID.cpp in Sources */,
+				77FA318912ABB079008A1880 /* SC_fftlib.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1934,14 +1952,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
@@ -1965,10 +1975,6 @@
 		77785345128EBB0100A32135 /* Development 64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_SC_TERMINAL_CLIENT=1",
@@ -1976,13 +1982,6 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = "$(HOME)/bin";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
@@ -2005,14 +2004,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
@@ -2139,14 +2130,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
@@ -2180,14 +2163,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
@@ -2211,10 +2186,6 @@
 		949317CF0C192ACC0018AB50 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_SC_TERMINAL_CLIENT=1",
@@ -2222,13 +2193,6 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = "$(HOME)/bin";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
@@ -2241,10 +2205,6 @@
 		949317D00C192ACC0018AB50 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_SC_TERMINAL_CLIENT=1",
@@ -2252,13 +2212,6 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = "$(HOME)/bin";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
@@ -2281,14 +2234,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
@@ -2322,14 +2267,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
@@ -2413,14 +2350,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
@@ -2444,10 +2373,6 @@
 		F36C2DAA1125E2140099DB2B /* Deployment32-64 */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"USE_SC_TERMINAL_CLIENT=1",
@@ -2455,13 +2380,6 @@
 					"$(inherited)",
 				);
 				INSTALL_PATH = "$(HOME)/bin";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/mac/lib\"";
@@ -2484,14 +2402,6 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/mac/lib\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/build\"";
