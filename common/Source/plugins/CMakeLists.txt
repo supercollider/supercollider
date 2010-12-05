@@ -47,6 +47,7 @@ set(plugin_sources
 	TestUGens.cpp
 	TriggerUGens.cpp
 	UnaryOpUGens.cpp
+	UnpackFFTUGens.cpp
 
 	KeyboardUGens.cpp
 	MouseUGens.cpp
