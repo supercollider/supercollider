@@ -13,8 +13,6 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/editors/scapp/include
 	${CMAKE_SOURCE_DIR}/editors/scapp/include/SMLAdvancedFind
 	${CMAKE_SOURCE_DIR}/editors/scapp/include/SMLAdvancedFind/ICU
-	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind
-	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/unicode/
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities
