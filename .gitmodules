@@ -4,9 +4,6 @@
 [submodule "libs/oscpack"]
 	path = libs/oscpack
 	url = git://tim.klingt.org/oscpack.git
-[submodule "libs/lockfree"]
-	path = libs/lockfree
-	url = git://tim.klingt.org/nova-lockfree
 [submodule "libs/boost"]
 	path = libs/boost
 	url = http://github.com/ryppl/boost-svn.git
