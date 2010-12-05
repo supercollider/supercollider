@@ -3,7 +3,7 @@
 #include <vector>
 #include <set>
 
-#include "../source/server/memory_pool.hpp"
+#include "../server/supernova/server/memory_pool.hpp"
 
 namespace nova
 {

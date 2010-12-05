@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
-#include "../source/server/server.hpp"
-#include "../source/server/server_args.hpp"
+#include "../server/supernova/server/server.hpp"
+#include "../server/supernova/server/server_args.hpp"
 
 #include "test_synth.hpp"
 

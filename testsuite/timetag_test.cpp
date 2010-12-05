@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include "../source/utilities/time_tag.hpp"
+#include "../server/supernova/utilities/time_tag.hpp"
 
 #include "boost/date_time/posix_time/posix_time.hpp"
 

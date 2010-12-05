@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include "../source/utilities/osc_server.hpp"
+#include "../server/supernova/utilities/osc_server.hpp"
 #include "nova-tt/semaphore.hpp"
 
 using namespace nova;

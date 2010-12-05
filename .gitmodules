@@ -7,8 +7,8 @@
 [submodule "external_libraries/boost"]
 	path = external_libraries/boost
 	url = http://github.com/ryppl/boost-svn.git
-[submodule "source/sc/supercollider"]
-	path = source/sc/supercollider
+[submodule "server/supernova/sc/supercollider"]
+	path = server/supernova/sc/supercollider
 	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/supercollider
 [submodule "external_libraries/nova-tt"]
 	path = external_libraries/nova-tt

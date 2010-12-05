@@ -1,5 +1,5 @@
-#include "../source/utilities/sized_array.hpp"
-#include "../source/server/memory_pool.hpp"
+#include "../server/supernova/utilities/sized_array.hpp"
+#include "../server/supernova/server/memory_pool.hpp"
 
 #include <iostream>
 #include <boost/test/unit_test.hpp>

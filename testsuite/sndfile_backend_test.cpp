@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/thread.hpp>
 
-#include "../source/audio_backend/sndfile_backend.hpp"
+#include "../server/supernova/audio_backend/sndfile_backend.hpp"
 
 using namespace nova;
 

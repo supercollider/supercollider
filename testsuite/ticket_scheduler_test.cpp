@@ -2,7 +2,7 @@
 #include <boost/thread.hpp>
 
 #define HAVE_SEMAPHORE_H
-#include "../source/utilities/ticket_scheduler.hpp"
+#include "../server/supernova/utilities/ticket_scheduler.hpp"
 
 
 namespace

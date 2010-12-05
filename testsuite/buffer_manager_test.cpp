@@ -1,8 +1,7 @@
 #include <iostream>
 #include <boost/test/unit_test.hpp>
 
-#include "../source/server/buffer_manager.hpp"
-#include "../source/server/buffer_manager.cpp"
+#include "../server/supernova/server/buffer_manager.cpp"
 
 
 using namespace nova;

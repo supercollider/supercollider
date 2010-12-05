@@ -1,4 +1,4 @@
-#include "../source/server/synth.hpp"
+#include "../server/supernova/server/synth.hpp"
 
 namespace nova
 {

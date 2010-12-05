@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include "../source/utilities/osc_dispatcher.hpp"
+#include "../server/supernova/utilities/osc_dispatcher.hpp"
 #include <memory>
 
 using namespace nova;

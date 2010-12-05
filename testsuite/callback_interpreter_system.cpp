@@ -3,8 +3,8 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
-#include "../source/utilities/callback_system.hpp"
-#include "../source/utilities/callback_interpreter.hpp"
+#include "../server/supernova/utilities/callback_system.hpp"
+#include "../server/supernova/utilities/callback_interpreter.hpp"
 #include "nova-tt/thread_priority.hpp"
 
 using namespace nova;

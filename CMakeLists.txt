@@ -36,7 +36,7 @@ endif()
 
 
 # preprocessor paths
-include_directories(source)
+include_directories(server/supernova)
 include_directories(external_libraries
                     external_libraries/boost
                     external_libraries/boost_endian
@@ -50,9 +50,9 @@ include_directories(external_libraries
                     external_libraries/tlsf/src
                     )
 
-include_directories(source/sc/supercollider/common/Headers/plugin_interface
-                    source/sc/supercollider/common/Headers/common
-                    source/sc/supercollider/common/Headers/server)
+include_directories(server/supernova/sc/supercollider/common/Headers/plugin_interface
+                    server/supernova/sc/supercollider/common/Headers/common
+                    server/supernova/sc/supercollider/common/Headers/server)
 
 
 CONFIGURE_FILE(
@@ -103,5 +103,5 @@ if(MEMORY_DEBUGGING)
 endif()
 
 add_subdirectory (external_libraries)
-add_subdirectory (source)
+add_subdirectory (server/supernova)
 add_subdirectory (testsuite)
