@@ -202,7 +202,7 @@ ScDocParser {
                 },
 
                 { //default case
-                    if("[a-zA-Z]+://.+".matchRegexp(word),{ //auto link URIs
+                    if("^[a-zA-Z]+://.+".matchRegexp(word),{ //auto link URIs
                         this.addTag('link::',word++" ",false,\inline);
                         this.endCurrent;
                     },{
@@ -714,14 +714,15 @@ ScDocRenderer {
                 file.write("<span class='soft'>"++this.escapeSpecialChars(node.text)++"</span>");
             },
             'link', {
-                if("[a-zA-Z]+://.+".matchRegexp(node.text),{
+                if("^[a-zA-Z]+://.+".matchRegexp(node.text),{
                     file.write("<a href=\""++node.text++"\">"++this.escapeSpecialChars(node.text)++"</a>");
                 },{
                     f = node.text.split($#);
-                    m = if(f[1].notNil, {"#"++f[1]}, {""});
+                    m = if(f[1].size>0, {"#"++f[1]}, {""});
+                    n = f[2] ?? { f[0].split($/).last };
 //                    n = if(f[1].notNil, {" ["++f[1]++"]"}, {""});
 //                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++f[0].split($/).last++" "++m++"</a>");
-                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++f[0].split($/).last++"</a>");
+                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++n++"</a>");
                 });
             },
             'anchor', {

@@ -90,5 +90,5 @@ method::asShortString
 Return a short string representing the receiver.
 
 method::paramsCompileString
-Represent parameters to 'new' as compileable strings. (See asCompileString in link::Classes/Object#asCompileString::)
+Represent parameters to 'new' as compileable strings. (See link::Classes/Object#asCompileString#Object:asCompileString::)
 

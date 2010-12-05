@@ -90,8 +90,7 @@ code::
 section:: Metadata
 All tags that are used for document metadata should be entered at the top of the document source file, before any section. These include:
 code::
-title::
-class::
+title:: or class::
 summary::
 related::
 categories::

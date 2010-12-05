@@ -134,7 +134,8 @@ oops
 next line
 ::
 ## protect || executes the first function. On an error, execute the second function before reporting the error.
-This is useful when the steps before the protect make some changes that need to be undone if an error occurs. See the method link::Classes/Environment#use::-use for an example.
+This is useful when the steps before the protect make some changes that need to be undone if an error occurs.
+See link::Classes/Environment#use#Environment:use:: for an example.
 code::
 protect { 1.blech } { |error| "oops".postln };
 "next line".postln;

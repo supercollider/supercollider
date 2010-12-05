@@ -248,6 +248,17 @@ Anchors can be inserted manually with code::anchor\::name\:::: and referenced li
 link::Foo/Bar#hello::
 ::
 
+All sections and methods get anchor names automagically, by making it lowercase and replacing spaces with '_' (underscore).
+
+One can change the rendered text of the link by using another code::#:: character:
+code::
+Also see link::Classes/SinOsc##a nice oscillator::
+::
+code::
+Take a look at link::Classes/SinOsc#ar#SinOsc's ar method::
+::
+
+
 subsection:: Images
 
 Images can be inserted with: code::

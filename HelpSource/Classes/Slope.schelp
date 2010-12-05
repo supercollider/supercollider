@@ -29,4 +29,5 @@ code::
 )
 ::
 
-For another example of Slope see code::hypot:: method in link::Classes/AbstractFunction#hypot::.
+For another example of Slope see link::Classes/AbstractFunction#hypot#AbstractFunction:hypot::.
+
