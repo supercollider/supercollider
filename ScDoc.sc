@@ -453,7 +453,7 @@ ScDocParser {
     }
 
     overviewAllMethods {|docMap|
-        var name, n, r = List.new, cap, old_cap=nil, t, m, meta;
+        var name, n, r = List.new, cap, old_cap=nil, t, m, ext;
         r.add((tag:'title', text:"Methods"));
         r.add((tag:'summary', text:"Alphabetical index of all methods"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
@@ -464,7 +464,8 @@ ScDocParser {
             name = c.name.asString;
             c.methods.do {|x|
                 if(t[x.name]==nil, {t[x.name] = List.new});
-                t[x.name].add(name);
+
+                t[x.name].add([name,x.isExtensionOf(c)]);
             };
         };
 
@@ -483,9 +484,11 @@ ScDocParser {
             m.add((tag:'||'));
             if(name.last==$_, {name=name.drop(-1)});
             t[k].do {|c,i|
-                if(c.find("Meta_")==0, {c = c.drop(5)});
-                if(i!=0, {m.add((tag:'prose', text:", "))});
-                m.add((tag:'link', text: "Classes" +/+ c ++ "#" ++ ScDocRenderer.simplifyName(name)));
+                n = c[0];
+                if(n.find("Meta_")==0, {n = n.drop(5)});
+                if(i!=0, {m.add((tag:'prose', text:", ", display:\inline))});
+                if(c[1], {m.add((tag:'prose', text:"+", display:\inline))});
+                m.add((tag:'link', text: "Classes" +/+ n ++ "#" ++ ScDocRenderer.simplifyName(name)));
             };
         };
 
@@ -661,7 +664,7 @@ ScDocRenderer {
                         // method not found
                         0, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++": METHOD NOT FOUND!</h3></a>\n"); }
                     );
-                    if(m.notNil and: {m.filenameSymbol!=c.filenameSymbol} and: {c.superclasses.includes(m.ownerClass).not}) {
+                    if(m.notNil and: {m.isExtensionOf(c)}) {
                         file.write("<div class='extmethod'>Extension from <a href='" ++ m.filenameSymbol ++ "'>" ++ m.filenameSymbol ++ "</a></div>\n");
                     };
                 };
@@ -1122,3 +1125,14 @@ ScDoc {
     }
 }
 
++ Method {
+    isExtensionOf {|class|
+        ^(
+            (this.filenameSymbol != class.filenameSymbol)
+            and:
+                if((class!=Object) and: (class!=Meta_Object),
+                    {class.superclasses.includes(this.ownerClass).not},
+                    {true})
+        );
+    }
+}

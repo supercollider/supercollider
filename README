@@ -64,9 +64,9 @@ HTML renderer stuff:
 - handle prose before first section in class doc?
 - other sections not allowed in class doc?
 
-- Handle extensions (extra classes and method additions)
-should merge stuff into the tree before parsing..? and mark method additions somehow so we can distinguish them visually in the rendered output. perhaps name the files +ClassName.schelp and only document the added methods, and let scdoc merge these..
-from where?
+- Handle extensions (quarks, plugins, etc)
+should merge stuff into the tree before parsing. Look in Extensions/HelpSource? or TheQuark/HelpSource, etc..
+documenting added methods could be done in files named +ClassName.schelp
 
 - validation pass:
 start by looking up the docType tag in the tree (root level), then we know which tags are allowed and not.
