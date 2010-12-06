@@ -672,8 +672,15 @@ ScDocRenderer {
                         0, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++": METHOD NOT FOUND!</h3></a>\n"); }
                     );
                     //Note: this only checks if the getter is an extension if there are both getter and setter..
-                    if(m.notNil and: {m.isExtensionOf(c)}) {
-                        file.write("<div class='extmethod'>Extension from <a href='" ++ m.filenameSymbol ++ "'>" ++ m.filenameSymbol ++ "</a></div>\n");
+                    if(m.notNil) {
+                        if(m.isExtensionOf(c)) {
+                            file.write("<div class='extmethod'>From extension in <a href='" ++ m.filenameSymbol ++ "'>" ++ m.filenameSymbol ++ "</a></div>\n");
+                        } {
+                            if(m.ownerClass != c) {
+                                n = m.ownerClass.name.asString.replace("Meta_","");
+                                file.write("<div class='supmethod'>From superclass: <a href='" ++ baseDir +/+ "Classes" +/+ n ++ ".html'>" ++ n ++ "</a></div>\n");
+                            }
+                        };
                     };
                 };
 

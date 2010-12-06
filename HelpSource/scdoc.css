@@ -176,6 +176,13 @@ pre {
     padding-left: 0.2em;
 }
 
+.supmethod {
+    font-size: 9pt;
+    color: #444;
+    background: #efe;
+    padding-left: 0.2em;
+}
+
 table.arguments {
     margin-left: 0em;
     margin-bottom: 1em;
