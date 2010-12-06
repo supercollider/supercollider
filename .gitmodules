@@ -1,6 +1,3 @@
-[submodule "external_libraries/oscpack"]
-	path = external_libraries/oscpack
-	url = git://tim.klingt.org/oscpack.git
 [submodule "server/supernova/sc/supercollider"]
 	path = server/supernova/sc/supercollider
 	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/supercollider
