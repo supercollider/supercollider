@@ -1,0 +1,3 @@
+several library dependencies are maintained as git subprojects. on a
+freshly cloned repository, you may want to run the init_submodules.sh
+script to initialize the subprojects.

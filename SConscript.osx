@@ -1,0 +1,158 @@
+# -*- coding: utf-8 -*-
+# $Id$
+#
+# SCons build system, osx specific part
+# Copyright (C) 2006, 2007 Tim Blechmann
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+# $Revision: 587 $
+# $LastChangedRevision: 587 $
+# $LastChangedDate: 2007-03-24 12:55:16 +0100 (Sat, 24 Mar 2007) $
+# $LastChangedBy: tim $
+
+import os
+
+Import("env")
+
+######################################################################
+#
+# osx-specific options
+
+opt = Options('options.cache.osx')
+opt.AddOptions(
+    BoolOption('pch', 'use gcc\'s precompiled headers', False),
+    BoolOption('ub', 'build universal binary', False),
+    BoolOption('warn', 'Display warnings', False),
+    BoolOption("strip", "Strip symbols from binaries", False),
+    BoolOption("strict", "Compile with strict interpretation of the c++ standard", False),
+    BoolOption("debug_release", "Compile release with debugging symbols and frame pointer", False),
+    ('optimize', 'Optimize for specific architecture', None),
+    ('cxx', 'c++ comiler', None),
+    ('prefix', 'install prefix', '/usr/local'),
+    )
+
+opt.Update(env)
+
+opt.Save('options.cache.osx',env)
+Help(opt.GenerateHelpText(env))
+
+if env['ub']:
+    env.Append(CCFLAGS="-arch i386 -arch ppc")
+######################################################################
+#
+# c++ compiler support
+
+if env.has_key('cxx') and env['cxx'] not in Split("no none No None"):
+    env.Replace(CXX = env['cxx'])
+
+
+try:
+    os.environ['CXX']
+    print "the CXX environment variable is ignored, please set the compiler with the cxx option"
+except:
+    pass
+
+#env.Append(CCFLAGS="-arch i386 -arch ppc")
+
+######################################################################
+#
+# distcc support
+
+try:
+    env['ENV']['PATH'] = os.environ['PATH']
+    env['ENV']['HOME'] = os.environ['HOME']
+except:
+    pass
+
+######################################################################
+#
+# pkg-config stuff
+
+# env.ParseConfig('pkg-config glibmm-2.4 --cflags --libs')
+# env.ParseConfig('pkg-config libxml++-2.6 --cflags --libs')
+
+# for gui
+# env.ParseConfig('pkg-config libgnomecanvasmm-2.6 --cflags --libs')
+# env.ParseConfig('pkg-config libglademm-2.4 --cflags --libs')
+# env.ParseConfig('pkg-config --libs gthread-2.0')
+
+
+######################################################################
+#
+# osx-specific configure
+
+custom_checks = SConscript("SConscript.custom_checks")
+conf = env.Configure(custom_tests = custom_checks)
+
+######################################################################
+#
+# some flags
+
+conf.CheckCXXFlag("-ftemplate-depth-4096")
+
+conf.CheckCXXFlag("-Wnon-virtual-dtor")
+
+if env.get('debug', False):
+    conf.CheckCFlag("-g")
+else:
+    ## we need to increase the inline limit for the template metaprogramming
+    conf.CheckCFlag("-finline-limit-1000")
+    conf.CheckCFlag("-ftree-vectorize")
+    conf.CheckCFlag("--param large-function-growth=1000")
+    conf.CheckCFlag("--param inline-unit-growth=1000")
+
+    if env.get('debug_release', False):
+        conf.CheckCFlag("-g")
+        conf.CheckCFlag("-O2")
+    else:
+        conf.CheckCFlag("-fomit-frame-pointer")
+        conf.CheckCFlag("-O3")
+
+if env.get('strip', False):
+    env.Append(LINKFLAGS=["-Wl,--strip-all"])
+
+if env.get('strict', False):
+    conf.CheckCFlag("-ansi")
+    conf.CheckCFlag("-pedantic")
+
+
+if env.get('warn', False):
+    conf.CheckCFlag("-Wsign-compare")
+    conf.CheckCFlag("-Wconversion")
+    conf.CheckCFlag("-Winline")
+    conf.CheckCFlag("-Wabi")
+    conf.CheckCFlag("-Wall")
+    conf.CheckCFlag("-Wextra")
+    conf.CheckCFlag("-Wno-unused-parameter")
+    conf.CheckCFlag("-Wno-reorder")
+
+if env.get('optimize', False):
+    if not env.get('debug', False):
+        if env['optimize'] not in ["False", "None", "0"]:
+            conf.CheckCFlag("-march=" + env['optimize'])
+
+#if not env.get('debug', False) and env.get('simd', True):
+#    conf.CheckCFlag("-mfpmath=sse")
+#    conf.CheckCFlag("-msse")
+
+
+
+conf.Finish()
+
+env['libnova_extra_linkflags'] = ['']
+
+Return('env')

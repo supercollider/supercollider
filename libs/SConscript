@@ -1,0 +1,79 @@
+# -*- coding: utf-8 -*-
+# SCons build system
+# Copyright (C) 2006, 2007, 2008 Tim Blechmann
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+# Boston, MA 02111-1307, USA.
+
+Import ("env")
+
+sources = list()
+
+######################################################################
+#
+# boost
+boost_sources = SConscript("SConscript.boost", exports={'env':env, 'env_specific':True})
+
+######################################################################
+#
+# boost's uuid
+
+env.Append(CPPPATH=Dir("#/libs/uuid"))
+
+######################################################################
+#
+# boost lockfree
+
+env.Append(CPPPATH=Dir("#/libs/boost_lockfree"))
+
+######################################################################
+#
+# dietmar kuehl's heap data structures
+
+env.Append(CPPPATH=Dir("#/libs/pri_queue"))
+
+######################################################################
+#
+# oscpack
+
+oscsources = [File("oscpack_build.cpp")]
+env.Append(CPPPATH=Dir("#/libs/oscpack"))
+sources.append(oscsources)
+
+######################################################################
+#
+# lockfree
+
+env.Append(CPPPATH=Dir("#/libs/."))
+
+######################################################################
+#
+# portaudio configuration
+
+SConscript("SConscript.portaudio", exports={'env':env})
+
+######################################################################
+#
+# tlsf
+
+env.Append(CPPPATH=Dir("#/libs/tlsf/src"))
+tlsf_sources = [File("tlsf/src/tlsf.c")]
+
+######################################################################
+
+build_sources = env.Combine("build.cpp", sources) + boost_sources + tlsf_sources
+sources += boost_sources + tlsf_sources
+
+Return("sources build_sources")

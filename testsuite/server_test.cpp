@@ -1,0 +1,74 @@
+#include <boost/test/unit_test.hpp>
+
+#include "../source/server/server.hpp"
+
+using namespace nova;
+using namespace boost;
+
+
+namespace
+{
+struct test_synth_prototype:
+    public synth_prototype
+{
+    test_synth_prototype(void):
+        synth_prototype("foo")
+    {}
+
+    synth * create_instance(int node_id)
+    {
+        synth * ret = allocate<synth>();
+        if (ret)
+            ::new(ret) synth(node_id, this);
+        return ret;
+    }
+};
+}
+
+
+BOOST_AUTO_TEST_CASE( server_test_1 )
+{
+    nova_server server;
+    server.register_prototype(new test_synth_prototype());
+
+    node_position_constraint to_root = std::make_pair(server.root_group(), insert);
+
+    synth * s = server.add_synth("foo", 0, to_root);
+    server.free_synth(s);
+}
+
+BOOST_AUTO_TEST_CASE( server_test_2 )
+{
+    nova_server server;
+    server.register_prototype(new test_synth_prototype());
+
+    node_position_constraint to_root = std::make_pair(server.root_group(), insert);
+
+    synth * s = server.add_synth("foo", 0, to_root);
+    server();
+    server();
+    server();
+    server.free_synth(s);
+}
+
+BOOST_AUTO_TEST_CASE( server_test_3 )
+{
+    nova_server server;
+    server.register_prototype(new test_synth_prototype());
+
+    parallel_group * g = parallel_group::allocate_parallel_group(0);
+
+    server.add_node(g);
+
+    node_position_constraint to_group = std::make_pair(g, insert);
+
+    synth * s1 = server.add_synth("foo", 1, to_group);
+    synth * s2 = server.add_synth("foo", 2, to_group);
+    synth * s3 = server.add_synth("foo", 3, to_group);
+    server();
+    server();
+    server();
+    server.free_synth(s1);
+    server.free_synth(s2);
+    server.free_synth(s3);
+}

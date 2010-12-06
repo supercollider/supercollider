@@ -1,0 +1,18 @@
+[submodule "libs/tlsf"]
+	path = libs/tlsf
+	url = git://tim.klingt.org/tlsf.git
+[submodule "libs/oscpack"]
+	path = libs/oscpack
+	url = git://tim.klingt.org/oscpack.git
+[submodule "libs/boost_lockfree"]
+	path = libs/boost_lockfree
+	url = git://tim.klingt.org/boost_lockfree.git
+[submodule "libs/lockfree"]
+	path = libs/lockfree
+	url = git://tim.klingt.org/nova-lockfree
+[submodule "libs/boost"]
+	path = libs/boost
+	url = git://tim.klingt.org/boost.git
+[submodule "source/simd"]
+	path = source/simd
+	url = git://tim.klingt.org/nova-simd.git
