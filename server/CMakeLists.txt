@@ -9,5 +9,14 @@ if (NOT APPLE AND NOT WIN32)
 	add_definitions("-DSC_PLUGIN_EXT=\".so\"")
 endif()
 
+
+include_directories(${CMAKE_SOURCE_DIR}/external_libraries
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+                    ${CMAKE_SOURCE_DIR}/external_libraries/nova-simd
+                    ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
+                    )
+
 add_subdirectory(scsynth)
+add_subdirectory(supernova)
 add_subdirectory(plugins)
