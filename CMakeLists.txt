@@ -47,7 +47,7 @@ include_directories(external_libraries
                     external_libraries/nova-tt
                     external_libraries/oscpack
                     external_libraries/pri_queue
-                    external_libraries/tlsf/src
+                    external_libraries/TLSF-2.4.6/src
                     )
 
 include_directories(server/supernova/sc/supercollider/common/Headers/plugin_interface

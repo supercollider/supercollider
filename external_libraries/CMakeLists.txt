@@ -27,7 +27,7 @@ add_library(boost_filesystem STATIC ${boost_filesystem})
 add_library(oscpack STATIC "oscpack_build.cpp")
 
 #tlsf
-add_library(tlsf STATIC "tlsf/src/tlsf.c")
+add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
 set_target_properties(tlsf
                       PROPERTIES COMPILE_DEFINITIONS TLSF_STATISTIC=1)
 
