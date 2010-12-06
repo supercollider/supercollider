@@ -1,18 +1,18 @@
 cmake_minimum_required (VERSION 2.6)
 project (SuperCollider)
 
-include (common/cmake_modules/FinalFile.cmake)
+include (cmake_modules/FinalFile.cmake)
 
 if (NOT CMAKE_BUILD_TYPE)
 	message(STATUS "Build type defaulting to \"Release\"")
 	set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/common/cmake_modules
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
 
 CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/common/cmake_modules/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 
@@ -20,7 +20,7 @@ ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
 ADD_CUSTOM_TARGET(setMainVersion ALL
-       sh ${CMAKE_CURRENT_SOURCE_DIR}/common/setMainVersion.sh
+       sh ${CMAKE_CURRENT_SOURCE_DIR}/setMainVersion.sh
        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/common
        VERBATIM
       )
@@ -52,7 +52,28 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 if(WIN32)
-		add_definitions("-DSC_WIN32")
+	add_definitions("-DSC_WIN32")
+endif()
+
+
+#############################################
+# some default libraries
+
+find_package(Pthreads)
+
+if (NOT PTHREADS_FOUND)
+    message(SEND_ERROR "cannot find libpthreads")
+endif()
+include_directories(${PTHREADS_INCLUDE_DIR})
+
+
+
+if(CURL)
+	find_package(CURL)
+	if(CURL_FOUND)
+		add_definitions("-DHAVE_LIBCURL")
+		include_directories(${CURL_INCLUDE_DIRS})
+	endif()
 endif()
 
 #############################################
@@ -73,45 +94,61 @@ if(NOT WIN32)
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	option(SC_EL "Build emacs-based IDE." ON)
-else()
-	option(SC_EL "Build emacs-based IDE." OFF)
-endif()
-option(SC_ED "Build gedit-based IDE." OFF)
-option(SC_VIM "Build vim-based IDE." OFF)
-
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	option(SC_WII "Build sclang with WII support" ON)
 endif()
 
 #############################################
 # subdirectories
-add_subdirectory(common/Source)
-add_subdirectory(common/build)
-
-if(APPLE)
-	add_subdirectory(mac)
-endif()
-
-if(SC_EL)
-	add_subdirectory(editors/scel)
-endif()
-
-if(SC_ED)
-	add_subdirectory(editors/sced)
-endif()
-
-if(SC_VIM)
-	add_subdirectory(editors/scvim)
-endif()
+add_subdirectory(common)
+add_subdirectory(server)
+add_subdirectory(lang)
+add_subdirectory(bindings)
+add_subdirectory(platform)
+add_subdirectory(editors)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    install(DIRECTORY common/Headers/
+    install(DIRECTORY include
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
         PATTERN app* EXCLUDE
     )
 endif()
 
+if(APPLE)
+	# determines the app name and app install location (scappbundlename, scappdir):
+	include (cmake_modules/MacAppFolder.cmake)
+
+	set(auxresourcesdir ${scappauxresourcesdir})
+
+	# Some aux files which go in the app's folder
+	install(FILES README ChangeLog
+		DESTINATION ${auxresourcesdir}
+	)
+	install(FILES COPYING AUTHORS
+		DESTINATION ${scappdir}
+	)
+else()
+	set(auxresourcesdir "share/SuperCollider")
+endif()
+
+install(DIRECTORY SCClassLibrary
+	DESTINATION ${auxresourcesdir}
+	PATTERN .git EXCLUDE
+)
+
+install(DIRECTORY Help
+	DESTINATION ${auxresourcesdir}
+	PATTERN .git EXCLUDE
+)
+
+install(DIRECTORY examples
+	DESTINATION ${auxresourcesdir}
+	PATTERN .git EXCLUDE
+)
+
+install(DIRECTORY sounds
+	DESTINATION ${auxresourcesdir}
+	PATTERN .git EXCLUDE
+)
 
 #############################################
 # CPack support

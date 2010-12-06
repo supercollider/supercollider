@@ -77,7 +77,7 @@ set(scsynth_sources
     SC_World.cpp
     Rendezvous.cpp
 
-    ../common/SC_fftlib.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
 )
 
 if (FFT_GREEN)
@@ -89,7 +89,9 @@ if (FFTW3F_FOUND)
 endif()
 
 
-include_directories(../../Headers/server ../../Headers/plugin_interface)
+include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/include/server
+                    ${CMAKE_SOURCE_DIR}/include/plugin_interface)
 
 set_property(DIRECTORY
              APPEND
@@ -165,7 +167,7 @@ target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
-	include (../../cmake_modules/MacAppFolder.cmake)
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
 	install(TARGETS libscsynth
 			DESTINATION ${scappauxresourcesdir}
