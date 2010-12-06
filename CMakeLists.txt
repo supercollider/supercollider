@@ -104,4 +104,4 @@ endif()
 
 add_subdirectory (external_libraries)
 add_subdirectory (server/supernova)
-add_subdirectory (testsuite)
+add_subdirectory (testsuite/supernova)
