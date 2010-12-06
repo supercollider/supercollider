@@ -4,9 +4,6 @@
 [submodule "external_libraries/oscpack"]
 	path = external_libraries/oscpack
 	url = git://tim.klingt.org/oscpack.git
-[submodule "external_libraries/boost"]
-	path = external_libraries/boost
-	url = http://github.com/ryppl/boost-svn.git
 [submodule "server/supernova/sc/supercollider"]
 	path = server/supernova/sc/supercollider
 	url = git://supercollider.git.sourceforge.net/gitroot/supercollider/supercollider
