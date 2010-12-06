@@ -301,9 +301,6 @@ This method is used by IdentitySet to search for a key among its members.
 method::atIdentityHashInPairs
 This method is used by IdentityDictionary to search for a key among its members.
 
-method::asShortString
-Returns a short string representing the Array that only shows how many elements it contains
-
 method::asString
 Returns a string representing the Array. May not be compileable due to ellision (...) of excessive arguments. 
 

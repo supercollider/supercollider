@@ -169,6 +169,13 @@ pre {
     margin-bottom: 1em;
 }
 
+.extmethod {
+    font-size: 9pt;
+    color: #444;
+    background: #fee;
+    padding-left: 0.5em;
+}
+
 table.arguments {
     margin-left: 0em;
     margin-bottom: 1em;

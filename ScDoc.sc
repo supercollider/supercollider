@@ -595,7 +595,7 @@ ScDocRenderer {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-        var f, m, n, mname, args, split, mstat;
+        var c, f, m, n, mname, args, split, mstat;
 
         var do_children = {|p=false|
             node.children !? {
@@ -633,31 +633,23 @@ ScDocRenderer {
                 //for multiple methods with same signature and similar function:
                 //ar kr (x = 42, y = 123)
                 f = node.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
-//                args = f[2][1];
                 args = "";
 //FIXME: handle overridden argumentnames/defaults?
 //perhaps we should check argument names at least? and only use overriding for "hidden" default values?
 //also, perhaps better to read the default values from the argument tags?
 //ignore markup-provided arguments for now..
+                c = if(parentTag==\instancemethods,{currentClass},{currentClass.class});
                 split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
                     mstat = 0;
                     mname = r[1];
-/*                    if(parentTag==\instancemethods,{
-                        m = currentClass.findRespondingMethodFor(mname.asSymbol);
-                    },{
-                        m = currentClass.class.findRespondingMethodFor(mname.asSymbol);
-                    });*/
-                    m = if(parentTag==\instancemethods,{currentClass},{currentClass.class}).findRespondingMethodFor(mname.asSymbol);
+                    m = c.findRespondingMethodFor(mname.asSymbol);
                     m !? {
                         mstat = mstat | 1;
-//                        args = (m.argumentString ? "").replace("this, ","").replace("this","");
-//                        if(args.notEmpty,{ args = " ("++args++")" });
                         args = ScDocRenderer.makeArgString(m);
                     };
                     //check for setter
-                    m = if(parentTag==\instancemethods,{currentClass},{currentClass.class}).findRespondingMethodFor((mname++"_").asSymbol);
-                    m !? { mstat = mstat | 2 };
+                    c.findRespondingMethodFor((mname++"_").asSymbol) !? { mstat = mstat | 2 };
 
                     switch (mstat,
                         // getter only
@@ -669,6 +661,9 @@ ScDocRenderer {
                         // method not found
                         0, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++": METHOD NOT FOUND!</h3></a>\n"); }
                     );
+                    if(m.notNil and: {m.filenameSymbol!=c.filenameSymbol} and: {c.superclasses.includes(m.ownerClass).not}) {
+                        file.write("<div class='extmethod'>Extension from <a href='" ++ m.filenameSymbol ++ "'>" ++ m.filenameSymbol ++ "</a></div>\n");
+                    };
                 };
 
                 file.write("<div class='method'>");

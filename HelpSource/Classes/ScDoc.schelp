@@ -9,13 +9,19 @@ to the help target directory. It also generates different overviews.
 
 It uses link::Classes/ScDocParser:: for parsing and link::Classes/ScDocRenderer:: for rendering.
 
-In the future, there will probably be a single instance of ScDoc stored somewhere (in thisProcess?), and it will also hold cached metadata and such.
-
 The syntax reference for the documentation markup language can be found here: link::Reference/ScDocSyntax::.
 
 A guide to writing help can be found here: link::Guides/WritingHelp::.
 
-warning:: Currently there is a limitation on line length. You should split up long paragraphs on multiple lines.
+SUBSECTION:: Basic usage
+Update all help-files and overviews:
+code::
+x = ScDoc.new;
+x.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
+x.updateAll;
+::
+
+To force an update of unchanged files, use code::x.updateAll(true):: or remove code::helpTargetDir/scdoc_cache::
 
 CLASSMETHODS::
 
@@ -40,13 +46,4 @@ get/set the base directory of help sourcefiles. Defaults to code:: thisProcess.p
 
 method:: helpTargetDir
 get/set the help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "/Help" ::
-
-EXAMPLES::
-
-Update all help-files and overviews:
-code::
-x = ScDoc.new;
-x.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
-x.updateAll;
-::
 
