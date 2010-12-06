@@ -746,14 +746,12 @@ ScDocRenderer {
                 file.write("<span class='soft'>"++this.escapeSpecialChars(node.text)++"</span>");
             },
             'link', {
-                if("^[a-zA-Z]+://.+".matchRegexp(node.text),{
+                if("^[a-zA-Z]+://.+".matchRegexp(node.text) or: (node.text.first==$/),{
                     file.write("<a href=\""++node.text++"\">"++this.escapeSpecialChars(node.text)++"</a>");
                 },{
                     f = node.text.split($#);
                     m = if(f[1].size>0, {"#"++f[1]}, {""});
                     n = f[2] ?? { f[0].split($/).last };
-//                    n = if(f[1].notNil, {" ["++f[1]++"]"}, {""});
-//                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++f[0].split($/).last++" "++m++"</a>");
                     file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++this.escapeSpecialChars(n)++"</a>");
                 });
             },
@@ -1061,8 +1059,11 @@ ScDoc {
                 n.add((tag:\categories, text:cats));
                 n.add((tag:\description, children:m=List.new));
 
-                m.add((tag:\prose, text:"This class is missing documentation. "));
-                m.add((tag:\prose, text:"Please create and edit "++src));
+                m.add((tag:\prose, text:"This class is missing documentation. Please create and edit "++src, display:\block));
+                c.helpFilePath !? {
+                    m.add((tag:\prose, text:"Old help file: ", display:\block));
+                    m.add((tag:\link, text:c.helpFilePath, display:\inline));
+                };
 
                 p.root = n;
 
