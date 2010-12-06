@@ -20,9 +20,9 @@ if(NO_LIBSNDFILE)
 	add_definitions("-DNO_LIBSNDFILE")
 elseif (APPLE)
 	set(SNDFILE_FOUND TRUE)
-	set(SNDFILE_INCLUDE_DIR ../include/libsndfile)
-	set(SNDFILE_LIBRARIES ${CMAKE_SOURCE_DIR}/mac/lib/scUBlibsndfile.a)
-	add_definitions("-isystem ${CMAKE_SOURCE_DIR}/common/include/libsndfile")
+	set(SNDFILE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/libsndfile/)
+	set(SNDFILE_LIBRARIES ${CMAKE_SOURCE_DIR}/platform/mac/lib/scUBlibsndfile.a)
+	add_definitions("-isystem ${CMAKE_SOURCE_DIR}/external_libraries/libsndfile")
 
 	# TODO on non-apple platforms, we need to be able to test for >=1018.
 	# (On apple it is known true, because we bundle a later version.)

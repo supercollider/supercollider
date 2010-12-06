@@ -1,9 +1,11 @@
-include_directories(../../Headers/lang
-	../../Headers/plugin_interface
+include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/include/lang
+                     ${CMAKE_SOURCE_DIR}/include/server
+                    ${CMAKE_SOURCE_DIR}/include/plugin_interface
 	LangSource/Bison)
 
 if(APPLE)
-	include_directories(../../include/icu
+	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/icu
 		LangPrimSource/HID_Utilities)
 else()
 	find_package(ALSA)
@@ -190,7 +192,7 @@ set_property(TARGET sclang
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
-	include (../../cmake_modules/MacAppFolder.cmake)
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
 	install(TARGETS libsclang
 			DESTINATION "${scappauxresourcesdir}"

@@ -3,12 +3,11 @@ if(NOT NO_LIBSNDFILE)
 	find_package(Sndfile)
 endif()
 
-include_directories(../../Headers/plugin_interface
-					../../Headers/common
-					../../Headers/server)
+include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/include/plugin_interface)
 
 if (NOVA_SIMD)
-	include_directories(../../include/nova-simd)
+	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/nova-simd)
 	add_definitions("-DNOVA_SIMD")
 endif()
 
@@ -235,7 +234,7 @@ endif()
 
 if (APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
-	include (../../cmake_modules/MacAppFolder.cmake)
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
 	install(TARGETS ${plugins}
 			DESTINATION "${scappauxresourcesdir}/plugins"
