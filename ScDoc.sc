@@ -598,11 +598,12 @@ ScDocRenderer {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-        var c, f, m, n, mname, args, split, mstat;
+        var c, f, m, n, mname, args, split, mstat, sym;
+        var mets = IdentitySet.new;
 
         var do_children = {|p=false|
             node.children !? {
-                node.children.do {|e| this.renderHTMLSubTree(file,e,if(p,{node.tag},{parentTag})) };
+                node.children.do {|e| mets = mets | this.renderHTMLSubTree(file,e,if(p,{node.tag},{parentTag})) };
             };
         };
 
@@ -646,13 +647,19 @@ ScDocRenderer {
                 split.do {|r|
                     mstat = 0;
                     mname = r[1];
-                    m = c.findRespondingMethodFor(mname.asSymbol);
+                    sym = mname.asSymbol;
+                    //check for normal method or getter
+                    m = c.findRespondingMethodFor(sym.asGetter);
                     m !? {
                         mstat = mstat | 1;
+                        mets.add(sym.asGetter);
                         args = ScDocRenderer.makeArgString(m);
                     };
                     //check for setter
-                    c.findRespondingMethodFor((mname++"_").asSymbol) !? { mstat = mstat | 2 };
+                    c.findRespondingMethodFor(sym.asSetter) !? {
+                        mstat = mstat | 2;
+                        mets.add(sym.asSetter);
+                    };
 
                     switch (mstat,
                         // getter only
@@ -664,6 +671,7 @@ ScDocRenderer {
                         // method not found
                         0, { file.write("<a name='"++mname++"'><h3 class='methodname'>"++this.escapeSpecialChars(mname)++": METHOD NOT FOUND!</h3></a>\n"); }
                     );
+                    //Note: this only checks if the getter is an extension if there are both getter and setter..
                     if(m.notNil and: {m.isExtensionOf(c)}) {
                         file.write("<div class='extmethod'>Extension from <a href='" ++ m.filenameSymbol ++ "'>" ++ m.filenameSymbol ++ "</a></div>\n");
                     };
@@ -804,6 +812,7 @@ ScDocRenderer {
                 node.text !? {file.write(this.escapeSpecialChars(node.text))};
             }
         );
+        ^mets;
     }
 
     renderHTMLHeader {|f,name,type,folder|
@@ -867,8 +876,26 @@ ScDocRenderer {
         f.write("</div>");
     }
 
+    addUndocumentedMethods {|f,parentTag,docmets|
+        var syms, name, mets, l = List.new;
+
+        (mets = if(parentTag==\classmethods,{currentClass.class},{currentClass}).methods) !? {
+            syms = mets.collectAs(_.name,IdentitySet);
+            mets.do {|m| //need to iterate over mets to keep the order
+                name = m.name;
+                if(docmets.includes(name).not and: {name.isSetter.not or: {syms.includes(name.asGetter).not}}) {
+                    l.add((tag:\method, text:name.asString));
+                }
+            };
+        };
+
+        if (l.notEmpty) {
+            this.renderHTMLSubTree(f,(tag:\subsection, text:"Undocumented methods", children:l),parentTag);
+        };
+    }
+
     renderHTML {|filename, folder="."|
-        var f,x,name;
+        var f,x,name,mets;
         
         postln("Rendering "++filename);
 
@@ -895,10 +922,14 @@ ScDocRenderer {
             this.renderHTMLSubTree(f,x);
 
             x = parser.findNode(\classmethods);
-            this.renderHTMLSubTree(f,x);
-//crashes here for generated autodocs on IOStream and String, why?
+            mets = this.renderHTMLSubTree(f,x);
+            //TODO: add methods from +ClassName.schelp (recursive search)
+            this.addUndocumentedMethods(f,\classmethods,mets);
+
             x = parser.findNode(\instancemethods);
-            this.renderHTMLSubTree(f,x);
+            mets = this.renderHTMLSubTree(f,x);
+            //TODO: add methods from +ClassName.schelp (recursive search)
+            this.addUndocumentedMethods(f,\instancemethods,mets);
 
             x = parser.findNode(\examples);
             this.renderHTMLSubTree(f,x);
