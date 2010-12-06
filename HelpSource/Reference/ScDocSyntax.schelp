@@ -84,6 +84,7 @@ related         S
 summary         S
 note            S
 warning         S
+private         S
 section         S       x         1
 subsection      S       x         2
 method          S       x         3
@@ -318,8 +319,9 @@ description::
 A non-band-limited pulse oscillator. Outputs a high value of one and a low value of zero.
 
 classmethods::
+private:: categories
 
-method::ar kr
+method:: ar, kr
 
 argument::freq
 frequency in Hertz

@@ -28,7 +28,7 @@ TODO
 ----
 - can setters have more than one arg? if so, we should fix rendering of setters.
 
-- cross-platform: check all uses of systemCmd.
+- cross-platform: check all uses of systemCmd. move to Platform class?
 
 - add argument:: for all args on methods even if the author didn't document it? also check that argument names are correct.
 
@@ -45,9 +45,6 @@ of anchor links to these.
 - force class ref filename to be equal to class name?
 
 - allow note:: and warning:: to have other tags inside them.. get children until newline, instead of using .text.
-
-- list undocumented methods automagically in each class? At the end of the doc..
-Also make tags for privateClassMethods:: and privateInstanceMethods::, and an option in ScDoc if those should be included or not.
 
 - render binary op methods differently? like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we? rather "++ aCollection" or "this ++ that" or something..

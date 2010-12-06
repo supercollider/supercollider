@@ -158,6 +158,7 @@ ScDocParser {
                 'categories::',         simpleTag,
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
+                'private::',            simpleTag,
                 
                 'code::',               modalRangeTag,
                 'emphasis::',           modalRangeTag,
@@ -624,14 +625,29 @@ ScDocRenderer {
                 do_children.();
             },
             'classmethods', {
-                file.write("<a name='classmethods'><h2>Class Methods</h2></a>\n<div id='classmethods'>");
-                do_children.(true);
-                file.write("</div>");
+                if(node.children.select{|n|n.tag!=\private}.notEmpty) {
+                    file.write("<a name='classmethods'><h2>Class Methods</h2></a>\n<div id='classmethods'>");
+                    do_children.(true);
+                    file.write("</div>");
+                } {
+                    do_children.(true);
+                };
             },
             'instancemethods', {
-                file.write("<a name='instancemethods'><h2>Instance Methods</h2></a>\n<div id='instancemethods'>");
-                do_children.(true);
-                file.write("</div>");
+                if(node.children.select{|n|n.tag!=\private}.notEmpty) {
+                    file.write("<a name='instancemethods'><h2>Instance Methods</h2></a>\n<div id='instancemethods'>");
+                    do_children.(true);
+                    file.write("</div>");
+                } {
+                    do_children.(true);
+                };
+            },
+            'private', {
+                split = node.text.findRegexp("[^ ,]+");
+                split.do {|r|
+                    sym = r[1].asSymbol;
+                    mets.add(sym);
+                }
             },
             'method', {
                 //for multiple methods with same signature and similar function:
@@ -703,9 +719,11 @@ ScDocRenderer {
                 collectedArgs = collectedArgs.add(node);
             },
             'description', {
-                file.write("<a name='description'><h2>Description</h2></a>\n<div id='description'>");
-                do_children.();
-                file.write("</div>");
+                if(node.children.notEmpty) {
+                    file.write("<a name='description'><h2>Description</h2></a>\n<div id='description'>");
+                    do_children.();
+                    file.write("</div>");
+                };
             },
             'examples', {
                 file.write("<a name='examples'><h2>Examples</h2></a>\n<div id='examples'>");
@@ -897,7 +915,7 @@ ScDocRenderer {
         };
 
         if (l.notEmpty) {
-            this.renderHTMLSubTree(f,(tag:\subsection, text:"Undocumented methods", children:l),parentTag);
+            this.renderHTMLSubTree(f,(tag:\subsection, text:"Undocumented "++if(parentTag==\classmethods,"class","instance")++" methods", children:l),parentTag);
         };
     }
 

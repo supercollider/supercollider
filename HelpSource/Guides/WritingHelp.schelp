@@ -27,6 +27,15 @@ A list of all undocumented classes can be seen here: link::Overviews/Categories#
 
 section:: Tags
 
+subsection:: Metadata
+All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. These include:
+code::
+title:: or class::
+summary::
+related::
+categories::
+::
+
 There are some difference between class reference and other documents, explained here:
 
 subsection:: Normal documents
@@ -54,6 +63,7 @@ DESCRIPTION::
 Here goes a long description of what the class does and why, etc..
 
 CLASSMETHODS::
+private:: myPrivateClassMethod
 
 method:: foo
 here goes a description of the class method foo
@@ -66,6 +76,7 @@ method:: bar
 another class method, etc..
 
 INSTANCEMETHODS::
+private:: init, anotherPrivateMethod
 
 method:: zoo
 here goes a description of the instance method zoo
@@ -87,13 +98,16 @@ code::
 \::
 ::
 
-section:: Metadata
-All tags that are used for document metadata should be entered at the top of the document source file, before any section. These include:
+Some notes:
+list::
+## ScDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag.
+## Subsections are allowed under ClassMethods and InstanceMethods
+## Don't list arguments in the method tag, only the method names
+## Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter, example:
 code::
-title:: or class::
-summary::
-related::
-categories::
+method:: helpSourceDir
+set or get the help source directory
+::
 ::
 
 section:: Categories
