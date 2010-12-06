@@ -1020,24 +1020,17 @@ ScDoc {
         r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
 
-    makeMethodList {|c,n|
-        var l, mets, name;
-
-        (mets = c.class.methods) !? {
-            n.add((tag:\classmethods, children:l=List.new));
-            mets.do {|m|
-                name = m.name.asString;
-                l.add((tag:\method, text:name));
-            };
-        };
+    makeMethodList {|c,n,tag|
+        var l, mets, name, syms;
 
         (mets = c.methods) !? {
-            n.add((tag:\instancemethods, children:l=List.new));    
-            mets.do {|m|
-                name = m.name.asString;
-//                if(name.last!=$_, { //what if the class has a setter only?
-                    l.add((tag:\method, text:name));
-//                });
+            n.add((tag:tag, children:l=List.new));
+            syms = mets.collectAs(_.name,IdentitySet);
+            mets.do {|m| //need to iterate over mets to keep the order
+                name = m.name;
+                if (name.isSetter.not or: {syms.includes(name.asGetter).not}) {
+                    l.add((tag:\method, text:name.asString));
+                };
             };
         };
     }
@@ -1076,7 +1069,8 @@ ScDoc {
                 this.addToDocMap(p, "Classes" +/+ name);
                 if((force or: File.exists(dest).not), {
                     ("Generating doc for class: "++name).postln;
-                    this.makeMethodList(c,n);
+                    this.makeMethodList(c.class,n,\classmethods);
+                    this.makeMethodList(c,n,\instancemethods);
                     r.parser = p;
                     r.renderHTML(dest,"Classes");
                 });
