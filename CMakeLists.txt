@@ -89,7 +89,12 @@ option(SSE "Compile with support for SSE instructions.")
 option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
 
-option(SUPENOVA "Build with supernova as optional audio synthesis server" ON)
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    option(SUPENOVA "Build with supernova as optional audio synthesis server" ON)
+elseif()
+    option(SUPENOVA "Build with supernova as optional audio synthesis server" OFF)
+endif()
 option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
