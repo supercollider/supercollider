@@ -110,18 +110,25 @@ endif()
 
 #############################################
 # some preprocessor flags
-if(SSE)
+if(CMAKE_COMPILER_IS_GNUCXX)
+  if(SSE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse -mfpmath=sse")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
-endif()
-if(SSE41)
+  endif()
+  if(SSE41)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
-endif()
-if(SSE42)
+  endif()
+  if(SSE42)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
-endif()
-if(NATIVE)
+  endif()
+  if(NATIVE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+  endif()
 endif()
+
 
 
 
