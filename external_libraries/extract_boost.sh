@@ -1,13 +1,15 @@
 #!/bin/sh
 # shell script to extract subset of boost, that is required for supernova
+#
+# run from the root of the supercollider repository
 
+# root of the boost source tree
 BOOST_ROOT=/home/tim/t/boost_1_45_0/
 
-bcp --boost=${BOOST_ROOT} --scan ../server/supernova/*/*pp boost
+bcp --boost=${BOOST_ROOT} --scan server/supernova/*/*pp external_libraries/boost
 
-# we don't use regex and date_time
+# we don't use regex
 rm -rf external_libraries/boost/*/regex
-rm -rf external_libraries/boost/*/date_time
 
 # nor do we need tests and the bjam build files
 rm -rf external_libraries/boost/Jamroot
