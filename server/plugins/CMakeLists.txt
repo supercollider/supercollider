@@ -78,7 +78,7 @@ endforeach(plugin)
 set(uiugens MouseUGens KeyboardUGens)
 
 if (WIN32)
-        set(scfft_sources   ${scfft_sources} ../../../windows/PlugIns/ExportHelper.cpp)
+        set(scfft_sources ../../../windows/PlugIns/ExportHelper.cpp)
 endif()
 
 
@@ -136,14 +136,6 @@ list(APPEND plugins FFT_UGens PV_ThirdParty ML_UGens)
 if (FFTW3F_FOUND)
 	include_directories (${FFTW3F_INCLUDE_DIR})
 endif()
-
-foreach(ugen ${fft_ugens})
-	target_link_libraries(${ugen} m)
-
-	if (APPLE)
-		target_link_libraries(${ugen} "-framework vecLib")
-	endif()
-endforeach()
 
 if (SUPERNOVA)
 	foreach(plugin ${plugin_sources})
@@ -206,6 +198,14 @@ if (SUPERNOVA)
 		endif(SNDFILE_FOUND)
 	endif()
 endif(SUPERNOVA)
+
+foreach(ugen ${fft_ugens})
+	target_link_libraries(${ugen} m)
+
+	if (APPLE)
+		target_link_libraries(${ugen} "-framework vecLib")
+	endif()
+endforeach()
 
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
