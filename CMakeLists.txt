@@ -88,8 +88,9 @@ mark_as_advanced(FFT_GREEN)
 option(SSE "Compile with support for SSE instructions.")
 option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
-option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
 
+option(SUPENOVA "Build with supernova as optional audio synthesis server" ON)
+option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
 mark_as_advanced(NO_LIBSNDFILE)
@@ -133,7 +134,7 @@ add_subdirectory(bindings)
 add_subdirectory(platform)
 add_subdirectory(editors)
 add_subdirectory(external_libraries)
-add_subdirectory (testsuite/supernova)
+add_subdirectory(testsuite)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     install(DIRECTORY include
