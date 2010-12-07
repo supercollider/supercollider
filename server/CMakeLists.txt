@@ -17,6 +17,9 @@ include_directories(${CMAKE_SOURCE_DIR}/external_libraries
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     )
 
-add_subdirectory(scsynth)
-add_subdirectory(supernova)
 add_subdirectory(plugins)
+add_subdirectory(scsynth)
+
+if (SUPERNOVA)
+  add_subdirectory(supernova)
+endif()

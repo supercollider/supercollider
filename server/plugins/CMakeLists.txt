@@ -145,7 +145,7 @@ foreach(ugen ${fft_ugens})
 	endif()
 endforeach()
 
-if (supernova)
+if (SUPERNOVA)
 	foreach(plugin ${plugin_sources})
 		string(REPLACE .cpp "_supernova" plugin_name ${plugin} )
 		add_library(${plugin_name} MODULE ${plugin})
@@ -205,7 +205,7 @@ if (supernova)
 			message(SEND_ERROR "Cannot find libsndfile")
 		endif(SNDFILE_FOUND)
 	endif()
-endif(supernova)
+endif(SUPERNOVA)
 
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -244,7 +244,7 @@ else()
 			DESTINATION "lib/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-	if (supernova)
+	if (SUPERNOVA)
 		install(TARGETS ${supernova_plugins}
 			DESTINATION "lib/supernova/plugins"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
