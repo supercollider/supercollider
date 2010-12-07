@@ -104,7 +104,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-    option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines.")
+    option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines, requires gcc-4.3 or higher).")
     option(LTO "Use GCC's link time optimizer' (experimental).")
 endif()
 
