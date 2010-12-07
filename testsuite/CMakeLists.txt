@@ -1,3 +1,3 @@
 if (SUPERNOVA)
-  add_subdirectory(testsuite)
+  add_subdirectory(supernova)
 endif()
