@@ -97,7 +97,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	option(SC_WII "Build sclang with WII support" ON)
 endif()
 
-option(SC_QT "Compile SuperCollider with Qt GUI?" ON)
+option(SC_QT "Build SuperCollider with Qt GUI" ON)
 
 #############################################
 # subdirectories

@@ -1,3 +1,9 @@
+find_package (Qt4 REQUIRED)
+find_package (Sndfile REQUIRED)
+
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
+
 set( QT_COLLIDER_HDRS
   QcApplication.h
   MainLoop.h
@@ -57,29 +63,18 @@ set( QT_COLLIDER_SRCS
 )
 
 set( QT_USE_QTWEBKIT TRUE )
+
 include(${QT_USE_FILE})
 
-
-set( SC_HEADERS_DIR "${CMAKE_SOURCE_DIR}/common/Headers" )
-
+set( SC_HEADERS_DIR "${CMAKE_SOURCE_DIR}/include" )
 include_directories(
   .
   "${SC_HEADERS_DIR}/common"
   "${SC_HEADERS_DIR}/lang"
   "${SC_HEADERS_DIR}/server"
   "${SC_HEADERS_DIR}/plugin_interface"
+  ${SNDFILE_INCLUDE_DIR}
 )
-
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
-
-find_package(Sndfile)
-
-if(SNDFILE_FOUND)
-  include_directories(${SNDFILE_INCLUDE_DIR})
-else()
-  message(SEND_ERROR "Cannot find libsndfile")
-endif(SNDFILE_FOUND)
 
 qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 
@@ -108,7 +103,7 @@ target_link_libraries( QtCollider ${QT_LIBRARIES} )
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
-	include (../../cmake_modules/MacAppFolder.cmake)
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
 	install(TARGETS QtCollider
 			DESTINATION ${scappauxresourcesdir}
