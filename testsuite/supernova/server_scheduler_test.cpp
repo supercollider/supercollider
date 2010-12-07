@@ -3,7 +3,7 @@
 #include <boost/thread.hpp>
 #include <boost/thread/barrier.hpp>
 
-#include "../server/supernova/server/server_scheduler.hpp"
+#include "server/server_scheduler.hpp"
 
 using namespace nova;
 using namespace boost;

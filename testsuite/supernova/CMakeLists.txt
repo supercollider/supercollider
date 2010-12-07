@@ -33,6 +33,24 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     )
 endif()
 
+
+
+
+include_directories(${CMAKE_SOURCE_DIR}/include/common
+                    ${CMAKE_SOURCE_DIR}/include/plugin_interface
+                    ${CMAKE_SOURCE_DIR}/include/server
+                    ${CMAKE_SOURCE_DIR}/server/supernova
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_move
+                    ${CMAKE_SOURCE_DIR}/external_libraries/oscpack
+                    ${CMAKE_SOURCE_DIR}/external_libraries/
+                    ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
+                    ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
+                    )
+
+
 add_library(boost_test STATIC boost_test.cpp)
 
 # run simple tests

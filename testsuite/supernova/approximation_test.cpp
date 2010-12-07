@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-#include "../server/supernova/utilities/fast_approximations.hpp"
+#include "utilities/fast_approximations.hpp"
 
 using namespace nova;
 using namespace std;

@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include "../server/supernova/dsp_thread_queue/dsp_thread_queue.hpp"
+#include "dsp_thread_queue/dsp_thread_queue.hpp"
 
 namespace
 {

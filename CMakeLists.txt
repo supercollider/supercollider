@@ -133,7 +133,7 @@ add_subdirectory(bindings)
 add_subdirectory(platform)
 add_subdirectory(editors)
 add_subdirectory(external_libraries)
-add_subdirectory (testsuite)
+add_subdirectory (testsuite/supernova)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     install(DIRECTORY include
