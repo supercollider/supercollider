@@ -42,8 +42,6 @@ of anchor links to these.
 
 - better error handling in parser on bogus input, etc..
 
-- force class ref filename to be equal to class name?
-
 - allow note:: and warning:: to have other tags inside them.. get children until newline, instead of using .text.
 
 - render binary op methods differently? like ArrayedCollections ++
@@ -58,23 +56,27 @@ binary ops only uses chars from this list: !@%&*-+=|<>?/
 
 HTML renderer stuff:
 - render to string instead of directly to file?
-- handle prose before first section in class doc?
+- handle prose before first section in class doc? or don't allow it..
 - other sections not allowed in class doc?
 
 - Handle extensions (quarks, plugins, etc)
 should merge stuff into the tree before parsing. Look in Extensions/HelpSource? or TheQuark/HelpSource, etc..
 documenting added methods could be done in files named +ClassName.schelp
+before we render each class, we need to find all +ClassName.schelp files and merge their parsed node tree with the current class.
+probably the best way is to first recursively search for these and add them to a dictionary with classname as key.
+and first, search for all HelpSource dirs and add these to an array. The paths to start with are:
+thisProcess.platform.classLibraryDir (perhaps no need for recursive search)
+thisProcess.platform.systemExtensionDir
+thisProcess.platform.userExtensionDir
 
 - validation pass:
-start by looking up the docType tag in the tree (root level), then we know which tags are allowed and not.
 
-Some tags should only be allowed once. like class, title, related, keywords, summary, description, methods, examples..
-Keep a dictionary with tag occurence count?
+* Some tags should only be allowed once. like class, title, related, categories, summary, description, methods, examples..
+Also, they should only occur in the root node.
 
-Also make sure ## and || only happens inside lists?
+* force class reference filename to be equal to class name
 
-- parser: Don't split by lines but pass newlines to handleWord and let it call endLine for us? and inc lineno..
-important: then we must check if the whitespace-word contains newline... (or create a regex rule that matches single newlines?)
-also let handleWord inc wordno..
-note: we could then also match blank lines by regex "\n\n*" and pass them to handleWord to split prose nodes.
+* check that no sections are used in class reference, and that no text is before the description/methods/examples..
+
+* make sure ## and || only happens inside lists?
 

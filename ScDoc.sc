@@ -296,7 +296,6 @@ ScDocParser {
 
     findNode {|tag,rootNode=nil|
         var res = nil;
-//        if(rootNode.isNil, { rootNode=root });
         (rootNode ?? { root }).do {|n|
             if(n.tag == tag.asSymbol, { res = n});
         };
@@ -341,7 +340,8 @@ ScDocParser {
         catMap.pairsDo {|cat,files|
             p=tree;
             l=cat.split($>);
-            if(if(filter.notNil, {filter.matchRegexp(l.first)}, {true}), {
+//            if(if(filter.notNil, {filter.matchRegexp(l.first)}, {true}), {
+            if(filter.isNil or: {filter.matchRegexp(l.first)}, {
                 l.do {|c|
                     if(p[c].isNil,{
                         p[c]=Dictionary.new;
@@ -459,7 +459,7 @@ ScDocParser {
         r.add((tag:'summary', text:"Alphabetical index of all methods"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
 
-        t = Dictionary.new;
+        t = IdentityDictionary.new;
 
         Class.allClasses.do {|c|
             name = c.name.asString;
@@ -544,11 +544,11 @@ ScDocRenderer {
     var footNotes;
 
     *new {|p=nil|
-        ^super.newCopyArgs(p).init;
+        ^super.newCopyArgs(p);//.init;
     }
 
-    init {
-    }
+//    init {
+//    }
 
     *simplifyName {|txt|
         ^txt.toLower.tr($\ ,$_);
@@ -925,7 +925,6 @@ ScDocRenderer {
         ("mkdir -p"+filename.dirname.escapeChar($ )).systemCmd;
 
         f = File.open(filename, "w");
-        x = parser.findNode(\class);
 
         //folder is the directory path of the file relative to the help tree,
         //like 'Classes' or 'Tutorials'.
@@ -935,6 +934,7 @@ ScDocRenderer {
 
         footNotes = List.new;
 
+        x = parser.findNode(\class);
         if(x.text.notEmpty, {
             name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
@@ -1034,7 +1034,7 @@ ScDoc {
     }
 
     classHasArKrIr {|c|
-        ^[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
+        ^#[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
     }
 
     handleUndocumentedClasses {|force=false|
@@ -1042,40 +1042,44 @@ ScDoc {
         var r = ScDocRenderer.new;
         var n, m, name, cats;
         var src, dest;
+        var srcbase = helpSourceDir +/+ "Classes";
+        var destbase = helpTargetDir +/+ "Classes";
         ("Checking for undocumented classes...").postln;
         Class.allClasses.do {|c|
             name = c.name.asString;
-            src = helpSourceDir +/+ "Classes" +/+ name++".schelp";
-            dest = helpTargetDir +/+ "Classes" +/+ name ++ ".html";
-            if(File.exists(src).not and: (name.find("Meta_")!=0), {
+            src = srcbase +/+ name ++ ".schelp";
+
+//            if(File.exists(src).not and: {name.find("Meta_")!=0}, {
+            if(docMap["Classes" +/+ name].isNil and: {name.find("Meta_")!=0}, { //this was actually slower!
+                dest = destbase +/+ name ++ ".html";
                 n = List.new;
-                n.add((tag:\class, text:c.name.asString));
+                n.add((tag:\class, text:name));
                 n.add((tag:\summary, text:""));
 
                 cats = "Undocumented classes";
-
                 if(this.classHasArKrIr(c), {cats = cats ++ ", UGens>Undocumented"});
-
                 n.add((tag:\categories, text:cats));
-                n.add((tag:\description, children:m=List.new));
-
-                m.add((tag:\prose, text:"This class is missing documentation. Please create and edit "++src, display:\block));
-                c.helpFilePath !? {
-                    m.add((tag:\prose, text:"Old help file: ", display:\block));
-                    m.add((tag:\link, text:c.helpFilePath, display:\inline));
-                };
 
                 p.root = n;
-
                 this.addToDocMap(p, "Classes" +/+ name);
+                
                 if((force or: File.exists(dest).not), {
                     ("Generating doc for class: "++name).postln;
+                    n.add((tag:\description, children:m=List.new));
+                    m.add((tag:\prose, text:"This class is missing documentation. Please create and edit "++src, display:\block));
+                    c.helpFilePath !? {
+                        m.add((tag:\prose, text:"Old help file: ", display:\block));
+                        m.add((tag:\link, text:c.helpFilePath, display:\inline));
+                    };
+
                     this.makeMethodList(c.class,n,\classmethods);
                     this.makeMethodList(c,n,\instancemethods);
                     r.parser = p;
                     r.renderHTML(dest,"Classes");
                 });
             });
+            n = docMap["Classes" +/+ name];
+            n !? {n.delete = false};
         };
     }
 
@@ -1105,7 +1109,7 @@ ScDoc {
 
     readDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
-        var file;
+/*        var file;
         if(File.exists(path), {
             file = File.open(path,"r");
             docMap = file.readAllString.interpret;
@@ -1114,14 +1118,23 @@ ScDoc {
         }, {
             docMap = Dictionary.new;
             ^true;
+        });*/
+        if((docMap = Object.readArchive(path)).notNil, {
+            ^false;
+        }, {
+            docMap = Dictionary.new;
+            ^true;
         });
+        
     }
 
     writeDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
-        var file = File.open(path,"w");
+/*        var file = File.open(path,"w");
+        "Writing docMap cache".postln;
         file.write(docMap.asCompileString);
-        file.close;
+        file.close;*/
+        docMap.writeArchive(path);
     }
 
     updateAll {|force=false|
@@ -1133,6 +1146,10 @@ ScDoc {
         }, {
             docMap = Dictionary.new;
         });
+        
+        docMap.do{|e|
+            e.delete = true;
+        };
 
         PathName(helpSourceDir).filesDo {|path|
             var source = path.fullPath;
@@ -1141,25 +1158,29 @@ ScDoc {
             var target = helpTargetDir +/+ subtarget ++".html";
             var folder = target.dirname;
             var ext = source.copyToEnd(lastDot);
-//            PathName(folder).makeDir;
-            //FIXME: if source is newer than target:
             if(ext == ".schelp", {
-                if(force or: (("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0), { //update only if needed
-//                    ("Rendering" + source + "to" + target).postln;
+                if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { //update only if needed
                     r.parser = p.parseFile(source);
-//                    this.addToCategoryMap(p,subtarget); //we need to parse it to get the categories and stuff..
                     this.addToDocMap(p,subtarget);
                     r.renderHTML(target,subtarget.dirname);
                 });
+                docMap[subtarget].delete = false;
             }, {
                 ("Copying" + source + "to" + folder).postln;
                 ("mkdir -p"+folder.escapeChar($ )).systemCmd;
                 ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
             });
         };
-//        this.writeCategoryMap;
-        this.writeDocMap;
+//        this.writeDocMap;
         this.handleUndocumentedClasses(force);
+        docMap.pairsDo{|k,e|
+            if(e.delete==true, {
+                postln("Deleting "++e.path);
+                docMap.removeAt(k);
+                //TODO: we should also remove the rendered dest file if existent?
+            });
+        };
+        this.writeDocMap;
         this.makeCategoryMap;
         this.makeOverviews;
         "Done".postln;
