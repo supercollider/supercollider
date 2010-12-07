@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include "../server/supernova/server/node_graph.hpp"
+#include "server/node_graph.hpp"
 
 #include "test_synth.hpp"
 

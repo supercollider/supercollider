@@ -4,9 +4,9 @@
 
 #include <boost/filesystem.hpp>
 
-#include "../source/sc/sc_ugen_factory.hpp"
-#include "../source/server/memory_pool.hpp"
-#include "../source/server/server_args.hpp"
+#include "sc/sc_ugen_factory.hpp"
+#include "server/memory_pool.hpp"
+#include "server/server_args.hpp"
 
 using namespace nova;
 using namespace std;

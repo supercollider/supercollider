@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "../server/supernova/dsp_thread_queue/dsp_thread.hpp"
-#include "../server/supernova/server/memory_pool.hpp"
+#include "dsp_thread_queue/dsp_thread.hpp"
+#include "server/memory_pool.hpp"
 
 namespace
 {

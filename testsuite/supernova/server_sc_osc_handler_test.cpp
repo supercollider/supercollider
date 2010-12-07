@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../source/server/sc_osc_handler.hpp"
+#include "../../source/server/sc_osc_handler.hpp"
 
 using namespace nova;
 

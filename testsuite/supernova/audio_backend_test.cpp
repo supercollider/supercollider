@@ -4,8 +4,8 @@
 
 #define protected public
 
-#include "../source/audio_backend/audio_backend.hpp"
-#include "../source/audio_backend/portaudio.hpp"
+#include "audio_backend/audio_backend.hpp"
+#include "audio_backend/portaudio.hpp"
 
 using namespace nova;
 

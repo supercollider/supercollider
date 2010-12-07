@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include "../server/supernova/server/synth_factory.hpp"
+#include "server/synth_factory.hpp"
 
 #include "test_synth.hpp"
 

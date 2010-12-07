@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
-#include "../source/sc/sc_synth_prototype.hpp"
-#include "../source/server/synth_factory.hpp"
+#include "sc/sc_synth_prototype.hpp"
+#include "server/synth_factory.hpp"
 
 using namespace nova;
 using namespace std;
