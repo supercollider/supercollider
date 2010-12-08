@@ -129,7 +129,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				int match_start =  what[i].start;
 				int match_length = what[i].end -  what[i].start;
 //					post("for i:%i, start %i, end %i\n",  i, what[i].start,  what[i].end);
-				char match[match_length+1];
+				char * match = match_length < 1024 ? (char*)alloca(match_length+1) : (char*)malloc(match_length+1);
 
 				strncpy(match, string + offset + match_start, match_length);
 				match[match_length] = 0;
@@ -143,6 +143,9 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
 				SetObject(array->slots+1, matched_string);
 				g->gc->GCWrite(array, matched_string);
+
+				if (match_length >= 1024)
+					free(match);
 			}
 		}
 
