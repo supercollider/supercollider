@@ -121,6 +121,8 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 		if (size>0) //(matched)
 		{
+			const int stackBufSize = 4096;
+			char match_buffer[stackBufSize];
 			for (int i = 0; i < size; i++)
 			{
 				assert(what[i].matched);
@@ -129,7 +131,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				int match_start =  what[i].start;
 				int match_length = what[i].end -  what[i].start;
 //					post("for i:%i, start %i, end %i\n",  i, what[i].start,  what[i].end);
-				char * match = match_length < 1024 ? (char*)alloca(match_length+1) : (char*)malloc(match_length+1);
+				char * match = match_length < stackBufSize ? match_buffer : (char*)malloc(match_length+1);
 
 				strncpy(match, string + offset + match_start, match_length);
 				match[match_length] = 0;
@@ -144,7 +146,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 				SetObject(array->slots+1, matched_string);
 				g->gc->GCWrite(array, matched_string);
 
-				if (match_length >= 1024)
+				if (match_length >= stackBufSize)
 					free(match);
 			}
 		}
