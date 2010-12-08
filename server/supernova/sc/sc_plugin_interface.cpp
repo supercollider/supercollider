@@ -695,7 +695,7 @@ void read_channel(SndfileHandle & sf, uint32_t channel_count, const uint32_t * c
 
             size_t channel_mapping = channel_data[0];
             for (size_t frame = 0; frame != read; ++frame) {
-                data[channel_mapping] = read_frame[0];
+                data[0] = read_frame[frame * sf.channels() + channel_mapping];
                 data += channel_count;
             }
         }
@@ -706,7 +706,7 @@ void read_channel(SndfileHandle & sf, uint32_t channel_count, const uint32_t * c
             for (size_t frame = 0; frame != read; ++frame) {
                 for (size_t c = 0; c != channel_count; ++c) {
                     size_t channel_mapping = channel_data[c];
-                    data[channel_mapping] = read_frame[c];
+                    data[c] = read_frame[frame * sf.channels() + channel_mapping];
                 }
                 data += channel_count;
             }
