@@ -572,32 +572,6 @@ ScDocRenderer {
         };
     }
 
-    *makeArgString {|m|
-        var res = "";
-        var value;
-        m.argNames.do {|a,i|
-            if (i>0) { //skip 'this' (first arg)
-                if (i>1) { res = res ++ ", " };
-                res = res ++ a;
-                value = m.prototypeFrame[i];
-                if (value.notNil) {
-                    value = switch(value.class,
-                        Symbol, { "'"++value.asString++"'" },
-                        Char, { "$"++value.asString },
-                        String, { "\""++value.asString++"\"" },
-                        { value.asString }
-                    );
-                    res = res ++ " = " ++ value.asString;
-                };
-            };
-        };
-        if (res.notEmpty) {
-            ^("("++res++")");
-        } {
-            ^"";
-        };
-    }
-
     renderHTMLSubTree {|file,node,parentTag=false|
         var c, f, m, n, mname, args, split, mstat, sym;
         var mets = IdentitySet.new;
@@ -669,7 +643,7 @@ ScDocRenderer {
                     m !? {
                         mstat = mstat | 1;
                         mets.add(sym.asGetter);
-                        args = ScDocRenderer.makeArgString(m);
+                        args = ScDoc.makeArgString(m);
                     };
                     //check for setter
                     c.findRespondingMethodFor(sym.asSetter) !? {
@@ -971,10 +945,10 @@ ScDocRenderer {
 }
 
 ScDoc {
-    var <>helpTargetDir;
-    var <>helpSourceDir;
-    var <categoryMap;
-    var <docMap;
+    classvar <>helpTargetDir;
+    classvar <>helpSourceDir;
+    classvar <categoryMap;
+    classvar <docMap;
 
     *new {
         ^super.new.init;
@@ -984,12 +958,12 @@ ScDoc {
         ^txt.findRegexp("[-_>a-zA-Z0-9]+[-_>/a-zA-Z0-9 ]*[-_>/a-zA-Z0-9]+").flop[1];
     }
 
-    init {
+    *initClass {
         helpTargetDir = thisProcess.platform.userAppSupportDir +/+ "/Help";
         helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
     }
 
-    makeOverviews {
+    *makeOverviews {
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
 
@@ -1018,7 +992,7 @@ ScDoc {
         r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
 
-    makeMethodList {|c,n,tag|
+    *makeMethodList {|c,n,tag|
         var l, mets, name, syms;
 
         (mets = c.methods) !? {
@@ -1033,11 +1007,37 @@ ScDoc {
         };
     }
 
-    classHasArKrIr {|c|
+    *classHasArKrIr {|c|
         ^#[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
     }
+    
+    *makeArgString {|m|
+        var res = "";
+        var value;
+        m.argNames.do {|a,i|
+            if (i>0) { //skip 'this' (first arg)
+                if (i>1) { res = res ++ ", " };
+                res = res ++ a;
+                value = m.prototypeFrame[i];
+                if (value.notNil) {
+                    value = switch(value.class,
+                        Symbol, { "'"++value.asString++"'" },
+                        Char, { "$"++value.asString },
+                        String, { "\""++value.asString++"\"" },
+                        { value.asString }
+                    );
+                    res = res ++ " = " ++ value.asString;
+                };
+            };
+        };
+        if (res.notEmpty) {
+            ^("("++res++")");
+        } {
+            ^"";
+        };
+    }
 
-    handleUndocumentedClasses {|force=false|
+    *handleUndocumentedClasses {|force=false|
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
         var n, m, name, cats;
@@ -1083,7 +1083,7 @@ ScDoc {
         };
     }
 
-    addToDocMap {|parser, path|
+    *addToDocMap {|parser, path|
         docMap[path] = (
             path:path,
             summary:parser.findNode(\summary).text,
@@ -1091,7 +1091,7 @@ ScDoc {
         );
     }
 
-    makeCategoryMap {
+    *makeCategoryMap {
         var cats;
         ("Creating category map...").postln;
         categoryMap = Dictionary.new;
@@ -1107,18 +1107,8 @@ ScDoc {
         };
     }
 
-    readDocMap {
+    *readDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
-/*        var file;
-        if(File.exists(path), {
-            file = File.open(path,"r");
-            docMap = file.readAllString.interpret;
-            file.close;
-            ^false;
-        }, {
-            docMap = Dictionary.new;
-            ^true;
-        });*/
         if((docMap = Object.readArchive(path)).notNil, {
             ^false;
         }, {
@@ -1128,16 +1118,12 @@ ScDoc {
         
     }
 
-    writeDocMap {
+    *writeDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
-/*        var file = File.open(path,"w");
-        "Writing docMap cache".postln;
-        file.write(docMap.asCompileString);
-        file.close;*/
         docMap.writeArchive(path);
     }
 
-    updateAll {|force=false|
+    *updateAll {|force=false|
         var p = ScDocParser.new;
         var r = ScDocRenderer.new;
 

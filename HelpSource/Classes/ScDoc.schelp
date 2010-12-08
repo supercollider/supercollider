@@ -16,24 +16,23 @@ A guide to writing help can be found here: link::Guides/WritingHelp::.
 SUBSECTION:: Basic usage
 Update all help-files and overviews:
 code::
-x = ScDoc.new;
-x.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
-x.updateAll;
+ScDoc.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
+ScDoc.updateAll;
 ::
 
-To force an update of unchanged files, use code::x.updateAll(true):: or remove code::helpTargetDir/scdoc_cache::
+To force an update of unchanged files, use code::updateAll(true):: or remove code::helpTargetDir/scdoc_cache::
 
 CLASSMETHODS::
+private:: initClass
 
 method:: new
 Create a new instance.
 
-method:: splitList
-Split a comma-separated string into an array of whitespace-stripped strings, useful to parse the contents of tags like code::categories\:::: and code::related\::::.
-argument:: txt
-The string to split.
+method:: helpSourceDir
+get/set the base directory of help sourcefiles. Defaults to code:: thisProcess.platform.systemAppSupportDir +/+ "/HelpSource" ::
 
-INSTANCEMETHODS::
+method:: helpTargetDir
+get/set the help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "/Help" ::
 
 method:: updateAll
 Render all help-files that need updating and generate overviews and cached metadata index. It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
@@ -41,9 +40,28 @@ Render all help-files that need updating and generate overviews and cached metad
 argument:: force
 Force updating of all files.
 
-method:: helpSourceDir
-get/set the base directory of help sourcefiles. Defaults to code:: thisProcess.platform.systemAppSupportDir +/+ "/HelpSource" ::
+subsection:: Cached map of documents
+In the maps below, each document is represented by an code::Event:: with the keys code::path, categories, summary::. More keys might come later..
 
-method:: helpTargetDir
-get/set the help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "/Help" ::
+method:: docMap
+Returns the internal dictionary of documents, which is cached in code::helpTargetDir/scdoc_cache::. Indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/ScDoc::.
+
+method:: categoryMap
+Returns an internal dictionary of all categories, where each value is a link::Classes/List:: of Events representing each document.
+
+method:: addToDocMap
+Add a parsed document to the docmap. Used internally by ScDoc.
+
+subsection:: Utilities
+
+method:: splitList
+Split a comma-separated string into an array of whitespace-stripped strings, useful to parse the contents of tags like code::categories\:::: and code::related\::::.
+argument:: txt
+The string to split.
+
+method:: makeArgString
+Return a string representing the argument string for a link::Classes/Method::.
+
+method:: classHasArKrIr
+Returns true if the class responds to ar, kr or ir classmethods.
 

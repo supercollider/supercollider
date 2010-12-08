@@ -16,15 +16,13 @@ If the tag has text, it is put in the code::text:: field. If it has children, th
 
 In normal cases you won't need to use this class directly, link::Classes/ScDoc:: uses this class to parse all help sourcefiles.
 
-warning:: Currently there is a limitation on line length. You should split up long paragraphs on multiple lines.
-
-
 classmethods::
 
 method::new
 Create a parser instance.
 
 instancemethods::
+private:: init, leaveLevel, popTree, pushTree, setTopNode, enterLevel, endCurrent, addTag, handleWord, addText, endLine
 
 method::parseFile
 Parse a help sourcefile written in ScDoc markup language.
