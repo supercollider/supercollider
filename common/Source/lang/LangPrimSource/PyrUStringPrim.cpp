@@ -137,8 +137,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 					int match_start =  what[i].start;
 					int match_length = what[i].end -  what[i].start;
 //					post("for i:%i, start %i, end %i\n",  i, what[i].start,  what[i].end);
-//					char *match = (char*)malloc(match_length);
-					char match[match_length];
+					char match[match_length+1];
 
 					strncpy(match, string + offset + match_start, match_length);
 					match[match_length] = 0;
