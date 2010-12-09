@@ -248,6 +248,9 @@ The link::Methods/play:: method is often very useful.
 Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: code::
 link::Foo/Bar#hello::
 ::
+or to jump to an anchor in this document: code::
+link::#hello::
+::
 
 All sections and methods get anchor names automagically, by making it lowercase and replacing spaces with '_' (underscore).
 

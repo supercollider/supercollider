@@ -427,34 +427,46 @@ ScDocParser {
     }
 
     overviewAllClasses {|docMap|
-        var name, doc, link, n, r = List.new, cap, old_cap=nil;
+        var name, doc, link, n, r = List.new, cap, old_cap=nil, sortedKeys;
         r.add((tag:'title', text:"Classes"));
         r.add((tag:'summary', text:"Alphabetical index of all classes"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Categories, Overviews/Methods"));
-//        r.add((tag:'categories', text:"Classes"));
-        Class.allClasses.do {|c|
+
+        sortedKeys = Class.allClasses.reject {|c| c.name.asString.find("Meta_")==0};
+
+        old_cap = nil;
+        r.add((tag:'prose', text:"Jump to: ", display:\inline));
+        sortedKeys.do {|c|
             name = c.name.asString;
-            if(name.find("Meta_")!=0, {
-                link = "Classes" +/+ name;
-                doc = docMap[link];
-                doc = if(doc.notNil, {doc.summary}, {""});
-                cap = name.first;
-                if(cap!=old_cap, {
-                    r.add((tag:'section', text:cap.asString, children:n=List.new));
-                    n.add((tag:'list', children:n=List.new));
-                    old_cap = cap;
-                });
-                n.add((tag:'##'));
-                n.add((tag:'link', text: link));
-//                n.add((tag:'||'));
-                n.add((tag:'prose', text: " - "++doc));
+            cap = name.first;
+            if(cap!=old_cap, {
+                r.add((tag:'link', text:"#"++cap.asString));
+                r.add((tag:'prose', text:" ", display:\inline));
+                old_cap = cap;
             });
+        };
+
+        old_cap = nil;
+        sortedKeys.do {|c|
+            name = c.name.asString;
+            link = "Classes" +/+ name;
+            doc = docMap[link];
+            doc = if(doc.notNil, {doc.summary}, {""});
+            cap = name.first;
+            if(cap!=old_cap, {
+                r.add((tag:'section', text:cap.asString, children:n=List.new));
+                n.add((tag:'list', children:n=List.new));
+                old_cap = cap;
+            });
+            n.add((tag:'##'));
+            n.add((tag:'link', text: link));
+            n.add((tag:'prose', text: " - "++doc));
         };
         root = r;
     }
 
     overviewAllMethods {|docMap|
-        var name, n, r = List.new, cap, old_cap=nil, t, m, ext;
+        var name, n, r = List.new, cap, old_cap, t, m, ext, sortedKeys;
         r.add((tag:'title', text:"Methods"));
         r.add((tag:'summary', text:"Alphabetical index of all methods"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
@@ -470,7 +482,22 @@ ScDocParser {
             };
         };
 
-        t.keys.asList.sort {|a,b| a<b}.do {|k|
+        sortedKeys = t.keys.asList.sort {|a,b| a<b};
+
+        old_cap = nil;
+        r.add((tag:'prose', text:"Jump to: ", display:\inline));
+        sortedKeys.do {|k|
+            name = k.asString;
+            cap = name.first;
+            if(cap!=old_cap, {
+                r.add((tag:'link', text:"#"++cap.asString));
+                r.add((tag:'prose', text:" ", display:\inline));
+                old_cap = cap;
+            });
+        };
+
+        old_cap = nil;
+        sortedKeys.do {|k|
             name = k.asString;
                 cap = name.first;
                 if(cap!=old_cap, {
@@ -497,11 +524,27 @@ ScDocParser {
     }
 
     overviewAllDocuments {|docMap|
-        var kind, name, doc, link, n, r = List.new, cap, old_cap=nil;
+        var kind, name, doc, link, n, r = List.new, cap, old_cap, sortedKeys;
         r.add((tag:'title', text:"Documents"));
         r.add((tag:'summary', text:"Alphabetical index of all documents"));
         r.add((tag:'related', text:"Overviews/Categories"));
-        docMap.keys.asList.sort {|a,b| a.split($/).last<b.split($/).last}.do {|link|
+
+        sortedKeys = docMap.keys.asList.sort {|a,b| a.split($/).last<b.split($/).last};
+
+        old_cap = nil;
+        r.add((tag:'prose', text:"Jump to: ", display:\inline));
+        sortedKeys.do {|link|
+            name = link.split($/).last;
+            cap = name.first;
+            if(cap!=old_cap, {
+                r.add((tag:'link', text:"#"++cap.asString));
+                r.add((tag:'prose', text:" ", display:\inline));
+                old_cap = cap;
+            });
+        };
+
+        old_cap = nil;
+        sortedKeys.do {|link|
             doc = docMap[link];
             doc = if(doc.notNil, {doc.summary}, {""});
             name = link.split($/).last;
@@ -726,7 +769,8 @@ ScDocRenderer {
                     f = node.text.split($#);
                     m = if(f[1].size>0, {"#"++f[1]}, {""});
                     n = f[2] ?? { f[0].split($/).last };
-                    file.write("<a href=\""++baseDir +/+ f[0]++".html"++m++"\">"++this.escapeSpecialChars(n)++"</a>");
+                    c = if(f[0].size>0, {baseDir +/+ f[0]++".html"},{n=f[1];""});
+                    file.write("<a href=\""++c++m++"\">"++this.escapeSpecialChars(n)++"</a>");
                 });
             },
             'anchor', {

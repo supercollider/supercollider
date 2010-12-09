@@ -32,10 +32,6 @@ TODO
 
 - add argument:: for all args on methods even if the author didn't document it? also check that argument names are correct.
 
-- move ScDoc:updateAll and stuff like that to classmethods/variables. Also put all utility-functions in ScDoc..
-ScDocRenderer:simplifyName, ScDocRenderer:escapeSpecialChars (?), ScDoc:splitList, 
-also move all overview functions to ScDoc.
-
 - table of contents? just include a maketoc:: tag in the doc header..
 what we do is find all section, description, classmethods, instancemethods, examples, subsection tags and generate a tree
 of anchor links to these.
@@ -65,9 +61,11 @@ documenting added methods could be done in files named +ClassName.schelp
 before we render each class, we need to find all +ClassName.schelp files and merge their parsed node tree with the current class.
 probably the best way is to first recursively search for these and add them to a dictionary with classname as key.
 and first, search for all HelpSource dirs and add these to an array. The paths to start with are:
-thisProcess.platform.classLibraryDir (perhaps no need for recursive search)
+//thisProcess.platform.classLibraryDir (no, these are only classes)
 thisProcess.platform.systemExtensionDir
 thisProcess.platform.userExtensionDir
+and this is also included of course, but no need to search:
+thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
 
 - validation pass:
 
