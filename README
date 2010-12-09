@@ -32,6 +32,12 @@ TODO
 
 - add argument:: for all args on methods even if the author didn't document it? also check that argument names are correct.
 
+- allow anchors in related:: links
+
+- method to find broken links
+
+- add utf8 encoding to html header..
+
 - table of contents? just include a maketoc:: tag in the doc header..
 what we do is find all section, description, classmethods, instancemethods, examples, subsection tags and generate a tree
 of anchor links to these.
