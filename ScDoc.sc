@@ -1000,6 +1000,7 @@ ScDoc {
     classvar <>helpSourceDir;
     classvar <categoryMap;
     classvar <docMap;
+    classvar <p, <r;
 
     *new {
         ^super.new.init;
@@ -1012,12 +1013,11 @@ ScDoc {
     *initClass {
         helpTargetDir = thisProcess.platform.userAppSupportDir +/+ "/Help";
         helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
+        p = ScDocParser.new;
+        r = ScDocRenderer.new;
     }
 
     *makeOverviews {
-        var p = ScDocParser.new;
-        var r = ScDocRenderer.new;
-
         "Generating ClassTree...".postln;
         r.parser = p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
@@ -1089,8 +1089,6 @@ ScDoc {
     }
 
     *handleUndocumentedClasses {|force=false|
-        var p = ScDocParser.new;
-        var r = ScDocRenderer.new;
         var n, m, name, cats;
         var src, dest;
         var srcbase = helpSourceDir +/+ "Classes";
@@ -1174,10 +1172,28 @@ ScDoc {
         docMap.writeArchive(path);
     }
 
-    *updateAll {|force=false|
-        var p = ScDocParser.new;
-        var r = ScDocRenderer.new;
+    *updateFile {|source,force=false|
+        var lastDot = source.findBackwards(".");
+        var subtarget = source.copyRange(helpSourceDir.size+1,lastDot-1);
+        var target = helpTargetDir +/+ subtarget ++".html";
+        var folder = target.dirname;
+        var ext = source.copyToEnd(lastDot);
+        if(ext == ".schelp", {
+            if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { //update only if needed
+                r.parser = p.parseFile(source);
+                this.addToDocMap(p,subtarget);
+                r.renderHTML(target,subtarget.dirname);
+            });
+            docMap[subtarget].delete = false;
+        }, {
+            ("Copying" + source + "to" + folder).postln;
+            ("mkdir -p"+folder.escapeChar($ )).systemCmd;
+            ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
+        });
+    
+    }
 
+    *updateAll {|force=false|
         if(force.not, {
             force = this.readDocMap;
         }, {
@@ -1189,24 +1205,7 @@ ScDoc {
         };
 
         PathName(helpSourceDir).filesDo {|path|
-            var source = path.fullPath;
-            var lastDot = source.findBackwards(".");
-            var subtarget = source.copyRange(helpSourceDir.size+1,lastDot-1);
-            var target = helpTargetDir +/+ subtarget ++".html";
-            var folder = target.dirname;
-            var ext = source.copyToEnd(lastDot);
-            if(ext == ".schelp", {
-                if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { //update only if needed
-                    r.parser = p.parseFile(source);
-                    this.addToDocMap(p,subtarget);
-                    r.renderHTML(target,subtarget.dirname);
-                });
-                docMap[subtarget].delete = false;
-            }, {
-                ("Copying" + source + "to" + folder).postln;
-                ("mkdir -p"+folder.escapeChar($ )).systemCmd;
-                ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
-            });
+            this.updateFile(path.fullPath, force);
         };
 //        this.writeDocMap;
         this.handleUndocumentedClasses(force);
