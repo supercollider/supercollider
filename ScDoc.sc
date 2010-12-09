@@ -154,7 +154,7 @@ ScDocParser {
                 'title::',              simpleTag,
                 'summary::',            simpleTag,
                 'related::',            simpleTag,
-                'keywords::',           simpleTag,
+//                'headerimage::',        simpleTag,
                 'categories::',         simpleTag,
                 'note::',               simpleTag,
                 'warning::',            simpleTag,
@@ -843,6 +843,7 @@ ScDocRenderer {
             'class', { },
             'related', { },
             'categories', { },
+            'headerimage', { },
             
             'root', {
                 do_children.();
@@ -877,7 +878,13 @@ ScDocRenderer {
             f.write("</div>");
         });    
 
-        f.write("<h1>"++name++"</h1>");
+        f.write("<h1>"++name);
+//        x = parser.findNode(\headerimage);
+//        if(x.text.notEmpty, { f.write("<span class='headerimage'><img src='"++x.text++"'/></span>")});
+        if((folder=="") and: {name=="Help"}, {
+            f.write("<span class='headerimage'><img src='"++baseDir++"/images/SC_icon.png'/></span>");
+        });
+        f.write("</h1>");
         x = parser.findNode(\summary);
         f.write("<div id='summary'>"++this.escapeSpecialChars(x.text)++"</div>");
         f.write("</div>");

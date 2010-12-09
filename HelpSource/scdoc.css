@@ -52,6 +52,11 @@ a:hover {
     font-weight: bold;
 }
 
+.headerimage {
+float: right;
+margin-right: 1ex;
+}
+
 .subheader {
     margin-bottom: 2em;
     text-align: right;
