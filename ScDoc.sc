@@ -860,7 +860,9 @@ ScDocRenderer {
     renderHTMLHeader {|f,name,type,folder|
         var x, cats, m;
         var style = baseDir +/+ "scdoc.css";
-        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' /></head><body>");
+        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' />");
+        f.write("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />");
+        f.write("</head><body>");
 
 //        cats = ScDoc.splitList(parser.findNode(\categories).text);
 //        cats = if(cats.notNil, {cats.join(", ")}, {""});
