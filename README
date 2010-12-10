@@ -10,11 +10,16 @@ USAGE
 -----
 To render and generate all docs:
 
-x = ScDoc.new;
-x.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
-x.updateAll(false);
+ScDoc.helpSourceDir = "/path/to/HelpSource";
+ScDoc.updateAll(false);
 
-Now all your rendered HTML help is in x.helpTargetDir (default is ~/share/SuperCollider/Help on Linux)
+Now all your rendered HTML help is in x.helpTargetDir (default is ~/share/SuperCollider/Help on Linux, and ~/Application Support/SuperCollider/Help on OSX)
+
+to render just one file:
+
+ScDoc.helpSourceDir = "/path/to/HelpSource";
+ScDoc.readDocMap;
+ScDoc.updateFile("/path/to/HelpSource/and/your/file.schelp",true);
 
 See these generated helpfiles for more info about ScDoc:
 
