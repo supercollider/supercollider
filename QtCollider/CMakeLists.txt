@@ -28,6 +28,7 @@ set( QT_COLLIDER_HDRS
   widgets/QcLevelIndicator.h
   widgets/QcHelpBrowser.hpp
   widgets/QcCanvas.h
+  widgets/QcSoundFileView.h
 )
 
 set( QT_COLLIDER_SRCS
@@ -60,6 +61,7 @@ set( QT_COLLIDER_SRCS
   widgets/QcGraph.cpp
   widgets/QcHelpBrowser.cpp
   widgets/QcCanvas.cpp
+  widgets/QcSoundFileView.cpp
 )
 
 set( QT_USE_QTWEBKIT TRUE )
