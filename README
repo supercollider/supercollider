@@ -13,7 +13,7 @@ To render and generate all docs:
 ScDoc.helpSourceDir = "/path/to/HelpSource";
 ScDoc.updateAll(false);
 
-Now all your rendered HTML help is in x.helpTargetDir (default is ~/share/SuperCollider/Help on Linux, and ~/Application Support/SuperCollider/Help on OSX)
+Now all your rendered HTML help is in ScDoc.helpTargetDir (default is ~/share/SuperCollider/Help on Linux, and ~/Application Support/SuperCollider/Help on OSX)
 
 to render just one file:
 
