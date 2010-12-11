@@ -1,7 +1,7 @@
 #!/bin/bash
 
 basename=`basename $PWD`
-if [ $basename != "Packager" ]; then
+if [ $basename != "package" ]; then
     echo "This script must be ran from within the Packager directory."
     exit 1
 fi
@@ -13,7 +13,7 @@ fi
 
 version=`date "+%Y-%m-%d"`
 include_optionals=false
-if [ `uname` = 'Darwin' ]; then 
+if [ `uname` = 'Darwin' ]; then
 	package_type="osx"
 else
 	package_type="source"
@@ -40,10 +40,10 @@ fi
 if [ $package_type == "source" ]; then
     mkdir SuperCollider-Source
     returndir=`pwd`
-    cd ../../
+    cd ../
     git archive $revision | tar -x --exclude ".gitignore" -C "$returndir/SuperCollider-Source"
     cd $returndir
-    
+
     if $include_optionals; then
         cp -Rp optional SuperCollider-Source/optional_installs
         cp OPTIONALS_README_SOURCE.txt SuperCollider-Source/optional_installs/README.txt
@@ -53,24 +53,23 @@ if [ $package_type == "source" ]; then
         filename="SuperCollider-$version-Source.tar.gz"
         filenamelinux="SuperCollider-$version-Source-linux.tar.gz"
     fi
-        
+
     # Here we build a list of (many) files that are useless on linux, so as to build a slimline source.tar.gz
     find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -name "iPhone*" > LinuxExclusions.txt
 	echo 'SuperCollider-Source/SuperColliderAU
-SuperCollider-Source/Psycollider
-SuperCollider-Source/README OS X
-SuperCollider-Source/README WINDOWS
-SuperCollider-Source/README IPHONE
-SuperCollider-Source/common/include/libsndfile
-SuperCollider-Source/common/include/curl
-SuperCollider-Source/common/include/icu
-SuperCollider-Source/mac
-SuperCollider-Source/iphone
-SuperCollider-Source/common/Source/lang/LangPrimSource/HID_Utilities
-SuperCollider-Source/common/Source/lang/LangPrimSource/WiiMote_OSX
-SuperCollider-Source/common/Headers/app
-SuperCollider-Source/common/Source/app' >> LinuxExclusions.txt
-    
+SuperCollider-Source/editors/Psycollider
+SuperCollider-Source/platform/README OS X
+SuperCollider-Source/platform/README WINDOWS
+SuperCollider-Source/platform/README IPHONE
+SuperCollider-Source/external_libraries/libsndfile
+SuperCollider-Source/external_libraries/curl
+SuperCollider-Source/external_libraries/icu
+SuperCollider-Source/platform/mac
+SuperCollider-Source/platform/iphone
+SuperCollider-Source/lang/LangPrimSource/HID_Utilities
+SuperCollider-Source/lang/LangPrimSource/WiiMote_OSX
+SuperCollider-Source/editors/scapp' >> LinuxExclusions.txt
+
     tar cfz "$filename" SuperCollider-Source
     tar cfzX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source
     rm -rf SuperCollider-Source
