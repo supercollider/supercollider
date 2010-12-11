@@ -82,8 +82,6 @@ doctype         S
 keywords        S
 related         S
 summary         S
-note            S
-warning         S
 private         S
 section         S       x         1
 subsection      S       x         2
@@ -93,12 +91,15 @@ description             x         1
 classmethods            x         1
 instancemethods         x         1
 examples                x         1
+returns                 x         4
 list                    x                    x               x
 tree                    x                    x               x
 numberedlist            x                    x               x
 definitionlist          x                    x               x
 table                   x                    x               x
 footnote                x                    x               x
+note                    x                    x               x
+warning                 x                    x               x
 code            V                            x        x
 link            V                            x        x
 anchor          V                            x        x
@@ -147,12 +148,6 @@ related:: link(s)
 categories:: name(s)
 ::
 
-subsection:: Other tags
-code::
-note:: text
-warning:: text
-::
-
 subsection:: Structural tags
 
 These are grouped by their level in the hierarchy, from high to low:
@@ -171,17 +166,44 @@ argument:: name
 ::
 description, examples and methods are equivalent to code::section\:::: structurally, but used to identify these special sections and render them consistently.
 
-Method signatures and argument defaults are filled in automagically. (TODO: One can also force an argument default by giving it a name like "a=1" instead of just "a" in the cases where the default is filled in later in the method and not given in the argument definition.)
+subsection:: Methods and arguments
+
+Methods should appear under code::instancemethods\:::: or code::classmethods\::::, and are written with code:: method\:: name(s) ::.
+After the method, there can be multiple lines of normal prose describing the method.
+
+After the method description comes the arguments, written with code:: argument\:: name :: where code::name:: must correspond to one of the methods arguments. After each argument line comes the description of that argument.
+
+There is an optional code::returns\:::: tag that could be used to describe the methods return value.
+
+Method signatures and argument defaults are filled in automagically. (In the future one might also override an argument default in the cases where the default is filled in later in the method and not given in the argument definition.)
 
 Also, when multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
+
+Example:
 code::
+classmethods::
+private:: new1
+
 method:: ar, kr
 description here...
+
 argument:: freq
 the frequency
 argument:: amp
 the amplitude
+
+returns:: a new UGen
+
+method:: foo
+description..
+
+argument:: x
+the x value
+
+returns:: some kind of value
 ::
+
+Any undocumented methods will show up in the rendered help file. To ignore methods, put them in a code::private\:::: tag.
 
 subsection:: Modal tags
 code::
@@ -233,6 +255,14 @@ definitionList::
 ## two || the second thing
 \::
 ::
+
+subsection:: Notes and warnings
+code::
+note:: text ::
+warning:: text ::
+::
+
+These tags can be multi-line and must end with \::. They can contain other tags.
 
 subsection:: Links
 

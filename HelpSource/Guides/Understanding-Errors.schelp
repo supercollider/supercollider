@@ -213,7 +213,7 @@ code::
 #[0, 1, 2].at(\1.asInteger)
 1
 ::
-note:: if the object cannot be converted into an integer, you'll get a "Does not understand" error!
+note:: if the object cannot be converted into an integer, you'll get a "Does not understand" error! ::
 
 subsection:: Index out of range.
 code::

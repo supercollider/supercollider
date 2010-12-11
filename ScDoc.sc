@@ -150,14 +150,19 @@ ScDocParser {
                 'subsection::',         namedSection.(2),
                 'method::',             namedSection.(3),
                 'argument::',           namedSection.(4),
+                'returns::',            {
+                    singleline = true; //this doesn't actually matter here since we don't have a text field?
+                    this.enterLevel(4);
+                    this.setTopNode(this.addTag(tag,nil,true));
+                },
                 'class::',              simpleTag,
                 'title::',              simpleTag,
                 'summary::',            simpleTag,
                 'related::',            simpleTag,
 //                'headerimage::',        simpleTag,
                 'categories::',         simpleTag,
-                'note::',               simpleTag,
-                'warning::',            simpleTag,
+//                'note::',               simpleTag,
+//                'warning::',            simpleTag,
                 'private::',            simpleTag,
                 
                 'code::',               modalRangeTag,
@@ -167,6 +172,9 @@ ScDocParser {
                 'anchor::',             modalRangeTag,
                 'image::',              modalRangeTag,
                 'soft::',               modalRangeTag,
+
+                'note::',               { listEnter.(); proseDisplay=\inline },
+                'warning::',            { listEnter.(); proseDisplay=\inline },
 
                 'list::',               listEnter,
                 'tree::',               listEnter,
@@ -582,6 +590,7 @@ ScDocRenderer {
 
     var currentClass;
     var collectedArgs;
+    var retValue;
     var dirLevel;
     var baseDir;
     var footNotes;
@@ -719,11 +728,16 @@ ScDocRenderer {
 
                 file.write("<div class='method'>");
                 collectedArgs = [];
+                retValue = nil;
                 do_children.();
                 file.write("<table class='arguments'>\n");
                 collectedArgs.do {|a|
                     file.write("<tr><td class='argumentname'>"+a.text+"<td>");
                     a.children.do {|e| this.renderHTMLSubTree(file,e,a.tag) };
+                };
+                if(retValue.notNil) {
+                    file.write("<tr><td class='returnvalue'>returns:<td>");
+                    retValue.children.do {|e| this.renderHTMLSubTree(file,e,false) };
                 };
                 file.write("</table>");
                 file.write("</div>");
@@ -734,6 +748,9 @@ ScDocRenderer {
 //                do_children.();
 //                file.write("</div>");
                 collectedArgs = collectedArgs.add(node);
+            },
+            'returns', {
+                retValue = node;
             },
             'description', {
                 if(node.children.notEmpty) {
@@ -748,10 +765,14 @@ ScDocRenderer {
                 file.write("</div>");
             },
             'note', {
-                file.write("<div class='note'><span class='notelabel'>NOTE:</span> "++this.escapeSpecialChars(node.text)++"</div>");
+                file.write("<div class='note'><span class='notelabel'>NOTE:</span> ");
+                do_children.();
+                file.write("</div>");
             },
             'warning', {
-                file.write("<div class='warning'><span class='warninglabel'>WARNING:</span> "++this.escapeSpecialChars(node.text)++"</div>");
+                file.write("<div class='warning'><span class='warninglabel'>WARNING:</span> ");
+                do_children.();
+                file.write("</div>");
             },
             'emphasis', {
                 file.write("<em>"++this.escapeSpecialChars(node.text)++"</em>");
@@ -1004,9 +1025,9 @@ ScDoc {
     classvar <docMap;
     classvar <p, <r;
 
-    *new {
+/*    *new {
         ^super.new.init;
-    }
+    }*/
 
     *splitList {|txt|
         ^txt.findRegexp("[-_>a-zA-Z0-9]+[-_>/a-zA-Z0-9 ]*[-_>/a-zA-Z0-9]+").flop[1];

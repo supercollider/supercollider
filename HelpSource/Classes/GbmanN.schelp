@@ -10,11 +10,11 @@ code::
 	x[n+1] = 1 - y[n] + abs(x[n])
 	y[n+1] = x[n]
 ::
-warning:: reviser formulae converted to c like code
+warning:: reviser formulae converted to c like code ::
 
 The behavior of the system is only dependent on its initial conditions.
 
-Reference: Devaney, R. L. "The Gingerbreadman." Algorithm 3, 15-16, Jan. 1992.
+Reference: emphasis:: Devaney, R. L. "The Gingerbreadman." Algorithm 3, 15-16, Jan. 1992. ::
 
 classmethods::
 method:: ar

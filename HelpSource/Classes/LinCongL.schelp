@@ -9,7 +9,7 @@ A linear-interpolating sound generator based on the difference equation:
 code::
 	x[n+1] = (a * x[n] + c) % m
 ::
-warning::revise formulae converted to c like code
+warning:: revise formulae converted to c like code ::
 
 The output signal is automatically scaled to a range of [-1, 1].
 

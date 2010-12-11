@@ -10,7 +10,7 @@ code::
 	x[n+1] = (x[n] + y[n+1]) % 2pi
 	y[n+1] = (y[n] + k * sin(x[n])) % 2pi
 ::
-warning::revise formulae conversion to c like code
+warning:: revise formulae conversion to c like code ::
 
 The standard map is an area preserving map of a cylinder discovered by the plasma physicist Boris Chirikov.
 

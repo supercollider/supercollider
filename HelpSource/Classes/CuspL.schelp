@@ -9,7 +9,7 @@ A linear-interpolating sound generator based on the difference equation:
 code::
 	x[n+1] = a - b * sqrt(abs(x[n]))
 ::
-warning::revise formulae converted to c like code
+warning:: revise formulae converted to c like code ::
 
 classmethods::
 

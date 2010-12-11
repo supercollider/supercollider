@@ -10,7 +10,7 @@ code::
 	y' = x * (r - z) - y
 	z' = x * y - b * z
 ::
-warning:: revise formulae converted to c like code (x', y', z'!!!)
+warning:: revise formulae converted to c like code (x', y', z'!!!) ::
 
 The time step amount code::h:: determines the rate at which the ODE is evaluated. Higher values will increase the rate, but cause more instability. A safe choice is the default amount of 0.05.
 

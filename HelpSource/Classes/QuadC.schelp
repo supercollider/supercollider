@@ -9,7 +9,7 @@ A cubic-interpolating sound generator based on the difference equation:
 code::
 	x[n+1] = a * pow(x[n], 2) + b * x[n] + c
 ::
-warning::revise formulae conversion to c like code
+warning:: revise formulae conversion to c like code ::
 
 classmethods::
 method:: ar

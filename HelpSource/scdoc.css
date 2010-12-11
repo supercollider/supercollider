@@ -158,9 +158,9 @@ pre {
 }
 
 .methodname {
-     /*border: none;
-    background: #eee;*/
-    border-bottom: 1px solid #bbb;
+     border: none;
+    background: #eee;
+/*    border-bottom: 1px solid #bbb;*/
     font-family: Andale Mono, monospace;
     font-weight: bold;
     font-size: 9.5pt;
@@ -195,15 +195,22 @@ table.arguments {
     border-collapse: separate;
 }
 
-td.argumentname {
+td.argumentname, td.returnvalue {
     margin-bottom: 0px;
     margin-top: 0px;
 /*    font-weight: bold;*/
 /*    padding-right: 1em;*/
-    background: #eee;
+/*    vertical-align: top;*/
     font-family: Andale Mono, monospace;
     font-size: 9.5pt;
-    vertical-align: top;
+}
+
+td.argumentname {
+    background: #eee;
+}
+
+td.returnvalue {
+/*    font-weight: bold;*/
 }
 
 table.arguments td {
@@ -231,7 +238,8 @@ td p {
     background: #ffe;
     border: 1px solid #dd9;
     padding: 1em;
-    margin: 1.5em;
+/*    margin: 1.5em;*/
+    margin: 1em;
 }
 .notelabel, .warninglabel {
     font-weight: bold;
