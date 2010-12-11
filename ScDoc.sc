@@ -914,27 +914,31 @@ ScDocRenderer {
 
         f.write("<div class='subheader'>\n");
 
-        if(type==\class,{
-            m = currentClass.filenameSymbol.asString;
-            f.write("<div id='filename'>Location: "++m.dirname++"/<a href='file://"++m++"'>"++m.basename++"</a></div>");
-            if(currentClass != Object, {
-                f.write("<div class='inheritance'>");
-                f.write("Inherits from: ");
-                f.write(currentClass.superclasses.collect {|c|
-                    "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
-                }.join(" : "));
-                f.write("</div>");
-            });
-            if(currentClass.subclasses.notNil, {
-                f.write("<div class='inheritance'>");
-                f.write("Subclasses: ");
-                f.write(currentClass.subclasses.collect {|c|
-                    "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
-                }.join(", "));
-                f.write("</div>");
-            });
-        });
-
+        if(type==\class) {
+            if(currentClass.notNil) {
+                m = currentClass.filenameSymbol.asString;
+                f.write("<div id='filename'>Location: "++m.dirname++"/<a href='file://"++m++"'>"++m.basename++"</a></div>");
+                if(currentClass != Object) {
+                    f.write("<div class='inheritance'>");
+                    f.write("Inherits from: ");
+                    f.write(currentClass.superclasses.collect {|c|
+                        "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
+                    }.join(" : "));
+                    f.write("</div>");
+                };
+                if(currentClass.subclasses.notNil) {
+                    f.write("<div class='inheritance'>");
+                    f.write("Subclasses: ");
+                    f.write(currentClass.subclasses.collect {|c|
+                        "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
+                    }.join(", "));
+                    f.write("</div>");
+                };
+            } {
+                f.write("<div id='filename'>Location: <b>NOT INSTALLED!</b></div>");
+            };
+        };
+        
         x = parser.findNode(\related);
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
@@ -992,15 +996,17 @@ ScDocRenderer {
             x = parser.findNode(\description);
             this.renderHTMLSubTree(f,x);
 
-            x = parser.findNode(\classmethods);
-            mets = this.renderHTMLSubTree(f,x);
-            //TODO: add methods from +ClassName.schelp (recursive search)
-            this.addUndocumentedMethods(f,\classmethods,mets);
+            currentClass !? {
+                x = parser.findNode(\classmethods);
+                mets = this.renderHTMLSubTree(f,x);
+                //TODO: add methods from +ClassName.schelp (recursive search)
+                this.addUndocumentedMethods(f,\classmethods,mets);
 
-            x = parser.findNode(\instancemethods);
-            mets = this.renderHTMLSubTree(f,x);
-            //TODO: add methods from +ClassName.schelp (recursive search)
-            this.addUndocumentedMethods(f,\instancemethods,mets);
+                x = parser.findNode(\instancemethods);
+                mets = this.renderHTMLSubTree(f,x);
+                //TODO: add methods from +ClassName.schelp (recursive search)
+                this.addUndocumentedMethods(f,\instancemethods,mets);
+            };
 
             x = parser.findNode(\examples);
             this.renderHTMLSubTree(f,x);

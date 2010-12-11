@@ -17,6 +17,7 @@ When operating on UGens instead of numbers, what results is not a result of the 
 See link::Overviews/Operators:: for an overview of common operators.
 
 classmethods::
+private:: new1
 
 method::new
 return a new instance that applies the operator code::selector:: to the UGens code::a:: and code::b:: normally, this is implicitly called when applying an operator to a link::Classes/UGen::.
@@ -26,6 +27,10 @@ argument:: a
 left operand
 argument:: b
 right operand
+returns:: A new instance of BinaryOpUGen
+
+instancemethods::
+private:: init, optimizeGraph, constantFolding
 
 examples::
 
