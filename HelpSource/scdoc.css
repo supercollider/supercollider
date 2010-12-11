@@ -190,9 +190,12 @@ pre {
 
 table.arguments {
     margin-left: 0em;
-    margin-bottom: 1em;
+    margin-bottom: 0em;
+    margin-top: 0.5em;
 /*    border-top: 1px solid #bbb;*/
+/*    border-bottom: 1px solid #bbb;*/
     border-collapse: separate;
+/*    border-left: 1px solid #bbb;*/
 }
 
 td.argumentname, td.returnvalue {

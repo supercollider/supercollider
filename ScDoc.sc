@@ -589,8 +589,8 @@ ScDocRenderer {
     var <>parser;
 
     var currentClass;
-    var collectedArgs;
-    var retValue;
+//    var collectedArgs;
+//    var retValue;
     var dirLevel;
     var baseDir;
     var footNotes;
@@ -727,7 +727,26 @@ ScDocRenderer {
                 };
 
                 file.write("<div class='method'>");
-                collectedArgs = [];
+
+                file.write("<table class='arguments'>\n");
+                node.children.do {|a|
+                    if(a.tag == \argument, {
+                            file.write("<tr><td class='argumentname'>"+a.text+"<td>");
+                            a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                    });
+                };
+                node.children.do {|a|
+                    if(a.tag == \returns, {
+                        file.write("<tr><td class='returnvalue'>returns:<td>");
+                        a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                    });
+                };
+
+                file.write("</table>");
+
+                do_children.();
+
+/*                collectedArgs = [];
                 retValue = nil;
                 do_children.();
                 file.write("<table class='arguments'>\n");
@@ -740,17 +759,14 @@ ScDocRenderer {
                     retValue.children.do {|e| this.renderHTMLSubTree(file,e,false) };
                 };
                 file.write("</table>");
+*/
                 file.write("</div>");
             },
             'argument', {
-//                file.write("<h4 class='argumentname'>"++node.text++"</h4>\n");
-//                file.write("<div class='argument'>");
-//                do_children.();
-//                file.write("</div>");
-                collectedArgs = collectedArgs.add(node);
+//                collectedArgs = collectedArgs.add(node);
             },
             'returns', {
-                retValue = node;
+//                retValue = node;
             },
             'description', {
                 if(node.children.notEmpty) {
