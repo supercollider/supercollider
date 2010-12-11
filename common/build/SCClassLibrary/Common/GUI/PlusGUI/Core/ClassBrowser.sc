@@ -412,7 +412,8 @@ ClassBrowser {
 						~methodView.items_(~classMethodNames ++ ~methodNames)
 							.value_(~methodViewIndex ? 0)
 							.action_(~displayCurrentMethodArgsAction)
-							.mouseDownAction_(~listViewDoubleClickAction);
+							.mouseDownAction_(~listViewDoubleClickAction)
+							.tryPerform(\colors_, colors)
 					},
 					argView: { |v|
 						if (~currentMethod.isNil or: { ~currentMethod.argNames.isNil }) {

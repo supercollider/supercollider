@@ -110,5 +110,7 @@ Nil {
 	}
 
 	archiveAsCompileString { ^true }
+
+	superclassesDo {}
 }
 
