@@ -29,7 +29,7 @@ QcSoundFileView::QcSoundFileView() :
   timeScrollBar = new QScrollBar();
 
   zoomScrollBar = new QScrollBar();
-  zoomScrollBar->setRange( 1, 1000 );
+  zoomScrollBar->setRange( 0, 1000 );
 
   progressBar = new QProgressBar();
   progressBar->setRange( 0, 100 );
@@ -77,8 +77,9 @@ void QcSoundFileView::setZoom( int z )
 void QcSoundFileView::updateTimeScrollBar()
 {
   // FIXME:
-  // - view start moves when changing zoom
-  // - zoom 0 does not disable the time scrollbar
+  // view start moves weirdly when changing zoom. setSliderPosition() actually calls Waveform
+  // again, and the resulting position is not the same as Waveform's original.
+
   quint64 max;
   max = waveform->duration() - waveform->viewWidth();
   if( max > 1000 ) {
@@ -88,7 +89,7 @@ void QcSoundFileView::updateTimeScrollBar()
     hScrollMultiplier = 1.0;
   }
   timeScrollBar->setMaximum( max );
-  timeScrollBar->setSliderPosition( waveform->viewStart() / hScrollMultiplier );
+  //timeScrollBar->setSliderPosition( waveform->viewStart() / hScrollMultiplier );
   timeScrollBar->setEnabled( max > 0 );
 }
 
@@ -145,15 +146,14 @@ float QcWaveform::zoom()
 
 void QcWaveform::setZoom( float z )
 {
-  // FIXME:
-  // - implement logarithmic zoom
-
   if( !sf ) return;
 
   z = qMax( 0.f, qMin( 1.f, z ) );
+  // take it to the power of 4, for a quasi-logarithmic curve
   z *= z;
   z *= z;
   _dur = (sfInfo.frames - 1) * z + 1;
+  //printf("dur: %Li view: %Li\n", sfInfo.frames, _dur);
   if( _beg + _dur > sfInfo.frames ) _beg = sfInfo.frames - _dur;
 
   redraw();
