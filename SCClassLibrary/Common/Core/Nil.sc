@@ -116,5 +116,6 @@ Nil {
 		^ControlSpec.new;
 	}
 
+	superclassesDo {}
 }
 
