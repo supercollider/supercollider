@@ -443,7 +443,7 @@ ScDocParser {
         sortedKeys = Class.allClasses.reject {|c| c.name.asString.find("Meta_")==0};
 
         old_cap = nil;
-        r.add((tag:'prose', text:"Jump to: ", display:\inline));
+        r.add((tag:'prose', text:"Jump to: ", display:\block));
         sortedKeys.do {|c|
             name = c.name.asString;
             cap = name.first;
@@ -478,6 +478,8 @@ ScDocParser {
         r.add((tag:'title', text:"Methods"));
         r.add((tag:'summary', text:"Alphabetical index of all methods"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
+        
+        r.add((tag:'prose', text:"This is an alphabetical list of all implemented methods, including private and undocumented methods.", display:\block));
 
         t = IdentityDictionary.new;
 
@@ -493,7 +495,7 @@ ScDocParser {
         sortedKeys = t.keys.asList.sort {|a,b| a<b};
 
         old_cap = nil;
-        r.add((tag:'prose', text:"Jump to: ", display:\inline));
+        r.add((tag:'prose', text:"Jump to: ", display:\block));
         sortedKeys.do {|k|
             name = k.asString;
             cap = name.first;
@@ -540,7 +542,7 @@ ScDocParser {
         sortedKeys = docMap.keys.asList.sort {|a,b| a.split($/).last<b.split($/).last};
 
         old_cap = nil;
-        r.add((tag:'prose', text:"Jump to: ", display:\inline));
+        r.add((tag:'prose', text:"Jump to: ", display:\block));
         sortedKeys.do {|link|
             name = link.split($/).last;
             cap = name.first;
