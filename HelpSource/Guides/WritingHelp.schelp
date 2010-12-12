@@ -25,6 +25,8 @@ definitionlist::
 
 A list of all undocumented classes can be seen here: link::Overviews/Categories#undocumented_classes:: (auto-generated).
 
+note:: The help files should use UTF-8 encoding!
+
 section:: Tags
 
 subsection:: Metadata
@@ -71,6 +73,12 @@ argument:: x
 here goes a description of argument x of method foo
 argument:: y
 here goes a description of argument y of method foo
+
+returns:: a calculated value
+
+discussion::
+you can enter a more in-depth discussion about this method here...
+this is a good place to put example code.
 
 method:: bar
 another class method, etc..

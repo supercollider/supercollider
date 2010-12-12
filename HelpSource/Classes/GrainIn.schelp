@@ -4,9 +4,9 @@ categories:: UGens>Generators>Granular
 related:: Classes/GrainSin, Classes/GrainFM, Classes/GrainBuf
 
 classmethods::
+private:: categories
 
 method:: ar
-All args except numChannels and trigger are polled at grain creation time.
 
 argument:: numChannels
 the number of channels to output. If 1, mono is returned and pan is ignored.
@@ -35,6 +35,10 @@ argument:: maxGrains
 the maximum number of overlapping grains that can be used at a given time. This value is set at the UGens init time and can't be modified. Defaults to 512. This can be set lower for more efficient use of memory.
 
 warning:: The above parameter is new (post SC 3.3.1) and has the potential to break code written <= 3.3.1. This parameter is BEFORE the mul slot, and you may need to update code to account for this difference. ::
+
+discussion:: All args except numChannels and trigger are polled at grain creation time.
+instancemethods::
+private:: init, argNamesInputsOffset
 
 Examples::
 code::
