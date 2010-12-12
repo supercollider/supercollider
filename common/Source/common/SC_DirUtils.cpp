@@ -176,28 +176,36 @@ bool sc_SkipDirectory(const char *name)
 int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length)
 {
 	isAlias = false;
-#ifdef SC_DARWIN
+#if defined(__APPLE__) && !defined(SC_IPHONE)
 	FSRef dirRef;
 	OSStatus osStatusErr = FSPathMakeRef ((const UInt8 *) path, &dirRef, NULL);
 	if ( !osStatusErr ) {
 		Boolean isFolder;
 		Boolean wasAliased;
 		OSErr err = FSResolveAliasFile (&dirRef, true, &isFolder, &wasAliased);
+		if (err)
+		{
+			return -1;
+		}
 		isAlias = wasAliased;
-		if ( !err && wasAliased ) {
+		if (wasAliased)
+		{
 			UInt8 resolvedPath[PATH_MAX];
 			osStatusErr = FSRefMakePath (&dirRef, resolvedPath, length);
-			if ( !osStatusErr ) {
-				strncpy(returnPath, (char *) resolvedPath, length);
-				return 0;
+			if (osStatusErr)
+			{
+				return -1;
 			}
+			strncpy(returnPath, (char *) resolvedPath, length);
+			return 0;
 		}
 	}
-	return -1;
 #elif defined(__linux__) || defined(__FreeBSD__)
 	isAlias = sc_IsSymlink(path);
 	if (realpath(path, returnPath))
+	{
 		return 0;
+	}
 
 	return -1;
 #endif
