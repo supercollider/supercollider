@@ -1,0 +1,44 @@
+title::initClass
+categories::Core>Kernel
+
+see also: link::Classes/Class::
+
+When SuperCollider starts up, just after it has compiled the library, it initializes all the classes from Object down, a depth first traversal of subclasses.
+
+In this method, any class that requires it may initalize classvars or other resources.
+
+In some cases you will require another class to be initalized before you can initalize your own.  You may depend on its resources (a classvar).  This can be accomplished by:
+
+code::
+YourClass {
+	*initClass {
+		Class.initClassTree(OtherClass);
+		
+		..
+		
+		//
+		
+		..
+	}
+	
+	..
+	
+}
+::
+
+Each class will be inited once, and the OtherClass will have all of its subclasses inited before the method returns.
+
+For those methods that need pre-initialized data (such as path names) should defer this function by using StartUp:
+
+code::
+YourClass {
+	*initClass {
+		StartUp.add {
+			..
+		}
+	}
+	
+	..
+	
+}
+::

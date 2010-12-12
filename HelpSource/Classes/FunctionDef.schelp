@@ -1,0 +1,77 @@
+class::FunctionDef
+summary:: FunctionDefs contain code which can be executed from a Function.
+categories::Core>Kernel
+
+instanceMethods::
+
+subsection::Accessing
+
+Even though it is possible to change the values in the various arrays that define the FunctionDef,
+you should not do it, unless you like to crash.
+
+method::code
+
+Get the byte code array.
+
+code::
+{ |a = 9, b = 10, c| a + b }.def.code;
+::
+
+method::sourceCode
+
+Get the source code string.
+
+{ |a = 9, b = 10, c| a + b }.def.sourceCode.postcs;
+
+method::context
+
+Get the enclosing FunctionDef or Method.
+
+method::findReferences
+
+return a list of all references to a given symbol.
+
+method::argNames
+
+Get the Array of Symbols of the argument names.
+
+code::
+{ |a = 9, b = 10, c| a + b }.def.argNames;
+::
+method::prototypeFrame
+
+Get the array of default values for argument and temporary variables.
+
+code::
+{ |a = 9, b = 10, c| a + b }.def.prototypeFrame;
+::
+method::varNames
+
+Get the Array of Symbols of the local variable names.
+
+code::
+{ |a = 9, b = 10, c| var x = 9; a + b + x }.def.varNames;
+::
+method::argumentString
+
+Return a string that contains  arguments and their default values for embedding in a string
+
+code::
+{ |a = 9, b = 10, c| a + b }.def.argumentString;
+::
+
+method::makeEnvirFromArgs
+
+Get the Array of Symbols of the local variable names.
+
+code::
+{ |a = 9, b = 10, c| a + b }.def.makeEnvirFromArgs;
+::
+
+subsection::Utilities
+
+method::dumpByteCodes
+
+"Disassemble" and post the FunctionDef's byte code instructions to the text window. 
+
+
