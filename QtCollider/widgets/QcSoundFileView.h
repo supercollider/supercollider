@@ -90,9 +90,6 @@ private:
   SF_INFO sfInfo;
 
   SoundCacheStream *_cache;
-  PeakCache *peakCache;
-  double _fpcache; // soundfile frames per cache frame
-  int _cacheSize;
 
   quint64 _beg;
   quint64 _dur;
@@ -154,6 +151,7 @@ public:
   SoundCacheStream( SNDFILE *sf, const SF_INFO &info, int maxFramesPerUnit, int maxRawFrames );
   ~SoundCacheStream();
   inline double fpu() { return _fpu; }
+  inline int size() { return _cacheSize; }
   bool integrate( int channel, double offset, double duration,
                   short *minBuffer, short *maxBuffer, int bufferSize );
   short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
