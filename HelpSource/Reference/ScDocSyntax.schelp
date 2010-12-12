@@ -92,6 +92,7 @@ classmethods            x         1
 instancemethods         x         1
 examples                x         1
 returns                 x         4
+discussion              x         4
 list                    x                    x               x
 tree                    x                    x               x
 numberedlist            x                    x               x
@@ -169,11 +170,13 @@ description, examples and methods are equivalent to code::section\:::: structura
 subsection:: Methods and arguments
 
 Methods should appear under code::instancemethods\:::: or code::classmethods\::::, and are written with code:: method\:: name(s) ::.
-After the method, there can be multiple lines of normal prose describing the method.
+After the method, there should be a short description. Even if it can be multiple lines, keep it short and use code::discussion\:::: if you need more.
 
 After the method description comes the arguments, written with code:: argument\:: name :: where code::name:: must correspond to one of the methods arguments. After each argument line comes the description of that argument.
 
 There is an optional code::returns\:::: tag that could be used to describe the methods return value.
+
+If a longer discussion is needed, use the code::discussion\:::: tag. This is a good place to insert example code, etc.
 
 Method signatures and argument defaults are filled in automagically. (In the future one might also override an argument default in the cases where the default is filled in later in the method and not given in the argument definition.)
 
@@ -185,7 +188,7 @@ classmethods::
 private:: new1
 
 method:: ar, kr
-description here...
+short description here...
 
 argument:: freq
 the frequency
@@ -195,12 +198,15 @@ the amplitude
 returns:: a new UGen
 
 method:: foo
-description..
+short description..
 
 argument:: x
 the x value
 
 returns:: some kind of value
+
+discussion::
+Here is a longer detailed discussion about this method, perhaps with example code, etc..
 ::
 
 Any undocumented methods will show up in the rendered help file. To ignore methods, put them in a code::private\:::: tag.

@@ -118,6 +118,15 @@ h3 {
     text-align: left;
 }
 
+h4 {
+    margin-top: 0.5em;
+    margin-bottom: 0em;
+    margin-left: 0em;
+    color: #777;
+    border-bottom: 1px solid #ddd;
+/*    font-weight: normal;*/
+}
+
 dt {
     font-weight: bold;
 }
@@ -159,19 +168,21 @@ pre {
 
 .methodname {
      border: none;
-    background: #eee;
+    background: #e7e7f0;
 /*    border-bottom: 1px solid #bbb;*/
     font-family: Andale Mono, monospace;
-    font-weight: bold;
     font-size: 9.5pt;
+    font-weight: bold;
     margin-bottom: 0.2em;
     margin-top: 1em;
-    padding-left: 0.2em;
+/*    padding-left: 0.2em;*/
+    padding: 0.3em;
+    border: 1px solid #ccc;
 }
 
 .method {
     margin-left: 2em;
-    margin-bottom: 1em;
+    margin-bottom: 2em;
 }
 
 .extmethod {
@@ -189,31 +200,31 @@ pre {
 }
 
 table.arguments {
-    margin-left: 0em;
+    margin-left: 1.5em;
     margin-bottom: 0em;
     margin-top: 0.5em;
 /*    border-top: 1px solid #bbb;*/
 /*    border-bottom: 1px solid #bbb;*/
-    border-collapse: separate;
+    border-collapse: collapse;
 /*    border-left: 1px solid #bbb;*/
 }
 
-td.argumentname, td.returnvalue {
-    margin-bottom: 0px;
-    margin-top: 0px;
+table.arguments td {
+/*    margin-bottom: 0px;*/
+/*    margin-top: 0px;*/
 /*    font-weight: bold;*/
 /*    padding-right: 1em;*/
-/*    vertical-align: top;*/
-    font-family: Andale Mono, monospace;
-    font-size: 9.5pt;
+    vertical-align: top;
 }
 
 td.argumentname {
-    background: #eee;
+/*    font-family: Andale Mono, monospace;
+    font-size: 9.5pt;*/
+    font-weight: bold;
 }
 
-td.returnvalue {
-/*    font-weight: bold;*/
+div.returnvalue {
+    margin-left: 2em;
 }
 
 table.arguments td {

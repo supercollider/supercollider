@@ -32,24 +32,29 @@ method:: helpTargetDir
 get/set the help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "/Help" ::
 
 method:: updateAll
-Render all help-files that need updating and generate overviews and cached metadata index. It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
-
+Render all help-files that need updating and generate overviews and cached metadata index.
 returns:: this class
-
 argument:: force
 Force updating of all files.
+discussion:: It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
+
 
 subsection:: Cached map of documents
 In the maps below, each document is represented by an link::Classes/Event:: with the keys code::path, categories, summary::. More keys might come later..
 
 method:: docMap
-Returns the internal dictionary of documents, which is cached in code::helpTargetDir/scdoc_cache::. Indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/ScDoc::.
+Returns the internal dictionary of documents.
 returns:: An internal link::Classes/Dictionary::
+discussion::
+The returned Dictionary is indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/ScDoc::.
 
+This dictionary is cached in code::helpTargetDir/scdoc_cache::.
+ 
 method:: categoryMap
-Returns an internal dictionary of all categories, where each value is a link::Classes/List:: of Events representing each document.
+Returns an internal dictionary of all categories.
 returns:: An internal link::Classes/Dictionary::
-
+discussion:: The keys are category symbols, and each value is a link::Classes/List:: of Events representing each document.
+ 
 method:: addToDocMap
 Add a parsed document to the docmap. Used internally by ScDoc.
 returns:: this class

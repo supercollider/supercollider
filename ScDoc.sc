@@ -155,6 +155,11 @@ ScDocParser {
                     this.enterLevel(4);
                     this.setTopNode(this.addTag(tag,nil,true));
                 },
+                'discussion::',            {
+                    singleline = true; //this doesn't actually matter here since we don't have a text field?
+                    this.enterLevel(4);
+                    this.setTopNode(this.addTag(tag,nil,true));
+                },
                 'class::',              simpleTag,
                 'title::',              simpleTag,
                 'summary::',            simpleTag,
@@ -591,7 +596,7 @@ ScDocRenderer {
     var <>parser;
 
     var currentClass;
-//    var collectedArgs;
+    var collectedArgs;
 //    var retValue;
     var dirLevel;
     var baseDir;
@@ -730,23 +735,49 @@ ScDocRenderer {
 
                 file.write("<div class='method'>");
 
-                file.write("<table class='arguments'>\n");
+                collectedArgs = [];
+                do_children.();
+                
+                if(collectedArgs.notEmpty) {
+                    file.write("<h4>Parameters:</h4>\n");
+                    file.write("<table class='arguments'>\n");
+                    collectedArgs.do {|a|
+                        file.write("<tr><td class='argumentname'>"+a.text+"<td>");
+                        a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                    };
+                    file.write("</table>");
+                };
+
+//                file.write("<h4>Parameters:</h4>\n");
+/*                file.write("<table class='arguments'>\n");
                 node.children.do {|a|
                     if(a.tag == \argument, {
                             file.write("<tr><td class='argumentname'>"+a.text+"<td>");
                             a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
                     });
+                };*/
+                
+                n = this.parser.findNode(\returns, node.children);
+                if(n.tag.notNil) {
+//                    file.write("<tr><td class='returnvalue'>returns:<td>");                    
+                    file.write("<h4>Returns:</h4>\n<div class='returnvalue'>");
+                    n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                    file.write("</div>");
                 };
-                node.children.do {|a|
+
+/*                node.children.do {|a|
                     if(a.tag == \returns, {
                         file.write("<tr><td class='returnvalue'>returns:<td>");
                         a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
                     });
                 };
-
-                file.write("</table>");
-
-                do_children.();
+*/
+//                file.write("</table>");
+                n = this.parser.findNode(\discussion, node.children);
+                if(n.tag.notNil) {
+                    file.write("<h4>Discussion:</h4>\n");
+                    n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
+                };
 
 /*                collectedArgs = [];
                 retValue = nil;
@@ -765,7 +796,7 @@ ScDocRenderer {
                 file.write("</div>");
             },
             'argument', {
-//                collectedArgs = collectedArgs.add(node);
+                collectedArgs = collectedArgs.add(node);
             },
             'returns', {
 //                retValue = node;
@@ -1060,33 +1091,33 @@ ScDoc {
     *initClass {
         helpTargetDir = thisProcess.platform.userAppSupportDir +/+ "/Help";
         helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
-        p = ScDocParser.new;
         r = ScDocRenderer.new;
+        r.parser = p = ScDocParser.new;
     }
 
     *makeOverviews {
         "Generating ClassTree...".postln;
-        r.parser = p.overviewClassTree;
+        p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
 
         "Generating Class overview...".postln;        
-        r.parser = p.overviewAllClasses(docMap);
+        p.overviewAllClasses(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews");
 
         "Generating Methods overview...".postln;
-        r.parser = p.overviewAllMethods(docMap);
+        p.overviewAllMethods(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews");
 
         "Generating Documents overview...".postln;
-        r.parser = p.overviewAllDocuments(docMap);
+        p.overviewAllDocuments(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews");
 
         "Generating Categories overview...".postln;
-        r.parser = p.overviewCategories(categoryMap);
+        p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
 
         "Generating Server overview...".postln;
-        r.parser = p.overviewServer(categoryMap);
+        p.overviewServer(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
 
@@ -1170,7 +1201,6 @@ ScDoc {
 
                     this.makeMethodList(c.class,n,\classmethods);
                     this.makeMethodList(c,n,\instancemethods);
-                    r.parser = p;
                     r.renderHTML(dest,"Classes");
                 });
             });
@@ -1227,7 +1257,7 @@ ScDoc {
         var ext = source.copyToEnd(lastDot);
         if(ext == ".schelp", {
             if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { //update only if needed
-                r.parser = p.parseFile(source);
+                p.parseFile(source);
                 this.addToDocMap(p,subtarget);
                 r.renderHTML(target,subtarget.dirname);
             });

@@ -26,32 +26,37 @@ private:: init, leaveLevel, popTree, pushTree, setTopNode, enterLevel, endCurren
 
 method::parseFile
 Parse a help sourcefile written in ScDoc markup language.
-Returns the parser object. The resulting tree is available in code::parser.root::
+returns:: the parser object.
 argument::filename
 The full path to the file.
+discussion:: The resulting tree is available in code::parser.root::
 
 method::parse
 Parse a string of ScDoc markup language.
-Returns the parser object. The resulting tree is available in code::parser.root::
+returns:: the parser object.
 argument::string
 The string to parse.
+discussion:: The resulting tree is available in code::parser.root::
 
 method::root
-The root array of the internal document tree.
+Set/get the root array of the internal document tree.
 
 method::dump
 Dump the internal document tree to the console in a human-readable form.
 
 method::findNode
-Find a node. Returns an object representing the node, if the node was not found the resulting object will have code::.tag:: set to nil. Example:
-code::
-p = ScDocParser.new.parseFile("/path/to/myfile.schelp");
-p.findNode("related").text.postln;
-::
+Find a node.
+returns:: An object representing the node, if the node was not found the resulting object will have code::.tag:: set to nil.
 argument::tag
 The tag to search for.
 argument::rootNode
 The array to search, defaults to code::parser.root::.
+discussion::
+Example:
+code::
+p = ScDocParser.new.parseFile("/path/to/myfile.schelp");
+p.findNode("related").text.postln;
+::
 
 examples::
 
