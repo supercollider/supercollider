@@ -31,24 +31,15 @@ QcSoundFileView::QcSoundFileView() :
   zoomScrollBar = new QSlider();
   zoomScrollBar->setRange( 0, 1000 );
 
-  progressBar = new QProgressBar();
-  progressBar->setRange( 0, 100 );
-
   QGridLayout *l = new QGridLayout();
   l->addWidget( waveform , 0, 0 );
   l->addWidget( zoomScrollBar, 0, 1 );
   l->addWidget( timeScrollBar, 1, 0, 1, 2 );
-  l->addWidget( progressBar, 2, 0, 1, 2 );
-
-  progressBar->hide();
 
   setLayout( l );
 
-  connect( timeScrollBar, SIGNAL(valueChanged(int)), this, SLOT(setBeginning(int)) );
-  connect( zoomScrollBar, SIGNAL(valueChanged(int)), this, SLOT(setZoom(int)) );
-  connect( waveform, SIGNAL(loadProgress(int)), progressBar, SLOT(show()) );
-  connect( waveform, SIGNAL(loadProgress(int)), progressBar, SLOT(setValue(int)) );
-  connect( waveform, SIGNAL(loadingDone()), progressBar, SLOT(hide()) );
+  connect( timeScrollBar, SIGNAL(valueChanged(int)), this, SLOT(onPosSliderChanged(int)) );
+  connect( zoomScrollBar, SIGNAL(valueChanged(int)), this, SLOT(onZoomSliderChanged(int)) );
   connect( waveform, SIGNAL(loadingDone()), this, SLOT(updateTimeScrollBar()) );
   connect( waveform, SIGNAL(loadingDone()), this, SLOT(updateZoomScrollBar()) );
 
@@ -63,12 +54,12 @@ void QcSoundFileView::load( const QString& filename )
 }
 
 
-void QcSoundFileView::setBeginning( int value )
+void QcSoundFileView::onPosSliderChanged( int value )
 {
   waveform->setViewStart( value * hScrollMultiplier );
 }
 
-void QcSoundFileView::setZoom( int z )
+void QcSoundFileView::onZoomSliderChanged( int z )
 {
   waveform->setZoom( (zoomScrollBar->maximum() - z) / 1000.f );
   updateTimeScrollBar();
@@ -148,8 +139,11 @@ void QcWaveform::load( const QString& filename )
   _cache = new SoundCacheStream();
   connect( _cache, SIGNAL(loadProgress(int)),
            this, SIGNAL(loadProgress(int)) );
+  connect( _cache, SIGNAL(loadProgress(int)),
+           this, SLOT(redraw()) );
   connect( _cache, SIGNAL(loadingDone()), this, SIGNAL(loadingDone()) );
-  connect( _cache, SIGNAL(loadingDone()), this, SLOT(update()) );
+  connect( _cache, SIGNAL(loadingDone()), this, SLOT(redraw()) );
+
   _cache->load( sf, sfInfo, 128, 300000 );
 
   redraw();
@@ -211,7 +205,16 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   QPainter p( pix );
   p.fillRect( pix->rect(), QColor( 255,255,255 ) );
 
-  if( !sf || !_cache || !_cache->ready() ) return;
+  if( !sf || !_cache ) return;
+
+  if( _cache->loading() ) {
+    QRect r( pix->rect() );
+    r.setRight( r.right() * _cache->loadProgress() / 100 );
+    p.fillRect( r, QColor( 150, 150, 255 ) );
+    return;
+  }
+
+  if( !_cache->ready() ) return;
 
   // Check for sane situation:
   if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
@@ -428,11 +431,13 @@ SoundCacheStream::SoundCacheStream()
   _caches(0),
   _fpu(0.0),
   _cacheSize(0),
-  _ready(false)
+  _ready(false),
+  _loading(false),
+  _loadProgress(0)
 {
   _loader = new SoundCacheLoader( this );
   connect( _loader, SIGNAL(loadProgress(int)),
-           this, SIGNAL(loadProgress(int)),
+           this, SLOT(onLoadProgress(int)),
            Qt::QueuedConnection );
   connect( _loader, SIGNAL(loadingDone()), this, SLOT(onLoadingDone()), Qt::QueuedConnection );
 }
@@ -441,6 +446,7 @@ void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info,
                              int maxFramesPerUnit, int maxRawFrames )
 {
   _ready = false;
+  _loadProgress = 0;
 
   if( _loader->isRunning() ) {
     _loader->terminate();
@@ -472,6 +478,7 @@ void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info,
     _caches[ch].max = new short [_cacheSize];
   }
 
+  _loading = true;
   _loader->load( sf, info );
 }
 
@@ -542,10 +549,17 @@ short *SoundCacheStream::rawFrames( int ch, quint64 b, quint64 d, bool *interlea
   maxRawFrames( maxRawFrames )
 {}*/
 
+void SoundCacheStream::onLoadProgress( int progress )
+{
+  _loadProgress = progress;
+  Q_EMIT( loadProgress(progress) );
+}
+
 void SoundCacheStream::onLoadingDone()
 {
   // FIXME what if the signal is received just after starting another load?
   _ready = true;
+  _loading = false;
   Q_EMIT( loadingDone() );
 }
 
