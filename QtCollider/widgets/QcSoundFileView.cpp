@@ -38,7 +38,7 @@ QcSoundFileView::QcSoundFileView() :
   l->addWidget( waveform , 0, 0 );
   l->addWidget( zoomScrollBar, 0, 1 );
   l->addWidget( timeScrollBar, 1, 0, 1, 2 );
-  l->addWidget( progressBar, 1, 0, 1, 2 );
+  l->addWidget( progressBar, 2, 0, 1, 2 );
 
   progressBar->hide();
 
@@ -116,12 +116,20 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
 
 QcWaveform::~QcWaveform()
 {
-  if( sf ) sf_close( sf );
+  delete _cache;
   delete pixmap;
+  if( sf ) sf_close( sf );
 }
 
 void QcWaveform::load( const QString& filename )
 {
+  // NOTE we have to delete SoundCacheStream before closing the soundfile, as it might be still
+  // loading it
+  // TODO: make SoundCacheStream open the soundfile on its own
+
+  delete _cache;
+  _cache = 0;
+
   if( sf ) sf_close( sf );
 
   sfInfo.format = 0;
@@ -137,7 +145,12 @@ void QcWaveform::load( const QString& filename )
   _beg = 0;
   _dur = sfInfo.frames;
 
-  rebuildCache( 128, 300000 );
+  _cache = new SoundCacheStream();
+  connect( _cache, SIGNAL(loadProgress(int)),
+           this, SIGNAL(loadProgress(int)) );
+  connect( _cache, SIGNAL(loadingDone()), this, SIGNAL(loadingDone()) );
+  connect( _cache, SIGNAL(loadingDone()), this, SLOT(update()) );
+  _cache->load( sf, sfInfo, 128, 300000 );
 
   redraw();
 }
@@ -190,14 +203,6 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 
 void QcWaveform::rebuildCache ( int maxFPU, int maxRawFrames )
 {
-  delete _cache;
-  _cache = 0;
-
-  SoundCacheStream *cache = new SoundCacheStream( sf, sfInfo, maxFPU, maxRawFrames );
-
-  _cache = cache;
-
-  Q_EMIT( loadingDone() );
 }
 
 void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_dur )
@@ -206,7 +211,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   QPainter p( pix );
   p.fillRect( pix->rect(), QColor( 255,255,255 ) );
 
-  if( !sf || !_cache ) return;
+  if( !sf || !_cache || !_cache->ready() ) return;
 
   // Check for sane situation:
   if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
@@ -417,11 +422,36 @@ short *SoundFileStream::rawFrames( int ch, quint64 b, quint64 d, bool *interleav
   return ( _data + offset );
 }
 
-SoundCacheStream::SoundCacheStream
-( SNDFILE *sf, const SF_INFO &info, int maxFramesPerUnit, int maxRawFrames )
-: SoundStream ( info.channels, 0.0, (double) info.frames ),
-  _caches( 0 )
+
+SoundCacheStream::SoundCacheStream()
+: SoundStream ( 0, 0.0, 0.0 ),
+  _caches(0),
+  _fpu(0.0),
+  _cacheSize(0),
+  _ready(false)
 {
+  _loader = new SoundCacheLoader( this );
+  connect( _loader, SIGNAL(loadProgress(int)),
+           this, SIGNAL(loadProgress(int)),
+           Qt::QueuedConnection );
+  connect( _loader, SIGNAL(loadingDone()), this, SLOT(onLoadingDone()), Qt::QueuedConnection );
+}
+
+void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info,
+                             int maxFramesPerUnit, int maxRawFrames )
+{
+  _ready = false;
+
+  if( _loader->isRunning() ) {
+    _loader->terminate();
+    _loader->wait();
+  }
+  delete [] _caches;
+
+  ch = info.channels;
+  beg = 0.0;
+  dur = (double) info.frames;
+
   if( info.frames <= maxRawFrames ) {
     _cacheSize = info.frames;
     _fpu = 1.0;
@@ -442,28 +472,15 @@ SoundCacheStream::SoundCacheStream
     _caches[ch].max = new short [_cacheSize];
   }
 
-
-  int i = 0;
-  while( i < _cacheSize ) {
-    int chunkSize = qMin( 1000, _cacheSize - i );
-
-    SoundFileStream sfStream( sf, info, i * _fpu, chunkSize * _fpu );
-
-    for( ch = 0; ch < channels(); ++ch ) {
-        sfStream.integrateAll( ch, _caches[ch].min + i, _caches[ch].max + i, chunkSize );
-    }
-
-    i += chunkSize;
-
-    Q_EMIT( loadProgress( i * 100 / _cacheSize ) );
-    QApplication::processEvents();
-  }
-
-  Q_EMIT( loadingDone() );
+  _loader->load( sf, info );
 }
 
 SoundCacheStream::~SoundCacheStream()
 {
+  if( _loader->isRunning() ) {
+    _loader->terminate();
+    _loader->wait();
+  }
   delete [] _caches;
 }
 
@@ -472,7 +489,8 @@ bool SoundCacheStream::integrate
 {
   // we assume that beginning() == 0
 
-  bool ok = ch < channels()
+  bool ok = _ready
+            && ch < channels()
             && ( off >= beginning() )
             && ( off + dur <= beginning() + duration() )
             && bufferSize <= dur * _fpu;
@@ -511,7 +529,58 @@ bool SoundCacheStream::integrate
 
 short *SoundCacheStream::rawFrames( int ch, quint64 b, quint64 d, bool *interleaved )
 {
-  if( _fpu > 1.0 || ch > channels() || b + d > _cacheSize ) return 0;
+  if( !_ready || _fpu > 1.0 || ch > channels() || b + d > _cacheSize ) return 0;
   *interleaved = false;
   return _caches[ch].min + b;
+}
+
+/*SoundCacheLoader::SoundCacheLoader( SNDFILE *sf, const SF_INFO &info,
+                                    int maxFPU, int maxRawFrames )
+: _sf( sf ),
+  _sfInfo( info ),
+  _maxFPU( maxFPU ),
+  maxRawFrames( maxRawFrames )
+{}*/
+
+void SoundCacheStream::onLoadingDone()
+{
+  // FIXME what if the signal is received just after starting another load?
+  _ready = true;
+  Q_EMIT( loadingDone() );
+}
+
+void SoundCacheLoader::load( SNDFILE *sf, const SF_INFO &info )
+{
+  Q_ASSERT( !isRunning() );
+  _sf = sf;
+  _info = info;
+  start();
+}
+
+void SoundCacheLoader::run()
+{
+  Q_ASSERT( _sf );
+
+  int channels = _cache->channels();
+  double fpu = _cache->_fpu;
+  int cacheSize = _cache->_cacheSize;
+  PeakCache *chanCaches = _cache->_caches;
+
+  int i = 0;
+  while( i < cacheSize ) {
+    int chunkSize = qMin( 1000, cacheSize - i );
+
+    SoundFileStream sfStream( _sf, _info, i * fpu, chunkSize * fpu );
+
+    int ch;
+    for( ch = 0; ch < channels; ++ch ) {
+      sfStream.integrateAll( ch, chanCaches[ch].min + i, chanCaches[ch].max + i, chunkSize );
+    }
+
+    i += chunkSize;
+
+    Q_EMIT( loadProgress( i * 100 / cacheSize ) );
+  }
+
+  Q_EMIT( loadingDone() );
 }

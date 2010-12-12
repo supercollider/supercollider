@@ -8,6 +8,7 @@
 #include <QSlider>
 #include <QProgressBar>
 #include <QPixmap>
+#include <QThread>
 
 class QcWaveform;
 class SoundCacheStream;
@@ -141,29 +142,56 @@ private:
   quint64 _dataOffset;
 };
 
+class SoundCacheLoader;
+
 class SoundCacheStream : public QObject, public SoundStream
 {
-  friend class QcWaveform;
+  friend class SoundCacheLoader;
 
   Q_OBJECT
 
 public:
-  SoundCacheStream( SNDFILE *sf, const SF_INFO &info, int maxFramesPerUnit, int maxRawFrames );
+  SoundCacheStream();
   ~SoundCacheStream();
+  void load( SNDFILE *sf, const SF_INFO &info, int maxFramesPerUnit, int maxRawFrames );
   inline double fpu() { return _fpu; }
   inline int size() { return _cacheSize; }
+  inline bool ready() { return _ready; }
   bool integrate( int channel, double offset, double duration,
                   short *minBuffer, short *maxBuffer, int bufferSize );
   short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
+
 Q_SIGNALS:
   void loadProgress( int );
   void loadingDone();
 
-private:
+private Q_SLOTS:
+  void onLoadingDone();
 
+private:
   PeakCache *_caches;
   double _fpu; // soundfile frames per cache frame
   int _cacheSize;
+  bool _ready;
+  SoundCacheLoader *_loader;
+};
+
+class SoundCacheLoader : public QThread
+{
+  Q_OBJECT
+public:
+  SoundCacheLoader( SoundCacheStream *cache ) : QThread( cache ), _cache( cache ), _sf(0) {}
+  void load( SNDFILE *sf, const SF_INFO &info );
+
+Q_SIGNALS:
+  void loadProgress( int );
+  void loadingDone();
+private:
+  void run();
+
+  SoundCacheStream *_cache;
+  SNDFILE *_sf;
+  SF_INFO _info;
 };
 
 #endif
