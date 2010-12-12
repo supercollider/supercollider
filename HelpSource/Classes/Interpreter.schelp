@@ -1,5 +1,6 @@
 class::Interpreter
 summary:: The interpreter defines a context in which interactive commands are compiled and executed.
+categories:: Core>Kernel
 
 description::
 In the interpreter, code::this:: refers to the interpreter itself, e.g.: code::this.postln::
@@ -12,26 +13,24 @@ instanceMethods::
 
 subsection::Accessing
 
-The interpreter defines instance variables 'a' through 'z' which are always available in the interpreter. By convention, the variable 's' is used to hold the default Server. Assigning another value to 's' may cause some of the examples in the documentation to fail. 
+The interpreter defines instance variables code::a:: through code::z:: which are always available in the interpreter. By convention, the variable code::s:: is used to hold the default Server. Assigning another value to code::s:: may cause some of the examples in the documentation to fail. 
 
 method::clearAll
 
-set the values of the variables 'a' through 'z' to nil.
+set the values of the variables code::a:: through code::z:: to nil.
 
 code::
-(
 x = 123;
 x.postln;
 this.clearAll;
 x.postln;
-)
 ::
 
 subsection::Compile & Interpret
 
 method::interpret
 
-Compile and execute a String.
+Compile and execute a link::Classes/String::.
 
 code::
 this.interpret("(123 + 4000).postln");
@@ -39,7 +38,7 @@ this.interpret("(123 + 4000).postln");
 
 method::interpretPrint
 
-Compile and execute a String, printing the result.
+Compile and execute a link::Classes/String::, printing the result.
 
 code::
 this.interpretPrint("123 + 4000");
@@ -47,7 +46,7 @@ this.interpretPrint("123 + 4000");
 
 method::compile
 
-Compile a String and return a Function.
+Compile a String and return a link::Classes/Function::.
 
 code::
 (
@@ -74,10 +73,8 @@ method::cmdLine
 Returns the previosly interpreted code.
 
 code::
-(
 1 + 2;
 this.cmdLine
-)
 ::
 
 method::codeDump

@@ -1,5 +1,6 @@
 class::Thunk
 summary::unevaluated value
+categories::Core>Kernel
 
 description::
 
