@@ -217,31 +217,40 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   // Check for sane situation:
   if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
 
+  // Some variables
   double fpp = f_dur / width;
   float chHeight = (float) pix->height() / sfInfo.channels;
+  SoundStream *soundStream;
   SoundFileStream sfStream;
 
+  // determine with data source to use according to horiz. zoom (data-display resolution)
+  if( fpp > 1.0 ? (fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
+    soundStream = &sfStream;
+  }
+  else {
+    soundStream = _cache;
+  }
+
+  // initial painter setup
   p.scale( 1.f, chHeight / 65535.f );
   p.translate( (float) x, 32767.f );
 
   if( fpp > 1.0 ) {
-    SoundStream *soundStream;
 
-    if( fpp >= _cache->fpu() ) {
-      soundStream = _cache;
-    }
-    else {
+    // display data accumulated into min-max ranges per pixel
+    //printf("drawing min-max ranges\n");
+
+    if( soundStream == &sfStream ) {
       sfStream.load( sf, sfInfo, f_beg, f_dur );
-      soundStream = &sfStream;
     }
-    
+
     short minBuffer[width];
     short maxBuffer[width];
 
     int ch;
     for( ch = 0; ch < soundStream->channels(); ++ch ) {
       bool ok = soundStream->integrate( ch, f_beg, f_dur, minBuffer, maxBuffer, width );
-//    printf("integrated ok: %i\n", ok);
+//    printf("integration ok: %i\n", ok);
       Q_ASSERT( ok );
 
       int i;
@@ -260,56 +269,63 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
     }
   }
   else {
-    // we are drawing lines between actual values
-    //printf("straight data from file\n");
 
-    QPainterPath paths[sfInfo.channels];
+    // draw lines between actual values
+    //printf("drawing lines\n");
 
-    int i_beg = f_beg;
-    int i_count = (int)(f_beg + f_dur) - i_beg + 1 ;
+    quint64 beg = floor(f_beg);
+    int count = ceil( f_beg + f_dur ) - beg;
+    bool haveOneMore;
+    if( sfInfo.frames - (f_beg + f_dur) >= 1 ) {
+      ++count;
+      haveOneMore = true;
+    }
+    else {
+      haveOneMore = false;
+    }
 
-    short buf[ i_count * sfInfo.channels];
-    sf_seek( sf, i_beg, SEEK_SET);
-    int i_read = sf_readf_short( sf, buf, i_count );
+    if( soundStream == &sfStream ) {
+      sfStream.load( sf, sfInfo, beg, count );
+    }
 
-    float ppf = 1 / fpp;
-    float dx = ((int) f_beg - f_beg) * ppf;
+    qreal ppf = 1.0 / fpp;
+    qreal dx = (beg - f_beg) * ppf;
+
+    p.translate( dx, 0.0 );
 
     int ch;
     for( ch = 0; ch < sfInfo.channels; ++ch ) {
-      int f;
-      for( f = 0; f < i_read; ++f ) {
-        short s = buf[ f*sfInfo.channels + ch ];
-        float x = f * ppf + dx;
-        QPointF pt( x, (float) s );
-        if( f == 0 ) paths[ch].moveTo( pt );
-        else paths[ch].lineTo( pt );
-      }
-    }
+      bool interleaved = false;
+      short *data = soundStream->rawFrames( ch, beg, count, &interleaved );
+      //printf("got raw frames ok: %i\n", data != 0 );
+      Q_ASSERT( data != 0 );
+      int step = interleaved ? soundStream->channels() : 1;
 
-    for( ch = 0; ch < sfInfo.channels; ++ch ) {
-      p.drawPath( paths[ch] );
+      QPainterPath path;
+
+      if( count ) {
+        QPointF pt( 0, (qreal) *data );
+        path.moveTo( pt );
+      }
+      int f; // frame
+      for( f = 1; f < count; ++f ) {
+        data += step;
+        dx = f * ppf;
+        QPointF pt( dx, (qreal) *data );
+        if( f == 0 ) path.moveTo( pt );
+        else path.lineTo( pt );
+      }
+      if( count && !haveOneMore ) {
+        path.lineTo( QPointF( f * ppf, (qreal)*data ) );
+      }
+
+      p.drawPath( path );
       p.translate( 0.f, 65535.f );
     }
   }
 
 }
 
-
-inline void QcWaveform::integrate
-  ( short *p_srcMin, short *p_srcMax, int stepSize, int steps, short &min, short &max )
-{
-  min = SHRT_MAX;
-  max = SHRT_MIN;
-  int i;
-  int count = steps * stepSize;
-  for( i = 0; i < count; i += stepSize ){
-    short srcMin = p_srcMin[i];
-    short srcMax = p_srcMax[i];
-    if( srcMin < min ) min = srcMin;
-    if( srcMax > max ) max = srcMax;
-  }
-}
 
 SoundFileStream::SoundFileStream() : _data(0), _dataSize(0), _dataOffset(0)
 {}
@@ -329,16 +345,16 @@ void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, double b, double d
 {
   delete[] _data;
 
-  ch = info.channels;
-  beg = b;
-  dur = d;
-
   _dataOffset = floor(b);
   _dataSize = ceil(b + d) - _dataOffset;
 
-  _data = new short [_dataSize * channels()];
+  _data = new short [_dataSize * info.channels];
   sf_seek( sf, _dataOffset, SEEK_SET);
   _dataSize = sf_readf_short( sf, _data, _dataSize );
+
+  ch = info.channels;
+  beg = _dataOffset;
+  dur = _dataSize;
 }
 
 bool SoundFileStream::integrate
@@ -359,13 +375,12 @@ bool SoundFileStream::integrate
     // there has to be one frame of overlap with the previous unit's frames,
     // to avoid discontinuity
 
-    //quint64 data_pos = floor(f_pos) - _dataOffset;
     int data_pos = floor(f_pos);
 
     // increment position
 
-    // slower, but error-prone:
-    // f_pos = (double)(i+1) / width() * f_dur + f_beg;
+    // slower, but error-proof:
+    // f_pos = (double)(i+1) / width() * dur + off;
 
     // the following is a faster variant, but floating point operations are fallible,
     // so we need to make sure we stay within the constraints of f_dur;
@@ -395,6 +410,14 @@ bool SoundFileStream::integrate
   }
 
   return true;
+}
+
+short *SoundFileStream::rawFrames( int ch, quint64 b, quint64 d, bool *interleaved )
+{
+  if( ch > channels() || b < _dataOffset || b + d > _dataOffset + _dataSize ) return 0;
+  *interleaved = true;
+  int offset = (b - _dataOffset) * channels() + ch;
+  return ( _data + offset );
 }
 
 SoundCacheStream::SoundCacheStream
@@ -490,4 +513,11 @@ bool SoundCacheStream::integrate
   }
 
   return true;
+}
+
+short *SoundCacheStream::rawFrames( int ch, quint64 b, quint64 d, bool *interleaved )
+{
+  if( _fpu > 1.0 || ch > channels() || b + d > _cacheSize ) return 0;
+  *interleaved = false;
+  return _caches[ch].min + b;
 }

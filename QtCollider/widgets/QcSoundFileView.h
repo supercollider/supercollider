@@ -86,9 +86,6 @@ private:
   void rebuildCache ( int maxFramesPerCache, int maxRawFrames );
   void draw ( QPixmap *, int x, int width, double beginning, double duration );
 
-  inline void integrate( short *srcMin, short *srcMax,
-                         int stepSize, int steps, short &p_min, short &p_max );
-
   SNDFILE *sf;
   SF_INFO sfInfo;
 
@@ -103,26 +100,6 @@ private:
   QPixmap *pixmap;
   bool dirty;
 };
-
-#if 0
-class Integrator
-{
-  virtual void load( float startFrame, float endFrame, int steps ) = 0;
-  virtual void integralAt( int channel, int index, short *p_min, short *p_max );
-protected:
-  void integrate( short *data, int step, int steps, short *p_min, short *p_max );
-}
-
-class SoundFile : public Integrator
-{
-public:
-  void load( float startFrame, float endFrame, int steps );
-private:
-  short *buffer;
-  int bufFrames;
-  float stepSize;
-}
-#endif
 
 class SoundStream {
 public:
@@ -139,16 +116,7 @@ public:
     return integrate( channel, beginning(), duration(), minBuffer, maxBuffer, bufferSize );
   }
 
-  virtual quint64 dataFrameCount() { return 0; }
-
-  virtual double dataResolution() { return 0.0; }
-
-  virtual quint64 dataOffset() { return 0; }
-
-  virtual bool interleaved() = 0;
-
-  virtual short *dataMin( int channel ) { return 0; }
-  virtual short *dataMax( int channel ) { return 0; }
+  virtual short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved ) = 0;
 
 protected:
   SoundStream()
@@ -167,9 +135,9 @@ public:
   SoundFileStream( SNDFILE *sf, const SF_INFO &sf_info, double beginning, double duration );
   ~SoundFileStream();
   void load( SNDFILE *sf, const SF_INFO &sf_info, double beginning, double duration );
-  bool interleaved () { return true; }
   bool integrate( int channel, double offset, double duration,
                   short *minBuffer, short *maxBuffer, int bufferSize );
+  short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
 private:
   short *_data;
   int _dataSize;
@@ -185,10 +153,10 @@ class SoundCacheStream : public QObject, public SoundStream
 public:
   SoundCacheStream( SNDFILE *sf, const SF_INFO &info, int maxFramesPerUnit, int maxRawFrames );
   ~SoundCacheStream();
-  inline bool interleaved () { return false; }
   inline double fpu() { return _fpu; }
   bool integrate( int channel, double offset, double duration,
                   short *minBuffer, short *maxBuffer, int bufferSize );
+  short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
 Q_SIGNALS:
   void loadProgress( int );
   void loadingDone();
