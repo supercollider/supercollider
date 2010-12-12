@@ -5,10 +5,22 @@
 
 #include <QVBoxLayout>
 #include <QScrollBar>
+#include <QSlider>
 #include <QProgressBar>
 #include <QPixmap>
 
 class QcWaveform;
+class SoundCacheStream;
+
+struct PeakCache {
+  PeakCache() : min(0), max(0) {};
+  ~PeakCache() {
+    delete [] min;
+    delete [] max;
+  }
+  short *min;
+  short *max;
+};
 
 class QcSoundFileView : public QWidget
 {
@@ -29,7 +41,7 @@ private:
   QcWaveform *waveform;
   QVBoxLayout *layout;
   QScrollBar *timeScrollBar;
-  QScrollBar *zoomScrollBar;
+  QSlider *zoomScrollBar;
   QProgressBar *progressBar;
 
   double hScrollMultiplier;
@@ -71,18 +83,8 @@ private:
     update();
   }
 
-  void rebuildCache ( int resolution );
+  void rebuildCache ( int maxFramesPerCache, int maxRawFrames );
   void draw ( QPixmap *, int x, int width, double beginning, double duration );
-
-  struct PeakCache {
-    PeakCache() : min(0), max(0) {};
-    ~PeakCache() {
-      delete [] min;
-      delete [] max;
-    }
-    short *min;
-    short *max;
-  };
 
   inline void integrate( short *srcMin, short *srcMax,
                          int stepSize, int steps, short &p_min, short &p_max );
@@ -90,6 +92,7 @@ private:
   SNDFILE *sf;
   SF_INFO sfInfo;
 
+  SoundCacheStream *_cache;
   PeakCache *peakCache;
   double _fpcache; // soundfile frames per cache frame
   int _cacheSize;
@@ -120,5 +123,81 @@ private:
   float stepSize;
 }
 #endif
+
+class SoundStream {
+public:
+  inline int channels() { return ch; }
+
+  inline double beginning() { return beg; }
+
+  inline double duration() { return dur; }
+
+  virtual bool integrate( int channel, double offset, double duration,
+                          short *minBuffer, short *maxBuffer, int bufferSize ) = 0;
+
+  inline bool integrateAll( int channel, short *minBuffer, short *maxBuffer, int bufferSize ) {
+    return integrate( channel, beginning(), duration(), minBuffer, maxBuffer, bufferSize );
+  }
+
+  virtual quint64 dataFrameCount() { return 0; }
+
+  virtual double dataResolution() { return 0.0; }
+
+  virtual quint64 dataOffset() { return 0; }
+
+  virtual bool interleaved() = 0;
+
+  virtual short *dataMin( int channel ) { return 0; }
+  virtual short *dataMax( int channel ) { return 0; }
+
+protected:
+  SoundStream()
+  : ch( 0 ), beg( 0.0 ), dur( 0.0 ) {}
+  SoundStream( int channels, double beginning, double duration ) :
+    ch( channels ), beg( beginning ), dur( duration ) {}
+  int ch;
+  double beg;
+  double dur;
+};
+
+class SoundFileStream : public SoundStream
+{
+public:
+  SoundFileStream();
+  SoundFileStream( SNDFILE *sf, const SF_INFO &sf_info, double beginning, double duration );
+  ~SoundFileStream();
+  void load( SNDFILE *sf, const SF_INFO &sf_info, double beginning, double duration );
+  bool interleaved () { return true; }
+  bool integrate( int channel, double offset, double duration,
+                  short *minBuffer, short *maxBuffer, int bufferSize );
+private:
+  short *_data;
+  int _dataSize;
+  quint64 _dataOffset;
+};
+
+class SoundCacheStream : public QObject, public SoundStream
+{
+  friend class QcWaveform;
+
+  Q_OBJECT
+
+public:
+  SoundCacheStream( SNDFILE *sf, const SF_INFO &info, int maxFramesPerUnit, int maxRawFrames );
+  ~SoundCacheStream();
+  inline bool interleaved () { return false; }
+  inline double fpu() { return _fpu; }
+  bool integrate( int channel, double offset, double duration,
+                  short *minBuffer, short *maxBuffer, int bufferSize );
+Q_SIGNALS:
+  void loadProgress( int );
+  void loadingDone();
+
+private:
+
+  PeakCache *_caches;
+  double _fpu; // soundfile frames per cache frame
+  int _cacheSize;
+};
 
 #endif
