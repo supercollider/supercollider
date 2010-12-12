@@ -20,8 +20,9 @@ code::
 method::sourceCode
 
 Get the source code string.
-
+code::
 { |a = 9, b = 10, c| a + b }.def.sourceCode.postcs;
+::
 
 method::context
 

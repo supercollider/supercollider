@@ -1,6 +1,6 @@
 class:: BinaryOpFunction
 summary:: represent a binary operation on a function
-categories:: Core>Kernel
+categories:: Core
 
 description::
 Operating on functions instead of numbers, what results is not a result of the calculation, but a structure that represents that calculation.

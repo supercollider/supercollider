@@ -1,7 +1,7 @@
 title::initClass
 categories::Core>Kernel
-
-see also: link::Classes/Class::
+summary:: Class initialization
+related:: Classes/Class
 
 When SuperCollider starts up, just after it has compiled the library, it initializes all the classes from Object down, a depth first traversal of subclasses.
 
@@ -11,18 +11,18 @@ In some cases you will require another class to be initalized before you can ini
 
 code::
 YourClass {
-	*initClass {
-		Class.initClassTree(OtherClass);
-		
-		..
-		
-		//
-		
-		..
-	}
-	
-	..
-	
+    *initClass {
+        Class.initClassTree(OtherClass);
+
+        ..
+
+        //
+
+        ..
+    }
+
+    ..
+
 }
 ::
 
@@ -32,13 +32,14 @@ For those methods that need pre-initialized data (such as path names) should def
 
 code::
 YourClass {
-	*initClass {
-		StartUp.add {
-			..
-		}
-	}
-	
-	..
-	
+    *initClass {
+        StartUp.add {
+            ..
+        }
+    }
+
+    ..
+
 }
 ::
+

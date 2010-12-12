@@ -1,5 +1,7 @@
 class::Routine
 categories::Core>Kernel
+summary:: Functions that can return in the middle and then resume where they left off
+related:: Classes/Stream
 
 description::
 Routines are functions that can return in the middle and then resume where 
@@ -8,41 +10,34 @@ as found in Scheme and some other languages.
 Routines are useful for writing things that behave like Streams.
 Routines inherit behaviour for math operations and filtering from Stream.
 
-
 classMethods::
 
 method::new
 
 Creates a Routine instance with the given function.
+
+discussion::
 The stackSize and random seed may be overridden if desired.
 
 code::
-(
 a = Routine.new({ 1.yield; 2.yield; });
 a.next.postln;
 a.next.postln;
 a.next.postln;
-)
 ::
 
 instanceMethods::
-
-method::value
-
-same as code::next::
-
-method::resume
-
-same as code::next::
 
 method::next
 
 The Routine function is either started if it has not been called yet, or it is 
 resumed from where it left off. The argument inval is passed as the argument
-to the Routine function if it is being started, or as the result of the yield
-method if it is being resumed from a yield. The result of the method will be
-what the Routine yields.
+to the Routine function if it is being started, or as the result of the code::yield::
+method if it is being resumed from a yield.
 
+returns:: The value that the Routine yields.
+
+discussion::
 There are basically 2 conditions for a Routine: one is when the routine starts. The other case is 
 that the routine continues after it has yielded. 
 
@@ -50,33 +45,14 @@ When the routine starts (by calling the above methods), you are passing in a fir
 This inval is accessible as the routine function argument:
 
 code::
-(
 Routine { arg inval;
 	inval.postln;
 }.value("hello routine");
-)
-;;
+::
 
 When there is a yield in the routine, the next time you call next (or synonym), the routine continues
 from there, and you get a chance to pass in a value from the outside. To access that value within the
-continuing routine, you have to assign the result of the yield call to a variable:
-
-code::
-(
-r = Routine { arg inval;
-	var valuePassedInbyYield;
-	inval.postln;
-	valuePassedInbyYield = 123.yield;
-	valuePassedInbyYield.postln;
-	
-}
-)
-
-r.value("hello routine");
-r.value("goodbye world");
-::
-
-Typically the name inval (or inevent) is reused, instead of declaring a variable like "valuePassedInbyYield":
+continuing routine, you have to assign the result of the yield call to a variable. Typically the name inval (or inevent) is reused, instead of declaring a variable like "valuePassedInbyYield":
 
 code::
 (
@@ -110,90 +86,78 @@ r = Routine { arg inval;
 )
 ::
 
+method::value
+
+same as code::next::
+
+method::resume
+
+same as code::next::
+
 method::reset
 
 Causes the Routine to start from the beginning next time it is called.
-A Routine cannot reset itself except by calling the yieldAndReset method.
+A Routine cannot reset itself except by calling the code::yieldAndReset:: method.
 
-See also in class link::Classes/Object:: :
-yield(outval)
-yieldAndReset(outval)
-alwaysYield(outval)
+See also code::yield, yieldAndReset, alwaysYield:: in class link::Classes/Object::
 
 If a Routine's function returns then it will always yield nil until reset.
 
 method::play
 
-
-In the SuperCollider application, a Routine can be played using a Clock, as can any Stream.
+In the SuperCollider application, a Routine can be played using a link::Classes/Clock::, as can any link::Classes/Stream::.
 every time the Routine yields, it should do so with a float, the clock will interpret that, usually
-pausing for that many seconds, and then resume the routine, passing it it the clock's current time.
+pausing for that many seconds, and then resume the routine, passing it the clock's current time.
 
-argumetn::clock
+argument::clock
 a Clock, TempoClock by default
+
 argument::quant
 see the link::Classes/Quant:: helpfile
 
-using Object-idle: 
+discussion::
+using link::Classes/Object#idle#Object:idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
+code::
+// for 6 seconds, return 200, then continue
+(
+r = Routine {
+		199.yield;
+		189.yield;
+		200.idle(6);
+		199.yield;
+		189.yield;
+};
 
-idle(time)
-	within a routine, return values until this time is over. Time is measured relative to the thread's clock.
-	(see Routine)
-	
-	// for 6 seconds, return 200, then continue
-	(
-	r = Routine {
-			199.yield;
-			189.yield;
-			200.idle(6);
-			199.yield;
-			189.yield;
-	};
-	
-	fork {
-		loop {
-			r.value.postln;
-			1.wait;
-		}
+fork {
+	loop {
+		r.value.postln;
+		1.wait;
 	}
-	);
-	
-	// the value can also be a stream or a function
-	(
-	r = Routine {
-			199.yield;
-			189.yield;
-			Routine { 100.do { |i| i.yield } }.idle(6);
-			199.yield;
-			189.yield;
-	};
-	
-	fork {
-		loop {
-			r.value.postln;
-			1.wait;
-		}
-	}
-	);
-	
+}
+);
 
+// the value can also be a stream or a function
+(
+r = Routine {
+		199.yield;
+		189.yield;
+		Routine { 100.do { |i| i.yield } }.idle(6);
+		199.yield;
+		189.yield;
+};
+
+fork {
+	loop {
+		r.value.postln;
+		1.wait;
+	}
+}
+);
+::
 
 subsection::Accessible instance variables
 
-Routine inherits from Thread, which allows access to some of its state:
-
-
-method::beats
-
-return the elapsed beats (logical time) of the routine. The beats do not proceed when the routine is not playing.
-	
-method::seconds
-
-return the elapsed seconds (logical time) of the routine. The seconds do not proceed when the routine is not playing, it is the converted beat value.
-
-method::clock
-
-return the thread's clock. If it has not played, it is the SystemClock.
+Routine inherits from link::Classes/Thread::, which allows access to some of its state:
 
 code::
 (
@@ -214,6 +178,18 @@ r.beats;
 r.seconds;
 r.clock;
 ::
+
+method::beats
+
+returns:: The elapsed beats (logical time) of the routine. The beats do not proceed when the routine is not playing.
+	
+method::seconds
+
+returns:: The elapsed seconds (logical time) of the routine. The seconds do not proceed when the routine is not playing, it is the converted beat value.
+
+method::clock
+
+returns:: The thread's clock. If it has not played, it is the SystemClock.
 
 examples::
 
@@ -353,4 +329,5 @@ fork { while { w.isClosed.not } { defer { w.refresh }; 0.04.wait; } };
 w.front;
 
 )
-:: 
+::
+
