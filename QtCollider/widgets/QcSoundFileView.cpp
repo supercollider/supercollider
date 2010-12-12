@@ -106,7 +106,6 @@ void QcSoundFileView::updateZoomScrollBar()
 QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   sf(0),
   _cache(0),
-  peakCache(0),
   _beg(0.0),
   _dur(0.0),
   pixmap(0),
@@ -138,7 +137,7 @@ void QcWaveform::load( const QString& filename )
   _beg = 0;
   _dur = sfInfo.frames;
 
-  rebuildCache( 128, 10000 );
+  rebuildCache( 128, 300000 );
 
   redraw();
 }
@@ -193,15 +192,10 @@ void QcWaveform::rebuildCache ( int maxFPU, int maxRawFrames )
 {
   delete _cache;
   _cache = 0;
-  peakCache = 0;
 
   SoundCacheStream *cache = new SoundCacheStream( sf, sfInfo, maxFPU, maxRawFrames );
 
   _cache = cache;
-
-  peakCache = cache->_caches;
-  _fpcache = cache->_fpu;
-  _cacheSize = cache->_cacheSize;
 
   Q_EMIT( loadingDone() );
 }
@@ -212,7 +206,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   QPainter p( pix );
   p.fillRect( pix->rect(), QColor( 255,255,255 ) );
 
-  if( !sf || !_cache || !peakCache ) return;
+  if( !sf || !_cache ) return;
 
   // Check for sane situation:
   if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
@@ -225,9 +219,11 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
   // determine with data source to use according to horiz. zoom (data-display resolution)
   if( fpp > 1.0 ? (fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
+    printf("use file\n");
     soundStream = &sfStream;
   }
   else {
+    printf("use cache\n");
     soundStream = _cache;
   }
 
@@ -238,7 +234,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   if( fpp > 1.0 ) {
 
     // display data accumulated into min-max ranges per pixel
-    //printf("drawing min-max ranges\n");
+    printf("drawing min-max ranges\n");
 
     if( soundStream == &sfStream ) {
       sfStream.load( sf, sfInfo, f_beg, f_dur );
@@ -271,7 +267,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   else {
 
     // draw lines between actual values
-    //printf("drawing lines\n");
+    printf("drawing lines\n");
 
     quint64 beg = floor(f_beg);
     int count = ceil( f_beg + f_dur ) - beg;
@@ -369,6 +365,9 @@ bool SoundFileStream::integrate
   double fpu = dur / bufferSize;
   double f_pos = off - beginning();
 
+  // TODO consider using the min-max approach in SoundCacheStream here as well, but then
+  // protection needs to be implemented in case fpu == 1
+
   int i;
   for( i = 0; i < bufferSize; ++i ) {
 
@@ -392,10 +391,8 @@ bool SoundFileStream::integrate
     Q_ASSERT( data_pos + frame_count <= _dataSize );
 
     short *samples = _data + (data_pos * channels()) + ch;
-
     short min = SHRT_MAX;
     short max = SHRT_MIN;
-
     int f; // frame
     for( f = 0; f < frame_count; ++f, samples += channels() ){
       short sample = *samples;
@@ -425,23 +422,18 @@ SoundCacheStream::SoundCacheStream
 : SoundStream ( info.channels, 0.0, (double) info.frames ),
   _caches( 0 )
 {
-  /*if( sfInfo.frames <= maxRawFrames ) {
-    _cacheSize = sfInfo.frames;
+  if( info.frames <= maxRawFrames ) {
+    _cacheSize = info.frames;
     _fpu = 1.0;
   }
   else {
     _cacheSize = maxRawFrames;
-    _fpu = (double) sfInfo.frames / _cacheSize;
+    _fpu = (double) info.frames / _cacheSize;
     if( _fpu > maxFramesPerUnit ) {
-      _cacheSize = sfInfo.frames / maxFramesPerUnit;
-      _fpu = (double) sfInfo.frames / _cacheSize;
+      _fpu = maxFramesPerUnit;
+      _cacheSize = info.frames / _fpu;
     }
-  }*/
-
-  _cacheSize = (info.frames / maxFramesPerUnit);
-  // recalculate frames-per-cache after cache size rounded down
-  _fpu = (double) info.frames / _cacheSize;
-
+  }
 
   _caches = new PeakCache [info.channels];
   int ch;
@@ -453,12 +445,12 @@ SoundCacheStream::SoundCacheStream
 
   int i = 0;
   while( i < _cacheSize ) {
-    int chunkSize = qMin( 100, _cacheSize - i );
+    int chunkSize = qMin( 1000, _cacheSize - i );
 
     SoundFileStream sfStream( sf, info, i * _fpu, chunkSize * _fpu );
 
     for( ch = 0; ch < channels(); ++ch ) {
-      sfStream.integrateAll( ch, _caches[ch].min + i, _caches[ch].max + i, chunkSize );
+        sfStream.integrateAll( ch, _caches[ch].min + i, _caches[ch].max + i, chunkSize );
     }
 
     i += chunkSize;
@@ -490,6 +482,8 @@ bool SoundCacheStream::integrate
   double cache_pos = off / _fpu;
   int i_beg, i_count;
 
+  short min = SHRT_MAX;
+  short max = SHRT_MIN;
   int i;
   for( i = 0; i < bufferSize; ++i ) {
     int i_cache_pos = ceil(cache_pos);
@@ -498,8 +492,6 @@ bool SoundCacheStream::integrate
     if( cache_pos > _cacheSize ) cache_pos = _cacheSize;
     int frame_count = ceil(cache_pos) - i_cache_pos ;
 
-    short min = SHRT_MAX;
-    short max = SHRT_MIN;
     short *p_srcMin = _caches[ch].min + i_cache_pos;
     short *p_srcMax = _caches[ch].max + i_cache_pos;
     int f; // frame
@@ -510,6 +502,8 @@ bool SoundCacheStream::integrate
 
     minBuffer[i] = min;
     maxBuffer[i] = max;
+    min = maxBuffer[i];
+    max = minBuffer[i];
   }
 
   return true;
