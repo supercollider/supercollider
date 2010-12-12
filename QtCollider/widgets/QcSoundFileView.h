@@ -6,7 +6,6 @@
 #include <QVBoxLayout>
 #include <QScrollBar>
 #include <QSlider>
-#include <QProgressBar>
 #include <QPixmap>
 #include <QThread>
 
@@ -28,12 +27,36 @@ class QcSoundFileView : public QWidget
   friend class QcWaveform;
 
   Q_OBJECT
+  /* TODO:
+  Q_PROPERTY( float readProgress READ loadProgress );
+  Q_PROPERTY( int frames READ frames );
+  Q_PROPERTY( int viewFrames READ viewFrames );
+  Q_PROPERTY( int scrollPos READ scrollPos WRITE scrollTo );
+  */
+
 public:
   QcSoundFileView();
   Q_INVOKABLE void load( const QString& filename );
+  /* TODO:
+  float readProgress();
+  int frames();
+  int viewFrames();
+  int scrollPos();
+  */
+
+public Q_SLOTS:
+  /* TODO:
+  void scrollTo( int frame );
+  void scrollBy( int frames );
+  void scrollToStart();
+  void scrollToEnd();
+  void zoomTo( float fraction );
+  void zoomBy( float factor );
+  void zoomAll();
+  */
 private Q_SLOTS:
-  void setBeginning( int centiseconds );
-  void setZoom( int percent );
+  void onPosSliderChanged( int value );
+  void onZoomSliderChanged( int value );
 private Q_SLOTS:
   void updateTimeScrollBar();
   void updateZoomScrollBar();
@@ -43,7 +66,6 @@ private:
   QVBoxLayout *layout;
   QScrollBar *timeScrollBar;
   QSlider *zoomScrollBar;
-  QProgressBar *progressBar;
 
   double hScrollMultiplier;
 };
@@ -67,8 +89,16 @@ public:
   void setViewStart( quint64 startFrame );
 
 Q_SIGNALS:
+
   void loadProgress( int );
   void loadingDone();
+
+public Q_SLOTS:
+
+  void redraw() {
+    dirty = true;
+    update();
+  }
 
 protected:
 
@@ -77,12 +107,6 @@ protected:
   virtual void paintEvent( QPaintEvent * );
 
 private:
-
-
-  inline void redraw() {
-    dirty = true;
-    update();
-  }
 
   void rebuildCache ( int maxFramesPerCache, int maxRawFrames );
   void draw ( QPixmap *, int x, int width, double beginning, double duration );
@@ -157,6 +181,8 @@ public:
   inline double fpu() { return _fpu; }
   inline int size() { return _cacheSize; }
   inline bool ready() { return _ready; }
+  inline bool loading() { return _loading; }
+  inline int loadProgress() { return _loadProgress; }
   bool integrate( int channel, double offset, double duration,
                   short *minBuffer, short *maxBuffer, int bufferSize );
   short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
@@ -166,6 +192,7 @@ Q_SIGNALS:
   void loadingDone();
 
 private Q_SLOTS:
+  void onLoadProgress( int );
   void onLoadingDone();
 
 private:
@@ -173,7 +200,9 @@ private:
   double _fpu; // soundfile frames per cache frame
   int _cacheSize;
   bool _ready;
+  bool _loading;
   SoundCacheLoader *_loader;
+  int _loadProgress;
 };
 
 class SoundCacheLoader : public QThread
