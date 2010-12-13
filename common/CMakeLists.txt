@@ -30,6 +30,9 @@ if(CURL)
 	endif()
 endif()
 
+if(WIN32)
+    target_link_libraries(sccommon wsock32)    
+endif()
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
