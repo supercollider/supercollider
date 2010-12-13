@@ -1,6 +1,7 @@
 class::AbstractFunction
 summary::An object which responds to a set of messages that represent mathematical functions
 categories::Core>Kernel
+related::Classes/UGen,Classes/Pattern,Classes/Function
 
 description::
 
@@ -13,8 +14,6 @@ Function, Pattern, Stream and UGen are subclasses of AbstractFunction.
 For example, if you multiply two UGens together the receiver responds by answering a new
 instance of class BinaryOpUGen which has the two operands as inputs.
 
-related::Classes/UGen,Classes/Pattern,Classes/Function
-
 instanceMethods::
 
 subsection::Unary Messages
@@ -23,7 +22,8 @@ All of the following messages send the message composeUnaryOp to the receiver wi
 unary message selector as an argument.
 See link::Classes/UnaryOpFunction::.
 
-method::neg, reciprocal
+method::neg
+method::reciprocal
 method::bitNot
 method::abs
 method::asFloat
@@ -146,7 +146,7 @@ subsection:: other
 method::applyTo
 
 Interface that allows us to combine selectors (Symbols) and Functions. Sends valueArray(args) to this.
-
+discussion::
 code::
 // example:
 
@@ -160,8 +160,8 @@ f.choose.postcs.applyTo(3, 4);
 
 method::asUGenInput
 
-returns the result of sending the value(for) message to this.
-
+returns:: the result of sending the value(for) message to this.
+discussion::
 code::
 // example:
 (
@@ -174,7 +174,8 @@ product = f * g * 0.1;
 ::
 
 method::sampled
-
+Sample a function.
+discussion::
 code::	
 //sample a function
 f = { |x| sin(3*x)*cos(8*x) }
@@ -193,9 +194,9 @@ g.plotGraph2(from:0,to:1);
 
 subsection::Function Composition
 
-when unary, binary or n-ary operators are appied to an abstract function, it returns an object that represents
-this operation, without evaluating the function: code::UnaryOpFunction::, code::BinaryOpFunction::, code::NAryOpFunction::.
-Note that different subclasses like code::Pattern:: or code::UGen:: have their own composition scheme analogous to the one of AbstractFunction itself. For more about functions, see link::Classes/Function::.
+When unary, binary or n-ary operators are applied to an abstract function, it returns an object that represents
+this operation, without evaluating the function: link::Classes/UnaryOpFunction::, link::Classes/BinaryOpFunction::, link::Classes/NAryOpFunction::.
+Note that different subclasses like link::Classes/Pattern:: or link::Classes/UGen:: have their own composition scheme analogous to the one of AbstractFunction itself. For more about functions, see link::Classes/Function::.
 
 examples::
 
@@ -247,11 +248,4 @@ a.value(0.5);
 
 a.value((0, 0.06..1)); // creates a range of values..
 ::
-
-
-
-
-
-
-
 
