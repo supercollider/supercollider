@@ -409,7 +409,23 @@ ClassBrowser {
 					},
 					methodTitle: { |v| v.string_("methods") },
 					methodView: { |v|
-						~methodView.items_(~classMethodNames ++ ~methodNames)
+						var colorFunc = { |class, name|
+							if(class.findOverriddenMethod(name.asSymbol).isNil) {
+								Color.clear
+							} {
+								Color.grey(0.8)
+							}
+						};
+						var classMethodColors = ~classMethodNames.collect { |name|
+							colorFunc.value(~currentClass.class, name)
+						};
+						var methodColors = ~methodNames.collect { |name|
+							colorFunc.value(~currentClass, name)
+						};
+						var methodNames = ~classMethodNames ++ ~methodNames;
+						var colors = classMethodColors ++ methodColors;
+
+						~methodView.items_(methodNames)
 							.value_(~methodViewIndex ? 0)
 							.action_(~displayCurrentMethodArgsAction)
 							.mouseDownAction_(~listViewDoubleClickAction)
