@@ -1,0 +1,257 @@
+class::AbstractFunction
+summary::An object which responds to a set of messages that represent mathematical functions
+categories::Core>Kernel
+
+description::
+
+An AbstractFunction is an object which responds to a set of messages that represent
+mathematical functions. Subclasses override a smaller set of messages to respond
+to the mathematical functions. The intent is to provide a mechanism for functions
+that do not calculate values directly but instead compose structures for calculating.
+
+Function, Pattern, Stream and UGen are subclasses of AbstractFunction.
+For example, if you multiply two UGens together the receiver responds by answering a new
+instance of class BinaryOpUGen which has the two operands as inputs.
+
+related::Classes/UGen,Classes/Pattern,Classes/Function
+
+instanceMethods::
+
+subsection::Unary Messages
+
+All of the following messages send the message composeUnaryOp to the receiver with the
+unary message selector as an argument.
+See link::Classes/UnaryOpFunction::.
+
+method::neg, reciprocal
+method::bitNot
+method::abs
+method::asFloat
+method::asInt
+method::ceil
+method::floor
+method::frac
+method::sign
+method::squared
+method::cubed
+method::sqrt
+method::exp
+method::midicps
+method::cpsmidi
+method::midiratio
+method::ratiomidi
+method::ampdb
+method::dbamp
+method::octcps
+method::cpsoct
+method::log
+method::log2
+method::log10
+method::sin
+method::cos
+method::tan
+method::asin
+method::acos
+method::atan
+method::sinh
+method::cosh
+method::tanh
+method::rand
+method::rand2
+method::linrand
+method::bilinrand
+method::sum3rand
+method::distort
+method::softclip
+method::coin
+method::even
+method::odd
+method::isPositive
+method::isNegative,
+method::isStrictlyPositive
+method::rho
+method::theta
+
+subsection::Binary Messages
+
+All of the following messages send the message composeBinaryOp to the receiver with the
+binary message selector and the second operand as arguments.
+See: link::Classes/BinaryOpFunction::.
+
+method::+
+method::-
+method::*
+method::/
+method::div
+method::%
+method::**
+method::min
+method::max
+method::<
+method::<=
+method::>
+method::>=
+method::&
+method::|
+method::lcm
+method::gcd
+method::round
+method::trunc
+method::atan2
+method::hypot
+method::hypotApx
+method::>>
+method::+>>
+method::fill
+method::ring1
+method::ring2
+method::ring3
+method::ring4
+method::difsqr
+method::sumsqr
+method::sqrdif
+method::absdif
+method::amclip
+method::scaleneg
+method::clip2
+method::excess
+method::<!
+method::rrand
+method::exprand
+method::rotate
+method::dist
+method::bitAnd
+method::bitOr
+method::bitXor
+method::bitHammingDistance
+method::@
+
+subsection:: Messages with more arguments
+
+All of the following messages send the message code::composeNAryOp:: to the receiver with the
+binary message selector and the other operands as arguments.
+See link::Classes/NAryOpFunction::.
+
+method::clip
+method::wrap
+method::fold
+method::blend
+method::linlin
+method::linexp
+method::explin
+method::expexp
+
+subsection:: other
+
+method::applyTo
+
+Interface that allows us to combine selectors (Symbols) and Functions. Sends valueArray(args) to this.
+
+code::
+// example:
+
+f = [{ |a, b| a * b * 100.rand }, { |a, b| sin(a) * sin(b) }, '*', '/'];
+f.choose.postcs.applyTo(3, 4);
+
+// this is used in SequenceableCollection reduce:
+(1..10).reduce('+');
+(1..10).reduce({ |a, b| a * b * 1.0.rand });
+::
+
+method::asUGenInput
+
+returns the result of sending the value(for) message to this.
+
+code::
+// example:
+(
+var f, g, product;
+f = { SinOsc.ar(400) };
+g = { LFPulse.kr(8)  };
+product = f * g * 0.1;
+{ Pan2.ar(product, SinOsc.kr(0.3)) }.play; 
+)
+::
+
+method::sampled
+
+code::	
+//sample a function
+f = { |x| sin(3*x)*cos(8*x) }
+f.plotGraph2(from:0,to:2);
+f.sampled(10,0,2).plotGraph2(from:0,to:2);
+f.sampled(80,0,2).plotGraph2(from:0,to:2);
+
+//on complicated functions a sampled function is less cpy heavy.
+f = { |x| 60.collect{ 2**((x-rrand(0.0,1.0))) }.sum/60 };
+f.plotGraph2(from:0,to:1);
+g = f.sampled(200);
+g.plotGraph2(from:0,to:1);
+{ 200.collect{ f.(rand(0.0,1.0)) } }.bench;
+{ 200.collect{ g.(rand(0.0,1.0)) } }.bench;
+::
+
+subsection::Function Composition
+
+when unary, binary or n-ary operators are appied to an abstract function, it returns an object that represents
+this operation, without evaluating the function: code::UnaryOpFunction::, code::BinaryOpFunction::, code::NAryOpFunction::.
+Note that different subclasses like code::Pattern:: or code::UGen:: have their own composition scheme analogous to the one of AbstractFunction itself. For more about functions, see link::Classes/Function::.
+
+examples::
+
+code::
+// examples
+
+a = { 1.0.rand } + 8;
+a.value;
+
+
+y = { 8 } + { 1.0.rand };
+y.value;
+::
+
+code::
+// arguments are passed into both functions
+
+y = { |x=0| x } + { 1.0.rand };
+y.value(10);
+
+
+y = { |x=0| x * 3 } + { |x=0| x + 1.0.rand };
+y.value(10);
+
+y.postcs;
+
+y = { |x=0| x * 3 } + { |x=0| x + 1.0.rand } * { |x=0| [50, 100].choose + x } + 1.0;
+y.value(10);
+::
+
+code::
+// environments can be used as a lookup with valueEnvir:
+
+(
+Environment.use {
+	~y = 10;
+	~x = 2;
+	~z = { |x=8| x } + { |y=0| y + 1.0.rand };
+	~z.valueEnvir;
+}
+)
+::
+
+code::
+// n-ary operators:
+
+a = blend({ 3.0.rand }, { 1000.rand }, { |frac| frac });
+a.value(0.5);
+
+a.value((0, 0.06..1)); // creates a range of values..
+::
+
+
+
+
+
+
+
+
