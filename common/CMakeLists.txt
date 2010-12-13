@@ -1,7 +1,6 @@
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 
-add_library(sccommon SHARED
-			SC_AllocPool.cpp
+set(sccommon_sources SC_AllocPool.cpp
 			SC_DirUtils.cpp
 			SC_Sem.cpp
 			SC_StandAloneInfo_Darwin.cpp
@@ -9,6 +8,13 @@ add_library(sccommon SHARED
 			SC_StringParser.cpp
 			scsynthsend.cpp
 			sc_popen.cpp)
+
+
+if (WIN32)
+	set (sccommon_sources ${sccommon_sources} SC_Win32Utils.cpp)
+endif()
+
+add_library(sccommon SHARED ${sccommon_sources})
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 
