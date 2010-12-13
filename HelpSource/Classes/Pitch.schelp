@@ -8,6 +8,7 @@ This is a better pitch follower than link::Classes/ZeroCrossing::, but more cost
 classmethods::
 private:: categories
 method:: kr
+argument::in
 argument::initFreq
 argument::minFreq
 argument::maxFreq
@@ -19,7 +20,7 @@ argument::peakThreshold
 argument::downSample
 argument::clar
 
-subsection:: How it works:
+discussion::
 The pitch follower executes periodically at the rate specified by code::execFreq:: in cps. code::execFreq:: is clipped to be between code::minFreq:: and code::maxFreq::. First it detects whether the input peak to peak amplitude is above the code::ampThreshold::.
 If it is not then no pitch estimation is performed, code::hasFreq:: is set to zero and code::freq:: is held at its previous value. It performs an autocorrelation on the input and looks for the first peak after the peak around the lag of zero that is above code::peakThreshold:: times the amplitude of the peak at lag zero.
 

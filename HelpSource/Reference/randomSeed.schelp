@@ -1,6 +1,6 @@
 title::Random Seed
 summary:: Random generator seed
-categories::Core>Kernel, Randomness
+categories::Core>Kernel, Random
 related:: Guides/Randomness, Classes/RandSeed, Classes/Pseed, Classes/Thread
 
 Every link::Classes/Thread:: in sclang has a (pseudo-) random number generator that is responsible for all randomization within this thread. Each random number generator has its own seed (starting point) from which the series of values is generated. This seed can be set and after that, the randgen (being strictly deterministic) produces exactly the same numbers again. 
