@@ -119,9 +119,9 @@ if(NOT NO_LIBSNDFILE)
 	set(diskio_sources DiskIO_UGens.cpp)
 
 	if(WIN32)
-		set(diskio_sources ${diskio_sources} ../../../windows/PlugIns/ExportHelper.cpp)
+		set(diskio_sources ${diskio_sources} ../../platform/windows/PlugIns/ExportHelper.cpp)
 	endif()
-
+        
 	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
 	if(SNDFILE_FOUND)
