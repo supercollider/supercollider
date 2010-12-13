@@ -101,6 +101,12 @@ if(UNIX)
 else(UNIX)
 endif(UNIX)
 
+if(WIN32)
+    include_directories (../platform/windows/compat_stuff)
+    
+    list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
+endif()
+
 if (SC_WII OR APPLE)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		find_package(CWiid)
