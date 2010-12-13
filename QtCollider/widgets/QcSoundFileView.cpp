@@ -134,7 +134,7 @@ void QcWaveform::load( const QString& filename )
   connect( _cache, SIGNAL(loadProgress(int)),
            this, SIGNAL(loadProgress(int)) );
   connect( _cache, SIGNAL(loadProgress(int)),
-           this, SLOT(redraw()) );
+           this, SLOT(update()) );
   connect( _cache, SIGNAL(loadingDone()), this, SIGNAL(loadingDone()) );
   connect( _cache, SIGNAL(loadingDone()), this, SLOT(redraw()) );
 
@@ -220,12 +220,25 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 {
   Q_ASSERT( pixmap != 0 );
 
+  QPainter p( this );
+
+  if( _cache && _cache->loading() ) {
+    QRect r( rect() );
+    p.fillRect( r, QColor(50,50,150) );
+    r.setRight( r.right() * _cache->loadProgress() / 100 );
+    p.fillRect( r, QColor( 0, 0, 100 ) );
+    p.setPen( QColor(255,255,255) );
+    QTextOption opt;
+    opt.setAlignment( Qt::AlignCenter );
+    p.drawText( rect(), "loading...", opt );
+    return;
+  }
+
   if( dirty ) {
     draw( pixmap, 0, width(), _beg, _dur );
     dirty = false;
   }
 
-  QPainter p( this );
   p.drawPixmap( ev->rect(), *pixmap, ev->rect() );
 }
 
@@ -234,21 +247,11 @@ void QcWaveform::rebuildCache ( int maxFPU, int maxRawFrames )
 }
 
 void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_dur )
-
 {
   QPainter p( pix );
-  p.fillRect( pix->rect(), QColor( 255,255,255 ) );
+  p.fillRect( pix->rect(), QColor( 0, 0, 100 ) );
 
-  if( !sf || !_cache ) return;
-
-  if( _cache->loading() ) {
-    QRect r( pix->rect() );
-    r.setRight( r.right() * _cache->loadProgress() / 100 );
-    p.fillRect( r, QColor( 150, 150, 255 ) );
-    return;
-  }
-
-  if( !_cache->ready() ) return;
+  if( !sf || !_cache || !_cache->ready() ) return;
 
   // Check for sane situation:
   if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
@@ -270,6 +273,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   }
 
   // initial painter setup
+  p.setPen( QColor(255,255,0) );
   p.scale( 1.f, chHeight / 65535.f );
   p.translate( (float) x, 32767.f );
 
@@ -361,7 +365,6 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
       p.translate( 0.f, 65535.f );
     }
   }
-
 }
 
 
