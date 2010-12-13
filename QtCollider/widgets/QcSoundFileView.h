@@ -27,33 +27,12 @@ class QcSoundFileView : public QWidget
   friend class QcWaveform;
 
   Q_OBJECT
-  /* TODO:
-  Q_PROPERTY( float readProgress READ loadProgress );
-  Q_PROPERTY( int frames READ frames );
-  Q_PROPERTY( int viewFrames READ viewFrames );
-  Q_PROPERTY( int scrollPos READ scrollPos WRITE scrollTo );
-  */
+
 
 public:
   QcSoundFileView();
   Q_INVOKABLE void load( const QString& filename );
-  /* TODO:
-  float readProgress();
-  int frames();
-  int viewFrames();
-  int scrollPos();
-  */
 
-public Q_SLOTS:
-  /* TODO:
-  void scrollTo( int frame );
-  void scrollBy( int frames );
-  void scrollToStart();
-  void scrollToEnd();
-  void zoomTo( float fraction );
-  void zoomBy( float factor );
-  void zoomAll();
-  */
 private Q_SLOTS:
   void onPosSliderChanged( int value );
   void onZoomSliderChanged( int value );
@@ -74,19 +53,31 @@ class QcWaveform : public QWidget {
 
   Q_OBJECT
 
+  Q_PROPERTY( float readProgress READ loadProgress );
+  Q_PROPERTY( int frames READ frames );
+  Q_PROPERTY( int viewFrames READ viewFrames );
+  Q_PROPERTY( int scrollPos READ scrollPos WRITE scrollTo );
+
 public:
 
   QcWaveform( QWidget * parent = 0 );
   ~QcWaveform();
-  void load( const QString& filename );
 
+  Q_INVOKABLE void load( const QString& filename );
+  float loadProgress();
+  quint64 frames() { return sfInfo.frames; }
+  quint64 viewFrames() { return _dur; }
+  quint64 scrollPos() { return _beg; }
   float zoom();
-  quint64 viewStart() { return _beg; }
-  quint64 viewWidth() { return _dur; }
-  quint64 duration() { if( sf ) return sfInfo.frames; else return 0; }
 
-  void setZoom( float );
-  void setViewStart( quint64 startFrame );
+public Q_SLOTS:
+  void zoomTo( float fraction );
+  void zoomBy( float factor );
+  void zoomAllOut();
+  void scrollTo( quint64 frame );
+  void scrollBy( qint64 frames );
+  void scrollToStart();
+  void scrollToEnd();
 
 Q_SIGNALS:
 
