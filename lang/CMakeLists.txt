@@ -40,7 +40,6 @@ set(sclang_sources
 	LangPrimSource/PyrFilePrim.cpp
 	LangPrimSource/PyrListPrim.cpp
 	LangPrimSource/PyrPlatformPrim.cpp
-	LangPrimSource/PyrSerialPrim.cpp
 	LangPrimSource/PyrStringPrim.cpp
 	LangPrimSource/PyrUStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
@@ -68,6 +67,10 @@ set(sclang_sources
 	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
 	../common/fftlib.c)
+
+if(NOT WIN32)
+    set(sclang_sources ${sclang_sources} LangPrimSource/PyrSerialPrim.cpp)
+endif()
 
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
