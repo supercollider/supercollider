@@ -68,7 +68,8 @@ endif()
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
         if(WIN32)
-        	add_library(${plugin_name} MODULE ${plugin} ../../../windows/PlugIns/ExportHelper.cpp)
+        	add_library(${plugin_name} MODULE ${plugin} ../../platform/windows/PlugIns/ExportHelper.cpp)
+        	target_link_libraries(${plugin_name} wsock32)
         else()
         	add_library(${plugin_name} MODULE ${plugin})
         endif()
@@ -78,9 +79,12 @@ endforeach(plugin)
 set(uiugens MouseUGens KeyboardUGens)
 
 if (WIN32)
-        set(scfft_sources   ${scfft_sources} ../../../windows/PlugIns/ExportHelper.cpp)
+        set(scfft_sources   ${scfft_sources} ../../platform/windows/PlugIns/ExportHelper.cpp)
 endif()
 
+if(WIN32)
+    include_directories (../../platform/windows/compat_stuff)
+endif()
 
 add_library(FFT_UGens MODULE
 			FFTInterfaceTable.cpp
