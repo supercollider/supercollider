@@ -9,17 +9,7 @@
 #include <climits>
 #include <cmath>
 
-class SoundFileViewFactory : public QcWidgetFactory<QcSoundFileView>
-{
-  void initialize( QcSoundFileView *sfv, QList<QVariant> & args ) {
-    if( args.size() < 1 ) return;
-    QString filename = args[0].toString();
-    if( filename.isEmpty() ) return;
-    sfv->load( filename );
-  };
-};
-
-static SoundFileViewFactory factory;
+static QcWidgetFactory<QcWaveform> waveformFactory;
 
 QcSoundFileView::QcSoundFileView() :
   hScrollMultiplier( 0.f )
@@ -56,12 +46,15 @@ void QcSoundFileView::load( const QString& filename )
 
 void QcSoundFileView::onPosSliderChanged( int value )
 {
-  waveform->setViewStart( value * hScrollMultiplier );
+  waveform->scrollTo( value * hScrollMultiplier );
 }
 
 void QcSoundFileView::onZoomSliderChanged( int z )
 {
-  waveform->setZoom( (zoomScrollBar->maximum() - z) / 1000.f );
+  float frac = (float)(zoomScrollBar->maximum() - z) / zoomScrollBar->maximum();
+  frac *= frac;
+  frac *= frac;
+  waveform->zoomTo( frac );
   updateTimeScrollBar();
 }
 
@@ -72,7 +65,7 @@ void QcSoundFileView::updateTimeScrollBar()
   // again, and the resulting position is not the same as Waveform's original.
 
   quint64 max;
-  max = waveform->duration() - waveform->viewWidth();
+  max = waveform->frames() - waveform->viewFrames();
   if( max > 1000 ) {
     hScrollMultiplier = max / 1000.0;
     max = 1000;
@@ -80,11 +73,11 @@ void QcSoundFileView::updateTimeScrollBar()
     hScrollMultiplier = 1.0;
   }
   timeScrollBar->setMaximum( max );
-  //printf("before: %Li\n", waveform->viewStart() );
+  //printf("before: %Li\n", waveform->scrollPos() );
   timeScrollBar->blockSignals( true );
-  timeScrollBar->setSliderPosition( waveform->viewStart() / hScrollMultiplier );
+  timeScrollBar->setSliderPosition( waveform->scrollPos() / hScrollMultiplier );
   timeScrollBar->blockSignals( false );
-  //printf("after: %Li\n", waveform->viewStart() );
+  //printf("after: %Li\n", waveform->scrollPos() );
   timeScrollBar->setEnabled( max > 0 );
 }
 
@@ -103,6 +96,7 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   dirty(false)
 {
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+  memset( &sfInfo, 0, sizeof(SF_INFO) );
 }
 
 QcWaveform::~QcWaveform()
@@ -122,14 +116,14 @@ void QcWaveform::load( const QString& filename )
   _cache = 0;
 
   if( sf ) sf_close( sf );
+  memset( &sfInfo, 0, sizeof(SF_INFO) );
 
-  sfInfo.format = 0;
+  _beg = 0;
+  _dur = 0;
 
   sf = sf_open( filename.toStdString().c_str(), SFM_READ, &sfInfo );
   if( !sf ) {
     printf("Could not open soundfile!\n");
-    _beg = 0;
-    _dur = 0;
     return;
   }
 
@@ -149,30 +143,70 @@ void QcWaveform::load( const QString& filename )
   redraw();
 }
 
-float QcWaveform::zoom()
+float QcWaveform::loadProgress()
 {
-  return (float) (_dur - 1) / (sfInfo.frames - 1);
+  return _cache ? _cache->loadProgress() : 1.f;
 }
 
-void QcWaveform::setZoom( float z )
+float QcWaveform::zoom()
 {
-  if( !sf ) return;
+  return sfInfo.frames ? (double) _dur / sfInfo.frames : 0;
+}
 
+void QcWaveform::zoomTo( float z )
+{
   z = qMax( 0.f, qMin( 1.f, z ) );
-  // take it to the power of 4, for a quasi-logarithmic curve
-  z *= z;
-  z *= z;
-  _dur = (sfInfo.frames - 1) * z + 1;
+
+  _dur = sfInfo.frames ? qMax( 1.f, sfInfo.frames * z ) : 0;
+
   //printf("dur: %Li view: %Li\n", sfInfo.frames, _dur);
   if( _beg + _dur > sfInfo.frames ) _beg = sfInfo.frames - _dur;
 
   redraw();
 }
 
-void QcWaveform::setViewStart( quint64 startFrame )
+void QcWaveform::zoomBy( float factor )
 {
-  _beg = qMax( (quint64) 0, qMin( (quint64) sfInfo.frames - _dur - 1, startFrame ) );
+  double z = zoom() * factor;
+  zoomTo( z );
   redraw();
+}
+
+void QcWaveform::zoomAllOut()
+{
+  _beg = 0.0;
+  _dur = sfInfo.frames;
+  redraw();
+}
+
+void QcWaveform::scrollTo( quint64 startFrame )
+{
+  _beg = qMax( (quint64) 0, qMin( (quint64) sfInfo.frames - _dur, startFrame ) );
+  redraw();
+}
+
+void QcWaveform::scrollBy( qint64 f )
+{
+  // NOTE take care of signedness
+  quint64 dest;
+  if( f < 0 ) {
+    qint64 reversed = -f;
+    dest = ( _beg > reversed ) ? ( _beg - reversed ) : 0;
+  }
+  else {
+    dest = _beg + f;
+  }
+  scrollTo( dest );
+}
+
+void QcWaveform::scrollToStart()
+{
+  scrollTo( _beg );
+}
+
+void QcWaveform::scrollToEnd()
+{
+  scrollTo( sfInfo.frames - _dur );
 }
 
 void QcWaveform::resizeEvent( QResizeEvent * )
