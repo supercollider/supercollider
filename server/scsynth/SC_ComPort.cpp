@@ -21,7 +21,7 @@
 #ifndef _WIN32
 # include "SC_ComPort.h"
 #else
-# include "../../headers/server/SC_ComPort.h"
+# include "../../include/server/SC_ComPort.h"
 #endif
 
 #include "SC_Endian.h"

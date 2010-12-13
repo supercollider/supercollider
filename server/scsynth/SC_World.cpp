@@ -40,7 +40,7 @@
 #include "SC_Samp.h"
 #include "SC_DirUtils.h"
 #ifdef _WIN32
-# include "../../headers/server/SC_ComPort.h"
+# include "../../include/server/SC_ComPort.h"
 # include "SC_Win32Utils.h"
 #else
 # include "SC_ComPort.h"
