@@ -7,7 +7,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 if(APPLE)
 	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/icu
 		LangPrimSource/HID_Utilities)
-else()
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 	find_package(ICU)
 	if (NOT ICU_FOUND)
@@ -17,6 +17,8 @@ endif()
 
 if(APPLE)
 	# apple bundles an old nongpl readline so we say no even though it is usually detectable
+	set(READLINE_FOUND false)
+elsif(WIN32)
 	set(READLINE_FOUND false)
 else()
 	find_package(Readline)
