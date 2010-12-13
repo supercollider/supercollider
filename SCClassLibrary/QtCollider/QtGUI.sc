@@ -45,9 +45,9 @@ QtGUI {
   *freqScopeView { ^QFreqScope }
   *scopeView { ^QScopeView }
   *stethoscope { ^QStethoscope }
-  *envelopeView { ^this.notImplemented( "EnvelopeView"); }
+  *soundFileView { ^QSoundFileView }
+  *envelopeView { ^QEnvelopeView }
   *tabletView { ^this.notImplemented( "TabletView"); }
-  *soundFileView { ^this.notImplemented( "SoundFileView"); }
   *movieView { ^this.notImplemented( "MovieView"); }
   *levelIndicator { ^QLevelIndicator }
 
