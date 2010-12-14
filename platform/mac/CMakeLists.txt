@@ -137,6 +137,10 @@ endif()
 
 if (SC_QT)
 	target_link_libraries(${scappbundlename} QtCollider)
+	set_property(TARGET ${scappbundlename}
+		APPEND
+		PROPERTY COMPILE_DEFINITIONS SC_QT
+		)
 endif()
 
 # for processing into the plist:
