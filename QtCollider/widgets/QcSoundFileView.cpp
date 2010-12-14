@@ -251,12 +251,13 @@ void QcWaveform::rebuildCache ( int maxFPU, int maxRawFrames )
 
 void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_dur )
 {
+  // FIXME anomaly: when fpp reaching 1.0 rms can go outside min-max!
+
   QPainter p( pix );
   p.fillRect( pix->rect(), QColor( 0, 0, 100 ) );
 
   if( !sf || !_cache || !_cache->ready() ) return;
 
-  printf("frames %Li\n", sfInfo.frames);
   // Check for sane situation:
   if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
 
@@ -314,13 +315,13 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
         if( max != min ) {
           p.setPen( minMaxPen );
           p.drawLine( x + i, min, x + i, max );
-          p.setPen( rmsPen );
-          p.drawLine( x + i, minRMS[i], x + i, maxRMS[i] );
         }
         else {
           p.setPen( minMaxPen );
           p.drawPoint( x + i, min );
         }
+        p.setPen( rmsPen );
+        p.drawLine( x + i, minRMS[i], x + i, maxRMS[i] );
       }
 
       p.translate( 0.f, 65535.f );
@@ -418,9 +419,6 @@ bool SoundFileStream::integrate
 ( int ch, double off, double dur,
   short *minBuffer, short *maxBuffer, float *sumBuf, float *sum2Buf, int bufferSize )
 {
-  // FIXME: include only parts of frame values in the sum,
-  // if they fall only partially into an integartion unit
-
   bool ok = _data != 0
             && ch < channels()
             && ( off >= beginning() )
@@ -432,10 +430,6 @@ bool SoundFileStream::integrate
 
   int i;
   for( i = 0; i < bufferSize; ++i ) {
-
-    // there has to be one frame of overlap with the previous unit's frames,
-    // to avoid discontinuity
-
     int data_pos = floor(f_pos);
 
     // increment position
@@ -445,12 +439,13 @@ bool SoundFileStream::integrate
 
     // the following is a faster variant, but floating point operations are fallible,
     // so we need to make sure we stay within the constraints of f_dur;
-    f_pos += fpu;
-    if( f_pos > dur ) f_pos = dur;
+    double f_pos1 = f_pos + fpu;
+    if( f_pos1 > dur ) f_pos1 = dur;
 
-    int frame_count = ceil(f_pos) - data_pos;
+    int frame_count = ceil(f_pos1) - data_pos;
 
-    Q_ASSERT( data_pos + frame_count <= _dataSize );
+    float frac0 = data_pos + 1.f - f_pos;
+    float frac1 = f_pos1 + 1.f - ceil(f_pos1);
 
     // get min, max and sum
     short *samples = _data + (data_pos * channels()) + ch;
@@ -460,31 +455,26 @@ bool SoundFileStream::integrate
     float sum2 = 0.f;
     int f; // frame
     for( f = 0; f < frame_count; ++f, samples += channels() ){
-      short sample = *samples;
+    // TODO should we overlap min-max or not here?
+      float sample = *samples;
+      float frac;
+      if( f == 0 ) frac = frac0;
+      else if( f == frame_count - 1 ) frac = frac1;
+      else frac = 1.0;
+
       if( sample < min ) min = sample;
       if( sample > max ) max = sample;
-      sum += sample;
-      sum2 += (float) sample * sample;
+
+      sum += sample * frac;
+      sum2 += sample * sample * frac;
     }
 
-#if 0
-    // compute standard deviation
-    float avg = sum / frame_count;
-    sum = 0.f;
-    samples = _data + (data_pos * channels()) + ch;
-    for( f = 0; f < frame_count; ++f, samples += channels() ){
-      float dev = *samples - avg;
-      sum += dev * dev;
-    }
-
-    float stdDev = sqrt( sum / frame_count );
-    //printf("_dataSize %i, data_pos %i, frame_count %i, min %i, max %i\n",
-    //       _dataSize, data_pos, frame_count, min, max );
-#endif
     minBuffer[i] = min;
     maxBuffer[i] = max;
     sumBuf[i] = sum;
     sum2Buf[i] = sum2;
+
+    f_pos = f_pos1;
   }
 
   return true;
@@ -503,12 +493,10 @@ bool SoundFileStream::displayData
   double fpu = dur / bufferSize;
   double f_pos = off - beginning();
 
+  short min = SHRT_MAX;
+  short max = SHRT_MIN;
   int i;
   for( i = 0; i < bufferSize; ++i ) {
-
-    // there has to be one frame of overlap with the previous unit's frames,
-    // to avoid discontinuity
-
     int data_pos = floor(f_pos);
 
     // increment position
@@ -518,56 +506,47 @@ bool SoundFileStream::displayData
 
     // the following is a faster variant, but floating point operations are fallible,
     // so we need to make sure we stay within the constraints of f_dur;
-    f_pos += fpu;
-    if( f_pos > dur ) f_pos = dur;
+    double f_pos1 = f_pos + fpu;
+    if( f_pos1 > dur ) f_pos1 = dur;
 
-    int frame_count = ceil(f_pos) - data_pos;
+    int frame_count = ceil(f_pos1) - data_pos;
 
-    Q_ASSERT( data_pos + frame_count <= _dataSize );
+    float frac0 = data_pos + 1.f - f_pos;
+    float frac1 = f_pos1 + 1.f - ceil(f_pos1);
 
     // get min, max and sum
     short *samples = _data + (data_pos * channels()) + ch;
-    short min = SHRT_MAX;
-    short max = SHRT_MIN;
+
     float sum = 0.f;
     float sum2 = 0.f;
     int f; // frame
     for( f = 0; f < frame_count; ++f, samples += channels() ){
-      short sample = *samples;
+      // TODO should we overlap min-max or not here?
+      float sample = *samples;
+      float frac;
+      if( f == 0 ) frac = frac0;
+      else if( f == frame_count - 1 ) frac = frac1;
+      else frac = 1.0;
+
       if( sample < min ) min = sample;
       if( sample > max ) max = sample;
-      sum += sample;
-      sum2 += (float) sample * sample;
+
+      sum += sample * frac;
+      sum2 += sample * sample * frac;
     }
 
-    double n = frame_count;
+    double n = fpu;
     double avg = sum / n;
-    double stdDev = sqrt( (sum2 - (sum*avg) ) / n );
+    double stdDev = sqrt( abs((sum2 - (sum*avg) ) / n) );
 
     minBuffer[i] = min;
     maxBuffer[i] = max;
     minRMS[i] = avg - stdDev;
     maxRMS[i] = avg + stdDev;
 
-#if 0
-    // compute standard deviation
-    float avg = sum / frame_count;
-    sum = 0.f;
-    samples = _data + (data_pos * channels()) + ch;
-    for( f = 0; f < frame_count; ++f, samples += channels() ){
-      float dev = *samples - avg;
-      sum += dev * dev;
-    }
-
-    float stdDev = sqrt( sum / frame_count );
-    //printf("_dataSize %i, data_pos %i, frame_count %i, min %i, max %i\n",
-    //       _dataSize, data_pos, frame_count, min, max );
-
-    minBuffer[i] = min;
-    maxBuffer[i] = max;
-    sumBuf[i] = sum;
-    sum2Buf[i] = sum2;
-#endif
+    f_pos = f_pos1;
+    min = maxBuffer[i];
+    max = minBuffer[i];
   }
 
   return true;
@@ -669,12 +648,18 @@ bool SoundCacheStream::displayData
   short max = SHRT_MIN;
   int i;
   for( i = 0; i < bufferSize; ++i ) {
-    int f = ceil(cache_pos); // first frame
+    int f = floor(cache_pos); // first frame
+    bool no_overlap = f == ceil(cache_pos);
+    float frac0 = f + 1.f - cache_pos;
+
     cache_pos += ratio;
     // Due to possibility of floating point operation failures.
     if( cache_pos > _cacheSize ) cache_pos = _cacheSize;
     int frame_count = ceil(cache_pos) - f ;
+    float frac1 = cache_pos + 1.f - ceil(cache_pos);
 
+    //short min = SHRT_MAX;
+    //short max = SHRT_MIN;
     double sum = 0.0;
     double sum2 = 0.0;
 
@@ -684,16 +669,28 @@ bool SoundCacheStream::displayData
     float *p_sum2 = _caches[ch].sum2;
     int countdown = frame_count;
     while( countdown-- ) {
-      if( p_min[f] < min ) min = p_min[f];
-      if( p_max[f] > max ) max = p_max[f];
-      sum += p_sum[f];
-      sum2 += p_sum2[f];
+
+      // NOTE for min-max, behave as if first frame was ceil(cache_pos) instead of floor(),
+      // to not smudge too much at large scale
+      if( countdown < frame_count - 1 || no_overlap ) {
+        if( p_min[f] < min ) min = p_min[f];
+        if( p_max[f] > max ) max = p_max[f];
+      }
+
+      float frac;
+      if( countdown == frame_count - 1 ) frac = frac0;
+      else if( countdown == 0 ) frac = frac1;
+      else frac = 1.0;
+
+      sum += p_sum[f] * frac;
+      sum2 += p_sum2[f] * frac;
+
       ++f;
     }
 
-    double n = frame_count * _fpu;
+    double n = dur / bufferSize;
     double avg = sum / n;
-    double stdDev = sqrt( (sum2 - (sum*avg) ) / n );
+    double stdDev = sqrt( abs((sum2 - (sum*avg) ) / n) );
 
     minBuffer[i] = min;
     maxBuffer[i] = max;
