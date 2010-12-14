@@ -110,7 +110,8 @@ if(APPLE)
           PERMISSIONS OWNER_READ OWNER_EXECUTE
                       GROUP_READ GROUP_EXECUTE
                       WORLD_READ WORLD_EXECUTE
-                      OWNER_WRITE )
+                      OWNER_WRITE
+          COMPONENT app)
 else()
   install(TARGETS QtCollider
           DESTINATION "lib"
