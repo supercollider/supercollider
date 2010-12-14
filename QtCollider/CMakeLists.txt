@@ -103,17 +103,18 @@ target_link_libraries( QtCollider ${QT_LIBRARIES} )
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+  include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
-	install(TARGETS QtCollider
-			DESTINATION ${scappauxresourcesdir}
-			PERMISSIONS OWNER_READ OWNER_EXECUTE
-						GROUP_READ GROUP_EXECUTE
-						WORLD_READ WORLD_EXECUTE)
+  install(TARGETS QtCollider
+          DESTINATION ${scappauxresourcesdir}
+          PERMISSIONS OWNER_READ OWNER_EXECUTE
+                      GROUP_READ GROUP_EXECUTE
+                      WORLD_READ WORLD_EXECUTE
+                      OWNER_WRITE )
 else()
-	install(TARGETS QtCollider
-			DESTINATION "lib"
-			PERMISSIONS OWNER_READ OWNER_EXECUTE
-						GROUP_READ GROUP_EXECUTE
-						WORLD_READ WORLD_EXECUTE)
+  install(TARGETS QtCollider
+          DESTINATION "lib"
+          PERMISSIONS OWNER_READ OWNER_EXECUTE
+                      GROUP_READ GROUP_EXECUTE
+                      WORLD_READ WORLD_EXECUTE )
 endif()
