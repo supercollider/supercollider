@@ -248,9 +248,9 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 
   if( _cache && _cache->loading() ) {
     QRect r( rect() );
-    p.fillRect( r, QColor(50,50,150) );
+    p.fillRect( r, QColor(70,70,70) );
     r.setRight( r.right() * _cache->loadProgress() / 100 );
-    p.fillRect( r, QColor( 0, 0, 100 ) );
+    p.fillRect( r, QColor( 0, 0, 0 ) );
     p.setPen( QColor(255,255,255) );
     QTextOption opt;
     opt.setAlignment( Qt::AlignCenter );
@@ -275,7 +275,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   // FIXME anomaly: when fpp reaching 1.0 rms can go outside min-max!
 
   QPainter p( pix );
-  p.fillRect( pix->rect(), QColor( 0, 0, 100 ) );
+  p.fillRect( pix->rect(), QColor( 0, 0, 0 ) );
 
   if( !sf || !_cache || !_cache->ready() ) return;
 
@@ -284,11 +284,14 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
   // Some variables
   double fpp = f_dur / width;
-  float chHeight = (float) pix->height() / sfInfo.channels;
+  float chHeight = pix->height() / (float) sfInfo.channels;
+  float yscale = -chHeight / 65535.f;
+  float spacing = 0.f;
+
   SoundStream *soundStream;
   SoundFileStream sfStream;
 
-  // determine with data source to use according to horiz. zoom (data-display resolution)
+  // determine which data source to use according to horiz. zoom (data-display resolution)
   if( fpp > 1.0 ? (fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
     printf("use file\n");
     soundStream = &sfStream;
@@ -299,9 +302,10 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   }
 
   // initial painter setup
-  p.setPen( QColor(255,255,0) );
-  p.scale( 1.f, chHeight / 65535.f );
-  p.translate( (float) x, 32767.f );
+  QPen minMaxPen( QColor(180,180,0) );
+  QPen rmsPen( QColor(255,255,0) );
+  p.scale( 1.f, yscale );
+  p.translate( (float) x, -32767.f );
 
   if( fpp > 1.0 ) {
 
@@ -317,11 +321,13 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
     short minRMS[width];
     short maxRMS[width];
 
-    QPen minMaxPen( QColor(180,180,0) );
-    QPen rmsPen( QColor(255,255,0) );
-
     int ch;
     for( ch = 0; ch < soundStream->channels(); ++ch ) {
+      p.setPen( QColor(255,255,255) );
+      p.drawLine( x, 0, x + width, 0 );
+      p.setPen( QColor(100,100,100) );
+      p.drawLine( x, SHRT_MIN, x+width, SHRT_MIN );
+
       bool ok = soundStream->displayData( ch, f_beg, f_dur,
                                         minBuffer, maxBuffer,
                                         minRMS, maxRMS,
@@ -345,7 +351,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
         p.drawLine( x + i, minRMS[i], x + i, maxRMS[i] );
       }
 
-      p.translate( 0.f, 65535.f );
+      p.translate( 0.f, -65535.f + spacing );
     }
   }
   else {
@@ -375,6 +381,11 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
     int ch;
     for( ch = 0; ch < sfInfo.channels; ++ch ) {
+      p.setPen( QColor(180,180,180) );
+      p.drawLine( x, 0, x + width, 0 );
+      p.setPen( QColor(100,100,100) );
+      p.drawLine( x, SHRT_MIN, x+width, SHRT_MIN );
+
       bool interleaved = false;
       short *data = soundStream->rawFrames( ch, beg, count, &interleaved );
       //printf("got raw frames ok: %i\n", data != 0 );
@@ -399,8 +410,10 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
         path.lineTo( QPointF( f * ppf, (qreal)*data ) );
       }
 
+      p.setPen( rmsPen );
       p.drawPath( path );
-      p.translate( 0.f, 65535.f );
+
+      p.translate( 0.f, -65535.f + spacing );
     }
   }
 }
