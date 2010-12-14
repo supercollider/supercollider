@@ -135,6 +135,10 @@ else()
 		)
 endif()
 
+if (SC_QT)
+	target_link_libraries(${scappbundlename} QtCollider)
+endif()
+
 # for processing into the plist:
 set_property(TARGET ${scappbundlename}
 	PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
