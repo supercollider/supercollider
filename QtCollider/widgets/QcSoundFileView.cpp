@@ -279,27 +279,40 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
   if( !sf || !_cache || !_cache->ready() ) return;
 
-  // Check for sane situation:
+  // check for sane situation:
   if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
 
-  // Some variables
-  double fpp = f_dur / width;
-  float chHeight = pix->height() / (float) sfInfo.channels;
-  float yscale = -chHeight / 65535.f;
-  float spacing = 0.f;
+  // data indexes
+  quint64 d_beg = floor(f_beg); // data beginning;
+  int d_count = ceil( f_beg + f_dur ) - d_beg; // data count;
+  bool haveOneMore;
+  if( sfInfo.frames - (f_beg + f_dur) >= 1 ) {
+    ++d_count;
+    haveOneMore = true;
+  }
+  else {
+    haveOneMore = false;
+  }
 
+  // data source - choose according to horiz. zoom (data-display resolution)
   SoundStream *soundStream;
   SoundFileStream sfStream;
 
-  // determine which data source to use according to horiz. zoom (data-display resolution)
+  double fpp = f_dur / width;
   if( fpp > 1.0 ? (fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
     printf("use file\n");
     soundStream = &sfStream;
+    sfStream.load( sf, sfInfo, d_beg, d_count );
   }
   else {
     printf("use cache\n");
     soundStream = _cache;
   }
+
+  // geometry
+  float chHeight = pix->height() / (float) sfInfo.channels;
+  float yscale = -chHeight / 65535.f;
+  float spacing = 0.f;
 
   // initial painter setup
   QPen minMaxPen( QColor(180,180,0) );
@@ -307,26 +320,22 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   p.scale( 1.f, yscale );
   p.translate( (float) x, -32767.f );
 
-  if( fpp > 1.0 ) {
 
-    // display data accumulated into min-max ranges per pixel
-    printf("drawing min-max ranges\n");
+  int ch;
+  for( ch = 0; ch < soundStream->channels(); ++ch ) {
+    p.setPen( QColor(255,255,255) );
+    p.drawLine( x, 0, x + width, 0 );
+    p.setPen( QColor(100,100,100) );
+    p.drawLine( x, SHRT_MIN, x+width, SHRT_MIN );
 
-    if( soundStream == &sfStream ) {
-      sfStream.load( sf, sfInfo, f_beg, f_dur );
-    }
+    if( fpp > 1.0 ) {
 
-    short minBuffer[width];
-    short maxBuffer[width];
-    short minRMS[width];
-    short maxRMS[width];
+      // draw min-max regions and RMS
 
-    int ch;
-    for( ch = 0; ch < soundStream->channels(); ++ch ) {
-      p.setPen( QColor(255,255,255) );
-      p.drawLine( x, 0, x + width, 0 );
-      p.setPen( QColor(100,100,100) );
-      p.drawLine( x, SHRT_MIN, x+width, SHRT_MIN );
+      short minBuffer[width];
+      short maxBuffer[width];
+      short minRMS[width];
+      short maxRMS[width];
 
       bool ok = soundStream->displayData( ch, f_beg, f_dur,
                                         minBuffer, maxBuffer,
@@ -350,72 +359,43 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
         p.setPen( rmsPen );
         p.drawLine( x + i, minRMS[i], x + i, maxRMS[i] );
       }
-
-      p.translate( 0.f, -65535.f + spacing );
-    }
-  }
-  else {
-
-    // draw lines between actual values
-    printf("drawing lines\n");
-
-    quint64 beg = floor(f_beg);
-    int count = ceil( f_beg + f_dur ) - beg;
-    bool haveOneMore;
-    if( sfInfo.frames - (f_beg + f_dur) >= 1 ) {
-      ++count;
-      haveOneMore = true;
     }
     else {
-      haveOneMore = false;
-    }
 
-    if( soundStream == &sfStream ) {
-      sfStream.load( sf, sfInfo, beg, count );
-    }
+      // draw lines between actual values
 
-    qreal ppf = 1.0 / fpp;
-    qreal dx = (beg - f_beg) * ppf;
-
-    p.translate( dx, 0.0 );
-
-    int ch;
-    for( ch = 0; ch < sfInfo.channels; ++ch ) {
-      p.setPen( QColor(180,180,180) );
-      p.drawLine( x, 0, x + width, 0 );
-      p.setPen( QColor(100,100,100) );
-      p.drawLine( x, SHRT_MIN, x+width, SHRT_MIN );
+      qreal ppf = 1.0 / fpp;
+      qreal dx = (d_beg - f_beg) * ppf;
 
       bool interleaved = false;
-      short *data = soundStream->rawFrames( ch, beg, count, &interleaved );
+      short *data = soundStream->rawFrames( ch, d_beg, d_count, &interleaved );
       //printf("got raw frames ok: %i\n", data != 0 );
       Q_ASSERT( data != 0 );
       int step = interleaved ? soundStream->channels() : 1;
 
       QPainterPath path;
 
-      if( count ) {
-        QPointF pt( 0, (qreal) *data );
+      if( d_count ) {
+        QPointF pt( dx, (qreal) *data );
         path.moveTo( pt );
       }
       int f; // frame
-      for( f = 1; f < count; ++f ) {
+      for( f = 1; f < d_count; ++f ) {
         data += step;
-        dx = f * ppf;
-        QPointF pt( dx, (qreal) *data );
-        if( f == 0 ) path.moveTo( pt );
-        else path.lineTo( pt );
+        QPointF pt( f * ppf + dx, (qreal) *data );
+        path.lineTo( pt );
       }
-      if( count && !haveOneMore ) {
-        path.lineTo( QPointF( f * ppf, (qreal)*data ) );
+      if( d_count && !haveOneMore ) {
+        path.lineTo( QPointF( f * ppf + dx, (qreal)*data ) );
       }
 
       p.setPen( rmsPen );
       p.drawPath( path );
-
-      p.translate( 0.f, -65535.f + spacing );
     }
+
+    p.translate( 0.f, -65535.f + spacing );
   }
+
 }
 
 
