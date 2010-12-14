@@ -9,6 +9,7 @@
 #include <climits>
 #include <cmath>
 
+static QcWidgetFactory<QcSoundFileView> sfViewFactory;
 static QcWidgetFactory<QcWaveform> waveformFactory;
 
 QcSoundFileView::QcSoundFileView() :
@@ -95,8 +96,8 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   pixmap(0),
   dirty(false)
 {
-  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
   memset( &sfInfo, 0, sizeof(SF_INFO) );
+  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 }
 
 QcWaveform::~QcWaveform()
@@ -108,27 +109,29 @@ QcWaveform::~QcWaveform()
 
 void QcWaveform::load( const QString& filename )
 {
-  // NOTE we have to delete SoundCacheStream before closing the soundfile, as it might be still
-  // loading it
-  // TODO: make SoundCacheStream open the soundfile on its own
+  SF_INFO new_info;
+  memset( &new_info, 0, sizeof(SF_INFO) );
 
-  delete _cache;
-  _cache = 0;
+  SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
 
-  if( sf ) sf_close( sf );
-  memset( &sfInfo, 0, sizeof(SF_INFO) );
-
-  _beg = 0;
-  _dur = 0;
-
-  sf = sf_open( filename.toStdString().c_str(), SFM_READ, &sfInfo );
-  if( !sf ) {
+  printf("bla\n");
+  if( !new_sf ) {
     printf("Could not open soundfile!\n");
     return;
   }
 
+  // NOTE we have to delete SoundCacheStream before closing the soundfile, as it might be still
+  // loading it
+  // TODO: should SoundCacheStream open the soundfile on its own?
+
+  delete _cache;
+  if( sf ) sf_close( sf );
+
+  sf = new_sf;
+  sfInfo = new_info;
   _beg = 0;
   _dur = sfInfo.frames;
+  printf("frames %Li\n", sfInfo.frames);
 
   _cache = new SoundCacheStream();
   connect( _cache, SIGNAL(loadProgress(int)),
@@ -253,6 +256,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
   if( !sf || !_cache || !_cache->ready() ) return;
 
+  printf("frames %Li\n", sfInfo.frames);
   // Check for sane situation:
   if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
 
@@ -288,10 +292,18 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
     short minBuffer[width];
     short maxBuffer[width];
+    short minRMS[width];
+    short maxRMS[width];
+
+    QPen minMaxPen( QColor(180,180,0) );
+    QPen rmsPen( QColor(255,255,0) );
 
     int ch;
     for( ch = 0; ch < soundStream->channels(); ++ch ) {
-      bool ok = soundStream->integrate( ch, f_beg, f_dur, minBuffer, maxBuffer, width );
+      bool ok = soundStream->displayData( ch, f_beg, f_dur,
+                                        minBuffer, maxBuffer,
+                                        minRMS, maxRMS,
+                                        width );
 //    printf("integration ok: %i\n", ok);
       Q_ASSERT( ok );
 
@@ -300,9 +312,13 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
         short min = minBuffer[i];
         short max = maxBuffer[i];
         if( max != min ) {
+          p.setPen( minMaxPen );
           p.drawLine( x + i, min, x + i, max );
+          p.setPen( rmsPen );
+          p.drawLine( x + i, minRMS[i], x + i, maxRMS[i] );
         }
         else {
+          p.setPen( minMaxPen );
           p.drawPoint( x + i, min );
         }
       }
@@ -399,8 +415,12 @@ void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, double b, double d
 }
 
 bool SoundFileStream::integrate
-( int ch, double off, double dur, short *minBuffer, short *maxBuffer, int bufferSize )
+( int ch, double off, double dur,
+  short *minBuffer, short *maxBuffer, float *sumBuf, float *sum2Buf, int bufferSize )
 {
+  // FIXME: include only parts of frame values in the sum,
+  // if they fall only partially into an integartion unit
+
   bool ok = _data != 0
             && ch < channels()
             && ( off >= beginning() )
@@ -409,9 +429,6 @@ bool SoundFileStream::integrate
 
   double fpu = dur / bufferSize;
   double f_pos = off - beginning();
-
-  // TODO consider using the min-max approach in SoundCacheStream here as well, but then
-  // protection needs to be implemented in case fpu == 1
 
   int i;
   for( i = 0; i < bufferSize; ++i ) {
@@ -435,20 +452,122 @@ bool SoundFileStream::integrate
 
     Q_ASSERT( data_pos + frame_count <= _dataSize );
 
+    // get min, max and sum
     short *samples = _data + (data_pos * channels()) + ch;
     short min = SHRT_MAX;
     short max = SHRT_MIN;
+    float sum = 0.f;
+    float sum2 = 0.f;
     int f; // frame
     for( f = 0; f < frame_count; ++f, samples += channels() ){
       short sample = *samples;
       if( sample < min ) min = sample;
       if( sample > max ) max = sample;
+      sum += sample;
+      sum2 += (float) sample * sample;
     }
 
+#if 0
+    // compute standard deviation
+    float avg = sum / frame_count;
+    sum = 0.f;
+    samples = _data + (data_pos * channels()) + ch;
+    for( f = 0; f < frame_count; ++f, samples += channels() ){
+      float dev = *samples - avg;
+      sum += dev * dev;
+    }
+
+    float stdDev = sqrt( sum / frame_count );
     //printf("_dataSize %i, data_pos %i, frame_count %i, min %i, max %i\n",
     //       _dataSize, data_pos, frame_count, min, max );
+#endif
     minBuffer[i] = min;
     maxBuffer[i] = max;
+    sumBuf[i] = sum;
+    sum2Buf[i] = sum2;
+  }
+
+  return true;
+}
+
+bool SoundFileStream::displayData
+( int ch, double off, double dur,
+  short *minBuffer, short *maxBuffer, short *minRMS, short *maxRMS, int bufferSize )
+{
+  bool ok = _data != 0
+            && ch < channels()
+            && ( off >= beginning() )
+            && ( off + dur <= beginning() + duration() );
+  if( !ok ) return false;
+
+  double fpu = dur / bufferSize;
+  double f_pos = off - beginning();
+
+  int i;
+  for( i = 0; i < bufferSize; ++i ) {
+
+    // there has to be one frame of overlap with the previous unit's frames,
+    // to avoid discontinuity
+
+    int data_pos = floor(f_pos);
+
+    // increment position
+
+    // slower, but error-proof:
+    // f_pos = (double)(i+1) / width() * dur + off;
+
+    // the following is a faster variant, but floating point operations are fallible,
+    // so we need to make sure we stay within the constraints of f_dur;
+    f_pos += fpu;
+    if( f_pos > dur ) f_pos = dur;
+
+    int frame_count = ceil(f_pos) - data_pos;
+
+    Q_ASSERT( data_pos + frame_count <= _dataSize );
+
+    // get min, max and sum
+    short *samples = _data + (data_pos * channels()) + ch;
+    short min = SHRT_MAX;
+    short max = SHRT_MIN;
+    float sum = 0.f;
+    float sum2 = 0.f;
+    int f; // frame
+    for( f = 0; f < frame_count; ++f, samples += channels() ){
+      short sample = *samples;
+      if( sample < min ) min = sample;
+      if( sample > max ) max = sample;
+      sum += sample;
+      sum2 += (float) sample * sample;
+    }
+
+    double n = frame_count;
+    double avg = sum / n;
+    double stdDev = sqrt( (sum2 - (sum*avg) ) / n );
+
+    minBuffer[i] = min;
+    maxBuffer[i] = max;
+    minRMS[i] = avg - stdDev;
+    maxRMS[i] = avg + stdDev;
+
+#if 0
+    // compute standard deviation
+    float avg = sum / frame_count;
+    sum = 0.f;
+    samples = _data + (data_pos * channels()) + ch;
+    for( f = 0; f < frame_count; ++f, samples += channels() ){
+      float dev = *samples - avg;
+      sum += dev * dev;
+    }
+
+    float stdDev = sqrt( sum / frame_count );
+    //printf("_dataSize %i, data_pos %i, frame_count %i, min %i, max %i\n",
+    //       _dataSize, data_pos, frame_count, min, max );
+
+    minBuffer[i] = min;
+    maxBuffer[i] = max;
+    sumBuf[i] = sum;
+    sum2Buf[i] = sum2;
+#endif
   }
 
   return true;
@@ -508,11 +627,13 @@ void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info,
     }
   }
 
-  _caches = new PeakCache [info.channels];
+  _caches = new SoundCache [info.channels];
   int ch;
   for( ch = 0; ch < info.channels; ++ch ) {
     _caches[ch].min = new short [_cacheSize];
     _caches[ch].max = new short [_cacheSize];
+    _caches[ch].sum = new float [_cacheSize];
+    _caches[ch].sum2 = new float [_cacheSize];
   }
 
   _loading = true;
@@ -528,8 +649,9 @@ SoundCacheStream::~SoundCacheStream()
   delete [] _caches;
 }
 
-bool SoundCacheStream::integrate
-( int ch, double off, double dur, short *minBuffer, short *maxBuffer, int bufferSize )
+bool SoundCacheStream::displayData
+( int ch, double off, double dur,
+  short *minBuffer, short *maxBuffer, short *minRMS, short *maxRMS, int bufferSize )
 {
   // we assume that beginning() == 0
 
@@ -542,28 +664,43 @@ bool SoundCacheStream::integrate
 
   double ratio = dur / _fpu / bufferSize;
   double cache_pos = off / _fpu;
-  int i_beg, i_count;
 
   short min = SHRT_MAX;
   short max = SHRT_MIN;
   int i;
   for( i = 0; i < bufferSize; ++i ) {
-    int i_cache_pos = ceil(cache_pos);
+    int f = ceil(cache_pos); // first frame
     cache_pos += ratio;
     // Due to possibility of floating point operation failures.
     if( cache_pos > _cacheSize ) cache_pos = _cacheSize;
-    int frame_count = ceil(cache_pos) - i_cache_pos ;
+    int frame_count = ceil(cache_pos) - f ;
 
-    short *p_srcMin = _caches[ch].min + i_cache_pos;
-    short *p_srcMax = _caches[ch].max + i_cache_pos;
-    int f; // frame
-    for( f = 0; f < frame_count; ++f, ++p_srcMin, ++p_srcMax ) {
-      if( *p_srcMin < min ) min = *p_srcMin;
-      if( *p_srcMax > max ) max = *p_srcMax;
+    double sum = 0.0;
+    double sum2 = 0.0;
+
+    short *p_min = _caches[ch].min;
+    short *p_max = _caches[ch].max;
+    float *p_sum = _caches[ch].sum;
+    float *p_sum2 = _caches[ch].sum2;
+    int countdown = frame_count;
+    while( countdown-- ) {
+      if( p_min[f] < min ) min = p_min[f];
+      if( p_max[f] > max ) max = p_max[f];
+      sum += p_sum[f];
+      sum2 += p_sum2[f];
+      ++f;
     }
+
+    double n = frame_count * _fpu;
+    double avg = sum / n;
+    double stdDev = sqrt( (sum2 - (sum*avg) ) / n );
 
     minBuffer[i] = min;
     maxBuffer[i] = max;
+    minRMS[i] = avg - stdDev;
+    maxRMS[i] = avg + stdDev;
+
+    // assure continuity from pixel to pixel
     min = maxBuffer[i];
     max = minBuffer[i];
   }
@@ -615,7 +752,7 @@ void SoundCacheLoader::run()
   int channels = _cache->channels();
   double fpu = _cache->_fpu;
   int cacheSize = _cache->_cacheSize;
-  PeakCache *chanCaches = _cache->_caches;
+  SoundCache *chanCaches = _cache->_caches;
 
   int i = 0;
   while( i < cacheSize ) {
@@ -625,7 +762,10 @@ void SoundCacheLoader::run()
 
     int ch;
     for( ch = 0; ch < channels; ++ch ) {
-      sfStream.integrateAll( ch, chanCaches[ch].min + i, chanCaches[ch].max + i, chunkSize );
+      sfStream.integrate( ch, i * fpu, chunkSize * fpu,
+                          chanCaches[ch].min + i, chanCaches[ch].max + i,
+                          chanCaches[ch].sum + i, chanCaches[ch].sum2 + i,
+                          chunkSize );
     }
 
     i += chunkSize;

@@ -12,14 +12,18 @@
 class QcWaveform;
 class SoundCacheStream;
 
-struct PeakCache {
-  PeakCache() : min(0), max(0) {};
-  ~PeakCache() {
+struct SoundCache {
+  SoundCache() : min(0), max(0), sum(0), sum2(0) {};
+  ~SoundCache() {
     delete [] min;
     delete [] max;
+    delete [] sum;
+    delete [] sum2;
   }
   short *min;
   short *max;
+  float *sum;
+  float *sum2;
 };
 
 class QcSoundFileView : public QWidget
@@ -122,12 +126,12 @@ public:
 
   inline double duration() { return dur; }
 
-  virtual bool integrate( int channel, double offset, double duration,
-                          short *minBuffer, short *maxBuffer, int bufferSize ) = 0;
-
-  inline bool integrateAll( int channel, short *minBuffer, short *maxBuffer, int bufferSize ) {
-    return integrate( channel, beginning(), duration(), minBuffer, maxBuffer, bufferSize );
-  }
+  virtual bool displayData( int channel, double offset, double duration,
+                            short *minBuffer,
+                            short *maxBuffer,
+                            short *minRMS,
+                            short *maxRMS,
+                            int bufferSize ) = 0;
 
   virtual short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved ) = 0;
 
@@ -149,7 +153,17 @@ public:
   ~SoundFileStream();
   void load( SNDFILE *sf, const SF_INFO &sf_info, double beginning, double duration );
   bool integrate( int channel, double offset, double duration,
-                  short *minBuffer, short *maxBuffer, int bufferSize );
+                  short *minBuffer,
+                  short *maxBuffer,
+                  float *sumBuffer,
+                  float *sum2Buffer,
+                  int bufferSize );
+  bool displayData( int channel, double offset, double duration,
+                    short *minBuffer,
+                    short *maxBuffer,
+                    short *minRMS,
+                    short *maxRMS,
+                    int bufferSize );
   short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
 private:
   short *_data;
@@ -174,8 +188,12 @@ public:
   inline bool ready() { return _ready; }
   inline bool loading() { return _loading; }
   inline int loadProgress() { return _loadProgress; }
-  bool integrate( int channel, double offset, double duration,
-                  short *minBuffer, short *maxBuffer, int bufferSize );
+  bool displayData( int channel, double offset, double duration,
+                    short *minBuffer,
+                    short *maxBuffer,
+                    short *minRMS,
+                    short *maxRMS,
+                    int bufferSize );
   short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
 
 Q_SIGNALS:
@@ -187,7 +205,7 @@ private Q_SLOTS:
   void onLoadingDone();
 
 private:
-  PeakCache *_caches;
+  SoundCache *_caches;
   double _fpu; // soundfile frames per cache frame
   int _cacheSize;
   bool _ready;
