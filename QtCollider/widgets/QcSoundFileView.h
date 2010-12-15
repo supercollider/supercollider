@@ -22,6 +22,8 @@
 #ifndef QC_SOUND_FILE_VIEW_H
 #define QC_SOUND_FILE_VIEW_H
 
+#include "../Common.h"
+
 #include <sndfile.h>
 
 #include <QVBoxLayout>
@@ -82,8 +84,16 @@ class QcWaveform : public QWidget {
   Q_PROPERTY( int frames READ frames );
   Q_PROPERTY( int viewFrames READ viewFrames );
   Q_PROPERTY( int scrollPos READ scrollPos WRITE scrollTo );
+  Q_PROPERTY( int currentSelection READ currentSelection WRITE setCurrentSelection );
 
 public:
+
+  struct Selection {
+    Selection() : start(0), size(0), editable(true) {}
+    quint64 start;
+    quint64 size;
+    bool editable;
+  };
 
   QcWaveform( QWidget * parent = 0 );
   ~QcWaveform();
@@ -94,6 +104,12 @@ public:
   quint64 viewFrames() { return _dur; }
   quint64 scrollPos() { return _beg; }
   float zoom();
+
+  int currentSelection() const { return _curSel; }
+  void setCurrentSelection( int index ) { _curSel = index; update(); }
+  Q_INVOKABLE VariantList selectionAt( int index );
+  Q_INVOKABLE void setSelectionAt( int index, VariantList data );
+  Q_INVOKABLE void setSelectionEditable( int index, bool editable );
 
 public Q_SLOTS:
   void zoomTo( float fraction );
@@ -134,6 +150,9 @@ private:
 
   quint64 _beg;
   quint64 _dur;
+
+  Selection _selections[64];
+  int _curSel;
 
   QPixmap *pixmap;
   bool dirty;

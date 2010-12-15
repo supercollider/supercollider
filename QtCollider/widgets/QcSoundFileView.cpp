@@ -114,6 +114,7 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _cache(0),
   _beg(0.0),
   _dur(0.0),
+  _curSel(0),
   pixmap(0),
   dirty(false)
 {
@@ -175,6 +176,32 @@ float QcWaveform::loadProgress()
 float QcWaveform::zoom()
 {
   return sfInfo.frames ? (double) _dur / sfInfo.frames : 0;
+}
+
+VariantList QcWaveform::selectionAt( int index )
+{
+  VariantList l;
+  if( index < 0 || index >= 64 ) return l;
+  const Selection &s = _selections[index];
+  l.data << QVariant(static_cast<int>(s.start));
+  l.data << QVariant(static_cast<int>(s.size));
+  return l;
+}
+
+void QcWaveform::setSelectionAt( int index, VariantList l )
+{
+  if( index < 0 || index >= 64 || l.data.count() < 2 ) return;
+  Selection& s = _selections[index];
+  s.start = l.data[0].toInt();
+  s.size = l.data[1].toInt();
+  update();
+}
+
+void QcWaveform::setSelectionEditable( int index, bool editable )
+{
+  if( index < 0 || index >= 64 ) return;
+  _selections[index].editable = editable;
+  update();
 }
 
 void QcWaveform::zoomTo( float z )
@@ -264,6 +291,18 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
   }
 
   p.drawPixmap( ev->rect(), *pixmap, ev->rect() );
+
+  p.scale( (double) width() / _dur, 1.0 );
+  p.translate( _beg * -1.0, 0.0 );
+  p.setPen( Qt::NoPen );
+
+  int i;
+  for( i = 0; i < 64; ++i ) {
+    const Selection &s = _selections[i];
+    if( s.size > 0 );
+    QRectF r ( s.start, 0, s.size, height() );
+    p.fillRect( r, i == _curSel ? QColor( 255, 0, 0, 100 ) : QColor( 255, 255, 255, 100 ) );
+  }
 }
 
 void QcWaveform::rebuildCache ( int maxFPU, int maxRawFrames )
