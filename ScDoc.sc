@@ -933,6 +933,16 @@ ScDocRenderer {
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' />");
         f.write("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />");
         f.write("</head><body>");
+        
+        f.write(
+            "<table class='headMenu'><tr>"
+            "<td><a href='" ++ baseDir +/+ "Help.html'>Home</a>"
+            "<td><a href='" ++ baseDir +/+ "Overviews/Categories.html'>Categories</a>"
+            "<td><a href='" ++ baseDir +/+ "Overviews/Documents.html'>Document index</a>"
+            "<td><a href='" ++ baseDir +/+ "Overviews/Classes.html'>Class index</a>"
+            "<td><a href='" ++ baseDir +/+ "Overviews/Methods.html'>Method index</a>"
+            "</table>"
+        );
 
 //        cats = ScDoc.splitList(parser.findNode(\categories).text);
 //        cats = if(cats.notNil, {cats.join(", ")}, {""});
@@ -1199,7 +1209,6 @@ ScDoc {
                 
                 if((force or: File.exists(dest).not), {
                     ScDoc.postProgress("Generating doc for class: "++name);
-                    0.wait;
                     n.add((tag:\description, children:m=List.new));
                     m.add((tag:\prose, text:"This class is missing documentation. Please create and edit "++src, display:\block));
                     c.helpFilePath !? {
@@ -1247,6 +1256,7 @@ ScDoc {
             ^false;
         }, {
             docMap = Dictionary.new;
+            ScDoc.postProgress("Creating new docMap cache");
             ^true;
         });
         
@@ -1278,9 +1288,8 @@ ScDoc {
     
     }
 
-    *updateAll {|force=false,doneFunc=nil|
-        doWait=true;
-        Routine {
+    *updateAll {|force=false,doneFunc=nil,threaded=false|
+        var f = {
             if(force.not, {
                 force = this.readDocMap;
             }, {
@@ -1294,7 +1303,6 @@ ScDoc {
             PathName(helpSourceDir).filesDo {|path|
                 this.updateFile(path.fullPath, force);
             };
-    //        this.writeDocMap;
             this.handleUndocumentedClasses(force);
             docMap.pairsDo{|k,e|
                 if(e.delete==true, {
@@ -1309,7 +1317,10 @@ ScDoc {
             "ScDoc done!".postln;
             doneFunc.value();
             doWait=false;
-        }.play(AppClock);
+        };
+        if(doWait = threaded, {
+            Routine(f).play(AppClock);
+        }, f);
     }
 }
 

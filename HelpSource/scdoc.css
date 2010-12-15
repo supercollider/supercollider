@@ -35,6 +35,26 @@ a:hover {
     text-decoration: underline;
 }
 
+table.headMenu {
+    margin: 0px;
+    width: 100%;
+/*    border-collapse: separate;*/
+    font-size: 9pt;
+    border-top: 1px solid #ccc;
+}
+
+table.headMenu td {
+    padding: 2px;
+/*    width: 15%;*/
+    border: none;
+    text-align: center;
+/*    background: #eee;*/
+}
+
+table.headMenu td a {
+    color: #777;
+}
+
 .header {
 /*    background: #c6d0c6;*/
 /*    background: #ccc;*/
