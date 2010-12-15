@@ -283,7 +283,7 @@ ScDocParser {
 
     parseFile {|filename|
         var file = File.open(filename,"r");
-        postln("Parsing "++filename);
+        ScDoc.postProgress("Parsing "++filename);
         this.parse(file.readAllString);
         file.close;
     }
@@ -1021,7 +1021,7 @@ ScDocRenderer {
     renderHTML {|filename, folder="."|
         var f,x,name,mets;
         
-        postln("Rendering "++filename);
+        ScDoc.postProgress("Rendering "++filename);
 
         ("mkdir -p"+filename.dirname.escapeChar($ )).systemCmd;
 
@@ -1079,10 +1079,16 @@ ScDoc {
     classvar <categoryMap;
     classvar <docMap;
     classvar <p, <r;
+    classvar doWait;
 
 /*    *new {
         ^super.new.init;
     }*/
+    
+    *postProgress {|string|
+        string.postln;
+        if(doWait, {0.wait});
+    }
 
     *splitList {|txt|
         ^txt.findRegexp("[-_>a-zA-Z0-9]+[-_>/a-zA-Z0-9 ]*[-_>/a-zA-Z0-9]+").flop[1];
@@ -1093,30 +1099,31 @@ ScDoc {
         helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
         r = ScDocRenderer.new;
         r.parser = p = ScDocParser.new;
+        doWait = false;
     }
 
     *makeOverviews {
-        "Generating ClassTree...".postln;
+        ScDoc.postProgress("Generating ClassTree...");
         p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
 
-        "Generating Class overview...".postln;        
+        ScDoc.postProgress("Generating Class overview...");
         p.overviewAllClasses(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews");
 
-        "Generating Methods overview...".postln;
+        ScDoc.postProgress("Generating Methods overview...");
         p.overviewAllMethods(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews");
 
-        "Generating Documents overview...".postln;
+        ScDoc.postProgress("Generating Documents overview...");
         p.overviewAllDocuments(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews");
 
-        "Generating Categories overview...".postln;
+        ScDoc.postProgress("Generating Categories overview...");
         p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
 
-        "Generating Server overview...".postln;
+        ScDoc.postProgress("Generating Server overview...");
         p.overviewServer(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
@@ -1171,7 +1178,7 @@ ScDoc {
         var src, dest;
         var srcbase = helpSourceDir +/+ "Classes";
         var destbase = helpTargetDir +/+ "Classes";
-        ("Checking for undocumented classes...").postln;
+        ScDoc.postProgress("Checking for undocumented classes...");
         Class.allClasses.do {|c|
             name = c.name.asString;
             src = srcbase +/+ name ++ ".schelp";
@@ -1191,7 +1198,8 @@ ScDoc {
                 this.addToDocMap(p, "Classes" +/+ name);
                 
                 if((force or: File.exists(dest).not), {
-                    ("Generating doc for class: "++name).postln;
+                    ScDoc.postProgress("Generating doc for class: "++name);
+                    0.wait;
                     n.add((tag:\description, children:m=List.new));
                     m.add((tag:\prose, text:"This class is missing documentation. Please create and edit "++src, display:\block));
                     c.helpFilePath !? {
@@ -1219,7 +1227,7 @@ ScDoc {
 
     *makeCategoryMap {
         var cats;
-        ("Creating category map...").postln;
+        ScDoc.postProgress("Creating category map...");
         categoryMap = Dictionary.new;
         docMap.pairsDo {|k,v|
             cats = ScDoc.splitList(v.categories);
@@ -1263,40 +1271,45 @@ ScDoc {
             });
             docMap[subtarget].delete = false;
         }, {
-            ("Copying" + source + "to" + folder).postln;
+            ScDoc.postProgress("Copying" + source + "to" + folder);
             ("mkdir -p"+folder.escapeChar($ )).systemCmd;
             ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
         });
     
     }
 
-    *updateAll {|force=false|
-        if(force.not, {
-            force = this.readDocMap;
-        }, {
-            docMap = Dictionary.new;
-        });
-        
-        docMap.do{|e|
-            e.delete = true;
-        };
-
-        PathName(helpSourceDir).filesDo {|path|
-            this.updateFile(path.fullPath, force);
-        };
-//        this.writeDocMap;
-        this.handleUndocumentedClasses(force);
-        docMap.pairsDo{|k,e|
-            if(e.delete==true, {
-                postln("Deleting "++e.path);
-                docMap.removeAt(k);
-                //TODO: we should also remove the rendered dest file if existent?
+    *updateAll {|force=false,doneFunc=nil|
+        doWait=true;
+        Routine {
+            if(force.not, {
+                force = this.readDocMap;
+            }, {
+                docMap = Dictionary.new;
             });
-        };
-        this.writeDocMap;
-        this.makeCategoryMap;
-        this.makeOverviews;
-        "Done".postln;
+            
+            docMap.do{|e|
+                e.delete = true;
+            };
+
+            PathName(helpSourceDir).filesDo {|path|
+                this.updateFile(path.fullPath, force);
+            };
+    //        this.writeDocMap;
+            this.handleUndocumentedClasses(force);
+            docMap.pairsDo{|k,e|
+                if(e.delete==true, {
+                    ScDoc.postProgress("Deleting "++e.path);
+                    docMap.removeAt(k);
+                    //TODO: we should also remove the rendered dest file if existent?
+                });
+            };
+            this.writeDocMap;
+            this.makeCategoryMap;
+            this.makeOverviews;
+            "ScDoc done!".postln;
+            doneFunc.value();
+            doWait=false;
+        }.play(AppClock);
     }
 }
 
