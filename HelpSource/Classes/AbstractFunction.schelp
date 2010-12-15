@@ -1,7 +1,7 @@
 class::AbstractFunction
 summary::An object which responds to a set of messages that represent mathematical functions
 categories::Core>Kernel
-related::Classes/UGen,Classes/Pattern,Classes/Function
+related::Classes/UGen,Classes/Pattern,Classes/Function,Overviews/Operators
 
 description::
 
@@ -13,6 +13,9 @@ that do not calculate values directly but instead compose structures for calcula
 Function, Pattern, Stream and UGen are subclasses of AbstractFunction.
 For example, if you multiply two UGens together the receiver responds by answering a new
 instance of class BinaryOpUGen which has the two operands as inputs.
+
+For an overview of common operators, see link::Overviews/Operators::.
+To see which classes implements a specific method, see that method in the generated link::Overviews/Methods:: overview.
 
 instanceMethods::
 
