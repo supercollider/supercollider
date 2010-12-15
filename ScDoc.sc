@@ -256,6 +256,8 @@ ScDocParser {
 
     parse {|string|
         var lines = string.split($\n); //split lines
+//        var lines = string.findRegexp("[^\n]+").flop[1]; //doesn't work for empty lines
+        
         var w, split, split2, word;
         this.init;
         lines.do {|line,l|
@@ -1007,6 +1009,11 @@ ScDocRenderer {
             }.join(", "));
             f.write("</div>");
         });
+
+        currentClass !? { // FIXME: Remove this when conversion to new help system is done!
+                f.write("[ <a href='"++currentClass.helpFilePath++"'>old help</a> ]");
+        };
+
         f.write("</div>");
     }
 

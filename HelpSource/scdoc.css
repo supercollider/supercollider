@@ -38,6 +38,8 @@ a:hover {
 table.headMenu {
     margin: 0px;
     width: 100%;
+/*    margin-left: 0px;
+    margin-right: auto;*/
 /*    border-collapse: separate;*/
     font-size: 9pt;
     border-top: 1px solid #ccc;
@@ -49,6 +51,8 @@ table.headMenu td {
     border: none;
     text-align: center;
 /*    background: #eee;*/
+/*    border: 1px solid #ddd;*/
+/*    padding-right: 2em;*/
 }
 
 table.headMenu td a {
