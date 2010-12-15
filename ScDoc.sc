@@ -348,14 +348,13 @@ ScDocParser {
         root = r;
     }
 
-    makeCategoryTree {|catMap,node,filter=nil|
-        var a, p, e, n, l, m, kinds, folder, v, dumpCats;
+    makeCategoryTree {|catMap,node,filter=nil,toc=false|
+        var a, p, e, n, l, m, kinds, folder, v, dumpCats, sorted;
         var tree = Dictionary.new;
 
         catMap.pairsDo {|cat,files|
             p=tree;
             l=cat.split($>);
-//            if(if(filter.notNil, {filter.matchRegexp(l.first)}, {true}), {
             if(filter.isNil or: {filter.matchRegexp(l.first)}, {
                 l.do {|c|
                     if(p[c].isNil,{
@@ -370,6 +369,7 @@ ScDocParser {
                 files.do {|f| a.add(f)};
             });
         };
+
 
         dumpCats = {|x,l,y|
             var ents = x[\entries];
@@ -397,7 +397,18 @@ ScDocParser {
             };    
         };
 
-        tree.keys.asList.sort {|a,b| a<b}.do {|k|
+        sorted = tree.keys.asList.sort {|a,b| a<b};
+
+        if(toc) {
+            node.add((tag:'prose', text:"Jump to: ", display:\block));
+            sorted.do {|k,i|
+                if(i!=0, {node.add((tag:'prose', text:", ", display:\inline))});
+                node.add((tag:'link', text:"#"++ScDocRenderer.simplifyName(k)++"#"++k));
+//                node.add((tag:'prose', text:" ", display:\inline));
+            };
+        };
+        
+        sorted.do {|k|
             node.add((tag:\section, text:k, children:m=List.new));
             m.add((tag:\tree, children:l=List.new));
             dumpCats.(tree[k],l,k);
@@ -410,8 +421,8 @@ ScDocParser {
         r.add((tag:'title', text:"Document Categories"));
         r.add((tag:'summary', text:"All documents by categories"));
         r.add((tag:'related', text:"Overviews/Documents"));
-       
-        this.makeCategoryTree(catMap,r);
+        
+        this.makeCategoryTree(catMap,r,toc:true);
         
         // kind - category
 /*        kinds = Dictionary.new;
@@ -841,7 +852,7 @@ ScDocRenderer {
                     f = node.text.split($#);
                     m = if(f[1].size>0, {"#"++f[1]}, {""});
                     n = f[2] ?? { f[0].split($/).last };
-                    c = if(f[0].size>0, {baseDir +/+ f[0]++".html"},{n=f[1];""});
+                    c = if(f[0].size>0, {baseDir +/+ f[0]++".html"},{n=f[2]??f[1];""});
                     file.write("<a href=\""++c++m++"\">"++this.escapeSpecialChars(n)++"</a>");
                 });
             },

@@ -22,8 +22,8 @@ table td {
 }
 
 p {
-    margin-top: 0.5em;
-/*    margin-bottom: 0em;*/
+    margin-top: 1em;
+    margin-bottom: 0em;
 }
 
 a:link, a:visited, a:hover {
@@ -124,6 +124,7 @@ h1 {
     font-size: 26pt;
 /*        border-top: 1px solid #aaa;*/
     letter-spacing: 0.05em;
+    margin-bottom: 0em;
 }
 
 h2 {
@@ -133,11 +134,13 @@ h2 {
     letter-spacing: 0.05em;
     margin-top: 1.5em;
     text-align: left;
+    margin-bottom: 2px;
 }
 
 h3 {
-    border-bottom: 2px solid #bbb;
-    margin-bottom: 0.5em;
+    border-bottom: 2px solid #ccc;
+/*    margin-bottom: 0.5em;*/
+    margin-bottom: 2px;
 /*    padding-left: 0.15em;*/
     text-align: left;
 }
@@ -197,7 +200,7 @@ pre {
     font-family: Andale Mono, monospace;
     font-size: 9.5pt;
     font-weight: bold;
-    margin-bottom: 0.2em;
+    margin-bottom: 0em;
     margin-top: 1em;
 /*    padding-left: 0.2em;*/
     padding: 0.3em;

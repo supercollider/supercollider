@@ -1,6 +1,5 @@
 TITLE::Help
 summary::documentation home
-related:: Overviews/Categories, Overviews/Documents
 
 SuperCollider is an object-oriented language client and a server for sound synthesis and digital signal processing (DSP).
 
@@ -22,18 +21,10 @@ SECTION::Documentation Overviews
 definitionlist::
 ## link::Overviews/Categories:: || All documents by categories
 ## link::Overviews/Documents:: || Alphabetical index of all documents
-::
-
-section:: Classes
-definitionList::
 ## link::Overviews/Classes:: || Alphabetical index of all classes
 ## link::Overviews/ClassTree:: || All classes by inheritance tree
 ## link::Overviews/Methods:: || Alphabetical index of all methods
-::
-
-section:: UGens and Server stuff
-definitionList::
-## link::Overviews/Server:: || Server related documents
+## link::Overviews/Server:: || UGens and Server related documents
 ::
 
 SECTION::Licensing
