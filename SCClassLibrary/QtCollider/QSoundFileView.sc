@@ -52,10 +52,10 @@ QSoundFileView : QView {
 
   currentSelection_ { arg index; this.setProperty( \currentSelection, index ); }
 
-  selection { arg index; ^this.invokeMethod( \selectionAt, 0, true ); }
+  selection { arg index; ^this.invokeMethod( \selection, 0, true ); }
 
   setSelection { arg index, selection;
-    this.invokeMethod( \setSelectionAt, [index, selection] );
+    this.invokeMethod( \setSelection, [index, selection] );
   }
 
   selectionStart { arg index;
@@ -88,11 +88,11 @@ QSoundFileView : QView {
 
   selectNone { arg index; this.setSelectionSize( index, 0 ); }
 
-  setSelectionColor { arg index, color; ^this.nonimpl("setSelectionColor"); }
-
   setEditableSelectionStart { arg index, editable; ^this.nonimpl("setEditableSelectionStart"); }
 
   setEditableSelectionSize { arg index, editable; ^this.nonimpl("setEditableSelectionSize"); }
+
+  setSelectionColor { arg index, color; this.invokeMethod( \setSelectionColor, [index,color] ); }
 
   readSelection { arg block, closeFile; ^this.nonimpl("readSelection"); }
 

@@ -368,6 +368,10 @@ void Slot::setData( PyrSlot *slot )
         _type = QMetaType::QRectF;
         _ptr = new QRectF( toRect(slot) );
       }
+      else if( isKindOfSlot( slot, s_color->u.classobj ) ) {
+        _type = QMetaType::QColor;
+        _ptr = new QColor( toColor(slot) );
+      }
       else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
         _type = qMetaTypeId<VariantList>();
         _ptr = new VariantList( toVariantList(slot) );
