@@ -23,6 +23,7 @@
 #define QC_SOUND_FILE_VIEW_H
 
 #include "../Common.h"
+#include "../QcHelper.h"
 
 #include <sndfile.h>
 
@@ -76,7 +77,7 @@ private:
   double hScrollMultiplier;
 };
 
-class QcWaveform : public QWidget {
+class QcWaveform : public QWidget, public QcHelper {
 
   Q_OBJECT
 
@@ -85,14 +86,16 @@ class QcWaveform : public QWidget {
   Q_PROPERTY( int viewFrames READ viewFrames );
   Q_PROPERTY( int scrollPos READ scrollPos WRITE scrollTo );
   Q_PROPERTY( int currentSelection READ currentSelection WRITE setCurrentSelection );
-
+  Q_PROPERTY( QColor peakColor READ dummyColor WRITE setPeakColor );
+  Q_PROPERTY( QColor rmsColor READ dummyColor WRITE setRmsColor );
 public:
 
   struct Selection {
-    Selection() : start(0), size(0), editable(true) {}
+    Selection() : start(0), size(0), editable(true), color(QColor(0,0,200)) {}
     quint64 start;
     quint64 size;
     bool editable;
+    QColor color;
   };
 
   QcWaveform( QWidget * parent = 0 );
@@ -107,9 +110,13 @@ public:
 
   int currentSelection() const { return _curSel; }
   void setCurrentSelection( int index ) { _curSel = index; update(); }
-  Q_INVOKABLE VariantList selectionAt( int index );
-  Q_INVOKABLE void setSelectionAt( int index, VariantList data );
+  Q_INVOKABLE VariantList selection( int index );
+  Q_INVOKABLE void setSelection( int index, VariantList data );
   Q_INVOKABLE void setSelectionEditable( int index, bool editable );
+  Q_INVOKABLE void setSelectionColor( int index, const QColor &clr );
+
+  void setPeakColor( const QColor &clr ) { _peakColor = clr; redraw(); }
+  void setRmsColor( const QColor &clr ) { _rmsColor = clr; redraw(); }
 
 public Q_SLOTS:
   void zoomTo( float fraction );
@@ -155,6 +162,8 @@ private:
   int _curSel;
 
   QPixmap *pixmap;
+  QColor _peakColor;
+  QColor _rmsColor;
   bool dirty;
 };
 

@@ -116,6 +116,8 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _dur(0.0),
   _curSel(0),
   pixmap(0),
+  _peakColor( QColor(242,178,0) ),
+  _rmsColor( QColor(255,255,0) ),
   dirty(false)
 {
   memset( &sfInfo, 0, sizeof(SF_INFO) );
@@ -178,7 +180,7 @@ float QcWaveform::zoom()
   return sfInfo.frames ? (double) _dur / sfInfo.frames : 0;
 }
 
-VariantList QcWaveform::selectionAt( int index )
+VariantList QcWaveform::selection( int index )
 {
   VariantList l;
   if( index < 0 || index >= 64 ) return l;
@@ -188,7 +190,7 @@ VariantList QcWaveform::selectionAt( int index )
   return l;
 }
 
-void QcWaveform::setSelectionAt( int index, VariantList l )
+void QcWaveform::setSelection( int index, VariantList l )
 {
   if( index < 0 || index >= 64 || l.data.count() < 2 ) return;
   Selection& s = _selections[index];
@@ -201,6 +203,13 @@ void QcWaveform::setSelectionEditable( int index, bool editable )
 {
   if( index < 0 || index >= 64 ) return;
   _selections[index].editable = editable;
+  update();
+}
+
+void QcWaveform::setSelectionColor( int index, const QColor &c )
+{
+  if( index < 0 || index >= 64 ) return;
+  _selections[index].color = c;
   update();
 }
 
@@ -290,7 +299,9 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     dirty = false;
   }
 
-  p.drawPixmap( ev->rect(), *pixmap, ev->rect() );
+  p.fillRect( rect(), QColor( 0, 0, 0 ) );
+
+  p.save();
 
   p.scale( (double) width() / _dur, 1.0 );
   p.translate( _beg * -1.0, 0.0 );
@@ -301,8 +312,14 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     const Selection &s = _selections[i];
     if( s.size > 0 );
     QRectF r ( s.start, 0, s.size, height() );
-    p.fillRect( r, i == _curSel ? QColor( 255, 0, 0, 100 ) : QColor( 255, 255, 255, 100 ) );
+    p.setBrush( s.color );
+    p.drawRect( r );
   }
+
+  p.restore();
+
+  p.drawPixmap( ev->rect(), *pixmap, ev->rect() );
+
 }
 
 void QcWaveform::rebuildCache ( int maxFPU, int maxRawFrames )
@@ -313,8 +330,9 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 {
   // FIXME anomaly: when fpp reaching 1.0 rms can go outside min-max!
 
+  pix->fill( QColor( 0, 0, 0, 0 ) );
+
   QPainter p( pix );
-  p.fillRect( pix->rect(), QColor( 0, 0, 0 ) );
 
   if( !sf || !_cache || !_cache->ready() ) return;
 
@@ -349,23 +367,27 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   }
 
   // geometry
-  float chHeight = pix->height() / (float) sfInfo.channels;
+  float spacing = pix->height() * 0.15f / (sfInfo.channels + 1);
+  float chHeight = pix->height() * 0.85f / (float) sfInfo.channels;
   float yscale = -chHeight / 65535.f;
-  float spacing = 0.f;
+  spacing /= yscale;
+  printf("spacing %f\n", spacing);
 
   // initial painter setup
-  QPen minMaxPen( QColor(180,180,0) );
-  QPen rmsPen( QColor(255,255,0) );
+  QPen minMaxPen( _peakColor );
+  QPen rmsPen( _rmsColor );
   p.scale( 1.f, yscale );
-  p.translate( (float) x, -32767.f );
+  p.translate( (float) x, -32767.f + spacing );
 
 
   int ch;
   for( ch = 0; ch < soundStream->channels(); ++ch ) {
+
     p.setPen( QColor(255,255,255) );
     p.drawLine( x, 0, x + width, 0 );
     p.setPen( QColor(100,100,100) );
     p.drawLine( x, SHRT_MIN, x+width, SHRT_MIN );
+    p.drawLine( x, SHRT_MAX, x+width, SHRT_MAX );
 
     if( fpp > 1.0 ) {
 
