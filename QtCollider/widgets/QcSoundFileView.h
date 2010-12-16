@@ -109,9 +109,12 @@ public:
   float zoom();
 
   int currentSelection() const { return _curSel; }
-  void setCurrentSelection( int index ) { _curSel = index; update(); }
+  void setCurrentSelection( int i );
   Q_INVOKABLE VariantList selection( int index );
+  void setSelection( int i, quint64 a, quint64 b );
   Q_INVOKABLE void setSelection( int index, VariantList data );
+  Q_INVOKABLE void setSelectionStart( int i, quint64 frame );
+  Q_INVOKABLE void setSelectionEnd( int i, quint64 frame );
   Q_INVOKABLE void setSelectionEditable( int index, bool editable );
   Q_INVOKABLE void setSelectionColor( int index, const QColor &clr );
 
@@ -120,6 +123,7 @@ public:
 
 public Q_SLOTS:
   void zoomTo( float fraction );
+  //void zoomTo( float fraction, quint64 frame );
   void zoomBy( float factor );
   void zoomAllOut();
   void scrollTo( quint64 frame );
@@ -144,12 +148,17 @@ protected:
   virtual QSize sizeHint() const { return QSize( 400, 200 ); }
   virtual void resizeEvent( QResizeEvent * );
   virtual void paintEvent( QPaintEvent * );
+  virtual void mousePressEvent( QMouseEvent * );
+  virtual void mouseDoubleClickEvent ( QMouseEvent * );
+  virtual void mouseMoveEvent( QMouseEvent * );
 
 private:
 
+  inline void updateFPP() { _fpp = width() ? (double) _dur / width() : 0.0; }
   void rebuildCache ( int maxFramesPerCache, int maxRawFrames );
   void draw ( QPixmap *, int x, int width, double beginning, double duration );
 
+  // data
   SNDFILE *sf;
   SF_INFO sfInfo;
 
@@ -157,14 +166,28 @@ private:
 
   quint64 _beg;
   quint64 _dur;
+  double _fpp;
 
+  // selections
   Selection _selections[64];
   int _curSel;
 
+  // painting
   QPixmap *pixmap;
   QColor _peakColor;
   QColor _rmsColor;
   bool dirty;
+
+  // interaction
+  enum DragAction {
+    Scroll,
+    Zoom,
+    Select
+  };
+  DragAction _dragAction;
+  QPointF _dragPoint;
+  quint64 _dragFrame;
+  double _dragData;
 };
 
 class SoundStream {
