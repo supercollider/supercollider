@@ -21,6 +21,9 @@ QSoundFileView : QView {
 
   readWithTask { this.read }
 
+
+  //// Info
+
   startFrame { ^0 }
 
   numFrames { ^this.getProperty( \frames ); }
@@ -30,6 +33,9 @@ QSoundFileView : QView {
   readProgress { ^this.getProperty( \readProgress ); }
 
   scrollPos { ^this.getProperty( \scrollPos ); }
+
+
+  //// Navigation
 
   zoom { arg factor; this.invokeMethod( \zoomBy, factor ); }
 
@@ -47,6 +53,9 @@ QSoundFileView : QView {
   scrollToStart { this.invokeMethod( \scrollToStart ); }
 
   scrollToEnd { this.invokeMethod( \scrollToEnd ); }
+
+
+  //// Selections
 
   currentSelection { ^this.getProperty( \currentSelection ); }
 
@@ -80,19 +89,22 @@ QSoundFileView : QView {
     this.setSelection( index, sel );
   }
 
-  selectionStartTime { arg index; ^this.nonimpl("selectionStartTime"); }
+  selectAll { arg index; this.setSelection( this.currentSelection, [0, this.numFrames] ); }
 
-  selectionDuration { arg index; ^this.nonimpl("selectionDuration"); }
+  selectNone { arg index; this.setSelection( this.currentSelection, [0, 0] );  }
 
-  selectAll { arg index; ^this.nonimpl("selectAll"); }
-
-  selectNone { arg index; this.setSelectionSize( index, 0 ); }
 
   setEditableSelectionStart { arg index, editable; ^this.nonimpl("setEditableSelectionStart"); }
 
   setEditableSelectionSize { arg index, editable; ^this.nonimpl("setEditableSelectionSize"); }
 
   setSelectionColor { arg index, color; this.invokeMethod( \setSelectionColor, [index,color] ); }
+
+
+  selectionStartTime { arg index; ^this.nonimpl("selectionStartTime"); }
+
+  selectionDuration { arg index; ^this.nonimpl("selectionDuration"); }
+
 
   readSelection { arg block, closeFile; ^this.nonimpl("readSelection"); }
 

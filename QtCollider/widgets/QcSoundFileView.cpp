@@ -122,6 +122,7 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
 {
   memset( &sfInfo, 0, sizeof(SF_INFO) );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+  setAttribute( Qt::WA_OpaquePaintEvent, true );
 }
 
 QcWaveform::~QcWaveform()
@@ -155,7 +156,7 @@ void QcWaveform::load( const QString& filename )
   sfInfo = new_info;
   _beg = 0;
   _dur = sfInfo.frames;
-  printf("frames %Li\n", sfInfo.frames);
+  updateFPP();
 
   _cache = new SoundCacheStream();
   connect( _cache, SIGNAL(loadProgress(int)),
@@ -180,36 +181,68 @@ float QcWaveform::zoom()
   return sfInfo.frames ? (double) _dur / sfInfo.frames : 0;
 }
 
-VariantList QcWaveform::selection( int index )
+void QcWaveform::setCurrentSelection( int i ) {
+  if( i < 0 || i > 63 ) return;
+  _curSel = i;
+  update();
+}
+
+VariantList QcWaveform::selection( int i )
 {
   VariantList l;
-  if( index < 0 || index >= 64 ) return l;
-  const Selection &s = _selections[index];
+  if( i < 0 || i > 63 ) return l;
+  const Selection &s = _selections[i];
   l.data << QVariant(static_cast<int>(s.start));
   l.data << QVariant(static_cast<int>(s.size));
   return l;
 }
 
-void QcWaveform::setSelection( int index, VariantList l )
+void QcWaveform::setSelection( int i, quint64 a, quint64 b )
 {
-  if( index < 0 || index >= 64 || l.data.count() < 2 ) return;
-  Selection& s = _selections[index];
-  s.start = l.data[0].toInt();
-  s.size = l.data[1].toInt();
+  if( i < 0 || i > 63 ) return;
+  Selection& s = _selections[i];
+  s.start = qMin( a, b );
+  s.size = qMax( a, b ) - s.start;
   update();
 }
 
-void QcWaveform::setSelectionEditable( int index, bool editable )
+void QcWaveform::setSelection( int i, VariantList l )
 {
-  if( index < 0 || index >= 64 ) return;
-  _selections[index].editable = editable;
+  if( l.data.count() < 2 ) return;
+  setSelection( i, l.data[0].toInt(), l.data[1].toInt() );
+}
+
+void QcWaveform::setSelectionStart( int i, quint64 frame )
+{
+  if( i < 0 || i > 63 ) return;
+  Selection& s = _selections[i];
+  quint64 frame2 = s.start + s.size;
+  s.start = qMin( frame, frame2 );
+  s.size = qMax( frame, frame2 ) - s.start;
   update();
 }
 
-void QcWaveform::setSelectionColor( int index, const QColor &c )
+void QcWaveform::setSelectionEnd( int i, quint64 frame )
 {
-  if( index < 0 || index >= 64 ) return;
-  _selections[index].color = c;
+  if( i < 0 || i > 63 ) return;
+  Selection& s = _selections[i];
+  quint64 frame2 = s.start;
+  s.start = qMin( frame, frame2 );
+  s.size = qMax( frame, frame2 ) - s.start;
+  update();
+}
+
+void QcWaveform::setSelectionEditable( int i, bool editable )
+{
+  if( i < 0 || i > 63 ) return;
+  _selections[i].editable = editable;
+  update();
+}
+
+void QcWaveform::setSelectionColor( int i, const QColor &c )
+{
+  if( i < 0 || i > 63 ) return;
+  _selections[i].color = c;
   update();
 }
 
@@ -217,11 +250,12 @@ void QcWaveform::zoomTo( float z )
 {
   z = qMax( 0.f, qMin( 1.f, z ) );
 
-  _dur = sfInfo.frames ? qMax( 1.f, sfInfo.frames * z ) : 0;
+  _dur = sfInfo.frames ? qMax( 10.f, sfInfo.frames * z ) : 0;
 
   //printf("dur: %Li view: %Li\n", sfInfo.frames, _dur);
   if( _beg + _dur > sfInfo.frames ) _beg = sfInfo.frames - _dur;
 
+  updateFPP();
   redraw();
 }
 
@@ -236,6 +270,7 @@ void QcWaveform::zoomAllOut()
 {
   _beg = 0.0;
   _dur = sfInfo.frames;
+  updateFPP();
   redraw();
 }
 
@@ -273,6 +308,7 @@ void QcWaveform::resizeEvent( QResizeEvent * )
 {
   delete pixmap;
   pixmap = new QPixmap( size() );
+  updateFPP();
   redraw();
 }
 
@@ -284,7 +320,7 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 
   if( _cache && _cache->loading() ) {
     QRect r( rect() );
-    p.fillRect( r, QColor(70,70,70) );
+    p.fillRect( r, QColor(100,100,100) );
     r.setRight( r.right() * _cache->loadProgress() / 100 );
     p.fillRect( r, QColor( 0, 0, 0 ) );
     p.setPen( QColor(255,255,255) );
@@ -322,13 +358,73 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 
 }
 
+void QcWaveform::mousePressEvent( QMouseEvent *ev )
+{
+  _dragPoint = ev->pos();
+  _dragFrame = ev->pos().x() * _fpp + _beg;
+  Qt::KeyboardModifiers mods = ev->modifiers();
+  if( mods & Qt::ShiftModifier ) {
+    _dragAction = Zoom;
+    _dragData = zoom();
+  }
+  else if( mods & Qt::MetaModifier ) {
+    _dragAction = Select;
+    const Selection &s = _selections[_curSel];
+    printf("start %Li size %Li\n", s.start, s.size);
+    if( _dragFrame < s.start + (s.size*0.5) ) {
+      setSelectionStart( _curSel, _dragFrame );
+      _dragFrame = s.start + s.size;
+    }
+    else {
+      setSelectionEnd( _curSel, _dragFrame );
+      _dragFrame = s.start;
+    }
+  }
+  else if( mods & Qt::ControlModifier ) {
+    _dragAction = Select;
+    _selections[_curSel].start = _dragFrame;
+    _selections[_curSel].size = 0;
+    update();
+  }
+  else {
+    _dragAction = Scroll;
+  }
+}
+
+void QcWaveform::mouseDoubleClickEvent ( QMouseEvent * )
+{
+  setSelection( _curSel, 0, sfInfo.frames );
+}
+
+void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
+{
+  if( _dragAction == Scroll ) {
+    double dpos = _dragPoint.x() - ev->pos().x();
+    qint64 dif = qMax( _beg * -1.0, dpos * _fpp );
+    scrollTo( _beg + dif );
+    _dragPoint = ev->pos();
+  }
+  else if( _dragAction == Zoom ) {
+    double factor = pow( 2, (ev->pos().y() - _dragPoint.y()) * 0.008 );
+    double zoom_0 = _dragData;
+    zoomTo( zoom_0 * factor );
+    double beg = qMax( 0.0, _dragFrame - (_dragPoint.x() * _fpp) );
+    scrollTo( beg );
+  }
+  else if( _dragAction == Select ) {
+    quint64 frame = qMax( 0, qMin( width(), ev->pos().x() ) ) * _fpp + _beg;
+    setSelection( _curSel, _dragFrame, frame );
+    update();
+  }
+}
+
 void QcWaveform::rebuildCache ( int maxFPU, int maxRawFrames )
 {
 }
 
 void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_dur )
 {
-  // FIXME anomaly: when fpp reaching 1.0 rms can go outside min-max!
+  // FIXME anomaly: when _fpp reaching 1.0 rms can go outside min-max!
 
   pix->fill( QColor( 0, 0, 0, 0 ) );
 
@@ -355,14 +451,13 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   SoundStream *soundStream;
   SoundFileStream sfStream;
 
-  double fpp = f_dur / width;
-  if( fpp > 1.0 ? (fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
-    printf("use file\n");
+  if( _fpp > 1.0 ? (_fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
+    qcDebugMsg( 1, QString("use file") );
     soundStream = &sfStream;
     sfStream.load( sf, sfInfo, d_beg, d_count );
   }
   else {
-    printf("use cache\n");
+    qcDebugMsg( 1, QString("use cache") );
     soundStream = _cache;
   }
 
@@ -371,7 +466,6 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   float chHeight = pix->height() * 0.85f / (float) sfInfo.channels;
   float yscale = -chHeight / 65535.f;
   spacing /= yscale;
-  printf("spacing %f\n", spacing);
 
   // initial painter setup
   QPen minMaxPen( _peakColor );
@@ -383,13 +477,13 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   int ch;
   for( ch = 0; ch < soundStream->channels(); ++ch ) {
 
-    p.setPen( QColor(255,255,255) );
+    p.setPen( QColor(90,90,90) );
     p.drawLine( x, 0, x + width, 0 );
     p.setPen( QColor(100,100,100) );
     p.drawLine( x, SHRT_MIN, x+width, SHRT_MIN );
     p.drawLine( x, SHRT_MAX, x+width, SHRT_MAX );
 
-    if( fpp > 1.0 ) {
+    if( _fpp > 1.0 ) {
 
       // draw min-max regions and RMS
 
@@ -425,7 +519,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
       // draw lines between actual values
 
-      qreal ppf = 1.0 / fpp;
+      qreal ppf = 1.0 / _fpp;
       qreal dx = (d_beg - f_beg) * ppf;
 
       bool interleaved = false;
