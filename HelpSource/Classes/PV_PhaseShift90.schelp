@@ -1,0 +1,41 @@
+class:: PV_PhaseShift90
+summary:: Shift phase by 90 degrees.
+related:: Classes/FFT, Classes/IFFT, Classes/PV_PhaseShift, Classes/PV_PhaseShift270, Classes/PV_Diffuser
+categories:: UGens>FFT
+
+Description::
+
+Shift phase of all bins by 90 degrees.
+
+
+classmethods::
+
+method::new
+
+argument::buffer
+
+FFT buffer.
+
+
+Examples::
+
+code::
+
+Server.internal.boot;
+
+b = Buffer.alloc(Server.internal,2048,1);
+c = Buffer.alloc(Server.internal,2048,1);
+
+(
+{  arg out=0, bufnum=0;
+	var in, fft, fft2, shifted;
+	in = SinOsc.ar(500, 0, 0.4);
+	fft = FFT(b.bufnum, in);
+	fft2 = FFT(c.bufnum, in);
+	shifted = PV_PhaseShift90(fft); 
+	Out.ar(0,  [IFFT(fft2),IFFT(shifted)]);  
+}.scope
+)
+
+::
+

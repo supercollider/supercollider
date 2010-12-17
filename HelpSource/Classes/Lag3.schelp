@@ -1,0 +1,58 @@
+class:: Lag3
+summary:: Exponential lag.
+related:: Classes/Lag, Classes/Lag2, Classes/Ramp
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+Lag3 is equivalent to Lag.kr(Lag.kr(Lag.kr(in, time), time), time), thus
+resulting in a smoother transition. This saves on CPU as you only have to
+calculate the decay factor once instead of three times. See
+link::Classes/Lag::  for more details.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::lagTime
+
+60 dB lag time in seconds.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+(
+// used to lag pitch
+{
+	SinOsc.ar(		// sine wave
+		Lag3.kr(			// lag the modulator
+			LFPulse.kr(4, 0, 0.5, 50, 400),	// frequency modulator
+			Line.kr(0, 1, 15)				// modulate lag time
+		), 
+		0,	// phase
+		0.3	// sine amplitude
+	) 
+}.play
+)
+
+::
+

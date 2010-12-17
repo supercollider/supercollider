@@ -1,0 +1,37 @@
+class:: PinkNoise
+summary:: Pink Noise.
+related:: Classes/BrownNoise, Classes/GrayNoise, Classes/ClipNoise, Classes/NoahNoise, Classes/WhiteNoise
+categories::  UGens>Generators>Stochastic
+
+
+Description::
+
+Generates noise whose spectrum falls off in power by 3 dB per octave.
+This gives equal power over the span of each octave.
+This version gives 8 octaves of pink noise.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+
+Examples::
+
+code::
+
+(
+SynthDef("help-PinkNoise", { arg out=0;
+	Out.ar(out, 
+		PinkNoise.ar(0.4)
+	)
+}).play;
+)
+
+::
+

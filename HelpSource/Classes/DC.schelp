@@ -1,0 +1,20 @@
+class:: DC
+summary:: DC offset follower.
+related:: Classes/LeakDC
+categories::  UGens>Generators>Single-value
+
+
+Description::
+
+Tracks the DC offset of the signal.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+

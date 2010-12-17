@@ -1,0 +1,61 @@
+class:: RLPF
+summary:: A resonant low pass filter.
+related:: Classes/Formlet, Classes/RHPF, Classes/Resonz, Classes/Ringz
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+A resonant low pass filter.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::freq
+
+Cuttoff frequency in Hertz.
+
+
+argument::rq
+
+The reciprocal of Q (bandwidth / cutoffFreq).
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+{ RLPF.ar(Saw.ar(200,0.1), FSinOsc.kr(XLine.kr(0.7,300,20),3600,4000), 0.2) }.play;
+
+
+(
+{ 	var ctl = RLPF.ar(Saw.ar(5,0.1), 25, 0.03);
+	SinOsc.ar(ctl * 200 + 400) * 0.1;
+}.play;
+)
+
+(
+{ 	var ctl = RLPF.ar(Saw.ar(5,0.1), MouseX.kr(2, 200, 1), MouseY.kr(0.01, 1, 1));
+	SinOsc.ar(ctl * 200 + 400) * 0.1;
+}.play;
+)
+
+::
+

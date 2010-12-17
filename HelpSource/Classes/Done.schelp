@@ -1,0 +1,20 @@
+class:: Done
+summary:: FIXME: Done purpose.
+related:: Classes/FreeSelfWhenDone, Classes/PauseSelfWhenDone
+categories::  UGens>Synth control
+
+
+Description::
+
+FIXME: Done description.
+
+
+classmethods::
+
+method::kr
+
+argument::src
+
+FIXME: explain parameter src.
+
+

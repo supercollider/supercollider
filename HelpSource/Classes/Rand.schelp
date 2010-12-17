@@ -1,0 +1,47 @@
+class:: Rand
+summary:: Single random number generator.
+related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/TExpRand, Classes/TIRand, Classes/TRand
+categories:: UGens>Random
+
+Description::
+
+Generates a single random float value in uniform distribution from
+code::lo::  to  code::hi:: . It generates
+this when the SynthDef first starts playing, and remains fixed for
+the duration of the synth's existence.
+
+
+classmethods::
+
+method::new
+
+argument::lo
+Lower limit of the output range.
+
+argument::hi
+Upper limit of the output range.
+
+Examples::
+
+code::
+
+(
+SynthDef("help-Rand", { arg out=0;
+	Out.ar(out, 
+		FSinOsc.ar(
+			Rand(200.0, 400.0), 
+			0, Line.kr(0.2, 0, 1, doneAction:2))
+	)
+}).send(s);
+)
+
+(
+Routine({
+	8.do({
+		Synth.new("help-Rand"); 1.0.wait;
+	})
+}).play;
+)
+
+::
+

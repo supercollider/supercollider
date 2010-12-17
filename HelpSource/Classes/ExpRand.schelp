@@ -1,0 +1,47 @@
+class:: ExpRand
+summary:: Exponential single random number generator.
+related:: Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
+categories:: UGens>Random
+
+Description::
+
+Generates a single random float value in an exponential distributions
+from  code::lo::  to  code::hi:: . It generates
+this when the SynthDef first starts playing, and remains fixed for
+the duration of the synth's existence.
+
+
+classmethods::
+
+method::new
+
+argument::lo
+Lower limit of the output range.
+
+argument::hi
+Upper limit of the output range.
+
+Examples::
+
+code::
+
+(
+SynthDef("help-ExpRand", { arg out=0, n=0;
+	Out.ar(out, 
+		FSinOsc.ar(
+			ExpRand(100.0, 8000.0, n), 
+			0, Line.kr(0.2, 0, 0.01, doneAction:2))
+	)
+}).send(s);
+)
+
+(
+Routine({
+	inf.do({ arg i;
+		Synth.new("help-ExpRand"); 0.05.wait;
+	})
+}).play;
+)
+
+::
+

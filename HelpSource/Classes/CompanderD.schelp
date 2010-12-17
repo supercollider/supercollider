@@ -1,0 +1,41 @@
+class:: CompanderD
+summary:: Compressor, expander, limiter, gate, ducker.
+related:: Classes/Amplitude, Classes/Compander, Classes/Normalizer, Classes/Limiter
+categories::  UGens>Analysis>Amplitude
+
+
+Description::
+
+CompanderD passes the signal directly to the control input, but
+adds a delay to the process input so that the lag in the gain clamping
+will not lag the attacks in the input sound.
+
+
+classmethods::
+
+method::ar
+
+argument::in
+FIXME: explain parameter in.
+
+argument::thresh
+FIXME: explain parameter thresh.
+
+argument::slopeBelow
+FIXME: explain parameter slopeBelow.
+
+argument::slopeAbove
+FIXME: explain parameter slopeAbove.
+
+argument::clampTime
+FIXME: explain parameter clampTime.
+
+argument::relaxTime
+FIXME: explain parameter relaxTime.
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+

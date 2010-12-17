@@ -1,0 +1,52 @@
+class:: BufDelayL
+summary:: Buffer based simple delay line with linear interpolation.
+related:: Classes/BufDelayC, Classes/BufDelayN, Classes/DelayL
+categories::  UGens>Delays
+
+
+Description::
+
+Simple delay line with linear interpolation which uses a buffer for its
+internal memory. See also  link::Classes/BufDelayN::  which uses no
+interpolation, and  link::Classes/BufDelayC::  which uses cubic
+interpolation. Cubic interpolation is more computationally expensive
+than linear, but more accurate.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::buf
+Buffer number.
+
+argument::in
+The input signal.
+
+argument::delaytime
+Delay time in seconds.
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+
+Examples::
+
+code::
+
+// allocate buffer
+b = Buffer.alloc(s,44100,1);
+
+(
+// Dust randomly triggers Decay to create an exponential 
+// decay envelope for the WhiteNoise input source
+{
+z = Decay.ar(Dust.ar(1,0.5), 0.3, WhiteNoise.ar);
+BufDelayL.ar(b.bufnum, z, 0.2, 1, z); // input is mixed with delay via the add input
+}.play
+)
+
+::
+

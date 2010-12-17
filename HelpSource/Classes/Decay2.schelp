@@ -1,0 +1,63 @@
+class:: Decay2
+summary:: Exponential decay.
+related:: Classes/Decay
+categories::  UGens>Filters>Linear
+
+
+Description::
+link::Classes/Decay::  has a very sharp attack and can produce clicks.
+Decay2 rounds off the attack by subtracting one Decay from another.
+Decay2.ar(in, attackTime, decayTime) is equivalent to:
+
+formula::
+Decay.ar(in, decayTime) - Decay.ar(in, attackTime)
+::
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::attackTime
+
+60 dB attack time in seconds.
+
+
+argument::decayTime
+
+60 dB decay time in seconds.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+//plot({ Decay2.ar(Impulse.ar(1), 0.001, 0.01) })
+
+// since attack and decay are a difference of two Decays, if you swap the values, 
+// then the envelope turns upside down
+//plot({ Decay2.ar(Impulse.ar(1), 0.01, 0.001) })
+
+// used as an envelope
+{ Decay2.ar(Impulse.ar(XLine.kr(1,50,20), 0.25), 0.01, 0.2, FSinOsc.ar(600)) }.play;
+
+// compare the above with Decay used as the envelope
+{ Decay.ar(Impulse.ar(XLine.kr(1,50,20), 0.25), 0.2, FSinOsc.ar(600), 0)  }.play;
+
+::
+

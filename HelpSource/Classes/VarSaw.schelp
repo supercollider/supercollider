@@ -1,0 +1,61 @@
+class:: VarSaw
+summary:: Variable duty saw.
+related:: Classes/Saw, Classes/SyncSaw, Classes/LFSaw
+categories::  UGens>Generators>Deterministic
+
+
+Description::
+
+FIXME: VarSaw description.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::freq
+
+FIXME: explain parameter freq.
+
+
+argument::iphase
+
+FIXME: explain parameter iphase.
+
+
+argument::width
+
+FIXME: explain parameter width.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+play({
+	VarSaw.ar(
+		LFPulse.kr(3, 0, 0.3, 200, 200), 
+		0, 
+		LFTri.kr(1.0).range(0,1), //width
+		0.1) 
+});
+
+
+play({ VarSaw.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
+
+compare:
+
+play({ LFPulse.ar(LFPulse.kr(3, 0, 0.3, 200, 200), 0, 0.2, 0.1) });
+
+::
+

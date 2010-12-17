@@ -1,0 +1,36 @@
+class:: TDelay
+summary:: Trigger delay.
+categories::  UGens>Triggers, UGens>Delays
+
+
+Description::
+
+Delays a trigger by a given time. Any triggers which arrive in the time
+between an input trigger and its delayed output, are ignored.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+Input trigger signal.
+
+
+argument::dur
+
+Delay time in seconds.
+
+
+Examples::
+
+code::
+
+(
+{
+	z = Impulse.ar(2);
+	[z * 0.1, ToggleFF.ar(TDelay.ar(z, 0.5)) * SinOsc.ar(mul: 0.1)]
+}.scope)
+
+::

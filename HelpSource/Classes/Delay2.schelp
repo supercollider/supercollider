@@ -1,0 +1,37 @@
+class:: Delay2
+summary:: Two sample delay.
+related:: Classes/Delay1
+categories::  UGens>Delays
+
+
+Description::
+
+Delays the input by 2 samples.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+Input signal.
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+
+Examples::
+
+code::
+
+(
+plot({
+	var z;
+	z = Dust.ar(1000);
+	[z, z - Delay2.ar(z)] 	// [ original, subtract delayed from original ]
+}))
+
+::
+

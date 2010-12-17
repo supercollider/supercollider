@@ -1,0 +1,37 @@
+class:: BufDur
+summary:: Current duration of soundfile in buffer.
+related:: Classes/BufChannels, Classes/BufFrames, Classes/BufRateScale, Classes/BufSampleRate, Classes/BufSamples
+categories::  UGens>Buffer>Info
+
+
+Description::
+
+Returns the current duration of soundfile.
+
+
+warning::
+
+The  code::.ir::  method is not the safest choice.
+Since a buffer can be reallocated at any time, using
+code::.ir::  will not track the changes.
+
+::
+
+classmethods::
+
+method::kr, ir
+
+argument::bufnum
+Buffer index.
+
+Examples::
+
+code::
+
+s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
+
+
+{ BufRd.ar(1, 0,  Sweep.ar(Impulse.ar(BufDur.kr(0).reciprocal), BufSampleRate.kr(0))) }.play;
+
+::
+

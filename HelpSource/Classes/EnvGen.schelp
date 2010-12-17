@@ -1,0 +1,199 @@
+class:: EnvGen
+summary:: Envelope generator.
+related:: 
+categories::  UGens>Envelopes
+
+
+Description::
+
+Plays back break point envelopes. The envelopes are instances of the
+link::Classes/Env:: class. The arguments for  code::levelScale:: ,
+code::levelBias:: , and  code::timeScale:: 
+are polled when the EnvGen is triggered and remain constant for the
+duration of the envelope.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::envelope
+
+An link::Classes/Env:: instance, or an Array of Controls. (See
+
+link::Classes/Control::  and the example below for how to use
+this.)
+
+
+argument::gate
+
+This triggers the envelope and holds it open while > 0. If the
+Env is fixed-length (e.g. Env.linen, Env.perc), the gate argument
+is used as a simple trigger. If it is an sustaining envelope
+(e.g. Env.adsr, Env.asr), the envelope is held open until the
+gate becomes 0, at which point is released.
+
+
+argument::levelScale
+
+Scales the levels of the breakpoints.
+
+
+argument::levelBias
+
+Offsets the levels of the breakpoints.
+
+
+argument::timeScale
+
+Scales the durations of the segments.
+
+
+argument::doneAction
+
+An integer representing an action to be executed when the env is
+finished playing. This can be used to free the enclosing synth,
+etc. See 
+link::Classes/UGen-doneActions::  for more detail.
+
+
+Examples::
+
+code::
+
+{ EnvGen.kr(Env.perc, 1.0, doneAction: 2) * SinOsc.ar(440,0,0.1) }.play;
+
+// example
+
+(
+SynthDef("env-help", { arg out, gate; 
+	var z;
+	z =  EnvGen.kr(Env.adsr,gate) * SinOsc.ar(440,0,0.1);
+	Out.ar(out, z)
+}).send(s);
+)
+
+s.sendMsg("/s_new", "env-help", 1980); // start a synth (silently, as gate defaults to 0)
+
+
+// turn on
+s.sendMsg("/n_set", 1980, \gate, 1);
+
+// turn off
+s.sendMsg("/n_set", 1980, \gate, 0);
+
+// it does not matter to what value the gate is set, as long as it is > 0
+s.sendMsg("/n_set", 1980, \gate, 2);
+
+s.sendMsg("/n_free", 1980);
+
+Changing an Env while playing
+
+(
+SynthDef("env", { arg i_outbus=0;
+	var env, envctl;
+	
+	// make a dummy 8 segment envelope
+	env = Env.newClear(8);
+	
+	// create a control argument array
+	envctl = Control.names([\env]).kr( env.asArray );
+	
+	ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
+}).send(s);
+)
+
+(
+SynthDef("sine", {
+	Out.ar(0, SinOsc.ar(In.kr(0), 0, 0.2));
+}).send(s);
+)
+
+s.sendMsg(\c_set, 0, 800);
+
+s.sendMsg(\s_new, \sine, 1001, 1, 0);
+
+e = Env([700,900,900,800], [1,1,1]*0.4, \exp).asArray;
+s.sendBundle(nil,[\s_new, \env, 1002, 2, 1001],[\n_setn, 1002, \env, e.size] ++ e);
+
+f = Env([1000,1000,800,1000,900,1000], [1,1,1,1,1]*0.3, \step).asArray;
+s.sendBundle(nil,[\s_new, \env, 1003, 2, 1001],[\n_setn, 1003, \env, f.size] ++ f);
+
+s.sendMsg(\n_free, 1001);
+
+
+
+	
+
+Forced release of the EnvGen
+
+	If the gate of an EnvGen is set to -1 or below, then the envelope will cutoff immediately. The time for it to 	cutoff is the amount less than -1, with -1 being as fast as possible, -1.5 being a cutoff in 0.5 seconds, etc. 	The cutoff shape is linear.
+
+(
+SynthDef("stealMe", { arg gate = 1;
+	Out.ar(0, {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction:2))
+}).send(s);
+)
+
+s.sendMsg(\s_new, \stealMe, 1001, 1, 0);
+
+s.sendMsg(\n_set, 1001, \gate, -1.1); // cutoff in 0.1 seconds
+
+If the synthDef has an arg named "gate", the convienience method of Node can be used:
+
+Node-release(releaseTime)
+
+d = { arg gate=1; {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction:2) }.play;
+d.release(3);
+
+
+Fast triggering tests
+
+(
+	{
+		EnvGen.kr(
+				Env.new([ 0.001, 1, 0.5, 0 ], [ 0.01, 0.3, 1 ], -4, 2, nil),
+				Impulse.kr(10)
+		) * SinOsc.ar(440,0,0.1)		
+	}.play;
+)
+
+(
+	{ 
+		EnvGen.kr(
+				Env.perc( 0.1, 0.0, 0.5, 1, \welch ),
+				Impulse.kr(100),
+				timeScale: 0.1
+			) * SinOsc.ar(440,0,0.3)
+	}.play;
+)
+
+
+Modulating the levelScale
+
+no,it doesn't take a ugen in
+(
+	{ 
+		EnvGen.kr(
+				Env.asr( 0.1, 1.0, 0.5, \welch ),
+				1.0,
+				FSinOsc.ar(1.0).range(0.0,1.0),
+				timeScale: 0.1
+			) * SinOsc.ar(440,0,0.3)
+	}.play;
+
+)
+an .ir rate input, a float or an ir rate ugen like Rand would work
+(
+	{ 
+		EnvGen.kr(
+				Env.asr( 0.1, 1.0, 0.5, \welch ),
+				1.0,
+				Rand(0.1,1.0),
+				timeScale: 0.1
+			) * SinOsc.ar(440,0,0.3)
+	}.play;
+)
+
+::
+

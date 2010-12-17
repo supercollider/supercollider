@@ -1,0 +1,58 @@
+class:: AudioIn
+summary:: Read audio input.
+related:: Classes/In
+categories::  UGens>InOut
+
+
+Description::
+
+Reads audio from the sound input hardware.
+
+
+classmethods::
+
+method::ar
+
+argument::channel
+
+Input channel number to read. Channel numbers begin at 1.
+
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+
+Examples::
+Patching input to output
+code::
+// patching input to output
+
+// watch the feedback
+
+(
+SynthDef("help-AudioIn",{ arg out=0;
+	Out.ar(out,
+		AudioIn.ar(1)
+	)
+}).play;
+)
+
+::
+Stereo through patching from input to output
+code::
+// stereo through patching from input to output
+
+// watch the feedback
+
+(
+SynthDef("help-AudioIn",{ arg out=0;
+	Out.ar(out,
+		AudioIn.ar([1,2])
+	)
+}).play;
+)
+
+::
+

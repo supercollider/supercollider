@@ -1,0 +1,50 @@
+class:: Convolution2L
+summary:: Fixed kernel convolver with linear crossfade.
+related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution3
+categories::  UGens>FFT
+
+
+Description::
+
+FIXME: Convolution2L description.
+
+
+classmethods::
+
+method::ar
+
+argument::in
+
+FIXME: explain parameter in.
+
+
+argument::bufnum
+
+FIXME: explain parameter bufnum.
+
+
+argument::trigger
+
+FIXME: explain parameter trigger.
+
+
+argument::framesize
+
+FIXME: explain parameter framesize.
+
+
+argument::crossfade
+
+FIXME: explain parameter crossfade.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+

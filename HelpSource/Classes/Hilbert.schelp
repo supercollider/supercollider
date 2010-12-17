@@ -1,0 +1,30 @@
+class:: Hilbert
+summary:: FIXME: Hilbert purpose.
+related:: Classes/HilbertFIR, Classes/FreqShift
+categories::  UGens>Filters>Nonlinear
+
+
+Description::
+
+FIXME: Hilbert description.
+
+
+classmethods::
+
+method::ar
+
+argument::in
+
+FIXME: explain parameter in.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+

@@ -1,0 +1,53 @@
+class:: Vibrato
+summary:: FIXME: Vibrato purpose.
+categories::  UGens>Filters>Pitch
+
+
+Description::
+
+FIXME: Vibrato description.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::freq
+
+FIXME: explain parameter freq.
+
+
+argument::rate
+
+FIXME: explain parameter rate.
+
+
+argument::depth
+
+FIXME: explain parameter depth.
+
+
+argument::delay
+
+FIXME: explain parameter delay.
+
+
+argument::onset
+
+FIXME: explain parameter onset.
+
+
+argument::rateVariation
+
+FIXME: explain parameter rateVariation.
+
+
+argument::depthVariation
+
+FIXME: explain parameter depthVariation.
+
+
+argument::iphase
+
+FIXME: explain parameter iphase.
+

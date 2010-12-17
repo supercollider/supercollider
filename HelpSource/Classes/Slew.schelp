@@ -1,0 +1,65 @@
+class:: Slew
+summary:: Slew rate limiter.
+related:: Classes/Slope
+categories::  UGens>Filters>Nonlinear
+
+
+Description::
+
+Limits the slope of an input signal. The slope is expressed in units per
+second.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::up
+
+Maximum upward slope.
+
+
+argument::dn
+
+Maximum downward slope.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+(
+{
+	z = LFPulse.ar(800);
+	[z, Slew.ar(z, 4000, 4000)]
+}.plot)
+
+
+
+Has the effect of removing transients and higher frequencies.
+(
+{
+
+	z = Saw.ar(800,mul:0.2);
+	Slew.ar(z,400,400)
+
+}.play
+)
+
+::
+

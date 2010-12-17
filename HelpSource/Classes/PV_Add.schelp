@@ -1,0 +1,51 @@
+class:: PV_Add
+summary:: Complex addition.
+related:: Classes/FFT, Classes/IFFT, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min, Classes/PV_Mul
+categories:: UGens>FFT
+
+Description::
+
+Complex addition:
+
+formula::
+
+RealA + RealB, ImagA + ImagB
+
+::
+
+
+classmethods::
+
+method::new
+
+argument::bufferA
+FFT buffer A.
+
+argument::bufferB
+FFT buffer B.
+
+Examples::
+
+code::
+
+s.boot;
+(
+b = Buffer.alloc(s,2048,1);
+c = Buffer.alloc(s,2048,1);
+d = Buffer.read(s,"sounds/a11wlk01.wav");
+)
+
+(
+SynthDef("help-add", { arg out=0, bufnumA=0, bufnumB=1, soundBufnum;
+	var inA, chainA, inB, chainB, chain ;
+	inA = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
+	inB =  PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum) * 0.5, loop: 1);
+	chainA = FFT(bufnumA, inA);
+	chainB = FFT(bufnumB, inB);
+	chain = PV_Add(chainA, chainB); 
+	Out.ar(out,  0.1 * IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum, \soundBufnum, d.bufnum]);
+)
+
+::
+

@@ -1,0 +1,30 @@
+class:: Tap
+summary:: FIXME: Tap purpose.
+related:: Classes/MultiTap
+categories::  UGens>Buffer
+
+
+Description::
+
+FIXME: Tap description.
+
+
+classmethods::
+
+method::ar
+
+argument::bufnum
+
+FIXME: explain parameter bufnum.
+
+
+argument::numChannels
+
+FIXME: explain parameter numChannels.
+
+
+argument::delaytime
+
+FIXME: explain parameter delaytime.
+
+

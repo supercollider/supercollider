@@ -1,0 +1,106 @@
+class:: SOS
+summary:: Second order filter section (biquad).
+related:: Classes/FOS
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+A standard second order filter section. Filter coefficients are given
+directly rather than calculated for you. Formula is equivalent to:
+
+formula::
+
+out(i) = (a0 * in(i)) + (a1 * in(i-1)) + (a2 * in(i-2)) + (b1 * out(i-1)) + (b2 * out(i-2))
+
+::
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+FIXME: explain parameter in.
+
+
+argument::a0
+
+FIXME: explain parameter a0.
+
+
+argument::a1
+
+FIXME: explain parameter a1.
+
+
+argument::a2
+
+FIXME: explain parameter a2.
+
+
+argument::b1
+
+FIXME: explain parameter b1.
+
+
+argument::b2
+
+FIXME: explain parameter b2.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+// example: same as TwoPole
+(
+{
+	var rho, theta, b1, b2;
+	theta = MouseX.kr(0.2pi, pi);
+	rho = MouseY.kr(0.6, 0.99);
+	b1 = 2.0 * rho * cos(theta);
+	b2 = rho.squared.neg;
+	SOS.ar(LFSaw.ar(200, 0, 0.1), 1.0, 0.0, 0.0, b1, b2)
+}.play
+)
+
+
+(
+{
+	var rho, theta, b1, b2;
+	theta = MouseX.kr(0.2pi, pi);
+	rho = MouseY.kr(0.6, 0.99);
+	b1 = 2.0 * rho * cos(theta);
+	b2 = rho.squared.neg;
+	SOS.ar(WhiteNoise.ar(0.1 ! 2), 1.0, 0.0, 0.0, b1, b2)
+}.play
+)
+
+// example with SOS.kr kr as modulator
+(
+{
+	var rho, theta, b1, b2, vib;
+	theta = MouseX.kr(0.2pi, pi);
+	rho = MouseY.kr(0.6, 0.99);
+	b1 = 2.0 * rho * cos(theta);
+	b2 = rho.squared.neg;
+	
+	vib = SOS.kr(LFSaw.kr(3.16), 1.0, 0.0, 0.0, b1, b2);
+	SinOsc.ar( vib * 200 + 600) * 0.2
+}.play
+)
+
+::
+

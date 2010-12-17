@@ -1,0 +1,27 @@
+class:: Logistic
+summary:: FIXME: Logistic purpose.
+related:: Classes/Crackle, Classes/Latoocarfian
+categories::  UGens>Generators>Chaotic
+
+
+Description::
+
+FIXME: Logistic description.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::chaosParam
+FIXME: explain parameter chaosParam.
+
+argument::freq
+FIXME: explain parameter freq.
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+

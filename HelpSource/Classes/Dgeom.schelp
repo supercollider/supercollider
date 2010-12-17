@@ -1,0 +1,63 @@
+class:: Dgeom
+summary:: Demand rate geometric series UGen.
+related:: Classes/Demand, Classes/Dseries, Classes/Duty, Classes/TDuty
+categories:: UGens>Demand
+
+Description::
+
+FIXME: Dgeom description.
+
+
+See link::Classes/Pgeom:: for structurally related equivalent.
+
+
+classmethods::
+
+method::new
+
+argument::start
+
+Start value. Can be a number or any other UGen.
+
+
+argument::grow
+
+Value by which to grow (x = x[-1] * grow).  Can be a number or
+any other UGen.
+
+
+argument::length
+
+Number of values to create. Can be a number or any other UGen.
+
+
+Examples::
+
+code::
+
+// example
+
+(
+{ 
+	var a, freq, trig;
+	a = Dgeom(1, 1.2, 15);
+	trig = Impulse.kr(MouseX.kr(1, 40, 1));
+	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	SinOsc.ar(freq) * 0.1
+
+}.play;
+)
+
+(
+{ 
+	var a, freq, trig;
+	a = Dgeom(1, 1.2, inf);
+	trig = Dust.kr(MouseX.kr(1, 40, 1));
+	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	SinOsc.ar(freq) * 0.1
+
+}.play;
+)
+
+::
+

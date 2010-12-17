@@ -1,0 +1,52 @@
+class:: InRect
+summary:: Test if a point is within a given rectangle.
+related:: Classes/InRange, Classes/Schmidt, Classes/Trapezoid
+categories::  UGens>Maths
+
+
+Description::
+
+Outputs 1, if
+
+formula::
+rect.left ≤
+x ≤
+rect.right
+
+::
+
+and
+
+formula::
+rect.top ≤
+y ≤
+rect.bottom,
+
+::
+
+otherwise, outputs 0.
+
+
+FIXME: This is strange, because Y must be LESS THAN top and GREATER THAN
+bottom, but the source is coded exactly the way above. A bug?
+
+
+classmethods::
+
+method::ar, kr
+
+argument::x
+
+X value.
+
+
+argument::y
+
+Y value.
+
+
+argument::rect
+
+A link::Classes/Rect::.
+
+

@@ -1,0 +1,79 @@
+class:: PanAz
+summary:: Azimuth panner
+related:: Classes/Balance2, Classes/LinPan2, Classes/Pan2, Classes/Pan4
+categories::  UGens>Multichannel>Panners
+
+
+Description::
+
+Multichannel equal power panner.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::numChans
+
+Number of output channels.
+
+
+argument::in
+
+The input signal.
+
+
+argument::pos
+
+pan position. Channels are evenly spaced over a cyclic period of
+2.0 in pos with 0.0 equal to channel zero and 2.0/numChans equal
+to channel 1, 4.0/numChans equal to channel 2, etc.
+
+
+Thus all channels will be cyclically panned through if a sawtooth
+wave from -1 to +1 is used to modulate the pos.
+
+
+argument::level
+
+A control rate level input.
+
+
+argument::width
+
+The width of the panning envelope. Nominally this is 2.0 which
+pans between pairs of adjacent speakers. Width values greater
+than two will spread the pan over greater numbers of speakers.
+Width values less than one will leave silent gaps between
+speakers.
+
+
+argument::orientation
+
+Should be zero if the front is a vertex of the polygon. The first
+speaker will be directly in front. Should be 0.5 if the front
+bisects a side of the polygon. Then the first speaker will be the
+one left of center.
+
+
+Examples::
+
+code::
+
+// five channel circular panning
+Server.internal.boot;
+(
+{
+	PanAz.ar(
+		5, 				// numChans
+		ClipNoise.ar, 	// in
+		LFSaw.kr(MouseX.kr(0.2, 8, 'exponential')), // pos
+		0.5,			// level
+		3			// width
+	);
+}.play(Server.internal);
+Server.internal.scope;
+)
+
+::
+

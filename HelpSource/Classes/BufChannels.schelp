@@ -1,0 +1,26 @@
+class:: BufChannels
+summary:: Current number of channels of soundfile in buffer.
+related:: Classes/BufDur, Classes/BufFrames, Classes/BufRateScale, Classes/BufSampleRate, Classes/BufSamples
+categories::  UGens>Buffer>Info
+
+
+Description::
+
+Returns the current number of channels of soundfile.
+
+
+warning::
+
+The  code::.ir::  method is not the safest choice.
+Since a buffer can be reallocated at any time, using
+code::.ir::  will not track the changes.
+
+::
+
+classmethods::
+
+method::kr, ir
+
+argument::bufnum
+Buffer index.
+

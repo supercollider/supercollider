@@ -1,0 +1,32 @@
+class:: Timer
+summary:: Returns time since last triggered.
+categories::  UGens>Triggers
+
+
+Description::
+
+FIXME: Timer description.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::trig
+
+FIXME: explain parameter trig.
+
+
+Examples::
+
+code::
+
+// using timer to modulate sine frequency: the slower the trigger is the higher the frequency
+(
+{ var trig;
+	trig = Impulse.kr(MouseX.kr(0.5, 20, 1));
+	SinOsc.ar(Timer.kr(trig) * 500 + 500, 0, 0.2)
+}.play;
+)
+
+::

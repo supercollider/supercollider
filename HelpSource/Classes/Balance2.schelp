@@ -1,0 +1,35 @@
+class:: Balance2
+summary:: FIXME: Balance2 purpose.
+related:: Classes/LinPan2, Classes/Pan2, Classes/Pan4, Classes/PanAz
+categories::  UGens>Multichannel>Panners
+
+
+Description::
+
+FIXME: Balance2 description.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::left
+
+FIXME: explain parameter left.
+
+
+argument::right
+
+FIXME: explain parameter right.
+
+
+argument::pos
+
+FIXME: explain parameter pos.
+
+
+argument::level
+
+FIXME: explain parameter level.
+
+

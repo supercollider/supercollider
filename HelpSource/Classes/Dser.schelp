@@ -1,0 +1,44 @@
+class:: Dser
+summary:: Demand rate sequence generator.
+related:: Classes/Demand, Classes/Drand, Classes/Dseq, Classes/Duty, Classes/Dxrand, Classes/TDuty
+categories:: UGens>Demand
+
+Description::
+
+FIXME: Dser description.
+
+
+See link::Classes/Pser:: for structurally related equivalent.
+
+
+classmethods::
+
+method::new
+
+argument::list
+
+An array of values or other UGens.
+
+
+argument::repeats
+
+Number of values to return.
+
+
+Examples::
+
+code::
+
+(
+{ 
+	var a, freq, trig;
+	a = Dser([1, 3, 2, 7, 8], 8);
+	trig = Impulse.kr(MouseX.kr(1, 40, 1));
+	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	SinOsc.ar(freq) * 0.1
+
+}.play;
+)
+
+::
+

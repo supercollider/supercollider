@@ -1,0 +1,33 @@
+class:: TrigControl
+summary:: FIXME: TrigControl purpose.
+related:: Classes/Control, Classes/LagControl
+categories::  UGens>Synth control
+
+
+Description::
+
+FIXME: TrigControl description.
+
+
+classmethods::
+
+method::kr, ir
+
+argument::values
+
+FIXME: explain parameter values.
+
+
+method::names
+
+argument::names
+
+FIXME: explain parameter names.
+
+
+returns:: Returns:
+
+A newly created 
+link::Classes/UGen:: .
+
+

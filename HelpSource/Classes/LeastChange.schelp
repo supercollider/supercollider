@@ -1,0 +1,25 @@
+class:: LeastChange
+summary:: Output least changed.
+related:: Classes/MostChange, Classes/LastValue
+categories::  UGens>Maths
+
+
+Description::
+
+Output the input that changed least.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::a
+
+Input signal A.
+
+
+argument::b
+
+Input signal B.
+
+

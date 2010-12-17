@@ -1,0 +1,35 @@
+class:: SinOscFB
+summary:: FIXME: SinOscFB purpose.
+related:: Classes/SinOsc, Classes/FSinOsc
+categories::  UGens>Generators>Deterministic
+
+
+Description::
+
+FIXME: SinOscFB description.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::freq
+
+FIXME: explain parameter freq.
+
+
+argument::feedback
+
+FIXME: explain parameter feedback.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
