@@ -170,17 +170,31 @@ li {
 }
 */
 
-code, pre {
+code.code, pre.code {
     font-family: Andale Mono, monospace;
     font-size: 9.5pt;
     font-weight: normal;
     color: #121;
 }
 
-pre {
+pre.code {
     padding: 0.5em;
     border: 1px solid #e0e0e0;
     background: #f5f5f5;
+}
+
+code.formula, pre.formula {
+    font-family: Andale Mono, monospace;
+    font-size: 11pt;
+    font-weight: normal;
+    color: #333;
+}
+
+pre.formula {
+    padding: 0.5em;
+    border: 1px solid #e0e0e0;
+    background: white;
+    text-align: center;
 }
 
 .image {

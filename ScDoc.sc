@@ -171,6 +171,7 @@ ScDocParser {
                 'private::',            simpleTag,
                 
                 'code::',               modalRangeTag,
+                'formula::',            modalRangeTag,
                 'emphasis::',           modalRangeTag,
                 'strong::',             modalRangeTag,
                 'link::',               modalRangeTag,
@@ -861,9 +862,16 @@ ScDocRenderer {
             },
             'code', {
                 if(node.display == \block, {
-                    file.write("<pre>"++this.escapeSpecialChars(node.text)++"</pre>\n");
+                    file.write("<pre class='code'>"++this.escapeSpecialChars(node.text)++"</pre>\n");
                 }, {
-                    file.write("<code>"++this.escapeSpecialChars(node.text)++"</code>\n");
+                    file.write("<code class='code'>"++this.escapeSpecialChars(node.text)++"</code>\n");
+                });
+            },
+            'formula', {
+                if(node.display == \block, {
+                    file.write("<pre class='formula'>"++this.escapeSpecialChars(node.text)++"</pre>\n");
+                }, {
+                    file.write("<code class='formula'>"++this.escapeSpecialChars(node.text)++"</code>\n");
                 });
             },
             'image', {
@@ -1023,9 +1031,9 @@ ScDocRenderer {
             f.write("</div>");
         });
 
-        currentClass !? { // FIXME: Remove this when conversion to new help system is done!
-                f.write("[ <a href='"++currentClass.helpFilePath++"'>old help</a> ]");
-        };
+        if((type==\class) and: {currentClass.notNil}, { // FIXME: Remove this when conversion to new help system is done!
+            f.write("[ <a href='"++currentClass.helpFilePath++"'>old help</a> ]");
+        });
 
         f.write("</div>");
     }
