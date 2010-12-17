@@ -244,7 +244,7 @@ inline int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol)
 
 inline void* slotRawPtr(PyrSlot *slot)
 {
-	assert(IsPtr(slot));
+	assert(IsPtr(slot) || (slot->s.u.ptr == NULL && IsNil(slot)));
 	return slot->s.u.ptr;
 }
 
