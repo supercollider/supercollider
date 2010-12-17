@@ -941,7 +941,7 @@ ScDocRenderer {
     }
 
     renderHTMLHeader {|f,name,type,folder|
-        var x, cats, m;
+        var x, cats, m, z;
         var style = baseDir +/+ "scdoc.css";
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' />");
         f.write("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />");
@@ -1016,7 +1016,9 @@ ScDocRenderer {
             f.write("<div id='related'>");
             f.write("See also: ");
             f.write(ScDoc.splitList(x.text).collect {|r|
-                "<a href=\""++baseDir +/+ r++".html\">"++r.split($/).last++"</a>"
+                z = r.split($#);
+                m = if(z[1].size>0, {"#"++z[1]}, {""});
+                "<a href=\""++baseDir +/+ z[0]++".html"++m++"\">"++r.split($/).last++"</a>"
             }.join(", "));
             f.write("</div>");
         });
@@ -1119,7 +1121,8 @@ ScDoc {
     }
 
     *splitList {|txt|
-        ^txt.findRegexp("[-_>a-zA-Z0-9]+[-_>/a-zA-Z0-9 ]*[-_>/a-zA-Z0-9]+").flop[1];
+//        ^txt.findRegexp("[-_>#a-zA-Z0-9]+[-_>#/a-zA-Z0-9 ]*[-_>#/a-zA-Z0-9]+").flop[1];
+        ^txt.findRegexp("[^, ]+[^,]*[^, ]+").flop[1];
     }
 
     *initClass {
