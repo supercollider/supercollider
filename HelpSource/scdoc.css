@@ -23,7 +23,7 @@ table td {
 
 p {
     margin-top: 1em;
-    margin-bottom: 0em;
+    margin-bottom: 0.3em;
 }
 
 a:link, a:visited, a:hover {
@@ -146,7 +146,7 @@ h3 {
 }
 
 h4 {
-    margin-top: 0.5em;
+    margin-top: 1em;
     margin-bottom: 0em;
     margin-left: 0em;
     color: #777;
