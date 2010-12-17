@@ -1,15 +1,13 @@
 class:: DemandEnvGen
-summary:: FIXME: DemandEnvGen purpose.
+summary:: Demand rate envelope generator
 related:: Classes/Demand, Classes/Duty, Classes/TDuty
 categories::  UGens>Demand, UGens>Envelopes
 
-
 Description::
-
-FIXME: DemandEnvGen description.
-
+Plays back break point envelope contours (levels, times, shapes) given by demand ugens. The next values are called when the next node is reached.
 
 classmethods::
+private:: categories
 
 method::ar, kr
 
@@ -75,8 +73,7 @@ FIXME: explain parameter timeScale.
 argument::doneAction
 
 A doneAction that is evaluated when level or duration stream
-ends. See 
-link::Classes/UGen-doneActions::  for more detail.
+ends. See link::Reference/UGen-doneActions::  for more detail.
 
 
 Examples::
