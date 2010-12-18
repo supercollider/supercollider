@@ -1,0 +1,119 @@
+<html>
+<head>
+    <title>Search</title>
+    <link rel='stylesheet' href='./scdoc.css' type='text/css' />
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <script src="docmap.js" type="text/javascript"></script>
+<style>
+div#search_box {
+    margin-top: 1em;
+    margin-bottom: 1em;
+    margin-left: auto;
+    margin-right: auto;
+/*    width: 75%;*/
+    text-align: center;
+}
+#search_input {
+/*    width: 50%;*/
+    border: 1px solid #aaa;
+    background: #eee;
+}
+div#search_results {
+    padding-top: 1em;
+}
+div#search_count {
+    border-bottom: 1px solid #aaa;
+    color: #777;
+}
+</style>
+
+<script type="text/javascript">
+var input = "";
+var newinput = "";
+
+window.onload = function() {
+    newinput = document.getElementById("search_input").value.toLowerCase();
+}
+
+function SearchKeyPressed(e) {
+    newinput = e.value.toLowerCase();
+    if(newinput != input)
+        document.getElementById("search_results").innerHTML = "Searching...";
+}
+
+function matchDoc(doc,file,txt) {
+    var fields = ["title","summary","categories"];
+    //FIXME: checkboxes for filename, title, summary, categories
+    //also, Classes, Reference, Guides, Tutorials, etc..
+    //FIXME: also search methods? then we need to export the method list as JSON..
+    for(var i=0;i<fields.length;i++) {
+        var f = fields[i];
+        if(doc[f] && doc[f].toLowerCase().indexOf(txt)>=0)
+            return true;
+    }
+    if(file.toLowerCase().indexOf(txt)>=0)
+        return true;
+               
+    return false;
+}
+
+function doSearch() {
+    var res = "";
+    var count = 0;
+
+    if(input!="") {
+        for(var k in docmap) {
+            var v = docmap[k];
+            var x = k.split("/");
+            var folder = x[0];
+            var file = x[x.length-1];
+
+            if(matchDoc(v,file,input)) {
+                res += "<a href='"+k+".html'>"+file+"</a> - "+v.summary+" <span class='soft'>["+folder+"]</span><br>";
+                count++;
+            }
+
+        }
+    }
+    document.getElementById("search_count").innerHTML = count+" results";
+    document.getElementById("search_results").innerHTML = res;
+}
+
+function delayed_update() {
+    if(input != newinput) {
+        input = newinput;
+        doSearch();
+    }
+}
+setInterval("delayed_update()",1000);
+
+</script>
+
+</head>
+
+<body>
+
+<table class='headMenu'>
+    <tr><td><a href='./Help.html'>Home</a>
+    <td><a href='./Overviews/Categories.html'>Categories</a>
+    <td><a href='./Overviews/Documents.html'>Document index</a>
+    <td><a href='./Overviews/Classes.html'>Class index</a>
+    <td><a href='./Overviews/Methods.html'>Method index</a>
+</table>
+
+<div class='header'>
+    <div id='label'><a href='./Help.html'>SuperCollider</a> </div>
+    <h1>Search</h1>
+    <div id='summary'>Search all documents</div>
+</div>
+
+<div id="search_box">
+Search text: <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
+</div>
+
+<div id="search_count">Results</div>
+<div id="search_results"></div>
+
+</body>
+</html>
+

@@ -973,6 +973,7 @@ ScDocRenderer {
             "<td><a href='" ++ baseDir +/+ "Overviews/Documents.html'>Document index</a>"
             "<td><a href='" ++ baseDir +/+ "Overviews/Classes.html'>Class index</a>"
             "<td><a href='" ++ baseDir +/+ "Overviews/Methods.html'>Method index</a>"
+            "<td><a href='" ++ baseDir +/+ "Search.html'>Search</a>"
             "</table>"
         );
 
@@ -1120,6 +1121,12 @@ ScDocRenderer {
         f.write("</body></html>");
         f.close;
     }
+
+    *makeSearchPage {
+        ScDoc.postProgress("Creating search page");
+        ScDoc.docMapToJSON(ScDoc.helpTargetDir +/+ "docmap.js");
+        //FIXME: also create html header etc.. and include HelpSource/Search.inc
+    }
 }
 
 ScDoc {
@@ -1137,6 +1144,25 @@ ScDoc {
     *postProgress {|string|
         string.postln;
         if(doWait, {0.wait});
+    }
+
+    *docMapToJSON {|path|
+        var f = File.open(path,"w");
+
+        if(f.isNil, {^nil});
+        
+        f.write("docmap = {\n");
+        docMap.pairsDo {|k,v|
+            f.write("'"++k++"': {\n");
+            v.pairsDo {|k2,v2|
+                v2=v2.asString.replace("'","\\'");
+                f.write("'"++k2++"': '"++v2++"',\n");
+            };
+
+            f.write("},\n");
+        };
+        f.write("}\n");
+        f.close;
     }
 
     *splitList {|txt|
@@ -1356,6 +1382,7 @@ ScDoc {
             this.writeDocMap;
             this.makeCategoryMap;
             this.makeOverviews;
+            ScDocRenderer.makeSearchPage;
             "ScDoc done!".postln;
             doneFunc.value();
             doWait=false;
