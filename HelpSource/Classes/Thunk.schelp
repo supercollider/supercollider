@@ -21,7 +21,7 @@ return the value. If calculation is done, use previous value, otherwise do calcu
 
 examples::		
 
-code::	
+code::
 // so for example, random values will result in a single instance:
 a = Thunk({ \done.postln; rrand(2.0, 8.0) });
 a.value; // posts "done"
@@ -51,3 +51,4 @@ b = { \done2.postln;Array.fill(10000, { |i| i + 5 % 6 * i / 3 }) };// some other
 c = [a, b].choose + 700;
 (c * c * c).value; // calculation happens here, but 3 times (for each c)
 ::
+

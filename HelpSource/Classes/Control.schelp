@@ -1,28 +1,25 @@
 class:: Control
 summary:: Bring signals and floats into the ugenGraph function of a SynthDef.
-related:: Classes/LagControl, Classes/TrigControl
+related:: Classes/NamedControl, Classes/LagControl, Classes/TrigControl
 categories::  UGens>Synth control
-
 
 Description::
 
 Used to bring signals and floats into the ugenGraph function of your
 SynthDef. This is the UGen that delivers the args into your function.
 
-
 Generally you do not create Controls yourself. (See Arrays example
 below).
 
-
 The rate may be either .kr (continous control rate signal) or .ir (a
 static value, set at the time the synth starts up, and subsequently
-unchangeable).
-
+unchangeable). For .ar, see link::Classes/AudioControl::
 
 SynthDef creates these when compiling the ugenGraph function. They are
 created for you, you use them, and you don't really need to worry about
 them if you don't want to.
 
+For a more concise combination of name, default value and lag, see link::Classes/NamedControl::
 
 classmethods::
 
@@ -38,12 +35,6 @@ method::names
 argument::names
 
 FIXME: explain parameter names.
-
-
-returns:: Returns:
-
-A newly created 
-link::Classes/UGen:: .
 
 
 Examples::
