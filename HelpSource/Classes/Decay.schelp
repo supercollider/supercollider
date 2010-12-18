@@ -1,8 +1,7 @@
 class:: Decay
-summary:: Exponential decay.
+summary:: Exponential decay
 related:: Classes/Decay2
-categories::  UGens>Filters>Linear
-
+categories:: UGens>Filters>Linear
 
 Description::
 
@@ -12,29 +11,15 @@ dB decay time. This is the time required for the integrator to lose 99.9%
 of its value or -60dB. This is useful for exponential decaying envelopes
 triggered by impulses.
 
-
 classmethods::
 
 method::ar, kr
 
 argument::in
-
 The input signal.
 
-
 argument::decayTime
-
-FIXME: explain parameter decayTime.
-
-
-argument::mul
-
 60 dB decay time in seconds.
-
-
-argument::add
-
-This value will be added to the output.
 
 
 Examples::

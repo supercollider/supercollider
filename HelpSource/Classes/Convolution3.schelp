@@ -3,43 +3,25 @@ summary:: Time based convolver.
 related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution2L
 categories::  UGens>FFT
 
-
 Description::
+Strict convolution with fixed kernel which can be updated using a trigger signal. The convolution is performed in the time domain, which is highly inefficient, and probably only useful for either very short kernel sizes, or for control rate signals. 
 
-FIXME: Convolution3 description.
-
+See link::Classes/Convolution2:: and link::Classes/Convolution2L:: for more efficient convolution UGens.
 
 classmethods::
+private:: categories
 
 method::ar, kr
 
 argument::in
-
-FIXME: explain parameter in.
-
+processing target
 
 argument::kernel
-
-FIXME: explain parameter kernel.
-
+buffer index for the fixed kernel, may be modulated in combination with the trigger
 
 argument::trigger
-
-FIXME: explain parameter trigger.
-
+update the kernel on a change from <=0 to >0
 
 argument::framesize
-
-FIXME: explain parameter framesize.
-
-
-argument::mul
-
-Output will be multiplied by this value.
-
-
-argument::add
-
-This value will be added to the output.
-
+size of FFT frame, does not have to be a power of two.
 
