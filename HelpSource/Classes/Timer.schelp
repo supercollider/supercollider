@@ -2,19 +2,17 @@ class:: Timer
 summary:: Returns time since last triggered.
 categories::  UGens>Triggers
 
-
 Description::
-
-FIXME: Timer description.
-
+Timer returns time since last triggered.
 
 classmethods::
+private:: categories
 
 method::ar, kr
 
 argument::trig
 
-FIXME: explain parameter trig.
+A trigger occurs when trig signal crosses from non-positive to positive.
 
 
 Examples::
@@ -30,3 +28,4 @@ code::
 )
 
 ::
+

@@ -1,14 +1,15 @@
 class:: PSinGrain
-summary:: Very fast sine grain with a parabolic envelope.
+summary:: Very fast sine grain with a parabolic envelope
 categories::  UGens>Generators>Deterministic
 
 
 Description::
 
-FIXME: PSinGrain description.
+Very fast sine grain with a parabolic envelope.
 
 
 classmethods::
+private:: categories
 
 method::ar
 

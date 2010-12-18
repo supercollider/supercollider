@@ -1,19 +1,12 @@
 class:: Select
 summary:: Select output from an array of inputs.
-categories::  UGens>Multichannel>Select
-
+categories:: UGens>Multichannel>Select
 
 Description::
-
 The output is selected from an array of inputs.
 
-
-note::
-
-All the UGens are continously running. This may not be the most efficient
-way if each input is CPU-expensive.
-
-::
+note:: All the UGens are continously running. This may not be the most efficient
+way if each input is CPU-expensive. ::
 
 Note that the array is fixed at the time of writing the SynthDef, and the
 whole array is embedded in the SynthDef file itself.  For small arrays
@@ -26,20 +19,18 @@ method::ar, kr
 
 argument::which
 
-FIXME: explain parameter which.
+Integer index
 
 
 argument::array
 
-FIXME: explain parameter array.
+Input array of signals
 
 
 Examples::
 
 code::
-
 (
-
 SynthDef("help-Select",{ arg out=0;
 
 	var a,cycle;
@@ -77,3 +68,4 @@ SynthDef("help-Select-2",{ arg out=0;
 )
 
 ::
+

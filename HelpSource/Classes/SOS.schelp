@@ -22,42 +22,7 @@ method::ar, kr
 
 argument::in
 
-FIXME: explain parameter in.
-
-
-argument::a0
-
-FIXME: explain parameter a0.
-
-
-argument::a1
-
-FIXME: explain parameter a1.
-
-
-argument::a2
-
-FIXME: explain parameter a2.
-
-
-argument::b1
-
-FIXME: explain parameter b1.
-
-
-argument::b2
-
-FIXME: explain parameter b2.
-
-
-argument::mul
-
-Output will be multiplied by this value.
-
-
-argument::add
-
-This value will be added to the output.
+signal input
 
 
 Examples::

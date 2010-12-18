@@ -1,41 +1,27 @@
 class:: VarSaw
-summary:: Variable duty saw.
+summary:: Variable duty saw
 related:: Classes/Saw, Classes/SyncSaw, Classes/LFSaw
 categories::  UGens>Generators>Deterministic
 
 
 Description::
 
-FIXME: VarSaw description.
+Sawtooth-triangle oscillator with variable duty.
 
 
 classmethods::
+private:: categories
 
 method::ar, kr
 
 argument::freq
-
-FIXME: explain parameter freq.
-
+frequency in Hertz
 
 argument::iphase
-
-FIXME: explain parameter iphase.
-
+initial phase offset in cycles ( 0..1 )
 
 argument::width
-
-FIXME: explain parameter width.
-
-
-argument::mul
-
-Output will be multiplied by this value.
-
-
-argument::add
-
-This value will be added to the output.
+duty cycle from zero to one.
 
 
 Examples::

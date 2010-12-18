@@ -22,7 +22,7 @@ argument::hi
 Upper limit of the output range.
 
 argument::minmax
-FIXME: explain parameter minmax.
+The output is skewed towards code::lo:: if code::minmax:: < 0, otherwise skewed towards code::hi::.
 
 Examples::
 

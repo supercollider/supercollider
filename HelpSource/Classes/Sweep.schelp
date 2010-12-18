@@ -1,7 +1,6 @@
 class:: Sweep
-summary:: Triggered linear ramp.
+summary:: Triggered linear ramp
 categories::  UGens>Triggers
-
 
 Description::
 
@@ -10,23 +9,23 @@ non-positive to positive.
 
 
 classmethods::
+private:: categories
 
 method::ar, kr
 
 argument::trig
 
-FIXME: explain parameter trig.
+triggers when trig input crosses from non-positive to positive.
 
 
 argument::rate
 
-FIXME: explain parameter rate.
+rate/sec raise rate
 
 
 Examples::
 
 code::
-
 // using sweep to modulate sine frequency
 (
 { var trig;
@@ -36,11 +35,7 @@ code::
 )
 
 
-
-
-
 // using sweep to index into a buffer
-
 s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
 
 (
@@ -51,7 +46,6 @@ s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
 )
 
 // backwards, variable offset
-
 (
 { var trig, pos, rate;
 	trig = Impulse.kr(MouseX.kr(0.5, 10, 1));
@@ -61,7 +55,6 @@ s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
 }.play;
 )
 
-
 // raising rate
 (
 { var trig, rate;
@@ -70,5 +63,5 @@ s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
 	BufRd.ar(1, 0, Sweep.ar(trig, BufSampleRate.ir(0) * rate))
 }.play;
 )
-
 ::
+
