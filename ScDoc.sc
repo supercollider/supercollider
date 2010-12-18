@@ -375,7 +375,7 @@ ScDocParser {
         dumpCats = {|x,l,y|
             var ents = x[\entries];
             var subs = x[\subcats];
-            var z;
+            var c, z;
 
             if(ents.notEmpty, {
                 ents.sort {|a,b| a.path.basename < b.path.basename}.do {|doc|
@@ -385,6 +385,17 @@ ScDocParser {
                     l.add((tag:'link', text:doc.path));
                     l.add((tag:'prose', text:" - "++doc.summary));
                     l.add((tag:'soft', text:folder));
+                    if(doc.path.dirname=="Classes") {
+                        c = doc.path.basename.asSymbol.asClass;
+                        if(c.notNil) {
+                            if(c.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not) {
+                                l.add((tag:'soft', text:" (+)"));
+                            };
+                        } {
+                            l.add((tag:'strong', text:" (not installed)"));
+                        };
+                    };
+
                 };
             });
 
@@ -1256,11 +1267,13 @@ ScDoc {
     }
 
     *addToDocMap {|parser, path|
+        var x = parser.findNode(\class).text;
         docMap[path] = (
             path:path,
             summary:parser.findNode(\summary).text,
             categories:parser.findNode(\categories).text
         );
+        docMap[path].title = if(x.notEmpty,x,{parser.findNode(\title).text});
     }
 
     *makeCategoryMap {
