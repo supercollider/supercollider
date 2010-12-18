@@ -1,7 +1,7 @@
 class:: PingPong
 summary:: Stereo ping-pong delay.
 related:: Classes/SinOsc
-categories::  UGens>Uncategorized
+categories::  UGens>Delays
 
 
 Description::

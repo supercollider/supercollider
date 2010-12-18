@@ -38,7 +38,7 @@ argument::doneAction
 
 An integer representing the doneAction. See
 
-link::Classes/UGen-doneActions::  for more detail.
+link::Reference/UGen-doneActions::  for more detail.
 
 
 Examples::

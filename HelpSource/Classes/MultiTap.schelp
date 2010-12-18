@@ -1,7 +1,7 @@
 class:: MultiTap
 summary:: Multiple tap delay.
 related:: Classes/Tap
-categories::  UGens>Uncategorized
+categories::  UGens>Delays
 
 
 Description::

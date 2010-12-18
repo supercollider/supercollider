@@ -1,7 +1,6 @@
 class:: Mix
 summary:: Sum an array of channels.
-related:: 
-categories::  UGens>Uncategorized
+categories::  UGens>Multichannel
 
 
 Description::
