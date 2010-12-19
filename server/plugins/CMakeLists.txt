@@ -211,6 +211,9 @@ if (supernova)
 	endif()
 endif(supernova)
 
+foreach (ugen ${uiugens})
+    target_link_libraries(${ugen} ${PTHREADS_LIBRARY})
+endforeach()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(X11)
