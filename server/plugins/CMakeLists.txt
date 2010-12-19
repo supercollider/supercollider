@@ -126,7 +126,7 @@ if(NOT NO_LIBSNDFILE)
 
 	if(SNDFILE_FOUND)
 		include_directories(${SNDFILE_INCLUDE_DIR})
-		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} m ${PTHREADS_LIBRARY})
+		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${PTHREADS_LIBRARY})
 
 		list(APPEND plugins DiskIO_UGens)
 	else()
@@ -142,7 +142,7 @@ if (FFTW3F_FOUND)
 endif()
 
 foreach(ugen ${fft_ugens})
-	target_link_libraries(${ugen} m)
+	target_link_libraries(${ugen} ${MATH_LIBRARY})
 
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")
@@ -203,7 +203,7 @@ if (supernova)
 
 		if(SNDFILE_FOUND)
 			include_directories(${SNDFILE_INCLUDE_DIR})
-			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} m ${PTHREADS_LIBRARY})
+			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${PTHREADS_LIBRARY})
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")

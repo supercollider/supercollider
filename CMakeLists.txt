@@ -70,7 +70,7 @@ if (NOT PTHREADS_FOUND)
 endif()
 include_directories(${PTHREADS_INCLUDE_DIR})
 
-
+find_library(MATH_LIBRARY m)
 
 if(CURL)
 	find_package(CURL)
