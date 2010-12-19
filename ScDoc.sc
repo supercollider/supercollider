@@ -382,7 +382,7 @@ ScDocParser {
                     folder = doc.path.dirname;
                     folder = if(folder==".", {""}, {" ["++folder++"]"});
                     l.add((tag:'##'));
-                    l.add((tag:'link', text:doc.path));
+                    l.add((tag:'link', text:doc.path++"##"++doc.title));
                     l.add((tag:'prose', text:" - "++doc.summary));
                     l.add((tag:'soft', text:folder));
                     if(doc.path.dirname=="Classes") {
@@ -586,7 +586,6 @@ ScDocParser {
         old_cap = nil;
         sortedKeys.do {|link|
             doc = docMap[link];
-            doc = if(doc.notNil, {doc.summary}, {""});
             name = link.split($/).last;
             kind = link.dirname;
             kind = if(kind==".", {""}, {" ["++kind++"]"});
@@ -597,9 +596,9 @@ ScDocParser {
                 old_cap = cap;
             });
             n.add((tag:'##'));
-            n.add((tag:'link', text: link));
+            n.add((tag:'link', text: link++"##"++doc.title));
 //            n.add((tag:'||'));
-            n.add((tag:'prose', text: " - "++doc));
+            n.add((tag:'prose', text: " - "++if(doc.notNil, {doc.summary}, {""})));
 //            n.add((tag:'||'));
             n.add((tag:'soft', text: kind));
         };
@@ -981,7 +980,8 @@ ScDocRenderer {
 //        cats = if(cats.notNil, {cats.join(", ")}, {""});
         if(folder==".",{folder=""});
         f.write("<div class='header'>");
-        f.write("<div id='label'><a href='"++baseDir+/+"Help.html"++"'>SuperCollider</a> "++folder.asString.toUpper++"</div>");
+//        f.write("<div id='label'><a href='"++baseDir+/+"Help.html"++"'>SuperCollider</a> "++folder.asString.toUpper++"</div>");
+        f.write("<div id='label'>SuperCollider "++folder.asString.toUpper++"</div>");
         x = parser.findNode(\categories);
         if(x.text.notEmpty, {
             f.write("<div id='categories'>");
