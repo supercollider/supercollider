@@ -18,7 +18,7 @@ endif()
 if(APPLE)
 	# apple bundles an old nongpl readline so we say no even though it is usually detectable
 	set(READLINE_FOUND false)
-elsif(WIN32)
+elseif(WIN32)
 	set(READLINE_FOUND false)
 else()
 	find_package(Readline)
@@ -103,7 +103,7 @@ endif(UNIX)
 
 if(WIN32)
     include_directories (../platform/windows/compat_stuff)
-    
+
     list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
 endif()
 
