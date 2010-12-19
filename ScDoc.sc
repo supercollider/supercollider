@@ -432,7 +432,7 @@ ScDocParser {
 //        var a, p, e, n, l, m, kinds, folder, v, tree, dumpCats;
         r.add((tag:'title', text:"Document Categories"));
         r.add((tag:'summary', text:"All documents by categories"));
-        r.add((tag:'related', text:"Overviews/Documents"));
+        r.add((tag:'related', text:"Overviews/Documents, Browse, Search"));
         
         this.makeCategoryTree(catMap,r,toc:true);
         
@@ -968,6 +968,7 @@ ScDocRenderer {
         f.write(
             "<table class='headMenu'><tr>"
             "<td><a href='" ++ baseDir +/+ "Help.html'>Home</a>"
+            "<td><a href='" ++ baseDir +/+ "Browse.html'>Browse</a>"
             "<td><a href='" ++ baseDir +/+ "Overviews/Categories.html'>Categories</a>"
             "<td><a href='" ++ baseDir +/+ "Overviews/Documents.html'>Document index</a>"
             "<td><a href='" ++ baseDir +/+ "Overviews/Classes.html'>Class index</a>"

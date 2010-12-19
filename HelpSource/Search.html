@@ -84,10 +84,15 @@ function doSearch() {
             var file = x[x.length-1];
 
             if(matchDoc(v,file,input)) {
-                var c = v.categories;
-                if(!cats[c])
-                    cats[c]=[];
-                cats[c].push(v);
+            
+                var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
+                for(var i=0;i<c2.length;i++) {
+                    var c = c2[i];
+                    if(!cats[c])
+                        cats[c]=[];
+                    cats[c].push(v);
+                }
+
                 count++;
             }
 
@@ -126,6 +131,7 @@ setInterval("delayed_update()",1000);
 
 <table class='headMenu'>
     <tr><td><a href='./Help.html'>Home</a>
+    <td><a href='./Browse.html'>Browse</a>
     <td><a href='./Overviews/Categories.html'>Categories</a>
     <td><a href='./Overviews/Documents.html'>Document index</a>
     <td><a href='./Overviews/Classes.html'>Class index</a>
@@ -134,7 +140,7 @@ setInterval("delayed_update()",1000);
 </table>
 
 <div class='header'>
-    <div id='label'><a href='./Help.html'>SuperCollider</a> </div>
+    <div id='label'>SuperCollider</div>
     <h1>Search</h1>
     <div id='summary'>Search all documents</div>
 </div>

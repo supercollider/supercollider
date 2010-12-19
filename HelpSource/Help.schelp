@@ -6,6 +6,12 @@ SuperCollider is an environment and programming language for real time audio syn
 NOTE:: This help system is currently work in progress.
 Please help out and convert old helpfiles! See link::Guides/WritingHelp:: for a quick how-to. ::
 
+SECTION::Search and browse
+definitionlist::
+## link::Search:: || Search all documents
+## link::Browse:: || Browse all documents by categories
+::
+
 SECTION::Getting Started
 
 These might be useful starting points on getting help with SuperCollider:
