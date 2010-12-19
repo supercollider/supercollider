@@ -7,7 +7,7 @@
 <style>
 div#search_box {
     margin-top: 1em;
-    margin-bottom: 1em;
+    margin-bottom: 0em;
     margin-left: auto;
     margin-right: auto;
 /*    width: 75%;*/
@@ -19,11 +19,23 @@ div#search_box {
     background: #eee;
 }
 div#search_results {
-    padding-top: 1em;
+/*    padding-top: 1em;*/
 }
 div#search_count {
-    border-bottom: 1px solid #aaa;
-    color: #777;
+    border-bottom: 2px solid #aaa;
+    color: #333;
+}
+div.result_item {
+    margin-bottom: 0.2em;
+}
+div.result_category {
+    color: #555;
+    font-size: 9.5pt;
+    margin-top: 1em;
+    border-bottom: 1px solid #ddd;
+}
+div.result_doc {
+    margin-left: 2em;
 }
 </style>
 
@@ -37,8 +49,10 @@ window.onload = function() {
 
 function SearchKeyPressed(e) {
     newinput = e.value.toLowerCase();
-    if(newinput != input)
+    if(newinput != input) {
         document.getElementById("search_results").innerHTML = "Searching...";
+//        document.getElementById("search_count").innerHTML = "0 results";
+    }
 }
 
 function matchDoc(doc,file,txt) {
@@ -62,18 +76,35 @@ function doSearch() {
     var count = 0;
 
     if(input!="") {
+        var cats = {};
         for(var k in docmap) {
             var v = docmap[k];
             var x = k.split("/");
-            var folder = x[0];
+//            var folder = x[0];
             var file = x[x.length-1];
 
             if(matchDoc(v,file,input)) {
-                res += "<a href='"+k+".html'>"+file+"</a> - "+v.summary+" <span class='soft'>["+folder+"]</span><br>";
+                var c = v.categories;
+                if(!cats[c])
+                    cats[c]=[];
+                cats[c].push(v);
                 count++;
             }
 
         }
+
+        for(k in cats) {
+            var c = cats[k];
+            res += "<div class='result_category'>"+k+"</div>";
+            for(var i=0;i<c.length;i++) {
+                var v = c[i];
+                var x = v.path.split("/");
+                res += "<div class='result_item'>";
+                res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> - "+v.summary+" <span class='soft'>["+x[0]+"]</span></div>";
+                res += "</div>";
+            }
+        }
+
     }
     document.getElementById("search_count").innerHTML = count+" results";
     document.getElementById("search_results").innerHTML = res;
@@ -99,6 +130,7 @@ setInterval("delayed_update()",1000);
     <td><a href='./Overviews/Documents.html'>Document index</a>
     <td><a href='./Overviews/Classes.html'>Class index</a>
     <td><a href='./Overviews/Methods.html'>Method index</a>
+    <td><a href='./Search.html'>Search</a>
 </table>
 
 <div class='header'>
