@@ -181,11 +181,12 @@ pre.code {
     padding: 0.5em;
     border: 1px solid #e0e0e0;
     background: #f5f5f5;
+    font-size: 9pt;
 }
 
 code.formula, pre.formula {
     font-family: Andale Mono, monospace;
-    font-size: 11pt;
+    font-size: 10pt;
     font-weight: normal;
     color: #333;
 }

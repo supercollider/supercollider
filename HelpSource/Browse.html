@@ -50,13 +50,11 @@
 <script type="text/javascript">
 var categories = null;
 var categorytree = null;
-//var path = ["UGens","Filters","Linear"];
 var path = [];
 
 function GotoPath(p) {
     path = p.split(">");
-//    window.location.replace('Browse.html#'+p);
-    window.location = ('Browse.html#'+p);
+    window.location.hash = p;
     updateTree();
 }
 
@@ -104,7 +102,6 @@ function updateTree() {
 }
 
 window.onload = function() {
-//    newinput = document.getElementById("search_input").value.toLowerCase();
     var cats = {};
     for(var k in docmap) {
         var v = docmap[k];
@@ -152,14 +149,12 @@ window.onload = function() {
     }
     
     categorytree = tree;
-    
-//    var p = window.location.href.slice(window.location.href.indexOf('#') + 1);
-    var p = window.location.href.split("#")[1];
-    if(!p) p="";
-    console.log(p);
-    GotoPath(p);
-    
-//    updateTree();
+
+    GotoPath(window.location.hash.slice(1));
+}
+
+window.onhashchange = function() {
+    GotoPath(window.location.hash.slice(1));
 }
 
 </script>
