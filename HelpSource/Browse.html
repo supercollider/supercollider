@@ -33,6 +33,7 @@
 /*    padding-left: 10px;*/
     border-bottom: 1px solid transparent;
 /*    border-bottom: 1px solid #ddd;*/
+/*    margin-right: 1ex;*/
 }
 .cat_selected {
     border-bottom: 1px solid #777;
@@ -44,6 +45,11 @@
 .cat_selected a {
     color: #000;
     font-weight: bold;
+}
+.cat_arrow {
+    float: right;
+    padding-left: 1ex;
+    color: #555;
 }
 </style>
 
@@ -71,7 +77,10 @@ function updateTree() {
         res += "<div class='result'>";
         p=path[lev++];
         
-        var l = Object.keys(tree.subcats).sort();
+        var l = [];
+        for(var k in tree.subcats)
+            l.push(k);
+        l = l.sort();
         
         for(var i=0;i<l.length;i++) {
             var k = l[i];
@@ -80,6 +89,8 @@ function updateTree() {
             else
                 res += "<div class='category'>";
             res += "<a href='javascript:GotoPath(\""+link+k+"\")'>"+k+"</a>";
+            if(k==p)
+                res += "<span class='cat_arrow'> &gt;</span>";
             res += "</div>";
         }
 
