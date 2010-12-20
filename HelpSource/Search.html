@@ -64,7 +64,7 @@ window.onload = function() {
         checkboxes[i].onchange = doSearch;
     }
     
-    var fields2 = ["classes", "reference", "guides", "tutorials", "other"];
+    var fields2 = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
     checkboxes2 = {};
     for(var i=0;i<fields2.length;i++) {
         var k = fields2[i];
@@ -135,8 +135,12 @@ function doSearch() {
                 var v = c[i];
                 var x = v.path.split("/");
                 res += "<div class='result_item'>";
-                res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> - "+v.summary+" <span class='soft'>["+x[0]+"]</span></div>";
-                res += "</div>";
+                res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> - "+v.summary+" <span class='soft'>["+x[0];
+                
+                if(v.installed=="extension" || v.installed=="missing")
+                    res += " : "+v.installed;
+
+                res += "]</span></div></div>";
             }
         }
 
@@ -184,11 +188,12 @@ Search in:
 <input type="checkbox" id="check_categories" checked="true">Categories</input>
 <input type="checkbox" id="check_filename" checked="true">Filename</input>
 <br>
-Filter by:
+Include:
 <input type="checkbox" id="check_classes" checked="true">Classes</input>
 <input type="checkbox" id="check_reference" checked="true">Reference</input>
 <input type="checkbox" id="check_guides" checked="true">Guides</input>
 <input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
+<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
 <input type="checkbox" id="check_other" checked="true">Other</input>
 </div>
 </div>

@@ -1,6 +1,6 @@
 class:: Compander
 summary:: Compressor, expander, limiter, gate, ducker
-categories:: UGens>Analysis>Amplitude, UGens>Dynamics
+categories:: UGens>Dynamics
 
 description::
 General purpose (hard-knee) dynamics processor.

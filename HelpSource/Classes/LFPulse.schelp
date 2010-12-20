@@ -1,6 +1,6 @@
 class::LFPulse
 summary::pulse oscillator
-categories::UGens>Generators>Deterministic, UGens>Oscillators
+categories::UGens>Generators>Deterministic
 related::Classes/LFSaw
 
 description::

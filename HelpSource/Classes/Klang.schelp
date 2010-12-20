@@ -1,7 +1,7 @@
 class:: Klang
 summary:: Sine oscillator bank.
 related:: Classes/Klank, Classes/DynKlank
-categories::  UGens>Generators>Deterministic, UGens>Filters>Linear
+categories::  UGens>Generators>Deterministic
 
 
 Description::

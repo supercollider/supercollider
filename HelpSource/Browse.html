@@ -51,12 +51,21 @@
     padding-left: 1ex;
     color: #555;
 }
+
+#search_checks {
+    font-size: 9pt;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+    margin-top: 1em;
+    padding-bottom: 1em;
+}
 </style>
 
 <script type="text/javascript">
 var categories = null;
 var categorytree = null;
 var path = [];
+var checkboxes;
 
 function GotoPath(p) {
     path = p.split(">");
@@ -97,9 +106,15 @@ function updateTree() {
 
         for(var i=0;i<tree.entries.length;i++) {
             var v = tree.entries[i];
-                var x = v.path.split("/");
-                res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> <span class='soft'>["+x[0]+"]</span></div>";
-                res += "<div class='result_summary'>"+v.summary+"</div>";
+            var x = v.path.split("/");
+            var c = checkboxes[x[0].toLowerCase()];
+            if(c && !c.checked)
+                continue;
+
+            res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> <span class='soft'>["+x[0];
+            if(v.installed=="extension" || v.installed=="missing")
+                res += " : "+v.installed;
+            res += "]</span></div><div class='result_summary'>"+v.summary+"</div>";
         }
 
         res += "</div>";
@@ -165,6 +180,15 @@ window.onload = function() {
     }
     
     categorytree = tree;
+    
+    var fields = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
+    checkboxes = {};
+    for(var i=0;i<fields.length;i++) {
+        var k = fields[i];
+        checkboxes[k] = document.getElementById("check_"+k);
+        checkboxes[k].onchange = updateTree;
+    }
+
 
     GotoPath(window.location.hash.slice(1));
 }
@@ -193,6 +217,15 @@ window.onhashchange = function() {
     <div id='label'>SuperCollider</div>
     <h1>Document Browser</h1>
     <div id='summary'>Browse categories</div>
+</div>
+<div id="search_checks">
+Include:
+<input type="checkbox" id="check_classes" checked="true">Classes</input>
+<input type="checkbox" id="check_reference" checked="true">Reference</input>
+<input type="checkbox" id="check_guides" checked="true">Guides</input>
+<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
+<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
+<input type="checkbox" id="check_other" checked="true">Other</input>
 </div>
 
 <table class="browser" id="browser"></table>

@@ -1,7 +1,7 @@
 class:: Limiter
 summary:: Peak limiter.
 related:: Classes/Amplitude, Classes/Compander, Classes/CompanderD, Classes/Normalizer
-categories::  UGens>Analysis>Amplitude
+categories:: UGens>Dynamics
 
 
 Description::

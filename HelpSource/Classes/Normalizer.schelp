@@ -1,7 +1,7 @@
 class:: Normalizer
 summary:: Flattens dynamics.
 related:: Classes/Amplitude, Classes/Compander, Classes/CompanderD, Classes/Limiter
-categories::  UGens>Analysis>Amplitude
+categories:: UGens>Dynamics
 
 
 Description::

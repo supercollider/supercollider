@@ -385,7 +385,11 @@ ScDocParser {
                     l.add((tag:'link', text:doc.path++"##"++doc.title));
                     l.add((tag:'prose', text:" - "++doc.summary));
                     l.add((tag:'soft', text:folder));
-                    if(doc.path.dirname=="Classes") {
+                    switch(doc.installed,
+                        \extension, { l.add((tag:'soft', text:" (+)")) },
+                        \missing, { l.add((tag:'strong', text:" (not installed)")) }
+                    );
+/*                    if(doc.path.dirname=="Classes") {
                         c = doc.path.basename.asSymbol.asClass;
                         if(c.notNil) {
                             if(c.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not) {
@@ -395,7 +399,7 @@ ScDocParser {
                             l.add((tag:'strong', text:" (not installed)"));
                         };
                     };
-
+*/
                 };
             });
 
@@ -1124,7 +1128,7 @@ ScDocRenderer {
     }
 
     *makeSearchPage {
-        ScDoc.postProgress("Creating search page");
+        ScDoc.postProgress("Creating search and browse pages");
         ScDoc.docMapToJSON(ScDoc.helpTargetDir +/+ "docmap.js");
         //FIXME: also create html header etc.. and include HelpSource/Search.inc
     }
@@ -1295,16 +1299,19 @@ ScDoc {
 
     *addToDocMap {|parser, path|
         var x = parser.findNode(\class).text;
-        docMap[path] = (
+        var doc = (
             path:path,
             summary:parser.findNode(\summary).text,
             categories:parser.findNode(\categories).text
         );
-        docMap[path].title = if(x.notEmpty,x,{parser.findNode(\title).text});
+
+        doc.title = if(x.notEmpty,x,{parser.findNode(\title).text});
+        
+        docMap[path] = doc;
     }
 
     *makeCategoryMap {
-        var cats;
+        var cats, c;
         ScDoc.postProgress("Creating category map...");
         categoryMap = Dictionary.new;
         docMap.pairsDo {|k,v|
@@ -1316,7 +1323,18 @@ ScDoc {
                 };
                 categoryMap[cat].add(v);
             };
+
+            // check if class is standard, extension or missing
+            if(v.path.dirname=="Classes") {
+                c = v.path.basename.asSymbol.asClass;
+                v.installed = if(c.notNil) {
+                    if(c.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
+                        {\extension}
+                        {\standard}
+                } {\missing};
+            };
         };
+
     }
 
     *readDocMap {
@@ -1379,6 +1397,7 @@ ScDoc {
                     docMap.removeAt(k);
                     //TODO: we should also remove the rendered dest file if existent?
                 });
+                e.removeAt(\delete); //remove the key since we don't need it anymore
             };
             this.writeDocMap;
             this.makeCategoryMap;
