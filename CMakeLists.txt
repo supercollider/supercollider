@@ -145,7 +145,6 @@ endif()
 
 #############################################
 # subdirectories
-add_subdirectory(common)
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(bindings)

@@ -66,10 +66,25 @@ set(sclang_sources
 	LangSource/SimpleStack.cpp
 	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
-	../common/fftlib.c)
+
+	${CMAKE_SOURCE_DIR}/common/fftlib.c
+	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
+	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
+)
 
 if(NOT WIN32)
-    set(sclang_sources ${sclang_sources} LangPrimSource/PyrSerialPrim.cpp)
+    list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
+endif()
+
+if(WIN32)
+    list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
 
 if(WIN32)
@@ -196,7 +211,7 @@ elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
-target_link_libraries(libsclang sccommon ${PTHREADS_LIBRARY})
+target_link_libraries(libsclang ${PTHREADS_LIBRARY})
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
 target_link_libraries(sclang libsclang)
