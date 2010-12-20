@@ -59,6 +59,14 @@
     margin-top: 1em;
     padding-bottom: 1em;
 }
+.cat_count {
+    color: #777;
+    font-size: 9pt;
+}
+#total_count {
+    font-size: 9pt;
+    color: #777;
+}
 </style>
 
 <script type="text/javascript">
@@ -99,6 +107,7 @@ function updateTree() {
             else
                 res += "<div class='category'>";
             res += "<a href='javascript:GotoPath(\""+link+k+"\")'>"+k+"</a>";
+            res += " <span class='cat_count'>("+tree.subcats[k].count+")</span>";
             if(k==p)
                 res += "<span class='cat_arrow'> &gt;</span>";
             res += "</div>";
@@ -108,10 +117,6 @@ function updateTree() {
             var v = tree.entries[i];
             var x = v.path.split("/");
             
-//            var c = checkboxes[x[0].toLowerCase()];
-//            if(c && !c.checked)
-//                continue;
-
             res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> <span class='soft'>["+x[0];
             if(v.installed=="extension" || v.installed=="missing")
                 res += " : "+v.installed;
@@ -131,6 +136,14 @@ function updateTree() {
         }
     }
     el.innerHTML = res;
+}
+
+function countTree(t) {
+    var x = 0;
+    for(var k in t.subcats)
+        x += countTree(t.subcats[k]);
+    x += t.entries.length;
+    return t.count = x;
 }
 
 function buildCategoryTree() {
@@ -174,6 +187,7 @@ function buildCategoryTree() {
                 p[c]={};
                 p[c].subcats = {};
                 p[c].entries = [];
+                p[c].count = 0;
             }
             e=p[c];
             p=p[c].subcats;
@@ -193,6 +207,8 @@ function buildCategoryTree() {
     }
     
     categorytree = tree;
+    
+    document.getElementById("total_count").innerHTML = countTree({subcats:tree,entries:[],count:0}) + " documents";
 }
 
 window.onload = function() {
@@ -247,7 +263,7 @@ Include:
 <input type="checkbox" id="check_overviews" checked="true">Overviews</input>
 <input type="checkbox" id="check_other" checked="true">Other</input>
 </div>
-
+<div id="total_count"></div>
 <table class="browser" id="browser"></table>
 
 </body>
