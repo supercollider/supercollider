@@ -29,7 +29,6 @@
 #include "scsynthsend.h"
 #include "SC_Endian.h"
 
-void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
 void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port)
 {
     toaddr.sin_family = AF_INET;     // host byte order

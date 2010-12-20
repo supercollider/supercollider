@@ -32,6 +32,8 @@ ADD_CUSTOM_TARGET(setMainVersion ALL
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	add_definitions("-ffast-math" "-fschedule-insns2" "-fomit-frame-pointer")
 
+	add_definitions(-fvisibility=hidden)
+
 	if(APPLE)
 		add_definitions("-D_REENTRANT")
 	else()
