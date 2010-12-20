@@ -1,7 +1,7 @@
 class:: BufAllpassC
 summary:: Buffer based all pass delay line with cubic interpolation.
 related:: Classes/BufAllpassL, Classes/BufAllpassN, Classes/AllpassC
-categories::  UGens>Delays
+categories::  UGens>Delays>Buffer
 
 
 Description::

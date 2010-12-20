@@ -1,7 +1,7 @@
 class:: BufDelayC
 summary:: Buffer based simple delay line with cubic interpolation.
 related:: Classes/BufDelayL, Classes/BufDelayN, Classes/DelayC
-categories::  UGens>Delays
+categories::  UGens>Delays>Buffer
 
 
 Description::

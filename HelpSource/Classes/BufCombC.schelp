@@ -1,7 +1,7 @@
 class:: BufCombC
 summary:: Buffer based comb delay line with cubic interpolation.
 related:: Classes/BufCombL, Classes/BufCombN, Classes/CombC
-categories::  UGens>Delays
+categories::  UGens>Delays>Buffer
 
 
 Description::

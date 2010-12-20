@@ -1,7 +1,7 @@
 class:: MultiTap
 summary:: Multiple tap delay.
 related:: Classes/Tap
-categories::  UGens>Delays
+categories::  UGens>Buffer, UGens>Delays>Buffer
 
 
 Description::

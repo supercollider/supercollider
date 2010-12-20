@@ -1,7 +1,7 @@
 class:: BufDelayL
 summary:: Buffer based simple delay line with linear interpolation.
 related:: Classes/BufDelayC, Classes/BufDelayN, Classes/DelayL
-categories::  UGens>Delays
+categories::  UGens>Delays>Buffer
 
 
 Description::

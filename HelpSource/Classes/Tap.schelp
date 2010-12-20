@@ -1,7 +1,7 @@
 class:: Tap
 summary:: Single tap into a delayline
 related:: Classes/MultiTap, Classes/PlayBuf
-categories::  UGens>Buffer
+categories::  UGens>Buffer, UGens>Delays>Buffer
 
 Description::
 

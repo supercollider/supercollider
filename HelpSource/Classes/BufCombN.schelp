@@ -1,7 +1,7 @@
 class:: BufCombN
 summary:: Buffer based comb delay line with no interpolation.
 related:: Classes/BufCombC, Classes/BufCombL, Classes/CombN
-categories::  UGens>Delays
+categories::  UGens>Delays>Buffer
 
 
 Description::
