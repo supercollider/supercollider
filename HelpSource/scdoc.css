@@ -73,7 +73,7 @@ table.headMenu td a {
 /*    font-size: 8pt;*/
 }
 #summary {
-    font-weight: bold;
+/*    font-weight: bold;*/
 }
 
 .headerimage {
@@ -121,20 +121,21 @@ div.footnote {
 
 h1 {
     margin: 0.1em 0;
-    font-size: 26pt;
+    font-size: 2.5em;
 /*        border-top: 1px solid #aaa;*/
     letter-spacing: 0.05em;
     margin-bottom: 0em;
 }
 
 h2 {
-    border-bottom: 4px solid #bbb;
+    border-bottom: 4px solid #ccc;
 /*    background: #ddd;
     padding-left: 0.15em;*/
     letter-spacing: 0.05em;
     margin-top: 1.5em;
     text-align: left;
     margin-bottom: 2px;
+    font-size: 1.4em;
 }
 
 h3 {
@@ -213,7 +214,8 @@ pre.formula {
     background: #e7e7f0;
 /*    border-bottom: 1px solid #bbb;*/
     font-family: Andale Mono, monospace;
-    font-size: 9.5pt;
+/*    font-size: 9.5pt;*/
+    font-size: 1em;
     font-weight: bold;
     margin-bottom: 0em;
     margin-top: 1em;
