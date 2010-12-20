@@ -71,6 +71,7 @@ window.onload = function() {
         checkboxes2[k] = document.getElementById("check_"+k);
         checkboxes2[k].onchange = doSearch;
     }
+    document.getElementById("check_filename").onchange = doSearch;
 }
 
 function SearchKeyPressed(e) {

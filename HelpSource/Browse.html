@@ -138,10 +138,17 @@ function buildCategoryTree() {
     for(var k in docmap) {
         var v = docmap[k];
 
-        var c = checkboxes[v.path.split("/")[0].toLowerCase()];
-        if(c && !c.checked)
+        if(v.installed=="extension" && !document.getElementById("check_ext_classes").checked)
             continue;
-
+        else
+        if(v.installed=="standard" &&  !document.getElementById("check_classes").checked)
+            continue;
+        else if(!v.installed) {
+            var c = checkboxes[v.path.split("/")[0].toLowerCase()];
+            if(c && !c.checked)
+                continue;
+        }
+        
         var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
         for(var i=0;i<c2.length;i++) {
             var c = c2[i];
@@ -191,14 +198,16 @@ function buildCategoryTree() {
 window.onload = function() {
     var fields = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
     checkboxes = {};
+    var onChange = function() {
+        buildCategoryTree();
+        updateTree();
+    };
     for(var i=0;i<fields.length;i++) {
         var k = fields[i];
         checkboxes[k] = document.getElementById("check_"+k);
-        checkboxes[k].onchange = function() {
-            buildCategoryTree();
-            updateTree();
-        };
+        checkboxes[k].onchange = onChange;
     }
+    document.getElementById("check_ext_classes").onchange = onChange;
     buildCategoryTree();
     GotoPath(window.location.hash.slice(1));
 }
@@ -231,6 +240,7 @@ window.onhashchange = function() {
 <div id="search_checks">
 Include:
 <input type="checkbox" id="check_classes" checked="true">Classes</input>
+<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
 <input type="checkbox" id="check_reference" checked="true">Reference</input>
 <input type="checkbox" id="check_guides" checked="true">Guides</input>
 <input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
