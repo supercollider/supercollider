@@ -55,30 +55,42 @@ endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
 set(scsynth_sources
-    Samp.cpp
-    SC_BufGen.cpp
-    SC_Carbon.cpp
+	Samp.cpp
+	SC_BufGen.cpp
+	SC_Carbon.cpp
 
-    SC_ComPort.cpp
-    SC_CoreAudio.cpp
-    SC_Errors.cpp
-    SC_Graph.cpp
-    SC_GraphDef.cpp
-    SC_Group.cpp
-    SC_Lib_Cintf.cpp
-    SC_Lib.cpp
-    SC_MiscCmds.cpp
-    SC_Node.cpp
-    SC_Rate.cpp
-    SC_SequencedCommand.cpp
-    SC_Str4.cpp
-    SC_Unit.cpp
-    SC_UnitDef.cpp
-    SC_World.cpp
-    Rendezvous.cpp
+	SC_ComPort.cpp
+	SC_CoreAudio.cpp
+	SC_Errors.cpp
+	SC_Graph.cpp
+	SC_GraphDef.cpp
+	SC_Group.cpp
+	SC_Lib_Cintf.cpp
+	SC_Lib.cpp
+	SC_MiscCmds.cpp
+	SC_Node.cpp
+	SC_Rate.cpp
+	SC_SequencedCommand.cpp
+	SC_Str4.cpp
+	SC_Unit.cpp
+	SC_UnitDef.cpp
+	SC_World.cpp
+	Rendezvous.cpp
 
-    ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
+	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
+
+if(WIN32)
+    list(APPEND scsynth_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+endif()
 
 if (FFT_GREEN)
 	list(APPEND scsynth_sources ../common/fftlib.c)
@@ -114,8 +126,6 @@ if (FINAL_BUILD)
 else()
 	add_library(libscsynth SHARED ${scsynth_sources})
 endif()
-
-target_link_libraries(libscsynth sccommon)
 
 if(CURL)
 	if(CURL_FOUND)
