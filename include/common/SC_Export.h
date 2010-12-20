@@ -1,7 +1,6 @@
 /*
-	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    SuperCollider real time audio synthesis system
+    Copyright (c) 2010 Tim Blechmann. All rights reserved.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,22 +17,20 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-//third party Phase Vocoder UGens
+#ifndef _SC_EXPORTS_
+#define _SC_EXPORTS_
 
-#include "FFT_UGens.h"
+#if defined _WIN32 || defined __CYGWIN__
+# ifdef __GNUC__
+#  define SC_DLLEXPORT __attribute__((dllexport))
+# else
+#  define SC_DLLEXPORT __declspec(dllexport)
+# endif
+#elif __GNUC__ >= 4
+# define SC_DLLEXPORT __attribute__ ((visibility("default")))
+#else
+# define SC_DLLEXPORT
+#endif
 
-InterfaceTable *ft;
+#endif
 
-//these are defined in the relevant files
-extern void initConvolution(InterfaceTable *);
-extern void initPV_ThirdParty(InterfaceTable *);
-extern void initFeatureDetectors(InterfaceTable *it);
-
-PluginLoad(PV_ThirdParty)
-{
-	ft= inTable;
-
-	initConvolution(inTable);
-	initPV_ThirdParty(inTable);
-	initFeatureDetectors(inTable);
-}

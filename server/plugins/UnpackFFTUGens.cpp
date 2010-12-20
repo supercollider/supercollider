@@ -303,7 +303,7 @@ void PackFFT_next(PackFFT *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void load(InterfaceTable *inTable)
+PluginLoad(UnpackFFTUGens)
 {
 	ft= inTable;
 

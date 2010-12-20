@@ -27,6 +27,7 @@
 #define SC_LANGUAGECLIENT_H_INCLUDED
 
 #include "SC_StringBuffer.h"
+#include "SC_Export.h"
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -43,7 +44,7 @@ extern bool compiledOK;
 extern pthread_mutex_t gLangMutex;
 extern VMGlobals* gMainVMGlobals;
 
-class SC_LanguageClient
+class SC_DLLEXPORT SC_LanguageClient
 {
 public:
 	struct Options

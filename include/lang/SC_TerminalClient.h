@@ -29,11 +29,12 @@
 #include "SC_LanguageClient.h"
 #include "SC_StringBuffer.h"
 
+
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
 // =====================================================================
 
-class SC_TerminalClient : public SC_LanguageClient
+class SC_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
 {
 public:
 	enum

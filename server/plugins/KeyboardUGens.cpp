@@ -71,7 +71,7 @@ void* gstate_update_func(void* arg)
 		GetKeys(gstate->keys);
 		usleep(17000);
 	}
-    
+
 	return 0;
 }
 
@@ -159,7 +159,7 @@ void KeyState_Ctor(KeyState *unit)
 	KeyState_next(unit, 1);
 }
 
-void load(InterfaceTable *inTable)
+PluginLoad(KeyboardUGens)
 {
 	ft = inTable;
 
