@@ -60,7 +60,8 @@ var path = [];
 
 function GotoPath(p) {
     path = p.split(">");
-    window.location.hash = p;
+    if(window.location.hash != p)
+        window.location.hash = p;
     updateTree();
 }
 
@@ -72,7 +73,7 @@ function updateTree() {
     var p;
     var done = 0;
     link = "";
-
+    
     while(1) {
         res += "<div class='result'>";
         p=path[lev++];
