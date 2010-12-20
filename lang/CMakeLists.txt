@@ -72,6 +72,11 @@ if(NOT WIN32)
     set(sclang_sources ${sclang_sources} LangPrimSource/PyrSerialPrim.cpp)
 endif()
 
+if(WIN32)
+	include_directories(../platform/windows/compat_stuff)
+	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
+endif()
+
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
