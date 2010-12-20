@@ -109,6 +109,10 @@ function updateTree() {
         tree = tree.subcats[p];
         link += p+">";
         res += "<td>";
+        if(!tree) {
+            res += "<div class='result_summary'>&gt; Category not found: "+p+"</div>";
+            break;
+        }
     }
     el.innerHTML = res;
 }
