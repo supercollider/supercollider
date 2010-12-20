@@ -132,7 +132,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 			}
 		}
 #endif
-		SetPtr(&pfile->fileptr, NULL);
+		SetNil(a);
 		SetFalse(a);
 	}
 	return errNone;
