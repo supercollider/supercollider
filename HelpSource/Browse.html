@@ -107,9 +107,10 @@ function updateTree() {
         for(var i=0;i<tree.entries.length;i++) {
             var v = tree.entries[i];
             var x = v.path.split("/");
-            var c = checkboxes[x[0].toLowerCase()];
-            if(c && !c.checked)
-                continue;
+            
+//            var c = checkboxes[x[0].toLowerCase()];
+//            if(c && !c.checked)
+//                continue;
 
             res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> <span class='soft'>["+x[0];
             if(v.installed=="extension" || v.installed=="missing")
@@ -132,10 +133,15 @@ function updateTree() {
     el.innerHTML = res;
 }
 
-window.onload = function() {
+function buildCategoryTree() {
     var cats = {};
     for(var k in docmap) {
         var v = docmap[k];
+
+        var c = checkboxes[v.path.split("/")[0].toLowerCase()];
+        if(c && !c.checked)
+            continue;
+
         var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
         for(var i=0;i<c2.length;i++) {
             var c = c2[i];
@@ -180,16 +186,20 @@ window.onload = function() {
     }
     
     categorytree = tree;
-    
+}
+
+window.onload = function() {
     var fields = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
     checkboxes = {};
     for(var i=0;i<fields.length;i++) {
         var k = fields[i];
         checkboxes[k] = document.getElementById("check_"+k);
-        checkboxes[k].onchange = updateTree;
+        checkboxes[k].onchange = function() {
+            buildCategoryTree();
+            updateTree();
+        };
     }
-
-
+    buildCategoryTree();
     GotoPath(window.location.hash.slice(1));
 }
 
