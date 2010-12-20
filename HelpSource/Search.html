@@ -37,14 +37,40 @@ div.result_category {
 div.result_doc {
     margin-left: 2em;
 }
+#search_checks {
+    font-size: 9pt;
+    color: #555;
+    margin-left: auto;
+    margin-right: auto;
+/*    border-top: 1px solid #ddd;*/
+    margin-top: 1em;
+}
 </style>
 
 <script type="text/javascript">
 var input = "";
 var newinput = "";
-
+var checkboxes;
+var checkboxes2;
+var fields;
+    
 window.onload = function() {
     newinput = document.getElementById("search_input").value.toLowerCase();
+
+    fields = ["title","summary","categories"];
+    checkboxes = [];
+    for(var i=0;i<fields.length;i++) {
+        checkboxes[i] = document.getElementById("check_"+fields[i]);
+        checkboxes[i].onchange = doSearch;
+    }
+    
+    var fields2 = ["classes", "reference", "guides", "tutorials", "other"];
+    checkboxes2 = {};
+    for(var i=0;i<fields2.length;i++) {
+        var k = fields2[i];
+        checkboxes2[k] = document.getElementById("check_"+k);
+        checkboxes2[k].onchange = doSearch;
+    }
 }
 
 function SearchKeyPressed(e) {
@@ -55,17 +81,20 @@ function SearchKeyPressed(e) {
     }
 }
 
-function matchDoc(doc,file,txt) {
-    var fields = ["title","summary","categories"];
-    //FIXME: checkboxes for filename, title, summary, categories
-    //also, Classes, Reference, Guides, Tutorials, etc..
+function matchDoc(doc,file,folder,txt) {
     //FIXME: also search methods? then we need to export the method list as JSON..
+    
+    var c = checkboxes2[folder.toLowerCase()];
+    if(c && !c.checked)
+        return false;
+    
     for(var i=0;i<fields.length;i++) {
         var f = fields[i];
-        if(doc[f] && doc[f].toLowerCase().indexOf(txt)>=0)
+        if(checkboxes[i].checked && doc[f] && doc[f].toLowerCase().indexOf(txt)>=0)
             return true;
     }
-    if(file.toLowerCase().indexOf(txt)>=0)
+
+    if(document.getElementById("check_filename").checked && file.toLowerCase().indexOf(txt)>=0)
         return true;
                
     return false;
@@ -80,18 +109,19 @@ function doSearch() {
         for(var k in docmap) {
             var v = docmap[k];
             var x = k.split("/");
-//            var folder = x[0];
+            var folder = x[0];
             var file = x[x.length-1];
 
-            if(matchDoc(v,file,input)) {
+            if(matchDoc(v,file,folder,input)) {
             
-                var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
-                for(var i=0;i<c2.length;i++) {
-                    var c = c2[i];
+//                var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
+//                for(var i=0;i<c2.length;i++) {
+//                    var c = c2[i];
+                    var c = v.categories;
                     if(!cats[c])
                         cats[c]=[];
                     cats[c].push(v);
-                }
+//                }
 
                 count++;
             }
@@ -147,9 +177,23 @@ setInterval("delayed_update()",1000);
 
 <div id="search_box">
 Search text: <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
+<div id="search_checks">
+Search in:
+<input type="checkbox" id="check_title" checked="true">Title</input>
+<input type="checkbox" id="check_summary" checked="true">Summary</input>
+<input type="checkbox" id="check_categories" checked="true">Categories</input>
+<input type="checkbox" id="check_filename" checked="true">Filename</input>
+<br>
+Filter by:
+<input type="checkbox" id="check_classes" checked="true">Classes</input>
+<input type="checkbox" id="check_reference" checked="true">Reference</input>
+<input type="checkbox" id="check_guides" checked="true">Guides</input>
+<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
+<input type="checkbox" id="check_other" checked="true">Other</input>
+</div>
 </div>
 
-<div id="search_count">Results</div>
+<div id="search_count">0 results</div>
 <div id="search_results"></div>
 
 </body>
