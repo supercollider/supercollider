@@ -201,7 +201,7 @@ if (SUPERNOVA)
 endif(SUPERNOVA)
 
 foreach(ugen ${fft_ugens})
-	target_link_libraries(${ugen} m)
+	target_link_libraries(${ugen} ${MATH_LIBRARY})
 
 	if (APPLE)
 		target_link_libraries(${ugen} "-framework vecLib")
