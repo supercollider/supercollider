@@ -141,15 +141,7 @@ if (FFTW3F_FOUND)
 	include_directories (${FFTW3F_INCLUDE_DIR})
 endif()
 
-foreach(ugen ${fft_ugens})
-	target_link_libraries(${ugen} ${MATH_LIBRARY})
-
-	if (APPLE)
-		target_link_libraries(${ugen} "-framework vecLib")
-	endif()
-endforeach()
-
-if (supernova)
+if (SUPERNOVA)
 	foreach(plugin ${plugin_sources})
 		string(REPLACE .cpp "_supernova" plugin_name ${plugin} )
 		add_library(${plugin_name} MODULE ${plugin})
@@ -209,7 +201,15 @@ if (supernova)
 			message(SEND_ERROR "Cannot find libsndfile")
 		endif(SNDFILE_FOUND)
 	endif()
-endif(supernova)
+endif(SUPERNOVA)
+
+foreach(ugen ${fft_ugens})
+	target_link_libraries(${ugen} m)
+
+	if (APPLE)
+		target_link_libraries(${ugen} "-framework vecLib")
+	endif()
+endforeach()
 
 foreach (ugen ${uiugens})
     target_link_libraries(${ugen} ${PTHREADS_LIBRARY})
@@ -251,7 +251,7 @@ else()
 			DESTINATION "lib/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
-	if (supernova)
+	if (SUPERNOVA)
 		install(TARGETS ${supernova_plugins}
 			DESTINATION "lib/supernova/plugins"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (SuperCollider)
+enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
@@ -90,6 +91,18 @@ option(CURL "Build with curl for remote file download." ON)
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 mark_as_advanced(FFT_GREEN)
 
+option(SSE "Compile with support for SSE instructions.")
+option(SSE41 "Compile with support for SSE4.1 instructions.")
+option(SSE42 "Compile with support for SSE4.2 instructions.")
+
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
+elseif()
+    option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
+endif()
+option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
+
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
 mark_as_advanced(NO_LIBSNDFILE)
 
@@ -101,6 +114,35 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	option(SC_WII "Build sclang with WII support" ON)
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+    option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines, requires gcc-4.3 or higher).")
+    option(LTO "Use GCC's link time optimizer' (experimental).")
+endif()
+
+#############################################
+# some preprocessor flags
+if(CMAKE_COMPILER_IS_GNUCXX)
+  if(SSE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse -mfpmath=sse")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
+  endif()
+  if(SSE41)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
+  endif()
+  if(SSE42)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
+  endif()
+  if(NATIVE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+  endif()
+endif()
+
+
+
+
 #############################################
 # subdirectories
 add_subdirectory(common)
@@ -109,6 +151,8 @@ add_subdirectory(lang)
 add_subdirectory(bindings)
 add_subdirectory(platform)
 add_subdirectory(editors)
+add_subdirectory(external_libraries)
+add_subdirectory(testsuite)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     install(DIRECTORY include
