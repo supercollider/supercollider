@@ -79,10 +79,7 @@ endforeach(plugin)
 set(uiugens MouseUGens KeyboardUGens)
 
 if (WIN32)
-        set(scfft_sources   ${scfft_sources} ../../platform/windows/PlugIns/ExportHelper.cpp)
-endif()
-
-if(WIN32)
+    set(scplugin_common_sources ../../platform/windows/PlugIns/ExportHelper.cpp)
     include_directories (../../platform/windows/compat_stuff)
 endif()
 
@@ -91,7 +88,7 @@ add_library(FFT_UGens MODULE
 			FFT_UGens.cpp
 			PV_UGens.cpp
 			PartitionedConvolution.cpp
-			${scfft_sources}
+			${scplugin_common_sources}
 			)
 
 add_library(PV_ThirdParty MODULE
@@ -99,7 +96,7 @@ add_library(PV_ThirdParty MODULE
 			FFT2InterfaceTable.cpp
 			FeatureDetection.cpp
 			PV_ThirdParty.cpp
-			${scfft_sources}
+			${scplugin_common_sources}
 			)
 
 add_library(ML_UGens MODULE
@@ -112,7 +109,7 @@ add_library(ML_UGens MODULE
 			MFCC.cpp
 			BeatTrack2.cpp
 			ML_SpecStats.cpp
-			${scfft_sources}
+			${scplugin_common_sources}
 			)
 
 if(NOT NO_LIBSNDFILE)
@@ -121,7 +118,7 @@ if(NOT NO_LIBSNDFILE)
 	if(WIN32)
 		set(diskio_sources ${diskio_sources} ../../platform/windows/PlugIns/ExportHelper.cpp)
 	endif()
-        
+
 	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
 	if(SNDFILE_FOUND)
@@ -157,7 +154,7 @@ if (SUPERNOVA)
 				FFT_UGens.cpp
 				PV_UGens.cpp
 				PartitionedConvolution.cpp
-				${scfft_sources}
+				${scplugin_common_sources}
 				)
 
 	add_library(PV_ThirdParty_supernova MODULE
@@ -165,7 +162,7 @@ if (SUPERNOVA)
 				FFT2InterfaceTable.cpp
 				FeatureDetection.cpp
 				PV_ThirdParty.cpp
-				${scfft_sources}
+				${scplugin_common_sources}
 				)
 
 	add_library(ML_UGens_supernova MODULE
@@ -178,7 +175,7 @@ if (SUPERNOVA)
 				MFCC.cpp
 				BeatTrack2.cpp
 				ML_SpecStats.cpp
-				${scfft_sources}
+				${scplugin_common_sources}
 				)
 
 	set_property(TARGET FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova
