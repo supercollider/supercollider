@@ -1,5 +1,5 @@
 if(NOT APPLE)
-		message(SEND_ERROR "mac folder invoked by cmake, but not APPLE platform")
+	message(SEND_ERROR "mac folder invoked by cmake, but not APPLE platform")
 endif()
 
 # determines the app name and app install location (scappbundlename, scappdir):
@@ -71,7 +71,18 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/HID_Utilities/HID_Error_Handler.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreMIDI.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreAudioPrim.cpp
+
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
+	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
+	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
+
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaFilePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/DrawBackground.M
@@ -109,7 +120,7 @@ set(scapp_parser_source ${CMAKE_SOURCE_DIR}/lang/LangSource/Bison/lang11d_tab.cp
 add_definitions(-DYYSTACK_USE_ALLOCA -DHAVE_SPEECH)
 
 # set how it shows up in the Info.plist file
-SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns) 
+SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns)
 # set where in the bundle to put the icns file
 SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns
 	PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
@@ -164,7 +175,7 @@ elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
-target_link_libraries(${scappbundlename} sccommon pthread)
+target_link_libraries(${scappbundlename} ${PTHREADS_LIBRARY})
 
 install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app"
 	DESTINATION ${scappdir}
