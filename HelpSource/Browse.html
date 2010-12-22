@@ -77,8 +77,9 @@ var checkboxes;
 
 function GotoPath(p) {
     path = p.split(">");
-    if(window.location.hash != p)
-        window.location.hash = p;
+    var x = escape(p);
+    if(window.location.hash != x)
+        window.location.hash = x;
     updateTree();
 }
 
@@ -225,11 +226,11 @@ window.onload = function() {
     }
     document.getElementById("check_ext_classes").onchange = onChange;
     buildCategoryTree();
-    GotoPath(window.location.hash.slice(1));
+    GotoPath(unescape(window.location.hash.slice(1)));
 }
 
 window.onhashchange = function() {
-    GotoPath(window.location.hash.slice(1));
+    GotoPath(unescape(window.location.hash.slice(1)));
 }
 
 </script>
