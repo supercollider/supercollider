@@ -194,6 +194,7 @@ if (APPLE)
 	target_link_libraries(libsclang "-framework CoreAudio")
 	target_link_libraries(libsclang "-framework CoreMidi")
 	target_link_libraries(libsclang "-framework IOKit")
+	target_link_libraries(libsclang "-framework CoreServices")
 endif()
 
 if(ALSA_FOUND)

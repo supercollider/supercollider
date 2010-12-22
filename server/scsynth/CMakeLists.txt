@@ -167,7 +167,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if (APPLE)
-	target_link_libraries(libscsynth "-framework vecLib")
+	target_link_libraries(libscsynth "-framework vecLib -framework CoreServices")
 endif()
 
 add_executable(scsynth scsynth_main.cpp)
