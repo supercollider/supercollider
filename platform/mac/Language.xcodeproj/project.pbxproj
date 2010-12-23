@@ -257,6 +257,95 @@
 		F33F726112C2A4FA00621B91 /* IOHIDDevice_.c in Sources */ = {isa = PBXBuildFile; fileRef = F33F526912C29F5200621B91 /* IOHIDDevice_.c */; };
 		F33F726212C2A4FA00621B91 /* IOHIDElement_.c in Sources */ = {isa = PBXBuildFile; fileRef = F33F526B12C29F5200621B91 /* IOHIDElement_.c */; };
 		F33F728012C2A65500621B91 /* HTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D1412C29FBA00621B91 /* HTMLRenderer.m */; };
+		F3514A9512C303080036CEB4 /* AdvancingAllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F528F12C29F5200621B91 /* AdvancingAllocPool.cpp */; };
+		F3514A9612C303080036CEB4 /* ByteCodeArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529412C29F5200621B91 /* ByteCodeArray.cpp */; };
+		F3514A9712C303080036CEB4 /* CocoaBridgePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D0E12C29FBA00621B91 /* CocoaBridgePrimitives.M */; };
+		F3514A9812C303080036CEB4 /* CocoaFilePrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D0F12C29FBA00621B91 /* CocoaFilePrimitives.M */; };
+		F3514A9912C303080036CEB4 /* DrawBackground.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D1012C29FBA00621B91 /* DrawBackground.M */; };
+		F3514A9A12C303080036CEB4 /* dumpByteCodes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529612C29F5200621B91 /* dumpByteCodes.cpp */; };
+		F3514A9B12C303080036CEB4 /* DumpParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529712C29F5200621B91 /* DumpParseNode.cpp */; };
+		F3514A9C12C303080036CEB4 /* fftlib.c in Sources */ = {isa = PBXBuildFile; fileRef = F33F52F212C29F6E00621B91 /* fftlib.c */; };
+		F3514A9D12C303080036CEB4 /* GC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529812C29F5200621B91 /* GC.cpp */; };
+		F3514A9E12C303080036CEB4 /* GetStringFromUser.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D1112C29FBA00621B91 /* GetStringFromUser.m */; };
+		F3514A9F12C303080036CEB4 /* GoToPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D1212C29FBA00621B91 /* GoToPanel.M */; };
+		F3514AA012C303080036CEB4 /* GUIPrimitives.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D1312C29FBA00621B91 /* GUIPrimitives.M */; };
+		F3514AA112C303080036CEB4 /* HID_Error_Handler.c in Sources */ = {isa = PBXBuildFile; fileRef = F33F525F12C29F5200621B91 /* HID_Error_Handler.c */; };
+		F3514AA212C303080036CEB4 /* HID_Name_Lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = F33F526112C29F5200621B91 /* HID_Name_Lookup.c */; };
+		F3514AA312C303080036CEB4 /* HID_Queue_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F33F526312C29F5200621B91 /* HID_Queue_Utilities.c */; };
+		F3514AA412C303080036CEB4 /* HID_Utilities.c in Sources */ = {isa = PBXBuildFile; fileRef = F33F526512C29F5200621B91 /* HID_Utilities.c */; };
+		F3514AA512C303080036CEB4 /* HTMLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D1412C29FBA00621B91 /* HTMLRenderer.m */; };
+		F3514AA612C303080036CEB4 /* ICUMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5912C29FBB00621B91 /* ICUMatcher.m */; };
+		F3514AA712C303080036CEB4 /* ICUPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5A12C29FBB00621B91 /* ICUPattern.m */; };
+		F3514AA812C303080036CEB4 /* InitAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529912C29F5200621B91 /* InitAlloc.cpp */; };
+		F3514AA912C303080036CEB4 /* lang11d_tab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529212C29F5200621B91 /* lang11d_tab.cpp */; };
+		F3514AAA12C303080036CEB4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D4812C29FBA00621B91 /* main.m */; };
+		F3514AAB12C303080036CEB4 /* MyDocument.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D4912C29FBA00621B91 /* MyDocument.M */; };
+		F3514AAC12C303080036CEB4 /* NSStringICUAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5C12C29FBB00621B91 /* NSStringICUAdditions.m */; };
+		F3514AAD12C303080036CEB4 /* OSCData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F526E12C29F5200621B91 /* OSCData.cpp */; };
+		F3514AAE12C303080036CEB4 /* post_queue.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D4A12C29FBA00621B91 /* post_queue.M */; };
+		F3514AAF12C303080036CEB4 /* PyrArchiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F526F12C29F5200621B91 /* PyrArchiver.cpp */; };
+		F3514AB012C303080036CEB4 /* PyrArrayPrimitives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527012C29F5200621B91 /* PyrArrayPrimitives.cpp */; };
+		F3514AB112C303080036CEB4 /* PyrBitPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527112C29F5200621B91 /* PyrBitPrim.cpp */; };
+		F3514AB212C303080036CEB4 /* PyrCharPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527212C29F5200621B91 /* PyrCharPrim.cpp */; };
+		F3514AB312C303080036CEB4 /* PyrFilePrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527312C29F5200621B91 /* PyrFilePrim.cpp */; };
+		F3514AB412C303080036CEB4 /* PyrFileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529A12C29F5200621B91 /* PyrFileUtils.cpp */; };
+		F3514AB512C303080036CEB4 /* PyrInterpreter3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529B12C29F5200621B91 /* PyrInterpreter3.cpp */; };
+		F3514AB612C303080036CEB4 /* PyrLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529C12C29F5200621B91 /* PyrLexer.cpp */; };
+		F3514AB712C303080036CEB4 /* PyrListPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527412C29F5200621B91 /* PyrListPrim.cpp */; };
+		F3514AB812C303080036CEB4 /* PyrMathOps.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529D12C29F5200621B91 /* PyrMathOps.cpp */; };
+		F3514AB912C303080036CEB4 /* PyrMathPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527512C29F5200621B91 /* PyrMathPrim.cpp */; };
+		F3514ABA12C303080036CEB4 /* PyrMathSupport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529E12C29F5200621B91 /* PyrMathSupport.cpp */; };
+		F3514ABB12C303080036CEB4 /* PyrMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F529F12C29F5200621B91 /* PyrMessage.cpp */; };
+		F3514ABC12C303080036CEB4 /* PyrObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F52A012C29F5200621B91 /* PyrObject.cpp */; };
+		F3514ABD12C303080036CEB4 /* PyrParseNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F52A112C29F5200621B91 /* PyrParseNode.cpp */; };
+		F3514ABE12C303080036CEB4 /* PyrPlatformPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527612C29F5200621B91 /* PyrPlatformPrim.cpp */; };
+		F3514ABF12C303080036CEB4 /* PyrPrimitive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527712C29F5200621B91 /* PyrPrimitive.cpp */; };
+		F3514AC012C303080036CEB4 /* PyrSched.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527812C29F5200621B91 /* PyrSched.cpp */; };
+		F3514AC112C303080036CEB4 /* PyrSerialPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527912C29F5200621B91 /* PyrSerialPrim.cpp */; };
+		F3514AC212C303080036CEB4 /* PyrSignal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F52A212C29F5200621B91 /* PyrSignal.cpp */; };
+		F3514AC312C303080036CEB4 /* PyrSignalPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527A12C29F5200621B91 /* PyrSignalPrim.cpp */; };
+		F3514AC412C303080036CEB4 /* PyrStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527B12C29F5200621B91 /* PyrStringPrim.cpp */; };
+		F3514AC512C303080036CEB4 /* PyrSymbolPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527C12C29F5200621B91 /* PyrSymbolPrim.cpp */; };
+		F3514AC612C303080036CEB4 /* PyrSymbolTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F52A312C29F5200621B91 /* PyrSymbolTable.cpp */; };
+		F3514AC712C303080036CEB4 /* PyrUnixPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527D12C29F5200621B91 /* PyrUnixPrim.cpp */; };
+		F3514AC812C303080036CEB4 /* PyrUStringPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F527E12C29F5200621B91 /* PyrUStringPrim.cpp */; };
+		F3514AC912C303080036CEB4 /* RendezvousClient.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D4B12C29FBA00621B91 /* RendezvousClient.M */; };
+		F3514ACA12C303080036CEB4 /* Samp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F52A412C29F5200621B91 /* Samp.cpp */; };
+		F3514ACB12C303080036CEB4 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60AA12C29F8100621B91 /* SC_AllocPool.cpp */; };
+		F3514ACC12C303080036CEB4 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F528012C29F5200621B91 /* SC_ComPort.cpp */; };
+		F3514ACD12C303080036CEB4 /* SC_CoreAudioPrim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F528112C29F5200621B91 /* SC_CoreAudioPrim.cpp */; };
+		F3514ACE12C303080036CEB4 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F528212C29F5200621B91 /* SC_CoreMIDI.cpp */; };
+		F3514ACF12C303080036CEB4 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60AB12C29F8100621B91 /* SC_DirUtils.cpp */; };
+		F3514AD012C303080036CEB4 /* SC_HID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F528312C29F5200621B91 /* SC_HID.cpp */; };
+		F3514AD112C303080036CEB4 /* SC_LibraryConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F52A612C29F5200621B91 /* SC_LibraryConfig.cpp */; };
+		F3514AD212C303080036CEB4 /* sc_popen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60AD12C29F8100621B91 /* sc_popen.cpp */; };
+		F3514AD312C303080036CEB4 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60AE12C29F8100621B91 /* SC_Sem.cpp */; };
+		F3514AD412C303080036CEB4 /* SC_Speech.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F528712C29F5200621B91 /* SC_Speech.M */; };
+		F3514AD512C303080036CEB4 /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60AF12C29F8100621B91 /* SC_StandAloneInfo_Darwin.cpp */; };
+		F3514AD612C303080036CEB4 /* SC_StringBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60B012C29F8100621B91 /* SC_StringBuffer.cpp */; };
+		F3514AD712C303080036CEB4 /* SC_StringParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60B112C29F8100621B91 /* SC_StringParser.cpp */; };
+		F3514AD812C303080036CEB4 /* SC_Wii.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F528812C29F5200621B91 /* SC_Wii.cpp */; };
+		F3514AD912C303080036CEB4 /* SC_Win32Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60B212C29F8100621B91 /* SC_Win32Utils.cpp */; };
+		F3514ADA12C303080036CEB4 /* SCCocoaView.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D4C12C29FBA00621B91 /* SCCocoaView.M */; };
+		F3514ADB12C3034C0036CEB4 /* SCDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D4D12C29FBA00621B91 /* SCDialog.mm */; };
+		F3514ADC12C3034C0036CEB4 /* SCGraphView.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D4E12C29FBA00621B91 /* SCGraphView.M */; };
+		F3514ADD12C3034C0036CEB4 /* SCImage.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D4F12C29FBA00621B91 /* SCImage.M */; };
+		F3514ADE12C3034C0036CEB4 /* SCNSWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5112C29FBA00621B91 /* SCNSWindow.m */; };
+		F3514ADF12C3034C0036CEB4 /* SCService.mm in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5212C29FBB00621B91 /* SCService.mm */; };
+		F3514AE012C3034C0036CEB4 /* SCSoundFileView.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5312C29FBB00621B91 /* SCSoundFileView.M */; };
+		F3514AE112C3034C0036CEB4 /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F60B312C29F8100621B91 /* scsynthsend.cpp */; };
+		F3514AE212C3034C0036CEB4 /* SCTextView.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5412C29FBB00621B91 /* SCTextView.M */; };
+		F3514AE312C3034C0036CEB4 /* SCView.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5512C29FBB00621B91 /* SCView.M */; };
+		F3514AE412C3034C0036CEB4 /* SCVirtualMachine.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5612C29FBB00621B91 /* SCVirtualMachine.M */; };
+		F3514AE512C3034C0036CEB4 /* SimpleStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F52A812C29F5200621B91 /* SimpleStack.cpp */; };
+		F3514AE612C3034C0036CEB4 /* SMLAdvancedFindController.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5D12C29FBB00621B91 /* SMLAdvancedFindController.m */; };
+		F3514AE712C3034C0036CEB4 /* SMLStatusBarTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5E12C29FBB00621B91 /* SMLStatusBarTextFieldCell.m */; };
+		F3514AE812C3034C0036CEB4 /* syntaxColorize.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D5F12C29FBB00621B91 /* syntaxColorize.M */; };
+		F3514AE912C3034C0036CEB4 /* TabletEvents.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D6012C29FBB00621B91 /* TabletEvents.m */; };
+		F3514AEA12C3034C0036CEB4 /* TextFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D6112C29FBB00621B91 /* TextFinder.m */; };
+		F3514AEB12C3034C0036CEB4 /* UserPanel.M in Sources */ = {isa = PBXBuildFile; fileRef = F33F6D6212C29FBB00621B91 /* UserPanel.M */; };
+		F3514AEC12C3034C0036CEB4 /* VMGlobals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F52A912C29F5200621B91 /* VMGlobals.cpp */; };
+		F3514AED12C3034C0036CEB4 /* wiiremote.c in Sources */ = {isa = PBXBuildFile; fileRef = F33F528C12C29F5200621B91 /* wiiremote.c */; };
 		F3B0038E1051D15C00929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */; };
 		F3B003911051D16E00929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */; };
 		F3B003921051D17A00929F44 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F3B0038D1051D15C00929F44 /* scUBlibsndfile.a */; };
@@ -1548,6 +1637,95 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3514ADB12C3034C0036CEB4 /* SCDialog.mm in Sources */,
+				F3514ADC12C3034C0036CEB4 /* SCGraphView.M in Sources */,
+				F3514ADD12C3034C0036CEB4 /* SCImage.M in Sources */,
+				F3514ADE12C3034C0036CEB4 /* SCNSWindow.m in Sources */,
+				F3514ADF12C3034C0036CEB4 /* SCService.mm in Sources */,
+				F3514AE012C3034C0036CEB4 /* SCSoundFileView.M in Sources */,
+				F3514AE112C3034C0036CEB4 /* scsynthsend.cpp in Sources */,
+				F3514AE212C3034C0036CEB4 /* SCTextView.M in Sources */,
+				F3514AE312C3034C0036CEB4 /* SCView.M in Sources */,
+				F3514AE412C3034C0036CEB4 /* SCVirtualMachine.M in Sources */,
+				F3514AE512C3034C0036CEB4 /* SimpleStack.cpp in Sources */,
+				F3514AE612C3034C0036CEB4 /* SMLAdvancedFindController.m in Sources */,
+				F3514AE712C3034C0036CEB4 /* SMLStatusBarTextFieldCell.m in Sources */,
+				F3514AE812C3034C0036CEB4 /* syntaxColorize.M in Sources */,
+				F3514AE912C3034C0036CEB4 /* TabletEvents.m in Sources */,
+				F3514AEA12C3034C0036CEB4 /* TextFinder.m in Sources */,
+				F3514AEB12C3034C0036CEB4 /* UserPanel.M in Sources */,
+				F3514AEC12C3034C0036CEB4 /* VMGlobals.cpp in Sources */,
+				F3514AED12C3034C0036CEB4 /* wiiremote.c in Sources */,
+				F3514A9512C303080036CEB4 /* AdvancingAllocPool.cpp in Sources */,
+				F3514A9612C303080036CEB4 /* ByteCodeArray.cpp in Sources */,
+				F3514A9712C303080036CEB4 /* CocoaBridgePrimitives.M in Sources */,
+				F3514A9812C303080036CEB4 /* CocoaFilePrimitives.M in Sources */,
+				F3514A9912C303080036CEB4 /* DrawBackground.M in Sources */,
+				F3514A9A12C303080036CEB4 /* dumpByteCodes.cpp in Sources */,
+				F3514A9B12C303080036CEB4 /* DumpParseNode.cpp in Sources */,
+				F3514A9C12C303080036CEB4 /* fftlib.c in Sources */,
+				F3514A9D12C303080036CEB4 /* GC.cpp in Sources */,
+				F3514A9E12C303080036CEB4 /* GetStringFromUser.m in Sources */,
+				F3514A9F12C303080036CEB4 /* GoToPanel.M in Sources */,
+				F3514AA012C303080036CEB4 /* GUIPrimitives.M in Sources */,
+				F3514AA112C303080036CEB4 /* HID_Error_Handler.c in Sources */,
+				F3514AA212C303080036CEB4 /* HID_Name_Lookup.c in Sources */,
+				F3514AA312C303080036CEB4 /* HID_Queue_Utilities.c in Sources */,
+				F3514AA412C303080036CEB4 /* HID_Utilities.c in Sources */,
+				F3514AA512C303080036CEB4 /* HTMLRenderer.m in Sources */,
+				F3514AA612C303080036CEB4 /* ICUMatcher.m in Sources */,
+				F3514AA712C303080036CEB4 /* ICUPattern.m in Sources */,
+				F3514AA812C303080036CEB4 /* InitAlloc.cpp in Sources */,
+				F3514AA912C303080036CEB4 /* lang11d_tab.cpp in Sources */,
+				F3514AAA12C303080036CEB4 /* main.m in Sources */,
+				F3514AAB12C303080036CEB4 /* MyDocument.M in Sources */,
+				F3514AAC12C303080036CEB4 /* NSStringICUAdditions.m in Sources */,
+				F3514AAD12C303080036CEB4 /* OSCData.cpp in Sources */,
+				F3514AAE12C303080036CEB4 /* post_queue.M in Sources */,
+				F3514AAF12C303080036CEB4 /* PyrArchiver.cpp in Sources */,
+				F3514AB012C303080036CEB4 /* PyrArrayPrimitives.cpp in Sources */,
+				F3514AB112C303080036CEB4 /* PyrBitPrim.cpp in Sources */,
+				F3514AB212C303080036CEB4 /* PyrCharPrim.cpp in Sources */,
+				F3514AB312C303080036CEB4 /* PyrFilePrim.cpp in Sources */,
+				F3514AB412C303080036CEB4 /* PyrFileUtils.cpp in Sources */,
+				F3514AB512C303080036CEB4 /* PyrInterpreter3.cpp in Sources */,
+				F3514AB612C303080036CEB4 /* PyrLexer.cpp in Sources */,
+				F3514AB712C303080036CEB4 /* PyrListPrim.cpp in Sources */,
+				F3514AB812C303080036CEB4 /* PyrMathOps.cpp in Sources */,
+				F3514AB912C303080036CEB4 /* PyrMathPrim.cpp in Sources */,
+				F3514ABA12C303080036CEB4 /* PyrMathSupport.cpp in Sources */,
+				F3514ABB12C303080036CEB4 /* PyrMessage.cpp in Sources */,
+				F3514ABC12C303080036CEB4 /* PyrObject.cpp in Sources */,
+				F3514ABD12C303080036CEB4 /* PyrParseNode.cpp in Sources */,
+				F3514ABE12C303080036CEB4 /* PyrPlatformPrim.cpp in Sources */,
+				F3514ABF12C303080036CEB4 /* PyrPrimitive.cpp in Sources */,
+				F3514AC012C303080036CEB4 /* PyrSched.cpp in Sources */,
+				F3514AC112C303080036CEB4 /* PyrSerialPrim.cpp in Sources */,
+				F3514AC212C303080036CEB4 /* PyrSignal.cpp in Sources */,
+				F3514AC312C303080036CEB4 /* PyrSignalPrim.cpp in Sources */,
+				F3514AC412C303080036CEB4 /* PyrStringPrim.cpp in Sources */,
+				F3514AC512C303080036CEB4 /* PyrSymbolPrim.cpp in Sources */,
+				F3514AC612C303080036CEB4 /* PyrSymbolTable.cpp in Sources */,
+				F3514AC712C303080036CEB4 /* PyrUnixPrim.cpp in Sources */,
+				F3514AC812C303080036CEB4 /* PyrUStringPrim.cpp in Sources */,
+				F3514AC912C303080036CEB4 /* RendezvousClient.M in Sources */,
+				F3514ACA12C303080036CEB4 /* Samp.cpp in Sources */,
+				F3514ACB12C303080036CEB4 /* SC_AllocPool.cpp in Sources */,
+				F3514ACC12C303080036CEB4 /* SC_ComPort.cpp in Sources */,
+				F3514ACD12C303080036CEB4 /* SC_CoreAudioPrim.cpp in Sources */,
+				F3514ACE12C303080036CEB4 /* SC_CoreMIDI.cpp in Sources */,
+				F3514ACF12C303080036CEB4 /* SC_DirUtils.cpp in Sources */,
+				F3514AD012C303080036CEB4 /* SC_HID.cpp in Sources */,
+				F3514AD112C303080036CEB4 /* SC_LibraryConfig.cpp in Sources */,
+				F3514AD212C303080036CEB4 /* sc_popen.cpp in Sources */,
+				F3514AD312C303080036CEB4 /* SC_Sem.cpp in Sources */,
+				F3514AD412C303080036CEB4 /* SC_Speech.M in Sources */,
+				F3514AD512C303080036CEB4 /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				F3514AD612C303080036CEB4 /* SC_StringBuffer.cpp in Sources */,
+				F3514AD712C303080036CEB4 /* SC_StringParser.cpp in Sources */,
+				F3514AD812C303080036CEB4 /* SC_Wii.cpp in Sources */,
+				F3514AD912C303080036CEB4 /* SC_Win32Utils.cpp in Sources */,
+				F3514ADA12C303080036CEB4 /* SCCocoaView.M in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
