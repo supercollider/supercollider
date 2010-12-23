@@ -120,5 +120,6 @@ if(LTO)
 endif()
 
 if (APPLE)
+    target_link_libraries(supernova "-framework vecLib")
     target_link_libraries(supernova "-framework CoreAudio")
 endif()
