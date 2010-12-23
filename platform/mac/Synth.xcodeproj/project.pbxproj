@@ -1029,7 +1029,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = ../common/Headers/common;
+				HEADER_SEARCH_PATHS = (
+					"../common/Headers/common",
+					"../../external_libraries/libsndfile/",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = "-DSC_DARWIN";
@@ -1198,7 +1201,10 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = ../common/Headers/common;
+				HEADER_SEARCH_PATHS = (
+					"../common/Headers/common",
+					"../../external_libraries/libsndfile/",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = "-DSC_DARWIN";
@@ -1220,7 +1226,10 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = ../common/Headers/common;
+				HEADER_SEARCH_PATHS = (
+					"../common/Headers/common",
+					"../../external_libraries/libsndfile/",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
@@ -1418,7 +1427,10 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_VERSION = 4.2;
-				HEADER_SEARCH_PATHS = ../common/Headers/common;
+				HEADER_SEARCH_PATHS = (
+					"../common/Headers/common",
+					"../../external_libraries/libsndfile/",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
 				OTHER_CFLAGS = (
