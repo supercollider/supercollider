@@ -63,7 +63,7 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 void dumpOSCmsg(int inSize, char* inData)
 {
 	int size;
-	char *data;
+	const char *data;
 
 	if (inData[0]) {
 		char *addr = inData;
