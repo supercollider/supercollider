@@ -32,7 +32,11 @@ ADD_CUSTOM_TARGET(setMainVersion ALL
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	add_definitions("-ffast-math" "-fschedule-insns2" "-fomit-frame-pointer")
 
-	add_definitions(-fvisibility=hidden)
+	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
+
+	if (DSO_VISIBILITY)
+		add_definitions(-fvisibility=hidden)
+	endif()
 
 	if(APPLE)
 		add_definitions("-D_REENTRANT")
