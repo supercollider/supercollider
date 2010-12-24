@@ -128,6 +128,8 @@ public:
         trace = 1;
     }
 
+    void apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, struct sc_msg_iter *args);
+
 private:
     void run_traced(void);
 
