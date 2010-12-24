@@ -750,8 +750,8 @@ QMultiSliderView : QView {
   }
 
   elasticMode_ { arg int;
-    elasticMode = int;
-    this.setProperty( \elastic, int > 0 );
+    elasticMode = int.booleanValue;
+    this.setProperty( \elastic, elasticMode);
   }
 
   thumbSize_ { arg float;
