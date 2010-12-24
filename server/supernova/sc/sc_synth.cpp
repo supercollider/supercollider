@@ -231,6 +231,16 @@ void sc_synth::map_control_buses_audio (const char * slot_name, int audio_bus_in
     map_control_buses_audio(index, audio_bus_index, count);
 }
 
+void sc_synth::apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, struct sc_msg_iter *args)
+{
+    Unit * unit = units[unit_index];
+    sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+
+    UnitCmdFunc func = def->find_command(unit_cmd);
+    (func)(unit, args);
+}
+
+
 void sc_synth::run(void)
 {
     perform();

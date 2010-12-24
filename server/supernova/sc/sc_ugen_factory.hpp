@@ -34,6 +34,34 @@ namespace nova
 {
 namespace bi = boost::intrusive;
 
+
+struct sc_unitcmd_def:
+    public bi::set_base_hook<>
+{
+    const std::string name_;
+
+public:
+    const UnitCmdFunc func;
+
+    sc_unitcmd_def(const char * cmd_name, UnitCmdFunc func):
+        name_(cmd_name), func(func)
+    {}
+
+    std::string const & name(void) const
+    {
+        return name_;
+    }
+
+public:
+    /* sort by name */
+    friend bool operator< (sc_unitcmd_def const & a,
+                           sc_unitcmd_def const & b)
+    {
+        return a.name_ < b.name_;
+    }
+};
+
+
 class sc_ugen_def:
     public bi::unordered_set_base_hook<>
 {
@@ -43,6 +71,9 @@ private:
     const UnitCtorFunc ctor;
     const UnitDtorFunc dtor;
     const uint32_t flags;
+
+    typedef bi::set<sc_unitcmd_def> unit_commands_set;
+    unit_commands_set commands;
 
 public:
     sc_ugen_def(const char *inUnitClassName, size_t inAllocSize,
@@ -86,13 +117,8 @@ public:
         return alloc_size;
     }
 
-public:
-    /* sort by name */
-    friend bool operator< (sc_ugen_def const & a,
-                           sc_ugen_def const & b)
-    {
-        return a.name_ < b.name_;
-    }
+    bool add_command(const char * cmd_name, UnitCmdFunc func);
+    UnitCmdFunc find_command(const char * cmd_name);
 
     friend bool operator== (sc_ugen_def const & a,
                            sc_ugen_def const & b)
@@ -142,59 +168,6 @@ class sc_ugen_factory:
 
     typedef bi::set<sc_bufgen_def> bufgen_set_t;
 
-    template<typename def>
-    struct compare_def
-    {
-        bool operator()(def const & lhs,
-                        std::string const & rhs) const
-        {
-            return lhs.name() < rhs;
-        }
-
-        bool operator()(std::string const & lhs,
-                        def const & rhs) const
-        {
-            return lhs < rhs.name();
-        }
-
-        bool operator()(def const & lhs,
-                        const char * rhs) const
-        {
-            return (strcmp(lhs.name().c_str(), rhs) < 0);
-        }
-
-        bool operator()(const char * lhs,
-                        def const & rhs) const
-        {
-            return (strcmp(lhs, rhs.name().c_str()) < 0);
-        }
-    };
-
-    template<typename def>
-    struct equal_def
-    {
-        bool operator()(def const & lhs,
-                        std::string const & rhs) const
-        {
-            return lhs.name() == rhs;
-        }
-
-        bool operator()(std::string const & lhs,
-                        def const & rhs) const
-        {
-            return lhs == rhs.name();
-        }
-    };
-
-    template<typename def>
-    struct hash_def
-    {
-        std::size_t operator()(std::string const & value)
-        {
-            return def::hash(value);
-        }
-    };
-
     ugen_set_type::bucket_type node_buckets[ugen_set_bucket_count];
     ugen_set_type ugen_set;
 
@@ -243,6 +216,8 @@ public:
     BufGenFunc find_bufgen(const char * name);
 
     sc_ugen_def * find_ugen(std::string const & name);
+
+    bool register_ugen_command_function(const char * ugen_name, const char * cmd_name, UnitCmdFunc);
 
 private:
     void close_handles(void);

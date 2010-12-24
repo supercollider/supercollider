@@ -294,6 +294,12 @@ bool define_bufgen(const char * name, BufGenFunc func)
     }
 }
 
+bool define_unitcmd(const char * unitClassName, const char * cmdName, UnitCmdFunc inFunc)
+{
+    return nova::sc_factory->register_ugen_command_function(unitClassName, cmdName, inFunc);
+}
+
+
 bool define_plugincmd(const char * name, PlugInCmdFunc func, void * user_data)
 {
     std::cerr << "plugin commands not implemented: " << name << std::endl;
@@ -520,6 +526,7 @@ void sc_plugin_interface::initialize(void)
     sc_interface.fDefineUnit = &define_unit;
     sc_interface.fDefineBufGen = &define_bufgen;
     sc_interface.fDefinePlugInCmd = &define_plugincmd;
+    sc_interface.fDefineUnitCmd = &define_unitcmd;
 
     /* interface functions */
     sc_interface.fNodeEnd = &node_end;

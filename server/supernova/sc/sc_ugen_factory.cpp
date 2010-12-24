@@ -33,6 +33,63 @@
 namespace nova
 {
 
+namespace
+{
+
+template<typename def>
+struct compare_def
+{
+    bool operator()(def const & lhs,
+                    std::string const & rhs) const
+    {
+        return lhs.name() < rhs;
+    }
+
+    bool operator()(std::string const & lhs,
+                    def const & rhs) const
+    {
+        return lhs < rhs.name();
+    }
+
+    bool operator()(def const & lhs,
+                    const char * rhs) const
+    {
+        return (strcmp(lhs.name().c_str(), rhs) < 0);
+    }
+
+    bool operator()(const char * lhs,
+                    def const & rhs) const
+    {
+        return (strcmp(lhs, rhs.name().c_str()) < 0);
+    }
+};
+
+template<typename def>
+struct equal_def
+{
+    bool operator()(def const & lhs,
+                    std::string const & rhs) const
+    {
+        return lhs.name() == rhs;
+    }
+
+    bool operator()(std::string const & lhs,
+                    def const & rhs) const
+    {
+        return lhs == rhs.name();
+    }
+};
+
+template<typename def>
+struct hash_def
+{
+    std::size_t operator()(std::string const & value)
+    {
+        return def::hash(value);
+    }
+};
+
+}
 
 sc_ugen_factory * sc_factory;
 
@@ -119,6 +176,23 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     return unit;
 }
 
+bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func)
+{
+    sc_unitcmd_def * def = new sc_unitcmd_def(cmd_name, func);
+    commands.insert(*def);
+    return true;
+}
+
+UnitCmdFunc sc_ugen_def::find_command(const char * cmd_name)
+{
+    unit_commands_set::iterator it = commands.find(cmd_name, compare_def<sc_unitcmd_def>());
+
+    if (it == commands.end())
+        return NULL;
+    else
+        return it->func;
+}
+
 void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
 {
     using namespace boost::filesystem;
@@ -174,6 +248,7 @@ void sc_ugen_factory::close_handles(void)
 {}
 #endif
 
+
 void sc_ugen_factory::register_ugen(const char *inUnitClassName, size_t inAllocSize,
                                     UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
 {
@@ -208,5 +283,15 @@ sc_ugen_def * sc_ugen_factory::find_ugen(std::string const & name)
     }
     return &*it;
 }
+
+bool sc_ugen_factory::register_ugen_command_function(const char * ugen_name, const char * cmd_name,
+                                                     UnitCmdFunc func)
+{
+    sc_ugen_def * def = find_ugen(ugen_name);
+    if (!def)
+        return false;
+    return def->add_command(cmd_name, func);
+}
+
 
 } /* namespace nova */

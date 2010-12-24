@@ -2909,7 +2909,24 @@ void handle_p_new(received_message const & msg)
     }
 }
 
+void handle_u_cmd(received_message const & msg, int size)
+{
+    sc_msg_iter args(size, msg.AddressPattern());
 
+    int node_id = args.geti();
+
+    server_node * target_synth = find_node(node_id);
+
+    if (target_synth == NULL || target_synth->is_group())
+        return;
+
+    sc_synth * synth = static_cast<sc_synth*>(target_synth);
+
+    int ugen_index = args.geti();
+    const char * cmd_name = args.gets();
+
+    synth->apply_unit_cmd(cmd_name, ugen_index, &args);
+}
 
 } /* namespace */
 
@@ -3051,6 +3068,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_b_alloc:
         handle_b_alloc<realtime>(message, endpoint);
+        break;
+
+    case cmd_u_cmd:
+        handle_u_cmd(message, msg_size);
         break;
 
     case cmd_b_free:
@@ -3491,6 +3512,11 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
 
     if (strcmp(address+1, "p_new") == 0) {
         handle_p_new(message);
+        return;
+    }
+
+    if (strcmp(address+1, "u_cmd") == 0) {
+        handle_u_cmd(message, msg_size);
         return;
     }
 
