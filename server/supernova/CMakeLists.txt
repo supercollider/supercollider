@@ -109,14 +109,10 @@ install(TARGETS supernova
 
 if(LTO)
     set_property(TARGET supernova libsupernova
-                 APPEND
-                 PROPERTY COMPILE_FLAGS "-flto -flto-report"
-    )
+                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
     set_property(TARGET supernova libsupernova
-                 APPEND
-                 PROPERTY LINK_FLAGS "-flto -flto-report"
-    )
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
 if (APPLE)
