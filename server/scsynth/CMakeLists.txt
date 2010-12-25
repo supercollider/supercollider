@@ -173,6 +173,14 @@ endif()
 add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
 
+if(LTO)
+    set_property(TARGET scsynth libscsynth
+                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+
+    set_property(TARGET scsynth libscsynth
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+endif()
+
 #TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
 
 if(APPLE)

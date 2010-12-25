@@ -221,6 +221,13 @@ set_property(TARGET sclang
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS USE_SC_TERMINAL_CLIENT)
 
+if(LTO)
+    set_property(TARGET sclang libsclang
+                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+
+    set_property(TARGET sclang libsclang
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+endif()
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
