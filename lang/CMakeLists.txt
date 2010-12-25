@@ -1,8 +1,7 @@
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
-                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
-	LangSource/Bison)
+                    LangSource/Bison)
 
 if(APPLE)
 	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/icu
