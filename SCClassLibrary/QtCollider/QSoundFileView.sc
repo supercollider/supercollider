@@ -43,8 +43,8 @@ QSoundFileView : QView {
 
   zoomAllOut { this.invokeMethod( \zoomAllOut ); }
 
-  scrollTo { arg frame;
-    if( frame < 0 ) { frame = 0 };
+  scrollTo { arg pos; // absolute. from 0 to 1
+    var frame = pos * (this.numFrames - this.viewFrames);
     this.setProperty( \scrollPos, frame );
   }
 
