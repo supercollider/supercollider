@@ -1,0 +1,106 @@
+#!/bin/bash
+
+basename=`basename $PWD`
+if [ $basename != "package" ]; then
+    echo "This script must be ran from within the Packager directory."
+    exit 1
+fi
+
+if [ -d SuperCollider ]; then
+	echo "Please remove the ./SuperCollider directory before running this script."
+	exit 1
+fi
+
+version=`date "+%Y-%m-%d"`
+include_optionals=false
+if [ `uname` = 'Darwin' ]; then
+	package_type="osx"
+else
+	package_type="source"
+fi
+
+while getopts ":v:os" Option
+do
+  case $Option in
+    v ) version=$OPTARG
+        ;;
+    o ) include_optionals=true
+        ;;
+    s ) package_type="source"
+        ;;
+  esac
+done
+shift $(($OPTIND - 1))
+
+revision=`git rev-list HEAD -1 | sed -E 's/([[:alnum:]]{1,10}).*/\1/'`
+if [ "`git status -s -uno`" != "" ]; then
+    echo "WARNING: The working copy has uncommitted changes which will NOT be included in the package."
+fi
+
+if [ $package_type == "source" ]; then
+    mkdir SuperCollider-Source
+    returndir=`pwd`
+    cd ../
+    git archive $revision | tar -x --exclude ".gitignore" -C "$returndir/SuperCollider-Source"
+    cd $returndir
+
+    if $include_optionals; then
+        cp -Rp optional SuperCollider-Source/optional_installs
+        cp OPTIONALS_README_SOURCE.txt SuperCollider-Source/optional_installs/README.txt
+        filename="SuperCollider-$version-Source-With-Extras.tar.gz"
+        filenamelinux="SuperCollider-$version-Source-With-Extras-linux.tar.gz"
+    else
+        filename="SuperCollider-$version-Source.tar.gz"
+        filenamelinux="SuperCollider-$version-Source-linux.tar.gz"
+    fi
+
+    # Here we build a list of (many) files that are useless on linux, so as to build a slimline source.tar.gz
+    find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -name "iPhone*" > LinuxExclusions.txt
+	echo 'SuperCollider-Source/SuperColliderAU
+SuperCollider-Source/editors/Psycollider
+SuperCollider-Source/platform/README OS X
+SuperCollider-Source/platform/README WINDOWS
+SuperCollider-Source/platform/README IPHONE
+SuperCollider-Source/external_libraries/libsndfile
+SuperCollider-Source/external_libraries/curl
+SuperCollider-Source/external_libraries/icu
+SuperCollider-Source/platform/mac
+SuperCollider-Source/platform/iphone
+SuperCollider-Source/lang/LangPrimSource/HID_Utilities
+SuperCollider-Source/lang/LangPrimSource/WiiMote_OSX
+SuperCollider-Source/editors/scapp' >> LinuxExclusions.txt
+
+    tar cfz "$filename" SuperCollider-Source
+    tar cfzX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source
+    rm -rf SuperCollider-Source
+    exit
+else
+    if $include_optionals; then
+        opt_options='--copy dmg_with_optionals.ds_store:/.DS_Store --copy optional/:/Optional\ Installs --copy OPTIONALS_README_OSX.rtf:/Optional\ Installs/README.rtf'
+        filename="SuperCollider-$version-With-Extras.dmg"
+    else
+        opt_options='--copy dmg_without_optionals.ds_store:/.DS_Store'
+        filename="SuperCollider-$version.dmg"
+    fi
+
+    about_version="$version (Revision $revision)"
+    echo "About box version string:" $about_version
+
+    mkdir -p SuperCollider/plugins
+    returndir=`pwd`
+    cd ../../common/build
+    git archive $revision | tar -x -C "$returndir/SuperCollider"
+    cp -R SuperCollider.app scsynth sclang "$returndir/SuperCollider/"
+    cp plugins/* "$returndir/SuperCollider/plugins/"
+    cp ../../COPYING "$returndir/SuperCollider/"
+    cd $returndir
+    find SuperCollider/help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
+    defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleVersion -string "$about_version"
+    defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleGetInfoString -string "$version"
+    plutil -convert xml1 $PWD/SuperCollider/SuperCollider.app/Contents/Info.plist
+
+    # use eval to force any escapes or quotes in $opt_options to be evaluated
+    eval './pkg-dmg --verbosity 0 --source ./SuperCollider --target "$filename" --sourcefile --volname SuperCollider --mkdir /.background --copy background.png:/.background/background.png --symlink /Applications:/Applications '$opt_options
+
+    rm -rf ./SuperCollider
+fi
