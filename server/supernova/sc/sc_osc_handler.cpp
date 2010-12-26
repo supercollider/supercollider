@@ -36,7 +36,6 @@ namespace
 
 int32_t last_generated = 0;
 
-
 server_node * find_node(int32_t target_id)
 {
     if (target_id == -1)
@@ -60,7 +59,6 @@ abstract_group * find_group(int32_t target_id)
         cerr << "node not found or not a group" << endl;
     return node;
 }
-
 
 bool check_node_id(int node_id)
 {
@@ -121,13 +119,26 @@ void fill_notification(const server_node * node, osc::OutboundPacketStream & p)
     p << osc::EndMessage;
 }
 
+spin_lock system_callback_allocator_lock;
+
+inline void * rt_malloc(size_t size)
+{
+    spin_lock::scoped_lock lock(system_callback_allocator_lock);
+    return system_callback::allocate(size);
+}
+
 struct movable_string
 {
-    /** allocate new string, only allowed to be called from the rt thread */
-    explicit movable_string(const char * str)
+    /** allocate new string, only allowed to be called from the rt context
+      *
+      * if locked is true, it can be allocated from a rt helper thread
+      */
+    explicit movable_string(const char * str, bool locked = false)
     {
-        size_t length = strlen(str);
-        char * data = (char*)system_callback::allocate(length + 1); /* terminating \0 */
+        size_t length = strlen(str) + 1; /* terminating \0 */
+
+        char * data = locked ? (char*)system_callback::allocate(length)
+                             : (char*)rt_malloc(length);
         strcpy(data, str);
         data_ = data;
     }
@@ -157,11 +168,15 @@ private:
 template <typename T>
 struct movable_array
 {
-    /** allocate new array, only allowed to be called from the rt thread */
-    movable_array(size_t length, const T * data):
+    /** allocate new array, only allowed to be called from the rt context
+      *
+      * if locked is true, it can be allocated from a rt helper thread
+      */
+    movable_array(size_t length, const T * data, bool locked = false):
         length_(length)
     {
-        data_ = (T*)system_callback::allocate(length * sizeof(T));
+        data_ = locked ? (T*)rt_malloc(length * sizeof(T))
+                       : (T*)system_callback::allocate(length * sizeof(T));
         for (size_t i = 0; i != length; ++i)
             data_[i] = data[i];
     }
@@ -407,8 +422,8 @@ void fire_node_reply(int32_t node_id, int reply_id, movable_string & cmd,
 void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const char* command_name,
                                           int argument_count, const float* values)
 {
-    movable_string cmd(command_name);
-    movable_array<float> value_array(argument_count, values);
+    movable_string cmd(command_name, true);
+    movable_array<float> value_array(argument_count, values, true);
 
     cmd_dispatcher<true>::fire_io_callback(boost::bind(fire_node_reply, node_id, reply_id, cmd, value_array));
 }
