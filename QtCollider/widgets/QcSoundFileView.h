@@ -136,6 +136,8 @@ Q_SIGNALS:
   void loadProgress( int );
   void loadingDone();
 
+  void action();
+
 public Q_SLOTS:
 
   void redraw() {

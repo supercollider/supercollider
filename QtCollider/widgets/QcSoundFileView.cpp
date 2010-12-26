@@ -403,6 +403,7 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
     qint64 dif = qMax( _beg * -1.0, dpos * _fpp );
     scrollTo( _beg + dif );
     _dragPoint = ev->pos();
+    Q_EMIT( action() );
   }
   else if( _dragAction == Zoom ) {
     double factor = pow( 2, (ev->pos().y() - _dragPoint.y()) * 0.008 );
@@ -415,6 +416,7 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
     quint64 frame = qMax( 0, qMin( width(), ev->pos().x() ) ) * _fpp + _beg;
     setSelection( _curSel, _dragFrame, frame );
     update();
+    Q_EMIT( action() );
   }
 }
 
@@ -552,7 +554,6 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   }
 
 }
-
 
 SoundFileStream::SoundFileStream() : _data(0), _dataSize(0), _dataOffset(0)
 {}
