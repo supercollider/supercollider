@@ -1,0 +1,68 @@
+September 28, 2005
+------------------
+
+Compared to the previous official snapshot (November 2004) the 
+current version of oscpack includes a re-written set of network 
+classes and some changes to the syntax of the networking code. It no 
+longer uses threads, which means that you don't need to use sleep() 
+if you are writing a simple single-threaded server, or you need to 
+spawn your own threads in a more complex application.
+
+The list below summarises the changes if you are porting code from 
+the previous release.
+
+    - there are no longer any threads in oscpack. if you need to 
+    set up an asynchronous listener you can create your own thread 
+    and call Run on an instance of SocketReceiveMultiplexer or 
+    UdpListeningReceiveSocket (see ip/UdpSocket.h) yourself.
+    
+    - host byte order is now used for network (IP) addresses
+        
+    - functions which used to take two parameters <address, port> 
+    now take an instance of IpEndpointName (see 
+    ip/IpEndpointName.h) this class has a number of convenient 
+    constructors for converting numbers and strings to internet 
+    addresses. For example there is one which takes a string and 
+    another that take the dotted address components as separate 
+    parameters.
+    
+    - The UdpTransmitPort class, formerly in UdpTransmitPort.h, is 
+    now called UdpTransmitSocket, which is simply a convenience 
+    class derived from UdpSocket (see ip/UdpSocket.h). Where you 
+    used to use the constructor UdpTransmitPort( address, port) now 
+    you can use UdpTransmitSocket( IpEndpointName( address, port ) 
+    ) or you can any of the other possible ctors to IpEndpointName
+    () (see above). The Send() method is unchanged.
+    
+    - The packet listener base class is now located in 
+    ip/PacketListener.h instead of PacketListenerPort.h. The 
+    ProcessPacket method now has an additional parameter indicating 
+    the remote endpoint
+    
+    - The preferred way to set up listeners is with 
+    SocketReceiveMultiplexer (in ip/UdpSocket.h), this also allows 
+    attaching periodic timers. For simple applications which only 
+    listen to a single socket with no timers you can use 
+    UdpListeningReceiveSocket (also in UdpSocket.h) See 
+    osc/OscReceiveTest.cpp or osc/OscDump.cpp for examples of this. 
+    This is more or less equivalent to the UdpPacketListenerPort 
+    object in the old oscpack versions except that you need to 
+    explicitly call Run() before it will start receiving packets 
+    and it runs in the same thread, not a separate thread so Run() 
+    won't usually return.
+    
+    - Explicit calls to InitializeNetworking() and 
+    TerminateNetworking() are no longer required for simple 
+    applications (more complex windows applications should 
+    instantiate NetworkInitializer in main() or WinMain (see 
+    ip/NetworkingUtils.h/.cpp)
+    
+    - The OscPacketListener base class (OscPacketListener.h) was 
+    added to make traversing OSC packets easier, it handles bundle 
+    traversal automatically so you only need to process messages in 
+    your derived classes.
+    
+    - On Windows be sure to link with ws2_32.lib or you will see
+    a linker error about WSAEventSelect not being found. Also you 
+    will need to link with winmm.lib for timeGetTime()
+
