@@ -222,7 +222,9 @@ ServerMeter{
 		numIns = numIns ?? { server.options.numInputBusChannels };
 		numOuts = numOuts ?? { server.options.numOutputBusChannels };
 
-		window = Window.new(server.name ++ " levels (dBFS)", Rect(5, 305, ServerMeterView.getWidth(numIns,numOuts), ServerMeterView.height));
+		window = Window.new(server.name ++ " levels (dBFS)",
+							Rect(5, 305, ServerMeterView.getWidth(numIns,numOuts), ServerMeterView.height),
+							false);
 		window.view.background = Color.grey(0.4);
 
 		meterView = ServerMeterView(server,window,0@0,numIns,numOuts);
