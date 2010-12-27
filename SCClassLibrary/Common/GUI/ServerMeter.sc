@@ -1,6 +1,6 @@
 ServerMeterView{
 
-	classvar serverMeterViews, 	updateFreq = 10, dBLow = -80;
+	classvar serverMeterViews, 	updateFreq = 10, dBLow = -80, meterWidth = 15, gapWidth = 4, <height = 230;
 
 	var <view;
 	var inresp, outresp, insynth, outsynth, synthFunc, responderFunc, server, numIns, numOuts, inmeters, outmeters;
@@ -9,22 +9,25 @@ ServerMeterView{
 		^super.new.init(aserver,parent,leftUp,numIns,numOuts)
 	}
 
-	init { arg aserver, parent, leftUp, anumIns,anumOuts;
-		var innerView;
+	*getWidth{ arg numIns,numOuts, server;
+		^20+((numIns + numOuts + 2) * (meterWidth + gapWidth))
+	}
 
-		var viewWidth, meterWidth = 15, gapWidth = 4;
+	init { arg aserver, parent, leftUp, anumIns,anumOuts;
+		var innerView, viewWidth;
+
+		numIns = anumIns ?? { server.options.numInputBusChannels };
+		numOuts = anumOuts ?? { server.options.numOutputBusChannels };
+
+		viewWidth= this.class.getWidth(anumIns,anumOuts);
 
 		leftUp = leftUp ? (0@0);
 
 		server = aserver;
 
-		numIns = anumIns ?? { server.options.numInputBusChannels };
-		numOuts = anumOuts ?? { server.options.numOutputBusChannels };
-		viewWidth = (numIns + numOuts + 2) * (meterWidth + gapWidth);
-
-		view = CompositeView(parent, Rect(leftUp.x,leftUp.y, viewWidth, 180) );
+		view = CompositeView(parent, Rect(leftUp.x,leftUp.y, viewWidth, height) );
 		view.onClose_({ this.stop });
-		innerView = CompositeView(view, Rect(10,25, viewWidth, 180) );
+		innerView = CompositeView(view, Rect(10,25, viewWidth, height) );
 		innerView.addFlowLayout(0@0, gapWidth@gapWidth);
 
 		// dB scale
@@ -214,14 +217,12 @@ ServerMeter{
 
 	*new{ |server, numIns, numOuts|
 
-		var window, meterView, viewWidth,meterWidth = 15, gapWidth = 4;
+		var window, meterView;
 
 		numIns = numIns ?? { server.options.numInputBusChannels };
 		numOuts = numOuts ?? { server.options.numOutputBusChannels };
 
-		viewWidth = (numIns + numOuts + 2) * (meterWidth + gapWidth);
-
-		window = Window.new(server.name ++ " levels (dBFS)", Rect(5, 305, viewWidth + 20, 230));
+		window = Window.new(server.name ++ " levels (dBFS)", Rect(5, 305, ServerMeterView.getWidth(numIns,numOuts), ServerMeterView.height));
 		window.view.background = Color.grey(0.4);
 
 		meterView = ServerMeterView(server,window,0@0,numIns,numOuts);
