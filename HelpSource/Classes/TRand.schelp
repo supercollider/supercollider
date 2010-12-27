@@ -1,7 +1,7 @@
 class:: TRand
 summary:: Triggered random number generator.
 related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TIRand
-categories::  UGens>Generators>Stochastic
+categories::  UGens>Generators>Stochastic, UGens>Random
 
 
 Description::
