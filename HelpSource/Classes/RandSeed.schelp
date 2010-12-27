@@ -1,7 +1,7 @@
 class:: RandSeed
 summary:: Sets the synth's random generator seed.
 related:: Classes/RandID
-categories::  UGens>Generators>Stochastic
+categories::  UGens>Generators>Stochastic, UGens>Random
 
 
 Description::

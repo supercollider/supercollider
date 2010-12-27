@@ -1,6 +1,6 @@
 class:: PartConv
 summary:: Real-time partitioned convolution
-categories:: UGens>FFT
+categories:: UGens>FFT, UGens>Convolution
 related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution2L, Classes/Convolution3
 
 description::

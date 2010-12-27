@@ -1,7 +1,7 @@
 class:: TIRand
 summary:: Triggered integer random number generator.
 related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TRand
-categories::  UGens>Generators>Stochastic, UGens>Random
+categories:: UGens>Random, UGens>Triggers
 
 
 Description::

@@ -1,7 +1,7 @@
 class:: Convolution
 summary:: Real-time convolver.
 related:: Classes/Convolution2, Classes/Convolution2L, Classes/Convolution3
-categories::  UGens>FFT
+categories::  UGens>FFT, UGens>Convolution
 
 
 Description::

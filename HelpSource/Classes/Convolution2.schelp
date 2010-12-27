@@ -1,7 +1,7 @@
 class:: Convolution2
 summary:: Real-time fixed kernel convolver.
 related:: Classes/Convolution, Classes/Convolution2L, Classes/Convolution3
-categories::  UGens>FFT
+categories::  UGens>FFT, UGens>Convolution
 
 
 Description::

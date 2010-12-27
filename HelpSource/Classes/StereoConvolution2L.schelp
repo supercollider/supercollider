@@ -1,6 +1,6 @@
 class:: StereoConvolution2L
 summary:: Stereo real-time convolver with linear interpolation
-categories:: UGens>FFT
+categories:: UGens>FFT, UGens>Convolution
 related:: Classes/Convolution, Classes/Convolution2L
 
 description::

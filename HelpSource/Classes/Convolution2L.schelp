@@ -1,7 +1,7 @@
 class:: Convolution2L
 summary:: Real-time fixed kernel convolver with linear interpolation
 related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution3, Classes/StereoConvolution2L
-categories::  UGens>FFT
+categories::  UGens>FFT, UGens>Convolution
 
 Description::
 Strict convolution with fixed kernel which can be updated using a trigger signal. There is a linear crossfade between the buffers upon change.

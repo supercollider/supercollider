@@ -1,6 +1,6 @@
 class:: TWindex
 summary:: Triggered windex.
-categories::  UGens>Generators>Stochastic
+categories:: UGens>Random, UGens>Triggers
 
 
 Description::

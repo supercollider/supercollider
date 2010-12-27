@@ -1,7 +1,7 @@
 class:: TExpRand
 summary:: Triggered exponential random number generator.
 related:: Classes/ExpRand, Classes/IRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TIRand, Classes/TRand
-categories::  UGens>Generators>Stochastic, UGens>Random
+categories:: UGens>Random, UGens>Triggers
 
 
 Description::
