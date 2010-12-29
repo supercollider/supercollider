@@ -5,7 +5,7 @@ categories::  UGens>Buffer
 
 
 Description::
-
+Index into a table with a signal.
 The input signal value is truncated to an integer value and used as an
 index into the table. Out-of-range index values are clipped to the valid
 range.
