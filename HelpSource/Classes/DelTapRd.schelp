@@ -1,7 +1,7 @@
 class:: DelTapRd
 categories:: UGens>Buffer, UGens>Delays
 summary:: Tap a delay line from a DelTapWr UGen
-related:: Classes/DelTapWr
+related:: Classes/DelTapWr>Buffer
 
 description::
 Tap a delay line from a link::Classes/DelTapWr:: UGen
