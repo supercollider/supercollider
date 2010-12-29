@@ -1,7 +1,7 @@
 class:: Hilbert
 summary:: FIXME: Hilbert purpose.
 related:: Classes/HilbertFIR, Classes/FreqShift
-categories::  UGens>Filters>Nonlinear
+categories::  UGens>Filters>Nonlinear, UGens>Undocumented
 
 
 Description::

@@ -1,7 +1,7 @@
 class:: PauseSelfWhenDone
 summary:: FIXME: PauseSelfWhenDone purpose.
 related:: Classes/Done, Classes/FreeSelfWhenDone
-categories::  UGens>Synth control
+categories::  UGens>Synth control, UGens>Undocumented
 
 
 Description::

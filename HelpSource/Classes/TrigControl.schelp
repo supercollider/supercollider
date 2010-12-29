@@ -1,7 +1,7 @@
 class:: TrigControl
 summary:: FIXME: TrigControl purpose.
 related:: Classes/Control, Classes/LagControl
-categories::  UGens>Synth control
+categories::  UGens>Synth control, UGens>Undocumented
 
 
 Description::

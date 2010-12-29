@@ -1,7 +1,7 @@
 class:: SinOscFB
 summary:: FIXME: SinOscFB purpose.
 related:: Classes/SinOsc, Classes/FSinOsc
-categories::  UGens>Generators>Deterministic
+categories::  UGens>Generators>Deterministic, UGens>Undocumented
 
 
 Description::
