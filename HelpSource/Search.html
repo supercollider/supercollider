@@ -138,8 +138,10 @@ function doSearch() {
                 res += "<div class='result_item'>";
                 res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> - "+v.summary+" <span class='soft'>["+x[0];
                 
-                if(v.installed=="extension" || v.installed=="missing")
-                    res += " : "+v.installed;
+                if(v.installed=="extension")
+                    res += " +";
+                else if(v.installed=="missing")
+                    res += " - missing!";
 
                 res += "]</span></div></div>";
             }

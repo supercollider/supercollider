@@ -124,8 +124,10 @@ function updateTree() {
             var x = v.path.split("/");
             
             res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> <span class='soft'>["+x[0];
-            if(v.installed=="extension" || v.installed=="missing")
-                res += " : "+v.installed;
+            if(v.installed=="extension")
+                res += " +";
+            else if(v.installed=="missing")
+                res += " - missing!";
             res += "]</span></div><div class='result_summary'>"+v.summary+"</div>";
         }
 
