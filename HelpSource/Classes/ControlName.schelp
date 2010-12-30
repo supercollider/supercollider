@@ -1,0 +1,15 @@
+class:: ControlName
+summary:: Object to store control information of SynthDef (used internally)
+related:: Classes/SynthDesc, Classes/SynthDef
+categories:: UGens>Synth control
+
+description::
+For an explicit creation of control names see: link::Classes/NamedControl::, link::Classes/Control::
+
+examples::
+code::
+a = SynthDescLib.global; // the global library of SynthDescs
+x = a.synthDescs.at(\default); // get the default SynthDesc
+x.controls.do { |ctl| [\name, ctl.name, \defaultValue, ctl.defaultValue].postln };"";
+::
+

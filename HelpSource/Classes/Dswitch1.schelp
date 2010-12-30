@@ -1,6 +1,6 @@
 class:: Dswitch1
 summary:: Demand rate generator for switching between inputs.
-related:: Classes/Demand, Classes/Duty, Classes/TDuty
+related:: Classes/Demand, Classes/Duty, Classes/TDuty, Classes/Dswitch
 categories:: UGens>Demand
 
 Description::
