@@ -1,7 +1,7 @@
 class:: Decay2
 summary:: Exponential decay.
 related:: Classes/Decay
-categories::  UGens>Filters>Linear
+categories::  UGens>Filters>Linear, UGens>Envelopes
 
 
 Description::
