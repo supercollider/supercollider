@@ -6,10 +6,8 @@ categories::  UGens>FFT
 
 Description::
 
-FFT onset detector based on work described in  emphasis::Hainsworth, S.
-(2003) Techniques for the Automated Analysis of Musical Audio. PhD,
-University of Cambridge engineering dept::. See especially
-p128. The Hainsworth metric is a modification of the Kullback Liebler
+FFT onset detector based on work described in emphasis:: Hainsworth, S. (2003) Techniques for the Automated Analysis of Musical Audio. PhD, University of Cambridge engineering dept. ::
+See especially p128. The Hainsworth metric is a modification of the Kullback Liebler
 distance.
 
 
@@ -24,6 +22,7 @@ useful in some situations: experimental.
 
 
 classmethods::
+private:: categories
 
 method::ar
 
