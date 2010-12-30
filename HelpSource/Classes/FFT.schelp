@@ -27,6 +27,8 @@ argument::in
 
 The input signal.
 
+returns::
+the FFT chain
 
 Examples::
 

@@ -39,7 +39,7 @@ The renderer would render formula:: by displaying that image if it exists, if no
 
 - cross-platform: check all uses of systemCmd. move to Platform class?
 
-- add argument:: for all args on methods even if the author didn't document it? also check that argument names are correct.
+- add argument:: for all args on methods even if the author didn't document it? also check that argument names and order are correct.
 
 - method to find broken links
 
