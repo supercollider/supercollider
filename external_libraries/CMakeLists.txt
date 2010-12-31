@@ -1,3 +1,7 @@
+if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd)
+    message(FATAL_ERROR "nova-simd submodule is missing: please run `git submodule init && git submodule update' from the toplevel of your git working tree")
+endif()
+
 #boost
 aux_source_directory(boost/libs/thread/src/ boost_thread )
 
