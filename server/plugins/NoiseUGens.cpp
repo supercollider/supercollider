@@ -471,7 +471,7 @@ void Crackle_Ctor(Crackle* unit)
 {
 	SETCALC(Crackle_next);
 
-	unit->m_y1 = 0.3f;
+	unit->m_y1 = unit->mParent->mRGen->drand();
 	unit->m_y2 = 0.f;
 
 	Crackle_next(unit, 1);
