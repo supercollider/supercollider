@@ -12,10 +12,8 @@ back to its start.
 
 
 note::
-
 N.B. Since end is defined as the wrap point, its value is never
 actually output.
-
 ::
 
 Phasor is commonly used as an index control with  link::Classes/BufRd:: 

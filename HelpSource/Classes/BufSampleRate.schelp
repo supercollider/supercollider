@@ -5,17 +5,7 @@ categories::  UGens>Buffer>Info
 
 
 Description::
-
 Returns the buffer's current sample rate.
-
-
-warning::
-
-The  code::.ir::  method is not the safest choice.
-Since a buffer can be reallocated at any time, using
-code::.ir::  will not track the changes.
-
-::
 
 classmethods::
 
@@ -24,10 +14,19 @@ method::kr, ir
 argument::bufnum
 Buffer index.
 
+returns::
+the buffer's current sample rate.
+
+discussion::
+warning::
+The  code::.ir::  method is not the safest choice.
+Since a buffer can be reallocated at any time, using
+code::.ir::  will not track the changes.
+::
+
 Examples::
 
 code::
-
 s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
 
 // compares a 1102.5 Hz sine tone (11025 * 0.1, left) with a 1100 Hz tone (right)
@@ -39,6 +38,5 @@ s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
 	SinOsc.ar(freq, 0, 0.1) 
 }.play; 
 )
-
 ::
 

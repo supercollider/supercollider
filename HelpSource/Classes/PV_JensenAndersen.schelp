@@ -7,10 +7,12 @@ categories::  UGens>FFT
 Description::
 
 FFT feature detector for onset detection based on work described in
-emphasis::Jensen, K. & Andersen, T. H. (2003). Real-time Beat Estimation
+emphasis::
+Jensen, K. & Andersen, T. H. (2003). Real-time Beat Estimation
 Using Feature Extraction. In Proceedings of the Computer Music Modeling
 and Retrieval Symposium, Lecture Notes in Computer Science. Springer
-Verlag.::
+Verlag.
+::
 
 First order derivatives of the features are taken.
 code::threshold::  may need to be set low to pick up on
@@ -18,7 +20,7 @@ changes.
 
 
 classmethods::
-
+private:: categories
 method::ar
 
 argument::buffer

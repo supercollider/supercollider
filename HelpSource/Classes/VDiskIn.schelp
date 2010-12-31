@@ -1,12 +1,22 @@
 class:: VDiskIn
-summary:: Stream in audio from a file (with variable rate)
+summary:: Stream in audio from a file, with variable rate
 categories:: UGens>InOut, UGens>Buffer
-related:: Classes/PlayBuf, Classes/BufRd
+related:: Classes/PlayBuf, Classes/BufRd, Classes/DiskIn
 
 description::
-Continuously play a longer soundfile from disk.  This requires a buffer to be preloaded with one buffer size of sound. If loop is set to 1, the soundfile will loop. If a sendID is given, the UGen sends an osc message with this id and the file position each time it reloads the buffer: code::['/diskin', nodeID, sendID, frame]::
+Continuously play a longer soundfile from disk. This requires a buffer to be preloaded with one buffer size of sound.
 
-code::rate:: controls the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.
+classmethods::
+method:: ar
+
+argument:: numChannels
+number of channels
+
+argument:: bufnum
+buffer number
+
+argument:: rate
+controls the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.
 
 warning::
 the rate does have a practical limit. The following must be true: rate < Buffer's size / ( 2 * s.options.blockSize) e.g with typical default values, this wil be 32768 / (2 * 64) = 256.
@@ -14,14 +24,11 @@ the rate does have a practical limit. The following must be true: rate < Buffer'
 
 If the rate is too high, the UGen will not execute, posting a warning.
 
-classmethods::
-method:: ar
-
-argument:: numChannels
-argument:: bufnum
-argument:: rate
 argument:: loop
+If loop is set to 1, the soundfile will loop.
+
 argument:: sendID
+If a sendID is given, the UGen sends an osc message with this id and the file position each time it reloads the buffer: code::['/diskin', nodeID, sendID, frame]::
 
 examples::
 code::

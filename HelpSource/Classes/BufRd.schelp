@@ -8,50 +8,40 @@ Description::
 
 Read the content of a buffer at an index.
 
-
-warning::
-
-If you supply a  code::bufnum::  of a buffer that has a
-different  code::numChannels::  then you have specified to
-the BufRd, it will fail silently.
-
-::
-
-In comparison to  link::Classes/PlayBuf:: : PlayBuf plays through the
-buffer by itself, BufRd only moves its read point by the phase input and
-therefore has no pitch input BufRd has variable interpolation.
-
+In comparison to link::Classes/PlayBuf:: :
+PlayBuf plays through the buffer by itself, BufRd only moves its read point by the phase input and
+therefore has no pitch input. BufRd has variable interpolation.
 
 classmethods::
-
+private:: categories
 method::ar, kr
 
 argument::numChannels
-
 Number of channels that the buffer will be. This must be a fixed
 integer. The architechture of the SynthDef cannot change after it
 is compiled.
-
+warning::
+If you supply a  code::bufnum::  of a buffer that has a
+different  code::numChannels::  then you have specified to
+the BufRd, it will fail silently.
+::
 
 argument::bufnum
-
 The index of the buffer to use.
 
-
 argument::phase
-
 Audio rate modulateable index into the buffer.
-
+Warning:: The phase argument only offers precision for addressing 2**24 samples (about 6.3 minutes at 44100Hz). ::
 
 argument::loop
-
 1 means true, 0 means false. This is modulateable.
 
 
 argument::interpolation
-
 1 means no interpolation, 2 is linear, 4 is cubic interpolation.
 
+instancemethods::
+private:: init, argNamesInputsOffset, checkInputs
 
 Examples::
 

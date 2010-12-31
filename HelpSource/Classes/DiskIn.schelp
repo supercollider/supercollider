@@ -3,7 +3,6 @@ summary:: Stream in audio from a file.
 related:: Classes/PlayBuf, Classes/DiskOut
 categories::  UGens>InOut, UGens>Buffer
 
-
 Description::
 
 Continously play a longer soundfile from disk. This requires a buffer to
@@ -11,23 +10,25 @@ be preloaded with one buffer size of sound.
 
 
 classmethods::
+private:: categories
 
 method::ar
 
 argument::numChannels
-
-FIXME: explain parameter numChannels.
-
+Number of channels
 
 argument::bufnum
+Buffer number
 
-FIXME: explain parameter bufnum.
+argument:: loop
+If set to 1, the soundfile will loop.
 
+instancemethods::
+private:: init
 
 Examples::
 
 code::
-
 s.boot; // start the server
 
 (
@@ -35,9 +36,10 @@ SynthDef("help-Diskin", { arg bufnum = 0;
 	Out.ar(0, DiskIn.ar(1, bufnum));
 }).send(s)
 )
+::
 
-OSC Messaging Style
-
+subsection:: OSC Messaging Style
+code::
 // allocate a disk i/o buffer
 s.sendMsg("/b_alloc", 0, 65536, 1);
 
@@ -59,12 +61,10 @@ s.sendMsg("/n_free", x); // stop reading
 s.sendMsg("/b_close", 0); // close the file.
 
 s.sendMsg("/b_free", 0); // frees the buffer
+::
 
-
-
-
-Using Buffer (Object Style)
-
+subsection:: Using Buffer (Object Style)
+code::
 b = Buffer.cueSoundFile(s, "sounds/a11wlk01-44_1.aiff", 0, 1);
 
 x = { DiskIn.ar(1, b.bufnum) }.play;
