@@ -793,12 +793,12 @@ void RandSeed_next(RandSeed* unit, int inNumSamples)
 {
 	float *trig = ZIN(0);
 	float *out = ZOUT(0);
-	
+
 	float prevtrig = unit->m_trig;
 	float curtrig;
-	
+
 	LOOP1(inNumSamples,
-	
+
 		curtrig = ZXP(trig);
 		if (curtrig > 0.f && prevtrig <= 0.f) {
 			RGen& rgen = *unit->mParent->mRGen;
@@ -807,9 +807,9 @@ void RandSeed_next(RandSeed* unit, int inNumSamples)
 		}
 		prevtrig = curtrig;
 		ZXP(out) = 0.f;
-		
+
 	)
-	
+
 	unit->m_trig = curtrig;
 }
 
