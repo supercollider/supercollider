@@ -1059,6 +1059,8 @@ ScDocRenderer {
         var syms, name, mets, l = List.new;
 
         (mets = if(parentTag==\classmethods,{currentClass.class},{currentClass}).methods) !? {
+            //ignore these methods by default. Note that they can still be explicitly documented.
+            docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
             syms = mets.collectAs(_.name,IdentitySet);
             mets.do {|m| //need to iterate over mets to keep the order
                 name = m.name;
