@@ -387,7 +387,7 @@ void free_mem_callback(movable_string & cmd,
 void fire_node_reply(int32_t node_id, int reply_id, movable_string & cmd,
                      movable_array<float> & values)
 {
-    size_t buffer_size = 128 + strlen(cmd.c_str()) + values.size()*sizeof(float);
+    size_t buffer_size = 1024 + strlen(cmd.c_str()) + values.size()*sizeof(float);
 
     sized_array<char> buffer(buffer_size);
 
