@@ -1,4 +1,3 @@
-
 Trig1 : UGen {
 
 	*ar { arg in = 0.0, dur = 0.1;
@@ -269,3 +268,27 @@ LastValue : UGen {
 	}
 }
 
+SendPeakRMS : UGen {
+
+	*kr { arg sig, replyRate = 20.0, peakLag = 3, cmdName = '/reply', replyID = -1;
+		this.new1('control', sig.asArray, replyRate, peakLag, cmdName, replyID);
+		^0.0        // SendPeakRMS has no output
+	}
+
+	*ar { arg sig, replyRate = 20.0, peakLag = 3, cmdName = '/reply', replyID = -1;
+		this.new1('audio', sig.asArray, replyRate, peakLag, cmdName, replyID);
+		^0.0        // SendPeakRMS has no output
+	}
+
+	*new1 { arg rate, sig, replyRate, peakLag, cmdName, replyID;
+		var ascii = cmdName.ascii;
+		var args = [rate, replyRate, peakLag, replyID, sig.size]
+			.addAll(sig.flatten)
+			.add(ascii.size)
+			.addAll(ascii);
+		^super.new1(*args);
+	}
+
+	numOutputs { ^0 }
+	writeOutputSpecs {}
+}
