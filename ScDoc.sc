@@ -1058,6 +1058,8 @@ ScDocRenderer {
     addUndocumentedMethods {|f,parentTag,docmets|
         var syms, name, mets, l = List.new;
 
+        if(currentClass.isNil, {^nil});
+        
         (mets = if(parentTag==\classmethods,{currentClass.class},{currentClass}).methods) !? {
             //ignore these methods by default. Note that they can still be explicitly documented.
             docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
@@ -1102,17 +1104,15 @@ ScDocRenderer {
             x = parser.findNode(\description);
             this.renderHTMLSubTree(f,x);
 
-            currentClass !? {
-                x = parser.findNode(\classmethods);
-                mets = this.renderHTMLSubTree(f,x);
-                //TODO: add methods from +ClassName.schelp (recursive search)
-                this.addUndocumentedMethods(f,\classmethods,mets);
+            x = parser.findNode(\classmethods);
+            mets = this.renderHTMLSubTree(f,x);
+            //TODO: add methods from +ClassName.schelp (recursive search)
+            this.addUndocumentedMethods(f,\classmethods,mets);
 
-                x = parser.findNode(\instancemethods);
-                mets = this.renderHTMLSubTree(f,x);
-                //TODO: add methods from +ClassName.schelp (recursive search)
-                this.addUndocumentedMethods(f,\instancemethods,mets);
-            };
+            x = parser.findNode(\instancemethods);
+            mets = this.renderHTMLSubTree(f,x);
+            //TODO: add methods from +ClassName.schelp (recursive search)
+            this.addUndocumentedMethods(f,\instancemethods,mets);
 
             x = parser.findNode(\examples);
             this.renderHTMLSubTree(f,x);
