@@ -253,12 +253,15 @@ table.arguments {
 /*    border-left: 1px solid #bbb;*/
 }
 
-table.arguments td {
+table.arguments td.argumentname, td.argumentdesc {
 /*    margin-bottom: 0px;*/
 /*    margin-top: 0px;*/
 /*    font-weight: bold;*/
 /*    padding-right: 1em;*/
     vertical-align: top;
+    border: none;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
 }
 
 td.argumentname {
@@ -269,13 +272,6 @@ td.argumentname {
 
 div.returnvalue {
     margin-left: 2em;
-}
-
-table.arguments td {
-    border: none;
-    padding-top: 0.2em;
-    padding-bottom: 0.2em;
-/*    background: #eee;*/
 }
 
 /*.argument {

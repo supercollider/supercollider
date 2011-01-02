@@ -770,7 +770,7 @@ ScDocRenderer {
                     file.write("<h4>Parameters:</h4>\n");
                     file.write("<table class='arguments'>\n");
                     collectedArgs.do {|a|
-                        file.write("<tr><td class='argumentname'>"+a.text+"<td>");
+                        file.write("<tr><td class='argumentname'>"+a.text+"<td class='argumentdesc'>");
                         a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
                     };
                     file.write("</table>");
