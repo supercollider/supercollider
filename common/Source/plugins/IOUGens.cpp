@@ -58,8 +58,8 @@ const int kMaxLags = 16;
 
 struct LagControl : public IOUnit
 {
-	float m_b1[kMaxLags];
-	float m_y1[kMaxLags];
+	float * m_b1;
+	float * m_y1;
 };
 
 
@@ -354,6 +354,11 @@ void LagControl_Ctor(LagControl* unit)
 {
 	int numChannels = unit->mNumInputs;
 	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
+
+	char * chunk = (char*)RTAlloc(unit->mWorld, numChannels * 2 * sizeof(float));
+	unit->m_y1 = (float*)chunk;
+	unit->m_b1 = unit->m_y1 + numChannels;
+
 	for (int i=0; i<numChannels; ++i, mapin++) {
 		unit->m_y1[i] = **mapin;
 		float lag = ZIN0(i);
@@ -367,6 +372,11 @@ void LagControl_Ctor(LagControl* unit)
 		SETCALC(LagControl_next_k);
 		LagControl_next_k(unit, 1);
 	}
+}
+
+void LagControl_Dtor(LagControl* unit)
+{
+	RTFree(unit->mWorld, unit->m_y1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1933,7 +1943,7 @@ PluginLoad(IO)
 	DefineDtorUnit(OffsetOut);
 	DefineDtorUnit(LocalIn);
 	DefineSimpleUnit(XOut);
-	DefineSimpleUnit(LagControl);
+	DefineDtorUnit(LagControl);
 	DefineDtorUnit(AudioControl);
 	DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, 0, 0);
 	DefineUnit("TrigControl", sizeof(Unit), (UnitCtorFunc)&TrigControl_Ctor, 0, 0);
