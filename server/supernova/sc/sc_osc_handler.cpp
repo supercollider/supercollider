@@ -389,19 +389,26 @@ void fire_node_reply(int32_t node_id, int reply_id, movable_string & cmd,
 {
     size_t buffer_size = 1024 + strlen(cmd.c_str()) + values.size()*sizeof(float);
 
-    sized_array<char> buffer(buffer_size);
+    char * buffer = (buffer_size < 2048) ? (char*)alloca(buffer_size)
+                                         : (char*)malloc(buffer_size);
 
-    osc::OutboundPacketStream p(buffer.c_array(), buffer_size);
-    p << osc::BeginMessage(cmd.c_str()) << osc::int32(node_id) << osc::int32(reply_id);
+    try {
+        osc::OutboundPacketStream p(buffer, buffer_size);
+        p << osc::BeginMessage(cmd.c_str()) << osc::int32(node_id) << osc::int32(reply_id);
 
-    for (int i = 0; i != values.size(); ++i)
-        p << values[i];
+        for (int i = 0; i != values.size(); ++i)
+            p << values[i];
 
-    p << osc::EndMessage;
+        p << osc::EndMessage;
 
-    instance->send_notification(p.Data(), p.Size());
+        instance->send_notification(p.Data(), p.Size());
 
-    cmd_dispatcher<true>::fire_rt_callback(boost::bind(free_mem_callback, cmd, values));
+        cmd_dispatcher<true>::fire_rt_callback(boost::bind(free_mem_callback, cmd, values));
+    } catch (...) {
+    }
+
+    if (buffer_size >= 2048)
+        free(buffer);
 }
 
 void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const char* command_name,
