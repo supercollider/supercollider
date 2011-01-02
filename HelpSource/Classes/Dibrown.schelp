@@ -37,7 +37,7 @@ Maximum step for each new value.
 
 argument::length
 
-Number of values to create.
+Number of values to create. Use code::inf:: for an infinite number.
 
 
 Examples::

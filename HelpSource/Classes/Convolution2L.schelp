@@ -1,5 +1,5 @@
 class:: Convolution2L
-summary:: Real-time fixed kernel convolver with linear interpolation
+summary:: Real-time convolver with linear interpolation
 related:: Classes/Convolution, Classes/Convolution2, Classes/Convolution3, Classes/StereoConvolution2L
 categories::  UGens>FFT, UGens>Convolution
 

@@ -5,8 +5,7 @@ categories:: UGens>Demand
 
 Description::
 
-FIXME: Dser description.
-
+Demand rate sequence generator.
 
 See link::Classes/Pser:: for structurally related equivalent.
 

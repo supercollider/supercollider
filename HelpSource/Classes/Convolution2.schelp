@@ -23,7 +23,7 @@ argument::in
 Processing target.
 
 
-argument::bufnum
+argument::kernel
 
 Buffer index for the fixed kernel, may be modulated in
 combination with the trigger.
@@ -39,27 +39,14 @@ argument::framesize
 
 Size of FFT frame, must be a power of two. Convolution uses twice
 this number internally, maximum value you can give this argument
-is 2
-= 65536. Note that it gets
-progressively more expensive to run for higher powers! 512, 1024,
+is 2^16 = 65536. Note that it gets progressively more expensive to run for higher powers! 512, 1024,
 2048, 4096 standard.
-
-
-argument::mul
-
-Output will be multiplied by this value.
-
-
-argument::add
-
-This value will be added to the output.
 
 
 Examples::
 
 code::
-
-(//allocate three buffers
+( // allocate three buffers
 b = Buffer.alloc(s,2048);
 c = Buffer.alloc(s,2048);
 d = Buffer.alloc(s,2048);
@@ -109,9 +96,7 @@ x.set(\trig,0);
 x.set(\trig,1); // after this trigger, the change will take effect.
 
 
-
-////next example
-
+// next example
 b = Buffer.read(s,"sounds/a11wlk01.wav");
 
 (
@@ -126,8 +111,7 @@ b = Buffer.read(s,"sounds/a11wlk01.wav");
 )
 
 
-//another example
-
+// another example
 (
 //must have power of two framesize- FFT size will be sorted by Convolution2 to be double this
 //maximum is currently a=8192 for FFT of size 16384
@@ -143,7 +127,7 @@ g.set(0,1.0);
 )
 
 (
-//random impulse response
+// random impulse response
 
 	{
 	var input,inputAmp,threshhold,gate;
@@ -158,12 +142,7 @@ gate = Lag.kr(inputAmp > threshhold, 0.01);
 
 )
 
-
-
-
-
-
-//one last example
+// one last example
 (
 b = Buffer.alloc(s, 512, 1);
 b.sine1(1.0/[1,2,3,4,5,6], true, true, true);
@@ -179,6 +158,36 @@ b.sine1(1.0/[1,2,3,4,5,6], true, true, true);
 	 }.play;
 
 )
+::
 
+Instead of triggering the kernel update yourself, as in the first example, you can use a UGen trigger signal to do so. In the next example, we use two Convolution2 UGens in order to continuously and smoothly change the impulse response: link::Classes/RecordBuf:: is used to record a random frequency link::Classes/Saw:: oscillator every code::trigPeriod:: seconds.
+Right after the recording (trigPeriod gets delayed by the buffer duration link::Classes/BufDur::, using the link::Classes/TDelay:: UGen) the two convolution UGens alternatingly update their kernels (using two triggers convTrigs). At the frequency of the kernel updates a crossfader link::Classes/XFade2:: moves between conv1 and conv2, using a triangle oscillator link::Classes/LFTri:: at half the trigger frequency as a panning input. The result is a constantly shifting spectral colorization of the Dust impulses:
+
+code::
+b = Buffer.alloc( s, 2048, 1, _.zeroMsg );
+(
+	x = { arg i_kernel, density = 100, trigPeriod = 5.0, cutOff = 1000, minFreq = 200, maxFreq = 2000;
+		var input, trigFreq, recTrig, irSig, convTrig, convTrigs, bufFrames, conv1, conv2;
+		
+		input		= LPF.ar( Dust2.ar( density ), cutOff );
+		trigFreq		= trigPeriod.reciprocal;
+		recTrig		= Impulse.kr( trigFreq );
+		irSig		= Saw.ar( TExpRand.kr( minFreq, maxFreq, recTrig ), 0.4 );
+		RecordBuf.ar( irSig, i_kernel, recTrig, loop: 0, trigger: recTrig );
+		convTrig		= TDelay.kr( recTrig, BufDur.ir( i_kernel ));
+		// split updates across two triggers. Note that [ 1, 0 ] creates
+		// a MultiChannel expansion!
+		convTrigs		= PulseDivider.kr( convTrig, 2, [ 1, 0 ]);
+		bufFrames		= BufFrames.ir( i_kernel );
+		// create the two alternatingly updated convolution ugens
+		#conv1, conv2	= Convolution2.ar( input, i_kernel, convTrigs, bufFrames );
+		
+		XFade2.ar( conv1, conv2, LFTri.kr( trigFreq * 0.5, 1 )) ! 2;
+	}.play( s, [ \i_kernel, b ]);
+)
+
+x.set( \trigPeriod, 0.1 );	// fast changes
+x.set( \trigPeriod, 10.0 );	// slow changes
+x.free;	// delete synth
 ::
 

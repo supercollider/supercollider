@@ -25,11 +25,9 @@ argument::decayTime
 Examples::
 
 code::
-
-// plot({ Decay.ar(Impulse.ar(1), 0.01) });
+plot({ Decay.ar(Impulse.ar(1), 0.01) });
 
 // used as an envelope
 play({ Decay.ar(Impulse.ar(XLine.kr(1,50,20), 0.25), 0.2, PinkNoise.ar, 0) });
-
 ::
 

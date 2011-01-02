@@ -1,6 +1,6 @@
 class:: AudioIn
 summary:: Read audio input.
-related:: Classes/In
+related:: Classes/In, Classes/SoundIn
 categories::  UGens>InOut
 
 
@@ -8,6 +8,9 @@ Description::
 
 Reads audio from the sound input hardware.
 
+note::
+This is provided for backwards compatibility with SC2 code. For normal use link::Classes/SoundIn::, which has bus numbers beginning at 0, as AudioIn may be deprecated and removed at some point in the future.
+::
 
 classmethods::
 
@@ -16,13 +19,6 @@ method::ar
 argument::channel
 
 Input channel number to read. Channel numbers begin at 1.
-
-
-argument::mul
-Output will be multiplied by this value.
-
-argument::add
-This value will be added to the output.
 
 Examples::
 Patching input to output

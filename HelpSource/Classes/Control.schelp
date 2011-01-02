@@ -5,8 +5,8 @@ categories::  UGens>Synth control
 
 Description::
 
-Used to bring signals and floats into the ugenGraph function of your
-SynthDef. This is the UGen that delivers the args into your function.
+A Control is a UGen that can be set and routed externally to interact with a running Synth.
+Typically, Controls are created from the arguments of a SynthDef function.
 
 Generally you do not create Controls yourself. (See Arrays example
 below).
@@ -27,108 +27,137 @@ method::kr, ir
 
 argument::values
 
-FIXME: explain parameter values.
+default values.
 
 
 method::names
 
 argument::names
 
-FIXME: explain parameter names.
+adds control names to the SynthDef.
 
 
 Examples::
 
 code::
-
-SynthDef("help-Control",{ arg freq=200;
-
+(
+SynthDef(\help_Control, { | freq = 200 |
+	
 	freq.inspect; // at the time of compiling the def
 
-}).writeDefFile;
+}).add
+);
 
-What is passed into the ugenGraph function is an OutputProxy, and its source is a Control.
+// synonym:
+(
+SynthDef(\help_Control, {
+	
+	\freq.kr(200).inspect; // at the time of compiling the def
 
+}).add
+);
+::
+
+What is passed into the ugenGraph function is an link::Classes/OutputProxy::, and its source is a Control.
 
 The main explicit use of Control is to allow Arrays to be sent to running Synths:
-
+code::
 // a synth def that has 4 partials
 (
-s = Server.local;
-SynthDef("help-Control", { arg out=0,i_freq;
-	var klank, n, harm, amp, ring;
-	n = 9;
+SynthDef(\help_Control, { arg out=0, i_freq;
+	var klank, harm, amp, ring;
 	
 	// harmonics
-	harm = Control.names([\harm]).ir(Array.series(4,1,1).postln);
+	harm = Control.names([\harm]).ir(Array.series(4, 1, 1).postln);
 	// amplitudes
-	amp = Control.names([\amp]).ir(Array.fill(4,0.05));
+	amp = Control.names([\amp]).ir(Array.fill(4, 0.05));
 	// ring times
-	ring = Control.names([\ring]).ir(Array.fill(4,1));
+	ring = Control.names([\ring]).ir(Array.fill(4, 1));
 	
-	klank = Klank.ar(`[harm,amp,ring], {ClipNoise.ar(0.003)}.dup, i_freq);
+	klank = Klank.ar(`[harm, amp, ring], { ClipNoise.ar(0.01) }.dup, i_freq);
 	
 	Out.ar(out, klank);
-}).send(s);
+}).add;
 )
 
-// nothing special yet, just using the default set of harmonics.
-a = Synth("help-Control",[\i_freq, 300]);
-b = Synth("help-Control",[\i_freq, 400]);
-c = Synth("help-Control",[\i_freq, 533.33]);
-d = Synth("help-Control",[\i_freq, 711.11]);
-
+a = Synth(\help_Control, [\i_freq, 300, \harm, [1, 3.3, 4.5, 7.8]]);
 a.free;
-b.free;
-c.free;
-d.free;
-
-// in order to set the harmonics amps and ring times at
-// initialization time we need to use an OSC bundle.
-(
-s.sendBundle(nil,
-	["/s_new", "help-Control", 2000, 1, 0, \i_freq, 500], // start note
-	["/n_setn", 2000, "harm", 4, 1, 3, 5, 7] // set odd harmonics
-	);
-)
-
-s.sendMsg("/n_free", 2000);
+a = Synth(\help_Control, [\i_freq, 300, \harm, [2, 3, 4, 5]]);
+a.free;
 
 (
-s.sendBundle(nil,
-	["/s_new", "help-Control", 2000, 1, 0, \i_freq, 500], // start note
-	// set geometric series harmonics
-	["/n_setn", 2000, "harm", 4] ++ Array.geom(4,1,1.61)
-	);
+SynthDef(\help_Control_Sines, { arg out=0;
+	var sines, control, numsines;
+	numsines = 20;
+	control = Control.names(\array).kr(Array.rand(numsines, 400.0, 1000.0));
+	sines = Mix(SinOsc.ar(control, 0, numsines.reciprocal)) ;
+	Out.ar(out, sines ! 2);
+}).add
 )
 
-s.sendMsg("/n_free", 2000);
+b = Synth(\help_Control_Sines);
+b.setn(\array, Array.rand(20, 200, 1600));
+b.setn(\array, Array.rand(20, 200, 1600));
+
+
 
 (
-// set harmonics, ring times and amplitudes
-s.sendBundle(nil,
-	["/s_new", "help-Control", 2000, 1, 0, \i_freq, 500], // start note
-	["/n_setn", 2000, "harm", 4, 1, 3, 5, 7], // set odd harmonics
-	["/n_setn", 2000, "ring", 4] ++ Array.fill(4,0.1), // set shorter ring time
-	["/n_setn", 2000, "amp", 4] ++ Array.fill(4,0.2) // set louder amps
-	);
+SynthDef(\help_Control_DynKlank, { arg out=0, freq = 440;
+	var klank, harm, amp, ring;
+	
+	// harmonics
+	harm = Control.names(\harm).kr(Array.series(4, 1, 1));
+	// amplitudes
+	amp = Control.names(\amp).kr(Array.fill(4, 0.05));
+	// ring times
+	ring = Control.names(\ring).kr(Array.fill(4, 1));
+	klank = DynKlank.ar(`[harm, amp, ring], {ClipNoise.ar(0.003)}.dup, freq);
+	Out.ar(out, klank);
+}).add
 )
 
-s.sendMsg(\n_trace, 2000);
-s.sendMsg(\n_free, 2000);
+a = Synth(\help_Control_DynKlank, [\freq, 300]);
+b = Synth(\help_Control_DynKlank, [\freq, 400]);
 
-(
-// same effect as above, but packed into one n_setn command
-s.sendBundle(nil,
-	["/s_new", "help-Control", 2000, 1, 0, \i_freq, 500], // start note
-	["/n_setn", 2000, "harm", 4, 1, 3, 5, 7,
-		"ring", 4] ++ Array.fill(4,0.1)
-		++ ["amp", 4] ++ Array.fill(4,0.2)
-	);
-)
 
-s.sendMsg(\n_trace, 2000);
-s.sendMsg(\n_free, 2000);
+a.setn(\harm,   Array.rand(4, 1.0, 4.7))
+a.setn(\amp, Array.rand(4, 0.005, 0.1))
+a.setn(\ring, Array.rand(4, 0.005, 1.0))
 
+b.setn(\harm,   Array.rand(4, 1.0, 4.7))
+b.setn(\amp, Array.rand(4, 0.005, 0.1))
+b.setn(\ring, Array.rand(4, 0.005, 1.0))
+::
+
+subsection:: Symbols
+
+Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see: link::Classes/ControlName::, and link::Classes/Symbol::)
+	
+definitionlist::
+## code:: \name.kr(val, lag) ::
+|| Return a control rate link::Classes/NamedControl:: input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
+code::
+a = { SinOsc.ar(\freq.kr(440, 1.2)) }.play;
+a.set(\freq, 330);
+a.release;
+a = { SinOsc.ar(\freq.kr([440, 460], 1.2)) }.play;
+a.setn(\freq, [330, 367]);
+a.release;
+::
+	
+## code:: \name.ar(val, lag) ::
+|| Return an audio rate link::Classes/NamedControl:: input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
+
+## code:: \name.ir(val) ::
+|| Return an intitalization rate link::Classes/NamedControl:: input with a default value (val). If val is an array, the control will be multichannel.
+
+## code:: \name.tr(val) ::
+|| Return a link::Classes/TrigControl:: input with a default value (val). If val is an array, the control will be multichannel.
+code::
+a = { Ringz.ar(T2A.ar(\trig.tr), \freq.kr(500, 1), 0.8) }.play;
+a.set(\freq, 330, \trig, 1);
+a.set(\freq, 830, \trig, 1);
+a.release;
+::
 ::
 

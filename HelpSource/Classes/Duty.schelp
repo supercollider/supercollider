@@ -46,12 +46,7 @@ link::Reference/UGen-doneActions::  for more detail.
 
 
 Examples::
-
 code::
-
-s.boot;
-
-
 (
 	{
 		var freq;
@@ -77,11 +72,10 @@ s.boot;
 	
 	}.play;
 )
+::
 
-
-
-// resetting the demand ugens
-
+Resetting the demand ugens:
+code::
 (
 	{
 		var freq;
@@ -107,10 +101,10 @@ s.boot;
 	
 	}.play;
 )
+::
 
-
-// demand ugen as audio oscillator
-
+Demand ugen as audio oscillator:
+code::
 (
 	{
 		var a, n=5, m=64;
@@ -128,6 +122,23 @@ s.boot;
 	
 	}.play;
 )
+::
 
+single sample feedback: a lin cong algorithm:
+code::
+(
+b = Buffer.alloc(s, 1);
+{
+var x, y, rate, a, c, m;
+	rate = MouseX.kr(100, SampleRate.ir);
+	a = 1.1;
+	c = 0.13;
+	m = 1.0;
+	x = Dbufrd(b); // read from buffer
+	x = x * a + c % m;
+	y = Dbufwr(x, b); // write to buffer
+	Duty.ar(1 / rate, 0, y) * 0.1;
+}.play;
+)
 ::
 

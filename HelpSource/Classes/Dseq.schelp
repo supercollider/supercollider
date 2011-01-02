@@ -5,7 +5,7 @@ categories:: UGens>Demand
 
 Description::
 
-FIXME: Dseq description.
+Demand rate sequence generator.
 
 
 See link::Classes/Pseq:: for structurally related equivalent.

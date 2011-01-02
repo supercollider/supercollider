@@ -42,6 +42,8 @@ speaker will be directly in front. Should be 0.5 if the front
 bisects a side of the polygon. Then the first speaker will be the
 one left of center.
 
+returns::
+An array of channels, one for each speaker.
 
 Examples::
 

@@ -21,12 +21,12 @@ Signal to be clipped.
 
 argument::lo
 
-Low threshold of clipping.
+Low threshold of clipping. Must be less then hi.
 
 
 argument::hi
 
-High threshold of clipping.
+High threshold of clipping. Must be greater then lo.
 
 
 Examples::

@@ -23,13 +23,9 @@ argument::specificationsArrayRef
 A Ref to an Array of three Arrays:
 
 table::
-
 ## frequencies: || An Array of filter frequencies.
-
 ## amplitudes: || An Array of filter amplitudes, or nil. If nil, then amplitudes default to 1.0.
-
 ## ring times: || An Array of 60 dB decay times for the filters.
-
 ::
 All subarrays, if not nil, should have the same length.
 
@@ -48,7 +44,6 @@ A scale factor multiplied by all ring times at initialization time.
 Examples::
 
 code::
-
 s.boot;
 
 { DynKlank.ar(`[[800, 1071, 1153, 1723], nil, [1, 1, 1, 1]], Impulse.ar(2, 0, 0.1)) }.play;
@@ -77,7 +72,7 @@ SynthDef('help-dynKlank', {
 	ringtimes = Control.names([\ringtimes]).kr([1, 1, 1, 1]);
 	signal = DynKlank.ar(`[freqs, nil, ringtimes ], Impulse.ar(2, 0, 0.1));
 	Out.ar(0, signal);
-}).load(s);
+}).add;
 )
 
 a = Synth('help-dynKlank');
@@ -85,13 +80,15 @@ a = Synth('help-dynKlank');
 a.setn(\freqs, Array.rand(4, 500, 2000));
 a.setn(\ringtimes, Array.rand(4, 0.2, 4) );
 
-(	// create multichannel controls directly with literal arrays:
-SynthDef('help-dynKlank', {| freqs (#[100, 200, 300, 400]), 
+// create multichannel controls directly with literal arrays:
+(
+SynthDef('help-dynKlank', {| 
+	freqs (#[100, 200, 300, 400]), 
 	amps (#[1, 0.3, 0.2, 0.05]), 
 	rings (#[1, 1, 1, 2])|
 
 	Out.ar(0, DynKlank.ar(`[freqs, amps, rings], WhiteNoise.ar * 0.001))
-}).send(s)
+}).add
 )
 
 a = Synth('help-dynKlank');
@@ -99,5 +96,7 @@ a = Synth('help-dynKlank');
 a.setn(\freqs, Array.rand(4, 500, 2000));
 a.setn(\amps, Array.exprand(4, 0.01, 1));
 
+{ Out.kr(102, MouseX.kr(1, 2) * Array.rand(4, 500, 2000)) }.play;
+a.mapn(\freqs, 102, 4);
 ::
 

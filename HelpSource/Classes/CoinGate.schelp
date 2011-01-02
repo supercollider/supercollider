@@ -15,7 +15,7 @@ method::ar, kr
 
 argument::prob
 
-Value between 0 and 1 determines probability of either possibilities.
+Value between 0.0 and 1.0 determines probability of either possibilities.
 
 
 argument::in

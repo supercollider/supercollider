@@ -10,7 +10,6 @@ Higher frequencies are normally perceived as louder, which AmpCompA
 compensates. Following the measurings by Fletcher and Munson, the
 ANSI standard describes a function for loudness vs. frequency.
 
-
 Note that this curve is only valid for standardized amplitude.
 footnote::
 Function freq → dB,
@@ -56,6 +55,9 @@ Amplitude at the minimum point of the curve (around 2512 Hz).
 
 argument::rootAmp
 Amplitude at the root frequency.
+
+discussion::
+Apart from code::freq::, the values are not modulatable
 
 Examples::
 

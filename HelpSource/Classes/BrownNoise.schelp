@@ -1,13 +1,10 @@
 class:: BrownNoise
 summary:: Brown Noise.
-related:: Classes/ClipNoise, Classes/GrayNoise, Classes/NoahNoise, Classes/PinkNoise, Classes/WhiteNoise
+related:: Classes/ClipNoise, Classes/GrayNoise, Classes/PinkNoise, Classes/WhiteNoise
 categories::  UGens>Generators>Stochastic
 
-
 Description::
-
 Generates noise whose spectrum falls off in power by 6 dB per octave.
-
 
 classmethods::
 
@@ -21,11 +18,19 @@ This value will be added to the output.
 
 Examples::
 
+compare:
 code::
-
-// compare
 { BrownNoise.ar(0.5) }.play;
 { WhiteNoise.ar(0.5) }.play;
+::
 
+brownian noise as a frequency modulator:
+code::
+{ SinOsc.ar(BrownNoise.ar(100, 200)) * 0.1 }.play;
+::
+
+filtered brown noise:
+code::
+{ BPF.ar(BrownNoise.ar(0.1.dup), MouseX.kr(40, 17000, 1), 0.2) }.play;
 ::
 

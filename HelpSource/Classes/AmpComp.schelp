@@ -36,11 +36,13 @@ argument::exp
 
 Exponent: how steep the curve decreases for increasing freq.
 
+discussion::
+Note that for frequencies very much smaller than root the amplitudes can become very high. 
+In this case limit the freq with code::freq.max(minval)::, or use AmpCompA.
 
 Examples::
 
 code::
-
 // compare a sine without compensation
 
 { SinOsc.ar(MouseX.kr(300, 15000, 1)) * 0.1 }.play;
@@ -163,6 +165,5 @@ SynthDef("pgrain",
 	}
 ).send(s);
 )
-
 ::
 

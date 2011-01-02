@@ -5,8 +5,7 @@ categories:: UGens>Demand
 
 Description::
 
-FIXME: Dseries description.
-
+Demand rate arithmetic series UGen.
 
 See link::Classes/Pseries:: for structurally related equivalent.
 

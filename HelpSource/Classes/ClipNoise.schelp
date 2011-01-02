@@ -23,14 +23,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
-(
-SynthDef("help-ClipNoise", { arg out=0;
-	Out.ar(out, 
-		ClipNoise.ar(0.2)
-	)
-}).play;
-)
-
+{ ClipNoise.ar(0.2) }.play;
 ::
 

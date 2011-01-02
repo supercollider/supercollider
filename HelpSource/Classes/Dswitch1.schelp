@@ -5,8 +5,7 @@ categories:: UGens>Demand
 
 Description::
 
-FIXME: Dswitch1 description.
-
+Demand rate generator for switching between inputs.
 
 See link::Classes/Pswitch1:: for structurally related equivalent.
 

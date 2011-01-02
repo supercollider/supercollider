@@ -9,9 +9,7 @@ Description::
 A special case fixed filter. Implements the formula:
 
 formula::
-
 out(i) = 0.5 * (in(i) + in(i - 2)).
-
 ::
 
 
@@ -27,25 +25,13 @@ argument::in
 The input signal.
 
 
-argument::mul
-
-Output will be multiplied by this value.
-
-
-argument::add
-
-This value will be added to the output.
-
-
 Examples::
 
 code::
-
 //Compare:
 
 { WhiteNoise.ar(0.25) }.play;
 
 { BRZ2.ar(WhiteNoise.ar(0.25)) }.play;
-
 ::
 

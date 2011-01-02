@@ -13,14 +13,14 @@ method::ar, kr
 
 argument::level
 
-A demand UGen or any other UGen. If this ends, the
+A demand UGen or any other UGen returning level values. If this ends, the
 
 code::doneAction::  is evaluated.
 
 
 argument::dur
 
-A demand UGen or any other UGen. If this ends, the
+A demand UGen or any other UGen returning time values. If this ends, the
 
 code::doneAction::  is evaluated.
 
@@ -33,9 +33,19 @@ number according to link::Classes/Env::.
 
 argument::curve
 
-A demand UGen or any other UGen: if shape is 5, this is the
+A demand UGen or any other UGen returning curve values. if shape is 5, this is the
 curve factor.
 
+The possible values are:
+table::
+## 0 || flat segments
+## 1 || linear segments, the default
+## 2 || natural exponential growth and decay. In this case, the levels must all be nonzero and the have the same sign.
+## 3 || sinusoidal S shaped segments.
+## 4 || sinusoidal segments shaped like the sides of a Welch window.
+## a Float || a curvature value for all segments.
+## An Array of Floats || curvature values for each segments.
+::
 
 argument::gate
 
@@ -46,7 +56,7 @@ If gate is 0 > x > 1, the UGen is released at the next
 level (doneAction).
 
 
-If gate is x < 0, the UGen is sampled end held.
+If gate is x < 0, the UGen is sampled and held.
 
 
 argument::reset
@@ -57,17 +67,17 @@ at the next level. If it is > 1, it is reset immediately.
 
 argument::levelScale
 
-FIXME: explain parameter levelScale.
+demand ugen returning level scaling values
 
 
 argument::levelBias
 
-FIXME: explain parameter levelBias.
+demand ugen returning level offset values
 
 
 argument::timeScale
 
-FIXME: explain parameter timeScale.
+demand ugen returning time scaling values
 
 
 argument::doneAction
@@ -79,10 +89,6 @@ ends. See link::Reference/UGen-doneActions::  for more detail.
 Examples::
 
 code::
-
-s.reboot;
-
-
 // frequency envelope with random times
 (
 	{
@@ -400,6 +406,5 @@ Server.internal.boot;
 	
 	}.play;
 )
-
 ::
 

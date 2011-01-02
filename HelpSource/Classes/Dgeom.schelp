@@ -4,9 +4,7 @@ related:: Classes/Demand, Classes/Dseries, Classes/Duty, Classes/TDuty
 categories:: UGens>Demand
 
 Description::
-
-FIXME: Dgeom description.
-
+Demand rate geometric series UGen.
 
 See link::Classes/Pgeom:: for structurally related equivalent.
 
@@ -16,20 +14,18 @@ classmethods::
 method::new
 
 argument::start
-
 Start value. Can be a number or any other UGen.
 
 
 argument::grow
-
 Value by which to grow (x = x[-1] * grow).  Can be a number or
 any other UGen.
 
-
 argument::length
+Number of values to create.
 
-Number of values to create. Can be a number or any other UGen.
-
+discussion::
+The arguments can be a number or any other ugen
 
 Examples::
 

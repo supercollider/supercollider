@@ -47,7 +47,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 (
 
 	{ var input, kernel;
@@ -85,6 +84,5 @@ g.set(0,1.0);
 	 }.play;
 
 )
-
 ::
 
