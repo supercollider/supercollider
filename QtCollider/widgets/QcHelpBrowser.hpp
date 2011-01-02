@@ -141,7 +141,14 @@ class HelpFileView : public QWebView
 {
   Q_OBJECT
 public:
-  HelpFileView( QWidget *parent = 0 ) : QWebView( parent ) {}
+  HelpFileView( QWidget *parent = 0 ) : QWebView( parent ) {
+    /// FIXME: for now we reset the base colors in order to render the help
+    ///        files correctly on a dark background
+    QPalette pal = palette();
+    pal.setColor(QPalette::Base, QColor(Qt::white));
+    pal.setColor(QPalette::Text, QColor(Qt::black));
+    setPalette(pal);
+  }
 public Q_SLOTS:
   void findText( const QString &searchText, bool reversed = false ) {
     QWebPage::FindFlags flags( QWebPage::FindWrapsAroundDocument );
