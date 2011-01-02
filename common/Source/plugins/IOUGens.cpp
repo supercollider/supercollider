@@ -352,19 +352,20 @@ void LagControl_next_1(LagControl *unit, int inNumSamples)
 
 void LagControl_Ctor(LagControl* unit)
 {
-	if (unit->mNumOutputs == 1) {
-		SETCALC(LagControl_next_1);
-		LagControl_next_1(unit, 1);
-	} else {
-		SETCALC(LagControl_next_k);
-		LagControl_next_k(unit, 1);
-	}
 	int numChannels = unit->mNumInputs;
 	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
 	for (int i=0; i<numChannels; ++i, mapin++) {
 		unit->m_y1[i] = **mapin;
 		float lag = ZIN0(i);
 		unit->m_b1[i] = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
+	}
+
+	if (unit->mNumOutputs == 1) {
+		SETCALC(LagControl_next_1);
+		LagControl_next_1(unit, 1);
+	} else {
+		SETCALC(LagControl_next_k);
+		LagControl_next_k(unit, 1);
 	}
 }
 
