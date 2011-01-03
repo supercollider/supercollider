@@ -1116,6 +1116,13 @@ ScDocRenderer {
 
             x = parser.findNode(\examples);
             this.renderHTMLSubTree(f,x);
+
+            parser.root.do {|n|
+                if(n.tag == \section) {
+                    this.renderHTMLSubTree(f,n);
+                };
+            };
+
         },{
             x = parser.findNode(\title);
             name = x.text.stripWhiteSpace;
