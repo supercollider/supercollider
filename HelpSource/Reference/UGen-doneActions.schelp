@@ -1,6 +1,6 @@
 title:: UGen done-actions
 summary:: Actions to take when an UGen has finished
-categories:: Server>Nodes
+categories:: UGens, Server>Nodes
 related:: Classes/UGen
 
 A number of UGens implement doneActions. These allow one to optionally free or pause the enclosing synth and other related nodes when the UGen is finished. These include link::Classes/EnvGen::, link::Classes/Line::, link::Classes/XLine::, link::Classes/Linen::, link::Classes/DetectSilence::, link::Classes/PlayBuf::, link::Classes/Duty::, link::Classes/TDuty:: and link::Classes/Demand::.

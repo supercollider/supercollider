@@ -1,7 +1,7 @@
 title:: Tour of UGens
 summary:: Signal Processing in SuperCollider
 related:: Browse#UGens
-categories:: UGens
+categories:: UGens, Server>Nodes
 
 definitionlist::
 ## 1. A Tour of available Unit Generators.
