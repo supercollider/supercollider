@@ -17,12 +17,12 @@ changed after it has been started.
 
 classmethods::
 
-method::ar
+method::ar, kr
 
 argument::specificationsArrayRef
-A Ref to an Array of three Arrays:
+A Ref to an Array of three Arrays: code::[frequencies, amplitudes, ringtimes]::
 
-table::
+definitionlist::
 ## frequencies: || An Array of filter frequencies.
 ## amplitudes: || An Array of filter amplitudes, or nil. If nil, then amplitudes default to 1.0.
 ## ring times: || An Array of 60 dB decay times for the filters.

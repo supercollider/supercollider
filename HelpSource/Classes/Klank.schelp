@@ -18,14 +18,10 @@ method::ar
 argument::specificationsArrayRef
 A link::Classes/Ref:: to an link::Classes/Array:: of three Arrays:
 
-table::
-
+definitionlist::
 ## frequencies: || An Array of filter frequencies.
-
 ## amplitudes: || an Array of filter amplitudes, or nil. If nil, then amplitudes default to 1.0.
-
 ## ring times: || an Array of 60 dB decay times for the filters.
-
 ::
 All subarrays, if not nil, should have the same length.
 
