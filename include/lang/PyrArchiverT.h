@@ -431,7 +431,7 @@ private:
 					SetObject(slot, readObjectID());
 					break;
 				case 'z' :
-					SetObject(slot, (void*)mStream.readInt32_be());
+					SetObject(slot, (void*)(size_t)mStream.readInt32_be());
 					break;
 				case 'C' :
 					SetObject(slot, (PyrObject*)readSymbolID()->u.classobj);
