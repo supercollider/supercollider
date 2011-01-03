@@ -67,6 +67,36 @@
 		D53110B10EF9A91B004BAF31 /* SuperColliderAUVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = D53110A40EF9A91B004BAF31 /* SuperColliderAUVersion.h */; };
 		D53110C80EF9AB24004BAF31 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D55DEBD70EF32CE300968B95 /* InfoPlist.strings */; };
 		D53110D00EF9AB2C004BAF31 /* serverConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = D55DEBDC0EF32CE300968B95 /* serverConfig.plist */; };
+		D559CA5E12D0EAC000EF3862 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F436B12C2936E00621B91 /* SC_AllocPool.cpp */; };
+		D559CA5F12D0EAE200EF3862 /* SC_AU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43B212C2936F00621B91 /* SC_AU.cpp */; };
+		D559CA6012D0EB3C00EF3862 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F436C12C2936E00621B91 /* SC_DirUtils.cpp */; };
+		D559CA6112D0EB3C00EF3862 /* SC_BufGen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43B412C2936F00621B91 /* SC_BufGen.cpp */; };
+		D559CA6212D0EB3C00EF3862 /* SC_Carbon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43B512C2936F00621B91 /* SC_Carbon.cpp */; };
+		D559CA6412D0EB3C00EF3862 /* SC_ComPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43B712C2936F00621B91 /* SC_ComPort.cpp */; };
+		D559CA6512D0EB3C00EF3862 /* SC_CoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43B812C2936F00621B91 /* SC_CoreAudio.cpp */; };
+		D559CA6612D0EB3C00EF3862 /* SC_Errors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43B912C2936F00621B91 /* SC_Errors.cpp */; };
+		D559CA6712D0EB3C00EF3862 /* SC_Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43BA12C2936F00621B91 /* SC_Graph.cpp */; };
+		D559CA6812D0EB3C00EF3862 /* SC_GraphDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43BB12C2936F00621B91 /* SC_GraphDef.cpp */; };
+		D559CA6912D0EB3C00EF3862 /* SC_Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43BC12C2936F00621B91 /* SC_Group.cpp */; };
+		D559CA6A12D0EB3C00EF3862 /* SC_Lib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43BE12C2936F00621B91 /* SC_Lib.cpp */; };
+		D559CA6B12D0EB3C00EF3862 /* SC_Lib_Cintf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43BF12C2936F00621B91 /* SC_Lib_Cintf.cpp */; };
+		D559CA6C12D0EB3C00EF3862 /* SC_MiscCmds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C012C2936F00621B91 /* SC_MiscCmds.cpp */; };
+		D559CA6D12D0EB3C00EF3862 /* SC_Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C112C2936F00621B91 /* SC_Node.cpp */; };
+		D559CA6E12D0EB3C00EF3862 /* SC_Rate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C212C2936F00621B91 /* SC_Rate.cpp */; };
+		D559CA6F12D0EB3C00EF3862 /* SC_SequencedCommand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C312C2936F00621B91 /* SC_SequencedCommand.cpp */; };
+		D559CA7012D0EB3C00EF3862 /* SC_Str4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C412C2936F00621B91 /* SC_Str4.cpp */; };
+		D559CA7112D0EB3C00EF3862 /* SC_Unit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C512C2936F00621B91 /* SC_Unit.cpp */; };
+		D559CA7212D0EB3C00EF3862 /* SC_UnitDef.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C612C2936F00621B91 /* SC_UnitDef.cpp */; };
+		D559CA7312D0EB3C00EF3862 /* SC_World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C712C2936F00621B91 /* SC_World.cpp */; };
+		D559CA7412D0EB3C00EF3862 /* scsynth_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43C812C2936F00621B91 /* scsynth_main.cpp */; };
+		D559CA9412D0EC8500EF3862 /* SC_StringParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F437212C2936E00621B91 /* SC_StringParser.cpp */; };
+		D559CA9712D0EC9400EF3862 /* SC_StringBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F437112C2936E00621B91 /* SC_StringBuffer.cpp */; };
+		D559CA9812D0ECA900EF3862 /* scsynthsend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F437412C2936E00621B91 /* scsynthsend.cpp */; };
+		D559CAA012D0ECCE00EF3862 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F436D12C2936E00621B91 /* SC_fftlib.cpp */; };
+		D559CAA412D0ECF000EF3862 /* SC_StandAloneInfo_Darwin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F437012C2936E00621B91 /* SC_StandAloneInfo_Darwin.cpp */; };
+		D559CAA812D0ED4A00EF3862 /* Samp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43B112C2936F00621B91 /* Samp.cpp */; };
+		D559CAAB12D0ED7500EF3862 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F436F12C2936E00621B91 /* SC_Sem.cpp */; };
+		D559CAB512D0EDA400EF3862 /* Rendezvous.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F33F43B012C2936F00621B91 /* Rendezvous.cpp */; };
 		D55DEE3C0EF3304300968B95 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D55DEE3B0EF3304300968B95 /* AudioUnit.framework */; };
 		D55DEF140EF333C000968B95 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F53F78F503B2842D011C068F /* CoreServices.framework */; };
 		D55DEF1C0EF333C600968B95 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 94B6B0C30AF5390900E478BB /* CoreAudio.framework */; };
@@ -978,6 +1008,36 @@
 				D53110A90EF9A91B004BAF31 /* Resources.cpp in Sources */,
 				D53110AB0EF9A91B004BAF31 /* SCProcess.cpp in Sources */,
 				D53110AD0EF9A91B004BAF31 /* SuperColliderAU.cpp in Sources */,
+				D559CA5E12D0EAC000EF3862 /* SC_AllocPool.cpp in Sources */,
+				D559CA5F12D0EAE200EF3862 /* SC_AU.cpp in Sources */,
+				D559CA6012D0EB3C00EF3862 /* SC_DirUtils.cpp in Sources */,
+				D559CA6112D0EB3C00EF3862 /* SC_BufGen.cpp in Sources */,
+				D559CA6212D0EB3C00EF3862 /* SC_Carbon.cpp in Sources */,
+				D559CA6412D0EB3C00EF3862 /* SC_ComPort.cpp in Sources */,
+				D559CA6512D0EB3C00EF3862 /* SC_CoreAudio.cpp in Sources */,
+				D559CA6612D0EB3C00EF3862 /* SC_Errors.cpp in Sources */,
+				D559CA6712D0EB3C00EF3862 /* SC_Graph.cpp in Sources */,
+				D559CA6812D0EB3C00EF3862 /* SC_GraphDef.cpp in Sources */,
+				D559CA6912D0EB3C00EF3862 /* SC_Group.cpp in Sources */,
+				D559CA6A12D0EB3C00EF3862 /* SC_Lib.cpp in Sources */,
+				D559CA6B12D0EB3C00EF3862 /* SC_Lib_Cintf.cpp in Sources */,
+				D559CA6C12D0EB3C00EF3862 /* SC_MiscCmds.cpp in Sources */,
+				D559CA6D12D0EB3C00EF3862 /* SC_Node.cpp in Sources */,
+				D559CA6E12D0EB3C00EF3862 /* SC_Rate.cpp in Sources */,
+				D559CA6F12D0EB3C00EF3862 /* SC_SequencedCommand.cpp in Sources */,
+				D559CA7012D0EB3C00EF3862 /* SC_Str4.cpp in Sources */,
+				D559CA7112D0EB3C00EF3862 /* SC_Unit.cpp in Sources */,
+				D559CA7212D0EB3C00EF3862 /* SC_UnitDef.cpp in Sources */,
+				D559CA7312D0EB3C00EF3862 /* SC_World.cpp in Sources */,
+				D559CA7412D0EB3C00EF3862 /* scsynth_main.cpp in Sources */,
+				D559CA9412D0EC8500EF3862 /* SC_StringParser.cpp in Sources */,
+				D559CA9712D0EC9400EF3862 /* SC_StringBuffer.cpp in Sources */,
+				D559CA9812D0ECA900EF3862 /* scsynthsend.cpp in Sources */,
+				D559CAA012D0ECCE00EF3862 /* SC_fftlib.cpp in Sources */,
+				D559CAA412D0ECF000EF3862 /* SC_StandAloneInfo_Darwin.cpp in Sources */,
+				D559CAA812D0ED4A00EF3862 /* Samp.cpp in Sources */,
+				D559CAAB12D0ED7500EF3862 /* SC_Sem.cpp in Sources */,
+				D559CAB512D0EDA400EF3862 /* Rendezvous.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1030,8 +1090,8 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
-					"../common/Headers/common",
-					"../../external_libraries/libsndfile/",
+					../common/Headers/common,
+					../../external_libraries/libsndfile/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -1202,8 +1262,8 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
-					"../common/Headers/common",
-					"../../external_libraries/libsndfile/",
+					../common/Headers/common,
+					../../external_libraries/libsndfile/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -1227,8 +1287,8 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
-					"../common/Headers/common",
-					"../../external_libraries/libsndfile/",
+					../common/Headers/common,
+					../../external_libraries/libsndfile/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -1428,8 +1488,8 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_VERSION = 4.2;
 				HEADER_SEARCH_PATHS = (
-					"../common/Headers/common",
-					"../../external_libraries/libsndfile/",
+					../common/Headers/common,
+					../../external_libraries/libsndfile/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
