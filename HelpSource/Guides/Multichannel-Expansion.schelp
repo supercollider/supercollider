@@ -1,6 +1,6 @@
 title:: Multichannel Expansion
 summary:: Explaining multichannel expansion and representation
-categories:: Server
+categories:: Server>Nodes, UGens>Multichannel
 
 section:: Multiple channels
 Multiple channels of audio are represented as link::Classes/Array::s.
