@@ -173,7 +173,7 @@ Returns:: a message of the type s_new which can be bundled. When sent to the ser
 subsection:: Control
 For further methods of controlling Synths (set, map, etc.), see the link::Classes/Node:: helpfile.
 
-method:: get
+method:: get, getMsg
 Query the server for the current value of a link::Classes/Control:: (argument).
 argument:: index
 a control name or index
@@ -193,10 +193,7 @@ x.get(\freq, { arg value; ("freq is now:" + value + "Hz").postln; });
 x.free;
 ::
 
-method:: getMsg
-returns:: corresponding OSC message
-
-method:: getn
+method:: getn, getnMsg
 Query the server for the current values of a sequential range of link::Classes/Controls:: (arguments).
 argument:: index
 a control name or index
@@ -204,9 +201,6 @@ argument:: count
 the number of sequential controls to query, starting at index.
 argument:: action
 a Function which will be evaluated with an link::Classes/Array:: containing the values passed as an argument when the reply is received.	
-
-method:: getnMsg
-returns:: corresponding OSC message
 
 method:: set
 Set the values of one or more link::Classes/Control::s.
