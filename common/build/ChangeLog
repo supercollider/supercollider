@@ -29,13 +29,45 @@ Bugfixes:
 SuperCollider v3.4.1, released 2010-11
 ======================================
 
-Bugfixes:
----------
-
 * 2010-07-12 remove accidental debug messages from SCView (on mac, posted a lot of info to Console, could affect performance) - ds
 * 2010-09-11 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
+* 2010-07-11 Collections should behave as reasonably as possible when empty - some fixes to better this - jr
+* 2010-07-11 SynthDef:add now sends to all running servers if no libname is given. SynthDescs are still added to the global SynthDescLib. If you want to handle multiple SynthDesc libs, you have to add the servers to each of them explicitly - jr
+* 2010-07-12 PanAz: added support for audio-rate pos arg - lfsaw
+* 2010-07-18 improved the sclang syntax highlighting parses - Patrick Borgeat
+* 2010-07-30 Dreset UGen allows to reset the child UGens on its input - jr
+* 2010-08-05 storeOn / asCompileString now simplifies its output. Default arguments that are given in the *new method anyhow are omitted - jr
+* 2010-08-06 Dictionary merge and blend methods - jr
+* 2010-08-09 method overwrite messages not posted by default, rather a message inviting people to run Main:overwriteMsg for the info - ds
+* 2010-08-13 MethodOverride class to encapsule information on overridden messages, inviting people to run MethodOverride.printAll  - jr
+* 2010-08-13 add size arg to Signal:zeroPad - jr and jh
+* 2010-08-18 Pevent now uses default event if no event is passed in - jr
+* 2010-08-18 added a shortcut to the rather tedious .asCompileString method. In analogy to object.postcs, object.cs returns the compile string - jr
+* 2010-08-20 audio driver for scsynth running on Android (through JNI) - ds
+* 2010-08-24 un-deprecate scsynth's ability to use internal "green" FFT lib, for embedded devices etc - ds
+* 2010-08-28 no 'record' button for remote server GUIs, since path not generally known - ds
+* 2010-09-02 token threading for sclang interpreter - tb
+* 2010-09-07 when looking for a code file (openCodeFile) or cmd-J, it is now enough to select a full line, instead of having to select both words around the colon - jr
+* 2010-09-07 added methods for better navigation in the class tree (findOverriddenMethod) - jr
+* 2010-09-10 add method: Complex:abs to fit common usage - jr
+* 2010-09-12 added Dwrand UGen - jr
 * 2010-09-15 SystemClock and TempoClock sched and schedAbs with inf time doesn't schedule the task in the first place - jr
+* 2010-10-07 change the mac HID error-handler code to output errors to sc post window rather than to mac log; removes a pascal-string issue - ds
+* 2010-10-19 Ndef now releses its bus when server was quit or just booted - jr
+* 2010-10-20 retain the path to the file in which an error has occurred and post it - jr
+
+
+Bugfixes:
+---------
+* 2010-07-10 protecting the server against malformatted SynthDef names - jr
+* 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
+* 2010-07-24 catch crash in the case that one tries to define a unique method using a return value directly - jr
+* 2010-09-07 UGen:clip, :wrap, :fold now apply correctly to scalar-rate signals; also methodSelectorForRate tweak for which class is asked - ds
+* 2010-09-09 fix a bug for trigger signals in Demand.kr that hold longer than one control period - jr
+* 2010-09-12 fix bug: 2994009. LFPar and LFCub audio rate modulation frequency argument work now - jr
+* 2010-09-19 fix to JITGui, when numItems is not supplied - jr
 * 2010-10-10 remove more crufty NSLog debug messages - ds
+* 2010-10-13 fix SCUserView:receiveDrag to receive mouse co-ordinates; thanks Daniel van den Eijkel - ds
 * 2010-10-19 debian-style scvim-check-if-plugin-is-active, brought upstream - ds
 * 2010-10-19 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
 * 2010-10-19 partial fix for bugs item #2994009 - seems to fix LFPar but not LFCub. More work needed - ds
@@ -80,7 +112,7 @@ Headlines:
 * 2010-02-18 scvim: now compatible with gnu screen, opens post window using screen, making it compatible with a pure-CLI environment - ds
 * 2010-02-xx add the Deployment32-64 build style for building on OS X (10.5 and greater) - jp
 * 2010-03-10 SynthDef:memStore deprecated in favour of the more coherent and typeable SynthDef:add - jr
-* 2010-04-11 Moved some more experimental JITLib classes to ÒJITLib extensions" Quark - jr
+* 2010-04-11 Moved some more experimental JITLib classes to "JITLib extensions" Quark - jr
 
 
 Bugfixes:
@@ -119,6 +151,7 @@ Bugfixes:
 * 2010-03-11 SequenceableCollection:reduce no longer returns nil if the collection has only 1 element - ds
 * 2010-03-28 fix memory leak of empty command line, for interactive sclang mode - tb
 * 2010-03-29 main menu for Mac lang editor app: correction to key for evaluate selection, used to be return, now return+shift - nc
+* 2010-04-19 fix missing font issue in Plotter -jr
 
 Other additions/improvements:
 -----------------------------
