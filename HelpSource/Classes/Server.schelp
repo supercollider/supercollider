@@ -1,0 +1,541 @@
+class:: Server
+summary:: Object representing an sc-server application
+categories:: Server
+related:: Classes/ServerOptions
+
+description::
+
+A Server object is the client-side representation of a server app and is used to control the app from the SuperCollider language application. (See link::Guides/ClientVsServer:: for more details on the distinction.)
+It forwards osc-messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
+
+The server application is a commandline program, so all commands apart from osc-messages are unix commands.
+
+The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine. 
+
+Most of a Server's options are contolled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
+
+subsection:: Paths
+
+Server apps running on the local machine have two unix environment variables: code::SC_SYNTHDEF_PATH:: and code::SC_PLUGIN_PATH::. These indicate directories of synthdefs and ugen plugins that will be loaded at startup. These are in addition to the default synthdef/ and plugin/ directories which are hard-coded.
+
+These can be set within SC using the getenv and setenv methods of class link::Classes/String::.
+code::
+// all defs in this directory will be loaded when a local server boots
+"SC_SYNTHDEF_PATH".setenv("~/scwork/".standardizePath); 
+"echo $SC_SYNTHDEF_PATH".unixCmd;
+::
+
+subsection:: The default group
+
+When a Server is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of link::Classes/Group:: : link::Classes/RootNode::.)
+If the server app was booted from within SCLang (as opposed to from the command line) the method code::initTree:: will be called automatically after booting.
+This will also create a link::Reference/default_group:: with an ID of 1, which is the default group for all link::Classes/Node::s when using object style.
+This provides a predictable basic node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems.
+
+The default group is persistent, i.e. it is recreated after a reboot, pressing cmd-., etc. See link::Classes/RootNode:: and link::Reference/default_group:: for more information.
+Note::
+If a Server has been booted from the command line you must call code::initTree:: manually in order to initialize the default group, if you want it. See code::initTree:: below.
+::
+
+subsection:: Local vs. Internal
+
+In general, when working with a single machine one will probably be using one of two Server objects which are created at startup and stored in the class variables local and internal. By default two GUI windows are created to control these.
+
+The difference between the two is that the local server runs as a separate application with its own address space, and the internal server runs within the same space as the language/client app.
+
+The internal server has the advantage of being able to access shared memory, thus allowing for things like scope windows (see below) and link::Classes/SharedIn:: / link::Classes/SharedOut::.
+It also minimizes messaging latency.
+
+The local server, and any other server apps running on your local machine, have the advantage that if the language app crashes, it (and thus possibly your piece) will continue to run. It is thus an inherently more robust arrangement.
+
+subsection:: The default Server
+
+There is always a default Server, which is stored in the class variable code::default::. Any link::Classes/Synth::s or link::Classes/Group::s created without a target will be created on the default server. At startup this is set to be the local server (see above), but can be set to be any Server.
+
+ClassMethods::
+private:: initClass
+
+method:: new
+
+argument:: name
+a symbol;  each Server object is stored in one global classvariable under its name.
+
+argument:: addr
+an optional instance of link::Classes/NetAddr::, providing host and port.
+The default is the localhost address using port 57110; the same as the local server.
+
+argument:: options
+an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
+
+argument:: clientID
+an integer. In multi client situations, every client can be given a separate nodeID range. The default is 0.
+
+
+method:: local
+get/set the local server, stored in classvar code::local:: (created already on initClass)
+
+method:: internal
+get/set the internal server, stored in classvar code::internal:: (created already on initClass)
+
+method:: default
+Get or set the default server. By default this is the local server (see above).
+discussion::
+Setting this will also assign it to the link::Classes/Interpreter:: variable 's'.
+code::
+Server.default = Server.internal; // set the internal Server to be the default Server
+s.postln; // internal
+::
+
+method:: all
+get/set the set of all servers.	
+
+method:: allRunningServers
+returns:: the set of all running servers.	
+
+method:: quitAll
+quit all registered servers
+		
+method:: killAll
+query the system for any sc-server apps and hard quit them
+		
+method:: freeAll
+free all nodes in all registered servers	
+
+
+
+InstanceMethods::
+						
+method:: sendMsg
+send an osc message to the server.
+discussion::
+code::
+s.sendMsg("/s_new", "default", s.nextNodeID, 0, 1);
+::
+
+method:: sendBundle
+send an osc bundle to the server.
+discussion::
+Since the network may have irregular performance, time allows for the bundle to be evaluated at a specified point in the future.
+Thus all messages are synchronous relative to each other, but delayed by a constant offset.
+If such a bundle arrives late, the server replies with a late message but still evaluates it.				
+code::	
+s.sendBundle(0.2, ["/s_new", "default", x = s.nextNodeID, 0, 1], ["/n_set", x, "freq", 500]);
+::		
+
+method:: sendRaw
+
+method:: listSendMsg
+as sendMsg, but takes an array as argument.
+
+method:: listSendBundle
+as sendBundle, but takes an array as argument.
+discussion::
+This allows you to collect messages in an array and then send them.
+code::
+s.listSendBundle(0.2, [["/s_new", "default", x = s.nextNodeID, 0, 1], 
+    ["/n_set", x, "freq", 600]]);
+::
+
+method:: sendSynthDef
+send a synthDef to the server that was written in a local directory
+		
+method:: loadSynthDef
+load a synthDef that resides in the remote directory
+
+method:: loadDirectory
+load all the SynthDefs in the directory dir.
+argument:: dir
+a link::Classes/String:: which is a valid path.
+		
+method:: nextNodeID
+get a unique nodeID. 
+
+method:: nextPermNodeID
+get a permanent node ID. This node ID is in a reserved range and will be held until you explicitly free it.
+
+method:: freePermNodeID
+free a permanent node ID for later reuse.
+	
+method:: wait
+this can be used within a link::Classes/Routine:: to wait for a server reply
+
+method:: waitForBoot
+evaluate the function code::func:: as soon as the server has booted. If it is running, it is evaluated immediately. If it is not running, boot the server and evaluate the function. code::limit:: indicates the maximum times to try. (5 times/sec)
+
+method:: doWhenBooted
+evaluate the function as soon as the server has booted. If it is running, it is evaluated immediately. code::limit:: is the maximum number of times to try. (5 times/sec)
+
+method:: boot
+boot the remote server, create new allocators.
+argument:: startAliveThread
+if set to false, the server is not queried to give information for the window.
+discussion::
+N.B. You cannot locally boot a server app on a remote machine.
+
+method:: quit
+quit the server application
+		
+method:: reboot
+quit and restart the server application
+		
+method:: freeAll
+free all nodes in this server 
+		
+method:: status
+query the server status
+
+method:: notify
+server sends notifications, for example if a node was created, a 'tr' message from a link::Classes/SendTrig::, or a strong::/done:: action. if code::flag:: is set to false, these messages are not sent. The default is true.
+
+method:: dumpOSC
+argument:: code
+table::
+## 0 || turn dumping OFF.
+## 1 || print the parsed contents of the message.
+## 2 || print the contents in hexadecimal.
+## 3 || print both the parsed and hexadecimal representations of the contents.
+::
+
+method:: queryAllNodes
+Post a representation of this Server's current node tree to the post window.
+discussion::
+Very helpful for debugging. For local servers this uses g_dumpTree and for remote g_queryTree. See link::Classes/Group:: and link::Reference/Server-Command-Reference:: for more info.
+code::
+s.boot;
+s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
+s.quit;
+::
+	
+method:: ping
+measure the time between server and client, which may vary. the code::func:: is
+evaluated after code::n:: number of times and is passed the resulting maximum. 
+
+method:: options
+Get or set this Server's link::Classes/ServerOptions:: object. Changes take effect when the server is rebooted.
+
+method:: defaultGroup
+returns:: this Server's default group.
+	
+method:: volume
+Get an instance of Volume that runs after the defualt group, or sets the Volume of the Server's output to level. Level is in db.
+
+method:: mute
+mute the server's output. This can also be toggled from the Server window with the 'm' key.
+
+method:: unmute
+unmute the server. This can also be toggled from the Server window with the 'm' key.
+
+method:: reorder
+Move the nodes in code::nodeList:: to the location specified by code::target:: and code::addAction::, placing them there in the order indicated by nodeList.
+discussion::
+Any nodes which have already been freed will be skipped. Passing nil for target and addAction will result in the location being the head of the default group.
+code::
+g = Group.new;
+x = Array.fill(5, {Synth(\default)});
+s.queryAllNodes;
+s.reorder(x, g, \addToTail);
+s.queryAllNodes;
+::
+
+subsection:: Automatic Message Bundling
+
+Server provides support for automatically bundling messages. This is quite convenient in object style, and ensures synchronous execution. See also link::Guides/Bundled-Messages::
+
+method:: makeBundle
+The Function code::func:: is evaluated, and all OSC messages generated by it are deferred and added to a bundle.
+returns:: The bundle so that it can be further used if needed.
+argument:: time
+If set to nil or a number the bundle will be automatically sent and executed after the corresponding delay in seconds. If code::time:: is set to false the bundle will not be sent.
+argument:: func
+The function to evaluate.
+argument:: bundle
+allows you to pass in a preexisting bundle and continue adding to it.
+discussion::
+Calling code::sync:: inside func will split the bundle and wait for asynchronous actions to complete before continuing.
+
+If an error is encountered while evaluating code::func:: this method will throw an link::Classes/Error:: and stop message deferral. 
+code::
+s.boot;
+(
+// send a synth def to server
+SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
+	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
+}).add;
+)
+
+// all OSC commands generated in the function contained below will be added to a bundle
+// and executed simultaneously after 2 seconds.
+(
+s.makeBundle(2.0, {
+	x = Synth.new("tpulse");
+	a = Bus.control.set(440);
+	x.map(\freq, a);
+});
+)
+x.free;
+
+// don't send
+(
+b = s.makeBundle(false, { 	
+	x = { PinkNoise.ar(0.1) * In.kr(0, 1); }.play;
+});
+)
+// now pass b as a pre-existing bundle, and start both synths synchronously
+(
+s.makeBundle(nil, { // nil executes ASAP
+	y = { SinOsc.kr(0.2).abs }.play(x, 0, 0, \addBefore); // sine envelope
+}, b);
+)
+x.free; y.free;
+
+// Throw an Error
+(
+try {
+	s.makeBundle(nil, {
+		s.farkermartin;
+	});
+} { |error|
+	("Look Ma, normal operations resume even though:\n" + error.errorString).postln; 
+	x = { FSinOsc.ar(440, 0, 0.2) }.play; // This works fine
+}
+)
+x.free;
+
+// use sync
+(
+s.makeBundle(nil, {
+	b = Buffer.read(s, "sounds/a11wlk01.wav");
+	s.sync; // wait until load is done and then send the rest of the bundle
+	x = { PlayBuf.ar(1, b) * 0.5 }.play;
+});
+)
+x.free; b.free;
+::
+
+method:: bind
+Just as in code::makeBundle::, the Function code::func:: is evaluated, and all OSC messages generated by it are deferred and added to a bundle, which is sent to the server, using the server default latency.
+discussion::
+code::
+(
+s.bind {
+	a = { |freq=100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
+	a.set(\freq, 400);
+}
+)
+::
+
+subsection:: Shared Controls
+
+The internal server has a number of shared control buses. Their values can be set or polled using the methods below.
+
+method:: getSharedControl
+get the current value of a shared control bus. num is the index of the bus to poll. This command is synchronous and only works with the internal server.
+
+method:: setSharedControl
+set the current value of a shared control bus to value. num is the index of the bus to set. This command is synchronous and only works with the internal server.
+
+method:: allocSharedControls
+set the number of shared control buses. Must be done before the internal server is booted. The default is 1024.
+
+subsection:: Persistent Node Trees
+
+The class link::Classes/ServerTree:: can be used to store functions which will be evaluated after the server is booted, after all nodes are freed, and after cmd-. is pressed.
+This allows, for example, for one to create a persistent basic node structure. ServerTree is evaluated in the method initTree after the default group is created, so its existence can be relied upon.
+
+method:: initTree
+This method initializes the link::Reference/default_group:: and runs link::Classes/ServerTree::.
+discussion::
+This method is called automatically when you boot a Server from the language. N.B. If you started a server app from the command line you will have to call initTree manually if you need this functionality.
+code::
+s.quit;
+f = {Group.new(s.defaultGroup); "Other code can be evaluated too".postln;};
+ServerTree.add(f);
+s.boot;
+s.queryAllNodes; // note the group within the default group
+ServerTree.remove(f);
+::
+link::Classes/ServerBoot:: and link::Classes/ServerQuit:: provide similar functionality at boot and quit times.
+
+subsection:: Scope Support
+
+This only works with the internal server, and currently only on OSX.
+see link::Classes/Stethoscope:: for further details.
+
+method:: scope
+Open a scope window showing the output of the Server. 
+		
+argument:: numChannels
+the number of channels to be scoped out. The default is this server's options' numOutputBusChannels.
+argument:: index
+the first channel to be output. The default is 0.
+argument:: bufsize
+the size of the buffer for the ScopeView. The default is 4096.
+argument:: zoom
+a zoom value for the scope's X axis. Larger values show more. The default is 1.
+argument:: rate
+whether to display audio or control rate buses (either \audio or \control)
+
+subsection:: Recording Support
+
+The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the link::Classes/DiskOut:: helpfile for more info. For non-realtime recording, see the link::Guides/Non-Realtime-Synthesis:: helpfile. 
+
+This functionality is also available through the recording button on the server windows.
+Pressing it once calls record, and pressing it again calls stopRecording (see below). When doing so the file created will be in your recordings folder and be named for the current date and time.
+The default location of the recordings folder varies from platform to platform but is always stored in code::thisProcess.platform.recordingsDir::. Setting this variable allows you to change the default.
+
+NOTE::
+record creates the recording synth after the Server's default group and uses In.ar. Thus if you add nodes after the recording synth their output will not be captured.
+To avoid this, either use Node objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1.
+code::
+s.sendMsg("/s_new", "default", s.nextNodeID, 1,1);
+::
+::
+
+For more detail on this subject see link::Guides/Order-of-execution::, link::Reference/default_group::, and link::Guides/NodeMessaging::.
+
+See link::Classes/SoundFile:: for information on the various sample and header formats.
+Not all sample and header formats are compatible. Note that the sampling rate of the output file will be the same as that of the server app. This can be set using the Server's link::Classes/ServerOptions::.
+
+Example:
+code::
+s.boot; // start the server
+
+// something to record
+(
+SynthDef("bubbles", {
+	var f, zout;
+	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; // glissando function
+	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
+	Out.ar(0, zout);
+}).add;
+SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0; 
+	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) ) 
+}).add;
+
+)
+
+x = Synth.new("bubbles");
+
+s.prepareForRecord; // you have to call this first
+
+s.record;
+
+s.pauseRecording; // pausable
+
+s.record // start again
+
+s.stopRecording; // this closes the file and deallocates the buffer recording node, etc.
+
+x.free; // stop the synths
+
+// look in your recordings folder and you'll find a file named for this date and time
+::
+
+method:: prepareForRecord
+Allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
+argument:: path
+a link::Classes/String:: representing the path and name of the output file.
+discussion::
+If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called SC_thisDateAndTime. Changes to the header or sample format, or to the number of channels must be made BEFORE calling this.
+		
+method:: record
+Starts or resumes recording the output.
+discussion::
+If you have not called prepareForRecord first (see above) then it will be invoked for you (but that adds a slight delay before recording starts for real).
+argument:: path
+this is optional, and is passed to code::prepareForRecord:: (above).
+			
+method:: pauseRecording
+Pauses recording. Can be resumed by executing record again.
+		
+method:: stopRecording
+Stops recording, closes the file, and frees the associated resources.
+discussion::
+You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
+		
+method:: recordNode
+Returns:: the current recording synth so that it can be used as a target. This should only be necessary for nodes which are not created in the default group.
+
+method:: recChannels
+Get/set the number of channels (int) to record. The default is two. Must be called BEFORE prepareForRecord.
+
+method:: recHeaderFormat
+Get/set the header format (string) of the output file. The default is "aiff". Must be called BEFORE prepareForRecord.
+	
+method:: recSampleFormat
+Get/set the sample format (string) of the output file. The default is "float". Must be called BEFORE prepareForRecord.
+
+subsection:: Asynchronous Commands
+
+Server provides support for waiting on the completion of asynchronous OSC commands such as reading or writing soundfiles. N.B. The following methods must be called from within a running link::Classes/Routine::. Explicitly passing in a link::Classes/Condition:: allows multiple elements to depend on different conditions. The examples below should make clear how all this works.
+
+method:: bootSync
+Boot the Server and wait until it has completed before resuming the thread.
+argument:: condition
+an optional instance of link::Classes/Condition:: used for evaluating this.
+
+method:: sendMsgSync
+Send the following message to the wait until it has completed before resuming the thread.
+argument:: condition
+an optional instance of link::Classes/Condition:: used for evaluating this.
+argument:: args
+one or more valid OSC messages.
+
+method:: sync
+Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
+argument:: condition
+an optional instance of link::Classes/Condition:: used for evaluating this.
+argument:: bundles
+one or more OSC messages which will be bundled before the sync message (thus ensuring that they will arrive before the /sync message). argument:: latency
+allows for the message to be evaluated at a specific point in the future.
+
+discussion::
+This may be slightly less safe then sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
+code::
+(
+Routine.run {
+	var c;
+
+	// create a condition variable to control execution of the Routine
+	c = Condition.new;
+	
+	s.bootSync(c);
+	\BOOTED.postln;
+		
+	s.sendMsgSync(c, "/b_alloc", 0, 44100, 2);
+	s.sendMsgSync(c, "/b_alloc", 1, 44100, 2);
+	s.sendMsgSync(c, "/b_alloc", 2, 44100, 2);
+	\b_alloc_DONE.postln;
+};
+)
+
+(
+Routine.run {
+	var c;
+
+	// create a condition variable to control execution of the Routine
+	c = Condition.new;
+	
+	s.bootSync(c);
+	\BOOTED.postln;
+		
+	s.sendMsg("/b_alloc", 0, 44100, 2);
+	s.sendMsg("/b_alloc", 1, 44100, 2);
+	s.sendMsg("/b_alloc", 2, 44100, 2);
+	s.sync(c);
+	\b_alloc_DONE.postln;
+};
+)
+::
+
+section:: Keyboard Shortcuts
+
+when a server window is in focus, these shortcuts can be used:
+table::
+## space || start the server
+## d || toggle dumpOSC
+## n || post a representation of the node tree
+## N || post a representation of the node tree and the current control values of any synths
+## s || scope (internal server only)
+::
+
