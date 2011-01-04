@@ -6,11 +6,6 @@ if [ $basename != "package" ]; then
     exit 1
 fi
 
-if [ -d SuperCollider ]; then
-	echo "Please remove the ./SuperCollider directory before running this script."
-	exit 1
-fi
-
 version=`date "+%Y-%m-%d"`
 include_optionals=false
 if [ `uname` = 'Darwin' ]; then
@@ -38,11 +33,18 @@ if [ "`git status -s -uno`" != "" ]; then
 fi
 
 if [ $package_type == "source" ]; then
-    mkdir SuperCollider-Source
+    if [ -d SuperCollider-Source ]; then
+        echo "Please remove the ./SuperCollider-Source directory before running this script."
+        exit 1
+    fi
     returndir=`pwd`
     cd ../
-    git archive $revision | tar -x --exclude ".gitignore" -C "$returndir/SuperCollider-Source"
-    cd $returndir
+    bash package/git-archive-all.sh --prefix SuperCollider-Source/ "$returndir/SuperCollider-Source.tmp.tar"
+    cd "$returndir"
+    # NB we only need one instance of boost, so we exclude one of its two appearances as a submodule in the following
+    tar -x --exclude ".gitignore" --exclude ".gitmodules" \
+        --exclude "SuperCollider-Source/external_libraries/nova-tt/boost_lockfree" \
+        -f SuperCollider-Source.tmp.tar
 
     if $include_optionals; then
         cp -Rp optional SuperCollider-Source/optional_installs
@@ -72,9 +74,13 @@ SuperCollider-Source/editors/scapp' >> LinuxExclusions.txt
 
     tar cfz "$filename" SuperCollider-Source
     tar cfzX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source
-    rm -rf SuperCollider-Source
+    rm -rf SuperCollider-Source SuperCollider-Source.tmp.tar
     exit
 else
+    if [ -d SuperCollider ]; then
+        echo "Please remove the ./SuperCollider directory before running this script."
+        exit 1
+    fi
     if $include_optionals; then
         opt_options='--copy dmg_with_optionals.ds_store:/.DS_Store --copy optional/:/Optional\ Installs --copy OPTIONALS_README_OSX.rtf:/Optional\ Installs/README.rtf'
         filename="SuperCollider-$version-With-Extras.dmg"
