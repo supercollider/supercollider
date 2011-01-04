@@ -1,11 +1,10 @@
 class:: FreeSelf
 summary:: When triggered, free enclosing synth.
-related:: Classes/PauseSelf
+related:: Classes/PauseSelf, Classes/Free
 categories::  UGens>Synth control
 
 
 Description::
-
 Free enclosing synth when input signal crosses from non-positive to
 positive.
 
@@ -22,7 +21,6 @@ The input signal.
 Examples::
 
 code::
-
 (
 SynthDef("freeSelf-help", { arg out, t_trig;
 	FreeSelf.kr(t_trig);
@@ -60,6 +58,5 @@ Task {
 	})
 } .play;
 )
-
 ::
 

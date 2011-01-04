@@ -31,9 +31,12 @@ The variably mixing and overwriting behaviour of the output UGens can
 make order of execution crucial. (No pun intended.) For example with a
 node order like the following the InFeedback UGen in Synth 2 will only
 receive data from Synth 1 (→ = write out; ← = read in):
-emphasis::Synth1 → (busA this synth overwrites the output of Synth3 before it reaches Synth2)
-Synth2 (with InFeedback) ← busA
-Synth3 → busA::
+list::
+## Synth1 → busA (this synth overwrites the output of Synth3 before it reaches Synth2)
+## Synth2 (with InFeedback) ← busA
+## Synth3 → busA
+::
+
 If Synth1 were moved after Synth2 then Synth2's InFeedback would receive
 a mix of the output from Synth1 and Synth3. This would also be true if
 Synth2 came after Synth1 and Synth3. In both cases data from Synth1 and
@@ -44,9 +47,12 @@ previous cycle), so nothing would be overwritten.
 Because of this it is often useful to allocate a separate bus for
 feedback. With the following arrangement Synth2 will receive data from
 Synth3 regardless of Synth1's position in the node order:
-emphasis::Synth1 → busA
-Synth2 (with InFeedback) ← busB
-Synth3 → busB + busA ::
+
+list::
+## Synth1 → busA
+## Synth2 (with InFeedback) ← busB
+## Synth3 → busB + busA
+::
 The second example below demonstrates this issue.
 
 
@@ -67,11 +73,8 @@ an argument in a SynthDef.
 
 
 Examples::
-
-code::
-
 audio feedback modulation:
-
+code::
 (
 SynthDef("help-InFeedback", { arg out=0, in=0;
 	var input, sound;
@@ -81,9 +84,9 @@ SynthDef("help-InFeedback", { arg out=0, in=0;
 
 }).play;
 )
-
+::
 this shows how a node can read audio from a bus that is being written to by a synth following it:
-
+code::
 (
 SynthDef("help-InFeedback", { arg out=0, in=0;
 	Out.ar(out,
@@ -112,9 +115,10 @@ c.free;
 x.free;
 
 a.free; b.free;
+::
 
-The example below implements a resonator. Note that you must subtract the blockSize in order for the tuning to be correct. See LocalIn for an equivalent example.
-
+The example below implements a resonator. Note that you must subtract the blockSize in order for the tuning to be correct. See link::Classes/LocalIn:: for an equivalent example.
+code::
 (
 var play, imp, initial;
 SynthDef("testRes", {
@@ -133,6 +137,5 @@ OffsetOut.ar(0, play);
 // Compare with this for tuning
 { SinOsc.ar(440, 0, 0.2) }.play(s, 1);
 )
-
 ::
 

@@ -1,6 +1,6 @@
 class:: Hasher
 summary:: Randomized value.
-categories::  UGens>Filters>Nonlinear
+categories::  UGens>Filters>Nonlinear, UGens>Random
 
 
 Description::
@@ -26,7 +26,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 { Hasher.ar(Line.ar(0,1,1), 0.2) }.play;
 
 (
@@ -52,5 +51,4 @@ code::
 	) * 0.1 
 }.play;
 )
-
 ::

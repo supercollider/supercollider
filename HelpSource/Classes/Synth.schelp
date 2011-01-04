@@ -141,7 +141,6 @@ private:: prepareForProxySynthDef, play
 
 Synth is a subclass of Node, and thus many of its most useful and important methods are documented in the link::Classes/Node:: help file.
 
-subsection:: Accessing Instance Variables
 method:: defName
 Returns:: the name of this Synth's SynthDef.
 
@@ -208,6 +207,14 @@ a Function which will be evaluated with an link::Classes/Array:: containing the 
 
 method:: getnMsg
 returns:: corresponding OSC message
+
+method:: set
+Set the values of one or more link::Classes/Control::s.
+discussion::
+Example:
+code::
+x.set(\freq, 440, \amp, 0.5)
+::
 
 Examples::
 code::

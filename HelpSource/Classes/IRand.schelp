@@ -24,7 +24,6 @@ Upper limit of the output range.
 Examples::
 
 code::
-
 (
 SynthDef("help-IRand", { 
 	Out.ar(
@@ -42,6 +41,5 @@ Routine({
 	})
 }).play;
 )
-
 ::
 

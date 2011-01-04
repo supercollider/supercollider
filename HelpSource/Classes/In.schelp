@@ -19,10 +19,11 @@ the  link::Classes/InFeedback::  and link::Reference/Order-of-execution:: helpfi
 more details.
 
 
-Note that using the Bus class to allocate a multichannel bus simply
+Note that using the link::Classes/Bus:: class to allocate a multichannel bus simply
 reserves a series of adjacent bus indices with the link::Classes/Server:: object's bus
-allocators. abus.index simply returns the first of those indices. When
-using a Bus with an In or  link::Classes/Out::  UGen there is nothing to
+allocators. code::abus.index:: simply returns the first of those indices.
+
+When using a Bus with an In or  link::Classes/Out::  UGen there is nothing to
 stop you from reading to or writing from a larger range, or from
 hardcoding to a bus that has been allocated. You are responsible for
 making sure that the number of channels match and that there are no
@@ -34,7 +35,7 @@ The hardware input busses begin just after the hardware output busses and
 can be read from using In.ar (See link::Reference/Server-Architecture:: for more
 details). The number of hardware input and output busses can vary
 depending on your Server's options. For a convienent wrapper class which
-deals with this issue see  link::Classes/AudioIn:: .
+deals with this issue see  link::Classes/SoundIn:: .
 
 
 classmethods::
@@ -55,10 +56,8 @@ SynthDef.
 
 Examples::
 
+read from an audio bus:
 code::
-
-read from an audio bus
-
 (
 s = Server.local;
 s.boot;
@@ -82,10 +81,10 @@ x = Synth("help-PinkNoise", [\out, 1]);
  
 //read the input and play it out on the left channel
 Synth.after(x, "help-In", [\out, 0, \in, 1]); 
-								
+::		
 
-read from a  control bus
-
+read from a  control bus:
+code::
 (
 SynthDef("help-InKr",{ arg out=0, in=0;
 	Out.ar(out,
@@ -105,9 +104,10 @@ Synth("help-InKr",[\in, b.index]);
 b.set(400);
 b.set(300);
 Synth("help-lfo", [\out, b.index]);
+::
 
-read control data from a synth later in the node order
-
+read control data from a synth later in the node order:
+code::
 (
 SynthDef("help-Infreq", { arg bus;
 	Out.ar(0, FSinOsc.ar(In.kr(bus), 0, 0.5));
@@ -137,6 +137,5 @@ c = Bus.control(s, 1);
 y.set(\bus, c.index); x.set(\bus, c.index);
 
 x.free; y.free; z.free;
-
 ::
 

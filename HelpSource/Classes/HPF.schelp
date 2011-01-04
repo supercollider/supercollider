@@ -5,7 +5,6 @@ categories::  UGens>Filters>Linear
 
 
 Description::
-
 A second order high pass filter.
 
 
@@ -36,7 +35,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 { HPF.ar(Saw.ar(200,0.1), FSinOsc.kr(XLine.kr(0.7,300,20),0,3600,4000), 5) }.play;
 
 (
@@ -50,7 +48,5 @@ code::
 	SinOsc.ar(ctl * 200 + 400) * 0.1;
 }.play;
 )
-
-
 ::
 

@@ -11,53 +11,35 @@ GENDYN normalises the durations in each period to force oscillation at
 the desired pitch. The breakpoints still get perturbed as in
 link::Classes/Gendy1:: .
 
-
 There is some glitching in the oscillator caused by the stochastic
 effects - control points as they vary cause big local jumps of amplitude.
 Put  code::ampscale::  and  code::durscale:: 
 low to minimise the rate of this.
 
-
-note::
-
-All parameters can be modulated at control rate except for
-code::initCPs:: 
-which is used only at initialisation.
-
-::
-
 SuperCollider implementation by Nick Collins (sicklincoln.org)
-
 
 classmethods::
 
 method::ar, kr
+
+discussion::
+All parameters can be modulated at control rate except for code::initCPs:: which is used only at initialisation.
 
 argument::ampdist
 
 Choice of probability distribution for the next perturbation of
 the amplitude of a control point.
 
-
 The distributions are (adapted from the GENDYN program in Formalized Music):
 
-
 table::
-
 ## 0: || LINEAR.
-
 ## 1: || CAUCHY.
-
 ## 2: || LOGIST.
-
 ## 3: || HYPERBCOS.
-
 ## 4: || ARCSINE.
-
 ## 5: || EXPON.
-
 ## 6: || SINUS.
-
 ::
 
 Where the sinus (Xenakis' name) is in this implementation taken
@@ -115,12 +97,6 @@ argument::knum
 
 Current number of utilised control points, allows modulation.
 
-
-argument::mul
-Output will be multiplied by this value.
-
-argument::add
-This value will be added to the output.
 
 Examples::
 
@@ -254,6 +230,5 @@ Pan2.ar(Gendy3.ar(6.rand,6.rand,1.0.rand,1.0.rand,freq, 1.0.rand, 1.0.rand, numc
 ;
 }.play
 )
-
 ::
 

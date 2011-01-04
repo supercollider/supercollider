@@ -17,34 +17,19 @@ classmethods::
 method::ar
 
 argument::in
-
 The input signal.
 
-
 argument::freq
-
 Amount of shift in cycles per second.
 
-
 argument::phase
-
 Phase of the frequency shift (0..2pi).
 
-
-argument::mul
-
-Output will be multiplied by this value.
-
-
-argument::add
-
-This value will be added to the output.
 
 
 Examples::
 
 code::
-
 // shifting a 100Hz tone by 1 Hz rising to 500Hz
 {FreqShift.ar(SinOsc.ar(100),XLine.kr(1,500,5),0,[0.5,0.5])}.play(s);
 
@@ -62,10 +47,12 @@ b = Buffer.read(s,"sounds/a11wlk01.wav");
 
 // shifting bandpassed noise
 {FreqShift.ar(BPF.ar(WhiteNoise.ar(1),1000,0.001),LFNoise0.kr(5.5,1000),0,[32,32])}.play(s);
+::
 
+subsection:: More Examples
+send a SynthDef, run the routine then send a different SynthDef
 
-More Examples (send a SynthDef, run the routine then send a different SynthDef)
-
+code::
 (// simple detune & pitchmod via FreqShift
 SynthDef("frqShift1",{arg frq,detune=1.5;
 	var e1,left,right;	
@@ -125,6 +112,7 @@ SynthDef("frqShift1",{arg frq, bufnum;
 	right = FreqShift.ar(snd,frq*3,0,EnvGen.ar(e1,1,doneAction:2));
 	Out.ar(0, [left,right] * 3);
 }).send(s);
+
 (// the routine
 r = Routine({
 	var table,pitch;
@@ -137,8 +125,5 @@ r = Routine({
 	};
 ).play;
 )
-
-)
-
 ::
 

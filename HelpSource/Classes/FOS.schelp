@@ -10,9 +10,7 @@ A standard first order filter section. Filter coefficients are given
 directly rather than calculated for you. Formula is equivalent to:
 
 formula::
-
 out(i) = (a0 * in(i)) + (a1 * in(i-1)) + (b1 * out(i-1))
-
 ::
 
 
@@ -21,33 +19,16 @@ classmethods::
 method::ar, kr
 
 argument::in
-
-FIXME: explain parameter in.
-
+Signal input.
 
 argument::a0
-
-FIXME: explain parameter a0.
-
+See formula above.
 
 argument::a1
-
-FIXME: explain parameter a1.
-
+See formula above.
 
 argument::b1
-
-FIXME: explain parameter b1.
-
-
-argument::mul
-
-Output will be multiplied by this value.
-
-
-argument::add
-
-This value will be added to the output.
+See formula above.
 
 
 Examples::
