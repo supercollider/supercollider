@@ -1,6 +1,6 @@
 class:: UGen
 summary:: Abstract superclass of all unit generators
-categories:: UGens>Base
+categories:: UGens
 related:: Overviews/Categories#UGens, Guides/Tour-of-UGens, Tutorials/UGens-and-Synths
 
 description::

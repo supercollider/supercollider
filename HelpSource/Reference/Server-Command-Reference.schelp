@@ -1,6 +1,6 @@
 title:: Server Command Reference
 summary:: SuperCollider Server Synth Engine Command Reference
-categories:: Server>Architecture
+categories:: Server>Architecture, OpenSoundControl
 
 The following is a list of all server commands and their arguments. 
 
