@@ -82,7 +82,7 @@ function SearchKeyPressed(e) {
     }
 }
 
-function matchDoc(doc,file,folder,txt) {
+function matchDoc(doc,file,folder,re) {
     //FIXME: also search methods? then we need to export the method list as JSON..
     
     var c = checkboxes2[folder.toLowerCase()];
@@ -91,11 +91,13 @@ function matchDoc(doc,file,folder,txt) {
     
     for(var i=0;i<fields.length;i++) {
         var f = fields[i];
-        if(checkboxes[i].checked && doc[f] && doc[f].toLowerCase().indexOf(txt)>=0)
+//        if(checkboxes[i].checked && doc[f] && doc[f].toLowerCase().indexOf(txt)>=0)
+        if(checkboxes[i].checked && doc[f] && re.test(doc[f]))
             return true;
     }
 
-    if(document.getElementById("check_filename").checked && file.toLowerCase().indexOf(txt)>=0)
+//    if(document.getElementById("check_filename").checked && file.toLowerCase().indexOf(txt)>=0)
+    if(document.getElementById("check_filename").checked && re.test(file))
         return true;
                
     return false;
@@ -107,13 +109,22 @@ function doSearch() {
 
     if(input!="") {
         var cats = {};
+
+        try {        
+            var re = RegExp(input,"i");
+        } catch(err) {
+            document.getElementById("search_count").innerHTML = "Invalid regexp";
+            document.getElementById("search_results").innerHTML = err;
+            return;
+        }
+        
         for(var k in docmap) {
             var v = docmap[k];
             var x = k.split("/");
             var folder = x[0];
             var file = x[x.length-1];
 
-            if(matchDoc(v,file,folder,input)) {
+            if(matchDoc(v,file,folder,re)) {
             
 //                var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
 //                for(var i=0;i<c2.length;i++) {
@@ -126,7 +137,6 @@ function doSearch() {
 
                 count++;
             }
-
         }
 
         for(k in cats) {
@@ -183,7 +193,7 @@ setInterval("delayed_update()",1000);
 </div>
 
 <div id="search_box">
-Search text: <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
+Search (regex): <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
 <div id="search_checks">
 Search in:
 <input type="checkbox" id="check_title" checked="true">Title</input>
