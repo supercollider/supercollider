@@ -493,7 +493,6 @@ ScDocParser {
             name = c.name.asString;
             link = "Classes" +/+ name;
             doc = docMap[link];
-            doc = if(doc.notNil, {doc.summary}, {""});
             cap = name.first.toUpper;
             if(cap!=old_cap, {
                 r.add((tag:'section', text:cap.asString, children:n=List.new));
@@ -502,7 +501,11 @@ ScDocParser {
             });
             n.add((tag:'##'));
             n.add((tag:'link', text: link));
-            n.add((tag:'prose', text: " - "++doc));
+            n.add((tag:'prose', text: " - "++ if(doc.notNil, {doc.summary}, {""})));
+            switch(doc.installed,
+                \extension, { n.add((tag:'soft', text:" (+)")) },
+                \missing, { n.add((tag:'strong', text:" (not installed)")) }
+            );
         };
         root = r;
     }
