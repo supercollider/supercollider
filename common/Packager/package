@@ -32,19 +32,17 @@ do
 done
 shift $(($OPTIND - 1))
 
-revision=`svnversion -n ../../`
-if ( echo $revision | grep "M" > /dev/null 2>&1 ); then
-    echo "WARNING: The working copy has uncommitted changes which will be included in the package."
+revision=`git rev-list HEAD -1 | sed -E 's/([[:alnum:]]{1,10}).*/\1/'`
+if [ "`git status -s -uno`" != "" ]; then
+    echo "WARNING: The working copy has uncommitted changes which will NOT be included in the package."
 fi
-
-if ( echo $revision | grep ":" > /dev/null 2>&1 ); then
-    echo "WARNING: The working copy has mixed revision numbers (some folders had 'svn update' ran more recently than others)."
-fi
-revision=`echo $revision | sed -e 's/^[^:]*://;s/[A-Za-z]//'`
 
 if [ $package_type == "source" ]; then
     mkdir SuperCollider-Source
-    svn export -q --force ../../ SuperCollider-Source
+    returndir=`pwd`
+    cd ../../
+    git archive $revision | tar -x --exclude ".gitignore" -C "$returndir/SuperCollider-Source"
+    cd $returndir
     
     if $include_optionals; then
         cp -Rp optional SuperCollider-Source/optional_installs
@@ -57,7 +55,7 @@ if [ $package_type == "source" ]; then
     fi
         
     # Here we build a list of (many) files that are useless on linux, so as to build a slimline source.tar.gz
-    find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -name "iPhone*" > LinuxExclusions.txt
+    find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -iname "iPhone*" > LinuxExclusions.txt
 	echo 'SuperCollider-Source/SuperColliderAU
 SuperCollider-Source/Psycollider
 SuperCollider-Source/README OS X
@@ -89,10 +87,14 @@ else
     about_version="$version (Revision $revision)"
     echo "About box version string:" $about_version
 
-    svn export -q --force ../../common/build SuperCollider
-    cp -R ../../common/build/SuperCollider.app ../../common/build/scsynth ../../common/build/sclang SuperCollider
-    cp ../../common/build/plugins/* SuperCollider/plugins/
-    cp ../../COPYING SuperCollider/COPYING
+    mkdir -p SuperCollider/plugins
+    returndir=`pwd`
+    cd ../../common/build
+    git archive $revision | tar -x -C "$returndir/SuperCollider"
+    cp -R SuperCollider.app scsynth sclang "$returndir/SuperCollider/"
+    cp plugins/* "$returndir/SuperCollider/plugins/"
+    cp ../../COPYING "$returndir/SuperCollider/"
+    cd $returndir
     find SuperCollider/help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleVersion -string "$about_version"
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleGetInfoString -string "$version"
