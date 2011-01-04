@@ -1,5 +1,35 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
+SuperCollider v3.4.2, released 2011-01
+======================================
+
+Bugfixes:
+---------
+
+* 2010-06-05 fix Latch first sample output bug: if trigger > 0 initially, latch should not output 0 - jh
+* 2010-09-04 fix firstArg behavior in BinaryOpUGen by a list-approved hack - jh
+* 2010-10-01 fix SConstruct so that libscsynth and libsclang get SONAME entries - ds
+* 2010-11-13 grainBuf: audio-rate trigger fix - tb
+* 2010-11-15 generate libsclang and libscsynth with .so.1 extension (and soname) on linux - ds
+* 2010-11-15 scons create symlinks from libX.so to libX.so.1 on linux, and install them - ds
+* 2010-11-16 added .htm files to SConstruct as approved help file extension - mb
+* 2010-11-28 compile fix for curl support - tb
+* 2010-11-28 prevent asBus from breaking when called with no numChannels - jh
+* 2010-12-03 grain ugens: demand ugen input fix - tb
+* 2010-12-05 SystemClock and TempoClock sched and schedAbs with inf time doesn't schedule the task in the first place. backported from master - tb
+* 2010-12-08 prString_FindRegexp fix: match char array was too short to hold null termination - jl
+* 2010-12-11 fix classbrowser colors bugs. backported from master - tb
+* 2010-12-12 fixes the bug where installed quark help files would not be detected - tb/ar
+* 2010-12-13 mark inherited methods in class browser by background colour. backported from master - tb
+* 2010-12-30 Pipe does not remove closed pipes from openFiles - jh
+* 2010-12-30 fix String:rotate - pb
+* 2011-01-02 unit generators: LagControl - fix initialization order - jh
+* 2011-01-02 unit generators: LagControl - dynamically allocate buffer for filter states - tb
+
+SuperCollider v3.4.1, released 2010-11
+======================================
+
+* 2010-07-12 remove accidental debug messages from SCView (on mac, posted a lot of info to Console, could affect performance) - ds
 * 2010-07-11 Collections should behave as reasonably as possible when empty - some fixes to better this - jr
 * 2010-07-11 SynthDef:add now sends to all running servers if no libname is given. SynthDescs are still added to the global SynthDescLib. If you want to handle multiple SynthDesc libs, you have to add the servers to each of them explicitly - jr
 * 2010-07-12 PanAz: added support for audio-rate pos arg - lfsaw
@@ -38,7 +68,19 @@ Bugfixes:
 * 2010-09-19 fix to JITGui, when numItems is not supplied - jr
 * 2010-10-10 remove more crufty NSLog debug messages - ds
 * 2010-10-13 fix SCUserView:receiveDrag to receive mouse co-ordinates; thanks Daniel van den Eijkel - ds
-
+* 2010-10-19 debian-style scvim-check-if-plugin-is-active, brought upstream - ds
+* 2010-10-19 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
+* 2010-10-19 partial fix for bugs item #2994009 - seems to fix LFPar but not LFCub. More work needed - ds
+* 2010-10-19 DC: fix multichannel expansion - tb
+* 2010-10-19 fix to demand rate unary op ugens, thanks james harkins - tb
+* 2010-10-19 Ugens: LinLin/LinExp fixes - tb
+* 2010-10-19 only /clearSched if RT - to fix tracker item #3033454 - tb
+* 2010-10-19 UGens: binary operators - fix scalar/signal division - tb
+* 2010-10-19 fix bug 2988525: SynthDef:writeDefFile appends path correctly - tb
+* 2010-10-19 ProcessOSCPacket: fix possible deadlock - tb
+* 2010-10-19 fix network address handling - albert graef
+* 2010-11-05 fix memory issues in regular expressions: correct memory management in prString_FindRegexp - tb
+* 2010-11-07 sclang: correct symlink handling - tb, ar
 
 SuperCollider v3.4, released 2010-07
 ====================================
