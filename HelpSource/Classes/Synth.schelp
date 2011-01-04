@@ -1,6 +1,6 @@
 class:: Synth
 summary:: Client-side representation of a synth node on the server
-categories:: Server>Nodes
+categories:: Server>Nodes, Server>Abstractions
 related:: Classes/Node, Classes/SynthDef
 
 description::

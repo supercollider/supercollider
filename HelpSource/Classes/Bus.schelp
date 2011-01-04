@@ -1,6 +1,6 @@
 class:: Bus
 summary:: Representation of a bus on the server
-categories:: Server
+categories:: Server>Abstractions
 related:: Classes/Server
 
 description::

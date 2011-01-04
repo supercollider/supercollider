@@ -1,6 +1,6 @@
 class:: Buffer
 summary:: Client-side representation of a buffer on a server
-categories:: Server
+categories:: Server>Abstractions
 
 description::
 

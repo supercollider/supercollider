@@ -1,6 +1,6 @@
 class:: Group
 summary:: Client-side representation of a group node on the server	
-categories:: Server>Nodes
+categories:: Server>Nodes, Server>Abstractions
 
 description::
 A Group is the client-side representation of a group node on the server, which is a collection of other nodes organized as a linked list. 

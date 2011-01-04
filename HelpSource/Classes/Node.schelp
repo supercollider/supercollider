@@ -1,7 +1,7 @@
 class:: Node
 summary:: Abstract superclass of Synth and Group
 related:: Reference/Server-Architecture, Classes/Synth, Classes/Group, Classes/RootNode
-categories:: Server>Nodes
+categories:: Server>Nodes, Server>Abstractions
 
 Description::
 This class is the abstract super class of Synth and Group, which represent synth and group nodes on the server.  Node objects are not made explicitly, but Synth and Group are subclasses, and inherit the methods  documented below.

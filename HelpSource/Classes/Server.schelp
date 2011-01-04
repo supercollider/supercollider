@@ -1,6 +1,6 @@
 class:: Server
 summary:: Object representing an sc-server application
-categories:: Server
+categories:: Server>Abstractions
 related:: Classes/ServerOptions
 
 description::
