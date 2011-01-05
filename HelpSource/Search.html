@@ -13,6 +13,8 @@ div#search_box {
     margin-right: auto;
 /*    width: 75%;*/
     text-align: center;
+    font-size: 9pt;
+    color: #555;
 }
 #search_input {
 /*    width: 50%;*/
@@ -44,13 +46,19 @@ div.mets {
     margin-bottom: 0.5em;
 }
 #search_checks {
-    font-size: 9pt;
-    color: #555;
     margin-left: auto;
     margin-right: auto;
-/*    border-top: 1px solid #ddd;*/
+    border-top: 1px solid #ddd;
     margin-top: 1em;
+    padding-top: 0.5em;
+    font-size: 9pt;
+    color: #555;
 }
+.label {
+    color: black;
+    font-size: 10pt;
+}
+
 </style>
 
 <script type="text/javascript">
@@ -78,7 +86,7 @@ window.onload = function() {
     }
     document.getElementById("check_filename").onchange = doSearch;
     document.getElementById("check_methods").onchange = doSearch;
-
+    document.getElementById("ignore_case").onchange = doSearch;
     document.getElementById("search_input").focus();
 }
 
@@ -148,7 +156,7 @@ function doSearch() {
         var cats = {};
 
         try {        
-            var re = RegExp(input,"i");
+            var re = RegExp(input,document.getElementById("ignore_case").checked?"i":"");
         } catch(err) {
             document.getElementById("search_count").innerHTML = "Invalid regexp";
             document.getElementById("search_results").innerHTML = err;
@@ -225,6 +233,10 @@ function doSearch() {
     document.getElementById("search_results").innerHTML = res;
 }
 
+function showReHelp() {
+    window.open("RegExHelp.html","regexhelp","width=450,height=300");
+}
+
 function delayed_update() {
     if(input != newinput) {
         input = newinput;
@@ -256,16 +268,17 @@ setInterval("delayed_update()",1000);
 </div>
 
 <div id="search_box">
-Search (regex): <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
+<span class="label">Search (<a href="javascript:showReHelp()">regex</a>):</span> <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
+<input type="checkbox" id="ignore_case" checked="true">Ignore case</input>
 <div id="search_checks">
-Search in:
+<span class="label">Search in:</span>
 <input type="checkbox" id="check_title" checked="true">Title/Class</input>
 <input type="checkbox" id="check_summary" checked="true">Summary</input>
 <input type="checkbox" id="check_categories" checked="true">Categories</input>
 <input type="checkbox" id="check_filename" checked="true">Filename</input>
 &nbsp;&larr; <a href="javascript:clear1()">clear all</a>
 <br>
-Include:
+<span class="label">Include:</span>
 <input type="checkbox" id="check_classes" checked="true">Classes</input>
 <input type="checkbox" id="check_reference" checked="true">Reference</input>
 <input type="checkbox" id="check_guides" checked="true">Guides</input>
