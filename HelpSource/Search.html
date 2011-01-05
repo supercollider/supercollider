@@ -52,19 +52,18 @@ var input = "";
 var newinput = "";
 var checkboxes;
 var checkboxes2;
-var fields;
+var fields = ["title","summary","categories"];
+var fields2 = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
     
 window.onload = function() {
     newinput = document.getElementById("search_input").value.toLowerCase();
 
-    fields = ["title","summary","categories"];
     checkboxes = [];
     for(var i=0;i<fields.length;i++) {
         checkboxes[i] = document.getElementById("check_"+fields[i]);
         checkboxes[i].onchange = doSearch;
     }
     
-    var fields2 = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
     checkboxes2 = {};
     for(var i=0;i<fields2.length;i++) {
         var k = fields2[i];
@@ -72,6 +71,29 @@ window.onload = function() {
         checkboxes2[k].onchange = doSearch;
     }
     document.getElementById("check_filename").onchange = doSearch;
+}
+
+function clear1() {
+    var x = false;
+
+    for(var i=0;i<checkboxes.length;i++)
+        x |= checkboxes[i].checked;
+    x |= document.getElementById("check_filename").checked;
+
+    
+    for(var i=0;i<checkboxes.length;i++)
+        checkboxes[i].checked = !x;
+    document.getElementById("check_filename").checked = !x;
+}
+
+function clear2() {
+    var x = false;
+
+    for(var k in checkboxes2)
+        x |= checkboxes2[k].checked;
+
+    for(var k in checkboxes2)
+        checkboxes2[k].checked = !x;
 }
 
 function SearchKeyPressed(e) {
@@ -196,10 +218,11 @@ setInterval("delayed_update()",1000);
 Search (regex): <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
 <div id="search_checks">
 Search in:
-<input type="checkbox" id="check_title" checked="true">Title</input>
+<input type="checkbox" id="check_title" checked="true">Title/Class</input>
 <input type="checkbox" id="check_summary" checked="true">Summary</input>
 <input type="checkbox" id="check_categories" checked="true">Categories</input>
 <input type="checkbox" id="check_filename" checked="true">Filename</input>
+&nbsp;&larr; <a href="javascript:clear1()">clear all</a>
 <br>
 Include:
 <input type="checkbox" id="check_classes" checked="true">Classes</input>
@@ -208,6 +231,7 @@ Include:
 <input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
 <input type="checkbox" id="check_overviews" checked="true">Overviews</input>
 <input type="checkbox" id="check_other" checked="true">Other</input>
+&nbsp;&larr; <a href="javascript:clear2()">clear all</a>
 </div>
 </div>
 
