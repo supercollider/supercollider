@@ -438,7 +438,7 @@ ScDocParser {
         r.add((tag:'summary', text:"All documents by categories"));
         r.add((tag:'related', text:"Overviews/Documents, Browse, Search"));
         
-        this.makeCategoryTree(catMap,r,toc:true);
+        this.makeCategoryTree(catMap,r,toc:false);
         
         // kind - category
 /*        kinds = Dictionary.new;
@@ -967,11 +967,59 @@ ScDocRenderer {
         ^mets;
     }
 
-    renderHTMLHeader {|f,name,type,folder|
+    renderTOC {|f|
+        var do_children = {|children|
+            children !? {
+                f.write("<ul class='toc'>");
+                children.do {|n|
+                    switch(n.tag,
+                        \description, {
+                            f.write("<li class='toc1'><a href='#description'>Description</a></li>\n");
+                            do_children.(n.children);
+                        },
+                        \examples, {
+                            f.write("<li class='toc1'><a href='#examples'>Examples</a></li>\n");
+                            do_children.(n.children);
+                        },
+                        \classmethods, {
+                            f.write("<li class='toc1'><a href='#classmethods'>Class methods</a></li>\n");
+                            do_children.(n.children);
+                        },
+                        \instancemethods, {
+                            f.write("<li class='toc1'><a href='#instancemethods'>Instance methods</a></li>\n");
+                            do_children.(n.children);
+                        },
+                        \method, {
+                            f.write("<li class='toc3'>");
+                            f.write(n.text.findRegexp("[^ ,]+").flop[1].collect {|m|
+                                "<a href='#"++m++"'>"++m++"</a>";
+                            }.join(", "));
+                            f.write("</li>\n");
+                        },
+                        \section, {
+                            f.write("<li class='toc1'><a href='#"++ScDocRenderer.simplifyName(n.text)++"'>"++n.text++"</a></li>\n");
+                            do_children.(n.children);
+                        },
+                        \subsection, {
+                            f.write("<li class='toc2'><a href='#"++ScDocRenderer.simplifyName(n.text)++"'>"++n.text++"</a></li>\n");
+                            do_children.(n.children);
+                        }
+                    );
+                };
+                f.write("</ul>");
+            }
+        };
+        f.write("<div id='toctitle'>Table of contents <a id='toc_toggle' href='#' onclick='showTOC(this);return false'></a></div>");
+        f.write("<div id='toc'>\n");
+        do_children.(parser.root);
+        f.write("</div>");
+    }
+
+    renderHTMLHeader {|f,name,type,folder,toc=true|
         var x, cats, m, z;
-        var style = baseDir +/+ "scdoc.css";
-        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++style++"' type='text/css' />");
+        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++baseDir++"/scdoc.css' type='text/css' />");
         f.write("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />");
+        f.write("<script src='" ++ baseDir ++ "/scdoc.js' type='text/javascript'></script>");
         f.write("</head><body>");
         
         f.write(
@@ -1058,6 +1106,8 @@ ScDocRenderer {
         });
 
         f.write("</div>");
+        
+        if(toc, {this.renderTOC(f)});
     }
 
     addUndocumentedMethods {|f,parentTag,docmets|
@@ -1082,7 +1132,7 @@ ScDocRenderer {
         };
     }
 
-    renderHTML {|filename, folder="."|
+    renderHTML {|filename, folder=".", toc=true|
         var f,x,name,mets;
         
         ScDoc.postProgress("Rendering "++filename);
@@ -1104,7 +1154,7 @@ ScDocRenderer {
             name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
 
-            this.renderHTMLHeader(f,name,\class,folder);
+            this.renderHTMLHeader(f,name,\class,folder,toc);
 
             x = parser.findNode(\description);
             this.renderHTMLSubTree(f,x);
@@ -1131,7 +1181,7 @@ ScDocRenderer {
         },{
             x = parser.findNode(\title);
             name = x.text.stripWhiteSpace;
-            this.renderHTMLHeader(f,name,\other,folder);
+            this.renderHTMLHeader(f,name,\other,folder,toc);
             this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
         });
 
@@ -1202,15 +1252,15 @@ ScDoc {
         
         ScDoc.postProgress("Generating ClassTree...");
         p.overviewClassTree;
-        r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
+        r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews",false);
 
         ScDoc.postProgress("Generating Class overview...");
         p.overviewAllClasses(docMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews");
+        r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews",false);
 
         ScDoc.postProgress("Generating Methods overview...");
         mets = p.overviewAllMethods(docMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews");
+        r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews",false);
 
         ScDoc.postProgress("Writing Methods JSON index...");
         f = File.open(ScDoc.helpTargetDir +/+ "methods.js","w");
@@ -1229,11 +1279,11 @@ ScDoc {
 
         ScDoc.postProgress("Generating Documents overview...");
         p.overviewAllDocuments(docMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews");
+        r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews", false);
 
         ScDoc.postProgress("Generating Categories overview...");
         p.overviewCategories(categoryMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
+        r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews", true);
 
 //        ScDoc.postProgress("Generating Server overview...");
 //        p.overviewServer(categoryMap);

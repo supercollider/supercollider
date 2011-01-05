@@ -86,7 +86,6 @@ margin-right: 1ex;
 }
 
 .subheader {
-    margin-bottom: 2em;
     text-align: right;
     font-size: 9pt;
     color: #333;
@@ -250,7 +249,7 @@ pre.formula {
 .supmethod {
     font-size: 9pt;
     color: #444;
-    background: #efe;
+    background: #ffe;
     padding-left: 0.2em;
 }
 
@@ -311,6 +310,61 @@ td p {
 }
 .warninglabel {
     color: red;
+}
+
+#toc {
+    margin-bottom: 2em;
+    padding: 0.5em;
+    background: #eee;
+    border: 1px solid #ccc;
+/*    border-top: none;*/
+    line-height: 130%;
+}
+#toctitle {
+    font-weight: bold;
+    color: #666;
+    margin-top: 1em;
+/*    border: 1px solid #ccc;
+    background: #eee;
+    padding-left: 0.5em;*/
+    padding-bottom: 0.2em;
+}
+#toctitle a {
+    font-size: 9pt;
+    font-weight: normal;
+}
+ul.toc {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+ul.toc ul {
+    margin-left: 2em;
+}
+ul.toc li {
+    margin: 0;
+    padding: 0;
+}
+.toc1 {
+    font-weight: bold;
+/*    line-height: 2em;*/
+/*    border-bottom: 1px solid #aaa;*/
+/*    border-top: 4px solid transparent;*/
+}
+.toc1 a {
+    color: black;
+}
+.toc2 {
+}
+.toc2 a {
+    color: black;
+}
+.toc3 {
+    font-family: Andale Mono, monospace;
+/*    font-size: 9.5pt;*/
+}
+.toc3 a {
+    color: #333;
 }
 
 ul.tree, ul.tree ul {
