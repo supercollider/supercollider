@@ -213,9 +213,8 @@ pre.formula {
     margin-bottom: 1em;
 }
 
-.methodname {
-     border: none;
-    background: #e7e7f0;
+
+.methodname, .imethodname, .cmethodname {
 /*    border-bottom: 1px solid #bbb;*/
     font-family: Andale Mono, monospace;
 /*    font-size: 9.5pt;*/
@@ -226,6 +225,14 @@ pre.formula {
 /*    padding-left: 0.2em;*/
     padding: 0.3em;
     border: 1px solid #ccc;
+}
+
+.imethodname {
+    background: #e7f7e0;
+}
+
+.methodname, .cmethodname {
+    background: #e7e7f0;
 }
 
 .method {
