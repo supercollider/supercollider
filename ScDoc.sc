@@ -613,7 +613,7 @@ ScDocParser {
         root = r;
     }
 
-    overviewServer {|catMap|
+/*    overviewServer {|catMap|
         var r = List.new;
         r.add((tag:'title', text:"Server stuff"));
         r.add((tag:'summary', text:"Overview of server related stuff"));
@@ -621,7 +621,7 @@ ScDocParser {
         this.makeCategoryTree(catMap,r,"^Server$"); 
         this.makeCategoryTree(catMap,r,"^UGens$");
         root = r;
-    }
+    }*/
 }
 
 ScDocRenderer {
@@ -1234,9 +1234,9 @@ ScDoc {
         p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews");
 
-        ScDoc.postProgress("Generating Server overview...");
-        p.overviewServer(categoryMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
+//        ScDoc.postProgress("Generating Server overview...");
+//        p.overviewServer(categoryMap);
+//        r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
 
     *makeMethodList {|c,n,tag|

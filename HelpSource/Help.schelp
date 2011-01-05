@@ -9,7 +9,7 @@ Please help out and convert old helpfiles! See link::Guides/WritingHelp:: for a 
 
 SECTION::Search and browse
 definitionlist::
-## link::Search:: || Search all documents
+## link::Search:: || Search all documents and methods
 ## link::Browse:: || Browse all documents by categories
 ::
 
@@ -30,7 +30,6 @@ definitionlist::
 ## link::Overviews/Classes:: || Alphabetical index of all classes
 ## link::Overviews/ClassTree:: || All classes by inheritance tree
 ## link::Overviews/Methods:: || Alphabetical index of all methods
-## link::Overviews/Server:: || UGens and Server related documents
 ::
 
 SECTION::Licensing
