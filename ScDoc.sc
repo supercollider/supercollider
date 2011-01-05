@@ -568,6 +568,7 @@ ScDocParser {
         };
 
         root = r;
+        ^t;
     }
 
     overviewAllDocuments {|docMap|
@@ -1140,7 +1141,7 @@ ScDocRenderer {
     }
 
     *makeSearchPage {
-        ScDoc.postProgress("Creating search and browse pages");
+        ScDoc.postProgress("Writing Document JSON index...");
         ScDoc.docMapToJSON(ScDoc.helpTargetDir +/+ "docmap.js");
         //FIXME: also create html header etc.. and include HelpSource/Search.inc
     }
@@ -1196,6 +1197,8 @@ ScDoc {
     }
 
     *makeOverviews {
+        var mets, f, n;
+        
         ScDoc.postProgress("Generating ClassTree...");
         p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews");
@@ -1205,8 +1208,23 @@ ScDoc {
         r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews");
 
         ScDoc.postProgress("Generating Methods overview...");
-        p.overviewAllMethods(docMap);
+        mets = p.overviewAllMethods(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews");
+
+        ScDoc.postProgress("Writing Methods JSON index...");
+        f = File.open(ScDoc.helpTargetDir +/+ "methods.js","w");
+        f.write("methods = {\n");
+        mets.pairsDo {|k,v|
+            f.write("'"++k++"':[");
+            v.do {|c,i|
+                n = c[0];
+                if(n.find("Meta_")==0, {n = n.drop(5)});
+                f.write("'"++n++"',");
+            };
+            f.write("],\n");
+        };
+        f.write("\n};");
+        f.close;
 
         ScDoc.postProgress("Generating Documents overview...");
         p.overviewAllDocuments(docMap);

@@ -4,6 +4,7 @@
     <link rel='stylesheet' href='./scdoc.css' type='text/css' />
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
     <script src="docmap.js" type="text/javascript"></script>
+    <script src="methods.js" type="text/javascript"></script>
 <style>
 div#search_box {
     margin-top: 1em;
@@ -32,10 +33,15 @@ div.result_category {
     color: #555;
     font-size: 9.5pt;
     margin-top: 1em;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ccc;
 }
 div.result_doc {
     margin-left: 2em;
+}
+div.mets {
+    padding-left: 2em;
+    border-top: 1px solid #eee;
+    margin-bottom: 0.5em;
 }
 #search_checks {
     font-size: 9pt;
@@ -71,6 +77,7 @@ window.onload = function() {
         checkboxes2[k].onchange = doSearch;
     }
     document.getElementById("check_filename").onchange = doSearch;
+    document.getElementById("check_methods").onchange = doSearch;
 }
 
 function clear1() {
@@ -84,6 +91,8 @@ function clear1() {
     for(var i=0;i<checkboxes.length;i++)
         checkboxes[i].checked = !x;
     document.getElementById("check_filename").checked = !x;
+    
+    doSearch();
 }
 
 function clear2() {
@@ -91,9 +100,13 @@ function clear2() {
 
     for(var k in checkboxes2)
         x |= checkboxes2[k].checked;
+    x |= document.getElementById("check_methods").checked;
 
     for(var k in checkboxes2)
         checkboxes2[k].checked = !x;
+    document.getElementById("check_methods").checked = !x;
+
+    doSearch();
 }
 
 function SearchKeyPressed(e) {
@@ -179,6 +192,31 @@ function doSearch() {
             }
         }
 
+        if(document.getElementById("check_methods").checked) {
+            var mets = {};
+            var found = false;
+            for(k in methods) {
+                if(re.test(k)) {
+                    mets[k] = methods[k];
+                    found = true;
+                }
+            }
+
+            if(found) {
+                res += "<div class='result_category'>[ Methods ]</div>";
+                for(k in mets) {
+                    res += "<div class='result_item'>";
+                    res += "<div class='result_doc'>"+k+"<div class='mets'>";
+                    var x = mets[k];
+                    for(var i=0;i<x.length;i++) {
+                        var m = x[i];
+                        if(i!=0) res += ", ";
+                        res += "<a href='Classes/"+m+".html#"+k+"'>"+m+"</a>";
+                    }
+                    res += "</div></div></div>";
+                }
+            }
+        }
     }
     document.getElementById("search_count").innerHTML = count+" results";
     document.getElementById("search_results").innerHTML = res;
@@ -231,6 +269,7 @@ Include:
 <input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
 <input type="checkbox" id="check_overviews" checked="true">Overviews</input>
 <input type="checkbox" id="check_other" checked="true">Other</input>
+<input type="checkbox" id="check_methods" checked="true">Methods</input>
 &nbsp;&larr; <a href="javascript:clear2()">clear all</a>
 </div>
 </div>
