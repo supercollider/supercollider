@@ -78,6 +78,8 @@ window.onload = function() {
     }
     document.getElementById("check_filename").onchange = doSearch;
     document.getElementById("check_methods").onchange = doSearch;
+
+    document.getElementById("search_input").focus();
 }
 
 function clear1() {
@@ -199,11 +201,12 @@ function doSearch() {
                 if(re.test(k)) {
                     mets[k] = methods[k];
                     found = true;
+                    count++;
                 }
             }
 
             if(found) {
-                res += "<div class='result_category'>[ Methods ]</div>";
+                res += "<div class='result_category'>Methods</div>";
                 for(k in mets) {
                     res += "<div class='result_item'>";
                     res += "<div class='result_doc'>"+k+"<div class='mets'>";
