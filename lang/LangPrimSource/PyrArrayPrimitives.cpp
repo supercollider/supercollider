@@ -1653,21 +1653,21 @@ int prArrayExtendWrap(struct VMGlobals *g, int numArgsPushed)
 	obj1 = slotRawObject(a);
 	size = slotRawInt(b);
 	if(obj1->size > 0) {
-	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
-	    obj2->size = size;
-	    slots = obj2->slots;
-	    // copy first part of list
-	    memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
-	    if (size > obj1->size) {
-		    // copy second part
-		    m = obj1->size;
-		    for (i=0,j=m; j<size; ++i,++j) {
-			    slotCopy(&slots[j],&slots[i]);
-		    }
+		obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
+		obj2->size = size;
+		slots = obj2->slots;
+		// copy first part of list
+		memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+		if (size > obj1->size) {
+			// copy second part
+			m = obj1->size;
+			for (i=0,j=m; j<size; ++i,++j) {
+				slotCopy(&slots[j],&slots[i]);
+			}
 		}
-	    } else {
-	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
-	    }
+	} else {
+		obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
+	}
 	SetRaw(a, obj2);
 	return errNone;
 }
@@ -1685,21 +1685,21 @@ int prArrayExtendFold(struct VMGlobals *g, int numArgsPushed)
 	obj1 = slotRawObject(a);
 	size = slotRawInt(b);
 	if(obj1->size > 0) {
-	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
-	    obj2->size = size;
-	    slots = obj2->slots;
-	    // copy first part of list
-	    memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
-	    if (size > obj1->size) {
-		    // copy second part
-		    m = obj1->size;
-		    for (i=0,j=m; j<size; ++i,++j) {
-			    slotCopy(&slots[j],&slots[sc_fold(j,0,m-1)]);
-		    }
+		obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
+		obj2->size = size;
+		slots = obj2->slots;
+		// copy first part of list
+		memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+		if (size > obj1->size) {
+			// copy second part
+			m = obj1->size;
+			for (i=0,j=m; j<size; ++i,++j) {
+				slotCopy(&slots[j], &slots[sc_fold(j,0,m-1)]);
+			}
 		}
-	    } else {
-	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
-	    }
+	} else {
+		obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
+	}
 	SetRaw(a, obj2);
 	return errNone;
 }
@@ -1717,22 +1717,22 @@ int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
 	obj1 = slotRawObject(a);
 	size = slotRawInt(b);
 	if(obj1->size > 0) {
-	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
-	    obj2->size = size;
-	    slots = obj2->slots;
-	    // copy first part of list
-	    memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
-	    if (size > obj1->size) {
-		    // copy second part
-		    m = obj1->size;
-		    slotCopy(&last,&slots[m-1]);
-		    for (i=0,j=m; j<size; ++i,++j) {
-			    slotCopy(&slots[j],&last);
-		    }
+		obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, false, true);
+		obj2->size = size;
+		slots = obj2->slots;
+		// copy first part of list
+		memcpy(slots, obj1->slots, sc_min(size, obj1->size) * sizeof(PyrSlot));
+		if (size > obj1->size) {
+			// copy second part
+			m = obj1->size;
+			slotCopy(&last,&slots[m-1]);
+			for (i=0,j=m; j<size; ++i,++j) {
+				slotCopy(&slots[j],&last);
+			}
 		}
-	    } else {
-	    obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
-	    }
+	} else {
+		obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size, true, true);
+	}
 	SetRaw(a, obj2);
 	return errNone;
 }
@@ -1790,19 +1790,20 @@ int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 
 	obj2 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, newSize, false, true);
 	slots2 = obj2->slots;
+	SetObject(b, obj2); // store reference on stack, so both source and destination objects can be reached by the gc
 
 	for (int i=0; i < newSize; ++i) {
 		int k = i;
-		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, tupSize, false, false);
+		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, tupSize, false, true);
 		slots3 = obj3->slots;
 		for (int j=tupSize-1; j >= 0; --j) {
 			if (isKindOfSlot(slots1+j, class_array)) {
 				PyrObject *obj4 = slotRawObject(&slots1[j]);
-				slotCopy(&slots3[j],&obj4->slots[k % obj4->size]);
+				slotCopy(&slots3[j], &obj4->slots[k % obj4->size]);
 				g->gc->GCWrite(obj3, obj4);
 				k /= obj4->size;
 			} else {
-				slotCopy(&slots3[j],&slots1[j]);
+				slotCopy(&slots3[j], &slots1[j]);
 			}
 		}
 		obj3->size = tupSize;
@@ -2331,12 +2332,14 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	obj2->size = numLists;
 	slots2 = obj2->slots;
 
+	SetObject(b, obj2); // store reference on stack, so both source and destination objects can be reached by the gc
+
 	size3 = size / numLists;
 	size3 = size3 - (size3 % clump);
 	if(size3 < 1) return errFailed;
 
 	for(i=0; i<numLists; ++i) {
-		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size3, false, false);
+		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size3, false, true);
 		obj3->size = size3;
 		slots3 = obj3->slots;
 		for(j=0; j<size3; j+=clump) {
@@ -2348,6 +2351,7 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	SetRaw(a, obj2);
+
 	return errNone;
 }
 
