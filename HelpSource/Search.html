@@ -25,13 +25,25 @@ div#search_results {
 /*    padding-top: 1em;*/
 }
 div#search_count {
-    border-bottom: 2px solid #aaa;
+/*    border-bottom: 1px solid #aaa;*/
     color: #333;
 }
+
+div#prog_bar {
+    background: #aaa;
+    height: 3px;
+    width: 100%;
+}
+
 div.result_item {
     margin-bottom: 0.2em;
     margin-left: 2em;
 }
+.result_met {
+    font-family: Andale Mono, monospace;
+    font-size: 9.5pt;
+}
+
 div.result_category {
     color: #555;
     font-size: 9.5pt;
@@ -90,7 +102,10 @@ window.onload = function() {
     document.getElementById("ignore_case").onchange = doSearch;
     document.getElementById("search_input").focus();
 
-    setInterval(delayed_update,1500);
+    node = document.getElementById("search_results");
+    prog = document.getElementById("prog_bar");
+    
+    setInterval(delayed_update,250);
 }
 
 function clear1() {
@@ -149,118 +164,141 @@ function matchDoc(doc,file,folder,re) {
     return false;
 }
 
-/*
-TODO: search in "background":
-
-hmm... it seems that these actual search loops are quite fast (under 100ms) even for huge results,
-even the rendering to result string is fast.
-the most time was spent setting innerHTML. I've now changed to DOM model instead of creating a big string..
-
-this means that we can split up this work on interval timer instead.
-But, then we need foundMets and foundCats to also be flat arrays.. or use co-routines, but they are not supported by all browsers..
-
-old notes:
-
-var index = 0;
-var indexmax = 0;
-var searchState = 0;
-var foundCount = 0;
-var foundCats, foundMets;
+var cindex;
+var cindex2;
+var mindex;
+var inProgress = false;
+var foundMets;
+var mets;
+var cats;
 var re;
+var node;
+var prog;
 
-doSearch()
-    index=0
-    indexmax = docmap.length;
-    foundCount = 0;
-    foundCats = {};
-    foundMets = {};
-    if(input!="")
-        searchState = 1;
-    else
-        searchState = -1;
+function updProgress() {
+    var x = ((cindex+mindex)/(cats.length+mets.length))*100.0;
+    prog.style.width = x+"%";
+}
 
-function runSearch() {
+function doPrint() {
     var now = Date.now();
-    
-    if(searchState==1) { //docs
-        while(Date.now()-now < 100) {
-            var v = docmap[index];
-            var x = v.path.split("/");
-            var folder = x[0];
-            var file = x[x.length-1];
-
-            if(matchDoc(v,file,folder,re)) {
-                var c = v.categories;
-                if(!foundCats[c])
-                    foundCats[c]=[];
-                foundCats[c].push(v);
-
-                foundCount++;
-            }
-
-            if(index++ >= indexmax) {
-                if(document.getElementById("check_methods").checked) {
-                    searchState = 2;
-                    index = 0;
-                    indexmax = methods.length;
-                    foundMets = false;
-                } else {
-                    searchState = -1;
-                }
-                break;
-            }
+    inProgress = false;
+    for(; cindex<cats.length; cindex++) {
+        var k = cats[cindex][0];
+        var c = cats[cindex][1];
+        if(cindex2==0) {
+            var div = document.createElement("div");
+            div.className="result_category";
+            div.innerHTML = k;
+            node.appendChild(div);
         }
-                
-    if(searchState==2) { //methods
-        while(Date.now()-now < 100) {
-            var m = methods[index];
-            if(re.test(m[0])) {
-                foundMets[m[0]] = m[1];
-                foundMets = true;
-                foundCount++;
+        for(;cindex2<c.length;cindex2++) {
+            var v = c[cindex2];
+            var x = v.path.split("/");
+            var div = document.createElement("div");
+            div.className = "result_item";
+            
+            var n = document.createElement("a");
+            n.setAttribute("href",v.path+".html");
+            n.innerHTML = v.title;
+            div.appendChild(n);
+            div.appendChild(document.createTextNode(" - "+v.summary+" "));
+
+            n = document.createElement("span");
+            n.className = "soft";
+            var res = "["+x[0];
+            if(v.installed=="extension")
+                res += " +";
+            else if(v.installed=="missing")
+                res += " - missing!";
+            n.innerHTML = res+"]";
+            div.appendChild(n);
+            node.appendChild(div);
+
+            if(Date.now()-now > 200) {
+                inProgress = true;
+    //            console.log("yield at cindex "+cindex);
+                updProgress();
+                return;
             }
-            if(index++ >= indexmax) {
-                searchState = -1;
-                break;
+
+        }
+        cindex2=0;
+    }
+
+    if(foundMets) {
+        if(mindex==0) {
+            var div = document.createElement("div");
+            div.className="result_category";
+            div.innerHTML = "Methods";
+            node.appendChild(div);
+        }
+
+        for(;mindex<mets.length; mindex++) {
+            var k = mets[mindex][0];
+            var div = document.createElement("div");
+            div.className = "result_item";
+            var x = document.createElement("span");
+            x.innerHTML = k;
+            x.className = "result_met";
+            div.appendChild(x);
+            
+            var div2 = document.createElement("div");
+            div2.className = "mets";
+            div.appendChild(div2);
+            
+            var x = mets[mindex][1];
+            for(var i=0;i<x.length;i++) {
+                var m = x[i];
+                if(i!=0) div2.appendChild(document.createTextNode(", "));
+                var a = document.createElement("a");
+                a.setAttribute("href","Classes/"+m+".html#"+k);
+                a.innerHTML = m;
+                div2.appendChild(a);
+            }
+
+            node.appendChild(div);
+
+            if(Date.now()-now > 200) {
+                inProgress = true;
+//                console.log("yield at mindex "+mindex);
+                updProgress();
+                return;
             }
         }
     }
+    updProgress();
 }
-
-updateTimer()
-    if input!=newinput, doSearch()
-    
-    if searchStage > 0: //searching
-        runSearch()
-        
-    if searchState < 0: //done
-        searchState = 0
-        printResults()
-*/
 
 function doSearch() {
     var res = "";
     var count = 0;
 
-    var node = document.getElementById("search_results");
     while(node.hasChildNodes())
         node.removeChild(node.lastChild);
-
+        
+    cindex = 0;
+    cindex2 = 0;
+    mindex = 0;
+    foundMets = false;
+    cats = [];
+    mets = [];
+    prog.style.width = "100%";
+        
     if(input!="") {
 
         // setup regexp
         try {        
-            var re = RegExp(input,document.getElementById("ignore_case").checked?"i":"");
+            re = RegExp(input,document.getElementById("ignore_case").checked?"i":"");
         } catch(err) {
             document.getElementById("search_count").innerHTML = "Invalid regexp";
             document.getElementById("search_results").innerHTML = err;
             return;
         }
-
-        // search docmap (fast)
-//        console.log("search docmap...");
-//        now = Date.now();
-        var cats = {};        
+        prog.style.width = 0;
+        
+        // search docmap
+        cats = {};        
         for(var k in docmap) {
             var v = docmap[k];
             var x = v.path.split("/");
@@ -276,124 +314,25 @@ function doSearch() {
                 count++;
             }
         }
-//        console.log((now-(now=Date.now()))+" ms");
+        var tmp = []; for(var k in cats) tmp.push([k,cats[k]]);
+        cats = tmp;
 
-        // search methods (fast)
-//        console.log("search methods");
-        var foundMets = false;
+        // search methods
         if(document.getElementById("check_methods").checked) {
-            var mets = {};
-            for(k in methods) {
-                var m = methods[k];
+            for(i in methods) {
+                var m = methods[i];
                 if(re.test(m[0])) {
-                    mets[m[0]] = m[1];
+                    mets.push(m);
                     foundMets = true;
                     count++;
                 }
             }
         }
-//        console.log((now-(now=Date.now()))+" ms");
 
-        // print docmap results (slow)
-//        console.log("print docmap results");
-/*        for(k in cats) {
-            var c = cats[k];
-            res += "<div class='result_category'>"+k+"</div>";
-            for(var i=0;i<c.length;i++) {
-                var v = c[i];
-                var x = v.path.split("/");
-                res += "<div class='result_item'>";
-                res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> - "+v.summary+" <span class='soft'>["+x[0];
-                
-                if(v.installed=="extension")
-                    res += " +";
-                else if(v.installed=="missing")
-                    res += " - missing!";
-
-                res += "]</span></div></div>";
-            }
-        }*/
-        for(k in cats) {
-            var c = cats[k];
-            var div = document.createElement("div");
-            div.className="result_category";
-            div.innerHTML = k;
-            node.appendChild(div);
-            for(var i=0;i<c.length;i++) {
-                var v = c[i];
-                var x = v.path.split("/");
-                div = document.createElement("div");
-                div.className = "result_item";
-                
-                var n = document.createElement("a");
-                n.setAttribute("href",v.path+".html");
-                n.innerHTML = v.title;
-                div.appendChild(n);
-                div.appendChild(document.createTextNode(" - "+v.summary+" "));
-
-                n = document.createElement("span");
-                n.className = "soft";
-                var res = "["+x[0];
-                if(v.installed=="extension")
-                    res += " +";
-                else if(v.installed=="missing")
-                    res += " - missing!";
-                n.innerHTML = res+"]";
-                div.appendChild(n);
-                node.appendChild(div);
-            }
-        }
-//        console.log((now-(now=Date.now()))+" ms");
-
-        // print methods results (slow)
-//        console.log("print methods results");
-/*        if(foundMets) {
-            res += "<div class='result_category'>Methods</div>";
-            for(k in mets) {
-                res += "<div class='result_item'>";
-                res += "<div class='result_doc'>"+k+"<div class='mets'>";
-                var x = mets[k];
-                for(var i=0;i<x.length;i++) {
-                    var m = x[i];
-                    if(i!=0) res += ", ";
-                    res += "<a href='Classes/"+m+".html#"+k+"'>"+m+"</a>";
-                }
-                res += "</div></div></div>";
-            }
-        }*/
-        if(foundMets) {
-            var div = document.createElement("div");
-            div.className="result_category";
-            div.innerHTML = "Methods";
-            node.appendChild(div);
-
-            for(k in mets) {
-                var div = document.createElement("div");
-                div.className = "result_item";
-                div.appendChild(document.createTextNode(k));
-                
-                var div2 = document.createElement("div");
-                div2.className = "mets";
-                div.appendChild(div2);
-                
-                var x = mets[k];
-                for(var i=0;i<x.length;i++) {
-                    var m = x[i];
-                    if(i!=0) div2.appendChild(document.createTextNode(", "));
-                    var a = document.createElement("a");
-                    a.setAttribute("href","Classes/"+m+".html#"+k);
-                    a.innerHTML = m;
-                    div2.appendChild(a);
-                }
-
-                node.appendChild(div);
-            }
-        }
-//        console.log((now-(now=Date.now()))+" ms");
+        doPrint();
     }
 
     document.getElementById("search_count").innerHTML = count+" results";
-//    document.getElementById("search_results").innerHTML = res;
 }
 
 function showReHelp() {
@@ -404,6 +343,8 @@ function delayed_update() {
     if(input != newinput) {
         input = newinput;
         doSearch();
+    } else if(inProgress) {
+        doPrint();
     }
 }
 </script>
@@ -452,6 +393,7 @@ function delayed_update() {
 </div>
 
 <div id="search_count">0 results</div>
+<div id="prog_bar">&nbsp;</div>
 <div id="search_results"></div>
 
 </body>
