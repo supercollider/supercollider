@@ -312,6 +312,14 @@ td p {
     color: red;
 }
 
+.version {
+    font-size: 9pt;
+    border-top: 1px solid #bbb;
+    color: #999;
+    text-align: right;
+    margin-top: 2em;
+}
+
 #toc {
     margin-bottom: 2em;
     padding: 0.5em;

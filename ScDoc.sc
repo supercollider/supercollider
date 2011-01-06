@@ -1187,6 +1187,7 @@ ScDocRenderer {
 
         this.renderFootNotes(f);
 
+        f.write("<div class='version'>SuperCollider version "++Main.version++"</div>");
         f.write("</body></html>");
         f.close;
     }
