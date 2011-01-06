@@ -1782,7 +1782,7 @@ int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 	int newSize = 1;
 	int tupSize = obj1->size;
 	for (int i=0; i < tupSize; ++i) {
-		if (isKindOfSlot(slots1+i, class_arrayed_collection)) {
+		if (isKindOfSlot(slots1+i, class_array)) {
 			newSize *= slotRawObject(&slots1[i])->size;
 		}
 	}
@@ -1793,13 +1793,13 @@ int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 
 	for (int i=0; i < newSize; ++i) {
 		int k = i;
-		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, tupSize, false, true);
+		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, tupSize, false, false);
 		slots3 = obj3->slots;
 		for (int j=tupSize-1; j >= 0; --j) {
-			if (isKindOfSlot(slots1+j, class_arrayed_collection)) {
+			if (isKindOfSlot(slots1+j, class_array)) {
 				PyrObject *obj4 = slotRawObject(&slots1[j]);
 				slotCopy(&slots3[j],&obj4->slots[k % obj4->size]);
-				g->gc->GCWrite(obj3, obj3);
+				g->gc->GCWrite(obj3, obj4);
 				k /= obj4->size;
 			} else {
 				slotCopy(&slots3[j],&slots1[j]);
@@ -2336,7 +2336,7 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	if(size3 < 1) return errFailed;
 
 	for(i=0; i<numLists; ++i) {
-		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size3, false, true);
+		obj3 = (PyrObject*)instantiateObject(g->gc, obj1->classptr, size3, false, false);
 		obj3->size = size3;
 		slots3 = obj3->slots;
 		for(j=0; j<size3; j+=clump) {
