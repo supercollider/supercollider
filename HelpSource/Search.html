@@ -88,6 +88,8 @@ window.onload = function() {
     document.getElementById("check_methods").onchange = doSearch;
     document.getElementById("ignore_case").onchange = doSearch;
     document.getElementById("search_input").focus();
+
+    setInterval(delayed_update,1500);
 }
 
 function clear1() {
@@ -128,8 +130,6 @@ function SearchKeyPressed(e) {
 }
 
 function matchDoc(doc,file,folder,re) {
-    //FIXME: also search methods? then we need to export the method list as JSON..
-    
     var c = checkboxes2[folder.toLowerCase()];
     if(c && !c.checked)
         return false;
@@ -148,6 +148,49 @@ function matchDoc(doc,file,folder,re) {
     return false;
 }
 
+/*
+TODO:
+
+search in "background":
+
+var index = 0;
+var searchState = 0;
+var foundCount = 0;
+var foundCats, foundMets;
+var re;
+
+doSearch()
+    index=0
+    foundCount = 0;
+    foundCats = {};
+    foundMets = {};
+    searchState = 1;
+
+runSearch()
+    now = Date.now
+    
+    if searchState==1: //docs
+        search docs from index until Date.now-now>100
+            if index++ > max:
+                searchState=2
+                index = 0
+                
+    if searchState==2: //methods
+        search mets from index until Date.now-now>100
+            if index++ > max:
+                searchState=-1 //done
+
+updateTimer()
+    if input!=newinput, doSearch()
+    
+    if searchStage > 0: //searching
+        runSearch()
+        
+    if searchState < 0: //done
+        searchState = 0
+        printResults()
+*/
+
 function doSearch() {
     var res = "";
     var count = 0;
@@ -165,20 +208,15 @@ function doSearch() {
         
         for(var k in docmap) {
             var v = docmap[k];
-            var x = k.split("/");
+            var x = v.path.split("/");
             var folder = x[0];
             var file = x[x.length-1];
 
             if(matchDoc(v,file,folder,re)) {
-            
-//                var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
-//                for(var i=0;i<c2.length;i++) {
-//                    var c = c2[i];
-                    var c = v.categories;
-                    if(!cats[c])
-                        cats[c]=[];
-                    cats[c].push(v);
-//                }
+                var c = v.categories;
+                if(!cats[c])
+                    cats[c]=[];
+                cats[c].push(v);
 
                 count++;
             }
@@ -206,8 +244,9 @@ function doSearch() {
             var mets = {};
             var found = false;
             for(k in methods) {
-                if(re.test(k)) {
-                    mets[k] = methods[k];
+                var m = methods[k];
+                if(re.test(m[0])) {
+                    mets[m[0]] = m[1];
                     found = true;
                     count++;
                 }
@@ -243,8 +282,6 @@ function delayed_update() {
         doSearch();
     }
 }
-setInterval("delayed_update()",1000);
-
 </script>
 
 </head>

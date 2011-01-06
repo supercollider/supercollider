@@ -1220,9 +1220,9 @@ ScDoc {
 
         if(f.isNil, {^nil});
         
-        f.write("docmap = {\n");
+        f.write("docmap = [\n");
         docMap.pairsDo {|k,v|
-            f.write("'"++k++"': {\n");
+            f.write("{\n");
             v.pairsDo {|k2,v2|
                 v2=v2.asString.replace("'","\\'");
                 f.write("'"++k2++"': '"++v2++"',\n");
@@ -1230,7 +1230,7 @@ ScDoc {
 
             f.write("},\n");
         };
-        f.write("}\n");
+        f.write("]\n");
         f.close;
     }
 
@@ -1264,17 +1264,17 @@ ScDoc {
 
         ScDoc.postProgress("Writing Methods JSON index...");
         f = File.open(ScDoc.helpTargetDir +/+ "methods.js","w");
-        f.write("methods = {\n");
+        f.write("methods = [\n");
         mets.pairsDo {|k,v|
-            f.write("'"++k++"':[");
+            f.write("['"++k++"',[");
             v.do {|c,i|
                 n = c[0];
                 if(n.find("Meta_")==0, {n = n.drop(5)});
                 f.write("'"++n++"',");
             };
-            f.write("],\n");
+            f.write("]],\n");
         };
-        f.write("\n};");
+        f.write("\n];");
         f.close;
 
         ScDoc.postProgress("Generating Documents overview...");
