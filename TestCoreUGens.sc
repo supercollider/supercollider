@@ -61,6 +61,10 @@ test_ugen_generator_equivalences {
 	 "sum and rescale ar signal is identity" -> {n=WhiteNoise.ar; [n, n].sum.madd(0.5, 0) - n },
 	 "sum and rescale kr signal is identity" -> {n=WhiteNoise.kr; [n, n].sum.madd(0.5, 0) - n },
 	
+	// Audio rate demand ugens
+	"Duty.ar(SampleDur.ir, 0, x) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, n)) }, 
+	"Duty.ar(SampleDur.ir, 0, Drand([x],inf)) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, Drand([n],inf))) }, 
+
 
 	 //////////////////////////////////////////
 	 // Panners (linear panners easy to verify - sum should recover original):
