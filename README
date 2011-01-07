@@ -56,11 +56,7 @@ The renderer would render formula:: by displaying that image if it exists, if no
 
 - method to find broken links
 
-- shortcuts for links to class:method? methodlink::Node#set::
-
-- table of contents? just include a maketoc:: tag in the doc header..
-what we do is find all section, description, classmethods, instancemethods, examples, subsection tags and generate a tree
-of anchor links to these.
+- shortcuts for links to class:method? methodlink::Node#set:: renders as Node:set
 
 - better error handling in parser on bogus input, etc..
 

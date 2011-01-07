@@ -2,16 +2,16 @@ title:: play
 summary:: Start a process
 categories:: Common methods
 
-section:: Description
+section:: Introduction
 
 The code::play:: message is of common use in sc. Different objects respond to it in various
-ways, but the simple meaning is: start a process.
+ways, but the simple meaning is: strong::start a process::.
 It is usually implemented by objects in contributed libraries as well.
 
 play usually returns the playing object which might not be the same as the one
 the message was sent to.
 
-opposite: stop
+opposite: code::stop::
 
 section:: Clocks, Routines, Streams and Patterns
 For a full list of which classes that implements code::play::, see link::Overviews/Methods#play::
@@ -24,12 +24,14 @@ r = Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln });
 SystemClock.play(r);
 )
 ::
+See link::Classes/Clock#play#Clock:play::
 
 subsection:: routine.play(clock)
 returns: the routine
 code::
 Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln }).play;
 ::
+See link::Classes/Routine#play#Routine:play::
 
 subsection:: stream.play(clock)
 returns: the stream
@@ -38,7 +40,8 @@ the stream will loop until it returns nil
 code::
 FuncStream({ "ok, that was it".postln; 1 }).play;
 ::
-	
+See link::Classes/FuncStream#play#FuncStream:play::
+
 subsection:: pausestream.play(clock) / task.play(clock)
 returns: the stream
 code::
@@ -52,7 +55,8 @@ a = Task.new({ loop({ "ok, that was it".postln; 1.wait; }) });
 a.play;
 a.stop;
 ::
-	
+See link::Classes/Stream#play#Stream:play:: and link::Classes/Task#play#Task:play::
+
 subsection:: pattern.play(clock, protoEvent)
 returns: an link::Classes/EventStreamPlayer::
 code::
@@ -63,6 +67,7 @@ Pseq([
 ], 2).play;
 )
 ::
+See link::Classes/Pattern#play#Pattern:play::
 
 section:: Playing single Synths from SynthDefs on the server
 
@@ -73,7 +78,6 @@ Note that they should not be used in quickly running automated processes,
 as there are more efficient alternatives ( see link::Guides/SynthDefsVsSynths:: )
 
 subsection:: function.play(target, outbus, fadeTime, addAction, args)
-See link::Classes/Function::
 
 returns: a link::Classes/Synth::
 table::
@@ -82,6 +86,8 @@ table::
 ## addAction || where to add the node (\addToHead by default)
 ## args || controls to set when starting the synth
 ::
+
+See link::Classes/Function#play#Function:play::
 
 code::
 a = { PinkNoise.ar([0.1, 0.1]) }.play;
@@ -125,6 +131,7 @@ x.set(\amp, 0.2);
 //free the synth
 x.free;
 ::
+See link::Classes/SynthDef#play#SynthDef:play::
 
 note:: code::Synth.play(function):: is synonymous, for backwards compatibility with sc2 ::
 
