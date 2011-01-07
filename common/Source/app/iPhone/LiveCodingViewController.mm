@@ -1,36 +1,64 @@
 //
-//  LiveCodingView.m
+//  LiveCodingViewController.m
 //  isclang
 //
 //  Created by Axel Balley on 30/10/08.
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#import "LiveCodingView.h"
+#import "LiveCodingViewController.h"
 
 extern void rtf2txt(char *txt);
 
-@implementation LiveCodingView
+@implementation LiveCodingViewController
 
-
-- (id)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame])
+- (id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])
 	{
 		target = 0;
 		selector = 0;
-    }
-    return self;
+	}
+	return self;
 }
 
-- (void) awakeFromNib
+- (void) viewDidLoad
 {
 	[textView setAutocapitalizationType:UITextAutocapitalizationTypeNone];
 	[textView setAutocorrectionType:UITextAutocorrectionTypeNo];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 	[self showButtons:NO];
 }
 
-- (void)drawRect:(CGRect)rect {
-    [super drawRect:rect];
+- (void) keyboardDidShow:(NSNotification *) notif
+{
+	NSDictionary *info = [notif userInfo];
+	NSValue *val = [info objectForKey:UIKeyboardFrameEndUserInfoKey];
+	CGRect r = [val CGRectValue];
+	
+	CGRect done_frame = doneButton.frame;
+	CGRect exec_frame = execButton.frame;
+	
+	r = [self.view convertRect:r fromView:nil];
+				
+	done_frame.origin.y = r.origin.y - done_frame.size.height - 10;
+	exec_frame.origin.y = done_frame.origin.y;
+	
+	[doneButton setFrame:done_frame];
+	[execButton setFrame:exec_frame];
+	
+	[self showButtons:YES];
+}
+
+- (void) keyboardWillHide:(NSNotification *) notif
+{
+	[self showButtons:NO];
+}
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+	return YES;
 }
 
 - (void) setTarget:(id)t withSelector:(SEL)s
@@ -54,13 +82,12 @@ extern void rtf2txt(char *txt);
 - (void) showButtons: (BOOL)state
 {
 	[doneButton setHidden:!state];
-	[lineButton setHidden:!state];
-	[blockButton setHidden:!state];
+	[execButton setHidden:!state];
 }
 
 - (void) textViewDidBeginEditing: (UITextView *)theView
 {
-	[self showButtons:YES];
+	//[self showButtons:YES];
 }
 
 - (IBAction) triggerDone: (id)sender
@@ -69,7 +96,7 @@ extern void rtf2txt(char *txt);
 	[self showButtons:NO];
 }
 
-- (IBAction) triggerLine: (id)sender
+- (IBAction) triggerExecute: (id)sender
 {
 	NSRange range = [textView selectedRange];
 	NSString *text = [textView text];
@@ -83,18 +110,13 @@ extern void rtf2txt(char *txt);
 	[self showButtons:NO];
 }
 
-- (IBAction) triggerBlock: (id)sender
-{
-	[textView resignFirstResponder];
-	[self showButtons:NO];
-}
-
-- (IBAction) triggerExecute: (id)sender
+- (IBAction) triggerExecuteFile: (id)sender
 {
 	if (target && [target respondsToSelector:selector]) [target performSelector:selector withObject:[textView text]];
 }
 
-- (void)dealloc {
+- (void) dealloc
+{
     [super dealloc];
 }
 

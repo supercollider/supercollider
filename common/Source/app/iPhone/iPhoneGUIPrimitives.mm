@@ -276,24 +276,72 @@ int prSCWindow_ToFront(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed);
+int prSCWindow_SetName(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+    PyrSlot *a = g->sp - 1;
+    PyrSlot *b = g->sp;
+
+    if (!(isKindOfSlot(b, class_string))) return errWrongType;
+
+    SCGraphView* view = (SCGraphView*)slotRawPtr(slotRawObject(a)->slots);
+    if (!view) return errNone;
+    PyrString *string = slotRawString(b);
+    NSString *title = [NSString stringWithCString: string->s length: string->size];
+    [[view window] setTitle: title];
+    return errNone;
+}
+
+
+int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed);
+int prFont_AvailableFonts(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!g->canCallOS) return errCantCallOS;
+
+	PyrSlot *a = g->sp;
+
+	NSArray *fonts = [UIFont familyNames];
+
+	int size = [fonts count];
+	PyrObject* array = newPyrArray(g->gc, size, 0, true);
+	SetObject(a, array);
+
+	for (int i=0; i<size; ++i) {
+		NSString *name = [fonts objectAtIndex: i];
+		//if (!name) continue;
+		PyrString *string = newPyrString(g->gc, [name UTF8String], 0, true);
+		SetObject(array->slots + array->size, string);
+		array->size++;
+		g->gc->GCWrite(array, string);
+	}
+
+    return errNone;
+}
+
+
 void initGUIPrimitives()
 {
 	int base, index;
 
-        s_draw = getsym("draw");
-        s_font = getsym("SCFont");
-        s_closed = getsym("closed");
-        s_tick = getsym("tick");
-        s_doaction = getsym("doAction");
-		s_didBecomeKey = getsym("didBecomeKey");
-        s_didResignKey = getsym("didResignKey");
+	s_draw = getsym("draw");
+	s_font = getsym("SCFont");
+	s_closed = getsym("closed");
+	s_tick = getsym("tick");
+	s_doaction = getsym("doAction");
+	s_didBecomeKey = getsym("didBecomeKey");
+	s_didResignKey = getsym("didResignKey");
 
 	base = nextPrimitiveIndex();
 	index = 0;
 
-		definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 7, 0);
+	definePrimitive(base, index++, "_SCWindow_New", prSCWindow_New, 7, 0);
 	definePrimitive(base, index++, "_SCWindow_Refresh", prSCWindow_Refresh, 1, 0);
 	definePrimitive(base, index++, "_SCWindow_Close", prSCWindow_Close, 1, 0);
 	definePrimitive(base, index++, "_SCWindow_ToFront", prSCWindow_ToFront, 1, 0);
+	definePrimitive(base, index++, "_SCWindow_SetName", prSCWindow_SetName, 2, 0);
+
+	definePrimitive(base, index++, "_Font_AvailableFonts", prFont_AvailableFonts, 1, 0);
 }
 

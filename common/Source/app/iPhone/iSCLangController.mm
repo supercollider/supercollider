@@ -316,18 +316,9 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	sc_GetUserAppSupportDirectory(supportpath, 256);
 	NSString *support = [NSString stringWithCString:supportpath encoding:NSASCIIStringEncoding];
 
+	if (![manager fileExistsAtPath:support]) [manager createDirectoryAtPath:support attributes:nil];
+
 	NSString *dir;
-/*
-	NSString *dir = [support stringByAppendingString:@"/SCClassLibrary"];
-	if (![manager fileExistsAtPath:dir])
-	{
-		NSString *from = [s stringByAppendingString:@"/SCClassLibrary"];
-		if ([manager fileExistsAtPath:from])
-		{
-			[manager copyItemAtPath:from toPath:dir error:&error];
-		}
-	}
-*/
 	dir = [support stringByAppendingString:@"/SCClassLibrary"];
 	if (![manager fileExistsAtPath:dir])
 	{
@@ -345,6 +336,9 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		[manager copyItemAtPath:from toPath:dest error:&error];
 		from = [s stringByAppendingString:@"/backwards_compatibility"];
 		dest = [dir stringByAppendingString:@"/backwards_compatibility"];
+		[manager copyItemAtPath:from toPath:dest error:&error];
+		from = [s stringByAppendingString:@"/JITLib"];
+		dest = [dir stringByAppendingString:@"/JITLib"];
 		[manager copyItemAtPath:from toPath:dest error:&error];
 	}
 
@@ -414,11 +408,11 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 	NSString *path;
 	//path = [support stringByAppendingString:@"/patches"];
 	[browserViewController setTarget:self withSelector:@selector(selectFile:)];
-	[browserViewController setRoot:support];
+	[browserViewController setPath:support];
 
 	[tabBarController setCustomizableViewControllers:nil];
 
-	[liveView setTarget:self withSelector:@selector(interpret:)];
+	[liveViewController setTarget:self withSelector:@selector(interpret:)];
 /*
 #ifdef START_HTTP_SERVER
 	HTTPServer *httpServer = [HTTPServer new];
@@ -457,7 +451,7 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 
 - (void) selectPatch:(NSString *)string
 {
-	[liveView loadFile:string];
+	[liveViewController loadFile:string];
 	[tabBarController performSelector:@selector(setSelectedViewController:) withObject:liveViewController afterDelay:0.5f];
 }
 
