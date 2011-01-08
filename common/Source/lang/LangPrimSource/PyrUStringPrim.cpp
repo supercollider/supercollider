@@ -142,15 +142,17 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 					strncpy(match, string + offset + match_start, match_length);
 					match[match_length] = 0;
 					PyrObject *array = newPyrArray(g->gc, 2, 0, true);
+					SetObject(result_array->slots + i, array);
+					g->gc->GCWrite(result_array, array);
+
+					PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
+
 					array->size = 2;
 					SetInt(array->slots, match_start + offset);
 
-					PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
 					SetObject(array->slots+1, matched_string);
 					g->gc->GCWrite(array, matched_string);
 
-					SetObject(result_array->slots + i, array);
-					g->gc->GCWrite(result_array, array);
 				}
 			}
 		}
