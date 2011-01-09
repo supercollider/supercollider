@@ -102,7 +102,7 @@ window.onload = function() {
     node = document.getElementById("search_results");
    
     var x = unescape(window.location.hash.slice(1));
-    if(x!="") {
+    if(x!="" && newinput=="") {
         document.getElementById("search_input").value = x;
         newinput = x;
     }
@@ -144,11 +144,17 @@ function SearchKeyPressed(e) {
     if(newinput != input) {
         document.getElementById("search_results").innerHTML = "Searching...";
 //        document.getElementById("search_count").innerHTML = "0 results";
-        if(window.location.hash != newinput)
-            window.location.hash = newinput;
+//        if(window.location.hash != newinput)
+//            window.location.hash = newinput;
 
     }
 }
+
+/*function updateHash() {
+    if(window.location.hash != input)
+        window.location.hash = input;
+    return true;
+}*/
 
 function matchDoc(doc,file,folder,re) {
     var c = checkboxes2[folder.toLowerCase()];
@@ -204,6 +210,7 @@ function doPrint() {
             
             var n = document.createElement("a");
             n.setAttribute("href",v.path+".html");
+//            n.onclick = updateHash;
             n.innerHTML = v.title;
             div.appendChild(n);
             div.appendChild(document.createTextNode(" - "+v.summary+" "));
@@ -257,6 +264,7 @@ function doPrint() {
                 if(i!=0) div2.appendChild(document.createTextNode(", "));
                 var a = document.createElement("a");
                 a.setAttribute("href","Classes/"+m+".html#"+k);
+//                a.onclick = updateHash;
                 a.innerHTML = m;
                 div2.appendChild(a);
             }
