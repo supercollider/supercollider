@@ -1,6 +1,6 @@
 class:: GrayNoise
 summary:: Gray Noise.
-related:: Classes/BrownNoise, Classes/ClipNoise, Classes/NoahNoise, Classes/PinkNoise, Classes/WhiteNoise
+related:: Classes/BrownNoise, Classes/ClipNoise, Classes/PinkNoise, Classes/WhiteNoise
 categories::  UGens>Generators>Stochastic
 
 

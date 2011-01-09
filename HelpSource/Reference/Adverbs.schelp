@@ -1,7 +1,7 @@
 title:: Adverbs for Binary Operators
 summary:: modify behaviour of binary operators
 categories:: Language, Collections
-related:: SequenceableCollection, Stream
+related:: Classes/SequenceableCollection, Classes/Stream
 
 Adverbs are a third argument passed to binary operators that modifies how they iterate over link::Classes/SequenceableCollection::s or link::Classes/Stream::s. The idea for adverbs is taken from the J programming language which is a successor of APL.
 

@@ -1,6 +1,6 @@
 class:: PinkNoise
 summary:: Pink Noise.
-related:: Classes/BrownNoise, Classes/GrayNoise, Classes/ClipNoise, Classes/NoahNoise, Classes/WhiteNoise
+related:: Classes/BrownNoise, Classes/GrayNoise, Classes/ClipNoise, Classes/WhiteNoise
 categories::  UGens>Generators>Stochastic
 
 

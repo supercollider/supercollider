@@ -5,7 +5,7 @@ categories::  UGens>Synth control
 
 Description::
 
-Some UGens, such as link::Classes/PlayBuf::, link::Classes/RecordBuf::, link::Classes/Line::, link::Classes/XLine::, link::Classes/EnvGen::, link::Classes/Linen::, link::Classes/BufRd::, link::Classes/BufWr::, link::Classes/DbufRd::, and the Buffer delay UGens set a 'done' flag when they are finished playing. This UGen echoes that flag when it is set to track a particular UGen. 
+Some UGens, such as link::Classes/PlayBuf::, link::Classes/RecordBuf::, link::Classes/Line::, link::Classes/XLine::, link::Classes/EnvGen::, link::Classes/Linen::, link::Classes/BufRd::, link::Classes/BufWr::, link::Classes/Dbufrd::, and the Buffer delay UGens set a 'done' flag when they are finished playing. This UGen echoes that flag when it is set to track a particular UGen. 
 
 classmethods::
 private:: categories

@@ -2,6 +2,10 @@ class::Class
 summary::A Class describes the structure and implementation of a set objects which are its instances.
 categories::Core>Kernel
 
+ClassMethods::
+method:: allClasses
+returns:: an link::Classes/Array:: of all Classes
+
 InstanceMethods::
 
 method::browse

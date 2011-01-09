@@ -48,7 +48,7 @@ link::Classes/LFPar::, link::Classes/LFCub::, link::Classes/LFTri::, link::Class
 will cause aliasing at higher frequencies.
 
 definitionlist::
-## link::Classes/LFParlink::, link::Classes/LFCub::, link::Classes/LFTri::, link::Classes/LFSaw::, link::Classes/Impulse::
+## link::Classes/LFPar::, link::Classes/LFCub::, link::Classes/LFTri::, link::Classes/LFSaw::, link::Classes/Impulse::
 || arguments: code::frequency, phase, mul, add::
 
 code::

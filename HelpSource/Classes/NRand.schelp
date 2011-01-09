@@ -24,7 +24,7 @@ argument::n
 
 table::
 
-## n = 1: || Uniform distribution - same as link::Rand::.
+## n = 1: || Uniform distribution - same as link::Classes/Rand::.
 
 ## n = 2: || Triangular distribution.
 

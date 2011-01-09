@@ -1,6 +1,6 @@
 class:: Demand
 summary:: Demand results from demand rate UGens.
-related:: Classes/Duty, Classes/TDuty, Classes/UGens.Demand
+related:: Classes/Duty, Classes/TDuty
 categories:: UGens>Demand
 
 Description::

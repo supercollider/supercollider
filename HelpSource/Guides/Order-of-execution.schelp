@@ -1,7 +1,7 @@
 title:: Order of execution 
 summary:: Understanding order of execution of synths on the server
 categories:: Server>Nodes
-related:: Classes/Server, Classes/Node, Classes/Group, Guides/default_group, Classes/Bus, Classes/Out, Classes/ReplaceOut, Classes/XOut, Classes/OffsetOut, Classes/In, Classes/InFeedback, Classes/LocalIn, Classes/LocalOut, Classes/SharedIn, Classes/SharedOut, Reference/default_group
+related:: Classes/Server, Classes/Node, Classes/Group, Reference/default_group, Classes/Bus, Classes/Out, Classes/ReplaceOut, Classes/XOut, Classes/OffsetOut, Classes/In, Classes/InFeedback, Classes/LocalIn, Classes/LocalOut, Classes/SharedIn, Classes/SharedOut
 
 Order of execution is one of the most critical and seemingly difficult aspects of using SuperCollider, but in reality it only takes a little thought in the early planning stages to make it work for you. 
 
@@ -47,7 +47,7 @@ When a link::Classes/Server:: is booted there is a top level group with an ID of
 There is also a link::Reference/default_group:: with an ID of 1. This group is the default group for all Nodes. This is what you will get if you supply a Server as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.  
 
 The default group serves an important purpose: It provides a predictable basic Node tree so that methods such as Server:scope and Server:record can function without running into order of execution problems.
-Thus in general one should create new Nodes within the default group rather than in the RootNode. See link::Guides/default_group:: and link::Classes/RootNode:: for more detail.
+Thus in general one should create new Nodes within the default group rather than in the RootNode. See link::Reference/default_group:: and link::Classes/RootNode:: for more detail.
 
 section:: Controlling order of execution 
 

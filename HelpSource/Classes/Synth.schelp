@@ -39,7 +39,7 @@ argument:: defName
 A String or Symbol specifying the name of the SynthDef to use in creating the Synth.
 
 argument:: args
-An optional link::Classes/Array:: specifying initial values for the link::Classes/SynthDef::'s arguments (controls). These are specified in pairs of control name or index and value. If names are used they can be specified with either link::Classes/Strings:: or link::Classes/Symbols::. e.g. code:: [\frequency, 440, \amplitude, 1, ...] ::.
+An optional link::Classes/Array:: specifying initial values for the link::Classes/SynthDef::'s arguments (controls). These are specified in pairs of control name or index and value. If names are used they can be specified with either link::Classes/String::s or link::Classes/Symbol::s. e.g. code:: [\frequency, 440, \amplitude, 1, ...] ::.
 Values that are arrays are sent using OSC array type-tags ($[ and $]).  These values will be assigned to subsequent controls.
 		
 argument:: target
@@ -194,7 +194,7 @@ x.free;
 ::
 
 method:: getn, getnMsg
-Query the server for the current values of a sequential range of link::Classes/Controls:: (arguments).
+Query the server for the current values of a sequential range of link::Classes/Control::s (arguments).
 argument:: index
 a control name or index
 argument:: count

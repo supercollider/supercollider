@@ -11,7 +11,7 @@ section:: Instance Variables
 
 The data of an object is contained in its instance variables. Instance variables are of two kinds, named and indexed. Each object contains a separate copy of its instance variables.
 
-Some classes' instances have no instance variables at all but instead have an atomic value. Classes whose instances consist of an atomic value are link::Classes/Integer::, link::Classes/Float::, link::Classes/Symbol::, link::Classes/True::, link::Classes/False::, link::Classes/Nil::, link::Classes/Infinitum::, link::Classes/Char::, link::Classes/Color::.
+Some classes' instances have no instance variables at all but instead have an atomic value. Classes whose instances consist of an atomic value are link::Classes/Integer::, link::Classes/Float::, link::Classes/Symbol::, link::Classes/True::, link::Classes/False::, link::Classes/Nil::, link::Classes/Char::, link::Classes/Color::.
 
 Instance variables declaration lists occur after the open curly bracket of the class definition and are preceeded by the reserved word code::var::. Instance variables names in the list may be initialized to a default literal value by using an equals sign. Instance variables which are not explicitly initialized will be set to nil. Instance variables that are immutable are defined by the reserved word code::const::.
 

@@ -1,6 +1,6 @@
 class:: Crackle
 summary:: Chaotic noise function.
-related:: Classes/Latoocarfian, Classes/Logistic
+related:: Classes/LatoocarfianN, Classes/Logistic
 categories::  UGens>Generators>Stochastic
 
 

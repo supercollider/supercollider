@@ -1,6 +1,6 @@
 class:: InRange
 summary:: Tests if a signal is within a given range.
-related:: Classes/InRect, Classes/Schmidt, Classes/Trapezoid
+related:: Classes/InRect, Classes/Schmidt
 categories::  UGens>Maths
 
 

@@ -15,7 +15,7 @@ of this and the fact that the various out UGens mix their output with
 data from the current cycle but overwrite data from an earlier cycle it
 may be necessary to use a private control bus when this type of feedback
 is desired. There is an example below which demonstrates the problem. See
-the  link::Classes/InFeedback::  and link::Reference/Order-of-execution:: helpfiles for
+the  link::Classes/InFeedback::  and link::Guides/Order-of-execution:: helpfiles for
 more details.
 
 

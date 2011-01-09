@@ -1,6 +1,6 @@
 class:: Schmidt
 summary:: Schmidt trigger.
-related:: Classes/InRange, Classes/InRect, Classes/Trapezoid
+related:: Classes/InRange, Classes/InRect
 categories::  UGens>Maths
 
 

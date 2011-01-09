@@ -1,6 +1,6 @@
 class:: ClipNoise
 summary:: Clip Noise.
-related:: Classes/BrownNoise, Classes/GrayNoise, Classes/NoahNoise, Classes/PinkNoise, Classes/WhiteNoise
+related:: Classes/BrownNoise, Classes/GrayNoise, Classes/PinkNoise, Classes/WhiteNoise
 categories::  UGens>Generators>Stochastic
 
 

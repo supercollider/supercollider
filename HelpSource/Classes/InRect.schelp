@@ -1,6 +1,6 @@
 class:: InRect
 summary:: Test if a point is within a given rectangle.
-related:: Classes/InRange, Classes/Schmidt, Classes/Trapezoid
+related:: Classes/InRange, Classes/Schmidt
 categories::  UGens>Maths
 
 

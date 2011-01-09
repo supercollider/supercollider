@@ -1,7 +1,7 @@
 class:: IEnvGen
 summary:: Envelope generator for polling values from an InterplEnv
 categories:: UGens>Envelopes
-related:: InterplEnv
+related:: Classes/InterplEnv
 
 description::
 Envelope generator for polling values from an InterplEnv. IEnvGen plays back break point envelopes from the code::index:: point. The envelopes are instances of the link::Classes/InterplEnv:: class.

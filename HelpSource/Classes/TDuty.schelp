@@ -1,6 +1,6 @@
 class:: TDuty
 summary:: Demand results as trigger from demand rate UGens.
-related:: Classes/Demand, Classes/Duty, Classes/UGens.Demand
+related:: Classes/Demand, Classes/Duty
 categories::  UGens>Demand
 
 

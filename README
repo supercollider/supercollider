@@ -43,6 +43,8 @@ hello
 
 soft::there::
 
+- TOC doesn't take into account the forced order of description,classmethods,instancemethods,examples
+
 - make sure the new undocumented-method-generation works as it should for:
   only setter
   getter and setter
@@ -67,8 +69,6 @@ The renderer would render formula:: by displaying that image if it exists, if no
 - cross-platform: check all uses of systemCmd. move to Platform class?
 
 - add argument:: for all args on methods even if the author didn't document it? at least check that argument names and order are correct.
-
-- method to find broken links
 
 - shortcuts for links to class:method? methodlink::Node#set:: renders as Node:set
 

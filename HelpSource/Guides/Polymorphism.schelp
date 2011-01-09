@@ -20,7 +20,7 @@ Let's look at how these classes implement the value message.
 
 subsection:: Object
 
-Here's the value method in class link::Classes/Object:::
+Here's the value method in class link::Classes/Object:: :
 code::
 value { ^this }
 ::
