@@ -286,7 +286,6 @@ ScDocParser {
 
     parseFile {|filename|
         var file = File.open(filename,"r");
-        ScDoc.postProgress("Parsing "++filename);
         this.parse(file.readAllString);
         file.close;
     }
@@ -1475,6 +1474,7 @@ ScDoc {
         var ext = source.copyToEnd(lastDot);
         if(ext == ".schelp", {
             if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { //update only if needed
+                ScDoc.postProgress("Parsing "++source);
                 p.parseFile(source);
                 this.addToDocMap(p,subtarget);
                 r.renderHTML(target,subtarget.dirname);
@@ -1525,6 +1525,57 @@ ScDoc {
         if(doWait = threaded, {
             Routine(f).play(AppClock);
         }, f);
+    }
+
+    *checkBrokenLinks {
+        var f,m;
+        var file;
+        var check_link = {|link|
+            if(("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)).not) {
+                f = link.split($#);
+                m = ScDoc.helpTargetDir +/+ f[0] ++ ".html";
+                if((f[0]!="") and: {File.exists(m).not}) {
+                    postln("Broken link: "++file++": "++link);
+                };
+            };
+        };
+        var do_children = {|children|
+            children.do {|node|
+                switch(node.tag,
+                    \link, {
+                        check_link.(node.text);
+                    },
+                    \related, {
+                        ScDoc.splitList(node.text).do {|l|
+                            check_link.(l);
+                        };
+                    },
+                    {
+                        node.children !? {
+                            do_children.(node.children);
+                        }
+                    }
+                );
+            };
+        };
+        
+        PathName(helpSourceDir).filesDo {|path|
+            var source = path.fullPath;
+            var lastDot = source.findBackwards(".");
+//            var subtarget = source.copyRange(helpSourceDir.size+1,lastDot-1);
+//            var target = helpTargetDir +/+ subtarget ++".html";
+            var ext = source.copyToEnd(lastDot);
+//            var lev;
+            if(ext == ".schelp", {
+                file = source;
+                p.parseFile(source);
+//                lev = target.dirname.split($/).reject {|y| (y.size<1) or: (y==".")}.size;
+//                baseDir = ".";
+//                lev.do { baseDir = baseDir +/+ ".." };
+                do_children.(p.root);
+            });
+        };
+        postln("Done");
     }
     
     *findClassOrMethod {|str|
