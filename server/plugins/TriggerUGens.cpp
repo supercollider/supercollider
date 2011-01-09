@@ -23,9 +23,8 @@
 
 #include <algorithm>            /* for std::min and std::max */
 
-#include "simd_peakmeter.hpp"
-
 #ifdef NOVA_SIMD
+#include "simd_peakmeter.hpp"
 #include "simd_memory.hpp"
 
 #ifdef __GNUC__
@@ -2794,6 +2793,7 @@ void PauseSelfWhenDone_next(PauseSelfWhenDone *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef NOVA_SIMD
 struct SendPeakRMS:
     public Unit
 {
@@ -3004,6 +3004,7 @@ struct SendPeakRMS:
 
 static void SendPeakRMS_Ctor(SendPeakRMS * unit) { new(unit) SendPeakRMS (); }
 static void SendPeakRMS_Dtor(SendPeakRMS * unit) { unit->~SendPeakRMS (); }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3044,5 +3045,7 @@ PluginLoad(Trigger)
 	DefineSimpleUnit(FreeSelfWhenDone);
 	DefineSimpleUnit(PauseSelfWhenDone);
 
+#ifdef NOVA_SIMD
 	DefineDtorUnit(SendPeakRMS);
+#endif
 }
