@@ -25,15 +25,10 @@ div#search_results {
 /*    padding-top: 1em;*/
 }
 div#search_count {
-/*    border-bottom: 1px solid #aaa;*/
+    border-bottom: 2px solid #777;
     color: #333;
 }
 
-div#prog_bar {
-    background: #aaa;
-    height: 3px;
-    width: 100%;
-}
 
 div.result_item {
     margin-bottom: 0.2em;
@@ -61,11 +56,13 @@ div.mets {
 #search_checks {
     margin-left: auto;
     margin-right: auto;
-    border-top: 1px solid #ddd;
     margin-top: 1em;
-    padding-top: 0.5em;
+    margin-bottom: 0.5em;
+    padding: 0.25em;
     font-size: 9pt;
     color: #555;
+    background: #eee;
+    border: 1px solid #ddd;
 }
 .label {
     color: black;
@@ -83,7 +80,7 @@ var fields = ["title","summary","categories"];
 var fields2 = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
     
 window.onload = function() {
-    newinput = document.getElementById("search_input").value.toLowerCase();
+    newinput = document.getElementById("search_input").value;
 
     checkboxes = [];
     for(var i=0;i<fields.length;i++) {
@@ -103,7 +100,12 @@ window.onload = function() {
     document.getElementById("search_input").focus();
 
     node = document.getElementById("search_results");
-    prog = document.getElementById("prog_bar");
+   
+    var x = unescape(window.location.hash.slice(1));
+    if(x!="") {
+        document.getElementById("search_input").value = x;
+        newinput = x;
+    }
     
     setInterval(delayed_update,250);
 }
@@ -138,10 +140,13 @@ function clear2() {
 }
 
 function SearchKeyPressed(e) {
-    newinput = e.value.toLowerCase();
+    newinput = e.value; //.toLowerCase();
     if(newinput != input) {
         document.getElementById("search_results").innerHTML = "Searching...";
 //        document.getElementById("search_count").innerHTML = "0 results";
+        if(window.location.hash != newinput)
+            window.location.hash = newinput;
+
     }
 }
 
@@ -173,12 +178,11 @@ var mets;
 var cats;
 var re;
 var node;
-var prog;
 
-function updProgress() {
+/*function updProgress() {
     var x = ((cindex+mindex)/(cats.length+mets.length))*100.0;
     prog.style.width = x+"%";
-}
+}*/
 
 function doPrint() {
     var now = Date.now();
@@ -218,7 +222,7 @@ function doPrint() {
             if(Date.now()-now > 200) {
                 inProgress = true;
     //            console.log("yield at cindex "+cindex);
-                updProgress();
+//                updProgress();
                 return;
             }
 
@@ -262,12 +266,12 @@ function doPrint() {
             if(Date.now()-now > 200) {
                 inProgress = true;
 //                console.log("yield at mindex "+mindex);
-                updProgress();
+//                updProgress();
                 return;
             }
         }
     }
-    updProgress();
+//    updProgress();
 }
 
 function doSearch() {
@@ -283,7 +287,6 @@ function doSearch() {
     foundMets = false;
     cats = [];
     mets = [];
-    prog.style.width = "100%";
         
     if(input!="") {
 
@@ -295,7 +298,6 @@ function doSearch() {
             document.getElementById("search_results").innerHTML = err;
             return;
         }
-        prog.style.width = 0;
         
         // search docmap
         cats = {};        
@@ -393,7 +395,6 @@ function delayed_update() {
 </div>
 
 <div id="search_count">0 results</div>
-<div id="prog_bar">&nbsp;</div>
 <div id="search_results"></div>
 
 </body>
