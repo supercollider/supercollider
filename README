@@ -43,6 +43,20 @@ hello
 
 soft::there::
 
+- make sure the new undocumented-method-generation works as it should for:
+  only setter
+  getter and setter
+  only getter
+  
+- use addUndocumentedMethods also for undocumented classes
+
+- description for categories? HelpSource/category_descriptions, example:
+  Server>Abstractions: Client-side classes representing server-side stuff
+  
+  show in header and category browser/overview
+
+  extensions should be able to add such descriptions too, but not overwrite existing descriptions?
+
 - handle formula:: tag. generate a hash hexstring for use as filename, HelpSource/formulas/xxxxxxxx.png
 The renderer would render formula:: by displaying that image if it exists, if not and if LaTeX is installed, convert formula to image first. if LaTeX not installed and image don't exist, show the latex code. (use img alt text?) 
 

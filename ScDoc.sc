@@ -291,6 +291,53 @@ ScDocParser {
         file.close;
     }
 
+    generateUndocumentedMethods {|class,node,title|
+        var syms, name, mets, l = List.new;
+        var docmets = IdentitySet.new;
+        
+        var addMet = {|n|
+            n.text.findRegexp("[^ ,]+").flop[1].do {|m|
+                docmets.add(m.asSymbol.asGetter);
+            };
+        };
+
+        var do_children = {|children|
+            children !? {
+                children.do {|n|
+                    switch(n.tag,
+                        \method, { addMet.(n) },
+                        \private, { addMet.(n) },
+                        \subsection, { do_children.(n.children) }
+                    );
+                };
+            };
+        };
+
+        if(class.isNil, {^nil});
+        
+        do_children.(node.children);
+        
+        (mets = class.methods) !? {
+            //ignore these methods by default. Note that they can still be explicitly documented.
+            docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
+            syms = mets.collectAs({|m|m.name.asGetter},IdentitySet);
+            syms.do {|name|
+                if(docmets.includes(name).not) {
+                    l.add((tag:\method, text:name.asString));
+                }
+            };
+        };
+
+        ^ if(l.notEmpty,
+        {
+            (tag:\subsection,
+            text:title,
+            children:l)
+        },
+            nil
+        );
+    }
+
     dumpSubTree {|t,i="",lev=1|
         t.do {|e|
             "".postln;
@@ -665,11 +712,10 @@ ScDocRenderer {
 
     renderHTMLSubTree {|file,node,parentTag=false|
         var c, f, m, n, mname, args, split, mstat, sym, css;
-        var mets = IdentitySet.new;
 
         var do_children = {|p=false|
             node.children !? {
-                node.children.do {|e| mets = mets | this.renderHTMLSubTree(file,e,if(p,{node.tag},{parentTag})) };
+                node.children.do {|e| this.renderHTMLSubTree(file,e,if(p,{node.tag},{parentTag})) };
             };
         };
 
@@ -708,11 +754,6 @@ ScDocRenderer {
                 };
             },
             'private', {
-                split = node.text.findRegexp("[^ ,]+");
-                split.do {|r|
-                    sym = r[1].asSymbol;
-                    mets.add(sym);
-                }
             },
             'method', {
                 //for multiple methods with same signature and similar function:
@@ -734,13 +775,13 @@ ScDocRenderer {
                     m = c.findRespondingMethodFor(sym.asGetter);
                     m !? {
                         mstat = mstat | 1;
-                        mets.add(sym.asGetter);
+//                        mets.add(sym.asGetter);
                         args = ScDoc.makeArgString(m);
                     };
                     //check for setter
                     c.findRespondingMethodFor(sym.asSetter) !? {
                         mstat = mstat | 2;
-                        mets.add(sym.asSetter);
+//                        mets.add(sym.asSetter);
                     };
 
                     switch (mstat,
@@ -964,7 +1005,6 @@ ScDocRenderer {
                 node.text !? {file.write(this.escapeSpecialChars(node.text))};
             }
         );
-        ^mets;
     }
 
     renderTOC {|f|
@@ -1110,30 +1150,21 @@ ScDocRenderer {
         if(toc, {this.renderTOC(f)});
     }
 
-    addUndocumentedMethods {|f,parentTag,docmets|
-        var syms, name, mets, l = List.new;
-
-        if(currentClass.isNil, {^nil});
-        
-        (mets = if(parentTag==\classmethods,{currentClass.class},{currentClass}).methods) !? {
-            //ignore these methods by default. Note that they can still be explicitly documented.
-            docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
-            syms = mets.collectAs(_.name,IdentitySet);
-            mets.do {|m| //need to iterate over mets to keep the order
-                name = m.name;
-                if(docmets.includes(name).not and: {name.isSetter.not or: {syms.includes(name.asGetter).not}}) {
-                    l.add((tag:\method, text:name.asString));
-                }
-            };
+    addUndocumentedMethods {|class,tag|
+        var node = parser.findNode(tag);
+        var mets = parser.generateUndocumentedMethods(class, node,
+            "Undocumented "++if(tag==\classmethods,"class methods","instance methods"));
+        mets !? {
+            if(node.tag.isNil, { //no subtree, create one
+                parser.root.add(node = (tag:tag, children:List.new));
+            });
+            node.children.add(mets);
         };
-
-        if (l.notEmpty) {
-            this.renderHTMLSubTree(f,(tag:\subsection, text:"Undocumented "++if(parentTag==\classmethods,"class","instance")++" methods", children:l),parentTag);
-        };
+        ^node;
     }
 
     renderHTML {|filename, folder=".", toc=true|
-        var f,x,name,mets;
+        var f,x,name,mets,inode,cnode;
         
         ScDoc.postProgress("Rendering "++filename);
 
@@ -1153,22 +1184,21 @@ ScDocRenderer {
         if(x.text.notEmpty, {
             name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
+            
+            currentClass !? {
+                cnode = this.addUndocumentedMethods(currentClass.class,\classmethods);
+                inode = this.addUndocumentedMethods(currentClass,\instancemethods);
+                //TODO: add methods from +ClassName.schelp (recursive search)
+            };
 
             this.renderHTMLHeader(f,name,\class,folder,toc);
 
             x = parser.findNode(\description);
             this.renderHTMLSubTree(f,x);
 
-            x = parser.findNode(\classmethods);
-            mets = this.renderHTMLSubTree(f,x);
-            //TODO: add methods from +ClassName.schelp (recursive search)
-            this.addUndocumentedMethods(f,\classmethods,mets);
-
-            x = parser.findNode(\instancemethods);
-            mets = this.renderHTMLSubTree(f,x);
-            //TODO: add methods from +ClassName.schelp (recursive search)
-            this.addUndocumentedMethods(f,\instancemethods,mets);
-
+            this.renderHTMLSubTree(f,cnode);
+            this.renderHTMLSubTree(f,inode);
+            
             x = parser.findNode(\examples);
             this.renderHTMLSubTree(f,x);
 
@@ -1192,11 +1222,6 @@ ScDocRenderer {
         f.close;
     }
 
-    *makeSearchPage {
-        ScDoc.postProgress("Writing Document JSON index...");
-        ScDoc.docMapToJSON(ScDoc.helpTargetDir +/+ "docmap.js");
-        //FIXME: also create html header etc.. and include HelpSource/Search.inc
-    }
 }
 
 ScDoc {
@@ -1348,6 +1373,7 @@ ScDoc {
 
 //            if(File.exists(src).not and: {name.find("Meta_")!=0}, {
             if(docMap["Classes" +/+ name].isNil and: {name.find("Meta_")!=0}, { //this was actually slower!
+            //FIXME: doesn't work quite right in case one removes the src file, then it's still in docMap cache..
                 dest = destbase +/+ name ++ ".html";
                 n = List.new;
                 n.add((tag:\class, text:name));
@@ -1489,7 +1515,9 @@ ScDoc {
             this.writeDocMap;
             this.makeCategoryMap;
             this.makeOverviews;
-            ScDocRenderer.makeSearchPage;
+            this.postProgress("Writing Document JSON index...");
+            this.docMapToJSON(this.helpTargetDir +/+ "docmap.js");
+
             "ScDoc done!".postln;
             doneFunc.value();
             doWait=false;
@@ -1497,6 +1525,13 @@ ScDoc {
         if(doWait = threaded, {
             Routine(f).play(AppClock);
         }, f);
+    }
+    
+    *findClassOrMethod {|str|
+        ^ ScDoc.helpTargetDir +/+ if(str[0].isUpper,
+            {"Classes" +/+ str ++ ".html"},
+            {"Overviews/Methods.html#" ++ str}
+        );
     }
 }
 
