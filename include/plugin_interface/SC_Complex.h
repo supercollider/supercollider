@@ -63,6 +63,8 @@ static bool initTables(void)
 		gPhaseLUT[i] = (float)angle;
 		gMagLUT[i] = (float)(1.f / cos(angle));
 	}
+
+	return true;
 }
 
 bool dummy = initTables();

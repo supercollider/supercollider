@@ -121,7 +121,12 @@ Pipe : UnixFILE {
 		});
 	}
 
-	close { // close the file
+	close {
+		this.prClose;
+		openFiles.remove(this);
+	}
+
+	prClose { // close the file
 		// the GC will not call this for you
 		_PipeClose
 		^this.primitiveFailed;

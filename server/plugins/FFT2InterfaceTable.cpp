@@ -22,12 +22,6 @@
 
 #include "FFT_UGens.h"
 
-
-extern "C"
-{
-	void load(InterfaceTable *inTable);
-}
-
 InterfaceTable *ft;
 
 //these are defined in the relevant files
@@ -35,7 +29,7 @@ extern void initConvolution(InterfaceTable *);
 extern void initPV_ThirdParty(InterfaceTable *);
 extern void initFeatureDetectors(InterfaceTable *it);
 
-void load(InterfaceTable *inTable)
+PluginLoad(PV_ThirdParty)
 {
 	ft= inTable;
 

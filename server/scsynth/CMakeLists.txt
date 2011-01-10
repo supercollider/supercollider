@@ -55,30 +55,42 @@ endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
 set(scsynth_sources
-    Samp.cpp
-    SC_BufGen.cpp
-    SC_Carbon.cpp
+	Samp.cpp
+	SC_BufGen.cpp
+	SC_Carbon.cpp
 
-    SC_ComPort.cpp
-    SC_CoreAudio.cpp
-    SC_Errors.cpp
-    SC_Graph.cpp
-    SC_GraphDef.cpp
-    SC_Group.cpp
-    SC_Lib_Cintf.cpp
-    SC_Lib.cpp
-    SC_MiscCmds.cpp
-    SC_Node.cpp
-    SC_Rate.cpp
-    SC_SequencedCommand.cpp
-    SC_Str4.cpp
-    SC_Unit.cpp
-    SC_UnitDef.cpp
-    SC_World.cpp
-    Rendezvous.cpp
+	SC_ComPort.cpp
+	SC_CoreAudio.cpp
+	SC_Errors.cpp
+	SC_Graph.cpp
+	SC_GraphDef.cpp
+	SC_Group.cpp
+	SC_Lib_Cintf.cpp
+	SC_Lib.cpp
+	SC_MiscCmds.cpp
+	SC_Node.cpp
+	SC_Rate.cpp
+	SC_SequencedCommand.cpp
+	SC_Str4.cpp
+	SC_Unit.cpp
+	SC_UnitDef.cpp
+	SC_World.cpp
+	Rendezvous.cpp
 
-    ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
+	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
+
+if(WIN32)
+    list(APPEND scsynth_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+endif()
 
 if (FFT_GREEN)
 	list(APPEND scsynth_sources ../common/fftlib.c)
@@ -106,14 +118,14 @@ elseif (AUDIOAPI STREQUAL portaudio)
 	include_directories(${PORTAUDIO_INCLUDE_DIRS})
 endif()
 
+set (FINAL_BUILD 0) # disable final build for scsynth
+
 if (FINAL_BUILD)
 	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources})
 	add_library(libscsynth SHARED libscsynth_final.cpp)
 else()
 	add_library(libscsynth SHARED ${scsynth_sources})
 endif()
-
-target_link_libraries(libscsynth sccommon)
 
 if(CURL)
 	if(CURL_FOUND)
@@ -136,8 +148,6 @@ endif(SNDFILE_FOUND)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	add_definitions(-DSC_PLUGIN_DIR="${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins")
-elseif(NOT APPLE)
-	message(SEND_ERROR "Not implemented")
 endif()
 
 if (AUDIOAPI STREQUAL jack)
@@ -157,11 +167,19 @@ if (FFTW3F_FOUND)
 endif()
 
 if (APPLE)
-	target_link_libraries(libscsynth "-framework vecLib")
+	target_link_libraries(libscsynth "-framework vecLib -framework CoreServices")
 endif()
 
 add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
+
+if(LTO)
+    set_property(TARGET scsynth libscsynth
+                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+
+    set_property(TARGET scsynth libscsynth
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+endif()
 
 #TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
 
@@ -181,9 +199,9 @@ if(APPLE)
 else()
 	install(TARGETS libscsynth
 			DESTINATION "lib"
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 	install(TARGETS scsynth
 			RUNTIME DESTINATION "bin"
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()

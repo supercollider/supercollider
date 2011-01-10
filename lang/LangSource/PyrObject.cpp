@@ -1273,7 +1273,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 			sizeof(PyrSlot) * classClassNumInstVars);
 		memcpy(slotRawSymbolArray(&metaclassobj->instVarNames)->symbols,
 			slotRawSymbolArray(&metaSuperClass->instVarNames)->symbols,
-			sizeof(PyrSlot) * classClassNumInstVars);
+			sizeof(PyrSymbol*) * classClassNumInstVars);
 		slotRawObject(&metaclassobj->iprototype)->size = classClassNumInstVars;
 		slotRawObject(&metaclassobj->instVarNames)->size = classClassNumInstVars;
 		//dumpObject((PyrObject*)metaclassobj);
@@ -1290,7 +1290,7 @@ PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 			sizeof(PyrSlot) * superInstVars);
 		memcpy(slotRawSymbolArray(&classobj->instVarNames)->symbols,
 			slotRawSymbolArray(&superClass->instVarNames)->symbols,
-			sizeof(PyrSlot) * superInstVars);
+			sizeof(PyrSymbol*) * superInstVars);
 		slotRawObject(&classobj->iprototype)->size = superInstVars;
 		slotRawObject(&classobj->instVarNames)->size = superInstVars;
 	}
@@ -1487,7 +1487,7 @@ void initClasses()
 
 		addIntrinsicVar(class_thread, "environment", &o_nil);
 		addIntrinsicVar(class_thread, "exceptionHandler", &o_nil);
-	
+
 		addIntrinsicVar(class_thread, "executingPath", &o_nil);
 		addIntrinsicVar(class_thread, "oldExecutingPath", &o_nil);
 

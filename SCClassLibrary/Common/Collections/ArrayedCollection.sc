@@ -459,7 +459,8 @@ ArrayedCollection : SequenceableCollection {
 		_NetAddr_BundleSize;
 		^this.primitiveFailed
 	}
-	includes { |item| ^this.indexOf(item).notNil }}
+	includes { |item| ^this.indexOf(item).notNil }
+}
 
 RawArray : ArrayedCollection {
 	// species { ^this.class }

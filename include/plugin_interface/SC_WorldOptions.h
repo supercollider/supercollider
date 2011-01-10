@@ -25,6 +25,7 @@
 #include <stdarg.h>
 #include "SC_Reply.h"
 #include "SC_Types.h"
+#include "SC_Export.h"
 
 typedef int (*PrintFunc)(const char *format, va_list ap);
 
@@ -93,12 +94,6 @@ const struct WorldOptions kDefaultWorldOptions =
 	,0
 	,0
 };
-
-#ifdef _WIN32
-# define SC_DLLEXPORT __declspec(dllexport)
-#else
-# define SC_DLLEXPORT
-#endif
 
 struct SndBuf;
 

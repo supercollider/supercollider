@@ -22,12 +22,6 @@
 
 #include "FFT_UGens.h"
 
-
-extern "C"
-{
-	void load(InterfaceTable *inTable);
-}
-
 InterfaceTable *ft;
 
 
@@ -36,7 +30,7 @@ extern void initFFT(InterfaceTable *inTable);
 extern void initPV(InterfaceTable *inTable);
 extern void initPartConv(InterfaceTable *inTable);
 
-void load(InterfaceTable *inTable)
+PluginLoad(FFT_UGens)
 {
 	ft= inTable;
 

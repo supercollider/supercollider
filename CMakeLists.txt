@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 project (SuperCollider)
+enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
@@ -31,6 +32,12 @@ ADD_CUSTOM_TARGET(setMainVersion ALL
 if (${CMAKE_COMPILER_IS_GNUCXX})
 	add_definitions("-ffast-math" "-fschedule-insns2" "-fomit-frame-pointer")
 
+	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
+
+	if (DSO_VISIBILITY)
+		add_definitions(-fvisibility=hidden)
+	endif()
+
 	if(APPLE)
 		add_definitions("-D_REENTRANT")
 	else()
@@ -52,7 +59,11 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 if(WIN32)
-	add_definitions("-DSC_WIN32")
+        set_property(DIRECTORY
+            	     APPEND
+		     PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WINSOCKAPI_)
+        SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE} /MTd")
+        SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} /MT")
 endif()
 
 
@@ -66,7 +77,7 @@ if (NOT PTHREADS_FOUND)
 endif()
 include_directories(${PTHREADS_INCLUDE_DIR})
 
-
+find_library(MATH_LIBRARY m)
 
 if(CURL)
 	find_package(CURL)
@@ -86,6 +97,18 @@ option(CURL "Build with curl for remote file download." ON)
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 mark_as_advanced(FFT_GREEN)
 
+option(SSE "Compile with support for SSE instructions.")
+option(SSE41 "Compile with support for SSE4.1 instructions.")
+option(SSE42 "Compile with support for SSE4.2 instructions.")
+
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
+elseif()
+    option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
+endif()
+option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
+
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
 mark_as_advanced(NO_LIBSNDFILE)
 
@@ -99,14 +122,41 @@ endif()
 
 option(SC_QT "Build SuperCollider with Qt GUI" ON)
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+    option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines, requires gcc-4.3 or higher).")
+    option(LTO "Use GCC's link time optimizer' (experimental).")
+endif()
+
+#############################################
+# some preprocessor flags
+if(CMAKE_COMPILER_IS_GNUCXX)
+  if(SSE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse -mfpmath=sse")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
+  endif()
+  if(SSE41)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
+  endif()
+  if(SSE42)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
+  endif()
+  if(NATIVE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+  endif()
+endif()
+
 #############################################
 # subdirectories
-add_subdirectory(common)
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(bindings)
 add_subdirectory(platform)
 add_subdirectory(editors)
+add_subdirectory(external_libraries)
+add_subdirectory(testsuite)
 
 if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )

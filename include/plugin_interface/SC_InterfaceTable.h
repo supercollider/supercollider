@@ -27,6 +27,7 @@
 #include "SC_BufGen.h"
 #include "SC_FifoMsg.h"
 #include "SC_fftlib.h"
+#include "SC_Export.h"
 
 #ifndef NO_LIBSNDFILE
 	#ifdef _WIN32
@@ -205,9 +206,9 @@ typedef struct InterfaceTable InterfaceTable;
 	#define PluginLoad(name) void name##_Load(InterfaceTable *inTable)
 #else
 	#ifdef __cplusplus
-		#define PluginLoad(name) extern "C" void load(InterfaceTable *inTable)
+		#define PluginLoad(name) extern "C" SC_DLLEXPORT void load(InterfaceTable *inTable)
 	#else
-		#define PluginLoad(name) void load(InterfaceTable *inTable)
+		#define PluginLoad(name) SC_DLLEXPORT void load(InterfaceTable *inTable)
 	#endif
 #endif
 

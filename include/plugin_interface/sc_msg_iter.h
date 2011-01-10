@@ -27,7 +27,7 @@
 #include <string.h>
 
 // return the ptr to the byte after the OSC string.
-inline char* OSCstrskip(char *str)
+inline const char* OSCstrskip(const char *str)
 {
 //	while (str[3]) { str += 4; }
 //	return str + 4;
@@ -36,30 +36,30 @@ inline char* OSCstrskip(char *str)
 }
 
 // returns the number of bytes (including padding) for an OSC string.
-inline int OSCstrlen(char *strin)
+inline int OSCstrlen(const char *strin)
 {
 	return OSCstrskip(strin) - strin;
 }
 
 // returns a float, converting an int if necessary
-inline float32 OSCfloat(char* inData)
+inline float32 OSCfloat(const char* inData)
 {
 	elem32* elem = (elem32*)inData;
 	elem->u = ntohl(elem->u);
 	return elem->f;
 }
 
-inline int32 OSCint(char* inData)
+inline int32 OSCint(const char* inData)
 {
 	return (int32)ntohl(*(uint32*)inData);
 }
 
-inline int64 OSCtime(char* inData)
+inline int64 OSCtime(const char* inData)
 {
 	return ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
 }
 
-inline float64 OSCdouble(char* inData)
+inline float64 OSCdouble(const char* inData)
 {
 	elem64 slot;
 	slot.i = ((int64)ntohl(*(uint32*)inData) << 32) + (ntohl(*(uint32*)(inData + 4)));
@@ -68,12 +68,12 @@ inline float64 OSCdouble(char* inData)
 
 struct sc_msg_iter
 {
-	char *data, *rdpos, *endpos, *tags;
+	const char *data, *rdpos, *endpos, *tags;
 	int size, count;
 
 	sc_msg_iter();
-	sc_msg_iter(int inSize, char* inData);
-	void init(int inSize, char* inData);
+	sc_msg_iter(int inSize, const char* inData);
+	void init(int inSize, const char* inData);
 	int32 geti(int32 defaultValue = 0);
 	float32 getf(float32 defaultValue = 0.f);
 	float64 getd(float64 defaultValue = 0.f);
@@ -91,12 +91,12 @@ inline sc_msg_iter::sc_msg_iter()
 {
 }
 
-inline sc_msg_iter::sc_msg_iter(int inSize, char* inData)
+inline sc_msg_iter::sc_msg_iter(int inSize, const char* inData)
 {
 	init(inSize, inData);
 }
 
-inline void sc_msg_iter::init(int inSize, char* inData)
+inline void sc_msg_iter::init(int inSize, const char* inData)
 {
 	data = inData;
 	size = inSize;

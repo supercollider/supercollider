@@ -25,7 +25,7 @@
 
 InterfaceTable *ft;
 
-extern "C" void load(InterfaceTable *inTable)
+PluginLoad(ML_UGens)
 {
 	ft = inTable;
 

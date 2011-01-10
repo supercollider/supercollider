@@ -435,7 +435,7 @@ s.sendMsg(\cmd, \pluginCmdDemo);
 
 */
 
-void load(InterfaceTable *inTable)
+PluginLoad(MouseUGens)
 {
 	ft = inTable;
 
