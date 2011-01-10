@@ -662,6 +662,15 @@ QMultiSliderView : QView {
 
   *qtClass { ^"QcMultiSlider" }
 
+  background {
+    ^palette.baseColor;
+  }
+
+  background_ { arg color;
+    palette.baseColor = color;
+    this.setProperty( \palette, palette );
+  }
+
   size_ { arg int;
     size = int;
     this.setProperty( \size, int );
