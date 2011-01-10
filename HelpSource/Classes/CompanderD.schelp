@@ -1,7 +1,7 @@
 class:: CompanderD
 summary:: Compressor, expander, limiter, gate, ducker.
 related:: Classes/Amplitude, Classes/Compander, Classes/Normalizer, Classes/Limiter
-categories::  UGens>Dynamics, UGens>Undocumented
+categories::  UGens>Dynamics
 
 
 Description::

@@ -43,14 +43,14 @@ hello
 
 soft::there::
 
-- TOC doesn't take into account the forced order of description,classmethods,instancemethods,examples
+- TOC doesn't take into account the forced order of description-classmethods-instancemethods-examples for classes
 
 - make sure the new undocumented-method-generation works as it should for:
   only setter
   getter and setter
   only getter
   
-- use addUndocumentedMethods also for undocumented classes
+- use addUndocumentedMethods also for undocumented classes?
 
 - description for categories? HelpSource/category_descriptions, example:
   Server>Abstractions: Client-side classes representing server-side stuff
