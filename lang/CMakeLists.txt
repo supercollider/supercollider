@@ -1,13 +1,12 @@
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
-                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
-	LangSource/Bison)
+                    LangSource/Bison)
 
 if(APPLE)
 	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/icu
 		LangPrimSource/HID_Utilities)
-else()
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 	find_package(ICU)
 	if (NOT ICU_FOUND)
@@ -17,6 +16,8 @@ endif()
 
 if(APPLE)
 	# apple bundles an old nongpl readline so we say no even though it is usually detectable
+	set(READLINE_FOUND false)
+elseif(WIN32)
 	set(READLINE_FOUND false)
 else()
 	find_package(Readline)
@@ -38,7 +39,6 @@ set(sclang_sources
 	LangPrimSource/PyrFilePrim.cpp
 	LangPrimSource/PyrListPrim.cpp
 	LangPrimSource/PyrPlatformPrim.cpp
-	LangPrimSource/PyrSerialPrim.cpp
 	LangPrimSource/PyrStringPrim.cpp
 	LangPrimSource/PyrUStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
@@ -65,7 +65,31 @@ set(sclang_sources
 	LangSource/SimpleStack.cpp
 	LangSource/VMGlobals.cpp
 	LangSource/dumpByteCodes.cpp
-	../common/fftlib.c)
+
+	${CMAKE_SOURCE_DIR}/common/fftlib.c
+	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
+	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
+)
+
+if(NOT WIN32)
+    list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
+endif()
+
+if(WIN32)
+    list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+endif()
+
+if(WIN32)
+	include_directories(../platform/windows/compat_stuff)
+	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
+endif()
 
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
@@ -92,6 +116,7 @@ if(UNIX)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
 		endif()
 		list(APPEND sclang_sources LangPrimSource/SC_LID.cpp)
+		add_definitions(-DHAVE_LID)
 	endif(APPLE)
 else(UNIX)
 endif(UNIX)
@@ -99,6 +124,12 @@ endif(UNIX)
 if (SC_QT)
   add_definitions(-DSC_QT)
 endif (SC_QT)
+
+if(WIN32)
+    include_directories (../platform/windows/compat_stuff)
+
+    list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
+endif()
 
 if (SC_WII OR APPLE)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -171,6 +202,7 @@ if (APPLE)
 	target_link_libraries(libsclang "-framework CoreAudio")
 	target_link_libraries(libsclang "-framework CoreMidi")
 	target_link_libraries(libsclang "-framework IOKit")
+	target_link_libraries(libsclang "-framework CoreServices")
 endif()
 
 if(ALSA_FOUND)
@@ -188,7 +220,7 @@ elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
-target_link_libraries(libsclang sccommon ${PTHREADS_LIBRARY})
+target_link_libraries(libsclang ${PTHREADS_LIBRARY})
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
 target_link_libraries(sclang libsclang)
@@ -197,6 +229,13 @@ set_property(TARGET sclang
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS USE_SC_TERMINAL_CLIENT)
 
+if(LTO)
+    set_property(TARGET sclang libsclang
+                 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+
+    set_property(TARGET sclang libsclang
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+endif()
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
@@ -214,9 +253,9 @@ if(APPLE)
 else()
 	install(TARGETS libsclang
 			DESTINATION "lib"
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 	install(TARGETS sclang
 			DESTINATION "bin"
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()

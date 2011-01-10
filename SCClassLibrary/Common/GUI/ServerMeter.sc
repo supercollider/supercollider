@@ -1,6 +1,6 @@
 ServerMeterView{
 
-	classvar serverMeterViews, 	updateFreq = 10, dBLow = -80;
+	classvar serverMeterViews, 	updateFreq = 10, dBLow = -80, meterWidth = 15, gapWidth = 4, <height = 230;
 
 	var <view;
 	var inresp, outresp, insynth, outsynth, synthFunc, responderFunc, server, numIns, numOuts, inmeters, outmeters;
@@ -9,22 +9,25 @@ ServerMeterView{
 		^super.new.init(aserver,parent,leftUp,numIns,numOuts)
 	}
 
-	init { arg aserver, parent, leftUp, anumIns,anumOuts;
-		var innerView;
+	*getWidth{ arg numIns,numOuts, server;
+		^20+((numIns + numOuts + 2) * (meterWidth + gapWidth))
+	}
 
-		var viewWidth, meterWidth = 15, gapWidth = 4;
+	init { arg aserver, parent, leftUp, anumIns,anumOuts;
+		var innerView, viewWidth;
+
+		numIns = anumIns ?? { server.options.numInputBusChannels };
+		numOuts = anumOuts ?? { server.options.numOutputBusChannels };
+
+		viewWidth= this.class.getWidth(anumIns,anumOuts);
 
 		leftUp = leftUp ? (0@0);
 
 		server = aserver;
 
-		numIns = anumIns ?? { server.options.numInputBusChannels };
-		numOuts = anumOuts ?? { server.options.numOutputBusChannels };
-		viewWidth = (numIns + numOuts + 2) * (meterWidth + gapWidth);
-
-		view = CompositeView(parent, Rect(leftUp.x,leftUp.y, viewWidth, 180) );
+		view = CompositeView(parent, Rect(leftUp.x,leftUp.y, viewWidth, height) );
 		view.onClose_({ this.stop });
-		innerView = CompositeView(view, Rect(10,25, viewWidth, 180) );
+		innerView = CompositeView(view, Rect(10,25, viewWidth, height) );
 		innerView.addFlowLayout(0@0, gapWidth@gapWidth);
 
 		// dB scale
@@ -102,30 +105,14 @@ ServerMeterView{
 			server.bind({
 				(numIns > 0).if({
 					insynth = SynthDef(server.name ++ "InputLevels", {
-						var in, imp;
-						in = In.ar(NumOutputBuses.ir, numIns);
-						imp = Impulse.ar(updateFreq);
-						SendReply.ar(imp, "/" ++ server.name ++ "InLevels",
-							// do the mean and sqrt clientside to save CPU
-							[
-								RunningSum.ar(in.squared, numRMSSamps),
-								Peak.ar(in, Delay1.ar(imp)).lag(0, 3)]
-							.flop.flat
-						);
+						var in = In.ar(NumOutputBuses.ir, numIns);
+						SendPeakRMS.kr(in, updateFreq, 3, "/" ++ server.name ++ "InLevels")
 					}).play(RootNode(server), nil, \addToHead);
 				});
 				(numOuts > 0).if({
 					outsynth = SynthDef(server.name ++ "OutputLevels", {
-						var in, imp;
-						in = In.ar(0, numOuts);
-						imp = Impulse.ar(updateFreq);
-						SendReply.ar(imp, "/" ++ server.name ++ "OutLevels",
-							// do the mean and sqrt clientside to save CPU
-							[
-								RunningSum.ar(in.squared, numRMSSamps),
-								Peak.ar(in, Delay1.ar(imp)).lag(0, 3)
-							].flop.flat
-						);
+						var in = In.ar(0, numOuts);
+						SendPeakRMS.kr(in, updateFreq, 3, "/" ++ server.name ++ "OutLevels")
 					}).play(RootNode(server), nil, \addToTail);
 				});
 			});
@@ -141,29 +128,35 @@ ServerMeterView{
 		(numIns > 0).if({
 			inresp = OSCresponderNode(server.addr, "/" ++ server.name ++ "InLevels", { |t, r, msg|
 				{try {
-				msg.copyToEnd(3).pairsDo({|val, peak, i|
-					var meter;
-					i = i * 0.5;
-					meter = inmeters[i];
-					if(meter.isClosed.not){
-						meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
-						meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
+				var channelCount = msg.size - 3 / 2;
+
+				channelCount.do {|channel|
+					var baseIndex = 3 + (2*channel);
+					var peakLevel = msg.at(baseIndex);
+					var rmsValue  = msg.at(baseIndex + 1);
+					var meter = inmeters.at(channel);
+					if (meter.isClosed.not) {
+						meter.pealLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
+						meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
 					}
-				}) }}.defer;
+				}}}.defer;
 			}).add;
 		});
 		(numOuts > 0).if({
 			outresp = OSCresponderNode(server.addr, "/" ++ server.name ++ "OutLevels", { |t, r, msg|
 				{try {
-				msg.copyToEnd(3).pairsDo({|val, peak, i|
-					var meter;
-					i = i * 0.5;
-					meter = outmeters[i];
-					if(meter.isClosed.not){
-						meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
-						meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
+				var channelCount = msg.size - 3 / 2;
+
+				channelCount.do {|channel|
+					var baseIndex = 3 + (2*channel);
+					var peakLevel = msg.at(baseIndex);
+					var rmsValue  = msg.at(baseIndex + 1);
+					var meter = outmeters.at(channel);
+					if (meter.isClosed.not) {
+						meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
+						meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
 					}
-				}) }}.defer;
+				}}}.defer;
 			}).add;
 		});
 	}
@@ -214,14 +207,14 @@ ServerMeter{
 
 	*new{ |server, numIns, numOuts|
 
-		var window, meterView, viewWidth,meterWidth = 15, gapWidth = 4;
+		var window, meterView;
 
 		numIns = numIns ?? { server.options.numInputBusChannels };
 		numOuts = numOuts ?? { server.options.numOutputBusChannels };
 
-		viewWidth = (numIns + numOuts + 2) * (meterWidth + gapWidth);
-
-		window = Window.new(server.name ++ " levels (dBFS)", Rect(5, 305, viewWidth + 20, 230));
+		window = Window.new(server.name ++ " levels (dBFS)",
+							Rect(5, 305, ServerMeterView.getWidth(numIns,numOuts), ServerMeterView.height),
+							false);
 		window.view.background = Color.grey(0.4);
 
 		meterView = ServerMeterView(server,window,0@0,numIns,numOuts);

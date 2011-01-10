@@ -74,10 +74,16 @@ build/CMakeCache.txt file.
 
 for example to enable a release build run the following in your build
 directory:
+
 cmake -DCMAKE_BUILD_TYPE=Release ..
 
 for a 32bit build on a 64bit machine (i.e. recent Mac systems), you need to configure cmake like this:
+
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS:STRING=-m32 -DCMAKE_C_FLAGS:STRING=-m32 ..
+
+for the BIG universal binary (on 10.6), use:
+
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='ppc;i386;x86_64' ..
 
 to install the whole program, run:
 make install

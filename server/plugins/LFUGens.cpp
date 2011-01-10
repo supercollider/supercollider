@@ -2328,6 +2328,42 @@ void LinExp_next(LinExp *unit, int inNumSamples)
 	);
 }
 
+#ifdef NOVA_SIMD
+void LinExp_next_nova(LinExp *unit, int inNumSamples)
+{
+	float *out = OUT(0);
+	float *in   = IN(0);
+
+	using namespace nova;
+
+	vec<float> dstlo (unit->m_dstlo);
+	vec<float> dstratio (unit->m_dstratio);
+	vec<float> rsrcrange (unit->m_rsrcrange);
+	vec<float> rrminuslo (unit->m_rrminuslo);
+
+	const int vecSize = vec<float>::size;
+
+	int unroll = inNumSamples / (2*vecSize);
+
+	do
+	{
+		vec<float> val0, val1;
+		val0.load_aligned(in);
+		val1.load_aligned(in + vecSize);
+
+		val0 = dstlo * pow(dstratio, val0 * rsrcrange + rrminuslo);
+		val1 = dstlo * pow(dstratio, val1 * rsrcrange + rrminuslo);
+
+		val0.store_aligned(out);
+		val1.store_aligned(out + vecSize);
+
+		in += 2*vecSize;
+		out += 2*vecSize;
+	} while (--unroll);
+}
+
+#endif
+
 void LinExp_next_kk(LinExp *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -2425,7 +2461,14 @@ void LinExp_SetCalc(LinExp* unit)
 			SETCALC(LinExp_next_kk); return;
 		}
 	};
+
+#ifdef NOVA_SIMD
+	if ((BUFLENGTH % (2*nova::vec<float>::size)) == 0)
+		SETCALC(LinExp_next_nova);
+	else
+#endif
 	SETCALC(LinExp_next);
+
 	float srclo = ZIN0(1);
 	float srchi = ZIN0(2);
 	float dstlo = ZIN0(3);

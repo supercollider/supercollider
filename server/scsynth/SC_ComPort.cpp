@@ -21,7 +21,7 @@
 #ifndef _WIN32
 # include "SC_ComPort.h"
 #else
-# include "../../headers/server/SC_ComPort.h"
+# include "../../include/server/SC_ComPort.h"
 #endif
 
 #include "SC_Endian.h"
@@ -63,7 +63,7 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 void dumpOSCmsg(int inSize, char* inData)
 {
 	int size;
-	char *data;
+	const char *data;
 
 	if (inData[0]) {
 		char *addr = inData;

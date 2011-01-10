@@ -294,7 +294,7 @@ String[char] : RawArray {
 		^this.as(Array).scramble.as(String)
 	}
 
-	rotate { |n|
+	rotate { arg n = 1;
 		^this.as(Array).rotate(n).as(String)
 	}
 
