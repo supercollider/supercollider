@@ -1227,16 +1227,20 @@ ScDocRenderer {
 }
 
 ScDoc {
-    classvar <>helpTargetDir;
-    classvar <>helpSourceDir;
+    classvar <helpTargetDir;
+    classvar <helpSourceDir;
     classvar <categoryMap;
     classvar <docMap;
     classvar <p, <r;
     classvar doWait;
 
-/*    *new {
-        ^super.new.init;
-    }*/
+    *helpSourceDir_ {|path|
+        helpSourceDir = path.standardizePath;
+    }
+
+    *helpTargetDir_ {|path|
+        helpTargetDir = path.standardizePath;
+    }
     
     *postProgress {|string|
         string.postln;
@@ -1364,19 +1368,18 @@ ScDoc {
     }
 
     *handleUndocumentedClasses {|force=false|
-        var n, m, name, cats;
-        var src, dest;
-        var srcbase = helpSourceDir +/+ "Classes";
+        var n, m, name, cats, dest;
+//        var src, dest;
+//        var srcbase = helpSourceDir +/+ "Classes";
         var destbase = helpTargetDir +/+ "Classes";
         ScDoc.postProgress("Checking for undocumented classes...");
         Class.allClasses.do {|c|
             name = c.name.asString;
-            src = srcbase +/+ name ++ ".schelp";
-
+//            src = srcbase +/+ name ++ ".schelp";
+            dest = destbase +/+ name ++ ".html";
 //            if(File.exists(src).not and: {name.find("Meta_")!=0}, {
-            if(docMap["Classes" +/+ name].isNil and: {name.find("Meta_")!=0}, { //this was actually slower!
+            if((File.exists(dest).not or: {docMap["Classes" +/+ name].isNil}) and: {name.find("Meta_")!=0}, { //this was actually slower!
             //FIXME: doesn't work quite right in case one removes the src file, then it's still in docMap cache..
-                dest = destbase +/+ name ++ ".html";
                 n = List.new;
                 n.add((tag:\class, text:name));
                 n.add((tag:\summary, text:""));
@@ -1396,7 +1399,7 @@ ScDoc {
                 if((force or: File.exists(dest).not), {
                     ScDoc.postProgress("Generating doc for class: "++name);
                     n.add((tag:\description, children:m=List.new));
-                    m.add((tag:\prose, text:"This class is missing documentation. Please create and edit "++src, display:\block));
+                    m.add((tag:\prose, text:"This class is missing documentation. Please create and edit HelpSource/Classes/"++name++".schelp", display:\block));
                     c.helpFilePath !? {
                         m.add((tag:\prose, text:"Old help file: ", display:\block));
                         m.add((tag:\link, text:c.helpFilePath, display:\inline));
@@ -1469,14 +1472,14 @@ ScDoc {
         docMap.writeArchive(path);
     }
 
-    *updateFile {|source,force=false|
+    *updateFile {|source, rootDir, force=false|
         var lastDot = source.findBackwards(".");
-        var subtarget = source.copyRange(helpSourceDir.standardizePath.size + 1, lastDot - 1);
+        var subtarget = source.copyRange(rootDir.size + 1, lastDot - 1);
         var target = helpTargetDir +/+ subtarget ++".html";
         var folder = target.dirname;
         var ext = source.copyToEnd(lastDot);
-        if(source.beginsWith(helpSourceDir).not) {
-            ScDoc.postProgress("File location error:\n"++source++"\nis not inside "++helpSourceDir);
+        if(source.beginsWith(rootDir).not) {
+            ScDoc.postProgress("File location error:\n"++source++"\nis not inside "++rootDir);
             ^nil;
         };
         if(ext == ".schelp", {
@@ -1498,6 +1501,22 @@ ScDoc {
     }
 
     *updateAll {|force=false,doneFunc=nil,threaded=false|
+        var recurseHelpSource = {|dir,force|
+            ScDoc.postProgress("Parsing all in "++dir);
+            PathName(dir).filesDo {|path|
+                this.updateFile(path.fullPath, dir, force);
+            };
+        };
+        var findExtHelp = {|p,force|
+            p.folders.do {|p2|
+                if(p2.fileName=="HelpSource") {
+                    recurseHelpSource.(p2.fullPath,force);
+                } {
+                    findExtHelp.(p2,force);
+                }
+            }
+        };
+
         var f = {
             if(force.not, {
                 force = this.readDocMap;
@@ -1509,15 +1528,16 @@ ScDoc {
                 e.delete = true;
             };
 
-            PathName(helpSourceDir).filesDo {|path|
-                this.updateFile(path.fullPath, force);
-            };
+            recurseHelpSource.(helpSourceDir, force);
+            findExtHelp.(PathName(thisProcess.platform.userExtensionDir), force);
+            findExtHelp.(PathName(thisProcess.platform.systemExtensionDir), force);
+
             this.handleUndocumentedClasses(force);
             docMap.pairsDo{|k,e|
                 if(e.delete==true, {
                     ScDoc.postProgress("Deleting "++e.path);
                     docMap.removeAt(k);
-                    //TODO: we should also remove the rendered dest file if existent?
+                    //TODO: we should also remove the rendered dest file if existent? or maybe too dangerous..
                 });
                 e.removeAt(\delete); //remove the key since we don't need it anymore
             };
