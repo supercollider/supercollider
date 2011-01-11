@@ -89,17 +89,10 @@ HTML renderer stuff:
 - handle prose before first section in class doc? or don't allow it..
 - other sections not allowed in class doc?
 
-- Handle extensions (quarks, plugins, etc)
-should merge stuff into the tree before parsing. Look in Extensions/HelpSource? or TheQuark/HelpSource, etc..
-documenting added methods could be done in files named +ClassName.schelp
+- Handle methods added by extensions
+Documenting added methods could be done in files named +ClassName.schelp
 before we render each class, we need to find all +ClassName.schelp files and merge their parsed node tree with the current class.
-probably the best way is to first recursively search for these and add them to a dictionary with classname as key.
-and first, search for all HelpSource dirs and add these to an array. The paths to start with are:
-//thisProcess.platform.classLibraryDir (no, these are only classes)
-thisProcess.platform.systemExtensionDir
-thisProcess.platform.userExtensionDir
-and this is also included of course, but no need to search:
-thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
+We should probably find these files first and keep their full paths in a dictionary with classname as key.
 
 - validation pass:
 

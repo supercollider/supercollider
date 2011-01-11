@@ -1493,9 +1493,11 @@ ScDoc {
             docMap[subtarget].delete = false;
         }, {
             //fixme: copy only if file is newer (problem: different args on different platforms)
-            ScDoc.postProgress("Copying" + source + "to" + folder);
-            ("mkdir -p"+folder.escapeChar($ )).systemCmd;
-            ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
+            if(("test"+source.escapeChar($ )+"-ot"+(folder +/+ source.basename).escapeChar($ )).systemCmd!=0, {
+                ScDoc.postProgress("Copying" + source + "to" + (folder +/+ source.basename));
+                ("mkdir -p"+folder.escapeChar($ )).systemCmd;
+                ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
+            });
         });
     
     }
