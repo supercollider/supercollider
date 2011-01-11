@@ -1471,12 +1471,17 @@ ScDoc {
 
     *updateFile {|source,force=false|
         var lastDot = source.findBackwards(".");
-        var subtarget = source.copyRange(helpSourceDir.size+1,lastDot-1);
+        var subtarget = source.copyRange(helpSourceDir.standardizePath.size + 1, lastDot - 1);
         var target = helpTargetDir +/+ subtarget ++".html";
         var folder = target.dirname;
         var ext = source.copyToEnd(lastDot);
+        if(source.beginsWith(helpSourceDir).not) {
+            ScDoc.postProgress("File location error:\n"++source++"\nis not inside "++helpSourceDir);
+            ^nil;
+        };
         if(ext == ".schelp", {
-            if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { //update only if needed
+            //update only if needed
+            if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { 
                 ScDoc.postProgress("Parsing "++source);
                 p.parseFile(source);
                 this.addToDocMap(p,subtarget);
@@ -1484,6 +1489,7 @@ ScDoc {
             });
             docMap[subtarget].delete = false;
         }, {
+            //fixme: copy only if file is newer (problem: different args on different platforms)
             ScDoc.postProgress("Copying" + source + "to" + folder);
             ("mkdir -p"+folder.escapeChar($ )).systemCmd;
             ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
