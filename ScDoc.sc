@@ -208,6 +208,9 @@ ScDocParser {
                     singleline = false;
                     this.addTag('||::',nil,false,\inline);
                 },
+                '\\||', {
+                    this.addText("||");
+                },
                 '::', { //ends tables and lists
                     this.endCurrent;
                     this.popTree;
