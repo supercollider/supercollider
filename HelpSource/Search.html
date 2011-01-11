@@ -78,6 +78,7 @@ var checkboxes;
 var checkboxes2;
 var fields = ["title","summary","categories"];
 var fields2 = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
+var classes = undefined;
     
 window.onload = function() {
     newinput = document.getElementById("search_input").value;
@@ -125,6 +126,13 @@ window.onload = function() {
         newinput = x;
     }
     
+    classes = {};
+    for(var k in docmap) {
+        var doc = docmap[k];
+        if(/Classes/.test(doc.path))
+            classes[doc.title] = doc;
+    }
+
     setInterval(delayed_update,250);
 }
 
@@ -350,12 +358,25 @@ function doSearch() {
         var tmp = []; for(var k in cats) tmp.push([k,cats[k]]);
         cats = tmp;
 
+        var include_ext_classes = document.getElementById("check_ext_classes").checked;
+
         // search methods
         if(document.getElementById("check_methods").checked) {
             for(i in methods) {
                 var m = methods[i];
                 if(re.test(m[0])) {
-                    mets.push(m);
+                    if(include_ext_classes) {
+                        mets.push(m);
+                    } else {
+                        var c = [];
+                        for(i2 in m[1]) {
+                            var k = m[1][i2];
+                            var doc = classes[k];
+                            if(doc && doc.installed != "extension")
+                                c.push(k);
+                        }
+                        mets.push([m[0],c]);
+                    }
                     foundMets = true;
                     count++;
                 }
