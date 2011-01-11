@@ -94,6 +94,24 @@ window.onload = function() {
         checkboxes2[k] = document.getElementById("check_"+k);
         checkboxes2[k].onchange = doSearch;
     }
+    
+    var cec = document.getElementById("check_ext_classes");
+    cec.onchange = function() {
+        if(cec.checked)
+            checkboxes2.classes.checked = true;
+        doSearch();
+    }
+    
+/*    checkboxes2.classes.onchange = function() {
+        cec.disabled = !checkboxes2.classes.checked;
+        doSearch();
+    }*/
+    checkboxes2.classes.onchange = function() {
+        if(!checkboxes2.classes.checked)
+            cec.checked = false;
+        doSearch();
+    }
+    
     document.getElementById("check_filename").onchange = doSearch;
     document.getElementById("check_methods").onchange = doSearch;
     document.getElementById("ignore_case").onchange = doSearch;
@@ -131,11 +149,13 @@ function clear2() {
     for(var k in checkboxes2)
         x |= checkboxes2[k].checked;
     x |= document.getElementById("check_methods").checked;
+    x |= document.getElementById("check_ext_classes").checked;
 
     for(var k in checkboxes2)
         checkboxes2[k].checked = !x;
     document.getElementById("check_methods").checked = !x;
-
+    document.getElementById("check_ext_classes").checked = !x;
+    
     doSearch();
 }
 
@@ -160,7 +180,10 @@ function matchDoc(doc,file,folder,re) {
     var c = checkboxes2[folder.toLowerCase()];
     if(c && !c.checked)
         return false;
-    
+
+    if(doc.installed=="extension" && !document.getElementById("check_ext_classes").checked)
+        return false;
+
     for(var i=0;i<fields.length;i++) {
         var f = fields[i];
 //        if(checkboxes[i].checked && doc[f] && doc[f].toLowerCase().indexOf(txt)>=0)
@@ -392,6 +415,7 @@ function delayed_update() {
 <br>
 <span class="label">Include:</span>
 <input type="checkbox" id="check_classes" checked="true">Classes</input>
+<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
 <input type="checkbox" id="check_reference" checked="true">Reference</input>
 <input type="checkbox" id="check_guides" checked="true">Guides</input>
 <input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
