@@ -1166,7 +1166,7 @@ ScDocRenderer {
     }
 
     renderHTML {|filename, folder=".", toc=true|
-        var f,x,name,mets,inode,cnode;
+        var f,x,name;
         
         ScDoc.postProgress("Rendering "++filename);
 
@@ -1188,28 +1188,25 @@ ScDocRenderer {
             currentClass = name.asSymbol.asClass;
             
             currentClass !? {
-                cnode = this.addUndocumentedMethods(currentClass.class,\classmethods);
-                inode = this.addUndocumentedMethods(currentClass,\instancemethods);
+                this.addUndocumentedMethods(currentClass.class,\classmethods);
+                this.addUndocumentedMethods(currentClass,\instancemethods);
                 //TODO: add methods from +ClassName.schelp (recursive search)
             };
 
-            this.renderHTMLHeader(f,name,\class,folder,toc);
-
-            x = parser.findNode(\description);
-            this.renderHTMLSubTree(f,x);
-
-            this.renderHTMLSubTree(f,cnode);
-            this.renderHTMLSubTree(f,inode);
-            
-            x = parser.findNode(\examples);
-            this.renderHTMLSubTree(f,x);
-
+            x = 10;
             parser.root.do {|n|
-                if(n.tag == \section) {
-                    this.renderHTMLSubTree(f,n);
-                };
+                switch(n.tag,
+                    \description,       { n.sort = 0 },
+                    \classmethods,      { n.sort = 1 },
+                    \instancemethods,   { n.sort = 2 },
+                    \examples,          { n.sort = 3 },
+                    { n.sort = x = x + 1 }
+                );
             };
+            parser.root.sort {|a,b| a.sort<b.sort};
 
+            this.renderHTMLHeader(f,name,\class,folder,toc);
+            this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
         },{
             x = parser.findNode(\title);
             name = x.text.stripWhiteSpace;

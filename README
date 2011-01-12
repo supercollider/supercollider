@@ -43,8 +43,6 @@ hello
 
 soft::there::
 
-- TOC doesn't take into account the forced order of description-classmethods-instancemethods-examples for classes
-
 - make sure the new undocumented-method-generation works as it should for:
   only setter
   getter and setter
