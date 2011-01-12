@@ -139,7 +139,6 @@ void QcWaveform::load( const QString& filename )
 
   SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
 
-  printf("bla\n");
   if( !new_sf ) {
     printf("Could not open soundfile!\n");
     return;
@@ -363,31 +362,43 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
   _dragPoint = ev->pos();
   _dragFrame = ev->pos().x() * _fpp + _beg;
   Qt::KeyboardModifiers mods = ev->modifiers();
-  if( mods & Qt::ShiftModifier ) {
-    _dragAction = Zoom;
-    _dragData = zoom();
-  }
-  else if( mods & Qt::MetaModifier ) {
-    _dragAction = Select;
-    const Selection &s = _selections[_curSel];
-    printf("start %Li size %Li\n", s.start, s.size);
-    if( _dragFrame < s.start + (s.size*0.5) ) {
-      setSelectionStart( _curSel, _dragFrame );
-      _dragFrame = s.start + s.size;
+  Qt::MouseButton btn = ev->button();
+#ifdef Q_OS_MAC
+  Qt::KeyboardModifier CTRL = Qt::MetaModifier;
+#else
+  Qt::KeyboardModifier CTRL = Qt::ControlModifier;
+#endif
+  if( btn == Qt::LeftButton ) {
+    if( mods & Qt::ShiftModifier ) {
+      _dragAction = Select;
+      const Selection &s = _selections[_curSel];
+      if( _dragFrame < s.start + (s.size*0.5) ) {
+        setSelectionStart( _curSel, _dragFrame );
+        _dragFrame = s.start + s.size;
+      }
+      else {
+        setSelectionEnd( _curSel, _dragFrame );
+        _dragFrame = s.start;
+      }
+    }
+    else if( mods & CTRL ) {
+      _dragAction = MoveSelection;
     }
     else {
-      setSelectionEnd( _curSel, _dragFrame );
-      _dragFrame = s.start;
+      _dragAction = Select;
+      _selections[_curSel].start = _dragFrame;
+      _selections[_curSel].size = 0;
+      update();
     }
   }
-  else if( mods & Qt::ControlModifier ) {
-    _dragAction = Select;
-    _selections[_curSel].start = _dragFrame;
-    _selections[_curSel].size = 0;
-    update();
-  }
-  else {
-    _dragAction = Scroll;
+  else if( btn == Qt::RightButton ) {
+    if( mods & Qt::ShiftModifier ) {
+      _dragAction = Zoom;
+      _dragData = zoom();
+    }
+    else {
+      _dragAction = Scroll;
+    }
   }
 }
 
@@ -415,6 +426,15 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
   else if( _dragAction == Select ) {
     quint64 frame = qMax( 0, qMin( width(), ev->pos().x() ) ) * _fpp + _beg;
     setSelection( _curSel, _dragFrame, frame );
+    update();
+    Q_EMIT( action() );
+  }
+  else if( _dragAction == MoveSelection ) {
+    double dpos = ev->pos().x() - _dragPoint.x();
+    Selection &s = _selections[_curSel];
+    s.start = qMax( 0.0, s.start + (dpos * _fpp) );
+    s.start = qMin( s.start, s.size < sfInfo.frames ? sfInfo.frames - s.size : 0 );
+    _dragPoint = ev->pos();
     update();
     Q_EMIT( action() );
   }
