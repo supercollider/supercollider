@@ -184,7 +184,8 @@ private:
   enum DragAction {
     Scroll,
     Zoom,
-    Select
+    Select,
+    MoveSelection
   };
   DragAction _dragAction;
   QPointF _dragPoint;
