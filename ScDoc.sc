@@ -1085,7 +1085,12 @@ ScDocRenderer {
         if(folder==".",{folder=""});
         f.write("<div class='header'>");
 //        f.write("<div id='label'><a href='"++baseDir+/+"Help.html"++"'>SuperCollider</a> "++folder.asString.toUpper++"</div>");
-        f.write("<div id='label'>SuperCollider "++folder.asString.toUpper++"</div>");
+        f.write("<div id='label'>SuperCollider "++folder.asString.toUpper);
+        if(type==\class and: currentClass.notNil) {
+            if(currentClass.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not,
+                    {f.write(" (extension)")});
+        };
+        f.write("</div>");
         x = parser.findNode(\categories);
         if(x.text.notEmpty, {
             f.write("<div id='categories'>");

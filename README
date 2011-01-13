@@ -43,8 +43,6 @@ hello
 
 soft::there::
 
-- show extension classes in header "SuperCollider CLASSES [extension]"
-
 - make sure the new undocumented-method-generation works as it should for:
   only setter
   getter and setter
