@@ -114,6 +114,7 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _cache(0),
   _beg(0.0),
   _dur(0.0),
+  _yZoom(1.f),
   _curSel(0),
   pixmap(0),
   _peakColor( QColor(242,178,0) ),
@@ -178,6 +179,16 @@ float QcWaveform::loadProgress()
 float QcWaveform::zoom()
 {
   return sfInfo.frames ? (double) _dur / sfInfo.frames : 0;
+}
+
+float QcWaveform::xZoom()
+{
+  return ( sfInfo.samplerate ? (double) _dur / sfInfo.samplerate : 0 );
+}
+
+float QcWaveform::yZoom()
+{
+  return _yZoom;
 }
 
 void QcWaveform::setCurrentSelection( int i ) {
@@ -301,6 +312,19 @@ void QcWaveform::scrollToStart()
 void QcWaveform::scrollToEnd()
 {
   scrollTo( sfInfo.frames - _dur );
+}
+
+void QcWaveform::setXZoom( float seconds )
+{
+  float frac = seconds * sfInfo.samplerate / sfInfo.frames;
+  printf("frac %f\n", frac );
+  zoomTo( frac );
+}
+
+void QcWaveform::setYZoom( float factor )
+{
+  _yZoom = factor;
+  redraw();
 }
 
 void QcWaveform::resizeEvent( QResizeEvent * )
@@ -486,24 +510,33 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   // geometry
   float spacing = pix->height() * 0.15f / (sfInfo.channels + 1);
   float chHeight = pix->height() * 0.85f / (float) sfInfo.channels;
-  float yscale = -chHeight / 65535.f;
-  spacing /= yscale;
+  float yScale = -chHeight / 65535.f * _yZoom;
+  //spacing /= yscale;
 
   // initial painter setup
   QPen minMaxPen( _peakColor );
   QPen rmsPen( _rmsColor );
-  p.scale( 1.f, yscale );
-  p.translate( (float) x, -32767.f + spacing );
 
+  float halfChH = chHeight * 0.5;
+  p.translate( 0.f, halfChH + spacing );
 
   int ch;
   for( ch = 0; ch < soundStream->channels(); ++ch ) {
 
+    // draw center line
     p.setPen( QColor(90,90,90) );
     p.drawLine( x, 0, x + width, 0 );
+
+    // draw bounding lines
     p.setPen( QColor(100,100,100) );
-    p.drawLine( x, SHRT_MIN, x+width, SHRT_MIN );
-    p.drawLine( x, SHRT_MAX, x+width, SHRT_MAX );
+    p.drawLine( x, halfChH, x+width, halfChH );
+    p.drawLine( x, -halfChH, x+width, -halfChH );
+
+    p.save();
+
+    p.setClipping(true);
+    p.setClipRect( x, -halfChH, x+width, chHeight );
+    p.scale( 1.f, yScale );
 
     if( _fpp > 1.0 ) {
 
@@ -570,7 +603,9 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
       p.drawPath( path );
     }
 
-    p.translate( 0.f, -65535.f + spacing );
+    p.restore();
+
+    p.translate( 0.f, chHeight + spacing );
   }
 
 }

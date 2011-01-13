@@ -54,6 +54,13 @@ QSoundFileView : QView {
 
   scrollToEnd { this.invokeMethod( \scrollToEnd ); }
 
+  xZoom { ^this.getProperty( \xZoom ); }
+
+  xZoom_ { arg seconds; this.setProperty( \xZoom, seconds ); }
+
+  yZoom { ^this.getProperty( \yZoom ); }
+
+  yZoom_ { arg factor; this.setProperty( \yZoom, factor.asFloat ); }
 
   //// Selections
 
