@@ -82,24 +82,22 @@ binary ops only uses chars from this list: !@%&*-+=|<>?/
   if HelpSource/Methods/methodname.schelp exists, merge with this so can write interface style documentation?
   This would produce a lot of files though!
 
-HTML renderer stuff:
 - render to string instead of directly to file?
-- handle prose before first section in class doc? or don't allow it..
-- other sections not allowed in class doc?
 
 - Handle methods added by extensions
 Documenting added methods could be done in files named +ClassName.schelp
 before we render each class, we need to find all +ClassName.schelp files and merge their parsed node tree with the current class.
 We should probably find these files first and keep their full paths in a dictionary with classname as key.
+note that they should *add* to classmethods and instancemethods instead of creating new sections for these..
 
 - validation pass:
 
-* Some tags should only be allowed once. like class, title, related, categories, summary, description, methods, examples..
+* Some tags should only be allowed once. like class, title, related, categories, summary, description, examples..
 Also, they should only occur in the root node.
+
+* private:: should come before any other method
 
 * force class reference filename to be equal to class name
 
-* check that no sections are used in class reference, and that no text is before the description/methods/examples..
-
-* make sure ## and || only happens inside lists?
+* make sure ## and || only happens inside lists/tables
 

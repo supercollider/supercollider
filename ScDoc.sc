@@ -1024,12 +1024,16 @@ ScDocRenderer {
                             do_children.(n.children);
                         },
                         \classmethods, {
-                            f.write("<li class='toc1'><a href='#classmethods'>Class methods</a></li>\n");
-                            do_children.(n.children);
+                            if(n.children.select{|x|x.tag!=\private}.notEmpty) {
+                                f.write("<li class='toc1'><a href='#classmethods'>Class methods</a></li>\n");
+                                do_children.(n.children);
+                            };
                         },
                         \instancemethods, {
-                            f.write("<li class='toc1'><a href='#instancemethods'>Instance methods</a></li>\n");
-                            do_children.(n.children);
+                            if(n.children.select{|x|x.tag!=\private}.notEmpty) {
+                                f.write("<li class='toc1'><a href='#instancemethods'>Instance methods</a></li>\n");
+                                do_children.(n.children);
+                            };
                         },
                         \method, {
                             f.write("<li class='toc3'>");
