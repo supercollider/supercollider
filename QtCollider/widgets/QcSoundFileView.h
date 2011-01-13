@@ -88,6 +88,9 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( int currentSelection READ currentSelection WRITE setCurrentSelection );
   Q_PROPERTY( QColor peakColor READ dummyColor WRITE setPeakColor );
   Q_PROPERTY( QColor rmsColor READ dummyColor WRITE setRmsColor );
+  Q_PROPERTY( float yZoom READ yZoom WRITE setYZoom );
+  Q_PROPERTY( float xZoom READ xZoom WRITE setXZoom );
+
 public:
 
   struct Selection {
@@ -106,7 +109,9 @@ public:
   quint64 frames() { return sfInfo.frames; }
   quint64 viewFrames() { return _dur; }
   quint64 scrollPos() { return _beg; }
-  float zoom();
+  float zoom(); //visible fraction
+  float xZoom(); //visible seconds
+  float yZoom(); //factor
 
   int currentSelection() const { return _curSel; }
   void setCurrentSelection( int i );
@@ -130,6 +135,8 @@ public Q_SLOTS:
   void scrollBy( qint64 frames );
   void scrollToStart();
   void scrollToEnd();
+  void setYZoom( float factor );
+  void setXZoom( float seconds );
 
 Q_SIGNALS:
 
@@ -169,6 +176,7 @@ private:
   quint64 _beg;
   quint64 _dur;
   double _fpp;
+  float _yZoom;
 
   // selections
   Selection _selections[64];
