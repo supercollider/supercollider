@@ -139,6 +139,10 @@ class QcGraph : public QWidget, QcHelper
     void setGrid( const QPointF &pt ) { _gridMetrics = pt; update(); }
     void setGridOn( bool b ) { _gridOn = b; update(); }
 
+  Q_SIGNALS:
+    void action();
+    void metaAction();
+
   private:
     inline void setValue( QcGraphElement *, const QPointF & );
     QPointF pos( const QPointF & value );
