@@ -1,5 +1,5 @@
 class:: LFClipNoise
-summary:: Clipped noise.
+summary:: Clipped noise
 related:: Classes/LFDClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise1, Classes/LFNoise2
 categories::  UGens>Generators>Stochastic
 

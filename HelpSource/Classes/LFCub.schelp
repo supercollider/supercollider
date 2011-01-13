@@ -1,5 +1,5 @@
 class:: LFCub
-summary:: A sine like shape made of two cubic pieces.
+summary:: A sine like shape made of two cubic pieces
 related:: Classes/LFPar, Classes/LFPulse, Classes/LFSaw, Classes/LFTri
 categories::  UGens>Generators>Deterministic
 
@@ -31,7 +31,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 { LFCub.ar(LFCub.kr(LFCub.kr(0.2,0,8,10),0, 400,800),0,0.1) }.play
 { LFCub.ar(LFCub.kr(0.2, 0, 400,800),0,0.1) }.play
 { LFCub.ar(800,0,0.1) }.play
@@ -45,7 +44,6 @@ code::
 { LFPar.ar(XLine.kr(100,8000,30),0,0.1) }.play
 
 
-
 { SinOsc.ar(SinOsc.kr(SinOsc.kr(0.2,0,8,10),0, 400,800),0,0.1) }.play
 { SinOsc.ar(SinOsc.kr(0.2, 0, 400,800),0,0.1) }.play
 { SinOsc.ar(800,0,0.1) }.play
@@ -55,6 +53,5 @@ code::
 { LFTri.ar(LFTri.kr(0.2, 0, 400,800),0,0.1) }.play
 { LFTri.ar(800,0,0.1) }.play
 { LFTri.ar(XLine.kr(100,8000,30),0,0.1) }.play
-
 ::
 

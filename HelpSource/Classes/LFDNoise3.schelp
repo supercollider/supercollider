@@ -1,5 +1,5 @@
 class:: LFDNoise3
-summary:: Dynamic cubic noise.
+summary:: Dynamic cubic noise
 related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFNoise0, Classes/LFNoise1, Classes/LFNoise2
 categories::  UGens>Generators>Stochastic
 
@@ -9,13 +9,17 @@ Description::
 Similar to  link::Classes/LFNoise2:: , it generates polynomially
 interpolated random values at a rate given by the
 code::freq::  argument, with 3 differences:
-
+list::
+## no time quantization 
+## fast recovery from low freq values footnote::
 link::Classes/LFNoise0:: ,  link::Classes/LFNoise1::  and
 link::Classes/LFNoise2::  quantize to the nearest integer division
 of the samplerate, and they poll the  code::freq:: 
 argument only when scheduled; thus they often seem to hang
-when freqs get very low).
-
+when freqs get very low.
+::
+## cubic instead of quadratic interpolation
+::
 
 If you don't need very high or very low freqs, or use fixed freqs,
 link::Classes/LFNoise2::  is more efficient.
@@ -37,7 +41,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 // try wiggling mouse quickly: 
 // LFNoise2 overshoots when going from high to low freqs, LFDNoise changes smoothly.
 
@@ -61,6 +64,5 @@ code::
 		)
 }.play;
 )
-
 ::
 

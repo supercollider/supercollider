@@ -1,19 +1,24 @@
 class:: LFDNoise0
-summary:: Dynamic step noise.
+summary:: Dynamic step noise
 related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise1, Classes/LFNoise2
 categories::  UGens>Generators>Stochastic
 
 
 Description::
 
-Like  link::Classes/LFNoise0:: , it generates random values at a rate
+Like link::Classes/LFNoise0::, it generates random values at a rate
 given by the  code::freq::  argument, with two differences:
 
+list::
+## no time quantization 
+## fast recovery from low freq values footnote::
 link::Classes/LFNoise0:: ,  link::Classes/LFNoise1::  and
 link::Classes/LFNoise2::  quantize to the nearest integer division
 of the samplerate, and they poll the  code::freq:: 
 argument only when scheduled; thus they often seem to hang
-when freqs get very low).
+when freqs get very low.
+::
+::
 
 
 If you don't need very high or very low freqs, or use fixed freqs,
@@ -36,7 +41,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 // try wiggling mouse quickly;
 // LFNoise frequently seems stuck, LFDNoise changes smoothly.
 
@@ -58,6 +62,5 @@ code::
 { LFDNoise0.ar(XLine.kr(1000, 20000, 10), 0.1) }.scope;
 
 { LFNoise2.ar(1000, 0.25) }.play;
-
 ::
 

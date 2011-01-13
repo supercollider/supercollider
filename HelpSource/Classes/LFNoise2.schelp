@@ -10,6 +10,9 @@ Generates quadratically interpolated random values at a rate given by
 the nearest integer division of the sample rate by the
 code::freq::  argument.
 
+note::
+quadratic interpolation means that the noise values can occasionally extend beyond the normal range of +-1, if the freq varies in certain ways. If this is undesirable then you might like to clip2 the values, or use a linearly-interpolating unit instead.
+::
 
 classmethods::
 
@@ -27,35 +30,22 @@ This value will be added to the output.
 Examples::
 
 code::
+{ LFNoise2.ar(1000, 0.25) }.play;
 
+// modulate frequency
+
+{ LFNoise2.ar(XLine.kr(1000, 10000, 10), 0.25) }.play;
+
+// as frequency modulator
 (
-SynthDef("help-LFNoise2", { arg out=0;
-	Out.ar(out, 
-		LFNoise2.ar(1000, 0.25)
-	)
-}).play;
+{ SinOsc.ar(
+		LFNoise2.ar(4, 400, 450),
+		0, 0.2
+	) 
+}.play;
 )
 
-//modulate frequency
-(
-SynthDef("help-LFNoise2", { arg out=0;
-	Out.ar(out, 
-		LFNoise2.ar(XLine.kr(1000, 10000, 10), 0.25)
-	)
-}).play;
-)
-
-//use as frequency control
-(
-SynthDef("help-LFNoise2", { arg out=0;
-	Out.ar(out, 
-		SinOsc.ar(
-			LFNoise2.ar(4, 400, 450),
-			0, 0.2
-		)
-	)
-}).play;
-)
-
+// freq is the rate of interpolation points
+{ var freq = 1000; [LFNoise2.ar(freq), Impulse.ar(freq)] }.plot
 ::
 

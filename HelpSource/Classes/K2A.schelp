@@ -21,7 +21,6 @@ The input signal.
 Examples::
 
 code::
-
 { K2A.ar(WhiteNoise.kr(0.3)) }.scope;
 
 
@@ -49,6 +48,5 @@ code::
 	] * 0.3
 }.scope;
 )
-
 ::
 

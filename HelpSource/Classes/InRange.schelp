@@ -7,13 +7,13 @@ categories::  UGens>Maths
 Description::
 
 If  code::in::  is ≥  code::lo::  and ≤
-code::hi::  output 1, otherwise output 0. Output is
+code::hi::  output 1.0, otherwise output 0.0. Output is
 initially zero.
 
 
 classmethods::
 
-method::ar, kr
+method::ar, kr, ir
 
 argument::in
 

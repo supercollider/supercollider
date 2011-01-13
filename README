@@ -43,6 +43,8 @@ hello
 
 soft::there::
 
+- show extension classes in header "SuperCollider CLASSES [extension]"
+
 - make sure the new undocumented-method-generation works as it should for:
   only setter
   getter and setter
@@ -98,6 +100,8 @@ Also, they should only occur in the root node.
 * private:: should come before any other method
 
 * force class reference filename to be equal to class name
+
+* check method argument names (and order?). it's ok to skip arguments though..
 
 * make sure ## and || only happens inside lists/tables
 

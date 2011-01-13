@@ -1,5 +1,5 @@
 class:: LFSaw
-summary:: Sawtooth oscillator.
+summary:: Sawtooth oscillator
 related:: Classes/LFCub, Classes/LFPar, Classes/LFPulse, Classes/LFTri, Classes/Saw
 categories::  UGens>Generators>Deterministic
 
@@ -31,11 +31,9 @@ This value will be added to the output.
 Examples::
 
 code::
-
 { LFSaw.ar(500, 1, 0.1) }.play
 
 // used as both Oscillator and LFO:
 { LFSaw.ar(LFSaw.kr(4, 0, 200, 400), 0, 0.1) }.play
-
 ::
 

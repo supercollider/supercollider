@@ -1,6 +1,6 @@
 class:: InTrig
 summary:: Generate a trigger anytime a bus is set.
-categories::  UGens>InOut
+categories::  UGens>InOut, UGens>Triggers
 
 
 Description::
@@ -15,12 +15,9 @@ classmethods::
 method::kr
 
 argument::bus
-
 The index of the bus to read in from.
 
-
 argument::numChannels
-
 The number of channels (i.e. adjacent buses) to read in. You
 cannot modulate this number by assigning it to an argument in a
 SynthDef.
@@ -29,7 +26,6 @@ SynthDef.
 Examples::
 
 code::
-
 s = Server.local;
 b = Bus.control(s,1);
 
@@ -42,7 +38,6 @@ SynthDef("help-InTrig",{arg out=0,busnum=0;
 }).play(s,[\out, 0, \busnum, b.index]);
 
 
-
 b.set(1.0);
 
 b.value = 1.0;
@@ -50,7 +45,7 @@ b.value = 1.0;
 b.value = 0.2;
 
 b.value = 0.1;
+::
 
 compare with link::Classes/In:: example.
 
-::

@@ -1,5 +1,5 @@
 class:: LFNoise1
-summary:: Ramp noise.
+summary:: Ramp noise
 related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise0, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise2
 categories::  UGens>Generators>Stochastic
 
@@ -27,35 +27,22 @@ This value will be added to the output.
 Examples::
 
 code::
+{ LFNoise1.ar(1000, 0.25) }.play;
 
+// modulate frequency
+
+{ LFNoise1.ar(XLine.kr(1000, 10000, 10), 0.25) }.play;
+
+// as frequency modulator
 (
-SynthDef("help-LFNoise1", { arg out=0;
-	Out.ar(out, 
-		LFNoise1.ar(1000, 0.25)
-	)
-}).play;
+{ SinOsc.ar(
+		LFNoise1.ar(4, 400, 450),
+		0, 0.2
+	) 
+}.play;
 )
 
-//modulate frequency
-(
-SynthDef("help-LFNoise1", { arg out=0;
-	Out.ar(out, 
-		LFNoise1.ar(XLine.kr(1000, 10000, 10), 0.25)
-	)
-}).play;
-)
-
-//use as frequency control
-(
-SynthDef("help-LFNoise1", { arg out=0;
-	Out.ar(out, 
-		SinOsc.ar(
-			LFNoise1.ar(4, 400, 450),
-			0, 0.2
-		)
-	)
-}).play;
-)
-
+// freq is the rate of starting points
+{ var freq = 1000; [LFNoise1.ar(freq), Impulse.ar(freq)] }.plot
 ::
 
