@@ -3,7 +3,7 @@ QEnvelopeView : QView
   var <editable, <step, <grid, <gridOn = false;
   var <gridColor, <strokeColor, <fillColor, <selectionColor;
   var <drawLines = true, <drawRects = true;
-  var <>metaAction;
+  var <metaAction;
 
   *qtClass {^"QcGraph"}
 
@@ -148,6 +148,11 @@ QEnvelopeView : QView
   setThumbHeight { this.nonimpl("setThumbHeight"); }
 
   setThumbSize { this.nonimpl("setThumbSize"); }
+
+  metaAction_ { arg function;
+    metaAction = function;
+    this.setSignalHandler( "metaAction()", \doMetaAction );
+  }
 
   doMetaAction {
     metaAction.value(this);

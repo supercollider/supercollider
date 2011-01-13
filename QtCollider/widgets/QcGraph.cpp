@@ -456,7 +456,7 @@ void QcGraph::doAction( Qt::KeyboardModifiers mods )
 #endif
 
   if( mods & ctrlMod )
-    QApplication::postEvent( this, new ScMethodCallEvent( "doMetaAction" ) );
+    Q_EMIT( metaAction() );
   else
-    QApplication::postEvent( this, new ScMethodCallEvent( "doAction" ) );
+    Q_EMIT( action() );
 }
