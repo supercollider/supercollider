@@ -90,6 +90,10 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( QColor rmsColor READ dummyColor WRITE setRmsColor );
   Q_PROPERTY( float yZoom READ yZoom WRITE setYZoom );
   Q_PROPERTY( float xZoom READ xZoom WRITE setXZoom );
+  Q_PROPERTY( bool cursorVisible READ cursorVisible WRITE setCursorVisible );
+  Q_PROPERTY( bool cursorEditable READ dummyBool WRITE setCursorEditable );
+  Q_PROPERTY( int cursorPosition READ cursorPosition WRITE setCursorPosition );
+  Q_PROPERTY( QColor cursorColor READ dummyColor WRITE setCursorColor );
 
 public:
 
@@ -122,6 +126,13 @@ public:
   Q_INVOKABLE void setSelectionEnd( int i, quint64 frame );
   Q_INVOKABLE void setSelectionEditable( int index, bool editable );
   Q_INVOKABLE void setSelectionColor( int index, const QColor &clr );
+
+  bool cursorVisible() { return _showCursor; }
+  void setCursorVisible( bool b ) { _showCursor = b; update(); }
+  int cursorPosition() { return _cursorPos; }
+  void setCursorPosition( int pos ) { _cursorPos = pos; update(); }
+  void setCursorColor( const QColor &c ) { _cursorColor = c; update(); }
+  void setCursorEditable( bool b ) { _cursorEditable = b; }
 
   void setPeakColor( const QColor &clr ) { _peakColor = clr; redraw(); }
   void setRmsColor( const QColor &clr ) { _rmsColor = clr; redraw(); }
@@ -174,14 +185,21 @@ private:
 
   SoundCacheStream *_cache;
 
+   // selections
+  Selection _selections[64];
+  int _curSel;
+
+  // cursor
+  bool _showCursor;
+  quint64 _cursorPos;
+  QColor _cursorColor;
+  bool _cursorEditable;
+
+  // view
   quint64 _beg;
   quint64 _dur;
   double _fpp;
   float _yZoom;
-
-  // selections
-  Selection _selections[64];
-  int _curSel;
 
   // painting
   QPixmap *pixmap;
@@ -191,10 +209,12 @@ private:
 
   // interaction
   enum DragAction {
+    NoDragAction,
     Scroll,
     Zoom,
     Select,
-    MoveSelection
+    MoveSelection,
+    MoveCursor
   };
   DragAction _dragAction;
   QPointF _dragPoint;

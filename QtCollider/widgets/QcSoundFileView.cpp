@@ -112,10 +112,18 @@ void QcSoundFileView::updateZoomScrollBar()
 QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   sf(0),
   _cache(0),
+
+  _curSel(0),
+
+  _showCursor(false),
+  _cursorEditable(true),
+  _cursorPos(0),
+  _cursorColor(QColor(255,0,0)),
+
   _beg(0.0),
   _dur(0.0),
   _yZoom(1.f),
-  _curSel(0),
+
   pixmap(0),
   _peakColor( QColor(242,178,0) ),
   _rmsColor( QColor(255,255,0) ),
@@ -396,12 +404,19 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 
   p.drawPixmap( ev->rect(), *pixmap, ev->rect() );
 
+  if( _showCursor && _cursorPos >= _beg && _cursorPos < _beg + _dur ) {
+    double cursorX = (_cursorPos - _beg) / _fpp;
+    p.setPen( _cursorColor );
+    p.drawLine( cursorX, 0, cursorX, height() );
+  }
 }
 
 void QcWaveform::mousePressEvent( QMouseEvent *ev )
 {
+  _dragAction = NoDragAction;
   _dragPoint = ev->pos();
   _dragFrame = ev->pos().x() * _fpp + _beg;
+
   Qt::KeyboardModifiers mods = ev->modifiers();
   Qt::MouseButton btn = ev->button();
 #ifdef Q_OS_MAC
@@ -409,8 +424,13 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
 #else
   Qt::KeyboardModifier CTRL = Qt::ControlModifier;
 #endif
+
   if( btn == Qt::LeftButton ) {
-    if( mods & Qt::ShiftModifier ) {
+
+    if( (mods & Qt::ShiftModifier) && ( mods & CTRL ) ) {
+      _dragAction = MoveSelection;
+    }
+    else if( mods & Qt::ShiftModifier ) {
       _dragAction = Select;
       const Selection &s = _selections[_curSel];
       if( _dragFrame < s.start + (s.size*0.5) ) {
@@ -422,17 +442,23 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
         _dragFrame = s.start;
       }
     }
-    else if( mods & CTRL ) {
-      _dragAction = MoveSelection;
-    }
     else {
-      _dragAction = Select;
-      _selections[_curSel].start = _dragFrame;
-      _selections[_curSel].size = 0;
-      update();
+      if( !(mods & CTRL) ) {
+        _dragAction = Select;
+        _selections[_curSel].start = _dragFrame;
+        _selections[_curSel].size = 0;
+        update();
+      }
+      if( _cursorEditable ) {
+        _cursorPos = _dragFrame;
+        if( mods & CTRL )  _dragAction = MoveCursor;
+        update();
+      }
     }
+
   }
   else if( btn == Qt::RightButton ) {
+
     if( mods & Qt::ShiftModifier ) {
       _dragAction = Zoom;
       _dragData = zoom();
@@ -440,6 +466,7 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
     else {
       _dragAction = Scroll;
     }
+
   }
 }
 
@@ -476,6 +503,11 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
     s.start = qMax( 0.0, s.start + (dpos * _fpp) );
     s.start = qMin( s.start, s.size < sfInfo.frames ? sfInfo.frames - s.size : 0 );
     _dragPoint = ev->pos();
+    update();
+    Q_EMIT( action() );
+  }
+  else if( _dragAction == MoveCursor ) {
+    _cursorPos = qMax( 0, qMin( width(), ev->pos().x() ) ) * _fpp + _beg;
     update();
     Q_EMIT( action() );
   }
@@ -624,7 +656,6 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
     p.translate( 0.f, chHeight + spacing );
   }
-
 }
 
 SoundFileStream::SoundFileStream() : _data(0), _dataSize(0), _dataOffset(0)

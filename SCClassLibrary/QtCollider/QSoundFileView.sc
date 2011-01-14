@@ -121,4 +121,11 @@ QSoundFileView : QView {
   readSelection { arg block, closeFile; ^this.nonimpl("readSelection"); }
 
   readSelectionWithTask { ^this.nonimpl("readSelectionWithTask"); }
+
+  // cursor
+
+  timeCursorOn_ { arg flag; this.setProperty( \cursorVisible, flag ) }
+  timeCursorEditable_ { arg flag; this.setProperty( \cursorEditable, flag ) }
+  timeCursorPosition_ { arg frame; this.setProperty( \cursorPosition, frame ) }
+  timeCursorColor_ { arg color; this.setProperty( \cursorColor, color ) }
 }
