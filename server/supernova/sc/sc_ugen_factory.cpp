@@ -100,6 +100,8 @@ sc_ugen_def::sc_ugen_def (const char *inUnitClassName, size_t inAllocSize,
 
 Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk)
 {
+    const int buffer_length = world->mBufLength;
+
     const size_t output_count = unit_spec.output_specs.size();
 
     /* size for wires and buffers */
@@ -144,7 +146,7 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
             /* allocate a new buffer */
             assert(unit_spec.buffer_mapping[i] >= 0);
             std::size_t buffer_id = unit_spec.buffer_mapping[i];
-            unit->mOutBuf[i] = buffer_base + 64 * buffer_id;
+            unit->mOutBuf[i] = buffer_base + buffer_length * buffer_id;
             w->mBuffer = unit->mOutBuf[i];
         }
         else
