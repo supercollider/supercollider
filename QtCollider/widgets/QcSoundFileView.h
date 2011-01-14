@@ -94,11 +94,15 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( bool cursorEditable READ dummyBool WRITE setCursorEditable );
   Q_PROPERTY( int cursorPosition READ cursorPosition WRITE setCursorPosition );
   Q_PROPERTY( QColor cursorColor READ dummyColor WRITE setCursorColor );
+  Q_PROPERTY( bool gridVisible READ dummyFloat WRITE setGridVisible );
+  Q_PROPERTY( float gridOffset READ dummyFloat WRITE setGridOffset );
+  Q_PROPERTY( float gridResolution READ dummyFloat WRITE setGridResolution );
+  Q_PROPERTY( QColor gridColor READ dummyColor WRITE setGridColor );
 
 public:
 
   struct Selection {
-    Selection() : start(0), size(0), editable(true), color(QColor(0,0,200)) {}
+    Selection() : start(0), size(0), editable(true), color(QColor(0,0,150)) {}
     quint64 start;
     quint64 size;
     bool editable;
@@ -133,6 +137,11 @@ public:
   void setCursorPosition( int pos ) { _cursorPos = pos; update(); }
   void setCursorColor( const QColor &c ) { _cursorColor = c; update(); }
   void setCursorEditable( bool b ) { _cursorEditable = b; }
+
+  void setGridVisible( bool b ) { _showGrid = b; update(); }
+  void setGridOffset( float f ) { _gridOffset = f; update(); }
+  void setGridResolution( float f ) { _gridResolution = f; update(); }
+  void setGridColor( const QColor &c ) { _gridColor = c; update(); }
 
   void setPeakColor( const QColor &clr ) { _peakColor = clr; redraw(); }
   void setRmsColor( const QColor &clr ) { _rmsColor = clr; redraw(); }
@@ -194,6 +203,12 @@ private:
   quint64 _cursorPos;
   QColor _cursorColor;
   bool _cursorEditable;
+
+  //grid
+  bool _showGrid;
+  float _gridResolution;
+  float _gridOffset;
+  QColor _gridColor;
 
   // view
   quint64 _beg;
