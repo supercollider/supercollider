@@ -3862,10 +3862,52 @@ inline void DelayX_perform_a(DelayX *unit, int inNumSamples, UnitCalcFunc resetF
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void Delay_next_0(DelayUnit *unit, int inNumSamples)
+{
+	float *out = OUT(0);
+	const float *in = IN(0);
+
+	memcpy(out, in, inNumSamples * sizeof(float));
+}
+
+void Delay_next_0_nop(DelayUnit *unit, int inNumSamples)
+{}
+
+#ifdef NOVA_SIMD
+void Delay_next_0_nova(DelayUnit *unit, int inNumSamples)
+{
+	nova::copyvec_simd(OUT(0), IN(0), inNumSamples);
+}
+#endif
+
+static bool DelayUnit_init_0(DelayUnit *unit)
+{
+	if (INRATE(2) == calc_ScalarRate && ZIN0(2) == 0) {
+		if (ZIN(0) == ZOUT(0))
+			SETCALC(Delay_next_0_nop);
+#ifdef NOVA_SIMD
+		else if (BUFLENGTH & 15 == 0)
+			SETCALC(Delay_next_0_nova);
+#endif
+		else
+			SETCALC(Delay_next_0);
+
+		ZOUT0(0) = ZIN0(0);
+		return true;
+	} else
+		return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void DelayN_Ctor(DelayN *unit)
 {
 	DelayUnit_Reset(unit);
-	if(INRATE(2) == calc_FullRate)
+
+	if (DelayUnit_init_0(unit))
+		return;
+
+	if (INRATE(2) == calc_FullRate)
 		SETCALC(DelayN_next_a_z);
 	else
 		SETCALC(DelayN_next_z);
@@ -4000,7 +4042,11 @@ void DelayN_next_a_z(DelayN *unit, int inNumSamples)
 void DelayL_Ctor(DelayL *unit)
 {
 	DelayUnit_Reset(unit);
-	if(INRATE(2) == calc_FullRate)
+
+	if (DelayUnit_init_0(unit))
+		return;
+
+	if (INRATE(2) == calc_FullRate)
 		SETCALC(DelayL_next_a_z);
 	else
 		SETCALC(DelayL_next_z);
@@ -4045,7 +4091,11 @@ void DelayL_next_a_z(DelayL *unit, int inNumSamples)
 void DelayC_Ctor(DelayC *unit)
 {
 	DelayUnit_Reset(unit);
-	if(INRATE(2) == calc_FullRate)
+
+	if (DelayUnit_init_0(unit))
+		return;
+
+	if (INRATE(2) == calc_FullRate)
 		SETCALC(DelayC_next_a_z);
 	else
 		SETCALC(DelayC_next_z);
