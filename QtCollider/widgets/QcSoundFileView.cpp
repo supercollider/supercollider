@@ -327,6 +327,23 @@ void QcWaveform::setYZoom( float factor )
   redraw();
 }
 
+void QcWaveform::zoomSelection( int i )
+{
+  if( i < 0 || i > 63 ) return;
+
+  Selection &s = _selections[i];
+
+  if( s.size <= 0 || s.start < 0 || s.start >= sfInfo.frames ) return;
+
+  _beg = s.start;
+  _dur = qMin( s.size, sfInfo.frames - s.start );
+
+  s.size = 0;
+
+  updateFPP();
+  redraw();
+}
+
 void QcWaveform::resizeEvent( QResizeEvent * )
 {
   delete pixmap;
