@@ -103,9 +103,20 @@ endif()
 target_link_libraries(libsupernova oscpack tlsf boost_thread boost_system boost_filesystem boost_program_options)
 target_link_libraries(supernova libsupernova)
 
+if(APPLE)
+	# determines the app name and app install location (scappbundlename, scappdir):
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+
+	install(TARGETS supernova
+			DESTINATION ${scappauxresourcesdir}
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE
+			COMPONENT app)
+else()
+
 install(TARGETS supernova
         DESTINATION "bin"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
 
 if(LTO)
     set_property(TARGET supernova libsupernova

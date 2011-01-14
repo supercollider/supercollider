@@ -53,7 +53,7 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     const size_t alloc_size = parameter_count * (sizeof(float) + sizeof(int) + sizeof(float*))
                               + constants_count * sizeof(Wire) + prototype->memory_requirement();
 
-    const size_t sample_alloc_size = 64 * synthdef.buffer_count + 64; /* allocate 64 bytes more than required */
+    const size_t sample_alloc_size = world.mBufLength * synthdef.buffer_count + 64; /* allocate 64 bytes more than required */
 
     char * chunk = (char*)allocate(alloc_size + sample_alloc_size*sizeof(sample));
     if (chunk == NULL)
