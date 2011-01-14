@@ -107,7 +107,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 elseif()
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
 endif()
+
 option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
+option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable memory pools).")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
 mark_as_advanced(NO_LIBSNDFILE)
@@ -146,8 +148,9 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 endif()
 
-
-
+if (SC_MEMORY_DEBUGGING)
+	add_definitions(-DDISABLE_MEMORY_POOLS)
+endif()
 
 #############################################
 # subdirectories
