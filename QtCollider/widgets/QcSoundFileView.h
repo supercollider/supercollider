@@ -137,6 +137,7 @@ public Q_SLOTS:
   void scrollToEnd();
   void setYZoom( float factor );
   void setXZoom( float seconds );
+  void zoomSelection( int selectionIndex );
 
 Q_SIGNALS:
 
