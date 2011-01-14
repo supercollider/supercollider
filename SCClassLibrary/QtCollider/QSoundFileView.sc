@@ -128,4 +128,11 @@ QSoundFileView : QView {
   timeCursorEditable_ { arg flag; this.setProperty( \cursorEditable, flag ) }
   timeCursorPosition_ { arg frame; this.setProperty( \cursorPosition, frame ) }
   timeCursorColor_ { arg color; this.setProperty( \cursorColor, color ) }
+
+  // grid
+
+  gridOn_ { arg flag; this.setProperty( \gridVisible, flag ) }
+  gridResolution_ { arg seconds; this.setProperty( \gridResolution, seconds ) }
+  gridOffset_ { arg seconds; this.setProperty( \gridOffset, seconds ) }
+  gridColor_ { arg color; this.setProperty( \gridColor, color ) }
 }

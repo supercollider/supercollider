@@ -120,6 +120,12 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _cursorPos(0),
   _cursorColor(QColor(255,0,0)),
 
+  _showGrid(true),
+  _gridResolution(1.0),
+  _gridOffset(0.0),
+  _gridColor(QColor(100,100,200)),
+
+
   _beg(0.0),
   _dur(0.0),
   _yZoom(1.f),
@@ -402,12 +408,31 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 
   p.restore();
 
+  if( _showGrid && sfInfo.samplerate > 0 && _gridResolution > 0.f ) {
+    p.save();
+
+    double durSecs = (double) _dur / sfInfo.samplerate;
+    double begSecs = (double) _beg / sfInfo.samplerate;
+
+    p.scale( width() / durSecs, 1.0 );
+    p.setPen( _gridColor );
+
+    double offset = _gridOffset - begSecs;
+    offset -= ( floor( offset / _gridResolution ) * _gridResolution );
+    while( offset <  durSecs ) {
+      p.drawLine( QLineF( offset, 0.0, offset, height() ) );
+      offset += _gridResolution;
+    }
+
+    p.restore();
+  }
+
   p.drawPixmap( ev->rect(), *pixmap, ev->rect() );
 
   if( _showCursor && _cursorPos >= _beg && _cursorPos < _beg + _dur ) {
     double cursorX = (_cursorPos - _beg) / _fpp;
     p.setPen( _cursorColor );
-    p.drawLine( cursorX, 0, cursorX, height() );
+    p.drawLine( QLineF( cursorX, 0, cursorX, height() ) );
   }
 }
 
