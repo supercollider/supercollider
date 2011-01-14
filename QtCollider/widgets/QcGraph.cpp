@@ -128,6 +128,21 @@ void QcGraph::setStrings( const VariantList &list )
   update();
 }
 
+void QcGraph::setCurves( const VariantList & curves )
+{
+  if( curves.data.size() == 1 ) {
+    QVariant var = curves.data[0];
+    Q_FOREACH( QcGraphElement *e, _model.elements() )
+      e->setCurveType( var );
+  }
+  else if( curves.data.size() == _model.elementCount() ) {
+    for( int i=0; i<curves.data.size(); ++i ) {
+      QVariant var = curves.data[i];
+      _model.elementAt(i)->setCurveType( var );
+    }
+  }
+}
+
 void QcGraph::setStringAt( int i, const QString & str )
 {
   int c = _model.elementCount();

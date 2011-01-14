@@ -28,9 +28,35 @@
 #include <QWidget>
 
 struct QcGraphElement {
-  QcGraphElement() : editable( true ) {};
+  enum CurveType {
+    Step,
+    Linear,
+    Exponential,
+    Sine,
+    Welch,
+    Curvature
+  };
+  QcGraphElement() : curvature( 0.f ), editable( true ) {};
+  void setCurveType( QVariant data ) {
+    if( data.type() == QVariant::String ) {
+      QString curveName = data.toString();
+      printf("curve name: %s\n",curveName.toStdString().c_str());
+      if( curveName == "step" ) curveType = Step;
+      else if( curveName == "linear" ) curveType = Linear;
+      else if( curveName == "exponential" ) curveType = Exponential;
+      else if( curveName == "sine" ) curveType = Sine;
+      else if( curveName == "welch" ) curveType = Welch;
+    }
+    else {
+      printf("curvature: %f\n", data.value<float>());
+      curveType = Curvature;
+      curvature = data.value<float>();
+    }
+  }
   QPointF value;
   QString text;
+  CurveType curveType;
+  float curvature;
   bool editable;
 };
 
@@ -114,6 +140,7 @@ class QcGraph : public QWidget, QcHelper
 
     void setValue( const VariantList & );
     void setStrings( const VariantList &list );
+    Q_INVOKABLE void setCurves( const VariantList & curves );
     Q_INVOKABLE void setStringAt( int, const QString & );
     Q_INVOKABLE void connectElements( int, VariantList );
     void setIndex( int i ) {
