@@ -78,9 +78,17 @@ QEnvelopeView : QView
 
   curves { this.nonimpl( "curves" ); }
 
-  curves_ { this.nonimpl( "curves_" ); }
+  curves_ { arg curves;
+    this.invokeMethod( \setCurves,
+                       if(curves.isKindOf( ArrayedCollection ) )
+                        {[curves]}{[[curves]]} ); }
 
-  setEnv { this.nonimpl( "setEnv" ); }
+  setEnv { arg env;
+    var times = [0] ++ env.times.integrate;
+    if( times.last > 0 ) {times = times / times.last};
+    this.value = [times, env.levels];
+    this.curves = env.curves;
+  }
 
   grid_ { arg aPoint;
     grid = aPoint;
