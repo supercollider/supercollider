@@ -204,7 +204,7 @@ inline void Scale(int numSamples, float *out, float *in, float level)
 }
 
 // in these the pointers are assumed to already have been pre-offset.
-inline void ZCopy(int numSamples, float *out, float *in)
+inline void ZCopy(int numSamples, float *out, const float *in)
 {
 	// pointers must be 8 byte aligned
 	//assert((((long)(out+ZOFF) & 7) == 0) && (((long)(in+ZOFF) & 7) == 0));
