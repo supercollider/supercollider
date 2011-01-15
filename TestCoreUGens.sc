@@ -60,10 +60,10 @@ test_ugen_generator_equivalences {
 	 "DC equivalence" -> {DC.ar(2) - K2A.ar(DC.kr(1)) - 1 },
 	 "sum and rescale ar signal is identity" -> {n=WhiteNoise.ar; [n, n].sum.madd(0.5, 0) - n },
 	 "sum and rescale kr signal is identity" -> {n=WhiteNoise.kr; [n, n].sum.madd(0.5, 0) - n },
-	
+
 	// Audio rate demand ugens
-	"Duty.ar(SampleDur.ir, 0, x) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, n)) }, 
-	"Duty.ar(SampleDur.ir, 0, Drand([x],inf)) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, Drand([n],inf))) }, 
+	"Duty.ar(SampleDur.ir, 0, x) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, n)) },
+	"Duty.ar(SampleDur.ir, 0, Drand([x],inf)) == x" -> {n=WhiteNoise.ar; (n - Duty.ar(SampleDur.ir, 0, Drand([n],inf))) },
 
 
 	 //////////////////////////////////////////
@@ -98,19 +98,19 @@ test_ugen_generator_equivalences {
 	 // FFT:
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n =  PinkNoise.ar(1,0,1); DelayN.ar(n, 1984*SampleDur.ir, 1984*SampleDur.ir) - IFFT(FFT(LocalBuf(2048), n))  },
 	 "IFFT(FFT(_)) == Delay(_, buffersize-blocksize)" -> {n = WhiteNoise.ar(1,0,1); DelayN.ar(n, 4032*SampleDur.ir, 4032*SampleDur.ir) - IFFT(FFT(LocalBuf(4096), n))  },
-	 
+
 	 //////////////////////////////////////////
 	 // CheckBadValues:
 	 "CheckBadValues.ar()" -> {
 			var trig=Impulse.ar(10);
-			var f=ToggleFF.ar(trig); 
+			var f=ToggleFF.ar(trig);
 			var g=ToggleFF.ar(PulseDivider.ar(trig));
 			var predicted = Demand.ar(trig,0,Dseq([2,0,0,1],inf));
 			CheckBadValues.ar(f/g, post: 0) - predicted
 			},
 	 "CheckBadValues.kr()" -> {
 			var trig=Impulse.kr(10);
-			var f=ToggleFF.kr(trig); 
+			var f=ToggleFF.kr(trig);
 			var g=ToggleFF.kr(PulseDivider.kr(trig));
 			var predicted = Demand.kr(trig,0,Dseq([2,0,0,1],inf));
 			CheckBadValues.kr(f/g, post: 0) - predicted
@@ -199,13 +199,12 @@ test_ugen_generator_equivalences {
 
 	];
 	var testsIncomplete = tests.size;
-	
-	 
+
+
 	 //////////////////////////////////////////
 	 // reversible unary ops:
-	 
+
 	 [
-	 	
 	 	[\reciprocal, \reciprocal],
 	 	[\squared, \sqrt],
 	 	[\cubed, { |x| x ** (1/3) }],
@@ -216,27 +215,55 @@ test_ugen_generator_equivalences {
 	 	[\octcps, \cpsoct],
 	 	[\sin, \asin],
 	 	[\cos, \acos],
-	 	[\tan, \atan]	 		 	
+	 	[\tan, \atan]
 	 ].do { |selectors|
 		 [selectors, selectors.reverse].do { |pair|
 			tests = tests.add(
-				 "x == %(%(x)) [control rate]".format(*pair) -> { 
+				 "x == %(%(x)) [control rate]".format(*pair) -> {
 					 			var n = WhiteNoise.kr.range(0.3, 0.9);
-					 			n - pair[1].applyTo(pair[0].applyTo(n)) 
+					 			n - pair[1].applyTo(pair[0].applyTo(n))
 				}
 			);
 			tests = tests.add(
-				 "x == %(%(x)) [audio rate]".format(*pair) -> { 
+				 "x == %(%(x)) [audio rate]".format(*pair) -> {
 					 			var n = WhiteNoise.ar.range(0.3, 0.9);
-					 			n - pair[1].applyTo(pair[0].applyTo(n)) 
+					 			n - pair[1].applyTo(pair[0].applyTo(n))
 				}
 			)
 		 }
 	 };
-	
-	
+
+	//////////////////////////////////////////
+	// delays/bufdelays:
+
+	[
+		[DelayN, BufDelayN],
+		[DelayL, BufDelayL],
+		[DelayC, BufDelayC]
+	].do { |classes|
+		tests = tests.add(
+			"% == % [control rate]".format(classes[0], classes[1]) -> {
+				var sig = SinOsc.ar + 1;
+				var delayTime = WhiteNoise.kr.range(0, 0.002);
+				var delay = classes[0].ar(sig, 0.02, delayTime);
+				var bufdelay = classes[1].ar(LocalBuf.new(0.02 * SampleRate.ir * 2), sig, delayTime);
+				delay - bufdelay
+			}
+		);
+		tests = tests.add(
+			"% == % [audio rate]".format(classes[0], classes[1]) -> {
+				var sig = SinOsc.ar + 1;
+				var delayTime = WhiteNoise.ar.range(0, 0.002);
+				var delay = classes[0].ar(sig, 0.02, delayTime);
+				var bufdelay = classes[1].ar(LocalBuf.new(0.02 * SampleRate.ir * 2), sig, delayTime);
+				delay - bufdelay
+			}
+		);
+	};
+
+
 	this.bootServer;
-	tests.keysValuesDo{|name, func| 
+	tests.keysValuesDo{|name, func|
 		func.loadToFloatArray(1, Server.default, { |data|
 			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
 			testsIncomplete = testsIncomplete - 1;
@@ -265,7 +292,7 @@ test_exact_convergence {
 			this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true);
 			testsIncomplete = testsIncomplete - 1;
 		});
-		rrand(0.12, 0.35).wait;
+		rrand(0.05, 0.1).wait;
 	};
 	this.wait{testsIncomplete==0};
 }
