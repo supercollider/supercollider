@@ -2263,6 +2263,87 @@ struct DelayN_helper<true>
 	}
 };
 
+template <bool initializing>
+static inline void DelayN_delay_loop(float * out, const float * in, long & iwrphase, float dsamp, long mask,
+									 float * dlybuf, int inNumSamples, int idelaylen)
+{
+	long irdphase = iwrphase - (long)dsamp;
+	float* dlybuf1 = dlybuf - ZOFF;
+	float* dlyrd   = dlybuf1 + (irdphase & mask);
+	float* dlywr   = dlybuf1 + (iwrphase & mask);
+	float* dlyN    = dlybuf1 + idelaylen;
+	long remain = inNumSamples;
+	while (remain) {
+		long rdspace = dlyN - dlyrd;
+		long wrspace = dlyN - dlywr;
+		if (initializing) {
+			long nsmps = sc_min(rdspace, wrspace);
+			nsmps = sc_min(remain, nsmps);
+			remain -= nsmps;
+			if (irdphase < 0) {
+				if ((dlywr - dlyrd) > nsmps) {
+#ifdef NOVA_SIMD
+					if ((nsmps & 15) == 0) {
+						nova::copyvec_nn_simd(dlywr + ZOFF, in + ZOFF, nsmps);
+						nova::zerovec_na_simd(out + ZOFF, nsmps);
+					} else
+#endif
+					{
+						ZCopy(nsmps, dlywr, in);
+						ZClear(nsmps, out);
+					}
+					out += nsmps;
+					in += nsmps;
+					dlyrd += nsmps;
+					dlywr += nsmps;
+				} else
+					LOOP(nsmps,
+						ZXP(dlywr) = ZXP(in);
+						ZXP(out) = 0.f;
+					);
+			} else {
+				LOOP(nsmps,
+					ZXP(dlywr) = ZXP(in);
+					ZXP(out) = ZXP(dlyrd);
+				);
+			}
+			irdphase += nsmps;
+			if (dlyrd == dlyN) dlyrd = dlybuf1;
+			if (dlywr == dlyN) dlywr = dlybuf1;
+		}
+		else {
+			long nsmps = sc_min(rdspace, wrspace);
+			nsmps = sc_min(remain, nsmps);
+			remain -= nsmps;
+
+			if (std::abs(dlyrd - dlywr) > nsmps) {
+#ifdef NOVA_SIMD
+				if ((nsmps & 15) == 0) {
+					nova::copyvec_nn_simd(dlywr + ZOFF, in + ZOFF, nsmps);
+					nova::copyvec_nn_simd(out + ZOFF, dlyrd + ZOFF, nsmps);
+				} else
+#endif
+				{
+					ZCopy(nsmps, dlywr, in);
+					ZCopy(nsmps, out, dlyrd);
+				}
+				out += nsmps;
+				in += nsmps;
+				dlyrd += nsmps;
+				dlywr += nsmps;
+			} else
+				LOOP(nsmps,
+					ZXP(dlywr) = ZXP(in);
+					ZXP(out) = ZXP(dlyrd);
+				);
+			if (dlyrd == dlyN) dlyrd = dlybuf1;
+			if (dlywr == dlyN) dlywr = dlybuf1;
+		}
+	}
+	iwrphase += inNumSamples;
+}
+
+
 template <bool Checked = false>
 struct DelayL_helper
 {
@@ -2821,26 +2902,7 @@ void BufDelayN_next(BufDelayN *unit, int inNumSamples)
 	float dsamp = unit->m_dsamp;
 
 	if (delaytime == unit->m_delaytime) {
-		long irdphase = iwrphase - (long)dsamp;
-		float* dlybuf1 = bufData - ZOFF;
-		float* dlyrd   = dlybuf1 + (irdphase & mask);
-		float* dlywr   = dlybuf1 + (iwrphase & mask);
-		float* dlyN    = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
-		long remain = inNumSamples;
-		while (remain) {
-			long rdspace = dlyN - dlyrd;
-			long wrspace = dlyN - dlywr;
-			long nsmps = sc_min(rdspace, wrspace);
-			nsmps = sc_min(remain, nsmps);
-			remain -= nsmps;
-			LOOP1(nsmps,
-				ZXP(dlywr) = ZXP(in);
-				ZXP(out) = ZXP(dlyrd);
-			);
-			if (dlyrd == dlyN) dlyrd = dlybuf1;
-			if (dlywr == dlyN) dlywr = dlybuf1;
-		}
-		iwrphase += inNumSamples;
+		DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(bufSamples));
 	} else {
 		float next_dsamp = BufCalcDelay(delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
@@ -2870,32 +2932,7 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 	float dsamp = unit->m_dsamp;
 
 	if (delaytime == unit->m_delaytime) {
-		long irdphase = iwrphase - (long)dsamp;
-		float* dlybuf1 = bufData - ZOFF;
-		float* dlyN    = dlybuf1 + PREVIOUSPOWEROFTWO(bufSamples);
-		long remain = inNumSamples;
-		while (remain) {
-			float* dlywr = dlybuf1 + (iwrphase & mask);
-			float* dlyrd = dlybuf1 + (irdphase & mask);
-			long rdspace = dlyN - dlyrd;
-			long wrspace = dlyN - dlywr;
-			long nsmps = sc_min(rdspace, wrspace);
-			nsmps = sc_min(remain, nsmps);
-			remain -= nsmps;
-			if (irdphase < 0) {
-				LOOP1(nsmps,
-					ZXP(dlywr) = ZXP(in);
-					ZXP(out) = 0.f;
-				);
-			} else {
-				LOOP1(nsmps,
-					ZXP(dlywr) = ZXP(in);
-					ZXP(out) = ZXP(dlyrd);
-				);
-			}
-			iwrphase += nsmps;
-			irdphase += nsmps;
-		}
+		DelayN_delay_loop<true>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(bufSamples));
 	} else {
 
 		float next_dsamp = BufCalcDelay(delaytime);
@@ -3927,26 +3964,7 @@ void DelayN_next(DelayN *unit, int inNumSamples)
 
 	//Print("DelayN_next %08X %g %g  %d %d\n", unit, delaytime, dsamp, mask, iwrphase);
 	if (delaytime == unit->m_delaytime) {
-		long irdphase = iwrphase - (long)dsamp;
-		float* dlybuf1 = dlybuf - ZOFF;
-		float* dlyrd   = dlybuf1 + (irdphase & mask);
-		float* dlywr   = dlybuf1 + (iwrphase & mask);
-		float* dlyN    = dlybuf1 + unit->m_idelaylen;
-		long remain = inNumSamples;
-		while (remain) {
-			long rdspace = dlyN - dlyrd;
-			long wrspace = dlyN - dlywr;
-			long nsmps = sc_min(rdspace, wrspace);
-			nsmps = sc_min(remain, nsmps);
-			remain -= nsmps;
-			LOOP(nsmps,
-				ZXP(dlywr) = ZXP(in);
-				ZXP(out) = ZXP(dlyrd);
-			);
-			if (dlyrd == dlyN) dlyrd = dlybuf1;
-			if (dlywr == dlyN) dlywr = dlybuf1;
-		}
-		iwrphase += inNumSamples;
+		DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, dlybuf, inNumSamples, unit->m_idelaylen);
 	} else {
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
@@ -3975,32 +3993,7 @@ void DelayN_next_z(DelayN *unit, int inNumSamples)
 	long mask = unit->m_mask;
 
 	if (delaytime == unit->m_delaytime) {
-		long irdphase = iwrphase - (long)dsamp;
-		float* dlybuf1 = dlybuf - ZOFF;
-		float* dlyN    = dlybuf1 + unit->m_idelaylen;
-		long remain = inNumSamples;
-		while (remain) {
-			float* dlywr = dlybuf1 + (iwrphase & mask);
-			float* dlyrd = dlybuf1 + (irdphase & mask);
-			long rdspace = dlyN - dlyrd;
-			long wrspace = dlyN - dlywr;
-			long nsmps = sc_min(rdspace, wrspace);
-			nsmps = sc_min(remain, nsmps);
-			remain -= nsmps;
-			if (irdphase < 0) {
-				LOOP(nsmps,
-					ZXP(dlywr) = ZXP(in);
-					ZXP(out) = 0.f;
-				);
-			} else {
-				LOOP(nsmps,
-					ZXP(dlywr) = ZXP(in);
-					ZXP(out) = ZXP(dlyrd);
-				);
-			}
-			iwrphase += nsmps;
-			irdphase += nsmps;
-		}
+		DelayN_delay_loop<true>(out, in, iwrphase, dsamp, mask, dlybuf, inNumSamples, unit->m_idelaylen);
 	} else {
 		float next_dsamp = CalcDelay(unit, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
