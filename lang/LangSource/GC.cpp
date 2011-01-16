@@ -192,7 +192,7 @@ void GCSet::MajorFlip()
 {
 	// move all white items to beginning of free list
 	mFree = mWhite.next;
-	if (!IsMarker(mBlack.next)) {
+	if (!PyrGC::IsMarker(mBlack.next)) {
 		// move all black items to white list
 		mWhite.next = mBlack.next;
 		mFree->prev = mWhite.prev;

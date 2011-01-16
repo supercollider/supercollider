@@ -77,21 +77,15 @@ public:
 
 	PyrObject* NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool inCollect);
 
-#if 0
-// Codewarrior is not inlining these.. why?
-	bool IsBlack(PyrObjectHdr* inObj) { return inObj->gc_color == mBlackColor; }
-	bool IsWhite(PyrObjectHdr* inObj) { return inObj->gc_color == mWhiteColor; }
-	bool IsGrey(PyrObjectHdr* inObj) { return inObj->gc_color == mGreyColor; }
-	bool IsMarker(PyrObjectHdr* inObj) { return inObj->gc_color == obj_gcmarker; }
-#else
-
-#define IsBlack(inObj) ((inObj)->gc_color == mBlackColor)
-#define IsWhite(inObj) ((inObj)->gc_color == mWhiteColor)
-#define IsGrey(inObj) ((inObj)->gc_color == mGreyColor)
-#define IsFree(inObj) (!(IsMarker(inObj) || inObj->IsPermanent() || \
-					IsBlack(inObj) || IsWhite(inObj) || IsGrey(inObj)))
-#define IsMarker(inObj) ((inObj)->gc_color == obj_gcmarker)
-#endif
+	bool IsBlack(PyrObjectHdr* inObj)  { return inObj->gc_color == mBlackColor; }
+	bool IsWhite(PyrObjectHdr* inObj)  { return inObj->gc_color == mWhiteColor; }
+	bool IsGrey(PyrObjectHdr* inObj)   { return inObj->gc_color == mGreyColor; }
+	static bool IsMarker(PyrObjectHdr* inObj) { return inObj->gc_color == obj_gcmarker; }
+	bool IsFree(PyrObjectHdr* inObj)   { return (!(IsMarker(inObj) ||
+													inObj->IsPermanent() ||
+													IsBlack(inObj) ||
+													IsWhite(inObj) ||
+													IsGrey(inObj))); }
 
 	bool ObjIsBlack(PyrObjectHdr* inObj) { return IsBlack(inObj); }
 	bool ObjIsGrey(PyrObjectHdr* inObj) { return IsGrey(inObj); }
