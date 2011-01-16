@@ -30,7 +30,6 @@
 #include "PredefinedSymbols.h"
 
 #define DEBUGMETHODS 0
-#define SANITYCHECK 0
 #define METHODMETER 0
 
 PyrMethod **gRowTable;
@@ -62,7 +61,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 	PyrObject *obj;
 
 	//postfl("->sendMessage\n");
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "sendMessageWithKeys");
 #endif
@@ -168,7 +167,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 				goto lookup_again;
 			case methPrimitive : /* primitive */
 				doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 				break;
@@ -177,7 +176,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendMessageWithKeys");
 #endif
@@ -195,7 +194,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	PyrObject *obj;
 
 	//postfl("->sendMessage\n");
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "sendMessage");
 #endif
@@ -330,7 +329,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				goto lookup_again;
 			case methPrimitive : /* primitive */
 				doPrimitive(g, meth, numArgsPushed);
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 				break;
@@ -362,7 +361,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendMessage");
 #endif
@@ -380,7 +379,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 	PyrObject *obj;
 
 	//postfl("->sendMessage\n");
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "sendSuperMessageWithKeys");
 #endif
@@ -487,7 +486,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 				goto lookup_again;
 			case methPrimitive : /* primitive */
 				doPrimitiveWithKeys(g, meth, numArgsPushed, numKeyArgsPushed);
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 				break;
@@ -496,7 +495,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendSuperMessageWithKeys");
 #endif
@@ -514,7 +513,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 	PyrObject *obj;
 
 	//postfl("->sendMessage\n");
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "sendSuperMessage");
 #endif
@@ -650,7 +649,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 				goto lookup_again;
 			case methPrimitive : /* primitive */
 				doPrimitive(g, meth, numArgsPushed);
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 				break;
@@ -682,7 +681,7 @@ void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 #if TAILCALLOPTIMIZE
 	g->tailCall = 0;
 #endif
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<sendSuperMessage");
 #endif
@@ -701,7 +700,7 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 	PyrMethod *meth;
 	PyrObject *array;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 	// move args up by one to make room for selector
@@ -757,7 +756,7 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 
 	executeMethodWithKeys(g, meth, numArgsPushed+1, numKeyArgsPushed);
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 }
@@ -774,7 +773,7 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 	PyrMethod *meth;
 	PyrObject *array;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 	// move args up by one to make room for selector
@@ -830,7 +829,7 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 
 	executeMethod(g, meth, numArgsPushed+1);
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 }
@@ -846,7 +845,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	PyrObject *proto;
 	long i, j, m, mmax, numtemps, numargs, numArgsPushed;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "executeMethodWithKeys");
 #endif
@@ -984,7 +983,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	}
 
 	slotCopy(&g->receiver, &vars[1]);
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<executeMethodWithKeys");
 #endif
@@ -1002,7 +1001,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	PyrObject *proto;
 	long i, m, mmax, numtemps, numargs;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "executeMethod");
 #endif
@@ -1118,7 +1117,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	}
 	slotCopy(&g->receiver, &vars[1]);
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "<executeMethod");
 #endif
@@ -1138,7 +1137,7 @@ void returnFromBlock(VMGlobals *g)
 
 	//if (gTraceInterpreter) postfl("->returnFromBlock\n");
 	//printf("->returnFromBlock\n");
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "returnFromBlock");
 #endif
@@ -1177,7 +1176,7 @@ void returnFromBlock(VMGlobals *g)
 		longjmp(g->escapeInterpreter, 1);
 	}
 	//if (gTraceInterpreter) postfl("<-returnFromBlock\n");
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 	CallStackSanity(g, "returnFromBlock");
 #endif
@@ -1197,7 +1196,7 @@ void returnFromMethod(VMGlobals *g)
 		post("returnFromMethod %s:%s\n", slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name);
 		post("tailcall %d\n", g->tailCall);
 	}*/
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 	homeContext = slotRawFrame(&slotRawFrame(&curframe->context)->homeContext);
@@ -1307,7 +1306,7 @@ if (gTraceInterpreter) {
 		slotCopy(&g->receiver, &homeContext->vars[0]);
 
 	}
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 }

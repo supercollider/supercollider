@@ -46,7 +46,6 @@
 //#include "Wacom.h"
 #include "InitAlloc.h"
 
-#define SANITYCHECK 0
 int yyparse();
 
 extern bool gTraceInterpreter;
@@ -3521,7 +3520,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 {
 
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 
@@ -3553,11 +3552,11 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	g->args = g->sp - numArgsNeeded;
 	int err;
 	try {
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 		err = (*def->func)(g, numArgsNeeded);
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 	} catch (std::exception& ex) {
@@ -3575,7 +3574,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 		SetInt(&g->thread->primitiveError, err);
 		executeMethod(g, meth, numArgsNeeded);
 	}
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 }
@@ -3586,7 +3585,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 	PyrSlot *pslot, *qslot;
 	int numArgsNeeded, numArgsPushed;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 	//post("doPrimitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
@@ -3687,7 +3686,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 			executeMethod(g, meth, numArgsNeeded);
 		}
 	}
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 }

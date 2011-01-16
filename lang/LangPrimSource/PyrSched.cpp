@@ -37,8 +37,6 @@
 
 #include "SC_Win32Utils.h"
 
-#define SANITYCHECK 0
-
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
@@ -49,8 +47,8 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 	short mom;	/* parent and sibling in the heap, not in the task hierarchy */
 	PyrSlot *pme, *pmom;
 
-#if SANITYCHECK
-	gcSanity(g->gc);
+#ifdef GC_SANITYCHECK
+	g->gc->SanityCheck();
 #endif
 	if (heap->size >= ARRAYMAXINDEXSIZE(heap)) return false;
 	//dumpheap(heap);
@@ -71,8 +69,8 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 	g->gc->GCWrite(heap, task);
 	heap->size += 2;
 
-#if SANITYCHECK
-	gcSanity(g->gc);
+#ifdef GC_SANITYCHECK
+	g->gc->SanityCheck();
 #endif
 	//dumpheap(heap);
 	//post("<-addheap %g\n", schedtime);
