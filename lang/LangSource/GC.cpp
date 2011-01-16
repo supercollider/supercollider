@@ -1036,7 +1036,7 @@ bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 			if (IsObj(slot) && slotRawObject(slot)) {
 				objB = slotRawObject(slot);
 			}
-			if (objB && (long)objB < 100) {
+			if (objB && (unsigned long)objB < 100) {
 				fprintf(stderr, "weird obj ptr\n");
 				return false;
 			}
