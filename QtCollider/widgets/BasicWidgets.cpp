@@ -219,6 +219,8 @@ void QcButton::setState( int i )
 
   i = qMax( 0, qMin( c-1, i ) );
 
+  currentState = i;
+
   State state = states[i];
 
   setText( state.text );
@@ -234,9 +236,9 @@ void QcButton::setState( int i )
 void QcButton::cycleStates()
 {
   if( states.size() < 2 ) return;
-  currentState++;
-  if( currentState >= states.size() ) currentState = 0;
-  setState( currentState );
+  int i = currentState + 1;
+  if( i >= states.size() ) i = 0;
+  setState( i );
 }
 
 void QcButton::doAction()
