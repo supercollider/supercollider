@@ -800,11 +800,11 @@ bool PyrGC::SanityCheck()
 {
 	if (!mRunning) return true;
 
-
 	//postfl("PyrGC::SanityCheck\n");
 	bool res = LinkSanity() && ListSanity()
-	//&& SanityMarkObj((PyrObject*)mProcess,NULL,0) && SanityMarkObj(mStack,NULL,0)
-	//&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
+			&& SanityMarkObj((PyrObject*)mProcess,NULL,0) && SanityMarkObj(mStack,NULL,0)
+			&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
+			&& SanityCheck2()
 	;
 	//if (!res) DumpInfo();
 	//if (!res) Debugger();
