@@ -26,7 +26,6 @@
 #include <string.h>
 #include <stdexcept>
 
-#define SANITYCHECK 0
 #define PAUSETIMES 0
 
 const int kScanThreshold =  256;
@@ -323,7 +322,7 @@ PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCol
 		return NewPermanent(inNumBytes, inFlags, inFormat);
 	}
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -374,7 +373,7 @@ PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCol
 	obj->classptr = class_object;
 	obj->gc_color = mWhiteColor;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 	return obj;
@@ -386,7 +385,7 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 {
 	PyrObject *obj = NULL;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -437,7 +436,7 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 	obj->classptr = class_frame;
 	obj->gc_color = mWhiteColor;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 	return obj;
@@ -447,7 +446,7 @@ PyrObject *PyrGC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, boo
 {
 	PyrObject *obj = NULL;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -497,7 +496,7 @@ PyrObject *PyrGC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, boo
 	SetPtr(obj->slots+0, (void*)finalizeFunc);
 	SetObject(obj->slots+1, inObject);
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 	return obj;
@@ -642,7 +641,7 @@ void PyrGC::ScanFrames()
 
 void PyrGC::Flip()
 {
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -679,7 +678,7 @@ void PyrGC::Flip()
 	mFlips++;
 	//post("flips %d  collects %d   nalloc %d   alloc %d   grey %d\n", mFlips, mCollects, mNumAllocs, mAllocTotal, mNumGrey);
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 }
@@ -703,7 +702,7 @@ void PyrGC::Collect()
 	bool stackScanned = false;
 	mCollects++;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -743,7 +742,7 @@ void PyrGC::Collect()
 		//TraceAnyPathToAllGrey();
 	}
 	//post("mNumToScan %d\n", mNumToScan);
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 	ENDPAUSE
