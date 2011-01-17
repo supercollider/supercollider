@@ -229,8 +229,8 @@ QView : QObject {
   // ----------------- actions .....................................
 
   action_ { arg func;
+    if( action.isNil ) { this.setSignalHandler( "action()", \doAction ) };
     action = func;
-    this.setSignalHandler( "action()", \doAction );
   }
 
   addAction { arg func, selector=\action;

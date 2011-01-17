@@ -806,8 +806,8 @@ QMultiSliderView : QView {
   }
 
   metaAction_ { arg func;
+    if( metaAction.isNil ) { this.setSignalHandler( "metaAction()", \doMetaAction ) };
     metaAction = func;
-    this.setSignalHandler( "metaAction()", \doMetaAction );
   }
 
   doMetaAction {
