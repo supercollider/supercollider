@@ -13,6 +13,7 @@ QObject {
     < keyUpEvent = 7;
 
   var qObject, finalizer;
+  var virtualSlots;
 
   *new { arg className, argumentArray;
     ^super.new.initQObject( className, argumentArray );
@@ -57,8 +58,28 @@ QObject {
     ^this.primitiveFailed
   }
 
+  connectToSlot { arg signal, receiver, slot;
+    _QObject_ConnectToSlot;
+    ^this.primitiveFailed
+  }
+
+  connectToFunction { arg signal, function, synchronous = false;
+    virtualSlots = virtualSlots.add( function );
+    this.prConnectToFunction( signal, function, synchronous );
+  }
+
   invokeMethod { arg method, arguments, synchronous = false;
     _QObject_InvokeMethod
     ^this.primitiveFailed
   }
+
+  ////////////////////// private //////////////////////////////////
+
+  prConnectToFunction { arg signal, function, synchronous = false;
+    _QObject_ConnectToFunction;
+    ^this.primitiveFailed
+  }
+
+  doFunction { arg f ... args; f.value( this, args ); }
+
 }

@@ -40,8 +40,7 @@ void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
 QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
 : QObject( qObject_ ),
   qObject( qObject_ ),
-  scObject( scObject_ ),
-  sigSpy( new QcSignalSpy( this ) )
+  scObject( scObject_ )
 {
   qObject->installEventFilter( this );
 }
@@ -256,8 +255,27 @@ bool QObjectProxy::setEventHandlerEvent( SetEventHandlerEvent *e )
 
 bool QObjectProxy::connectEvent( ConnectEvent *e )
 {
-  bool direct = e->sync == Synchronous;
-  return sigSpy->connect( e->signal.toStdString().c_str(), e->handler, direct );
+  Qt::ConnectionType ctype = e->sync == Synchronous ? Qt::DirectConnection : Qt::QueuedConnection;
+
+  if( e->method ) {
+    QcMethodSignalHandler *handler =
+      new QcMethodSignalHandler( this, e->signal.toStdString().c_str(), e->method, ctype );
+
+    if( !handler->isValid() ) { delete handler; return false; }
+
+    methodSigHandlers.append( handler );
+  }
+  else if ( e->function ) {
+    QcFunctionSignalHandler *handler =
+      new QcFunctionSignalHandler( this, e->signal.toStdString().c_str(), e->function, ctype );
+
+    if( !handler->isValid() ) { delete handler; return false; }
+
+    funcSigHandlers.append( handler );
+  }
+  else return false;
+
+  return true;
 }
 
 bool QObjectProxy::invokeMethodEvent( InvokeMethodEvent *e )

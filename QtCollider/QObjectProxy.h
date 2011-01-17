@@ -41,6 +41,8 @@ struct ScMethodCallEvent;
 
 class QObjectProxy;
 class QcSignalSpy;
+class QcMethodSignalHandler;
+class QcFunctionSignalHandler;
 
 typedef void (QObjectProxy::*InterpretEventFn) ( QEvent *, QList<QVariant> & );
 
@@ -56,7 +58,8 @@ namespace QtCollider {
 
 class QObjectProxy : public QObject
 {
-  friend class QcSignalSpy;
+  friend class QcMethodSignalHandler;
+  friend class QcFunctionSignalHandler;
 
   Q_OBJECT
 
@@ -112,8 +115,9 @@ class QObjectProxy : public QObject
 
     QObject *qObject;
     PyrObject *scObject;
-    QcSignalSpy *sigSpy;
     QMap<int,EventHandlerData> eventHandlers;
+    QList<QcMethodSignalHandler*> methodSigHandlers;
+    QList<QcFunctionSignalHandler*> funcSigHandlers;
 };
 
 namespace QtCollider {
@@ -176,7 +180,8 @@ struct SetEventHandlerEvent
 struct ConnectEvent
 : public RequestTemplate<ConnectEvent, &QObjectProxy::connectEvent>
 {
-  PyrSymbol *handler;
+  PyrSymbol *method;
+  PyrObject *function;
   // QString is necessary, because signal signature can not be a valid PyrSymbol.
   // Think of brackets and similar...
   QString signal;
