@@ -1,6 +1,7 @@
 title:: Synth Definition File Format
 summary:: Description of Synth Definition file format used by SC synth server
 categories:: Server>Architecture
+related:: Classes/SynthDef
 
 Synth definition files are read by the synth server and define collections of unit generators and their connections. These files are currently written by  the SuperCollider language application, but theoretically could be written by any program.
 Such a program would need knowledge of the SC unit generators and their characteristics, such as number of inputs and outputs and available calculation rates. The code to write these files is open and available in the SuperCollider language app.

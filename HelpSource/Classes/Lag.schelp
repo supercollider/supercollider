@@ -1,11 +1,10 @@
 class:: Lag
-summary:: Exponential lag.
-related:: Classes/Lag2, Classes/Lag3, Classes/Ramp
+summary:: Exponential lag
+related:: Classes/Lag2, Classes/Lag3, Classes/Ramp, Classes/LagUD
 categories::  UGens>Filters>Linear
 
 
 Description::
-
 This is essentially the same as  link::Classes/OnePole::  except that
 instead of supplying the coefficient directly, it is calculated from a 60
 dB lag time. This is the time required for the filter to converge to
@@ -40,7 +39,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 (
 // used to lag pitch
 {
@@ -54,6 +52,5 @@ code::
 	) 
 }.play
 )
-
 ::
 

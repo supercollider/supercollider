@@ -1,12 +1,12 @@
 class:: Lag2
-summary:: Exponential lag.
-related:: Classes/Lag, Classes/Lag3, Classes/Ramp
+summary:: Exponential lag
+related:: Classes/Lag, Classes/Lag3, Classes/Ramp, Classes/Lag2UD
 categories::  UGens>Filters>Linear
 
 
 Description::
 
-Lag2 is equivalent to Lag.kr(Lag.kr(in, time), time), thus resulting in a
+Lag2 is equivalent to code:: Lag.kr(Lag.kr(in, time), time) ::, thus resulting in a
 smoother transition. This saves on CPU as you only have to calculate the
 decay factor once instead of twice. See  link::Classes/Lag::  for more
 details.
@@ -39,7 +39,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 (
 // used to lag pitch
 {
@@ -53,6 +52,5 @@ code::
 	) 
 }.play
 )
-
 ::
 

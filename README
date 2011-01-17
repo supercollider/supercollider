@@ -43,6 +43,11 @@ hello
 
 soft::there::
 
+- instead of showing "(extension)" only for classes, do it for any document that was located in an extension directory.
+pass a flag to recurseHelpSource call in findExtHelp, and let updateFile return the doc map entry so we can set installed=\extension,
+or pass the flag to updateFile and then to addToDocMap?
+also add a check and warning for when a class file location and doc location is not the same in regards of extension or not.
+
 - make sure the new undocumented-method-generation works as it should for:
   only setter
   getter and setter

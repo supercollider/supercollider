@@ -1,5 +1,5 @@
 class:: LPF
-summary:: 2nd order Butterworth lowpass filter.
+summary:: 2nd order Butterworth lowpass filter
 related:: Classes/BPF, Classes/BRF, Classes/HPF
 categories::  UGens>Filters>Linear
 
@@ -36,7 +36,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 { LPF.ar(Saw.ar(200,0.1), SinOsc.kr(XLine.kr(0.7,300,20),0,3600,4000)) }.play;
 
 // kr:
@@ -51,6 +50,5 @@ code::
 	SinOsc.ar(ctl * 200 + 400) 
 }.play;
 )
-
 ::
 

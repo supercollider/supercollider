@@ -1,5 +1,5 @@
 class:: LPZ2
-summary:: Two zero fixed lowpass.
+summary:: Two zero fixed lowpass
 related:: Classes/BPZ2, Classes/BRZ2, Classes/HPZ2
 categories::  UGens>Filters>Linear
 
@@ -7,11 +7,8 @@ categories::  UGens>Filters>Linear
 Description::
 
 A special case fixed filter. Implements the formula:
-
 formula::
-
 out(i) = 0.25 * (in(i) + (2 * in(i - 1)) + in(i - 2)).
-
 ::
 
 
@@ -37,12 +34,10 @@ This value will be added to the output.
 Examples::
 
 code::
-
 //Compare:
 
 { WhiteNoise.ar(0.25) }.play;
 
 { LPZ2.ar(WhiteNoise.ar(0.25)) }.play;
-
 ::
 

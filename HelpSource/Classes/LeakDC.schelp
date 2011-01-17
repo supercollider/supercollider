@@ -1,5 +1,5 @@
 class:: LeakDC
-summary:: Remove DC.
+summary:: Remove DC
 related:: Classes/DC
 categories::  UGens>Filters>Linear
 
@@ -36,14 +36,12 @@ This value will be added to the output.
 Examples::
 
 code::
-
 (
-// this is really better with scope()
-play({
+{
 	var a;
 	a = LFPulse.ar(800, 0.5, 0.5, 0.5);
 	[a, LeakDC.ar(a, 0.995)]
-}))
-
+}.scope(bufsize: 22050)
+)
 ::
 

@@ -109,6 +109,19 @@ div.footnote {
     padding-left: 2em;*/
 }
 
+#related {
+    font-weight: bold;
+    margin-top: 0.5em;
+}
+
+/*#related a {
+    font-weight: normal;
+}*/
+
+.inheritance, #filename {
+/*    background: #ffe;*/
+}
+
 /*#inheritance, #related {
     margin-left: 0.5em;
     border-top: 1px solid #aaa;

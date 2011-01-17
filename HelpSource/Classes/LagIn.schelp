@@ -1,12 +1,12 @@
 class:: LagIn
-summary:: Read a signal from a bus with a lag.
+summary:: Read a control signal from a bus with a lag
 related:: Classes/In, Classes/InFeedback
 categories::  UGens>InOut
 
 
 Description::
 
-FIXME: LagIn description.
+Read a control signal from a bus with a lag.
 
 
 classmethods::
@@ -21,8 +21,7 @@ The index of the bus to read in from.
 argument::numChannels
 
 The number of channels (i.e. adjacent buses) to read in. You
-cannot modulate this number by assigning it to an argument in a
-SynthDef.
+cannot modulate this number.
 
 
 argument::lag

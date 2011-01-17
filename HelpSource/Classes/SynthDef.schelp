@@ -1,7 +1,7 @@
 class:: SynthDef
 summary:: Client-side representation of a synth definition
 categories:: Server>Abstractions
-related:: Classes/Synth
+related:: Classes/Synth, Reference/Synth-Definition-File-Format
 
 description::
 
