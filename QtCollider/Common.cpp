@@ -21,15 +21,23 @@ void QtCollider::setDebugLevel( int i ) {
 void QtCollider::lockLang()
 {
   qcDebugMsg(2,"locking lang!");
-  //printf("trying to lock\n");
+
+#ifdef QC_DEBUG
   QString msg;
+#endif
+
   while( pthread_mutex_trylock (&gLangMutex) ) {
+#ifdef QC_DEBUG
+    msg += QChar('.');
+#endif
     /* FIXME Dangerous! This sends to all QObjects. no matter what thread they
       live in */
-    msg += QChar('.');
     QApplication::sendPostedEvents( 0, QtCollider::Event_Sync );
     QThread::yieldCurrentThread();
   }
-  //msg += "locked\n";
-  //printf("%s", msg.toStdString().c_str() );
+
+#ifdef QC_DEBUG
+  msg += "locked";
+#endif
+  qcDebugMsg(2,msg);
 }
