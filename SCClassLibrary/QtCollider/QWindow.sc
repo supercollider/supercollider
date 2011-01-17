@@ -60,8 +60,10 @@ QWindow : QView {
   }
 
   drawHook_ { arg aFunction;
+    if( drawHook.notNil ) { this.disconnectFunction( 'painting()', drawHook ) };
+    this.connectToFunction( 'painting()', aFunction, true );
+    if( drawHook.isNil ) { this.setProperty( \paint, true ) };
     drawHook = aFunction;
-    this.setProperty( \paint, true );
   }
 
   refresh {
@@ -87,9 +89,5 @@ QWindow : QView {
 
   *removeWindow { arg window;
     allWindows.remove( window );
-  }
-
-  draw {
-    drawHook.value( this );
   }
 }

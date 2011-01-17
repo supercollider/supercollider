@@ -246,7 +246,3 @@ void QcButton::doAction()
   cycleStates();
   Q_EMIT( action() );
 }
-
-void QcCustomPainted::doDrawFunc() {
-  QApplication::sendEvent( this, new ScMethodCallEvent( "draw", QList<QVariant>(), true ) );
-}

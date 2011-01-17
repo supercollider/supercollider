@@ -160,11 +160,8 @@ class QcCustomPainted : public QcCanvas, QcHelper
   public:
     QcCustomPainted() {
       setLayout( new QcDefaultLayout() );
-      connect( this, SIGNAL(painting()), this, SLOT(doDrawFunc()) );
     }
     Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
-  private Q_SLOTS:
-    void doDrawFunc();
   private:
     // reimplement event handlers just so events don't propagate
     void mousePressEvent( QMouseEvent * ) {}

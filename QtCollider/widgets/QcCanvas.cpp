@@ -50,11 +50,9 @@ void QcCanvas::paintEvent( QPaintEvent * )
 
     QPainter pixPainter( &_pixmap );
 
-    QtCollider::lockLang();
     QtCollider::beginPainting( &pixPainter );
     Q_EMIT( painting() );
     QtCollider::endPainting();
-    QtCollider::unlockLang();
 
     repaintNeeded = false;
   }
