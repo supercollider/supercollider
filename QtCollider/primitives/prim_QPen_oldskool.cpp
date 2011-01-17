@@ -65,10 +65,12 @@ private:
 
 static QPainter *painter = 0;
 static QPainterPath path;
+static QMutex painterMutex;
 
 namespace QtCollider {
   void beginPainting( QPainter *p )
   {
+    painterMutex.lock();
     if( painter )
       qcErrorMsg( QString("Painting already in progress!") );
 
@@ -79,15 +81,21 @@ namespace QtCollider {
     painter->setBrush( black );
 
     path = QPainterPath();
+    painterMutex.unlock();
   }
 
   void endPainting()
   {
+    painterMutex.lock();
     painter = 0;
+    painterMutex.unlock();
   }
 
   QPainter *globalPainter()
   {
+    painterMutex.lock();
+    QPainter *p = painter;
+    painterMutex.unlock();
     return painter;
   }
 }

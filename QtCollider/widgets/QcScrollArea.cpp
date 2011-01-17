@@ -77,7 +77,7 @@ QcScrollArea::QcScrollArea()
   scrollWidget = new QcScrollWidget( viewport() );
   setWidget( scrollWidget );
   setWidgetResizable( true );
-  connect( scrollWidget, SIGNAL(painting()), this, SLOT(doDrawFunc()) );
+  connect( scrollWidget, SIGNAL(painting()), this, SIGNAL(painting()) );
 }
 
 void QcScrollArea::setHasBorder( bool b ) {
@@ -90,9 +90,4 @@ void QcScrollArea::setHasBorder( bool b ) {
 void QcScrollArea::setBackground ( const QColor &color )
 {
   scrollWidget->setBackground( color );
-}
-
-void QcScrollArea::doDrawFunc()
-{
-  QApplication::sendEvent( this, new ScMethodCallEvent( "draw", QList<QVariant>(), true ) );
 }

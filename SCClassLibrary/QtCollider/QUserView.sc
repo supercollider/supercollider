@@ -21,8 +21,10 @@ QUserView : QView {
   }
 
   drawFunc_ { arg aFunction;
+    if( drawFunc.notNil ) { this.disconnectFunction( 'painting()', drawFunc ) };
+    this.connectToFunction( 'painting()', aFunction, true );
+    if( drawFunc.isNil ) { this.setProperty( \paint, true ) };
     drawFunc = aFunction;
-    this.setProperty( \paint, true );
   }
 
   refresh {
@@ -34,9 +36,5 @@ QUserView : QView {
   background_ { arg aColor;
     background = aColor;
     this.setProperty( \background, aColor, true );
-  }
-
-  draw {
-    drawFunc.value( this );
   }
 }

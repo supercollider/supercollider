@@ -58,8 +58,8 @@ class QcScrollArea : public QScrollArea, public QcHelper
                     qMax( vs.height(), cs.height() ) );
     }
     Q_INVOKABLE void repaint() { scrollWidget->repaint(); }
-  public Q_SLOTS:
-    void doDrawFunc();
+  Q_SIGNALS:
+    void painting();
   private:
     QcScrollWidget *scrollWidget;
 };
