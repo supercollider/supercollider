@@ -668,7 +668,7 @@ int prFunctionDefDumpContexts(struct VMGlobals *g, int numArgsPushed)
 
 	int i=0;
 	while (slotRawBlock(a)) {
-		post("%2d context %s %08X\n", i++, slotRawSymbol(&slotRawObject(a)->classptr->name)->name, slotRawInt(&slotRawBlock(a)->contextDef));
+		post("%2d context %s %p\n", i++, slotRawSymbol(&slotRawObject(a)->classptr->name)->name, slotRawInt(&slotRawBlock(a)->contextDef));
 		a = &slotRawBlock(a)->contextDef;
 	}
 	return errNone;
@@ -2780,9 +2780,9 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 
 	oldthread = g->thread;
 	if (newthread == oldthread) return;
-	//postfl("->switchToThread %d %08X -> %08X\n", oldstate, oldthread, newthread);
+	//postfl("->switchToThread %d %p -> %p\n", oldstate, oldthread, newthread);
 	//post("->switchToThread from %s:%s\n", slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name);
-	//post("->stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n",
+	//post("->stack %p  g->sp %p [%d]  g->top %p [%d]\n",
 	//	g->gc->Stack()->slots, g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "switchToThreadA");
@@ -2829,7 +2829,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetObject(&oldthread->stack, gc->Stack());
 		gc->ToWhite(gc->Stack());
 		gc->Stack()->size = g->sp - gc->Stack()->slots + 1;
-		//post("else %08X %08X\n", slotRawObject(&oldthread->stack), gc->Stack());
+		//post("else %p %p\n", slotRawObject(&oldthread->stack), gc->Stack());
 
 		SetObject(&oldthread->method, g->method);
 		SetObject(&oldthread->block, g->block);
@@ -2879,7 +2879,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 
 	g->execMethod = 99;
 
-	//post("switchToThread ip %08X\n", g->ip);
+	//post("switchToThread ip %p\n", g->ip);
 	//post(slotRawInt(&"switchToThread newthread->ip) %d\n", slotRawInt(&newthread->ip));
 	//post(slotRawInt(&"switchToThread oldthread->ip) %d\n", slotRawInt(&oldthread->ip));
 
@@ -2898,16 +2898,16 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
         slotCopy(currentEnvironmentSlot,&g->thread->environment);
         g->gc->GCWrite(g->classvars, currentEnvironmentSlot);
 
-	//post("old thread %08X stack %08X\n", oldthread, slotRawObject(&oldthread->stack));
-	//post("new thread %08X stack %08X\n", g->thread, slotRawObject(&g->thread->stack));
-	//post("main thread %08X stack %08X\n", slotRawThread(&g->process->mainThread), slotRawObject(&slotRawThread(&g->process->mainThread)->stack));
+	//post("old thread %p stack %p\n", oldthread, slotRawObject(&oldthread->stack));
+	//post("new thread %p stack %p\n", g->thread, slotRawObject(&g->thread->stack));
+	//post("main thread %p stack %p\n", slotRawThread(&g->process->mainThread), slotRawObject(&slotRawThread(&g->process->mainThread)->stack));
 
 	//postfl("<-switchToThread\n");
-	//post("<-stack %08X  g->sp %08X [%d]  g->top %08X [%d]\n",
+	//post("<-stack %p  g->sp %p [%d]  g->top %p [%d]\n",
 	//	g->gc->Stack()->slots, g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "switchToThreadB");
-	//post("switchToThread ip2 %08X\n", g->ip);
+	//post("switchToThread ip2 %p\n", g->ip);
 }
 
 void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray,
@@ -3099,7 +3099,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot value;
 
-	//postfl("->prRoutineYield %08X\n", g->thread);
+	//postfl("->prRoutineYield %p\n", g->thread);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineYield");
 	//postfl("->numArgsPushed %d\n", numArgsPushed);
@@ -3114,7 +3114,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	PyrThread *parent = slotRawThread(&g->thread->parent);
 	SetNil(&g->thread->parent);
 	slotCopy(&g->process->nowExecutingPath, &g->thread->oldExecutingPath);
-	//debugf("yield from thread %08X to parent %08X\n", g->thread, slotRawThread(&g->thread->parent));
+	//debugf("yield from thread %p to parent %p\n", g->thread, slotRawThread(&g->thread->parent));
 	switchToThread(g, parent, tSuspended, &numArgsPushed);
 
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
@@ -3132,7 +3132,7 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot value;
 
-	//postfl("->prRoutineAlwaysYield ip %08X\n", g->ip);
+	//postfl("->prRoutineAlwaysYield ip %p\n", g->ip);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "prRoutineAlwaysYield");
 	if (!isKindOf((PyrObject*)g->thread, class_routine)) {
@@ -3147,13 +3147,13 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 	PyrThread *parent = slotRawThread(&g->thread->parent);
 	SetNil(&g->thread->parent);
 	slotCopy(&g->process->nowExecutingPath, &g->thread->oldExecutingPath);
-	//post("alwaysYield from thread %08X to parent %08X\n", g->thread, parent);
+	//post("alwaysYield from thread %p to parent %p\n", g->thread, parent);
 	switchToThread(g, parent, tDone, &numArgsPushed);
 
 	// on the other side of the looking glass, put the yielded value on the stack as the result..
 	slotCopy((g->sp - numArgsPushed + 1),&value);
 
-	//postfl("<-prRoutineAlwaysYield ip %08X\n", g->ip);
+	//postfl("<-prRoutineAlwaysYield ip %p\n", g->ip);
 	//assert(g->gc->SanityCheck());
 	//CallStackSanity(g, "<prRoutineAlwaysYield");
 	return errNone;
@@ -3181,8 +3181,8 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		slotCopy(&threadSlot,a);
 		slotCopy(&value,b);
 
-		//post("g->thread %08X\n", g->thread);
-		//post("thread %08X\n", thread);
+		//post("g->thread %p\n", g->thread);
+		//post("thread %p\n", thread);
 		SetObject(&thread->parent, g->thread);
 		g->gc->GCWrite(thread, g->thread);
 
@@ -3191,11 +3191,11 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		slotCopy(&thread->clock, &g->thread->clock);
 		g->gc->GCWrite(thread, &g->thread->clock);
 
-		//postfl("start into thread %08X from parent %08X\n", thread, g->thread);
+		//postfl("start into thread %p from parent %p\n", thread, g->thread);
 		switchToThread(g, thread, tSuspended, &numArgsPushed);
 
 		// set stack
-		//post("set stack %08X %08X\n", g->sp, g->gc->Stack()->slots - 1);
+		//post("set stack %p %p\n", g->sp, g->gc->Stack()->slots - 1);
 		g->sp = g->gc->Stack()->slots - 1;
 		slotCopy((++g->sp), &threadSlot);
 		slotCopy(&g->receiver, &threadSlot);
@@ -3215,7 +3215,7 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 		g->gc->GCWrite(thread, &g->thread->clock);
 
 		slotCopy(&value,b);
-	//debugf("resume into thread %08X from parent %08X\n", thread, g->thread);
+	//debugf("resume into thread %p from parent %p\n", thread, g->thread);
 		switchToThread(g, thread, tSuspended, &numArgsPushed);
 		// on the other side of the looking glass, put the yielded value on the stack as the result..
 		slotCopy((g->sp - numArgsPushed + 1),&value);

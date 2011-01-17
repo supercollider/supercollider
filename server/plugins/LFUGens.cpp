@@ -3755,9 +3755,9 @@ void BufEnvGen_Ctor(BufEnvGen *unit)
 	if (!buf || !buf->data || buf->samples < 8) {
 		Print("Envelope not allocated.\n");
 		//Print("bufnum %d\n", bufnum);
-		//Print("buf %08X\n", buf);
+		//Print("buf %p\n", buf);
 		if (buf) {
-			//Print("buf->data %08X   buf->samples %d\n", buf->data, buf->samples);
+			//Print("buf->data %p   buf->samples %d\n", buf->data, buf->samples);
 		}
 		SETCALC(ClearUnitOutputs);
 		return;

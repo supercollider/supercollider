@@ -1216,8 +1216,8 @@ void returnFromMethod(VMGlobals *g)
 				slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name
 			);
 			post("tailcall %d\n", g->tailCall);
-			post("homeContext %08X\n", homeContext);
-			post("returnFrame %08X\n", returnFrame);
+			post("homeContext %p\n", homeContext);
+			post("returnFrame %p\n", returnFrame);
 			dumpObjectSlot(&homeContext->caller);
 			DumpStack(g, g->sp);
 			DumpBackTrace(g);
