@@ -34,118 +34,163 @@
 #include <QMetaMethod>
 #include <QVariant>
 
-class QcDynamicSlot {
+#include <PyrKernel.h>
+#include <VMGlobals.h>
+
+class QcSignalSpy: public QObject
+{
+
 public:
-  QcDynamicSlot( PyrSymbol *scMethod, QObject *obj, int sigId )
-  : _scMethod( scMethod ),
-    _sigId( sigId )
+
+QcSignalSpy( QObjectProxy *proxy, const char *sigName,
+              Qt::ConnectionType conType = Qt::QueuedConnection )
+: QObject( proxy ), _proxy( proxy ), _sigId( -1 )
+{
+
+  Q_ASSERT( sigName );
+
+  const QMetaObject *mo = _proxy->object()->metaObject();
+
+  QByteArray signal = QMetaObject::normalizedSignature( sigName );
+  int sigId = mo->indexOfSignal( signal );
+
+  if( sigId < 0 ) {
+    qcErrorMsg( QString("No such signal: '%1'").arg(signal.constData()) );
+    return;
+  }
+
+  int slotId = QObject::staticMetaObject.methodCount();
+
+  if( !QMetaObject::connect( _proxy->object(), sigId, this, slotId,
+                            conType, 0) )
   {
-    QMetaMethod signal = obj->metaObject()->method( sigId );
-    QList<QByteArray> params = signal.parameterTypes();
-    for( int i = 0; i < params.count(); ++i ) {
-      int type = QMetaType::type( params.at(i).constData() );
-      if( type == QMetaType::Void )
-        qcErrorMsg( QString("QObject:connect: Don't know how to handle '%1', "
-                            "use qRegisterMetaType to register it.")
-                    .arg(params.at(i).constData()) );
-      _argTypes << type;
-    }
+    qcErrorMsg( "QMetaObject::connect returned false. Unable to connect." );
+    return;
   }
 
-  inline int signalId() const { return _sigId; }
+  QMetaMethod mm = mo->method( sigId );
 
-  inline PyrSymbol *scMethod () const { return _scMethod; }
+  QList<QByteArray> params = mm.parameterTypes();
 
-  void decode( void **argData, QList<QVariant> & args ) {
+  for( int i = 0; i < params.count(); ++i ) {
+    int type = QMetaType::type( params.at(i).constData() );
+    if( type == QMetaType::Void )
+      qcErrorMsg( QString("QObject:connect: Don't know how to handle '%1', "
+                          "use qRegisterMetaType to register it.")
+                  .arg(params.at(i).constData()) );
+    _argTypes << type;
+  }
+
+  _sigId = sigId;
+}
+
+int qt_metacall( QMetaObject::Call call, int methodId, void **argData )
+{
+  methodId = QObject::qt_metacall( call, methodId, argData );
+
+  if( methodId < 0 )
+    return methodId;
+
+  if( call == QMetaObject::InvokeMetaMethod ) {
+    Q_ASSERT( methodId == 0 );
+
+    QList<QVariant> args;
+    args.reserve( _argTypes.count() );
+
     for (int i = 0; i < _argTypes.count(); ++i) {
-        QMetaType::Type type = static_cast<QMetaType::Type>(_argTypes.at(i));
-        args << QVariant( type, argData[i + 1] );
+      QMetaType::Type type = static_cast<QMetaType::Type>(_argTypes.at(i));
+      args << QVariant( type, argData[i + 1] );
     }
+
+    react( args );
+
+    methodId = -1;
   }
 
-private:
-  PyrSymbol *_scMethod;
+  return methodId;
+}
+
+inline int indexOfSignal () { return _sigId; }
+
+inline bool isValid () { return _sigId > 0; }
+
+protected:
+
+  virtual void react( const QList<QVariant> args ) = 0;
+
+  QObjectProxy *_proxy;
   int _sigId;
   QList<int> _argTypes;
 };
 
-class QcSignalSpy: public QObject
+class QcMethodSignalHandler : public QcSignalSpy
 {
 public:
+  QcMethodSignalHandler( QObjectProxy *proxy, const char *sigName, PyrSymbol *handler,
+                          Qt::ConnectionType conType = Qt::QueuedConnection )
+  : QcSignalSpy( proxy, sigName, conType ), _handler( handler )
+  { }
 
-  QcSignalSpy( QObjectProxy *proxy )
-  : QObject( proxy ), _proxy( proxy )
-  {}
+  inline PyrSymbol *handler() { return _handler; }
 
-  bool connect( const char *sigName, PyrSymbol * scMethod, bool direct = false )
-  {
-    Q_ASSERT( sigName );
+protected:
 
-    const QMetaObject *mo = _proxy->object()->metaObject();
+  virtual void react( const QList<QVariant> args ) {
+    const QMetaMethod mm = _proxy->object()->metaObject()->method( _sigId );
+    qcDebugMsg( 1, QString("SIGNAL: '%1' handled by method '%2'")
+                    .arg(mm.signature()).arg(_handler->name) );
 
-    QByteArray signal = QMetaObject::normalizedSignature( sigName );
-    int sigId = mo->indexOfSignal( signal );
-
-    if( sigId < 0 ) {
-      qcErrorMsg( QString("No such signal: '%1'").arg(signal.constData()) );
-      return false;
-    }
-
-    Q_FOREACH( QcDynamicSlot* ds, _dynSlots ) {
-      if( ds->signalId() == sigId && ds->scMethod() == scMethod ) return true;
-    }
-
-    int slotId = QObject::staticMetaObject.methodCount() + _dynSlots.size();
-
-    Qt::ConnectionType conType =
-      direct ? Qt::DirectConnection : Qt::QueuedConnection;
-
-    if( !QMetaObject::connect( _proxy->object(), sigId, this, slotId,
-                              conType, 0) )
-    {
-      qcErrorMsg( "QMetaObject::connect returned false. Unable to connect." );
-      return false;
-    }
-
-    QcDynamicSlot *dynSlot = new QcDynamicSlot( scMethod,
-                                                _proxy->object(), sigId );
-    _dynSlots << dynSlot;
-
-    return true;
+    _proxy->invokeScMethod( _handler, args );
   }
 
-  int qt_metacall( QMetaObject::Call call, int methodId, void **argData )
-  {
-    methodId = QObject::qt_metacall( call, methodId, argData );
-
-    if( methodId < 0 )
-      return methodId;
-
-    if( call == QMetaObject::InvokeMetaMethod ) {
-      Q_ASSERT( methodId < _dynSlots.size() );
-
-      QcDynamicSlot *ds = _dynSlots[methodId];
-      PyrSymbol *scMethod = ds->scMethod();
-      QList<QVariant> args;
-      ds->decode( argData, args );
-
-      const QMetaMethod mm =
-        _proxy->object()->metaObject()->method( ds->signalId() );
-      qcDebugMsg( 1, QString("SIGNAL: '%1' handled by method '%2'")
-                      .arg(mm.signature()).arg(scMethod->name) );
-
-      _proxy->invokeScMethod( scMethod, args );
-
-      methodId = -1;
-    }
-
-    return methodId;
-  }
-
-private:
-
-  QObjectProxy *_proxy;
-  QList<QcDynamicSlot*> _dynSlots;
+  PyrSymbol * _handler;
 };
+
+class QcFunctionSignalHandler : public QcSignalSpy
+{
+public:
+  QcFunctionSignalHandler( QObjectProxy *proxy, const char *sigName, PyrObject *handler,
+                          Qt::ConnectionType conType = Qt::QueuedConnection )
+  : QcSignalSpy( proxy, sigName, conType ), _handler( handler )
+  { }
+
+  inline PyrObject *handler() { return _handler; }
+
+protected:
+
+  virtual void react( const QList<QVariant> args ) {
+
+    const QMetaMethod mm = _proxy->object()->metaObject()->method( _sigId );
+    qcDebugMsg( 1, QString("SIGNAL: '%1' handled by a Function").arg(mm.signature()) );
+
+    // FIXME, reuse QObjectProxy::invokeScMethod. Here a custom implementation just
+    // because Slot does not support a Function.
+
+    qcDebugMsg(1, QString("SC FUNCTION CALL [+++] ") );
+
+    QtCollider::lockLang();
+
+    if( _proxy->scObject ) {
+      VMGlobals *g = gMainVMGlobals;
+      g->canCallOS = true;
+      ++g->sp;  SetObject(g->sp, _proxy->scObject);
+      ++g->sp;  SetObject(g->sp, _handler);
+      Q_FOREACH( QVariant var, args ) {
+        ++g->sp;
+        if( Slot::setVariant( g->sp, var ) )
+          SetNil( g->sp );
+      }
+      runInterpreter(g, getsym("doFunction"), args.size() + 2);
+      g->canCallOS = false;
+    }
+
+    QtCollider::unlockLang();
+
+    qcDebugMsg(1, QString("SC FUNCTION CALL [---] ") );
+  }
+
+  PyrObject * _handler;
+};
+
 
 #endif //QC_SIGNALSPY_H

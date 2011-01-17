@@ -228,16 +228,71 @@ QC_LANG_PRIMITIVE( QObject_Connect, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   Synchronicity sync = Slot::toBool( a+2 ) ? Synchronous : Asynchronous;
 
   qcSCObjectDebugMsg( 1, slotRawObject(r),
-                      QString("CONNECT: %1 -> %2 [%3]").arg(signal).arg(handler->name)
+                      QString("SET SIGNAL HANDLER: %1 -> %2 [%3]").arg(signal).arg(handler->name)
                       .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
 
   ConnectEvent *e = new ConnectEvent();
-  e->handler = handler;
+  e->method = handler;
+  e->function = 0;
   e->signal = signal;
   e->sync = sync;
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
   e->send( proxy, Asynchronous );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_ConnectToFunction, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
+
+  QString signal = Slot::toString( a+0 );
+  if( signal.isEmpty() || NotObj( a+1 ) ) return errWrongType;
+  PyrObject *handlerObj = slotRawObject( a+1 );
+  Synchronicity sync = Slot::toBool( a+2 ) ? Synchronous : Asynchronous;
+
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("SET SIGNAL HANDLER: %1 -> a Function %2").arg(signal)
+                      .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
+
+  ConnectEvent *e = new ConnectEvent();
+  e->method = 0;
+  e->function = handlerObj;
+  e->signal = signal;
+  e->sync = sync;
+
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+  e->send( proxy, Asynchronous );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_ConnectToSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  // Args: signal, receiver, slot
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
+  if( !isKindOfSlot( a+1, getsym("QObject")->u.classobj )
+      || NotSym( a+0 ) || NotSym( a+2 ) ) return errWrongType;
+  if( IS_OBJECT_NIL( a+1 ) ) return errFailed;
+
+  PyrSymbol *symSig = slotRawSymbol( a+0 );
+  PyrSymbol *symSlot = slotRawSymbol( a+2 );
+  QObjectProxy *sndProxy = QOBJECT_FROM_SLOT( r );
+  QObjectProxy *rcvProxy = QOBJECT_FROM_SLOT( a+1 );
+
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("CONNECT TO SLOT: %1 -> %2").arg(symSig->name).arg(symSlot->name) );
+
+  QString strSig = QString("2") + symSig->name;
+  QString strSlot = QString("1") + symSlot->name;
+  if (! QObject::connect( sndProxy->object(), strSig.toStdString().c_str(),
+                          rcvProxy->object(), strSlot.toStdString().c_str() ) ) {
+    qcErrorMsg( QString("Failed to connect %1::%2 to %3::%4!\n")
+                .arg(sndProxy->scClassName()).arg(symSig->name)
+                .arg(rcvProxy->scClassName()).arg(symSlot->name) );
+    return errFailed;
+  }
 
   return errNone;
 }
