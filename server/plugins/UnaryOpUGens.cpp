@@ -926,7 +926,7 @@ bool ChooseOperatorFunc(UnaryOpUGen *unit)
 		func = ChooseNormalFunc(unit);
 	}
 	unit->mCalcFunc = (UnitCalcFunc)func;
-	//Print("<-ChooseOperatorFunc %08X\n", func);
+	//Print("<-ChooseOperatorFunc %p\n", func);
 	//Print("calc %d\n", unit->mCalcRate);
 	return ret;
 }

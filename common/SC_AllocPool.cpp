@@ -273,8 +273,8 @@ size_t AllocPool::LargestFreeChunk()
 	int bitPosition = NUMBITS(binBits) - 1;
 	int index = (word << 5) + bitPosition;
 	AllocChunkPtr bin = mBins + index;
-	//postbuf("** %08X %08X %08X %08X\n", mBinBlocks[0], mBinBlocks[1], mBinBlocks[2], mBinBlocks[3]);
-	//postbuf("%d %d %d %08X    %08X %08X\n", word, bitPosition, index, binBits, bin->Prev(), bin->Next());
+	//postbuf("** %p %p %p %p\n", mBinBlocks[0], mBinBlocks[1], mBinBlocks[2], mBinBlocks[3]);
+	//postbuf("%d %d %d %p    %p %p\n", word, bitPosition, index, binBits, bin->Prev(), bin->Next());
 
 	AllocChunkPtr candidate;
 	size_t maxsize = 0;

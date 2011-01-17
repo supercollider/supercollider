@@ -2174,7 +2174,7 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 	int size = delaybufsize * sizeof(float);
 	//Print("->RTAlloc %d\n", size);
 	unit->m_dlybuf = (float*)RTAlloc(unit->mWorld, size);
-	//Print("<-RTAlloc %08X\n", unit->m_dlybuf);
+	//Print("<-RTAlloc %p\n", unit->m_dlybuf);
 	unit->m_mask = delaybufsize - 1;
 }
 #endif
@@ -3962,7 +3962,7 @@ void DelayN_next(DelayN *unit, int inNumSamples)
 	float dsamp = unit->m_dsamp;
 	long mask = unit->m_mask;
 
-	//Print("DelayN_next %08X %g %g  %d %d\n", unit, delaytime, dsamp, mask, iwrphase);
+	//Print("DelayN_next %p %g %g  %d %d\n", unit, delaytime, dsamp, mask, iwrphase);
 	if (delaytime == unit->m_delaytime) {
 		DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, dlybuf, inNumSamples, unit->m_idelaylen);
 	} else {
@@ -5728,7 +5728,7 @@ void GrainTap_next(GrainTap *unit, int inNumSamples)
 		if (unit->nextTime < 1) unit->nextTime = 1;
 
 		/*if (grain == NULL) {
-			postbuf("nextTime %d %g %g %08X %08X %08X\n", unit->nextTime, sdur, density,
+			postbuf("nextTime %d %g %g %p %p %p\n", unit->nextTime, sdur, density,
 				grain, unit->firstActive, unit->firstFree);
 		}*/
 	}
@@ -5916,7 +5916,7 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 
 		float *out1 = out[chan1];
 		float *out2 = out[chan2];
-		//printf("B chan %d %d  %08X %08X", chan1, chan2, out1, out2);
+		//printf("B chan %d %d  %p %p", chan1, chan2, out1, out2);
 
 		int nsmps = sc_min(grain->counter, inNumSamples);
 		if (grain->interp >= 4) {

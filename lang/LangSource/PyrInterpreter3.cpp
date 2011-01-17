@@ -113,9 +113,9 @@ void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 		g->gc->SanityCheck();
 #endif
 //        if (strcmp(selector->name, "tick") != 0) post("%s %d  execMethod %d\n", selector->name, numArgsPushed, g->execMethod);
-	//post("->Interpret thread %08X\n", g->thread);
+	//post("->Interpret thread %p\n", g->thread);
 		if (g->execMethod) Interpret(g);
-	//post("<-Interpret thread %08X\n", g->thread);
+	//post("<-Interpret thread %p\n", g->thread);
 #ifdef GC_SANITYCHECK
 		g->gc->SanityCheck();
 #endif
@@ -350,7 +350,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 
 static bool initAwakeMessage(VMGlobals *g)
 {
-	//post("initAwakeMessage %08X %08X\n", g->thread, slotRawThread(&g->process->mainThread));
+	//post("initAwakeMessage %p %p\n", g->thread, slotRawThread(&g->process->mainThread));
 	slotCopy(&g->process->curThread, &g->process->mainThread); //??
 	g->thread = slotRawThread(&g->process->mainThread); //??
 
@@ -830,8 +830,8 @@ void Interpret(VMGlobals *g)
 	prevop = op1;
 #endif
 	//printf("op1 %d\n", op1);
-	//postfl("sp %08X   frame %08X  caller %08X  ip %08X\n", sp, g->frame, g->frame->caller.uof, slotRawInt(&g->frame->caller.uof->ip));
-	//postfl("sp %08X   frame %08X   diff %d    caller %08X\n", sp, g->frame, ((int)sp - (int)g->frame)>>3, g->frame->caller.uof);
+	//postfl("sp %p   frame %p  caller %p  ip %p\n", sp, g->frame, g->frame->caller.uof, slotRawInt(&g->frame->caller.uof->ip));
+	//postfl("sp %p   frame %p   diff %d    caller %p\n", sp, g->frame, ((int)sp - (int)g->frame)>>3, g->frame->caller.uof);
 #if DEBUGINTERPRETER
 	if (gTraceInterpreter) {
 		//DumpStack(g, sp);

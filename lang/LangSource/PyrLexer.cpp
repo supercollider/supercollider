@@ -1801,7 +1801,7 @@ void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 		//postfl("<-Parsing %s %d\n", fileSym->name, parseFailed); fflush(stdout);
 		//post("parseFailed %d\n", parseFailed); fflush(stdout);
 		if (!parseFailed && gRootParseNode) {
-			//postfl("Compiling nodes %08X\n", gRootParseNode);fflush(stdout);
+			//postfl("Compiling nodes %p\n", gRootParseNode);fflush(stdout);
 			compilingCmdLine = false;
 			compileNodeList(gRootParseNode, true);
 			//postfl("done compiling\n");fflush(stdout);

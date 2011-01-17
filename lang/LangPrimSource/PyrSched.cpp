@@ -158,7 +158,7 @@ void dumpheap(PyrObject *heap)
 	mintime = slotRawFloat(&heap->slots[0]);
 	post("SCHED QUEUE (%d)\n", heap->size);
 	for (i=0; i<heap->size; i+=2) {
-		post("%3d %9.2f %08X\n", i>>1, slotRawFloat(&heap->slots[i]), slotRawInt(&heap->slots[i+1]));
+		post("%3d %9.2f %p\n", i>>1, slotRawFloat(&heap->slots[i]), slotRawInt(&heap->slots[i+1]));
 		if (slotRawFloat(&heap->slots[i]) < mintime)
 			post("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	}
@@ -707,7 +707,7 @@ void* TempoClock_stop_func(void* p)
 
 void TempoClock_stopAll(void)
 {
-	//printf("->TempoClock_stopAll %08X\n", TempoClock::sAll);
+	//printf("->TempoClock_stopAll %p\n", TempoClock::sAll);
 	TempoClock *clock = TempoClock::sAll;
 	while (clock) {
 		TempoClock* next = clock->mNext;
@@ -716,7 +716,7 @@ void TempoClock_stopAll(void)
 		delete clock;
 		clock = next;
 	}
-	//printf("<-TempoClock_stopAll %08X\n", TempoClock::sAll);
+	//printf("<-TempoClock_stopAll %p\n", TempoClock::sAll);
 	TempoClock::sAll = 0;
 }
 
