@@ -39,11 +39,18 @@ QWindow : QAbstractScroll {
     scroll = argScroll;
   }
 
+  // compatibility with SCWindow
   asView {
     ^this;
   }
 
+  // compatibility with SCWindow
   view {
+    ^this;
+  }
+
+  // compatibility with SCTopView
+  findWindow {
     ^this;
   }
 
