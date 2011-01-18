@@ -58,6 +58,11 @@ QObject {
     ^this.primitiveFailed
   }
 
+  disconnectMethod { arg signal, method;
+    _QObject_DisconnectMethod;
+    ^this.primitiveFailed
+  }
+
   connectToSlot { arg signal, receiver, slot;
     _QObject_ConnectToSlot;
     ^this.primitiveFailed
@@ -66,6 +71,11 @@ QObject {
   connectToFunction { arg signal, function, synchronous = false;
     virtualSlots = virtualSlots.add( function );
     this.prConnectToFunction( signal, function, synchronous );
+  }
+
+  disconnectFunction { arg signal, function;
+    virtualSlots.remove( function );
+    this.prDisconnectFunction( signal, function );
   }
 
   invokeMethod { arg method, arguments, synchronous = false;
@@ -77,6 +87,11 @@ QObject {
 
   prConnectToFunction { arg signal, function, synchronous = false;
     _QObject_ConnectToFunction;
+    ^this.primitiveFailed
+  }
+
+  prDisconnectFunction { arg signal, function;
+    _QObject_DisconnectFunction;
     ^this.primitiveFailed
   }
 

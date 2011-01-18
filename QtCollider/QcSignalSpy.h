@@ -110,9 +110,16 @@ int qt_metacall( QMetaObject::Call call, int methodId, void **argData )
   return methodId;
 }
 
-inline int indexOfSignal () { return _sigId; }
+inline int indexOfSignal () const { return _sigId; }
 
-inline bool isValid () { return _sigId > 0; }
+inline bool isValid () const { return _sigId > 0; }
+
+void destroy () {
+  int slotId = QObject::staticMetaObject.methodCount();
+  QMetaObject::disconnect( _proxy->object(), _sigId, this, slotId );
+  _sigId = -1;
+  deleteLater();
+}
 
 protected:
 
@@ -131,7 +138,7 @@ public:
   : QcSignalSpy( proxy, sigName, conType ), _handler( handler )
   { }
 
-  inline PyrSymbol *handler() { return _handler; }
+  inline PyrSymbol *method() { return _handler; }
 
 protected:
 
@@ -154,7 +161,7 @@ public:
   : QcSignalSpy( proxy, sigName, conType ), _handler( handler )
   { }
 
-  inline PyrObject *handler() { return _handler; }
+  inline PyrObject *function() { return _handler; }
 
 protected:
 
@@ -170,7 +177,7 @@ protected:
 
     QtCollider::lockLang();
 
-    if( _proxy->scObject ) {
+    if( _proxy->scObject && this->isValid() ) {
       VMGlobals *g = gMainVMGlobals;
       g->canCallOS = true;
       ++g->sp;  SetObject(g->sp, _proxy->scObject);

@@ -52,6 +52,7 @@ namespace QtCollider {
   struct GetPropertyEvent;
   struct SetEventHandlerEvent;
   struct ConnectEvent;
+  struct DisconnectEvent;
   struct InvokeMethodEvent;
   class DestroyEvent;
 }
@@ -92,6 +93,7 @@ class QObjectProxy : public QObject
     bool getPropertyEvent( QtCollider::GetPropertyEvent * );
     bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
     bool connectEvent( QtCollider::ConnectEvent * );
+    bool disconnectEvent( QtCollider::DisconnectEvent * );
     bool invokeMethodEvent( QtCollider::InvokeMethodEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
 
@@ -186,6 +188,14 @@ struct ConnectEvent
   // Think of brackets and similar...
   QString signal;
   Synchronicity sync;
+};
+
+struct DisconnectEvent
+: public RequestTemplate<DisconnectEvent, &QObjectProxy::disconnectEvent>
+{
+  PyrSymbol *method;
+  PyrObject *function;
+  QString signal;
 };
 
 struct InvokeMethodEvent
