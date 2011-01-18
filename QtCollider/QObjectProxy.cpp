@@ -278,6 +278,41 @@ bool QObjectProxy::connectEvent( ConnectEvent *e )
   return true;
 }
 
+bool QObjectProxy::disconnectEvent( QtCollider::DisconnectEvent *e )
+{
+  const QMetaObject *mo = qObject->metaObject();
+  QByteArray signal = QMetaObject::normalizedSignature( e->signal.toStdString().c_str() );
+  int sigId = mo->indexOfSignal( signal );
+  if( sigId < 0 ) {
+    qcDebugMsg( 1, QString("WARNING: No such signal: '%1'").arg(signal.constData()) );
+    return false;
+  }
+
+  if( e->method ) {
+    for( int i=0; i<methodSigHandlers.size(); ++i ) {
+      QcMethodSignalHandler *h = methodSigHandlers[i];
+      if( h->indexOfSignal() == sigId && h->method() == e->method ) {
+        methodSigHandlers.removeAt(i);
+        h->destroy();
+        break;
+      }
+    }
+  }
+  else if( e->function ) {
+    for( int i=0; i<funcSigHandlers.size(); ++i ) {
+      QcFunctionSignalHandler *h = funcSigHandlers[i];
+      if( h->indexOfSignal() == sigId && h->function() == e->function ) {
+        funcSigHandlers.removeAt(i);
+        h->destroy();
+        break;
+      }
+    }
+  }
+  else return false;
+
+  return true;
+}
+
 bool QObjectProxy::invokeMethodEvent( InvokeMethodEvent *e )
 {
   return invokeMethod( e->method->name, e->ret, e->arg, Qt::DirectConnection );

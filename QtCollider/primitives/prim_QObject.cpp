@@ -243,6 +243,28 @@ QC_LANG_PRIMITIVE( QObject_Connect, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QObject_DisconnectMethod, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
+
+  QString signal = Slot::toString( a+0 );
+  if( signal.isEmpty() || NotSym( a+1 ) ) return errWrongType;
+  PyrSymbol *handler = 0; slotSymbolVal( a+1, &handler );
+
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("DISCONNECT METHOD: %1 -> %2").arg(signal).arg(handler->name) );
+
+  DisconnectEvent *e = new DisconnectEvent();
+  e->method = handler;
+  e->function = 0;
+  e->signal = signal;
+
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+  e->send( proxy, Asynchronous );
+
+  return errNone;
+}
+
 QC_LANG_PRIMITIVE( QObject_ConnectToFunction, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( IS_OBJECT_NIL( r ) ) return errFailed;
@@ -253,7 +275,7 @@ QC_LANG_PRIMITIVE( QObject_ConnectToFunction, 3, PyrSlot *r, PyrSlot *a, VMGloba
   Synchronicity sync = Slot::toBool( a+2 ) ? Synchronous : Asynchronous;
 
   qcSCObjectDebugMsg( 1, slotRawObject(r),
-                      QString("SET SIGNAL HANDLER: %1 -> a Function %2").arg(signal)
+                      QString("SET SIGNAL HANDLER: %1 -> a Function [%2]").arg(signal)
                       .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
 
   ConnectEvent *e = new ConnectEvent();
@@ -264,6 +286,30 @@ QC_LANG_PRIMITIVE( QObject_ConnectToFunction, 3, PyrSlot *r, PyrSlot *a, VMGloba
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
   e->send( proxy, Asynchronous );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_DisconnectFunction, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( IS_OBJECT_NIL( r ) ) return errFailed;
+
+  QString signal = Slot::toString( a+0 );
+  if( signal.isEmpty() || NotObj( a+1 ) ) return errWrongType;
+  PyrObject *handlerObj = slotRawObject( a+1 );
+
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("DISCONNECT FUNCTION: %1").arg(signal) );
+
+  DisconnectEvent *e = new DisconnectEvent();
+  e->method = 0;
+  e->function = handlerObj;
+  e->signal = signal;
+
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+  // NOTE Has to be synchronous, because the function might be deleted by the time the signal
+  // is sent
+  e->send( proxy, Synchronous );
 
   return errNone;
 }
