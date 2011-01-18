@@ -1,16 +1,24 @@
-QWindow : QView {
+QWindow : QAbstractScroll {
   classvar <allWindows, <>initAction;
 
-  var <drawHook, <background;
+  var scroll, <drawHook, <background;
 
   //dummy for compatibility
   var <currentSheet;
 
-  *qtClass {^"QcWindow"}
-
   *initClass {
     ShutDown.add( { QWindow.closeAll } );
   }
+
+  *screenBounds {
+    ^this.prScreenBounds( Rect.new );
+  }
+
+  *closeAll {
+    allWindows.copy.do { |win| win.close };
+  }
+
+  *qtClass {^"QcWindow"}
 
   *new { arg name,
          bounds = Rect( 128, 64, 400, 400 ),
@@ -23,19 +31,12 @@ QWindow : QView {
 
     //NOTE we omit server, which is only for compatibility with SwingOSC
     ^super.newCustom( [name, b, resizable, border, scroll] )
-          .initQWindow(name);
+          .initQWindow(name, scroll);
   }
 
-  initQWindow { arg argName;
+  initQWindow { arg argName, argScroll;
     name = argName;
-  }
-
-  *screenBounds {
-    ^this.prScreenBounds( Rect.new );
-  }
-
-  *closeAll {
-    allWindows.copy.do { |win| win.close };
+    scroll = argScroll;
   }
 
   asView {
@@ -52,6 +53,12 @@ QWindow : QView {
 
   bounds {
     ^QWindow.flipY( super.bounds );
+  }
+
+  innerBounds {
+    if( scroll )
+      { ^this.getProperty( \innerBounds, Rect.new ) }
+      { ^super.bounds.moveTo(0,0) };
   }
 
   background_ { arg aColor;
