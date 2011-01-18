@@ -56,6 +56,9 @@ if(APPLE)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	add_definitions("-DSC_LINUX")
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
+elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+	add_definitions("-DSC_FREEBSD")
+	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
 
 if(WIN32)
@@ -162,7 +165,7 @@ add_subdirectory(editors)
 add_subdirectory(external_libraries)
 add_subdirectory(testsuite)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
     install(DIRECTORY include
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
         PATTERN app* EXCLUDE
