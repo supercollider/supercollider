@@ -44,6 +44,7 @@ class QcScrollArea : public QScrollArea, public QcHelper
   Q_PROPERTY( QColor background READ dummyColor WRITE setBackground );
   Q_PROPERTY( bool paint READ dummyBool WRITE setPaint );
   Q_PROPERTY( QRectF innerBounds READ innerBounds );
+  Q_PROPERTY( QPointF visibleOrigin READ visibleOrigin WRITE setVisibleOrigin );
   public:
     QcScrollArea();
     Q_INVOKABLE void addChild( QWidget* w ) { w->setParent( scrollWidget ); w->show(); }
@@ -58,6 +59,8 @@ class QcScrollArea : public QScrollArea, public QcHelper
                     qMax( vs.height(), cs.height() ) );
     }
     Q_INVOKABLE void repaint() { scrollWidget->repaint(); }
+    QPointF visibleOrigin() const;
+    void setVisibleOrigin( const QPointF & );
   Q_SIGNALS:
     void painting();
   private:

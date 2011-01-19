@@ -75,6 +75,14 @@ QScrollArea : QAbstractScroll {
   innerBounds {
     ^this.getProperty( \innerBounds, Rect.new );
   }
+
+  visibleOrigin {
+    ^this.getProperty( \visibleOrigin, Point.new );
+  }
+
+  visibleOrigin_ { arg point;
+    this.setProperty( \visibleOrigin, point );
+  }
 }
 
 /////////////////////////// WIDGETS ///////////////////////////////
