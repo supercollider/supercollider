@@ -57,6 +57,19 @@ int Slot::setRect( PyrSlot *slot, const QRectF &r )
   return errNone;
 }
 
+int Slot::setPoint( PyrSlot *slot, const QPointF &pt )
+{
+  if( !isKindOfSlot( slot, s_point->u.classobj ) ) {
+    return errWrongType;
+  }
+
+  PyrSlot *slots = slotRawObject( slot )->slots;
+  SetFloat( slots+0, pt.x() );
+  SetFloat( slots+1, pt.y() );
+
+  return errNone;
+}
+
 void Slot::setString( PyrSlot *slot, const QString& arg )
 {
   const char *pszArg = arg.toStdString().c_str();
@@ -96,9 +109,12 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
         if( b_val ) SetTrue( slot );
         else SetFalse( slot );
         return errNone;
+    case QMetaType::QPoint:
+    case QMetaType::QPointF:
+        return Slot::setPoint( slot, val.toPointF() );
     case QMetaType::QRect:
     case QMetaType::QRectF:
-        return Slot::setRect( slot, val.toRect() );
+        return Slot::setRect( slot, val.toRectF() );
     case QMetaType::QString:
         Slot::setString( slot, val.toString() );
         return errNone;

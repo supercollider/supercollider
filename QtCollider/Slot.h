@@ -83,6 +83,7 @@ struct Slot
     static QVariant toVariant( PyrSlot * );
 
     static int setRect( PyrSlot *, const QRectF & );
+    static int setPoint( PyrSlot *, const QPointF & );
     static void setString( PyrSlot *, const QString& arg );
     static void setVariantList( PyrSlot *, const VariantList& );
     static int setVariant( PyrSlot *, const QVariant & );
