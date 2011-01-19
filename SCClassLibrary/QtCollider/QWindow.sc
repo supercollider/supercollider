@@ -68,6 +68,16 @@ QWindow : QAbstractScroll {
       { ^super.bounds.moveTo(0,0) };
   }
 
+  visibleOrigin {
+    if( scroll )
+      { ^this.getProperty( \visibleOrigin, Point.new ) }
+      { ^Point() };
+  }
+
+  visibleOrigin_ { arg point;
+    if( scroll ) { this.setProperty( \visibleOrigin, point ) };
+  }
+
   background_ { arg aColor;
     background = aColor;
     this.setProperty( \background, aColor, true );
