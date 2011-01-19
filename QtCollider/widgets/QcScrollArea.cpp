@@ -91,3 +91,14 @@ void QcScrollArea::setBackground ( const QColor &color )
 {
   scrollWidget->setBackground( color );
 }
+
+QPointF QcScrollArea::visibleOrigin() const
+{
+  return scrollWidget->mapFromParent( QPoint(0,0) );
+}
+
+void QcScrollArea::setVisibleOrigin( const QPointF &pt )
+{
+  horizontalScrollBar()->setValue( pt.x() );
+  verticalScrollBar()->setValue( pt.y() );
+}
