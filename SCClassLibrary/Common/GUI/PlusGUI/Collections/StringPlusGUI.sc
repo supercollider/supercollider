@@ -25,10 +25,20 @@
 		this.drawAtPoint(Point(0,0), Font.default, Color.black);
 	}
 	drawAtPoint { arg point, font, color;
+		if(GUI.id === \qt)
+			{ QPen.prStringAtPoint( this, point, font, color ) }
+			{ this.prDrawAtPoint( point, font, color ) };
+	}
+	drawInRect { arg rect, font, color;
+		if(GUI.id === \qt)
+			{ QPen.prStringInRect( this, rect, font, color ) }
+			{ this.prDrawInRect( rect, font, color ) }
+	}
+	prDrawAtPoint { arg point, font, color;
 		_String_DrawAtPoint
 		^this.primitiveFailed
 	}
-	drawInRect { arg rect, font, color;
+	prDrawInRect { arg rect, font, color;
 		_String_DrawInRect
 		^this.primitiveFailed
 	}
