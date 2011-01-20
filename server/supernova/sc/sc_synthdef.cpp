@@ -20,7 +20,6 @@
 #include <fstream>
 #include <sstream>
 
-#undef is // libsimdmath workaround
 #include <boost/format.hpp>
 #include <boost/integer/endian.hpp>
 
