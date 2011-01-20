@@ -130,7 +130,7 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
 
     unit->mBufLength = unit->mRate->mBufLength;
 
-    float * buffer_base = (float*) ((size_t(s->unit_buffers) + 63) & ~63); /* next multiple of 64 */
+    float * buffer_base = s->unit_buffers;
 
     /* allocate buffers */
     for (size_t i = 0; i != output_count; ++i) {
