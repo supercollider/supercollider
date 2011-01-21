@@ -328,6 +328,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
       }
       else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
         obj = toObject(slot);
+        if( !obj ) return QVariant();
         if( obj->isWidgetType() )
           return QVariant::fromValue<QWidget*>( static_cast<QWidget*>(obj) );
         else
@@ -395,7 +396,11 @@ void Slot::setData( PyrSlot *slot )
       }
       else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
         obj = toObject(slot);
-        if( obj->isWidgetType() ) {
+        if( !obj ) {
+          _type = QMetaType::Void;
+          _ptr = 0;
+        }
+        else if( obj->isWidgetType() ) {
           _type = QMetaType::QWidgetStar;
           _ptr = new QWidget*( static_cast<QWidget*>(obj) );
         }
