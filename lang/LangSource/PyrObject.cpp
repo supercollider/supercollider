@@ -1993,8 +1993,6 @@ void DumpFrame(PyrFrame *frame)
 	methraw = METHRAW(meth);
 	if (methraw->numtemps) {
 		post("\t%s   %p\n", str, frame);
-//#ifndef SC_LINUX
-// sk: crashes on linux when accessing meth->argNames.uosym->symbols[i]
 		numargs = methraw->numargs + methraw->varargs;
 		for (i=0; i<methraw->numtemps; ++i) {
 			slotOneWord(frame->vars + i, str);
@@ -2005,7 +2003,6 @@ void DumpFrame(PyrFrame *frame)
 				post("\t\tvar %s = %s\n", slotRawSymbolArray(&meth->varNames)->symbols[i - numargs]->name, str);
 			}
 		}
-//#endif // !SC_LINUX
 	} else {
 		post("\t%s  (no arguments or variables)\n", str);
 	}
