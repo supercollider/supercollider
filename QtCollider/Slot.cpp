@@ -130,6 +130,7 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
           Slot::setVariantList( slot, val.value<VariantList>() );
         }
         else {
+          qcErrorMsg( "the QVariant could not be interpreted!" );
           return errFailed;
         }
         return errNone;
