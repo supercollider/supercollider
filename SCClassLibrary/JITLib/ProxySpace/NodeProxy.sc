@@ -37,7 +37,7 @@ NodeProxy : BusPlug {
 			this.stop(0, reset);
 		}
 	}
-	
+
 	isPlaying { ^group.isPlaying }
 
 	free { | fadeTime, freeGroup = true |
@@ -53,8 +53,8 @@ NodeProxy : BusPlug {
 		}
  	}
 
-	release { | fadeTime | 
-		this.free(fadeTime, false) 
+	release { | fadeTime |
+		this.free(fadeTime, false)
 	}
 
 	pause {
@@ -70,11 +70,11 @@ NodeProxy : BusPlug {
 	fadeTime_ { | dur |
 		if(dur.isNil) { this.unset(\fadeTime) } { this.set(\fadeTime, dur) };
 	}
-	
+
 	fadeTime {
 		^nodeMap.at(\fadeTime).value ? 0.02;
 	}
-	
+
 	prFadeTime { ^nodeMap.at(\fadeTime).value }
 
 	asGroup { ^group.asGroup }
@@ -91,22 +91,22 @@ NodeProxy : BusPlug {
 
 
 	// setting the source
-	
+
 	source_ { | obj |
 		this.put(nil, obj, 0)
 	}
-	
+
 	prime { | obj |
 		this.put(nil, obj, 0, nil, false);
 	}
-	
+
 	sources_ { | list |
 		this[0..] = list;
 	}
 
 	source { ^objects.at(0).source }
 	sources { ^objects.array.collect(_.source) }
-	
+
 	add { | obj, channelOffset = 0, extraArgs, now = true |
 		this.put(objects.pos, obj, channelOffset, extraArgs, now)
 	}
@@ -168,8 +168,8 @@ NodeProxy : BusPlug {
 		last = last ?? { max(1, max(objects.size, value.size)) - 1 };
 		this.putAll(value.asArray, (first, second..last))
 	}
-	
-	filter { | i, func | 
+
+	filter { | i, func |
 		this.put(i, \filter -> func)
 	}
 
@@ -183,7 +183,7 @@ NodeProxy : BusPlug {
 			{ this.removeToBundle(bundle, index, fadeTime) };
 		bundle.schedSend(server);
 	}
-	
+
 	rebuild {
 		var bundle;
 		if(this.isPlaying) {
@@ -218,7 +218,7 @@ NodeProxy : BusPlug {
 		};
 		server = inServer;
 	}
-	
+
 	bus_ { | inBus |
 		if(server != inBus.server) { Error("can't change the server").throw };
 		super.bus_(inBus);
@@ -239,13 +239,13 @@ NodeProxy : BusPlug {
 		} { group = inGroup };
 	}
 
-	
+
 	read { | proxies |
 		proxies = proxies.asCollection;
 		proxies.do { arg item; item.wakeUp };
 		this.readFromBus(proxies)
 	}
-	
+
 	readFromBus { | busses |
 		var n, x;
 		busses = busses.asCollection;
@@ -266,7 +266,7 @@ NodeProxy : BusPlug {
 
 
 	// modifying context, setting controls
-	
+
 	set { | ... args | // pairs of keys or indices and value
 		nodeMap.set(*args);
 		if(this.isPlaying) {
@@ -287,7 +287,7 @@ NodeProxy : BusPlug {
 		};
 	}
 
-	map { | ... args | // key(s), proxy, key(s), proxy ... 
+	map { | ... args | // key(s), proxy, key(s), proxy ...
 		var bundle;
 		if(this.isPlaying) {
 			bundle = List.new;
@@ -302,7 +302,7 @@ NodeProxy : BusPlug {
 		"NodeProxy: mapn is deprecated, please use map instead".postln;
 		^this.map(*args)
 	}
-	
+
 	xset { | ... args |
 		this.xFadePerform(\set, args)
 	}
@@ -323,14 +323,14 @@ NodeProxy : BusPlug {
 	xFadePerform { | selector, args |
 		var bundle;
 		if(this.isPlaying)
-		{ 
+		{
 			nodeMap.performList(selector, args);
-			this.sendEach(nil, true) 
-		} { 
+			this.sendEach(nil, true)
+		} {
 			this.performList(selector, args)
 		}
 	}
-	
+
 	mapEnvir { | ... keys | // map to current environment
 		nodeMap.mapEnvir(*keys);
 		if(this.isPlaying) {
@@ -356,7 +356,7 @@ NodeProxy : BusPlug {
 		};
 		nodeMap.unmap(*keys);
 	}
-	
+
 	nodeMap_ { | map |
 		this.setNodeMap(map, false)
 	}
@@ -377,8 +377,8 @@ NodeProxy : BusPlug {
 			}
 		};
 	}
-	
-	
+
+
 	// play proxy as source of receiver
 	<-- { | proxy |
 		var bundle = MixedBundle.new;
@@ -393,14 +393,14 @@ NodeProxy : BusPlug {
 		bundle.add(proxy.moveBeforeMsg(this));
 		bundle.send(server, server.latency);
 	}
-	
+
 	// map receiver to proxy input
 	// second argument is an adverb
 	<>> { | proxy, key = \in |
 		proxy.perform('<<>', this, key);
 		^proxy
 	}
-	
+
 	// map proxy to receiver input
 	// second argument is an adverb
 	<<> { | proxy, key = \in |
@@ -409,7 +409,7 @@ NodeProxy : BusPlug {
 		ctl = this.controlNames.detect { |x| x.name == key };
 		rate = ctl.rate ?? {
 				if(proxy.isNeutral) {
-					if(this.isNeutral) { \audio } { this.rate } 
+					if(this.isNeutral) { \audio } { this.rate }
 				} {
 					proxy.rate
 				}
@@ -419,7 +419,7 @@ NodeProxy : BusPlug {
 			if(this.isNeutral) { this.defineBus(rate, numChannels) };
 			this.xmap(key, proxy);
 		} {
-			"Could not link node proxies, no matching input found.".warn 
+			"Could not link node proxies, no matching input found.".warn
 		};
 		^proxy // returns first argument for further chaining
 	}
@@ -429,7 +429,7 @@ NodeProxy : BusPlug {
 
 
 	// starting processes
-	
+
 	spawn { | extraArgs, index = 0 |
 			var bundle, obj, i;
 			obj = objects.at(index);
@@ -486,7 +486,7 @@ NodeProxy : BusPlug {
 	}
 
 	wakeUp { 	// do not touch internal state if already playing
-		if(this.isPlaying.not) { this.deepWakeUp } 
+		if(this.isPlaying.not) { this.deepWakeUp }
 	}
 
 	deepWakeUp {
@@ -501,7 +501,7 @@ NodeProxy : BusPlug {
 
 
 	// gui support
-	
+
 	typeStr {
 		if(this.rate === 'audio') { ^"ar" + this.numChannels };
 		if(this.rate === 'control') { ^"kr" + this.numChannels };
@@ -516,7 +516,7 @@ NodeProxy : BusPlug {
 
 
 	// interproxy structure and reading other busses
-	
+
 	orderNodes { | ... proxies |
 		var msg = this.moveBeforeMsg(*proxies);
 		msg !? {
@@ -552,7 +552,7 @@ NodeProxy : BusPlug {
 		};
 		^nil
 	}
-	
+
 	moveBeforeMsg { | ... proxies |
 		var list;
 		([this] ++ proxies).do { |el|
@@ -565,18 +565,18 @@ NodeProxy : BusPlug {
 		};
 		^list !? { Node.orderNodesMsg(list) }
 	}
-	
+
 
 
 
 
 
 	// node map settings
-	
+
 	internalKeys {
 		^#[\out, \i_out, \gate, \fadeTime];
 	}
-	
+
 		// return names in the order they have in .objects
 	controlNames { | except, addNodeMap = true |
 		var all = Array.new; // Set doesn't work, because equality undefined for ControlName
@@ -590,39 +590,43 @@ NodeProxy : BusPlug {
 				}
 			};
 		};
-		^if (addNodeMap.not or: nodeMap.isNil) { all } { 
-			this.addNodeMapControlNames(all, except) 
+		^if (addNodeMap.not or: nodeMap.isNil) { all } {
+			this.addNodeMapControlNames(all, except)
 		};
 	}
-	
+
 		// if a name is set in nodemap, overwrite the values in objCtlNames;
-		// if a key is set in the nodemap, but is not used in the objects yet, add at the end. 
-	addNodeMapControlNames { |objCtlNames, except = #[]| 
+		// if a key is set in the nodemap, but is not used in the objects yet, add at the end.
+	addNodeMapControlNames { |objCtlNames, except = #[]|
 		nodeMap.controlNames
 			.reject { |ctlname| except.includes(ctlname.name) }
 			.do { |mapCtl|
 				var index = objCtlNames.detectIndex { |objCtl| objCtl.name == mapCtl.name };
-				if (index.notNil) { 
+				if (index.notNil) {
 					objCtlNames.put(index, mapCtl)
-				} { 
+				} {
 					objCtlNames = objCtlNames.add(mapCtl)
 				}
 			};
 		^objCtlNames
 	}
-	
-	resetNodeMap { 
+
+	resetNodeMap {
 		this.nodeMap = ProxyNodeMap.new;
 	}
-	
-	cleanNodeMap { 
-		var nodeMapKeys, keysToRemove; 
+
+	cleanNodeMap {
+		var nodeMapSettingKeys, nodeMapMappingKeys, keysToUnset, keysToUnmap, currentKeys;
 		if (nodeMap.isNil) { ^this };
-		
-		nodeMapKeys = nodeMap.settings.keys.difference(this.internalKeys);
-		keysToRemove = nodeMapKeys.difference(this.controlNames(addNodeMap: false).collect(_.name));
-		
-		keysToRemove.do(this.unset(_));
+
+		nodeMapSettingKeys = difference(nodeMap.settingKeys, this.internalKeys);
+		nodeMapMappingKeys = difference(nodeMap.mappingKeys, this.internalKeys);
+		currentKeys = this.controlNames(addNodeMap: false).collect(_.name);
+		keysToUnset = difference(nodeMapSettingKeys, currentKeys);
+		keysToUnmap = difference(nodeMapMappingKeys, currentKeys);
+
+		keysToUnset.do(this.unset(_));
+		keysToUnmap.do(this.unmap(_));
 	}
 
 	controlKeys { | except, noInternalKeys = true |
@@ -634,7 +638,7 @@ NodeProxy : BusPlug {
 			}
 		^list
 	}
-	
+
 	getKeysValues { | keys, except, withDefaults = true, noInternalKeys = true |
 		var pairs, result = [], myKeys, defaults, mapSettings;
 		if (noInternalKeys) { except = except ++ this.internalKeys; };
@@ -734,7 +738,7 @@ NodeProxy : BusPlug {
 						nodes = Array(4);
 						objects.doRange({ arg obj;
 							var id = obj.nodeID;
-							if(id.notNil and: { id != synthID }) 
+							if(id.notNil and: { id != synthID })
 								{ nodes = nodes ++ id ++ synthID };
 						}, index + 1);
 						if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
@@ -771,8 +775,8 @@ NodeProxy : BusPlug {
 	stopAllToBundle { | bundle, fadeTime |
 		var obj, dt;
 		dt = fadeTime ? this.fadeTime;
-		if(this.isPlaying) { 
-			objects.do { |obj| obj.stopToBundle(bundle, dt) } 
+		if(this.isPlaying) {
+			objects.do { |obj| obj.stopToBundle(bundle, dt) }
 		}
 	}
 
@@ -785,7 +789,7 @@ NodeProxy : BusPlug {
 		};
 		loaded = true;
 	}
-	
+
 	unsetToBundle { | bundle, keys |
 		var pairs = this.controlKeysValues(keys);
 		if(this.isPlaying) {
@@ -819,14 +823,14 @@ NodeProxy : BusPlug {
 
 
 
-	
+
 	// allocation
-	
+
 	defineBus { | rate = \audio, numChannels |
 		super.defineBus(rate, numChannels);
 		this.linkNodeMap;
 	}
-	
+
 	reallocBusIfNeeded { // bus is reallocated only if the server was not booted on creation.
 		if(busLoaded.not and: { bus.notNil }) {
 			bus.realloc;
@@ -840,11 +844,11 @@ NodeProxy : BusPlug {
 
 
 	// network support
-	
+
 	shouldAddObject { | obj | ^obj.readyForPlay } // shared node proxy overrides this
 
 	defaultGroupID { ^server.nextNodeID }
-	
+
 
 
 
@@ -858,7 +862,7 @@ NodeProxy : BusPlug {
 		if(index.notNil) { nodeMap.set(\out, index, \i_out, index) };
 		nodeMap.proxy = this;
 	}
-	
+
 	generateUniqueName {
 			^server.clientID.asString ++ this.identityHash.abs
 	}
@@ -876,14 +880,14 @@ NodeProxy : BusPlug {
 		^child.isPlaying;
 	}
 
-	
+
 
 }
 
 
 
 Ndef : NodeProxy {
-	
+
 	classvar <>defaultServer, <>all;
 	var <>key;
 
@@ -921,7 +925,7 @@ Ndef : NodeProxy {
 	*kr { | key, numChannels, offset = 0 |
 		^this.new(key).kr(numChannels, offset)
 	}
-	
+
 	*clear { | fadeTime |
 		all.do(_.clear(fadeTime));
 		all.clear;
@@ -935,18 +939,18 @@ Ndef : NodeProxy {
 			dict.registerServer;
 		};
 		^dict
-	}	
+	}
 
 	storeOn { | stream |
 		this.printOn(stream);
 	}
 	printOn { | stream |
-		var serverString = if (server == Server.default) { "" } { 
+		var serverString = if (server == Server.default) { "" } {
 			" ->" + server.name.asCompileString;
 		};
 		stream << this.class.name << "(" <<< this.key << serverString << ")"
 	}
-	
-	
+
+
 }
 
