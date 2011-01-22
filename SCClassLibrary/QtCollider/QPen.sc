@@ -256,12 +256,12 @@ QPen {
     this.stringAtPoint( aString, Point(0,0) );
   }
 
-  stringAtPoint { arg aString, aPoint;
-    prStringAtPoint( aString, aPoint );
+  *stringAtPoint { arg aString, aPoint;
+    this.prStringAtPoint( aString, aPoint );
   }
 
-  stringInRect { arg aString, aRect;
-    prStringInRect( aString, aRect );
+  *stringInRect { arg aString, aRect;
+    this.prStringInRect( aString, aRect );
   }
 
 
