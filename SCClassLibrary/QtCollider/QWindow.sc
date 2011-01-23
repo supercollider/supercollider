@@ -94,6 +94,7 @@ QWindow : QAbstractScroll {
     if( drawHook.notNil ) {
       this.invokeMethod( \repaint );
     };
+    super.refresh;
   }
   // ---------------------- private ------------------------------------
 
