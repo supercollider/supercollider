@@ -24,6 +24,7 @@ QUserView : QView {
     if( drawFunc.notNil ) {
       this.invokeMethod( \repaint );
     };
+    super.refresh;
   }
 
   background_ { arg aColor;
