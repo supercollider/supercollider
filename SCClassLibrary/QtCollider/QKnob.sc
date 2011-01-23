@@ -84,7 +84,7 @@ QKnob : QUserView {
     ^rect
   }
 
-  sizeHint {
+  *sizeHint {
     ^Point(60,60);
   }
 
