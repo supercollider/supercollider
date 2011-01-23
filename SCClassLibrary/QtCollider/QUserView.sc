@@ -4,20 +4,13 @@ QUserView : QView {
   *qtClass { ^"QcCustomPainted" }
 
   *new { arg parent, bounds;
-    var me = super.new(parent,bounds);
-    // If bounds argument nil, ask subclass for default size.
-    // FIXME Could be more optimal if there was a way to get sizeHint from new instance before
-    // QWidget constructor and therefore pass to it already adjusted bounds;
-    var sizeHint = me.sizeHint;
-    if( bounds.isNil ) {
-      me.resizeTo( sizeHint.x, sizeHint.y );
-    };
+    var me = super.new(parent, bounds ?? {this.sizeHint} );
     me.canFocus = true;
     ^me;
   }
 
-  sizeHint {
-    ^Point(0,0);
+  *sizeHint {
+    ^Point(150,150);
   }
 
   drawFunc_ { arg aFunction;
