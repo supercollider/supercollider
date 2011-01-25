@@ -41,6 +41,7 @@ QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
 : qObject( qObject_ ),
   scObject( scObject_ )
 {
+  ProxyToken *token = new ProxyToken( this, qObject );
   connect( qObject, SIGNAL( destroyed( QObject* ) ), this, SLOT( invalidate() ) );
   qObject->installEventFilter( this );
 }
@@ -345,6 +346,37 @@ bool QObjectProxy::destroyEvent( DestroyEvent *e )
     scObject = 0;
     if( qObject ) qObject->deleteLater();
     deleteLater();
+  }
+
+  return true;
+}
+
+bool QObjectProxy::getChildrenEvent( QtCollider::GetChildrenEvent *e )
+{
+  if( !qObject ) return false;
+
+  const QObjectList &children = qObject->children();
+
+  Q_FOREACH( QObject *child, children ) {
+
+    ProxyToken * token = 0;
+
+    const QObjectList &grandChildren = child->children();
+    Q_FOREACH( QObject *grandChild, grandChildren ) {
+      token = qobject_cast<QtCollider::ProxyToken*>( grandChild );
+      if( token ) break;
+    }
+
+    if( !token ) continue;
+
+    PyrObject * obj = token->proxy->scObject;
+
+    if( obj ) {
+        if( e->className && !isKindOf( obj, e->className->u.classobj ) )
+            continue;
+        e->children.append( obj );
+    }
+
   }
 
   return true;

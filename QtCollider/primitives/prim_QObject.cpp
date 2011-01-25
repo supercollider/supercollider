@@ -28,6 +28,7 @@
 
 #include <PyrObject.h>
 #include <PyrKernel.h>
+#include <GC.h>
 
 PyrSymbol *s_QObject;
 
@@ -372,4 +373,42 @@ QC_LANG_PRIMITIVE( QObject_IsValid, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   SetBool( r, valid );
 
   return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_GetChildren, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( NotSym(a) && NotNil(a) ) return errWrongType;
+
+  QObjectProxy *proxy = Slot::toObjectProxy( r );
+  PyrSymbol *className = IsSym( a ) ? slotRawSymbol( a ) : 0;
+
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("GET CHILDREN: of class '%1'")
+                      .arg( className ? className->name : "QObject" ) );
+
+  QList<PyrObject*> children;
+
+  GetChildrenEvent *e = new GetChildrenEvent( className, children );
+
+  bool ok = e->send( proxy, Synchronous );
+
+  if( ok ) {
+
+    int count = children.count();
+    PyrObject *array = newPyrArray( g->gc, count, 0, true );
+    PyrSlot *s = array->slots;
+
+    Q_FOREACH( PyrObject *obj, children ) {
+      SetObject( s, obj );
+      ++array->size;
+      g->gc->GCWrite( array, s );
+      ++s;
+    }
+
+    SetObject( r, array );
+
+    return errNone;
+  }
+
+  return errFailed;
 }
