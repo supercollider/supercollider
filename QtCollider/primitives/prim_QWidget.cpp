@@ -30,7 +30,6 @@
 QC_LANG_PRIMITIVE( QWidget_SetFocus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   PyrObject *scObj = slotRawObject( r );
-  if( IsNil( scObj->slots ) ) return errFailed;
 
   QObject *proxy = static_cast<QObject*>( slotRawPtr( scObj->slots ) );
   bool b = IsTrue( a );
@@ -43,7 +42,6 @@ QC_LANG_PRIMITIVE( QWidget_SetFocus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QWidget_BringFront, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   PyrObject *scObj = slotRawObject( r );
-  if( IsNil( scObj->slots ) ) return errFailed;
 
   QObject *proxy = static_cast<QObject*>( slotRawPtr( scObj->slots ) );
 

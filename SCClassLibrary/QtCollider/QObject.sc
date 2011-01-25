@@ -1,5 +1,6 @@
 QObject {
   classvar
+    heap,
     < closeEvent = 19,
     < showEvent = 17,
     < windowActivateEvent = 24,
@@ -19,9 +20,12 @@ QObject {
     ^super.new.initQObject( className, argumentArray );
   }
 
+  *heap { ^heap.copy }
+
   initQObject{ arg className, argumentArray;
-    _QObject_New
-    ^this.primitiveFailed;
+    this.prConstruct( className, argumentArray );
+    heap = heap.add( this );
+    this.connectToFunction( 'destroyed()', { heap.remove(this) }, false );
   }
 
   destroy {
@@ -30,7 +34,8 @@ QObject {
   }
 
   isValid {
-    ^qObject.notNil;
+    _QObject_IsValid
+    ^this.primitiveFailed
   }
 
   setParent { arg parent;
@@ -84,6 +89,11 @@ QObject {
   }
 
   ////////////////////// private //////////////////////////////////
+
+  prConstruct { arg className, argumentArray;
+    _QObject_New
+    ^this.primitiveFailed;
+  }
 
   prConnectToFunction { arg signal, function, synchronous = false;
     _QObject_ConnectToFunction;

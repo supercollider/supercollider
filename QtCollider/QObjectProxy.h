@@ -68,7 +68,8 @@ class QObjectProxy : public QObject
 
     enum DestroyAction {
       DestroyProxy,
-      DestroyProxyAndObject
+      DestroyObject,
+      DestroyProxyAndObject,
     };
 
     struct EventHandlerData
@@ -86,6 +87,11 @@ class QObjectProxy : public QObject
 
     inline QObject *object() const { return qObject; }
 
+    // Lock for usage of object() outside Qt thread.
+    // WARNING Do not post any sync events while locked!
+    inline void lock() { mutex.lock(); }
+    inline void unlock() { mutex.unlock(); }
+
     const char *scClassName() const;
 
     virtual bool setParentEvent( QtCollider::SetParentEvent * );
@@ -97,7 +103,12 @@ class QObjectProxy : public QObject
     bool invokeMethodEvent( QtCollider::InvokeMethodEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
 
+    // thread-safe (if connection == queued)
     bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
+
+  private Q_SLOTS:
+
+    void invalidate();
 
   private:
 
@@ -120,6 +131,7 @@ class QObjectProxy : public QObject
     QMap<int,EventHandlerData> eventHandlers;
     QList<QcMethodSignalHandler*> methodSigHandlers;
     QList<QcFunctionSignalHandler*> funcSigHandlers;
+    QMutex mutex;
 };
 
 namespace QtCollider {
@@ -151,7 +163,7 @@ private:
 struct SetParentEvent
 : public RequestTemplate<SetParentEvent, &QObjectProxy::setParentEvent>
 {
-  QObject *parent;
+  QObjectProxy *parent;
 };
 
 struct SetPropertyEvent

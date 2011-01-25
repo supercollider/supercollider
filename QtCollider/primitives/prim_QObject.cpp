@@ -106,16 +106,11 @@ QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   qcSCObjectDebugMsg( 1, slotRawObject(r), "DESTROY" );
 
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
-
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
-  DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxyAndObject );
-  e->send( proxy, Synchronous );
-
-  /* NOTE destroy has set QObjectProxy::scObject to 0, so we have to invalidate
-    the SC object ourselves */
-  SetNil( slotRawObject( r )->slots );
+  DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyObject );
+  bool ok = e->send( proxy, Synchronous );
+  if( !ok ) qcSCObjectDebugMsg( 1, slotRawObject(r), "Already destroyed\n" );
 
   return errNone;
 }
@@ -123,8 +118,6 @@ QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 {
   qcSCObjectDebugMsg( 1, obj, "FINALIZE" );
-
-  if( IsNil( obj->slots ) ) return errNone;
 
   QObjectProxy *proxy = (QObjectProxy*) slotRawPtr( obj->slots );
 
@@ -136,10 +129,9 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 
 QC_LANG_PRIMITIVE( QObject_SetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
-  QObject *parent = Slot::toObject( a );
+  QObjectProxy *parent = Slot::toObjectProxy( a );
   if( !parent ) return errWrongType;
 
   qcSCObjectDebugMsg( 1, slotRawObject(r), "SET PARENT" );
@@ -153,7 +145,6 @@ QC_LANG_PRIMITIVE( QObject_SetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   if( NotSym( a ) ) return errWrongType;
@@ -173,7 +164,6 @@ QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
 QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   if( NotSym(a) ) return errWrongType;
@@ -185,7 +175,8 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   GetPropertyEvent *e = new GetPropertyEvent( property, val );
 
-  e->send( proxy, Synchronous );
+  bool ok = e->send( proxy, Synchronous );
+  if( !ok ) return errFailed;
 
   bool haveExtra = NotNil( slotRetExtra );
   int err = Slot::setVariant( ( haveExtra ? slotRetExtra : r ), val );
@@ -198,7 +189,6 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
 QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   if( NotInt( a+0 ) || NotSym( a+1 ) ) return errWrongType;
@@ -220,8 +210,6 @@ QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals
 
 QC_LANG_PRIMITIVE( QObject_Connect, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
-
   QString signal = Slot::toString( a+0 );
   if( signal.isEmpty() || NotSym( a+1 ) ) return errWrongType;
   PyrSymbol *handler = 0; slotSymbolVal( a+1, &handler );
@@ -245,8 +233,6 @@ QC_LANG_PRIMITIVE( QObject_Connect, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QObject_DisconnectMethod, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
-
   QString signal = Slot::toString( a+0 );
   if( signal.isEmpty() || NotSym( a+1 ) ) return errWrongType;
   PyrSymbol *handler = 0; slotSymbolVal( a+1, &handler );
@@ -267,8 +253,6 @@ QC_LANG_PRIMITIVE( QObject_DisconnectMethod, 2, PyrSlot *r, PyrSlot *a, VMGlobal
 
 QC_LANG_PRIMITIVE( QObject_ConnectToFunction, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
-
   QString signal = Slot::toString( a+0 );
   if( signal.isEmpty() || NotObj( a+1 ) ) return errWrongType;
   PyrObject *handlerObj = slotRawObject( a+1 );
@@ -292,8 +276,6 @@ QC_LANG_PRIMITIVE( QObject_ConnectToFunction, 3, PyrSlot *r, PyrSlot *a, VMGloba
 
 QC_LANG_PRIMITIVE( QObject_DisconnectFunction, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
-
   QString signal = Slot::toString( a+0 );
   if( signal.isEmpty() || NotObj( a+1 ) ) return errWrongType;
   PyrObject *handlerObj = slotRawObject( a+1 );
@@ -317,10 +299,8 @@ QC_LANG_PRIMITIVE( QObject_DisconnectFunction, 2, PyrSlot *r, PyrSlot *a, VMGlob
 QC_LANG_PRIMITIVE( QObject_ConnectToSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   // Args: signal, receiver, slot
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
   if( !isKindOfSlot( a+1, getsym("QObject")->u.classobj )
       || NotSym( a+0 ) || NotSym( a+2 ) ) return errWrongType;
-  if( IS_OBJECT_NIL( a+1 ) ) return errFailed;
 
   PyrSymbol *symSig = slotRawSymbol( a+0 );
   PyrSymbol *symSlot = slotRawSymbol( a+2 );
@@ -332,11 +312,19 @@ QC_LANG_PRIMITIVE( QObject_ConnectToSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *
 
   QString strSig = QString("2") + symSig->name;
   QString strSlot = QString("1") + symSlot->name;
-  if (! QObject::connect( sndProxy->object(), strSig.toStdString().c_str(),
-                          rcvProxy->object(), strSlot.toStdString().c_str() ) ) {
+
+  sndProxy->lock();
+  rcvProxy->lock();
+  bool ok = QObject::connect( sndProxy->object(), strSig.toStdString().c_str(),
+                          rcvProxy->object(), strSlot.toStdString().c_str() );
+  sndProxy->unlock();
+  rcvProxy->unlock();
+
+  if (!ok)  {
     qcErrorMsg( QString("Failed to connect %1::%2 to %3::%4!\n")
                 .arg(sndProxy->scClassName()).arg(symSig->name)
-                .arg(rcvProxy->scClassName()).arg(symSlot->name) );
+                .arg(rcvProxy->scClassName()).arg(symSlot->name)
+              );
     return errFailed;
   }
 
@@ -345,8 +333,6 @@ QC_LANG_PRIMITIVE( QObject_ConnectToSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *
 
 QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  if( IS_OBJECT_NIL( r ) ) return errFailed;
-
   if( NotSym( a+0 ) ) return errWrongType;
 
   PyrSymbol *method = slotRawSymbol( a+0 );
@@ -370,6 +356,20 @@ QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g
   else {
     proxy->invokeMethod( method->name, 0, methodArgs, Qt::QueuedConnection );
   }
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_IsValid, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QObjectProxy *proxy = Slot::toObjectProxy( r );
+  bool valid;
+
+  proxy->lock();
+  valid = proxy->object() != 0;
+  proxy->unlock();
+
+  SetBool( r, valid );
 
   return errNone;
 }

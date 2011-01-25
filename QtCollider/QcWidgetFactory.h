@@ -34,12 +34,19 @@ public:
 
   virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments ) {
 
+    int argc = arguments.count();
+
+    // check if parent arg is valid;
+
+    QObjectProxy *parentProxy = argc > 0 ? arguments[0].value<QObjectProxy*>() : 0;
+    if( parentProxy && !parentProxy->object() ) return 0;
+
+    // create the widget
+
     QWIDGET *widget = new QWIDGET();
     QWidget *w = widget; // template parameter type-safety
 
     // set requested geometry
-
-    int argc = arguments.count();
 
     QRect r;
     if( argc > 1 ) r = arguments[1].value<QRect>();
@@ -53,7 +60,7 @@ public:
 
     // set parent
 
-    QWidget *parent = argc > 0 ? arguments[0].value<QWidget*>() : 0;
+    QWidget *parent = parentProxy ? qobject_cast<QWidget*>( parentProxy->object() ) : 0;
 
     if( parent ) {
 

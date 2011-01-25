@@ -145,9 +145,13 @@ public:
 protected:
 
   virtual void react( const QList<QVariant> args ) {
-    const QMetaMethod mm = _proxy->object()->metaObject()->method( _sigId );
+
     qcDebugMsg( 1, QString("SIGNAL: '%1' handled by method '%2'")
-                    .arg(mm.signature()).arg(_handler->name) );
+                  .arg( _proxy->object() ?
+                        _proxy->object()->metaObject()->method( _sigId ).signature() :
+                        "unknown" )
+                  .arg(_handler->name)
+              );
 
     _proxy->invokeScMethod( _handler, args );
   }
@@ -169,17 +173,20 @@ protected:
 
   virtual void react( const QList<QVariant> args ) {
 
-    const QMetaMethod mm = _proxy->object()->metaObject()->method( _sigId );
-    qcDebugMsg( 1, QString("SIGNAL: '%1' handled by a Function").arg(mm.signature()) );
+    qcDebugMsg( 1, QString("SIGNAL: '%1' handled by a Function")
+                  .arg( _proxy->object() ?
+                        _proxy->object()->metaObject()->method( _sigId ).signature() :
+                        "unknown" )
+              );
 
     // FIXME, reuse QObjectProxy::invokeScMethod. Here a custom implementation just
     // because Slot does not support a Function.
 
-    qcDebugMsg(1, QString("SC FUNCTION CALL [+++] ") );
-
     QtCollider::lockLang();
 
     if( _proxy->scObject && this->isValid() ) {
+      qcDebugMsg(1, QString("SC FUNCTION CALL [+++] ") );
+
       VMGlobals *g = gMainVMGlobals;
       g->canCallOS = true;
       ++g->sp;  SetObject(g->sp, _proxy->scObject);
@@ -191,11 +198,11 @@ protected:
       }
       runInterpreter(g, getsym("doFunction"), args.size() + 2);
       g->canCallOS = false;
+
+      qcDebugMsg(1, QString("SC FUNCTION CALL [---] ") );
     }
 
     QtCollider::unlockLang();
-
-    qcDebugMsg(1, QString("SC FUNCTION CALL [---] ") );
   }
 
   PyrObject * _handler;

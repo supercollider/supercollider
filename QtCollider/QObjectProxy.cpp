@@ -38,24 +38,21 @@ void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
 void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
 
 QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
-: QObject( qObject_ ),
-  qObject( qObject_ ),
+: qObject( qObject_ ),
   scObject( scObject_ )
 {
+  connect( qObject, SIGNAL( destroyed( QObject* ) ), this, SLOT( invalidate() ) );
   qObject->installEventFilter( this );
 }
 
 QObjectProxy::~QObjectProxy()
 {
-  if( scObject ) {
-    qcProxyDebugMsg( 2, "~QObjectProxy: invalidating SC object" );
-    QtCollider::lockLang();
-    SetNil( scObject->slots );
-    QtCollider::unlockLang();
-  }
-  else {
-    qcProxyDebugMsg( 2, "~QObjectProxy: SC object already detached" );
-  }
+  qcProxyDebugMsg( 1, QString("Proxy is being deleted.") );
+}
+
+void QObjectProxy::invalidate() {
+  qcProxyDebugMsg( 1, QString("Object has been deleted. Invalidating proxy.") );
+  mutex.lock(); qObject = 0; mutex.unlock();
 }
 
 const char *QObjectProxy::scClassName() const {
@@ -66,12 +63,21 @@ const char *QObjectProxy::scClassName() const {
 bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *argSlot,
                                  Qt::ConnectionType ctype )
 {
+  mutex.lock();
+  if( !qObject ) {
+    mutex.unlock();
+    return true;
+  }
+
   // the signature char array
   QVarLengthArray<char, 512> sig;
 
   // serialize method name
   int len = qstrlen( method );
-  if( len <= 0 ) return false;
+  if( len <= 0 ) {
+    mutex.unlock();
+    return false;
+  }
   sig.append( method, len );
   sig.append( '(' );
 
@@ -119,6 +125,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   if( mi < 0 || mi >= mo->methodCount()  ) {
     qcProxyDebugMsg( 1, QString("WARNING: No such method: %1::%2").arg( mo->className() )
                         .arg( sig.constData() ) );
+    mutex.unlock();
     return false;
   }
 
@@ -157,6 +164,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   if( retPtr )
     QMetaType::destroy( retType, retPtr );
 
+  mutex.unlock();
   return success;
 }
 
@@ -212,20 +220,24 @@ void QObjectProxy::customEvent( QEvent *event )
 }
 
 bool QObjectProxy::setParentEvent( SetParentEvent *e ) {
-  qObject->setParent( e->parent );
+  if( !qObject || !e->parent->object() ) return false;
+  qObject->setParent( e->parent->object() );
   return true;
 }
 
 bool QObjectProxy::setPropertyEvent( SetPropertyEvent *e )
 {
+  if( !qObject ) return false;
   if( !qObject->setProperty( e->property->name, e->value ) ) {
     qcProxyDebugMsg(1, QString("WARNING: Property '%1' not found. Setting dynamic property.")
                         .arg( e->property->name ) );
   }
+  return true;
 }
 
 bool QObjectProxy::getPropertyEvent( GetPropertyEvent *e )
 {
+  if( !qObject ) return false;
   e->value = qObject->property( e->property->name );
   return true;
 }
@@ -280,6 +292,7 @@ bool QObjectProxy::connectEvent( ConnectEvent *e )
 
 bool QObjectProxy::disconnectEvent( QtCollider::DisconnectEvent *e )
 {
+  if( !qObject ) return false;
   const QMetaObject *mo = qObject->metaObject();
   QByteArray signal = QMetaObject::normalizedSignature( e->signal.toStdString().c_str() );
   int sigId = mo->indexOfSignal( signal );
@@ -320,14 +333,21 @@ bool QObjectProxy::invokeMethodEvent( InvokeMethodEvent *e )
 
 bool QObjectProxy::destroyEvent( DestroyEvent *e )
 {
-  scObject = 0;
-
-  if( e->action() == DestroyProxyAndObject )
-    qObject->deleteLater();
-  else
+  if( e->action() == DestroyObject ) {
+     if( qObject ) qObject->deleteLater();
+     else return false;
+  }
+  else if( e->action() == DestroyProxy ) {
+    scObject = 0;
     deleteLater();
+  }
+  else if( e->action() == DestroyProxyAndObject ) {
+    scObject = 0;
+    if( qObject ) qObject->deleteLater();
+    deleteLater();
+  }
 
-  return errNone;
+  return true;
 }
 
 bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
@@ -385,6 +405,9 @@ void QObjectProxy::scMethodCallEvent( ScMethodCallEvent *e )
 
 void QObjectProxy::interpretMouseEvent( QEvent *e, QList<QVariant> &args )
 {
+  // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
+  // it wasn't existing
+
   if( e->type() == QEvent::Enter ) {
     QPoint pos = QCursor::pos();
 
