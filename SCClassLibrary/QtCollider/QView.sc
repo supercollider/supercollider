@@ -141,6 +141,10 @@ QView : QObject {
 
   // ------------------ container stuff ----------------------------
 
+  children { arg class = QView;
+    ^super.children( class );
+  }
+
   removeAll {
     var childWidgets = this.children( QView );
     childWidgets.do { |child| child.remove };
