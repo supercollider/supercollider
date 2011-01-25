@@ -4,11 +4,10 @@ QView : QObject {
   classvar <vSizePolicy;
   classvar <orientationDict, <alignmentDict;
 
-  var <parent;
   // general props
   var <font, <palette, <resize = 1, <alpha = 1.0;
   // container props
-  var <children, <decorator;
+  var <decorator;
   // top window props
   var <>userCanClose=true, <name, <>deleteOnClose = true;
   // actions
@@ -52,19 +51,12 @@ QView : QObject {
   asView { ^this }
 
   refresh {
-    children.do { |child| child.refresh };
+    var childWidgets = this.children( QView );
+    childWidgets.do { |child| child.refresh };
     // Do nothing here. Reimplement if real work needed.
   }
 
   remove {
-    if( parent.notNil ) {
-      parent.removeChild( this );
-    } {
-      QWindow.removeWindow( this );
-    };
-
-    this.removeAll;
-
     this.destroy;
   }
 
@@ -149,17 +141,9 @@ QView : QObject {
 
   // ------------------ container stuff ----------------------------
 
-  add { arg child;
-    children = children.add(child);
-    if (decorator.notNil, { decorator.place(child); });
-  }
-
-  removeChild { arg child;
-    children.remove(child);
-  }
-
   removeAll {
-    children.copy.do { |child| child.remove };
+    var childWidgets = this.children( QView );
+    childWidgets.do { |child| child.remove };
   }
 
   addFlowLayout { arg margin, gap;
@@ -353,20 +337,15 @@ QView : QObject {
 
   /* ---------------- private ----------------------- */
 
-  initQView { arg parentArg;
+  initQView { arg parent;
 
     var handleKeyDown, handleKeyUp;
 
-    parent = parentArg;
-
-    if( parentArg.notNil ) {
-      parentArg.add( this );
-    } {
-      QWindow.addWindow( this );
-      QWindow.initAction.value( this );
-    };
-
     palette = QPalette.new;
+
+    if (parent.notNil) {
+        if( parent.decorator.notNil ) { parent.decorator.place(this) }
+    };
 
     this.registerEventHandler( QObject.closeEvent, \onCloseEvent, true );
 

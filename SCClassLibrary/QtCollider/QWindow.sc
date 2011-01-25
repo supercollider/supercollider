@@ -37,6 +37,9 @@ QWindow : QAbstractScroll {
   initQWindow { arg argName, argScroll;
     name = argName;
     scroll = argScroll;
+    QWindow.addWindow( this );
+    this.connectToFunction( 'destroyed()', { |me| QWindow.removeWindow(me); }, false );
+    QWindow.initAction.value( this );
   }
 
   // compatibility with SCWindow

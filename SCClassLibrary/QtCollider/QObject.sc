@@ -38,6 +38,14 @@ QObject {
     ^this.primitiveFailed
   }
 
+  parent {
+    // TODO
+  }
+
+  children { arg class;
+    ^this.prGetChildren( if( class.notNil ){class.name}{nil} );
+  }
+
   setParent { arg parent;
     _QObject_SetParent
     ^this.primitiveFailed
@@ -102,6 +110,11 @@ QObject {
 
   prDisconnectFunction { arg signal, function;
     _QObject_DisconnectFunction;
+    ^this.primitiveFailed
+  }
+
+  prGetChildren { arg className;
+    _QObject_GetChildren
     ^this.primitiveFailed
   }
 
