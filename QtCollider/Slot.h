@@ -79,7 +79,7 @@ struct Slot
     static QFont toFont( PyrSlot * );
     static QPalette toPalette( PyrSlot * );
     static VariantList toVariantList( PyrSlot * );
-    static QObject * toObject( PyrSlot * );
+    static QObjectProxy * toObjectProxy( PyrSlot * );
     static QVariant toVariant( PyrSlot * );
 
     static int setRect( PyrSlot *, const QRectF & );

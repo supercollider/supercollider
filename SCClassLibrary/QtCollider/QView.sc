@@ -18,7 +18,7 @@ QView : QObject {
   var <keyDownAction, <keyUpAction, <keyModifiersChangedAction;
   var <>keyTyped;
   var <>beginDragAction, <>canReceiveDragHandler, <>receiveDragHandler;
-  var <>onClose;
+  var <onClose;
 
   //TODO
   var <>acceptsClickThrough=false, <>acceptsMouseOver=false,
@@ -39,11 +39,8 @@ QView : QObject {
   }
 
   *new { arg parent, bounds;
-    if( parent.notNil ) {
-      if( parent.isValid.not ) {^nil;}
-    }
     ^super.new( this.qtClass, [parent, bounds.asRect] )
-      .initQView( parent );
+          .initQView( parent );
   }
 
   *newCustom { arg customArgs;
@@ -68,10 +65,7 @@ QView : QObject {
 
     this.removeAll;
 
-    if( this.isValid ) {
-      onClose.value(this);
-      this.destroy;
-    };
+    this.destroy;
   }
 
   // ----------------- properties --------------------------
@@ -216,6 +210,7 @@ QView : QObject {
 
   isClosed {
     if( this.isValid ) {
+      // FIXME even after this.isValid == true, the object can become invalid!
       ^this.visible.not;
     } {
       ^true;
@@ -288,6 +283,14 @@ QView : QObject {
     endFrontAction = aFunction;
     this.registerEventHandler( QObject.windowDeactivateEvent,
                                \onWindowDeactivateEvent );
+  }
+
+  onClose_ { arg func;
+    if( onClose != func && onClose.notNil ) {
+      this.disconnectFunction( 'destroyed()', onClose );
+    };
+    this.connectToFunction( 'destroyed()', func, false );
+    onClose = func;
   }
 
   doAction {

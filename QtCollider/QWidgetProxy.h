@@ -29,36 +29,46 @@
 class QWidgetProxy : public QObjectProxy
 {
   Q_OBJECT
+
   public:
+
     QWidgetProxy( QWidget *w, PyrObject *po ) : QObjectProxy( w, po )
-    {
-      widget = w;
-    }
+    { }
+
     Q_INVOKABLE void setFocus( bool b ) {
+      if( !widget() ) return;
       if( b )
-        widget->setFocus( Qt::OtherFocusReason );
+        widget()->setFocus( Qt::OtherFocusReason );
       else
-        widget->clearFocus();
+        widget()->clearFocus();
     }
+
     Q_INVOKABLE void bringFront() {
-      widget->setWindowState( widget->windowState() & ~Qt::WindowMinimized
-                              | Qt::WindowActive );
-      widget->show();
-      widget->raise();
+      QWidget *w = widget();
+      if( !w ) return;
+      w->setWindowState( w->windowState() & ~Qt::WindowMinimized
+                                          | Qt::WindowActive );
+      w->show();
+      w->raise();
     }
+
   protected:
+
+    inline QWidget *widget() { return static_cast<QWidget*>( object() ); }
+
     virtual bool setParentEvent( QtCollider::SetParentEvent *e ) {
-      QObject *po = e->parent;
-      if( po->isWidgetType() ) {
-        QWidget *pw = qobject_cast<QWidget*>(po);
-        bool ok = pw->metaObject()->invokeMethod( pw, "addChild", Q_ARG( QWidget*, widget ) );
-        if( !ok ) widget->setParent( pw );
+
+      QObject *parent = e->parent->object();
+      if( !parent || !widget() ) return false;
+
+      if( parent->isWidgetType() ) {
+        QWidget *pw = qobject_cast<QWidget*>(parent);
+        bool ok = pw->metaObject()->invokeMethod( pw, "addChild", Q_ARG( QWidget*, widget() ) );
+        if( !ok ) widget()->setParent( pw );
         return true;
       }
       return false;
     }
-  private:
-    QWidget *widget;
 };
 
 #endif //QC_WIDGET_PROXY_H

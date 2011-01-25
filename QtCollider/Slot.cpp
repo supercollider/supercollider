@@ -282,18 +282,18 @@ VariantList Slot::toVariantList( PyrSlot *slot )
   return VariantList();
 }
 
-QObject* Slot::toObject( PyrSlot *slot )
+QObjectProxy* Slot::toObjectProxy( PyrSlot *slot )
 {
   if( !isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) return 0;
   QObjectProxy *proxy = 0;
   PyrSlot *proxySlot = slotRawObject( slot )->slots;
   if( IsPtr( proxySlot ) ) proxy = (QObjectProxy*) slotRawPtr( proxySlot );
-  return ( proxy ? proxy->object() : 0 );
+  return proxy;
 }
 
 QVariant Slot::toVariant( PyrSlot *slot )
 {
-  QObject *obj;
+  QObjectProxy *proxy;
   switch (GetTag(slot)) {
     case tagChar :
     case tagNil :
@@ -327,12 +327,8 @@ QVariant Slot::toVariant( PyrSlot *slot )
         return QVariant::fromValue<QPalette>( toPalette(slot) );
       }
       else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
-        obj = toObject(slot);
-        if( !obj ) return QVariant();
-        if( obj->isWidgetType() )
-          return QVariant::fromValue<QWidget*>( static_cast<QWidget*>(obj) );
-        else
-          return QVariant::fromValue<QObject*>( obj );
+        proxy = toObjectProxy(slot);
+        return QVariant::fromValue<QObjectProxy*>( proxy );
       }
       else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
         return QVariant::fromValue<VariantList>( toVariantList(slot) );
@@ -349,7 +345,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
 
 void Slot::setData( PyrSlot *slot )
 {
-  QObject *obj;
+  QObjectProxy *proxy;
   switch (GetTag(slot)) {
     case tagChar :
     case tagNil :
@@ -395,18 +391,14 @@ void Slot::setData( PyrSlot *slot )
         _ptr = new VariantList( toVariantList(slot) );
       }
       else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
-        obj = toObject(slot);
-        if( !obj ) {
+        proxy = toObjectProxy(slot);
+        if( !proxy ) {
           _type = QMetaType::Void;
           _ptr = 0;
         }
-        else if( obj->isWidgetType() ) {
-          _type = QMetaType::QWidgetStar;
-          _ptr = new QWidget*( static_cast<QWidget*>(obj) );
-        }
         else {
-          _type = QMetaType::QObjectStar;
-          _ptr = new QObject*( obj );
+          _type = qMetaTypeId<QObjectProxy*>();
+          _ptr = new QObjectProxy*( proxy );
         }
       }
       else {
