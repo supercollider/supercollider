@@ -347,6 +347,7 @@ QView : QObject {
   mouseOver { arg x, y;
     mouseOverAction.value( this, x, y );
   }
+
   /* ---------------- private ----------------------- */
 
   initQView { arg parentArg;
@@ -373,20 +374,20 @@ QView : QObject {
       { handleKeyUp = this.overrides( \defaultKeyUpAction )};
 
     if( handleKeyDown )
-      { this.registerEventHandler( QObject.keyDownEvent, \keyDown, true ) };
+      { this.registerEventHandler( QObject.keyDownEvent, \keyDownEvent, true ) };
     if( handleKeyUp )
-      { this.registerEventHandler( QObject.keyUpEvent, \keyUp, true ) };
+      { this.registerEventHandler( QObject.keyUpEvent, \keyUpEvent, true ) };
 
     if( this.overrides( \mouseDown ) ) {
-      this.registerEventHandler( QObject.mouseDownEvent, \mouseDown );
-      this.registerEventHandler( QObject.mouseDblClickEvent, \mouseDown )
+      this.registerEventHandler( QObject.mouseDownEvent, \mouseDownEvent );
+      this.registerEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent )
     };
     if( this.overrides( \mouseUp ) )
-      {this.registerEventHandler( QObject.mouseUpEvent, \mouseUp )};
+      {this.registerEventHandler( QObject.mouseUpEvent, \mouseUpEvent )};
     if( this.overrides( \mouseMove ) )
-      {this.registerEventHandler( QObject.mouseMoveEvent, \mouseMove )};
+      {this.registerEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent )};
     if( this.overrides( \mouseOver ) )
-      {this.registerEventHandler( QObject.mouseOverEvent, \mouseOver )};
+      {this.registerEventHandler( QObject.mouseOverEvent, \mouseOverEvent )};
   }
 
   onCloseEvent {
@@ -403,6 +404,30 @@ QView : QObject {
 
   onWindowDeactivateEvent {
     endFrontAction.value(this);
+  }
+
+  keyDownEvent { arg char, modifiers, unicode, keycode;
+    ^this.keyDown( char, modifiers, unicode, keycode );
+  }
+
+  keyUpEvent { arg char, modifiers, unicode, keycode;
+    ^this.keyUp( char, modifiers, unicode, keycode );
+  }
+
+  mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
+    ^this.mouseDown( x, y, modifiers, buttonNumber, clickCount );
+  }
+
+  mouseUpEvent { arg x, y, modifiers, buttonNumber;
+    ^this.mouseUp(  x, y, modifiers, buttonNumber );
+  }
+
+  mouseMoveEvent { arg x, y, modifiers;
+    ^this.mouseMove( x, y, modifiers );
+  }
+
+  mouseOverEvent { arg x, y;
+    ^this.mouseOver( x, y );
   }
 
   overrides { arg symMethod;
