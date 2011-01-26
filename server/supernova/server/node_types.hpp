@@ -24,6 +24,7 @@
 #include <boost/intrusive/unordered_set.hpp>
 #include <boost/intrusive_ptr.hpp>
 
+#include "memory_pool.hpp"
 #include "synth_prototype.hpp"
 #include "utilities/static_pool.hpp"
 
@@ -179,32 +180,15 @@ private:
 public:
     /* memory management for server_nodes */
     /* @{ */
-    template<typename T>
-    static T * allocate(std::size_t count)
-    {
-        return static_cast<T*>(allocate(count * sizeof(T)));
-    }
-
-    static void * allocate(std::size_t size);
-    static void free(void *);
-    static std::size_t get_max_size(void)
-    {
-        return pool.get_max_size();
-    }
-
     inline void * operator new(std::size_t size)
     {
-        return allocate(size);
+        return rt_pool.malloc(size);
     }
 
     inline void operator delete(void * p)
     {
-        free(p);
+        rt_pool.free(p);
     }
-
-private:
-    typedef static_pool<1024*1024*8> node_pool;
-    static node_pool pool;
     /* @} */
 
 public:
@@ -251,93 +235,6 @@ enum node_position
 };
 
 typedef std::pair<server_node *, node_position> node_position_constraint;
-
-
-template <typename synth_t>
-inline synth_t * synth_prototype::allocate(void)
-{
-    return static_cast<synth_t*>(server_node::allocate(sizeof(synth_t)));
-}
-
-
-
-/* allocator class, using server_node specific memory pool */
-template <class T>
-class server_node_allocator
-{
-public:
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-    typedef T*        pointer;
-    typedef const T*  const_pointer;
-    typedef T&        reference;
-    typedef const T&  const_reference;
-    typedef T         value_type;
-
-    template <class U> struct rebind
-    {
-        typedef server_node_allocator<U> other;
-    };
-
-    server_node_allocator(void) throw()
-    {}
-
-    ~server_node_allocator() throw()
-    {}
-
-    pointer address(reference x) const
-    {
-        return &x;
-    }
-
-    const_pointer address(const_reference x) const
-    {
-        return &x;
-    }
-
-    pointer allocate(size_type n,
-                     const_pointer hint = 0)
-    {
-        pointer ret = static_cast<pointer>(server_node::allocate(n * sizeof(T)));
-        if (unlikely(ret == 0))
-            throw std::bad_alloc();
-
-        return ret;
-    }
-
-    void deallocate(pointer p, size_type n)
-    {
-        server_node::free(p);
-    }
-
-    size_type max_size() const throw()
-    {
-        return server_node::get_max_size();
-    }
-
-    void construct(pointer p, const T& val)
-    {
-        ::new(p) T(val);
-    }
-
-    void destroy(pointer p)
-    {
-        p->~T();
-    }
-};
-
-
-template<typename T, typename U>
-bool operator==( server_node_allocator<T> const& left, server_node_allocator<U> const& right )
-{
-    return !(left != right);
-}
-
-template<typename T, typename U>
-bool operator!=( server_node_allocator<T> const& left, server_node_allocator<U> const& right )
-{
-    return true;
-}
 
 
 } /* namespace nova */

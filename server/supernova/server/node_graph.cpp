@@ -276,17 +276,4 @@ void parallel_group::add_child(server_node * node, node_position position)
     /* later warn about this! */
 }
 
-void * server_node::allocate(std::size_t size)
-{
-    return pool.malloc(size);
-}
-
-void server_node::free(void * ptr)
-{
-    pool.free(ptr);
-}
-
-server_node::node_pool server_node::pool(true);
-
-
 } /* namespace nova */

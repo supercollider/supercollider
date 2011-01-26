@@ -50,12 +50,11 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     const size_t constants_count = synthdef.constants.size();
 
     /* we allocate one memory chunk */
-    const size_t alloc_size = parameter_count * (sizeof(float) + sizeof(int) + sizeof(float*))
-                              + constants_count * sizeof(Wire) + prototype->memory_requirement();
+    const size_t alloc_size = prototype->memory_requirement();
 
-    const size_t sample_alloc_size = world.mBufLength * synthdef.buffer_count + 64; /* allocate 64 bytes more than required */
+    const size_t sample_alloc_size = world.mBufLength * synthdef.buffer_count + 64;  /* allocate 64 samples more than required */
 
-    char * chunk = (char*)allocate(alloc_size + sample_alloc_size*sizeof(sample));
+    char * chunk = (char*)rt_pool.malloc(alloc_size + sample_alloc_size*sizeof(sample));
     if (chunk == NULL)
         throw std::bad_alloc();
 
@@ -88,6 +87,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     calc_units = (Unit**)chunk; chunk += calc_unit_count * sizeof(Unit*);
     unit_buffers = (sample*)chunk; chunk += sample_alloc_size*sizeof(sample);
 
+    unit_buffers = (sample*) ((size_t(unit_buffers) + 63) & ~63); /* next multiple of 64 */
+
     /* allocate unit generators */
     sc_factory->allocate_ugens(synthdef.graph.size());
     for (size_t i = 0; i != synthdef.graph.size(); ++i)
@@ -101,6 +102,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
         int32_t index = synthdef.calc_unit_indices[i];
         calc_units[i] = units[index];
     }
+
+    assert((char*)mControls + alloc_size <= chunk); // ensure the memory boundaries
 }
 
 namespace
@@ -116,7 +119,7 @@ void free_ugen(struct Unit * unit)
 
 sc_synth::~sc_synth(void)
 {
-    free(mControls);
+    rt_pool.free(mControls);
     std::for_each(units, units + unit_count, free_ugen);
 
     sc_factory->free_ugens(unit_count);

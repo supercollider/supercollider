@@ -154,6 +154,10 @@ void AllocPool::Reinit()
 
 void AllocPool::Free(void *inPtr)
 {
+#ifdef DISABLE_MEMORY_POOLS
+	free(inPtr);
+	return;
+#endif
 
 	check_pool();
 	if (inPtr == 0) return;                   /* free(0) has no effect */
@@ -269,8 +273,8 @@ size_t AllocPool::LargestFreeChunk()
 	int bitPosition = NUMBITS(binBits) - 1;
 	int index = (word << 5) + bitPosition;
 	AllocChunkPtr bin = mBins + index;
-	//postbuf("** %08X %08X %08X %08X\n", mBinBlocks[0], mBinBlocks[1], mBinBlocks[2], mBinBlocks[3]);
-	//postbuf("%d %d %d %08X    %08X %08X\n", word, bitPosition, index, binBits, bin->Prev(), bin->Next());
+	//postbuf("** %p %p %p %p\n", mBinBlocks[0], mBinBlocks[1], mBinBlocks[2], mBinBlocks[3]);
+	//postbuf("%d %d %d %p    %p %p\n", word, bitPosition, index, binBits, bin->Prev(), bin->Next());
 
 	AllocChunkPtr candidate;
 	size_t maxsize = 0;
@@ -291,6 +295,10 @@ size_t AllocPool::LargestFreeChunk()
 
 void* AllocPool::Alloc(size_t inReqSize)
 {
+#ifdef DISABLE_MEMORY_POOLS
+	return malloc(inReqSize);
+#endif
+
 	// OK it has a lot of gotos, but these remove a whole lot of common code
 	// that was obfuscating the original version of this function.
 	// So here I am choosing the OnceAndOnlyOnce principle over the caveats on gotos.
@@ -421,6 +429,11 @@ void* AllocPool::Alloc(size_t inReqSize)
 
 void* AllocPool::Realloc(void* inPtr, size_t inReqSize)
 {
+#ifdef DISABLE_MEMORY_POOLS
+	return realloc(inPtr, inReqSize);
+#endif
+
+
 	void *outPtr;
 	AllocChunkPtr prev;
 	check_pool();

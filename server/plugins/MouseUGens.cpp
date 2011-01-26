@@ -376,7 +376,7 @@ void cmdCleanup(World* world, void* inUserData)
 
 void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, void *replyAddr)
 {
-	Print("->cmdDemoFunc %08X\n", inUserData);
+	Print("->cmdDemoFunc %p\n", inUserData);
 
 	// user data is the plug-in's user data.
 	MyPluginData* thePlugInData = (MyPluginData*)inUserData;

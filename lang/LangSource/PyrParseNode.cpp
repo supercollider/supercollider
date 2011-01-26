@@ -182,9 +182,9 @@ void compileNodeList(PyrParseNode *node, bool onTailBranch)
 	PyrSlot dummy;
 	//postfl("->compileNodeList\n");
 	for (; node; node = node->mNext) {
-            //postfl("-->compileNodeList %08X\n", node);
+            //postfl("-->compileNodeList %p\n", node);
 		COMPILENODE(node, &dummy, onTailBranch);
-            //postfl("<--compileNodeList %08X\n", node);
+            //postfl("<--compileNodeList %p\n", node);
 	}
 	//postfl("<-compileNodeList\n");
 }
@@ -1270,7 +1270,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 	methraw->unused1 = 0;
 	methraw->unused2 = 0;
 
-	//postfl("method %08X raw %08X\n", method, methraw);
+	//postfl("method %p raw %p\n", method, methraw);
 	method->contextDef = o_nil;
 	method->name = mMethodName->mSlot;
 	if (gCompilingFileSym) SetSymbol(&method->filenameSym, gCompilingFileSym);
@@ -2655,14 +2655,14 @@ PyrCallNode* buildCase(PyrParseNode *arg1)
 	}
 
 	/*
-	post("arg1->mNext %08X arg2 %08X\n", arg1->mNext, arg2);
+	post("arg1->mNext %p arg2 %p\n", arg1->mNext, arg2);
 	if (arg2) {
-		post("arg2->mNext %08X arg3 %08X\n", arg2->mNext, arg3);
+		post("arg2->mNext %p arg3 %p\n", arg2->mNext, arg3);
 		post("isAnInlineableBlock arg2 %d\n", isAnInlineableBlock(arg2));
 	}
 	if (arg3) {
 		post("isAnInlineableBlock arg3 %d\n", isAnInlineableBlock(arg3));
-		post("arg3->mNext %08X\n", arg3->mNext);
+		post("arg3->mNext %p\n", arg3->mNext);
 	}
 	DUMPNODE(arg1, 0);
 	*/

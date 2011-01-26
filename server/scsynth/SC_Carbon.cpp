@@ -59,7 +59,7 @@ bool sc_HasVectorUnit()
 {
 	SInt32 response;
 	Gestalt(gestaltPowerPCProcessorFeatures, &response);
-	//printf("HasAltivec %08X %d\n", response, response & (1<<gestaltPowerPCHasVectorInstructions));
+	//printf("HasAltivec %p %d\n", response, response & (1<<gestaltPowerPCHasVectorInstructions));
 	return response & (1<<gestaltPowerPCHasVectorInstructions);
 }
 
