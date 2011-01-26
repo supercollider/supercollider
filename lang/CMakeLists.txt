@@ -220,6 +220,10 @@ elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
+if (GC_SANITYCHECK)
+	add_definitions(-DGC_SANITYCHECK)
+endif()
+
 target_link_libraries(libsclang ${PTHREADS_LIBRARY})
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)

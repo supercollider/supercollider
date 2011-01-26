@@ -597,7 +597,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	mOutputDevice = kAudioDeviceUnknown;
 	mInputDevice = kAudioDeviceUnknown;
 
-	//scprintf("SC_CoreAudioDriver::Setup world %08X\n", mWorld);
+	//scprintf("SC_CoreAudioDriver::Setup world %p\n", mWorld);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -619,14 +619,14 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 		for (int i = 0; i < numdevices; ++i) {
 			err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
 			if (err != kAudioHardwareNoError) {
-				scprintf("info kAudioDevicePropertyDeviceName error %4.4s A %d %08X\n", (char*)&err, i, devices[i]);
+				scprintf("info kAudioDevicePropertyDeviceName error %4.4s A %d %p\n", (char*)&err, i, devices[i]);
 				break;
 			}
 
 			char *name = (char*)malloc(count);
 			err = AudioDeviceGetProperty(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, name);
 			if (err != kAudioHardwareNoError) {
-				scprintf("get kAudioDevicePropertyDeviceName error %4.4s A %d %08X\n", (char*)&err, i, devices[i]);
+				scprintf("get kAudioDevicePropertyDeviceName error %4.4s A %d %p\n", (char*)&err, i, devices[i]);
 				free(name);
 				break;
 			}
@@ -659,14 +659,14 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 		for (int i = 0; i < numdevices; ++i) {
 			err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
 			if (err != kAudioHardwareNoError) {
-				scprintf("info kAudioDevicePropertyDeviceName error %4.4s B %d %08X\n", (char*)&err, i, devices[i]);
+				scprintf("info kAudioDevicePropertyDeviceName error %4.4s B %d %p\n", (char*)&err, i, devices[i]);
 				break;
 			}
 
 			char *name = (char*)malloc(count);
 			err = AudioDeviceGetProperty(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, name);
 			if (err != kAudioHardwareNoError) {
-				scprintf("get kAudioDevicePropertyDeviceName error %4.4s B %d %08X\n", (char*)&err, i, devices[i]);
+				scprintf("get kAudioDevicePropertyDeviceName error %4.4s B %d %p\n", (char*)&err, i, devices[i]);
 				return false;
 			}
 			if (strcmp(name, mWorld->hw->mInDeviceName) == 0) {
@@ -791,14 +791,14 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	do {
 		err = AudioDeviceGetPropertyInfo(mInputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, 0);
 		if (err != kAudioHardwareNoError) {
-			scprintf("info kAudioDevicePropertyDeviceName error %4.4s C %08X\n", (char*)&err, mInputDevice);
+			scprintf("info kAudioDevicePropertyDeviceName error %4.4s C %p\n", (char*)&err, mInputDevice);
 			break;
 		}
 
 		char *name = (char*)malloc(count);
 		err = AudioDeviceGetProperty(mInputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, name);
 		if (err != kAudioHardwareNoError) {
-			scprintf("get kAudioDevicePropertyDeviceName error %4.4s C %08X\n", (char*)&err, mInputDevice);
+			scprintf("get kAudioDevicePropertyDeviceName error %4.4s C %p\n", (char*)&err, mInputDevice);
 			free(name);
 			break;
 		}
@@ -936,7 +936,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	*outSampleRate = outputStreamDesc.mSampleRate;
 
 	if(mWorld->mVerbosity >= 1){
-		scprintf("<-SC_CoreAudioDriver::Setup world %08X\n", mWorld);
+		scprintf("<-SC_CoreAudioDriver::Setup world %p\n", mWorld);
 	}
 	
 	
@@ -946,7 +946,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	
 	err = AudioDeviceGetPropertyInfo(mOutputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, 0);
 	if (err != kAudioHardwareNoError) {
-		scprintf("info kAudioDevicePropertyDeviceName error %4.4s %08X\n", (char*)&err, mOutputDevice);
+		scprintf("info kAudioDevicePropertyDeviceName error %4.4s %p\n", (char*)&err, mOutputDevice);
 		return false; 
 	}
 	
@@ -954,7 +954,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	char *testname = "Built-in Output"; 
 	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, outputname);
 	if (err != kAudioHardwareNoError) {
-		scprintf("get kAudioDevicePropertyDeviceName error %4.4s %08X\n", (char*)&err, mOutputDevice);
+		scprintf("get kAudioDevicePropertyDeviceName error %4.4s %p\n", (char*)&err, mOutputDevice);
 		return false;
 	}
 	builtinoutputflag_ = 0; 
@@ -1468,36 +1468,36 @@ bool SC_CoreAudioDriver::DriverStop()
 	if (UseSeparateIO()) {
 		err = AudioDeviceStop(mOutputDevice, appIOProc);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceStop A failed %08X\n", err);
+			scprintf("AudioDeviceStop A failed %p\n", err);
 			return false;
 		}
 		err = AudioDeviceRemoveIOProc(mOutputDevice, appIOProc);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceRemoveIOProc A failed %08X\n", err);
+			scprintf("AudioDeviceRemoveIOProc A failed %p\n", err);
 			return false;
 		}
 
 		err = AudioDeviceStop(mInputDevice, appIOProcSeparateIn);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceStop A failed %08X\n", err);
+			scprintf("AudioDeviceStop A failed %p\n", err);
 			return false;
 		}
 
 		err = AudioDeviceRemoveIOProc(mInputDevice, appIOProcSeparateIn);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceRemoveIOProc A failed %08X\n", err);
+			scprintf("AudioDeviceRemoveIOProc A failed %p\n", err);
 			return false;
 		}
 	} else {
 		err = AudioDeviceStop(mOutputDevice, appIOProc);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceStop B failed %08X\n", err);
+			scprintf("AudioDeviceStop B failed %p\n", err);
 			return false;
 		}
 
 		err = AudioDeviceRemoveIOProc(mOutputDevice, appIOProc);
 		if (err != kAudioHardwareNoError) {
-			scprintf("AudioDeviceRemoveIOProc B failed %08X\n", err);
+			scprintf("AudioDeviceRemoveIOProc B failed %p\n", err);
 			return false;
 		}
 	}
@@ -2292,7 +2292,7 @@ bool SC_iCoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* out
 	AUGraphInitialize(graph);
 
 	if(mWorld->mVerbosity >= 0){
-		scprintf("<-SC_CoreAudioDriver::Setup world %08X\n", mWorld);
+		scprintf("<-SC_CoreAudioDriver::Setup world %p\n", mWorld);
 	}
 	return true;
 }

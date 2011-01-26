@@ -72,17 +72,11 @@ extern PyrObject *gSynth;
 
 void debugf(char *fmt, ...) ;
 
-#define SANITYCHECK 0
 #define DEBUGINTERPRETER 0
 #define METHODMETER 0
 #define BCSTAT 0
 #define CHECK_MAX_STACK_USE 0
 
-#if SANITYCHECK
-#define SANITYCHECKLITE 1
-#else
-#define SANITYCHECKLITE 0
-#endif
 
 #if CHECK_MAX_STACK_USE
 int gMaxStackDepth = 0;
@@ -109,27 +103,27 @@ extern PyrClass *gClassList;
 void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
 		//postfl("->runInterpreter\n");
-#if SANITYCHECKLITE
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 		//postfl(" >initInterpreter\n");
 
 	if (initInterpreter(g, selector, numArgsPushed)) {
-#if SANITYCHECKLITE
+#ifdef GC_SANITYCHECK
 		g->gc->SanityCheck();
 #endif
 //        if (strcmp(selector->name, "tick") != 0) post("%s %d  execMethod %d\n", selector->name, numArgsPushed, g->execMethod);
-	//post("->Interpret thread %08X\n", g->thread);
+	//post("->Interpret thread %p\n", g->thread);
 		if (g->execMethod) Interpret(g);
-	//post("<-Interpret thread %08X\n", g->thread);
-#if SANITYCHECKLITE
+	//post("<-Interpret thread %p\n", g->thread);
+#ifdef GC_SANITYCHECK
 		g->gc->SanityCheck();
 #endif
 	}
 
 	//postfl(" >endInterpreter\n");
 	endInterpreter(g);
-#if SANITYCHECKLITE
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 		//postfl("<-runInterpreter\n");
@@ -337,7 +331,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 	initPatterns();
 	initUniqueMethods();
 	initGUI();
-#if SANITYCHECKLITE
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 	//tellPlugInsAboutToRun();
@@ -347,7 +341,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 #endif
 
 	assert((g->gc->SanityCheck()));
-#if SANITYCHECKLITE
+#ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
 
@@ -356,7 +350,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 
 static bool initAwakeMessage(VMGlobals *g)
 {
-	//post("initAwakeMessage %08X %08X\n", g->thread, slotRawThread(&g->process->mainThread));
+	//post("initAwakeMessage %p %p\n", g->thread, slotRawThread(&g->process->mainThread));
 	slotCopy(&g->process->curThread, &g->process->mainThread); //??
 	g->thread = slotRawThread(&g->process->mainThread); //??
 
@@ -836,8 +830,8 @@ void Interpret(VMGlobals *g)
 	prevop = op1;
 #endif
 	//printf("op1 %d\n", op1);
-	//postfl("sp %08X   frame %08X  caller %08X  ip %08X\n", sp, g->frame, g->frame->caller.uof, slotRawInt(&g->frame->caller.uof->ip));
-	//postfl("sp %08X   frame %08X   diff %d    caller %08X\n", sp, g->frame, ((int)sp - (int)g->frame)>>3, g->frame->caller.uof);
+	//postfl("sp %p   frame %p  caller %p  ip %p\n", sp, g->frame, g->frame->caller.uof, slotRawInt(&g->frame->caller.uof->ip));
+	//postfl("sp %p   frame %p   diff %d    caller %p\n", sp, g->frame, ((int)sp - (int)g->frame)>>3, g->frame->caller.uof);
 #if DEBUGINTERPRETER
 	if (gTraceInterpreter) {
 		//DumpStack(g, sp);
@@ -855,7 +849,7 @@ void Interpret(VMGlobals *g)
 		dumpOneByteCode(g->block, NULL, ip);
 	}
 #endif
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 //	gcLinkSanity(g->gc);
 	g->gc->SanityCheck();
 //	do_check_pool(pyr_pool_runtime);

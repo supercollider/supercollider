@@ -344,7 +344,7 @@ void slotString(PyrSlot *slot, char *str)
 				double f;
 			} u;
 			u.f = slotRawFloat(slot);
-			sprintf(str, "Float %f   %08X %08X", u.f, u.i[0], u.i[1]);
+			sprintf(str, "Float %f   %p %p", u.f, u.i[0], u.i[1]);
 			break;
 		}
 	}
@@ -472,7 +472,7 @@ bool postString(PyrSlot *slot, char *str)
 						slotRawSymbol(&slotRawClass(&slotRawMethod(slot)->ownerclass)->name)->name,
 						slotRawSymbol(&slotRawMethod(slot)->name)->name);
 				} else {
-					sprintf(str, "instance of %s (%08X, size=%d, set=%02X)",
+					sprintf(str, "instance of %s (%p, size=%d, set=%02X)",
 						slotRawSymbol(&slotRawObject(slot)->classptr->name)->name,
 						slotRawObject(slot), slotRawObject(slot)->size,
 						slotRawObject(slot)->obj_sizeclass);
@@ -538,7 +538,7 @@ bool postString(PyrSlot *slot, char *str)
 				} else {
 					str[0] = 0;
 					res = false;
-//					sprintf(str, "instance of %s (%08X, size=%d, gcset=%02X)",
+//					sprintf(str, "instance of %s (%p, size=%d, gcset=%02X)",
 //						slotRawSymbol(&slotRawObject(slot)->classptr->name)->name,
 //						slotRawObject(slot), slotRawObject(slot)->size,
 //						slotRawObject(slot)->obj_sizeclass);

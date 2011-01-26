@@ -56,6 +56,9 @@ if(APPLE)
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	add_definitions("-DSC_LINUX")
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
+elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+	add_definitions("-DSC_FREEBSD")
+	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
 
 if(WIN32)
@@ -107,7 +110,10 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 elseif()
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
 endif()
+
 option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
+option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable memory pools).")
+option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
 mark_as_advanced(NO_LIBSNDFILE)
@@ -148,6 +154,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 endif()
 
+if (SC_MEMORY_DEBUGGING)
+	add_definitions(-DDISABLE_MEMORY_POOLS)
+endif()
+
 #############################################
 # subdirectories
 add_subdirectory(server)
@@ -163,7 +173,7 @@ if (SC_QT)
   add_subdirectory(QtCollider)
 endif (SC_QT)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
     install(DIRECTORY include
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
         PATTERN app* EXCLUDE
