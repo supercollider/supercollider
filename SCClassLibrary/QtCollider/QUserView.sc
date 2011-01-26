@@ -31,4 +31,30 @@ QUserView : QView {
     background = aColor;
     this.setProperty( \background, aColor, true );
   }
+
+  // reimplement mouse and key response to do nothing if enabled = false;
+
+  keyDownEvent { arg char, modifiers, unicode, keycode;
+    if( this.enabled ) { ^this.keyDown( char, modifiers, unicode, keycode ) };
+  }
+
+  keyUpEvent { arg char, modifiers, unicode, keycode;
+    if( this.enabled ) { ^this.keyUp( char, modifiers, unicode, keycode ) };
+  }
+
+  mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
+    if( this.enabled ) { ^this.mouseDown( x, y, modifiers, buttonNumber, clickCount ) };
+  }
+
+  mouseUpEvent { arg x, y, modifiers, buttonNumber;
+    if( this.enabled ) { ^this.mouseUp( x, y, modifiers, buttonNumber ) };
+  }
+
+  mouseMoveEvent { arg x, y, modifiers;
+    if( this.enabled ) { ^this.mouseMove( x, y, modifiers ) };
+  }
+
+  mouseOverEvent { arg x, y;
+    if( this.enabled ) { ^this.mouseOver( x, y ) };
+  }
 }
