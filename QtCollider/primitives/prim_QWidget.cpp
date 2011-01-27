@@ -50,3 +50,13 @@ QC_LANG_PRIMITIVE( QWidget_BringFront, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( !ok ) return errFailed;
   return errNone;
 }
+
+QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  PyrObject *scObj = slotRawObject( r );
+
+  QObject *proxy = static_cast<QObject*>( slotRawPtr( scObj->slots ) );
+
+  QMetaObject::invokeMethod( proxy, "refresh", Qt::QueuedConnection );
+
+  return errNone;
+}

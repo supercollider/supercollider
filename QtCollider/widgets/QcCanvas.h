@@ -37,8 +37,10 @@ public Q_SLOTS:
 Q_SIGNALS:
   void painting();
 protected:
+  virtual void customEvent( QEvent * );
   virtual void resizeEvent( QResizeEvent * );
   virtual void paintEvent( QPaintEvent * );
+
 private:
   QPixmap _pixmap;
   QColor _bkgColor;

@@ -20,13 +20,6 @@ QUserView : QView {
     drawFunc = aFunction;
   }
 
-  refresh {
-    if( drawFunc.notNil ) {
-      this.invokeMethod( \repaint );
-    };
-    super.refresh;
-  }
-
   background_ { arg aColor;
     background = aColor;
     this.setProperty( \background, aColor, true );
