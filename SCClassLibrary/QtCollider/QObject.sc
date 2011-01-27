@@ -39,7 +39,8 @@ QObject {
   }
 
   parent {
-    // TODO
+    _QObject_GetParent
+    ^this.primitiveFailed
   }
 
   children { arg class;
