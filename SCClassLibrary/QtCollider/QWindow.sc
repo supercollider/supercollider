@@ -93,12 +93,6 @@ QWindow : QAbstractScroll {
     drawHook = aFunction;
   }
 
-  refresh {
-    if( drawHook.notNil ) {
-      this.invokeMethod( \repaint );
-    };
-    super.refresh;
-  }
   // ---------------------- private ------------------------------------
 
   *flipY { arg aRect;

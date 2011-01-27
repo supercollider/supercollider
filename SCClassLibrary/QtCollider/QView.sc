@@ -51,9 +51,8 @@ QView : QObject {
   asView { ^this }
 
   refresh {
-    var childWidgets = this.children( QView );
-    childWidgets.do { |child| child.refresh };
-    // Do nothing here. Reimplement if real work needed.
+    _QWidget_Refresh
+    ^this.primitiveFailed;
   }
 
   remove {

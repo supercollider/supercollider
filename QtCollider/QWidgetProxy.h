@@ -24,6 +24,8 @@
 
 #include "QObjectProxy.h"
 
+#include <QApplication>
+
 #include <QWidget>
 
 class QWidgetProxy : public QObjectProxy
@@ -52,6 +54,11 @@ class QWidgetProxy : public QObjectProxy
       w->raise();
     }
 
+    Q_INVOKABLE void refresh() {
+      QWidget *w = widget();
+      if( w ) sendRefreshEventRecursive( w );
+    }
+
   protected:
 
     inline QWidget *widget() { return static_cast<QWidget*>( object() ); }
@@ -69,6 +76,17 @@ class QWidgetProxy : public QObjectProxy
       }
       return false;
     }
+
+    private:
+      static void sendRefreshEventRecursive( QWidget *w ) {
+        QEvent event( static_cast<QEvent::Type>( QtCollider::Event_Refresh ) );
+        QApplication::sendEvent( w, &event );
+        const QObjectList &children = w->children();
+        Q_FOREACH( QObject *child, children ) {
+          if( child->isWidgetType() )
+              sendRefreshEventRecursive( static_cast<QWidget*>( child ) );
+        }
+      }
 };
 
 #endif //QC_WIDGET_PROXY_H

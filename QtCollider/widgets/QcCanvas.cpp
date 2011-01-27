@@ -37,6 +37,14 @@ void QcCanvas::repaint()
   update();
 }
 
+void QcCanvas::customEvent( QEvent *e )
+{
+  if( e->type() == QtCollider::Event_Refresh ) {
+    e->accept();
+    repaint();
+  }
+}
+
 void QcCanvas::resizeEvent( QResizeEvent * )
 {
   repaint();
