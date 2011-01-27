@@ -30,8 +30,7 @@ QcSlider::QcSlider()
 : lastVal(0), bDoAction( false )
 {
   setRange(0, 10000);
-  setSingleStep(0);
-  setPageStep(0);
+  setStep( 0.01 );
   lastVal = sliderPosition();
 
   connect( this, SIGNAL(actionTriggered( int )),
