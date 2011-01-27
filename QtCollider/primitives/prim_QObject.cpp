@@ -412,3 +412,22 @@ QC_LANG_PRIMITIVE( QObject_GetChildren, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   return errFailed;
 }
+
+QC_LANG_PRIMITIVE( QObject_GetParent, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QObjectProxy *proxy = Slot::toObjectProxy( r );
+
+  qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET PARENT") );
+
+  GetParentEvent *e = new GetParentEvent();
+  PyrObject *parent = 0;
+  e->parent = &parent;
+
+  bool ok = e->send( proxy, Synchronous );
+  if( !ok ) return errFailed;
+
+  if( parent ) SetObject( r, parent );
+  else SetNil( r );
+
+  return errNone;
+}

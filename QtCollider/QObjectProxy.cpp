@@ -382,6 +382,26 @@ bool QObjectProxy::getChildrenEvent( QtCollider::GetChildrenEvent *e )
   return true;
 }
 
+bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )
+{
+  if( !qObject ) return false;
+
+  QObject *parent = qObject->parent();
+  if( !parent ) return true;
+
+  ProxyToken * token = 0;
+
+  const QObjectList &siblings = parent->children();
+  Q_FOREACH( QObject *sibling, siblings ) {
+    token = qobject_cast<QtCollider::ProxyToken*>( sibling );
+    if( token ) break;
+  }
+
+  if( token ) *e->parent = token->proxy->scObject;
+
+  return true;
+}
+
 bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 {
   int type = event->type();
