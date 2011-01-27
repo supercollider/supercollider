@@ -39,6 +39,13 @@ QcApplication::QcApplication( int & argc, char ** argv )
   qRegisterMetaType<VariantList>();
 }
 
+QcApplication::~QcApplication()
+{
+  _mutex.lock();
+  _instance = 0;
+  _mutex.unlock();
+}
+
 void QcApplication::postSyncEvent( QcSyncEvent *e, QObject *rcv )
 {
   _mutex.lock();
