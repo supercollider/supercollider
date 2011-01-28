@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2011 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,8 +19,8 @@
 *
 ************************************************************************/
 
-#ifndef QC_ABSTRACT_LAYOUT_H
-#define QC_ABSTRACT_LAYOUT_H
+#ifndef QC_CLASSIC_LAYOUTS_H
+#define QC_CLASSIC_LAYOUTS_H
 
 #include <QLayout>
 #include <QLayoutItem>
@@ -70,4 +70,27 @@ class QcAbstractLayout : public QLayout {
     QList<QcLayoutItem*> items;
 };
 
-#endif // QC_ABSTRACT_LAYOUT_H
+/////////////////////////// IMPLEMENTATIONS //////////////////////////////
+
+class QcDefaultLayout : public QcAbstractLayout {
+  public:
+    QcDefaultLayout() : initialized( false ) {}
+  private:
+    void setGeometry ( const QRect & r );
+    QRect geom;
+    bool initialized;
+};
+
+class QcHLayout : public QcAbstractLayout
+{
+  private:
+    void setGeometry ( const QRect & r );
+};
+
+class QcVLayout : public QcAbstractLayout
+{
+  private:
+    void setGeometry ( const QRect & r );
+};
+
+#endif // QC_CLASSIC_LAYOUTS_H
