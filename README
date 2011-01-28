@@ -1,4 +1,5 @@
 Welcome to SuperCollider 3!
+***************************
 
 SuperCollider is an environment and programming language for real time audio synthesis and algorithmic composition. It provides an interpreted object-oriented language which functions as a network client to a state of the art, realtime sound synthesis server.
 
@@ -25,12 +26,23 @@ And be careful you're not using TextEdit or a web browser instead of the SuperCo
 [Windows] The windows version of SuperCollider is called PsyCollider. Key commands differ from the Mac, but almost all code should work the same. The SwingOSC Java based GUI library is used here, however, for GUIs. You must use JMouseX/JMouseY in particular; PsyCollider does not support MouseX/MouseY UGens.
 
 
-[Linux] Most people use SuperCollider from emacs; there are some alternative editors available. For GUI building, the SwingOSC Java framework is a standard option. For more information on Linux specific issues, check the "README LINUX" file included in the source package, and the README in the folder editors/scel for information on the emacs editor.
+[Linux] Most people use SuperCollider from emacs; there are some alternative editors available. For GUI building, the SwingOSC Java framework is a standard option. For more information on Linux specific issues, check the "platform/README LINUX" file included in the source package, and the README in the folder editors/scel for information on the emacs editor.
 
+
+Building the Source Code
+========================
+
+Platform specific build and install instructions can be found in:
+
+	platform/
 
 
 
 We hope you enjoy SuperCollider; please get involved in the active community!
+
+
+License
+=======
 
 SuperCollider is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version. See "COPYING" for the license text.
 
