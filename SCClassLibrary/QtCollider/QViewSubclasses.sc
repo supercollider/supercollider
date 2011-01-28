@@ -46,14 +46,11 @@ QAbstractScroll : QView {
 
 /////////////////////// CONTAINERS ////////////////////////////////
 
-QLayout : QView {
-}
-
-QHLayout : QLayout {
+QHLayoutView : QView {
   *qtClass { ^"QcHLayoutWidget" }
 }
 
-QVLayout : QLayout {
+QVLayoutView : QView {
   *qtClass { ^"QcVLayoutWidget" }
 }
 

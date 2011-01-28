@@ -30,6 +30,7 @@ set( QT_COLLIDER_HDRS
   widgets/QcCanvas.h
   widgets/QcSoundFileView.h
   widgets/QcFileDialog.h
+  layouts/layouts.hpp
 )
 
 set( QT_COLLIDER_SRCS
@@ -65,6 +66,7 @@ set( QT_COLLIDER_SRCS
   widgets/QcCanvas.cpp
   widgets/QcSoundFileView.cpp
   widgets/QcFileDialog.cpp
+  layouts/layouts.cpp
 )
 
 set( QT_USE_QTWEBKIT TRUE )
