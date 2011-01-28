@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2011 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -153,22 +153,27 @@ class RequestEvent : public QcSyncEvent {
 
 public:
   bool send( QObjectProxy *, Synchronicity );
-  virtual bool execute( QObjectProxy * ) = 0;
+  inline bool perform( QObjectProxy *proxy ) {
+    bool done = execute( proxy );
+    if( p_done ) *p_done = done;
+    return done;
+  }
+
 protected:
   RequestEvent() : QcSyncEvent( QcSyncEvent::ProxyRequest ), p_done(0) {}
+  virtual bool execute( QObjectProxy *proxy ) = 0;
+
+private:
   bool *p_done;
 };
 
-template <class T, bool (QObjectProxy::*RESPONSE)( T* )>
+template <class T, bool (QObjectProxy::*handler)( T* )>
 class RequestTemplate : public RequestEvent {
 protected:
-  RequestTemplate() {}
+  RequestTemplate(){}
 private:
-  bool execute( QObjectProxy *obj ) {
-    T *data = static_cast<T*>( this );
-    bool done = (obj->*RESPONSE)(data);
-    if( p_done ) *p_done = done;
-    return done;
+  bool execute( QObjectProxy *proxy ) {
+    return (proxy->*handler)( static_cast<T*>( this ) );
   }
 };
 

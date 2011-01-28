@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2011 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -215,7 +215,7 @@ void QObjectProxy::customEvent( QEvent *event )
 
   if( se->syncEventType() == QcSyncEvent::ProxyRequest ) {
     QtCollider::RequestEvent *re =  static_cast<QtCollider::RequestEvent*>( event );
-    re->execute( this );
+    re->perform( this );
     return;
   }
 }

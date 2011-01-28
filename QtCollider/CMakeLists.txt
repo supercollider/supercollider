@@ -36,6 +36,7 @@ set( QT_COLLIDER_SRCS
   MainLoop.cpp
   Common.cpp
   QObjectProxy.cpp
+  QWidgetProxy.cpp
   QcPen.cpp
   Slot.cpp
   QcObjectFactory.cpp
