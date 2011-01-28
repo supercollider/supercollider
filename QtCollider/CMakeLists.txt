@@ -13,7 +13,6 @@ set( QT_COLLIDER_HDRS
   Common.h
   QcHelper.h
   QcObjectFactory.h
-  widgets/QcAbstractLayout.h
   widgets/BasicWidgets.h
   widgets/QcScrollArea.h
   widgets/QcAbstractStepValue.h
@@ -48,7 +47,6 @@ set( QT_COLLIDER_SRCS
   primitives/prim_QPen_oldskool.cpp
   primitives/prim_misc.cpp
   primitives/prim_QWidget.cpp
-  widgets/QcAbstractLayout.cpp
   widgets/BasicWidgets.cpp
   widgets/QcScrollArea.cpp
   widgets/QcAbstractStepValue.cpp
@@ -66,6 +64,7 @@ set( QT_COLLIDER_SRCS
   widgets/QcCanvas.cpp
   widgets/QcSoundFileView.cpp
   widgets/QcFileDialog.cpp
+  layouts/classic_layouts.cpp
   layouts/layouts.cpp
 )
 

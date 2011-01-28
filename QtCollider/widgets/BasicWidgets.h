@@ -23,7 +23,7 @@
 #define _WIDGETS_H
 
 #include "../QcHelper.h"
-#include "QcAbstractLayout.h"
+#include "../layouts/classic_layouts.hpp"
 #include "QcCanvas.h"
 
 #include <QListWidget>
@@ -32,31 +32,6 @@
 #include <QLineEdit>
 #include <QLabel>
 #include <QCheckBox>
-
-///////////////////////// Layouts /////////////////////////////////////////////
-
-class QcDefaultLayout : public QcAbstractLayout {
-  public:
-    QcDefaultLayout() : initialized( false ) {}
-  private:
-    void setGeometry ( const QRect & r );
-    QRect geom;
-    bool initialized;
-};
-
-class QcHLayout : public QcAbstractLayout
-{
-  private:
-    void setGeometry ( const QRect & r );
-};
-
-class QcVLayout : public QcAbstractLayout
-{
-  private:
-    void setGeometry ( const QRect & r );
-};
-
-///////////////////////// Basic Widgets ///////////////////////////////////////
 
 class QcDefaultWidget : public QWidget
 {
