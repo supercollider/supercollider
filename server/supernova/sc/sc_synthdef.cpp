@@ -20,7 +20,6 @@
 #include <fstream>
 #include <sstream>
 
-#undef is // libsimdmath workaround
 #include <boost/format.hpp>
 #include <boost/integer/endian.hpp>
 
@@ -327,6 +326,13 @@ void sc_synthdef::prepare(void)
     }
 
     memory_requirement_ += (graph.size() + calc_unit_indices.size()) * sizeof(Unit*); // reserves space for units
+
+    // memory that is required to fill the sc_synth data structure
+    const size_t ctor_alloc_size = parameter_count() * (sizeof(float) + sizeof(int) + sizeof(float*))
+                                 + constants.size() * sizeof(Wire);
+
+    memory_requirement_ += ctor_alloc_size;
+
     buffer_count = uint16_t(allocator.buffer_count());
 }
 

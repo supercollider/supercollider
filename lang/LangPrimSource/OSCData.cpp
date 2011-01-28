@@ -450,7 +450,7 @@ int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 	int numargs = numArgsPushed - 1;
 	makeSynthMsgWithTags(&packet, args, numargs);
 
-	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
+	//for (int i=0; i<packet.size()/4; i++) post("%d %p\n", i, packet.buf[i]);
 
 	return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
@@ -472,7 +472,7 @@ int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 	int numargs = numArgsPushed - 1;
 	makeSynthBundle(&packet, args, numargs, true);
 
-	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
+	//for (int i=0; i<packet.size()/4; i++) post("%d %p\n", i, packet.buf[i]);
 
 	return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
@@ -586,7 +586,7 @@ int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 	obj->size = size;
 	memcpy(obj->b, packet.data(), size);
 	SetObject(a, (PyrObject*)obj);
-	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
+	//for (int i=0; i<packet.size()/4; i++) post("%d %p\n", i, packet.buf[i]);
 
 	return errNone;
 }
@@ -742,7 +742,7 @@ void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj)
 
 void FreeOSCPacket(OSC_Packet *inPacket)
 {
-    //post("->FreeOSCPacket %08X\n", inPacket);
+    //post("->FreeOSCPacket %p\n", inPacket);
     if (inPacket) {
             free(inPacket->mData);
             free(inPacket);

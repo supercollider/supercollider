@@ -155,7 +155,7 @@ inline Polar Complex::ToPolarApx()
 		} else {
 			return Polar(mag, (float)(pi + phase));
 		}
-	} else {
+	} else if (absimag > 0) {
 		slope = real/imag;
 		index = (int32)(kPolarLUTSize2 + kPolarLUTSize2 * slope);
 		mag = gMagLUT[index] * absimag;
@@ -165,7 +165,7 @@ inline Polar Complex::ToPolarApx()
 		} else {
 			return Polar(mag, (float)(pi32 - phase));
 		}
-	}
+	} else return Polar(0, 0);
 }
 
 inline void Complex::ToPolarInPlace()

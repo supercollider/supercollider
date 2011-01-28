@@ -143,7 +143,7 @@ void DiskIOMsg::Perform()
 			}
 		break;
 		case kDiskCmd_Write :
-			//printf("kDiskCmd_Write %d %08X\n", mBufNum, buf->sndfile);
+			//printf("kDiskCmd_Write %d %p\n", mBufNum, buf->sndfile);
 			if (!buf->sndfile) goto leave;
 			count = sf_writef_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames);
 		break;

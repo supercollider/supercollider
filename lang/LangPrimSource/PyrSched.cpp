@@ -37,8 +37,6 @@
 
 #include "SC_Win32Utils.h"
 
-#define SANITYCHECK 0
-
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
@@ -49,8 +47,8 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 	short mom;	/* parent and sibling in the heap, not in the task hierarchy */
 	PyrSlot *pme, *pmom;
 
-#if SANITYCHECK
-	gcSanity(g->gc);
+#ifdef GC_SANITYCHECK
+	g->gc->SanityCheck();
 #endif
 	if (heap->size >= ARRAYMAXINDEXSIZE(heap)) return false;
 	//dumpheap(heap);
@@ -71,8 +69,8 @@ bool addheap(VMGlobals *g, PyrObject *heap, double schedtime, PyrSlot *task)
 	g->gc->GCWrite(heap, task);
 	heap->size += 2;
 
-#if SANITYCHECK
-	gcSanity(g->gc);
+#ifdef GC_SANITYCHECK
+	g->gc->SanityCheck();
 #endif
 	//dumpheap(heap);
 	//post("<-addheap %g\n", schedtime);
@@ -160,7 +158,7 @@ void dumpheap(PyrObject *heap)
 	mintime = slotRawFloat(&heap->slots[0]);
 	post("SCHED QUEUE (%d)\n", heap->size);
 	for (i=0; i<heap->size; i+=2) {
-		post("%3d %9.2f %08X\n", i>>1, slotRawFloat(&heap->slots[i]), slotRawInt(&heap->slots[i+1]));
+		post("%3d %9.2f %p\n", i>>1, slotRawFloat(&heap->slots[i]), slotRawInt(&heap->slots[i+1]));
 		if (slotRawFloat(&heap->slots[i]) < mintime)
 			post("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	}
@@ -709,7 +707,7 @@ void* TempoClock_stop_func(void* p)
 
 void TempoClock_stopAll(void)
 {
-	//printf("->TempoClock_stopAll %08X\n", TempoClock::sAll);
+	//printf("->TempoClock_stopAll %p\n", TempoClock::sAll);
 	TempoClock *clock = TempoClock::sAll;
 	while (clock) {
 		TempoClock* next = clock->mNext;
@@ -718,7 +716,7 @@ void TempoClock_stopAll(void)
 		delete clock;
 		clock = next;
 	}
-	//printf("<-TempoClock_stopAll %08X\n", TempoClock::sAll);
+	//printf("<-TempoClock_stopAll %p\n", TempoClock::sAll);
 	TempoClock::sAll = 0;
 }
 

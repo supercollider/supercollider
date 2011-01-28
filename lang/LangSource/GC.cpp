@@ -26,7 +26,6 @@
 #include <string.h>
 #include <stdexcept>
 
-#define SANITYCHECK 0
 #define PAUSETIMES 0
 
 const int kScanThreshold =  256;
@@ -192,7 +191,7 @@ void GCSet::MajorFlip()
 {
 	// move all white items to beginning of free list
 	mFree = mWhite.next;
-	if (!IsMarker(mBlack.next)) {
+	if (!PyrGC::IsMarker(mBlack.next)) {
 		// move all black items to white list
 		mWhite.next = mBlack.next;
 		mFree->prev = mWhite.prev;
@@ -323,7 +322,7 @@ PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCol
 		return NewPermanent(inNumBytes, inFlags, inFormat);
 	}
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -374,7 +373,7 @@ PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCol
 	obj->classptr = class_object;
 	obj->gc_color = mWhiteColor;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 	return obj;
@@ -386,7 +385,7 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 {
 	PyrObject *obj = NULL;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -437,7 +436,7 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 	obj->classptr = class_frame;
 	obj->gc_color = mWhiteColor;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 	return obj;
@@ -447,7 +446,7 @@ PyrObject *PyrGC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, boo
 {
 	PyrObject *obj = NULL;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -497,7 +496,7 @@ PyrObject *PyrGC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, boo
 	SetPtr(obj->slots+0, (void*)finalizeFunc);
 	SetObject(obj->slots+1, inObject);
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 	return obj;
@@ -642,7 +641,7 @@ void PyrGC::ScanFrames()
 
 void PyrGC::Flip()
 {
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -679,7 +678,7 @@ void PyrGC::Flip()
 	mFlips++;
 	//post("flips %d  collects %d   nalloc %d   alloc %d   grey %d\n", mFlips, mCollects, mNumAllocs, mAllocTotal, mNumGrey);
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 }
@@ -703,7 +702,7 @@ void PyrGC::Collect()
 	bool stackScanned = false;
 	mCollects++;
 
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 
@@ -743,7 +742,7 @@ void PyrGC::Collect()
 		//TraceAnyPathToAllGrey();
 	}
 	//post("mNumToScan %d\n", mNumToScan);
-#if SANITYCHECK
+#ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
 	ENDPAUSE
@@ -801,11 +800,11 @@ bool PyrGC::SanityCheck()
 {
 	if (!mRunning) return true;
 
-
 	//postfl("PyrGC::SanityCheck\n");
 	bool res = LinkSanity() && ListSanity()
-	//&& SanityMarkObj((PyrObject*)mProcess,NULL,0) && SanityMarkObj(mStack,NULL,0)
-	//&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
+			&& SanityMarkObj((PyrObject*)mProcess,NULL,0) && SanityMarkObj(mStack,NULL,0)
+			&& SanityClearObj((PyrObject*)mProcess,0) && SanityClearObj(mStack,0)
+			&& SanityCheck2()
 	;
 	//if (!res) DumpInfo();
 	//if (!res) Debugger();
@@ -1037,7 +1036,7 @@ bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 			if (IsObj(slot) && slotRawObject(slot)) {
 				objB = slotRawObject(slot);
 			}
-			if (objB && (long)objB < 100) {
+			if (objB && (unsigned long)objB < 100) {
 				fprintf(stderr, "weird obj ptr\n");
 				return false;
 			}
