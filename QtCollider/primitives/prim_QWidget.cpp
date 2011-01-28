@@ -23,6 +23,8 @@
 #include "Slot.h"
 #include "../QWidgetProxy.h"
 
+#include <PyrKernel.h>
+
 #include <QWidget>
 
 using namespace QtCollider;
@@ -72,4 +74,17 @@ QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   slotCopy( r, a+1 );
 
   return errNone;
+}
+
+QC_LANG_PRIMITIVE( QWidget_SetLayout, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  if( !isKindOfSlot( a, getsym("QLayout")->u.classobj ) ) return errWrongType;
+
+  QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
+  QObjectProxy *lProxy = Slot::toObjectProxy( a );
+
+  SetLayoutRequest *req = new SetLayoutRequest();
+  req->layoutProxy = lProxy;
+
+  bool ok = req->send( wProxy, Synchronous );
+  return ( ok ? errNone : errFailed );
 }

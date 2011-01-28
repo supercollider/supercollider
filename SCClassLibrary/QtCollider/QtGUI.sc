@@ -23,8 +23,8 @@ QtGUI {
 
   *view { ^QView }
   *compositeView { ^QView }
-  *hLayoutView { ^QHLayout }
-  *vLayoutView { ^QVLayout }
+  *hLayoutView { ^QHLayoutView }
+  *vLayoutView { ^QVLayoutView }
   *window { ^QWindow }
   *scrollView { ^QScrollArea; }
 

@@ -22,6 +22,7 @@
 #include "QWidgetProxy.h"
 
 #include <QApplication>
+#include <QLayout>
 
 using namespace QtCollider;
 
@@ -60,6 +61,30 @@ bool QWidgetProxy::mapToGlobal( QtCollider::MapToGlobalRequest *r )
 {
   QWidget *w = widget();
   if( w ) r->point = w->mapToGlobal( r->point );
+
+  return true;
+}
+
+bool QWidgetProxy::setLayout ( SetLayoutRequest *r ) {
+
+  QWidget *w = widget();
+  QLayout *l = qobject_cast<QLayout*>( r->layoutProxy->object() );
+  if( !w || !l ) return true;
+
+  QLayout *exLayout = w->layout();
+  if( exLayout != l ) {
+    if( exLayout != 0 ) {
+      qcDebugMsg( 2, QString("Deleting old layout.") );
+      delete exLayout;
+    }
+    qcDebugMsg( 2, QString("Setting layout.") );
+    w->setLayout( l );
+    l->activate();
+  }
+  else {
+    qcDebugMsg( 2, QString("Layout same as existing. Will do nothing.") );
+  }
+
   return true;
 }
 

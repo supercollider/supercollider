@@ -7,7 +7,7 @@ QView : QObject {
   // general props
   var <font, <palette, <resize = 1, <alpha = 1.0;
   // container props
-  var <decorator;
+  var <decorator, <layout;
   // top window props
   var <>userCanClose=true, <name, <>deleteOnClose = true;
   // actions
@@ -173,6 +173,13 @@ QView : QObject {
   removeAll {
     var childWidgets = this.children( QView );
     childWidgets.do { |child| child.remove };
+  }
+
+  layout_ { arg newLayout;
+    if( newLayout.notNil && (newLayout != layout) ) {
+      this.prSetLayout( newLayout );
+      layout = newLayout;
+    };
   }
 
   addFlowLayout { arg margin, gap;
@@ -447,6 +454,11 @@ QView : QObject {
 
   prMapToGlobal { arg point, retPoint;
     _QWidget_MapToGlobal
+    ^this.primitiveFailed;
+  }
+
+  prSetLayout { arg layout;
+    _QWidget_SetLayout
     ^this.primitiveFailed;
   }
 
