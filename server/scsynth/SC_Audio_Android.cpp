@@ -48,7 +48,7 @@ bool SC_AndroidJNIAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double
 #endif
 
 	if(mWorld->mVerbosity >= 0){
-		scprintf("<-SC_AndroidJNIAudioDriver::Setup world %08X, mPreferredHardwareBufferFrameSize %i, mPreferredSampleRate %i, outNumSamplesPerCallback %i, outSampleRate %g\n", 
+		scprintf("<-SC_AndroidJNIAudioDriver::Setup world %p, mPreferredHardwareBufferFrameSize %i, mPreferredSampleRate %i, outNumSamplesPerCallback %i, outSampleRate %g\n", 
 				mWorld, mPreferredHardwareBufferFrameSize, mPreferredSampleRate, *outNumSamplesPerCallback, *outSampleRate);
 	}
 	return true;

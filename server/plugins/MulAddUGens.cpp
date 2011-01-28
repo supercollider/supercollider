@@ -219,7 +219,7 @@ void ampmix_ki(MulAdd *unit, int inNumSamples)
 	float nextAmp = MULIN[0];
 	float amp_slope = CALCSLOPE(nextAmp, amp_cur);
 	float mix_cur = unit->mPrevAdd;
-	//postbuf("ampmix_ki %08X %g %g\n", out, amp_cur, mix_cur);
+	//postbuf("ampmix_ki %p %g %g\n", out, amp_cur, mix_cur);
 
 	if (amp_slope == 0.f) {
 		if (amp_cur == 1.f) {
@@ -1006,7 +1006,7 @@ void MulAdd_Ctor(MulAdd *unit)
 	int addRate = INRATE(2);
 
 	//Print("muladd %d %d %g %g\n", mulRate, addRate, unit->mPrevMul, unit->mPrevAdd);
-	//Print("**** %08X %08X %08X    %08X\n", IN(0), IN(1), IN(2), OUT(0));
+	//Print("**** %p %p %p    %p\n", IN(0), IN(1), IN(2), OUT(0));
 
 #if __VEC__
 	if (!USEVEC) {

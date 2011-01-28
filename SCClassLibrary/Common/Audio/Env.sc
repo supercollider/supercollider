@@ -80,7 +80,7 @@ Env {
 	}
 
 	asPseg {
-		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves) };
+		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves, inf) };
 		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy
 	}
 

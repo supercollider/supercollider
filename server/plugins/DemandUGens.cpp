@@ -438,7 +438,7 @@ void Demand_Ctor(Demand *unit)
 	unit->m_prevout = (float*) RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float));
 	unit->m_out = (float**) RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float*));
 
-	//Print("Demand_Ctor calc %08X\n", unit->mCalcFunc);
+	//Print("Demand_Ctor calc %p\n", unit->mCalcFunc);
 	unit->m_prevtrig = 0.f;
 	unit->m_prevreset = 0.f;
 	for (int i=0; i<unit->mNumOutputs; ++i) {
