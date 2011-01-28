@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2011 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -21,42 +21,40 @@
 
 #include "primitives.h"
 #include "Slot.h"
+#include "../QWidgetProxy.h"
 
 #include <QWidget>
+
+using namespace QtCollider;
 
 // WARNING these primitives have to always execute asynchronously, or Cocoa language client will
 // hang.
 
 QC_LANG_PRIMITIVE( QWidget_SetFocus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  PyrObject *scObj = slotRawObject( r );
+  QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
 
-  QObject *proxy = static_cast<QObject*>( slotRawPtr( scObj->slots ) );
-  bool b = IsTrue( a );
+  SetFocusRequest *req = new SetFocusRequest();
+  req->focus = IsTrue( a );
 
-  int ok = QMetaObject::invokeMethod( proxy, "setFocus", Qt::QueuedConnection, Q_ARG( bool, b ) );
-
-  if( !ok ) return errFailed;
-  return errNone;
+  bool ok = req->send( proxy, Asynchronous );
+  return ( ok ? errNone : errFailed );
 }
 
 QC_LANG_PRIMITIVE( QWidget_BringFront, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
-  PyrObject *scObj = slotRawObject( r );
+  QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
 
-  QObject *proxy = static_cast<QObject*>( slotRawPtr( scObj->slots ) );
+  GenericWidgetRequest *req = new GenericWidgetRequest( &QWidgetProxy::bringFront );
 
-  int ok = QMetaObject::invokeMethod( proxy, "bringFront", Qt::QueuedConnection );
-
-  if( !ok ) return errFailed;
-  return errNone;
+  bool ok = req->send( proxy, Asynchronous );
+  return ( ok ? errNone : errFailed );
 }
 
 QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
-  PyrObject *scObj = slotRawObject( r );
+  QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
 
-  QObject *proxy = static_cast<QObject*>( slotRawPtr( scObj->slots ) );
+  GenericWidgetRequest *req = new GenericWidgetRequest( &QWidgetProxy::refresh );
 
-  QMetaObject::invokeMethod( proxy, "refresh", Qt::QueuedConnection );
-
-  return errNone;
+  bool ok = req->send( proxy, Asynchronous );
+  return ( ok ? errNone : errFailed );
 }

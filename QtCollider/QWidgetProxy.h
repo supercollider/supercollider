@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2011 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -24,69 +24,70 @@
 
 #include "QObjectProxy.h"
 
-#include <QApplication>
-
 #include <QWidget>
+
+namespace QtCollider {
+  struct SetFocusRequest;
+}
 
 class QWidgetProxy : public QObjectProxy
 {
   Q_OBJECT
 
-  public:
+public:
 
-    QWidgetProxy( QWidget *w, PyrObject *po ) : QObjectProxy( w, po )
-    { }
+  QWidgetProxy( QWidget *w, PyrObject *po );
 
-    Q_INVOKABLE void setFocus( bool b ) {
-      if( !widget() ) return;
-      if( b )
-        widget()->setFocus( Qt::OtherFocusReason );
-      else
-        widget()->clearFocus();
-    }
+  bool setFocus( QtCollider::SetFocusRequest *r );
 
-    Q_INVOKABLE void bringFront() {
-      QWidget *w = widget();
-      if( !w ) return;
-      w->setWindowState( w->windowState() & ~Qt::WindowMinimized
-                                          | Qt::WindowActive );
-      w->show();
-      w->raise();
-    }
+  bool bringFront();
 
-    Q_INVOKABLE void refresh() {
-      QWidget *w = widget();
-      if( w ) sendRefreshEventRecursive( w );
-    }
+  bool refresh();
 
-  protected:
+  virtual bool setParentEvent( QtCollider::SetParentEvent *e );
 
-    inline QWidget *widget() { return static_cast<QWidget*>( object() ); }
+protected:
 
-    virtual bool setParentEvent( QtCollider::SetParentEvent *e ) {
+  inline QWidget *widget() { return static_cast<QWidget*>( object() ); }
 
-      QObject *parent = e->parent->object();
-      if( !parent || !widget() ) return false;
+private:
 
-      if( parent->isWidgetType() ) {
-        QWidget *pw = qobject_cast<QWidget*>(parent);
-        bool ok = pw->metaObject()->invokeMethod( pw, "addChild", Q_ARG( QWidget*, widget() ) );
-        if( !ok ) widget()->setParent( pw );
-        return true;
-      }
-      return false;
-    }
-
-    private:
-      static void sendRefreshEventRecursive( QWidget *w ) {
-        QEvent event( static_cast<QEvent::Type>( QtCollider::Event_Refresh ) );
-        QApplication::sendEvent( w, &event );
-        const QObjectList &children = w->children();
-        Q_FOREACH( QObject *child, children ) {
-          if( child->isWidgetType() )
-              sendRefreshEventRecursive( static_cast<QWidget*>( child ) );
-        }
-      }
+  static void sendRefreshEventRecursive( QWidget *w );
 };
+
+namespace QtCollider {
+
+class GenericWidgetRequest : public RequestEvent
+{
+public:
+  GenericWidgetRequest( bool (QWidgetProxy::*h)() ) : handler(h) {}
+protected:
+  virtual bool execute( QObjectProxy *proxy ) {
+    QWidgetProxy *wproxy = qobject_cast<QWidgetProxy*>( proxy );
+    return (wproxy->*handler)();
+  }
+private:
+  bool (QWidgetProxy::*handler)();
+};
+
+template <class T, bool (QWidgetProxy::*handler)( T* )>
+class WidgetRequestTemplate : public RequestEvent
+{
+protected:
+  WidgetRequestTemplate(){}
+private:
+  bool execute( QObjectProxy *proxy ) {
+    QWidgetProxy *wproxy = qobject_cast<QWidgetProxy*>( proxy );
+    return (wproxy->*handler)( static_cast<T*>( this ) );
+  }
+};
+
+struct SetFocusRequest
+: public WidgetRequestTemplate<SetFocusRequest, &QWidgetProxy::setFocus>
+{
+  bool focus;
+};
+
+}
 
 #endif //QC_WIDGET_PROXY_H
