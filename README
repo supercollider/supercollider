@@ -43,10 +43,24 @@ hello
 
 soft::there::
 
+- tags after each other doesn't work, like returns::link::hello::
+
+- some classes uses *doesNotUnderstand trick for class methods! need a "force" flag for method:: ?
+
+- using \::. doesn't work, needs a space: \:: .
+also sometimes non-letters after :: doesn't work correctly, like "(link::hello::)"
+
+- we need to distinguish between class and instance method anchors since some classes have both named the same,
+something like #cmethod:name and #imethod:name perhaps? or #*classmethodname and #instancemethodname ?
+
 - instead of showing "(extension)" only for classes, do it for any document that was located in an extension directory.
 pass a flag to recurseHelpSource call in findExtHelp, and let updateFile return the doc map entry so we can set installed=\extension,
 or pass the flag to updateFile and then to addToDocMap?
 also add a check and warning for when a class file location and doc location is not the same in regards of extension or not.
+
+- currently all auto-generated docs are not included in the docMap, we could add these manually to HelpSystem,
+  or put them (and Help.html) in a tag named Help?
+  add them to docmap *before* we generate the overviews that are using categories.
 
 - make sure the new undocumented-method-generation works as it should for:
   only setter

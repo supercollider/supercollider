@@ -268,7 +268,7 @@ note:: text ::
 warning:: text ::
 ::
 
-These tags can be multi-line and must end with \::. They can contain other tags.
+These tags can be multi-line and must end with \:: . They can contain other tags.
 
 subsection:: Links
 
