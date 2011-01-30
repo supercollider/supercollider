@@ -83,7 +83,7 @@
 		7725B4BD1191E0510056CA2F /* SuperCollider_BrowserPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7725B4BC1191E0510056CA2F /* SuperCollider_BrowserPage.xib */; };
 		772C0EA012DA0D6F009C0126 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 772C0E9A12DA0CCA009C0126 /* SC_fftlib.cpp */; };
 		772C0F3312DA126F009C0126 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5239129C374C00CE89DD /* MediaPlayer.framework */; };
-		772C0F4812DA12DD009C0126 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
+		7752352312F59638005AE5FE /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
 		775574050FBE45A500192282 /* SuperCollider_FileTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */; };
 		776B2A97119075EF001F253D /* JITLib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 776B2A70119075EC001F253D /* JITLib */; };
 		778F12C10F50A92100CB6629 /* sounds in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129F0F50A92100CB6629 /* sounds */; };
@@ -451,7 +451,7 @@
 				77BA523C129C375700CE89DD /* UIKit.framework in Frameworks */,
 				77BA523E129C376000CE89DD /* Foundation.framework in Frameworks */,
 				772C0F3312DA126F009C0126 /* MediaPlayer.framework in Frameworks */,
-				772C0F4812DA12DD009C0126 /* scUBlibsndfile.a in Frameworks */,
+				7752352312F59638005AE5FE /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
