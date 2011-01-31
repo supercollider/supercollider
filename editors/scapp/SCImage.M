@@ -32,9 +32,6 @@
 #if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
 #define class_getSuperclass(a)	((a)->super_class)
 #define class_getName(a)		((a)->name)
-#endif
-
-#if ((MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5))
 typedef float ColorData;
 #else
 typedef CGFloat ColorData;

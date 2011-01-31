@@ -38,7 +38,7 @@
 
 #include <pthread.h>
 
-#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_5)
+#if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
 #define class_getName(a)	((a)->name)
 #endif
 
