@@ -50,6 +50,7 @@ class QcLayoutItem {
 
     QtCollider::VSizePolicy vSizePolicy();
     QtCollider::HSizePolicy hSizePolicy();
+    void setGeometry ( const QRect & r );
 
     QLayoutItem *qLayoutItem;
 };

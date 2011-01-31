@@ -43,6 +43,14 @@ HSizePolicy QcLayoutItem::hSizePolicy() {
   return (HSizePolicy) var.toInt();
 }
 
+void QcLayoutItem::setGeometry( const QRect &r ) {
+  QWidget *widget = qLayoutItem->widget();
+  if( widget )
+    widget->setGeometry( r );
+  else
+    qLayoutItem->setGeometry( r );
+}
+
 QcAbstractLayout::~QcAbstractLayout() {
   QLayoutItem *item;
   while((item = takeAt(0)))
@@ -56,9 +64,6 @@ int QcAbstractLayout::count() const {
 void QcAbstractLayout::addItem( QLayoutItem* item ) {
     qcDebugMsg(2,"QcAbstractLayout::addItem");
     QWidget *w = item->widget();
-    if( w ) {
-      w->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored );
-    }
     items.append( new QcLayoutItem( item ) );
 }
 
@@ -117,7 +122,8 @@ void QcDefaultLayout::setGeometry ( const QRect & r )
       if( item->vSizePolicy() == QtCollider::VStretch )
         h += dSize.height();
     }
-    item->qLayoutItem->setGeometry( QRect(x, y, w, h) );
+
+    item->setGeometry( QRect(x, y, w, h) );
   }
   geom = r;
 }
@@ -146,7 +152,8 @@ void QcHLayout::setGeometry ( const QRect & geom )
     if( item->hSizePolicy() == QtCollider::HStretch )
       r.setWidth( partWidth );
     x += r.width();
-    item->qLayoutItem->setGeometry( r );
+
+    item->setGeometry( r );
   }
 }
 
@@ -174,6 +181,7 @@ void QcVLayout::setGeometry ( const QRect & geom )
     if( item->vSizePolicy() == QtCollider::VStretch )
       r.setHeight( partHeight );
     y += r.height();
-    item->qLayoutItem->setGeometry( r );
+
+    item->setGeometry( r );
   }
 }
