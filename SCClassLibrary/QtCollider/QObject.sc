@@ -79,7 +79,7 @@ QObject {
 
   connectFunction { arg signal, function, synchronous = false;
     virtualSlots = virtualSlots.add( function );
-    this.prConnectToFunction( signal, function, synchronous );
+    this.prConnectFunction( signal, function, synchronous );
   }
 
   disconnectFunction { arg signal, function;
@@ -104,7 +104,7 @@ QObject {
     ^this.primitiveFailed;
   }
 
-  prConnectToFunction { arg signal, function, synchronous = false;
+  prConnectFunction { arg signal, function, synchronous = false;
     _QObject_ConnectFunction;
     ^this.primitiveFailed
   }
