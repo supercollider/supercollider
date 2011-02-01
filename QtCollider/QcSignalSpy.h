@@ -193,7 +193,7 @@ protected:
       ++g->sp;  SetObject(g->sp, _handler);
       Q_FOREACH( QVariant var, args ) {
         ++g->sp;
-        if( Slot::setVariant( g->sp, var ) )
+        if( QtCollider::Slot::setVariant( g->sp, var ) )
           SetNil( g->sp );
       }
       runInterpreter(g, getsym("doFunction"), args.size() + 2);

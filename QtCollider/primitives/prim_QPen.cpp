@@ -52,6 +52,8 @@ void QtCollider::endPen()
   currentPen = 0;
 }
 
+using namespace QtCollider;
+
 int QPen_Save (struct VMGlobals *, int)
 {
   QtCollider::currentPen->save();

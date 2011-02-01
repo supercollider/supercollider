@@ -35,6 +35,8 @@
 
 class QObjectProxy;
 
+namespace QtCollider {
+
 namespace Slot
 {
   bool toBool( PyrSlot * );
@@ -56,8 +58,6 @@ namespace Slot
   void setVariantList( PyrSlot *, const VariantList& );
   int setVariant( PyrSlot *, const QVariant & );
 };
-
-namespace QtCollider {
 
 class Variant
 {

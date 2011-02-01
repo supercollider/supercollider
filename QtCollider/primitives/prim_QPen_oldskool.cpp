@@ -131,6 +131,8 @@ inline static qreal radToDeg( qreal rad )
   return rad * 180.0 / PI;
 }
 
+using namespace QtCollider;
+
 QC_QPEN_PRIMITIVE( QPen_Save, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   painter->save();
