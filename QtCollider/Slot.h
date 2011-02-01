@@ -35,58 +35,65 @@
 
 class QObjectProxy;
 
-struct Slot
+namespace Slot
 {
-  public:
+  bool toBool( PyrSlot * );
+  int toInt( PyrSlot * );
+  float toFloat( PyrSlot * );
+  QString toString( PyrSlot * );
+  QPointF toPoint( PyrSlot * );
+  QRectF toRect( PyrSlot * );
+  QColor toColor( PyrSlot * );
+  QFont toFont( PyrSlot * );
+  QPalette toPalette( PyrSlot * );
+  VariantList toVariantList( PyrSlot * );
+  QObjectProxy * toObjectProxy( PyrSlot * );
+  QVariant toVariant( PyrSlot * );
 
-    Slot() :
-      _type( QMetaType::Void ),
-      _ptr(0)
-      {}
-
-    Slot( PyrSlot *slot )
-      { setData( slot ); }
-
-    ~Slot() {
-      if( _ptr ) {
-        QMetaType::destroy( _type, _ptr );
-      }
-    }
-
-    void setData( PyrSlot * );
-
-    QGenericArgument asGenericArgument() {
-      if( _type != QMetaType::Void )
-        return QGenericArgument( QMetaType::typeName(_type), _ptr );
-      else
-        return QGenericArgument();
-    }
-
-    int type() { return _type; }
-
-  private:
-    int _type;
-    void *_ptr;
-
-  public:
-    static bool toBool( PyrSlot * );
-    static int toInt( PyrSlot * );
-    static float toFloat( PyrSlot * );
-    static QString toString( PyrSlot * );
-    static QPointF toPoint( PyrSlot * );
-    static QRectF toRect( PyrSlot * );
-    static QColor toColor( PyrSlot * );
-    static QFont toFont( PyrSlot * );
-    static QPalette toPalette( PyrSlot * );
-    static VariantList toVariantList( PyrSlot * );
-    static QObjectProxy * toObjectProxy( PyrSlot * );
-    static QVariant toVariant( PyrSlot * );
-
-    static int setRect( PyrSlot *, const QRectF & );
-    static int setPoint( PyrSlot *, const QPointF & );
-    static void setString( PyrSlot *, const QString& arg );
-    static void setVariantList( PyrSlot *, const VariantList& );
-    static int setVariant( PyrSlot *, const QVariant & );
+  int setRect( PyrSlot *, const QRectF & );
+  int setPoint( PyrSlot *, const QPointF & );
+  void setString( PyrSlot *, const QString& arg );
+  void setVariantList( PyrSlot *, const VariantList& );
+  int setVariant( PyrSlot *, const QVariant & );
 };
+
+namespace QtCollider {
+
+class Variant
+{
+public:
+
+  Variant() :
+    _type( QMetaType::Void ),
+    _ptr(0)
+    {}
+
+  Variant( PyrSlot *slot )
+    { setData( slot ); }
+
+  ~Variant() {
+    if( _ptr ) {
+      QMetaType::destroy( _type, _ptr );
+    }
+  }
+
+  void setData( PyrSlot * );
+
+  QGenericArgument asGenericArgument() {
+    if( _type != QMetaType::Void )
+      return QGenericArgument( QMetaType::typeName(_type), _ptr );
+    else
+      return QGenericArgument();
+  }
+
+  int type() { return _type; }
+
+private:
+
+  int _type;
+  void *_ptr;
+};
+
+} // namespace QtCollider
 
 #endif

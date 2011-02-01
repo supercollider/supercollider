@@ -343,7 +343,9 @@ QVariant Slot::toVariant( PyrSlot *slot )
   }
 }
 
-void Slot::setData( PyrSlot *slot )
+using namespace Slot;
+
+void QtCollider::Variant::setData( PyrSlot *slot )
 {
   QObjectProxy *proxy;
   switch (GetTag(slot)) {
