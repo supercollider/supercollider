@@ -60,6 +60,10 @@ namespace QtCollider {
 
 extern pthread_mutex_t gLangMutex;
 
+namespace QtCollider {
+  extern PyrSymbol *symSize;
+}
+
 struct VariantList {
   QList<QVariant> data;
 };

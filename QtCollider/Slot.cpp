@@ -200,6 +200,20 @@ QRectF Slot::toRect( PyrSlot *slot )
   return QRectF( bounds[0], bounds[1], bounds[2], bounds[3] );
 }
 
+QSizeF Slot::toSize( PyrSlot *slot )
+{
+  if( !isKindOfSlot( slot, symSize->u.classobj ) ) {
+    return QSizeF();
+  }
+
+  PyrSlot *slots = slotRawObject( slot )->slots;
+  float w = 0.f, h = 0.f;
+  slotFloatVal( slots+0, &w );
+  slotFloatVal( slots+1, &h );
+
+  return QSizeF( w, h );
+}
+
 QColor Slot::toColor( PyrSlot *slot )
 {
   if( !isKindOfSlot( slot, s_color->u.classobj ) )
@@ -319,6 +333,9 @@ QVariant Slot::toVariant( PyrSlot *slot )
       else if( isKindOfSlot( slot, s_rect->u.classobj ) ) {
         return QVariant( toRect(slot) );
       }
+      else if( isKindOfSlot( slot, symSize->u.classobj ) ) {
+        return QVariant( toSize(slot) );
+      }
       else if( isKindOfSlot( slot, s_color->u.classobj ) ) {
         return QVariant::fromValue<QColor>( toColor(slot) );
       }
@@ -385,6 +402,10 @@ void QtCollider::Variant::setData( PyrSlot *slot )
       else if( isKindOfSlot( slot, s_rect->u.classobj ) ) {
         _type = QMetaType::QRectF;
         _ptr = new QRectF( toRect(slot) );
+      }
+      else if( isKindOfSlot( slot, symSize->u.classobj ) ) {
+        _type = QMetaType::QSizeF;
+        _ptr = new QSizeF( toSize(slot) );
       }
       else if( isKindOfSlot( slot, s_color->u.classobj ) ) {
         _type = QMetaType::QColor;
