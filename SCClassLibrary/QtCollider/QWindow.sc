@@ -1,7 +1,7 @@
 QWindow : QAbstractScroll {
   classvar <allWindows, <>initAction;
 
-  var scroll, <drawHook, <background;
+  var scroll, resizable, <drawHook, <background;
 
   //dummy for compatibility
   var <currentSheet;
@@ -31,12 +31,13 @@ QWindow : QAbstractScroll {
 
     //NOTE we omit server, which is only for compatibility with SwingOSC
     ^super.newCustom( [name, b, resizable, border, scroll] )
-          .initQWindow(name, scroll);
+          .initQWindow(name, scroll, resizable);
   }
 
-  initQWindow { arg argName, argScroll;
+  initQWindow { arg argName, argScroll, argResizeable;
     name = argName;
     scroll = argScroll;
+    resizable = argResizeable == true;
     QWindow.addWindow( this );
     this.connectFunction( 'destroyed()', { |me| QWindow.removeWindow(me); }, false );
     QWindow.initAction.value( this );
@@ -58,7 +59,12 @@ QWindow : QAbstractScroll {
   }
 
   bounds_ { arg aRect;
-    super.bounds_( QWindow.flipY( aRect.asRect ) );
+    var r = QWindow.flipY( aRect.asRect );
+    super.bounds_(r);
+    if( resizable.not ) {
+      this.setProperty( \minimumSize, r.asSize );
+      this.setProperty( \maximumSize, r.asSize );
+    }
   }
 
   bounds {
