@@ -22,6 +22,10 @@
 #include "primitives/primitives.h"
 #include "Common.h"
 
+namespace QtCollider {
+  PyrSymbol *symSize;
+}
+
 using namespace QtCollider;
 
 LangPrimitiveList& QtCollider::langPrimitives() {
@@ -40,4 +44,6 @@ void initQtGUIPrimitives () {
     qcDebugMsg(1, QString("defining primitive '%1'").arg(p.name) );
     definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
   }
+
+  symSize = getsym("Size");
 }

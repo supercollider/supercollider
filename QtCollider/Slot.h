@@ -45,6 +45,7 @@ namespace Slot
   QString toString( PyrSlot * );
   QPointF toPoint( PyrSlot * );
   QRectF toRect( PyrSlot * );
+  QSizeF toSize( PyrSlot * );
   QColor toColor( PyrSlot * );
   QFont toFont( PyrSlot * );
   QPalette toPalette( PyrSlot * );
