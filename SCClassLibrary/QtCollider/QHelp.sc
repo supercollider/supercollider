@@ -1,73 +1,14 @@
 + Help {
 
   gui { |sysext=true, userext=true, allowCached=true|
-    var browser, listViews;
-    var nodes;
-    var fAddNode;
-    var searchResults;
-    var bounds;
-
-    // Call to ensure the tree has been built
-    this.tree( sysext, userext, allowCached );
+    var browser, bounds;
 
     bounds = Rect(0,0,800,600);
     bounds = bounds.moveToPoint( bounds.centerIn( QWindow.screenBounds ) );
+
     browser = QHelpBrowser.new( nil, bounds );
-
-    browser.bounds = bounds;
-
-    listViews = Array.new;
-    nodes = Array.new;
-
-    fAddNode = { arg node;
-      var newListView, newItems;
-      var index;
-
-      index = listViews.size;
-
-      newListView = QListView.new;
-
-      listViews = listViews.add( newListView );
-      nodes = nodes.add( node );
-
-      newItems =  node.keys(Array).collect(_.asString).sort({|a,b|
-          // the outcomes:
-          // a and b both start with open-bracket:
-          //  test result should be a < b
-          // or one starts with open-bracket and the other doesn't (xor)
-          //  test result should be whether it's a that has the bracket
-        if(a[0] == $[ /*]*/ xor: (b[0] == $[ /*]*/)) {
-          a[0] == $[ /*]*/
-        } {
-          a < b
-        }
-      });
-      newListView.items = newItems;
-
-      newListView.action = { arg list;
-        var activatedNode, activatedItem;
-
-        listViews[(index+1)..].do {|x| x.remove;};
-        listViews.removeAll( listViews[(index+1)..] );
-        nodes.removeAll( nodes[index+1..] );
-
-        activatedItem = list.item;
-        activatedNode = try { node[activatedItem] };
-        if( activatedNode.notNil ) {
-          fAddNode.value( activatedNode );
-          browser.setCurrentIndex( index+1 );
-        } {
-          browser.load( fileslist.at( activatedItem.asSymbol ) ? fileslist.at( \Help ) );
-        }
-      };
-
-      newListView.setParent( browser );
-    };
-
-    fAddNode.value( tree );
-
-    browser.front;
     browser.load( fileslist.at( \Help ) );
+    browser.front;
 
     ^browser;
   }
