@@ -158,7 +158,7 @@ QEnvelopeView : QView
   setThumbSize { this.nonimpl("setThumbSize"); }
 
   metaAction_ { arg function;
-    if( metaAction.isNil ) { this.setSignalHandler( "metaAction()", \doMetaAction ) };
+    if( metaAction.isNil ) { this.connectMethod( "metaAction()", \doMetaAction ) };
     metaAction = function;
   }
 

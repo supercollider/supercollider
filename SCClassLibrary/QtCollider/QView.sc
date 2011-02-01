@@ -211,7 +211,7 @@ QView : QObject {
   // ----------------- actions .....................................
 
   action_ { arg func;
-    if( action.isNil ) { this.setSignalHandler( "action()", \doAction ) };
+    if( action.isNil ) { this.connectMethod( "action()", \doAction ) };
     action = func;
   }
 
@@ -276,7 +276,7 @@ QView : QObject {
     if( onClose != func && onClose.notNil ) {
       this.disconnectFunction( 'destroyed()', onClose );
     };
-    this.connectToFunction( 'destroyed()', func, false );
+    this.connectFunction( 'destroyed()', func, false );
     onClose = func;
   }
 
