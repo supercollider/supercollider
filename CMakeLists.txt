@@ -40,7 +40,7 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	if(APPLE)
 		add_definitions("-D_REENTRANT")
-	else()
+	elseif(WIN32 and not CYGWIN)
 		add_definitions("-pthread")
 	endif()
 endif ()
@@ -62,11 +62,14 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 endif()
 
 if(WIN32)
-        set_property(DIRECTORY
-            	     APPEND
-		     PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WINSOCKAPI_)
+    set_property(DIRECTORY
+                 APPEND
+                 PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WINSOCKAPI_)
+
+    if(MSVC)
         SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE} /MTd")
         SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} /MT")
+    endif()
 endif()
 
 
@@ -80,7 +83,9 @@ if (NOT PTHREADS_FOUND)
 endif()
 include_directories(${PTHREADS_INCLUDE_DIR})
 
-find_library(MATH_LIBRARY m)
+if (CMAKE_COMPILER_IS_GNUCXX)
+    find_library(MATH_LIBRARY m)
+endif()
 
 if(CURL)
 	find_package(CURL)
