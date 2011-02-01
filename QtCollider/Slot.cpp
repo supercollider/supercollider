@@ -31,6 +31,8 @@
 #include <QPalette>
 #include <QWidget>
 
+using namespace QtCollider;
+
 static QPalette::ColorRole paletteColorRoles[] = {
   QPalette::Window,
   QPalette::WindowText,

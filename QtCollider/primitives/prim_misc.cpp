@@ -31,6 +31,8 @@
 #include <QDesktopWidget>
 #include <QFontDatabase>
 
+using namespace QtCollider;
+
 QC_LANG_PRIMITIVE( QtGUI_Start, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   // FIXME is QApplication::instance() thread-safe??
