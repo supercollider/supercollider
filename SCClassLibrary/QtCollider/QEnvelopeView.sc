@@ -119,6 +119,10 @@ QEnvelopeView : QView
     this.setProperty( \fillColor, aColor );
   }
 
+  setFillColor { arg index, color;
+    this.invokeMethod( \setFillColorAt, [index, color] );
+  }
+
   colors_ { arg strokeColor, fillColor;
     this.strokeColor_( strokeColor );
     this.fillColor_( fillColor );

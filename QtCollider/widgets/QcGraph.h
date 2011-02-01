@@ -36,7 +36,7 @@ struct QcGraphElement {
     Welch,
     Curvature
   };
-  QcGraphElement() : curvature( 0.f ), editable( true ) {};
+  QcGraphElement() : fillColor( QColor(0,0,0) ), curvature( 0.f ), editable( true ) {};
   void setCurveType( QVariant data ) {
     if( data.type() == QVariant::String ) {
       QString curveName = data.toString();
@@ -55,6 +55,7 @@ struct QcGraphElement {
   }
   QPointF value;
   QString text;
+  QColor fillColor;
   CurveType curveType;
   float curvature;
   bool editable;
@@ -155,7 +156,8 @@ class QcGraph : public QWidget, QcHelper
     void setThumbWidth( float f ) { _thumbSize.setWidth(f); update(); }
     void setThumbHeight( float f ) { _thumbSize.setHeight(f); update(); }
     void setStrokeColor( const QColor & c ) { _strokeColor = c; update(); }
-    void setFillColor( const QColor & c ) { _fillColor = c; update(); }
+    void setFillColor( const QColor & c );
+    Q_INVOKABLE void setFillColorAt( int, const QColor & );
     void setSelectionColor( const QColor & c ) { _selColor = c; update(); }
     void setGridColor( const QColor & c ) { _gridColor = c; update(); }
     void setDrawLines( bool b ) { _drawLines = b; update(); }
@@ -185,7 +187,6 @@ class QcGraph : public QWidget, QcHelper
 
     QSize _thumbSize;
     QColor _strokeColor;
-    QColor _fillColor;
     QColor _selColor;
     QColor _gridColor;
     QPointF _gridMetrics;

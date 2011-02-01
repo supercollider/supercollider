@@ -32,7 +32,6 @@ static QcWidgetFactory<QcGraph> factory;
 
 QcGraph::QcGraph() :
   _thumbSize( QSize( 8, 8 ) ),
-  _fillColor( QColor(0,0,0) ),
   _strokeColor( QColor(0,0,0) ),
   _selColor( QColor(255,0,0) ),
   _gridColor( QColor(225,225,225) ),
@@ -185,6 +184,26 @@ void QcGraph::setCurrentY( float f )
   val.setY( f );
   setValue( e, val );
   update();
+}
+
+void QcGraph::setFillColor( const QColor & color )
+{
+  int c = _model.elementCount();
+  for( int i=0; i<c; ++i ) {
+    QcGraphElement *e = _model.elementAt(i);
+    e->fillColor = color;
+  }
+  update();
+}
+
+void QcGraph::setFillColorAt( int i, const QColor & color )
+{
+  int c = _model.elementCount();
+  if( i > 0 && i < c ) {
+    QcGraphElement *e = _model.elementAt(i);
+    e->fillColor = color;
+    update();
+  }
 }
 
 void QcGraph::setEditableAt( int i, bool b )
@@ -359,7 +378,7 @@ void QcGraph::paintEvent( QPaintEvent * )
       if( i == selIndex )
         p.setBrush( _selColor );
       else
-        p.setBrush( _fillColor );
+        p.setBrush( e->fillColor );
 
       pt = pos( e->value );
 
