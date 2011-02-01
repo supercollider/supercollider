@@ -7,8 +7,8 @@ QHelpBrowser : QView {
   }
 
   initQHelpBrowser {
-    this.setSignalHandler( "searchRequest(const QString &, int)", \search );
-    this.setSignalHandler( "classReferenceRequest(const QString &)", \showReference );
+    this.connectMethod( "searchRequest(const QString &, int)", \search );
+    this.connectMethod( "classReferenceRequest(const QString &)", \showReference );
   }
 
   setCurrentIndex { arg index;

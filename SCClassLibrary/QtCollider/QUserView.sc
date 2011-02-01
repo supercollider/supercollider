@@ -15,7 +15,7 @@ QUserView : QView {
 
   drawFunc_ { arg aFunction;
     if( drawFunc.notNil ) { this.disconnectFunction( 'painting()', drawFunc ) };
-    this.connectToFunction( 'painting()', aFunction, true );
+    this.connectFunction( 'painting()', aFunction, true );
     if( drawFunc.isNil ) { this.setProperty( \paint, true ) };
     drawFunc = aFunction;
   }

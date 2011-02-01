@@ -38,7 +38,7 @@ QWindow : QAbstractScroll {
     name = argName;
     scroll = argScroll;
     QWindow.addWindow( this );
-    this.connectToFunction( 'destroyed()', { |me| QWindow.removeWindow(me); }, false );
+    this.connectFunction( 'destroyed()', { |me| QWindow.removeWindow(me); }, false );
     QWindow.initAction.value( this );
   }
 
@@ -88,7 +88,7 @@ QWindow : QAbstractScroll {
 
   drawHook_ { arg aFunction;
     if( drawHook.notNil ) { this.disconnectFunction( 'painting()', drawHook ) };
-    this.connectToFunction( 'painting()', aFunction, true );
+    this.connectFunction( 'painting()', aFunction, true );
     if( drawHook.isNil ) { this.setProperty( \paint, true ) };
     drawHook = aFunction;
   }

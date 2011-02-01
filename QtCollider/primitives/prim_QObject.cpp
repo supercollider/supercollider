@@ -209,7 +209,7 @@ QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QObject_Connect, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QObject_ConnectMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString signal = Slot::toString( a+0 );
   if( signal.isEmpty() || NotSym( a+1 ) ) return errWrongType;
@@ -252,7 +252,7 @@ QC_LANG_PRIMITIVE( QObject_DisconnectMethod, 2, PyrSlot *r, PyrSlot *a, VMGlobal
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QObject_ConnectToFunction, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QObject_ConnectFunction, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString signal = Slot::toString( a+0 );
   if( signal.isEmpty() || NotObj( a+1 ) ) return errWrongType;
@@ -297,7 +297,7 @@ QC_LANG_PRIMITIVE( QObject_DisconnectFunction, 2, PyrSlot *r, PyrSlot *a, VMGlob
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QObject_ConnectToSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QObject_ConnectSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   // Args: signal, receiver, slot
   if( !isKindOfSlot( a+1, getsym("QObject")->u.classobj )

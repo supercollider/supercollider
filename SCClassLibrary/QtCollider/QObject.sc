@@ -25,7 +25,7 @@ QObject {
   initQObject{ arg className, argumentArray;
     this.prConstruct( className, argumentArray );
     heap = heap.add( this );
-    this.connectToFunction( 'destroyed()', { heap.remove(this) }, false );
+    this.connectFunction( 'destroyed()', { heap.remove(this) }, false );
   }
 
   destroy {
@@ -67,8 +67,8 @@ QObject {
     ^this.primitiveFailed
   }
 
-  setSignalHandler { arg signal, handler, direct=false;
-    _QObject_Connect
+  connectMethod { arg signal, handler, direct=false;
+    _QObject_ConnectMethod
     ^this.primitiveFailed
   }
 
@@ -77,12 +77,7 @@ QObject {
     ^this.primitiveFailed
   }
 
-  connectToSlot { arg signal, receiver, slot;
-    _QObject_ConnectToSlot;
-    ^this.primitiveFailed
-  }
-
-  connectToFunction { arg signal, function, synchronous = false;
+  connectFunction { arg signal, function, synchronous = false;
     virtualSlots = virtualSlots.add( function );
     this.prConnectToFunction( signal, function, synchronous );
   }
@@ -90,6 +85,11 @@ QObject {
   disconnectFunction { arg signal, function;
     virtualSlots.remove( function );
     this.prDisconnectFunction( signal, function );
+  }
+
+  connectSlot { arg signal, receiver, slot;
+    _QObject_ConnectSlot;
+    ^this.primitiveFailed
   }
 
   invokeMethod { arg method, arguments, synchronous = false;
@@ -105,7 +105,7 @@ QObject {
   }
 
   prConnectToFunction { arg signal, function, synchronous = false;
-    _QObject_ConnectToFunction;
+    _QObject_ConnectFunction;
     ^this.primitiveFailed
   }
 
