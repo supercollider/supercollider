@@ -144,6 +144,20 @@ QView : QObject {
     ^super.children( class );
   }
 
+  parents {
+    var allParents;
+    var p = this.parent;
+    while { p.notNil } {
+      allParents = allParents.add( p );
+      p = p.parent;
+    };
+    ^allParents;
+  }
+
+  getParents {
+    ^this.parents;
+  }
+
   removeAll {
     var childWidgets = this.children( QView );
     childWidgets.do { |child| child.remove };
