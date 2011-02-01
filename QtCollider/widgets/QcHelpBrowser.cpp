@@ -48,6 +48,8 @@ QcHelpBrowser::QcHelpBrowser()
 
   // top controls
   QToolBar *toolbar = new QToolBar;
+  QAction *actHome = toolbar->addAction( style()->standardIcon( QStyle::SP_DirHomeIcon ),
+                                         "Go To Start Page" );
   toolbar->addAction( helpFileView->pageAction( QWebPage::Back ) );
   toolbar->addAction( helpFileView->pageAction( QWebPage::Forward ) );
 
@@ -82,10 +84,16 @@ QcHelpBrowser::QcHelpBrowser()
            helpFileView->pageAction( QWebPage::Copy ), SLOT(trigger()) );
   connect( findTool, SIGNAL(activated(const QString&,bool)),
            helpFileView, SLOT(findText(const QString&,bool)) );
+  connect( actHome, SIGNAL(activated()), this, SLOT(goHome()) );
 }
 
 void QcHelpBrowser::load( const QString &urlString ) {
   helpFileView->load( QUrl( urlString ) );
+}
+
+void QcHelpBrowser::goHome()
+{
+  load( _home );
 }
 
 void QcHelpBrowser::onLoadFinished( bool ok )

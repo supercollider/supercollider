@@ -51,9 +51,15 @@ public:
   Q_INVOKABLE
   void load( const QString &urlString );
 
+  Q_INVOKABLE
+  void setHome( const QString &homeUrl ) { _home = homeUrl; goHome(); }
+
   QSize sizeHint() const {
     return QWidget::sizeHint() - QSize(200, 0 );
   }
+
+public Q_SLOTS:
+   void goHome();
 
 private Q_SLOTS:
   void onLoadFinished( bool ok );
@@ -64,6 +70,8 @@ private:
 
   // content display
   HelpFileView *helpFileView;
+
+  QString _home;
 };
 
 class SimpleFindTool : public QLineEdit
