@@ -43,6 +43,14 @@ HSizePolicy QcLayoutItem::hSizePolicy() {
   return (HSizePolicy) var.toInt();
 }
 
+QRect QcLayoutItem::geometry () {
+  QWidget *widget = qLayoutItem->widget();
+  if( widget )
+    return widget->geometry();
+  else
+    return qLayoutItem->geometry();
+}
+
 void QcLayoutItem::setGeometry( const QRect &r ) {
   QWidget *widget = qLayoutItem->widget();
   if( widget )
@@ -100,7 +108,7 @@ void QcDefaultLayout::setGeometry ( const QRect & r )
   QSize dSize = r.size() - geom.size();//_geometry.size();
   //qcDebugMsg(2,"dSize: %i,%i", dSize.width(), dSize.height() );
   Q_FOREACH( QcLayoutItem* item, items ) {
-    QRect g = item->qLayoutItem->geometry();
+    QRect g = item->geometry();
     int x = g.x();
     int y = g.y();
     int w = g.width();
@@ -133,7 +141,7 @@ void QcHLayout::setGeometry ( const QRect & geom )
   int varWidth = geom.width();
   int i = items.size();
   Q_FOREACH( QcLayoutItem *item, items ) {
-    QRect r = item->qLayoutItem->geometry();
+    QRect r = item->geometry();
     if( item->hSizePolicy() != QtCollider::HStretch ) {
       varWidth -= r.width();
       i--;
@@ -146,7 +154,7 @@ void QcHLayout::setGeometry ( const QRect & geom )
   int partWidth = i > 0 && varWidth > 0 ? varWidth / i : 0;
   int x = 0;
   Q_FOREACH( QcLayoutItem *item, items ) {
-    QRect r = item->qLayoutItem->geometry();
+    QRect r = item->geometry();
     r.setHeight( geom.height() );
     r.moveTo( x, geom.top() );
     if( item->hSizePolicy() == QtCollider::HStretch )
@@ -162,7 +170,7 @@ void QcVLayout::setGeometry ( const QRect & geom )
   int varHeight = geom.height();
   int i = items.size();
   Q_FOREACH( QcLayoutItem *item, items ) {
-    QRect r = item->qLayoutItem->geometry();
+    QRect r = item->geometry();
     if( item->vSizePolicy() != QtCollider::VStretch ) {
       varHeight -= r.height();
       i--;
@@ -175,7 +183,7 @@ void QcVLayout::setGeometry ( const QRect & geom )
   int partHeight = i > 0 && varHeight > 0 ? varHeight / i : 0;
   int y = 0;
   Q_FOREACH( QcLayoutItem *item, items ) {
-    QRect r = item->qLayoutItem->geometry();
+    QRect r = item->geometry();
     r.setWidth( geom.width() );
     r.moveTo( geom.left(), y );
     if( item->vSizePolicy() == QtCollider::VStretch )
