@@ -56,6 +56,13 @@ bool QWidgetProxy::refresh() {
   return true;
 }
 
+bool QWidgetProxy::mapToGlobal( QtCollider::MapToGlobalRequest *r )
+{
+  QWidget *w = widget();
+  if( w ) r->point = w->mapToGlobal( r->point );
+  return true;
+}
+
 bool QWidgetProxy::setParentEvent( QtCollider::SetParentEvent *e ) {
 
   QObject *parent = e->parent->object();

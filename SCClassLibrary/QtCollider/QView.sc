@@ -59,6 +59,10 @@ QView : QObject {
     this.destroy;
   }
 
+  mapToGlobal { arg point;
+    ^this.prMapToGlobal( point, Point.new );
+  }
+
   // ----------------- properties --------------------------
   font_ { arg f;
     font = f;
@@ -75,9 +79,14 @@ QView : QObject {
     this.setProperty( \autoFillBackground, true );
   }
 
+  absoluteBounds {
+    ^this.bounds.moveToPoint( this.mapToGlobal( 0@0 ) );
+  }
+
   bounds {
     ^this.getProperty(\geometry, Rect.new)
   }
+
   bounds_ { arg rect;
     this.setProperty(\geometry, rect.asRect )
   }
@@ -429,6 +438,11 @@ QView : QObject {
 
   mouseOverEvent { arg x, y;
     ^this.mouseOver( x, y );
+  }
+
+  prMapToGlobal { arg point, retPoint;
+    _QWidget_MapToGlobal
+    ^this.primitiveFailed;
   }
 
   overrides { arg symMethod;
