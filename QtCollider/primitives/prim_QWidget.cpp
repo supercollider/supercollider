@@ -58,3 +58,18 @@ QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   bool ok = req->send( proxy, Asynchronous );
   return ( ok ? errNone : errFailed );
 }
+
+QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
+
+  QPoint pt( Slot::toPoint( a ).toPoint() );
+
+  MapToGlobalRequest *req = new MapToGlobalRequest( pt );
+  req->send( proxy, Synchronous );
+
+  int err = Slot::setPoint( a+1, pt );
+  if( err ) return err;
+  slotCopy( r, a+1 );
+
+  return errNone;
+}

@@ -28,6 +28,7 @@
 
 namespace QtCollider {
   struct SetFocusRequest;
+  struct MapToGlobalRequest;
 }
 
 class QWidgetProxy : public QObjectProxy
@@ -43,6 +44,8 @@ public:
   bool bringFront();
 
   bool refresh();
+
+  bool mapToGlobal( QtCollider::MapToGlobalRequest * );
 
   virtual bool setParentEvent( QtCollider::SetParentEvent *e );
 
@@ -86,6 +89,13 @@ struct SetFocusRequest
 : public WidgetRequestTemplate<SetFocusRequest, &QWidgetProxy::setFocus>
 {
   bool focus;
+};
+
+struct MapToGlobalRequest
+: public WidgetRequestTemplate<MapToGlobalRequest, &QWidgetProxy::mapToGlobal>
+{
+  MapToGlobalRequest( QPoint &pt ) : point(pt) {}
+  QPoint &point;
 };
 
 }
