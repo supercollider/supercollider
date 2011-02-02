@@ -79,7 +79,9 @@ set(uiugens MouseUGens KeyboardUGens)
 
 if (WIN32)
     set(scplugin_common_sources ../../platform/windows/PlugIns/ExportHelper.cpp)
-    include_directories (../../platform/windows/compat_stuff)
+    if(MSVC)
+        include_directories (../../platform/windows/compat_stuff) # for stdbool.h
+    endif()
 endif()
 
 add_library(FFT_UGens MODULE
