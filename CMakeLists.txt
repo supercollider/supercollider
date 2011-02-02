@@ -40,7 +40,7 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	if(APPLE)
 		add_definitions("-D_REENTRANT")
-	elseif(WIN32 and not CYGWIN)
+	elseif(NOT (WIN32 AND NOT CYGWIN))
 		add_definitions("-pthread")
 	endif()
 endif ()
