@@ -264,7 +264,7 @@ inline void sc_msg_iter::getb(char* outArray, size_t size)
 	size_t len = OSCint(rdpos);
 	if (size < len) return;
 	rdpos += sizeof(int32);
-	size_t len4 = (len + 3) & -4;
+	size_t len4 = (len + 3) & (size_t)-4;
 	memcpy(outArray, rdpos, size);
 	rdpos += len4;
 	count ++;
@@ -274,7 +274,7 @@ inline void sc_msg_iter::skipb()
 {
 	size_t len = OSCint(rdpos);
 	rdpos += sizeof(int32);
-	size_t len4 = (len + 3) & -4;
+	size_t len4 = (len + 3) & (size_t)-4;
 	rdpos += len4;
 	count ++;
 }
