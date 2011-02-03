@@ -29,6 +29,8 @@
 #import	<QuartzCore/QuartzCore.h>
 #import <sys/time.h>
 
+
+
 #define SCIMAGE_DEBUG				0
 #define SCIMAGE_BACKGROUND_DEBUG	0
 #define SCIMAGE_FILTER_DEBUG		0
@@ -51,6 +53,14 @@
 	it just disable the possibility to use Dirty Rect wich should be considered as a marginal option for now.
 
 */
+
+
+#if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
+typedef unsigned int PixelData;
+#else
+typedef NSUInteger PixelData;
+#endif
+
 #define SCIMAGE_MAC_OS_10_4			(MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4)
 //#if defined(MAC_OS_X_VERSION_10_5)
 //#define SCIMAGE_MAC_OS_10_5			(MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5)
@@ -120,9 +130,9 @@ typedef int SCImageHint;
 - (void)rebuildNSImageFromBitmapRep;
 - (void)rebuildCIImageFromBitmapRep;
 - (void)setDrawingHint:(SCImageHint)hint;
-- (void)setPixel:(NSUInteger *)pixel atX:(int)x y:(int)y;
+- (void)setPixel:(PixelData *)pixel atX:(int)x y:(int)y;
 - (void)setColor:(NSColor*)color atX:(unsigned int)x y:(unsigned int)y;
-- (void)getPixel:(NSUInteger *)pixel atX:(int)x y:(int)y;
+- (void)getPixel:(PixelData *)pixel atX:(int)x y:(int)y;
 - (NSColor*)colorAtX:(unsigned int)x y:(unsigned int)y;
 - (void)setScalesWhenResized:(BOOL)yorn;
 - (BOOL)scalesWhenResized;

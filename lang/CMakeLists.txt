@@ -5,7 +5,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
 if(APPLE)
 	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/icu
-		LangPrimSource/HID_Utilities)
+		"LangPrimSource/${HID_UTIL_DIR}")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 	find_package(ICU)
@@ -100,17 +100,21 @@ if(UNIX)
 		list(APPEND sclang_sources
 			LangPrimSource/WiiMote_OSX/wiiremote.c
 			LangPrimSource/SC_HID.cpp
-			LangPrimSource/HID_Utilities/IOHIDElement_.c
-			LangPrimSource/HID_Utilities/IOHIDDevice_.c
-			LangPrimSource/HID_Utilities/HID_Utilities.c
-			LangPrimSource/HID_Utilities/HID_Name_Lookup.c
-			LangPrimSource/HID_Utilities/HID_Queue_Utilities.c
-			LangPrimSource/HID_Utilities/HID_Error_Handler.c
+			"LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c"
+			"LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c"
+			"LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c"
+			"LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c"
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.M
 			)
-			add_definitions(-DHAVE_SPEECH)
+		add_definitions(-DHAVE_SPEECH)
+		if($MAC_OSX_SDK_VERSION GREATER 4)
+			list(APPEND sclang_sources
+				"LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c"
+				"LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c"
+			)
+		endif()
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
