@@ -109,7 +109,8 @@ public:
     {
         semaphore sync_sem;
         semaphore_sync sync(sync_sem);
-        return boost::thread (boost::bind(&callback_interpreter::run_thread, this, boost::ref(sync_sem)));
+        boost::thread thread(boost::bind(&callback_interpreter::run_thread, this, boost::ref(sync_sem)));
+        return boost::thread(thread.move());
     }
 
     void run_thread(semaphore & sync_sem)
