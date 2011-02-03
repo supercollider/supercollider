@@ -1158,7 +1158,6 @@ static inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int
 	uint32 bufnum = grain_in_at<full_rate>(unit, 2, position);
 	grain->bufnum = bufnum;
 
-try_again:
 	GRAIN_BUF
 
 	if ( (bufChannels != 1) || (!bufData) ) {
