@@ -357,10 +357,8 @@ int SC_WIIManager::start( float updtime )
 #ifdef SC_LINUX
 cwiid_wiimote_t * SC_WIIManager::discover()
 {
-	bdaddr_t bdaddr;
+	static bdaddr_t bdaddr = {0, 0, 0, 0, 0, 0}; // BDADDR_ANY
  	cwiid_wiimote_t* wiimotediscovered;
-
-	bdaddr = *BDADDR_ANY;
 
 	if ( (wiimotediscovered = cwiid_open(&bdaddr, CWIID_FLAG_MESG_IFC)) == NULL ) {
 		return NULL;
