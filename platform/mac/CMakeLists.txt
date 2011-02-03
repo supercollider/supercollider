@@ -192,3 +192,10 @@ if (NOT ("${standalone}" STREQUAL ""))
 
 	# TODO: Standalones are also given a chance to overwrite things from their specially-manufactured resources dir
 endif()
+
+# fixup_bundle will fix the dll referencing so the .app can be sent to other people:
+INSTALL(CODE "
+   include(BundleUtilities)
+   fixup_bundle(\"${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app\"   \"\"   \"${CMAKE_CURRENT_BINARY_DIR}\")
+   "
+COMPONENT Runtime)
