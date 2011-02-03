@@ -26,6 +26,10 @@ ADD_CUSTOM_TARGET(setMainVersion ALL
        VERBATIM
       )
 
+if(APPLE)
+	STRING(REGEX REPLACE "^.*MacOSX10.([0-9]+).*$" "\\1" MAC_OSX_SDK_VERSION  "${CMAKE_OSX_SYSROOT}")
+endif()
+
 #############################################
 # Compiler flags etc
 
