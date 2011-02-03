@@ -29,6 +29,14 @@
 #include <stdio.h>
 #include <math.h>
 
+#if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
+#define class_getSuperclass(a)	((a)->super_class)
+#define class_getName(a)		((a)->name)
+typedef float ColorData;
+#else
+typedef CGFloat ColorData;
+#endif
+
 extern int slotGetPoint(PyrSlot* a, NSPoint *p);
 extern int slotGetNSRect(PyrSlot* a, NSRect *r);
 extern int allocSlotStrVal(PyrSlot *slot, char **str);
@@ -731,7 +739,7 @@ failure:
 	return [[self bitmapRepresentation] bitmapData];
 }
 
--(void)setPixel:(NSUInteger *)pixel atX:(int)x y:(int)y
+-(void)setPixel:(PixelData *)pixel atX:(int)x y:(int)y
 {
 	if([self isAccelerated])
 		[self syncBitmap];
@@ -747,7 +755,7 @@ failure:
 	[self setShouldSyncCIImage:YES];
 }
 
--(void)getPixel:(NSUInteger *)pixel atX:(int)x y:(int)y
+-(void)getPixel:(PixelData *)pixel atX:(int)x y:(int)y
 {
 	if([self isAccelerated])
 		[self syncBitmap];
@@ -1550,7 +1558,7 @@ int prSCImage_pixelAt(struct VMGlobals *g, int numArgsPushed)
 
 	int x, y, err;
 	SCImage *image;
-	NSUInteger pixelAsArray[4] = {0, 0, 0, 0};
+	PixelData pixelAsArray[4] = {0, 0, 0, 0};
 
 	err = errNone;
 
@@ -1599,7 +1607,7 @@ int prSCImage_setPixelAt(struct VMGlobals *g, int numArgsPushed)
 
 	int x, y, err;
 	uint32 pixel;
-	NSUInteger pixelData[4]={0, 0, 0, 0};
+	PixelData pixelData[4]={0, 0, 0, 0};
 
 	err = slotIntVal(pixelSlot, (int*)&pixel);
 	if(err) return err;
@@ -1756,7 +1764,7 @@ int prSCImage_loadPixels(struct VMGlobals *g, int numArgsPushed)
 	height = region.size.height;
 	width = region.size.width;
 	pixelsData = (uint32*)allocatedPixelArray->i + startIndex;
-	NSUInteger pixel[4]={0, 0, 0, 0};
+	PixelData pixel[4]={0, 0, 0, 0};
 
 	if((allocatedPixelArray->size - startIndex) < ( height * width /** 4*/ )  ) {
 		post("Error: pixel array is not of good size ! should be %i bytes long\n", height * width /** 4*/);
@@ -2123,7 +2131,7 @@ BOOL nsClassIsKindOfClass(Class currentClass, Class match)
 id		ciVectorFromSlot(PyrObject* slot);
 id		ciVectorFromSlot(PyrObject* slot)
 {
-	CGFloat values[4] = {0.f, 0.f, 0.f, 0.f};
+	ColorData values[4] = {0.f, 0.f, 0.f, 0.f};
 	int size = slot->size, err;
 
 	for (int i=0; i < size; ++i) {

@@ -34,6 +34,13 @@
 #import "SCNSWindow.h"
 #import "SCCocoaView.h"
 
+#if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
+typedef float ColorData;
+#else
+typedef CGFloat ColorData;
+#endif
+
+
 extern ChangeCounter gUIChangeCounter;
 extern NSTextView* gPostView;
 PyrSymbol *s_draw;
@@ -222,7 +229,7 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 	if(!view) return errNone;
 	NSColor * color = [view backgroundColor];
 	if(!color) return errNone;
-	CGFloat red, green, blue, alpha;
+	ColorData red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
 	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
@@ -320,7 +327,7 @@ int prTextWindow_GetSelectedBackgroundColor(struct VMGlobals *g, int numArgsPush
 	if(!view) return errNone;
 	NSColor * color = [[[view selectedTextAttributes] objectForKey: NSBackgroundColorAttributeName] colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
 	if(!color) return errNone;
-	CGFloat red, green, blue, alpha;
+	ColorData red, green, blue, alpha;
 	[color getRed:&red green:&green blue:&blue alpha:&alpha];
 	PyrSlot *slots = slotRawObject(b)->slots;
 	SetFloat(slots+0, red);
@@ -2934,7 +2941,7 @@ int prPen_SetShadow(struct VMGlobals *g, int numArgsPushed)
 
 	CGContextRef _ctx = (CGContextRef)[gctx graphicsPort];
 	CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-	CGFloat colors[4];
+	ColorData colors[4];
 	colors[0] = scColor.red;
 	colors[1] = scColor.green;
 	colors[2] = scColor.blue;
@@ -3228,12 +3235,12 @@ int prPen_LineDash(struct VMGlobals *g, int numArgsPushed)
 
 	if( pyrclass == class_floatarray )  // float array only
 	{
-		CGFloat *colors = (CGFloat *) malloc(pyrarray->size*sizeof(CGFloat));
+		ColorData *colors = (ColorData *) malloc(pyrarray->size*sizeof(ColorData));
 		int i;
 		float *src = ((PyrFloatArray *)pyrarray)->f;
 		for (i=0; i<pyrarray->size; i++)
 		{
-			colors[i] = (CGFloat) *(src++);
+			colors[i] = (ColorData) *(src++);
 		}
 		CGContextSetLineDash(
 			(CGContextRef)[gctx graphicsPort],
@@ -3313,7 +3320,7 @@ typedef struct GradientInfo {
 
 static GradientInfo gGradientInfo;
 
-static void					GradientCalcLinear(void *info, const CGFloat *in, CGFloat *out)
+static void					GradientCalcLinear(void *info, const ColorData *in, ColorData *out)
 {
     size_t k;
 	/*
@@ -3324,7 +3331,7 @@ static void					GradientCalcLinear(void *info, const CGFloat *in, CGFloat *out)
 	}else{
 	*/
 		for (k = 0; k < 4; k++) {
-			*out++ = (CGFloat)(((float *)(&gGradientInfo.color1))[k]) * (*in) + (CGFloat)(((float *)(&gGradientInfo.color0))[k]) * (1-(*in));
+			*out++ = (ColorData)(((float *)(&gGradientInfo.color1))[k]) * (*in) + (ColorData)(((float *)(&gGradientInfo.color0))[k]) * (1-(*in));
 		}
 	//}
 }
@@ -3332,8 +3339,8 @@ static void					GradientCalcLinear(void *info, const CGFloat *in, CGFloat *out)
 static CGFunctionRef		CreateGradientFunctionRef()
 {
 	size_t components;
-    static const CGFloat input_value_range [2] = { 0, 1 };
-    static const CGFloat output_value_ranges [8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
+    static const ColorData input_value_range [2] = { 0, 1 };
+    static const ColorData output_value_ranges [8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
     static const CGFunctionCallbacks callbacks = { 0,
 									&GradientCalcLinear,
 									NULL};
