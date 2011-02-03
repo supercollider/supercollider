@@ -384,8 +384,11 @@ inline double sc_gloop(double in, double hi)
 	float *out[16];											\
 	for (uint32 i=0; i<numOutputs; ++i) out[i] = OUT(i);
 
-#define SETUP_GRAIN_OUTS_CT									\
-	float *out[numOutputs];									\
+#define SETUP_GRAIN_OUTS_CT													\
+	const uint32 numOutputs = IsMono ? 1 : unit->mNumOutputs;				\
+	float *out_dummy;														\
+	float **out = IsMono ? &out_dummy										\
+						 : (float**)alloca(numOutputs * sizeof(float*));	\
 	for (uint32 i=0; i<numOutputs; ++i) out[i] = OUT(i);
 
 
@@ -1090,9 +1093,11 @@ static inline bool GrainBuf_grain_cleanup(GrainBuf * unit, GrainBufG * grain)
 		return false;
 }
 
-template <int numOutputs>
+template <bool IsMono>
 static inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 {
+	const int numChannels = IsMono ? 1 : unit->mNumOutputs;
+
 	SETUP_GRAIN_OUTS_CT
 	World *world = unit->mWorld;
 
@@ -1138,7 +1143,7 @@ static inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 	}
 }
 
-template <bool full_rate, int numOutputs>
+template <bool full_rate, bool IsMono>
 static inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int position)
 {
 	World *world = unit->mWorld;
@@ -1155,7 +1160,7 @@ static inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int
 	if (winType >= 0 && (windowData == NULL))
 		return;
 
-	uint32 bufnum = grain_in_at<full_rate>(unit, 2, position);
+	int32 bufnum = grain_in_at<full_rate>(unit, 2, position);
 	grain->bufnum = bufnum;
 
 	GRAIN_BUF
@@ -1205,52 +1210,52 @@ static inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int
 }
 
 
-template <int numOutputs>
+template <bool MultiChannel>
 static void GrainBuf_next_a(GrainBuf *unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
 
-	GrainBuf_next_play_active<numOutputs>(unit, inNumSamples);
+	GrainBuf_next_play_active<MultiChannel>(unit, inNumSamples);
 
 	float *trig = IN(0);
 	for (int i=0; i<inNumSamples; i++) {
 		if ((trig[i] > 0) && (unit->curtrig <=0))
-			GrainBuf_next_start_new<true, numOutputs>(unit, inNumSamples, i);
+			GrainBuf_next_start_new<true, MultiChannel>(unit, inNumSamples, i);
 		unit->curtrig = trig[i];
 	}
 }
 
-template <int numOutputs>
+template <bool MultiChannel>
 static void GrainBuf_next_k(GrainBuf * unit, int inNumSamples)
 {
 	ClearUnitOutputs(unit, inNumSamples);
 
-	GrainBuf_next_play_active<numOutputs>(unit, inNumSamples);
+	GrainBuf_next_play_active<MultiChannel>(unit, inNumSamples);
 
 	float trig = IN0(0);
 	if ((trig > 0) && (unit->curtrig <=0))
-		GrainBuf_next_start_new<false, numOutputs>(unit, inNumSamples, 0);
+		GrainBuf_next_start_new<false, MultiChannel>(unit, inNumSamples, 0);
 	unit->curtrig = trig;
 }
 
 inline_functions static void GrainBuf_next_k_1(GrainBuf * unit, int inNumSamples)
 {
-	GrainBuf_next_k<1>(unit, inNumSamples);
+	GrainBuf_next_k<true>(unit, inNumSamples);
 }
 
 inline_functions static void GrainBuf_next_k_2(GrainBuf * unit, int inNumSamples)
 {
-	GrainBuf_next_k<2>(unit, inNumSamples);
+	GrainBuf_next_k<false>(unit, inNumSamples);
 }
 
 inline_functions static void GrainBuf_next_a_1(GrainBuf * unit, int inNumSamples)
 {
-	GrainBuf_next_a<1>(unit, inNumSamples);
+	GrainBuf_next_a<true>(unit, inNumSamples);
 }
 
 inline_functions static void GrainBuf_next_a_2(GrainBuf * unit, int inNumSamples)
 {
-	GrainBuf_next_a<2>(unit, inNumSamples);
+	GrainBuf_next_a<false>(unit, inNumSamples);
 }
 
 void GrainBuf_Ctor(GrainBuf *unit)
