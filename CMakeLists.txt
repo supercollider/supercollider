@@ -28,6 +28,13 @@ ADD_CUSTOM_TARGET(setMainVersion ALL
 
 if(APPLE)
 	STRING(REGEX REPLACE "^.*MacOSX10.([0-9]+).*$" "\\1" MAC_OSX_SDK_VERSION  "${CMAKE_OSX_SYSROOT}")
+
+	if($MAC_OSX_SDK_VERSION GREATER 4)
+		set(HID_UTIL_DIR "HID_Utilities")
+	else()
+		set(HID_UTIL_DIR "HID_Utilities_10_4")
+	endif()
+	MESSAGE( STATUS "Using HID Utilities from folder '${HID_UTIL_DIR}'")
 endif()
 
 #############################################
