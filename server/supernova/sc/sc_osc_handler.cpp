@@ -190,7 +190,7 @@ struct movable_array
         return data_[index];
     }
 
-    const size_t size(void) const
+    size_t size(void) const
     {
         return length_;
     }
