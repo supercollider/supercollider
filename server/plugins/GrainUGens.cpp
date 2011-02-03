@@ -378,19 +378,6 @@ inline double sc_gloop(double in, double hi)
 	float *out[16];											\
 	for (uint32 i=0; i<numOutputs; ++i) out[i] = ZOUT(i);
 
-// for standard SC dist ///
-#define SETUP_GRAIN_OUTS									\
-	uint32 numOutputs = unit->mNumOutputs;					\
-	float *out[16];											\
-	for (uint32 i=0; i<numOutputs; ++i) out[i] = OUT(i);
-
-#define SETUP_GRAIN_OUTS_CT													\
-	const uint32 numOutputs = IsMono ? 1 : unit->mNumOutputs;				\
-	float *out_dummy;														\
-	float **out = IsMono ? &out_dummy										\
-						 : (float**)alloca(numOutputs * sizeof(float*));	\
-	for (uint32 i=0; i<numOutputs; ++i) out[i] = OUT(i);
-
 
 #define CALC_GRAIN_PAN													\
 	float panangle, pan1, pan2;											\
@@ -481,23 +468,23 @@ inline double sc_gloop(double in, double hi)
 	grain->counter -= nsmps;
 
 #define WRAP_CHAN(offset)							\
-	out1 = out[grain->chan] + offset;				\
+	out1 = OUT(grain->chan) + offset;				\
 	if(numOutputs > 1) {							\
 		if((grain->chan + 1) >= (int)numOutputs)	\
-			out2 = out[0] + offset;					\
+			out2 = OUT(0) + offset;					\
 		else										\
-			out2 = out[grain->chan + 1] + offset;	\
+			out2 = OUT(grain->chan + 1) + offset;	\
 	}
 
 #define GET_PAN_PARAMS							\
 	float pan1 = grain->pan1;					\
 	uint32 chan1 = grain->chan;					\
-	float *out1 = out[chan1];					\
+	float *out1 = OUT(chan1);					\
 	if(numOutputs > 1){							\
 		pan2 = grain->pan2;						\
 		uint32 chan2 = chan1 + 1;				\
 		if (chan2 >= numOutputs) chan2 = 0;		\
-		out2 = out[chan2];						\
+		out2 = OUT(chan2);						\
 	}
 
 
@@ -505,7 +492,7 @@ inline double sc_gloop(double in, double hi)
 
 inline void GrainIn_next_play_active(GrainIn * unit, int inNumSamples)
 {
-	SETUP_GRAIN_OUTS
+	const uint32 numOutputs = unit->mNumOutputs;
 	float *in = IN(2);
 	for (int i=0; i < unit->mNumActive; ) {
 		GrainInG *grain = unit->mGrains + i;
@@ -561,7 +548,7 @@ inline void GrainIn_next_start_new(GrainIn * unit, int inNumSamples, int positio
 
 	GET_GRAIN_INIT_AMP
 
-	SETUP_GRAIN_OUTS
+	const uint32 numOutputs = unit->mNumOutputs;
 	float *in = IN(2);
 
 	float *in1 = in + position;
@@ -643,7 +630,7 @@ void GrainIn_Dtor(GrainIn *unit)
 
 inline void GrainSin_next_play_active(GrainSin * unit, int inNumSamples)
 {
-	SETUP_GRAIN_OUTS
+	const uint numOutputs = unit->mNumOutputs;
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
@@ -713,7 +700,7 @@ inline void GrainSin_next_start_new(GrainSin * unit, int inNumSamples, int posit
 
 	GET_GRAIN_INIT_AMP
 
-	SETUP_GRAIN_OUTS
+	const uint32 numOutputs = unit->mNumOutputs;
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
@@ -751,8 +738,6 @@ void GrainSin_next_a(GrainSin *unit, int inNumSamples)
 	ClearUnitOutputs(unit, inNumSamples);
 
 	GrainSin_next_play_active(unit, inNumSamples);
-
-	SETUP_GRAIN_OUTS
 
 	float *trig = IN(0);
 	for (int i=0; i<inNumSamples; ++i) {
@@ -806,7 +791,7 @@ void GrainSin_Dtor(GrainSin *unit)
 
 inline void GrainFM_next_play_active(GrainFM *unit, int inNumSamples)
 {
-	SETUP_GRAIN_OUTS
+	const uint32 numOutputs = unit->mNumOutputs;
 	// end add
 
 	float *table0 = ft->mSineWavetable;
@@ -886,7 +871,7 @@ inline void GrainFM_next_start_new(GrainFM * unit, int inNumSamples, int positio
 	grain->winType = winType; //GRAIN_IN_AT(unit, 6, i);
 
 	GET_GRAIN_INIT_AMP
-	SETUP_GRAIN_OUTS
+	const uint32 numOutputs = unit->mNumOutputs;
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
@@ -1096,9 +1081,8 @@ static inline bool GrainBuf_grain_cleanup(GrainBuf * unit, GrainBufG * grain)
 template <bool IsMono>
 static inline void GrainBuf_next_play_active(GrainBuf *unit, int inNumSamples)
 {
-	const int numChannels = IsMono ? 1 : unit->mNumOutputs;
+	const uint32 numOutputs = IsMono ? 1 : unit->mNumOutputs;
 
-	SETUP_GRAIN_OUTS_CT
 	World *world = unit->mWorld;
 
 	for (int i=0; i < unit->mNumActive; ) {
@@ -1185,7 +1169,8 @@ static inline void GrainBuf_next_start_new(GrainBuf *unit, int inNumSamples, int
 
 	GET_GRAIN_INIT_AMP
 
-	SETUP_GRAIN_OUTS_CT
+	const uint32 numOutputs = IsMono ? 1 : unit->mNumOutputs;
+
 	// begin add //
 	float pan = grain_in_at<full_rate>(unit, 6, position);
 
