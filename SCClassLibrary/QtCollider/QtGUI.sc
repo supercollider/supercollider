@@ -60,6 +60,8 @@ QtGUI {
   *dragSink { ^this.notImplemented( "DragSink"); }
   *dragBoth { ^this.notImplemented( "DragBoth"); }
 
+  *dialog { ^QDialog }
+
   *ezScroller { ^EZScroller }
   *ezSlider { ^EZSlider }
   *ezListView { ^EZListView }
