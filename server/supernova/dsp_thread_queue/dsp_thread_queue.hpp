@@ -103,6 +103,7 @@ public:
 
             data = rhs.data;
             data->count++;
+            return *this;
         }
 
         std::size_t size(void) const

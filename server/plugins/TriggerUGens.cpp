@@ -1992,7 +1992,7 @@ static inline float Peak_unroll_body(Peak *unit, int inNumSamples, float & level
 		float level4 = max(abs(in[4]), level3);
 		float level5 = max(abs(in[5]), level4);
 		float level6 = max(abs(in[6]), level5);
-		float inlevel = abs(in[7]);
+		inlevel = abs(in[7]);
 		float level7 = max(inlevel, level6);
 		out[0] = level0;
 		out[1] = level1;
@@ -2892,7 +2892,7 @@ struct SendPeakRMS:
 
 			performLevelLag(maxLevel, mChannelData[2*i], mChannelData[2*mChannelCount + i]);
 
-			if (INRATE(signalStartIndex + i) = calc_FullRate)
+			if (INRATE(signalStartIndex + i) == calc_FullRate)
 				rms = std::sqrt(mChannelData[2*i + 1] / (float)mAudioSamplesPerTick);
 			else
 				rms = std::sqrt(mChannelData[2*i + 1] / (float)mControlSamplesPerTick);
