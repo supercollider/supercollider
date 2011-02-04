@@ -69,7 +69,6 @@ foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
         if(WIN32)
         	add_library(${plugin_name} MODULE ${plugin} ../../platform/windows/PlugIns/ExportHelper.cpp)
-        	target_link_libraries(${plugin_name} wsock32)
         else()
         	add_library(${plugin_name} MODULE ${plugin})
         endif()
@@ -80,7 +79,9 @@ set(uiugens MouseUGens KeyboardUGens)
 
 if (WIN32)
     set(scplugin_common_sources ../../platform/windows/PlugIns/ExportHelper.cpp)
-    include_directories (../../platform/windows/compat_stuff)
+    if(MSVC)
+        include_directories (../../platform/windows/compat_stuff) # for stdbool.h
+    endif()
 endif()
 
 add_library(FFT_UGens MODULE
@@ -211,6 +212,13 @@ endforeach()
 foreach (ugen ${uiugens})
     target_link_libraries(${ugen} ${PTHREADS_LIBRARY})
 endforeach()
+
+foreach (plugin ${plugins})
+    if (WIN32)
+        target_link_libraries(${plugin} wsock32 ws2_32)
+    endif()
+endforeach()
+
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(X11)

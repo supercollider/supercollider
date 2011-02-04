@@ -29,7 +29,7 @@
 
 using nova::wrap_argument;
 
-#ifdef __GNUC__
+#if defined (__GNUC__) && !(defined(__clang__))
 #define inline_functions __attribute__ ((flatten))
 #else
 #define inline_functions

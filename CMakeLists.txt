@@ -26,6 +26,17 @@ ADD_CUSTOM_TARGET(setMainVersion ALL
        VERBATIM
       )
 
+if(APPLE)
+	STRING(REGEX REPLACE "^.*MacOSX10.([0-9]+).*$" "\\1" MAC_OSX_SDK_VERSION  "${CMAKE_OSX_SYSROOT}")
+
+	if($MAC_OSX_SDK_VERSION GREATER 4)
+		set(HID_UTIL_DIR "HID_Utilities")
+	else()
+		set(HID_UTIL_DIR "HID_Utilities_10_4")
+	endif()
+	MESSAGE( STATUS "Using HID Utilities from folder '${HID_UTIL_DIR}'")
+endif()
+
 #############################################
 # Compiler flags etc
 
@@ -40,7 +51,7 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	if(APPLE)
 		add_definitions("-D_REENTRANT")
-	else()
+	elseif(NOT (WIN32 AND NOT CYGWIN))
 		add_definitions("-pthread")
 	endif()
 endif ()
@@ -62,11 +73,14 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 endif()
 
 if(WIN32)
-        set_property(DIRECTORY
-            	     APPEND
-		     PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WINSOCKAPI_)
+    set_property(DIRECTORY
+                 APPEND
+                 PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WINSOCKAPI_)
+
+    if(MSVC)
         SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_RELEASE} /MTd")
         SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} /MT")
+    endif()
 endif()
 
 
@@ -80,7 +94,11 @@ if (NOT PTHREADS_FOUND)
 endif()
 include_directories(${PTHREADS_INCLUDE_DIR})
 
-find_library(MATH_LIBRARY m)
+if (MSVC)
+    set(MATH_LIBRARY "")
+else()
+    find_library(MATH_LIBRARY m)
+endif()
 
 if(CURL)
 	find_package(CURL)

@@ -69,6 +69,7 @@ SuperCollider-Source/external_libraries/icu
 SuperCollider-Source/platform/mac
 SuperCollider-Source/platform/iphone
 SuperCollider-Source/lang/LangPrimSource/HID_Utilities
+SuperCollider-Source/lang/LangPrimSource/HID_Utilities_10_4
 SuperCollider-Source/lang/LangPrimSource/WiiMote_OSX
 SuperCollider-Source/editors/scapp' >> LinuxExclusions.txt
 
@@ -94,13 +95,15 @@ else
 
     mkdir -p SuperCollider/plugins
     returndir=`pwd`
-    cd ../../common/build
+    cd ../platform/mac/build
     git archive $revision | tar -x -C "$returndir/SuperCollider"
     cp -R SuperCollider.app scsynth sclang "$returndir/SuperCollider/"
     cp plugins/* "$returndir/SuperCollider/plugins/"
-    cp ../../COPYING "$returndir/SuperCollider/"
     cd $returndir
-    find SuperCollider/help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
+    cd ../
+    cp -R ChangeLog COPYING examples Help SCClassLibrary README sounds "$returndir/SuperCollider/"
+    cd $returndir
+    find SuperCollider/Help/ \( -name "*.htm" -or -name "*.html" \) -exec /Developer/Tools/SetFile -c SCjm {} \;
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleVersion -string "$about_version"
     defaults write $PWD/SuperCollider/SuperCollider.app/Contents/Info CFBundleGetInfoString -string "$version"
     plutil -convert xml1 $PWD/SuperCollider/SuperCollider.app/Contents/Info.plist

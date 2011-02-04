@@ -38,6 +38,10 @@
 #import "GC.h"
 #import "SCVirtualMachine.h"
 
+#if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
+#define class_getName(a)	((a)->name)
+#endif
+
 #define COCOABRIDGE_VERBOSITY						0
 #define COCOABRIDGE_STORE_OBJECTS_IN_ARRAY			1 // Conditional for storing all created objects in an NSArray. For future test with special Pool.
 #define COCOABRIDGE_AUTOCONVERT_NSSTRING			1 /* for backward compat. set to 0.
