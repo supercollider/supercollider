@@ -119,6 +119,6 @@ QObject {
     ^this.primitiveFailed
   }
 
-  doFunction { arg f ... args; f.value( this, args ); }
+  doFunction { arg f ... args; f.valueArray( this, args ); }
 
 }
