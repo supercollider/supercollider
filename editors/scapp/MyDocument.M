@@ -582,6 +582,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".rtfd"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".scd"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.scd"]]
+				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".schelp"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".help.rtf"]]
 				|| [[fullName lastPathComponent] isEqualToString: [helpFileName stringByAppendingString: @".htm"]]
 				) {
