@@ -150,13 +150,14 @@ In : AbstractIn {
 }
 
 LocalIn : AbstractIn {
-	*ar { arg numChannels = 1;
-		^this.multiNew('audio', numChannels)
+	*ar { arg numChannels = 1, default = 0.0;
+		^this.multiNew('audio', numChannels, *default)
 	}
-	*kr { arg numChannels = 1;
-		^this.multiNew('control', numChannels)
+	*kr { arg numChannels = 1, default = 0.0;
+		^this.multiNew('control', numChannels, *default)
 	}
-	init { arg numChannels;
+	init { arg numChannels ... default;
+		inputs = default.wrapExtend(numChannels);
 		^this.initOutputs(numChannels, rate)
 	}
 }
