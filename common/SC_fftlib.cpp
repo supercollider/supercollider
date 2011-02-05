@@ -38,6 +38,8 @@ For speed we keep this global, although this makes the code non-thread-safe.
 // We include vDSP even if not using for FFT, since we want to use some vectorised add/mul tricks
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 	#include "vecLib/vDSP.h"
+#elif defined(SC_IPHONE)
+	#include <Accelerate/Accelerate.h>
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +56,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 0
 	#define SC_FFT_GREEN 1
-#elif !SC_FFT_FFTW && defined(__APPLE__) && !defined(SC_IPHONE) && !defined(SUPERNOVA)
+#elif !SC_FFT_FFTW && defined(__APPLE__) && !defined(SUPERNOVA)
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 1
 	#define SC_FFT_GREEN 0
