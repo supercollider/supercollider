@@ -91,6 +91,9 @@ QView : QObject {
     this.setProperty(\geometry, rect.asRect )
   }
 
+  // backwards compatibility
+  relativeOrigin { ^true }
+
   moveTo { arg x, y;
     this.bounds_( this.bounds.moveTo( x, y ) );
   }
