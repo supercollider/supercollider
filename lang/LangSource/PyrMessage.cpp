@@ -853,7 +853,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 	if (gTraceInterpreter) {
 		if (g->method) {
 			postfl(" %s:%s -> %s:%s\n",
-				slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name,
+				slotRawSymbol(&slotRawClass(&g->method->ownerclass)->name)->name, slotRawSymbol(&g->method->name)->name,
 				slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		} else {
 			postfl(" top -> %s:%s\n",
@@ -1009,7 +1009,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 	if (gTraceInterpreter) {
 		if (g->method) {
 			postfl(" %s:%s -> %s:%s\n",
-				slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name,
+				slotRawSymbol(&slotRawClass(&g->method->ownerclass)->name)->name, slotRawSymbol(&g->method->name)->name,
 				slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
 		} else {
 			postfl(" top -> %s:%s\n",
@@ -1297,7 +1297,7 @@ void returnFromMethod(VMGlobals *g)
 if (gTraceInterpreter) {
 	postfl("%s:%s <- %s:%s\n",
 		slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name,
-		slotRawClass(&g->method->ownerclass)->name.us->name, g->slotRawSymbol(&method->name)->name
+		slotRawSymbol(&slotRawClass(&g->method->ownerclass)->name)->name, slotRawSymbol(&g->method->name)->name
 	);
 }
 #endif
