@@ -232,6 +232,8 @@ QView : QObject {
 
   closed { ^this.isClosed }
 
+  notClosed { ^this.isClosed.not }
+
   setInnerExtent {
     this.nonimpl("setInnerExtent");
   }
