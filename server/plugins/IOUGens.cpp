@@ -1679,7 +1679,7 @@ void LocalIn_next_a(LocalIn *unit, int inNumSamples)
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
 	int numChannels = unit->mNumOutputs;
-
+	
 	float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
@@ -1689,7 +1689,7 @@ void LocalIn_next_a(LocalIn *unit, int inNumSamples)
 		int diff = bufCounter - touched[i];
 		//Print("LocalIn  %d  %d  %g\n", i, diff, in[0]);
 		if (diff == 1 || diff == 0) Copy(inNumSamples, out, in);
-		else Fill(inNumSamples, out, 0.f);
+		else Fill(inNumSamples, out, IN0(i));
 	}
 }
 
@@ -1711,7 +1711,8 @@ inline_functions void LocalIn_next_a_nova(LocalIn *unit, int inNumSamples)
 		if (diff == 1 || diff == 0)
 			nova::copyvec_simd(out, in, inNumSamples);
 		else
-			nova::zerovec_simd(out, inNumSamples);
+			//nova::zerovec_simd(out, inNumSamples);
+			Fill(inNumSamples, out, IN0(i));
 	}
 }
 
@@ -1724,7 +1725,6 @@ inline_functions void LocalIn_next_a_nova_64(LocalIn *unit, int inNumSamples)
 	float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
-
 	for (int i=0; i<numChannels; ++i, in += bufLength) {
 		float *out = OUT(i);
 		int diff = bufCounter - touched[i];
@@ -1732,7 +1732,8 @@ inline_functions void LocalIn_next_a_nova_64(LocalIn *unit, int inNumSamples)
 		if (diff == 1 || diff == 0)
 			nova::copyvec_simd<64>(out, in);
 		else
-			nova::zerovec_simd<64>(out);
+			//nova::zerovec_simd<64>(out);
+			Fill(inNumSamples, out, IN0(i));
 	}
 }
 #endif
@@ -1743,9 +1744,15 @@ void LocalIn_next_k(LocalIn *unit, int inNumSamples)
 	uint32 numChannels = unit->mNumOutputs;
 
 	float *in = unit->m_bus;
+	int32 *touched = unit->m_busTouched;
+	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (uint32 i=0; i<numChannels; ++i, in++) {
+		int diff = bufCounter - touched[i];
 		float *out = OUT(i);
-		*out = *in;
+		if (diff == 1 || diff == 0)
+			*out = *in;
+		else
+			*out = IN0(i);
 	}
 }
 
@@ -1755,7 +1762,7 @@ void LocalIn_Ctor(LocalIn* unit)
 	int numChannels = unit->mNumOutputs;
 
 	World *world = unit->mWorld;
-
+	
 	int busDataSize = numChannels * BUFLENGTH;
 	unit->m_bus = (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int32));
 	unit->m_busTouched = (int32*)(unit->m_bus + busDataSize);
@@ -1763,7 +1770,7 @@ void LocalIn_Ctor(LocalIn* unit)
 	{
 		unit->m_busTouched[i] = -1;
 	}
-
+	
 	if (unit->mCalcRate == calc_FullRate) {
 		if (unit->mParent->mLocalAudioBusUnit)
 		{
