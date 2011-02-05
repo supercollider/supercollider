@@ -185,9 +185,9 @@ add_subdirectory(external_libraries)
 add_subdirectory(testsuite)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-    install(DIRECTORY include
+    install(DIRECTORY include/common include/plugin_interface include/server include/lang
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
-        PATTERN app* EXCLUDE
+        FILES_MATCHING PATTERN "*.h"
     )
 endif()
 
