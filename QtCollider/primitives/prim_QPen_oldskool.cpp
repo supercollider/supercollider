@@ -63,11 +63,15 @@ private:
   static QtCollider::QPenPrimitive<&name> p_##name( "_" #name, argc ); \
   int name ( receiver, args, global )
 
+static bool announced = false;
 static QPainter *painter = 0;
 static QWidget * widget = 0;
 static QPainterPath path;
 
 namespace QtCollider {
+  void announcePainting() { announced = true; }
+  bool paintingAnnounced() { return announced; }
+
   bool beginPainting( QPainter *p, QWidget *w )
   {
     if( painter ) {
@@ -92,6 +96,7 @@ namespace QtCollider {
   {
     painter = 0;
     widget = 0;
+    announced = false;
   }
 
   QPainter *globalPainter() { return painter; }

@@ -105,6 +105,13 @@ bool QWidgetProxy::setParentEvent( QtCollider::SetParentEvent *e ) {
 
 void QWidgetProxy::customPaint( QPainter *painter )
 {
+  if( QtCollider::paintingAnnounced() ) {
+    qcDebugMsg(1, "WARNING: Custom painting already in progress. Will not paint." );
+    return;
+  }
+
+  QtCollider::announcePainting();
+
   QtCollider::lockLang();
 
   if( QtCollider::beginPainting( painter, widget() ) ) {
