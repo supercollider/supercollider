@@ -2347,7 +2347,7 @@ int getIndexedInt(PyrObject *obj, int index, int *value)
 			}
 			break;
 		case obj_double :
-			*value = (int)slotRawFloat(&obj->slots[index]);
+			*value = (int)((double*)(obj->slots))[index];
 			break;
 		case obj_float :
 			*value = (int)((float*)(obj->slots))[index];
@@ -2384,7 +2384,7 @@ int getIndexedFloat(PyrObject *obj, int index, float *value)
 			}
 			break;
 		case obj_double :
-			*value = slotRawFloat(&obj->slots[index]);
+			*value = ((double*)(obj->slots))[index];
 			break;
 		case obj_float :
 			*value = ((float*)(obj->slots))[index];
@@ -2421,7 +2421,7 @@ int getIndexedDouble(PyrObject *obj, int index, double *value)
 			}
 			break;
 		case obj_double :
-			*value = slotRawFloat(&obj->slots[index]);
+			*value = ((double*)(obj->slots))[index];
 			break;
 		case obj_float :
 			*value = ((float*)(obj->slots))[index];
@@ -2448,8 +2448,10 @@ void getIndexedSlot(PyrObject *obj, PyrSlot *a, int index)
 //		obj, index);
 	switch (obj->obj_format) {
 		case obj_slot :
-		case obj_double :
 			slotCopy(a, &obj->slots[index]);
+			break;
+		case obj_double :
+			SetFloat(a, ((double*)(obj->slots))[index]);
 			break;
 		case obj_float :
 			SetFloat(a, ((float*)(obj->slots))[index]);
@@ -2486,10 +2488,10 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 			if (NotFloat(c)) {
 				if (NotInt(c)) return errWrongType;
 				else {
-					SetFloat(&obj->slots[index], slotRawInt(c));
+					((double*)(obj->slots))[index] = slotRawInt(c);
 				}
 			} else
-				SetRaw(&obj->slots[index], slotRawFloat(c));
+				((double*)(obj->slots))[index] = slotRawFloat(c);
 			break;
 		case obj_float :
 			if (NotFloat(c)) {
@@ -2497,9 +2499,8 @@ int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 				else {
 					((float*)(obj->slots))[index] = slotRawInt(c);
 				}
-			} else {
+			} else
 				((float*)(obj->slots))[index] = slotRawFloat(c);
-			}
 			break;
 		case obj_int32 :
 			if (NotInt(c)) return errWrongType;
@@ -2535,7 +2536,7 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 			SetFloat(slot, val);
 			break;
 		case obj_double :
-			SetFloat(&obj->slots[index], val);
+			((double*)(obj->slots))[index] = val;
 			break;
 		case obj_float :
 			((float*)(obj->slots))[index] = (float)val;

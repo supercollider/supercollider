@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DirBrowserView.h"
+#import "FileBrowserViewController.h"
 
 #include "SC_World.h"
 #include "SC_HiddenWorld.h"
@@ -31,7 +31,7 @@
 	IBOutlet UITextView *logView;
 
 	IBOutlet UIViewController *logViewController;
-	IBOutlet DirBrowserViewController *synthdefsViewController;
+	IBOutlet FileBrowserViewController *synthdefsViewController;
 
 }
 
