@@ -31,7 +31,7 @@ class QcCanvas : public QWidget
 public:
   QcCanvas( QWidget *parent = 0 );
   void setBackground( const QColor & c ) { _bkgColor = c; update(); }
-  void setPaint( bool b ) { paint = b; refresh(); }
+  void setPaint( bool b ) { paint = b; }
 public Q_SLOTS:
   void refresh();
 Q_SIGNALS:
