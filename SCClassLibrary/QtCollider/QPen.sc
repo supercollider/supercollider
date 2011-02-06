@@ -262,45 +262,26 @@ QPen {
     this.stringAtPoint( aString, Point(0,0) );
   }
 
-  *stringAtPoint { arg aString, aPoint;
-    this.prStringAtPoint( aString, aPoint );
-  }
-
-  *stringInRect { arg aString, aRect;
-    this.prStringInRect( aString, aRect );
-  }
-
-
-  *prStringAtPoint { arg aString, aPoint, font, color;
+  *stringAtPoint { arg string, point, font, color;
     _QPen_StringAtPoint
     ^this.primitiveFailed;
   }
 
-  *prStringInRect { arg aString, aRect, font, color;
+  *stringInRect { arg string, rect, font, color, alignment;
     _QPen_StringInRect
     ^this.primitiveFailed;
   }
 
-  *stringCenteredIn { arg aString, aRect;
-    this.stringAtPoint( aString,
-                        QtGUI.stringBounds( aString, this.font )
-                             .centerIn( aRect ) );
+  *stringCenteredIn { arg string, rect, font, color;
+    this.stringInRect( string, rect, font, color, QView.alignmentDict[\center] );
   }
 
-  *stringLeftJustIn { arg aString, aRect;
-    var pos, bounds;
-    bounds = QtGUI.stringBounds( aString, this.font );
-    pos = bounds.centerIn( aRect );
-    pos.x = aRect.left;
-    this.stringAtPoint( aString, pos );
+  *stringLeftJustIn { arg string, rect, font, color;
+    this.stringInRect( string, rect, font, color, QView.alignmentDict[\left] );
   }
 
-  *stringRightJustIn { arg aString, aRect;
-    var pos, bounds;
-    bounds = QtGUI.stringBounds( aString, this.font );
-    pos = bounds.centerIn( aRect );
-    pos.x = aRect.right - bounds.width;
-    this.stringAtPoint( aString, pos );
+  *stringRightJustIn { arg string, rect, font, color;
+    this.stringInRect( string, rect, font, color, QView.alignmentDict[\right] );
   }
 
 //---------------------- PRIVATE! -- Painter on/off-----------------------------

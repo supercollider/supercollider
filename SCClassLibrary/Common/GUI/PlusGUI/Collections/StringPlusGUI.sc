@@ -26,12 +26,12 @@
 	}
 	drawAtPoint { arg point, font, color;
 		if(GUI.id === \qt)
-			{ QPen.prStringAtPoint( this, point, font, color ) }
+			{ QPen.stringAtPoint( this, point, font, color ) }
 			{ this.prDrawAtPoint( point, font, color ) };
 	}
 	drawInRect { arg rect, font, color;
 		if(GUI.id === \qt)
-			{ QPen.prStringInRect( this, rect, font, color ) }
+			{ QPen.stringInRect( this, rect, font, color ) }
 			{ this.prDrawInRect( rect, font, color ) }
 	}
 	prDrawAtPoint { arg point, font, color;
@@ -43,21 +43,31 @@
 		^this.primitiveFailed
 	}
 	drawCenteredIn { arg rect, font, color;
-		this.drawAtPoint(this.bounds( font ).centerIn(rect), font, color);
+		if(GUI.id === \qt)
+			{ QPen.stringCenteredIn( this, rect, font, color ) }
+			{ this.drawAtPoint(this.bounds( font ).centerIn(rect), font, color) };
 	}
 	drawLeftJustIn { arg rect, font, color;
 		var pos, bounds;
-		bounds = this.bounds( font );
-		pos = bounds.centerIn(rect);
-		pos.x = rect.left + 2;
-		this.drawAtPoint(pos, font, color);
+		if(GUI.id === \qt)
+			{ QPen.stringLeftJustIn( this, rect, font, color ) }
+			{
+				bounds = this.bounds( font );
+				pos = bounds.centerIn(rect);
+				pos.x = rect.left + 2;
+				this.drawAtPoint(pos, font, color);
+			};
 	}
 	drawRightJustIn { arg rect, font, color;
 		var pos, bounds;
-		bounds = this.bounds( font );
-		pos = bounds.centerIn(rect);
-		pos.x = rect.right - 2 - bounds.width;
-		this.drawAtPoint(pos, font, color);
+		if(GUI.id === \qt)
+			{ QPen.stringRightJustIn( this, rect, font, color ) }
+			{
+				bounds = this.bounds( font );
+				pos = bounds.centerIn(rect);
+				pos.x = rect.right - 2 - bounds.width;
+				this.drawAtPoint(pos, font, color);
+			};
 	}
 
 	bounds { arg font;
