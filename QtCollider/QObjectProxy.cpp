@@ -221,14 +221,14 @@ void QObjectProxy::customEvent( QEvent *event )
 }
 
 bool QObjectProxy::setParentEvent( SetParentEvent *e ) {
-  if( !qObject || !e->parent->object() ) return false;
+  if( !qObject || !e->parent->object() ) return true;
   qObject->setParent( e->parent->object() );
   return true;
 }
 
 bool QObjectProxy::setPropertyEvent( SetPropertyEvent *e )
 {
-  if( !qObject ) return false;
+  if( !qObject ) return true;
   if( !qObject->setProperty( e->property->name, e->value ) ) {
     qcProxyDebugMsg(1, QString("WARNING: Property '%1' not found. Setting dynamic property.")
                         .arg( e->property->name ) );
@@ -238,7 +238,7 @@ bool QObjectProxy::setPropertyEvent( SetPropertyEvent *e )
 
 bool QObjectProxy::getPropertyEvent( GetPropertyEvent *e )
 {
-  if( !qObject ) return false;
+  if( !qObject ) return true;
   e->value = qObject->property( e->property->name );
   return true;
 }
@@ -293,7 +293,7 @@ bool QObjectProxy::connectEvent( ConnectEvent *e )
 
 bool QObjectProxy::disconnectEvent( QtCollider::DisconnectEvent *e )
 {
-  if( !qObject ) return false;
+  if( !qObject ) return true;
   const QMetaObject *mo = qObject->metaObject();
   QByteArray signal = QMetaObject::normalizedSignature( e->signal.toStdString().c_str() );
   int sigId = mo->indexOfSignal( signal );
@@ -336,7 +336,7 @@ bool QObjectProxy::destroyEvent( DestroyEvent *e )
 {
   if( e->action() == DestroyObject ) {
      if( qObject ) qObject->deleteLater();
-     else return false;
+     else return true;
   }
   else if( e->action() == DestroyProxy ) {
     scObject = 0;
@@ -353,7 +353,7 @@ bool QObjectProxy::destroyEvent( DestroyEvent *e )
 
 bool QObjectProxy::getChildrenEvent( QtCollider::GetChildrenEvent *e )
 {
-  if( !qObject ) return false;
+  if( !qObject ) return true;
 
   const QObjectList &children = qObject->children();
 
@@ -384,7 +384,7 @@ bool QObjectProxy::getChildrenEvent( QtCollider::GetChildrenEvent *e )
 
 bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )
 {
-  if( !qObject ) return false;
+  if( !qObject ) return true;
 
   QObject *parent = qObject->parent();
   if( !parent ) return true;

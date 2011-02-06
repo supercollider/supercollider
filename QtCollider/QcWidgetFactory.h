@@ -39,7 +39,6 @@ public:
     // check if parent arg is valid;
 
     QObjectProxy *parentProxy = argc > 0 ? arguments[0].value<QObjectProxy*>() : 0;
-    if( parentProxy && !parentProxy->object() ) return 0;
 
     // create the widget
 
