@@ -26,6 +26,10 @@ class QPainter;
 class QWidget;
 
 namespace QtCollider {
+  // WARNING these can be called only from Qt thread (no locking needed):
+  void announcePainting();
+  bool paintingAnnounced();
+
   // WARNING language must be locked to call these:
 
   bool beginPainting( QPainter *, QWidget * );
