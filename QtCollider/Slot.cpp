@@ -127,6 +127,9 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
     case QMetaType::Int:
         SetInt( slot, val.toInt() );
         return errNone;
+    case QMetaType::Void:
+        SetNil( slot );
+        return errNone;
     default:
         if( type == qMetaTypeId<VariantList>() ) {
           Slot::setVariantList( slot, val.value<VariantList>() );

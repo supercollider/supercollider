@@ -29,7 +29,7 @@ QWidgetProxy::QWidgetProxy( QWidget *w, PyrObject *po ) : QObjectProxy( w, po )
 { }
 
 bool QWidgetProxy::setFocus( QtCollider::SetFocusRequest *r ) {
-  if( !widget() ) return false;
+  if( !widget() ) return true;
 
   if( r->focus )
     widget()->setFocus( Qt::OtherFocusReason );
@@ -41,7 +41,7 @@ bool QWidgetProxy::setFocus( QtCollider::SetFocusRequest *r ) {
 
 bool QWidgetProxy::bringFront() {
   QWidget *w = widget();
-  if( !w ) return false;
+  if( !w ) return true;
   w->setWindowState( w->windowState() & ~Qt::WindowMinimized
                                       | Qt::WindowActive );
   w->show();
@@ -66,7 +66,7 @@ bool QWidgetProxy::mapToGlobal( QtCollider::MapToGlobalRequest *r )
 bool QWidgetProxy::setParentEvent( QtCollider::SetParentEvent *e ) {
 
   QObject *parent = e->parent->object();
-  if( !parent || !widget() ) return false;
+  if( !parent || !widget() ) return true;
 
   if( parent->isWidgetType() ) {
     QWidget *pw = qobject_cast<QWidget*>(parent);

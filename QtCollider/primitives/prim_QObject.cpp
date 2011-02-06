@@ -316,8 +316,14 @@ QC_LANG_PRIMITIVE( QObject_ConnectSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   sndProxy->lock();
   rcvProxy->lock();
-  bool ok = QObject::connect( sndProxy->object(), strSig.toStdString().c_str(),
-                          rcvProxy->object(), strSlot.toStdString().c_str() );
+  bool ok;
+  if( !sndProxy->object() || !rcvProxy->object() ) {
+    ok = true;
+  }
+  else {
+    ok = QObject::connect( sndProxy->object(), strSig.toStdString().c_str(),
+                           rcvProxy->object(), strSlot.toStdString().c_str() );
+  }
   sndProxy->unlock();
   rcvProxy->unlock();
 
