@@ -82,7 +82,9 @@ namespace QtCollider {
 
     painter->setRenderHint( QPainter::Antialiasing, true );
     QColor black( 0,0,0 );
-    painter->setPen( black );
+    QPen pen( black );
+    pen.setCapStyle( Qt::FlatCap );
+    painter->setPen( pen );
     painter->setBrush( black );
 
     path = QPainterPath();
@@ -160,7 +162,9 @@ QC_QPEN_PRIMITIVE( QPen_FillColor, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_QPEN_PRIMITIVE( QPen_StrokeColor, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QColor color = Slot::toColor( a );
-  painter->setPen( color );
+  QPen pen = painter->pen();
+  pen.setColor( color );
+  painter->setPen( pen );
   return errNone;
 }
 
@@ -366,6 +370,7 @@ QC_QPEN_PRIMITIVE( QPen_ArcTo, 3, PyrSlot *r, PyrSlot *arg, VMGlobals *g )
   QPointF pt2 = Slot::toPoint( arg+1 );
   float radius;
   if( slotFloatVal( arg+2, &radius ) ) return errWrongType;
+  radius = qMax( 0.f, radius );
 
   vec2 a( path.currentPosition() );
   vec2 b( pt1 );
@@ -601,7 +606,7 @@ QC_QPEN_PRIMITIVE( QPen_StringAtPoint, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-QC_QPEN_PRIMITIVE( QPen_StringInRect, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString str = Slot::toString( a );
   if( str.isEmpty() ) return errNone;
@@ -613,7 +618,11 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     if( NotNil( a+3 ) ) painter->setPen( Slot::toColor( a+3 ) );
   }
 
-  painter->drawText( rect, Qt::AlignTop | Qt::AlignLeft, str );
+  Qt::Alignment align;
+  if( NotNil(a+4) ) align = static_cast<Qt::Alignment>( Slot::toInt( a+4 ) );
+  else align = Qt::AlignTop | Qt::AlignLeft;
+
+  painter->drawText( rect, align, str );
 
   if( NotNil( a+2 ) || NotNil( a+3 ) ) {
     painter->restore();
