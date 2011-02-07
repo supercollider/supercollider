@@ -46,12 +46,16 @@ soft::there::
 - tags after each other doesn't work, like returns::link::hello::
 
 - some classes uses *doesNotUnderstand trick for class methods! need a "force" flag for method:: ?
+or even better, fix these classes so they redirect also *findRespondingMethodFor ?
+or simply, have a redirect:: tag that sets the name of the classvar holding the implementing class?
 
 - using \::. doesn't work, needs a space: \:: .
 also sometimes non-letters after :: doesn't work correctly, like "(link::hello::)"
 
 - we need to distinguish between class and instance method anchors since some classes have both named the same,
 something like #cmethod:name and #imethod:name perhaps? or #*classmethodname and #instancemethodname ?
+
+- check for system-wide pre-rendered docs in ScDoc.findClassOrMethod and similar functions..
 
 - instead of showing "(extension)" only for classes, do it for any document that was located in an extension directory.
 pass a flag to recurseHelpSource call in findExtHelp, and let updateFile return the doc map entry so we can set installed=\extension,

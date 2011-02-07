@@ -1,0 +1,19 @@
+CLASS::OrderedIdentitySet
+summary::a set according to identity
+related::Classes/IdentitySet, Classes/List, Classes/Dictionary
+categories::Collections>Ordered
+
+DESCRIPTION::
+An OrderedIdentitySet is a collection of objects, no two of which are the same object (aka. "identical").
+Most of its methods are inherited. (see link::Classes/Collection:: and link::Classes/Set:: classes).
+Unlike link::Classes/IdentitySet::, contents of an OrderedIdentitySet are ordered.
+
+INSTANCEMETHODS::
+
+private::putCheck
+
+method::do
+Evaluates strong::function:: for each item in the OrderedIdentitySet. You may depend on the order of items. The function is passed two arguments, the item and an integer index.
+code::
+OrderedIdentitySet[1, 2, 3, 300].do { |item, i| item.postln };
+::

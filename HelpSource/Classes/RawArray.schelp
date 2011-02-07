@@ -1,0 +1,12 @@
+CLASS::RawArray
+categories::Collections>Ordered
+
+DESCRIPTION::
+RawArray is the abstract superclass of a group of array classes that hold raw data values.
+
+INSTANCEMETHODS::
+
+private::archiveAsCompileString, archiveAsObject
+
+method::write
+Writes the array as a file.

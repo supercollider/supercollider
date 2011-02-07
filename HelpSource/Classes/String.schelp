@@ -1,0 +1,579 @@
+CLASS::String
+summary::array of characters
+
+DESCRIPTION::
+String represents an array of characters.
+
+Strings can be written literally using double quotes:
+code::
+"my string".class.postln;
+::
+
+CLASSMETHODS::
+
+private::initClass
+
+method::readNew
+Read the entire contents of a link::Classes/File:: and return them as a new String.
+
+INSTANCEMETHODS::
+
+private::prUnixCmd, prFormat, prCat
+
+method::at
+Strings respond to .at in a manner similar to other indexed collections. Each element is a link::Classes/Char::.
+code::
+"ABCDEFG".at(2).postln;
+::
+
+method::compare
+Returns a -1, 0, or 1 depending on whether the receiver should be sorted before the argument, is equal to the argument or should be sorted after the argument. This is a case sensitive compare.
+
+method::<
+Returns a link::Classes/Boolean:: whether the receiver should be sorted before the argument.
+
+method::==
+Returns a link::Classes/Boolean:: whether the two Strings are equal.
+
+method::post
+Prints the string to the current post window.
+
+method::postln
+Prints the string and a carriage return to the current post window.
+
+method::postc, postcln
+As link::#post:: and link::#postln::, but formatted as a comment.
+code::
+"This is a comment.".postcln;
+::
+
+method::postf
+Prints a formatted string with arguments to the current post window. The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .
+code::
+postf("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
+
+this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]
+::
+
+method::format
+Returns a formatted string with arguments. The % character in the format string is replaced by a string representation of an argument. To print a % character use \\% .
+code::
+format("this % a %. pi = %, list = %\n", "is", "test", pi.round(1e-4), (1..4))
+
+this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]
+::
+
+method::matchRegexp
+POSIX regular expression matching. Returns true if the receiver (a regular expression pattern) matches the string passed to it. The strong::start:: is an offset where to start searching in the string (default: 0), strong::end:: where to stop.
+code::
+"c".matchRegexp("abcdefg", 2, 5); // true
+"c".matchRegexp("abcdefg", 4, 5); // false
+
+"behaviou?r".matchRegexp("behavior"); // true
+"behaviou?r".matchRegexp("behaviour"); // true
+"behaviou?r".matchRegexp("behavir"); // false
+"b.h.v.r".matchRegexp("behavor"); // true
+"b.h.vi*r".matchRegexp("behaviiiiir"); // true
+"(a|u)nd".matchRegexp("und"); // true
+"(a|u)nd".matchRegexp("and"); // true
+"[a-c]nd".matchRegexp("ind"); // false
+"[a-c]nd".matchRegexp("bnd"); // true
+::
+
+method::findRegexp
+POSIX regular expression search.
+code::
+"foobar".findRegexp("o*bar");
+"32424 334 /**aaaaaa*/".findRegexp("/\\*\\*a*\\*/");
+"foobar".findRegexp("(o*)(bar)");
+"aaaabaaa".findAllRegexp("a+");
+::
+
+method::error
+Prepends an error banner and posts the string.
+::
+
+method::warn
+Prepends a warning banner and posts the string.
+
+method::inform
+Posts the string.
+
+method::++
+Return a concatenation of the two strings.
+::
+
+method::+
+Return a concatenation of the two strings with a space between them.
+
+method::compile
+Compiles a String containing legal SuperCollider code and returns a Function.
+code::
+(
+var f;
+f = "2 + 1".compile.postln;
+f.value.postln;
+)
+::
+
+method::asCompileString
+Returns a String formatted for compiling.
+code::
+(
+var f;
+f = "myString";
+f.postln;
+f.asCompileString.postln;
+)
+::
+
+method::postcs
+As link::#postln::, but posts the compileString of the reciever.
+code::
+List[1, 2, ["comment", [3, 2]], { 1.0.rand }].postcs;
+::
+
+method::interpret
+Compile and execute a String containing legal SuperCollider code, returning the result.
+code::
+"2 + 1".interpret.postln;
+::
+
+method::interpretPrint
+Compile, execute and print the result of a String containing legal SuperCollider code.
+code::
+"2 + 1".interpretPrint;
+::
+
+method::asSymbol
+Return a link::Classes/Symbol:: derived from the String.
+code::
+(
+var z;
+z = "myString".asSymbol.postln;
+z.class.postln;
+)
+::
+
+method::asInteger
+Return an link::Classes/Integer:: derived from the String. Strings beginning with non-numeric characters return 0.
+code::
+"4".asInteger.postln;
+::
+
+method::asFloat
+Return a link::Classes/Float:: derived from the String. Strings beginning with non-numeric characters return 0.
+code::
+"4.3".asFloat.postln;
+::
+
+method::asSecs
+Return a link::Classes/Float:: based on converting a time string in format (dd):hh:mm:ss.s. This is the inverse method to link::Classes/SimpleNumber#asTimeString#SimpleNumber:asTimeString::.
+code:: 
+(45296.asTimeString).asSecs;
+"32.1".asSecs;
+"62.1".asSecs;		// warns
+"0:0:59.9".asSecs;
+"1:1:1.1".asSecs;
+"-1".asSecs;		// neg sign supported
+"-12:34:56".asSecs;
+"12:-34:56".asSecs;	// warns
+"-23:12.3456".asSecs;	//
+"-1:00:00:00".asSecs;	// days too.
+::
+
+method::catArgs
+Concatenate this string with the following args.
+code::
+"These are some args: ".catArgs(\fish, SinOsc.ar, {4 + 3}).postln;
+::
+
+method::scatArgs
+Same as link::#catArgs::, but with spaces in between.
+code::
+"These are some args: ".scatArgs(\fish, SinOsc.ar, {4 + 3}).postln;
+::
+
+method::ccatArgs
+Same as link::#catArgs::, but with commas in between.
+code::
+"a String".ccatArgs(\fish, SinOsc.ar, {4 + 3}).postln;
+::
+
+method::catList, scatList, ccatList
+As link::#catArgs::, link::#scatArgs:: and link::#ccatArgs:: above, but takes a Collection (usually a link::Classes/List:: or an link::Classes/Array::) as an argument.
+code::
+"a String".ccatList([\fish, SinOsc.ar, {4 + 3}]).postln;
+::
+
+method::split
+Returns an Array of Strings split at the separator. The separator is a link::Classes/Char::, and is not included in the output array. The default separator is $/, handy for Unix paths.
+code::
+"This/could/be/a/Unix/path".split.postln;
+"These are several words".split($ ).postln;
+::
+
+method::ascii
+Returns an Array of asci numbers of the Strings's characters.
+code::
+"wertvoll".ascii;
+::
+
+method::find
+Returns the index of the string in the receiver, or nil if not found. If strong::ignoreCase:: is true, find makes no difference between uppercase and lowercase letters. The strong::offset:: is the point in the string where the search begins.
+code::
+"These are several words".find("are").postln;
+"These are several words".find("fish").postln;
+::
+
+method::findBackwards
+Same like link::#find::, but starts at the end of the string.
+code::
+// compare:
+"These words are several words".find("words"); // 6
+"These words are several words".findBackwards("words"); // 24
+::
+
+method::findAll
+Returns the indices of the string in the receiver, or nil if not found.
+code::
+"These are several words which are fish".findAll("are").postln;
+"These are several words which are fish".findAll("fish").postln;
+::
+
+method::contains
+Returns a link::Classes/Boolean:: indicating if the String contains string.
+code::
+"These are several words".contains("are").postln;
+"These are several words".contains("fish").postln;
+::
+
+method::containsi
+Same as link::#contains::, but case insensitive.
+code::
+"These are several words".containsi("ArE").postln;
+::
+
+method::containsStringAt
+Returns a link::Classes/Boolean:: indicating if the String contains string beginning at the specified index.
+code::
+"These are several words".containsStringAt(6, "are").postln;
+::
+
+method::icontainsStringAt
+Same as link::#containsStringAt::, but case insensitive.
+
+method::escapeChar
+Add the escape character (\) at the location of your choice.
+code::
+"This will become a Unix friendly string".escapeChar($ ).postln;
+::
+
+method::tr
+Transliteration. Replace all instances of strong::from:: with strong::to::.
+code::
+":-(:-(:-(".tr($(, $)); //turn the frowns upside down
+::
+
+method::replace
+Like link::#tr::, but with strings as arguments.
+code::
+"Here are several words which are fish".replace("are", "were");
+::
+
+method::printOn
+Print the String on stream.
+code::
+"Print this on Post".printOn(Post);
+
+// equivalent to:
+Post << "Print this on Post";
+::
+
+method::storeOn
+Same as link::#printOn::, but formatted link::#asCompileString::.
+code::
+"Store this on Post".storeOn(Post);
+
+// equivalent to:
+Post <<< "Store this on Post";
+::
+
+method::inspectorClass
+Returns class link::Classes/StringInspector::.
+
+method::stripRTF
+Returns a new String with all RTF formatting removed.
+code::
+(
+// same as File-readAllStringRTF
+g = File("/code/SuperCollider3/build/Help/UGens/Chaos/HenonC.help.rtf","r");
+g.readAllString.stripRTF.postln;
+g.close;
+)
+::
+
+subsection::Unix Support
+
+Where relevant, the current working directory is the same as the location of the SuperCollider app and the shell is the Bourne shell (sh). Note that the cwd, and indeed the shell itself, does not persist:
+code::
+"echo $0".unixCmd; // print the shell (sh)
+"pwd".unixCmd;
+"cd Help/".unixCmd;
+"pwd".unixCmd;
+
+"export FISH=mackerel".unixCmd;
+"echo $FISH".unixCmd;
+::
+It is however possible to execute complex commands:
+code::
+"pwd; cd Help/; pwd".unixCmd;
+"export FISH=mackerel; echo $FISH".unixCmd;
+::
+Also on os x applescript can be called via osascript:
+code::
+"osascript -e 'tell application \"Safari\" to activate'".unixCmd;
+::
+Should you need an environment variable to persist you can use link::#setenv::.
+
+note::
+Despite the fact that the method is called 'unixCmd', strong::it does work in Windows::. The string must be a DOS command, however: "dir" rather than "ls" for instance.
+::
+
+method::unixCmd
+Execute the String on the command line using the Bourne shell (sh). Returns the pid of the newly created process (use Integer.pidRunning to test if a pid is alive). action is a Function that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process. postOutput is a Boolean that controls whether or not the output of the process is displayed in the post window.
+code::
+"ls Help".unixCmd;
+"echo one; sleep 1; echo two; sleep 1".unixCmd { |res, pid| [\done, res, pid].postln };
+::
+
+method::unixCmdGetStdOut
+Similar to link::#unixCmd:: except that the stdout of the process is returned (synchronously) rather than sent to the post window.
+code::
+~listing = "ls Help".unixCmdGetStdOut; // Grab
+~listing.reverse.as(Array).stutter.join.postln; // Mangle
+::
+
+method::runInTerminal
+Execute the String in a new terminal window. (The string is incorporated into a temporary script file and executed using a shell. "/usr/bash" is the default shell used but you can optionally specify which shell to use as an argument.)
+code::
+"echo ---------Hello delightful SuperCollider user----------".runInTerminal;
+::
+
+method::setenv
+Set the environment variable indicated in the string to equal the String strong::value::. This value will persist until it is changed or SC is quit. Note that if strong::value:: is a path you may need to call link::#standardizePath:: on it.
+code::
+// all defs in this directory will be loaded when a local server boots
+"SC_SYNTHDEF_PATH".setenv("~/scwork/".standardizePath);
+"echo $SC_SYNTHDEF_PATH".unixCmd;
+::
+
+method::getenv
+Returns the value contained in the environment variable indicated by the String.
+code::
+"USER".getenv;
+::
+
+method::pathMatch
+Returns an link::Classes/Array:: containing all paths matching this String. Wildcards apply, non-recursive.
+code::
+Post << "Help/*".pathMatch;
+::
+
+method::loadPaths
+Perform link::#pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
+code::
+"Help/Collections/loadPaths example.scd".loadPaths; //This file posts some text
+::
+
+method::load
+Load and execute the file at the path represented by the receiver.
+::
+
+method::loadRelative
+Load and execute the file at the path represented by the receiver, interpreting the path as relative to the current document or text file. Requires that the file has been saved.
+
+method::resolveRelative
+Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
+
+method::standardizePath
+Expand ~ to your home directory, and resolve symbolic links. See link::Classes/PathName:: for more complex needs.
+code::
+"~/".standardizePath; //This will print your home directory
+::
+
+method::basename
+Return the filename from a Unix path.
+code::
+"Imaginary/Directory/fish.rtf".basename;
+::
+
+method::dirname
+Return the directory name from a Unix path.
+code::
+"Imaginary/Directory/fish.rtf".dirname;
+::
+
+method::splitext
+Split off the extension from a filename or path and return both in an link::Classes/Array:: as [path or filename, extension].
+code::
+"fish.rtf".splitext;
+"Imaginary/Directory/fish.rtf".splitext;
+::
+
+subsection::Document Support
+
+method::newTextWindow
+Create a new link::Classes/Document:: with this.
+code::
+"Here is a new Document".newTextWindow;
+::
+
+method::openDocument
+Create a new link::Classes/Document:: from the path corresponding to this. Returns the Document.
+code::
+(
+d = "Help/Help.html".openDocument;
+d.class;
+)
+::
+
+method::openTextFile
+Create a new link::Classes/Document:: from the path corresponding to this. The selection arguments will preselect the indicated range in the new window. Returns this.
+code::
+(
+d = "Help/Help.html".openTextFile(20, 210);
+d.class;
+)
+::
+
+method::findHelpFile
+Returns the path for the helpfile named this, if it exists, else returns nil.
+code::
+"Document".findHelpFile;
+"foobar".findHelpFile;
+::
+
+method::openHelpFile
+Performs link::#findHelpFile:: on this, and opens the file it if it exists, otherwise opens the main helpfile.
+code::
+"Document".openHelpFile;
+"foobar".openHelpFile;
+::
+
+method::speak
+Sends string to the speech synthesisier of the OS. (OS X only.) see: link::Classes/Speech::
+code::
+"hi i'm talking with the default voice now, i guess".speak;
+::
+
+subsection::Drawing Support
+
+The following methods must be called within an Window-drawHook or a SCUserView-drawFunc function, and will only be visible once the window or the view is refreshed. Each call to Window-refresh SCUserView-refresh will 'overwrite' all previous drawing by executing the currently defined function.
+
+See also: link::Classes/Window::, link::Classes/SCUserView::, link::Classes/Color::, and link::Classes/Pen::.
+
+note::
+for cross-platform GUIs, use code::Pen.stringAtPoint, Pen.stringInRect, Pen.stringCenteredIn, Pen.stringLeftJustIn, Pen.stringRightJustIn:: instead.
+::
+
+method::draw
+Draws the String at the current 0@0 link::Classes/Point::. If not transformations of the graphics state have taken place this will be the upper left corner of the window. See also link::Classes/Pen::.
+code::
+(
+w = Window.new.front;
+w.view.background_(Color.white);
+w.drawHook = {
+	"abababababa\n\n\n".scramble.draw
+};
+w.refresh
+)
+::
+
+method::drawAtPoint
+Draws the String at the given link::Classes/Point:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+code::
+(
+w = Window.new.front;
+w.view.background_(Color.white);
+w.drawHook = {
+	"abababababa\n\n\n".scramble.drawAtPoint(
+		100@100,
+		Font("Courier", 30),
+		Color.blue(0.3, 0.5))
+};
+w.refresh;
+)
+::
+
+method::drawInRect
+Draws the String into the given link::Classes/Rect:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+code::
+(
+w = Window.new.front;
+r = Rect(100, 100, 100, 100);
+w.view.background_(Color.white);
+w.drawHook = {
+	"abababababa\n\n\n".scramble.drawInRect(r, Font("Courier", 12), Color.blue(0.3, 0.5));
+	Pen.strokeRect(r);
+};
+w.refresh;
+)
+::
+
+method::drawCenteredIn
+Draws the String into the given Rect using the Font and Color specified.
+code::
+(
+w = Window.new.front;
+w.view.background_(Color.white);
+r = Rect(100, 100, 100, 100);
+w.drawHook = {
+	"abababababa\n\n\n".scramble.drawCenteredIn(
+		r,
+		Font("Courier", 12),
+		Color.blue(0.3, 0.5)
+	);
+	Pen.strokeRect(r);
+};
+w.refresh;
+)
+::
+
+method::drawLeftJustIn
+Draws the String into the given Rect using the Font and Color specified.
+code::
+(
+w = Window.new.front;
+w.view.background_(Color.white);
+r = Rect(100, 100, 100, 100);
+w.drawHook = {
+	"abababababa\n\n\n".scramble.drawLeftJustIn(
+		r,
+		Font("Courier", 12),
+		Color.blue(0.3, 0.5)
+	);
+	Pen.strokeRect(r);
+};
+w.refresh;
+)
+::
+
+method::drawRightJustIn
+Draws the String into the given link::Classes/Rect:: using the link::Classes/Font:: and link::Classes/Color:: specified.
+code::
+(
+w = Window.new.front;
+w.view.background_(Color.white);
+r = Rect(100, 100, 100, 100);
+w.drawHook = {
+	"abababababa\n\n\n".scramble.drawRightJustIn(
+		r,
+		Font("Courier", 12),
+		Color.blue(0.3, 0.5)
+	);
+	Pen.strokeRect(r);
+};
+w.refresh;
+)
+::

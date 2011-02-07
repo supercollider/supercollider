@@ -1,0 +1,37 @@
+CLASS::LibraryBase
+summary::global storage base class
+
+DESCRIPTION::
+Base class for link::Classes/Library:: and link::Classes/Archive::
+
+There is only one global instance: Archive.global, or Library.global, which is initialized automatically in the subclasses.
+
+CLASSMETHODS::
+
+method::global
+Subclass responsibility
+
+method::clear
+Clear the dictionary
+
+method::at
+Access the dictionary at a path with keys. The keys may be any object, but are usually link::Classes/Symbol::s.
+
+method::put
+Store an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument. The keys may be any object, but are usually link::Classes/Symbol::s.
+
+method::atList
+Access the dictionary at a path, given as a list of keys. The keys may be any object, but are usually link::Classes/Symbol::s.
+
+method::putList
+Store an object in the dictionary at a path, given as a list of keys and the object to be stored as last argument. The keys may be any object, but are usually link::Classes/Symbol::s.
+
+EXAMPLES::
+
+code::
+// an example from the subclass Library:
+
+Library.put(\multi, \level, \addressing, \system, "i'm the thing you are putting in here");
+Library.at(\multi, \level, \addressing, \system).postln;
+Library.atList([\multi, \level, \addressing, \system]).postln;
+::

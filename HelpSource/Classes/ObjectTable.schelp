@@ -1,0 +1,42 @@
+CLASS::ObjectTable
+summary::associate objects with IDs
+
+DESCRIPTION::
+An ObjectTable is used to associate an id with an object. This is useful
+for enabling references to objects on remote systems via Open Sound Control.
+
+CLASSMETHODS::
+
+private::initClass
+
+method::init
+Create the main ObjectTable. This is called in Main::startUp.
+
+method::add
+Put an object in the main ObjectTable and generate an Integer id.
+argument::obj
+the object to put in the table.
+
+method::put
+Put an object in the main ObjectTable under a specific key.
+argument::key
+a link::Classes/Symbol::.
+argument::obj
+the object to put in the table.
+
+method::at
+Get an object in the main ObjectTable.
+argument::id
+an link::Classes/Integer:: or link::Classes/Symbol::.
+
+method::getID
+Get the ID of an object in the table.
+argument::obj
+an object in the table.
+
+INSTANCEMETHODS::
+
+method::add
+Put an object in an ObjectTable and generate an Integer id.
+argument::obj
+the object to put in the table.

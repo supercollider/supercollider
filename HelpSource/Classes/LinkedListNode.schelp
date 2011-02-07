@@ -1,0 +1,5 @@
+CLASS::LinkedListNode
+
+DESCRIPTION::
+LinkedListNode is used to implement the internal nodes of the link::Classes/LinkedList:: class.
+You should not need to deal with a LinkedListNode directly.
