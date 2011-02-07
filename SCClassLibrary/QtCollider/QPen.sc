@@ -42,11 +42,13 @@ QPen {
   }
 
   *joinStyle_ { arg style;
-    this.nonimpl("joinStyle_");
+    _QPen_SetJoinStyle
+    ^this.primitiveFailed;
   }
 
   *capStyle_ { arg style;
-    this.nonimpl("capStyle_");
+    _QPen_SetCapStyle
+    ^this.primitiveFailed;
   }
 
   *lineDash_ { arg pattern;
