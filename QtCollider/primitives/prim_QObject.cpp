@@ -369,12 +369,14 @@ QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g
 
 QC_LANG_PRIMITIVE( QObject_IsValid, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QObjectProxy *proxy = Slot::toObjectProxy( r );
-  bool valid;
+  // NOTE Though we could check validity without posting an event (by locking the proxy),
+  // we post a sync event to maximize the chance that a DeferredDelete event issued earlier
+  // can get processed by the object in question before it is checked for validity.
 
-  proxy->lock();
-  valid = proxy->object() != 0;
-  proxy->unlock();
+  QObjectProxy *proxy = Slot::toObjectProxy( r );
+
+  GetValidityEvent *e = new GetValidityEvent();
+  bool valid = e->send( proxy, Synchronous );
 
   SetBool( r, valid );
 
