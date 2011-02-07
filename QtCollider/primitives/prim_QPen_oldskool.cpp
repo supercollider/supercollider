@@ -446,6 +446,62 @@ QC_QPEN_PRIMITIVE( QPen_Draw, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_QPEN_PRIMITIVE( QPen_FillAxialGradient, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QPointF pt1 = Slot::toPoint(a+0);
+  QPointF pt2 = Slot::toPoint(a+1);
+  QColor c1 = Slot::toColor(a+2);
+  QColor c2 = Slot::toColor(a+3);
+
+  QLinearGradient grad( pt1, pt2 );
+  grad.setColorAt( 0, c1 );
+  grad.setColorAt( 1, c2 );
+
+  QPen pen = painter->pen();
+  QBrush brush = painter->brush();
+
+  painter->setPen( Qt::NoPen );
+  painter->setBrush( grad );
+
+  painter->drawPath( path );
+
+  painter->setPen( pen );
+  painter->setBrush( brush );
+
+  path = QPainterPath();
+
+  return errNone;
+}
+
+QC_QPEN_PRIMITIVE( QPen_FillRadialGradient, 6, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QPointF pt1 = Slot::toPoint(a+0);
+  QPointF pt2 = Slot::toPoint(a+1);
+  float r1 = Slot::toFloat(a+2);
+  float r2 = Slot::toFloat(a+3);
+  QColor c1 = Slot::toColor(a+4);
+  QColor c2 = Slot::toColor(a+5);
+
+  QRadialGradient grad( pt2, r2, pt1 );
+  grad.setColorAt( (r2 > 0 ? r1 / r2 : 0), c1 );
+  grad.setColorAt( 1, c2 );
+
+  QPen pen = painter->pen();
+  QBrush brush = painter->brush();
+
+  painter->setPen( Qt::NoPen );
+  painter->setBrush( grad );
+
+  painter->drawPath( path );
+
+  painter->setPen( pen );
+  painter->setBrush( brush );
+
+  path = QPainterPath();
+
+  return errNone;
+}
+
 QC_QPEN_PRIMITIVE( QPen_StringAtPoint, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString str = Slot::toString( a );
