@@ -206,15 +206,15 @@ QView : QObject {
   }
 
   minimize {
-    this.nonimpl("minimize");
+    if( this.visible ) { this.invokeMethod( \showMinimized ) };
   }
 
   fullScreen {
-    this.nonimpl("fullScreen");
+    this.invokeMethod( \showFullScreen );
   }
 
   endFullScreen {
-    this.nonimpl("endFullScreen");
+    if( this.getProperty( \fullScreen ) ) { this.invokeMethod( \showNormal ) };
   }
 
   alpha_ { arg aFloat;
@@ -241,8 +241,10 @@ QView : QObject {
 
   notClosed { ^this.isClosed.not }
 
-  setInnerExtent {
-    this.nonimpl("setInnerExtent");
+  setInnerExtent { arg w, h;
+    // bypass this.bounds, to avoid QWindow flipping the y coordinate
+    var r = this.getProperty(\geometry, Rect.new );
+    this.setProperty(\geometry, r.resizeTo( w, h ); )
   }
 
   // ----------------- actions .....................................
