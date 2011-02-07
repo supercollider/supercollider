@@ -1,0 +1,62 @@
+CLASS::AppClock
+categories::Scheduling>Clocks
+summary::Clock running on main application thread
+related::Classes/SystemClock, Classes/TempoClock
+
+DESCRIPTION::
+SystemClock is more accurate, but cannot call Cocoa primitives. AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.
+
+You will need to use the link::Classes/SystemClock:: to get accurate/musical scheduling.
+
+CLASSMETHODS::
+
+private::initClass
+
+method::sched
+The float you return specifies the delta to resched the function for. Returning nil will stop the task from being rescheduled.
+code::
+(
+AppClock.sched(0.0,{ arg time;
+	["AppClock has been playing for ",time].postln;
+	rrand(0.1,0.9);
+});
+)
+::
+code::
+(
+AppClock.sched(2.0,{
+	"2.0 seconds later".postln;
+	nil;
+});
+)
+::
+
+method::clear
+Clear the AppClock's scheduler to stop it.
+code::
+AppClock.clear;
+::
+
+method::play
+The link::Classes/Routine:: (or link::Classes/Task::) yields a float value indicating the delta (secs) for the AppClock to wait until resuming the Routine.
+code::
+(
+var w, r;
+w = Window.new("trem", Rect(512, 256, 360, 130));
+w.front;
+r = Routine({ arg appClockTime;
+	["AppClock has been playing for secs:",appClockTime].postln;
+	60.do({ arg i;
+		0.05.yield;
+		w.bounds = w.bounds.moveBy(10.rand2, 10.rand2);
+		w.alpha = cos(i*0.1pi)*0.5+0.5;
+	});
+	1.yield;
+	w.close;
+});
+AppClock.play(r);
+)
+::
+	
+method::tick
+AppClock.tick is called periodically by the SuperCollider application itself. This updates the link::Classes/Scheduler:: and causes any scheduled tasks to be executed. You should never call this method yourself.
