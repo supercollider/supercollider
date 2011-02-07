@@ -52,6 +52,16 @@ void QcListWidget::setItems( const VariantList & items )
   setCurrentRow( 0 );
 }
 
+void QcListWidget::setColors( const VariantList & colors ) const
+{
+  int cc = colors.data.count();
+  int ic = count();
+  for( int i=0; i<cc && i < ic; ++i ) {
+    QListWidgetItem *it = item(i);
+    it->setBackground( colors.data[i].value<QColor>() );
+  }
+}
+
 void QcListWidget::keyPressEvent( QKeyEvent *e )
 {
   QListWidget::keyPressEvent( e );
