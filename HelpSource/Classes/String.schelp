@@ -1,5 +1,6 @@
 CLASS::String
 summary::array of characters
+categories:: Collections>Ordered
 
 DESCRIPTION::
 String represents an array of characters.

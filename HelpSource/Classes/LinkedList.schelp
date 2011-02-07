@@ -1,5 +1,6 @@
 CLASS::LinkedList
 summary::doubly linked list
+categories:: Collections>Ordered
 
 DESCRIPTION::
 LinkedList implements a doubly linked list.

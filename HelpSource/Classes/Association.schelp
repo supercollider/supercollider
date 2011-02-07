@@ -1,6 +1,6 @@
 CLASS::Association
 summary::relate two objects
-categories::Collections>Ordered
+categories::Collections
 
 DESCRIPTION::
 Associates a key with a value.

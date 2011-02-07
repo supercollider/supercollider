@@ -1,5 +1,6 @@
 CLASS::Interval
 summary::range of integers
+categories:: Math
 
 DESCRIPTION::
 An Interval is a range of integers from a starting value to an ending value by some step value.

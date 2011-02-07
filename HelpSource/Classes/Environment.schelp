@@ -1,6 +1,7 @@
 CLASS::Environment
 related::Classes/Event, Classes/IdentityDictionary
 categories::Collections>Unordered
+summary:: A dictionary which can serve as a 'name space' for functions
 
 DESCRIPTION::
 An Environment is an IdentityDictionary with additional features that allow it to serve as a 'name space' within which functions can be defined and/or evaluated.

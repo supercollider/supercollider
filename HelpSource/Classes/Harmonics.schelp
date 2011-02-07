@@ -1,4 +1,6 @@
 CLASS::Harmonics
+summary:: Convenient factory for filling buffers with harmonics on the server
+categories:: Collections, Server, UGens>Buffer
 
 DESCRIPTION::
 Harmonics objects are convenient factories for creating Arrays that are used to fill buffers using the b_gen sine fill commands on the server.

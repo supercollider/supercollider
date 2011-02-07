@@ -1,5 +1,6 @@
 CLASS::ObjectTable
 summary::associate objects with IDs
+categories:: Collections>Unordered
 
 DESCRIPTION::
 An ObjectTable is used to associate an id with an object. This is useful

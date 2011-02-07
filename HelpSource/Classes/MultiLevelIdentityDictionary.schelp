@@ -1,6 +1,7 @@
 CLASS::MultiLevelIdentityDictionary
 summary::tree of dictionaries
 related::IdentityDictionary
+categories:: Collections>Unordered
 
 DESCRIPTION::
 A tree of IdentityDictionaries. Addresses within the tree are specified with a series of keys. link::Classes/Library:: is its most useful subclass.

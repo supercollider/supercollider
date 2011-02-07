@@ -1,6 +1,7 @@
 CLASS::Scale
 summary::represents a musical scale
 related::Classes/Tuning
+categories::Math, Tuning
 
 DESCRIPTION::
 Scale supports arbitrary octave divisions and ratios, and (in conjunction with link::Classes/Tuning::) can generate pitch information in various ways, including as input to Patterns.

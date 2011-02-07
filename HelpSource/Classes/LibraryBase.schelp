@@ -1,5 +1,6 @@
 CLASS::LibraryBase
 summary::global storage base class
+categories:: Collections
 
 DESCRIPTION::
 Base class for link::Classes/Library:: and link::Classes/Archive::

@@ -1,5 +1,6 @@
 CLASS::Archive
 summary::storing objects to file
+categories:: Collections, Files
 related::Classes/Library, Classes/Object, Classes/LibraryBase
 
 DESCRIPTION::

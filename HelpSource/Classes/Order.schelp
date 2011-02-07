@@ -1,6 +1,7 @@
 CLASS::Order
 summary::an order of elements with a numerical index
 related::Classes/SparseArray
+categories:: Collections>Ordered
 
 DESCRIPTION::
 Keeps elements in an order and allows to put them at arbitrary slots 

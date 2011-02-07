@@ -1,6 +1,7 @@
 CLASS::Library
 summary::keeping objects in a central place
 related::Classes/Archive, Classes/LibraryBase
+categories:: Collections
 
 DESCRIPTION::
 Library is a global MultiLevelIdentityDictionary.

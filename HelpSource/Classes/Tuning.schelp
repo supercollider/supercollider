@@ -1,6 +1,7 @@
 CLASS::Tuning
 summary::represents a musical tuning
 related::Classes/Scale
+categories:: Tuning
 
 DESCRIPTION::
 Represents a musical tuning (e.g. equal temperament, just intonation, etc.). Used in conjunction with link::Classes/Scale:: to generate pitch information.

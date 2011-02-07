@@ -1,5 +1,6 @@
 CLASS::Pair
 summary::LISP-like two element cells
+categories:: Collections>Ordered
 
 DESCRIPTION::
 

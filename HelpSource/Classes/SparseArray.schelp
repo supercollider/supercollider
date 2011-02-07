@@ -1,5 +1,6 @@
 CLASS::SparseArray
 categories::Collections>Ordered
+summary:: Array that stores duplicated values more efficiently
 
 DESCRIPTION::
 A sparse array is a data structure that acts in exactly the same manner as an Array. However, data is represented differently in memory, in a way that makes it much more efficient to store very large arrays in which many values are the same.
