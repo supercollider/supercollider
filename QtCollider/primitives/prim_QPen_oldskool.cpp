@@ -175,6 +175,48 @@ QC_QPEN_PRIMITIVE( QPen_Width, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_QPEN_PRIMITIVE( QPen_SetJoinStyle, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  int style = Slot::toInt(a);
+  QPen pen = painter->pen();
+
+  switch( style ) {
+    case 0:
+      pen.setJoinStyle( Qt::MiterJoin ); break;
+    case 1:
+      pen.setJoinStyle( Qt::RoundJoin ); break;
+    case 2:
+      pen.setJoinStyle( Qt::BevelJoin ); break;
+    default:
+      return errFailed;
+  }
+
+  painter->setPen( pen );
+
+  return errNone;
+}
+
+QC_QPEN_PRIMITIVE( QPen_SetCapStyle, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  int style = Slot::toInt(a);
+  QPen pen = painter->pen();
+
+  switch( style ) {
+    case 0:
+      pen.setCapStyle( Qt::FlatCap ); break;
+    case 1:
+      pen.setCapStyle( Qt::RoundCap ); break;
+    case 2:
+      pen.setCapStyle( Qt::SquareCap ); break;
+    default:
+      return errFailed;
+  }
+
+  painter->setPen( pen );
+
+  return errNone;
+}
+
 QC_QPEN_PRIMITIVE( QPen_Clip, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   painter->setClipPath( path );
