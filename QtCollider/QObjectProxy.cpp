@@ -402,6 +402,11 @@ bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )
   return true;
 }
 
+bool QObjectProxy::getValidityEvent( QtCollider::GetValidityEvent *e )
+{
+  return ( qObject != 0 );
+}
+
 bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 {
   int type = event->type();
