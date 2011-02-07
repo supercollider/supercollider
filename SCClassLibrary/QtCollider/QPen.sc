@@ -241,11 +241,13 @@ QPen {
   }
 
   *fillAxialGradient { arg startPoint, endPoint, startColor, endColor;
-    this.nonimpl( "fillAxialGradient" );
+    _QPen_FillAxialGradient;
+    ^this.primitiveFailed;
   }
 
   *fillRadialGradient { arg innerCircleCenter, outerCircleCenter, startRadius, endRadius, startColor, endColor;
-    this.nonimpl( "fillRadialGradient" );
+    _QPen_FillRadialGradient;
+    ^this.primitiveFailed;
   }
 
   *setShadow { arg offsetPoint, blur, color;
