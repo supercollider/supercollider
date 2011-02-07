@@ -62,6 +62,7 @@ class QcListWidget : public QListWidget, public QcHelper
 {
   Q_OBJECT
   Q_PROPERTY( VariantList items READ dummyVariantList WRITE setItems );
+  Q_PROPERTY( VariantList colors READ dummyVariantList WRITE setColors );
 
   public:
     QcListWidget();
@@ -70,6 +71,7 @@ class QcListWidget : public QListWidget, public QcHelper
     void returnPressed();
   private:
     void setItems( const VariantList & );
+    void setColors( const VariantList & ) const;
     void keyPressEvent( QKeyEvent * );
 };
 

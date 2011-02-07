@@ -628,9 +628,9 @@ QListView : QItemViewBase {
     enterKeyAction.value( this );
   }
 
-  colors_ { arg aColor;
-    colors = aColor;
-    this.nonimpl( "colors" );
+  colors_ { arg colorArray;
+    colors = colorArray;
+    this.setProperty( \colors, colorArray );
   }
 }
 
