@@ -52,7 +52,8 @@ QPen {
   }
 
   *lineDash_ { arg pattern;
-    this.nonimpl("lineDash_");
+    _QPen_SetDashPattern
+    ^this.primitiveFailed;
   }
 
   *alpha_ { arg value;

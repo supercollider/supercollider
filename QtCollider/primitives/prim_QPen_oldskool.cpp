@@ -217,6 +217,33 @@ QC_QPEN_PRIMITIVE( QPen_SetCapStyle, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_QPEN_PRIMITIVE( QPen_SetDashPattern, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !IsObj( a ) ) return errWrongType;
+  PyrObject *obj = slotRawObject( a );
+  if( obj->classptr != class_floatarray ) return errWrongType;
+  PyrFloatArray *farray = reinterpret_cast<PyrFloatArray*>(obj);
+
+  int s = farray->size;
+  float *f = farray->f;
+  QVector<qreal> pattern;
+
+  int i = 1;
+  while( i<s ) {
+    pattern << *f << *(f+1);
+    f += 2;
+    i += 2;
+  }
+
+  if( pattern.size() ) {
+    QPen pen = painter->pen();
+    pen.setDashPattern( pattern );
+    painter->setPen( pen );
+  }
+
+  return errNone;
+}
+
 QC_QPEN_PRIMITIVE( QPen_SetOpacity, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   float opacity = Slot::toFloat(a);
