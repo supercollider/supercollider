@@ -113,10 +113,10 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/NSStringICUAdditions.m
 	)
 
-if($MAC_OSX_SDK_VERSION GREATER 4)
+if(MAC_OSX_SDK_VERSION GREATER 4)
 	list(APPEND scapp_sources
-		"LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c"
-		"LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c"
+		"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c"
+		"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c"
 	)
 endif()
 
