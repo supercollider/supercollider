@@ -39,7 +39,7 @@ void QcCanvas::repaint()
 
 void QcCanvas::customEvent( QEvent *e )
 {
-  if( e->type() == QtCollider::Event_Refresh ) {
+  if( e->type() == (QEvent::Type) QtCollider::Event_Refresh ) {
     e->accept();
     repaint();
   }
