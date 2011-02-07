@@ -55,8 +55,9 @@ QPen {
     this.nonimpl("lineDash_");
   }
 
-  *alpha_ {
-    this.nonimpl("alpha_");
+  *alpha_ { arg value;
+    _QPen_SetOpacity
+    ^this.primitiveFailed;
   }
 
   *blendMode_ { arg mode;
