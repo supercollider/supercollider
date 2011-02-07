@@ -602,11 +602,11 @@ QListView : QItemViewBase {
   }
 
   selectedStringColor {
-    ^palette.higlightedTextColor;
+    ^palette.highlightedTextColor;
   }
 
   selectedStringColor_ { arg aColor;
-    palette.higlightedTextColor = aColor;
+    palette.highlightedTextColor = aColor;
     this.setProperty( \palette, palette );
   }
 
