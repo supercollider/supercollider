@@ -217,6 +217,13 @@ QC_QPEN_PRIMITIVE( QPen_SetCapStyle, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_QPEN_PRIMITIVE( QPen_SetOpacity, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  float opacity = Slot::toFloat(a);
+  painter->setOpacity( opacity );
+  return errNone;
+}
+
 QC_QPEN_PRIMITIVE( QPen_Clip, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   painter->setClipPath( path );
