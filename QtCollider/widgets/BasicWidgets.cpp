@@ -32,7 +32,6 @@ QcWidgetFactory<QcHLayoutWidget> hLayoutWidgetFactory;
 QcWidgetFactory<QcVLayoutWidget> vLayoutWidgetFactory;
 QcWidgetFactory<QLabel> labelFactory;
 QcWidgetFactory<QcTextField> textFieldFactory;
-QcWidgetFactory<QcCustomPainted> customPaintedFactory;
 
 //////////////////////////// QcListWidget //////////////////////////////////////
 
@@ -159,3 +158,22 @@ void QcButton::doAction()
   cycleStates();
   Q_EMIT( action() );
 }
+
+class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
+{
+protected:
+  virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments )
+  {
+    QObjectProxy *proxy =
+        QcWidgetFactory<QcCustomPainted>::newInstance( scObject, arguments );
+
+    if( proxy ) {
+      QObject::connect( proxy->object(), SIGNAL(painting(QPainter*)),
+                        proxy, SLOT(customPaint(QPainter*)) );
+    }
+
+    return proxy;
+  }
+};
+
+static QcCustomPaintedFactory customPaintedFactory;

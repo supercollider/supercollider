@@ -28,7 +28,25 @@
 #include <QChildEvent>
 #include <QApplication>
 
-static QcWidgetFactory<QcScrollArea> factory;
+class QcScrollAreaFactory : public QcWidgetFactory<QcScrollArea>
+{
+protected:
+  virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments )
+  {
+    QObjectProxy *proxy =
+        QcWidgetFactory<QcScrollArea>::newInstance( scObject, arguments );
+
+    if( proxy ) {
+      QcScrollArea *scrollArea = static_cast<QcScrollArea*>( proxy->object() );
+      QObject::connect( scrollArea->widget(), SIGNAL(painting(QPainter*)),
+                        proxy, SLOT(customPaint(QPainter*)) );
+    }
+
+    return proxy;
+  }
+};
+
+static QcScrollAreaFactory factory;
 
 QcScrollWidget::QcScrollWidget( QWidget *parent ) : QcCanvas( parent )
 {
@@ -77,7 +95,6 @@ QcScrollArea::QcScrollArea()
   scrollWidget = new QcScrollWidget( viewport() );
   setWidget( scrollWidget );
   setWidgetResizable( true );
-  connect( scrollWidget, SIGNAL(painting()), this, SIGNAL(painting()) );
 }
 
 void QcScrollArea::setHasBorder( bool b ) {

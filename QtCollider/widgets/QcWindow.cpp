@@ -38,8 +38,15 @@ public:
     bool scroll = arguments[4].value<bool>();
 
     QWidget *window;
-    if( scroll ) window = new QcScrollArea();
-    else window = new QcCustomPainted();
+    QWidget *canvas;
+    if( scroll ) {
+      QcScrollArea *scroll = new QcScrollArea();
+      window = scroll;
+      canvas = scroll->widget();
+    }
+    else {
+      window = canvas = new QcCustomPainted();
+    }
 
     QString name = arguments[0].toString();
     window->setWindowTitle( name );
@@ -62,7 +69,12 @@ public:
     QObject::connect( closeShortcut, SIGNAL(activated()),
                       window, SLOT(close()) );
 
-    return new QWidgetProxy( window, po );
+    QWidgetProxy *proxy = new QWidgetProxy( window, po );
+
+    QObject::connect( canvas, SIGNAL(painting(QPainter*)),
+                      proxy, SLOT(customPaint(QPainter*)) );
+
+    return proxy;
   }
 };
 

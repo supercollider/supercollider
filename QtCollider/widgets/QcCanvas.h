@@ -31,11 +31,11 @@ class QcCanvas : public QWidget
 public:
   QcCanvas( QWidget *parent = 0 );
   void setBackground( const QColor & c ) { _bkgColor = c; update(); }
-  void setPaint( bool b ) { paint = b; repaint(); }
+  void setPaint( bool b ) { paint = b; refresh(); }
 public Q_SLOTS:
-  void repaint();
+  void refresh();
 Q_SIGNALS:
-  void painting();
+  void painting(QPainter*);
 protected:
   virtual void customEvent( QEvent * );
   virtual void resizeEvent( QResizeEvent * );

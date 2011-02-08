@@ -23,13 +23,16 @@
 #define QC_PAINTING_H
 
 class QPainter;
+class QWidget;
 
 namespace QtCollider {
+  // WARNING language must be locked to call these:
 
-void beginPainting( QPainter * );
-void endPainting();
-QPainter * globalPainter();
+  bool beginPainting( QPainter *, QWidget * );
+  void endPainting();
 
+  QPainter * globalPainter();
+  QWidget *paintedWidget();
 }
 
 #endif

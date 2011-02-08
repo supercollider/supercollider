@@ -58,11 +58,9 @@ class QcScrollArea : public QScrollArea, public QcHelper
                     qMax( vs.width(), cs.width() ),
                     qMax( vs.height(), cs.height() ) );
     }
-    Q_INVOKABLE void repaint() { scrollWidget->repaint(); }
+    Q_INVOKABLE void refresh() { scrollWidget->refresh(); }
     QPointF visibleOrigin() const;
     void setVisibleOrigin( const QPointF & );
-  Q_SIGNALS:
-    void painting();
   private:
     QcScrollWidget *scrollWidget;
 };

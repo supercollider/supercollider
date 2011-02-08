@@ -31,7 +31,7 @@ QcCanvas::QcCanvas( QWidget *parent )
   //_bkgColor = palette().color( QPalette::Background );
 }
 
-void QcCanvas::repaint()
+void QcCanvas::refresh()
 {
   repaintNeeded = true;
   update();
@@ -41,13 +41,13 @@ void QcCanvas::customEvent( QEvent *e )
 {
   if( e->type() == (QEvent::Type) QtCollider::Event_Refresh ) {
     e->accept();
-    repaint();
+    refresh();
   }
 }
 
 void QcCanvas::resizeEvent( QResizeEvent * )
 {
-  repaint();
+  refresh();
 }
 
 void QcCanvas::paintEvent( QPaintEvent * )
@@ -58,9 +58,7 @@ void QcCanvas::paintEvent( QPaintEvent * )
 
     QPainter pixPainter( &_pixmap );
 
-    QtCollider::beginPainting( &pixPainter );
-    Q_EMIT( painting() );
-    QtCollider::endPainting();
+    Q_EMIT( painting(&pixPainter) );
 
     repaintNeeded = false;
   }

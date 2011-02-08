@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "QWidgetProxy.h"
+#include "Painting.h"
 
 #include <QApplication>
 #include <QLayout>
@@ -100,6 +101,18 @@ bool QWidgetProxy::setParentEvent( QtCollider::SetParentEvent *e ) {
     return true;
   }
   return false;
+}
+
+void QWidgetProxy::customPaint( QPainter *painter )
+{
+  QtCollider::lockLang();
+
+  if( QtCollider::beginPainting( painter, widget() ) ) {
+    invokeScMethod( getsym("doDrawFunc"), QList<QVariant>(), 0, true );
+    QtCollider::endPainting();
+  }
+
+  QtCollider::unlockLang();
 }
 
 void QWidgetProxy::sendRefreshEventRecursive( QWidget *w ) {
