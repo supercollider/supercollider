@@ -34,6 +34,7 @@ public:
 
   QcFileDialog() {
     dialog = new QFileDialog();
+    dialog->setDirectory( QDir::home() );
     setParent( dialog );
     connect( dialog, SIGNAL(finished(int)), this, SLOT(onFinished(int)) );
   }
