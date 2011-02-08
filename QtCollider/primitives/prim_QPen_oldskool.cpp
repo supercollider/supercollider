@@ -65,14 +65,13 @@ private:
 
 static bool announced = false;
 static QPainter *painter = 0;
-static QWidget * widget = 0;
 static QPainterPath path;
 
 namespace QtCollider {
   void announcePainting() { announced = true; }
   bool paintingAnnounced() { return announced; }
 
-  bool beginPainting( QPainter *p, QWidget *w )
+  bool beginPainting( QPainter *p )
   {
     if( painter ) {
       qcErrorMsg( QString("Painting already in progress!") );
@@ -80,7 +79,6 @@ namespace QtCollider {
     }
 
     painter = p;
-    widget = w;
 
     painter->setRenderHint( QPainter::Antialiasing, true );
     QColor black( 0,0,0 );
@@ -95,13 +93,10 @@ namespace QtCollider {
   void endPainting()
   {
     painter = 0;
-    widget = 0;
     announced = false;
   }
 
   QPainter *globalPainter() { return painter; }
-
-  QWidget *paintedWidget() { return widget; }
 }
 
 typedef QVector2D vec2;

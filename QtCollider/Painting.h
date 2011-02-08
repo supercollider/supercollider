@@ -32,11 +32,10 @@ namespace QtCollider {
 
   // WARNING language must be locked to call these:
 
-  bool beginPainting( QPainter *, QWidget * );
+  bool beginPainting( QPainter * );
   void endPainting();
 
   QPainter * globalPainter();
-  QWidget *paintedWidget();
 }
 
 #endif
