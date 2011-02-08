@@ -156,6 +156,21 @@ Color {
 		this.storeParamsOn(stream);
 	}
 	storeArgs { ^[red,green,blue,alpha] }
+
+	// FIXME The following GUI redirections are rather ugly.
+	// Shall we make GUI.color instead, and then CocoaColor, SwingColor, QColor etc. ?
+
+	setStroke {
+		if( GUI.id === \cocoa ) { ^this.cocoaPrSetStroke } { Pen.strokeColor = this; }
+	}
+
+	setFill {
+		if( GUI.id === \cocoa ) { ^this.cocoaPrSetFill } { Pen.fillColor = this; }
+	}
+
+	set {
+		this.setStroke.setFill;
+	}
 }
 
 /*	X-windows colors :
