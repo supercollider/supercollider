@@ -114,7 +114,7 @@ void QWidgetProxy::customPaint( QPainter *painter )
 
   QtCollider::lockLang();
 
-  if( QtCollider::beginPainting( painter, widget() ) ) {
+  if( QtCollider::beginPainting( painter ) ) {
     invokeScMethod( getsym("doDrawFunc"), QList<QVariant>(), 0, true );
     QtCollider::endPainting();
   }
@@ -125,6 +125,7 @@ void QWidgetProxy::customPaint( QPainter *painter )
 void QWidgetProxy::sendRefreshEventRecursive( QWidget *w ) {
   QEvent event( static_cast<QEvent::Type>( QtCollider::Event_Refresh ) );
   QApplication::sendEvent( w, &event );
+
   const QObjectList &children = w->children();
   Q_FOREACH( QObject *child, children ) {
     if( child->isWidgetType() )
