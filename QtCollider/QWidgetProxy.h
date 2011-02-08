@@ -56,6 +56,10 @@ protected:
 
   inline QWidget *widget() { return static_cast<QWidget*>( object() ); }
 
+private Q_SLOTS:
+
+  void customPaint( QPainter * );
+
 private:
 
   static void sendRefreshEventRecursive( QWidget *w );

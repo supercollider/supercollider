@@ -14,8 +14,6 @@ QUserView : QView {
   }
 
   drawFunc_ { arg aFunction;
-    if( drawFunc.notNil ) { this.disconnectFunction( 'painting()', drawFunc ) };
-    this.connectFunction( 'painting()', aFunction, true );
     if( drawFunc.isNil ) { this.setProperty( \paint, true ) };
     drawFunc = aFunction;
   }
@@ -50,4 +48,6 @@ QUserView : QView {
   mouseOverEvent { arg x, y;
     if( this.enabled ) { ^this.mouseOver( x, y ) };
   }
+
+  doDrawFunc { drawFunc.value(this) }
 }

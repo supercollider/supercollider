@@ -64,40 +64,39 @@ private:
   int name ( receiver, args, global )
 
 static QPainter *painter = 0;
+static QWidget * widget = 0;
 static QPainterPath path;
-static QMutex painterMutex;
 
 namespace QtCollider {
-  void beginPainting( QPainter *p )
+  bool beginPainting( QPainter *p, QWidget *w )
   {
-    painterMutex.lock();
-    if( painter )
+    if( painter ) {
       qcErrorMsg( QString("Painting already in progress!") );
+      return false;
+    }
 
     painter = p;
+    widget = w;
+
     painter->setRenderHint( QPainter::Antialiasing, true );
     QColor black( 0,0,0 );
     painter->setPen( black );
     painter->setBrush( black );
 
     path = QPainterPath();
-    painterMutex.unlock();
+
+    return true;
   }
 
   void endPainting()
   {
-    painterMutex.lock();
     painter = 0;
-    painterMutex.unlock();
+    widget = 0;
   }
 
-  QPainter *globalPainter()
-  {
-    painterMutex.lock();
-    QPainter *p = painter;
-    painterMutex.unlock();
-    return painter;
-  }
+  QPainter *globalPainter() { return painter; }
+
+  QWidget *paintedWidget() { return widget; }
 }
 
 typedef QVector2D vec2;

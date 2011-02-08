@@ -22,6 +22,7 @@
 #include "primitives.h"
 #include "Slot.h"
 #include "../QWidgetProxy.h"
+#include "../Painting.h"
 
 #include <PyrKernel.h>
 
@@ -54,6 +55,20 @@ QC_LANG_PRIMITIVE( QWidget_BringFront, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
 QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
+
+  QWidget *pw = QtCollider::paintedWidget();
+
+  proxy->lock();
+
+  QObject *o = proxy->object();
+  if( pw && o && pw == o ) {
+    qcDebugMsg( 2, QString("WARNING: This widget is already being painted on!"
+                           " Will not refresh.") );
+    proxy->unlock();
+    return errNone;
+  }
+
+  proxy->unlock();
 
   GenericWidgetRequest *req = new GenericWidgetRequest( &QWidgetProxy::refresh );
 

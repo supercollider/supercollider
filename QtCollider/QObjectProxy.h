@@ -120,15 +120,17 @@ class QObjectProxy : public QObject
     // thread-safe (if connection == queued)
     bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
 
+  protected:
+
+    void invokeScMethod
+      ( PyrSymbol *method, const QList<QVariant> & args = QList<QVariant>(),
+        PyrSlot *result = 0, bool locked = false );
+
   private Q_SLOTS:
 
     void invalidate();
 
   private:
-
-    void invokeScMethod
-      ( PyrSymbol *method, const QList<QVariant> & args = QList<QVariant>(),
-        PyrSlot *result = 0, bool locked = false );
 
     inline void scMethodCallEvent( ScMethodCallEvent * );
 
