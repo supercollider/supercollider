@@ -5378,6 +5378,7 @@ void hypotx_ai(BinaryOpUGen *unit, int inNumSamples)
 # undef vec_cmple
 #endif
 #define vec_cmple(a, b) (vec_cmpge(b, a))
+#define vec_div(a, b)  vec_mul(a, vec_reciprocal(b))
 
 
 void vadd_aa(BinaryOpUGen *unit, int inNumSamples)

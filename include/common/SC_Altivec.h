@@ -114,7 +114,6 @@ inline vector float vec_reciprocal( vector float v )
 	return vec_madd( reciprocal, vec_nmsub( reciprocal, v, vec_float_1()), reciprocal ); //Newton Rapheson refinement
 }
 
-#define vec_div(a, b)  vec_mul(a, vec_reciprocal(b))
 
 // seed = ((seed & mask) << shift1) ^ (((seed << shift2) ^ seed) >> shift3);
 
