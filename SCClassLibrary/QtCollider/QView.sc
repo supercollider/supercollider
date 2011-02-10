@@ -5,7 +5,7 @@ QView : QObject {
   classvar <orientationDict, <alignmentDict;
 
   // general props
-  var <font, <palette, <resize = 1, <alpha = 1.0;
+  var <font, <resize = 1, <alpha = 1.0;
   // container props
   var <decorator, <layout;
   // top window props
@@ -69,13 +69,20 @@ QView : QObject {
     this.setProperty( \font, f );
   }
 
+  palette {
+    ^this.getProperty( \palette, QPalette.new.init );
+  }
+
+  palette_ { arg p;
+    this.setProperty( \palette, p );
+  }
+
   background {
-    ^palette.windowColor;
+    ^this.palette.windowColor;
   }
 
   background_ { arg color;
-    palette.windowColor = color;
-    this.setProperty( \palette, palette );
+    this.setProperty( \palette, this.palette.windowColor_(color) );
     this.setProperty( \autoFillBackground, true );
   }
 
@@ -382,8 +389,6 @@ QView : QObject {
   initQView { arg parent;
 
     var handleKeyDown, handleKeyUp;
-
-    palette = QPalette.new;
 
     if (parent.notNil) {
         if( parent.decorator.notNil ) { parent.decorator.place(this) }

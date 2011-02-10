@@ -79,6 +79,33 @@ void Slot::setString( PyrSlot *slot, const QString& arg )
   SetObject( slot, str );
 }
 
+int Slot::setColor( PyrSlot *slot, const QColor &c )
+{
+  if( !isKindOfSlot( slot, s_color->u.classobj ) ) return errWrongType;
+
+  PyrSlot *slots = slotRawObject( slot )->slots;
+
+  SetFloat( slots+0, c.red() / 255.0 );
+  SetFloat( slots+1, c.green() / 255.0 );
+  SetFloat( slots+2, c.blue() / 255.0 );
+  SetFloat( slots+3, c.alpha() / 255.0 );
+
+  return errNone;
+}
+
+int Slot::setPalette( PyrSlot *slot, const QPalette &plt )
+{
+  if( !isKindOfSlot( slot, getsym("QPalette")->u.classobj ) ) return errWrongType;
+
+  PyrSlot *s = slotRawObject( slot )->slots;
+
+  for( int i=0; i<8; ++i, ++s ) {
+    if( setColor( s, plt.color( paletteColorRoles[i] ) ) ) return errFailed;
+  }
+
+  return errNone;
+}
+
 void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
 {
   VMGlobals *g = gMainVMGlobals;
@@ -120,6 +147,10 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
     case QMetaType::QString:
         Slot::setString( slot, val.toString() );
         return errNone;
+    case QMetaType::QColor:
+         return Slot::setColor( slot, val.value<QColor>() );
+    case QMetaType::QPalette:
+        return Slot::setPalette( slot, val.value<QPalette>() );
     case QMetaType::Float:
     case QMetaType::Double:
         SetFloat( slot, val.value<float>() );
@@ -264,13 +295,13 @@ QPalette Slot::toPalette( PyrSlot *slot )
 
   PyrSlot *slots = slotRawObject( slot )->slots;
   QPalette palette;
-  int i;
 
   PyrClass *color_class = s_color->u.classobj;
 
-  for( i=0; i<8; ++i, ++slots ) {
-    if( !isKindOfSlot( slots, color_class ) ) continue;
-    palette.setColor( paletteColorRoles[i], Slot::toColor(slots) );
+  for( int i=0; i<8; ++i, ++slots ) {
+    QColor c = Slot::toColor(slots);
+    if( !c.isValid() ) continue;
+    palette.setColor( paletteColorRoles[i], c );
   }
 
   return palette;
@@ -288,7 +319,6 @@ VariantList Slot::toVariantList( PyrSlot *slot )
     return list;
   }
   else if( isKindOfSlot( slot, class_symbolarray ) ) {
-    printf("a SymbolArray");
     PyrSymbolArray *symarray = slotRawSymbolArray( slot );
     PyrSymbol **symbols = symarray->symbols;
     int size = symarray->size;
