@@ -21,6 +21,10 @@
 
 #include "SC_PlugIn.h"
 
+#ifdef SC_IPHONE
+#include "SC_VFP11.h"
+#endif
+
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
 #include "simd_mix.hpp"
@@ -1679,7 +1683,7 @@ void LocalIn_next_a(LocalIn *unit, int inNumSamples)
 	World *world = unit->mWorld;
 	int bufLength = world->mBufLength;
 	int numChannels = unit->mNumOutputs;
-	
+
 	float *in = unit->m_bus;
 	int32 *touched = unit->m_busTouched;
 	int32 bufCounter = unit->mWorld->mBufCounter;
@@ -1762,7 +1766,7 @@ void LocalIn_Ctor(LocalIn* unit)
 	int numChannels = unit->mNumOutputs;
 
 	World *world = unit->mWorld;
-	
+
 	int busDataSize = numChannels * BUFLENGTH;
 	unit->m_bus = (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int32));
 	unit->m_busTouched = (int32*)(unit->m_bus + busDataSize);
@@ -1770,7 +1774,7 @@ void LocalIn_Ctor(LocalIn* unit)
 	{
 		unit->m_busTouched[i] = -1;
 	}
-	
+
 	if (unit->mCalcRate == calc_FullRate) {
 		if (unit->mParent->mLocalAudioBusUnit)
 		{
