@@ -117,12 +117,11 @@ QStaticText : QTextViewBase {
   }
 
   stringColor {
-    ^palette.windowTextColor;
+    ^this.palette.windowTextColor;
   }
 
   stringColor_ { arg color;
-    palette.windowTextColor = color;
-    this.setProperty( \palette, palette );
+    this.setProperty( \palette, this.palette.windowTextColor_(color) );
   }
 }
 
@@ -138,21 +137,19 @@ QTextField : QTextViewBase {
   }
 
   stringColor {
-    ^palette.baseTextColor;
+    ^this.palette.baseTextColor;
   }
 
   stringColor_ { arg color;
-    palette.baseTextColor = color;
-    this.setProperty( \palette, palette );
+    this.setProperty( \palette, this.palette.baseTextColor_(color) );
   }
 
   background {
-    ^palette.baseColor;
+    ^this.palette.baseColor;
   }
 
   background_ { arg color;
-    palette.baseColor = color;
-    this.setProperty( \palette, palette )
+    this.setProperty( \palette, this.palette.baseColor_(color) )
   }
 
   value {
@@ -283,12 +280,11 @@ QSlider : QAbstractStepValue {
   }
 
   knobColor {
-    ^palette.buttonColor;
+    ^this.palette.buttonColor;
   }
 
-  knobColor_ { arg aColor;
-    palette.buttonColor = aColor;
-    this.setProperty( \palette, palette );
+  knobColor_ { arg color;
+    this.setProperty( \palette, this.palette.buttonColor_(color) );
   }
 
   initQSlider { arg bounds;
@@ -361,21 +357,19 @@ QSlider2D : QAbstractStepValue {
   }
 
   knobColor {
-    ^palette.baseTextColor;
+    ^this.palette.baseTextColor;
   }
 
-  knobColor_ { arg aColor;
-    palette.baseTextColor = aColor;
-    this.setProperty( \palette, palette );
+  knobColor_ { arg color;
+    this.setProperty( \palette, this.palette.baseTextColor_(color) );
   }
 
   background {
-    ^palette.baseColor;
+    ^this.palette.baseColor;
   }
 
   background_ { arg color;
-    palette.baseColor = color;
-    this.setProperty( \palette, palette )
+    this.setProperty( \palette, this.palette.baseColor_(color) );
   }
 }
 
@@ -455,21 +449,19 @@ QRangeSlider : QAbstractStepValue {
   }
 
   knobColor {
-    ^palette.baseTextColor;
+    ^this.palette.baseTextColor;
   }
 
-  knobColor_ { arg aColor;
-    palette.baseTextColor = aColor;
-    this.setProperty( \palette, palette );
+  knobColor_ { arg color;
+    this.setProperty( \palette, this.palette.baseTextColor_(color) );
   }
 
   background {
-    ^palette.baseColor;
+    ^this.palette.baseColor;
   }
 
   background_ { arg color;
-    palette.baseColor = color;
-    this.setProperty( \palette, palette )
+    this.setProperty( \palette, this.palette.baseColor_(color) )
   }
 }
 
@@ -526,12 +518,11 @@ QNumberBox : QAbstractStepValue {
   }
 
   stringColor {
-    ^palette.baseTextColor;
+    ^this.palette.baseTextColor;
   }
 
   stringColor_ { arg color;
-    palette.baseTextColor = color;
-    this.setProperty( \palette, palette );
+    this.setProperty( \palette, this.palette.baseTextColor_(color) );
   }
 
   normalColor_ { arg aColor;
@@ -545,12 +536,11 @@ QNumberBox : QAbstractStepValue {
   }
 
   background {
-    ^palette.baseColor;
+    ^this.palette.baseColor;
   }
 
   background_ { arg color;
-    palette.baseColor = color;
-    this.setProperty( \palette, palette )
+    this.setProperty( \palette, this.palette.baseColor_(color) )
   }
 
   buttonsVisible_ { arg aBool;
@@ -593,30 +583,27 @@ QListView : QItemViewBase {
   }
 
   stringColor {
-    ^palette.baseTextColor;
+    ^this.palette.baseTextColor;
   }
 
-  stringColor_ { arg aColor;
-    palette.baseTextColor = aColor;
-    this.setProperty( \palette, palette );
+  stringColor_ { arg color;
+    this.setProperty( \palette, this.palette.baseTextColor_(color) );
   }
 
   selectedStringColor {
-    ^palette.highlightedTextColor;
+    ^this.palette.highlightedTextColor;
   }
 
-  selectedStringColor_ { arg aColor;
-    palette.highlightedTextColor = aColor;
-    this.setProperty( \palette, palette );
+  selectedStringColor_ { arg color;
+    this.setProperty( \palette, this.palette.highlightedTextColor_(color) );
   }
 
   hiliteColor {
-    ^palette.highlightColor;
+    ^this.palette.highlightColor;
   }
 
-  hiliteColor_ { arg aColor;
-    palette.highlightColor = aColor;
-    this.setProperty( \palette, palette );
+  hiliteColor_ { arg color;
+    this.setProperty( \palette, this.palette.highlightColor_(color) );
   }
 
   enterKeyAction_ { arg func;
@@ -647,12 +634,11 @@ QPopUpMenu : QItemViewBase {
   }
 
   stringColor {
-    ^palette.buttonTextColor;
+    ^this.palette.buttonTextColor;
   }
 
-  stringColor_ { arg aColor;
-    palette.buttonTextColor = aColor;
-    this.setProperty( \palette, palette );
+  stringColor_ { arg color;
+    this.setProperty( \palette, this.palette.buttonTextColor_(color) );
   }
 }
 
@@ -668,12 +654,11 @@ QMultiSliderView : QView {
   *qtClass { ^"QcMultiSlider" }
 
   background {
-    ^palette.baseColor;
+    ^this.palette.baseColor;
   }
 
   background_ { arg color;
-    palette.baseColor = color;
-    this.setProperty( \palette, palette );
+    this.setProperty( \palette, this.palette.baseColor_(color) );
   }
 
   size_ { arg int;
