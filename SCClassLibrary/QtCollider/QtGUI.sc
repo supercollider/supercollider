@@ -83,6 +83,22 @@ QtGUI {
     ^bounds
   }
 
+  *palette {
+    ^this.prPalette( QPalette.new.init );
+  }
+
+  *palette_ { arg p;
+    _Qt_SetGlobalPalette
+    ^this.primitiveFailed;
+  }
+
+  // private ///////////////////////////////////////////////////////////
+
+  *prPalette { arg ret;
+    _Qt_GlobalPalette
+    ^this.primitiveFailed;
+  }
+
   *prStringBounds { arg aString, aFont, aRect;
     _Qt_StringBounds
     ^this.primitiveFailed

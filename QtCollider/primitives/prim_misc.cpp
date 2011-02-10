@@ -104,3 +104,39 @@ QC_LANG_PRIMITIVE( Qt_AvailableFonts, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   Slot::setVariantList( r, l );
   return errNone;
 }
+
+static void qcGlobalPalette( QcSyncEvent *e )
+{
+  QcGenericEvent *ge = static_cast<QcGenericEvent*>(e);
+  *ge->_return = QVariant( QApplication::palette() );
+}
+
+QC_LANG_PRIMITIVE( Qt_GlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QVariant var;
+
+  QcGenericEvent *e = new QcGenericEvent(0, QVariant(), &var);
+  QcApplication::postSyncEvent( e, &qcGlobalPalette );
+
+  QPalette p = var.value<QPalette>();
+  if( Slot::setPalette( a, p ) ) return errFailed;
+
+  slotCopy( r, a );
+
+  return errNone;
+}
+
+static void qcSetGlobalPalette( QcSyncEvent *e )
+{
+  QcGenericEvent *ge = static_cast<QcGenericEvent*>(e);
+  QPalette p = ge->_data.value<QPalette>();
+  QApplication::setPalette( p );
+}
+
+QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QPalette p = Slot::toPalette( a );
+  QcGenericEvent *e = new QcGenericEvent(0, QVariant(p));
+  QcApplication::postSyncEvent( e, &qcSetGlobalPalette );
+  return errNone;
+}
