@@ -50,6 +50,8 @@ class QcScope : public QWidget, QcHelper
     void setYZoom( float f ) { yZoom = f; }
     void setStyle( int i ) { style = i; }
     void setWaveColors( const VariantList & colors );
+    QSize sizeHint() const { return QSize( 500, 300 ); }
+    QSize minimumSizeHint() const { return QSize( 50, 50 ); }
   private Q_SLOTS:
     void updateScope();
   private:

@@ -37,6 +37,7 @@ QcScope::QcScope()
 {
   memset( &buffer, 0, sizeof(SndBuf) );
   timer = new QTimer( this );
+  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
   connect( timer, SIGNAL( timeout() ), this, SLOT( updateScope() ) );
 }
 
