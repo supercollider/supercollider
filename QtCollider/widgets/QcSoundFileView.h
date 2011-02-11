@@ -146,6 +146,9 @@ public:
   void setPeakColor( const QColor &clr ) { _peakColor = clr; redraw(); }
   void setRmsColor( const QColor &clr ) { _rmsColor = clr; redraw(); }
 
+  QSize sizeHint() const { return QSize( 400, 200 ); }
+  QSize minimumSizeHint() const { return QSize( 100, 20 ); }
+
 public Q_SLOTS:
   void zoomTo( float fraction );
   //void zoomTo( float fraction, quint64 frame );
@@ -175,7 +178,6 @@ public Q_SLOTS:
 
 protected:
 
-  virtual QSize sizeHint() const { return QSize( 400, 200 ); }
   virtual void resizeEvent( QResizeEvent * );
   virtual void paintEvent( QPaintEvent * );
   virtual void mousePressEvent( QMouseEvent * );
