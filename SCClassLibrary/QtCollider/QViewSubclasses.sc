@@ -575,11 +575,12 @@ QListView : QItemViewBase {
   *qtClass { ^"QcListWidget" }
 
   value {
-    ^this.getProperty( \currentRow );
+    var v = this.getProperty( \currentRow );
+    if( v < 0 ) { ^nil } { ^v };
   }
 
   value_ { arg val;
-    this.setProperty( \currentRow, val );
+    this.setProperty( \currentRow, val ? -1 );
   }
 
   stringColor {
@@ -626,11 +627,12 @@ QPopUpMenu : QItemViewBase {
   *qtClass { ^"QcPopUpMenu" }
 
   value {
-    ^this.getProperty( \currentIndex );
+    var v = this.getProperty( \currentIndex );
+    if( v < 0 ) { ^nil } { ^v };
   }
 
   value_ { arg val;
-    this.setProperty( \currentIndex, val );
+    this.setProperty( \currentIndex, val ? -1 );
   }
 
   stringColor {
