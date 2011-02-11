@@ -167,6 +167,8 @@ class QcGraph : public QWidget, QcHelper
     void setStep( float f );
     void setGrid( const QPointF &pt ) { _gridMetrics = pt; update(); }
     void setGridOn( bool b ) { _gridOn = b; update(); }
+    QSize sizeHint() const { return QSize( 200,200 ); }
+    QSize minimumSizeHint() const { return QSize( 50,50 ); }
 
   Q_SIGNALS:
     void action();
@@ -180,7 +182,6 @@ class QcGraph : public QWidget, QcHelper
     void mousePressEvent( QMouseEvent * );
     void mouseMoveEvent( QMouseEvent * );
     void keyPressEvent( QKeyEvent * );
-    QSize sizeHint() const { return QSize( 200,200 ); }
     void doAction( Qt::KeyboardModifiers );
 
     QcGraphModel _model;

@@ -44,6 +44,7 @@ QcGraph::QcGraph() :
   dragIndex( -1 )
 {
   setFocusPolicy( Qt::StrongFocus );
+  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 }
 
 VariantList QcGraph::value() const
