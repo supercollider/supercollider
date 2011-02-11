@@ -44,6 +44,8 @@ class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
     void setXValue( float x ) { setValue( QPointF( x, _y ), false ); }
     void setYValue( float y ) { setValue( QPointF( _x, y ), false ); }
     void setStep( float f ) { _step = f;}
+    QSize sizeHint() const { return QSize(150,150); }
+    QSize minimumSizeHint() const { return QSize(30,30); }
   Q_SIGNALS:
     void action();
     void randomize();
@@ -55,8 +57,6 @@ class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
     void mousePressEvent ( QMouseEvent * );
     void keyPressEvent ( QKeyEvent * );
     void paintEvent ( QPaintEvent * );
-    QSize sizeHint() const { return QSize(150,150); }
-    QSize minimumSizeHint() const { return QSize(30,30); }
 
     float _x;
     float _y;
