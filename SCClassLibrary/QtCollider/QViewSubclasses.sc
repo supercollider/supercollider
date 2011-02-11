@@ -377,12 +377,14 @@ QRangeSlider : QAbstractStepValue {
   *qtClass { ^"QcRangeSlider" }
 
   *new { arg parent, bounds;
-    ^super.new( parent, bounds ).initQRangeSlider( bounds.asRect );
+    ^super.new( parent, bounds ).initQRangeSlider( bounds );
   }
 
   initQRangeSlider { arg bounds;
+    var r;
     if( bounds.notNil ) {
-      if( bounds.width > bounds.height ) {
+      r = bounds.asRect;
+      if( r.width > r.height ) {
         this.orientation_( \horizontal );
       } {
         this.orientation_( \vertical );

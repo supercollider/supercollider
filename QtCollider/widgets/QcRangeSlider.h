@@ -50,12 +50,14 @@ class QcRangeSlider :
 
     QcRangeSlider();
     Qt::Orientation orientation() const { return _ort; }
-    void setOrientation( Qt::Orientation o ) { _ort = o; update(); }
+    void setOrientation( Qt::Orientation o );
     float loValue() const { return _lo; }
     void setLoValue( float );
     float hiValue() const { return _hi; }
     void setHiValue( float );
     void setStep( float f ) { _step = f; }
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
 
   Q_SIGNALS:
     void action();
@@ -71,8 +73,6 @@ class QcRangeSlider :
     void mouseReleaseEvent ( QMouseEvent * );
     void keyPressEvent ( QKeyEvent * );
     void paintEvent ( QPaintEvent * );
-    QSize sizeHint() const { return QSize(15,150); }
-    QSize minimumSizeHint() const { return QSize(5,10); }
 
     Qt::Orientation _ort;
     float _lo;
