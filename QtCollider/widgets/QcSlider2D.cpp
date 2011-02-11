@@ -36,6 +36,7 @@ QcSlider2D::QcSlider2D() :
   _step( 0.01f )
 {
   setFocusPolicy( Qt::StrongFocus );
+  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 }
 
 QRect QcSlider2D::thumbRect()
