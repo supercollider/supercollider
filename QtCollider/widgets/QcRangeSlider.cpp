@@ -30,13 +30,28 @@
 static QcWidgetFactory<QcRangeSlider> factory;
 
 QcRangeSlider::QcRangeSlider() :
-  _ort( Qt::Vertical ),
   _lo( 0.f ),
   _hi( 1.f ),
   _step( 0.01f ),
   mouseMode( None )
 {
   setFocusPolicy( Qt::StrongFocus );
+  setOrientation( Qt::Vertical );
+}
+
+void QcRangeSlider::setOrientation( Qt::Orientation o )
+{
+  _ort = o;
+
+  if( _ort == Qt::Horizontal ) {
+    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+  }
+  else {
+    setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+  }
+
+  updateGeometry();
+  update();
 }
 
 void QcRangeSlider::setLoValue( float val )
@@ -63,6 +78,16 @@ void QcRangeSlider::setHiValue( float val )
     _lo = val;
   }
   update();
+}
+
+QSize QcRangeSlider::sizeHint() const
+{
+  return ( _ort == Qt::Horizontal ? QSize( 100, 20 ) : QSize( 20, 100 ) );
+}
+
+QSize QcRangeSlider::minimumSizeHint() const
+{
+  return ( _ort == Qt::Horizontal ? QSize( 30, 10 ) : QSize( 10, 30 ) );
 }
 
 void QcRangeSlider::increment()
