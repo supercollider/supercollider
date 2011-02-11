@@ -45,6 +45,7 @@ QcMultiSlider::QcMultiSlider() :
   highlight( false ),
   startIndex( 0 )
 {
+  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
   connect( this, SIGNAL(modified()), this, SLOT(update()) );
   connect( this, SIGNAL(interacted()), this, SLOT(doAction()) );
 }

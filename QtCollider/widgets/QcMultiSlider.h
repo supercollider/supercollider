@@ -53,6 +53,8 @@ class QcMultiSlider : public QWidget, QcHelper
 
   public:
     QcMultiSlider();
+    QSize sizeHint() const { return QSize( 500,300 ); }
+    QSize minimumSizeHint() const { return QSize( 50, 50 ); }
   Q_SIGNALS:
     void modified();
     void interacted();
@@ -60,10 +62,6 @@ class QcMultiSlider : public QWidget, QcHelper
     void metaAction();
   public Q_SLOTS:
     void doAction();
-  protected:
-    virtual QSize sizeHint() const {
-      return QSize( 500,300 );
-    }
   private:
     Qt::Orientation orientation() const { return ort; }
     VariantList values() const;
