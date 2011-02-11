@@ -276,7 +276,7 @@ QSlider : QAbstractStepValue {
   *qtClass { ^"QcSlider" }
 
   *new { arg parent, bounds;
-    ^super.new( parent, bounds ).initQSlider( bounds.asRect );
+    ^super.new( parent, bounds ).initQSlider( bounds );
   }
 
   knobColor {
@@ -288,8 +288,10 @@ QSlider : QAbstractStepValue {
   }
 
   initQSlider { arg bounds;
+    var r;
     if( bounds.notNil ) {
-      if( bounds.width > bounds.height ) {
+      r = bounds.asRect;
+      if( r.width > r.height ) {
         this.orientation_( \horizontal );
       } {
         this.orientation_( \vertical );
