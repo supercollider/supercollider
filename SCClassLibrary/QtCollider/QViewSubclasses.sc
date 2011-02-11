@@ -574,6 +574,29 @@ QListView : QItemViewBase {
 
   *qtClass { ^"QcListWidget" }
 
+  selectionMode_ { arg mode;
+    var m;
+    m = mode.switch(
+      \none, {0},
+      \single, {1},
+      \multi, {2},
+      \extended, {3},
+      \contiguous, {4}
+    );
+    if( m == 0 ) {
+      this.invokeMethod( \clearSelection );
+      this.setProperty( \currentRow, -1 );
+      this.setProperty( \focusPolicy, 0 );
+    };
+    this.setProperty( \selectionMode, m );
+  }
+
+  selectionMode {
+    var modes = [\none, \single, \multi, \extended, \contiguous];
+    var m = this.getProperty( \selectionMode );
+    ^modes[m];
+  }
+
   value {
     var v = this.getProperty( \currentRow );
     if( v < 0 ) { ^nil } { ^v };
