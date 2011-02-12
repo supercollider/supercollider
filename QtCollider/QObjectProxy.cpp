@@ -268,6 +268,8 @@ bool QObjectProxy::setEventHandlerEvent( SetEventHandlerEvent *e )
 
 bool QObjectProxy::connectEvent( ConnectEvent *e )
 {
+  if( !qObject ) return true;
+
   Qt::ConnectionType ctype = e->sync == Synchronous ? Qt::DirectConnection : Qt::QueuedConnection;
 
   if( e->method ) {
