@@ -40,6 +40,10 @@ public:
 
   QWidgetProxy( QWidget *w, PyrObject *po );
 
+  void setKeyEventWidget( QWidget * );
+
+  void setMouseEventWidget( QWidget * );
+
   bool setFocus( QtCollider::SetFocusRequest *r );
 
   bool bringFront();
@@ -56,13 +60,20 @@ protected:
 
   inline QWidget *widget() { return static_cast<QWidget*>( object() ); }
 
+  bool interpretEvent( QObject *, QEvent *, QList<QVariant> & );
+
 private Q_SLOTS:
 
   void customPaint( QPainter * );
 
 private:
 
+  void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
+  void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
   static void sendRefreshEventRecursive( QWidget *w );
+
+  QWidget *_keyEventWidget;
+  QWidget *_mouseEventWidget;
 };
 
 namespace QtCollider {

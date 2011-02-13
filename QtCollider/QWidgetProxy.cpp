@@ -24,11 +24,46 @@
 
 #include <QApplication>
 #include <QLayout>
+#include <QMouseEvent>
+#include <QKeyEvent>
 
 using namespace QtCollider;
 
-QWidgetProxy::QWidgetProxy( QWidget *w, PyrObject *po ) : QObjectProxy( w, po )
+QWidgetProxy::QWidgetProxy( QWidget *w, PyrObject *po )
+: QObjectProxy( w, po ), _keyEventWidget( w ), _mouseEventWidget( w )
 { }
+
+void QWidgetProxy::setKeyEventWidget( QWidget *w )
+{
+  if( w == 0 || w == _keyEventWidget ) return;
+
+  QWidget *me = widget();
+
+  if( _keyEventWidget != me )
+    _keyEventWidget->removeEventFilter( this );
+
+  _keyEventWidget = w;
+
+  if( _keyEventWidget != me ) {
+    _keyEventWidget->installEventFilter( this );
+  }
+}
+
+void QWidgetProxy::setMouseEventWidget( QWidget *w )
+{
+  if( w == 0 || w == _mouseEventWidget ) return;
+
+  QWidget *me = widget();
+
+  if( _mouseEventWidget != me )
+    _mouseEventWidget->removeEventFilter( this );
+
+  _mouseEventWidget = w;
+
+  if( _mouseEventWidget != me ) {
+    _mouseEventWidget->installEventFilter( this );
+  }
+}
 
 bool QWidgetProxy::setFocus( QtCollider::SetFocusRequest *r ) {
   if( !widget() ) return true;
@@ -103,6 +138,32 @@ bool QWidgetProxy::setParentEvent( QtCollider::SetParentEvent *e ) {
   return false;
 }
 
+bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args )
+{
+  switch( e->type() ) {
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseMove:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+    case QEvent::Enter: {
+      if( o == _mouseEventWidget ) {
+        interpretMouseEvent( e, args );
+        return true;
+      }
+      else return false;
+    }
+    case QEvent::KeyPress:
+    case QEvent::KeyRelease: {
+      if( o == _keyEventWidget ) {
+        interpretKeyEvent( e, args );
+        return true;
+      }
+      else return false;
+    }
+    default: return QObjectProxy::interpretEvent( o, e, args );
+  }
+}
+
 void QWidgetProxy::customPaint( QPainter *painter )
 {
   if( QtCollider::paintingAnnounced() ) {
@@ -120,6 +181,71 @@ void QWidgetProxy::customPaint( QPainter *painter )
   }
 
   QtCollider::unlockLang();
+}
+
+void QWidgetProxy::interpretMouseEvent( QEvent *e, QList<QVariant> &args )
+{
+  // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
+  // it wasn't existing
+
+  QWidget *w = widget();
+
+  if( e->type() == QEvent::Enter ) {
+    QPoint pos = QCursor::pos();
+
+
+    if( w ) pos = w->mapFromGlobal( pos );
+
+    args << pos.x();
+    args << pos.y();
+    return;
+  }
+
+  QMouseEvent *mouse = static_cast<QMouseEvent*>( e );
+  QPoint pt = ( _mouseEventWidget == w ?
+                mouse->pos() :
+                _mouseEventWidget->mapTo( w, mouse->pos() ) );
+  args << pt.x();
+  args << pt.y();
+
+  args << (int) mouse->modifiers();
+
+  if( e->type() == QEvent::MouseMove ) return;
+
+  int button;
+  switch( mouse->button() ) {
+    case Qt::LeftButton:
+      button = 0; break;
+    case Qt::RightButton:
+      button = 1; break;
+    case Qt::MidButton:
+      button = 2; break;
+    default:
+      button = -1;
+  }
+
+  args << button;
+
+  switch( e->type() ) {
+    case QEvent::MouseButtonPress:
+      args << 1; break;
+    case QEvent::MouseButtonDblClick:
+      args << 2; break;
+    default: ;
+  }
+}
+
+void QWidgetProxy::interpretKeyEvent( QEvent *e, QList<QVariant> &args )
+{
+  QKeyEvent *ke = static_cast<QKeyEvent*>( e );
+
+  QString text = ke->text();
+  int unicode = ( text.count() == 1 ? text[0].unicode() : 0 );
+
+  args << text;
+  args << (int) ke->modifiers();
+  args << unicode;
+  args << ke->key();
 }
 
 void QWidgetProxy::sendRefreshEventRecursive( QWidget *w ) {
