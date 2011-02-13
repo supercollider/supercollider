@@ -59,13 +59,15 @@ public:
     QOBJECT *qobject = new QOBJECT();
     QObject *qo = qobject; // template parameter type-safety
 
-    initialize( qobject, arguments );
+    QObjectProxy *proxy = new QObjectProxy ( qobject, scObject );
 
-    return new QObjectProxy ( qobject, scObject );
+    initialize( proxy, qobject, arguments );
+
+    return proxy;
   }
 
 protected:
-  virtual void initialize( QOBJECT *, QList<QVariant> & arguments ) {};
+  virtual void initialize( QObjectProxy *, QOBJECT *, QList<QVariant> & arguments ) {};
 };
 
 

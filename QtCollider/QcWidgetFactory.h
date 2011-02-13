@@ -45,6 +45,7 @@ public:
     QWIDGET *widget = new QWIDGET();
     QWidget *w = widget; // template parameter type-safety
 
+    QWidgetProxy *proxy = new QWidgetProxy ( w, scObject );
     // set requested geometry
 
     QRect r;
@@ -55,7 +56,7 @@ public:
 
     // do custom initialization
 
-    initialize( widget, arguments ); // use template parameter type
+    initialize( proxy, widget, arguments ); // use template parameter type
 
     // set parent
 
@@ -73,8 +74,12 @@ public:
       w->show();
     }
 
-    return new QWidgetProxy ( w, scObject );
+    return proxy;
   }
+
+protected:
+
+  virtual void initialize( QWidgetProxy *, QWIDGET *, QList<QVariant> & ) {};
 };
 
 #endif
