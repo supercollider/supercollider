@@ -31,24 +31,10 @@
 template<class BOXLAYOUT> class QcBoxLayoutFactory : public QcObjectFactory<BOXLAYOUT>
 {
 protected:
-  virtual void initialize( BOXLAYOUT *l, QList<QVariant> & args ) {
-    int s = args.size();
-    if( s > 0 ) {
-      VariantList items = args[0].value<VariantList>();
-      Q_FOREACH( QVariant v, items.data ) {
-        VariantList item = v.value<VariantList>();
-        l->addItem( item );
-      }
-    }
-
-    if( s > 1 ) {
-      int spacing = args[1].value<int>();
-      l->setSpacing( spacing );
-    }
-
-    if( s > 2 ) {
-      VariantList margins = args[2].value<VariantList>();
-      l->setMargins( margins );
+  virtual void initialize( BOXLAYOUT *l, QList<QVariant> & items ) {
+    Q_FOREACH( QVariant v, items ) {
+      VariantList item = v.value<VariantList>();
+      l->addItem( item );
     }
   }
 };

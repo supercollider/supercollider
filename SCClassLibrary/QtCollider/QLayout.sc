@@ -16,14 +16,14 @@ LineItem {
   var <align;
 
   *new { arg object, stretch = 0, align = 0;
-    ^super.new.initLinetItem( object, stretch, align );
+    ^super.new.initLineItem( object, stretch, align );
   }
 
   *wrap { arg other;
     if( other.isKindOf( LineItem ) ) {^other} {^LineItem.new(other)};
   }
 
-  initLinetItem { arg o, s, a;
+  initLineItem { arg o, s, a;
     object = o;
     stretch = s;
     align = QView.alignmentDict[a];
@@ -41,9 +41,9 @@ SpacerItem : LineItem {
 }
 
 QLineLayout : QLayout {
-  *new { arg items, spacing, margins;
+  *new { arg ...items;
     var serializedItems = items.collect( { |x| LineItem.wrap(x).serialized } );
-    ^super.new( this.layoutClass, [serializedItems, spacing, margins] );
+    ^super.new( this.layoutClass, serializedItems );
   }
 
   *layoutClass { ^'' }
