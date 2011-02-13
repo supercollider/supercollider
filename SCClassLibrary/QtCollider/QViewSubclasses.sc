@@ -89,7 +89,7 @@ QTextViewBase : QView {
 
   align_ { arg aSymbol;
     align = aSymbol;
-    this.setProperty( \alignment, alignmentDict[ aSymbol ] );
+    this.setProperty( \alignment, QAlignment(aSymbol) );
   }
 }
 
@@ -305,7 +305,7 @@ QSlider : QAbstractStepValue {
 
   orientation_ { arg aSymbol;
     orientation = aSymbol;
-    this.setProperty( \orientation, orientationDict[ aSymbol ] );
+    this.setProperty( \orientation, QOrientation(aSymbol) );
   }
 }
 
@@ -395,7 +395,7 @@ QRangeSlider : QAbstractStepValue {
   }
 
   orientation_ { arg aSymbol;
-    this.setProperty( \orientation, orientationDict[ aSymbol ] );
+    this.setProperty( \orientation, QOrientation(aSymbol) );
   }
 
   lo {
@@ -518,7 +518,7 @@ QNumberBox : QAbstractStepValue {
 
   align_ { arg alignment;
     align = alignment;
-    this.setProperty( \alignment, alignmentDict[ alignment ]);
+    this.setProperty( \alignment, QAlignment(alignment));
   }
 
   stringColor {
@@ -698,9 +698,9 @@ QMultiSliderView : QView {
   indexIsHorizontal_ { arg bool;
     indexIsHorizontal = bool;
     if( bool ) {
-      this.setProperty( \orientation, orientationDict[\horizontal] );
+      this.setProperty( \orientation, QOrientation(\horizontal) );
     } {
-      this.setProperty( \orientation, orientationDict[\vertical] );
+      this.setProperty( \orientation, QOrientation(\vertical) );
     };
   }
 

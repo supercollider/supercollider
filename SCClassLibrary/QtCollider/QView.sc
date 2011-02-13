@@ -2,7 +2,6 @@ QView : QObject {
   classvar <>globalKeyDownAction, <>globalKeyUpAction;
   classvar <hSizePolicy;
   classvar <vSizePolicy;
-  classvar <orientationDict, <alignmentDict;
 
   // general props
   var <font, <resize = 1, <alpha = 1.0;
@@ -26,15 +25,6 @@ QView : QObject {
   *initClass {
     hSizePolicy = [1,2,3,1,2,3,1,2,3];
     vSizePolicy = [1,1,1,2,2,2,3,3,3];
-
-    orientationDict = IdentityDictionary.new;
-    orientationDict.put( \horizontal, 1 );
-    orientationDict.put( \vertical, 2 );
-
-    alignmentDict = IdentityDictionary.new;
-    alignmentDict.put( \left, 16r1 | 16r80 );
-    alignmentDict.put( \center, 16r4 | 16r80 );
-    alignmentDict.put( \right, 16r2 | 16r80 );
   }
 
   *new { arg parent, bounds;

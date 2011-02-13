@@ -26,7 +26,7 @@ LineItem {
   initLineItem { arg o, s, a;
     object = o;
     stretch = s;
-    align = QView.alignmentDict[a];
+    align = QAlignment(a);
   }
 
   serialized { ^[ object, stretch, align] }
@@ -127,11 +127,14 @@ QGridLayout : QLayout {
   }
 
   add { arg item, row, column, align;
-    this.invokeMethod( \addItem, [[item, row, column, 1, 1, align]], true );
+    this.invokeMethod( \addItem, [[item, row, column, 1, 1, QAlignment(align)]], true );
   }
 
   addSpanning { arg item, row, column, rowSpan=1, columnSpan=1, align;
-    this.invokeMethod( \addItem, [[item, row, column, rowSpan, columnSpan, align]], true );
+    this.invokeMethod( \addItem, [[item, row, column,
+                                   rowSpan, columnSpan,
+                                   QAlignment(align)
+                                 ]], true );
   }
 
   hSpacing_ { arg spacing;
