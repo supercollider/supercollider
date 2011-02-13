@@ -44,8 +44,6 @@ class QcSignalSpy;
 class QcMethodSignalHandler;
 class QcFunctionSignalHandler;
 
-typedef void (QObjectProxy::*InterpretEventFn) ( QEvent *, QList<QVariant> & );
-
 namespace QtCollider {
   struct SetParentEvent;
   struct SetPropertyEvent;
@@ -89,7 +87,6 @@ class QObjectProxy : public QObject
       int type;
       PyrSymbol *method;
       QtCollider::Synchronicity sync;
-      InterpretEventFn interpretFn;
     };
 
     QObjectProxy( QObject *qObject, PyrObject *scObject );
@@ -126,6 +123,10 @@ class QObjectProxy : public QObject
       ( PyrSymbol *method, const QList<QVariant> & args = QList<QVariant>(),
         PyrSlot *result = 0, bool locked = false );
 
+    virtual bool eventFilter( QObject * watched, QEvent * event );
+
+    virtual bool interpretEvent( QObject *, QEvent *, QList<QVariant> & ) { return true; }
+
   private Q_SLOTS:
 
     void invalidate();
@@ -134,13 +135,7 @@ class QObjectProxy : public QObject
 
     inline void scMethodCallEvent( ScMethodCallEvent * );
 
-    void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
-
-    void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
-
     void customEvent( QEvent * );
-
-    bool eventFilter( QObject * watched, QEvent * event );
 
     QObject *qObject;
     PyrObject *scObject;

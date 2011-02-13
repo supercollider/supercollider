@@ -249,19 +249,6 @@ bool QObjectProxy::setEventHandlerEvent( SetEventHandlerEvent *e )
   data.type = e->type;
   data.method = e->method;
   data.sync = e->sync;
-  switch( e->type ) {
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-    case QEvent::Enter:
-      data.interpretFn = &QObjectProxy::interpretMouseEvent; break;
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-      data.interpretFn = &QObjectProxy::interpretKeyEvent; break;
-    default:
-      data.interpretFn = 0;
-  }
   eventHandlers.insert( data.type, data );
   return true;
 }
@@ -425,14 +412,8 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
       PyrSymbol *symMethod = eh.method;
       qcProxyDebugMsg(1,QString("Catched event: type %1 -> '%2'").arg(type).arg(symMethod->name) );
 
-      InterpretEventFn interpreter = eh.interpretFn;
-
       QList<QVariant> args;
-
-      if( interpreter ) {
-        qcProxyDebugMsg(2,"got interpreter");
-        (this->*interpreter) ( event, args );
-      }
+      if( !interpretEvent( watched, event, args ) ) return false;
 
       if( eh.sync == Synchronous ) {
         qcProxyDebugMsg(2,"direct!");
@@ -458,68 +439,6 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 void QObjectProxy::scMethodCallEvent( ScMethodCallEvent *e )
 {
   invokeScMethod( e->method, e->args, 0, e->locked );
-}
-
-#include <QMouseEvent>
-
-void QObjectProxy::interpretMouseEvent( QEvent *e, QList<QVariant> &args )
-{
-  // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
-  // it wasn't existing
-
-  if( e->type() == QEvent::Enter ) {
-    QPoint pos = QCursor::pos();
-
-    QWidget *w = qobject_cast<QWidget*>( qObject );
-    if( w ) pos = w->mapFromGlobal( pos );
-
-    args << pos.x();
-    args << pos.y();
-    return;
-  }
-
-  QMouseEvent *mouse = static_cast<QMouseEvent*>( e );
-  args << mouse->x();
-  args << mouse->y();
-
-  args << (int) mouse->modifiers();
-
-  if( e->type() == QEvent::MouseMove ) return;
-
-  int button;
-  switch( mouse->button() ) {
-    case Qt::LeftButton:
-      button = 0; break;
-    case Qt::RightButton:
-      button = 1; break;
-    case Qt::MidButton:
-      button = 2; break;
-    default:
-      button = -1;
-  }
-
-  args << button;
-
-  switch( e->type() ) {
-    case QEvent::MouseButtonPress:
-      args << 1; break;
-    case QEvent::MouseButtonDblClick:
-      args << 2; break;
-    default: ;
-  }
-}
-
-void QObjectProxy::interpretKeyEvent( QEvent *e, QList<QVariant> &args )
-{
-  QKeyEvent *ke = static_cast<QKeyEvent*>( e );
-
-  QString text = ke->text();
-  int unicode = ( text.count() == 1 ? text[0].unicode() : 0 );
-
-  args << text;
-  args << (int) ke->modifiers();
-  args << unicode;
-  args << ke->key();
 }
 
 bool QtCollider::RequestEvent::send( QObjectProxy *proxy, Synchronicity sync )
