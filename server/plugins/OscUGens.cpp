@@ -19,6 +19,7 @@
 */
 
 #include "SC_PlugIn.h"
+#include "SC_Altivec.h"
 #include <limits>
 #include <string.h>
 
