@@ -273,15 +273,15 @@ QPen {
   }
 
   *stringCenteredIn { arg string, rect, font, color;
-    this.stringInRect( string, rect, font, color, QView.alignmentDict[\center] );
+    this.stringInRect( string, rect, font, color, QAlignment(\center) );
   }
 
   *stringLeftJustIn { arg string, rect, font, color;
-    this.stringInRect( string, rect, font, color, QView.alignmentDict[\left] );
+    this.stringInRect( string, rect, font, color, QAlignment(\left) );
   }
 
   *stringRightJustIn { arg string, rect, font, color;
-    this.stringInRect( string, rect, font, color, QView.alignmentDict[\right] );
+    this.stringInRect( string, rect, font, color, QAlignment(\right) );
   }
 
 //---------------------- PRIVATE! -- Painter on/off-----------------------------
