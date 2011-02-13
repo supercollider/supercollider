@@ -116,10 +116,6 @@ List : SequenceableCollection {
 		array = aColl.asArray;
 	}
 
-	writeAsPlist { arg pathname;
-		array.writeAsPlist(pathname);
-	}
-	
 	asList { ^this }
 }
 

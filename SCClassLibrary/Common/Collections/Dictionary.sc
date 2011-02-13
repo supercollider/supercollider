@@ -447,11 +447,6 @@ IdentityDictionary : Dictionary {
 		^this.superPerformList(\doesNotUnderstand, selector, args);
 	}
 
-	// not the fastest way, but the simplest
-	writeAsPlist { arg path;
-		this.as(Dictionary).writeAsPlist(path);
-	}
-
 		// Quant support.
 		// The Quant class assumes the quant/phase/offset scheduling model.
 		// If you want a different model, you can write a dictionary like so:
