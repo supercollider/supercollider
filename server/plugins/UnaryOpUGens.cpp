@@ -201,20 +201,6 @@ inline_functions void invert_nova_64(UnaryOpUGen *unit, int inNumSamples)
 
 #endif
 
-#if __VEC__
-void vinvert_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-
-	vint32 neg = (vint32)vinit(0x80000000);
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vec_st((vfloat32)vec_xor(neg, (vint32)vec_ld(i, a)), i, out);
-	}
-}
-#endif // __VEC__
 
 template <typename F>
 inline F sc_not(F x)
@@ -273,21 +259,6 @@ inline_functions void abs_nova_64(UnaryOpUGen *unit, int inNumSamples)
 }
 #endif
 
-#if __VEC__
-void vabs_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-
-	vint32 mask = (vint32)vinit(0x7fffffff);
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vec_st((vfloat32)vec_and(mask, (vint32)vec_ld(i, a)), i, out);
-	}
-}
-#endif // __VEC__
-
 template <typename F>
 inline F sc_recip(F x)
 {
@@ -309,48 +280,8 @@ inline_functions void recip_nova_64(UnaryOpUGen *unit, int inNumSamples)
 #endif
 
 
-#if __VEC__
-void vrecip_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vec_st(vec_reciprocal(vec_ld(i, a)), i, out);
-	}
-}
-#endif // __VEC__
-
 DEFINE_UNARY_OP_FUNCS(floor, floor)
-
-#if __VEC__
-void vfloor_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vec_st(vec_floor(vec_ld(i, a)), i, out);
-	}
-}
-#endif // __VEC__
-
 DEFINE_UNARY_OP_FUNCS(ceil, ceil)
-
-#if __VEC__
-void vceil_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vec_st(vec_ceil(vec_ld(i, a)), i, out);
-	}
-}
-#endif // __VEC__
 
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(floor, floor)
@@ -421,63 +352,18 @@ NOVA_WRAPPER(octcps, oct2freq)
 
 
 DEFINE_UNARY_OP_FUNCS(frac, sc_frac)
-
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(frac, frac)
 #endif
 
-#if __VEC__
-void vfrac_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vfloat32 z = vec_ld(i, a);
-		vec_st(vec_sub(z, vec_floor(z)), i, out);
-	}
-}
-#endif // __VEC__
 
 DEFINE_UNARY_OP_FUNCS(squared, sc_squared)
-
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(squared, square)
 #endif
 
-#if __VEC__
-void vsquared_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-	define_vzero;
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vfloat32 z = vec_ld(i, a);
-		vec_st(vec_mul(z, z), i, out);
-	}
-}
-#endif // __VEC__
 
 DEFINE_UNARY_OP_FUNCS(cubed, sc_cubed)
-
-#if __VEC__
-void vcubed_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-	define_vzero;
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vfloat32 z = vec_ld(i, a);
-		vec_st(vec_mul(z, vec_mul(z, z)), i, out);
-	}
-}
-#endif // __VEC__
-
 #ifdef NOVA_SIMD
 NOVA_WRAPPER_CT_UNROLL(cubed, cube)
 #endif
@@ -509,25 +395,6 @@ void distort_a_nova(UnaryOpUGen *unit, int inNumSamples)
 	}
 }
 #endif
-
-#if __VEC__
-#define vec_div(a, b)  vec_mul(a, vec_reciprocal(b))
-
-void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
-{
-	vfloat32 *out = (vfloat32*)OUT(0);
-	vfloat32 *a = (vfloat32*)IN(0);
-	define_vzero;
-	define_vones;
-	vint32 mask = (vint32)vinit(0x7fffffff);
-
-	int len = inNumSamples << 2;
-	for (int i=0; i<len; i+=16) {
-		vfloat32 z = vec_ld(i, a);
-		vec_st(vec_div(z, vec_add(vones, (vfloat32)vec_and(mask, (vint32)z))), i, out);
-	}
-}
-#endif // __VEC__
 
 DEFINE_UNARY_OP_FUNCS(distortneg, sc_distortneg)
 DEFINE_UNARY_OP_FUNCS(softclip, sc_softclip)
@@ -753,65 +620,6 @@ static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 	return func;
 }
 
-#if __VEC__
-static UnaryOpFunc ChooseVectorFunc(UnaryOpUGen *unit)
-{
-	void (*func)(UnaryOpUGen *unit, int inNumSamples);
-
-	switch (unit->mSpecialIndex) {
-		case opSilence : func = &zero_a; break;
-		case opThru : func = &thru_a; break;
-		case opNeg : func = &vinvert_a; break;
-		case opNot : func = &not_a; break;
-		case opAbs : func = &vabs_a; break;
-		case opCeil : func = &vceil_a; break;
-		case opFloor : func = &vfloor_a; break;
-		case opFrac : func = &vfrac_a; break;
-		case opSign : func = &sign_a; break;
-		case opSquared : func = &vsquared_a; break;
-		case opCubed : func = &vcubed_a; break;
-		case opSqrt : 		func = &sqrt_a; break;
-		case opExp : func = &exp_a; break;
-		case opRecip : func = &vrecip_a; break;
-		case opMIDICPS : func = &midicps_a; break;
-		case opCPSMIDI : func = &cpsmidi_a; break;
-
-		case opMIDIRatio : func = &midiratio_a; break;
-		case opRatioMIDI : func = &ratiomidi_a; break;
-		case opDbAmp : func = &dbamp_a; break;
-		case opAmpDb : 	func = &ampdb_a; break;
-		case opOctCPS : func = &octcps_a; break;
-		case opCPSOct : func = &cpsoct_a; break;
-		case opLog : func = &log_a; break;
-		case opLog2 : func = &log2_a; break;
-		case opLog10 : func = &log10_a; break;
-		case opSin : func = &sin_a; break;
-		case opCos : func = &cos_a; break;
-		case opTan : func = &tan_a; break;
-		case opArcSin : func = &asin_a; break;
-		case opArcCos : func = &acos_a; break;
-		case opArcTan : func = &atan_a; break;
-		case opSinH : func = &sinh_a; break;
-		case opCosH : func = &cosh_a; break;
-		case opTanH : func = &tanh_a; break;
-
-		case opDistort : func = &vdistort_a; break;
-		case opSoftClip : func = &softclip_a; break;
-
-		case opRectWindow : func = &rectwindow_a; break;
-		case opHanWindow : func = &hanwindow_a; break;
-		case opWelchWindow : func = &welwindow_a; break;
-		case opTriWindow : func = &triwindow_a; break;
-
-		case opSCurve : func = &scurve_a; break;
-		case opRamp : func = &ramp_a; break;
-
-		default : func = &thru_a; break;
-	}
-	return func;
-}
-#endif // __VEC__
-
 #ifdef NOVA_SIMD
 
 static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
@@ -931,10 +739,7 @@ bool ChooseOperatorFunc(UnaryOpUGen *unit)
 		func = ChooseDemandFunc(unit);
 	} else if (BUFLENGTH == 1) {
 		func = ChooseOneFunc(unit);
-#if __VEC__
-	} else if (USEVEC) {
-		func = ChooseVectorFunc(unit);
-#elif defined(NOVA_SIMD)
+#if defined(NOVA_SIMD)
 	} else if (!(BUFLENGTH & 15)) {
 		/* select normal function for initialization */
 		func = ChooseNormalFunc(unit);

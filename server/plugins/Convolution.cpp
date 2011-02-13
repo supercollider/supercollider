@@ -29,14 +29,6 @@
 
 //#include "SC_fftlib.h"
 
-//#if __VEC__
-//	FFTSetup fftsetup[32];
-//#else
-//extern "C" {
-//#include "fftlib.h"
-//	float *cosTable[32];
-//}
-//#endif
 
 //float *fftWindow[32];
 
