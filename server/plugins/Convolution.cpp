@@ -1429,65 +1429,8 @@ void Convolution3_next_k(Convolution3 *unit)
 	unit->m_prevtrig = curtrig;
 }
 
-
-//float* create_cosTable(int log2n);
-//float* create_cosTable(int log2n)
-//{
-//	int size = 1 << log2n;
-//	int size2 = size / 4 + 1;
-//	float *win = (float*)malloc(size2 * sizeof(float));
-//	double winc = twopi / size;
-//	for (int i=0; i<size2; ++i) {
-//		double w = i * winc;
-//		win[i] = cos(w);
-//	}
-//	return win;
-//}
-//
-//float* create_fftwindow(int log2n);
-//float* create_fftwindow(int log2n)
-//{
-//	int size = 1 << log2n;
-//	float *win = (float*)malloc(size * sizeof(float));
-//	//double winc = twopi / size;
-//	double winc = pi / size;
-//	for (int i=0; i<size; ++i) {
-//		double w = i * winc;
-//		//win[i] = 0.5 - 0.5 * cos(w);
-//		win[i] = sin(w);
-//	}
-//	return win;
-//}
-//
-//
-////allowing up to 65536= 2^16 kernel (requires a 2^17 FFT), storage space demand is about 6 sec of audio at 44.1
-//void init_ffts();
-//void init_ffts()
-//{
-////#if __VEC__
-////
-////	for (int i=0; i<32; ++i) {
-////		fftsetup[i] = 0;
-////	}
-////	for (int i=0; i<18; ++i) {
-////		fftsetup[i] = create_fftsetup(i, kFFTRadix2);
-////	}
-////#else
-//	for (int i=0; i<32; ++i) {
-//		cosTable[i] = 0;
-//		//fftWindow[i] = 0;
-//	}
-//	for (int i=3; i<18; ++i) {
-//		cosTable[i] = create_cosTable(i);
-//		//fftWindow[i] = create_fftwindow(i);
-//	}
-////#endif
-//}
-
-
 void initConvolution(InterfaceTable *it)
 {
-	//init_ffts();
 	DefineDtorUnit(Convolution);
 	DefineDtorUnit(Convolution2);
 	DefineDtorUnit(Convolution2L);
