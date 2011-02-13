@@ -23,3 +23,34 @@
 
 static QcBoxLayoutFactory<QcHBoxLayout> hBoxLayoutFactory;
 static QcBoxLayoutFactory<QcVBoxLayout> vBoxLayoutFactory;
+static QcObjectFactory<QcGridLayout> gridLayoutFactory;
+
+void QcGridLayout::addItem( const VariantList &dataList )
+{
+  const QList<QVariant> &data = dataList.data;
+  if( data.count() < 6 ) return;
+
+  int row = data[1].toInt();
+  int column = data[2].toInt();
+  int rSpan = data[3].toInt();
+  int cSpan = data[4].toInt();
+  Qt::Alignment alignment = (Qt::Alignment) data[5].toInt();
+
+  QVariant varObject = data[0];
+
+  QObjectProxy *p = varObject.value<QObjectProxy*>();
+
+  if( !p || !p->object() ) return;
+
+  QWidget *w = qobject_cast<QWidget*>( p->object() );
+  if( w ) {
+    addWidget( w, row, column, rSpan, cSpan, alignment );
+    return;
+  }
+
+  QLayout *l = qobject_cast<QLayout*>( p->object() );
+  if(l) {
+    addLayout( l, row, column, rSpan, cSpan, alignment );
+    return;
+  }
+}
