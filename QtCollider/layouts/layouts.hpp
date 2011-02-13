@@ -26,13 +26,12 @@
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QGridLayout>
 
 template<class BOXLAYOUT> class QcBoxLayoutFactory : public QcObjectFactory<BOXLAYOUT>
 {
 protected:
   virtual void initialize( BOXLAYOUT *l, QList<QVariant> & args ) {
-    printf("initializing\n");
-
     int s = args.size();
     if( s > 0 ) {
       VariantList items = args[0].value<VariantList>();
@@ -67,12 +66,13 @@ public:
     }
     LAYOUT::setContentsMargins( m[0], m[1], m[2], m[3] );
   }
+};
 
+template <class BOXLAYOUT> class QcBoxLayout : public QcLayout<BOXLAYOUT>
+{
+public:
   void addItem( const VariantList & item ) {
-    if( item.data.size() < 3 ) {
-      printf("item data array empty or too short\n");
-      return;
-    }
+    if( item.data.size() < 3 ) return;
 
     int stretch = item.data[1].toInt();
     Qt::Alignment alignment = (Qt::Alignment) item.data[2].toInt();
@@ -80,57 +80,59 @@ public:
     QVariant varObject = item.data[0];
 
     if( varObject.canConvert<int>() ) {
-      printf( "a spacer\n");
       int size = varObject.toInt();
-      if( size > 0 ) LAYOUT::addSpacing( size );
-      else LAYOUT::addStretch( stretch );
+      if( size > 0 ) BOXLAYOUT::addSpacing( size );
+      else BOXLAYOUT::addStretch( stretch );
       return;
     }
 
     QObjectProxy *p = varObject.value<QObjectProxy*>();
-
-    if( !p ) {
-      printf( "not a proxy\n");
-      return;
-    }
-
-    if( !p->object() ) {
-      printf("invalid proxy\n");
-      return;
-    }
+    if( !p || !p->object() ) return;
 
     QWidget *w = qobject_cast<QWidget*>( p->object() );
     if( w ) {
-      printf("a widget\n");
-      LAYOUT::addWidget( w, stretch, alignment );
+      BOXLAYOUT::addWidget( w, stretch, alignment );
       return;
     }
 
     QLayout *l2 = qobject_cast<QLayout*>( p->object() );
     if(l2) {
-      printf("a layout\n");
-      LAYOUT::addLayout( l2, stretch );
+      BOXLAYOUT::addLayout( l2, stretch );
       return;
     }
-
-    printf("not a widget or a layout\n");
   }
 };
 
-class QcHBoxLayout : public QcLayout<QHBoxLayout>
+class QcHBoxLayout : public QcBoxLayout<QHBoxLayout>
 {
   Q_OBJECT
   Q_PROPERTY( VariantList margins READ margins WRITE setMargins )
 public:
-  Q_INVOKABLE void addItem( const VariantList &data ) { QcLayout<QHBoxLayout>::addItem(data); }
+  Q_INVOKABLE void addItem( const VariantList &data ) { QcBoxLayout<QHBoxLayout>::addItem(data); }
 };
 
-class QcVBoxLayout : public QcLayout<QVBoxLayout>
+class QcVBoxLayout : public QcBoxLayout<QVBoxLayout>
 {
   Q_OBJECT
   Q_PROPERTY( VariantList margins READ margins WRITE setMargins )
 public:
-  Q_INVOKABLE void addItem( const VariantList &data ) { QcLayout<QVBoxLayout>::addItem(data); }
+  Q_INVOKABLE void addItem( const VariantList &data ) { QcBoxLayout<QVBoxLayout>::addItem(data); }
+};
+
+class QcGridLayout : public QcLayout<QGridLayout>
+{
+  Q_OBJECT
+  Q_PROPERTY( VariantList margins READ margins WRITE setMargins )
+  Q_PROPERTY( int verticalSpacing READ verticalSpacing WRITE setVerticalSpacing )
+  Q_PROPERTY( int horizontalSpacing READ horizontalSpacing WRITE setHorizontalSpacing )
+public:
+  Q_INVOKABLE void addItem( const VariantList &dataList );
+  Q_INVOKABLE void setRowStretch( int row, int factor ) {
+    QcLayout<QGridLayout>::setRowStretch( row, factor );
+  }
+  Q_INVOKABLE void setColumnStretch( int column, int factor ) {
+    QcLayout<QGridLayout>::setColumnStretch( column, factor );
+  }
 };
 
 #endif
