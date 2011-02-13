@@ -864,12 +864,6 @@ Object  {
 		_AsArchive
 		^this.primitiveFailed;
 	}
-	// converts to an os x standard plist with NS Values
-	writeAsPlist { arg pathname;
-		_Cocoa_SaveAsPlist
-		^this.primitiveFailed;
-	}
-
 	// support for Gen
 	genNext { ^nil }
 	genCurrent { ^this }
