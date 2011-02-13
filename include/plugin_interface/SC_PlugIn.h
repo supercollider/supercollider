@@ -32,7 +32,6 @@
 #include "SC_DemandUnit.h"
 #include "clz.h"
 #include "sc_msg_iter.h"
-#include "SC_Altivec.h"
 #include <stdlib.h>
 
 #ifdef _WIN32
