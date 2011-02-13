@@ -491,6 +491,8 @@ NOVA_WRAPPER_CT_UNROLL(sign, sgn)
 DEFINE_UNARY_OP_FUNCS(distort, sc_distort)
 
 #if __VEC__
+#define vec_div(a, b)  vec_mul(a, vec_reciprocal(b))
+
 void vdistort_a(UnaryOpUGen *unit, int inNumSamples)
 {
 	vfloat32 *out = (vfloat32*)OUT(0);
