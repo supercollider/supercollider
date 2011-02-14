@@ -24,7 +24,7 @@
 
 class FileDialogFactory : public QcObjectFactory<QcFileDialog>
 {
-  void initialize( QcFileDialog *dialog, QList<QVariant> & args ) {
+  void initialize( QObjectProxy *, QcFileDialog *dialog, QList<QVariant> & args ) {
     QFileDialog *d = dialog->theDialog();
     if( args.count() > 0 ) {
       int mode = args[0].toInt();
