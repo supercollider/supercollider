@@ -946,4 +946,8 @@ QScopeView : QView {
     waveColors = aColorArray;
     this.setProperty( \waveColors, aColorArray );
   }
+
+  background { ^this.getProperty( \background, Color.new ); }
+
+  background_ { arg color; this.setProperty( \background, color, true ); }
 }
