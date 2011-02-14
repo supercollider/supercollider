@@ -24,7 +24,14 @@
 
 #include <QFile>
 
-static QcWidgetFactory<QcTextEdit> factory;
+class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
+{
+  void initialize( QWidgetProxy *p, QcTextEdit *w, QList<QVariant> & ) {
+    p->setMouseEventWidget( w->viewport() );
+  }
+};
+
+static QcTextEditFactory factory;
 
 QString QcTextEdit::documentFilename() const
 {
