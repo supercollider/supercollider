@@ -83,8 +83,9 @@
 		7725B4BD1191E0510056CA2F /* SuperCollider_BrowserPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7725B4BC1191E0510056CA2F /* SuperCollider_BrowserPage.xib */; };
 		772C0EA012DA0D6F009C0126 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 772C0E9A12DA0CCA009C0126 /* SC_fftlib.cpp */; };
 		772C0F3312DA126F009C0126 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5239129C374C00CE89DD /* MediaPlayer.framework */; };
-		7752352312F59638005AE5FE /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
+		774770CF12FDE7EB007449B3 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
 		775574050FBE45A500192282 /* SuperCollider_FileTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */; };
+		7759955312FDE20A00603187 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7759955212FDE20A00603187 /* Accelerate.framework */; };
 		776B2A97119075EF001F253D /* JITLib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 776B2A70119075EC001F253D /* JITLib */; };
 		778F12C10F50A92100CB6629 /* sounds in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F129F0F50A92100CB6629 /* sounds */; };
 		778F12C30F50A92100CB6629 /* patches in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12AD0F50A92100CB6629 /* patches */; };
@@ -416,6 +417,7 @@
 		775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
 		77597AEA1123320700D2A968 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = lib/libsndfile_iphone.a; sourceTree = "<group>"; };
 		77597AEF1123323800D2A968 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = ../mac/lib/scUBlibsndfile.a; sourceTree = SOURCE_ROOT; };
+		7759955212FDE20A00603187 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		776B2A70119075EC001F253D /* JITLib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = JITLib; path = ../../SCClassLibrary/JITLib; sourceTree = SOURCE_ROOT; };
 		778F129F0F50A92100CB6629 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = "iPhone Resources/sounds"; sourceTree = "<group>"; };
 		778F12AD0F50A92100CB6629 /* patches */ = {isa = PBXFileReference; lastKnownFileType = folder; name = patches; path = "iPhone Resources/patches"; sourceTree = "<group>"; };
@@ -451,7 +453,8 @@
 				77BA523C129C375700CE89DD /* UIKit.framework in Frameworks */,
 				77BA523E129C376000CE89DD /* Foundation.framework in Frameworks */,
 				772C0F3312DA126F009C0126 /* MediaPlayer.framework in Frameworks */,
-				7752352312F59638005AE5FE /* scUBlibsndfile.a in Frameworks */,
+				7759955312FDE20A00603187 /* Accelerate.framework in Frameworks */,
+				774770CF12FDE7EB007449B3 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -931,6 +934,7 @@
 			children = (
 				77597AEA1123320700D2A968 /* libsndfile_iphone.a */,
 				77597AEF1123323800D2A968 /* scUBlibsndfile.a */,
+				7759955212FDE20A00603187 /* Accelerate.framework */,
 				77BA5222129C371F00CE89DD /* CFNetwork.framework */,
 				77BA5233129C373400CE89DD /* CoreFoundation.framework */,
 				77BA5235129C373B00CE89DD /* CoreGraphics.framework */,
@@ -1134,10 +1138,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					SC_IPHONE,
-					SC_FFT_GREEN,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = SC_IPHONE;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = 4.2;
 				INFOPLIST_FILE = "iPhone Resources/SuperCollider.plist";
@@ -1174,7 +1175,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					SC_IPHONE,
 					NDEBUG,
-					SC_FFT_GREEN,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_THUMB_SUPPORT = NO;

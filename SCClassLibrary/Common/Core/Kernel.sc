@@ -72,7 +72,7 @@ Class {
 	}
 	superclassesDo { arg function;
 		var class = this;
-		while ({ class.notNil and: { class != Class} }) {
+		while { class.notNil } {
 			function.value(class);
 			class = class.superclass;
 		}
