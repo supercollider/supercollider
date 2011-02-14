@@ -35,7 +35,14 @@ QcWidgetFactory<QcTextField> textFieldFactory;
 
 //////////////////////////// QcListWidget //////////////////////////////////////
 
-QcWidgetFactory<QcListWidget> listWidgetFactory;
+class QcListWidgetFactory : public QcWidgetFactory<QcListWidget>
+{
+  void initialize( QWidgetProxy *p, QcListWidget *l, QList<QVariant> & ) {
+    p->setMouseEventWidget( l->viewport() );
+  }
+};
+
+QcListWidgetFactory listWidgetFactory;
 
 QcListWidget::QcListWidget()
 {
