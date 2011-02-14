@@ -61,6 +61,8 @@ class QcScrollArea : public QScrollArea, public QcHelper
     Q_INVOKABLE void refresh() { scrollWidget->refresh(); }
     QPointF visibleOrigin() const;
     void setVisibleOrigin( const QPointF & );
+    QSize sizeHint() const { return QSize( 300,200 ); }
+    QSize minimumSizeHint() const { return QSize( 50, 50 ); }
   private:
     QcScrollWidget *scrollWidget;
 };
