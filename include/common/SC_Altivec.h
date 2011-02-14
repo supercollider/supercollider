@@ -52,16 +52,22 @@ typedef vector float vfloat32;
 #define v0123_4ths (vec_ctf(vec_unpackh(vec_unpackh((vector signed char)vec_lvsl(0,(int*)0))), 2))
 #define vstart(x, vslope) (vec_madd(vslope, v0123_4ths, vload(x)))
 
-#define vec_not(a) (vtemp = (a); vec_nor(vtemp, vtemp))
-#ifdef vec_cmplt
-# undef vec_cmplt
-#endif
-#define vec_cmplt(a, b) (vec_cmpgt(b, a))
-#ifdef vec_cmple
-# undef vec_cmple
-#endif
-#define vec_cmple(a, b) (vec_cmpge(b, a))
-#define vec_mul(a, b) (vec_madd(a, b, vzero))
+inline vint32 vec_not(vint32 arg)
+{
+	return vec_nor(arg, arg);
+}
+
+inline vfloat32 vec_not(vfloat32 arg)
+{
+	return vec_nor(arg, arg);
+}
+
+inline vfloat32 vec_mul(vfloat32 a, vfloat32 b)
+{
+	define_vzero;
+	return vec_madd(a, b, vzero);
+}
+
 #define vec_2sComp(x) (vec_sub(vec_sub (x, x), x))
 
 #define USEVEC (ft->mAltivecAvailable && !(BUFLENGTH & 3))
@@ -108,7 +114,6 @@ inline vector float vec_reciprocal( vector float v )
 	return vec_madd( reciprocal, vec_nmsub( reciprocal, v, vec_float_1()), reciprocal ); //Newton Rapheson refinement
 }
 
-#define vec_div(a, b)  vec_mul(a, vec_reciprocal(b))
 
 // seed = ((seed & mask) << shift1) ^ (((seed << shift2) ^ seed) >> shift3);
 

@@ -109,7 +109,7 @@ if(UNIX)
 			LangPrimSource/SC_Speech.M
 			)
 		add_definitions(-DHAVE_SPEECH)
-		if($MAC_OSX_SDK_VERSION GREATER 4)
+		if(MAC_OSX_SDK_VERSION GREATER 4)
 			list(APPEND sclang_sources
 				"LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c"
 				"LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c"

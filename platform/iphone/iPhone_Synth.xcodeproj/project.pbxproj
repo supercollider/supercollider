@@ -19,6 +19,12 @@
 		772C0F0312DA1047009C0126 /* PartitionedConvolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B85C0F43603A0044CAC0 /* PartitionedConvolution.cpp */; };
 		7742A4B60FEA960D00AE1A03 /* GendynUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8470F43603A0044CAC0 /* GendynUGens.cpp */; };
 		7742A4CE0FEA972500AE1A03 /* GendynUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8470F43603A0044CAC0 /* GendynUGens.cpp */; };
+		77476E9712FDE60E007449B3 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77476E9612FDE60E007449B3 /* Accelerate.framework */; };
+		77476E9D12FDE61C007449B3 /* FFT_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8430F43603A0044CAC0 /* FFT_UGens.cpp */; };
+		77476EA012FDE633007449B3 /* FFTInterfaceTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8450F43603A0044CAC0 /* FFTInterfaceTable.cpp */; };
+		77476EA412FDE651007449B3 /* PartitionedConvolution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B85C0F43603A0044CAC0 /* PartitionedConvolution.cpp */; };
+		77476EA512FDE652007449B3 /* PV_UGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B85F0F43603A0044CAC0 /* PV_UGens.cpp */; };
+		77476EBA12FDE672007449B3 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77476E9312FDE5FB007449B3 /* scUBlibsndfile.a */; };
 		7751B8680F4363C40044CAC0 /* BinaryOpUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8390F43603A0044CAC0 /* BinaryOpUGens.cpp */; };
 		7751B87C0F4368070044CAC0 /* ChaosUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B83A0F43603A0044CAC0 /* ChaosUGens.cpp */; };
 		7751B87E0F4368090044CAC0 /* DelayUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B83D0F43603A0044CAC0 /* DelayUGens.cpp */; };
@@ -39,7 +45,8 @@
 		7751B8910F4368AE0044CAC0 /* TriggerUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8640F43603A0044CAC0 /* TriggerUGens.cpp */; };
 		7751B8920F4368B00044CAC0 /* UnaryOpUGens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751B8650F43603A0044CAC0 /* UnaryOpUGens.cpp */; };
 		775384800FBDE6EA00DADEB2 /* iPhoneUGens.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7751B84A0F43603A0044CAC0 /* iPhoneUGens.mm */; };
-		77597BA6112336DD00D2A968 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 778F126B0F50A87300CB6629 /* libsndfile_iphone.a */; };
+		7759953912FDE0C900603187 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7759953812FDE0C900603187 /* SC_fftlib.cpp */; };
+		775995B712FDE5BB00603187 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7759953812FDE0C900603187 /* SC_fftlib.cpp */; };
 		775D93DA0F509D2F00112D87 /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249810EABE96E00732A1C /* SC_AllocPool.cpp */; };
 		775D93DB0F509D2F00112D87 /* SC_DirUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249820EABE96E00732A1C /* SC_DirUtils.cpp */; };
 		775D93DC0F509D2F00112D87 /* SC_Sem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249840EABE96E00732A1C /* SC_Sem.cpp */; };
@@ -224,6 +231,8 @@
 		772C0C1E12DA0A03009C0126 /* SC_UnitDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_UnitDef.h; sourceTree = "<group>"; };
 		772C0C1F12DA0A03009C0126 /* SC_UnitSpec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_UnitSpec.h; sourceTree = "<group>"; };
 		772C0C2012DA0A03009C0126 /* SC_WireSpec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_WireSpec.h; sourceTree = "<group>"; };
+		77476E9312FDE5FB007449B3 /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = ../mac/lib/scUBlibsndfile.a; sourceTree = SOURCE_ROOT; };
+		77476E9612FDE60E007449B3 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		7751B8350F43603A0044CAC0 /* BeatTrack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeatTrack.cpp; sourceTree = "<group>"; };
 		7751B8360F43603A0044CAC0 /* BeatTrack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeatTrack.h; sourceTree = "<group>"; };
 		7751B8370F43603A0044CAC0 /* BeatTrack2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BeatTrack2.cpp; sourceTree = "<group>"; };
@@ -296,7 +305,9 @@
 		7752330F12F5926C005AE5FE /* vec_sse.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec_sse.hpp; sourceTree = "<group>"; };
 		7752331012F5926C005AE5FE /* vec_sse2.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec_sse2.hpp; sourceTree = "<group>"; };
 		7752331112F5926C005AE5FE /* wrap_arguments.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = wrap_arguments.hpp; sourceTree = "<group>"; };
-		7755359A111C959D00534FFB /* scUBlibsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = scUBlibsndfile.a; path = ../mac/lib/scUBlibsndfile.a; sourceTree = "<group>"; };
+		7759953812FDE0C900603187 /* SC_fftlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_fftlib.cpp; sourceTree = "<group>"; };
+		775995A512FDE51C00603187 /* SuperCollider_BrowserPage.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_BrowserPage.xib; path = "iPhone Resources/SuperCollider_BrowserPage.xib"; sourceTree = "<group>"; };
+		775995B312FDE5B000603187 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = lib/libsndfile_iphone.a; sourceTree = "<group>"; };
 		7772497F0EABE96E00732A1C /* fftlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fftlib.c; sourceTree = "<group>"; };
 		777249810EABE96E00732A1C /* SC_AllocPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_AllocPool.cpp; sourceTree = "<group>"; };
 		777249820EABE96E00732A1C /* SC_DirUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_DirUtils.cpp; sourceTree = "<group>"; };
@@ -333,9 +344,12 @@
 		778F12440F50A70400CB6629 /* iscsynth.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = iscsynth.plist; path = "iPhone Resources/iscsynth.plist"; sourceTree = "<group>"; };
 		778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = iscsynth_MainWindow.xib; path = "iPhone Resources/iscsynth_MainWindow.xib"; sourceTree = "<group>"; };
 		778F12510F50A72900CB6629 /* synthdefs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = synthdefs; path = "iPhone Resources/synthdefs"; sourceTree = "<group>"; };
-		778F126B0F50A87300CB6629 /* libsndfile_iphone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile_iphone.a; path = lib/libsndfile_iphone.a; sourceTree = "<group>"; };
 		77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
 		77AA93920EB3685400DC0BCB /* libscsynth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libscsynth.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		77AB4FC112FB38AC00810BCF /* vec_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec_base.hpp; sourceTree = "<group>"; };
+		77AB4FC212FB38AC00810BCF /* vec_int_altivec.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec_int_altivec.hpp; sourceTree = "<group>"; };
+		77AB4FC312FB38AC00810BCF /* vec_int_neon.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec_int_neon.hpp; sourceTree = "<group>"; };
+		77AB4FC412FB38AC00810BCF /* vec_neon.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec_neon.hpp; sourceTree = "<group>"; };
 		77BA5025129C364A00CE89DD /* FileBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileBrowserViewController.h; sourceTree = "<group>"; };
 		77BA5026129C364A00CE89DD /* FileBrowserViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FileBrowserViewController.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -350,7 +364,8 @@
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
 				77724C6B0EABF92400732A1C /* AudioToolbox.framework in Frameworks */,
 				77724C6D0EABF92400732A1C /* CoreAudio.framework in Frameworks */,
-				77597BA6112336DD00D2A968 /* libsndfile_iphone.a in Frameworks */,
+				77476E9712FDE60E007449B3 /* Accelerate.framework in Frameworks */,
+				77476EBA12FDE672007449B3 /* scUBlibsndfile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +411,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				775995A512FDE51C00603187 /* SuperCollider_BrowserPage.xib */,
 				778F12440F50A70400CB6629 /* iscsynth.plist */,
 				778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */,
 				77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */,
@@ -407,13 +423,14 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				778F126B0F50A87300CB6629 /* libsndfile_iphone.a */,
-				7755359A111C959D00534FFB /* scUBlibsndfile.a */,
+				77476E9612FDE60E007449B3 /* Accelerate.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				288765FC0DF74451002DB57D /* CoreGraphics.framework */,
 				77724C6A0EABF92400732A1C /* AudioToolbox.framework */,
 				77724C6C0EABF92400732A1C /* CoreAudio.framework */,
+				77476E9312FDE5FB007449B3 /* scUBlibsndfile.a */,
+				775995B312FDE5B000603187 /* libsndfile_iphone.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -512,9 +529,13 @@
 				7752330912F5926C005AE5FE /* vec.hpp */,
 				7752330A12F5926C005AE5FE /* vec_avx_double.hpp */,
 				7752330B12F5926C005AE5FE /* vec_avx_float.hpp */,
+				77AB4FC112FB38AC00810BCF /* vec_base.hpp */,
 				7752330C12F5926C005AE5FE /* vec_generic.hpp */,
+				77AB4FC212FB38AC00810BCF /* vec_int_altivec.hpp */,
 				7752330D12F5926C005AE5FE /* vec_int_avx.hpp */,
+				77AB4FC312FB38AC00810BCF /* vec_int_neon.hpp */,
 				7752330E12F5926C005AE5FE /* vec_int_sse2.hpp */,
+				77AB4FC412FB38AC00810BCF /* vec_neon.hpp */,
 				7752330F12F5926C005AE5FE /* vec_sse.hpp */,
 				7752331012F5926C005AE5FE /* vec_sse2.hpp */,
 				7752331112F5926C005AE5FE /* wrap_arguments.hpp */,
@@ -537,6 +558,7 @@
 		7772497D0EABE96E00732A1C /* common */ = {
 			isa = PBXGroup;
 			children = (
+				7759953812FDE0C900603187 /* SC_fftlib.cpp */,
 				778F12660F50A85200CB6629 /* iPhone */,
 				7772497F0EABE96E00732A1C /* fftlib.c */,
 				777249810EABE96E00732A1C /* SC_AllocPool.cpp */,
@@ -840,6 +862,11 @@
 				770903C80F50A468005C05DC /* iscsynthmain.m in Sources */,
 				7742A4B60FEA960D00AE1A03 /* GendynUGens.cpp in Sources */,
 				77BA5027129C364A00CE89DD /* FileBrowserViewController.mm in Sources */,
+				775995B712FDE5BB00603187 /* SC_fftlib.cpp in Sources */,
+				77476E9D12FDE61C007449B3 /* FFT_UGens.cpp in Sources */,
+				77476EA012FDE633007449B3 /* FFTInterfaceTable.cpp in Sources */,
+				77476EA412FDE651007449B3 /* PartitionedConvolution.cpp in Sources */,
+				77476EA512FDE652007449B3 /* PV_UGens.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -900,6 +927,7 @@
 				772C0ECA12DA0FC0009C0126 /* PV_UGens.cpp in Sources */,
 				772C0F0212DA1043009C0126 /* FFTInterfaceTable.cpp in Sources */,
 				772C0F0312DA1047009C0126 /* PartitionedConvolution.cpp in Sources */,
+				7759953912FDE0C900603187 /* SC_fftlib.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -918,16 +946,15 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					SC_IPHONE,
 					STATIC_PLUGINS,
+					NOVA_SIMD,
 				);
 				GCC_THUMB_SUPPORT = NO;
-				HEADER_SEARCH_PATHS = ../common/include/libsndfile;
 				INFOPLIST_FILE = "iPhone Resources/iscsynth.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
-					lib,
-					../mac/lib,
-					"\"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\"",
-					"\"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/iphone/lib\"",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SYMROOT = build_iphone;
@@ -944,16 +971,16 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					SC_IPHONE,
 					STATIC_PLUGINS,
+					NDEBUG,
+					NOVA_SIMD,
 				);
 				GCC_THUMB_SUPPORT = NO;
-				HEADER_SEARCH_PATHS = ../common/include/libsndfile;
 				INFOPLIST_FILE = "iPhone Resources/iscsynth.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				LIBRARY_SEARCH_PATHS = (
-					lib,
-					../mac/lib,
-					"\"$(SYSTEM_APPS_DIR)/SC3/source/mac/lib\"",
-					"\"$(SYSTEM_APPS_DIR)/SC3/source/iphone/lib\"",
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/iphone/lib\"",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SYMROOT = build_iphone;
@@ -979,6 +1006,10 @@
 				GCC_VERSION = 4.2;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
+				);
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
 				SKIP_INSTALL = NO;
@@ -1007,6 +1038,10 @@
 				GCC_VERSION = 4.2;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
+				);
 				OBJROOT = "$(SYMROOT)";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;

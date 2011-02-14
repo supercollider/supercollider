@@ -2930,6 +2930,7 @@ void MidEQ_next(MidEQ* unit, int inNumSamples)
 
 		unit->m_freq = freq;
 		unit->m_bw = bw;
+		unit->m_db = db;
 		unit->m_a0 = a0;
 		unit->m_b1 = b1;
 		unit->m_b2 = b2;
