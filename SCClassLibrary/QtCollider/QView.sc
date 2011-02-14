@@ -8,7 +8,7 @@ QView : QObject {
   // container props
   var <decorator, <layout;
   // top window props
-  var <>userCanClose=true, <name, <>deleteOnClose = true;
+  var <>userCanClose=true, <>deleteOnClose = true;
   // actions
   var <action;
   var <toFrontAction, <endFrontAction;
@@ -18,18 +18,15 @@ QView : QObject {
   var <>beginDragAction, <>canReceiveDragHandler, <>receiveDragHandler;
   var <onClose;
 
-  //TODO
-  var <>acceptsClickThrough=false, <>acceptsMouseOver=false,
-      <>alwaysOnTop=false;
-
   *initClass {
     hSizePolicy = [1,2,3,1,2,3,1,2,3];
     vSizePolicy = [1,1,1,2,2,2,3,3,3];
   }
 
   *new { arg parent, bounds;
-    ^super.new( this.qtClass, [parent, bounds.asRect] )
-          .initQView( parent );
+    var p = parent.asView;
+    ^super.new( this.qtClass, [p, bounds.asRect] )
+          .initQView( p );
   }
 
   *newCustom { arg customArgs;
@@ -192,9 +189,12 @@ QView : QObject {
 
   // ................. top window stuff ............................
 
-  name_ { arg aString;
-    name = aString;
-    this.setProperty( \windowTitle, aString );
+  name {
+    ^this.getProperty( \windowTitle );
+  }
+
+  name_ { arg string;
+    this.setProperty( \windowTitle, string );
   }
 
   front {
@@ -237,12 +237,6 @@ QView : QObject {
   closed { ^this.isClosed }
 
   notClosed { ^this.isClosed.not }
-
-  setInnerExtent { arg w, h;
-    // bypass this.bounds, to avoid QWindow flipping the y coordinate
-    var r = this.getProperty(\geometry, Rect.new );
-    this.setProperty(\geometry, r.resizeTo( w, h ); )
-  }
 
   // ----------------- actions .....................................
 
