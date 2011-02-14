@@ -132,11 +132,13 @@ void QcNumberBox::keyPressEvent ( QKeyEvent * event )
     onEditingFinished();
     stepBy( 1, step );
     Q_EMIT( action() );
+    return;
   }
   else if( key == Qt::Key_Down ) {
     onEditingFinished();
     stepBy( -1, step );
     Q_EMIT( action() );
+    return;
   }
   else if( isReadOnly() ) {
     QString t = event->text();
