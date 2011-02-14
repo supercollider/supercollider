@@ -31,7 +31,7 @@
 template<class BOXLAYOUT> class QcBoxLayoutFactory : public QcObjectFactory<BOXLAYOUT>
 {
 protected:
-  virtual void initialize( BOXLAYOUT *l, QList<QVariant> & items ) {
+  virtual void initialize( QObjectProxy *, BOXLAYOUT *l, QList<QVariant> & items ) {
     Q_FOREACH( QVariant v, items ) {
       VariantList item = v.value<VariantList>();
       l->addItem( item );
