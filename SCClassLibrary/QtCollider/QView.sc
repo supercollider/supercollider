@@ -334,8 +334,7 @@ QView : QObject {
     if( keyDownAction.notNil ) {
       ^keyDownAction.value( this, char, modifiers, unicode, keycode );
     } {
-      ^this.tryPerform( \defaultKeyDownAction,
-                        char, modifiers, unicode, keycode );
+      ^this.defaultKeyDownAction( char, modifiers, unicode, keycode );
     };
   }
 
@@ -349,8 +348,7 @@ QView : QObject {
     if( keyUpAction.notNil ) {
       ^keyUpAction.value( this, char, modifiers, unicode, keycode );
     } {
-      ^this.tryPerform( \defaultKeyUpAction,
-                        char, modifiers, unicode, keycode );
+      ^this.defaultKeyUpAction( char, modifiers, unicode, keycode );
     };
   }
 
@@ -411,7 +409,7 @@ QView : QObject {
 
   onCloseEvent {
     if( userCanClose != false ) {
-        if( deleteOnClose != false ) { this.remove; } { ^nil; };
+        if( deleteOnClose != false ) { this.remove; ^true };
     }{
         ^false;
     };

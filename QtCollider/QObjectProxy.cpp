@@ -419,9 +419,12 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
         qcProxyDebugMsg(2,"direct!");
         PyrSlot result;
         invokeScMethod( symMethod, args, &result );
-        if( IsNil( &result ) ) return false;
-        else {
-          if( IsFalse( &result ) ) event->ignore();
+        if( IsTrue( &result ) ) {
+          event->accept();
+          return true;
+        }
+        else if( IsFalse( &result ) ) {
+          event->ignore();
           return true;
         }
       }

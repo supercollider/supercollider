@@ -212,18 +212,25 @@ QKnob : QUserView {
     var zoom = this.getScale(modifiers);
 
     // standard keydown
-    if (char == $r, { this.valueAction = 1.0.rand; ^this });
-    if (char == $n, { this.valueAction = 0.0; ^this });
-    if (char == $x, { this.valueAction = 1.0; ^this });
-    if (char == $c, { this.valueAction = 0.5; ^this });
+    switch( char,
+      $r, { this.valueAction = 1.0.rand },
+      $n, { this.valueAction = 0.0 },
+      $x, { this.valueAction = 1.0 },
+      $c, { this.valueAction = 0.5 },
 
-    if (keycode == 16r5b, { this.decrement(zoom); ^this });
-    if (keycode == 16r5d, { this.increment(zoom); ^this });
-    if (keycode == 16r1000013, { this.increment(zoom); ^this });
-    if (keycode == 16r1000014, { this.increment(zoom); ^this });
-    if (keycode == 16r1000015, { this.decrement(zoom); ^this });
-    if (keycode == 16r1000012, { this.decrement(zoom); ^this });
-    ^nil    // bubble if it's an invalid key
+      {
+        switch( keycode,
+          16r5b, { this.decrement(zoom) },
+          16r5d, { this.increment(zoom) },
+          16r1000013, { this.increment(zoom) },
+          16r1000014, { this.increment(zoom) },
+          16r1000015, { this.decrement(zoom) },
+          16r1000012, { this.decrement(zoom) },
+          {^this} // bubble if it's an invalid key
+        )
+      }
+    );
+    ^true;
   }
 
   increment { |zoom=1| ^this.valueAction = (this.value + (keystep * zoom)).min(1) }
