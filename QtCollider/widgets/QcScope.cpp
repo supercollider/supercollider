@@ -33,7 +33,8 @@ QcScope::QcScope()
   yOffset( 0.f ),
   xZoom( 1.f ),
   yZoom( 1.f ),
-  style( 0 )
+  style( 0 ),
+  _bkg( QColor(0,0,0) )
 {
   memset( &buffer, 0, sizeof(SndBuf) );
   timer = new QTimer( this );
@@ -103,7 +104,7 @@ void QcScope::paint1D( bool overlapped, QPainter & p )
   for( c = 0; c < buffer.channels; c++ ) {
 
     if( c < colors.count() ) p.setPen( colors[c] );
-    else p.setPen( QColor( 0,0,0 ) );
+    else p.setPen( QColor(255,255,255) );
 
     float yCenter = area.height() * 0.5;
     if( !overlapped ) {
@@ -128,7 +129,7 @@ void QcScope::paint1D( bool overlapped, QPainter & p )
 void QcScope::paint2D( QPainter & p )
 {
   if( colors.count() ) p.setPen( colors[0] );
-  else p.setPen( QColor( 0,0,0 ) );
+  else p.setPen( QColor(255,255,255) );
 
   QRect area = rect();
   int minSize = qMin( area.width(), area.height() );
@@ -162,7 +163,7 @@ void QcScope::paintEvent ( QPaintEvent * event )
 
   QPainter p( this );
   QRect area = rect();
-  p.fillRect( area, QColor( "white" ) );
+  p.fillRect( area, _bkg );
 
   if( buffer.frames == 0 ) return;
 
