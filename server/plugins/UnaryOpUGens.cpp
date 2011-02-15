@@ -490,6 +490,26 @@ NOVA_WRAPPER_CT_UNROLL(sign, sgn)
 
 DEFINE_UNARY_OP_FUNCS(distort, sc_distort)
 
+#ifdef NOVA_SIMD
+void distort_a_nova(UnaryOpUGen *unit, int inNumSamples)
+{
+	float *out = OUT(0);
+	float *a = IN(0);
+	using namespace nova;
+
+	int vs = vec<float>::size;
+	int len = inNumSamples / vs;
+	vec<float> one(1.f);
+
+	for (int i=0; i<len; ++i) {
+		vec<float> arg; arg.load_aligned(a);
+		vec<float> result = arg / (one + abs(arg));
+		result.store_aligned(out);
+		out += vs; a += vs;
+	}
+}
+#endif
+
 #if __VEC__
 #define vec_div(a, b)  vec_mul(a, vec_reciprocal(b))
 
@@ -835,7 +855,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opCosH : func = &cosh_a; break;
 		case opTanH : func = &tanh_nova; break;
 
-		case opDistort : func = &distort_a; break;
+		case opDistort : func = &distort_a_nova; break;
 		case opSoftClip : func = &softclip_nova_64; break;
 
 		case opRectWindow : func = &rectwindow_a; break;
@@ -885,7 +905,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opCosH : func = &cosh_a; break;
 		case opTanH : func = &tanh_nova; break;
 
-		case opDistort : func = &distort_a; break;
+		case opDistort : func = &distort_a_nova; break;
 		case opSoftClip : func = &softclip_nova; break;
 
 		case opRectWindow : func = &rectwindow_a; break;

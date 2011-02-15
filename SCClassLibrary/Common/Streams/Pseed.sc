@@ -18,7 +18,7 @@ Pseed : FilterPattern {
 			seed = seedStream.next(inval);
 			seed.notNil
 		}{
-			thread = pattern.asStream;
+			thread = Routine { |inval| pattern.embedInStream(inval) };
 			thread.randSeed = seed;
 			inval = thread.embedInStream(inval);
 		};

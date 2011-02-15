@@ -141,6 +141,7 @@ extern "C"
 	void BiPanB2_Ctor(BiPanB2* unit);
 
 	void DecodeB2_next(DecodeB2 *unit, int inNumSamples);
+	void DecodeB2_next_nova(DecodeB2 *unit, int inNumSamples);
 	void vDecodeB2_next(DecodeB2 *unit, int inNumSamples);
 	void DecodeB2_Ctor(DecodeB2* unit);
 
@@ -1239,6 +1240,56 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 	}
 }
 
+void PanB2_next_nova(PanB2 *unit, int inNumSamples)
+{
+	float *Wout = OUT(0);
+	float *Xout = OUT(1);
+	float *Yout = OUT(2);
+
+	float *in = IN(0);
+	float azimuth = ZIN0(1);
+	float level = ZIN0(2);
+
+	float W_amp = unit->m_W_amp;
+	float X_amp = unit->m_X_amp;
+	float Y_amp = unit->m_Y_amp;
+
+	int kSineSize = ft->mSineSize;
+	int kSineMask = kSineSize - 1;
+	if (azimuth != unit->m_azimuth || level != unit->m_level) {
+		unit->m_azimuth = azimuth;
+		unit->m_level = level;
+
+		long isinpos = kSineMask & (long)(azimuth * (float)(kSineSize >> 1));
+		float sina = -ft->mSine[isinpos];
+
+		long icospos = kSineMask & (isinpos + (kSineSize>>2));
+		float cosa = ft->mSine[icospos];
+
+		float next_W_amp = rsqrt2_f * level;
+		float next_X_amp = cosa * level;
+		float next_Y_amp = sina * level;
+
+		float W_slope = CALCSLOPE(next_W_amp, W_amp);
+		float X_slope = CALCSLOPE(next_X_amp, X_amp);
+		float Y_slope = CALCSLOPE(next_Y_amp, Y_amp);
+
+		nova::times_vec_simd(Wout, in, W_amp, W_slope, inNumSamples);
+		nova::times_vec_simd(Xout, in, X_amp, X_slope, inNumSamples);
+		nova::times_vec_simd(Yout, in, Y_amp, Y_slope, inNumSamples);
+
+		unit->m_W_amp = W_amp;
+		unit->m_X_amp = X_amp;
+		unit->m_Y_amp = Y_amp;
+	} else {
+		// TODO: can be further optimized by joining the loops
+		nova::times_vec_simd(Wout, in, W_amp, inNumSamples);
+		nova::times_vec_simd(Xout, in, X_amp, inNumSamples);
+		nova::times_vec_simd(Yout, in, Y_amp, inNumSamples);
+	}
+}
+
+
 #if __VEC__
 
 void vPanB2_next(PanB2 *unit, int inNumSamples)
@@ -1310,6 +1361,7 @@ void vPanB2_next(PanB2 *unit, int inNumSamples)
 	}
 }
 
+
 #endif
 
 
@@ -1318,12 +1370,15 @@ void PanB2_Ctor(PanB2 *unit)
 #if __VEC__
 	if (USEVEC) {
 		SETCALC(vPanB2_next);
-	} else {
-		SETCALC(PanB2_next);
-	}
-#else
-	SETCALC(PanB2_next);
+	} else
+
+#elseif defined(NOVA_SIMD)
+	if (!(BUFLENGTH & 15))
+		SETCALC(PanB2_next_nova);
+	else
 #endif
+
+	SETCALC(PanB2_next);
 
 	float azimuth = unit->m_azimuth = ZIN0(1);
 	float level = unit->m_level = ZIN0(2);
@@ -1657,12 +1712,13 @@ void DecodeB2_Ctor(DecodeB2 *unit)
 	//if (USEVEC) {
 	if (0) {
 		SETCALC(vDecodeB2_next);
-	} else {
-		SETCALC(DecodeB2_next);
-	}
-#else
-	SETCALC(DecodeB2_next);
+	} else
+#elif defined(NOVA_SIMD)
+	if (!(BUFLENGTH & 15))
+		SETCALC(DecodeB2_next_nova);
+	else
 #endif
+		SETCALC(DecodeB2_next);
 
 	DecodeB2_next(unit, 1);
 
@@ -1704,6 +1760,46 @@ void DecodeB2_next(DecodeB2 *unit, int inNumSamples)
 		X_amp = X_tmp;
 	}
 }
+
+#ifdef NOVA_SIMD
+void DecodeB2_next_nova(DecodeB2 *unit, int inNumSamples)
+{
+	float *Win0 = IN(0);
+	float *Xin0 = IN(1);
+	float *Yin0 = IN(2);
+
+	using namespace nova;
+	vec<float> W_amp = unit->m_W_amp;
+	vec<float> X_amp = unit->m_X_amp;
+	vec<float> Y_amp = unit->m_Y_amp;
+	vec<float> X_tmp;
+	vec<float> cosa = unit->m_cosa;
+	vec<float> sina = unit->m_sina;
+
+	int numOutputs = unit->mNumOutputs;
+	int vs = vec<float>::size;
+	int loops = inNumSamples / vs;
+	for (int i=0; i<numOutputs; ++i) {
+		float *out = OUT(i);
+		float *Win = Win0;
+		float *Xin = Xin0;
+		float *Yin = Yin0;
+
+		for (int j = 0; j != loops; ++j) {
+			vec<float> result, w, x, y;
+			w.load_aligned(Win); x.load_aligned(Xin); y.load_aligned(Yin);
+			result = w * W_amp + x * X_amp + y * Y_amp;
+			result.store_aligned(out);
+			out += vs; Win += vs; Xin += vs; Yin += vs;
+		};
+
+		X_tmp = X_amp * cosa + Y_amp * sina;
+		Y_amp = Y_amp * cosa - X_amp * sina;
+		X_amp = X_tmp;
+	}
+}
+#endif
+
 
 #if __VEC__
 
