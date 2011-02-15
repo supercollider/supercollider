@@ -866,6 +866,8 @@ SequenceableCollection : Collection {
 		^this.multiChannelPerform(\exprange, lo, hi)
 	}
 
+	unipolar { arg mul = 1; ^this.collect {|item| item.unipolar(mul) }  }
+	bipolar { arg mul = 1; ^this.collect {|item| item.bipolar(mul) }  }
 
 	// UGen support
 
