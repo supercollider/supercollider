@@ -1374,7 +1374,7 @@ void PanB2_Ctor(PanB2 *unit)
 		SETCALC(vPanB2_next);
 	} else
 
-#elseif defined(NOVA_SIMD)
+#elif defined(NOVA_SIMD)
 	if (!(BUFLENGTH & 15))
 		SETCALC(PanB2_next_nova);
 	else
