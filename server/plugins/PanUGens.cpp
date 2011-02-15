@@ -1240,6 +1240,8 @@ void PanB2_next(PanB2 *unit, int inNumSamples)
 	}
 }
 
+#ifdef NOVA_SIMD
+
 void PanB2_next_nova(PanB2 *unit, int inNumSamples)
 {
 	float *Wout = OUT(0);
@@ -1288,7 +1290,7 @@ void PanB2_next_nova(PanB2 *unit, int inNumSamples)
 		nova::times_vec_simd(Yout, in, Y_amp, inNumSamples);
 	}
 }
-
+#endif
 
 #if __VEC__
 
@@ -1372,7 +1374,7 @@ void PanB2_Ctor(PanB2 *unit)
 		SETCALC(vPanB2_next);
 	} else
 
-#elseif defined(NOVA_SIMD)
+#elif defined(NOVA_SIMD)
 	if (!(BUFLENGTH & 15))
 		SETCALC(PanB2_next_nova);
 	else
