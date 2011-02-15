@@ -134,12 +134,12 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 				strncpy(match, string + offset + match_start, match_length);
 				match[match_length] = 0;
-				PyrObject *array = newPyrArray(g->gc, 2, 0, true);
+				PyrObject *array = newPyrArray(g->gc, 2, 0, false); // gc corruption workaround: disable collection
 				SetObject(result_array->slots + i, array);
 				result_array->size++;
 				g->gc->GCWrite(result_array, array);
 
-				PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, true);
+				PyrObject *matched_string = (PyrObject*)newPyrString(g->gc, match, 0, false); // gc corruption workaround: disable collection
 
 				array->size = 2;
 				SetInt(array->slots, match_start + offset);
