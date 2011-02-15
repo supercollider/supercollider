@@ -132,8 +132,6 @@ class QcButton : public QPushButton, public QcHelper
 class QcCustomPainted : public QcCanvas, QcHelper
 {
   Q_OBJECT
-  Q_PROPERTY( QColor background READ dummyColor WRITE setBackground );
-  Q_PROPERTY( bool paint READ dummyBool WRITE setPaint );
   public:
     QcCustomPainted() {
       setLayout( new QcDefaultLayout() );

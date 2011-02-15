@@ -26,15 +26,25 @@
 #include <QPainter>
 
 QcCanvas::QcCanvas( QWidget *parent )
-: QWidget( parent ), paint( false ), repaintNeeded( true )
+: QWidget( parent ),
+  _paint( false ),
+  _repaintNeeded( true ),
+  _clearOnRefresh( true ),
+  _clearOnce( false ),
+  _resize( false )
 {
   //_bkgColor = palette().color( QPalette::Background );
 }
 
 void QcCanvas::refresh()
 {
-  repaintNeeded = true;
+  _repaintNeeded = true;
   update();
+}
+
+void QcCanvas::clear()
+{
+  _clearOnce = true;
 }
 
 void QcCanvas::customEvent( QEvent *e )
@@ -47,23 +57,30 @@ void QcCanvas::customEvent( QEvent *e )
 
 void QcCanvas::resizeEvent( QResizeEvent * )
 {
+  _resize = true;
   refresh();
 }
 
 void QcCanvas::paintEvent( QPaintEvent * )
 {
-  if( paint && repaintNeeded ) {
-    _pixmap = QPixmap( size() );
-    _pixmap.fill( QColor(0,0,0,0) );
+  if( _paint && _repaintNeeded ) {
+    if( _resize ) {
+      _pixmap = QPixmap( size() );
+      _resize = false;
+      _clearOnce = true;
+    }
+
+    if( _clearOnRefresh || _clearOnce ) {
+      _pixmap.fill( QColor(0,0,0,0) );
+      _clearOnce = false;
+    }
 
     QPainter pixPainter( &_pixmap );
-
     Q_EMIT( painting(&pixPainter) );
-
-    repaintNeeded = false;
+    _repaintNeeded = false;
   }
 
   QPainter p(this);
   if( _bkgColor.isValid() ) p.fillRect( rect(), _bkgColor );
-  if( paint ) p.drawPixmap( rect(), _pixmap );
+  if( _paint ) p.drawPixmap( rect(), _pixmap );
 }

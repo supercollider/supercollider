@@ -13,8 +13,17 @@ QUserView : QView {
     ^Point(150,150);
   }
 
+  drawingEnabled { ^this.getProperty( \drawingEnabled ); }
+  drawingEnabled_ { arg boolean; this.setProperty( \drawingEnabled, boolean ); }
+
+  clearOnRefresh { ^this.getProperty( \clearOnRefresh ); }
+  clearOnRefresh_ { arg boolean; this.setProperty( \clearOnRefresh, boolean ); }
+
+  clearDrawing { this.invokeMethod( \clear ); }
+
   drawFunc_ { arg aFunction;
-    if( drawFunc.isNil ) { this.setProperty( \paint, true ) };
+    if( drawFunc.isNil ) { this.drawingEnabled = true };
+    if( aFunction.isNil ) { this.drawingEnabled = false };
     drawFunc = aFunction;
   }
 

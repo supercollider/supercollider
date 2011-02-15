@@ -152,7 +152,8 @@ QWindow
   }
 
   drawHook_ { arg aFunction;
-    if( drawHook.isNil ) { view.setProperty( \paint, true ) };
+    if( drawHook.isNil ) { view.setProperty( \drawingEnabled, true ) };
+    if( aFunction.isNil ) { view.setProperty( \drawingEnabled, false ) };
     drawHook = aFunction;
   }
 

@@ -42,14 +42,14 @@ class QcScrollArea : public QScrollArea, public QcHelper
   Q_OBJECT
   Q_PROPERTY( bool hasBorder READ dummyBool WRITE setHasBorder );
   Q_PROPERTY( QColor background READ dummyColor WRITE setBackground );
-  Q_PROPERTY( bool paint READ dummyBool WRITE setPaint );
+  Q_PROPERTY( bool drawingEnabled READ dummyBool WRITE setDrawingEnabled );
   Q_PROPERTY( QRectF innerBounds READ innerBounds );
   Q_PROPERTY( QPointF visibleOrigin READ visibleOrigin WRITE setVisibleOrigin );
   public:
     QcScrollArea();
     Q_INVOKABLE void addChild( QWidget* w ) { w->setParent( scrollWidget ); w->show(); }
-    void setBackground ( const QColor &color );
-    void setPaint( bool b ) { scrollWidget->setPaint( b ); }
+    void setBackground ( const QColor &color ) { scrollWidget->setBackground( color ); }
+    void setDrawingEnabled( bool b ) { scrollWidget->setDrawingEnabled( b ); }
     void setHasBorder( bool b );
     QRectF innerBounds() const {
       QSize vs = viewport()->size();
