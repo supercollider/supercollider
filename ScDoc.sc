@@ -1516,7 +1516,7 @@ ScDoc {
     
     }
 
-    *updateAll {|force=false,doneFunc=nil,threaded=false|
+    *updateAll {|force=false,doneFunc=nil,threaded=true|
         var recurseHelpSource = {|dir,force|
             ScDoc.postProgress("Parsing all in "++dir);
             PathName(dir).filesDo {|path|

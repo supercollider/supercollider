@@ -32,6 +32,17 @@ See these generated helpfiles for more info about ScDoc:
 TODO
 ----
 
+threaded:true
+    real	4m6.582s
+    user	2m50.979s
+    sys	0m5.184s
+
+threaded:false
+    real	2m52.912s
+    user	2m42.638s
+    sys	0m4.604s
+
+
 - this doesn't work:
 modalrangetag:: blah blah blah
 blah blah blah blah blah
@@ -51,6 +62,12 @@ or simply, have a redirect:: tag that sets the name of the classvar holding the 
 
 - using \::. doesn't work, needs a space: \:: .
 also sometimes non-letters after :: doesn't work correctly, like "(link::hello::)"
+
+- integration with frontend / main sc:
+* should we render all help to HTML when starting/recompiling or only when user decides to?
+* should we ship pre-rendered help with the binary? (render after building supercollider)
+* should we post progress messages or keep them in internal log and use external GUI to poll this?
+* should we even run ScDoc.updateAll in a separate process?
 
 - we need to distinguish between class and instance method anchors since some classes have both named the same,
 something like #cmethod:name and #imethod:name perhaps? or #*classmethodname and #instancemethodname ?
