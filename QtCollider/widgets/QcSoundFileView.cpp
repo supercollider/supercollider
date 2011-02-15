@@ -133,7 +133,8 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   pixmap(0),
   _peakColor( QColor(242,178,0) ),
   _rmsColor( QColor(255,255,0) ),
-  dirty(false)
+  dirty(false),
+  _drawWaveform(true)
 {
   memset( &sfInfo, 0, sizeof(SF_INFO) );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
@@ -372,6 +373,7 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 
   QPainter p( this );
 
+  // if loading draw progress
   if( _cache && _cache->loading() ) {
     QRect r( rect() );
     p.fillRect( r, QColor(100,100,100) );
@@ -384,12 +386,18 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     return;
   }
 
-  if( dirty ) {
+  // draw waveform on pixmap
+
+  if( _drawWaveform && dirty ) {
     draw( pixmap, 0, width(), _beg, _dur );
     dirty = false;
   }
 
+  // clear background
+
   p.fillRect( rect(), QColor( 0, 0, 0 ) );
+
+  // draw selections
 
   p.save();
 
@@ -407,6 +415,8 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
   }
 
   p.restore();
+
+  // draw time grid
 
   if( _showGrid && sfInfo.samplerate > 0 && _gridResolution > 0.f ) {
     p.save();
@@ -427,7 +437,12 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     p.restore();
   }
 
-  p.drawPixmap( ev->rect(), *pixmap, ev->rect() );
+  // paste the waveform pixmap on screen
+
+  if( _drawWaveform )
+    p.drawPixmap( ev->rect(), *pixmap, ev->rect() );
+
+  // draw cursor
 
   if( _showCursor && _cursorPos >= _beg && _cursorPos < _beg + _dur ) {
     double cursorX = (_cursorPos - _beg) / _fpp;

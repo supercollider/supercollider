@@ -98,6 +98,7 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( float gridOffset READ dummyFloat WRITE setGridOffset );
   Q_PROPERTY( float gridResolution READ dummyFloat WRITE setGridResolution );
   Q_PROPERTY( QColor gridColor READ dummyColor WRITE setGridColor );
+  Q_PROPERTY( bool drawsWaveform READ drawsWaveform WRITE setDrawsWaveform );
 
 public:
 
@@ -145,6 +146,9 @@ public:
 
   void setPeakColor( const QColor &clr ) { _peakColor = clr; redraw(); }
   void setRmsColor( const QColor &clr ) { _rmsColor = clr; redraw(); }
+
+  bool drawsWaveform() const { return _drawWaveform; }
+  bool setDrawsWaveform( bool b ) { _drawWaveform = b; update(); }
 
   QSize sizeHint() const { return QSize( 400, 200 ); }
   QSize minimumSizeHint() const { return QSize( 100, 20 ); }
@@ -223,6 +227,7 @@ private:
   QColor _peakColor;
   QColor _rmsColor;
   bool dirty;
+  bool _drawWaveform;
 
   // interaction
   enum DragAction {

@@ -21,6 +21,9 @@ QSoundFileView : QView {
 
   readWithTask { this.read }
 
+  drawsWaveform { ^this.getProperty( \drawsWaveform ); }
+
+  drawsWaveform_ { arg boolean; this.setProperty( \drawsWaveform, boolean ); }
 
   //// Info
 
