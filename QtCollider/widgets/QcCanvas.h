@@ -27,13 +27,21 @@
 
 class QcCanvas : public QWidget
 {
+  Q_PROPERTY( bool clearOnRefresh READ clearOnRefresh WRITE setClearOnRefresh );
+  Q_PROPERTY( bool drawingEnabled READ drawingEnabled WRITE setDrawingEnabled );
+  Q_PROPERTY( QColor background READ background WRITE setBackground );
   Q_OBJECT
 public:
   QcCanvas( QWidget *parent = 0 );
+  QColor background() const { return _bkgColor; }
   void setBackground( const QColor & c ) { _bkgColor = c; update(); }
-  void setPaint( bool b ) { paint = b; }
+  bool drawingEnabled() const { return _paint; }
+  void setDrawingEnabled( bool b ) { _paint = b; }
+  bool clearOnRefresh() const { return _clearOnRefresh; }
+  void setClearOnRefresh( bool b ) { _clearOnRefresh = b; }
 public Q_SLOTS:
   void refresh();
+  void clear();
 Q_SIGNALS:
   void painting(QPainter*);
 protected:
@@ -44,8 +52,11 @@ protected:
 private:
   QPixmap _pixmap;
   QColor _bkgColor;
-  bool paint;
-  bool repaintNeeded;
+  bool _paint;
+  bool _repaintNeeded;
+  bool _clearOnRefresh;
+  bool _clearOnce;
+  bool _resize;
 };
 
 #endif

@@ -104,11 +104,6 @@ void QcScrollArea::setHasBorder( bool b ) {
     QFrame::setFrameShape( QFrame::NoFrame );
 }
 
-void QcScrollArea::setBackground ( const QColor &color )
-{
-  scrollWidget->setBackground( color );
-}
-
 QPointF QcScrollArea::visibleOrigin() const
 {
   return scrollWidget->mapFromParent( QPoint(0,0) );
