@@ -1768,15 +1768,16 @@ void DecodeB2_next_nova(DecodeB2 *unit, int inNumSamples)
 	float *Xin0 = IN(1);
 	float *Yin0 = IN(2);
 
-	float W_amp = unit->m_W_amp;
-	float X_amp = unit->m_X_amp;
-	float Y_amp = unit->m_Y_amp;
-	float X_tmp;
-	float cosa = unit->m_cosa;
-	float sina = unit->m_sina;
+	using namespace nova;
+	vec<float> W_amp = unit->m_W_amp;
+	vec<float> X_amp = unit->m_X_amp;
+	vec<float> Y_amp = unit->m_Y_amp;
+	vec<float> X_tmp;
+	vec<float> cosa = unit->m_cosa;
+	vec<float> sina = unit->m_sina;
 
 	int numOutputs = unit->mNumOutputs;
-	int vs = nova::vec<float>::size;
+	int vs = vec<float>::size;
 	int loops = inNumSamples / vs;
 	for (int i=0; i<numOutputs; ++i) {
 		float *out = OUT(i);
@@ -1785,11 +1786,11 @@ void DecodeB2_next_nova(DecodeB2 *unit, int inNumSamples)
 		float *Yin = Yin0;
 
 		for (int j = 0; j != loops; ++j) {
-			nova::vec<float> result, w, x, y;
+			vec<float> result, w, x, y;
 			w.load_aligned(Win); x.load_aligned(Xin); y.load_aligned(Yin);
 			result = w * W_amp + x * X_amp + y * Y_amp;
 			result.store_aligned(out);
-			out += vs; w += vs; x += vs; y += vs;
+			out += vs; Win += vs; Xin += vs; Yin += vs;
 		};
 
 		X_tmp = X_amp * cosa + Y_amp * sina;
