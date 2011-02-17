@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2011 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,17 +19,33 @@
 *
 ************************************************************************/
 
-#include "ScQt.h"
+#ifndef QC_LANGUAGE_CLIENT_H
+#define QC_LANGUAGE_CLIENT_H
 
-#include <QThread>
+#include "SC_TerminalClient.h"
+#include "QC_Export.h"
 
-class QcLangThread : public QThread
+#include <QObject>
+#include <QTimer>
+
+namespace QtCollider {
+
+class LangClient : public QObject, public SC_TerminalClient
 {
-  public:
-    QcLangThread( int argc, char **argv, QtCollider::MainFn );
-  private:
-    void run();
-    int argc;
-    char **argv;
-    QtCollider::MainFn langFn;
+  Q_OBJECT
+public:
+  LangClient( const char* name );
+  virtual ~LangClient() {};
+private Q_SLOTS:
+  void cmdLineTick();
+  void daemonTick();
+protected:
+  virtual void commandLoop();
+  virtual void daemonLoop();
+private:
+  QTimer *langTimer;
 };
+
+} // namespace QtCollider
+
+#endif // QC_LANGUAGE_CLIENT_H

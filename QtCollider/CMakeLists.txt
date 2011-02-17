@@ -6,7 +6,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
 
 set( QT_COLLIDER_HDRS
   QcApplication.h
-  MainLoop.h
   QObjectProxy.h
   QWidgetProxy.h
   Slot.h
@@ -33,8 +32,8 @@ set( QT_COLLIDER_HDRS
 )
 
 set( QT_COLLIDER_SRCS
+  interface.cpp
   QcApplication.cpp
-  MainLoop.cpp
   Common.cpp
   QObjectProxy.cpp
   QWidgetProxy.cpp
@@ -43,7 +42,7 @@ set( QT_COLLIDER_SRCS
   QcObjectFactory.cpp
   primitives/primitives.cpp
   primitives/prim_QObject.cpp
-  primitives/prim_QPen.cpp
+  #primitives/prim_QPen.cpp
   primitives/prim_QPen_oldskool.cpp
   primitives/prim_misc.cpp
   primitives/prim_QWidget.cpp
@@ -75,6 +74,7 @@ include(${QT_USE_FILE})
 set( SC_HEADERS_DIR "${CMAKE_SOURCE_DIR}/include" )
 include_directories(
   .
+  "${SC_HEADERS_DIR}/QtCollider"
   "${SC_HEADERS_DIR}/common"
   "${SC_HEADERS_DIR}/lang"
   "${SC_HEADERS_DIR}/server"
@@ -86,16 +86,10 @@ qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 
 add_library( QtCollider SHARED ${QT_COLLIDER_SRCS} ${QT_COLLIDER_MOC_SRCS} )
 
-set_property(
-  TARGET QtCollider
-  APPEND PROPERTY COMPILE_DEFINITIONS QT_NO_KEYWORDS
-)
+add_definitions( -DQT_NO_KEYWORDS )
 
 if(NOT SCLANG_SERVER)
-  set_property(
-    TARGET QtCollider
-    APPEND PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
-  )
+  add_definitions( -DNO_INTERNAL_SERVER )
 endif(NOT SCLANG_SERVER)
 
 if(APPLE)
@@ -105,7 +99,15 @@ if(APPLE)
   )
 endif(APPLE)
 
+set_property ( TARGET QtCollider
+               APPEND PROPERTY COMPILE_DEFINITIONS QT_COLLIDER_EXPORTING )
+
 target_link_libraries( QtCollider ${QT_LIBRARIES} )
+
+qt4_wrap_cpp( QC_LANG_CLIENT_MOC_SRCS LanguageClient.h )
+add_library( QcLangClient STATIC LanguageClient.cpp ${QC_LANG_CLIENT_MOC_SRCS} )
+set_property ( TARGET QcLangClient
+               APPEND PROPERTY COMPILE_FLAGS -fpic )
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
