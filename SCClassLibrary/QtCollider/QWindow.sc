@@ -117,7 +117,7 @@ QWindow
 
     // allWindows array management
     QWindow.addWindow( this );
-    view.connectFunction( 'destroyed()', { |me| QWindow.removeWindow(me); }, false );
+    view.connectFunction( 'destroyed()', { QWindow.removeWindow(this); }, false );
 
     // action to call whenever a window is created
     QWindow.initAction.value( this );
