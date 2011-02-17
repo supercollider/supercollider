@@ -152,6 +152,7 @@ else()
 endif()
 
 if (SC_QT)
+	include_directories(${CMAKE_SOURCE_DIR}/include/QtCollider)
 	target_link_libraries(${scappbundlename} QtCollider)
 	set_property(TARGET ${scappbundlename}
 		APPEND

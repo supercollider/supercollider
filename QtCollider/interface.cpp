@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2011 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,50 +19,20 @@
 *
 ************************************************************************/
 
-#include "MainLoop.h"
-#include "ScQt.h"
+#include "QtCollider.h"
 #include "QcApplication.h"
 
-QcLangThread::QcLangThread( int c, char *v[], QtCollider::MainFn mainFn )
-{
-  argc = c;
-  argv = v;
-  langFn = mainFn;
-}
+#include <QTimer>
 
-void QcLangThread::run()
-{
-  (*langFn)( argc,argv );
-}
-
-int QtCollider::run( int & argc, char **argv, QtCollider::MainFn mainFn )
-{
-  // create language thread
-  QcLangThread langThread( argc, argv, mainFn );
-
+QC_PUBLIC
+void QtCollider::init() {
   #ifdef Q_OS_MAC
     QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
   #endif
-
-  // create QcApplication
-  int qcArgc = 1;
-  char qcArg = '\0';
-  char *qcArgv[1];
-  qcArgv[0] = &qcArg;
-  QcApplication qcApp( qcArgc, qcArgv  );
-
-  qcApp.setQuitOnLastWindowClosed( false );
-
-  // quit QApplication when language thread finishes
-  QObject::connect( &langThread, SIGNAL(finished()),
-                    &qcApp, SLOT(quit()) );
-
-  // start them both
-  langThread.start();
-  qcApp.exec();
-
-  // after QApplication quits, thread should have terminated, or we wait for it
-  langThread.wait();
-
-  return 0;
+  static int qcArgc = 1;
+  static char qcArg0[] = "";
+  static char *qcArgv[1];
+  qcArgv[0] = qcArg0;
+  QcApplication *qcApp = new QcApplication( qcArgc, qcArgv );
+  qcApp->setQuitOnLastWindowClosed( false );
 }

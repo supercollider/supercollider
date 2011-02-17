@@ -126,7 +126,8 @@ else(UNIX)
 endif(UNIX)
 
 if (SC_QT)
-  add_definitions(-DSC_QT)
+	add_definitions(-DSC_QT)
+	include_directories(${CMAKE_SOURCE_DIR}/include/QtCollider)
 endif (SC_QT)
 
 if(WIN32)
@@ -176,7 +177,7 @@ else()
 endif()
 
 if (SC_QT)
-  target_link_libraries(libsclang QtCollider)
+	target_link_libraries(libsclang QcLangClient QtCollider)
 endif (SC_QT)
 
 set_property(TARGET libsclang

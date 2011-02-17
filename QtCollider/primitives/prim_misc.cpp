@@ -24,6 +24,7 @@
 #include "../Common.h"
 #include "../Slot.h"
 #include "../QcApplication.h"
+#include "QtCollider.h"
 
 #include <PyrKernel.h>
 
@@ -37,13 +38,7 @@ QC_LANG_PRIMITIVE( QtGUI_Start, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   // FIXME is QApplication::instance() thread-safe??
   if( !QApplication::instance() ) {
-    #ifdef Q_OS_MAC
-      QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
-    #endif
-    int qcArgc = 0;
-    char **qcArgv = 0;
-    QcApplication *qcApp = new QcApplication( qcArgc, qcArgv  );
-    qcApp->setQuitOnLastWindowClosed( false );
+    QtCollider::init();
   }
   return errNone;
 }

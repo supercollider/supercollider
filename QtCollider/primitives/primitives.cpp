@@ -21,6 +21,7 @@
 
 #include "primitives/primitives.h"
 #include "Common.h"
+#include "QC_Export.h"
 
 namespace QtCollider {
   PyrSymbol *symSize;
@@ -33,7 +34,10 @@ LangPrimitiveList& QtCollider::langPrimitives() {
   return *primitives;
 }
 
-void initQtGUIPrimitives () {
+namespace QtCollider {
+
+QC_PUBLIC
+void initPrimitives () {
   qcDebugMsg(1,"initializing QtGUI primitives");
 
   int base = nextPrimitiveIndex();
@@ -47,3 +51,5 @@ void initQtGUIPrimitives () {
 
   symSize = getsym("Size");
 }
+
+} // namespace QtCollider
