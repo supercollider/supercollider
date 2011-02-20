@@ -845,7 +845,7 @@ void Interpret(VMGlobals *g)
 			sp = g->sp; ip = g->ip;
 		postfl("[%3d] %20s-%-16s  ",
 			(sp - g->gc->Stack()->slots) + 1,
-			g->method->ownerclass.uoc->name.us->name, g->slotRawSymbol(&method->name)->name);
+			slotRawSymbol(&slotRawClass(&g->method->ownerclass)->name)->name, slotRawSymbol(&g->method->name)->name);
 		dumpOneByteCode(g->block, NULL, ip);
 	}
 #endif
