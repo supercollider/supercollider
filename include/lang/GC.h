@@ -166,6 +166,8 @@ public:
 	int32 GetPartialScanIndex() const { return mPartialScanSlot; }
 
 private:
+	PyrObject * Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
+
 	void ScanSlots(PyrSlot *inSlots, long inNumToScan);
 	void SweepBigObjects();
 	void DoPartialScan(int32 inObjSize);
