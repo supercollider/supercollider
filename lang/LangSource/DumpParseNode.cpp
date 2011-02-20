@@ -344,7 +344,7 @@ void slotString(PyrSlot *slot, char *str)
 				double f;
 			} u;
 			u.f = slotRawFloat(slot);
-			sprintf(str, "Float %f   %p %p", u.f, u.i[0], u.i[1]);
+			sprintf(str, "Float %f   %08X %08X", u.f, u.i[0], u.i[1]);
 			break;
 		}
 	}
