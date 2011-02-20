@@ -22,10 +22,6 @@
 #ifndef _SC_ComPort_
 #define _SC_ComPort_
 
-#if defined (__APPLE__) && defined (__GNUC__)
-#define USE_RENDEZVOUS
-#endif
-
 #include <sys/types.h>
 #ifdef _WIN32
 # include <winsock2.h>
