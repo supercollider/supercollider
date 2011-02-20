@@ -1095,7 +1095,10 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
-				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-DUSE_RENDEZVOUS",
+				);
 				PREBINDING = NO;
 				SDKROOT = "";
 			};
@@ -1267,7 +1270,10 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
-				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-DUSE_RENDEZVOUS",
+				);
 				PREBINDING = NO;
 				SDKROOT = "";
 			};
@@ -1295,6 +1301,7 @@
 				OTHER_CFLAGS = (
 					"-DNDEBUG",
 					"-DSC_DARWIN",
+					"-DUSE_RENDEZVOUS",
 				);
 				PREBINDING = NO;
 				SDKROOT = "";
@@ -1496,6 +1503,7 @@
 				OTHER_CFLAGS = (
 					"-DNDEBUG",
 					"-DSC_DARWIN",
+					"-DUSE_RENDEZVOUS",
 				);
 				PREBINDING = NO;
 				SDKROOT = "";
