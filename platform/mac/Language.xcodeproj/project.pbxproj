@@ -2028,7 +2028,10 @@
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
-				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-DHAVE_WII",
+				);
 				PREBINDING = NO;
 				SDKROOT = "";
 				ZERO_LINK = YES;
@@ -2198,7 +2201,10 @@
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
-				OTHER_CFLAGS = "-DSC_DARWIN";
+				OTHER_CFLAGS = (
+					"-DSC_DARWIN",
+					"-DHAVE_WII",
+				);
 				PREBINDING = NO;
 				SDKROOT = "";
 				ZERO_LINK = YES;
@@ -2229,6 +2235,7 @@
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-DNDEBUG",
+					"-DHAVE_WII",
 				);
 				PREBINDING = NO;
 				SDKROOT = "";
@@ -2449,6 +2456,7 @@
 				OTHER_CFLAGS = (
 					"-DSC_DARWIN",
 					"-DNDEBUG",
+					"-DHAVE_WII",
 				);
 				PREBINDING = NO;
 				SDKROOT = "";
