@@ -190,7 +190,24 @@ if (NOT ("${standalone}" STREQUAL ""))
 	# A synthdefs folder is expected in the bundle
 	file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents/Resources/synthdefs")
 
-	# TODO: Standalones are also given a chance to overwrite things from their specially-manufactured resources dir
+	# Standalones are also given a chance to overwrite things from their specially-manufactured resources dir.
+	# If "${scappbundlename} Resources" exists then that's used; otherwise it uses "Standalone Resources".
+	if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${scappbundlename} Resources")
+		set(standaloneresourcesfrom "${scappbundlename} Resources")
+	else()
+		set(standaloneresourcesfrom "Standalone Resources")
+	endif()
+	message(STATUS "Including standalone resources from folder named: " ${standaloneresourcesfrom})
+
+	# TODO: This globbing approach means cmake can't autodetect if files have changed and regenerate. Might be good if we can find a way that allows that.
+	file(GLOB_RECURSE standaloneresourceitems RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/${standaloneresourcesfrom}" "${standaloneresourcesfrom}/*")
+
+	foreach(onefile ${standaloneresourceitems})
+		GET_FILENAME_COMPONENT(onefiledir "${onefile}" PATH)
+		file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/${standaloneresourcesfrom}/${onefile}"
+			DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents/Resources/${onefiledir}"
+		)
+	endforeach(onefile)
 endif()
 
 # fixup_bundle will fix the dll referencing so the .app can be sent to other people:
