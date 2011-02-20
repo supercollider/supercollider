@@ -27,7 +27,9 @@ Building
 ------------------------------------------------------------------------
 
 The easy way:
+	cd mac
 	./clean-compile.sh
+	cd ../../package
 	./package.sh
 
 Your build will be placed in a directory named "SuperCollider".
@@ -58,40 +60,52 @@ SuperCollider.
 Cmake
 ------------------------------------------------------------------------
 
-to build supercollider with cmake, it is suggested to do out-of-tree
-builds in a specific build directory:
+To build SuperCollider with Cmake, it is recommended to create a "build"
+folder (to keep the built files neatly all together), then run "cmake"
+from within that folder:
 
-mkdir build
-cd build
-cmake ..
+	mkdir build
+	cd build
+	cmake ..
 
-to run the build process run:
-make
+Then to run the build process run:
 
-the build process can be configured using the cmake program, cmake
+	make install
+
+This will build the software, then "install" it to a folder "build/SuperCollider"
+with the finished products in.
+
+The build process can be configured using the cmake program, cmake
 frontends like ccmake or cmake-gui, or by simply editing the
 build/CMakeCache.txt file.
 
-for example to enable a release build run the following in your build
-directory:
+For example, by default cmake will create a "release" build, but if you want a
+"debug" build (with optimisations turned off etc), configure cmake like this:
 
-cmake -DCMAKE_BUILD_TYPE=Release ..
+	cmake -DCMAKE_BUILD_TYPE=Debug ..
 
-for a 32bit build on a 64bit machine (i.e. recent Mac systems), you need to configure cmake like this:
+For a 32bit build on a 64bit machine (i.e. recent Mac systems), you need to configure cmake like this:
 
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS:STRING=-m32 -DCMAKE_C_FLAGS:STRING=-m32 ..
+	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS:STRING=-m32 -DCMAKE_C_FLAGS:STRING=-m32 ..
 
-for the BIG universal binary (on 10.6), use:
+For the BIG universal binary (on 10.6), use:
 
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='ppc;i386;x86_64' ..
+	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='ppc;i386;x86_64' ..
 
-to install the whole program, run:
-make install
 
-On Mac, this will create a SuperCollider directory in the build directory (rather then installing the program to the CMAKE_INSTALL_PREFIX:PATH=/usr/local)
+Standalones:
+------------
 
-to uninstall:
-make uninstall
+To create a "standalone" app using cmake, you need to use the "standalone" flag.
+For example, to create a standalone whose name is MyFabApp:
+
+	cmake -D standalone:string=MyFabApp ..
+
+This builds like normal but names the finished program "MyFabApp" and puts all
+resources into the app bundle, including any special resources you might have
+created in the folder "platform/mac/MyFabApp Resources" (or, if that doesn't
+exist, it just uses "platform/mac/Standalone Resources").
+
 
 ------------------------------------------------------------------------
 On libsndfile
@@ -100,7 +114,7 @@ On libsndfile
 Compiling a universal binary of libsndfile requires access to both a
 i386 and PPC Mac. The reasons for this are described here:
 
-http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
+	http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
 
 Because of this, libsndfile is included with the source as a precompiled
 universal binary. This UB contains ppc, i386 and x86_64 archs.
