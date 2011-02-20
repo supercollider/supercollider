@@ -314,6 +314,37 @@ void PyrGC::BecomeImmutable(PyrObject *inObject)
 
 void DumpBackTrace(VMGlobals *g);
 
+PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect)
+{
+	if (inCollect && mNumToScan >= kScanThreshold)
+		Collect();
+
+	GCSet *gcs = mSets + sizeclass;
+
+	PyrObject * obj = (PyrObject*)gcs->mFree;
+	if (!IsMarker(obj)) {
+		// from free list
+		gcs->mFree = obj->next;
+		assert(obj->obj_sizeclass == sizeclass);
+	} else {
+		if (sizeclass > kMaxPoolSet) {
+			SweepBigObjects();
+			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
+			obj = (PyrObject*)mPool->Alloc(allocSize);
+		} else {
+			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
+			obj = (PyrObject*)mNewPool.Alloc(allocSize);
+		}
+		if (!obj) {
+			post("alloc failed. size = %d\n", inNumBytes);
+			MEMFAILED;
+		}
+		DLInsertAfter(&gcs->mWhite, obj);
+		obj->obj_sizeclass = sizeclass;
+	}
+	return obj;
+}
+
 PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect)
 {
 	PyrObject *obj = NULL;
@@ -339,34 +370,8 @@ PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCol
 	mNumAllocs++;
 
 	mNumToScan += credit;
-	if (inCollect && mNumToScan >= kScanThreshold) {
-		Collect();
-	}
+	obj = Allocate(inNumBytes, sizeclass, inCollect);
 
-	GCSet *gcs = mSets + sizeclass;
-
-	obj = (PyrObject*)gcs->mFree;
-	if (!IsMarker(obj)) {
-		// from free list
-		gcs->mFree = obj->next;
-	} else {
-		if (sizeclass > kMaxPoolSet) {
-			SweepBigObjects();
-			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-			obj = (PyrObject*)mPool->Alloc(allocSize);
-		} else {
-			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-			obj = (PyrObject*)mNewPool.Alloc(allocSize);
-		}
-		if (!obj) {
-			post("alloc failed. size = %d\n", inNumBytes);
-			MEMFAILED;
-		}
-		DLInsertAfter(&gcs->mWhite, obj);
-	}
-
-
-	obj->obj_sizeclass = sizeclass;
 	obj->obj_format = inFormat;
 	obj->obj_flags = inFlags & 255;
 	obj->size = 0;
@@ -401,35 +406,9 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 	mAllocTotal += credit;
 	mNumAllocs++;
 	mNumToScan += credit;
-	if (inAccount) {
-		if (mNumToScan >= kScanThreshold) {
-			Collect();
-		}
-	}
 
-	GCSet *gcs = mSets + sizeclass;
+	obj = Allocate(inNumBytes, sizeclass, inAccount);
 
-	obj = (PyrObject*)gcs->mFree;
-	if (!IsMarker(obj)) {
-		// from free list
-		gcs->mFree = obj->next;
-	} else {
-		if (sizeclass > kMaxPoolSet) {
-			SweepBigObjects();
-			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-			obj = (PyrObject*)mPool->Alloc(allocSize);
-		} else {
-			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-			obj = (PyrObject*)mNewPool.Alloc(allocSize);
-		}
-		if (!obj) {
-			post("Frame alloc failed. size = %d\n", inNumBytes);
-			MEMFAILED;
-		}
-		DLInsertAfter(&gcs->mWhite, obj);
-	}
-
-	obj->obj_sizeclass = sizeclass;
 	obj->obj_format = inFormat;
 	obj->obj_flags = inFlags;
 	obj->size = 0;
