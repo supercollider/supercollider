@@ -50,8 +50,9 @@
 #include "GC.h"
 
 
+#ifdef HAVE_WII
+
 #ifdef SC_DARWIN
-	#define HAVE_WII
 	#include <mach/mach.h>
 	#include <mach/mach_error.h>
 
@@ -59,8 +60,6 @@
 	#include "WiiMote_OSX/wiiremote.h"
 	}
 #endif // SC_DARWIN
-
-#ifdef HAVE_WII
 
 #ifdef SC_LINUX
 	#include <stdint.h>
