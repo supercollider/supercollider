@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "PredefinedSymbols.h"
+#include "PyrObjectProto.h"
 
 #define DEBUGMETHODS 0
 #define METHODMETER 0
@@ -42,8 +43,6 @@ long cvxUniqueMethods;
 extern int ivxIdentDict_array;
 
 void StoreToImmutableB(VMGlobals *g, PyrSlot *& sp, unsigned char *& ip);
-
-void CallStackSanity(VMGlobals *g, char *tagstr);
 
 void initUniqueMethods()
 {

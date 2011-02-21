@@ -1914,8 +1914,8 @@ void dumpSlotOneWord(const char *tagstr, PyrSlot *slot)
 	post("%s %s\n", tagstr, str);
 }
 
-void CallStackSanity(VMGlobals *g, char *tagstr);
-void CallStackSanity(VMGlobals *g, char *tagstr)
+void CallStackSanity(VMGlobals *g, const char *tagstr);
+void CallStackSanity(VMGlobals *g, const char *tagstr)
 {
 	PyrFrame *frame;
 	frame = g->frame;
