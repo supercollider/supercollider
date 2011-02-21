@@ -46,7 +46,9 @@
 //#include "Wacom.h"
 #include "InitAlloc.h"
 
-#include "QtCollider.h"
+#ifdef SC_QT
+#  include "QtCollider.h"
+#endif
 
 int yyparse();
 
