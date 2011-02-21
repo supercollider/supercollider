@@ -155,15 +155,6 @@ struct QcGenericEvent : public QcSyncEvent
 
 struct ScMethodCallEvent : public QEvent
 {
-  ScMethodCallEvent( const QString &s,
-                     const QList<QVariant> &l = QList<QVariant>(),
-                     bool b_locked = false )
-  : QEvent( (QEvent::Type) QtCollider::Event_ScMethodCall ),
-    method( getsym( s.toStdString().c_str() ) ),
-    args( l ),
-    locked( b_locked )
-  {}
-
   ScMethodCallEvent( PyrSymbol *m,
                      const QList<QVariant> &l = QList<QVariant>(),
                      bool b_locked = false )
