@@ -23,6 +23,7 @@
 #include "PyrSched.h"
 #include "GC.h"
 #include "PyrPrimitive.h"
+#include "PyrSymbol.h"
 #ifdef SC_DARWIN
 # include <CoreAudio/HostTime.h>
 #endif
@@ -36,7 +37,7 @@
 #endif
 
 #include "SC_Win32Utils.h"
-
+#include "SCBase.h"
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 

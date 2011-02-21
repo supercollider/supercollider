@@ -23,6 +23,7 @@
 #include "PyrKernel.h"
 #include "PyrInterpreter.h"
 #include "PyrSched.h"
+#include "PyrSymbol.h"
 #include "GC.h"
 //#include "PyrOMS.h"
 //#include "MidiQ.h"

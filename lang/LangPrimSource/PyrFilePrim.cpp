@@ -27,9 +27,11 @@ Primitives for File i/o.
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
+#include "PyrSymbol.h"
 #include "PyrFilePrim.h"
 #include "PyrFileUtils.h"
 #include "ReadWriteMacros.h"
+#include "SCBase.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>

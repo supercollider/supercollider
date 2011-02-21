@@ -26,8 +26,10 @@ Primitives for Symbol.
 #include <string.h>
 #include <stdlib.h>
 #include "PyrPrimitive.h"
+#include "PyrSymbol.h"
 #include "VMGlobals.h"
 #include "PyrKernel.h"
+#include "SCBase.h"
 
 /*
 int prSymbolString(struct VMGlobals *g, int numArgsPushed);

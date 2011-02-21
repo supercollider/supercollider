@@ -24,6 +24,7 @@
 
 #include "PyrSymbol.h"
 #include "SC_Export.h"
+#include "SCBase.h"
 
 extern int charno, lineno, linepos;
 extern int *linestarts;

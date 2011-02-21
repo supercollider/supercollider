@@ -23,9 +23,13 @@
 #define _PYRSLOTGENERIC_H_
 
 #include "SC_Endian.h"
-#include "PyrSymbol.h"
+#include "SC_Types.h"
+#include "PyrErrors.h"
 
+#include <cstddef>
 #include <cassert>
+
+struct PyrSymbol;
 
 enum {
 	tagNotInitialized, // uninitialized slots have a tag of 0

@@ -22,6 +22,7 @@
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrObjectProto.h"
+#include "PyrSymbol.h"
 #include "InitAlloc.h"
 #include <string.h>
 #include <stdexcept>

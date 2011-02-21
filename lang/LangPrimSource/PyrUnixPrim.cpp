@@ -37,6 +37,7 @@ Primitives for Unix.
 #include "SC_RGen.h"
 #include "SC_DirUtils.h"
 #include "sc_popen.h"
+#include "SCBase.h"
 
 #ifdef SC_WIN32
 #include "SC_Win32Utils.h"

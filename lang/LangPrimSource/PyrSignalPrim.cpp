@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "PyrSymbol.h"
 #include "PyrKernel.h"
 #include "PyrObject.h"
 #include "PyrPrimitive.h"
@@ -25,6 +26,7 @@
 #include "PyrSignalPrim.h"
 #include "PyrMessage.h"
 #include "SC_Constants.h"
+#include "SCBase.h"
 #include "clz.h"
 extern "C" {
 #include "fftlib.h"
