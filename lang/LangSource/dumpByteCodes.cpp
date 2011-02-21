@@ -20,6 +20,8 @@
 
 #include "PyrKernel.h"
 #include "PyrParseNode.h"
+#include "PyrSymbol.h"
+#include "SCBase.h"
 
 void numBlockTemps(PyrBlock *block, long level, long *numArgNames, long *numVarNames);
 void numBlockTemps(PyrBlock *block, long level, long *numArgNames, long *numVarNames)

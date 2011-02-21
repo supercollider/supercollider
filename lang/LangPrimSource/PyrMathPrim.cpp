@@ -32,6 +32,7 @@
 #include <string.h>
 #include <math.h>
 #include "SC_Endian.h"
+#include "SCBase.h"
 
 const int INT_MAX_BY_PyrSlot = INT_MAX / sizeof(PyrSlot);
 

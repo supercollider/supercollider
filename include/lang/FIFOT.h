@@ -26,6 +26,8 @@ A Fifo for sending/receiving some type of object.
 #ifndef _FIFOT_
 #define _FIFOT_
 
+#include "SCBase.h"
+
 template <class T, int N> class FIFOT
 {
 public:

@@ -45,6 +45,7 @@
 #include "GC.h"
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"
+#include "SCBase.h"
 
 void closeAllGUIScreens();
 void initGUI();

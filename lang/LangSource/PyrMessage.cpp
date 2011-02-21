@@ -23,12 +23,14 @@
 #include "PyrInterpreter.h"
 #include "PyrPrimitive.h"
 #include "PyrListPrim.h"
+#include "PyrSymbol.h"
 #include "GC.h"
 #include "bullet.h"
 #include <stdlib.h>
 #include <assert.h>
 #include "PredefinedSymbols.h"
 #include "PyrObjectProto.h"
+#include "SCBase.h"
 
 #define DEBUGMETHODS 0
 #define METHODMETER 0

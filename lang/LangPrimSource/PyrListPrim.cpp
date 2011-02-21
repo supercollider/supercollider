@@ -22,6 +22,7 @@
 #include "PyrKernelProto.h"
 #include "PyrPrimitive.h"
 #include "PyrPrimitiveProto.h"
+#include "PyrSymbol.h"
 #include "PyrListPrim.h"
 #include "SC_InlineUnaryOp.h"
 #include "SC_InlineBinaryOp.h"
@@ -29,6 +30,7 @@
 #include "PyrMessage.h"
 #include "PyrSched.h"
 #include "SC_RGen.h"
+#include "SCBase.h"
 #include <stdlib.h>
 #include <string.h>
 

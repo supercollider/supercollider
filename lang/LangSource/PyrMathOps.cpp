@@ -36,6 +36,7 @@ double log2(double x);
 #include "PyrParseNode.h"
 #include "PyrSignal.h"
 #include "PyrSched.h"
+#include "PyrSymbol.h"
 #include "SC_InlineUnaryOp.h"
 #include "SC_InlineBinaryOp.h"
 #include "MiscInlineMath.h"

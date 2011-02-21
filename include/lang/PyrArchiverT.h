@@ -32,9 +32,11 @@ An object archiving system for SuperCollider.
 
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
+#include "PyrSymbol.h"
 #include "VMGlobals.h"
 #include "GC.h"
 #include "ReadWriteMacros.h"
+#include "SCBase.h"
 
 const int32 kArchHdrSize = 12;
 const int32 kObjectArrayInitialCapacity = 32;
