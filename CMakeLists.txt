@@ -41,7 +41,13 @@ endif()
 # Compiler flags etc
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
-	add_definitions("-ffast-math" "-fschedule-insns2" "-fomit-frame-pointer")
+	exec_program(${CMAKE_CXX_COMPILER} ARGS -dumpversion OUTPUT_VARIABLE _gcc_version)
+
+	add_definitions("-fschedule-insns2" "-fomit-frame-pointer")
+
+	if (${_gcc_version} VERSION_GREATER 4.0.99)
+		add_definitions("-ffast-math")
+	endif()
 
 	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
 
@@ -50,6 +56,10 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 	endif()
 
 	if(APPLE)
+		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
+		if ("${_gcc_version_info}" MATCHES "Apple")
+			add_definitions("-fpascal-strings")
+		endif()
 		add_definitions("-D_REENTRANT")
 	elseif(NOT (WIN32 AND NOT CYGWIN))
 		add_definitions("-pthread")
@@ -60,10 +70,6 @@ if(APPLE)
 	set_property(DIRECTORY
 		APPEND
 		PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
-	exec_program(${CMAKE_C_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
-	if ("${_gcc_version_info}" MATCHES "Apple")
-		add_definitions("-fpascal-strings")
-	endif()
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	add_definitions("-DSC_LINUX")
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
