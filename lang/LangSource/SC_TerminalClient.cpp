@@ -462,7 +462,7 @@ void SC_TerminalClient::commandLoop()
 	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
 		readCmdLine();
-		if (nanosleep(&tv, 0) == -1) {
+		if (nanosleep(&tv, 0) == -1 && errno != EINTR) {
 			perror(getName());
 			quit(1);
 			break;
@@ -480,7 +480,7 @@ void SC_TerminalClient::daemonLoop()
 
 	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
-		if (nanosleep(&tv, 0) == -1) {
+		if (nanosleep(&tv, 0) == -1 && errno != EINTR) {
 			perror(getName());
 			quit(1);
 			break;
