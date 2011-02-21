@@ -627,7 +627,7 @@ void Duty_Ctor(Duty *unit)
 		}
 	}
 
-	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE;
+	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE - 1;
 	unit->m_prevout = DEMANDINPUT(duty_level);
 	OUT0(0) = unit->m_prevout;
 
