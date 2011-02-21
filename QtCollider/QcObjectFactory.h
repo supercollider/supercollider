@@ -43,7 +43,7 @@ class QcAbstractFactory
 {
 public:
   QcAbstractFactory( const char *className ) {
-    qcDebugMsg( 1, QString("Declaring class '%1'").arg(className) );
+    qcDebugMsg( 2, QString("Declaring class '%1'").arg(className) );
     QtCollider::factories().insert( className, this );
   }
   virtual QObjectProxy *newInstance( PyrObject *, QList<QVariant> & arguments ) = 0;
