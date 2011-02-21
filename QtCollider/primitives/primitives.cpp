@@ -45,7 +45,7 @@ void initPrimitives () {
   LangPrimitiveList& primitives = langPrimitives();
 
   Q_FOREACH( LangPrimitiveData p, primitives ) {
-    qcDebugMsg(1, QString("defining primitive '%1'").arg(p.name) );
+    qcDebugMsg(2, QString("defining primitive '%1'").arg(p.name) );
     definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
   }
 
