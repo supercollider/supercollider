@@ -2057,7 +2057,7 @@ void DumpDetailedFrame(PyrFrame *frame)
 	slotString(&frame->ip, str);			post("\t\tip      = %s\n", str);
 
 	if (IsPtr(&frame->ip)) {
-		post("ipoffset = %d\n", (char*)slotRawInt(&frame->ip) - (char*)slotRawInt8Array(&meth->code)->b);
+		post("ipoffset = %d\n", (char*)slotRawPtr(&frame->ip) - (char*)slotRawInt8Array(&meth->code)->b);
 		dumpByteCodes(meth);
 	}
 
