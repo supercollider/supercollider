@@ -40,7 +40,7 @@ struct QcGraphElement {
   void setCurveType( QVariant data ) {
     if( data.type() == QVariant::String ) {
       QString curveName = data.toString();
-      printf("curve name: %s\n",curveName.toStdString().c_str());
+      //printf("curve name: %s\n",curveName.toStdString().c_str());
       if( curveName == "step" ) curveType = Step;
       else if( curveName == "linear" ) curveType = Linear;
       else if( curveName == "exponential" ) curveType = Exponential;
@@ -48,7 +48,7 @@ struct QcGraphElement {
       else if( curveName == "welch" ) curveType = Welch;
     }
     else {
-      printf("curvature: %f\n", data.value<float>());
+      //printf("curvature: %f\n", data.value<float>());
       curveType = Curvature;
       curvature = data.value<float>();
     }
