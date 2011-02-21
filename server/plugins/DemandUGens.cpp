@@ -258,7 +258,7 @@ void Drand_next(Drand *unit, int inNumSamples);
 
 void Dxrand_Ctor(Dxrand *unit);
 void Dxrand_next(Dxrand *unit, int inNumSamples);
-	
+
 void Dwrand_Ctor(Dwrand *unit);
 void Dwrand_next(Dwrand *unit, int inNumSamples);
 
@@ -274,7 +274,7 @@ void Dstutter_next(Dstutter *unit, int inNumSamples);
 void Dpoll_Ctor(Dpoll *unit);
 void Dpoll_Ctor(Dpoll *unit);
 void Dpoll_next(Dpoll *unit, int inNumSamples);
-	
+
 void Dreset_Ctor(Dreset *unit);
 void Dreset_next(Dreset *unit, int inNumSamples);
 
@@ -326,7 +326,7 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 		prevtrig = ztrig;
 		prevreset = zreset;
 	}
-	
+
 	unit->m_prevtrig = prevtrig;
 	unit->m_prevreset = prevreset;
 }
@@ -515,7 +515,6 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 
 void Duty_next_dk(Duty *unit, int inNumSamples)
 {
-
 	float zreset = ZIN0(duty_reset);
 
 	float *out = OUT(0);
@@ -1798,18 +1797,18 @@ void Dwrand_next(Dwrand *unit, int inNumSamples)
 	int offset = unit->m_weights_size + 2;
 	int weights_size = unit->mNumInputs - offset;
 	if (inNumSamples) {
-		
+
 		if (unit->m_repeats < 0.) {
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
 		while (true) {
-			
+
 			if (unit->m_repeatCount >= unit->m_repeats) {
 				OUT0(0) = NAN;
 				return;
 			}
-			
+
 			if (ISDEMANDINPUT(unit->m_index)) {
 				if (unit->m_needToResetChild) {
 					unit->m_needToResetChild = false;
@@ -1817,7 +1816,7 @@ void Dwrand_next(Dwrand *unit, int inNumSamples)
 				}
 				float x = DEMANDINPUT_A(unit->m_index, inNumSamples);
 				if (sc_isnan(x)) {
-					
+
 					WINDEX;
 					unit->m_repeatCount++;
 					unit->m_needToResetChild = true;
