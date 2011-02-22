@@ -151,6 +151,15 @@ else()
 		)
 endif()
 
+if (SC_QT)
+	include_directories(${CMAKE_SOURCE_DIR}/include/QtCollider)
+	target_link_libraries(${scappbundlename} QtCollider)
+	set_property(TARGET ${scappbundlename}
+		APPEND
+		PROPERTY COMPILE_DEFINITIONS SC_QT
+		)
+endif()
+
 # for processing into the plist:
 set_property(TARGET ${scappbundlename}
 	PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})

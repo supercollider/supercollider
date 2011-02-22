@@ -29,7 +29,6 @@
 #include "SC_LanguageClient.h"
 #include "SC_StringBuffer.h"
 
-
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
 // =====================================================================
@@ -74,6 +73,9 @@ public:
 	virtual void postError(const char* str, size_t len);
 	virtual void flush();
 
+	// subclasses should call periodically during their commandLoop().
+	void readCmdLine();
+
 protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
@@ -92,9 +94,14 @@ protected:
 	virtual void onLibraryStartup();
 
 private:
+	void initCmdLine();
+	static void readlineCb( char * );
+
 	bool				mShouldBeRunning;
 	int					mReturnCode;
 	Options				mOptions;
+
+	bool mUseReadline;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

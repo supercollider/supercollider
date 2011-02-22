@@ -1,6 +1,9 @@
 Welcome to SuperCollider 3!
 ***************************
 
+This is a special version of SuperCollider that includes a new cross-platform GUI implementation using Qt framework. The new GUI is still in development and (probably) buggy, so you are kindly encouraged to test it thoroughly and report any problems to the author or to the SuperCollider development mailing list.
+This version is regularly being updated with the latest development in the main SuperCollider version.
+
 SuperCollider is an environment and programming language for real time audio synthesis and algorithmic composition. It provides an interpreted object-oriented language which functions as a network client to a state of the art, realtime sound synthesis server.
 
 SuperCollider was written by James McCartney (audiosynth.com) over a period of many years. It is now an open source GPL'd project maintained and developed by James and various others. It is used by musicians, scientists, and artists working with sound.

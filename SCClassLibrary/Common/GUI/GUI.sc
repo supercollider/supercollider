@@ -72,6 +72,17 @@ GUI {
 		^this.fromID( \swing );
 	}
 
+  /**
+   *  Makes qt (Qt GUI) the current scheme
+   *  and returns it. Subsequent GUI object calls
+   *  to GUI are delegated to qt.
+   *
+   *  @return the current (qt) scheme
+   */
+  *qt {
+    ^this.fromID( \qt );
+  }
+
 	/**
 	 *	Changes the current scheme and returns it.
 	 *

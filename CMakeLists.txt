@@ -150,6 +150,8 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	option(SC_WII "Build sclang with WII support" ON)
 endif()
 
+option(SC_QT "Build SuperCollider with Qt GUI" ON)
+
 if(CMAKE_COMPILER_IS_GNUCXX)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines, requires gcc-4.3 or higher).")
     option(LTO "Use GCC's link time optimizer' (experimental).")
@@ -189,6 +191,11 @@ add_subdirectory(platform)
 add_subdirectory(editors)
 add_subdirectory(external_libraries)
 add_subdirectory(testsuite)
+
+if (SC_QT)
+  message( STATUS "Compiling with Qt GUI" )
+  add_subdirectory(QtCollider)
+endif (SC_QT)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
