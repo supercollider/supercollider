@@ -61,6 +61,7 @@ struct VMGlobals* scGlobals();
 void runInterpreter(struct VMGlobals *g, struct PyrSymbol *selector, int numArgsPushed);
 
 struct PyrSymbol* getsym(const char *inName);
+struct PyrSymbol* getmetasym(const char *name);
 struct PyrSymbol* findsym(const char *name);
 }
 
