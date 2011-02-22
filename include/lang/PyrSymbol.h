@@ -53,9 +53,5 @@ enum {
 	sym_Filename = 128
 };
 
-PyrSymbol* getsym(const char *name);
-PyrSymbol* getmetasym(const char *name);
-PyrSymbol* findsym(const char *name);
-
 #endif
 
