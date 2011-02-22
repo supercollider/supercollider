@@ -60,7 +60,8 @@ static const int ticks_per_second = 50; // every 20 milliseconds
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mShouldBeRunning(false),
-	  mReturnCode(0)
+	  mReturnCode(0),
+	  mUseReadline(0)
 {
 }
 
@@ -243,8 +244,12 @@ int SC_TerminalClient::run(int argc, char** argv)
 	if (codeFile) executeFile(codeFile);
 	if (opt.mCallRun) runMain();
 
-	if (opt.mDaemon) daemonLoop();
-	else commandLoop();
+	initCmdLine();
+
+	if( mShouldBeRunning ) {
+		if (opt.mDaemon) daemonLoop();
+		else commandLoop();
+    }
 
 	if (opt.mCallStop) stopMain();
 
@@ -335,6 +340,26 @@ int sc_rl_mainstop(int i1, int i2){
 	return 0;
 }
 
+void SC_TerminalClient::readlineCb(char *cmdLine)
+{
+	SC_TerminalClient *lang =
+		static_cast<SC_TerminalClient*>( instance() );
+
+	if( cmdLine == 0 ) {
+		printf("\nExiting sclang (ctrl-D)\n");
+		rl_callback_handler_remove();
+		lang->quit(0);
+		return;
+	}
+	if(*cmdLine!=0){
+		// If line wasn't empty, store it so that uparrow retrieves it
+		add_history(cmdLine);
+		lang->interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
+	}
+}
+
+static struct timeval rl_tv;
+static fd_set rl_rfds;
 /*
 // Completion from sclang dictionary TODO
 char ** sc_rl_completion (const char *text, int start, int end);
@@ -346,75 +371,103 @@ char ** sc_rl_completion (const char *text, int start, int end){
 */
 #endif
 
-void SC_TerminalClient::commandLoop()
+static const int fd = 0;
+static struct pollfd pfds = { fd, POLLIN, 0 };
+
+void SC_TerminalClient::initCmdLine()
 {
 #ifndef SC_WIN32
 
 #ifdef HAVE_READLINE
+
 	if(strcmp(gIdeName, "none") == 0){ // Other clients (emacs, vim, ...) won't want to interact through rl
 		// Set up rl for sclang-specific nicenesses
 		rl_readline_name = "sclang";
-		rl_event_hook = &sc_rl_ticker;
+		rl_callback_handler_install( "sc3> ", &SC_TerminalClient::readlineCb );
 		rl_set_keyboard_input_timeout(1e6/ticks_per_second);
 		rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
 		//rl_attempted_completion_function = sc_rl_completion;
 		rl_bind_key(0x02, &sc_rl_mainstop); // TODO 0x02 is ctrl-B; ctrl-. would be nicer but keycode not working here (plain "." is 46 (0x2e))
 
-		signal(SIGINT, &sc_rl_signalhandler);
-		const char *prompt = "sc3> ";
-		char *cmdLine;
-		while (shouldBeRunning()) {
-			tick();
-			while((cmdLine = readline(prompt)) != NULL){
-				if(*cmdLine!=0){
-					// If line wasn't empty, store it so that uparrow retrieves it
-					add_history(cmdLine);
-					interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
-				}
-				free(cmdLine);
-			}
-			if(cmdLine == NULL){
-				printf("\nExiting sclang (ctrl-D)\n");
-				quit(0);
-			}
-		}
+		// Set our handler for SIGINT that will clear the line instead of terminating.
+		// NOTE: We have to prevent readline from setting its own signal handlers,
+		// to not override ours.
+		rl_catch_signals = 0;
+		struct sigaction sact;
+		memset( &sact, 0, sizeof(struct sigaction) );
+		sact.sa_handler = &sc_rl_signalhandler;
+		sigaction( SIGINT, &sact, 0 );
+
+		mUseReadline = true;
 	}else{
-#endif
-	const int fd = 0;
-	struct pollfd pfds = { fd, POLLIN, 0 };
-	SC_StringBuffer cmdLine;
 
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
-		perror(getName());
-		quit(1);
-		return;
-	}
-
-	while (shouldBeRunning()) {
-		tick();
-		int nfds = poll(&pfds, POLLIN, 1000/ticks_per_second);
-		if (nfds > 0) {
-			while (readCmdLine(fd, cmdLine));
-#ifdef SC_DARWIN
-			if(pfds.revents == POLLNVAL){
-				// we reach here when reading directly from CLI, but not if being piped data! (osx 10.4.11 and 10.5.7 at least)
-				usleep(1e6/ticks_per_second);
-			}
 #endif
-		} else if (nfds == -1 && errno != EINTR) {
+
+		if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
 			perror(getName());
 			quit(1);
 			return;
 		}
-	}
+
+		mUseReadline = false;
 
 #ifdef HAVE_READLINE
 	} // end gIdeName!="none"
 #endif
 
 #else
-  assert(0);
+	assert(0);
 #endif
+}
+
+static SC_StringBuffer gCmdLine;
+
+void SC_TerminalClient::readCmdLine()
+{
+#ifdef HAVE_READLINE
+	if( mUseReadline ) {
+		FD_ZERO(&rl_rfds);
+		FD_SET(0, &rl_rfds);
+		rl_tv.tv_sec = 0;
+		rl_tv.tv_usec = 0;
+
+		int nfds = select(1, &rl_rfds, NULL, NULL, &rl_tv);
+		if( nfds > 0 ) {
+			rl_callback_read_char();
+		}
+		else if( nfds == -1 && errno != EINTR ) {
+			perror(getName());
+			quit(1);
+			return;
+		}
+	}else{
+#endif
+		int nfds = poll(&pfds, POLLIN, 0);
+		if (nfds > 0) {
+			while (readCmdLine(fd, gCmdLine));
+		} else if (nfds == -1 && errno != EINTR) {
+			perror(getName());
+			quit(1);
+			return;
+		}
+#ifdef HAVE_READLINE
+	} // useReadLine
+#endif
+}
+
+void SC_TerminalClient::commandLoop()
+{
+	struct timespec tv = { 0, 1e9 / ticks_per_second };
+
+	while (shouldBeRunning()) {
+		tick(); // also flushes post buffer
+		readCmdLine();
+		if (nanosleep(&tv, 0) == -1 && errno != EINTR) {
+			perror(getName());
+			quit(1);
+			break;
+		}
+	}
 }
 
 #ifdef SC_WIN32
@@ -427,7 +480,7 @@ void SC_TerminalClient::daemonLoop()
 
 	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
-		if (nanosleep(&tv, 0) == -1) {
+		if (nanosleep(&tv, 0) == -1 && errno != EINTR) {
 			perror(getName());
 			quit(1);
 			break;

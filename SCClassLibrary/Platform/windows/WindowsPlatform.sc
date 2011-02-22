@@ -1,7 +1,7 @@
 WindowsPlatform : Platform
 {
 	name { ^\windows }
-	startupFiles { ^["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath] }	
+	startupFiles { ^["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath] }
 	startup {
 		// Server setup
 		Server.program = "scsynth.exe";
@@ -12,9 +12,10 @@ WindowsPlatform : Platform
 		// load user startup file
 		this.loadStartupFiles;
 	}
-	
-	defaultGUIScheme { ^\swing }
-	defaultHIDScheme { ^nil }
+
+	defaultGUIScheme { ^\qt }
+	defaultHIDScheme { ^nil }
+
 	pathSeparator { ^$\\ }
 	isPathSeparator { |char|
 		^#[$\\, $/].includes(char)

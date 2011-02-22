@@ -95,6 +95,10 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
 
+if (SC_QT AND DSO_VISIBILITY)
+	remove_definitions(-fvisibility=hidden)
+endif()
+
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
@@ -124,6 +128,11 @@ if(UNIX)
 	endif(APPLE)
 else(UNIX)
 endif(UNIX)
+
+if (SC_QT)
+	add_definitions(-DSC_QT)
+	include_directories(${CMAKE_SOURCE_DIR}/include/QtCollider)
+endif (SC_QT)
 
 if(WIN32)
     include_directories (../platform/windows/compat_stuff)
@@ -170,6 +179,10 @@ else()
 		PROPERTY COMPILE_DEFINITIONS NO_INTERNAL_SERVER
 		)
 endif()
+
+if (SC_QT)
+	target_link_libraries(libsclang QcLangClient QtCollider)
+endif (SC_QT)
 
 set_property(TARGET libsclang
 	PROPERTY OUTPUT_NAME sclang)

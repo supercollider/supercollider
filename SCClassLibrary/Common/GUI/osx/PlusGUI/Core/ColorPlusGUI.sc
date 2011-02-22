@@ -1,13 +1,10 @@
 + Color {
-	setStroke {
+	cocoaPrSetStroke {
 		_Color_SetStroke
 		^this.primitiveFailed
 	}
-	setFill {
+	cocoaPrSetFill {
 		_Color_SetFill
 		^this.primitiveFailed
-	}
-	set {
-		this.setStroke.setFill;
 	}
 }

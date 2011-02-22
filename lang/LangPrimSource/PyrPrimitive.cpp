@@ -46,6 +46,10 @@
 //#include "Wacom.h"
 #include "InitAlloc.h"
 
+#ifdef SC_QT
+#  include "QtCollider.h"
+#endif
+
 int yyparse();
 
 extern bool gTraceInterpreter;
@@ -4028,6 +4032,10 @@ void initRendezvousPrimitives();
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
 	initOpenGLPrimitives();
+#endif
+
+#ifdef SC_QT
+	QtCollider::initPrimitives();
 #endif
 
 	s_recvmsg = getsym("receiveMsg");
