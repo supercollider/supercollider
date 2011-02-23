@@ -39,8 +39,8 @@ OSXPlatform : UnixPlatform
 		};
 	}
 
-		// only osx uses Cocoa guis
-	defaultGUIScheme { ^\qt }
+	// Prefer qt but fall back to cocoa if qt not installed.
+	defaultGUIScheme { if (GUI.get(\qt).notNil) {^\qt} {^\cocoa} }
 	defaultHIDScheme { ^\osx_hid }
 
 	recompile { _Recompile }

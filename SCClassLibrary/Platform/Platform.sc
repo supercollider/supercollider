@@ -94,8 +94,8 @@ Platform
 		^thisProcess.platform.when(features, ifFunction, elseFunction)
 	}
 
-	// swing is compatible with all platforms; so declare it as global default
-	defaultGUIScheme { ^\qt }
+	// Prefer qt but fall back to swing if qt not installed.
+	defaultGUIScheme { if (GUI.get(\qt).notNil) {^\qt} {^\swing} }
 	defaultHIDScheme { ^\none }
 
 	isSleeping { ^false } // unless defined otherwise
