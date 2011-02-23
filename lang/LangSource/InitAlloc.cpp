@@ -65,7 +65,7 @@ void pyr_free_area_from_runtime(void *ptr)
 	pyr_pool_runtime->Free(ptr);
 }
 
-bool pyr_init_mem_pools(int runtime_space, int runtime_grow)
+SC_DLLEXPORT_C bool pyr_init_mem_pools(int runtime_space, int runtime_grow)
 {
 	pyr_pool_runtime = new AllocPool(pyr_new_area, pyr_free_area, runtime_space, runtime_grow);
 	if (!pyr_pool_runtime) return false;

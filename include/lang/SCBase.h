@@ -32,6 +32,7 @@
 #include "SC_Types.h"
 #include "PyrErrors.h"
 #include "AllocPools.h"
+#include "SC_Export.h"
 
 void postfl(const char *fmt, ...);
 void post(const char *fmt, ...);
@@ -44,29 +45,20 @@ void setPostFile(FILE *file); // If file is not NULL, causes all posted text to 
 void debugf(char *fmt, ...);
 void pprintf(unsigned char *str, char *fmt, ...);
 
-#ifndef _WIN32
-#pragma export on
-#endif
+SC_DLLEXPORT_C void schedInit();
+SC_DLLEXPORT_C void init_OSC(int port);
+SC_DLLEXPORT_C bool pyr_init_mem_pools(int runtime_space, int runtime_grow);
 
-extern "C" {
-void schedInit();
-void init_OSC(int port);
-bool pyr_init_mem_pools(int runtime_space, int runtime_grow);
+SC_DLLEXPORT_C void schedRun();
+SC_DLLEXPORT_C void schedStop();
+SC_DLLEXPORT_C bool compileLibrary();
+SC_DLLEXPORT_C void runLibrary(struct PyrSymbol* selector);
+SC_DLLEXPORT_C void runInterpreter(struct VMGlobals *g, struct PyrSymbol *selector, int numArgsPushed);
 
-void schedRun();
-void schedStop();
-bool compileLibrary();
-void runLibrary(struct PyrSymbol* selector);
-struct VMGlobals* scGlobals();
-void runInterpreter(struct VMGlobals *g, struct PyrSymbol *selector, int numArgsPushed);
+SC_DLLEXPORT_C struct VMGlobals* scGlobals();
 
-struct PyrSymbol* getsym(const char *inName);
-struct PyrSymbol* getmetasym(const char *name);
-struct PyrSymbol* findsym(const char *name);
-}
-
-#ifndef _WIN32
-#pragma export off
-#endif
+SC_DLLEXPORT_C struct PyrSymbol* getsym(const char *inName);
+SC_DLLEXPORT_C struct PyrSymbol* getmetasym(const char *name);
+SC_DLLEXPORT_C struct PyrSymbol* findsym(const char *name);
 
 #endif

@@ -185,7 +185,7 @@ void dumpOSC(int mode, int size, char* inData)
 	if (mode & 2) hexdump(size, inData);
 }
 
-bool World_SendPacketWithContext(World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext)
+SC_DLLEXPORT_C bool World_SendPacketWithContext(World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext)
 {
 	bool result = false;
 	if (inSize > 0) {
@@ -207,7 +207,7 @@ bool World_SendPacketWithContext(World *inWorld, int inSize, char *inData, Reply
 	return result;
 }
 
-bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
+SC_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
 {
 	return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, 0);
 }

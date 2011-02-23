@@ -100,7 +100,7 @@ extern PyrClass *gClassList;
 // 	runLibrary
 // 	interpretCmdLine
 
-void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
+SC_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
 		//postfl("->runInterpreter\n");
 #ifdef GC_SANITYCHECK

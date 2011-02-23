@@ -127,6 +127,10 @@ else()
 	add_library(libscsynth SHARED ${scsynth_sources})
 endif()
 
+set_property(TARGET libscsynth
+	APPEND
+	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
+
 if(CURL)
 	if(CURL_FOUND)
 		target_link_libraries(libscsynth ${CURL_LIBRARIES})
