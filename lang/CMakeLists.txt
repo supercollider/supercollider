@@ -163,6 +163,10 @@ else()
 	add_library(libsclang SHARED ${sclang_sources} ${sclang_parser_source})
 endif()
 
+set_property(TARGET libsclang
+	APPEND
+	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
+
 if (SC_WII OR APPLE)
 	if (BLUETOOTH_FOUND AND CWIID_FOUND)
 		target_link_libraries(libsclang ${BLUETOOTH_LIBRARIES} ${CWIID_LIBRARIES})

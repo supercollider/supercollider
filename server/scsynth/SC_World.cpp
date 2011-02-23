@@ -288,7 +288,7 @@ void World_LoadGraphDefs(World* world)
 
 }
 
-World* World_New(WorldOptions *inOptions)
+SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 {
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 	if (inOptions->mMemoryLocking && inOptions->mRealTime)
@@ -456,7 +456,7 @@ World* World_New(WorldOptions *inOptions)
 	return world;
 }
 
-int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool *outDidChange)
+SC_DLLEXPORT_C int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool *outDidChange)
 {
 	if (index > world->mNumSndBufs) return kSCErr_IndexOutOfRange;
 
@@ -533,7 +533,7 @@ bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 
 #ifndef NO_LIBSNDFILE
-void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
+SC_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 {
 	if (inOptions->mLoadGraphDefs) {
 		World_LoadGraphDefs(world);
@@ -724,7 +724,7 @@ Bail:
 }
 #endif   // !NO_LIBSNDFILE
 
-int World_OpenUDP(struct World *inWorld, int inPort)
+SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
 {
 	try {
 		new SC_UdpInPort(inWorld, inPort);
@@ -736,7 +736,7 @@ int World_OpenUDP(struct World *inWorld, int inPort)
 	return false;
 }
 
-int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
+SC_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
 {
 	try {
 		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
@@ -748,7 +748,7 @@ int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int i
 	return false;
 }
 
-void World_WaitForQuit(struct World *inWorld)
+SC_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld)
 {
 	try {
 		inWorld->hw->mQuitProgram->Acquire();
@@ -988,7 +988,7 @@ void World_Start(World *inWorld)
 	inWorld->mRunning = true;
 }
 
-void World_Cleanup(World *world)
+SC_DLLEXPORT_C void World_Cleanup(World *world)
 {
 	if (!world) return;
 
@@ -1312,13 +1312,13 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg)
 	return inWorld->hw->mAudioDriver->SendMsgFromEngine(inMsg);
 }
 
-void SetPrintFunc(PrintFunc func)
+SC_DLLEXPORT_C void SetPrintFunc(PrintFunc func)
 {
 	gPrint = func;
 }
 
 
-int scprintf(const char *fmt, ...)
+SC_DLLEXPORT_C int scprintf(const char *fmt, ...)
 {
 	va_list vargs;
 	va_start(vargs, fmt);

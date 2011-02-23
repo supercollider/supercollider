@@ -51,6 +51,7 @@ int main(int argc, char** argv)
 #include "PyrObject.h"
 #include "InitAlloc.h"
 #include <stdarg.h>
+#include "SCBase.h"
 
 
 static FILE *postfile = stdout;
@@ -169,9 +170,6 @@ void initRendezvousPrimitives();
 void initRendezvousPrimitives()
 {
 }
-
-bool compileLibrary();
-void runLibrary(PyrSymbol* selector);
 
 int main();
 int main()

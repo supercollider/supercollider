@@ -23,6 +23,7 @@
 #define _PYRLEXER_H_
 
 #include "PyrSymbol.h"
+#include "SC_Export.h"
 
 extern int charno, lineno, linepos;
 extern int *linestarts;
@@ -59,7 +60,7 @@ void traverseDepTree2(ClassDependancy *classdep, int level);
 void compileClassExtensions();
 void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset);
 
-void runLibrary(PyrSymbol* selector);
+SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
 
 void interpretCmdLine(const char *textbuf, int textlen, char *methodname);
 

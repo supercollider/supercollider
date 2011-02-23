@@ -2271,8 +2271,7 @@ PyrBlock* newPyrBlock(int flags)
 	return block;
 }
 
-struct VMGlobals* scGlobals();
-struct VMGlobals* scGlobals()
+SC_DLLEXPORT_C struct VMGlobals* scGlobals()
 {
 	return gMainVMGlobals;
 }

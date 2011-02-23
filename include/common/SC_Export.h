@@ -21,15 +21,30 @@
 #define _SC_EXPORTS_
 
 #if defined _WIN32 || defined __CYGWIN__
-# ifdef __GNUC__
-#  define SC_DLLEXPORT __attribute__((dllexport))
-# else
-#  define SC_DLLEXPORT __declspec(dllexport)
-# endif
-#elif __GNUC__ >= 4
-# define SC_DLLEXPORT __attribute__ ((visibility("default")))
+#  define SC_API_IMPORT __declspec(dllimport)
+#  define SC_API_EXPORT __declspec(dllexport)
 #else
-# define SC_DLLEXPORT
+#  if __GNUC__ >= 4
+#    define SC_API_IMPORT __attribute__ ((visibility("default")))
+#    define SC_API_EXPORT __attribute__ ((visibility("default")))
+#  else
+#    define SC_API_IMPORT
+#    define SC_API_EXPORT
+#  endif
+#endif
+
+#ifdef __cplusplus
+#  define C_LINKAGE extern "C"
+#else
+#  define C_LINKAGE
+#endif
+
+#ifdef BUILDING_SUPERCOLLIDER // if SuperCollider is being built, instead of used
+#  define SC_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
+#  define SC_DLLEXPORT SC_API_EXPORT
+#else
+#  define SC_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
+#  define SC_DLLEXPORT SC_API_IMPORT
 #endif
 
 #endif

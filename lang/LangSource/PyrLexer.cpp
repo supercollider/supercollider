@@ -2225,8 +2225,7 @@ void shutdownLibrary()
 	TempoClock_stopAll();
 }
 
-bool compileLibrary();
-bool compileLibrary()
+SC_DLLEXPORT_C bool compileLibrary()
 {
 	//printf("->compileLibrary\n");
 	shutdownLibrary();
@@ -2276,7 +2275,7 @@ void signal_init_globs();
 
 void dumpByteCodes(PyrBlock *theBlock);
 
-void runLibrary(PyrSymbol* selector)
+SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector)
 {
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;

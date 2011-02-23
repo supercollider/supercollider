@@ -205,11 +205,7 @@ typedef struct InterfaceTable InterfaceTable;
 #ifdef STATIC_PLUGINS
 	#define PluginLoad(name) void name##_Load(InterfaceTable *inTable)
 #else
-	#ifdef __cplusplus
-		#define PluginLoad(name) extern "C" SC_DLLEXPORT void load(InterfaceTable *inTable)
-	#else
-		#define PluginLoad(name) SC_DLLEXPORT void load(InterfaceTable *inTable)
-	#endif
+	#define PluginLoad(name) SC_DLLEXPORT_C void load(InterfaceTable *inTable)
 #endif
 
 #define scfft_create (*ft->fSCfftCreate)

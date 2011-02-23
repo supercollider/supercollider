@@ -23,6 +23,7 @@
 
 #include "PyrSlot.h"
 #include "VMGlobals.h"
+#include "SC_Export.h"
 
 extern bool gRunningInterpreterThread;
 
@@ -43,6 +44,6 @@ void DumpFrame(struct PyrFrame *frame);
 bool FrameSanity(PyrFrame *frame, const char *tagstr);
 struct PyrProcess* newPyrProcess(VMGlobals *g, struct PyrClass *classobj);
 void startProcess(VMGlobals *g, PyrSymbol *selector);
-void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
+SC_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
 
 #endif

@@ -97,22 +97,16 @@ const struct WorldOptions kDefaultWorldOptions =
 
 struct SndBuf;
 
-#if defined(__cplusplus)
-extern "C" {
-#endif // __cplusplus
-	SC_DLLEXPORT void SetPrintFunc(PrintFunc func);
-	SC_DLLEXPORT struct World* World_New(struct WorldOptions *inOptions);
-	SC_DLLEXPORT void World_Cleanup(struct World *inWorld);
-	SC_DLLEXPORT void World_NonRealTimeSynthesis(struct World *inWorld, struct WorldOptions *inOptions);
-	SC_DLLEXPORT int World_OpenUDP(struct World *inWorld, int inPort);
-	SC_DLLEXPORT int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
-	SC_DLLEXPORT void World_WaitForQuit(struct World *inWorld);
-	SC_DLLEXPORT bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
-	SC_DLLEXPORT bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);
-	SC_DLLEXPORT int World_CopySndBuf(struct World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool *didChange);
-	SC_DLLEXPORT int scprintf(const char *fmt, ...);
-#if defined(__cplusplus)
-}
-#endif // __cplusplus
+SC_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
+SC_DLLEXPORT_C struct World* World_New(struct WorldOptions *inOptions);
+SC_DLLEXPORT_C void World_Cleanup(struct World *inWorld);
+SC_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *inWorld, struct WorldOptions *inOptions);
+SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort);
+SC_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
+SC_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld);
+SC_DLLEXPORT_C bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
+SC_DLLEXPORT_C bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);
+SC_DLLEXPORT_C int World_CopySndBuf(struct World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool *didChange);
+SC_DLLEXPORT_C int scprintf(const char *fmt, ...);
 
 #endif // _SC_WorldOptions_

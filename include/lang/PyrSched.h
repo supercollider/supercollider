@@ -22,16 +22,17 @@
 #define _PYRSCHED_H_
 
 #include "VMGlobals.h"
+#include "SC_Export.h"
 #include <pthread.h>
 
 extern pthread_mutex_t gLangMutex;
 
-void schedInit();
-void schedCleanup();
+SC_DLLEXPORT_C void schedInit();
+SC_DLLEXPORT_C void schedCleanup();
 
-void schedRun();
-void schedStop();
-void schedClear();
+SC_DLLEXPORT_C void schedRun();
+SC_DLLEXPORT_C void schedStop();
+SC_DLLEXPORT_C void schedClear();
 
 double elapsedTime();
 int64 OSCTime();
