@@ -558,6 +558,8 @@ features['lid'] = env['LID'] and conf.CheckCHeader('linux/input.h')
 # wii on linux
 if PLATFORM == 'linux':
     features['wii'] = env['WII'] and conf.CheckCHeader('cwiid.h')
+elif PLATFORM == 'darwin':
+    features['wii'] = 1
 else:
     features['wii'] = env['WII']
 
