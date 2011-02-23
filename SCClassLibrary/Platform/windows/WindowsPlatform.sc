@@ -13,7 +13,6 @@ WindowsPlatform : Platform
 		this.loadStartupFiles;
 	}
 
-	defaultGUIScheme { ^\qt }
 	defaultHIDScheme { ^nil }
 
 	pathSeparator { ^$\\ }
