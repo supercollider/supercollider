@@ -142,7 +142,7 @@ inline int GetTag(PyrSlot* slot) { return slot->utag; }
 
 /* some macros for setting values of slots */
 inline void SetInt(PyrSlot* slot, int val)    {  (slot)->utag = tagInt;  (slot)->ui = (val); }
-inline void SetObject(PyrSlot* slot, void* val) {  (slot)->utag = tagObj;   (slot)->uo = (PyrObject*)(val); }
+inline void SetObject(PyrSlot* slot, struct PyrObjectHdr* val) {  (slot)->utag = tagObj;   (slot)->uo = (PyrObject*)(val); }
 inline void SetSymbol(PyrSlot* slot, PyrSymbol *val) {  (slot)->utag = tagSym;   (slot)->us = (val); }
 inline void SetChar(PyrSlot* slot, char val)   {  (slot)->utag = tagChar;  (slot)->uc = (val); }
 inline void SetPtr(PyrSlot* slot, void* val)    {  (slot)->utag = tagPtr;  (slot)->uptr = (void*)(val); }

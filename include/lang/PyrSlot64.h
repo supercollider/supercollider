@@ -99,7 +99,7 @@ inline bool NotPtr(PyrSlot* slot) { return slot->tag != tagPtr; }
 
 /* setter functions */
 inline void SetInt(PyrSlot* slot, int val)           { slot->tag = tagInt;  slot->u.i = val; }
-inline void SetObject(PyrSlot* slot, void* val)      { slot->tag = tagObj;  slot->u.o = (struct PyrObject*)(val); }
+inline void SetObject(PyrSlot* slot, struct PyrObjectHdr* val)      { slot->tag = tagObj;  slot->u.o = (struct PyrObject*)(val); }
 inline void SetSymbol(PyrSlot* slot, PyrSymbol *val) { slot->tag = tagSym;  slot->u.s = val; }
 inline void SetChar(PyrSlot* slot, char val)         { slot->tag = tagChar; slot->u.c = val; }
 inline void SetPtr(PyrSlot* slot, void* val)         { slot->tag = tagPtr;  slot->u.ptr = (void*)val; }
