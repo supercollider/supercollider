@@ -431,7 +431,7 @@ private:
 					SetObject(slot, readObjectID());
 					break;
 				case 'z' :
-					SetObject(slot, (void*)(size_t)mStream.readInt32_be());
+					SetObject(slot, (PyrObject*)(size_t)mStream.readInt32_be()); // FIXME: fix 64bit safety
 					break;
 				case 'C' :
 					SetObject(slot, (PyrObject*)readSymbolID()->u.classobj);
