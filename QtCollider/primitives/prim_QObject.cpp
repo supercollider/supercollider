@@ -30,8 +30,6 @@
 #include <PyrKernel.h>
 #include <GC.h>
 
-PyrSymbol *s_QObject;
-
 #define IS_OBJECT_NIL( a ) \
   IsNil( slotRawObject(a)->slots )
 
@@ -300,7 +298,7 @@ QC_LANG_PRIMITIVE( QObject_DisconnectFunction, 2, PyrSlot *r, PyrSlot *a, VMGlob
 QC_LANG_PRIMITIVE( QObject_ConnectSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   // Args: signal, receiver, slot
-  if( !isKindOfSlot( a+1, getsym("QObject")->u.classobj )
+  if( !isKindOfSlot( a+1, class_QObject )
       || NotSym( a+0 ) || NotSym( a+2 ) ) return errWrongType;
 
   PyrSymbol *symSig = slotRawSymbol( a+0 );

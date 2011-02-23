@@ -25,7 +25,10 @@
 #include "Common.h"
 #include "QObjectProxy.h"
 
+#include <PyrKernel.h>
 #include <PyrSymbol.h>
+#include <VMGlobals.h>
+#include <SCBase.h>
 
 #include <QByteArray>
 #include <QList>
@@ -33,9 +36,6 @@
 #include <QMetaObject>
 #include <QMetaMethod>
 #include <QVariant>
-
-#include <PyrKernel.h>
-#include <VMGlobals.h>
 
 class QcSignalSpy: public QObject
 {
@@ -196,7 +196,7 @@ protected:
         if( QtCollider::Slot::setVariant( g->sp, var ) )
           SetNil( g->sp );
       }
-      runInterpreter(g, getsym("doFunction"), args.size() + 2);
+      runInterpreter(g, QtCollider::s_doFunction, args.size() + 2);
       g->canCallOS = false;
 
       qcDebugMsg(1, QString("SC FUNCTION CALL [---] ") );

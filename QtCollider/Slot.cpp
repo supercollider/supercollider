@@ -19,14 +19,14 @@
 *
 ************************************************************************/
 
+#include "Slot.h"
+#include "QObjectProxy.h"
+#include "Common.h"
+
 #include <PyrObject.h>
 #include <PyrKernel.h>
 #include <GC.h>
 #include <VMGlobals.h>
-
-#include "Slot.h"
-#include "QObjectProxy.h"
-#include "Common.h"
 
 #include <QPalette>
 #include <QWidget>
@@ -46,7 +46,7 @@ static QPalette::ColorRole paletteColorRoles[] = {
 
 int Slot::setRect( PyrSlot *slot, const QRectF &r )
 {
-  if( !isKindOfSlot( slot, s_rect->u.classobj ) ) {
+  if( !isKindOfSlot( slot, class_Rect ) ) {
     return errWrongType;
   }
 
@@ -61,7 +61,7 @@ int Slot::setRect( PyrSlot *slot, const QRectF &r )
 
 int Slot::setPoint( PyrSlot *slot, const QPointF &pt )
 {
-  if( !isKindOfSlot( slot, s_point->u.classobj ) ) {
+  if( !isKindOfSlot( slot, class_Point ) ) {
     return errWrongType;
   }
 
@@ -81,7 +81,7 @@ void Slot::setString( PyrSlot *slot, const QString& arg )
 
 int Slot::setColor( PyrSlot *slot, const QColor &c )
 {
-  if( !isKindOfSlot( slot, s_color->u.classobj ) ) return errWrongType;
+  if( !isKindOfSlot( slot, class_Color) ) return errWrongType;
 
   PyrSlot *slots = slotRawObject( slot )->slots;
 
@@ -95,7 +95,7 @@ int Slot::setColor( PyrSlot *slot, const QColor &c )
 
 int Slot::setPalette( PyrSlot *slot, const QPalette &plt )
 {
-  if( !isKindOfSlot( slot, getsym("QPalette")->u.classobj ) ) return errWrongType;
+  if( !isKindOfSlot( slot, class_QPalette ) ) return errWrongType;
 
   PyrSlot *s = slotRawObject( slot )->slots;
 
@@ -197,7 +197,7 @@ QString Slot::toString( PyrSlot *slot )
   if( IsSym(slot) ) {
     return QString( slotRawSymbol(slot)->name );
   }
-  else if( isKindOfSlot( slot, class_string ) ) {
+  else if( isKindOfSlot( slot, class_String ) ) {
     int len = slotRawObject( slot )->size;
     return QString::fromAscii( slotRawString(slot)->s, len );
   }
@@ -206,7 +206,7 @@ QString Slot::toString( PyrSlot *slot )
 
 QPointF Slot::toPoint( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, s_point->u.classobj ) ) {
+  if( !isKindOfSlot( slot, class_Point ) ) {
     return QPointF();
   }
   PyrSlot *slots = slotRawObject( slot )->slots;
@@ -219,7 +219,7 @@ QPointF Slot::toPoint( PyrSlot *slot )
 
 QRectF Slot::toRect( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, s_rect->u.classobj ) ) {
+  if( !isKindOfSlot( slot, class_Rect ) ) {
     return QRectF();
   }
 
@@ -236,7 +236,7 @@ QRectF Slot::toRect( PyrSlot *slot )
 
 QSizeF Slot::toSize( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, symSize->u.classobj ) ) {
+  if( !isKindOfSlot( slot, class_Size ) ) {
     return QSizeF();
   }
 
@@ -250,7 +250,7 @@ QSizeF Slot::toSize( PyrSlot *slot )
 
 QColor Slot::toColor( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, s_color->u.classobj ) )
+  if( !isKindOfSlot( slot, class_Color) )
     return QColor();
 
   PyrSlot *slots = slotRawObject(slot)->slots;
@@ -271,7 +271,7 @@ QColor Slot::toColor( PyrSlot *slot )
 
 QFont Slot::toFont( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, getsym("QFont")->u.classobj ) )
+  if( !isKindOfSlot( slot, class_QFont ) )
     return QFont();
 
   PyrSlot *slots = slotRawObject(slot)->slots;
@@ -290,13 +290,11 @@ QFont Slot::toFont( PyrSlot *slot )
 
 QPalette Slot::toPalette( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, getsym("QPalette")->u.classobj ) )
+  if( !isKindOfSlot( slot, class_QPalette ) )
     return QPalette();
 
   PyrSlot *slots = slotRawObject( slot )->slots;
   QPalette palette;
-
-  PyrClass *color_class = s_color->u.classobj;
 
   for( int i=0; i<8; ++i, ++slots ) {
     QColor c = Slot::toColor(slots);
@@ -309,7 +307,7 @@ QPalette Slot::toPalette( PyrSlot *slot )
 
 VariantList Slot::toVariantList( PyrSlot *slot )
 {
-  if( isKindOfSlot( slot, class_array ) ) {
+  if( isKindOfSlot( slot, class_Array ) ) {
     PyrObject *obj = slotRawObject( slot );
     PyrSlot *slots = obj->slots;
     int size = obj->size;
@@ -318,7 +316,7 @@ VariantList Slot::toVariantList( PyrSlot *slot )
       list.data << Slot::toVariant( slots );
     return list;
   }
-  else if( isKindOfSlot( slot, class_symbolarray ) ) {
+  else if( isKindOfSlot( slot, class_SymbolArray ) ) {
     PyrSymbolArray *symarray = slotRawSymbolArray( slot );
     PyrSymbol **symbols = symarray->symbols;
     int size = symarray->size;
@@ -333,7 +331,7 @@ VariantList Slot::toVariantList( PyrSlot *slot )
 
 QObjectProxy* Slot::toObjectProxy( PyrSlot *slot )
 {
-  if( !isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) return 0;
+  if( !isKindOfSlot( slot, class_QObject ) ) return 0;
   QObjectProxy *proxy = 0;
   PyrSlot *proxySlot = slotRawObject( slot )->slots;
   if( IsPtr( proxySlot ) ) proxy = (QObjectProxy*) slotRawPtr( proxySlot );
@@ -357,32 +355,32 @@ QVariant Slot::toVariant( PyrSlot *slot )
       return QVariant( true );
     case tagObj :
     {
-      if( isKindOfSlot( slot, class_string ) ) {
+      if( isKindOfSlot( slot, class_String ) ) {
         return QVariant( toString(slot) );
       }
-      else if( isKindOfSlot( slot, s_point->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_Point ) ) {
         return QVariant( toPoint( slot ) );
       }
-      else if( isKindOfSlot( slot, s_rect->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_Rect ) ) {
         return QVariant( toRect(slot) );
       }
-      else if( isKindOfSlot( slot, symSize->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_Size ) ) {
         return QVariant( toSize(slot) );
       }
-      else if( isKindOfSlot( slot, s_color->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_Color) ) {
         return QVariant::fromValue<QColor>( toColor(slot) );
       }
-      else if( isKindOfSlot( slot, getsym("QFont")->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_QFont ) ) {
         return QVariant::fromValue<QFont>( toFont(slot) );
       }
-      else if( isKindOfSlot( slot, getsym("QPalette")->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_QPalette ) ) {
         return QVariant::fromValue<QPalette>( toPalette(slot) );
       }
-      else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_QObject ) ) {
         proxy = toObjectProxy(slot);
         return QVariant::fromValue<QObjectProxy*>( proxy );
       }
-      else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
+      else if( isKindOfSlot( slot, class_Array ) || isKindOfSlot( slot, class_SymbolArray ) ) {
         return QVariant::fromValue<VariantList>( toVariantList(slot) );
       }
       else {
@@ -424,31 +422,31 @@ void QtCollider::Variant::setData( PyrSlot *slot )
       break;
     case tagObj :
     {
-      if( isKindOfSlot( slot, class_string ) ) {
+      if( isKindOfSlot( slot, class_String ) ) {
         _type = QMetaType::QString;
         _ptr = new QString( toString(slot) );
       }
-      else if( isKindOfSlot( slot, s_point->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_Point ) ) {
         _type = QMetaType::QPointF;
         _ptr = new QPointF( toPoint(slot) );
       }
-      else if( isKindOfSlot( slot, s_rect->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_Rect ) ) {
         _type = QMetaType::QRectF;
         _ptr = new QRectF( toRect(slot) );
       }
-      else if( isKindOfSlot( slot, symSize->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_Size ) ) {
         _type = QMetaType::QSizeF;
         _ptr = new QSizeF( toSize(slot) );
       }
-      else if( isKindOfSlot( slot, s_color->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_Color) ) {
         _type = QMetaType::QColor;
         _ptr = new QColor( toColor(slot) );
       }
-      else if( isKindOfSlot( slot, class_array ) || isKindOfSlot( slot, class_symbolarray ) ) {
+      else if( isKindOfSlot( slot, class_Array ) || isKindOfSlot( slot, class_SymbolArray ) ) {
         _type = qMetaTypeId<VariantList>();
         _ptr = new VariantList( toVariantList(slot) );
       }
-      else if( isKindOfSlot( slot, getsym("QObject")->u.classobj ) ) {
+      else if( isKindOfSlot( slot, class_QObject ) ) {
         proxy = toObjectProxy(slot);
         if( !proxy ) {
           _type = QMetaType::Void;

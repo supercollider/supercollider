@@ -21,6 +21,7 @@
 
 #include "QWidgetProxy.h"
 #include "Painting.h"
+#include "Common.h"
 
 #include <QApplication>
 #include <QLayout>
@@ -176,7 +177,7 @@ void QWidgetProxy::customPaint( QPainter *painter )
   QtCollider::lockLang();
 
   if( QtCollider::beginPainting( painter ) ) {
-    invokeScMethod( getsym("doDrawFunc"), QList<QVariant>(), 0, true );
+    invokeScMethod( s_doDrawFunc, QList<QVariant>(), 0, true );
     QtCollider::endPainting();
   }
 

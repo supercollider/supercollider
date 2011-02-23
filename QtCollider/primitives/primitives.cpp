@@ -23,9 +23,7 @@
 #include "Common.h"
 #include "QC_Export.h"
 
-namespace QtCollider {
-  PyrSymbol *symSize;
-}
+#include <SCBase.h>
 
 using namespace QtCollider;
 
@@ -35,6 +33,21 @@ LangPrimitiveList& QtCollider::langPrimitives() {
 }
 
 namespace QtCollider {
+
+PyrSymbol *s_doFunction;
+PyrSymbol *s_doDrawFunc;
+PyrSymbol *s_Rect;
+PyrSymbol *s_Point;
+PyrSymbol *s_Color;
+PyrSymbol *s_Size;
+PyrSymbol *s_Array;
+PyrSymbol *s_FloatArray;
+PyrSymbol *s_SymbolArray;
+PyrSymbol *s_String;
+PyrSymbol *s_QPalette;
+PyrSymbol *s_QFont;
+PyrSymbol *s_QObject;
+PyrSymbol *s_QLayout;
 
 QC_PUBLIC
 void initPrimitives () {
@@ -49,7 +62,21 @@ void initPrimitives () {
     definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
   }
 
-  symSize = getsym("Size");
+  s_doFunction = getsym("doFunction");
+  s_doDrawFunc = getsym("doDrawFunction");
+
+  s_Rect = getsym("Rect");
+  s_Point = getsym("Point");
+  s_Size = getsym("Size");
+  s_Color = getsym("Color");
+  s_Array = getsym("Array");
+  s_FloatArray = getsym("FloatArray");
+  s_SymbolArray = getsym("SymbolArray");
+  s_String = getsym("String");
+  s_QObject = getsym("QObject");
+  s_QLayout = getsym("QLayout");
+  s_QFont = getsym("QFont");
+  s_QPalette = getsym("QPalette");
 }
 
 } // namespace QtCollider

@@ -57,7 +57,7 @@ void qcScreenBounds( QcSyncEvent *e )
 
 QC_LANG_PRIMITIVE( QWindow_ScreenBounds, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlobals *g )
 {
-  if( !isKindOfSlot( rectSlot, s_rect->u.classobj ) ) return errWrongType;
+  if( !isKindOfSlot( rectSlot, class_Rect ) ) return errWrongType;
 
   QVariant var;
 
