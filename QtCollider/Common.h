@@ -60,10 +60,6 @@ namespace QtCollider {
 
 extern pthread_mutex_t gLangMutex;
 
-namespace QtCollider {
-  extern PyrSymbol *symSize;
-}
-
 struct VariantList {
   QList<QVariant> data;
 };
@@ -179,6 +175,33 @@ namespace QtCollider {
     //printf("UNLOCKED\n");
   }
 
+  extern PyrSymbol *s_doFunction;
+  extern PyrSymbol *s_doDrawFunc;
+  extern PyrSymbol *s_Rect;
+  extern PyrSymbol *s_Point;
+  extern PyrSymbol *s_Color;
+  extern PyrSymbol *s_Size;
+  extern PyrSymbol *s_Array;
+  extern PyrSymbol *s_FloatArray;
+  extern PyrSymbol *s_SymbolArray;
+  extern PyrSymbol *s_String;
+  extern PyrSymbol *s_QPalette;
+  extern PyrSymbol *s_QFont;
+  extern PyrSymbol *s_QObject;
+  extern PyrSymbol *s_QLayout;
+
+#define class_Rect s_Rect->u.classobj
+#define class_Point s_Point->u.classobj
+#define class_Color s_Color->u.classobj
+#define class_Size s_Size->u.classobj
+#define class_Array s_Array->u.classobj
+#define class_FloatArray s_FloatArray->u.classobj
+#define class_SymbolArray s_SymbolArray->u.classobj
+#define class_String s_String->u.classobj
+#define class_QPalette s_QPalette->u.classobj
+#define class_QFont s_QFont->u.classobj
+#define class_QObject s_QObject->u.classobj
+#define class_QLayout s_QLayout->u.classobj
 }
 
 #endif //_SC_QT_COMMON_H

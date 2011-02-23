@@ -85,7 +85,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   // get data from argument slots
   QtCollider::Variant argSlots[10];
 
-  if( isKindOfSlot( argSlot, class_array ) ) {
+  if( isKindOfSlot( argSlot, class_Array ) ) {
     PyrSlot *slots = slotRawObject( argSlot )->slots;
     int size = slotRawObject( argSlot )->size;
     int i;
