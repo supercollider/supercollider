@@ -176,7 +176,7 @@ QWindow
   //------------------- simply redirected to QView ---------------------//
 
   alpha_ { var value; view.alpha_(value); }
-  addFlowLayout { arg margin, gap; view.addFlowLayout( margin, gap ); }
+  addFlowLayout { arg margin, gap; ^view.addFlowLayout( margin, gap ); }
   close { view.close; }
   front { view.front; }
   fullScreen { view.fullScreen; }
