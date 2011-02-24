@@ -5,7 +5,7 @@
 #include <QAtomicInt>
 
 static QAtomicInt& debugLevelInt() {
-  static QAtomicInt *i = new QAtomicInt(1);
+  static QAtomicInt *i = new QAtomicInt(0);
   return *i;
 }
 
