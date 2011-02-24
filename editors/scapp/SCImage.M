@@ -16,6 +16,8 @@
 #import <objc/objc-class.h>
 #import <ctype.h>
 
+#import "SCBase.h"
+#import "PyrSymbol.h"
 #import "PyrPrimitive.h"
 #import "PyrObject.h"
 #import "PyrSlot.h"

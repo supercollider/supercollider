@@ -21,6 +21,8 @@
 #import "SCTextView.h"
 #import "MyDocument.h"
 #import "SC_DirUtils.h"
+#include "SCBase.h"
+#include "PyrSymbol.h"
 #include <pthread.h>
 
 extern bool compiledOK;

@@ -28,6 +28,8 @@
 #include <Cocoa/Cocoa.h>
 #include <Carbon/Carbon.h>
 #include <pthread.h>
+#include "SCBase.h"
+#include "PyrSymbol.h"
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"

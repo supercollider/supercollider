@@ -22,6 +22,8 @@
 #import <objc/objc-class.h>
 //#import <objc/runtime.h>
 
+#include "SCBase.h"
+#include "PyrSymbol.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "GC.h"
