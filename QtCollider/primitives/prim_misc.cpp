@@ -34,15 +34,6 @@
 
 using namespace QtCollider;
 
-QC_LANG_PRIMITIVE( QtGUI_Start, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
-{
-  // FIXME is QApplication::instance() thread-safe??
-  if( !QApplication::instance() ) {
-    QtCollider::init();
-  }
-  return errNone;
-}
-
 QC_LANG_PRIMITIVE( QtGUI_SetDebugLevel, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QtCollider::setDebugLevel( Slot::toInt(a) );

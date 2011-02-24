@@ -22,6 +22,7 @@
 #include "primitives/primitives.h"
 #include "Common.h"
 #include "QC_Export.h"
+#include "QtCollider.h"
 
 #include <SCBase.h>
 
@@ -51,6 +52,8 @@ PyrSymbol *s_QLayout;
 
 QC_PUBLIC
 void initPrimitives () {
+  QtCollider::init();
+
   qcDebugMsg(1,"initializing QtGUI primitives");
 
   int base = nextPrimitiveIndex();
