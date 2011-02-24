@@ -1990,8 +1990,8 @@ void Fold_Ctor(Fold* unit)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-void Clip_next(Clip* unit, int inNumSamples)
+
+void Clip_next_ii(Clip* unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in   = ZIN(0);
@@ -1999,51 +1999,25 @@ void Clip_next(Clip* unit, int inNumSamples)
 	float hi = unit->m_hi;
 
 	LOOP1(inNumSamples,
-		float zin = ZXP(in);
-		ZXP(out) = sc_clip(zin, lo, hi);
+		ZXP(out) = sc_clip(ZXP(in), lo, hi);
 	);
 }
 
-#ifdef NOVA_SIMD
-void Clip_next_nova(Clip* unit, int inNumSamples)
-{
-	float lo = unit->m_lo;
-	float hi = unit->m_hi;
-
-	nova::clip_vec_simd(OUT(0), IN(0), lo, hi, inNumSamples);
-}
-#endif
-
-void Clip_Ctor(Clip* unit)
-{
-#ifdef NOVA_SIMD
-	if (!(BUFLENGTH & 15))
-		SETCALC(Clip_next_nova);
-	else
-#endif
-	SETCALC(Clip_next);
-	unit->m_lo = ZIN0(1);
-	unit->m_hi = ZIN0(2);
-
-	if (unit->m_lo > unit->m_hi) {
-		float temp = unit->m_lo;
-		unit->m_lo = unit->m_hi;
-		unit->m_hi = temp;
-	}
-
-	Clip_next(unit, 1);
-}
-*/
-
 void Clip_next_kk(Clip* unit, int inNumSamples)
 {
-	float *out = ZOUT(0);
-	float *in   = ZIN(0);
 	float next_lo = ZIN0(1);
 	float next_hi = ZIN0(2);
 	float lo = unit->m_lo;
-	float lo_slope = CALCSLOPE(next_lo, lo);
 	float hi = unit->m_hi;
+
+	if (lo == next_lo && hi == next_hi) {
+		Clip_next_ii(unit, inNumSamples);
+		return;
+	}
+
+	float *out = ZOUT(0);
+	float *in   = ZIN(0);
+	float lo_slope = CALCSLOPE(next_lo, lo);
 	float hi_slope = CALCSLOPE(next_hi, hi);
 
 	LOOP1(inNumSamples,
@@ -2099,30 +2073,206 @@ void Clip_next_aa(Clip* unit, int inNumSamples)
 	);
 }
 
-void Clip_Ctor(Clip* unit)
+void Clip_next_k(Clip* unit, int inNumSamples)
 {
-	if(BUFLENGTH == 1) {
-			// _aa? Well, yes - that calc func doesn't interpolate
-			// and interpolation is not needed for kr (1 sample/block)
-		SETCALC(Clip_next_aa);
-	} else {
-		if(INRATE(1) == calc_FullRate) {
-			if(INRATE(2) == calc_FullRate)
-				SETCALC(Clip_next_aa);
-			else
-				SETCALC(Clip_next_ak);
-		} else {
-			if(INRATE(2) == calc_FullRate)
-				SETCALC(Clip_next_ka);
-			else
-				SETCALC(Clip_next_kk);
+	float *out = ZOUT(0);
+	float *in  = ZIN(0);
+	float lo = unit->m_lo;
+	float hi = unit->m_hi;
+
+	ZXP(out) = sc_clip(ZXP(in), lo, hi);
+}
+
+#ifdef NOVA_SIMD
+void Clip_next_nova_ii(Clip* unit, int inNumSamples)
+{
+	float lo = unit->m_lo;
+	float hi = unit->m_hi;
+
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo), wrap_argument(hi), inNumSamples);
+}
+
+void Clip_next_nova_ki(Clip* unit, int inNumSamples)
+{
+	float next_lo = ZIN0(1);
+	float lo = unit->m_lo;
+	float hi = unit->m_hi;
+
+	if (lo == next_lo) {
+		Clip_next_nova_ii(unit, inNumSamples);
+		return;
+	}
+
+	float lo_slope = CALCSLOPE(next_lo, lo);
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo, lo_slope), wrap_argument(hi), inNumSamples);
+}
+
+void Clip_next_nova_ik(Clip* unit, int inNumSamples)
+{
+	float next_hi = ZIN0(2);
+	float lo = unit->m_lo;
+	float hi = unit->m_hi;
+
+	if (hi == next_hi) {
+		Clip_next_nova_ii(unit, inNumSamples);
+		return;
+	}
+
+	float hi_slope = CALCSLOPE(next_hi, hi);
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo), wrap_argument(hi, hi_slope), inNumSamples);
+}
+
+void Clip_next_nova_kk(Clip* unit, int inNumSamples)
+{
+	float next_lo = ZIN0(1);
+	float next_hi = ZIN0(2);
+	float lo = unit->m_lo;
+	float hi = unit->m_hi;
+
+	if (lo == next_lo && hi == next_hi) {
+		Clip_next_nova_ii(unit, inNumSamples);
+		return;
+	}
+
+	if (lo == next_lo) {
+		Clip_next_nova_ik(unit, inNumSamples);
+		return;
+	}
+
+	if (hi == next_hi) {
+		Clip_next_nova_ki(unit, inNumSamples);
+		return;
+	}
+
+	float lo_slope = CALCSLOPE(next_lo, lo);
+	float hi_slope = CALCSLOPE(next_hi, hi);
+
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo, lo_slope), wrap_argument(hi, hi_slope), inNumSamples);
+}
+
+void Clip_next_nova_ai(Clip* unit, int inNumSamples)
+{
+	float hi = unit->m_hi;
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(IN(1)), wrap_argument(hi), inNumSamples);
+}
+
+void Clip_next_nova_ak(Clip* unit, int inNumSamples)
+{
+	float next_hi = ZIN0(2);
+	float hi = unit->m_hi;
+
+	if (hi == next_hi) {
+		Clip_next_nova_ai(unit, inNumSamples);
+		return;
+	}
+
+	float hi_slope = CALCSLOPE(next_hi, hi);
+
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(IN(1)), wrap_argument(hi, hi_slope), inNumSamples);
+}
+
+void Clip_next_nova_ia(Clip* unit, int inNumSamples)
+{
+	float lo = unit->m_lo;
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo), wrap_argument(IN(2)), inNumSamples);
+}
+
+void Clip_next_nova_ka(Clip* unit, int inNumSamples)
+{
+	float next_lo = ZIN0(1);
+	float lo = unit->m_lo;
+
+	if (lo == next_lo) {
+		Clip_next_nova_ia(unit, inNumSamples);
+		return;
+	}
+
+	float lo_slope = CALCSLOPE(next_lo, lo);
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo, lo_slope), wrap_argument(IN(2)), inNumSamples);
+}
+
+
+void Clip_next_nova_aa(Clip* unit, int inNumSamples)
+{
+	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(IN(1)), wrap_argument(IN(2)), inNumSamples);
+}
+
+#endif
+
+typedef void (*ClipCalcFunc)(Clip*, int);
+
+static ClipCalcFunc Clip_SelectCalc(Clip * unit)
+{
+	if(BUFLENGTH == 1)
+		return Clip_next_k;
+
+	int loRate = INRATE(1);
+	int hiRate = INRATE(2);
+
+#ifdef NOVA_SIMD
+	if (!(BUFLENGTH & 15)) {
+		switch (loRate)
+		{
+		case calc_FullRate:
+			switch (hiRate) {
+			case calc_FullRate:
+				return Clip_next_nova_aa;
+			case calc_BufRate:
+				return Clip_next_nova_ak;
+			case calc_ScalarRate:
+				return Clip_next_nova_ai;
+			}
+			break;
+
+		case calc_BufRate:
+			switch (hiRate) {
+			case calc_FullRate:
+				return Clip_next_nova_ka;
+			case calc_BufRate:
+				return Clip_next_nova_kk;
+			case calc_ScalarRate:
+				return Clip_next_nova_ki;
+			}
+			break;
+
+		case calc_ScalarRate:
+			switch (hiRate) {
+			case calc_FullRate:
+				return Clip_next_nova_ia;
+			case calc_BufRate:
+				return Clip_next_nova_ik;
+			case calc_ScalarRate:
+				return Clip_next_nova_ii;
+			}
+			break;
 		}
 	}
+#endif
+
+	if (loRate == calc_FullRate && hiRate == calc_FullRate)
+		return Clip_next_aa;
+
+	if (loRate == calc_ScalarRate && hiRate == calc_ScalarRate)
+		return Clip_next_ii;
+
+	if (loRate == calc_FullRate && hiRate != calc_FullRate)
+		return Clip_next_ak;
+
+	if (loRate != calc_FullRate && hiRate == calc_FullRate)
+		return Clip_next_ak;
+
+	return Clip_next_kk;
+}
+
+void Clip_Ctor(Clip* unit)
+{
+	ClipCalcFunc fn = Clip_SelectCalc(unit);
+	unit->mCalcFunc = (UnitCalcFunc)fn;
 
 	unit->m_lo = ZIN0(1);
 	unit->m_hi = ZIN0(2);
 
-	Clip_next_kk(unit, 1);
+	Clip_next_ii(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
