@@ -140,6 +140,13 @@ make install
 to uninstall:
 make uninstall
 
+Qt GUI:
+-------
+
+By default the experimental Qt GUI support will be built into sclang.
+If you want to build without it configure cmake like this:
+
+        cmake -DSC_QT=OFF ..
 
 ------------------------------------------------------------------------
 Building a Debian package
