@@ -22,6 +22,12 @@ QObject {
 
   *heap { ^heap.copy }
 
+  *initClass {
+      ShutDown.add {
+          heap.do { |x| x.prFinalize; };
+      };
+  }
+
   initQObject{ arg className, argumentArray;
     this.prConstruct( className, argumentArray );
     heap = heap.add( this );
@@ -116,6 +122,11 @@ QObject {
 
   prGetChildren { arg className;
     _QObject_GetChildren
+    ^this.primitiveFailed
+  }
+
+  prFinalize {
+    _QObject_ManuallyFinalize
     ^this.primitiveFailed
   }
 
