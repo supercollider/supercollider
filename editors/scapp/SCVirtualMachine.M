@@ -25,10 +25,11 @@
 #import "SCNSWindow.h"
 #include "ChangeCounter.h"
 
-// CR ADDED
 #import "RendezvousClient.h"
 #import "SCService.h"
 
+#include "SCBase.h"
+#include "PyrSymbol.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "GC.h"

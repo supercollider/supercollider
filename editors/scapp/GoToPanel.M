@@ -26,6 +26,8 @@
 
 
 #import "GoToPanel.h"
+#import "SCBase.h"
+#import "PyrSymbol.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "GC.h"

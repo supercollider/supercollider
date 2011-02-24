@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "SCBase.h"
+#include "PyrSymbol.h"
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"

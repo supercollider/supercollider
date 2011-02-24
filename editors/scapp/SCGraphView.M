@@ -20,6 +20,8 @@
 
 #import "SCGraphView.h"
 #import "SCVirtualMachine.h"
+#include "SCBase.h"
+#include "PyrSymbol.h"
 #include "PyrKernel.h"
 #include "PyrMessage.h"
 #include "VMGlobals.h"

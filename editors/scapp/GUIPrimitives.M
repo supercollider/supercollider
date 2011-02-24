@@ -20,6 +20,8 @@
 
 #include <Cocoa/Cocoa.h>
 #include <Carbon/Carbon.h>
+#import "SCBase.h"
+#import "PyrSymbol.h"
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"

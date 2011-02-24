@@ -30,6 +30,8 @@
 #import <QTKit/QTTime.h>
 #import <QTKit/QTTimeRange.h>
 #import <Foundation/NSMethodSignature.h>
+#import "SCBase.h"
+#import "PyrSymbol.h"
 #import "PyrPrimitive.h"
 #import "PyrObject.h"
 #import "PyrKernel.h"
