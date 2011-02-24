@@ -21,18 +21,22 @@
 
 #include "QtCollider.h"
 #include "QcApplication.h"
+#include "Common.h"
 
 #include <QTimer>
 
 QC_PUBLIC
 void QtCollider::init() {
-  #ifdef Q_OS_MAC
-    QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
-  #endif
-  static int qcArgc = 1;
-  static char qcArg0[] = "";
-  static char *qcArgv[1];
-  qcArgv[0] = qcArg0;
-  QcApplication *qcApp = new QcApplication( qcArgc, qcArgv );
-  qcApp->setQuitOnLastWindowClosed( false );
+  if( !QApplication::instance() ) {
+    qcDebugMsg( 1, "Initializing QtCollider" );
+    #ifdef Q_OS_MAC
+      QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
+    #endif
+    static int qcArgc = 1;
+    static char qcArg0[] = "";
+    static char *qcArgv[1];
+    qcArgv[0] = qcArg0;
+    QcApplication *qcApp = new QcApplication( qcArgc, qcArgv );
+    qcApp->setQuitOnLastWindowClosed( false );
+  }
 }

@@ -33,7 +33,6 @@ int QtCollider::run(int argc, char** argv) {
 LangClient::LangClient( const char* name )
 : SC_TerminalClient( name )
 {
-  QtCollider::init();
 }
 
 void LangClient::commandLoop()

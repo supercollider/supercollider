@@ -2,15 +2,9 @@ QtGUI {
 
   *initClass {
     GUI.add( this );
-    this.start;
   }
 
   *id { ^\qt }
-
-  *start{
-    _QtGUI_Start
-    ^this.primitiveFailed;
-  }
 
   *stop { }
 
