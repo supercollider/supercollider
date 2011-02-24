@@ -114,6 +114,10 @@ resources into the app bundle, including any special resources you might have
 created in the folder "platform/mac/MyFabApp Resources" (or, if that doesn't
 exist, it just uses "platform/mac/Standalone Resources").
 
+If you've built a standalone and want to go back to normal build mode, just
+set that value as an empty string:
+
+        cmake -D standalone:string=..
 
 ------------------------------------------------------------------------
 On libsndfile
