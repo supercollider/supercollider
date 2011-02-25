@@ -63,16 +63,24 @@ class QcListWidget : public QListWidget, public QcHelper
   Q_OBJECT
   Q_PROPERTY( VariantList items READ dummyVariantList WRITE setItems );
   Q_PROPERTY( VariantList colors READ dummyVariantList WRITE setColors );
+  Q_PROPERTY( int currentRow READ currentRow WRITE setCurrentRowWithoutAction )
 
   public:
     QcListWidget();
+    void setItems( const VariantList & );
+    void setColors( const VariantList & ) const;
+    void setCurrentRowWithoutAction( int );
   Q_SIGNALS:
     void action();
     void returnPressed();
+  private Q_SLOTS:
+    void onCurrentItemChanged();
   private:
-    void setItems( const VariantList & );
-    void setColors( const VariantList & ) const;
     void keyPressEvent( QKeyEvent * );
+    bool eventFilter( QObject *, QEvent * );
+
+    int _indexOnPress;
+    bool _emitAction;
 };
 
 class QcPopUpMenu : public QComboBox, public QcHelper
