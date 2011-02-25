@@ -44,10 +44,11 @@ class QcListWidgetFactory : public QcWidgetFactory<QcListWidget>
 
 QcListWidgetFactory listWidgetFactory;
 
-QcListWidget::QcListWidget()
+QcListWidget::QcListWidget() : _emitAction(true)
 {
-  connect( this, SIGNAL( itemClicked( QListWidgetItem* ) ),
-           this, SIGNAL( action() ) );
+  connect( this, SIGNAL( currentItemChanged( QListWidgetItem*, QListWidgetItem* ) ),
+           this, SLOT( onCurrentItemChanged() ) );
+  viewport()->installEventFilter( this );
 }
 
 void QcListWidget::setItems( const VariantList & items )
@@ -68,11 +69,39 @@ void QcListWidget::setColors( const VariantList & colors ) const
   }
 }
 
+void QcListWidget::setCurrentRowWithoutAction( int row )
+{
+  bool b = _emitAction;
+  _emitAction = false;
+  setCurrentRow( row );
+  _emitAction = b;
+}
+
+void QcListWidget::onCurrentItemChanged()
+{
+  if( _emitAction ) Q_EMIT( action() );
+}
+
 void QcListWidget::keyPressEvent( QKeyEvent *e )
 {
   QListWidget::keyPressEvent( e );
   if( e->key() == Qt::Key_Return )
     Q_EMIT( returnPressed() );
+}
+
+bool QcListWidget::eventFilter( QObject *o, QEvent *e )
+{
+  if( o == viewport() ) {
+    if( e->type() == QEvent::MouseButtonPress ) {
+      _emitAction = false;
+      _indexOnPress = currentRow();
+    }
+    else if( e->type() == QEvent::MouseButtonRelease ) {
+      _emitAction = true;
+      if( currentRow() != _indexOnPress ) Q_EMIT( action() );
+    }
+  }
+  return QListWidget::eventFilter( o, e );
 }
 
 ////////////////////////// QcPopUpMenu /////////////////////////////////////////
