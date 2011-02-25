@@ -63,7 +63,7 @@ void initPrimitives () {
   }
 
   s_doFunction = getsym("doFunction");
-  s_doDrawFunc = getsym("doDrawFunction");
+  s_doDrawFunc = getsym("doDrawFunc");
 
   s_Rect = getsym("Rect");
   s_Point = getsym("Point");
