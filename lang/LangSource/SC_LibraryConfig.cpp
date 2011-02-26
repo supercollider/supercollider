@@ -1,3 +1,26 @@
+/*
+ *  Copyright 2003 Maurizio Umberto Puxeddu
+ *  Copyright 2011 Jakob Leben
+ *
+ *  This file is part of SuperCollider.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation; either version 2 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
+ *  USA
+ *
+ */
+
 #include "SC_LibraryConfig.h"
 #include "SCBase.h"
 #include "SC_StringBuffer.h"
@@ -17,111 +40,67 @@
 # include <libgen.h>
 #endif
 
-// =====================================================================
-// SC_LibraryConfig
-// Copyright 2003 Maurizio Umberto Puxeddu
-// =====================================================================
+using namespace std;
 
 SC_LibraryConfig *gLibraryConfig = 0;
 
 void SC_LibraryConfig::postExcludedDirectories(void)
 {
-	char **directories = m_excludedDirectories;
-	if (directories != 0) {
-		while (directories[0] != 0) {
-			post("\texcluding dir: '%s'\n", directories[0]);
-			directories += 1;
-		}
+	DirVector &vec = mExcludedDirectories;
+	DirVector::iterator it;
+	for (it=vec.begin(); it!=vec.end(); ++it) {
+		post("\texcluding dir: '%s'\n", it->c_str());
 	}
 }
 
-bool SC_LibraryConfig::forEachIncludedDirectory(bool (*func)(char *, int))
+bool SC_LibraryConfig::forEachIncludedDirectory(bool (*func)(const char *, int))
 {
-	char **directories = m_includedDirectories;
-	if (directories != 0) {
-		while (directories[0] != 0) {
-			if (!func(directories[0], 0)) return false;
-			directories += 1;
-		}
+	DirVector &vec = mIncludedDirectories;
+	DirVector::iterator it;
+	for (it=vec.begin(); it!=vec.end(); ++it) {
+		if (!func(it->c_str(), 0)) return false;
 	}
 	return true;
 }
 
-SC_LibraryConfig::SC_LibraryConfig(void) :
-	m_nIncludedDirectories(0),
-	m_nExcludedDirectories(0)
-{
-	m_includedDirectories = (char **)malloc(sizeof(char *) * 1);
-	m_excludedDirectories = (char **)malloc(sizeof(char *) * 1);
-
-	m_includedDirectories[0] = 0;
-	m_excludedDirectories[0] = 0;
-}
+SC_LibraryConfig::SC_LibraryConfig(void)
+{}
 
 SC_LibraryConfig::~SC_LibraryConfig()
-{
-	int i;
-
-	for (i = 0; i <= m_nIncludedDirectories; ++i)
-		free(m_includedDirectories[i]);
-	for (i = 0; i <= m_nExcludedDirectories; ++i)
-		free(m_excludedDirectories[i]);
-
-	free(m_includedDirectories);
-	free(m_excludedDirectories);
-}
-
-char **SC_LibraryConfig::includedDirectories(void)
-{
-	return m_includedDirectories;
-}
-
-char **SC_LibraryConfig::excludedDirectories(void)
-{
-	return m_excludedDirectories;
-}
+{}
 
 bool SC_LibraryConfig::pathIsExcluded(const char *path)
 {
-	int i;
+	char standardPath[PATH_MAX];
+	sc_StandardizePath(path, standardPath);
 
-	if (m_nExcludedDirectories != 0)
-		for (i = 0; i < m_nExcludedDirectories; ++i)
-			if (strcmp(path, m_excludedDirectories[i]) == 0) return true;
+	DirVector &vec = mExcludedDirectories;
+	DirVector::iterator it;
+	for (it=vec.begin(); it!=vec.end(); ++it) {
+		if (!strcmp(standardPath, it->c_str())) return true;
+	}
 
 	return false;
 }
 
 void SC_LibraryConfig::addIncludedDirectory(char *path)
 {
-	char **includedDirectories = m_includedDirectories;
-
 	if (path == 0) return;
 
-	m_includedDirectories = (char **)realloc(m_includedDirectories, (m_nIncludedDirectories + 2) * sizeof(char *));
-	if (m_includedDirectories == 0) {
-		m_includedDirectories = includedDirectories;
-	} else {
-		m_includedDirectories[m_nIncludedDirectories] = path;
-		m_includedDirectories[m_nIncludedDirectories + 1] = 0;
-		m_nIncludedDirectories += 1;
-	}
+	char standardPath[PATH_MAX];
+	sc_StandardizePath(path, standardPath);
+
+	mIncludedDirectories.push_back(string(standardPath));
 }
 
 void SC_LibraryConfig::addExcludedDirectory(char *path)
 {
-	char **excludedDirectories = m_excludedDirectories;
-
 	if (path == 0) return;
 
-	m_excludedDirectories = (char **)realloc(m_excludedDirectories, (m_nExcludedDirectories + 2) * sizeof(char *));
-	if (m_excludedDirectories == 0) {
-		m_excludedDirectories = excludedDirectories;
-	} else {
-		m_excludedDirectories[m_nExcludedDirectories] = path;
-		m_excludedDirectories[m_nExcludedDirectories + 1] = 0;
-		m_nExcludedDirectories += 1;
-	}
+	char standardPath[PATH_MAX];
+	sc_StandardizePath(path, standardPath);
+
+	mExcludedDirectories.push_back(string(standardPath));
 }
 
 bool SC_LibraryConfig::readLibraryConfig(SC_LibraryConfigFile& file, const char* fileName)
@@ -295,7 +274,7 @@ bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNu
 	}
 
 	path.finish();
-  char realPath[MAXPATHLEN];
+	char realPath[MAXPATHLEN];
 
 	if (sc_StandardizePath(path.getData(), realPath) == 0) {
 		(*mErrorFunc)("%s,%d: couldn't resolve path %s\n", fileName, lineNumber, path.getData());
@@ -309,22 +288,16 @@ bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNu
 		}
 		SC_LibraryConfigFile file(mErrorFunc);
 		if (!file.open(realPath)) return true;
-    const char* fileName = basename(realPath);
-    bool success = file.read(depth, fileName, libConf);
+		const char* fileName = basename(realPath);
+		bool success = file.read(depth, fileName, libConf);
 		file.close();
 		return success;
 	}
 
-	char* str = strdup(realPath);
-	if (str == 0) {
-		(*mErrorFunc)("%s,%d: memory allocation failure\n", fileName, lineNumber);
-		return false;
-	}
-
 	if (action == '+') {
-		libConf->addIncludedDirectory(str);
+		libConf->addIncludedDirectory(realPath);
 	} else if (action == '-') {
-		libConf->addExcludedDirectory(str);
+		libConf->addExcludedDirectory(realPath);
 	}
 
 	return true;
