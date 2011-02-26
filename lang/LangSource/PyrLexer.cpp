@@ -2025,8 +2025,8 @@ void finiPassOne()
     //postfl("<-finiPassOne\n");
 }
 
-bool passOne_ProcessDir(char *dirname, int level);
-bool passOne_ProcessDir(char *dirname, int level)
+bool passOne_ProcessDir(const char *dirname, int level);
+bool passOne_ProcessDir(const char *dirname, int level)
 {
 	bool success = true;
 

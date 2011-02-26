@@ -2,26 +2,36 @@
 // file:		SC_LibraryConfig.h
 // cvs:			$Id$
 
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation; either version 2 of the
-// License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
-// USA
+/*
+ *  Copyright 2003 Maurizio Umberto Puxeddu
+ *  Copyright 2011 Jakob Leben
+ *
+ *  This file is part of SuperCollider.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License as
+ *  published by the Free Software Foundation; either version 2 of the
+ *  License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
+ *  USA
+ *
+ */
 
 #ifndef SC_LIBRARYCONFIG_H_INCLUDED
 #define SC_LIBRARYCONFIG_H_INCLUDED
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <vector>
+#include <string>
 
 // =====================================================================
 // SC_LibraryConfigFile
@@ -77,14 +87,16 @@ private:
 class SC_LibraryConfig
 {
 public:
+	typedef std::vector<std::string> DirVector;
+
 	SC_LibraryConfig(void);
 	virtual ~SC_LibraryConfig();
 
-	char **includedDirectories(void);
-	char **excludedDirectories(void);
+	const DirVector& includedDirectories() { return mIncludedDirectories; }
+	const DirVector& excludedDirectories() { return mExcludedDirectories; }
 
 	void postExcludedDirectories(void);
-	bool forEachIncludedDirectory(bool (*func)(char *, int));
+	bool forEachIncludedDirectory(bool (*func)(const char *, int));
 
 	bool pathIsExcluded(const char *path);
 
@@ -96,10 +108,8 @@ public:
 	static void freeLibraryConfig();
 
 private:
-	int m_nIncludedDirectories;
-	char **m_includedDirectories;
-	int m_nExcludedDirectories;
-	char **m_excludedDirectories;
+	DirVector mIncludedDirectories;
+	DirVector mExcludedDirectories;
 };
 
 extern SC_LibraryConfig* gLibraryConfig;
