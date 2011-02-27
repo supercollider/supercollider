@@ -259,3 +259,17 @@ set(CPACK_PACKAGE_VERSION_MAJOR 3)
 set(CPACK_PACKAGE_VERSION_MINOR 5)
 set(CPACK_PACKAGE_VERSION_PATCH dev)
 include(CPack)
+
+
+
+#############################################
+# hide advanced variables
+mark_as_advanced(AVAHI_LIBRARIES AVAHI_INCLUDE_DIRS AVAHI_INCLUDE_DIR AVAHI_LIBRARY-COMMON AVAHI_LIBRARY-CLIENT)
+mark_as_advanced(DL)
+mark_as_advanced(EMACS_EXECUTABLE)
+mark_as_advanced(FFTW3F_INCLUDE_DIR FFTW3F_LIBRARY)
+mark_as_advanced(JACK JACK_INCLUDE_DIR JACK_LIBRARY)
+mark_as_advanced(MATH_LIBRARY)
+mark_as_advanced(QT_QMAKE_EXECUTABLE)
+mark_as_advanced(SNDFILE)
+
