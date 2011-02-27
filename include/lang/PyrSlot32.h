@@ -33,6 +33,7 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include "PyrErrors.h"
 
 #include <cassert>
+#include <cstddef>
 
 struct PyrSymbol;
 
