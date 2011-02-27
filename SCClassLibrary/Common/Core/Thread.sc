@@ -17,10 +17,10 @@ Thread : Stream {
 	var <>exceptionHandler;
 	var <executingPath, <oldExecutingPath;
 
-	*new { arg func, stackSize=64;
+	*new { arg func, stackSize=512;
 		^super.new.init(func, stackSize)
 	}
-	init { arg argFunc, argStackSize=64;
+	init { arg argFunc, argStackSize=512;
 		_Thread_Init
 		^this.primitiveFailed
 	}
