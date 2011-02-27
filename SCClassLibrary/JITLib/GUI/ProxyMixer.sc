@@ -323,8 +323,9 @@ ProxyMixer : JITGui {
 
 NdefMixer : ProxyMixer {
 	object_ { |obj|
+		obj = Server.named.at(obj) ? obj;
 		if (obj.isKindOf(Server)) { 
-			super.object_(Ndef.dictFor(obj));
+				super.object_(Ndef.dictFor(obj));
 		}
 	}
 }
