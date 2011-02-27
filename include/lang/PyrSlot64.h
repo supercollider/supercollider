@@ -275,8 +275,8 @@ inline void slotCopy(PyrSlot *dst, PyrSlot *src)
 
 inline void slotCopy(PyrSlot *dst, PyrSlot *src, int num)
 {
-	for (int i=0;i<num;++i)
-		*++dst = *++src;
+	for (int i=0; i<num; ++i)
+		slotCopy(dst + i, src + i);
 }
 
 #endif
