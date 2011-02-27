@@ -1372,6 +1372,7 @@ int prArrayCat(struct VMGlobals *g, int numArgsPushed)
 	bobj = slotRawObject(b);
 	size = aobj->size + bobj->size;
 	format = aobj->obj_format;
+	assert(aobj->obj_format == bobj->obj_format);
 	elemsize = gFormatElemSize[format];
 	numbytes = (size * elemsize);
 
