@@ -113,6 +113,7 @@ void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
   int count = varList.data.count();
 
   PyrObject *array = newPyrArray( g->gc, count, 0, true );
+  SetObject( slot, array );
 
   int i;
   PyrSlot *s = array->slots;
@@ -123,8 +124,6 @@ void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
     array->size++;
     g->gc->GCWrite( array, s );
   }
-
-  SetObject( slot, array );
 }
 
 int Slot::setVariant( PyrSlot *slot, const QVariant &val )
