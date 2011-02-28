@@ -1319,39 +1319,36 @@ void Decay2_next(Decay2* unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void LeakDC_Ctor(LeakDC *unit)
+void LeakDC_next_i(LeakDC* unit, int inNumSamples)
 {
-	//printf("LeakDC_Ctor\n");
-	if (BUFLENGTH == 1)
-		SETCALC(LeakDC_next_1);
-	else
-		SETCALC(LeakDC_next);
-	unit->m_b1 = 0.0;
-	unit->m_x1 = 0.0;
-	unit->m_y1 = 0.0;
-	LeakDC_next_1(unit, 1);
-}
-
-
-void LeakDC_next(LeakDC* unit, int inNumSamples)
-{
-	//printf("LeakDC_next_a\n");
-
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	double b1 = unit->m_b1;
-	unit->m_b1 = ZIN0(1);
-
 	double y1 = unit->m_y1;
 	double x1 = unit->m_x1;
 
-	if (b1 == unit->m_b1) {
-		LOOP1(inNumSamples,
-			double x0 = ZXP(in);
-			ZXP(out) = y1 = x0 - x1 + b1 * y1;
-			x1 = x0;
-		);
+	LOOP1(inNumSamples,
+		double x0 = ZXP(in);
+		ZXP(out) = y1 = x0 - x1 + b1 * y1;
+		x1 = x0;
+	);
+	unit->m_x1 = x1;
+	unit->m_y1 = zapgremlins(y1);
+}
+
+void LeakDC_next(LeakDC* unit, int inNumSamples)
+{
+	if (ZIN0(1) == unit->m_b1) {
+		LeakDC_next_i(unit, inNumSamples);
 	} else {
+		float *out = ZOUT(0);
+		float *in = ZIN(0);
+		double b1 = unit->m_b1;
+		unit->m_b1 = ZIN0(1);
+
+		double y1 = unit->m_y1;
+		double x1 = unit->m_x1;
+
 		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		LOOP1(inNumSamples,
 			double x0 = ZXP(in);
@@ -1359,9 +1356,9 @@ void LeakDC_next(LeakDC* unit, int inNumSamples)
 			x1 = x0;
 			b1 += b1_slope;
 		);
+		unit->m_x1 = x1;
+		unit->m_y1 = zapgremlins(y1);
 	}
-	unit->m_x1 = x1;
-	unit->m_y1 = zapgremlins(y1);
 }
 
 void LeakDC_next_1(LeakDC* unit, int inNumSamples)
@@ -1378,6 +1375,24 @@ void LeakDC_next_1(LeakDC* unit, int inNumSamples)
 	unit->m_x1 = x1;
 	unit->m_y1 = zapgremlins(y1);
 }
+
+void LeakDC_Ctor(LeakDC *unit)
+{
+	//printf("LeakDC_Ctor\n");
+	if (BUFLENGTH == 1)
+		SETCALC(LeakDC_next_1);
+	else {
+		if (INRATE(1) == calc_ScalarRate)
+			SETCALC(LeakDC_next_i);
+		else
+			SETCALC(LeakDC_next);
+	}
+	unit->m_b1 = 0.0;
+	unit->m_x1 = 0.0;
+	unit->m_y1 = 0.0;
+	LeakDC_next_1(unit, 1);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
