@@ -1319,6 +1319,30 @@ void Decay2_next(Decay2* unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void LeakDC_next_i_4(LeakDC* unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	double b1 = unit->m_b1;
+	double y1 = unit->m_y1;
+	double x1 = unit->m_x1;
+
+	LOOP1(inNumSamples/4,
+		double x00 = ZXP(in);
+		double x01 = ZXP(in);
+		double x02 = ZXP(in);
+		double x03 = ZXP(in);
+		ZXP(out) = y1 = x00 - x1 + b1 * y1;
+		ZXP(out) = y1 = x01 - x00 + b1 * y1;
+		ZXP(out) = y1 = x02 - x01 + b1 * y1;
+		ZXP(out) = y1 = x03 - x02 + b1 * y1;
+
+		x1 = x03;
+	);
+	unit->m_x1 = x1;
+	unit->m_y1 = zapgremlins(y1);
+}
+
 void LeakDC_next_i(LeakDC* unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
@@ -1339,7 +1363,10 @@ void LeakDC_next_i(LeakDC* unit, int inNumSamples)
 void LeakDC_next(LeakDC* unit, int inNumSamples)
 {
 	if (ZIN0(1) == unit->m_b1) {
-		LeakDC_next_i(unit, inNumSamples);
+		if ((inNumSamples & 3) == 0)
+			LeakDC_next_i_4(unit, inNumSamples);
+		else
+			LeakDC_next_i(unit, inNumSamples);
 	} else {
 		float *out = ZOUT(0);
 		float *in = ZIN(0);
@@ -1360,6 +1387,7 @@ void LeakDC_next(LeakDC* unit, int inNumSamples)
 		unit->m_y1 = zapgremlins(y1);
 	}
 }
+
 
 void LeakDC_next_1(LeakDC* unit, int inNumSamples)
 {
@@ -1382,9 +1410,12 @@ void LeakDC_Ctor(LeakDC *unit)
 	if (BUFLENGTH == 1)
 		SETCALC(LeakDC_next_1);
 	else {
-		if (INRATE(1) == calc_ScalarRate)
-			SETCALC(LeakDC_next_i);
-		else
+		if (INRATE(1) == calc_ScalarRate) {
+			if ((BUFLENGTH & 3) == NULL)
+				SETCALC(LeakDC_next_i_4);
+			else
+				SETCALC(LeakDC_next_i);
+		} else
 			SETCALC(LeakDC_next);
 	}
 	unit->m_b1 = 0.0;
