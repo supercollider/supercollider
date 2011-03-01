@@ -244,12 +244,12 @@ int SC_TerminalClient::run(int argc, char** argv)
 	if (codeFile) executeFile(codeFile);
 	if (opt.mCallRun) runMain();
 
-	initCmdLine();
-
-	if( mShouldBeRunning ) {
-		if (opt.mDaemon) daemonLoop();
-		else commandLoop();
-    }
+	if (opt.mDaemon) daemonLoop();
+	else {
+		initCmdLine();
+		if( mShouldBeRunning ) commandLoop();
+		cleanupCmdLine();
+	}
 
 	if (opt.mCallStop) stopMain();
 
@@ -347,7 +347,6 @@ void SC_TerminalClient::readlineCb(char *cmdLine)
 
 	if( cmdLine == 0 ) {
 		printf("\nExiting sclang (ctrl-D)\n");
-		rl_callback_handler_remove();
 		lang->quit(0);
 		return;
 	}
@@ -452,6 +451,13 @@ void SC_TerminalClient::readCmdLine()
 		}
 #ifdef HAVE_READLINE
 	} // useReadLine
+#endif
+}
+
+void SC_TerminalClient::cleanupCmdLine()
+{
+#ifdef HAVE_READLINE
+	if( mUseReadline ) rl_callback_handler_remove();
 #endif
 }
 

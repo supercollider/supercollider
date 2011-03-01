@@ -95,6 +95,7 @@ protected:
 
 private:
 	void initCmdLine();
+	void cleanupCmdLine();
 	static void readlineCb( char * );
 
 	bool				mShouldBeRunning;
