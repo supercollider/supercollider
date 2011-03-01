@@ -12,10 +12,10 @@ Stream : AbstractFunction {
 	nextN { arg n, inval;
 		^Array.fill(n, { this.next(inval) });
 	}
-	all {
+	all { arg inval;
 		// don't do this on infinite streams.
 		var array;
-		this.do {|item| array = array.add(item); };
+		this.do({|item| array = array.add(item) }, inval);
 		^array
 	}
 
@@ -30,10 +30,10 @@ Stream : AbstractFunction {
 		aCollection.do {|item| this.put(item); };
 	}
 
-	do { arg function;
+	do { arg function, inval;
 		var item, i=0;
 		while {
-			item = this.next;
+			item = this.next(inval);
 			item.notNil
 		}{
 			function.value(item, i);
