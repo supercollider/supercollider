@@ -222,6 +222,7 @@ endif()
 # fixup_bundle will fix the dll referencing so the .app can be sent to other people:
 INSTALL(CODE "
    include(BundleUtilities)
+   set(BU_CHMOD_BUNDLE_ITEMS TRUE) # allow cmake>=2.8.3 to chmod libs it's including, rather than choking on readonly
    fixup_bundle(\"${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app\"   \"\"   \"${CMAKE_CURRENT_BINARY_DIR}\")
    "
 COMPONENT Runtime)
