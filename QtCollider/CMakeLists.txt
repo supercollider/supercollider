@@ -1,4 +1,9 @@
-find_package (Qt4 REQUIRED)
+find_package (Qt4)
+if (NOT QT4_FOUND)
+	message(FATAL_ERROR "you try to compile with QT support, but qt cannot be found."
+	"please either install qt4 or compile without qt support (add -DSC_QT=OFF to the cmake command line)")
+endif()
+
 find_package (Sndfile REQUIRED)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
