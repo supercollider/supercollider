@@ -1464,13 +1464,6 @@ ScDoc {
     *readDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
 
-        // magic work-around
-        // the logic thing would be to check if the file exists and only then
-        // do Object.readArchive, otherwise create a new docMap dictionary.
-        // But for some reason that crashes when running updateAll(threaded:true) !!
-        ("mkdir -p "++helpTargetDir.escapeChar($ )).systemCmd;
-        ("touch "++path.escapeChar($ )).systemCmd;
-
         docMap = Object.readArchive(path);
 
         if(docMap.isNil) {
