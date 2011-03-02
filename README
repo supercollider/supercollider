@@ -72,7 +72,10 @@ also sometimes non-letters after :: doesn't work correctly, like "(link::hello::
 - we need to distinguish between class and instance method anchors since some classes have both named the same,
 something like #cmethod:name and #imethod:name perhaps? or #*classmethodname and #instancemethodname ?
 
+- in methods overview, print '*' before classes implementing the method as classmethod?
+
 - check for system-wide pre-rendered docs in ScDoc.findClassOrMethod and similar functions..
+also make a ScDoc.findHelp(subdir,name,anchor), example: ScDoc.findHelp("Classes","SinOsc"), which would return the full path to the helpfile. or ScDoc.findHelp("Overviews","Methods","play"), ScDoc.findHelp("","Search","^asString$"), etc...
 
 - instead of showing "(extension)" only for classes, do it for any document that was located in an extension directory.
 pass a flag to recurseHelpSource call in findExtHelp, and let updateFile return the doc map entry so we can set installed=\extension,

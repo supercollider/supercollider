@@ -1152,8 +1152,9 @@ ScDocRenderer {
             f.write("</div>");
         });
 
-        if((type==\class) and: {currentClass.notNil}, { // FIXME: Remove this when conversion to new help system is done!
-            f.write("[ <a href='"++currentClass.helpFilePath++"'>old help</a> ]");
+        // FIXME: Remove this when conversion to new help system is done!
+        if((type==\class) and: {currentClass.notNil}, {
+            f.write("[ <a href='"++Help.findHelpFile(currentClass.name.asString)++"'>old help</a> ]");
         });
 
         f.write("</div>");
@@ -1406,10 +1407,10 @@ ScDoc {
                     ScDoc.postProgress("Generating doc for class: "++name);
                     n.add((tag:\description, children:m=List.new));
                     m.add((tag:\prose, text:"This class is missing documentation. Please create and edit HelpSource/Classes/"++name++".schelp", display:\block));
-                    c.helpFilePath !? {
-                        m.add((tag:\prose, text:"Old help file: ", display:\block));
-                        m.add((tag:\link, text:c.helpFilePath, display:\inline));
-                    };
+
+                    // FIXME: Remove this when conversion to new help system is done!
+                    m.add((tag:\prose, text:"Old help file: ", display:\block));
+                    m.add((tag:\link, text:Help.findHelpFile(c.name.asString) ?? "not found", display:\inline));
 
                     this.makeMethodList(c.class,n,\classmethods);
                     this.makeMethodList(c,n,\instancemethods);
