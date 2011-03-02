@@ -32,7 +32,7 @@ Requirements:
  * Mac OS X 10.4.9 or greater
  * Cmake 2.7 or greater
  * Xcode Tools 2.4.1 or greater
- * Qt 4
+ * Qt 4: http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x/
 
 To build SuperCollider with Cmake, it is recommended to create a "build"
 folder (to keep the built files neatly all together) in the root of the 
