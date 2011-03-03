@@ -491,10 +491,22 @@ static inline bool checkStackOverflow(VMGlobals* g, PyrSlot * sp)
 	return depth < slotRawInt(&g->thread->stackSize);
 }
 
+static inline void checkStackDepth(VMGlobals* g, PyrSlot * sp)
+{
+#if CHECK_MAX_STACK_USE
+	int stackDepth = sp - g->sp + 1;
+	if (stackDepth > gMaxStackDepth) {
+		gMaxStackDepth = stackDepth;
+		printf("gMaxStackDepth %d\n", gMaxStackDepth);
+	}
+#endif
+}
+
 #ifdef __GNUC__
 #define dispatch_opcode \
 	op1 = ip[1];		\
 	++ip;				\
+	checkStackDepth(g, sp); \
 	assert(checkStackOverflow(g, sp)); \
 	goto *opcode_labels[op1]
 #else
@@ -819,13 +831,7 @@ void Interpret(VMGlobals *g)
 	while (true) {
 #endif
 
-#if CHECK_MAX_STACK_USE
-	int stackDepth = sp - g->sp + 1;
-	if (stackDepth > gMaxStackDepth) {
-		gMaxStackDepth = stackDepth;
-		printf("gMaxStackDepth %d\n", gMaxStackDepth);
-	}
-#endif
+	checkStackDepth(g, sp);
 
 #if BCSTAT
 	prevop = op1;

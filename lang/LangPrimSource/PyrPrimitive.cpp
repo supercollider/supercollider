@@ -2928,6 +2928,7 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	array = newPyrArray(gc, stacksize, 0, collect);
 	SetObject(&thread->stack, array);
 	gc->GCWrite(thread, array);
+
 	SetInt(&thread->state, tInit);
 
 	SetPtr(&thread->ip, 0);
