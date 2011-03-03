@@ -106,7 +106,6 @@ enum { tInit, tStart, tReady, tRunning, tSleeping, tSuspended, tDone };
 
 struct PyrThread : public PyrObjectHdr
 {
-
 	PyrSlot state, func, stack, method, block, frame, ip, sp;
 	PyrSlot numpop, receiver, numArgsPushed;
 	PyrSlot parent, terminalValue;
@@ -118,6 +117,7 @@ struct PyrThread : public PyrObjectHdr
 	PyrSlot exceptionHandler;
 	PyrSlot executingPath;
 	PyrSlot oldExecutingPath;
+	PyrSlot stackSize;
 };
 
 #define EVALSTACKDEPTH 512
