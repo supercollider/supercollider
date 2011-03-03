@@ -42,13 +42,11 @@ set( QT_COLLIDER_SRCS
   Common.cpp
   QObjectProxy.cpp
   QWidgetProxy.cpp
-  QcPen.cpp
   Slot.cpp
   QcObjectFactory.cpp
   primitives/primitives.cpp
   primitives/prim_QObject.cpp
-  #primitives/prim_QPen.cpp
-  primitives/prim_QPen_oldskool.cpp
+  primitives/prim_QPen.cpp
   primitives/prim_misc.cpp
   primitives/prim_QWidget.cpp
   widgets/BasicWidgets.cpp
