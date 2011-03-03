@@ -71,6 +71,10 @@ so Section 1 ends at the examples tag above.
 
 Structural tags at the same level in the hierarchy may be functionally equivalent, but treated differently for rendering or querying purposes. For example code::examples\:::: is equivalent to code::section\:::: but imply particular formatting or specially identify the examples section for customised uses like concatenating all examples for classes with a given parent class.
 
+Some structural tags don't have a specific section level, but builds hierarchies by using a close tag, like lists and tables. They can be nested.
+
+All structural tags has children elements, for example the items in a list or the subsections and prose in a section.
+
 section::Tags for use in the new SC Doc system
 
 code::

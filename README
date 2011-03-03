@@ -3,7 +3,7 @@ SuperCollider documentation system
 
 INSTALLATION
 ------------
-All SCDoc classes are in SCDoc.sc, copy or symlink this to your Extensions folder.
+All SCDoc classes are in the subfolder "SCDoc", copy or symlink this folder to your SuperCollider Extensions folder.
 
 
 USAGE
