@@ -31,7 +31,8 @@ PR.registerLangHandler(
           [PR.PR_DECLARATION, /^\|/],
                   
          [PR.PR_LITERAL,     /^(?:(?:0(?:[0-7]+|X[0-9A-F]+))L?|(?:(?:0|[1-9][0-9]*)(?:(?:\.[0-9]+)?(?:E[+\-]?[0-9]+)?F?|L?))|\\.[0-9]+(?:E[+\-]?[0-9]+)?F?)/i],
-         [PR.PR_TYPE,        /^\b([A-Z][A-Za-z_0-9]*){2,}\b/, null],
+/*         [PR.PR_TYPE,        /^\b([A-Z][A-Za-z_0-9]*){2,}\b/, null], //not working as it should.. does not match Bag and Pan2*/
+         [PR.PR_TYPE,        /^\b([A-Z][A-Za-z_0-9]+)\b/],
          [PR.PR_COMMENT,     /^\/(?:\/.*|\*(?:\/|\**[^*/])*(?:\*+\/?)?)/],
          [PR.PR_PUNCTUATION, /^[-.,;!#$/+*<>=@()\[\]{}]/]
         ]),
