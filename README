@@ -1,33 +1,34 @@
-New SC documentation system
-===========================
+SuperCollider documentation system
+==================================
 
 INSTALLATION
 ------------
-All ScDoc classes are in ScDoc.sc, copy or symlink this to your Extensions folder.
+All SCDoc classes are in SCDoc.sc, copy or symlink this to your Extensions folder.
 
 
 USAGE
 -----
 To render and generate all docs:
 
-ScDoc.helpSourceDir = "/path/to/HelpSource";
-ScDoc.updateAll(false);
+SCDoc.helpSourceDir = "/path/to/HelpSource";
+SCDoc.updateAll;
 
-Now all your rendered HTML help is in ScDoc.helpTargetDir (default is ~/share/SuperCollider/Help on Linux, and ~/Application Support/SuperCollider/Help on OSX)
+Now all your rendered HTML help is in SCDoc.helpTargetDir, which defaults to ~/share/SuperCollider/Help on Linux and ~/Application Support/SuperCollider/Help on OSX.
 
-to render just one file:
+To render just one file:
 
-ScDoc.helpSourceDir = "/path/to/HelpSource";
-ScDoc.readDocMap;
-ScDoc.updateFile("/path/to/HelpSource/and/your/file.schelp",true);
+SCDoc.helpSourceDir = "/path/to/HelpSource";
+SCDoc.readDocMap;
+SCDoc.updateFile("/path/to/HelpSource/and/your/file.schelp",true);
 
 See these generated helpfiles for more info about ScDoc:
 
-- Help/Reference/ScDocSyntax.html
+- Help/Reference/SCDocSyntax.html
 - Help/Guides/WritingHelp.html
-- Help/Classes/ScDoc.html
-- Help/Classes/ScDocParser.html
-- Help/Classes/ScDocRenderer.html
+- Help/Classes/SCDoc.html
+- Help/Classes/SCDocParser.html
+- Help/Classes/SCDocRenderer.html
+
 
 TODO
 ----

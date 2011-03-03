@@ -1,29 +1,34 @@
-class:: ScDoc
+class:: SCDoc
 summary:: Help system main class
 categories:: HelpSystem
-related:: Classes/ScDocParser, Classes/ScDocRenderer, Guides/WritingHelp, Reference/ScDocSyntax
+related:: Classes/SCDocParser, Classes/SCDocRenderer, Guides/WritingHelp, Reference/SCDocSyntax
 
 DESCRIPTION::
-ScDoc manages the SuperCollider documentation system, by traversing the directory tree of help sourcefiles and rendering them
+SCDoc manages the SuperCollider documentation system, by traversing the directory tree of help sourcefiles and rendering them
 to the help target directory. It also generates different overviews.
 
-It uses link::Classes/ScDocParser:: for parsing and link::Classes/ScDocRenderer:: for rendering.
+It uses link::Classes/SCDocParser:: for parsing and link::Classes/SCDocRenderer:: for rendering.
 
-The syntax reference for the documentation markup language can be found here: link::Reference/ScDocSyntax::.
+The syntax reference for the documentation markup language can be found here: link::Reference/SCDocSyntax::.
 
 A guide to writing help can be found here: link::Guides/WritingHelp::.
 
 SUBSECTION:: Basic usage
 Update all help-files and overviews:
 code::
-ScDoc.helpSourceDir = "/home/lijon/Coding/ScDoc/HelpSource";
-ScDoc.updateAll;
+SCDoc.helpSourceDir = "/path/to/HelpSource";
+SCDoc.updateAll;
 ::
 
 To force an update of unchanged files, use code::updateAll(true):: or remove code::helpTargetDir/scdoc_cache::
 
 CLASSMETHODS::
-private:: initClass
+private:: initClass, addToDocMap, makeCategoryMap, makeMethodList, makeOverviews, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap
+
+method:: p
+The default link::Classes/SCDocParser:: object, created automatically.
+method:: r
+The default link::Classes/SCDocRenderer:: object, created automatically.
 
 method:: helpSourceDir
 get/set the base directory of help sourcefiles. Defaults to code:: thisProcess.platform.systemAppSupportDir +/+ "/HelpSource" ::
@@ -36,17 +41,37 @@ Render all help-files that need updating and generate overviews and cached metad
 returns:: this class
 argument:: force
 Force updating of all files.
+argument:: doneFunc
+Function to evaluate when done.
+argument:: threaded
+When true, runs the process in a link::Classes/Routine:: on link::Classes/AppClock::. This is needed to get progress feedback when running inside a frontend like the SuperCollider app on OSX. If running with the sclang terminal client, this can be set to false for better performance.
 discussion:: It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
 
+method:: updateFile
+Update a single file.
+argument:: source
+The source file
+argument:: rootDir
+The base directory
+argument:: force
+Force update even if file has not changed.
+
+method:: checkBrokenLinks
+Scans the entire help tree for broken links
+
+method:: findClassOrMethod
+returns the full path to the document for a specific class if the string starts with capital letter, or the method overview if not.
 
 subsection:: Cached map of documents
-In the maps below, each document is represented by an link::Classes/Event:: with the keys code::path, categories, summary::. More keys might come later..
+In the maps below, each document is represented by an link::Classes/Event:: with the keys code::path, title, categories, summary, installed::. More keys might come later..
+
+code::updateAll:: also writes the document map in JSON format to code::docmap.js:: and a list of all methods and their implementing classes to code::methods.js::
 
 method:: docMap
 Returns the internal dictionary of documents.
 returns:: An internal link::Classes/Dictionary::
 discussion::
-The returned Dictionary is indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/ScDoc::.
+The returned Dictionary is indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/SCDoc::.
 
 This dictionary is cached in code::helpTargetDir/scdoc_cache::.
  
@@ -54,10 +79,9 @@ method:: categoryMap
 Returns an internal dictionary of all categories.
 returns:: An internal link::Classes/Dictionary::
 discussion:: The keys are category symbols, and each value is a link::Classes/List:: of Events representing each document.
- 
-method:: addToDocMap
-Add a parsed document to the docmap. Used internally by ScDoc.
-returns:: this class
+
+method:: readDocMap
+Reads the cached document map from file. 
 
 subsection:: Utilities
 

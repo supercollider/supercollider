@@ -1,4 +1,4 @@
-ScDocParser {
+SCDocParser {
     var <>root;
     var tree;
     var stack;
@@ -453,7 +453,7 @@ ScDocParser {
             });
 
             subs.keys.asList.sort {|a,b| a<b}.do {|k|
-                z = ScDocRenderer.simplifyName(y++">"++k);
+                z = SCDocRenderer.simplifyName(y++">"++k);
                 l.add((tag:'##'));
                 l.add((tag:\anchor, text:z));
                 l.add((tag:\strong, text:k));
@@ -468,7 +468,7 @@ ScDocParser {
             node.add((tag:'prose', text:"Jump to: ", display:\block));
             sorted.do {|k,i|
                 if(i!=0, {node.add((tag:'prose', text:", ", display:\inline))});
-                node.add((tag:'link', text:"#"++ScDocRenderer.simplifyName(k)++"#"++k));
+                node.add((tag:'link', text:"#"++SCDocRenderer.simplifyName(k)++"#"++k));
 //                node.add((tag:'prose', text:" ", display:\inline));
             };
         };
@@ -612,7 +612,7 @@ ScDocParser {
                 if(n.find("Meta_")==0, {n = n.drop(5)});
                 if(i!=0, {m.add((tag:'prose', text:", ", display:\inline))});
                 if(c[1], {m.add((tag:'prose', text:"+", display:\inline))});
-                m.add((tag:'link', text: "Classes" +/+ n ++ "#" ++ ScDocRenderer.simplifyName(name)));
+                m.add((tag:'link', text: "Classes" +/+ n ++ "#" ++ SCDocRenderer.simplifyName(name)));
             };
         };
 
@@ -673,7 +673,7 @@ ScDocParser {
     }*/
 }
 
-ScDocRenderer {
+SCDocRenderer {
     var <>parser;
 
     var currentClass;
@@ -730,11 +730,11 @@ ScDocRenderer {
                 });
             },
             'section', {
-                file.write("<a name='"++ScDocRenderer.simplifyName(node.text)++"'><h2>"++this.escapeSpecialChars(node.text)++"</h2></a>\n");
+                file.write("<a name='"++SCDocRenderer.simplifyName(node.text)++"'><h2>"++this.escapeSpecialChars(node.text)++"</h2></a>\n");
                 do_children.();
             },
             'subsection', {
-                file.write("<a name='"++ScDocRenderer.simplifyName(node.text)++"'><h3>"++this.escapeSpecialChars(node.text)++"</h3></a>\n");
+                file.write("<a name='"++SCDocRenderer.simplifyName(node.text)++"'><h3>"++this.escapeSpecialChars(node.text)++"</h3></a>\n");
                 do_children.();
             },
             'classmethods', {
@@ -778,7 +778,7 @@ ScDocRenderer {
                     m !? {
                         mstat = mstat | 1;
 //                        mets.add(sym.asGetter);
-                        args = ScDoc.makeArgString(m);
+                        args = SCDoc.makeArgString(m);
                     };
                     //check for setter
                     c.findRespondingMethodFor(sym.asSetter) !? {
@@ -1043,11 +1043,11 @@ ScDocRenderer {
                             f.write("</li>\n");
                         },
                         \section, {
-                            f.write("<li class='toc1'><a href='#"++ScDocRenderer.simplifyName(n.text)++"'>"++n.text++"</a></li>\n");
+                            f.write("<li class='toc1'><a href='#"++SCDocRenderer.simplifyName(n.text)++"'>"++n.text++"</a></li>\n");
                             do_children.(n.children);
                         },
                         \subsection, {
-                            f.write("<li class='toc2'><a href='#"++ScDocRenderer.simplifyName(n.text)++"'>"++n.text++"</a></li>\n");
+                            f.write("<li class='toc2'><a href='#"++SCDocRenderer.simplifyName(n.text)++"'>"++n.text++"</a></li>\n");
                             do_children.(n.children);
                         }
                     );
@@ -1080,7 +1080,7 @@ ScDocRenderer {
             "</table>"
         );
 
-//        cats = ScDoc.splitList(parser.findNode(\categories).text);
+//        cats = SCDoc.splitList(parser.findNode(\categories).text);
 //        cats = if(cats.notNil, {cats.join(", ")}, {""});
         if(folder==".",{folder=""});
         f.write("<div class='header'>");
@@ -1095,9 +1095,9 @@ ScDocRenderer {
         if(x.text.notEmpty, {
             f.write("<div id='categories'>");
 //            f.write("Categories: ");
-            f.write(ScDoc.splitList(x.text).collect {|r|
-//                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++ScDocRenderer.simplifyName(r).split($>).first++"'>"++r++"</a>"
-                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++ScDocRenderer.simplifyName(r)++"'>"++r++"</a>"
+            f.write(SCDoc.splitList(x.text).collect {|r|
+//                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++SCDocRenderer.simplifyName(r).split($>).first++"'>"++r++"</a>"
+                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++SCDocRenderer.simplifyName(r)++"'>"++r++"</a>"
             }.join(", "));
             f.write("</div>");
         });    
@@ -1144,7 +1144,7 @@ ScDocRenderer {
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
             f.write("See also: ");
-            f.write(ScDoc.splitList(x.text).collect {|r|
+            f.write(SCDoc.splitList(x.text).collect {|r|
                 z = r.split($#);
                 m = if(z[1].size>0, {"#"++z[1]}, {""});
                 "<a href=\""++baseDir +/+ z[0]++".html"++m++"\">"++r.split($/).last++"</a>"
@@ -1178,7 +1178,7 @@ ScDocRenderer {
     renderHTML {|filename, folder=".", toc=true|
         var f,x,name;
         
-        ScDoc.postProgress("Rendering "++filename);
+        SCDoc.postProgress("Rendering "++filename);
 
         ("mkdir -p"+filename.dirname.escapeChar($ )).systemCmd;
 
@@ -1233,7 +1233,7 @@ ScDocRenderer {
 
 }
 
-ScDoc {
+SCDoc {
     classvar <helpTargetDir;
     classvar <helpSourceDir;
     classvar <categoryMap;
@@ -1281,28 +1281,28 @@ ScDoc {
     *initClass {
         helpTargetDir = thisProcess.platform.userAppSupportDir +/+ "/Help";
         helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
-        r = ScDocRenderer.new;
-        r.parser = p = ScDocParser.new;
+        r = SCDocRenderer.new;
+        r.parser = p = SCDocParser.new;
         doWait = false;
     }
 
     *makeOverviews {
         var mets, f, n;
         
-        ScDoc.postProgress("Generating ClassTree...");
+        SCDoc.postProgress("Generating ClassTree...");
         p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews",false);
 
-        ScDoc.postProgress("Generating Class overview...");
+        SCDoc.postProgress("Generating Class overview...");
         p.overviewAllClasses(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews",false);
 
-        ScDoc.postProgress("Generating Methods overview...");
+        SCDoc.postProgress("Generating Methods overview...");
         mets = p.overviewAllMethods(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews",false);
 
-        ScDoc.postProgress("Writing Methods JSON index...");
-        f = File.open(ScDoc.helpTargetDir +/+ "methods.js","w");
+        SCDoc.postProgress("Writing Methods JSON index...");
+        f = File.open(SCDoc.helpTargetDir +/+ "methods.js","w");
         f.write("methods = [\n");
         mets.pairsDo {|k,v|
             f.write("['"++k++"',[");
@@ -1316,15 +1316,15 @@ ScDoc {
         f.write("\n];");
         f.close;
 
-        ScDoc.postProgress("Generating Documents overview...");
+        SCDoc.postProgress("Generating Documents overview...");
         p.overviewAllDocuments(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews", false);
 
-        ScDoc.postProgress("Generating Categories overview...");
+        SCDoc.postProgress("Generating Categories overview...");
         p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews", true);
 
-//        ScDoc.postProgress("Generating Server overview...");
+//        SCDoc.postProgress("Generating Server overview...");
 //        p.overviewServer(categoryMap);
 //        r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
@@ -1379,7 +1379,7 @@ ScDoc {
 //        var src, dest;
 //        var srcbase = helpSourceDir +/+ "Classes";
         var destbase = helpTargetDir +/+ "Classes";
-        ScDoc.postProgress("Checking for undocumented classes...");
+        SCDoc.postProgress("Checking for undocumented classes...");
         Class.allClasses.do {|c|
             name = c.name.asString;
 //            src = srcbase +/+ name ++ ".schelp";
@@ -1404,7 +1404,7 @@ ScDoc {
                 this.addToDocMap(p, "Classes" +/+ name);
                 
                 if((force or: File.exists(dest).not), {
-                    ScDoc.postProgress("Generating doc for class: "++name);
+                    SCDoc.postProgress("Generating doc for class: "++name);
                     n.add((tag:\description, children:m=List.new));
                     m.add((tag:\prose, text:"This class is missing documentation. Please create and edit HelpSource/Classes/"++name++".schelp", display:\block));
 
@@ -1437,10 +1437,10 @@ ScDoc {
 
     *makeCategoryMap {
         var cats, c;
-        ScDoc.postProgress("Creating category map...");
+        SCDoc.postProgress("Creating category map...");
         categoryMap = Dictionary.new;
         docMap.pairsDo {|k,v|
-            cats = ScDoc.splitList(v.categories);
+            cats = SCDoc.splitList(v.categories);
             cats = cats ? ["Uncategorized"];
             cats.do {|cat|
                 if (categoryMap[cat].isNil) {
@@ -1469,7 +1469,7 @@ ScDoc {
 
         if(docMap.isNil) {
             docMap = Dictionary.new;
-            ScDoc.postProgress("Creating new docMap cache");
+            SCDoc.postProgress("Creating new docMap cache");
             ^true;
         };
         ^false;
@@ -1487,13 +1487,13 @@ ScDoc {
         var folder = target.dirname;
         var ext = source.copyToEnd(lastDot);
         if(source.beginsWith(rootDir).not) {
-            ScDoc.postProgress("File location error:\n"++source++"\nis not inside "++rootDir);
+            SCDoc.postProgress("File location error:\n"++source++"\nis not inside "++rootDir);
             ^nil;
         };
         if(ext == ".schelp", {
             //update only if needed
             if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { 
-                ScDoc.postProgress("Parsing "++source);
+                SCDoc.postProgress("Parsing "++source);
                 p.parseFile(source);
                 this.addToDocMap(p,subtarget);
                 r.renderHTML(target,subtarget.dirname);
@@ -1502,7 +1502,7 @@ ScDoc {
         }, {
             //fixme: copy only if file is newer (problem: different args on different platforms)
             if(("test"+source.escapeChar($ )+"-ot"+(folder +/+ source.basename).escapeChar($ )).systemCmd!=0, {
-                ScDoc.postProgress("Copying" + source + "to" + (folder +/+ source.basename));
+                SCDoc.postProgress("Copying" + source + "to" + (folder +/+ source.basename));
                 ("mkdir -p"+folder.escapeChar($ )).systemCmd;
                 ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
             });
@@ -1512,7 +1512,7 @@ ScDoc {
 
     *updateAll {|force=false,doneFunc=nil,threaded=true|
         var recurseHelpSource = {|dir,force|
-            ScDoc.postProgress("Parsing all in "++dir);
+            SCDoc.postProgress("Parsing all in "++dir);
             PathName(dir).filesDo {|path|
                 this.updateFile(path.fullPath, dir, force);
             };
@@ -1545,7 +1545,7 @@ ScDoc {
             this.handleUndocumentedClasses(force);
             docMap.pairsDo{|k,e|
                 if(e.delete==true, {
-                    ScDoc.postProgress("Deleting "++e.path);
+                    SCDoc.postProgress("Deleting "++e.path);
                     docMap.removeAt(k);
                     //TODO: we should also remove the rendered dest file if existent? or maybe too dangerous..
                 });
@@ -1557,7 +1557,7 @@ ScDoc {
             this.postProgress("Writing Document JSON index...");
             this.docMapToJSON(this.helpTargetDir +/+ "docmap.js");
 
-            "ScDoc done!".postln;
+            "SCDoc done!".postln;
             doneFunc.value();
             doWait=false;
         };
@@ -1572,7 +1572,7 @@ ScDoc {
         var check_link = {|link|
             if(("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)).not) {
                 f = link.split($#);
-                m = ScDoc.helpTargetDir +/+ f[0] ++ ".html";
+                m = SCDoc.helpTargetDir +/+ f[0] ++ ".html";
                 if((f[0]!="") and: {File.exists(m).not}) {
                     postln("Broken link: "++file++": "++link);
                 };
@@ -1585,7 +1585,7 @@ ScDoc {
                         check_link.(node.text);
                     },
                     \related, {
-                        ScDoc.splitList(node.text).do {|l|
+                        SCDoc.splitList(node.text).do {|l|
                             check_link.(l);
                         };
                     },
@@ -1618,7 +1618,7 @@ ScDoc {
     }
     
     *findClassOrMethod {|str|
-        ^ ScDoc.helpTargetDir +/+ if(str[0].isUpper,
+        ^ SCDoc.helpTargetDir +/+ if(str[0].isUpper,
             {"Classes" +/+ str ++ ".html"},
             {"Overviews/Methods.html#" ++ str}
         );

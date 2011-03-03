@@ -1,7 +1,7 @@
 title:: Writing Help
 summary:: Get started with writing help
 categories:: HelpSystem
-related:: Reference/ScDocSyntax
+related:: Reference/SCDocSyntax, Classes/SCDoc
 
 section:: Converting old helpfiles
 
@@ -20,7 +20,7 @@ definitionlist::
 ## Overviews || overviews of other documents, these are mostly auto-generated.
 ## Other || stuff that don't fit in any other directory.
 ::
-## Do ScDoc:updateAll or use ScDocParser and ScDocRenderer to generate HTML and check that it rendered OK.
+## Do SCDoc:updateAll to generate HTML strong:: and check that it rendered OK ::.
 ::
 
 A list of all undocumented classes can be seen here: link::Overviews/Categories#undocumented_classes:: (auto-generated).
@@ -48,7 +48,7 @@ summary:: A short single-line summary of what this is
 categories:: HelpSystem, Language>Conditionals, AndSoOn
 ::
 
-Then use normal text in sections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/ScDocSyntax:: for tag reference.
+Then use normal text in sections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
 
 subsection:: Class reference
 Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text can only be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. Thus, named sections are not allowed, but custom subsections can be made under each special section just mentioned.
@@ -108,7 +108,7 @@ code::
 
 Some notes:
 list::
-## ScDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag.
+## SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag.
 ## Subsections are allowed under ClassMethods and InstanceMethods
 ## Don't list arguments in the method tag, only the method names
 ## Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter, example:
