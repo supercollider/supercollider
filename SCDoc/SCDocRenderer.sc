@@ -249,9 +249,9 @@ SCDocRenderer {
             },
             'code', {
                 if(node.display == \block, {
-                    file.write("<pre class='code'>"++this.escapeSpecialChars(node.text)++"</pre>\n");
+                    file.write("<pre class='code prettyprint lang-sc'>"++this.escapeSpecialChars(node.text)++"</pre>\n");
                 }, {
-                    file.write("<code class='code'>"++this.escapeSpecialChars(node.text)++"</code>\n");
+                    file.write("<code class='code prettyprint lang-sc'>"++this.escapeSpecialChars(node.text)++"</code>\n");
                 });
             },
             'formula', {
@@ -391,7 +391,10 @@ SCDocRenderer {
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++baseDir++"/scdoc.css' type='text/css' />");
         f.write("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />");
         f.write("<script src='" ++ baseDir ++ "/scdoc.js' type='text/javascript'></script>");
-        f.write("</head><body>");
+        f.write("<script src='" ++ baseDir ++ "/prettify.js' type='text/javascript'></script>");
+        f.write("<script src='" ++ baseDir ++ "/lang-sc.js' type='text/javascript'></script>");
+
+        f.write("</head><body onload='prettyPrint()'>");
         
         f.write(
             "<table class='headMenu'><tr>"
