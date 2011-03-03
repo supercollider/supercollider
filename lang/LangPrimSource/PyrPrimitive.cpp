@@ -2957,6 +2957,8 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 		slotCopy(&thread->executingPath,&g->process->nowExecutingPath);
 		gc->GCWrite(thread, &g->process->nowExecutingPath);
 	}
+
+	SetInt(&thread->stackSize, stacksize);
 }
 
 extern PyrSymbol *s_prstart;

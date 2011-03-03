@@ -484,14 +484,23 @@ static inline void handleSendSpecialBinaryArithMsg(VMGlobals* g, PyrSlot *& sp, 
 	sp = g->sp; ip = g->ip;
 }
 
+static inline bool checkStackOverflow(VMGlobals* g, PyrSlot * sp)
+{
+	PyrObject * stack = g->gc->Stack();
+	int depth = sp - stack->slots;
+	return depth < slotRawInt(&g->thread->stackSize);
+}
+
 #ifdef __GNUC__
 #define dispatch_opcode \
 	op1 = ip[1];		\
 	++ip;				\
+	assert(checkStackOverflow(g, sp)); \
 	goto *opcode_labels[op1]
 #else
 #define dispatch_opcode break
 #endif
+
 
 void Interpret(VMGlobals *g)
 {
@@ -824,6 +833,9 @@ void Interpret(VMGlobals *g)
 
 	op1 = ip[1];
 	++ip;
+
+	assert(checkStackOverflow(g, sp));
+
 #if BCSTAT
 	++bcstat[op1];
 	++bcpair[prevop][op1];
