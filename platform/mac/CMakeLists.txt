@@ -113,6 +113,31 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/NSStringICUAdditions.m
 	)
 
+set(objcpp_sources
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaFilePrimitives.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/DrawBackground.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/GUIPrimitives.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/GoToPanel.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/MyDocument.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/RendezvousClient.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCCocoaView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCGraphView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCImage.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCSoundFileView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCTextView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCView.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCVirtualMachine.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/UserPanel.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/post_queue.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/syntaxColorize.M
+	)
+
+# xcode generator workaround
+set_source_files_properties(${objcpp_sources}
+							PROPERTIES COMPILE_FLAGS "-x objective-c++")
+
 if(MAC_OSX_SDK_VERSION GREATER 4)
 	list(APPEND scapp_sources
 		"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c"
