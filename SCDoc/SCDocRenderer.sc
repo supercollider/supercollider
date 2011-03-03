@@ -397,7 +397,7 @@ SCDocRenderer {
         f.write("<script src='" ++ baseDir ++ "/prettify.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/lang-sc.js' type='text/javascript'></script>");
 
-        f.write("</head><body onload='prettyPrint()'>");
+        f.write("</head><body onload='fixTOC();prettyPrint()'>");
         
         f.write(
             "<table class='headMenu'><tr>"

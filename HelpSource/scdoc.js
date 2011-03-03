@@ -18,7 +18,7 @@ function showTOC(a) {
     return false;
 }
 
-window.onload = function() {
+function fixTOC() {
     document.getElementById("toc_toggle").innerHTML = "[hide]";
 
 // Hide toc if empty    
