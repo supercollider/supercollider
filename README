@@ -32,43 +32,35 @@ See these generated helpfiles for more info about ScDoc:
 
 TODO
 ----
+- this doesn't work as it should:
 
-threaded:true
-    real	4m6.582s
-    user	2m50.979s
-    sys	0m5.184s
-
-threaded:false
-    real	2m52.912s
-    user	2m42.638s
-    sys	0m4.604s
-
-
-- this doesn't work:
 modalrangetag:: blah blah blah
 blah blah blah blah blah
 blah blah ::
 
-or:
+- this doesn't work as it should:
 
 hello
 
 soft::there::
 
 - tags after each other doesn't work, like returns::link::hello::
+perhaps hard to fix without taking into account if the tag needs closing or not?
+for example, what does this mean: code::foo::link::bar::
 
-- some classes uses *doesNotUnderstand trick for class methods! need a "force" flag for method:: ?
-or even better, fix these classes so they redirect also *findRespondingMethodFor ?
-or simply, have a redirect:: tag that sets the name of the classvar holding the implementing class?
+- some classes uses *doesNotUnderstand trick for class methods
+make a redirect:: tag that sets the name of the classvar holding the implementing class?
 
 - using \::. doesn't work, needs a space: \:: .
 also sometimes non-letters after :: doesn't work correctly, like "(link::hello::)"
 
 - integration with frontend / main sc:
-* should we render all help to HTML when starting/recompiling or only when user decides to?
+* should we update help when starting/recompiling or only when user decides to?
 * should we ship pre-rendered help with the binary? (render after building supercollider)
+then we need to use hard-links: when SCDoc finds helpTargetDir empty, search in system-wide folder for pre-rendered docs.
 * should we post progress messages or keep them in internal log and use external GUI to poll this?
 * should we even run ScDoc.updateAll in a separate process?
+* fix or deprecate all old help classes and methods
 
 - we need to distinguish between class and instance method anchors since some classes have both named the same,
 something like #cmethod:name and #imethod:name perhaps? or #*classmethodname and #instancemethodname ?
@@ -76,29 +68,23 @@ something like #cmethod:name and #imethod:name perhaps? or #*classmethodname and
 - in methods overview, print '*' before classes implementing the method as classmethod?
 
 - check for system-wide pre-rendered docs in ScDoc.findClassOrMethod and similar functions..
-also make a ScDoc.findHelp(subdir,name,anchor), example: ScDoc.findHelp("Classes","SinOsc"), which would return the full path to the helpfile. or ScDoc.findHelp("Overviews","Methods","play"), ScDoc.findHelp("","Search","^asString$"), etc...
+also make a ScDoc.findHelp(subdir,name,anchor) which would return the path to the helpfile. examples:
+    ScDoc.findHelp("Classes","SinOsc")
+    ScDoc.findHelp("Overviews","Methods","play")
+    ScDoc.findHelp("","Search","^asString$"), etc...
 
 - instead of showing "(extension)" only for classes, do it for any document that was located in an extension directory.
 pass a flag to recurseHelpSource call in findExtHelp, and let updateFile return the doc map entry so we can set installed=\extension,
 or pass the flag to updateFile and then to addToDocMap?
-also add a check and warning for when a class file location and doc location is not the same in regards of extension or not.
+also add a check and warning for when a class file location and doc location is not the same in regards of extension or not?
 
 - currently all auto-generated docs are not included in the docMap, we could add these manually to HelpSystem,
   or put them (and Help.html) in a tag named Help?
   add them to docmap *before* we generate the overviews that are using categories.
 
-- make sure the new undocumented-method-generation works as it should for:
-  only setter
-  getter and setter
-  only getter
-  
-- use addUndocumentedMethods also for undocumented classes?
-
 - description for categories? HelpSource/category_descriptions, example:
   Server>Abstractions: Client-side classes representing server-side stuff
-  
-  show in header and category browser/overview
-
+  show in header and category browser/overview..
   extensions should be able to add such descriptions too, but not overwrite existing descriptions?
 
 - handle formula:: tag. generate a hash hexstring for use as filename, HelpSource/formulas/xxxxxxxx.png
@@ -119,14 +105,6 @@ The renderer would render formula:: by displaying that image if it exists, if no
 - render binary op methods differently? like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we? rather "++ aCollection" or "this ++ that" or something..
 binary ops only uses chars from this list: !@%&*-+=|<>?/
-
-- Render the argument string in method overview? Could be different for different classes though..
-  One way would be that the index is just an alphabetical list of links to Methods/methodname,
-  which is a generated doc with a list of all classes implementing it (and the description of that method in that class?),
-  if HelpSource/Methods/methodname.schelp exists, merge with this so can write interface style documentation?
-  This would produce a lot of files though!
-
-- render to string instead of directly to file?
 
 - Handle methods added by extensions
 Documenting added methods could be done in files named +ClassName.schelp

@@ -225,6 +225,12 @@ pre.formula {
     margin-bottom: 1em;
 }
 
+.methprefix {
+    font-weight: normal;
+    color: #777;
+    padding-right: 0.5em;
+    margin-left: -1em;
+}
 
 .methodname, .imethodname, .cmethodname {
 /*    border-bottom: 1px solid #bbb;*/
@@ -235,16 +241,18 @@ pre.formula {
     margin-bottom: 0em;
     margin-top: 1em;
 /*    padding-left: 0.2em;*/
-    padding: 0.3em;
-    border: 1px solid #ccc;
+    padding: 0.25em;
+/*    border: 1px solid #ddd;*/
+/*    border-bottom: 1px solid #bbb;*/
+border: none;
 }
 
 .imethodname {
-    background: #e7f7e0;
+    background: #e7ebe7;
 }
 
 .methodname, .cmethodname {
-    background: #e7e7f0;
+    background: #e7e7eb;
 }
 
 .method {
@@ -257,6 +265,7 @@ pre.formula {
     color: #444;
     background: #fee;
     padding-left: 0.2em;
+    text-align: right;
 }
 
 .supmethod {
@@ -264,6 +273,7 @@ pre.formula {
     color: #444;
     background: #ffe;
     padding-left: 0.2em;
+    text-align: right;
 }
 
 table.arguments {

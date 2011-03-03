@@ -38,7 +38,7 @@ SCDocRenderer {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-        var c, f, m, n, mname, args, split, mstat, sym, css;
+        var c, f, m, n, mname, args, split, mstat, sym, css, pfx;
 
         var do_children = {|p=false|
             node.children !? {
@@ -93,6 +93,7 @@ SCDocRenderer {
 //ignore markup-provided arguments for now..
                 c = if(parentTag==\instancemethods,{currentClass},{currentClass.class});
                 css = if(parentTag==\instancemethods,{"imethodname"},{"cmethodname"});
+                pfx = if(parentTag==\instancemethods,{"-"},{"*"});
                 split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
                     mstat = 0;
@@ -111,15 +112,17 @@ SCDocRenderer {
 //                        mets.add(sym.asSetter);
                     };
 
+                    file.write("<a name='"++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++pfx++"</span>"++this.escapeSpecialChars(mname));
+
                     switch (mstat,
                         // getter only
-                        1, { file.write("<a name='"++mname++"'><h3 class='"++css++"'>"++this.escapeSpecialChars(mname)++" "++args++"</h3></a>\n"); },
+                        1, { file.write(" "++args++"</h3></a>\n"); },
                         // setter only
-                        2, { file.write("<a name='"++mname++"'><h3 class='"++css++"'>"++this.escapeSpecialChars(mname)++" = value</h3></a>\n"); },
+                        2, { file.write(" = value</h3></a>\n"); },
                         // getter and setter
-                        3, { file.write("<a name='"++mname++"'><h3 class='"++css++"'>"++this.escapeSpecialChars(mname)++" [= value]</h3></a>\n"); },
+                        3, { file.write(" [= value]</h3></a>\n"); },
                         // method not found
-                        0, { file.write("<a name='"++mname++"'><h3 class='"++css++"'>"++this.escapeSpecialChars(mname)++": METHOD NOT FOUND!</h3></a>\n"); }
+                        0, { file.write(": METHOD NOT FOUND!</h3></a>\n"); }
                     );
                     //Note: this only checks if the getter is an extension if there are both getter and setter..
                     if(m.notNil) {
