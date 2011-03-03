@@ -360,7 +360,7 @@ test_bufugens{
 }
 
 test_demand {
-	var nodestofree, tests, o, s=Server.default;
+	var nodestofree, tests, o, s=Server.default, testNaN;
 
 	this.bootServer;
 	nodestofree = [];
@@ -384,6 +384,19 @@ test_demand {
 	// The items should all have freed by now...
 	this.assert(nodestofree.size == 0, "Duty should free itself after a limited sequence");
 
+	o.remove;
+	
+	// Test for nil - reference: "cmake build system: don't enable -ffast-math for gcc-4.0"
+	testNaN = false;
+	o = OSCresponderNode(s.addr, '/tr', {|time, resp, msg|
+		switch(msg[2],
+			5453, {testNaN = msg[3] <= 0.0 or:{msg[3] >= 1.0}}		);
+	});
+	o.add;
+	{Line.kr(1, 0, 1, 1, 0, 2); SendTrig.kr(Impulse.kr(10, 0.5), 5453, LFTri.ar(Duty.ar(0.1, 0, Dseq(#[100], 1))))}.play;
+	1.5.wait;
+	s.sync;
+	this.assert(testNaN.not, "Duty+LFTri should not output NaN");
 	o.remove;
 }
 
