@@ -16,7 +16,7 @@ effects - control points as they vary cause big local jumps of amplitude.
 Put  code::ampscale::  and  code::durscale:: 
 low to minimise the rate of this.
 
-SuperCollider implementation by Nick Collins (sicklincoln.org)
+SuperCollider implementation by Nick Collins
 
 classmethods::
 

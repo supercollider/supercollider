@@ -15,7 +15,7 @@ directly. The amplitude step random walk uses a lehmer style number
 generator whose parameters are accessible.
 ::
 
-SuperCollider implementation by Nick Collins (sicklincoln.org)
+SuperCollider implementation by Nick Collins
 
 classmethods::
 

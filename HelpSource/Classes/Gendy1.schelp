@@ -21,13 +21,13 @@ amplitude or time breakpoints sampled from a continuous controller input.
 subsection:: Technical notes
 X's plan as described in chapter 13 allows the 12 segments in the period to be successively modified with each new period.
 Yet the period is allowed to vary as the sum of the segment durations, as figure 1 demonstrates.
-We can setup some memory of n (conventionally 12) points, or even simply vary sucessively a single point's ordinate and
+We can setup some memory of n (conventionally 12) points, or even simply vary successively a single point's ordinate and
 duration. There are thus various schemes available to us. In one, fix period T and only move the (ti, Ei) within the period. In another, have a memory of 12 segments but allow continuous modification of the inter point intervals and the amplitudes.
 In yet another, just have one point and random walk its amplitude and duration based on the probability distribution.
 In this implementation I allow the user to initialise a certain number of memory points which is up to them.
 To restrict the period to be unchanging, you must set rate variation to zero (dscale=0).
 
-SuperCollider implementation by Nick Collins (sicklincoln.org)
+SuperCollider implementation by Nick Collins.
 
 
 classmethods::
