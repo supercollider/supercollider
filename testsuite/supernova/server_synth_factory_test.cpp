@@ -25,6 +25,8 @@ struct test_synth_prototype:
 
 BOOST_AUTO_TEST_CASE( synth_factory_test_1 )
 {
+    rt_pool.init(1<<20);
+
     synth_factory sf;
 
     sf.register_prototype(new test_synth_prototype);
