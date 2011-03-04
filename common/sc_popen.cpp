@@ -50,8 +50,8 @@ sc_popen(const char *command, pid_t *pidp, const char *type)
 	if (pipe(pdes) < 0)
 		return (NULL);
 
-	argv[0] = "sh";
-	argv[1] = "-c";
+	argv[0] = (char *)"sh";
+	argv[1] = (char *)"-c";
 	argv[2] = (char *)command;
 	argv[3] = NULL;
 
