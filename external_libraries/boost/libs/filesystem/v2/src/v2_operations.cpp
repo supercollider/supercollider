@@ -44,7 +44,7 @@
 
 #include <boost/filesystem/v2/operations.hpp>
 #include <boost/scoped_array.hpp>
-#include <boost/throw_exception.hpp>
+#include <boost/assert.hpp>
 #include <boost/detail/workaround.hpp>
 #include <cstdlib>  // for malloc, free
 
@@ -93,7 +93,6 @@ using boost::system::system_category;
 #include <cstring>
 #include <cstdio>      // for remove, rename
 #include <cerrno>
-#include <cassert>
 // #include <iostream>    // for debugging only; comment out when not in use
 
 #ifdef BOOST_NO_STDC_NAMESPACE
@@ -294,7 +293,7 @@ namespace
       if ( p1.handle != INVALID_HANDLE_VALUE
         || p2.handle != INVALID_HANDLE_VALUE )
         { return std::make_pair( ok, false ); }
-      assert( p1.handle == INVALID_HANDLE_VALUE
+      BOOST_ASSERT( p1.handle == INVALID_HANDLE_VALUE
         && p2.handle == INVALID_HANDLE_VALUE );
         { return std::make_pair( error_code( error1, system_category()), false ); }
     }
@@ -724,7 +723,7 @@ namespace boost
           || ((mode&~std::ios_base::binary)
           == (std::ios_base::in|std::ios_base::out|std::ios_base::trunc)) )
           disposition = CREATE_ALWAYS;
-        else assert( 0 && "invalid mode argument" );
+        else BOOST_ASSERT( 0 && "invalid mode argument" );
 
         HANDLE handle ( ::CreateFileW( ph.c_str(), access,
           FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE, 0,
@@ -1215,8 +1214,9 @@ namespace boost
         if ( ::stat( from_file_ph.c_str(), &from_stat ) != 0 )
           { return error_code( errno, system_category() ); }
 
-        int oflag = O_CREAT | O_WRONLY;
-        if ( fail_if_exists ) oflag |= O_EXCL;
+        int oflag = O_CREAT | O_WRONLY | O_TRUNC;
+        if ( fail_if_exists )
+          oflag |= O_EXCL;
         if (  (outfile = ::open( to_file_ph.c_str(), oflag, from_stat.st_mode )) < 0 )
         {
           int open_errno = errno;

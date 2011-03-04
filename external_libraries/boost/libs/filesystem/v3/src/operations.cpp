@@ -49,6 +49,7 @@
 #include <boost/scoped_array.hpp>
 #include <boost/detail/workaround.hpp>
 #include <cstdlib>  // for malloc, free
+#include <vector>
 
 #ifdef BOOST_FILEYSTEM_INCLUDE_IOSTREAM
 # include <iostream>
@@ -147,6 +148,9 @@ typedef struct _REPARSE_DATA_BUFFER {
 #define REPARSE_DATA_BUFFER_HEADER_SIZE \
   FIELD_OFFSET(REPARSE_DATA_BUFFER, GenericReparseBuffer)
 
+#endif
+
+#ifndef MAXIMUM_REPARSE_DATA_BUFFER_SIZE
 #define MAXIMUM_REPARSE_DATA_BUFFER_SIZE  ( 16 * 1024 )
 #endif
 
@@ -426,8 +430,9 @@ namespace
     if (::stat(from_p.c_str(), &from_stat)!= 0)
       { return false; }
 
-    int oflag = O_CREAT | O_WRONLY;
-    if (fail_if_exists)oflag |= O_EXCL;
+    int oflag = O_CREAT | O_WRONLY | O_TRUNC;
+    if (fail_if_exists)
+      oflag |= O_EXCL;
     if ((outfile = ::open(to_p.c_str(), oflag, from_stat.st_mode))< 0)
     {
       int open_errno = errno;
@@ -1443,6 +1448,9 @@ namespace detail
       {
         return process_status_failure(p, ec);
       }
+
+      if (!is_reparse_point_a_symlink(p))
+        return file_status(reparse_file);
     }
 
     if (ec != 0) ec->clear();
@@ -1512,6 +1520,55 @@ namespace detail
 #   endif
   }
 
+   // contributed by Jeff Flinn
+  BOOST_FILESYSTEM_DECL
+  path temp_directory_path(system::error_code* ec)
+  {
+#   ifdef BOOST_POSIX_API
+      const char* val = 0;
+      
+      (val = std::getenv("TMPDIR" )) ||
+      (val = std::getenv("TMP"    )) ||
+      (val = std::getenv("TEMP"   )) ||
+      (val = std::getenv("TEMPDIR"));
+      
+      path p((val!=0) ? val : "/tmp");
+      
+      if (p.empty() || (ec&&!is_directory(p, *ec))||(!ec&&!is_directory(p)))
+      {
+        errno = ENOTDIR;
+        error(true, p, ec, "boost::filesystem::temp_directory_path");
+        return p;
+      }
+        
+      return p;
+      
+#   else  // Windows
+
+      std::vector<path::value_type> buf(GetTempPathW(0, NULL));
+
+      if (buf.empty() || GetTempPathW(buf.size(), &buf[0])==0)
+      {
+        if(!buf.empty()) ::SetLastError(ENOTDIR);
+        error(true, ec, "boost::filesystem::temp_directory_path");
+        return path();
+      }
+          
+      buf.pop_back();
+      
+      path p(buf.begin(), buf.end());
+          
+      if ((ec&&!is_directory(p, *ec))||(!ec&&!is_directory(p)))
+      {
+        ::SetLastError(ENOTDIR);
+        error(true, p, ec, "boost::filesystem::temp_directory_path");
+        return path();
+      }
+      
+      return p;
+#   endif
+  }
+  
   BOOST_FILESYSTEM_DECL
   path system_complete(const path& p, system::error_code* ec)
   {
@@ -1742,9 +1799,13 @@ namespace
         ? 0 : ::GetLastError(), system_category() );
     }
     target = data.cFileName;
-    if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-    { sf.type(fs::directory_file); symlink_sf.type(fs::directory_file); }
-    else { sf.type(fs::regular_file); symlink_sf.type(fs::regular_file); }
+    if (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+      // reparse points are complex, so don't try to handle them here
+      { sf.type(fs::status_error); symlink_sf.type(fs::status_error); }
+    else if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+      { sf.type(fs::directory_file); symlink_sf.type(fs::directory_file); }
+    else
+      { sf.type(fs::regular_file); symlink_sf.type(fs::regular_file); }
     return error_code();
   }
 
@@ -1759,9 +1820,13 @@ namespace
       return error_code(error == ERROR_NO_MORE_FILES ? 0 : error, system_category());
     }
     target = data.cFileName;
-    if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    if (data.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+      // reparse points are complex, so don't try to handle them here
+      { sf.type(fs::status_error); symlink_sf.type(fs::status_error); }
+    else if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
       { sf.type(fs::directory_file); symlink_sf.type(fs::directory_file); }
-    else { sf.type(fs::regular_file); symlink_sf.type(fs::regular_file); }
+    else
+      { sf.type(fs::regular_file); symlink_sf.type(fs::regular_file); }
     return error_code();
   }
 #endif
@@ -1878,7 +1943,12 @@ namespace detail
       }
       else if (ec != 0) ec->clear();
 
-      if (it.m_imp->handle == 0){ it.m_imp.reset(); return; } // eof, make end
+      if (it.m_imp->handle == 0)  // eof, make end
+      {
+        it.m_imp.reset();
+        return;
+      }
+
       if (!(filename[0] == dot // !(dot or dot-dot)
         && (filename.size()== 1
           || (filename[1] == dot
