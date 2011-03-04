@@ -361,17 +361,19 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 	char *buffer = (char*)malloc(size);
 	if (!buffer) {
 		scprintf("*** ERROR: can't malloc buffer size %d\n", size);
+		fclose(file);
 		return inList;
 	}
 	fseek(file, 0, SEEK_SET);
-#ifdef _WIN32
-        size_t readSize = fread(buffer, 1, size, file);
-        if (readSize!= size)
-			*((int*)0) = 0;
-#else
-      	fread(buffer, 1, size, file);
-#endif
+
+	size_t readSize = fread(buffer, 1, size, file);
 	fclose(file);
+
+	if (readSize!= size) {
+		scprintf("*** ERROR: invalid fread\n", size);
+		free(buffer);
+		return inList;
+	}
 
 	try {
 		inList = GraphDefLib_Read(inWorld, buffer, inList);
