@@ -57,7 +57,7 @@ also sometimes non-letters after :: doesn't work correctly, like "(link::hello::
 - integration with frontend / main sc:
 * should we update help when starting/recompiling or only when user decides to?
 * should we ship pre-rendered help with the binary? (render after building supercollider)
-then we need to use hard-links: when SCDoc finds helpTargetDir empty, search in system-wide folder for pre-rendered docs.
+just use the pre-rendered help until the users chooses "update help" which would first copy or hard-link the pre-rendered files into user location and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else a system-wide location.
 * should we post progress messages or keep them in internal log and use external GUI to poll this?
 * should we even run ScDoc.updateAll in a separate process?
 * fix or deprecate all old help classes and methods
