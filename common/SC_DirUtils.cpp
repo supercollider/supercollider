@@ -260,7 +260,9 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 
 void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
 {
-	getcwd(pathBuf, length);
+	char * result = getcwd(pathBuf, length);
+	if (result != pathBuf)
+		throw std::runtime_error("cannot get current working directory");
 }
 
 
