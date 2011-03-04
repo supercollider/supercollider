@@ -75,7 +75,7 @@ void finiLexer() ;
 bool startLexer(char* filename) ;
 void startLexerCmdLine(char *textbuf, int textbuflen);
 int yylex() ;
-void yyerror(char *s) ;
+void yyerror(const char *s) ;
 void fatal() ;
 bool isValidSourceFileName(char *filename);
 bool passOne_ProcessOneFile(const char *filename, int level);

@@ -1342,7 +1342,7 @@ int processstring(char *s)
 	return STRING;
 }
 
-void yyerror(char *s)
+void yyerror(const char *s)
 {
 	parseFailed = 1;
 	yytext[yylen] = 0;
