@@ -71,6 +71,25 @@ get accurate progress information? perhaps collect the file trees first, then tr
 
 -------------------------------------------
 
+- automatically create links for ClassNames in everything but link:: tags:
+//        if(("^\\b[A-Z][A-Za-z_0-9]+".matchRegexp(word) and: {word.asSymbol.asClass.notNil})
+//        and: {current.isNil or: {current.tag!=\link}}) {
+//            tree.add((tag:\link, display:\inline, text:"Classes/"++word, children:nil));
+//        } {
+Did not work in the parser when the word is inside something else than prose..
+Need to do this in the renderer, something like this:
+
+    x = "hello SinOsc=1.23; Foo.someMethod(BarBa2);";
+    y = "";
+    z = 0;
+    x.findRegexp("\\b[A-Z][A-Za-z_0-9]+").do {|m|
+        y = y + x.copyRange(z,m[0]-1);
+        y = y + "<" ++ m[1] ++ ">";
+        z = m[0] + m[1].size;
+    };
+    y.postln;
+
+
 - this doesn't work as it should:
 
 modalrangetag:: blah blah blah
