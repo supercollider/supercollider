@@ -1,6 +1,7 @@
 title:: Syntax Shortcuts
 summary:: syntactic sugar
 categories:: Language
+related:: Overviews/SymbolicNotations
 
 This file shows a number of syntax equivalences in the compiler.
 
