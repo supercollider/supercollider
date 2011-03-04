@@ -26,6 +26,7 @@
 #include "SC_Endian.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdexcept>
 
 template <class T>
 class SC_IOStream
@@ -292,7 +293,9 @@ public:
 template <>
 inline void SC_IOStream<FILE*>::readData(char *data, int size)
 {
-    fread(data, 1, size, s);
+	size_t read = fread(data, 1, size, s);
+	if (read != size)
+		throw std::runtime_error("SC_IOStream<FILE*>::readData: read != size");
 }
 
 template <>
