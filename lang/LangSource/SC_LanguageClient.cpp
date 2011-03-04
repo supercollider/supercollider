@@ -121,11 +121,10 @@ bool SC_LanguageClient::readDefaultLibraryConfig()
 #ifndef SC_WIN32
 	const char* paths[3] = { ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg" };
 
-	char ipath[PATH_MAX];
 	char opath[PATH_MAX];
 
 	for (int i=0; i < 3; i++) {
-		snprintf(ipath, PATH_MAX, paths[i]);
+		const char * ipath = paths[i];
 		if (sc_StandardizePath(ipath, opath)) {
 			bool success = readLibraryConfig(opath, ipath);
 			if (success) return true;
