@@ -86,7 +86,7 @@ namespace boost
 
     void wpath_traits::imbue( const std::locale & new_loc )
     {
-      if ( locked ) boost::throw_exception(
+      if ( locked ) BOOST_FILESYSTEM_THROW(
         wfilesystem_error(
           "boost::filesystem::wpath_traits::imbue() after lockdown",
           make_error_code( system::errc::not_supported ) ) );
@@ -144,7 +144,7 @@ namespace boost
       if ( converter()->out( 
         state, src.c_str(), src.c_str()+src.size(), from_next, work.get(),
         work.get()+work_size, to_next ) != std::codecvt_base::ok )
-        boost::throw_exception( boost::filesystem::wfilesystem_error(
+        BOOST_FILESYSTEM_THROW( boost::filesystem::wfilesystem_error(
           "boost::filesystem::wpath::to_external conversion error",
           ph, system::error_code( system::errc::invalid_argument, system::system_category() ) ) );
       *to_next = '\0';
@@ -163,7 +163,7 @@ namespace boost
       if ( converter()->in( 
         state, src.c_str(), src.c_str()+src.size(), from_next, work.get(),
         work.get()+work_size, to_next ) != std::codecvt_base::ok )
-        boost::throw_exception( boost::filesystem::wfilesystem_error(
+        BOOST_FILESYSTEM_THROW( boost::filesystem::wfilesystem_error(
           "boost::filesystem::wpath::to_internal conversion error",
           system::error_code( system::errc::invalid_argument, system::system_category() ) ) );
       *to_next = L'\0';

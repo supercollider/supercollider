@@ -25,8 +25,9 @@ add_library(boost_program_options STATIC ${boost_program_options})
 aux_source_directory(boost/libs/system/src/ boost_system )
 add_library(boost_system STATIC ${boost_system})
 
-aux_source_directory(boost/libs/filesystem/v2/src boost_filesystem)
-add_library(boost_filesystem STATIC ${boost_filesystem})
+aux_source_directory(boost/libs/filesystem/v2/src boost_filesystem_v2)
+aux_source_directory(boost/libs/filesystem/v3/src boost_filesystem_v3)
+add_library(boost_filesystem STATIC ${boost_filesystem_v2} ${boost_filesystem_v3})
 
 
 #oscpack
