@@ -25,6 +25,7 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
+#include "SCBase.h"
 
 #ifndef SC_WIN32
 # include <unistd.h>
@@ -585,7 +586,9 @@ void SC_TcpClientPort::Close()
 #ifdef SC_WIN32
 	win32_pipewrite(mCmdFifo[1], &cmd, sizeof(cmd));
 #else
-	write(mCmdFifo[1], &cmd, sizeof(cmd));
+	size_t written = write(mCmdFifo[1], &cmd, sizeof(cmd));
+	if (written != sizeof(cmd))
+		post("warning: invalid write in SC_TcpClientPort::Close");
 #endif
 }
 
