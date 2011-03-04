@@ -25,6 +25,7 @@
 #include "SC_Types.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdexcept>
 
 inline int32 readInt8(FILE *file)
 {
@@ -66,7 +67,9 @@ inline float readFloat_be(FILE *file)
 
 inline void readData(FILE *file, char *outData, size_t inLength)
 {
-	fread(outData, 1, inLength, file);
+	size_t read = fread(outData, 1, inLength, file);
+	if (read != inLength)
+		throw std::runtime_error("readData: read != inLength");
 }
 
 inline int32 readInt8(char *&buf)
