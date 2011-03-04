@@ -14,29 +14,29 @@ symbol
 ::
 
 definitionlist::
-## number + number || addition
-## number - number || subtraction
-## number * number || multiplication
-## number / number || division
-## number % number || modulo
-## number ** number || exponentiation
+## code:: number + number :: || addition
+## code:: number - number :: || subtraction
+## code:: number * number :: || multiplication
+## code:: number / number :: || division
+## code:: number % number :: || modulo
+## code:: number ** number :: || exponentiation
 ::
 
 section:: Bitwise arithmetic
 definitionlist::
-## number & number || bitwise and
-## number | number || bitwise or
-## number << number || bitwise left shift
-## number >> number || bitwise right shift
-## number +>> number || unsigned bitwise right shift
+## code:: number & number :: || bitwise and
+## code:: number | number :: || bitwise or
+## code:: number << number :: || bitwise left shift
+## code:: number >> number :: || bitwise right shift
+## code:: number +>> number :: || unsigned bitwise right shift
 ::
 
 section:: Logical operators
 definitionlist::
-## object == object || equivalence
-## object === object || identity
-## object != object || not equal to
-## object !== object || not identical to
+## code:: object == object :: || equivalence
+## code:: object === object :: || identity
+## code:: object != object :: || not equal to
+## code:: object !== object :: || not identical to
 ::
 
 Objects may be equivalent but not identical.
@@ -52,14 +52,14 @@ true        // a and b are the same array instance
 ::
 
 definitionlist::
-## number < number || comparison (less than)
-## number <= number || comparison (less than or equal to)
-## number > number || comparison (greater than)
-## number >= number || comparison (greater than or equal to)
+## code:: number < number :: || comparison (less than)
+## code:: number <= number :: || comparison (less than or equal to)
+## code:: number > number :: || comparison (greater than)
+## code:: number >= number :: || comparison (greater than or equal to)
 ::
 definitionlist::
-## Boolean && Boolean || logical And
-## Boolean code::||:: Boolean || logical Or
+## code:: boolean && boolean :: || logical And
+## code:: boolean || boolean :: || logical Or
 ::
 When a function is the second operand, these operators perform short-circuiting (i.e., the function is executed only when its result would influence the result of the operation). This is recommended for speed.
 
@@ -96,20 +96,23 @@ false
 section:: Array and Collection operators
 
 definitionlist::
-## object ++ object || concatenation
-## collection +++ collection || lamination (see link::Guides/J-concepts-in-SC::)
-## collection @ index || collection/array indexing: .at(index) or [index]
-## collection @@ integer || collection/array indexing: .wrapAt(int)
-## collection @|@ integer || collection/array indexing: .foldAt(int)
-## collection |@| integer || collection/array indexing: .clipAt(int)
+## code:: object ++ object :: || concatenation
+## code:: collection +++ collection :: || lamination (see link::Guides/J-concepts-in-SC::)
+## code:: collection @ index :: || collection/array indexing: .at(index) or [index]
+## code:: collection @@ integer :: || collection/array indexing: .wrapAt(int)
+## code:: collection @|@ integer :: || collection/array indexing: .foldAt(int)
+## code:: collection |@| integer :: || collection/array indexing: .clipAt(int)
 ::
 
 section:: Set operators
 definitionlist::
-## set & set || intersection of two sets
-## set | set || union of two sets
-## setA - setB || difference of sets (elements of setA not found in setB)
-## set -- set || symmetric difference code:: (setA -- setB) == ((setA - setB) | (setB - setA)) :: 
+## code:: set & set :: || intersection of two sets
+## code:: set | set :: || union of two sets
+## code:: setA - setB :: || difference of sets (elements of setA not found in setB)
+## code:: set -- set :: || symmetric difference:
+code::
+(setA -- setB) == ((setA - setB) | (setB - setA))
+::
 ::
 
 code::
@@ -131,22 +134,32 @@ Set[ 2, 9, 3, 4, 8 ]
 
 section:: Geometry operators
 definitionlist::
-## number @ number || x @ y returns Point(x, y)
-## point @ point || code:: Point(left, top) @ Point(right, bottom) :: returns code:: Rect(left, top, right-left, bottom-top) :: 
-## ugen @ ugen || create a Point with 2 UGens
-## rect & rect || intersection of two rectangles
-## rect | rect || union of two rectangles (returns a Rect whose boundaries exactly encompass both Rects)
+## code:: number @ number :: || make a link::Classes/Point:: of two numbers
+code::
+x @ y
+// returns:
+Point(x, y)
+::
+## code:: point @ point :: || make a link::Classes/Rect:: of two link::Classes/Points::
+code::
+Point(left, top) @ Point(right, bottom)
+// returns:
+Rect(left, top, right-left, bottom-top)
+::
+## code:: ugen @ ugen :: || create a Point with two link::Classes/UGen::s
+## code:: rect & rect :: || intersection of two rectangles
+## code:: rect | rect :: || union of two rectangles (returns a Rect whose boundaries exactly encompass both Rects)
 
 section:: IOStream operators
 definitionlist::
-## stream << object || represent the object as a string and add to the stream.
+## code:: stream << object :: || represent the object as a string and add to the stream.
 A common usage is with the Post class, to write output to the post window.
 code::
 Post << "Here is a random number: " << 20.rand << ".\n";
 Here is a random number: 13.
 ::
 
-## stream <<* collection || add each item of the collection to the stream.
+## code:: stream <<* collection :: || add each item of the collection to the stream.
 code::
 Post << [0, 1, 2, 3]
 [ 0, 1, 2, 3 ]
@@ -154,18 +167,19 @@ Post << [0, 1, 2, 3]
 Post <<* [0, 1, 2, 3]
 0, 1, 2, 3
 ::
-## stream <<< object || add the object's compile string to the stream.
+
+## code:: stream <<< object :: || add the object's compile string to the stream.
 code::
 Post <<< "a string"
 "a string"
 ::
-## stream <<<* collection || add each item's compile string to the stream.
+## code:: stream <<<* collection :: || add each item's compile string to the stream.
 ::
 
 section:: Conditional execution operators
 definitionlist::
-## object ? object || nil check (no .value)
-## object ?? function || nil check (.value, function is inlined)
+## code:: object ? object :: || nil check (no .value)
+## code:: object ?? function :: || nil check (.value, function is inlined)
 If the object is nil, the second expression's value will be used; otherwise, it will be the first object.
 code::
 a = [nil, 5];
@@ -189,7 +203,7 @@ slider = slider ? SCSlider.new(parent, Rect(0, 0, 100, 20));
 ::
 , a new slider would be created even if it is not needed, or used.
 
-## object !? function || execute function if object is not nil.
+## code:: object !? function :: || execute function if object is not nil.
 code::
 a = [10, nil].choose;
 a !? { "ran func".postln };
@@ -212,7 +226,7 @@ f.value(2)
 
 section:: Miscellaneous operators
 definitionlist::
-## object ! number || same as code:: object.dup(number) :: 
+## code:: object ! number :: || same as code:: object.dup(number) :: 
 code::
 15 ! 5
 [ 15, 15, 15, 15, 15 ]
@@ -222,8 +236,8 @@ code::
 { 10.rand } ! 5
 [ 8, 9, 3, 8, 0 ]
 ::
-## object -> object || creates an Association, used in dictionaries.
-## expression <! expression || bypass value of second expression.
+## code:: object -> object :: || creates an link::Classes/Association::, used in dictionaries.
+## code:: expression <! expression :: || bypass value of second expression.
 This operator evaluates both expressions, and returns the value of the first.
 code::
 a = 0;
@@ -237,7 +251,8 @@ a = 0;
 a	// a's value reflects both increments
 2
 ::
-## function <> function || function composition operator.
+
+## code:: function <> function :: || function composition operator.
 This operator returns a new function, which evaluates the second function and passes the result to the first function.
 code::
 f = { |a| a * 5 } <> {|a| a + 2 };
@@ -253,15 +268,15 @@ f.([10, 75, 512]);
 
 section:: Symbolic notations to define literals/other objects
 definitionlist::
-## $ || character prefix: code:: "ABC".at(0) == $A :: 
-## '' or \ || define a literal Symbol: code:: 'abc' === \abc :: 
-## "" || define a literal String: code:: "SuperCollider is the best" ::
-## [item, item...] || define an Array containing given items
-## Set[item, item...] || define a Set -- any link::Classes/Collection:: class name can be used other than Set
-## #[item, item...] || define a literal Array
-## (a:1, b:2) || define an link::Classes/Event:: (same as Event[\a -> 1, \b -> 2])
-## ` (backtick or backquote) || define a Ref: `1 == Ref(1), `(a+1) == Ref(a+1)
-## \ || inside a string or symbol, escapes the next character
+## code:: $ :: || character prefix: code:: "ABC".at(0) == $A :: 
+## code:: '' :: or code:: \ :: || define a literal link::Classes/Symbol:: : code:: 'abc' === \abc :: 
+## code:: "" :: || define a literal link::Classes/String:: : code:: "SuperCollider is the best" ::
+## code:: [item, item...] :: || define an link::Classes/Array:: containing given items
+## code:: Set[item, item...] :: || define a link::Classes/Set:: -- any link::Classes/Collection:: class name can be used other than Set
+## code:: #[item, item...] :: || define a literal link::Classes/Array::
+## code:: (a:1, b:2) :: || define an link::Classes/Event:: (same as code:: Event[\a -> 1, \b -> 2] ::)
+## code:: ` :: (backtick or backquote) || define a link::Classes/Ref:: : code:: `1 == Ref(1), `(a+1) == Ref(a+1) ::
+## code:: \ :: || inside a string or symbol, escapes the next character
 code::
 "abc\"def\"ghi"
 abc"def"ghi
@@ -270,40 +285,40 @@ abc"def"ghi
 abc'def'ghi
 ::
 definitionlist::
-## \t || tab character
-## \n || newline character
-## \l || linefeed character
-## \r || carriage return character
-## \\ || \ character
+## code:: \t :: || tab character
+## code:: \n :: || newline character
+## code:: \l :: || linefeed character
+## code:: \r :: || carriage return character
+## code:: \\ :: || \ character
 ::
 
-## { } || define an open function
-## #{ } || define a closed function
-## (_ * 2) || define a function { |a| a * 2 } (see link::Reference/Partial-Application:: )
+## code:: { } :: || define an open function
+## code:: #{ } :: || define a closed function
+## code:: (_ * 2) :: || define a function code:: { |a| a * 2 } :: (see link::Reference/Partial-Application::)
 ::
 
 section:: Argument definition
 definitionlist::
-## |a, b, c| || define function/method arguments
-## |a, b ... c| || define function/method arguments; arguments after a and b will be placed into c as an array
-## #a, b, c = myArray || assign consecutive elements of myArray to multiple variables
-## #a, b ... c = myArray || assign first two elements to a and b; the rest as an array into c
+## code:: |a, b, c| :: || define function/method arguments
+## code:: |a, b ... c| :: || define function/method arguments; arguments after a and b will be placed into c as an array
+## code:: #a, b, c = myArray ::|| assign consecutive elements of myArray to multiple variables
+## code:: #a, b ... c = myArray :: || assign first two elements to a and b; the rest as an array into c
 ::
 
 section:: Where f is a function
 definitionlist::
-## f.( ) || evaluate the function with the arguments in parentheses
-## f.(*argList) || evaluate the function with the arguments in an array
-## f.(anArgName: value) || keyword addressing of function or method arguments
+## code:: f.( ) :: || evaluate the function with the arguments in parentheses
+## code:: f.(*argList) :: || evaluate the function with the arguments in an array
+## code:: f.(anArgName: value) :: || keyword addressing of function or method arguments
 code::
 f = { |a, b| a * b };
 f.(2, 4);
 f.(*[2, 4]);
 f.(a: 2, b: 4);
 ::
-## SomeClass.[index] || Equivalent to SomeClass.at(index) -- Instr.at is a good example
-## myObject.method(*array) || call the method with the arguments in an array
-## obj1 method: obj2 || same as obj1.method(obj2) or method(obj1, obj2).
+## code:: SomeClass.[index] :: || Equivalent to SomeClass.at(index) -- Instr.at is a good example
+## code:: myObject.method(*array) :: || call the method with the arguments in an array
+## code:: obj1 method: obj2 :: || same as code::obj1.method(obj2):: or code::method(obj1, obj2)::.
 This works only with single-argument methods like binary operators.
 ::
 
@@ -326,26 +341,26 @@ code::
 These notations do not apply to variables defined within methods.
 
 definitionlist::
-## ^someExpression || Inside a method definition: return the expression's value to the caller
-## instVar_ { } || define a setter for an instance variable
-## myObject.instVar = x; || invoke the setter: code:: (myObject.instVar_(x); x) ::
+## code:: ^someExpression :: || Inside a method definition: return the expression's value to the caller
+## code:: instVar_ { } :: || define a setter for an instance variable
+## code:: myObject.instVar = x; :: || invoke the setter: code:: (myObject.instVar_(x); x) ::
 ::
 
 section:: Array series and indexing
 definitionlist::
-## (a..b) || produces an array consisting of consecutive integers from a to b
-## (a, b..c) || e.g.: (1, 3..9) produces [1, 3, 5, 7, 9]
-## (..b) || produces an array 0 through b
-## (a..) || not legal (no endpoint given)
+## code:: (a..b) :: || produces an array consisting of consecutive integers from a to b
+## code:: (a, b..c) :: || e.g.: (1, 3..9) produces [1, 3, 5, 7, 9]
+## code:: (..b) :: || produces an array 0 through b
+## code:: (a..) :: || not legal (no endpoint given)
 
-## a[i..j] || a.copyRange(i, j)
-## a[i, j..k] || e.g.: a[1, 3..9] retrieves array elements 1, 3, 5, 7, 9
-## a[..j] || a.copyRange(0, j)
-## a[j..] || a.copyRange(i, a.size-1)  (this is OK--Array is finite)
+## code:: a[i..j] :: || same as code:: a.copyRange(i, j) ::
+## code:: a[i, j..k] :: || e.g.: code:: a[1, 3..9] :: retrieves array elements 1, 3, 5, 7, 9
+## code:: a[..j] :: || same as code:: a.copyRange(0, j) ::
+## code:: a[j..] :: || same as code:: a.copyRange(i, a.size-1) :: (this is OK--Array is finite)
 
-## ~ || access an environment variable
-## ~abc || compiles to \abc.envirGet
-## ~abc = value || compiles to \abc.envirPut(value)
+## code:: ~ :: || access an environment variable
+## code:: ~abc :: || compiles to code:: \abc.envirGet ::
+## code:: ~abc = value :: || compiles to code:: \abc.envirPut(value) ::
 ::
 
 section:: Adverbs to math operators
@@ -360,11 +375,11 @@ code::
 [ [ 2, 3, 4 ], [ 4, 6, 8 ], [ 6, 9, 12 ] ]
 ::
 definitionlist::
-## .s || output length is the shorter of the two arrays
-## .f || use folded indexing instead of wrapped indexing
-## .t || table-style
-## .x || cross (like table, except that the results of each operation are concatenated, not added as another dimension)
-## .0 || operator depth (see link::Guides/J-concepts-in-SC:: )
-## .1 || etc.
+## code:: .s :: || output length is the shorter of the two arrays
+## code:: .f :: || use folded indexing instead of wrapped indexing
+## code:: .t :: || table-style
+## code:: .x :: || cross (like table, except that the results of each operation are concatenated, not added as another dimension)
+## code:: .0 :: || operator depth (see link::Guides/J-concepts-in-SC:: )
+## code:: .1 :: || etc.
 ::
 

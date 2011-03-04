@@ -11,10 +11,10 @@ section::Numbers
 subsection::Integers
 An integer is any series of digits optionally preceeded by a minus sign:
 code::
-    -13      
-    666      
-    2112      
-    96
+-13
+666
+2112
+96
 ::
 
 subsection::Floats
@@ -24,23 +24,24 @@ integer expressions like code::8.rand::.
 
 Examples of floats:
 code::
-    0.39      
-    98.6      
-    1.0      
-    -0.5
+0.39
+98.6
+1.0
+-0.5
 ::
 
 Exponential notation is also supported:
 code::
-    1.2e4
-    1e-4
+1.2e4
+1e-4
 ::
 
 The constant pi can be appended to a number to create a floating point constant:
 code::
-    2pi    
-    0.5pi
-    -0.25pi
+pi
+2pi
+0.5pi
+-0.25pi
 ::
 
 subsection::Radix
@@ -49,66 +50,66 @@ The radix is specified in base 10 followed by the letter 'r' followed by the val
 that radix using characters 0-9,A-Z, or a-z, for digit values from 0 to 35. 
 For example you can write hexidecimal numbers as follows:
 code::
-    16rF0
-    16rA9FF
+16rF0
+16rA9FF
 ::
 Binary numbers can be written as follows:
 code::
-    2r01101011
+2r01101011
 ::
 
 Floating point values may also be specified in any base:
 code::
-    12r4A.A
+12r4A.A
 ::
 
 section::Characters
 
 Characters are preceeded by a dollar sign:
 code::
-    $A     
-    $B     
-    $C
+$A
+$B
+$C
 ::
 
 Tab, linefeed, carriage return, and backslash are preceeded by a backslash:
 code::
-    $\t
-    $\n
-    $\r
-    $\\
+$\t
+$\n
+$\r
+$\\
 ::
 
-section::Symbols 
+section::Symbols
 
 A symbol is written as a string enclosed in single quotes. 
 examples of symbols:
 code::
-    'x'
-    'aiff'
-    'BigSwiftyAndAssoc'
-    'nowhere here'  
-    'somewhere there' 
-    '.+o*o+.'
+'x'
+'aiff'
+'BigSwiftyAndAssoc'
+'nowhere here'
+'somewhere there'
+'.+o*o+.'
 ::
 
 A symbol consisting of a single word can be written with a preceeding backslash.
 code::
-    \x
-    \aiff
-    \BigSwiftyAndAssoc
+\x
+\aiff
+\BigSwiftyAndAssoc
 ::
 
 section::Strings
 
 Strings are written in double quotes:
 code::
-    "This is a string."
+"This is a string."
 ::
 
 If two or more strings are lexically adjacent, then they combine into a larger string:
 code::
-    "This" " is " "also a " "string."
+"This" " is " "also a " "string."
 ::
 
 Strings may span more than one line. If so, then the new line characters become part of the string:
@@ -119,22 +120,24 @@ also a
 string.
 "
 ::
-	
-section::Identifiers 
+
+section::Identifiers
 
 Names of methods and variables begin with a lower case alphabetic character, followed by zero or more
 alphanumeric characters:
 code::
-    var abc, z123, func;
+var abc, z123, func;
 ::
 
 section::Class Names
 
 Class names always begin with a capital letter followed by zero or more alphanumeric characters.
 code::
-    Object
-    Point
-    Synth
+Object
+Point
+Synth
+SinOsc
+Pan2
 ::
 
 section::Special Values
@@ -142,30 +145,30 @@ section::Special Values
 The singular instances of the classes True, False and Nil are written as the 
 words true, false, nil and inf.
 code::
-    x = true;
-    y = false;
-    z = nil;
+x = true;
+y = false;
+z = nil;
 ::
 
 section::Arrays
 
 link::Classes/Array::s of literals are created at compile time and are written with a # preceeding the array as follows:
 code::
-    #[1, 2, 'abc', "def", 4]
+#[1, 2, 'abc', "def", 4]
 ::
 Literal Arrays must be used as is and may not be altered at run time.
 
 In literal Arrays names are interpreted as symbols. This is not the case in regular Arrays, where they are interpreted as variable names:
 code::
-    #[foo, bar]	// this is legal; an Array of Symbols
-    [foo, bar]	// this is only legal if foo and bar have been declared as variables
+#[foo, bar]     // this is legal; an Array of Symbols
+[foo, bar]      // this is only legal if foo and bar have been declared as variables
 ::
 Arrays and other collections may also be created dynamically which is explained in link::Classes/Collection::.
 Using a literal Array is faster than building an array dynamically every time you need it.
 
 When nesting literal arrays, only the outermost literal array needs the '#' character.
 code::
-    #[[1, 2, 3], [4, 5, 6]]
+#[[1, 2, 3], [4, 5, 6]]
 ::
 
 Literal Arrays can be useful for things such as tables of constants, for example note names:
