@@ -176,7 +176,7 @@ dt {
 }
 dd {
 /*    margin-top: -1em;*/
-    margin-bottom: 0.5em;
+    margin-bottom: 1em;
 }
 
 /*ul, ol {
@@ -189,8 +189,8 @@ li {
 
 code.code, pre.code {
     font-family: Andale Mono, monospace;
-    font-size: 9.5pt;
-    font-weight: normal;
+    font-size: 9pt;
+/*    font-weight: normal;*/
     color: #121;
 }
 
@@ -425,7 +425,7 @@ ul.tree li:last-child {
 
 /* Pretty printing styles. Used with prettify.js. */
 
-.str { color: #080; }
+.str { color: #070; }
 .kwd { color: #880; }
 .com { color: #822; }
 .typ { color: #008; }
@@ -433,7 +433,7 @@ ul.tree li:last-child {
 .pun { color: #777; }
 .pln { color: #000; }
 .tag { color: #038; }
-.atn { color: #606; }
+.atn { color: #286; }
 .atv { color: #080; }
 .dec { color: #508; }
 
