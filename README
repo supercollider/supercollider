@@ -32,6 +32,45 @@ See these generated helpfiles for more info about ScDoc:
 
 TODO
 ----
+
+integration with frontends / main sc distro
+===========================================
+* update docs automatically when needed. Make an SCDoc.checkUpdate that returns fast if nothing needs to be done, otherwise calls SCDoc.updateAll.
+
+Save a list of all classes so that we can detect if any new ones where added (extensions).
+    x = Class.allClasses.collectAs(_.name,IdentitySet)
+
+Only update overviews (methods, classes, classtree) when this list changed.. no need to update those if it was only help-files that changed. same with JSON method index.
+
+Check each class in above Set for update like this:
+    1) class was not in the set above (x.includes(\SinOsc))
+    2) class source file is newer than the rendered doc
+    3) if possible, compare class checksum?
+If a class needs update, add it and all its subclasses to a Set of classes that should be updated.
+
+Traverse "Classes/" folder in the updateAll path iteration as usual to catch updated class helpfiles, remove such classes from the Set above.
+
+Then, for each class in the should-update Set:
+    - does the class have a help-file? then parse it. (NOTE: should look in all HelpSource/Classes dirs)
+    - if not, generate stub.
+    - then render to HTML
+Note that this will also handle any undocumented classes.. (rename handleUndocumentedClasses to checkClassUpdates).
+
+Only update categories and document JSON index if the docMap changed from last run.
+
+* should we ship pre-rendered help with the binary? (render after building supercollider)
+just use the pre-rendered help until the users need to update help, which would first copy or hard-link the pre-rendered files into user location and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else a system-wide location.
+
+* should we post progress messages or keep them in internal log and use external GUI to poll this?
+or at least have an option to pop up a GUI progress dialog. is there a quick way to count the number of documents so we can
+get accurate progress information? perhaps collect the file trees first, then traverse..
+
+* should we even run ScDoc.updateAll in a separate process?
+
+* fix or deprecate all old help classes and methods
+
+-------------------------------------------
+
 - this doesn't work as it should:
 
 modalrangetag:: blah blah blah
@@ -53,14 +92,6 @@ make a redirect:: tag that sets the name of the classvar holding the implementin
 
 - using \::. doesn't work, needs a space: \:: .
 also sometimes non-letters after :: doesn't work correctly, like "(link::hello::)"
-
-- integration with frontend / main sc:
-* should we update help when starting/recompiling or only when user decides to?
-* should we ship pre-rendered help with the binary? (render after building supercollider)
-just use the pre-rendered help until the users chooses "update help" which would first copy or hard-link the pre-rendered files into user location and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else a system-wide location.
-* should we post progress messages or keep them in internal log and use external GUI to poll this?
-* should we even run ScDoc.updateAll in a separate process?
-* fix or deprecate all old help classes and methods
 
 - we need to distinguish between class and instance method anchors since some classes have both named the same,
 something like #cmethod:name and #imethod:name perhaps? or #*classmethodname and #instancemethodname ?

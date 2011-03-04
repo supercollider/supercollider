@@ -12,11 +12,11 @@ method::browse
 
 Open a graphical browser for this Class. (OSX only). Shows methods, arguments, variables, subclasses, and has buttons for navigating to the superclass, source, helpfile, cvs, etc.
 
-method::findMethod(methodName)
+method::findMethod
 
 Find the Method referred to by name. If not found, return nil.
 
-method::findRespondingMethodFor(methodName)
+method::findRespondingMethodFor
 
 As above, but climb the class tree to see if the method is inherited from a superclass. If not found, return nil.
 
@@ -24,7 +24,7 @@ method::dumpAllMethods
 
 Post all instance methods which instances of this class responde too, including inherited ones. this.class.dumpAllMethods will post all class methods which this class responds to.
 
-method::dumpByteCodes(methodName)
+method::dumpByteCodes
 
 Dump the byte codes of the named method.
 
@@ -48,7 +48,7 @@ method::helpFilePath
 
 Returns the path of this Class's helpfile as a String.
 
-method::helpFileForMethod(methodSymbol)
+method::helpFileForMethod
 
 Opens the helpfile for the class in which the responding method is implemented.
 

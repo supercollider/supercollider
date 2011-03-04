@@ -186,6 +186,13 @@ SCDoc {
             n !? {n.delete = false};
         };
     }
+    
+    *classHash {|c|
+        var hash;
+        //Problems: probably very slow! Also it doesn't work if one of the superclasses changed..
+        hash = (((c.methods ++ c.class.methods) ?? []).collect {|m| m.code}).flatten.asString.hash;
+        ^hash;
+    }
 
     *addToDocMap {|parser, path|
         var x = parser.findNode(\class).text;
@@ -196,6 +203,10 @@ SCDoc {
         );
 
         doc.title = if(x.notEmpty,x,{parser.findNode(\title).text});
+
+//        if(x.notEmpty) {
+//            doc.hashnum = this.classHash(x.stripWhiteSpace.asSymbol.asClass);
+//        };
         
         docMap[path] = doc;
     }
@@ -229,12 +240,12 @@ SCDoc {
 
     *readDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
-
+        SCDoc.postProgress("Reading docMap cache...");
         docMap = Object.readArchive(path);
 
         if(docMap.isNil) {
             docMap = Dictionary.new;
-            SCDoc.postProgress("Creating new docMap cache");
+            SCDoc.postProgress("Not found, Creating new docMap cache");
             ^true;
         };
         ^false;
@@ -242,6 +253,7 @@ SCDoc {
 
     *writeDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
+        SCDoc.postProgress("Writing docMap cache");
         docMap.writeArchive(path);
     }
 
@@ -257,7 +269,9 @@ SCDoc {
         };
         if(ext == ".schelp", {
             //update only if needed
-            if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}, { 
+            if(force or: {docMap[subtarget].isNil} or: {("test"+source.escapeChar($ )+"-ot"+target.escapeChar($ )).systemCmd!=0}
+//                or: {subtarget.dirname == "Classes" and: {this.classHash(subtarget.basename.asSymbol.asClass) != docMap[subtarget].hashnum}}
+                , { 
                 SCDoc.postProgress("Parsing "++source);
                 p.parseFile(source);
                 this.addToDocMap(p,subtarget);
