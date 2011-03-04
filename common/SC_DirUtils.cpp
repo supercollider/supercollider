@@ -54,7 +54,7 @@
 #include <curl/curl.h>
 #endif
 
-char *gIdeName="none";
+const char * gIdeName = "none";
 
 // Add a component to a path.
 
