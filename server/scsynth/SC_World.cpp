@@ -514,15 +514,19 @@ SC_DLLEXPORT_C int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, 
 bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 {
 	int32 msglen;
-	if (!fread(&msglen, 1, sizeof(int32), file)) return true;
+	if (fread(&msglen, 1, sizeof(int32), file) != sizeof(int32))
+		return true;
 	// msglen is in network byte order
 	msglen = OSCint((char*)&msglen);
 	if (msglen > 8192)
 		throw std::runtime_error("OSC packet too long. > 8192 bytes\n");
 
-	fread(packet->mData, 1, msglen, file);
+	size_t read = fread(packet->mData, 1, msglen, file);
+	if (read != msglen)
+		throw std::runtime_error("nextOSCPacket: invalid read of OSC packaet\n");
+
 	if (strcmp(packet->mData, "#bundle")!=0)
-			throw std::runtime_error("OSC packet not a bundle\n");
+		throw std::runtime_error("OSC packet not a bundle\n");
 
 	packet->mSize = msglen;
 
