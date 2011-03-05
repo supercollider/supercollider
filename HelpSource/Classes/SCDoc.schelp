@@ -45,6 +45,8 @@ argument:: doneFunc
 Function to evaluate when done.
 argument:: threaded
 When true, runs the process in a link::Classes/Routine:: on link::Classes/AppClock::. This is needed to get progress feedback when running inside a frontend like the SuperCollider app on OSX. If running with the sclang terminal client, this can be set to false for better performance.
+argument:: gui
+If true and code::threaded:: is also true, create a GUI progress window instead of posting progress to the post window.
 discussion:: It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
 
 method:: updateFile
@@ -60,7 +62,8 @@ method:: checkBrokenLinks
 Scans the entire help tree for broken links
 
 method:: findClassOrMethod
-returns the full path to the document for a specific class if the string starts with capital letter, or the method overview if not.
+returns::
+the full path to the document for a specific class if the string starts with capital letter, or the method overview if not.
 
 subsection:: Cached map of documents
 In the maps below, each document is represented by an link::Classes/Event:: with the keys code::path, title, categories, summary, installed::. More keys might come later..
