@@ -186,4 +186,14 @@ int main()
 }
 
 #endif // USE_SC_TERMINAL_CLIENT
+
+#else
+
+#include <windows.h>
+
+int WINAPI WinMain(HINSTANCE d1, HINSTANCE d2, LPSTR d3, int d4)
+{
+	MessageBox(NULL, "sclang.exe unsupported", "", MB_OK);
+}
+
 #endif //SC_WIN32
