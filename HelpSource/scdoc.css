@@ -423,19 +423,24 @@ ul.tree li:last-child {
  background: #fff url(images/lastnode.png) no-repeat;
 }
 
+/* auto class links. note that color is set by prettify rules below */
+a.clslnk {
+}
+
 /* Pretty printing styles. Used with prettify.js. */
 
-.str { color: #070; }
-.kwd { color: #880; }
-.com { color: #822; }
-.typ { color: #008; }
-.lit { color: #066; }
-.pun { color: #777; }
-.pln { color: #000; }
-.tag { color: #038; }
-.atn { color: #286; }
-.atv { color: #080; }
-.dec { color: #508; }
+.str { color: #070; } /* strings */
+.kwd { color: #880; } /* special values like true, nil.. */
+.com { color: #822; } /* comments */
+.typ { color: #008; } /* class names */
+.lit { color: #066; } /* numbers and character literals */
+.pun { color: #777; } /* punctuation */
+.pln { color: #000; } /* plain text, methods and variable names */
+.tag { color: #038; } /* special variables like super, thisProcess... */
+.dec { color: #508; } /* declarations like var, const... */
+.atn { color: #286; } /* symbols */
+.atv { color: #080; } /* --- not used --- */
+
 
 /* Specify class=linenums on a pre to get line numbering */
 ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */

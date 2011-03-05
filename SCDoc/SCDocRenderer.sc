@@ -37,6 +37,18 @@ SCDocRenderer {
         };
     }
 
+    autoLinkClasses {|txt|
+        var x = "", z = 0;
+        // FIXME: also match plural? like "Floats".. - if word was not class but ends in s and is a class without that s, then use that. 
+        // it would be useful in prose, but not code examples..
+        txt.findRegexp("\\b[A-Z][A-Za-z_0-9]+").select{|m| m[1].asSymbol.asClass.notNil}.do {|m|
+            x = x ++ txt.copyRange(z,m[0]-1);
+            x = x ++ "<a class='clslnk' href='"++baseDir+/+"Classes"+/+m[1]++".html'>" ++ m[1] ++ "</a>";
+            z = m[0] + m[1].size;
+        };
+        ^(x ++ txt.copyToEnd(z));
+    }
+
     renderHTMLSubTree {|file,node,parentTag=false|
         var c, f, m, n, mname, args, split, mstat, sym, css, pfx;
 
@@ -49,10 +61,13 @@ SCDocRenderer {
         switch(node.tag,
             'prose', {
                 if(node.display == \block, {
-                    file.write("<p>"++this.escapeSpecialChars(node.text));
-                }, {
-                    file.write(this.escapeSpecialChars(node.text));                
+                    file.write("<p>");
                 });
+                // FIXME: using autoLinkClasses here is often very nice, but a bit ugly when the word is not meant to be a class,
+                // like "In this building lives a big cat" or "Control your mind", etc..
+                // one workaround might be to don't match some words if they start a sentence??
+//                file.write(this.autoLinkClasses(this.escapeSpecialChars(node.text)));
+                file.write(this.escapeSpecialChars(node.text));
             },
             'section', {
                 file.write("<a name='"++SCDocRenderer.simplifyName(node.text)++"'><h2>"++this.escapeSpecialChars(node.text)++"</h2></a>\n");
@@ -252,9 +267,9 @@ SCDocRenderer {
             },
             'code', {
                 if(node.display == \block, {
-                    file.write("<pre class='code prettyprint lang-sc'>"++this.escapeSpecialChars(node.text)++"</pre>\n");
+                    file.write("<pre class='code prettyprint lang-sc'>"++this.autoLinkClasses(this.escapeSpecialChars(node.text))++"</pre>\n");
                 }, {
-                    file.write("<code class='code prettyprint lang-sc'>"++this.escapeSpecialChars(node.text)++"</code>\n");
+                    file.write("<code class='code prettyprint lang-sc'>"++this.autoLinkClasses(this.escapeSpecialChars(node.text))++"</code>\n");
                 });
             },
             'formula', {
