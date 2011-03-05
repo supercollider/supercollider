@@ -306,11 +306,10 @@ SCDoc {
         var a, b;
         if(GUI.scheme.isNil and: doWait, {^nil});
         
-        progressWindow = Window("Documentation update",500@100).alwaysOnTop_(true).userCanClose_(false);
+        progressWindow = Window("Documentation update",500@200).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
 
-        b = VLayoutView.new(progressWindow,500@100);
-        StaticText(b).string_("Please wait while updating help files...\n");
-        progressText = TextView(b).editable_(false);
+        StaticText(progressWindow).string_("Please wait while updating help files...\n");
+        progressText = TextView(progressWindow).editable_(false);
 
         progressWindow.front;
     }
