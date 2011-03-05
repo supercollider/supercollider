@@ -40,7 +40,7 @@ build requirements
    facilitates checking for installed packages when compiling from
    source
 
- * cmake >= 2.6
+ * cmake >= 2.8
    http://www.cmake.org/
    cross-platform build system
 
