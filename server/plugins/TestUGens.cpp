@@ -29,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Visual C++ doesn't have fpclassify (C99), so define it here if needed
-#ifdef _WIN32
+#ifdef _MSC_VER
 #include <float.h>
 enum { FP_NORMAL, FP_NAN, FP_INFINITE, FP_SUBNORMAL };
 

@@ -630,7 +630,7 @@ void GrainIn_Dtor(GrainIn *unit)
 
 inline void GrainSin_next_play_active(GrainSin * unit, int inNumSamples)
 {
-	const uint numOutputs = unit->mNumOutputs;
+	const unsigned int numOutputs = unit->mNumOutputs;
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;

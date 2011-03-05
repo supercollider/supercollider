@@ -31,7 +31,7 @@ typedef void (*UnitDtorFunc)(struct Unit* inUnit);
 typedef void (*UnitCalcFunc)(struct Unit *inThing, int inNumSamples);
 
 struct SC_Unit_Extensions {
-	float * todo; 	
+	float * todo;
 };
 
 struct Unit
@@ -59,8 +59,12 @@ enum {
 	kUnitDef_CantAliasInputsToOutputs = 1
 };
 
-// easy macros, the unit variable must be named 'unit'.
-#ifndef _WIN32
+#ifdef _WIN32
+// Win32 headers (included by C std library headers) define IN and OUT macros
+// for their own purposes.
+#undef IN
+#undef OUT
+#endif
 
 // These return float* pointers to input and output buffers.
 #define IN(index)  (unit->mInBuf[index])
@@ -69,20 +73,6 @@ enum {
 // These return a float value. Used for control rate inputs and outputs.
 #define IN0(index)  (IN(index)[0])
 #define OUT0(index) (OUT(index)[0])
-
-#else
-
-// Win32 headers (included by C std library headers) define IN and OUT macros
-// for their own purposes. To avoid problems we don't define IN and OUT here
-// but define SC_IN and SC_OUT instead. Source files that use IN and OUT need
-// to include definitions of IN, and OUT referencing SC_IN and SC_OUT after
-// all headers have been included.
-#define SC_IN(index)  (unit->mInBuf[index])
-#define SC_OUT(index) (unit->mOutBuf[index])
-#define IN0(index)  (SC_IN(index)[0])
-#define OUT0(index) (SC_OUT(index)[0])
-
-#endif
 
 // get the rate of the input.
 #define INRATE(index) (unit->mInput[index]->mCalcRate)

@@ -42,7 +42,7 @@ Primitives for File i/o.
 #include <Navigation.h>
 #endif
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 # include <unistd.h>
 #else
 # include <direct.h>
@@ -50,7 +50,8 @@ Primitives for File i/o.
 # define strcasecmp stricmp
 #endif
 
-#ifdef SC_WIN32
+#ifdef _WIN32
+#include <stdio.h>
 #include "SC_Win32Utils.h"
 #include "SC_DirUtils.h"
 #endif
@@ -126,12 +127,23 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		// the file is deleted automatically when closed
 		if (sc_DirectoryExists(filename)) {
 			int err;
+#ifdef _MSC_VER
 			err = tmpfile_s(&file);
 			if (!err) {
 				SetPtr(&pfile->fileptr, file);
 				SetTrue(a);
 				return errNone;
 			}
+#elif defined(__MINGW32__)
+			file = tmpfile();
+			if (file) {
+				SetPtr(&pfile->fileptr, file);
+				SetTrue(a);
+				return errNone;
+			}
+#else
+#error compiler unsupported
+#endif
 		}
 #endif
 		SetNil(a);
