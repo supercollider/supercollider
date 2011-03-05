@@ -5,6 +5,8 @@ SCDoc {
     classvar <docMap;
     classvar <p, <r;
     classvar doWait;
+    classvar progressText = nil, progressWindow = nil;
+    classvar progressCount = 0, progressMax = 1;
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
@@ -15,7 +17,12 @@ SCDoc {
     }
     
     *postProgress {|string|
-        string.postln;
+        var prg = (progressCount/progressMax*100).round(0.1).asString ++ "%";
+        if(progressText.notNil) {
+            progressText.string = "Progress: "++prg++"\n\n"++string;
+        } {
+            (prg+string).postln;
+        };
         if(doWait, {0.wait});
     }
 
@@ -57,14 +64,17 @@ SCDoc {
         SCDoc.postProgress("Generating ClassTree...");
         p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews",false);
+        progressCount = progressCount + 1;
 
         SCDoc.postProgress("Generating Class overview...");
         p.overviewAllClasses(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews",false);
+        progressCount = progressCount + 1;
 
         SCDoc.postProgress("Generating Methods overview...");
         mets = p.overviewAllMethods(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews",false);
+        progressCount = progressCount + 1;
 
         SCDoc.postProgress("Writing Methods JSON index...");
         f = File.open(SCDoc.helpTargetDir +/+ "methods.js","w");
@@ -80,15 +90,18 @@ SCDoc {
         };
         f.write("\n];");
         f.close;
-
+        progressCount = progressCount + 1;
+        
         SCDoc.postProgress("Generating Documents overview...");
         p.overviewAllDocuments(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews", false);
+        progressCount = progressCount + 1;
 
         SCDoc.postProgress("Generating Categories overview...");
         p.overviewCategories(categoryMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews", true);
-
+        progressCount = progressCount + 1;
+        
 //        SCDoc.postProgress("Generating Server overview...");
 //        p.overviewServer(categoryMap);
 //        r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
@@ -288,20 +301,45 @@ SCDoc {
         });
     
     }
+    
+    *makeProgressWindow {
+        var a, b;
+        if(GUI.scheme.isNil and: doWait, {^nil});
+        
+        progressWindow = Window("Documentation update",500@100).alwaysOnTop_(true).userCanClose_(false);
 
-    *updateAll {|force=false,doneFunc=nil,threaded=true|
-        var recurseHelpSource = {|dir,force|
-            SCDoc.postProgress("Parsing all in "++dir);
-            PathName(dir).filesDo {|path|
-                this.updateFile(path.fullPath, dir, force);
+        b = VLayoutView.new(progressWindow,500@100);
+        StaticText(b).string_("Please wait while updating help files...\n");
+        progressText = TextView(b).editable_(false);
+
+        progressWindow.front;
+    }
+
+    *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true|
+        // FIXME: split updateFile() so that it first collects all files that needs updating, then we run it on that list.
+        // then we can have progress of files that needs update, not for all files.
+        var fileList = List.new;
+        var processFiles = {
+            SCDoc.postProgress("Processing helpfiles...");
+            fileList.do {|entry|
+                this.updateFile(entry[0], entry[1], force);
+                progressCount = progressCount + 1;
             };
         };
-        var findExtHelp = {|p,force|
+        var recurseHelpSource = {|dir|
+//            SCDoc.postProgress("Parsing all in "++dir);
+            SCDoc.postProgress("Collecting helpfiles in "++dir);
+            PathName(dir).filesDo {|path|
+//                this.updateFile(path.fullPath, dir, force);
+                fileList.add([path.fullPath, dir]);
+            };
+        };
+        var findExtHelp = {|p|
             p.folders.do {|p2|
                 if(p2.fileName=="HelpSource") {
-                    recurseHelpSource.(p2.fullPath,force);
+                    recurseHelpSource.(p2.fullPath);
                 } {
-                    findExtHelp.(p2,force);
+                    findExtHelp.(p2);
                 }
             }
         };
@@ -317,11 +355,15 @@ SCDoc {
                 e.delete = true;
             };
 
-            recurseHelpSource.(helpSourceDir, force);
-            findExtHelp.(PathName(thisProcess.platform.userExtensionDir), force);
-            findExtHelp.(PathName(thisProcess.platform.systemExtensionDir), force);
+            recurseHelpSource.(helpSourceDir);
+            findExtHelp.(PathName(thisProcess.platform.userExtensionDir));
+            findExtHelp.(PathName(thisProcess.platform.systemExtensionDir));
+            progressMax = fileList.size + 4 + 6;
+            progressCount = 0;
+            processFiles.value;
 
             this.handleUndocumentedClasses(force);
+            progressCount = progressCount + 1;
             docMap.pairsDo{|k,e|
                 if(e.delete==true, {
                     SCDoc.postProgress("Deleting "++e.path);
@@ -331,15 +373,20 @@ SCDoc {
                 e.removeAt(\delete); //remove the key since we don't need it anymore
             };
             this.writeDocMap;
+            progressCount = progressCount + 1;
             this.makeCategoryMap;
+            progressCount = progressCount + 1;
             this.makeOverviews;
             this.postProgress("Writing Document JSON index...");
             this.docMapToJSON(this.helpTargetDir +/+ "docmap.js");
-
+            progressCount = progressCount + 1;
+            
             "SCDoc done!".postln;
             doneFunc.value();
             doWait=false;
+            progressWindow !? { progressWindow.userCanClose = true };
         };
+        if(gui, {this.makeProgressWindow});
         if(doWait = threaded, {
             Routine(f).play(AppClock);
         }, f);
