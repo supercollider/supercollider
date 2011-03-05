@@ -33,6 +33,7 @@
 
 using namespace Py;
 
+#include "SCBase.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "GC.h"
