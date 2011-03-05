@@ -35,9 +35,7 @@
 #endif
 
 #include "PyrParseNode.h"
-#ifndef SC_WIN32
-# include "lang11d_tab.h"
-#endif
+#include "Bison/lang11d_tab.h"
 #include "SCBase.h"
 #include "PyrObject.h"
 #include "PyrObjectProto.h"
@@ -69,11 +67,6 @@
 
 #include "SC_DirUtils.h"
 
-#ifdef SC_WIN32
-# include <stdio.h>
-# define MAXPATHLEN _MAX_PATH
-# include "Bison/lang11d_tab.h"
-#endif
 
 int yyparse();
 int processaccidental1(char *s);
