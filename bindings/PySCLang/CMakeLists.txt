@@ -1,10 +1,12 @@
 find_package(PythonLibs)
 
+set(pycxxdir ${CMAKE_SOURCE_DIR}/external_libraries/pycxx-6.2.2)
+
 set(PySCLangSource
-	pycxx/Src/cxx_extensions.cxx
-	pycxx/Src/cxxextensions.c
-	pycxx/Src/cxxsupport.cxx
-	pycxx/Src/IndirectPythonInterface.cxx
+	${pycxxdir}/Src/cxx_extensions.cxx
+	${pycxxdir}/Src/cxxextensions.c
+	${pycxxdir}/Src/cxxsupport.cxx
+	${pycxxdir}/Src/IndirectPythonInterface.cxx
 
 	PySCLang_Module.cpp
 	PySCLang_Module_GUIStuff.cpp
@@ -16,7 +18,7 @@ if(WIN32)
 endif()
 
 include_directories(${PYTHON_INCLUDE_PATH})
-include_directories(pycxx)
+include_directories(${pycxxdir})
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
 					${CMAKE_SOURCE_DIR}/include/lang
