@@ -1,4 +1,7 @@
 find_package(Sndfile)
+if (WIN32)
+	find_package(Portaudio)
+endif()
 
 # here we choose who provides us with the FFT lib
 if (FFT_GREEN)
@@ -161,6 +164,16 @@ elseif(AUDIOAPI STREQUAL portaudio)
 elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
+
+if(PTHREADS_FOUND)
+	target_link_libraries(libscsynth ${PTHREADS_LIBRARIES})
+endif()
+
+
+if (WIN32)
+	target_link_libraries(libscsynth wsock32 ws2_32)
+endif()
+
 
 set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
 # These two properties are ABI version info, not sc version:

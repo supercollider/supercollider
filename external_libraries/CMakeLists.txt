@@ -7,16 +7,18 @@ aux_source_directory(boost/libs/thread/src/ boost_thread )
 
 include_directories(boost)
 
-if (PTHREADS_FOUND)
-    aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_posix )
-    add_library(boost_thread STATIC ${boost_thread} ${boost_thread_posix})
-    target_link_libraries(boost_thread ${PTHREADS_LIBRARY})
-
-    include_directories(${PTHREADS_INCLUDE_DIR})
+if(WIN32)
+    aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
+elseif(PTHREADS_FOUND)
+    aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 else()
-    message(SEND_ERROR "we need to implement boost_thread for non-posix systems")
+    message(SEND_ERROR "we need to implement boost_thread")
 endif()
 
+add_library(boost_thread STATIC ${boost_thread} ${boost_thread_platform})
+target_link_libraries(boost_thread ${PTHREADS_LIBRARY})
+
+include_directories(${PTHREADS_INCLUDE_DIR})
 
 
 aux_source_directory(boost/libs/program_options/src/ boost_program_options )
