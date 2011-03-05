@@ -30,6 +30,7 @@
 # ifndef PATH_MAX
 #  define PATH_MAX _MAX_PATH
 # endif
+# include <string.h>
 # define strcasecmp stricmp
 # define snprintf _snprintf
 #endif

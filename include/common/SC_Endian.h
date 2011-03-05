@@ -46,6 +46,8 @@
 # define BIG_ENDIAN 4321
 # define BYTE_ORDER LITTLE_ENDIAN
 # include <winsock2.h>
+# undef IN
+# undef OUT
 
 #elif defined(__linux__)
 

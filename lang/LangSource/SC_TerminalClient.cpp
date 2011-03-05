@@ -29,6 +29,7 @@
 #include <fcntl.h>
 
 #ifdef SC_WIN32
+# define __GNU_LIBRARY__
 # include "getopt.h"
 # include "SC_Win32Utils.h"
 # include <io.h>
@@ -371,7 +372,9 @@ char ** sc_rl_completion (const char *text, int start, int end){
 #endif
 
 static const int fd = 0;
+#ifndef _WIN32
 static struct pollfd pfds = { fd, POLLIN, 0 };
+#endif
 
 void SC_TerminalClient::initCmdLine()
 {
@@ -423,6 +426,8 @@ static SC_StringBuffer gCmdLine;
 
 void SC_TerminalClient::readCmdLine()
 {
+#ifndef _WIN32
+
 #ifdef HAVE_READLINE
 	if( mUseReadline ) {
 		FD_ZERO(&rl_rfds);
@@ -439,7 +444,7 @@ void SC_TerminalClient::readCmdLine()
 			quit(1);
 			return;
 		}
-	}else{
+	} else {
 #endif
 		int nfds = poll(&pfds, POLLIN, 0);
 		if (nfds > 0) {
@@ -451,6 +456,9 @@ void SC_TerminalClient::readCmdLine()
 		}
 #ifdef HAVE_READLINE
 	} // useReadLine
+#endif
+#else
+	assert(false);
 #endif
 }
 
@@ -475,10 +483,6 @@ void SC_TerminalClient::commandLoop()
 		}
 	}
 }
-
-#ifdef SC_WIN32
-# define nanosleep(tv, tz) win32_nanosleep(tv, tz)
-#endif
 
 void SC_TerminalClient::daemonLoop()
 {

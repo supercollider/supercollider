@@ -127,7 +127,7 @@ sc_pclose(FILE *iop, pid_t mPid)
 
 #else
 
-#include <Windows.h>
+#include <windows.h>
 #include <fcntl.h>
 #include <io.h>
 #include <errno.h>

@@ -35,6 +35,7 @@
 #include "clz.h"
 #include "sc_msg_iter.h"
 #include <stdlib.h>
+#include "SC_Alloca.h"
 
 #ifdef _WIN32
 
@@ -42,10 +43,6 @@
 #ifndef __GNUC__
 #define __attribute__(x)
 #endif
-
-// workaround for IN/OUT conflict with Win32 headers. see SC_Unit.h for details
-#define IN SC_IN
-#define OUT SC_OUT
 
 #ifdef _MSC_VER
 #include <xmath.h>

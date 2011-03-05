@@ -25,7 +25,9 @@
 #include <stdio.h>
 #ifdef _WIN32
 # include <stdlib.h>
+#ifndef PATH_MAX
 # define PATH_MAX _MAX_PATH
+#endif
 #endif
 
 #include "SC_BoundsMacros.h"
