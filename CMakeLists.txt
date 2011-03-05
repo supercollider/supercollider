@@ -106,7 +106,7 @@ if (NOT PTHREADS_FOUND)
 endif()
 include_directories(${PTHREADS_INCLUDE_DIR})
 
-if (MSVC)
+if (MSVC OR MINGW)
     set(MATH_LIBRARY "")
 else()
     find_library(MATH_LIBRARY m)

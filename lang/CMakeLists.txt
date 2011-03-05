@@ -1,3 +1,5 @@
+find_package(FFTW3f)
+
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
@@ -232,6 +234,15 @@ if(SNDFILE_FOUND)
 elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
+
+if (FFTW3F_FOUND)
+	include_directories (${FFTW3F_INCLUDE_DIR})
+	target_link_libraries(libsclang ${FFTW3F_LIBRARY})
+endif()
+
+if (WIN32)
+	target_link_libraries(libsclang wsock32 ws2_32)
+endif()
 
 if (GC_SANITYCHECK)
 	add_definitions(-DGC_SANITYCHECK)
