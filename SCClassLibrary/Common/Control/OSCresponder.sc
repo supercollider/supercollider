@@ -97,19 +97,23 @@ OSCMultiResponder : OSCresponder {
 
 OSCresponderNode : OSCresponder {
 	
-	//i.zannos fix
+	var <added = false;
+	
 	add {
 		var made, found;
-		made = OSCMultiResponder(addr, cmdName);
-		found = OSCresponder.all.findMatch(made);
-		if(found.isNil, { made.nodes = [this]; made.add; ^this });
-		if (found.class === OSCresponder, {
-			found.remove;
-			made.nodes = [found, this];
-			made.add;
-		},{
-			found.nodes = found.nodes.add(this)
-		});
+		if(added.not, {
+			made = OSCMultiResponder(addr, cmdName);
+			found = all.findMatch(made);
+			if(found.isNil, { made.nodes = [this]; made.add; added = true; ^this });
+			if (found.class === OSCresponder, {
+				found.remove;
+				made.nodes = [found, this];
+				made.add;
+			},{
+				found.nodes = found.nodes.add(this)
+			});
+			added = true;
+		})
 	}
 
 	removeWhenDone {
@@ -124,11 +128,12 @@ OSCresponderNode : OSCresponder {
 	remove {
 		var resp, alreadyThere;
 		resp = OSCMultiResponder(addr, cmdName);
-		alreadyThere = OSCresponder.all.findMatch(resp);
+		alreadyThere = all.findMatch(resp);
 		if(alreadyThere.notNil)
 		{
 			alreadyThere.nodes.remove(this);
 			if(alreadyThere.isEmpty, { alreadyThere.remove });
+			added = false;
 		};
 	}
 
