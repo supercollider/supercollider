@@ -566,6 +566,7 @@ SCDocParser {
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
         
         r.add((tag:'prose', text:"This is an alphabetical list of all implemented methods, including private and undocumented methods.", display:\block));
+        r.add((tag:'prose', text:"The classnames are prefixed by * for classmethods and postfixed by + for extensions.", display:\block));
 
         t = IdentityDictionary.new;
 
@@ -604,15 +605,18 @@ SCDocParser {
 
             m.add((tag:'##'));
             m.add((tag:'anchor', text:name));
-            m.add((tag:'prose', text:name));
+            m.add((tag:'code', text:name));
             m.add((tag:'||'));
             if(name.last==$_, {name=name.drop(-1)});
             t[k].do {|c,i|
                 n = c[0];
-                if(n.find("Meta_")==0, {n = n.drop(5)});
                 if(i!=0, {m.add((tag:'prose', text:", ", display:\inline))});
-                if(c[1], {m.add((tag:'prose', text:"+", display:\inline))});
+                if(n.find("Meta_")==0, {
+                    n = n.drop(5);
+                    m.add((tag:'prose', text:"*", display:\inline));
+                });
                 m.add((tag:'link', text: "Classes" +/+ n ++ "#" ++ SCDocRenderer.simplifyName(name)));
+                if(c[1], {m.add((tag:'prose', text:"+", display:\inline))});
             };
         };
 
