@@ -26,6 +26,19 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 					${CMAKE_SOURCE_DIR}/editors/scapp/include
 				   )
 
-add_library(PySCLang ${PySCLangSource})
+add_library(PySCLang MODULE ${PySCLangSource})
 set_target_properties(PySCLang
-					  PROPERTIES LINKER_LANGUAGE C)
+					  PROPERTIES LINKER_LANGUAGE C
+								 PREFIX "")
+
+target_link_libraries(PySCLang ${PYTHON_LIBRARY})
+target_link_libraries(PySCLang libsclang)
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+	find_package(PythonInterp)
+
+	execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
+		OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+	install(TARGETS PySCLang DESTINATION ${PYTHON_SITE_PACKAGES})
+endif()

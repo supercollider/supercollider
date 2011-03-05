@@ -21,3 +21,7 @@ endif()
 if(SC_VIM)
 	add_subdirectory(scvim)
 endif()
+
+if(SC_PSYCOLLIDER)
+	add_subdirectory(Psycollider)
+endif()

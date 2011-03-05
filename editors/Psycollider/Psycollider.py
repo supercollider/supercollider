@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # File: Psycollider.py
 # Copyright (c) Benjamin Golinvaux
 #
