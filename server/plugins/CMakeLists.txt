@@ -67,18 +67,13 @@ endif()
 
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
-        if(WIN32)
-        	add_library(${plugin_name} MODULE ${plugin} ../../platform/windows/PlugIns/ExportHelper.cpp)
-        else()
-        	add_library(${plugin_name} MODULE ${plugin})
-        endif()
+		add_library(${plugin_name} MODULE ${plugin})
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
 set(uiugens MouseUGens KeyboardUGens)
 
 if (WIN32)
-    set(scplugin_common_sources ../../platform/windows/PlugIns/ExportHelper.cpp)
     if(MSVC)
         include_directories (../../platform/windows/compat_stuff) # for stdbool.h
     endif()
@@ -115,10 +110,6 @@ add_library(ML_UGens MODULE
 
 if(NOT NO_LIBSNDFILE)
 	set(diskio_sources DiskIO_UGens.cpp)
-
-	if(WIN32)
-		set(diskio_sources ${diskio_sources} ../../platform/windows/PlugIns/ExportHelper.cpp)
-	endif()
 
 	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
