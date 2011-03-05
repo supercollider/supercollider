@@ -6,11 +6,14 @@ set(PySCLangSource
 	pycxx/Src/cxxsupport.cxx
 	pycxx/Src/IndirectPythonInterface.cxx
 
-	PySCLang.cpp
 	PySCLang_Module.cpp
 	PySCLang_Module_GUIStuff.cpp
 	PySCLang_vpost_stuff.cpp
 )
+
+if(WIN32)
+	list(APPEND PySCLangSource PySCLang.cpp)
+endif()
 
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(pycxx)

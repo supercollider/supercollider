@@ -9,6 +9,7 @@ include_directories(boost)
 
 if(WIN32)
     aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
+    add_definitions(-DBOOST_THREAD_BUILD_DLL)
 elseif(PTHREADS_FOUND)
     aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 else()
