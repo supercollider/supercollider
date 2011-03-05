@@ -35,17 +35,22 @@ TODO
 
 integration with frontends / main sc distro
 ===========================================
-* update docs automatically when needed. Make an SCDoc.checkUpdate that returns fast if nothing needs to be done, otherwise calls SCDoc.updateAll.
+* ship pre-rendered help with the binary package (render after building supercollider)
+just use the pre-rendered help until the users need to update help, which would first copy or hard-link the pre-rendered
+files into helpTargetDir and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else the system-wide location (thisProcess.platform.systemAppSupportDir +/+ "Help");
+
+* update docs automatically when needed.
+Make an SCDoc.checkUpdate that returns fast if nothing needs to be done, otherwise calls SCDoc.updateAll.
 
 Save a list of all classes so that we can detect if any new ones where added (extensions).
     x = Class.allClasses.collectAs(_.name,IdentitySet)
 
-Only update overviews (methods, classes, classtree) when this list changed.. no need to update those if it was only help-files that changed. same with JSON method index.
+Only update methods.js, methods overview, class overview and classtree when this list changed.. no need to update those if it was only help-files that changed.
 
 Check each class in above Set for update like this:
-    1) class was not in the set above (x.includes(\SinOsc))
-    2) class source file is newer than the rendered doc
-    3) if possible, compare class checksum?
+        class was not in the set above (x.includes(theClass.name).not) (means the class was newly installed)
+    or: class source file is newer than the rendered doc (means the class source might have changed)
+
 If a class needs update, add it and all its subclasses to a Set of classes that should be updated.
 
 Traverse "Classes/" folder in the updateAll path iteration as usual to catch updated class helpfiles, remove such classes from the Set above.
@@ -56,39 +61,13 @@ Then, for each class in the should-update Set:
     - then render to HTML
 Note that this will also handle any undocumented classes.. (rename handleUndocumentedClasses to checkClassUpdates).
 
-Only update categories and document JSON index if the docMap changed from last run.
+Only update docmap.js and categories overview if the docMap changed from last run. How do we check this? at least it seems a 'diff scdoc_cache scdoc_cache.old' returns no differences if nothing changed.. so maybe we can just copy the read cache object and compare it with the one we're going to write..
 
-* should we ship pre-rendered help with the binary? (render after building supercollider)
-just use the pre-rendered help until the users need to update help, which would first copy or hard-link the pre-rendered files into user location and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else a system-wide location.
-
-* should we post progress messages or keep them in internal log and use external GUI to poll this?
-or at least have an option to pop up a GUI progress dialog. is there a quick way to count the number of documents so we can
-get accurate progress information? perhaps collect the file trees first, then traverse..
-
-* should we even run ScDoc.updateAll in a separate process?
+* should we even run ScDoc.updateAll in a separate process for real background processing?
 
 * fix or deprecate all old help classes and methods
 
 -------------------------------------------
-
-- automatically create links for ClassNames in everything but link:: tags:
-//        if(("^\\b[A-Z][A-Za-z_0-9]+".matchRegexp(word) and: {word.asSymbol.asClass.notNil})
-//        and: {current.isNil or: {current.tag!=\link}}) {
-//            tree.add((tag:\link, display:\inline, text:"Classes/"++word, children:nil));
-//        } {
-Did not work in the parser when the word is inside something else than prose..
-Need to do this in the renderer, something like this:
-
-    x = "hello SinOsc=1.23; Foo.someMethod(BarBa2);";
-    y = "";
-    z = 0;
-    x.findRegexp("\\b[A-Z][A-Za-z_0-9]+").do {|m|
-        y = y + x.copyRange(z,m[0]-1);
-        y = y + "<" ++ m[1] ++ ">";
-        z = m[0] + m[1].size;
-    };
-    y.postln;
-
 
 - this doesn't work as it should:
 
