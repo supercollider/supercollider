@@ -59,14 +59,22 @@ div.mets {
     margin-top: 0.5em;
     margin-bottom: 0.5em;*/
     padding: 0.5em;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
     font-size: 9pt;
     color: #555;
     background: #eee;
 /*    border: 1px solid #ddd;*/
+/*    border-bottom: 1px solid #ddd;*/
 }
 .label {
     color: black;
     font-size: 10pt;
+}
+#search_settings {
+    font-size: 9pt;
+    color: #555;
+    margin-bottom: 0.5em;
 }
 #search_settings td {
     border: none;
@@ -476,7 +484,7 @@ function delayed_update() {
 <span class="label">Search text:</span> <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
 
 <table id="search_settings">
-<td><span class="label">Options:</span>
+<td>Options:
 <td>
 <div id="search_checks">
 <input type="checkbox" id="ignore_case" checked="true">Ignore case</input>
@@ -486,7 +494,7 @@ function delayed_update() {
 <input class="nonregex" type="checkbox" id="check_suffix">Ends with</input>
 </div>
 <tr>
-<td><span class="label">Match:</span>
+<td>Match:
 <td>
 <div id="search_checks">
 <input type="checkbox" id="check_title" checked="true">Title/Class</input>
@@ -496,7 +504,7 @@ function delayed_update() {
 &nbsp;&larr; <a href="javascript:clear1()">clear all</a>
 </div>
 <tr>
-<td><span class="label">Include:</span>
+<td>Include:
 <td>
 <div id="search_checks">
 <input type="checkbox" id="check_classes" checked="true">Classes</input>
