@@ -401,9 +401,9 @@ SCDoc {
             this.makeOverviews;
             this.postProgress("Writing Document JSON index...");
             this.docMapToJSON(this.helpTargetDir +/+ "docmap.js");
-            progressCount = progressCount + 1;
+            progressCount = progressMax;
             
-            "SCDoc done!".postln;
+            this.postProgress("SCDoc done!");
             doneFunc.value();
             doWait=false;
             progressWindow !? { progressWindow.userCanClose = true };
