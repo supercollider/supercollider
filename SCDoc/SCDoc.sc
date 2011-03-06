@@ -83,7 +83,6 @@ SCDoc {
             f.write("['"++k++"',[");
             v.do {|c,i|
                 n = c[0];
-                if(n.find("Meta_")==0, {n = n.drop(5)});
                 f.write("'"++n++"',");
             };
             f.write("]],\n");

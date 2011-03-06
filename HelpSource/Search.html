@@ -293,6 +293,10 @@ function doPrint() {
             for(var i=0;i<x.length;i++) {
                 var m = x[i];
                 if(i!=0) div2.appendChild(document.createTextNode(", "));
+                if(/^Meta_/.test(m)) {
+                    div2.appendChild(document.createTextNode("*"));
+                    m = m.slice(5);
+                }
                 var a = document.createElement("a");
                 a.setAttribute("href","Classes/"+m+".html#"+k);
 //                a.onclick = updateHash;

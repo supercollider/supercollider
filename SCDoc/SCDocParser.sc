@@ -566,7 +566,7 @@ SCDocParser {
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
         
         r.add((tag:'prose', text:"This is an alphabetical list of all implemented methods, including private and undocumented methods.", display:\block));
-        r.add((tag:'prose', text:"The classnames are prefixed by * for classmethods and postfixed by + for extensions.", display:\block));
+        r.add((tag:'prose', text:"The classnames are prefixed by * for classmethods and postfixed by + for extensionmethods.", display:\block));
 
         t = IdentityDictionary.new;
 
