@@ -83,7 +83,6 @@
 		7725B4BD1191E0510056CA2F /* SuperCollider_BrowserPage.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7725B4BC1191E0510056CA2F /* SuperCollider_BrowserPage.xib */; };
 		772C0EA012DA0D6F009C0126 /* SC_fftlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 772C0E9A12DA0CCA009C0126 /* SC_fftlib.cpp */; };
 		772C0F3312DA126F009C0126 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5239129C374C00CE89DD /* MediaPlayer.framework */; };
-		774770CF12FDE7EB007449B3 /* scUBlibsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEF1123323800D2A968 /* scUBlibsndfile.a */; };
 		775574050FBE45A500192282 /* SuperCollider_FileTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 775574040FBE45A500192282 /* SuperCollider_FileTransfer.xib */; };
 		7759955312FDE20A00603187 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7759955212FDE20A00603187 /* Accelerate.framework */; };
 		776B2A97119075EF001F253D /* JITLib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 776B2A70119075EC001F253D /* JITLib */; };
@@ -96,6 +95,7 @@
 		778F18490F50B1D000CB6629 /* Common in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18450F50B1D000CB6629 /* Common */; };
 		778F184A0F50B1D000CB6629 /* DefaultLibrary in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18460F50B1D000CB6629 /* DefaultLibrary */; };
 		778F184B0F50B1D000CB6629 /* Platform in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F18470F50B1D000CB6629 /* Platform */; };
+		7791ECBF1324044500E5CDBF /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 77597AEA1123320700D2A968 /* libsndfile_iphone.a */; };
 		77BA5223129C371F00CE89DD /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5222129C371F00CE89DD /* CFNetwork.framework */; };
 		77BA5234129C373400CE89DD /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5233129C373400CE89DD /* CoreFoundation.framework */; };
 		77BA5236129C373B00CE89DD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77BA5235129C373B00CE89DD /* CoreGraphics.framework */; };
@@ -454,7 +454,7 @@
 				77BA523E129C376000CE89DD /* Foundation.framework in Frameworks */,
 				772C0F3312DA126F009C0126 /* MediaPlayer.framework in Frameworks */,
 				7759955312FDE20A00603187 /* Accelerate.framework in Frameworks */,
-				774770CF12FDE7EB007449B3 /* scUBlibsndfile.a in Frameworks */,
+				7791ECBF1324044500E5CDBF /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -33,8 +33,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>NSMainNibFile</key>
-	<string>SuperCollider_MainWindow</string>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>NSMainNibFile~ipad</key>
 	<string>SuperCollider_MainWindow_iPad</string>
 </dict>
