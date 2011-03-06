@@ -287,7 +287,7 @@ list::
 ## link::Classes/TWChoose::
 ::
 
-Also see UGens>Generators>Stochastic in link::Overviews/Categories#ugens>generators>stochastic::
+Also see UGens>Generators>Stochastic in the link::Browse#UGens>Generators>Stochastic:: page.
 
 subsection:: UGens that generate random numbers once, or on trigger:
 

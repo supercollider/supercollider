@@ -12,7 +12,7 @@ definitionlist::
 ## link::Browse:: || Browse all documents by categories
 ::
 
-SECTION::Getting Started
+SECTION::Getting started
 
 These might be useful starting points on getting help with SuperCollider:
 
@@ -21,10 +21,9 @@ definitionlist::
 ## link::Tutorials/Introductory_tutorial:: || Get started with SuperCollider
 ::
 
-SECTION::Documentation Overviews
+SECTION::Documentation indexes
 
 definitionlist::
-## link::Overviews/Categories:: || All documents by categories
 ## link::Overviews/Documents:: || Alphabetical index of all documents
 ## link::Overviews/Classes:: || Alphabetical index of all classes
 ## link::Overviews/ClassTree:: || All classes by inheritance tree

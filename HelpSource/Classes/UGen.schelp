@@ -1,7 +1,7 @@
 class:: UGen
 summary:: Abstract superclass of all unit generators
 categories:: UGens, Server>Abstractions
-related:: Overviews/Categories#UGens, Guides/Tour_of_UGens, Tutorials/UGens-and-Synths
+related:: Browse#UGens, Guides/Tour_of_UGens, Tutorials/UGens-and-Synths
 
 description::
 

@@ -23,7 +23,7 @@ definitionlist::
 ## Do SCDoc:updateAll to generate HTML strong:: and check that it rendered OK ::.
 ::
 
-A list of all undocumented classes can be seen here: link::Overviews/Categories#undocumented_classes:: (auto-generated).
+A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
 
 note:: The help files should use UTF-8 encoding!
 
@@ -45,7 +45,7 @@ Example header:
 code::
 title:: My help file
 summary:: A short single-line summary of what this is
-categories:: HelpSystem, Language>Conditionals, AndSoOn
+categories:: Language>Conditionals, AndSoOn
 ::
 
 Then use normal text in sections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
@@ -119,7 +119,7 @@ set or get the help source directory
 ::
 
 section:: Categories
-Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See link::Overviews/Categories:: (auto-generated) for existing categories.
+Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See the link::Browse##Document Browser:: (auto-generated) for existing categories.
 
 For UGens, you should use the existing categories like UGens>Filter>Nonlinear. View the current categories like this:
 code::

@@ -69,6 +69,8 @@ Only update docmap.js and categories overview if the docMap changed from last ru
 
 -------------------------------------------
 
+- make a SCDoc.makeClassTemplate(class,outputfile) that fills in the title, categories if existing, method and argument names, etc..
+
 - this doesn't work as it should:
 
 modalrangetag:: blah blah blah
