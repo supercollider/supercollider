@@ -120,7 +120,7 @@ SCDoc {
 //        SCDoc.postProgress("Generating Categories overview...");
 //        p.overviewCategories(categoryMap);
 //        r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews", true);
-        progressCount = progressCount + 1;
+//        progressCount = progressCount + 1;
         
     }
 
@@ -380,10 +380,10 @@ SCDoc {
             recurseHelpSource.(helpSourceDir);
             findExtHelp.(PathName(thisProcess.platform.userExtensionDir));
             findExtHelp.(PathName(thisProcess.platform.systemExtensionDir));
-            progressMax = fileList.size + 4 + 6;
-            progressCount = 0;
+            progressMax = fileList.size + 11;
+            progressCount = 1;
             processFiles.value;
-
+            progressCount = progressCount + 1;
             this.handleUndocumentedClasses(force);
             progressCount = progressCount + 1;
             docMap.pairsDo{|k,e|
