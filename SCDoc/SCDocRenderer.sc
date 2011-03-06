@@ -418,7 +418,6 @@ SCDocRenderer {
             "<table class='headMenu'><tr>"
             "<td><a href='" ++ baseDir +/+ "Help.html'>Home</a>"
             "<td><a href='" ++ baseDir +/+ "Browse.html'>Browse</a>"
-            "<td><a href='" ++ baseDir +/+ "Overviews/Categories.html'>Categories</a>"
             "<td><a href='" ++ baseDir +/+ "Overviews/Documents.html'>Document index</a>"
             "<td><a href='" ++ baseDir +/+ "Overviews/Classes.html'>Class index</a>"
             "<td><a href='" ++ baseDir +/+ "Overviews/Methods.html'>Method index</a>"
@@ -443,7 +442,7 @@ SCDocRenderer {
 //            f.write("Categories: ");
             f.write(SCDoc.splitList(x.text).collect {|r|
 //                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++SCDocRenderer.simplifyName(r).split($>).first++"'>"++r++"</a>"
-                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++SCDocRenderer.simplifyName(r)++"'>"++r++"</a>"
+                "<a href='"++baseDir +/+ "Browse.html#"++r++"'>"++r++"</a>"
             }.join(", "));
             f.write("</div>");
         });    

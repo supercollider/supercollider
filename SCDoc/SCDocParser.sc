@@ -397,7 +397,7 @@ SCDocParser {
         this.dumpClassTree(n,Object);
         root = r;
     }
-
+/*
     makeCategoryTree {|catMap,node,filter=nil,toc=false|
         var a, p, e, n, l, m, kinds, folder, v, dumpCats, sorted;
         var tree = Dictionary.new;
@@ -482,41 +482,15 @@ SCDocParser {
 
     overviewCategories {|catMap|
         var r = List.new;
-//        var a, p, e, n, l, m, kinds, folder, v, tree, dumpCats;
         r.add((tag:'title', text:"Document Categories"));
         r.add((tag:'summary', text:"All documents by categories"));
         r.add((tag:'related', text:"Overviews/Documents, Browse, Search"));
         
         this.makeCategoryTree(catMap,r,toc:false);
-        
-        // kind - category
-/*        kinds = Dictionary.new;
-        catMap.pairsDo {|k,v|
-            v.do {|file|
-                folder = file.path.dirname;
-                if(folder!=".", {
-                    if(kinds[folder].isNil, { kinds[folder] = Dictionary.new });
-                    if(kinds[folder][k].isNil, { kinds[folder][k] = List.new });
-                    kinds[folder][k].add(file);
-                });
-            };
-        };
-        kinds.keys.asList.sort {|a,b| a<b}.do {|k|
-            v = kinds[k];
-            r.add((tag:'section', text:k, children:n=List.new));
-            v.keys.asList.sort {|a,b| a<b}.do {|cat|
-                n.add((tag:'subsection', text:cat, children:m=List.new));
-                m.add((tag:'list', children:l=List.new));
-                v[cat].do {|doc|
-                    l.add((tag:'##'));
-                    l.add((tag:'link', text:doc.path));
-                    l.add((tag:'prose', text:" - "++doc.summary));
-                };
-            };
-        };*/
+
         root = r;
     }
-
+*/
     overviewAllClasses {|docMap|
         var name, doc, link, n, r = List.new, cap, old_cap=nil, sortedKeys;
         r.add((tag:'title', text:"Classes"));

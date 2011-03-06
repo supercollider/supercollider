@@ -61,17 +61,17 @@ SCDoc {
     *makeOverviews {
         var mets, f, n;
         
-        SCDoc.postProgress("Generating ClassTree...");
+        SCDoc.postProgress("Generating Class tree...");
         p.overviewClassTree;
         r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews",false);
         progressCount = progressCount + 1;
 
-        SCDoc.postProgress("Generating Class overview...");
+        SCDoc.postProgress("Generating Class index...");
         p.overviewAllClasses(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews",false);
         progressCount = progressCount + 1;
 
-        SCDoc.postProgress("Generating Methods overview...");
+        SCDoc.postProgress("Generating Methods index...");
         mets = p.overviewAllMethods(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews",false);
         progressCount = progressCount + 1;
@@ -91,19 +91,16 @@ SCDoc {
         f.close;
         progressCount = progressCount + 1;
         
-        SCDoc.postProgress("Generating Documents overview...");
+        SCDoc.postProgress("Generating Documents index...");
         p.overviewAllDocuments(docMap);
         r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews", false);
         progressCount = progressCount + 1;
 
-        SCDoc.postProgress("Generating Categories overview...");
-        p.overviewCategories(categoryMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews", true);
+//        SCDoc.postProgress("Generating Categories overview...");
+//        p.overviewCategories(categoryMap);
+//        r.renderHTML(helpTargetDir +/+ "Overviews/Categories.html","Overviews", true);
         progressCount = progressCount + 1;
         
-//        SCDoc.postProgress("Generating Server overview...");
-//        p.overviewServer(categoryMap);
-//        r.renderHTML(helpTargetDir +/+ "Overviews/Server.html","Overviews");
     }
 
     *makeMethodList {|c,n,tag|
