@@ -106,9 +106,16 @@ SCDocRenderer {
 //perhaps we should check argument names at least? and only use overriding for "hidden" default values?
 //also, perhaps better to read the default values from the argument tags?
 //ignore markup-provided arguments for now..
-                c = if(parentTag==\instancemethods,{currentClass},{currentClass.class});
-                css = if(parentTag==\instancemethods,{"imethodname"},{"cmethodname"});
-                pfx = if(parentTag==\instancemethods,{"-"},{"*"});
+                if(parentTag==\instancemethods) {
+                    c = currentClass;
+                    css = "imethodname";
+                    pfx = "-";
+                } {
+                    c = currentClass.class;
+                    css = "cmethodname";
+                    pfx = "*";
+                };
+
                 split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
                     mstat = 0;
@@ -118,16 +125,14 @@ SCDocRenderer {
                     m = c.findRespondingMethodFor(sym.asGetter);
                     m !? {
                         mstat = mstat | 1;
-//                        mets.add(sym.asGetter);
                         args = SCDoc.makeArgString(m);
                     };
                     //check for setter
                     c.findRespondingMethodFor(sym.asSetter) !? {
                         mstat = mstat | 2;
-//                        mets.add(sym.asSetter);
                     };
 
-                    file.write("<a name='"++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++pfx++"</span>"++this.escapeSpecialChars(mname));
+                    file.write("<a name='"++pfx++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++pfx++"</span>"++this.escapeSpecialChars(mname));
 
                     switch (mstat,
                         // getter only
@@ -139,7 +144,7 @@ SCDocRenderer {
                         // method not found
                         0, { file.write(": METHOD NOT FOUND!</h3></a>\n"); }
                     );
-                    //Note: this only checks if the getter is an extension if there are both getter and setter..
+                    //Note: this only checks if the getter is an extension if there are both getter and setter.. (?)
                     if(m.notNil) {
                         if(m.isExtensionOf(c)) {
                             file.write("<div class='extmethod'>From extension in <a href='" ++ m.filenameSymbol ++ "'>" ++ m.filenameSymbol ++ "</a></div>\n");

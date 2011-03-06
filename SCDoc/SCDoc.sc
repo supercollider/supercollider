@@ -83,7 +83,12 @@ SCDoc {
             f.write("['"++k++"',[");
             v.do {|c,i|
                 n = c[0];
-                f.write("'"++n++"',");
+//                f.write("'"++n++"',");
+                f.write("'"++n);
+                if(c[1]) { //is extension of
+                    f.write("+");
+                };
+                f.write("',");
             };
             f.write("]],\n");
         };
@@ -272,6 +277,7 @@ SCDoc {
         var target = helpTargetDir +/+ subtarget ++".html";
         var folder = target.dirname;
         var ext = source.copyToEnd(lastDot);
+        var didUpdate = false;
         if(source.beginsWith(rootDir).not) {
             SCDoc.postProgress("File location error:\n"++source++"\nis not inside "++rootDir);
             ^nil;
@@ -285,6 +291,7 @@ SCDoc {
                 p.parseFile(source);
                 this.addToDocMap(p,subtarget);
                 r.renderHTML(target,subtarget.dirname);
+                didUpdate = true;
             });
             docMap[subtarget].delete = false;
         }, {
@@ -293,9 +300,10 @@ SCDoc {
                 SCDoc.postProgress("Copying" + source + "to" + (folder +/+ source.basename));
                 ("mkdir -p"+folder.escapeChar($ )).systemCmd;
                 ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
+                didUpdate = true;
             });
         });
-    
+        ^didUpdate;
     }
     
     *makeProgressWindow {
@@ -317,8 +325,11 @@ SCDoc {
         var processFiles = {
             SCDoc.postProgress("Processing helpfiles...");
             fileList.do {|entry|
-                this.updateFile(entry[0], entry[1], force);
-                progressCount = progressCount + 1;
+                if(this.updateFile(entry[0], entry[1], force)) {
+                    progressCount = progressCount + 1;
+                } {
+                    progressMax = progressMax - 1;
+                }
             };
         };
         var recurseHelpSource = {|dir|

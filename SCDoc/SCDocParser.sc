@@ -534,7 +534,7 @@ SCDocParser {
     }
 
     overviewAllMethods {|docMap|
-        var name, n, r = List.new, cap, old_cap, t, m, ext, sortedKeys;
+        var name, n, r = List.new, cap, old_cap, t, m, ext, sortedKeys, pfx;
         r.add((tag:'title', text:"Methods"));
         r.add((tag:'summary', text:"Alphabetical index of all methods"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
@@ -584,12 +584,15 @@ SCDocParser {
             if(name.last==$_, {name=name.drop(-1)});
             t[k].do {|c,i|
                 n = c[0];
+                pfx = "-";
                 if(i!=0, {m.add((tag:'prose', text:", ", display:\inline))});
                 if(n.find("Meta_")==0, {
                     n = n.drop(5);
                     m.add((tag:'prose', text:"*", display:\inline));
+                    pfx = "*";
                 });
-                m.add((tag:'link', text: "Classes" +/+ n ++ "#" ++ SCDocRenderer.simplifyName(name)));
+//                m.add((tag:'link', text: "Classes" +/+ n ++ "#" ++ SCDocRenderer.simplifyName(name)));
+                m.add((tag:'link', text: "Classes" +/+ n ++ "#" ++ pfx ++ name));
                 if(c[1], {m.add((tag:'prose', text:"+", display:\inline))});
             };
         };

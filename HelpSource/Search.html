@@ -310,16 +310,27 @@ function doPrint() {
             var x = mets[mindex][1];
             for(var i=0;i<x.length;i++) {
                 var m = x[i];
+                var pfx = "-";
+                var ext = false;
                 if(i!=0) div2.appendChild(document.createTextNode(", "));
                 if(/^Meta_/.test(m)) {
                     div2.appendChild(document.createTextNode("*"));
                     m = m.slice(5);
+                    pfx = "*";
                 }
+                if(m[m.length-1]=="+") {
+                    m = m.slice(0,-1);
+                    ext = true;
+                }
+
                 var a = document.createElement("a");
-                a.setAttribute("href","Classes/"+m+".html#"+k);
+                a.setAttribute("href","Classes/"+m+".html#"+pfx+k);
 //                a.onclick = updateHash;
                 a.innerHTML = m;
                 div2.appendChild(a);
+                if(ext)
+                    div2.appendChild(document.createTextNode("+"));
+
             }
 
             node.appendChild(div);
@@ -403,7 +414,13 @@ function doSearch() {
                         var c = [];
                         for(i2 in m[1]) {
                             var k = m[1][i2];
-                            var doc = classes[k];
+                            var k2 = k;
+                            if(/^Meta_/.test(k2))
+                                k2 = k2.slice(5);
+                            if(k2[k2.length-1]=="+")
+                                k2 = k2.slice(0,-1);
+
+                            var doc = classes[k2];
                             if(doc && doc.installed != "extension")
                                 c.push(k);
                         }
