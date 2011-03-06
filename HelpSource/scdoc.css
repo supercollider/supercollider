@@ -1,12 +1,9 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
-    margin-left: 2em;
-/*    margin-right: auto;*/
-    margin-top: 2em;
+    margin: 1.25em;
     color: black;
     max-width: 60em;
-    margin-bottom: 3em;
     text-align: justify;
 }
 
@@ -42,53 +39,50 @@ a:hover {
 table.headMenu {
     margin: 0px;
     width: 100%;
-/*    margin-left: 0px;
-    margin-right: auto;*/
-/*    border-collapse: separate;*/
+    border-collapse: separate;
     font-size: 9pt;
-    border-top: 1px solid #ccc;
 }
 
 table.headMenu td {
-    padding: 2px;
-/*    width: 15%;*/
+    padding: 1pt;
     border: none;
     text-align: center;
-/*    background: #eee;*/
-/*    border: 1px solid #ddd;*/
-/*    padding-right: 2em;*/
+    background: #888;
+    font-weight: bold;
 }
 
 table.headMenu td a {
-    color: #777;
+    color: white;
 }
 
 .header {
-/*    background: #c6d0c6;*/
-/*    background: #ccc;*/
-    background: #d8dfd8;
-    padding: 0.5em;
-    border: 1px solid #bbb;
+    border-bottom: 6px solid #000;
 }
 #label, #label a {
-    text-align: left;
     font-weight: bold;
-    color: #777;
-/*    font-size: 8pt;*/
+    color: #999;
 }
 #summary {
+    font-weight: normal;
+}
+#categories {
+    color: #888;
+    font-size: 9pt;
+}
+#related {
     font-weight: bold;
+    margin-top: 0.5em;
 }
 
 .headerimage {
-float: right;
-margin-right: 1ex;
+    float: right;
+    margin-right: 1ex;
 }
 
 .subheader {
     text-align: right;
     font-size: 9pt;
-    color: #333;
+    color: #444;
 }
 
 a.footnote {
@@ -105,31 +99,7 @@ div.footnote {
     margin-bottom: 0.5em;
     margin-top: 0.5em;
     font-size: 9pt;
-/*    text-indent: -2em;
-    padding-left: 2em;*/
 }
-
-#related {
-    font-weight: bold;
-    margin-top: 0.5em;
-}
-
-/*#related a {
-    font-weight: normal;
-}*/
-
-.inheritance, #filename {
-/*    background: #ffe;*/
-}
-
-/*#inheritance, #related {
-    margin-left: 0.5em;
-    border-top: 1px solid #aaa;
-}
-#categories {
-    color: #888;
-}
-*/
 
 .soft {
     color: #777;
@@ -137,16 +107,12 @@ div.footnote {
 
 h1 {
     margin: 0.1em 0;
-    font-size: 2.5em;
-/*        border-top: 1px solid #aaa;*/
-    letter-spacing: 0.05em;
+    font-size: 3em;
     margin-bottom: 0em;
 }
 
 h2 {
-    border-bottom: 4px solid #ccc;
-/*    background: #ddd;
-    padding-left: 0.15em;*/
+    border-bottom: 4px solid #aaa;
     letter-spacing: 0.05em;
     margin-top: 1.5em;
     text-align: left;
@@ -155,10 +121,8 @@ h2 {
 }
 
 h3 {
-    border-bottom: 2px solid #ccc;
-/*    margin-bottom: 0.5em;*/
+    border-bottom: 2px solid #aaa;
     margin-bottom: 2px;
-/*    padding-left: 0.15em;*/
     text-align: left;
 }
 
@@ -168,37 +132,26 @@ h4 {
     margin-left: 0em;
     color: #777;
     border-bottom: 1px solid #ddd;
-/*    font-weight: normal;*/
 }
 
 dt {
     font-weight: bold;
 }
 dd {
-/*    margin-top: -1em;*/
     margin-bottom: 1em;
 }
-
-/*ul, ol {
-    margin-bottom: 2em;
-}
-li {
-    line-height: 0em;
-}
-*/
 
 code.code, pre.code {
     font-family: Andale Mono, monospace;
     font-size: 9pt;
-/*    font-weight: normal;*/
     color: #121;
 }
 
 pre.code {
-    padding: 0.5em;
-    border: 1px solid #e0e0e0;
-    background: #fcfcfc;
     font-size: 9pt;
+    border-left: 2px solid #e0e0e0;
+    padding-left: 1em;
+
 }
 
 code.formula, pre.formula {
@@ -210,8 +163,6 @@ code.formula, pre.formula {
 
 pre.formula {
     padding: 0.5em;
-    border: 1px solid #e0e0e0;
-    background: white;
     text-align: center;
 }
 
@@ -233,26 +184,14 @@ pre.formula {
 }
 
 .methodname, .imethodname, .cmethodname {
-/*    border-bottom: 1px solid #bbb;*/
     font-family: Andale Mono, monospace;
-/*    font-size: 9.5pt;*/
     font-size: 1em;
     font-weight: bold;
     margin-bottom: 0em;
     margin-top: 1em;
-/*    padding-left: 0.2em;*/
     padding: 0.25em;
-/*    border: 1px solid #ddd;*/
-/*    border-bottom: 1px solid #bbb;*/
-border: none;
-}
-
-.imethodname {
+    border: none;
     background: #e7ebe7;
-}
-
-.methodname, .cmethodname {
-    background: #e7e7eb;
 }
 
 .method {
@@ -280,17 +219,10 @@ table.arguments {
     margin-left: 1.5em;
     margin-bottom: 0em;
     margin-top: 0.5em;
-/*    border-top: 1px solid #bbb;*/
-/*    border-bottom: 1px solid #bbb;*/
     border-collapse: collapse;
-/*    border-left: 1px solid #bbb;*/
 }
 
 table.arguments td.argumentname, td.argumentdesc {
-/*    margin-bottom: 0px;*/
-/*    margin-top: 0px;*/
-/*    font-weight: bold;*/
-/*    padding-right: 1em;*/
     vertical-align: top;
     border: none;
     padding-top: 0.2em;
@@ -298,8 +230,6 @@ table.arguments td.argumentname, td.argumentdesc {
 }
 
 td.argumentname {
-/*    font-family: Andale Mono, monospace;
-    font-size: 9.5pt;*/
     font-weight: bold;
 }
 
@@ -307,26 +237,14 @@ div.returnvalue {
     margin-left: 2em;
 }
 
-/*.argument {
-    margin-left: 0em;
-}*/
-
 td p {
     margin-top: 0em;
 }
 
-/*.argument p:first-child {
-    margin-top: 0px;
-}
-*/
-
 .note, .warning {
-/*    background: #eec;*/
-    background: #ffe;
-    border: 1px solid #dd9;
-    padding: 1em;
-/*    margin: 1.5em;*/
-    margin: 1em;
+/*    border-left: 4px solid #eea;*/
+    background: #efefd7;
+    padding: 0.5em;
 }
 .notelabel, .warninglabel {
     font-weight: bold;
@@ -346,18 +264,14 @@ td p {
 #toc {
     margin-bottom: 2em;
     padding: 0.5em;
+/*    border-top: 1px solid #ddd;*/
     background: #eee;
-    border: 1px solid #ccc;
-/*    border-top: none;*/
-    line-height: 130%;
+    line-height: 120%;
 }
 #toctitle {
     font-weight: bold;
     color: #666;
     margin-top: 1em;
-/*    border: 1px solid #ccc;
-    background: #eee;
-    padding-left: 0.5em;*/
     padding-bottom: 0.2em;
 }
 #toctitle a {
