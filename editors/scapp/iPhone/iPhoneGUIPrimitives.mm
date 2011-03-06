@@ -22,8 +22,10 @@
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
+#include "PyrSymbol.h"
 #include "VMGlobals.h"
 #include "SC_RGen.h"
+#include "SCBase.h"
 
 #import "iPhoneSCGraphView.h"
 #import "ChangeCounter.h"

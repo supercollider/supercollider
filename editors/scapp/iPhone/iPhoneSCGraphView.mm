@@ -20,6 +20,7 @@
 
 #import "iPhoneSCGraphView.h"
 #import "iSCLangController.h"
+#include "PyrInterpreter.h"
 #include "PyrKernel.h"
 #include "PyrMessage.h"
 #include "VMGlobals.h"
