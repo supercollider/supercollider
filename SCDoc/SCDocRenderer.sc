@@ -358,6 +358,7 @@ SCDocRenderer {
     }
 
     renderTOC {|f|
+        var parent = nil, pfx;
         var do_children = {|children|
             children !? {
                 f.write("<ul class='toc'>");
@@ -374,19 +375,22 @@ SCDocRenderer {
                         \classmethods, {
                             if(n.children.select{|x|x.tag!=\private}.notEmpty) {
                                 f.write("<li class='toc1'><a href='#classmethods'>Class methods</a></li>\n");
+                                parent = n.tag;
                                 do_children.(n.children);
                             };
                         },
                         \instancemethods, {
                             if(n.children.select{|x|x.tag!=\private}.notEmpty) {
                                 f.write("<li class='toc1'><a href='#instancemethods'>Instance methods</a></li>\n");
+                                parent = n.tag;
                                 do_children.(n.children);
                             };
                         },
                         \method, {
+                            pfx = if(parent==\classmethods,"*","-");
                             f.write("<li class='toc3'>");
                             f.write(n.text.findRegexp("[^ ,]+").flop[1].collect {|m|
-                                "<a href='#"++m++"'>"++m++"</a>";
+                                "<a href='#"++pfx++m++"'>"++m++"</a>";
                             }.join(", "));
                             f.write("</li>\n");
                         },
