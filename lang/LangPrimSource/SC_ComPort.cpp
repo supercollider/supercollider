@@ -104,7 +104,7 @@ void dumpOSCmsg(int inSize, char* inData)
 				printf(" \"%s\"", msg.gets());
 				break;
 			case 'b' :
-				printf(" DATA[%lu]", msg.getbsize());
+				printf(" DATA[%zu]", msg.getbsize());
 				msg.skipb();
 				break;
 			default :
