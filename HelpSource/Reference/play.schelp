@@ -14,9 +14,9 @@ the message was sent to.
 opposite: code::stop::
 
 section:: Clocks, Routines, Streams and Patterns
-For a full list of which classes that implements code::play::, see link::Overviews/Methods#play::
+For a full list of which classes that implements code::play::, see link::Overviews/Methods#show_play::
 
-subsection:: clock.play(stream)
+subsection:: clock.play (stream)
 returns: the clock
 code::
 (
@@ -24,25 +24,25 @@ r = Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln });
 SystemClock.play(r);
 )
 ::
-See link::Classes/Clock#play#Clock:play::
+See link::Classes/Clock#*play#Clock:play::
 
-subsection:: routine.play(clock)
+subsection:: routine.play (clock)
 returns: the routine
 code::
 Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln }).play;
 ::
-See link::Classes/Routine#play#Routine:play::
+See link::Classes/Routine#-play#Routine:play::
 
-subsection:: stream.play(clock)
+subsection:: stream.play (clock)
 returns: the stream
 
 the stream will loop until it returns nil
 code::
 FuncStream({ "ok, that was it".postln; 1 }).play;
 ::
-See link::Classes/FuncStream#play#FuncStream:play::
+See link::Classes/FuncStream#-play#FuncStream:play::
 
-subsection:: pausestream.play(clock) / task.play(clock)
+subsection:: pausestream.play (clock) / task.play (clock)
 returns: the stream
 code::
 a = PauseStream.new(FuncStream.new({ "ok, that was it".postln; 1 }));
@@ -55,9 +55,9 @@ a = Task.new({ loop({ "ok, that was it".postln; 1.wait; }) });
 a.play;
 a.stop;
 ::
-See link::Classes/Stream#play#Stream:play:: and link::Classes/Task#play#Task:play::
+See link::Classes/Stream#-play#Stream:play:: and link::Classes/Task#-play#Task:play::
 
-subsection:: pattern.play(clock, protoEvent)
+subsection:: pattern.play (clock, protoEvent)
 returns: an link::Classes/EventStreamPlayer::
 code::
 (
@@ -67,7 +67,7 @@ Pseq([
 ], 2).play;
 )
 ::
-See link::Classes/Pattern#play#Pattern:play::
+See link::Classes/Pattern#-play#Pattern:play::
 
 section:: Playing single Synths from SynthDefs on the server
 
@@ -77,7 +77,7 @@ and start a synth with it there.
 Note that they should not be used in quickly running automated processes,
 as there are more efficient alternatives ( see link::Guides/SynthDefsVsSynths:: )
 
-subsection:: function.play(target, outbus, fadeTime, addAction, args)
+subsection:: function.play (target, outbus, fadeTime, addAction, args)
 
 returns: a link::Classes/Synth::
 table::
@@ -87,7 +87,7 @@ table::
 ## args || controls to set when starting the synth
 ::
 
-See link::Classes/Function#play#Function:play::
+See link::Classes/Function#-play#Function:play::
 
 code::
 a = { PinkNoise.ar([0.1, 0.1]) }.play;
@@ -106,7 +106,7 @@ a = { |freq = 500| HPF.ar(PinkNoise.ar([1, 1] * 0.4), freq) }.play(args: [\freq,
 { XOut.ar(0, MouseX.kr(0,1), PinkNoise.ar(0.1*[1,1])) }.play; // mouse x controls level
 ::
 
-subsection:: synthDef.play(target, args, addAction)
+subsection:: synthDef.play (target, args, addAction)
 returns: a link::Classes/Synth::
 	
 Note that you need an out ugen to hear the result.
@@ -131,7 +131,7 @@ x.set(\amp, 0.2);
 //free the synth
 x.free;
 ::
-See link::Classes/SynthDef#play#SynthDef:play::
+See link::Classes/SynthDef#-play#SynthDef:play::
 
 note:: code::Synth.play(function):: is synonymous, for backwards compatibility with sc2 ::
 

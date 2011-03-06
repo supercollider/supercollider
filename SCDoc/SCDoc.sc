@@ -58,6 +58,21 @@ SCDoc {
         doWait = false;
     }
 
+    *collectAllMethods {
+        var name, t;
+        t = IdentityDictionary.new;
+
+        Class.allClasses.do {|c|
+            name = c.name.asString;
+            c.methods.do {|x|
+                if(t[x.name]==nil, {t[x.name] = List.new});
+
+                t[x.name].add([name,x.isExtensionOf(c)]);
+            };
+        };
+
+        ^t;
+    }
     *makeOverviews {
         var mets, f, n;
         
@@ -72,8 +87,9 @@ SCDoc {
         progressCount = progressCount + 1;
 
         SCDoc.postProgress("Generating Methods index...");
-        mets = p.overviewAllMethods(docMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews",false);
+        mets = this.collectAllMethods;
+//        mets = p.overviewAllMethods(docMap);
+//        r.renderHTML(helpTargetDir +/+ "Overviews/Methods.html","Overviews",false);
         progressCount = progressCount + 1;
 
         SCDoc.postProgress("Writing Methods JSON index...");

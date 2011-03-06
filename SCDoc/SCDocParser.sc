@@ -532,7 +532,7 @@ SCDocParser {
         };
         root = r;
     }
-
+/*
     overviewAllMethods {|docMap|
         var name, n, r = List.new, cap, old_cap, t, m, ext, sortedKeys, pfx;
         r.add((tag:'title', text:"Methods"));
@@ -600,7 +600,7 @@ SCDocParser {
         root = r;
         ^t;
     }
-
+*/
     overviewAllDocuments {|docMap|
         var kind, name, doc, link, n, r = List.new, cap, old_cap, sortedKeys;
         r.add((tag:'title', text:"Documents"));
