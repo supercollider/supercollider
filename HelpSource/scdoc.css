@@ -243,8 +243,10 @@ td p {
 
 .note, .warning {
 /*    border-left: 4px solid #eea;*/
-    background: #efefd7;
+    background: #f0f0d7;
     padding: 0.5em;
+    margin-top: 1em;
+    margin-bottom: 1em;
 }
 .notelabel, .warninglabel {
     font-weight: bold;
