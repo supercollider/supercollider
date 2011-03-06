@@ -54,21 +54,24 @@ div.mets {
     margin-bottom: 0.5em;
 }
 #search_checks {
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 1em;
-    margin-bottom: 0.5em;
-    padding: 0.25em;
+/*    margin-left: 1em;
+    margin-right: 1em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;*/
+    padding: 0.5em;
     font-size: 9pt;
     color: #555;
     background: #eee;
-    border: 1px solid #ddd;
+/*    border: 1px solid #ddd;*/
 }
 .label {
     color: black;
     font-size: 10pt;
 }
-
+#search_settings td {
+    border: none;
+    padding: 2px;
+}
 </style>
 
 <script type="text/javascript">
@@ -79,6 +82,11 @@ var checkboxes2;
 var fields = ["title","summary","categories"];
 var fields2 = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
 var classes = undefined;
+
+escape_regexp = function(str) {
+  var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
+  return str.replace(specials, "\\$&");
+}
     
 window.onload = function() {
     newinput = document.getElementById("search_input").value;
@@ -113,9 +121,19 @@ window.onload = function() {
         doSearch();
     }
     
-    document.getElementById("check_filename").onchange = doSearch;
-    document.getElementById("check_methods").onchange = doSearch;
-    document.getElementById("ignore_case").onchange = doSearch;
+    var x = ["check_filename","check_methods","ignore_case","check_word","check_prefix","check_suffix"];
+    for(var i=0;i<x.length;i++) {
+        document.getElementById(x[i]).onchange = doSearch;
+    }
+
+    document.getElementById("check_regexp").onchange = function(e) {
+        var x = document.getElementsByClassName("nonregex");
+        for(var i=0;i<x.length;i++) {
+            x[i].disabled = e.target.checked;
+        }
+        doSearch();
+    }
+    
     document.getElementById("search_input").focus();
 
     node = document.getElementById("search_results");
@@ -334,8 +352,18 @@ function doSearch() {
     if(input!="") {
 
         // setup regexp
-        try {        
-            re = RegExp(input,document.getElementById("ignore_case").checked?"i":"");
+        try {
+            var str = input;
+            if(!document.getElementById("check_regexp").checked) {
+                str = escape_regexp(str); //escape special chars
+                if(document.getElementById("check_word").checked)
+                    str = "\\b" + str + "\\b";
+                if(document.getElementById("check_prefix").checked)
+                    str = "^" + str;
+                if(document.getElementById("check_suffix").checked)
+                    str = str + "$";
+            }
+            re = RegExp(str,document.getElementById("ignore_case").checked?"i":"");
         } catch(err) {
             document.getElementById("search_count").innerHTML = "Invalid regexp";
             document.getElementById("search_results").innerHTML = err;
@@ -428,17 +456,32 @@ function delayed_update() {
 </div>
 
 <div id="search_box">
-<span class="label">Search (<a href="javascript:showReHelp()">regex</a>):</span> <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
-<input type="checkbox" id="ignore_case" checked="true">Ignore case</input>
+<span class="label">Search text:</span> <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
+
+<table id="search_settings">
+<td><span class="label">Options:</span>
+<td>
 <div id="search_checks">
-<span class="label">Search in:</span>
+<input type="checkbox" id="ignore_case" checked="true">Ignore case</input>
+<input type="checkbox" id="check_regexp">Regular expression <a href="javascript:showReHelp()">[?]</a></input>
+<input class="nonregex" type="checkbox" id="check_word">Whole word</input>
+<input class="nonregex" type="checkbox" id="check_prefix" checked="true">Starts with</input>
+<input class="nonregex" type="checkbox" id="check_suffix">Ends with</input>
+</div>
+<tr>
+<td><span class="label">Match:</span>
+<td>
+<div id="search_checks">
 <input type="checkbox" id="check_title" checked="true">Title/Class</input>
 <input type="checkbox" id="check_summary" checked="true">Summary</input>
-<input type="checkbox" id="check_categories" checked="true">Categories</input>
+<input type="checkbox" id="check_categories">Categories</input>
 <input type="checkbox" id="check_filename" checked="true">Filename</input>
 &nbsp;&larr; <a href="javascript:clear1()">clear all</a>
-<br>
-<span class="label">Include:</span>
+</div>
+<tr>
+<td><span class="label">Include:</span>
+<td>
+<div id="search_checks">
 <input type="checkbox" id="check_classes" checked="true">Classes</input>
 <input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
 <input type="checkbox" id="check_reference" checked="true">Reference</input>
@@ -449,6 +492,7 @@ function delayed_update() {
 <input type="checkbox" id="check_methods" checked="true">Methods</input>
 &nbsp;&larr; <a href="javascript:clear2()">clear all</a>
 </div>
+</table>
 </div>
 
 <div id="search_count">0 results</div>
