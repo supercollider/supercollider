@@ -20,7 +20,7 @@ definitionlist::
 ## Overviews || overviews of other documents, these are mostly auto-generated.
 ## Other || stuff that don't fit in any other directory.
 ::
-## Do SCDoc:updateAll to generate HTML strong:: and check that it rendered OK ::.
+## Do code::SCDoc:updateAll:: to generate HTML strong:: and check that it rendered OK ::.
 ::
 
 A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
@@ -131,4 +131,17 @@ For other documents, you could base it on the old directory layout, or come up w
 
 Documents can exist in multiple categories, and also have hierarchical categories, like Sequencing>Patterns.
 
+section:: Cross-document linking
+To link another document, use code:: link\::Path/To/Document\:: :: where the path is relative to code::SCDoc.helpTargetDir:: and the document filename is with no extension. Example:
+code::
+Also take a look at link::Classes/SinOsc:: and link::Reference/Literals::
+::
+To link to a specific class method, append code::#*methodName:: or code::#-methodName:: for instance methods:
+code::
+Also take a look at the play method of link::Classes/Function#-play::
+::
+The special link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown by appending code::#show_methodName:: where methodName is the name of the method:
+code::
+For all implementations of play, see link::Overviews/Methods#show_play::
+::
 

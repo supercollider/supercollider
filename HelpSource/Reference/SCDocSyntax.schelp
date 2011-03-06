@@ -174,7 +174,10 @@ description, examples and methods are equivalent to code::section\:::: structura
 subsection:: Methods and arguments
 
 Methods should appear under code::instancemethods\:::: or code::classmethods\::::, and are written with code:: method\:: name(s) ::.
+Do strong::not:: enter any arguments here, only the name.
 After the method, there should be a short description. Even if it can be multiple lines, keep it short and use code::discussion\:::: if you need more.
+
+Methods get an anchor name automatically, prefixed with code::*:: for class methods and code::-:: for instance methods. For example, to link to the code::foo:: class method, use code:: link\::#*foo\:: ::.
 
 After the method description comes the arguments, written with code:: argument\:: name :: where code::name:: must correspond to one of the methods arguments. After each argument line comes the description of that argument.
 
@@ -182,7 +185,7 @@ There is an optional code::returns\:::: tag that could be used to describe the m
 
 If a longer discussion is needed, use the code::discussion\:::: tag. This is a good place to insert example code, etc.
 
-Method signatures and argument defaults are filled in automagically. (In the future one might also override an argument default in the cases where the default is filled in later in the method and not given in the argument definition.)
+Method signatures and argument defaults are filled in automagically.
 
 Also, when multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
 
@@ -213,7 +216,7 @@ discussion::
 Here is a longer detailed discussion about this method, perhaps with example code, etc..
 ::
 
-Any undocumented methods will show up in the rendered help file. To ignore methods, put them in a code::private\:::: tag.
+Any undocumented methods will show up in the rendered help file. To ignore methods, put them in a code::private\:::: tag, which must come directly after the code::instancemethods:: or code::classmethods:: tag.
 
 subsection:: Modal tags
 code::
@@ -281,8 +284,8 @@ URL's are automagically converted to links.
 The code::link\:::: tag is used for cross-reference between docs. It uses a simple namespace, example:
 code::
 See also link::Classes/SinOsc:: for a nice oscillator.
-Or take a look at link::Overviews/Ugens:: for a full list.
-The link::Methods/play:: method is often very useful.
+Or take a look at link::Browse#UGens:: for a full list.
+The link::Overviews/Methods#show_play#play method:: is often very useful.
 ::
 
 Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: code::
@@ -292,16 +295,31 @@ or to jump to an anchor in this document: code::
 link::#hello::
 ::
 
-All sections and methods get anchor names automagically, by making it lowercase and replacing spaces with '_' (underscore).
+All sections get anchor names automagically, by making it lowercase and replacing spaces with '_' (underscore).
+
+All methods get anchor names prefixed with code::*:: for class methods and code::-:: for instance methods.
 
 One can change the rendered text of the link by using another code::#:: character:
 code::
 Also see link::Classes/SinOsc##a nice oscillator::
 ::
+
+A link to a specific method in a class:
 code::
-Take a look at link::Classes/SinOsc#ar#SinOsc's ar method::
+Take a look at link::Classes/SinOsc#*ar#SinOsc's ar method::
 ::
 
+The link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown, by prefixing the methodname with code::show_::, for example to get a list of all classes implementing code::play:: :
+code::
+All classes implementing code::play:: can be seen link::Overviews/Methods#show_play#here::.
+::
+Renders as: All classes implementing code::play:: can be seen link::Overviews/Methods#show_play#here::.
+
+The link::Browse:: page is also dynamic, and can take a category tree as anchor name:
+code::
+For more filters, see link::Browse#UGens>Filters::
+::
+Renders as: For more filters, see link::Browse#UGens>Filters::
 
 subsection:: Images
 
