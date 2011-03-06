@@ -18,6 +18,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifndef SC_PLUGIN_H
+#define SC_PLUGIN_H
 
 #include "SC_World.h"
 #include "SC_Graph.h"
@@ -54,6 +56,8 @@
 #undef max
 #undef min
 
+#endif
+
 // we pull some standard math functions to the scope
 using std::floor;
 using std::ceil;
@@ -74,10 +78,4 @@ using std::sinh;
 using std::cosh;
 using std::tanh;
 
-#ifndef SC_WIN32
-using std::asinh;
-using std::acosh;
-using std::atanh;
-#endif
-
-#endif
+#endif /* SC_PLUGIN_H */
