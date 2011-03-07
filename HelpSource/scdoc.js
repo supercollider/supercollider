@@ -19,13 +19,16 @@ function showTOC(a) {
 }
 
 function fixTOC() {
-    document.getElementById("toc_toggle").innerHTML = "[hide]";
+    var t = document.getElementById("toc_toggle");
+    if(t) {
+        t.innerHTML = "[hide]";
 
 // Hide toc if empty    
-    var e = document.getElementById("toc");
-    var x = e.getElementsByTagName("ul")[0];
-    if(!x.childNodes.length) {
-        e.style.display = 'none';
-        document.getElementById("toctitle").style.display = 'none';
+        var e = document.getElementById("toc");
+        var x = e.getElementsByTagName("ul")[0];
+        if(!x.childNodes.length) {
+            e.style.display = 'none';
+            document.getElementById("toctitle").style.display = 'none';
+        }
     }
 }
