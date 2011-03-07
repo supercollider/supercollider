@@ -372,7 +372,7 @@ SCDoc {
             };
         };
         var findExtHelp = {|p|
-            p.entries.do {|p2|
+            p.folders.do {|p2|
                 if(p2.fileName=="HelpSource") {
                     recurseHelpSource.(p2.fullPath);
                 } {
