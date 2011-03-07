@@ -496,7 +496,7 @@ SCDocParser {
         var name, doc, link, n, r = List.new, cap, old_cap=nil, sortedKeys;
         r.add((tag:'title', text:"Classes"));
         r.add((tag:'summary', text:"Alphabetical index of all classes"));
-        r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Categories, Overviews/Methods"));
+        r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Methods"));
 
         sortedKeys = Class.allClasses.reject {|c| c.name.asString.find("Meta_")==0};
 
@@ -602,7 +602,7 @@ SCDocParser {
         ^t;
     }
 */
-    overviewAllDocuments {|docMap|
+/*    overviewAllDocuments {|docMap|
         var kind, name, doc, link, n, r = List.new, cap, old_cap, sortedKeys;
         r.add((tag:'title', text:"Documents"));
         r.add((tag:'summary', text:"Alphabetical index of all documents"));
@@ -643,6 +643,7 @@ SCDocParser {
         };
         root = r;
     }
+    */
 
 /*    overviewServer {|catMap|
         var r = List.new;

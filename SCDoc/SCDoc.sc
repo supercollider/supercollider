@@ -119,10 +119,10 @@ SCDoc {
         f.close;
         progressCount = progressCount + 1;
         
-        SCDoc.postProgress("Generating Documents index...",true);
-        p.overviewAllDocuments(docMap);
-        r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews", false);
-        progressCount = progressCount + 1;
+//        SCDoc.postProgress("Generating Documents index...",true);
+//        p.overviewAllDocuments(docMap);
+//        r.renderHTML(helpTargetDir +/+ "Overviews/Documents.html","Overviews", false);
+//        progressCount = progressCount + 1;
 
 //        SCDoc.postProgress("Generating Categories overview...");
 //        p.overviewCategories(categoryMap);
@@ -390,7 +390,7 @@ SCDoc {
             recurseHelpSource.(helpSourceDir);
             findExtHelp.(PathName(thisProcess.platform.userExtensionDir));
             findExtHelp.(PathName(thisProcess.platform.systemExtensionDir));
-            progressMax = fileList.size + 11;
+            progressMax = fileList.size + 10;
             progressCount = 1;
             processFiles.value;
             progressCount = progressCount + 1;
