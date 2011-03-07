@@ -262,6 +262,7 @@ function doPrint() {
         if(cindex2==0) {
             var div = document.createElement("div");
             div.className="result_category";
+            if(!k) k = "(uncategorized)";
             div.innerHTML = k;
             node.appendChild(div);
         }
