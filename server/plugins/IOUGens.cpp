@@ -30,7 +30,7 @@
 #include "simd_mix.hpp"
 #include "simd_binary_arithmetic.hpp"
 
-#ifdef __GNUC__ && !defined(__clang__)
+#if defined(__GNUC__) && !defined(__clang__)
 #define inline_functions __attribute__ ((flatten))
 #else
 #define inline_functions
