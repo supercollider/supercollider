@@ -3,6 +3,9 @@ summary:: Get started with writing help
 categories:: HelpSystem
 related:: Reference/SCDocSyntax, Classes/SCDoc
 
+section:: Writing new help
+The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
+
 section:: Converting old helpfiles
 
 Currently there is no automated process for this, but for most help files it's really simple to do it manually:
@@ -11,7 +14,18 @@ numberedlist::
 ## open the old helpfile in your web browser
 ## copy the text and insert it in a new textfile: FileName.schelp
 ## add the appropriate tags, like title, sections, etc.. (see below)
-## save the file to the right subdirectory under HelpSource, depending on the document kind:
+## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#directory_layout::)
+## Do code::SCDoc:updateAll:: to generate HTML strong:: and check that it rendered OK ::.
+::
+
+A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
+
+note:: The help files should use UTF-8 encoding! ::
+
+section:: Directory layout
+The help system uses different folders under HelpSource depending on document kind:
+definitionlist::
+## HelpSource ||
 definitionlist::
 ## Classes || class reference, file must be named as the class.
 ## Reference || other reference documentation.
@@ -20,16 +34,14 @@ definitionlist::
 ## Overviews || overviews of other documents, these are mostly auto-generated.
 ## Other || stuff that don't fit in any other directory.
 ::
-## Do code::SCDoc:updateAll:: to generate HTML strong:: and check that it rendered OK ::.
 ::
 
-A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
+note:: It's important that the document is put in the right folder. For Classes, it's a must! ::
 
-note:: The help files should use UTF-8 encoding!
+All .schelp files will be parsed and rendered to an equal directory layout in the help target directory. Any other files will just be copied.
 
-section:: Tags
+section:: Metadata
 
-subsection:: Metadata
 All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. These include:
 code::
 title:: or class::
@@ -38,22 +50,75 @@ related::
 categories::
 ::
 
-There are some difference between class reference and other documents, explained here:
+You should always specify title/class, summary and categories.
 
-subsection:: Normal documents
+section:: Normal documents
+Normal documents use code::title:: for the document title.
+
 Example header:
 code::
 title:: My help file
 summary:: A short single-line summary of what this is
 categories:: Language>Conditionals, AndSoOn
+related:: Reference/FooBar
 ::
 
-Then use normal text in sections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
+Then use normal text in sections and subsections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
 
-subsection:: Class reference
-Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text can only be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. Thus, named sections are not allowed, but custom subsections can be made under each special section just mentioned.
+code::
+section:: Introduction
+this is a nice document...
+blah blah blah..
 
-Tags are case insensitive, but it might be a good idea to write section tags in uppercase for easier reading.
+subsection:: Details
+some details..
+::
+
+section:: Class reference
+Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text should be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. 
+
+Named subsections can be used under each of the above mentioned top-level sections.
+
+Also named sections can be used, but they will be put after all above top-level sections.
+
+subsection:: Methods and arguments
+Methods are documented with the tags:
+tree::
+## code::method\:::: name(s)
+    tree::
+    ## short description of method
+    ## code::argument\:::: name
+    tree:: 
+        ## description of argument
+        ::
+    ## code::argument\:::: name
+    tree:: 
+        ## description of argument
+        ::
+    ## code::returns\::::
+    tree:: 
+        ## description of return value
+        ::
+    ## code::discussion\::::
+    tree:: 
+        ## optional discussion and example code
+        ::
+    ::
+::
+
+note:: Don't list arguments in the method tag, only the method names ::
+
+Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter, example:
+code::
+method:: helpSourceDir
+set or get the help source directory
+::
+
+The code::method\:::: tag can be used also in normal documents, and should then have argumentnames. This can be useful for documenting common methods outside of a specific class document, for example link::Reference/plot::
+
+SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag right after code::classmethods\:::: or code::instancemethods\::::
+
+subsection:: Example
 
 code::
 CLASS:: MyClass
@@ -83,6 +148,10 @@ this is a good place to put example code.
 method:: bar
 another class method, etc..
 
+SUBSECTION:: Special class methods
+method:: hello
+this is a method in a subsection of class methods..
+
 INSTANCEMETHODS::
 private:: init, anotherPrivateMethod
 
@@ -104,18 +173,6 @@ Another example:
 code::
 ...insert code here...
 \::
-::
-
-Some notes:
-list::
-## SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag.
-## Subsections are allowed under ClassMethods and InstanceMethods
-## Don't list arguments in the method tag, only the method names
-## Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter, example:
-code::
-method:: helpSourceDir
-set or get the help source directory
-::
 ::
 
 section:: Categories
