@@ -30,7 +30,7 @@
 #include "softclip.hpp"
 #include "simd_unit_conversion.hpp"
 
-#ifdef __GNUC__
+#ifdef __GNUC__ && !defined(__clang__)
 #define inline_functions __attribute__ ((flatten))
 #else
 #define inline_functions
