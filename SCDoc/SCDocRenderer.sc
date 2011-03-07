@@ -101,39 +101,52 @@ SCDocRenderer {
                 //for multiple methods with same signature and similar function:
                 //ar kr (x = 42, y = 123)
                 f = node.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
-                args = "";
+//                args = "";
+                args = f[2][1];
 //FIXME: handle overridden argumentnames/defaults?
 //perhaps we should check argument names at least? and only use overriding for "hidden" default values?
 //also, perhaps better to read the default values from the argument tags?
 //ignore markup-provided arguments for now..
-                if(parentTag==\instancemethods) {
-                    c = currentClass;
-                    css = "imethodname";
-                    pfx = "-";
-                } {
-                    c = currentClass.class;
-                    css = "cmethodname";
-                    pfx = "*";
-                };
+                switch(parentTag,
+                    \instancemethods, {
+                        c = currentClass;
+                        css = "imethodname";
+                        pfx = "-";
+                    },
+                    \classmethods, {
+                        c = currentClass.class;
+                        css = "cmethodname";
+                        pfx = "*";
+                    },
+                    {
+                        c = nil;
+                        css = "imethodname";
+                        pfx = "";
+                    }
+                );
 
                 split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
-                    mstat = 0;
                     mname = r[1];
-                    sym = mname.asSymbol;
-                    //check for normal method or getter
-                    m = c.findRespondingMethodFor(sym.asGetter);
-                    m !? {
-                        mstat = mstat | 1;
-                        args = SCDoc.makeArgString(m);
+                    if(c.notNil) {
+                        mstat = 0;
+                        sym = mname.asSymbol;
+                        //check for normal method or getter
+                        m = c.findRespondingMethodFor(sym.asGetter);
+                        m !? {
+                            mstat = mstat | 1;
+                            args = SCDoc.makeArgString(m);
+                        };
+                        //check for setter
+                        m2 = c.findRespondingMethodFor(sym.asSetter);
+                        m2 !? {
+                            mstat = mstat | 2;
+                            args = (m2.argNames ?? [nil,"value"])[1];
+                        };
+                    } {
+                        m = nil;
+                        mstat = 1;
                     };
-                    //check for setter
-                    m2 = c.findRespondingMethodFor(sym.asSetter);
-                    m2 !? {
-                        mstat = mstat | 2;
-                        args = (m2.argNames ?? [nil,"value"])[1];
-                    };
-
                     file.write("<a name='"++pfx++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++pfx++"</span>"++this.escapeSpecialChars(mname));
 
                     switch (mstat,
@@ -360,7 +373,7 @@ SCDocRenderer {
     }
 
     renderTOC {|f|
-        var parent = nil, pfx;
+        var parent = nil, pfx, r;
         var do_children = {|children|
             children !? {
                 f.write("<ul class='toc'>");
@@ -391,7 +404,8 @@ SCDocRenderer {
                         \method, {
                             pfx = if(parent==\classmethods,"*","-");
                             f.write("<li class='toc3'>");
-                            f.write(n.text.findRegexp("[^ ,]+").flop[1].collect {|m|
+                            r = n.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
+                            f.write(r[1][1].findRegexp("[^ ,]+").flop[1].collect {|m|
                                 "<a href='#"++pfx++m++"'>"++m++"</a>";
                             }.join(", "));
                             f.write("</li>\n");
