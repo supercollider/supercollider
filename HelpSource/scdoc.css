@@ -339,7 +339,7 @@ ul.tree li:last-child {
  background: #fff url(images/lastnode.png) no-repeat;
 }
 
-/* auto class links. note that color is set by prettify rules below */
+/* auto class links. note that color can be overridden by prettify rules below */
 a.clslnk {
 }
 
@@ -348,7 +348,7 @@ a.clslnk {
 .str { color: #070; } /* strings */
 .kwd { color: #880; } /* special values like true, nil.. */
 .com { color: #822; } /* comments */
-.typ { color: #008; } /* class names */
+/*.typ { color: #008; }*/ /* class names */
 .lit { color: #066; } /* numbers and character literals */
 .pun { color: #777; } /* punctuation */
 .pln { color: #000; } /* plain text, methods and variable names */
