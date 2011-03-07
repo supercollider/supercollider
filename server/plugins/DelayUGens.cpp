@@ -272,7 +272,6 @@ struct DelTapRd : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
 
 	void SampleRate_Ctor(Unit *unit, int inNumSamples);
 	void ControlRate_Ctor(Unit *unit, int inNumSamples);
@@ -2316,7 +2315,7 @@ static inline void DelayN_delay_loop(float * out, const float * in, long & iwrph
 			nsmps = sc_min(remain, nsmps);
 			remain -= nsmps;
 
-			if (std::abs(dlyrd - dlywr) > nsmps) {
+			if (std::abs((float)(dlyrd - dlywr)) > nsmps) {
 #ifdef NOVA_SIMD
 				if ((nsmps & 15) == 0) {
 					nova::copyvec_nn_simd(dlywr + ZOFF, in + ZOFF, nsmps);

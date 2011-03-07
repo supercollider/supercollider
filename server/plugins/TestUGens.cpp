@@ -83,8 +83,6 @@ struct CheckBadValues : public Unit
 // declare unit generator functions
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void CheckBadValues_Ctor(CheckBadValues* unit);
 	void CheckBadValues_next(CheckBadValues* unit, int inNumSamples);
 };

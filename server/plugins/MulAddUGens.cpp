@@ -55,8 +55,6 @@ struct MulAdd : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void MulAdd_Ctor(MulAdd *unit);
 
 	// mul add functions for every occasion:

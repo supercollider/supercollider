@@ -305,7 +305,6 @@ struct MoogFF : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
 
 	void Ramp_next(Ramp *unit, int inNumSamples);
 	void Ramp_next_1(Ramp *unit, int inNumSamples);

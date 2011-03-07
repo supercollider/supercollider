@@ -222,7 +222,6 @@ struct Klank : public Unit
 
 extern "C"
 {
-void load(InterfaceTable *inTable);
 
 void DegreeToKey_Ctor(DegreeToKey *unit);
 void DegreeToKey_next_1(DegreeToKey *unit, int inNumSamples);

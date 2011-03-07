@@ -156,8 +156,6 @@ struct RandID : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void WhiteNoise_next(WhiteNoise *unit, int inNumSamples);
 	void WhiteNoise_Ctor(WhiteNoise* unit);
 

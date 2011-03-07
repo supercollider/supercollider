@@ -27,6 +27,7 @@
 #  include <time.h>
 #  include <X11/Intrinsic.h>
 # else
+# include <windows.h>
 # endif
 #endif
 
@@ -49,8 +50,6 @@ struct MouseInputUGen : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void MouseX_next(MouseInputUGen *unit, int inNumSamples);
 	void MouseY_next(MouseInputUGen *unit, int inNumSamples);
 	void MouseButton_next(MouseInputUGen *unit, int inNumSamples);

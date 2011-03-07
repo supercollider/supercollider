@@ -131,7 +131,6 @@ struct Warp1 : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
 
 	void GrainIn_Ctor(GrainIn* unit);
 	void GrainIn_Dtor(GrainIn* unit);

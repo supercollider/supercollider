@@ -194,8 +194,6 @@ struct Dreset : public Unit
 
 extern "C"
 {
-void load(InterfaceTable *inTable);
-
 
 
 void Demand_Ctor(Demand *unit);

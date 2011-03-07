@@ -238,8 +238,6 @@ struct ADSR : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void Vibrato_next(Vibrato *unit, int inNumSamples);
 	void Vibrato_Ctor(Vibrato* unit);
 

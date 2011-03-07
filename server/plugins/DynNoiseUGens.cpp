@@ -61,7 +61,6 @@ struct LFDClipNoise : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
 
 	void LFDNoise0_next(LFDNoise0 *unit, int inNumSamples);
 	void LFDNoise0_next_k(LFDNoise0 *unit, int inNumSamples);
