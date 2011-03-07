@@ -22,11 +22,11 @@ SCDoc {
         if(progressText.notNil) {
             if(setTopic, {
                 progressTopic.string = string;
-                progressText.string = "";
+                progressText.string = prg;
             }, {
-                progressText.string = string;
+                progressText.string = prg+string;
             });
-            progressBar.string = "Progress: "++prg;
+            progressBar.lo_(0).hi_(progressCount/progressMax);
         } {
             (prg+string).postln;
         };
@@ -330,13 +330,12 @@ SCDoc {
     }
     
     *makeProgressWindow {
-        var a, b;
         if(GUI.scheme.isNil and: doWait, {^nil});
         
         progressWindow = Window("Documentation update",500@150).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
 
         StaticText(progressWindow).string_("Please wait while updating help files...");
-        progressBar = StaticText(progressWindow).font_(Font.defaultMonoFace);
+        progressBar = RangeSlider(progressWindow,300@20).orientation_(\horizontal).background_(Color(0.8,0.8,0.8)).knobColor_(Color(0.5,0.5,0.8));
         progressTopic = StaticText(progressWindow).font_(Font.defaultSansFace.boldVariant);
         progressText = TextView(progressWindow).editable_(false);
 
