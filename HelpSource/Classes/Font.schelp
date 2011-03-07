@@ -1,4 +1,5 @@
 class:: Font
+redirect:: implClass
 summary:: A font object
 categories:: GUI>GUI-Tools
 
@@ -10,8 +11,9 @@ classmethods::
 
 method:: new
 argument:: name
-An instance of link::Classes/String::. Must coincide with the name of a font on the system. See link::Classes/SCFont#availableFonts::.
-argument:: size - An Instance of Float.
+An instance of link::Classes/String::. Must coincide with the name of a font on the system. See link::#*availableFonts::.
+argument:: size
+An Instance of link::Classes/Float::.
 discussion::
 Example:
 code::
@@ -41,21 +43,24 @@ Returns the default mono face Font.
 method:: default
 Gets/sets the default Font.
 
+instancemethods::
+
 method:: name
 Gets/sets the name of a font.
-argument:: arg1
+argument:: value
 An instance of link::Classes/String::.
 
 method:: size
 Gets/sets the size of a font.
-argument:: arg1
+argument:: value
 An instance of link::Classes/Float::.
 
 method:: setDefault
 Makes the current instance of Font the default.
 
 method:: storeArgs
-Returns an link::Classes/Array::, code:: [ name, size ] ::.
+(?)
+Returns:: an link::Classes/Array::, code:: [ name, size ] ::.
 
 method:: boldVariant
 Appendes code::"-Bold":: to the name. This is only useful for fonts that have bold variants.

@@ -118,6 +118,13 @@ The code::method\:::: tag can be used also in normal documents, and should then 
 
 SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag right after code::classmethods\:::: or code::instancemethods\::::
 
+subsection:: Redirect classes
+Some classes uses the code::*doesNotUnderstand:: trick to redirect to another implementing class. To document such classes, you need to add this tag in the header:
+code::
+redirect:: implClass
+::
+Where code::implClass:: is the class variable name holding the implementing class.
+
 subsection:: Example
 
 code::

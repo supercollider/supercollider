@@ -82,6 +82,7 @@ tag             hasText hasChilds structural needClose modal nestable
 ---------------------------------------------------------------------
 title           S
 class           S
+redirect        S
 doctype         S
 keywords        S
 related         S
