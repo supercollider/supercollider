@@ -27,6 +27,7 @@
 #  include <time.h>
 #  include <X11/Intrinsic.h>
 # else
+#include <windows.h>
 # endif
 #endif
 
@@ -53,8 +54,6 @@ struct KeyState : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void KeyState_next(KeyState *unit, int inNumSamples);
 	void KeyState_Ctor(KeyState *unit);
 };

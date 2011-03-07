@@ -88,8 +88,6 @@ struct LocalIn : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void Control_Ctor(Unit *inUnit);
 	void Control_next_k(Unit *unit, int inNumSamples);
 	void Control_next_1(Unit *unit, int inNumSamples);

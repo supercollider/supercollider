@@ -101,8 +101,6 @@ struct DecodeB2 : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void LinPan2_next_ak(LinPan2 *unit, int inNumSamples);
 	void LinPan2_next_aa(LinPan2 *unit, int inNumSamples);
 	void LinPan2_Ctor(LinPan2* unit);

@@ -138,7 +138,6 @@ typedef void (*UnaryOpFunc)(UnaryOpUGen *unit, int inNumSamples);
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
 
 	void UnaryOpUGen_Ctor(UnaryOpUGen *unit);
 }

@@ -61,8 +61,6 @@ struct TBall : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 
 	void Spring_Ctor(Spring *unit);
 	void Spring_next(Spring *unit, int inNumSamples);

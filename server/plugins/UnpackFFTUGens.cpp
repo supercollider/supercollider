@@ -50,8 +50,6 @@ struct PackFFT : Unit {
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void Unpack1FFT_Ctor(Unpack1FFT *unit);
 	void Unpack1FFT_next_dc(Unpack1FFT *unit, int inNumSamples);
 	void Unpack1FFT_next_nyq(Unpack1FFT *unit, int inNumSamples);

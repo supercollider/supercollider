@@ -272,7 +272,6 @@ typedef void (*BinaryOpFunc)(BinaryOpUGen *unit, int inNumSamples);
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
 
 	void BinaryOpUGen_Ctor(BinaryOpUGen *unit);
 

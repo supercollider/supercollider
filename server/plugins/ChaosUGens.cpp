@@ -111,7 +111,6 @@ struct FBSineC : public FBSineL {
 };
 
 extern "C" {
-	void load(InterfaceTable *inTable);
 
 	void CuspN_next(CuspN *unit, int inNumSamples);
 	void CuspN_Ctor(CuspN *unit);

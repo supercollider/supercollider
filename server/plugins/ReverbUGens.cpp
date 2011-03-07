@@ -116,7 +116,6 @@ struct GVerb : public Unit
 
 extern "C"
 {
-    void load(InterfaceTable *inTable);
     void FreeVerb_Ctor(FreeVerb *unit);
     void FreeVerb_next(FreeVerb *unit, int inNumSamples);
 

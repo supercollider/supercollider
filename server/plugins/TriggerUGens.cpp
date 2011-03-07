@@ -237,8 +237,6 @@ struct PauseSelfWhenDone : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
-
 	void Trig1_Ctor(Trig1 *unit);
 	void Trig1_next(Trig1 *unit, int inNumSamples);
 	void Trig1_next_k(Trig1 *unit, int inNumSamples);

@@ -79,7 +79,6 @@ struct VDiskIn : public Unit
 
 extern "C"
 {
-	void load(InterfaceTable *inTable);
 
 	void DiskIn_next(DiskIn *unit, int inNumSamples);
 	void DiskIn_Ctor(DiskIn* unit);
