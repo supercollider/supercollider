@@ -1,4 +1,8 @@
-title:: Modifier Keys	
+title:: Modifier Keys
+summary:: OSX Modifier key reference
+categories:: GUI
+
+note:: This document might be outdated.. ::
 
 An integer bit field indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator.
 

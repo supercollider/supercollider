@@ -1,13 +1,12 @@
 title:: plot
 summary:: Plot data in a graph
+categories:: Common methods, GUI
 
-description::
-The code::.plot:: method provides the ability to plot data in a GUI window. The method is implemented in the link::Classes/ArrayedCollection:: class but is also available for other classes for convenience, including link::Classes/Function::, link::Classes/Env::, link::Classes/Buffer::, link::Classes/SoundFile::, link::Classes/Wavetable::.
-code::
-receiver.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
-::
 
-method:: plot
+section:: Description
+The link::Overviews/Methods#show_plot#plot method:: provides the ability to plot data in a GUI window. The method is implemented in the link::Classes/ArrayedCollection:: class but is also available for other classes for convenience, including link::Classes/Function::, link::Classes/Env::, link::Classes/Buffer::, link::Classes/SoundFile::, link::Classes/Wavetable::.
+
+method:: plot (name, bounds, discrete, numChannels, minval, maxval, parent, labels)
 All arguments are optional
 argument:: name
 The name to be used as the GUI window title.
@@ -33,13 +32,14 @@ By default the plot is placed in a new GUI window. This argument can be used to 
 argument:: labels
 By default labels appear at the top left of the plot giving a data readout based on mouse position. Set this argument to code::false:: to prevent them appearing.
 
+discussion::
 If code::minval:: and/or code::maxval:: are set to code::nil:: (this is default, except for link::Classes/Buffer::s), they will be automatically calculated from the dataset minimum and/or maximum. For multi-channel data, code::minval:: and code::maxval:: may be arrays, specifying the range independently for each channel (including use of code::nil::, in which case the min/max will be calculated for the specific channel rather than for the overall dataset).
 
 Hitting the strong::L-key:: on the keyboard when the window is focussed toggles the lock, and the window can be used to edit the data.
 
-subsection:: Examples
+section:: Examples
 
-note::See some of the classes linked above for more examples::
+note:: See some of the classes linked above for more examples ::
 
 code::
 // Arrays
