@@ -50,7 +50,7 @@ SCDocRenderer {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-        var c, f, m, n, mname, args, split, mstat, sym, css, pfx;
+        var c, f, m, m2, n, mname, args, split, mstat, sym, css, pfx;
 
         var do_children = {|p=false|
             node.children !? {
@@ -128,8 +128,10 @@ SCDocRenderer {
                         args = SCDoc.makeArgString(m);
                     };
                     //check for setter
-                    c.findRespondingMethodFor(sym.asSetter) !? {
+                    m2 = c.findRespondingMethodFor(sym.asSetter);
+                    m2 !? {
                         mstat = mstat | 2;
+                        args = (m2.argNames ?? [nil,"value"])[1];
                     };
 
                     file.write("<a name='"++pfx++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++pfx++"</span>"++this.escapeSpecialChars(mname));
@@ -138,9 +140,9 @@ SCDocRenderer {
                         // getter only
                         1, { file.write(" "++args++"</h3></a>\n"); },
                         // setter only
-                        2, { file.write(" = value</h3></a>\n"); },
+                        2, { file.write(" = "++args++"</h3></a>\n"); },
                         // getter and setter
-                        3, { file.write(" [= value]</h3></a>\n"); },
+                        3, { file.write(" [= "++args++"]</h3></a>\n"); },
                         // method not found
                         0, { file.write(": METHOD NOT FOUND!</h3></a>\n"); }
                     );
