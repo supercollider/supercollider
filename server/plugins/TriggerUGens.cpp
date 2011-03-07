@@ -28,7 +28,7 @@
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
 
-#ifdef __GNUC__
+#ifdef __GNUC__ && !defined(__clang__)
 #define inline_functions __attribute__ ((flatten))
 #else
 #define inline_functions
