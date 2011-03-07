@@ -18,8 +18,6 @@ Bounds: Make certain to choose bounds that are large enough to encompass the kno
 
 classmethods::
 
-subsection:: Creation / Class Methods
-
 method:: new
 
 argument:: parent
@@ -64,7 +62,7 @@ A link::Classes/Point::. By default, the view tries to get its parent's gap, oth
 argument:: margin
 A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
 
-subsection::
+discussion::
 code::
 (
 w=Window.new.front;
@@ -88,10 +86,16 @@ The contained views can be accessed via the EZKnob instance variables: code::lab
 
 instancemethods::
 
-subsection:: Accessing Instance and Class Variables
+subsection:: Accessing Instance Variables
 
 method:: numberView
-Returns the code::numberView::
+Returns:: the code::numberView::
+
+method:: knobView
+Returns:: the code::knobView::
+
+method:: labelView
+Set/get the code::labelView::
 
 method:: action
 A function to be evaluated when the value changes. Te first argument will be the EZKnob.
@@ -101,8 +105,8 @@ An instance of link::Classes/Function:: or link::Classes/FunctionList::. Default
 method:: value
 The value of the knob
 
-method::
-Sets/gets whether the  knob is in centered mode. See link::Classes/Knob::.
+method:: centered
+Sets/gets whether the knob is in centered mode. See link::Classes/Knob::.
 argument:: bool
 
 method:: round
@@ -130,7 +134,7 @@ argument:: initVal
 argument:: initAction
 
 method:: visible
-Sets/gets it the component views are visible.
+Sets/gets if the component views are visible.
 argument:: bool
 An instance of link::Classes/Boolean::. Default is code::true::.
 

@@ -25,18 +25,18 @@ instancemethods::
 subsection:: Building and Changing the List
 
 method:: globalAction
-a Global function to be performed in addition to the item functions: code::{ arg listObj; value }::.
-argument:: function
+Set/get the global function to be performed in addition to the item functions: code:: { arg listObj; value } ::.
 
 method:: items
-argument:: assocArray
-An link::Classes/Array:: of Associations including the labels and the item functions: code::['label' -> { arg listObj; value }, ]::. In menus, the OS X graphics system gives special meanings to some characters. See link::Classes/SCPopUpMenu::; Or and link::Classes::Array:: link::Classes::Symbol::s (if you are only using code::globalAction::). link::Classes/Array::s of link::Classes/Symbol::s will get converted into and array of link::Classes/Association::s with and empty link::Classes/Function::: code::['label' -> {}, ]::.
+Set/get an link::Classes/Array:: of Associations including the labels and the item functions: code:: ['label' -> { arg listObj; value }, ] ::.
+discussion::
+In menus, the OS X graphics system gives special meanings to some characters. See link::Classes/SCPopUpMenu::; Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::). link::Classes/Array::s of link::Classes/Symbol::s will get converted into and array of link::Classes/Association::s with and empty link::Classes/Function::: code:: ['label' -> {}, ] ::.
 
 method:: item
-Returns the item label of the current selection.
+Returns:: the item label of the current selection.
 
 method:: itemFunc
-Returns the item function of the current selection.
+Returns:: the item function of the current selection.
 
 method:: addItem
 Adds an item.

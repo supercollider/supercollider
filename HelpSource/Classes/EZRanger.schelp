@@ -11,8 +11,6 @@ EZRanger's number boxs scroll by default, using the step size of the link::Class
 
 classmethods::
 
-subsection:: Creation / Class Methods
-
 method:: new
 
 argument:: parent
@@ -49,7 +47,7 @@ argument:: labelHeight
 The default is 20;
 
 argument:: layout
-code::\vert::, code::\line2, or code::\horz::. The default is code::\horz::.
+code::\vert::, code::\line2::, or code::\horz::. The default is code::\horz::.
 
 argument:: gap
 A link::Classes/Point::. By default, the view tries to get its parent's gap, otherwise it defaults to code::2@2::. Setting it overrides these.
@@ -57,7 +55,7 @@ A link::Classes/Point::. By default, the view tries to get its parent's gap, oth
 argument:: margin
 A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
 
-subsection::
+discussion::
 code::
 (
 w = Window.new.front;
@@ -86,20 +84,16 @@ method:: loBox
 The code::lo:: value link::Classes/NumberBox::.
 
 method:: action
-A function to be evaluated when the value changes. Te first argument will be the EZRanger.
-argument:: arg1
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. Default value is code::nil::.
+Set/get a link::Classes/Function:: or link::Classes/FunctionList:: to be evaluated when the value changes. The first argument will be the EZRanger.
 
 method:: rangeSlider
 The link::Classes/RangeSlider:: link::Classes/View::
 
 method:: lo
-The low value.
-argument:: val
+Set/get the low value.
 
 method::hi
-The high value
-argument:: val
+Set/get the high value
 
 method:: hiBox
 The hi value link::Classes/NumberBox::.
@@ -116,12 +110,12 @@ Performs the action at the current index and the global action.
 method:: value
 Gets/sets the code::lo:: and code::hi:: values.
 argument:: vals
-An instance of link::Classes/Array::: code::[lo, hi]::.
+An instance of link::Classes/Array::: code:: [lo, hi] ::.
 
 method:: valueAction
 Sets the value and performs the action at the index value and the global action.
 argument:: vals
-An instance of link::Classes/Array::: code::[lo, hi]::.
+An instance of link::Classes/Array::: code:: [lo, hi] ::.
 
 subsection:: Changing Appearance
 

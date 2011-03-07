@@ -9,7 +9,7 @@ Users will not normally directly create instances of EZGui, but only use it thro
 
 instancemethods::
 
-subsection:: Accessing Instance and Class Variables
+subsection:: Accessing Instance Variables
 
 method:: view
 Returns the enclosing link::Classes/CompositeView::.

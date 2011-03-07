@@ -10,9 +10,6 @@ subsection:: Some Important Issues Regarding EZPopUpMenu
 The convenience methods for EZPopUpMenu require that the items array is an array of associations of labels and functions, not like in link::Classes/PopUpMenu::, where items is simply an array of strings. If code::label:: is code::nil::, then no staticText is created.
 
 classmethods::
-
-subsection:: Creation / Class Methods
-
 method:: new
 
 argument:: parentView
@@ -25,10 +22,10 @@ argument:: label
 The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created. 
 
 argument:: items
-Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code::['label' -> { arg menuObj; value }, ]::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
+Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code:: ['label' -> { arg menuObj; value }, ] ::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
 
 argument:: globalAction
-A global function to be performed in addition to the item functions code::{ arg menuObj; value }::.
+A global function to be performed in addition to the item functions code:: { arg menuObj; value } ::.
 
 argument:: initVal
 Initial value of the menu, i.e. the index selected. Default value is 0.
@@ -51,7 +48,7 @@ A link::Classes/Point::. By default, the view tries to get its parent's code::ga
 argument:: margin
 A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
 
-subsection::
+discussion::
 code::
 (
 w = Window.new.front;

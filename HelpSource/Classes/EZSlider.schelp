@@ -56,7 +56,7 @@ A link::Classes/Point::. By default, the view tries to get its parent's gap, oth
 argument:: margin
 A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
 
-subsection::
+discussion::
 code::
 (
 w = Window.new.front;
@@ -85,20 +85,16 @@ method:: numberView
 Returns the numberView.
 
 method:: action
-A function to be evaluated when the value changes. Te first argument will be the EZSlider.
-argument:: arg1
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. Default value is code::nil::.
+A link::Classes/Function:: or link::Classes/FunctionList:: to be evaluated when the value changes. The first argument will be the EZSlider.
 
 method:: value
 The value of the slider.
 
 method:: round
 Rounds the values in the number box.
-argument:: arg1
 
 method:: controlSpec
 An instance of ControlSpec for scaling the values.
-argument:: arg1
 
 method:: value
 Gets/sets the list/menu to the index at value. Does not perform the action.

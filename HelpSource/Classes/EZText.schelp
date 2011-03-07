@@ -51,7 +51,8 @@ A link::Classes/Point::. By default, the view tries to get its parent's gap, oth
 argument:: margin
 A link::Classes/Point::. This will inset the bounds occupied  by the subviews of view.
 
-subsection::
+discussion::
+Example:
 code::
 (
 w = Window("EZText", Rect(300, 300, 260, 60)).front;
@@ -85,15 +86,10 @@ Returns the textField.
 
 method:: action
 A link::Classes/Function:: to be evaluated when the value changes. Typical use is to type in a new value, and interpret it by hitting the evaluation shortcut. The first argument to the function will be the EZText.
-argument:: arg1
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. Default value is code::nil::.
-
-method:: value
-The value of the code::ezText:: can be any object.
 
 method:: value
 Gets/sets the value of the ezText. Does not perform the action.
-argument:: val
+argument:: inval
 Any object.
 
 method:: valueAction
