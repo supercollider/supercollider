@@ -26,7 +26,7 @@
 #include "simd_pan.hpp"
 #include "simd_mix.hpp"
 
-#ifdef __GNUC__ && !defined(__clang__)
+#if defined(__GNUC__) && !defined(__clang__)
 #define inline_functions __attribute__ ((flatten))
 #else
 #define inline_functions
