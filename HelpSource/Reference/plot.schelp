@@ -1,0 +1,66 @@
+title:: plot
+summary:: Plot data in a graph
+
+description::
+The code::.plot:: method provides the ability to plot data in a GUI window. The method is implemented in the link::Classes/ArrayedCollection:: class but is also available for other classes for convenience, including link::Classes/Function::, link::Classes/Env::, link::Classes/Buffer::, link::Classes/SoundFile::, link::Classes/Wavetable::.
+code::
+receiver.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
+::
+
+method:: plot
+All arguments are optional
+argument:: name
+The name to be used as the GUI window title.
+
+argument:: bounds
+A link::Classes/Rect:: providing coordinates for the GUI location.
+
+argument:: discrete
+Plots are line-plots by default. Set this to code::true:: for bar charts.
+
+argument:: numChannels
+The number of interleaved channels that an array represents. For Buffers this argument is not available, since it's filled in automatically.
+
+argument:: minval
+Minimum value(s) for the display range. For a Buffer this defaults to code::-1:: but can be changed.
+
+argument:: maxval
+Maximum value(s) for the display range. For a Buffer this defaults to code::+1:: but can be changed.
+
+argument:: parent
+By default the plot is placed in a new GUI window. This argument can be used to specify an existing GUI container to send the plot to.
+
+argument:: labels
+By default labels appear at the top left of the plot giving a data readout based on mouse position. Set this argument to code::false:: to prevent them appearing.
+
+If code::minval:: and/or code::maxval:: are set to code::nil:: (this is default, except for link::Classes/Buffer::s), they will be automatically calculated from the dataset minimum and/or maximum. For multi-channel data, code::minval:: and code::maxval:: may be arrays, specifying the range independently for each channel (including use of code::nil::, in which case the min/max will be calculated for the specific channel rather than for the overall dataset).
+
+Hitting the strong::L-key:: on the keyboard when the window is focussed toggles the lock, and the window can be used to edit the data.
+
+subsection:: Examples
+
+note::See some of the classes linked above for more examples::
+
+code::
+// Arrays
+[5, 6, 7, 6.5, 4.5, 3.5].plot("Some data")
+[5, 6, 7, 6.5, 4.5, 3.5].plot("Some data, in stereo", numChannels:2)
+[5, 6, 7, 6.5, 4.5, 3.5].plot("Some data, in stereo", numChannels:2, discrete: true)
+
+{ |i| { |j| j + 1 * i % 6 }.dup(5) }.dup(200).plot("Some 2-d data");
+
+// 3-channel interlaced data
+b = [{1.0.rand}.dup(50), { 20.0.rand - 30 }.dup(50),{ 10.0.rand }.dup(50)].lace(150);
+b.plot(numChannels:3, minval: nil, maxval: nil); // Common rescaling
+b.plot(numChannels:3, minval: [nil, nil, nil], maxval: [nil, nil, nil]); // Separate rescaling
+
+// Envelopes
+Env.adsr(0.4, 0.4, 0.8, 0.9).plot
+
+// Buffers
+s.boot;
+b = Buffer.read(s,"sounds/a11wlk01.wav");
+b.plot; // +-1 range
+b.plot(minval: nil, maxval: nil); // auto range
+b.plot(minval: 0, maxval: nil); // semi-auto range
+::
