@@ -7,7 +7,7 @@
     <script src="methods.js" type="text/javascript"></script>
 <style>
 div#search_box {
-    margin-top: 1em;
+    margin-top: 0em;
     margin-bottom: 0em;
     margin-left: auto;
     margin-right: auto;
@@ -28,7 +28,6 @@ div#search_count {
     border-bottom: 2px solid #777;
     color: #333;
 }
-
 
 div.result_item {
     margin-bottom: 0.2em;
@@ -79,6 +78,10 @@ div.mets {
 #search_settings td {
     border: none;
     padding: 2px;
+}
+#random {
+    text-align: right;
+    font-size: 9pt;
 }
 </style>
 <noscript>
@@ -357,8 +360,32 @@ function doPrint() {
 //    updProgress();
 }
 
+function randomDoc() {
+    while(node.hasChildNodes())
+        node.removeChild(node.lastChild);
+        
+    cindex = 0;
+    cindex2 = 0;
+    mindex = 0;
+    foundMets = false;
+    mets = [];
+
+    document.getElementById("search_input").value = "";
+
+    for(var i=0;i<100;i++) {
+        var v = docmap[Math.floor(Math.random()*docmap.length)];
+        if(! /Undocumented classes/.test(v.categories)) {
+            cats = [[v.categories,[v]]];
+            break;
+        }
+    }
+
+    doPrint();
+    
+    document.getElementById("search_count").innerHTML = "random document";
+}
+
 function doSearch() {
-    var res = "";
     var count = 0;
 
     while(node.hasChildNodes())
@@ -393,7 +420,7 @@ function doSearch() {
         }
         
         // search docmap
-        cats = {};        
+        cats = {};
         for(var k in docmap) {
             var v = docmap[k];
             var x = v.path.split("/");
@@ -482,6 +509,7 @@ function delayed_update() {
     <h1>Search</h1>
     <div id='summary'>Search all documents</div>
 </div>
+<div id="random"><a href="javascript:randomDoc()">random page</a></div>
 
 <div id="search_box">
 <span class="label">Search text:</span> <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
