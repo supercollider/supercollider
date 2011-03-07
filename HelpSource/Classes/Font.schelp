@@ -1,7 +1,6 @@
-class:: SCFont
+class:: Font
 summary:: A font object
 categories:: GUI>GUI-Tools
-related::
 
 description::
 This is the object you pass to other gui objects to set their font name or size.
@@ -9,12 +8,12 @@ This is the object you pass to other gui objects to set their font name or size.
 
 classmethods::
 
-subsection:: Creation / Class Methods
-
 method:: new
 argument:: name
 An instance of link::Classes/String::. Must coincide with the name of a font on the system. See link::Classes/SCFont#availableFonts::.
 argument:: size - An Instance of Float.
+discussion::
+Example:
 code::
 g = Font.new("Helvetica", 12);
 ::
@@ -39,14 +38,8 @@ Returns the default serif face Font.
 method:: defaultMonoFace
 Returns the default mono face Font.
 
-
-subsection:: Accessing Class Variables
-
 method:: default
-Class Variable. Gets/sets the default Font.
-
-
-subsection:: Accessing Instance and Class Variables
+Gets/sets the default Font.
 
 method:: name
 Gets/sets the name of a font.
@@ -62,7 +55,7 @@ method:: setDefault
 Makes the current instance of Font the default.
 
 method:: storeArgs
-Returns an link::Classes/Array::, code::[ name, size ]::.
+Returns an link::Classes/Array::, code:: [ name, size ] ::.
 
 method:: boldVariant
 Appendes code::"-Bold":: to the name. This is only useful for fonts that have bold variants.

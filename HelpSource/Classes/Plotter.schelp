@@ -1,31 +1,31 @@
 class:: Plotter
 summary:: Plot numerical data on a window or view
 categories:: GUI>GUI-Tools
-related:: plot
+related:: Reference/plot
 
 description::
 Plot data of up to three dimensions on a link::Classes/Window:: or link::Classes/UserView::.
 
-classmethods::
+subsection:: Keyboard shortcuts
 
-subsection:: Creation / Class Methods
-
-method:: new
-argument:: name
-Plot window title.
-argument:: parent
-Either a link::Classes/Window::/link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
-argument:: bounds
-The window bounds (a link::Classes/Rect::).
-
-code::
-(
-a = Plotter("the plot", Rect(600, 30, 800, 250));
-a.value = (0..1000).normalize(0, 14pi).curdle(0.01).scramble.flat.sin;
-)
+When the plotter window has focus, the following keyboard shortcuts can be used to change the display:
+table::
+## + / - || vertical zoom
+## = || compare plot channels
+## n || toggle normalize display (0..1) / (-1..1), or fit range
+## s || toggle superposition (see: superpose)
+## m || switch plot mode (see: link::Classes/Plotter#plotMode::)
+## e || toggle editing (see: link::Classes/Plotter#editMode::)
+## g || toggle horizontal (domain) grid
+## G || toggle vertical (codomain) grid
+## ctrl-+ / - || zoom font
+## alt-click || post value
 ::
 
-subsection:: something.plot2(args)
+section:: Method extensions
+Plotter extends other classes with methods:
+
+method:: something.plot2 (args)
 
 code::
 // plot array
@@ -46,32 +46,63 @@ Buffer.read(s, "sounds/SinedPink.aiff").plot2;
 Env.perc(0.4, 0.6).plot2;
 ::
 
-subsection:: something.plotGraph2(n,from,to,...)
+method:: something.plotGraph2 (n,from,to,...)
 
 code::
 { |x| sin(x) }.plotGraph2(300,0,2*pi);
 { |x| sin(1/x)*x }.plotGraph2(from:0.0001,to:0.2);
 ::
 
-subsection:: Keyboard shortcuts
+section:: Changing global defaults
 
-When the plotter window has focus, the following keyboard shortcuts can be used to change the display:
-table::
-## + / - || vertical zoom
-## = || compare plot channels
-## n || toggle normalize display (0..1) / (-1..1), or fit range
-## s || toggle superposition (see: superpose)
-## m || switch plot mode (see: link::Classes/Plotter#plotMode::)
-## e || toggle editing (see: link::Classes/Plotter#editMode::)
-## g || toggle horizontal (domain) grid
-## G || toggle vertical (codomain) grid
-## ctrl-+ / - || zoom font
-## alt-click || post value
+The default styles are kept (and may be overridden) in code::GUI.skin.at(\plot)::. See also link::Classes/GUI:: help.
+
+code::
+// specify plot layout
+(
+GUI.skin.plot.gridLinePattern = FloatArray[1, 0];
+GUI.skin.plot.fontColor = Color(0.5, 1, 0);
+GUI.skin.plot.gridColorX = Color.yellow(0.5);
+GUI.skin.plot.gridColorY = Color.yellow(0.5);
+GUI.skin.plot.background = Color.black;
+GUI.skin.plot.plotColor = (10..0).normalize(0.1, 1).collect { |i| Color.rand(i) };
+GUI.skin.plot.labelX = "X";
+GUI.skin.plot.labelY = "Y";
+);
+
+(
+x = { |i| (0..60).scramble.clump(8) * (3.5 ** i) }.dup(3);
+x.plot2("ARRAY:PLOT", Rect(200, 300, 600, 500));
+)
+
+GUI.skin.plot.put(\plotColor, { Color.rand(0.0, 0.8) } ! 8);
+[(0..100), (20..120), (40..140)].squared.flop.bubble.plot2;
+
+// reset the defaults:
+Plot.initClass;
 ::
+
+classmethods::
+
+method:: new
+argument:: name
+Plot window title.
+argument:: parent
+Either a link::Classes/Window:: / link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
+argument:: bounds
+The window bounds (a link::Classes/Rect::).
+discussion::
+code::
+(
+a = Plotter("the plot", Rect(600, 30, 800, 250));
+a.value = (0..1000).normalize(0, 14pi).curdle(0.01).scramble.flat.sin;
+)
+::
+
 
 instancemethods::
 
-subsection:: Accessing Instance and Class Variables
+subsection:: Accessing Instance Variables
 
 method:: makeWindow
 Open given plotter in a new window or within a given composite view.
@@ -91,6 +122,7 @@ table::
 ## code::\levels:: || horizontal lines
 ## code::\steps:: || connecting data points with step interpolation
 ::
+discussion::
 code::
 a = (0..20).scramble.plot2;
 a.plotMode = \points; a.refresh;
@@ -102,9 +134,24 @@ a.plotMode = \linear; a.refresh;
 
 method:: setProperties
 Set properties of all plot views. Defaults are taken from code::GUI.skin.at(\plot);::
-argument:: ...pairs
-Supported properties: font, fontColor, gridColorX, gridColorY, plotColor (an link::Classes/Array::), backgroundColor, gridLinePattern, gridLineSmoothing (code::bool::), labelX, labelY, gridOnX (code::bool::), gridOnY (code::bool::).
-
+argument:: pairs
+A list of symbol,value pairs. Supported properties:
+list::
+## font
+## fontColor
+## gridColorX
+## gridColorY
+## plotColor (an link::Classes/Array::)
+## backgroundColor
+## gridLinePattern
+## gridLineSmoothing ( link::Classes/Boolean:: )
+## labelX
+## labelY
+## gridOnX ( link::Classes/Boolean:: )
+## gridOnY ( link::Classes/Boolean:: )
+::
+discussion::
+Example:
 code::
 (
 a = { (0..30).scramble }.dup(2).plot2;
@@ -123,7 +170,6 @@ GUI.skin.at(\plot); // defaults
 
 method:: editMode
 If the edit mode is set to true, the data may be edited via cursor.
-argument:: boolean
 code::
 a = (0..20).plot2;
 a.editMode = true; // now edit the data by clicking into the plot..
@@ -132,7 +178,6 @@ a.value; // the value
 
 method:: resolution
 Set the number of data points displayed maximally per pixel (default: 1)
-argument:: val
 code::
 a = (0..200).scramble.plot2;
 a.resolution = 8; a.refresh; // resizing the window shows interpolation
@@ -141,11 +186,9 @@ a.resolution = 1; a.refresh;
 
 method:: findSpecs
 If true (default: code::true::), specs are derived from new data (using min and max values) automatically.
-argument:: boolean
 
 method::superpose
 If set to true, plotter displays channels on top of each other (keyboard shortcut: s)
-argument:: boolean
 code::
 a = { (0..30).scramble }.dup(2).plot2;
 a.superpose = true; a.refresh;
@@ -153,7 +196,6 @@ a.superpose = true; a.refresh;
 
 method:: value
 Return or set the data values. Data may be numerical arrays of up to 3 dimensions.
-argument:: array
 code::
 a = [1, 4, 2, 7, 4].dup(2).plot2;
 a.value;
@@ -163,25 +205,21 @@ method:: data
 Reference to the current internal data.
 
 method:: cursorPos
-Return the last cursorPos (a link::Classes/Point::).
+Returns:: the last cursorPos (a link::Classes/Point::).
 
 method:: plots
-Return the single subplots (a link::Classes/Plot::).
+Returns:: the single subplots (a link::Classes/Plot::).
 
 
 method:: specs
 Set or get the spec for the y-axis (codomain).
-argument:: list
 code::
-(
 a = { (40..3000).scramble }.dup(2).plot2;
 a.specs = \freq.asSpec; a.refresh;
-)
 ::
 
 method:: domainSpecs
 Set or get the spec for the x-axis (domain).
-argument:: list
 code::
 a = { (40..300).scramble }.dup(2).plot2;
 a.domainSpecs = \freq.asSpec; a.refresh;
@@ -189,7 +227,8 @@ a.domainSpecs = \freq.asSpec; a.refresh;
 
 method:: editFunc
 Supply a function which is evaluated when editing data. The function is called with the arguments: code::plotter::, code::plotIndex::, code::index::, code::val::, code::x::, code::y::.
-argument:: func
+discussion::
+Example:
 code::
 (
 a = { (0..10).scramble.normalize }.dup(2).plot2;
@@ -224,36 +263,6 @@ a.editFunc = { |plotter, plotIndex, i, val|
 a.parent.onClose = { x.release };
 );
 ::
-
-subsection:: Changing global defaults
-
-The default styles are kept (and may be overridden) in code::GUI.skin.at(\plot)::. See also link::Classes/GUI:: help.
-
-code::
-// specify plot layout
-(
-GUI.skin.plot.gridLinePattern = FloatArray[1, 0];
-GUI.skin.plot.fontColor = Color(0.5, 1, 0);
-GUI.skin.plot.gridColorX = Color.yellow(0.5);
-GUI.skin.plot.gridColorY = Color.yellow(0.5);
-GUI.skin.plot.background = Color.black;
-GUI.skin.plot.plotColor = (10..0).normalize(0.1, 1).collect { |i| Color.rand(i) };
-GUI.skin.plot.labelX = "X";
-GUI.skin.plot.labelY = "Y";
-);
-
-(
-x = { |i| (0..60).scramble.clump(8) * (3.5 ** i) }.dup(3);
-x.plot2("ARRAY:PLOT", Rect(200, 300, 600, 500));
-)
-
-GUI.skin.plot.put(\plotColor, { Color.rand(0.0, 0.8) } ! 8);
-[(0..100), (20..120), (40..140)].squared.flop.bubble.plot2;
-
-// reset the defaults:
-Plot.initClass;
-::
-
 
 examples::
 
@@ -356,3 +365,4 @@ b = Buffer.read(s, "sounds/SinedPink.aiff");
 b.plot2;
 b.free;
 ::
+

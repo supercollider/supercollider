@@ -8,7 +8,6 @@ FlowLayout is a decorator which automatically arranges views inside a container 
 
 classmethods::
 
-subsection:: Creation / Class Methods
 method:: new
 argument:: bounds
 An instance of link::Classes/Rect::. Normally set to the code::parent.bounds::.
@@ -17,7 +16,8 @@ An instance of link::Classes/Point::. The horizontal and vertical inner margins,
 argument:: gap
 An instance of link::Classes/Point::. The horizontal and vertical layout gap between the subviews.
 
-subsection::
+discussion::
+Example:
 code::
 (
 w = Window.new.front;
@@ -27,7 +27,7 @@ w.view.decorator = FlowLayout( w.view.bounds, 10@10, 20@5 );
 )
 ::
 You can also write:
-::
+code::
 (
 w = Window.new.front;
 w.addFlowLayout( 10@10, 20@5 ); // a shortcut method, see SCContainerView
@@ -37,7 +37,7 @@ w.addFlowLayout( 10@10, 20@5 ); // a shortcut method, see SCContainerView
 
 instancemethods::
 
-subsection:: Accessing Instance and Class Variables
+subsection:: Accessing Instance Variables
 
 method:: nextLine
 Forces the decorator to start a new line:
@@ -106,6 +106,7 @@ method:: left
 Get the current left indentation or manually set it.
 argument:: arg1
 A number.
+discussion::
 code::
 (
 w = Window.new;
@@ -121,6 +122,7 @@ method:: top
 Get the current top indentation or manually set it.
 argument:: arg1
 A number.
+discussion::
 code::
 (
 w = Window.new;
@@ -135,13 +137,12 @@ w.front;
 
 method:: shift
 Set the current left and top indentation (see above).
-argument:: x
-argument:: y
 
 method:: maxHeight
 Get/set maximium height of the subviews in the current position.
 argument:: arg1
 A number.
+discussion::
 code::
 (
 w = Window.new;
@@ -159,6 +160,7 @@ method:: maxRight
 Get/set maximium right of the subviews in the current position.
 argument:: arg1
 A number.
+discussion::
 code::
 (
 w = Window.new;
@@ -170,9 +172,11 @@ Slider2D( w.view,150@150 ).background_( Color.rand );
 "second row maxRight: " ++ d.maxRight.postln;
 w.front;
 )
+::
 
 method:: currentBounds
 Gets a link::Classes/Rect:: with code::bounds.width:: and code::height = top + maxHeight::.
+discussion::
 code::
 (
 w = Window.new;
@@ -189,6 +193,7 @@ w.front;
 
 method:: used
 Gets a link::Classes/Rect:: with the space actually used.
+discussion::
 code::
 (
 w = Window.new;
@@ -203,10 +208,6 @@ w.front;
 )
 ::
 
-reset
+method:: reset
 Resets the layout mechanism to 0,0.
 
-method:: init	
-
-method:: place
-argument:: view

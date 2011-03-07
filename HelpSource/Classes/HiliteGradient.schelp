@@ -3,12 +3,10 @@ summary:: A linear color fade between an outside and an inside color
 categories:: GUI>GUI-Tools
 related:: Classes/Color, Classes/Gradient
 
-summary::
+description::
 A linear color fade between an outside and an inside color.
 
 classmethods::
-
-subsection:: Creation / Class Methods
 
 method:: new
 argument:: color1

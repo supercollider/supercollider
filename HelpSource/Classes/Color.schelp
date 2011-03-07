@@ -8,8 +8,6 @@ An object which stores red, green, blue, and alpha values in instance variables,
 
 classmethods::
 
-subsection:: Creation / Class Methods
-
 method:: new
 argument:: red
 An instance of link::Classes/Float:: between 0 and 1. Default value is 0.0.
@@ -110,7 +108,7 @@ link::Classes/Float:: between 0 and 1. Default value is 1.
 
 instancemethods::
 
-subsection:: Accessing Instance and Class Variables
+subsection:: Accessing Instance Variables
 
 method:: red
 Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::,
@@ -294,7 +292,7 @@ w.refresh;
 )
 ::
 
-subsection:: X-windows colors
+section:: X-windows colors
 code::
 'alice blue' -> Color.new255(240, 248, 255),
 'AliceBlue' -> Color.new255(240, 248, 255),
