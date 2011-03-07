@@ -2,6 +2,7 @@ SCDocRenderer {
     var <>parser;
 
     var currentClass;
+    var currentImplClass;
     var collectedArgs;
 //    var retValue;
     var dirLevel;
@@ -50,7 +51,7 @@ SCDocRenderer {
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|
-        var c, f, m, m2, n, mname, args, split, mstat, sym, css, pfx;
+        var c, ic, f, m, m2, n, mname, args, split, mstat, sym, css, pfx;
 
         var do_children = {|p=false|
             node.children !? {
@@ -110,16 +111,19 @@ SCDocRenderer {
                 switch(parentTag,
                     \instancemethods, {
                         c = currentClass;
+                        ic = currentImplClass;
                         css = "imethodname";
                         pfx = "-";
                     },
                     \classmethods, {
                         c = currentClass.class;
+                        ic = currentImplClass.class;
                         css = "cmethodname";
                         pfx = "*";
                     },
                     {
                         c = nil;
+                        ic = nil;
                         css = "imethodname";
                         pfx = "";
                     }
@@ -132,13 +136,15 @@ SCDocRenderer {
                         mstat = 0;
                         sym = mname.asSymbol;
                         //check for normal method or getter
-                        m = c.findRespondingMethodFor(sym.asGetter);
+                        m = ic !? {ic.findRespondingMethodFor(sym.asGetter)};
+                        m = m ?? {c.findRespondingMethodFor(sym.asGetter)};
                         m !? {
                             mstat = mstat | 1;
                             args = SCDoc.makeArgString(m);
                         };
                         //check for setter
-                        m2 = c.findRespondingMethodFor(sym.asSetter);
+                        m2 = ic !? {ic.findRespondingMethodFor(sym.asSetter)};
+                        m2 = m2 ?? {c.findRespondingMethodFor(sym.asSetter)};
                         m2 !? {
                             mstat = mstat | 2;
                             args = (m2.argNames ?? [nil,"value"])[1];
@@ -159,14 +165,18 @@ SCDocRenderer {
                         // method not found
                         0, { file.write(": METHOD NOT FOUND!</h3></a>\n"); }
                     );
-                    //Note: this only checks if the getter is an extension if there are both getter and setter.. (?)
+                    m = m ?? m2;
                     if(m.notNil) {
-                        if(m.isExtensionOf(c)) {
+                        if(m.isExtensionOf(c) and: {ic.isNil or: {m.isExtensionOf(ic)}}) {
                             file.write("<div class='extmethod'>From extension in <a href='" ++ m.filenameSymbol ++ "'>" ++ m.filenameSymbol ++ "</a></div>\n");
                         } {
-                            if(m.ownerClass != c) {
-                                n = m.ownerClass.name.asString.replace("Meta_","");
-                                file.write("<div class='supmethod'>From superclass: <a href='" ++ baseDir +/+ "Classes" +/+ n ++ ".html'>" ++ n ++ "</a></div>\n");
+                            if(m.ownerClass == ic) {
+                                file.write("<div class='supmethod'>From implementing class</div>\n");
+                            } {
+                                if(m.ownerClass != c) {
+                                    n = m.ownerClass.name.asString.replace("Meta_","");
+                                    file.write("<div class='supmethod'>From superclass: <a href='" ++ baseDir +/+ "Classes" +/+ n ++ ".html'>" ++ n ++ "</a></div>\n");
+                                }
                             }
                         };
                     };
@@ -505,6 +515,12 @@ SCDocRenderer {
                     }.join(", "));
                     f.write("</div>");
                 };
+                if(currentImplClass.notNil) {
+                    f.write("<div class='inheritance'>");
+                    f.write("Implementing class: ");
+                    f.write("<a href=\"../Classes/"++currentImplClass.name++".html\">"++currentImplClass.name++"</a>");
+                    f.write("</div>");
+                };
             } {
                 f.write("<div id='filename'>Location: <b>NOT INSTALLED!</b></div>");
             };
@@ -566,11 +582,17 @@ SCDocRenderer {
         if(x.text.notEmpty, {
             name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
+            currentImplClass = nil;
             
             currentClass !? {
                 this.addUndocumentedMethods(currentClass.class,\classmethods);
                 this.addUndocumentedMethods(currentClass,\instancemethods);
                 //TODO: add methods from +ClassName.schelp (recursive search)
+                
+                x = parser.findNode(\redirect).text.stripWhiteSpace;
+                if(x.notEmpty) {
+                    currentImplClass = currentClass.perform(x.asSymbol);
+                };
             };
 
             x = 10;

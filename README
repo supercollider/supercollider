@@ -35,6 +35,8 @@ TODO
 
 integration with frontends / main sc distro
 ===========================================
+* HelpSource should be installed in thisProcess.platform.systemAppSupportDir
+
 * ship pre-rendered help with the binary package (render after building supercollider)
 just use the pre-rendered help until the users need to update help, which would first copy or hard-link the pre-rendered
 files into helpTargetDir and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else the system-wide location (thisProcess.platform.systemAppSupportDir +/+ "Help");
@@ -86,10 +88,6 @@ soft::there::
 - tags after each other doesn't work, like returns::link::hello::
 perhaps hard to fix without taking into account if the tag needs closing or not?
 for example, what does this mean: code::foo::link::bar::
-
-- some classes uses *doesNotUnderstand trick for class methods
-make a redirect:: tag that sets the name of the classvar holding the implementing class?
-Perhaps the implementing class should be marked as "documented" and not show up in UndocumentedClasses?
 
 - using \::. doesn't work, needs a space: \:: .
 also sometimes non-letters after :: doesn't work correctly, like "(link::hello::)"

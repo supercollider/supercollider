@@ -161,6 +161,7 @@ SCDocParser {
                     this.setTopNode(this.addTag(tag,nil,true));
                 },
                 'class::',              simpleTag,
+                'redirect::',           simpleTag,
                 'title::',              simpleTag,
                 'summary::',            simpleTag,
                 'related::',            simpleTag,
