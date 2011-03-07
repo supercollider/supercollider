@@ -33,6 +33,8 @@ unit->mRate->mFilterRemain = 1;
 unit->mRate->mFilterLoops = tmp_floops; \
 unit->mRate->mFilterRemain = tmp_fremain;
 
+using namespace std; // for math functions
+
 static InterfaceTable *ft;
 
 struct Ramp : public Unit

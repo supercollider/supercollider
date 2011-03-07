@@ -36,7 +36,6 @@
 #define inline_functions
 #endif
 
-
 using nova::wrap_argument;
 
 #define NOVA_WRAPPER(NAME, NOVANAME)                                    \
@@ -58,6 +57,7 @@ using nova::wrap_argument;
 
 #endif
 
+using namespace std; // for math functions
 
 static InterfaceTable *ft;
 
