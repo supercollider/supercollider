@@ -34,6 +34,8 @@
 
 #endif
 
+using namespace std; // for math functions
+
 static InterfaceTable *ft;
 
 struct LinPan2 : public Unit
