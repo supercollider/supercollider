@@ -8,6 +8,7 @@ SCDoc {
     classvar progressText = nil, progressWindow = nil;
     classvar progressCount = 0, progressMax = 1;
     classvar progressTopic = nil, progressBar = nil;
+    classvar new_classes = nil;
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
@@ -181,8 +182,8 @@ SCDoc {
             ^"";
         };
     }
-
-    *handleUndocumentedClasses {|force=false|
+/*
+    *handleUndocumentedClassesOld {|force=false|
         var n, m, name, cats, dest;
 //        var src, dest;
 //        var srcbase = helpSourceDir +/+ "Classes";
@@ -229,13 +230,54 @@ SCDoc {
             n !? {n.delete = false};
         };
     }
+*/
+    *handleUndocumentedClasses {
+        var n, m, name, cats, dest;
+        var destbase = helpTargetDir +/+ "Classes";
+        SCDoc.postProgress("Generating docs for"+new_classes.size+"undocumented classes...",true);
+        new_classes.do {|sym|
+            var c = sym.asClass;
+            var name = sym.asString;
+            dest = destbase +/+ name ++ ".html";
+            n = List.new;
+            n.add((tag:\class, text:name));
+            n.add((tag:\summary, text:""));
+
+            cats = "Undocumented classes";
+            if(this.classHasArKrIr(c), {
+                cats = cats ++ ", UGens>Undocumented";
+                if(c.categories.notNil) {
+                    cats = cats ++ ", "++c.categories.join(", ");
+                };
+            });
+            n.add((tag:\categories, text:cats));
+
+            p.root = n;
+            this.addToDocMap(p, "Classes" +/+ name);
+            
+//            SCDoc.postProgress("Generating doc for class: "++name);
+            n.add((tag:\description, children:m=List.new));
+            m.add((tag:\prose, text:"This class is missing documentation. Please create and edit HelpSource/Classes/"++name++".schelp", display:\block));
+
+            // FIXME: Remove this when conversion to new help system is done!
+            m.add((tag:\prose, text:"Old help file: ", display:\block));
+            m.add((tag:\link, text:Help.findHelpFile(name) ?? "not found", display:\inline));
+
+            this.makeMethodList(c.class,n,\classmethods);
+            this.makeMethodList(c,n,\instancemethods);
+            r.renderHTML(dest,"Classes");
+
+            docMap["Classes" +/+ name].delete = false;
+            this.tickProgress;
+        };
+    }
     
-    *classHash {|c|
+/*    *classHash {|c|
         var hash;
         //Problems: probably very slow! Also it doesn't work if one of the superclasses changed..
         hash = (((c.methods ++ c.class.methods) ?? []).collect {|m| m.code}).flatten.asString.hash;
         ^hash;
-    }
+    }*/
 
     *addToDocMap {|parser, path|
         var c, x = parser.findNode(\class).text;
@@ -302,7 +344,20 @@ SCDoc {
         docMap.writeArchive(path);
     }
 
-    *updateFile {|source, rootDir, force=false|
+    *makeProgressWindow {
+        if(GUI.scheme.isNil and: doWait, {^nil});
+        
+        progressWindow = Window("Documentation update",500@150).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
+
+        StaticText(progressWindow).string_("Please wait while updating help files...");
+        progressBar = RangeSlider(progressWindow,300@20).orientation_(\horizontal).background_(Color(0.8,0.8,0.8)).knobColor_(Color(0.5,0.5,0.8));
+        progressTopic = StaticText(progressWindow).font_(Font.defaultSansFace.boldVariant);
+        progressText = TextView(progressWindow).editable_(false);
+
+        progressWindow.front;
+    }
+/*
+    *updateFileOld {|source, rootDir, force=false|
         var lastDot = source.findBackwards(".");
         var subtarget = source.copyRange(rootDir.size + 1, lastDot - 1);
         var target = helpTargetDir +/+ subtarget ++".html";
@@ -336,21 +391,223 @@ SCDoc {
         });
         ^didUpdate;
     }
-    
-    *makeProgressWindow {
-        if(GUI.scheme.isNil and: doWait, {^nil});
-        
-        progressWindow = Window("Documentation update",500@150).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
-
-        StaticText(progressWindow).string_("Please wait while updating help files...");
-        progressBar = RangeSlider(progressWindow,300@20).orientation_(\horizontal).background_(Color(0.8,0.8,0.8)).knobColor_(Color(0.5,0.5,0.8));
-        progressTopic = StaticText(progressWindow).font_(Font.defaultSansFace.boldVariant);
-        progressText = TextView(progressWindow).editable_(false);
-
-        progressWindow.front;
+*/
+    *updateFile {|source, rootDir|
+        var lastDot = source.findBackwards(".");
+        var subtarget = source.copyRange(rootDir.size + 1, lastDot - 1);
+        var target = helpTargetDir +/+ subtarget ++".html";
+        var folder = target.dirname;
+        var ext = source.copyToEnd(lastDot);
+        if(source.beginsWith(rootDir).not) {
+            error("File location error:\n"++source++"\nis not inside "++rootDir);
+            ^nil;
+        };
+        if(ext == ".schelp", {
+            SCDoc.postProgress("Parsing "++source);
+            p.parseFile(source);
+            this.addToDocMap(p,subtarget);
+            r.renderHTML(target,subtarget.dirname);
+            if(subtarget.dirname=="Classes",{new_classes.remove(subtarget.basename.asSymbol)});
+        }, {
+            SCDoc.postProgress("Copying" + source + "to" + (folder +/+ source.basename));
+            ("mkdir -p"+folder.escapeChar($ )).systemCmd;
+            ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
+        });
     }
+    
+    *tickProgress { progressCount = progressCount + 1 }
 
     *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true|
+        var func;
+        var docmap_path = SCDoc.helpTargetDir.escapeChar($ )+/+"scdoc_cache";
+        var classlist_path = SCDoc.helpTargetDir.escapeChar($ )+/+"classlist_cache";
+        
+        if(force.not) {
+            force = this.readDocMap;
+        } {
+            docMap = Dictionary.new;
+        };
+
+        func = {
+            var helpSourceDirs, fileList, count, maybeDelete, x, f, n, old_classes, current_classes;
+
+            progressMax = 1;
+            progressCount = 0;
+            
+            new_classes = IdentitySet.new;
+            
+            // get list of helpSourceDirs
+            SCDoc.postProgress("Searching for HelpSource folders...",true);
+            helpSourceDirs = [SCDoc.helpSourceDir];
+            [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
+                helpSourceDirs = helpSourceDirs ++ ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d")
+                    .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+            };
+
+            SCDoc.postProgress(helpSourceDirs);
+
+            // get list of new or updated files
+            fileList = Dictionary.new;
+            count = 0;
+            if(force) {
+                SCDoc.postProgress("Updating all files",true);
+                helpSourceDirs.do {|dir|
+                    fileList[dir] = ("find -L"+dir.escapeChar($ )+"-type f")
+                        .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+                    count = count + fileList[dir].size;
+                };
+            } {
+                SCDoc.postProgress("Searching for new or updated files...",true);
+                helpSourceDirs.do {|dir|
+                    fileList[dir] = ("find -L"+dir.escapeChar($ )+"-newer"+docmap_path+"-type f")
+                        .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+                    count = count + fileList[dir].size;
+                };
+            };
+            SCDoc.postProgress("Found"+count+"files in need of update");
+            progressMax = count + 5;
+
+            //Read a list of all classes so that we can detect if any new ones where added (extensions).
+            old_classes = Object.readArchive(classlist_path);
+            current_classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
+            SCDoc.postProgress("Checking for new classes...",true);
+            if(old_classes.notNil) {
+                current_classes.do{|name|
+                    if(old_classes.includes(name).not) {
+                        //or: {("test"+name.asClass.filenameSymbol.asString.escapeChar($ )+"-ot"+classlist_path).systemCmd!=0}) {
+                        //tried to test if class source file is newer than the class_cache file to catch class file updates,
+                        //but it is *very* slow and also won't trigger writing a new classlist_path file so that can't
+                        //be used as time reference anyhow..
+                        //Would be nice with a way to detect if a class did change though..
+                        new_classes.add(name);
+                    };
+                };
+            } {
+                // this is a fresh run
+                new_classes = current_classes.copy;
+            };
+            SCDoc.postProgress("Found"+new_classes.size+"new classes");
+
+            /* FIXME:
+               - read old HelpSourceDirs from archive
+               - if one was added since last time, go through every file in that dir and compare
+                 mtime to already rendered help, if newer then add to fileList[dir].
+               - write new HelpSourceDirs to archive
+               
+               This catches newly installed extensions/quarks where the helpfiles was not newer than scdoc_cache
+
+               is there a better solution for this? like checking the mtime for each helpsource dir compared
+               to scdoc_cache (as we already do) but checking the mtime of the actual link?
+            */
+
+            // parse/render or copy new and updated files
+            // any class docs processed here will remove that class from the new_classes set
+            helpSourceDirs.do {|dir|
+                x = fileList[dir].size;
+                if(x>0) {
+                    SCDoc.postProgress("Processing"+x+"files in"+dir,true);
+                    fileList[dir].do {|file|
+                        this.updateFile(file,dir);
+                        this.tickProgress;
+                    };
+                };
+            };
+            
+            // use folder mtime to see if there might be any deleted files,
+            // note: this will also trigger on added helpfiles but that's ok I guess..
+            maybeDelete = false;
+            helpSourceDirs.do {|dir|
+                if(("find -L"+dir.escapeChar($ )+"-type d -newer"+docmap_path).unixCmdGetStdOut.isEmpty.not) {
+                    maybeDelete = true;
+                };
+            };
+            if(maybeDelete or: force or: {old_classes != current_classes}) {
+                docMap.do(_.delete=true); // mark all docs in docMap for deletion
+                SCDoc.postProgress("Help folders changed, scanning for deleted documents...",true);
+                count = 0;
+                helpSourceDirs.do {|dir|
+                    ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOut.split($\n).reject(_.isEmpty).do {|f|
+                        var subtarget = f.copyRange(dir.size + 1, f.findBackwards(".") - 1);
+                        docMap[subtarget].delete = false;
+                    };
+                };
+                current_classes.do {|sym|
+                    x = docMap["Classes"+/+sym.asString];
+                    x !? {x.delete = false};
+                };
+
+                docMap.pairsDo{|k,e|
+                    if(e.delete==true, {
+                        SCDoc.postProgress("Removing"+e.path+"from cache");
+                        docMap.removeAt(k);
+                        count = count + 1;
+                    });
+                    e.removeAt(\delete); //remove the key since we don't need it anymore
+                };
+                SCDoc.postProgress("Removed"+count+"documents");
+            };
+
+            // generate simple doc for each class in new_classes, which now contains only undocumented *new* classes:
+            if(new_classes.size>0) {
+                progressMax = progressMax + new_classes.size;
+                this.handleUndocumentedClasses;
+            };
+            
+            if(old_classes != current_classes) {
+                current_classes.writeArchive(classlist_path);
+                SCDoc.postProgress("Generating Class tree...",true);
+                p.overviewClassTree;
+                r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews",false);
+                this.tickProgress;
+
+                SCDoc.postProgress("Generating Class index...",true);
+                p.overviewAllClasses(docMap);
+                r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews",false);
+                this.tickProgress;
+            };
+            
+            // move this to the old_classes!=current_classes check above? but methods can change even if the classlist has not..
+            SCDoc.postProgress("Generating Methods index",true);
+            f = File.open(SCDoc.helpTargetDir +/+ "methods.js","w");
+            f.write("methods = [\n");
+            this.collectAllMethods.pairsDo {|k,v|
+                f.write("['"++k++"',[");
+                v.do {|c,i|
+                    n = c[0];
+                    f.write("'"++n);
+                    if(c[1]) { //is extension of
+                        f.write("+");
+                    };
+                    f.write("',");
+                };
+                f.write("]],\n");
+            };
+            f.write("\n];");
+            f.close;
+            this.tickProgress;
+
+            this.writeDocMap;
+            this.tickProgress;
+            this.postProgress("Writing Document JSON index...",true);
+            this.docMapToJSON(this.helpTargetDir +/+ "docmap.js");
+            progressCount = progressMax;
+            
+            this.postProgress("Done!",true);
+            "SCDoc done!".postln;
+            doneFunc.value();
+            doWait=false;
+            progressWindow !? { progressWindow.userCanClose = true };
+
+        };
+
+        if(gui, {this.makeProgressWindow});
+        if(doWait = threaded, {
+            Routine(func).play(AppClock);
+        }, func);
+        
+    }
+/*
+    *updateAllOld {|force=false,doneFunc=nil,threaded=true,gui=true|
         // FIXME: split updateFile() so that it first collects all files that needs updating, then we run it on that list.
         // then we can have progress of files that needs update, not for all files.
         var fileList = List.new;
@@ -431,7 +688,7 @@ SCDoc {
             Routine(f).play(AppClock);
         }, f);
     }
-
+*/
     *checkBrokenLinks {
         var f,m;
         var file;
