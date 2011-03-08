@@ -422,16 +422,16 @@ SCDoc {
     *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true|
         var func;
         var docmap_path = SCDoc.helpTargetDir.escapeChar($ )+/+"scdoc_cache";
-        var classlist_path = SCDoc.helpTargetDir.escapeChar($ )+/+"classlist_cache";
+        var classlist_path = SCDoc.helpTargetDir+/+"classlist_cache";
         
-        if(force.not) {
-            force = this.readDocMap;
-        } {
-            docMap = Dictionary.new;
-        };
-
         func = {
             var helpSourceDirs, fileList, count, maybeDelete, x, f, n, old_classes, current_classes;
+
+            if(force.not) {
+                force = this.readDocMap;
+            } {
+                docMap = Dictionary.new;
+            };
 
             progressMax = 1;
             progressCount = 0;
@@ -500,6 +500,14 @@ SCDoc {
 
                is there a better solution for this? like checking the mtime for each helpsource dir compared
                to scdoc_cache (as we already do) but checking the mtime of the actual link?
+               
+               - check the mtime of the actual softlink or folder against scdoc_cache, if newer then go through every
+               file in that dir and compare mtime to already rendered help, if newer then add to fileList[dir] so they will be updated.
+
+               problem: the linked folder is most probably not the HelpSource folder itself, but the extensions folder..
+               so we first need to collect all folders or links to folders in Extensions that is newer than scdoc_cache,
+               then find any HelpSource folders under these and add all their files to fileList[dir]?
+
             */
 
             // parse/render or copy new and updated files

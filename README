@@ -42,15 +42,7 @@ just use the pre-rendered help until the users need to update help, which would 
 files into helpTargetDir and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else the system-wide location (thisProcess.platform.systemAppSupportDir +/+ "Help");
 
 * updateAll FIXME:
-   - read old HelpSourceDirs from archive
-   - if one was added since last time, go through every file in that dir and compare
-     mtime to already rendered help, if newer then add to fileList[dir].
-   - write new HelpSourceDirs to archive
-   
-   This catches newly installed extensions/quarks where the helpfiles was not newer than scdoc_cache
-
-   is there a better solution for this? like checking the mtime for each helpsource dir compared
-   to scdoc_cache (as we already do) but checking the mtime of the actual link?
+    when quarks/extensions are linked/moved in and any helpfiles therein is older than scdoc_cache, SCDoc will not detect them.
 
 * fix (adjust for SCDoc) or deprecate all old help classes and methods
 
