@@ -515,36 +515,38 @@ SCDoc {
             
             // use folder mtime to see if there might be any deleted files,
             // note: this will also trigger on added helpfiles but that's ok I guess..
-            maybeDelete = false;
-            helpSourceDirs.do {|dir|
-                if(("find -L"+dir.escapeChar($ )+"-type d -newer"+docmap_path).unixCmdGetStdOut.isEmpty.not) {
-                    maybeDelete = true;
-                };
-            };
-            if(maybeDelete or: force or: {old_classes != current_classes}) {
-                docMap.do(_.delete=true); // mark all docs in docMap for deletion
-                SCDoc.postProgress("Help folders changed, scanning for deleted documents...",true);
-                count = 0;
+            if(force.not) {
+                maybeDelete = false;
                 helpSourceDirs.do {|dir|
-                    ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOut.split($\n).reject(_.isEmpty).do {|f|
-                        var subtarget = f.copyRange(dir.size + 1, f.findBackwards(".") - 1);
-                        docMap[subtarget].delete = false;
+                    if(("find -L"+dir.escapeChar($ )+"-type d -newer"+docmap_path).unixCmdGetStdOut.isEmpty.not) {
+                        maybeDelete = true;
                     };
                 };
-                current_classes.do {|sym|
-                    x = docMap["Classes"+/+sym.asString];
-                    x !? {x.delete = false};
-                };
+                if(maybeDelete or: force or: {old_classes != current_classes}) {
+                    docMap.do(_.delete=true); // mark all docs in docMap for deletion
+                    SCDoc.postProgress("Help folders changed, scanning for deleted documents...",true);
+                    count = 0;
+                    helpSourceDirs.do {|dir|
+                        ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOut.split($\n).reject(_.isEmpty).do {|f|
+                            var subtarget = f.copyRange(dir.size + 1, f.findBackwards(".") - 1);
+                            docMap[subtarget].delete = false;
+                        };
+                    };
+                    current_classes.do {|sym|
+                        x = docMap["Classes"+/+sym.asString];
+                        x !? {x.delete = false};
+                    };
 
-                docMap.pairsDo{|k,e|
-                    if(e.delete==true, {
-                        SCDoc.postProgress("Removing"+e.path+"from cache");
-                        docMap.removeAt(k);
-                        count = count + 1;
-                    });
-                    e.removeAt(\delete); //remove the key since we don't need it anymore
+                    docMap.pairsDo{|k,e|
+                        if(e.delete==true, {
+                            SCDoc.postProgress("Removing"+e.path+"from cache");
+                            docMap.removeAt(k);
+                            count = count + 1;
+                        });
+                        e.removeAt(\delete); //remove the key since we don't need it anymore
+                    };
+                    SCDoc.postProgress("Removed"+count+"documents");
                 };
-                SCDoc.postProgress("Removed"+count+"documents");
             };
 
             // generate simple doc for each class in new_classes, which now contains only undocumented *new* classes:
