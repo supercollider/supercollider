@@ -367,6 +367,7 @@ SCDocRenderer {
             'title', { },
             'summary', { },
             'class', { },
+            'redirect', { },
             'related', { },
             'categories', { },
             'headerimage', { },
