@@ -9,7 +9,7 @@
     margin-top: 1em;
 }
 .result_item {
-    margin-left: 1em;
+    margin-left: 1.5em;
     margin-top: 0.2em;
 }
 .jump a {
@@ -17,7 +17,7 @@
 }
 </style>
 <noscript>
-<p>The method index needs JavaScript.
+<p>The document index needs JavaScript.
 </noscript>
 <script type="text/javascript">
 function showdocs() {
@@ -65,25 +65,27 @@ function showdocs() {
             node.appendChild(y);
         }
         
-        var div = document.createElement("div");
-        div.className = "result_item";
-        
-        var n = document.createElement("a");
-        n.setAttribute("href","../"+v.path+".html");
-        n.innerHTML = v.title;
-        div.appendChild(n);
-        div.appendChild(document.createTextNode(" - "+v.summary+" "));
+        if(! /Undocumented classes/.test(v.categories)) {
+            var div = document.createElement("div");
+            div.className = "result_item";
 
-        n = document.createElement("span");
-        n.className = "soft";
-        var res = "["+x[0];
-        if(v.installed=="extension")
-            res += " +";
-        else if(v.installed=="missing")
-            res += " - missing!";
-        n.innerHTML = res+"]";
-        div.appendChild(n);
-        node.appendChild(div);
+            var n = document.createElement("a");
+            n.setAttribute("href","../"+v.path+".html");
+            n.innerHTML = v.title;
+            div.appendChild(n);
+            div.appendChild(document.createTextNode(" - "+v.summary+" "));
+
+            n = document.createElement("span");
+            n.className = "soft";
+            var res = "["+x[0];
+            if(v.installed=="extension")
+                res += " +";
+            else if(v.installed=="missing")
+                res += " - missing!";
+            n.innerHTML = res+"]";
+            div.appendChild(n);
+            node.appendChild(div);
+        }
     }
 }
 </script>
