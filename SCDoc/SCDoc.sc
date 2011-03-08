@@ -328,7 +328,7 @@ SCDoc {
     *readDocMap {
         var path = helpTargetDir +/+ "scdoc_cache";
         SCDoc.postProgress("Reading docMap cache...",true);
-        docMap = Object.readArchive(path);
+        docMap = path.load;
 
         if(docMap.isNil) {
             docMap = Dictionary.new;
@@ -339,9 +339,11 @@ SCDoc {
     }
 
     *writeDocMap {
-        var path = helpTargetDir +/+ "scdoc_cache";
+        var f, path = helpTargetDir +/+ "scdoc_cache";
         SCDoc.postProgress("Writing docMap cache",true);
-        docMap.writeArchive(path);
+        f = File(path,"w");
+        f.write(docMap.asCompileString);
+        f.close;
     }
 
     *makeProgressWindow {
