@@ -1,7 +1,7 @@
 SCDoc {
     classvar <helpTargetDir;
     classvar <helpSourceDir;
-    classvar <categoryMap;
+//    classvar <categoryMap;
     classvar <docMap;
     classvar <p, <r;
     classvar doWait;
@@ -238,7 +238,7 @@ SCDoc {
     }
 
     *addToDocMap {|parser, path|
-        var x = parser.findNode(\class).text;
+        var c, x = parser.findNode(\class).text;
         var doc = (
             path:path,
             summary:parser.findNode(\summary).text,
@@ -246,6 +246,17 @@ SCDoc {
         );
 
         doc.title = if(x.notEmpty,x,{parser.findNode(\title).text});
+        
+        // check if class is standard, extension or missing
+        if(x.notEmpty) {
+            c = path.basename.asSymbol.asClass;
+            doc.installed = if(c.notNil) {
+                if(c.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
+                    {\extension}
+                    {\standard}
+            } {\missing};
+        };
+
 
 //        if(x.notEmpty) {
 //            doc.hashnum = this.classHash(x.stripWhiteSpace.asSymbol.asClass);
@@ -255,30 +266,21 @@ SCDoc {
     }
 
     *makeCategoryMap {
-        var cats, c;
+        var cats, c, map;
         SCDoc.postProgress("Creating category map...");
-        categoryMap = Dictionary.new;
+        map = Dictionary.new;
         docMap.pairsDo {|k,v|
             cats = SCDoc.splitList(v.categories);
             cats = cats ? ["Uncategorized"];
             cats.do {|cat|
-                if (categoryMap[cat].isNil) {
-                    categoryMap[cat] = List.new;
+                if (map[cat].isNil) {
+                    map[cat] = List.new;
                 };
-                categoryMap[cat].add(v);
+                map[cat].add(v);
             };
 
-            // check if class is standard, extension or missing
-            if(v.path.dirname=="Classes") {
-                c = v.path.basename.asSymbol.asClass;
-                v.installed = if(c.notNil) {
-                    if(c.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
-                        {\extension}
-                        {\standard}
-                } {\missing};
-            };
         };
-
+        ^map;
     }
 
     *readDocMap {
@@ -412,7 +414,7 @@ SCDoc {
             };
             this.writeDocMap;
             progressCount = progressCount + 1;
-            this.makeCategoryMap;
+//            this.makeCategoryMap;
             progressCount = progressCount + 1;
             this.makeOverviews;
             this.postProgress("Writing Document JSON index...",true);

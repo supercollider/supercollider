@@ -41,33 +41,86 @@ integration with frontends / main sc distro
 just use the pre-rendered help until the users need to update help, which would first copy or hard-link the pre-rendered
 files into helpTargetDir and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else the system-wide location (thisProcess.platform.systemAppSupportDir +/+ "Help");
 
-* update docs automatically when needed.
-Make an SCDoc.checkUpdate that returns fast if nothing needs to be done, otherwise calls SCDoc.updateAll.
+* Make updateAll return fast if nothing needs to be done:
 
-Save a list of all classes so that we can detect if any new ones where added (extensions).
-    x = Class.allClasses.collectAs(_.name,IdentitySet)
+Read a list of all classes so that we can detect if any new ones where added (extensions).
+    old_classes = Object.readArchive(class_cache_path)
+    current_classes = Class.allClasses.collectAs(_.name,IdentitySet)
+    
+Check each class in current_classes for update:
+    if  class was not in old_classes (old_classes.includes(theClass.name).not) (means the class was newly installed)
+    or: class source file is newer than the class_cache file (means the class source might have changed)
+    then add it (and all its subclasses?) to new_classes (Set of classes that should be updated).
 
-Only update methods.js, methods overview, class overview and classtree when this list changed.. no need to update those if it was only help-files that changed.
+Traverse "HelpSource" folders to catch new and updated helpfiles:
+    0) read docMap from archive, copy to old_docMap
+    
+    1) Use 'find' to get a list of HelpSource folders:
+        a = [SCDoc.helpSourceDir];
+        [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
+            a = a ++ ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d")
+                .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+        };
+        helpSourceDirs = a;
+        
+    2) Use 'find' to get a list of new and updated files:
+        b = [];
+        helpSourceDirs.do {|dir|
+            b = b ++ ("find -L"+dir.escapeChar($ )+"-newer"+SCDoc.helpTargetDir.escapeChar($ )+/+"scdoc_cache -type f")
+                .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+        };
+        
+    3) Find new helpfolders:
+       read old HelpSourceDirs from archive, if one was added since last time - go through every file in that dir and compare
+       mtime to already rendered help - add to b.
+       This catches newly installed extensions/quarks where the helpfile was not newer than scdoc_cache
+       (is there a better solution for this?)
+       
+       Write new HelpSourceDirs to archive
+        
+    4) mark all docs in docMap for deletion
+    
+    5) Parse and render (.schelp) or copy (other) each file in b, set doc.delete = false.
+       If file was a class, remove it from the new_classes Set.
+    
+    6) Use a "find dirs -iname '*.schelp'" for marking doc.delete = false
+        helpSourceDirs.do {|dir|
+            ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOut.split($\n).reject(_.isEmpty).do {|f|
+                var subtarget = f.copyRange(dir.size + 1, f.findBackwards(".") - 1);
+                docMap[subtarget].delete = false;
+            };
+        };
+       This catches any helpfile removals..
+       
+       NOTE: use folder mtime to see if there where any deleted files, so no need to find deleted
+       files if no helpSourceDir was newer than scdoc_cache.. this will also trigger on added helpfiles but that's ok I guess:
+       
+        a = [];
+        [SCDoc.helpSourceDir, thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
+            a = a ++ ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -newer"+SCDoc.helpTargetDir.escapeChar($ )+/+"scdoc_cache")
+                .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+        };
+        if(a.notEmpty) {this.findDeletedHelp};
 
-Check each class in above Set for update like this:
-        class was not in the set above (x.includes(theClass.name).not) (means the class was newly installed)
-    or: class source file is newer than the rendered doc (means the class source might have changed)
+    7) remove all docs from docMap with doc.delete == true an remove the 'delete' key.
 
-If a class needs update, add it and all its subclasses to a Set of classes that should be updated.
+For each class in new_classes Set, which now contains only undocumented *new* classes:
+    - generate stub doc and render to HTML, add to docMap
 
-Traverse "Classes/" folder in the updateAll path iteration as usual to catch updated class helpfiles, remove such classes from the Set above.
+If old_classes != current_classes:
+    Write methods.js, class index overview and classtree page
+    Write current_classes to file: current_classes.writeArchive(class_cache_path);
 
-Then, for each class in the should-update Set:
-    - does the class have a help-file? then parse it. (NOTE: should look in all HelpSource/Classes dirs)
-    - if not, generate stub.
-    - then render to HTML
-Note that this will also handle any undocumented classes.. (rename handleUndocumentedClasses to checkClassUpdates).
+NOTE: or don't check for undocumented classes, but split this out to a separate SCDoc.makeUndocumentedClassDocs
+that the user can run if he wants to? this method would just find all classes not present in docMap and generate&render the docs
+and add them to docMap.
 
-Only update docmap.js and categories overview if the docMap changed from last run. How do we check this? at least it seems a 'diff scdoc_cache scdoc_cache.old' returns no differences if nothing changed.. so maybe we can just copy the read cache object and compare it with the one we're going to write..
+if old_docMap != docMap:
+    Write docmap.js and scdoc_cache
+else:
+    touch scdoc_cache
 
-* should we even run ScDoc.updateAll in a separate process for real background processing?
-
-* fix or deprecate all old help classes and methods
+* fix (adjust for SCDoc) or deprecate all old help classes and methods
 
 -------------------------------------------
 
