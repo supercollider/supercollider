@@ -3,8 +3,8 @@ SuperCollider documentation system
 
 INSTALLATION
 ------------
-All SCDoc classes are in the subfolder "SCDoc", copy or symlink this folder to your SuperCollider Extensions folder.
-
+All SCDoc classes are in the subfolder "SCDoc",
+copy or symlink this folder to your SuperCollider Extensions folder.
 
 USAGE
 -----
@@ -13,13 +13,17 @@ To render and generate all docs:
 SCDoc.helpSourceDir = "/path/to/HelpSource";
 SCDoc.updateAll;
 
-Now all your rendered HTML help is in SCDoc.helpTargetDir, which defaults to ~/share/SuperCollider/Help on Linux and ~/Application Support/SuperCollider/Help on OSX.
+This may take a couple of minutes the first time.
 
-To render just one file:
+If you want to run it without the GUI progress window:
 
-SCDoc.helpSourceDir = "/path/to/HelpSource";
-SCDoc.readDocMap;
-SCDoc.updateFile("/path/to/HelpSource/and/your/file.schelp",true);
+SCDoc.updateAll(gui:false);
+
+After this, all rendered HTML help will be in SCDoc.helpTargetDir,
+which defaults to "~/share/SuperCollider/Help" on Linux
+and "~/Application Support/SuperCollider/Help" on OSX.
+
+This folder is automagically created for you.
 
 See these generated helpfiles for more info about ScDoc:
 
@@ -28,6 +32,7 @@ See these generated helpfiles for more info about ScDoc:
 - Help/Classes/SCDoc.html
 - Help/Classes/SCDocParser.html
 - Help/Classes/SCDocRenderer.html
+
 
 
 TODO
