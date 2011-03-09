@@ -27,19 +27,19 @@ classvar <scvim_dir, <scvim_cache_dir,
 	if(scvim_cache_dir_env.isNil){
 		scvim_cache_dir = "~/.scvim".standardizePath;
 		setenv("SCVIM_CACHE_DIR", scvim_cache_dir);
-		//inform("SCVim: I've set the cache dir based on the scvim dir");
 	}{
 		scvim_cache_dir = scvim_cache_dir_env;
-		//inform("SCVim: I've set the cache dir based on the environment variable");
 	};
 	StartUp.add{
-		if(autoFirstRun and:{ File.exists(scvim_cache_dir).not }){
-			Task{
-				"SCVim: generating help docs, it will take a few moments. (This only happens the first time you launch scvim. See SCVim help file for more info.)".inform;
-				this.updateCaches;
-				this.updateHelpCache;
-				"SCVim: finished generating help docs".inform;
-			}.play;
+		if(Platform.ideName=="scvim"){
+			if(autoFirstRun and:{ File.exists(scvim_cache_dir).not }){
+				Task{
+					"SCVim: generating help docs, it will take a few moments. (This only happens the first time you launch scvim. See SCVim help file for more info.)".inform;
+					this.updateCaches;
+					this.updateHelpCache;
+					"SCVim: finished generating help docs".inform;
+				}.play;
+			};
 		};
 	};
 }
