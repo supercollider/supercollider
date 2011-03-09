@@ -1,7 +1,7 @@
 SCDoc {
     classvar <helpTargetDir;
     classvar <helpSourceDir;
-    classvar <docMap;
+    classvar doc_map = nil;
     classvar <p, <r;
     classvar doWait;
     classvar progressText = nil, progressWindow = nil;
@@ -39,7 +39,7 @@ SCDoc {
         if(f.isNil, {^nil});
         
         f.write("docmap = [\n");
-        docMap.pairsDo {|k,v|
+        doc_map.pairsDo {|k,v|
             f.write("{\n");
             v.pairsDo {|k2,v2|
                 v2=v2.asString.replace("'","\\'");
@@ -167,7 +167,7 @@ SCDoc {
             this.makeMethodList(c,n,\instancemethods);
             r.renderHTML(dest,"Classes");
 
-            docMap["Classes" +/+ name].delete = false;
+            doc_map["Classes" +/+ name].delete = false;
             this.tickProgress;
         };
     }
@@ -203,14 +203,14 @@ SCDoc {
 //            doc.hashnum = this.classHash(x.stripWhiteSpace.asSymbol.asClass);
 //        };
         
-        docMap[path] = doc;
+        doc_map[path] = doc;
     }
 
     *makeCategoryMap {
         var cats, c, map;
         this.postProgress("Creating category map...");
         map = Dictionary.new;
-        docMap.pairsDo {|k,v|
+        doc_map.pairsDo {|k,v|
             cats = this.splitList(v.categories);
             cats = cats ? ["Uncategorized"];
             cats.do {|cat|
@@ -226,23 +226,31 @@ SCDoc {
 
     *readDocMap {
         var path = this.helpTargetDir +/+ "scdoc_cache";
-        this.postProgress("Reading docMap cache...",true);
-        docMap = path.load;
+        doc_map = path.load;
 
-        if(docMap.isNil) {
-            docMap = Dictionary.new;
-            this.postProgress("Not found, Creating new docMap cache");
+        if(doc_map.isNil) {
+            doc_map = Dictionary.new;
+            "SCDoc: docMap cache not found, created new".postln;
             ^true;
+        } {
+            "SCDoc: read docMap cache from file".postln;
         };
         ^false;
     }
 
     *writeDocMap {
         var f, path = this.helpTargetDir +/+ "scdoc_cache";
-        this.postProgress("Writing docMap cache",true);
         f = File(path,"w");
-        f.write(docMap.asCompileString);
+        f.write(doc_map.asCompileString);
         f.close;
+        "SCDoc: wrote docMap cache".postln;
+    }
+    
+    *docMap {
+        if(doc_map.isNil) {
+            this.readDocMap;
+        };
+        ^doc_map;
     }
 
     *makeProgressWindow {
@@ -294,7 +302,7 @@ SCDoc {
             if(force.not) {
                 force = this.readDocMap;
             } {
-                docMap = Dictionary.new;
+                doc_map = Dictionary.new;
             };
 
             ("mkdir -p"+this.helpTargetDir.escapeChar($ )).systemCmd;
@@ -393,24 +401,24 @@ SCDoc {
                     };
                 };
                 if(maybeDelete or: force or: {old_classes != current_classes}) {
-                    docMap.do(_.delete=true); // mark all docs in docMap for deletion
+                    doc_map.do(_.delete=true); // mark all docs in docMap for deletion
                     this.postProgress("Help folders changed, scanning for deleted documents...",true);
                     count = 0;
                     helpSourceDirs.do {|dir|
                         ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOut.split($\n).reject(_.isEmpty).do {|f|
                             var subtarget = f.copyRange(dir.size + 1, f.findBackwards(".") - 1);
-                            docMap[subtarget].delete = false;
+                            doc_map[subtarget].delete = false;
                         };
                     };
                     current_classes.do {|sym|
-                        x = docMap["Classes"+/+sym.asString];
+                        x = doc_map["Classes"+/+sym.asString];
                         x !? {x.delete = false};
                     };
 
-                    docMap.pairsDo{|k,e|
+                    doc_map.pairsDo{|k,e|
                         if(e.delete==true, {
                             this.postProgress("Removing"+e.path+"from cache");
-                            docMap.removeAt(k);
+                            doc_map.removeAt(k);
                             count = count + 1;
                         });
                         e.removeAt(\delete); //remove the key since we don't need it anymore
@@ -433,7 +441,7 @@ SCDoc {
                 this.tickProgress;
 
                 this.postProgress("Generating Class index...",true);
-                p.overviewAllClasses(docMap);
+                p.overviewAllClasses(doc_map);
                 r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews",false);
                 this.tickProgress;
             };

@@ -23,7 +23,7 @@ SCDoc.updateAll;
 To force an update of unchanged files, use code::updateAll(true):: or remove code::helpTargetDir/scdoc_cache::
 
 CLASSMETHODS::
-private:: initClass, addToDocMap, makeMethodList, makeOverviews, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap
+private:: initClass, addToDocMap, makeMethodList, updateFile, makeOverviews, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap
 
 method:: p
 The default link::Classes/SCDocParser:: object, created automatically.
@@ -50,15 +50,6 @@ If true and code::threaded:: is also true, create a GUI progress window instead 
 discussion::
 It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::. It also searches recursively for all folders named "HelpSource" under code::thisProcess.platform.userExtensionDir:: and code::thisProcess.platform.systemExtensionDir::.
 
-method:: updateFile
-Update a single file.
-argument:: source
-The source file
-argument:: rootDir
-The base directory
-argument:: force
-Force update even if file has not changed.
-
 method:: checkBrokenLinks
 Scans the entire help tree for broken links
 
@@ -73,8 +64,9 @@ The link::#*updateAll:: method also writes the document map in JSON format to co
 
 method:: docMap
 Returns the internal dictionary of documents.
-returns:: An internal link::Classes/Dictionary::
+returns:: An internal link::Classes/Dictionary::, it will be empty if there was no docmap cache file.
 discussion::
+If the document map cache was not already read from file, it's first read from file if existent.
 The returned Dictionary is indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/SCDoc::.
 
 This dictionary is cached in code::helpTargetDir/scdoc_cache::.
@@ -83,9 +75,6 @@ method:: makeCategoryMap
 Creates a dictionary of all categories, with a list of documents for each category.
 returns:: A link::Classes/Dictionary:: of all documents grouped by category.
 discussion:: The keys are category symbols, and each value is a link::Classes/List:: of Events representing each document.
-
-method:: readDocMap
-Reads the cached document map from file. 
 
 subsection:: Utilities
 
