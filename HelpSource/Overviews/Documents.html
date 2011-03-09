@@ -15,14 +15,29 @@
 .jump a {
     font-weight: bold;
 }
+#search_checks {
+    font-size: 9pt;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+    margin-top: 1em;
+    padding-bottom: 1em;
+}
+#total_count {
+    font-size: 9pt;
+    color: #777;
+}
 </style>
 <noscript>
 <p>The document index needs JavaScript.
 </noscript>
 <script type="text/javascript">
-function showdocs() {
-    var node = document.getElementById("doclist");
-    var docs = docmap.sort(function(a,b) {
+var checkboxes;
+var node;
+var docs;
+
+function did_load() {
+    node = document.getElementById("doclist");
+    docs = docmap.sort(function(a,b) {
         a = a.title.toUpperCase();
         b = b.title.toUpperCase();
         if(a<b) return -1;
@@ -32,13 +47,46 @@ function showdocs() {
         return 0;
     });
 
+    var fields = ["classes", "ext_classes", "reference", "guides", "tutorials", "overviews", "other"];
+    checkboxes = {};
+    var onChange = function() {
+        showdocs();
+    };
+    for(var i=0;i<fields.length;i++) {
+        var k = fields[i];
+        checkboxes[k] = document.getElementById("check_"+k);
+        checkboxes[k].onchange = onChange;
+    }
+    showdocs();
+}
+
+function showdocs() {
+    while(node.hasChildNodes())
+        node.removeChild(node.lastChild);
+
+    var count = 0;
     var cap = undefined;
     var div = document.createElement("p");
+    var docs2 = [];
     div.className = "jump";
     div.appendChild(document.createTextNode("Jump to: "));
     for(var i=0;i<docs.length;i++) {
-        var m = docs[i];
-        var x = m.title[0].toUpperCase();
+        var v = docs[i];
+        var x = v.title[0].toUpperCase();
+
+        if(v.installed=="extension" && !checkboxes["ext_classes"].checked)
+            continue;
+        else
+        if(v.installed=="standard" &&  !checkboxes["classes"].checked)
+            continue;
+        else if(!v.installed) {
+            var y = checkboxes[v.path.split("/")[0].toLowerCase()];
+            if(y && !y.checked)
+                continue;
+        }
+        if(/Undocumented classes/.test(v.categories))
+            continue;
+
         if(cap != x) {
             cap = x;
             var a = document.createElement("a");
@@ -47,12 +95,14 @@ function showdocs() {
             div.appendChild(a);
             div.appendChild(document.createTextNode(" "));
         }
+
+        docs2.push(v);
     }
     node.appendChild(div);
 
     cap = undefined;
-    for(var i=0;i<docs.length;i++) {
-        var v = docs[i];
+    for(var i=0;i<docs2.length;i++) {
+        var v = docs2[i];
         var x = v.path.split("/");
         var c = v.title[0].toUpperCase();
         
@@ -64,34 +114,34 @@ function showdocs() {
             node.appendChild(a);
             node.appendChild(y);
         }
-        
-        if(! /Undocumented classes/.test(v.categories)) {
-            var div = document.createElement("div");
-            div.className = "result_item";
 
-            var n = document.createElement("a");
-            n.setAttribute("href","../"+v.path+".html");
-            n.innerHTML = v.title;
-            div.appendChild(n);
-            div.appendChild(document.createTextNode(" - "+v.summary+" "));
+        var div = document.createElement("div");
+        div.className = "result_item";
 
-            n = document.createElement("span");
-            n.className = "soft";
-            var res = "["+x[0];
-            if(v.installed=="extension")
-                res += " +";
-            else if(v.installed=="missing")
-                res += " - missing!";
-            n.innerHTML = res+"]";
-            div.appendChild(n);
-            node.appendChild(div);
-        }
+        var n = document.createElement("a");
+        n.setAttribute("href","../"+v.path+".html");
+        n.innerHTML = v.title;
+        div.appendChild(n);
+        div.appendChild(document.createTextNode(" - "+v.summary+" "));
+
+        n = document.createElement("span");
+        n.className = "soft";
+        var res = "["+x[0];
+        if(v.installed=="extension")
+            res += " +";
+        else if(v.installed=="missing")
+            res += " - missing!";
+        n.innerHTML = res+"]";
+        div.appendChild(n);
+        node.appendChild(div);
+        count++;
     }
+    document.getElementById("total_count").innerHTML = count + " documents";
 }
 </script>
 </head>
 
-<body onload="showdocs()">
+<body onload="did_load()">
 
 <table class='headMenu'>
     <tr><td><a href='../Help.html'>Home</a>
@@ -107,7 +157,17 @@ function showdocs() {
     <h1>Documents</h1>
     <div id='summary'>Alphabetical index of all documents</div>
 </div>
-
+<div id="search_checks">
+Include:
+<input type="checkbox" id="check_classes" checked="true">Classes</input>
+<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
+<input type="checkbox" id="check_reference" checked="true">Reference</input>
+<input type="checkbox" id="check_guides" checked="true">Guides</input>
+<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
+<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
+<input type="checkbox" id="check_other" checked="true">Other</input>
+</div>
+<div id="total_count"></div>
 <div id='doclist'></div>
 
 </body>
