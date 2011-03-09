@@ -7,25 +7,21 @@
     <script src="methods.js" type="text/javascript"></script>
 <style>
 div#search_box {
-    margin-top: 0em;
-    margin-bottom: 0em;
-    margin-left: auto;
-    margin-right: auto;
-/*    width: 75%;*/
+    margin: 1.5em;
     text-align: center;
-    font-size: 9pt;
-    color: #555;
 }
 #search_input {
-/*    width: 50%;*/
     border: 1px solid #aaa;
     background: #eee;
+    margin-left: 0.5em;
 }
+/*
 div#search_results {
-/*    padding-top: 1em;*/
+    padding-top: 1em;
 }
+*/
 div#search_count {
-    border-bottom: 2px solid #777;
+    border-bottom: 2px solid #999;
     color: #333;
 }
 
@@ -37,26 +33,17 @@ div.result_item {
     font-family: Andale Mono, monospace;
     font-size: 9.5pt;
 }
-
 div.result_category {
     color: #555;
     font-size: 9.5pt;
     margin-top: 1em;
     border-bottom: 1px solid #ccc;
 }
-/*div.result_doc {
-    margin-left: 2em;
-}*/
 div.mets {
     padding-left: 2em;
-/*    border-top: 1px solid #eee; */
     margin-bottom: 0.5em;
 }
 #search_checks {
-/*    margin-left: 1em;
-    margin-right: 1em;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;*/
     padding: 0.5em;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
@@ -64,16 +51,24 @@ div.mets {
     color: #555;
     background: #eee;
 /*    border: 1px solid #ddd;*/
-/*    border-bottom: 1px solid #ddd;*/
 }
-.label {
-    color: black;
-    font-size: 10pt;
-}
-#search_settings {
+#search_checks0 {
     font-size: 9pt;
     color: #555;
-    margin-bottom: 0.5em;
+    border-bottom: 1px solid #ddd;
+    margin-top: 1em;
+    padding-bottom: 1em;
+}
+table#search_settings {
+    font-size: 9pt;
+    color: #555;
+    width: 100%;
+/*    margin: 1em;
+    margin-left: 0px;
+    margin-right: 0px;*/
+    margin: 0px;
+    padding: 0px;
+    border-collapse: collapse;
 }
 #search_settings td {
     border: none;
@@ -168,6 +163,7 @@ window.onload = function() {
     setInterval(delayed_update,250);
 }
 
+/*
 function clear1() {
     var x = false;
 
@@ -182,6 +178,7 @@ function clear1() {
     
     doSearch();
 }
+*/
 
 function clear2() {
     var x = false;
@@ -510,10 +507,22 @@ function delayed_update() {
     <h1>Search</h1>
     <div id='summary'>Search all documents</div>
 </div>
-<div id="random"><a href="javascript:randomDoc()">random page</a></div>
+<div id="search_checks0">
+Include:
+<input type="checkbox" id="check_classes" checked="true">Classes</input>
+<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
+<input type="checkbox" id="check_reference" checked="true">Reference</input>
+<input type="checkbox" id="check_guides" checked="true">Guides</input>
+<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
+<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
+<input type="checkbox" id="check_other" checked="true">Other</input>
+<input type="checkbox" id="check_methods" checked="true">Methods</input>
+&nbsp;&larr; <a href="javascript:clear2()">clear all</a>
+</div>
 
 <div id="search_box">
-<span class="label">Search text:</span> <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
+Search text:<input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
+</div>
 
 <table id="search_settings">
 <td>Options:
@@ -533,25 +542,10 @@ function delayed_update() {
 <input type="checkbox" id="check_summary" checked="true">Summary</input>
 <input type="checkbox" id="check_categories">Categories</input>
 <input type="checkbox" id="check_filename" checked="true">Filename</input>
-&nbsp;&larr; <a href="javascript:clear1()">clear all</a>
-</div>
-<tr>
-<td>Include:
-<td>
-<div id="search_checks">
-<input type="checkbox" id="check_classes" checked="true">Classes</input>
-<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
-<input type="checkbox" id="check_reference" checked="true">Reference</input>
-<input type="checkbox" id="check_guides" checked="true">Guides</input>
-<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
-<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
-<input type="checkbox" id="check_other" checked="true">Other</input>
-<input type="checkbox" id="check_methods" checked="true">Methods</input>
-&nbsp;&larr; <a href="javascript:clear2()">clear all</a>
+<!--&nbsp;&larr; <a href="javascript:clear1()">clear all</a>-->
 </div>
 </table>
-</div>
-
+<div id="random"><a href="javascript:randomDoc()">random page</a></div>
 <div id="search_count">0 results</div>
 <div id="search_results"></div>
 

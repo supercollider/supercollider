@@ -12,9 +12,14 @@
     margin-left: 1.5em;
     margin-top: 0.2em;
 }
-.jump a {
-    font-weight: bold;
+.jump {
+    background: #eee;
+    padding: 0.5em;
+    text-align: center;
 }
+/*.jump a {
+    font-weight: bold;
+}*/
 #search_checks {
     font-size: 9pt;
     color: #555;
@@ -69,7 +74,7 @@ function showdocs() {
     var div = document.createElement("p");
     var docs2 = [];
     div.className = "jump";
-    div.appendChild(document.createTextNode("Jump to: "));
+//    div.appendChild(document.createTextNode("Jump to: "));
     for(var i=0;i<docs.length;i++) {
         var v = docs[i];
         var x = v.title[0].toUpperCase();

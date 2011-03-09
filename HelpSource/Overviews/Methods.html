@@ -16,11 +16,13 @@
     font-size: 9.5pt;
 }
 .jump {
-    text-align: left;
+    background: #eee;
+    padding: 0.5em;
+    text-align: center;
 }
-.jump a {
+/*.jump a {
     font-weight: bold;
-}
+}*/
 #method_note {
     font-size: 9pt;
     color: #777;
@@ -101,7 +103,7 @@ function showmethods() {
         var cap = undefined;
         var div = document.createElement("p");
         div.className = "jump";
-        div.appendChild(document.createTextNode("Jump to: "));
+//        div.appendChild(document.createTextNode("Jump to: "));
         for(var i=0;i<mets.length;i++) {
             var m = mets[i];
             if(cap != m[0][0]) {
