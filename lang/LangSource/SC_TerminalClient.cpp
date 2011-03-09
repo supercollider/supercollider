@@ -358,8 +358,6 @@ void SC_TerminalClient::readlineCb(char *cmdLine)
 	}
 }
 
-static struct timeval rl_tv;
-static fd_set rl_rfds;
 /*
 // Completion from sclang dictionary TODO
 char ** sc_rl_completion (const char *text, int start, int end);
@@ -429,20 +427,25 @@ void SC_TerminalClient::readCmdLine()
 #ifndef _WIN32
 
 #ifdef HAVE_READLINE
-	if( mUseReadline ) {
-		FD_ZERO(&rl_rfds);
-		FD_SET(0, &rl_rfds);
-		rl_tv.tv_sec = 0;
-		rl_tv.tv_usec = 0;
+	if (mUseReadline) {
+		int nfds = poll(&pfds, 1, 0);
+		if (nfds > 0) {
+			const int bufSize = 128;
+			char buf[bufSize];
 
-		int nfds = select(1, &rl_rfds, NULL, NULL, &rl_tv);
-		if( nfds > 0 ) {
-			rl_callback_read_char();
+			int n = read(fd, buf, bufSize);
+
+			for (int i=0; i<n; ++i) {
+				rl_stuff_char(buf[i]);
+				rl_callback_read_char();
+			}
+
+			if (n < 0 && errno != EINTR) {
+				perror(getName()); quit(1);
+			}
 		}
-		else if( nfds == -1 && errno != EINTR ) {
-			perror(getName());
-			quit(1);
-			return;
+		else if (nfds == -1 && errno != EINTR) {
+			perror(getName()); quit(1);
 		}
 	} else {
 #endif
