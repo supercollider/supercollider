@@ -342,7 +342,7 @@ SCDoc {
                 };
             };
             this.postProgress("Found"+count+"files in need of update");
-            progressMax = count + 5;
+            progressMax = count + 4;
 
             //Read a list of all classes so that we can detect if any new ones where added (extensions).
             old_classes = Object.readArchive(classlist_path);
@@ -438,11 +438,6 @@ SCDoc {
                 this.postProgress("Generating Class tree...",true);
                 p.overviewClassTree;
                 r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews",false);
-                this.tickProgress;
-
-                this.postProgress("Generating Class index...",true);
-                p.overviewAllClasses(doc_map);
-                r.renderHTML(helpTargetDir +/+ "Overviews/Classes.html","Overviews",false);
                 this.tickProgress;
             };
             

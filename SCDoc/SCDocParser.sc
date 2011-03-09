@@ -492,6 +492,7 @@ SCDocParser {
         root = r;
     }
 */
+/*
     overviewAllClasses {|docMap|
         var name, doc, link, n, r = List.new, cap, old_cap=nil, sortedKeys;
         r.add((tag:'title', text:"Classes"));
@@ -535,6 +536,7 @@ SCDocParser {
         };
         root = r;
     }
+*/
 /*
     overviewAllMethods {|docMap|
         var name, n, r = List.new, cap, old_cap, t, m, ext, sortedKeys, pfx;

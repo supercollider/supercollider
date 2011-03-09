@@ -30,6 +30,10 @@
     text-align: center;
     margin-top: 2em;
 }
+#total_count {
+    font-size: 9pt;
+    color: #777;
+}
 </style>
 <noscript>
 <p>The method index needs JavaScript.
@@ -81,16 +85,17 @@ function showmethods() {
     
 //    if(/^show_/.test(hash)) {
     if(hash && ! /^section_/.test(hash)) {
-        var div = document.createElement("p");
-        div.appendChild(document.createTextNode("Showing single method: "));
-        res.appendChild(div);
-
+        document.getElementById("total_count").innerHTML = "Showing single method:";
+        document.getElementById("method_note").innerHTML = "";
         for(var i=0;i<methods.length;i++) {
             if(methods[i][0]==hash) {
                 showMethod(methods[i],res);
-                break;
+                return;
             }
         }
+        var div = document.createElement("p");
+        div.appendChild(document.createTextNode("Method not found: "+hash));
+        res.appendChild(div);
     } else {
         var mets = methods.sort(function(a,b) {
             if(a[0]<b[0]) return -1;
@@ -132,6 +137,7 @@ function showmethods() {
             
             showMethod(m, res);
         }
+        document.getElementById("total_count").innerHTML = mets.length + " methods";
     }
 }
 window.onhashchange = showmethods;
@@ -151,11 +157,11 @@ window.onhashchange = showmethods;
 </table>
 
 <div class='header'>
-    <div id='label'>SuperCollider</div>
+    <div id='label'>SuperCollider OVERVIEWS</div>
     <h1>Methods</h1>
-    <div id='summary'>Method index</div>
+    <div id='summary'>Alphabetical index of all methods</div>
 </div>
-
+<div id="total_count"></div>
 <div id='methods'>
     Generating method index, please wait...
 </div>
