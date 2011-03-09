@@ -325,7 +325,6 @@ bool QObjectProxy::destroyEvent( DestroyEvent *e )
 {
   if( e->action() == DestroyObject ) {
      if( qObject ) qObject->deleteLater();
-     else return true;
   }
   else if( e->action() == DestroyProxy ) {
     scObject = 0;

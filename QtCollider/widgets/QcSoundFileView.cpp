@@ -408,10 +408,11 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
   int i;
   for( i = 0; i < 64; ++i ) {
     const Selection &s = _selections[i];
-    if( s.size > 0 );
-    QRectF r ( s.start, 0, s.size, height() );
-    p.setBrush( s.color );
-    p.drawRect( r );
+    if( s.size > 0 ) {
+      QRectF r ( s.start, 0, s.size, height() );
+      p.setBrush( s.color );
+      p.drawRect( r );
+    }
   }
 
   p.restore();
