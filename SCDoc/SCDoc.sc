@@ -6,7 +6,7 @@ SCDoc {
     classvar doWait;
     classvar progressText = nil, progressWindow = nil;
     classvar progressCount = 0, progressMax = 1;
-    classvar progressTopic = nil, progressBar = nil;
+    classvar progressTopic = nil, progressBar = nil, closeButton = nil;
     classvar new_classes = nil;
 
     *helpSourceDir_ {|path|
@@ -256,12 +256,13 @@ SCDoc {
     *makeProgressWindow {
         if(GUI.scheme.isNil, {^nil});
         
-        progressWindow = Window("Documentation update",500@150).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
+        progressWindow = Window("Documentation update",500@200).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
 
         StaticText(progressWindow).string_("Please wait while updating help files...");
         progressBar = RangeSlider(progressWindow,300@20).orientation_(\horizontal).background_(Color(0.8,0.8,0.8)).knobColor_(Color(0.5,0.5,0.8));
         progressTopic = StaticText(progressWindow).font_(Font.defaultSansFace.boldVariant);
         progressText = TextView(progressWindow).editable_(false);
+        closeButton = Button(progressWindow).states_([["Close"]]).enabled_(false).action = {progressWindow.close};
 
         progressWindow.front;
     }
@@ -312,9 +313,21 @@ SCDoc {
             maybeDelete = false;
             
             new_classes = IdentitySet.new;
-            
+
             // get list of helpSourceDirs
             this.postProgress("Searching for HelpSource folders...",true);
+
+            if(File.exists(this.helpSourceDir).not) {
+                progressCount = 1;
+                this.postProgress(this.helpSourceDir+"does not exist!\n\nPlease set SCDoc.helpSourceDir to SCDoc's HelpSource folder and run SCDoc.updateAll again.");
+                progressWindow !? {
+                    progressText.stringColor = Color(1,0,0);
+                    progressWindow.userCanClose = true;
+                    closeButton.enabled = true;
+                };
+                ^this;
+            };
+
             helpSourceDirs = [this.helpSourceDir];
             [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
                 helpSourceDirs = helpSourceDirs ++ ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
@@ -471,8 +484,10 @@ SCDoc {
             "SCDoc done!".postln;
             doneFunc.value();
             doWait=false;
-            progressWindow !? { progressWindow.userCanClose = true };
-
+            progressWindow !? {
+                progressWindow.userCanClose = true;
+                closeButton.enabled = true;
+            };
         };
 
         doWait = threaded or: gui;
