@@ -136,7 +136,7 @@ set(objcpp_sources
 
 # xcode generator workaround
 set_source_files_properties(${objcpp_sources}
-							PROPERTIES COMPILE_FLAGS "-x objective-c++")
+							PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 
 if(MAC_OSX_SDK_VERSION GREATER 4)
 	list(APPEND scapp_sources
