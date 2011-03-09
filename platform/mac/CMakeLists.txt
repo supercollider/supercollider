@@ -134,9 +134,10 @@ set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/syntaxColorize.M
 	)
 
-# xcode generator workaround
-set_source_files_properties(${objcpp_sources}
-							PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
+if (CMAKE_COMPILER_IS_GNUCXX)
+	set_source_files_properties(${objcpp_sources}
+								PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
+endif()
 
 if(MAC_OSX_SDK_VERSION GREATER 4)
 	list(APPEND scapp_sources
