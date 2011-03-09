@@ -159,10 +159,10 @@ function buildCategoryTree() {
     for(var k in docmap) {
         var v = docmap[k];
 
-        if(v.installed=="extension" && !document.getElementById("check_ext_classes").checked)
+        if(v.installed=="extension" && !checkboxes["ext_classes"].checked)
             continue;
         else
-        if(v.installed=="standard" &&  !document.getElementById("check_classes").checked)
+        if(v.installed=="standard" &&  !checkboxes["classes"].checked)
             continue;
         else if(!v.installed) {
             var c = checkboxes[v.path.split("/")[0].toLowerCase()];
@@ -219,7 +219,7 @@ function buildCategoryTree() {
 }
 
 window.onload = function() {
-    var fields = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
+    var fields = ["classes", "ext_classes", "reference", "guides", "tutorials", "overviews", "other"];
     checkboxes = {};
     var onChange = function() {
         buildCategoryTree();
@@ -230,7 +230,6 @@ window.onload = function() {
         checkboxes[k] = document.getElementById("check_"+k);
         checkboxes[k].onchange = onChange;
     }
-    document.getElementById("check_ext_classes").onchange = onChange;
     buildCategoryTree();
     GotoPath(unescape(window.location.hash.slice(1)));
 }
@@ -248,7 +247,6 @@ window.onhashchange = function() {
 <table class='headMenu'>
     <tr><td><a href='./Help.html'>Home</a>
     <td><a href='./Browse.html'>Browse</a>
-<!--    <td><a href='./Overviews/Categories.html'>Categories</a>-->
     <td><a href='./Overviews/Documents.html'>Document index</a>
     <td><a href='./Overviews/Classes.html'>Class index</a>
     <td><a href='./Overviews/Methods.html'>Method index</a>
