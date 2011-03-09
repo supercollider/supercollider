@@ -148,7 +148,7 @@ public:
   void setRmsColor( const QColor &clr ) { _rmsColor = clr; redraw(); }
 
   bool drawsWaveform() const { return _drawWaveform; }
-  bool setDrawsWaveform( bool b ) { _drawWaveform = b; update(); }
+  void setDrawsWaveform( bool b ) { _drawWaveform = b; update(); }
 
   QSize sizeHint() const { return QSize( 400, 200 ); }
   QSize minimumSizeHint() const { return QSize( 100, 20 ); }

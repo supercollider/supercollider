@@ -108,8 +108,7 @@ QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyObject );
-  bool ok = e->send( proxy, Synchronous );
-  if( !ok ) qcSCObjectDebugMsg( 1, slotRawObject(r), "Already destroyed\n" );
+  e->send( proxy, Synchronous );
 
   return errNone;
 }
