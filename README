@@ -46,12 +46,19 @@ integration with frontends / main sc distro
 just use the pre-rendered help until the users need to update help, which would first copy or hard-link the pre-rendered
 files into helpTargetDir and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else the system-wide location (thisProcess.platform.systemAppSupportDir +/+ "Help");
 
-* updateAll FIXME:
-    when quarks/extensions are linked/moved in and any helpfiles therein is older than scdoc_cache, SCDoc will not detect them.
-
 * fix (adjust for SCDoc) or deprecate all old help classes and methods
 
 -------------------------------------------
+
+- redirect classes doesn't show up in methods search, of course.. it would be nice if they did!
+  let the class renderer add [(Meta_)thisClassName, methodName] to a special list that we append in SCDoc.collectAllMethods.
+  Also we need to archive this to file somehow, and handle deletion/additions etc.. not a simple task :/
+  Or, just maintain a dictionary of redirected classes -> redirecting class?
+  in method search and index: if class is in this dict, replace with (or add) redirecting class.
+  Or/and, let redirected classes have a link to the redirecting class?
+  
+  Also, if a class has implemented *doesNotUnderstand then maybe we should ignore if method was not found in renderer?
+  for stuff like Scale..
 
 - make a SCDoc.makeClassTemplate(class,outputfile) that fills in the title, categories if existing, method and argument names, etc..
 
