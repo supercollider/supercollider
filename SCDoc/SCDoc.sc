@@ -246,7 +246,7 @@ SCDoc {
     }
 
     *makeProgressWindow {
-        if(GUI.scheme.isNil and: doWait, {^nil});
+        if(GUI.scheme.isNil, {^nil});
         
         progressWindow = Window("Documentation update",500@150).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
 
@@ -472,8 +472,9 @@ SCDoc {
 
         };
 
+        doWait = threaded or: gui;
         if(gui, {this.makeProgressWindow});
-        if(doWait = threaded, {
+        if(doWait, {
             Routine(func).play(AppClock);
         }, func);
         
