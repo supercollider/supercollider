@@ -446,7 +446,7 @@ void SC_TerminalClient::readCmdLine()
 		}
 	} else {
 #endif
-		int nfds = poll(&pfds, POLLIN, 0);
+		int nfds = poll(&pfds, 1, 0);
 		if (nfds > 0) {
 			while (readCmdLine(fd, gCmdLine));
 		} else if (nfds == -1 && errno != EINTR) {
