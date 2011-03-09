@@ -79,14 +79,14 @@ function showmethods() {
     var res = document.getElementById("methods");
     res.innerHTML = "";
     
-    if(/^show_/.test(hash)) {
-        var n = hash.slice(5);
+//    if(/^show_/.test(hash)) {
+    if(hash && ! /^section_/.test(hash)) {
         var div = document.createElement("p");
         div.appendChild(document.createTextNode("Showing single method: "));
         res.appendChild(div);
 
         for(var i=0;i<methods.length;i++) {
-            if(methods[i][0]==n) {
+            if(methods[i][0]==hash) {
                 showMethod(methods[i],res);
                 break;
             }
@@ -160,7 +160,7 @@ window.onhashchange = showmethods;
     Generating method index, please wait...
 </div>
 <div id='method_note'>
-You can show a specific method by appending '#show_NAME' to this page url, where NAME is the name of the method.
+You can show a specific method by appending '#NAME' to this page url, where NAME is the name of the method.
 </div>
 </body>
 </html>

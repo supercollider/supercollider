@@ -14,7 +14,7 @@ the message was sent to.
 opposite: code::stop::
 
 section:: Clocks, Routines, Streams and Patterns
-For a full list of which classes that implements code::play::, see link::Overviews/Methods#show_play::
+For a full list of which classes that implements code::play::, see link::Overviews/Methods#play::
 
 subsection:: clock.play (stream)
 returns: the clock

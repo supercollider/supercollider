@@ -204,8 +204,8 @@ To link to a specific class method, append code::#*methodName:: or code::#-metho
 code::
 Also take a look at the play method of link::Classes/Function#-play::
 ::
-The special link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown by appending code::#show_methodName:: where methodName is the name of the method:
+The special link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown by appending code::#name:: where name is the name of the method:
 code::
-For all implementations of play, see link::Overviews/Methods#show_play::
+For all implementations of play, see link::Overviews/Methods#play::
 ::
 

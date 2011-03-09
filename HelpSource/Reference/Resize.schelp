@@ -3,7 +3,7 @@ summary:: Resize behavior for SCView and its subclasses
 categories:: GUI
 
 section:: Description
-The SCView link::Overviews/Methods#show_resize#resize method:: takes nine different arguments defining the behavior when window is resized. Each view responds relatively to the stretches of its parent view.
+The SCView link::Overviews/Methods#resize#resize method:: takes nine different arguments defining the behavior when window is resized. Each view responds relatively to the stretches of its parent view.
 
 table::
 ## 1 || 2 || 3

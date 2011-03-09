@@ -286,7 +286,7 @@ The code::link\:::: tag is used for cross-reference between docs. It uses a simp
 code::
 See also link::Classes/SinOsc:: for a nice oscillator.
 Or take a look at link::Browse#UGens:: for a full list.
-The link::Overviews/Methods#show_play#play method:: is often very useful.
+The link::Overviews/Methods#play#play method:: is often very useful.
 ::
 
 Anchors can be inserted manually with code::anchor\::name\:::: and referenced like this: code::
@@ -310,11 +310,11 @@ code::
 Take a look at link::Classes/SinOsc#*ar#SinOsc's ar method::
 ::
 
-The link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown, by prefixing the methodname with code::show_::, for example to get a list of all classes implementing code::play:: :
+The link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown, by using the methodname as anchor, for example to get a list of all classes implementing code::play:: :
 code::
-All classes implementing code::play:: can be seen link::Overviews/Methods#show_play#here::.
+All classes implementing code::play:: can be seen link::Overviews/Methods#play#here::.
 ::
-Renders as: All classes implementing code::play:: can be seen link::Overviews/Methods#show_play#here::.
+Renders as: All classes implementing code::play:: can be seen link::Overviews/Methods#play#here::.
 
 The link::Browse:: page is also dynamic, and can take a category tree as anchor name:
 code::
