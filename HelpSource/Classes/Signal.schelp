@@ -21,7 +21,7 @@ argument::phases
 an Array of phases in radians for each harmonic beginning with the fundamental.
 
 method::chebyFill
-Fill a Signal of the given size with a sum of Chebyshev polynomials at the given amplitudes. For eventual use in waveshaping by the Shaper ugen; see link::Classes/Shaper:: helpfile and link::Classes/Buffer#cheby#Buffer:cheby:: too.
+Fill a Signal of the given size with a sum of Chebyshev polynomials at the given amplitudes. For eventual use in waveshaping by the Shaper ugen; see link::Classes/Shaper:: helpfile and link::Classes/Buffer#-cheby#Buffer:cheby:: too.
 code::
 Signal.chebyFill(1000, [1]).plot;
 Signal.chebyFill(1000, [0, 1]).plot;
