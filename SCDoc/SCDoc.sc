@@ -328,10 +328,10 @@ SCDoc {
                 ^this;
             };
 
-            helpSourceDirs = [this.helpSourceDir];
+            helpSourceDirs = Set[this.helpSourceDir];
             [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
-                helpSourceDirs = helpSourceDirs ++ ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
-                    .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+                helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
+                    .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
             };
 
             this.postProgress(helpSourceDirs);
@@ -343,14 +343,14 @@ SCDoc {
                 this.postProgress("Updating all files",true);
                 helpSourceDirs.do {|dir|
                     fileList[dir] = ("find -L"+dir.escapeChar($ )+"-type f")
-                        .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+                        .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
                     count = count + fileList[dir].size;
                 };
             } {
                 this.postProgress("Searching for new or updated files...",true);
                 helpSourceDirs.do {|dir|
                     fileList[dir] = ("find -L"+dir.escapeChar($ )+"-newer"+docmap_path+"-type f")
-                        .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+                        .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
                     count = count + fileList[dir].size;
                 };
             };
@@ -381,12 +381,12 @@ SCDoc {
             // add all files in added HelpSource folders (e.g. newly installed quarks/extensions)
             x = Object.readArchive(this.helpTargetDir+/+"helpdirlist_cache");
             if(x.notNil) {
-                (helpSourceDirs.asSet - x.asSet).do {|dir|
+                (helpSourceDirs - x).do {|dir|
                     this.postProgress("Found new HelpSource folder:"+dir);
-                    fileList[dir] = fileList[dir] ++ ("find -L"+dir.escapeChar($ )+"-type f")
-                        .unixCmdGetStdOut.split($\n).reject(_.isEmpty);
+                    fileList[dir] = fileList[dir] | ("find -L"+dir.escapeChar($ )+"-type f")
+                        .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
                 };
-                if((x.asSet - helpSourceDirs.asSet).notEmpty) {
+                if((x - helpSourceDirs).notEmpty) {
                     maybeDelete = true;
                 };
             };
@@ -418,7 +418,7 @@ SCDoc {
                     this.postProgress("Help folders changed, scanning for deleted documents...",true);
                     count = 0;
                     helpSourceDirs.do {|dir|
-                        ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOut.split($\n).reject(_.isEmpty).do {|f|
+                        ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOutLines.reject(_.isEmpty).do {|f|
                             var subtarget = f.copyRange(dir.size + 1, f.findBackwards(".") - 1);
                             doc_map[subtarget].delete = false;
                         };
@@ -559,6 +559,18 @@ SCDoc {
         while({(this[b]==$\n) or: (this[b]==$\ ) or: (this[b]==$\t)},{b=b-1});
         ^this.copyRange(a,b);
     }
+	unixCmdGetStdOutLines {
+		var pipe, lines, line;
+
+		pipe = Pipe.new(this, "r");
+		lines = Array.new;
+		line = pipe.getLine;
+		while({line.notNil}, {lines = lines.add(line); line = pipe.getLine; });
+		pipe.close;
+
+		^lines;
+	}
+
 }
 
 + Method {
