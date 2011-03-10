@@ -1,12 +1,15 @@
 class:: SinOscFB
-summary:: FIXME: SinOscFB purpose.
-related:: Classes/SinOsc, Classes/FSinOsc
-categories::  UGens>Generators>Deterministic, UGens>Undocumented
+summary:: Feedback FM oscillator
+related:: Classes/SinOsc, Classes/FSinOsc, Classes/PMOsc
+categories::  UGens>Generators>Deterministic, UGens>Generators>Chaotic
 
 
 Description::
 
-FIXME: SinOscFB description.
+SinOscFB is a sine oscillator that has phase modulation feedback; its output plugs back into the phase input.
+Basically this allows a modulation between a sine wave and a sawtooth like wave. Overmodulation causes chaotic oscillation. It may be useful if you want to simulate feedback FM synths.
+
+
 
 
 classmethods::
@@ -15,21 +18,57 @@ method::ar, kr
 
 argument::freq
 
-FIXME: explain parameter freq.
-
+The base frequency of the sine oscillator in Hertz. 
 
 argument::feedback
 
-FIXME: explain parameter feedback.
-
+The second argument is the amplitude of phase feedback in radians. 
 
 argument::mul
 
 Output will be multiplied by this value.
 
-
 argument::add
 
-This value will be added to the output.
+This value will be added to the output after any multiplication.
 
 
+Examples::
+
+code::
+
+
+{SinOscFB.ar(440,MouseX.kr(0,4))*0.1}.play
+
+
+{SinOscFB.ar(MouseY.kr(10,1000,'exponential'),MouseX.kr(0.5pi,pi))*0.1}.play
+
+
+{SinOscFB.ar(100*SinOscFB.ar(MouseY.kr(1,1000,'exponential'))+200,MouseX.kr(0.5pi,pi))*0.1}.play
+
+
+//JMC original example
+
+(
+var f, s;
+w = Window("scope test", Rect(128, 64, 680, 280));
+
+n = SCScope(w, Rect(10,10,640,256));
+n.background = Color.blue(0.2);
+n.resize = 5;
+w.front;
+)
+
+s = Server.internal;
+s.boot;
+
+s.sendMsg(\b_alloc, 0, 8192, 2);
+
+{ 
+var z;
+z = SinOscFB.ar([400,301], MouseX.kr(0,4),0.3);
+Out.ar(0, z);
+ScopeOut.ar(z, 0);
+}.play(s);
+
+::
