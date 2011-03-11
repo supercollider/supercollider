@@ -873,7 +873,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	CGContextSaveGState(cgc);
-	QDDrawBevelRect(cgc, (*(CGRect *)&([self bounds])), 1, true);
+	QDDrawBevelRect(cgc, NSRectToCGRect([self bounds]), 1, true);
 	CGContextRestoreGState(cgc);
 
 }
@@ -1441,18 +1441,18 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 
         return errNone;
 	}
-	
+
 	if (strcmp(name, "setSyntaxColors")==0) {
 		SyntaxColorize(mTextView);
-		return errNone; 
+		return errNone;
 	}
-	
+
 	if (strcmp(name, "setUsesAutoInOutdent")==0) {
 		bool uses = IsTrue(slot);
 		[mTextView setUsesAutoInOutdent: uses];
 		return errNone;
 	}
-	
+
 	return SCView::setProperty(symbol, slot);
 }
 
