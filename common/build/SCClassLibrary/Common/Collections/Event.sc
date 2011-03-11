@@ -507,24 +507,22 @@ Event : Environment {
 							};
 
 							// schedule when the bundles are sent
-							
 							if (strum == 0) {
-								schedBundleArrayOnClock(
-									offset, thisThread.clock, bndl, lag, server, ~latency);
+								~schedBundleArray.(lag, offset, server, bndl, ~latency);
 								if (sendGate) {
-									schedBundleArrayOnClock(
-										sustain + offset, thisThread.clock, 
-										[\n_set, ids, \gate, 0].flop, 
-										lag, server, ~latency
+									~schedBundleArray.(
+										lag,
+										sustain + offset,
+										server,
+										[\n_set, ids, \gate, 0].flop,
+										~latency
 									);
 								}
 							} {
-								
 								if (strum < 0) { bndl = bndl.reverse };
 								strumOffset = offset + Array.series(bndl.size, 0, strum.abs);
-								schedBundleArrayOnClock(
-									strumOffset, thisThread.clock, bndl, 
-									lag, server, ~latency
+								~schedBundleArray.(
+									lag, strumOffset, server, bndl, ~latency
 								);
 								if (sendGate) {
 									if (~strumEndsTogether) {
@@ -532,10 +530,10 @@ Event : Environment {
 									} {
 											strumOffset = sustain + strumOffset
 									};
-									schedBundleArrayOnClock(
-										strumOffset, thisThread.clock, 
-										[\n_set, ids, \gate, 0].flop, 
-										lag, server, ~latency
+									~schedBundleArray.(
+										lag, strumOffset, server,
+										[\n_set, ids, \gate, 0].flop,
+										~latency
 									);
 								}
 							}
