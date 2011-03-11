@@ -125,6 +125,7 @@ set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCCocoaView.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCGraphView.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCImage.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCService.mm
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCSoundFileView.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCTextView.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCView.M
@@ -134,9 +135,25 @@ set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/syntaxColorize.M
 	)
 
+set(objc_sources
+	${CMAKE_SOURCE_DIR}/editors/scapp/GetStringFromUser.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/HTMLRenderer.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SCNSWindow.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/TabletEvents.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/TextFinder.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/main.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLAdvancedFindController.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLStatusBarTextFieldCell.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/ICUMatcher.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/ICUPattern.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/NSStringICUAdditions.m
+)
+
 if (CMAKE_COMPILER_IS_GNUCXX)
 	set_source_files_properties(${objcpp_sources}
 								PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
+	set_source_files_properties(${objc_sources}
+								PROPERTIES COMPILE_FLAGS "-fobjc-exceptions")
 endif()
 
 if(MAC_OSX_SDK_VERSION GREATER 4)
