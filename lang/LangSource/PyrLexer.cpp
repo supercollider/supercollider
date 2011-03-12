@@ -1214,6 +1214,8 @@ int processchar(int c)
 	return ASCII;
 }
 
+extern "C" double sc_strtod(const char *nptr, char **endptr);
+
 int processfloat(char *s, int sawpi)
 {
 	PyrSlot slot;
@@ -1223,8 +1225,11 @@ int processfloat(char *s, int sawpi)
 	if (gDebugLexer) postfl("processfloat: '%s'\n",s);
 #endif
 
-	if (sawpi) { z = atof(s)*pi; SetFloat(&slot, z); }
-	else  { SetFloat(&slot, atof(s)); }
+	double parsedfloat = sc_strtod(s, NULL);
+	if (sawpi)
+		parsedfloat *= pi;
+
+	SetFloat(&slot, parsedfloat);
 	node = newPyrSlotNode(&slot);
 	zzval = (long)node;
     return SC_FLOAT;
