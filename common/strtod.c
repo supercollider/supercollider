@@ -1,4 +1,4 @@
-/* 
+/*
  * strtod.c --
  *
  *	Source code for the "strtod" library procedure.
@@ -17,10 +17,6 @@
  * RCS: @(#) $Id$
  */
 
-#include "config.h"
-#ifdef HAVE_STDLIB_H
-#   include <stdlib.h>
-#endif
 #include <ctype.h>
 #include <errno.h>
 extern  int     errno;
@@ -57,7 +53,7 @@ static double powersOf10[] = {	/* Table giving binary powers of 10.  Entry */
     1.0e128,
     1.0e256
 };
-
+
 /*
  *----------------------------------------------------------------------
  *
@@ -80,7 +76,7 @@ static double powersOf10[] = {	/* Table giving binary powers of 10.  Entry */
  */
 
 double
-strtod(string, endPtr)
+sc_strtod(string, endPtr)
     const char *string;		/* A decimal ASCII floating-point number,
 				 * optionally preceded by white space.
 				 * Must have form "-I.FE-X", where I is the
@@ -158,7 +154,7 @@ strtod(string, endPtr)
      * If the mantissa has more than 18 digits, ignore the extras, since
      * they can't affect the value anyway.
      */
-    
+
     pExp  = p;
     p -= mantSize;
     if (decPt < 0) {
@@ -236,7 +232,7 @@ strtod(string, endPtr)
      * many powers of 2 of 10. Then combine the exponent with the
      * fraction.
      */
-    
+
     if (exp < 0) {
 	expSign = TRUE;
 	exp = -exp;
