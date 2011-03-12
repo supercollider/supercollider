@@ -618,9 +618,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	if(maxlength < 1) range = NSMakeRange(0, 0);
 	else{
 		if (rangeSize < 0) {
-			unsigned int lineStart, lineEnd;
+			NSUInteger lineStart, lineEnd;
 			range.length = 0;
-			[nsstring getLineStart: (NSUInteger*)&lineStart end: (NSUInteger*)&lineEnd contentsEnd: nil forRange: range];
+			[nsstring getLineStart: &lineStart end: &lineEnd contentsEnd: nil forRange: range];
 			range = NSMakeRange(lineStart, lineEnd - lineStart);
 		}
 		if(rangeStart < 0) range.location = 0;
