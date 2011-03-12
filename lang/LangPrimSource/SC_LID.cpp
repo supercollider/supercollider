@@ -248,13 +248,11 @@ int SC_LID::getInfo(struct input_id *info, char *bufPhys, size_t sizePhys, char 
 	if (ioctl(m_fd, EVIOCGPHYS(sizePhys), bufPhys) == -1) {
 // 		strcpy( sizePhys, strerror(errno));
  		post("LID could not retrieve physical location (error: %s)\n", strerror(errno));
-		sprintf(bufPhys, "");
 // 		return errFailed;
 	}
 	if (ioctl(m_fd, EVIOCGUNIQ(sizeUniq), bufUniq) == -1) {
 // 		strcpy( strerror(errno), sizeof( strerror(errno)), sizeUniq );
  		post("LID could not get unique identifier (error: %s)\n", strerror(errno));
-		sprintf(bufUniq, "");
 // 		return errFailed;
 	}
 
