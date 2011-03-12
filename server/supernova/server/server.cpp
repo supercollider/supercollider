@@ -146,6 +146,8 @@ void nova_server::set_node_slot(int node_id, const char * slot, float value)
 
 void nova_server::free_node(server_node * node)
 {
+    if (node->get_parent() == NULL)
+        return; // has already been freed by a different event
     notification_node_ended(node);
     node_graph::remove_node(node);
     update_dsp_queue();
