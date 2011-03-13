@@ -75,6 +75,8 @@ int prString_AsInteger(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+extern "C" double sc_strtod(const char *nptr, char **endptr);
+
 int prString_AsFloat(struct VMGlobals *g, int numArgsPushed);
 int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 {
@@ -84,7 +86,7 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 	int err = slotStrVal(a, str, 255);
 	if (err) return err;
 
-	SetFloat(a, atof(str));
+	SetFloat(a, sc_strtod(str, NULL));
 
 	return errNone;
 }
