@@ -1493,7 +1493,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = (
 					../common/Headers/common,
 					../../external_libraries/libsndfile/,
