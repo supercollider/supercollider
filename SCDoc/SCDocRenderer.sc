@@ -117,7 +117,7 @@ SCDocRenderer {
                     },
                     \classmethods, {
                         c = currentClass.class;
-                        ic = currentImplClass.class;
+                        ic = currentImplClass !? {currentImplClass.class}; // else we get Nil for nil!
                         css = "cmethodname";
                         pfx = "*";
                     },
@@ -151,6 +151,7 @@ SCDocRenderer {
                         };
                     } {
                         m = nil;
+                        m2 = nil;
                         mstat = 1;
                     };
                     file.write("<a name='"++pfx++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++pfx++"</span>"++this.escapeSpecialChars(mname));
@@ -197,58 +198,24 @@ SCDocRenderer {
                     file.write("</table>");
                 };
 
-//                file.write("<h4>Parameters:</h4>\n");
-/*                file.write("<table class='arguments'>\n");
-                node.children.do {|a|
-                    if(a.tag == \argument, {
-                            file.write("<tr><td class='argumentname'>"+a.text+"<td>");
-                            a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
-                    });
-                };*/
-                
                 n = this.parser.findNode(\returns, node.children);
                 if(n.tag.notNil) {
-//                    file.write("<tr><td class='returnvalue'>returns:<td>");                    
                     file.write("<h4>Returns:</h4>\n<div class='returnvalue'>");
                     n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
                     file.write("</div>");
                 };
 
-/*                node.children.do {|a|
-                    if(a.tag == \returns, {
-                        file.write("<tr><td class='returnvalue'>returns:<td>");
-                        a.children.do {|e| this.renderHTMLSubTree(file,e,false) };
-                    });
-                };
-*/
-//                file.write("</table>");
                 n = this.parser.findNode(\discussion, node.children);
                 if(n.tag.notNil) {
                     file.write("<h4>Discussion:</h4>\n");
                     n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
                 };
-
-/*                collectedArgs = [];
-                retValue = nil;
-                do_children.();
-                file.write("<table class='arguments'>\n");
-                collectedArgs.do {|a|
-                    file.write("<tr><td class='argumentname'>"+a.text+"<td>");
-                    a.children.do {|e| this.renderHTMLSubTree(file,e,a.tag) };
-                };
-                if(retValue.notNil) {
-                    file.write("<tr><td class='returnvalue'>returns:<td>");
-                    retValue.children.do {|e| this.renderHTMLSubTree(file,e,false) };
-                };
-                file.write("</table>");
-*/
                 file.write("</div>");
             },
             'argument', {
                 collectedArgs = collectedArgs.add(node);
             },
             'returns', {
-//                retValue = node;
             },
             'description', {
                 if(node.children.notEmpty) {
