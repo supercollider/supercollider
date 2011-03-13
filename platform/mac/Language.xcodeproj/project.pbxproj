@@ -35,6 +35,9 @@
 		6A1C636A0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
 		6A1C636B0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
 		6A1C636C0CFB6C50004ED3DA /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A1C63690CFB6C50004ED3DA /* libicucore.dylib */; };
+		7767CE7C132D23DB0045D5E9 /* strtod.c in Sources */ = {isa = PBXBuildFile; fileRef = 7767CE7B132D23DB0045D5E9 /* strtod.c */; };
+		7767CE7D132D23DB0045D5E9 /* strtod.c in Sources */ = {isa = PBXBuildFile; fileRef = 7767CE7B132D23DB0045D5E9 /* strtod.c */; };
+		7767CE7E132D23DB0045D5E9 /* strtod.c in Sources */ = {isa = PBXBuildFile; fileRef = 7767CE7B132D23DB0045D5E9 /* strtod.c */; };
 		77FA31B412ABB16A008A1880 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77FA31B312ABB16A008A1880 /* vecLib.framework */; };
 		77FA31C812ABB19A008A1880 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77FA31B312ABB16A008A1880 /* vecLib.framework */; };
 		77FA31C912ABB19D008A1880 /* vecLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77FA31B312ABB16A008A1880 /* vecLib.framework */; };
@@ -420,6 +423,7 @@
 		6A0CC2680D3D5F1D0080C454 /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/SMLRegularExpressionHelp.nib; sourceTree = "<group>"; };
 		6A1C63690CFB6C50004ED3DA /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = /usr/lib/libicucore.dylib; sourceTree = "<absolute>"; };
 		6AB6FFA10538A90A0000009F /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
+		7767CE7B132D23DB0045D5E9 /* strtod.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strtod.c; sourceTree = "<group>"; };
 		77FA31B312ABB16A008A1880 /* vecLib.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = vecLib.framework; path = /System/Library/Frameworks/vecLib.framework; sourceTree = "<absolute>"; };
 		94070C5B0C19DEF6002304F7 /* html.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = html.icns; sourceTree = "<group>"; };
 		94070C5C0C19DEF6002304F7 /* rtf.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rtf.icns; sourceTree = "<group>"; };
@@ -1195,6 +1199,7 @@
 				F33F60B112C29F8100621B91 /* SC_StringParser.cpp */,
 				F33F60B212C29F8100621B91 /* SC_Win32Utils.cpp */,
 				F33F60B312C29F8100621B91 /* scsynthsend.cpp */,
+				7767CE7B132D23DB0045D5E9 /* strtod.c */,
 			);
 			name = common;
 			path = ../../common;
@@ -1726,6 +1731,7 @@
 				F3514AD812C303080036CEB4 /* SC_Wii.cpp in Sources */,
 				F3514AD912C303080036CEB4 /* SC_Win32Utils.cpp in Sources */,
 				F3514ADA12C303080036CEB4 /* SCCocoaView.M in Sources */,
+				7767CE7E132D23DB0045D5E9 /* strtod.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1797,6 +1803,7 @@
 				F33F726012C2A4E800621B91 /* sc_popen.cpp in Sources */,
 				F33F726112C2A4FA00621B91 /* IOHIDDevice_.c in Sources */,
 				F33F726212C2A4FA00621B91 /* IOHIDElement_.c in Sources */,
+				7767CE7D132D23DB0045D5E9 /* strtod.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1896,6 +1903,7 @@
 				F33F6DBC12C2A1D900621B91 /* UserPanel.M in Sources */,
 				F33F6DBD12C2A1D900621B91 /* VMGlobals.cpp in Sources */,
 				F33F6DBE12C2A1D900621B91 /* wiiremote.c in Sources */,
+				7767CE7C132D23DB0045D5E9 /* strtod.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2021,10 +2029,7 @@
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = (
-					../common/include/icu,
-					../common/Headers/common,
-				);
+				HEADER_SEARCH_PATHS = ../../external_libraries/icu;
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -2194,10 +2199,7 @@
 				CONFIGURATION_TEMP_DIR = "$(PROJECT_DIR)/Intermediate Build Files";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = (
-					../common/include/icu,
-					../common/Headers/common,
-				);
+				HEADER_SEARCH_PATHS = ../../external_libraries/icu;
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -2225,10 +2227,7 @@
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_VERSION = "";
-				HEADER_SEARCH_PATHS = (
-					../common/include/icu,
-					../common/Headers/common,
-				);
+				HEADER_SEARCH_PATHS = ../../external_libraries/icu;
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -2367,11 +2366,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				HEADER_SEARCH_PATHS = (
-					../../external_libraries/icu,
-					../common/include/icu,
-					../common/Headers/common,
-				);
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
@@ -2405,11 +2399,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				HEADER_SEARCH_PATHS = (
-					../../external_libraries/icu,
-					../common/include/icu,
-					../common/Headers/common,
-				);
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
@@ -2445,11 +2434,8 @@
 				GCC_MODEL_TUNING = G4;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_UNROLL_LOOPS = YES;
-				GCC_VERSION = 4.2;
-				HEADER_SEARCH_PATHS = (
-					../common/include/icu,
-					../common/Headers/common,
-				);
+				GCC_VERSION = "";
+				HEADER_SEARCH_PATHS = ../../external_libraries/icu;
 				INFOPLIST_FILE = Info.plist;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OBJROOT = "$(PROJECT_DIR)/Intermediate Build Files";
@@ -2494,11 +2480,6 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/CoreServices.framework/Versions/A/Frameworks\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/build\"";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				HEADER_SEARCH_PATHS = (
-					../../external_libraries/icu,
-					../common/include/icu,
-					../common/Headers/common,
-				);
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build\"";
