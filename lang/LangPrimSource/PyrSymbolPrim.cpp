@@ -210,6 +210,7 @@ int prSymbol_SpecialIndex(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+extern "C" double sc_strtod(const char *nptr, char **endptr);
 
 int prSymbol_AsFloat(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_AsFloat(struct VMGlobals *g, int numArgsPushed)
@@ -217,7 +218,7 @@ int prSymbol_AsFloat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 
 	char *str = slotRawSymbol(a)->name;
-	SetFloat(a, atof(str));
+	SetFloat(a, sc_strtod(str, NULL));
 
 	return errNone;
 }
