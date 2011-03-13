@@ -85,6 +85,15 @@ table.headMenu td a {
     color: #444;
 }
 
+.jump {
+    text-align: right;
+    font-size: 9pt;
+    color: #555;
+}
+.jump a {
+    font-weight: bold;
+}
+
 a.footnote {
     font-size: 9pt;
     top: -0.1em;

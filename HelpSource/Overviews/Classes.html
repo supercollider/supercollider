@@ -12,14 +12,6 @@
     margin-left: 1.5em;
     margin-top: 0.2em;
 }
-.jump {
-    background: #eee;
-    padding: 0.5em;
-    text-align: center;
-}
-/*.jump a {
-    font-weight: bold;
-}*/
 #search_checks {
     font-size: 9pt;
     color: #555;
@@ -64,6 +56,7 @@ function showdocs() {
     var div = document.createElement("p");
     var docs2 = [];
     div.className = "jump";
+    div.innerHTML = "Jump to: ";
 
     for(var i=0;i<docs.length;i++) {
         var v = docs[i];
