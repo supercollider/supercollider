@@ -15,7 +15,7 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/editors/scapp/include/SMLAdvancedFind/ICU
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/unicode/
-	"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}"
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}
 	)
 
 find_package(Sndfile)
@@ -63,10 +63,10 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangSource/dumpByteCodes.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/WiiMote_OSX/wiiremote.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_HID.cpp
-	"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c"
-	"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c"
-	"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c"
-	"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c"
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c
+	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreMIDI.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_CoreAudioPrim.cpp
 
@@ -157,7 +157,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 								PROPERTIES COMPILE_FLAGS "-fobjc-exceptions")
 endif()
 
-if(MAC_OSX_SDK_VERSION GREATER 4)
+if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
 	list(APPEND scapp_sources
 		"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c"
 		"${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c"

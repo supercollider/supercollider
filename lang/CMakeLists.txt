@@ -107,10 +107,10 @@ if(UNIX)
 		list(APPEND sclang_sources
 			LangPrimSource/WiiMote_OSX/wiiremote.c
 			LangPrimSource/SC_HID.cpp
-			"LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c"
-			"LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c"
-			"LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c"
-			"LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c"
+			LangPrimSource/${HID_UTIL_DIR}/HID_Utilities.c
+			LangPrimSource/${HID_UTIL_DIR}/HID_Name_Lookup.c
+			LangPrimSource/${HID_UTIL_DIR}/HID_Queue_Utilities.c
+			LangPrimSource/${HID_UTIL_DIR}/HID_Error_Handler.c
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.M
@@ -120,10 +120,10 @@ if(UNIX)
 			set_source_files_properties(LangPrimSource/SC_Speech.M
 										PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 		endif()
-		if(MAC_OSX_SDK_VERSION GREATER 4)
+		if(NOT (HID_UTIL_DIR MATCHES "HID_Utilities_10_4"))
 			list(APPEND sclang_sources
-				"LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c"
-				"LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c"
+				LangPrimSource/${HID_UTIL_DIR}/IOHIDElement_.c
+				LangPrimSource/${HID_UTIL_DIR}/IOHIDDevice_.c
 			)
 		endif()
 	else(APPLE)
