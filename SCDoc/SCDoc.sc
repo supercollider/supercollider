@@ -19,7 +19,7 @@ SCDoc {
     
     *postProgress {|string,setTopic=false|
         var prg = (progressCount/progressMax*100).round(0.1).asString ++ "%";
-        if(progressText.notNil) {
+        if(progressWindow.notNil) {
             if(setTopic, {
                 progressTopic.string = string;
                 progressText.string = prg;
@@ -256,15 +256,16 @@ SCDoc {
     *makeProgressWindow {
         if(GUI.scheme.isNil, {^nil});
         
-        progressWindow = Window("Documentation update",500@200).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
-
-        StaticText(progressWindow).string_("Please wait while updating help files...");
-        progressBar = RangeSlider(progressWindow,300@20).orientation_(\horizontal).background_(Color(0.8,0.8,0.8)).knobColor_(Color(0.5,0.5,0.8));
-        progressTopic = StaticText(progressWindow).font_(Font.defaultSansFace.boldVariant);
-        progressText = TextView(progressWindow).editable_(false);
-        closeButton = Button(progressWindow).states_([["Close"]]).enabled_(false).action = {progressWindow.close};
-
-        progressWindow.front;
+        if(progressWindow.isNil) {
+            progressWindow = Window("Documentation update",500@200).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
+            progressWindow.onClose = {progressWindow = nil};
+            StaticText(progressWindow).string_("Please wait while updating help files...");
+            progressBar = RangeSlider(progressWindow,300@20).orientation_(\horizontal).background_(Color(0.8,0.8,0.8)).knobColor_(Color(0.5,0.5,0.8));
+            progressTopic = StaticText(progressWindow).font_(Font.defaultSansFace.boldVariant);
+            progressText = TextView(progressWindow).editable_(false);
+            closeButton = Button(progressWindow).states_([["Close"]]).enabled_(false).action = {progressWindow.close; progressWindow = nil};
+            progressWindow.front;
+        };
     }
 
     *updateFile {|source, rootDir|
@@ -314,9 +315,9 @@ SCDoc {
             
             new_classes = IdentitySet.new;
 
-            // get list of helpSourceDirs
             this.postProgress("Searching for HelpSource folders...",true);
 
+            // check for existence of main helpSourceDir
             if(File.exists(this.helpSourceDir).not) {
                 progressCount = 1;
                 this.postProgress(this.helpSourceDir+"does not exist!\n\nPlease set SCDoc.helpSourceDir to SCDoc's HelpSource folder and run SCDoc.updateAll again.");
@@ -328,12 +329,12 @@ SCDoc {
                 ^this;
             };
 
+            // find the set of helpSourceDirs
             helpSourceDirs = Set[this.helpSourceDir];
             [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
                 helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
                     .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
             };
-
             this.postProgress(helpSourceDirs);
 
             // get list of new or updated files
@@ -393,10 +394,11 @@ SCDoc {
             helpSourceDirs.writeArchive(this.helpTargetDir+/+"helpdirlist_cache");
 
             // parse/render or copy new and updated files
-            // any class docs processed here will remove that class from the new_classes set
+            // NOTE: any class docs processed here will remove that class from the new_classes set
             helpSourceDirs.do {|dir|
                 x = fileList[dir].size;
                 if(x>0) {
+                    if(gui){this.makeProgressWindow};
                     this.postProgress("Processing"+x+"files in"+dir,true);
                     fileList[dir].do {|file|
                         this.updateFile(file,dir);
@@ -406,7 +408,7 @@ SCDoc {
             };
             
             // use folder mtime to see if there might be any deleted files,
-            // note: this will also trigger on added helpfiles but that's ok I guess..
+            // NOTE: this will also trigger on added helpfiles but that's ok I guess..
             if(force.not) {
                 helpSourceDirs.do {|dir|
                     if(("find -L"+dir.escapeChar($ )+"-type d -newer"+docmap_path).unixCmdGetStdOut.isEmpty.not) {
@@ -414,8 +416,9 @@ SCDoc {
                     };
                 };
                 if(maybeDelete or: force or: {old_classes != current_classes}) {
-                    doc_map.do(_.delete=true); // mark all docs in docMap for deletion
+                    if(gui){this.makeProgressWindow};
                     this.postProgress("Help folders changed, scanning for deleted documents...",true);
+                    doc_map.do(_.delete=true); // mark all docs in docMap for deletion
                     count = 0;
                     helpSourceDirs.do {|dir|
                         ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOutLines.reject(_.isEmpty).do {|f|
@@ -441,12 +444,14 @@ SCDoc {
             };
 
             // generate simple doc for each class in new_classes, which now contains only undocumented *new* classes:
-            if(new_classes.size>0) {
+            if(new_classes.notEmpty) {
+                if(gui){this.makeProgressWindow};
                 progressMax = progressMax + new_classes.size;
                 this.handleUndocumentedClasses;
             };
             
             if(old_classes != current_classes) {
+                if(gui){this.makeProgressWindow};
                 current_classes.writeArchive(classlist_path);
                 this.postProgress("Generating Class tree...",true);
                 p.overviewClassTree;
@@ -491,7 +496,7 @@ SCDoc {
         };
 
         doWait = threaded or: gui;
-        if(gui, {this.makeProgressWindow});
+//        if(gui, {this.makeProgressWindow});
         if(doWait, {
             Routine(func).play(AppClock);
         }, func);
