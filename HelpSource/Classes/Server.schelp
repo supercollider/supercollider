@@ -187,25 +187,6 @@ query the server status
 method:: notify
 server sends notifications, for example if a node was created, a 'tr' message from a link::Classes/SendTrig::, or a strong::/done:: action. if code::flag:: is set to false, these messages are not sent. The default is true.
 
-method:: dumpOSC
-argument:: code
-table::
-## 0 || turn dumping OFF.
-## 1 || print the parsed contents of the message.
-## 2 || print the contents in hexadecimal.
-## 3 || print both the parsed and hexadecimal representations of the contents.
-::
-
-method:: queryAllNodes
-Post a representation of this Server's current node tree to the post window.
-discussion::
-Very helpful for debugging. For local servers this uses g_dumpTree and for remote g_queryTree. See link::Classes/Group:: and link::Reference/Server-Command-Reference:: for more info.
-code::
-s.boot;
-s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
-s.quit;
-::
-	
 method:: ping
 measure the time between server and client, which may vary. the code::func:: is
 evaluated after code::n:: number of times and is passed the resulting maximum. 
@@ -236,6 +217,47 @@ s.queryAllNodes;
 s.reorder(x, g, \addToTail);
 s.queryAllNodes;
 ::
+
+subsection:: Information and debugging
+
+method:: dumpOSC
+argument:: code
+table::
+## 0 || turn dumping OFF.
+## 1 || print the parsed contents of the message.
+## 2 || print the contents in hexadecimal.
+## 3 || print both the parsed and hexadecimal representations of the contents.
+::
+
+method:: queryAllNodes
+Post a representation of this Server's current node tree to the post window. See link::#-plotTree:: for a graphical variant.
+discussion::
+Very helpful for debugging. For local servers this uses g_dumpTree and for remote g_queryTree. See link::Classes/Group:: and link::Reference/Server-Command-Reference:: for more info.
+code::
+s.boot;
+s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
+s.quit;
+::
+
+method:: peakCPU, avgCPU
+Get peak and average CPU usage.
+
+method:: numSynths
+Get number of running link::Classes/Synth::s.
+
+method:: numGroups
+Get number of link::Classes/Group::s.
+
+method:: numUGens
+Get number of running link::Classes/UGen::s.
+
+method:: numSynthDefs
+Get number of loaded link::Classes/SynthDef::initions.
+
+method:: pid
+Get process ID of running server (if not internal).
+
+
 
 subsection:: Automatic Message Bundling
 
@@ -356,13 +378,15 @@ ServerTree.remove(f);
 ::
 link::Classes/ServerBoot:: and link::Classes/ServerQuit:: provide similar functionality at boot and quit times.
 
-subsection:: Scope Support
+subsection:: GUI methods
 
-This only works with the internal server, and currently only on OSX.
-see link::Classes/Stethoscope:: for further details.
+method:: makeGui
+Create and show the server window
 
 method:: scope
 Open a scope window showing the output of the Server. 
+This only works with the internal server.
+see link::Classes/Stethoscope:: for further details.
 		
 argument:: numChannels
 the number of channels to be scoped out. The default is this server's options' numOutputBusChannels.
@@ -374,6 +398,15 @@ argument:: zoom
 a zoom value for the scope's X axis. Larger values show more. The default is 1.
 argument:: rate
 whether to display audio or control rate buses (either \audio or \control)
+
+method:: freqscope
+Show frequency analyzer window. This only works with the internal server.
+
+method:: meter
+Show input/output level meters.
+
+method:: plotTree
+Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
 
 subsection:: Recording Support
 
