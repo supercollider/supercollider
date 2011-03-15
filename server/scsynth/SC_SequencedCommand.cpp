@@ -70,45 +70,36 @@ char* allocAndRestrictPath(World *mWorld, const char* inPath, const char* restri
 	int offset = 0;
 	int remain = PATH_MAX;
 
-#ifdef HAVE_LIBCURL
-	// Not relevant for URLs
-	if(strncmp(inPath, "http://", 7)==0 || strncmp(inPath, "https://", 8)==0 || strncmp(inPath, "ftp://", 6)==0){
-		strcpy(strbuf, inPath);
-	}else{
-#endif
-		// Ensure begins with the base
-		if(strncmp(inPath, restrictBase, strlen(restrictBase)) != 0){
-			strcpy(strbuf, restrictBase);
-			offset = strlen(restrictBase);
-			remain -= offset;
-			if(inPath[0]!='/' && strbuf[strlen(strbuf)-1]!='/'){
+	// Ensure begins with the base
+	if(strncmp(inPath, restrictBase, strlen(restrictBase)) != 0){
+		strcpy(strbuf, restrictBase);
+		offset = strlen(restrictBase);
+		remain -= offset;
+		if(inPath[0]!='/' && strbuf[strlen(strbuf)-1]!='/'){
+			strbuf[offset] = '/';
+			++offset;
+			--remain;
+		}
+	}
+
+	// Now copy string, but discard any ".." (which could be benign, but easy to abuse)
+	SC_StringParser sp(inPath, '/');
+	size_t tokenlen;
+	while (!sp.AtEnd()) {
+		const char *token = const_cast<char *>(sp.NextToken());
+		tokenlen = strlen(token);
+		// now add the new token, then a slash, as long as token is neither dodgy nor overflows
+		if(strcmp(token, "..")!=0 && remain > tokenlen){
+			strcpy(strbuf+offset, token);
+			offset += tokenlen;
+			remain -= tokenlen;
+			if(!sp.AtEnd()) {
 				strbuf[offset] = '/';
 				++offset;
 				--remain;
 			}
 		}
-
-		// Now copy string, but discard any ".." (which could be benign, but easy to abuse)
-		SC_StringParser sp(inPath, '/');
-		size_t tokenlen;
-		while (!sp.AtEnd()) {
-			const char *token = const_cast<char *>(sp.NextToken());
-			tokenlen = strlen(token);
-			// now add the new token, then a slash, as long as token is neither dodgy nor overflows
-			if(strcmp(token, "..")!=0 && remain > tokenlen){
-				strcpy(strbuf+offset, token);
-				offset += tokenlen;
-				remain -= tokenlen;
-				if(!sp.AtEnd()) {
-					strbuf[offset] = '/';
-					++offset;
-					--remain;
-				}
-			}
-		}
-#ifdef HAVE_LIBCURL
 	}
-#endif
 
 	// Now we can make a long-term home for the string and return it
 	char* saferPath = (char*)World_Alloc(mWorld, strlen(strbuf)+1);
@@ -540,28 +531,11 @@ bool BufAllocReadCmd::Stage2()
 	return false;
 #else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
-#ifndef _WIN32
-	FILE* fp = fopenLocalOrRemote(mFilename, "r");
-	if (!fp) {
-		char str[256];
-		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex);	//SendFailure(&mReplyAddress, "/b_allocRead", str);
-		scprintf(str);
-		return false;
-	}
-#endif
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
-#ifndef _WIN32
-	SNDFILE* sf = sf_open_fd(fileno(fp), SFM_READ, &fileinfo, true);
-#else
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
-#endif
 	if (!sf) {
 		char str[256];
-#ifndef _WIN32
-		fclose(fp);
-#endif
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
 		SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex);	//SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
@@ -663,24 +637,9 @@ bool BufReadCmd::Stage2()
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
 
-#ifndef _WIN32
-	FILE* fp = fopenLocalOrRemote(mFilename, "r");
-	if (!fp) {
-		char str[256];
-		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
-		scprintf(str);
-		return false;
-	}
-	SNDFILE* sf = sf_open_fd(fileno(fp), SFM_READ, &fileinfo, true);
-#else
 	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
-#endif
 	if (!sf) {
 		char str[256];
-#ifndef _WIN32
-		fclose(fp);
-#endif
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
 		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
@@ -1453,24 +1412,7 @@ void LoadSynthDefCmd::CallDestructor()
 bool LoadSynthDefCmd::Stage2()
 {
 	char* fname = mFilename;
-#ifdef HAVE_LIBCURL
-	bool isRemote = strstr(mFilename, "://") != 0;
-	FILE* fp;
-	if(isRemote){
-		fname = strcat(tmpnam(NULL), ".scsyndef");
-		scprintf("Temp file is %s\n", fname);
-		fp = fopen(fname, "w");
-		downloadToFp(fp, mFilename);
-		fclose(fp);
-	}
-#endif
 	mDefs = GraphDef_LoadGlob(mWorld, fname, mDefs);
-
-#ifdef HAVE_LIBCURL
-	if(isRemote){
-		remove(fname);
-	}
-#endif
 	return true;
 }
 

@@ -134,12 +134,6 @@ set_property(TARGET libscsynth
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
 
-if(CURL)
-	if(CURL_FOUND)
-		target_link_libraries(libscsynth ${CURL_LIBRARIES})
-	endif()
-endif()
-
 if(AVAHI_FOUND)
 	add_definitions("-DHAVE_AVAHI=1")
 	include_directories(${AVAHI_INCLUDE_DIRS})
