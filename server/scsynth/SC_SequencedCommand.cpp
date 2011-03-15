@@ -563,16 +563,12 @@ leave:
 
 bool BufAllocReadCmd::Stage3()
 {
-#ifdef NO_LIBSNDFILE
-	return false;
-#else
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	*buf = mSndBuf;
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
 
 	return true;
-#endif
 }
 
 void BufAllocReadCmd::Stage4()
@@ -796,7 +792,7 @@ bool BufAllocReadChannelCmd::Stage2()
 	if (!sf) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
 	}
@@ -816,7 +812,7 @@ bool BufAllocReadChannelCmd::Stage2()
 		// verify channel indexes
 		if (!CheckChannels(fileinfo.channels)) {
             const char* str = "Channel index out of range.\n";
-			SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
+			SendFailureWithBufnum(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
 			return false;
@@ -922,7 +918,7 @@ bool BufReadChannelCmd::Stage2()
 	if (!sf) {
 		char str[256];
 		sprintf(str, "File '%s' could not be opened.\n", mFilename);
-		SendFailureWithBufnum(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
+		SendFailureWithBufnum(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
@@ -931,7 +927,7 @@ bool BufReadChannelCmd::Stage2()
 		// verify channel indexes
 		if (!( CheckChannels(fileinfo.channels)) ) { // nescivi:  && CheckChannels(buf->channels) (should not check here for buf->channels)
             const char* str = "Channel index out of range.\n";
-			SendFailureWithBufnum(&mReplyAddress, "/b_allocRead", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
+			SendFailureWithBufnum(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
 			return false;
@@ -1123,7 +1119,7 @@ void BufCloseCmd::CallDestructor()
 bool BufCloseCmd::Stage2()
 {
 #ifdef NO_LIBSNDFILE
-	SendFailure(&mReplyAddress, "/b_readChannel", "scsynth compiled without libsndfile\n");
+	SendFailure(&mReplyAddress, "/b_close", "scsynth compiled without libsndfile\n");
  	scprintf("scsynth compiled without libsndfile\n");
 	return false;
 #else
