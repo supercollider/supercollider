@@ -49,11 +49,6 @@
 #endif
 #endif
 
-// If you have libcurl, you may activate this flag and it will allow Buffer.read to read from remote URLs
-#ifdef HAVE_LIBCURL
-#include <curl/curl.h>
-#endif
-
 const char * gIdeName = "none";
 
 // Add a component to a path.
@@ -545,53 +540,3 @@ const char* sc_GlobNext(SC_GlobHandle* glob)
 	return glob->mHandle.gl_pathv[glob->mEntry++];
 #endif
 }
-
-// Wrapper function - if it seems to be a URL, dnld to local tmp file first.
-// If HAVE_LIBCURL is not set, this does absolutely nothing but call fopen.
-#ifdef HAVE_LIBCURL
-bool downloadToFp(FILE* fp, const char* mFilename){
-	bool success = true;
-	CURL* curl = curl_easy_init();
-	CURLcode ret;
-	char* errstr = (char*)malloc(CURL_ERROR_SIZE);
-	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errstr);
-	if((ret = curl_easy_setopt(curl, CURLOPT_URL, mFilename)) != 0){
-		printf("CURL setopt error while setting URL. Error code %i\n%s\n", ret, errstr);
-		success = false;
-	}
-	if((ret = curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp)) != 0){
-		printf("CURL setopt error while setting temp file pointer. Error code %i\n%s\n", ret, errstr);
-		success = false;
-	}
-	//printf("Loading remote file %s...\n", mFilename);
-	if((ret = curl_easy_perform(curl)) != 0){
-		printf("CURL perform error while attempting to access remote file. Error code %i\n%s\n", ret, errstr);
-		success = false;
-	//}else{
-	//	printf("...done.\n");
-	}
-	curl_easy_cleanup(curl);
-	rewind(fp);
-	free(errstr);
-	return success;
-}
-FILE* fopenLocalOrRemote(const char* mFilename, const char* mode){
-	FILE* fp;
-	bool isRemote = strstr(mFilename, "://") != 0;
-	if(isRemote){
-		fp = tmpfile();
-		downloadToFp(fp, mFilename);
-	}else{
-		fp = fopen(mFilename, mode);
-	}
-	return fp;
-}
-#else
-// Non-curl version, so no checks for downloading etc:
-bool downloadToFp(FILE* fp, const char* mFilename){
-	return false;
-}
-FILE* fopenLocalOrRemote(const char* mFilename, const char* mode){
-	return fopen(mFilename, mode);
-}
-#endif
