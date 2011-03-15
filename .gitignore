@@ -1,0 +1,9 @@
+common/build/plugins/*.scx
+common/Packager/SuperCollider-3.4.2rc3-10.4.dmg
+common/build/SuperCollider.app/
+common/build/SuperColliderAU.component/
+common/build/libscsynth.a
+common/build/sclang
+common/build/scsynth
+mac/Intermediate Build Files/
+
