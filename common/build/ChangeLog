@@ -1,6 +1,6 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
-SuperCollider v3.4.2, released 2011-01
+SuperCollider v3.4.2, released 2011-03
 ======================================
 
 Bugfixes:
@@ -25,6 +25,16 @@ Bugfixes:
 * 2010-12-30 fix String:rotate - pb
 * 2011-01-02 unit generators: LagControl - fix initialization order - jh
 * 2011-01-02 unit generators: LagControl - dynamically allocate buffer for filter states - tb
+* 2011-01-07 fixed iOS compilation and backported changes from master branch - ab
+* 2011-01-06 array primitives: fix allTuples and unlace - pb
+* 2011-01-07 sclang: makeIntrinsicClass - correct bounds for memcpy - tb
+* 2011-01-08 sclang: prString_FindRegexp - fill array after allocating objects - tb
+* 2011-01-14 sclang: prString_FindRegexp ensure correct size of results array during gc calls - tb
+* 2011-02-27 sclang: ensure minimum stack size - tb
+* 2011-03-09 SCVim: avoid generating scvim help cache if not currently in scvim - ds
+* 2011-03-11 fix the Event type 'note' (fixes rendering patterns to audio files) - rk
+
+
 
 SuperCollider v3.4.1, released 2010-11
 ======================================
