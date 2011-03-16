@@ -1,14 +1,22 @@
 class:: Ramp
-summary:: Linear lag.
+summary:: Break a continuous signal into line segments
 related:: Classes/Lag, Classes/Lag2, Classes/Lag3
 categories::  UGens>Filters>Linear
 
 
 Description::
 
-This is similar to  link::Classes/Lag::  but with a linear rather than
-exponential lag. This is useful for smoothing out control signals.
+Break a continuous signal into linearly interpolated segments with specific durations.
+Can be useful for smoothing out control signals.
 
+Feeding Ramp with noise is similar to link::Classes/LFNoise1::
+code::
+Ramp.kr(WhiteNoise.kr(1),0.5)
+::
+is equal to:
+code::
+LFNoise1.kr(1 / 0.5)
+::
 
 classmethods::
 
@@ -37,7 +45,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 Server.internal.boot;
 (
 // used to lag pitch
@@ -62,6 +69,5 @@ var pulse;
 }.play(Server.internal);
 Server.internal.scope(3, bufsize: 44100, rate: \control, zoom: 40);
 )
-
 ::
 

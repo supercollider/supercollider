@@ -559,7 +559,6 @@ SCDoc {
 + String {
     stripWhiteSpace {
         var a=0, b=this.size-1;
-        //FIXME: how does this handle strings that are empty or single characters?
         while({(this[a]==$\n) or: (this[a]==$\ ) or: (this[a]==$\t)},{a=a+1});
         while({(this[b]==$\n) or: (this[b]==$\ ) or: (this[b]==$\t)},{b=b-1});
         ^this.copyRange(a,b);
