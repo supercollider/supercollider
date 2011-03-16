@@ -1,7 +1,7 @@
 class:: Linen
 summary:: Simple linear envelope generator.
 categories::  UGens>Envelopes
-
+related:: Classes/EnvGen
 
 Description::
 
