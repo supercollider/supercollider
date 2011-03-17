@@ -7,7 +7,7 @@ categories::  UGens>Envelopes
 Description::
 
 Plays back break point envelopes. The envelopes are instances of the
-link::Classes/Env:: class. The arguments for  code::levelScale:: ,
+link::Classes/Env:: class. The envelope and the arguments for  code::levelScale:: ,
 code::levelBias:: , and  code::timeScale:: 
 are polled when the EnvGen is triggered and remain constant for the
 duration of the envelope.
@@ -22,6 +22,8 @@ argument::envelope
 An link::Classes/Env:: instance, or an Array of Controls.
 (See link::Classes/Control::  and the example below for how to use
 this.)
+
+The envelope is polled when the EnvGen is triggered. The Env inputs can be other UGens.
 
 
 argument::gate
