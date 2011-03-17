@@ -1,0 +1,8 @@
+class:: SynthDescLib
+summary:: SynthDesc library
+categories:: Server>Nodes
+related:: Classes/SynthDesc
+
+description::
+See link::Classes/SynthDesc::
+

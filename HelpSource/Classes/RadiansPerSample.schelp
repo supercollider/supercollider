@@ -1,0 +1,15 @@
+class:: RadiansPerSample
+summary:: Number of radians per sample.
+related:: Classes/ControlRate, Classes/SampleDur, Classes/SampleRate, Classes/SubsampleOffset
+categories::  UGens>Info
+
+
+Description::
+
+Returns the number of radians per sample.
+
+
+classmethods::
+
+method::ir
+

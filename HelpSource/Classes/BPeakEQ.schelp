@@ -1,0 +1,49 @@
+class:: BPeakEQ
+summary:: Parametric equalizer
+categories:: UGens>Filters>BEQSuite
+related:: Classes/SOS, Classes/BLowPass, Classes/BLowPass4, Classes/BHiPass, Classes/BHiPass4, Classes/BPeakEQ, Classes/BLowShelf, Classes/BHiShelf, Classes/BBandPass, Classes/BBandStop, Classes/BAllPass
+
+description::
+The B equalization suite is based on the Second Order Section (link::Classes/SOS::) biquad UGen.
+
+note::
+Biquad coefficient calculations imply certain amount of CPU overhead. These plugin UGens contain optimizations such that the coefficients get updated only when there has been a change to one of the filter's parameters. This can cause spikes in CPU performance and should be considered when using several of these units.
+::
+
+classmethods::
+
+method:: ar
+argument:: in
+input signal to be processed.
+argument:: freq
+center frequency.
+argument:: rq
+the reciprocal of Q. bandwidth / cutoffFreq.
+argument:: db
+boost/cut the center frequency (in dBs).
+
+examples::
+code::
+s.boot;
+(
+z = { // toy with boost/cut
+BPeakEQ.ar(
+	SoundIn.ar([0,1]),
+	MouseX.kr(20, 20000, \exponential),
+	0.8, // rq
+	MouseY.kr(12.0, -12.0, \linear),
+	0.5); // mul
+}.play)
+z.release;
+
+(
+z = { // toy with rq
+BPeakEQ.ar(
+	SoundIn.ar([0,1]),
+	MouseX.kr(20, 20000, \exponential),
+	MouseY.kr(10, 0.4, \linear), // rq
+	6, // boost/cut - +6dB
+	0.5); // mul
+}.play)
+z.release;
+::

@@ -1,0 +1,38 @@
+TITLE::Help
+summary::Documentation home
+
+SuperCollider is an environment and programming language for real time audio synthesis and algorithmic composition. It provides an interpreted object-oriented language which functions as a network client to a state of the art, realtime sound synthesis server.
+
+NOTE:: This help system is currently work in progress.
+Please help out and convert old helpfiles! See link::Guides/WritingHelp:: for a quick how-to. ::
+
+SECTION::Search and browse
+definitionlist::
+## link::Search:: || Search all documents and methods
+## link::Browse:: || Browse all documents by categories
+::
+
+SECTION::Getting started
+
+These might be useful starting points on getting help with SuperCollider:
+
+definitionlist::
+## link::Guides/ClientVsServer:: || Explaining the client vs server architecture.
+## link::Tutorials/Introductory_tutorial:: || Get started with SuperCollider
+::
+
+SECTION::Documentation indexes
+
+definitionlist::
+## link::Overviews/Documents:: || Alphabetical index of all documents
+## link::Overviews/Classes:: || Alphabetical index of all classes
+## link::Overviews/ClassTree:: || All classes by inheritance tree
+## link::Overviews/Methods:: || Alphabetical index of all methods
+::
+
+SECTION::Licensing
+
+SuperCollider is free software published under the GPL: link::Other/Licensing::.
+
+SuperCollider help docs are published under the Creative Commons CC-BY-SA-3 license: link::Other/HelpDocsLicensing::.
+

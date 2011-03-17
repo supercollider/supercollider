@@ -1,0 +1,56 @@
+class:: Dseq
+summary:: Demand rate sequence generator.
+related:: Classes/Demand, Classes/Drand, Classes/Dser, Classes/Duty, Classes/Dxrand, Classes/TDuty
+categories:: UGens>Demand
+
+Description::
+
+Demand rate sequence generator.
+
+
+See link::Classes/Pseq:: for structurally related equivalent.
+
+
+classmethods::
+
+method::new
+
+argument::list
+
+An array of values or other UGens.
+
+
+argument::repeats
+
+Number of repeats.
+
+
+Examples::
+
+code::
+
+(
+{ 
+	var a, freq, trig;
+	a = Dseq([1, 3, 2, 7, 8], 3);
+	trig = Impulse.kr(MouseX.kr(1, 40, 1));
+	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	SinOsc.ar(freq) * 0.1
+
+}.play;
+)
+	
+// audio rate
+(
+{ 
+	var a, freq, trig;
+	a = Dseq({ 10.rand } ! 32, inf);
+	trig = Impulse.ar(MouseX.kr(1, 10000, 1));
+	freq = Demand.ar(trig, 0, a) * 30 + 340; 
+	SinOsc.ar(freq) * 0.1
+
+}.play;
+)
+
+::
+

@@ -1,0 +1,36 @@
+class:: CuspL
+summary:: Cusp map chaotic generator
+categories:: UGens>Generators>Chaotic
+related:: Classes/CuspN
+
+description::
+A linear-interpolating sound generator based on the difference equation:
+
+code::
+	x[n+1] = a - b * sqrt(abs(x[n]))
+::
+warning:: revise formulae converted to c like code ::
+
+classmethods::
+
+method:: ar
+argument::freq
+Iteration frequency in Hertz
+argument::a
+Equation variable
+argument::b
+Equation variable
+argument::xi
+Initial value of x
+
+examples::
+code::
+// vary frequency
+{ CuspL.ar(MouseX.kr(20, SampleRate.ir), 1.0, 1.99) * 0.3 }.play(s);
+
+// mouse-controlled params
+{ CuspL.ar(SampleRate.ir/4, MouseX.kr(0.9,1.1,1), MouseY.kr(1.8,2,1)) * 0.3 }.play(s);
+
+// as a frequency control
+{ SinOsc.ar(CuspL.ar(40, MouseX.kr(0.9,1.1,1), MouseY.kr(1.8,2,1))*800+900)*0.4 }.play(s);
+::

@@ -1,0 +1,39 @@
+class:: LFSaw
+summary:: Sawtooth oscillator
+related:: Classes/LFCub, Classes/LFPar, Classes/LFPulse, Classes/LFTri, Classes/Saw
+categories::  UGens>Generators>Deterministic
+
+
+Description::
+
+A non-band-limited sawtooth oscillator. Output ranges from -1 to +1.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::freq
+Frequency in Hertz.
+
+argument::iphase
+
+Initial phase offset. For efficiency reasons this is a value
+ranging from 0 to 2.
+
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+
+Examples::
+
+code::
+{ LFSaw.ar(500, 1, 0.1) }.play
+
+// used as both Oscillator and LFO:
+{ LFSaw.ar(LFSaw.kr(4, 0, 200, 400), 0, 0.1) }.play
+::
+

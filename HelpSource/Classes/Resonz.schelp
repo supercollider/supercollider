@@ -1,0 +1,70 @@
+class:: Resonz
+summary:: Resonant filter.
+related:: Classes/Formlet, Classes/RHPF, Classes/RLPF, Classes/Ringz
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+A two pole resonant filter with zeroes at
+
+formula::
+z = ±1
+::
+
+
+Based on  emphasis::K. Steiglitz,  "A Note on Constant-Gain Digital
+Resonators", Computer Music Journal, vol 18, no. 4, pp. 8-10, Winter
+1994::.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::freq
+
+Resonant frequency in Hertz.
+
+
+argument::bwr
+
+Bandwidth ratio (reciprocal of Q). rq = bandwidth / centerFreq.
+
+
+The reciprocal of Q is used rather than Q because it saves a
+divide operation inside the unit generator.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+{ Resonz.ar(WhiteNoise.ar(0.5), 2000, 0.1) }.play
+
+// modulate frequency
+{ Resonz.ar(WhiteNoise.ar(0.5), XLine.kr(1000,8000,10), 0.05) }.play
+
+// modulate bandwidth
+{ Resonz.ar(WhiteNoise.ar(0.5), 2000, XLine.kr(1, 0.001, 8)) }.play
+
+// modulate bandwidth opposite direction
+{ Resonz.ar(WhiteNoise.ar(0.5), 2000, XLine.kr(0.001, 1, 8)) }.play
+
+::
+

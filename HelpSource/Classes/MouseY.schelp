@@ -1,0 +1,44 @@
+class:: MouseY
+summary:: Cursor tracking UGen.
+related:: Classes/KeyState, Classes/MouseButton, Classes/MouseX
+categories::  UGens>User interaction
+
+
+Description::
+
+Cursor tracking UGen.
+
+
+classmethods::
+
+method::kr
+
+argument::minval
+
+Value corresponding to the bottom edge of the screen.
+
+
+argument::maxval
+
+Value corresponding to the top edge of the screen.
+
+
+argument::warp
+
+Mapping curve. 0 is linear, 1 is exponential (e. g. for freq or
+times). Alternatively you can specify: 'linear' or 'exponential'.
+
+
+argument::lag
+
+Lag factor to dezpipper cursor movement.
+
+
+Examples::
+
+code::
+
+{ SinOsc.ar(MouseY.kr(40, 10000, 1), 0, 0.1) }.play;
+
+::
+

@@ -1,0 +1,86 @@
+class:: Dbufwr
+summary:: Buffer write demand ugen
+categories:: UGens>Buffer, UGens>Demand
+related:: Classes/Dbufrd
+
+classmethods::
+
+method:: new
+argument:: input
+single channel input
+argument:: bufnum
+buffer number to write to (single channel buffer)
+argument:: phase
+index into the buffer
+argument:: loop
+when phase exceeds number of frames in buffer, loops when set to 1 (default :1)
+discussion::
+all inputs can be either demand ugen or any other ugen.
+
+examples::
+code::
+// alloc a single channel buffer
+b = Buffer.alloc(s, 24, 1);
+b.setn(0, { 210 } ! b.numFrames);
+
+// post some info:
+fork { loop { 0.5.wait; b.getn(0, b.numFrames, {|x| x.postln }) } };
+
+// write demand sequence into a buffer
+(
+{
+var read, write, readpos, writepos, writetrig;
+
+	writetrig = Dust.kr(1);
+	readpos = Dseries(0, 1, inf);
+	writepos = Dseq([Dseries(0, 3, 30), Dseries(0, 1, 30)], inf);
+
+	read = Dbufrd(b, readpos);
+	write = Dbufwr(Dseq([Dseries(1, 1, 16), Dwhite(1, 16, 8)], inf) * 60, b, writepos);
+
+	Demand.kr(writetrig, 0, write); // write on trigger
+
+	SinOsc.ar(
+		Demand.kr(Impulse.kr(16), 0, read).lag(0.01) * [1, 1.01]
+	) * 0.1
+
+}.play;
+)
+
+// write into buffer with mouse clicks
+(
+{
+	var val = MouseY.kr(1000, 200, 1); // cursor y pos controls frequency
+	var pos = MouseX.kr(0, BufFrames.kr(b) - 1); // cursor x position controls buffer pos
+	var write = MouseButton.kr; // button controls write action
+	Demand.kr(write, 0, Dbufwr(val, b, pos, 1));
+	SinOsc.ar(
+		Duty.kr(Dseq([0.5, 0.75, 0.5, 1.0], inf) * 0.2, 0, Dbufrd(b, Dseries(0, 1, inf)))
+	) * 0.1
+}.play;
+)
+
+// write demand sequence into a buffer
+b.free; b = Buffer.alloc(s, 2, 1);
+fork { loop { 0.5.wait; b.getn(0, b.numFrames, {|x| x.postln }) } };
+b.setn(0, [1, 0]);
+
+(
+{
+var read, write, readpos, writepos, writetrig;
+
+	writetrig = Impulse.kr(2);
+	readpos = Dbufrd(b, 1); // first buffer val is position
+	writepos = Dbufrd(b, 0); // second buffer val is position
+	read = Dbufrd(b, readpos);
+
+	write = Dbufwr(read, b, writepos);
+
+	Demand.kr(writetrig, 0, write); // write on trigger
+}.play;
+)
+
+// free buffer:
+b.free;
+::
+

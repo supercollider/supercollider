@@ -1,0 +1,93 @@
+class:: SelectXFocus
+summary:: Mix one output from many sources
+categories:: UGens>Multichannel>Select
+related:: Classes/SelectX
+
+description::
+The output is mixed from an array of inputs, linearly interpolating from a number of adjacent channels.
+
+A focus argument allows to control how many adjacent sources are mixed. (by adc)
+
+classmethods::
+method:: ar, kr
+
+argument:: which
+argument:: array
+argument:: focus
+
+examples::
+code::
+(
+{
+	var a;
+	a = [
+			Saw.ar(LFSaw.kr(3 * [1, 1.01], 0, 100, 230)),
+			SinOsc.ar,
+			Pulse.ar(LFPulse.kr(3 * [1, 1.02], 0, 0.4, 100, 230)),
+			SinOsc.ar(SinOsc.kr(4 * [1, 1.03], 0, 200, 300))
+		];
+	
+	SelectXFocus.ar(MouseX.kr(0, 1) * a.size, a, MouseY.kr(0, a.size)) * 0.2
+}.play;
+)
+::
+
+note::
+all the ugens are continously running. This may not be the most efficient way if each input is  cpu-expensive. The array is fixed at the time of writing the SynthDef, and the whole array is embedded in the SynthDef file itself.  For small arrays this is more efficient than reading from a buffer.
+::
+
+code::
+// radio tuner
+// (jrh) (cc 2006)
+(
+{
+	var a, n, mx, my, mwrap;
+	n = 8;
+	mx = MouseX.kr(0, 1, 0, 0.1);
+	my = MouseY.kr;
+	mwrap = { |pmin, pmax, min, max| sin(mx * ExpRand(pmin, pmax)) + 1 * 0.5 * ExpRand(min, max) };
+	a = {
+		var freq, fmul, phase;
+		freq = mwrap.(10, 40, 200, 5000) + ExpRand(200, 3000);
+		fmul = LFNoise0.kr(ExpRand(0.1, 8)).round(1/6).exprange(1, Rand(1, 1.2));
+		phase = LFNoise2.ar(mwrap.(1, 20, 10, 1000), Rand(2, 5));
+		SinOsc.ar(freq * fmul, phase)
+	} ! n;
+	a = a.add(
+		SinOsc.ar(LFDNoise0.kr(11, SetResetFF.kr(*Dust.kr([1, 2] * 0.3))).range(0, 700) + 220)
+	);
+	SelectXFocus.ar(mx * n, a, my * n) * 0.2 + OnePole.ar(PinkNoise.ar(0.5 ! 2), 0.4) 
+	* Line.kr(0, 1, 3);
+}.play;
+)
+
+
+// jimmy played harmonica in the pub where I was born
+// (hh) (jrh) (cc 2006)
+(
+{
+	var blas, zieh, mx, my, trig, which, amp, u, schnauf;
+	var del = 9, det = 0.1;
+	schnauf = 0.3;
+	mx = MouseX.kr;
+	my = MouseY.kr(0.1, 2, 1);
+	
+	blas = [0, 12, 24] +.x [60, 64, 67] ++ [60+36];
+	zieh = [62, 67, 71,   74, 77, 81, 83,   86, 89, 93];
+
+	trig = Dust.kr(1);
+	which = ToggleFF.kr(TDelay.kr(trig, schnauf));
+	amp = EnvGen.kr(Env([1, 0, 1], [schnauf, schnauf]), trig);
+	blas = Select.kr(which, [blas, zieh]);
+	u = SelectXFocus.ar(
+		mx * blas.size,	
+		blas.collect {|f|
+			Pulse.ar((Rand(-0.04, 0.09) + f).midicps * 0.5, 0.48 + LFNoise1.kr(0.06, 0.1), 0.2)
+		},
+		my
+	) * Slope.kr(mx + my).abs.lag2(2) * amp;
+	u = Pan2.ar(OnePole.ar(u, -0.3), mx * 2 - 1);
+	DelayL.ar(BPF.ar(u * 2, 1500, 0.3), del + det, LFNoise2.kr(0.2, det, del)) + u
+}.play;
+);
+::

@@ -1,0 +1,45 @@
+class:: BBandPass
+summary:: Band Pass Filter
+categories:: UGens>Filters>BEQSuite
+related:: Classes/SOS, Classes/BLowPass, Classes/BLowPass4, Classes/BHiPass, Classes/BHiPass4, Classes/BPeakEQ, Classes/BLowShelf, Classes/BHiShelf, Classes/BBandStop, Classes/BAllPass
+
+description::
+The B equalization suite is based on the Second Order Section (link::Classes/SOS::) biquad UGen.
+
+note::
+Biquad coefficient calculations imply certain amount of CPU overhead. These plugin UGens contain optimizations such that the coefficients get updated only when there has been a change to one of the filter's parameters. This can cause spikes in CPU performance and should be considered when using several of these units.
+::
+
+classmethods::
+
+method:: ar
+argument:: in
+input signal to be processed.
+argument:: freq
+center frequency.
+argument:: bw
+the bandwidth in octaves between -3 dB frequencies.
+
+examples::
+code::
+s.boot;
+(
+z = {
+BBandPass.ar(
+	SoundIn.ar([0,1]),
+	MouseX.kr(20, 20000, \exponential),
+	MouseY.kr(0.0, 10.0, \linear), // bw
+	0.5); // mul
+}.play)
+z.release;
+
+(
+z = {
+BBandPass.ar(
+	WhiteNoise.ar ! 2,
+	MouseX.kr(20, 20000, \exponential),
+	MouseY.kr(0.0, 10.0, \linear), // bw
+	0.5); // mul
+}.play)
+z.release;
+::

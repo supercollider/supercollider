@@ -1,0 +1,155 @@
+class:: Shaper
+summary:: Wave shaper.
+related:: Classes/Index, Classes/WrapIndex
+categories::  UGens>Buffer
+
+Description::
+Performs waveshaping on the input signal by indexing into the table.
+
+classmethods::
+method::ar, kr
+
+argument::bufnum
+The number of a buffer filled in wavetable format containing the
+transfer function.
+
+argument::in
+The input signal.
+
+
+Examples::
+Examples use the Internal Server to show the effect of waveshaping via a scope. Use .play instead if necessary.  
+code::
+Server.default = s = Server.internal; s.boot;
+
+b = Buffer.alloc(s, 512, 1, { |buf| buf.chebyMsg([1,0,1,1,0,1])});
+
+(
+{ 
+	Shaper.ar(
+		b, 
+		SinOsc.ar(300, 0, Line.kr(0,1,6)),
+		0.5
+	) 
+}.scope;
+)
+
+b.free;
+::
+
+image::chebyshevpolynomials.png::
+
+Wave shaping transfer functions are typically designed by using Chebyshev polynomials to control which harmonics are generated when a cosine wave is passed in. The implementation in SuperCollider compensates for the DC offset due to even polynomial terms, making sure that when 0 is put into the transfer function, you get 0 out. By default, normalization is set to true, which avoids output overload. If you want to construct a transfer function without this, you need to be careful with the final output scaling, since it could easily overload the -1 to 1 range for audio.
+code::
+// I want the first harmonic at 0.25 amplitude, second at 0.5, third at 0.25
+b = Buffer.alloc(s, 512, 1, {arg buf; buf.chebyMsg([0.25,0.5,0.25], false)});
+
+(
+{ 
+	Shaper.ar(
+		b, 
+		SinOsc.ar(440, 0.5pi, Line.kr(0,1,6)), //input cosine wave
+		0.5 //scale output down because otherwise it goes between -1.05 and 0.5, distorting...
+	) 
+}.scope;
+)
+
+b.free;
+::
+
+For those who like to make their own wavetables for arbitrary shapers, your buffer must be in wavetable format to have a valid transfer function. Wavetable format is a special representation to make linear interpolation faster (see at the bottom of this file). You don't have to worry about this directly, because there are two straight forward ways to get wavetables into a server buffer. First, the server can generate them (see the Buffer help file for the methods sine1, sine2, sine3 and cheby):
+code::
+b = Buffer.alloc(s, 1024, 1);
+b.cheby([1, 0.5, 1, 0.125]);
+
+(
+{ 	var	sig = Shaper.ar(b, SinOsc.ar(440, 0, 0.4));
+	sig ! 2
+}.scope;
+)
+
+b.free;
+::
+Or, you can calculate the transfer function in a client-side array (Signal class) then convert it to a wavetable and send the data over.
+code::
+b = Buffer.alloc(s, 1024, 1);
+
+//size must be power of two plus 1
+t = Signal.chebyFill(513,[1, 0.5, 1, 0.125]);
+
+// linear function
+t.plot
+
+// t.asWavetableNoWrap will convert it to the official Wavetable format at next power of two size
+b.sendCollection(t.asWavetableNoWrap);  // may also use loadCollection here
+
+b.plot
+
+(
+{ 	var	sig = Shaper.ar(b, SinOsc.ar(440, 0, 0.4));
+	sig ! 2
+}.scope;
+)
+
+b.free;
+::
+
+This way of working then allows you to get creative with your transfer functions! 
+code::
+b = Buffer.alloc(s, 1024, 1);
+
+// or, for an arbitrary transfer function, create the data at 1/2 buffer size + 1
+t = Signal.fill(513, { |i| i.linlin(0.0, 512.0, -1.0, 1.0) });
+
+// linear function
+t.plot
+
+// t.asWavetable will convert it to the official Wavetable format at twice the size
+b.sendCollection(t.asWavetableNoWrap);  // may also use loadCollection here
+
+// shaper has no effect because of the linear transfer function
+(
+{ 	var	sig = Shaper.ar(b, SinOsc.ar(440, 0, 0.4));
+	sig ! 2
+}.scope;
+)
+
+
+// now for a twist
+(
+a = Signal.fill(256, { |i| 
+	var t = i/255.0;  
+	t + (0.1 * (max(t, 0.1) - 0.1) * sin(2pi * t * 80 + sin(2pi * 25.6 * t)))
+})
+);
+
+a.plot
+
+d = (a.copy.reverse.neg) ++(Signal[0])++ a;
+
+d.plot
+
+d.size	//must be buffer size/2 + 1, so 513 is fine
+
+b.sendCollection(d.asWavetableNoWrap);  // may also use loadCollection here
+
+b.plot // wavetable format! 
+
+// test shaper
+(
+{ 
+	Shaper.ar(
+		b, 
+		SinOsc.ar(440, 0.5, Line.kr(0,0.9,6))
+	) 
+}.scope
+)
+::
+
+subsection:: Advanced notes: wavetable format
+code::
+Signal: [a0, a1, a2...]
+Wavetable: [2*a0-a1, a1-a0, 2*a1-a2, a2-a1, 2*a2-a3, a3-a2...]
+::
+This strange format is not a standard linear interpolation (integer + frac), but for (integer part -1) and (1+frac))  due to some efficient maths for integer to float conversion in the underlying C code.
+

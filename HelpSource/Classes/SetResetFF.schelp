@@ -1,0 +1,47 @@
+class:: SetResetFF
+summary:: Set-reset flip flop.
+related:: Classes/ToggleFF
+categories::  UGens>Triggers
+
+
+Description::
+
+Output is set to 1.0 upon receiving a trigger in the trig input, and to
+0.0 upon receiving a trigger in the reset input. Once the flip flop is
+set to zero or one further triggers in the same input are have no effect.
+One use of this is to have some precipitating event cause something to
+happen until you reset it.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::trig
+
+The trigger that sets output to 1. Trigger can be any signal.
+A trigger happens when the signal changes from non-positive to
+positive.
+
+
+argument::reset
+
+The trigger that sets output to 0. Trigger can be any signal.
+A trigger happens when the signal changes from non-positive to
+positive.
+
+
+Examples::
+
+code::
+
+(
+play({
+	a = Dust.ar(5); // the set trigger
+	b = Dust.ar(5); // the reset trigger
+	SetResetFF.ar(a,b) * BrownNoise.ar(0.2); 
+
+}))
+
+::
+

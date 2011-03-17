@@ -1,0 +1,41 @@
+class:: GbmanN
+summary:: Gingerbreadman map chaotic generator
+categories:: UGens>Generators>Chaotic
+related:: Classes/GbmanL
+
+description::
+A non-interpolating sound generator based on the difference equations:
+
+code::
+	x[n+1] = 1 - y[n] + abs(x[n])
+	y[n+1] = x[n]
+::
+warning:: reviser formulae converted to c like code ::
+
+The behavior of the system is only dependent on its initial conditions.
+
+Reference: emphasis:: Devaney, R. L. "The Gingerbreadman." Algorithm 3, 15-16, Jan. 1992. ::
+
+classmethods::
+method:: ar
+argument:: freq
+Iteration frequency in Hertz
+argument:: xi
+Initial value of x
+argument:: yi
+Initial value of y
+
+examples::
+code::
+// default initial params
+{ GbmanN.ar(MouseX.kr(20, SampleRate.ir)) * 0.1 }.play(s);
+
+// change initial params
+{ GbmanN.ar(MouseX.kr(20, SampleRate.ir), -0.7, -2.7) * 0.1 }.play(s);
+
+// wait for it...
+{ GbmanN.ar(MouseX.kr(20, SampleRate.ir), 1.2, 2.0002) * 0.1 }.play(s);
+
+// as a frequency control
+{ SinOsc.ar(GbmanN.ar(40)*400+500)*0.4 }.play(s);
+::

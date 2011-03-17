@@ -1,0 +1,50 @@
+class:: Pulse
+summary:: Band limited pulse wave.
+related:: Classes/LFPulse
+categories::  UGens>Generators>Deterministic
+
+
+Description::
+
+Band limited pulse wave generator with pulse width modulation.
+
+
+classmethods::
+
+method::ar
+
+argument::freq
+
+Frequency in Hertz.
+
+
+argument::width
+
+Pulse width ratio from zero to one. 0.5 makes a square wave.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+// modulate frequency
+{ Pulse.ar(XLine.kr(40,4000,6),0.1, 0.2) }.play;
+
+// modulate pulse width
+{ Pulse.ar(200, Line.kr(0.01,0.99,8), 0.2) }.play;
+
+// two band limited square waves thru a resonant low pass filter
+{ RLPF.ar(Pulse.ar([100,250],0.5,0.1), XLine.kr(8000,400,5), 0.05) }.play;
+
+::
+

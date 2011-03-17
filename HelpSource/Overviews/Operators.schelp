@@ -1,0 +1,92 @@
+title:: Operators
+categories:: Language, Common methods
+summary:: common unary and binary operators
+related:: Reference/Adverbs
+
+SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, Ugens, Collections, and so on. When operators are applied to ugens they result in link::Classes/BinaryOpUGen::s or link::Classes/UnaryOpUGen::s, through the methods of link::Classes/AbstractFunction::. 
+
+This is a list of some of the common unary and binary operators that are implemented by several classes.
+See the specific classes for details and other operators.
+
+You can see which classes implements a specific operator by looking at the method index: link::Overviews/Methods::. 
+
+section:: Unary Operators
+table::
+## link::Overviews/Methods#neg#neg:: || inversion
+## link::Overviews/Methods#reciprocal#reciprocal:: || reciprocal
+## link::Overviews/Methods#abs#abs:: || absolute value
+## link::Overviews/Methods#floor#floor:: || next lower integer
+## link::Overviews/Methods#ceil#ceil:: || next higher integer
+## link::Overviews/Methods#frac#frac:: || fractional part
+## link::Overviews/Methods#sign#sign:: || { -1 when a < 0, +1 when a > 0, 0 when a is 0 }
+## link::Overviews/Methods#squared#squared:: || ( code:: a*a :: )
+## link::Overviews/Methods#cubed#cubed:: || ( code:: a*a*a :: )
+## link::Overviews/Methods#sqrt#sqrt:: || square root
+## link::Overviews/Methods#exp#exp:: || exponential
+## link::Overviews/Methods#midicps#midicps:: || MIDI note number to cycles per second
+## link::Overviews/Methods#cpsmidi#cpsmidi:: || cycles per second to MIDI note number
+## link::Overviews/Methods#midiratio#midiratio:: || convert an interval in MIDI notes into a frequency ratio
+## link::Overviews/Methods#ratiomidi#ratiomidi:: || convert a frequency ratio to an interval in MIDI notes
+## link::Overviews/Methods#dbamp#dbamp:: || decibels to linear amplitude
+## link::Overviews/Methods#ampdb#ampdb:: || linear amplitude to decibels
+## link::Overviews/Methods#octcps#octcps:: || decimal octaves to cycles per second
+## link::Overviews/Methods#cpsoct#cpsoct:: || cycles per second to decimal octaves
+## link::Overviews/Methods#log#log:: || natural logarithm
+## link::Overviews/Methods#log2#log2:: || base 2 logarithm
+## link::Overviews/Methods#log10#log10:: || base 10 logarithm
+## link::Overviews/Methods#sin#sin:: || sine
+## link::Overviews/Methods#cos#cos:: || cosine
+## link::Overviews/Methods#tan#tan:: || tangent
+## link::Overviews/Methods#asin#asin:: || arcsine
+## link::Overviews/Methods#acos#acos:: || arccosine
+## link::Overviews/Methods#atan#atan:: || arctangent
+## link::Overviews/Methods#sinh#sinh:: || hyperbolic sine
+## link::Overviews/Methods#cosh#cosh:: || hyperbolic cosine
+## link::Overviews/Methods#tanh#tanh:: || hyperbolic tangent
+## link::Overviews/Methods#distort#distort:: || distortion
+## link::Overviews/Methods#softclip#softclip:: || distortion
+## link::Overviews/Methods#isPositive#isPositive:: || { 1 when a >= 0, else 0 }
+## link::Overviews/Methods#isNegative#isNegative:: || { 1 when a < 0, else 0 }
+## link::Overviews/Methods#isStrictlyPositive#isStrictlyPositive:: || { 1 when a > 0, else 0 }
+::
+
+section:: Binary Operators
+table::
+## link::Overviews/Methods#+#+:: || addition
+## link::Overviews/Methods#-#-:: || subtraction
+## link::Overviews/Methods#*#*:: || multiplication
+## link::Overviews/Methods#/#/:: || division
+## link::Overviews/Methods#%#%:: || float modulo
+## link::Overviews/Methods#**#**:: || exponentiation
+## link::Overviews/Methods#<#<::  || less than
+## link::Overviews/Methods#<=#<=:: || less than or equal
+## link::Overviews/Methods#>#>::  || greater than
+## link::Overviews/Methods#>=#>=:: || greater than or equal
+## link::Overviews/Methods#==#==:: || equal
+## link::Overviews/Methods#!=#!=:: || not equal
+## link::Overviews/Methods#<!#<!:: || return first argument
+## link::Overviews/Methods#min#min:: || minimum of two
+## link::Overviews/Methods#max#max:: || maximum of two
+## link::Overviews/Methods#round#round:: || quantization by rounding
+## link::Overviews/Methods#trunc#trunc:: || quantization by truncation
+## link::Overviews/Methods#atan2#atan2:: || arctangent
+## link::Overviews/Methods#hypot#hypot:: || hypotenuse ( code:: sqrt(a*a + b*b) :: )
+## link::Overviews/Methods#hypotApx#hypotApx:: || hypotenuse approximation
+## link::Overviews/Methods#ring1#ring1:: || ( code:: a*b + a :: ) or equivalently: ( code:: a*(b + 1) :: )
+## link::Overviews/Methods#ring2#ring2:: || ( code:: a*b + a + b :: )
+## link::Overviews/Methods#ring3#ring3:: || ( code:: a*a*b :: )
+## link::Overviews/Methods#ring4#ring4:: || ( code:: a*a*b - a*b*b :: )
+## link::Overviews/Methods#sumsqr#sumsqr:: || ( code:: a*a + b*b :: )
+## link::Overviews/Methods#difsqr#difsqr:: || ( code:: a*a - b*b :: )
+## link::Overviews/Methods#sqrsum#sqrsum:: || ( code:: (a + b)**2 :: )
+## link::Overviews/Methods#sqrdif#sqrdif:: || ( code:: (a - b)**2 :: )
+## link::Overviews/Methods#absdif#absdif:: || ( code:: fabs(a - b) :: )
+## link::Overviews/Methods#thresh#thresh:: || threshholding { 0 when a < b, a when a >= b }
+## link::Overviews/Methods#amclip#amclip:: || two quadrant multiply { 0 when b <= 0, a*b when b > 0 }
+## link::Overviews/Methods#scaleneg#scaleneg:: || nonlinear amplification { a when a >= 0, a*b when a < 0 }
+## link::Overviews/Methods#clip2#clip2::  || bilateral clipping { b when a > b, -b when a < -b, else a }
+## link::Overviews/Methods#wrap2#wrap2::  || bilateral wrapping
+## link::Overviews/Methods#fold2#fold2::  || bilateral folding
+## link::Overviews/Methods#excess#excess:: || residual of clipping ( code:: a - clip2(a,b) :: )
+::
+

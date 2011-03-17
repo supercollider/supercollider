@@ -1,0 +1,70 @@
+class:: SCDocParser
+summary:: Parse SCDoc markup text
+categories:: HelpSystem
+related:: Classes/SCDoc, Classes/SCDocRenderer, Guides/WritingHelp, Reference/SCDocSyntax
+
+description::
+This class is part of the SCDoc help system, and handles the parsing of the help sourcefiles into an internal tree of elements.
+
+The markup language used in the help sourcefile is explained in link::Reference/SCDocSyntax::.
+
+The internal tree representation consists of an array of nodes, each node looks like this:
+code::
+(tag:'tagSymbol', text:"textString", children:[], display:\block)
+::
+If the tag has text, it is put in the code::text:: field. If it has children, then the code::children:: field contains an array of children nodes. The code::display:: element is either code::\block:: or code::\inline::
+
+In normal cases you won't need to use this class directly, link::Classes/SCDoc:: uses this class to parse and render all help sourcefiles.
+
+classmethods::
+
+method::new
+Create a parser instance.
+
+instancemethods::
+private:: init, leaveLevel, popTree, pushTree, setTopNode, enterLevel, endCurrent, addTag, handleWord, addText, endLine, dumpSubTree, makeCategoryTree, overviewCategories, generateUndocumentedMethods, overviewClassTree, overviewAllDocuments, overviewAllMethods, overviewAllClasses, dumpClassTree
+
+method::parseFile
+Parse a help sourcefile written in SCDoc markup language.
+returns:: the parser object.
+argument::filename
+The full path to the file.
+discussion:: The resulting tree is available in code::parser.root::
+
+method::parse
+Parse a string of SCDoc markup language.
+returns:: the parser object.
+argument::string
+The string to parse.
+discussion:: The resulting tree is available in code::parser.root::
+
+method::root
+Set/get the root array of the internal document tree.
+
+method::dump
+Dump the internal document tree to the post window in a human-readable form.
+
+method::findNode
+Find a node.
+returns:: An object representing the node, if the node was not found the resulting object will have code::.tag:: set to nil.
+argument::tag
+The tag to search for.
+argument::rootNode
+The array to search, defaults to code::this.root::.
+discussion::
+Example:
+code::
+p = SCDocParser.new.parseFile("/path/to/myfile.schelp");
+p.findNode("related").text.postln;
+::
+
+examples::
+
+code::
+p = SCDocParser.new;
+p.parseFile("/path/to/an/example.schelp");
+p.dump;
+p.findNode("summary").text.postln;
+p.parse("inline code::code example::.").dump;
+::
+

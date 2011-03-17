@@ -1,0 +1,56 @@
+class:: HPZ1
+summary:: Two point difference filter
+related:: Classes/LPZ1, Classes/HPZ2
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+A special case fixed filter. Implements the formula:
+
+formula::
+out(i) = 0.5 * (in(i) - in(i-1))
+::
+
+Which is a two point differentiator.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+// Compare:
+
+{ WhiteNoise.ar(0.25) }.play;
+
+{ HPZ1.ar(WhiteNoise.ar(0.25)) }.play;
+
+// HPZ1 is useful to detect changes in a signal:
+// see also HPZ2
+(
+{ 	
+	var changingSignal = LFNoise0.ar(1000); 
+	var hpz1 = HPZ1.ar(changingSignal);
+	[hpz1, hpz1 > 0, hpz1.abs > 0] 
+}.plot
+);
+::
+

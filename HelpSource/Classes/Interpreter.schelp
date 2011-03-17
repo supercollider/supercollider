@@ -1,0 +1,107 @@
+class::Interpreter
+summary:: The interpreter defines a context in which interactive commands are compiled and executed.
+categories:: Core>Kernel
+
+description::
+In the interpreter, code::this:: refers to the interpreter itself, e.g.: code::this.postln::
+
+classMethods::
+
+private::new
+
+instanceMethods::
+
+subsection::Accessing
+
+The interpreter defines instance variables code::a:: through code::z:: which are always available in the interpreter. By convention, the variable code::s:: is used to hold the default Server. Assigning another value to code::s:: may cause some of the examples in the documentation to fail. 
+
+method::clearAll
+
+set the values of the variables code::a:: through code::z:: to nil.
+
+code::
+x = 123;
+x.postln;
+this.clearAll;
+x.postln;
+::
+
+subsection::Compile & Interpret
+
+method::interpret
+
+Compile and execute a link::Classes/String::.
+
+code::
+this.interpret("(123 + 4000).postln");
+::
+
+method::interpretPrint
+
+Compile and execute a link::Classes/String::, printing the result.
+
+code::
+this.interpretPrint("123 + 4000");
+::
+
+method::compile
+
+Compile a String and return a link::Classes/Function::.
+
+code::
+(
+z = this.compile("(123 + 4000).postln");
+z.postln;
+z.value;
+)
+::
+
+method::compileFile
+
+Reads the file at pathName, compiles it and returns a Function. 
+The file must contain a valid SuperCollider expression, naturally.
+This will not compile class definitions, only expressions.
+
+method::executeFile
+
+Reads the file at pathName, compiles it and executes it, returning the result. 
+The file must contain a valid SuperCollider expression, naturally.
+This will not compile class definitions, only expressions.
+
+method::cmdLine
+
+Returns the previosly interpreted code.
+
+code::
+1 + 2;
+this.cmdLine
+::
+
+method::codeDump
+
+this interpreter variable can be set to evaluate a function with any sucessfully compiled code.
+see e.g. the class History.
+
+code::
+a = [ ]; // store all the code evaulated in a
+this.codeDump = { |code| a = a.add(code) };
+1 + 3;
+f = { "hallo" };
+a.postcs;
+codeDump = nil; // reset to nil.
+::
+
+method::preProcessor
+
+can be used to modify code before it is interpreted. Given appropriate delimiters, this can be used to implement little languages.
+
+code::
+// silly but simple: understand a Saw for every SinOsc
+this.preProcessor = { |code| code.replace("SinOsc", "Saw") };
+
+{ SinOsc.ar(200) * 0.1 }.play;
+
+preProcessor = nil; // reset to nil.
+::
+
+

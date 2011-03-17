@@ -1,0 +1,130 @@
+class:: Platform
+summary:: handle cross-platform differencies
+categories:: CrossPlatform
+
+description::
+The Platform class (along with its subclasses) handles things which differ between operating systems (mac/linux/windows/...), to simplify cross-platform aspects of SuperCollider.
+
+Platform is an abstract class encapsulating various platform dependent constants and properties, such as directories, primitive features and startup files. The platform object is accessible through the code::platform:: method of the main process instance:
+code::
+thisProcess.platform
+::
+
+Currently implemented platforms include: OSXPlatform, LinuxPlatform, WindowsPlatform, UnixPlatform.
+
+classmethods::
+Most of Platforms class methods are simply wrappers to code::thisProcess.platform.method::.
+
+subsection:: Platform name and platform dependent actions
+
+method:: case
+Perform actions depending on the current platform (name), just like Object:switch:
+code::
+Platform.case(
+    \osx,       { "OSX".postln },
+    \linux,     { "Linux".postln },
+    \windows,   { "Windows".postln }
+);
+::
+
+method:: ideName
+returns a String indicating which IDE the language believes it is running in. (Often this is determined via the "-i" option to the sclang executable.) This is determined when sclang starts and cannot be changed dynamically.
+
+The main purpose of this is to include/exclude folders from the class search patch depending on which IDE is in use: for example, if the value of ideName is "scapp" then folders named "scide_scapp" are included and all other folders beginning with "scide_" are excluded. The default value of this is "none".
+
+Known IDE names in use are "scapp" (SuperCollider.app on Mac), "scvim" (vim), "scel" (emacs). Others may be used.
+
+subsection:: Directories and filesystem stuff
+method:: classLibraryDir
+location of the bundled class library
+
+method:: helpDir
+location of the bundled help files
+
+method:: systemAppSupportDir
+system application support directory
+
+method:: userAppSupportDir
+user application support directory
+
+method:: systemExtensionDir
+system extension directory (see link::Guides/Using-Extensions::)
+
+method:: userExtensionDir
+user extension directory (see link::Guides/Using-Extensions::)
+
+method:: platformDir
+platform specific directory for class files (see link::Guides/Using-Extensions::)
+
+method:: pathSeparator
+platform specific path separator
+
+subsection:: Features
+
+method:: when
+Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
+code::
+Platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
+::
+
+instancemethods::
+
+method:: name
+returns the platform name
+
+subsection:: Directories and filesystem stuff
+method:: classLibraryDir
+location of the bundled class library
+
+method:: helpDir
+location of the bundled help files
+
+method:: systemAppSupportDir
+system application support directory
+
+method:: userAppSupportDir
+user application support directory
+
+method:: systemExtensionDir
+system extension directory (see link::Guides/Using-Extensions::)
+
+method:: userExtensionDir
+user extension directory (see link::Guides/Using-Extensions::)
+
+method:: platformDir
+platform specific directory for class files (see link::Guides/Using-Extensions::)
+
+method:: pathSeparator
+platform specific path separator
+
+subsection:: Startup files
+
+method:: startupFiles
+files to be loaded on startup
+
+method:: loadStartupFiles
+(re)load startup files
+
+subsection:: Features
+
+Features are abstract symbols that can be declared by extension authors and be checked during runtime in user code. Apart from explicitly declared features, class and primitive names are implicitly declared.
+
+method:: declareFeature
+Declare aSymbol to be a feature present in the runtime. Class names and primitive names cannot be declared as features.
+
+method:: hasFeature
+Return true if the feature aSymbol is present in the runtime system. aSymbol can refer to explicitly declared features as well as class and primitive names.
+code::
+thisProcess.platform.hasFeature(\Object);
+thisProcess.platform.hasFeature('_SCWindow_BeginFullScreen');
+thisProcess.platform.hasFeature('_myFuncyPrimitive');
+
+thisProcess.platform.declareFeature('superCrazyCompositionSystem');
+thisProcess.platform.hasFeature('superCrazyCompositionSystem');
+::
+
+method:: when
+Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
+code::
+thisProcess.platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
+::

@@ -1,0 +1,7 @@
+class:: MaxLocalBufs
+summary:: Set the maximum number of local buffers in a synth
+categories:: UGens>InOut
+
+description::
+This class is used internally by LocalBuf, sets the maximum number of local buffers in a synth.
+

@@ -1,0 +1,213 @@
+class:: FlowLayout
+summary:: A view decorator which autowraps the view contents
+categories:: GUI>GUI-Tools
+related:: Classes/SCContainerView, Classes/CompositeView, Classes/SCTopView
+
+description::
+FlowLayout is a decorator which automatically arranges views inside a container view in a row, and starts a new row if there is not enough space left for the next view. link::Classes/SCWindow:: and link::Classes/SCCompositeView:: both have code::addFlowLayout:: methods which assign FlowLayout to their view decorators and return the decorator.
+
+classmethods::
+
+method:: new
+argument:: bounds
+An instance of link::Classes/Rect::. Normally set to the code::parent.bounds::.
+argument:: margin
+An instance of link::Classes/Point::. The horizontal and vertical inner margins, within which the parent's subviews are placed.
+argument:: gap
+An instance of link::Classes/Point::. The horizontal and vertical layout gap between the subviews.
+
+discussion::
+Example:
+code::
+(
+w = Window.new.front;
+//change the gaps and margins to see how they work
+w.view.decorator = FlowLayout( w.view.bounds, 10@10, 20@5 );
+16.do{ Slider2D( w.view,80@80 ).background_( Color.rand ) };
+)
+::
+You can also write:
+code::
+(
+w = Window.new.front;
+w.addFlowLayout( 10@10, 20@5 ); // a shortcut method, see SCContainerView
+16.do{ Slider2D( w.view,80@80 ).background_( Color.rand ) };
+)
+::
+
+instancemethods::
+
+subsection:: Accessing Instance Variables
+
+method:: nextLine
+Forces the decorator to start a new line:
+code::
+(
+w = Window.new;
+q = w.addFlowLayout( 10@10, 20@5 );
+Slider2D( w.view,140@140 ).background_( Color.rand );
+q.nextLine;
+Slider2D( w.view,140@140 ).background_( Color.rand );
+w.front;
+)
+::
+
+method:: indentedRemaining
+Returns and instance of link::Classes/Rect::. This is a very useful method which tells you how much space is left in a row, before the next row starts. The height of code::indentedRemaining::, is the full height remaining in the FlowLayout.
+code::
+(
+//normally you will only use the width of indentedRemaining
+w = Window.new;
+w.view.decorator = d = FlowLayout.new( w.view.bounds, 10@10, 20@5 );
+Slider2D( w.view,150@150 ).background_( Color.rand );
+Slider2D( w.view,150@150 ).background_( Color.rand );
+Slider( w.view, d.indentedRemaining.width@150) //fits this view perfectly to the right innerBounds
+	.background_( Color.rand );
+w.front;
+)
+::
+Compare this with:
+code::
+( //here the third view is fit to both the right and bottom innerBounds
+w = Window.new;
+w.view.decorator = d = FlowLayout.new( w.view.bounds, 10@10, 20@5 );
+Slider2D( w.view,140@140 ).background_( Color.rand );
+Slider2D( w.view,140@140 ).background_( Color.rand );
+d.nextLine;
+Slider2D( w.view, d.indentedRemaining ).background_( Color.rand );
+w.front;
+)
+::
+
+method:: bounds
+The outer bounds in which the decorator places the subviews in the parent view.
+argument:: b
+An instance of link::Classes/Rect::.
+
+method:: innerBounds
+Returns the bounds inset by margin.
+
+method:: gap
+The horizontal and vertical layout gap between the subviews.
+argument:: arg1
+An instance of link::Classes/Point::.
+
+method:: margin
+The horizontal and vertical inner margins, within which the parent's subviews are placed.
+argument:: arg1
+An instance of link::Classes/Point::.
+
+
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+method:: left
+Get the current left indentation or manually set it.
+argument:: arg1
+A number.
+discussion::
+code::
+(
+w = Window.new;
+w.view.decorator = d = FlowLayout.new( w.view.bounds, 10@10, 20@5 );
+Slider2D( w.view,150@150 ).background_( Color.rand );
+d.left_(220); //manually set the new indentation
+Slider2D( w.view,150@150 ).background_( Color.rand );
+w.front;
+)
+::
+
+method:: top
+Get the current top indentation or manually set it.
+argument:: arg1
+A number.
+discussion::
+code::
+(
+w = Window.new;
+w.view.decorator = d = FlowLayout.new( w.view.bounds, 10@10, 20@5 );
+Slider2D( w.view,150@150 ).background_( Color.rand );
+d.top_(50); //manually set the new indentation
+Slider2D( w.view,150@150 ).background_( Color.rand );
+Slider2D( w.view,150@150 ).background_( Color.rand );
+w.front;
+)
+::
+
+method:: shift
+Set the current left and top indentation (see above).
+
+method:: maxHeight
+Get/set maximium height of the subviews in the current position.
+argument:: arg1
+A number.
+discussion::
+code::
+(
+w = Window.new;
+w.view.decorator = d = FlowLayout.new( w.view.bounds, 10@10, 20@5 );
+Slider2D( w.view,100@160 ).background_( Color.rand );
+Slider2D( w.view,150@150 ).background_( Color.rand );
+"first row maxHeight: " ++ d.maxHeight.postln;
+Slider2D( w.view,150@150 ).background_( Color.rand );
+"second row maxHeight: " ++ d.maxHeight.postln;
+w.front;
+)
+::
+
+method:: maxRight
+Get/set maximium right of the subviews in the current position.
+argument:: arg1
+A number.
+discussion::
+code::
+(
+w = Window.new;
+w.view.decorator = d = FlowLayout.new( w.view.bounds, 10@10, 20@5 );
+Slider2D( w.view,100@160 ).background_( Color.rand );
+"first row maxRight: " ++ d.maxRight.postln;
+Slider2D( w.view,150@150 ).background_( Color.rand );
+Slider2D( w.view,150@150 ).background_( Color.rand );
+"second row maxRight: " ++ d.maxRight.postln;
+w.front;
+)
+::
+
+method:: currentBounds
+Gets a link::Classes/Rect:: with code::bounds.width:: and code::height = top + maxHeight::.
+discussion::
+code::
+(
+w = Window.new;
+w.view.decorator = d = FlowLayout.new( w.view.bounds, 10@10, 10@5 );
+Slider2D( w.view,100@160 ).background_( Color.rand );
+d.currentBounds.postln;
+Slider2D( w.view,150@150 ).background_( Color.rand );
+d.currentBounds.postln;
+Slider2D( w.view,150@150 ).background_( Color.rand );
+d.currentBounds.postln;
+w.front;
+)
+::
+
+method:: used
+Gets a link::Classes/Rect:: with the space actually used.
+discussion::
+code::
+(
+w = Window.new;
+w.view.decorator = d = FlowLayout.new( w.view.bounds, 10@10, 20@5 );
+Slider2D( w.view,100@160 ).background_( Color.rand );
+d.used.postln;
+Slider2D( w.view,150@150 ).background_( Color.rand );
+d.used.postln;
+Slider2D( w.view,150@150 ).background_( Color.rand );
+d.used.postln;
+w.front;
+)
+::
+
+method:: reset
+Resets the layout mechanism to 0,0.
+

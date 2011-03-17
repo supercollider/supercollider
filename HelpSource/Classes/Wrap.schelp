@@ -1,0 +1,41 @@
+class:: Wrap
+summary:: Wrap a signal outside given thresholds.
+related:: Classes/Clip, Classes/Fold
+categories::  UGens>Maths
+
+
+Description::
+
+This differs from the  link::Classes/BinaryOpUGen::  link::Overviews/Methods#wrap2#wrap2:: in that it
+allows one to set both low and high thresholds.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+Signal to be wrapped.
+
+
+argument::lo
+
+Low threshold of wrapping.
+
+
+argument::hi
+
+High threshold of wrapping.
+
+
+Examples::
+
+code::
+
+Server.internal.boot;
+
+{ Wrap.ar(SinOsc.ar(440, 0, 0.2), -0.15, 0.15) }.scope;
+
+::
+

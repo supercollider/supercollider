@@ -1,0 +1,18 @@
+class:: Silent
+summary:: Output silence.
+categories::  UGens>Generators>Single-value
+
+
+Description::
+
+Output silence.
+
+
+classmethods::
+
+method::ar
+
+argument::numChannels
+
+Number of channels to output.
+
