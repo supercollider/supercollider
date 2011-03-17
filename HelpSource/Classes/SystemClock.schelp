@@ -1,0 +1,71 @@
+CLASS::SystemClock
+categories::Scheduling>Clocks
+summary:: Clock running on separate accurately timed thread
+related::Classes/AppClock, Classes/TempoClock
+
+DESCRIPTION::
+
+SystemClock is more accurate, but cannot call Cocoa primitives. AppClock is less accurate (uses NSTimers) but can call Cocoa primitives.
+
+CLASSMETHODS::
+
+method::sched
+The float you return specifies the delta to resched the function for. Returning nil will stop the task from being rescheduled.
+code::
+(
+SystemClock.sched(0.0,{ arg time;
+	time.postln;
+	rrand(0.1,0.9);
+});
+)
+::	
+code::
+(
+SystemClock.sched(2.0,{
+	"2.0 seconds later".postln;
+	nil;
+});
+)
+::
+
+method::clear
+Clear the SystemClock's scheduler to stop it.
+code::
+SystemClock.clear;
+::
+
+method::schedAbs
+code::
+(
+SystemClock.schedAbs( (thisThread.seconds + 4.0).round(1.0),{ arg time;
+	("the time is exactly " ++ time.asString
+		++ " seconds since starting SuperCollider").postln;
+});
+)			
+::
+	
+method::play
+Calls to the cocoa framework (including all GUI) may not be made directly from actions triggered by SystemClock or incoming socket messages (OSCresponder).
+
+To get around this, use code::{ }.defer ::. This will execute the function using the AppClock and is equivalent to code::AppClock.sched(0, function)::
+
+code::
+(
+var w, r;
+w = Window.new("trem", Rect(512, 256, 360, 130));
+w.front;
+r = Routine({ arg time;
+	60.do({ arg i;
+		0.05.yield;
+		{
+			w.bounds = w.bounds.moveBy(10.rand2, 10.rand2);
+			w.alpha = cos(i*0.1pi)*0.5+0.5;
+		}.defer;
+	});
+	1.yield;
+	w.close;
+});
+SystemClock.play(r);
+)
+::
+This example is only to show how to make calls to Cocoa/GUI when scheduling with the SystemClock. If you only wish to control the GUI, use AppClock.

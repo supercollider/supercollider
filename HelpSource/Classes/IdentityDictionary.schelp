@@ -1,0 +1,53 @@
+CLASS::IdentityDictionary
+summary::associative collection mapping keys to values
+related::Classes/Environment, Classes/Event
+categories::Collections>Unordered
+
+DESCRIPTION::
+An IdentityDictionary is an associative collection mapping keys to values. 
+Keys match only if they are strong::identical objects::. (i.e. === returns true.)
+
+(In Dictionary, keys match if they are equal valued. This makes IdentityDictionary faster than link::Classes/Dictionary::)
+
+The contents of a Dictionary are strong::unordered::. You must not depend on the order of items in a Dictionary.
+
+Often, the subclass Event is used as an IdentityDictionary, because there is a syntactical shortcut:
+code::
+a = (); // return a new Event.
+a.put(\foo, 2.718);
+a.at(\foo);
+::
+
+CLASSMETHODS::
+
+method::new
+The link::#parent:: and link::#proto:: instance variables allow additional IdentityDictionary's to provide default values. The precedence order for determining the value of a key is the IdentityDictionary, its prototype, its parent.
+
+When the instance variable link::#know:: is link::Classes/True::, the IdentityDictionary responds to unknown messages by looking up the selector and evaluating the result with the dictionary as an argument. For example:
+code::
+a = IdentityDictionary(know: true);
+a.put(\foo, { | x | ("the argument is:" + x).postln });
+a.foo;
+::
+
+INSTANCEMETHODS::
+
+method::putGet
+Sets key to newValue, returns the previous value of key.
+
+subsection::Accessing Instance Variables
+
+method::proto, parent, know
+				
+subsection::IdentityDictionary reimplements the following methods of Dictionary
+
+method::at, put, includesKey, findKeyForValue, scanFor
+
+subsection::The following three methods provide support for Quant
+
+method::nextTimeOnGrid, asQuant, timingOffset
+
+
+EXAMPLES::
+
+IdentityDictionary is often used to assign names to instances of a particular class. For example, the proxy classes ( link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Ndef:: ), and link::Classes/NodeWatcher:: all have class variables named all implemented as IdentityDictionaries.

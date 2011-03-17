@@ -1,0 +1,244 @@
+CLASS::Environment
+related::Classes/Event, Classes/IdentityDictionary
+categories::Collections>Unordered
+summary:: A dictionary which can serve as a 'name space' for functions
+
+DESCRIPTION::
+An Environment is an IdentityDictionary with additional features that allow it to serve as a 'name space' within which functions can be defined and/or evaluated.
+
+CLASSMETHODS::
+method::stack
+Maintains a stack of Environments accessed by link::#push:: and link::#pop::.
+
+method::make
+Creates a new Environment and sends make message.
+
+method::use
+Creates a new Environment and sends use message.
+
+method::push
+Saves link::#currentEnvironment:: on the stack.
+
+method::pop
+Restores link::#currentEnvironment:: from the stack.
+
+INSTANCEMETHODS::
+
+method::make
+Evaluates the function within the environment, returns the environment.
+
+method::use
+Evaluates the function within the environment, returns the return value of the function.
+
+method::push
+Saves the receiver on the stack.
+
+method::pop
+Restores link::#currentEnvironment:: from the stack.
+
+::
+::
+
+SECTION::PseudoVariables (global variables)
+list::
+anchor::currentEnvironment::
+## currentEnvironment - determines environment used by "~" syntax, link::#valueEnvir::, and link::#valueArrayEnvir::
+anchor::topEnvironment::
+## topEnvironment - initial value of link::#currentEnvironment::, can be used for 'global variables'
+::
+
+SECTION::Related Messages
+list::
+anchor::valueEnvir::
+## valueEnvir (arg1, arg2...) - evaluates a function, looking up unspecified arguments in link::#currentEnvironment::
+anchor::valueArrayEnvir::
+## valueArrayEnvir (argArray) - same as link::#valueEnvir::, but with arguments in an array
+::
+
+SECTION::Overview
+
+subsection::topEnvironment, currentEnvironment, make and use
+
+When SuperCollider starts, it creates an Environment that it stores in the pseudovariables link::#topEnvironment:: and link::#currentEnvironment::. The link::#topEnvironment:: provides a universally accessible collection of named values similar to the link::Classes/Interpreter:: variables a, b, c, ....
+
+The compiler provides a shortcut syntax where ~ is a placeholder for link::#currentEnvironment::.
+This makes the expression code::~myvariable;:: equivalent to code::currentEnvironment.at(\myvariable);:: and the expression code::~myvariable = 888;:: equivalent to code::currentEnvironment.put(\myvariable, 888);::
+
+The messages link::#make::(function) and link::#use::(function) replace link::#currentEnvironment:: with the receiver. The message link::#make:: is intended to be used when initializing an Environment, so it returns the Environment. The message link::#use:: is for evaluating a functions within an Environment, so it returns the return value of the function.
+
+For example
+code::
+(
+a = Environment.make({
+	~a = 100;
+	~b = 200;
+	~c = 300;
+});
+a.postln;
+)
+::
+creates an environment, while
+code::
+a.use({
+	~a + ~b + ~c
+}).postln;
+::
+evaluates the function within that environment.
+
+subsection::valueEnvir and valueArrayEnvir
+
+When Functions are evaluated with link::#valueEnvir:: and link::#valueArrayEnvir:: unspecified arguments are looked up in the current Environment.
+If the argument is not found in the Environment its default value is used.
+code::
+(
+var f;
+
+// define a function
+f = { arg x, y, z; [x, y, z].postln; };
+
+Environment.use({
+	~x = 7;
+	~y = 8;
+	~z = 9;
+	
+	f.valueEnvir(1, 2, 3);	// all values supplied
+	f.valueEnvir(1, 2);	// z is looked up in the current Environment
+	f.valueEnvir(1);	// y and z are looked up in the current Environment
+	f.valueEnvir;		// all arguments are looked up in the current Environment
+	f.valueEnvir(z: 1);	// x and y are looked up in the current Environment
+});
+)
+::
+Now here is how this can be used with an instrument function. Environments allow you to define instruments without having to worry about argument ordering conflicts. Even though the three functions below have the freq, amp and pan args declared in different orders it does not matter, because link::#valueEnvir:: looks them up in the environment.
+code::
+s.boot;
+
+(
+var orc;
+orc = Environment.make {
+	~a = { arg freq, amp, pan;
+		Pan2.ar(SinOsc.ar(freq), pan, amp);
+	};
+	~b = { arg amp, pan, freq;
+		Pan2.ar(RLPF.ar(Saw.ar(freq), freq * 6, 0.1), pan, amp);
+	};
+	~c = { arg pan, freq, amp;
+		Pan2.ar(Resonz.ar(GrayNoise.ar, freq * 2, 0.1), pan, amp * 2);
+	};
+	~orc = [~a, ~b, ~c];
+};
+// 'reverb'
+{ var in; in = In.ar(0, 2); CombN.ar(in, 0.2, 0.2, 3, 1, in); }.play(addAction: \addToTail);
+
+{ loop({
+	orc.use({
+			// set values in the environment
+		~freq = exprand(80, 600);
+		~amp = 0.1;
+		~pan = 1.0.rand2;
+		
+			// call a randomly chosen instrument function
+			// with values from the environment
+		
+		 x = { ~orc.choose.valueEnvir; }.play(fadeTime: 0.2, addAction: \addToHead);
+		 0.2.wait;
+		 x.release(0.2);
+	});
+}) }.fork;
+
+)
+::
+
+subsection::Environments and asynchronous functions
+
+Local variables declared in functions, and class and instance variables, use lexical scope. That is, the context in which they are understood depends on where the declaration is read during compilation. Asynchronous functions -- any function that will execute outside (later than) the current execution flow -- carry their lexically scoped variables with them.
+code::
+f = { var a = "got it"; { a.postln }.defer(0.5) };
+f.value;
+::
+Asynchronous functions include any scheduled function, responder function associated with OSCresponder, MIDIResponder, HID or GUI action functions, or actions used in server messaging (such as Buffer.read, Buffer or Bus .get, and so on).
+
+Environment variables have dynamic scope; they are read from whichever environment is current, whether or not it was the current environment when the function was declared. For instance, the following fails because e is no longer the current environment when the deferred function wakes up.
+code::
+e = (a: "got it", f: { { ~a.postln }.defer(0.5) });
+e.use { e.f };
+::
+link::Classes/Function#inEnvir#Function's inEnvir:: method attaches a function to a specific environment. If no environment is given, the current environment at the time of executing inEnvir is the default.
+code::
+e = (a: "got it", f: { { ~a.postln }.inEnvir.defer(0.5) });
+e.use { e.f };
+::
+
+subsection::Using Environments as object prototypes
+
+Environment's strong::know:: variable holds a link::Classes/Boolean:: value controlling whether the Environment may be used as an object prototype or not. If strong::know:: is true, any messages sent to the Environment that it does not already understand will be relayed into items in the Environment. (If false, not-understood messages will produce a standard "does not understand" error message.)
+
+The default for know is false for Environment, and true for link::Classes/Event::.
+code::
+e = Environment[
+	'someVariable' -> 5,
+	'printMe' -> { |self, string| string.postln }
+];
+
+e.know = true;
+::
+More typically, Events are used to define such prototypes because the syntax is simpler.
+code::
+e = (someVariable: 5, printMe: { |self, string| string.postln });
+::
+
+
+An object prototype looks up the method selector in the Environment to decide what to do.
+
+Most objects are simply returned -- the method call behaves like a getter for any other object.
+code::
+e.someVariable;
+// same as
+e.at('someVariable');
+e['someVariable'];
+::
+If the selector is a setter, e.g. strong::someVariable_(value):: or strong::someVariable = value::, the new value is put into the Environment.
+code::
+e.someVariable = 10;
+// same as
+e.put('someVariable', 10);
+::
+If the Environment item is a function, it is evaluated as if it were a method definition. The first argument passed into the function is the Environment that holds the function; arguments to the method call follow as the second, third etc. arguments passed into the function.
+code::
+e.printMe("Oh hai wrldz");
+// same as
+e['printMe'].value(e, "Oh hai wrldz");
+::
+The function may access objects in the Environment using the first function argument.
+code::
+e.mul2 = { |z| z.someVariable * 2 };
+e.mul2;
+::
+Environment variables inside a function will refer to the currently active environment -- not to the Environment being addressed. This is to allow the object prototype to interact with the link::#currentEnvironment::.
+code::
+e.mul2 = { |z| ~someVariable * 2 };
+// this will throw an error because ~someVariable is nil in the currentEnvironment
+e.mul2;
+::
+If you wish to access objects in the environment using environment variable syntax, 'use' the environment within the function.
+code::
+e.mul2 = { |z| z.use { ~someVariable * 2 } };
+e.mul2;
+::
+
+note::
+Be careful to avoid method names that are defined in any of the superclasses of environment (or event). Object prototyping works by trapping method selectors that are not already defined as class library methods. Using a generic method selector such as 'stop' or 'reset' will cause the corresponding class library method to respond, and the items in the environment will never be checked.
+
+Assigning a value into an environment using a setter -- strong::name_():: or strong::.name = ...:: -- posts a warning message if the name is already defined in the class library.
+code::
+e.reset = { "My reset function".postln };
+
+// prints:
+WARNING:
+'reset' exists a method name, so you can't use it as pseudo-method.
+
+// this does NOT execute the reset function above
+// because Object:reset responds
+e.reset;
+::
+::

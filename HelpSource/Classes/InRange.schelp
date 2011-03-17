@@ -1,0 +1,44 @@
+class:: InRange
+summary:: Tests if a signal is within a given range.
+related:: Classes/InRect, Classes/Schmidt
+categories::  UGens>Maths
+
+
+Description::
+
+If  code::in::  is ≥  code::lo::  and ≤
+code::hi::  output 1.0, otherwise output 0.0. Output is
+initially zero.
+
+
+classmethods::
+
+method::ar, kr, ir
+
+argument::in
+
+Signal to be tested.
+
+
+argument::lo
+
+Low threshold.
+
+
+argument::hi
+
+High threshold.
+
+
+Examples::
+
+code::
+
+Server.internal.boot;
+
+{ InRange.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15)}.scope; // see the trigger
+
+{ InRange.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15) * BrownNoise.ar(0.1)}.scope; // trigger noise Burst
+
+::
+

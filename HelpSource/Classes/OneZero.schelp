@@ -1,0 +1,71 @@
+class:: OneZero
+summary:: One zero filter.
+related:: Classes/OnePole
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+A one zero filter. Implements the formula:
+
+formula::
+
+out(i) = ((1 - abs(coef)) * in(i)) + (coef * in(i-1)).
+
+::
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::coef
+
+Feed forward coefficient.
+
+
++0.5 makes a two point averaging filter
+(see also 
+link::Classes/LPZ1:: ).
+
+
+-0.5 makes a differentiator
+(see also 
+link::Classes/HPZ1:: ).
+
+
++1 makes a single sample delay
+(see also 
+link::Classes/Delay1:: ).
+
+
+-1 makes an inverted single sample delay.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+{ OneZero.ar(WhiteNoise.ar(0.5), 0.5) }.play
+
+{ OneZero.ar(WhiteNoise.ar(0.5), -0.5) }.play
+
+{ OneZero.ar(WhiteNoise.ar(0.5), Line.kr(-0.5, 0.5, 10)) }.play
+
+::
+

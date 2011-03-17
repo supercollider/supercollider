@@ -1,0 +1,44 @@
+class:: BPF
+summary:: 2nd order Butterworth bandpass filter.
+related:: Classes/BRF, Classes/HPF, Classes/LPF
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+A second order band pass filter.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::freq
+
+Centre frequency in Hertz.
+
+
+argument::rq
+
+The reciprocal of Q (bandwidth / cutoffFreq).
+
+
+Examples::
+
+code::
+{ BPF.ar(Saw.ar(200,0.5), FSinOsc.kr(XLine.kr(0.7,300,20),0,3600,4000), 0.3) }.play;
+
+{ BPF.ar(Saw.ar(200,0.5), MouseX.kr(100, 10000, 1), 0.3) }.play;
+
+	// BPF on control signals:
+(
+{ 	var vib = BPF.kr(PinkNoise.kr, MouseX.kr(1, 100, 1), 0.3) * 10;
+	SinOsc.ar(vib * 200 + 600) * 0.2 }.play;
+)
+::
+

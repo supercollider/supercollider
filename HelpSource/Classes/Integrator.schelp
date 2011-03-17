@@ -1,0 +1,53 @@
+class:: Integrator
+summary:: A leaky integrator.
+categories::  UGens>Filters>Linear, UGens>Maths
+
+
+Description::
+
+Integrates an input signal with a leak. The formula implemented is:
+
+formula::
+out(0) = in(0) + (coef * out(-1))
+::
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::coef
+
+Leak coefficient.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+{ Integrator.ar(LFPulse.ar(300, 0.2, 0.1), MouseX.kr(0.001, 0.999, 1)) }.play
+
+// used as an envelope
+{ Integrator.ar(LFPulse.ar(3, 0.2, 0.0004), 0.999, FSinOsc.ar(700), 0) }.play
+
+
+// scope, using the internal server:
+
+{ Integrator.ar(LFPulse.ar(1500 / 4, 0.2, 0.1), MouseX.kr(0.01, 0.999, 1)) }.scope
+
+::

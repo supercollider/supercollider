@@ -1,0 +1,15 @@
+class:: NumBuffers
+summary:: Number of open buffers.
+related:: Classes/NumAudioBuses, Classes/NumControlBuses, Classes/NumInputBuses, Classes/NumOutputBuses, Classes/NumRunningSynths
+categories::  UGens>Info
+
+
+Description::
+
+Number of open buffers.
+
+
+classmethods::
+
+method::ir
+

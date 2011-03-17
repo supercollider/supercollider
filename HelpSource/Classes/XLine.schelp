@@ -1,0 +1,56 @@
+class:: XLine
+summary:: Exponential line generator.
+related:: Classes/Line
+categories::  UGens>Envelopes
+
+
+Description::
+
+Generates an exponential curve from the start value to the end value.
+Both the start and end values must be non-zero and have the same sign.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::start
+
+Starting value.
+
+
+argument::end
+
+Ending value.
+
+
+argument::dur
+
+Duration in seconds.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+argument::doneAction
+
+A doneAction to be evaluated when the line is completed. See
+
+link::Reference/UGen-doneActions::  for more detail.
+
+
+Examples::
+
+code::
+
+play({ SinOsc.ar(XLine.kr(200,17000,10),0,0.1) });
+
+::
+

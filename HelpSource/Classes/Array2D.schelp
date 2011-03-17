@@ -1,0 +1,98 @@
+CLASS::Array2D
+summary::two-dimensional array
+related::Classes/Array
+categories::Collections>Ordered
+
+DESCRIPTION::
+Represents a two-dimensional array of data. The number of rows and columns is fixed.
+
+note:: It is possible to implement a similar behaviour using an "array-of-arrays" - see the examples towards the bottom of this page for comparison.::
+
+CLASSMETHODS::
+
+method::new
+Create an array of the specified size.
+code::
+a = Array2D.new(3,4);
+a[2,2] = 1;
+a.postln
+::
+
+method::fromArray
+Build an Array2D from the supplied array.
+code::
+a = Array2D.fromArray(3,4, [9,8,7,6,5,4,3,2,1,2,3,4]);
+a[2,2] = 1;
+a.postln
+::
+
+INSTANCEMETHODS::
+
+private::printOn, storeOn
+
+method::at
+Get a value from the array.
+code::
+a.at(2,3);
+a[2,3];
+::
+
+method::put
+Put a value into the array.
+code::
+a.put(2,3, 72);
+a[2,3];
+::
+
+method::colsDo
+Iterate over the columns. Each column will be passed to strong::func:: in turn.
+code::
+a.colsDo(_.postln);
+::
+
+method::rowsDo
+Iterate over the rows. Each row will be passed to strong::func:: in turn.
+code::
+a.rowsDo(_.postln);
+::
+
+method::colAt
+Retrieve a single column.
+code::
+a.colAt(2);
+::
+
+method::rowAt
+Retrieve a single row.
+code::
+a.rowAt(2);
+::
+
+method::asArray
+Return a flat array containing the elements.
+code::
+a.postln;
+a.asArray.postln;
+::
+returns:: link::Classes/Array::
+
+EXAMPLES::
+
+code::
+// "a" is an array-of-arrays
+a = { { 100.0.rand }.dup(100) }.dup(100);
+// "b" is an equivalent Array2D, made using the "fromArray" class method
+b = Array2D.fromArray(100,100, a.flat);
+
+// Accessing
+a[15][22]
+b[15, 22]
+
+// Speed comparison 1: random access
+bench { 100.do(a[100.rand][100.rand]) }
+bench { 100.do(b[100.rand, 100.rand]) }
+
+// Speed comparison 2: iteration
+bench { 100.do(a.do { |row| row.do { |item| item * 2 } }) }
+bench { 100.do(b.do { |item| item * 2 }) }
+::

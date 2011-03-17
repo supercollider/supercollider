@@ -1,0 +1,53 @@
+class:: OnePole
+summary:: One pole filter.
+related:: Classes/OneZero
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+A one pole filter. Implements the formula:
+
+formula::
+
+out(i) = ((1 - abs(coef)) * in(i)) + (coef * out(i-1)).
+
+::
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::coef
+
+Feedback coefficient. Should be between -1 and +1
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+{ OnePole.ar(WhiteNoise.ar(0.5), 0.95) }.play
+
+{ OnePole.ar(WhiteNoise.ar(0.5), -0.95) }.play
+
+{ OnePole.ar(WhiteNoise.ar(0.5), Line.kr(-0.99, 0.99, 10)) }.play
+
+::
+

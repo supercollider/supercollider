@@ -1,0 +1,72 @@
+class:: PV_RectComb2
+summary:: Make gaps in spectrum.
+related:: Classes/FFT, Classes/IFFT, Classes/PV_RectComb
+categories:: UGens>FFT
+
+Description::
+
+Alternates blocks of bins between the two inputs.
+
+
+classmethods::
+
+method::new
+
+argument::bufferA
+
+FFT buffer A.
+
+
+argument::bufferB
+
+FFT buffer B.
+
+
+argument::numTeeth
+
+Number of teeth in the comb.
+
+
+argument::phase
+
+Starting phase of comb pulse.
+
+
+argument::width
+
+Pulse width of the comb.
+
+
+Examples::
+
+code::
+
+s.boot;
+(
+b = Buffer.alloc(s,2048,1);
+c = Buffer.alloc(s,2048,1);
+d = Buffer.read(s,"sounds/a11wlk01.wav");
+)
+
+(
+var exBuf;
+	CocoaDialog.getPaths({ arg paths; //get a second soundfile;
+	paths.do({ arg p; exBuf = Buffer.read(s, p);
+
+SynthDef("help-max", { arg out=0, bufnumA=0, bufnumB=1, soundBufnum1=2, soundBufnum2 = 3;
+	var inA, chainA, inB, chainB, chain ;
+	inA = PlayBuf.ar(1, soundBufnum1, BufRateScale.kr(soundBufnum1), loop: 1);
+	inB =  PlayBuf.ar(1, soundBufnum2, BufRateScale.kr(soundBufnum2), loop: 1);
+	chainA = FFT(bufnumA, inA);
+	chainB = FFT(bufnumB, inB);
+	chain = PV_RectComb2(chainA, chainB,  MouseX.kr(0, 32), MouseY.kr, 0.3); 
+	Out.ar(out,  0.5 * IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum, \soundBufnum1, d.bufnum, \soundBufnum2, exBuf.bufnum]);
+	})
+},{
+	"cancelled".postln;
+});
+)
+
+::
+

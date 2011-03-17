@@ -1,0 +1,39 @@
+class:: MouseButton
+summary:: Mouse button UGen.
+related:: Classes/KeyState, Classes/MouseX, Classes/MouseY
+categories::  UGens>User interaction
+
+
+Description::
+
+Mouse button UGen.
+
+
+classmethods::
+
+method::kr
+
+argument::minval
+
+Value when the button is not pressed.
+
+
+argument::maxval
+
+Value when the button is pressed.
+
+
+argument::lag
+
+Lag factor.
+
+
+Examples::
+
+code::
+
+{ SinOsc.ar(MouseButton.kr(400, 440, 0.1), 0, 0.1) }.play;
+{ SinOsc.ar(MouseButton.kr(400, 740, 2), 0, 0.1) }.play;
+
+::
+

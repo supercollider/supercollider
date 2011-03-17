@@ -1,0 +1,57 @@
+class:: PV_BinScramble
+summary:: Scramble bins.
+categories:: UGens>FFT
+
+Description::
+
+Randomizes the order of the bins. The trigger will select a new random
+ordering.
+
+
+classmethods::
+
+method::new
+
+argument::buffer
+
+FFT buffer.
+
+
+argument::wipe
+
+Scrambles more bins as wipe moves from 0 to 1.
+
+
+argument::width
+
+A value from zero to one, indicating the maximum randomized
+distance of a bin from its original location in the spectrum.
+
+
+argument::trig
+
+A trigger, that selects a new random ordering.
+
+
+Examples::
+
+code::
+
+s.boot;
+(
+b = Buffer.alloc(s,2048,1);
+c = Buffer.read(s,"sounds/a11wlk01.wav");
+)
+
+(
+//trig with MouseY
+SynthDef("help-binScramble", { arg out=0, bufnum=0, soundBufnum=2;
+	var in, chain;
+	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
+	chain = FFT(bufnum, in);
+	chain = PV_BinScramble(chain, MouseX.kr , 0.1, MouseY.kr > 0.5 ); 
+	Out.ar(out, 0.5 * IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnum, b.bufnum, \soundBufnum, c.bufnum]);
+)
+
+::
