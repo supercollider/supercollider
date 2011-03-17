@@ -39,8 +39,11 @@ integration with frontends / main sc distro
 easier to always use (thisProcess.platform.classLibraryDir +/+ "../HelpSource").standardizePath for all platforms..
 
 * ship pre-rendered help with the binary package (render after building supercollider)
-just use the pre-rendered help until the users need to update help, which would first copy or hard-link the pre-rendered
+just use the pre-rendered help until the users need to update help, which would first copy or soft-link* the pre-rendered
 files into helpTargetDir and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else the system-wide location ((thisProcess.platform.classLibraryDir +/+ "../Help").standardizePath);
+NOTE* hard-links would be easier but won't work across partitions. with soft-links, we need to check if the target exists, then delete it before writing the new file.
+
+* add an ignoreExtensions flag to updateAll, for package builders..
 
 * the class-source links for classes in classLibraryDir won't work on OSX since the SuperCollider folder can be put anywhere..
 fix: keep a softlink in helpTargetDir/SCClassLibrary pointing to the correct location. The pre-rendered docs would sit in the same folder as the app, so we would then have SCClassLibrary -> ../SCClassLibrary and it would work wherever the user puts the SuperCollider folder. When the user makes a change that triggers an update of the docs, SCDoc would copy/hardlink the pre-rendered docs into user-location and rewrite this link to point to the current value of thisProcess.platform.classLibraryDir. 
