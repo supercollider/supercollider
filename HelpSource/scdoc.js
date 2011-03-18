@@ -31,4 +31,10 @@ function fixTOC() {
             document.getElementById("toctitle").style.display = 'none';
         }
     }
+
+// make all code examples editable!
+    var x = document.getElementsByClassName("lang-sc");
+    for(var i=0;i<x.length;i++) {
+        x[i].setAttribute("contentEditable",true);
+    }
 }
