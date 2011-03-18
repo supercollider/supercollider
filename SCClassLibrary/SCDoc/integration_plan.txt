@@ -1,7 +1,7 @@
 PLAN FOR SCDOC INTEGRATION
 ==========================
 
-1) The three help related directories are managed by these class variables:
+1) [DONE] The three help related directories are managed by these class variables:
 
 SCDoc.helpSourceDir - the system-wide base help source
     defaults to (thisProcess.platform.classLibraryDir +/+ "../HelpSource").standardizePath
@@ -12,7 +12,7 @@ SCDoc.systemHelpDir - the system-wide pre-rendered help
 SCDoc.helpTargetDir - the user-space help target dir
     defaults to thisProcess.platform.userAppSupportDir +/+ "/Help";
 
-2) Make a new class method: SCDoc.initHelpTargetDir
+2) [DONE] Make a new class method: SCDoc.initHelpTargetDir
 what it does is: if helpTargetDir does not exist, re-create the directory structure from systemHelpDir,
 and hard-link (if possible) or copy all files into place:
 
@@ -27,9 +27,9 @@ NOTE: Why not softlinks?
 At least with chrome, and probably with other browsers too, opening a symlinked html file follows it, so relative href links from that doc will go to the system-wide help, not the user-space help! Only solution is to copy or hardlink instead.
 ------------------------------------------------------------------------------------------------
 
-3) Call SCDoc.initHelpTargetDir at the top of SCDoc.updateAll
+3) [DONE] Call SCDoc.initHelpTargetDir at the top of SCDoc.updateAll
 
-4) Before writing any file in SCDoc, remove the old one first so we don't change the original file in case it was linked!
+4) [DONE] Before writing any file in SCDoc, remove the old one first so we don't change the original file in case it was linked!
 
     File.delete("~/foo/foo.txt".standardizePath)
     f = File("~/foo/foo.txt".standardizePath,"w")
@@ -38,9 +38,13 @@ At least with chrome, and probably with other browsers too, opening a symlinked 
 
 5) Integration with build system:
 
+Rename the old Help dir to OldHelp or similar.
+
 Add a make target for building the docs: "make docs"
 Let "make install" install the rendered docs to SCDoc.systemHelpDir and the help-sources to SCDoc.helpSourceDir.
 Package managers should build the docs without any extensions! Add an "ignoreExtensions" flag to SCDoc.updateAll?
+Also, if stuff are copied into place, make sure to touch scdoc_cache at the end so that it is newer than all HelpSources, or else
+it will trigger a total render when the users runs updateAll the first time.
 
 6) Adjust or deprecate all old classes and methods related to help:
 
