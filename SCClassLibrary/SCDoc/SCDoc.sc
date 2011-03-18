@@ -306,16 +306,15 @@ SCDoc {
         var cond;
         if(File.exists(this.helpTargetDir).not) {
             this.postProgress("Initializing user's help directory", true);
-            ("mkdir -p"+this.helpTargetDir.escapeChar($ )).systemCmd;
             if(File.exists(this.systemHelpDir)) {
                 cond = Condition.new;
                 this.postProgress("Basing help tree on pre-rendered help, please wait...");
-                ("rsync -vax --link-dest="++sysdir+sysdir++"/"+this.helpTargetDir).unixCmd({cond.unhang},true);
+                ("rsync -vax --link-dest="++sysdir+sysdir++"/"+this.helpTargetDir).unixCmd({cond.unhang},false);
                 cond.hang;
             } {
                 this.postProgress("No pre-rendered help found, creating from scratch...");
             }
-        }
+        };
     }
 
     *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true|
@@ -361,6 +360,13 @@ SCDoc {
                     .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
             };
             this.postProgress(helpSourceDirs);
+
+            this.postProgress("Ensuring help directory structure");
+            helpSourceDirs.do {|srcdir|
+                ("find"+srcdir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type d").unixCmdGetStdOutLines.do {|dir|
+                    ("mkdir -p"+(SCDoc.helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ )).systemCmd;
+                }
+            };
 
             // get list of new or updated files
             fileList = Dictionary.new;
