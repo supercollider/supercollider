@@ -65,7 +65,7 @@ SCDoc {
 
     *initClass {
         this.helpSourceDir_(thisProcess.platform.classLibraryDir +/+ "../HelpSource");
-        this.systemHelpDir_(thisProcess.platform.classLibraryDir +/+ "../Help");
+        this.systemHelpDir_(thisProcess.platform.classLibraryDir +/+ "../HelpBase");
         this.helpTargetDir_(thisProcess.platform.userAppSupportDir +/+ "/Help");
         r = SCDocRenderer.new;
         r.parser = p = SCDocParser.new;
