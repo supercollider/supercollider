@@ -1,6 +1,7 @@
 SCDoc {
     classvar <helpTargetDir;
     classvar <helpSourceDir;
+    classvar <systemHelpDir;
     classvar doc_map = nil;
     classvar <p, <r;
     classvar doWait;
@@ -15,6 +16,10 @@ SCDoc {
 
     *helpTargetDir_ {|path|
         helpTargetDir = path.standardizePath;
+    }
+
+    *systemHelpDir_ {|path|
+        systemHelpDir = path.standardizePath;
     }
     
     *postProgress {|string,setTopic=false|
@@ -34,10 +39,11 @@ SCDoc {
     }
 
     *docMapToJSON {|path|
-        var f = File.open(path,"w");
+        var f;
 
-        if(f.isNil, {^nil});
-        
+        File.delete(path);
+        f = File.open(path,"w");
+
         f.write("docmap = [\n");
         doc_map.pairsDo {|k,v|
             f.write("{\n");
@@ -58,8 +64,9 @@ SCDoc {
     }
 
     *initClass {
-        helpTargetDir = thisProcess.platform.userAppSupportDir +/+ "/Help";
-        helpSourceDir = thisProcess.platform.systemAppSupportDir +/+ "/HelpSource";
+        this.helpSourceDir_(thisProcess.platform.classLibraryDir +/+ "../HelpSource");
+        this.systemHelpDir_(thisProcess.platform.classLibraryDir +/+ "../Help");
+        this.helpTargetDir_(thisProcess.platform.userAppSupportDir +/+ "/Help");
         r = SCDocRenderer.new;
         r.parser = p = SCDocParser.new;
         doWait = false;
@@ -240,7 +247,8 @@ SCDoc {
 
     *writeDocMap {
         var f, path = this.helpTargetDir +/+ "scdoc_cache";
-        f = File(path,"w");
+        File.delete(path);
+        f = File.open(path,"w");
         f.write(doc_map.asCompileString);
         f.close;
         "SCDoc: wrote docMap cache".postln;
@@ -293,6 +301,23 @@ SCDoc {
     
     *tickProgress { progressCount = progressCount + 1 }
 
+    *initHelpTargetDir {
+        var sysdir = this.systemHelpDir.escapeChar($ );
+        var cond;
+        if(File.exists(this.helpTargetDir).not) {
+            this.postProgress("Initializing user's help directory", true);
+            ("mkdir -p"+this.helpTargetDir.escapeChar($ )).systemCmd;
+            if(File.exists(this.systemHelpDir)) {
+                cond = Condition.new;
+                this.postProgress("Basing help tree on pre-rendered help, please wait...");
+                ("rsync -vax --link-dest="++sysdir+sysdir++"/"+this.helpTargetDir).unixCmd({cond.unhang},true);
+                cond.hang;
+            } {
+                this.postProgress("No pre-rendered help found, creating from scratch...");
+            }
+        }
+    }
+
     *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true|
         var func;
         var docmap_path = this.helpTargetDir.escapeChar($ )+/+"scdoc_cache";
@@ -301,13 +326,13 @@ SCDoc {
         func = {
             var helpSourceDirs, fileList, count, maybeDelete, x, f, n, old_classes, current_classes;
 
+            this.initHelpTargetDir;
+
             if(force.not) {
                 force = this.readDocMap;
             } {
                 doc_map = Dictionary.new;
             };
-
-            ("mkdir -p"+this.helpTargetDir.escapeChar($ )).systemCmd;
 
             progressMax = 1;
             progressCount = 0;
@@ -391,6 +416,7 @@ SCDoc {
                     maybeDelete = true;
                 };
             };
+            File.delete(this.helpTargetDir+/+"helpdirlist_cache");
             helpSourceDirs.writeArchive(this.helpTargetDir+/+"helpdirlist_cache");
 
             // parse/render or copy new and updated files
@@ -452,6 +478,7 @@ SCDoc {
             
             if(old_classes != current_classes) {
                 if(gui){this.makeProgressWindow};
+                File.delete(classlist_path);
                 current_classes.writeArchive(classlist_path);
                 this.postProgress("Generating Class tree...",true);
                 p.overviewClassTree;
@@ -461,6 +488,7 @@ SCDoc {
             
             // move this to the old_classes!=current_classes check above? but methods can change even if the classlist has not..
             this.postProgress("Generating Methods index",true);
+            File.delete(this.helpTargetDir +/+ "methods.js");
             f = File.open(this.helpTargetDir +/+ "methods.js","w");
             f.write("methods = [\n");
             this.collectAllMethods.pairsDo {|k,v|
