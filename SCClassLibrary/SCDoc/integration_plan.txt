@@ -1,0 +1,101 @@
+PLAN FOR SCDOC INTEGRATION
+==========================
+
+1) The three help related directories are managed by these class variables:
+
+SCDoc.helpSourceDir - the system-wide base help source
+    defaults to (thisProcess.platform.classLibraryDir +/+ "../HelpSource").standardizePath
+
+SCDoc.systemHelpDir - the system-wide pre-rendered help
+    defaults to (thisProcess.platform.classLibraryDir +/+ "../Help").standardizePath
+
+SCDoc.helpTargetDir - the user-space help target dir
+    defaults to thisProcess.platform.userAppSupportDir +/+ "/Help";
+
+2) Make a new class method: SCDoc.initHelpTargetDir
+what it does is: if helpTargetDir does not exist, re-create the directory structure from systemHelpDir,
+and hard-link (if possible) or copy all files into place:
+
+    rsync -vax --link-dest=systemHelpDir systemHelpDir++"/" helpTargetDir
+
+Note that the trailing / in srcdir is very important for the linking to work.
+
+rsync is *very fast*, also it will just copy the file if a hardlink was not possible, for example if the original is on another partition or we don't have write-access to it.. Might want to supress the error messages in this case?
+
+------------------------------------------------------------------------------------------------
+NOTE: Why not softlinks?
+At least with chrome, and probably with other browsers too, opening a symlinked html file follows it, so relative href links from that doc will go to the system-wide help, not the user-space help! Only solution is to copy or hardlink instead.
+------------------------------------------------------------------------------------------------
+
+3) Call SCDoc.initHelpTargetDir at the top of SCDoc.updateAll
+
+4) Before writing any file in SCDoc, remove the old one first so we don't change the original file in case it was linked!
+
+    File.delete("~/foo/foo.txt".standardizePath)
+    f = File("~/foo/foo.txt".standardizePath,"w")
+    f.write("hej2\n")
+    f.close
+
+5) Integration with build system:
+
+Add a make target for building the docs: "make docs"
+Let "make install" install the rendered docs to SCDoc.systemHelpDir and the help-sources to SCDoc.helpSourceDir.
+Package managers should build the docs without any extensions! Add an "ignoreExtensions" flag to SCDoc.updateAll?
+
+6) Adjust or deprecate all old classes and methods related to help:
+
+Classes:
+    AutoClassHelper
+    QHelpBrowser
+    HelpSearchResult
+    UGenHelper
+    AutoClassHelperTest
+    TopicHelper
+    Help
+    ClassHelper
+    Helper
+
+Methods:
+    showHelpSearch
+        Main
+    showHelpBrowser
+        Main
+    makeHelp
+        AutoClassHelper, ClassHelper, *Help, TopicHelper, UGenHelper
+    initHelper
+        Helper
+    initQHelpBrowser
+        QHelpBrowser
+    showHelp
+        Process
+    initTopicHelper
+        TopicHelper
+    initUGenHelper
+        UGenHelper
+    helpGui
+        Process+
+    helpFileForMethod
+        Class+
+    help
+        *Phaser, *Quarks, Quarks
+    helpDir
+        *Platform, Platform
+    helpFilePath
+        Class
+    helpFilesDo
+        PathName
+    findHelpFileOrElse
+        Help, String+
+    hasHelpFile
+        Class, Method
+    makeAutoHelp
+        *Help
+    findHelpFile
+        Help, *Help, String+
+    openHelpFile
+        Class, Method, String+
+    isHelp
+        Integer
+    initClassHelper
+        AutoClassHelper, ClassHelper
+

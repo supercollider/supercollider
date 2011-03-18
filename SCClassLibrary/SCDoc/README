@@ -28,31 +28,62 @@ See these generated helpfiles for more info about ScDoc:
 - Help/Classes/SCDocParser.html
 - Help/Classes/SCDocRenderer.html
 
-
-
 TODO
 ----
-
-integration with frontends / main sc distro
-===========================================
-* HelpSource should be installed in thisProcess.platform.systemAppSupportDir, or next to classLibraryDir on OSX ?
-easier to always use (thisProcess.platform.classLibraryDir +/+ "../HelpSource").standardizePath for all platforms..
-
-* ship pre-rendered help with the binary package (render after building supercollider)
-just use the pre-rendered help until the users need to update help, which would first copy or soft-link* the pre-rendered
-files into helpTargetDir and then run SCDoc.updateAll. let SCDoc.helpClientDir return helpTargetDir if existent, else the system-wide location ((thisProcess.platform.classLibraryDir +/+ "../Help").standardizePath);
-NOTE* hard-links would be easier but won't work across partitions. with soft-links, we need to check if the target exists, then delete it before writing the new file.
-
-* add an ignoreExtensions flag to updateAll, for package builders..
+* integration with main sc distro: See integration_plan.txt
 
 * the class-source links for classes in classLibraryDir won't work on OSX since the SuperCollider folder can be put anywhere..
 fix: keep a softlink in helpTargetDir/SCClassLibrary pointing to the correct location. The pre-rendered docs would sit in the same folder as the app, so we would then have SCClassLibrary -> ../SCClassLibrary and it would work wherever the user puts the SuperCollider folder. When the user makes a change that triggers an update of the docs, SCDoc would copy/hardlink the pre-rendered docs into user-location and rewrite this link to point to the current value of thisProcess.platform.classLibraryDir. 
 
-* fix (adjust for SCDoc) or deprecate all old help classes and methods
+* cross-platform: check all uses of systemCmd. move to Platform class? Some stuff are not possible on windows, use cygwin or similar?
 
--------------------------------------------
+* Handle methods added by extensions
+Documenting added methods could be done in files named +ClassName.schelp
+before we render each class, we need to find all +ClassName.schelp files and merge their parsed node tree with the current class.
+We should probably find these files first and keep their full paths in a dictionary with classname as key.
+note that they should *add* to classmethods and instancemethods instead of creating new sections for these..
 
-- redirect classes doesn't show up in methods search, of course.. it would be nice if they did!
+VALIDATION
+----------
+* better error handling in parser on bogus input, etc..
+
+* Some tags should only be allowed once. like class, title, related, categories, summary, description, examples..
+Also, they should only occur in the root node.
+
+* private:: must come before any other method
+
+* force class reference filename to be equal to class name, and located in Classes/, and using class:: instead of title::
+
+* check method argument names (and order?). it's ok to skip arguments though..
+
+* warn on nameless sections, subsections and methods
+
+* make sure ## and || only happens inside lists/tables
+
+PARSER BUGS
+-----------
+* this doesn't work as it should:
+
+    modalrangetag:: blah blah blah
+    blah blah blah blah blah
+    blah blah ::
+
+* this doesn't work as it should:
+
+    hello
+
+    soft::there::
+
+* tags after each other doesn't work, like returns::link::hello::
+perhaps hard to fix without taking into account if the tag needs closing or not?
+for example, what does this mean: code::foo::link::bar::
+
+* using \::. doesn't work, needs a space: \:: .
+also sometimes non-letters after :: doesn't work as expected, like "(link::hello::)"
+
+IDEAS AND IMPROVEMENTS
+----------------------
+* redirect classes doesn't show up in methods search, of course.. it would be nice if they did!
   let the class renderer add [(Meta_)thisClassName, methodName] to a special list that we append in SCDoc.collectAllMethods.
   Also we need to archive this to file somehow, and handle deletion/additions etc.. not a simple task :/
   Or, just maintain a dictionary of redirected classes -> redirecting class?
@@ -62,87 +93,26 @@ fix: keep a softlink in helpTargetDir/SCClassLibrary pointing to the correct loc
   Also, if a class has implemented *doesNotUnderstand then maybe we should ignore if method was not found in renderer?
   for stuff like Scale..
 
-- make a SCDoc.makeClassTemplate(class,outputfile) that fills in the title, categories if existing, method and argument names, etc..
+* make a SCDoc.makeClassTemplate(class,outputfile) that fills in the title, categories if existing, method and argument names, etc..
 
-- this doesn't work as it should:
-
-modalrangetag:: blah blah blah
-blah blah blah blah blah
-blah blah ::
-
-- this doesn't work as it should:
-
-hello
-
-soft::there::
-
-- tags after each other doesn't work, like returns::link::hello::
-perhaps hard to fix without taking into account if the tag needs closing or not?
-for example, what does this mean: code::foo::link::bar::
-
-- using \::. doesn't work, needs a space: \:: .
-also sometimes non-letters after :: doesn't work correctly, like "(link::hello::)"
-
-- we need to distinguish between class and instance method anchors since some classes have both named the same,
-something like #cmethod:name and #imethod:name perhaps? or #*classmethodname and #instancemethodname ?
-
-- in methods overview, print '*' before classes implementing the method as classmethod?
-
-- check for system-wide pre-rendered docs in ScDoc.findClassOrMethod and similar functions..
-also make a ScDoc.findHelp(subdir,name,anchor) which would return the path to the helpfile. examples:
-    ScDoc.findHelp("Classes","SinOsc")
-    ScDoc.findHelp("Overviews","Methods","play")
-    ScDoc.findHelp("","Search","^asString$"), etc...
-
-- instead of showing "(extension)" only for classes, do it for any document that was located in an extension directory.
+* instead of showing "(extension)" only for classes, do it for any document that was located in an extension directory.
 pass a flag to recurseHelpSource call in findExtHelp, and let updateFile return the doc map entry so we can set installed=\extension,
 or pass the flag to updateFile and then to addToDocMap?
 also add a check and warning for when a class file location and doc location is not the same in regards of extension or not?
 
-- currently all auto-generated docs are not included in the docMap, we could add these manually to HelpSystem,
-  or put them (and Help.html) in a tag named Help?
-  add them to docmap *before* we generate the overviews that are using categories.
-
-- description for categories? HelpSource/category_descriptions, example:
+* description for categories? HelpSource/category_descriptions, example:
   Server>Abstractions: Client-side classes representing server-side stuff
   show in header and category browser/overview..
   extensions should be able to add such descriptions too, but not overwrite existing descriptions?
 
-- handle formula:: tag. generate a hash hexstring for use as filename, HelpSource/formulas/xxxxxxxx.png
+* handle formula:: tag. generate a hash hexstring for use as filename, HelpSource/formulas/xxxxxxxx.png
 The renderer would render formula:: by displaying that image if it exists, if not and if LaTeX is installed, convert formula to image first. if LaTeX not installed and image don't exist, show the latex code. (use img alt text?) 
 
-- comments (* like this? *)
+* comments (* like this? *)
 
-- can setters have more than one arg? if so, we should fix rendering of setters.
+* shortcuts for links to method in class? methodlink::Node#-set:: renders as Node-set
 
-- cross-platform: check all uses of systemCmd. move to Platform class?
-
-- add argument:: for all args on methods even if the author didn't document it? at least check that argument names and order are correct.
-
-- shortcuts for links to class:method? methodlink::Node#set:: renders as Node:set
-
-- better error handling in parser on bogus input, etc..
-
-- render binary op methods differently? like ArrayedCollections ++
+* render binary op methods differently? like ArrayedCollections ++
 we don't want it to display as "++ (aCollection)" do we? rather "++ aCollection" or "this ++ that" or something..
 binary ops only uses chars from this list: !@%&*-+=|<>?/
-
-- Handle methods added by extensions
-Documenting added methods could be done in files named +ClassName.schelp
-before we render each class, we need to find all +ClassName.schelp files and merge their parsed node tree with the current class.
-We should probably find these files first and keep their full paths in a dictionary with classname as key.
-note that they should *add* to classmethods and instancemethods instead of creating new sections for these..
-
-- validation pass:
-
-* Some tags should only be allowed once. like class, title, related, categories, summary, description, examples..
-Also, they should only occur in the root node.
-
-* private:: should come before any other method
-
-* force class reference filename to be equal to class name
-
-* check method argument names (and order?). it's ok to skip arguments though..
-
-* make sure ## and || only happens inside lists/tables
 
