@@ -7,7 +7,7 @@ SCDoc.helpSourceDir - the system-wide base help source
     defaults to (thisProcess.platform.classLibraryDir +/+ "../HelpSource").standardizePath
 
 SCDoc.systemHelpDir - the system-wide pre-rendered help
-    defaults to (thisProcess.platform.classLibraryDir +/+ "../Help").standardizePath
+    defaults to (thisProcess.platform.classLibraryDir +/+ "../HelpBase").standardizePath
 
 SCDoc.helpTargetDir - the user-space help target dir
     defaults to thisProcess.platform.userAppSupportDir +/+ "/Help";
