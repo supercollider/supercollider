@@ -67,6 +67,7 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 		// this method is called when an OSC message is received.
 		recvOSCfunc.value(time, replyAddr, msg);
 		OSCresponder.respond(time, replyAddr, msg);
+		OSCResponder.respond(time, replyAddr, msg);
 	}
 
 	recvOSCbundle { arg time, replyAddr ... msgs;
