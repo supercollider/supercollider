@@ -20,7 +20,7 @@ set(all_scel_sources ${scel_sources} sclang-vars.el)
 foreach (el ${all_scel_sources})
 	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${el}c
 		COMMAND ${EMACS_EXECUTABLE} -batch
-			--eval \"(add-to-list 'load-path (expand-file-name \\\"${CMAKE_CURRENT_BINARY_DIR}\\\")) \"
+			-L ${CMAKE_CURRENT_BINARY_DIR}
 			-f batch-byte-compile
 			${CMAKE_CURRENT_BINARY_DIR}/${el}
 		DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${el}
