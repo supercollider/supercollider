@@ -72,6 +72,7 @@ private:
   HelpFileView *helpFileView;
 
   QString _home;
+  QString _urlFragment; // fragment(anchor) of requested url
 };
 
 class SimpleFindTool : public QLineEdit
