@@ -23,6 +23,8 @@
 #include "../QcWidgetFactory.h"
 
 #include <QWebView>
+#include <QWebPage>
+#include <QWebFrame>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QSplitter>
@@ -88,7 +90,9 @@ QcHelpBrowser::QcHelpBrowser()
 }
 
 void QcHelpBrowser::load( const QString &urlString ) {
-  helpFileView->load( QUrl( urlString ) );
+  QUrl url( urlString );
+  _urlFragment = url.fragment();
+  helpFileView->load( url );
 }
 
 void QcHelpBrowser::goHome()
@@ -102,6 +106,9 @@ void QcHelpBrowser::onLoadFinished( bool ok )
     setWindowTitle( "SuperCollider Help: Failed to load page" );
     return;
   }
+
+  if( !_urlFragment.isEmpty() )
+      helpFileView->page()->mainFrame()->scrollToAnchor( _urlFragment );
 
   QString title = helpFileView->title();
   if( title.isEmpty() ) {
