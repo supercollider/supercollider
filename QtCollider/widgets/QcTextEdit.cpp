@@ -61,7 +61,9 @@ int QcTextEdit::selectionSize()
 
 QString QcTextEdit::selectedString()
 {
-  return textCursor().selectedText();
+  // NOTE QTextCuror.selectedText() contains unicode paragraph separators U+2029
+  // instead of newline \n characters
+  return textCursor().selectedText().replace( QChar( 0x2029 ), QChar( '\n' ) );
 }
 
 void QcTextEdit::setTextFont( const QFont &f )
