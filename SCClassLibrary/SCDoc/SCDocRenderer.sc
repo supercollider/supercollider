@@ -534,10 +534,6 @@ SCDocRenderer {
         
         SCDoc.postProgress("Rendering "++filename);
 
-        ("mkdir -p"+filename.dirname.escapeChar($ )).systemCmd;
-         //FIXME: get rid of above mkdir by first creating the directory structure in SCDoc.updateAll
-         //use "find helpSourceDir -type d"
-
         File.delete(filename);
         f = File.open(filename, "w");
 
