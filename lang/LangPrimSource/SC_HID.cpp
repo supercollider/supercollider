@@ -149,13 +149,7 @@ int prHIDBuildElementList(VMGlobals *g, int numArgsPushed)
 				SetObject(devElementArray->slots+devElementArray->size++, devstring);
 				//g->gc->GCWrite(devElementArray, (PyrObject*) devstring);
 				//usage (2)
-#if(SC_MAC_HIDSTYLE_10_4)
-				HIDGetUsageName (devElement->usagePage, devElement->usage, cstrElementName);
-#else
-				CFStringRef stringref = HIDCopyUsageName(IOHIDElementGetUsagePage(devElement), IOHIDElementGetUsage(devElement));
-				CFStringGetCString(stringref, cstrElementName, 256, kCFStringEncodingASCII);
-				CFRelease(stringref);
-#endif
+				HIDGetUsageName (IOHIDElementGetUsagePage(devElement), IOHIDElementGetUsage(devElement), cstrElementName);
 				PyrString *usestring = newPyrString(g->gc, cstrElementName, 0, true);
 				SetObject(devElementArray->slots+devElementArray->size++, usestring);
 				//g->gc->GCWrite(devElementArray, (PyrObject*) usestring);
@@ -214,9 +208,11 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 	//UInt32 usage = NULL;
 
 	Boolean result = HIDBuildDeviceList (usagePage, usage);
-	// returns false if no device found (ignored in this case) - returns always false ?
-
-	if(result) post("no HID devices found\n");
+#if(SC_MAC_HIDSTYLE_10_4)
+    // on 10.4, this should return false (!)
+    result = !result;
+#endif
+	if(!result) post("no HID devices found\n");
 
 	int numdevs = HIDCountDevices();
 	gNumberOfHIDDevices = numdevs;
@@ -237,9 +233,13 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 #if(SC_MAC_HIDSTYLE_10_4)
 		PyrString *devstring = newPyrString(g->gc, pCurrentHIDDevice->manufacturer, 0, true);
 #else
-		stringref = IOHIDDevice_GetManufacturer(pCurrentHIDDevice);
-		CFStringGetCString(stringref, tmp, 256, kCFStringEncodingASCII);
-		CFRelease(stringref);
+		*tmp = 0;
+        stringref = IOHIDDevice_GetManufacturer(pCurrentHIDDevice);
+		if (stringref)
+        {
+            CFStringGetCString(stringref, tmp, 256, kCFStringEncodingASCII);
+            CFRelease(stringref);
+        }
 		PyrString *devstring = newPyrString(g->gc, tmp, 0, true);
 #endif
 		SetObject(devNameArray->slots+devNameArray->size++, devstring);
@@ -248,21 +248,25 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 #if(SC_MAC_HIDSTYLE_10_4)
 		devstring = newPyrString(g->gc, pCurrentHIDDevice->product, 0, true);
 #else
+		*tmp = 0;
 		stringref = IOHIDDevice_GetProduct(pCurrentHIDDevice);
-		CFStringGetCString(stringref, tmp, 256, kCFStringEncodingASCII);
-		CFRelease(stringref);
+        if (stringref)
+        {
+            CFStringGetCString(stringref, tmp, 256, kCFStringEncodingASCII);
+            CFRelease(stringref);
+        }
 		devstring = newPyrString(g->gc, tmp, 0, true);
 #endif
 		SetObject(devNameArray->slots+devNameArray->size++, devstring);
 		g->gc->GCWrite(devNameArray, (PyrObject*) devstring);
+
 		//usage
 #if(SC_MAC_HIDSTYLE_10_4)
 		HIDGetUsageName (pCurrentHIDDevice->usagePage, pCurrentHIDDevice->usage, tmp);
 		devstring = newPyrString(g->gc, tmp, 0, true);
 #else
-		stringref = HIDCopyUsageName(IOHIDDevice_GetUsagePage(pCurrentHIDDevice), IOHIDDevice_GetUsage(pCurrentHIDDevice));
-		CFStringGetCString(stringref, tmp, 256, kCFStringEncodingASCII);
-		CFRelease(stringref);
+        *tmp = 0;
+		HIDGetUsageName (IOHIDDevice_GetPrimaryUsagePage(pCurrentHIDDevice), IOHIDDevice_GetPrimaryUsage(pCurrentHIDDevice), tmp);
 		devstring = newPyrString(g->gc, tmp, 0, true);
 #endif
 		SetObject(devNameArray->slots+devNameArray->size++, devstring);
@@ -281,9 +285,13 @@ int prHIDBuildDeviceList(VMGlobals *g, int numArgsPushed)
 #if(SC_MAC_HIDSTYLE_10_4)
 		devstring = newPyrString(g->gc, pCurrentHIDDevice->serial, 0, true);
 #else
+        *tmp = 0;
 		stringref = IOHIDDevice_GetSerialNumber(pCurrentHIDDevice);
-		CFStringGetCString(stringref, tmp, 256, kCFStringEncodingASCII);
-		CFRelease(stringref);
+		if (stringref)
+        {
+            CFStringGetCString(stringref, tmp, 256, kCFStringEncodingASCII);
+            CFRelease(stringref);
+        }
 		devstring = newPyrString(g->gc, tmp, 0, true);
 #endif
 		SetObject(devNameArray->slots+devNameArray->size++, devstring);
