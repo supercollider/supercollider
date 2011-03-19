@@ -107,8 +107,10 @@ void QcHelpBrowser::onLoadFinished( bool ok )
     return;
   }
 
+#if QT_VERSION >= 0x040700
   if( !_urlFragment.isEmpty() )
       helpFileView->page()->mainFrame()->scrollToAnchor( _urlFragment );
+#endif
 
   QString title = helpFileView->title();
   if( title.isEmpty() ) {
