@@ -241,9 +241,10 @@ else()
 	set(auxresourcesdir "share/SuperCollider")
 endif()
 
-set(SCCLASSLIB_EXCLUDE_REGEX "\\.git")
 if(NOT SC_QT)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|QtCollider")
+	set(SCCLASSLIB_EXCLUDE_REGEX "QtCollider")
+else()
+	set(SCCLASSLIB_EXCLUDE_REGEX "()")
 endif()
 
 install(DIRECTORY SCClassLibrary
@@ -253,17 +254,14 @@ install(DIRECTORY SCClassLibrary
 
 install(DIRECTORY Help
 	DESTINATION ${auxresourcesdir}
-	PATTERN .git EXCLUDE
 )
 
 install(DIRECTORY examples
 	DESTINATION ${auxresourcesdir}
-	PATTERN .git EXCLUDE
 )
 
 install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
-	PATTERN .git EXCLUDE
 )
 
 #############################################
