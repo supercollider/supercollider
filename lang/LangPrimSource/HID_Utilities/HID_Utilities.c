@@ -101,24 +101,24 @@ Boolean HIDBuildMultiDeviceList( const UInt32 *inUsagePages, const UInt32 *inUsa
 {
 	Boolean result = FALSE;                // assume failure ( pessimist! )
 	Boolean first = ( !gIOHIDManagerRef ); // not yet created?
-	
+
 	if ( first ) {
 		// create the manager
 		gIOHIDManagerRef = IOHIDManagerCreate( kCFAllocatorDefault, kIOHIDOptionsTypeNone );
 	}
-	
+
 	if ( gIOHIDManagerRef ) {
 		CFMutableArrayRef hidMatchingCFMutableArrayRef = NULL;
-		
+
 		if ( inUsages && inUsagePages && inNumDeviceTypes ) {
 			hidMatchingCFMutableArrayRef = CFArrayCreateMutable( kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks );
-			
+
 			if ( hidMatchingCFMutableArrayRef ) {
 				int idx;
 				for ( idx = 0; idx < inNumDeviceTypes; idx++ ) {    // for all usage and usage page types
 					// Set up matching dictionary. returns NULL on error.
 					CFMutableDictionaryRef hidMatchingCFDictRef = hu_SetUpMatchingDictionary( inUsagePages[idx], inUsages[idx] );
-					
+
 					if ( hidMatchingCFDictRef ) {
 						CFArrayAppendValue( hidMatchingCFMutableArrayRef, (void*) hidMatchingCFDictRef );
 						CFRelease( hidMatchingCFDictRef );
@@ -130,18 +130,18 @@ Boolean HIDBuildMultiDeviceList( const UInt32 *inUsagePages, const UInt32 *inUsa
 				fprintf( stderr, "%s: Couldn’t create a matching array.", __PRETTY_FUNCTION__ );
 			}
 		}
-		
+
 		// set it for IOHIDManager to use to match against
 		IOHIDManagerSetDeviceMatchingMultiple( gIOHIDManagerRef, hidMatchingCFMutableArrayRef );
-		
+
 		if ( hidMatchingCFMutableArrayRef ) {
 			CFRelease( hidMatchingCFMutableArrayRef );
 		}
-		
+
 		if ( first ) {
 			// open it
 			IOReturn tIOReturn = IOHIDManagerOpen( gIOHIDManagerRef, kIOHIDOptionsTypeNone );
-			
+
 			if ( kIOReturnSuccess != tIOReturn ) {
 				fprintf( stderr, "%s: Couldn’t open IOHIDManager.", __PRETTY_FUNCTION__ );
 				goto Oops;
@@ -254,7 +254,7 @@ Boolean HIDHaveDeviceList( void )
 void HIDRebuildDevices( void ) {
 	// get the set of devices from the IOHID manager
 	CFSetRef devCFSetRef = IOHIDManagerCopyDevices( gIOHIDManagerRef );
-	
+
 	if ( devCFSetRef ) {
 		// if the existing array isn't empty...
 		if ( gDeviceCFArrayRef ) {
@@ -268,7 +268,7 @@ void HIDRebuildDevices( void ) {
 		// now sort the array by location ID's
 		CFIndex cnt = CFArrayGetCount( gDeviceCFArrayRef );
 		CFArraySortValues( gDeviceCFArrayRef, CFRangeMake( 0, cnt ), CFDeviceArrayComparatorFunction, NULL );
-		
+
 		// and release the set we copied from the IOHID manager
 		CFRelease( devCFSetRef );
 	}
@@ -292,21 +292,21 @@ UInt32 HIDCountDevices( void )
 UInt32 HIDCountDeviceElements( IOHIDDeviceRef inIOHIDDeviceRef, HIDElementTypeMask typeMask )
 {
 	int count = 0;
-	
+
 	if ( inIOHIDDeviceRef ) {
 		assert( IOHIDDeviceGetTypeID() == CFGetTypeID( inIOHIDDeviceRef ) );
-		
+
 		gElementCFArrayRef = IOHIDDeviceCopyMatchingElements( inIOHIDDeviceRef, NULL, kIOHIDOptionsTypeNone );
-		
+
 		if ( gElementCFArrayRef ) {
 			CFIndex idx, cnt = CFArrayGetCount( gElementCFArrayRef );
 			for ( idx = 0; idx < cnt; idx++ ) {
 				IOHIDElementRef tIOHIDElementRef = ( IOHIDElementRef ) CFArrayGetValueAtIndex( gElementCFArrayRef, idx );
-				
+
 				if ( !tIOHIDElementRef ) {
 					continue;
 				}
-				
+
 				IOHIDElementType type = IOHIDElementGetType( tIOHIDElementRef );
 				switch ( type ) {
 					case kIOHIDElementTypeInput_Misc:
@@ -319,7 +319,7 @@ UInt32 HIDCountDeviceElements( IOHIDDeviceRef inIOHIDDeviceRef, HIDElementTypeMa
 						}
 						break;
 					}
-						
+
 					case kIOHIDElementTypeOutput:
 					{
 						if ( typeMask & kHIDElementTypeOutput ) {
@@ -327,7 +327,7 @@ UInt32 HIDCountDeviceElements( IOHIDDeviceRef inIOHIDDeviceRef, HIDElementTypeMa
 						}
 						break;
 					}
-						
+
 					case kIOHIDElementTypeFeature:
 					{
 						if ( typeMask & kHIDElementTypeFeature ) {
@@ -335,7 +335,7 @@ UInt32 HIDCountDeviceElements( IOHIDDeviceRef inIOHIDDeviceRef, HIDElementTypeMa
 						}
 						break;
 					}
-						
+
 					case kIOHIDElementTypeCollection:
 					{
 						if ( typeMask & kHIDElementTypeCollection ) {
@@ -360,12 +360,12 @@ UInt32 HIDCountDeviceElements( IOHIDDeviceRef inIOHIDDeviceRef, HIDElementTypeMa
 IOHIDDeviceRef HIDGetFirstDevice( void )
 {
 	IOHIDDeviceRef result = NULL;
-	
+
 	gDeviceIndex = 0;
-	
+
 	if ( gDeviceCFArrayRef ) {
 		CFIndex count = CFArrayGetCount( gDeviceCFArrayRef );
-		
+
 		if ( ( gDeviceIndex >= 0 ) && ( gDeviceIndex < count ) ) {
 			result = ( IOHIDDeviceRef ) CFArrayGetValueAtIndex( gDeviceCFArrayRef, gDeviceIndex );
 		}
@@ -381,25 +381,25 @@ IOHIDDeviceRef HIDGetFirstDevice( void )
 IOHIDDeviceRef HIDGetNextDevice( IOHIDDeviceRef inIOHIDDeviceRef )
 {
 	IOHIDDeviceRef result = NULL;
-	
+
 	if ( gDeviceCFArrayRef && inIOHIDDeviceRef ) {
 		CFIndex index, count = CFArrayGetCount( gDeviceCFArrayRef );
-		
+
 		// quick case to verify the current device index is valid for current device
 		if ( ( gDeviceIndex >= 0 ) && ( gDeviceIndex < count ) ) {
 			result = ( IOHIDDeviceRef ) CFArrayGetValueAtIndex( gDeviceCFArrayRef, gDeviceIndex );
-			
+
 			if ( result && ( result == inIOHIDDeviceRef ) ) {
 				result = NULL;
 				gDeviceIndex++; // bump index
 			} else {
 				// previous index was invalid;
 				gDeviceIndex = -1;
-				
+
 				// search for current device's index
 				for ( index = 0; index < count; index++ ) {
 					result = ( IOHIDDeviceRef ) CFArrayGetValueAtIndex( gDeviceCFArrayRef, gDeviceIndex );
-					
+
 					if ( ( result ) && ( result == inIOHIDDeviceRef ) ) {
 						gDeviceIndex = index + 1;   // found valid index; bump to next one
 						break;
@@ -407,7 +407,7 @@ IOHIDDeviceRef HIDGetNextDevice( IOHIDDeviceRef inIOHIDDeviceRef )
 				}
 				result = NULL;
 			}
-			
+
 			if ( ( gDeviceIndex >= 0 ) && ( gDeviceIndex < count ) ) {
 				result = ( IOHIDDeviceRef ) CFArrayGetValueAtIndex( gDeviceCFArrayRef, gDeviceIndex );
 			}
@@ -423,21 +423,21 @@ IOHIDDeviceRef HIDGetNextDevice( IOHIDDeviceRef inIOHIDDeviceRef )
 IOHIDElementRef HIDGetFirstDeviceElement( IOHIDDeviceRef inIOHIDDeviceRef, HIDElementTypeMask typeMask )
 {
 	IOHIDElementRef result = NULL;
-	
+
 	if ( inIOHIDDeviceRef ) {
 		assert( IOHIDDeviceGetTypeID() == CFGetTypeID( inIOHIDDeviceRef ) );
-		
+
 		gElementCFArrayRef = IOHIDDeviceCopyMatchingElements( inIOHIDDeviceRef, NULL, kIOHIDOptionsTypeNone );
-		
+
 		if ( gElementCFArrayRef ) {
 			CFIndex idx, cnt = CFArrayGetCount( gElementCFArrayRef );
 			for ( idx = 0; idx < cnt; idx++ ) {
 				IOHIDElementRef tIOHIDElementRef = ( IOHIDElementRef ) CFArrayGetValueAtIndex( gElementCFArrayRef, idx );
-				
+
 				if ( !tIOHIDElementRef ) {
 					continue;
 				}
-				
+
 				IOHIDElementType type = IOHIDElementGetType( tIOHIDElementRef );
 				switch ( type ) {
 					case kIOHIDElementTypeInput_Misc:
@@ -450,7 +450,7 @@ IOHIDElementRef HIDGetFirstDeviceElement( IOHIDDeviceRef inIOHIDDeviceRef, HIDEl
 						}
 						break;
 					}
-						
+
 					case kIOHIDElementTypeOutput:
 					{
 						if ( typeMask & kHIDElementTypeOutput ) {
@@ -458,7 +458,7 @@ IOHIDElementRef HIDGetFirstDeviceElement( IOHIDDeviceRef inIOHIDDeviceRef, HIDEl
 						}
 						break;
 					}
-						
+
 					case kIOHIDElementTypeFeature:
 					{
 						if ( typeMask & kHIDElementTypeFeature ) {
@@ -466,7 +466,7 @@ IOHIDElementRef HIDGetFirstDeviceElement( IOHIDDeviceRef inIOHIDDeviceRef, HIDEl
 						}
 						break;
 					}
-						
+
 					case kIOHIDElementTypeCollection:
 					{
 						if ( typeMask & kHIDElementTypeCollection ) {
@@ -475,7 +475,7 @@ IOHIDElementRef HIDGetFirstDeviceElement( IOHIDDeviceRef inIOHIDDeviceRef, HIDEl
 						break;
 					}
 				}           // switch ( type )
-				
+
 				if ( result ) {
 					break;  // DONE!
 				}
@@ -497,26 +497,26 @@ IOHIDElementRef HIDGetFirstDeviceElement( IOHIDDeviceRef inIOHIDDeviceRef, HIDEl
 IOHIDElementRef HIDGetNextDeviceElement( IOHIDElementRef inIOHIDElementRef, HIDElementTypeMask typeMask )
 {
 	IOHIDElementRef result = NULL;
-	
+
 	if ( inIOHIDElementRef ) {
 		assert( IOHIDElementGetTypeID() == CFGetTypeID( inIOHIDElementRef ) );
-		
+
 		IOHIDDeviceRef tIOHIDDeviceRef = IOHIDElementGetDevice( inIOHIDElementRef );
-		
+
 		if ( tIOHIDDeviceRef ) {
 			Boolean found = FALSE;
-			
+
 			gElementCFArrayRef = IOHIDDeviceCopyMatchingElements( tIOHIDDeviceRef, NULL, kIOHIDOptionsTypeNone );
-			
+
 			if ( gElementCFArrayRef ) {
 				CFIndex idx, cnt = CFArrayGetCount( gElementCFArrayRef );
 				for ( idx = 0; idx < cnt; idx++ ) {
 					IOHIDElementRef tIOHIDElementRef = ( IOHIDElementRef ) CFArrayGetValueAtIndex( gElementCFArrayRef, idx );
-					
+
 					if ( !tIOHIDElementRef ) {
 						continue;
 					}
-					
+
 					if ( !found ) {
 						if ( inIOHIDElementRef == tIOHIDElementRef ) {
 							found = TRUE;
@@ -536,7 +536,7 @@ IOHIDElementRef HIDGetNextDeviceElement( IOHIDElementRef inIOHIDElementRef, HIDE
 								}
 								break;
 							}
-								
+
 							case kIOHIDElementTypeOutput:
 							{
 								if ( typeMask & kHIDElementTypeOutput ) {
@@ -544,7 +544,7 @@ IOHIDElementRef HIDGetNextDeviceElement( IOHIDElementRef inIOHIDElementRef, HIDE
 								}
 								break;
 							}
-								
+
 							case kIOHIDElementTypeFeature:
 							{
 								if ( typeMask & kHIDElementTypeFeature ) {
@@ -552,7 +552,7 @@ IOHIDElementRef HIDGetNextDeviceElement( IOHIDElementRef inIOHIDElementRef, HIDE
 								}
 								break;
 							}
-								
+
 							case kIOHIDElementTypeCollection:
 							{
 								if ( typeMask & kHIDElementTypeCollection ) {
@@ -561,7 +561,7 @@ IOHIDElementRef HIDGetNextDeviceElement( IOHIDElementRef inIOHIDElementRef, HIDE
 								break;
 							}
 						}           // switch ( type )
-						
+
 						if ( result ) {
 							break;  // DONE!
 						}
@@ -601,25 +601,25 @@ void HIDDumpDeviceInfo( IOHIDDeviceRef inIOHIDDeviceRef )
 	char cstring[256];
 
 	printf( "Device: %p = { ", inIOHIDDeviceRef );
-	
+
 	char manufacturer[256] = ""; // name of manufacturer
 	CFStringRef tCFStringRef = IOHIDDevice_GetManufacturer( inIOHIDDeviceRef );
-	
+
 	if ( tCFStringRef ) {
 		verify( CFStringGetCString( tCFStringRef, manufacturer, sizeof( manufacturer ), kCFStringEncodingUTF8 ) );
 	}
-	
+
 	char product[256] = "";      // name of product
 	tCFStringRef = IOHIDDevice_GetProduct( inIOHIDDeviceRef );
-	
+
 	if ( tCFStringRef ) {
 		verify( CFStringGetCString( tCFStringRef, product, sizeof( product ), kCFStringEncodingUTF8 ) );
 	}
-	
+
 	printf( "%s - %s, ", manufacturer, product );
-	
+
 	long vendorID = IOHIDDevice_GetVendorID( inIOHIDDeviceRef );
-	
+
 	if ( vendorID ) {
 #if 1
 		printf( "	vendorID:	0x%04lX, ", vendorID );
@@ -631,14 +631,14 @@ void HIDDumpDeviceInfo( IOHIDDeviceRef inIOHIDDeviceRef )
 		}
 #endif
 	}
-	
+
 	long productID = IOHIDDevice_GetProductID( inIOHIDDeviceRef );
-	
+
 	if ( productID ) {
 #if 1
 		printf( "	productID:	0x%04lX, ", productID );
 #else
-		
+
 		if ( HIDGetProductNameFromVendorProductID( vendorID, productID, cstring ) ) {
 			printf( "	productID:	0x%04lX (\"%s\"), ", productID, cstring );
 		} else {
@@ -646,17 +646,17 @@ void HIDDumpDeviceInfo( IOHIDDeviceRef inIOHIDDeviceRef )
 		}
 #endif
 	}
-	
+
 	uint32_t usagePage = IOHIDDevice_GetUsagePage( inIOHIDDeviceRef );
 	uint32_t usage = IOHIDDevice_GetUsage( inIOHIDDeviceRef );
-	
+
 	if ( !usagePage || !usage ) {
 		usagePage = IOHIDDevice_GetPrimaryUsagePage( inIOHIDDeviceRef );
 		usage = IOHIDDevice_GetPrimaryUsage( inIOHIDDeviceRef );
 	}
-	
+
 	printf( "usage: 0x%04lX:0x%04lX, ", (long unsigned int) usagePage, (long unsigned int) usage );
-	
+
 #if 1
 	tCFStringRef = HIDCopyUsageName( usagePage, usage );
 	if ( tCFStringRef ) {
@@ -756,39 +756,39 @@ void HIDDumpElementInfo( IOHIDElementRef inIOHIDElementRef )
 #endif
 		IOHIDElementCookie tIOHIDElementCookie = IOHIDElementGetCookie( inIOHIDElementRef );
 		printf( "cookie: %p, ", tIOHIDElementCookie );
-		
+
 		IOHIDElementType tIOHIDElementType = IOHIDElementGetType( inIOHIDElementRef );
 		switch ( tIOHIDElementType ) {
 			case kIOHIDElementTypeInput_Misc: {
 				printf( "type: Misc, " );
 				break;
 			}
-				
+
 			case kIOHIDElementTypeInput_Button: {
 				printf( "type: Button, " );
 				break;
 			}
-				
+
 			case kIOHIDElementTypeInput_Axis: {
 				printf( "type: Axis, " );
 				break;
 			}
-				
+
 			case kIOHIDElementTypeInput_ScanCodes: {
 				printf( "type: ScanCodes, " );
 				break;
 			}
-				
+
 			case kIOHIDElementTypeOutput: {
 				printf( "type: Output, " );
 				break;
 			}
-				
+
 			case kIOHIDElementTypeFeature: {
 				printf( "type: Feature, " );
 				break;
 			}
-				
+
 			case kIOHIDElementTypeCollection: {
 				IOHIDElementCollectionType tIOHIDElementCollectionType = IOHIDElementGetCollectionType( inIOHIDElementRef );
 				switch (tIOHIDElementCollectionType ) {
@@ -800,32 +800,32 @@ void HIDDumpElementInfo( IOHIDElementRef inIOHIDElementRef )
 						printf( "type: Application Collection, " );
 						break;
 					}
-						
+
 					case kIOHIDElementCollectionTypeLogical: {
 						printf( "type: Logical Collection, " );
 						break;
 					}
-						
+
 					case kIOHIDElementCollectionTypeReport: {
 						printf( "type: Report Collection, " );
 						break;
 					}
-						
+
 					case kIOHIDElementCollectionTypeNamedArray: {
 						printf( "type: Named Array Collection, " );
 						break;
 					}
-						
+
 					case kIOHIDElementCollectionTypeUsageSwitch: {
 						printf( "type: Usage Switch Collection, " );
 						break;
 					}
-						
+
 					case kIOHIDElementCollectionTypeUsageModifier: {
 						printf( "type: Usage Modifier Collection, " );
 						break;
 					}
-						
+
 					default: {
 						printf( "type: %p Collection, ", (void*) tIOHIDElementCollectionType );
 						break;
@@ -833,19 +833,19 @@ void HIDDumpElementInfo( IOHIDElementRef inIOHIDElementRef )
 				}
 				break;
 			}
-				
+
 			default: {
 				printf( "type: %p, ", (void*) tIOHIDElementType );
 				break;
 			}
 		}     /* switch */
-		
+
 		uint32_t usagePage = IOHIDElementGetUsagePage( inIOHIDElementRef );
 		uint32_t usage = IOHIDElementGetUsage( inIOHIDElementRef );
 		printf( "usage: 0x%04lX:0x%04lX, ", (long unsigned int) usagePage, (long unsigned int) usage );
 #if 1
 		CFStringRef tCFStringRef = HIDCopyUsageName( usagePage, usage );
-		
+
 		if ( tCFStringRef ) {
 			char usageString[256] = "";
 			verify( CFStringGetCString( tCFStringRef, usageString, sizeof( usageString ), kCFStringEncodingUTF8 ) );
@@ -855,80 +855,80 @@ void HIDDumpElementInfo( IOHIDElementRef inIOHIDElementRef )
 #endif
 		CFStringRef nameCFStringRef = IOHIDElementGetName( inIOHIDElementRef );
 		char buffer[256];
-		
+
 		if ( nameCFStringRef && CFStringGetCString( nameCFStringRef, buffer, sizeof( buffer ), kCFStringEncodingUTF8 ) ) {
 			printf( "name: %s, ", buffer );
 		}
-		
+
 		uint32_t reportID = IOHIDElementGetReportID( inIOHIDElementRef );
 		uint32_t reportSize = IOHIDElementGetReportSize( inIOHIDElementRef );
 		uint32_t reportCount = IOHIDElementGetReportCount( inIOHIDElementRef );
 		printf( "report: { ID: %lu, Size: %lu, Count: %lu }, ",
 			   (long unsigned int) reportID, (long unsigned int) reportSize, (long unsigned int) reportCount );
-		
+
 		uint32_t unit = IOHIDElementGetUnit( inIOHIDElementRef );
 		uint32_t unitExp = IOHIDElementGetUnitExponent( inIOHIDElementRef );
-		
+
 		if ( unit || unitExp ) {
 			printf( "unit: %lu * 10^%lu, ", (long unsigned int) unit, (long unsigned int) unitExp );
 		}
-		
+
 		CFIndex logicalMin = IOHIDElementGetLogicalMin( inIOHIDElementRef );
 		CFIndex logicalMax = IOHIDElementGetLogicalMax( inIOHIDElementRef );
-		
+
 		if ( logicalMin != logicalMax ) {
 			printf( "logical: {min: %ld, max: %ld}, ", logicalMin, logicalMax );
 		}
-		
+
 		CFIndex physicalMin = IOHIDElementGetPhysicalMin( inIOHIDElementRef );
 		CFIndex physicalMax = IOHIDElementGetPhysicalMax( inIOHIDElementRef );
-		
+
 		if ( physicalMin != physicalMax ) {
 			printf( "physical: {min: %ld, max: %ld}, ", physicalMin, physicalMax );
 		}
-		
+
 		Boolean isVirtual = IOHIDElementIsVirtual( inIOHIDElementRef );
-		
+
 		if ( isVirtual ) {
 			printf( "isVirtual, " );
 		}
-		
+
 		Boolean isRelative = IOHIDElementIsRelative( inIOHIDElementRef );
-		
+
 		if ( isRelative ) {
 			printf( "isRelative, " );
 		}
-		
+
 		Boolean isWrapping = IOHIDElementIsWrapping( inIOHIDElementRef );
-		
+
 		if ( isWrapping ) {
 			printf( "isWrapping, " );
 		}
-		
+
 		Boolean isArray = IOHIDElementIsArray( inIOHIDElementRef );
-		
+
 		if ( isArray ) {
 			printf( "isArray, " );
 		}
-		
+
 		Boolean isNonLinear = IOHIDElementIsNonLinear( inIOHIDElementRef );
-		
+
 		if ( isNonLinear ) {
 			printf( "isNonLinear, " );
 		}
-		
+
 		Boolean hasPreferredState = IOHIDElementHasPreferredState( inIOHIDElementRef );
-		
+
 		if ( hasPreferredState ) {
 			printf( "hasPreferredState, " );
 		}
-		
+
 		Boolean hasNullState = IOHIDElementHasNullState( inIOHIDElementRef );
-		
+
 		if ( hasNullState ) {
 			printf( "hasNullState, " );
 		}
-		
+
 		printf( " }\n" );
 	}
 }   // HIDDumpElementInfo
@@ -951,7 +951,7 @@ void HIDDumpElementCalibrationInfo( IOHIDElementRef inIOHIDElementRef )
 
 	double_t granularity = IOHIDElement_GetCalibrationGranularity(inIOHIDElementRef);
 	printf( "granularity: %6.2f }\n", granularity );
-	
+
 }
 
 //***************************************************
@@ -985,10 +985,10 @@ static CFComparisonResult CFDeviceArrayComparatorFunction( const void *val1, con
 {
 #pragma unused( context )
 	CFComparisonResult result = kCFCompareEqualTo;
-	
+
 	long loc1 = IOHIDDevice_GetLocationID( ( IOHIDDeviceRef ) val1 );
 	long loc2 = IOHIDDevice_GetLocationID( ( IOHIDDeviceRef ) val2 );
-	
+
 	if ( loc1 < loc2 ) {
 		result = kCFCompareLessThan;
 	} else if ( loc1 > loc2 ) {
@@ -1016,21 +1016,21 @@ static CFMutableDictionaryRef hu_SetUpMatchingDictionary( UInt32 inUsagePage, UI
 	// create a dictionary to add usage page/usages to
 	CFMutableDictionaryRef refHIDMatchDictionary = CFDictionaryCreateMutable( kCFAllocatorDefault, 0,
 																			 &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks );
-	
+
 	if ( refHIDMatchDictionary ) {
 		if ( inUsagePage ) {
 			// Add key for device type to refine the matching dictionary.
 			CFNumberRef pageCFNumberRef = CFNumberCreate( kCFAllocatorDefault, kCFNumberIntType, &inUsagePage );
-			
+
 			if ( pageCFNumberRef ) {
 				CFDictionarySetValue( refHIDMatchDictionary,
 									 CFSTR( kIOHIDPrimaryUsagePageKey ), pageCFNumberRef );
 				CFRelease( pageCFNumberRef );
-				
+
 				// note: the usage is only valid if the usage page is also defined
 				if ( inUsage ) {
 					CFNumberRef usageCFNumberRef = CFNumberCreate( kCFAllocatorDefault, kCFNumberIntType, &inUsage );
-					
+
 					if ( usageCFNumberRef ) {
 						CFDictionarySetValue( refHIDMatchDictionary,
 											 CFSTR( kIOHIDPrimaryUsageKey ), usageCFNumberRef );

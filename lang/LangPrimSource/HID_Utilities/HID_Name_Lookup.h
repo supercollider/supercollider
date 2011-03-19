@@ -115,6 +115,7 @@ extern Boolean HIDAddDeviceElementToXML( IOHIDDeviceRef inIOHIDDeviceRef, IOHIDE
 // returns C string type name given a type enumeration passed in as parameter( see IOHIDKeys.h )
 // returns empty string for invalid types
 extern void HIDGetTypeName( IOHIDElementType inIOHIDElementType, char * outCStrName );
+extern void HIDGetUsageName (const long valueUsagePage, const long valueUsage, char * cstrName);
 
 // return a CFStringRef string for a given usage page & usage( see IOUSBHIDParser.h )
 extern CFStringRef HIDCopyUsageName( long inUsagePage, long inUsage );
