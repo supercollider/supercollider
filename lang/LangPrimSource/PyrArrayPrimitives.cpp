@@ -859,7 +859,7 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 			break;
 		case obj_symbol :
 			if (NotSym(b)) return errWrongType;
-			((int*)slots)[array->size++] = slotRawInt(b);
+			((PyrSymbol**)slots)[array->size++] = slotRawSymbol(b);
 			break;
 		case obj_float :
 			err = slotDoubleVal(b, &fval);
@@ -962,7 +962,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 				break;
 			case obj_symbol :
 				if (NotSym(c)) return errWrongType;
-				((int*)slots1)[index] = slotRawInt(c);
+				((PyrSymbol**)slots1)[index] = slotRawSymbol(c);
 				if (remain) {
 					memcpy((int*)slots1 + index + 1, (int*)slots2 + index,
 						remain * elemsize);
@@ -1037,7 +1037,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 						remain * elemsize);
 				}
 				if (NotSym(c)) return errWrongType;
-				((int*)slots1)[index] = slotRawInt(c);
+				((PyrSymbol**)slots1)[index] = slotRawSymbol(c);
 				break;
 			case obj_float :
 				if (remain) {
