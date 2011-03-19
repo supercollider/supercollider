@@ -1,7 +1,10 @@
-find_package (Qt4)
+find_package (Qt4 4.5)
 if (NOT QT4_FOUND)
-	message(FATAL_ERROR "you try to compile with QT support, but qt cannot be found."
-	"please either install qt4 or compile without qt support (add -DSC_QT=OFF to the cmake command line)")
+    message(FATAL_ERROR
+        "You are trying to compile with Qt GUI support, but either Qt version on your"
+        " system is not compatible, or Qt cannot be found."
+        " Please either install Qt (version 4.5 or greater), or compile without Qt GUI support"
+        " (add -DSC_QT=OFF to the cmake command line).")
 endif()
 
 find_package (Sndfile REQUIRED)
