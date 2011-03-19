@@ -264,6 +264,41 @@ install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
 )
 
+install(DIRECTORY HelpSource
+	DESTINATION ${auxresourcesdir}
+)
+
+#############################################
+#
+# build scdoc help files
+#
+
+set(BUILD_CLASSLIBRARYPATH_COMMON ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/Common)
+set(BUILD_CLASSLIBRARYPATH_PLATFORM ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/Platform)
+set(BUILD_CLASSLIBRARYPATH_SCDOC ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/SCDoc)
+set(BUILD_CLASSLIBRARYPATH_DEFAULTLIB ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/DefaultLibrary)
+set(BUILD_CLASSLIBRARYPATH_JITLIB ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/JITLib)
+set(BUILD_CLASSLIBRARYPATH_COMPAT ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/backwards_compatibility)
+
+configure_file(build_sclang.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg)
+
+file(GLOB_RECURSE SCDocSources RELATIVE HelpSource .*[^~])
+file(GLOB_RECURSE SCDocClasses RELATIVE SCClassLibrary/SCDoc *.sc)
+
+add_custom_target(doc ALL
+				  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/lang/sclang
+						  -l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
+						  HelpSource/compileHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/SCDoc
+				  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+				  DEPENDS sclang ${SCDocSources} ${SCDocClasses})
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/SCDoc
+	DESTINATION ${auxresourcesdir})
+
+set_directory_properties(
+	PROPERTIES
+	ADDITIONAL_MAKE_CLEAN_FILES "SCDoc")
+
 #############################################
 # CPack support
 
