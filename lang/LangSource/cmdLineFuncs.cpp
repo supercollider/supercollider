@@ -181,6 +181,8 @@ int main()
 	compileLibrary();
 	runLibrary(s_run); fflush(postfile);
 
+	cleanup_OSC();
+
 	return 0;
 }
 

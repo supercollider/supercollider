@@ -72,6 +72,7 @@ public:
 
 	// initialize language runtime
 	void initRuntime(const Options& opt=Options());
+	void shutdownRuntime();
 
 	// return application name
 	const char* getName() const { return mName; }

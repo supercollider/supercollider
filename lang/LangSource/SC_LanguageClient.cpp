@@ -103,6 +103,11 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 	}
 }
 
+void SC_LanguageClient::shutdownRuntime()
+{
+	cleanup_OSC();
+}
+
 bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* fileName)
 {
 	SC_LibraryConfigFile file(&::post);
