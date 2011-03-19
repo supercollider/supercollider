@@ -189,21 +189,7 @@ extern IOHIDElementRef HIDGetPreviousDeviceElement (IOHIDElementRef inIOHidEleme
 // returns C string type name given a type enumeration passed in as parameter( see IOHIDKeys.h )
 // returns empty string for invalid types
 extern void HIDGetTypeName( IOHIDElementType inIOHIDElementType, char * outCStrName );
-	
-//*************************************************************************
-//
-// HIDCopyUsageName( inUsagePage, inUsage )
-//
-// Purpose:	return a CFStringRef string for a given usage page & usage( see IOUSBHIDParser.h )
-//
-// Notes:	returns usage page and usage values in CFString form for unknown values
-//
-// Inputs:	inUsagePage	- the usage page
-//			inUsage		- the usage
-//
-// Returns:	CFStringRef	- the resultant string
-//
-
+extern void HIDGetUsageName (const long valueUsagePage, const long valueUsage, char * cstrName);
 extern CFStringRef HIDCopyUsageName( long inUsagePage, long inUsage );
 
 // ==================================
