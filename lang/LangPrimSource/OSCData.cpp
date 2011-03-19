@@ -775,11 +775,28 @@ void init_OSC(int port);
 void init_OSC(int port)
 {
     postfl("init_OSC\n");
+
+#ifdef _WIN32
+	WSAData wsaData;
+	int nCode;
+	if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+		error( "sclang: init_OSC: WSAStartup() failed with error code %d.\n", nCode );
+	}
+#endif
+
     try {
         gUDPport = new SC_UdpInPort(port);
     } catch (...) {
         postfl("No networking.");
     }
+}
+
+void cleanup_OSC()
+{
+	postfl( "cleaning up OSC\n");
+#ifdef _WIN32
+	WSACleanup();
+#endif
 }
 
 int prGetHostByName(VMGlobals *g, int numArgsPushed);
@@ -792,7 +809,14 @@ int prGetHostByName(VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	struct hostent *he = gethostbyname(hostname);
-	if (!he) return errFailed;
+	if (!he) {
+#ifdef _WIN32
+		int err = WSAGetLastError();
+		error("gethostbyname(\"%s\") failed with error code %i.\n",
+			hostname, err);
+#endif
+		return errFailed;
+	}
 
 	SetInt(a, ntohl(*(int*)he->h_addr));
 

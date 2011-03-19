@@ -259,6 +259,8 @@ int SC_TerminalClient::run(int argc, char** argv)
 	shutdownLibrary();
 	flush();
 
+	shutdownRuntime();
+
 	return mReturnCode;
 }
 
