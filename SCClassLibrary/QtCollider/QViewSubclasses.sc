@@ -635,8 +635,8 @@ QListView : QItemViewBase {
   }
 
   enterKeyAction_ { arg func;
+    this.manageMethodConnection( enterKeyAction, func, 'returnPressed()', 'enterKey' );
     enterKeyAction = func;
-    this.connectMethod( "returnPressed()", \enterKey );
   }
 
   enterKey {
@@ -825,7 +825,7 @@ QMultiSliderView : QView {
   }
 
   metaAction_ { arg func;
-    if( metaAction.isNil ) { this.connectMethod( "metaAction()", \doMetaAction ) };
+    this.manageMethodConnection( metaAction, func, 'metaAction()', \doMetaAction );
     metaAction = func;
   }
 

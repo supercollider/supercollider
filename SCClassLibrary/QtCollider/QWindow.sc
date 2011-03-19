@@ -162,10 +162,7 @@ QWindow
   }
 
   onClose_ { arg func;
-    if( onClose != func && onClose.notNil ) {
-      view.disconnectFunction( 'destroyed()', onClose );
-    };
-    view.connectFunction( 'destroyed()', func, false );
+    view.manageFunctionConnection( onClose, func, 'destroyed()', false );
     onClose = func;
   }
 

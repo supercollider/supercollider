@@ -241,7 +241,7 @@ QView : QObject {
   // ----------------- actions .....................................
 
   action_ { arg func;
-    if( action.isNil ) { this.connectMethod( "action()", \doAction ) };
+    this.manageMethodConnection( action, func, 'action()', \doAction );
     action = func;
   }
 
@@ -303,10 +303,7 @@ QView : QObject {
   }
 
   onClose_ { arg func;
-    if( onClose != func && onClose.notNil ) {
-      this.disconnectFunction( 'destroyed()', onClose );
-    };
-    this.connectFunction( 'destroyed()', func, false );
+    this.manageFunctionConnection( onClose, func, 'destroyed()', false );
     onClose = func;
   }
 
@@ -449,6 +446,34 @@ QView : QObject {
   prSetLayout { arg layout;
     _QWidget_SetLayout
     ^this.primitiveFailed;
+  }
+
+  isValidFunction { arg f;
+    case
+      { f.isFunction } {^true}
+      { f.isNil } {^false}
+      { ^(f.array.size > 0) }
+    ;
+  }
+
+  manageMethodConnection { arg fold, fnew, signal, method, sync=false;
+    var haveOld, haveNew;
+    if( fold !== fnew ) {
+      haveOld = this.isValidFunction(fold);
+      haveNew = this.isValidFunction(fnew);
+      if( haveOld.not && haveNew ) {this.connectMethod (signal, method, sync)};
+      if( haveOld && haveNew.not ) {this.disconnectMethod (signal, method);}
+    }
+  }
+
+  manageFunctionConnection { arg fold, fnew, signal, sync=false;
+    var haveOld, haveNew;
+    if( fold !== fnew ) {
+      haveOld = this.isValidFunction(fold);
+      haveNew = this.isValidFunction(fnew);
+      if( haveOld ) {this.disconnectFunction (signal, fold)};
+      if( haveNew ) {this.connectFunction (signal, fnew, sync)};
+    }
   }
 
   overrides { arg symMethod;
