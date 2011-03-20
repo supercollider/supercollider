@@ -17,17 +17,14 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifdef _WIN32
-#define hypotf _hypotf
-#endif
-
 #include "onsetsds.h"
 
 
 #define ODS_DEBUG_POST_CSV 0
 
 #ifdef _MSC_VER
-// the MSVC 2005 compiler is not up to date with inline
+// msvc doesn't support c99
+#define hypotf _hypotf
 #define inline /* inline */
 #endif
 

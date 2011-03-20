@@ -28,6 +28,11 @@
 #include "SC_Constants.h"
 #include "float.h"
 
+#ifdef _MSC_VER
+// hypotf is c99, but not c++
+#define hypotf _hypotf
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace detail {
@@ -136,7 +141,7 @@ struct Polar
 
 inline Polar Complex::ToPolar()
 {
-	return Polar(hypot(imag, real), std::atan2(imag, real));
+	return Polar(hypotf(imag, real), std::atan2(imag, real));
 }
 
 inline Polar Complex::ToPolarApx()

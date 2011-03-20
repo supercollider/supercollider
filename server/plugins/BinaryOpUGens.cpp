@@ -23,9 +23,8 @@
 
 
 #ifdef _MSC_VER
-// MS libs prefer _hypot rather than hypot, and don't provide hypotf
-#define hypot _hypot
-#define hypotf (float)_hypot
+// hypotf is c99, but not c++
+#define hypotf _hypotf
 #endif
 
 #ifdef NOVA_SIMD
