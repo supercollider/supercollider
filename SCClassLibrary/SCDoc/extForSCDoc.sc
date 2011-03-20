@@ -122,6 +122,8 @@
 	
 }
 // install a menu to access scdoc
+/*
+// commenting this out for now since it breaks SCDoc by overwriting the original *initClass.
 +SCDoc {
 	*initClass {
 		var scDocMenu;
@@ -144,7 +146,7 @@
 		}
 	}
 }
-
+*/
 
 // these methods allow the QHelpBrowser to do cmd-j, etc
 
