@@ -403,7 +403,9 @@ Server : Model {
 								NotificationCenter.notify(this,\didQuit);
 							};
 							recordNode = nil;
-							notified = false;
+							if(this.isLocal.not){
+								notified = false;
+							}
 						})
 
 					}{
