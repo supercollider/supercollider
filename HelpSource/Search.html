@@ -97,7 +97,7 @@ escape_regexp = function(str) {
   return str.replace(specials, "\\$&");
 }
     
-window.onload = function() {
+function onLoad() {
     newinput = document.getElementById("search_input").value;
 
     checkboxes = [];
@@ -148,9 +148,10 @@ window.onload = function() {
     node = document.getElementById("search_results");
    
     var x = unescape(window.location.hash.slice(1));
-    if(x!="" && newinput=="") {
+    if(x!="" && newinput!=x) {
         document.getElementById("search_input").value = x;
         newinput = x;
+        window.location.hash = "";
     }
     
     classes = {};
@@ -416,7 +417,7 @@ function doSearch() {
             document.getElementById("search_results").innerHTML = err;
             return;
         }
-        
+
         // search docmap
         cats = {};
         for(var k in docmap) {
@@ -486,11 +487,12 @@ function delayed_update() {
         doPrint();
     }
 }
+window.onhashchange = onLoad;
 </script>
 
 </head>
 
-<body>
+<body onload="onLoad()">
 
 <table class='headMenu'>
     <tr><td><a href='./Help.html'>Home</a>
