@@ -558,7 +558,9 @@ SCDocRenderer {
                 
                 x = parser.findNode(\redirect).text.stripWhiteSpace;
                 if(x.notEmpty) {
-                    currentImplClass = currentClass.perform(x.asSymbol);
+                    try {
+                        currentImplClass = currentClass.perform(x.asSymbol);
+                    };
                 };
             };
 
