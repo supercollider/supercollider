@@ -125,7 +125,7 @@
 +SCDoc {
 	*initClass {
 		var scDocMenu;
-		if (thisProcess.class.name == 'osx') {	
+		if (thisProcess.class.name == 'OSXPlatform') {	
 			StartUp.add({	
 				if (GUI.scheme.name == \QtGUI) {
 					scDocMenu = SCMenuGroup(nil, "SCDoc", 10);
