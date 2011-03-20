@@ -17,7 +17,6 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#ifndef SC_WIN32
 
 // #ifdef SC_DARWIN
 // # define USE_SC_TERMINAL_CLIENT 0
@@ -186,14 +185,3 @@ int main()
 }
 
 #endif // USE_SC_TERMINAL_CLIENT
-
-#else
-
-#include <windows.h>
-
-int WINAPI WinMain(HINSTANCE d1, HINSTANCE d2, LPSTR d3, int d4)
-{
-	MessageBox(NULL, "sclang.exe unsupported", "", MB_OK);
-}
-
-#endif //SC_WIN32

@@ -33,6 +33,7 @@
 # include "getopt.h"
 # include "SC_Win32Utils.h"
 # include <io.h>
+# include <windows.h>
 #else
 # include <sys/param.h>
 # include <sys/poll.h>
@@ -62,7 +63,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mShouldBeRunning(false),
 	  mReturnCode(0),
-	  mUseReadline(0)
+	  mUseReadline(false)
 {
 }
 
@@ -267,38 +268,6 @@ void SC_TerminalClient::quit(int code)
 	mShouldBeRunning = false;
 }
 
-bool SC_TerminalClient::readCmdLine(int fd, SC_StringBuffer& cmdLine)
-{
-	const int bufSize = 256;
-	char buf[bufSize];
-
-	int n = read(fd, buf, bufSize);
-
-	if (n > 0) {
-		char* ptr = buf;
-		while (n--) {
-			char c = *ptr++;
-			if (c == kInterpretCmdLine) {
-				interpretCmdLine(s_interpretCmdLine, cmdLine);
-			} else if (c == kInterpretPrintCmdLine) {
-				interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
-			} else {
-				cmdLine.append(c);
-			}
-		}
-		return true;
-	}
-
-	if (n == 0) {
-		quit(0);
-	} else if (errno != EAGAIN) {
-		perror(getName());
-		quit(1);
-	}
-
-	return false;
-}
-
 void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine)
 {
 	setCmdLine(cmdLine);
@@ -376,7 +345,7 @@ static struct pollfd pfds = { fd, POLLIN, 0 };
 
 void SC_TerminalClient::initCmdLine()
 {
-#ifndef SC_WIN32
+#ifndef _WIN32
 
 #ifdef HAVE_READLINE
 
@@ -415,54 +384,117 @@ void SC_TerminalClient::initCmdLine()
 	} // end gIdeName!="none"
 #endif
 
-#else
-	assert(0);
-#endif
+#else // _WIN32
+
+#endif // _WIN32
 }
 
 static SC_StringBuffer gCmdLine;
 
-void SC_TerminalClient::readCmdLine()
-{
-#ifndef _WIN32
-
 #ifdef HAVE_READLINE
-	if (mUseReadline) {
-		int nfds = poll(&pfds, 1, 0);
-		if (nfds > 0) {
-			const int bufSize = 128;
-			char buf[bufSize];
+void SC_TerminalClient::readCmdLineRL()
+{
+	int nfds = poll(&pfds, 1, 0);
+	if (nfds > 0) {
+		const int bufSize = 128;
+		char buf[bufSize];
 
-			int n = read(fd, buf, bufSize);
+		int n = read(fd, buf, bufSize);
 
-			for (int i=0; i<n; ++i) {
-				rl_stuff_char(buf[i]);
-				rl_callback_read_char();
-			}
-
-			if (n < 0 && errno != EINTR) {
-				perror(getName()); quit(1);
-			}
+		for (int i=0; i<n; ++i) {
+			rl_stuff_char(buf[i]);
+			rl_callback_read_char();
 		}
-		else if (nfds == -1 && errno != EINTR) {
+
+		if (n < 0 && errno != EINTR) {
 			perror(getName()); quit(1);
 		}
-	} else {
-#endif
-		int nfds = poll(&pfds, 1, 0);
-		if (nfds > 0) {
-			while (readCmdLine(fd, gCmdLine));
-		} else if (nfds == -1 && errno != EINTR) {
-			perror(getName());
-			quit(1);
-			return;
+	}
+	else if (nfds == -1 && errno != EINTR) {
+		perror(getName()); quit(1);
+	}
+}
+#endif // HAVE_READLINE
+
+#ifndef _WIN32
+
+void SC_TerminalClient::readCmdLineStream()
+{
+	int nfds = poll(&pfds, 1, 0);
+	if (nfds > 0) {
+		int n = 0;
+		do {
+			const int bufSize = 256;
+			char buf[bufSize];
+
+			n = read(fd, buf, bufSize);
+
+			if (n > 0) {
+				pushCmdLine(buf, n, gCmdLine);
+			}
+			else if ( n == 0 ) {
+				quit(0);
+			}
+			else if ( errno != EAGAIN ) {
+				perror(getName());
+				quit(1);
+			}
+		} while ( n > 0 );
+	} else if (nfds == -1 && errno != EINTR) {
+		perror(getName());
+		quit(1);
+		return;
+	}
+}
+
+#else // !_WIN32
+
+void SC_TerminalClient::readCmdLineStream()
+{
+	DWORD nAvail;
+	HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
+	if (!PeekNamedPipe(hStdIn, NULL, 0, NULL, &nAvail, NULL)) {
+		return;
+	}
+
+	while (nAvail > 0)
+	{
+		char buf[256];
+		DWORD nRead = sc_min(256, nAvail);
+		if (!ReadFile(hStdIn, buf, nRead, &nRead, NULL)) {
+			quit(1); return;
 		}
-#ifdef HAVE_READLINE
-	} // useReadLine
+		else if (nRead > 0) {
+			pushCmdLine(buf, nRead, gCmdLine);
+		}
+		nAvail -= nRead;
+	}
+}
+
+#endif // !_WIN32
+
+void SC_TerminalClient::readCmdLine()
+{
+#if defined( HAVE_READLINE ) && !defined( _WIN32 )
+	if (mUseReadline)
+		readCmdLineRL();
+	else
 #endif
-#else
-	assert(false);
-#endif
+		readCmdLineStream();
+}
+
+void SC_TerminalClient::pushCmdLine(const char *buf, int bufc, SC_StringBuffer& cmdLine)
+{
+	while (bufc--) {
+		char c = *buf++;
+		if (c == kInterpretCmdLine) {
+			interpretCmdLine(s_interpretCmdLine, cmdLine);
+		} else if (c == kInterpretPrintCmdLine) {
+			interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
+		} else {
+			cmdLine.append(c);
+		}
+	}
 }
 
 void SC_TerminalClient::cleanupCmdLine()
@@ -474,16 +506,24 @@ void SC_TerminalClient::cleanupCmdLine()
 
 void SC_TerminalClient::commandLoop()
 {
+#ifndef _WIN32
 	struct timespec tv = { 0, 1e9 / ticks_per_second };
+#else
+	int period = 1000 / ticks_per_second;
+#endif
 
 	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
 		readCmdLine();
+#ifndef _WIN32
 		if (nanosleep(&tv, 0) == -1 && errno != EINTR) {
 			perror(getName());
 			quit(1);
 			break;
 		}
+#else
+		Sleep(period);
+#endif
 	}
 }
 
