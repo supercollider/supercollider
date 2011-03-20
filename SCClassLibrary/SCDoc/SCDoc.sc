@@ -302,8 +302,7 @@ SCDoc {
     *tickProgress { progressCount = progressCount + 1 }
 
     *initHelpTargetDir {
-        var sysdir = this.systemHelpDir.escapeChar($ );
-        var cond;
+        var cond, sysdir = this.systemHelpDir.escapeChar($ );
         if(File.exists(this.helpTargetDir).not) {
             this.postProgress("Initializing user's help directory", true);
             if(File.exists(this.systemHelpDir)) {
@@ -317,7 +316,7 @@ SCDoc {
         };
     }
 
-    *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true|
+    *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true,findExtensions=true,useHelpBase=true|
         var func;
         var docmap_path = this.helpTargetDir.escapeChar($ )+/+"scdoc_cache";
         var classlist_path = this.helpTargetDir+/+"classlist_cache";
@@ -325,7 +324,9 @@ SCDoc {
         func = {
             var helpSourceDirs, fileList, count, maybeDelete, x, f, n, old_classes, current_classes;
 
-            this.initHelpTargetDir;
+            if(useHelpBase) {
+                this.initHelpTargetDir;
+            };
 
             if(force.not) {
                 force = this.readDocMap;
@@ -355,9 +356,11 @@ SCDoc {
 
             // find the set of helpSourceDirs
             helpSourceDirs = Set[this.helpSourceDir];
-            [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
-                helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
-                    .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
+            if(findExtensions) {
+                [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
+                    helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
+                        .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
+                };
             };
             this.postProgress(helpSourceDirs);
 
