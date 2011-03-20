@@ -134,7 +134,7 @@ bool SC_LanguageClient::readDefaultLibraryConfig()
 	return false;
 #else
 // $$$todo rewrite for win32 (home folder ?)
-  assert(0);
+  //assert(0);
   return false;
 #endif
 }

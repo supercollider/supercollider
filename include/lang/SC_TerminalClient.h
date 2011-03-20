@@ -80,8 +80,6 @@ protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
 
-	// fd is assumed to be non-blocking
-	bool readCmdLine(int fd, SC_StringBuffer& cmdLine);
 	void interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine);
 	void interpretCmdLine(PyrSymbol* method, const char* cmdLine);
 
@@ -96,6 +94,11 @@ protected:
 private:
 	void initCmdLine();
 	void cleanupCmdLine();
+#ifdef HAVE_READLINE
+	void readCmdLineRL();
+#endif
+	void readCmdLineStream();
+	void pushCmdLine(const char *buf, int bufc, SC_StringBuffer& cmdLine);
 	static void readlineCb( char * );
 
 	bool				mShouldBeRunning;
