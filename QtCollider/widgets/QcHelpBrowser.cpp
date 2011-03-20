@@ -89,15 +89,19 @@ QcHelpBrowser::QcHelpBrowser()
   connect( actHome, SIGNAL(activated()), this, SLOT(goHome()) );
 }
 
+void QcHelpBrowser::setHome( const QString &homeUrl )
+{
+  _home = urlFromString(homeUrl);
+  goHome();
+}
+
 void QcHelpBrowser::load( const QString &urlString ) {
-  QUrl url( urlString );
-  _urlFragment = url.fragment();
-  helpFileView->load( url );
+  helpFileView->load( urlFromString(urlString) );
 }
 
 void QcHelpBrowser::goHome()
 {
-  load( _home );
+  helpFileView->load( _home );
 }
 
 void QcHelpBrowser::onLoadFinished( bool ok )
@@ -106,11 +110,6 @@ void QcHelpBrowser::onLoadFinished( bool ok )
     setWindowTitle( "SuperCollider Help: Failed to load page" );
     return;
   }
-
-#if QT_VERSION >= 0x040700
-  if( !_urlFragment.isEmpty() )
-      helpFileView->page()->mainFrame()->scrollToAnchor( _urlFragment );
-#endif
 
   QString title = helpFileView->title();
   if( title.isEmpty() ) {

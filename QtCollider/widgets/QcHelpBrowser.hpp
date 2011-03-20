@@ -49,13 +49,19 @@ public:
   QcHelpBrowser();
 
   Q_INVOKABLE
-  void load( const QString &urlString );
+  void setHome( const QString &homeUrl );
 
   Q_INVOKABLE
-  void setHome( const QString &homeUrl ) { _home = homeUrl; goHome(); }
+  void load( const QString &urlString );
 
   QSize sizeHint() const {
     return QWidget::sizeHint() - QSize(200, 0 );
+  }
+
+  inline static QUrl urlFromString( const QString &str ) {
+    QUrl url( str );
+    if( url.scheme().isEmpty() ) url.setScheme( "file" );
+    return url;
   }
 
 public Q_SLOTS:
@@ -71,8 +77,7 @@ private:
   // content display
   HelpFileView *helpFileView;
 
-  QString _home;
-  QString _urlFragment; // fragment(anchor) of requested url
+  QUrl _home;
 };
 
 class SimpleFindTool : public QLineEdit
