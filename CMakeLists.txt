@@ -288,16 +288,16 @@ file(GLOB_RECURSE SCDocClasses RELATIVE SCClassLibrary/SCDoc *.sc)
 add_custom_target(doc ALL
 				  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/lang/sclang
 						  -l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
-						  HelpSource/compileHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/SCDoc
+						  HelpSource/compileHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/HelpBase
 				  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 				  DEPENDS sclang ${SCDocSources} ${SCDocClasses})
 
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/SCDoc
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/HelpBase
 	DESTINATION ${auxresourcesdir})
 
 set_directory_properties(
 	PROPERTIES
-	ADDITIONAL_MAKE_CLEAN_FILES "SCDoc")
+	ADDITIONAL_MAKE_CLEAN_FILES "HelpBase")
 
 #############################################
 # CPack support
