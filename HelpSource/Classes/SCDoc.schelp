@@ -49,6 +49,10 @@ argument:: gui
 If true and code::threaded:: is also true, create a GUI progress window instead of posting progress to the post window.
 discussion::
 It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::. It also searches recursively for all folders named "HelpSource" under code::thisProcess.platform.userExtensionDir:: and code::thisProcess.platform.systemExtensionDir::.
+argument:: findExtensions
+If false, don't search for extensions (useful when building base help)
+argument:: useHelpBase
+if false, don't initialize help target directory from existing HelpBase
 
 method:: checkBrokenLinks
 Scans the entire help tree for broken links
