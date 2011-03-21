@@ -80,11 +80,11 @@ int gNumCompiledFiles;
 thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 */
 
-#ifdef SC_LINUX
+//#ifdef SC_LINUX
 # define ENABLE_LIBRARY_CONFIGURATOR 1
-#else
-# undef ENABLE_LIBRARY_CONFIGURATOR
-#endif // SC_LINUX
+//#else
+//# undef ENABLE_LIBRARY_CONFIGURATOR
+//#endif // SC_LINUX
 
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
