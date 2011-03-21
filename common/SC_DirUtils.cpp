@@ -172,42 +172,18 @@ bool sc_SkipDirectory(const char *name)
 
 int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length)
 {
+#if defined(_WIN32)
 	isAlias = false;
-#if defined(__APPLE__) && !defined(SC_IPHONE)
-	FSRef dirRef;
-	OSStatus osStatusErr = FSPathMakeRef ((const UInt8 *) path, &dirRef, NULL);
-	if ( !osStatusErr ) {
-		Boolean isFolder;
-		Boolean wasAliased;
-		OSErr err = FSResolveAliasFile (&dirRef, true, &isFolder, &wasAliased);
-		if (err)
-		{
-			return -1;
-		}
-		isAlias = wasAliased;
-		if (wasAliased)
-		{
-			UInt8 resolvedPath[PATH_MAX];
-			osStatusErr = FSRefMakePath (&dirRef, resolvedPath, length);
-			if (osStatusErr)
-			{
-				return -1;
-			}
-			strncpy(returnPath, (char *) resolvedPath, length);
-			return 0;
-		}
-	}
-#elif defined(__linux__) || defined(__FreeBSD__)
+	strcpy(returnPath, path);
+	return 0;
+#else
 	isAlias = sc_IsSymlink(path);
 	if (realpath(path, returnPath))
 	{
 		return 0;
 	}
-
 	return -1;
 #endif
-	strcpy(returnPath, path);
-	return 0;
 }
 
 // Support for Bundles
