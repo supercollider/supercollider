@@ -417,9 +417,11 @@ SCDoc {
             x = Object.readArchive(this.helpTargetDir+/+"helpdirlist_cache");
             if(x.notNil) {
                 (helpSourceDirs - x).do {|dir|
-                    this.postProgress("Found new HelpSource folder:"+dir);
-                    fileList[dir] = fileList[dir] | ("find -L"+dir.escapeChar($ )+"-type f")
-                        .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
+                    if(dir != this.helpSourceDir) {
+                        this.postProgress("Found new HelpSource folder:"+dir);
+                        fileList[dir] = fileList[dir] | ("find -L"+dir.escapeChar($ )+"-type f")
+                            .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
+                    };
                 };
                 if((x - helpSourceDirs).notEmpty) {
                     maybeDelete = true;
