@@ -2298,6 +2298,169 @@ void SCQuartzComposerView::setVisibleFromParent()
 }
 
 
+////////////////////
+SCView* NewSCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+{
+	return new SCWebView(inParent, inObj, inBounds);
+}
+
+SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
+: SCView(inParent, inObj, inBounds)
+{
+	NSRect matrect = SCtoNSRect(getDrawBounds());
+	mWebView = [[WebView alloc] initWithFrame:matrect frameName:nil groupName: nil];
+	NSView *view = mTop->GetNSView();
+	[view addSubview: mWebView];
+	
+	[mWebView setFocusRingType:NSFocusRingTypeNone];
+	[mWebView setEditable:YES];
+	
+	setVisibleFromParent();
+}
+
+SCWebView::~SCWebView()
+{
+	[mWebView removeFromSuperview];
+	[mWebView release];
+}
+
+void SCWebView::setBounds(SCRect screct)
+{
+	if(
+	   mBounds.x == screct.x &&
+	   mBounds.x == screct.y &&
+	   mBounds.width == screct.width &&
+	   mBounds.height == screct.height
+	   ) { // in case - prevent a refresh if the bounds are the same
+		return;
+	}
+	
+	mBounds = screct;
+	if(!(mParent->isSubViewScroller())){
+		SCRect pbounds = mParent->getLayout().bounds;
+		mLayout.bounds.x = mBounds.x + pbounds.x;
+		mLayout.bounds.y = mBounds.y + pbounds.y;
+		mLayout.bounds.width = mBounds.width;
+		mLayout.bounds.height = mBounds.height;
+	} else {
+		mLayout.bounds = mBounds;
+	}
+	
+	[mWebView setFrame: SCtoNSRect(mLayout.bounds)];
+}
+
+int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	int err;
+	char *name = symbol->name;
+	
+	if (strcmp(name, "open")==0) {
+		if(!isKindOfSlot(slot, class_string)) return errWrongType;
+		PyrString* pstring = slotRawString(slot);
+		if(!pstring) return errNone;
+		NSString *path = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+		
+		[[mWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:path]]];
+		
+		[path release];
+		return errNone;
+	}
+	
+	if (strcmp(name, "visible")==0) {
+		bool visible = IsTrue(slot);
+		mVisible = visible;
+		setVisibleFromParent();
+		return errNone;
+	}
+	
+	if (strcmp(name, "bounds")==0) {
+		SCRect screct;
+		err = slotGetSCRect(slot, &screct);
+		if (err) return err;
+		setBounds(screct);
+		return errNone;
+	}
+	
+//	if (strcmp(name, "enabled")==0) {
+//		bool enabled = IsTrue(slot);
+//		if (mEnabled != enabled) {
+//			mEnabled = enabled;
+//			[mWebView setEnabled:(BOOL)enabled];
+//			if (!mEnabled) mTop->resetFocus();
+//			refresh();
+//		}
+//		return errNone;
+//	}
+	
+	return SCView::setProperty(symbol, slot);
+}
+
+
+//int SCWebView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+//{
+//	char *name = symbol->name;
+//	return SCView::getProperty(symbol, slot);
+//}
+
+
+void SCWebView::setVisibleFromParent()
+{
+	if(mVisible && mParent->isVisible()) {
+		[mWebView setHidden:NO];
+	} else {
+		[mWebView setHidden:YES];
+	}
+	[mWebView setNeedsDisplay:YES];
+	NSRect frame = [mWebView frame];
+	[mWebView setFrame: frame];
+	mTop->resetFocus();
+	refresh();
+}
+
+void SCWebView::makeFocus(bool focus)
+{
+    if (focus) {
+		if (canFocus() && !isFocus()) {
+			[mWebView setAcceptsFirstResponder:YES];
+			
+			// trick focus ring into drawing
+			SEL sel = @selector(setNeedsDisplay:);
+			NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
+			NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
+			SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
+			[anInvocation setTarget: [mWebView superview]];
+			[anInvocation setSelector: sel];
+			BOOL flag = YES;
+			[anInvocation setArgument: &flag atIndex: 2];
+			[scvm defer: anInvocation];
+        }
+    } else {
+        if (isFocus()) {
+			[mWebView setAcceptsFirstResponder:NO];
+        }
+    }
+	SCView::makeFocus(focus);
+}
+
+void SCWebView::tabPrevFocus()
+{
+	mTop->tabPrevFocus();
+}
+void SCWebView::tabNextFocus()
+{
+	//post("next focus\n");
+	mTop->tabNextFocus();
+}
+
+void SCWebView::mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent)
+{
+    if (modifiers & NSCommandKeyMask) {
+        beginDrag(where);
+    }
+}
+
+
+////////////////////
 
 ////////////////////
 SCView* NewSCTextField(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds)
