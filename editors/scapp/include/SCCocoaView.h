@@ -30,6 +30,7 @@
 #import "SCVirtualMachine.h"
 #include "QTKit/QTKit.h"
 #include <Quartz/Quartz.h>
+#include <WebKit/WebView.h>
 
 @interface SCCocoaTextViewResponder : NSResponder
 {
@@ -152,6 +153,27 @@ protected:
 	QTMovieView *mMovieView;
 	QTTime mTime;
 	QTMovie *mMovie;
+};
+
+class SCWebView : public SCView
+{
+public:
+	SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBounds);
+	virtual ~SCWebView();
+	virtual void setBounds(SCRect inBounds);
+	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
+	//virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual void setVisibleFromParent();
+	virtual void makeFocus(bool focus);
+	//virtual void keyDown(int character, int modifiers, unsigned short keycode);
+	void tabPrevFocus();
+	void tabNextFocus();
+	virtual NSView* focusResponder() { return mWebView; }
+	SCTopView* getTop() { return mTop; }
+	virtual void mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent);
+	
+protected:
+	WebView *mWebView;
 };
 
 //class SCTextField : public SCStaticText
