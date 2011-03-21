@@ -36,15 +36,7 @@ At least with chrome, and probably with other browsers too, opening a symlinked 
     f.write("hej2\n")
     f.close
 
-5) Integration with build system:
-
-Rename the old Help dir to OldHelp or similar.
-
-Add a make target for building the docs: "make docs"
-Let "make install" install the rendered docs to SCDoc.systemHelpDir and the help-sources to SCDoc.helpSourceDir.
-Package managers should build the docs without any extensions! Add an "ignoreExtensions" flag to SCDoc.updateAll?
-Also, if stuff are copied into place, make sure to touch scdoc_cache at the end so that it is newer than all HelpSources, or else
-it will trigger a total render when the users runs updateAll the first time.
+5) [DONE] Integration with build system
 
 6) Adjust or deprecate all old classes and methods related to help:
 
@@ -102,4 +94,6 @@ Methods:
         Integer
     initClassHelper
         AutoClassHelper, ClassHelper
+
+7) integrate with SuperCollider.app and other frontends
 
