@@ -4,17 +4,30 @@ InstallSCDocMenu {
 		var scDocMenu;
 		if (thisProcess.platform.class.name == 'OSXPlatform') {
 			StartUp.add({	
-				if (GUI.scheme.name == \QtGUI) {
+				if (\SCMenuGroup.asClass.notNil) {
+					
 					scDocMenu = SCMenuGroup(nil, "SCDoc", 10);
 					SCMenuItem(scDocMenu, "help")
 					.action_({ 
-					QHelpBrowser.newUnique.front.load(SCDoc.helpTargetDir ++ "/Help.html") });
+						if (GUI.scheme.name == \QtGUI) {
+							QHelpBrowser.newUnique.front.load(SCDoc.helpTargetDir ++ "/Help.html")
+						};
+						if (GUI.scheme.name == \CocoaGUI) {
+							Document.open(SCDoc.helpTargetDir ++ "/Help.html")
+						};
+					});
 					SCMenuItem(scDocMenu, "browse")
 					.action_({ 
-					QHelpBrowser.newUnique.front.load(SCDoc.helpTargetDir ++ "/browse.html") });
+						if (GUI.scheme.name == \QtGUI) {
+							QHelpBrowser.newUnique.front.load(SCDoc.helpTargetDir ++ "/browse.html")
+						};
+						if (GUI.scheme.name == \CocoaGUI) {
+							Document.open(SCDoc.helpTargetDir ++ "/browse.html")
+						};
+					});
 				};
-				~scDocMenu = scDocMenu;
-			})
+					
+			});
 		}
 	}
 }
