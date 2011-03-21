@@ -308,7 +308,7 @@ SCDoc {
             if(File.exists(this.systemHelpDir)) {
                 cond = Condition.new;
                 this.postProgress("Basing help tree on pre-rendered help, please wait...");
-                ("rsync -vax --link-dest="++sysdir+sysdir++"/"+this.helpTargetDir).unixCmd({cond.unhang},false);
+                ("rsync -vax --link-dest="++sysdir+sysdir++"/"+this.helpTargetDir.escapeChar($ )).unixCmd({cond.unhang},false);
                 cond.hang;
             } {
                 this.postProgress("No pre-rendered help found, creating from scratch...");
