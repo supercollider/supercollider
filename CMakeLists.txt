@@ -244,7 +244,7 @@ endif()
 if(NOT SC_QT)
 	set(SCCLASSLIB_EXCLUDE_REGEX "QtCollider")
 else()
-	set(SCCLASSLIB_EXCLUDE_REGEX "()")
+	set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
 endif()
 
 install(DIRECTORY SCClassLibrary
