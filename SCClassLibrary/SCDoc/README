@@ -5,8 +5,6 @@ USAGE
 -----
 To render and generate all docs:
 
-SCDoc.helpSourceDir = "/path/to/SuperCollider/HelpSource";
-
 SCDoc.updateAll;
 
 Or, if you want to run it without the GUI progress window:
@@ -33,13 +31,15 @@ TODO
 * integration with main sc distro: See integration_plan.txt
 
 * the class-source links for classes in classLibraryDir won't work on OSX since the SuperCollider folder can be put anywhere..
-fix: keep a softlink in helpTargetDir/SCClassLibrary pointing to the correct location. The pre-rendered docs would sit in the same folder as the app, so we would then have SCClassLibrary -> ../SCClassLibrary and it would work wherever the user puts the SuperCollider folder. When the user makes a change that triggers an update of the docs, SCDoc would copy/hardlink the pre-rendered docs into user-location and rewrite this link to point to the current value of thisProcess.platform.classLibraryDir. 
+fix: keep a softlink in helpTargetDir/SCClassLibrary pointing to the correct location. The pre-rendered docs would sit in the same folder as the app, so we would then have SCClassLibrary -> ../SCClassLibrary and it would work wherever the user puts the SuperCollider folder. 
+In renderHTML, replace reference to thisProcess.classLibraryDir with baseDir+/+"SCClassLibrary".
+In initHelpTargetDir, rewrite this link to point to the current value of thisProcess.platform.classLibraryDir.
 
 * cross-platform: check all uses of systemCmd. move to Platform class? Some stuff are not possible on windows, use cygwin or similar?
 
 * Handle methods added by extensions
-Documenting added methods could be done in files named +ClassName.schelp
-before we render each class, we need to find all +ClassName.schelp files and merge their parsed node tree with the current class.
+Documenting added methods could be done in files named ClassName.ext.
+before we render each class, we need to find all ClassName.ext files and merge their parsed node tree with the current class.
 We should probably find these files first and keep their full paths in a dictionary with classname as key.
 note that they should *add* to classmethods and instancemethods instead of creating new sections for these..
 
