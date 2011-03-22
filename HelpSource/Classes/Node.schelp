@@ -270,3 +270,20 @@ g == h; 	// true
 g === h;	// false
 ::
 
+method:: onFree
+Evaluate function when this Node is freed.
+discussion::
+code::
+{PinkNoise.ar(1) * Line.kr(1,0,2,doneAction:2)}.play.onFree {"done".postln};
+::
+
+method:: waitForFree
+Wait until this Node is freed. Should be used inside a Routine or similar.
+discussion::
+code::
+fork {
+    {SinOsc.ar(440!2) * Line.kr(0,1,5,doneAction:2)}.play.waitForFree;
+    {PinkNoise.ar(1) * Line.kr(1,0,2,doneAction:2)}.play.onFree {"done".postln};
+}
+::
+
