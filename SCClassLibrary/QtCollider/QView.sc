@@ -448,32 +448,20 @@ QView : QObject {
     ^this.primitiveFailed;
   }
 
-  isValidFunction { arg f;
-    case
-      { f.isFunction } {^true}
-      { f.isNil } {^false}
-      { ^(f.array.size > 0) }
-    ;
+  manageMethodConnection { arg oldAction, newAction, signal, method, sync=false;
+    if( newAction !== oldAction ) {
+      case
+        { oldAction.isNil && newAction.notNil } {this.connectMethod (signal, method, sync)}
+        { oldAction.notNil && newAction.isNil } {this.disconnectMethod (signal, method)}
+      ;
+    };
   }
 
-  manageMethodConnection { arg fold, fnew, signal, method, sync=false;
-    var haveOld, haveNew;
-    if( fold !== fnew ) {
-      haveOld = this.isValidFunction(fold);
-      haveNew = this.isValidFunction(fnew);
-      if( haveOld.not && haveNew ) {this.connectMethod (signal, method, sync)};
-      if( haveOld && haveNew.not ) {this.disconnectMethod (signal, method);}
-    }
-  }
-
-  manageFunctionConnection { arg fold, fnew, signal, sync=false;
-    var haveOld, haveNew;
-    if( fold !== fnew ) {
-      haveOld = this.isValidFunction(fold);
-      haveNew = this.isValidFunction(fnew);
-      if( haveOld ) {this.disconnectFunction (signal, fold)};
-      if( haveNew ) {this.connectFunction (signal, fnew, sync)};
-    }
+  manageFunctionConnection { arg oldAction, newAction, signal, sync=false;
+    if( newAction !== oldAction ) {
+      if( oldAction.notNil ) {this.disconnectFunction (signal, oldAction)};
+      if( newAction.notNil ) {this.connectFunction (signal, newAction, sync)};
+    };
   }
 
   overrides { arg symMethod;
