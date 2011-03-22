@@ -940,6 +940,10 @@ Ndef : NodeProxy {
 		};
 		^dict
 	}
+	
+	proxyspace {
+		^this.class.dictFor(this.server)	
+	}
 
 	storeOn { | stream |
 		this.printOn(stream);
