@@ -32,9 +32,8 @@ SCDoc {
                 progressText.string = prg+string;
             });
             progressBar.lo_(0).hi_(progressCount/progressMax);
-        } {
-            (prg+string).postln;
         };
+        (prg+string).postln;
         if(doWait, {0.wait});
     }
 
@@ -262,7 +261,7 @@ SCDoc {
     }
 
     *makeProgressWindow {
-        if(GUI.scheme.isNil, {^nil});
+        if(GUI.scheme.name != \QtGUI, {^nil});
         
         if(progressWindow.isNil) {
             progressWindow = Window("Documentation update",500@200).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
@@ -302,14 +301,12 @@ SCDoc {
     *tickProgress { progressCount = progressCount + 1 }
 
     *initHelpTargetDir {
-        var cond, sysdir = this.systemHelpDir.escapeChar($ );
+        var sysdir = this.systemHelpDir.escapeChar($ );
         if(File.exists(this.helpTargetDir).not) {
             this.postProgress("Initializing user's help directory", true);
             if(File.exists(this.systemHelpDir)) {
-                cond = Condition.new;
                 this.postProgress("Basing help tree on pre-rendered help, please wait...");
-                ("rsync -vax --link-dest="++sysdir+sysdir++"/"+this.helpTargetDir.escapeChar($ )).unixCmd({cond.unhang},false);
-                cond.hang;
+                ("rsync -ax --link-dest="++sysdir+sysdir++"/"+this.helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
             } {
                 this.postProgress("No pre-rendered help found, creating from scratch...");
             }
