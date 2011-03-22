@@ -387,16 +387,16 @@ SCDocRenderer {
                             f.write("<li class='toc3'>");
                             r = n.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
                             f.write(r[1][1].findRegexp("[^ ,]+").flop[1].collect {|m|
-                                "<a href='#"++pfx++m++"'>"++m++"</a>";
+                                "<a href='#"++pfx++m++"'>"++this.escapeSpecialChars(m)++"</a>";
                             }.join(", "));
                             f.write("</li>\n");
                         },
                         \section, {
-                            f.write("<li class='toc1'><a href='#"++SCDocRenderer.simplifyName(n.text)++"'>"++n.text++"</a></li>\n");
+                            f.write("<li class='toc1'><a href='#"++SCDocRenderer.simplifyName(n.text)++"'>"++this.escapeSpecialChars(n.text)++"</a></li>\n");
                             do_children.(n.children);
                         },
                         \subsection, {
-                            f.write("<li class='toc2'><a href='#"++SCDocRenderer.simplifyName(n.text)++"'>"++n.text++"</a></li>\n");
+                            f.write("<li class='toc2'><a href='#"++SCDocRenderer.simplifyName(n.text)++"'>"++this.escapeSpecialChars(n.text)++"</a></li>\n");
                             do_children.(n.children);
                         }
                     );
