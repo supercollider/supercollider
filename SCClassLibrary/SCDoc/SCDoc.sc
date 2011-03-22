@@ -290,7 +290,12 @@ SCDoc {
             p.parseFile(source);
             this.addToDocMap(p,subtarget);
             r.renderHTML(target,subtarget.dirname);
-            if(subtarget.dirname=="Classes",{new_classes.remove(subtarget.basename.asSymbol)});
+            if(subtarget.dirname=="Classes") {
+                if(new_classes.includes(subtarget.basename.asSymbol)) {
+                    new_classes.remove(subtarget.basename.asSymbol);
+                    progressMax = progressMax - 1;
+                };
+            };
         }, {
             this.postProgress("Copying" + source + "to" + (folder +/+ source.basename));
             ("mkdir -p"+folder.escapeChar($ )).systemCmd;
@@ -387,7 +392,6 @@ SCDoc {
                 };
             };
             this.postProgress("Found"+count+"files in need of update");
-            progressMax = count + 4;
 
             //Read a list of all classes so that we can detect if any new ones where added (extensions).
             old_classes = Object.readArchive(classlist_path);
@@ -426,6 +430,13 @@ SCDoc {
             };
             File.delete(this.helpTargetDir+/+"helpdirlist_cache");
             helpSourceDirs.writeArchive(this.helpTargetDir+/+"helpdirlist_cache");
+
+            count = 0;
+            helpSourceDirs.do {|dir|
+                count = count + fileList[dir].size;
+            };
+            this.postProgress("Total"+count+"files to process");
+            progressMax = count + new_classes.size + 4;
 
             // parse/render or copy new and updated files
             // NOTE: any class docs processed here will remove that class from the new_classes set
@@ -480,7 +491,6 @@ SCDoc {
             // generate simple doc for each class in new_classes, which now contains only undocumented *new* classes:
             if(new_classes.notEmpty) {
                 if(gui){this.makeProgressWindow};
-                progressMax = progressMax + new_classes.size;
                 this.handleUndocumentedClasses;
             };
             
