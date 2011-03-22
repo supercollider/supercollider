@@ -312,7 +312,7 @@ function doPrint() {
             var div = document.createElement("div");
             div.className = "result_item";
             var x = document.createElement("span");
-            x.innerHTML = k;
+            x.appendChild(document.createTextNode(k));
             x.className = "result_met";
             div.appendChild(x);
             
@@ -339,7 +339,7 @@ function doPrint() {
                 var a = document.createElement("a");
                 a.setAttribute("href","Classes/"+m+".html#"+pfx+k);
 //                a.onclick = updateHash;
-                a.innerHTML = m;
+                a.appendChild(document.createTextNode(m));
                 div2.appendChild(a);
                 if(ext)
                     div2.appendChild(document.createTextNode("+"));
