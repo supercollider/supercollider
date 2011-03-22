@@ -2404,9 +2404,13 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 : SCView(inParent, inObj, inBounds)
 {
 	NSRect matrect = SCtoNSRect(getDrawBounds());
-	mWebView = [[WebView alloc] initWithFrame:matrect frameName:nil groupName: nil];
+	mWebView = [[SCNSWebView alloc] initWithFrame:matrect frameName:nil groupName: nil];
 	NSView *view = mTop->GetNSView();
 	[view addSubview: mWebView];
+	
+	[mWebView setEditingDelegate:mWebView];
+	
+	[mWebView setSCObject: this];
 	
 	[mWebView setFocusRingType:NSFocusRingTypeNone];
 	[mWebView setEditable:YES];
