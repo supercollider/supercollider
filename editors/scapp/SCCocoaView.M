@@ -2542,6 +2542,8 @@ void SCWebView::makeFocus(bool focus)
 	SCView::makeFocus(focus);
 }
 
+
+
 void SCWebView::tabPrevFocus()
 {
 	mTop->tabPrevFocus();
