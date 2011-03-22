@@ -283,6 +283,9 @@ if(SC_QT)
 	list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/QtCollider")
 endif()
 
+# this folder has an extension to Platform that disables the loadStartupFiles method
+list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/platform/disable_startup_files")
+
 foreach(arg ${BUILD_CLASSLIBRARIES})
 	set(BUILD_CLASSLIBRARYPATH "${BUILD_CLASSLIBRARYPATH}+${arg}\n")
 endforeach()
