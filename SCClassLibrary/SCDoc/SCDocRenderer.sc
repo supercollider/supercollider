@@ -125,7 +125,7 @@ SCDocRenderer {
                         c = nil;
                         ic = nil;
                         css = "imethodname";
-                        pfx = "";
+                        pfx = nil;
                     }
                 );
 
@@ -154,7 +154,7 @@ SCDocRenderer {
                         m2 = nil;
                         mstat = 1;
                     };
-                    file.write("<a name='"++pfx++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++pfx++"</span>"++this.escapeSpecialChars(mname));
+                    file.write("<a name='"++(pfx??"")++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++(pfx??"&nbsp;")++"</span>"++this.escapeSpecialChars(mname));
 
                     switch (mstat,
                         // getter only
@@ -380,7 +380,10 @@ SCDocRenderer {
                             };
                         },
                         \method, {
-                            pfx = if(parent==\classmethods,"*","-");
+                            pfx = switch(parent,
+                                \classmethods, {"*"},
+                                \instancemethods, {"-"},
+                                {""});
                             f.write("<li class='toc3'>");
                             r = n.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
                             f.write(r[1][1].findRegexp("[^ ,]+").flop[1].collect {|m|
