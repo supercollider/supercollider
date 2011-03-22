@@ -172,6 +172,23 @@ Node {
 		NodeWatcher.register(this, assumePlaying)
 	}
 
+	onFree {|func|
+		var f = {|n,m|
+			if(m==\n_end) {
+				func.value(this,m);
+				this.removeDependant(f);
+			}
+		};
+		this.register;
+		this.addDependant(f);
+		^f;
+	}
+	waitForFree {
+		var c = Condition.new;
+		this.onFree({c.unhang});
+		c.hang;
+	}
+
 	moveBefore { arg aNode;
 		group = aNode.group;
 		server.sendMsg(18, nodeID, aNode.nodeID); //"/n_before"
