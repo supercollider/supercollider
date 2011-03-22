@@ -151,12 +151,12 @@ SCDoc {
             n.add((tag:\summary, text:""));
 
             cats = "Undocumented classes";
-            if(this.classHasArKrIr(c), {
+            if(this.classHasArKrIr(c)) {
                 cats = cats ++ ", UGens>Undocumented";
-                if(c.categories.notNil) {
-                    cats = cats ++ ", "++c.categories.join(", ");
-                };
-            });
+            };
+            if(c.categories.notNil) {
+                cats = cats ++ ", "++c.categories.join(", ");
+            };
             n.add((tag:\categories, text:cats));
 
             p.root = n;
