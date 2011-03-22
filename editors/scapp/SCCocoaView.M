@@ -1078,6 +1078,102 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 @end
 
+@implementation SCNSWebView
+
+- (void)setSCObject: (struct PyrObject*)inObject
+{
+    mSCWebView = inObject;
+}
+
+- (struct PyrObject*)getSCObject
+{
+    return mSCWebView;
+}
+
+//- (void) keyDown: (NSEvent*) event
+- (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector
+{
+	NSLog(@"webview keydown");
+   // NSString *characters = [event characters];
+	//BOOL ignoreControlKeys = NO;
+//	if(compiledOK){
+//		unsigned int modifiers = [event modifierFlags];
+//		unichar character = 0;
+//		if([characters length] > 0) {
+//			character = [characters characterAtIndex: 0];
+//		}
+//		unsigned int keycode = [event keyCode];
+//		
+//		if (mSCWebView) {
+//			pthread_mutex_lock (&gLangMutex);
+//			PyrSymbol *documentclass = getsym([langClassToCall cString]);
+//			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;			
+//			if(NotNil(pobj->slots+objectKeyDownActionIndex) || NotNil(classobj->slots+keyDownActionIndex)){
+//				if(compiledOK){
+//					PyrSymbol *method = getsym("keyDown");
+//					VMGlobals *g = gMainVMGlobals;
+//					g->canCallOS = true;
+//					++g->sp;  SetObject(g->sp, pobj); 
+//					++g->sp;  SetChar(g->sp, character); 
+//					++g->sp;  SetInt(g->sp, modifiers); 
+//					++g->sp;  SetInt(g->sp, character); 
+//					++g->sp;  SetInt(g->sp, keycode); 
+//					runInterpreter(g, method, 5);
+//					g->canCallOS = false;
+//				}
+//			}
+//			pthread_mutex_unlock (&gLangMutex);
+//		}
+//	}
+	
+	
+	
+	// shift- or control-return added by hjh
+//    if ([characters isEqual: @"\03"] ||
+//		(([characters isEqual: @"\n"] || [characters isEqual: @"\r"])
+//		 && ([event modifierFlags] & (NSControlKeyMask | NSShiftKeyMask)))) {
+	unsigned short keycode = [[NSApp currentEvent] keyCode];
+	
+	printf("keycode: %d\n", keycode);
+	
+	// Exec on Ctrl c or Enter
+	if ( (aSelector == @selector(insertNewline:) && (keycode == 76)) || ( keycode == 8) ) {
+			
+			if (!compiledOK) {
+				return NO;
+			}
+			
+			//NSRange selectedRange;
+			NSString* selection = [self stringByEvaluatingJavaScriptFromString:@"(function (){return window.getSelection().toString();})();"];
+			const char *text = [selection UTF8String];
+			int textlength = strlen(text);
+			
+			[[SCVirtualMachine sharedInstance] setCmdLine: text length: textlength];
+			
+			//NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
+//			[txtView setSelectedRange: newSelectedRange];
+			
+			pthread_mutex_lock(&gLangMutex);
+			runLibrary(getsym("interpretPrintCmdLine"));
+			pthread_mutex_unlock(&gLangMutex);
+			
+			return YES;
+		} //else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
+//			[self autoIndent: event];
+//		} else { 
+//			//call lang
+//			if([[self delegate] handleKeyDown: event]) return;
+//			if(ignoreControlKeys && ([event modifierFlags] & NSCommandKeyMask)) return;
+//			[super keyDown: event];
+//			
+//			if ([characters isEqual: @"}"] && useAutoInOutdent) {
+//				[self outdentBrack];
+//			}
+//		}
+	return NO;
+}
+
+@end
 
 NSRect SCtoNSRect(SCRect screct);
 

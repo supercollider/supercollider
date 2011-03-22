@@ -105,6 +105,17 @@
 
 @end
 
+@interface SCNSWebView : WebView {
+	struct PyrObject *mSCWebView;
+}
+
+- (void)setSCObject: (struct PyrObject*)inObject;
+- (struct PyrObject*)getSCObject;
+//- (void) keyDown: (NSEvent*) event;
+- (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector;
+
+@end
+
 class SCCocoaTextView : public SCView
 {
 public:
