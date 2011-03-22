@@ -97,3 +97,5 @@ Methods:
 
 7) integrate with SuperCollider.app and other frontends
 
+8) Should we call SCDoc.updateAll at startup or only have a menu item to do it manually?
+
