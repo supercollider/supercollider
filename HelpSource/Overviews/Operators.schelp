@@ -11,44 +11,184 @@ See the specific classes for details and other operators.
 You can see which classes implements a specific operator by looking at the method index: link::Overviews/Methods::. 
 
 section:: Unary Operators
-table::
-## link::Overviews/Methods#neg#neg:: || inversion
-## link::Overviews/Methods#reciprocal#reciprocal:: || reciprocal
-## link::Overviews/Methods#abs#abs:: || absolute value
-## link::Overviews/Methods#floor#floor:: || next lower integer
-## link::Overviews/Methods#ceil#ceil:: || next higher integer
-## link::Overviews/Methods#frac#frac:: || fractional part
-## link::Overviews/Methods#sign#sign:: || { -1 when a < 0, +1 when a > 0, 0 when a is 0 }
-## link::Overviews/Methods#squared#squared:: || ( code:: a*a :: )
-## link::Overviews/Methods#cubed#cubed:: || ( code:: a*a*a :: )
-## link::Overviews/Methods#sqrt#sqrt:: || square root
-## link::Overviews/Methods#exp#exp:: || exponential
-## link::Overviews/Methods#midicps#midicps:: || MIDI note number to cycles per second
-## link::Overviews/Methods#cpsmidi#cpsmidi:: || cycles per second to MIDI note number
-## link::Overviews/Methods#midiratio#midiratio:: || convert an interval in MIDI notes into a frequency ratio
-## link::Overviews/Methods#ratiomidi#ratiomidi:: || convert a frequency ratio to an interval in MIDI notes
-## link::Overviews/Methods#dbamp#dbamp:: || decibels to linear amplitude
-## link::Overviews/Methods#ampdb#ampdb:: || linear amplitude to decibels
-## link::Overviews/Methods#octcps#octcps:: || decimal octaves to cycles per second
-## link::Overviews/Methods#cpsoct#cpsoct:: || cycles per second to decimal octaves
-## link::Overviews/Methods#log#log:: || natural logarithm
-## link::Overviews/Methods#log2#log2:: || base 2 logarithm
-## link::Overviews/Methods#log10#log10:: || base 10 logarithm
-## link::Overviews/Methods#sin#sin:: || sine
-## link::Overviews/Methods#cos#cos:: || cosine
-## link::Overviews/Methods#tan#tan:: || tangent
-## link::Overviews/Methods#asin#asin:: || arcsine
-## link::Overviews/Methods#acos#acos:: || arccosine
-## link::Overviews/Methods#atan#atan:: || arctangent
-## link::Overviews/Methods#sinh#sinh:: || hyperbolic sine
-## link::Overviews/Methods#cosh#cosh:: || hyperbolic cosine
-## link::Overviews/Methods#tanh#tanh:: || hyperbolic tangent
-## link::Overviews/Methods#distort#distort:: || distortion
-## link::Overviews/Methods#softclip#softclip:: || distortion
-## link::Overviews/Methods#isPositive#isPositive:: || { 1 when a >= 0, else 0 }
-## link::Overviews/Methods#isNegative#isNegative:: || { 1 when a < 0, else 0 }
-## link::Overviews/Methods#isStrictlyPositive#isStrictlyPositive:: || { 1 when a > 0, else 0 }
+Unary operators may be written in two ways:
+code::
+a.operator
+operator(a)
 ::
+
+method:: neg
+Inversion. link::Overviews/Methods#neg#[implementations]::
+discussion::
+code::
+{
+	var a;
+	a = FSinOsc.ar(300);
+	[ a, a.neg ]
+}.plot
+::
+
+method:: reciprocal
+Reciprocal (1/x). link::Overviews/Methods#reciprocal#[implementations]::
+
+method:: abs
+Absolute value. link::Overviews/Methods#abs#[implementations]::
+
+method:: floor
+Next lower integer. link::Overviews/Methods#floor#[implementations]::
+discussion::
+code::
+{
+	var a;
+	a = Line.ar(-1, 1, 0.01);
+	[ a, a.floor ]
+}.plot
+::
+
+method:: ceil
+Next higher integer. link::Overviews/Methods#ceil#[implementations]::
+discussion::
+code::
+{
+	var a;
+	a = Line.ar(-1, 1, 0.01);
+	[ a, a.ceil ]
+}.plot
+::
+
+method:: frac
+Fractional part. link::Overviews/Methods#frac#[implementations]::
+
+method:: sign
+Sign function. link::Overviews/Methods#sign#[implementations]::
+returns::
+-1 when a < 0, +1 when a > 0, 0 when a is 0
+
+method:: squared
+Squared value. link::Overviews/Methods#squared#[implementations]::
+returns::
+code:: a*a ::
+
+method:: cubed
+Cubed value. link::Overviews/Methods#cubed#[implementations]::
+returns::
+code:: a*a*a ::
+
+method:: sqrt
+Square root. link::Overviews/Methods#sqrt#[implementations]::
+discussion::
+The definition of square root is extended for signals so that sqrt(a) when a<0 returns
+-sqrt(-a).
+
+method:: exp
+Exponential. link::Overviews/Methods#exp#[implementations]::
+
+method:: midicps
+Convert MIDI note number to cycles per second. link::Overviews/Methods#midicps#[implementations]::
+discussion::
+code::
+{
+	Saw.ar(Line.kr(24,108,10).midicps, 0.2)
+}.play
+::
+
+method:: cpsmidi
+Convert cycles per second to MIDI note. link::Overviews/Methods#cpsmidi#[implementations]::
+
+method:: midiratio
+Convert an interval in MIDI notes into a frequency ratio. link::Overviews/Methods#midiratio#[implementations]::
+
+method:: ratiomidi
+Convert a frequency ratio to an interval in MIDI notes. link::Overviews/Methods#ratiomidi#[implementations]::
+
+method:: dbamp
+Convert decibels to linear amplitude. link::Overviews/Methods#dbamp#[implementations]::
+
+method:: ampdb
+Convert linear amplitude to decibels. link::Overviews/Methods#ampdb#[implementations]::
+
+method:: octcps
+Convert decimal octaves to cycles per second. link::Overviews/Methods#octcps#[implementations]::
+
+method:: cpsoct
+Convert cycles per second to decimal octaves. link::Overviews/Methods#cpsoct#[implementations]::
+
+method:: log
+Natural logarithm. link::Overviews/Methods#log#[implementations]::
+discussion::
+code::
+{
+	var a, e;
+	e = exp(1);
+	a = Line.ar(e, 1/e, 0.01);
+	a.log
+}.plot
+::
+
+method:: log2
+Base 2 logarithm. link::Overviews/Methods#log2#[implementations]::
+
+method:: log10
+Base 10 logarithm. link::Overviews/Methods#log10#[implementations]::
+
+method:: sin
+Sine. link::Overviews/Methods#sin#[implementations]::
+
+method:: cos
+Cosine. link::Overviews/Methods#cos#[implementations]::
+
+method:: tan
+Tangent. link::Overviews/Methods#tan#[implementations]::
+
+method:: asin
+Arcsine. link::Overviews/Methods#asin#[implementations]::
+
+method:: acos
+Arccosine. link::Overviews/Methods#acos#[implementations]::
+
+method:: atan
+Arctangent. link::Overviews/Methods#atan#[implementations]::
+
+method:: sinh
+Hyperbolic sine. link::Overviews/Methods#sinh#[implementations]::
+
+method:: cosh
+Hyperbolic cosine. link::Overviews/Methods#cosh#[implementations]::
+
+method:: tanh
+Hyperbolic tangent. link::Overviews/Methods#tanh#[implementations]::
+
+method:: distort
+Nonlinear distortion. link::Overviews/Methods#distort#[implementations]::
+discussion::
+code::
+(
+{
+	var a;
+	a = Line.ar(-4, 4, 0.01);
+	a.distort
+}.plot
+)
+
+{ FSinOsc.ar(500, 0.0, XLine.kr(0.1, 10, 10)).distort * 0.25 }.scope;
+::
+
+method:: softclip
+Nonlinear distortion. link::Overviews/Methods#softclip#[implementations]::
+discussion::
+Distortion with a perfectly linear region from -0.5 to +0.5
+code::
+{ FSinOsc.ar(500,0.0, XLine.kr(0.1, 10, 10)).softclip * 0.25 }.scope(2);
+::
+
+method:: isPositive
+Test if signal is >= 0. link::Overviews/Methods#isPositive#[implementations]::
+
+method:: isNegative
+Test if signal is < 0. link::Overviews/Methods#isNegative#[implementations]::
+
+method:: isStrictlyPositive
+Test if signal is > 0. link::Overviews/Methods#isStrictlyPositive#[implementations]::
 
 section:: Binary Operators
 Three different syntaxes can be used for binary operators consisting of letters:
