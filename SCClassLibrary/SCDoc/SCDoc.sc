@@ -598,10 +598,12 @@ SCDoc {
     }
     
     *findClassOrMethod {|str|
-        ^ this.helpTargetDir +/+ if(str[0].isUpper,
-            {"Classes" +/+ str ++ ".html"},
-            {"Overviews/Methods.html#" ++ str}
-        );
+        var path = if(str[0].isUpper) {
+            if(str.asSymbol.asClass.notNil)
+                {"Classes" +/+ str ++ ".html"}
+                {"Search.html#" ++ str};
+        } {"Overviews/Methods.html#" ++ str};
+        ^ this.helpTargetDir +/+ path;
     }
 }
 
