@@ -38,7 +38,7 @@ function showMethod(m, node) {
     div.className = "method_item";
     var x = document.createElement("div");
     x.className = "method_name";
-    x.innerHTML = m[0];
+    x.appendChild(document.createTextNode(m[0]));
     div.appendChild(x);
 
     var div2 = document.createElement("div");
