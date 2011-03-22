@@ -74,8 +74,8 @@ int Slot::setPoint( PyrSlot *slot, const QPointF &pt )
 
 void Slot::setString( PyrSlot *slot, const QString& arg )
 {
-  const char *pszArg = arg.toStdString().c_str();
-  PyrString *str = newPyrString( gMainVMGlobals->gc, pszArg, 0, true );
+  PyrString *str = newPyrString( gMainVMGlobals->gc,
+                                 arg.toStdString().c_str(), 0, true );
   SetObject( slot, str );
 }
 
