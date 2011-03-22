@@ -368,8 +368,11 @@ SCDoc {
 
             this.postProgress("Ensuring help directory structure");
             helpSourceDirs.do {|srcdir|
+                this.postProgress("Replicating"+srcdir);
                 ("find"+srcdir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type d").unixCmdGetStdOutLines.do {|dir|
-                    ("mkdir -p"+(SCDoc.helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ )).systemCmd;
+                    x = (SCDoc.helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ );
+                    this.postProgress("-"+x);
+                    ("mkdir -p"+x).systemCmd;
                 }
             };
 
@@ -386,7 +389,7 @@ SCDoc {
             } {
                 this.postProgress("Searching for new or updated files...",true);
                 helpSourceDirs.do {|dir|
-                    fileList[dir] = ("find -L"+dir.escapeChar($ )+"-newer"+docmap_path+"-type f")
+                    fileList[dir] = ("find -L"+dir.escapeChar($ )+"-newer"+docmap_path+"\\( ! -regex '.*/\\..*' \\) -type f")
                         .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
                     count = count + fileList[dir].size;
                 };
@@ -420,7 +423,7 @@ SCDoc {
                 (helpSourceDirs - x).do {|dir|
                     if(dir != this.helpSourceDir) {
                         this.postProgress("Found new HelpSource folder:"+dir);
-                        fileList[dir] = fileList[dir] | ("find -L"+dir.escapeChar($ )+"-type f")
+                        fileList[dir] = fileList[dir] | ("find -L"+dir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type f")
                             .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
                     };
                 };
