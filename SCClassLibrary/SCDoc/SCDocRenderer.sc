@@ -155,7 +155,7 @@ SCDocRenderer {
                         m2 = nil;
                         mstat = 1;
                     };
-                    file.write("<a name='"++(pfx??".")++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++(pfx??"&nbsp;")++"</span>"++this.escapeSpecialChars(mname));
+                    file.write("<a name='"++(pfx??".")++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++(pfx??"&nbsp;")++"</span>"++"<a href='"++baseDir+/+"Overviews/Methods.html#"++this.escapeSpecialChars(mname)++"'>"++this.escapeSpecialChars(mname)++"</a>");
 
                     switch (mstat,
                         // getter only

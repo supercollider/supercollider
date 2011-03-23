@@ -8,7 +8,7 @@ SuperCollider supports operator overloading. Operators can thus be applied to a 
 This is a list of some of the common unary and binary operators that are implemented by several classes.
 See the specific classes for details and other operators.
 
-You can see which classes implements a specific operator by looking at the method index: link::Overviews/Methods::. 
+You can see which classes implements a specific operator by clicking on the method name.
 
 section:: Unary Operators
 Unary operators may be written in two ways:
@@ -18,7 +18,7 @@ operator(a)
 ::
 
 method:: neg
-Inversion. link::Overviews/Methods#neg#[implementations]::
+Inversion.
 discussion::
 code::
 {
@@ -29,13 +29,13 @@ code::
 ::
 
 method:: reciprocal
-Reciprocal (1/x). link::Overviews/Methods#reciprocal#[implementations]::
+Reciprocal (1/x).
 
 method:: abs
-Absolute value. link::Overviews/Methods#abs#[implementations]::
+Absolute value.
 
 method:: floor
-Next lower integer. link::Overviews/Methods#floor#[implementations]::
+Next lower integer.
 discussion::
 code::
 {
@@ -46,7 +46,7 @@ code::
 ::
 
 method:: ceil
-Next higher integer. link::Overviews/Methods#ceil#[implementations]::
+Next higher integer.
 discussion::
 code::
 {
@@ -57,34 +57,34 @@ code::
 ::
 
 method:: frac
-Fractional part. link::Overviews/Methods#frac#[implementations]::
+Fractional part.
 
 method:: sign
-Sign function. link::Overviews/Methods#sign#[implementations]::
+Sign function.
 returns::
 -1 when a < 0, +1 when a > 0, 0 when a is 0
 
 method:: squared
-Squared value. link::Overviews/Methods#squared#[implementations]::
+Squared value.
 returns::
 code:: a*a ::
 
 method:: cubed
-Cubed value. link::Overviews/Methods#cubed#[implementations]::
+Cubed value.
 returns::
 code:: a*a*a ::
 
 method:: sqrt
-Square root. link::Overviews/Methods#sqrt#[implementations]::
+Square root.
 discussion::
 The definition of square root is extended for signals so that sqrt(a) when a<0 returns
 -sqrt(-a).
 
 method:: exp
-Exponential. link::Overviews/Methods#exp#[implementations]::
+Exponential.
 
 method:: midicps
-Convert MIDI note number to cycles per second. link::Overviews/Methods#midicps#[implementations]::
+Convert MIDI note number to cycles per second.
 discussion::
 code::
 {
@@ -93,28 +93,28 @@ code::
 ::
 
 method:: cpsmidi
-Convert cycles per second to MIDI note. link::Overviews/Methods#cpsmidi#[implementations]::
+Convert cycles per second to MIDI note.
 
 method:: midiratio
-Convert an interval in MIDI notes into a frequency ratio. link::Overviews/Methods#midiratio#[implementations]::
+Convert an interval in MIDI notes into a frequency ratio.
 
 method:: ratiomidi
-Convert a frequency ratio to an interval in MIDI notes. link::Overviews/Methods#ratiomidi#[implementations]::
+Convert a frequency ratio to an interval in MIDI notes.
 
 method:: dbamp
-Convert decibels to linear amplitude. link::Overviews/Methods#dbamp#[implementations]::
+Convert decibels to linear amplitude.
 
 method:: ampdb
-Convert linear amplitude to decibels. link::Overviews/Methods#ampdb#[implementations]::
+Convert linear amplitude to decibels.
 
 method:: octcps
-Convert decimal octaves to cycles per second. link::Overviews/Methods#octcps#[implementations]::
+Convert decimal octaves to cycles per second.
 
 method:: cpsoct
-Convert cycles per second to decimal octaves. link::Overviews/Methods#cpsoct#[implementations]::
+Convert cycles per second to decimal octaves.
 
 method:: log
-Natural logarithm. link::Overviews/Methods#log#[implementations]::
+Natural logarithm.
 discussion::
 code::
 {
@@ -126,40 +126,40 @@ code::
 ::
 
 method:: log2
-Base 2 logarithm. link::Overviews/Methods#log2#[implementations]::
+Base 2 logarithm.
 
 method:: log10
-Base 10 logarithm. link::Overviews/Methods#log10#[implementations]::
+Base 10 logarithm.
 
 method:: sin
-Sine. link::Overviews/Methods#sin#[implementations]::
+Sine.
 
 method:: cos
-Cosine. link::Overviews/Methods#cos#[implementations]::
+Cosine.
 
 method:: tan
-Tangent. link::Overviews/Methods#tan#[implementations]::
+Tangent.
 
 method:: asin
-Arcsine. link::Overviews/Methods#asin#[implementations]::
+Arcsine.
 
 method:: acos
-Arccosine. link::Overviews/Methods#acos#[implementations]::
+Arccosine.
 
 method:: atan
-Arctangent. link::Overviews/Methods#atan#[implementations]::
+Arctangent.
 
 method:: sinh
-Hyperbolic sine. link::Overviews/Methods#sinh#[implementations]::
+Hyperbolic sine.
 
 method:: cosh
-Hyperbolic cosine. link::Overviews/Methods#cosh#[implementations]::
+Hyperbolic cosine.
 
 method:: tanh
-Hyperbolic tangent. link::Overviews/Methods#tanh#[implementations]::
+Hyperbolic tangent.
 
 method:: distort
-Nonlinear distortion. link::Overviews/Methods#distort#[implementations]::
+Nonlinear distortion.
 discussion::
 code::
 (
@@ -174,7 +174,7 @@ code::
 ::
 
 method:: softclip
-Nonlinear distortion. link::Overviews/Methods#softclip#[implementations]::
+Nonlinear distortion.
 discussion::
 Distortion with a perfectly linear region from -0.5 to +0.5
 code::
@@ -182,13 +182,13 @@ code::
 ::
 
 method:: isPositive
-Test if signal is >= 0. link::Overviews/Methods#isPositive#[implementations]::
+Test if signal is >= 0.
 
 method:: isNegative
-Test if signal is < 0. link::Overviews/Methods#isNegative#[implementations]::
+Test if signal is < 0.
 
 method:: isStrictlyPositive
-Test if signal is > 0. link::Overviews/Methods#isStrictlyPositive#[implementations]::
+Test if signal is > 0.
 
 section:: Binary Operators
 Three different syntaxes can be used for binary operators consisting of letters:
@@ -207,33 +207,33 @@ a + b
 subsection:: Arithmetics
 
 method:: +
-Addition. link::Overviews/Methods#+#[implementations]::
+Addition.
 
 method:: -
-Subtraction. link::Overviews/Methods#-#[implementations]::
+Subtraction.
 
 method:: *
-Multiplication. link::Overviews/Methods#*#[implementations]::
+Multiplication.
 
 method:: /
-Division. link::Overviews/Methods#/#[implementations]::
+Division.
 
 method:: %
-Floating point modulo. link::Overviews/Methods#%#[implementations]::
+Floating point modulo.
 
 method:: **
-Exponentiation. link::Overviews/Methods#**#[implementations]::
+Exponentiation.
 
 subsection:: Comparisions
 
 method:: <
-Less than. link::Overviews/Methods#<#[implementations]::
+Less than.
 
 method:: <=
-Less than or equal. link::Overviews/Methods#<=#[implementations]::
+Less than or equal.
 
 method:: >
-Greater than. link::Overviews/Methods#>#[implementations]::
+Greater than.
 discussion::
 With UGens, this can be useful for triggering purposes, among other things:
 code::
@@ -267,21 +267,21 @@ OSCresponderNode(s.addr,'/tr',{ "triggered".postln; Synth.new("help-EnvGen") }).
 ::
 
 method:: >=
-Greater than or equal. link::Overviews/Methods#>=#[implementations]::
+Greater than or equal.
 
 method:: ==
-Equal. link::Overviews/Methods#==#[implementations]::
+Equal. 
 
 method:: !=
-Not equal. link::Overviews/Methods#!=#[implementations]::
+Not equal.
 
 subsection:: Other
 
 method:: <!
-Return first argument. link::Overviews/Methods#<!#[implementations]::
+Return first argument. 
 
 method:: min
-Minimum. link::Overviews/Methods#min#[implementations]::
+Minimum. 
 discussion::
 code::
 { // distorts and envelopes z
@@ -292,7 +292,7 @@ z min: FSinOsc.ar(0.1);
 ::
 
 method:: max
-Maximum. link::Overviews/Methods#max#[implementations]::
+Maximum. 
 discussion::
 code::
 { // modulates and envelopes z
@@ -303,14 +303,14 @@ z max: FSinOsc.ar(0.1);
 ::
 
 method:: round
-Quantization by rounding. Rounds a to the nearest multiple of b. link::Overviews/Methods#round#[implementations]::
+Quantization by rounding. Rounds a to the nearest multiple of b. 
 
 method:: trunc
-Quantization by truncation. Truncate a to a multiple of b. link::Overviews/Methods#trunc#[implementations]::
+Quantization by truncation. Truncate a to a multiple of b. 
 
 method:: hypot
 Hypotenuse. Returns the square root of the sum of the squares of a and b. Or equivalently, the distance from the origin
-to the point (x, y). link::Overviews/Methods#hypot#[implementations]::
+to the point (x, y). 
 discussion::
 In this example, hypot is used to calculate a doppler shift pitch and amplitude based on distance.
 code::
@@ -345,7 +345,7 @@ code::
 ::
 
 method:: hypotApx
-Hypotenuse approximation. Returns an approximation of the square root of the sum of the squares of x and y. link::Overviews/Methods#hypotApx#[implementations]::
+Hypotenuse approximation. Returns an approximation of the square root of the sum of the squares of x and y.
 discussion::
 The formula used is :
 formula::
@@ -357,7 +357,7 @@ This should not be used for simulating a doppler shift because it is discontinuo
 See also link::#hypot::, link::#atan2::.
 
 method:: atan2
-Returns the arctangent of y/x. link::Overviews/Methods#atan2#[implementations]::
+Returns the arctangent of y/x. 
 discussion::
 OK, now we can add a pan to the link::#hypot:: doppler examples by using atan2 to find the azimuth, 
 or direction angle, of the sound source.
@@ -397,7 +397,7 @@ code::
 ::
 
 method:: ring1
-Ring modulation plus first source. link::Overviews/Methods#ring1#[implementations]::
+Ring modulation plus first source. 
 discussion::
 Return the value of  ((a*b) + a). This is more efficient than using
 separate unit generators for the multiply and add.
@@ -428,7 +428,7 @@ code::
 ::
 
 method:: ring2
-Ring modulation plus both sources. link::Overviews/Methods#ring2#[implementations]::
+Ring modulation plus both sources. 
 discussion::
 Return the value of  ((a*b) + a + b). This is more efficient than using
 separate unit generators for the multiply and adds.
@@ -447,7 +447,7 @@ code::
 ::
 
 method:: ring3
-Ring modulation variant. link::Overviews/Methods#ring3#[implementations]::
+Ring modulation variant. 
 discussion::
 Return the value of  (a*a *b). This is more efficient than using
 separate unit generators for each multiply.
@@ -466,7 +466,7 @@ code::
 ::
 
 method:: ring4
-Ring modulation variant. link::Overviews/Methods#ring4#[implementations]::
+Ring modulation variant. 
 discussion::
 Return the value of  ((a*a *b) - (a*b*b)). This is more efficient than using
 separate unit generators for each operation.
@@ -485,7 +485,7 @@ code::
 ::
 
 method:: sumsqr
-Sum of squares. link::Overviews/Methods#sumsqr#[implementations]::
+Sum of squares. 
 discussion::
 Return the value of  (a*a) + (b*b). This is more efficient than using
 separate unit generators for each operation.
@@ -504,7 +504,7 @@ code::
 ::
 
 method:: difsqr
-Difference of squares. link::Overviews/Methods#difsqr#[implementations]::
+Difference of squares. 
 discussion::
 Return the value of  (a*a) - (b*b). This is more efficient than using
 separate unit generators for each operation.
@@ -523,7 +523,7 @@ code::
 ::
 
 method:: sqrsum
-Square of the sum. link::Overviews/Methods#sqrsum#[implementations]::
+Square of the sum. 
 discussion::
 Return the value of  (a + b)**2. This is more efficient than using
 separate unit generators for each operation.
@@ -543,7 +543,7 @@ code::
 ::
 
 method:: sqrdif
-Square of the difference. link::Overviews/Methods#sqrdif#[implementations]::
+Square of the difference. 
 discussion::
 Return the value of  (a - b)**2. This is more efficient than using
 separate unit generators for each operation.
@@ -563,7 +563,7 @@ code::
 ::
 
 method:: absdif
-Absolute value of the difference. code:: abs(a - b) :: link::Overviews/Methods#absdif#[implementations]::
+Absolute value of the difference. code:: abs(a - b) :: 
 discussion::
 code::
 { // creates a rhythm
@@ -574,7 +574,7 @@ FSinOsc.ar(440, 0, mul);
 ::
 
 method:: thresh
-Thresholding. link::Overviews/Methods#thresh#[implementations]::
+Thresholding. 
 discussion::
 0 when a < b, otherwise a.
 code::
@@ -582,7 +582,7 @@ code::
 ::
 
 method:: amclip
-Two quadrant multiply. link::Overviews/Methods#amclip#[implementations]::
+Two quadrant multiply. 
 discussion::
 0  when  b <= 0,  a*b  when  b > 0
 code::
@@ -590,7 +590,7 @@ code::
 ::
 
 method:: scaleneg
-Scale negative part of input. link::Overviews/Methods#scaleneg#[implementations]::
+Scale negative part of input. 
 discussion::
 a*b when a < 0, otherwise a.
 code::
@@ -598,7 +598,7 @@ code::
 ::
 
 method:: clip2
-Bilateral clipping. link::Overviews/Methods#clip2#[implementations]::
+Bilateral clipping. 
 discussion::
 clips input wave a to +/- b
 code::
@@ -608,7 +608,7 @@ code::
 ::
 
 method:: wrap2
-Bilateral wrapping. link::Overviews/Methods#wrap2#[implementations]::
+Bilateral wrapping. 
 discussion::
 wraps input wave to +/- b
 code::
@@ -616,7 +616,7 @@ code::
 ::
 
 method:: fold2
-Bilateral folding. link::Overviews/Methods#fold2#[implementations]::
+Bilateral folding. 
 discussion::
 folds input wave a to +/- b
 code::
@@ -624,7 +624,7 @@ code::
 ::
 
 method:: excess
-Residual of clipping. link::Overviews/Methods#excess#[implementations]::
+Residual of clipping. 
 discussion::
 Returns the difference of the original signal and its clipped form: (a - clip2(a,b)).
 code::

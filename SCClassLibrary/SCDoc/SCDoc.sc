@@ -322,7 +322,7 @@ SCDoc {
             this.postProgress("Initializing user's help directory", true);
             if(File.exists(helpBaseDir)) {
                 this.postProgress("Basing help tree on pre-rendered help, please wait...");
-                ("rsync -vax --link-dest="++sysdir+sysdir++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
+                ("rsync -ax --link-dest="++sysdir+sysdir++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
                 this.postProgress("Done, creating timestamp");
                 ("touch -r"+sysdir+stamp).systemCmd;
             } {
