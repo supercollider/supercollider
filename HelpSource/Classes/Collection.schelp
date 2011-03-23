@@ -4,10 +4,8 @@ related::Classes/List, Classes/Array, Classes/Dictionary, Classes/Bag, Classes/S
 categories::Collections
 
 DESCRIPTION::
-Collections are groups of objects. See the link::Overviews/Collections:: overview for a complete listing of all subclasses.
-
 Collection is an abstract class. You do not create direct instances of Collection.
-There are many types of Collections including link::Classes/List::, link::Classes/Array::, link::Classes/Dictionary::, link::Classes/Bag::, link::Classes/Set::, link::Classes/SortedList::, etc.
+There are many types of Collections including link::Classes/List::, link::Classes/Array::, link::Classes/Dictionary::, link::Classes/Bag::, link::Classes/Set::, link::Classes/SortedList::, etc. See link::Overviews/ClassTree:: for a complete class tree.
 
 CLASSMETHODS::
 
@@ -138,7 +136,7 @@ List[1, 2, 3, 4].includesAll(List[4, 5]);
 ::
 
 method::matchItem
-Returns link::Classes/True:: if this includes the strong::item::. See also: link::#matchItem::
+Returns link::Classes/True:: if this includes the strong::item::.
 
 subsection::Iteration
 

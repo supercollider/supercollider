@@ -472,7 +472,7 @@ subsection::Drawing Support
 
 The following methods must be called within an Window-drawHook or a SCUserView-drawFunc function, and will only be visible once the window or the view is refreshed. Each call to Window-refresh SCUserView-refresh will 'overwrite' all previous drawing by executing the currently defined function.
 
-See also: link::Classes/Window::, link::Classes/SCUserView::, link::Classes/Color::, and link::Classes/Pen::.
+See also: link::Classes/Window::, link::Classes/UserView::, link::Classes/Color::, and link::Classes/Pen::.
 
 note::
 for cross-platform GUIs, use code::Pen.stringAtPoint, Pen.stringInRect, Pen.stringCenteredIn, Pen.stringLeftJustIn, Pen.stringRightJustIn:: instead.

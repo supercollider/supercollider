@@ -270,7 +270,7 @@ subsection::Timing control with Event's delta method
 
 Events also specify timing within a link::Classes/Pattern::. Event's code::delta:: method returns the value of code::~delta:: or, if that is nil, code::~dur * ~stretch::.
 
-Patterns are played by link::Classes/TempoClocks::, which have their own tempo controls. This tempo which can be controlled through code::~tempo:: in the event. Changes to the tempo affect everything else scheduled by the TempoClock, so code::tempo:: provides a global tempo control while code::stretch:: provides a control limited to the one pattern.
+Patterns are played by link::Classes/TempoClock::s, which have their own tempo controls. This tempo which can be controlled through code::~tempo:: in the event. Changes to the tempo affect everything else scheduled by the TempoClock, so code::tempo:: provides a global tempo control while code::stretch:: provides a control limited to the one pattern.
 
 subsection::The structure of defaultParentEvent
 

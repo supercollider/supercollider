@@ -140,7 +140,7 @@ x @ y
 // returns:
 Point(x, y)
 ::
-## code:: point @ point :: || make a link::Classes/Rect:: of two link::Classes/Points::
+## code:: point @ point :: || make a link::Classes/Rect:: of two link::Classes/Point::s
 code::
 Point(left, top) @ Point(right, bottom)
 // returns:

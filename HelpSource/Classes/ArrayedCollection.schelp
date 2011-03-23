@@ -100,7 +100,7 @@ y.foldAt(5).postln; // this returns the value at index 1
 ::
 
 method::plot
-Plot data in a GUI window. See link::plot:: for more details.
+Plot data in a GUI window. See link::Reference/plot:: for more details.
 
 method::swap
 Swap the values at indices i and j.

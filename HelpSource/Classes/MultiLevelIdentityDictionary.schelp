@@ -1,6 +1,6 @@
 CLASS::MultiLevelIdentityDictionary
 summary::tree of dictionaries
-related::IdentityDictionary
+related:: Classes/IdentityDictionary
 categories:: Collections>Unordered
 
 DESCRIPTION::

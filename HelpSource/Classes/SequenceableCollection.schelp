@@ -412,7 +412,7 @@ see Laurson and Kuuskankare's 2003, "From RTM-notation to ENP-score-notation"
 http://jim2003.agglo-montbeliard.fr/articles/laurson.pdf 
 ::
 
-The method converts a collection of the form code:: [beat-count, [rtm-list], repeats] :: to a link::Classes/List:: of link::Classes/Floats::. A negative integer within the rtm-list equates to a value tied over to the duration following. The method is recursive in that any subdivision within the rtm-list can itself be a nested convertRhythm collection (see example below). The repeats integer has a default value of 1.
+The method converts a collection of the form code:: [beat-count, [rtm-list], repeats] :: to a link::Classes/List:: of link::Classes/Float::s. A negative integer within the rtm-list equates to a value tied over to the duration following. The method is recursive in that any subdivision within the rtm-list can itself be a nested convertRhythm collection (see example below). The repeats integer has a default value of 1.
 
 If the divisions in the rtm-list are events, the event durations are interpreted as relative durations, and a list of events is returned.
 code::
