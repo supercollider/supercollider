@@ -203,6 +203,10 @@ pre.formula {
     background: #e7ebe7;
 }
 
+.methodname a, .imethodname a, .cmethodname a {
+    color: black;
+}
+
 .method {
     margin-left: 2em;
     margin-bottom: 2em;
