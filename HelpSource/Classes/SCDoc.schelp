@@ -36,6 +36,9 @@ get/set the system-wide directory of help sourcefiles. Defaults to code:: thisPr
 method:: helpTargetDir
 get/set the user help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "Help" ::
 
+method:: waitForHelp
+Make sure that the help-files are available, then call code::func::
+
 method:: updateAll
 Render all help-files that need updating and generate overviews and cached metadata index.
 returns:: this class

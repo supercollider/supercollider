@@ -1,5 +1,5 @@
 SCDoc {
-    classvar helpTargetDir;
+    classvar <helpTargetDir;
     classvar <helpSourceDir;
     classvar <helpBaseDir;
     classvar doc_map = nil;
@@ -19,16 +19,17 @@ SCDoc {
         helpBaseDir = path.standardizePath;
     }
 
-    *helpTargetDir {
-        if(didRun.not) {this.updateAll};
-        ^helpTargetDir;
-    }
     *helpTargetDir_ {|path|
         if(path!=helpTargetDir) {didRun = false};
         helpTargetDir = path.standardizePath;
     }
 
-    
+    *waitForHelp {|func,gui=true|
+        if(didRun.not)
+            {this.updateAll(doneFunc:func,gui:gui)}
+            {func.value};
+    }
+
     *postProgress {|string,setTopic=false|
         var prg = (progressCount/progressMax*100).round(0.1).asString ++ "%";
         if(progressWindow.notNil) {
