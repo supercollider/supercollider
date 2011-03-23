@@ -114,7 +114,8 @@ method:: helpSourceDir
 set or get the help source directory
 ::
 
-The code::method\:::: tag can be used also in normal documents, and should then have argumentnames. This can be useful for documenting common methods outside of a specific class document, for example link::Reference/plot::
+The code::method\:::: tag can be used also in normal documents, and should then have argumentnames. This can be useful for documenting common methods outside of a specific class document, for example link::Reference/plot::.
+Anchors for these methods get prefixed with a dot (.) instead of * or -.
 
 SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag right after code::classmethods\:::: or code::instancemethods\::::
 
@@ -200,10 +201,12 @@ To link another document, use code:: link\::Path/To/Document\:: :: where the pat
 code::
 Also take a look at link::Classes/SinOsc:: and link::Reference/Literals::
 ::
-To link to a specific class method, append code::#*methodName:: or code::#-methodName:: for instance methods:
+To link to a specific class method, append code::#*methodName:: or to an instance method, append code::#-methodName:: :
 code::
 Also take a look at the play method of link::Classes/Function#-play::
 ::
+For generic methods documented outside of instancemethods or classmethods (like the generic link::Reference/play:: document), use a dot (.) as prefix instead of * or -.
+
 The special link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown by appending code::#name:: where name is the name of the method:
 code::
 For all implementations of play, see link::Overviews/Methods#play::
