@@ -75,7 +75,6 @@ function showmethods() {
     var res = document.getElementById("methods");
     res.innerHTML = "";
     
-//    if(/^show_/.test(hash)) {
     if(hash && ! /^section_/.test(hash)) {
         document.getElementById("total_count").innerHTML = "Showing single method:";
         document.getElementById("method_note").innerHTML = "";
@@ -104,41 +103,48 @@ function showmethods() {
             else
             return 0;
         });
+        
+        var section = undefined;
+        if(/^section_/.test(hash))
+            section = hash[8];
 
         var cap = undefined;
         var div = document.createElement("p");
         div.className = "jump";
-        div.innerHTML = "Jump to: ";
+        div.innerHTML = "Show section: ";
 
         for(var i=0;i<mets.length;i++) {
             var m = mets[i];
             if(cap != m[0][0]) {
                 cap = m[0][0];
+                if(section == undefined)
+                    section = cap;
                 var a = document.createElement("a");
                 a.setAttribute("href","#section_"+cap);
-                a.innerHTML=cap;
+                a.innerHTML=cap.toUpperCase();
                 div.appendChild(a);
                 div.appendChild(document.createTextNode(" "));
             }
         }
         res.appendChild(div);
+
+        var x = document.createElement("h2");
+        x.innerHTML = section.toUpperCase();
+        var a = document.createElement("a");
+        a.setAttribute("name","section_"+section);
+        res.appendChild(a);
+        res.appendChild(x);
         
-        cap = undefined;
+        var count = 0;
         for(var i=0;i<mets.length;i++) {
             var m = mets[i];
             
-            if(cap != m[0][0]) {
-                var x = document.createElement("h2");
-                x.innerHTML = cap = m[0][0];
-                var a = document.createElement("a");
-                a.setAttribute("name","section_"+cap);
-                res.appendChild(a);
-                res.appendChild(x);
+            if(m[0][0]==section) {
+                showMethod(m, res);
+                count++;
             }
-            
-            showMethod(m, res);
         }
-        document.getElementById("total_count").innerHTML = mets.length + " methods";
+        document.getElementById("total_count").innerHTML = count + " methods (" + mets.length + " total)";
     }
 }
 window.onhashchange = showmethods;
