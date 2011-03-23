@@ -22,10 +22,10 @@ table::
 ## alt-click || post value
 ::
 
-section:: Method extensions
-Plotter extends other classes with methods:
+subsection:: Method extensions
+Plotter extends other classes with methods. To see what classes implements plot2, see link::Overviews/Methods#plot2::
 
-method:: something.plot2 (args)
+method:: plot2 (args)
 
 code::
 // plot array
@@ -46,7 +46,7 @@ Buffer.read(s, "sounds/SinedPink.aiff").plot2;
 Env.perc(0.4, 0.6).plot2;
 ::
 
-method:: something.plotGraph2 (n,from,to,...)
+method:: plotGraph2 (n,from,to,...)
 
 code::
 { |x| sin(x) }.plotGraph2(300,0,2*pi);
