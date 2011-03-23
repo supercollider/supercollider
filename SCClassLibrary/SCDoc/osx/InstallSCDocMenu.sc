@@ -27,25 +27,33 @@ InstallSCDocMenu {
 
 					SCMenuItem(scDocMenu, "Help (for selected text)")
 					.action_({
-						if(Document.current.selectionSize > 0) {
-							this.openFile(SCDoc.findClassOrMethod(Document.current.selectedString));
-						} {
-							this.openFile(SCDoc.helpTargetDir+/+"Help.html");
+					    var sz = Document.current.selectionSize;
+					    var txt = Document.current.selectedString;
+					    SCDoc.waitForHelp {
+						    if(sz > 0) {
+							    this.openFile(SCDoc.findClassOrMethod(txt));
+						    } {
+							    this.openFile(SCDoc.helpTargetDir+/+"Help.html");
+						    };
 						};
 					})
 					.setShortCut("d",false,true);
 
 					SCMenuItem(scDocMenu, "Search (for selected text)")
 					.action_({
-						this.openFile(SCDoc.helpTargetDir+/+"Search.html",
-							if(Document.current.selectionSize > 0,
-								{Document.current.selectedString},nil));
+					    var sz = Document.current.selectionSize;
+					    var txt = Document.current.selectedString;
+					    SCDoc.waitForHelp {
+						    this.openFile(SCDoc.helpTargetDir+/+"Search.html", if(sz>0,{txt},nil));
+                        };
 					})
 					.setShortCut("s",false,true);
 
 					SCMenuItem(scDocMenu, "Browse")
 					.action_({
-						this.openFile(SCDoc.helpTargetDir+/+"Browse.html");
+					    SCDoc.waitForHelp {
+    						this.openFile(SCDoc.helpTargetDir+/+"Browse.html");
+    					};
 					})
 					.setShortCut("b",false,true);
 
