@@ -16,7 +16,6 @@ A guide to writing help can be found here: link::Guides/WritingHelp::.
 SUBSECTION:: Basic usage
 Update all help-files and overviews:
 code::
-SCDoc.helpSourceDir = "/path/to/HelpSource";
 SCDoc.updateAll;
 ::
 
