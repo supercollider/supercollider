@@ -48,6 +48,11 @@ InstallSCDocMenu {
 						this.openFile(SCDoc.helpTargetDir+/+"Browse.html");
 					})
 					.setShortCut("b",false,true);
+
+					SCMenuItem(scDocMenu, "Update help")
+					.action_({
+					    SCDoc.updateAll;
+					});
 				};
 			});
 		}
