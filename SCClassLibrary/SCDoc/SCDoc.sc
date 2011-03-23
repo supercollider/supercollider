@@ -82,22 +82,6 @@ SCDoc {
         doWait = false;
     }
 
-    *collectAllMethods {
-        var name, t;
-        t = IdentityDictionary.new;
-
-        Class.allClasses.do {|c|
-            name = c.name.asString;
-            c.methods.do {|x|
-                if(t[x.name]==nil, {t[x.name] = List.new});
-
-                t[x.name].add([name,x.isExtensionOf(c)]);
-            };
-        };
-
-        ^t;
-    }
-
     *makeMethodList {|c,n,tag|
         var l, mets, name, syms;
 
@@ -454,7 +438,7 @@ SCDoc {
                 count = count + fileList[dir].size;
             };
             this.postProgress("Total"+count+"files to process");
-            progressMax = count + new_classes.size + 4;
+            progressMax = count + new_classes.size + 3;
 
             // parse/render or copy new and updated files
             // NOTE: any class docs processed here will remove that class from the new_classes set
@@ -521,27 +505,6 @@ SCDoc {
                 r.renderHTML(helpTargetDir +/+ "Overviews/ClassTree.html","Overviews",false);
                 this.tickProgress;
             };
-            
-            // move this to the old_classes!=current_classes check above? but methods can change even if the classlist has not..
-            this.postProgress("Generating Methods index",true);
-            File.delete(helpTargetDir +/+ "methods.js");
-            f = File.open(helpTargetDir +/+ "methods.js","w");
-            f.write("methods = [\n");
-            this.collectAllMethods.pairsDo {|k,v|
-                f.write("['"++k++"',[");
-                v.do {|c,i|
-                    n = c[0];
-                    f.write("'"++n);
-                    if(c[1]) { //is extension of
-                        f.write("+");
-                    };
-                    f.write("',");
-                };
-                f.write("]],\n");
-            };
-            f.write("\n];");
-            f.close;
-            this.tickProgress;
 
             this.writeDocMap;
             this.tickProgress;
