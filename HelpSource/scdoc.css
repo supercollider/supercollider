@@ -195,7 +195,7 @@ pre.formula {
 .methodname, .imethodname, .cmethodname {
     font-family: Andale Mono, monospace;
     font-size: 1em;
-    font-weight: bold;
+    font-weight: normal;
     margin-bottom: 0em;
     margin-top: 1em;
     padding: 0.25em;
@@ -205,6 +205,7 @@ pre.formula {
 
 .methodname a, .imethodname a, .cmethodname a {
     color: black;
+    font-weight: bold;
 }
 
 .method {
