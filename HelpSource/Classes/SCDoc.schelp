@@ -23,7 +23,7 @@ SCDoc.updateAll;
 To force an update of unchanged files, use code::updateAll(true):: or remove code::helpTargetDir/scdoc_cache::
 
 CLASSMETHODS::
-private:: initClass, addToDocMap, makeMethodList, updateFile, makeOverviews, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap
+private:: initClass, addToDocMap, makeMethodList, updateFile, makeOverviews, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap, helpBaseDir, initHelpTargetDir
 
 method:: p
 The default link::Classes/SCDocParser:: object, created automatically.
@@ -31,10 +31,10 @@ method:: r
 The default link::Classes/SCDocRenderer:: object, created automatically.
 
 method:: helpSourceDir
-get/set the base directory of help sourcefiles. Defaults to code:: thisProcess.platform.systemAppSupportDir +/+ "/HelpSource" ::
+get/set the system-wide directory of help sourcefiles. Defaults to code:: thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource" ::
 
 method:: helpTargetDir
-get/set the help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "/Help" ::
+get/set the user help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "Help" ::
 
 method:: updateAll
 Render all help-files that need updating and generate overviews and cached metadata index.

@@ -1,7 +1,7 @@
 SCDoc {
     classvar helpTargetDir;
     classvar <helpSourceDir;
-    classvar <systemHelpDir;
+    classvar <helpBaseDir;
     classvar doc_map = nil;
     classvar <p, <r;
     classvar doWait;
@@ -15,8 +15,8 @@ SCDoc {
         helpSourceDir = path.standardizePath;
     }
 
-    *systemHelpDir_ {|path|
-        systemHelpDir = path.standardizePath;
+    *helpBaseDir_ {|path|
+        helpBaseDir = path.standardizePath;
     }
 
     *helpTargetDir {
@@ -75,8 +75,8 @@ SCDoc {
 
     *initClass {
         this.helpSourceDir_(thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource");
-        this.systemHelpDir_(thisProcess.platform.classLibraryDir.dirname +/+ "HelpBase");
-        this.helpTargetDir_(thisProcess.platform.userAppSupportDir +/+ "/Help");
+        this.helpBaseDir_(thisProcess.platform.classLibraryDir.dirname +/+ "HelpBase");
+        this.helpTargetDir_(thisProcess.platform.userAppSupportDir +/+ "Help");
         r = SCDocRenderer.new;
         r.parser = p = SCDocParser.new;
         doWait = false;
@@ -303,12 +303,27 @@ SCDoc {
     *tickProgress { progressCount = progressCount + 1 }
 
     *initHelpTargetDir {
-        var sysdir = this.systemHelpDir.escapeChar($ );
-        if(File.exists(helpTargetDir).not) {
+        var sysdir = helpBaseDir.escapeChar($ );
+        var stamp = helpTargetDir.escapeChar($ )+/+"helpbase_timestamp";
+        /*
+        NOTE:
+        if the system-wide HelpBase dir was updated since last time we based our help-dir on it,
+        then copy it again. Any pre-rendered help that was updated (due to a new version of SC, etc)
+        will thus be copied over and overwrite the outdated html file in helpTargetDir.
+
+        Note that rsync does not check if sourcefile is newer, only if it differs.
+        This means that scdoc_cache, classlist_cache, helpdirlist_cache will also be replaced,
+        thus triggering a re-compile of all docs not part of HelpBase (main SC without extensions).
+        This is probably a good thing, since a new SC version might mean that SCDoc changed internally
+        and that all docs should be re-compiled.
+        */
+        if(File.exists(helpTargetDir).not or: {("test"+sysdir+"-nt"+stamp+"-o \\! -e"+stamp).systemCmd==0}) {
             this.postProgress("Initializing user's help directory", true);
-            if(File.exists(systemHelpDir)) {
+            if(File.exists(helpBaseDir)) {
                 this.postProgress("Basing help tree on pre-rendered help, please wait...");
-                ("rsync -ax --link-dest="++sysdir+sysdir++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
+                ("rsync -vax --link-dest="++sysdir+sysdir++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
+                this.postProgress("Done, creating timestamp");
+                ("touch -r"+sysdir+stamp).systemCmd;
             } {
                 this.postProgress("No pre-rendered help found, creating from scratch...");
             }
