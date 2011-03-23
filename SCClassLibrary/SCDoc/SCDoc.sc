@@ -1,5 +1,5 @@
 SCDoc {
-    classvar <helpTargetDir;
+    classvar helpTargetDir;
     classvar <helpSourceDir;
     classvar <systemHelpDir;
     classvar doc_map = nil;
@@ -9,18 +9,25 @@ SCDoc {
     classvar progressCount = 0, progressMax = 1;
     classvar progressTopic = nil, progressBar = nil, closeButton = nil;
     classvar new_classes = nil;
+    classvar didRun = false;
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
     }
 
-    *helpTargetDir_ {|path|
-        helpTargetDir = path.standardizePath;
-    }
-
     *systemHelpDir_ {|path|
         systemHelpDir = path.standardizePath;
     }
+
+    *helpTargetDir {
+        if(didRun.not) {this.updateAll};
+        ^helpTargetDir;
+    }
+    *helpTargetDir_ {|path|
+        if(path!=helpTargetDir) {didRun = false};
+        helpTargetDir = path.standardizePath;
+    }
+
     
     *postProgress {|string,setTopic=false|
         var prg = (progressCount/progressMax*100).round(0.1).asString ++ "%";
@@ -307,11 +314,11 @@ SCDoc {
 
     *initHelpTargetDir {
         var sysdir = this.systemHelpDir.escapeChar($ );
-        if(File.exists(this.helpTargetDir).not) {
+        if(File.exists(helpTargetDir).not) {
             this.postProgress("Initializing user's help directory", true);
-            if(File.exists(this.systemHelpDir)) {
+            if(File.exists(systemHelpDir)) {
                 this.postProgress("Basing help tree on pre-rendered help, please wait...");
-                ("rsync -ax --link-dest="++sysdir+sysdir++"/"+this.helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
+                ("rsync -ax --link-dest="++sysdir+sysdir++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
             } {
                 this.postProgress("No pre-rendered help found, creating from scratch...");
             }
@@ -320,8 +327,10 @@ SCDoc {
 
     *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true,findExtensions=true,useHelpBase=true|
         var func;
-        var docmap_path = this.helpTargetDir.escapeChar($ )+/+"scdoc_cache";
-        var classlist_path = this.helpTargetDir+/+"classlist_cache";
+        var docmap_path = helpTargetDir.escapeChar($ )+/+"scdoc_cache";
+        var classlist_path = helpTargetDir+/+"classlist_cache";
+
+        didRun = true;
         
         func = {
             var helpSourceDirs, fileList, count, maybeDelete, x, f, n, old_classes, current_classes;
@@ -345,9 +354,9 @@ SCDoc {
             this.postProgress("Searching for HelpSource folders...",true);
 
             // check for existence of main helpSourceDir
-            if(File.exists(this.helpSourceDir).not) {
+            if(File.exists(helpSourceDir).not) {
                 progressCount = 1;
-                this.postProgress(this.helpSourceDir+"does not exist!\n\nPlease set SCDoc.helpSourceDir to SCDoc's HelpSource folder and run SCDoc.updateAll again.");
+                this.postProgress(helpSourceDir+"does not exist!\n\nPlease set SCDoc.helpSourceDir to SCDoc's HelpSource folder and run SCDoc.updateAll again.");
                 progressWindow !? {
                     progressText.stringColor = Color(1,0,0);
                     progressWindow.userCanClose = true;
@@ -357,7 +366,7 @@ SCDoc {
             };
 
             // find the set of helpSourceDirs
-            helpSourceDirs = Set[this.helpSourceDir];
+            helpSourceDirs = Set[helpSourceDir];
             if(findExtensions) {
                 [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
                     helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
@@ -370,7 +379,7 @@ SCDoc {
             helpSourceDirs.do {|srcdir|
                 this.postProgress("Replicating"+srcdir);
                 ("find"+srcdir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type d").unixCmdGetStdOutLines.do {|dir|
-                    x = (SCDoc.helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ );
+                    x = (helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ );
                     this.postProgress("-"+x);
                     ("mkdir -p"+x).systemCmd;
                 }
@@ -418,10 +427,10 @@ SCDoc {
             this.postProgress("Found"+new_classes.size+"new classes");
 
             // add all files in added HelpSource folders (e.g. newly installed quarks/extensions)
-            x = Object.readArchive(this.helpTargetDir+/+"helpdirlist_cache");
+            x = Object.readArchive(helpTargetDir+/+"helpdirlist_cache");
             if(x.notNil) {
                 (helpSourceDirs - x).do {|dir|
-                    if(dir != this.helpSourceDir) {
+                    if(dir != helpSourceDir) {
                         this.postProgress("Found new HelpSource folder:"+dir);
                         fileList[dir] = fileList[dir] | ("find -L"+dir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type f")
                             .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
@@ -431,8 +440,8 @@ SCDoc {
                     maybeDelete = true;
                 };
             };
-            File.delete(this.helpTargetDir+/+"helpdirlist_cache");
-            helpSourceDirs.writeArchive(this.helpTargetDir+/+"helpdirlist_cache");
+            File.delete(helpTargetDir+/+"helpdirlist_cache");
+            helpSourceDirs.writeArchive(helpTargetDir+/+"helpdirlist_cache");
 
             count = 0;
             helpSourceDirs.do {|dir|
@@ -509,8 +518,8 @@ SCDoc {
             
             // move this to the old_classes!=current_classes check above? but methods can change even if the classlist has not..
             this.postProgress("Generating Methods index",true);
-            File.delete(this.helpTargetDir +/+ "methods.js");
-            f = File.open(this.helpTargetDir +/+ "methods.js","w");
+            File.delete(helpTargetDir +/+ "methods.js");
+            f = File.open(helpTargetDir +/+ "methods.js","w");
             f.write("methods = [\n");
             this.collectAllMethods.pairsDo {|k,v|
                 f.write("['"++k++"',[");
@@ -531,7 +540,7 @@ SCDoc {
             this.writeDocMap;
             this.tickProgress;
             this.postProgress("Writing Document JSON index...",true);
-            this.docMapToJSON(this.helpTargetDir +/+ "docmap.js");
+            this.docMapToJSON(helpTargetDir +/+ "docmap.js");
             progressCount = progressMax;
             
             this.postProgress("Done!",true);
