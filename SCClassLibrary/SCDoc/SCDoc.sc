@@ -54,8 +54,12 @@ SCDoc {
         doc_map.pairsDo {|k,v|
             f.write("{\n");
             v.pairsDo {|k2,v2|
-                v2=v2.asString.replace("'","\\'");
-                f.write("'"++k2++"': '"++v2++"',\n");
+                if(v2.class == List) {
+                    v2 = "["+v2.collect{|x|"'"++x++"'"}.join(",")+"]";
+                } {
+                    v2 = "'"++v2.asString.replace("'","\\'")++"'";
+                };
+                f.write("'"++k2++"': "++v2++",\n");
             };
 
             f.write("},\n");
@@ -181,6 +185,7 @@ SCDoc {
             r.renderHTML(dest,"Classes");
 
             doc_map["Classes" +/+ name].delete = false;
+            doc_map["Classes" +/+ name].methods = r.methods;
             this.tickProgress;
         };
     }
@@ -297,6 +302,7 @@ SCDoc {
             p.parseFile(source);
             this.addToDocMap(p,subtarget);
             r.renderHTML(target,subtarget.dirname);
+            doc_map[subtarget].methods = r.methods;
             if(subtarget.dirname=="Classes") {
                 if(new_classes.includes(subtarget.basename.asSymbol)) {
                     new_classes.remove(subtarget.basename.asSymbol);

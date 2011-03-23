@@ -8,6 +8,7 @@ SCDocRenderer {
     var dirLevel;
     var baseDir;
     var footNotes;
+    var <methods;
 
     *new {|p=nil|
         ^super.newCopyArgs(p);//.init;
@@ -181,6 +182,7 @@ SCDocRenderer {
                             }
                         };
                     };
+                    methods.add(if(m.notNil and: {m.isExtensionOf(c)},"+","_")++(pfx??".")++mname);
                 };
 
                 file.write("<div class='method'>");
@@ -547,6 +549,7 @@ SCDocRenderer {
         dirLevel.do { baseDir = baseDir +/+ ".." };
 
         footNotes = List.new;
+        methods = List.new;
 
         x = parser.findNode(\class);
         if(x.text.notEmpty, {
