@@ -4,7 +4,7 @@
     <link rel='stylesheet' href='./scdoc.css' type='text/css' />
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
     <script src="docmap.js" type="text/javascript"></script>
-    <script src="methods.js" type="text/javascript"></script>
+<!--    <script src="methods.js" type="text/javascript"></script>-->
 <style>
 div#search_box {
     margin: 1.5em;
@@ -26,12 +26,13 @@ div#search_count {
 }
 
 div.result_item {
-    margin-bottom: 0.2em;
+    margin-bottom: 0.1em;
     margin-left: 2em;
 }
 .result_met {
     font-family: Andale Mono, monospace;
     font-size: 9.5pt;
+    margin-top: 1em;
 }
 div.result_category {
     color: #555;
@@ -39,9 +40,9 @@ div.result_category {
     margin-top: 1em;
     border-bottom: 1px solid #ccc;
 }
-div.mets {
+div.met_docs {
     padding-left: 2em;
-    margin-bottom: 0.5em;
+    margin-bottom: 0.1em;
 }
 #search_checks {
     padding: 0.5em;
@@ -90,11 +91,31 @@ var checkboxes;
 var checkboxes2;
 var fields = ["title","summary","categories"];
 var fields2 = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
-var classes = undefined;
+//var classes = undefined;
 
 escape_regexp = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
   return str.replace(specials, "\\$&");
+}
+    
+var methods;
+function buildMethodList() {
+    methods = {};
+    for(var i=0;i<docmap.length;i++) {
+        var doc = docmap[i];
+        var mets = doc.methods;
+        if(mets) {
+            for(var j=0;j<mets.length;j++) {
+                var m = mets[j];
+                var mname = m.slice(2);
+                var pfx = m[1];
+                var ext = m[0]=="+";
+                if(!methods[mname])
+                    methods[mname] = [];
+                methods[mname].push({doc:doc,pfx:pfx,ext:ext});
+            }
+        }
+    }
 }
     
 function onLoad() {
@@ -154,12 +175,14 @@ function onLoad() {
         window.location.hash = "";
     }
     
-    classes = {};
+/*    classes = {};
     for(var k in docmap) {
         var doc = docmap[k];
         if(/Classes/.test(doc.path))
             classes[doc.title] = doc;
     }
+*/
+    buildMethodList();
 
     setInterval(delayed_update,250);
 }
@@ -308,19 +331,57 @@ function doPrint() {
         }
 
         for(;mindex<mets.length; mindex++) {
-            var k = mets[mindex][0];
+            var mname = mets[mindex][0]; //name
             var div = document.createElement("div");
             div.className = "result_item";
-            var x = document.createElement("span");
-            x.appendChild(document.createTextNode(k));
+            var x = document.createElement("div");
+            x.appendChild(document.createTextNode(mname));
             x.className = "result_met";
             div.appendChild(x);
             
-            var div2 = document.createElement("div");
+/*            var div2 = document.createElement("div");
             div2.className = "mets";
-            div.appendChild(div2);
-            
-            var x = mets[mindex][1];
+            div.appendChild(div2);*/
+
+            var x = mets[mindex][1].sort(function(a,b) { //document list
+                    a = a.pfx + a.doc.title;
+                    b = b.pfx + b.doc.title;
+                    if(a<b) return -1;
+                    else
+                    if(a>b) return +1;
+                    else
+                    return 0;
+            });
+                
+            for(var i=0;i<x.length;i++) {
+                var m = x[i];
+                var v = m.doc;
+
+                var div2 = document.createElement("div");
+                div2.className = "met_docs";
+                div.appendChild(div2);
+                
+                var p = m.pfx;
+                if(p==".") p=" ";
+                div2.appendChild(document.createTextNode(p+" "));
+                var a = document.createElement("a");
+                a.setAttribute("href",v.path+".html#"+m.pfx+mname);
+                a.innerHTML = v.title;
+                div2.appendChild(a);
+                if(m.ext)
+                    div2.appendChild(document.createTextNode("+"));
+                div2.appendChild(document.createTextNode(" - "+v.summary+" "));
+                var n = document.createElement("span");
+                n.className = "soft";
+                var res = "["+v.path.split("/")[0];
+                if(v.installed=="extension")
+                    res += " +";
+                else if(v.installed=="missing")
+                    res += " - missing!";
+                n.innerHTML = res+"]";
+                div2.appendChild(n);
+            }            
+/*            var x = mets[mindex][1];
             for(var i=0;i<x.length;i++) {
                 var m = x[i];
                 var pfx = "-";
@@ -344,7 +405,7 @@ function doPrint() {
                 if(ext)
                     div2.appendChild(document.createTextNode("+"));
 
-            }
+            }*/
 
             node.appendChild(div);
 
@@ -442,26 +503,19 @@ function doSearch() {
 
         // search methods
         if(document.getElementById("check_methods").checked) {
-            for(i in methods) {
-                var m = methods[i];
-                if(re.test(m[0])) {
+            for(var mname in methods) {
+                var m = methods[mname];
+                if(re.test(mname)) {
                     if(include_ext_classes) {
-                        mets.push(m);
+                        mets.push([mname,m]);
                     } else {
                         var c = [];
-                        for(i2 in m[1]) {
-                            var k = m[1][i2];
-                            var k2 = k;
-                            if(/^Meta_/.test(k2))
-                                k2 = k2.slice(5);
-                            if(k2[k2.length-1]=="+")
-                                k2 = k2.slice(0,-1);
-
-                            var doc = classes[k2];
+                        for(var i=0;i<m.length;i++) {
+                            var doc = m[i].doc;
                             if(doc && doc.installed != "extension")
-                                c.push(k);
+                                c.push(m[i]);
                         }
-                        mets.push([m[0],c]);
+                        mets.push([mname,c]);
                     }
                     foundMets = true;
                     count++;
