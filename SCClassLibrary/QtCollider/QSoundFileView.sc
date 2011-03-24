@@ -76,7 +76,7 @@ QSoundFileView : QView {
 
   currentSelection_ { arg index; this.setProperty( \currentSelection, index ); }
 
-  selection { arg index; ^this.invokeMethod( \selection, 0, true ); }
+  selection { arg index; ^this.invokeMethod( \selection, index, true ); }
 
   setSelection { arg index, selection;
     this.invokeMethod( \setSelection, [index, selection] );
