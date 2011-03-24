@@ -12,8 +12,6 @@ private::initClass
 
 subsection::Class variables
 
-method::defaultParentEvent
-The default event used in most cases.
 method::parentEvents
 An IdentityDictionary of useful parent events.
 method::partialEvents
@@ -33,7 +31,7 @@ argument::know
 If strong::know:: is set to link::Classes/True::, the event will respond to appropriate message calls. See link::Classes/Environment:: for more details.
 
 method::default
-Returns an empty event with link::#*defaultParentEvent:: as parent.
+Returns an empty event with link::#.defaultParentEvent:: as parent.
 
 method::silent
 Returns an event that describes a pause of strong::dur:: duration.
@@ -52,7 +50,7 @@ code::
 Pn((dur: 2, freq:8000)).play;
 ::
 
-method::next			
+method::next
 Combines an event given in the argument with the current event. This is used to enable events to be composed.
 code::
 (a: 6, b: 7).next((c: 100));
@@ -60,7 +58,7 @@ code::
 
 method::playAndDelta
 Used by link::Classes/EventStreamPlayer:: to play Events and obtain a time increment.
-			
+
 method::asUGenInput
 Calls link::#-asControlInput::.
 
@@ -115,13 +113,13 @@ q.y;			// [ 100, 200, 300 ]
 
 subsection::Event for specifying different things to happen
 
-Event provides a link::#*defaultParentEvent:: that defines a variety of different event types and provides a complete set of default key/value pairs for each type. The type is determined by the value of the key strong::\type:: which defaults to strong::\note::. Note events create synths on the server.
+Event provides a link::#.defaultParentEvent:: that defines a variety of different event types and provides a complete set of default key/value pairs for each type. The type is determined by the value of the key strong::\type:: which defaults to strong::\note::. Note events create synths on the server.
 code::
 ( ).play;			// the default note
 (freq: 500, pan: -1) .play;	// 500 Hz, panned left
 (play: { ~what.postln }, what: "hello happening").play;	// something else
 ::
-Per default, the play message derives its behaviour from the link::#*defaultParentEvent::, which provides many default values, such as default instrument (\default), note (0), legato (0.8) and so on. Depending on the event type, these may differ completely and need not even represent a sound.
+Per default, the play message derives its behaviour from the link::#.defaultParentEvent::, which provides many default values, such as default instrument (\default), note (0), legato (0.8) and so on. Depending on the event type, these may differ completely and need not even represent a sound.
 
 subsection::Events and SynthDefs
 
@@ -230,7 +228,7 @@ Pbind(
 )
 ::
 
-Here is an example that illustrates some more of the keys defined by the link::#*defaultParentEvent::. Note that it is equivalent to write code::Pbind(\key, val, ...):: and code::Pbind(*[key: val, ...])::.
+Here is an example that illustrates some more of the keys defined by the link::#.defaultParentEvent::. Note that it is equivalent to write code::Pbind(\key, val, ...):: and code::Pbind(*[key: val, ...])::.
 code::
 (
 Pbind(*[
@@ -261,7 +259,7 @@ play {
 	this.use { ~play.value };
 }
 ::
-Thus we can see that the link::#*defaultParentEvent:: is used unless otherwise specified and the function stored in code::~play:: is executed in the context of the Event. It can be replaced in a given event for different behavior:
+Thus we can see that the link::#.defaultParentEvent:: is used unless otherwise specified and the function stored in code::~play:: is executed in the context of the Event. It can be replaced in a given event for different behavior:
 code::
 (a: 6, b: 7, play: { (~a * ~b).postln }).play;
 ::
@@ -273,6 +271,9 @@ Events also specify timing within a link::Classes/Pattern::. Event's code::delta
 Patterns are played by link::Classes/TempoClock::s, which have their own tempo controls. This tempo which can be controlled through code::~tempo:: in the event. Changes to the tempo affect everything else scheduled by the TempoClock, so code::tempo:: provides a global tempo control while code::stretch:: provides a control limited to the one pattern.
 
 subsection::The structure of defaultParentEvent
+
+method::defaultParentEvent
+The default event used in most cases. This is a private class variable. See link::#*default::.
 
 The default parent event provides the collection of default values and functions needed for the different uses of an Event. These defaults are defined in partialEvents that specify distinct aspects of default parent Event:
 code::
