@@ -48,11 +48,9 @@ QcApplication::~QcApplication()
 
 void QcApplication::postSyncEvent( QcSyncEvent *e, QObject *rcv )
 {
-  _mutex.lock();
-  if( !_instance ) {
-    _mutex.unlock();
-    return;
-  }
+  // WARNING: If the current thread is other than receiver's, this
+  // method will block until an event loop is started for the receiver's
+  // thread (e.g. a QApplication is started)
 
   if( QThread::currentThread() == rcv->thread() ) {
     sendEvent( rcv, e );
@@ -70,23 +68,33 @@ void QcApplication::postSyncEvent( QcSyncEvent *e, QObject *rcv )
     cond.wait( &mutex );
     mutex.unlock();
   }
-
-  _mutex.unlock();
 }
 
 void QcApplication::postSyncEvent( QcSyncEvent *e, EventHandlerFn handler )
 {
+  bool sameThread;
+
   _mutex.lock();
   if( !_instance ) {
+    // Can not use QcApplication's thread as QcApplication is not instantiated
     _mutex.unlock();
     return;
   }
+  sameThread = QThread::currentThread() == _instance->thread();
+  _mutex.unlock();
 
-  if( QThread::currentThread() == _instance->thread() ) {
+  if( sameThread ) {
     (*handler)(e);
     delete(e);
   }
   else {
+    // NOTE:
+    // Despite locking QcApplication's mutex for the time of event processing
+    // this method can be called recursively from event processing, because that
+    // implies that the current thread will be the same as QcApplication's, so
+    // this branch will not be entered the second time
+    _mutex.lock();
+
     QMutex mutex;
     QWaitCondition cond;
 
@@ -98,9 +106,9 @@ void QcApplication::postSyncEvent( QcSyncEvent *e, EventHandlerFn handler )
     postEvent( _instance, e );
     cond.wait( &mutex );
     mutex.unlock();
-  }
 
-  _mutex.unlock();
+    _mutex.unlock();
+  }
 }
 
 bool QcApplication::event( QEvent *e )
