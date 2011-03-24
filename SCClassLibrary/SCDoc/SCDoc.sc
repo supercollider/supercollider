@@ -486,7 +486,8 @@ SCDoc {
                     helpSourceDirs.do {|dir|
                         ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOutLines.reject(_.isEmpty).do {|f|
                             var subtarget = f.copyRange(dir.size + 1, f.findBackwards(".") - 1);
-                            doc_map[subtarget].delete = false;
+                            x = doc_map[subtarget];
+                            x !? {x.delete = false};
                         };
                     };
                     current_classes.do {|sym|
