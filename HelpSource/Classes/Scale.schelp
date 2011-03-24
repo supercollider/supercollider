@@ -34,7 +34,7 @@ Creates a scale from the library stored in link::Classes/ScaleInfo::. Each scale
 code::
 Scale.phrygian(\pythagorean)
 ::
-If the tuning size does not match the scale's link::#pitchesPerOctave::, a warning will be thrown, and the scale will use its default tuning.
+If the tuning size does not match the scale's link::#-pitchesPerOctave::, a warning will be thrown, and the scale will use its default tuning.
 
 For a complete list of available scales, execute
 code::
@@ -73,7 +73,7 @@ argument::value
 can be either an instance of link::Classes/Tuning:: or a symbol matching a library tuning.
 
 method::semitones
-Returns a tuned array of semitone values. link::#as::(Array) is equivalent; link::#as::(List) returns it as a list, etc.
+Returns a tuned array of semitone values. link::#-as::(Array) is equivalent; link::#-as::(List) returns it as a list, etc.
 
 method::cents
 Returns a tuned array of cent values.

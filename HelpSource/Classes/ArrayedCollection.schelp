@@ -76,14 +76,14 @@ method::at
 Return the item at strong::index::.
 	
 method::clipAt
-Same as link::#at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
 code::
 y = [ 1, 2, 3 ];
 y.clipAt(13).postln;
 ::
  
 method::wrapAt
-Same as link::#at::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
 code::
 y = [ 1, 2, 3 ];
 y.wrapAt(3).postln; // this returns the value at index 0
@@ -91,7 +91,7 @@ y.wrapAt(4).postln; // this returns the value at index 1
 ::
 
 method::foldAt
-Same as link::#at::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
 code::
 y = [ 1, 2, 3 ];
 y.foldAt(3).postln; // this returns the value at index 1
@@ -112,13 +112,13 @@ method::put
 Put strong::item:: at strong::index::, replacing what is there.
 
 method::clipPut
-Same as link::#put::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
+Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
 
 method::wrapPut
-Same as link::#put::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
+Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
 
 method::foldPut
-Same as link::#put::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
+Same as link::#-put::, but values for strong::index:: greater than the size of the ArrayedCollection will be folded back.
 
 method::putEach
 Put the strong::values:: in the corresponding indices given by strong::keys::. If one of the two argument arrays is longer then it will wrap.
@@ -159,7 +159,7 @@ y.postln;
 ::
 
 method::takeAt
-Similar to link::#removeAt::, but does not maintain the order of the items following the one that was removed. Instead, the last item is placed into the position of the removed item and the array's size decreases by one.
+Similar to link::#-removeAt::, but does not maintain the order of the items following the one that was removed. Instead, the last item is placed into the position of the removed item and the array's size decreases by one.
 code::
 y = [ 1, 2, 3, 4, 5 ];
 y.takeAt(1);
@@ -167,7 +167,7 @@ y.postln;
 ::
 
 method::takeThese
-Removes all items in the receiver for which the strong::func:: answers true. The function is passed two arguments, the item and an integer index. note::that order is not preserved. See link::#takeAt::.
+Removes all items in the receiver for which the strong::func:: answers true. The function is passed two arguments, the item and an integer index. note::that order is not preserved. See link::#-takeAt::.
 code::
 y = [ 1, 2, 3, 4 ];
 y.takeThese({ arg item, index; item.odd; });	//remove odd items
@@ -368,7 +368,7 @@ method::collect
 Answer a new collection which consists of the results of function evaluated for each item in the collection. The function is passed two arguments, the item and an integer index. See link::Classes/Collection:: helpfile for examples.
 
 method::deepCollect
-The same as link::#collect::, but can look inside sub-arrays up to the specified strong::depth::.
+The same as link::#-collect::, but can look inside sub-arrays up to the specified strong::depth::.
 code::
 a = [99, [4,6,5], [[32]]];
 a.deepCollect(1, {|item| item.isArray}).postln;

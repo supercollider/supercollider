@@ -21,9 +21,9 @@ a.at(\foo);
 CLASSMETHODS::
 
 method::new
-The link::#parent:: and link::#proto:: instance variables allow additional IdentityDictionary's to provide default values. The precedence order for determining the value of a key is the IdentityDictionary, its prototype, its parent.
+The link::#-parent:: and link::#-proto:: instance variables allow additional IdentityDictionary's to provide default values. The precedence order for determining the value of a key is the IdentityDictionary, its prototype, its parent.
 
-When the instance variable link::#know:: is link::Classes/True::, the IdentityDictionary responds to unknown messages by looking up the selector and evaluating the result with the dictionary as an argument. For example:
+When the instance variable link::#-know:: is link::Classes/True::, the IdentityDictionary responds to unknown messages by looking up the selector and evaluating the result with the dictionary as an argument. For example:
 code::
 a = IdentityDictionary(know: true);
 a.put(\foo, { | x | ("the argument is:" + x).postln });

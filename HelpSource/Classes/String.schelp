@@ -43,7 +43,7 @@ method::postln
 Prints the string and a carriage return to the current post window.
 
 method::postc, postcln
-As link::#post:: and link::#postln::, but formatted as a comment.
+As link::#-post:: and link::#-postln::, but formatted as a comment.
 code::
 "This is a comment.".postcln;
 ::
@@ -129,7 +129,7 @@ f.asCompileString.postln;
 ::
 
 method::postcs
-As link::#postln::, but posts the compileString of the reciever.
+As link::#-postln::, but posts the compileString of the reciever.
 code::
 List[1, 2, ["comment", [3, 2]], { 1.0.rand }].postcs;
 ::
@@ -190,19 +190,19 @@ code::
 ::
 
 method::scatArgs
-Same as link::#catArgs::, but with spaces in between.
+Same as link::#-catArgs::, but with spaces in between.
 code::
 "These are some args: ".scatArgs(\fish, SinOsc.ar, {4 + 3}).postln;
 ::
 
 method::ccatArgs
-Same as link::#catArgs::, but with commas in between.
+Same as link::#-catArgs::, but with commas in between.
 code::
 "a String".ccatArgs(\fish, SinOsc.ar, {4 + 3}).postln;
 ::
 
 method::catList, scatList, ccatList
-As link::#catArgs::, link::#scatArgs:: and link::#ccatArgs:: above, but takes a Collection (usually a link::Classes/List:: or an link::Classes/Array::) as an argument.
+As link::#-catArgs::, link::#-scatArgs:: and link::#-ccatArgs:: above, but takes a Collection (usually a link::Classes/List:: or an link::Classes/Array::) as an argument.
 code::
 "a String".ccatList([\fish, SinOsc.ar, {4 + 3}]).postln;
 ::
@@ -228,7 +228,7 @@ code::
 ::
 
 method::findBackwards
-Same like link::#find::, but starts at the end of the string.
+Same like link::#-find::, but starts at the end of the string.
 code::
 // compare:
 "These words are several words".find("words"); // 6
@@ -250,7 +250,7 @@ code::
 ::
 
 method::containsi
-Same as link::#contains::, but case insensitive.
+Same as link::#-contains::, but case insensitive.
 code::
 "These are several words".containsi("ArE").postln;
 ::
@@ -262,7 +262,7 @@ code::
 ::
 
 method::icontainsStringAt
-Same as link::#containsStringAt::, but case insensitive.
+Same as link::#-containsStringAt::, but case insensitive.
 
 method::escapeChar
 Add the escape character (\) at the location of your choice.
@@ -277,7 +277,7 @@ code::
 ::
 
 method::replace
-Like link::#tr::, but with strings as arguments.
+Like link::#-tr::, but with strings as arguments.
 code::
 "Here are several words which are fish".replace("are", "were");
 ::
@@ -292,7 +292,7 @@ Post << "Print this on Post";
 ::
 
 method::storeOn
-Same as link::#printOn::, but formatted link::#asCompileString::.
+Same as link::#-printOn::, but formatted link::#-asCompileString::.
 code::
 "Store this on Post".storeOn(Post);
 
@@ -335,7 +335,7 @@ Also on os x applescript can be called via osascript:
 code::
 "osascript -e 'tell application \"Safari\" to activate'".unixCmd;
 ::
-Should you need an environment variable to persist you can use link::#setenv::.
+Should you need an environment variable to persist you can use link::#-setenv::.
 
 note::
 Despite the fact that the method is called 'unixCmd', strong::it does work in Windows::. The string must be a DOS command, however: "dir" rather than "ls" for instance.
@@ -349,7 +349,7 @@ code::
 ::
 
 method::unixCmdGetStdOut
-Similar to link::#unixCmd:: except that the stdout of the process is returned (synchronously) rather than sent to the post window.
+Similar to link::#-unixCmd:: except that the stdout of the process is returned (synchronously) rather than sent to the post window.
 code::
 ~listing = "ls Help".unixCmdGetStdOut; // Grab
 ~listing.reverse.as(Array).stutter.join.postln; // Mangle
@@ -362,7 +362,7 @@ code::
 ::
 
 method::setenv
-Set the environment variable indicated in the string to equal the String strong::value::. This value will persist until it is changed or SC is quit. Note that if strong::value:: is a path you may need to call link::#standardizePath:: on it.
+Set the environment variable indicated in the string to equal the String strong::value::. This value will persist until it is changed or SC is quit. Note that if strong::value:: is a path you may need to call link::#-standardizePath:: on it.
 code::
 // all defs in this directory will be loaded when a local server boots
 "SC_SYNTHDEF_PATH".setenv("~/scwork/".standardizePath);
@@ -382,7 +382,7 @@ Post << "Help/*".pathMatch;
 ::
 
 method::loadPaths
-Perform link::#pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
+Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
 code::
 "Help/Collections/loadPaths example.scd".loadPaths; //This file posts some text
 ::
@@ -456,7 +456,7 @@ code::
 ::
 
 method::openHelpFile
-Performs link::#findHelpFile:: on this, and opens the file it if it exists, otherwise opens the main helpfile.
+Performs link::#-findHelpFile:: on this, and opens the file it if it exists, otherwise opens the main helpfile.
 code::
 "Document".openHelpFile;
 "foobar".openHelpFile;

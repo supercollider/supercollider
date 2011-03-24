@@ -19,7 +19,7 @@ method::hang
 Wait for strong::value:: time, regardless of test.
 
 method::signal
-If link::#test:: is true, reschedule blocked threads.
+If link::#-test:: is true, reschedule blocked threads.
 
 method::unhang
 Resume threads.

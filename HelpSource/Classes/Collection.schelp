@@ -80,7 +80,7 @@ code::
 ~closet = [\hat, \hat, \hat, \coat, \coat, \shoe, \shoe];
 ~closet.removeAll([\hat, \coat, \shoe, \shoe]); // Doesn't empty the closet, just removes what we wanted to
 ::
-See link::#removeEvery:: for a related method that removes all occurrences.
+See link::#-removeEvery:: for a related method that removes all occurrences.
 ::
 
 method::removeEvery
@@ -151,21 +151,21 @@ Answer a new collection which consists of the results of strong::function:: eval
 code::
 List[1, 2, 3, 4].collect({ arg item, i; item + 10 });
 ::
-If you want to control what type of collection is returned, use link::#collectAs::(function, class).
+If you want to control what type of collection is returned, use link::#-collectAs::(function, class).
 
 method::select
 Answer a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].select({ arg item, i; item.even });
 ::
-If you want to control what type of collection is returned, use link::#selectAs::(function, class).
+If you want to control what type of collection is returned, use link::#-selectAs::(function, class).
 
 method::reject
 Answer a new collection which consists of all items in the receiver for which strong::function:: answers link::Classes/False::. The function is passed two arguments, the item and an integer index.
 code::
 List[1, 2, 3, 4].reject({ arg item, i; item.even });
 ::
-If you want to control what type of collection is returned, use link::#rejectAs::(function, class).
+If you want to control what type of collection is returned, use link::#-rejectAs::(function, class).
 
 method::detect
 Answer the first item in the receiver for which strong::function:: answers link::Classes/True::. The function is passed two arguments, the item and an integer index.
@@ -174,7 +174,7 @@ List[1, 2, 3, 4].detect({ arg item, i; item.even });
 ::
 
 method::detectIndex
-Similar to link::#detect:: but returns the index instead of the item itself.
+Similar to link::#-detect:: but returns the index instead of the item itself.
 code::
 List[1, 2, 3, 4].detectIndex({ arg item, i; item.even });
 ::

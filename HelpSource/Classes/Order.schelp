@@ -8,7 +8,7 @@ Keeps elements in an order and allows to put them at arbitrary slots
 without having to allocate a large array.
 
 note::
-link::#put:: and link::#at:: are slower than in link::Classes/IdentityDictionary:: / link::Classes/PriorityQueue::, link::#do:: is faster.
+link::#-put:: and link::#-at:: are slower than in link::Classes/IdentityDictionary:: / link::Classes/PriorityQueue::, link::#-do:: is faster.
 ::
 
 CLASSMETHODS::
