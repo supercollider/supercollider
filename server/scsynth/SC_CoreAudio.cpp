@@ -951,7 +951,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 	}
 	
 	char *outputname = (char*)malloc(count);
-	char *testname = "Built-in Output"; 
+	const char *testname = "Built-in Output";
 	err = AudioDeviceGetProperty(mOutputDevice, 0, false, kAudioDevicePropertyDeviceName, &count, outputname);
 	if (err != kAudioHardwareNoError) {
 		scprintf("get kAudioDevicePropertyDeviceName error %4.4s %p\n", (char*)&err, mOutputDevice);
