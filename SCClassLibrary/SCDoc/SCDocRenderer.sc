@@ -372,6 +372,7 @@ SCDocRenderer {
                                 f.write("<li class='toc1'><a href='#classmethods'>Class methods</a></li>\n");
                                 parent = n.tag;
                                 do_children.(n.children);
+                                parent = nil;
                             };
                         },
                         \instancemethods, {
@@ -379,6 +380,7 @@ SCDocRenderer {
                                 f.write("<li class='toc1'><a href='#instancemethods'>Instance methods</a></li>\n");
                                 parent = n.tag;
                                 do_children.(n.children);
+                                parent = nil;
                             };
                         },
                         \method, {
