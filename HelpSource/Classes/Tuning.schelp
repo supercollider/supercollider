@@ -55,7 +55,7 @@ INSTANCEMETHODS::
 private::storeOn, storedKey, storeArgs, printOn
 
 method::semitones
-Returns an array of semitone values for the pitch set. link::#as::(Array) is equivalent; link::#as::(List) returns it as a list, etc.
+Returns an array of semitone values for the pitch set. link::#-as::(Array) is equivalent; link::#-as::(List) returns it as a list, etc.
 
 method::cents
 Returns a array of cent values for the pitch set.

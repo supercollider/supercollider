@@ -89,7 +89,7 @@ s.queryAllNodes;
 g.free;
 ::
 
-After creation, use instance methods code::newMsg, addToHeadMsg, addToTailMsg, addBeforeMsg, addAfterMsg, addReplaceMsg:: to instantiate this synth on the server. See link::#instance_methods:: below.
+After creation, use instance methods code::newMsg, addToHeadMsg, addToTailMsg, addBeforeMsg, addAfterMsg, addReplaceMsg:: to instantiate this synth on the server. See link::#instancemethods#Instance Methods:: below.
 
 
 instancemethods::

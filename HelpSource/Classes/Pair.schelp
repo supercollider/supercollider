@@ -32,7 +32,7 @@ method::do
 Iterate over the two elements.
 
 Traverse
-Same like: link::#depthFirstPreOrderTraversal::
+Same like: link::#-depthFirstPreOrderTraversal::
 
 method::depthFirstPreOrderTraversal
 Traverse the data structure first link down, then across (see link::#Examples::).
