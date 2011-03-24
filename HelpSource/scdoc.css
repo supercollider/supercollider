@@ -7,6 +7,11 @@ body {
     text-align: justify;
 }
 
+html {
+    height: 100%;
+    margin: 0 0 1px;
+}
+
 table {
     border-collapse: collapse;
     font-size: 10pt;
