@@ -78,7 +78,7 @@ argument::pad
 the number of samples of the size that is zero padding.
 
 method::fftCosTable
-Fourier Transform: Fill a Signal with the cosine table needed by the FFT methods. See also the instance methods link::#fft:: and link::#ifft::.
+Fourier Transform: Fill a Signal with the cosine table needed by the FFT methods. See also the instance methods link::#-fft:: and link::#-ifft::.
 code::
 Signal.fftCosTable(512).plot;
 ::
@@ -268,7 +268,7 @@ Signal[1, 2, 3, 4].blend(Signal[5, 5, 5, 0], 2);
 subsection::Fourier Transform
 
 method::fft
-Perform an FFT on a real and imaginary signal in place. See also the class method link::#fftCosTable::.
+Perform an FFT on a real and imaginary signal in place. See also the class method link::#*fftCosTable::.
 code::
 (
 var size = 512, real, imag, cosTable, complex;
@@ -289,7 +289,7 @@ complex = fft(real, imag, cosTable);
 ::
 
 method::ifft
-Perform an inverse FFT on a real and imaginary signal in place. See also the class method link::#fftCosTable::.
+Perform an inverse FFT on a real and imaginary signal in place. See also the class method link::#*fftCosTable::.
 code::
 (
 var size = 512, real, imag, cosTable, complex, ifft;

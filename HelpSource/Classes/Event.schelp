@@ -4,7 +4,7 @@ related::Classes/Pattern
 categories::Collections>Unordered
 
 DESCRIPTION::
-An Event is an Environment that specifies an action to be taken in response to a link::#play:: message. The key/value pairs within the Event specify the parameters of that action. Most methods, Event inherits from its superclasses, especially from link::Classes/Dictionary::.
+An Event is an Environment that specifies an action to be taken in response to a link::#-play:: message. The key/value pairs within the Event specify the parameters of that action. Most methods, Event inherits from its superclasses, especially from link::Classes/Dictionary::.
 
 CLASSMETHODS::
 
@@ -33,7 +33,7 @@ argument::know
 If strong::know:: is set to link::Classes/True::, the event will respond to appropriate message calls. See link::Classes/Environment:: for more details.
 
 method::default
-Returns an empty event with link::#defaultParentEvent:: as parent.
+Returns an empty event with link::#*defaultParentEvent:: as parent.
 
 method::silent
 Returns an event that describes a pause of strong::dur:: duration.
@@ -62,7 +62,7 @@ method::playAndDelta
 Used by link::Classes/EventStreamPlayer:: to play Events and obtain a time increment.
 			
 method::asUGenInput
-Calls link::#asControlInput::.
+Calls link::#-asControlInput::.
 
 method::asControlInput
 Enables events to represent the server resources they created in an Event.
@@ -115,13 +115,13 @@ q.y;			// [ 100, 200, 300 ]
 
 subsection::Event for specifying different things to happen
 
-Event provides a link::#defaultParentEvent:: that defines a variety of different event types and provides a complete set of default key/value pairs for each type. The type is determined by the value of the key strong::\type:: which defaults to strong::\note::. Note events create synths on the server.
+Event provides a link::#*defaultParentEvent:: that defines a variety of different event types and provides a complete set of default key/value pairs for each type. The type is determined by the value of the key strong::\type:: which defaults to strong::\note::. Note events create synths on the server.
 code::
 ( ).play;			// the default note
 (freq: 500, pan: -1) .play;	// 500 Hz, panned left
 (play: { ~what.postln }, what: "hello happening").play;	// something else
 ::
-Per default, the play message derives its behaviour from the link::#defaultParentEvent::, which provides many default values, such as default instrument (\default), note (0), legato (0.8) and so on. Depending on the event type, these may differ completely and need not even represent a sound.
+Per default, the play message derives its behaviour from the link::#*defaultParentEvent::, which provides many default values, such as default instrument (\default), note (0), legato (0.8) and so on. Depending on the event type, these may differ completely and need not even represent a sound.
 
 subsection::Events and SynthDefs
 
@@ -230,7 +230,7 @@ Pbind(
 )
 ::
 
-Here is an example that illustrates some more of the keys defined by the link::#defaultParentEvent::. Note that it is equivalent to write code::Pbind(\key, val, ...):: and code::Pbind(*[key: val, ...])::.
+Here is an example that illustrates some more of the keys defined by the link::#*defaultParentEvent::. Note that it is equivalent to write code::Pbind(\key, val, ...):: and code::Pbind(*[key: val, ...])::.
 code::
 (
 Pbind(*[
@@ -261,7 +261,7 @@ play {
 	this.use { ~play.value };
 }
 ::
-Thus we can see that the link::#defaultParentEvent:: is used unless otherwise specified and the function stored in code::~play:: is executed in the context of the Event. It can be replaced in a given event for different behavior:
+Thus we can see that the link::#*defaultParentEvent:: is used unless otherwise specified and the function stored in code::~play:: is executed in the context of the Event. It can be replaced in a given event for different behavior:
 code::
 (a: 6, b: 7, play: { (~a * ~b).postln }).play;
 ::
