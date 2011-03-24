@@ -12,7 +12,7 @@ CLASSMETHODS::
 private::initClass
 
 method::new
-Creates a new TempoClock scheduler with the given tempo and starting times. If not supplied, strong::tempo:: defaults to one, strong::beats:: defaults to zero and strong::seconds:: defaults to the current elapsed time since SuperCollider startup. The default queueSize is 256, see link::#queue::.
+Creates a new TempoClock scheduler with the given tempo and starting times. If not supplied, strong::tempo:: defaults to one, strong::beats:: defaults to zero and strong::seconds:: defaults to the current elapsed time since SuperCollider startup. The default queueSize is 256, see link::#-queue::.
 code::
 t = TempoClock.new(1, 0, Main.elapsedTime.ceil);
 ::
@@ -54,20 +54,20 @@ method::beats
 Returns the appropriate beat time of the clock from any thread. If the receiver is the clock of the current thread, this returns the current logical time: code::thisThread.beats::. If the receiver is not the current thread's clock then this translates the current thread's logical time in seconds to this clock's logical time in beats.
 
 method::schedAbs
-Schedules a function to be evaluated at a particular strong::beat::. If the function returns an link::Classes/Integer:: or a link::Classes/Float::, it will be re-evaluated at the logical time plus the returned value. The function receives a number of default arguments, see link::#play:: example below.
+Schedules a function to be evaluated at a particular strong::beat::. If the function returns an link::Classes/Integer:: or a link::Classes/Float::, it will be re-evaluated at the logical time plus the returned value. The function receives a number of default arguments, see link::#-play:: example below.
 
 method::sched
 Schedules a function to be evaluated strong::delta:: beats from the current logical time in this clock. If the receiver is the clock of the current thread, the delta is applied to the current logical time. If the receiver is not the current thread's clock then the delta is applied to the clock's elapsed time.
 
 method::play
-Plays task (a function) at the next beat, where strong::quant:: is 1 by default. Shortcut for link::#schedAbs::; see link::#seconds:: and link::#nextTimeOnGrid:: for further details on time and quant.
+Plays task (a function) at the next beat, where strong::quant:: is 1 by default. Shortcut for link::#-schedAbs::; see link::#-seconds:: and link::#-nextTimeOnGrid:: for further details on time and quant.
 code::
 t= TempoClock.default;
 t.play({arg beats, time, clock; [beats, time, clock].postln});
 ::
 
 method::playNextBar
-Plays task (a function) at the next bar using link::#schedAbs::.
+Plays task (a function) at the next bar using link::#-schedAbs::.
 
 method::queue
 Returns the scheduling queue Array in the form [beat, function]. The maximum number of items is determined by the clock's queueSize argument upon instantiation. The default queueSize of 256 allows 128 functions to be in the queue at any time.
@@ -84,35 +84,35 @@ t.beatsPerBar;
 ::
 
 method::bar
-Returns the current bar. See link::#bars2beats:: for returning beat of current bar.
+Returns the current bar. See link::#-bars2beats:: for returning beat of current bar.
 
 method::nextBar
 Returns the number of beats at the next bar line relative to the beat argument. If strong::beat:: is not supplied, returns the beat at which the next bar begins.
 
 method::beatInBar
-Returns the current bar beat (as a link::Classes/Float::) in relation to link::#beatsPerBar::. Values range from 0 to < beatsPerBar.
+Returns the current bar beat (as a link::Classes/Float::) in relation to link::#-beatsPerBar::. Values range from 0 to < beatsPerBar.
 
 method::baseBar
-Returns bar at which link::#beatsPerBar:: was last changed. If beatsPerBar has not been changed since the clock was created, returns 0.
+Returns bar at which link::#-beatsPerBar:: was last changed. If beatsPerBar has not been changed since the clock was created, returns 0.
 
 method::baseBarBeat
-Returns beat at which the link::#beatsPerBar:: was last changed. If beatsPerBar has not been changed since the clock was created, returns 0.
+Returns beat at which the link::#-beatsPerBar:: was last changed. If beatsPerBar has not been changed since the clock was created, returns 0.
 
 method::beats2bars
-Returns a bar as a float relative to link::#baseBarBeat::.
+Returns a bar as a float relative to link::#-baseBarBeat::.
 
 method::bars2beats
-Returns a beat relative to link::#baseBar::.
+Returns a beat relative to link::#-baseBar::.
 code::
 t= TempoClock.default;
 t.bars2beats(t.bar) // downbeat of the current bar
 ::
 
 method::timeToNextBeat
-Returns the logical time to next beat. strong::quant:: is 1 by default, relative to baseBarBeat, see link::#nextTimeOnGrid::.
+Returns the logical time to next beat. strong::quant:: is 1 by default, relative to baseBarBeat, see link::#-nextTimeOnGrid::.
 
 method::nextTimeOnGrid
-With default values, returns the next whole beat. strong::quant:: is 1 by default, strong::phase:: is 0. quant is relative to link::#baseBarBeat::, such that
+With default values, returns the next whole beat. strong::quant:: is 1 by default, strong::phase:: is 0. quant is relative to link::#-baseBarBeat::, such that
 code::
 t= TempoClock.default;
 t.nextTimeOnGrid(t.beatsPerBar) == t.nextBar // => true
@@ -120,7 +120,7 @@ t.nextTimeOnGrid(t.beatsPerBar) == t.nextBar // => true
 Together strong::quant:: and strong::phase:: are useful for finding the next n beat in a bar, e.g. code::nextTimeOnGrid(4, 2):: will return the next 3rd beat of a bar (of 4 beats), whereas code::nextBar-2:: may return an elapsed beat.
 
 method::elapsedBeats
-Returns the current elapsed time in beats. This is equivalent to code::tempoClock.secs2beats(Main.elapsedTime)::. It is often preferable to use link::#beats:: instead of elapsedBeats because beats uses a thread's logical time.
+Returns the current elapsed time in beats. This is equivalent to code::tempoClock.secs2beats(Main.elapsedTime)::. It is often preferable to use link::#-beats:: instead of elapsedBeats because beats uses a thread's logical time.
 
 method::seconds
 Returns the current elapsed time. (This method is inherited from link::Classes/Clock::.)

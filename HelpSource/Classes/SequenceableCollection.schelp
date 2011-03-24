@@ -117,7 +117,7 @@ y.find([7, 6, 5]);
 ::
 
 method::findAll
-Similar to link::#find:: but returns an array of all the indices at which the sequence is found.
+Similar to link::#-find:: but returns an array of all the indices at which the sequence is found.
 code::
 y = [7, 8, 7, 6, 5, 6, 7, 6, 7, 8, 9];
 y.findAll([7, 6]);
@@ -130,14 +130,14 @@ code::
 ::
 
 method::indexInBetween
-Returns a linearly interpolated float index for the value (collection must be sorted). Inverse operation is link::#blendAt::.
+Returns a linearly interpolated float index for the value (collection must be sorted). Inverse operation is link::#-blendAt::.
 code::
 x = [2, 3, 5, 6].indexInBetween(5.2);
 [2, 3, 5, 6].blendAt(x);
 ::
 
 method::blendAt
-Returns a linearly interpolated value between the two closest indices. Inverse operation is link::#indexInBetween::.
+Returns a linearly interpolated value between the two closest indices. Inverse operation is link::#-indexInBetween::.
 code::
 x = [2, 5, 6].blendAt(0.4);
 ::
@@ -293,7 +293,7 @@ a.sortBy(\c);
 ::
 
 method::order
-Return an array of indices that would sort the collection into order. strong::function:: is treated the same way as for the link::#sort:: method.
+Return an array of indices that would sort the collection into order. strong::function:: is treated the same way as for the link::#-sort:: method.
 code::
 [6, 2, 1, 7, 5].order;
 ::
@@ -379,7 +379,7 @@ code::
 
 subsection::Math Support - Unary Messages
 
-All of the following messages send the message link::#performUnaryOp:: to the receiver with the unary message selector as an argument.
+All of the following messages send the message link::#-performUnaryOp:: to the receiver with the unary message selector as an argument.
 
 method::neg, reciprocal, bitNot, abs, asFloat, asInt, ceil, floor, frac, sign, squared, cubed, sqrt, exp, midicps, cpsmidi, midiratio, ratiomidi, ampdb, dbamp, octcps, cpsoct, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, rand, rand2, linrand, bilinrand, sum3rand, distort, softclip, nyqring, coin, even, odd, isPositive, isNegative, isStrictlyPositive, real, imag, magnitude, magnitudeApx, phase, angle, rho, theta, asFloat, asInteger
 
@@ -392,7 +392,7 @@ code::
 
 subsection::Math Support - Binary Messages
 
-All of the following messages send the message link::#performBinaryOp:: to the receiver with the binary message selector and the second operand as arguments.
+All of the following messages send the message link::#-performBinaryOp:: to the receiver with the binary message selector and the second operand as arguments.
 
 method::+, -, *, /, div, %, **, min, max, <, <=, >, >=, &, |, bitXor, lcm, gcd, round, trunc, atan2, hypot, >>, +>>, fill, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, <!, rrand, exprand
 

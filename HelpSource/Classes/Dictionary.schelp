@@ -184,7 +184,7 @@ d.keysValuesDo { |key, value| postln("the key: " ++ key ++ " the value: " ++ val
 ::
 
 method::keysValuesChange
-Iterate over the associations, and evaluate the function for each, passing key and value as argument. Replace the value with the return value from the function (similar to link::#collect::, but modifies the dictionary strong::in place::).
+Iterate over the associations, and evaluate the function for each, passing key and value as argument. Replace the value with the return value from the function (similar to link::#-collect::, but modifies the dictionary strong::in place::).
 code::
 d = (a: "hello", b: "robot", c: [1, 2, 3]);
 d.keysValuesChange { |key, value| "the key: " ++ key ++ " the value: " ++ value };
@@ -206,7 +206,7 @@ d.associationsDo { |assoc| postln("the association: " ++ assoc) };
 ::
 	
 method::pairsDo
-Iterate over the associations, and evaluate the function for each, passing key and value as argument. Identical to link::#keysValuesDo::
+Iterate over the associations, and evaluate the function for each, passing key and value as argument. Identical to link::#-keysValuesDo::
 
 method::invert
 Return a new dictionary with all the values as keys and vice versa.

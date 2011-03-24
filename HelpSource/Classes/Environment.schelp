@@ -8,7 +8,7 @@ An Environment is an IdentityDictionary with additional features that allow it t
 
 CLASSMETHODS::
 method::stack
-Maintains a stack of Environments accessed by link::#push:: and link::#pop::.
+Maintains a stack of Environments accessed by link::#*push:: and link::#*pop::.
 
 method::make
 Creates a new Environment and sends make message.
@@ -17,10 +17,10 @@ method::use
 Creates a new Environment and sends use message.
 
 method::push
-Saves link::#currentEnvironment:: on the stack.
+Saves link::#.currentEnvironment:: on the stack.
 
 method::pop
-Restores link::#currentEnvironment:: from the stack.
+Restores link::#.currentEnvironment:: from the stack.
 
 INSTANCEMETHODS::
 
@@ -34,37 +34,38 @@ method::push
 Saves the receiver on the stack.
 
 method::pop
-Restores link::#currentEnvironment:: from the stack.
+Restores link::#.currentEnvironment:: from the stack.
 
 ::
 ::
 
 SECTION::PseudoVariables (global variables)
-list::
-anchor::currentEnvironment::
-## currentEnvironment - determines environment used by "~" syntax, link::#valueEnvir::, and link::#valueArrayEnvir::
-anchor::topEnvironment::
-## topEnvironment - initial value of link::#currentEnvironment::, can be used for 'global variables'
-::
+These are not methods, but global variables.
+method:: currentEnvironment
+determines environment used by "~" syntax, link::#.valueEnvir::, and link::#.valueArrayEnvir::
+
+method:: topEnvironment
+initial value of link::#.currentEnvironment::, can be used for 'global variables'
 
 SECTION::Related Messages
-list::
-anchor::valueEnvir::
-## valueEnvir (arg1, arg2...) - evaluates a function, looking up unspecified arguments in link::#currentEnvironment::
-anchor::valueArrayEnvir::
-## valueArrayEnvir (argArray) - same as link::#valueEnvir::, but with arguments in an array
-::
+
+method:: valueEnvir (arg1, arg2...)
+evaluates a function, looking up unspecified arguments in link::#.currentEnvironment::
+
+method:: valueArrayEnvir (argArray)
+same as link::#.valueEnvir::, but with arguments in an array
+
 
 SECTION::Overview
 
 subsection::topEnvironment, currentEnvironment, make and use
 
-When SuperCollider starts, it creates an Environment that it stores in the pseudovariables link::#topEnvironment:: and link::#currentEnvironment::. The link::#topEnvironment:: provides a universally accessible collection of named values similar to the link::Classes/Interpreter:: variables a, b, c, ....
+When SuperCollider starts, it creates an Environment that it stores in the pseudovariables link::#.topEnvironment:: and link::#.currentEnvironment::. The link::#.topEnvironment:: provides a universally accessible collection of named values similar to the link::Classes/Interpreter:: variables a, b, c, ....
 
-The compiler provides a shortcut syntax where ~ is a placeholder for link::#currentEnvironment::.
+The compiler provides a shortcut syntax where ~ is a placeholder for link::#.currentEnvironment::.
 This makes the expression code::~myvariable;:: equivalent to code::currentEnvironment.at(\myvariable);:: and the expression code::~myvariable = 888;:: equivalent to code::currentEnvironment.put(\myvariable, 888);::
 
-The messages link::#make::(function) and link::#use::(function) replace link::#currentEnvironment:: with the receiver. The message link::#make:: is intended to be used when initializing an Environment, so it returns the Environment. The message link::#use:: is for evaluating a functions within an Environment, so it returns the return value of the function.
+The messages link::#*make::(function) and link::#*use::(function) replace link::#.currentEnvironment:: with the receiver. The message link::#*make:: is intended to be used when initializing an Environment, so it returns the Environment. The message link::#*use:: is for evaluating a functions within an Environment, so it returns the return value of the function.
 
 For example
 code::
@@ -87,7 +88,7 @@ evaluates the function within that environment.
 
 subsection::valueEnvir and valueArrayEnvir
 
-When Functions are evaluated with link::#valueEnvir:: and link::#valueArrayEnvir:: unspecified arguments are looked up in the current Environment.
+When Functions are evaluated with link::#.valueEnvir:: and link::#.valueArrayEnvir:: unspecified arguments are looked up in the current Environment.
 If the argument is not found in the Environment its default value is used.
 code::
 (
@@ -109,7 +110,7 @@ Environment.use({
 });
 )
 ::
-Now here is how this can be used with an instrument function. Environments allow you to define instruments without having to worry about argument ordering conflicts. Even though the three functions below have the freq, amp and pan args declared in different orders it does not matter, because link::#valueEnvir:: looks them up in the environment.
+Now here is how this can be used with an instrument function. Environments allow you to define instruments without having to worry about argument ordering conflicts. Even though the three functions below have the freq, amp and pan args declared in different orders it does not matter, because link::#.valueEnvir:: looks them up in the environment.
 code::
 s.boot;
 
@@ -214,7 +215,7 @@ code::
 e.mul2 = { |z| z.someVariable * 2 };
 e.mul2;
 ::
-Environment variables inside a function will refer to the currently active environment -- not to the Environment being addressed. This is to allow the object prototype to interact with the link::#currentEnvironment::.
+Environment variables inside a function will refer to the currently active environment -- not to the Environment being addressed. This is to allow the object prototype to interact with the link::#.currentEnvironment::.
 code::
 e.mul2 = { |z| ~someVariable * 2 };
 // this will throw an error because ~someVariable is nil in the currentEnvironment

@@ -354,12 +354,12 @@ abs(x) + abs(y) - ((sqrt(2) - 1) * min(abs(x), abs(y)))
 hypotApx is used to implement Complex method magnitudeApx.
 This should not be used for simulating a doppler shift because it is discontinuous. Use hypot.
 
-See also link::#hypot::, link::#atan2::.
+See also link::#.hypot::, link::#.atan2::.
 
 method:: atan2
 Returns the arctangent of y/x. 
 discussion::
-OK, now we can add a pan to the link::#hypot:: doppler examples by using atan2 to find the azimuth, 
+OK, now we can add a pan to the link::#.hypot:: doppler examples by using atan2 to find the azimuth, 
 or direction angle, of the sound source.
 Assume speakers at +/- 45 degrees and clip the direction to between those.
 code::
@@ -402,7 +402,7 @@ discussion::
 Return the value of  ((a*b) + a). This is more efficient than using
 separate unit generators for the multiply and add.
 
-See also link::#*::, link::#ring1::, link::#ring2::, link::#ring3::, link::#ring4::.
+See also link::#.*::, link::#.ring1::, link::#.ring2::, link::#.ring3::, link::#.ring4::.
 code::
 { (FSinOsc.ar(800) ring1: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
 ::
