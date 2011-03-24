@@ -1,7 +1,7 @@
 CLASS::Event
 summary::an environment that represents an action
 related::Classes/Pattern
-categories::Collections>Unordered
+categories::Collections>Unordered, Streams-Patterns-Events>Events
 
 DESCRIPTION::
 An Event is an Environment that specifies an action to be taken in response to a link::#-play:: message. The key/value pairs within the Event specify the parameters of that action. Most methods, Event inherits from its superclasses, especially from link::Classes/Dictionary::.
