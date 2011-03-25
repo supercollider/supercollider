@@ -158,7 +158,9 @@ class QcCheckBox : public QCheckBox
   Q_PROPERTY( bool value READ value WRITE setValue );
 
   public:
-    QcCheckBox();
+    QcCheckBox() {
+      connect( this, SIGNAL(clicked()), this, SIGNAL(action()) );
+    }
   Q_SIGNALS:
     void action();
   private:

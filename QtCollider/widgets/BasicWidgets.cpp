@@ -32,6 +32,7 @@ QcWidgetFactory<QcHLayoutWidget> hLayoutWidgetFactory;
 QcWidgetFactory<QcVLayoutWidget> vLayoutWidgetFactory;
 QcWidgetFactory<QLabel> labelFactory;
 QcWidgetFactory<QcTextField> textFieldFactory;
+QcWidgetFactory<QcCheckBox> checkBoxFactory;
 
 //////////////////////////// QcListWidget //////////////////////////////////////
 
