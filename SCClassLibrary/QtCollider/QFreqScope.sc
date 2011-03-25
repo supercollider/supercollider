@@ -2,7 +2,7 @@
 // by Lance Putnam
 // modified by Jakob Leben and Lucas Samaruga for GUI.qt scheme
 
-QFreqScope : QScopeView {
+QFreqScope : QScope {
 
   classvar <server;
   var <scopebuf, <fftbuf;

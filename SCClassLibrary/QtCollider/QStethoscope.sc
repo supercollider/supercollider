@@ -43,7 +43,7 @@ QStethoscope {
         view.decorator = FlowLayout(view.bounds);
       });
     };
-    scopeView = QScopeView(view,
+    scopeView = QScope(view,
       Rect(0,0, view.bounds.width - 10 - 20 - 4, view.bounds.height - 40)
     );
     scopeView.background = Color.black;
