@@ -433,15 +433,19 @@ QC_LANG_PRIMITIVE( QObject_GetChildren, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   return errFailed;
 }
 
-QC_LANG_PRIMITIVE( QObject_GetParent, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QObject_GetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+  if( NotSym(a) && NotNil(a) ) return errWrongType;
+
   QObjectProxy *proxy = Slot::toObjectProxy( r );
+  PyrSymbol *className = IsSym( a ) ? slotRawSymbol( a ) : 0;
 
   qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET PARENT") );
 
   GetParentEvent *e = new GetParentEvent();
   PyrObject *parent = 0;
   e->parent = &parent;
+  e->className = className;
 
   bool ok = e->send( proxy, Synchronous );
   if( !ok ) return errFailed;

@@ -44,9 +44,8 @@ QObject {
     ^this.primitiveFailed
   }
 
-  parent {
-    _QObject_GetParent
-    ^this.primitiveFailed
+  parent { arg class;
+    ^this.prGetParent( if( class.notNil ){class.name}{nil} );
   }
 
   children { arg class;
@@ -122,6 +121,11 @@ QObject {
 
   prGetChildren { arg className;
     _QObject_GetChildren
+    ^this.primitiveFailed
+  }
+
+  prGetParent { arg className;
+    _QObject_GetParent
     ^this.primitiveFailed
   }
 
