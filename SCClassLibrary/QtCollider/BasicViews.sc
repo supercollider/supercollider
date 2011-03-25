@@ -265,32 +265,30 @@ QCheckBox : QView {
 
   *qtClass { ^"QcCheckBox" }
 
-	*new{ |parent,bounds,text|
-		^super.new(parent,bounds).init(text)
-	}
+  *new{ |parent,bounds,text|
+    ^super.new(parent,bounds).init(text)
+  }
 
-	init{ |text|
-		this.string_(text)
-	}
+  init{ |text|
+    this.string_(text)
+  }
 
-	value{
-		^this.getProperty(\value)
-	}
+  value{
+    ^this.getProperty(\value)
+  }
 
-	value_{ |val|
-		this.setProperty(\value,val)
-	}
+  value_{ |val|
+    this.setProperty(\value,val)
+  }
 
-	string_{ |string|
-		this.setProperty(\text,string)
-	}
+  string_{ |string|
+    this.setProperty(\text,string)
+  }
 
-	string{
-		^this.getProperty(\text)
-	}
+  string{
+    ^this.getProperty(\text)
+  }
 }
-
-
 
 QSlider : QAbstractStepValue {
   //compatibility stuff:
