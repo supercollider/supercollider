@@ -1,3 +1,34 @@
+
+/////////////////////// ABSTRACT CLASSES ////////////////////////////
+
+QTextViewBase : QView {
+  var <align;
+
+  align_ { arg aSymbol;
+    align = aSymbol;
+    this.setProperty( \alignment, QAlignment(aSymbol) );
+  }
+}
+
+QItemViewBase : QView
+{
+  var <items;
+
+  items_ { arg stringArray;
+    items = stringArray;
+    this.setProperty( \items, stringArray);
+  }
+
+  item {
+    ^items.at( this.value );
+  }
+
+  valueAction_ { arg val;
+    this.value_(val);
+    action.value(this);
+  }
+}
+
 QAbstractScroll : QView {
   var <hasHorizontalScroller = true, <hasVerticalScroller = true;
   var <autohidesScrollers = true;
@@ -44,6 +75,51 @@ QAbstractScroll : QView {
   }
 }
 
+QAbstractStepValue : QView {
+  var <step, <shift_scale, <ctrl_scale, <alt_scale;
+
+  step_ { arg aFloat;
+    step = aFloat;
+    this.setProperty( \step, aFloat );
+  }
+
+  value {
+    ^this.getProperty( \value );
+  }
+
+  value_ { arg argVal;
+    this.setProperty( \value, argVal );
+  }
+
+  valueAction_ { arg val;
+    this.value_(val);
+    action.value(this);
+  }
+
+  shift_scale_ { arg aFloat;
+    shift_scale = aFloat;
+    this.setProperty( \shiftScale, aFloat );
+  }
+
+  ctrl_scale_ { arg aFloat;
+    ctrl_scale = aFloat;
+    this.setProperty( \ctrlScale, aFloat );
+  }
+
+  alt_scale_ { arg aFloat;
+    alt_scale = aFloat;
+    this.setProperty( \altScale, aFloat );
+  }
+
+  increment {
+    this.nonimpl( \increment );
+  }
+
+  decrement {
+    this.nonimpl( \decrement );
+  }
+}
+
 /////////////////////// CONTAINERS ////////////////////////////////
 
 QHLayoutView : QView {
@@ -83,15 +159,6 @@ QScrollView : QAbstractScroll {
 }
 
 /////////////////////////// WIDGETS ///////////////////////////////
-
-QTextViewBase : QView {
-  var <align;
-
-  align_ { arg aSymbol;
-    align = aSymbol;
-    this.setProperty( \alignment, QAlignment(aSymbol) );
-  }
-}
 
 QStaticText : QTextViewBase {
   var <string;
@@ -223,50 +290,7 @@ QCheckBox : QView {
 	}
 }
 
-QAbstractStepValue : QView {
-  var <step, <shift_scale, <ctrl_scale, <alt_scale;
 
-  step_ { arg aFloat;
-    step = aFloat;
-    this.setProperty( \step, aFloat );
-  }
-
-  value {
-    ^this.getProperty( \value );
-  }
-
-  value_ { arg argVal;
-    this.setProperty( \value, argVal );
-  }
-
-  valueAction_ { arg val;
-    this.value_(val);
-    action.value(this);
-  }
-
-  shift_scale_ { arg aFloat;
-    shift_scale = aFloat;
-    this.setProperty( \shiftScale, aFloat );
-  }
-
-  ctrl_scale_ { arg aFloat;
-    ctrl_scale = aFloat;
-    this.setProperty( \ctrlScale, aFloat );
-  }
-
-  alt_scale_ { arg aFloat;
-    alt_scale = aFloat;
-    this.setProperty( \altScale, aFloat );
-  }
-
-  increment {
-    this.nonimpl( \increment );
-  }
-
-  decrement {
-    this.nonimpl( \decrement );
-  }
-}
 
 QSlider : QAbstractStepValue {
   //compatibility stuff:
@@ -306,25 +330,6 @@ QSlider : QAbstractStepValue {
   orientation_ { arg aSymbol;
     orientation = aSymbol;
     this.setProperty( \orientation, QOrientation(aSymbol) );
-  }
-}
-
-QItemViewBase : QView
-{
-  var <items;
-
-  items_ { arg stringArray;
-    items = stringArray;
-    this.setProperty( \items, stringArray);
-  }
-
-  item {
-    ^items.at( this.value );
-  }
-
-  valueAction_ { arg val;
-    this.value_(val);
-    action.value(this);
   }
 }
 
