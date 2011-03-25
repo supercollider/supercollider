@@ -150,6 +150,10 @@ QView : QObject {
     ^super.children( class );
   }
 
+  parent { arg class = QView;
+    ^super.parent(class);
+  }
+
   parents {
     var allParents;
     var p = this.parent;

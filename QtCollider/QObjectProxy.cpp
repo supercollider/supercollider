@@ -375,17 +375,35 @@ bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )
   if( !qObject ) return true;
 
   QObject *parent = qObject->parent();
-  if( !parent ) return true;
 
-  ProxyToken * token = 0;
+  while( parent ) {
+      // see if this parent has a corresponding sc object (a token is found
+      // among it's children
+      const QObjectList &siblings = parent->children();
+      Q_FOREACH( QObject *sibling, siblings ) {
+          ProxyToken * token = qobject_cast<QtCollider::ProxyToken*>( sibling );
+          if( token ) {
+              // if this sibling is a token, consider its sc object
+              PyrObject *scobj = token->proxy->scObject;
 
-  const QObjectList &siblings = parent->children();
-  Q_FOREACH( QObject *sibling, siblings ) {
-    token = qobject_cast<QtCollider::ProxyToken*>( sibling );
-    if( token ) break;
+              // if parent is being deleted return no parent;
+              if( !scobj ) return true;
+
+              // if parent is of desired class (or no class specified) return it,
+              // else continue
+              if( !e->className || isKindOf( scobj, e->className->u.classobj ) ) {
+                  *e->parent = scobj;
+                  return true;
+              }
+          }
+          // if this sibling is not a token continue
+      }
+
+      // if no token was found among parent's children (meaning there is no
+      // corresponding sc object) or parent's sc object class is not as desired
+      // continue to consider parent's parent
+      parent = parent->parent();
   }
-
-  if( token ) *e->parent = token->proxy->scObject;
 
   return true;
 }

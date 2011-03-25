@@ -256,6 +256,7 @@ struct GetChildrenEvent
 struct GetParentEvent
 : public RequestTemplate<GetParentEvent, &QObjectProxy::getParentEvent>
 {
+  PyrSymbol *className;
   PyrObject ** parent;
 };
 
