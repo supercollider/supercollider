@@ -20,7 +20,7 @@ QtGUI {
   *hLayoutView { ^QHLayoutView }
   *vLayoutView { ^QVLayoutView }
   *window { ^QWindow }
-  *scrollView { ^QScrollArea; }
+  *scrollView { ^QScrollView; }
 
   *staticText { ^QStaticText }
   *button { ^QButton; }

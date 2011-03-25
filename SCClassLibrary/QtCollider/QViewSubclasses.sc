@@ -54,7 +54,7 @@ QVLayoutView : QView {
   *qtClass { ^"QcVLayoutWidget" }
 }
 
-QScrollArea : QAbstractScroll {
+QScrollView : QAbstractScroll {
   var <background, <hasBorder=true;
 
   *qtClass { ^"QcScrollArea" }
