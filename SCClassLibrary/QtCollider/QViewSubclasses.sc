@@ -793,6 +793,10 @@ QMultiSliderView : QView {
     this.setProperty( \gap, anInt );
   }
 
+  // alias for 'gap'
+  xOffset_ { arg int; this.gap_(int); }
+  xOffset { arg int; ^this.gap; }
+
   drawLines_ { arg bool;
     drawLines = bool;
     this.setProperty( \drawLines, bool );
