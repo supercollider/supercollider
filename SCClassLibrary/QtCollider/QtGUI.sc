@@ -44,6 +44,7 @@ QtGUI {
   *tabletView { ^this.notImplemented( "TabletView"); }
   *movieView { ^this.notImplemented( "MovieView"); }
   *levelIndicator { ^QLevelIndicator }
+  *webView { ^QWebView }
 
   *userView { ^QUserView }
 

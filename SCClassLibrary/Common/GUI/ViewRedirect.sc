@@ -124,3 +124,5 @@ Knob : ViewRedirect  {	*key { ^\knob }}
 LevelIndicator : ViewRedirect  {	*key { ^\levelIndicator }}
 
 Image : ViewRedirect { *key { ^\image }}
+
+WebView : ViewRedirect { *key { ^\webView }}
