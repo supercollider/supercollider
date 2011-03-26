@@ -2671,7 +2671,7 @@ int prUGenCodeString(struct VMGlobals *g, int numArgsPushed)
 			do {
 				c = *in++;
 				if (c == 0) break;
-				if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9')) {
+				if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9'))) {
 					--in;
 					break;
 				}

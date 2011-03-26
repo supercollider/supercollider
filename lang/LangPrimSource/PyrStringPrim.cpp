@@ -192,7 +192,7 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *d = g->sp;
 
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
-	if (NotInt(c) || NotInt(d) && NotNil(d)) return errWrongType;
+	if (NotInt(c) || (NotInt(d) && NotNil(d))) return errWrongType;
 	start = slotRawInt(c);
 
 	len = slotRawObject(b)->size; // last char index instead of size

@@ -47,7 +47,7 @@ namespace date_time {
       return week;
     }
 
-    if ((week == 53)) {
+    if (week == 53) {
       if((day==6) ||(day == 5 && is_leap_year(ymd.year))) {
         return week; //under these circumstances week == 53.
       } else {
