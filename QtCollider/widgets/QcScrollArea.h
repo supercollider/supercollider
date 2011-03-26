@@ -27,8 +27,11 @@
 
 #include <QScrollArea>
 
+class QObjectProxy;
+
 class QcScrollWidget : public QcCanvas
 {
+  Q_OBJECT
 public:
   QcScrollWidget( QWidget *parent = 0 );
   QSize sizeHint() const;
@@ -41,30 +44,18 @@ class QcScrollArea : public QScrollArea, public QcHelper
 {
   Q_OBJECT
   Q_PROPERTY( bool hasBorder READ dummyBool WRITE setHasBorder );
-  Q_PROPERTY( QColor background READ dummyColor WRITE setBackground );
-  Q_PROPERTY( bool drawingEnabled READ dummyBool WRITE setDrawingEnabled );
   Q_PROPERTY( QRectF innerBounds READ innerBounds );
   Q_PROPERTY( QPointF visibleOrigin READ visibleOrigin WRITE setVisibleOrigin );
   public:
     QcScrollArea();
-    Q_INVOKABLE void addChild( QWidget* w ) { w->setParent( scrollWidget ); w->show(); }
-    void setBackground ( const QColor &color ) { scrollWidget->setBackground( color ); }
-    void setDrawingEnabled( bool b ) { scrollWidget->setDrawingEnabled( b ); }
+    Q_INVOKABLE void setWidget( QObjectProxy * );
+    Q_INVOKABLE void addChild( QWidget* w );
     void setHasBorder( bool b );
-    QRectF innerBounds() const {
-      QSize vs = viewport()->size();
-      QSize cs = scrollWidget->size();
-      return QRectF(0, 0,
-                    qMax( vs.width(), cs.width() ),
-                    qMax( vs.height(), cs.height() ) );
-    }
-    Q_INVOKABLE void refresh() { scrollWidget->refresh(); }
+    QRectF innerBounds() const;
     QPointF visibleOrigin() const;
     void setVisibleOrigin( const QPointF & );
     QSize sizeHint() const { return QSize( 300,200 ); }
     QSize minimumSizeHint() const { return QSize( 50, 50 ); }
-  private:
-    QcScrollWidget *scrollWidget;
 };
 
 #endif //QC_SCROLL_AREA_H
