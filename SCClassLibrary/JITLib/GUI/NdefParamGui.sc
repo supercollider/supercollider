@@ -48,10 +48,13 @@ NdefParamGui : EnvirGui {
 		
 		#drags, valFields = { |i|
 			var drag, field;
-			drag = DragBoth(zone, Rect(0, 0, sinkWidth, skin.buttonHeight))
+
+			try { // QT temp fix.
+				drag = DragBoth(zone, Rect(0, 0, sinkWidth, skin.buttonHeight))
 				.string_("-").align_(\center)
 				.visible_(false)
 				.font_(font);
+			};
 			drag.action_(this.dragAction(i));
 			 
 			field = CompositeView(zone, Rect(0, 0, bounds.width - sinkWidth - 20, height))
@@ -176,16 +179,16 @@ NdefParamGui : EnvirGui {
 		} { 
 			area.background_(skin.background);
 		};
-
-		if (value.isKindOf(NodeProxy)) { 
-			drags[index].object_(value).string_("->" ++ value.key);
-		} {
-			drags[index].object_(nil).string_("-");
+		try { // QT temp fix.
+			if (value.isKindOf(NodeProxy)) { 
+				drags[index].object_(value).string_("->" ++ value.key);
+			} {
+				drags[index].object_(nil).string_("-");
+			};
+					// dodgy - defer should go away eventually.
+					// needed for defer in setToSlider... 
+			{ drags[index].visible_(true) }.defer(0.05);
 		};
-				// dodgy - defer should go away eventually.
-				// needed for defer in setToSlider... 
-		{ drags[index].visible_(true) }.defer(0.05);
-
 		if (value.isKindOf(SimpleNumber) ) {
 			this.setToSlider(index, key, value, sameKey);
 			^this
