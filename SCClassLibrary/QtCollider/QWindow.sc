@@ -1,14 +1,30 @@
-QScrollTopView : QAbstractScroll {
+QTopScrollWidget : QObject {
+  var <>win;
+  *new { ^super.new("QcScrollWidget") }
+  doDrawFunc { win.drawHook.value(win); }
+}
+
+QScrollTopView : QScrollView {
   var >window;
 
   *qtClass {^"QcWindow"}
 
+  // NOTE: Since the scroll arg is true, this should actually
+  // instantiate a QcScrollArea
   *new { arg win, name, bounds, resizable, border;
     ^super.newCustom([name, bounds, resizable, border, true /*scroll*/])
           .initQScrollTopView(win);
   }
 
-  initQScrollTopView { arg win; window = win; }
+  initQScrollTopView { arg win;
+    var cnv;
+    window = win;
+    // NOTE: The canvas widget must not be a QView, so that asking its
+    // children for parent will skip it and hit this view instead.
+    cnv = QTopScrollWidget.new;
+    cnv.win = win;
+    this.canvas = cnv;
+  }
 
   bounds {
     var r;
@@ -22,28 +38,19 @@ QScrollTopView : QAbstractScroll {
     this.setProperty( \geometry, rOld.resizeTo( rNew.width, rNew.height ) );
   }
 
+  drawingEnabled_ { arg bool; canvas.setProperty( \drawingEnabled, bool ); }
+
   findWindow { ^window; }
-
-  doDrawFunc { window.drawHook.value(window) }
-
-  visibleOrigin {
-    ^this.getProperty( \visibleOrigin, Point.new );
-  }
-
-  visibleOrigin_ { arg point;
-    this.setProperty( \visibleOrigin, point );
-  }
-
-  innerBounds {
-    ^this.getProperty( \innerBounds, Rect.new );
-  }
 }
 
 QTopView : QView {
   var >window;
+  var <background;
 
   *qtClass {^"QcWindow"}
 
+  // NOTE: Since the scroll arg is false, this should actually
+  // instantiate a QcCustomPainted
   *new { arg win, name, bounds, resizable, border;
     ^super.newCustom([name, bounds, resizable, border, false /*scroll*/])
           .initQTopView(win);
@@ -63,6 +70,13 @@ QTopView : QView {
     this.setProperty( \geometry, rOld.resizeTo( rNew.width, rNew.height ) );
   }
 
+  background_ { arg aColor;
+    background = aColor;
+    this.setProperty( \background, aColor, true );
+  }
+
+  drawingEnabled_ { arg bool; this.setProperty( \drawingEnabled, bool ); }
+
   findWindow { ^window; }
 
   doDrawFunc { window.drawHook.value(window) }
@@ -72,7 +86,7 @@ QWindow
 {
   classvar <allWindows, <>initAction;
 
-  var resizable, <drawHook, <background, <onClose;
+  var resizable, <drawHook, <onClose;
   var <view;
 
   //TODO
@@ -146,14 +160,12 @@ QWindow
     view.setProperty(\geometry, r.resizeTo( w, h ); )
   }
 
-  background_ { arg aColor;
-    background = aColor;
-    view.setProperty( \background, aColor, true );
-  }
+  background { ^view.backgroud; }
+
+  background_ { arg aColor; view.background = aColor; }
 
   drawHook_ { arg aFunction;
-    if( drawHook.isNil ) { view.setProperty( \drawingEnabled, true ) };
-    if( aFunction.isNil ) { view.setProperty( \drawingEnabled, false ) };
+    view.drawingEnabled = aFunction.notNil;
     drawHook = aFunction;
   }
 

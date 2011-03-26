@@ -131,13 +131,22 @@ QVLayoutView : QView {
 }
 
 QScrollView : QAbstractScroll {
+  var <canvas;
   var <background, <hasBorder=true;
+
+  *new { arg parent, bounds;
+    ^super.new( parent, bounds ).initQScrollView;
+  }
 
   *qtClass { ^"QcScrollArea" }
 
+  children { arg class = QView;
+    ^canvas.children( class );
+  }
+
   background_ { arg aColor;
     background = aColor;
-    this.setProperty( \background, aColor, true );
+    canvas.setProperty( \background, aColor, true );
   }
 
   hasBorder_ { arg aBool;
@@ -155,6 +164,17 @@ QScrollView : QAbstractScroll {
 
   visibleOrigin_ { arg point;
     this.setProperty( \visibleOrigin, point );
+  }
+
+  canvas_ { arg view;
+    canvas = view;
+    this.invokeMethod( \setWidget, view, true );
+  }
+
+  initQScrollView {
+    // NOTE: The canvas widget must not be a QView, so that asking its
+    // children for parent will skip it and hit this view instead.
+    this.canvas = QObject("QcScrollWidget");
   }
 }
 

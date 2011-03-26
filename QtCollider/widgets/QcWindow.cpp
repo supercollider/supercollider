@@ -38,14 +38,14 @@ public:
     bool scroll = arguments[4].value<bool>();
 
     QWidget *window;
-    QWidget *canvas;
     if( scroll ) {
       QcScrollArea *scroll = new QcScrollArea();
       window = scroll;
-      canvas = scroll->widget();
+      // NOTE the 'painting' signal will be connected to a widget proxy
+      // by QcScrollWidget factory
     }
     else {
-      window = canvas = new QcCustomPainted();
+      window = new QcCustomPainted();
     }
 
     QString name = arguments[0].toString();
@@ -71,8 +71,10 @@ public:
 
     QWidgetProxy *proxy = new QWidgetProxy( window, po );
 
-    QObject::connect( canvas, SIGNAL(painting(QPainter*)),
-                      proxy, SLOT(customPaint(QPainter*)) );
+    if( !scroll ) {
+      QObject::connect( window, SIGNAL(painting(QPainter*)),
+                        proxy, SLOT(customPaint(QPainter*)) );
+    }
 
     return proxy;
   }

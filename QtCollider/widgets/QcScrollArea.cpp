@@ -28,17 +28,17 @@
 #include <QChildEvent>
 #include <QApplication>
 
-class QcScrollAreaFactory : public QcWidgetFactory<QcScrollArea>
+class QcScrollWidgetFactory : public QcWidgetFactory<QcScrollWidget>
 {
 protected:
   virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments )
   {
     QObjectProxy *proxy =
-        QcWidgetFactory<QcScrollArea>::newInstance( scObject, arguments );
+        QcWidgetFactory<QcScrollWidget>::newInstance( scObject, arguments );
 
     if( proxy ) {
-      QcScrollArea *scrollArea = static_cast<QcScrollArea*>( proxy->object() );
-      QObject::connect( scrollArea->widget(), SIGNAL(painting(QPainter*)),
+      QcScrollWidget *w= static_cast<QcScrollWidget*>( proxy->object() );
+      QObject::connect( w, SIGNAL(painting(QPainter*)),
                         proxy, SLOT(customPaint(QPainter*)) );
     }
 
@@ -46,7 +46,7 @@ protected:
   }
 };
 
-static QcScrollAreaFactory factory;
+static QcScrollWidgetFactory scrollWidgetFactory;
 
 QcScrollWidget::QcScrollWidget( QWidget *parent ) : QcCanvas( parent )
 {
@@ -90,11 +90,41 @@ bool QcScrollWidget::eventFilter ( QObject * watched, QEvent * event ) {
   return false;
 }
 
+
+
+static QcWidgetFactory<QcScrollArea> scrollAreaFactory;
+
 QcScrollArea::QcScrollArea()
 {
-  scrollWidget = new QcScrollWidget( viewport() );
-  setWidget( scrollWidget );
+
+}
+
+void QcScrollArea::setWidget( QObjectProxy *proxy )
+{
+  QWidget *w = qobject_cast<QWidget*>( proxy->object() );
+  if( !w ) {
+    qcErrorMsg( "QcScrollArea::setCanvas: given proxy does not contain a valid widget." );
+    return;
+  }
+  QScrollArea::setWidget( w );
   setWidgetResizable( true );
+}
+
+void QcScrollArea::addChild( QWidget* w )
+{
+  if( widget() ) {
+    w->setParent( widget() );
+    w->show();
+  }
+}
+
+QRectF QcScrollArea::innerBounds() const {
+  QSize vs = viewport()->size();
+  if( !widget() ) return QRectF(0,0,vs.width(),vs.height());
+  QSize cs = widget()->size();
+  return QRectF(0, 0,
+                qMax( vs.width(), cs.width() ),
+                qMax( vs.height(), cs.height() ) );
 }
 
 void QcScrollArea::setHasBorder( bool b ) {
@@ -106,7 +136,8 @@ void QcScrollArea::setHasBorder( bool b ) {
 
 QPointF QcScrollArea::visibleOrigin() const
 {
-  return scrollWidget->mapFromParent( QPoint(0,0) );
+  QWidget *w = widget();
+  return ( w != 0 ? widget()->mapFromParent( QPoint(0,0) ) : QPoint(0,0) );
 }
 
 void QcScrollArea::setVisibleOrigin( const QPointF &pt )
