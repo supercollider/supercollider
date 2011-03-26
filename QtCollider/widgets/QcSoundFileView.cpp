@@ -154,6 +154,7 @@ void QcWaveform::load( const QString& filename )
   memset( &new_info, 0, sizeof(SF_INFO) );
 
   SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
+  sf_command( new_sf, SFC_SET_SCALE_FLOAT_INT_READ, NULL, SF_TRUE );
 
   if( !new_sf ) {
     printf("Could not open soundfile!\n");
