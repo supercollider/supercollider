@@ -27,6 +27,10 @@ QWebView : QView {
 
   forward { this.invokeMethod( 'forward' ); }
 
+  findText { arg string, reverse = false;
+    this.invokeMethod( \findText, [string, reverse] );
+  }
+
   // The given function will be evaluated when a page has finished loading -
   // be it successfully or not.
 
