@@ -514,7 +514,7 @@ start:
 		yylen = 0;
 		goto start;
 	}
-	else if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') goto ident;
+	else if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_') goto ident;
 	else if (c == '/') {
 		c = input();
 		if (c == '/') goto comment1;
@@ -647,8 +647,8 @@ start:
 ident:
 	c = input();
 
-	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'
-		|| c == '_' || c >= '0' && c <= '9') goto ident;
+	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+		|| c == '_' || (c >= '0' && c <= '9')) goto ident;
 	else if (c == ':') {
 		yytext[yylen] = 0;
 		r = processkeywordbinop(yytext) ;
@@ -663,7 +663,7 @@ ident:
 symbol1:
 	c = input();
 
-	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') goto symbol2;
+	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_') goto symbol2;
 	else if (c >= '0' && c <= '9') goto symbol4;
 	else {
 		unput(c);
@@ -675,8 +675,8 @@ symbol1:
 symbol2:
 	c = input();
 
-	if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'
-		|| c == '_' || c >= '0' && c <= '9') goto symbol2;
+	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
+		|| c == '_' || (c >= '0' && c <= '9')) goto symbol2;
 	else {
 		unput(c);
 		yytext[yylen] = 0;

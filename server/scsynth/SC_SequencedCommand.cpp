@@ -721,7 +721,7 @@ bool SC_BufReadCommand::CheckChannels(int inNumChannels)
 void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels, size_t numFrames)
 {
 	for (int ci=0; ci < mNumChannels; ++ci) {
-		size_t c = mChannels[ci];
+		int c = mChannels[ci];
 		if (c >= 0 && c < srcChannels) {
 			for (size_t fi=0; fi < numFrames; ++fi) {
 				dst[fi*mNumChannels+ci] = src[fi*srcChannels+c];
