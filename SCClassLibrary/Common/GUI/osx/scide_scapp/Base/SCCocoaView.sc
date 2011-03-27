@@ -274,7 +274,7 @@ SCWebView : SCView{
 	
 	reload { this.setProperty(\reload);}
 	
-	didLoad { onDidLoad.value(this); }
+	didLoad { pageLoadedAction.value(this); }
 
 //	*paletteExample{ arg parent, bounds;
 //		^this.new(parent, bounds).string_("The quick brown fox jumps over the lazy dog.");
