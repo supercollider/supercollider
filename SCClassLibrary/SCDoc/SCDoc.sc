@@ -383,19 +383,19 @@ SCDoc {
             this.postProgress(helpSourceDirs);
 
             this.postProgress("Ensuring help directory structure");
-            count = 0;
+            x = Set.new;
             helpSourceDirs.do {|srcdir|
-                this.postProgress("Replicating"+srcdir);
-                ("find"+srcdir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type d").unixCmdGetStdOutLines.do {|dir|
-                    x = (helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ );
-                    this.postProgress("-"+x);
-                    ("mkdir -p"+x).systemCmd;
-                    count = count + 1;
-                }
+                x = x | ("find"+srcdir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type d").unixCmdGetStdOutLines
+                    .collect {|dir|
+                        (helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ )
+                    }.asSet;
             };
-            
-            if(count==0) {
+            if(x.isEmpty) {
                 Error("SCDoc: strange error: could not replicate directory structure").throw;
+            };
+            x.do {|dir|
+                this.postProgress("-"+dir);
+                ("mkdir -p"+dir).systemCmd;
             };
 
             // get list of new or updated files
