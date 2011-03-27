@@ -1,28 +1,97 @@
+/*
+abstract superclass for SCDoc renderers
+*/
 SCDocRenderer {
-    var <>parser;
+    // render the document tree of parser.root into outputFile, relative to given destination help folder
+    render {|parser, outputFile, folder, makeTOC=true|
+        ^this.subclassResponsibility(thisMethod);
+    }
+    // return the URL for help on given string
+    findHelpFile {|str|
+        ^this.subclassResponsibility(thisMethod);
+    }
+    // return a list of documented methodnames, prefixed with xk where
+    // x is "+" for extended methods, or else "_"
+    // k is "*" for classmethods, "-" for instancemethods and "." for generic methods (often interfaces documented in a non-class helpfile)
+    methods {
+        ^this.subclassResponsibility(thisMethod);
+    }
+}
 
+/*
+HTML renderer
+*/
+SCDocHTMLRenderer : SCDocRenderer {
+    var parser;
     var currentClass;
     var currentImplClass;
     var collectedArgs;
-//    var retValue;
     var dirLevel;
     var baseDir;
     var footNotes;
     var <methods;
 
-    *new {|p=nil|
-        ^super.newCopyArgs(p);//.init;
-    }
-
-//    init {
-//    }
-
     *simplifyName {|txt|
         ^txt.toLower.tr($\ ,$_);
     }
 
+    findHelpFile {|str|
+        var path = "Help.html";
+        if(str.notNil and: {str.notEmpty}) {
+            path = if(str[0].isUpper) {
+                if(str.asSymbol.asClass.notNil)
+                    {"Classes" +/+ str ++ ".html"}
+                    {"Search.html#" ++ str};
+            } {"Overviews/Methods.html#" ++ str};
+        };
+        ^ "file://" ++ SCDoc.helpTargetDir +/+ path;
+    }
+    
+    *checkBrokenLinks {
+        var f,m,p,file;
+        var check_link = {|link|
+            if(("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)).not) {
+                f = link.split($#);
+                m = SCDoc.helpTargetDir +/+ f[0] ++ ".html";
+                if((f[0]!="") and: {File.exists(m).not}) {
+                    postln("Broken link: "++file++": "++link);
+                };
+            };
+        };
+        var do_children = {|children|
+            children.do {|node|
+                switch(node.tag,
+                    \link, {
+                        check_link.(node.text);
+                    },
+                    \related, {
+                        SCDoc.splitList(node.text).do {|l|
+                            check_link.(l);
+                        };
+                    },
+                    {
+                        node.children !? {
+                            do_children.(node.children);
+                        }
+                    }
+                );
+            };
+        };
+        p = SCDocParser.new;
+        PathName(SCDoc.helpSourceDir).filesDo {|path|
+            var source = path.fullPath;
+            var lastDot = source.findBackwards(".");
+            var ext = source.copyToEnd(lastDot);
+            if(ext == ".schelp", {
+                file = source;
+                p.parseFile(source);
+                do_children.(p.root);
+            });
+        };
+        postln("Done");
+    }
+    
     escapeSpecialChars {|str|
-//        ^str.replace("\"","&quot;").replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
         ^str.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
     }
 
@@ -72,11 +141,11 @@ SCDocRenderer {
                 file.write(this.escapeSpecialChars(node.text));
             },
             'section', {
-                file.write("<a name='"++SCDocRenderer.simplifyName(node.text)++"'><h2>"++this.escapeSpecialChars(node.text)++"</h2></a>\n");
+                file.write("<a name='"++this.class.simplifyName(node.text)++"'><h2>"++this.escapeSpecialChars(node.text)++"</h2></a>\n");
                 do_children.();
             },
             'subsection', {
-                file.write("<a name='"++SCDocRenderer.simplifyName(node.text)++"'><h3>"++this.escapeSpecialChars(node.text)++"</h3></a>\n");
+                file.write("<a name='"++this.class.simplifyName(node.text)++"'><h3>"++this.escapeSpecialChars(node.text)++"</h3></a>\n");
                 do_children.();
             },
             'classmethods', {
@@ -200,14 +269,14 @@ SCDocRenderer {
                     file.write("</table>");
                 };
 
-                n = this.parser.findNode(\returns, node.children);
+                n = parser.findNode(\returns, node.children);
                 if(n.tag.notNil) {
                     file.write("<h4>Returns:</h4>\n<div class='returnvalue'>");
                     n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
                     file.write("</div>");
                 };
 
-                n = this.parser.findNode(\discussion, node.children);
+                n = parser.findNode(\discussion, node.children);
                 if(n.tag.notNil) {
                     file.write("<h4>Discussion:</h4>\n");
                     n.children.do {|e| this.renderHTMLSubTree(file,e,false) };
@@ -396,11 +465,11 @@ SCDocRenderer {
                             f.write("</li>\n");
                         },
                         \section, {
-                            f.write("<li class='toc1'><a href='#"++SCDocRenderer.simplifyName(n.text)++"'>"++this.escapeSpecialChars(n.text)++"</a></li>\n");
+                            f.write("<li class='toc1'><a href='#"++this.class.simplifyName(n.text)++"'>"++this.escapeSpecialChars(n.text)++"</a></li>\n");
                             do_children.(n.children);
                         },
                         \subsection, {
-                            f.write("<li class='toc2'><a href='#"++SCDocRenderer.simplifyName(n.text)++"'>"++this.escapeSpecialChars(n.text)++"</a></li>\n");
+                            f.write("<li class='toc2'><a href='#"++this.class.simplifyName(n.text)++"'>"++this.escapeSpecialChars(n.text)++"</a></li>\n");
                             do_children.(n.children);
                         }
                     );
@@ -536,8 +605,10 @@ SCDocRenderer {
         ^node;
     }
 
-    renderHTML {|filename, folder=".", toc=true|
+    render {|p, filename, folder=".", toc=true|
         var f,x,name;
+        
+        parser = p;
         
         SCDoc.postProgress("Rendering "++filename);
 
