@@ -106,12 +106,13 @@
 @end
 
 @interface SCNSWebView : WebView {
-	struct PyrObject *mSCWebView;
+	struct SCWebView *mSCWebView;
+	int loadCount;
 }
 
-- (void)setSCObject: (struct PyrObject*)inObject;
-- (struct PyrObject*)getSCObject;
-//- (void) keyDown: (NSEvent*) event;
+- (void)setSCObject: (struct SCWebView*)inObject;
+- (struct SCWebView*)getSCObject;
+- (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame;
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector;
 
 @end
@@ -179,6 +180,7 @@ public:
 	//virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	void tabPrevFocus();
 	void tabNextFocus();
+	virtual void doOnLoadAction();
 	virtual NSView* focusResponder() { return mWebView; }
 	SCTopView* getTop() { return mTop; }
 	virtual void mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent);

@@ -1080,20 +1080,41 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 @implementation SCNSWebView
 
-- (void)setSCObject: (struct PyrObject*)inObject
+-(id)init {
+    self=[super init];
+    if (self) {
+        loadCount=0; 
+    }
+    return self;
+}
+
+- (void)setSCObject: (struct SCWebView*)inObject
 {
     mSCWebView = inObject;
 }
 
-- (struct PyrObject*)getSCObject
+- (struct SCWebView*)getSCObject
 {
     return mSCWebView;
 }
 
-//- (void) keyDown: (NSEvent*) event
+// delegate methods
+- (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
+{
+	loadCount = loadCount - 1;
+	if (loadCount == 0 && mSCWebView) {
+		mSCWebView->doOnLoadAction();
+	}
+}
+
+- (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame
+{
+	loadCount = loadCount + 1;
+}
+
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector
 {
-	NSLog(@"webview keydown");
+	NSLog(@"webview keydown %@", NSStringFromSelector(aSelector));
    // NSString *characters = [event characters];
 	//BOOL ignoreControlKeys = NO;
 //	if(compiledOK){
@@ -1143,15 +1164,11 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 				return NO;
 			}
 			
-			//NSRange selectedRange;
-			NSString* selection = [self stringByEvaluatingJavaScriptFromString:@"(function (){return window.getSelection().toString();})();"];
+			NSString* selection = [self stringByEvaluatingJavaScriptFromString:@"(function (){selObj = window.getSelection(); string = selObj.toString(); selObj.collapseToEnd(); return string })();"];
 			const char *text = [selection UTF8String];
 			int textlength = strlen(text);
 			
 			[[SCVirtualMachine sharedInstance] setCmdLine: text length: textlength];
-			
-			//NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
-//			[txtView setSelectedRange: newSelectedRange];
 			
 			pthread_mutex_lock(&gLangMutex);
 			runLibrary(getsym("interpretPrintCmdLine"));
@@ -2409,6 +2426,7 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 	[view addSubview: mWebView];
 	
 	[mWebView setEditingDelegate:mWebView];
+	[mWebView setFrameLoadDelegate:mWebView];
 	
 	[mWebView setSCObject: this];
 	
@@ -2449,6 +2467,20 @@ void SCWebView::setBounds(SCRect screct)
 	[mWebView setFrame: SCtoNSRect(mLayout.bounds)];
 }
 
+void SCWebView::doOnLoadAction()
+{
+	pthread_mutex_lock (&gLangMutex);			
+	if(compiledOK){
+		PyrSymbol *method = getsym("didLoad");
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, mObj); 
+		runInterpreter(g, method, 1);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
+}
+
 int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	int err;
@@ -2478,6 +2510,21 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		err = slotGetSCRect(slot, &screct);
 		if (err) return err;
 		setBounds(screct);
+		return errNone;
+	}
+	
+	if (strcmp(name, "back")==0) {
+		[mWebView goBack];
+		return errNone;
+	}
+	
+	if (strcmp(name, "forward")==0) {
+		[mWebView goForward];
+		return errNone;
+	}
+	
+	if (strcmp(name, "reload")==0) {
+		[mWebView reload:nil];
 		return errNone;
 	}
 	

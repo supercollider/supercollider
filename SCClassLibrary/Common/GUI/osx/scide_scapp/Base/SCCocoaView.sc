@@ -220,6 +220,8 @@ SCMovieView : SCView{
 }
 
 SCWebView : SCView{
+	
+	var <>pageLoadedAction;
 
 	mouseUp {arg x, y, modifiers, buttonNumber, clickCount, clickPos;
 		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount, clickPos);	}
@@ -265,6 +267,14 @@ SCWebView : SCView{
 		path = path.replace(" ", "%20");
 		this.setProperty(\open, path);
 	}
+	
+	forward { this.setProperty(\forward);}
+	
+	back { this.setProperty(\back);}
+	
+	reload { this.setProperty(\reload);}
+	
+	didLoad { onDidLoad.value(this); }
 
 //	*paletteExample{ arg parent, bounds;
 //		^this.new(parent, bounds).string_("The quick brown fox jumps over the lazy dog.");
