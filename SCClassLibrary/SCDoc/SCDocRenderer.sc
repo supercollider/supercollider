@@ -612,7 +612,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         
         SCDoc.postProgress("Rendering "++filename);
 
-        File.delete(filename);
+//        File.delete(filename);
         f = File.open(filename, "w");
 
         //folder is the directory path of the file relative to the help tree,
