@@ -13,6 +13,7 @@ InstallSCDocMenu {
 		if(ref.notNil) {
 			url = url ++ "#" ++ ref;
 		};
+		// FIXME: use new HelpBrowser
 		switch(GUI.scheme.name,
 			\QtGUI, {QHelpBrowser.newUnique.front.load(url)},
 			\CocoaGUI, {("open"+url).systemCmd}
@@ -30,11 +31,7 @@ InstallSCDocMenu {
 					    var sz = Document.current.selectionSize;
 					    var txt = Document.current.selectedString;
 					    SCDoc.waitForHelp {
-						    if(sz > 0) {
-							    this.openFile(SCDoc.findClassOrMethod(txt));
-						    } {
-							    this.openFile(SCDoc.helpTargetDir+/+"Help.html");
-						    };
+						    this.openFile(SCDoc.findHelpFile(txt));
 						};
 					})
 					.setShortCut("d",false,true);
