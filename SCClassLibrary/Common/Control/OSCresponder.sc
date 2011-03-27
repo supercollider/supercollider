@@ -4,7 +4,6 @@ OSCresponder {
 	var <cmdNameWithoutSlash;
 
 	*new { arg addr, cmdName, action;
-		this.deprecated(thisMethod, Meta_OSCResponder.findMethod(\new));
 		^super.new.init(addr, cmdName, action);
 	}
 
@@ -100,11 +99,6 @@ OSCresponderNode : OSCresponder {
 	
 	var <added = false;
 	
-	*new { arg addr, cmdName, action;
-		this.deprecated(thisMethod, Meta_OSCResponder.findMethod(\new));
-		^super.new(addr, cmdName, action);
-	}
-	
 	add {
 		var made, found;
 		if(added.not, {
@@ -146,95 +140,6 @@ OSCresponderNode : OSCresponder {
 	value { arg time, msg, addr;
 		action.value(time, this, msg, addr);
 	}
-
-}
-
-// replace old OSCresponder/OSCresponderNode
-OSCResponder : AbstractResponder {
-	
-	classvar <>all;
-	var <>addr, <cmdName, <>action;
-	
-	*new { arg addr, cmdName, action, install=true, removeOnCmdPeriod=true;
-		^super.new.init(addr, cmdName, action, install, removeOnCmdPeriod);
-	}
-
-	*initClass {
-		all = IdentityDictionary.new;
-	}
-		
-	init { arg argAddr, argCmdName, argAction, arginstall, argremoveOnCmdPeriod;
-		addr = argAddr;
-		action = argAction;
-		this.cmdName = argCmdName.asSymbol;
-		removeOnCmdPeriod = argremoveOnCmdPeriod;
-		if(arginstall, {this.add});
-	}
-
-	cmdName_ { arg string;
-		string = string.asString;
-		if(string[0] != $/) { "/" ++ string };
-		cmdName = string.asSymbol;
-	}
-	
-	// this version doesn't do the slash checking
-	// but OSC paths without an initial slash are malformed
-	*respond { arg time, addr, msg;
-		var cmdName, hit = false;
-		cmdName = msg[0];
-		all[cmdName].do { |resp|
-			resp.value(time, msg, addr);
-			hit = true;
-		};
-		^hit
-	}
-
-	add {
-		var made, found;
-		if(all[cmdName].isNil, {all[cmdName] = IdentitySet.new});
-		all[cmdName].add(this);
-		if(removeOnCmdPeriod, {CmdPeriod.add(this)});
-		added = true;
-	}
-
-	removeWhenDone {
-		var func;
-		func = action;
-		action = { arg time, responder, msg, addr;
-			func.value(time, responder, msg, addr);
-			this.remove;
-		}
-	}
-
-	remove {
-		all[cmdName].remove(this);
-		added = false;
-	}
-	
-	*removeAddr { arg addr;
-		all.copy.keysValuesDo({|k, v|
-			var new; 
-			new = v.reject({ arg item;
-				item.addr == addr
-			});
-			all[k] = new;
-		});
-	}
-
-	value { arg time, msg, addr;
-		action.value(time, this, msg, addr);
-	}
-
-// probably not a good idea
-//	== { arg that;
-//		^that respondsTo: #[\cmdName, \addr]
-//			and: { cmdName == that.cmdName and: { addr == that.addr }}
-//	}
-
-// probably not a good idea
-//	hash {
-//		^addr.hash bitXor: cmdName.hash
-//	}
 
 }
 

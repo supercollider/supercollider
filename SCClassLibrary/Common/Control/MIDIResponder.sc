@@ -2,13 +2,13 @@
 // see MIDIResponder help for all classes on this page
 
 
-MIDIResponder : AbstractResponder {
-	var	<>action,<>swallowEvent=false,
+MIDIResponder {
+	var	<>function,<>swallowEvent=false,
 		<>matchEvent;		// for matching ports, channels, and parameters
 	init { arg install;
 		if(this.class.initialized.not,{ this.class.init });
 		matchEvent.port = matchEvent.port.asMIDIInPortUID;
-		if(install,{this.add;});
+		if(install,{this.class.add(this);});
 	}
 	respond { arg src,chan,num,value;
 		if(this.match(src,chan,num,value),{
@@ -21,23 +21,11 @@ MIDIResponder : AbstractResponder {
 		^matchEvent.match(src,chan,num,value);
 	}
 	value { arg src,chan,a,b;
-		action.value(src, chan, a, b)
+		function.value(src, chan, a, b)
 	}
-	
-	function {
-		this.deprecated(thisMethod, this.findMethod(\action));
-		^action
-	}
-	
-	function_ {|function|
-		this.deprecated(thisMethod, this.findMethod(\action_));
-		this.action_(function);
-	}
-	
-	*add {arg resp; resp.add }
 
-	*remove {arg resp;
-		resp.remove;
+	remove {
+		this.class.remove(this)
 	}
 	*removeAll {
 		if(this == MIDIResponder,{
@@ -53,12 +41,10 @@ MIDIResponder : AbstractResponder {
 NoteOnResponder : MIDIResponder {
 	classvar <norinit = false,<nonr;
 
-	*new { arg action, src, chan, num, veloc, install=true, 
-			swallowEvent=false, removeOnCmdPeriod=true;
-		^super.new.action_(action)
+	*new { arg function, src, chan, num, veloc, install=true,swallowEvent=false;
+		^super.new.function_(function)
 			.matchEvent_(MIDIEvent(nil, src, chan, num, veloc))
 			.swallowEvent_(swallowEvent)
-			.removeOnCmdPeriod_(removeOnCmdPeriod)
 			.init(install)
 	}
 	*initialized { ^norinit }
@@ -73,15 +59,11 @@ NoteOnResponder : MIDIResponder {
 			});
 		}
 	}
-	add { 
-		if(removeOnCmdPeriod, {CmdPeriod.add(this)});
-		added = true;
-		nonr = nonr.add(this);
+	*add { arg resp;
+		nonr = nonr.add(resp);
 	}
-	remove {
-		if(removeOnCmdPeriod, {CmdPeriod.remove(this)});
-		added = false;
-		nonr.remove(this);
+	*remove { arg resp;
+		nonr.remove(resp);
 	}
 	learn {
 		var oneShot;
@@ -108,49 +90,39 @@ NoteOffResponder : NoteOnResponder {
 	*initialized { ^noffinit }
 	*responders { ^noffr }
 
-	add {
-		if(removeOnCmdPeriod, {CmdPeriod.add(this)});
-		added = true;
-		noffr = noffr.add(this);
+	*add { arg resp;
+		noffr = noffr.add(resp);
 	}
-	remove {
-		if(removeOnCmdPeriod, {CmdPeriod.remove(this)});
-		added = false;
-		noffr.remove(this);
+	*remove { arg resp;
+		noffr.remove(resp);
 	}
 }
 
 CCResponder : MIDIResponder {
 	classvar <ccinit = false,<ccr,<ccnumr;
 
-	*new { arg action, src, chan, num, value, install=true, 
-			swallowEvent=false, removeOnCmdPeriod=true;
-		^super.new.action_(action).swallowEvent_(swallowEvent)
+	*new { arg function, src, chan, num, value, install=true,swallowEvent=false;
+		^super.new.function_(function).swallowEvent_(swallowEvent)
 			.matchEvent_(MIDIEvent(nil, src, chan, num, value))
-			.removeOnCmdPeriod_(removeOnCmdPeriod)
 			.init(install)
 	}
 	*initialized { ^ccinit }
 	*responders { ^ccnumr.select(_.notNil).flat ++ ccr }
-	add { 
+	*add { arg resp;
 		var temp;
-		if(this.class.initialized.not,{ this.class.init });
-		if(removeOnCmdPeriod, {CmdPeriod.add(this)});
-		added = true;
-		if((temp = matchEvent.ctlnum).isNumber) {
-			ccnumr[temp] = ccnumr[temp].add(this);
+		if(this.initialized.not,{ this.init });
+		if((temp = resp.matchEvent.ctlnum).isNumber) {
+			ccnumr[temp] = ccnumr[temp].add(resp);
 		} {
-			ccr = ccr.add(this);
+			ccr = ccr.add(resp);
 		};
 	}
-	remove {
+	*remove { arg resp;
 		var temp;
-		if(removeOnCmdPeriod, {CmdPeriod.remove(this)});
-		added = false;
-		if((temp = matchEvent.ctlnum).isNumber) {
-			ccnumr[temp].remove(this)
+		if((temp = resp.matchEvent.ctlnum).isNumber) {
+			ccnumr[temp].remove(resp)
 		} {
-			ccr.remove(this);
+			ccr.remove(resp);
 		};
 	}
 	*init {
@@ -182,7 +154,7 @@ CCResponder : MIDIResponder {
 		{
 			this.remove;
 			matchEvent = midiEvent;
-			this.add;
+			this.class.add(this);
 		} {
 			matchEvent = midiEvent;
 		}
@@ -192,11 +164,9 @@ CCResponder : MIDIResponder {
 TouchResponder : MIDIResponder {
 	classvar <touchinit = false,<touchr;
 
-	*new { arg action, src, chan, value, install=true, 
-			swallowEvent=false, removeOnCmdPeriod=true;
-		^super.new.action_(action).swallowEvent_(swallowEvent)
+	*new { arg function, src, chan, value, install=true,swallowEvent=false;
+		^super.new.function_(function).swallowEvent_(swallowEvent)
 			.matchEvent_(MIDIEvent(nil, src, chan, nil, value))
-			.removeOnCmdPeriod_(removeOnCmdPeriod)
 			.init(install)
 	}
 	*init {
@@ -211,20 +181,16 @@ TouchResponder : MIDIResponder {
 	}
 	value { arg src,chan,num,val;
 		// num is irrelevant
-		action.value(src,chan,val);
+		function.value(src,chan,val);
 	}
 	*initialized { ^touchinit }
 	*responders { ^touchr }
 
-	add {
-		if(removeOnCmdPeriod, {CmdPeriod.add(this)});
-		added = true;
-		touchr = touchr.add(this);
+	*add { arg resp;
+		touchr = touchr.add(resp);
 	}
-	remove {
-		if(removeOnCmdPeriod, {CmdPeriod.remove(this)});
-		added = false;
-		touchr.remove(this);
+	*remove { arg resp;
+		touchr.remove(resp);
 	}
 	learn {
 		var oneShot;
@@ -251,22 +217,18 @@ BendResponder : TouchResponder {
 	*initialized { ^bendinit }
 	*responders { ^bendr }
 
-	add { 
-		if(removeOnCmdPeriod, {CmdPeriod.add(this)});
-		added = true;
-		bendr = bendr.add(this);
+	*add { arg resp;
+		bendr = bendr.add(resp);
 	}
-	remove {
-		if(removeOnCmdPeriod, {CmdPeriod.remove(this)});
-		added = false;
-		bendr.remove(this);
+	*remove { arg resp;
+		bendr.remove(resp);
 	}
 }
 
 /*
 NoteOnOffResponder
-	the note on action would return an object which is stored.
-	when a matching note off event occurs, the object is passed into the note off action
+	the note on function would return an object which is stored.
+	when a matching note off event occurs, the object is passed into the note off function
 PolyTouchResponder
 */
 
@@ -275,10 +237,9 @@ PolyTouchResponder
 ProgramChangeResponder : MIDIResponder {
 	classvar <pcinit = false,<pcr;
 
-	*new { arg action, src, chan, value, install=true, removeOnCmdPeriod=true;
-		^super.new.action_(action)
+	*new { arg function, src, chan, value, install=true;
+		^super.new.function_(function)
 			.matchEvent_(MIDIEvent(nil, src.asMIDIInPortUID, chan, nil, value))
-			.removeOnCmdPeriod_(removeOnCmdPeriod)
 			.init(install)
 	}
 	*init {
@@ -293,20 +254,16 @@ ProgramChangeResponder : MIDIResponder {
 		}
 	}
 	value { arg src,chan,val;
-		action.value(src,chan,val);
+		function.value(src,chan,val);
 	}
 	*initialized { ^pcinit }
 	*responders { ^pcr }
 
-	add {
-		if(removeOnCmdPeriod, {CmdPeriod.add(this)});
-		added = true;
-		pcr = pcr.add(this);
+	*add { arg resp;
+		pcr = pcr.add(resp);
 	}
-	remove {
-		if(removeOnCmdPeriod, {CmdPeriod.remove(this)});
-		added = false;
-		pcr.remove(this);
+	*remove { arg resp;
+		pcr.remove(resp);
 	}
 }
 
