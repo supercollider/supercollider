@@ -2,6 +2,7 @@ SCDoc {
     classvar <helpTargetDir;
     classvar <helpSourceDir;
     classvar <helpBaseDir;
+    classvar <helpSourceDirs;
     classvar doc_map = nil;
     classvar <p, <r;
     classvar doWait;
@@ -340,7 +341,7 @@ SCDoc {
         didRun = true;
         
         func = {
-            var helpSourceDirs, fileList, count, maybeDelete, x, f, n, old_classes, current_classes;
+            var fileList, count, maybeDelete, x, f, n, old_classes, current_classes;
 
             if(useHelpBase) {
                 this.initHelpTargetDir;
