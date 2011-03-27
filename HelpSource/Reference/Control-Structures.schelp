@@ -1,9 +1,12 @@
 title::Control Structures
 summary:: flow control
 categories:: Language
+related:: Classes/Boolean
 
 Control structures in SuperCollider are implemented via message sends. Here are a few of those available. 
 See link::Reference/Syntax-Shortcuts:: for the various ways expressions can be written.
+
+section:: Basic Control Structures
 
 method:: if
 
@@ -218,11 +221,11 @@ x.postln;
 
 section:: Other Control Structures
 
-Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection:: there are many more messages defined for iterating over Collections.
+Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#iteration:: there are many more messages defined for iterating over Collections.
 
 section:: Inline optimization
 
-'if', 'while', 'switch' and 'case' expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the trueFunc and the falseFunc. The optimization plucks the code from the functions and uses a more efficient jump statement:
+code::if::, code::while::, code::switch:: and code::case:: expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the functions. The optimization plucks the code from the functions and uses a more efficient jump statement:
 code::
 {
 	if( 6 == 9,{
@@ -274,26 +277,3 @@ BYTECODES: (12)
 a FunctionDef in closed FunctionDef
 ::
 
-Removing the variable allows inlining:
-code::
-{
-	if( 6 == 9,{
-		"hello".postln;
-	},{
-		"hello".postln;
-	})
-}.def.dumpByteCodes
-
-BYTECODES: (18)
-  0   FE 06    PushPosInt 6
-  2   FE 09    PushPosInt 9
-  4   E6       SendSpecialBinaryArithMsg '=='
-  5   F8 00 06 JumpIfFalse 6  (14)
-  8   42       PushLiteral "hello"
-  9   A1 00    SendMsg 'postln'
- 11   FC 00 03 JumpFwd 3  (17)
- 14   41       PushLiteral "hello"
- 15   A1 00    SendMsg 'postln'
- 17   F2       BlockReturn
-a FunctionDef in closed FunctionDef
-::
