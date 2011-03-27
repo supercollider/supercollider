@@ -1,49 +1,35 @@
 class:: SCDocRenderer
-summary:: Render SCDoc markup text
+summary:: Abstract superclass for SCDoc renderers
 categories:: HelpSystem
-related:: Classes/SCDoc, Classes/SCDocParser, Guides/WritingHelp, Reference/SCDocSyntax
+related:: Classes/SCDoc, Classes/SCDocParser
 
 description::
-This class is part of the SCDoc help system, and handles the rendering of the parsed document tree into HTML output.
-
-Other output formats might be added in the future, either to this class or to separate classes.
-
-In normal cases you won't need to use this class directly, link::Classes/SCDoc:: uses this class to parse and render all help files.
-
-classmethods::
-method::new
-Create a renderer instance.
-argument::p
-Optional parser object. Can also be set afterwards with code::renderer.parser=p::.
-
-method::simplifyName
-Simplify a textstring by replacing spaces with underscores and making it all lowercase. Used to convert section names to anchor names.
-argument::txt
-The textstring to simplify.
-returns:: the simplified string.
+This is an abstract superclass for SCDoc renderers, like link::Classes/SCDocHTMLRenderer::.
 
 instancemethods::
+The interface should look as follows:
 
-private:: addUndocumentedMethods, renderFootNotes, renderTOC, escapeSpecialChars, renderHTMLSubTree, renderHTMLHeader
-
-method:: parser
-get/set the link::Classes/SCDocParser:: object to render.
-
-method:: renderHTML
-Render the tree contained in the code::parser:: instance variable to HTML file.
-argument:: filename
-The full path for the output filename. Any nonexistent intermediate directories will be created.
+method:: render
+Render a parsed document.
+argument:: parser
+An instance of link::Classes/SCDocParser:: holding a parsed document tree in code::.root::, which are to be rendered.
+argument:: outputFile
+The full path for the output filename.
 argument:: folder
 The directory part relative to the base directory of the help directory tree, like "Classes" or "Reference". This is used as a simple organization for document "kind".
-argument:: toc
+argument:: makeTOC
 if true, create a table-of-contents.
 
-examples::
-code::
-p = SCDocParser.new;
-r = SCDocRenderer.new;
+method:: findHelpFile
+Find help for string.
+returns:: the URL for help on given string, or the main help page if string was empty or nil.
 
-r.parser = p.parseFile("/path/to/HelpSource/Classes/Array.schelp");
-r.renderHTML("/home/lijon/share/SuperCollider/Help/Classes/Array.html","Classes");
+method:: methods
+Get list of documented methods.
+returns::
+A link::Classes/List:: of documented method names ( link::Classes/String::s ), prefixed with xk where
+list::
+## x is "+" for extended methods, or else "_"
+## k is "*" for classmethods, "-" for instancemethods and "." for generic methods (often interfaces documented in a non-class helpfile)
 ::
 

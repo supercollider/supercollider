@@ -27,7 +27,7 @@ private:: initClass, addToDocMap, makeMethodList, updateFile, makeOverviews, pos
 method:: p
 The default link::Classes/SCDocParser:: object, created automatically.
 method:: r
-The default link::Classes/SCDocRenderer:: object, created automatically.
+The default link::Classes/SCDocRenderer:: object, created automatically. Defaults to an instance of link::Classes/SCDocHTMLRenderer::
 
 method:: helpSourceDir
 get/set the system-wide directory of help sourcefiles. Defaults to code:: thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource" ::
@@ -56,12 +56,9 @@ If false, don't search for extensions (useful when building base help)
 argument:: useHelpBase
 if false, don't initialize help target directory from existing HelpBase
 
-method:: checkBrokenLinks
-Scans the entire help tree for broken links
-
-method:: findClassOrMethod
-returns::
-the full path to the document for a specific class if the string starts with capital letter, or the method overview if not.
+method:: findHelpFile
+Find help for a given string. This method redirects to the instance method code::findHelpFile:: on the current renderer object.
+returns:: the URL for help on given string
 
 subsection:: Cached map of documents
 SCDoc keeps a dictionary where each document is represented by an link::Classes/Event:: with the keys code::path, title, categories, summary, installed::.

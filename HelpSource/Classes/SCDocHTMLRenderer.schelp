@@ -1,0 +1,52 @@
+class:: SCDocHTMLRenderer
+summary:: Render SCDoc markup text to HTML
+categories:: HelpSystem
+related:: Classes/SCDoc, Classes/SCDocParser, Guides/WritingHelp, Reference/SCDocSyntax
+
+description::
+This class is part of the SCDoc help system, and handles the rendering of the parsed document tree into HTML output.
+
+In normal cases you won't need to use this class directly, link::Classes/SCDoc:: uses this class to parse and render all help files.
+
+classmethods::
+method::new
+Create a renderer instance.
+
+method::simplifyName
+Simplify a textstring by replacing spaces with underscores and making it all lowercase. Used to convert section names to anchor names.
+argument::txt
+The textstring to simplify.
+returns:: the simplified string.
+
+method:: checkBrokenLinks
+Scans the entire help tree for broken links
+
+instancemethods::
+
+private:: addUndocumentedMethods, renderFootNotes, renderTOC, escapeSpecialChars, renderHTMLSubTree, renderHTMLHeader, autoLinkClasses, methods
+
+method:: render
+Render the tree contained in the code::parser:: instance variable to HTML file.
+argument:: p
+An instance of link::Classes/SCDocParser:: holding a parsed document tree in code::.root::, which are to be rendered.
+argument:: filename
+The full path for the output filename.
+argument:: folder
+The directory part relative to the base directory of the help directory tree, like "Classes" or "Reference". This is used as a simple organization for document "kind".
+argument:: toc
+if true, create a table-of-contents.
+
+method:: findHelpFile
+returns:: the URL for help on given string
+discussion::
+If string is a class, open the helpfile for that class. If the string starts with uppercase but is not an existing class, open the Search page with this string. If the string starts with lowercase, open the Methods page for this method. (This page will redirect to Search if the method was not found)
+
+examples::
+code::
+p = SCDocParser.new;
+r = SCDocHTMLRenderer.new;
+
+p.parseFile("/path/to/HelpSource/Classes/Array.schelp");
+r.render(p,"/path/to/Help/Classes/Array.html","Classes");
+::
+
