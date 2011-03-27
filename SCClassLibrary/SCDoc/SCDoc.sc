@@ -322,7 +322,8 @@ SCDoc {
             this.postProgress("Initializing user's help directory", true);
             if(File.exists(helpBaseDir)) {
                 this.postProgress("Basing help tree on pre-rendered help, please wait...");
-                ("rsync -ax --link-dest="++sysdir+sysdir++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
+//                ("rsync -ax --link-dest="++sysdir+sysdir++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
+                ("rsync -rlt"+sysdir++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
                 this.postProgress("Done, creating timestamp");
                 ("touch -r"+sysdir+stamp).systemCmd;
             } {
@@ -368,7 +369,7 @@ SCDoc {
                     progressWindow.userCanClose = true;
                     closeButton.enabled = true;
                 };
-                ^this;
+                ^nil;
             };
 
             // find the set of helpSourceDirs
@@ -382,13 +383,19 @@ SCDoc {
             this.postProgress(helpSourceDirs);
 
             this.postProgress("Ensuring help directory structure");
+            count = 0;
             helpSourceDirs.do {|srcdir|
                 this.postProgress("Replicating"+srcdir);
                 ("find"+srcdir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type d").unixCmdGetStdOutLines.do {|dir|
                     x = (helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ );
                     this.postProgress("-"+x);
                     ("mkdir -p"+x).systemCmd;
+                    count = count + 1;
                 }
+            };
+            
+            if(count==0) {
+                Error("SCDoc: strange error: could not replicate directory structure").throw;
             };
 
             // get list of new or updated files
