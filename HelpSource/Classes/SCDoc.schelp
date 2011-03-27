@@ -32,6 +32,9 @@ The default link::Classes/SCDocRenderer:: object, created automatically. Default
 method:: helpSourceDir
 get/set the system-wide directory of help sourcefiles. Defaults to code:: thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource" ::
 
+method:: helpSourceDirs
+get the list of HelpSource folders, including extensions and quarks. this will be empty before running code::updateAll::
+
 method:: helpTargetDir
 get/set the user help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "Help" ::
 
