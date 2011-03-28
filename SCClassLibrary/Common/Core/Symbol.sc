@@ -232,4 +232,9 @@ Symbol {
 	ar { | val, lag |
 		^NamedControl.ar(this, val, lag)
 	}
+	
+	matchOSCAddressPattern { arg addressPattern;
+		_Symbol_matchOSCPattern
+		^this.primitiveFailed
+	}
 }

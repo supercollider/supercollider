@@ -223,6 +223,28 @@ int prSymbol_AsFloat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSymbol_matchOSCPattern(struct VMGlobals *g, int numArgsPushed);
+int prSymbol_matchOSCPattern(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	int length;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	if (!IsSym(a) || !IsSym(b)) return errWrongType;
+//	int32 alen = slotRawSymbol(a)->length;
+//	int32 blen = slotRawSymbol(b)->length;
+//	length = sc_min(alen, blen);
+	if (lo_pattern_match(slotRawSymbol(a)->name, slotRawSymbol(b)->name)) {
+		SetTrue(a);
+	} else {
+		SetFalse(a);
+	}
+	return errNone;
+}
+
+
+
 
 void initSymbolPrimitives();
 void initSymbolPrimitives()
@@ -243,6 +265,7 @@ void initSymbolPrimitives()
 	definePrimitive(base, index++, "_Symbol_PrimitiveIndex", prSymbol_PrimitiveIndex, 1, 0);
 	definePrimitive(base, index++, "_Symbol_SpecialIndex", prSymbol_SpecialIndex, 1, 0);
 	definePrimitive(base, index++, "_Symbol_AsFloat", prSymbol_AsFloat, 1, 0);
+	definePrimitive(base, index++, "_Symbol_matchOSCPattern", prSymbol_matchOSCPattern, 2, 0);
 
 }
 

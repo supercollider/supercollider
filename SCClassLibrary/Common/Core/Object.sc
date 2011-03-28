@@ -391,6 +391,7 @@ Object  {
 		^FunctionList([this] ++ functions)
 	}
 	removeFunc { arg function; if(this === function) { ^nil } }
+	replaceFunc { arg find, replace; if(this === find) { ^replace } }
 	addFuncTo { arg variableName ... functions;
 		this.perform(variableName.asSetter, this.perform(variableName).addFunc(*functions))
 	}
