@@ -1080,12 +1080,9 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 @implementation SCNSWebView
 
--(id)init {
-    self=[super init];
-    if (self) {
-        loadCount=0; 
-    }
-    return self;
+-(void)initVars {
+	loadCount=0; 
+	handleLinks = true;
 }
 
 - (void)setSCObject: (struct SCWebView*)inObject
@@ -1096,6 +1093,11 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (struct SCWebView*)getSCObject
 {
     return mSCWebView;
+}
+
+- (void) setHandleLinks: (bool)handle
+{
+	handleLinks = handle;
 }
 
 // delegate methods
@@ -1112,50 +1114,27 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	loadCount = loadCount + 1;
 }
 
+// call link action if set, otherwise proceed
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id )listener
+{	
+	if(handleLinks) {
+		[listener use];
+	} else {
+		VMGlobals *g = gMainVMGlobals;
+		NSString *urlString = [[request URL] path];
+		const char * cstr = [urlString UTF8String];
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
+		mSCWebView->doLinkClickedAction(string);
+	}
+
+}
+
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector
 {
-	NSLog(@"webview keydown %@", NSStringFromSelector(aSelector));
-   // NSString *characters = [event characters];
-	//BOOL ignoreControlKeys = NO;
-//	if(compiledOK){
-//		unsigned int modifiers = [event modifierFlags];
-//		unichar character = 0;
-//		if([characters length] > 0) {
-//			character = [characters characterAtIndex: 0];
-//		}
-//		unsigned int keycode = [event keyCode];
-//		
-//		if (mSCWebView) {
-//			pthread_mutex_lock (&gLangMutex);
-//			PyrSymbol *documentclass = getsym([langClassToCall cString]);
-//			PyrObject *classobj = (PyrObject*) documentclass->u.classobj;			
-//			if(NotNil(pobj->slots+objectKeyDownActionIndex) || NotNil(classobj->slots+keyDownActionIndex)){
-//				if(compiledOK){
-//					PyrSymbol *method = getsym("keyDown");
-//					VMGlobals *g = gMainVMGlobals;
-//					g->canCallOS = true;
-//					++g->sp;  SetObject(g->sp, pobj); 
-//					++g->sp;  SetChar(g->sp, character); 
-//					++g->sp;  SetInt(g->sp, modifiers); 
-//					++g->sp;  SetInt(g->sp, character); 
-//					++g->sp;  SetInt(g->sp, keycode); 
-//					runInterpreter(g, method, 5);
-//					g->canCallOS = false;
-//				}
-//			}
-//			pthread_mutex_unlock (&gLangMutex);
-//		}
-//	}
-	
-	
-	
-	// shift- or control-return added by hjh
-//    if ([characters isEqual: @"\03"] ||
-//		(([characters isEqual: @"\n"] || [characters isEqual: @"\r"])
-//		 && ([event modifierFlags] & (NSControlKeyMask | NSShiftKeyMask)))) {
+
 	unsigned short keycode = [[NSApp currentEvent] keyCode];
 	
-	printf("keycode: %d\n", keycode);
+	//printf("keycode: %d\n", keycode);
 	
 	// Exec on Ctrl c or Enter
 	if ( (aSelector == @selector(insertNewline:) && (keycode == 76)) || ( keycode == 8) ) {
@@ -1175,18 +1154,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 			pthread_mutex_unlock(&gLangMutex);
 			
 			return YES;
-		} //else if (([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && !([event modifierFlags] & NSAlternateKeyMask)) {
-//			[self autoIndent: event];
-//		} else { 
-//			//call lang
-//			if([[self delegate] handleKeyDown: event]) return;
-//			if(ignoreControlKeys && ([event modifierFlags] & NSCommandKeyMask)) return;
-//			[super keyDown: event];
-//			
-//			if ([characters isEqual: @"}"] && useAutoInOutdent) {
-//				[self outdentBrack];
-//			}
-//		}
+		} 
 	return NO;
 }
 
@@ -2422,11 +2390,13 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 {
 	NSRect matrect = SCtoNSRect(getDrawBounds());
 	mWebView = [[SCNSWebView alloc] initWithFrame:matrect frameName:nil groupName: nil];
+	[mWebView initVars];
 	NSView *view = mTop->GetNSView();
 	[view addSubview: mWebView];
 	
 	[mWebView setEditingDelegate:mWebView];
 	[mWebView setFrameLoadDelegate:mWebView];
+	[mWebView setPolicyDelegate:mWebView];
 	
 	[mWebView setSCObject: this];
 	
@@ -2481,15 +2451,30 @@ void SCWebView::doOnLoadAction()
 	pthread_mutex_unlock (&gLangMutex);
 }
 
+void SCWebView::doLinkClickedAction(PyrString* pstring)
+{
+	pthread_mutex_lock (&gLangMutex);			
+	if(compiledOK){
+		PyrSymbol *method = getsym("linkActivated");
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, mObj); 
+		++g->sp;  SetObject(g->sp, pstring); 
+		runInterpreter(g, method, 2);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
+}
+
 int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	int err;
 	char *name = symbol->name;
 	
-	if (strcmp(name, "open")==0) {
+	if (strcmp(name, "url")==0) {
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
 		PyrString* pstring = slotRawString(slot);
-		if(!pstring) return errNone;
+		if(!pstring) return errFailed;
 		NSString *path = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		
 		[[mWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:path]]];
@@ -2528,26 +2513,79 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	
-//	if (strcmp(name, "enabled")==0) {
-//		bool enabled = IsTrue(slot);
-//		if (mEnabled != enabled) {
-//			mEnabled = enabled;
-//			[mWebView setEnabled:(BOOL)enabled];
-//			if (!mEnabled) mTop->resetFocus();
-//			refresh();
-//		}
-//		return errNone;
-//	}
+	if (strcmp(name, "html")==0) {
+		if(!isKindOfSlot(slot, class_string)) return errWrongType;
+		PyrString* pstring = slotRawString(slot);
+		if(!pstring) return errFailed;
+		NSString *html = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+		[[mWebView mainFrame] loadHTMLString:html baseURL:nil];
+		return errNone;
+	}
+	
+	if (strcmp(name, "handleLinks")==0) {
+		bool handleLinks = IsTrue(slot);
+		[mWebView setHandleLinks: handleLinks];
+		return errNone;
+	}
+	
+	if (strcmp(name, "findText")==0) {
+		if(!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots =slotRawObject(slot)->slots;
+		PyrSlot *stringSlot = slots+0;
+		if(!isKindOfSlot(stringSlot, class_string)) return errWrongType;
+		PyrString* pstring = slotRawString(stringSlot);
+		if(!pstring) return errFailed;
+		NSString *searchText = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+		
+		PyrSlot *dir = slots+1;
+		bool goesForward = IsFalse(dir);
+
+		[mWebView searchFor:searchText direction:goesForward caseSensitive:NO wrap:YES];
+		return errNone;
+	}
 	
 	return SCView::setProperty(symbol, slot);
 }
 
 
-//int SCWebView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
-//{
-//	char *name = symbol->name;
-//	return SCView::getProperty(symbol, slot);
-//}
+int SCWebView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
+{
+	char *name = symbol->name;
+	
+	if (strcmp(name, "url")==0) {
+		NSString *rawLocationString = [mWebView stringByEvaluatingJavaScriptFromString:@"location.href;"];
+		const char * cstr = [rawLocationString UTF8String];
+        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        SetObject(slot, string);
+		return errNone;
+	}
+	
+	if (strcmp(name, "html")==0) {
+		NSString *html = [mWebView stringByEvaluatingJavaScriptFromString:@"document.documentElement.outerHTML"];
+		const char * cstr = [html UTF8String];
+        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        SetObject(slot, string);
+		return errNone;
+	}
+	
+	if (strcmp(name, "plainText")==0) {
+		NSString *plainText = [mWebView stringByEvaluatingJavaScriptFromString:@"document.body.innerText"];
+		const char * cstr = [plainText UTF8String];
+        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        SetObject(slot, string);
+		return errNone;
+	}
+	
+	if (strcmp(name, "selectedText")==0) {
+		NSString *selectedText = [mWebView stringByEvaluatingJavaScriptFromString:@"(function (){return window.getSelection().toString();})();"];
+		const char * cstr = [selectedText UTF8String];
+        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        SetObject(slot, string);
+		return errNone;
+	}
+	
+	return SCView::getProperty(symbol, slot);
+}
 
 
 void SCWebView::setVisibleFromParent()

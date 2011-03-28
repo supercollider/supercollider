@@ -108,12 +108,16 @@
 @interface SCNSWebView : WebView {
 	struct SCWebView *mSCWebView;
 	int loadCount;
+	bool handleLinks;
 }
 
+- (void)initVars;
+- (void) setHandleLinks: (bool)handle;
 - (void)setSCObject: (struct SCWebView*)inObject;
 - (struct SCWebView*)getSCObject;
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame;
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector;
+- (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id )listener;
 
 @end
 
@@ -174,19 +178,20 @@ public:
 	virtual ~SCWebView();
 	virtual void setBounds(SCRect inBounds);
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
-	//virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
+	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual void setVisibleFromParent();
 	virtual void makeFocus(bool focus);
 	//virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	void tabPrevFocus();
 	void tabNextFocus();
 	virtual void doOnLoadAction();
+	virtual void doLinkClickedAction(PyrString* pstring);
 	virtual NSView* focusResponder() { return mWebView; }
 	SCTopView* getTop() { return mTop; }
 	virtual void mouseTrack(SCPoint where, int modifiers, NSEvent *theEvent);
 	
 protected:
-	WebView *mWebView;
+	SCNSWebView *mWebView;
 };
 
 //class SCTextField : public SCStaticText

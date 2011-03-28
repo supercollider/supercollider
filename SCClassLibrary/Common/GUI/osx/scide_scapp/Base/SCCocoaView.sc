@@ -221,41 +221,9 @@ SCMovieView : SCView{
 
 SCWebView : SCView{
 	
-	var <>pageLoadedAction;
+	var <>pageLoadedAction, <onLinkActivated;
 
-	mouseUp {arg x, y, modifiers, buttonNumber, clickCount, clickPos;
-		mouseUpAction.value(this, x, y, modifiers, buttonNumber, clickCount, clickPos);	}
-
-//	selectedString {
-//		^this.getProperty(\selectedString);
-//	}
-//
-//	selectedString_{|str|
-//		this.setProperty(\selectedString, str);
-//	}
-//
-//	selectionStart {
-//		^this.getProperty(\selectedRangeLocation);
-//	}
-//
-//	selectionSize {
-//		^this.getProperty(\selectedRange);
-//	}
-//
-//	path {
-//		^this.getProperty(\path);
-//	}
-
-//	editable_{|bool|
-//		editable = bool;
-//		this.setProperty(\setEditable, bool);
-//	}
-//
-//	enabled_{|bool|
-//		this.editable_(bool);
-//	}
-
-	open {|path|
+	url_ {|path|
 		if ( path.contains( "SC://"), {
 	        	path = Help.findHelpFile( path.asRelativePath( "SC:/") );
 		});
@@ -265,7 +233,11 @@ SCWebView : SCView{
 	        path = "file://"++path;
 		});
 		path = path.replace(" ", "%20");
-		this.setProperty(\open, path);
+		this.setProperty(\url, path);
+	}
+	
+	url {
+		^this.getProperty(\url);
 	}
 	
 	forward { this.setProperty(\forward);}
@@ -275,8 +247,32 @@ SCWebView : SCView{
 	reload { this.setProperty(\reload);}
 	
 	didLoad { pageLoadedAction.value(this); }
+	
+	// Get the displayed content in html form.
+	html { ^this.getProperty( \html ); }
 
-//	*paletteExample{ arg parent, bounds;
-//		^this.new(parent, bounds).string_("The quick brown fox jumps over the lazy dog.");
-//	}
+	// Set html content.
+	html_ { arg htmlString;
+		this.setProperty( \html, htmlString );
+	}
+
+	selectedText { ^this.getProperty( \selectedText ); }
+
+	// Try to extract plain text from html content and return it.
+	plainText { ^this.getProperty( \plainText ); }
+	
+	onLinkActivated_{|func| 
+		onLinkActivated = func;
+		this.setProperty(\handleLinks, func.isNil);
+	} 
+	
+	linkActivated {|linkString| onLinkActivated.value(linkString) }
+	
+	findText { arg string, reverse = false;
+		this.setProperty( \findText, [string, reverse] );
+	}
+
+	*paletteExample{ arg parent, bounds;
+		^this.new(parent, bounds).url_("http://supercollider.sourceforge.net");
+	}
 }

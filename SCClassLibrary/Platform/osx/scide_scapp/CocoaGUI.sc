@@ -75,6 +75,7 @@ CocoaGUI {
 	*font { ^SCFont }
 	*pen { ^SCPen }
 	*image { ^SCImage }
+	*webView {^SCWebView }
 
 	///////////////// Common -> Audio /////////////////
 
