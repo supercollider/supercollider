@@ -1,0 +1,82 @@
+class:: PV_JensenAndersen
+summary:: FFT feature detector for onset detection.
+related:: Classes/PV_HainsworthFoote
+categories::  UGens>FFT
+
+
+Description::
+
+FFT feature detector for onset detection based on work described in
+emphasis::
+Jensen, K. & Andersen, T. H. (2003). Real-time Beat Estimation
+Using Feature Extraction. In Proceedings of the Computer Music Modeling
+and Retrieval Symposium, Lecture Notes in Computer Science. Springer
+Verlag.
+::
+
+First order derivatives of the features are taken.
+code::threshold::  may need to be set low to pick up on
+changes.
+
+
+classmethods::
+private:: categories
+method::ar
+
+argument::buffer
+
+FFT buffer.
+
+
+argument::propsc
+
+Proportion of spectral centroid feature.
+
+
+argument::prophfe
+
+Proportion of high frequency energy feature.
+
+
+argument::prophfc
+
+Proportion of high frequency content feature.
+
+
+argument::propsf
+
+Proportion of spectral flux feature.
+
+
+argument::threshold
+
+Threshold level for allowing a detection.
+
+
+argument::waittime
+
+If triggered, minimum wait until a further frame can cause
+another spot (useful to stop multiple detects on heavy signals).
+
+
+Examples::
+
+code::
+
+(
+b=Buffer.alloc(s,2048,1);
+	
+SynthDef(\fftod,
+{
+ var source1, detect;
+	
+	source1= AudioIn.ar(1); 
+	
+	detect= PV_JensenAndersen.ar(FFT(b.bufnum,source1), threshold:MouseX.kr(0.1,1.0));
+	
+	Out.ar(0,SinOsc.ar([440,445],0,Decay.ar(0.1*detect,0.1)));
+}).play(s);	
+)	
+
+::
+

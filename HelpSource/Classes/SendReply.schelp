@@ -1,0 +1,51 @@
+class:: SendReply
+summary:: Send an array of values from the server to all notified clients
+categories:: UGens>Triggers
+related:: Classes/SendTrig
+
+description::
+A message is sent to all notified clients. See link::Classes/Server::.
+
+list::
+## strong::cmdName::
+	list::
+	## int - node ID
+	## int - reply ID
+	## ... floats - values.
+	::
+::
+
+classmethods::
+method:: ar, kr
+
+argument:: trig
+a non-positive to positive transition triggers a message.
+argument:: cmdName
+a string or symbol, as a message name.
+argument:: values
+array of ugens, or valid ugen inputs.
+argument:: replyID
+integer id (similar to link::Classes/SendTrig::).
+
+examples::
+code::
+(
+{
+	SendReply.kr(Impulse.kr(3), 'the_answer', [40, 41, 42, 43] + MouseX.kr, 1905);
+}.play(s);
+)
+
+o.remove; o = OSCresponder(nil, 'the_answer', { |t, r, msg| msg.postln }).add;
+
+
+// multichannel expansion
+(
+{
+	SendReply.kr(Impulse.kr(3), 
+		'the_answer', 
+		values: [[40, 80], [41, 56], 42, [43, 100, 200]], 
+		replyID: [1905, 1906, 1907, 1908]
+	);
+}.play(s);
+)
+::

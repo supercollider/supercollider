@@ -1,0 +1,41 @@
+class:: LinPan2
+summary:: Two channel linear pan.
+related:: Classes/Balance2, Classes/Pan2, Classes/Pan4, Classes/PanAz
+categories::  UGens>Multichannel>Panners
+
+
+Description::
+
+Two channel linear panner. This one sounds more like the Rhodes tremolo
+than  link::Classes/Pan2:: .
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::pos
+
+Pan position, -1 is left, +1 is right.
+
+
+argument::level
+
+A control rate level input.
+
+
+Examples::
+
+code::
+
+play({ LinPan2.ar(PinkNoise.ar(0.4), FSinOsc.kr(2)) });
+
+SynthDef("help-LinPan2", {  Out.ar(0, LinPan2.ar(FSinOsc.ar(800, 0, 0.1), FSinOsc.kr(3))) }).play;
+
+::
+

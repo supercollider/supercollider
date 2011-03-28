@@ -1,0 +1,65 @@
+class:: PV_Mul
+summary:: Complex multiply.
+related:: Classes/FFT, Classes/IFFT, Classes/PV_Add, Classes/PV_CopyPhase, Classes/PV_MagMul, Classes/PV_Max, Classes/PV_Min
+categories:: UGens>FFT
+
+Description::
+
+Complex Multiplication:
+
+formula::
+
+(RealA * RealB) - (ImagA * ImagB),
+(ImagA * RealB) + (RealA * ImagB)
+
+::
+
+
+classmethods::
+
+method::new
+
+argument::bufferA
+FFT buffer A.
+
+argument::bufferB
+FFT buffer B.
+
+Examples::
+
+code::
+
+s = Server.internal.boot;
+(
+b = Buffer.alloc(s,2048,1);
+c = Buffer.alloc(s,2048,1);
+)
+
+(
+SynthDef("help-mul", { arg out=0, bufnumA=0, bufnumB=1;
+	var inA, chainA, inB, chainB, chain ;
+	inA = SinOsc.ar(500, 0, 0.5);
+	inB =  SinOsc.ar(Line.kr(100, 400, 5), 0, 0.5);
+	chainA = FFT(bufnumA, inA);
+	chainB = FFT(bufnumB, inB);
+	chain = PV_Mul(chainA, chainB); 
+	Out.ar(out,  0.5 * IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum]);
+s.scope;
+)
+
+(
+SynthDef("help-mul2", { arg out=0, bufnumA=0, bufnumB=1;
+	var inA, chainA, inB, chainB, chain ;
+	inA = SinOsc.ar(500, 0, 0.5) * Line.kr;
+	inB = LFNoise1.ar(20);
+	chainA = FFT(bufnumA, inA);
+	chainB = FFT(bufnumB, inB);
+	chain = PV_Mul(chainA, chainB); 
+	Out.ar(out,  0.5 * IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum]);
+s.scope;
+)
+
+::
+

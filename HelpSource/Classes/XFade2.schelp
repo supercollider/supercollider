@@ -1,0 +1,47 @@
+class:: XFade2
+summary:: Equal power two channel cross fade.
+related:: Classes/LinXFade2
+categories::  UGens>Multichannel>Select
+
+
+Description::
+
+Two channel equal power crossfader.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::inA
+
+Input signal A.
+
+
+argument::inB
+
+Input signal B.
+
+
+argument::pan
+
+Crossfade position from -1 to +1.
+
+
+argument::level
+
+A control rate level input.
+
+
+Examples::
+
+code::
+
+(
+SynthDef("help-XFade2", {
+	Out.ar(0, XFade2.ar( Saw.ar, SinOsc.ar , LFTri.kr(0.1) ));
+}).play
+)
+
+::
+

@@ -1,0 +1,31 @@
+class:: LagIn
+summary:: Read a control signal from a bus with a lag
+related:: Classes/In, Classes/InFeedback
+categories::  UGens>InOut
+
+
+Description::
+
+Read a control signal from a bus with a lag.
+
+
+classmethods::
+
+method::kr
+
+argument::bus
+
+The index of the bus to read in from.
+
+
+argument::numChannels
+
+The number of channels (i.e. adjacent buses) to read in. You
+cannot modulate this number.
+
+
+argument::lag
+
+Lag factor.
+
+

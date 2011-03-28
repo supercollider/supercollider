@@ -1,0 +1,8 @@
+CLASS::Clock
+categories::Scheduling>Clocks
+summary::abstract superclass for clocks
+related::Classes/AppClock, Classes/SystemClock, Classes/TempoClock
+
+DESCRIPTION::
+Clock is a general scheduler - see subclasses: link::Classes/SystemClock::, link::Classes/TempoClock::, link::Classes/AppClock::
+

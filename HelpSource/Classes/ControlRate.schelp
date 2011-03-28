@@ -1,0 +1,30 @@
+class:: ControlRate
+summary:: Server control rate.
+related:: Classes/RadiansPerSample, Classes/SampleDur, Classes/SampleRate, Classes/SubsampleOffset
+categories::  UGens>Info
+
+
+Description::
+
+Get the current control rate of the server.
+
+
+classmethods::
+
+method::ir
+
+returns::
+The current control rate of the server.
+
+equivalent to 1 / link::Classes/ControlDur::
+
+Examples::
+code::
+{ ControlRate.ir.poll }.play;
+::
+
+play a sine tone at control rate
+code::
+{ SinOsc.ar(ControlRate.ir) * 0.1 }.play;
+::
+

@@ -1,0 +1,633 @@
+title:: Operators
+categories:: Language, Common methods
+summary:: common unary and binary operators
+related:: Reference/Adverbs
+
+SuperCollider supports operator overloading. Operators can thus be applied to a variety of different objects; Numbers, Ugens, Collections, and so on. When operators are applied to ugens they result in link::Classes/BinaryOpUGen::s or link::Classes/UnaryOpUGen::s, through the methods of link::Classes/AbstractFunction::. 
+
+This is a list of some of the common unary and binary operators that are implemented by several classes.
+See the specific classes for details and other operators.
+
+You can see which classes implements a specific operator by clicking on the method name.
+
+section:: Unary Operators
+Unary operators may be written in two ways:
+code::
+a.operator
+operator(a)
+::
+
+method:: neg
+Inversion.
+discussion::
+code::
+{
+	var a;
+	a = FSinOsc.ar(300);
+	[ a, a.neg ]
+}.plot
+::
+
+method:: reciprocal
+Reciprocal (1/x).
+
+method:: abs
+Absolute value.
+
+method:: floor
+Next lower integer.
+discussion::
+code::
+{
+	var a;
+	a = Line.ar(-1, 1, 0.01);
+	[ a, a.floor ]
+}.plot
+::
+
+method:: ceil
+Next higher integer.
+discussion::
+code::
+{
+	var a;
+	a = Line.ar(-1, 1, 0.01);
+	[ a, a.ceil ]
+}.plot
+::
+
+method:: frac
+Fractional part.
+
+method:: sign
+Sign function.
+returns::
+-1 when a < 0, +1 when a > 0, 0 when a is 0
+
+method:: squared
+Squared value.
+returns::
+code:: a*a ::
+
+method:: cubed
+Cubed value.
+returns::
+code:: a*a*a ::
+
+method:: sqrt
+Square root.
+discussion::
+The definition of square root is extended for signals so that sqrt(a) when a<0 returns
+-sqrt(-a).
+
+method:: exp
+Exponential.
+
+method:: midicps
+Convert MIDI note number to cycles per second.
+discussion::
+code::
+{
+	Saw.ar(Line.kr(24,108,10).midicps, 0.2)
+}.play
+::
+
+method:: cpsmidi
+Convert cycles per second to MIDI note.
+
+method:: midiratio
+Convert an interval in MIDI notes into a frequency ratio.
+
+method:: ratiomidi
+Convert a frequency ratio to an interval in MIDI notes.
+
+method:: dbamp
+Convert decibels to linear amplitude.
+
+method:: ampdb
+Convert linear amplitude to decibels.
+
+method:: octcps
+Convert decimal octaves to cycles per second.
+
+method:: cpsoct
+Convert cycles per second to decimal octaves.
+
+method:: log
+Natural logarithm.
+discussion::
+code::
+{
+	var a, e;
+	e = exp(1);
+	a = Line.ar(e, 1/e, 0.01);
+	a.log
+}.plot
+::
+
+method:: log2
+Base 2 logarithm.
+
+method:: log10
+Base 10 logarithm.
+
+method:: sin
+Sine.
+
+method:: cos
+Cosine.
+
+method:: tan
+Tangent.
+
+method:: asin
+Arcsine.
+
+method:: acos
+Arccosine.
+
+method:: atan
+Arctangent.
+
+method:: sinh
+Hyperbolic sine.
+
+method:: cosh
+Hyperbolic cosine.
+
+method:: tanh
+Hyperbolic tangent.
+
+method:: distort
+Nonlinear distortion.
+discussion::
+code::
+(
+{
+	var a;
+	a = Line.ar(-4, 4, 0.01);
+	a.distort
+}.plot
+)
+
+{ FSinOsc.ar(500, 0.0, XLine.kr(0.1, 10, 10)).distort * 0.25 }.scope;
+::
+
+method:: softclip
+Nonlinear distortion.
+discussion::
+Distortion with a perfectly linear region from -0.5 to +0.5
+code::
+{ FSinOsc.ar(500,0.0, XLine.kr(0.1, 10, 10)).softclip * 0.25 }.scope(2);
+::
+
+method:: isPositive
+Test if signal is >= 0.
+
+method:: isNegative
+Test if signal is < 0.
+
+method:: isStrictlyPositive
+Test if signal is > 0.
+
+section:: Binary Operators
+Three different syntaxes can be used for binary operators consisting of letters:
+code::
+operator(a, b)
+
+a operator: b
+
+a.operator(b)
+::
+Operators consisting of symbols are written like this:
+code::
+a + b
+::
+
+subsection:: Arithmetics
+
+method:: +
+Addition.
+
+method:: -
+Subtraction.
+
+method:: *
+Multiplication.
+
+method:: /
+Division.
+
+method:: %
+Floating point modulo.
+
+method:: **
+Exponentiation.
+
+subsection:: Comparisions
+
+method:: <
+Less than.
+
+method:: <=
+Less than or equal.
+
+method:: >
+Greater than.
+discussion::
+With UGens, this can be useful for triggering purposes, among other things:
+code::
+{ // trigger an envelope
+	var trig;
+	trig = SinOsc.ar(1) > 0;
+	Out.ar(0,
+		EnvGen.kr(Env.perc, trig, doneAction: 0) 
+			* SinOsc.ar(440,0,0.1)
+	)
+}.play(s);
+
+( // trigger a synth
+SynthDef("help-EnvGen",{ arg out=0;
+	Out.ar(out,
+		EnvGen.kr(Env.perc,1.0,doneAction: 2) 
+			* SinOsc.ar(440,0,0.1)
+	)
+}).send(s);
+
+// This synth has no output. It only checks amplitude of input and looks for a transition from < 0.2
+// to > 0.2
+
+SynthDef("help-> trig", {
+	SendTrig.kr(Amplitude.kr(SoundIn.ar(0)) > 0.2);
+}).play(s);
+
+// responder to trigger synth
+OSCresponderNode(s.addr,'/tr',{ "triggered".postln; Synth.new("help-EnvGen") }).add;
+)
+::
+
+method:: >=
+Greater than or equal.
+
+method:: ==
+Equal. 
+
+method:: !=
+Not equal.
+
+subsection:: Other
+
+method:: <!
+Return first argument. 
+
+method:: min
+Minimum. 
+discussion::
+code::
+{ // distorts and envelopes z
+var z;
+z = FSinOsc.ar(500);
+z min: FSinOsc.ar(0.1);
+}.play;
+::
+
+method:: max
+Maximum. 
+discussion::
+code::
+{ // modulates and envelopes z
+var z;
+z = FSinOsc.ar(500);
+z max: FSinOsc.ar(0.1);
+}.play;
+::
+
+method:: round
+Quantization by rounding. Rounds a to the nearest multiple of b. 
+
+method:: trunc
+Quantization by truncation. Truncate a to a multiple of b. 
+
+method:: hypot
+Hypotenuse. Returns the square root of the sum of the squares of a and b. Or equivalently, the distance from the origin
+to the point (x, y). 
+discussion::
+In this example, hypot is used to calculate a doppler shift pitch and amplitude based on distance.
+code::
+(
+{
+	var x, y, distance, velocity, pitchRatio, amplitude;
+	// object travels 200 meters in 6 secs (=120kph) passing 10 meters 
+	// from the listener
+	x = 10;
+	y = LFSaw.kr(1/6, 0, 100);
+	distance = hypot(x, y);
+	velocity = Slope.kr(distance);
+	pitchRatio = (344 - velocity) / 344;  // speed of sound is 344 meters/sec
+	amplitude = 10 / distance.squared;
+	FSinOsc.ar(1000 * pitchRatio, 0, amplitude)
+}.play)
+::
+The next example uses the distance to modulate a delay line.
+code::
+(
+{
+	var x, y, distance, velocity, pitchRatio, amplitude, motorSound;
+	// object travels 200 meters in 6 secs (=120kph) passing 10 meters 
+	// from the listener
+	x = 10;
+	y = LFSaw.kr(1/6, 0, 100);
+	distance = hypot(x, y);
+	amplitude = 40 / distance.squared;
+	motorSound = RLPF.ar(FSinOsc.ar(200, 0, LFPulse.ar(31.3, 0, 0.4)), 400, 0.3);
+	DelayL.ar(motorSound, 110/344, distance/344, amplitude)
+}.play)
+::
+
+method:: hypotApx
+Hypotenuse approximation. Returns an approximation of the square root of the sum of the squares of x and y.
+discussion::
+The formula used is :
+formula::
+abs(x) + abs(y) - ((sqrt(2) - 1) * min(abs(x), abs(y)))
+::
+hypotApx is used to implement Complex method magnitudeApx.
+This should not be used for simulating a doppler shift because it is discontinuous. Use hypot.
+
+See also link::#.hypot::, link::#.atan2::.
+
+method:: atan2
+Returns the arctangent of y/x. 
+discussion::
+OK, now we can add a pan to the link::#.hypot:: doppler examples by using atan2 to find the azimuth, 
+or direction angle, of the sound source.
+Assume speakers at +/- 45 degrees and clip the direction to between those.
+code::
+(
+{
+	var x, y, distance, velocity, pitchRatio, amplitude, azimuth, panValue;
+	// object travels 200 meters in 6 secs (=120kph) passing 10 meters 
+	// from the listener
+	x = 10;
+	y = LFSaw.kr(1/6, 0, 100);
+	distance = hypot(x, y);
+	velocity = Slope.kr(distance);
+	pitchRatio = (344 - velocity) / 344;  // speed of sound is 344 meters/sec
+	amplitude = 10 / distance.squared;
+	azimuth = atan2(y, x); // azimuth in radians
+	panValue = (azimuth / 0.5pi).clip2(1);
+	Pan2.ar(FSinOsc.ar(1000 * pitchRatio), panValue, amplitude)
+}.play)
+
+(
+{
+	var x, y, distance, velocity, pitchRatio, amplitude, motorSound, 
+			azimuth, panValue;
+	// object travels 200 meters in 6 secs (=120kph) passing 10 meters 
+	// from the listener
+	x = 10;
+	y = LFSaw.kr(1/6, 0, 100);
+	distance = hypot(x, y);
+	amplitude = 40 / distance.squared;
+	motorSound = RLPF.ar(FSinOsc.ar(200, 0, LFPulse.ar(31.3, 0, 0.4)), 400, 0.3);
+	azimuth = atan2(y, x); // azimuth in radians
+	panValue = (azimuth / 0.5pi).clip2(1); // make a value for Pan2 from azimuth
+	Pan2.ar(DelayL.ar(motorSound, 110/344, distance/344), panValue, amplitude)
+}.play)
+::
+
+method:: ring1
+Ring modulation plus first source. 
+discussion::
+Return the value of  ((a*b) + a). This is more efficient than using
+separate unit generators for the multiply and add.
+
+See also link::#.*::, link::#.ring1::, link::#.ring2::, link::#.ring3::, link::#.ring4::.
+code::
+{ (FSinOsc.ar(800) ring1: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
+::
+same as :
+code::
+(
+{
+	var a, b;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	((a * b) + a) * 0.125
+}.play)
+::
+normal ring modulation:
+code::
+(
+{
+	var a, b;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	(a * b) * 0.125
+}.play)
+::
+
+method:: ring2
+Ring modulation plus both sources. 
+discussion::
+Return the value of  ((a*b) + a + b). This is more efficient than using
+separate unit generators for the multiply and adds.
+code::
+{ (FSinOsc.ar(800) ring2: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
+::
+same as :
+code::
+(
+{
+	var a, b;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	((a * b) + a + b) * 0.125
+}.play)
+::
+
+method:: ring3
+Ring modulation variant. 
+discussion::
+Return the value of  (a*a *b). This is more efficient than using
+separate unit generators for each multiply.
+code::
+{ (FSinOsc.ar(800) ring3: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
+::
+same as :
+code::
+(
+{
+	var a, b;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	(a * a * b) * 0.125;
+}.play)
+::
+
+method:: ring4
+Ring modulation variant. 
+discussion::
+Return the value of  ((a*a *b) - (a*b*b)). This is more efficient than using
+separate unit generators for each operation.
+code::
+{ (FSinOsc.ar(800) ring4: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
+::
+same as :
+code::
+(
+{
+	var a, b;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	((a * a * b) - (a * b * b)) * 0.125
+}.play)
+::
+
+method:: sumsqr
+Sum of squares. 
+discussion::
+Return the value of  (a*a) + (b*b). This is more efficient than using
+separate unit generators for each operation.
+code::
+{ (FSinOsc.ar(800) sumsqr: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
+::
+same as :
+code::
+(
+{
+	var a, b;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	((a * a) + (b * b)) * 0.125
+}.play)
+::
+
+method:: difsqr
+Difference of squares. 
+discussion::
+Return the value of  (a*a) - (b*b). This is more efficient than using
+separate unit generators for each operation.
+code::
+{ (FSinOsc.ar(800) difsqr: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
+::
+same as :
+code::
+(
+{
+	var a, b;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	((a * a) - (b * b)) * 0.125
+}.play)
+::
+
+method:: sqrsum
+Square of the sum. 
+discussion::
+Return the value of  (a + b)**2. This is more efficient than using
+separate unit generators for each operation.
+code::
+{ (FSinOsc.ar(800) sqrsum: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
+::
+same as :
+code::
+(
+{
+	var a, b, c;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	c = a + b;
+	(c * c) * 0.125
+}.play)
+::
+
+method:: sqrdif
+Square of the difference. 
+discussion::
+Return the value of  (a - b)**2. This is more efficient than using
+separate unit generators for each operation.
+code::
+{ (FSinOsc.ar(800) sqrdif: FSinOsc.ar(XLine.kr(200,500,5))) * 0.125 }.play;
+::
+same as :
+code::
+(
+{
+	var a, b, c;
+	a = FSinOsc.ar(800);
+	b = FSinOsc.ar(XLine.kr(200,500,5));
+	c = a - b;
+	(c * c) * 0.125
+}.play)
+::
+
+method:: absdif
+Absolute value of the difference. code:: abs(a - b) :: 
+discussion::
+code::
+{ // creates a rhythm
+var mul;
+mul = 0.2 absdif: FSinOsc.ar(2, 0, 0.5);
+FSinOsc.ar(440, 0, mul);
+}.play;
+::
+
+method:: thresh
+Thresholding. 
+discussion::
+0 when a < b, otherwise a.
+code::
+{ LFNoise0.ar(50, 0.5) thresh: 0.45 }.play // a low-rent gate
+::
+
+method:: amclip
+Two quadrant multiply. 
+discussion::
+0  when  b <= 0,  a*b  when  b > 0
+code::
+{ WhiteNoise.ar.amclip(FSinOsc.kr(1,0.2)) }.play; // makes a sine envelope
+::
+
+method:: scaleneg
+Scale negative part of input. 
+discussion::
+a*b when a < 0, otherwise a.
+code::
+{ FSinOsc.ar(500).scaleneg(Line.ar(1,-1,4)) }.play;
+::
+
+method:: clip2
+Bilateral clipping. 
+discussion::
+clips input wave a to +/- b
+code::
+{ FSinOsc.ar(400).clip2(0.2) }.scope; // clipping distortion
+
+{ FSinOsc.ar(1000).clip2(Line.kr(0,1,8)) }.scope;
+::
+
+method:: wrap2
+Bilateral wrapping. 
+discussion::
+wraps input wave to +/- b
+code::
+{ FSinOsc.ar(1000).wrap2(Line.kr(0,1.01,8)) }.scope;
+::
+
+method:: fold2
+Bilateral folding. 
+discussion::
+folds input wave a to +/- b
+code::
+{ FSinOsc.ar(1000).fold2(Line.kr(0,1,8)) }.scope;
+::
+
+method:: excess
+Residual of clipping. 
+discussion::
+Returns the difference of the original signal and its clipped form: (a - clip2(a,b)).
+code::
+{ FSinOsc.ar(1000).excess(Line.kr(0,1,8)) }.play;
+::
+

@@ -1,0 +1,45 @@
+class:: IRand
+summary:: Single integer random number generator.
+related:: Classes/ExpRand, Classes/LinRand, Classes/NRand, Classes/Rand, Classes/TExpRand, Classes/TIRand, Classes/TRand
+categories:: UGens>Random
+
+Description::
+
+Generates a single random integer value in uniform distribution from
+code::lo::  to  code::hi:: . It generates
+this when the SynthDef first starts playing, and remains fixed for
+the duration of the synth's existence.
+
+
+classmethods::
+
+method::new
+
+argument::lo
+Lower limit of the output range.
+
+argument::hi
+Upper limit of the output range.
+
+Examples::
+
+code::
+(
+SynthDef("help-IRand", { 
+	Out.ar(
+		IRand(0, 1), //play on random channel between 0 and 1 
+		FSinOsc.ar(500, 
+			0, Line.kr(0.2, 0, 0.1, doneAction:2))
+	)
+}).send(s);
+)
+
+(
+Routine({
+	16.do({
+		Synth.new("help-IRand"); 0.5.wait;
+	})
+}).play;
+)
+::
+

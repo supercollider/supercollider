@@ -1,0 +1,77 @@
+class:: Ringz
+summary:: Ringing filter.
+related:: Classes/Formlet, Classes/RHPF, Classes/RLPF, Classes/Resonz
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+This is the same as  link::Classes/Resonz:: , except that instead of a
+resonance parameter, the bandwidth is specified in a 60dB ring decay
+time. One Ringz is equivalent to one component of the
+link::Classes/Klank::  UGen.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::freq
+
+Resonant frequency in Hertz.
+
+
+argument::decaytime
+
+The 60 dB decay time of the filter.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+
+{ Ringz.ar(Dust.ar(3, 0.3), 2000, 2) }.play
+
+{ Ringz.ar(WhiteNoise.ar(0.005), 2000, 0.5) }.play
+
+// modulate frequency
+{ Ringz.ar(WhiteNoise.ar(0.005), XLine.kr(100,3000,10), 0.5) }.play
+
+{ Ringz.ar(Impulse.ar(6, 0, 0.3),  XLine.kr(100,3000,10), 0.5) }.play
+
+// modulate ring time
+{ Ringz.ar(Impulse.ar(6, 0, 0.3),  2000, XLine.kr(4, 0.04, 8)) }.play
+
+// modulate ring time opposite direction
+{ Ringz.ar(Impulse.ar(6, 0, 0.3), 2000, XLine.kr(0.04, 4, 8)) }.play
+
+
+(
+{ 
+	var exciter;
+	exciter = WhiteNoise.ar(0.001);
+	Mix.arFill(10, {
+		Ringz.ar(exciter, 
+			XLine.kr(exprand(100.0,5000.0), exprand(100.0,5000.0), 20),
+			0.5)
+	})
+}.play
+)
+
+::
+

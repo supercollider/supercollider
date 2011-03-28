@@ -1,0 +1,68 @@
+class:: PV_MagAbove
+summary:: Pass bins above a threshold.
+related:: Classes/FFT, Classes/IFFT, Classes/PV_LocalMax, Classes/PV_MagBelow, Classes/PV_MagClip
+categories:: UGens>FFT
+
+Description::
+
+Passes only bins whose magnitude is above a threshold.
+
+
+classmethods::
+
+method::new
+
+argument::buffer
+
+FFT buffer.
+
+
+argument::threshold
+
+Magnitude threshold.
+
+
+Examples::
+
+code::
+
+s.boot;
+
+(
+b = Buffer.alloc(s,2048,1);
+c = Buffer.read(s,"sounds/a11wlk01.wav");
+)
+
+(
+SynthDef("help-magAbove", { arg out=0, bufnum=0;
+	var in, chain;
+	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08, 0, 6, 6.2).squared, 0, 100, 800));
+	//in = WhiteNoise.ar(0.2);
+	chain = FFT(bufnum, in);
+	chain = PV_MagAbove(chain, 310); 
+	Out.ar(out, 0.5 * IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnum, b.bufnum]);
+)
+
+(
+SynthDef("help-magAbove2", { arg out=0, bufnum=0;
+	var in, chain;
+	in = WhiteNoise.ar(0.2);
+	chain = FFT(bufnum, in);
+	chain = PV_MagAbove(chain, MouseX.kr(0, 10)); 
+	Out.ar(out, 0.5 * IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnum, b.bufnum]);
+)
+
+(
+SynthDef("help-magAbove3", { arg out=0, bufnum=0, soundBufnum=2;
+	var in, chain;
+	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
+	chain = FFT(bufnum, in);
+	chain = PV_MagAbove(chain, MouseX.kr(0, 310)); 
+	Out.ar(out, 0.5 * IFFT(chain).dup);
+}).play(s,[\out, 0, \bufnum, b.bufnum, \soundBufnum, c.bufnum]);
+)
+
+::
+

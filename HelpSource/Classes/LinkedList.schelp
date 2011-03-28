@@ -1,0 +1,43 @@
+CLASS::LinkedList
+summary::doubly linked list
+categories:: Collections>Ordered
+
+DESCRIPTION::
+LinkedList implements a doubly linked list.
+
+Most methods are inherited from the superclasses.
+
+INSTANCEMETHODS::
+
+method::addFirst
+Add an item to the head of the list.
+
+method::add
+Add an item to the tail of the list.
+
+method::remove
+Remove an item from the list.
+
+method::pop
+Remove and return the last item in the list.
+
+method::popFirst
+Remove and return the first item in the list.
+
+method::first
+Return the first item in the list.
+
+method::last
+Return the last item in the list.
+
+method::at
+Return the item at the given index in the list.
+This requires a scan of the list and so is O(n).
+
+method::put
+Put the item at the given index in the list.
+This requires a scan of the list and so is O(n).
+
+method::removeAt
+Remove and return the item at the given index in the list.
+This requires a scan of the list and so is O(n).

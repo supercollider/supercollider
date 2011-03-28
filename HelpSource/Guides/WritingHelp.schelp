@@ -1,0 +1,214 @@
+title:: Writing Help
+summary:: Get started with writing help
+categories:: HelpSystem
+related:: Reference/SCDocSyntax, Classes/SCDoc
+
+section:: Writing new help
+The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
+
+section:: Converting old helpfiles
+
+Currently there is no automated process for this, but for most help files it's really simple to do it manually:
+
+numberedlist::
+## open the old helpfile in your web browser
+## copy the text and insert it in a new textfile: FileName.schelp
+## add the appropriate tags, like title, sections, etc.. (see below)
+## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#directory_layout::)
+## Do code::SCDoc:updateAll:: to generate HTML strong:: and check that it rendered OK ::.
+::
+
+A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
+
+note:: The help files should use UTF-8 encoding! ::
+
+section:: Directory layout
+The help system uses different folders under HelpSource depending on document kind:
+definitionlist::
+## HelpSource ||
+definitionlist::
+## Classes || class reference, file must be named as the class.
+## Reference || other reference documentation.
+## Tutorials || yes, tutorials.
+## Guides || guides that explain stuff but without beeing a real tutorial.
+## Overviews || overviews of other documents, these are mostly auto-generated.
+## Other || stuff that don't fit in any other directory.
+::
+::
+
+note:: It's important that the document is put in the right folder. For Classes, it's a must! ::
+
+All .schelp files will be parsed and rendered to an equal directory layout in the help target directory. Any other files will just be copied.
+
+section:: Metadata
+
+All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. These include:
+code::
+title:: or class::
+summary::
+related::
+categories::
+::
+
+You should always specify title/class, summary and categories.
+
+section:: Normal documents
+Normal documents use code::title:: for the document title.
+
+Example header:
+code::
+title:: My help file
+summary:: A short single-line summary of what this is
+categories:: Language>Conditionals, AndSoOn
+related:: Reference/FooBar
+::
+
+Then use normal text in sections and subsections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
+
+code::
+section:: Introduction
+this is a nice document...
+blah blah blah..
+
+subsection:: Details
+some details..
+::
+
+section:: Class reference
+Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text should be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. 
+
+Named subsections can be used under each of the above mentioned top-level sections.
+
+Also named sections can be used, but they will be put after all above top-level sections.
+
+subsection:: Methods and arguments
+Methods are documented with the tags:
+tree::
+## code::method\:::: name(s)
+    tree::
+    ## short description of method
+    ## code::argument\:::: name
+    tree:: 
+        ## description of argument
+        ::
+    ## code::argument\:::: name
+    tree:: 
+        ## description of argument
+        ::
+    ## code::returns\::::
+    tree:: 
+        ## description of return value
+        ::
+    ## code::discussion\::::
+    tree:: 
+        ## optional discussion and example code
+        ::
+    ::
+::
+
+note:: Don't list arguments in the method tag, only the method names ::
+
+Setters are handled automagically, when documenting a setter/getter, use only the getter name (no underscore) and describe both setter and getter, example:
+code::
+method:: helpSourceDir
+set or get the help source directory
+::
+
+The code::method\:::: tag can be used also in normal documents, and should then have argumentnames. This can be useful for documenting common methods outside of a specific class document, for example link::Reference/plot::.
+Anchors for these methods get prefixed with a dot (.) instead of * or -.
+
+SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag right after code::classmethods\:::: or code::instancemethods\::::
+
+subsection:: Redirect classes
+Some classes uses the code::*doesNotUnderstand:: trick to redirect to another implementing class. To document such classes, you need to add this tag in the header:
+code::
+redirect:: implClass
+::
+Where code::implClass:: is the class variable name holding the implementing class.
+
+subsection:: Example
+
+code::
+CLASS:: MyClass
+summary:: a nice class to do that and this
+categories:: Collections>SuperCollections, OtherCategories, AndSoOn
+related:: Classes/AnotherClass, Reference/MyClassCommandReference
+
+DESCRIPTION::
+Here goes a long description of what the class does and why, etc..
+
+CLASSMETHODS::
+private:: myPrivateClassMethod
+
+method:: foo
+here goes a description of the class method foo
+argument:: x
+here goes a description of argument x of method foo
+argument:: y
+here goes a description of argument y of method foo
+
+returns:: a calculated value
+
+discussion::
+you can enter a more in-depth discussion about this method here...
+this is a good place to put example code.
+
+method:: bar
+another class method, etc..
+
+SUBSECTION:: Special class methods
+method:: hello
+this is a method in a subsection of class methods..
+
+INSTANCEMETHODS::
+private:: init, anotherPrivateMethod
+
+method:: zoo
+here goes a description of the instance method zoo
+argument:: x
+here goes a description of argument x of method zoo
+argument:: y
+here goes a description of argument y of method zoo
+
+EXAMPLES::
+
+An example of how to use this and that:
+code::
+...insert code here...
+\::
+
+Another example:
+code::
+...insert code here...
+\::
+::
+
+section:: Categories
+Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See the link::Browse##Document Browser:: (auto-generated) for existing categories.
+
+For UGens, you should use the existing categories like UGens>Filter>Nonlinear. View the current categories like this:
+code::
+Ball.categories
+::
+Or the directory layout if categories was not set.
+
+For other documents, you could base it on the old directory layout, or come up with better ones. like Scheduling, Sequencing, Patterns, Streams, Server, etc..
+
+Documents can exist in multiple categories, and also have hierarchical categories, like Sequencing>Patterns.
+
+section:: Cross-document linking
+To link another document, use code:: link\::Path/To/Document\:: :: where the path is relative to code::SCDoc.helpTargetDir:: and the document filename is with no extension. Example:
+code::
+Also take a look at link::Classes/SinOsc:: and link::Reference/Literals::
+::
+To link to a specific class method, append code::#*methodName:: or to an instance method, append code::#-methodName:: :
+code::
+Also take a look at the play method of link::Classes/Function#-play::
+::
+For generic methods documented outside of instancemethods or classmethods (like the generic link::Reference/play:: document), use a dot (.) as prefix instead of * or -.
+
+The special link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown by appending code::#name:: where name is the name of the method:
+code::
+For all implementations of play, see link::Overviews/Methods#play::
+::
+

@@ -1,0 +1,90 @@
+class:: LinExp
+summary:: Map a linear range to an exponential range
+related:: Classes/LinLin
+categories::  UGens>Maths
+
+
+Description::
+
+Converts a linear range of values to an exponential range of values.
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal to convert.
+
+
+argument::srclo
+
+Lower limit of input range.
+
+
+argument::srchi
+
+Upper limit of input range.
+
+
+argument::dstlo
+
+Lower limit of output range.
+
+
+argument::dsthi
+
+Upper limit of output range.
+
+discussion::
+The code::dstlo::  and  code::dsthi::  arguments
+must be nonzero and have the same sign.
+
+
+Examples::
+
+code::
+// compare:
+(
+{ 
+	var mod = SinOsc.kr(Line.kr(1, 10, 10));
+	SinOsc.ar(mod * 400 + 500) * 0.1 
+}.play;
+)
+
+(
+{ 
+	var mod = SinOsc.kr(Line.kr(1, 10, 10));
+	SinOsc.ar(LinExp.kr(mod, -1,1, 100, 900)) * 0.1 
+}.play;
+)
+
+// modulating destination values.
+(
+{ 
+	var mod = LFNoise2.ar(80);
+	SinOsc.ar(LinExp.ar(mod, -1,1, MouseX.kr(200, 8000, 1), MouseY.kr(200, 8000, 1))) * 0.1 
+}.play;
+)
+::
+
+code::linexp:: and code::exprange:: can be used to create a LinExp implicitly from a ugen, mapping its output values from linear range to an exponential one. The rate is derived from the ugen.
+
+code::
+// linexp
+(
+{ 
+	var mod = LFNoise2.ar(80);
+	SinOsc.ar(mod.linexp(-1,1, MouseX.kr(200, 8000, 1), MouseY.kr(200, 8000, 1))) * 0.1 
+}.play;
+)
+
+// exprange
+(
+{ 
+	var mod = LFNoise2.ar(80).exprange(MouseX.kr(200, 8000, 1), MouseY.kr(200, 8000, 1));
+	SinOsc.ar(mod) * 0.1 
+}.play;
+)
+::
+

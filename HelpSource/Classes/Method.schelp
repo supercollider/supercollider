@@ -1,0 +1,26 @@
+class::Method
+categories::Core>Kernel
+summary:: Code that implements an operation upon instances of a Class.
+related:: Classes/Class
+
+description::
+A Method is code that is a part of the set of operations upon instances of a link::Classes/Class::.
+
+instanceMethods::
+
+method::ownerClass
+returns::
+The link::Classes/Class:: for which the method is part of the implementation.
+
+method::name
+returns::
+A link::Classes/Symbol:: which is the name of the Method.
+
+method::primitiveName
+returns::
+A link::Classes/Symbol:: which contains the name of the primitive function that implements the Method, if there is one.
+
+method:: filenameSymbol
+returns::
+A link::Classes/Symbol:: which is the full path of the source file that this method is defined in.
+

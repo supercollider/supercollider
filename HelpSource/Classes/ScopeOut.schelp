@@ -1,0 +1,23 @@
+class:: ScopeOut
+summary:: FIXME: ScopeOut purpose.
+categories::  UGens>Buffer, UGens>Undocumented
+
+
+Description::
+
+FIXME: ScopeOut description.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::inputArray
+
+FIXME: explain parameter inputArray.
+
+
+argument::bufnum
+
+FIXME: explain parameter bufnum.
+

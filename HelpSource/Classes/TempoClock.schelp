@@ -1,0 +1,216 @@
+CLASS::TempoClock
+categories::Scheduling>Clocks
+summary::tempo based scheduler
+related::Classes/AppClock, Classes/SystemClock
+
+DESCRIPTION::
+
+TempoClock is a scheduler like link::Classes/SystemClock::, but it schedules relative to a strong::tempo:: in beats per second.
+
+CLASSMETHODS::
+
+private::initClass
+
+method::new
+Creates a new TempoClock scheduler with the given tempo and starting times. If not supplied, strong::tempo:: defaults to one, strong::beats:: defaults to zero and strong::seconds:: defaults to the current elapsed time since SuperCollider startup. The default queueSize is 256, see link::#-queue::.
+code::
+t = TempoClock.new(1, 0, Main.elapsedTime.ceil);
+::
+
+method::default
+Sets or gets the permanent default TempoClock instantiated at startup.
+code::
+TempoClock.default.beats // beats since default TempoClock was started
+::
+
+subsection::Methods that allow TempoClock to act as TempoClock.default
+
+method::stop, play, sched, schedAbs, clear, tempo, etempo, beats, beats2secs, secs2beats, nextTimeOnGrid, timeToNextBeat, setTempoAtBeat, setTempoAtSec, setMeterAtBeat, beatsPerBar, baseBarBeat, baseBar, playNextBar, beatDur, elapsedBeats, beats2bars, bars2beats, bar, nextBar, beatInBar
+
+INSTANCEMETHODS::
+
+private::prDump, prStart, prStop, prClear
+
+method::stop
+Destroys the scheduler and releases the OS thread running the scheduler.
+
+method::clear
+Removes all tasks from the scheduling queue.
+
+method::tempo
+Sets or gets the current tempo in beats per second.
+code::
+t= TempoClock.new;
+t.tempo_(2.0); // equivalent to t.tempo = 2.0;
+t.tempo;
+t.tempo_(72/60) // 72 beats per minute
+t.tempo;
+::
+
+method::permanent
+Sets or gets a link::Classes/Boolean:: value indicating whether the clock will survive cmd-period. If false the clock is stopped (and thus removed) on cmd-period. If true the clock survives cmd-period. It is false by default.
+
+method::beats
+Returns the appropriate beat time of the clock from any thread. If the receiver is the clock of the current thread, this returns the current logical time: code::thisThread.beats::. If the receiver is not the current thread's clock then this translates the current thread's logical time in seconds to this clock's logical time in beats.
+
+method::schedAbs
+Schedules a function to be evaluated at a particular strong::beat::. If the function returns an link::Classes/Integer:: or a link::Classes/Float::, it will be re-evaluated at the logical time plus the returned value. The function receives a number of default arguments, see link::#-play:: example below.
+
+method::sched
+Schedules a function to be evaluated strong::delta:: beats from the current logical time in this clock. If the receiver is the clock of the current thread, the delta is applied to the current logical time. If the receiver is not the current thread's clock then the delta is applied to the clock's elapsed time.
+
+method::play
+Plays task (a function) at the next beat, where strong::quant:: is 1 by default. Shortcut for link::#-schedAbs::; see link::#-seconds:: and link::#-nextTimeOnGrid:: for further details on time and quant.
+code::
+t= TempoClock.default;
+t.play({arg beats, time, clock; [beats, time, clock].postln});
+::
+
+method::playNextBar
+Plays task (a function) at the next bar using link::#-schedAbs::.
+
+method::queue
+Returns the scheduling queue Array in the form [beat, function]. The maximum number of items is determined by the clock's queueSize argument upon instantiation. The default queueSize of 256 allows 128 functions to be in the queue at any time.
+
+method::beatDur
+Returns the duration in seconds of a current whole beat.
+
+method::beatsPerBar
+Gets or sets the number of beats per bar. The default is 4. Setting must be done from within the scheduling thread, e.g.
+code::
+t= TempoClock.new;
+t.schedAbs(t.nextBar, {t.beatsPerBar_(3)});
+t.beatsPerBar;
+::
+
+method::bar
+Returns the current bar. See link::#-bars2beats:: for returning beat of current bar.
+
+method::nextBar
+Returns the number of beats at the next bar line relative to the beat argument. If strong::beat:: is not supplied, returns the beat at which the next bar begins.
+
+method::beatInBar
+Returns the current bar beat (as a link::Classes/Float::) in relation to link::#-beatsPerBar::. Values range from 0 to < beatsPerBar.
+
+method::baseBar
+Returns bar at which link::#-beatsPerBar:: was last changed. If beatsPerBar has not been changed since the clock was created, returns 0.
+
+method::baseBarBeat
+Returns beat at which the link::#-beatsPerBar:: was last changed. If beatsPerBar has not been changed since the clock was created, returns 0.
+
+method::beats2bars
+Returns a bar as a float relative to link::#-baseBarBeat::.
+
+method::bars2beats
+Returns a beat relative to link::#-baseBar::.
+code::
+t= TempoClock.default;
+t.bars2beats(t.bar) // downbeat of the current bar
+::
+
+method::timeToNextBeat
+Returns the logical time to next beat. strong::quant:: is 1 by default, relative to baseBarBeat, see link::#-nextTimeOnGrid::.
+
+method::nextTimeOnGrid
+With default values, returns the next whole beat. strong::quant:: is 1 by default, strong::phase:: is 0. quant is relative to link::#-baseBarBeat::, such that
+code::
+t= TempoClock.default;
+t.nextTimeOnGrid(t.beatsPerBar) == t.nextBar // => true
+::
+Together strong::quant:: and strong::phase:: are useful for finding the next n beat in a bar, e.g. code::nextTimeOnGrid(4, 2):: will return the next 3rd beat of a bar (of 4 beats), whereas code::nextBar-2:: may return an elapsed beat.
+
+method::elapsedBeats
+Returns the current elapsed time in beats. This is equivalent to code::tempoClock.secs2beats(Main.elapsedTime)::. It is often preferable to use link::#-beats:: instead of elapsedBeats because beats uses a thread's logical time.
+
+method::seconds
+Returns the current elapsed time. (This method is inherited from link::Classes/Clock::.)
+
+method::beats2secs
+Converts absolute strong::beats:: to absolute strong::seconds::, returning the elapsed time of the clock at the given strong::beats::. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.
+code::
+t= TempoClock.default;
+t.beats2secs(t.beats) // equivalent to t.seconds
+t.beats2secs(0) // how many seconds after startup did beat 0 occur?
+::
+
+method::secs2beats
+Converts absolute strong::seconds:: to absolute beats. Only works for times in the current tempo. If the tempo changes any computed time in future will be wrong.
+
+EXAMPLES::
+
+code::
+t = TempoClock(1); // create a TempoClock
+
+// schedule an event at next whole beat
+t.schedAbs(t.beats.ceil, { arg beat, sec; [beat, sec].postln; 1 });
+
+t.tempo = 2;
+t.tempo = 4;
+t.tempo = 0.5;
+t.tempo = 1;
+
+t.clear;
+
+t.schedAbs(t.beats.ceil, { arg beat, sec; [beat, sec].postln; 1 });
+
+t.stop;
+::
+code::
+(
+// get elapsed time, round up to next second
+v = Main.elapsedTime.ceil;
+
+// create two clocks in a 5:2 relation, starting at time v.
+t = TempoClock(1, 0, v);
+u = TempoClock(0.4, 0, v);
+
+// start two functions at beat zero in each clock.
+t.schedAbs(0, { arg beat, sec; [\t, beat, sec].postln; 1 });
+u.schedAbs(0, { arg beat, sec; [\u, beat, sec].postln; 1 });
+)
+
+(
+u.tempo = u.tempo * 3;
+t.tempo = t.tempo * 3;
+)
+
+(
+u.tempo = u.tempo * 1/4;
+t.tempo = t.tempo * 1/4;
+)
+
+(
+t.stop;
+u.stop;
+)
+::
+code::
+(
+// get elapsed time, round up to next second
+v = Main.elapsedTime.ceil;
+
+// create two clocks, starting at time v.
+t = TempoClock(1, 0, v);
+u = TempoClock(1, 0, v);
+
+// start two functions at beat zero in each clock.
+// t controls u's tempo. They should stay in sync.
+t.schedAbs(0, { arg beat, sec; u.tempo = t.tempo * [1,2,3,4,5].choose; [\t, beat, sec].postln; 1 });
+u.schedAbs(0, { arg beat, sec; [\u, beat, sec].postln; 1 });
+)
+
+(
+u.tempo = u.tempo * 3;
+t.tempo = t.tempo * 3;
+)
+
+(
+u.tempo = u.tempo * 1/4;
+t.tempo = t.tempo * 1/4;
+)
+
+(
+t.stop;
+u.stop;
+)
+::

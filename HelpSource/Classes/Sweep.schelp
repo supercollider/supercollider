@@ -1,0 +1,67 @@
+class:: Sweep
+summary:: Triggered linear ramp
+categories::  UGens>Triggers
+
+Description::
+
+Starts a linear raise by rate/sec from zero when trig input crosses from
+non-positive to positive.
+
+
+classmethods::
+private:: categories
+
+method::ar, kr
+
+argument::trig
+
+triggers when trig input crosses from non-positive to positive.
+
+
+argument::rate
+
+rate/sec raise rate
+
+
+Examples::
+
+code::
+// using sweep to modulate sine frequency
+(
+{ var trig;
+	trig = Impulse.kr(MouseX.kr(0.5, 20, 1));
+	SinOsc.ar(Sweep.kr(trig, 700) + 500, 0, 0.2)
+}.play;
+)
+
+
+// using sweep to index into a buffer
+s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
+
+(
+{ var trig;
+	trig = Impulse.kr(MouseX.kr(0.5, 10, 1));
+	BufRd.ar(1, 0, Sweep.ar(trig, BufSampleRate.ir(0)))
+}.play;
+)
+
+// backwards, variable offset
+(
+{ var trig, pos, rate;
+	trig = Impulse.kr(MouseX.kr(0.5, 10, 1));
+	rate = BufSampleRate.ir(0);
+	pos = Sweep.ar(trig, rate.neg) + (BufFrames.ir(0) * LFNoise0.kr(0.2));
+	BufRd.ar(1, 0, pos)
+}.play;
+)
+
+// raising rate
+(
+{ var trig, rate;
+	trig = Impulse.kr(MouseX.kr(0.5, 10, 1));
+	rate = Sweep.kr(trig, 2) + 0.5;
+	BufRd.ar(1, 0, Sweep.ar(trig, BufSampleRate.ir(0) * rate))
+}.play;
+)
+::
+

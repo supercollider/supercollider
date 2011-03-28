@@ -1,0 +1,47 @@
+class:: LeakDC
+summary:: Remove DC
+related:: Classes/DC
+categories::  UGens>Filters>Linear
+
+
+Description::
+
+This filter removes DC offset from a signal.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::coef
+
+Leak coefficient.
+
+
+argument::mul
+
+Output will be multiplied by this value.
+
+
+argument::add
+
+This value will be added to the output.
+
+
+Examples::
+
+code::
+(
+{
+	var a;
+	a = LFPulse.ar(800, 0.5, 0.5, 0.5);
+	[a, LeakDC.ar(a, 0.995)]
+}.scope(bufsize: 22050)
+)
+::
+

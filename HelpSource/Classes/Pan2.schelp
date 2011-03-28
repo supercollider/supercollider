@@ -1,0 +1,38 @@
+class:: Pan2
+summary:: Two channel equal power pan.
+related:: Classes/Balance2, Classes/LinPan2, Classes/Pan4, Classes/PanAz
+categories::  UGens>Multichannel>Panners
+
+
+Description::
+
+Two channel equal power panner.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::pos
+
+Pan position, -1 is left, +1 is right.
+
+
+argument::level
+
+A control rate level input.
+
+
+Examples::
+
+code::
+
+SynthDef("help-Pan2", { Out.ar(0, Pan2.ar(PinkNoise.ar(0.4), FSinOsc.kr(2), 0.3)) }).play;
+
+::
+

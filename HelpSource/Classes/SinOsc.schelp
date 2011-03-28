@@ -1,0 +1,45 @@
+class:: SinOsc
+summary:: Interpolating sine wavetable oscillator.
+related:: Classes/FSinOsc, Classes/SinOscFB
+categories::  UGens>Generators>Deterministic
+
+
+Description::
+
+This is the same as  link::Classes/Osc::  except that the table is
+a sine table of 8192 entries.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::freq
+Frequency in Hertz.
+
+argument::phase
+Phase offset or modulator in radians.
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+
+Examples::
+
+code::
+
+{ SinOsc.ar(200, 0, 0.5) }.play;
+
+// modulate freq
+{ SinOsc.ar(XLine.kr(2000, 200), 0, 0.5) }.play;
+
+// modulate freq
+{ SinOsc.ar(SinOsc.ar(XLine.kr(1, 1000, 9), 0, 200, 800), 0, 0.25) }.play;
+
+// modulate phase
+{ SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) }.play;
+
+::
+
