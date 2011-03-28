@@ -304,6 +304,10 @@ FunctionList : AbstractFunction {
 		array.remove(function);
 		if(array.size < 2) { ^array[0] };
 	}
+	
+	replaceFunc { arg find, replace;
+		array = array.replace(find, replace);
+	}
 
 	value { arg ... args;
 		var res = array.collect(_.valueArray(args));
