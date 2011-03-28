@@ -1095,15 +1095,21 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
     return mSCWebView;
 }
 
-- (void) setHandleLinks: (bool)handle
+- (void)setHandleLinks: (bool)handle
 {
 	handleLinks = handle;
+}
+
+- (void)resetLoadCount
+{
+	loadCount = 0;
 }
 
 // delegate methods
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
 	loadCount = loadCount - 1;
+	if(loadCount < 0) loadCount = 0;
 	if (loadCount == 0 && mSCWebView) {
 		mSCWebView->doOnLoadAction();
 	}
@@ -2475,6 +2481,7 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
 		PyrString* pstring = slotRawString(slot);
 		if(!pstring) return errFailed;
+		[mWebView resetLoadCount];
 		NSString *path = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		
 		[[mWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:path]]];
@@ -2499,17 +2506,43 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 	}
 	
 	if (strcmp(name, "back")==0) {
-		[mWebView goBack];
+		if([mWebView canGoBack]) {
+			[mWebView resetLoadCount];
+			SEL selector = @selector(goBack);
+			NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+										[mWebView methodSignatureForSelector: selector]];
+			[invocation setTarget:mWebView];
+			[invocation setSelector: selector];
+			
+			[[SCVirtualMachine sharedInstance] defer: invocation];
+		}
 		return errNone;
 	}
 	
 	if (strcmp(name, "forward")==0) {
-		[mWebView goForward];
+		if([mWebView canGoForward]) {
+			[mWebView resetLoadCount];
+			SEL selector = @selector(goForward);
+			NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+										[mWebView methodSignatureForSelector: selector]];
+			[invocation setTarget:mWebView];
+			[invocation setSelector: selector];
+			
+			[[SCVirtualMachine sharedInstance] defer: invocation];
+		}
 		return errNone;
 	}
 	
 	if (strcmp(name, "reload")==0) {
-		[mWebView reload:nil];
+		[mWebView resetLoadCount];
+		SEL selector = @selector(reload:);
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+									[mWebView methodSignatureForSelector: selector]];
+		[invocation setTarget:mWebView];
+		[invocation setSelector: selector];
+		[invocation setArgument:&mWebView atIndex:2];
+		
+		[[SCVirtualMachine sharedInstance] defer: invocation];
 		return errNone;
 	}
 	
@@ -2517,6 +2550,7 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(!isKindOfSlot(slot, class_string)) return errWrongType;
 		PyrString* pstring = slotRawString(slot);
 		if(!pstring) return errFailed;
+		[mWebView resetLoadCount];
 		NSString *html = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
 		[[mWebView mainFrame] loadHTMLString:html baseURL:nil];
 		return errNone;

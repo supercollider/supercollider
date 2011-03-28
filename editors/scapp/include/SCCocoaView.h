@@ -113,6 +113,7 @@
 
 - (void)initVars;
 - (void) setHandleLinks: (bool)handle;
+- (void)resetLoadCount;
 - (void)setSCObject: (struct SCWebView*)inObject;
 - (struct SCWebView*)getSCObject;
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame;
