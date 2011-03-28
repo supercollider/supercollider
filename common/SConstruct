@@ -277,6 +277,16 @@ def make_local_symlink(target, source, env):
 	    os.symlink(os.path.basename(str(source[0])), targetname)
     return None
 
+# for linking libX.so => libX.so.1 on *nixy systems. Note, they must be in same dir.
+def make_local_symlink(target, source, env):
+    targetname = os.path.basename(str(target[0]))
+    if os.path.isfile(targetname):
+        if not os.path.islink(targetname):
+            liblog.error("ERROR: cannot create symlink %s because already exists as non-symlink." % (targetname))
+    else:
+	    os.symlink(os.path.basename(str(source[0])), targetname)
+    return None
+
 # ======================================================================
 # command line options
 # ======================================================================
@@ -298,7 +308,8 @@ opts.AddOptions(
     BoolOption('DEBUG',
                'Build with debugging information', 0),
     PathOption('DESTDIR',
-               'Intermediate installation prefix for packaging', '/'),
+               'Intermediate installation prefix for packaging', '/',
+               PathOption.PathAccept),
     BoolOption('DEVELOPMENT',
                'Build and install the development files', 0),
     BoolOption('FFTW',
@@ -806,13 +817,14 @@ libscsynthEnv = serverEnv.Clone(
     PKGCONFIG_LIBS = ['-lscsynth'],
 #     PKGCONFIG_LIBS_PRIVATE = ['-lm', '-lpthread', '-ldl'],
     PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/server'],
-    SHLIBSUFFIX='.so.1',
-    LIBSUFFIXES=['.so.1']
+    SHLIBSUFFIX='.so.1.0.0',
+    LIBSUFFIXES=['.so.1.0.0']
     )
 if PLATFORM == 'linux':
     libscsynthEnv.Append(
-        LINKFLAGS = ['-Wl,-soname,libscsynth.so.1'])
-    libscsynthEnv.Command('build/libscsynth.so', 'build/libscsynth.so.1', make_local_symlink, chdir=1)
+        LINKFLAGS = ['-Wl,-soname,libscsynth.so.1.0.0'])
+    # create local symlink for linker to follow (not installed)
+    libscsynthEnv.Command('build/libscsynth.so', 'build/libscsynth.so.1.0.0', make_local_symlink, chdir=1)
 
 libscsynthSources = Split('''
 Source/server/Rendezvous.cpp
@@ -842,7 +854,8 @@ Source/server/SC_World.cpp
 scsynthSources = ['Source/server/scsynth_main.cpp']
 
 libscsynth = libscsynthEnv.SharedLibrary('build/scsynth', libscsynthSources)
-env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth, 'build/libscsynth.so']))
+env.Alias('install-programs', env.Install(lib_dir(INSTALL_PREFIX), [libscsynth]))
+env.Alias('install-programs', env.Command(lib_dir(INSTALL_PREFIX) + '/libscsynth.so', lib_dir(INSTALL_PREFIX) + '/libscsynth.so.1.0.0', make_local_symlink, chdir=1))
 
 libscsynthStaticSources = libscsynthSources + make_static_objects(serverEnv, commonSources, "_libscsynthStatic");
 libscsynthStatic = serverEnv.StaticLibrary('build/scsynth', libscsynthStaticSources)
@@ -1051,14 +1064,15 @@ libsclangEnv = langEnv.Clone(
     PKGCONFIG_REQUIRES = make_pkgconfig_requires(libraries['sndfile']) + ['libscsynth'],
     PKGCONFIG_LIBS = ['-lsclang'],
     PKGCONFIG_CFLAGS = ['-D' + PLATFORM_SYMBOL, '-I${includedir}/common', '-I${includedir}/plugin_interface', '-I${includedir}/lang', '-I${includedir}/server'],
-    SHLIBSUFFIX='.so.1',
-    LIBSUFFIXES=['.so.1']
+    SHLIBSUFFIX='.so.1.0.0',
+    LIBSUFFIXES=['.so.1.0.0']
     )
 if PLATFORM == 'linux':
     libsclangEnv.Append(
-        LINKFLAGS = ['-Wl,-soname,libsclang.so.1'])
-    libsclangEnv.Command('build/libsclang.so', 'build/libsclang.so.1', make_local_symlink, chdir=1)
-    Requires('build/libsclang.so.1', 'build/libscsynth.so')
+        LINKFLAGS = ['-Wl,-soname,libsclang.so.1.0.0'])
+    # create local symlink for linker to follow (not installed)
+    libsclangEnv.Command('build/libsclang.so', 'build/libsclang.so.1.0.0', make_local_symlink, chdir=1)
+    Requires('build/libsclang.so.1.0.0', 'build/libscsynth.so')
 
 # required libraries
 merge_lib_info(langEnv, libraries['sndfile'])
@@ -1162,7 +1176,8 @@ sclangSources = ['Source/lang/LangSource/cmdLineFuncs.cpp']
 
 if env['LANG']:
     libsclang = libsclangEnv.SharedLibrary('build/sclang', libsclangSources)
-    env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang, 'build/libsclang.so']))
+    env.Alias('install-bin', env.Install(lib_dir(INSTALL_PREFIX), [libsclang]))
+    env.Alias('install-bin', env.Command(lib_dir(INSTALL_PREFIX) + '/libsclang.so', lib_dir(INSTALL_PREFIX) + '/libsclang.so.1.0.0', make_local_symlink, chdir=1))
     if PLATFORM == 'darwin':
         sclangLibs = ['scsynth', 'sclang']
     else:
