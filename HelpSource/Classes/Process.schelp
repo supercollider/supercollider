@@ -1,0 +1,26 @@
+class::Process
+categories::Core>Kernel
+summary:: Runtime environment for the virtual machine and interpreter.
+
+description::
+A Process is the runtime environment for the virtual machine and interpreter.
+It has a subclass named link::Classes/Main:: which is where you should override the methods
+of Process. There are two methods of interest. One is named code::startup:: and is 
+called after the class library has been compiled. The other is named code::run:: and
+is called when the user chooses the Run menu command.
+
+classMethods::
+
+method::tailCallOptimize
+Get or set tail call optimization. The default is on. Setting this to code::false:: can help with debugging by including intermediate levels in an error backtrace.
+
+instanceMethods::
+
+method::startup
+
+called after the class library has been compiled. Override this in class link::Classes/Main:: to do whatever you want.
+
+method::run
+
+called when the user chooses the Run menu command. Override this in class link::Classes/Main:: to do whatever you want.
+

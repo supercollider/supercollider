@@ -1,0 +1,41 @@
+class:: Clip
+summary:: Clip a signal outside given thresholds.
+related:: Classes/Fold, Classes/Wrap
+categories::  UGens>Maths
+
+
+Description::
+
+This differs from the  link::Classes/BinaryOpUGen::  link::Overviews/Methods#clip2#clip2:: in that it
+allows one to set both low and high thresholds.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+Signal to be clipped.
+
+
+argument::lo
+
+Low threshold of clipping. Must be less then hi.
+
+
+argument::hi
+
+High threshold of clipping. Must be greater then lo.
+
+
+Examples::
+
+code::
+
+Server.internal.boot;
+
+{ Clip.ar(SinOsc.ar(440, 0, 0.2), -0.07, 0.07) }.scope;
+
+::
+

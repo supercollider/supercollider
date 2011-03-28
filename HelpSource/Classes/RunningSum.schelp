@@ -1,0 +1,61 @@
+class:: RunningSum
+summary:: Running sum over n frames
+categories:: UGens>Analysis, UGens>Maths
+
+description::
+A running sum over a user specified number of samples, useful for running RMS power windowing.
+
+classmethods::
+method:: ar, kr
+argument::in
+Input signal
+argument::numsamp
+How many samples to take the running sum over (initialisation time only, not modulatable. default: 40)
+
+examples::
+
+code::
+// distorts of course - would need scaling  
+{ RunningSum.ar(SoundIn.ar) }.play      
+    
+// Running Average over x samples   
+(
+{ 
+    var x = 100;
+    RunningSum.ar(LFSaw.ar, x) * (x.reciprocal)
+ }.play
+)
+::
+
+code::
+// RMS Power
+(
+{ 
+    var input, numsamp;
+    
+    input = LFSaw.ar;
+    numsamp = 30;
+    
+    (RunningSum.ar(input.squared, numsamp) / numsamp).sqrt
+}.play
+)
+::
+
+code::
+// shortcut in class
+{ RunningSum.rms(SoundIn.ar) }.play     
+::
+
+code::
+// play around
+(
+{ 
+    var input, numsamp, power;
+    numsamp = 500;
+    input = SoundIn.ar;
+    power = MouseX.kr(0.1, 4);
+
+    (RunningSum.ar(input ** power, numsamp)/numsamp) ** (power.reciprocal)
+}.play
+)
+::

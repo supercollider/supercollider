@@ -44,9 +44,11 @@ class HelpFileView;
 class QcHelpBrowser : public QWidget
 {
   Q_OBJECT
-
+	Q_PROPERTY( QString selectedString READ selectedString);
+	
 public:
   QcHelpBrowser();
+	QString selectedString();
 
   Q_INVOKABLE
   void setHome( const QString &homeUrl );

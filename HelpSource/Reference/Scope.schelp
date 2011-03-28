@@ -1,0 +1,45 @@
+title:: Scoping and Closure 
+summary:: scoping of variables
+categories:: Language
+
+SuperCollider has nested scoping of variables. A function can refer not only to its own arguments and variables, but also to those declared in any enclosing (defining) contexts.
+
+For example, the function defined below within makeCounter can access all of the arguments and variables declared in code::makeCounter::.
+Other code can call the returned function at some later time and it can access and update the values contained in code::makeCounter:: at the time when the inner function was instantiated. 
+code::
+(
+var makeCounter;
+makeCounter = { arg curVal=0, stepVal=1; 
+     // return a function :
+    {
+        var temp;
+        // temp is local to this function, curVal & stepVal in the
+        // enclosing function are referred to here within.
+        temp = curVal;
+        curVal = curVal + stepVal;
+        temp                       // return result
+    }
+};
+
+// Each invocation of makeCounter creates a new set of variables curVal and stepVal:
+
+x = makeCounter.value(10, 1);
+z = makeCounter.value(99, 100); 
+)
+::
+
+x and z are functions which refer to different instances of the variables curVal and stepVal
+code::
+x.value.postln; // posts 10
+x.value.postln; // posts 11
+z.value.postln; // posts 99
+z.value.postln; // posts 199
+x.value.postln; // posts 12
+x.value.postln; // posts 13
+z.value.postln; // posts 299
+z.value.postln; // posts 399
+::
+
+Note that even though the function which defines curVal and stepVal has completed execution, its variables are still accessible to those functions that were defined within its context.
+This is known as lexical closure, the capturing and availability of variables defined in outer contexts by inner contexts even when the outer contexts may have completed execution.
+

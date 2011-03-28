@@ -1,0 +1,12 @@
+class:: AbstractOut
+summary:: Abstract class for out ugens
+categories:: UGens>InOut
+
+classmethods::
+private:: categories
+
+instancemethods::
+method:: numOutputs
+returns::
+number of output buses (default: 0, overridden in subclasses)
+

@@ -1,0 +1,54 @@
+class:: PMOsc
+summary:: Phase modulation oscillator pair.
+categories::  UGens>Generators>Deterministic
+
+
+Description::
+
+Phase modulation sine oscillator pair.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::carfreq
+Carrier frequency in cycles per second.
+
+argument::modfreq
+Modulator frequency in cycles per second.
+
+argument::pmindex
+Modulation index in radians.
+
+argument::modphase
+A modulation input for the modulator's phase in radians.
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+
+Examples::
+
+code::
+
+play({ PMOsc.ar(Line.kr(600, 900, 5), 600, 3, 0, 0.1) }); // modulate carfreq
+
+play({ PMOsc.ar(300, Line.kr(600, 900, 5), 3, 0, 0.1) }); // modulate modfreq
+
+play({ PMOsc.ar(300, 550, Line.ar(0,20,8), 0, 0.1) }); // modulate index
+
+(
+e = Env.linen(2, 5, 2);
+Routine.run({ 
+	loop({
+		play({
+			LinPan2.ar(EnvGen.ar(e) *
+				PMOsc.ar(2000.0.rand,800.0.rand, Line.kr(0.0, 12.0.rand,9),0,0.1), 1.0.rand2)});
+		2.wait;
+	})
+}))
+
+::

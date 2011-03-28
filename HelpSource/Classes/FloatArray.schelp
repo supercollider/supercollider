@@ -1,0 +1,19 @@
+CLASS::FloatArray
+summary::an array whose indexed slots are all of the same type
+related::Classes/Int8Array, Classes/Int16Array, Classes/Int32Array, Classes/DoubleArray, Classes/SymbolArray
+categories::Collections>Ordered
+
+DESCRIPTION::
+These classes implement arrays whose indexed slots are all of the same type.
+list::
+## Int8Array - 8 bit integer
+## Int16Array - 16 bit integer
+## Int32Array - 32 bit integer
+## FloatArray - 32 bit floating point
+## DoubleArray - 64 bit floating point
+## SymbolArray - symbols
+::
+
+INSTANCEMETHODS::
+
+method::readFromStream

@@ -1,0 +1,9 @@
+class::RawPointer
+categories::Core>Kernel
+summary:: Hold raw pointers from the host environment
+
+description::
+
+A class used to hold raw pointers from the host environment. 
+No instance variables, no methods.
+

@@ -1,0 +1,75 @@
+title:: Bundled Server Messages
+summary:: Sending OSC message bundles
+categories:: OpenSoundControl
+related:: Guides/ServerTiming
+
+When using the Synth/Node/Group sclang objects there is often a need to construct bundles to send messages together. For example when you want to start a synth that should be mapped instantly to certain buses, or need to ensure that two synths start with precise synchronisation.
+
+The simplest way to deal with this is through Server's automated bundling support. This allows you to open a bundle into which all osc messages will be collected until it is sent. See Server for details of makeBundle's arguments.
+code::
+s.boot;
+(
+// send a synth def to server
+SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
+	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
+}).send(s);
+)
+
+// all OSC commands generated in the function contained below will be added to a bundle
+// and executed simultaneously after 2 seconds.
+(
+s.makeBundle(2.0, {
+	x = Synth.new("tpulse");
+	a = Bus.control.set(440);
+	x.map(\freq, a);
+});
+)
+x.free;
+
+// don't send
+(
+b = s.makeBundle(false, { 	
+	x = { PinkNoise.ar(0.1) * In.kr(0, 1); }.play;
+});
+)
+// now pass b as a pre-existing bundle, and start both synths synchronously
+(
+s.makeBundle(nil, { // nil executes ASAP
+	y = { SinOsc.kr(0.2).abs }.play(x, 0, 0, \addBefore); // sine envelope
+}, b);
+)
+x.free; y.free;
+::
+
+To send a bundle with the default latency of the server, use the message bind:
+code::
+(
+s.bind {
+	SynthDef("tpulse2", { arg out=0, freq=700, sawFreq=440.0;
+		Out.ar(out, Pan2.ar(SyncSaw.ar(freq,  sawFreq, 0.1), SinOsc.kr(8)) )
+	}).send(s);
+	s.sync; // wait until synthdef is loaded
+	x = Synth.new("tpulse2");
+	a = Bus.control.set(440);
+	x.map(\freq, a);
+};
+)
+
+a.free; x.free;
+::
+
+In addition to this there are a number of methods which return OSC messages which can be added to a bundle. These are detailed in the helpfiles for link::Classes/Node::, link::Classes/Synth::, and link::Classes/Group::.
+code::
+s.boot;
+b = List.new;
+c = Bus.control(s, 1).set(660);
+x = Synth.basicNew("default", s); // Create without sending
+b.add(x.newMsg);
+b.add(x.mapMsg(\freq, c));
+b.postln; // here's what it looks like
+s.listSendBundle(1.0, b); // Execute after 1 second
+c.set(440);
+s.queryAllNodes;
+x.free;
+::
+

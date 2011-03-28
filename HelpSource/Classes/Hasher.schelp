@@ -1,0 +1,54 @@
+class:: Hasher
+summary:: Randomized value.
+categories::  UGens>Filters>Nonlinear, UGens>Random
+
+
+Description::
+
+Returns a unique output value from zero to one for each input value
+according to a hash function. The same input value will always produce
+the same output value. The input need not be from 0 to 1.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+The input signal.
+
+argument::mul
+Output will be multiplied by this value.
+
+argument::add
+This value will be added to the output.
+
+Examples::
+
+code::
+{ Hasher.ar(Line.ar(0,1,1), 0.2) }.play;
+
+(
+{
+	SinOsc.ar(
+		Hasher.kr(MouseX.kr(0,10).round(1), 300, 500)
+	) * 0.1 
+}.play;
+)
+
+(
+{
+	SinOsc.ar(
+		Hasher.kr(MouseX.kr(0,10).round(1) + 0.0001, 300, 500)
+	) * 0.1 
+}.play;
+)
+
+(
+{
+	SinOsc.ar(
+		Hasher.kr(MouseX.kr(0,10), 300, 500)
+	) * 0.1 
+}.play;
+)
+::

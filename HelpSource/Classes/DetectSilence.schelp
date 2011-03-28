@@ -1,0 +1,72 @@
+class:: DetectSilence
+summary:: When input falls below a threshhold, evaluate doneAction.
+categories::  UGens>Synth control, UGens>Analysis>Amplitude
+
+
+Description::
+
+When input falls below a threshhold, evaluate doneAction. If the input
+signal starts with silence at the beginning of the synth's duration, then
+DetectSilence will wait indefinitely until the first sound before
+starting to monitor for silence.
+
+
+classmethods::
+
+method::ar, kr
+
+argument::in
+
+The input signal.
+
+
+argument::amp
+
+When input falls below this, evaluate
+
+code::doneAction:: .
+
+
+argument::time
+
+The minimum duration for which input must fall below
+
+code::amp::  before this triggers.
+
+
+argument::doneAction
+
+An integer representing the doneAction. See
+
+link::Reference/UGen-doneActions::  for more detail.
+
+returns::
+This UGen outputs 1 if silence is detected, otherwise 0.
+
+Examples::
+
+code::
+
+(
+SynthDef("detectSilence-help", { arg out;
+	var z;
+	z = SinOsc.ar(Rand(400, 700), 0, LFNoise2.kr(8, 0.2).max(0));
+	DetectSilence.ar(z, doneAction:2);
+	Out.ar(out, z);
+}).send(s);
+)
+
+s.sendMsg("/s_new", "detectSilence-help", -1);
+s.sendMsg("/s_new", "detectSilence-help", -1);
+s.sendMsg("/s_new", "detectSilence-help", -1);
+
+(
+Task({
+	loop({
+		s.sendMsg("/s_new", "detectSilence-help", -1);
+		[0.5, 1].choose.wait;
+	})
+}).play;
+)
+
+::

@@ -1,0 +1,54 @@
+class:: Dswitch1
+summary:: Demand rate generator for switching between inputs.
+related:: Classes/Demand, Classes/Duty, Classes/TDuty, Classes/Dswitch
+categories:: UGens>Demand
+
+Description::
+
+Demand rate generator for switching between inputs.
+
+See link::Classes/Pswitch1:: for structurally related equivalent.
+
+
+classmethods::
+
+method::new
+
+argument::list
+
+Array of values or other UGens.
+
+
+argument::index
+
+Which of the inputs to return.
+
+
+Examples::
+
+code::
+
+(
+{ 
+	var a, freq, trig;
+	a = Dswitch1([1, 3, MouseY.kr(1, 15), 2, Dwhite(0, 3, 2)], MouseX.kr(0, 4));
+	trig = Impulse.kr(3);
+	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	SinOsc.ar(freq) * 0.1
+
+}.play;
+)
+
+(
+{ 
+	var a, freq, trig;
+	a = Dswitch1({ |i| Dseq((0..i*3), inf) } ! 5, MouseX.kr(0, 4));
+	trig = Impulse.kr(6);
+	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	SinOsc.ar(freq) * 0.1
+
+}.play;
+)
+
+::
+

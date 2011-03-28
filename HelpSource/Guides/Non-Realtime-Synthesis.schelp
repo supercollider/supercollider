@@ -1,0 +1,106 @@
+title:: Non-Realtime Synthesis
+summary:: Non-realtime synthesis with binary files of OSC commands
+categories:: Server, OpenSoundControl
+related:: Classes/Score
+
+This documentation is initial.
+
+SuperCollider 3 supports non-realtime synthesis through the use of binary files of OSC commands.
+
+First create an OSC command file (i.e. a score)
+code::
+f = File("Cmds.osc","w");
+
+// start a sine oscillator at 0.2 seconds.
+c = [ 0.2, [\s_new, \NRTsine, 1001, 0, 0]].asRawOSC;
+f.write(c.size); // each bundle is preceeded by a 32 bit size.
+f.write(c); // write the bundle data.
+
+// stop sine oscillator at 3.0 seconds.
+c = [ 3.0, [\n_free, 1001]].asRawOSC;
+f.write(c.size);
+f.write(c);
+
+// scsynth stops processing immediately after the last command, so here is
+// a do-nothing command to mark the end of the command stream.
+c = [ 3.2, [0]].asRawOSC;
+f.write(c.size);
+f.write(c);
+
+f.close;
+
+// the 'NRTsine' SynthDef
+(
+SynthDef("NRTsine",{ arg freq = 440;
+	Out.ar(0,
+		 SinOsc.ar(freq, 0, 0.2)
+	)
+}).writeDefFile;
+)
+::
+then on the command line (i.e. in Terminal):
+code::
+./scsynth -N Cmds.osc _ NRTout.aiff 44100 AIFF int16
+::
+The command line arguments are:
+code::
+    -N <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format> 	<...other scsynth arguments>
+::
+If you do not need an input sound file, then put "_" for the file name as in the example above.
+
+For details on other valid arguments to the scsynth app see Server-Architecture.
+
+This could be executed in SC as:
+code::
+"./scsynth -N Cmds.osc _ NRTout.aiff 44100 AIFF int16 -o 1".unixCmd; // -o 1 is mono output
+::
+A more powerful option is to use the link::Classes/Score:: object, which has convenience methods to create OSC command files and do nrt synthesis.
+code::
+(
+x = [
+
+[0.0, [ \s_new, \NRTsine, 1000, 0, 0,  \freq, 1413 ]],
+[0.1, [ \s_new, \NRTsine, 1001, 0, 0,  \freq, 712 ]],
+[0.2, [ \s_new, \NRTsine, 1002, 0, 0,  \freq, 417 ]],
+[0.3, [ \s_new, \NRTsine, 1003, 0, 0,  \freq, 1238 ]],
+[0.4, [ \s_new, \NRTsine, 1004, 0, 0,  \freq, 996 ]],
+[0.5, [ \s_new, \NRTsine, 1005, 0, 0,  \freq, 1320 ]],
+[0.6, [ \s_new, \NRTsine, 1006, 0, 0,  \freq, 864 ]],
+[0.7, [ \s_new, \NRTsine, 1007, 0, 0,  \freq, 1033 ]],
+[0.8, [ \s_new, \NRTsine, 1008, 0, 0,  \freq, 1693 ]],
+[0.9, [ \s_new, \NRTsine, 1009, 0, 0,  \freq, 410 ]],
+[1.0, [ \s_new, \NRTsine, 1010, 0, 0,  \freq, 1349 ]],
+[1.1, [ \s_new, \NRTsine, 1011, 0, 0,  \freq, 1449 ]],
+[1.2, [ \s_new, \NRTsine, 1012, 0, 0,  \freq, 1603 ]],
+[1.3, [ \s_new, \NRTsine, 1013, 0, 0,  \freq, 333 ]],
+[1.4, [ \s_new, \NRTsine, 1014, 0, 0,  \freq, 678 ]],
+[1.5, [ \s_new, \NRTsine, 1015, 0, 0,  \freq, 503 ]],
+[1.6, [ \s_new, \NRTsine, 1016, 0, 0,  \freq, 820 ]],
+[1.7, [ \s_new, \NRTsine, 1017, 0, 0,  \freq, 1599 ]],
+[1.8, [ \s_new, \NRTsine, 1018, 0, 0,  \freq, 968 ]],
+[1.9, [ \s_new, \NRTsine, 1019, 0, 0,  \freq, 1347 ]],
+
+[3.0, [\c_set, 0, 0]] 
+];
+)
+::
+You can then use code::Score.write:: to convert the above to the OSC command file as follows:
+code::
+Score.write(x, "score-test.osc");
+"./scsynth -N score-test.osc _ score-test.aiff 44100 AIFF int16 -o 1".unixCmd;
+::
+Score also provides methods to do nrt synthesis directly:
+code::
+(
+var f, o;
+g = [
+	[0.1, [\s_new, \NRTsine, 1000, 0, 0, \freq, 440]],	
+	[0.2, [\s_new, \NRTsine, 1001, 0, 0, \freq, 660]],
+	[0.3, [\s_new, \NRTsine, 1002, 0, 0, \freq, 220]],
+	[1, [\c_set, 0, 0]]
+	];
+o = ServerOptions.new.numOutputBusChannels = 1; // mono output
+Score.recordNRT(g, "help-oscFile.osc", "helpNRT.aiff", options: o); // synthesize
+)
+::
+

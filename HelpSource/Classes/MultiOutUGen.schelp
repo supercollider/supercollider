@@ -1,0 +1,17 @@
+class:: MultiOutUGen
+summary:: Superclass for all UGens with multiple outputs
+categories:: UGens>Base
+related:: Classes/OutputProxy
+
+Description::
+This is a superclass for all UGens with multiple outputs.
+MultiOutUGen creates the link::Classes/OutputProxy:: ugens needed for the multiple outputs.
+
+classmethods::
+private:: categories
+
+instancemethods::
+
+method:: initOutputs
+Create an array of OutputProxies for the outputs.
+

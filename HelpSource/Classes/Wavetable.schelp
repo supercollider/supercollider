@@ -1,0 +1,59 @@
+CLASS::Wavetable
+summary::sampled audio buffer in wavetable format
+related::Classes/Signal
+categories:: Signals
+
+DESCRIPTION::
+A Wavetable is a FloatArray in a special format used by SuperCollider's interpolating oscillators. Wavetables cannot be created by strong::new::.
+
+CLASSMETHODS::
+
+method::sineFill
+Fill a Wavetable of the given size with a sum of sines at the given amplitudes and phases. The Wavetable will be normalized.
+code::
+Wavetable.sineFill(512, 1.0/[1, 2, 3, 4, 5, 6]).plot;
+::
+argument::size
+must be a power of 2.
+argument::amplitudes
+an Array of amplitudes for each harmonic beginning with the fundamental.
+argument::phases
+an Array of phases in radians for each harmonic beginning with the fundamental.
+
+method::chebyFill
+Fill a Wavetable of the given size with a sum of Chebyshev polynomials at the given amplitudes for use in waveshaping by the link::Classes/Shaper:: ugen. The Wavetable will be normalized.
+code::
+Wavetable.chebyFill(513, [1]).plot;
+Wavetable.chebyFill(513, [0, 1]).plot;
+Wavetable.chebyFill(513, [0, 0, 1]).plot;
+Wavetable.chebyFill(513, [0.3, -0.8, 1.1]).plot;
+::
+argument::size
+must be a power of 2 plus 1, eventual wavetable is next power of two size up.
+argument::amplitudes
+an Array of amplitudes for each Chebyshev polynomial beginning with order 1.
+
+INSTANCEMETHODS::
+
+method::plot
+Plot the Wavetable in a window. The arguments are not required and if not given defaults will be used.
+code::
+Wavetable.sineFill(512, [0.5]).plot;
+Wavetable.sineFill(512, [1]).plot("Table 1", Rect(50, 50, 150, 450));
+::
+argument::name
+a String, the name of the window.
+argument::bounds
+a Rect giving the bounds of the window.
+argument::minval
+the minimum value in the plot. Defaults to the highest value in the data.
+argument::maxval
+the maximum value in the plot. Defaults to the lowest value in the data.
+argument::parent
+a window to place the plot in. If nil, one will be created for you.
+
+method::asSignal
+Convert the Wavetable into a Signal.
+code::
+Wavetable.sineFill(512, [1]).asSignal.plot;
+::

@@ -1,0 +1,42 @@
+class:: StandardL
+summary:: Standard map chaotic generator
+categories:: UGens>Generators>Chaotic
+related:: Classes/StandardN
+
+description::
+A linear-interpolating sound generator based on the difference equations:
+
+code::
+	x[n+1] = (x[n] + y[n+1]) % 2pi
+	y[n+1] = (y[n] + k * sin(x[n])) % 2pi
+::
+warning:: revise formulae conversion to c like code ::
+
+The standard map is an area preserving map of a cylinder discovered by the plasma physicist Boris Chirikov.
+
+classmethods::
+method:: ar
+argument:: freq
+Iteration frequency in Hertz
+argument:: k
+Perturbation amount
+argument:: xi
+Initial value of x
+argument:: yi
+Initial value of y
+
+examples::
+code::
+// vary frequency
+{ StandardL.ar(MouseX.kr(20, SampleRate.ir)) * 0.3 }.play(s);
+::
+
+code::
+// mouse-controlled param
+{ StandardL.ar(SampleRate.ir/2, MouseX.kr(0.9,4)) * 0.3 }.play(s);
+::
+
+code::
+// as a frequency control
+{ SinOsc.ar(StandardL.ar(40, MouseX.kr(0.9,4))*800+900)*0.4 }.play(s);
+::

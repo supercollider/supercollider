@@ -1,0 +1,63 @@
+class:: Volume
+summary:: Model for the global volume of the synthesis server
+categories:: Server
+
+description::
+Internally used by Server.
+
+classmethods::
+method:: new
+Create and return a new instance of Volume for a given server, 
+ranging from code::startBus:: over code::numChans:: (usually the server's number of output bus channels).
+argument:: startBus
+start bus
+argument:: numChans
+number of channels
+argument:: min
+minimum volume in decibel
+argument:: max
+minimum volume in decibel
+argument:: persist
+whether to persist a reset
+
+instancemethods::
+
+method:: play
+run the synth that controls the volume. If mute is true, mute the output. (default: false)
+
+method:: free
+free the synth that controls the volume.
+		
+method:: mute 
+mute output
+		
+method:: unmute 
+unmute output
+		
+method:: volume
+set the volume (in db)
+		
+method:: lag
+set the lag time that dampens volume changes
+		
+method:: setVolumeRange
+set the volume range
+
+method:: gui(window, bounds)
+create a volume gui.
+
+examples::
+code::
+v = s.volume;
+
+v.min;
+v.max;
+v.volume = rrand(-50, 5);
+v.setVolumeRange(-90, 8);
+v.mute;
+v.unmute;
+
+// separate window
+v.gui;
+::
+

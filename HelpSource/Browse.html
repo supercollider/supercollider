@@ -1,0 +1,276 @@
+<html>
+<head>
+    <title>Document Browser</title>
+    <link rel='stylesheet' href='./scdoc.css' type='text/css' />
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <script src="docmap.js" type="text/javascript"></script>
+<style>
+
+.browser {
+    margin: 0em;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+.result {
+/*    border-left: 1px solid #777;*/
+    padding: 2px;
+}
+.browser td {
+    vertical-align: top;
+    border: none;
+}
+.result_doc {
+    border-bottom: 1px solid #ddd;
+}
+.result_summary {
+    color: #444;
+    font-size: 9pt;
+    max-width: 18em;
+    margin-bottom: 0.8em;
+}
+.category, .cat_selected {
+    margin-bottom: 0.25em;
+/*    padding-left: 10px;*/
+    border-bottom: 1px solid transparent;
+/*    border-bottom: 1px solid #ddd;*/
+/*    margin-right: 1ex;*/
+}
+.cat_selected {
+    border-bottom: 1px solid #777;
+}
+.category a {
+    color: #555;
+    font-weight: bold;
+}
+.cat_selected a {
+    color: #000;
+    font-weight: bold;
+}
+.cat_arrow {
+    float: right;
+    padding-left: 1ex;
+    color: #555;
+}
+
+#search_checks {
+    font-size: 9pt;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+    margin-top: 1em;
+    padding-bottom: 1em;
+}
+.cat_count {
+    color: #777;
+    font-size: 9pt;
+}
+#total_count {
+    font-size: 9pt;
+    color: #777;
+}
+</style>
+
+<noscript>
+<!--<meta http-equiv="refresh" content="3; URL=Overviews/Categories.html">
+<p>JavaScript is not available, redirecting to <a href="Overviews/Categories.html">static category overview</a>...-->
+<p>The document browser needs JavaScript.
+</noscript>
+
+<script type="text/javascript">
+var categorytree = null;
+var path = [];
+var checkboxes;
+
+function GotoPath(p) {
+    path = p.split(">");
+    var x = escape(p);
+    if(window.location.hash != x)
+        window.location.hash = x;
+    updateTree();
+}
+
+function updateTree() {
+    var el = document.getElementById("browser");
+    var res = "<tr><td>";
+    var lev = 0;
+    var tree = {entries:[],subcats:categorytree};
+    var p;
+    var done = 0;
+    link = "";
+    
+    while(1) {
+        res += "<div class='result'>";
+        p=path[lev++];
+        
+        var l = [];
+        for(var k in tree.subcats)
+            l.push(k);
+        l = l.sort();
+        
+        for(var i=0;i<l.length;i++) {
+            var k = l[i];
+            if(k==p)
+                res += "<div class='cat_selected'>";
+            else
+                res += "<div class='category'>";
+            res += "<a href='javascript:GotoPath(\""+link+k+"\")'>"+k+"</a>";
+            res += " <span class='cat_count'>("+tree.subcats[k].count+")</span>";
+            if(k==p)
+                res += "<span class='cat_arrow'> &gt;</span>";
+            res += "</div>";
+        }
+
+        for(var i=0;i<tree.entries.length;i++) {
+            var v = tree.entries[i];
+            var x = v.path.split("/");
+            
+            res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> <span class='soft'>["+x[0];
+            if(v.installed=="extension")
+                res += " +";
+            else if(v.installed=="missing")
+                res += " - missing!";
+            res += "]</span></div><div class='result_summary'>"+v.summary+"</div>";
+        }
+
+        res += "</div>";
+
+        if(!p)
+            break;
+        tree = tree.subcats[p];
+        link += p+">";
+        res += "<td>";
+        if(!tree) {
+            res += "<div class='result_summary'>&gt; Category not found: "+p+"</div>";
+            break;
+        }
+    }
+    el.innerHTML = res;
+}
+
+function countTree(t) {
+    var x = 0;
+    for(var k in t.subcats)
+        x += countTree(t.subcats[k]);
+    x += t.entries.length;
+    return t.count = x;
+}
+
+function buildCategoryTree() {
+    var cats = {};
+    for(var k in docmap) {
+        var v = docmap[k];
+
+        if(v.installed=="extension" && !checkboxes["ext_classes"].checked)
+            continue;
+        else
+        if(v.installed=="standard" &&  !checkboxes["classes"].checked)
+            continue;
+        else if(!v.installed) {
+            var c = checkboxes[v.path.split("/")[0].toLowerCase()];
+            if(c && !c.checked)
+                continue;
+        }
+        
+        var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
+        for(var i=0;i<c2.length;i++) {
+            var c = c2[i];
+            if(!cats[c])
+                cats[c]=[];
+            cats[c].push(v);
+        }
+    }
+
+    var tree = {};
+    var p,l,e,a;
+    for(var cat in cats) {
+        var files = cats[cat];    
+
+        p=tree;
+        l=cat.split(">");
+
+        for(var i=0;i<l.length;i++) {
+            var c = l[i];
+
+            if(!p[c]) {
+                p[c]={};
+                p[c].subcats = {};
+                p[c].entries = [];
+                p[c].count = 0;
+            }
+            e=p[c];
+            p=p[c].subcats;
+        }
+
+        for(var i=0;i<files.length;i++)
+            e.entries.push(files[i]);
+            
+        e.entries = e.entries.sort(function(a,b) {
+            a=a.title; b=b.title;
+            if(a<b) return -1;
+            else
+            if(a>b) return +1;
+            else
+            return 0;
+        });
+    }
+    
+    categorytree = tree;
+    
+    document.getElementById("total_count").innerHTML = countTree({subcats:tree,entries:[],count:0}) + " documents";
+}
+
+window.onload = function() {
+    var fields = ["classes", "ext_classes", "reference", "guides", "tutorials", "overviews", "other"];
+    checkboxes = {};
+    var onChange = function() {
+        buildCategoryTree();
+        updateTree();
+    };
+    for(var i=0;i<fields.length;i++) {
+        var k = fields[i];
+        checkboxes[k] = document.getElementById("check_"+k);
+        checkboxes[k].onchange = onChange;
+    }
+    buildCategoryTree();
+    GotoPath(unescape(window.location.hash.slice(1)));
+}
+
+window.onhashchange = function() {
+    GotoPath(unescape(window.location.hash.slice(1)));
+}
+
+</script>
+
+</head>
+
+<body>
+
+<table class='headMenu'>
+    <tr><td><a href='./Help.html'>Home</a>
+    <td><a href='./Browse.html'>Browse</a>
+    <td><a href='./Overviews/Documents.html'>Document index</a>
+    <td><a href='./Overviews/Classes.html'>Class index</a>
+    <td><a href='./Overviews/Methods.html'>Method index</a>
+    <td><a href='./Search.html'>Search</a>
+</table>
+
+<div class='header'>
+    <div id='label'>SuperCollider</div>
+    <h1>Document Browser</h1>
+    <div id='summary'>Browse categories</div>
+</div>
+<div id="search_checks">
+Include:
+<input type="checkbox" id="check_classes" checked="true">Classes</input>
+<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
+<input type="checkbox" id="check_reference" checked="true">Reference</input>
+<input type="checkbox" id="check_guides" checked="true">Guides</input>
+<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
+<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
+<input type="checkbox" id="check_other" checked="true">Other</input>
+</div>
+<div id="total_count"></div>
+<table class="browser" id="browser"></table>
+
+</body>
+</html>
+

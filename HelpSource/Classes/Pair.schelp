@@ -1,0 +1,61 @@
+CLASS::Pair
+summary::LISP-like two element cells
+categories:: Collections>Ordered
+
+DESCRIPTION::
+
+note::
+Implementation incomplete. See link::Guides/J-concepts-in-SC:: for similar functionality.
+::
+
+Most methods are inherited from the superclasses.
+
+CLASSMETHODS::
+
+method::new
+Return new instance.
+
+method::newFrom
+Convert collection (e.g. arrays of arrays) to pairs.
+
+INSTANCEMETHODS::
+
+private::storeOn, printOn, storeArgs
+
+method::size
+Return the size when linking across.
+
+method::depth
+Return the size when linking down.
+
+method::do
+Iterate over the two elements.
+
+Traverse
+Same like: link::#-depthFirstPreOrderTraversal::
+
+method::depthFirstPreOrderTraversal
+Traverse the data structure first link down, then across (see link::#Examples::).
+
+method::depthFirstPostOrderTraversal
+Traverse the data structure from bottom up (see link::#Examples::).
+
+EXAMPLES::
+
+code::
+a = Pair(Pair(Pair(1, 2), 4), Pair(5, 6));
+
+a.size;
+a.depth;
+a.do { |x| x.postln };
+a.traverse { |x| x.postln };
+a.depthFirstPreOrderTraversal { |x| x.postln };
+a.depthFirstPostOrderTraversal { |x| x.postln };
+
+
+// alternative instantiations:
+
+Pair.newFrom([1, [2, [[4, 5], 6]]]);
+
+[1, [2, [[4, 5], 6]]].as(Pair); // equivalent.
+::

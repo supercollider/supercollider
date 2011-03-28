@@ -1,0 +1,56 @@
+CLASS::MultiLevelIdentityDictionary
+summary::tree of dictionaries
+related:: Classes/IdentityDictionary
+categories:: Collections>Unordered
+
+DESCRIPTION::
+A tree of IdentityDictionaries. Addresses within the tree are specified with a series of keys. link::Classes/Library:: is its most useful subclass.
+
+INSTANCEMETHODS::
+
+private::add, remove, removeFail, prChooseFrom, prPutTree, leaves, prNestedValuesFromDict, prRemoveAtPathRecursive, storeOn, printOn
+
+method::at
+Retrieves a leaf node or nil if not found.
+
+method::put
+Puts the item as a leaf node, internally creating new branches as needed to accommodate the list of keys.
+
+method::choose
+Choose a branch at each level, descend the tree until a leaf is chosen.
+By using arguments strong::key1, key2 ... keyN::, one can start at an address within the tree, descend the tree until a leaf is chosen.
+
+method::putTree
+A way to insert objects into the tree with a syntax similar to the organization of the tree itself.
+code::
+//pseudo code:
+putTree(key1,[
+	key2a, item1-2a,
+	key2b, item1-2b,
+	[
+		key3, item1-3
+	] // etc...
+]);
+::
+
+method::removeAt
+Remove only the item located by the path.
+
+method::removeEmptyAt
+Remove the item located by the path. This might make the item's parent dictionary empty. In that case, it will remove the parent and continue up the chain, removing empty dictionaries as it goes. This is slower but cleaner.
+
+EXAMPLES::
+
+code::
+// Example of the difference between removeAt and removeEmptyAt
+
+m = MultiLevelIdentityDictionary.new;
+m.put(\a, \b, \c, 1);
+
+m.removeAt(\a, \b, \c);
+m	// note, \a and \b dictionaries remain
+
+m.put(\a, \b, \c, 2);
+m.removeEmptyAt(\a, \b, \c);
+m	// now the entire MultiLevelIdentityDictionary is empty
+::

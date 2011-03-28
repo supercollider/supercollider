@@ -1,0 +1,43 @@
+class:: Balance2
+summary:: Stereo signal balancer
+related:: Classes/LinPan2, Classes/Pan2, Classes/Pan4, Classes/PanAz
+categories::  UGens>Multichannel>Panners
+
+
+Description::
+
+Equal power panning balances two channels; by panning, you are favouring one or other channel in the mix, and the other loses power.
+
+classmethods::
+private:: categories
+
+method::ar, kr
+discussion::
+The middle pan position (pos=0.0) corresponds to the original stereo mix; full left (pos of -1) is essentially just left channel playing, full right (pos of 1) just the right. The output of Balance2 remains a stereo signal.  
+
+argument::left
+
+channel 1 of input stereo signal
+
+
+argument::right
+
+channel 2 of input stereo signal
+
+
+argument::pos
+
+pan position, -1 is left, +1 is right
+
+
+argument::level
+
+a control rate level input.
+
+Examples::
+code::
+{Balance2.ar(LFSaw.ar(44),Pulse.ar(33),FSinOsc.kr(0.5), 0.1) }.play;
+
+{var source; source= SinOsc.ar([440,550]); Balance2.ar(source[0],source[1],LFNoise0.kr(4),0.3) }.play;
+::
+

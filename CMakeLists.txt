@@ -143,6 +143,8 @@ option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
 
 
+option(SC_DOC "Generate SCDoc documentation." ON)
+
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
 elseif()
@@ -241,9 +243,10 @@ else()
 	set(auxresourcesdir "share/SuperCollider")
 endif()
 
-set(SCCLASSLIB_EXCLUDE_REGEX "\\.git")
 if(NOT SC_QT)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|QtCollider")
+	set(SCCLASSLIB_EXCLUDE_REGEX "QtCollider")
+else()
+	set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
 endif()
 
 install(DIRECTORY SCClassLibrary
@@ -253,18 +256,62 @@ install(DIRECTORY SCClassLibrary
 
 install(DIRECTORY Help
 	DESTINATION ${auxresourcesdir}
-	PATTERN .git EXCLUDE
 )
 
 install(DIRECTORY examples
 	DESTINATION ${auxresourcesdir}
-	PATTERN .git EXCLUDE
 )
 
 install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
-	PATTERN .git EXCLUDE
 )
+
+install(DIRECTORY HelpSource
+	DESTINATION ${auxresourcesdir}
+)
+
+#############################################
+#
+# build scdoc help files
+#
+list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/Common")
+list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/Platform")
+list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/SCDoc")
+list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/DefaultLibrary")
+list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/JITLib")
+list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/backwards_compatibility")
+
+if(SC_QT)
+	list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/QtCollider")
+endif()
+
+# this folder has an extension to Platform that disables the loadStartupFiles method
+list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/platform/disable_startup_files")
+
+foreach(arg ${BUILD_CLASSLIBRARIES})
+	set(BUILD_CLASSLIBRARYPATH "${BUILD_CLASSLIBRARYPATH}+${arg}\n")
+endforeach()
+
+configure_file(build_sclang.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg)
+
+if(SC_DOC)
+	file(GLOB_RECURSE SCDocSources RELATIVE HelpSource .*[^~])
+	file(GLOB_RECURSE SCDocClasses RELATIVE SCClassLibrary/SCDoc *.sc)
+
+	add_custom_target(doc ALL
+					COMMAND ${CMAKE_CURRENT_BINARY_DIR}/lang/sclang
+							-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
+							HelpSource/compileHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/HelpBase
+					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+					DEPENDS sclang ${SCDocSources} ${SCDocClasses})
+
+	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/HelpBase
+		DESTINATION ${auxresourcesdir})
+endif()
+
+set_directory_properties(
+	PROPERTIES
+	ADDITIONAL_MAKE_CLEAN_FILES "HelpBase")
 
 #############################################
 # CPack support

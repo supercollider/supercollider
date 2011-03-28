@@ -112,10 +112,16 @@ void QcHelpBrowser::onLoadFinished( bool ok )
   }
 
   QString title = helpFileView->title();
-  if( title.isEmpty() ) {
-    title = QFileInfo( helpFileView->url().toLocalFile() ).fileName();
-    title.truncate( title.lastIndexOf('.') );
-  }
+	  if( title.isEmpty() ) {
+		title = QFileInfo( helpFileView->url().toLocalFile() ).fileName();
+		title.truncate( title.lastIndexOf('.') );
+	  }
 
-  setWindowTitle( "SuperCollider Help: " + title );
+   setWindowTitle( "SuperCollider Help: " + title );
 }
+
+QString QcHelpBrowser::selectedString()
+{
+	return helpFileView->selectedText();
+}
+
