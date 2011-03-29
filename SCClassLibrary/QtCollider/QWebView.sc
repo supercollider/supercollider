@@ -1,6 +1,6 @@
 QWebView : QView {
 
-  var <onLoadAction, <onLinkActivated;
+  var <onLoadFinished, <onLoadFailed, <onLinkActivated;
 
   *qtClass { ^'QtCollider::WebView'; }
 
@@ -31,15 +31,30 @@ QWebView : QView {
     this.invokeMethod( \findText, [string, reverse] );
   }
 
-  // The given function will be evaluated when a page has finished loading -
-  // be it successfully or not.
+  // The given function will be evaluated when a page has loaded successfully.
+  // The calling QWebView object is passed to the function.
 
-  // The arguments passed to the function are the calling QWebView object,
-  // and a boolean determining whether loading was successful.
+  onLoadFinished_ { arg func;
+    case
+    { (func ? onLoadFailed).notNil && (onLoadFinished ? onLoadFailed).isNil }
+        { this.connectMethod( 'loadFinished(bool)', 'prLoadFinished' ); }
+    { (func ? onLoadFailed).isNil && (onLoadFinished ? onLoadFailed).notNil }
+        { this.disconnectMethod( 'loadFinished(bool)', 'prLoadFinished' ); };
 
-  onLoad_ { arg func;
-    this.manageFunctionConnection( onLoadAction, func, 'loadFinished(bool)' );
-    onLoadAction = func;
+    onLoadFinished = func;
+  }
+
+  // The given function will be evaluated when a page has failed to load.
+  // The calling QWebView object is passed to the function.
+
+  onLoadFailed_ { arg func;
+    case
+    { (func ? onLoadFinished).notNil && (onLoadFinished ? onLoadFailed).isNil }
+        { this.connectMethod( 'loadFinished(bool)', 'prLoadFinished' ); }
+    { (func ? onLoadFinished).isNil && (onLoadFinished ? onLoadFailed).notNil }
+        { this.disconnectMethod( 'loadFinished(bool)', 'prLoadFinished' ); };
+
+    onLoadFailed = func;
   }
 
   // After this method is called with a function as an argument, QWebView will not
@@ -57,6 +72,12 @@ QWebView : QView {
       { this.setProperty( \linkDelegationPolicy, 2 ); }
       { this.setProperty( \linkDelegationPolicy, 0 ); };
     onLinkActivated = func;
+  }
+
+//---------------------------------- private --------------------------------------//
+
+  prLoadFinished { arg ok;
+    if(ok) { onLoadFinished.value(this) } { onLoadFailed.value(this) };
   }
 }
 
