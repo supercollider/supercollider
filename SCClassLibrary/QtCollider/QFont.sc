@@ -22,15 +22,15 @@ QFont {
   }
 
   *defaultSansFace {
-    ^QFont("sans-serif");
+    ^"sans-serif";
   }
 
   *defaultSerifFace {
-    ^QFont("serif");
+    ^"serif";
   }
 
   *defaultMonoFace {
-    ^QFont("monospace");
+    ^"monospace";
   }
 
   *default {
