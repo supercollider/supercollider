@@ -294,6 +294,91 @@ SCDocParser {
         file.close;
     }
 
+    parseMetaData {|path|
+        var line, file, tag, text, match;
+        var tags = IdentitySet[\class,\title,\summary,\categories,\related,\redirect];
+        var pfx = ".";
+        var methods = List.new;
+        var inHeader = true;
+        var class = nil;
+        var cmets = IdentitySet.new;
+        var imets = IdentitySet.new;
+        var m, mets, f, l;
+
+        this.init;
+        file = File.open(path,"r");
+        block {|break|
+            loop {
+                line = file.getLine;
+                if(line.isNil) {break.value};
+                match = line.findRegexp("([a-zA-Z]+::)\\s*(\\S*.*\\S+)?").flop[1];
+                if(match.notNil) {
+                    tag = match[1].toLower.drop(-2).asSymbol;
+                    text = match[2];
+                    if(inHeader and: {tags.includes(tag)}) {
+                        root.add((tag:tag, text:text));
+                        if(tag==\class) {
+                            class = text.asSymbol.asClass;
+                        };
+                    } {
+                        inHeader = false;
+                        switch(tag,
+                            \description,       {pfx="."},
+                            \section,           {pfx="."},
+                            \examples,          {pfx="."},
+                            \instancemethods,   {pfx="-"},
+                            \classmethods,      {pfx="*"},
+                            \method, {
+                            //FIXME:
+                            // - m.isExtensionOf(c) (perhaps not very important, we can see this in the class doc)
+                                match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1];
+                                match.do {|name|
+                                    if(name[0]!=$() {
+                                        m = name.asSymbol.asGetter;
+                                        methods.add("_"++pfx++m);
+                                        switch(pfx,
+                                            "*", {cmets.add(m)},
+                                            "-", {imets.add(m)}
+                                        );
+                                    };
+                                };
+                            },
+                            \private, {
+                                match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1];
+                                match.do {|name|
+                                    m = name.asSymbol.asGetter;
+                                    switch(pfx,
+                                        "*", {cmets.add(m)},
+                                        "-", {imets.add(m)}
+                                    );
+                                };
+                            }
+                        );
+                    };
+                };
+            };
+        };
+        file.close;
+        // Add undocumented methods
+        if(class.notNil) {
+            f = {|c,docmets,pfx|
+                l = List.new;
+                (mets = c.methods) !? {
+                    //ignore these methods by default. Note that they can still be explicitly documented.
+                    docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
+                    mets.collectAs({|m|m.name.asGetter},IdentitySet).do {|name|
+                        if(docmets.includes(name).not) {
+                            l.add("_"++pfx++name.asString);
+                        }
+                    };
+                };
+                l;
+            };
+            methods = methods ++ f.(class,imets,"-") ++ f.(class.class,cmets,"*");
+        };
+        ^methods.asList;
+    }
+
     generateUndocumentedMethods {|class,node,title|
         var syms, name, mets, l = List.new;
         var docmets = IdentitySet.new;
@@ -392,7 +477,7 @@ SCDocParser {
         var n = (tag:'tree', children:List.new);
         r.add((tag:'title', text:"Class Tree"));
         r.add((tag:'summary', text:"All classes by inheritance tree"));
-        r.add((tag:'related', text:"Overviews/Classes, Overviews/Categories, Overviews/Methods"));
+        r.add((tag:'related', text:"Overviews/Classes, Browse, Overviews/Methods"));
 //        r.add((tag:'categories', text:"Classes"));
         r.add(n);
         this.dumpClassTree(n,Object);

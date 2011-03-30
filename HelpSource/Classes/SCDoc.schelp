@@ -4,8 +4,7 @@ categories:: HelpSystem
 related:: Classes/SCDocParser, Classes/SCDocRenderer, Guides/WritingHelp, Reference/SCDocSyntax
 
 DESCRIPTION::
-SCDoc manages the SuperCollider documentation system, by traversing the directory tree of help sourcefiles and rendering them
-to the help target directory. It also generates different overviews.
+SCDoc manages the SuperCollider documentation system.
 
 It uses link::Classes/SCDocParser:: for parsing and link::Classes/SCDocRenderer:: for rendering.
 
@@ -14,15 +13,13 @@ The syntax reference for the documentation markup language can be found here: li
 A guide to writing help can be found here: link::Guides/WritingHelp::.
 
 SUBSECTION:: Basic usage
-Update all help-files and overviews:
+Get help URL for a specific string:
 code::
-SCDoc.updateAll;
+url = SCDoc.prepareHelpForURL(SCDoc.findHelpFile("SinOsc"));
 ::
 
-To force an update of unchanged files, use code::updateAll(true):: or remove code::helpTargetDir/scdoc_cache::
-
 CLASSMETHODS::
-private:: initClass, addToDocMap, makeMethodList, updateFile, makeOverviews, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap, helpBaseDir, initHelpTargetDir
+private:: initClass, addToDocMap, makeMethodList, updateFile, makeOverviews, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap, helpBaseDir, initHelpTargetDir, addMethodList, findHelpSourceDirs, waitForHelp, getAllMetaData, syncNonHelpFiles, makeClassTemplate
 
 method:: p
 The default link::Classes/SCDocParser:: object, created automatically.
@@ -33,17 +30,32 @@ method:: helpSourceDir
 get/set the system-wide directory of help sourcefiles. Defaults to code:: thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource" ::
 
 method:: helpSourceDirs
-get the list of HelpSource folders, including extensions and quarks. this will be empty before running code::updateAll::
+get the list of HelpSource folders, including extensions and quarks.
+discussion::
+This searches recursively for all folders named "HelpSource" under code::thisProcess.platform.userExtensionDir:: and code::thisProcess.platform.systemExtensionDir:: as well as including the system-wide code::helpSourceDir::
 
 method:: helpTargetDir
 get/set the user help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "Help" ::
 
-method:: waitForHelp
-Make sure that the help-files are available, then call code::func::
+subsection:: Main interface
+
+method:: prepareHelpForURL
+Prepare help for the given URL by checking if the file needs rendering from schelp source, or some other action needs to be done.
+Use this as a wrapper to get on-the-fly rendering and processing of help files.
+argument:: url
+The url to prepare. If this is not a local file inside link::#*helpTargetDir:: then it will just pass through the url directly.
+argument:: doYield
+If true, do some code::0.wait:: while running. Useful when used in Routines.
+returns:: the URL or nil if file not found.
+
+method:: findHelpFile
+Find help for a given string. This method redirects to the instance method code::findHelpFile:: on the current renderer object.
+returns:: the URL for help on given string
+
+subsection:: Render all files
 
 method:: updateAll
-Render all help-files that need updating and generate overviews and cached metadata index.
-returns:: this class
+Render all help-files that need updating and generate overviews and cached metadata index. This can take several minutes. Useful mainly if you want to render all help to put online or similar.
 argument:: force
 Force updating of all files.
 argument:: doneFunc
@@ -53,15 +65,11 @@ When true, runs the process in a link::Classes/Routine:: on link::Classes/AppClo
 argument:: gui
 If true and code::threaded:: is also true, create a GUI progress window instead of posting progress to the post window.
 discussion::
-It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::. It also searches recursively for all folders named "HelpSource" under code::thisProcess.platform.userExtensionDir:: and code::thisProcess.platform.systemExtensionDir::.
+It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
 argument:: findExtensions
 If false, don't search for extensions (useful when building base help)
 argument:: useHelpBase
 if false, don't initialize help target directory from existing HelpBase
-
-method:: findHelpFile
-Find help for a given string. This method redirects to the instance method code::findHelpFile:: on the current renderer object.
-returns:: the URL for help on given string
 
 subsection:: Cached map of documents
 SCDoc keeps a dictionary where each document is represented by an link::Classes/Event:: with the keys code::path, title, categories, summary, installed::.
