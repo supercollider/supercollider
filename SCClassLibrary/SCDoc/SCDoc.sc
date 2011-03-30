@@ -735,7 +735,7 @@ SCDoc {
     }
     
     *getAllMetaData {
-        var subtarget, classes, mets, count = 0, t = Main.elapsedTime;
+        var subtarget, classes, mets, count = 0, cats, t = Main.elapsedTime;
         this.postProgress("Getting metadata for all docs...");
         this.findHelpSourceDirs;
         // find undocumented classes
@@ -758,9 +758,18 @@ SCDoc {
 
         this.postProgress("Making metadata for undocumented classes");
         classes.do {|name|
+            var class = name.asClass;
+            cats = "Undocumented classes";
+            if(this.classHasArKrIr(class)) {
+                cats = cats ++ ", UGens>Undocumented";
+            };
+            if(class.categories.notNil) {
+                cats = cats ++ ", "++class.categories.join(", ");
+            };
+
             p.root = [
                 (tag:\class, text:name.asString),
-                (tag:\categories, text:"Undocumented classes")
+                (tag:\categories, text:cats)
             ];
             this.addToDocMap(p,"Classes/"++name.asString);
             //FIXME: methods too?
