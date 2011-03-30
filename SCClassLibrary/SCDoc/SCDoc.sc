@@ -579,7 +579,6 @@ SCDoc {
         
         // does URL need metadata?
         if(needMetaData.includes(subtarget)) {
-            this.postProgress("URL needs metadata");
             if(doc_map.isNil) {
                 this.getAllMetaData;
             };
