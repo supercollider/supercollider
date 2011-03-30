@@ -120,7 +120,13 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
   QObjectProxy *proxy = (QObjectProxy*) slotRawPtr( obj->slots );
 
   DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxyAndObject );
-  e->send( proxy, Synchronous );
+
+  // Invalidate proxy's SC object pointer directly.
+  // Note that it is protected by language mutex;
+  proxy->finalize();
+
+  // Post the destruction event asynchronously;
+  QApplication::postEvent( proxy, e );
 
   return errNone;
 }
@@ -135,7 +141,13 @@ QC_LANG_PRIMITIVE( QObject_ManuallyFinalize, 0, PyrSlot *r, PyrSlot *a, VMGlobal
   // language shutdown code using it will have been executed, so any
   // shutdown code is safe.
   DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxyAndObject );
-  e->send( proxy, Synchronous );
+
+  // Invalidate proxy's SC object pointer directly.
+  // Note that it is protected by language mutex;
+  proxy->finalize();
+
+  // Post the destruction event asynchronously;
+  QApplication::postEvent( proxy, e );
 
   return errNone;
 }
