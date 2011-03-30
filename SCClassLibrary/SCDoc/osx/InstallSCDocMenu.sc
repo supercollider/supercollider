@@ -1,23 +1,10 @@
 // install a menu to access scdoc
 InstallSCDocMenu {
-	*makeUrl {|path|
-		var url = path;
-		if(url.contains("://")) {
-			^url;
-		} {
-			^"file://"++url;
-		};
-	}
-	*openFile {|path,ref|
-		var url = this.makeUrl(path);
+	*openFile {|url,ref|
 		if(ref.notNil) {
 			url = url ++ "#" ++ ref;
 		};
-		// FIXME: use new HelpBrowser
-		switch(GUI.scheme.name,
-			\QtGUI, {QHelpBrowser.newUnique.front.load(url)},
-			\CocoaGUI, {("open"+url).systemCmd}
-		);
+		HelpBrowser.instance.goTo(url);
 	}
 	*initClass {
 		var scDocMenu;
@@ -30,9 +17,7 @@ InstallSCDocMenu {
 					.action_({
 					    var sz = Document.current.selectionSize;
 					    var txt = Document.current.selectedString;
-					    SCDoc.waitForHelp {
-						    this.openFile(SCDoc.findHelpFile(txt));
-						};
+					    this.openFile(SCDoc.findHelpFile(txt));
 					})
 					.setShortCut("d",false,true);
 
@@ -40,24 +25,15 @@ InstallSCDocMenu {
 					.action_({
 					    var sz = Document.current.selectionSize;
 					    var txt = Document.current.selectedString;
-					    SCDoc.waitForHelp {
-						    this.openFile(SCDoc.helpTargetDir+/+"Search.html", if(sz>0,{txt},nil));
-                        };
+					    this.openFile(SCDoc.helpTargetDir+/+"Search.html", if(sz>0,{txt},nil));
 					})
 					.setShortCut("s",false,true);
 
 					SCMenuItem(scDocMenu, "Browse")
 					.action_({
-					    SCDoc.waitForHelp {
-    						this.openFile(SCDoc.helpTargetDir+/+"Browse.html");
-    					};
+						this.openFile(SCDoc.helpTargetDir+/+"Browse.html");
 					})
 					.setShortCut("b",false,true);
-
-					SCMenuItem(scDocMenu, "Update help")
-					.action_({
-					    SCDoc.updateAll;
-					});
 				};
 			});
 		}
