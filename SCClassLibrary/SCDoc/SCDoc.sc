@@ -11,6 +11,7 @@ SCDoc {
     classvar progressTopic = nil, progressBar = nil, closeButton = nil;
     classvar new_classes = nil;
     classvar didRun = false;
+    classvar isProcessing = false;
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
@@ -558,23 +559,34 @@ SCDoc {
 
     *prepareHelpForURL {|url,doYield=false|
         var proto, path, anchor;
-        var subtarget, src;
+        var subtarget, src, c;
 
         var needMetaData = Set["Browse","Search","Overviews/Documents","Overviews/Classes","Overviews/Methods"];
 
         doWait = doYield;
 
+        if(isProcessing) {
+            "SCDoc: prepareHelpForURL already running.. waiting for the first to finish.".warn;
+            c = Condition.new;
+            Routine {
+                while {0.5.wait; isProcessing};
+                c.unhang;
+            }.play(AppClock);
+            c.hang;
+        };
+        isProcessing = true;
+
         // parse URL
         #proto, path, anchor = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1];
         if(proto.isEmpty) {proto="file://"};
-        if(proto!="file://") {^url}; // just pass through remote url's
+        if(proto!="file://") {isProcessing = false; ^url}; // just pass through remote url's
         
         this.findHelpSourceDirs;
         
         // sync non-schelp files once every session
         if(didRun.not) {
-            this.syncNonHelpFiles;
             didRun = true;
+            this.syncNonHelpFiles;
         };
 
         // strip to subfolder/basename (like Classes/SinOsc)
@@ -586,6 +598,7 @@ SCDoc {
             if(doc_map.isNil) {
                 this.getAllMetaData;
             };
+            isProcessing = false;
             ^url;
         };
 
@@ -609,7 +622,6 @@ SCDoc {
 
         // create a simple stub if class was undocumented
         if(src.isNil and: {subtarget.dirname=="Classes"}) {
-            this.postProgress("Undocumented class, generating stub and template");
             this.makeClassTemplate(subtarget.basename,path);
         };
 
@@ -618,8 +630,11 @@ SCDoc {
                 this.postProgress("Parsing"+src);
                 p.parseFile(src);
                 r.render(p,path,subtarget.dirname);
+                isProcessing = false;
                 ^url;
             } {
+                this.postProgress("Broken link:"+url);
+                isProcessing = false;
                 ^"file://"++helpTargetDir++"/BrokenLink.html#"++url;
             };
         } {
@@ -627,17 +642,20 @@ SCDoc {
                 // target file and helpsource exists, and helpsource is newer than target
                 p.parseFile(src);
                 r.render(p,path,subtarget.dirname);
+                isProcessing = false;
                 ^url;
             };
         };
-    
+        isProcessing = false;
         ^url;
     }
     
     *makeClassTemplate {|name,path|
         var class = name.asSymbol.asClass;
         var n, m, cats, methodstemplate, f;
-        if(class.notNil) {
+        f = class.filenameSymbol.asString.escapeChar($ );
+        if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
+            this.postProgress("Undocumented class, generating stub and template");
             n = List.new;
             n.add((tag:\class, text:name));
             n.add((tag:\summary, text:""));

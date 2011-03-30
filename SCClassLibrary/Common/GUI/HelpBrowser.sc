@@ -25,6 +25,10 @@ HelpBrowser {
 	}
 
 	goTo {|url|
+	//FIXME: if we first show the browser with HelpBrowser.instance.goTo, it will initialize it and goHome,
+	//so we get two instances of the routines below running!
+	//at least now SCDoc.prepareHelpForURL avoids being run more than one at the same time,
+	//but perhaps the interface for opening the helpbrowser on a specific URL (without changing homeUrl) should be improved.
 		var done = false, progress = [">---","->--","-->-","--->"];
 		var r = Routine {
 			block {|break|
