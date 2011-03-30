@@ -12,13 +12,6 @@ HelpBrowser {
 			homeUrl = defaultHomeUrl;
 			if( homeUrl.isNil ) {
 				homeUrl = SCDoc.helpTargetDir ++ "/Help.html";
-				if( File.exists(homeUrl).not ) {
-					homeUrl = SCDoc.helpBaseDir ++ "/Help.html";
-					if( File.exists(homeUrl).not ) {
-						"Help home page was not found in standard directories.".warn;
-						homeUrl = nil;
-					};
-				};
 			};
 			singleton = this.new( homeUrl );
 			singleton.window.onClose = { singleton = nil; };
@@ -30,7 +23,9 @@ HelpBrowser {
 		^super.new.init( homeUrl );
 	}
 
-	goHome { webView.url = homeUrl; }
+	goTo {|url| webView.url = SCDoc.prepareHelpForURL(url); }
+
+	goHome { this.goTo(homeUrl); }
 
 	goBack { webView.back; }
 
@@ -80,6 +75,10 @@ HelpBrowser {
 		w = winRect.width - 10;
 		h = winRect.height - y - marg;
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
+
+		webView.onLinkActivated = {|wv, url|
+			wv.url = SCDoc.prepareHelpForURL(url);
+		};
 
 		toolbar[\Home].action = { this.goHome };
 		toolbar[\Back].action = { this.goBack };
