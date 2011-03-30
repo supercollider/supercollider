@@ -589,6 +589,12 @@ SCDoc {
             ^url;
         };
 
+        if(subtarget=="Overviews/ClassTree") {
+            this.postProgress("Generating Class tree...",true);
+            p.overviewClassTree;
+            r.render(p, path, "Overviews", false);
+        };
+
         // find help source file
         block {|break|
             src = nil;

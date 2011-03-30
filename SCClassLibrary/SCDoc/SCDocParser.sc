@@ -442,7 +442,7 @@ SCDocParser {
         var n = (tag:'tree', children:List.new);
         r.add((tag:'title', text:"Class Tree"));
         r.add((tag:'summary', text:"All classes by inheritance tree"));
-        r.add((tag:'related', text:"Overviews/Classes, Overviews/Categories, Overviews/Methods"));
+        r.add((tag:'related', text:"Overviews/Classes, Browse, Overviews/Methods"));
 //        r.add((tag:'categories', text:"Classes"));
         r.add(n);
         this.dumpClassTree(n,Object);
