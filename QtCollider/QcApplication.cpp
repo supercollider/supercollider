@@ -76,16 +76,10 @@ void QcApplication::postSyncEvent( QcSyncEvent *e, QObject *rcv )
     delete e;
   }
   else {
-    QMutex mutex;
-    QWaitCondition cond;
-
-    e->_cond = &cond;
-    e->_mutex = &mutex;
-
-    mutex.lock();
-    postEvent( rcv, e );
-    cond.wait( &mutex );
-    mutex.unlock();
+    // NOTE: experimental: shut off other threads than main
+    delete e;
+    qcErrorMsg("You can not use Qt in this thread!");
+    return;
   }
 }
 
@@ -107,26 +101,10 @@ void QcApplication::postSyncEvent( QcSyncEvent *e, EventHandlerFn handler )
     delete(e);
   }
   else {
-    // NOTE:
-    // Despite locking QcApplication's mutex for the time of event processing
-    // this method can be called recursively from event processing, because that
-    // implies that the current thread will be the same as QcApplication's, so
-    // this branch will not be entered the second time
-    _mutex.lock();
-
-    QMutex mutex;
-    QWaitCondition cond;
-
-    e->_handler = handler;
-    e->_cond = &cond;
-    e->_mutex = &mutex;
-
-    mutex.lock();
-    postEvent( _instance, e );
-    cond.wait( &mutex );
-    mutex.unlock();
-
-    _mutex.unlock();
+    // NOTE: experimental: shut off other threads than main
+    delete e;
+    qcErrorMsg("You can not use Qt in this thread!");
+    return;
   }
 }
 

@@ -34,7 +34,8 @@
 #include <PyrSlot.h>
 #include <PyrSymbol.h>
 
-#define qcProxyDebugMsg( LEVEL, MSG ) qcSCObjectDebugMsg( LEVEL, _scObject, MSG )
+#define qcProxyDebugMsg( LEVEL, MSG ) \
+  qcDebugMsg( LEVEL, QString("[%1]: ").arg(_scClassName) + QString(MSG) )
 
 struct VariantList;
 struct ScMethodCallEvent;
@@ -93,6 +94,9 @@ class QObjectProxy : public QObject
 
     virtual ~QObjectProxy();
 
+    // WARNING: must be called with language locked!
+    void finalize() { _scObject = 0; }
+
     inline QObject *object() const { return qObject; }
     inline PyrObject *scObject() const { return _scObject; }
 
@@ -101,7 +105,7 @@ class QObjectProxy : public QObject
     inline void lock() { mutex.lock(); }
     inline void unlock() { mutex.unlock(); }
 
-    const char *scClassName() const;
+    QString scClassName() const { return _scClassName; }
 
     virtual bool setParentEvent( QtCollider::SetParentEvent * );
     bool setPropertyEvent( QtCollider::SetPropertyEvent * );
@@ -141,7 +145,11 @@ class QObjectProxy : public QObject
     void customEvent( QEvent * );
 
     QObject *qObject;
+    // NOTE: scObject is protected by the language lock. Should not use it without it!
     PyrObject *_scObject;
+    // NOTE: for the reason above we extract SC class name at construction
+    QString _scClassName;
+
     QMap<int,EventHandlerData> eventHandlers;
     QList<QcMethodSignalHandler*> methodSigHandlers;
     QList<QcFunctionSignalHandler*> funcSigHandlers;

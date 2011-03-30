@@ -39,7 +39,8 @@ void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
 
 QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
 : qObject( qObject_ ),
-  _scObject( scObject_ )
+  _scObject( scObject_ ),
+  _scClassName( slotRawSymbol( &scObject_->classptr->name )->name )
 {
   ProxyToken *token = new ProxyToken( this, qObject );
   connect( qObject, SIGNAL( destroyed( QObject* ) ), this, SLOT( invalidate() ) );
@@ -54,11 +55,6 @@ QObjectProxy::~QObjectProxy()
 void QObjectProxy::invalidate() {
   qcProxyDebugMsg( 1, QString("Object has been deleted. Invalidating proxy.") );
   mutex.lock(); qObject = 0; mutex.unlock();
-}
-
-const char *QObjectProxy::scClassName() const {
-  if( _scObject ) return slotRawSymbol( &_scObject->classptr->name )->name;
-  return 0;
 }
 
 bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *argSlot,
