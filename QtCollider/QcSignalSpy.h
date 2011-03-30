@@ -116,13 +116,6 @@ inline int indexOfSignal () const { return _sigId; }
 
 inline bool isValid () const { return _sigId > 0; }
 
-void destroy () {
-  int slotId = QObject::staticMetaObject.methodCount();
-  QMetaObject::disconnect( _proxy->object(), _sigId, this, slotId );
-  _sigId = -1;
-  deleteLater();
-}
-
 protected:
 
   virtual void react( const QList<QVariant> args ) = 0;
@@ -184,7 +177,7 @@ protected:
 
     QtCollider::lockLang();
 
-    if( _proxy->scObject() && this->isValid() ) {
+    if( _proxy->scObject() ) {
       qcDebugMsg(1, QString("SC FUNCTION CALL [+++] ") );
 
       VMGlobals *g = gMainVMGlobals;
