@@ -294,6 +294,56 @@ SCDocParser {
         file.close;
     }
 
+    parseMetaData {|path|
+        var line, file, tag, text, match;
+        var tags = IdentitySet[\class,\title,\summary,\categories,\related,\redirect];
+        var pfx = ".";
+        var methods = List.new;
+        var inHeader = true;
+//        var class = nil;
+        this.init;
+        file = File.open(path,"r");
+        block {|break|
+            loop {
+                line = file.getLine;
+                if(line.isNil) {break.value};
+                match = line.findRegexp("([a-zA-Z]+::)\\s*(\\S*.*\\S+)?").flop[1];
+                if(match.notNil) {
+                    tag = match[1].toLower.drop(-2).asSymbol;
+                    text = match[2];
+                    if(inHeader and: {tags.includes(tag)}) {
+                        root.add((tag:tag, text:text));
+//                        if(tag==\class) {
+//                            class = text.asSymbol.asClass;
+//                        };
+                    } {
+                        inHeader = false;
+                        switch(tag,
+                            \description,       {pfx="."},
+                            \section,           {pfx="."},
+                            \examples,          {pfx="."},
+                            \instancemethods,   {pfx="-"},
+                            \classmethods,      {pfx="*"},
+                            \method, {
+                            //FIXME:
+                            // - m.isExtensionOf(c) (perhaps not very important, we can see this in the class doc)
+                            // - undocumented methods (perhaps not very important, but it helps when searching for methods!)
+                                match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1];
+                                match.do {|name|
+                                    if(name[0]!=$() {
+                                        methods.add("_"++pfx++name.asSymbol.asGetter);
+                                    };
+                                };
+                            }
+                        );
+                    };
+                };
+            };
+        };
+        file.close;
+        ^methods;
+    }
+
     generateUndocumentedMethods {|class,node,title|
         var syms, name, mets, l = List.new;
         var docmets = IdentitySet.new;
