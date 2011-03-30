@@ -5,6 +5,8 @@ HelpBrowser {
 	var <>homeUrl;
 	var <window;
 	var webView;
+	var lblStatus, animCount = 0;
+	var oldPath;
 
 	*instance {
 		var homeUrl;
@@ -12,13 +14,6 @@ HelpBrowser {
 			homeUrl = defaultHomeUrl;
 			if( homeUrl.isNil ) {
 				homeUrl = SCDoc.helpTargetDir ++ "/Help.html";
-				if( File.exists(homeUrl).not ) {
-					homeUrl = SCDoc.helpBaseDir ++ "/Help.html";
-					if( File.exists(homeUrl).not ) {
-						"Help home page was not found in standard directories.".warn;
-						homeUrl = nil;
-					};
-				};
 			};
 			singleton = this.new( homeUrl );
 			singleton.window.onClose = { singleton = nil; };
@@ -30,7 +25,22 @@ HelpBrowser {
 		^super.new.init( homeUrl );
 	}
 
-	goHome { webView.url = homeUrl; }
+	goTo {|url|
+		var newPath;
+		//FIXME: since multiple scdoc queries can be running at the same time,
+		//it would be best to create a queue and run them in order, but only use the url from the last.
+		newPath = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
+		if(newPath!=oldPath) {
+			oldPath = newPath;
+			this.startAnim;
+		};
+
+		Routine {
+			webView.url = SCDoc.prepareHelpForURL(url, true) ?? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
+		}.play(AppClock);
+	}
+
+	goHome { this.goTo(homeUrl); }
 
 	goBack { webView.back; }
 
@@ -52,7 +62,7 @@ HelpBrowser {
 		winRect = Rect(0,0,600,600);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
 
-		window = Window.new( bounds: winRect ).name_("SuperCollider Help");
+		window = Window.new( bounds: winRect );
 
 		toolbar = ();
 
@@ -64,6 +74,12 @@ HelpBrowser {
 			toolbar[sym] = Button( window, Rect(x,y,w,h) ).states_([[str]]);
 			x = x + w + 2;
 		};
+
+		w = 100;
+		x = x + 5;
+		lblStatus = StaticText.new( window, Rect(x, y, w, h) )
+			.resize_(1);
+        lblStatus.font = Font.defaultSansFace.boldVariant;
 
 		w = 200;
 		x = winRect.width - marg - w;
@@ -81,17 +97,46 @@ HelpBrowser {
 		h = winRect.height - y - marg;
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
 
+		webView.onLoadFinished = { this.stopAnim; window.name = "SuperCollider Help:"+webView.getProperty(\title) };
+		webView.onLoadFailed = { this.stopAnim };
+		webView.onLinkActivated = {|wv, url|
+			this.goTo(url);
+		};
+
 		toolbar[\Home].action = { this.goHome };
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
 		txtFind.action = { |x| webView.findText( x.string ); };
-
-		this.goHome;
 	}
+
+	startAnim {
+		var progress = [">---","->--","-->-","--->"];
+		animCount = animCount + 1;
+		if(animCount==1) {
+		    Routine {
+			    block {|break|
+				    loop {
+					    progress.do {|p|
+						    lblStatus.string_("Wait"+p);
+						    0.3.wait;
+						    if(animCount==0) {break.value};
+					    };
+				    };
+			    };
+			    lblStatus.string_("");
+		    }.play(AppClock);
+		};
+	}
+	stopAnim {
+		if(animCount>0) {
+			animCount = animCount - 1;
+		};
+	}
+
 }
 
 + Help {
 	gui {
-		HelpBrowser.instance.window.front;
+		HelpBrowser.instance.goHome.window.front;
 	}
 }
