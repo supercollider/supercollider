@@ -7,7 +7,7 @@ SCDoc {
     classvar <p, <r;
     classvar doWait;
     classvar progressText = nil, progressWindow = nil;
-    classvar progressCount = 0, progressMax = 1;
+    classvar progressCount = 0, progressMax = 0;
     classvar progressTopic = nil, progressBar = nil, closeButton = nil;
     classvar new_classes = nil;
     classvar didRun = false;
@@ -32,7 +32,8 @@ SCDoc {
     }
 
     *postProgress {|string,setTopic=false|
-        var prg = (progressCount/progressMax*100).round(0.1).asString ++ "%";
+        var prg = "";
+        if(progressMax>0) {prg = (progressCount/progressMax*100).round(0.1).asString ++ "% "};
         if(progressWindow.notNil) {
             if(setTopic, {
                 progressTopic.string = string;
@@ -40,9 +41,9 @@ SCDoc {
             }, {
                 progressText.string = prg+string;
             });
-            progressBar.lo_(0).hi_(progressCount/progressMax);
+            if(progressMax>0) {progressBar.lo_(0).hi_(progressCount/progressMax)};
         };
-        (prg+string).postln;
+        ("SCDoc:"+prg++string).postln;
         if(doWait, {0.wait});
     }
 
@@ -555,11 +556,13 @@ SCDoc {
         
     }
 
-    *prepareHelpForURL {|url|
+    *prepareHelpForURL {|url,doYield=false|
         var proto, path, anchor;
         var subtarget, src;
 
         var needMetaData = Set["Browse","Search","Overviews/Documents","Overviews/Classes","Overviews/Methods"];
+
+        doWait = doYield;
 
         // parse URL
         #proto, path, anchor = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1];
@@ -600,6 +603,7 @@ SCDoc {
 
         // create a simple stub if class was undocumented
         if(src.isNil and: {subtarget.dirname=="Classes"}) {
+            this.postProgress("Undocumented class, generating stub and template");
             this.makeClassTemplate(subtarget.basename,path);
         };
 
@@ -690,11 +694,13 @@ SCDoc {
     
     *findHelpSourceDirs {
         if(helpSourceDirs.notNil) {^this};
+        this.postProgress("Finding HelpSource folders...");
         helpSourceDirs = Set[helpSourceDir];
         [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
             helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
                 .unixCmdGetStdOutLines.asSet;
         };
+        this.postProgress(helpSourceDirs.asString);
     }
     
     *syncNonHelpFiles {
@@ -706,32 +712,36 @@ SCDoc {
     }
     
     *getAllMetaData {
-        var subtarget, classes, mets, t = Main.elapsedTime;
-        "SCDoc: getting metadata for all docs".postln;
+        var subtarget, classes, mets, count = 0, t = Main.elapsedTime;
+        this.postProgress("Getting metadata for all docs...");
         this.findHelpSourceDirs;
         // find undocumented classes
         classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
         doc_map = Dictionary.new;
         helpSourceDirs.do {|dir|
-            ("SCDoc: collecting from"+dir).postln;
+            this.postProgress("- Collecting from"+dir);
             ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp'").unixCmdGetStdOutLines.do {|path|
                 mets = p.parseMetaData(path);
                 subtarget = path[dir.size+1 ..].drop(-7);
                 this.addToDocMap(p,subtarget);
+                //FIXME: undocumented methods too?
                 doc_map[subtarget].methods = mets;
                 if(subtarget.dirname=="Classes") {
                     classes.remove(subtarget.basename.asSymbol);
                 };
+                if(doWait and: {count = count + 1; count > 10}, {0.wait; count = 0;});
             };
         };
 
-        "SCDoc: making metadata for undocumented classes".postln;
+        this.postProgress("Making metadata for undocumented classes");
         classes.do {|name|
             p.root = [
                 (tag:\class, text:name.asString),
                 (tag:\categories, text:"Undocumented classes")
             ];
             this.addToDocMap(p,"Classes/"++name.asString);
+            //FIXME: methods too?
+            if(doWait and: {count = count + 1; count > 10}, {0.wait; count = 0;});
         };
         
 //        this.writeDocMap;   // not needed actually? unless we re-use this instead of parsing all headers,
@@ -741,9 +751,9 @@ SCDoc {
                             // so for all *.schelp, add to filelist if not in docmap.
                             // then for all *.schelp newer than scdoc_cache, add to filelist.
                             // then parse everything in filelist.
-        "SCDoc: writing JSON doc map".postln;
+        this.postProgress("Writing JSON doc map");
         this.docMapToJSON(helpTargetDir +/+ "docmap.js");
-        ("SCDoc: done! time spent:"+(Main.elapsedTime-t)+"sec").postln;
+        this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
     }
 
     *findHelpFile {|str|

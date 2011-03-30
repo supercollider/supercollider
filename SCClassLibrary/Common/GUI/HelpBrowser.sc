@@ -5,6 +5,7 @@ HelpBrowser {
 	var <>homeUrl;
 	var <window;
 	var webView;
+	var lblStatus;
 
 	*instance {
 		var homeUrl;
@@ -23,7 +24,26 @@ HelpBrowser {
 		^super.new.init( homeUrl );
 	}
 
-	goTo {|url| webView.url = SCDoc.prepareHelpForURL(url); }
+	goTo {|url|
+		var done = false, progress = [">---","->--","-->-","--->"];
+		var r = Routine {
+			block {|break|
+				loop {
+					progress.do {|p|
+						lblStatus.string_("Wait"+p);
+						0.2.wait;
+						if(done) {break.value};
+					};
+				};
+			};
+			lblStatus.string_("");
+		}.play(AppClock,0);
+		
+		Routine {
+			webView.url = SCDoc.prepareHelpForURL(url, true);
+			done = true;
+		}.play(AppClock,0);
+	}
 
 	goHome { this.goTo(homeUrl); }
 
@@ -60,6 +80,11 @@ HelpBrowser {
 			x = x + w + 2;
 		};
 
+		w = 100;
+		x = x + 5;
+		lblStatus = StaticText.new( window, Rect(x, y, w, h) )
+			.resize_(1);
+
 		w = 200;
 		x = winRect.width - marg - w;
 		txtFind = TextField.new( window, Rect(x,y,w,h) ).resize_(3);
@@ -77,7 +102,7 @@ HelpBrowser {
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
 
 		webView.onLinkActivated = {|wv, url|
-			wv.url = SCDoc.prepareHelpForURL(url);
+			this.goTo(url);
 		};
 
 		toolbar[\Home].action = { this.goHome };
