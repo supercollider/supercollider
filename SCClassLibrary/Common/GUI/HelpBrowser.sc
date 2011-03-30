@@ -85,6 +85,7 @@ HelpBrowser {
 		toolbar[\Forward].action = { this.goForward };
 		txtFind.action = { |x| webView.findText( x.string ); };
 
+		window.front;
 		this.goHome;
 	}
 }
