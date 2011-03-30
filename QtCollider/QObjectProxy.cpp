@@ -292,7 +292,7 @@ bool QObjectProxy::disconnectEvent( QtCollider::DisconnectEvent *e )
       QcMethodSignalHandler *h = methodSigHandlers[i];
       if( h->indexOfSignal() == sigId && h->method() == e->method ) {
         methodSigHandlers.removeAt(i);
-        h->destroy();
+        delete h;
         break;
       }
     }
@@ -302,7 +302,7 @@ bool QObjectProxy::disconnectEvent( QtCollider::DisconnectEvent *e )
       QcFunctionSignalHandler *h = funcSigHandlers[i];
       if( h->indexOfSignal() == sigId && h->function() == e->function ) {
         funcSigHandlers.removeAt(i);
-        h->destroy();
+        delete h;
         break;
       }
     }
