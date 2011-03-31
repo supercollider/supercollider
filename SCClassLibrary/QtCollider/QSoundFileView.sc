@@ -1,6 +1,7 @@
 QSoundFileView : QView {
 
   var <>soundfile;
+  var <metaAction;
 
   *qtClass { ^"QcWaveform" }
 
@@ -138,4 +139,11 @@ QSoundFileView : QView {
   gridResolution_ { arg seconds; this.setProperty( \gridResolution, seconds ) }
   gridOffset_ { arg seconds; this.setProperty( \gridOffset, seconds ) }
   gridColor_ { arg color; this.setProperty( \gridColor, color ) }
+
+  // actions
+
+  metaAction_ { arg action;
+    this.manageFunctionConnection( metaAction, action, 'metaAction()' );
+    metaAction = action
+  }
 }

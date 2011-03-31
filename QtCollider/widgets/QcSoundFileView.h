@@ -172,6 +172,7 @@ Q_SIGNALS:
   void loadingDone();
 
   void action();
+  void metaAction();
 
 public Q_SLOTS:
 
