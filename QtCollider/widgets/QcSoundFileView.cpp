@@ -349,7 +349,7 @@ void QcWaveform::zoomSelection( int i )
 
   Selection &s = _selections[i];
 
-  if( s.size <= 0 || s.start < 0 || s.start >= sfInfo.frames ) return;
+  if( s.size <= 0 || s.start >= sfInfo.frames ) return;
 
   _beg = s.start;
   _dur = qMin( s.size, sfInfo.frames - s.start );
