@@ -86,19 +86,29 @@ SCDoc {
         doWait = false;
     }
 
-    *makeMethodList {|c,n,tag|
-        var l, mets, name, syms;
-
-        (mets = c.methods) !? {
+    *addMethodList {|c,n,tag|
+        var l, x = this.makeMethodList(c);
+        if(x.notEmpty) {
             n.add((tag:tag, children:l=List.new));
+            x.do {|m|
+                l.add((tag:\method, text:m));
+            };
+        };
+    }
+
+    *makeMethodList {|c|
+        var l, mets, name, syms;
+        l = List.new;
+        (mets = c.methods) !? {
             syms = mets.collectAs(_.name,IdentitySet);
             mets.do {|m| //need to iterate over mets to keep the order
                 name = m.name;
                 if (name.isSetter.not or: {syms.includes(name.asGetter).not}) {
-                    l.add((tag:\method, text:name.asString));
+                    l.add(name.asString);
                 };
             };
         };
+        ^l;
     }
 
     *classHasArKrIr {|c|
@@ -646,8 +656,8 @@ SCDoc {
                 display:\inline
             ));
 
-            this.makeMethodList(class.class,n,\classmethods);
-            this.makeMethodList(class,n,\instancemethods);
+            this.addMethodList(class.class,n,\classmethods);
+            this.addMethodList(class,n,\instancemethods);
             
             f = {|x|
                 if(x.tag==\method) {
@@ -727,7 +737,8 @@ SCDoc {
                 if(doc.isNil or: {mtime != doc.mtime}) {
                     mets = p.parseMetaData(path);
                     this.addToDocMap(p,subtarget);
-                    //FIXME: undocumented methods too?
+                    //FIXME: undocumented methods too? or probably not!
+                    //makes sense to only include documented (and non-private) methods for documented classes.
                     doc_map[subtarget].methods = mets;
                     doc_map[subtarget].mtime = mtime;
                     update = true;
@@ -759,7 +770,9 @@ SCDoc {
                     (tag:\categories, text:cats)
                 ];
                 this.addToDocMap(p,subtarget);
-                //FIXME: methods too?
+                doc_map[subtarget].methods =
+                    (this.makeMethodList(class.class).collect{|m| "_*"++m}
+                    ++ this.makeMethodList(class).collect{|m| "_-"++m}).asList;
                 update = true;
             };
             doc_map[subtarget].delete = false;
