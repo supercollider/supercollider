@@ -580,6 +580,7 @@ SCDoc {
         #proto, path, anchor = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1];
         if(proto.isEmpty) {proto="file://"};
         if(proto!="file://") {isProcessing = false; ^url}; // just pass through remote url's
+        if(path.beginsWith(helpTargetDir).not) {isProcessing = false; ^url}; // just pass through remote url's
         
         this.findHelpSourceDirs;
         

@@ -327,7 +327,6 @@ SCDocParser {
                             \method, {
                             //FIXME:
                             // - m.isExtensionOf(c) (perhaps not very important, we can see this in the class doc)
-                            // - undocumented methods (perhaps not very important, but it helps when searching for methods!)
                                 match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1];
                                 match.do {|name|
                                     if(name[0]!=$() {
