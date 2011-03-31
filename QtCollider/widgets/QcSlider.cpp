@@ -35,8 +35,16 @@ QcSlider::QcSlider()
 
   connect( this, SIGNAL(actionTriggered( int )),
            this, SLOT(action( int )));
-  connect( this, SIGNAL(valueChanged( int )),
-           this, SLOT(onValueChange( int )));
+}
+
+void  QcSlider::increment( float factor )
+{
+  QSlider::setValue( QSlider::singleStep() * factor + QSlider::value() );
+}
+
+void  QcSlider::decrement( float factor )
+{
+  QSlider::setValue( QSlider::singleStep() * (-factor) + QSlider::value() );
 }
 
 void QcSlider::action( int act )
@@ -56,18 +64,7 @@ void QcSlider::action( int act )
         }
       }
       lastVal = sliderPosition();
-      //TODO this is an ugly hack to defer action until slider has been redrawn.
-      //Instead, we could post an event for example,.. or something smarter??
-      bDoAction = true;
-  }
-}
-
-void QcSlider::onValueChange( int val )
-{
-  Q_UNUSED( val );
-  if( bDoAction ) {
-    bDoAction = false;
-    Q_EMIT( action() );
+      Q_EMIT( action() );
   }
 }
 

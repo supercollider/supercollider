@@ -38,11 +38,13 @@ class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
 
   public:
     QcSlider();
+  public Q_SLOTS:
+    void increment( float factor = 1.f );
+    void decrement( float factor = 1.f );
   Q_SIGNALS:
     void action();
   private Q_SLOTS:
     void action( int val );
-    void onValueChange( int val );
   private:
     float value() { return QSlider::value() * 0.0001f; }
     void setStep( float );

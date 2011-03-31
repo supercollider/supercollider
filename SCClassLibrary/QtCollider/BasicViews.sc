@@ -329,6 +329,9 @@ QSlider : QAbstractStepValue {
     this.setProperty( \palette, this.palette.buttonColor_(color) );
   }
 
+  increment { arg factor = 1.0; this.invokeMethod( \increment, factor.asFloat ); }
+  decrement { arg factor = 1.0; this.invokeMethod( \decrement, factor.asFloat ); }
+
   initQSlider { arg bounds;
     var r;
     if( bounds.notNil ) {
