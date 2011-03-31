@@ -31,11 +31,11 @@ SCDoc {
         helpTargetDir = path.standardizePath;
     }
 
-    *waitForHelp {|func,gui=true|
+/*    *waitForHelp {|func,gui=true|
         if(didRun.not)
             {this.updateAll(doneFunc:func,gui:gui)}
             {func.value};
-    }
+    }*/
 
     *postProgress {|string,setTopic=false|
         var prg = "";
@@ -162,7 +162,7 @@ SCDoc {
             this.makeClassTemplate(name,dest);
             this.addToDocMap(p, "Classes" +/+ name);
             doc_map["Classes" +/+ name].delete = false;
-            doc_map["Classes" +/+ name].methods = r.methods;
+            doc_map["Classes" +/+ name].methods = r.methodlist;
             this.tickProgress;
         };
     }
@@ -268,7 +268,7 @@ SCDoc {
             p.parseFile(source);
             this.addToDocMap(p,subtarget);
             r.render(p,target,subtarget.dirname);
-            doc_map[subtarget].methods = r.methods;
+            doc_map[subtarget].methods = r.methodlist;
             if(subtarget.dirname=="Classes") {
                 if(new_classes.includes(subtarget.basename.asSymbol)) {
                     new_classes.remove(subtarget.basename.asSymbol);
@@ -798,55 +798,6 @@ SCDoc {
             this.postProgress("Writing JSON doc map");
             this.docMapToJSON(helpTargetDir +/+ "docmap.js");
         };
-        this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
-    }
-    
-    *getAllMetaDataOld {
-        var subtarget, classes, mets, count = 0, cats, t = Main.elapsedTime;
-       
-        this.postProgress("Getting metadata for all docs...");
-        this.findHelpSourceDirs;
-        // find undocumented classes
-        classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
-        doc_map = Dictionary.new;
-
-        helpSourceDirs.do {|dir|
-            this.postProgress("- Collecting from"+dir);
-            ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp'").unixCmdGetStdOutLines.do {|path|
-                mets = p.parseMetaData(path);
-                subtarget = path[dir.size+1 ..].drop(-7);
-                this.addToDocMap(p,subtarget);
-                //FIXME: undocumented methods too?
-                doc_map[subtarget].methods = mets;
-                if(subtarget.dirname=="Classes") {
-                    classes.remove(subtarget.basename.asSymbol);
-                };
-                if(doWait and: {count = count + 1; count > 10}, {0.wait; count = 0;});
-            };
-        };
-
-        this.postProgress("Making metadata for undocumented classes");
-        classes.do {|name|
-            var class = name.asClass;
-            cats = "Undocumented classes";
-            if(this.classHasArKrIr(class)) {
-                cats = cats ++ ", UGens>Undocumented";
-            };
-            if(class.categories.notNil) {
-                cats = cats ++ ", "++class.categories.join(", ");
-            };
-
-            p.root = [
-                (tag:\class, text:name.asString),
-                (tag:\categories, text:cats)
-            ];
-            this.addToDocMap(p,"Classes/"++name.asString);
-            //FIXME: methods too?
-            if(doWait and: {count = count + 1; count > 10}, {0.wait; count = 0;});
-        };
-
-        this.postProgress("Writing JSON doc map");
-        this.docMapToJSON(helpTargetDir +/+ "docmap.js");
         this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
     }
 
