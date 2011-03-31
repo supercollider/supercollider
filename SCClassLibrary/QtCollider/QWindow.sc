@@ -184,14 +184,18 @@ QWindow
 
   //------------------- simply redirected to QView ---------------------//
 
-  alpha_ { var value; view.alpha_(value); }
+  alpha_ { arg value; view.alpha_(value); }
   addFlowLayout { arg margin, gap; ^view.addFlowLayout( margin, gap ); }
   close { view.close; }
+  isClosed { ^view.isClosed; }
+  closed { ^view.isClosed; }
+  visible { ^view.visible; }
+  visible_ { arg boolean; view.visible_(boolean); }
   front { view.front; }
   fullScreen { view.fullScreen; }
   endFullScreen { view.endFullScreen; }
-  isClosed { ^view.isClosed; }
   minimize { view.minimize; }
+  unminimize { view.unminimize; }
   name { ^view.name; }
   name_ { arg string; view.name_(string); }
   refresh { view.refresh; }
@@ -199,6 +203,10 @@ QWindow
   userCanClose_ { arg boolean; view.userCanClose_( boolean ); }
   layout { ^view.layout; }
   layout_ { arg layout; view.layout_(layout); }
+  toFrontAction_ { arg action; view.toFrontAction_(action) }
+  toFrontAction { ^view.toFrontAction }
+  endFrontAction_ { arg action; view.endFrontAction_(action) }
+  endFrontAction { ^view.endFrontAction }
 
   // ---------------------- private ------------------------------------
 
