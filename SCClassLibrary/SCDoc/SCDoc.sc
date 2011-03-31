@@ -736,11 +736,93 @@ SCDoc {
     
     *getAllMetaData {
         var subtarget, classes, mets, count = 0, cats, t = Main.elapsedTime;
+        var force, mtime, update = false, doc;
+        
+        this.postProgress("Getting metadata for all docs...");
+        this.findHelpSourceDirs;
+
+        classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
+
+        force = this.readDocMap;
+        
+        doc_map.do(_.delete=true);
+
+        this.postProgress("Parsing metadata...");
+        // parse all files in fileList
+        helpSourceDirs.do {|dir|
+            this.postProgress("- Collecting from"+dir);
+            ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp'").unixCmdGetStdOutLines.do {|path|
+                subtarget = path[dir.size+1 ..].drop(-7);
+                mtime = ("stat -c %Z"+path.escapeChar($ )).unixCmdGetStdOut.stripWhiteSpace; //this is the slow part!
+                doc = doc_map[subtarget];
+                if(doc.isNil or: {mtime != doc.mtime}) {
+                    mets = p.parseMetaData(path);
+                    this.addToDocMap(p,subtarget);
+                    //FIXME: undocumented methods too?
+                    doc_map[subtarget].methods = mets;
+                    doc_map[subtarget].mtime = mtime;
+                    update = true;
+                };
+                doc_map[subtarget].delete = false;
+                if(subtarget.dirname=="Classes") {
+                    classes.remove(subtarget.basename.asSymbol);
+                };
+                if(doWait and: {count = count + 1; count > 10}) {0.wait; count = 0};
+            };
+        };
+       
+        this.postProgress("Making metadata for undocumented classes");
+        classes.do {|name|
+            var class;
+            subtarget = "Classes/"++name.asString;
+            if(doc_map[subtarget].isNil) {
+                cats = "Undocumented classes";
+                class = name.asClass;
+                if(this.classHasArKrIr(class)) {
+                    cats = cats ++ ", UGens>Undocumented";
+                };
+                if(class.categories.notNil) {
+                    cats = cats ++ ", "++class.categories.join(", ");
+                };
+
+                p.root = [
+                    (tag:\class, text:name.asString),
+                    (tag:\categories, text:cats)
+                ];
+                this.addToDocMap(p,subtarget);
+                //FIXME: methods too?
+                update = true;
+            };
+            doc_map[subtarget].delete = false;
+            if(doWait and: {count = count + 1; count > 10}) {0.wait; count = 0};
+        };
+
+        doc_map.pairsDo{|k,e|
+            if(e.delete==true, {
+                this.postProgress("Removing"+e.path+"from cache");
+                doc_map.removeAt(k);
+                update = true;
+            });
+            e.removeAt(\delete); //remove the key since we don't need it anymore
+        };
+        
+        if(update) {
+            this.writeDocMap;
+            this.postProgress("Writing JSON doc map");
+            this.docMapToJSON(helpTargetDir +/+ "docmap.js");
+        };
+        this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
+    }
+    
+    *getAllMetaDataOld {
+        var subtarget, classes, mets, count = 0, cats, t = Main.elapsedTime;
+       
         this.postProgress("Getting metadata for all docs...");
         this.findHelpSourceDirs;
         // find undocumented classes
         classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
         doc_map = Dictionary.new;
+
         helpSourceDirs.do {|dir|
             this.postProgress("- Collecting from"+dir);
             ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp'").unixCmdGetStdOutLines.do {|path|
@@ -775,14 +857,7 @@ SCDoc {
             //FIXME: methods too?
             if(doWait and: {count = count + 1; count > 10}, {0.wait; count = 0;});
         };
-        
-//        this.writeDocMap;   // not needed actually? unless we re-use this instead of parsing all headers,
-                            // but then we need some magic to detect new files as in updateAll. checking for -newer scdoc_cache
-                            // is not enough, also need to detect newly added helpSourceDir's
-                            // or perhaps it's enough to see if the file is in the docmap?
-                            // so for all *.schelp, add to filelist if not in docmap.
-                            // then for all *.schelp newer than scdoc_cache, add to filelist.
-                            // then parse everything in filelist.
+
         this.postProgress("Writing JSON doc map");
         this.docMapToJSON(helpTargetDir +/+ "docmap.js");
         this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
