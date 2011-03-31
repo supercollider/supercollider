@@ -111,13 +111,11 @@ HelpBrowser {
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
 		txtFind.action = { |x| webView.findText( x.string ); };
-
-		window.front;
 	}
 }
 
 + Help {
 	gui {
-		HelpBrowser.instance.goHome;
+		HelpBrowser.instance.goHome.window.front;
 	}
 }

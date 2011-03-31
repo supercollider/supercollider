@@ -4,7 +4,7 @@ InstallSCDocMenu {
 		if(ref.notNil) {
 			url = url ++ "#" ++ ref;
 		};
-		HelpBrowser.instance.goTo(url);
+		HelpBrowser.instance.goTo(url).window.front;
 	}
 	*initClass {
 		var scDocMenu;
