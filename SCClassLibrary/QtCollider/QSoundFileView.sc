@@ -22,9 +22,9 @@ QSoundFileView : QView {
 
   readWithTask { this.read }
 
-  drawsWaveform { ^this.getProperty( \drawsWaveform ); }
+  drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
 
-  drawsWaveform_ { arg boolean; this.setProperty( \drawsWaveform, boolean ); }
+  drawsWaveForm_ { arg boolean; this.setProperty( \drawsWaveform, boolean ); }
 
   //// Info
 
