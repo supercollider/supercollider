@@ -12,6 +12,7 @@ SCDoc {
     classvar new_classes = nil;
     classvar didRun = false;
     classvar isProcessing = false;
+    classvar didMakeClassTree = false;
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
@@ -580,7 +581,8 @@ SCDoc {
             ^url;
         };
 
-        if(subtarget=="Overviews/ClassTree") {
+        if(subtarget=="Overviews/ClassTree" and: {didMakeClassTree.not}) {
+            didMakeClassTree = true;
             this.postProgress("Generating Class tree...",true);
             p.overviewClassTree;
             r.render(p, path, "Overviews", false);
@@ -755,7 +757,7 @@ SCDoc {
                 if(doWait and: {count = count + 1; count > 10}) {0.wait; count = 0};
             };
         };
-       
+
         this.postProgress("Making metadata for undocumented classes");
         classes.do {|name|
             var class;
