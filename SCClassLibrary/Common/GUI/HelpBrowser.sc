@@ -42,7 +42,7 @@ HelpBrowser {
 		}.play(AppClock,0);
 		
 		Routine {
-			webView.url = SCDoc.prepareHelpForURL(url, true);
+			webView.url = SCDoc.prepareHelpForURL(url, true) ?? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
 			done = true;
 		}.play(AppClock,0);
 	}

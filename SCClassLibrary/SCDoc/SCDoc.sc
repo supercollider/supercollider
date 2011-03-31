@@ -608,7 +608,7 @@ SCDoc {
             } {
                 this.postProgress("Broken link:"+url);
                 isProcessing = false;
-                ^"file://"++helpTargetDir++"/BrokenLink.html#"++url;
+                ^nil;
             };
         } {
             if(src.notNil and: {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
