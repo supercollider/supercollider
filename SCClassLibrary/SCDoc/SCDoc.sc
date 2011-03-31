@@ -2,7 +2,7 @@ SCDoc {
     classvar <helpTargetDir;
     classvar <helpSourceDir;
     classvar <helpBaseDir;
-    classvar <helpSourceDirs;
+    classvar helpSourceDirs;
     classvar doc_map = nil;
     classvar <p, <r;
     classvar doWait;
@@ -15,6 +15,11 @@ SCDoc {
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
+    }
+
+    *helpSourceDirs {
+        this.findHelpSourceDirs;
+        ^helpSourceDirs;
     }
 
     *helpBaseDir_ {|path|
