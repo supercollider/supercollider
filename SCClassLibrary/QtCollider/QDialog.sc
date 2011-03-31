@@ -7,7 +7,7 @@ QFileDialog : QObject {
     if( cancelFunc.notNil ) {
       me.connectFunction( 'rejected()', { cancelFunc.value() } );
     };
-    me.invokeMethod('show');
+    me.invokeMethod('show', synchronous:false);
     ^me;
   }
 }
