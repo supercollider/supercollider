@@ -483,6 +483,7 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
         setSelectionEnd( _curSel, _dragFrame );
         _dragFrame = s.start;
       }
+      Q_EMIT( action() );
     }
     else {
       if( !(mods & CTRL) ) {
@@ -490,11 +491,13 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
         _selections[_curSel].start = _dragFrame;
         _selections[_curSel].size = 0;
         update();
+        Q_EMIT( action() );
       }
       if( _cursorEditable ) {
         _cursorPos = _dragFrame;
         if( mods & CTRL )  _dragAction = MoveCursor;
         update();
+        Q_EMIT( metaAction() );
       }
     }
 
@@ -515,6 +518,7 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
 void QcWaveform::mouseDoubleClickEvent ( QMouseEvent * )
 {
   setSelection( _curSel, 0, sfInfo.frames );
+  Q_EMIT( action() );
 }
 
 void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
@@ -524,7 +528,6 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
     qint64 dif = qMax( _beg * -1.0, dpos * _fpp );
     scrollTo( _beg + dif );
     _dragPoint = ev->pos();
-    Q_EMIT( action() );
   }
   else if( _dragAction == Zoom ) {
     double factor = pow( 2, (ev->pos().y() - _dragPoint.y()) * 0.008 );
@@ -551,7 +554,7 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
   else if( _dragAction == MoveCursor ) {
     _cursorPos = qMax( 0, qMin( width(), ev->pos().x() ) ) * _fpp + _beg;
     update();
-    Q_EMIT( action() );
+    Q_EMIT( metaAction() );
   }
 }
 
