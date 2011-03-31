@@ -130,16 +130,30 @@ QSoundFileView : QView {
 
   // cursor
 
+  timeCursorOn { ^this.getProperty( \cursorVisible ); }
   timeCursorOn_ { arg flag; this.setProperty( \cursorVisible, flag ) }
+
+  timeCursorEditable { ^this.getProperty( \cursorEditable ); }
   timeCursorEditable_ { arg flag; this.setProperty( \cursorEditable, flag ) }
+
+  timeCursorPosition { ^this.getProperty( \cursorPosition ); }
   timeCursorPosition_ { arg frame; this.setProperty( \cursorPosition, frame ) }
+
+  timeCursorColor { ^this.getProperty( \cursorColor, Color.new ); }
   timeCursorColor_ { arg color; this.setProperty( \cursorColor, color ) }
 
   // grid
 
+  gridOn { ^this.getProperty( \gridVisible ); }
   gridOn_ { arg flag; this.setProperty( \gridVisible, flag ) }
+
+  gridResolution { ^this.getProperty( \gridResolution ) }
   gridResolution_ { arg seconds; this.setProperty( \gridResolution, seconds ) }
+
+  gridOffset { ^this.getProperty( \gridOffset ) }
   gridOffset_ { arg seconds; this.setProperty( \gridOffset, seconds ) }
+
+  gridColor { ^this.getProperty( \gridColor, Color.new ) }
   gridColor_ { arg color; this.setProperty( \gridColor, color ) }
 
   // actions

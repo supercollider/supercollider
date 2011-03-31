@@ -92,13 +92,13 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( float yZoom READ yZoom WRITE setYZoom );
   Q_PROPERTY( float xZoom READ xZoom WRITE setXZoom );
   Q_PROPERTY( bool cursorVisible READ cursorVisible WRITE setCursorVisible );
-  Q_PROPERTY( bool cursorEditable READ dummyBool WRITE setCursorEditable );
+  Q_PROPERTY( bool cursorEditable READ cursorEditable WRITE setCursorEditable );
   Q_PROPERTY( int cursorPosition READ cursorPosition WRITE setCursorPosition );
-  Q_PROPERTY( QColor cursorColor READ dummyColor WRITE setCursorColor );
-  Q_PROPERTY( bool gridVisible READ dummyFloat WRITE setGridVisible );
-  Q_PROPERTY( float gridOffset READ dummyFloat WRITE setGridOffset );
-  Q_PROPERTY( float gridResolution READ dummyFloat WRITE setGridResolution );
-  Q_PROPERTY( QColor gridColor READ dummyColor WRITE setGridColor );
+  Q_PROPERTY( QColor cursorColor READ cursorColor WRITE setCursorColor );
+  Q_PROPERTY( bool gridVisible READ gridVisible WRITE setGridVisible );
+  Q_PROPERTY( float gridOffset READ gridOffset WRITE setGridOffset );
+  Q_PROPERTY( float gridResolution READ gridResolution WRITE setGridResolution );
+  Q_PROPERTY( QColor gridColor READ gridColor WRITE setGridColor );
   Q_PROPERTY( bool drawsWaveform READ drawsWaveform WRITE setDrawsWaveform );
 
 public:
@@ -134,16 +134,22 @@ public:
   Q_INVOKABLE void setSelectionEditable( int index, bool editable );
   Q_INVOKABLE void setSelectionColor( int index, const QColor &clr );
 
-  bool cursorVisible() { return _showCursor; }
+  bool cursorVisible() const { return _showCursor; }
   void setCursorVisible( bool b ) { _showCursor = b; update(); }
-  int cursorPosition() { return _cursorPos; }
+  int cursorPosition() const { return _cursorPos; }
   void setCursorPosition( int pos ) { _cursorPos = pos; update(); }
+  QColor cursorColor() const { return _cursorColor; }
   void setCursorColor( const QColor &c ) { _cursorColor = c; update(); }
+  bool cursorEditable() const { return _cursorEditable; }
   void setCursorEditable( bool b ) { _cursorEditable = b; }
 
+  bool gridVisible() const { return _showGrid; }
   void setGridVisible( bool b ) { _showGrid = b; update(); }
+  float gridOffset() const { return _gridOffset; }
   void setGridOffset( float f ) { _gridOffset = f; update(); }
+  float gridResolution() const { return _gridResolution; }
   void setGridResolution( float f ) { _gridResolution = f; update(); }
+  QColor gridColor() const { return _gridColor; }
   void setGridColor( const QColor &c ) { _gridColor = c; update(); }
 
   void setPeakColor( const QColor &clr ) { _peakColor = clr; redraw(); }
