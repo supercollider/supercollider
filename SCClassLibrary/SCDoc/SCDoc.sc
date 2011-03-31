@@ -736,7 +736,7 @@ SCDoc {
     
     *getAllMetaData {
         var subtarget, classes, mets, count = 0, cats, t = Main.elapsedTime;
-        var force, mtime, update = false, doc;
+        var force, update = false, doc;
         
         this.postProgress("Getting metadata for all docs...");
         this.findHelpSourceDirs;
@@ -750,10 +750,15 @@ SCDoc {
         this.postProgress("Parsing metadata...");
         // parse all files in fileList
         helpSourceDirs.do {|dir|
+            var path, mtime;
             this.postProgress("- Collecting from"+dir);
-            ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp'").unixCmdGetStdOutLines.do {|path|
+            Platform.case(
+//                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -printf '%p;%T@\n'"},
+                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -exec stat -c \"%n;%Z\" {} +"},
+                \osx, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -exec stat -f \"%N;%m\" {} +"}
+            ).unixCmdGetStdOutLines.do {|line|
+                #path, mtime = line.split($;);
                 subtarget = path[dir.size+1 ..].drop(-7);
-                mtime = ("stat -c %Z"+path.escapeChar($ )).unixCmdGetStdOut.stripWhiteSpace; //this is the slow part!
                 doc = doc_map[subtarget];
                 if(doc.isNil or: {mtime != doc.mtime}) {
                     mets = p.parseMetaData(path);
