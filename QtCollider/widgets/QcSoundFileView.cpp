@@ -281,6 +281,30 @@ void QcWaveform::setSelectionColor( int i, const QColor &c )
   update();
 }
 
+VariantList QcWaveform::waveColors() const
+{
+  VariantList clist;
+#if 0
+  // FIXME there is no way to return an Array of Colors to SC
+  // as the Color objects should have been preallocated by the
+  // user, but we don't have an interface for that.
+
+  Q_FOREACH( QColor clr, _waveColors ) {
+    clist.data << QVariant(clr);
+  }
+#endif
+  return clist;
+}
+
+void QcWaveform::setWaveColors( const VariantList &list )
+{
+  _waveColors.clear();
+  Q_FOREACH( QVariant var, list.data ) {
+    _waveColors << var.value<QColor>();
+  }
+  redraw();
+}
+
 void QcWaveform::zoomTo( float z )
 {
   z = qMax( 0.f, qMin( 1.f, z ) );
@@ -617,14 +641,25 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   //spacing /= yscale;
 
   // initial painter setup
-  QPen minMaxPen( _peakColor );
-  QPen rmsPen( _rmsColor );
+  QPen minMaxPen;
+  QPen rmsPen;
 
   float halfChH = chHeight * 0.5;
   p.translate( 0.f, halfChH + spacing );
 
+  int waveColorN = _waveColors.count();
   int ch;
   for( ch = 0; ch < soundStream->channels(); ++ch ) {
+
+    if( ch < waveColorN && _waveColors[ch].isValid() ) {
+      QColor clr( _waveColors[ch] );
+      rmsPen.setColor( clr );
+      minMaxPen.setColor( clr.darker( 140 ) );
+    }
+    else {
+      rmsPen.setColor( _rmsColor );
+      minMaxPen.setColor( _peakColor );
+    }
 
     // draw center line
     p.setPen( QColor(90,90,90) );
