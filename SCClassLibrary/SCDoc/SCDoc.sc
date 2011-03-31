@@ -744,8 +744,6 @@ SCDoc {
                 if(doc.isNil or: {mtime != doc.mtime}) {
                     mets = p.parseMetaData(path);
                     this.addToDocMap(p,subtarget);
-                    //FIXME: undocumented methods too? or probably not!
-                    //makes sense to only include documented (and non-private) methods for documented classes.
                     doc_map[subtarget].methods = mets;
                     doc_map[subtarget].mtime = mtime;
                     update = true;
