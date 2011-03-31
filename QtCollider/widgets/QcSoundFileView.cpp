@@ -207,13 +207,22 @@ float QcWaveform::yZoom()
   return _yZoom;
 }
 
+VariantList QcWaveform::selections() const
+{
+  VariantList slist;
+  for( int i = 0; i < 64; ++i ) {
+    slist.data << QVariant::fromValue<VariantList>( selection(i) );
+  }
+  return slist;
+}
+
 void QcWaveform::setCurrentSelection( int i ) {
   if( i < 0 || i > 63 ) return;
   _curSel = i;
   update();
 }
 
-VariantList QcWaveform::selection( int i )
+VariantList QcWaveform::selection( int i ) const
 {
   VariantList l;
   if( i < 0 || i > 63 ) return l;

@@ -86,6 +86,7 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( int viewFrames READ viewFrames );
   Q_PROPERTY( int scrollPos READ scrollPos WRITE scrollTo );
   Q_PROPERTY( int currentSelection READ currentSelection WRITE setCurrentSelection );
+  Q_PROPERTY( VariantList selections READ selections );
   Q_PROPERTY( QColor peakColor READ dummyColor WRITE setPeakColor );
   Q_PROPERTY( QColor rmsColor READ dummyColor WRITE setRmsColor );
   Q_PROPERTY( float yZoom READ yZoom WRITE setYZoom );
@@ -122,9 +123,10 @@ public:
   float xZoom(); //visible seconds
   float yZoom(); //factor
 
+  VariantList selections() const;
   int currentSelection() const { return _curSel; }
   void setCurrentSelection( int i );
-  Q_INVOKABLE VariantList selection( int index );
+  Q_INVOKABLE VariantList selection( int index ) const;
   void setSelection( int i, quint64 a, quint64 b );
   Q_INVOKABLE void setSelection( int index, VariantList data );
   Q_INVOKABLE void setSelectionStart( int i, quint64 frame );
