@@ -210,6 +210,10 @@ QView : QObject {
     if( this.visible ) { this.invokeMethod( \showMinimized ) };
   }
 
+  unminimize {
+    if( this.getProperty( \minimized ) ) { this.invokeMethod( \showNormal ) };
+  }
+
   fullScreen {
     this.invokeMethod( \showFullScreen );
   }
