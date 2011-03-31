@@ -17,6 +17,11 @@ QRangeSlider : QAbstractStepValue {
     }
   }
 
+  pixelStep {
+    // FIXME for now we are using step instead
+    ^this.step;
+  }
+
   orientation_ { arg aSymbol;
     this.setProperty( \orientation, QOrientation(aSymbol) );
   }

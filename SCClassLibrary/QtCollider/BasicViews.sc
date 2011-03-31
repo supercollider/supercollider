@@ -76,7 +76,7 @@ QAbstractScroll : QView {
 }
 
 QAbstractStepValue : QView {
-  var <step, <shift_scale, <ctrl_scale, <alt_scale;
+  var <step = 0.1, <shift_scale = 100.0, <ctrl_scale = 10.0, <alt_scale = 0.1;
 
   step_ { arg aFloat;
     step = aFloat;
@@ -345,7 +345,8 @@ QSlider : QAbstractStepValue {
   }
 
   pixelStep {
-    ^0;
+    // FIXME for now we are using step instead
+    ^this.step;
   }
 
   orientation_ { arg aSymbol;

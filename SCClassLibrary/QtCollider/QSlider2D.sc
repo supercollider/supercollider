@@ -7,6 +7,16 @@ QSlider2D : QAbstractStepValue {
     ^me;
   }
 
+  pixelStepX {
+    // FIXME for now we are using step instead
+    ^this.step;
+  }
+
+  pixelStepY {
+    // FIXME for now we are using step instead
+    ^this.step;
+  }
+
   x {
     ^this.getProperty( \xValue );
   }
