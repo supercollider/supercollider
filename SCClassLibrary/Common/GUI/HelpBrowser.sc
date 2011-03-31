@@ -25,10 +25,8 @@ HelpBrowser {
 	}
 
 	goTo {|url|
-	//FIXME: if we first show the browser with HelpBrowser.instance.goTo, it will initialize it and goHome,
-	//so we get two instances of the routines below running!
-	//at least now SCDoc.prepareHelpForURL avoids being run more than one at the same time,
-	//but perhaps the interface for opening the helpbrowser on a specific URL (without changing homeUrl) should be improved.
+   	//FIXME: since multiple scdoc queries can be running at the same time,
+	//it would be best to create a queue and run them in order, but only use the url from the last.
 		var done = false, progress = [">---","->--","-->-","--->"];
 		var r = Routine {
 			block {|break|
@@ -115,12 +113,11 @@ HelpBrowser {
 		txtFind.action = { |x| webView.findText( x.string ); };
 
 		window.front;
-		this.goHome;
 	}
 }
 
 + Help {
 	gui {
-		HelpBrowser.instance.window.front;
+		HelpBrowser.instance.goHome;
 	}
 }
