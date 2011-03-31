@@ -138,52 +138,19 @@ SCDoc {
     }
 
     *handleUndocumentedClasses {
-        var n, m, name, cats, dest;
+        var n, m, name, cats;
         var destbase = helpTargetDir +/+ "Classes";
         this.postProgress("Generating docs for"+new_classes.size+"undocumented classes...",true);
         new_classes.do {|sym|
-            var c = sym.asClass;
             var name = sym.asString;
-            dest = destbase +/+ name ++ ".html";
-            n = List.new;
-            n.add((tag:\class, text:name));
-            n.add((tag:\summary, text:""));
-
-            cats = "Undocumented classes";
-            if(this.classHasArKrIr(c)) {
-                cats = cats ++ ", UGens>Undocumented";
-            };
-            if(c.categories.notNil) {
-                cats = cats ++ ", "++c.categories.join(", ");
-            };
-            n.add((tag:\categories, text:cats));
-
-            p.root = n;
+            var dest = destbase +/+ name ++ ".html";
+            this.makeClassTemplate(name,dest);
             this.addToDocMap(p, "Classes" +/+ name);
-            
-            n.add((tag:\description, children:m=List.new));
-            m.add((tag:\prose, text:"This class is missing documentation. Please create and edit HelpSource/Classes/"++name++".schelp", display:\block));
-
-            // FIXME: Remove this when conversion to new help system is done!
-            m.add((tag:\prose, text:"Old help file: ", display:\block));
-            m.add((tag:\link, text:Help.findHelpFile(name) ?? "not found", display:\inline));
-
-            this.makeMethodList(c.class,n,\classmethods);
-            this.makeMethodList(c,n,\instancemethods);
-            r.render(p,dest,"Classes");
-
             doc_map["Classes" +/+ name].delete = false;
             doc_map["Classes" +/+ name].methods = r.methods;
             this.tickProgress;
         };
     }
-    
-/*    *classHash {|c|
-        var hash;
-        //Problems: probably very slow! Also it doesn't work if one of the superclasses changed..
-        hash = (((c.methods ++ c.class.methods) ?? []).collect {|m| m.code}).flatten.asString.hash;
-        ^hash;
-    }*/
 
     *addToDocMap {|parser, path|
         var c, x = parser.findNode(\class).text;
@@ -205,10 +172,6 @@ SCDoc {
             } {\missing};
         };
 
-//        if(x.notEmpty) {
-//            doc.hashnum = this.classHash(x.stripWhiteSpace.asSymbol.asClass);
-//        };
-        
         doc_map[path] = doc;
     }
 
