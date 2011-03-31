@@ -43,6 +43,11 @@ QSlider2D : QAbstractStepValue {
     this.doAction;
   }
 
+  incrementX { arg factor=1.0; this.invokeMethod( \incrementX, factor.asFloat ); }
+  decrementX { arg factor=1.0; this.invokeMethod( \decrementX, factor.asFloat ); }
+  incrementY { arg factor=1.0; this.invokeMethod( \incrementY, factor.asFloat ); }
+  decrementY { arg factor=1.0; this.invokeMethod( \decrementY, factor.asFloat ); }
+
   randomize {
     this.setXYActive( 1.0.rand, 1.0.rand );
   }
