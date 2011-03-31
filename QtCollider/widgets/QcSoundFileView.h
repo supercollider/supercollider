@@ -133,6 +133,7 @@ public:
   Q_INVOKABLE void setSelectionEnd( int i, quint64 frame );
   Q_INVOKABLE void setSelectionEditable( int index, bool editable );
   Q_INVOKABLE void setSelectionColor( int index, const QColor &clr );
+  Q_PROPERTY( VariantList waveColors READ waveColors WRITE setWaveColors );
 
   bool cursorVisible() const { return _showCursor; }
   void setCursorVisible( bool b ) { _showCursor = b; update(); }
@@ -157,6 +158,8 @@ public:
 
   bool drawsWaveform() const { return _drawWaveform; }
   void setDrawsWaveform( bool b ) { _drawWaveform = b; update(); }
+  VariantList waveColors() const;
+  void setWaveColors( const VariantList & );
 
   QSize sizeHint() const { return QSize( 400, 200 ); }
   QSize minimumSizeHint() const { return QSize( 100, 20 ); }
@@ -237,6 +240,7 @@ private:
   QColor _rmsColor;
   bool dirty;
   bool _drawWaveform;
+  QList<QColor> _waveColors;
 
   // interaction
   enum DragAction {

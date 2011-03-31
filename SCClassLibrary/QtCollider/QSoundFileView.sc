@@ -2,6 +2,7 @@ QSoundFileView : QView {
 
   var <>soundfile;
   var <metaAction;
+  var <waveColors;
 
   *qtClass { ^"QcWaveform" }
 
@@ -25,6 +26,11 @@ QSoundFileView : QView {
   drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
 
   drawsWaveForm_ { arg boolean; this.setProperty( \drawsWaveform, boolean ); }
+
+  waveColors_ { arg colorArray;
+    this.setProperty( \waveColors, colorArray );
+    waveColors = colorArray;
+  }
 
   //// Info
 
