@@ -39,6 +39,26 @@ QcSlider2D::QcSlider2D() :
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 }
 
+void QcSlider2D::incrementX( float factor )
+{
+   setValue( QPointF( _step * factor + _x, _y ) );
+}
+
+void QcSlider2D::decrementX( float factor )
+{
+  setValue( QPointF( -_step * factor + _x, _y ) );
+}
+
+void QcSlider2D::incrementY( float factor )
+{
+   setValue( QPointF( _x, _step * factor + _y ) );
+}
+
+void QcSlider2D::decrementY( float factor )
+{
+   setValue( QPointF( _x, -_step * factor + _y ) );
+}
+
 QRect QcSlider2D::thumbRect()
 {
   QRect r;
