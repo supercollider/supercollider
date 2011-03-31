@@ -73,6 +73,8 @@ QSoundFileView : QView {
 
   //// Selections
 
+  selections { ^this.getProperty( \selections ); }
+
   currentSelection { ^this.getProperty( \currentSelection ); }
 
   currentSelection_ { arg index; this.setProperty( \currentSelection, index ); }
