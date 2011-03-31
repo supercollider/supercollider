@@ -207,19 +207,19 @@ QView : QObject {
   }
 
   minimize {
-    if( this.visible ) { this.invokeMethod( \showMinimized ) };
+    if( this.visible ) { this.invokeMethod( \showMinimized, synchronous:false ) };
   }
 
   unminimize {
-    if( this.getProperty( \minimized ) ) { this.invokeMethod( \showNormal ) };
+    if( this.getProperty( \minimized ) ) { this.invokeMethod( \showNormal, synchronous:false ) };
   }
 
   fullScreen {
-    this.invokeMethod( \showFullScreen );
+    this.invokeMethod( \showFullScreen, synchronous:false );
   }
 
   endFullScreen {
-    if( this.getProperty( \fullScreen ) ) { this.invokeMethod( \showNormal ) };
+    if( this.getProperty( \fullScreen ) ) { this.invokeMethod( \showNormal, synchronous:false ) };
   }
 
   alpha_ { arg aFloat;

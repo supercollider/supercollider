@@ -97,7 +97,7 @@ QObject {
     ^this.primitiveFailed
   }
 
-  invokeMethod { arg method, arguments, synchronous = false;
+  invokeMethod { arg method, arguments, synchronous = true;
     _QObject_InvokeMethod
     ^this.primitiveFailed
   }
