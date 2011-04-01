@@ -221,7 +221,7 @@ SCMovieView : SCView{
 
 SCWebView : SCView{
 	
-	var <>pageLoadedAction, <onLinkActivated;
+	var <>onLoadFinished, <>onLoadFailed, <onLinkActivated;
 
 	url_ {|path|
 		if ( path.contains( "SC://"), {
@@ -236,9 +236,9 @@ SCWebView : SCView{
 		this.setProperty(\url, path);
 	}
 	
-	url {
-		^this.getProperty(\url);
-	}
+	url { ^this.getProperty(\url);}
+	
+	title { ^this.getProperty(\title);}
 	
 	forward { this.setProperty(\forward);}
 	
@@ -246,27 +246,33 @@ SCWebView : SCView{
 	
 	reload { this.setProperty(\reload);}
 	
-	didLoad { pageLoadedAction.value(this); }
+	didLoad { onLoadFinished.value(this); }
+	
+	didFail { onLoadFailed.value(this); }
 	
 	// Get the displayed content in html form.
-	html { ^this.getProperty( \html ); }
+	html { ^this.getProperty(\html); }
 
 	// Set html content.
 	html_ { arg htmlString;
-		this.setProperty( \html, htmlString );
+		this.setProperty(\html, htmlString);
+	}
+	
+	editable_ { arg bool;
+		this.setProperty(\editable, bool);
 	}
 
-	selectedText { ^this.getProperty( \selectedText ); }
+	selectedText { ^this.getProperty(\selectedText); }
 
 	// Try to extract plain text from html content and return it.
-	plainText { ^this.getProperty( \plainText ); }
+	plainText { ^this.getProperty(\plainText); }
 	
 	onLinkActivated_{|func| 
 		onLinkActivated = func;
 		this.setProperty(\handleLinks, func.isNil);
 	} 
 	
-	linkActivated {|linkString| onLinkActivated.value(linkString) }
+	linkActivated {|linkString| onLinkActivated.value(this, linkString) }
 	
 	findText { arg string, reverse = false;
 		this.setProperty( \findText, [string, reverse] );

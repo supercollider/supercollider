@@ -117,8 +117,12 @@
 - (void)setSCObject: (struct SCWebView*)inObject;
 - (struct SCWebView*)getSCObject;
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame;
+- (void)webView:(WebView *)sender didFailProvisionalLoadWithError:(NSError *)error forFrame:(WebFrame *)frame;
+- (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error;
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector;
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id )listener;
+- (void)webView:(WebView *)webView unableToImplementPolicyWithError:(NSError *)error frame:(WebFrame *)frame;
+- (void)doLinkAction:(NSString *)urlString;
 
 @end
 
@@ -186,6 +190,7 @@ public:
 	void tabPrevFocus();
 	void tabNextFocus();
 	virtual void doOnLoadAction();
+	virtual void doLoadFailedAction();
 	virtual void doLinkClickedAction(PyrString* pstring);
 	virtual NSView* focusResponder() { return mWebView; }
 	SCTopView* getTop() { return mTop; }

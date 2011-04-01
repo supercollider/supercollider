@@ -1108,9 +1108,11 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 // delegate methods
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
+	//NSLog(@"frame load finished");
 	loadCount = loadCount - 1;
 	if(loadCount < 0) loadCount = 0;
 	if (loadCount == 0 && mSCWebView) {
+		//NSLog(@"all load finished");
 		mSCWebView->doOnLoadAction();
 	}
 }
@@ -1118,21 +1120,63 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame
 {
 	loadCount = loadCount + 1;
+	//NSLog(@"load started");
+}
+
+- (void)webView:(WebView *)sender didFailProvisionalLoadWithError:(NSError *)error forFrame:(WebFrame *)frame
+{
+	NSLog(@"didFailProvisionalLoadWithError: %@",[error localizedDescription]);
+	if (mSCWebView) {
+		post("SCWebView load request failed: '%s'\n", [[error localizedDescription] cString]);
+		mSCWebView->doLoadFailedAction();
+	}
+}
+
+- (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error
+{
+	NSLog(@"didFailLoadWithError: %@",[error localizedDescription]);
+	if (mSCWebView) {
+		post("SCWebView load request failed: '%s'\n", [[error localizedDescription] cString]);
+		mSCWebView->doLoadFailedAction();
+	}
 }
 
 // call link action if set, otherwise proceed
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id )listener
 {	
-	if(handleLinks) {
+	//NSLog(@"decide policy");
+	int actionKey = [[actionInformation objectForKey:WebActionNavigationTypeKey] intValue];
+	if(actionKey == WebNavigationTypeLinkClicked) {
+		//NSLog(@"link clicked");
+		if(handleLinks) {
+			loadCount = 0;
+			//NSLog(@"handle link");
+			[listener use];
+		} else {
+			//NSLog(@"fire action");
+			[listener ignore];
+			NSString *urlString = [[request URL] absoluteString];
+			[self doLinkAction:urlString];
+		}
+	} else { 
 		[listener use];
-	} else {
-		VMGlobals *g = gMainVMGlobals;
-		NSString *urlString = [[request URL] path];
-		const char * cstr = [urlString UTF8String];
-        PyrString *string = newPyrString(g->gc, cstr, 0, true);
-		mSCWebView->doLinkClickedAction(string);
+		//NSLog(@"link not clicked");
 	}
 
+}
+
+// handle error
+- (void)webView:(WebView *)webView unableToImplementPolicyWithError:(NSError *)error frame:(WebFrame *)frame
+{
+	NSLog(@"unableToImplementPolicyWithError: %@",[error localizedDescription]);
+}
+
+- (void)doLinkAction:(NSString *)urlString
+{
+	VMGlobals *g = gMainVMGlobals;
+	const char * cstr = [urlString UTF8String];
+	PyrString *string = newPyrString(g->gc, cstr, 0, true);
+	mSCWebView->doLinkClickedAction(string);
 }
 
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector
@@ -2457,6 +2501,20 @@ void SCWebView::doOnLoadAction()
 	pthread_mutex_unlock (&gLangMutex);
 }
 
+void SCWebView::doLoadFailedAction()
+{
+	pthread_mutex_lock (&gLangMutex);			
+	if(compiledOK){
+		PyrSymbol *method = getsym("didFail");
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, mObj); 
+		runInterpreter(g, method, 1);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
+}
+
 void SCWebView::doLinkClickedAction(PyrString* pstring)
 {
 	pthread_mutex_lock (&gLangMutex);			
@@ -2483,10 +2541,7 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		if(!pstring) return errFailed;
 		[mWebView resetLoadCount];
 		NSString *path = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
-		
 		[[mWebView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:path]]];
-		
-		[path release];
 		return errNone;
 	}
 	
@@ -2562,6 +2617,12 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		return errNone;
 	}
 	
+	if (strcmp(name, "editable")==0) {
+		bool editable = IsTrue(slot);
+		[mWebView setEditable: editable];
+		return errNone;
+	}
+	
 	if (strcmp(name, "findText")==0) {
 		if(!isKindOfSlot(slot, class_array)) return errWrongType;
 		PyrSlot *slots =slotRawObject(slot)->slots;
@@ -2585,11 +2646,12 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 int SCWebView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	char *name = symbol->name;
+	VMGlobals *g = gMainVMGlobals;
 	
 	if (strcmp(name, "url")==0) {
 		NSString *rawLocationString = [mWebView stringByEvaluatingJavaScriptFromString:@"location.href;"];
 		const char * cstr = [rawLocationString UTF8String];
-        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(slot, string);
 		return errNone;
 	}
@@ -2597,7 +2659,7 @@ int SCWebView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "html")==0) {
 		NSString *html = [mWebView stringByEvaluatingJavaScriptFromString:@"document.documentElement.outerHTML"];
 		const char * cstr = [html UTF8String];
-        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(slot, string);
 		return errNone;
 	}
@@ -2605,7 +2667,7 @@ int SCWebView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "plainText")==0) {
 		NSString *plainText = [mWebView stringByEvaluatingJavaScriptFromString:@"document.body.innerText"];
 		const char * cstr = [plainText UTF8String];
-        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(slot, string);
 		return errNone;
 	}
@@ -2613,7 +2675,15 @@ int SCWebView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "selectedText")==0) {
 		NSString *selectedText = [mWebView stringByEvaluatingJavaScriptFromString:@"(function (){return window.getSelection().toString();})();"];
 		const char * cstr = [selectedText UTF8String];
-        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
+        SetObject(slot, string);
+		return errNone;
+	}
+	
+	if (strcmp(name, "title")==0) {
+		NSString *rawLocationString = [mWebView mainFrameTitle];
+		const char * cstr = [rawLocationString UTF8String];
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(slot, string);
 		return errNone;
 	}
