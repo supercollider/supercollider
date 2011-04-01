@@ -5,7 +5,7 @@ HelpBrowser {
 	var <>homeUrl;
 	var <window;
 	var webView;
-	var lblStatus;
+	var lblStatus, animCount = 0;
 
 	*instance {
 		var homeUrl;
@@ -27,24 +27,10 @@ HelpBrowser {
 	goTo {|url|
    	//FIXME: since multiple scdoc queries can be running at the same time,
 	//it would be best to create a queue and run them in order, but only use the url from the last.
-		var done = false, progress = [">---","->--","-->-","--->"];
-		var r = Routine {
-			block {|break|
-				loop {
-					progress.do {|p|
-						0.3.wait;
-						if(done) {break.value};
-						lblStatus.string_("Wait"+p);
-					};
-				};
-			};
-			lblStatus.string_("");
-		}.play(AppClock,0);
-		
+		this.startAnim;
 		Routine {
 			webView.url = SCDoc.prepareHelpForURL(url, true) ?? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
-			done = true;
-		}.play(AppClock,0);
+		}.play(AppClock);
 	}
 
 	goHome { this.goTo(homeUrl); }
@@ -86,6 +72,7 @@ HelpBrowser {
 		x = x + 5;
 		lblStatus = StaticText.new( window, Rect(x, y, w, h) )
 			.resize_(1);
+        lblStatus.font = Font.defaultSansFace.boldVariant;
 
 		w = 200;
 		x = winRect.width - marg - w;
@@ -103,6 +90,8 @@ HelpBrowser {
 		h = winRect.height - y - marg;
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
 
+		webView.onLoadFinished = { this.stopAnim };
+		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
 			this.goTo(url);
 		};
@@ -112,6 +101,31 @@ HelpBrowser {
 		toolbar[\Forward].action = { this.goForward };
 		txtFind.action = { |x| webView.findText( x.string ); };
 	}
+
+	startAnim {
+		var progress = [">---","->--","-->-","--->"];
+		animCount = animCount + 1;
+		if(animCount==1) {
+		    Routine {
+			    block {|break|
+				    loop {
+					    progress.do {|p|
+						    lblStatus.string_("Wait"+p);
+						    0.3.wait;
+						    if(animCount==0) {break.value};
+					    };
+				    };
+			    };
+			    lblStatus.string_("");
+		    }.play(AppClock);
+		};
+	}
+	stopAnim {
+		if(animCount>0) {
+			animCount = animCount - 1;
+		};
+	}
+
 }
 
 + Help {
