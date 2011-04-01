@@ -2,18 +2,25 @@ SCDoc {
     classvar <helpTargetDir;
     classvar <helpSourceDir;
     classvar <helpBaseDir;
-    classvar <helpSourceDirs;
+    classvar helpSourceDirs;
     classvar doc_map = nil;
     classvar <p, <r;
     classvar doWait;
     classvar progressText = nil, progressWindow = nil;
-    classvar progressCount = 0, progressMax = 1;
+    classvar progressCount = 0, progressMax = 0;
     classvar progressTopic = nil, progressBar = nil, closeButton = nil;
     classvar new_classes = nil;
     classvar didRun = false;
+    classvar isProcessing = false;
+    classvar didMakeClassTree = false;
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
+    }
+
+    *helpSourceDirs {
+        this.findHelpSourceDirs;
+        ^helpSourceDirs;
     }
 
     *helpBaseDir_ {|path|
@@ -25,14 +32,15 @@ SCDoc {
         helpTargetDir = path.standardizePath;
     }
 
-    *waitForHelp {|func,gui=true|
+/*    *waitForHelp {|func,gui=true|
         if(didRun.not)
             {this.updateAll(doneFunc:func,gui:gui)}
             {func.value};
-    }
+    }*/
 
     *postProgress {|string,setTopic=false|
-        var prg = (progressCount/progressMax*100).round(0.1).asString ++ "%";
+        var prg = "";
+        if(progressMax>0) {prg = (progressCount/progressMax*100).round(0.1).asString ++ "% "};
         if(progressWindow.notNil) {
             if(setTopic, {
                 progressTopic.string = string;
@@ -40,9 +48,9 @@ SCDoc {
             }, {
                 progressText.string = prg+string;
             });
-            progressBar.lo_(0).hi_(progressCount/progressMax);
+            if(progressMax>0) {progressBar.lo_(0).hi_(progressCount/progressMax)};
         };
-        (prg+string).postln;
+        ("SCDoc:"+prg++string).postln;
         if(doWait, {0.wait});
     }
 
@@ -84,19 +92,29 @@ SCDoc {
         doWait = false;
     }
 
-    *makeMethodList {|c,n,tag|
-        var l, mets, name, syms;
-
-        (mets = c.methods) !? {
+    *addMethodList {|c,n,tag|
+        var l, x = this.makeMethodList(c);
+        if(x.notEmpty) {
             n.add((tag:tag, children:l=List.new));
+            x.do {|m|
+                l.add((tag:\method, text:m));
+            };
+        };
+    }
+
+    *makeMethodList {|c|
+        var l, mets, name, syms;
+        l = List.new;
+        (mets = c.methods) !? {
             syms = mets.collectAs(_.name,IdentitySet);
             mets.do {|m| //need to iterate over mets to keep the order
                 name = m.name;
                 if (name.isSetter.not or: {syms.includes(name.asGetter).not}) {
-                    l.add((tag:\method, text:name.asString));
+                    l.add(name.asString);
                 };
             };
         };
+        ^l;
     }
 
     *classHasArKrIr {|c|
@@ -136,52 +154,19 @@ SCDoc {
     }
 
     *handleUndocumentedClasses {
-        var n, m, name, cats, dest;
+        var n, m, name, cats;
         var destbase = helpTargetDir +/+ "Classes";
         this.postProgress("Generating docs for"+new_classes.size+"undocumented classes...",true);
         new_classes.do {|sym|
-            var c = sym.asClass;
             var name = sym.asString;
-            dest = destbase +/+ name ++ ".html";
-            n = List.new;
-            n.add((tag:\class, text:name));
-            n.add((tag:\summary, text:""));
-
-            cats = "Undocumented classes";
-            if(this.classHasArKrIr(c)) {
-                cats = cats ++ ", UGens>Undocumented";
-            };
-            if(c.categories.notNil) {
-                cats = cats ++ ", "++c.categories.join(", ");
-            };
-            n.add((tag:\categories, text:cats));
-
-            p.root = n;
+            var dest = destbase +/+ name ++ ".html";
+            this.makeClassTemplate(name,dest);
             this.addToDocMap(p, "Classes" +/+ name);
-            
-            n.add((tag:\description, children:m=List.new));
-            m.add((tag:\prose, text:"This class is missing documentation. Please create and edit HelpSource/Classes/"++name++".schelp", display:\block));
-
-            // FIXME: Remove this when conversion to new help system is done!
-            m.add((tag:\prose, text:"Old help file: ", display:\block));
-            m.add((tag:\link, text:Help.findHelpFile(name) ?? "not found", display:\inline));
-
-            this.makeMethodList(c.class,n,\classmethods);
-            this.makeMethodList(c,n,\instancemethods);
-            r.render(p,dest,"Classes");
-
             doc_map["Classes" +/+ name].delete = false;
-            doc_map["Classes" +/+ name].methods = r.methods;
+            doc_map["Classes" +/+ name].methods = r.methodlist;
             this.tickProgress;
         };
     }
-    
-/*    *classHash {|c|
-        var hash;
-        //Problems: probably very slow! Also it doesn't work if one of the superclasses changed..
-        hash = (((c.methods ++ c.class.methods) ?? []).collect {|m| m.code}).flatten.asString.hash;
-        ^hash;
-    }*/
 
     *addToDocMap {|parser, path|
         var c, x = parser.findNode(\class).text;
@@ -203,10 +188,6 @@ SCDoc {
             } {\missing};
         };
 
-//        if(x.notEmpty) {
-//            doc.hashnum = this.classHash(x.stripWhiteSpace.asSymbol.asClass);
-//        };
-        
         doc_map[path] = doc;
     }
 
@@ -253,7 +234,7 @@ SCDoc {
     
     *docMap {
         if(doc_map.isNil) {
-            this.readDocMap;
+            this.getAllMetaData;
         };
         ^doc_map;
     }
@@ -288,7 +269,7 @@ SCDoc {
             p.parseFile(source);
             this.addToDocMap(p,subtarget);
             r.render(p,target,subtarget.dirname);
-            doc_map[subtarget].methods = r.methods;
+            doc_map[subtarget].methods = r.methodlist;
             if(subtarget.dirname=="Classes") {
                 if(new_classes.includes(subtarget.basename.asSymbol)) {
                     new_classes.remove(subtarget.basename.asSymbol);
@@ -554,7 +535,282 @@ SCDoc {
         }, func);
         
     }
+
+    *cleanStart {
+        didRun = false;
+        didMakeClassTree = false;
+        doc_map = nil;
+    }
+
+    *prepareHelpForURL {|url,doYield=false|
+        var proto, path, anchor;
+        var subtarget, src, c;
+
+        var needMetaData = Set["Browse","Search","Overviews/Documents","Overviews/Classes","Overviews/Methods"];
+
+        doWait = doYield;
+
+        if(isProcessing) {
+            "SCDoc: prepareHelpForURL already running.. waiting for the first to finish.".warn;
+            c = Condition.new;
+            Routine {
+                while {0.5.wait; isProcessing};
+                c.unhang;
+            }.play(AppClock);
+            c.hang;
+        };
+        isProcessing = true;
+
+        // parse URL
+        #proto, path, anchor = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1];
+        if(proto.isEmpty) {proto="file://"};
+        if(proto!="file://") {isProcessing = false; ^url}; // just pass through remote url's
+        if(path.beginsWith(helpTargetDir).not) {isProcessing = false; ^url}; // just pass through remote url's
+
+        this.findHelpSourceDirs;
+        
+        if(File.exists(helpTargetDir).not) {
+            this.cleanStart;
+        };
+        
+        // sync non-schelp files once every session
+        if(didRun.not) {
+            didRun = true;
+            this.syncNonHelpFiles;
+        };
+
+        // strip to subfolder/basename (like Classes/SinOsc)
+        subtarget = path[helpTargetDir.size+1 .. path.findBackwards(".")?path.size-1];
+        
+        // does URL need metadata?
+        if(needMetaData.includes(subtarget)) {
+            if(doc_map.isNil) {
+                this.getAllMetaData;
+            };
+            isProcessing = false;
+            ^url;
+        };
+
+        if(subtarget=="Overviews/ClassTree" and: {didMakeClassTree.not}) {
+            didMakeClassTree = true;
+            this.postProgress("Generating Class tree...",true);
+            p.overviewClassTree;
+            r.render(p, path, "Overviews", false);
+        };
+
+        // find help source file
+        block {|break|
+            src = nil;
+            helpSourceDirs.do {|dir|
+                var x = dir+/+subtarget++".schelp";
+                if(File.exists(x)) {
+                    src = x;
+                    break.value;
+                };
+            };
+        };
+
+        // create a simple stub if class was undocumented
+        if(src.isNil and: {subtarget.dirname=="Classes"}) {
+            this.makeClassTemplate(subtarget.basename,path);
+        };
+
+        if(File.exists(path).not) {
+            if(src.notNil) { // no target file, but helpsource found, parse and render.
+                this.postProgress("Parsing"+src);
+                p.parseFile(src);
+                r.render(p,path,subtarget.dirname);
+                isProcessing = false;
+                ^url;
+            } {
+                this.postProgress("Broken link:"+url);
+                isProcessing = false;
+                ^nil;
+            };
+        } {
+            if(src.notNil and: {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
+                // target file and helpsource exists, and helpsource is newer than target
+                p.parseFile(src);
+                r.render(p,path,subtarget.dirname);
+                isProcessing = false;
+                ^url;
+            };
+        };
+        isProcessing = false;
+        ^url;
+    }
     
+    *makeClassTemplate {|name,path|
+        var class = name.asSymbol.asClass;
+        var n, m, cats, methodstemplate, f;
+        f = class.filenameSymbol.asString.escapeChar($ );
+        if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
+            this.postProgress("Undocumented class, generating stub and template");
+            n = List.new;
+            n.add((tag:\class, text:name));
+            n.add((tag:\summary, text:""));
+
+            cats = "Undocumented classes";
+            if(this.classHasArKrIr(class)) {
+                cats = cats ++ ", UGens>Undocumented";
+            };
+            if(class.categories.notNil) {
+                cats = cats ++ ", "++class.categories.join(", ");
+            };
+            n.add((tag:\categories, text:cats));
+
+            p.root = n;
+            
+            n.add((tag:\description, children:m=List.new));
+            m.add((
+                tag:\prose,
+                text:"This class is missing documentation. See the ",
+                display:\block
+            ));
+            m.add((
+                tag:\link,
+                text:"#help_template#generated help template",
+                display:\inline
+            ));
+
+            this.addMethodList(class.class,n,\classmethods);
+            this.addMethodList(class,n,\instancemethods);
+            
+            f = {|x|
+                if(x.tag==\method) {
+                    methodstemplate = methodstemplate ++ "Method::" + x.text ++ "\n(describe method here)\n\nreturns:: (returnvalue)\n\n";
+                };
+            };
+            methodstemplate = "\nClassMethods::\n\n";
+            p.findNode(\classmethods).children.do(f);
+            methodstemplate = methodstemplate ++ "\nInstanceMethods::\n\n";
+            p.findNode(\instancemethods).children.do(f);
+
+            n.add((
+                tag:\section, text:"Help Template", children:[
+                    (tag:\prose, display:\block,
+                    text:"Fill out and save the template below to HelpSource/Classes/"++name++".schelp"),
+                    (tag:\code,
+                    text:"Class::"+name
+                    ++"\nsummary:: (put short description here)\n"
+                    ++"categories::"+cats
+                    ++"\nrelated:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.\n\n"
+                    ++"Description::\n(put long description here)\n\n"
+                    ++methodstemplate
+                    ++"\nExamples::\n\ncode::\n(some example code)\n::\n",
+                    display:\block)
+                ]
+            ));
+
+            r.render(p,path,"Classes");
+        };
+    }
+    
+    *findHelpSourceDirs {
+        if(helpSourceDirs.notNil) {^this};
+        this.postProgress("Finding HelpSource folders...");
+        helpSourceDirs = Set[helpSourceDir];
+        [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
+            helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
+                .unixCmdGetStdOutLines.asSet;
+        };
+        this.postProgress(helpSourceDirs.asString);
+    }
+    
+    *syncNonHelpFiles {
+        this.findHelpSourceDirs;
+        this.postProgress("Synchronizing non-schelp files");
+        helpSourceDirs.do {|dir|
+            ("rsync -rlt --exclude '*.schelp' --exclude '.*'"+dir.escapeChar($ )++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
+        };
+    }
+    
+    *getAllMetaData {
+        var subtarget, classes, mets, count = 0, cats, t = Main.elapsedTime;
+        var force, update = false, doc;
+        
+        this.postProgress("Getting metadata for all docs...");
+        this.findHelpSourceDirs;
+
+        classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
+
+        force = this.readDocMap;
+        
+        doc_map.do(_.delete=true);
+
+        this.postProgress("Parsing metadata...");
+        // parse all files in fileList
+        helpSourceDirs.do {|dir|
+            var path, mtime;
+            this.postProgress("- Collecting from"+dir);
+            Platform.case(
+//                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -printf '%p;%T@\n'"},
+                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -exec stat -c \"%n;%Z\" {} +"},
+                \osx, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -exec stat -f \"%N;%m\" {} +"}
+            ).unixCmdGetStdOutLines.do {|line|
+                #path, mtime = line.split($;);
+                subtarget = path[dir.size+1 ..].drop(-7);
+                doc = doc_map[subtarget];
+                if(doc.isNil or: {mtime != doc.mtime}) {
+                    mets = p.parseMetaData(path);
+                    this.addToDocMap(p,subtarget);
+                    doc_map[subtarget].methods = mets;
+                    doc_map[subtarget].mtime = mtime;
+                    update = true;
+                };
+                doc_map[subtarget].delete = false;
+                if(subtarget.dirname=="Classes") {
+                    classes.remove(subtarget.basename.asSymbol);
+                };
+                if(doWait and: {count = count + 1; count > 10}) {0.wait; count = 0};
+            };
+        };
+       
+        this.postProgress("Making metadata for undocumented classes");
+        classes.do {|name|
+            var class;
+            subtarget = "Classes/"++name.asString;
+            if(doc_map[subtarget].isNil) {
+                cats = "Undocumented classes";
+                class = name.asClass;
+                if(this.classHasArKrIr(class)) {
+                    cats = cats ++ ", UGens>Undocumented";
+                };
+                if(class.categories.notNil) {
+                    cats = cats ++ ", "++class.categories.join(", ");
+                };
+
+                p.root = [
+                    (tag:\class, text:name.asString),
+                    (tag:\categories, text:cats)
+                ];
+                this.addToDocMap(p,subtarget);
+                doc_map[subtarget].methods =
+                    (this.makeMethodList(class.class).collect{|m| "_*"++m}
+                    ++ this.makeMethodList(class).collect{|m| "_-"++m}).asList;
+                update = true;
+            };
+            doc_map[subtarget].delete = false;
+            if(doWait and: {count = count + 1; count > 10}) {0.wait; count = 0};
+        };
+
+        doc_map.pairsDo{|k,e|
+            if(e.delete==true, {
+                this.postProgress("Removing"+e.path+"from cache");
+                doc_map.removeAt(k);
+                update = true;
+            });
+            e.removeAt(\delete); //remove the key since we don't need it anymore
+        };
+        
+        if(update) {
+            this.writeDocMap;
+            this.postProgress("Writing JSON doc map");
+            this.docMapToJSON(helpTargetDir +/+ "docmap.js");
+        };
+        this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
+    }
+
     *findHelpFile {|str|
         ^r.findHelpFile(str);
     }
