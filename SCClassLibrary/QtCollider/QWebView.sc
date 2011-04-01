@@ -8,6 +8,8 @@ QWebView : QView {
 
   url_ { arg address; this.setProperty( \url, address ); }
 
+  title { ^this.getProperty( \title ); }
+
   // Get the displayed content in html form.
   html { ^this.getProperty( \html ); }
 
