@@ -299,7 +299,7 @@ if(SC_DOC)
 	file(GLOB_RECURSE SCDocClasses RELATIVE SCClassLibrary/SCDoc *.sc)
 
 	add_custom_target(doc ALL
-					COMMAND ${CMAKE_CURRENT_BINARY_DIR}/lang/sclang
+					COMMAND ${CMAKE_CURRENT_BINARY_DIR}/lang/sclang${CMAKE_EXECUTABLE_SUFFIX}
 							-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
 							HelpSource/compileHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/HelpBase
 					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
