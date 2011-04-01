@@ -234,7 +234,7 @@ SCDoc {
     
     *docMap {
         if(doc_map.isNil) {
-            this.readDocMap;
+            this.getAllMetaData;
         };
         ^doc_map;
     }
