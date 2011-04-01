@@ -327,10 +327,14 @@ SCDocHTMLRenderer : SCDocRenderer {
                     c = if(n.size>0) {baseDir+/+n++".html"} {""}; // url
                     if(m.size>0) {c=c++"#"++m}; // add #anchor
                     if(f.size<1) { // no label
-                        f = if(SCDoc.docMap[n].notNil)
-                            {SCDoc.docMap[n].title} // use doc title
-                            {n.basename}; // use filename
-                        if(m.size>0) {f = f++":"+m}; // add : anchor
+                        if(n.size>0) {
+                            f = if(SCDoc.docMap[n].notNil)
+                                {SCDoc.docMap[n].title} // use doc title
+                                {n.basename}; // use filename
+                            if(m.size>0) {f = f++":"+m}; // add : anchor
+                        } {
+                            f = if(m.size>0) {m} {"(empty link)"};
+                        };
                     };
                     file.write("<a href=\""++c++"\">"++this.escapeSpecialChars(f)++"</a>");
                 });
