@@ -134,6 +134,11 @@ set_property(TARGET libscsynth
 	APPEND
 	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
 
+find_library(DL NAMES dl)
+if (DL)
+    target_link_libraries(libscsynth ${DL})
+endif()
+
 if(AVAHI_FOUND)
 	add_definitions("-DHAVE_AVAHI=1")
 	include_directories(${AVAHI_INCLUDE_DIRS})
