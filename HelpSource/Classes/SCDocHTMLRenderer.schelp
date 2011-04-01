@@ -23,7 +23,7 @@ Scans the entire help tree for broken links
 
 instancemethods::
 
-private:: addUndocumentedMethods, renderFootNotes, renderTOC, escapeSpecialChars, renderHTMLSubTree, renderHTMLHeader, autoLinkClasses, methods
+private:: addUndocumentedMethods, renderFootNotes, renderTOC, escapeSpecialChars, renderHTMLSubTree, renderHTMLHeader, autoLinkClasses
 
 method:: render
 Render the tree contained in the code::parser:: instance variable to HTML file.
@@ -40,6 +40,9 @@ method:: findHelpFile
 returns:: the URL for help on given string
 discussion::
 If the string is empty or nil, return the home help page URL. If string is a class, return the URL for the helpfile for that class. If the string starts with uppercase but is not an existing class, then the Search page with this string. If the string starts with lowercase, then the Methods page for this method. (This page will redirect to Search if the method was not found)
+
+method:: methodlist
+See link::Classes/SCDocRenderer#-methodlist::
 
 examples::
 code::

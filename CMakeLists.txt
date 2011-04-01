@@ -143,7 +143,7 @@ option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
 
 
-option(SC_DOC "Generate SCDoc documentation." ON)
+option(SC_DOC "Generate SCDoc documentation." OFF)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
