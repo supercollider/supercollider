@@ -79,7 +79,7 @@ HelpBrowser {
 		x = x + 5;
 		lblStatus = StaticText.new( window, Rect(x, y, w, h) )
 			.resize_(1);
-        lblStatus.font = Font(Font.defaultSansFace).boldVariant;
+        lblStatus.font = Font(Font.defaultSansFace).boldVariant.size_(12);
 
 		w = 200;
 		x = winRect.width - marg - w;
