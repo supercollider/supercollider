@@ -536,6 +536,12 @@ SCDoc {
         
     }
 
+    *cleanStart {
+        didRun = false;
+        didMakeClassTree = false;
+        doc_map = nil;
+    }
+
     *prepareHelpForURL {|url,doYield=false|
         var proto, path, anchor;
         var subtarget, src, c;
@@ -562,6 +568,10 @@ SCDoc {
         if(path.beginsWith(helpTargetDir).not) {isProcessing = false; ^url}; // just pass through remote url's
         
         this.findHelpSourceDirs;
+        
+        if(File.exists(helpTargetDir).not) {
+            this.cleanStart;
+        };
         
         // sync non-schelp files once every session
         if(didRun.not) {
