@@ -177,7 +177,11 @@ SCDoc {
         );
 
         doc.title = if(x.notEmpty,x,{parser.findNode(\title).text});
-        
+        if(doc.title.isEmpty) {
+            doc.title = "NO TITLE:"+path;
+            warn("Document at"+path+"has no title:: or class:: tag");
+        };
+
         // check if class is standard, extension or missing
         if(x.notEmpty) {
             c = path.basename.asSymbol.asClass;
