@@ -323,11 +323,16 @@ SCDocHTMLRenderer : SCDocRenderer {
                 if("^[a-zA-Z]+://.+".matchRegexp(node.text) or: (node.text.first==$/),{
                     file.write("<a href=\""++node.text++"\">"++this.escapeSpecialChars(node.text)++"</a>");
                 },{
-                    f = node.text.split($#);
-                    m = if(f[1].size>0, {"#"++f[1]}, {""});
-                    n = f[2] ?? { f[0].split($/).last };
-                    c = if(f[0].size>0, {baseDir +/+ f[0]++".html"},{n=f[2]??f[1];""});
-                    file.write("<a href=\""++c++m++"\">"++this.escapeSpecialChars(n)++"</a>");
+                    #n, m, f = node.text.split($#); // link, anchor, label
+                    c = if(n.size>0) {baseDir+/+n++".html"} {""}; // url
+                    if(m.size>0) {c=c++"#"++m}; // add #anchor
+                    if(f.size<1) { // no label
+                        f = if(SCDoc.docMap[n].notNil)
+                            {SCDoc.docMap[n].title} // use doc title
+                            {n.basename}; // use filename
+                        if(m.size>0) {f = f++":"+m}; // add : anchor
+                    };
+                    file.write("<a href=\""++c++"\">"++this.escapeSpecialChars(f)++"</a>");
                 });
             },
             'anchor', {
