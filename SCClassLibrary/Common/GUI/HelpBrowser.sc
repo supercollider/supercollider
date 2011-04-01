@@ -79,7 +79,7 @@ HelpBrowser {
 		x = x + 5;
 		lblStatus = StaticText.new( window, Rect(x, y, w, h) )
 			.resize_(1);
-        lblStatus.font = Font.defaultSansFace.boldVariant;
+        lblStatus.font = Font(Font.defaultSansFace).boldVariant;
 
 		w = 200;
 		x = winRect.width - marg - w;
@@ -97,7 +97,7 @@ HelpBrowser {
 		h = winRect.height - y - marg;
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
 
-		webView.onLoadFinished = { this.stopAnim; window.name = "SuperCollider Help:"+webView.getProperty(\title) };
+		webView.onLoadFinished = { this.stopAnim; window.name = "SuperCollider Help:"+webView.title };
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
 			this.goTo(url);
