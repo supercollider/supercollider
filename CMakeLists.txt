@@ -281,7 +281,7 @@ list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/Def
 list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/JITLib")
 list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/backwards_compatibility")
 
-if(SC_QT)
+if(SC_QT AND NOT CMAKE_SYSTEM_NAME MATCHES "Linux") ## on linux, we don't include qtcollider to avoid connecting with the x server
 	list(APPEND BUILD_CLASSLIBRARIES "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/QtCollider")
 endif()
 
