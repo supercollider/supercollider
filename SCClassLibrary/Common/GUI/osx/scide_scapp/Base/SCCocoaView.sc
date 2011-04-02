@@ -221,7 +221,7 @@ SCMovieView : SCView{
 
 SCWebView : SCView{
 	
-	var <>onLoadFinished, <>onLoadFailed, <onLinkActivated;
+	var <>onLoadFinished, <>onLoadFailed, <onLinkActivated, <enterInterpretsSelection=true;
 
 	url_ {|path|
 		if ( path.contains( "SC://"), {
@@ -276,6 +276,11 @@ SCWebView : SCView{
 	
 	findText { arg string, reverse = false;
 		this.setProperty( \findText, [string, reverse] );
+	}
+	
+	enterInterpretsSelection_{|bool|
+		enterInterpretsSelection=bool;
+		this.setProperty(\enterExecutesSelection, bool);
 	}
 
 	*paletteExample{ arg parent, bounds;
