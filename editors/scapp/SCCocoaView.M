@@ -1083,6 +1083,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 -(void)initVars {
 	loadCount=0; 
 	handleLinks = true;
+	enterExecutesSelection = YES;
 }
 
 - (void)setSCObject: (struct SCWebView*)inObject
@@ -1187,7 +1188,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	//printf("keycode: %d\n", keycode);
 	
 	// Exec on Ctrl c or Enter
-	if ( (aSelector == @selector(insertNewline:) && (keycode == 76)) || ( keycode == 8) ) {
+	if ( (aSelector == @selector(insertNewline:) && enterExecutesSelection && (keycode == 76)) || ( keycode == 8) ) {
 			
 			if (!compiledOK) {
 				return NO;
@@ -1206,6 +1207,43 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 			return YES;
 		} 
 	return NO;
+}
+
+- (BOOL)webView:(WebView *)webView shouldInsertText:(NSString *)insertText replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action
+{
+	//post("sctir\n");
+	NSEvent* event = [NSApp currentEvent];
+	NSString *characters = [event characters];
+    unsigned int modifiers = [event modifierFlags];
+    unichar character = 0;
+    if([characters length] > 0) {
+        character = [characters characterAtIndex: 0];
+    }
+	if ([event keyCode] == 53){ //escape key breaks from modal or fullscreen windows
+		[[self window] keyDown:event];
+	}
+	mSCWebView->keyDown(character, modifiers,[event keyCode]);
+	return YES;
+}
+
+- (void)keyDown:(NSEvent *)event
+{
+	NSString *characters = [event characters];
+    unsigned int modifiers = [event modifierFlags];
+    unichar character = 0;
+    if([characters length] > 0) {
+        character = [characters characterAtIndex: 0];
+    }
+	if ([event keyCode] == 53){ //escape key breaks from modal or fullscreen windows
+		[[self window] keyDown:event];
+	}
+	mSCWebView->keyDown(character, modifiers,[event keyCode]);
+	[super keyDown:event];
+}
+
+- (void) setEnterExecutesSelection: (BOOL) flag
+{
+	enterExecutesSelection = flag;
 }
 
 @end
@@ -2447,11 +2485,13 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 	[mWebView setEditingDelegate:mWebView];
 	[mWebView setFrameLoadDelegate:mWebView];
 	[mWebView setPolicyDelegate:mWebView];
+	//[mWebView setUIDelegate:mWebView];
 	
 	[mWebView setSCObject: this];
 	
 	[mWebView setFocusRingType:NSFocusRingTypeNone];
 	[mWebView setEditable:YES];
+	[mWebView setEnterExecutesSelection:YES];
 	
 	setVisibleFromParent();
 }
@@ -2636,6 +2676,12 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		bool goesForward = IsFalse(dir);
 
 		[mWebView searchFor:searchText direction:goesForward caseSensitive:NO wrap:YES];
+		return errNone;
+	}
+	
+	if (strcmp(name, "enterExecutesSelection")==0) {
+		if(IsTrue(slot))[mWebView setEnterExecutesSelection:YES];
+		else [mWebView setEnterExecutesSelection:NO];
 		return errNone;
 	}
 	
