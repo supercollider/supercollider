@@ -16,6 +16,11 @@ Exception {
 	reportError {
 		this.errorString.postln;
 		this.dumpBackTrace;
+		this.adviceLink.postln;
+	}
+	adviceLink {
+		^("For advice: [http://supercollider.sf.net/wiki/index.php/%]"
+			.format(this.errorString.tr($ , $_).tr($\n, $_)));
 	}
 	isException { ^true }
 }
@@ -41,6 +46,7 @@ MethodError : Error {
 		receiver.dump;
 		this.errorPathString.post;
 		this.dumpBackTrace;
+		this.adviceLink.postln;
 	}
 }
 
@@ -95,6 +101,7 @@ DoesNotUnderstandError : MethodError {
 		args.dumpAll;
 		this.errorPathString.post;
 		this.dumpBackTrace;
+		this.adviceLink.postln;
 	}
 }
 
@@ -153,6 +160,7 @@ DeprecatedError : Error {
 
 	reportError {
 		this.errorString.postln;
+		this.adviceLink.postln;
 	}
 
 	throw {
