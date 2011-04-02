@@ -47,7 +47,7 @@ function buildMethodList() {
                 var mname = m.slice(2);
                 var pfx = m[1];
                 var ext = m[0]=="+";
-                if(!methods[mname])
+                if(!methods.hasOwnProperty(mname))
                     methods[mname] = [];
                 methods[mname].push({doc:doc,pfx:pfx,ext:ext});
             }

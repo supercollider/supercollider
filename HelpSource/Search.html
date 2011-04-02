@@ -79,6 +79,11 @@ table#search_settings {
     text-align: right;
     font-size: 9pt;
 }
+#js_error {
+    font-family: Andale Mono, monospace;
+    font-size: 9pt;
+    color: red;
+}
 </style>
 <noscript>
 <p>The search page needs JavaScript.
@@ -97,7 +102,11 @@ escape_regexp = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
   return str.replace(specials, "\\$&");
 }
-    
+
+function debug(str) {
+    document.getElementById("js_error").innerHTML += str + "<br>"
+}
+
 var methods;
 function buildMethodList() {
     methods = {};
@@ -110,9 +119,14 @@ function buildMethodList() {
                 var mname = m.slice(2);
                 var pfx = m[1];
                 var ext = m[0]=="+";
-                if(!methods[mname])
+                if(!methods.hasOwnProperty(mname))
                     methods[mname] = [];
-                methods[mname].push({doc:doc,pfx:pfx,ext:ext});
+                if(!methods[mname].push) {
+                    debug("Problem with method '"+mname+"' in "+doc.path);
+                    debug(methods[mname].toString());
+                } else {
+                    methods[mname].push({doc:doc,pfx:pfx,ext:ext});
+                }
             }
         }
     }
@@ -248,7 +262,7 @@ function matchDoc(doc,file,folder,re) {
     for(var i=0;i<fields.length;i++) {
         var f = fields[i];
 //        if(checkboxes[i].checked && doc[f] && doc[f].toLowerCase().indexOf(txt)>=0)
-        if(checkboxes[i].checked && doc[f] && re.test(doc[f]))
+        if(checkboxes[i].checked && doc.hasOwnProperty(f) && re.test(doc[f]))
             return true;
     }
 
@@ -489,7 +503,7 @@ function doSearch() {
 
             if(matchDoc(v,file,folder,re)) {
                 var c = v.categories;
-                if(!cats[c])
+                if(!cats.hasOwnProperty(c))
                     cats[c]=[];
                 cats[c].push(v);
 
@@ -604,7 +618,7 @@ Search text:<input type="text" id="search_input" value="" size="40" onkeyup="Sea
 <div id="random"><a href="javascript:randomDoc()">random page</a></div>
 <div id="search_count">0 results</div>
 <div id="search_results"></div>
-
+<div id="js_error"></div>
 </body>
 </html>
 
