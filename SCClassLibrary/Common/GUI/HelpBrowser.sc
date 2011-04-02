@@ -24,6 +24,17 @@ HelpBrowser {
 		^super.new.init( homeUrl );
 	}
 
+	*openBrowser {
+		this.instance.goTo(SCDoc.helpTargetDir++"/Browse.html").window.front;
+	}
+	*openSearch {|text|
+		text = if(text.notNil) {"#"++text} {""};
+		this.instance.goTo(SCDoc.helpTargetDir++"/Search.html"++text).window.front;
+	}
+	*openHelpFor {|text|
+		this.instance.goTo(SCDoc.findHelpFile(text)).window.front;
+	}
+
 	goTo {|url|
 		var newPath, oldPath;
 		//FIXME: since multiple scdoc queries can be running at the same time,
@@ -60,7 +71,7 @@ HelpBrowser {
 		winRect = Rect(0,0,800,600);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
 
-		window = Window.new( bounds: winRect );
+		window = Window.new( bounds: winRect ).name_("SuperCollider Help");
 
 		toolbar = ();
 

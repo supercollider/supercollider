@@ -89,23 +89,15 @@
 
 
 	findHelpFile {
-		^if(thisProcess.platform.hasFeature(\findHelpFile)){
-			// on osx, there's a primitve which does it nice and fast
-			thisProcess.platform.findHelpFile(this)
-		}{
-			// this is very fast, but not on first run since it needs a tree to be scanned+built
-			Help.findHelpFile(this)
-		}
-
+		^SCDoc.findHelpFile(this);
 	}
 
 	findHelpFileOrElse {
-		// this is very fast, but not on first run since it needs a tree to be scanned+built
-		^Help.findHelpFileOrElse(this)
+		this.findHelpFile;
 	}
 
 	openHelpFile {
-		(this.findHelpFile ? "Help/Help.html".standardizePath).openHTMLFile
+		HelpBrowser.openHelpFor(this);
 	}
 }
 

@@ -492,9 +492,8 @@ bool gIsFullScreen = false;
     [scvm defer: anInvocation];
 }
 
-- (IBAction)showHelp:(id)sender {
-    // a useless waste of a search to get the main page
-    showHelpFor( @"Help");
+- (IBAction)showHelpFor:(id)sender {
+	[self sendMain: "showHelp"];
 }
 - (IBAction)showHelpBrowser:(id)sender {
 	[self sendMain: "showHelpBrowser"];

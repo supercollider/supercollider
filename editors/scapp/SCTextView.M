@@ -787,12 +787,13 @@ bool blankUnparsedChars(unichar* buffer, int length, bool process)
     [[self delegate] sendSelection: "openCodeFile"];
 }
 
-NSString* pathOfHelpFileFor(NSString* selection);
-void showHelpFor(NSString* selection);
-
-- (IBAction) showHelp: (id) sender;
+- (IBAction) showHelpFor: (id) sender
 {
-	showHelpFor([self currentlySelectedText: NULL]);
+	[[self delegate] sendSelection: "showHelp"];
+}
+
+- (IBAction)showHelpSearch:(id)sender {
+	[[self delegate] sendSelection: "showHelpSearch"];
 }
 
 - (IBAction)methodTemplates: (id)sender

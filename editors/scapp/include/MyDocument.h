@@ -74,7 +74,7 @@ extern PyrSymbol *s_closed;
 //- (NSString*)currentlySelectedTextOrLine: (NSRange*) outRange;
 -(void)selectRangeStart:(int)rangeStart size:(int)rangeSize;
 
-- (IBAction) showHelp: (id) sender;
+- (IBAction) showHelpFor: (id) sender;
 - (IBAction)showClassBrowser:(id)sender;
 
 - (BOOL) textView: (NSTextView *) textView
