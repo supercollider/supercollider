@@ -305,8 +305,6 @@ if(SC_DOC)
 					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 					DEPENDS sclang ${SCDocSources} ${SCDocClasses})
 
-	install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/HelpBase
-		DESTINATION ${auxresourcesdir})
 endif()
 
 set_directory_properties(
