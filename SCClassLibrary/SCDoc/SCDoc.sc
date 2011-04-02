@@ -566,6 +566,7 @@ SCDoc {
         isProcessing = true;
 
         // parse URL
+        url = url.replace("%20"," ");
         #proto, path, anchor = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1];
         if(proto.isEmpty) {proto="file://"};
         if(proto!="file://") {isProcessing = false; ^url}; // just pass through remote url's
