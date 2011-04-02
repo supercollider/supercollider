@@ -1,0 +1,41 @@
+title::matchItem
+categories::Common methods
+summary::test if object fulfils a constraint
+
+Implemented by: link::Classes/Object::, link::Classes/Collection::, link::Classes/Nil::, link::Classes/Function::
+
+matchItem(item) may be passed to different objects that behave as constraints. More Objects may be conceived to implement matchItem to extend the interface.
+
+See also: link::Classes/Dictionary#matchAt#Dictionary:matchAt::.
+
+method:: Object:matchItem(item)
+Test if strong::item:: is identical to strong::object::.
+code::
+a = [1, 2, 3, "wort", "1", [pi, 2pi]];
+a.any { |x| x.matchItem(3) }; // true
+a.any { |x| x.matchItem(5) }; // false
+a.any { |x| x.matchItem("wort") }; // false, because "wort" == "wort" but not identical.
+::
+
+method::Collection:matchItem(item)
+Test if strong::item:: is included in strong::collection::.
+code::
+a = [1, 2, 3, "wort", "1", [pi, 2pi]];
+a.any { |x| x.matchItem(pi) }; // true
+::
+
+method::Nil:matchItem(item)
+returns true (link::Classes/Nil:: serves as a "joker", a stand-in for anything).
+code::
+a = [nil, 1, 2, 3, "wort", "1", [pi, 2pi]];
+a.any { |x| x.matchItem(10000.rand) }; // true always
+::
+
+method::Function:matchItem(item)
+Test strong::item:: by passing it to a function which should return a link::Classes/Boolean::.
+code::
+a = [10, 20, 30, { |item| item.isPrime }];
+a.any { |x| x.matchItem(3) }; // true
+a.any { |x| x.matchItem(4) }; // false
+a.any { |x| x.matchItem(10) }; // true
+::

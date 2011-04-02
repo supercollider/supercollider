@@ -130,7 +130,7 @@ d.findKeyForValue(1);
 ::
 
 method::matchAt
-The dictionary's keys are used as conditions against which the arbitrary item is matched.
+The dictionary's keys are used as conditions against which the arbitrary item is matched. See: link::Reference/matchItem::
 note::
 if an item matches multiple criteria, the value returned is arbitrary. This is because a dictionary is an unordered collection. It's the user's responsibility to make sure that criteria are mutually exclusive.
 ::
