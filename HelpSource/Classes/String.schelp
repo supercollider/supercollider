@@ -384,7 +384,19 @@ Post << "Help/*".pathMatch;
 method::loadPaths
 Perform link::#-pathMatch:: on this String, then load and execute all paths in the resultant link::Classes/Array::.
 code::
-"Help/Collections/loadPaths example.scd".loadPaths; //This file posts some text
+//first prepare a file with some code...
+(
+var f = File("/tmp/loadPaths_example.scd", "w");
+if(f.isOpen, {
+	f.putString("\"This text is the result of a postln command which was loaded and executed by loadPaths\".postln");
+}, {
+	"test file could not be created - please edit the file's path above".warn;
+});
+f.close;
+)
+
+//then load the file...
+"/tmp/loadPaths_example.scd".loadPaths; //This file posts some text
 ::
 
 method::load
