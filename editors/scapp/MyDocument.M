@@ -474,15 +474,6 @@ void SyntaxColorize(NSTextView* textView);
     [self sendSelection: "interpretPrintCmdLine" ];
 }
 
-#if 0
-
-- (IBAction) showHelp: (id) sender
-{
-    [self sendSelection: "showHelp" ];
-}
-
-#else
-
 NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile, NSString* helpFolderPath)
 {
     // catch the common case of wanting main help
@@ -665,16 +656,14 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	[[SMLAdvancedFindController sharedInstance] showAdvancedFindWindow];
 }
 
-- (IBAction) showHelp: (id) sender;
+- (IBAction) showHelpFor: (id) sender
 {
-	showHelpFor([activeTextView currentlySelectedText: NULL]);
+	[self sendSelection: "showHelp"];
 }
 
 - (IBAction)showClassBrowser:(id)sender {
 	[self sendSelection: "showClassBrowser"];
 }
-
-#endif
 
 // LINK SUPPORT
 //	Handle a click in a link.
@@ -1495,12 +1484,13 @@ NSString* pathOfHelpFileFor(NSString* selection)
     return helpFilePath; // possibly == NULL
 }
 
+/*
 void showHelpFor(NSString* selection)
 {
     NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
     if (!docctl)
 	return;
-	
+
     NSString *helpFilePath = pathOfHelpFileFor(selection);
     if(!helpFilePath) { // none found
         helpFilePath = helpFileWithName([NSFileManager defaultManager], @"Help", nil);
@@ -1526,6 +1516,7 @@ void showHelpFor(NSString* selection)
     }
     [window makeKeyAndOrderFront: nil];
 }
+*/
 
 void fixHTMLBoldUnderline(NSMutableString* html) {
 	// NSTextView doesn't like <b> tags within spans, and unfortunately the export outputs bold underlines that way.
