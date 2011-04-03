@@ -4,6 +4,7 @@ SCDoc {
     classvar helpSourceDirs;
     classvar doc_map = nil;
     classvar <p, <r;
+    classvar <undocumentedClasses;
     classvar doWait;
     classvar progressText = nil, progressWindow = nil;
     classvar progressCount = 0, progressMax = 0;
@@ -25,12 +26,6 @@ SCDoc {
         if(path!=helpTargetDir) {didRun = false};
         helpTargetDir = path.standardizePath;
     }
-
-/*    *waitForHelp {|func,gui=true|
-        if(didRun.not)
-            {this.updateAll(doneFunc:func,gui:gui)}
-            {func.value};
-    }*/
 
     *postProgress {|string,setTopic=false|
         var prg = "";
@@ -73,7 +68,6 @@ SCDoc {
     }
 
     *splitList {|txt|
-//        ^txt.findRegexp("[-_>#a-zA-Z0-9]+[-_>#/a-zA-Z0-9 ]*[-_>#/a-zA-Z0-9]+").flop[1];
         ^txt.findRegexp("[^, ]+[^,]*[^, ]+").flop[1];
     }
 
@@ -251,245 +245,66 @@ SCDoc {
         };
     }
 
-    *updateFile {|source, rootDir|
-        var lastDot = source.findBackwards(".");
-        var subtarget = source.copyRange(rootDir.size + 1, lastDot - 1);
-        var target = helpTargetDir +/+ subtarget ++".html";
-        var folder = target.dirname;
-        var ext = source.copyToEnd(lastDot);
-        if(source.beginsWith(rootDir).not) {
-            error("File location error:\n"++source++"\nis not inside "++rootDir);
-            ^nil;
-        };
-        if(ext == ".schelp", {
-            this.postProgress("Parsing "++source);
-            p.parseFile(source);
-            this.addToDocMap(p,subtarget);
-            r.render(p,target,subtarget.dirname);
-            doc_map[subtarget].methods = r.methodlist;
-            if(subtarget.dirname=="Classes") {
-                if(new_classes.includes(subtarget.basename.asSymbol)) {
-                    new_classes.remove(subtarget.basename.asSymbol);
-                    progressMax = progressMax - 1;
-                };
-            };
-        }, {
-            this.postProgress("Copying" + source + "to" + (folder +/+ source.basename));
-            ("mkdir -p"+folder.escapeChar($ )).systemCmd;
-            ("cp" + source.escapeChar($ ) + folder.escapeChar($ )).systemCmd;
-        });
-    }
-    
     *tickProgress { progressCount = progressCount + 1 }
 
-    *updateAll {|force=false,doneFunc=nil,threaded=true,gui=true,findExtensions=true|
-    //FIXME: rewrite to re-use code from prepareHelpForURL..
-    //use getAllMetaData here, remove SCDocRenderer.methodlist
-    //skip the classlist_cache, helpdirlist_cache and similar, and just check mtime for each doc
-    //according to the mtime stored in doc_map. (or compare with target html)
-        var func;
-        var docmap_path = helpTargetDir.escapeChar($ )+/+"scdoc_cache";
-        var classlist_path = helpTargetDir+/+"classlist_cache";
+    *renderAll {|force=false,gui=true,threaded=true,findExtensions=true,doneFunc|
+        var count, count2, func, x, fileList, subtarget, dest, t = Main.elapsedTime;
 
-        didRun = true;
-        
         func = {
-            var fileList, count, maybeDelete, x, f, n, old_classes, current_classes;
-
-            if(force.not) {
-                force = this.readDocMap;
-            } {
-                doc_map = Dictionary.new;
-            };
-
-            progressMax = 1;
+            progressMax = 100;
             progressCount = 0;
-            maybeDelete = false;
-            
-            new_classes = IdentitySet.new;
 
-            this.postProgress("Searching for HelpSource folders...",true);
-
-            // check for existence of main helpSourceDir
-            if(File.exists(helpSourceDir).not) {
-                progressCount = 1;
-                this.postProgress(helpSourceDir+"does not exist!\n\nPlease set SCDoc.helpSourceDir to SCDoc's HelpSource folder and run SCDoc.updateAll again.");
-                progressWindow !? {
-                    progressText.stringColor = Color(1,0,0);
-                    progressWindow.userCanClose = true;
-                    closeButton.enabled = true;
-                };
-                ^nil;
-            };
-
-            // find the set of helpSourceDirs
-            helpSourceDirs = Set[helpSourceDir];
             if(findExtensions) {
-                [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
-                    helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
-                        .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
-                };
+                this.findHelpSourceDirs;
+            } {
+                helpSourceDirs = Set[helpSourceDir];
             };
-            this.postProgress(helpSourceDirs);
-
-            this.postProgress("Ensuring help directory structure");
-            x = Set.new;
-            helpSourceDirs.do {|srcdir|
-                x = x | ("find"+srcdir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type d").unixCmdGetStdOutLines
-                    .collect {|dir|
-                        (helpTargetDir+/+dir.copyToEnd(srcdir.size)).escapeChar($ )
-                    }.asSet;
-            };
-            if(x.isEmpty) {
-                Error("SCDoc: strange error: could not replicate directory structure").throw;
-            };
-            x.do {|dir|
-                this.postProgress("-"+dir);
-                ("mkdir -p"+dir).systemCmd;
-            };
-
-            // get list of new or updated files
+            this.tickProgress;
+            this.syncNonHelpFiles;
+            this.tickProgress;
+            this.getAllMetaData(true);
+            this.tickProgress;
+            
             fileList = Dictionary.new;
             count = 0;
-            if(force) {
-                this.postProgress("Updating all files",true);
-                helpSourceDirs.do {|dir|
-                    fileList[dir] = ("find -L"+dir.escapeChar($ )+"-type f")
-                        .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
-                    count = count + fileList[dir].size;
-                };
-            } {
-                this.postProgress("Searching for new or updated files...",true);
-                helpSourceDirs.do {|dir|
-                    fileList[dir] = ("find -L"+dir.escapeChar($ )+"-newer"+docmap_path+"\\( ! -regex '.*/\\..*' \\) -type f")
-                        .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
-                    count = count + fileList[dir].size;
-                };
-            };
-            this.postProgress("Found"+count+"files in need of update");
-
-            //Read a list of all classes so that we can detect if any new ones where added (extensions).
-            old_classes = Object.readArchive(classlist_path);
-            current_classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
-            this.postProgress("Checking for new classes...",true);
-            if(old_classes.notNil) {
-                current_classes.do{|name|
-                    if(old_classes.includes(name).not) {
-                        //or: {("test"+name.asClass.filenameSymbol.asString.escapeChar($ )+"-ot"+classlist_path).systemCmd!=0}) {
-                        //tried to test if class source file is newer than the class_cache file to catch class file updates,
-                        //but it is *very* slow and also won't trigger writing a new classlist_path file so that can't
-                        //be used as time reference anyhow..
-                        //Would be nice with a way to detect if a class did change though..
-                        new_classes.add(name);
-                    };
-                };
-            } {
-                // this is a fresh run
-                new_classes = current_classes.copy;
-            };
-            this.postProgress("Found"+new_classes.size+"new classes");
-
-            // add all files in added HelpSource folders (e.g. newly installed quarks/extensions)
-            x = Object.readArchive(helpTargetDir+/+"helpdirlist_cache");
-            if(x.notNil) {
-                (helpSourceDirs - x).do {|dir|
-                    if(dir != helpSourceDir) {
-                        this.postProgress("Found new HelpSource folder:"+dir);
-                        fileList[dir] = fileList[dir] | ("find -L"+dir.escapeChar($ )+"\\( ! -regex '.*/\\..*' \\) -type f")
-                            .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
-                    };
-                };
-                if((x - helpSourceDirs).notEmpty) {
-                    maybeDelete = true;
-                };
-            };
-            File.delete(helpTargetDir+/+"helpdirlist_cache");
-            helpSourceDirs.writeArchive(helpTargetDir+/+"helpdirlist_cache");
-
-            count = 0;
+            this.postProgress("Updating all files",true);
             helpSourceDirs.do {|dir|
+                fileList[dir] = ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp'")
+                    .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
                 count = count + fileList[dir].size;
             };
-            this.postProgress("Total"+count+"files to process");
-            progressMax = count + new_classes.size + 3;
+            count2 = undocumentedClasses.size;
+            progressCount = 3 * ((count+count2)/progressMax);
+            progressMax = count+count2+progressCount;
 
-            // parse/render or copy new and updated files
-            // NOTE: any class docs processed here will remove that class from the new_classes set
+            this.postProgress("Found"+count+"help files",true);
             helpSourceDirs.do {|dir|
                 x = fileList[dir].size;
                 if(x>0) {
-                    if(gui){this.makeProgressWindow};
-                    this.postProgress("Processing"+x+"files in"+dir,true);
-                    fileList[dir].do {|file|
-                        this.updateFile(file,dir);
+                    fileList[dir].do {|path|
+                        subtarget = path[dir.size+1 .. path.findBackwards(".")?path.size-1];
+                        dest = helpTargetDir+/+subtarget++".html";
+                        if(force
+                        or: {("test"+path.escapeChar($ )+"-nt"+dest.escapeChar($ )+"-o ! -e"+dest.escapeChar($ )).systemCmd==0}) {
+                            p.parseFile(path);
+                            r.render(p,dest,subtarget.dirname);
+                        } {
+                            this.postProgress("Skipping"+dest);
+                        };
                         this.tickProgress;
                     };
                 };
             };
-            
-            // use folder mtime to see if there might be any deleted files,
-            // NOTE: this will also trigger on added helpfiles but that's ok I guess..
-            if(force.not) {
-                helpSourceDirs.do {|dir|
-                    if(("find -L"+dir.escapeChar($ )+"-type d -newer"+docmap_path).unixCmdGetStdOut.isEmpty.not) {
-                        maybeDelete = true;
-                    };
+            this.postProgress("Found"+count2+"undocumented classes",true);
+            undocumentedClasses.do {|name|
+                dest = helpTargetDir+/+"Classes"+/+name++".html";
+                if(this.makeClassTemplate(name.asString,dest).not) {
+                    this.postProgress("Skipping"+dest);
                 };
-                if(maybeDelete or: force or: {old_classes != current_classes}) {
-                    if(gui){this.makeProgressWindow};
-                    this.postProgress("Help folders changed, scanning for deleted documents...",true);
-                    doc_map.do(_.delete=true); // mark all docs in docMap for deletion
-                    count = 0;
-                    helpSourceDirs.do {|dir|
-                        ("find -L"+dir.escapeChar($ )+"-name '*.schelp'").unixCmdGetStdOutLines.reject(_.isEmpty).do {|f|
-                            var subtarget = f.copyRange(dir.size + 1, f.findBackwards(".") - 1);
-                            x = doc_map[subtarget];
-                            x !? {x.delete = false};
-                        };
-                    };
-                    current_classes.do {|sym|
-                        x = doc_map["Classes"+/+sym.asString];
-                        x !? {x.delete = false};
-                    };
-
-                    doc_map.pairsDo{|k,e|
-                        if(e.delete==true, {
-                            this.postProgress("Removing"+e.path+"from cache");
-                            doc_map.removeAt(k);
-                            count = count + 1;
-                        });
-                        e.removeAt(\delete); //remove the key since we don't need it anymore
-                    };
-                    this.postProgress("Removed"+count+"documents");
-                };
+                this.tickProgress;
             };
-
-            // generate simple doc for each class in new_classes, which now contains only undocumented *new* classes:
-            if(new_classes.notEmpty) {
-                if(gui){this.makeProgressWindow};
-                this.handleUndocumentedClasses;
-            };
-            
-            if(old_classes != current_classes) {
-//                if(gui){this.makeProgressWindow};
-                File.delete(classlist_path);
-                current_classes.writeArchive(classlist_path);
-//                this.postProgress("Generating Class tree...",true);
-//                p.overviewClassTree;
-//                r.render(p, helpTargetDir +/+ "Overviews/ClassTree.html", "Overviews", false);
-//                this.tickProgress;
-            };
-
-            this.writeDocMap;
-            this.tickProgress;
-            this.postProgress("Writing Document JSON index...",true);
-            this.docMapToJSON(helpTargetDir +/+ "docmap.js");
-            progressCount = progressMax;
-            
-            this.postProgress("Done!",true);
-            "SCDoc done!".postln;
+            this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
             doneFunc.value();
-            doWait=false;
             progressWindow !? {
                 progressWindow.userCanClose = true;
                 closeButton.enabled = true;
@@ -497,11 +312,11 @@ SCDoc {
         };
 
         doWait = threaded or: gui;
-//        if(gui, {this.makeProgressWindow});
+        if(gui){this.makeProgressWindow};
         if(doWait, {
             Routine(func).play(AppClock);
         }, func);
-        
+
     }
 
     *cleanStart {
@@ -665,7 +480,9 @@ SCDoc {
             ));
 
             r.render(p,path,"Classes");
+            ^true;
         };
+        ^false;
     }
     
     *findHelpSourceDirs {
@@ -687,16 +504,20 @@ SCDoc {
         };
     }
     
-    *getAllMetaData {
+    *getAllMetaData {|force=false|
         var subtarget, classes, mets, count = 0, cats, t = Main.elapsedTime;
-        var force, update = false, doc;
+        var update = false, doc;
         
         this.postProgress("Getting metadata for all docs...");
         this.findHelpSourceDirs;
 
         classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
 
-        force = this.readDocMap;
+        if(force) {
+            doc_map = Dictionary.new;
+        } {
+            this.readDocMap;
+        };
         
         doc_map.do(_.delete=true);
 
@@ -730,6 +551,7 @@ SCDoc {
         };
        
         this.postProgress("Making metadata for undocumented classes");
+        undocumentedClasses = classes;
         classes.do {|name|
             var class;
             subtarget = "Classes/"++name.asString;
