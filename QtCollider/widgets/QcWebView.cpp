@@ -23,6 +23,8 @@
 #include "../QcWidgetFactory.h"
 #include <QWebPage>
 #include <QWebFrame>
+#include <QAction>
+#include <QShortcut>
 
 static QcWidgetFactory<QtCollider::WebView> factory;
 
@@ -36,6 +38,11 @@ WebView::WebView( QWidget *parent ) : QWebView( parent )
   pal.setColor(QPalette::Base, QColor(Qt::white));
   pal.setColor(QPalette::Text, QColor(Qt::black));
   setPalette(pal);
+
+  QShortcut *scutCopy = new QShortcut( QKeySequence::Copy, this );
+  scutCopy->setContext( Qt::WidgetWithChildrenShortcut );
+  connect( scutCopy, SIGNAL(activated()),
+           pageAction(QWebPage::Copy), SLOT(trigger()) );
 
   connect( this, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
 }
