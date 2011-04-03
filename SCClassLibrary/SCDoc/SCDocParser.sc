@@ -458,32 +458,6 @@ SCDocParser {
         });
     }
 
-    dumpClassTree {|node,c|
-        var n;
-        if(c.name.asString.find("Meta_")==0, {^nil});
-        node.children.add((tag:'##'));
-        node.children.add((tag:'link', text:"Classes/"++c.name.asString));
-        
-        c.subclasses !? {
-            n = (tag:'tree', children:List.new);
-            node.children.add(n);
-            c.subclasses.copy.sort {|a,b| a.name < b.name}.do {|x|
-                this.dumpClassTree(n,x);
-            };
-        };
-    }
-
-    overviewClassTree {
-        var r = List.new;
-        var n = (tag:'tree', children:List.new);
-        r.add((tag:'title', text:"Class Tree"));
-        r.add((tag:'summary', text:"All classes by inheritance tree"));
-        r.add((tag:'related', text:"Overviews/Classes, Browse, Overviews/Methods"));
-//        r.add((tag:'categories', text:"Classes"));
-        r.add(n);
-        this.dumpClassTree(n,Object);
-        root = r;
-    }
 /*
     makeCategoryTree {|catMap,node,filter=nil,toc=false|
         var a, p, e, n, l, m, kinds, folder, v, dumpCats, sorted;
