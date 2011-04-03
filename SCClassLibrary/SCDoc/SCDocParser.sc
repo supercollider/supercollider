@@ -299,7 +299,7 @@ SCDocParser {
         var line, file, tag, text, match;
         var tags = IdentitySet[\class,\title,\summary,\categories,\related,\redirect];
         var pfx = ".";
-        var methods = List.new;
+        var methods = Array.new;
         var inHeader = true;
         var class = nil;
         var cmets = IdentitySet.new;
@@ -336,7 +336,7 @@ SCDocParser {
                                 match.do {|name|
                                     if(name[0]!=$() {
                                         m = name.asSymbol.asGetter;
-                                        methods.add("_"++pfx++m);
+                                        methods = methods.add("_"++pfx++m);
                                         switch(pfx,
                                             "*", {cmets.add(m)},
                                             "-", {imets.add(m)}
@@ -363,13 +363,13 @@ SCDocParser {
         // Add undocumented methods
         if(class.notNil) {
             f = {|c,docmets,pfx|
-                l = List.new;
+                l = Array.new;
                 (mets = c.methods) !? {
                     //ignore these methods by default. Note that they can still be explicitly documented.
                     docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
                     mets.collectAs({|m|m.name.asGetter},IdentitySet).do {|name|
                         if(docmets.includes(name).not) {
-                            l.add("_"++pfx++name.asString);
+                            l = l.add("_"++pfx++name.asString);
                         }
                     };
                 };
@@ -377,11 +377,12 @@ SCDocParser {
             };
             methods = methods ++ f.(class,imets,"-") ++ f.(class.class,cmets,"*");
         };
-        ^methods.asList;
+        ^methods;
     }
 
+    // FIXME: move to renderer?
     generateUndocumentedMethods {|class,node,title|
-        var syms, name, mets, l = List.new;
+        var syms, name, mets, l = Array.new;
         var docmets = IdentitySet.new;
         
         var addMet = {|n|
@@ -412,7 +413,7 @@ SCDocParser {
             syms = mets.collectAs({|m|m.name.asGetter},IdentitySet);
             syms.do {|name|
                 if(docmets.includes(name).not) {
-                    l.add((tag:\method, text:name.asString));
+                    l = l.add((tag:\method, text:name.asString));
                 }
             };
         };
@@ -447,14 +448,9 @@ SCDocParser {
     }
 
     findNode {|tag,rootNode=nil|
-        var res = nil;
-        (rootNode ?? { root }).do {|n|
-            if(n.tag == tag.asSymbol, { res = n});
-        };
-        if(res.notNil, {
-            ^res;
-        }, {
-            ^(tag:nil, text:"", children:[]);
+        var sym = tag.asSymbol;
+        ^((rootNode ?? { root }).detect {|n| n.tag == tag} ?? {
+            (tag:nil, text:"", children:[]);
         });
     }
 
