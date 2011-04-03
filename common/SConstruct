@@ -1075,7 +1075,7 @@ if PLATFORM == 'linux':
     Requires('build/libsclang.so.1.0.0', 'build/libscsynth.so')
 
 # required libraries
-merge_lib_info(langEnv, libraries['sndfile'])
+merge_lib_info(libsclangEnv, libraries['sndfile'])
 
 libsclangSources = Split('''
 Source/lang/LangSource/AdvancingAllocPool.cpp
@@ -1125,11 +1125,11 @@ Source/common/fftlib.c
 ''')
 
 if env['LANG']:
-    merge_lib_info(langEnv, libraries['libicu'])
+    merge_lib_info(libsclangEnv, libraries['libicu'])
 
 # optional features
 if features['midiapi']:
-    merge_lib_info(langEnv, libraries['midiapi'])
+    merge_lib_info(libsclangEnv, libraries['midiapi'])
     if features['midiapi'] == 'CoreMIDI':
                 libsclangSources += ['Source/lang/LangPrimSource/SC_CoreMIDI.cpp']
     else:
@@ -1139,7 +1139,7 @@ else:
     libsclangSources += ['Source/lang/LangPrimSource/SC_AlsaMIDI.cpp']
 
 if PLATFORM == 'darwin':
-    langEnv.Append(
+    libsclangEnv.Append(
                 CPPPATH = ['#Source/lang/LangPrimSource/HID_Utilities',
                                    '#Source/lang/LangPrimSource/WiiMote_OSX'],
                 LINKFLAGS = '-framework Carbon -framework IOKit -framework IOBluetooth'
@@ -1161,15 +1161,15 @@ if PLATFORM == 'linux':
     # HAVE_LID does the right thing in SC_LID.cpp source
     libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
     if features['wii']:
-                langEnv.Append(CPPDEFINES = 'HAVE_WII')
-                langEnv.Append(LINKFLAGS = '-lcwiid')
+                libsclangEnv.Append(CPPDEFINES = 'HAVE_WII')
+                libsclangEnv.Append(LINKFLAGS = '-lcwiid')
         #langEnv.Append(LINKFLAGS = '-lbluetooth')
         #langEnv.Append(CPPPATH = '-I/usr/local/include/libcwiimote-0.4.0/libcwiimote/' ) #FIXME: to proper include directory
     if features['lid']:
-            langEnv.Append(CPPDEFINES = 'HAVE_LID')
+            libsclangEnv.Append(CPPDEFINES = 'HAVE_LID')
 
 if PLATFORM == 'darwin':
-    langEnv.Append(CPPDEFINES = 'HAVE_SPEECH')
+    libsclangEnv.Append(CPPDEFINES = 'HAVE_SPEECH')
     libsclangSources += ['Source/lang/LangPrimSource/SC_Speech.cpp']
 
 sclangSources = ['Source/lang/LangSource/cmdLineFuncs.cpp']
