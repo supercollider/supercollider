@@ -1,9 +1,10 @@
 title:: if
-categories::Core
-categories:: Common methods
+categories::Core, Common methods
+related:: Guides/Control-Structures
+summary:: conditional execution
 
-see also: link::Guides/Control-Structures::
-
+method:: if
+subsection::example
 code::
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
 	{ "expression was true".postln },	// true function
@@ -29,7 +30,7 @@ code::
 )
 ::
 
-section:: Advanced 
+subsection:: optimization
 
 the functions will be inlined, which plucks the code from the functions and uses a more efficient jump statement.
 

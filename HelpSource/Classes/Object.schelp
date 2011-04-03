@@ -11,11 +11,10 @@ We call "receiver" the object the message is sent to: receiver.method(argument).
 
 classmethods::
 private:: prNewCopyArgs,prNew
-method::*readArchive
+method::readArchive
 
 Read in an object from a text archive. pathname is a String containing the archive file's path.
-
-
+discussion::
 code::
 a = Array.fill(100, { 100.0.rand });
 a.writeArchive(PathName.tmp ++ "myArray");
@@ -320,6 +319,7 @@ method::switch
 
 Object implements a switch method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if true. In order for switch to be inlined (and thus be as efficient as nested if statements) the matching values must be literal Integers, Floats, Chars, Symbols and the functions must have no variables or arguments.
 
+discussion::
 code::
 (
 var x, z;
@@ -495,6 +495,7 @@ method::subclassResponsibility
 
 Throws a SubclassResponsibilityError. Use this to indicate that this method should be defined in all subclasses of the receiver.
 
+discussion::
 code::
 someMethod {
 	this.subclassResponsibility(thisMethod);
@@ -509,6 +510,7 @@ method::deprecated(method, alternateMethod)
 
 Throws a DeprecatedError. Use this to indicate that the enclosing method has been replaced by a better one (possibly in another class), and that it will likely be removed in the future. Unlike other errors, DeprecatedError only halts execution if Error.debug == true. In all cases it posts a warning indicating that the method is deprecated and what is the recommended alternative.
 
+discussion::
 code::
 foo {
 	this.deprecated(thisMethod, ThisOrSomeOtherObject.findMethod(\foo);
@@ -553,6 +555,7 @@ method::gcInfo
 
 Posts garbage collector information in a table format.
 
+discussion::
 list::
 ## flips: the number of times the GC "flipped", i.e. when it finished incremental scanning of all reachable objects
 ## collects: the number of partial collections performed
@@ -583,14 +586,14 @@ tot bwf t sz: 174215  65476 7876722   8116413   341832120
 ::
 
 
-you can also query the amount of free memory with Object.totalFree and dump the currently grey objects with Object.dumpGrey. More memory status methods are: Object.largestFreeBlock, Object..gcDumpSet, and Object.gcSanity.
+you can also query the amount of free memory with Object.totalFree and dump the currently grey objects with Object.dumpGrey. More memory status methods are: Object.largestFreeBlock, Object.gcDumpSet, and Object.gcSanity.
 
 subsection::Iteration
 
 method::do
 
 Object evaluates the function with itself as an argument, returning the reasult. Different classes interpret this message differently.
-
+discussion::
 code::
 f = { |x, i| [x, i].postln; };
 [1, 2, 3].do(f); // Array.do
@@ -606,7 +609,7 @@ This method is used internally by list comprehensions.
 method::dup
 
 Duplicates the receiver n times, returning an array of n copies. Different classes interpret this message differently.  The shortcut "!" can be used in place.
-
+discussion::
 code::
 8.dup(10);
 8 ! 10; // same as above

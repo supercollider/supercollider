@@ -1,10 +1,11 @@
 class::Boolean
 summary:: abstract class whose instances represent a logical value
 categories::Core
+related:: Reference/Control-Structures
 
-summary::
-Boolean is the superclass of True and False which are the concrete realizations.
-In code True and False are represented by the literal values true and false.
+description::
+Boolean is the superclass of link::Classes/True:: and link::Classes/False:: which are the concrete realizations.
+In code True and False are represented by the literal values code::true:: and code::false::.
 
 instanceMethods::
 
@@ -16,7 +17,7 @@ private:: archiveAsCompileString
 
 method::xor
 
-Answers the exclusive or of the receiver and another Boolean.
+returns:: the exclusive or of the receiver and another Boolean.
 
 method::and
 
@@ -30,19 +31,19 @@ If the receiver is true then function is not evaluated and the message answers t
 
 method::&&
 
-Answers true if the receiver is true and aBoolean is true.
+returns:: true if the receiver is true and aBoolean is true.
 
 method::\||
 
-Answers true if either the receiver is true or aBoolean is true.
+returns:: true if either the receiver is true or aBoolean is true.
 
 method::nand
 
-Answers true unless both the operands are true (Sheffer stroke)
+returns:: true unless both the operands are true (Sheffer stroke)
 
 method::not
 
-Answers true if the receiver is false, and false if the receiver is true.
+returns:: true if the receiver is false, and false if the receiver is true.
 
 method::if
 
@@ -50,11 +51,11 @@ If the receiver is true, answer the evaluation of the trueFunc. If the receiver 
 
 method::binaryValue
 
-Answer 1 if the receiver is true, and 0 if the receiver is false.
+returns:: 1 if the receiver is true, and 0 if the receiver is false.
 
 method::booleanValue
 
-Return receiver. The same message is understood by link::Classes/SimpleNumber:: and can be used to convert it to boolean.
+Returns:: The receiver. The same message is understood by link::Classes/SimpleNumber:: and can be used to convert it to boolean.
 
 method::keywordWarnings
 

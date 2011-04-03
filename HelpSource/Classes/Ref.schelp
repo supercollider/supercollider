@@ -5,9 +5,9 @@ categories:: Core
 description::
 
 A Ref holds an object which may be retrieved and altered with the messages value and value_(obj).   
-The backquote ` is a unary operator that is equivalent to calling Ref.new(obj).
+The backquote code:: ` :: is a unary operator that is equivalent to calling code::Ref.new(obj)::.
 
-Refs are most commonly used to prevent multi-channel expansion in SynthDefs and Patterns (see Klank for an example).
+Refs are most commonly used to prevent multi-channel expansion in link::Classes/SynthDef::s and link::Classes/Pattern::s (see link::Classes/Klank:: for an example).
 Refs can also be used to simplify the coding of co-routines used in EventStreams (see link::Classes/Proutine:: for an example).
 
 code::
@@ -25,7 +25,7 @@ classmethods::
 method::new
 
 create a Ref of an object.
-
+discussion::
 Another syntax:
 
 code::
@@ -44,17 +44,13 @@ Answers the receiver. In class Object this message is defined to create a Ref of
 
 method::value
 
-Returns value.
-
-method::value_
-
-Sets value.
+Get or set the value.
 
 method::get
 
 Returns value.
 
-method::set(aValue)
+method::set
 
 Sets value.
 
@@ -69,7 +65,7 @@ method::seq
 
 this method is used to return values from within a Routine definition
 
-
+discussion::
 code::
 { this.value = output.embedInStream(this.value); }
 ::
@@ -89,12 +85,10 @@ subsection::preventing multi-channel expansion
 Consult link::Reference/MultiChannel:: for details on multi-channel expansion in SynthDefs.
 
 Refs prevent multi-channel expansion in a SynthDef, so the array below defines one Klank UGen rather than three.
-	
-		
+
 code::
 { Klank.ar(`[[800, 1071, 1153, 1723], nil, [1, 1, 1, 1]], Impulse.ar(2, 0, 0.1)) }.play;
 ::
-	
 
 Refs cannot be used reliably to suppress multi-channel expansion within Events and Patterns.  
 Instead, it is necessary to enclose the array of values in another array:
@@ -112,7 +106,6 @@ code::
 	( instrument: \multi, freq: [ [500, 501, 700] ], sustain: 2).play
 
 )
-
 ::
 
 code::

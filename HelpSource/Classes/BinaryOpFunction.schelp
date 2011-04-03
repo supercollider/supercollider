@@ -1,8 +1,7 @@
 class:: BinaryOpFunction
 summary:: represent a binary operation on a function
 categories:: Core
-
-relates:: Classes/UnaryOpFunction,Classes/NAryOpFunction,Classes/BinaryOpStream,Classes/Pbinop
+related:: Classes/UnaryOpFunction,Classes/NAryOpFunction,Classes/BinaryOpStream,Classes/Pbinop
 
 description::
 
@@ -18,7 +17,7 @@ Executes each of the operand functions and then performs the selector on the res
 
 method::valueArray
 
-the same as value
+the same as link::#-value::
 
 examples::
 

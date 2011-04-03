@@ -1,11 +1,15 @@
 title:: loop / repeat
-categories::Core
-categories:: Common methods
+summary:: Repeat stuff
+categories::Core,Common methods
+
+method:: loop, repeat
 
 Create an object that behaves like a stream that returns values for a limited (or infinite) number of times.
 
-list::
-## Function-loop
+For a full list of implementing classes, see link::Overviews/Methods#loop:: and link::Overviews/Methods#repeat::
+
+definitionlist::
+## link::Classes/Function#-loop:: ||
 	repeats the function forever.
 code::	
 	f = { 3.yield };
@@ -13,7 +17,7 @@ code::
 	10.do({ x.next.postln })
 ::
 
-## Object-repeat(n)
+## link::Classes/Object#-repeat:: (n) ||
 	repeat to yield the object
 code::	
 	x = 5;
@@ -21,21 +25,21 @@ code::
 	y.nextN(8);
 ::
 
-## Pattern-repeat(n)
+## link::Classes/Pattern#-repeat:: (n) ||
 
 code::	
 	x = Prand([1, 2]).repeat(6).asStream;
 	x.nextN(8);
 ::
 
-## Pattern-loop
+## link::Classes/Pattern#-loop:: ||
 
 code::	
 	x = Prand([1, 2]).loop.asStream;
 	x.nextN(8);
 ::	
 
-## Stream-repeat(n)
+## link::Classes/Stream#-repeat:: (n) ||
 
 	embeds the stream repeatedly
 
@@ -44,7 +48,7 @@ code::
 	x.nextN(8);
 ::
 	
-## Stream-loop
+## link::Classes/Stream#-loop:: ||
 
 	embeds the stream repeatedly
 
@@ -52,6 +56,4 @@ code::
 	x = Routine({ 3.do({ arg i; i.yield }) }).loop;
 	x.nextN(8);
 ::	
-
-
 ::

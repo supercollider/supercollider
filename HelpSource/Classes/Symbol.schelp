@@ -1,17 +1,14 @@
-class::Symbol			
+class::Symbol
 summary::unique name
 categories::Core
 
 description::
 A Symbol is a name that is guaranteed to be unique. They can be used to represent
-symbolic constant values, Dictionary keys, etc.
+symbolic constant values, link::Classes/Dictionary:: keys, etc.
 
-Symbols are represented syntactically as literals which are described in [Literals]
+Symbols are represented syntactically as literals which are described in link::Reference/Literals::
 
-
-instancemethods::
-
-section::Creating a Symbol
+subsection::Creating a Symbol
 
 A symbol can be written by surrounding characters by single quotes (may include whitespace):
 
@@ -25,10 +22,12 @@ A String can be converted into a symbol:
 
 code::"arbeit".scramble.asSymbol;::
 
+classmethods::
+private::new
 
-section::Testing
+instancemethods::
 
-Answer whether the symbol can be a class name / meta class name. This does not say if the class exists.
+subsection::Testing
 
 method::isClassName
 
@@ -63,9 +62,9 @@ code::
 '_SymbolIsClassName'.isPrimitiveName;
 ::
 
-method::Conversion
+subsection::Conversion
 
-medthod::asString
+method::asString
 	
 Convert to a String
 	
@@ -101,11 +100,11 @@ method::asScale
 
 Convert to a Scale
 
-section::Environments
+subsection::Environments
 
 Symbols are used as keys to look up objects in dictionaries and environments, but also in arrays. 
-See IdentityDictionary, Environment, Event
-
+See link::Classes/IdentityDictionary::, link::Classes/Environment::, link::Classes/Event::
+discussion::
 code::
 a = ();
 a.put(\commune, 1871);
@@ -119,14 +118,14 @@ put a value to the current environment using receiver as key
 method::envirGet
 
 return a value from the current environment using receiver as key
-
+discussion::
 code::
 \foo.envirPut(100);
 \foo.envirGet;
 \foo.envirPut(nil);
 ::
 
-section::Math
+subsection::Math
 
 Symbols respond to all unary and binary math operations by returning themselves. The result of any math operation between a Number or other math object and a Symbol is to return the Symbol. This allows for example operations on lists of notes which contain 'rest's to preserve the rests.
 
@@ -135,14 +134,14 @@ code::Pseq([1, 3, \rest, 2, 4] + 8);::
 method::applyTo
 
 Use the symbol as a method selector and perform the message on firstArg, with args as arguments. This is used for mixing functions with method selectors (see also: Function).
-
+discussion::
 code::
 '%'.applyTo(2553, 345);
 ['+', '-', '*', { |a, b| a.rand + b.rand } ].choose.applyTo(2, 3);
 ::
 
 
-section::Synthesis
+subsection::Synthesis
 
 Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see:  NamedControl, ControlName, and Control).
 
@@ -150,7 +149,7 @@ Inside SynthDefs and UGen functions, symbols can be used to conventiently specif
 method::kr
 
 Return a control rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
-
+discussion::
 code::
 a = { SinOsc.ar(\freq.kr(440, 1.2)) }.play;
 a.set(\freq, 330);
@@ -171,7 +170,7 @@ Return an intitalization rate NamedControl input with a default value (val). If 
 method::tr(val)
 
 Return a TrigControl input with a default value (val). If val is an array, the control will be multichannel.
-
+discussion::
 code::
 a = { Ringz.ar(T2A.ar(\trig.tr), \freq.kr(500, 1), 0.8) }.play;
 a.set(\freq, 330, \trig, 1);
@@ -179,4 +178,3 @@ a.set(\freq, 830, \trig, 1);
 a.release;
 ::
 
-	

@@ -7,9 +7,9 @@ The root of SuperCollider's error handling mechanism.
 
 Exception is an abstract class, defining basic error behavior. This class is not directly used in SuperCollider. Users may create subclasses of Exception to identify specific types of failure conditions.
 
-The built-in exception types are actually subclasses of Error -- see its help file for the hierarchy.
+The built-in exception types are actually subclasses of link::Classes/Error:: -- see its help file for the hierarchy.
 
-section::Background: General exception handling
+subsection::Background: General exception handling
 
 An exception is any event that disrupts the normal execution flow of a program. In practice there is not much distinction between an exception and an error; in SuperCollider, we tend to speak of errors where other object-oriented languages (Java, C++) would use exception consistently.
 
