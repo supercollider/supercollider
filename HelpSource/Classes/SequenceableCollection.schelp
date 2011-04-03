@@ -1,5 +1,5 @@
 CLASS::SequenceableCollection
-summary::integer indexable collection
+summary::Abstract superclass of integer indexable collections
 categories::Collections>Ordered
 
 DESCRIPTION::

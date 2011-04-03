@@ -1,5 +1,5 @@
 CLASS::IdentityBag
-summary::counted set
+summary::A Bag according to identity
 categories::Collections>Unordered
 
 DESCRIPTION::

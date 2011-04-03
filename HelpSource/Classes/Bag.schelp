@@ -1,5 +1,5 @@
 CLASS::Bag
-summary::counted set
+summary::Unordered collection of objects
 related::Classes/IdentityBag, Classes/Set
 categories::Collections>Unordered
 
