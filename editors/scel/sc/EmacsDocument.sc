@@ -21,7 +21,7 @@ EmacsDocument
 	classvar documentMap, <>current;
 	var <>sceld;
 	var title, path;
-	var dataptr;
+	var <dataptr;
 	var <isEdited, <isListener, <envir;
 
 	*initClass {

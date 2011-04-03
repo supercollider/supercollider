@@ -295,6 +295,8 @@ ScelDocument : Document{
 		^this.string( rangestart, rangesize );
 	}
 
+	dataptr { ^thisdoc.tryPerform(\dataptr) }
+
 	// not implemented:
 	selectRange { arg start=0, length=0; }
 	background_ {arg color, rangestart= -1, rangesize = 0;
