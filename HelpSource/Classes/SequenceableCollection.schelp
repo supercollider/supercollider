@@ -232,17 +232,6 @@ a.collect(_.size); // sizes are the same
 a.collect(_.shape) // shapes can be different
 ::
 
-method::lace
-Returns a new Collection whose elements are interlaced sequences of the elements of the receiver's subcollections, up to size strong::length::. The receiver is unchanged.
-code::
-(
-x = [ [1, 2, 3], 6, List["foo", 'bar']];
-y = x.lace(12);
-x.postln;
-y.postln;
-)
-::
-
 method::resamp0
 Returns a new Collection of the desired length, with values resampled evenly-spaced from the receiver without interpolation.
 code::
