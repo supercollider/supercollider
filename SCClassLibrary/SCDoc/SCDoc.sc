@@ -140,21 +140,6 @@ SCDoc {
         };
     }
 
-    *handleUndocumentedClasses {
-        var n, m, name, cats;
-        var destbase = helpTargetDir +/+ "Classes";
-        this.postProgress("Generating docs for"+new_classes.size+"undocumented classes...",true);
-        new_classes.do {|sym|
-            var name = sym.asString;
-            var dest = destbase +/+ name ++ ".html";
-            this.makeClassTemplate(name,dest);
-            this.addToDocMap(p, "Classes" +/+ name);
-            doc_map["Classes" +/+ name].delete = false;
-            doc_map["Classes" +/+ name].methods = r.methodlist;
-            this.tickProgress;
-        };
-    }
-
     *addToDocMap {|parser, path|
         var c, x = parser.findNode(\class).text;
         var doc = (

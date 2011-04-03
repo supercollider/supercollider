@@ -24,12 +24,3 @@ method:: findHelpFile
 Find help for string.
 returns:: the URL for help on given string, or the main help page if string was empty or nil.
 
-method:: methodlist
-Get list of documented methods.
-returns::
-A link::Classes/List:: of documented method names ( link::Classes/String::s ), prefixed with xk where
-list::
-## x is "+" for extended methods, or else "_"
-## k is "*" for classmethods, "-" for instancemethods and "." for generic methods (often interfaces documented in a non-class helpfile)
-::
-

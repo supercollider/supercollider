@@ -10,12 +10,6 @@ SCDocRenderer {
     findHelpFile {|str|
         ^this.subclassResponsibility(thisMethod);
     }
-    // return a list of documented methodnames, prefixed with xk where
-    // x is "+" for extended methods, or else "_"
-    // k is "*" for classmethods, "-" for instancemethods and "." for generic methods (often interfaces documented in a non-class helpfile)
-    methodlist {
-        ^this.subclassResponsibility(thisMethod);
-    }
 }
 
 /*
@@ -29,7 +23,6 @@ SCDocHTMLRenderer : SCDocRenderer {
     var dirLevel;
     var baseDir;
     var footNotes;
-    var <methodlist;
 
     *simplifyName {|txt|
         ^txt.toLower.tr($\ ,$_);
@@ -251,7 +244,6 @@ SCDocHTMLRenderer : SCDocRenderer {
                             }
                         };
                     };
-                    methodlist.add(if(m.notNil and: {m.isExtensionOf(c)},"+","_")++(pfx??".")++mname);
                 };
 
                 file.write("<div class='method'>");
@@ -665,7 +657,6 @@ SCDocHTMLRenderer : SCDocRenderer {
         dirLevel.do { baseDir = baseDir +/+ ".." };
 
         footNotes = List.new;
-        methodlist = List.new;
 
         x = parser.findNode(\class);
         if(x.text.notEmpty, {
