@@ -19,7 +19,7 @@ url = SCDoc.prepareHelpForURL(SCDoc.findHelpFile("SinOsc"));
 ::
 
 CLASSMETHODS::
-private:: initClass, addToDocMap, makeMethodList, updateFile, makeOverviews, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap, helpBaseDir, initHelpTargetDir, addMethodList, findHelpSourceDirs, waitForHelp, getAllMetaData, syncNonHelpFiles, makeClassTemplate
+private:: initClass, addToDocMap, makeMethodList, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap, addMethodList, findHelpSourceDirs, getAllMetaData, syncNonHelpFiles, makeClassTemplate, cleanStart
 
 method:: p
 The default link::Classes/SCDocParser:: object, created automatically.
@@ -36,6 +36,9 @@ This searches recursively for all folders named "HelpSource" under code::thisPro
 
 method:: helpTargetDir
 get/set the user help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "Help" ::
+
+method:: undocumentedClasses
+A set of all undocumented classes.
 
 subsection:: Main interface
 
@@ -54,27 +57,25 @@ returns:: the URL for help on given string
 
 subsection:: Render all files
 
-method:: updateAll
+method:: renderAll
 Render all help-files that need updating and generate overviews and cached metadata index. This can take several minutes. Useful mainly if you want to render all help to put online or similar.
 argument:: force
 Force updating of all files.
-argument:: doneFunc
-Function to evaluate when done.
-argument:: threaded
-When true, runs the process in a link::Classes/Routine:: on link::Classes/AppClock::. This is needed to get progress feedback when running inside a frontend like the SuperCollider app on OSX. If running with the sclang terminal client, this can be set to false for better performance.
 argument:: gui
 If true and code::threaded:: is also true, create a GUI progress window instead of posting progress to the post window.
-discussion::
-It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
+argument:: threaded
+When true, runs the process in a link::Classes/Routine:: on link::Classes/AppClock::. This is needed to get progress feedback when running inside a frontend like the SuperCollider app on OSX. If running with the sclang terminal client, this can be set to false for better performance.
 argument:: findExtensions
 If false, don't search for extensions (useful when building base help)
-argument:: useHelpBase
-if false, don't initialize help target directory from existing HelpBase
+argument:: doneFunc
+Function to evaluate when done.
+discussion::
+It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
 
 subsection:: Cached map of documents
 SCDoc keeps a dictionary where each document is represented by an link::Classes/Event:: with the keys code::path, title, categories, summary, installed::.
 
-The link::#*updateAll:: method also writes the document map in JSON format to code::helpTargetDir/docmap.js:: and a list of all methods and their implementing classes to code::helpTargetDir/methods.js::
+SCDoc also writes the document map in JSON format to code::helpTargetDir/docmap.js::.
 
 method:: docMap
 Returns the internal dictionary of documents.

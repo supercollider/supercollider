@@ -6,6 +6,11 @@ related:: Reference/SCDocSyntax, Classes/SCDoc
 section:: Writing new help
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
 
+note:: The help files should use UTF-8 encoding! ::
+
+subsection:: Documenting new classes
+When you navigate to an undocumented class, it will contain an schelp template that can be filled in and saved to HelpSource/Classes/ClassName.schelp.
+
 section:: Converting old helpfiles
 
 Currently there is no automated process for this, but for most help files it's really simple to do it manually:
@@ -14,13 +19,12 @@ numberedlist::
 ## open the old helpfile in your web browser
 ## copy the text and insert it in a new textfile: FileName.schelp
 ## add the appropriate tags, like title, sections, etc.. (see below)
-## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#directory_layout::)
-## Do code::SCDoc:updateAll:: to generate HTML strong:: and check that it rendered OK ::.
+## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#directory_layout:: below)
+## strong:: check that it rendered OK ::.
+You can run code::SCDoc.cleanStart:: to make SCDoc detect the new file and add it to the doc map next time you open the Browse or Search page. If the file already existed and you want to see the changes, just navigate to it again and SCDoc will re-render it.
 ::
 
 A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
-
-note:: The help files should use UTF-8 encoding! ::
 
 section:: Directory layout
 The help system uses different folders under HelpSource depending on document kind:
