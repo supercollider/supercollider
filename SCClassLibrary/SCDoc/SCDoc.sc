@@ -53,7 +53,7 @@ SCDoc {
         doc_map.pairsDo {|k,v|
             f.write("{\n");
             v.pairsDo {|k2,v2|
-                if(v2.class == List) {
+                if(v2.isKindOf(Array)) {
                     v2 = "["+v2.collect{|x|"'"++x++"'"}.join(",")+"]";
                 } {
                     v2 = "'"++v2.asString.replace("'","\\'")++"'";
@@ -82,22 +82,23 @@ SCDoc {
     *addMethodList {|c,n,tag|
         var l, x = this.makeMethodList(c);
         if(x.notEmpty) {
-            n.add((tag:tag, children:l=List.new));
+            n = n.add((tag:tag, children:l=Array.new));
             x.do {|m|
-                l.add((tag:\method, text:m));
+                l = l.add((tag:\method, text:m));
             };
         };
+        ^n;
     }
 
     *makeMethodList {|c|
         var l, mets, name, syms;
-        l = List.new;
+        l = Array.new;
         (mets = c.methods) !? {
             syms = mets.collectAs(_.name,IdentitySet);
             mets.do {|m| //need to iterate over mets to keep the order
                 name = m.name;
                 if (name.isSetter.not or: {syms.includes(name.asGetter).not}) {
-                    l.add(name.asString);
+                    l = l.add(name.asString);
                 };
             };
         };
@@ -408,10 +409,6 @@ SCDoc {
         //FIXME: force a re-render if class source-file changed?
         if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
             this.postProgress("Undocumented class, generating stub and template");
-            n = List.new;
-            n.add((tag:\class, text:name));
-            n.add((tag:\summary, text:""));
-
             cats = "Undocumented classes";
             if(this.classHasArKrIr(class)) {
                 cats = cats ++ ", UGens>Undocumented";
@@ -419,24 +416,26 @@ SCDoc {
             if(class.categories.notNil) {
                 cats = cats ++ ", "++class.categories.join(", ");
             };
-            n.add((tag:\categories, text:cats));
 
-            p.root = n;
-            
-            n.add((tag:\description, children:m=List.new));
-            m.add((
+            m=[(
                 tag:\prose,
                 text:"This class is missing documentation. See the ",
                 display:\block
-            ));
-            m.add((
+            ),(
                 tag:\link,
                 text:"#help_template#generated help template",
                 display:\inline
-            ));
+            )];
 
-            this.addMethodList(class.class,n,\classmethods);
-            this.addMethodList(class,n,\instancemethods);
+            n = [
+                (tag:\class, text:name),
+                (tag:\summary, text:""),
+                (tag:\categories, text:cats),
+                (tag:\description, children:m)
+            ];
+
+            n = this.addMethodList(class.class,n,\classmethods);
+            n = this.addMethodList(class,n,\instancemethods);
             
             f = {|x|
                 if(x.tag==\method) {
@@ -448,7 +447,7 @@ SCDoc {
             methodstemplate = methodstemplate ++ "\nInstanceMethods::\n\n";
             p.findNode(\instancemethods).children.do(f);
 
-            n.add((
+            n = n.add((
                 tag:\section, text:"Help Template", children:[
                     (tag:\prose, display:\block,
                     text:"Fill out and save the template below to HelpSource/Classes/"++name++".schelp"),
@@ -463,7 +462,7 @@ SCDoc {
                     display:\block)
                 ]
             ));
-
+            p.root = n;
             r.render(p,path,"Classes");
             ^true;
         };
@@ -557,7 +556,7 @@ SCDoc {
                 this.addToDocMap(p,subtarget);
                 doc_map[subtarget].methods =
                     (this.makeMethodList(class.class).collect{|m| "_*"++m}
-                    ++ this.makeMethodList(class).collect{|m| "_-"++m}).asList;
+                    ++ this.makeMethodList(class).collect{|m| "_-"++m});
                 update = true;
             };
             doc_map[subtarget].delete = false;
