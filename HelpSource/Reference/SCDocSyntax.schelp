@@ -113,6 +113,7 @@ emphasis        V                            x        x
 strong          V                            x        x
 soft            V                            x        x
 image           V                            x        x
+classtree       V                            x        x
 ##
 ||
 (prose)         V
@@ -268,6 +269,13 @@ definitionList::
     \::
 ## two || the second thing
 \::
+::
+
+subsection:: ClassTree
+
+A special tag to render a class hierarchy tree:
+code::
+classtree::Pattern::
 ::
 
 subsection:: Notes and warnings

@@ -410,6 +410,13 @@ SCDocHTMLRenderer : SCDocRenderer {
                     'table',            { file.write("<td>") }
                 );
             },
+
+            'classtree', {
+                file.write("<ul class='tree'>");
+                this.renderClassTree(file,node.text.asSymbol.asClass);
+                file.write("</ul>");
+            },
+
             //these are handled explicitly
             'title', { },
             'summary', { },
@@ -428,6 +435,23 @@ SCDocHTMLRenderer : SCDocRenderer {
                 node.text !? {file.write(this.escapeSpecialChars(node.text))};
             }
         );
+    }
+
+    renderClassTree {|f,c|
+        var name, doc, desc = "";
+        name = c.name.asString;
+        doc = SCDoc.docMap["Classes/"++name];
+        doc !? { desc = " - "++doc.summary };
+        if(c.name.isMetaClassName, {^this});
+        f.write("<li> <a href='"++baseDir+/+"Classes/"++name++".html'>"++name++"</a>"++desc++"\n");
+
+        c.subclasses !? {
+            f.write("<ul class='tree'>\n");
+            c.subclasses.copy.sort {|a,b| a.name < b.name}.do {|x|
+                this.renderClassTree(f,x);
+            };
+            f.write("</ul>\n");
+        };
     }
 
     renderTOC {|f|
