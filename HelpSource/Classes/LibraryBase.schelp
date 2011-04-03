@@ -1,5 +1,5 @@
 CLASS::LibraryBase
-summary::global storage base class
+summary::Abstract global storage class
 categories:: Collections
 
 DESCRIPTION::

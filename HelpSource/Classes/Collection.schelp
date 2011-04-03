@@ -1,11 +1,11 @@
 CLASS::Collection
-summary::group of objects
+summary::Abstract superclass of all collections
 related::Classes/List, Classes/Array, Classes/Dictionary, Classes/Bag, Classes/Set, Classes/SortedList
 categories::Collections
 
 DESCRIPTION::
 Collection is an abstract class. You do not create direct instances of Collection.
-There are many types of Collections including link::Classes/List::, link::Classes/Array::, link::Classes/Dictionary::, link::Classes/Bag::, link::Classes/Set::, link::Classes/SortedList::, etc. See link::Overviews/ClassTree:: for a complete class tree.
+There are many types of Collections including link::Classes/List::, link::Classes/Array::, link::Classes/Dictionary::, link::Classes/Bag::, link::Classes/Set::, link::Classes/SortedList::, etc. See link::Overviews/Collections:: for a complete class tree.
 
 CLASSMETHODS::
 
