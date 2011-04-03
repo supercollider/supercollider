@@ -201,10 +201,13 @@ To link another document, use code:: link\::Path/To/Document\:: :: where the pat
 code::
 Also take a look at link::Classes/SinOsc:: and link::Reference/Literals::
 ::
+subsection:: Methods
 To link to a specific class method, append code::#*methodName:: or to an instance method, append code::#-methodName:: :
 code::
 Also take a look at the play method of link::Classes/Function#-play::
 ::
+This will render as link::Classes/Function#-play::
+
 For generic methods documented outside of instancemethods or classmethods (like the generic link::Reference/play:: document), use a dot (.) as prefix instead of * or -.
 
 The special link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown by appending code::#name:: where name is the name of the method:

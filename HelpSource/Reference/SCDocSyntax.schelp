@@ -313,10 +313,11 @@ code::
 Also see link::Classes/SinOsc##a nice oscillator::
 ::
 
-A link to a specific method in a class:
+A link to specific methods:
 code::
-Take a look at link::Classes/SinOsc#*ar#SinOsc's ar method::
+Take a look at link::Classes/SinOsc#*ar:: and link::Classes/Function#-play::
 ::
+Renders as: link::Classes/SinOsc#*ar:: and link::Classes/Function#-play::
 
 The link::Overviews/Methods:: overview is dynamic and allows a specific method to be shown, by using the methodname as anchor, for example to get a list of all classes implementing code::play:: :
 code::

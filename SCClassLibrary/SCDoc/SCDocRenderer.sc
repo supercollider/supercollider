@@ -331,7 +331,17 @@ SCDocHTMLRenderer : SCDocRenderer {
                             f = if(SCDoc.docMap[n].notNil)
                                 {SCDoc.docMap[n].title} // use doc title
                                 {n.basename}; // use filename
-                            if(m.size>0) {f = f++":"+m}; // add : anchor
+                            if(m.size>0) {
+                                if(n.dirname=="Classes") {
+                                    f = f ++ switch(m[0],
+                                        $*,{"."++m.drop(1)},
+                                        $-,{":"++m.drop(1)},
+                                        {": "+m}
+                                        );
+                                } {
+                                    f = f++":"+m;
+                                }
+                            }
                         } {
                             f = if(m.size>0) {m} {"(empty link)"};
                         };
