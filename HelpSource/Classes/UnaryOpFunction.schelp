@@ -1,6 +1,6 @@
 class::UnaryOpFunction
 summary::represent a unary oparation on a function
-related:: UnaryOpStream, Punop, BinaryOpFunction, NAryOpFunction
+related:: Classes/UnaryOpStream, Classes/Punop, Classes/BinaryOpFunction, Classes/NAryOpFunction
 categories::Core
 
 description::

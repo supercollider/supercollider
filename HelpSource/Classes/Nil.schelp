@@ -20,8 +20,8 @@ Answer false. In class Object this message answers true.
 
 method::?
 
-	? means return first non-nil argument. Since this IS nil then return anObject.
-	In class Object, ? is defined to answer the receiver.
+return first non-nil argument. Since this IS nil then return anObject.
+In class link::Classes/Object::, ? is defined to answer the receiver.
 
 method::??
 If the receiver is nil, value the function and return the result.  Since this IS nil, then value the function and return the result. In class Object, ?? is defined to answer the receiver.

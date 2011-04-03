@@ -44,3 +44,7 @@ list::
 ## link::Classes/ShouldNotImplementError:: : you called a method on a class that has no business implementing it.
 ## link::Classes/SubclassResponsibilityError:: : you called a method on an abstract class.
 ::
+
+The exact inheritance tree looks like this:
+classtree::Error::
+

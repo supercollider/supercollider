@@ -1,12 +1,12 @@
 class::Char
-summary::ascii characters
+summary::ascii character
 categories:: Core
 
 description::
 Chars may be written as literals using the $ sign. For example $a, $b, $c.
 See link::Reference/Literals::
 
-Chars may be created from Integers using the Integer methods asAscii and asDigit.
+Chars may be created from link::Classes/Integer::s using the methods link::Classes/Integer#-asAscii:: and link::Classes/Integer#-asDigit::.
 
 instancemethods::
 
@@ -14,57 +14,55 @@ subsection::conversion
 
 method::ascii
 
-answers the integer ascii value of a Char.
+returns:: the integer ascii value of a Char.
 
 method::digit
 
-answers an integer value from 0 to 9 for chars $0 to $9, and values 10 to 35 for chars $a to $z
+returns:: an integer value from 0 to 9 for chars $0 to $9, and values 10 to 35 for chars $a to $z
 or $A to $Z.
 
 method::toUpper
 
-answers the upper case version of a char. Nonalphabetic chars return themselves.
+returns:: the upper case version of a char. Nonalphabetic chars return themselves.
 
 method::toLower
 
-answers a lower case version of a char. Nonalphabetic chars return themselves.
+returns:: a lower case version of a char. Nonalphabetic chars return themselves.
 
 subsection:: Testing
 
 method::isAlpha
 
-answers whether the char is an alphabetic character.
+returns:: whether the char is an alphabetic character.
 
 method::isAlphaNum
 
-answers whether the char is an alphabetic or numeric character.
+returns:: whether the char is an alphabetic or numeric character.
 
 method::isPrint
 
-answers whether the char is printable.
+returns:: whether the char is printable.
 
 method::isPunct
 
-answers whether the char is a punctuation character
+returns:: whether the char is a punctuation character
 
 method::isSpace
 
-answers whether the char is white space.
+returns:: true if the char is white space.
 
 method::isDecDigit
  
- answers whether the char is a decimal digit $0 to $9.
+returns:: true if the char is a decimal digit $0 to $9.
  
 method::isFileSafe
  
- answers whether the char is safe for use as in a filename.
- excludes the path separators / and : 
- 
+returns:: true if the char is safe for use as in a filename.
+excludes the path separators / and : 
+discussion::
 code:: 
  for(0,255,{ arg i;
 	var a;
 	[i,a = i.asAscii,a.isAlphaNum,a.isPrint,a.isPunct,a.isControl].postln;
 });
 ::
-
- 
