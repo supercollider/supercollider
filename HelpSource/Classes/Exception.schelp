@@ -1,0 +1,108 @@
+class::Exception
+categories::Core
+summary::root error class
+
+description::
+The root of SuperCollider's error handling mechanism.
+
+Exception is an abstract class, defining basic error behavior. This class is not directly used in SuperCollider. Users may create subclasses of Exception to identify specific types of failure conditions.
+
+The built-in exception types are actually subclasses of Error -- see its help file for the hierarchy.
+
+section::Background: General exception handling
+
+An exception is any event that disrupts the normal execution flow of a program. In practice there is not much distinction between an exception and an error; in SuperCollider, we tend to speak of errors where other object-oriented languages (Java, C++) would use exception consistently.
+
+If a piece of code runs into an unexpected condition, it creates an exception object that holds information about the faulty condition, and then "throws" that object. From there, the interpreter unwinds backward through all the preceding stack frames looking for an exception handler that will "catch" the exception. The exception handler can take an alternate route to resolve the failure and continue normally; if this is not possible, it can re-throw the exception back to the previous stack frame. An exception that never gets caught causes execution to abort. In SuperCollider, this results in the standard error dump (see the Understanding-Errors help file for details); in C++ or Java, the effect is catastrophic, causing the whole program to crash.
+
+subsection::Common syntax in other languages for exception handling is:
+
+code::
+try { ...code... }
+catch { ...exception handler... }
+::
+
+Specific languages may have other variants. The SuperCollider compiler doesn't have room for the "catch" keyword, so the syntax is simpler:
+
+code::
+try { ...code... } { ...exception handler... };
+::
+
+With "try", "if" the error cannot be handled, you have to re-throw the error explicitly:
+
+code::
+try { ...code... } { |error|
+	if( test: can I handle the error? ) {
+		handle gracefully
+	} { error.throw }
+};
+::
+
+SuperCollider includes a variant, borrowed from Scheme, in which the exception is always fatal, but the preceding code might have allocated some resources that need to be released before reporting the error. For example, you might open a file and do some processing on it that might encounter an error. Good practice is to close the file before the error halt, which you can do this way:
+
+code::
+file = File(path, "r");
+protect {
+	work with the file here, which might cause an error
+} {
+	file.close;
+};
+::
+
+With "protect" the second function will execute even if there is no error, and any error will be passed up the chain.
+
+In Java, you can catch specific classes of exception. You can simulate this usage with the following construction:
+
+code::
+// Java-style
+
+try {  }
+catch { FileNotFoundException e } { console.printLine("File not found: " + e.path) }
+catch { EmptyFileException e } { console.printLine("File is empty: " + e.path) };
+
+// SuperCollider-style (hypothetical; these specific exceptions do not exist in the main library
+
+try {  } { |error|
+	switch(error.species.name)
+		{ 'FileNotFoundException' } { postln("File not found:" + e.path) }
+		{ 'EmptyFileException' } { postln("File is empty:" + e.path) }
+			// default condition: unhandled exception, rethrow
+		{ error.throw }
+}
+::
+Following is an example that recovers from a failed attempt to write into an immutable array, by re-attempting the write on a copy of the array.
+
+code::
+(
+~inPlaceSub = { |array, find, replace|
+	array.do({ |item, i|
+		if(item == find) { array[i] = replace };
+	});
+};
+
+~trySub = { |array, find, replace|
+	try {
+		~inPlaceSub.(array, find, replace)
+	} { |error|
+		switch(error.species.name)
+			{ 'PrimitiveFailedError' } {
+				if(error.what.find("immutable").notNil) {
+					"caught ImmutableError".postln;
+					~inPlaceSub.(array.copy, find, replace)
+				} { "unknown primitive exception".postln; error.throw; }
+			}
+				// default case: unhandled exception, should die so re-throw error
+			{ "unknown exception".postln; error.throw; }
+	};
+};
+)
+
+// pass in a mutable array, OK
+~trySub.((0..9), 9, 19);
+
+// pass in a literal array, Immutable exception is caught and handled
+~trySub.(#[0, 1, 2, 3, 4, 5], 5, 6);
+
+// pass in a nonsense value, other exception is re-thrown
+~trySub.(10, 5, 6);
+::
