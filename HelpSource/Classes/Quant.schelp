@@ -25,35 +25,37 @@ For use with patterns only -- this enables patterns to run slightly ahead of the
 
 EXAMPLES::
 
-quant = 1 -- schedule for the next whole beat
-
-quant = 4, phase = -1 -- a one beat pick-up to the next 4/4 barline
-
+definitionlist::
+## quant = 1 || schedule for the next whole beat
+## quant = 4, phase = -1 || a one beat pick-up to the next 4/4 barline
+::
 Suppose the clock's meter was 3/4 for 3 bars (starting at 0). Then:
-
-quant = 3, phase = 1 -- would schedule for 1, 4, or 7 beats
-
+definitionlist::
+## quant = 3, phase = 1 || would schedule for 1, 4, or 7 beats
+::
 During this time, clock.setMeterAtBeat(4, 9) is executed. Then:
-
-quant = 4, phase = 0 -- would schedule for 9, 13, 17, 21 etc. beats
-
+definitionlist::
+## quant = 4, phase = 0 || would schedule for 9, 13, 17, 21 etc. beats
+::
 Every point in time can be precisely identified this way, and it can be related back easily to the Western concept of meter or time signature.
 
 subsection::Automatic instantiation
 
-Certain objects convert themselves into Quant objects when used with Routine:play, Task:play or Pattern:play.
+Certain objects convert themselves into Quant objects when used with link::Classes/Routine#-play::, link::Classes/Task#-play:: or link::Classes/Pattern#-play::.
 
-4.0 (i.e., link::Classes/SimpleNumber::) --> Quant(4.0, nil, nil)
-
-[4.0, 1.0] (i.e., link::Classes/Array::) --> Quant(4.0, 1.0, nil)
-
-[4.0, 1.0, 0.1] --> Quant(4.0, 1.0, 0.1)
-
-nil --> Quant(nil, nil, nil)
-
+definitionlist::
+## link::Classes/SimpleNumber::
+|| code:: 4.0 --> Quant(4.0, nil, nil) ::
+## link::Classes/Array::
+|| code:: [4.0, 1.0] --> Quant(4.0, 1.0, nil) ::
+|| code:: [4.0, 1.0, 0.1] --> Quant(4.0, 1.0, 0.1) ::
+## link::Classes/Nil::
+|| code:: nil --> Quant(nil, nil, nil) ::
+::
 This simplifies the syntax:
-
-code::Routine({ ... }).play(quant: 4.0):: vs. code::Routine({ ... }).play(quant: Quant(4.0))::
+code::
+Routine({ ... }).play(quant: 4.0):: vs. code::Routine({ ... }).play(quant: Quant(4.0))
+::
 
 subsection::Timing offset in Patterns
 
