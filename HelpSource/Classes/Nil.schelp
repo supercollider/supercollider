@@ -1,0 +1,113 @@
+class::Nil
+categories::Core
+summary::Represents uninitialized data
+
+description::
+
+Nil has a single instance named nil and is used to represent uninitialized data,
+bad values, or terminal values such as end-of-stream.
+
+instancemethods::
+
+private::do, reverseDo, pairsDo, collect, select, reject, detect, collectAs, selectAs, rejectAs, pop, source, source_, changed, 	addDependant, removeDependant, release, update, swapThisGroup, performMsg, remove, seconds_, throw, superclassesDo, !?, play, printOn, storeOn, archiveAsCompileString, set, addDependant
+
+
+method::isNil
+Answers true because this is nil. In class Object this message is defined to answer false.
+
+method::notNil
+Answer false. In class Object this message answers true.
+
+method::?
+
+	? means return first non-nil argument. Since this IS nil then return anObject.
+	In class Object, ? is defined to answer the receiver.
+
+method::??
+If the receiver is nil, value the function and return the result.  Since this IS nil, then value the function and return the result. In class Object, ?? is defined to answer the receiver.
+
+method::add
+Returns an array with the value. This makes it unecessary to initialize when adding to a variable.
+
+method::addAll
+Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.
+
+method::remove
+Returns nil. This makes it unecessary to initialize when adding to a variable.
+
+method::++
+Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.
+
+method::booleanValue
+Returns false.
+
+method::rate
+Returns nil.
+
+method::numChannels
+Returns nil.
+
+method::isPlaying
+Returns false.
+
+method::dependants
+Returns an empty IdentitySet.
+
+method::transformEvent
+Return the argument.
+
+method::awake
+Returns nil.
+
+method::nextTimeOnGrid
+Returns clock.nextTimeOnGrid.
+
+method::asQuant
+Returns Quant.default.
+
+method::matchItem
+Returns true.
+
+method::add
+Returns an array with item.
+
+method::addAll
+Returns array.asArray.
+
+method::++
+Returns array.
+
+method::asCollection
+Returns empty array.
+
+method::get
+Returns prevVal.
+
+method::addFunc
+Returns the function or a FunctionList.
+
+method::removeFunc
+Returns Nil.
+
+method::asSpec
+Returns the default ControlSpec
+
+method::handleError
+Either report error or inspect error and halt execution.
+
+method::push
+Executes function.
+
+method::appendStream
+Retuns stream.
+
+subsection::Dependancy
+
+All the messages for the Dependancy protocol (See class link::Classes/Object::) are defined in class Nil 
+to do nothing. This eliminates the need to check for nil when sending dependancy messages.
+
+subsection::Other Methods
+
+Many other messages are defined in class Nil to do nothing. This eliminates the need to check for nil.
+
+

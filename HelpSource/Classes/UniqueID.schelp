@@ -1,0 +1,22 @@
+class::UniqueID
+summary::source for unique numbers
+categories::Core
+
+classmethods::
+
+method::initClass
+
+initialize the starting id.
+
+method::next
+
+get next id, which is unique to the system
+
+examples::
+
+code::
+// example
+UniqueID.next;
+UniqueID.next;
+UniqueID.next;
+::
