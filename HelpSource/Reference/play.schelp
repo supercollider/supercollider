@@ -24,14 +24,14 @@ r = Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln });
 SystemClock.play(r);
 )
 ::
-See link::Classes/Clock#*play#Clock:play::
+See link::Classes/Clock#*play::
 
 subsection:: routine.play (clock)
 returns: the routine
 code::
 Routine.new({ "...playing".postln; 1.wait; "ok, that was it".postln }).play;
 ::
-See link::Classes/Routine#-play#Routine:play::
+See link::Classes/Routine#-play::
 
 subsection:: stream.play (clock)
 returns: the stream
@@ -40,7 +40,7 @@ the stream will loop until it returns nil
 code::
 FuncStream({ "ok, that was it".postln; 1 }).play;
 ::
-See link::Classes/FuncStream#-play#FuncStream:play::
+See link::Classes/FuncStream#-play::
 
 subsection:: pausestream.play (clock) / task.play (clock)
 returns: the stream
@@ -55,7 +55,7 @@ a = Task.new({ loop({ "ok, that was it".postln; 1.wait; }) });
 a.play;
 a.stop;
 ::
-See link::Classes/Stream#-play#Stream:play:: and link::Classes/Task#-play#Task:play::
+See link::Classes/Stream#-play:: and link::Classes/Task#-play::
 
 subsection:: pattern.play (clock, protoEvent)
 returns: an link::Classes/EventStreamPlayer::
@@ -67,7 +67,7 @@ Pseq([
 ], 2).play;
 )
 ::
-See link::Classes/Pattern#-play#Pattern:play::
+See link::Classes/Pattern#-play::
 
 section:: Playing single Synths from SynthDefs on the server
 
@@ -87,7 +87,7 @@ table::
 ## args || controls to set when starting the synth
 ::
 
-See link::Classes/Function#-play#Function:play::
+See link::Classes/Function#-play::
 
 code::
 a = { PinkNoise.ar([0.1, 0.1]) }.play;
@@ -131,7 +131,7 @@ x.set(\amp, 0.2);
 //free the synth
 x.free;
 ::
-See link::Classes/SynthDef#-play#SynthDef:play::
+See link::Classes/SynthDef#-play::
 
 note:: code::Synth.play(function):: is synonymous, for backwards compatibility with sc2 ::
 
