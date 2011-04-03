@@ -616,9 +616,11 @@ ClassBrowser {
 						// of the new state environment
 						// might be nil unless subclass also implements
 					extraValuesDict: (methodViewIndex: {
-						~methodArray.detectIndex({ |item|
-							item.name == prevMethod.name
-						})
+						if(prevMethod.isNil) { 0 } {
+							~methodArray.detectIndex({ |item|
+								item.name == prevMethod.name
+							})
+						};
 					}));
 			},
 			navigateToCurrentClassAction: {
