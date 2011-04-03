@@ -11,7 +11,6 @@ SCDoc {
     classvar new_classes = nil;
     classvar didRun = false;
     classvar isProcessing = false;
-    classvar didMakeClassTree = false;
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
@@ -472,13 +471,13 @@ SCDoc {
             };
             
             if(old_classes != current_classes) {
-                if(gui){this.makeProgressWindow};
+//                if(gui){this.makeProgressWindow};
                 File.delete(classlist_path);
                 current_classes.writeArchive(classlist_path);
-                this.postProgress("Generating Class tree...",true);
-                p.overviewClassTree;
-                r.render(p, helpTargetDir +/+ "Overviews/ClassTree.html", "Overviews", false);
-                this.tickProgress;
+//                this.postProgress("Generating Class tree...",true);
+//                p.overviewClassTree;
+//                r.render(p, helpTargetDir +/+ "Overviews/ClassTree.html", "Overviews", false);
+//                this.tickProgress;
             };
 
             this.writeDocMap;
@@ -507,7 +506,6 @@ SCDoc {
 
     *cleanStart {
         didRun = false;
-        didMakeClassTree = false;
         doc_map = nil;
     }
 
@@ -561,13 +559,6 @@ SCDoc {
             ^url;
         };
 
-        if(subtarget=="Overviews/ClassTree" and: {didMakeClassTree.not}) {
-            didMakeClassTree = true;
-            this.postProgress("Generating Class tree...",true);
-            p.overviewClassTree;
-            r.render(p, path, "Overviews", false);
-        };
-
         // find help source file
         block {|break|
             src = nil;
@@ -614,6 +605,7 @@ SCDoc {
         var class = name.asSymbol.asClass;
         var n, m, cats, methodstemplate, f;
         f = class.filenameSymbol.asString.escapeChar($ );
+        //FIXME: force a re-render if class source-file changed?
         if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
             this.postProgress("Undocumented class, generating stub and template");
             n = List.new;
@@ -723,6 +715,7 @@ SCDoc {
                 doc = doc_map[subtarget];
                 if(doc.isNil or: {mtime != doc.mtime}) {
                     mets = p.parseMetaData(path);
+                    //FIXME: if doc uses 'classtree::', force a re-render by setting mtime=0 and/or removing the html??
                     this.addToDocMap(p,subtarget);
                     doc_map[subtarget].methods = mets;
                     doc_map[subtarget].mtime = mtime;
