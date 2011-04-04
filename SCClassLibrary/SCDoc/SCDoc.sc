@@ -152,7 +152,13 @@ SCDoc {
         doc.title = if(x.notEmpty,x,{parser.findNode(\title).text});
         if(doc.title.isEmpty) {
             doc.title = "NO TITLE:"+path;
-            warn("Document at"+path+"has no title:: or class:: tag");
+            warn("Document at"+path+"has no title:: or class::");
+        };
+        if(doc.summary.isEmpty) {
+            warn("Document at"+path+"has no summary::");
+        };
+        if(doc.categories.isEmpty) {
+            warn("Document at"+path+"has no categories::");
         };
 
         // check if class is standard, extension or missing
@@ -233,6 +239,12 @@ SCDoc {
 
     *tickProgress { progressCount = progressCount + 1 }
 
+    *parseAndRender {|src,dest,kind|
+        SCDoc.postProgress(src+"->"+dest);
+        p.parseFile(src);
+        r.render(p,dest,kind);
+    }
+
     *renderAll {|force=false,gui=true,threaded=true,findExtensions=true,doneFunc|
         var count, count2, func, x, fileList, subtarget, dest, t = Main.elapsedTime;
 
@@ -272,8 +284,7 @@ SCDoc {
                         dest = helpTargetDir+/+subtarget++".html";
                         if(force
                         or: {("test"+path.escapeChar($ )+"-nt"+dest.escapeChar($ )+"-o ! -e"+dest.escapeChar($ )).systemCmd==0}) {
-                            p.parseFile(path);
-                            r.render(p,dest,subtarget.dirname);
+                            this.parseAndRender(path,dest,subtarget.dirname);
                         } {
                             this.postProgress("Skipping"+dest);
                         };
@@ -379,9 +390,7 @@ SCDoc {
 
         if(File.exists(path).not) {
             if(src.notNil) { // no target file, but helpsource found, parse and render.
-                this.postProgress("Parsing"+src);
-                p.parseFile(src);
-                r.render(p,path,subtarget.dirname);
+                this.parseAndRender(src,path,subtarget.dirname);
                 isProcessing = false;
                 ^url;
             } {
@@ -392,8 +401,7 @@ SCDoc {
         } {
             if(src.notNil and: {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
                 // target file and helpsource exists, and helpsource is newer than target
-                p.parseFile(src);
-                r.render(p,path,subtarget.dirname);
+                this.parseAndRender(src,path,subtarget.dirname);
                 isProcessing = false;
                 ^url;
             };
@@ -408,7 +416,7 @@ SCDoc {
         f = class.filenameSymbol.asString.escapeChar($ );
         //FIXME: force a re-render if class source-file changed?
         if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
-            this.postProgress("Undocumented class, generating stub and template");
+            this.postProgress("Undocumented class"+name+"generating stub and template");
             cats = "Undocumented classes";
             if(this.classHasArKrIr(class)) {
                 cats = cats ++ ", UGens>Undocumented";
@@ -429,7 +437,7 @@ SCDoc {
 
             n = [
                 (tag:\class, text:name),
-                (tag:\summary, text:""),
+                (tag:\summary, text:"(not documented)"),
                 (tag:\categories, text:cats),
                 (tag:\description, children:m)
             ];
@@ -551,7 +559,8 @@ SCDoc {
 
                 p.root = [
                     (tag:\class, text:name.asString),
-                    (tag:\categories, text:cats)
+                    (tag:\categories, text:cats),
+                    (tag:\summary, text:"(not documented)")
                 ];
                 this.addToDocMap(p,subtarget);
                 doc_map[subtarget].methods =

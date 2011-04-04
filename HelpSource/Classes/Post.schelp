@@ -1,5 +1,6 @@
 CLASS::Post
 summary::posts text to the post window
+categories:: Files
 
 DESCRIPTION::
 The class Post is a stream destination. Its main use is that it can sometimes make code more readable and execution slightly more efficient.
