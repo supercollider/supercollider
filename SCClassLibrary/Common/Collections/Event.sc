@@ -667,9 +667,14 @@ Event : Environment {
 					},
 
 					group: #{|server|
-						var bundle;
+						var bundle, cmd;
 						if (~id.isNil) { ~id = server.nextNodeID };
-						bundle = [\g_new, ~id.asArray, Node.actionNumberFor(~addAction),
+						if (~parallel.booleanValue) {
+							cmd = \p_new;
+						} {
+							cmd = \g_new;
+						};
+						bundle = [cmd, ~id.asArray, Node.actionNumberFor(~addAction),
 								 ~group.asControlInput].flop;
 						~schedBundleArray.value(~lag, ~timingOffset, server, bundle);
 					},
