@@ -26,7 +26,7 @@ method:: window
 Returns the window if you used the popUp window function.
 
 
-subsetion:: Accessing GUI options
+subsection:: Accessing GUI options
 
 method:: alwaysOnTop
 Makes the popup window always on top, if there is one.

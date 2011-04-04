@@ -150,7 +150,7 @@ An instance of link::Classes/Color::. The code::background:: of the enclosing vi
 	
 method:: font
 Set the link::Classes/Font:: used by all the views.
-argumento:: font
+argument:: font
 An instance of link::Classes/Font::.
 
 
