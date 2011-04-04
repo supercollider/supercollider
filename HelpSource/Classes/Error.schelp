@@ -46,5 +46,5 @@ list::
 ::
 
 The exact inheritance tree looks like this:
-classtree::Error::
+classtree::Error
 

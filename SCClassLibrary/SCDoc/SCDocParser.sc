@@ -170,7 +170,8 @@ SCDocParser {
 //                'note::',               simpleTag,
 //                'warning::',            simpleTag,
                 'private::',            simpleTag,
-                
+                'classtree::',          simpleTag,
+
                 'code::',               modalRangeTag,
                 'formula::',            modalRangeTag,
                 'emphasis::',           modalRangeTag,
@@ -179,7 +180,6 @@ SCDocParser {
                 'anchor::',             modalRangeTag,
                 'image::',              modalRangeTag,
                 'soft::',               modalRangeTag,
-                'classtree::',          modalRangeTag,
 
                 'note::',               { listEnter.(); proseDisplay=\inline },
                 'warning::',            { listEnter.(); proseDisplay=\inline },
