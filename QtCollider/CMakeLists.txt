@@ -67,6 +67,7 @@ set( QT_COLLIDER_SRCS
   widgets/QcWebView.cpp
   layouts/classic_layouts.cpp
   layouts/layouts.cpp
+  style/ProxyStyle.cpp
 )
 
 set( QT_USE_QTWEBKIT TRUE )
