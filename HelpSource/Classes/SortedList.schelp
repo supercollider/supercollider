@@ -1,5 +1,5 @@
 CLASS::SortedList
-summary::SortedList is a Collection whose items are kept in a sorted order.
+summary::a Collection whose items are kept in a sorted order.
 categories::Collections>Ordered
 
 CLASSMETHODS::

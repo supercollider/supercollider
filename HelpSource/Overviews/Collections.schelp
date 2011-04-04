@@ -9,3 +9,21 @@ section:: Hierarchy
 
 classtree::Collection::
 
+subsection:: Notes
+
+definitionlist::
+## link::Classes/List::
+|| is an expandable link::Classes/SequenceableCollection:: (compare to link::Classes/ArrayedCollection:: and link::Classes/Array::).
+## link::Classes/Array::
+|| is more efficient than link::Classes/List::.
+## link::Classes/SparseArray::
+|| is an array of elements optimized for huge gaps between them.
+## link::Classes/TwoWayIdentityDictionary::
+|| is similar to link::Classes/IdentityDictionary:: and allows easy searching by both key and value. It is faster than link::Classes/IdentityDictionary:: on reverse lookup, but with more memory overhead.
+## link::Classes/Environment::
+|| is an link::Classes/IdentityDictionary::, one of which is always current; useful for creating sets of persistent variables.
+## link::Classes/Event::
+|| is a dictionary mapping names of musical parameters to their values.
+## link::Classes/IdentitySet::
+|| is an unordered collection of unidentical objects (compare to link::Classes/Set::).
+::
