@@ -6,7 +6,6 @@ HelpBrowser {
 	var <window;
 	var webView;
 	var lblStatus, animCount = 0;
-	var oldPath;
 
 	*instance {
 		var homeUrl;
@@ -26,12 +25,11 @@ HelpBrowser {
 	}
 
 	goTo {|url|
-		var newPath;
+		var newPath, oldPath;
 		//FIXME: since multiple scdoc queries can be running at the same time,
 		//it would be best to create a queue and run them in order, but only use the url from the last.
-		newPath = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
-		if(newPath!=oldPath) {
-			oldPath = newPath;
+		#newPath, oldPath = [url,webView.url].collect {|x| if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}};
+		if(newPath != oldPath) {
 			this.startAnim;
 		};
 
@@ -59,7 +57,7 @@ HelpBrowser {
 
 		homeUrl = aHomeUrl;
 
-		winRect = Rect(0,0,600,600);
+		winRect = Rect(0,0,800,600);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
 
 		window = Window.new( bounds: winRect );
