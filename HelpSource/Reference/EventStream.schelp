@@ -1,0 +1,20 @@
+title:: Event Stream
+categories:: Patterns
+
+An event stream is a normal link::Classes/Stream:: that returns events when called. (see class link::Classes/Event::). Usually, an event stream requires an event to be passed in, often the default event is used:
+
+code::
+t = Pbind(\x, Pseq([1, 2, 3])).asStream; // Pbind, e.g. creates a stream
+t.next(Event.default);
+t.next(Event.default);
+::
+
+An event stream cannot be played directly with a clock, as it returns events and not time values. Therefore, an link::Classes/EventStreamPlayer:: is used, which replaces the event by according time value.
+
+A link::Classes/Pevent:: can be used to wrap a stream in an event:
+
+code::
+t = Pevent(Pbind(\x, Pseq([1,2,3])), Event.default).asStream;
+t.next;
+t.next;
+::
