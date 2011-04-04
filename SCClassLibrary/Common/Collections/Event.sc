@@ -166,7 +166,11 @@ Event : Environment {
 				midinote: #{
 					(((~note.value + ~gtranspose + ~root) /
 						~scale.respondsTo(\stepsPerOctave).if(
-							{ ~scale.stepsPerOctave },							~stepsPerOctave) + ~octave - 5.0) * 						(12.0 * ~scale.respondsTo(\octaveRatio).if						({ ~scale.octaveRatio }, ~octaveRatio).log2) + 60.0);				},
+							{ ~scale.stepsPerOctave },
+							~stepsPerOctave) + ~octave - 5.0) *
+						(12.0 * ~scale.respondsTo(\octaveRatio).if
+						({ ~scale.octaveRatio }, ~octaveRatio).log2) + 60.0);
+				},
 				detunedFreq: #{
 					~freq.value + ~detune
 				},
