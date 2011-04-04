@@ -51,7 +51,7 @@ method::isSetter
 Answer whether the symbol has a trailing underscore.
 	
 code::
-'_action'.isSetter;
+'action_'.isSetter;
 ::
 	
 method::isPrimitiveName
