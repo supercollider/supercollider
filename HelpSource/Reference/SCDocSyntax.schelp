@@ -83,6 +83,7 @@ tag             hasText hasChilds structural needClose modal nestable
 title           S
 class           S
 redirect        S
+classtree       S
 doctype         S
 keywords        S
 related         S
@@ -113,7 +114,6 @@ emphasis        V                            x        x
 strong          V                            x        x
 soft            V                            x        x
 image           V                            x        x
-classtree       V                            x        x
 ##
 ||
 (prose)         V
@@ -275,7 +275,7 @@ subsection:: ClassTree
 
 A special tag to render a class hierarchy tree:
 code::
-classtree::Pattern::
+classtree::Pattern
 ::
 
 subsection:: Notes and warnings

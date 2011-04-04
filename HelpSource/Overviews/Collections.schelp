@@ -7,7 +7,7 @@ SuperCollider has a rich hierarchy of Collection subclasses, detailed below. Sub
 
 section:: Hierarchy
 
-classtree::Collection::
+classtree::Collection
 
 subsection:: Notes
 
