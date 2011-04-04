@@ -25,3 +25,20 @@ function fixTOC() {
         x[i].setAttribute("contentEditable",true);
     }
 }
+
+function hidemenu(a) {
+    var e = document.getElementById("leftpane");
+    var t = document.getElementById("toc");
+    if(!e.style.left) {
+        e.style.left = "-18em";
+        t.style.display = 'none';
+        a.innerHTML = "&gt;&gt;";
+        document.body.style.marginLeft = "2em";
+    } else {
+        e.style.left = "";
+        t.style.display = 'block';
+        a.innerHTML = "&lt;&lt;";
+        document.body.style.marginLeft = "20em";
+    }
+    return false;
+}

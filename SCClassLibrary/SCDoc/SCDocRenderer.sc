@@ -537,6 +537,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.write("</head>");
         
         f.write("<div id='leftpane'>");
+        f.write("<a class='hidetoggle' href='#' onclick='hidemenu(this)'>&lt;&lt;</a>");
         f.write(
             "<ul id='mainmenu'>"
             "<li><a href='" ++ baseDir +/+ "Help.html'>Home</a>"
