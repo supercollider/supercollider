@@ -195,6 +195,11 @@ SCDocHTMLRenderer : SCDocRenderer {
                 split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
                     mname = r[1];
+                    if(mname[0].isLower.not) {
+                        //FIXME: is there a better method to check if a symbol is a valid methodname?
+                        warn("SCDocHTMLRenderer: Methodname not valid:"+mname);
+                        mname[0] = mname[0].toLower;
+                    };
                     if(c.notNil) {
                         mstat = 0;
                         sym = mname.asSymbol;
@@ -227,7 +232,9 @@ SCDocHTMLRenderer : SCDocRenderer {
                         // getter and setter
                         3, { file.write(" [= "++args++"]</h3></a>\n"); },
                         // method not found
-                        0, { file.write(": METHOD NOT FOUND!</h3></a>\n"); }
+                        0, { file.write(": METHOD NOT FOUND!</h3></a>\n");
+                            warn("SCDocHTMLRenderer: Method not found:"+mname+"in doc for class"+c.name);
+                        }
                     );
                     m = m ?? m2;
                     if(m.notNil) {
@@ -645,10 +652,8 @@ SCDocHTMLRenderer : SCDocRenderer {
 
     render {|p, filename, folder=".", toc=true|
         var f,x,name;
-        
+
         parser = p;
-        
-        SCDoc.postProgress("Rendering "++filename);
 
 //        File.delete(filename);
         f = File.open(filename, "w");

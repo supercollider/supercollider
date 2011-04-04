@@ -11,6 +11,7 @@ SCDocParser {
     var isWS;
     var stripFirst;
     var proseDisplay;
+    var currentFile;
 
     init {
         root = tree = List.new;
@@ -230,6 +231,9 @@ SCDocParser {
                             this.addText(word.drop(-2));
                             this.handleWord("::",lineno,wordno+1);
                         },{
+                            if(word.endsWith("::")) {
+                                warn("SCDocParser: Unknown tag:"+word+"in"+currentFile);
+                            };
                             this.addText(word); //plain text, add the word.
                         });
                     });
@@ -291,6 +295,7 @@ SCDocParser {
 
     parseFile {|filename|
         var file = File.open(filename,"r");
+        currentFile = filename;
         this.parse(file.readAllString);
         file.close;
     }
