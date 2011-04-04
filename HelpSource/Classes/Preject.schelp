@@ -1,7 +1,7 @@
 class:: Preject
 summary:: Reject values from a pattern
-categories:: Patterns
-related:: Classes/Pseject, Classes/Pcollect
+categories:: Patterns>Filter
+related:: Classes/Pselect, Classes/Pcollect
 
 description::
 Rejects values for which the function returns true. The value is passed to the function.

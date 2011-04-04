@@ -1,6 +1,6 @@
 class:: Pfunc
 summary:: Function pattern
-categories:: Patterns
+categories:: Patterns>Function
 related:: Classes/Pfuncn
 
 description::

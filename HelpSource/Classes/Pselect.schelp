@@ -1,6 +1,6 @@
 class:: Pselect
 summary:: Select values from a pattern
-categories:: Patterns
+categories:: Patterns>Filter
 related:: Classes/Pcollect, Classes/Preject
 
 description::
