@@ -305,14 +305,15 @@ td p {
     line-height: 120%;
 }
 #toctitle {
-    font-weight: bold;
-    color: #666;
-    margin-bottom: 1em;
     border-bottom: 1px solid #888;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+    color: #555;
 }
-#toctitle a {
-    font-size: 9pt;
+#toclabel {
     font-weight: normal;
+    color: #777;
+    margin-bottom: 0.5em;
 }
 ul.toc {
     list-style-type: none;
