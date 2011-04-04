@@ -463,7 +463,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         };
     }
 
-    renderTOC {|f|
+    renderTOC {|f,title|
         var parent = nil, pfx, r;
         var do_children = {|children|
             children !? {
@@ -521,7 +521,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         };
         f.write("<div id='toc'>\n");
 //        f.write("<div id='toctitle'>Table of contents <a id='toc_toggle' href='#' onclick='showTOC(this);return false'></a></div>");
-        f.write("<div id='toctitle'>Table of contents</div>");
+        f.write("<div id='toctitle'>"++title++"</div><div id='toclabel'>table of contents:</div>");
         do_children.(parser.root);
         f.write("</div>");
     }
@@ -548,7 +548,7 @@ SCDocHTMLRenderer : SCDocRenderer {
             "<li><a href='" ++ baseDir +/+ "Search.html'>Search</a>"
             "</ul>"
         );
-        if(toc, {this.renderTOC(f)});
+        if(toc, {this.renderTOC(f,name)});
         f.write("</div>");
 
         f.write("<body onload='fixTOC();prettyPrint()'>");
