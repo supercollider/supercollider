@@ -297,7 +297,7 @@ Event : Environment {
 								dur = sustain + strumTime
 							};
 							schedBundle.value(lag, dur + ~timingOffset, server,
-									[\n_set, msg[2], \gate, 0])
+									[15 /* \n_set */, msg[2], \gate, 0])
 						}
 				}
 
@@ -485,7 +485,7 @@ Event : Environment {
 
 							// compute the control values and generate OSC commands
 							bndl = msgFunc.valueEnvir;
-							bndl = [\s_new, instrumentName, ids, addAction, ~group] ++ bndl;
+							bndl = [9 /* \s_new */, instrumentName, ids, addAction, ~group] ++ bndl;
 
 
 							if(strum == 0 and: { (sendGate and: { sustain.isArray })
@@ -517,7 +517,7 @@ Event : Environment {
 										lag,
 										sustain + offset,
 										server,
-										[\n_set, ids, \gate, 0].flop,
+										[15 /* \n_set */, ids, \gate, 0].flop,
 										~latency
 									);
 								}
@@ -536,7 +536,7 @@ Event : Environment {
 									};
 									~schedBundleArray.(
 										lag, strumOffset, server,
-										[\n_set, ids, \gate, 0].flop,
+										[15 /* \n_set */, ids, \gate, 0].flop,
 										~latency
 									);
 								}
@@ -580,7 +580,7 @@ Event : Environment {
 							// compute the control values and generate OSC commands
 
 							bndl = msgFunc.valueEnvir;
-							bndl = [\s_new, instrumentName, -1, addAction, ~group] ++ bndl;
+							bndl = [9 /* \s_new */, instrumentName, -1, addAction, ~group] ++ bndl;
 
 							~schedBundleArray.(
 								~lag,
@@ -605,7 +605,7 @@ Event : Environment {
 							msgFunc = ~getMsgFunc.valueEnvir;
 							instrumentName = ~synthDefName.valueEnvir;
 							bndl = msgFunc.valueEnvir;
-							bndl = [\s_new, instrumentName, ~id,
+							bndl = [9 /* \s_new */, instrumentName, ~id,
 									 Node.actionNumberFor(~addAction), ~group] ++ bndl;
 							bndl = bndl.flop;
 							if ( (ids = ~id).isNil ) {
@@ -642,7 +642,7 @@ Event : Environment {
 								bndl = ~args.envirPairs;
 							};
 
-							bndl = ([\n_set, ~id] ++  bndl).flop.asOSCArgBundle;
+							bndl = ([15 /* \n_set */, ~id] ++  bndl).flop.asOSCArgBundle;
 							~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
 						};
 					},
@@ -652,7 +652,7 @@ Event : Environment {
 						if (~hasGate) {
 							gate = min(0.0, ~gate ? 0.0); // accept release times
 							~schedBundleArray.value(~lag, ~timingOffset, server,
-								[\n_set, ~id.asControlInput, \gate, gate].flop)
+								[15 /* \n_set */, ~id.asControlInput, \gate, gate].flop)
 						} {
 							~schedBundleArray.value(~lag, ~timingOffset, server,
 								[\n_free, ~id.asControlInput].flop)
@@ -667,7 +667,7 @@ Event : Environment {
 					group: #{|server|
 						var bundle, cmd;
 						if (~id.isNil) { ~id = server.nextNodeID };
-						bundle = [\g_new, ~id.asArray, Node.actionNumberFor(~addAction),
+						bundle = [21 /* \g_new */, ~id.asArray, Node.actionNumberFor(~addAction),
 								 ~group.asControlInput].flop;
 						~schedBundleArray.value(~lag, ~timingOffset, server, bundle);
 					},
@@ -675,7 +675,7 @@ Event : Environment {
 					parGroup: #{|server|
 						var bundle, cmd;
 						if (~id.isNil) { ~id = server.nextNodeID };
-						bundle = [\p_new, ~id.asArray, Node.actionNumberFor(~addAction),
+						bundle = [63 /* \p_new */, ~id.asArray, Node.actionNumberFor(~addAction),
 								 ~group.asControlInput].flop;
 						~schedBundleArray.value(~lag, ~timingOffset, server, bundle);
 					},
@@ -782,7 +782,7 @@ Event : Environment {
 								[\n_free] ++ ~id.asControlInput);
 						} {
 							~schedBundle.value(~lag, ~timingOffset, server,
-								*([\n_set, ~id.asControlInput, \gate, 0].flop) );
+								*([15 /* \n_set */, ~id.asControlInput, \gate, 0].flop) );
 						};
 
 					},
@@ -796,7 +796,7 @@ Event : Environment {
 							~amp = ~amp.value;
 							~sustain = ~sustain.value;
 
-							bndl = ([\n_set, ~id.asControlInput] ++ ~msgFunc.valueEnvir).flop;
+							bndl = ([15 /* \n_set */, ~id.asControlInput] ++ ~msgFunc.valueEnvir).flop;
 							bndl = bndl.collect(_.asOSCArgArray);
 							~schedBundle.value(~lag, ~timingOffset, server, *bndl);
 						};
@@ -810,7 +810,7 @@ Event : Environment {
 						f = ~freq;
 						~amp = ~amp.value;
 
-						bndl = ( [\s_new, ~instrument, ids, addAction, ~group.asControlInput]
+						bndl = ( [9 /* \s_new */, ~instrument, ids, addAction, ~group.asControlInput]
 							++ ~msgFunc.valueEnvir).flop;
 						bndl.do { | b |
 							id = server.nextNodeID;
@@ -839,7 +839,7 @@ Event : Environment {
 						msgFunc = ~getMsgFunc.valueEnvir;
 						instrumentName = ~synthDefName.valueEnvir;
 
-						bndl = [\s_new, instrumentName, ids, addAction, group]
+						bndl = [9 /* \s_new */, instrumentName, ids, addAction, group]
 											++ msgFunc.valueEnvir;
 						if ((addAction == 0) || (addAction == 3)) {
 							bndl = bndl.reverse;
@@ -864,7 +864,7 @@ Event : Environment {
 							ids = ids.reverse;
 						};
 						bundle = ids.collect {|id, i|
-							[\g_new, id, addAction, group];
+							[21 /* \g_new */, id, addAction, group];
 						};
 						server.sendBundle(server.latency, *bundle);
 						~isPlaying = true;
@@ -876,7 +876,7 @@ Event : Environment {
 					tree: #{ |server|
 						var doTree = { |tree, currentNode, addAction=1|
 							if(tree.isKindOf(Association)) {
-								~bundle = ~bundle.add(["/g_new",
+								~bundle = ~bundle.add([21 /* \g_new */,
 									tree.key.asControlInput, Node.actionNumberFor(addAction),
 									currentNode.asControlInput]);
 								currentNode = tree.key;
@@ -888,7 +888,7 @@ Event : Environment {
 									doTree.(x, currentNode)
 								};
 							} {
-								~bundle = ~bundle.add(["/g_new",
+								~bundle = ~bundle.add([21 /* \g_new */,
 									tree.asControlInput, Node.actionNumberFor(addAction),
 									currentNode.asControlInput]);
 							};
@@ -934,7 +934,7 @@ Event : Environment {
 						ids = ids.asArray.reverse;
 					};
 					bundle = ids.collect {|id, i|
-						[\g_new, id, addAction, group];
+						[21 /* \g_new */, id, addAction, group];
 					};
 					server.sendBundle(server.latency, *bundle);
 					~isPlaying = true;
@@ -969,7 +969,7 @@ Event : Environment {
 				ids = Event.checkIDs(~id, server);
 				if (ids.isNil) { ids = msgs.collect { server.nextNodeID } };
 				bndl = ids.collect { |id, i|
-					[\s_new, instrumentName, id, addAction, group]
+					[9 /* \s_new */, instrumentName, id, addAction, group]
 					 ++ msgs[i]
 				};
 
