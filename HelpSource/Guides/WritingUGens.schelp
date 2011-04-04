@@ -29,7 +29,7 @@ definitionList::
 ## DefineSimpleUnit || Define a `simple' unit generator
 ## DefineDtorUnit || Define a unit generator with a descructor
 ## DefineSimpleCantAliasUnit || Define a `simple' unit generator, whose input and output buffers cannot alias
-## DefineDtorCantAliasUnit || Define a unit generator with a descructor, whose input and output buffers cannot alias
+## DefineDtorCantAliasUnit || Define a unit generator with a destructor, whose input and output buffers cannot alias
 ::
 
 These macros depend on a specific naming convention:
