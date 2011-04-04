@@ -386,16 +386,23 @@ SynthDef {
 	}
 
 	checkInputs {
-		var seenErr = false;
+		var firstErr;
 		children.do { arg ugen;
 			var err;
 			if ((err = ugen.checkInputs).notNil) {
-				seenErr = true;
+				if(firstErr.isNil){
+					firstErr = if(err.indexOf($:).isNil){err}{
+						err[..err.indexOf($:)-1]
+					};
+				};
 				(ugen.class.asString + err).postln;
 				ugen.dumpArgs;
 			};
 		};
-		if(seenErr) { Error("SynthDef" + this.name + "build failed").throw };
+		if(firstErr.notNil) {
+			("SynthDef" + this.name + "build failed").postln;
+			Error(firstErr).throw
+		};
 		^true
 	}
 
