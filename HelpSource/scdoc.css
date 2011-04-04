@@ -42,6 +42,17 @@ a:hover {
     text-decoration: underline;
 }
 
+a.hidetoggle {
+    font-size: 9pt;
+    color: #777;
+    float: right;
+}
+
+a.hidetoggle:hover {
+    text-decoration: none;
+    color: #000;
+}
+
 .header {
     border-bottom: 6px solid #000;
 }
