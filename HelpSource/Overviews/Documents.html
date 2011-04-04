@@ -139,16 +139,18 @@ function showdocs() {
 </script>
 </head>
 
-<body onload="did_load()">
+<div id='leftpane'>
+<ul id='mainmenu'>
+<li><a href='../Help.html'>Home</a>
+<li><a href='../Browse.html'>Browse</a>
+<li><a href='../Overviews/Documents.html'>Document index</a>
+<li><a href='../Overviews/Classes.html'>Class index</a>
+<li><a href='../Overviews/Methods.html'>Method index</a>
+<li><a href='../Search.html'>Search</a>
+</ul>
+</div>
 
-<table class='headMenu'>
-    <tr><td><a href='../Help.html'>Home</a>
-    <td><a href='../Browse.html'>Browse</a>
-    <td><a href='../Overviews/Documents.html'>Document index</a>
-    <td><a href='../Overviews/Classes.html'>Class index</a>
-    <td><a href='../Overviews/Methods.html'>Method index</a>
-    <td><a href='../Search.html'>Search</a>
-</table>
+<body onload="did_load()">
 
 <div class='header'>
     <div id='label'>SuperCollider OVERVIEWS</div>

@@ -512,8 +512,9 @@ SCDocHTMLRenderer : SCDocRenderer {
                 f.write("</ul>");
             }
         };
-        f.write("<div id='toctitle'>Table of contents <a id='toc_toggle' href='#' onclick='showTOC(this);return false'></a></div>");
         f.write("<div id='toc'>\n");
+//        f.write("<div id='toctitle'>Table of contents <a id='toc_toggle' href='#' onclick='showTOC(this);return false'></a></div>");
+        f.write("<div id='toctitle'>Table of contents</div>");
         do_children.(parser.root);
         f.write("</div>");
     }
@@ -526,19 +527,23 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.write("<script src='" ++ baseDir ++ "/prettify.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/lang-sc.js' type='text/javascript'></script>");
 
-        f.write("</head><body onload='fixTOC();prettyPrint()'>");
+        f.write("</head>");
         
+        f.write("<div id='leftpane'>");
         f.write(
-            "<table class='headMenu'><tr>"
-            "<td><a href='" ++ baseDir +/+ "Help.html'>Home</a>"
-            "<td><a href='" ++ baseDir +/+ "Browse.html'>Browse</a>"
-            "<td><a href='" ++ baseDir +/+ "Overviews/Documents.html'>Document index</a>"
-            "<td><a href='" ++ baseDir +/+ "Overviews/Classes.html'>Class index</a>"
-            "<td><a href='" ++ baseDir +/+ "Overviews/Methods.html'>Method index</a>"
-            "<td><a href='" ++ baseDir +/+ "Search.html'>Search</a>"
-            "</table>"
+            "<ul id='mainmenu'>"
+            "<li><a href='" ++ baseDir +/+ "Help.html'>Home</a>"
+            "<li><a href='" ++ baseDir +/+ "Browse.html'>Browse</a>"
+            "<li><a href='" ++ baseDir +/+ "Overviews/Documents.html'>Document index</a>"
+            "<li><a href='" ++ baseDir +/+ "Overviews/Classes.html'>Class index</a>"
+            "<li><a href='" ++ baseDir +/+ "Overviews/Methods.html'>Method index</a>"
+            "<li><a href='" ++ baseDir +/+ "Search.html'>Search</a>"
+            "</ul>"
         );
+        if(toc, {this.renderTOC(f)});
+        f.write("</div>");
 
+        f.write("<body onload='fixTOC();prettyPrint()'>");
 //        cats = SCDoc.splitList(parser.findNode(\categories).text);
 //        cats = if(cats.notNil, {cats.join(", ")}, {""});
         if(folder==".",{folder=""});
@@ -623,8 +628,6 @@ SCDocHTMLRenderer : SCDocRenderer {
         });
 
         f.write("</div>");
-        
-        if(toc, {this.renderTOC(f)});
     }
 
     addUndocumentedMethods {|class,tag|

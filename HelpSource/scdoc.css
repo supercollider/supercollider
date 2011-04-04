@@ -3,8 +3,9 @@ body {
     font-size: 10pt;
     margin: 1.25em;
     color: black;
-    max-width: 60em;
+/*    max-width: 60em;*/
     text-align: justify;
+    margin-left: 20em;
 }
 
 html {
@@ -34,30 +35,11 @@ p {
 
 a:link, a:visited, a:hover {
     text-decoration: none;
-    color: #33a;
+    color: #449;
 }
 
 a:hover {
     text-decoration: underline;
-}
-
-table.headMenu {
-    margin: 0px;
-    width: 100%;
-    border-collapse: separate;
-    font-size: 9pt;
-}
-
-table.headMenu td {
-    padding: 1pt;
-    border: none;
-    text-align: center;
-    background: #888;
-    font-weight: bold;
-}
-
-table.headMenu td a {
-    color: white;
 }
 
 .header {
@@ -66,6 +48,7 @@ table.headMenu td a {
 #label, #label a {
     font-weight: bold;
     color: #999;
+    border-bottom: 1px solid #bbb;
 }
 #summary {
     font-weight: normal;
@@ -282,18 +265,39 @@ td p {
     margin-top: 2em;
 }
 
+#mainmenu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0.5em;
+    font-weight: bold;
+}
+#mainmenu a {
+    color: #447;
+}
+
+#leftpane {
+    overflow: auto;
+    position: fixed;
+    text-align: left;
+    top: 0px;
+    left: 0px;
+    width: 19em;
+    height: 100%;
+    background: #eee;
+}
+
 #toc {
-    margin-bottom: 2em;
+/*    margin-bottom: 2em;*/
+    margin: 0;
     padding: 0.5em;
 /*    border-top: 1px solid #ddd;*/
-    background: #eee;
     line-height: 120%;
 }
 #toctitle {
     font-weight: bold;
     color: #666;
-    margin-top: 1em;
-    padding-bottom: 0.2em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid #888;
 }
 #toctitle a {
     font-size: 9pt;
@@ -305,7 +309,7 @@ ul.toc {
     padding: 0;
 }
 ul.toc ul {
-    margin-left: 2em;
+    margin-left: 1em;
 }
 ul.toc li {
     margin: 0;
