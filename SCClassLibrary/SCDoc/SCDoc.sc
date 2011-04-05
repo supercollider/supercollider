@@ -84,10 +84,11 @@ SCDoc {
     *addMethodList {|c,n,tag|
         var l, x = this.makeMethodList(c);
         if(x.notEmpty) {
-            n = n.add((tag:tag, children:l=Array.new));
+            l=Array.new;
             x.do {|m|
                 l = l.add((tag:\method, text:m));
             };
+            n = n.add((tag:tag, children:l));
         };
         ^n;
     }
