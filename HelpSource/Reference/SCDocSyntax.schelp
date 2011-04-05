@@ -84,8 +84,7 @@ title           S
 class           S
 redirect        S
 classtree       S
-doctype         S
-keywords        S
+copymethod      S
 related         S
 summary         S
 private         S
@@ -219,6 +218,15 @@ Here is a longer detailed discussion about this method, perhaps with example cod
 ::
 
 Any undocumented methods will show up in the rendered help file. To ignore methods, put them in a code::private\:::: tag, which must come directly after the code::instancemethods:: or code::classmethods:: tag.
+
+subsection:: Copy methods from other class
+You can use code:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
+
+code::methodName:: must be prefixed with code::*:: (asterix) for class methods and code::-:: (dash) for instance methods.
+
+note::
+The copied method must itself be a real code::method:: doc, not another code::copymethod::.
+::
 
 subsection:: Modal tags
 code::

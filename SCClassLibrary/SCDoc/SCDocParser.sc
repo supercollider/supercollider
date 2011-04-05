@@ -150,6 +150,7 @@ SCDocParser {
                 'section::',            namedSection.(1),
                 'subsection::',         namedSection.(2),
                 'method::',             namedSection.(3),
+                'copymethod::',         simpleTag,
                 'argument::',           namedSection.(4),
                 'returns::',            {
                     singleline = true; //this doesn't actually matter here since we don't have a text field?
@@ -291,6 +292,7 @@ SCDocParser {
             if(modalTag.isNil and: split.isEmpty, { this.endCurrent; proseDisplay=\block; }); //force a new prose on double blank lines
             this.endLine;
         };
+        this.handleCopyMethod;
     }
 
     parseFile {|filename|
@@ -349,6 +351,17 @@ SCDocParser {
                                     };
                                 };
                             },
+                            \copymethod, {
+                                match = text.findRegexp("[^ ,]+").flop[1][1];
+                                if(match.notNil) {
+                                    m = match.drop(1).asSymbol.asGetter;
+                                    methods = methods.add("_"++pfx++m);
+                                    switch(pfx,
+                                        "*", {cmets.add(m)},
+                                        "-", {imets.add(m)}
+                                    );
+                                }
+                            },
                             \private, {
                                 match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1];
                                 match.do {|name|
@@ -383,6 +396,67 @@ SCDocParser {
             methods = methods ++ f.(class,imets,"-") ++ f.(class.class,cmets,"*");
         };
         ^methods;
+    }
+
+    *getMethodDoc {|classname,methodname|
+        var p, src, node = nil, findparent, parent;
+        var findmet = {|children|
+            children !? {
+                children.do {|n|
+                    switch(n.tag,
+                        \instancemethods, {parent = n.tag},
+                        \classmethods, {parent = n.tag},
+                        \method, {
+                            if(parent == findparent
+                            and: {n.text.findRegexp("[^ ,]+").flop[1].indexOfEqual(methodname).notNil}) {
+                                node = n;
+                            }
+                        }
+                    );
+                    if(n.children.size>0 and: {node.isNil}) { findmet.(n.children) };
+                }
+            }
+        };
+        block {|break|
+            src = nil;
+            SCDoc.helpSourceDirs.do {|dir|
+                var x = dir+/+"Classes"+/+classname++".schelp";
+                if(File.exists(x)) {
+                    src = x;
+                    break.value;
+                };
+            };
+        };
+        if(src.isNil) {^nil};
+
+        // FIXME: cache this in a dictionary with src as key?
+        p = SCDocParser.new;
+        p.parseFile(src);
+
+        findparent = switch(methodname[0],
+            $*, \classmethods,
+            $-, \instancemethods);
+        methodname = methodname.drop(1);
+
+        findmet.(p.root);
+        ^node;
+    }
+
+    handleCopyMethod {
+        var name, met, node;
+        var do_children = {|children|
+            children !? {
+                children.do {|n,i|
+                    if(n.tag==\copymethod) {
+                        #name, met = n.text.findRegexp("[^ ,]+").flop[1];
+                        node = this.class.getMethodDoc(name,met);
+                        if(node.notNil) {children[i]=node};
+                    };
+                    if(n.children.size>0) { do_children.(n.children) };
+                };
+            };
+        };
+        do_children.(root);
     }
 
     // FIXME: move to renderer?
