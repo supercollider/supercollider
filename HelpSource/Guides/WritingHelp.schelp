@@ -21,7 +21,7 @@ numberedlist::
 ## add the appropriate tags, like title, sections, etc.. (see below)
 ## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#directory_layout:: below)
 ## strong:: check that it rendered OK ::.
-You can run code::SCDoc.cleanStart:: to make SCDoc detect the new file and add it to the doc map next time you open the Browse or Search page. If the file already existed and you want to see the changes, just navigate to it again and SCDoc will re-render it.
+You can run link::Classes/SCDoc#*cleanState:: to make SCDoc detect the new file and add it to the doc map next time you open a file in the link::Classes/HelpBrowser::. If the file already existed and you want to see the changes, just navigate to it again and SCDoc will re-render it.
 ::
 
 A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
