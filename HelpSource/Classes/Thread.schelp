@@ -9,7 +9,8 @@ Normally there is no need to instantiate a Thread, but its subclass Routine is v
 
 It is wise not to fiddle with the source code for this class; see the warnings in the class file. 
 
- code::thisThread:: always returns the enclosing thread running the given code. A Thread is aware of its own attached clock and associated beats and seconds timing, and has an individual random number seed and exception handler.
+method:: thisThread
+The global pseudo-variable code::thisThread:: always returns the enclosing thread running the given code. A Thread is aware of its own attached clock and associated beats and seconds timing, and has an individual random number seed and exception handler.
 
 classMethods::
 

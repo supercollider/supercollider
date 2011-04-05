@@ -9,6 +9,7 @@ Main is the concrete instance of link::Classes/Process:: (the runtime environmen
 Main overrides some methods of Process. There are two methods of interest. One is named startup and is 
 called after the class library has been compiled. The other is called shutdown which gets called when the library gets re-compiled.
 
+method:: thisProcess
 The singleton instance of Main is available through the special keyword thisProcess. 
 For example, to find out what platform you're on:
 
