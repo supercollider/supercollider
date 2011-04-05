@@ -338,75 +338,78 @@ SCDoc {
             }.play(AppClock);
             c.hang;
         };
-        isProcessing = true;
+        protect {
+            isProcessing = true;
 
-        // parse URL
-        url = url.replace("%20"," ");
-        #proto, path, anchor = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1];
-        if(proto.isEmpty) {proto="file://"};
-        if(proto!="file://") {isProcessing = false; ^url}; // just pass through remote url's
-        if(path.beginsWith(helpTargetDir).not) {isProcessing = false; ^url}; // just pass through remote url's
+            // parse URL
+            url = url.replace("%20"," ");
+            #proto, path, anchor = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1];
+            if(proto.isEmpty) {proto="file://"};
+            if(proto!="file://") {isProcessing = false; ^url}; // just pass through remote url's
+            if(path.beginsWith(helpTargetDir).not) {isProcessing = false; ^url}; // just pass through remote url's
 
-        this.findHelpSourceDirs;
-        
-        if(File.exists(helpTargetDir).not) {
-            this.cleanStart;
-        };
-        
-        // sync non-schelp files once every session
-        if(didRun.not) {
-            didRun = true;
-            this.syncNonHelpFiles;
-        };
+            this.findHelpSourceDirs;
 
-        // strip to subfolder/basename (like Classes/SinOsc)
-        subtarget = path[helpTargetDir.size+1 .. path.findBackwards(".")?path.size-1];
-        
-        // does URL need metadata?
-        if(needMetaData.includes(subtarget)) {
-            if(doc_map.isNil) {
-                this.getAllMetaData;
+            if(File.exists(helpTargetDir).not) {
+                this.cleanStart;
             };
-            isProcessing = false;
-            ^url;
-        };
 
-        // find help source file
-        block {|break|
-            src = nil;
-            helpSourceDirs.do {|dir|
-                var x = dir+/+subtarget++".schelp";
-                if(File.exists(x)) {
-                    src = x;
-                    break.value;
+            // sync non-schelp files once every session
+            if(didRun.not) {
+                didRun = true;
+                this.syncNonHelpFiles;
+            };
+
+            // strip to subfolder/basename (like Classes/SinOsc)
+            subtarget = path[helpTargetDir.size+1 .. path.findBackwards(".")?path.size-1];
+
+            // does URL need metadata?
+            if(needMetaData.includes(subtarget)) {
+                if(doc_map.isNil) {
+                    this.getAllMetaData;
+                };
+                isProcessing = false;
+                ^url;
+            };
+
+            // find help source file
+            block {|break|
+                src = nil;
+                helpSourceDirs.do {|dir|
+                    var x = dir+/+subtarget++".schelp";
+                    if(File.exists(x)) {
+                        src = x;
+                        break.value;
+                    };
                 };
             };
-        };
 
-        // create a simple stub if class was undocumented
-        if(src.isNil and: {subtarget.dirname=="Classes"}) {
-            this.makeClassTemplate(subtarget.basename,path);
-        };
+            // create a simple stub if class was undocumented
+            if(src.isNil and: {subtarget.dirname=="Classes"}) {
+                this.makeClassTemplate(subtarget.basename,path);
+            };
 
-        if(File.exists(path).not) {
-            if(src.notNil) { // no target file, but helpsource found, parse and render.
-                this.parseAndRender(src,path,subtarget.dirname);
-                isProcessing = false;
-                ^url;
+            if(File.exists(path).not) {
+                if(src.notNil) { // no target file, but helpsource found, parse and render.
+                    this.parseAndRender(src,path,subtarget.dirname);
+                    isProcessing = false;
+                    ^url;
+                } {
+                    this.postProgress("Broken link:"+url);
+                    isProcessing = false;
+                    ^nil;
+                };
             } {
-                this.postProgress("Broken link:"+url);
-                isProcessing = false;
-                ^nil;
+                if(src.notNil and: {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
+                    // target file and helpsource exists, and helpsource is newer than target
+                    this.parseAndRender(src,path,subtarget.dirname);
+                    isProcessing = false;
+                    ^url;
+                };
             };
         } {
-            if(src.notNil and: {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
-                // target file and helpsource exists, and helpsource is newer than target
-                this.parseAndRender(src,path,subtarget.dirname);
-                isProcessing = false;
-                ^url;
-            };
-        };
-        isProcessing = false;
+            isProcessing = false;
+        }
         ^url;
     }
     
@@ -416,7 +419,7 @@ SCDoc {
         f = class.filenameSymbol.asString.escapeChar($ );
         //FIXME: force a re-render if class source-file changed?
         if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
-            this.postProgress("Undocumented class"+name+"generating stub and template");
+            this.postProgress("Undocumented class:"+name+", generating stub and template");
             cats = "Undocumented classes";
             if(this.classHasArKrIr(class)) {
                 cats = cats ++ ", UGens>Undocumented";
