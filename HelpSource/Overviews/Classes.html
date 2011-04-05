@@ -34,6 +34,7 @@ var node;
 var docs;
 
 function did_load() {
+    restoreMenu();
     node = document.getElementById("doclist");
     docs = docmap.sort(function(a,b) {
         a = a.title.toUpperCase();
