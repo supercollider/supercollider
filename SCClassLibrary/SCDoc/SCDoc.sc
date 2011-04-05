@@ -405,7 +405,6 @@ SCDoc {
             } {
                 if(src.notNil and: {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
                     // target file and helpsource exists, and helpsource is newer than target
-                    this.postProgress(path+"needs update.."+doc_map[subtarget].asString);
                     this.parseAndRender(src,path,subtarget.dirname);
                     isProcessing = false;
                     ^url;
