@@ -342,12 +342,16 @@ SCDocParser {
                                 match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1];
                                 match.do {|name|
                                     if(name[0]!=$() {
-                                        m = name.asSymbol.asGetter;
-                                        methods = methods.add("_"++pfx++m);
-                                        switch(pfx,
-                                            "*", {cmets.add(m)},
-                                            "-", {imets.add(m)}
-                                        );
+                                        if("[a-z][a-zA-Z0-9_]*|[-<>@|&%*+/!?=]+".matchRegexp(name).not) {
+                                            warn("SCDocParser: Methodname not valid: '"++name++"' in"+path);
+                                        } {
+                                            m = name.asSymbol.asGetter;
+                                            methods = methods.add("_"++pfx++m);
+                                            switch(pfx,
+                                                "*", {cmets.add(m)},
+                                                "-", {imets.add(m)}
+                                            );
+                                        };
                                     };
                                 };
                             },
@@ -465,8 +469,10 @@ SCDocParser {
         var docmets = IdentitySet.new;
         
         var addMet = {|n|
-            n.text.findRegexp("[^ ,]+").flop[1].do {|m|
-                docmets.add(m.asSymbol.asGetter);
+            n.text.findRegexp("\\(.*\\)|[^ ,]+").flop[1].do {|m|
+                if(m[0] != $() {
+                    docmets.add(m.asSymbol.asGetter);
+                };
             };
         };
 

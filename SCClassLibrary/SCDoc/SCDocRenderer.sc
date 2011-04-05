@@ -195,11 +195,6 @@ SCDocHTMLRenderer : SCDocRenderer {
                 split = f[1][1].findRegexp("[^ ,]+");
                 split.do {|r|
                     mname = r[1];
-                    if(mname[0].isLower.not) {
-                        //FIXME: is there a better method to check if a symbol is a valid methodname?
-                        warn("SCDocHTMLRenderer: Methodname not valid:"+mname);
-                        mname[0] = mname[0].toLower;
-                    };
                     if(c.notNil) {
                         mstat = 0;
                         sym = mname.asSymbol;
