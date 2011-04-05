@@ -1,0 +1,10 @@
+class:: AbstractSystemAction
+summary:: register actions to be taken for system events
+related:: Classes/CmdPeriod, Classes/StartUp, Classes/ShutDown, Classes/ServerBoot, Classes/ServerTree, Classes/ServerQuit
+categories:: Control
+
+
+ClassMethods::
+
+method::removeAll
+Remove all items from registry.

@@ -1,0 +1,24 @@
+class:: DebugNodeWatcher
+summary:: watches a server address for debug-related messages
+related:: Reference/Server-Command-Reference
+categories:: Control, Server>Nodes
+
+description::
+Posts when these messages are received from the server:
+n_go n_end n_off n_on
+
+Examples::
+
+code::
+s = Server.default;
+s.boot;
+
+d = DebugNodeWatcher(s);
+d.start;
+
+y = Group.new;
+
+y.free;
+
+d.stop;
+::
