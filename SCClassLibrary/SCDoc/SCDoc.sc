@@ -450,10 +450,11 @@ SCDoc {
                     methodstemplate = methodstemplate ++ "Method::" + x.text ++ "\n(describe method here)\n\nreturns:: (returnvalue)\n\n";
                 };
             };
+
             methodstemplate = "\nClassMethods::\n\n";
-            p.findNode(\classmethods).children.do(f);
+            p.findNode(\classmethods,n).children.do(f);
             methodstemplate = methodstemplate ++ "\nInstanceMethods::\n\n";
-            p.findNode(\instancemethods).children.do(f);
+            p.findNode(\instancemethods,n).children.do(f);
 
             n = n.add((
                 tag:\section, text:"Help Template", children:[
