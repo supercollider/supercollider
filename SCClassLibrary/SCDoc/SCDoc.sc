@@ -12,6 +12,8 @@ SCDoc {
     classvar new_classes = nil;
     classvar didRun = false;
     classvar isProcessing = false;
+    classvar skipCacheOnce = false;
+    classvar lastUITick = 0;
 
     *helpSourceDir_ {|path|
         helpSourceDir = path.standardizePath;
@@ -40,7 +42,7 @@ SCDoc {
             if(progressMax>0) {progressBar.lo_(0).hi_(progressCount/progressMax)};
         };
         ("SCDoc:"+prg++string).postln;
-        if(doWait, {0.wait});
+        this.maybeWait;
     }
 
     *docMapToJSON {|path|
@@ -239,6 +241,14 @@ SCDoc {
 
     *tickProgress { progressCount = progressCount + 1 }
 
+    *maybeWait {
+        var t;
+        if(doWait and: {(t = Main.elapsedTime)-lastUITick > 0.2}) {
+            0.wait;
+            lastUITick = t;
+        }
+    }
+
     *parseAndRender {|src,dest,kind|
         SCDoc.postProgress(src+"->"+dest);
         p.parseFile(src);
@@ -313,19 +323,20 @@ SCDoc {
         if(doWait, {
             Routine(func).play(AppClock);
         }, func);
-
     }
 
-    *cleanStart {
+    *cleanState {|noCache=false|
         didRun = false;
-        doc_map = nil;
+        helpSourceDirs = nil;
+        skipCacheOnce = noCache;
+        // fixme: how can we force a re-render of files where the target already exists and is not older than the source?
+        // letting getAllMetaData add an "doupdate" flag to each added doc in doc_map would work, but then we would need to
+        // save the doc_map again (when??).
     }
 
     *prepareHelpForURL {|url,doYield=false|
         var proto, path, anchor;
         var subtarget, src, c;
-
-        var needMetaData = Set["Browse","Search","Overviews/Documents","Overviews/Classes","Overviews/Methods"];
 
         doWait = doYield;
 
@@ -351,26 +362,18 @@ SCDoc {
             this.findHelpSourceDirs;
 
             if(File.exists(helpTargetDir).not) {
-                this.cleanStart;
+                this.cleanState;
             };
 
             // sync non-schelp files once every session
             if(didRun.not) {
                 didRun = true;
                 this.syncNonHelpFiles;
+                this.getAllMetaData;
             };
 
             // strip to subfolder/basename (like Classes/SinOsc)
             subtarget = path[helpTargetDir.size+1 .. path.findBackwards(".")?path.size-1];
-
-            // does URL need metadata?
-            if(needMetaData.includes(subtarget)) {
-                if(doc_map.isNil) {
-                    this.getAllMetaData;
-                };
-                isProcessing = false;
-                ^url;
-            };
 
             // find help source file
             block {|break|
@@ -402,10 +405,13 @@ SCDoc {
             } {
                 if(src.notNil and: {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
                     // target file and helpsource exists, and helpsource is newer than target
+                    this.postProgress(path+"needs update.."+doc_map[subtarget].asString);
                     this.parseAndRender(src,path,subtarget.dirname);
                     isProcessing = false;
                     ^url;
                 };
+                // we reach here if the target URL exists and there's no schelp source file,
+                // or if the target URL does not need update.
             };
         } {
             isProcessing = false;
@@ -417,7 +423,6 @@ SCDoc {
         var class = name.asSymbol.asClass;
         var n, m, cats, methodstemplate, f;
         f = class.filenameSymbol.asString.escapeChar($ );
-        //FIXME: force a re-render if class source-file changed?
         if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
             this.postProgress("Undocumented class:"+name+", generating stub and template");
             cats = "Undocumented classes";
@@ -501,21 +506,20 @@ SCDoc {
     }
     
     *getAllMetaData {|force=false|
-        var subtarget, classes, mets, count = 0, cats, t = Main.elapsedTime;
-        var update = false, doc;
+        var subtarget, classes, mets, cats, t = Main.elapsedTime;
+        var update = false, doc, ndocs = 0;
         
         this.postProgress("Getting metadata for all docs...");
         this.findHelpSourceDirs;
 
         classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
 
-        if(force) {
+        if(force or: skipCacheOnce) {
             doc_map = Dictionary.new;
+            skipCacheOnce = false;
         } {
             this.readDocMap;
         };
-        
-        doc_map.do(_.delete=true);
 
         this.postProgress("Parsing metadata...");
         // parse all files in fileList
@@ -532,22 +536,26 @@ SCDoc {
                 doc = doc_map[subtarget];
                 if(doc.isNil or: {mtime != doc.mtime}) {
                     mets = p.parseMetaData(path);
-                    //FIXME: if doc uses 'classtree::', force a re-render by setting mtime=0 and/or removing the html??
+                    //FIXME: if doc uses 'classtree::', force a re-render by setting mtime=0 ??
                     this.addToDocMap(p,subtarget);
-                    doc_map[subtarget].methods = mets;
-                    doc_map[subtarget].mtime = mtime;
+                    doc = doc_map[subtarget];
+                    doc.methods = mets;
+                    doc.mtime = mtime;
                     update = true;
+                    ndocs = ndocs + 1;
                 };
-                doc_map[subtarget].delete = false;
+                doc.keep = true;
                 if(subtarget.dirname=="Classes") {
                     classes.remove(subtarget.basename.asSymbol);
                 };
-                if(doWait and: {count = count + 1; count > 10}) {0.wait; count = 0};
+                this.maybeWait;
             };
         };
+        this.postProgress("Added"+ndocs+"new documents");
        
-        this.postProgress("Making metadata for undocumented classes");
+        this.postProgress("Processing"+classes.size+"undocumented classes");
         undocumentedClasses = classes;
+        ndocs = 0;
         classes.do {|name|
             var class;
             subtarget = "Classes/"++name.asString;
@@ -570,20 +578,24 @@ SCDoc {
                 doc_map[subtarget].methods =
                     (this.makeMethodList(class.class).collect{|m| "_*"++m}
                     ++ this.makeMethodList(class).collect{|m| "_-"++m});
+                ndocs = ndocs + 1;
                 update = true;
             };
-            doc_map[subtarget].delete = false;
-            if(doWait and: {count = count + 1; count > 10}) {0.wait; count = 0};
+            doc_map[subtarget].keep = true;
+            this.maybeWait;
         };
+        this.postProgress("Generated metadata for"+ndocs+"undocumented classes");
 
+        ndocs = 0;
         doc_map.pairsDo{|k,e|
-            if(e.delete==true, {
-                this.postProgress("Removing"+e.path+"from cache");
+            if(e.keep!=true, {
                 doc_map.removeAt(k);
+                ndocs = ndocs + 1;
                 update = true;
             });
-            e.removeAt(\delete); //remove the key since we don't need it anymore
+            e.removeAt(\keep); //remove the key since we don't need it anymore
         };
+        this.postProgress("Removed"+ndocs+"documents from cache");
         
         if(update) {
             this.writeDocMap;
