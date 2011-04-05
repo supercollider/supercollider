@@ -15,7 +15,7 @@ function fixTOC() {
     if(e) {
         var x = e.getElementsByTagName("ul")[0];
         if(!x.childNodes.length) {
-            e.style.display = 'none';
+            document.getElementById("toclabel").style.display = 'none';
         }
     }
 
@@ -31,12 +31,14 @@ function hidemenu(a) {
     var t = document.getElementById("toc");
     if(!e.style.left) {
         e.style.left = "-18em";
-        t.style.display = 'none';
+        if(t)
+            t.style.display = 'none';
         a.innerHTML = "&gt;&gt;";
         document.body.style.marginLeft = "2em";
     } else {
         e.style.left = "";
-        t.style.display = 'block';
+        if(t)
+            t.style.display = 'block';
         a.innerHTML = "&lt;&lt;";
         document.body.style.marginLeft = "20em";
     }
