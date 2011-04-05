@@ -107,6 +107,7 @@ function showMethod(mname, node) {
 }
 
 function showmethods() {
+    restoreMenu();
     var hash = unescape(window.location.hash.slice(1));
     var res = document.getElementById("methods");
     res.innerHTML = "";

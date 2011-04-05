@@ -220,6 +220,7 @@ function buildCategoryTree() {
 }
 
 window.onload = function() {
+    restoreMenu();
     var fields = ["classes", "ext_classes", "reference", "guides", "tutorials", "overviews", "other"];
     checkboxes = {};
     var onChange = function() {
