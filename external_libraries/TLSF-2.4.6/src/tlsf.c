@@ -171,6 +171,8 @@
 #define PAGE_SIZE (getpagesize())
 #endif
 
+#ifndef _MSC_VER
+
 #ifdef USE_PRINTF
 #include <stdio.h>
 # define PRINT_MSG(fmt, args...) printf(fmt, ## args)
@@ -182,6 +184,23 @@
 # if !defined(ERROR_MSG)
 #  define ERROR_MSG(fmt, args...)
 # endif
+#endif
+
+#else
+
+#ifdef USE_PRINTF
+#include <stdio.h>
+# define PRINT_MSG(fmt, ...) printf(fmt, __VA_ARGS__)
+# define ERROR_MSG(fmt, ...) printf(fmt, __VA_ARGS__)
+#else
+# if !defined(PRINT_MSG)
+#  define PRINT_MSG(fmt, ...)
+# endif
+# if !defined(ERROR_MSG)
+#  define ERROR_MSG(fmt, ...)
+# endif
+#endif
+
 #endif
 
 typedef unsigned int u32_t;     /* NOTE: Make sure that this type is 4 bytes long on your computer */
