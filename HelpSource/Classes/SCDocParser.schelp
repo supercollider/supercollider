@@ -21,8 +21,18 @@ classmethods::
 method::new
 Create a parser instance.
 
+method:: getMethodDoc
+Find helpfile for class and parse it to get the documentation for a specific method.
+argument:: classname
+The name of the class.
+argument:: methodname
+The name of the method, must be prefixed with code::*:: for classmethods and code::-:: for instancemethods.
+returns:: The parsed node tree for the specific method documentation.
+discussion::
+This is used internally by the code::copymethod\:::: tag.
+
 instancemethods::
-private:: init, leaveLevel, popTree, pushTree, setTopNode, enterLevel, endCurrent, addTag, handleWord, addText, endLine, dumpSubTree, makeCategoryTree, overviewCategories, generateUndocumentedMethods, overviewClassTree, overviewAllDocuments, overviewAllMethods, overviewAllClasses, dumpClassTree
+private:: init, leaveLevel, popTree, pushTree, setTopNode, enterLevel, endCurrent, addTag, handleWord, addText, endLine, dumpSubTree, makeCategoryTree, generateUndocumentedMethods, dumpClassTree, handleCopyMethod
 
 method::parseFile
 Parse a help sourcefile written in SCDoc markup language.

@@ -19,7 +19,7 @@ url = SCDoc.prepareHelpForURL(SCDoc.findHelpFile("SinOsc"));
 ::
 
 CLASSMETHODS::
-private:: initClass, addToDocMap, makeMethodList, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap, addMethodList, findHelpSourceDirs, getAllMetaData, syncNonHelpFiles, makeClassTemplate
+private:: initClass, addToDocMap, makeMethodList, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap, addMethodList, findHelpSourceDirs, getAllMetaData, syncNonHelpFiles, makeClassTemplate, maybeWait, checkVersion
 
 method:: p
 The default link::Classes/SCDocParser:: object, created automatically.
@@ -55,7 +55,7 @@ method:: findHelpFile
 Find help for a given string. This method redirects to the instance method code::findHelpFile:: on the current renderer object.
 returns:: the URL for help on given string
 
-subsection:: Render all files
+subsection:: Render all or specific files
 
 method:: renderAll
 Render all help-files that need updating and generate overviews and cached metadata index. This can take several minutes. Useful mainly if you want to render all help to put online or similar.
@@ -71,6 +71,15 @@ argument:: doneFunc
 Function to evaluate when done.
 discussion::
 It traverses the directory tree recursively starting at code::helpSourceDir::, parsing and rendering all *.schelp files and copying all other files. The output goes to an equal directory layout in code::helpTargetDir::.
+
+method:: parseAndRender
+Parse and render a specific file.
+argument:: src
+The .schelp source document file, must be full path.
+argument:: dest
+The destination target file ( .html if current renderer is link::Classes/SCDocHTMLRenderer:: ), must be full path.
+argument:: kind
+The document "kind", like Classes, Reference, Overviews, Guides. Should be the same as the parent folder name of both code::src:: and code::dest::
 
 subsection:: Cached map of documents
 SCDoc keeps a dictionary where each document is represented by an link::Classes/Event:: with the keys code::path, title, categories, summary, installed::.
@@ -92,11 +101,9 @@ returns:: A link::Classes/Dictionary:: of all documents grouped by category.
 discussion:: The keys are category symbols, and each value is a link::Classes/List:: of Events representing each document.
 
 method:: cleanState
-Reset the state so that next time link::#*prepareHelpForURL:: is called, SCDoc will collect any newly added HelpSource files.
+Reset the state so that next time link::#*prepareHelpForURL:: is called, SCDoc will collect any newly added HelpSource files and undocumented classes.
 argument:: noCache
-If true, don't read doc map cache from file. This makes sure that every file is re-rendered, even if there was already a rendered help file. Similar to starting with an empty Help folder.
-discussion::
-note:: Currently it does strong::not:: force a re-render of every file when code::noCache:: is true, if the target help file already exist and is not older than the help source file. To ensure a total re-render, remove your Help folder.::
+If true, don't read doc map cache from file and discard any old rendered files. This makes sure that every file is re-rendered, even if there was already a rendered help file. This is similar to starting with an empty Help folder.
 
 subsection:: Utilities
 
