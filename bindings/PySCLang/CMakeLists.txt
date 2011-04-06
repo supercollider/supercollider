@@ -34,7 +34,14 @@ set_target_properties(PySCLang
 target_link_libraries(PySCLang ${PYTHON_LIBRARY})
 target_link_libraries(PySCLang libsclang)
 
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+if (WIN32)
+	install(TARGETS PySCLang
+		DESTINATION "SuperCollider")
+
+	install(FILES ${PYTHON_LIBRARY}
+		DESTINATION "SuperCollider")
+
+elseif (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(PythonInterp)
 
 	execute_process ( COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
