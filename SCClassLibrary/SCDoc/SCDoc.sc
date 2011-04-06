@@ -1,4 +1,7 @@
 SCDoc {
+    // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
+    classvar version = 0;
+
     classvar <helpTargetDir;
     classvar <helpSourceDir;
     classvar helpSourceDirs;
@@ -12,7 +15,6 @@ SCDoc {
     classvar new_classes = nil;
     classvar didRun = false;
     classvar isProcessing = false;
-    classvar skipCacheOnce = false;
     classvar lastUITick = 0;
 
     *helpSourceDir_ {|path|
@@ -195,13 +197,34 @@ SCDoc {
         ^map;
     }
 
+    *checkVersion {
+        var f, path = this.helpTargetDir +/+ "version";
+        if(path.load != version) {
+            // FIXME: should we call this.syncNonHelpFiles here to ensure that helpTargetDir exists?
+            this.postProgress("SCDoc: version update, refreshing timestamp");
+            // this will update the mtime of the version file, triggering re-rendering and clean doc_map
+            f = File.open(path,"w");
+            f.write(version.asCompileString);
+            f.close;
+            ^true;
+        };
+        ^false;
+    }
+
     *readDocMap {
         var path = this.helpTargetDir +/+ "scdoc_cache";
-        doc_map = path.load;
+        var verpath = this.helpTargetDir +/+ "version";
+
+        if(this.checkVersion or: {("test"+verpath.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
+            this.postProgress("SCDoc: not reading scdoc_cache due to version timestamp update");
+            doc_map = nil;
+        } {
+            doc_map = path.load;
+        };
 
         if(doc_map.isNil) {
             doc_map = Dictionary.new;
-            "SCDoc: docMap cache not found, created new".postln;
+            "SCDoc: creating new clean docMap cache".postln;
             ^true;
         } {
             "SCDoc: read docMap cache from file".postln;
@@ -269,9 +292,8 @@ SCDoc {
                 helpSourceDirs = Set[helpSourceDir];
             };
             this.tickProgress;
-            this.syncNonHelpFiles;
-            this.tickProgress;
-            this.getAllMetaData(true);
+            this.cleanState(force);
+            this.getAllMetaData;
             this.tickProgress;
             
             fileList = Dictionary.new;
@@ -329,15 +351,16 @@ SCDoc {
     *cleanState {|noCache=false|
         didRun = false;
         helpSourceDirs = nil;
-        skipCacheOnce = noCache;
-        // fixme: how can we force a re-render of files where the target already exists and is not older than the source?
-        // letting getAllMetaData add an "doupdate" flag to each added doc in doc_map would work, but then we would need to
-        // save the doc_map again (when??).
+        if(noCache) {
+            this.syncNonHelpFiles; // ensure helpTargetDir exists
+            ("touch"+(helpTargetDir+/+"version").escapeChar($ )).systemCmd;
+        }
     }
 
     *prepareHelpForURL {|url,doYield=false|
         var proto, path, anchor;
         var subtarget, src, c;
+        var verpath = this.helpTargetDir +/+ "version";
 
         doWait = doYield;
 
@@ -360,8 +383,6 @@ SCDoc {
             if(proto!="file://") {isProcessing = false; ^url}; // just pass through remote url's
             if(path.beginsWith(helpTargetDir).not) {isProcessing = false; ^url}; // just pass through remote url's
 
-            this.findHelpSourceDirs;
-
             if(File.exists(helpTargetDir).not) {
                 this.cleanState;
             };
@@ -369,7 +390,6 @@ SCDoc {
             // sync non-schelp files once every session
             if(didRun.not) {
                 didRun = true;
-                this.syncNonHelpFiles;
                 this.getAllMetaData;
             };
 
@@ -404,7 +424,9 @@ SCDoc {
                     ^nil;
                 };
             } {
-                if(src.notNil and: {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
+                if(src.notNil and:
+                {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )
+                 +"-o"+verpath.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
                     // target file and helpsource exists, and helpsource is newer than target
                     this.parseAndRender(src,path,subtarget.dirname);
                     isProcessing = false;
@@ -422,7 +444,8 @@ SCDoc {
     *makeClassTemplate {|name,path|
         var class = name.asSymbol.asClass;
         var n, m, cats, methodstemplate, f;
-        f = class.filenameSymbol.asString.escapeChar($ );
+//        f = class.filenameSymbol.asString.escapeChar($ );
+        f = (helpTargetDir+/+"version").escapeChar($ );
         if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
             this.postProgress("Undocumented class:"+name+", generating stub and template");
             cats = "Undocumented classes";
@@ -505,21 +528,17 @@ SCDoc {
         };
     }
     
-    *getAllMetaData {|force=false|
+    *getAllMetaData {
         var subtarget, classes, mets, cats, t = Main.elapsedTime;
         var update = false, doc, ndocs = 0;
-        
+
+        this.syncNonHelpFiles; // ensure that helpTargetDir exist
+
         this.postProgress("Getting metadata for all docs...");
-        this.findHelpSourceDirs;
 
         classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
 
-        if(force or: skipCacheOnce) {
-            doc_map = Dictionary.new;
-            skipCacheOnce = false;
-        } {
-            this.readDocMap;
-        };
+        this.readDocMap;
 
         this.postProgress("Parsing metadata...");
         // parse all files in fileList
@@ -585,7 +604,8 @@ SCDoc {
             this.maybeWait;
         };
         this.postProgress("Generated metadata for"+ndocs+"undocumented classes");
-
+        // NOTE: If we remove a Classes/Name.schelp for an existing class, the doc_map won't get updated.
+        // but this shouldn't happen in real-life anyhow..
         ndocs = 0;
         doc_map.pairsDo{|k,e|
             if(e.keep!=true, {

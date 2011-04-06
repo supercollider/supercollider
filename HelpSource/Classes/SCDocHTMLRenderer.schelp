@@ -23,7 +23,7 @@ Scans the entire help tree for broken links
 
 instancemethods::
 
-private:: addUndocumentedMethods, renderFootNotes, renderTOC, escapeSpecialChars, renderHTMLSubTree, renderHTMLHeader, autoLinkClasses
+private:: addUndocumentedMethods, renderFootNotes, renderTOC, escapeSpecialChars, renderHTMLSubTree, renderHTMLHeader, autoLinkClasses, renderClassTree
 
 method:: render
 Render the tree contained in the code::parser:: instance variable to HTML file.
