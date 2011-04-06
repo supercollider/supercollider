@@ -2678,7 +2678,7 @@ void DumpSimpleBackTrace(VMGlobals *g)
 	for (i=0; i<16; ++i) {
 		char str[256];
 		slotOneWord(&frame->method, str);
-		post("%s ip %d\n", str, (char*)slotRawInt(&frame->ip) - (char*)slotRawObject(&slotRawMethod(&frame->method)->code)->slots);
+		post("%s ip %d\n", str, (char*)slotRawPtr(&frame->ip) - (char*)slotRawObject(&slotRawMethod(&frame->method)->code)->slots);
 		frame = slotRawFrame(&frame->caller);
 		if (!frame) break;
 	}
