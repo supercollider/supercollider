@@ -68,6 +68,10 @@ QTextView : QAbstractScroll {
     this.setProperty( \rangeText, [aString,intStart,intSize] );
   }
 
+  tabWidth { ^this.getProperty( \tabStopWidth ); }
+
+  tabWidth_ { arg pixels; this.setProperty( \tabStopWidth, pixels ); }
+
   syntaxColorize {
     this.nonimpl( "syntaxColorize" );
   }
