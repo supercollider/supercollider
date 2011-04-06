@@ -76,8 +76,8 @@ static double powersOf10[] = {	/* Table giving binary powers of 10.  Entry */
  */
 
 double
-sc_strtod(string, endPtr)
-    const char *string;		/* A decimal ASCII floating-point number,
+sc_strtod(
+    const char *string,		/* A decimal ASCII floating-point number,
 				 * optionally preceded by white space.
 				 * Must have form "-I.FE-X", where I is the
 				 * integer part of the mantissa, F is the
@@ -89,8 +89,9 @@ sc_strtod(string, endPtr)
 				 * The "E" may actually be an "e".  E and X
 				 * may both be omitted (but not just one).
 				 */
-    char **endPtr;		/* If non-NULL, store terminating character's
+    char **endPtr		/* If non-NULL, store terminating character's
 				 * address here. */
+	)
 {
     int sign, expSign = FALSE;
     double fraction, dblExp, *d;
