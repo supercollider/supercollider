@@ -243,6 +243,8 @@ if(APPLE)
 	install(FILES COPYING AUTHORS
 		DESTINATION ${scappdir}
 	)
+elseif (WIN32)
+	set(auxresourcesdir "SuperCollider")
 else()
 	set(auxresourcesdir "share/SuperCollider")
 endif()
@@ -258,19 +260,7 @@ install(DIRECTORY SCClassLibrary
 	REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
 )
 
-install(DIRECTORY Help
-	DESTINATION ${auxresourcesdir}
-)
-
-install(DIRECTORY examples
-	DESTINATION ${auxresourcesdir}
-)
-
-install(DIRECTORY sounds
-	DESTINATION ${auxresourcesdir}
-)
-
-install(DIRECTORY HelpSource
+install(DIRECTORY Help examples sounds HelpSource
 	DESTINATION ${auxresourcesdir}
 )
 
@@ -316,14 +306,24 @@ set_directory_properties(
 	ADDITIONAL_MAKE_CLEAN_FILES "HelpBase")
 
 #############################################
+# win32 install support
+
+if(WIN32)
+	install(FILES ${FFTW3F_LIBRARY} ${SNDFILE_LIBRARY} ${PTHREADS_LIBRARY} ${PORTAUDIO_LIBRARIES}
+		DESTINATION "SuperCollider"
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
+
+#############################################
 # CPack support
 
 set(CPACK_PACKAGE_VERSION_MAJOR 3)
 set(CPACK_PACKAGE_VERSION_MINOR 5)
 set(CPACK_PACKAGE_VERSION_PATCH dev)
 include(CPack)
-
-
+if(WIN32)
+	set(CPACK_MONOLITHIC_INSTALL 1)
+endif()
 
 #############################################
 # hide advanced variables
