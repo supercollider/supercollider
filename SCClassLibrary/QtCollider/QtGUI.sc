@@ -92,6 +92,15 @@ QtGUI {
     ^this.primitiveFailed;
   }
 
+  *selectedText {
+    var view = this.focusView;
+    if( view.notNil ) {
+      if( view.respondsTo(\selectedText) ) { ^view.selectedText };
+      if( view.respondsTo(\selectedString) ) { ^view.selectedString };
+    };
+    ^"";
+  }
+
   // private ///////////////////////////////////////////////////////////
 
   *prPalette { arg ret;
