@@ -184,12 +184,12 @@ protected:
 
     QtCollider::lockLang();
 
-    if( _proxy->scObject && this->isValid() ) {
+    if( _proxy->scObject() && this->isValid() ) {
       qcDebugMsg(1, QString("SC FUNCTION CALL [+++] ") );
 
       VMGlobals *g = gMainVMGlobals;
       g->canCallOS = true;
-      ++g->sp;  SetObject(g->sp, _proxy->scObject);
+      ++g->sp;  SetObject(g->sp, _proxy->scObject());
       ++g->sp;  SetObject(g->sp, _handler);
       Q_FOREACH( QVariant var, args ) {
         ++g->sp;
