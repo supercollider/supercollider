@@ -59,6 +59,19 @@ int QcTextEdit::selectionSize()
   return cursor.selectionEnd() - cursor.selectionStart();
 }
 
+void QcTextEdit::select( int start, int size )
+{
+  if( start < 0 ) start = 0;
+
+  QTextCursor cursor( document() );
+
+  cursor.movePosition( QTextCursor::Right, QTextCursor::MoveAnchor, start );
+  cursor.movePosition( size > 0 ? QTextCursor::Right : QTextCursor::Left,
+                       QTextCursor::KeepAnchor, qAbs(size) );
+
+  setTextCursor( cursor );
+}
+
 QString QcTextEdit::selectedString()
 {
   // NOTE QTextCuror.selectedText() contains unicode paragraph separators U+2029

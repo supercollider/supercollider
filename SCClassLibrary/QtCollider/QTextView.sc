@@ -52,6 +52,10 @@ QTextView : QAbstractScroll {
     ^this.getProperty( \selectionSize );
   }
 
+  select { arg start, size;
+    this.invokeMethod( \select, [start, size] );
+  }
+
   setStringColor { arg aColor, intStart, intSize;
     this.setProperty( \rangeColor, [aColor,intStart,intSize] );
   }
