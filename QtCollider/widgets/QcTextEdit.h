@@ -41,6 +41,10 @@ class QcTextEdit : public QTextEdit, QcHelper
               READ dummyVariantList WRITE setRangeFont );
   Q_PROPERTY( VariantList rangeText
               READ dummyVariantList WRITE setRangeText );
+
+  public:
+    Q_INVOKABLE void select( int start, int size );
+
   private:
     QString documentFilename() const;
     void setDocument( const QString & );
