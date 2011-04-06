@@ -205,21 +205,18 @@ if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
-	install(TARGETS libscsynth
+	install(TARGETS libscsynth scsynth
 			DESTINATION ${scappauxresourcesdir}
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE
-			COMPONENT app)
-
-	install(TARGETS scsynth
 			RUNTIME DESTINATION ${scappauxresourcesdir}
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE
 			COMPONENT app)
-else()
-	install(TARGETS libscsynth
-			DESTINATION "lib"
+elseif(WIN32)
+	install(TARGETS libscsynth scsynth
+			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-	install(TARGETS scsynth
+else()
+	install(TARGETS libscsynth scsynth
+			LIBRARY DESTINATION "lib"
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
