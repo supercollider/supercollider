@@ -39,7 +39,7 @@ void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
 
 QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
 : qObject( qObject_ ),
-  scObject( scObject_ )
+  _scObject( scObject_ )
 {
   ProxyToken *token = new ProxyToken( this, qObject );
   connect( qObject, SIGNAL( destroyed( QObject* ) ), this, SLOT( invalidate() ) );
@@ -57,7 +57,7 @@ void QObjectProxy::invalidate() {
 }
 
 const char *QObjectProxy::scClassName() const {
-  if( scObject ) return slotRawSymbol( &scObject->classptr->name )->name;
+  if( _scObject ) return slotRawSymbol( &_scObject->classptr->name )->name;
   return 0;
 }
 
@@ -179,10 +179,10 @@ void QObjectProxy::invokeScMethod
     QtCollider::lockLang();
   }
 
-  if( scObject ) {
+  if( _scObject ) {
     VMGlobals *g = gMainVMGlobals;
     g->canCallOS = true;
-    ++g->sp;  SetObject(g->sp, scObject);
+    ++g->sp;  SetObject(g->sp, _scObject);
     Q_FOREACH( QVariant var, args ) {
       ++g->sp;
       if( Slot::setVariant( g->sp, var ) )
@@ -327,11 +327,11 @@ bool QObjectProxy::destroyEvent( DestroyEvent *e )
      if( qObject ) qObject->deleteLater();
   }
   else if( e->action() == DestroyProxy ) {
-    scObject = 0;
+    _scObject = 0;
     deleteLater();
   }
   else if( e->action() == DestroyProxyAndObject ) {
-    scObject = 0;
+    _scObject = 0;
     if( qObject ) qObject->deleteLater();
     deleteLater();
   }
@@ -347,17 +347,10 @@ bool QObjectProxy::getChildrenEvent( QtCollider::GetChildrenEvent *e )
 
   Q_FOREACH( QObject *child, children ) {
 
-    ProxyToken * token = 0;
+    QObjectProxy *proxy = QObjectProxy::fromObject( child );
+    if( !proxy ) continue;
 
-    const QObjectList &grandChildren = child->children();
-    Q_FOREACH( QObject *grandChild, grandChildren ) {
-      token = qobject_cast<QtCollider::ProxyToken*>( grandChild );
-      if( token ) break;
-    }
-
-    if( !token ) continue;
-
-    PyrObject * obj = token->proxy->scObject;
+    PyrObject * obj = proxy->_scObject;
 
     if( obj ) {
         if( e->className && !isKindOf( obj, e->className->u.classobj ) )
@@ -377,31 +370,23 @@ bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )
   QObject *parent = qObject->parent();
 
   while( parent ) {
-      // see if this parent has a corresponding sc object (a token is found
-      // among it's children
-      const QObjectList &siblings = parent->children();
-      Q_FOREACH( QObject *sibling, siblings ) {
-          ProxyToken * token = qobject_cast<QtCollider::ProxyToken*>( sibling );
-          if( token ) {
-              // if this sibling is a token, consider its sc object
-              PyrObject *scobj = token->proxy->scObject;
+      // see if this parent has a corresponding proxy
+      QObjectProxy *proxy = QObjectProxy::fromObject( parent );
+      if( proxy ) {
+          // if parent does not have a corresponding SC object (it is just
+          // being deleted) return no parent;
+          PyrObject *scobj = proxy->_scObject;
+          if( !scobj ) return true;
 
-              // if parent is being deleted return no parent;
-              if( !scobj ) return true;
-
-              // if parent is of desired class (or no class specified) return it,
-              // else continue
-              if( !e->className || isKindOf( scobj, e->className->u.classobj ) ) {
-                  *e->parent = scobj;
-                  return true;
-              }
+          // if parent SC object is of desired class (or no class specified)
+          // return it, else continue
+          if( !e->className || isKindOf( scobj, e->className->u.classobj ) ) {
+              *e->parent = scobj;
+              return true;
           }
-          // if this sibling is not a token continue
       }
 
-      // if no token was found among parent's children (meaning there is no
-      // corresponding sc object) or parent's sc object class is not as desired
-      // continue to consider parent's parent
+      // if this parent was not appropriate continue to consider the parent's parent
       parent = parent->parent();
   }
 
@@ -459,6 +444,16 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 void QObjectProxy::scMethodCallEvent( ScMethodCallEvent *e )
 {
   invokeScMethod( e->method, e->args, 0, e->locked );
+}
+
+QObjectProxy * QObjectProxy::fromObject( QObject *object )
+{
+  const QObjectList &children = object->children();
+  Q_FOREACH( QObject *child, children ) {
+    ProxyToken *token = qobject_cast<QtCollider::ProxyToken*>( child );
+    if( token ) return token->proxy;
+  }
+  return 0;
 }
 
 bool QtCollider::RequestEvent::send( QObjectProxy *proxy, Synchronicity sync )

@@ -34,7 +34,7 @@
 #include <PyrSlot.h>
 #include <PyrSymbol.h>
 
-#define qcProxyDebugMsg( LEVEL, MSG ) qcSCObjectDebugMsg( LEVEL, scObject, MSG )
+#define qcProxyDebugMsg( LEVEL, MSG ) qcSCObjectDebugMsg( LEVEL, _scObject, MSG )
 
 struct VariantList;
 struct ScMethodCallEvent;
@@ -94,6 +94,7 @@ class QObjectProxy : public QObject
     virtual ~QObjectProxy();
 
     inline QObject *object() const { return qObject; }
+    inline PyrObject *scObject() const { return _scObject; }
 
     // Lock for usage of object() outside Qt thread.
     // WARNING Do not post any sync events while locked!
@@ -117,6 +118,8 @@ class QObjectProxy : public QObject
     // thread-safe (if connection == queued)
     bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
 
+    static QObjectProxy *fromObject( QObject * );
+
   protected:
 
     void invokeScMethod
@@ -138,7 +141,7 @@ class QObjectProxy : public QObject
     void customEvent( QEvent * );
 
     QObject *qObject;
-    PyrObject *scObject;
+    PyrObject *_scObject;
     QMap<int,EventHandlerData> eventHandlers;
     QList<QcMethodSignalHandler*> methodSigHandlers;
     QList<QcFunctionSignalHandler*> funcSigHandlers;
