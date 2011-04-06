@@ -1,0 +1,21 @@
+class:: InterplPairs
+summary:: envelope specification
+related:: Classes/InterplEnv
+categories:: Control, Envelopes
+
+description::
+Takes an array of [x, y] pairs and a curve value for all break points.
+x values can be negative (for use in indexing with negartive values or signals).
+See link::Classes/InterplEnv:: Help for more info.
+
+Examples::
+
+code::
+a = InterplPairs([[0, 1], [1, 2], [2, 0]], \sin);
+a.plot;
+
+a = InterplPairs([[-1, 1], [0, 2], [1, 0]], \sin);
+a.plot;
+a.at(-0.5);
+a.at(0.2);
+::

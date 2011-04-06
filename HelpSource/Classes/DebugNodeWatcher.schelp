@@ -1,11 +1,13 @@
 class:: DebugNodeWatcher
 summary:: watches a server address for debug-related messages
-related:: Reference/Server-Command-Reference
+related:: Reference/Server-Command-Reference, Classes/Node, Classes/NodeWatcher
 categories:: Control, Server>Nodes
 
 description::
 Posts when these messages are received from the server:
 n_go n_end n_off n_on
+
+For debugging, it can be useful to see every node start and end. It doesn't require registration, reacts to each message.
 
 Examples::
 
@@ -17,7 +19,7 @@ d = DebugNodeWatcher(s);
 d.start;
 
 y = Group.new;
-
+y.run(false);
 y.free;
 
 d.stop;
