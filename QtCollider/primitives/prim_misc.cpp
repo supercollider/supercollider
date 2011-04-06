@@ -24,6 +24,7 @@
 #include "../Common.h"
 #include "../Slot.h"
 #include "../QcApplication.h"
+#include "../QObjectProxy.h"
 #include "QtCollider.h"
 
 #include <PyrKernel.h>
@@ -124,5 +125,21 @@ QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   QPalette p = Slot::toPalette( a );
   QcGenericEvent *e = new QcGenericEvent(0, QVariant(p));
   QcApplication::postSyncEvent( e, &qcSetGlobalPalette );
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( Qt_FocusWidget, 0,  PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QWidget *w = QApplication::focusWidget();
+
+  if( w ) {
+    QObjectProxy *proxy = QObjectProxy::fromObject(w);
+    if( proxy && proxy->scObject() ) {
+      SetObject( r, proxy->scObject() );
+      return errNone;
+    }
+  }
+
+  SetNil(r);
   return errNone;
 }

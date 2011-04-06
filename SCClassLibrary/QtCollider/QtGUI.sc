@@ -87,6 +87,11 @@ QtGUI {
     ^this.primitiveFailed;
   }
 
+  *focusView {
+    _Qt_FocusWidget
+    ^this.primitiveFailed;
+  }
+
   // private ///////////////////////////////////////////////////////////
 
   *prPalette { arg ret;
