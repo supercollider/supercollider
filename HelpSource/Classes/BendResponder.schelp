@@ -1,0 +1,72 @@
+class:: BendResponder
+summary:: allow functions to be registered to respond to MIDI pitchbend events
+related:: Classes/MIDIResponder, Classes/CCResponder
+categories:: Control, MIDI
+
+
+ClassMethods::
+
+method::new
+
+argument::function
+A link::Classes/Function:: to be evaluated. Arguments passed to the function are: src, chan, value.
+
+argument::src
+The src number may be the system UID (obtained from code:: MIDIClient.sources[index].uid ::) or the index of the source in the code:: MIDIClient.sources :: array. nil matches all.
+
+argument::chan
+An link::Classes/Integer:: between 0 and 15 that selects which MIDI channel to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val < 2 }
+
+argument::value
+An link::Classes/Integer:: between 0 and 16383 to filter values. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val < 50 }
+
+argument::install
+If true, install the responder automatically so it is active and ready to respond. If false, then it will be inactive.
+
+argument::swallowEvent
+If true, then if the midi event is matched, cease testing any further responders.
+
+InstanceMethods::
+
+method::learn
+Wait for the next pitch bend message, reset self to match src, chan.
+code::
+(
+c = BendResponder({ |src,chan,value|
+		[src,chan,value].postln;
+	});
+	c.learn; // wait for the first bend message
+)
+BendResponder.removeAll
+::
+
+
+Examples::
+
+code::
+(
+	c = BendResponder({ |src,chan,val|
+		[src,chan,val].postln;
+		},
+		nil, // any source
+		nil, // any channel
+		nil // any value
+	)
+)
+
+c.remove
+::
+
+code::
+(
+	c = BendResponder({ |src,chan,val|
+		[src,chan,val].postln;
+		},
+		nil, // any source
+		(3..6), // only channels 3 - 6
+		nil // any value
+	)
+)
+
+c.remove
+::

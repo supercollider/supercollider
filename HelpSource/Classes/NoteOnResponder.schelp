@@ -1,6 +1,6 @@
-class:: CCResponder
-summary:: allow functions to be registered to respond to MIDI control change events
-related:: Classes/MIDIResponder, Classes/NoteOnResponder
+class:: NoteOnResponder
+summary:: allow functions to be registered to respond to MIDI noteOn events
+related:: Classes/MIDIResponder, Classes/CCResponder
 categories:: Control, MIDI
 
 
@@ -18,9 +18,9 @@ argument::chan
 An link::Classes/Integer:: between 0 and 15 that selects which MIDI channel to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val < 2 }
 
 argument::num
-An link::Classes/Integer:: between 0 and 127 that selects which controller number to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val >= 4 }
+An link::Classes/Integer:: between 0 and 127 that selects which note number to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val >= 4 }
 
-argument::value
+argument::veloc
 An link::Classes/Integer:: between 0 and 127 to filter values. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val < 50 }
 
 argument::install
@@ -32,16 +32,15 @@ If true, then if the midi event is matched, cease testing any further responders
 InstanceMethods::
 
 method::learn
-Wait for the next CC message, reset to match src, chan, cc num.
+Wait for the next noteOn message, reset self to match src, chan.
 code::
 (
-
-c = CCResponder({ |src,chan,num,value|
-		[src,chan,num,value].postln;
+c = NoteOnResponder({ |src,chan,note,vel|
+		[src,chan,note,vel].postln;
 	});
-	c.learn; // wait for the first controller
+	c.learn; // wait for the first note
 )
-CCResponder.removeAll
+NoteOnResponder.removeAll
 ::
 
 
@@ -49,13 +48,13 @@ Examples::
 
 code::
 (
-	c = CCResponder({ |src,chan,num,value|
-		[src,chan,num,value].postln;
+	c = NoteOnResponder({ |src,chan,note,vel|
+		[src,chan,note,vel].postln;
 		},
 		nil, // any source
 		nil, // any channel
-		nil, // any CC number
-		nil // any value
+		nil, // any note
+		nil // any vel
 	)
 )
 
@@ -64,13 +63,13 @@ c.remove
 
 code::
 (
-	c = CCResponder({ |src,chan,num,value|
-		[src,chan,num,value].postln;
+	c = NoteOnResponder({ |src,chan,note,vel|
+		[src,chan,note,vel].postln;
 		},
 		nil, // any source
 		nil, // any channel
-		80, // CC number 80
-		{ |val| val < 50 } // any value less than 50
+		(50..60), // within this note range
+		nil // any vel
 	)
 )
 

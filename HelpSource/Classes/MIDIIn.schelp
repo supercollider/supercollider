@@ -1,0 +1,381 @@
+class:: MIDIIn
+summary:: receive MIDI messages
+related:: Classes/MIDIOut, Classes/MIDIResponder, Reference/MIDI, Reference/UsingMIDI
+categories:: Control, MIDI
+
+description::
+This document explains technical details of the MIDI hardware interface class, MIDIIn.
+
+MIDIIn is a simple and direct interface. When MIDI events come into Super Collider, MIDIIn evaluates simple handler functions.
+
+note::
+For general programming, strong::users should not use the MIDIIn class directly::. See the link::Classes/MIDIResponder:: classes for higher level event matching and more flexible handling of event handlers.
+::
+
+Certain MIDI messages are supported only through MIDIIn. These are: polytouch, program, sysex, sysrt, smpte.
+
+See the link::Reference/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
+
+subsection::The MIDIIn class
+
+MIDIIn links MIDI input received from the operating system to a set of user defined functions. Only one set of MIDI input handling functions can be active at a time, they are stored in the following class variables:
+
+	noteOff, noteOn, polytouch, control, program, touch, bend, sysex, sysrt, smpte
+
+The first argument these functions receive is an unique identifier that specifies the source of the data.
+
+
+ClassMethods::
+
+private::prDispatchEvent, connectByUID, disconnectByUID
+
+method::findPort
+searches for a connected link::Classes/MIDIEndPoint:: by name.
+code::
+//list connected ins:
+MIDIClient.init;
+MIDIClient.sources;
+::
+
+method::noteOn
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI noteOn message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## MIDIchannel || ranges from 0 to 15
+## keyNumber || 0 - 127
+## velocity || 0 - 127
+::
+
+method::noteOff
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI noteOff message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## MIDIchannel || ranges from 0 to 15
+## keyNumber || 0 - 127
+## velocity || 0 - 127 (typically 64 unless noteOff velocity is supported)
+::
+
+method::polytouch
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI polytouch message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## MIDIchannel || ranges from 0 to 15
+## keyNumber || 0 - 127
+## pressure || 0 - 127
+::
+
+method::control
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI control change message (CC) is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## MIDIchannel || ranges from 0 to 15
+## controllerNumber || 0 - 127
+## value || 0 - 127
+::
+
+method::program
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI program change message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## MIDIchannel || ranges from 0 to 15
+## programNumber || 0 - 127
+::
+
+method::touch
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI after-touch message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## MIDIchannel || ranges from 0 to 15
+## pressure || 0 - 127
+::
+
+method::bend
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI pitch wheel change message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## MIDIchannel || ranges from 0 to 15
+## bend || 0 - 16383 (14bits, the midpoint is 8192)
+::
+
+method::sysex
+note::
+The current implementation assembles a complete system exclusive packet before evaluating the function.
+::
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI System Exclusive message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## data || an link::Classes/Int8Array:: (includes f0 and f7). See manufacturer references for details.
+::
+
+method::sysrt
+table::
+## strong::index:: || strong::data:: || strong::message::
+## 2 || 14bits || song pointer
+## 3 || 7bits || song select
+## 8 || || midiclock
+## 10 || || start
+## 11 || || continue
+## 12 || || stop
+::
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI System Real-Time message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## index || ranges from 0 to 15
+## data ||
+::
+
+method::smpte
+Over MIDI, SMPTE is transmitted at 1/4 frame intervals four times faster than the frame rate.
+table::
+## strong::index:: || strong::data::
+## 0 || frames low nibble
+## 1 || frames hi nibble
+## 2 || seconds low nibble
+## 3 || seconds hi nibble
+## 4 || minutes low nibble
+## 5 || minutes hi nibble
+## 6 || hours low nibble
+## 7 || hours hi emphasis::bit:: OR'ed with frameRate
+list::
+## 0 -> 24 fps
+## 2 -> 25 fps
+## 4 -> 30 fps drop frame
+## 6 -> 30 fps
+::
+::
+Nibbles are sent in ascending order.
+argument::value
+a link::Classes/Function:: evaluated whenever a MIDI smpte message is received. It is passed the following arguments:
+definitionList::
+## uid || unique identifier of the MIDI port
+## index || ranges from 0 to 7
+## data || 0 - 15 (4bits)
+::
+
+Examples::
+
+subsection::Quick start for 1 port
+code::
+(
+	MIDIIn.connect;	// init for one port midi interface
+// register functions:
+	MIDIIn.noteOff = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
+	MIDIIn.noteOn = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
+	MIDIIn.polytouch = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
+	MIDIIn.control = { arg src, chan, num, val;	[chan,num,val].postln; };
+	MIDIIn.program = { arg src, chan, prog;		[chan,prog].postln; };
+	MIDIIn.touch = { arg src, chan, pressure;	[chan,pressure].postln; };
+	MIDIIn.bend = { arg src, chan, bend;		[chan,bend - 8192].postln; };
+	MIDIIn.sysex = { arg src, sysex;		sysex.postln; };
+	MIDIIn.sysrt = { arg src, chan, val;		[chan,val].postln; };
+	MIDIIn.smpte = { arg src, chan, val;		[chan,val].postln; };
+)
+::
+
+subsection::Quick start for 2 or more ports
+code::
+(
+	var inPorts = 2;
+	var outPorts = 2;
+	MIDIClient.init(inPorts,outPorts);	// explicitly intialize the client
+	inPorts.do({ arg i;
+		MIDIIn.connect(i, MIDIClient.sources.at(i));
+	});
+)
+::
+
+subsection::example with sound
+code::
+MIDIIn.connect;
+s = Server.local;
+s.boot;
+s.latency = 0;
+
+(
+SynthDef("sik-goo", { arg freq=440,formfreq=100,gate=0.0,bwfreq=800;
+	var x;
+	x = Formant.ar(
+		SinOsc.kr(0.02, 0, 10, freq),
+		formfreq,
+		bwfreq
+	);
+	x = EnvGen.kr(Env.adsr, gate,Latch.kr(gate,gate)) * x;
+	Out.ar(0, x);
+}).send(s);
+)
+
+x = Synth("sik-goo");
+
+//set the action:
+(
+MIDIIn.noteOn = {arg src, chan, num, vel;
+	x.set(\freq, num.midicps / 4.0);
+	x.set(\gate, vel / 200 );
+	x.set(\formfreq, vel / 127 * 1000);
+};
+MIDIIn.noteOff = { arg src,chan,num,vel;
+	x.set(\gate, 0.0);
+};
+MIDIIn.bend = { arg src,chan,val;
+	//(val * 0.048828125).postln;
+	x.set(\bwfreq, val * 0.048828125 );
+};
+)
+::
+
+subsection::writing to the bus rather than directly to the synth
+code::
+//i used this and got acceptable latency for triggering synths live.
+//The latency might actually be less than sc2, but i haven't used it enough
+//to tell for sure yet.
+//Powerbook G4, 512mb ram.
+//- matrix6k@somahq.com
+
+s = Server.local;
+s.boot;
+s.latency = 0;
+
+(
+SynthDef("moto-rev", { arg ffreq=100;
+	var x;
+	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1),
+		ffreq, 0.1)
+		.clip2(0.4);
+	Out.ar(0, x);
+}).send(s);
+)
+
+b = Bus.control(s);
+
+x = Synth("moto-rev");
+
+// map the synth's first input (ffreq) to read
+// from the bus' output index
+x.map(0, b);
+
+
+MIDIIn.connect;
+//set the action:
+(
+MIDIIn.noteOn = {arg src, chan, num, vel;
+	b.value = num.midicps.postln;
+};
+MIDIIn.control = {arg src, chan, num, val;
+	[chan,num,val].postln;
+};
+MIDIIn.bend = {arg src, chan, val;
+	val.postln;
+};
+)
+
+// cleanup
+x.free;
+b.free;
+::
+
+subsection::Keyboard Split for two voices
+code::
+//pbend to cutoff, mod to rez, 7 to amp
+//- matrix6k@somahq.com
+
+s.boot;
+(
+SynthDef("funk",{ arg freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed=0;
+	var e,x,env,range,filterfreq;
+	e = Env.new([0, 0.1, 0.1, 0], [0, 0.1, 0.1], 'linear', 2);
+	env=Env.adsr(0.3,1,1,1);
+	range = cutoff -1;
+	filterfreq = SinOsc.kr(lfospeed,0, range, cutoff).abs;
+	x = RLPF.ar(Mix.ar([
+			Mix.arFill(2, {Saw.ar(freq *2 + 0.2.rand2, amp)}),
+			Mix.arFill(2, {Saw.ar(freq *4+ 0.2.rand2, amp)})
+		]),
+		EnvGen.kr(env,gate)*filterfreq,
+		rez);
+	Out.ar([0,1],x * EnvGen.kr(e, gate, doneAction: 2))
+}).send(s);
+
+SynthDef("strings",{ arg freq = 700, amp = 0.2, gate = 1;
+	var x,enve;
+	enve = Env.new([0, 0.1, 0.1, 0], [2, 0.1, 1], 'linear', 2);
+	x = RLPF.ar(Mix.ar([
+			Mix.arFill(2, {Saw.ar(freq +2.rand2,0.6)}),
+			Mix.arFill(2, {Saw.ar(freq *0.5 + 2.rand2,0.6)})
+		]),
+		6000,1);
+	Out.ar([0,1],x * EnvGen.kr(enve, gate, doneAction: 2))
+}).send(s);
+)
+
+(
+var keys, cutspec, cutbus, rezspec, rezbus, lfospec, lfobus;
+keys = Array.newClear(128);
+
+MIDIClient.init;
+MIDIIn.connect(0, MIDIClient.sources.at(0));
+
+g = Group.new;
+
+cutspec = ControlSpec(100,10000,\linear,0.001);
+cutbus = Bus.new(\control,1,1,s);
+cutbus.value = 10000;
+
+rezspec = ControlSpec(1,0,\linear,0.001);
+rezbus = Bus.new(\control,2,1,s);
+rezbus.value = 1.0;
+
+lfospec = ControlSpec(0,50,\linear,0.001);
+lfobus = Bus.new(\control,3,1,s);
+
+MIDIIn.control = {arg src, chan, num, val;
+	if(num == 1,{
+		rezbus.value = rezspec.map(val/127.0);
+	});
+	if(num == 7,{
+		lfobus.value = lfospec.map(val/127.0).postln;
+	});
+};
+
+MIDIIn.bend = {arg src, chan, val;
+	cutbus.value = cutspec.map(val/16383.0);
+};
+
+MIDIIn.noteOn = {arg src, chan, num, vel;
+	var node;
+	if(num < 60, {
+		node = Synth.tail(g, "funk", [\freq, num.midicps, \amp, vel/255]);
+		node.map("cutoff",1,"rez",2,"lfospeed",3);
+//		node = Synth.basicNew("funk",s);
+//		s.sendBundle(nil,
+//			node.addToTailMsg(g,[\freq, num.midicps, \amp, vel/255]),
+//			node.mapMsg("cutoff",1,"rez",2,"lfospeed",3)
+//		);
+		keys.put(num, node)
+	},{ 
+		node = Synth.tail(g, "strings", [\freq, num.midicps, \amp, vel/255]);
+		keys.put(num, node)
+	});
+};
+
+MIDIIn.noteOff = {arg src, chan, num, vel;
+	var node;
+	node = keys.at(num);
+	if (node.notNil, {
+		keys.put(num, nil);
+		s.sendMsg("/n_set", node.nodeID, "gate", 0);
+		// or node.release
+		// then free it ... or get the NodeWatcher to do it
+	});
+};
+
+)
+::
