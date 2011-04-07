@@ -72,6 +72,16 @@ QtGUI {
 
   //////////////////////////////////////////////////////////////////////
 
+  *availableStyles {
+    _Qt_AvailableStyles
+    ^this.primitiveFailed;
+  }
+
+  *style_ { arg styleName;
+    _Qt_SetStyle
+    ^this.primitiveFailed;
+  }
+
   *stringBounds { arg aString, aFont;
     var bounds = this.prStringBounds( aString, aFont, Rect.new );
     bounds.left = 0;

@@ -25,6 +25,7 @@
 #include "../Slot.h"
 #include "../QcApplication.h"
 #include "../QObjectProxy.h"
+#include "../style/ProxyStyle.hpp"
 #include "QtCollider.h"
 
 #include <PyrKernel.h>
@@ -32,6 +33,7 @@
 #include <QFontMetrics>
 #include <QDesktopWidget>
 #include <QFontDatabase>
+#include <QStyleFactory>
 
 using namespace QtCollider;
 
@@ -118,5 +120,32 @@ QC_LANG_PRIMITIVE( Qt_FocusWidget, 0,  PyrSlot *r, PyrSlot *a, VMGlobals *g )
   }
 
   SetNil(r);
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( Qt_SetStyle, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QString str = Slot::toString( a );
+  if( str.isEmpty() ) return errFailed;
+
+  QStyle *style = QStyleFactory::create( str );
+  if( !style ) return errFailed;
+
+  QApplication::setStyle( new QtCollider::ProxyStyle( style ) );
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( Qt_AvailableStyles, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  VariantList list;
+  Q_FOREACH( QString key, QStyleFactory::keys() ) {
+    list.data << QVariant(key);
+  }
+
+  Slot::setVariantList( r, list );
   return errNone;
 }
