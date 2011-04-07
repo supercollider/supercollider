@@ -363,7 +363,7 @@ scale:		#[0, 2, 4, 5, 7, 9, 11]	// diatonic major scale
 stepsPerOctave:	12.0	// 
 detune:		0.0,	// detune in Hertz
 harmonic:	1.0	// harmonic ratio
-octaveRatio:	2.0	// size of the octave (can be used with the link::Classes/Scale:: class)
+octaveRatio:	2.0	// size of the octave (can be used with the Scale class)
 ::
 The event calculates with these keys to derive parameters needed for the synth:
 code::

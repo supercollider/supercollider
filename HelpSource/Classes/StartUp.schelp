@@ -1,0 +1,33 @@
+class:: StartUp
+summary:: register functions to be evaluated after the startup is finished
+related:: Classes/ShutDown, Classes/ServerBoot, Classes/ServerTree, Classes/CmdPeriod
+categories:: Control
+
+description::
+StartUp registers functions to perform an action after the library has been compiled, and after the startup file has run. For instance this is used for creating link::Classes/SynthDef:: in the strong::initClass:: function of class files in order to be able to make the synthdef directory customizable by the startup script.
+
+If an object is registered, strong::doOnStartUp:: must be implemented. Otherwise a function can be used.
+
+ClassMethods::
+
+method::add
+Registers an object or function to be evaluated after startup is finished.
+
+method::defer
+Registers an object or function to be evaluated after startup is finished, or immediately, if this has happened already.
+
+method::remove
+Removes an object that was previously registered.
+
+method::run
+Call the object in order.
+
+Examples::
+
+code::
+*initClass {
+	StartUp.add {
+		// something to do...
+	}
+}
+::
