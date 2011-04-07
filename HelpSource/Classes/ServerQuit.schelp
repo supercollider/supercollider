@@ -1,0 +1,13 @@
+class:: ServerQuit
+summary:: register actions to be taken when a server quits
+related:: Classes/Server, Classes/ServerBoot, Classes/ServerTree, Classes/ShutDown
+categories:: Control
+
+description::
+The singleton ServerQuit provides a place for registering functions and objects for events that should happen when a given server quits.
+
+See link::Classes/AbstractServerAction:: for usage.
+
+ClassMethods::
+
+private::initClass

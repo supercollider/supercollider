@@ -1,0 +1,13 @@
+class:: ServerBoot
+summary:: register actions to be taken when a server has booted
+related:: Classes/Server, Classes/ServerQuit, Classes/ServerTree, Classes/StartUp
+categories:: Control
+
+description::
+The singleton ServerBoot provides a place for registering functions and objects for events that should happen when a given server has booted.
+
+See link::Classes/AbstractServerAction:: for usage.
+
+ClassMethods::
+
+private::initClass

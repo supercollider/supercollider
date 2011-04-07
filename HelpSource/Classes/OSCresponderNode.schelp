@@ -1,0 +1,143 @@
+class:: OSCresponderNode
+summary:: client side network responder
+related:: Guides/OSC_communication, Classes/OSCpathResponder, Classes/NetAddr
+categories:: Control, OpenSoundControl
+
+description::
+Register a function to be called upon receiving a specific command from a specific OSC address. Same interface like link::Classes/OSCresponder::, but allows strong::multiple responders to the same command::.
+
+Note that OSCresponderNode evaluates its function in the system process.
+In order to access the application process (e.g. for GUI access ) use { ... }.defer;
+
+Other applications sending messages to SuperCollider should distinguish between sending messages to the server or the language. Server messages are documented in the link::Reference/Server-Command-Reference:: and should be sent to the server's port - code::s.addr.port:: - which is strong::57110:: by default. Messages sent to the server will not be processed by any OSCresponder in the language.
+
+Messages from external clients that should be processed by OSCresponders must be sent to the language port, strong::57120:: by default. Use code::NetAddr.langPort:: to confirm which port the SuperCollider language is listening on.
+
+See link::Guides/OSC_communication:: for more details.
+
+Examples::
+
+subsection::Setting up OSCresponderNode for listening to a remote application
+
+code::
+// example: two SuperCollider apps communicating
+
+// application 1:
+n = NetAddr("127.0.0.1", 57120); // the url should be the one of computer of app 2 (or nil)
+
+o = OSCresponderNode(n, '/chat', { |t, r, msg| ("time:" + t).postln; msg[1].postln }).add;
+
+// application 2:
+m = NetAddr("127.0.0.1", 57120); // the url should be the one of computer of app 1
+m.sendMsg("/chat", "Hello App 1");
+
+// sending bundles (including timestamps)
+(
+m.sendBundle(2.0, ["/chat", "Hello App 1"], ["/chat", "Hallo Wurld"]);
+m.sendBundle(0.0, ["/chat", "Hello App 1"], ["/chat", "Hallo Wurld"]);
+)
+
+// end application 2:
+m.disconnect;
+
+// end application 1:
+n.disconnect; o.remove;
+::
+
+subsection::Listening to data from _any_ client
+
+code::
+// same as above, but we set the address to nil so we can receive from anywhere
+// no need for a NetAddr since we are just listening (and not sending)
+
+o = OSCresponderNode(nil, '/test', { |t, r, msg| msg.postln }).add;
+o.remove;
+::
+
+subsection::Listening to data from _any_ client, but from a specific host
+
+code::
+// same as above, but we use a NetAddr with a port of nil, so we can receive from a specific host, but from any port
+
+n = NetAddr("127.0.0.1", nil); // the url should be the one of computer of app 2
+o = OSCresponderNode(n, '/test', { |t, r, msg| msg.postln }).add;
+o.remove;
+::
+
+subsection::Listening to data from the server
+
+code::
+// example from SendTrig
+
+(
+s = Server.local;
+s.boot;
+s.notify;
+)
+
+(
+SynthDef("help-SendTrig",{
+	SendTrig.kr(Dust.kr(1.0), 0, 0.9);
+}).send(s);
+
+// register to receive this message
+a = OSCresponderNode(s.addr, '/tr', { arg time, responder, msg;
+	[time, responder, msg].postln;
+}).add;
+b = OSCresponderNode(s.addr, '/tr', { arg time, responder, msg;
+	"this is another call".postln;
+}).add;
+)
+
+x = Synth.new("help-SendTrig");
+a.remove;
+b.remove;
+x.free;
+::
+
+subsection::Watching for something specific
+
+code::
+// end of group message
+
+s.boot;
+
+a = OSCresponderNode(s.addr,'/n_end',{ arg time,responder,msg;
+	[time, responder, msg].postln;
+	if(msg[1] == g.nodeID,{
+		"g is dead !".postln;
+		// g = Group.new;
+	});
+}).add;
+
+g = Group.new;
+
+g.free;
+
+a.remove;
+::
+
+subsection::Watching for errors
+
+code::
+// example from ServerErrorGui in crucial lib
+
+f = OSCresponderNode(s.addr, '/fail', { arg time, responder, msg;
+	{
+		var mins,secs;
+		mins = (time/60).round(1);
+		secs = (time%60).round(0.1);
+		if(secs<10,{ secs = "0"++secs.asString; },{ secs=secs.asString;});
+		// put this on a gui
+		//errors.label = "% % (%:%)".format(msg[1], msg[2], mins, secs);
+		//errors.stringColor = Color.white;
+		"% % (%:%)".format(msg[1], msg[2], mins, secs).postln;
+	}.defer
+});
+f.add;
+
+// cause a failure
+Synth("gthhhhppppppp!");
+
+f.remove
+::

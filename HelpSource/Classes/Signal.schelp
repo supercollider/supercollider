@@ -125,11 +125,11 @@ s.plot;
 argument::function
 a function that should calculate the value of a sample.
 
-The function is called with two arguments.
-	
-	strong::x:: - the value along the interval.
-	
-	strong::i:: - the sample index.
+The function is called with two arguments:
+definitionList::
+## x || the value along the interval.
+## i || the sample index.
+::
 
 argument::start
 the starting value of the interval.

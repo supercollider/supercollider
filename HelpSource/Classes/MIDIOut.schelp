@@ -146,3 +146,39 @@ The IAC Bus will now also appear to other applications.
 MIDIMonitor (freeware) can be very useful for troubleshooting:
 
 http://www.snoize.com/MIDIMonitor/
+
+subsection::Sysex example
+
+a machinedrum manual say sysex commands should be formatted like this...
+code::
+$f0,$00,$20,$3c,$02,$00,command,...,$f7
+::
+
+and to set the tempo the machinedrum expects this command...
+code::
+$61 | Set tempo ID
+%0aaaaaaa | Upper bits
+%0bbbbbbb | Lower bits
+$f7 | SYSEX end
+Note: Tempo = %aaaaaaabbbbbbb / 24, max 300 BPM, min 30 BPM
+::
+
+so to create and send a valid set tempo sysex command from SuperCollider to this machinedrum do...
+code::
+MIDIClient.init;
+m = MIDIOut(0);
+m.sysex(Int8Array[0xf0, 0x00, 0x20, 0x3c, 0x02, 0x00, 0x61, 21, 54, 0xf7]);
+::
+
+This will set the tempo to 114.23 bpm. One can calculate the upper and lower 7bit values like this...
+code::
+(
+var bpm, val, upper, lower;
+bpm = 114.23;
+val = (bpm*24).round.asInteger;
+upper = val&2r11111110000000>>7;
+lower = val&2r00000001111111;
+[upper, lower].postln;
+)
+::
+where the resulting 21 and 54 are the same as 2r0010101 and 2r0110110 in binary notation.
