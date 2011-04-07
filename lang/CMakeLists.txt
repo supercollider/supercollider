@@ -163,7 +163,7 @@ if (SC_WII OR APPLE)
 	endif()
 endif()
 
-if(FINAL_BUILD)
+if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
 	add_library(libsclang SHARED libsclang_final.cpp ${sclang_parser_source})
 else()
