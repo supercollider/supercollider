@@ -6,7 +6,8 @@ Nil {
 	? { arg obj; ^obj }
 	?? { arg obj; ^obj.value }
 	!? {}
-	booleanValue { ^false }
+	asBoolean    { ^false }
+	booleanValue { ^false } // TODO in the long-run, deprecate for asBoolean
 
 	// support a nil Environment
 	push { arg function; ^function.value }

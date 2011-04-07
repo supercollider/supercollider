@@ -9,7 +9,8 @@ Boolean {
 	or { ^this.subclassResponsibility(thisMethod) }
 	nand { ^this.subclassResponsibility(thisMethod) }
 
-	booleanValue { ^this }
+	asBoolean    { ^this }
+	booleanValue { ^this } // TODO in the long-run, deprecate for asBoolean
 
 	keywordWarnings {
 		// turn on/off warnings if a keyword argument is not found
@@ -38,7 +39,8 @@ True : Boolean {
 	and { arg that; ^that.value }
 	or { arg that; ^this }
 	nand { arg that; ^that.value.not }
-	binaryValue { ^1 }
+	asInteger   { ^1 }
+	binaryValue { ^1 } // TODO in the long-run, deprecate for asInteger
 }
 
 False : Boolean  {
@@ -49,5 +51,6 @@ False : Boolean  {
 	and { arg that; ^this }
 	or { arg that; ^that.value }
 	nand { arg that; ^true }
-	binaryValue { ^0 }
+	asInteger   { ^0 }
+	binaryValue { ^0 } // TODO in the long-run, deprecate for asInteger
 }
