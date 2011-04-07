@@ -352,6 +352,7 @@ SCDoc {
         didRun = false;
         helpSourceDirs = nil;
         if(noCache) {
+            doWait = false;
             this.syncNonHelpFiles; // ensure helpTargetDir exists
             ("touch"+(helpTargetDir+/+"version").escapeChar($ )).systemCmd;
         }
