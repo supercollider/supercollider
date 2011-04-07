@@ -1022,7 +1022,9 @@ void sc_plugin_interface::initialize_synths_perform(void)
     for (std::size_t i = 0; i != uninitialized_synths.size(); ++i)
     {
         sc_synth * synth = static_cast<sc_synth*>(uninitialized_synths[i]);
-        synth->prepare();
+        if (likely(synth->get_parent()))
+            synth->prepare();
+        synth->release();
     }
     synths_to_initialize = false;
     uninitialized_synths.clear();

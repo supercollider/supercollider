@@ -23,6 +23,7 @@
 
 #include "../server/audio_bus_manager.hpp"
 #include "../server/node_types.hpp"
+#include "../server/synth.hpp"
 #include "../server/memory_pool.hpp"
 
 #include "SC_InterfaceTable.h"
@@ -216,6 +217,7 @@ public:
     {
         synths_to_initialize = true;
         uninitialized_synths.push_back(synth);
+        synth->add_ref();
     }
 
 private:
