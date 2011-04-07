@@ -4,7 +4,8 @@ NodeMapSetting {
 	var <>key, <>value, <>busNumChannels, <>isMultiChannel=false, <>isMapped=false, <>mappedRate;
 	
 	*new { arg key, value, busNumChannels;
-		^super.newCopyArgs(key, value, busNumChannels)	}
+		^super.newCopyArgs(key, value, busNumChannels)
+	}
 	
 	map { arg index;
 		value = index;
