@@ -1701,12 +1701,15 @@ SCEnvelopeView : SCView {
 	        	if (unicode == 16rF702, { this.x = this.value[0][this.index] - this.step; ^this });
 	        	};
 	        } {
-	       		if (unicode == 16rF703, { this.selectIndex((this.index+1)%this.size) ^this });	        	if (unicode == 16rF702, { this.selectIndex((this.index-1)%this.size) ^this });
+	       		if (unicode == 16rF703, { this.selectIndex((this.index+1)%this.size) ^this });
+	        	if (unicode == 16rF702, { this.selectIndex((this.index-1)%this.size) ^this });
 	        };
 	       	(this.index > 1.neg).if {
-	     	   if (unicode == 16rF700, { this.y = this.value[1][this.index] + this.step; ^this });	     	   if (unicode == 16rF701, { this.y = this.value[1][this.index] - this.step; ^this });
+	     	   if (unicode == 16rF700, { this.y = this.value[1][this.index] + this.step; ^this });
+	     	   if (unicode == 16rF701, { this.y = this.value[1][this.index] - this.step; ^this });
 	     	};
-        ^nil        // bubble if it's an invalid key    }
+        ^nil        // bubble if it's an invalid key
+    }
 
 	doMetaAction {
 		metaAction.value(this)

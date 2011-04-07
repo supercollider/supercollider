@@ -159,7 +159,10 @@ Bus {
 		this.fill(value,numChannels);
 	}
 
-	printOn { arg stream;		stream << this.class.name << "(" <<*			[rate, index, numChannels, server]  <<")"	}
+	printOn { arg stream;
+		stream << this.class.name << "(" <<*
+			[rate, index, numChannels, server]  <<")"
+	}
 
 	storeOn { arg stream;
 		stream << this.class.name << "(" <<*

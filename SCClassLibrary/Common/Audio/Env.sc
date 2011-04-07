@@ -177,7 +177,8 @@ Env {
 		)
 	}
 
-	// delay the onset of the envelope	delay { arg delay;
+	// delay the onset of the envelope
+	delay { arg delay;
 		^Env([levels[0]] ++ levels,
 			[delay] ++ times,
 			if (curves.isArray) {[\lin] ++ curves} {curves},
