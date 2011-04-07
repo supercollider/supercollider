@@ -29,7 +29,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 add_library(PySCLang MODULE ${PySCLangSource})
 set_target_properties(PySCLang
 					  PROPERTIES LINKER_LANGUAGE C
-								 PREFIX "")
+								 PREFIX ""
+								 SUFFIX .pyd)
 
 target_link_libraries(PySCLang ${PYTHON_LIBRARY})
 target_link_libraries(PySCLang libsclang)
