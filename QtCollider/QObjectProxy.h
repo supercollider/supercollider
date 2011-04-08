@@ -94,6 +94,9 @@ class QObjectProxy : public QObject
 
     virtual ~QObjectProxy();
 
+    // compare current thread to proxy's thread
+    bool compareThread();
+
     // WARNING: must be called with language locked!
     void finalize() { _scObject = 0; }
 

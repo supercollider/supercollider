@@ -34,6 +34,7 @@ class QcApplication : public QApplication
     virtual ~QcApplication();
     static void postSyncEvent( QcSyncEvent *e, QObject *rcv );
     static void postSyncEvent( QcSyncEvent *e, EventHandlerFn handler );
+    static bool compareThread();
 
   private:
     bool event( QEvent * );

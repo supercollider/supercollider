@@ -108,6 +108,22 @@ void QcApplication::postSyncEvent( QcSyncEvent *e, EventHandlerFn handler )
   }
 }
 
+bool QcApplication::compareThread()
+{
+  bool same;
+
+  _mutex.lock();
+
+  if( _instance )
+    same = QThread::currentThread() == _instance->thread();
+  else
+    same = false;
+
+  _mutex.unlock();
+
+  return same;
+}
+
 bool QcApplication::event( QEvent *e )
 {
   if( e->type() == QEvent::FileOpen ) {

@@ -49,6 +49,8 @@ void qcScreenBounds( QcSyncEvent *e )
 
 QC_LANG_PRIMITIVE( QWindow_ScreenBounds, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlobals *g )
 {
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
   if( !isKindOfSlot( rectSlot, class_Rect ) ) return errWrongType;
 
   QVariant var;
@@ -100,6 +102,8 @@ static void qcGlobalPalette( QcSyncEvent *e )
 
 QC_LANG_PRIMITIVE( Qt_GlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
   QVariant var;
 
   QcGenericEvent *e = new QcGenericEvent(0, QVariant(), &var);
@@ -122,6 +126,8 @@ static void qcSetGlobalPalette( QcSyncEvent *e )
 
 QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
   QPalette p = Slot::toPalette( a );
   QcGenericEvent *e = new QcGenericEvent(0, QVariant(p));
   QcApplication::postSyncEvent( e, &qcSetGlobalPalette );
@@ -130,6 +136,8 @@ QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
 QC_LANG_PRIMITIVE( Qt_FocusWidget, 0,  PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
   QWidget *w = QApplication::focusWidget();
 
   if( w ) {
