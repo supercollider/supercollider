@@ -1,0 +1,20 @@
+class:: CocoaDocument
+summary:: implements Document functionality
+related:: Classes/Document
+categories:: OSX
+
+description::
+
+CocoaDocument implements link::Classes/Document:: functionality for the SuperCollider user interface on Mac OSX.
+
+You could instantiate it e.g. by running code::CocoaDocument.new:: but in order to write platform-independent code you should not do this - simply call code::Document.new:: and this instantiates the correct class for your system.
+
+For examples and method descriptions see link::Classes/Document::.
+
+ClassMethods::
+
+private::initClass, prSetDefaultFont, prSetSyntaxColorTheme, prDefaultUsesAutoInOutdent_, prnumberOfOpen, prGetIndexOfListener
+
+InstanceMethods::
+
+private::prUsesAutoInOutdent_, prIsEditable_, prSetTitle, prGetTitle, prGetFileName, prSetFileName, prGetBounds, prSetBounds, prBalanceParens, prclose, prinsertText, prinitByIndex, prGetLastIndex, propen, prinitByString, prSetBackgroundColor, prGetBackgroundColor, prSetSelectedBackgroundColor, prGetSelectedBackgroundColor, prSelectLine
