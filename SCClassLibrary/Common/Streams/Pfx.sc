@@ -77,12 +77,12 @@ Pfxb : Pfx {
 }
 
 
-Pgroup : FilterPattern {
-
+PAbstractGroup : FilterPattern {
 	embedInStream { arg inevent;
 		var	server, groupID, event, ingroup, cleanup;
 		var	stream, lag = 0, clock = thisThread.clock,
 			groupReleaseTime = inevent[\groupReleaseTime] ? 0.1, cleanupEvent;
+		var eventType = this.class.eventType;
 
 		cleanup = EventStreamCleanup.new;
 		server = inevent[\server] ?? { Server.default };
@@ -90,7 +90,7 @@ Pgroup : FilterPattern {
 
 		event = inevent.copy;
 		event[\addAction] = 1;
-		event[\type] = \group;
+		event[\type] = eventType;
 		event[\delta] = 1e-9; // no other sync choice for now. (~ 1 / 20000 sample delay)
 		event[\id] = groupID;
 
@@ -119,6 +119,18 @@ Pgroup : FilterPattern {
 			inevent = event.yield;
 			inevent.put(\group, groupID);
 		}
+	}
+}
+
+Pgroup : PAbstractGroup {
+	*eventType {
+		^\group
+	}
+}
+
+PparGroup : PAbstractGroup {
+	*eventType {
+		^\parGroup
 	}
 }
 
