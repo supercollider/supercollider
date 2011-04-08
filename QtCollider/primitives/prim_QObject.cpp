@@ -90,6 +90,8 @@ QC_LANG_PRIMITIVE( QObject_New, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   qcSCObjectDebugMsg( 1, scObject, QString("CREATE: %2").arg(e->qtClassName) );
 
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
   QcApplication::postSyncEvent( e, &qcCreateQObject );
 
   if( !proxy ) return errFailed;
@@ -106,6 +108,8 @@ QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   qcSCObjectDebugMsg( 1, slotRawObject(r), "DESTROY" );
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyObject );
   e->send( proxy, Synchronous );
@@ -161,6 +165,8 @@ QC_LANG_PRIMITIVE( QObject_SetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   qcSCObjectDebugMsg( 1, slotRawObject(r), "SET PARENT" );
 
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
   QtCollider::SetParentEvent *e = new QtCollider::SetParentEvent();
   e->parent = parent;
   bool ok = e->send( proxy, Synchronous );
@@ -177,6 +183,8 @@ QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   bool sync = IsTrue( a+2 );
 
   qcSCObjectDebugMsg( 1, slotRawObject(r), QString("SET: %1").arg(property->name) );
+
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   SetPropertyEvent *e = new SetPropertyEvent();
   e->property = property;
@@ -197,6 +205,8 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   QVariant val;
 
   qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(property->name) );
+
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   GetPropertyEvent *e = new GetPropertyEvent( property, val );
 
@@ -225,6 +235,8 @@ QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals
                       QString("EVENT HANDLER: type %1 -> %2 [%3]")
                       .arg(eventType).arg(method->name)
                       .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
+
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   SetEventHandlerEvent *e = new SetEventHandlerEvent( eventType, method, sync );
 
@@ -399,6 +411,8 @@ QC_LANG_PRIMITIVE( QObject_IsValid, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   QObjectProxy *proxy = Slot::toObjectProxy( r );
 
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
   GetValidityEvent *e = new GetValidityEvent();
   bool valid = e->send( proxy, Synchronous );
 
@@ -417,6 +431,8 @@ QC_LANG_PRIMITIVE( QObject_GetChildren, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   qcSCObjectDebugMsg( 1, slotRawObject(r),
                       QString("GET CHILDREN: of class '%1'")
                       .arg( className ? className->name : "QObject" ) );
+
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   QList<PyrObject*> children;
 
@@ -453,6 +469,8 @@ QC_LANG_PRIMITIVE( QObject_GetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   PyrSymbol *className = IsSym( a ) ? slotRawSymbol( a ) : 0;
 
   qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET PARENT") );
+
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   GetParentEvent *e = new GetParentEvent();
   PyrObject *parent = 0;

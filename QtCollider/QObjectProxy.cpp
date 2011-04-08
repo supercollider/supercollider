@@ -28,6 +28,7 @@
 #include <QApplication>
 #include <QWidget>
 #include <QVarLengthArray>
+#include <QThread>
 
 #include <PyrKernel.h>
 #include <VMGlobals.h>
@@ -50,6 +51,10 @@ QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
 QObjectProxy::~QObjectProxy()
 {
   qcProxyDebugMsg( 1, QString("Proxy is being deleted.") );
+}
+
+bool QObjectProxy::compareThread() {
+  return QThread::currentThread() == this->thread();
 }
 
 void QObjectProxy::invalidate() {

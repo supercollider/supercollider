@@ -57,6 +57,8 @@ QC_LANG_PRIMITIVE( QWidget_BringFront, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
 
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
   GenericWidgetRequest *req = new GenericWidgetRequest( &QWidgetProxy::refresh );
 
   // WARNING The request has to be sent synchronously! Only this will ensure that
@@ -68,6 +70,8 @@ QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
 
 QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
+
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   QPoint pt( Slot::toPoint( a ).toPoint() );
 
@@ -85,6 +89,9 @@ QC_LANG_PRIMITIVE( QWidget_SetLayout, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) 
   if( !isKindOfSlot( a, class_QLayout ) ) return errWrongType;
 
   QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
+
+  if( !wProxy->compareThread() ) return QtCollider::wrongThreadError();
+
   QObjectProxy *lProxy = Slot::toObjectProxy( a );
 
   SetLayoutRequest *req = new SetLayoutRequest();
