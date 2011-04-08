@@ -4,7 +4,7 @@ ProxySpace : LazyEnvir {
 	classvar <>all;
 
 	var <name, <server, <clock, <fadeTime, <quant;
-	var <>awake=true, tempoProxy, <group;
+	var <awake=true, tempoProxy, <group;
 
 	*initClass { all = IdentityDictionary.new }
 
@@ -66,6 +66,11 @@ ProxySpace : LazyEnvir {
 	quant_ { arg val;
 		quant = val;
 		this.do { arg item; item.quant = val };
+	}
+	
+	awake_ { arg flag;
+		this.do(_.awake_(flag));
+		awake = flag;	
 	}
 
 	makeTempoClock { arg tempo=1.0, beats, seconds;
