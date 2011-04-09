@@ -7,46 +7,44 @@ FilterPattern : Pattern {
 	}
 }
 
-//Pn : FilterPattern {
-//	var <>repeats;
-//	*new { arg pattern, repeats=inf;
-//		^super.new(pattern).repeats_(repeats)
-//	}
-//	storeArgs { ^[pattern,repeats] }
-//	embedInStream { arg event;
-//		repeats.value(event).do { event = pattern.embedInStream(event) };
-//		^event;
-//	}
-//}
-//
+
 Pn : FilterPattern {
-	var <>repeats, <>flag;
-	*new { arg pattern, repeats=inf, flag;
-		^super.new(pattern).repeats_(repeats).flag_(flag)
+	var <>repeats, <>key;
+	*new { arg pattern, repeats=inf, key;
+		^super.newCopyArg, pattern, repeats, key )
 	}
-	storeArgs { ^[pattern,repeats, flag] }
-	embedInStream { arg event;
-		repeats.value(event).do { 
-			if (flag.notNil) { event.put(flag, true) };
-			event = pattern.embedInStream(event) 
-		};
+	storeArgs { ^[pattern,repeats, key] }
+	embedInStream { | event |
+		if(key.isNil) {
+			repeats.value.do { event = pattern.embedInStream(event) };
+		} {
+			repeats.value.do { 
+				event = pattern.embedInStream(event);
+				event[key] = true;
+			};
+			event[key] = false;
+		};	
 		^event;
 	}
 }
 
-Pgate  : FilterPattern {
-	var <>repeats, <>flag;
+Pgate  : Pn {
 	*new { arg pattern, repeats=inf, flag;
 		^super.new(pattern).repeats_(repeats).flag_(flag)
 	}
 	storeArgs { ^[pattern,repeats, flag] }
-	embedInStream { arg event;
-		var val, str = pattern.asStream;
-		val = str.next(event);
-		repeats.value(event).do { 
-			event = val.yield;
-			if (event[flag] == true) { val = str.next(event) }
-		};
+	embedInStream { | event |
+		var stream, output;
+		repeats.do {
+			stream = pattern.asStream;
+			output = stream.next(event);
+			while {
+				if (event[key] == true) { output = stream.next(event) };
+				output.notNil;
+			} {
+				event = output.copy.embedInStream(event)
+			}
+		};		
 		^event;
 	}
 }
