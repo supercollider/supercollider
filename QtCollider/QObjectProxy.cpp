@@ -364,9 +364,9 @@ QList<PyrObject*> QObjectProxy::children( PyrSymbol *className )
   return scChildren;
 }
 
-bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )
+PyrObject *QObjectProxy::parent( PyrSymbol *className )
 {
-  if( !qObject ) return true;
+  if( !qObject ) return 0;
 
   QObject *parent = qObject->parent();
 
@@ -377,13 +377,12 @@ bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )
           // if parent does not have a corresponding SC object (it is just
           // being deleted) return no parent;
           PyrObject *scobj = proxy->_scObject;
-          if( !scobj ) return true;
+          if( !scobj ) return 0;
 
           // if parent SC object is of desired class (or no class specified)
           // return it, else continue
-          if( !e->className || isKindOf( scobj, e->className->u.classobj ) ) {
-              *e->parent = scobj;
-              return true;
+          if( !className || isKindOf( scobj, className->u.classobj ) ) {
+              return scobj;
           }
       }
 
@@ -391,7 +390,7 @@ bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )
       parent = parent->parent();
   }
 
-  return true;
+  return 0;
 }
 
 bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
