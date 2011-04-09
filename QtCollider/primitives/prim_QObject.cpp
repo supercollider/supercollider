@@ -88,8 +88,8 @@ QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyObject );
-  e->send( proxy, Synchronous );
+  DestroyEvent e ( QObjectProxy::DestroyObject );
+  proxy->destroyEvent( &e );
 
   return errNone;
 }
@@ -144,9 +144,7 @@ QC_LANG_PRIMITIVE( QObject_SetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  QtCollider::SetParentEvent *e = new QtCollider::SetParentEvent();
-  e->parent = parent;
-  bool ok = e->send( proxy, Synchronous );
+  bool ok = proxy->setParent( parent );
 
   return ok ? errNone : errFailed;
 }

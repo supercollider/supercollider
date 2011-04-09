@@ -221,9 +221,10 @@ void QObjectProxy::customEvent( QEvent *event )
   }
 }
 
-bool QObjectProxy::setParentEvent( SetParentEvent *e ) {
-  if( !qObject || !e->parent->object() ) return true;
-  qObject->setParent( e->parent->object() );
+bool QObjectProxy::setParent( QObjectProxy *parentProxy ) {
+  if( qObject && parentProxy->object() )
+    qObject->setParent( parentProxy->object() );
+
   return true;
 }
 

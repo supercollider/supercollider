@@ -46,7 +46,6 @@ class QcMethodSignalHandler;
 class QcFunctionSignalHandler;
 
 namespace QtCollider {
-  struct SetParentEvent;
   struct SetPropertyEvent;
   struct GetPropertyEvent;
   struct SetEventHandlerEvent;
@@ -109,7 +108,8 @@ class QObjectProxy : public QObject
 
     QString scClassName() const { return _scClassName; }
 
-    virtual bool setParentEvent( QtCollider::SetParentEvent * );
+    virtual bool setParent( QObjectProxy *parent );
+
     bool setPropertyEvent( QtCollider::SetPropertyEvent * );
     bool getPropertyEvent( QtCollider::GetPropertyEvent * );
     bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
@@ -186,12 +186,6 @@ private:
   bool execute( QObjectProxy *proxy ) {
     return (proxy->*handler)( static_cast<T*>( this ) );
   }
-};
-
-struct SetParentEvent
-: public RequestTemplate<SetParentEvent, &QObjectProxy::setParentEvent>
-{
-  QObjectProxy *parent;
 };
 
 struct SetPropertyEvent

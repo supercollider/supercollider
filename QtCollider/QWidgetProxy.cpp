@@ -125,9 +125,9 @@ bool QWidgetProxy::setLayout ( SetLayoutRequest *r ) {
   return true;
 }
 
-bool QWidgetProxy::setParentEvent( QtCollider::SetParentEvent *e ) {
-
-  QObject *parent = e->parent->object();
+bool QWidgetProxy::setParent( QObjectProxy *parentProxy )
+{
+  QObject *parent = parentProxy->object();
   if( !parent || !widget() ) return true;
 
   if( parent->isWidgetType() ) {
