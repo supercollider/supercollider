@@ -886,13 +886,17 @@ void postClassTree(PyrClass *classobj, int level)
 		indent(level+1);
 		post("      [.. all metaclasses ..]\n");
 	} else {
+		if (IsNil(&classobj->subclasses))
+			return; // FIXME: can we initialize subclasses with a NULL pointer?
 		subclasses = slotRawObject(&classobj->subclasses);
 		if (subclasses) {
 			// determine if can put on one line
 			bool oneline = subclasses->size <= 5;
 			for (i=0; oneline && i<subclasses->size; ++i) {
 				PyrClass *subclassobj = slotRawClass(&subclasses->slots[i]);
-				if (slotRawObject(&subclassobj->subclasses)) oneline = false;
+				if (IsObj(&subclassobj->subclasses))
+					// FIXME: shall we do a null-pointer check?
+					oneline = false;
 			}
 			if (oneline) {
 				indent(level+1);
