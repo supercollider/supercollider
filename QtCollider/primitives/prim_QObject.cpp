@@ -438,13 +438,7 @@ QC_LANG_PRIMITIVE( QObject_GetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  GetParentEvent *e = new GetParentEvent();
-  PyrObject *parent = 0;
-  e->parent = &parent;
-  e->className = className;
-
-  bool ok = e->send( proxy, Synchronous );
-  if( !ok ) return errFailed;
+  PyrObject *parent = proxy->parent( className );
 
   if( parent ) SetObject( r, parent );
   else SetNil( r );
