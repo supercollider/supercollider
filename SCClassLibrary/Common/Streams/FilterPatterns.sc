@@ -11,7 +11,7 @@ FilterPattern : Pattern {
 Pn : FilterPattern {
 	var <>repeats, <>key;
 	*new { arg pattern, repeats=inf, key;
-		^super.newCopyArg, pattern, repeats, key )
+		^super.newCopyArgs(pattern, repeats, key )
 	}
 	storeArgs { ^[pattern,repeats, key] }
 	embedInStream { | event |
@@ -29,10 +29,10 @@ Pn : FilterPattern {
 }
 
 Pgate  : Pn {
-	*new { arg pattern, repeats=inf, flag;
-		^super.new(pattern).repeats_(repeats).flag_(flag)
+	*new { arg pattern, repeats=inf,  key	;
+		^super.new(pattern).repeats_(repeats).key_(key)
 	}
-	storeArgs { ^[pattern,repeats, flag] }
+	storeArgs { ^[pattern,repeats, key] }
 	embedInStream { | event |
 		var stream, output;
 		repeats.do {
