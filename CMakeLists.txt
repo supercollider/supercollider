@@ -218,7 +218,6 @@ add_subdirectory(bindings)
 add_subdirectory(platform)
 add_subdirectory(editors)
 add_subdirectory(external_libraries)
-add_subdirectory(testsuite)
 
 if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )
@@ -306,6 +305,12 @@ endif()
 set_directory_properties(
 	PROPERTIES
 	ADDITIONAL_MAKE_CLEAN_FILES "HelpBase")
+
+#############################################
+#
+# testsuite
+#
+add_subdirectory(testsuite)
 
 #############################################
 # win32 install support
