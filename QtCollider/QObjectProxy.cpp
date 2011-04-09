@@ -228,21 +228,24 @@ bool QObjectProxy::setParent( QObjectProxy *parentProxy ) {
   return true;
 }
 
-bool QObjectProxy::setPropertyEvent( SetPropertyEvent *e )
+bool QObjectProxy::setProperty( const char *property, const QVariant & val )
 {
   if( !qObject ) return true;
-  if( !qObject->setProperty( e->property->name, e->value ) ) {
+  if( !qObject->setProperty( property, val ) ) {
     qcProxyDebugMsg(1, QString("WARNING: Property '%1' not found. Setting dynamic property.")
-                        .arg( e->property->name ) );
+                        .arg( property ) );
   }
-  return true;
+  return false;
 }
 
-bool QObjectProxy::getPropertyEvent( GetPropertyEvent *e )
+bool QObjectProxy::setPropertyEvent( SetPropertyEvent *e )
 {
-  if( !qObject ) return true;
-  e->value = qObject->property( e->property->name );
-  return true;
+  return setProperty( e->property->name, e->value );
+}
+
+QVariant QObjectProxy::property( const char *property )
+{
+  return qObject ? qObject->property( property ) : QVariant();
 }
 
 bool QObjectProxy::setEventHandlerEvent( SetEventHandlerEvent *e )
