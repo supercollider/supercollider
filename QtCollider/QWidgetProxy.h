@@ -55,7 +55,7 @@ public:
 
   bool setLayout ( QtCollider::SetLayoutRequest *r );
 
-  virtual bool setParentEvent( QtCollider::SetParentEvent *e );
+  virtual bool setParent( QObjectProxy *parent );
 
   bool alwaysOnTop();
 
