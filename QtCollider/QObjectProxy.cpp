@@ -339,9 +339,11 @@ bool QObjectProxy::destroyEvent( DestroyEvent *e )
   return true;
 }
 
-bool QObjectProxy::getChildrenEvent( QtCollider::GetChildrenEvent *e )
+QList<PyrObject*> QObjectProxy::children( PyrSymbol *className )
 {
-  if( !qObject ) return true;
+  QList<PyrObject*> scChildren;
+
+  if( !qObject ) return scChildren;
 
   const QObjectList &children = qObject->children();
 
@@ -353,14 +355,13 @@ bool QObjectProxy::getChildrenEvent( QtCollider::GetChildrenEvent *e )
     PyrObject * obj = proxy->_scObject;
 
     if( obj ) {
-        if( e->className && !isKindOf( obj, e->className->u.classobj ) )
+        if( className && !isKindOf( obj, className->u.classobj ) )
             continue;
-        e->children.append( obj );
+        scChildren.append( obj );
     }
-
   }
 
-  return true;
+  return scChildren;
 }
 
 bool QObjectProxy::getParentEvent( QtCollider::GetParentEvent *e )

@@ -410,31 +410,21 @@ QC_LANG_PRIMITIVE( QObject_GetChildren, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  QList<PyrObject*> children;
+  QList<PyrObject*> children = proxy->children( className );
 
-  GetChildrenEvent *e = new GetChildrenEvent( className, children );
+  int count = children.count();
+  PyrObject *array = newPyrArray( g->gc, count, 0, true );
+  SetObject( r, array );
 
-  bool ok = e->send( proxy, Synchronous );
-
-  if( ok ) {
-
-    int count = children.count();
-    PyrObject *array = newPyrArray( g->gc, count, 0, true );
-    PyrSlot *s = array->slots;
-
-    Q_FOREACH( PyrObject *obj, children ) {
-      SetObject( s, obj );
-      ++array->size;
-      g->gc->GCWrite( array, s );
-      ++s;
-    }
-
-    SetObject( r, array );
-
-    return errNone;
+  PyrSlot *s = array->slots;
+  Q_FOREACH( PyrObject *obj, children ) {
+    SetObject( s, obj );
+    ++array->size;
+    g->gc->GCWrite( array, s );
+    ++s;
   }
 
-  return errFailed;
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QObject_GetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
