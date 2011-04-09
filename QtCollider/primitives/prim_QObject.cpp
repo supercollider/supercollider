@@ -392,10 +392,7 @@ QC_LANG_PRIMITIVE( QObject_IsValid, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  GetValidityEvent *e = new GetValidityEvent();
-  bool valid = e->send( proxy, Synchronous );
-
-  SetBool( r, valid );
+  SetBool( r, proxy->object() != 0 );
 
   return errNone;
 }
