@@ -264,6 +264,7 @@ inline double slotRawFloat(PyrSlot *slot)
 
 inline PyrObject* slotRawObject(PyrSlot *slot)
 {
+	assert(IsObj(slot));
 	return slot->u.o;
 }
 
