@@ -7,18 +7,49 @@ FilterPattern : Pattern {
 	}
 }
 
+//Pn : FilterPattern {
+//	var <>repeats;
+//	*new { arg pattern, repeats=inf;
+//		^super.new(pattern).repeats_(repeats)
+//	}
+//	storeArgs { ^[pattern,repeats] }
+//	embedInStream { arg event;
+//		repeats.value(event).do { event = pattern.embedInStream(event) };
+//		^event;
+//	}
+//}
+//
 Pn : FilterPattern {
-	var <>repeats;
-	*new { arg pattern, repeats=inf;
-		^super.new(pattern).repeats_(repeats)
+	var <>repeats, <>flag;
+	*new { arg pattern, repeats=inf, flag;
+		^super.new(pattern).repeats_(repeats).flag_(flag)
 	}
-	storeArgs { ^[pattern,repeats] }
+	storeArgs { ^[pattern,repeats, flag] }
 	embedInStream { arg event;
-		repeats.value(event).do { event = pattern.embedInStream(event) };
+		repeats.value(event).do { 
+			if (flag.notNil) { event.put(flag, true) };
+			event = pattern.embedInStream(event) 
+		};
 		^event;
 	}
 }
 
+Pgate  : FilterPattern {
+	var <>repeats, <>flag;
+	*new { arg pattern, repeats=inf, flag;
+		^super.new(pattern).repeats_(repeats).flag_(flag)
+	}
+	storeArgs { ^[pattern,repeats, flag] }
+	embedInStream { arg event;
+		var val, str = pattern.asStream;
+		val = str.next(event);
+		repeats.value(event).do { 
+			event = val.yield;
+			if (event[flag] == true) { val = str.next(event) }
+		};
+		^event;
+	}
+}
 
 FuncFilterPattern : FilterPattern {
 	var <>func;
