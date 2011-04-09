@@ -51,7 +51,6 @@ namespace QtCollider {
   struct ConnectEvent;
   struct DisconnectEvent;
   class DestroyEvent;
-  struct GetChildrenEvent;
   struct GetParentEvent;
 
   class ProxyToken : public QObject {
@@ -112,11 +111,12 @@ class QObjectProxy : public QObject
     bool setPropertyEvent( QtCollider::SetPropertyEvent * );
     QVariant property( const char *property );
 
+    QList<PyrObject*> children( PyrSymbol *className );
+
     bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
     bool connectEvent( QtCollider::ConnectEvent * );
     bool disconnectEvent( QtCollider::DisconnectEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
-    bool getChildrenEvent( QtCollider::GetChildrenEvent * );
     bool getParentEvent( QtCollider::GetParentEvent * );
 
     // thread-safe (if connection == queued)
@@ -231,15 +231,6 @@ public:
   QObjectProxy::DestroyAction action() { return _action; }
 private:
   QObjectProxy::DestroyAction _action;
-};
-
-struct GetChildrenEvent
-: public RequestTemplate<GetChildrenEvent, &QObjectProxy::getChildrenEvent>
-{
-  GetChildrenEvent( PyrSymbol * cname, QList<PyrObject*> & ch )
-  : className( cname ), children( ch ) {}
-  PyrSymbol *className;
-  QList<PyrObject*> &children;
 };
 
 struct GetParentEvent
