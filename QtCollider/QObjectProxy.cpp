@@ -317,11 +317,6 @@ bool QObjectProxy::disconnectEvent( QtCollider::DisconnectEvent *e )
   return true;
 }
 
-bool QObjectProxy::invokeMethodEvent( InvokeMethodEvent *e )
-{
-  return invokeMethod( e->method->name, e->ret, e->arg, Qt::DirectConnection );
-}
-
 bool QObjectProxy::destroyEvent( DestroyEvent *e )
 {
   if( e->action() == DestroyObject ) {

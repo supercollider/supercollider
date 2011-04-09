@@ -52,7 +52,6 @@ namespace QtCollider {
   struct SetEventHandlerEvent;
   struct ConnectEvent;
   struct DisconnectEvent;
-  struct InvokeMethodEvent;
   class DestroyEvent;
   struct GetChildrenEvent;
   struct GetParentEvent;
@@ -116,7 +115,6 @@ class QObjectProxy : public QObject
     bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
     bool connectEvent( QtCollider::ConnectEvent * );
     bool disconnectEvent( QtCollider::DisconnectEvent * );
-    bool invokeMethodEvent( QtCollider::InvokeMethodEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
     bool getChildrenEvent( QtCollider::GetChildrenEvent * );
     bool getParentEvent( QtCollider::GetParentEvent * );
@@ -238,14 +236,6 @@ struct DisconnectEvent
   PyrSymbol *method;
   PyrObject *function;
   QString signal;
-};
-
-struct InvokeMethodEvent
-: public RequestTemplate<InvokeMethodEvent, &QObjectProxy::invokeMethodEvent>
-{
-  PyrSymbol *method;
-  PyrSlot *ret;
-  PyrSlot *arg;
 };
 
 class DestroyEvent
