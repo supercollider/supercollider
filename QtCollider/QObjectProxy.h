@@ -53,7 +53,6 @@ namespace QtCollider {
   class DestroyEvent;
   struct GetChildrenEvent;
   struct GetParentEvent;
-  struct GetValidityEvent;
 
   class ProxyToken : public QObject {
     Q_OBJECT
@@ -119,7 +118,6 @@ class QObjectProxy : public QObject
     bool destroyEvent( QtCollider::DestroyEvent * );
     bool getChildrenEvent( QtCollider::GetChildrenEvent * );
     bool getParentEvent( QtCollider::GetParentEvent * );
-    bool getValidityEvent( QtCollider::GetValidityEvent * );
 
     // thread-safe (if connection == queued)
     bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
@@ -250,10 +248,6 @@ struct GetParentEvent
   PyrSymbol *className;
   PyrObject ** parent;
 };
-
-struct GetValidityEvent
-: public RequestTemplate<GetValidityEvent, &QObjectProxy::getValidityEvent>
-{};
 
 } // namespace
 
