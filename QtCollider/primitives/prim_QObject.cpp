@@ -43,56 +43,33 @@ using namespace QtCollider;
 
 int QObject_Finalize( struct VMGlobals *, struct PyrObject * );
 
-struct CreationEvent : public QcSyncEvent
-{
-  CreationEvent()
-  : QcSyncEvent( QcSyncEvent::CreateQObject ) {}
-  PyrObject * scObject;
-  QString qtClassName;
-  QVariant arguments;
-  QObjectProxy **proxy;
-};
-
-void qcCreateQObject( QcSyncEvent *e )
-{
-  CreationEvent *ce = static_cast<CreationEvent*>(e);
-
-  QcAbstractFactory *f = QtCollider::factories().value( ce->qtClassName );
-
-  if( !f ) {
-    qcErrorMsg( QString("Factory for class '%1' not found!").arg(ce->qtClassName) );
-    return;
-  }
-
-  QVariant var( ce->arguments );
-  if( var.userType() == qMetaTypeId<VariantList>() ) {
-    VariantList args = var.value<VariantList>();
-    *ce->proxy = f->newInstance( ce->scObject, args.data );
-  }
-  else {
-    QList<QVariant> args;
-    if( var.isValid() ) args << var;
-    *ce->proxy = f->newInstance( ce->scObject, args );
-  }
-}
-
 QC_LANG_PRIMITIVE( QObject_New, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   PyrObject *scObject = slotRawObject( r );
+  QString qtClassName = Slot::toString( a+0 );
 
-  QObjectProxy *proxy = 0;
-
-  CreationEvent *e = new CreationEvent();
-  e->scObject = scObject;
-  e->qtClassName = Slot::toString( a+0 );
-  e->arguments = Slot::toVariant( a+1 );
-  e->proxy = &proxy;
-
-  qcSCObjectDebugMsg( 1, scObject, QString("CREATE: %2").arg(e->qtClassName) );
+  qcSCObjectDebugMsg( 1, scObject, QString("CREATE: %2").arg(qtClassName) );
 
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  QcApplication::postSyncEvent( e, &qcCreateQObject );
+  QcAbstractFactory *f = QtCollider::factories().value( qtClassName );
+
+  if( !f ) {
+    qcErrorMsg( QString("Factory for class '%1' not found!").arg(qtClassName) );
+    return errFailed;
+  }
+
+  QObjectProxy *proxy = 0;
+
+  if( isKindOfSlot( a+1, class_Array ) ) {
+    VariantList argVars = Slot::toVariantList( a+1 );
+    proxy = f->newInstance( scObject, argVars.data );
+  }
+  else {
+    QList<QVariant> argList;
+    argList << Slot::toVariant( a+1 );
+    proxy = f->newInstance( scObject, argList );
+  }
 
   if( !proxy ) return errFailed;
 
@@ -387,20 +364,21 @@ QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
-  if( sync ) {
-    InvokeMethodEvent *e = new InvokeMethodEvent();
-    e->method = method;
-    e->ret = r;
-    e->arg = methodArgs;
+  PyrSlot *retSlot;
+  Qt::ConnectionType cType;
 
-    bool ok = e->send( proxy, Synchronous );
-    return ok ? errNone : errFailed;
+  if( proxy->compareThread() && sync ) {
+    retSlot = r;
+    cType = Qt::DirectConnection;
   }
   else {
-    proxy->invokeMethod( method->name, 0, methodArgs, Qt::QueuedConnection );
+    retSlot = 0;
+    cType = Qt::QueuedConnection;
   }
 
-  return errNone;
+  bool ok = proxy->invokeMethod( method->name, retSlot, methodArgs, cType );
+
+  return ok ? errNone : errFailed;
 }
 
 QC_LANG_PRIMITIVE( QObject_IsValid, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
