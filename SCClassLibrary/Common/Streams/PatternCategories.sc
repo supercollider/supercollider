@@ -4,6 +4,7 @@
 
 + Pclutch { *categories{ ^ #["Streams-Patterns-Events>Patterns>Repetition"]  }}
 + Pn { *categories{ ^ #["Streams-Patterns-Events>Patterns>Repetition"]  }}
++ Pgate { *categories{ ^ #["Streams-Patterns-Events>Patterns>Repetition"]  }}
 + Pstutter { *categories{ ^ #["Streams-Patterns-Events>Patterns>Repetition"]  }}
 + PdurStutter { *categories{ ^ #["Streams-Patterns-Events>Patterns>Repetition"]  }}
 + Pfin { *categories{ ^ #["Streams-Patterns-Events>Patterns>Repetition"]  }}
