@@ -161,11 +161,16 @@ QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  SetPropertyEvent *e = new SetPropertyEvent();
-  e->property = property;
-  e->value = Slot::toVariant( a+1 );
+  QVariant val = Slot::toVariant( a+1 );
 
-  e->send( proxy, sync ? Synchronous : Asynchronous );
+  if( sync ) {
+    proxy->setProperty( property->name, val );
+  } else {
+    SetPropertyEvent *e = new SetPropertyEvent();
+    e->property = property;
+    e->value = val;
+    QApplication::postEvent( proxy, e );
+  }
 
   return errNone;
 }
@@ -175,18 +180,16 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   if( NotSym(a) ) return errWrongType;
-  PyrSymbol *property = slotRawSymbol( a );
+  PyrSymbol *symProp = slotRawSymbol( a );
   PyrSlot *slotRetExtra = a+1;
-  QVariant val;
 
-  qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(property->name) );
+  qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(symProp->name) );
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  GetPropertyEvent *e = new GetPropertyEvent( property, val );
+  QVariant val = proxy->property( symProp->name );
 
-  bool ok = e->send( proxy, Synchronous );
-  if( !ok ) return errFailed;
+  if( !val.isValid() ) return errFailed;
 
   bool haveExtra = NotNil( slotRetExtra );
   int err = Slot::setVariant( ( haveExtra ? slotRetExtra : r ), val );

@@ -47,7 +47,6 @@ class QcFunctionSignalHandler;
 
 namespace QtCollider {
   struct SetPropertyEvent;
-  struct GetPropertyEvent;
   struct SetEventHandlerEvent;
   struct ConnectEvent;
   struct DisconnectEvent;
@@ -110,8 +109,10 @@ class QObjectProxy : public QObject
 
     virtual bool setParent( QObjectProxy *parent );
 
+    bool setProperty( const char *property, const QVariant & val );
     bool setPropertyEvent( QtCollider::SetPropertyEvent * );
-    bool getPropertyEvent( QtCollider::GetPropertyEvent * );
+    QVariant property( const char *property );
+
     bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
     bool connectEvent( QtCollider::ConnectEvent * );
     bool disconnectEvent( QtCollider::DisconnectEvent * );
@@ -193,14 +194,6 @@ struct SetPropertyEvent
 {
   PyrSymbol *property;
   QVariant value;
-};
-
-struct GetPropertyEvent
-: public RequestTemplate<GetPropertyEvent, &QObjectProxy::getPropertyEvent>
-{
-  GetPropertyEvent( PyrSymbol *p, QVariant &v ) : property(p), value(v) {}
-  PyrSymbol *property;
-  QVariant &value;
 };
 
 struct SetEventHandlerEvent
