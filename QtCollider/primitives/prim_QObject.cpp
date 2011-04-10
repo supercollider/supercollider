@@ -228,22 +228,20 @@ QC_LANG_PRIMITIVE( QObject_ConnectMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *
   QString signal = Slot::toString( a+0 );
   if( signal.isEmpty() || NotSym( a+1 ) ) return errWrongType;
   PyrSymbol *handler = 0; slotSymbolVal( a+1, &handler );
-  Synchronicity sync = Slot::toBool( a+2 ) ? Synchronous : Asynchronous;
+  Qt::ConnectionType ctype =
+    Slot::toBool( a+2 ) ? Qt::DirectConnection : Qt::QueuedConnection;
 
   qcSCObjectDebugMsg( 1, slotRawObject(r),
-                      QString("SET SIGNAL HANDLER: %1 -> %2 [%3]").arg(signal).arg(handler->name)
-                      .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
-
-  ConnectEvent *e = new ConnectEvent();
-  e->method = handler;
-  e->function = 0;
-  e->signal = signal;
-  e->sync = sync;
+                      QString("CONNECT METHOD: %1 -> %2 [%3]").arg(signal).arg(handler->name)
+                      .arg( IsTrue(a+2) ? "SYNC" : "ASYNC") );
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
-  e->send( proxy, Asynchronous );
 
-  return errNone;
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  bool ok = proxy->connectMethod( signal.toAscii().constData(), handler, ctype );
+
+  return ok ? errNone : errFailed;
 }
 
 QC_LANG_PRIMITIVE( QObject_DisconnectMethod, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )

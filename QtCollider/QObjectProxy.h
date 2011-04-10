@@ -48,7 +48,6 @@ class QcFunctionSignalHandler;
 namespace QtCollider {
   struct SetPropertyEvent;
   struct SetEventHandlerEvent;
-  struct ConnectEvent;
   struct DisconnectEvent;
   class DestroyEvent;
 
@@ -114,9 +113,9 @@ class QObjectProxy : public QObject
     PyrObject *parent( PyrSymbol *className );
 
     bool connectObject( const char *signal, PyrObject *object, Qt::ConnectionType );
+    bool connectMethod( const char *signal, PyrSymbol *method, Qt::ConnectionType );
 
     bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
-    bool connectEvent( QtCollider::ConnectEvent * );
     bool disconnectEvent( QtCollider::DisconnectEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
 
@@ -202,17 +201,6 @@ struct SetEventHandlerEvent
   : type(t), method(m), sync(s) {}
   int type;
   PyrSymbol *method;
-  Synchronicity sync;
-};
-
-struct ConnectEvent
-: public RequestTemplate<ConnectEvent, &QObjectProxy::connectEvent>
-{
-  PyrSymbol *method;
-  PyrObject *function;
-  // QString is necessary, because signal signature can not be a valid PyrSymbol.
-  // Think of brackets and similar...
-  QString signal;
   Synchronicity sync;
 };
 
