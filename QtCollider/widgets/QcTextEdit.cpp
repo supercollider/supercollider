@@ -87,6 +87,8 @@ void QcTextEdit::setTextFont( const QFont &f )
   QTextCursor cursor( document() );
   cursor.select( QTextCursor::Document );
   cursor.setCharFormat( format );
+
+  QTextEdit::setFont(f);
 }
 
 void QcTextEdit::setTextColor( const QColor &color )
