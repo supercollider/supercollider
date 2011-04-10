@@ -23,6 +23,7 @@ SCDocHTMLRenderer : SCDocRenderer {
     var dirLevel;
     var baseDir;
     var footNotes;
+    classvar <>enableClassLinksInCode = true;
 
     *simplifyName {|txt|
         ^txt.toLower.tr($\ ,$_);
@@ -103,14 +104,18 @@ SCDocHTMLRenderer : SCDocRenderer {
 
     autoLinkClasses {|txt|
         var x = "", z = 0;
-        // FIXME: also match plural? like "Floats".. - if word was not class but ends in s and is a class without that s, then use that. 
-        // it would be useful in prose, but not code examples..
-        txt.findRegexp("\\b[A-Z][A-Za-z_0-9]+").select{|m| m[1].asSymbol.asClass.notNil}.do {|m|
-            x = x ++ txt.copyRange(z,m[0]-1);
-            x = x ++ "<a class='clslnk' href='"++baseDir+/+"Classes"+/+m[1]++".html'>" ++ m[1] ++ "</a>";
-            z = m[0] + m[1].size;
-        };
-        ^(x ++ txt.copyToEnd(z));
+        if(enableClassLinksInCode) {
+            // FIXME: also match plural? like "Floats".. - if word was not class but ends in s and is a class without that s, then use that. 
+            // it would be useful in prose, but not code examples..
+            txt.findRegexp("\\b[A-Z][A-Za-z_0-9]+").select{|m| m[1].asSymbol.asClass.notNil}.do {|m|
+                x = x ++ txt.copyRange(z,m[0]-1);
+                x = x ++ "<a class='clslnk' href='"++baseDir+/+"Classes"+/+m[1]++".html'>" ++ m[1] ++ "</a>";
+                z = m[0] + m[1].size;
+            };
+            ^(x ++ txt.copyToEnd(z));
+        } {
+            ^txt;
+        }
     }
 
     renderHTMLSubTree {|file,node,parentTag=false|

@@ -12,6 +12,9 @@ classmethods::
 method::new
 Create a renderer instance.
 
+method::enableClassLinksInCode
+Set this to false to disable generation of hypertext links for class names in example code.
+
 method::simplifyName
 Simplify a textstring by replacing spaces with underscores and making it all lowercase. Used to convert section names to anchor names.
 argument::txt
