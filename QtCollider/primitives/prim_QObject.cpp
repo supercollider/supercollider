@@ -216,11 +216,9 @@ QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  SetEventHandlerEvent *e = new SetEventHandlerEvent( eventType, method, sync );
+  bool ok = proxy->setEventHandler( eventType, method, sync );
 
-  e->send( proxy, Asynchronous );
-
-  return errNone;
+  return ok ? errNone : errFailed;
 }
 
 QC_LANG_PRIMITIVE( QObject_ConnectMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
