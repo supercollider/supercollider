@@ -95,20 +95,17 @@ class QObjectProxy : public QObject
     inline PyrObject *scObject() const { return _scObject; }
 
     // Lock for usage of object() outside Qt thread.
-    // WARNING Do not post any sync events while locked!
     inline void lock() { mutex.lock(); }
     inline void unlock() { mutex.unlock(); }
 
     QString scClassName() const { return _scClassName; }
 
+    QList<PyrObject*> children( PyrSymbol *className );
+    PyrObject *parent( PyrSymbol *className );
     virtual bool setParent( QObjectProxy *parent );
 
     bool setProperty( const char *property, const QVariant & val );
-    bool setPropertyEvent( QtCollider::SetPropertyEvent * );
     QVariant property( const char *property );
-
-    QList<PyrObject*> children( PyrSymbol *className );
-    PyrObject *parent( PyrSymbol *className );
 
     bool connectObject( const char *signal, PyrObject *object, Qt::ConnectionType );
     bool connectMethod( const char *signal, PyrSymbol *method, Qt::ConnectionType );
@@ -116,10 +113,11 @@ class QObjectProxy : public QObject
     bool disconnectMethod( const char *signal, PyrSymbol *method);
     bool setEventHandler( int eventType, PyrSymbol *method, QtCollider::Synchronicity );
 
-    bool destroyEvent( QtCollider::DestroyEvent * );
-
-    // thread-safe (if connection == queued)
+    // thread-safe if connection == queued
     bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
+
+    bool setPropertyEvent( QtCollider::SetPropertyEvent * );
+    bool destroyEvent( QtCollider::DestroyEvent * );
 
     static QObjectProxy *fromObject( QObject * );
 
