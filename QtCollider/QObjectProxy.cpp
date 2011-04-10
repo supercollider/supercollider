@@ -248,13 +248,14 @@ QVariant QObjectProxy::property( const char *property )
   return qObject ? qObject->property( property ) : QVariant();
 }
 
-bool QObjectProxy::setEventHandlerEvent( SetEventHandlerEvent *e )
+bool QObjectProxy::setEventHandler( int eventType, PyrSymbol *method,
+                                    QtCollider::Synchronicity sync )
 {
   EventHandlerData data;
-  data.type = e->type;
-  data.method = e->method;
-  data.sync = e->sync;
-  eventHandlers.insert( data.type, data );
+  data.type = eventType;
+  data.method = method;
+  data.sync = sync;
+  eventHandlers.insert( eventType, data );
   return true;
 }
 
