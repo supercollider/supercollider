@@ -36,10 +36,18 @@ HelpBrowser {
 	}
 
 	goTo {|url|
-		var newPath, oldPath;
+		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt"];
+
 		//FIXME: since multiple scdoc queries can be running at the same time,
 		//it would be best to create a queue and run them in order, but only use the url from the last.
 		#newPath, oldPath = [url,webView.url].collect {|x| if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}};
+
+		plainTextExts.do {|x|
+			if(newPath.endsWith(x)) {
+				^this.openTextFile(newPath);
+			}
+		};
+
 		if(newPath != oldPath) {
 			this.startAnim;
 		};
@@ -116,6 +124,23 @@ HelpBrowser {
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
 		txtFind.action = { |x| webView.findText( x.string ); };
+	}
+
+	openTextFile {|path|
+		var win, winRect, txt, file, fonts;
+		if(Document.implementationClass.notNil) {
+			^Document.open(path);
+		};
+		winRect = Rect(0,0,600,400);
+		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
+
+		file = File(path,"r");
+		win = Window(bounds: winRect).name_("SuperCollider Help:"+path.basename);
+		txt = TextView(win,Rect(0,0,600,400)).resize_(5).string_(file.readAllString);
+		file.close;
+		fonts = Font.availableFonts;
+		txt.font = Font(["Monaco","Monospace"].detect {|x| fonts.includesEqual(x)} ?? {Font.defaultMonoFace}, 12);
+		win.front;
 	}
 
 	startAnim {
