@@ -291,40 +291,52 @@ bool QObjectProxy::connectMethod( const char *signal, PyrSymbol *method,
   }
 }
 
-bool QObjectProxy::disconnectEvent( QtCollider::DisconnectEvent *e )
+bool QObjectProxy::disconnectObject( const char *sig, PyrObject *object )
 {
   if( !qObject ) return true;
+
   const QMetaObject *mo = qObject->metaObject();
-  QByteArray signal = QMetaObject::normalizedSignature( e->signal.toStdString().c_str() );
+  QByteArray signal = QMetaObject::normalizedSignature( sig );
   int sigId = mo->indexOfSignal( signal );
   if( sigId < 0 ) {
     qcDebugMsg( 1, QString("WARNING: No such signal: '%1'").arg(signal.constData()) );
     return false;
   }
 
-  if( e->method ) {
-    for( int i=0; i<methodSigHandlers.size(); ++i ) {
-      QcMethodSignalHandler *h = methodSigHandlers[i];
-      if( h->indexOfSignal() == sigId && h->method() == e->method ) {
-        methodSigHandlers.removeAt(i);
-        delete h;
-        break;
-      }
+  for( int i = 0; i < funcSigHandlers.size(); ++i ) {
+    QcFunctionSignalHandler *h = funcSigHandlers[i];
+    if( h->indexOfSignal() == sigId && h->function() == object ) {
+      funcSigHandlers.removeAt(i);
+      delete h;
+      return true;
     }
   }
-  else if( e->function ) {
-    for( int i=0; i<funcSigHandlers.size(); ++i ) {
-      QcFunctionSignalHandler *h = funcSigHandlers[i];
-      if( h->indexOfSignal() == sigId && h->function() == e->function ) {
-        funcSigHandlers.removeAt(i);
-        delete h;
-        break;
-      }
-    }
-  }
-  else return false;
 
-  return true;
+  return false;
+}
+
+bool QObjectProxy::disconnectMethod( const char *sig, PyrSymbol *method)
+{
+  if( !qObject ) return true;
+
+  const QMetaObject *mo = qObject->metaObject();
+  QByteArray signal = QMetaObject::normalizedSignature( sig );
+  int sigId = mo->indexOfSignal( signal );
+  if( sigId < 0 ) {
+    qcDebugMsg( 1, QString("WARNING: No such signal: '%1'").arg(signal.constData()) );
+    return false;
+  }
+
+  for( int i = 0; i < methodSigHandlers.size(); ++i ) {
+    QcMethodSignalHandler *h = methodSigHandlers[i];
+    if( h->indexOfSignal() == sigId && h->method() == method ) {
+      methodSigHandlers.removeAt(i);
+      delete h;
+      return true;
+    }
+  }
+
+  return false;
 }
 
 bool QObjectProxy::destroyEvent( DestroyEvent *e )

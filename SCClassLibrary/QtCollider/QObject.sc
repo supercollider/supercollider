@@ -87,9 +87,9 @@ QObject {
     this.prConnectObject( signal, object, synchronous );
   }
 
-  disconnectFunction { arg signal, function;
-    virtualSlots.remove( function );
-    this.prDisconnectFunction( signal, function );
+  disconnectFunction { arg signal, object;
+    virtualSlots.remove( object );
+    this.prDisconnectObject( signal, object );
   }
 
   connectSlot { arg signal, receiver, slot;
@@ -114,8 +114,8 @@ QObject {
     ^this.primitiveFailed
   }
 
-  prDisconnectFunction { arg signal, function;
-    _QObject_DisconnectFunction;
+  prDisconnectObject { arg signal, object;
+    _QObject_DisconnectObject;
     ^this.primitiveFailed
   }
 
