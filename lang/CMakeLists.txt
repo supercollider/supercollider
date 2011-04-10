@@ -267,7 +267,7 @@ if(LTO)
                  APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
     set_property(TARGET sclang libsclang
-                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
 if(APPLE)

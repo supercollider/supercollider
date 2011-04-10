@@ -196,7 +196,7 @@ if(LTO)
                  APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
     set_property(TARGET scsynth libscsynth
-                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+                 APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
 #TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
