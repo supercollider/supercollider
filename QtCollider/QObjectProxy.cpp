@@ -340,21 +340,25 @@ bool QObjectProxy::disconnectMethod( const char *sig, PyrSymbol *method)
   return false;
 }
 
+void QObjectProxy::destroy( DestroyAction action )
+{
+  switch( action ) {
+    case DestroyObject:
+      if( qObject ) qObject->deleteLater();
+      return;
+    case  DestroyProxy:
+      deleteLater();
+      return;
+    case DestroyProxyAndObject:
+      if( qObject ) qObject->deleteLater();
+      deleteLater();
+      return;
+  }
+}
+
 bool QObjectProxy::destroyEvent( DestroyEvent *e )
 {
-  if( e->action() == DestroyObject ) {
-     if( qObject ) qObject->deleteLater();
-  }
-  else if( e->action() == DestroyProxy ) {
-    _scObject = 0;
-    deleteLater();
-  }
-  else if( e->action() == DestroyProxyAndObject ) {
-    _scObject = 0;
-    if( qObject ) qObject->deleteLater();
-    deleteLater();
-  }
-
+  destroy( e->action() );
   return true;
 }
 
