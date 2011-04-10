@@ -83,7 +83,9 @@ namespace QtCollider {
   enum EventType {
     Event_Sync = QEvent::User,
     Event_ScMethodCall,
-    Event_Refresh
+    Event_Refresh,
+    Event_Proxy_SetProperty,
+    Event_Proxy_Destroy
   };
 
   enum Synchronicity {

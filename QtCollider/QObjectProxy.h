@@ -118,9 +118,6 @@ class QObjectProxy : public QObject
 
     void destroy( DestroyAction );
 
-    bool setPropertyEvent( QtCollider::SetPropertyEvent * );
-    bool destroyEvent( QtCollider::DestroyEvent * );
-
     static QObjectProxy *fromObject( QObject * );
 
   protected:
@@ -139,9 +136,10 @@ class QObjectProxy : public QObject
 
   private:
 
-    inline void scMethodCallEvent( ScMethodCallEvent * );
-
     void customEvent( QEvent * );
+    inline void scMethodCallEvent( ScMethodCallEvent * );
+    bool setPropertyEvent( QtCollider::SetPropertyEvent * );
+    bool destroyEvent( QtCollider::DestroyEvent * );
 
     QObject *qObject;
     // NOTE: scObject is protected by the language lock. Should not use it without it!
@@ -176,28 +174,20 @@ private:
   bool *p_done;
 };
 
-template <class T, bool (QObjectProxy::*handler)( T* )>
-class RequestTemplate : public RequestEvent {
-protected:
-  RequestTemplate(){}
-private:
-  bool execute( QObjectProxy *proxy ) {
-    return (proxy->*handler)( static_cast<T*>( this ) );
-  }
-};
-
-struct SetPropertyEvent
-: public RequestTemplate<SetPropertyEvent, &QObjectProxy::setPropertyEvent>
+struct SetPropertyEvent : public QEvent
 {
+  SetPropertyEvent() : QEvent( (QEvent::Type) QtCollider::Event_Proxy_SetProperty ) {}
   PyrSymbol *property;
   QVariant value;
 };
 
-class DestroyEvent
-: public RequestTemplate<DestroyEvent, &QObjectProxy::destroyEvent>
+class DestroyEvent : public QEvent
 {
 public:
-  DestroyEvent( QObjectProxy::DestroyAction act ) : _action( act ) {}
+  DestroyEvent( QObjectProxy::DestroyAction act ) :
+    QEvent( (QEvent::Type) QtCollider::Event_Proxy_Destroy ),
+    _action( act )
+  {}
   QObjectProxy::DestroyAction action() { return _action; }
 private:
   QObjectProxy::DestroyAction _action;
