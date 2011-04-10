@@ -253,15 +253,13 @@ QC_LANG_PRIMITIVE( QObject_DisconnectMethod, 2, PyrSlot *r, PyrSlot *a, VMGlobal
   qcSCObjectDebugMsg( 1, slotRawObject(r),
                       QString("DISCONNECT METHOD: %1 -> %2").arg(signal).arg(handler->name) );
 
-  DisconnectEvent *e = new DisconnectEvent();
-  e->method = handler;
-  e->function = 0;
-  e->signal = signal;
-
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
-  e->send( proxy, Asynchronous );
 
-  return errNone;
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  bool ok = proxy->disconnectMethod( signal.toAscii().constData(), handler );
+
+  return ok ? errNone : errFailed;
 }
 
 QC_LANG_PRIMITIVE( QObject_ConnectObject, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
@@ -287,26 +285,22 @@ QC_LANG_PRIMITIVE( QObject_ConnectObject, 3, PyrSlot *r, PyrSlot *a, VMGlobals *
   return ok ? errNone : errFailed;
 }
 
-QC_LANG_PRIMITIVE( QObject_DisconnectFunction, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QObject_DisconnectObject, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString signal = Slot::toString( a+0 );
   if( signal.isEmpty() || NotObj( a+1 ) ) return errWrongType;
   PyrObject *handlerObj = slotRawObject( a+1 );
 
   qcSCObjectDebugMsg( 1, slotRawObject(r),
-                      QString("DISCONNECT FUNCTION: %1").arg(signal) );
-
-  DisconnectEvent *e = new DisconnectEvent();
-  e->method = 0;
-  e->function = handlerObj;
-  e->signal = signal;
+                      QString("DISCONNECT OBJECT: %1").arg(signal) );
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
-  // NOTE Has to be synchronous, because the function might be deleted by the time the signal
-  // is sent
-  e->send( proxy, Synchronous );
 
-  return errNone;
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  bool ok = proxy->disconnectObject( signal.toAscii().constData(), handlerObj );
+
+  return ok ? errNone : errFailed;
 }
 
 QC_LANG_PRIMITIVE( QObject_ConnectSlot, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )

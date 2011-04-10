@@ -48,7 +48,6 @@ class QcFunctionSignalHandler;
 namespace QtCollider {
   struct SetPropertyEvent;
   struct SetEventHandlerEvent;
-  struct DisconnectEvent;
   class DestroyEvent;
 
   class ProxyToken : public QObject {
@@ -114,9 +113,10 @@ class QObjectProxy : public QObject
 
     bool connectObject( const char *signal, PyrObject *object, Qt::ConnectionType );
     bool connectMethod( const char *signal, PyrSymbol *method, Qt::ConnectionType );
+    bool disconnectObject( const char *signal, PyrObject *object );
+    bool disconnectMethod( const char *signal, PyrSymbol *method);
 
     bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
-    bool disconnectEvent( QtCollider::DisconnectEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
 
     // thread-safe (if connection == queued)
@@ -202,14 +202,6 @@ struct SetEventHandlerEvent
   int type;
   PyrSymbol *method;
   Synchronicity sync;
-};
-
-struct DisconnectEvent
-: public RequestTemplate<DisconnectEvent, &QObjectProxy::disconnectEvent>
-{
-  PyrSymbol *method;
-  PyrObject *function;
-  QString signal;
 };
 
 class DestroyEvent
