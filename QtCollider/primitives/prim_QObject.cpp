@@ -358,7 +358,8 @@ QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g
   PyrSlot *retSlot;
   Qt::ConnectionType cType;
 
-  if( proxy->compareThread() && sync ) {
+  if( sync ) {
+    if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
     retSlot = r;
     cType = Qt::DirectConnection;
   }
