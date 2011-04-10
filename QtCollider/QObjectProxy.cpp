@@ -258,6 +258,21 @@ bool QObjectProxy::setEventHandlerEvent( SetEventHandlerEvent *e )
   return true;
 }
 
+bool QObjectProxy::connectObject( const char *signal, PyrObject *object,
+                                    Qt::ConnectionType ctype )
+{
+  if( !qObject ) return true;
+
+  QcFunctionSignalHandler *handler =
+    new QcFunctionSignalHandler( this, signal, object, ctype );
+
+  if( !handler->isValid() ) { delete handler; return false; }
+
+  funcSigHandlers.append( handler );
+
+  return true;
+}
+
 bool QObjectProxy::connectEvent( ConnectEvent *e )
 {
   if( !qObject ) return true;

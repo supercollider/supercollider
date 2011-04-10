@@ -113,6 +113,8 @@ class QObjectProxy : public QObject
     QList<PyrObject*> children( PyrSymbol *className );
     PyrObject *parent( PyrSymbol *className );
 
+    bool connectObject( const char *signal, PyrObject *object, Qt::ConnectionType );
+
     bool setEventHandlerEvent( QtCollider::SetEventHandlerEvent * );
     bool connectEvent( QtCollider::ConnectEvent * );
     bool disconnectEvent( QtCollider::DisconnectEvent * );
