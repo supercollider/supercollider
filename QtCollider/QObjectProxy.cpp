@@ -273,31 +273,22 @@ bool QObjectProxy::connectObject( const char *signal, PyrObject *object,
   return true;
 }
 
-bool QObjectProxy::connectEvent( ConnectEvent *e )
+bool QObjectProxy::connectMethod( const char *signal, PyrSymbol *method,
+                                  Qt::ConnectionType ctype )
 {
   if( !qObject ) return true;
 
-  Qt::ConnectionType ctype = e->sync == Synchronous ? Qt::DirectConnection : Qt::QueuedConnection;
+  QcMethodSignalHandler *handler =
+    new QcMethodSignalHandler( this, signal, method, ctype );
 
-  if( e->method ) {
-    QcMethodSignalHandler *handler =
-      new QcMethodSignalHandler( this, e->signal.toStdString().c_str(), e->method, ctype );
-
-    if( !handler->isValid() ) { delete handler; return false; }
-
+  if( handler->isValid() ) {
     methodSigHandlers.append( handler );
+    return true;
   }
-  else if ( e->function ) {
-    QcFunctionSignalHandler *handler =
-      new QcFunctionSignalHandler( this, e->signal.toStdString().c_str(), e->function, ctype );
-
-    if( !handler->isValid() ) { delete handler; return false; }
-
-    funcSigHandlers.append( handler );
+  else {
+    delete handler;
+    return false;
   }
-  else return false;
-
-  return true;
 }
 
 bool QObjectProxy::disconnectEvent( QtCollider::DisconnectEvent *e )
