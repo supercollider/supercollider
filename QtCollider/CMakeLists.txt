@@ -26,7 +26,6 @@ set( QT_COLLIDER_HDRS
   widgets/QcScope.h
   widgets/QcGraph.h
   widgets/QcLevelIndicator.h
-  widgets/QcHelpBrowser.hpp
   widgets/QcCanvas.h
   widgets/QcSoundFileView.h
   widgets/QcFileDialog.h
@@ -60,7 +59,6 @@ set( QT_COLLIDER_SRCS
   widgets/QcLevelIndicator.cpp
   widgets/QcWindow.cpp
   widgets/QcGraph.cpp
-  widgets/QcHelpBrowser.cpp
   widgets/QcCanvas.cpp
   widgets/QcSoundFileView.cpp
   widgets/QcFileDialog.cpp
