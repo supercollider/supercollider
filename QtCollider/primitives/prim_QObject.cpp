@@ -88,8 +88,7 @@ QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  DestroyEvent e ( QObjectProxy::DestroyObject );
-  proxy->destroyEvent( &e );
+  proxy->destroy( QObjectProxy::DestroyObject );
 
   return errNone;
 }
@@ -100,13 +99,12 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 
   QObjectProxy *proxy = (QObjectProxy*) slotRawPtr( obj->slots );
 
-  DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxyAndObject );
-
   // Invalidate proxy's SC object pointer directly.
   // Note that it is protected by language mutex;
   proxy->finalize();
 
   // Post the destruction event asynchronously;
+  DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxyAndObject );
   QApplication::postEvent( proxy, e );
 
   return errNone;
@@ -118,16 +116,15 @@ QC_LANG_PRIMITIVE( QObject_ManuallyFinalize, 0, PyrSlot *r, PyrSlot *a, VMGlobal
 
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
-  // WARNING we assume that proxy's deletion will be deferred until any
-  // language shutdown code using it will have been executed, so any
-  // shutdown code is safe.
-  DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxyAndObject );
-
   // Invalidate proxy's SC object pointer directly.
   // Note that it is protected by language mutex;
   proxy->finalize();
 
   // Post the destruction event asynchronously;
+  // WARNING we assume that proxy's deletion will be deferred until any
+  // language shutdown code using it will have been executed, so any
+  // shutdown code is safe.
+  DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxyAndObject );
   QApplication::postEvent( proxy, e );
 
   return errNone;

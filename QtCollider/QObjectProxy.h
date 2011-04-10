@@ -116,6 +116,8 @@ class QObjectProxy : public QObject
     // thread-safe if connection == queued
     bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
 
+    void destroy( DestroyAction );
+
     bool setPropertyEvent( QtCollider::SetPropertyEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
 
