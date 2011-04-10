@@ -93,14 +93,6 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 		^argv ?? { argv = this.prArgv }
 	}
 
-	getCurrentSelection {
-		^if(\QtGUI.asClass.notNil and: {QtGUI.focusView.notNil}) {
-			QtGUI.selectedText;
-		} {
-			interpreter.cmdLine;
-		}
-	}
-
 	showHelpBrowser {
 		HelpBrowser.openBrowser;
 	}

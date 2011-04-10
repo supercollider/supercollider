@@ -75,4 +75,9 @@
 -(IBAction)showHelpSearch:(id)sender;
 -(IBAction)showClassBrowser:(id)sender;
 
+- (IBAction) executeSelection: (id)sender;
+- (IBAction) openCode: (id)sender;
+- (IBAction) methodTemplates: (id)sender;
+- (IBAction) methodReferences: (id)sender;
+
 @end

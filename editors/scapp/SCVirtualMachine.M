@@ -505,6 +505,24 @@ bool gIsFullScreen = false;
 	[self sendMain: "showClassBrowser"];
 }
 
+- (IBAction) executeSelection: (id)sender
+{
+    [self sendMain: "interpretPrintCmdLine" ];
+}
+- (IBAction) openCode: (id)sender
+{
+    [self sendMain: "openCodeFile"];
+}
+- (IBAction) methodTemplates: (id)sender
+{
+    [self sendMain: "methodTemplates"];
+}
+- (IBAction) methodReferences: (id)sender
+{
+    [self sendMain: "methodReferences"];
+}
+
+
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
 		[self sendMain: "shutdown"];

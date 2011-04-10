@@ -220,9 +220,17 @@ Process {
 	*tailCallOptimize { _GetTailCallOptimize }
 	*tailCallOptimize_ { arg bool; _SetTailCallOptimize ^this.primitiveFailed }
 
+	getCurrentSelection {
+		^if(\QtGUI.asClass.notNil and: {QtGUI.focusView.notNil}) {
+			QtGUI.selectedText;
+		} {
+			interpreter.cmdLine;
+		}
+	}
+
 	openCodeFile {
 		var string, class, method, words;
-		string = interpreter.cmdLine;
+		string = this.getCurrentSelection;
 		if (string.includes($:), {
 			string.removeAllSuchThat(_.isSpace);
 			words = string.delimit({ arg c; c == $: });
@@ -244,7 +252,7 @@ Process {
 
 	openWinCodeFile {
 		var string, class, method, words;
-		string = interpreter.cmdLine;
+		string = this.getCurrentSelection;
 		if (string.includes($:), {
 			string.removeAllSuchThat(_.isSpace);
 			words = string.delimit({ arg c; c == $: });
@@ -269,7 +277,7 @@ Process {
 		// this will not find method calls that are compiled with special byte codes such as 'value'.
 		var name, out, references;
 		out = CollStream.new;
-		name = interpreter.cmdLine.asSymbol;
+		name = this.getCurrentSelection.asSymbol;
 		references = Class.findAllReferences(name);
 		if (references.notNil, {
 			out << "References to '" << name << "' :\n";
@@ -281,18 +289,20 @@ Process {
 	}
 	methodTemplates {
 		// this constructs the method templates when cmd-Y is pressed in the Lang menu.
-		var name, out, found = 0, namestring;
+		var name, out, found = 0, namestring, text;
 		out = CollStream.new;
 
-		if (interpreter.cmdLine.isEmpty){
+		text = this.getCurrentSelection;
+
+		if (text.isEmpty){
 			Post << "\nNo implementations of ''.\n";
 			^this
 		};
-		if (interpreter.cmdLine[0].toLower != interpreter.cmdLine[0]) {
+		if (text[0].toLower != text[0]) {
 			// user pressed the wrong key. DWIM.
 			^this.openCodeFile;
 		};
-		name = interpreter.cmdLine.asSymbol;
+		name = text.asSymbol;
 		out << "Implementations of '" << name << "' :\n";
 		Class.allClasses.do({ arg class;
 			class.methods.do({ arg method;
@@ -340,16 +350,18 @@ Process {
 
 	interpretCmdLine {
 		// interpret some text from the command line
+		interpreter.cmdLine = this.getCurrentSelection;
 		interpreter.interpretCmdLine;
 	}
 
 	interpretPrintCmdLine {
 		// interpret some text from the command line and print result
+		interpreter.cmdLine = this.getCurrentSelection;
 		interpreter.interpretPrintCmdLine;
 	}
 
 	showHelp {
-		interpreter.cmdLine.openHelpFile
+		this.getCurrentSelection.openHelpFile
 	}
 
 	argv { ^[] }
