@@ -43,6 +43,7 @@ scui_str = """<ui>
         <menuitem action="ScedStopSound"/>
         <menuitem action="ScedRecord"/>
         <separator/>
+        <menuitem action="ScedServerGUI"/>
         <menuitem action="ScedStartServer"/>
         <menuitem action="ScedStopServer"/>
         <separator/>
@@ -50,6 +51,9 @@ scui_str = """<ui>
         <menuitem action="ScedStopSwingOSC"/>
         <separator/>
         <menuitem action="ScedFindHelp"/>
+        <menuitem action="ScedBrowseHelp"/>
+        <menuitem action="ScedSearchHelp"/>
+        <separator/>
         <menuitem action="ScedFindDefinition"/>
         <menuitem action="ScedBrowseClass"/>
         <separator/>
@@ -125,6 +129,14 @@ class WindowHelper:
              _("Find and open help file"),
              self.on_find_help),
 
+            ("ScedBrowseHelp", None, _("Browse Help"), None,
+             _("Browse help by categories"),
+             self.on_browse_help),
+
+            ("ScedSearchHelp", None, _("Search Help"), "<control><alt>U",
+             _("Search for help"),
+             self.on_search_help),
+
             ("ScedFindDefinition", None, _("Find Definition"), "<control>Y",
              _("Find and open class definition"),
              self.on_find_definition),
@@ -144,6 +156,10 @@ class WindowHelper:
             ("ScedClearOutput", gtk.STOCK_CLEAR, _("Clear output"), None,
              _("Clear interpreter log"),
              self.on_clear_log),
+
+            ("ScedServerGUI", None, _("Show Server GUI"), None,
+             _("Show GUI for default server"),
+             self.on_server_gui),
 
             ("ScedStartServer", None, _("Start Server"), None,
              _("Start the default server"),
@@ -235,7 +251,7 @@ class WindowHelper:
     def on_record(self, action):
         self.__lang.toggle_recording(action.get_active())
 
-    def on_find_help(self, action):
+    def get_selection(self):
         doc = self.__window.get_active_document()
 
         try:
@@ -245,47 +261,29 @@ class WindowHelper:
             i1, i2 = find_word(doc, i1)
             doc.select_range(i1, i2)
 
-        text = doc.get_text(i1, i2)
-        self.__lang.evaluate("""
-("gnome-open " ++ ((\"""" + text + "\").findHelpFile ? \"Help\".findHelpFile).escapeChar($ )).unixCmd;", silent=True)
+        return doc.get_text(i1, i2)
+
+    def on_find_help(self, action):
+        text = self.get_selection()
+        self.__lang.evaluate("HelpBrowser.openHelpFor(\"" + text + "\");")
+
+    def on_browse_help(self, action):
+        self.__lang.evaluate("HelpBrowser.openBrowser;")
+
+    def on_search_help(self, action):
+        text = self.get_selection()
+        self.__lang.evaluate("HelpBrowser.openSearch(\"" + text + "\");")
 
     def on_find_definition(self, action):
-        doc = self.__window.get_active_document()
-
-        try:
-            i1, i2 = doc.get_selection_bounds()
-        except ValueError:
-            i1 = doc.get_iter_at_mark(doc.get_insert())
-            i1, i2 = find_word(doc, i1)
-            doc.select_range(i1, i2)
-
-        text = doc.get_text(i1, i2)
+        text = self.get_selection()
         self.__lang.evaluate("(\"gedit \" + (\"" + text + "\"" + ".interpret.filenameSymbol.asString)).systemCmd", silent=True)
 
     def on_browse_class(self, action):
-        doc = self.__window.get_active_document()
-
-        try:
-            i1, i2 = doc.get_selection_bounds()
-        except ValueError:
-            i1 = doc.get_iter_at_mark(doc.get_insert())
-            i1, i2 = find_word(doc, i1)
-            doc.select_range(i1, i2)
-
-        text = doc.get_text(i1, i2)
+        text = self.get_selection()
         self.__lang.evaluate("" + text + ".browse", silent=True)
 
     def on_inspect_object(self, action):
-        doc = self.__window.get_active_document()
-
-        try:
-            i1, i2 = doc.get_selection_bounds()
-        except ValueError:
-            i1 = doc.get_iter_at_mark(doc.get_insert())
-            i1, i2 = find_word(doc, i1)
-            doc.select_range(i1, i2)
-
-        text = doc.get_text(i1, i2)
+        text = self.get_selection()
         self.__lang.evaluate("" + text + ".inspect", silent=True)
 
     def on_restart(self, action):
@@ -296,6 +294,9 @@ class WindowHelper:
 
     def on_clear_log(self, action):
         self.__log_panel.buffer.set_text("")
+
+    def on_server_gui(self, action):
+        self.__lang.evaluate("Server.default.makeGui;", silent=True)
 
     def on_start_server(self, action):
         # FIXME: make these actions possible only if interpreter is running and okay
