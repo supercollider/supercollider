@@ -1,0 +1,28 @@
+class:: NAryOpStream
+summary:: several streams combined by an n-ary operator
+related:: Classes/UnaryOpStream, Classes/BinaryOpStream
+categories:: Streams-Patterns-Events
+
+description::
+
+A NAryOpStream is created as a result of a n-ary math operation on a Stream. It is defined to respond to strong::next:: by returning the result of the math operation on the strong::next:: value from the stream. It responds to strong::reset:: by resetting the Stream.
+
+Examples::
+
+code::
+x = Routine { 6.do { arg i; i.yield; } }.wrap(0, 3);
+x.dump;
+::
+
+code::
+(
+x = Routine { 6.do { arg i; i.yield; } }.wrap(0, 3);
+x.next.postln;
+x.next.postln;
+x.next.postln;
+x.next.postln;
+x.next.postln;
+x.next.postln;
+x.next.postln;
+)
+::

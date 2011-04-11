@@ -1,0 +1,70 @@
+title:: Streams
+summary:: Patterns/Streams Help overview
+categories:: Streams-Patterns-Events
+related:: Classes/Stream, Classes/Pattern
+
+section:: Some tutorials
+
+definitionlist::
+## link::Tutorials/PG_01_Introduction:: || A Practical Guide to Patterns
+::
+
+definitionlist::
+## link::Tutorials/Streams-Patterns-Events1:: || Streams & Routines
+## link::Tutorials/Streams-Patterns-Events2:: || Patterns Introduction
+## link::Tutorials/Streams-Patterns-Events3:: || ListPatterns
+## link::Tutorials/Streams-Patterns-Events4:: || Environment & Event
+## link::Tutorials/Streams-Patterns-Events5:: || Event.default
+## link::Tutorials/Streams-Patterns-Events6:: || Parallel Patterns
+## link::Tutorials/Streams-Patterns-Events7:: || Practical Considerations
+::
+
+definitionlist::
+## link::Classes/Pattern:: || Pattern class helpfile
+::
+
+section:: Specific classes
+
+subsection:: ListPatterns
+
+classtree::ListPattern
+
+subsection:: FilterPatterns
+
+classtree::FilterPattern
+
+subsection:: event stream specific filter patterns
+
+list::
+## link::Classes/Pset::
+## link::Classes/Pfset::
+## link::Classes/Pmul::
+## link::Classes/Padd::
+## link::Classes/Psetp::
+## link::Classes/Pmulp::
+## link::Classes/Paddp::
+## link::Classes/Pfindur::
+::
+
+subsection:: other Patterns
+
+list::
+## link::Classes/Pwhite::
+## link::Classes/Pbrown::
+## link::Classes/Ppatmod::
+## link::Classes/Plazy::
+## link::Classes/Pbind::
+## link::Classes/Phid::
+## link::Classes/PstepNadd::
+## link::Classes/PstepNfunc::
+::
+
+subsection:: Streams
+
+list::
+## link::Classes/BinaryOpStream::
+## link::Classes/UnaryOpStream::
+## link::Classes/EventStream::
+## link::Classes/EventStreamPlayer::
+::
+

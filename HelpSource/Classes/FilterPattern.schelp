@@ -1,0 +1,12 @@
+class:: FilterPattern
+summary:: abstract class that holds a pattern to be modified
+related:: Classes/ListPattern
+categories:: Streams-Patterns-Events>Patterns>Filter
+
+Examples::
+
+code::
+// post subclasses:
+
+FilterPattern.dumpClassSubtree;
+::

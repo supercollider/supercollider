@@ -1,0 +1,41 @@
+class:: Pindex
+summary:: pattern that indexes into an array
+related:: Classes/Pswitch
+categories:: Streams-Patterns-Events>Patterns>List>Indexing
+
+description::
+
+This allows an link::Classes/ArrayedCollection:: to be accessed within patterns.
+
+ClassMethods::
+
+method::new
+
+argument::list
+is the array and strong::index:: the value to retrieve - both of these arguments can themselves be link::Classes/Pattern::s.
+
+argument::repeats
+specifies the number of repeats.
+
+Examples::
+
+code::
+(
+SynthDef(\help_pindex, { | out, amp=0.1, freq=440, gate=1 |
+	var son = Saw.ar(freq * [0.99, 1, 1.01]).mean;
+	son = son * EnvGen.ar(Env.adsr, gate: gate, doneAction:2);
+	Out.ar(out, son.dup * amp);
+}).add;
+)
+
+(
+var data = [7, 13, 12, 2, 2, 2, 5];
+var indices = [0, 0, 2, 0, 4, 6, 7];
+Pbind(
+	\instrument, \help_pindex,
+	\choice, Prand(indices, inf),
+	\degree, Pindex(data, Pkey(\choice), inf),
+	\dur, 0.7
+).play
+)
+::

@@ -1,0 +1,82 @@
+class:: Pfxb
+summary:: add an effect synth to the synths of a given event stream
+related:: Classes/Pfx, Classes/Pbus, Classes/Pgroup
+categories:: Streams-Patterns-Events>Patterns>Server Control
+
+description::
+
+Puts an effect node on the tail of the current group and releases it when the contained pattern finishes. Name value pairs are inserted into the event for starting the effect node. The effect parameters are set from the event.
+
+In difference to link::Classes/Pfx::, a strong::private effect bus:: is provided according to the number of channels in the effect synth def.
+
+Examples::
+
+code::
+(
+SynthDef(\echo, { arg out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;
+	var env, in;
+	env = Linen.kr(gate, 0.05, 1, 0.1, 2);
+	in = In.ar(out, 2);
+	XOut.ar(out, env, CombL.ar(in * env, maxdtime, dtime, decay, 1, in));
+}, [\ir, \ir, 0.1, 0.1, 0]).add;
+
+SynthDef(\distort, { arg out=0, pregain=40, amp=0.2, gate=1;
+	var env;
+	env = Linen.kr(gate, 0.05, 1, 0.1, 2);
+	XOut.ar(out, env, (In.ar(out, 2) * pregain).distort * amp);
+}, [\ir, 0.1, 0.1, 0]).add;
+
+SynthDef(\wah, { arg out=0, gate=1;
+	var env, in;
+	env = Linen.kr(gate, 0.05, 1, 0.4, 2);
+	in = In.ar(out, 2);
+	XOut.ar(out, env, RLPF.ar(in, LinExp.kr(LFNoise1.kr(0.3), -1, 1, 200, 8000), 0.1).softclip * 0.8);
+}, [\ir, 0]).add;
+)
+
+(
+var p, q, r, o;
+p = Pbind(\degree, Prand((0..7),12), \dur, 0.3, \legato, 0.2);
+
+q = Pfxb(p, \echo, \dtime, 0.2, \decay, 3);
+
+r = Pfxb(q, \distort, \pregain, 20, \amp, 0.25);
+
+o = Pfxb(r, \wah);
+
+Pseq([p, q, r, o], 2).play;
+)
+
+
+// test order of effect chain
+(
+SynthDef(\echo, { arg out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;
+	var env, in;
+	env = Linen.kr(gate, 0.05, 1, 0.1, 2);
+	in = In.ar(out, 2);
+	XOut.ar(out, env, CombL.ar(in * env, maxdtime, dtime, decay, 1, in));
+}, [\ir, \ir, 0.1, 0.1, 0]).add;
+
+SynthDef(\addbeeps, { arg out=0, gate=1;
+	var env;
+	env = Linen.kr(gate, 0.05, 1, 0.1, 2);
+	XOut.ar(out, env, (In.ar(out, 2) + (LFPulse.kr(1, 0, 0.3) * SinOsc.ar(1000) * 0.4) ));
+}, [\ir, 0.1, 0.1, 0]).add;
+)
+
+(
+var a;
+a = Pbind(\degree, Prand((0..7),12), \dur, 0.3, \legato, 0.2);
+a = Pfxb(a, \echo, \dtime, 0.2, \decay, 3);
+a = Pfxb(a, \addbeeps);
+a.play;
+)
+
+(
+var a;
+a = Pbind(\degree, Prand((0..7),12), \dur, 0.3, \legato, 0.2);
+a = Pfxb(a, \addbeeps);
+a = Pfxb(a, \echo, \dtime, 0.2, \decay, 3);
+a.play;
+)
+::

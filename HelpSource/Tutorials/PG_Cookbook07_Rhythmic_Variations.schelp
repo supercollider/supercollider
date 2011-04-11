@@ -1,0 +1,230 @@
+title:: PG_Cookbook07_Rhythmic_Variations
+summary:: An ever-changing drumbeat
+related:: Tutorials/PG_Cookbook06_Phrase_Network, Tutorials/PG_Ref01_Pattern_Internals
+categories:: Streams-Patterns-Events>A-Practical-Guide
+
+section::Creating variations on a base rhythmic pattern
+
+Normally patterns are stateless objects. This would seem to rule out the possibility of making on-the-fly changes to the material that pattern is playing. Indeed, modifying an existing pattern object is tricky and not always appropriate (because that approach cannot confine its changes to the one stream making the changes).
+
+link::Classes/Plazy:: offers an alternate approach: use a function to generate a new pattern object periodically, and play these patterns in succession, one by one. (Plazy embeds just one pattern; wrapping Plazy in link::Classes/Pn:: does it many times.)
+
+The logic in this example is a bit more involved: for each measure, start with arrays containing the basic rhythmic pattern for each part (kick drum, snare and hi-hat) and insert ornamental notes with different amplitudes and durations. Arrays hold the rhythmic data because this type of rhythm generation calls for awareness of the entire bar (future), whereas patterns generally don't look ahead.
+
+This suggests an object for data storage that will also encapsulate the unique logic for each part. We saw earlier that link::Classes/Penvir:: maintains a distinct environment for each stream made from the pattern. In other words, Penvir allows more complicated behavior to be modeled using an object that encapsulates both custom logic and the data on which it will operate.
+
+The specific ornaments to be added are slightly different for the three parts, so there are three environments. Some functions are shared; rather than copy and paste them into each environment, we put them into a separate environment and use that as the parent of the environment for each drum part.
+
+Most of the logic is in the drum parts' environments, and consist mostly of straightforward array manipulations. Let's unpack the pattern that uses the environments to generate notes:
+
+code::
+~kik = Penvir(~kikEnvir, Pn(Plazy({
+	~init.value;
+	~addNotes.value;
+	Pbindf(
+		Pbind(
+			\instrument, \kik,
+			\preamp, 0.4,
+			\dur, 0.25,
+			*(~pbindPairs.value(#[amp, decay2]))
+		),
+		\freq, Pif(Pkey(\amp) > 0, 1, \rest)
+	)
+}), inf)).play(quant: 4);
+::
+
+definitionList::
+## code::Penvir(~kikEnvir, ...):: || Tell the enclosed pattern to run inside the kick drum's environment.
+
+## code::Pn(..., inf):: || Repeat the enclosed pattern (Plazy) an infinite number of times.
+
+## code::Plazy({ ... }):: || The function can do anything it likes, as long as it returns some kind of pattern. The first two lines of the function do the hard work, especially code::~addNotes::.value, calling into the environment to use the rhythm generator code. This changes the data in the environment, which then get plugged into Pbind in the code::~pbindPairs.value():: line. That pattern will play through; when it ends, Plazy gives control back to its parent -- Pn, which repeats Plazy.
+
+## code::Pbindf(..., \freq, ...):: || Pbindf adds new values into events coming from a different pattern. This usage is to take advantage of a fact about the default event. If the code::\freq:: key is a symbol (rather than a number or array), the event represents a rest and nothing will play on the server. It doesn't matter whether or not the SynthDef has a code::freq:: control; a symbol in this space produces a rest. Here it's a simple conditional to produce a rest when code:: amp == 0 ::.
+
+## code::Pbind(...):: || The meat of the notes: SynthDef name, general parameters, and rhythmic values from the environment. (The code::*:: syntax explains the need for Pbindf. The code::\freq:: expression must follow the pbindPairs result, but it isn't possible to put additional arguments after code::*(...) ::. Pbindf allows the inner Pbind to be closed while still accepting additional values.)
+::
+
+strong::Third-party extension alert:: : This type of hybrid between pattern-style flow of control and object-oriented modeling is powerful but has some limitations, mainly difficulty with inheritance (subclassing). The strong::ddwChucklib:: quark (which depends on ddwPrototype) expands the object-oriented modeling possibilities while supporting patterns' ability to work with data external to a pattern itself.
+
+subsection::Example
+
+code::
+(
+// this kick drum doesn't sound so good on cheap speakers
+// but if your monitors have decent bass, it's electro-licious
+SynthDef(\kik, { |basefreq = 50, ratio = 7, sweeptime = 0.05, preamp = 1, amp = 1,
+		decay1 = 0.3, decay1L = 0.8, decay2 = 0.15, out|
+	var	fcurve = EnvGen.kr(Env([basefreq * ratio, basefreq], [sweeptime], \exp)),
+		env = EnvGen.kr(Env([1, decay1L, 0], [decay1, decay2], -4), doneAction: 2),
+		sig = SinOsc.ar(fcurve, 0.5pi, preamp).distort * env * amp;
+	Out.ar(out, sig ! 2)
+}).add;
+
+SynthDef(\kraftySnr, { |amp = 1, freq = 2000, rq = 3, decay = 0.3, pan, out|
+	var	sig = PinkNoise.ar(amp),
+		env = EnvGen.kr(Env.perc(0.01, decay), doneAction: 2);
+	sig = BPF.ar(sig, freq, rq, env);
+	Out.ar(out, Pan2.ar(sig, pan))
+}).add;
+
+~commonFuncs = (
+		// save starting time, to recognize the last bar of a 4-bar cycle
+	init: {
+		if(~startTime.isNil) { ~startTime = thisThread.clock.beats };
+	},
+		// convert the rhythm arrays into patterns
+	pbindPairs: { |keys|
+		var	pairs = Array(keys.size * 2);
+		keys.do({ |key|
+			if(key.envirGet.notNil) { pairs.add(key).add(Pseq(key.envirGet, 1)) };
+		});
+		pairs
+	},
+		// identify rests in the rhythm array
+		// (to know where to stick notes in)
+	getRestIndices: { |array|
+		var	result = Array(array.size);
+		array.do({ |item, i|
+			if(item == 0) { result.add(i) }
+		});
+		result
+	}
+);
+)
+
+(
+TempoClock.default.tempo = 104 / 60;
+
+~kikEnvir = (
+	parent: ~commonFuncs,
+		// rhythm pattern that is constant in each bar
+	baseAmp: #[1, 0, 0, 0,  0, 0, 0.7, 0,  0, 1, 0, 0,  0, 0, 0, 0] * 0.5,
+	baseDecay: #[0.15, 0, 0, 0,  0, 0, 0.15, 0,  0, 0.15, 0, 0,  0, 0, 0, 0],
+	addNotes: {
+		var	beat16pos = (thisThread.clock.beats - ~startTime) % 16,
+			available = ~getRestIndices.(~baseAmp);
+		~amp = ~baseAmp.copy;
+		~decay2 = ~baseDecay.copy;
+			// if last bar of 4beat cycle, do busier fills
+		if(beat16pos.inclusivelyBetween(12, 16)) {
+			available.scramble[..rrand(5, 10)].do({ |index|
+					// crescendo
+				~amp[index] = index.linexp(0, 15, 0.2, 0.5);
+				~decay2[index] = 0.15;
+			});
+		} {
+			available.scramble[..rrand(0, 2)].do({ |index|
+				~amp[index] = rrand(0.15, 0.3);
+				~decay2[index] = rrand(0.05, 0.1);
+			});
+		}
+	}
+);
+
+~snrEnvir = (
+	parent: ~commonFuncs,
+	baseAmp: #[0, 0, 0, 0,  1, 0, 0, 0,  0, 0, 0, 0,  1, 0, 0, 0] * 1.5,
+	baseDecay: #[0, 0, 0, 0,  0.7, 0, 0, 0,  0, 0, 0, 0,  0.4, 0, 0, 0],
+	addNotes: {
+		var	beat16pos = (thisThread.clock.beats - ~startTime) % 16,
+			available = ~getRestIndices.(~baseAmp),
+			choice;
+		~amp = ~baseAmp.copy;
+		~decay = ~baseDecay.copy;
+		if(beat16pos.inclusivelyBetween(12, 16)) {
+			available.scramble[..rrand(5, 9)].do({ |index|
+				~amp[index] = index.linexp(0, 15, 0.5, 1.8);
+				~decay[index] = rrand(0.2, 0.4);
+			});
+		} {
+			available.scramble[..rrand(1, 3)].do({ |index|
+				~amp[index] = rrand(0.15, 0.3);
+				~decay[index] = rrand(0.2, 0.4);
+			});
+		}
+	}
+);
+
+~hhEnvir = (
+	parent: ~commonFuncs,
+	baseAmp: 15 ! 16,
+	baseDelta: 0.25 ! 16,
+	addNotes: {
+		var	beat16pos = (thisThread.clock.beats - ~startTime) % 16,
+			available = (0..15),
+			toAdd;
+			// if last bar of 4beat cycle, do busier fills
+		~amp = ~baseAmp.copy;
+		~dur = ~baseDelta.copy;
+		if(beat16pos.inclusivelyBetween(12, 16)) {
+			toAdd = available.scramble[..rrand(2, 5)]
+		} {
+			toAdd = available.scramble[..rrand(0, 1)]
+		};
+		toAdd.do({ |index|
+			~amp[index] = ~doubleTimeAmps;
+			~dur[index] = ~doubleTimeDurs;
+		});
+	},
+	doubleTimeAmps: Pseq(#[15, 10], 1),
+	doubleTimeDurs: Pn(0.125, 2)
+);
+
+
+~kik = Penvir(~kikEnvir, Pn(Plazy({
+	~init.value;
+	~addNotes.value;
+	Pbindf(
+		Pbind(
+			\instrument, \kik,
+			\preamp, 0.4,
+			\dur, 0.25,
+			*(~pbindPairs.value(#[amp, decay2]))
+		),
+			// default Event checks \freq --
+			// if a symbol like \rest or even just \,
+			// the event is a rest and no synth will be played
+		\freq, Pif(Pkey(\amp) > 0, 1, \rest)
+	)
+}), inf)).play(quant: 4);
+
+~snr = Penvir(~snrEnvir, Pn(Plazy({
+	~init.value;
+	~addNotes.value;
+	Pbindf(
+		Pbind(
+			\instrument, \kraftySnr,
+			\dur, 0.25,
+			*(~pbindPairs.value(#[amp, decay]))
+		),
+		\freq, Pif(Pkey(\amp) > 0, 5000, \rest)
+	)
+}), inf)).play(quant: 4);
+
+~hh = Penvir(~hhEnvir, Pn(Plazy({
+	~init.value;
+	~addNotes.value;
+	Pbindf(
+		Pbind(
+			\instrument, \kraftySnr,
+			\rq, 0.06,
+			\amp, 15,
+			\decay, 0.04,
+			*(~pbindPairs.value(#[amp, dur]))
+		),
+		\freq, Pif(Pkey(\amp) > 0, 12000, \rest)
+	)
+}), inf)).play(quant: 4);
+)
+
+// stop just before barline
+t = TempoClock.default;
+t.schedAbs(t.nextTimeOnGrid(4, -0.001), {
+	[~kik, ~snr, ~hh].do(_.stop);
+});
+::
+
+Previous:	link::Tutorials/PG_Cookbook06_Phrase_Network::
+
+Next:		link::Tutorials/PG_Ref01_Pattern_Internals::

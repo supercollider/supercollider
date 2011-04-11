@@ -1,0 +1,115 @@
+title:: PG_06b_Time_Based_Patterns
+summary:: Patterns using time as the basis for their evaluation
+related:: Tutorials/PG_06a_Repetition_Contraint_Patterns, Tutorials/PG_06c_Composition_of_Patterns
+categories:: Streams-Patterns-Events>A-Practical-Guide
+
+section::Time-based patterns
+
+"Time-based patterns" here are value patterns that use time as part of their calculation. Event patterns are naturally time-driven when played on a clock. (Technically it's possible to request events from an event stream without running it in an EventStreamPlayer, but this is not typical usage.)
+
+Most of these patterns work by remembering the clock's current time at the moment the pattern is embedded into a value stream. The time value used for calculation is, then, the clock's time at the moment of evaluation minus the starting time -- that is, the number of beats elapsed since the patterns started embedding. If the pattern is embedded several times, the starting time is also reset so that the pattern begins again from the beginning.
+
+There is nothing to prevent using these patterns outside of a scheduling context. In these documents, that context would be an event pattern played on a clock, but streams made from these patterns can be used in scheduled routines or functions as well. Only a scheduling context can ensure precise timing of requests for values.
+
+definitionList::
+## code::Ptime(repeats):: || Returns the amount of time elapsed since embedding. One nice trick with this pattern is to stop a value stream/pattern after a certain amount of time.
+
+This link::Classes/Pif:: pattern uses Ptime to get values from the true branch for exactly 4 beats after the first value is requested. After that, the condition will be false and Pif reverts to the false branch, which is nil. That causes the stream to stop. (This is like link::Classes/Pfindur:: for event patterns, but Pif/Ptime works for value patterns as well.)
+
+code::
+// This is a really useful trick: like Pfindur but for value patterns
+(
+p = Pbind(
+	\degree, Pif(Ptime(inf) < 4.0, Pwhite(-4, 11, inf)),
+	\dur, 0.25
+).play;
+)
+::
+
+## code::Pstep(levels, durs, repeats):: || Repeat a code::level:: value for its corresponding duration, then move to the next.
+## code::Pseg(levels, durs, curves, repeats):: || Similar to Pstep, but interpolates to the next value instead of stepping abruptly at the end of the duration. Interpolation is linear by default, but any envelope segment curve can be used. code::levels::, code::durs:: and code::curves:: should be patterns.
+
+code::
+// curve is 5 - here's what the curve looks like, ascending first then descending
+Env(#[0, 1, 0], #[1, 1], 5).plot;
+
+(
+p = Pbind(
+		// using \note b/c Pseg will give fractional note numbers
+		// can't use \degree because it handles non-integers differently
+	\note, Pseg(
+		Pwhite(-7, 19, inf),	// chromatic note numbers
+			// alternate version for diatonic numbers
+			// PdegreeToKey does the same conversion as \degree --> \note
+//		PdegreeToKey(Pwhite(-4, 11, inf), Pkey(\scale), 12),
+		Pwhite(1, 4, inf) * 0.5,
+		5, inf),
+	\dur, 0.125
+).play;
+)
+
+p.stop;
+::
+::
+
+subsection::Using envelopes as patterns
+
+link::Classes/Env:: supports the stream protocol: code::asStream:: turns an Env into a stream, and timed values can be obtained from it using code::next::. The envelope stream returns the value the envelope would have at the elapsed time, in the same way code::.at(time):: returns the envelope value at the specified time.
+
+code::
+e = Env.linen(1, 1, 1);
+e.at(2);	// == 1
+e.at(2.5);	// == 0.5
+
+// print envelope values
+r = fork {
+	var stream = e.asStream;
+	12.do({
+		stream.next.postln;
+		0.25.wait;
+	});
+};
+
+// Use an envelope to pan notes from left to right and back
+p = Pbind(
+	\degree, Pwhite(-4, 11, 32),
+	\pan, Env(#[-1, 1, -1], #[2, 2], \sin),
+	\dur, 0.125
+).play;
+
+p.stop;
+::
+
+The code::releaseNode:: and code::loopNode:: envelope parameters do not take effect, because they are meaningful only when used in a Synth with a gated EnvGen.
+
+When the envelope ends, the stream will hold the final level indefinitely. The code::Pif(Ptime(inf) < totalTime, Env(...)):: trick can make it stop instead.
+
+code::
+// Use an envelope to pan notes from left to right and back
+// Plays one cycle
+(
+p = Pbind(
+		// change to inf: we don't need to know exactly how many events are needed
+	\degree, Pwhite(-4, 11, inf),
+	\pan, Pif(Ptime(inf) <= 4.0, Env(#[-1, 1, -1], #[2, 2], \sin)),
+	\dur, 0.125
+).play;
+)
+
+p.stop;
+
+// To keep looping the envelope, wrap Pif inside Pn
+(
+p = Pbind(
+	\degree, Pwhite(-4, 11, inf),
+	\pan, Pn(Pif(Ptime(inf) <= 4.0, Env(#[-1, 1, -1], #[2, 2], \sin)), inf),
+	\dur, 0.125
+).play;
+)
+
+p.stop;
+::
+
+Previous:	link::Tutorials/PG_06a_Repetition_Contraint_Patterns::
+
+Next:		link::Tutorials/PG_06c_Composition_of_Patterns::

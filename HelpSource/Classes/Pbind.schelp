@@ -1,0 +1,449 @@
+class:: Pbind
+summary:: combine several value patterns to one event stream by binding keys to values
+related:: Classes/Pattern, Classes/Event, Classes/Pmono
+categories:: Streams-Patterns-Events>Patterns>Event
+
+description::
+
+Pbind combines several value streams into one event stream. Each value stream is assigned to one or more keys in the resulting event stream. It specifies a stream of strong::Events:: in terms of different patterns that are strong::bound:: to different keys in the Event.
+The patterns bound to keys are referred to as emphasis::value patterns:: and the Pbind itself is termed an event pattern.
+
+The keys used in a Pbind are usually determined by link::Classes/Event::'s default mechanism and the controls defined for the link::Classes/SynthDef:: to be played. (See link::#synthdef_and_event:: below for a brief discussion of both in relation to Pbind.)
+
+ClassMethods::
+
+method::new
+The arguments to Pbind are an alternating sequence of keys and patterns. A pattern can also be bount to an array of keys. In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
+
+Examples::
+
+code::
+(
+a = Pbind(\x, Pseq([1, 2, 3]), \y, Prand([100, 300, 200], inf), \zzz, 99);
+x = a.asStream;
+)
+
+x.next(()); // pass in an event ()
+x.next(());
+x.next(());
+x.next(()); // end: nil
+::
+
+code::
+// sound examples
+
+// using the default synth def
+Pbind(\freq, Prand([300, 500, 231.2, 399.2], inf), \dur, 0.1).play;
+Pbind(\freq, Prand([300, 500, 231.2, 399.2], inf), \dur, Prand([0.1, 0.3], inf)).play;
+
+Pbind(\freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200, \dur, 0.1).play;
+::
+
+code::
+(
+// a SynthDef
+SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
+	var audio = Blip.ar(freq, nharms, amp);
+	var env = Linen.kr(gate, doneAction: 2);
+	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
+}).add;
+)
+
+Pbind(\instrument, \test, \freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200, \dur, 0.1).play;
+
+
+
+// standard syntax, arguments alternate symbols and patterns
+(
+Pbind(
+	\instrument,		\test,
+	\nharms,		Pseq([4, 10, 40], inf),
+	\dur,			Pseq([1, 1, 2, 1]/10, inf),
+	#[freq, sustain],	Ptuple([ // assignment to multiple keys
+					Pseq( (1..16) * 50, 4),
+					Pseq([1/10, 0.5, 1, 2], inf)
+				])
+).play;
+)
+::
+
+It is possible to specify a Pbind with an link::Classes/Array:: preceded by *. Arrays treat identifiers ending with a colon as link::Classes/Symbol::s, making the syntax of the Pbind specification a bit more concise:
+
+code::
+(
+// Alternative syntax, using a key/pattern array:
+Pbind(*[
+	instrument:		\test,
+	nharms:			Pseq([4, 10, 40], inf),
+	dur:			Pseq([1, 1, 2, 1]/10, inf),
+	#[freq, sustain],	Ptuple([
+					Pseq( (1..16) * 50, 4),
+					Pseq([1/10, 0.5, 1, 2], inf)
+				])
+]).play;
+)
+::
+
+subsection::SynthDef and Event
+
+The keys used in a Pbind are determined by the link::Classes/SynthDef:: used and the structure of the extensive default mechanism provided by link::Classes/Event::. This section provides a brief review of both.
+
+A link::Classes/SynthDef:: assigns a name to an interconnection of unit generators to be run as a synth on a server. It also assigns strong::control names:: to the synth's control inputs. In the following example the SynthDef \test has control inputs strong::out::, strong::freq::, strong::amp::, strong::nharms::, strong::pan::, and strong::gate::.
+
+code::
+SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
+	var audio = Blip.ar(freq, nharms, amp);
+	var env = Linen.kr(gate, doneAction: 2);
+	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
+}).add;
+::
+
+The SynthDef needs to be downloaded to the server upon which it is to be run. Use strong::.add:: instead of .send to ensure that any patterns using this SynthDef have information about the available control inputs (see link::Classes/SynthDesc::). Alternately, strong::.store:: may be used to save the SynthDef to disk and add the SynthDesc to the library.
+
+An link::Classes/Event:: is a Dictionary that specifies an action to be taken in response to strong::play:: and a time increment to be returned in response to strong::delta::. Events can be written as a series of key value pairs enclosed in parentheses. Empty parentheses create an empty event.
+
+By default, Events play synths on a server. Such emphasis::note events:: use the following keys:
+
+definitionList::
+## instrument (\default) || The synthdef to be played
+## variant (nil, optional) || The set of variant control defaults to use (see link::Classes/SynthDef::)
+## server (Server.default) || The server that plays the synth
+## group (1) || The new synth's or the synth the new synth is placed before or after
+## addAction (0) || How the synth is placed relative to the target specified by strong::group::
+definitionList::
+## 0 || head of group
+## 1 || tail of group
+## 2 || before group (could be a Synth)
+## 3 || after group (could be a Synth)
+::
+## delta (function) || The time until the next event in a sequence of events, generally specified indirectly through strong::dur::
+::
+
+When the Event is played, it creates an OSC command to play a synth. It uses the name assigned to strong::instrument:: to the select the SynthDef to be played. The SynthDef's control names (found in its link::Classes/SynthDesc::) are looked up in the event and the corresponding values included in the command.
+
+Playing a synth is the normal action taken by an Event. The default event structure defines several other event types that can perform a wide variety of server actions. See the link::Classes/Event:: help file for a list of event types.
+
+There are a number of coventional names typically used to identify controls in a synth.
+
+definitionList::
+## out || output bus index
+## in || input bus index (for filters, modulators, etc)
+## gate || envelope gate (not level!) - should default to 1.0, deletes synth when released
+## trig || envelope gate (not level!) - should default to 1.0, does not delete synth when released
+## pan || panning position
+## bufnum || buffer number (used in synths that utilize link::Classes/PlayBuf::, link::Classes/DiskIn::, etc)
+## sustain || duration of the synth
+## amp || amplitude of the synth
+## freq || base pitch of the synth
+::
+
+Event implements a layered specification scheme for some of these controls. In the following list, the first and leftmost name is the actual control name, names below and indented are more abstract ways to specify the control.
+
+definitionList::
+## delta || The time until the next event. Generally determined by:
+definitionList::
+## dur || The time until next event in a sequence of events
+## stretch || Scales event timings (i.e. stretch == 2 => durations are twice as long)
+::
+## sustain || Duration of the synth, typically determined (in stretched time units) by:
+definitionList::
+## legato || The ratio of the synth's duration to the event's duration
+::
+## amp || synth amplitude (typically ranging from 0 to 1), often determined by
+definitionList::
+## db || Amplitude in decibels
+::
+## detunedFreq || actual "pitch" of a synth, determined by:
+definitionList::
+## freq + detune; || freq is determined by:
+definitionList::
+## (midinote + ctranspose).midicps * harmonic; || midinote is determined by:
+definitionList::
+## (note + gtranspose + root)/stepsPerOctave * octave * 12; || note is determined by:
+definitionList::
+## (degree + mtranspose).degreeToKey(scale, stepsPerOctave)
+::
+::
+::
+::
+::	
+
+code::
+(
+// the SynthDef
+SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
+	var audio = Blip.ar(freq, nharms, amp);
+	var env = Linen.kr(gate, doneAction: 2);
+	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
+}).add;
+
+// Events are written as parantheses enclosing key/value pairs
+(instrument: \test).play;
+(instrument: \test, freq: 20, nharms: 50).play;
+)
+::
+
+subsection::The Play Method
+
+While the play method is actually defined in the class link::Classes/Pattern::, it is useful to review it here:
+
+definitionList::
+## play (clock, protoEvent, quant) || returns an link::Classes/EventStreamPlayer::.
+## clock || The clock that schedules the EventStreamPlayer, defaults to TempoClock.default. Patterns that change graphics must use link::Classes/AppClock::.
+## protoEvent || The initial event modified by Pbind, defaults to Event.default.
+## quant || A quantization value used by clock. When a number, the pattern will start at the next even multiple of that number. May also be a link::Classes/Quant::, which specifies quantization, time position within that quantization, and a timingOffset. See link::Classes/Quant:: for details.
+::
+
+subsection::Realtime Control with EventStreamPlayer
+
+The link::Classes/EventStreamPlayer:: provides realtime control through strong::mute::, strong::unmute::, strong::stop::, strong::play:: and strong::reset::.
+
+code::
+(
+SynthDef(\cfstring1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
+	var out, eg, fc, osc, a, b, w;
+	fc = LinExp.kr(LFNoise1.kr(Rand(0.25, 0.4)), -1, 1, 500, 2000);
+	osc = Mix.fill(8, {LFSaw.ar(freq * [Rand(0.99, 1.01), Rand(0.99, 1.01)], 0, amp) }).distort * 0.2;
+	eg = EnvGen.kr(Env.asr(1, 1, 1), gate, doneAction:2);
+	out = eg * RLPF.ar(osc, fc, 0.1);
+	#a, b = out;
+	Out.ar(i_out, Mix.ar(PanAz.ar(4, [a, b], [pan, pan+0.3])));
+}).add;
+
+e = Pbind(
+	\degree, Pseq((0..12), inf),
+	\dur, 0.2,
+	\instrument, \cfstring1
+).play; // returns an EventStream
+)
+
+( // an interactive session
+e.stop
+e.play
+e.reset
+
+e.mute; // keeps playing, but replaces notes with rests
+
+e.unmute;
+
+e.reset; // reset the stream.
+e.reset; // reset the stream.
+e.reset; // reset the stream.
+e.reset; // reset the stream.
+
+e.pause; // will resume where paused.
+
+e.play;
+
+e.stop; // will reset before resume.
+
+e.play;
+)
+::
+
+In addition, the stream the EventStreamPlayer plays can be altered while it is running through the method
+strong::stream_(aStream)::.
+
+code::
+(
+e.stream = Pbind(
+	\degree, Pseq([0, 1, 2, 4, 6, 3, 4, 8], inf),
+	\dur, Prand([0.2, 0.4, 0.8], inf),
+	\amp, 0.05, \octave, 5,
+	\instrument, \cfstring1, \ctranspose, 0
+).asStream;
+)
+
+(
+e.stream = Pbind(
+	\degree, Pseq([0, 1, 2, 4, 6, 3, 4, 8], inf),
+	\dur, Prand([0.2, 0.4, 0.8], inf),
+	\amp, 0.05, \octave, 5,
+	\instrument, \cfstring1, \ctranspose, 0
+).asStream;
+)
+
+(
+e.stream = Pbind(
+	\degree, Pxrand([0, 1, 2, 4, 6, 3, 5, 7, 8], inf),
+	\dur, Prand([0.2, 0.4, 0.8], inf), \amp, 0.05,
+	\octave, 5, \instrument, \cfstring1
+).asStream;
+)
+::
+
+subsection::Additional arguments
+
+Here is an example with more bindings. Here we have added a filter with cutoff and resonance arguments.
+You will need to hit command '.' before executing the next few pbind ex. without having them stack up.
+also, due to the synthdef's and synthdeclib, if the server is shut down you will have to reload the 
+synthdef and re-read the synthdesclib. 
+
+code::
+(
+SynthDef(\acid, { arg out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8, amp = 1;
+	Out.ar(out,
+		Pan2.ar(
+			RLPF.ar(
+				Pulse.ar(freq, 0.05),
+			cut, rez),
+		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction:2);
+	)
+}).add;
+)
+
+(
+Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, -12,
+	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({1.0.rand2}),
+	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, 0.2).play;
+)
+::
+
+The link::Classes/ListPattern::s can be put around Event Streams to create sequences of Event Streams.
+
+code::
+(
+Pseq([
+	Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], 4), \root, -24,
+		\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({1.0.rand2}),
+		\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, 0.2),
+
+	Pbind(\instrument, \acid, \dur, Pseq([0.25], 6), \root, -24, \degree, Pseq([18, 17, 11, 9], inf),
+		\pan, Pfunc({1.0.rand2}), \cut, 1500, \rez, Pfunc({0.7.rand +0.3}), \amp, 0.16)
+
+], inf).play;
+)
+::
+
+'Pseq' in the above ex. can be any pattern object:
+
+code::
+(
+Prand([
+	Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], 4), \root, -24,
+		\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({1.0.rand2}),
+		\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}),
+		\amp, 0.2),
+
+	Pbind(\instrument, \acid, \dur, Pseq([0.25], 6), \root, -24, \degree, Pseq([18, 17, 11, 9], inf),
+		\pan, Pfunc({1.0.rand2}), \cut, 1500, \rez, Pfunc({0.7.rand +0.3}), \amp, 0.16)
+
+], inf).play;
+)
+::
+
+subsection::Multichannel Expansion
+
+If we supply an array for any argument, the synth node will automatically replicate to handle the additional arguments. When we give the 'root' argument an array, we should hear a chord....
+
+code::
+(
+Pbind(
+	\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf),
+	\root, [-24, -17],
+	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf),
+	\pan, Pfunc({1.0.rand2}), \cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}),
+	\amp, 0.2).play;
+)
+::
+
+Using link::Classes/Pdef:: (provided by link::Overviews/JITLib::) makes it easy to replace patterns on the fly:
+
+code::
+(
+Pdef(\buckyball).play;
+)
+
+(
+Pdef(\buckyball, Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, [-24, -17],
+	\degree, Pseq([0, 3, 5, 7, 9, 11, [5, 17], 1], inf), \pan, Pfunc({[1.0.rand2, 1.0.rand2]}),
+	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, [0.15, 0.22]));
+)
+(
+Pdef(\buckyball, Pbind(\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, [-24, -17],
+	\degree, Pseq([0b, 3b, 5b, 7b, 9b, 11b, 5b, 0b], inf), \pan, Pfunc({1.0.rand2}), //notice the flats
+	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, 0.2));
+)
+
+//stop the Pdef
+Pdef(\buckyball).stop;
+
+//start the Pdef
+Pdef(\buckyball).resume;
+
+//removing the Pdef
+Pdef.remove(\buckyball);
+::
+
+subsection::Sending to effects
+
+Assignment to effect processors can be achieved by setting the 'out' argument to the desired efx's input bus. The effect Synth must also be created. Synth.new is one way of doing this.
+
+code::
+(
+// efx synthdef- dig the timing on the delay and the pbind. :-P
+SynthDef(\pbindefx, { arg out, in, time1=0.25, time2=0.5;
+	var audio, efx;
+	audio = In.ar([20, 21], 2);
+	efx=CombN.ar(audio, 0.5, [time1, time2], 10, 1, audio);	
+	Out.ar(out, efx);
+}).add;
+
+// create efx synth
+a = Synth.after(1, \pbindefx);
+
+// if you don't like the beats change to 0.4, 0.24
+// a.set(\time1, 0.4, \time2, 0.24);
+
+SynthDef(\acid, { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8, amp = 1;
+	Out.ar(out,
+		Pan2.ar(
+			RLPF.ar(
+				Pulse.ar(freq, 0.05),
+			cut, rez),
+		pan) * EnvGen.kr(Env.linen(0.02, 1, 0.3), gate, amp, doneAction:2);
+	)
+}).add;
+)
+
+(
+Pbind(\instrument, \acid, \out, 20, \dur, Pseq([0.25, 0.5, 0.25], inf), \root, [-24, -17],
+	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf), \pan, Pfunc({1.0.rand2}),
+	\cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}), \amp, 0.12).play;
+)
+::
+
+subsection::Additional examples
+
+code::
+(
+SynthDef(\berlinb, { arg out=0, freq = 80, amp = 0.01, pan=0, gate=1;
+	var synth, env;
+	env = Decay2.kr(gate, 0.05, 8, 0.0003);
+	synth = RLPF.ar(
+		LFPulse.ar(freq, 0, SinOsc.kr(0.12, [0, 0.5pi], 0.48, 0.5)),
+		freq * SinOsc.kr(0.21, 0, 18, 20),
+		0.07
+	);
+	#a, b = synth*env;
+	DetectSilence.ar(a, 0.1, doneAction: 2);
+	Out.ar(out, amp * Mix.ar(PanAz.ar(4, [a, b], [pan, pan+1])));
+}).add;
+)
+
+(
+f = Pbind(
+	\degree, Pseq([0, 1, 2, 4, 6, 3, 4, 8], inf),
+	\dur, 0.5, \octave, 3, \instrument, \berlinb
+).play;
+)
+
+(
+f.stream = Pbind(
+	\degree, Pseq([0, 1, 2, 4, 6, 3, 4, 8], inf),
+	\dur, 0.5, \octave, [2, 1],
+	\instrument, \berlinb,
+	\pan, Pfunc({1.0.rand2})
+).asStream;
+)
+::

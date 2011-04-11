@@ -1,0 +1,101 @@
+class:: Pchain
+summary:: pass values from stream to stream
+related:: Classes/Pbindf
+categories:: Streams-Patterns-Events>Patterns>Composition
+
+description::
+
+definitionList::
+## Pchain(pattern1, pattern2, ... patternN) || pattern1 <- pattern2 <- ...patternN
+::
+
+Values produced by the stream of strong::pattern2:: are used as inval to the stream of strong::pattern1::. Therefore pattern1 overrides (or filters) the output of pattern2, and so forth. This is an equivalent to the composite pattern: emphasis::pattern1 <> pattern2 <> ... patternN::
+
+ClassMethods::
+
+method::new
+
+argument::patterns
+The patterns to be chained up.
+
+InstanceMethods::
+
+method::<>
+Add another pattern to the chain.
+
+Examples::
+
+code::
+(
+Pchain(
+	Pbind(\detune, Pseq([-30, 0, 40], inf), \dur, Prand([0.2, 0.4], inf)),
+	Pbind(\degree, Pseq([1, 2, 3], inf), \dur, 1)
+).trace.play;
+)
+
+
+// also events can be used directly:
+(
+Pchain(
+	Pbind(\degree, Pseq([1, 2, 3], inf)),
+	(detune: [0, 4])
+).trace.play;
+)
+
+// compose some more complicated patterns:
+(
+var a, b;
+a = Prand([
+	Pbind(\degree, Pseq([0, 1, 3, 5, 6])),
+	Pbind(\dur, Pshuf([0.4, 0.3, 0.3]), \degree, Pseq([3, -1]))
+], inf);
+b = Prand([
+	Pbind(\ctranspose, Pn(1, 4)),
+	Pbind(\mtranspose, Pn(2, 7))
+], inf);
+c = Prand([
+	Pbind(\detune, Pfuncn( { [0, 10.0].rand }, 5), \legato, 0.2, \dur, 0.2),
+	Pbind(\legato, Pseq([0.2, 0.5, 1.5], 2), \dur, 0.3)
+], inf);
+Pchain(a, b, c).trace.play;
+)
+::
+
+section::pattern composition
+
+pattern <> pattern <> pattern
+
+code::
+// implicitly, the composition operator <> returns a Pchain when applied to a pattern.
+// so that a <> b creates a Pchain (a, b).
+// as seen above, in Pchain(a, b), a specifies (and overrides) b: b is the input to a.
+
+// the above example is equivalent to:
+
+(Pbind(\degree, Pseq([1, 2, 3], inf)) <> (detune: [0, 4])).trace.play;
+
+(
+a = Pbind(\degree, Pseq([1, 2, 3], inf), \dur, Prand([0.2, 0.4], inf));
+b = Pbind(\detune, Pseq([-30, 0, [0, 40]], inf), \dur, 0.1);
+c = b <> a;
+c.play; // see that the \dur key of a is overridden by b
+)
+
+// also value streams can be composed
+(
+a = Pfunc { |x| x + 1.33 };
+b = Pfunc { |x| x * 3 };
+c = Pseries(1, 2, inf);
+)
+
+// post some values from the composite streams:
+
+t = (a <> b).asStream;
+10.do { t.value(10).postln };
+
+t = (a <> b <> c).asStream;
+10.do { t.value(10).postln };
+
+t = (b <> c <> a).asStream;
+10.do { t.value(10).postln };
+::

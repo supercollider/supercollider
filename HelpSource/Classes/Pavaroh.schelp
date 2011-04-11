@@ -1,0 +1,60 @@
+class:: Pavaroh
+summary:: applying ascending and descending scales to event stream
+categories:: Streams-Patterns-Events>Patterns>Math
+
+description::
+
+Basic classical indian scale pattern. Allowing to apply an ascending scale (aroh) and a descending scale (avaroh).
+
+Note that no special pakads (movements) or vakras (twists) are applied.
+
+The pakad is often a natural consequence of the notes of arohana / avarohana (ascending and descending structures). This is the purpose of this pattern.
+
+Examples::
+
+code::
+(
+Pbind(\note, Pavaroh(
+			Pseq([1, 2, 3, 2, 5, 4, 3, 4, 2, 1], 2),
+			#[0, 2, 3, 6, 7, 9],
+			#[0, 1, 3, 7, 8, 11]
+		),
+	\dur, 0.25
+).play;
+)
+
+
+//___indian video game (1)
+(
+SynthDef("ivg", { arg out, freq=900, pan;
+	var trig, snd;
+	trig = Impulse.kr(LFClipNoise.kr(4, 3, LFClipNoise.kr(0.2, 2, 7)));
+	snd = RLPF.ar(
+		SinOsc.ar(freq, 0, Decay.kr(trig, 1.8)).distort
+		, 554, 0.3) 
+	* 0.1;
+	Out.ar(out, Pan2.ar(snd, pan))
+ }).send(s);
+)
+
+(
+	var aroh, avaroh, synth, str, pat;
+	
+	//gandhari raga.  vadi: dha (7) samvadi: ga (3)
+	
+	aroh = #[0, 2, 5, 7, 10];
+	avaroh =  #[0, 1, 3, 5, 7, 9, 10];
+	
+	synth = Synth.head(s, \ivg);
+	pat = Prand([0, 2, 3, 4, 2, 1, 0, -1, -2], inf);
+	str = Pavaroh(pat, aroh, avaroh).asStream;
+	Routine({
+		
+		loop({
+			synth.set(\freq, midicps(str.next + 60) );
+			rrand([0.1,1.0].choose, 0.5).wait;
+		});
+	
+	}).play;
+)
+::
