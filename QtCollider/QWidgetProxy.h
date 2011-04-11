@@ -30,6 +30,7 @@ namespace QtCollider {
   struct SetFocusRequest;
   struct MapToGlobalRequest;
   struct SetLayoutRequest;
+  struct SetAlwaysOnTopRequest;
 }
 
 class QWidgetProxy : public QObjectProxy
@@ -55,6 +56,10 @@ public:
   bool setLayout ( QtCollider::SetLayoutRequest *r );
 
   virtual bool setParentEvent( QtCollider::SetParentEvent *e );
+
+  bool alwaysOnTop();
+
+  bool setAlwaysOnTopEvent( QtCollider::SetAlwaysOnTopRequest * );
 
 protected:
 
@@ -120,6 +125,12 @@ struct SetLayoutRequest
 : public WidgetRequestTemplate<SetLayoutRequest, &QWidgetProxy::setLayout>
 {
   QObjectProxy *layoutProxy;
+};
+
+struct SetAlwaysOnTopRequest
+: public WidgetRequestTemplate<SetAlwaysOnTopRequest, &QWidgetProxy::setAlwaysOnTopEvent>
+{
+  bool flag;
 };
 
 }
