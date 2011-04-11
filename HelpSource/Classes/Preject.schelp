@@ -1,6 +1,6 @@
 class:: Preject
 summary:: Reject values from a pattern
-categories:: Patterns>Filter
+categories:: Streams-Patterns-Events>Patterns>Filter
 related:: Classes/Pselect, Classes/Pcollect
 
 description::

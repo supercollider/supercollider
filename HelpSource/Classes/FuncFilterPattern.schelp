@@ -1,6 +1,7 @@
 class:: FuncFilterPattern
 summary:: Abstract class that filters a pattern using a function
-categories:: Patterns>Filter
+related:: Classes/FilterPattern
+categories:: Streams-Patterns-Events>Patterns>Filter
 
 description::
 This is an abstract class that filters a pattern using a function. See subclasses below:
