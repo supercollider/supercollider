@@ -1,6 +1,6 @@
 class:: Pwhile
 summary:: While a condition holds, repeatedly embed stream
-categories:: Patterns>Language Control
+categories:: Streams-Patterns-Events>Patterns>Language Control
 
 description::
 Repeatedly strong::embed:: a link::Classes/Stream:: while the result of code::func:: is code::true::.

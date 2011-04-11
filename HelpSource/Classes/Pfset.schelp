@@ -1,6 +1,7 @@
 class:: Pfset
 summary:: Insert an environment into the event prototype before evaluating the supplied pattern
-categories:: Patterns>Data Sharing
+related:: Classes/Pset
+categories:: Streams-Patterns-Events>Patterns>Data Sharing
 
 description::
 Good for setting default values or loading server objects.

@@ -1,6 +1,6 @@
 class:: Pfunc
 summary:: Function pattern
-categories:: Patterns>Function
+categories:: Streams-Patterns-Events>Patterns>Function
 related:: Classes/Pfuncn
 
 description::

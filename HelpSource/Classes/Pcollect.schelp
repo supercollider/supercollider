@@ -1,6 +1,6 @@
 class:: Pcollect
 summary:: Apply a function to a pattern
-categories:: Patterns>Filter
+categories:: Streams-Patterns-Events>Patterns>Filter
 related:: Classes/Pselect, Classes/Preject
 
 description::
