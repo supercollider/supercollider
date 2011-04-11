@@ -18,8 +18,10 @@ SECTION::Getting started
 These might be useful starting points on getting help with SuperCollider:
 
 definitionlist::
+## link::Guides/Glossary:: || Glossary
 ## link::Guides/ClientVsServer:: || Explaining the client vs server architecture.
 ## link::Tutorials/Introductory_tutorial:: || Get started with SuperCollider
+## link::Guides/More-On-Getting-Help:: || How to find more help
 ::
 
 SECTION::Documentation indexes
