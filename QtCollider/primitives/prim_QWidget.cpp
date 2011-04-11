@@ -26,6 +26,8 @@
 #include <PyrKernel.h>
 
 #include <QWidget>
+#include <QThread>
+#include <QApplication>
 
 using namespace QtCollider;
 
@@ -90,4 +92,23 @@ QC_LANG_PRIMITIVE( QWidget_SetLayout, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) 
 
   bool ok = req->send( wProxy, Synchronous );
   return ( ok ? errNone : errFailed );
+}
+
+QC_LANG_PRIMITIVE( QWidget_GetAlwaysOnTop, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
+
+  if( QThread::currentThread() != wProxy->thread() ) return errFailed;
+
+  SetBool( r, wProxy->alwaysOnTop() );
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QWidget_SetAlwaysOnTop, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
+
+  SetAlwaysOnTopRequest *req = new SetAlwaysOnTopRequest();
+  req->flag = IsTrue( a );
+  QApplication::postEvent( wProxy, req );
+
+  return errNone;
 }

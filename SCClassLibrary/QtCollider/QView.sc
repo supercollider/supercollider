@@ -227,6 +227,16 @@ QView : QObject {
     this.setProperty( \windowOpacity, aFloat );
   }
 
+  alwaysOnTop {
+    _QWidget_GetAlwaysOnTop
+    ^this.primitiveFailed;
+  }
+
+  alwaysOnTop_ { arg boolean;
+    _QWidget_SetAlwaysOnTop
+    ^this.primitiveFailed;
+  }
+
   close {
     if( deleteOnClose )
       { this.remove; }

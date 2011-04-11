@@ -259,3 +259,38 @@ void QWidgetProxy::sendRefreshEventRecursive( QWidget *w ) {
         sendRefreshEventRecursive( static_cast<QWidget*>( child ) );
   }
 }
+
+bool QWidgetProxy::alwaysOnTop()
+{
+  QWidget *w = widget();
+  if(!w) return false;
+
+  Qt::WindowFlags flags = w->windowFlags();
+  if( flags & Qt::Window && flags & Qt::WindowStaysOnTopHint ) return true;
+  else return false;
+}
+
+bool QWidgetProxy::setAlwaysOnTopEvent( QtCollider::SetAlwaysOnTopRequest *req )
+{
+  QWidget *w = widget();
+  if( !w ) return true;
+
+  Qt::WindowFlags flags = w->windowFlags();
+  if( flags & Qt::Window ) {
+    if( req->flag ) flags |= Qt::WindowStaysOnTopHint;
+    else flags &= ~Qt::WindowStaysOnTopHint;
+
+    // record the initial state to restore it later
+    QPoint pos = w->pos();
+    bool visible = w->isVisible();
+
+    w->setWindowFlags( flags );
+
+    // setting window flags will move the window to (0,0) and hide it,
+    // so restore the initial state
+    w->move(pos);
+    if( visible ) w->show();
+  }
+
+  return true;
+}

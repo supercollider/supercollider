@@ -90,8 +90,7 @@ QWindow
   var <view;
 
   //TODO
-  var <>acceptsClickThrough=false, <>acceptsMouseOver=false,
-      <>alwaysOnTop=false;
+  var <>acceptsClickThrough=false, <>acceptsMouseOver=false;
   var <currentSheet;
 
   *initClass {
@@ -201,6 +200,8 @@ QWindow
   refresh { view.refresh; }
   userCanClose { ^view.userCanClose; }
   userCanClose_ { arg boolean; view.userCanClose_( boolean ); }
+  alwaysOnTop { ^view.alwaysOnTop; }
+  alwaysOnTop_ { arg boolean; view.alwaysOnTop_(boolean); }
   layout { ^view.layout; }
   layout_ { arg layout; view.layout_(layout); }
   toFrontAction_ { arg action; view.toFrontAction_(action) }
