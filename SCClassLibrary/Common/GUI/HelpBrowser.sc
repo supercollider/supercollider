@@ -113,6 +113,7 @@ HelpBrowser {
 		w = winRect.width - 10;
 		h = winRect.height - y - marg;
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
+		webView.html = "Please wait while initializing Help... (This might take several seconds the first time)";
 
 		webView.onLoadFinished = { this.stopAnim; window.name = "SuperCollider Help:"+webView.title };
 		webView.onLoadFailed = { this.stopAnim };
@@ -151,7 +152,7 @@ HelpBrowser {
 			    block {|break|
 				    loop {
 					    progress.do {|p|
-						    lblStatus.string_("Wait"+p);
+						    lblStatus.string_("Loading"+p);
 						    0.3.wait;
 						    if(animCount==0) {break.value};
 					    };
