@@ -1,0 +1,16 @@
+title:: Linux Udev Setup
+summary:: Suggestion on udev setup
+categories:: Linux
+
+In the file code:: /etc/udev/udev.rules ::
+
+(on Debian /etc/udev/rules.d/50-udev.rules)
+
+(on Ubuntu this should be in /etc/udev/rules.d/20-names.rules)
+
+make sure there is the following:
+code::
+KERNEL=="event[0-9]*",          NAME="input/%k",        GROUP="audio"
+::
+i.e. add code:: GROUP="audio" :: to the lines, so that any user in the group "audio" can open the device.
+
