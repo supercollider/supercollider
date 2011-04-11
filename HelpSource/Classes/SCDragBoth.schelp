@@ -1,0 +1,48 @@
+class:: SCDragBoth
+summary:: A gui object source and receiver for drag and drop
+categories:: GUI
+
+note::
+See link::Classes/SCDragView:: for description and examples.
+::
+
+classmethods::
+
+new
+argument:: parent
+The parent view.
+argument:: bounds
+An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
+
+
+instancemethods::
+
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+	
+method:: defaultGetDrag
+The method called by default when initiating a drag. Returns the content of object when dragging from an DragBoth.
+
+
+
+examples::
+code::
+(
+w = Window.new.front;
+w.addFlowLayout;
+// store various kinds of objects in the drag source
+
+// a string source
+a = DragBoth(w, Rect(10, 10, 150, 20)).align_(\center).background_(Color.rand);
+a.object = "drag us around";
+
+a = DragBoth(w, Rect(10, 10, 150, 20)).align_(\center).background_(Color.rand);
+a.object="SUPERCOLLIDER";
+
+8.do{
+a = DragBoth(w, Rect(10, 10, 150, 20)).align_(\center).background_(Color.rand);
+a.receiveDragHandler = { arg obj; obj.object = View.currentDrag.scramble };
+}
+)
+::

@@ -1,0 +1,832 @@
+class:: Document
+summary:: An abstract class for editor-specific text document editing classes
+categories:: GUI
+related:: Classes/CocoaDocument, Classes/EmacsDocument, Classes/ScelDocument
+
+description::
+The Document class represents a text document within the context of your text editing environment. You can use the class to programmatically create, modify, and query these documents. While it is an abstract class, you still use it to create a code::new:: Document. It simply passes on code::new:: to the appropriate document implementation, e.g. link::Classes/CocoaDocument::.
+
+subsection:: Some Important Issues Regarding Document
+
+Different text-editing environments can be used with SuperCollider. Therefore Document is an abstract class, meaning it doesn't provide all the functionality itself, but relies on subclasses to complete the functionality. Calls to code::Document.new:: or code::Document.open:: are actually passed down to the relevant class for the editor you're using, such as link::Classes/CocoaDocument:: (for most Mac users) or link::Classes/ScelDocument:: (containing an link::Classes/EmacsDocument::).
+
+subsection:: Setting the Environment
+
+By default code::envir:: it is set to the current link::Classes/Environment::. However, you can make it use its own link::Classes/Environment:: also. Thus, e.g., if you were to set the link::Classes/Environment:: variable code::~myVar = 12:: in the current link::Classes/Environment::, you can create a new Document window in which that link::Classes/Environment:: variable is not set.
+
+
+
+
+classmethods::
+
+method:: new
+argument:: title
+An instance of link::Classes/String:: or link::Classes/Symbol::. Default value is code::"Untitled"::.
+argument:: string
+An instance of link::Classes/String::. Default value is code::""::. The contents of the document.
+argument:: makeListener
+Makes this document the listener, i.e. the place where SC-lang posts messages. Default value is code::false::.
+argument:: envir
+An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window. By defualt, it is set to the current link::Classes/Environment::.
+discussion::
+code::
+Document.new("this is the title", "this is the text");
+::
+::
+
+method:: open
+Open a document from a path.
+argument:: path
+The file system path to the document. An instance of link::Classes/String::.
+argument:: selectionStart
+The beginning of the cursor selection of the file content. Default value is code::0::.
+argument:: selectionLength
+The length of the cursor selection of the file content. Default value is code::0::.
+argument:: envir
+An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By defualt, it is set to the current link::Classes/Environment::.
+discussion::
+code::
+Document.open("README", 292,253); // notice the selected text in the open document
+::
+
+method:: openDocuments
+Returns an Array of all open documents.
+code::
+d = Document.openDocuments.do{ |doc| doc.name.postln };
+::
+
+method:: hasEditedDocuments
+Returns true if there are edited Documents.
+
+method:: closeAll
+warning::
+Closes all open Documents, whether edited or not.
+::
+argument:: leavePostWindowOpen
+An instance of link::Classes/Boolean::. Default is code::true::.
+
+method:: closeAllUnedited
+Closes all unedited Documents.
+argument:: leavePostWindowOpen
+An instance of link::Classes/Boolean::. Default is code::true::.
+
+method:: current
+Gets/sets the current Document.
+argument:: arg1
+A Document.
+discussion::
+code::
+Document.current.name.postln; // Prints "Document.html"
+::
+::
+
+method:: listener
+Returns the current Document which is the listener, i.e. the Document where interpreter messages are posted.
+
+method:: storePostWin
+Stores the content of Document.listener.
+argument:: path
+The file system path. An instance of link::Classes/String::.
+
+method:: allDocuments
+A class variable. Returns all documents. Default value is code::defaultValue::.
+
+method:: globalKeyDownAction
+A class variable. Get/set A global action to be performed when a key is pressed.
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+method:: globalKeyUpAction
+A class variable. Get/set A global action to be performed when a key is released.
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+method:: initAction
+A class variable. Get/set A an action to be performed up opening or creating a Document.
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+method:: autoRun
+A class variable. If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be exectued on opening the file, if autorun is set to true.
+argument:: arg1
+An instance of link::Classes/Boolean::. Default value is code::true::.
+
+method:: wikiBrowse
+A class variable. If set to code::true::, underlining text will create a wiki link.
+argument:: arg1
+An instance of link::Classes/Boolean::. Default value is code::true::.
+
+method:: implementationClass
+A class variable. The editor implementation specific class which will handle Documents.
+argument:: arg1
+A class for implementing Document, e.g. link::Classes/CocoaDocument::.
+
+method:: setTheme
+Sets the theme for syntax colorization.
+argument:: arg1
+A link::Classes/Symbol::, defining the name of the theme that you've put into code::Document.themes::.
+discussion::
+The Document class has a preset theme called code::'default'::, which is set as follows (default SC colors):
+code::
+themes = (
+	default: (
+		classColor: Color(0, 0, 0.75, 1),
+		textColor: Color(0, 0, 0, 1),
+		stringColor: Color(0.375, 0.375, 0.375, 1),
+		commentColor: Color(0.75, 0, 0, 1),
+		symbolColor: Color(0, 0.45, 0, 1),
+		numberColor: Color(0, 0, 0, 1)
+	)
+);
+::
+If you want to have your own themes for syntax colorization, you need to put your color set into code::Document.themes:: first (preferably in startup.rtf file) and call code::setTheme:: by giving it the name of the theme you've added to "themes" earlier:
+code::
+//putting a custom color theme into Document.themes
+Document.themes.put
+(\myTheme, 
+	(
+		classColor: Color.new255(53, 74, 187),
+		textColor: Color.new255(0, 0, 0),
+		stringColor: Color.new255(96, 129, 158),
+		commentColor: Color.new255(206, 27, 28),
+		symbolColor: Color.new255(57, 154, 20),
+		numberColor: Color.new255(157, 80, 65)
+	)
+);
+
+//and then calling setTheme with the name:
+Document.setTheme('myTheme');
+//to see the current theme:
+Document.theme;
+::
+You can switch to the default theme anytime by calling:
+code::
+Document.setTheme('default');
+::
+Next time you invoke syntaxColorize, the color theme set by setTheme will be used for syntax colorization. If you want to change the background color for the document window and selected text, in order to make them fit with your syntax colorization theme, see the help for the link::Classes/Document#background:: and link::Classes/Document#selectedBackground:: methods for Document.
+::
+
+
+subsection:: Path Utilities
+
+Utilities and settings for dealing with documents such as super collider code files. By default the document directory is SuperCollider's application directory.
+
+method:: dir
+Get/set the default document directory. The default is dependent on link::Classes/Document#implementationClass::.
+argument:: path
+The file system path to the directory. An instance of link::Classes/String::.
+discussion::
+In Main-startUp you can set this to a more practical directory:
+code::
+Document.dir = "~/Documents/SuperCollider";
+::
+::
+
+method:: wikiDir
+Get/set the default wiki directory. The default is dependent on link::Classes/Document#implementationClass::.
+argument:: path
+The file system path to the directory. An instance of link::Classes/String::.
+
+method:: standardizePath
+argument:: p
+The file system path to the directory. An instance of link::Classes/String::.
+discussion::
+If it is a relative path, expand it to an absolute path relative to your document directory. Expand tildes in path (your home directory), resolve symbolic links (but not aliases). Also converts from OS9 macintosh path format. See PathName for more complex needs.
+code::
+Document.standardizePath("~/"); // This will print your home directory
+
+Document.standardizePath(":Patches:newfoots:fastRuckAndTuck");
+// Returns: /Volumes/Macintosh HD/Users/cruxxial/Documents/SC3docs/Patches/newfoots/fastRuckAndTuck
+
+Document.standardizePath("~/Documents/SC3docs/Patches/newfoots/fastRuckAndTuck");
+// Returns: Patches/newfoots/fastRuckAndTuck
+
+Document.standardizePath("Patches/newfoots/fastRuckAndTuck")
+// Returns: Patches/newfoots/fastRuckAndTuck
+::
+
+method:: abrevPath
+Returns a path relative to Document.dir, if the path is inside Document.dir.
+argument:: path
+The file system path to the directory. An instance of link::Classes/String::.
+
+
+
+
+instancemethods::
+
+subsection:: General Document Properties
+
+method:: bounds
+Get/set the bounds of the document.
+argument:: argBounds
+An instance of link::Classes/Rect::.
+
+method:: path
+Get / set the the Document's path.
+argument:: apath
+An instance of link::Classes/String::. A files system path.
+discussion::
+code::
+Document.current.path.postln;
+::
+
+method:: dir
+Returns the directory of a Document.
+discussion::
+code::
+Document.current.dir.postln;
+::
+
+method:: ==
+A binary operator.
+argument:: doc
+An instance of Document.
+discussion::
+code::
+Document.current == Document.listener; // presumaably returns false
+::
+
+method:: editable
+Get / set the the document is editable.
+argument:: arg1
+An instance of link::Classes/Boolean::.
+
+method:: name
+Get / set the title (same as link::Classes/Document#title::).
+argument:: aname
+An instance of link::Classes/String::.
+discussion::
+code::
+Document.current.name.postln;
+::
+::
+
+method:: title
+Get / set the title (same as link::Classes/Document#name::).
+argument:: argName
+An instance of link::Classes/String::.
+
+method:: background
+Get / set the the Document's background color.
+argument:: color
+An instance of link::Classes/Color::.
+discussion::
+code::
+(
+a = Document("background", "'hardly see anything");
+a.background_(Color.blue(alpha:0.8)); // notice that alpha controls the window transparency
+)
+::
+::
+
+method:: postColor
+Get / set the listeners pen color.
+argument:: color
+An instance of link::Classes/Color::.
+discussion::
+code::
+Document.postColor; // returns current post color
+Document.postColor_(Color.red);
+Document.postColor_(Color.green);
+Document.postColor_(Color.blue);
+Document.postColor_(Color.black);
+(
+r = Routine({ 
+	10.do({
+		Document.postColor_(Color.rand);
+		"There is no blue without yellow and without orange.".postln;
+		0.5.rand.yield;
+	});
+	Document.postColor_(Color.black);
+});
+)
+
+r.play;
+r.stop;
+::
+::
+
+method:: alwaysOnTop
+Get/set whether a document is always on top.
+argument:: boolean
+An instance of link::Classes/Boolean::.
+
+method:: promptToSave
+Get/set whether a document is prompts to save if it has been changed. Use this with caution.
+argument:: bool
+An instance of link::Classes/Boolean::.
+
+method:: closed
+Returns code::true:: if the document has been closed.
+
+method:: isEdited
+Returns code::true:: if the document has been edited.
+code::
+Document.current.isEdited.postln;
+::
+
+method:: isFront
+Returns code::true:: if the document is in front.
+
+method:: isListener
+Returns if the document is the listener.
+
+method:: didBecomeKey
+Saves the current link::Classes/Environment::, makes the document current, and performs its link::Classes/Document#toFrontAction::.
+
+method:: didResignKey
+Performs the Document's link::Classes/Document#endFrontAction:: and restores the current link::Classes/Environment::.
+
+
+
+subsection:: Controlling Document
+
+method:: close
+Close a document.
+code::
+(
+Task({
+	var doc;
+	doc = Document("background", "closing in 2 seconds");
+	doc.stringColor_(Color.blue);
+	1.wait;
+	doc.background_(Color.blue(alpha:0.8));
+	1.wait;
+	doc.close;
+}).play(AppClock);
+)
+::
+
+method:: front
+Bring a document to the front.
+code::
+Document.listener.front;
+::
+
+method:: unfocusedFront
+Bring a document to the front without focusing it.
+code::
+Document.listener.unfocusedFront;
+::
+
+method:: onClose
+Get/set the action to be performed on closing the document.
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+method:: endFrontAction
+Get/set the action to be performed when the document becomes no longer the front document.
+method:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+method:: toFrontAction
+Get / set the action to be performed when the document become the front document.
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::.
+
+method:: mouseDownAction
+Get/set the action to be performed on link::Classes/Document#mouseDown::.
+note::
+The Mac OSX built-in editor does not supports this feature. A mouseDownAction that you supply will be ignored.
+::
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
+
+
+method:: mouseUpAction
+Get/set the action to be performed on link::Classes/Document#mouseUp::.
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
+discussion::
+code::
+(
+
+//add a mouse action to this document:
+//example: easy button:
+//when you click in front of a 17 a SinOsc will start up;
+s.waitForBoot({	
+	Document.current.mouseUpAction_({arg doc;
+		var char;
+		char = doc.rangeText(doc.selectionStart, 2);
+		if(char == "17",{
+			{EnvGen.kr(Env.perc, doneAction:2) * SinOsc.ar([600,720,300].choose, 0, 0.5)}.play;
+		});
+		if(char == "23",{
+			{EnvGen.kr(Env.perc, doneAction:2) * PinkNoise.ar(0.2)}.play;
+		});
+	})
+});
+)
+::
+Test here and click in front of the numbers: 17 and 23.
+code::
+Document.current.mouseUpAction = nil; // clear mouseUpActiont
+::
+::
+
+
+method:: keyDownAction
+Get/set the action to be performed on link::Classes/Document#keyDown::.
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::.
+discussion::
+code::
+Document.current.keyDownAction = { arg ...args; args.postln };
+// now type some text
+Document.current.keyDownAction = nil;
+::
+::
+
+method:: keyUpAction
+Get/set the action to be performed on link::Classes/Document#keyUp::.
+argument:: arg1
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::.
+code::
+Document.current.keyUpAction = { arg ...args; args.postln };
+// now type some text
+Document.current.keyUpAction = nil;
+::
+::
+
+method:: makeWikiPage
+Creates a wiki page.
+argument:: wikiWord
+An instance of link::Classes/String::. The name of the document.
+argument:: extension
+An instance of link::Classes/String::. The file extension. Default value is code::".rtf"::.
+argument:: directory
+An instance of link::Classes/String::. The directory in which to save the page.
+discussion::
+code::
+Document.current.makeWikiPage("test1");
+::
+::
+
+method:: openWikiPage
+Opens/creates a wiki page out of the currently selected text.
+
+
+
+subsection:: Editing Content
+
+method:: selectLine
+Select a line of the document by number.
+argument:: line
+An link::Classes/Integer::.
+discussion::
+code::
+Document.current.selectLine(390);
+::
+::
+
+method:: selectRange
+Select a text range in the string of the document.
+argument:: start
+The start index.
+argument:: length
+The length of the selection.
+discussion::
+code::
+(
+Document.current.selectRange(Document.current.selectedRangeLocation + 3, 150);
+)
+::
+::
+
+method:: balanceParens
+Starting from the current selection, increase the selection until matching parentheses are selected.
+argument:: level
+Do this as many times to find ever wider brackets. Set to code::inf:: for outmost.
+discussion::
+code::
+((((
+Document.current.balanceParens(1);
+Document.current.balanceParens(3);
+Document.current.balanceParens(inf);
+))))
+::
+
+method:: selectionStart
+Returns the start of a current selection.
+code::
+Document.current.selectionStart.postln;
+::
+
+method:: selectionSize
+Returns the size of a current selection.
+code::
+(
+var doc;
+doc = Document.current;
+doc.selectRange(doc.selectionStart - 40, 10);
+doc.selectionSize.postln;
+)
+::
+
+
+method:: selectedString
+Gets/sets the selected string.
+argument:: txt
+An instance of link::Classes/String::.
+discussion::
+code::
+(
+var doc;
+doc = Document.current;
+doc.selectRange(doc.selectionStart - 40, 10);
+doc.selectedString.postln;
+)
+::
+::
+
+method:: currentLine
+Returns the current line as a link::Classes/String::.
+code::
+(
+var doc;
+doc = Document.current;
+doc.selectRange(doc.selectionStart - 40, 10);
+doc.currentLine.postln;
+)
+::
+
+method:: getSelectedLines
+Returns all full lines from before code::rangestart:: to after code::rangestart + rangesize:: as a link::Classes/String::.
+argument:: rangestart
+argument:: rangesize
+discussion::
+code::
+(
+var doc;
+doc = Document.current;
+doc.selectRange(doc.selectionStart - 40, 10);
+doc.getSelectedLines(doc.selectionStart - 40, 130).postln;
+)
+::
+::
+
+
+method:: string
+Gets the string within a certain range.
+argument:: rangestart
+argument:: rangesize
+
+method.: string_
+Sets the string within a certain range.
+argument:: string
+Explanation of string. Default value is code::nil::. Other information.
+argument:: rangestart
+An link::Classes/Integer::. Default value is code::nil::.
+argument:: rangesize
+An link::Classes/Integer::. Default value is 1.
+discussion::
+code::
+// Select the following code in parentheses and execute it
+(
+Document.current.string_(": test test test test test ",
+	Document.current.selectedRangeLocation + 12,
+	18);
+)
+// Watch me change content
+::
+::
+
+method:: font
+Gets/sets the font within a certain range.
+argument:: font
+An instance of link::Classes/Font::.
+argument:: rangestart
+An link::Classes/Integer::. Default value is -1. If code::rangestart = -1::, the whole document is selected.
+argument:: rangesize
+An link::Classes/nteger::. Default value is 0.
+discussion::
+code::
+// Select the following code in parentheses and execute it
+(
+Document.current.font_(Font("Impact", 14),
+	Document.current.selectedRangeLocation + 12,
+	18);
+)
+// Watch me change font
+::
+::
+
+method:: stringColor
+Gets the last color set with link::Classes/Document#stringColor_::.
+
+method:: stringColor_
+Sets the string color of a specific range of already printed text. Default is the whole document. To set the listener text color for posting, see: link::Classes/Document#postColor::.
+argument:: color
+An instance of link::Classes/Color::.
+argument:: rangeStart
+An link::Classes/Integer::. Default is -1.
+argument:: rangeSize
+An link::Classes/Integer::. Default value is 0
+discussion::
+code::
+// Select the following code in parentheses and execute it
+(
+Document.current.stringColor_(Color.rand(0.2, 0.8),
+	Document.current.selectedRangeLocation + 13,
+	16);
+)
+// Watch me change color
+::
+::
+
+method:: selectedBackground
+Gets the document's background color for selected text.
+
+method:: selectedBackground_
+Sets the document's background color for selected text. Applies to the whole document instance.
+argument:: color
+An instance of link::Classes/Color::.
+discussion::
+code::
+Document.current.selectedBackground; // returns default color
+(
+w = Document.new("Test", "Here is a selected text...");
+w.selectedBackground_(Color.new255(120, 180, 110));
+w.selectRange(10, 13);
+)
+::
+::
+
+method:: syntaxColorize
+Syntax colorize a document.
+
+method:: underlineSelection
+Underlines the current selection of a Document.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+subsection:: Auto-Completion
+
+note::
+OSX version only, currently. See link::Reference/DocumentAutoCompletion::.
+::
+code::
+	*allowAutoComp
+	*autoCompAll
+	*autoComplete
+	*autoCompleteKeyAction
+	*openFileAutoComplete (path)
+	*openAutoComplete
+	autoComplete
+::
+	
+
+
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+code::
+	*startup
+	*numberOfOpen
+	mouseUp (x, y, modifiers, buttonNumber, clickCount, clickPos)
+	keyDown (character, modifiers, unicode, keycode)
+	keyUp (character, modifiers, unicode, keycode)
+	getIdentifierCoordFromEnd (endPos)
+	dataptr
+	
+	Private. Used only internally:
+	*newFromIndex (idx)
+	*prnumberOfOpen
+	*prGetLast
+	*prGetIndexOfListener
+	*prBasicNew
+	prAdd
+	prGetLastIndex
+	setFont (font, rangeStart, rangeSize)
+	setTextColor (color, rangeStart, rangeSize)	
+	propen (path, selectionStart, selectionLength)
+	rangeText (rangestart, rangesize)
+	insertTextRange (string, rangestart, rangesize)
+	prinitByString (title, str, makeListener)
+	prSetBackgroundColor (color)
+	prGetBackgroundColor (color)
+	prSelectLine (line)
+	prIsEditable_ (editable)
+	prSetTitle (argName)
+	prGetTitle
+	prGetFileName
+	prSetFileName (apath)
+	prGetBounds (argBounds)
+	prSetBounds (argBounds)
+	prclose
+	prinsertText (dataPtr, txt)
+	prinitByIndex (idx)
+	envir
+	envir_ (ev)
+	text
+	removeUndo 
+	selectedText
+	selectUnderlinedText (clickPos)
+	linkAtClickPos (clickPos)
+	selectedRangeLocation
+	selectedRangeSize
+	restoreCurrentEnvironment
+	saveCurrentEnvironment
+	initByIndex (idx)
+	initLast
+	initFromPath (path, selectionStart, selectionLength)
+	initByString (argTitle, str, makeListener)
+::
+
+
+
+
+
+examples::
+
+code::
+//unfocusedFront_
+(
+Document.allDocuments.at(0).unfocusedFront
+)
+
+
+(
+var doc;
+doc = Document("", "||");
+doc.background_(Color.blue(alpha: 1.0.rand));
+
+Task({
+	1000.do({
+		doc.setFont(rangeSize: [7, 8, 9, 24].choose);
+		0.08.wait;
+	})
+}).play(AppClock);
+
+Task({
+	100.do({
+		1.01.wait;
+		doc.stringColor_([Color.red(alpha: 1.0.rand), Color.green(alpha: 1.0.rand)].choose);
+	})
+}).play(AppClock);
+
+Task({
+	100.do({
+		1.01.wait;
+		doc.selectedString_(["\"\n#", "||", "-", "--"].choose);
+	})
+}).play(AppClock);
+
+Task({
+	var co, mul;
+	co = 0.1;
+	mul = 1.02;
+	100.do({
+		0.16.wait;
+		co = co * mul;
+		if(co > 0.99, { co = 0.1 });
+		doc.background_(Color.blue(alpha: co));
+	});
+	doc.close;
+}).play(AppClock)
+)
+::
+
+A simple implementation of TBT (time based text) http://tbt.dyne.org/?info=download
+code::
+// record: type some text
+(
+var time = Main.elapsedTime;
+a = List.new;
+r = Routine { |char|
+loop {
+	a = a.add([char, Main.elapsedTime - time]);
+	char = 0.yield;
+}
+};
+
+Document.new("type some text")
+	.bounds_(Rect(100,SCWindow.screenBounds.height - 250, 400, 200))
+	.keyDownAction = { |doc, key| r.value(key) ; time = Main.elapsedTime};
+)
+
+// play back text in time
+(
+d = Document.new("type some text")
+	.bounds_(Rect(550,SCWindow.screenBounds.height-250,400,200));
+fork({
+	a.do { |pair|
+		d.string = d.string ++ pair[0];
+		pair[1].wait;
+	}
+}, AppClock)
+)
+::
