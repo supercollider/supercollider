@@ -1,0 +1,92 @@
+class:: Ppatlace
+summary:: interlace streams
+related:: Classes/Place
+categories:: Streams-Patterns-Events>Patterns>List
+
+description::
+
+Similar to link::Classes/Place::, but the list is an array of streams or patterns. The results of each stream will be output in turn.
+
+Examples::
+
+code::
+p = Ppatlace([Pwhite(1, 5, 5), Pgeom(10, 1.01, 10)], inf);
+x = p.asStream;
+x.all;
+
+
+5		// from Pwhite
+10		// from Pgeom
+4		// from Pwhite
+10.1		// etc....
+5
+10.201
+4
+10.30301
+2
+10.4060401
+10.510100501
+10.61520150601
+10.72135352107
+10.828567056281
+10.936852726844
+nil
+::
+
+Note that the Ppatlace has an infinite number of repeats, but the resulting stream is finite because the member streams are all finite. When the first stream (Pwhite) comes to an end, it is skipped and you see only the second stream until it stops.
+
+If even one member stream is infinite and Ppatlace has infinite repeats, the Ppatlace stream will also be infinite.
+
+
+code::
+//Ppatlace as a sequence of pitches:
+
+(
+SynthDef(\help_sinegrain,
+	{ arg out=0, freq=440, sustain=0.05;
+		var env;
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:2);
+		Out.ar(out, SinOsc.ar(freq, 0, env))
+	}).add;
+)
+
+
+// interlace two streams
+(
+var c = Ppatlace([
+		Pseq([0, 0, 0, 0, 8, 0, 8], inf),
+		Pseries(1, 1, 32)
+	], inf) + 67;
+x = c.asStream;
+
+Routine({
+	loop({
+		Synth(\help_sinegrain, [\freq, x.next.midicps, \dur, 0.2]);
+		0.17.wait;
+	})
+}).play;
+)
+
+
+
+
+// a more complicated example:
+(
+c = Ppatlace([
+	Pxrand([
+		Pseq(#[0, -2, -3, -5, -7], 1), Pwhite(-12, 4, 3), Pshuf(#[0, -2, -3, -5, -7], 1)
+	], inf),
+	Pxrand([
+		Pseq(#[0, 2, 4, 5, 7], 1), Pwhite(-4, 12, 3), Pshuf(#[0, 2, 4, 5, 7], 1)
+	], inf)
+], inf) + 67;
+x = c.asStream;
+
+Routine({
+	loop({
+		Synth(\help_sinegrain, [\freq, x.next.midicps, \dur, 0.2]);
+		0.17.wait;
+	})
+}).play;
+)
+::

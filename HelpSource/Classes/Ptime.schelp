@@ -1,0 +1,66 @@
+class:: Ptime
+summary:: returns time in beats from moment of embedding in stream
+related:: Classes/Pkey
+categories:: Streams-Patterns-Events>Patterns>Time
+
+Examples::
+
+code::
+(
+a = Ptime.new;
+x = a.asStream;
+)
+
+x.next;
+x.next;
+x.next;
+
+// post time in a playing event stream
+(
+Pbind(
+	\pfunc, Ptime.new.trace,
+	\dur, Pseries(0.5, 0.5, 5)
+).play;
+)
+
+
+// change degree independant of number of events that have been playing
+
+(
+var a, b;
+a = Pbind(
+	\degree, Pswitch(#[0, 2b, 3], Ptime(8).round(2) / 2),
+	\dur, Prand(#[0.2, 0.5, 1.1, 0.25, 0.15], inf)
+);
+b = Pbind(
+	\degree, Pseq(#[0, 2b, 3], 1),
+	\dur, 2,
+	\ctranspose, -7
+);
+Pseq([Event.silent(1.25), Ppar([a, b])], inf).play;
+)
+
+
+// test tempo changes
+
+(
+var a, b;
+a = Pbind(
+	\degree, Pswitch(#[0, 2b, 3], Ptime(8).round(2) / 2),
+	\dur, Prand(#[0.2, 0.5, 1.1, 0.25, 0.15], 9)
+);
+b = Pbind(
+	\degree, Pseq(#[0, 2b, 3], 1),
+	\dur, 2,
+	\ctranspose, -7
+);
+Pn(
+	Pfset({ ~tempo = #[1, 2, 4].choose.postln },
+		Pseq([
+			Event.silent(1.25),
+			Ppar([a, b])
+		])
+	)
+).play
+)
+::

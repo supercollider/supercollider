@@ -1,0 +1,12 @@
+class:: ListPattern
+summary:: abstract class that holds a list
+related:: Classes/FilterPattern
+categories:: Streams-Patterns-Events>Patterns>List
+
+Examples::
+
+code::
+// post subclasses:
+
+ListPattern.dumpClassSubtree;
+::

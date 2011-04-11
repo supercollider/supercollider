@@ -1,0 +1,53 @@
+class:: Pbindf
+summary:: bind several value patterns to one existing event stream by binding keys to valueskeys to values
+related:: Classes/Pattern, Classes/Event, Classes/Pbind, Classes/Pchain
+categories:: Streams-Patterns-Events>Patterns>Composition
+
+description::
+
+Pbindf adds several value streams into one existing event stream. Each value stream is assigned to one or more keys in the resulting event stream, overriding any values from the input stream.
+
+The patterns bound to keys are referred to as value patterns and the Pbindf itself is termed an emphasis::event pattern::.
+
+ClassMethods::
+
+method::new
+The arguments to Pbindf is the initial pattern followed by an alternating sequence of keys and patterns. A pattern can also be bound to an array of keys. In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
+
+Examples::
+
+code::
+(
+a = Pbind(\x, Pseq([1, 2, 3]), \zzz, 9000); // input stream
+b = Pbindf(a, \y, Prand([100, 300, 200], inf), \zzz, 99);
+x = b.asStream;
+)
+
+x.next(()); // pass in an event ()
+x.next(());
+x.next(());
+x.next(()); // end: nil
+
+
+
+// sound examples
+
+// using the default synth def
+a = Pbind(\dur, 0.1);
+Pbindf(a, \freq, Prand([300, 500, 231.2, 399.2], inf)).play;
+Pbindf(a, \freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200).play;
+
+
+(
+// a SynthDef
+SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
+	var audio = Blip.ar(freq, nharms, amp);
+	var env = Linen.kr(gate, doneAction: 2);
+	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
+}).add;
+)
+
+a = Pbind(\instrument, \test, \dur, 0.1);
+
+Pbindf(a, \freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200).play;
+::

@@ -1,0 +1,25 @@
+class:: Pprotect
+summary:: evaluate a function when an error occured in the thread
+related:: Classes/Ptrace
+categories:: Streams-Patterns-Events>Patterns>Language Control
+
+ClassMethods::
+
+method::new
+
+argument::pattern
+any pattern
+
+argument::func
+a link::Classes/Function:: to be evaluated when an error occurs. The error and the thread are passed as arguments to the function.
+
+Examples::
+
+code::
+(
+var x;
+var func = { "an error happened".postln };
+a = Pprotect(Pseq([1, 3, 3, Pfuncn({ Error.throw }), 2]), func);
+x = Pbind(\degree, a, \dur, 0.5).play;
+)
+::

@@ -1,0 +1,307 @@
+title:: Understanding Streams, Patterns and Events - Part 6
+summary:: Parallel Patterns
+related:: Tutorials/Streams-Patterns-Events1, Tutorials/Streams-Patterns-Events2, Tutorials/Streams-Patterns-Events3, Tutorials/Streams-Patterns-Events4, Tutorials/Streams-Patterns-Events5, Tutorials/Streams-Patterns-Events7
+categories:: Streams-Patterns-Events>Understanding-Streams-Patterns-and-Events
+
+section::Parallel Patterns
+
+subsection::Ppar
+
+The link::Classes/Ppar:: pattern allows you to merge multiple event streams to play in parallel.
+
+Ppar is a link::Classes/ListPattern:: and so like most ListPatterns it takes two arguments, a strong::list:: of event patterns to play in parallel and a strong::repeats:: count.
+
+Ppar's child patterns must be event patterns. Using value patterns in a Ppar is an error because value patterns contain no duration data.
+
+A Ppar is done when all of its subpatterns are done.
+
+code::
+(
+Ppar([
+	Pbind(\dur, 0.2, \midinote, Pseq([62, 65, 69, 72], inf)),
+	Pbind(\dur, 0.4, \midinote, Pseq([50, 45], inf))
+]).play
+)
+
+
+(
+// Ppars can be nested
+Ppar([
+	Pbind(
+		\dur, Prand([0.2, 0.4, 0.6], inf),
+		\midinote, Prand([72, 74, 76, 77, 79, 81], inf),
+		\db, -26,
+		\legato, 1.1
+	),
+	Pseq([
+		Pbind(\dur, 3.2, \freq, Pseq([\rest]) ),
+		Prand([
+			Ppar([
+				Pbind(\dur, 0.2, \pan,  0.5, \midinote, Pseq([60, 64, 67, 64])),
+				Pbind(\dur, 0.4, \pan, -0.5, \midinote, Pseq([48, 43]))
+			]),
+			Ppar([
+				Pbind(\dur, 0.2, \pan,  0.5, \midinote, Pseq([62, 65, 69, 65])),
+				Pbind(\dur, 0.4, \pan, -0.5, \midinote, Pseq([50, 45]))
+			]),
+			Ppar([
+				Pbind(\dur, 0.2, \pan,  0.5, \midinote, Pseq([64, 67, 71, 67])),
+				Pbind(\dur, 0.4, \pan, -0.5, \midinote, Pseq([52, 47]))
+			])
+		], 12)
+	], inf)
+], inf).play;
+)
+::
+
+subsection::Ptpar
+
+The link::Classes/Ppar:: pattern starts all of its subpatterns at the same time.
+
+A link::Classes/Ptpar:: pattern includes a start time parameter before each subpattern which allow the subpatterns to be started at some time delay within the pattern. The start time is given in beats.
+
+code::
+(
+var makePattern, durpat;
+
+durpat = Pseq([ Pgeom(0.05, 1.1, 24), Pgeom(0.5, 0.909, 24) ], 2);
+
+makePattern = { arg note, db, pan;
+	Pbind( \dur, durpat, \db, db, \pan, pan, \midinote, Pseq([note, note-4], inf) );
+};
+
+Ptpar([
+	0.0, makePattern.value(53, -20, -0.9),
+	2.0, makePattern.value(60, -23, -0.3),
+	4.0, makePattern.value(67, -26,  0.3),
+	6.0, makePattern.value(74, -29,  0.9)
+], inf).play;
+)
+::
+
+The time arguments are sent the code::value:: message when the Ptpar pattern is started, so you may use functions to specify the times.
+
+code::
+(
+var makePattern, durpat;
+
+durpat = Pseq([ Pgeom(0.05, 1.1, 24), Pgeom(0.5, 0.909, 24) ], 2);
+
+makePattern = { arg note, db, pan;
+	Pbind( \dur, durpat, \db, db, \pan, pan, \midinote, Pseq([note, note-4], inf) );
+};
+
+Ptpar([
+	{ 0.0 }, makePattern.value(53, -20, -0.9),
+	{ 8.0.rand }, makePattern.value(60, -23, -0.3),
+	{ 8.0.rand }, makePattern.value(67, -26,  0.3),
+	{ 8.0.rand }, makePattern.value(74, -29,  0.9)
+], inf).play;
+)
+::
+
+section::FilterPatterns and transformation
+
+FilterPatterns take an existing pattern and apply some modification to its properties.
+
+subsection::Padd, Pmul, Pset, Pstretch
+
+There is a simpler way to write the modal transposition example given in part 5. In fact the earlier examples are setting the values of code::mtranspose:: and code::ctranspose:: which is not the best way to change those variables, because it wipes out any modifications to them by parent patterns. It is better to take the current value of those properties and add a value to them.
+
+The link::Classes/Padd:: filter takes the current value of a property and adds a value to it.
+
+code::
+(
+// modal transposition
+var pattern;
+
+// define the basic pattern
+pattern = Pbind(
+	\dur, 0.15,
+	\degree, Pseq([ Pshuf(#[-7,-3,0,2,4,7], 4), Pseq([0,1,2,3,4,5,6,7]) ], 1)
+);
+
+Pseq([
+	pattern,		// untransposed
+	Padd(\mtranspose, 1, pattern),	// modal transpose up 1 degree
+	Padd(\mtranspose, 2, pattern)	// modal transpose up 2 degrees
+], inf).play
+)
+::
+
+Similarly, link::Classes/Pmul:: multiplies the current value of a property by a value. link::Classes/Pset:: sets the property to a value.
+
+In order to process duration correctly link::Classes/Pstretch:: should be used.
+
+code::
+(
+// beat stretching using Pstretch
+var pattern;
+
+// define the basic pattern
+pattern = Pbind(
+	\dur, 0.15,
+	\degree, Pseq([ Pshuf(#[-7,-3,0,2,4,7], 4), Pseq([0,1,2,3,4,5,6,7]) ], 1)
+);
+
+Pseq([
+	pattern,		// normal
+	Pstretch(0.5, pattern),	// stretch durations by a factor of 1/2
+	Pstretch(2.0, pattern)	// stretch durations by a factor of 2
+], inf).play
+)
+::
+
+subsection::Paddp, Pmulp, Psetp, Pstretchp
+
+In fact there is an even shorter version of the modal transposition example. link::Classes/Paddp:: reads one pattern to get values for adding to a property and plays the second pattern once through modified with each new value.
+
+code::
+(
+// modal transposition
+var pattern;
+
+// define the basic pattern
+pattern = Pbind(
+	\dur, 0.15,
+	\degree, Pseq([ Pshuf(#[-7,-3,0,2,4,7], 4), Pseq([0,1,2,3,4,5,6,7]) ], 1)
+);
+
+Paddp(
+	\mtranspose,		// property to be modified
+	Pseq([0,1,2], inf),	// a value pattern as a source of values for adding to mtranspose
+	pattern			// the pattern to be modified
+).play
+)
+::
+
+Nested modifications:
+
+code::
+(
+// modal transposition
+var pat1, pat2;
+
+// define the basic pattern
+pat1 = Pbind(
+	\dur, 0.15,
+	\degree, Pseq([ Pshuf(#[-7,-3,0,2,4,7], 4), Pseq([0,1,2,3,4,5,6,7]) ], 1)
+);
+
+pat2 = Paddp(
+	\mtranspose,	// property to be modified
+	Pseq([0,1,2]),	// a value pattern as a source of values for adding to mtranspose
+	Ppar([
+		pat1,
+		Padd(\mtranspose, -3, pat1),	// down a 4th
+		Padd(\mtranspose, 2, pat1)	// up a 3rd
+	])
+);
+
+Pseq([
+	pat1,	// unmodified pattern
+	pat2,	// parallel sequence
+	Pstretch(1.5, pat2)	// parallel sequence stretched by 3/2
+], inf).play
+)
+::
+
+Another example using Paddp:
+
+code::
+(
+var chord;
+chord = Prand([[53, 58, 64],[53, 60, 64],[57,60,65]]);
+Paddp(\ctranspose, Prand([-1,0,2,4,5], inf),
+	Ppar([
+		Pbind(	// melody part
+			\dur, Prand([0.2, 0.4, 0.6], inf),
+			\midinote, Pxrand([71, 72, 74, 76, 77, 79], 10),
+			\db, -26,
+			\legato, 1.1
+		),
+		Pbind(	// harmony part
+			\pan, 0.4,
+			\dur, Pseq([0.1, 0.5, 0.4, 0.6], 4),
+			\midinote, Pseq([chord,\rest,chord,\rest], 4)
+		),
+		Pbind(	// bass part
+			\pan, -0.4,
+			\dur, 0.4,
+			\midinote, Pseq([38, 45, 38, 36], 4)
+		)
+	])
+).play
+)
+
+
+(
+// chromatic transposition
+var pattern;
+
+// define the basic pattern
+pattern = Pbind(
+	\dur, 0.1,
+	\degree, Pseq([0,1,2,3,4,5,6,7])
+);
+
+Paddp(
+	\ctranspose,		// property to be modified
+	Pseries(0,1,12),	// a value pattern as a source of values for multiplying with ctranspose
+	pattern			// the pattern to be modified
+).play
+)
+
+
+(
+// beat time stretching
+var pattern;
+
+// define the basic pattern
+pattern = Pbind(
+	\dur, 0.1,
+	\degree, Pseq([0,1,2,3,4,5,6,7])
+);
+
+Pstretchp(
+	Pseq([1,2,3], inf),	// a value pattern as a source of values for multiplying with stretch
+	pattern			// the pattern to be modified
+).play
+)
+::
+
+subsection::Pbindf
+
+link::Classes/Pbindf:: is like link::Classes/Pbind:: except that it merges all the bound symbols into events that it gets from a subpattern. It takes the same initial arguments in pairs as Pbind does, with an additional pattern to be modified as the last argument.
+
+code::
+(
+var pattern;
+pattern = Pbind( \midinote, Pseq(#[60, 62, 64, 65, 67, 69, 71, 72]) );
+
+Pseq([
+	Pbindf(pattern, \legato, 0.1, \dur, 0.2),
+	Pbindf(pattern, \legato, 1.0, \dur, 0.125),
+	Pbindf(pattern, \legato, 2.0, \dur, 0.3)
+], inf).play
+)
+::
+
+Patterns can be used as the arguments to Pbindf.
+
+code::
+(
+var pattern;
+pattern = Pbind( \midinote, Pseq(#[60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79]) );
+
+Pseq([
+	Pbindf(pattern,\legato, 0.1, \dur, Pgeom(0.3, 0.85, inf)),
+	Pbindf(pattern,\legato, 1.0, \dur, Pseq([0.3, 0.15], inf)),
+	Pbindf(pattern,\legato, 2.0, \dur, Pseq([0.2, 0.2, 0.4], inf))
+], inf).play
+)
+::
+
+To go to the next file:
+link::Tutorials/Streams-Patterns-Events7::
+

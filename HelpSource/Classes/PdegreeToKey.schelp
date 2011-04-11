@@ -1,0 +1,48 @@
+class:: PdegreeToKey
+summary:: index into a scale
+related:: Classes/Scale
+categories:: Streams-Patterns-Events>Patterns>Math
+
+description::
+
+Returns a series of notes derived from an index into a scale.
+
+ClassMethods::
+
+method::new
+
+argument::keypattern
+integer index into the scale.
+
+argument::scale
+an array or pattern. If a pattern, it streams the scales accordingly.
+
+argument::stepsPerOctave
+the number of steps per octave in the scale.
+
+Examples::
+
+code::
+(
+Pbind(\note, PdegreeToKey(
+			Pseq([1, 2, 3, 2, 5, 4, 3, 4, 2, 1], 2),
+			#[0, 2, 3, 6, 7, 9],
+			12
+		),
+	\dur, 0.25
+).play;
+)
+
+
+(
+var scales;
+scales = #[[0, 2, 3, 6, 7, 9], [0, 1, 5, 6, 7, 9, 11], [0, 2, 3]];
+Pbind(\note, PdegreeToKey(
+			Pseq([1, 2, 3, 2, 5, 4, 3, 4, 2, 1], 4),
+			Pstutter(3, Prand(scales, inf)),
+			12
+		),
+	\dur, 0.25
+).play;
+)
+::

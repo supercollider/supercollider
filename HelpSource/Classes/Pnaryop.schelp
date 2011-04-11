@@ -1,0 +1,108 @@
+class:: Pnaryop
+summary:: n-ary operator pattern
+related:: Classes/Pbinop, Classes/Punop, Classes/NAryOpFunction
+categories:: Streams-Patterns-Events>Patterns>Math
+
+description::
+
+Returns a stream that applies the n-ary operator to the stream values of the receiver, taking n-1 streams as arguments. Usually, this is the result of applying an n-ary operator (i.e. a method with more than one argument) to a pattern.
+
+Examples of n-ary operators are: blend, linlin, linexp, explin, expexp, clip, fold, wrap.
+
+ClassMethods::
+
+method::new
+
+argument::operator
+operator to be applied
+
+argument::a
+a pattern (or compatible pattern input)
+
+argument::arglist
+a list of patterns (or compatible pattern inputs)
+
+Examples::
+
+code::
+(
+var a;
+a = Pnaryop(\wrap, Pseries(0, 1, 12), [3, 7]);
+a.asStream.all;
+)
+
+// this is the same as:
+(
+var a;
+a = Pseries(0, 1, 12).wrap(3, 7);
+a.asStream.all;
+)
+
+// the scale argument can also be a pattern:
+
+(
+var a;
+a = Pnaryop(\wrap, Pseries(0, 1, 12), [Pseq([3, 4, 5], inf), Pseq([9, 7], inf)]);
+a.asStream.all;
+)
+
+
+// common cases:
+Pwhite(0, 1, inf).linexp(0, 1, 200, 1000);
+Pwhite(0, 1, inf).degreeToKey([0, 1, 3, 5, 7, 9, 11], 10);
+blend(Pseq([1, 2, 3], inf), Pseq([3, 2, 1, 0], inf), Pseries(0, 0.01, inf));
+::
+
+code::
+// sound example
+(
+SynthDef(\help_sinegrain,
+	{ arg out=0, freq=440, sustain=0.05, amp=0.1;
+		var env;
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2, amp), doneAction:2);
+		Out.ar(out, SinOsc.ar(freq, 0, env))
+	}).add;
+)
+
+(
+var a;
+a = Pnaryop(\wrap, Pseries(0, 1, 12), [3, 7]).asStream;
+{
+	a.do { |val|
+		Synth(\help_sinegrain, [\freq, (val + 72) .midicps.postln]);
+		0.5.wait;
+	}
+}.fork;
+)
+
+(
+Pbind(
+	\dur, 0.1,
+	\instrument, \help_sinegrain,
+	\note, Pnaryop(\wrap, Pseries(0, 1, 12), [3, 7]);
+).play;
+)
+
+
+
+// these are the same as:
+
+(
+var a;
+a = Pseries(0, 1, 12).wrap(3, 7).asStream;
+{
+	a.do { |val|
+		Synth(\help_sinegrain, [\freq, (val + 72) .midicps.postln]);
+		0.5.wait;
+	}
+}.fork;
+)
+
+(
+Pbind(
+	\dur, 0.1,
+	\instrument, \help_sinegrain,
+	\note, Pwhite(0, 12, inf).wrap(3, 7);
+).play;
+)
+::

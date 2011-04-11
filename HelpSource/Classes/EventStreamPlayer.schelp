@@ -1,0 +1,51 @@
+class:: EventStreamPlayer
+summary:: two streams combined by a binary operator
+related:: Classes/Event, Classes/Pbind
+categories:: Streams-Patterns-Events
+
+description::
+
+An EventStreamPlayer is used by link::Classes/Event:: based Patterns.
+
+The EventStreamPlayer holds a stream which returns a series of Events, and a protoEvent. At each call to next, it copies the protoEvent, passes that to the stream, and calls strong::play:: on the link::Classes/Event:: returned.
+
+For more on EventStreamPlayer see link::Tutorials/Streams-Patterns-Events4::
+
+EventStreamPlayer uses the same control methods and status notifications as link::Classes/Task::.
+
+ClassMethods::
+
+method::new
+note::
+You do not explictly create an EventStreamPlayers, they are created for you when you call link::Classes/Pattern#-play::.
+::
+
+InstanceMethods::
+
+private::prStop, prNext
+
+method::play
+
+argument::argClock
+(optional) Override the clock assigned in Task.new.
+
+argument::doReset
+If true, the task will start over from the beginning. Default is false (task will resume where it was when it was last stopped).
+
+argument::quant
+See the link::Classes/Quant:: helpfile.
+
+method::start
+Restart the task from the beginning.
+
+method::resume
+Resume the task where it left off.
+
+method::pause
+Stop playing now.
+
+method::stop
+Stop playing now. (Pause and stop have the same implementation.)
+
+method::reset
+Set the stream to restart from the beginning the next time it's played.

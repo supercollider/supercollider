@@ -1,0 +1,262 @@
+title:: PG_Cookbook05_Using_Samples
+summary:: Using samples
+related:: Tutorials/PG_Cookbook04_Sending_MIDI, Tutorials/PG_Cookbook06_Phrase_Network
+categories:: Streams-Patterns-Events>A-Practical-Guide
+
+section::Using samples
+
+subsection::Playing a pattern in time with a sampled loop
+
+A deceptively complex requirement... here, we will loop the a11wlk01.wav sample between 0.404561 and 3.185917 seconds (chosen for its surprisingly accurate four-beat groove), and overlay synthesized bells emphasizing the meter.
+
+It might be tempting to loop a link::Classes/PlayBuf:: so that the loop runs automatically on the server, but it can easily drift out of sync with the client (because of slight deviations in the actual sample rate). Instead, the example defines a SynthDef that plays exactly one repetition of the loop, and repeatedly triggers it once per bar.
+
+The primary bell pattern accents the downbeat and follows with a randomly generated rhythm. The catch is that we have no assurance that the link::Classes/Pwrand:: code::\dur:: pattern will add up to exactly 4 beats. The link::Classes/Pfindur:: ("finite duration") pattern cuts off the inner Pbind after 4 beats. This would stop the pattern, except link::Classes/Pn:: repeats the Pfindur infinitely, placing the accent in the right place every time.
+
+The loop actually starts with a half-beat anacrusis, so link::Classes/Ptpar:: delays the bell patterns by 0.5 beats.
+
+code::
+(
+b = Buffer.read(s, "sounds/a11wlk01.wav");
+
+// one loop segment
+SynthDef(\oneLoop, { |out, bufnum, start, time, amp|
+	var	sig = PlayBuf.ar(1, bufnum, startPos: start, loop: 0),
+		env = EnvGen.kr(Env.linen(0.01, time, 0.05, level: amp), doneAction: 2);
+	Out.ar(out, (sig * env) ! 2)
+}).add;
+
+SynthDef(\bell, { |out, accent = 0, amp = 0.1, decayScale = 1|
+	var	exc = PinkNoise.ar(amp)
+			* Decay2.kr(Impulse.kr(0), 0.01, 0.05),
+		sig = Klank.ar(`[
+			{ ExpRand(400, 1600) } ! 4,
+			1 ! 4,
+			{ ExpRand(0.1, 0.4) } ! 4
+		], exc, freqscale: accent + 1, decayscale: decayScale);
+	DetectSilence.ar(sig, doneAction: 2);
+	Out.ar(out, sig ! 2)
+}).add;
+)
+
+(
+TempoClock.default.tempo = 0.35953685899971 * 4;
+
+p = Ptpar([
+	0, Pbind(
+		\instrument, \oneLoop,
+		\bufnum, b,
+		\amp, 0.4,
+		\start, 17841,
+		\time, 0.35953685899971.reciprocal,
+		\dur, 4
+	),
+	0.5, Pn(
+		Pfindur(4,
+			Pbind(
+				\instrument, \bell,
+				\accent, Pseq([2, Pn(0, inf)], 1),
+				\amp, Pseq([0.3, Pn(0.1, inf)], 1),
+				\decayScale, Pseq([6, Pn(1, inf)], 1),
+				\dur, Pwrand(#[0.25, 0.5, 0.75, 1], #[2, 3, 1, 1].normalizeSum, inf)
+			)
+		), 
+	inf),
+	0.5, Pbind(
+		\instrument, \bell,
+		\accent, -0.6,
+		\amp, 0.2,
+		\decayScale, 0.1,
+		\dur, 1
+	)
+], 1).play;
+)
+
+p.stop;
+::
+
+The use of Ptpar above means that you could stop or start only the whole ball of wax at once, with no control over the three layers. It's no more difficult to play the layers in the independent event stream players, using the quant argument to ensure the proper synchronization. See the link::Classes/Quant:: help file for details on specifying the onset time of a pattern.
+
+code::
+(
+TempoClock.default.tempo = 0.35953685899971 * 4;
+
+p = Pbind(
+	\instrument, \oneLoop,
+	\bufnum, b,
+	\amp, 0.4,
+	\start, 17841,
+	\time, 0.35953685899971.reciprocal,
+	\dur, 4
+).play(quant: [4, 3.5]);
+
+q = Pn(
+	Pfindur(4,
+		Pbind(
+			\instrument, \bell,
+			\accent, Pseq([2, Pn(0, inf)], 1),
+			\amp, Pseq([0.3, Pn(0.1, inf)], 1),
+			\decayScale, Pseq([6, Pn(1, inf)], 1),
+			\dur, Pwrand(#[0.25, 0.5, 0.75, 1], #[2, 3, 1, 1].normalizeSum, inf)
+		)
+	), 
+inf).play(quant: [4, 4]);
+
+r = Pbind(
+	\instrument, \bell,
+	\accent, -0.6,
+	\amp, 0.2,
+	\decayScale, 0.1,
+	\dur, 1
+).play(quant: [4, 4]);
+)
+
+[p, q, r].do(_.stop);
+
+b.free;
+::
+
+subsection::Using audio samples to play pitched material
+
+To use an instrument sample in a pattern, you need a SynthDef that plays the sample at a given rate. Here we will use link::Classes/PlayBuf::, which doesn't allow looping over a specific region. For that, link::Classes/Phasor:: and link::Classes/BufRd:: are probably the best choice. ( strong::Third-party extension alert:: : LoopBuf by Lance Putnam is an alternative - find it in the strong::sc3-plugins:: package.)
+
+Frequency is controlled by the rate parameter. The sample plays at a given frequency at normal rate, so to play a specific frequency, code::frequency / baseFrequency:: gives you the required rate.
+
+The first example makes a custom protoEvent that calculates rate, as code::\freq::, based on the base frequency. It uses one sample, so it would be best for patterns that will play in a narrow range. Since there isn't an instrument sample in the SuperCollider distribution, we will record a frequency-modulation sample into a buffer before running the pattern.
+
+code::
+// make a sound sample
+(
+var	recorder;
+fork {
+	b = Buffer.alloc(s, 44100 * 2, 1);
+	s.sync;
+	recorder = { |freq = 440|
+		var	initPulse = Impulse.kr(0),
+			mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
+			car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
+		RecordBuf.ar(car, b, loop: 0, doneAction: 2);
+		car ! 2
+	}.play;
+	OSCpathResponder(s.addr, ['/n_end', recorder.nodeID], { |time, resp, msg|
+		"done recording".postln;
+		resp.remove;
+	}).add;	
+};
+SynthDef(\sampler, { |out, bufnum, freq = 1, amp = 1|
+	var	sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: 2) * amp;
+	Out.ar(out, sig ! 2)
+}).add;
+)
+
+(
+// WAIT for "done recording" message before doing this
+var	samplerEvent = Event.default.put(\freq, { ~midinote.midicps / ~sampleBaseFreq });
+
+TempoClock.default.tempo = 1;
+p = Pbind(
+	\degree, Pwhite(0, 12, inf),
+	\dur, Pwrand([0.25, Pn(0.125, 2)], #[0.8, 0.2], inf),
+	\amp, Pexprand(0.1, 0.5, inf),
+	\sampleBaseFreq, 440,
+	\instrument, \sampler,
+	\bufnum, b
+).play(protoEvent: samplerEvent);
+)
+
+p.stop;
+b.free;
+::
+
+subsection::Multi-sampled instruments
+
+To extend the sampler's range using multiple samples and ensure smooth transitions between frequency ranges, the SynthDef should crossfade between adjacent buffers. A hybrid approach is used here, where Pbind calculates the lower buffer number to use and the SynthDef calculates the crossfade strength. (The calculations could be structured differently, either putting more of them into the SynthDef for convenience in the pattern, or loading them into the pattern and keeping the SynthDef as lean as possible.)
+
+MIDI note numbers are used for these calculations because it's a linear frequency scale and linear interpolation is easier than the exponential interpolation that would be required when using Hz. Assuming a sorted array, indexInBetween gives the fractional index using linear interpolation. If you need to use frequency in Hz, use this function in place of indexInBetween.
+
+code::
+	f = { |val, array|
+		var a, b, div;
+		var i = array.indexOfGreaterThan(val);
+		if(i.isNil) { array.size - 1 } {
+			if(i == 0) { i } {
+				a = array[i-1]; b = array[i];
+				div = b / a;
+				if(div == 1) { i } {
+						// log() / log() == log(val/a) at base (b/a)
+						// which is the inverse of exponential interpolation
+					log(val / a) / log(div) + i - 1
+				}
+			}
+		};
+	};
+::
+
+But that function isn't needed for this example:
+
+code::
+(
+var	bufCount;
+~midinotes = (39, 46 .. 88);
+bufCount = ~midinotes.size;
+
+fork {
+		// record the samples at different frequencies
+	b = Buffer.allocConsecutive(~midinotes.size, s, 44100 * 2, 1);
+	SynthDef(\sampleSource, { |freq = 440, bufnum|
+		var	initPulse = Impulse.kr(0),
+			mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
+			car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
+		RecordBuf.ar(car, bufnum, loop: 0, doneAction: 2);
+	}).send(s);
+	s.sync;
+		// record all 8 buffers concurrently
+	b.do({ |buf, i|
+		Synth(\sampleSource, [freq: ~midinotes[i].midicps, bufnum: buf]);
+	});
+};
+OSCresponderNode(s.addr, '/n_end', { |t, r, m|
+	bufCount = bufCount - 1;
+	if(bufCount == 0) {
+		"done recording".postln;
+		r.remove;
+	};
+}).add;
+
+SynthDef(\multiSampler, { |out, bufnum, bufBase, baseFreqBuf, freq = 440, amp = 1|
+	var	buf1 = bufnum.floor,
+		buf2 = buf1 + 1,
+		xfade = (bufnum - buf1).madd(2, -1),
+		basefreqs = Index.kr(baseFreqBuf, [buf1, buf2]),
+		playbufs = PlayBuf.ar(1, bufBase + [buf1, buf2], freq / basefreqs, loop: 0, doneAction: 2),
+		sig = XFade2.ar(playbufs[0], playbufs[1], xfade, amp);
+	Out.ar(out, sig ! 2)
+}).add;
+
+~baseBuf = Buffer.alloc(s, ~midinotes.size, 1, { |buf| buf.setnMsg(0, ~midinotes.midicps) });
+)
+
+(
+TempoClock.default.tempo = 1;
+p = Pbind(
+	\instrument, \multiSampler,
+	\bufBase, b.first,
+	\baseFreqBuf, ~baseBuf,
+	\degree, Pseries(0, Prand(#[-2, -1, 1, 2], inf), inf).fold(-11, 11),
+	\dur, Pwrand([0.25, Pn(0.125, 2)], #[0.8, 0.2], inf),
+	\amp, Pexprand(0.1, 0.5, inf),
+		// some important conversions
+		// identify the buffer numbers to read
+	\freq, Pfunc { |ev| ev.use(ev[\freq]) },
+	\bufnum, Pfunc({ |ev| ~midinotes.indexInBetween(ev[\freq].cpsmidi) })
+		.clip(0, ~midinotes.size - 1.001)
+).play;
+)
+
+p.stop;
+b.do(_.free); ~baseBuf.free;
+::
+
+Previous:	link::Tutorials/PG_Cookbook04_Sending_MIDI::
+
+Next:		link::Tutorials/PG_Cookbook06_Phrase_Network::

@@ -1,0 +1,70 @@
+class:: Pgbrown
+summary:: geometric brownian motion pattern
+related:: Classes/BrownNoise, Classes/Pbrown
+categories:: Streams-Patterns-Events>Patterns>Random
+
+description::
+
+Returns a stream that behaves like a geometric brownian motion.
+
+ClassMethods::
+
+method::new
+
+argument::lo
+lower boundary of values.
+
+argument::hi
+upper boundary of values.
+
+argument::step
+maximum multiplication factor per step (omega) - the distribution is xrand2.
+
+argument::length
+number of values produced.
+
+Examples::
+
+code::
+(
+var a, b;
+a = Pgbrown(0.0, 1.0, 0.2, inf);
+b = a.asStream;
+7.do({ b.next.postln; });
+)
+
+
+// sound example
+(
+SynthDef(\help_sinegrain,
+	{ arg out=0, freq=440, sustain=0.05;
+		var env;
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:2);
+		Out.ar(out, SinOsc.ar(freq, 0, env))
+	}).add;
+)
+
+(
+var a;
+a = Pgbrown(1.0, 2.0, 0.1, inf).asStream;
+Routine({
+	loop({
+	Synth(\help_sinegrain, [\freq, a.next * 600 + 300]);
+	0.02.wait;
+	})
+}).play;
+)
+
+// compare with normal brownian motion:
+
+(
+var a;
+a = Pbrown(1.0, 2.0, 0.1, inf).asStream;
+Routine({
+	loop({
+		Synth(\help_sinegrain, [\freq, a.next * 600 + 300]);
+		0.02.wait;
+	})
+}).play;
+)
+::

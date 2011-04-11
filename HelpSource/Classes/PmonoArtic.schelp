@@ -1,0 +1,38 @@
+class:: PmonoArtic
+summary:: partly monophonic event stream
+related:: Classes/Pbind, Classes/Pmono
+categories:: Streams-Patterns-Events>Patterns>Event
+
+description::
+
+Like link::Classes/Pmono::, PmonoArtic plays one synth at a time (where successive events change the parameters of the existing synth node). PmonoArtic, however, allows events to re-articulate and supports staccato in the middle of a monophonic phrase.
+
+If an event specifies a 'sustain' value shorter than the event delta, it means the synth should not sustain all the way through to the next event. In that case, the node will be released according to 'sustain' and the next event will start a new synth.
+
+If sustain >= delta, the synth will play through and its parameters will change (just like link::Classes/Pmono::).
+
+Since sustain is calculated as code::~dur * ~legato::, this means code::~legato < 1.0:: causes re-articulation while code::~legato >= 1.0:: causes a slur.
+
+Examples::
+
+code::
+// This SynthDef has a harder attack than the default, illustrating rearticulation more clearly.
+(
+SynthDef(\sawpulse, { |out, freq = 440, gate = 0.5, plfofreq = 6, mw = 0, ffreq = 2000, rq = 0.3, freqlag = 0.05, amp = 1|
+	var sig, plfo, fcurve;
+	plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
+	freq = Lag.kr(freq, freqlag) * plfo;
+	fcurve = EnvGen.kr(Env.adsr(0, 0.3, 0.1, 20), gate);
+	fcurve = (fcurve - 1).madd(0.7, 1) * ffreq;
+	sig = Mix.ar([Pulse.ar(freq, 0.9), Saw.ar(freq*1.007)]);
+	sig = RLPF.ar(sig, fcurve, rq)
+		* EnvGen.kr(Env.adsr(0.04, 0.2, 0.6, 0.1), gate, doneAction:2)
+		* amp;
+	Out.ar(out, sig ! 2)
+}).add;
+)
+
+p = PmonoArtic(\sawpulse, \dur, 0.2, \freq, Pwhite(1,8) * 100, \legato, Pwrand(#[0.5, 1.0], #[0.1, 0.9], inf) ).play;
+
+p.stop;
+::

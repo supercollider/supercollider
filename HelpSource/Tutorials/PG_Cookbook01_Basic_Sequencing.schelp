@@ -1,0 +1,114 @@
+title:: PG_Cookbook01_Basic_Sequencing
+summary:: Sequencing basics
+related:: Tutorials/PG_08_Event_Types_and_Parameters, Tutorials/PG_Cookbook02_Manipulating_Patterns
+categories:: Streams-Patterns-Events>A-Practical-Guide
+
+section::Cookbook: Sequencing basics
+
+subsection::Playing a predefined note sequence
+
+The following are three different ways of playing the same famous fugue subject.
+
+The first is brute force, listing all the scale degrees mechanically in order. The second and third recognize the A pedal point and use interlacing operations to insert the pedal notes in between the changing notes.
+
+The example demonstrates the use of the code::\scale:: and code::\root:: event keys to define tonality. Root = 2 is D, and the scale defines a natural minor mode. The degree sequence also uses accidentals. Subtracting 0.1 from an integer scale degree flattens the note by a semitone; adding 0.1 raises by a semitone. -0.9 is 0.1 higher than -1; a natural minor scale degree below the tonic is a flat 7, and a half step higher than that is the leading tone.
+
+code::
+(
+TempoClock.default.tempo = 84/60;
+
+p = Pbind(
+	\scale, #[0, 2, 3, 5, 7, 8, 10],
+	\root, 2,
+	\degree, Pseq(#[rest, 4, 3, 4, 2, 4, 1, 4, 0, 4, -0.9, 4, 0, 4, 1, 4, 2, 4,
+		-3, 4, -1.9, 4, -0.9, 4, 0, 4, -0.9, 4, 0, 4, 1, 4, 2], 1),
+	\dur, 0.25
+).play;
+)
+
+(
+p = Pbind(
+	\scale, #[0, 2, 3, 5, 7, 8, 10],
+	\root, 2,
+	\degree, Place([#[rest, 3, 2, 1, 0, -0.9, 0, 1, 2, -3, -1.9, -0.9, 0, -0.9, 0, 1, 2],
+		(4 ! 16) ++ \rest], 17),
+	\dur, 0.25
+).play;
+)
+
+(
+p = Pbind(
+	\scale, #[0, 2, 3, 5, 7, 8, 10],
+	\root, 2,
+	\degree, Ppatlace([Pseq(#[rest, 3, 2, 1, 0, -0.9, 0, 1, 2, -3, -1.9, -0.9, 0, -0.9, 0, 1, 2], 1),
+		Pn(4, 16)], inf),
+	\dur, 0.25
+).play;
+)
+::
+
+subsection::"Multichannel" expansion
+
+In a SynthDef, using an array as the input to a UGen expands the UGen into an array of UGens (see link::Guides/Multichannel-Expansion::). Something similar happens in patterns. Normally a value sent to a Synth node should be a single number, but if it's an array instead, the pattern expands the event to produce emphasis::multiple synth nodes instead:: of just one.
+
+The code::\degree:: pattern applies a set of chord intervals to a melody that's always on top. It's a compound pattern, Pseries(...) + Prand(...), where Pseries returns a single number and Prand returns an array. As with regular math operations, a number plus an array is an array. If the current Pseries value is 7 and Prand returns [0, -3, -5], the result is [7, 4, 2] and you would hear a C major triad in first inversion.
+
+code::
+(
+p = Pbind(
+	\degree, Pseries(7, Pwhite(1, 3, inf) * Prand(#[-1, 1], inf), inf).fold(0, 14)
+		+ Prand(#[[0, -2, -4], [0, -3, -5], [0, -2, -5], [0, -1, -4]], inf),
+	\dur, Pwrand(#[1, 0.5], #[0.8, 0.2], inf)
+).play;
+)
+
+p.stop;
+::
+
+subsection::Using custom SynthDefs (including unpitched SynthDefs)
+
+Patterns have special features to support several styles of pitch organization, but those features are strictly optional. Here we play a SynthDef that has no frequency argument whatsoever.
+
+Note the use of code::add:: to prepare the SynthDef. Without it, most of the SynthDef inputs would not be recognized and the pattern would not send values to them.
+
+It's worth noting that the pattern runs in beats, whose real duration in seconds depends on the clock's tempo. The SynthDef, however, always measures time in seconds. This example keeps things simple by setting the clock to 1 beat per second. If the tempo needs to be something else, though, the code::\time:: key should be divided by the tempo:
+
+code::
+	\time, Pkey(\delta) / Pfunc { thisThread.clock.tempo },
+::
+
+code::
+(
+b = Buffer.read(s, "sounds/a11wlk01.wav");
+
+SynthDef(\stretchedFragments, { |out, bufnum, start, time = 1, stretch = 1, amp = 1, attack = 0.01, decay = 0.05|
+	var	sig = PlayBuf.ar(1, bufnum, rate: stretch.reciprocal, startPos: start, doneAction:2);
+	sig = PitchShift.ar(sig, pitchRatio: stretch)
+		* EnvGen.kr(Env.linen(attack, time, decay), doneAction: 2);
+	Out.ar(out, sig ! 2)
+}).add;	// note add! Without this, arguments won't work
+)
+
+(
+TempoClock.default.tempo = 1;
+
+p = Pbind(
+	\instrument, \stretchedFragments,
+	\bufnum, b,
+	\start, Pwhite(0, (b.numFrames * 0.7).asInteger, inf),
+	\delta, Pexprand(0.2, 1.5, inf),
+	\time, Pkey(\delta),
+	\stretch, Pexprand(1.0, 4.0, inf),
+	\amp, 0.5,
+	\attack, 0.1,
+	\decay, 0.2
+).play;
+)
+
+p.stop;
+b.free;	// be tidy! remember to clean up your Buffer
+::
+
+Previous:	link::Tutorials/PG_08_Event_Types_and_Parameters::
+
+Next:		link::Tutorials/PG_Cookbook02_Manipulating_Patterns::

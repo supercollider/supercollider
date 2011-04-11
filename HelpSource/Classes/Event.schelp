@@ -195,7 +195,7 @@ code::
 
 subsection::Events and Patterns
 
-Events are closely integrated with the Patterns library. Different patterns can be bound to different keys (or collections of keys) to specify the resultant music. See the help files link::Classes/Pattern:: and link::Classes/Pbind:: and the tutorials link::Overviews/Streams-Patterns-Events4:: and link::Overviews/Streams-Patterns-Events5:: for more details on Patterns.
+Events are closely integrated with the Patterns library. Different patterns can be bound to different keys (or collections of keys) to specify the resultant music. See the help files link::Classes/Pattern:: and link::Classes/Pbind:: and the tutorials link::Tutorials/Streams-Patterns-Events4:: and link::Tutorials/Streams-Patterns-Events5:: for more details on Patterns.
 
 Patterns that return events may be played on a clock: dur specifies the time between two subsequent events.
 code::

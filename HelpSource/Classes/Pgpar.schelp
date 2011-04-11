@@ -1,0 +1,105 @@
+class:: Pgpar
+summary:: embed event streams in parallel and put each in its own group
+related:: Classes/Ppar, Classes/Pbus, Classes/Pgroup
+categories:: Streams-Patterns-Events>Patterns>Parallel
+
+description::
+
+Embeds several event streams so that they form a single output stream with all their events in temporal order. When one stream ends, the other streams are further embedded until all have ended.
+
+note::
+In order to fully separate these layers from other synths, use link::Classes/Pbus::.
+::
+
+See link::Classes/Pgroup:: for a description of the code::\groupReleaseTime:: event key.
+
+ClassMethods::
+
+method::new
+
+argument::list
+list of patterns or streams.
+
+argument::repeats
+repeat the whole pattern n times.
+
+Examples::
+
+code::
+// an example analogous to the one in the Pfx helpfile
+
+(
+SynthDef(\echo, { arg out=0, maxdtime=0.2, dtime=0.2, decay=2, gate=1;
+	var env, in;
+	env = Linen.kr(gate, 0.05, 1, 0.1, 2);
+	in = In.ar(out, 2);
+	XOut.ar(out, env, CombL.ar(in * env, maxdtime, dtime, decay, 1, in));
+}, [\ir, \ir, 0.1, 0.1, 0]).add;
+
+SynthDef(\distort, { arg out=0, pregain=40, amp=0.2, gate=1;
+	var env;
+	env = Linen.kr(gate, 0.05, 1, 0.1, 2);
+	XOut.ar(out, env, (In.ar(out, 2) * pregain).distort * amp);
+}, [\ir, 0.1, 0.1, 0]).add;
+
+SynthDef(\wah, { arg out=0, gate=1, rate=0.3;
+	var env, in;
+	env = Linen.kr(gate, 0.05, 1, 0.4, 2);
+	in = In.ar(out, 2);
+	XOut.ar(out, env, RLPF.ar(in, LinExp.kr(LFNoise1.kr(rate), -1, 1, 200, 8000), 0.1).softclip * 0.8);
+}, [\ir, 0]).add;
+)
+
+
+(
+var p, q, r, o;
+Pbus(
+	Pgpar([
+		Pbind(\degree, Prand((0..7), inf), \dur, 0.3, \legato, 0.2),
+		Pbind(\instrument, \echo, \dur, 3, \legato, 1.1, 
+			\dtime, Pwhite(0.01, 0.1, inf), \decay, 3),
+		Pbind(\instrument, \distort, \dur, 1.2, \legato, 1.1, 
+			\pregain, Pwhite(1, 20, inf), \amp, 0.25),
+		Pbind(\instrument, \wah, \dur, 4.0, \legato, 1.1, 
+			\rate, Pwhite(0.1, 3, inf))
+	])
+).play
+)
+::
+
+code::
+// synthdefs
+(
+SynthDef(\gap, { arg out, sustain=1.0, attack=0.0001, decay=0.01, leak;
+	var level;
+	level = EnvGen.ar(Env.linen(attack, sustain, decay, 1-leak), doneAction:2);
+	XOut.ar(out, level, Silent.ar ! 2)
+}).add;
+
+SynthDef(\help_sinegrain,
+	{ arg out=0, freq=440, sustain=0.05;
+		var env;
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:2);
+		Out.ar(out, SinOsc.ar(freq, 0, env))
+}).add;
+)
+
+
+// play a layered pattern with gaps and overlays
+(
+x = Pbind(
+	\instrument, \help_sinegrain,
+	\degree, Pn(Plazy({ Prand([0, 4, 5], 16) + 5.rand })) + Prand(#[0, [0, 3], [0, 7]], inf),
+	\dur, Prand([0.25, 0.5, 1.0], inf),
+	\scale, #[0, 3, 5, 9, 10]
+);
+y = Pbind(
+	\instrument, \gap,
+	\dur, Prand([0.25, 0.5, 1.0], inf) * Pstutter(inf, Prand([0.25, 1, 2],1)),
+	\legato, Prand([0.25, 0.5, 1.0], inf),
+	\leak, 0.25
+);
+a = Pbus(Pgpar([x, y, x, y, x, y]));
+a.play;
+)
+::

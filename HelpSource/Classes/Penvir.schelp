@@ -1,0 +1,50 @@
+class:: Penvir
+summary:: use an environment when embedding the pattern in a stream
+related:: Classes/Pkey
+categories:: Streams-Patterns-Events>Patterns>Data Sharing
+
+ClassMethods::
+
+method::new
+
+argument::envir
+an environment with objects to embed.
+
+argument::pattern
+pattern or stream, ususally a link::Classes/Pfunc::, link::Classes/Prout::.
+
+argument::independent
+if true streams can write to the environment without influencing other streams created from this pattern. if false, the streams write to a common namespace.
+
+Examples::
+
+code::
+(
+x = (a:8);
+y = Penvir(
+	x,
+	Pfunc { ~a * 2 }
+);
+
+t = y.asStream;
+)
+
+t.next;
+
+
+
+(
+x = (a:8);
+y = Penvir(
+	x,
+	Pfunc { ~a = ~a * 2 }
+);
+
+t = y.asStream;
+z = y.asStream;
+)
+
+t.next;
+t.next;
+x.postln;	// x stays unchanged
+::
