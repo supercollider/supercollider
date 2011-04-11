@@ -1,0 +1,83 @@
+title:: How-to-Use-the-Interpreter
+summary:: Basic tutorial on how to run code
+categories:: Frontends, Getting Started
+
+This document is OSX (SCapp) specific in key commands, though the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors. For the emacs sclang interface please also see link::Reference/EmacsEditor:: specific documentation.
+
+You can execute any single line expression by clicking anywhere in that line and pressing the 'strong::Enter::' key.
+strong::Note that the 'Enter' key is not the same key as 'Return' ::. If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return (on Some Macs), or Shift-Return.
+
+You will need to start the default server before you can hear any examples. By convention the default server is assigned to the interpreter variable 's'. (At startup the default will be the localhost server.) You can start the server app by pressing the 'Boot' button on the localhost server window, or you can do it in code:
+
+code::
+// execute these lines one at a time by placing the cursor on the line and then pressing 'enter'
+
+s.boot; // this boots the default Server. Watch the post window and server window for the result
+
+// once that's done execute this to make a sound
+{ FSinOsc.ar(800, 0, 0.1) }.play;
+::
+
+(Press and hold Cmd (the Apple key) and then press period to stop the sound started above.)
+
+In the help files all executable fragments are written in the Monaco font.
+
+If an expression has multiple lines you can select all of the lines before typing 'Enter'. Note that this example uses link::Classes/GUI:: objects that are standard in Mac OSX. Windows and Linux platforms can run this using SwingOSC. SwingOSC is installed as part of the Windows package. Linux users might need to download SwingOSC for themselves. http://www.sciss.de/swingOSC/
+
+code::
+// Select all 9 of the following lines and press 'Enter':
+w = Window.new("Fading").front;
+r = Routine({
+	200.do({|i|
+		w.view.background = Color.blue(val: 1, alpha: 1 - (i * 0.005));
+		0.005.wait;
+	});
+	w.close;
+});
+AppClock.play(r);
+::
+
+Some examples do require lines to be executed one at a time, or certain lines to be executed first. By far the most common case of this is booting the server app, as we did at the top of the page. Until the server has completed booting, no sound producing code will work.
+
+However, most of the examples included with the app have parentheses around lines of code which should be executed at the same time. (This is a convention which should be followed in your own code.) This allows you to double click to the right of the open paren and select the entire expression. Then press 'enter'.
+
+code::
+(
+// ^^^^^^^^ double click above this line ^^^^^^^^
+play({
+// Three patches in one...
+n = 5;	// number of strings
+b = [	// array of possible impulse excitation behaviours
+		{ Impulse.ar(2 + 0.2.rand, 0.3) }, // slow phasing
+		{ Dust.ar(0.5, 0.3) },	// "wind chimes"
+		{ Impulse.ar(SinOsc.kr(0.05+0.1.rand, 2pi.rand, 5, 5.2), 0.3) } // races
+	].choose;	// choose one at random to use for all voices
+Mix.new(
+	Array.fill(n, {	// n strings tuned randomly to MIDI keys 60-90
+		var delayTime;
+		// calculate delay based on a random note
+		delayTime = 1 / (60 + 30.rand).midicps;
+		Pan2.ar(
+			LeakDC.ar(	// removes DC buildup
+				CombL.ar(	// used as a string resonator
+					Decay.ar(	// decaying envelope for noise
+						b.value,// instantiate an exciter
+						0.04,	// decay time of excitation
+						PinkNoise.ar(0.2)),// multiply noise by envelope
+					delayTime, 	// max delay time
+					delayTime,	// actual delay time
+					4)), 		// decay time of string
+			1.0.rand2 // random pan position
+		)
+	}))
+})
+)
+::
+
+Again, press Cmd-. to stop the sound. This will stop all audio (and free all nodes on the server) at any time.
+
+When you're done you can quit the server app by pressing the 'Quit' button on the localhost server window, or do it by executing the following code:
+
+code::
+s.quit;
+::
