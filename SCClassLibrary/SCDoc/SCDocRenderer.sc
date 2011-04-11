@@ -320,7 +320,9 @@ SCDocHTMLRenderer : SCDocRenderer {
             },
             'link', {
                 if("^[a-zA-Z]+://.+".matchRegexp(node.text) or: (node.text.first==$/),{
-                    file.write("<a href=\""++node.text++"\">"++this.escapeSpecialChars(node.text)++"</a>");
+                    #n, m, f = node.text.split($#); // link, anchor, label
+                    if(f.size<1) {f=node.text};
+                    file.write("<a href=\""++node.text++"\">"++this.escapeSpecialChars(f)++"</a>");
                 },{
                     #n, m, f = node.text.split($#); // link, anchor, label
                     c = if(n.size>0) {baseDir+/+n++".html"} {""}; // url
