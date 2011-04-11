@@ -56,7 +56,7 @@ subsection::Additional Random Number Generators
 definitionList::
 ## code::Pgbrown(lo, hi, step, length):: || Brownian motion, geometric scale (multiplication).
 
-## code::Pbeta(lo, hi, prob1, prob2, length):: || Beta distribution, where code::prob1 = α:: (alpha) and code::prob2 = β:: (beta).
+## code::Pbeta(lo, hi, prob1, prob2, length):: || Beta distribution, where code::prob1 = α :: (alpha) and code::prob2 = β :: (beta).
 ## code::Pcauchy(mean, spread, length):: || Cauchy distribution.
 ## code::Pgauss(mean, dev, length):: || Guassian (normal) distribution.
 ## code::Phprand(lo, hi, length):: || Returns the greater of two equal-distribution random numbers.
