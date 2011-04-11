@@ -1,0 +1,63 @@
+class:: SCContainerView
+summary:: An abstract superclass for container views
+categories:: GUI
+related:: Classes/CompositeView, Classes/HLayoutView, Classes/VLayoutView, Classes/ScrollView, Classes/SCTopView, Classes/SCScrollTopView
+
+description::
+Users will not normally directly create instances of ContainerView, but only use it through its subclasses. It provides the basic mechanisms for container views of various kinds, which are used for placing and grouping widgets in a window.
+
+
+
+subsection:: Some Important Issues Regarding ContainerView
+
+Container views are meant for placing and grouping child views and widgets. While they accept key actions, many do not accept mouse clicks or drags. The exception is SCTopView and its subclasses.
+
+classmethods::
+
+
+instancemethods::
+
+subsection:: Accessing Instance and Class Variables
+
+method:: decorator
+An automatic layout management for a container. Currently the only one existing is link::Classes/FlowLayout::.
+note::Crucial Library also has a useful layout tool called GridLayout.::
+argument:: arg1
+
+method:: addFlowLayout(margin, gap)
+A convenience utility which sets decorator to link::Classes/FlowLayout:: and returns the decorator. See link::Classes/FlowLayout:: for examples.
+argument:: margin
+An instance of link::Classes/Point::.
+argument:: gap
+An instance of link::Classes/Point::.
+
+method:: children
+An array containing all the views (children) contained in the the container.
+
+
+
+subsection:: Adding and Removing Subviews
+
+method:: add
+Adds a view to children. The placement of the child view will depend on the the decorator, and the child's bounds. Normally you don't need to call this directly, since subviews call it automatically when you create them.
+argument:: child
+
+method:: removeAll
+Removes all children from the view.
+
+
+
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+method::init
+argument:: argParent
+argument:: argBounds
+
+method:: prRemoveChild
+Private method.
+argument:: child
+
+method:: prClose
+Private method.
