@@ -1,6 +1,6 @@
 title:: Unit Generators and Synths
 summary:: Introduction to some fundamental concepts
-categories:: Getting Started
+categories:: Server>Nodes
 
 A unit generator is an object that processes or generates sound. There are many classes of unit generators, all of which derive from the class link::Classes/UGen::.
 
