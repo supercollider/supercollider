@@ -50,15 +50,22 @@ discussion:: The resulting tree is available in code::parser.root::
 
 method::parseMetaData
 Parse metadata of document and collect methods.
-returns::
-A list of documented method names ( link::Classes/String::s ), prefixed with xk where
+discussion::
+This method will leave a list of all method names in code::parser.methodList::, prefixed with xk where
 list::
 ## x is "+" for extended methods, or else "_"
 ## k is "*" for classmethods, "-" for instancemethods and "." for generic methods (often interfaces documented in a non-class helpfile)
 ::
+It will also leave a list of all explicitly added keywords in code::parser.keywordList::
 
 method::root
 Set/get the root array of the internal document tree.
+
+method:: methodList
+Get the list of documented methods after running link::-parseMetaData::
+
+method:: keywordList
+Get the list of keywords after running link::-parseMetaData::
 
 method::dump
 Dump the internal document tree to the post window in a human-readable form.

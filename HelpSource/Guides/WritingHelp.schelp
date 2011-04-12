@@ -219,3 +219,10 @@ code::
 For all implementations of play, see link::Overviews/Methods#play::
 ::
 
+section:: Making the document findable by Search
+The link::Search:: page can match on document title/classname, summary, methods documented with code::method\::::, and categories.
+If you mention something that should match in search but is not one of the above, you can explicitly add it with the keyword tag:
+code::
+keyword:: someKeyWords
+::
+

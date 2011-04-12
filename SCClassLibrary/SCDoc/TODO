@@ -112,6 +112,8 @@ we don't seem to use this anyway. should we allow force replacement of argstring
 
 IDEAS AND IMPROVEMENTS
 ----------------------
+* keyword:: now renders an invisible anchor name prefixed with "kw_", we could use this in Search.html to jump to the relevant place if the match was on the keyword.
+
 * Improve the parser,
 clean up and write better regexps. For example, code::foo::/code::bar:: does not currently work.
 Use Array instead of List where possible? (note: l=l.add(x), and add everything before we put the array in some other container like node.children, etc).

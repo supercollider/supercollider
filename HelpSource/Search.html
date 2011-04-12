@@ -201,6 +201,14 @@ function matchDoc(doc,file,folder,re) {
             return true;
     }
 
+    if(doc.hasOwnProperty('keywords')) {
+        for(var i=0;i<doc.keywords.length;i++) {
+            var kw = doc.keywords[i];
+            if(re.test(kw))
+                return true;
+        }
+    }
+
     return false;
 }
 
