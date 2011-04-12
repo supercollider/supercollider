@@ -1,4 +1,4 @@
-class:: Pprob
+class:: Pproto
 summary:: provide a proto event for an event stream
 related:: Classes/Pattern
 categories:: Streams-Patterns-Events>Patterns>Server Control
