@@ -79,7 +79,6 @@
 <script type="text/javascript">
 var categorytree = null;
 var path = [];
-var checkboxes;
 
 function GotoPath(p) {
     path = p.split(">");
@@ -160,16 +159,11 @@ function buildCategoryTree() {
     for(var k in docmap) {
         var v = docmap[k];
 
-        if(v.installed=="extension" && !checkboxes["ext_classes"].checked)
+        if(v.installed=="extension" && !check_extensions.checked)
             continue;
-        else
-        if(v.installed=="standard" &&  !checkboxes["classes"].checked)
+            
+        if(filter.value != "all" && v.path.split("/")[0].toLowerCase() != filter.value)
             continue;
-        else if(!v.installed) {
-            var c = checkboxes[v.path.split("/")[0].toLowerCase()];
-            if(c && !c.checked)
-                continue;
-        }
         
         var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
         for(var i=0;i<c2.length;i++) {
@@ -219,19 +213,21 @@ function buildCategoryTree() {
     document.getElementById("total_count").innerHTML = countTree({subcats:tree,entries:[],count:0}) + " documents";
 }
 
+var check_extensions;
+var filter;
+
 window.onload = function() {
     restoreMenu();
-    var fields = ["classes", "ext_classes", "reference", "guides", "tutorials", "overviews", "other"];
-    checkboxes = {};
     var onChange = function() {
         buildCategoryTree();
         updateTree();
     };
-    for(var i=0;i<fields.length;i++) {
-        var k = fields[i];
-        checkboxes[k] = document.getElementById("check_"+k);
-        checkboxes[k].onchange = onChange;
-    }
+
+    check_extensions = document.getElementById("check_extensions");
+    check_extensions.onchange = onChange;
+    filter = document.getElementById("menu_filter");
+    filter.onchange = onChange;
+    
     buildCategoryTree();
     GotoPath(unescape(window.location.hash.slice(1)));
 }
@@ -263,15 +259,19 @@ window.onhashchange = function() {
     <div id='summary'>Browse categories</div>
 </div>
 <div id="search_checks">
-Include:
-<input type="checkbox" id="check_classes" checked="true">Classes</input>
-<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
-<input type="checkbox" id="check_reference" checked="true">Reference</input>
-<input type="checkbox" id="check_guides" checked="true">Guides</input>
-<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
-<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
-<input type="checkbox" id="check_other" checked="true">Other</input>
+Filter:
+<select id="menu_filter">
+<option SELECTED value="all">All documents</option>
+<option value="classes">Classes only</option>
+<option value="reference">Reference only</option>
+<option value="guides">Guides only</option>
+<option value="tutorials">Tutorials only</option>
+<option value="overviews">Overviews only</option>
+<option value="other">Other only</option>
+</select>
+<input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
 </div>
+
 <div id="total_count"></div>
 <table class="browser" id="browser"></table>
 
