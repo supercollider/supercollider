@@ -1,10 +1,11 @@
-class:: SCDragSource
-summary:: A gui object source for drag and drop
+class:: DragSink
+redirect:: implClass
+summary:: A gui object for receiving drag and drop
 categories:: GUI
+related:: Classes/DragBoth, Classes/DragSource
 
 description::
-A gui object which acts as a source a source for drag and drop. See link::Classes/SCDragView:: for usage and examples, and link::Classes/View:: for a general description of the drag and drop mechanism.
-
+A gui object for receiving drag and drop. See link::Classes/SCDragView:: for description and examples, and link::Classes/View:: for a general description of the drag and drop mechanism.
 
 classmethods::
 
@@ -14,6 +15,19 @@ The parent view.
 argument:: bounds
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
 
+
+
+instancemethods::
+
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+method:: defaultCanReceiveDrag
+The method called by default when attempting to drop a drag in this object. By default, DragSink will respond to any drag.
+
+method:: defaultReceiveDrag
+The default method called when a drag has been recieved. By default, this sets the object to the currentDrag and performs the action.
 
 
 examples::
@@ -72,7 +86,7 @@ s.waitForBoot({	// only needed if you are using sound
 	i.receiveDragHandler = { arg v;
 		i.object = View.currentDrag.value;
 		i.string = "click here for silence";
-		i.background_(Color.red)};
+		i.background_(Color.red) };
 	i.mouseDownAction_({
 		i.object.free;
 		i.string = "I evaluate a (sound) function";
