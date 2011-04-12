@@ -528,8 +528,9 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.write("</div>");
     }
 
-    renderHTMLHeader {|f,name,type,folder,toc=true|
+    renderHTMLHeader {|f,name,type,subtarget,toc=true|
         var x, cats, m, z;
+        var folder = subtarget.dirname;
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++baseDir++"/scdoc.css' type='text/css' />");
         f.write("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />");
         f.write("<script src='" ++ baseDir ++ "/scdoc.js' type='text/javascript'></script>");
@@ -554,31 +555,23 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.write("</div>");
 
         f.write("<body onload='fixTOC();prettyPrint()'>");
-//        cats = SCDoc.splitList(parser.findNode(\categories).text);
-//        cats = if(cats.notNil, {cats.join(", ")}, {""});
         if(folder==".",{folder=""});
         f.write("<div class='header'>");
-//        f.write("<div id='label'><a href='"++baseDir+/+"Help.html"++"'>SuperCollider</a> "++folder.asString.toUpper++"</div>");
         f.write("<div id='label'>SuperCollider "++folder.asString.toUpper);
-        if(type==\class and: currentClass.notNil) {
-            if(currentClass.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not,
-                    {f.write(" (extension)")});
+        if(SCDoc.docMap[subtarget].installed==\extension) {
+            f.write(" (extension)");
         };
         f.write("</div>");
         x = parser.findNode(\categories);
         if(x.text.notEmpty, {
             f.write("<div id='categories'>");
-//            f.write("Categories: ");
             f.write(SCDoc.splitList(x.text).collect {|r|
-//                "<a href='"++baseDir +/+ "Overviews/Categories.html#"++SCDocRenderer.simplifyName(r).split($>).first++"'>"++r++"</a>"
                 "<a href='"++baseDir +/+ "Browse.html#"++r++"'>"++r++"</a>"
             }.join(", "));
             f.write("</div>");
         });    
 
         f.write("<h1>"++name);
-//        x = parser.findNode(\headerimage);
-//        if(x.text.notEmpty, { f.write("<span class='headerimage'><img src='"++x.text++"'/></span>")});
         if((folder=="") and: {name=="Help"}, {
             f.write("<span class='headerimage'><img src='"++baseDir++"/images/SC_icon.png'/></span>");
         });
@@ -653,8 +646,8 @@ SCDocHTMLRenderer : SCDocRenderer {
         ^node;
     }
 
-    render {|p, filename, folder=".", toc=true|
-        var f,x,name;
+    render {|p, filename, subtarget, toc=true|
+        var f,x,name,folder;
 
         parser = p;
 
@@ -663,6 +656,7 @@ SCDocHTMLRenderer : SCDocRenderer {
 
         //folder is the directory path of the file relative to the help tree,
         //like 'Classes' or 'Tutorials'.
+        folder = subtarget.dirname;
         dirLevel = folder.split($/).reject {|y| (y.size<1) or: (y==".")}.size;
         baseDir = ".";
         dirLevel.do { baseDir = baseDir +/+ ".." };
@@ -700,12 +694,12 @@ SCDocHTMLRenderer : SCDocRenderer {
             };
             parser.root.sort {|a,b| a.sort<b.sort};
 
-            this.renderHTMLHeader(f,name,\class,folder,toc);
+            this.renderHTMLHeader(f,name,\class,subtarget,toc);
             this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
         },{
             x = parser.findNode(\title);
             name = x.text.stripWhiteSpace;
-            this.renderHTMLHeader(f,name,\other,folder,toc);
+            this.renderHTMLHeader(f,name,\other,subtarget,toc);
             this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
         });
 

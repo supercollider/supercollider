@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 0;
+    classvar version = 1;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -166,16 +166,6 @@ SCDoc {
             warn("Document at"+path+"has no categories::");
         };
 
-        // check if class is standard, extension or missing
-        if(x.notEmpty) {
-            c = path.basename.asSymbol.asClass;
-            doc.installed = if(c.notNil) {
-                if(c.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
-                    {\extension}
-                    {\standard}
-            } {\missing};
-        };
-
         doc_map[path] = doc;
     }
 
@@ -273,10 +263,10 @@ SCDoc {
         }
     }
 
-    *parseAndRender {|src,dest,kind|
+    *parseAndRender {|src,dest,subtarget|
         SCDoc.postProgress(src+"->"+dest);
         p.parseFile(src);
-        r.render(p,dest,kind);
+        r.render(p,dest,subtarget);
     }
 
     *renderAll {|force=false,gui=true,threaded=true,findExtensions=true,doneFunc|
@@ -317,7 +307,7 @@ SCDoc {
                         dest = helpTargetDir+/+subtarget++".html";
                         if(force
                         or: {("test"+path.escapeChar($ )+"-nt"+dest.escapeChar($ )+"-o ! -e"+dest.escapeChar($ )).systemCmd==0}) {
-                            this.parseAndRender(path,dest,subtarget.dirname);
+                            this.parseAndRender(path,dest,subtarget);
                         } {
                             this.postProgress("Skipping"+dest);
                         };
@@ -416,7 +406,7 @@ SCDoc {
 
             if(File.exists(path).not) {
                 if(src.notNil) { // no target file, but helpsource found, parse and render.
-                    this.parseAndRender(src,path,subtarget.dirname);
+                    this.parseAndRender(src,path,subtarget);
                     isProcessing = false;
                     ^url;
                 } {
@@ -429,7 +419,7 @@ SCDoc {
                 {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )
                  +"-o"+verpath.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
                     // target file and helpsource exists, and helpsource is newer than target
-                    this.parseAndRender(src,path,subtarget.dirname);
+                    this.parseAndRender(src,path,subtarget);
                     isProcessing = false;
                     ^url;
                 };
@@ -504,7 +494,7 @@ SCDoc {
                 ]
             ));
             p.root = n;
-            r.render(p,path,"Classes");
+            r.render(p,path,"Classes/"++name);
             ^true;
         };
         ^false;
@@ -544,7 +534,8 @@ SCDoc {
         this.postProgress("Parsing metadata...");
         // parse all files in fileList
         helpSourceDirs.do {|dir|
-            var path, mtime;
+            var path, mtime, ext, sym;
+            ext = (dir != helpSourceDir);
             this.postProgress("- Collecting from"+dir);
             Platform.case(
 //                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -printf '%p;%T@\n'"},
@@ -561,12 +552,18 @@ SCDoc {
                     doc = doc_map[subtarget];
                     doc.methods = mets;
                     doc.mtime = mtime;
+                    doc.installed = if(ext){\extension}{\standard};
                     update = true;
                     ndocs = ndocs + 1;
                 };
                 doc.keep = true;
                 if(subtarget.dirname=="Classes") {
-                    classes.remove(subtarget.basename.asSymbol);
+                    sym = subtarget.basename.asSymbol;
+                    if(sym.asClass.notNil) {
+                        classes.remove(sym);
+                    } {
+                        doc.installed = \missing;
+                    };
                 };
                 this.maybeWait;
             };
@@ -598,6 +595,11 @@ SCDoc {
                 doc_map[subtarget].methods =
                     (this.makeMethodList(class.class).collect{|m| "_*"++m}
                     ++ this.makeMethodList(class).collect{|m| "_-"++m});
+
+                doc_map[subtarget].installed = if(class.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
+                    {\extension}
+                    {\standard};
+
                 ndocs = ndocs + 1;
                 update = true;
             };
