@@ -1,6 +1,6 @@
 class:: LID
 summary:: Linux Input Device
-categories:: Linux
+categories:: Linux, HID
 related:: Classes/GeneralHID, Classes/HIDDeviceService
 
 description::
