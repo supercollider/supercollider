@@ -1,12 +1,13 @@
-class:: SC2DTabletSlider
+class:: TabletSlider2D
+redirect:: implClass
 summary:: A 2D slider with support for extended wacom data
 categories:: GUI
-related:: Classes/SC2DSlider, Classes/SCTabletView
+related:: Classes/Slider2D, Classes/TabletView
 
+description::
+subsection:: Some Important Issues Concerning TabletSlider2D
 
-subsection:: Some Important Issues Concerning SC2DTabletSlider
-
-Inherits much of its behavior form link::Classes/SC2DSlider:: and link::Classes/SCSliderBase::. Drag and drop returns and accepts a link::Classes/Point::.
+Inherits much of its behavior form link::Classes/Slider2D:: and link::Classes/SCSliderBase::. Drag and drop returns and accepts a link::Classes/Point::.
 
 classmethods::
 

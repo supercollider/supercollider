@@ -1,8 +1,12 @@
-class:: SCButton
+class:: Button
+redirect:: implClass
 summary:: A multi-state button
 categories:: GUI
 
-subsection:: Some Important Issues Regarding SCButton
+description::
+A multi-state button.
+
+subsection:: Some Important Issues Regarding Button
 
 Failure to set any states at all results in an invisible button.
 

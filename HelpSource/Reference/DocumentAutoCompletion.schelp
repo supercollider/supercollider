@@ -1,5 +1,6 @@
-title:: SuperCollider Autocompletion
-categories:: Reference
+title:: Document Autocompletion
+categories:: OSX, Frontends
+summary:: SuperCollider autocompletion on OSX
 
 The autocompletion feature described in this document is available in the OSX version only. It uses the keyDownAction feature of link::Classes/CocoaDocument:: to intercept keystrokes and open the autocompletion interface when specific characters are typed. That feature is not available in all platforms.
 
@@ -9,7 +10,7 @@ Autocompletion is not available in the Windows version as of this writing.
 
 Another way to get information about classes and methods is the class browser, accessed by calling code::.browse:: on a class, e.g. code::Object.browse::. The browser is available in the OSX version, as well as any platform where link::Classes/SwingOSC:: (http://www.sciss.de/swingOSC) is installed.
 
-subsection:: Usage
+section:: Usage
 
 To open a text window with the auto-complete feature enabled, execute the following in SuperCollider:
 code::
@@ -33,7 +34,7 @@ Autocompletion will be integrated more tightly into the code editor.
 
 
 
-subsection:: Summary
+section:: Summary
 
 While editing code in an auto-complete code window, the following keystrokes initiate special actions:
 
@@ -51,7 +52,7 @@ table::
 
 
 
-subsection:: Feature description
+section:: Feature description
 
 When you type a dot, SuperCollider will to check the previous text to see if it refers to a valid class. If so, a window will be presented with all the class methods (not instance methods) of the class.
 
@@ -94,7 +95,7 @@ Because the class browser does not show methods defined by superclasses, you may
 
 
 
-subsection:: Further configuration
+section:: Further configuration
 
 Use the startup file (see link::Guides/Using-the-Startup-File::) to define class names and method names to be excluded from the browsers. I like to exclude the most common flow of control mechanisms (code::while::, code::do::, code::if::, etc.).
 code::
@@ -104,7 +105,7 @@ AutoCompClassBrowser.exclude([... list of classes ...]);
 
 
 
-subsection:: Quirks and caveats
+section:: Quirks and caveats
 
 The auto complete features will be lost from all documents when recompiling the class library.
 

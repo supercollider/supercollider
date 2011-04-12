@@ -1,11 +1,14 @@
-class:: SC2DSlider
+class:: Slider2D
+redirect:: implClass
 summary:: A two-dimensional GUI slider
 categories:: GUI
-related:: Classes/SC2DTabletSlider, Classes/SCTabletView
+related:: Classes/TabletSlider2D, Classes/TabletView
 
-subsection:: Some Important Issues Regarding SC2DSlider
+description::
 
-SC2DSlider values always have ranges between zero and one. You must scale the output and input values to your needs. Using code::map:: and code::unmap::, combined with a link::Classes/Spec::, is helpful for this. To set the increment or decrement value of the slider, set the step. By default, the shift, ctrl, and alt keys will modify the stepping by 100x, 10x, or 0.1x respectively, though you can customize this by setting shift_scale, ctrl_scale, or alt_scale  (see link::Classes/SCSliderBase::). Drag and drop returns and accept a link::Classes/Point::. Inherits some formatting form link::Classes/SCSliderBase::.
+subsection:: Some Important Issues Regarding Slider2D
+
+Slider2D values always have ranges between zero and one. You must scale the output and input values to your needs. Using code::map:: and code::unmap::, combined with a link::Classes/Spec::, is helpful for this. To set the increment or decrement value of the slider, set the step. By default, the shift, ctrl, and alt keys will modify the stepping by 100x, 10x, or 0.1x respectively, though you can customize this by setting shift_scale, ctrl_scale, or alt_scale  (see link::Classes/SCSliderBase::). Drag and drop returns and accept a link::Classes/Point::. Inherits some formatting form link::Classes/SCSliderBase::.
 
 classmethods::
 

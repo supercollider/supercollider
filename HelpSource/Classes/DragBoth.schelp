@@ -1,10 +1,11 @@
-class:: SCDragBoth
+class:: DragBoth
+redirect:: implClass
 summary:: A gui object source and receiver for drag and drop
 categories:: GUI
+related:: Classes/DragSink, Classes/DragSource
 
-note::
-See link::Classes/SCDragView:: for description and examples.
-::
+description::
+A gui object source and receiver for drag and drop. See link::Classes/SCDragView:: for description and examples.
 
 classmethods::
 

@@ -1,4 +1,5 @@
-class:: SCCompositeView
+class:: CompositeView
+redirect:: implClass
 summary:: A view that contains other views.
 categories:: GUI
 related:: Classes/FlowView, Classes/FlowLayout
