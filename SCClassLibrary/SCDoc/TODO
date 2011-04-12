@@ -121,9 +121,6 @@ Rewrite the parser in C or some fast external script?
 
 * Try to make the renderer faster.
 
-* instead of showing "(extension)" only for classes, do it for any document that was located in an extension directory?
-also add a check and warning for when a class file location and doc location is not the same in regards of extension or not?
-
 * description for categories? HelpSource/category_descriptions, example:
   Server>Abstractions: Client-side classes representing server-side stuff
   show in header and category browser/overview..
