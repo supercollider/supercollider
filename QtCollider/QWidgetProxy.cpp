@@ -88,25 +88,16 @@ bool QWidgetProxy::bringFront() {
   return true;
 }
 
-bool QWidgetProxy::refresh() {
+void QWidgetProxy::refresh() {
   QWidget *w = widget();
   if( w ) sendRefreshEventRecursive( w );
-  return true;
 }
 
-bool QWidgetProxy::mapToGlobal( QtCollider::MapToGlobalRequest *r )
-{
-  QWidget *w = widget();
-  if( w ) r->point = w->mapToGlobal( r->point );
-
-  return true;
-}
-
-bool QWidgetProxy::setLayout ( SetLayoutRequest *r ) {
+void QWidgetProxy::setLayout ( QObjectProxy *layoutProxy ) {
 
   QWidget *w = widget();
-  QLayout *l = qobject_cast<QLayout*>( r->layoutProxy->object() );
-  if( !w || !l ) return true;
+  QLayout *l = qobject_cast<QLayout*>( layoutProxy->object() );
+  if( !w || !l ) return;
 
   QLayout *exLayout = w->layout();
   if( exLayout != l ) {
@@ -121,8 +112,6 @@ bool QWidgetProxy::setLayout ( SetLayoutRequest *r ) {
   else {
     qcDebugMsg( 2, QString("Layout same as existing. Will do nothing.") );
   }
-
-  return true;
 }
 
 bool QWidgetProxy::setParent( QObjectProxy *parentProxy )

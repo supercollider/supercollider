@@ -59,13 +59,9 @@ QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  GenericWidgetRequest *req = new GenericWidgetRequest( &QWidgetProxy::refresh );
+  proxy->refresh();
 
-  // WARNING The request has to be sent synchronously! Only this will ensure that
-  // refreshing within the SC drawing function will not lead into an infinite cycle.
-
-  bool ok = req->send( proxy, Synchronous );
-  return ( ok ? errNone : errFailed );
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
@@ -73,10 +69,11 @@ QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  QPoint pt( Slot::toPoint( a ).toPoint() );
+  QWidget *w = proxy->widget();
+  if( !w ) return errNone;
 
-  MapToGlobalRequest *req = new MapToGlobalRequest( pt );
-  req->send( proxy, Synchronous );
+  QPoint pt( Slot::toPoint( a ).toPoint() );
+  pt = w->mapToGlobal( pt );
 
   int err = Slot::setPoint( a+1, pt );
   if( err ) return err;
@@ -93,12 +90,9 @@ QC_LANG_PRIMITIVE( QWidget_SetLayout, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) 
   if( !wProxy->compareThread() ) return QtCollider::wrongThreadError();
 
   QObjectProxy *lProxy = Slot::toObjectProxy( a );
+  wProxy->setLayout( lProxy );
 
-  SetLayoutRequest *req = new SetLayoutRequest();
-  req->layoutProxy = lProxy;
-
-  bool ok = req->send( wProxy, Synchronous );
-  return ( ok ? errNone : errFailed );
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QWidget_GetAlwaysOnTop, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
