@@ -65,49 +65,6 @@ QcApplication::~QcApplication()
   _mutex.unlock();
 }
 
-void QcApplication::postSyncEvent( QcSyncEvent *e, QObject *rcv )
-{
-  // WARNING: If the current thread is other than receiver's, this
-  // method will block until an event loop is started for the receiver's
-  // thread (e.g. a QApplication is started)
-
-  if( QThread::currentThread() == rcv->thread() ) {
-    sendEvent( rcv, e );
-    delete e;
-  }
-  else {
-    // NOTE: experimental: shut off other threads than main
-    delete e;
-    qcErrorMsg("You can not use Qt in this thread!");
-    return;
-  }
-}
-
-void QcApplication::postSyncEvent( QcSyncEvent *e, EventHandlerFn handler )
-{
-  bool sameThread;
-
-  _mutex.lock();
-  if( !_instance ) {
-    // Can not use QcApplication's thread as QcApplication is not instantiated
-    _mutex.unlock();
-    return;
-  }
-  sameThread = QThread::currentThread() == _instance->thread();
-  _mutex.unlock();
-
-  if( sameThread ) {
-    (*handler)(e);
-    delete(e);
-  }
-  else {
-    // NOTE: experimental: shut off other threads than main
-    delete e;
-    qcErrorMsg("You can not use Qt in this thread!");
-    return;
-  }
-}
-
 bool QcApplication::compareThread()
 {
   bool same;
@@ -147,13 +104,4 @@ bool QcApplication::event( QEvent *e )
   }
 
   return QApplication::event( e );
-}
-
-void QcApplication::customEvent( QEvent *e )
-{
-  // FIXME properly check event type
-  QcSyncEvent *qce = static_cast<QcSyncEvent*>(e);
-  if( qce->_handler ) {
-    (*qce->_handler) ( qce );
-  }
 }
