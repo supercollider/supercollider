@@ -353,6 +353,9 @@ SCDocHTMLRenderer : SCDocRenderer {
             'anchor', {
                 file.write("<a name='"++node.text++"'</a>");
             },
+            'keyword', {
+                file.write("<a name='kw_"++node.text++"'</a>");
+            },
             'code', {
                 if(node.display == \block, {
                     file.write("<pre class='code prettyprint lang-sc'>"++this.autoLinkClasses(this.escapeSpecialChars(node.text))++"</pre>\n");

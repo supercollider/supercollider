@@ -12,6 +12,7 @@ SCDocParser {
     var stripFirst;
     var proseDisplay;
     var currentFile;
+    var <methodList, <keywordList;
 
     init {
         root = tree = List.new;
@@ -151,6 +152,7 @@ SCDocParser {
                 'subsection::',         namedSection.(2),
                 'method::',             namedSection.(3),
                 'copymethod::',         simpleTag,
+                'keyword::',            simpleTag,
                 'argument::',           namedSection.(4),
                 'returns::',            {
                     singleline = true; //this doesn't actually matter here since we don't have a text field?
@@ -307,6 +309,7 @@ SCDocParser {
         var tags = IdentitySet[\class,\title,\summary,\categories,\related,\redirect];
         var pfx = ".";
         var methods = Array.new;
+        var keywords = Array.new;
         var inHeader = true;
         var class = nil;
         var cmets = IdentitySet.new;
@@ -375,6 +378,10 @@ SCDocParser {
                                         "-", {imets.add(m)}
                                     );
                                 };
+                            },
+                            \keyword, {
+                                match = text.findRegexp("[^ ,]+").flop[1];
+                                keywords = keywords ++ match;
                             }
                         );
                     };
@@ -399,7 +406,8 @@ SCDocParser {
             };
             methods = methods ++ f.(class,imets,"-") ++ f.(class.class,cmets,"*");
         };
-        ^methods;
+        methodList = methods;
+        keywordList = keywords;
     }
 
     *getMethodDoc {|classname,methodname|

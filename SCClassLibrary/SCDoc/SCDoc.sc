@@ -520,7 +520,7 @@ SCDoc {
     }
     
     *getAllMetaData {
-        var subtarget, classes, mets, cats, t = Main.elapsedTime;
+        var subtarget, classes, cats, t = Main.elapsedTime;
         var update = false, doc, ndocs = 0;
 
         this.syncNonHelpFiles; // ensure that helpTargetDir exist
@@ -546,11 +546,12 @@ SCDoc {
                 subtarget = path[dir.size+1 ..].drop(-7);
                 doc = doc_map[subtarget];
                 if(doc.isNil or: {mtime != doc.mtime}) {
-                    mets = p.parseMetaData(path);
+                    p.parseMetaData(path);
                     //FIXME: if doc uses 'classtree::', force a re-render by setting mtime=0 ??
                     this.addToDocMap(p,subtarget);
                     doc = doc_map[subtarget];
-                    doc.methods = mets;
+                    doc.methods = p.methodList;
+                    doc.keywords = p.keywordList;
                     doc.mtime = mtime;
                     doc.installed = if(ext){\extension}{\standard};
                     update = true;

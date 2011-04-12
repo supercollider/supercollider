@@ -83,10 +83,11 @@ tag             hasText hasChilds structural needClose modal nestable
 title           S
 class           S
 redirect        S
-classtree       S
-copymethod      S
 related         S
 summary         S
+classtree       S
+copymethod      S
+keyword         S
 private         S
 section         S       x         1
 subsection      S       x         2
