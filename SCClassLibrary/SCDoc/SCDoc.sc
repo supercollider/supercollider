@@ -147,7 +147,7 @@ SCDoc {
     }
 
     *addToDocMap {|parser, path|
-        var c, x = parser.findNode(\class).text;
+        var c, folder = path.dirname, x = parser.findNode(\class).text;
         var doc = (
             path:path,
             summary:parser.findNode(\summary).text,
@@ -155,6 +155,7 @@ SCDoc {
         );
 
         doc.title = if(x.notEmpty,x,{parser.findNode(\title).text});
+
         if(doc.title.isEmpty) {
             doc.title = "NO TITLE:"+path;
             warn("Document at"+path+"has no title:: or class::");
@@ -164,6 +165,19 @@ SCDoc {
         };
         if(doc.categories.isEmpty) {
             warn("Document at"+path+"has no categories::");
+        };
+
+        if(x.notEmpty) {
+            if(path.basename != doc.title) {
+                warn("Document at"+path+"is not named according to class name:"+doc.title);
+            };
+            if(folder != "Classes") {
+                warn("Document at"+path+"is a class doc but is not in Classes/ folder");
+            };
+        } {
+            if(folder == "Classes") {
+                warn("Document at"+path+"is not a class doc but is in Classes/ folder");
+            };
         };
 
         doc_map[path] = doc;

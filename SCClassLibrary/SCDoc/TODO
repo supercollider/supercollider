@@ -99,11 +99,13 @@ Also, they should only occur in the root node.
 
 * private:: must come before any other method
 
-* force class reference filename to be equal to class name, and located in Classes/, and using class:: instead of title::
-
 * check method argument names (and order?). it's ok to skip arguments though..
 
 * warn on nameless sections, subsections and methods
+
+* warn on subsection with no parent section (including description/classmethods/etc.)
+
+* warn on text before first section in classdocumentation?
 
 * make sure ## and || only happens inside lists/tables
 
