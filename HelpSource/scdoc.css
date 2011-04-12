@@ -297,6 +297,15 @@ td p {
     background: #eee;
 }
 
+.doclink {
+    font-size: 8pt;
+    font-family: Andale Mono, monospace;
+    color: #777;
+    text-align: right;
+    margin: 1em;
+    border-top: 1px solid #888;
+}
+
 #toc {
 /*    margin-bottom: 2em;*/
     margin: 0;
