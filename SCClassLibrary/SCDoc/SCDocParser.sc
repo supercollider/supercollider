@@ -346,7 +346,7 @@ SCDocParser {
                                 match.do {|name|
                                     if(name[0]!=$() {
                                         if("[a-z][a-zA-Z0-9_]*|[-<>@|&%*+/!?=]+".matchRegexp(name).not) {
-                                            warn("SCDocParser: Methodname not valid: '"++name++"' in"+path);
+                                            warn("Methodname not valid: '"++name++"' in"+path);
                                         } {
                                             m = name.asSymbol.asGetter;
                                             methods = methods.add("_"++pfx++m);
@@ -370,7 +370,7 @@ SCDocParser {
                                 }
                             },
                             \private, {
-                                match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1];
+                                match = text.findRegexp("[^ ,]+").flop[1];
                                 match.do {|name|
                                     m = name.asSymbol.asGetter;
                                     switch(pfx,
