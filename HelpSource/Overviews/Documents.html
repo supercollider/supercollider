@@ -29,9 +29,10 @@
 <p>The document index needs JavaScript.
 </noscript>
 <script type="text/javascript">
-var checkboxes;
 var node;
 var docs;
+var check_extensions;
+var filter;
 
 function did_load() {
     restoreMenu();
@@ -46,16 +47,15 @@ function did_load() {
         return 0;
     });
 
-    var fields = ["classes", "ext_classes", "reference", "guides", "tutorials", "overviews", "other"];
-    checkboxes = {};
     var onChange = function() {
         showdocs();
     };
-    for(var i=0;i<fields.length;i++) {
-        var k = fields[i];
-        checkboxes[k] = document.getElementById("check_"+k);
-        checkboxes[k].onchange = onChange;
-    }
+
+    check_extensions = document.getElementById("check_extensions");
+    check_extensions.onchange = onChange;
+    filter = document.getElementById("menu_filter");
+    filter.onchange = onChange;
+
     showdocs();
 }
 
@@ -74,16 +74,12 @@ function showdocs() {
         var v = docs[i];
         var x = v.title[0].toUpperCase();
 
-        if(v.installed=="extension" && !checkboxes["ext_classes"].checked)
+        if(v.installed=="extension" && !check_extensions.checked)
             continue;
-        else
-        if(v.installed=="standard" &&  !checkboxes["classes"].checked)
+            
+        if(filter.value != "all" && v.path.split("/")[0].toLowerCase() != filter.value)
             continue;
-        else if(!v.installed) {
-            var y = checkboxes[v.path.split("/")[0].toLowerCase()];
-            if(y && !y.checked)
-                continue;
-        }
+
         if(/Undocumented classes/.test(v.categories))
             continue;
 
@@ -161,14 +157,17 @@ function showdocs() {
     <div id='summary'>Alphabetical index of all documents</div>
 </div>
 <div id="search_checks">
-Include:
-<input type="checkbox" id="check_classes" checked="true">Classes</input>
-<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
-<input type="checkbox" id="check_reference" checked="true">Reference</input>
-<input type="checkbox" id="check_guides" checked="true">Guides</input>
-<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
-<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
-<input type="checkbox" id="check_other" checked="true">Other</input>
+Filter:
+<select id="menu_filter">
+<option SELECTED value="all">All documents</option>
+<option value="classes">Classes only</option>
+<option value="reference">Reference only</option>
+<option value="guides">Guides only</option>
+<option value="tutorials">Tutorials only</option>
+<option value="overviews">Overviews only</option>
+<option value="other">Other only</option>
+</select>
+<input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
 </div>
 <div id="total_count"></div>
 <div id='doclist'></div>

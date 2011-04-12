@@ -94,10 +94,8 @@ table#search_settings {
 var input = "";
 var newinput = "";
 var checkboxes;
-var checkboxes2;
 var fields = ["title","summary","categories"];
-var fields2 = ["classes", "reference", "guides", "tutorials", "overviews", "other"];
-//var classes = undefined;
+var filter;
 
 escape_regexp = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
@@ -132,7 +130,7 @@ function buildMethodList() {
         }
     }
 }
-    
+
 function onLoad() {
     restoreMenu();
     newinput = document.getElementById("search_input").value;
@@ -142,32 +140,8 @@ function onLoad() {
         checkboxes[i] = document.getElementById("check_"+fields[i]);
         checkboxes[i].onchange = doSearch;
     }
-    
-    checkboxes2 = {};
-    for(var i=0;i<fields2.length;i++) {
-        var k = fields2[i];
-        checkboxes2[k] = document.getElementById("check_"+k);
-        checkboxes2[k].onchange = doSearch;
-    }
-    
-    var cec = document.getElementById("check_ext_classes");
-    cec.onchange = function() {
-        if(cec.checked)
-            checkboxes2.classes.checked = true;
-        doSearch();
-    }
-    
-/*    checkboxes2.classes.onchange = function() {
-        cec.disabled = !checkboxes2.classes.checked;
-        doSearch();
-    }*/
-    checkboxes2.classes.onchange = function() {
-        if(!checkboxes2.classes.checked)
-            cec.checked = false;
-        doSearch();
-    }
-    
-    var x = ["check_filename","check_methods","ignore_case","check_word","check_prefix","check_suffix"];
+
+    var x = ["check_extensions", "check_methods","ignore_case","check_word","check_prefix","check_suffix"];
     for(var i=0;i<x.length;i++) {
         document.getElementById(x[i]).onchange = doSearch;
     }
@@ -191,59 +165,18 @@ function onLoad() {
         window.location.hash = "";
     }
     
-/*    classes = {};
-    for(var k in docmap) {
-        var doc = docmap[k];
-        if(/Classes/.test(doc.path))
-            classes[doc.title] = doc;
-    }
-*/
     buildMethodList();
+    
+    filter = document.getElementById("menu_filter");
+    filter.onchange = doSearch;
 
     setInterval(delayed_update,250);
 }
 
-/*
-function clear1() {
-    var x = false;
-
-    for(var i=0;i<checkboxes.length;i++)
-        x |= checkboxes[i].checked;
-    x |= document.getElementById("check_filename").checked;
-
-    
-    for(var i=0;i<checkboxes.length;i++)
-        checkboxes[i].checked = !x;
-    document.getElementById("check_filename").checked = !x;
-    
-    doSearch();
-}
-*/
-
-function clear2() {
-    var x = false;
-
-    for(var k in checkboxes2)
-        x |= checkboxes2[k].checked;
-    x |= document.getElementById("check_methods").checked;
-    x |= document.getElementById("check_ext_classes").checked;
-
-    for(var k in checkboxes2)
-        checkboxes2[k].checked = !x;
-    document.getElementById("check_methods").checked = !x;
-    document.getElementById("check_ext_classes").checked = !x;
-    
-    doSearch();
-}
-
 function SearchKeyPressed(e) {
-    newinput = e.value; //.toLowerCase();
+    newinput = e.value;
     if(newinput != input) {
         document.getElementById("search_results").innerHTML = "Searching...";
-//        document.getElementById("search_count").innerHTML = "0 results";
-//        if(window.location.hash != newinput)
-//            window.location.hash = newinput;
-
     }
 }
 
@@ -254,24 +187,20 @@ function SearchKeyPressed(e) {
 }*/
 
 function matchDoc(doc,file,folder,re) {
-    var c = checkboxes2[folder.toLowerCase()];
-    if(c && !c.checked)
-        return false;
-
-    if(doc.installed=="extension" && !document.getElementById("check_ext_classes").checked)
+    if(filter.value != "all") {
+        if(folder.toLowerCase() != filter.value)
+            return false;
+    }
+    
+    if(doc.installed=="extension" && !document.getElementById("check_extensions").checked)
         return false;
 
     for(var i=0;i<fields.length;i++) {
         var f = fields[i];
-//        if(checkboxes[i].checked && doc[f] && doc[f].toLowerCase().indexOf(txt)>=0)
         if(checkboxes[i].checked && doc.hasOwnProperty(f) && re.test(doc[f]))
             return true;
     }
 
-//    if(document.getElementById("check_filename").checked && file.toLowerCase().indexOf(txt)>=0)
-    if(document.getElementById("check_filename").checked && re.test(file))
-        return true;
-               
     return false;
 }
 
@@ -284,11 +213,6 @@ var mets;
 var cats;
 var re;
 var node;
-
-/*function updProgress() {
-    var x = ((cindex+mindex)/(cats.length+mets.length))*100.0;
-    prog.style.width = x+"%";
-}*/
 
 function doPrint() {
     var now = Date.now();
@@ -311,7 +235,6 @@ function doPrint() {
             
             var n = document.createElement("a");
             n.setAttribute("href",v.path+".html");
-//            n.onclick = updateHash;
             n.innerHTML = v.title;
             div.appendChild(n);
             div.appendChild(document.createTextNode(" - "+v.summary+" "));
@@ -329,8 +252,6 @@ function doPrint() {
 
             if(Date.now()-now > 200) {
                 inProgress = true;
-    //            console.log("yield at cindex "+cindex);
-//                updProgress();
                 return;
             }
 
@@ -355,10 +276,6 @@ function doPrint() {
             x.className = "result_met";
             div.appendChild(x);
             
-/*            var div2 = document.createElement("div");
-            div2.className = "mets";
-            div.appendChild(div2);*/
-
             var x = mets[mindex][1].sort(function(a,b) { //document list
                     a = a.pfx + a.doc.title;
                     b = b.pfx + b.doc.title;
@@ -397,43 +314,15 @@ function doPrint() {
                 n.innerHTML = res+"]";
                 div2.appendChild(n);
             }            
-/*            var x = mets[mindex][1];
-            for(var i=0;i<x.length;i++) {
-                var m = x[i];
-                var pfx = "-";
-                var ext = false;
-                if(i!=0) div2.appendChild(document.createTextNode(", "));
-                if(/^Meta_/.test(m)) {
-                    div2.appendChild(document.createTextNode("*"));
-                    m = m.slice(5);
-                    pfx = "*";
-                }
-                if(m[m.length-1]=="+") {
-                    m = m.slice(0,-1);
-                    ext = true;
-                }
-
-                var a = document.createElement("a");
-                a.setAttribute("href","Classes/"+m+".html#"+pfx+k);
-//                a.onclick = updateHash;
-                a.appendChild(document.createTextNode(m));
-                div2.appendChild(a);
-                if(ext)
-                    div2.appendChild(document.createTextNode("+"));
-
-            }*/
 
             node.appendChild(div);
 
             if(Date.now()-now > 200) {
                 inProgress = true;
-//                console.log("yield at mindex "+mindex);
-//                updProgress();
                 return;
             }
         }
     }
-//    updProgress();
 }
 
 function randomDoc() {
@@ -515,26 +404,26 @@ function doSearch() {
         var tmp = []; for(var k in cats) tmp.push([k,cats[k]]);
         cats = tmp;
 
-        var include_ext_classes = document.getElementById("check_ext_classes").checked;
-
         // search methods
+        var include_ext_classes = document.getElementById("check_extensions").checked;
+        var filter_val = filter.value;
         if(document.getElementById("check_methods").checked) {
             for(var mname in methods) {
                 var m = methods[mname];
                 if(re.test(mname)) {
-                    if(include_ext_classes) {
-                        mets.push([mname,m]);
-                    } else {
-                        var c = [];
-                        for(var i=0;i<m.length;i++) {
-                            var doc = m[i].doc;
-                            if(doc && doc.installed != "extension")
-                                c.push(m[i]);
-                        }
-                        mets.push([mname,c]);
+                    var c = [];
+                    for(var i=0;i<m.length;i++) {
+                        var doc = m[i].doc;
+                        if(!doc) continue;
+                        if(doc.installed == "extension" && !include_ext_classes) continue;
+                        if(filter_val != "all" && doc.path.split("/")[0].toLowerCase() != filter_val) continue
+                        c.push(m[i]);
                     }
-                    foundMets = true;
-                    count++;
+                    if(c.length>0) {
+                        mets.push([mname,c]);
+                        foundMets = true;
+                        count++;
+                    }
                 }
             }
         }
@@ -582,16 +471,17 @@ window.onhashchange = onLoad;
     <div id='summary'>Search all documents</div>
 </div>
 <div id="search_checks0">
-Include:
-<input type="checkbox" id="check_classes" checked="true">Classes</input>
-<input type="checkbox" id="check_ext_classes" checked="true">Extension classes</input>
-<input type="checkbox" id="check_reference" checked="true">Reference</input>
-<input type="checkbox" id="check_guides" checked="true">Guides</input>
-<input type="checkbox" id="check_tutorials" checked="true">Tutorials</input>
-<input type="checkbox" id="check_overviews" checked="true">Overviews</input>
-<input type="checkbox" id="check_other" checked="true">Other</input>
-<input type="checkbox" id="check_methods" checked="true">Methods</input>
-&nbsp;&larr; <a href="javascript:clear2()">clear all</a>
+Filter:
+<select id="menu_filter">
+<option SELECTED value="all">All documents</option>
+<option value="classes">Classes only</option>
+<option value="reference">Reference only</option>
+<option value="guides">Guides only</option>
+<option value="tutorials">Tutorials only</option>
+<option value="overviews">Overviews only</option>
+<option value="other">Other only</option>
+</select>
+<input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
 </div>
 
 <div id="search_box">
@@ -603,10 +493,10 @@ Search text:<input type="text" id="search_input" value="" size="40" onkeyup="Sea
 <td>
 <div id="search_checks">
 <input type="checkbox" id="ignore_case" checked="true">Ignore case</input>
-<input type="checkbox" id="check_regexp">Regular expression <a href="javascript:showReHelp()">[?]</a></input>
 <input class="nonregex" type="checkbox" id="check_word">Whole word</input>
 <input class="nonregex" type="checkbox" id="check_prefix" checked="true">Starts with</input>
 <input class="nonregex" type="checkbox" id="check_suffix">Ends with</input>
+<input type="checkbox" id="check_regexp">Regexp</input>
 </div>
 <tr>
 <td>Match:
@@ -615,8 +505,7 @@ Search text:<input type="text" id="search_input" value="" size="40" onkeyup="Sea
 <input type="checkbox" id="check_title" checked="true">Title/Class</input>
 <input type="checkbox" id="check_summary" checked="true">Summary</input>
 <input type="checkbox" id="check_categories">Categories</input>
-<input type="checkbox" id="check_filename" checked="true">Filename</input>
-<!--&nbsp;&larr; <a href="javascript:clear1()">clear all</a>-->
+<input type="checkbox" id="check_methods" checked="true">Methods</input>
 </div>
 </table>
 <div id="random"><a href="javascript:randomDoc()">random page</a></div>
