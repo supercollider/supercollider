@@ -68,11 +68,6 @@ struct VariantList {
 
 Q_DECLARE_METATYPE( VariantList );
 
-
-struct QcSyncEvent;
-
-typedef void (*EventHandlerFn) ( QcSyncEvent * );
-
 namespace QtCollider {
 
   enum MetaType {
@@ -81,8 +76,7 @@ namespace QtCollider {
   };
 
   enum EventType {
-    Event_Sync = QEvent::User,
-    Event_ScMethodCall,
+    Event_ScMethodCall = QEvent::User,
     Event_Refresh,
     Event_Proxy_SetProperty,
     Event_Proxy_Destroy,
@@ -96,65 +90,6 @@ namespace QtCollider {
     Asynchronous
   };
 }
-
-struct QcSyncEvent : public QEvent
-{
-  friend class QcApplication;
-
-  enum Type {
-    ProxyRequest,
-    Generic,
-    CreateQObject
-  };
-
-  QcSyncEvent( Type type )
-    : QEvent( (QEvent::Type) QtCollider::Event_Sync ),
-    _cond( 0 ),
-    _mutex( 0 ),
-    _handler( 0 ),
-    _type( type )
-  { }
-
-  ~QcSyncEvent()
-  {
-    if( _cond && _mutex ) {
-      _mutex->lock();
-      _cond->wakeAll();
-      _mutex->unlock();
-    }
-  }
-
-  Type syncEventType() { return _type; }
-
-  private:
-
-    QWaitCondition *_cond;
-    QMutex *_mutex;
-    EventHandlerFn _handler;
-    Type _type;
-};
-
-struct QcGenericEvent : public QcSyncEvent
-{
-  QcGenericEvent( int type, const QVariant& data = QVariant(), QVariant *ret = 0 )
-    : QcSyncEvent( QcSyncEvent::Generic ),
-    _data( data ),
-    _return( ret ),
-    _type( type )
-  {}
-
-  template <class T> void returnThis( T arg ) {
-    *_return = QVariant::fromValue<T>( arg );
-  }
-
-  int genericEventType() { return _type; }
-
-  QVariant _data;
-  QVariant *_return;
-
-  private:
-    int _type;
-};
 
 struct ScMethodCallEvent : public QEvent
 {

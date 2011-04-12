@@ -32,13 +32,10 @@ class QcApplication : public QApplication
   public:
     QcApplication( int & argc, char ** argv );
     virtual ~QcApplication();
-    static void postSyncEvent( QcSyncEvent *e, QObject *rcv );
-    static void postSyncEvent( QcSyncEvent *e, EventHandlerFn handler );
     static bool compareThread();
 
   private:
     bool event( QEvent * );
-    void customEvent( QEvent * );
 
     static QMutex _mutex;
     static QcApplication *_instance;
