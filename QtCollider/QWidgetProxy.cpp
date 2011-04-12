@@ -66,26 +66,14 @@ void QWidgetProxy::setMouseEventWidget( QWidget *w )
   }
 }
 
-bool QWidgetProxy::setFocus( QtCollider::SetFocusRequest *r ) {
-  if( !widget() ) return true;
-
-  if( r->focus )
-    widget()->setFocus( Qt::OtherFocusReason );
-  else
-    widget()->clearFocus();
-
-  return true;
-}
-
-bool QWidgetProxy::bringFront() {
+bool QWidgetProxy::alwaysOnTop()
+{
   QWidget *w = widget();
-  if( !w ) return true;
-  w->setWindowState( w->windowState() & ~Qt::WindowMinimized
-                                      | Qt::WindowActive );
-  w->show();
-  w->raise();
+  if(!w) return false;
 
-  return true;
+  Qt::WindowFlags flags = w->windowFlags();
+  if( flags & Qt::Window && flags & Qt::WindowStaysOnTopHint ) return true;
+  else return false;
 }
 
 void QWidgetProxy::refresh() {
@@ -128,6 +116,68 @@ bool QWidgetProxy::setParent( QObjectProxy *parentProxy )
   return false;
 }
 
+void QWidgetProxy::customEvent( QEvent *e )
+{
+  int type = e->type();
+  switch( type ) {
+    case QtCollider::Event_Proxy_BringFront:
+      bringFrontEvent();
+      return;
+    case QtCollider::Event_Proxy_SetFocus:
+      setFocusEvent( static_cast<SetFocusEvent*>(e) );
+      return;
+    case QtCollider::Event_Proxy_SetAlwaysOnTop:
+      setAlwaysOnTopEvent( static_cast<SetAlwaysOnTopEvent*>(e) );
+      return;
+    default:
+      QObjectProxy::customEvent(e);
+  }
+}
+
+void QWidgetProxy::bringFrontEvent() {
+  QWidget *w = widget();
+  if( !w ) return;
+
+  w->setWindowState( w->windowState() & ~Qt::WindowMinimized
+                                      | Qt::WindowActive );
+  w->show();
+  w->raise();
+
+  return;
+}
+
+void QWidgetProxy::setFocusEvent( QtCollider::SetFocusEvent *e ) {
+  if( !widget() ) return;
+
+  if( e->focus )
+    widget()->setFocus( Qt::OtherFocusReason );
+  else
+    widget()->clearFocus();
+}
+
+void QWidgetProxy::setAlwaysOnTopEvent( QtCollider::SetAlwaysOnTopEvent *e )
+{
+  QWidget *w = widget();
+  if( !w ) return;
+
+  Qt::WindowFlags flags = w->windowFlags();
+  if( flags & Qt::Window ) {
+    if( e->alwaysOnTop ) flags |= Qt::WindowStaysOnTopHint;
+    else flags &= ~Qt::WindowStaysOnTopHint;
+
+    // record the initial state to restore it later
+    QPoint pos = w->pos();
+    bool visible = w->isVisible();
+
+    w->setWindowFlags( flags );
+
+    // setting window flags will move the window to (0,0) and hide it,
+    // so restore the initial state
+    w->move(pos);
+    if( visible ) w->show();
+  }
+}
+
 bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args )
 {
   switch( e->type() ) {
@@ -152,25 +202,6 @@ bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args 
     }
     default: return QObjectProxy::interpretEvent( o, e, args );
   }
-}
-
-void QWidgetProxy::customPaint( QPainter *painter )
-{
-  if( QtCollider::paintingAnnounced() ) {
-    qcDebugMsg(1, "WARNING: Custom painting already in progress. Will not paint." );
-    return;
-  }
-
-  QtCollider::announcePainting();
-
-  QtCollider::lockLang();
-
-  if( QtCollider::beginPainting( painter ) ) {
-    invokeScMethod( s_doDrawFunc, QList<QVariant>(), 0, true );
-    QtCollider::endPainting();
-  }
-
-  QtCollider::unlockLang();
 }
 
 void QWidgetProxy::interpretMouseEvent( QEvent *e, QList<QVariant> &args )
@@ -238,6 +269,25 @@ void QWidgetProxy::interpretKeyEvent( QEvent *e, QList<QVariant> &args )
   args << ke->key();
 }
 
+void QWidgetProxy::customPaint( QPainter *painter )
+{
+  if( QtCollider::paintingAnnounced() ) {
+    qcDebugMsg(1, "WARNING: Custom painting already in progress. Will not paint." );
+    return;
+  }
+
+  QtCollider::announcePainting();
+
+  QtCollider::lockLang();
+
+  if( QtCollider::beginPainting( painter ) ) {
+    invokeScMethod( s_doDrawFunc, QList<QVariant>(), 0, true );
+    QtCollider::endPainting();
+  }
+
+  QtCollider::unlockLang();
+}
+
 void QWidgetProxy::sendRefreshEventRecursive( QWidget *w ) {
   QEvent event( static_cast<QEvent::Type>( QtCollider::Event_Refresh ) );
   QApplication::sendEvent( w, &event );
@@ -247,39 +297,4 @@ void QWidgetProxy::sendRefreshEventRecursive( QWidget *w ) {
     if( child->isWidgetType() )
         sendRefreshEventRecursive( static_cast<QWidget*>( child ) );
   }
-}
-
-bool QWidgetProxy::alwaysOnTop()
-{
-  QWidget *w = widget();
-  if(!w) return false;
-
-  Qt::WindowFlags flags = w->windowFlags();
-  if( flags & Qt::Window && flags & Qt::WindowStaysOnTopHint ) return true;
-  else return false;
-}
-
-bool QWidgetProxy::setAlwaysOnTopEvent( QtCollider::SetAlwaysOnTopRequest *req )
-{
-  QWidget *w = widget();
-  if( !w ) return true;
-
-  Qt::WindowFlags flags = w->windowFlags();
-  if( flags & Qt::Window ) {
-    if( req->flag ) flags |= Qt::WindowStaysOnTopHint;
-    else flags &= ~Qt::WindowStaysOnTopHint;
-
-    // record the initial state to restore it later
-    QPoint pos = w->pos();
-    bool visible = w->isVisible();
-
-    w->setWindowFlags( flags );
-
-    // setting window flags will move the window to (0,0) and hide it,
-    // so restore the initial state
-    w->move(pos);
-    if( visible ) w->show();
-  }
-
-  return true;
 }

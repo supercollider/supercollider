@@ -38,20 +38,18 @@ QC_LANG_PRIMITIVE( QWidget_SetFocus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
 
-  SetFocusRequest *req = new SetFocusRequest();
-  req->focus = IsTrue( a );
+  QApplication::postEvent( proxy, new SetFocusEvent( IsTrue(a) ) );
 
-  bool ok = req->send( proxy, Asynchronous );
-  return ( ok ? errNone : errFailed );
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QWidget_BringFront, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
 
-  GenericWidgetRequest *req = new GenericWidgetRequest( &QWidgetProxy::bringFront );
+  QApplication::postEvent( proxy,
+                           new QEvent( (QEvent::Type) QtCollider::Event_Proxy_BringFront ) );
 
-  bool ok = req->send( proxy, Asynchronous );
-  return ( ok ? errNone : errFailed );
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
@@ -107,9 +105,7 @@ QC_LANG_PRIMITIVE( QWidget_GetAlwaysOnTop, 0, PyrSlot *r, PyrSlot *a, VMGlobals 
 QC_LANG_PRIMITIVE( QWidget_SetAlwaysOnTop, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
 
-  SetAlwaysOnTopRequest *req = new SetAlwaysOnTopRequest();
-  req->flag = IsTrue( a );
-  QApplication::postEvent( wProxy, req );
+  QApplication::postEvent( wProxy, new SetAlwaysOnTopEvent( IsTrue(a) ) );
 
   return errNone;
 }
