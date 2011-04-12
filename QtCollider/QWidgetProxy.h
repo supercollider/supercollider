@@ -49,11 +49,9 @@ public:
 
   bool bringFront();
 
-  bool refresh();
+  void refresh();
 
-  bool mapToGlobal( QtCollider::MapToGlobalRequest * );
-
-  bool setLayout ( QtCollider::SetLayoutRequest *r );
+  void setLayout ( QObjectProxy *layoutProxy );
 
   virtual bool setParent( QObjectProxy *parent );
 
@@ -61,9 +59,9 @@ public:
 
   bool setAlwaysOnTopEvent( QtCollider::SetAlwaysOnTopRequest * );
 
-protected:
-
   inline QWidget *widget() { return static_cast<QWidget*>( object() ); }
+
+protected:
 
   bool interpretEvent( QObject *, QEvent *, QList<QVariant> & );
 
@@ -112,19 +110,6 @@ struct SetFocusRequest
 : public WidgetRequestTemplate<SetFocusRequest, &QWidgetProxy::setFocus>
 {
   bool focus;
-};
-
-struct MapToGlobalRequest
-: public WidgetRequestTemplate<MapToGlobalRequest, &QWidgetProxy::mapToGlobal>
-{
-  MapToGlobalRequest( QPoint &pt ) : point(pt) {}
-  QPoint &point;
-};
-
-struct SetLayoutRequest
-: public WidgetRequestTemplate<SetLayoutRequest, &QWidgetProxy::setLayout>
-{
-  QObjectProxy *layoutProxy;
 };
 
 struct SetAlwaysOnTopRequest
