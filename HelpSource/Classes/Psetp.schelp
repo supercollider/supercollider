@@ -1,4 +1,4 @@
-class:: Pset
+class:: Psetp
 summary:: event pattern that sets values of one key
 related:: Classes/Pbindf, Classes/Pset
 categories:: Streams-Patterns-Events>Patterns>Filter
