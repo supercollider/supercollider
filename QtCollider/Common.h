@@ -30,13 +30,15 @@ namespace QtCollider {
   void setDebugLevel( int );
 }
 
-#include <iostream>
 #include <QString>
+
+extern void postfl(const char *fmt, ...);
+extern void error(const char *fmt, ...);
 
 #ifdef QC_DEBUG
   #define qcDebugMsg( LEVEL, MSG ) \
     if( LEVEL <= QtCollider::debugLevel() ) { \
-      std::cout << "Qt: " << QString(MSG).toStdString() << "\n"; \
+      postfl( "Qt:: %s\n", QString(MSG).toStdString().c_str() ); \
     }
 #else
   #define qcDebugMsg( LEVEL, MSG )
@@ -47,7 +49,7 @@ namespace QtCollider {
                     .arg( OBJ ? slotRawSymbol( &OBJ->classptr->name )->name : "null" ) \
                     .arg(MSG) )
 
-#define qcErrorMsg( MSG ) { std::cout << "Qt: ERROR: " << QString(MSG).toStdString() << "\n"; }
+#define qcErrorMsg( MSG ) error( "Qt: %s\n", QString(MSG).toStdString().c_str() )
 
 #include <QList>
 #include <QVariant>
