@@ -555,6 +555,7 @@ SCDocHTMLRenderer : SCDocRenderer {
             "</ul>"
         );
         if(toc, {this.renderTOC(f,name)});
+        f.write("<div class='doclink'>link::"++subtarget++"::</div>");
         f.write("</div>");
 
         f.write("<body onload='fixTOC();prettyPrint()'>");
