@@ -27,10 +27,8 @@
 #include <QWidget>
 
 namespace QtCollider {
-  struct SetFocusRequest;
-  struct MapToGlobalRequest;
-  struct SetLayoutRequest;
-  struct SetAlwaysOnTopRequest;
+  struct SetFocusEvent;
+  struct SetAlwaysOnTopEvent;
 }
 
 class QWidgetProxy : public QObjectProxy
@@ -45,9 +43,7 @@ public:
 
   void setMouseEventWidget( QWidget * );
 
-  bool setFocus( QtCollider::SetFocusRequest *r );
-
-  bool bringFront();
+  bool alwaysOnTop();
 
   void refresh();
 
@@ -55,24 +51,26 @@ public:
 
   virtual bool setParent( QObjectProxy *parent );
 
-  bool alwaysOnTop();
-
-  bool setAlwaysOnTopEvent( QtCollider::SetAlwaysOnTopRequest * );
-
   inline QWidget *widget() { return static_cast<QWidget*>( object() ); }
 
 protected:
 
-  bool interpretEvent( QObject *, QEvent *, QList<QVariant> & );
+  virtual void customEvent( QEvent * );
+
+  virtual bool interpretEvent( QObject *, QEvent *, QList<QVariant> & );
 
 private Q_SLOTS:
 
   void customPaint( QPainter * );
 
 private:
-
   void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
   void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
+
+  void bringFrontEvent();
+  void setFocusEvent( QtCollider::SetFocusEvent * );
+  void setAlwaysOnTopEvent( QtCollider::SetAlwaysOnTopEvent * );
+
   static void sendRefreshEventRecursive( QWidget *w );
 
   QWidget *_keyEventWidget;
@@ -106,16 +104,22 @@ private:
   }
 };
 
-struct SetFocusRequest
-: public WidgetRequestTemplate<SetFocusRequest, &QWidgetProxy::setFocus>
+struct SetFocusEvent : public QEvent
 {
+  SetFocusEvent( bool b )
+  : QEvent( (QEvent::Type) QtCollider::Event_Proxy_SetFocus ),
+    focus(b)
+  {}
   bool focus;
 };
 
-struct SetAlwaysOnTopRequest
-: public WidgetRequestTemplate<SetAlwaysOnTopRequest, &QWidgetProxy::setAlwaysOnTopEvent>
+struct SetAlwaysOnTopEvent  : public QEvent
 {
-  bool flag;
+  SetAlwaysOnTopEvent( bool b )
+  : QEvent( (QEvent::Type) QtCollider::Event_Proxy_SetAlwaysOnTop ),
+    alwaysOnTop(b)
+  {}
+  bool alwaysOnTop;
 };
 
 }

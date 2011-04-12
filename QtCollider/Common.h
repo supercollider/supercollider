@@ -85,7 +85,10 @@ namespace QtCollider {
     Event_ScMethodCall,
     Event_Refresh,
     Event_Proxy_SetProperty,
-    Event_Proxy_Destroy
+    Event_Proxy_Destroy,
+    Event_Proxy_BringFront,
+    Event_Proxy_SetFocus,
+    Event_Proxy_SetAlwaysOnTop
   };
 
   enum Synchronicity {

@@ -128,6 +128,8 @@ class QObjectProxy : public QObject
 
     virtual bool eventFilter( QObject * watched, QEvent * event );
 
+    virtual void customEvent( QEvent * );
+
     virtual bool interpretEvent( QObject *, QEvent *, QList<QVariant> & ) { return true; }
 
   private Q_SLOTS:
@@ -136,7 +138,6 @@ class QObjectProxy : public QObject
 
   private:
 
-    void customEvent( QEvent * );
     inline void scMethodCallEvent( ScMethodCallEvent * );
     bool setPropertyEvent( QtCollider::SetPropertyEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
