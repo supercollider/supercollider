@@ -79,31 +79,6 @@ private:
 
 namespace QtCollider {
 
-class GenericWidgetRequest : public RequestEvent
-{
-public:
-  GenericWidgetRequest( bool (QWidgetProxy::*h)() ) : handler(h) {}
-protected:
-  virtual bool execute( QObjectProxy *proxy ) {
-    QWidgetProxy *wproxy = qobject_cast<QWidgetProxy*>( proxy );
-    return (wproxy->*handler)();
-  }
-private:
-  bool (QWidgetProxy::*handler)();
-};
-
-template <class T, bool (QWidgetProxy::*handler)( T* )>
-class WidgetRequestTemplate : public RequestEvent
-{
-protected:
-  WidgetRequestTemplate(){}
-private:
-  bool execute( QObjectProxy *proxy ) {
-    QWidgetProxy *wproxy = qobject_cast<QWidgetProxy*>( proxy );
-    return (wproxy->*handler)( static_cast<T*>( this ) );
-  }
-};
-
 struct SetFocusEvent : public QEvent
 {
   SetFocusEvent( bool b )

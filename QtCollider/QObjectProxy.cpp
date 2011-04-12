@@ -217,16 +217,6 @@ void QObjectProxy::customEvent( QEvent *event )
       return;
     default: ;
   }
-
-  if( event->type() != (QEvent::Type) QtCollider::Event_Sync ) return;
-
-  QcSyncEvent *se = static_cast<QcSyncEvent*>( event );
-
-  if( se->syncEventType() == QcSyncEvent::ProxyRequest ) {
-    QtCollider::RequestEvent *re =  static_cast<QtCollider::RequestEvent*>( event );
-    re->perform( this );
-    return;
-  }
 }
 
 bool QObjectProxy::setParent( QObjectProxy *parentProxy ) {
@@ -480,22 +470,4 @@ QObjectProxy * QObjectProxy::fromObject( QObject *object )
     if( token ) return token->proxy;
   }
   return 0;
-}
-
-bool QtCollider::RequestEvent::send( QObjectProxy *proxy, Synchronicity sync )
-{
-  if( sync == Synchronous ) {
-    bool done = false;
-    p_done = &done;
-    QcApplication::postSyncEvent( this, proxy );
-    return done;
-  }
-  else {
-    QApplication::postEvent( proxy, this );
-  }
-
-  // WARNING at this point, the event has been deleted, so "this" pointer and data members are
-  // not valid anymore!
-
-  return true;
 }

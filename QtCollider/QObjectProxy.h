@@ -156,25 +156,6 @@ class QObjectProxy : public QObject
 
 namespace QtCollider {
 
-class RequestEvent : public QcSyncEvent {
-  friend class QObjectProxy;
-
-public:
-  bool send( QObjectProxy *, Synchronicity );
-  inline bool perform( QObjectProxy *proxy ) {
-    bool done = execute( proxy );
-    if( p_done ) *p_done = done;
-    return done;
-  }
-
-protected:
-  RequestEvent() : QcSyncEvent( QcSyncEvent::ProxyRequest ), p_done(0) {}
-  virtual bool execute( QObjectProxy *proxy ) = 0;
-
-private:
-  bool *p_done;
-};
-
 struct SetPropertyEvent : public QEvent
 {
   SetPropertyEvent() : QEvent( (QEvent::Type) QtCollider::Event_Proxy_SetProperty ) {}
