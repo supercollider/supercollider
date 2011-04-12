@@ -41,26 +41,13 @@ QC_LANG_PRIMITIVE( QtGUI_SetDebugLevel, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   return errNone;
 }
 
-void qcScreenBounds( QcSyncEvent *e )
-{
-  QcGenericEvent *ce = static_cast<QcGenericEvent*>(e);
-  *ce->_return = QVariant( QApplication::desktop()->screenGeometry() );
-}
-
 QC_LANG_PRIMITIVE( QWindow_ScreenBounds, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  if( !isKindOfSlot( rectSlot, class_Rect ) ) return errWrongType;
+  QRect screenGeometry = QApplication::desktop()->screenGeometry();
 
-  QVariant var;
-
-  QcGenericEvent *e = new QcGenericEvent(0, QVariant(), &var);
-  QcApplication::postSyncEvent( e, &qcScreenBounds );
-
-  QRect rect = var.value<QRect>();
-
-  int err = Slot::setRect( rectSlot, rect );
+  int err = Slot::setRect( rectSlot, screenGeometry );
   if( err ) return err;
 
   slotCopy( r, rectSlot );
@@ -94,34 +81,16 @@ QC_LANG_PRIMITIVE( Qt_AvailableFonts, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-static void qcGlobalPalette( QcSyncEvent *e )
-{
-  QcGenericEvent *ge = static_cast<QcGenericEvent*>(e);
-  *ge->_return = QVariant( QApplication::palette() );
-}
-
 QC_LANG_PRIMITIVE( Qt_GlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  QVariant var;
+  QPalette p( QApplication::palette() );
 
-  QcGenericEvent *e = new QcGenericEvent(0, QVariant(), &var);
-  QcApplication::postSyncEvent( e, &qcGlobalPalette );
-
-  QPalette p = var.value<QPalette>();
   if( Slot::setPalette( a, p ) ) return errFailed;
-
   slotCopy( r, a );
 
   return errNone;
-}
-
-static void qcSetGlobalPalette( QcSyncEvent *e )
-{
-  QcGenericEvent *ge = static_cast<QcGenericEvent*>(e);
-  QPalette p = ge->_data.value<QPalette>();
-  QApplication::setPalette( p );
 }
 
 QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
@@ -129,8 +98,8 @@ QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QPalette p = Slot::toPalette( a );
-  QcGenericEvent *e = new QcGenericEvent(0, QVariant(p));
-  QcApplication::postSyncEvent( e, &qcSetGlobalPalette );
+  QApplication::setPalette( p );
+
   return errNone;
 }
 
