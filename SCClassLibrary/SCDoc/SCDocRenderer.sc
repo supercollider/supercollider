@@ -671,7 +671,7 @@ SCDocHTMLRenderer : SCDocRenderer {
             name = x.text.stripWhiteSpace;
             currentClass = name.asSymbol.asClass;
             currentImplClass = nil;
-            
+
             currentClass !? {
                 this.addUndocumentedMethods(currentClass.class,\classmethods);
                 this.addUndocumentedMethods(currentClass,\instancemethods);
