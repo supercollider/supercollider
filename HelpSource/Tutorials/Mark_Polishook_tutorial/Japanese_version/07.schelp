@@ -1,0 +1,59 @@
+title:: 07
+summary:: Mark Polishook tutorial (JP)
+categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+section::いつ1つのSynthDefを用いるか ... いつ2つまたはそれ以上のSynthDefを用いるか
+
+多くのシンセシスのプロセスでは、シンプルな場合には、単独のSynthDefで定義することができます。　もっと複雑な場合には、グループの中でコンポーネントとしてコラボレートする複数のSynthDefを使う様に書くのがベストです。
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+section::関数と.scopeメッセージ
+
+シンプルなシンセシスのプロセスを試してみる簡単な方法は、関数の中で実行してみるということで、これはSynthDefを定義してそれをシンセの中でエンジンとして使うというよりも簡単です。この様な方法でコードを開発している時、後のある時点で、コードをテスト用の関数からSynthDefに変換することができます。
+
+実際には、.playと.scopeメッセージは関数に送ることができ、そうすることでこの手法は有益なものになります。なぜなら、.scopeメッセージは関数の中でそのコードを実行し、定義されたシンセシスのプロセスによって生成される波形を視覚的な表現として表示するからです。
+
+The .scope message ONLY works with the internal server - which means that the internal server must be turned on to use it. This can be done manually, by pressing the boot button on the internal server, or through code, as in
+
+しかしながら、.scopeメッセージはインターナル・サーバーに対してしか機能しません。つまり、これを使うためにはインターナル・サーバーがオンになっていなければならないということです。これを手動でやるためには、インターナル・サーバーのbootボタンを押すか、コードとして次の様に実行します。
+
+code::
+Server.internal.boot;
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+この例を実行してスコープ・ウィンドウに注目して下さい。
+
+code::
+(
+{ 
+	SinOsc.ar([440.067, 441.013], 0, 1) 
+	* 
+	SinOsc.ar([111, 109], 0, 0.2) 
+}.scope;
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+これは同じシンセシスのプロセスをSnythDefとして表現したものです。以下に示す様に、上の例で関数の中に書かれているコードが、単にそのままOutの第２アーギュメントになっているということに注目して下さい。
+
+code::
+(
+SynthDef("ringMod", { 
+	Out.ar(
+		0,
+		SinOsc.ar([440.067, 441.013], 0, 1) * SinOsc.ar([111, 109], 0, 0.2) 
+	)
+}).add;
+)
+
+Synth("ringMod")
+::
+	
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+go to link::Tutorials/Mark_Polishook_tutorial/Japanese_version/08::
