@@ -1,0 +1,223 @@
+title:: 15
+summary:: Mark Polishook tutorial (JP)
+categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+section::ルーチンとクロック
+
+クロックは、SuperColliderの中で自動のアルゴリズミックなスケジュ−リングを生成する際に使うメカニズムを提供します。クロックはルーチン、タスク、そしてパターンを再生します。
+
+パターンとタスクはルーチンから作られます。
+
+ルーチンに対する最初のアーギュメント（そして通常は唯一のアーギュメント）は関数です。
+
+これが関数の一例です。
+
+code::
+// 関数を実行するには.valueメッセージを送る
+f = { "hello, world" };
+f.value;
+::
+
+これはルーチンの中に関数を配置したものです。.yieldメッセージを送ることで関数の中の式を評価します。
+
+code::
+r = Routine({ "hello, world".yield.postln });
+::
+
+ルーチンを実行するには、評価して下さい。
+
+code::
+// ルーチンを評価するには、.nextメッセージを送る
+r.next;
+::
+
+もう一度やってみましょう。
+
+code::
+r.next;
+::
+
+これは一度ルーチンが"yield"（受け渡す）すると、関数の中にさらなるコードがあるか、resetメッセージを受け取らない限り、終了することを示します。
+
+code::
+r.reset;
+r.next;
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+この引用では、ルーチンに.nextメッセージが送られると、３つの表現（文字列）を順番に引き渡すことを引き起こします。例えば、nextメッセージが送られると、文字列が引き渡され、nextメッセージが送られると、文字列が引き渡さるという様にです。
+
+code::
+(
+r = Routine({ 
+	"hello, world".yield;
+	"what a world".yield;
+	"i am a world".yield;
+});
+)
+::
+
+上の例での最後の.nextメッセージはnilを返すでしょう。最後の表現が引き渡されると、ルーチンはリセットされるまで常にnilを返します。
+
+code::
+r.next;
+r.next;
+r.next;
+r.next;
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+このルーチンを.doメッセージを使って書き直すと、loopを作ります。
+
+code::
+(
+r = Routine({ 
+
+	var array;
+	array = [ "hello, world", "what a world", "i am a world" ];
+
+	3.do({ array.choose.yield })
+	
+});
+)
+::
+
+このdo loopをルーチンの中のループよりももう1回多く実行すると、前の例と同じ様に、３つの文字列とnilを返します。
+
+code::
+4.do({ r.next.postln });
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+次に、このルーチンを.waitメッセージを含む形で書き直します。.waitメッセージは、その数字が示す秒単位で指定した時間だけ、ルーチンを「プレイ」するクロックを一時停止させます。
+
+code::
+(
+r = Routine({ 
+
+	var array;
+	array = [ "hello, world", "what a world", "i am a world" ];
+
+	3.do({ 1.wait; array.choose.postln })
+	
+});
+)
+::
+
+以下のコードが示す様に、ルーチンに.resetメッセージを追加します。このようにして、ルーチンは常に再スタートできる様になります。そして、クロックとともにルーチンをプレイします。
+
+以下のコードはSuperColliderがイベントをスケジューリングする時に使用する３つのクロックを示します。
+
+code::
+SystemClock.play(r.reset);		// 最も正確
+AppClock.play(r.reset);			// GUIで使用する
+TempoClock.new.play(r.reset);	// 主に拍でスケジューリングするために使われる
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+または、そのプロセスを省略することができ、その場合にはデフォルトとしてTempoClockが使用されます。
+
+code::
+r.reset.play;
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+section::ルーチンを用いたシンセシスのスケジューリング
+
+ルーチンの中にシンセを入れます。シンセの中のSynthDefが必ずエンベロープを持つ様にし、そのエンベロープのdoneActionパラメータを２にセットします。これによって、エンベロープが終了した後に、そのシンセのために必要とされていたメモリが解放されます。
+
+code::
+(
+SynthDef("fm2", { 
+	arg bus = 0, freq = 440, carPartial = 1, modPartial = 1, index = 3, mul = 0.2, ts = 1;
+
+	// インデックスの値は通常0から24まで
+	// carPartial :: modPartial => car/mod ratio
+	
+	var mod;
+	var car;
+	
+	mod = SinOsc.ar(
+		freq * modPartial, 
+		0, 
+		freq * index * LFNoise1.kr(5.reciprocal).abs
+	);
+		
+	car = SinOsc.ar(
+		(freq * carPartial) + mod, 
+		0, 
+		mul
+	);
+	
+	Out.ar(
+		bus,
+		car * EnvGen.kr(Env.sine(1), doneAction: 2, timeScale: ts)
+	)
+}).add;
+)
+
+(
+r = Routine({
+
+	12.do({
+		Synth("fm2", [\freq, 400.0.rrand(1200), \carPartial, 0.5.rrand(2), \ts, 0.1.rrand(4)]);
+		2.wait;
+	})
+});
+)
+r.reset.play;
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ルーチンの中で引き起こされたシンセを、ルーチンの外側で実行するエコー・エフェクト・ユニットを通してプレイします。
+
+code::
+(
+SynthDef("echoplex", {
+	ReplaceOut.ar(
+		0,
+		CombN.ar(
+			In.ar(0, 1),
+			0.35,
+			[Rand(0.05, 0.3), Rand(0.05, 0.3)], 
+			// シンセが生成されるたびにランダムな値を生成する
+			7,
+			0.5
+		)
+	)
+}).add;
+
+// ~sourceグループをルートノードの先頭に追加し、~effectsグループをる−とノードの最後に追加する
+~source = Group.head(s);
+~effect = Group.tail(s);
+
+r = Routine({
+
+	// ループはinf.doと同じ。例えば、永遠に実行される無限ループを生成する。
+	loop({
+		Synth.head(	// ~sourceグループの先頭にシンセを追加する
+			~source,
+			"fm2", 
+			[
+				\outbus, 0, \freq, 400.0.rrand(1200), \modPartial, 0.3.rrand(2.0),
+				\carPartial, 0.5.rrand(11), \ts, 0.1.rrand(0.2)]
+		);
+		2.wait;
+	})
+});
+// 2つのechoplexesーこれらを~effectsグループの先頭に順に追加する
+Synth.head(~effect, "echoplex");
+Synth.head(~effect, "echoplex");
+)
+// ルーチンをプレイする
+r.reset.play;
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,24 @@
+title:: 00
+summary:: Mark Polishook tutorial (JP)
+categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+私がSuperColliderに関するレクチャーを始める前に、みなさんはまず私のSuperColliderについてのバックグラウンドを知りたいと思うかもしれません。
+
+私は7年前にSuperColliderを使い始めました。私にはある学生がいて、その学生は、ProToolsのようなソフトウェアではできない様なやりかたで録音を加工するということに興味を持っていました。私は彼にSuperCollider 1のデモ版を渡しました。彼は一日それに取り組んだ後、私もそれに取り組むべきだと進言してきました。それから7年間が経ち、私は今でもそれに取り組んでいます（SuperCollider 3になりましたが）。
+
+今や私は、SuperColliderが作曲したり音楽を作ったりする時に自分でたてた仮説を検証する際に助けとなることを知っています。SuperColliderは挑戦的です。なぜなら、それは音楽を作るためにプログラミングを勉強するということを要求するからです。とりわけ、SuperColliderは素晴らしいツールだと思います。なぜなら、それを使うには実験と開発に基づくアーティスティックなアプローチが必要だからです。
+
+3つのレクチャーで私が皆さんにご紹介したいと思っていることの目標はシンプルです。できるかぎり、私は皆さんにSuperColliderについて考えるためのフレームワークを示したいと思っています。そのフレームワークは、プログラミングと音楽に関する美学と哲学に触れることになるでしょう。そして、私は私がSuperColliderで制作した大きなプロジェクトの2つの例についても紹介します。明日議論する最初のプロジェクトはロボット・イン・レジデンスで、レゴ・ロボット、チャターボット、そして音響と映像の合成を含むネットワーク化されたシステムを制御するのにSuperColloderを使っています。
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+-Mark Polishook, DSP SuperSchool, Ogaki City, Japan, February, 2004
+polishoo@cwu.edu
+polishoo@daimi.au.dk
+
+日本語訳作成
+小林　茂
+kotobuki@yapan.org
+
+go to link::Tutorials/Mark_Polishook_tutorial/Japanese_version/01::

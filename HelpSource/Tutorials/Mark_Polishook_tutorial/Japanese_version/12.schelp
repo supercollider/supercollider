@@ -1,0 +1,230 @@
+title:: 12
+summary:: Mark Polishook tutorial (JP)
+categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+section::複数の部分からなるシンセシス
+
+シンセシスのプロセスを部分に分割することは、モジュラー・デザインとコンポーネントの再利用を促進します。このことが意味するのは、小さく、うまく設計されたタスクを成し遂げる様にSynthDefを作るということには、しばしば〜があるということです。そのようにすることで、複雑なシンセシスのネットワークを構築するためにSynthDefを組み合わせたり、様々な方法で組み替えたりすることが可能になるのです。
+
+code::
+(
+// ディスクからサウンド・ファイルを読み込む
+b = Buffer.read(s, "sounds/a11wlk01.wav");
+
+// モノのサンプル・プレーヤー ... １チャンネルのみ
+SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
+	Out.ar(
+		bus,
+		PlayBuf.ar(
+			1,
+			bufnum,
+			BufRateScale.kr(bufnum) * rateScale
+		)
+		*
+		EnvGen.kr(Env.sine(BufDur.kr(bufnum)))
+	)
+}).add;
+)
+
+(
+// SynthDefをテストする ... 動く？（はい、大丈夫。左チャンネルで再生する。）
+Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
+)
+
+
+(
+// コンポーネントの再利用の非常にシンプルな例 ... 
+// \busアーギュメントを使用して、同じSynthDefから作られたシンセを別のチャンネルにアサインする
+// この場合には、1チャンネルのサウンド・ファイルを2チャンネルで再生する
+// それぞれのチャンネルの再生レートを変えることで効果を明白にする
+Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b, \rateScale, 0.99]);
+Synth("aMonoSamplePlayer", [\bus, 1, \bufNum, b, \rateScale, 1.01]);
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+section::どのようにして情報を取得するか
+
+前の例ではBufRateScaleとBufDurというUGenを使って、PlayBufがサウンド・ファイルをプレイするレートと、PlayBufに適用されるエンベロープの長さをコントロールしています。
+
+BufRateScaleはサウンド・ファイルが録音されたときのレートでプレイバックされることを保証します。BufDurはバッファの長さを返します。これら両方のクラスはInfoUGenbaseまたはBufInfoUGenBaseを継承するUGenのファミリーです。
+
+そのようなUGenの完全なリストを表示するためのコードがこれです。
+
+code::
+InfoUGenBase.dumpClassSubtree
+::
+
+このコードを実行すると次の様に表示されます。
+
+code::
+InfoUGenBase[  NumRunningSynths  NumBuffers  ControlDur  NumControlBuses  SubsampleOffset  RadiansPerSample  SampleDur  ControlRate  NumInputBuses  NumAudioBuses  SampleRate  NumOutputBuses]InfoUGenBase
+::
+
+code::
+BufInfoUGenBase.dumpClassSubtree
+::
+
+このコードを実行すると次の様に表示されます。
+
+code::
+BufInfoUGenBase[  BufChannels  BufSampleRate  BufRateScale  BufFrames  BufDur  BufSamples]BufInfoUGenBase
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+section::実行の順序
+
+もう一度、次の例はどのようにしてシンセをソースとエフェクトのグループに配置するのかを示します。２つのグループは２つのシンセが適切な順序で実行されることを保証します。
+
+code::
+(
+// エンベロープなしのフィルター　ー永遠にとどまる
+SynthDef("soundFileFilter", { arg bus = 0, freq = 440, rq = 0.05;
+	ReplaceOut.ar(
+		bus,
+		BPF.ar(			// a bandpass filter
+			In.ar(0, 2),
+			[freq * 0.99, freq * 1.5],
+			rq
+		)
+	)
+}).add;
+)
+
+// ２つのグループを作成する。１つはソース用、他の１つはエフェクト用
+(
+~source = Group.head(s);
+~effect = Group.tail(s);
+)
+
+// シンセをそれぞれ適切なグループの先頭に追加する
+// シンセを適切なグループの最後に追加しても同じ結果になる
+(
+Synth.head(~effect, "soundFileFilter", [\out, 0, \freq, 500.rrand(1000), \rq, 0.04.rrand(0.1)]);
+Synth.head(~source, "aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+section::サンプルをループする
+
+サウンド・ファイルを何度も何度も繰り返し再生するには、PlayBufのloopアーギュメント（コントロール）を使います。
+
+しかし、PlayBufのインスタンスのloopアーギュメントに任せてファイル全体をループする代わりに、正確な繰り返しが起きる様にスケジューリングすることで、より細かくコントロールすることもできます。
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+この例は３つのSynthDefを使用しています。第1のSynthDefはサンプル・プレーヤーで、バッファ全体を永遠にループし続けます。第2のSynthDefはその入力をリング変調します。第3のSynthDefはその入力に対してローパス・フィルターを適用します。
+
+３つのシンセはチェーンを形成します。第1のシンセはソース・シンセです。第2と第3のシンセは、それぞれのソースに対して処理を加えます。つまり、ソースに対して振幅変調を加え、振幅変調を行ったソースに対してローパス・フィルターをかけます。
+
+処理の順序、つまり振幅変調とローパス・フィルターのどちらが最初でどちらが2番目かは任意です。それはどちらの方法でも定義することができます。
+
+code::
+(
+// サウンド・ファイルを読み込む
+b = Buffer.read(s, "sounds/a11wlk01.wav");
+
+// サウンド・ファイル全体をループ再生するサンプル・プレーヤーを定義する
+SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;
+	Out.ar(
+		outBus,
+		PlayBuf.ar(
+			1,
+			bufnum,
+			BufRateScale.kr(bufnum) * rateScale + LFNoise1.kr(2.reciprocal, 0.05),
+			loop: 1	// 停止することなくサウンド・ファイルを繰り返し再生する
+		)
+		*
+		mul
+	)
+}).add;
+
+// オーディオ・ソースに振幅変調を適用する
+SynthDef("ampMod", { arg inBus = 0, outBus = 0, modFreq = 1;
+	Out.ar(
+		outBus,
+		[In.ar(inBus, 1) * SinOsc.kr(modFreq), In.ar(inBus, 1) * SinOsc.kr(modFreq - 0.02)]
+	)
+}).add;
+
+// オーディオ・ソースにローパス・フィルターを適用する
+SynthDef("aLowPassFilter", { arg inBus = 0, outBus = 0, freq = 300, freqDev = 50, boost = 1;
+	Out.ar(
+		outBus,
+		RLPF.ar(
+			In.ar(inBus, 2),
+			Lag.kr(LFNoise0.kr(1, freqDev, freq), 1),
+			0.1
+		)
+		*
+		boost
+	)
+}).add;
+)
+
+// ２つのグループを定義する。１つはソースのためで、他方はエフェクトのため
+(
+~source = Group.head(s);
+~effect = Group.tail(~s);
+)
+
+(
+// ソース・グループにサンプル・プレーヤーを追加する
+Synth.head(
+	~source, 
+	"aLoopingSamplePlayer", [\outBus, 3, \bufNum, b, \rateScale, 1, \mul, 0.051]);
+// エフェクト・グループの先頭に振幅変調シンセを追加する
+Synth.head(
+	~effect,
+	"ampMod", [\inBus, 3, \outBus, 5, \modFreq, 1]);
+// エフェクト・グループの最後にフィルタリングを追加する
+Synth.tail(
+	~effect,
+	"aLowPassFilter", [\inBus, 5, \outBus, 0, \boost, 5])
+)
+::
+
+このシンセシスのネットワークを文字による図で表すと、この様になります。
+
+code::
+Group (RootNode, ID 0)
+      /\
+     /  \
+~source  ~effects	// ~sourceと~effectsはグループ
+ |        |      \
+ |        |       \
+ synth    synth    synth	
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ここでは、シンセとグループの配置は同じです。一部のアーギュメント（コントロール）を変えることでエフェクトの音色が劇的に変わります。
+
+code::
+(
+~source = Group.head(s);
+~effect = Group.tail(~s);
+)
+
+(
+Synth.head(
+	~source, 
+	"aLoopingSamplePlayer", [\outBus, 3, \bufNum, b, \rateScale, 1, \mul, 0.051]);
+Synth.head(
+	~effect,
+	"ampMod", [\inBus, 3, \outBus, 5, \modFreq, 1000]);
+Synth.tail(
+	~effect,
+	"aLowPassFilter", [\inBus, 5, \outBus, 0, \freq, 500, \freqDev, 200, \boost, 7])
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+go to link::Tutorials/Mark_Polishook_tutorial/Japanese_version/13::

@@ -1,0 +1,75 @@
+title:: 05
+summary:: Mark Polishook tutorial (JP)
+categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+section::バスにオーディオを乗せる
+
+デフォルトでは、SuperColliderはオーディオに対して128のバスを持ちます。バスは配列の中の要素として存在します。
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// オーディオ・バス（チャンネル）の配列
+[ channel0, channel1, channel2, channel3, channel4, ... , ..., ..., etc., ... channel127 ]
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+オーディオ・バスにデータを乗せるには、オーディオ・レートで動作するOutというugenを使います。
+
+code::
+(
+SynthDef("dataForABus", {
+	Out.ar(
+		0,		// 1チャンネル分のオーディオをバス0に書き込む
+		Saw.ar(100, 0.1)
+	)
+}).add;
+)
+
+Synth("dataForABus");
+::
+
+SynthDefブラウザーが示す様に、
+
+code::
+(
+// 評価してみて下さい
+SynthDescLib.global.read;
+SynthDescLib.global.browse;
+)
+::
+
+この例は（1チャンネル分の）オーディオ出力をチャンネル0に乗せます。
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+section::バスからオーディオを取得する
+
+オーディオ・バスからデータを取得するには、.arメッセージをInというugenに送ります。
+
+code::
+(
+SynthDef("dataFromABus", {
+	Out.ar(
+		0,					
+		[	//　左チャンネルはオーディオ・バスから入力を得る
+			In.ar(0, 1), 			
+			SinOsc.ar(440, 0.2), 
+		]	
+	)
+}).add;
+)
+
+(
+Synth("dataForABus");	// チャンネル0にノコギリ波をシンセサイズする
+Synth("dataFromABus");	// それをチャンネル1のサイン波で変調する
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+さらに詳しくは、SuperColliderのヘルプ・システムでOutとInを参照して下さい。
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+go to link::Tutorials/Mark_Polishook_tutorial/Japanese_version/06::
