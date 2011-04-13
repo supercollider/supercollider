@@ -30,8 +30,27 @@
 QcApplication * QcApplication::_instance = 0;
 QMutex QcApplication::_mutex;
 
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
+#endif
+
+
+/* on x11, we need to check, if we can actually connect to the X server */
+static bool QtColliderUseGui(void)
+{
+#ifdef Q_WS_X11
+  Display *dpy = XOpenDisplay(NULL);
+  if (!dpy)
+    return false;
+  XCloseDisplay(dpy);
+  return true;
+#else
+  return true;
+#endif
+}
+
 QcApplication::QcApplication( int & argc, char ** argv )
-: QApplication( argc, argv )
+: QApplication( argc, argv, QtColliderUseGui() )
 {
   _mutex.lock();
   _instance = this;

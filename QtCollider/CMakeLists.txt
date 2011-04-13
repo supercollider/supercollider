@@ -109,6 +109,18 @@ add_library( QcLangClient STATIC LanguageClient.cpp ${QC_LANG_CLIENT_MOC_SRCS} )
 set_property ( TARGET QcLangClient
                APPEND PROPERTY COMPILE_FLAGS -fpic )
 
+
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+	find_package(X11)
+
+	if(X11_FOUND)
+		include_directories(X11_INCLUDE_DIR)
+		target_link_libraries( QtCollider ${X11_X11_LIB})
+	elseif()
+		message(SEND_ERROR "Cannot find libx11")
+	endif()
+endif()
+
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
   include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
