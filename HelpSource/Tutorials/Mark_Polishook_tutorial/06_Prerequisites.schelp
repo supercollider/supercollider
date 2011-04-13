@@ -1,0 +1,36 @@
+title:: 06_Prerequisites
+summary:: Mark Polishook tutorial
+categories:: Tutorials>Mark_Polishook_tutorial
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+We know that SuperCollider applies a client/server model to audio synthesis and processing. Let's focus on synthesis definition. Some things to consider:
+
+section::DSP
+
+First, we require knowledge of digital signal processing. A reference, such as the "Computer Music Tutorial," (MIT Press) can be helpful. A source on the internet is "The Scientist and Engineer's Guide to Digital Signal Processing" at
+
+http://www.dspguide.com/
+
+section::OOP
+
+Second, we need to know how to use the SuperCollider language to express synthesis algorithms. This means learning about object-oriented programming in general and about the grammar and syntax of the SuperCollider language in particular. A book about Smalltalk, the object-oriented computer language that SuperCollider closely resembles, can be helpful. Two books about Smalltalk on the www are
+
+The Art and Science of Smalltalk
+
+http://www.iam.unibe.ch/~ducasse/FreeBooks/Art/artMissing186187Fix1.pdf
+
+and
+
+Smalltalk by Example
+
+http://www.iam.unibe.ch/~ducasse/FreeBooks/ByExample/
+
+The SuperCollider documentation and numerous sites across the internet, such as the swiki at
+
+http://swiki.hfbk-hamburg.de:8888/MusicTechnology/6
+
+explain and show how the SuperCollider language works.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+go to link::Tutorials/Mark_Polishook_tutorial/07_SynthDefs::

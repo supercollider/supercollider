@@ -1,0 +1,181 @@
+title:: 16_Playbuf
+summary:: Mark Polishook tutorial
+categories:: Tutorials>Mark_Polishook_tutorial
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+Breaking synthesis processes into parts that accomplish small well-defined tasks encourages modular design and component reuse (the oop mantra).
+
+code::
+(
+// read a soundfile from disk
+b = Buffer.read(s, "sounds/a11wlk01.wav");
+
+// a samplePlayer in mono ... one channel only
+SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
+	Out.ar(
+		bus,
+		PlayBuf.ar(
+			1,
+			bufnum,
+			BufRateScale.kr(bufnum) * rateScale
+		)
+		*
+		EnvGen.kr(Env.sine(BufDur.kr(bufnum)))
+	)
+}).add;
+)
+
+(
+// test the synthdef ... does it work? (yes, it's fine. it plays on the left channel)
+Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
+)
+
+
+(
+// a simple example of component reuse ... use the \bus argument to assign synths built from
+// the same synthdef to different channels
+// in this case, play a 1-channel soundfile on 2 channels
+// a different playback rate for each channel makes the effect more obvious
+Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b, \rateScale, 0.99]);
+Synth("aMonoSamplePlayer", [\bus, 1, \bufNum, b, \rateScale, 1.01]);
+)
+::
+
+section::Information
+
+The BufRateScale and the BufDur ugens, as shown in the previous example, control the rate at which PlayBuf plays the soundfile and the length of the envelope applied to the playbuf.
+
+BufRateScale and BufDur are of a family of ugens that inherit from InfoUGenBase or BufInfoUGenBase.
+
+To see the complete list of such ugens, evaluate
+
+code::
+InfoUGenBase.dumpClassSubtree;
+::
+
+It returns
+
+code::
+InfoUGenBase
+[  NumRunningSynths  NumBuffers  ControlDur  NumControlBuses  SubsampleOffset  RadiansPerSample  SampleDur  ControlRate  NumInputBuses  NumAudioBuses  SampleRate  NumOutputBuses]InfoUGenBase
+::
+
+Evaluate
+
+code::
+BufInfoUGenBase.dumpClassSubtree;
+::
+
+and it returns
+
+code::
+BufInfoUGenBase[  BufChannels  BufSampleRate  BufRateScale  BufFrames  BufDur  BufSamples]BufInfoUGenBase
+::
+
+section::Loop a sample
+
+The next example uses three synthsdefs to make a chain. The first synthdef is a sample player that loops through a buffer. The second synthdef ring modulates its input. The third synthdef applies a lowpass filter.
+
+code::
+(
+// read a soundfile
+b = Buffer.read(s, "sounds/a11wlk01.wav");
+
+// define a sample player that will loop over a soundfile
+SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;
+	Out.ar(
+		outBus,
+		PlayBuf.ar(
+			1,
+			bufnum,
+			BufRateScale.kr(bufnum) * rateScale + LFNoise1.kr(2.reciprocal, 0.05),
+			loop: 1	// play the soundfile over and over without stopping
+		)
+		*
+		mul
+	)
+}).add;
+
+// apply amplitude modulation to an audio source
+SynthDef("ampMod", { arg inBus = 0, outBus = 0, modFreq = 1;
+	Out.ar(
+		outBus,
+		[	// In.ar ugen reads from an audio bus
+			In.ar(inBus, 1) * SinOsc.kr(modFreq),
+			In.ar(inBus, 1) * SinOsc.kr(modFreq - 0.02)
+		]
+	)
+}).add;
+
+// apply a low pass filter to an audio source
+SynthDef("aLowPassFilter", { arg inBus = 0, outBus = 0, freq = 300, freqDev = 50, boost = 1;
+	Out.ar(
+		outBus,
+		RLPF.ar(
+			In.ar(inBus, 2),
+			Lag.kr(LFNoise0.kr(1, freqDev, freq), 1),
+			0.2
+		)
+		*
+		boost
+		*
+		LFPulse.kr(1, [0.25, 0.75], [0.5, 0.45])
+		+
+		In.ar(inBus, 2)
+	)
+}).add;
+)
+
+// define 2 groups, 1 for source material and the other for effects
+(
+~source = Group.head(s);
+~effect = Group.tail(~s);
+)
+
+(
+// add the samplePlayer to the source group
+~theSource = Synth.head(
+	~source,
+	"aLoopingSamplePlayer", [\outBus, 3, \bufNum, b, \rateScale, 1, \mul, 0.051]);
+// add an amplitude modulation synth to the head of the effects group
+~fx1 = Synth.head(
+	~effect,
+	"ampMod", [\inBus, 3, \outBus, 5, \modFreq, 1]);
+// add filtering to the tail of the effects group
+~fx2 = Synth.tail(
+	~effect,
+	"aLowPassFilter", [\inBus, 5, \outBus, 0, \boost, 5])
+)
+
+// examine the nodes
+(
+s.queryAllNodes;
+)
+::
+
+code::
+// a diagram
+
+    RootNode
+	|
+  default_node
+      /\
+     /  \
+~source  ~effects	// ~source and ~effects are groups
+ |        |      \
+ |        |       \
+ synth    synth    synth
+::
+
+code::
+// Changing argument (control) values effects timbre
+(
+ ~theSource.set(\rateScale, 0.95.rrand(1.05), \mul, 0.051.rrand(0.07));
+ ~fx1.set(\modFreq, 800.0.rrand(1200));
+ ~fx2.set(\freq, 500.rrand(700), \freqDev, 180.rrand(210), \boost, 7);
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+go to link::Tutorials/Mark_Polishook_tutorial/17_Delays_reverbs::
