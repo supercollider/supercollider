@@ -1,0 +1,94 @@
+title:: 14_Subtractive_synthesis
+summary:: Mark Polishook tutorial
+categories:: Tutorials>Mark_Polishook_tutorial
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+section::Filtering
+
+The basic idea of subtractive synthesis is similar to making coffee: something goes through a filter to remove unwanted components from the final product.
+
+section::The .dumpClassSubtree message
+
+Get a list of ugen filters in SuperCollider 3, by sending the .dumpClassSubtree message to the Filter class, as in
+
+code::
+Filter.dumpClassSubtree;
+::
+
+( code::Object.dumpClassSubtree:: prints all SuperCollider classes)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+classtree::Filter::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Use LPF, a low-pass filter to subtract high-frequency content from an input source.
+
+code::
+(
+SynthDef("subtractive", {
+	Out.ar(
+		0,
+		LPF.ar(
+			Pulse.ar(440, 0.5, 0.1),	// the source to be filtered
+			Line.kr(8000, 660, 6)		// control the filter frequency with a line
+		)
+	)
+}).add;
+)
+
+Synth("subtractive")
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+RLPF, a resonant low-pass filter, removes high-frequency content and emphasizes the cutoff frequency.
+
+code::
+(
+SynthDef("passLowFreqs2", {
+	Out.ar(
+		0,
+		RLPF.ar(
+			Saw.ar([220, 221] + LFNoise0.kr(1, 100, 200), 0.2),
+			[LFNoise0.kr(4, 600, 2400), LFNoise0.kr(3, 600, 2400)],
+			0.1
+		)
+	)
+}).add;
+)
+
+Synth("passLowFreqs2")
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Resonz is a very, very, very strong filter. Use it to emphasize a frequency band.
+
+Transform noise into pitch with a sharp cutoff.
+
+code::
+(
+SynthDef("noiseToPitch", { arg out = 0, mul = 1;
+	Out.ar(
+		out,
+		Resonz.ar(
+			WhiteNoise.ar(mul),
+			LFNoise0.kr(4, 110, 660),
+			[0.005, 0.005]
+		)
+	)
+}).add;
+)
+
+(
+// activate left and right channels
+Synth("noiseToPitch", [\out, 0, \mul, 1]);
+Synth("noiseToPitch", [\out, 1, \mul, 1]);
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+go to link::Tutorials/Mark_Polishook_tutorial/15_Groups::

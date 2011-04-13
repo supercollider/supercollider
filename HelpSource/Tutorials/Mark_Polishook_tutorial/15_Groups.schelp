@@ -1,0 +1,312 @@
+title:: 15_Groups
+summary:: Mark Polishook tutorial
+categories:: Tutorials>Mark_Polishook_tutorial
+related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
+
+The simplest synthesis processes use a single ugen.
+
+code::
+{ Saw.ar(500, 0.1) }.scope;
+::
+
+or
+
+code::
+{ Formlet.ar(Saw.ar(22), 400, 0.01, 0.11, 0.022) }.scope
+::
+
+Most of the SuperCollider help documents for the UGens show other such examples.
+
+link::Browse#UGens::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Many synthesis processes, because they use more than a few ugens, are often best divided into component parts. This can make code modular, resusable, and easier to read.
+
+The link::Classes/Group:: class, which is the means to specify a collection of nodes, provides a mechanism through which to control several synths at once.
+
+section::Groups are linked lists
+
+The important technical feature of groups is that the nodes they contain are items in a linked list. A linked list is a data structure that makes it easy to order and reorder nodes. The first item in a linked list is the "head" and the last item is the "tail."
+
+Groups, through their head and tail mechanisms, allow synths to be placed in order so one synth verifiably executes before another, eg, the head synth runs before the tail synth. The ability to order synths is essential when sending source audio through an effect, such as a reverb or a filter.
+
+Another feature of groups is they allow synths to receive messages from a single point of control, eg, one message to the group goes to all of nodes that belong to the group.
+
+section::Nodes, linked lists, trees
+
+See the link::Reference/Server-Architecture:: document for a definition of a node in SuperCollider or look to the Wikipedia for a general discussion of nodes, linked lists, and trees.
+
+list::
+## http://en.wikipedia.org/wiki/Node
+## http://en.wikipedia.org/wiki/Linked_list
+## http://en.wikipedia.org/wiki/Tree_data_structure
+::
+
+section::RootNode and default_group
+
+By default, the localhost and internal servers each boot with two predefined groups: the link::Classes/RootNode:: and the link::Reference/default_group:: (see their help files). To see this, start the localhost server and then evaluate
+
+code::
+s.queryAllNodes;
+::
+
+The next two lines
+
+code::
+Group(0)
+        Group(1)
+::
+
+will appear in the transcript window.
+
+Group(0) is the rootnode group and Group(1) is the default_group. Group(1) is indented to show that it branches from Group(0).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+New synths are attached by default to the head of the default_group.
+
+code::
+// 1st, evaluate a synthdef
+(
+SynthDef("ringModulation", {
+	Out.ar(
+		0,
+		Mix.ar(
+			SinOsc.ar([440.067, 441.013], 0, 1)
+			*
+			SinOsc.ar([111, 109], 0, 0.2)
+		)
+	)
+}).add;
+)
+
+// 2nd, make a synth
+(
+Synth("ringModulation");
+)
+
+// 3rd, tell the server to list its nodes
+(
+s.queryAllNodes;
+)
+::
+
+code::
+Group(0)
+        Group(1)
+                Synth 1003
+::
+
+will appear in the transcript window. It shows Group(0) as the rootnode, Group(1) as the branching default_node and Synth 1003 (or some such number) as a leaf attached to the default_node.
+
+code::
+Rootnode - Group(0)
+	  |
+	  |
+default_node - Group(1)
+      /
+     /
+Synth 1003
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+An example with two synths.
+
+code::
+// 1st, evaluate a synthdef
+(
+SynthDef("pitchFromNoise", { arg out = 0;
+	Out.ar(
+		out,
+		Resonz.ar(
+			WhiteNoise.ar(15),
+			LFNoise0.kr(2, 110, 660),
+			0.005
+		)
+	)
+}).add;
+)
+
+// 2nd, make 2 synths
+(
+Synth("ringModulation");
+Synth("pitchFromNoise", [\out, 1]);
+)
+
+// 3rd, tell the server to list its nodes
+(
+s.queryAllNodes;
+)
+::
+
+The printout in the transcript window
+
+code::
+Group(0)
+        Group(1)
+                Synth 1005
+                Synth 1004
+::
+
+shows that Group(0) is the rootnode and Group(1) is the default_node.
+
+Synth 1005 and 1004 (or similar such numbers) are leaves attached to the default_node. Synth 1005 is first in the list because of the way nodes are attached, by default, to the head of a list: Synth 1004, the "ringModulation" synth, was evaluated first and attached to the head of Group(1). Then Synth 1005, the "pitchFromNoise"s synth, was evaluated and placed at the head of the list (in front of Synth 1004).
+
+code::
+	Rootnode - Group(0)
+	  |
+	  |
+ default_node - Group(1)
+      /     \
+     /       \
+Synth 1005  Synth 1004
+(head)	    (tail)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+It's the responsibility of the user to make sure that nodes on the server are ordered properly. For this reason, the two synths below must be evaluated in the order in which they're given - because the first synth is source material for the second synth, a filter that processes its input.
+
+code::
+(
+SynthDef("firstNode-source", {
+	Out.ar(
+		0,
+		Saw.ar([200, 201], 0.05)
+	)
+}).add;
+
+SynthDef("secondNode-filter", {
+	ReplaceOut.ar(
+		0,
+		LPF.ar(
+			In.ar(0, 2),
+			Lag.kr(
+				LFNoise0.kr([4, 4.001], 500, 1000),
+				0.1
+			)
+		)
+	)
+}).add;
+)
+
+// evaluate "secondNode-filter" first
+// "firstNode-source" will go at the head of default_node
+(
+Synth("secondNode-filter");
+Synth("firstNode-source");
+)
+
+(
+s.queryAllNodes;
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Or, use .head and .tail messages to attach the the nodes to the default_group).
+
+code::
+(
+Synth.head(s, "firstNode-source");
+Synth.tail(s, "secondNode-filter");
+)
+
+(
+s.queryAllNodes;
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Or, assign the synths to groups.
+
+code::
+(
+~source = Group.head(s);	// attach the group to the head of the default_node
+~effect = Group.tail(s);	// attach the group to the tail of the default_node
+)
+
+(
+// add the synths to the appropriate groups
+Synth.head(~effect, "secondNode-filter");
+Synth.head(~source, "firstNode-source");
+)
+::
+
+The idea is that the groups are attached first to the default_group in the desired order. The synths can then be evaluated in any order as long as they're attached to the appropriate group.
+
+code::
+// run the code to see a diagram of the nodes
+(
+s.queryAllNodes;
+)
+::
+
+code::
+	Rootnode
+	  |
+	  |
+ default_node
+      /\
+     /  \
+Group    Group
+  |        |
+  |        |
+Synth    Synth
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Set a control for all of the synths in a group.
+
+code::
+// each of the synthdefs below has a control for amplitude (mul)
+(
+// build 3 synthdefs and a group
+SynthDef("synthNumber1", { arg mul = 0.2;
+	Out.ar(
+		0,
+		BrownNoise.ar(mul) * LFNoise0.kr([1, 1.01])
+	)
+	}, [0.1]).add;
+SynthDef("synthNumber2", { arg mul = 0.2;
+	Out.ar(
+		0,
+		WhiteNoise.ar(mul) * LFNoise1.kr([2.99, 3])
+	)
+	}, [0.1]).add;
+SynthDef("synthNumber3", { arg mul = 0.2;
+	Out.ar(
+		0,
+		PinkNoise.ar(mul) * LFNoise2.kr([0.79, 0.67])
+	)
+}, [0.1]).add;
+)
+
+(
+// make a group
+~myGroup = Group.new;
+)
+
+(
+// attach 3 synths
+Synth.head(~myGroup, "synthNumber1");
+Synth.head(~myGroup, "synthNumber2");
+Synth.head(~myGroup, "synthNumber3");
+)
+
+// set the \mul control of each of the 3 synths in the group
+~myGroup.set(\mul, 0.01.rrand(0.2))
+
+// execute to see a diagram of the nodes
+(
+s.queryAllNodes;
+)
+::
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+go to link::Tutorials/Mark_Polishook_tutorial/16_Playbuf::
