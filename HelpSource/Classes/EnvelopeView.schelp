@@ -1,0 +1,386 @@
+class:: EnvelopeView
+redirect:: implClass
+summary:: A configurable view with nodes and connections
+categories:: GUI
+related:: Classes/MultiSliderView, Classes/SCEnvelopeEdit
+
+description::
+A view which can graphically display nodes at x/y coordinates, connection lines, cross-connections, node markers, and labels. All of the values for these are stored in arrays. While this view is typically used to make editable envelopes interfaces, it can be used to draw very complex interconnection graphs as well.
+
+subsection:: Some Important Issues Regarding EnvelopeView
+
+The instance variable step must be explicitly set for the code::defautlKeyDownAction:: to work.
+
+
+classmethods::
+
+method:: new
+argument:: parent
+The parent view.
+argument:: bounds
+An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
+discussion::
+Example:
+code::
+(
+	w = Window("envelope", Rect(150 , Window.screenBounds.height-250, 250, 100)).front;
+	b = EnvelopeView(w, Rect(10, 10, 230, 70))
+		.resize_(5)
+		.action_({arg b; [b.index,b.value].postln})
+		.value_([[0.0, 0.15, 0.5, 1.0],[0.1, 1.0, 0.7, 0.0]])
+		.curves_([5, 5, -5]);
+)
+::
+::
+
+instancemethods::
+
+method:: editable
+Determines if the any node is editable.
+argument:: val
+An instance of link::Classes/Boolean::.
+
+method:: setEditable
+Determines if the the node at index is editable.
+argument:: index
+An link::Classes/Integer::.
+argument:: boolean
+An instance of link::Classes/Boolean::.
+
+method:: step
+Quantizes the values to the nearest multiple of stepSize.
+argument:: stepSize
+An instance of link::Classes/Float::.
+
+method:: value
+Gets/sets the property, code::\value::, by calling get/setProperty(\value, val). The setter also sets size to the size of val. This will not do the action of the slider.
+argument:: val
+An instance of link::Classes/Array::. The values must be between 0 and 1. The form of the array must be:
+code::
+[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]
+::
+
+method:: valueAction
+Sets the property, code::\value::, by calling (\value, val). Also sets size to the size of val. Does the sliders action.
+argument:: val
+An instance of link::Classes/Array::. The values must be between 0 and 1. The form of the array must be:
+code::
+[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]
+::
+
+method:: index
+Gets theselected index. -1 if none selected.
+argument:: inx
+An link::Classes/Integer::.
+
+method:: lastIndex
+Returns the index last selected.
+
+method:: selectIndex
+Selects the node at index, and refreshes the view.
+argument:: index
+An link::Classes/Integer::.
+
+method:: x
+Get/set the x or y value at the selected index.
+argument:: ax
+An instance of link::Classes/Float::, between 0 and 1.
+
+method:: y
+Get/set the x or y value at the selected index.
+argument:: ay
+An instance of link::Classes/Float::, between 0 and 1.
+
+method:: currentvalue
+Gets/sets the y - value at the current index.
+argument:: iny
+A link::Classes/Float:: between 0 and 1.
+
+method:: setString
+Draw the string inside the thumb at index. Make sure that ths stroke color contrasts the fill color.
+argument:: index
+An link::Classes/Integer::.
+argument:: astring
+An instance of link::Classes/String::.
+
+method:: strings
+Draw a string inside the thumb at the corresponding index in the array. Make sure that ths stroke color contrasts the fill color.
+argument:: astrings
+An link::Classes/Array:: of link::Classes/String::s;
+
+method:: curves
+Set a shape to draw the connection between points. The shapes defined by link::Classes/Env:: are accepted.
+argument:: incurves
+An  link::Classes/Array:: of link::Classes/Symbol::s, An link::Classes/Array:: of link::Classes/SimpleNumber::s, a link::Classes/Symbol:: or a link::Classes/SimpleNumber::.
+
+method:: setEnv
+Set an link::Classes/Env:: to be shown in the view.
+argument:: env
+
+method:: grid
+Set a grid using a link::Classes/Point::. x and y correspond to times and levels respectively. Specify a value of 0.0 if you do not want that axis to be drawn.
+argument:: point
+
+method:: gridOn
+Show a grid.
+argument:: flag
+A false or true
+
+method:: gridColor
+Set the Color of the grid.
+
+method:: connect
+Replaces the connections which were drawn at init time, and then draws new ones from the index, from, to the each of the code::aconnections:: indexes.
+argument:: from
+An link::Classes/Integer::. The index form which the lines originate.
+argument:: aconnections
+An link::Classes/Array:: of numbers. The indexes to which the lines are drawn.
+
+method:: metaAction
+Gets/sets a function to be evaluate on Ctrl-click
+argument:: arg1
+An instance of link::Classes/Function::. Default value is code::nil::.
+
+
+
+subsection:: Customizing Appearance
+
+method:: strokeColor
+The line and text color of the view.
+argument:: acolor
+An instance of link::Classes/Color::.
+
+method:: colors
+Sets the stroke and fill colors of the view.
+argument:: strokec
+An instance of link::Classes/Color::.
+argument:: fillc
+An instance of link::Classes/Color::.
+
+method:: drawLines
+Draws connecting lines between the nodes.
+argument:: abool
+An instance of link::Classes/Boolean::. default is code::false::.
+
+method:: drawRects
+Draws rectangles (thumbs) at the nodes .
+argument:: abool
+An instance of link::Classes/Boolean::. default is code::true::.
+
+method:: fillColor
+argument:: color
+
+method:: setFillColor
+The line and text color of the all the nodes (and their text), or of a specific node at code::index::.
+argument:: index
+An link::Classes/Integer::.
+argument:: color
+An instance of link::Classes/Color::.
+
+method:: thumbWidth
+Set the width of all th thumbs.
+argument:: width
+The number of pixels.
+
+thumbHeight
+Set the height of all th thumbs.
+argument:: height
+The number of pixels.
+
+method:: thumbSize
+Set the size(both) of all th thumbs.
+argument:: size
+The number of pixels.
+
+method:: setThumbWidth
+Set the thumb width at a certain index.
+argument:: index
+index - An link::Classes/Integer::.
+argument:: width
+The number of pixels.
+
+method::setThumbHeight
+Set the thumb heightat a certain index.
+argument:: index
+index - An link::Classes/Integer::.
+argument:: height
+The number of pixels.
+
+method:: setThumbSize
+Set the thumb size(both) at a certain index.
+argument:: index
+index - An link::Classes/Integer::.
+argument:: size
+The number of pixels.
+
+method:: selectionColor
+Set the color a thumb has when selected.
+argument:: acolor
+An instance of link::Classes/Color::.
+
+
+
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+method:: defaultKeyDownAction
+argument:: char
+argument:: modifiers
+argument:: unicode
+discussion::
+The default keydown actions are:
+table::
+## key || action || comment
+## shift+unicode 16rF703 || increment x by step || shift + right arrow
+## shift+unicode 16rF702 || decrement x by step || shift + left arrow	
+## unicode 16rF703 || select next index || right arrow
+## unicode 16rF702 || select previous index || left arrow	
+## unicode 16rF700 || increment y by step || up arrow
+## unicode 16rF701 || decrement y by step || down arrow
+::
+note:: Step must be explicitly set fro this to work.
+
+
+method:: defaultGetDrag
+Returns code::this.value::.
+
+method:: defaultCanReceiveDrag
+The method called by default when attempting to place a drag in this object. Will receive any drag, but the drag should be an array of values of the form:
+code::
+[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]
+::
+
+method:: defaultReceiveDrag
+The default method called when a drag has been received. Performs code::value_():: and code::reference_():: using code::currentDrag:: as an argument. Does not perform the action.
+
+method:: properties
+A list of properties to which this view responds. See link::Classes/View::.
+returns::
+[ \bounds, \visible, \enabled, \canFocus, \resize, \background, \minWidth, \maxWidth, \minHeight, \maxHeight, \value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \thumbWidth, \absoluteX, \isFilled, \step ]
+
+method:: size
+argument:: arg1
+
+method:: size
+Called by code::value_::.
+
+method:: items
+argument:: arg1
+method:: items
+returns:: An link::Classes/Array::.
+
+
+method:: doMetaAction
+Not normally called directly (called by the primitive).
+
+method::select
+Selects the node at index, without refreshing the view.
+argument:: index
+An link::Classes/Integer::.
+
+method:: addValue
+argument:: xval
+argument:: yval
+
+method:: fixedSelection
+argument:: bool
+
+method:: allConnections
+argument:: arg1
+
+method:: allConnections
+
+method:: doMetaAction
+
+
+
+examples::
+
+Use as envelope view
+code::
+(
+// use shift-click to keep a node selected
+w = Window("envelope", Rect(150 , Window.screenBounds.height - 250, 250, 100)).front;
+w.view.decorator = FlowLayout(w.view.bounds);
+
+b = EnvelopeView(w, Rect(0, 0, 230, 80))
+	.drawLines_(true)
+	.selectionColor_(Color.red)
+	.drawRects_(true)
+	.resize_(5)
+	.step_(0.05)
+	.action_({arg b; [b.index, b.value].postln})
+	.thumbSize_(5)
+	.value_([[0.0, 0.1, 0.5, 1.0],[0.1,1.0,0.8,0.0]]);
+w.front;
+)
+
+// show grid
+b.gridOn_(true);
+
+// show Env
+b.setEnv(Env.asr(0.5,1, 0.2));
+
+// make the first point unmoveable
+(
+b.setEditable(0,false);
+)
+::
+
+Use shift click to select/unselect the points
+code::
+(
+w = Window("envelope", Rect(150 , Window.screenBounds.height - 250, 400, 150)).front;
+w.view.decorator = FlowLayout(w.view.bounds);
+
+b = EnvelopeView(w, Rect(0, 0, 350, 100))
+	.thumbSize_(5)
+	.drawLines_(true)
+	.fillColor_(Color.green)
+	.selectionColor_(Color.red)
+	.drawRects_(true)
+	.value_([(0.0, 0.1 .. 1.0), (0.0, 0.1 .. 1.0)])
+	.setEditable(0,false);
+)
+
+(
+r = Routine({
+	var j = 0;
+	20.do({ arg i;
+		b.select((b.size - 1).rand.abs);
+		0.1.wait;
+		b.x_(1.0.rand.abs);
+		b.y_(1.0.rand.abs);
+	});
+	b.select(-1);
+});
+AppClock.play(r);
+)	
+::
+
+Show boxes with a string in it:
+code::
+(
+a = Window("text-boxes", Rect(200 , 450, 450, 450));
+a.view.decorator = FlowLayout(a.view.bounds);
+
+b = EnvelopeView(a, Rect(0, 0, 440, 440))
+	.thumbWidth_(60.0)
+	.thumbHeight_(15.0)
+	.drawLines_(true)
+	.drawRects_(true)
+	.selectionColor_(Color.red)
+	.value_([[0.1, 0.4, 0.5, 0.3], [0.1, 0.2, 0.9, 0.7]]);
+4.do({arg i;
+	b.setString(i, ["this", "is", "so much", "fun"].at(i));
+	b.setFillColor(i,[Color.yellow, Color.white, Color.green].choose);
+});
+a.front;
+)
+
+(
+b.connect(3, [2.0,0.0,1.0]); // the text objects can be connected
+b.connect(0,[2.0,3.0,1.0]);
+)
+::
