@@ -96,7 +96,7 @@ HelpBrowser {
 		x = x + 5;
 		lblStatus = StaticText.new( window, Rect(x, y, w, h) )
 			.resize_(1);
-        lblStatus.font = Font(Font.defaultSansFace).boldVariant.size_(12);
+		lblStatus.font = Font(Font.defaultSansFace).boldVariant.size_(12);
 
 		w = 200;
 		x = winRect.width - marg - w;
@@ -118,6 +118,9 @@ HelpBrowser {
 		webView.onLoadFinished = { this.stopAnim; window.name = "SuperCollider Help:"+webView.title };
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
+			this.goTo(url);
+		};
+		webView.onReload = {|wv, url|
 			this.goTo(url);
 		};
 
@@ -148,18 +151,18 @@ HelpBrowser {
 		var progress = [">---","->--","-->-","--->"];
 		animCount = animCount + 1;
 		if(animCount==1) {
-		    Routine {
-			    block {|break|
-				    loop {
-					    progress.do {|p|
-						    lblStatus.string_("Loading"+p);
-						    0.3.wait;
-						    if(animCount==0) {break.value};
-					    };
-				    };
-			    };
-			    lblStatus.string_("");
-		    }.play(AppClock);
+			Routine {
+				block {|break|
+					loop {
+						progress.do {|p|
+							lblStatus.string_("Loading"+p);
+							0.3.wait;
+							if(animCount==0) {break.value};
+						};
+					};
+				};
+				lblStatus.string_("");
+			}.play(AppClock);
 		};
 	}
 	stopAnim {
