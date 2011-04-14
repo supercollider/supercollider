@@ -1,0 +1,58 @@
+class:: Pipe
+summary:: pipe stdin to, or stdout from, a unix shell command
+related:: Classes/UnixFILE
+categories:: Files
+
+description::
+Pipe stdin to, or stdout from, a unix shell command. Pipe treats the shell command as if it were a UnixFILE, and returns nil when done. See link::Classes/UnixFILE:: for details of the access methods. Pipe must be explicitly closed. Do not rely on the garbage collector to do this for you!
+
+ClassMethods::
+
+method::new
+
+argument::commandLine
+A link::Classes/String:: representing a valid shell command.
+
+argument::mode
+A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
+
+InstanceMethods::
+
+private::prClose, prOpen
+
+method::open
+Open the file.
+
+argument::mode
+A link::Classes/String:: passed to popen, so should be one of: "r","w"
+
+method::close
+Closes the pipe. You must do this explicitly before the Pipe object is garbage collected.
+
+Examples::
+
+note::
+For anyone still using OS X 10.3, unix commands like pipe do not work when the server is booted; quit the server, otherwise sc crashes. More recent OS X is not affected.
+::
+
+code::
+// this pipes in stdout from ls
+(
+var p, l;
+p = Pipe.new("ls -l", "r");			// list directory contents in long format
+l = p.getLine;					// get the first line
+while({l.notNil}, {l.postln; l = p.getLine; });	// post until l = nil
+p.close;					// close the pipe to avoid that nasty buildup
+)
+::
+
+A more time-intensive request:
+code::
+(
+var p, l;
+p = Pipe.new("ping -c10 sourceforge.net", "r");	// list directory contents in long format
+l = p.getLine;					// get the first line
+while({l.notNil}, {l.postln; l = p.getLine; });	// post until l = nil
+p.close;					// close the pipe to avoid that nasty buildup
+)
+::
