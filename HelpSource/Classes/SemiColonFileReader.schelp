@@ -1,0 +1,68 @@
+class:: SemiColonFileReader
+summary:: file reader for semi-colon separated data
+related:: Classes/File
+categories:: Files
+
+description::
+SemiColonFileReader reads semi-colon delimited files into 2D arrays.
+
+For tab delimited files use link::Classes/TabFileReader::. For comma-separated files use link::Classes/CSVFileReader::. For space-delimited files, or custom delimiters, use link::Classes/FileReader::.
+
+Examples::
+
+code::
+(
+// write a test file:
+f = File("SemiColonTest.sc", "w");
+f.write(
+"Some semi-colon delimited data;
+
+123;;4;
+0.5;0.6;0.7
+"
+);
+f.close;
+)
+
+
+	// open file, read and put strings into array, close file.
+x = SemiColonFileReader.read("SemiColonTest.sc").postcs;
+
+	// can skip empty lines:
+x = SemiColonFileReader.read("SemiColonTest.sc", true).postcs;
+
+	// can skip blank entries caused by multiple commas:
+x = SemiColonFileReader.read("SemiColonTest.sc", true, true).postcs;
+
+	// do file open/close by hand if you prefer:
+f = File("SemiColonTest.sc", "r"); f.isOpen;
+t = SemiColonFileReader(f);
+t.read;
+f.close;
+
+(
+// write a test file with numbers:
+f = File("SemiColonTestNum.sc", "w");
+
+(1..10).do { |n| f.write(n.asString ++ ";"); };
+f.close;
+)
+
+x = SemiColonFileReader.read("SemiColonTestNum.sc").postcs;
+x.collect(_.collect(_.interpret));	// convert to numbers.
+
+	// or you can do it immediately:
+x = SemiColonFileReader.readInterpret("SemiColonTestNum.sc").postcs;
+
+(
+// write a test file with numbers:
+f = File("SemiColonTestNum.sc", "w");
+
+(1..100).do { |n|
+	f.write(n.asString ++ if (n % 10 != 0, $;, Char.nl)); };
+f.close;
+)
+
+
+x = SemiColonFileReader.readInterpret("SemiColonTestNum.sc").postln;
+::

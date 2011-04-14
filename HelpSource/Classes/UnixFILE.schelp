@@ -1,0 +1,84 @@
+class:: UnixFILE
+summary:: An abstract class
+related:: Classes/File, Classes/Pipe
+categories:: Files
+
+InstanceMethods::
+
+private::prGetLine, addOpenFile
+
+method::isOpen
+Returns whether the file is open. An open request can fail if a file cannot be found for example. This method lets you test that the open call succeeded.
+
+method::pos
+Answer the current file position
+
+seek(offset, origin)
+Seek to an offset from the origin.
+
+argument::offset
+an offset in bytes.
+
+argument::origin
+one of the following link::Classes/Integer::s:
+definitionList::
+## 0 || seek from beginning of file.
+## 1 || seek from current position in file.
+## 2 || seek from end of file.
+::
+
+method::write(item)
+Writes an item to the file.
+
+argument::item
+one of the following:
+definitionList::
+## link::Classes/Float:: || 
+## link::Classes/Integer:: || 
+## link::Classes/Char:: || 
+## link::Classes/Color:: || 
+## link::Classes/Symbol:: || writes the name of the Symbol as a C string.
+## link::Classes/RawArray:: || write the bytes from any RawArray in big endian.
+::
+
+method::getLine
+reads and returns a link::Classes/String:: up to lesser of next newline or 1023 chars.
+
+method::getChar
+read one byte and return as a link::Classes/Char::.
+
+method::getInt8
+read one byte and return as a link::Classes/Integer::.
+
+method::getInt16
+read two bytes and return as an link::Classes/Integer::.
+
+method::getInt32
+read four bytes and return as an link::Classes/Integer::.
+
+method::getFloat
+read four bytes and return as a link::Classes/Float::.
+
+method::getDouble
+read eight bytes and return as a link::Classes/Float::.
+
+method::putChar
+write a link::Classes/Char:: as one byte.
+
+method::putInt8
+write an link::Classes/Integer:: as one byte. That is a signed link::Classes/Integer:: value between -128 and 127.
+
+method::putInt16
+write an link::Classes/Integer:: as two bytes.
+
+method::putInt32
+write an link::Classes/Integer:: as four bytes.
+
+method::putFloat
+write a link::Classes/Float:: as four bytes.
+
+method::putDouble
+write a link::Classes/Float:: as eight bytes.
+
+method::putString
+write a null terminated link::Classes/String::.
