@@ -93,7 +93,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         if (footNotes.notEmpty) {
             file.write("<div class='footnotes'>\n");
             footNotes.do {|n,i|
-                file.write("<a name='footnote_"++(i+1)++"'/><div class='footnote'>");
+                file.write("<a class='anchor' name='footnote_"++(i+1)++"'/><div class='footnote'>");
                 file.write("[<a href='#footnote_org_"++(i+1)++"'>"++(i+1)++"</a>] - ");
                 n.children.do(this.renderHTMLSubTree(file,_));
                 file.write("</div>");
@@ -139,27 +139,25 @@ SCDocHTMLRenderer : SCDocRenderer {
                 file.write(this.escapeSpecialChars(node.text));
             },
             'section', {
-                file.write("<a name='"++this.class.simplifyName(node.text)++"'><h2>"++this.escapeSpecialChars(node.text)++"</h2></a>\n");
+                file.write("<h2><a class='anchor' name='"++this.class.simplifyName(node.text)++"'>"++this.escapeSpecialChars(node.text)++"</a></h2>\n");
                 do_children.();
             },
             'subsection', {
-                file.write("<a name='"++this.class.simplifyName(node.text)++"'><h3>"++this.escapeSpecialChars(node.text)++"</h3></a>\n");
+                file.write("<h3><a class='anchor' name='"++this.class.simplifyName(node.text)++"'>"++this.escapeSpecialChars(node.text)++"</a></h3>\n");
                 do_children.();
             },
             'classmethods', {
-                if(node.children.select{|n|n.tag!=\private}.notEmpty) {
-                    file.write("<a name='classmethods'><h2>Class Methods</h2></a>\n<div id='classmethods'>");
+                if(node.children.select{|n|n.tag!=\private}.notEmpty) { //FIXME use detect
+                    file.write("<h2><a class='anchor' name='classmethods'>Class Methods</a></h2>\n");
                     do_children.(true);
-                    file.write("</div>");
                 } {
                     do_children.(true);
                 };
             },
             'instancemethods', {
-                if(node.children.select{|n|n.tag!=\private}.notEmpty) {
-                    file.write("<a name='instancemethods'><h2>Instance Methods</h2></a>\n<div id='instancemethods'>");
+                if(node.children.select{|n|n.tag!=\private}.notEmpty) { //FIXME use detect
+                    file.write("<h2><a class='anchor' name='instancemethods'>Instance Methods</a></h2>\n");
                     do_children.(true);
-                    file.write("</div>");
                 } {
                     do_children.(true);
                 };
@@ -184,7 +182,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                         pfx = "-";
                     },
                     \classmethods, {
-                        c = currentClass.class;
+                        c = currentClass !? {currentClass.class};
                         ic = currentImplClass !? {currentImplClass.class}; // else we get Nil for nil!
                         css = "cmethodname";
                         pfx = "*";
@@ -222,17 +220,19 @@ SCDocHTMLRenderer : SCDocRenderer {
                         m2 = nil;
                         mstat = 1;
                     };
-                    file.write("<a name='"++(pfx??".")++mname++"'><h3 class='"++css++"'><span class='methprefix'>"++(pfx??"&nbsp;")++"</span>"++"<a href='"++baseDir+/+"Overviews/Methods.html#"++this.escapeSpecialChars(mname)++"'>"++this.escapeSpecialChars(mname)++"</a>");
+                    file.write("<h3 class='"++css++"'>");
+//                    file.write("<a class='anchor' name='"++(pfx??".")++mname++"'>");
+                    file.write("<span class='methprefix'>"++"<a class='anchor' name='"++(pfx??".")++mname++"'>"++(pfx??"&nbsp;")++"</a></span>"++"<a href='"++baseDir+/+"Overviews/Methods.html#"++this.escapeSpecialChars(mname)++"'>"++this.escapeSpecialChars(mname)++"</a>");
 
                     switch (mstat,
                         // getter only
-                        1, { file.write(" "++args++"</h3></a>\n"); },
+                        1, { file.write(" "++args++"</h3>\n"); },
                         // setter only
-                        2, { file.write(" = "++args++"</h3></a>\n"); },
+                        2, { file.write(" = "++args++"</h3>\n"); },
                         // getter and setter
-                        3, { file.write(" [= "++args++"]</h3></a>\n"); },
+                        3, { file.write(" [= "++args++"]</h3>\n"); },
                         // method not found
-                        0, { file.write(": METHOD NOT FOUND!</h3></a>\n");
+                        0, { file.write(": METHOD NOT FOUND!</h3>\n");
                             warn("SCDocHTMLRenderer: Method not found:"+mname+"in doc for class"+c.name);
                         }
                     );
@@ -289,15 +289,13 @@ SCDocHTMLRenderer : SCDocRenderer {
             },
             'description', {
                 if(node.children.notEmpty) {
-                    file.write("<a name='description'><h2>Description</h2></a>\n<div id='description'>");
+                    file.write("<h2><a class='anchor' name='description'>Description</a></h2>\n");
                     do_children.();
-                    file.write("</div>");
                 };
             },
             'examples', {
-                file.write("<a name='examples'><h2>Examples</h2></a>\n<div id='examples'>");
+                file.write("<h2><a class='anchor' name='examples'>Examples</a></h2>\n");
                 do_children.();
-                file.write("</div>");
             },
             'note', {
                 file.write("<div class='note'><span class='notelabel'>NOTE:</span> ");
@@ -351,10 +349,10 @@ SCDocHTMLRenderer : SCDocRenderer {
                 });
             },
             'anchor', {
-                file.write("<a name='"++node.text++"'</a>");
+                file.write("<a class='anchor' name='"++node.text++"'></a>");
             },
             'keyword', {
-                file.write("<a name='kw_"++node.text++"'</a>");
+                file.write("<a class='anchor' name='kw_"++node.text++"'></a>");
             },
             'code', {
                 if(node.display == \block, {
@@ -407,7 +405,7 @@ SCDocHTMLRenderer : SCDocRenderer {
             },
             'footnote', {
                 footNotes.add(node);
-                file.write("<a class='footnote' name='footnote_org_"++footNotes.size++"' href='#footnote_"++footNotes.size++"'><sup>"++footNotes.size++"</sup></a> ");
+                file.write("<a class='footnote anchor' name='footnote_org_"++footNotes.size++"' href='#footnote_"++footNotes.size++"'><sup>"++footNotes.size++"</sup></a> ");
             },
             '##', {
                 switch(parentTag,
@@ -526,7 +524,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         };
         f.write("<div id='toc'>\n");
 //        f.write("<div id='toctitle'>Table of contents <a id='toc_toggle' href='#' onclick='showTOC(this);return false'></a></div>");
-        f.write("<div id='toctitle'>"++title++"</div><div id='toclabel'>table of contents:</div>");
+//        f.write("<div id='toctitle'>"++title++"</div><div id='toclabel'>table of contents:</div>");
         do_children.(parser.root);
         f.write("</div>");
     }
@@ -539,26 +537,13 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.write("<script src='" ++ baseDir ++ "/scdoc.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/prettify.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/lang-sc.js' type='text/javascript'></script>");
-
+        f.write("<script type='text/javascript'>var helpRoot='"++baseDir++"';</script>");
         f.write("</head>");
-        
-        f.write("<div id='leftpane'>");
-        f.write("<a class='hidetoggle' href='#' onclick='return hidemenu(this)'>&lt;&lt;</a>");
-        f.write(
-            "<ul id='mainmenu'>"
-            "<li><a href='" ++ baseDir +/+ "Help.html'>Home</a>"
-            "<li><a href='" ++ baseDir +/+ "Browse.html'>Browse</a>"
-            "<li><a href='" ++ baseDir +/+ "Overviews/Documents.html'>Document index</a>"
-            "<li><a href='" ++ baseDir +/+ "Overviews/Classes.html'>Class index</a>"
-            "<li><a href='" ++ baseDir +/+ "Overviews/Methods.html'>Method index</a>"
-            "<li><a href='" ++ baseDir +/+ "Search.html'>Search</a>"
-            "</ul>"
-        );
-        if(toc, {this.renderTOC(f,name)});
-        f.write("<div class='doclink'>link::"++subtarget++"::</div>");
-        f.write("</div>");
+
+        f.write("<ul id='menubar'></ul>");
 
         f.write("<body onload='fixTOC();prettyPrint()'>");
+        f.write("<div class='contents'>");
         if(folder==".",{folder=""});
         f.write("<div class='header'>");
         f.write("<div id='label'>SuperCollider "++folder.asString.toUpper);
@@ -635,6 +620,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         });
 
         f.write("</div>");
+        if(toc, {this.renderTOC(f,name)});
     }
 
     addUndocumentedMethods {|class,tag|
@@ -709,8 +695,9 @@ SCDocHTMLRenderer : SCDocRenderer {
 
         this.renderFootNotes(f);
 
-        f.write("<div class='version'>SuperCollider version "++Main.version++"</div>");
-        f.write("</body></html>");
+        f.write("<div class='doclink'>link::"++subtarget++"::</div>");
+        //f.write("<div class='version'>SuperCollider version "++Main.version++"</div>");
+        f.write("</div></body></html>");
         f.close;
     }
 }

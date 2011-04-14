@@ -217,7 +217,8 @@ var check_extensions;
 var filter;
 
 window.onload = function() {
-    restoreMenu();
+//    restoreMenu();
+    helpRoot="."; fixTOC();
     var onChange = function() {
         buildCategoryTree();
         updateTree();
@@ -239,20 +240,10 @@ window.onhashchange = function() {
 </script>
 
 </head>
-
-<div id='leftpane'>
-<a class='hidetoggle' href='#' onclick='return hidemenu(this)'>&lt;&lt;</a>
-<ul id='mainmenu'>
-<li><a href='./Help.html'>Home</a>
-<li><a href='./Browse.html'>Browse</a>
-<li><a href='./Overviews/Documents.html'>Document index</a>
-<li><a href='./Overviews/Classes.html'>Class index</a>
-<li><a href='./Overviews/Methods.html'>Method index</a>
-<li><a href='./Search.html'>Search</a>
-</ul>
-</div>
+<ul id="menubar"></ul>
 
 <body>
+<div class='contents'>
 <div class='header'>
     <div id='label'>SuperCollider</div>
     <h1>Document Browser</h1>
@@ -274,7 +265,7 @@ Filter:
 
 <div id="total_count"></div>
 <table class="browser" id="browser"></table>
-
+</div>
 </body>
 </html>
 
