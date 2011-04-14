@@ -54,10 +54,12 @@ QcListWidget::QcListWidget() : _emitAction(true)
 
 void QcListWidget::setItems( const VariantList & items )
 {
+  _emitAction = false;
   clear();
   Q_FOREACH( QVariant item, items.data )
     addItem( item.toString() );
-  setCurrentRow( -1 );
+  _emitAction = true;
+  setCurrentRow( 0 );
 }
 
 void QcListWidget::setColors( const VariantList & colors ) const
