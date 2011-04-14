@@ -32,6 +32,10 @@ namespace QtCollider {
 
 WebView::WebView( QWidget *parent ) : QWebView( parent )
 {
+  QtCollider::WebPage *page = new WebPage(this);
+  page->setDelegateReload(true);
+  setPage( page );
+
   /// FIXME: for now we reset the base colors in order to render the help
   ///        files correctly on a dark background
   QPalette pal = palette();
@@ -45,6 +49,8 @@ WebView::WebView( QWidget *parent ) : QWebView( parent )
            pageAction(QWebPage::Copy), SLOT(trigger()) );
 
   connect( this, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
+  connect( page->action(QWebPage::Reload), SIGNAL(triggered(bool)),
+           this, SLOT(onPageReload()) );
 }
 
 QString WebView::url() const
@@ -83,6 +89,20 @@ void WebView::setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy p )
   page()->setLinkDelegationPolicy( p );
 }
 
+bool WebView::delegateReload() const
+{
+  WebPage *p = qobject_cast<QtCollider::WebPage*>(page());
+  Q_ASSERT(p);
+  return p->delegateReload();
+}
+
+void WebView::setDelegateReload( bool flag )
+{
+  WebPage *p = qobject_cast<QtCollider::WebPage*>(page());
+  Q_ASSERT(p);
+  p->setDelegateReload( flag );
+}
+
 void WebView::findText( const QString &searchText, bool reversed )
 {
   QWebPage::FindFlags flags( QWebPage::FindWrapsAroundDocument );
@@ -93,6 +113,18 @@ void WebView::findText( const QString &searchText, bool reversed )
 void WebView::onLinkClicked( const QUrl &url )
 {
   Q_EMIT( linkActivated( url.toString() ) );
+}
+
+void WebView::onPageReload()
+{
+  Q_EMIT( reloadTriggered( url() ) );
+}
+
+void WebPage::triggerAction ( WebAction action, bool checked )
+{
+  if( action == QWebPage::Reload && _delegateReload ) return;
+
+  QWebPage::triggerAction( action, checked );
 }
 
 } // namespace QtCollider

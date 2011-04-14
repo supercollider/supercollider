@@ -1,6 +1,6 @@
 QWebView : QView {
 
-  var <onLoadFinished, <onLoadFailed, <onLinkActivated;
+  var <onLoadFinished, <onLoadFailed, <onLinkActivated, <onReload;
 
   *qtClass { ^'QtCollider::WebView'; }
 
@@ -74,6 +74,22 @@ QWebView : QView {
       { this.setProperty( \linkDelegationPolicy, 2 ); }
       { this.setProperty( \linkDelegationPolicy, 0 ); };
     onLinkActivated = func;
+  }
+
+  // After this method is called with an object as an argument, QWebView will do
+  // nothing when page reload is requested. Instead, the given object's 'value' method
+  // will be called on such event.
+
+  // The arguments passed to the 'value' method are this QWebView instance and
+  // a String for the requested URL to be reloaded.
+
+  // If this method is called with nil argument, QWebView's page reload handling will
+  // be restored again.
+
+  onReload_ { arg func;
+    this.manageFunctionConnection( onReload, func, 'reloadTriggered(QString)' );
+    this.setProperty( \delegateReload, func.notNil );
+    onReload = func;
   }
 
 //---------------------------------- private --------------------------------------//
