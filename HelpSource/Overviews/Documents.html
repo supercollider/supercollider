@@ -35,7 +35,8 @@ var check_extensions;
 var filter;
 
 function did_load() {
-    restoreMenu();
+//    restoreMenu();
+    helpRoot=".."; fixTOC();
     node = document.getElementById("doclist");
     docs = docmap.sort(function(a,b) {
         a = a.title.toUpperCase();
@@ -104,10 +105,11 @@ function showdocs() {
         
         if(cap != c) {
             var y = document.createElement("h2");
-            y.innerHTML = cap = c;
             var a = document.createElement("a");
-            a.setAttribute("name","section_"+cap);
-            node.appendChild(a);
+            a.className = "anchor";
+            a.setAttribute("name","section_"+c);
+            a.innerHTML = cap = c;
+            y.appendChild(a);
             node.appendChild(y);
         }
 
@@ -136,21 +138,10 @@ function showdocs() {
 }
 </script>
 </head>
-
-<div id='leftpane'>
-<a class='hidetoggle' href='#' onclick='return hidemenu(this)'>&lt;&lt;</a>
-<ul id='mainmenu'>
-<li><a href='../Help.html'>Home</a>
-<li><a href='../Browse.html'>Browse</a>
-<li><a href='../Overviews/Documents.html'>Document index</a>
-<li><a href='../Overviews/Classes.html'>Class index</a>
-<li><a href='../Overviews/Methods.html'>Method index</a>
-<li><a href='../Search.html'>Search</a>
-</ul>
-</div>
+<ul id="menubar"></ul>
 
 <body onload="did_load()">
-
+<div class='contents'>
 <div class='header'>
     <div id='label'>SuperCollider OVERVIEWS</div>
     <h1>Documents</h1>
@@ -171,7 +162,7 @@ Filter:
 </div>
 <div id="total_count"></div>
 <div id='doclist'></div>
-
+</div>
 </body>
 </html>
 

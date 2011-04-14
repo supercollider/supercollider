@@ -106,8 +106,13 @@ function showMethod(mname, node) {
     node.appendChild(div);
 }
 
+function did_load() {
+    helpRoot=".."; fixTOC();
+    showmethods();
+}
+
 function showmethods() {
-    restoreMenu();
+//    restoreMenu();
     var hash = unescape(window.location.hash.slice(1));
     var res = document.getElementById("methods");
     res.innerHTML = "";
@@ -165,9 +170,9 @@ function showmethods() {
 
         var x = document.createElement("h2");
         x.innerHTML = section.toUpperCase();
-        var a = document.createElement("a");
-        a.setAttribute("name","section_"+section);
-        res.appendChild(a);
+//        var a = document.createElement("a");
+//        a.setAttribute("name","section_"+section);
+//        res.appendChild(a);
         res.appendChild(x);
         
         var count = 0;
@@ -186,21 +191,10 @@ window.onhashchange = showmethods;
 </script>
 
 </head>
+<ul id="menubar"></ul>
 
-<div id='leftpane'>
-<a class='hidetoggle' href='#' onclick='return hidemenu(this)'>&lt;&lt;</a>
-<ul id='mainmenu'>
-<li><a href='../Help.html'>Home</a>
-<li><a href='../Browse.html'>Browse</a>
-<li><a href='../Overviews/Documents.html'>Document index</a>
-<li><a href='../Overviews/Classes.html'>Class index</a>
-<li><a href='../Overviews/Methods.html'>Method index</a>
-<li><a href='../Search.html'>Search</a>
-</ul>
-</div>
-
-<body onload="showmethods()">
-
+<body onload="did_load()">
+<div class='contents'>
 <div class='header'>
     <div id='label'>SuperCollider OVERVIEWS</div>
     <h1>Methods</h1>
@@ -212,6 +206,7 @@ window.onhashchange = showmethods;
 </div>
 <div id='method_note'>
 You can show a specific method by appending '#NAME' to this page url, where NAME is the name of the method.
+</div>
 </div>
 </body>
 </html>
