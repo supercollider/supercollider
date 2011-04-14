@@ -1264,7 +1264,7 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 		case obj_char : {
 			char* ptr = (char*)slots + aobj->size;
 			if (NotChar(c)) return errWrongType;
-			ival = slotRawInt(c);
+			ival = slotRawChar(c);
 			for (int i=0; i<fillSize; ++i) ptr[i] = ival;
 		} break;
 		case obj_symbol : {
