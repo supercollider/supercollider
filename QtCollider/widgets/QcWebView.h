@@ -23,8 +23,11 @@
 #define QC_WEB_VIEW_H
 
 #include <QWebView>
+#include <QWebPage>
 
 namespace QtCollider {
+
+class WebPage;
 
 class WebView : public QWebView
 {
@@ -34,6 +37,7 @@ class WebView : public QWebView
   Q_PROPERTY( QString plainText READ plainText )
   Q_PROPERTY( QWebPage::LinkDelegationPolicy linkDelegationPolicy
               READ linkDelegationPolicy WRITE setLinkDelegationPolicy )
+  Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
 
 public:
 
@@ -45,6 +49,8 @@ public:
   QString plainText () const;
   QWebPage::LinkDelegationPolicy linkDelegationPolicy () const;
   void setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy );
+  bool delegateReload() const;
+  void setDelegateReload( bool );
 
   inline static QUrl urlFromString( const QString & str ) {
     QUrl url( str );
@@ -54,13 +60,31 @@ public:
 
 Q_SIGNALS:
   void linkActivated( const QString & );
+  void reloadTriggered( const QString & );
 
 public Q_SLOTS:
   void findText( const QString &searchText, bool reversed = false );
 
 private Q_SLOTS:
   void onLinkClicked( const QUrl & );
+  void onPageReload();
 
+};
+
+class WebPage : public QWebPage
+{
+  Q_OBJECT
+
+public:
+
+  WebPage( QObject *parent ) : QWebPage( parent ), _delegateReload(false) {}
+  virtual void triggerAction ( WebAction action, bool checked = false );
+  bool delegateReload() const { return _delegateReload; }
+  void setDelegateReload( bool flag ) { _delegateReload = flag; }
+
+private:
+
+  bool _delegateReload;
 };
 
 } // namespace QtCollider
