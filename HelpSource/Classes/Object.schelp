@@ -2,7 +2,7 @@ class:: Object
 summary:: abstract superclass of all objects
 categories:: Core
 
-related:: Classes/Class, Reference/Intro-To-Objects, Reference/Classes
+related:: Classes/Class, Guides/Intro-To-Objects, Reference/Classes
 
 description::
 Object is the root class of all other classes. All objects are indirect instances of class Object.
