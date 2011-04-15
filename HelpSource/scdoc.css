@@ -388,7 +388,7 @@ td p {
 #toc {
 /*    margin-bottom: 2em;*/
     margin: 0;
-    padding: 0.75em;
+    padding: 10px;
 /*    border-top: 1px solid #ddd;*/
     min-width: 20em;
     line-height: 130%;

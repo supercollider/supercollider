@@ -33,9 +33,10 @@ function eraseCookie(name) {
     createCookie(name,"",-1);
 }
 
-
-var didPopToc = false;
-function popOutTOC(original_toc, bar, p0) {
+var sidetoc;
+var toc;
+var menubar;
+function popOutTOC(original_toc, p0) {
     var t = original_toc.cloneNode(true);
     t.id = "sidetoc";
     var c = document.getElementsByClassName("contents")[0];
@@ -43,8 +44,7 @@ function popOutTOC(original_toc, bar, p0) {
     c.style.marginLeft = "20.5em";
     document.body.insertBefore(t,c);
 
-    t.style.top = bar.clientHeight;
-    t.style.height = window.innerHeight - bar.clientHeight - 20;
+    t.style.top = menubar.clientHeight;
     t.style.maxHeight = "none";
     t.style.display = "block";
 
@@ -54,7 +54,7 @@ function popOutTOC(original_toc, bar, p0) {
         t.parentNode.removeChild(t);
         c.style.marginLeft = left;
         p0.style.display = "";
-        didPopToc = false;
+        sidetoc = null;
         createCookie("popToc","no",7);
         return false;
     }
@@ -64,8 +64,17 @@ function popOutTOC(original_toc, bar, p0) {
     t.insertBefore(x,p.nextSibling);
     p0.style.display = "none";
 
-    didPopToc = true;
+    sidetoc = t;
+    resize_handler();
     createCookie("popToc","yes",7);
+}
+
+function resize_handler() {
+    var height = window.innerHeight - menubar.clientHeight - 20;
+    if(sidetoc)
+        sidetoc.style.height = height;
+    if(toc)
+        toc.style.maxHeight = height * 0.75;
 }
 
 function fixTOC() {
@@ -84,7 +93,7 @@ function fixTOC() {
         }
         if(e != openMenu) {
             e.style.display = 'block';
-            openMenu = e; //toggle_visibility(e);
+            openMenu = e;
         } else {
             openMenu = undefined;
         }
@@ -102,7 +111,7 @@ function fixTOC() {
 
 // make header menu
     var bar = document.getElementById("menubar");
-
+    menubar = bar;
     var nav = ["Home","Browse","Search"];
     var url = ["Help.html","Browse.html","Search.html"];
     for(var i=0;i<nav.length;i++) {
@@ -151,11 +160,10 @@ function fixTOC() {
     li.appendChild(x)
     bar.appendChild(li);
 
-//    var t = document.getElementById("toc").cloneNode(true); // copy it (then also we need to change id and position:relative
-    var t = document.getElementById("toc"); // move it
+    var t = document.getElementById("toc");
+    toc = t;
     if(t) {
         x.appendChild(document.createTextNode(" - "));
-        t.style.maxHeight = window.innerHeight * 0.75;
         t.style.display = 'none';
         t.onclick = function() {
             t.style.display = 'none';
@@ -171,22 +179,22 @@ function fixTOC() {
             toggleMenu(t);
             return false;
         };
-        li.appendChild(t.parentNode.removeChild(t)); // move it
-//        li.appendChild(t); // copy it
+        li.appendChild(t.parentNode.removeChild(t));
         var p = document.createElement("a");
         p.setAttribute("href","#");
         p.className = "popoutlink";
         p.innerHTML = "pop out";
         p.onclick = function() {
-            if(!didPopToc)
-                popOutTOC(t,bar,a);
+            if(!sidetoc)
+                popOutTOC(t,a);
             return false;
         }
         t.insertBefore(p,t.firstChild);
-//        t.appendChild(p);
+        resize_handler();
         if(readCookie("popToc") == "yes") {
-            popOutTOC(t,bar,a);
+            popOutTOC(t,a);
         }
     }
+    window.onresize = resize_handler;
 }
 
