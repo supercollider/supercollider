@@ -13,7 +13,6 @@
     margin-top: 1em;
 }
 .result {
-/*    border-left: 1px solid #777;*/
     padding: 2px;
 }
 .browser td {
@@ -22,22 +21,29 @@
 }
 .result_doc {
     border-bottom: 1px solid #ddd;
+/*    margin-top: 0.75em;*/
 }
 .result_summary {
     color: #444;
     font-size: 9pt;
     max-width: 18em;
-    margin-bottom: 0.8em;
+    margin-bottom: 0.6em;
 }
 .category, .cat_selected {
     margin-bottom: 0.25em;
-/*    padding-left: 10px;*/
     border-bottom: 1px solid transparent;
-/*    border-bottom: 1px solid #ddd;*/
-/*    margin-right: 1ex;*/
 }
 .cat_selected {
     border-bottom: 1px solid #777;
+}
+.cat_header {
+/*    border-bottom: 1px solid #999;
+    color: #777;*/
+    background: #aaa;
+    color: white;
+    margin-bottom: 0.25em;
+    padding: 2px;
+    font-weight: bold;
 }
 .category a {
     color: #555;
@@ -95,6 +101,7 @@ function updateTree() {
     var tree = {entries:[],subcats:categorytree};
     var p;
     var done = 0;
+    var sel;
     link = "";
     
     while(1) {
@@ -106,16 +113,18 @@ function updateTree() {
             l.push(k);
         l = l.sort();
         
+        sel = "";
         for(var i=0;i<l.length;i++) {
             var k = l[i];
-            if(k==p)
+            if(k==p) {
                 res += "<div class='cat_selected'>";
-            else
+                sel = k;
+            } else
                 res += "<div class='category'>";
             res += "<a href='javascript:GotoPath(\""+link+k+"\")'>"+k+"</a>";
             res += " <span class='cat_count'>("+tree.subcats[k].count+")</span>";
             if(k==p)
-                res += "<span class='cat_arrow'> &gt;</span>";
+                res += "<span class='cat_arrow'> &#9658;</span>";
             res += "</div>";
         }
 
@@ -138,8 +147,9 @@ function updateTree() {
         tree = tree.subcats[p];
         link += p+">";
         res += "<td>";
+        res += "<div class='cat_header'>"+sel+"</div>";
         if(!tree) {
-            res += "<div class='result_summary'>&gt; Category not found: "+p+"</div>";
+            res += "<div class='result_summary'>&#9658; Category not found: "+p+"</div>";
             break;
         }
     }

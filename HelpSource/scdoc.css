@@ -90,6 +90,7 @@ a:hover {
     font-style: italic;
 /*    color: #fff;*/
     color: #444;
+    cursor: pointer;
 }
 
 .submenu {
