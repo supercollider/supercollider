@@ -99,6 +99,7 @@ a:hover {
     display: none;
     position: absolute;
     border: 1px solid #aaa;
+    border-radius: 4px;
 }
 
 .submenu a {
@@ -386,10 +387,8 @@ td p {
 }
 
 #toc {
-/*    margin-bottom: 2em;*/
     margin: 0;
-    padding: 10px;
-/*    border-top: 1px solid #ddd;*/
+    padding: 10px 2px 10px 2px;
     min-width: 20em;
     line-height: 130%;
     display: none;
@@ -398,6 +397,7 @@ td p {
     position: absolute;
     border: 1px solid #aaa;
     margin-top: 2px;
+    border-radius: 4px;
 }
 #toctitle {
     border-bottom: 1px solid #aaa;
@@ -417,6 +417,15 @@ ul.toc ul {
 ul.toc li {
     margin: 0;
     padding: 0;
+}
+
+ul.toc li a {
+    display: block;
+    padding: 0 8px 0 8px;
+}
+
+ul.toc li a:hover {
+    background: #eee;
 }
 
 .toc1 {
@@ -444,6 +453,8 @@ a.popoutlink {
     float: right;
     font-size: 9pt;
     color: #558;
+    padding-right: 8px;
+    display: inline-block;
 }
 
 .anchor {
