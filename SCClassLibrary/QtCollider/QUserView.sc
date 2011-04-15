@@ -32,6 +32,11 @@ QUserView : QView {
     this.setProperty( \background, aColor, true );
   }
 
+  // override QView's action_ to not connect to 'action()' signal
+  action_ { arg func;
+    action = func;
+  }
+
   // reimplement mouse and key response to do nothing if enabled = false;
 
   keyDownEvent { arg char, modifiers, unicode, keycode;
