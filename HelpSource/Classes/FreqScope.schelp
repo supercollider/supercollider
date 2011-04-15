@@ -2,7 +2,7 @@ class:: FreqScope
 redirect:: implClass
 summary:: Frequency analysis view
 categories:: GUI
-related:: Classes/SCFreqScopeWindow Classes/SCScope
+related:: Classes/SCFreqScopeWindow, Classes/SCScope
 
 description::
 FreqScope shows the frequency spectrum of a specified audio bus.
@@ -80,6 +80,19 @@ Median.scopeResponse // nonlinear, and therefore interesting
 gain:MouseY.kr(4, 0))}.scopeResponse
 ::
 
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+method:: viewClass
+Returns link::Classes/SCScope::. See also Subclassing and Internal Methods in link::Classes/SCView::.
+warning::Cocoa specific::
+
+method:: initClass
+Sets the classvar, code::server = Server.internal::.
+
+method:: server
+A classvar. Must be code::Server.internal::.
 
 instancemethods::
 
@@ -116,17 +129,6 @@ Extra arguments that you may wish to pass to the synth.
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
-warning::Check the class methods in this sub-section (instancemethods sub-section)::
-
-method:: *viewClass
-Returns link::Classes/SCScope::. See also Subclassing and Internal Methods in link::Classes/SCView::.
-warning::Cocoa specific::
-
-method:: *initClass
-Sets the classvar, code::server = Server.internal::.
-
-method:: server
-A classvar. Must be code::Server.internal::.
 
 method:: start
 
@@ -152,8 +154,6 @@ method:: fftbuf
 
 method:: bufSize
 
-
-	
 examples::
 
 code::

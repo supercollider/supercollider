@@ -32,6 +32,11 @@ method:: paletteExample
 argument:: parent
 argument:: bounds
 
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+method:: viewClass
 
 instancemethods::
 
@@ -52,7 +57,7 @@ method:: minTime
 Changes minimum time (sec) shown in editor. Negative times are okay because link::Classes/Env:: uses inter-node durations.
 argument:: sec
 An instance of link::Classes/Float::. Seconds.
-		
+
 method:: maxTime
 Changes maximum time (sec) shown in editor.
 argument:: sec
@@ -63,14 +68,13 @@ subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: defaultMauseDownAction
+method:: defaultMouseDownAction
 argument:: x
 argument:: y
 argument:: modifiers
 argument:: buttonNumber
 argument:: clickCount
 
-method:: *viewClass
 
 method:: env
 argument:: e

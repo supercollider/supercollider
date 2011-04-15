@@ -182,7 +182,7 @@ Set the width of all th thumbs.
 argument:: width
 The number of pixels.
 
-thumbHeight
+method:: thumbHeight
 Set the height of all th thumbs.
 argument:: height
 The number of pixels.
@@ -260,14 +260,10 @@ returns::
 [ \bounds, \visible, \enabled, \canFocus, \resize, \background, \minWidth, \maxWidth, \minHeight, \maxHeight, \value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \thumbWidth, \absoluteX, \isFilled, \step ]
 
 method:: size
-argument:: arg1
-
-method:: size
 Called by code::value_::.
 
 method:: items
-argument:: arg1
-method:: items
+Get/set items.
 returns:: An link::Classes/Array::.
 
 
@@ -288,12 +284,6 @@ argument:: bool
 
 method:: allConnections
 argument:: arg1
-
-method:: allConnections
-
-method:: doMetaAction
-
-
 
 examples::
 

@@ -50,6 +50,12 @@ SCFreqScopeWindow.new(400, 200, 0);
 ::
 ::
 
+subsection:: Subclassing and Internal Methods
+
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+
+method:: scopeOpen
+Returns a link::Classes/Boolean::, whether the scope is open.
 
 InstanceMethods::
 
@@ -57,9 +63,6 @@ subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: *scopeOpen
-Returns a link::Classes/Boolean::, whether the scope is open.
-				
 method::window
 Returns the window in which the SCFreqScope view is placed.
 
