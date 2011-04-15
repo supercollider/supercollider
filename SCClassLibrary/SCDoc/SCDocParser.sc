@@ -342,19 +342,17 @@ SCDocParser {
                             \method, {
                             //FIXME:
                             // - m.isExtensionOf(c) (perhaps not very important, we can see this in the class doc)
-                                match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1];
+                                match = text.findRegexp("\\(.*\\)|[^ ,]+").flop[1].reject{|x|x[0]==$(};
                                 match.do {|name|
-                                    if(name[0]!=$() {
-                                        if("[a-z][a-zA-Z0-9_]*|[-<>@|&%*+/!?=]+".matchRegexp(name).not) {
-                                            warn("Methodname not valid: '"++name++"' in"+path);
-                                        } {
-                                            m = name.asSymbol.asGetter;
-                                            methods = methods.add("_"++pfx++m);
-                                            switch(pfx,
-                                                "*", {cmets.add(m)},
-                                                "-", {imets.add(m)}
-                                            );
-                                        };
+                                    if("[a-z][a-zA-Z0-9_]*|[-<>@|&%*+/!?=]+".matchRegexp(name).not) {
+                                        warn("Methodname not valid: '"++name++"' in"+path);
+                                    } {
+                                        m = name.asSymbol.asGetter;
+                                        methods = methods.add("_"++pfx++m);
+                                        switch(pfx,
+                                            "*", {cmets.add(m)},
+                                            "-", {imets.add(m)}
+                                        );
                                     };
                                 };
                             },
