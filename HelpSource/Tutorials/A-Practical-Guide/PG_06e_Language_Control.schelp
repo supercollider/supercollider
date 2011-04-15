@@ -1,6 +1,6 @@
 title:: PG_06e_Language_Control
 summary:: Patterns that mimic some language-side control structures
-related:: Tutorials/PG_06d_Parallel_Patterns, Tutorials/PG_06f_Server_Control
+related:: Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns, Tutorials/A-Practical-Guide/PG_06f_Server_Control
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Language control methods
@@ -58,6 +58,6 @@ p = Pwhile({ ~go }, Pbind(
 ::
 ::
 
-Previous:	link::Tutorials/PG_06d_Parallel_Patterns::
+Previous:	link::Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns::
 
-Next:		link::Tutorials/PG_06f_Server_Control::
+Next:		link::Tutorials/A-Practical-Guide/PG_06f_Server_Control::

@@ -1,6 +1,6 @@
 title:: PG_05_Math_on_Patterns
 summary:: Performing math and collection operations on patterns
-related:: Tutorials/PG_04_Words_to_Phrases, Tutorials/PG_060_Filter_Patterns
+related:: Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases, Tutorials/A-Practical-Guide/PG_060_Filter_Patterns
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Math on patterns
@@ -141,8 +141,8 @@ p.stop;
 
 subsection::Calculations based on other event values
 
-In a Pbind, normally the patterns for the various keys calculate independently. But it's possible for one or more child patterns to depend on the result of another pattern inside the same Pbind. This is done with link::Classes/Pkey::, described in link::Tutorials/PG_06g_Data_Sharing::.
+In a Pbind, normally the patterns for the various keys calculate independently. But it's possible for one or more child patterns to depend on the result of another pattern inside the same Pbind. This is done with link::Classes/Pkey::, described in link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::.
 
-Previous:	link::Tutorials/PG_04_Words_to_Phrases::
+Previous:	link::Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases::
 
-Next:		link::Tutorials/PG_060_Filter_Patterns::
+Next:		link::Tutorials/A-Practical-Guide/PG_060_Filter_Patterns::

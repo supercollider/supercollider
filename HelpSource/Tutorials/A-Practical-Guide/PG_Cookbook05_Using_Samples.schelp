@@ -1,6 +1,6 @@
 title:: PG_Cookbook05_Using_Samples
 summary:: Using samples
-related:: Tutorials/PG_Cookbook04_Sending_MIDI, Tutorials/PG_Cookbook06_Phrase_Network
+related:: Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI, Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Using samples
@@ -257,6 +257,6 @@ p.stop;
 b.do(_.free); ~baseBuf.free;
 ::
 
-Previous:	link::Tutorials/PG_Cookbook04_Sending_MIDI::
+Previous:	link::Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI::
 
-Next:		link::Tutorials/PG_Cookbook06_Phrase_Network::
+Next:		link::Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network::

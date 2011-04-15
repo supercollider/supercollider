@@ -1,6 +1,6 @@
 title:: PG_Cookbook03_External_Control
 summary:: Pattern control by external device
-related:: Tutorials/PG_Cookbook02_Manipulating_Patterns, Tutorials/PG_Cookbook04_Sending_MIDI
+related:: Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns, Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Pattern control by external device
@@ -192,6 +192,6 @@ StaticText(~w, 295@5).background_(Color.gray);
 )
 ::
 
-Previous:	link::Tutorials/PG_Cookbook02_Manipulating_Patterns::
+Previous:	link::Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns::
 
-Next:		link::Tutorials/PG_Cookbook04_Sending_MIDI::
+Next:		link::Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI::

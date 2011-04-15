@@ -1,6 +1,6 @@
 title:: PG_06c_Composition_of_Patterns
 summary:: Making multiple event patterns act as one
-related:: Tutorials/PG_06b_Time_Based_Patterns, Tutorials/PG_06d_Parallel_Patterns
+related:: Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns, Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Adding values to a base event pattern (Or, "Pattern Composition")
@@ -113,6 +113,6 @@ Similar for code::Pmulpre::.
 
 A third group -- link::Classes/Psetp::, link::Classes/Paddp::, link::Classes/Pmulp:: -- behave slightly differently, nesting pattern evaluation.
 
-Previous:	link::Tutorials/PG_06b_Time_Based_Patterns::
+Previous:	link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::
 
-Next:		link::Tutorials/PG_06d_Parallel_Patterns::
+Next:		link::Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns::

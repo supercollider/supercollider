@@ -1,6 +1,6 @@
 title:: PG_Cookbook04_Sending_MIDI
 summary:: Sending notes under pattern control to MIDI devices
-related:: Tutorials/PG_Cookbook03_External_Control, Tutorials/PG_Cookbook05_Using_Samples
+related:: Tutorials/A-Practical-Guide/PG_Cookbook03_External_Control, Tutorials/A-Practical-Guide/PG_Cookbook05_Using_Samples
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Sending MIDI out with Patterns
@@ -36,6 +36,6 @@ p = Pbind(
 p.stop;
 ::
 
-Previous:	link::Tutorials/PG_Cookbook03_External_Control::
+Previous:	link::Tutorials/A-Practical-Guide/PG_Cookbook03_External_Control::
 
-Next:		link::Tutorials/PG_Cookbook05_Using_Samples::
+Next:		link::Tutorials/A-Practical-Guide/PG_Cookbook05_Using_Samples::

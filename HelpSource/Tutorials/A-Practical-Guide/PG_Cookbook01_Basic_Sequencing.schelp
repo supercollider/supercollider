@@ -1,6 +1,6 @@
 title:: PG_Cookbook01_Basic_Sequencing
 summary:: Sequencing basics
-related:: Tutorials/PG_08_Event_Types_and_Parameters, Tutorials/PG_Cookbook02_Manipulating_Patterns
+related:: Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters, Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Cookbook: Sequencing basics
@@ -109,6 +109,6 @@ p.stop;
 b.free;	// be tidy! remember to clean up your Buffer
 ::
 
-Previous:	link::Tutorials/PG_08_Event_Types_and_Parameters::
+Previous:	link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters::
 
-Next:		link::Tutorials/PG_Cookbook02_Manipulating_Patterns::
+Next:		link::Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns::

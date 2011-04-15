@@ -1,6 +1,6 @@
 title:: PG_03_What_Is_Pbind
 summary:: Pattern-based musical sequencing with Pbind and cousins
-related:: Tutorials/PG_02_Basic_Vocabulary, Tutorials/PG_04_Words_to_Phrases
+related:: Tutorials/A-Practical-Guide/PG_02_Basic_Vocabulary, Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::What's that Pbind thing?
@@ -150,8 +150,8 @@ p = Pbind(
 It's actually an oversimplification to say that the Pbind names should always match up to SynthDef arguments.
 
 list::
-## A Pbind can use some values in the event for intermediate calculations (see link::Tutorials/PG_06g_Data_Sharing::). If these intermediate values have names not found in the SynthDef, they are not sent to the server. There is no requirement that every item in an Event must correspond to a SynthDef control.
-## The default event prototype performs some automatic conversions. You might have noticed that the examples so far use code::'degree':: to specify pitch, but the default SynthDef being played does not have a degree argument. It works because the default event converts degree into code::'freq'::, which is an argument. The most important conversions are for pitch and timing. Timing is simple; pitch is more elaborate. See link::Tutorials/PG_07_Value_Conversions:: for an explanation of these automatic calculations.
+## A Pbind can use some values in the event for intermediate calculations (see link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::). If these intermediate values have names not found in the SynthDef, they are not sent to the server. There is no requirement that every item in an Event must correspond to a SynthDef control.
+## The default event prototype performs some automatic conversions. You might have noticed that the examples so far use code::'degree':: to specify pitch, but the default SynthDef being played does not have a degree argument. It works because the default event converts degree into code::'freq'::, which is an argument. The most important conversions are for pitch and timing. Timing is simple; pitch is more elaborate. See link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions:: for an explanation of these automatic calculations.
 ::
 
 strong::Don't send or load SynthDefs; use .add or .store instead::
@@ -174,7 +174,7 @@ SynthDef(...).add;
 
 section::"Rest" events
 
-The convention to include a rest in the middle of an event pattern is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. Ligeti's "touches bloquees" technique could be written this way (see link::Tutorials/PG_06e_Language_Control:: for an explanation of the conditional link::Classes/Pif::):
+The convention to include a rest in the middle of an event pattern is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. Ligeti's "touches bloquees" technique could be written this way (see link::Tutorials/A-Practical-Guide/PG_06e_Language_Control:: for an explanation of the conditional link::Classes/Pif::):
 
 code::
 (
@@ -242,6 +242,6 @@ p = Pmono(\trig_demo,
 p.stop;
 ::
 
-Previous:	link::Tutorials/PG_02_Basic_Vocabulary::
+Previous:	link::Tutorials/A-Practical-Guide/PG_02_Basic_Vocabulary::
 
-Next:		link::Tutorials/PG_04_Words_to_Phrases::
+Next:		link::Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases::

@@ -1,6 +1,6 @@
 title:: PG_060_Filter_Patterns
 summary:: Overview of patterns that modify the behavior of other patterns
-related:: Tutorials/PG_05_Math_on_Patterns, Tutorials/PG_06a_Repetition_Contraint_Patterns
+related:: Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns, Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Filter patterns
@@ -14,7 +14,7 @@ All filter patterns take at least one source pattern, providing the values/event
 Following is a categorized overview. See the separate category documents for more detail.
 
 subsection::Repetition and Constraint patterns
-link::Tutorials/PG_06a_Repetition_Contraint_Patterns::
+link::Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns::
 
 definitionList::
 ## code::Pclutch(pattern, connected):: || If the code::connected:: pattern is true, Pclutch returns the next value from code::pattern::. If code::connected:: is false, the previous pattern value is repeated. It's like a clutch in a car: when engaged, the pattern moves forward; when disconnected, it stays where it is.
@@ -29,7 +29,7 @@ definitionList::
 ::
 
 subsection::Time-based patterns
-link::Tutorials/PG_06b_Time_Based_Patterns::
+link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::
 
 definitionList::
 ## code::Ptime(repeats):: || Returns the amount of time elapsed since embedding.
@@ -38,7 +38,7 @@ definitionList::
 ::
 
 subsection::Adding values into event patterns (Or, "Pattern Composition")
-link::Tutorials/PG_06c_Composition_of_Patterns::
+link::Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns::
 
 definitionList::
 ## code::Pbindf(pattern, pairs):: || Adds new key-value pairs onto a pre-existing Pbind-style pattern.
@@ -46,7 +46,7 @@ definitionList::
 ::
 
 subsection::Parallelizing event patterns
-link::Tutorials/PG_06d_Parallel_Patterns::
+link::Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns::
 
 definitionList::
 ## code::Ppar(list, repeats):: || Start each of the event patterns in the code::list:: at the same time. When the last one finishes, the Ppar also stops. If code::repeats:: > 1, all the subpatterns start over again from the beginning.
@@ -59,7 +59,7 @@ definitionList::
 ::
 
 subsection::Language control methods
-link::Tutorials/PG_06e_Language_Control::
+link::Tutorials/A-Practical-Guide/PG_06e_Language_Control::
 
 Some patterns mimic language-style control methods: conditionals ( link::Classes/Pif:: ), loops ( link::Classes/Pwhile:: ) and error cleanup ( link::Classes/Pprotect:: ).
 
@@ -72,7 +72,7 @@ definitionList::
 ::
 
 subsection::Server control methods
-link::Tutorials/PG_06f_Server_Control::
+link::Tutorials/A-Practical-Guide/PG_06f_Server_Control::
 
 definitionList::
 ## code::Pbus(pattern, dur, fadeTime, numChannels, rate):: || Creates a private group and bus for the synths played by the pattern. The group and bus are released when the pattern stops. Useful for isolating signals from different patterns.
@@ -85,7 +85,7 @@ definitionList::
 ::
 
 subsection::Data sharing
-link::Tutorials/PG_06g_Data_Sharing::
+link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::
 
 definitionList::
 ## code::Pkey(key):: || Read the code::key:: in the input event, making previously-calculated values available for other streams.
@@ -94,6 +94,6 @@ definitionList::
 ## code::Plambda(pattern, scope):: || Creates a "function scope" into which values are assigned using link::Classes/Plet::, and from which values are retrieved with link::Classes/Pget::. Pget is somewhat like link::Classes/Pkey::, except that its scope is strictly internal, hidden from the caller. With Pkey, the source values remain present in the event returned to the caller.
 ::
 
-Previous:	link::Tutorials/PG_05_Math_on_Patterns::
+Previous:	link::Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns::
 
-Next:		link::Tutorials/PG_06a_Repetition_Contraint_Patterns::
+Next:		link::Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns::
