@@ -1,0 +1,65 @@
+Class:: Float
+summary:: Floating point number
+categories:: Math
+
+description::
+A 64 bit double precision floating point number. Float inherits most of its behaviour from its superclass.
+
+ClassMethods::
+
+method:: from32Bits
+returns:: a new Float from a 32 bit word.
+
+method:: from64Bits
+returns:: a new Float from a 64 bit word.
+
+InstanceMethods::
+
+method:: do
+iterates a link::Classes/Function:: from code::0:: to code::this-1::. See also: link::Classes/Integer#-do::, link::Classes/Collection#-do::
+argument:: function
+The function to iterate.
+
+method:: reverseDo
+iterates function from this-1 to 0
+argument:: function
+The function to iterate.
+
+method:: coin
+Perform a random test whose probability of success in a range from 
+zero to one is this and return the result.
+returns:: a link::Classes/Boolean::
+discussion::
+code::
+0.2.coin; // 20 % chance for true.
+::
+See also: link::Guides/Randomness::
+
+method:: isFloat
+returns:: code::true:: since this is a Float.
+
+method:: asFloat
+returns:: code::this:: since this is a Float.
+
+method:: as32Bits
+returns:: an Integer which is the bit pattern of this as a 32bit single precision float
+
+method:: high32Bits
+returns:: an Integer which is the bit pattern of high 32 bits of the 64 bit double precision floating point value
+
+method:: low32Bits
+returns:: an Integer which is the bit pattern of high 32 bits of the 64 bit double precision floating point value
+
+method:: asStringPrec
+Returns a string representation of the number, with the desired precision (i.e. number of significant figures).
+discussion::
+code::
+// example:
+pi
+pi.asStringPrec(3)
+pi.asStringPrec(6)
+(pi * 0.0001).asStringPrec(3)
+7.4.asStringPrec(5)
+7.4.asStringPrec(50)
+::
+

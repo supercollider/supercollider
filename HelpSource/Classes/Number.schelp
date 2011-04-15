@@ -1,0 +1,93 @@
+class:: Number
+summary:: Mathematical quantity
+categories:: Math
+
+description::
+Number represents a mathematical quantity.
+
+instancemethods::
+
+subsection:: Math
+
+method:: +
+Addition.
+
+method:: -
+Subtraction.
+
+method:: *
+Multiplication.
+
+method:: /
+Division.
+
+method:: div
+Integer division.
+
+method:: %
+Modulo.
+
+method:: **
+Exponentiation.
+
+
+subsection:: Polar Coordinate Support
+
+method:: rho
+Answer the polar radius of the number.
+
+method:: theta
+Answer the polar angle of the number.
+
+
+subsection:: Complex Number Support
+
+method:: real
+Answer the real part of the number.
+
+method:: imag
+Answer the imaginary part of the number.
+
+
+subsection:: Conversion
+
+method:: @
+Create a new link::Classes/Point:: whose x coordinate is the receiver and whose y coordinate is aNumber.
+
+method:: complex
+Create a new link::Classes/Complex:: number whose real part is the receiver with the given imaginary part.
+
+method:: polar
+Create a new link::Classes/Polar:: number whose radius is the receiver with the given angle.
+
+
+subsection:: Iteration
+
+method:: for
+Calls strong::function:: for numbers from this up to endval, inclusive, stepping each time by 1.
+argument:: endval
+a link::Classes/Number::.
+argument:: function
+a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
+argument:: endval, and the second which is a number from zero to the number of iterations minus one.
+
+method:: forBy
+Calls strong::function:: for numbers from this up to endval stepping each time by step.
+argument:: endval
+a link::Classes/Number::.
+argument:: step
+a link::Classes/Number::.
+argument:: function
+a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
+endval, and the second which is a number from zero to the number of iterations minus one.
+
+method:: forSeries
+Calls strong::function:: for numbers from this up to endval stepping each time by a step specified by second.
+argument:: second
+a link::Classes/Number::.
+argument:: last
+a link::Classes/Number::.
+argument:: function
+a link::Classes/Function:: which is passed two arguments, the first which is an number from this to
+endval, and the second which is a number from zero to the number of iterations minus one.
+

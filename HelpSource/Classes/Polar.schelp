@@ -1,0 +1,53 @@
+class:: Polar
+summary:: Polar coordinates
+categories:: Math
+
+description::
+Represents polar coordinates.
+
+classmethods::
+
+method:: new
+Create a new polar coordinate with the given radius, rho, and angle in radians, theta.
+
+
+instancemethods::
+
+subsection:: Math
+method:: +, -, *, /
+The math operations of addition, subtraction, multiplication and division are accomplished by
+first converting to complex numbers.
+
+method:: scale
+Scale the radius by some value.
+
+method:: rotate
+Rotate the angle by some value.
+
+method:: neg
+Rotate by pi.
+
+
+subsection:: Conversion
+
+method:: magnitude
+Answer the radius.
+
+method:: angle
+Answer the angle in radians
+
+method:: phase
+Answer the angle in radians
+
+method:: real
+Answer the real part.
+
+method:: imag
+Answer the imaginary part.
+
+method:: asComplex
+Convert to Complex
+
+method:: asPoint
+Convert to Point
+

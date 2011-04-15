@@ -1,0 +1,35 @@
+class:: Magnitude
+summary:: Comparable value in a linear continuum
+categories:: Math
+
+description::
+Magnitudes represent values along a linear continuum which can be compared against each other.
+
+instancemethods::
+method:: <
+returns:: a link::Classes/Boolean:: whether the receiver is less than strong::aMagnitude::.
+
+method:: <=
+returns:: a link::Classes/Boolean:: whether the receiver is less than or equal to strong::aMagnitude::.
+
+method:: >
+returns:: a link::Classes/Boolean:: whether the receiver is greater than strong::aMagnitude::.
+
+method:: >=
+returns:: a link::Classes/Boolean:: whether the receiver is greater than or equal to strong::aMagnitude::.
+
+method:: min
+returns:: the minimum of the receiver and aMagnitude.
+
+method:: max
+returns:: the maximum of the receiver and aMagnitude.
+
+method:: clip
+If the receiver is less than minVal then answer minVal, else if the receiver is greater than maxVal then answer maxVal, else answer the receiver.
+
+method:: inclusivelyBetween
+returns:: whether the receiver is greater than or equal to minVal and less than or equal to maxVal.
+
+method:: exclusivelyBetween
+returns:: whether the receiver is greater than minVal and less than maxVal.
+
