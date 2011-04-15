@@ -8,6 +8,7 @@ function toggle_visibility(e) {
     }
 }
 
+/*
 function createCookie(name,value,days) {
     if (days) {
         var date = new Date();
@@ -28,10 +29,7 @@ function readCookie(name) {
     }
     return null;
 }
-
-function eraseCookie(name) {
-    createCookie(name,"",-1);
-}
+*/
 
 var sidetoc;
 var toc;
@@ -55,7 +53,7 @@ function popOutTOC(original_toc, p0) {
         c.style.marginLeft = left;
         p0.style.display = "";
         sidetoc = null;
-        createCookie("popToc","no",7);
+        sessionStorage.popToc = "no";
         return false;
     }
     var x = document.createElement("div");
@@ -66,7 +64,7 @@ function popOutTOC(original_toc, p0) {
 
     sidetoc = t;
     resize_handler();
-    createCookie("popToc","yes",7);
+    sessionStorage.popToc = "yes";
 }
 
 function resize_handler() {
@@ -83,6 +81,9 @@ function fixTOC() {
     for(var i=0;i<x.length;i++) {
         x[i].setAttribute("contentEditable",true);
     }
+
+    if(sessionStorage == undefined)
+        sessionStorage = {};
 
     var openMenu;
     var inMenu = false;
@@ -191,7 +192,7 @@ function fixTOC() {
         }
         t.insertBefore(p,t.firstChild);
         resize_handler();
-        if(readCookie("popToc") == "yes") {
+        if(sessionStorage.popToc == "yes") {
             popOutTOC(t,a);
         }
     }
