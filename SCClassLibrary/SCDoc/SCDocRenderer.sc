@@ -503,10 +503,10 @@ SCDocHTMLRenderer : SCDocRenderer {
                                 \instancemethods, {"-"},
                                 {"."});
                             f.write("<li class='toc3'>");
-                            r = n.text.findRegexp(" *([^(]+) *(\\(.*\\))?");
-                            f.write(r[1][1].findRegexp("[^ ,]+").flop[1].collect {|m|
-                                "<a href='#"++pfx++m++"'>"++this.escapeSpecialChars(m)++"</a>";
-                            }.join(", "));
+                            r = n.text.findRegexp("\\(.*\\)|[^ ,]+").flop[1].reject{|x|x[0]==$(};
+                            f.write(r.collect{|m|
+                                "<a href='#"++pfx++m++"'>"++this.escapeSpecialChars(m)++"</a> ";
+                            }.join(" "));
                             f.write("</li>\n");
                         },
                         \section, {
