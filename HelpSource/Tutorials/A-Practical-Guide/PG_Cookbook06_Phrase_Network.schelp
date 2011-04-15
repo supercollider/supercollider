@@ -1,6 +1,6 @@
 title:: PG_Cookbook06_Phrase_Network
 summary:: Sequencing by a network of phrases, Articulating notes with PmonoArtic
-related:: Tutorials/PG_Cookbook05_Using_Samples, Tutorials/PG_Cookbook07_Rhythmic_Variations
+related:: Tutorials/A-Practical-Guide/PG_Cookbook05_Using_Samples, Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Sequencing by a network of phrases
@@ -181,6 +181,6 @@ p = Pmul(\amp, 0.4, Pfsm([
 p.stop;
 ::
 
-Previous:	link::Tutorials/PG_Cookbook05_Using_Samples::
+Previous:	link::Tutorials/A-Practical-Guide/PG_Cookbook05_Using_Samples::
 
-Next:		link::Tutorials/PG_Cookbook07_Rhythmic_Variations::
+Next:		link::Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations::

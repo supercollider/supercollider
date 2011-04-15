@@ -1,6 +1,6 @@
 title:: PG_06a_Repetition_Contraint_Patterns
 summary:: Patterns that repeat values, or cut other patterns off early
-related:: Tutorials/PG_060_Filter_Patterns, Tutorials/PG_06b_Time_Based_Patterns
+related:: Tutorials/A-Practical-Guide/PG_060_Filter_Patterns, Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Repetition and Constraint patterns
@@ -17,7 +17,7 @@ definitionList::
 ## code::Pstutter(n, pattern):: || code::n:: and code::pattern:: are both patterns. Each value from code::pattern:: is repeated code::n:: times. If code::n:: is a pattern, each value can be repeated a different number of times.
 ## code::PdurStutter(n, pattern):: || Like Pstutter, except the pattern value is divided by the number of repeats (so that the total time for the repeat cycle is the duration value from the source pattern).
 
-See also link::Classes/Pstep::, described in link::Tutorials/PG_06b_Time_Based_Patterns::. Pstep can be used like link::Classes/Pstutter::, but repetition is controlled by time rather than number of repeats per item.
+See also link::Classes/Pstep::, described in link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::. Pstep can be used like link::Classes/Pstutter::, but repetition is controlled by time rather than number of repeats per item.
 
 code::
 // play repeated notes with a different rhythmic value per new pitch
@@ -129,6 +129,6 @@ p = (Psync(Pbind(
 ::
 ::
 
-Previous:	link::Tutorials/PG_060_Filter_Patterns::
+Previous:	link::Tutorials/A-Practical-Guide/PG_060_Filter_Patterns::
 
-Next:		link::Tutorials/PG_06b_Time_Based_Patterns::
+Next:		link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::

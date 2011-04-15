@@ -1,6 +1,6 @@
 title:: PG_02_Basic_Vocabulary
 summary:: Common patterns to generate streams of single values
-related:: Tutorials/PG_01_Introduction, Tutorials/PG_03_What_Is_Pbind
+related:: Tutorials/A-Practical-Guide/PG_01_Introduction, Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Basic Vocabulary: Generating values
@@ -315,6 +315,6 @@ definitionList::
 
 Next, we'll look at the central pattern for audio sequencing: link::Classes/Pbind::.
 
-Previous:	link::Tutorials/PG_01_Introduction::
+Previous:	link::Tutorials/A-Practical-Guide/PG_01_Introduction::
 
-Next:		link::Tutorials/PG_03_What_Is_Pbind::
+Next:		link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind::

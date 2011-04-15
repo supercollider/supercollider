@@ -1,6 +1,6 @@
 title:: PG_06g_Data_Sharing
 summary:: Writing patterns to use information from other patterns
-related:: Tutorials/PG_06f_Server_Control, Tutorials/PG_07_Value_Conversions
+related:: Tutorials/A-Practical-Guide/PG_06f_Server_Control, Tutorials/A-Practical-Guide/PG_07_Value_Conversions
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Sharing data between patterns
@@ -55,7 +55,7 @@ definitionList::
 
 The code::independent:: flag specifies whether the environment will be kept separate for each stream made from the Penvir. If true (the default), whenever the Penvir is embedded in a stream, a new environment is created that inherits the initial values provided by code::envir::. If false, the same environment is used for every stream. In that case, the same environment could also be used in different Penvir patterns, and modifications of the environment by one Penvir would carry over to all the others -- hence its usefulness for sharing data.
 
-## code::Pfset(func, pattern, cleanupFunc):: || When embedded, link::Classes/Pfset:: creates an environment and populates it using environment variable assignments in the provided function. For every code::next:: call, the values in the preset environment are inserted into the event prototype before evaluating the child pattern. This is one way to set defaults for the pattern. It could also be used to load objects on the server, although this takes some care because the object would be reloaded every time the Pfset is played and you are responsible for freeing objects created this way in the cleanupFunc. (Pproto is another way; see link::Tutorials/PG_06f_Server_Control:: .)
+## code::Pfset(func, pattern, cleanupFunc):: || When embedded, link::Classes/Pfset:: creates an environment and populates it using environment variable assignments in the provided function. For every code::next:: call, the values in the preset environment are inserted into the event prototype before evaluating the child pattern. This is one way to set defaults for the pattern. It could also be used to load objects on the server, although this takes some care because the object would be reloaded every time the Pfset is played and you are responsible for freeing objects created this way in the cleanupFunc. (Pproto is another way; see link::Tutorials/A-Practical-Guide/PG_06f_Server_Control:: .)
 
 code::
 (
@@ -229,6 +229,6 @@ p = Penvir((), Ptpar([
 p.stop;
 ::
 
-Previous:	link::Tutorials/PG_06f_Server_Control::
+Previous:	link::Tutorials/A-Practical-Guide/PG_06f_Server_Control::
 
-Next:		link::Tutorials/PG_07_Value_Conversions::
+Next:		link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions::

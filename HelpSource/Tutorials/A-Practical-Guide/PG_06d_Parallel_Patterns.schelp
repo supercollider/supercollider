@@ -1,6 +1,6 @@
 title:: PG_06d_Parallel_Patterns
 summary:: Running multiple event patterns simultaneously
-related:: Tutorials/PG_06c_Composition_of_Patterns, Tutorials/PG_06e_Language_Control
+related:: Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns, Tutorials/A-Practical-Guide/PG_06e_Language_Control
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Parallelizing event patterns
@@ -77,6 +77,6 @@ p.stop;
 ::
 ::
 
-Previous:	link::Tutorials/PG_06c_Composition_of_Patterns::
+Previous:	link::Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns::
 
-Next:		link::Tutorials/PG_06e_Language_Control::
+Next:		link::Tutorials/A-Practical-Guide/PG_06e_Language_Control::

@@ -19,21 +19,21 @@ Patterns are one of the most powerful elements of the SuperCollider language, bu
 section::Contents
 
 definitionList::
-## link::Tutorials/PG_01_Introduction:: || Fundamental concepts of patterns and streams
-## link::Tutorials/PG_02_Basic_Vocabulary:: || Common patterns to generate streams of single values
-## link::Tutorials/PG_03_What_Is_Pbind:: || Pattern-based musical sequencing with Pbind and cousins
-## link::Tutorials/PG_04_Words_to_Phrases:: || Nesting patterns, arranging music in terms of phrases
-## link::Tutorials/PG_05_Math_on_Patterns:: || Performing math and collection operations on patterns
-## link::Tutorials/PG_06_Filter_Patterns:: || Overview of patterns that modify the behavior of other patterns
-## link::Tutorials/PG_06a_Repetition_Contraint_Patterns:: || Patterns that repeat values, or cut other patterns off early
-## link::Tutorials/PG_06b_Time_Based_Patterns:: || Patterns using time as the basis for their evaluation
-## link::Tutorials/PG_06c_Composition_of_Patterns:: || Making multiple event patterns act as one
-## link::Tutorials/PG_06d_Parallel_Patterns:: || Running multiple event patterns simultaneously
-## link::Tutorials/PG_06e_Language_Control:: || Patterns that mimic some language-side control structures
-## link::Tutorials/PG_06f_Server_Control:: || Patterns that manage server-side resources
-## link::Tutorials/PG_06g_Data_Sharing:: || Writing patterns to use information from other patterns
-## link::Tutorials/PG_07_Value_Conversions:: || Describes the default event's conversions for pitch, rhythm and amplitude
-## link::Tutorials/PG_08_Event_Types_and_Parameters:: || Describes the event types defined in the default event, and the parameters they expect
+## link::Tutorials/A-Practical-Guide/PG_01_Introduction:: || Fundamental concepts of patterns and streams
+## link::Tutorials/A-Practical-Guide/PG_02_Basic_Vocabulary:: || Common patterns to generate streams of single values
+## link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind:: || Pattern-based musical sequencing with Pbind and cousins
+## link::Tutorials/A-Practical-Guide/PG_04_Words_to_Phrases:: || Nesting patterns, arranging music in terms of phrases
+## link::Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns:: || Performing math and collection operations on patterns
+## link::Tutorials/A-Practical-Guide/PG_06_Filter_Patterns:: || Overview of patterns that modify the behavior of other patterns
+## link::Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns:: || Patterns that repeat values, or cut other patterns off early
+## link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns:: || Patterns using time as the basis for their evaluation
+## link::Tutorials/A-Practical-Guide/PG_06c_Composition_of_Patterns:: || Making multiple event patterns act as one
+## link::Tutorials/A-Practical-Guide/PG_06d_Parallel_Patterns:: || Running multiple event patterns simultaneously
+## link::Tutorials/A-Practical-Guide/PG_06e_Language_Control:: || Patterns that mimic some language-side control structures
+## link::Tutorials/A-Practical-Guide/PG_06f_Server_Control:: || Patterns that manage server-side resources
+## link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing:: || Writing patterns to use information from other patterns
+## link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions:: || Describes the default event's conversions for pitch, rhythm and amplitude
+## link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters:: || Describes the event types defined in the default event, and the parameters they expect
 ::
 
 subsection::Pattern Cookbook
@@ -41,32 +41,32 @@ subsection::Pattern Cookbook
 The pattern cookbook is a set of examples with explanations.
 
 definitionList::
-## link::Tutorials/PG_Cookbook01_Basic_Sequencing:: || list::
+## link::Tutorials/A-Practical-Guide/PG_Cookbook01_Basic_Sequencing:: || list::
 	## Playing a predefined note sequence
 	## "Multichannel" expansion
 	## Using custom SynthDefs (including unpitched SynthDefs)
 ::
-## link::Tutorials/PG_Cookbook02_Manipulating_Patterns:: || list::
+## link::Tutorials/A-Practical-Guide/PG_Cookbook02_Manipulating_Patterns:: || list::
 	## Merging (interleaving) independent streams
 	## Reading an array forward or backward arbitrarily
 	## Changing Pbind value patterns on the fly
 ::
-## link::Tutorials/PG_Cookbook03_External_Control:: || list::
+## link::Tutorials/A-Practical-Guide/PG_Cookbook03_External_Control:: || list::
 	## Control of parameters by MIDI or HID
 	## Triggering patterns by external control
 ::
-## link::Tutorials/PG_Cookbook04_Sending_MIDI:: || list::
+## link::Tutorials/A-Practical-Guide/PG_Cookbook04_Sending_MIDI:: || list::
 	## Sending notes under pattern control to MIDI devices
 ::
-## link::Tutorials/PG_Cookbook05_Using_Samples:: || list::
+## link::Tutorials/A-Practical-Guide/PG_Cookbook05_Using_Samples:: || list::
 	## Playing a pattern in time with a sampled loop
 	## Using audio samples to play pitched material
 ::
-## link::Tutorials/PG_Cookbook06_Phrase_Network:: || list::
+## link::Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network:: || list::
 	## Building a more complicated melody using shorter phrase patterns
 	## Also illustrates PmonoArtic for portamento with articulation
 ::
-## link::Tutorials/PG_Cookbook07_Rhythmic_Variations:: || list::
+## link::Tutorials/A-Practical-Guide/PG_Cookbook07_Rhythmic_Variations:: || list::
 	## An ever-changing drumbeat
 ::
 ::
@@ -74,7 +74,7 @@ definitionList::
 subsection::Reference material
 
 definitionList::
-## link::Tutorials/PG_Ref01_Pattern_Internals:: || Details of pattern implementation, with guidance on writing new pattern classes
+## link::Tutorials/A-Practical-Guide/PG_Ref01_Pattern_Internals:: || Details of pattern implementation, with guidance on writing new pattern classes
 ::
 
 section::Why patterns?
@@ -170,7 +170,7 @@ q.next;	// resumes where q left off, with no effect from getting values from r
 Bear these points in mind as we move to the next subject: getting basic types of data (deterministic and random) out of patterns.
 
 
-Next: link::Tutorials/PG_02_Basic_Vocabulary::
+Next: link::Tutorials/A-Practical-Guide/PG_02_Basic_Vocabulary::
 
 
 

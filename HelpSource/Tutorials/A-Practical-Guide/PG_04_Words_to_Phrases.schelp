@@ -1,6 +1,6 @@
 title:: PG_04_Words_to_Phrases
 summary:: Nesting patterns, arranging music in terms of phrases
-related:: Tutorials/PG_03_What_Is_Pbind, Tutorials/PG_05_Math_on_Patterns
+related:: Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind, Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::From words to phrases
@@ -117,7 +117,7 @@ p.stop;
 
 If this sounds a bit like a Markov chain, that's because the Pfsm implementation is a special case of a Markov chain where there is an equal probability of choosing the next state from the valid successors. In a Markov chain, the probabilities are weighted according to analysis of a real-world data stream.
 
-The Pfsm help file includes very good examples of organizing single values and pattern phrases. Also see link::Tutorials/PG_Cookbook06_Phrase_Network:: for an application of Pfsm to generate a corny jazz solo.
+The Pfsm help file includes very good examples of organizing single values and pattern phrases. Also see link::Tutorials/A-Practical-Guide/PG_Cookbook06_Phrase_Network:: for an application of Pfsm to generate a corny jazz solo.
 
 The name link::Classes/Pdfsm:: stands for "deterministic finite state machine," where there is no random selection.
 
@@ -238,9 +238,9 @@ p = Pbind(
 p.stop;
 ::
 
-We will see in link::Tutorials/PG_06e_Language_Control:: that Pif can be used on values that were previously calculated in the Pbind. It adds considerably to the intelligence Pbind can manage, when its value streams are aware of other values in the event.
+We will see in link::Tutorials/A-Practical-Guide/PG_06e_Language_Control:: that Pif can be used on values that were previously calculated in the Pbind. It adds considerably to the intelligence Pbind can manage, when its value streams are aware of other values in the event.
 
 
-Previous:	link::Tutorials/PG_03_What_Is_Pbind::
+Previous:	link::Tutorials/A-Practical-Guide/PG_03_What_Is_Pbind::
 
-Next:		link::Tutorials/PG_05_Math_on_Patterns::
+Next:		link::Tutorials/A-Practical-Guide/PG_05_Math_on_Patterns::

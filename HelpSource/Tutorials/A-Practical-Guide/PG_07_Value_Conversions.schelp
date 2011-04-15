@@ -1,6 +1,6 @@
 title:: PG_07_Value_Conversions
 summary:: Describes the default event's conversions for pitch, rhythm and amplitude
-related:: Tutorials/PG_06g_Data_Sharing, Tutorials/PG_08_Event_Types_and_Parameters
+related:: Tutorials/A-Practical-Guide/PG_06g_Data_Sharing, Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Pitch and rhythm conversions in the default event
@@ -102,6 +102,6 @@ subsection::Amplitude conversion
 Finally, you can specify amplitude as code::\db:: or code::\amp::. If it's given as code::\db::, the amplitude will be calculated automatically using code::.dbamp::.
 
 
-Previous:	link::Tutorials/PG_06g_Data_Sharing::
+Previous:	link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing::
 
-Next:		link::Tutorials/PG_08_Event_Types_and_Parameters::
+Next:		link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters::

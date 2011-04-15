@@ -1,6 +1,6 @@
 title:: PG_08_Event_Types_and_Parameters
 summary:: Describes the event types defined in the default event, and the parameters they expect
-related:: Tutorials/PG_07_Value_Conversions, Tutorials/PG_Cookbook01_Basic_Sequencing
+related:: Tutorials/A-Practical-Guide/PG_07_Value_Conversions, Tutorials/A-Practical-Guide/PG_Cookbook01_Basic_Sequencing
 categories:: Streams-Patterns-Events>A-Practical-Guide
 
 section::Event types
@@ -22,7 +22,7 @@ subsection::Timing control
 definitionList::
 ## \delta || Number of strong::beats:: until the next event. Calculated from code::~dur * ~stretch::, if code::\delta:: is not given explicitly.
 ## \lag || Number of strong::seconds:: to delay the event's server message(s).
-## \timingOffset || Number of strong::beats:: to delay the event's server message(s). In conjunction with link::Classes/Quant::, this allows control over the order of event preparation between different patterns in the client, without desynchronizing sonic events that should play together. link::Tutorials/PG_06g_Data_Sharing:: has an example of its use to pass data from a bass pattern to a chord pattern.
+## \timingOffset || Number of strong::beats:: to delay the event's server message(s). In conjunction with link::Classes/Quant::, this allows control over the order of event preparation between different patterns in the client, without desynchronizing sonic events that should play together. link::Tutorials/A-Practical-Guide/PG_06g_Data_Sharing:: has an example of its use to pass data from a bass pattern to a chord pattern.
 
 ## \sustain || Number of beats to wait before releasing a Synth node on the server. The SynthDef must have a code::gate:: argument for the explicit release to be sent; otherwise, the pattern assumes the note will release itself using a timed envelope. code::\sustain:: is calculated from code::~dur * ~legato * ~stretch:: if not given directly.
 ::
@@ -237,7 +237,7 @@ a = { PlayBuf.ar(1, b, doneAction: 2) }.play;
 EventTypesWithCleanup.cleanup(b);
 ::
 
-See the Pproto example in link::Tutorials/PG_06f_Server_Control::, showing how these can be used to clean up server objects at the end of a pattern.
+See the Pproto example in link::Tutorials/A-Practical-Guide/PG_06f_Server_Control::, showing how these can be used to clean up server objects at the end of a pattern.
 
 definitionList::
 ## audioBus || Allocate an audio bus index from the server.
@@ -332,7 +332,7 @@ definitionList::
 ## noteOn || Starts a note, and optionally stops it. If multiple frequencies are given, one noteOn/noteOff pair is sent for each, and code::\strum:: is also supported.
 definitionList::
 ## chan || MIDI channel (0-15).
-## midinote || Note number to trigger. This may be calculated from the standard pitch hierarchy described in link::Tutorials/PG_07_Value_Conversions:: (with the exception that only 12TET can be supported).
+## midinote || Note number to trigger. This may be calculated from the standard pitch hierarchy described in link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions:: (with the exception that only 12TET can be supported).
 ## amp || code::MIDI velocity = amp / 12::.
 ## sustain || How many beats to wait before sending the corresponding note off message. If not given directly, it's calculated as code::~sustain = ~dur * ~legato * ~stretch:: (just like the standard code::\note:: event type).
 ## hasGate || Normally true. If false, the note off message will not be sent.
@@ -432,6 +432,6 @@ p.stop;
 ::
 ::
 
-Previous:	link::Tutorials/PG_07_Value_Conversions::
+Previous:	link::Tutorials/A-Practical-Guide/PG_07_Value_Conversions::
 
-Next:		link::Tutorials/PG_Cookbook01_Basic_Sequencing::
+Next:		link::Tutorials/A-Practical-Guide/PG_Cookbook01_Basic_Sequencing::
