@@ -1,5 +1,4 @@
-
-+ Group {
++ AbstractGroup {
 	asGroup {}
 }
 
@@ -20,6 +19,6 @@
 }
 + Integer {
 	asGroup {
-		^Group.basicNew(nil,this)
+		^Group.basicNew(nil, this)
 	}
 }
