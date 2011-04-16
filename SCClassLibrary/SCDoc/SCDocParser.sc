@@ -13,6 +13,7 @@ SCDocParser {
     var proseDisplay;
     var currentFile;
     var <methodList, <keywordList;
+    classvar copyMethodCache;
 
     init {
         root = tree = List.new;
@@ -409,7 +410,7 @@ SCDocParser {
     }
 
     *getMethodDoc {|classname,methodname|
-        var p, src, node = nil, findparent, parent;
+        var a, p, src, node = nil, findparent, parent;
         var findmet = {|children|
             children !? {
                 children.do {|n|
@@ -427,21 +428,36 @@ SCDocParser {
                 }
             }
         };
-        block {|break|
-            src = nil;
-            SCDoc.helpSourceDirs.do {|dir|
-                var x = dir+/+"Classes"+/+classname++".schelp";
-                if(File.exists(x)) {
-                    src = x;
-                    break.value;
+
+        if(copyMethodCache.isNil) {
+            copyMethodCache = Array.new(4); //create an empty cache with room for 4 class docs
+        };
+        a = copyMethodCache.detect{|a|a.key==classname}; // check if class was already in cache
+        if(a.notNil) {
+            p = a.value;
+        } {
+            block {|break|
+                src = nil;
+                SCDoc.helpSourceDirs.do {|dir|
+                    var x = dir+/+"Classes"+/+classname++".schelp";
+                    if(File.exists(x)) {
+                        src = x;
+                        break.value;
+                    };
                 };
             };
+            if(src.isNil) {
+                warn("SCDoc: copymethod:: could not find class doc"+classname);
+                ^nil;
+            };
+            p = SCDocParser.new;
+            p.parseFile(src);
+            // add to cache, possibly removing the oldest one
+            if(copyMethodCache.size >= copyMethodCache.maxSize) {
+                copyMethodCache.removeAt(0);
+            };
+            copyMethodCache.add(classname -> p);
         };
-        if(src.isNil) {^nil};
-
-        // FIXME: cache this in a dictionary with src as key?
-        p = SCDocParser.new;
-        p.parseFile(src);
 
         findparent = switch(methodname[0],
             $*, \classmethods,
@@ -449,6 +465,9 @@ SCDocParser {
         methodname = methodname.drop(1);
 
         findmet.(p.root);
+        if(node.isNil) {
+            warn("SCDoc: copymethod:: could not find"+methodname+"in"+findparent+"of class doc"+classname);
+        };
         ^node;
     }
 
@@ -463,7 +482,6 @@ SCDocParser {
                         if(node.notNil) {
                             children[i]=node;
                         } {
-                            warn("SCDoc: copymethod::"+n.text+"not found");
                             children[i]=(tag:\method, text:met.drop(1), children:[(tag:\prose, text:"(copymethod::"+n.text+"failed)", display:\block)]);
                         };
                     };
