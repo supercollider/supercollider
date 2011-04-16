@@ -513,14 +513,12 @@ inline void initialize_rate(Rate & rate, double sample_rate, int blocksize)
 }
 
 
-void sc_plugin_interface::initialize(void)
+void sc_plugin_interface::initialize(server_arguments const & args)
 {
     done_nodes.reserve(64);
     pause_nodes.reserve(16);
     freeAll_nodes.reserve(16);
     freeDeep_nodes.reserve(16);
-
-    server_arguments const & args = server_arguments::instance();
 
     /* define functions */
     sc_interface.fDefineUnit = &define_unit;
@@ -610,8 +608,17 @@ void sc_plugin_interface::initialize(void)
     world.mNumInputs = args.input_channels;
     world.mNumOutputs = args.output_channels;
 
-    world.mRealTime = true; /* todo: for now we just support real-time synthesis */
+    world.mRealTime = !args.non_rt;
 }
+
+void sc_plugin_interface::reset_sampling_rate(int sr)
+{
+    world.mSampleRate = sr;
+
+    initialize_rate(world.mFullRate, sr, world.mBufLength);
+    initialize_rate(world.mBufRate, double(sr)/world.mBufLength, 1);
+}
+
 
 void sc_done_action_handler::update_nodegraph(void)
 {

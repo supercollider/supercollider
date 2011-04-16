@@ -113,12 +113,16 @@ void start_audio_backend(server_arguments const & args)
     instance->prepare_backend();
     instance->activate_audio();
 
-    if (args.samplerate && args.samplerate != instance->get_samplerate()) {
+    int real_sampling_rate = instance->get_samplerate();
+
+    if (args.samplerate && args.samplerate != real_sampling_rate) {
         std::cout << "samplerate mismatch between command line argument and jack" << endl;
-        std::cout << "forcing samplerate of " << instance->get_samplerate() << "Hz" << endl;
+        std::cout << "forcing samplerate of " << real_sampling_rate << "Hz" << endl;
+
+        server_arguments::set_samplerate((uint32_t)real_sampling_rate);
+        sc_factory->reset_sampling_rate(real_sampling_rate);
     }
 
-    server_arguments::set_samplerate((uint32_t)instance->get_samplerate());
     connect_jack_ports();
     instance->start_dsp_threads();
 }
@@ -244,19 +248,17 @@ int main(int argc, char * argv[])
     nova_server server(args);
     register_handles();
 
-    sc_factory->initialize();
+    sc_factory->initialize(args);
 
     set_plugin_paths();
     load_synthdefs(server, args);
 
-    if (!args.non_rt)
-    {
+    if (!args.non_rt) {
         start_audio_backend(args);
-
         std::cout << "Supernova ready" << std::endl;
         server.run();
-    }
-    else
+    } else
         server.run_nonrt_synthesis(args);
+
     return 0;
 }
