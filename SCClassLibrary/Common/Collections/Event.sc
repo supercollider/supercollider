@@ -253,7 +253,7 @@ Event : Environment {
 					var	synthLib, synthDesc, desc;
 						// if user specifies a msgFunc, prefer user's choice
 					if(~msgFunc.isNil) {
-						instrument = ~instrument = instrument.asSymbol;
+						instrument = ~instrument = instrument.asDefName;
 						synthLib = ~synthLib ?? { SynthDescLib.global };
 						synthDesc = desc = synthLib.at(instrument);
 						if (desc.notNil) {
@@ -266,6 +266,7 @@ Event : Environment {
 				},
 				synthDefName: { |instrument, variant, synthDesc|
 						// allow `nil to cancel a variant in a pattern
+					instrument = instrument.asDefName;
 					variant = variant.dereference;
 					if(variant.notNil and: { synthDesc.notNil and: { synthDesc.hasVariants } })
 						{ (instrument ++ "." ++ variant).asSymbol }
