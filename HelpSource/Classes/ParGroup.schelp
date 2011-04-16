@@ -38,7 +38,7 @@ For a detailed discussion please refer to link::Classes/Group#*basicNew::.
 
 InstanceMethods::
 
-copydoc:: Group asGroup
+copymethod:: Group -asGroup
 
 Examples::
 
