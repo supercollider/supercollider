@@ -460,7 +460,12 @@ SCDocParser {
                     if(n.tag==\copymethod) {
                         #name, met = n.text.findRegexp("[^ ,]+").flop[1];
                         node = this.class.getMethodDoc(name,met);
-                        if(node.notNil) {children[i]=node};
+                        if(node.notNil) {
+                            children[i]=node;
+                        } {
+                            warn("SCDoc: copymethod::"+n.text+"not found");
+                            children[i]=(tag:\method, text:met.drop(1), children:[(tag:\prose, text:"(copymethod::"+n.text+"failed)", display:\block)]);
+                        };
                     };
                     if(n.children.size>0) { do_children.(n.children) };
                 };
