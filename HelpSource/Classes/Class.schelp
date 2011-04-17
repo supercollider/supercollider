@@ -1,6 +1,6 @@
 class::Class
 summary::A Class describes the structure and implementation of a set objects which are its instances.
-categories::Core>Kernel
+categories::Core>Kernel, Language>OOP
 
 ClassMethods::
 method:: allClasses
