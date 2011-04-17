@@ -55,6 +55,10 @@ div.met_subclasses {
 div.met_subclasses a {
     color: #444;
 }
+div.met_subclasses a.seemore {
+    margin-left: 0.2em;
+    color: #558;
+}
 #search_checks {
     padding: 0.5em;
     padding-top: 0.25em;
@@ -95,6 +99,7 @@ table#search_settings {
     font-size: 9pt;
     color: red;
 }
+
 </style>
 <noscript>
 <p>The search page needs JavaScript.
@@ -338,7 +343,7 @@ function doPrint() {
                 if(p==".") p=" ";
                 div2.appendChild(document.createTextNode(p+" "));
                 var a = document.createElement("a");
-                a.setAttribute("href",v.path+".html#"+m.pfx+mname);
+                a.setAttribute("href",helpRoot+"/"+v.path+".html#"+m.pfx+mname);
                 a.innerHTML = v.title;
                 div2.appendChild(a);
                 if(m.ext)
@@ -366,18 +371,42 @@ function doPrint() {
                         } else {
                             var subs = getSubClasses(v);
                             n = document.createElement("div");
+                            var m = n;
                             n.className = "met_subclasses";
                             n.appendChild(document.createTextNode("Inherited by: "));
                             for(var j=0;j<subs.length;j++) {
                                 var a = document.createElement("a");
-                                a.setAttribute("href", "Classes/"+subs[j]+".html");
+                                a.setAttribute("href", helpRoot+"/Classes/"+subs[j]+".html");
+                                if(j==10 && subs.length > 14) {
+                                    m = document.createElement("span");
+                                    m.className = "hiddenspan";
+                                    m.style.display = "none";
+                                    n.appendChild(m);
+                                    var a2 = document.createElement("a");
+                                    a2.setAttribute("href","#");
+                                    a2.className = "seemore";
+                                    a2.innerHTML = "&hellip; see "+(subs.length-10)+" more";
+                                    n.appendChild(document.createTextNode(" "));
+                                    n.appendChild(a2);
+                                }
                                 if(j>0)
-                                    n.appendChild(document.createTextNode(", "));
+                                    m.appendChild(document.createTextNode(", "));
                                 a.innerHTML = subs[j];
-                                n.appendChild(a);
+                                m.appendChild(a);
                             }
                             subclassCache[v.path] = n;
                         }
+                        (function() {
+                            var a = n.getElementsByClassName("seemore")[0];
+                            if(a) {
+                                var m = n.getElementsByClassName("hiddenspan")[0];
+                                a.onclick = function() {
+                                    m.style.display = "";
+                                    a.parentNode.removeChild(a);
+                                    return false;
+                                }
+                            }
+                        })();
                         div2.appendChild(n);
                     }
                 }
