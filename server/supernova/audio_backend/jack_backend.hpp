@@ -90,7 +90,7 @@ public:
         /* initialize callbacks */
         jack_set_thread_init_callback (client, jack_thread_init_callback, NULL);
         jack_set_process_callback (client, jack_process_callback, this);
-        jack_on_info_shutdown(client, jack_on_info_shutdown_callback, NULL);
+        jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, NULL);
 
         /* register ports */
         input_ports.clear();
@@ -119,7 +119,7 @@ public:
         jack_frames = jack_get_buffer_size(client);
 
         if (jack_frames % blocksize_)
-            throw std::runtime_error("jack buffer size is not a multiple of blocksize");
+            throw std::runtime_error("Jack buffer size is not a multiple of blocksize");
     }
 
     void close_client(void)
