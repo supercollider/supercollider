@@ -1,7 +1,7 @@
 class:: TouchResponder
 summary:: allow functions to be registered to respond to MIDI aftertouch events
 related:: Classes/MIDIResponder, Classes/CCResponder
-categories:: Control, MIDI
+categories:: MIDI
 
 
 ClassMethods::

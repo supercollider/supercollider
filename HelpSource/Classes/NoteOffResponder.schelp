@@ -1,7 +1,7 @@
 class:: NoteOffResponder
 summary:: allow functions to be registered to respond to MIDI noteOff events
 related:: Classes/MIDIResponder, Classes/NoteOnResponder
-categories:: Control, MIDI
+categories:: MIDI
 
 
 ClassMethods::

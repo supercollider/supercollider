@@ -1,7 +1,7 @@
 class:: CCResponder
 summary:: allow functions to be registered to respond to MIDI control change events
 related:: Classes/MIDIResponder, Classes/NoteOnResponder
-categories:: Control, MIDI
+categories:: MIDI
 
 
 ClassMethods::

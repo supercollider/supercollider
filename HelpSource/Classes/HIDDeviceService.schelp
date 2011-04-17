@@ -1,7 +1,7 @@
 class:: HIDDeviceService
 summary:: provides access to Human Interface Devices like joysticks and gamepads
 related:: Classes/LID, Classes/GeneralHID, Classes/HIDDevice
-categories:: Control, HID
+categories:: HID
 
 description::
 It is advised to use link::Classes/GeneralHID:: instead, which wraps the HIDDeviceService functionality, and produces crossplatform compatible code.

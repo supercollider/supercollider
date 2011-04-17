@@ -1,7 +1,7 @@
 title:: MIDI
 summary:: about MIDI
-related:: Reference/UsingMIDI
-categories:: Control, MIDI
+related:: Guides/UsingMIDI
+categories:: MIDI
 
 note::
 See the link::Reference/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
