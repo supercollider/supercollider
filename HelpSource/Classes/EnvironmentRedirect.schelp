@@ -1,0 +1,40 @@
+class:: EnvironmentRedirect
+summary:: base class for environment redirects
+categories:: Libraries>JITLib>Environments
+related:: Classes/Environment
+
+description::
+Environment that redirects access ( strong::put:: ) and assignment ( strong::at:: ).
+
+ClassMethods::
+
+method::new
+create new redirect, if envir is given it is used.
+
+subsection:: replacing Environment class methods
+
+EnvironmentRedirect implements some of the interface of link::Classes/Environment::, which it can replace where needed.
+
+method::push, pop, make, use
+
+InstanceMethods::
+
+method::envir
+return or replace the source environment
+
+subsection::redirecting objects
+
+Overriding these methods, one can redirect where objects go when they are assigned to the space. This is done for example in link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
+
+method::at, put, localPut, removeAt
+
+subsection:: replacing Environment instance methods
+
+EnvironmentRedirect implements some of the interface of link::Classes/Environment::, which it can replace where needed.
+
+method::push, pop, make, use, do, clear, keysValuesDo, keysValuesArrayDo, findKeyForValue, sortedKeysValuesDo, choose, know, doesNotUnderstand
+
+
+section::Networking
+
+EnvironmentRedirect and its subclasses can be used to dispatch assignment over a network. To do this, a dispatch function can be supplied - see link::Classes/Public:: in strong::JITLibExtensions:: quark.

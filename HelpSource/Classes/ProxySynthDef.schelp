@@ -1,0 +1,48 @@
+class:: ProxySynthDef
+summary:: synth def that wraps ugen graph
+categories:: Libraries>JITLib>NodeProxy
+related:: Classes/NodeProxy
+
+description::
+(used internally by link::Classes/NodeProxy::)
+
+for inner workings see link::Tutorials/JITLib/jitlib_fading::
+
+ClassMethods::
+
+method::new
+
+argument::name, func, rates, prependArgs
+like in link::Classes/SynthDef::. todo: add variants.
+
+argument::makeFadeEnv
+if true it constructs a fader envelope and adds controls for gate and fadeTime
+
+argument::channelOffset
+a constant offset that is added to the out number
+
+argument::chanConstraint
+max numChannels for the synthdef. If ugenfunc returns a larger array, it wraps
+
+method::sampleAccurate
+always use link::Classes/OffsetOut::, if set to true (default: false)
+
+Examples::
+
+code::
+a = ProxySynthDef("xtest", { SinOsc.ar(400) * 0.1 });
+
+a.send(s);
+
+x = Synth("xtest");
+x.release;
+
+
+/*
+
+	if the resulting number of channels is larger than a given channelConstraint,
+	it behaves according to the rate: audio rate signals are wrapped around
+	a smaller channel size, control rate signals are not (the exceeding channels are left out)
+
+*/
+::

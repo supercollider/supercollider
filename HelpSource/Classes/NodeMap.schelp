@@ -1,0 +1,90 @@
+class:: NodeMap
+summary:: store control values and bus mappings
+categories:: Libraries>JITLib>NodeProxy
+related:: Classes/Bus
+
+description::
+Object to store control values and bus mappings independant of of a specific node.
+
+InstanceMethods::
+
+method::set
+set arguments of a node
+
+method::map
+set bus mappings of a node
+
+method::unset
+remove settings
+
+method::unmap
+remove mappings
+
+method::setn
+set ranges of controls
+
+method::mapn
+map num busses mappings to node
+
+method::at
+return setting at that key.
+
+method::sendToNode
+apply a setting to a node by sending a bundle
+
+method::send
+apply a setting to a node by sending a bundle
+
+method::addToBundle
+add all my messages to the bundle
+
+Examples::
+
+code::
+
+s.boot;
+
+(
+SynthDef("modsine",
+	{ arg freq=320, amp=0.2;
+		Out.ar(0, SinOsc.ar(freq, 0, amp));
+	}).send(s);
+SynthDef("lfo",
+	{ arg rate=2, busNum=0;
+		Out.kr(busNum, LFPulse.kr(rate, 0, 0.1, 0.2))
+	}).send(s);
+)
+
+//start nodes
+(
+b = Bus.control(s,1);
+x = Synth("modsine");
+y = Synth.before(x, "lfo", [\busNum, b]);
+)
+
+//create some node maps
+(
+h = NodeMap.new;
+h.set(\freq, 800);
+h.map(\amp, b);
+
+k = NodeMap.new;
+k.set(\freq, 400);
+k.unmap(\amp);
+)
+
+//apply the maps
+
+h.sendToNode(x); //the first time a new bundle is made
+k.sendToNode(x);
+
+h.sendToNode(x); //the second time the cache is used
+k.sendToNode(x);
+
+h.set(\freq, 600);
+
+h.sendToNode(x); //when a value was changed, a new bundle is made
+
+//free all
+x.free; b.free; y.free;
+::

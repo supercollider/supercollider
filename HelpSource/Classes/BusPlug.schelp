@@ -1,0 +1,103 @@
+class:: BusPlug
+summary:: a listener on a bus
+categories:: Libraries>JITLib>NodeProxy
+related:: Classes/Bus
+
+description::
+BusPlug is mainly in use as a basic superclass of NodeProxy, but it can be applied for other things as well. Most methods are documented in the link::Classes/NodeProxy:: helpfile.
+
+ClassMethods::
+
+method::new
+Create a new (neutral) instance on the given server
+
+method::audio
+Create a new audio rate instance on the given server
+
+method::control
+Create a new audio rate instance on the given server
+
+InstanceMethods::
+
+method::clear
+Free the bus, end the monitor
+
+method::ar, kr
+Return a link to my output, which is limited by strong::numChannels::. If uninitialized, creates a matching bus. Normally, strong::ar defaults to stereo, kr to mono::. This can be set in the classvars: link::#*defaultNumAudio::, link::#*defaultNumControl::
+
+method::play
+Plays from a bus index ( strong::out:: ) with a number of channels to another index with a number of channels, within a strong::group:: (ie a target group or server).
+
+argument::multi
+keep old links and add new one
+
+argument::vol
+volume at which to monitor
+
+argument::fadeTime
+fade in fade out time
+
+method::playN
+
+argument::outs
+array of destination channels
+
+argument::amps
+array of amplitudes for each channel
+
+argument::ins
+array of source channels
+
+method::monitor
+returns the current monitor (see link::Classes/Monitor::)
+
+Examples::
+
+code::
+// using as a control bus listener
+
+s.boot;
+z = Bus.control(s, 16);
+a = BusPlug.for(z);
+
+m = { Mix(SinOsc.ar(a.kr(16), 0, 0.1)) }.play;
+
+z.setn(Array.rand(16, 300, 320).put(16.rand, rrand(500, 1000)));
+z.setn(Array.rand(16, 300, 320).put(16.rand, rrand(500, 1000)));
+z.setn(Array.rand(16, 300, 320).put(16.rand, rrand(500, 1000)));
+
+m.free;
+
+
+m = { SinOsc.ar(a.kr(2, MouseX.kr(0, 19)), 0, 0.1) }.play; // modulate channel offset
+
+z.setn(Array.rand(16, 300, 1320).put(16.rand, rrand(500, 1000)));
+
+
+m.free; z.free;
+
+// using as a audio monitor
+
+p = BusPlug.audio(s,2);
+d = { Out.ar(p.index, PinkNoise.ar([0.1, 0.1])) }.play;
+
+
+p.play; // monitor whatever plays in p (the execution order does not matter)
+
+
+
+d.free;
+d = { Out.ar(p.index, PinkNoise.ar([0.1, 0.1])) }.play;
+
+p.stop;
+p.play;
+
+// also p can play to another bus:
+
+p.stop;
+p.play(12);
+
+// listen to that bus for a test:
+x = { InFeedback.ar(12,2) }.play;
+x.free;
+::

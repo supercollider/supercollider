@@ -1,0 +1,118 @@
+class:: PatternProxy
+summary:: stream reference
+categories:: Libraries>JITLib>Patterns
+related:: Classes/Pdefn
+
+description::
+Keeps a reference to a stream that can be replaced while playing. Multiple streams are thus handled without creating dependancies.
+
+ClassMethods::
+
+method::new
+create a new instance with a pattern (the source). the pattern should be a emphasis::value pattern:: (see link::Classes/Pdefn::).
+
+for event pattern proxy, see: link::Classes/EventPatternProxy::. instead of a pattern, a strong::function:: can be passed in, creating a routine.
+
+method::default
+a default source, if none is given. the default is 1.0 (it is not 0.0 in order to make it safe for durations)
+
+method::defaultQuant
+set the default quantization value for the class. (default: nil)
+
+InstanceMethods::
+
+method::source
+set the source. If a quantization is given, schedule this change to the next beat
+
+method::clear
+set the source to nil
+
+method::quant
+set or get the quantization value
+
+method::condition
+provide a condition under which the pattern is switched when a new one is inserted. the stream value and a count is passed into the function. the methods strong::count_(n):: simply counts up to n and switches the pattern then
+
+method::embedInStream
+just like any pattern, embeds itself in stream
+
+subsection::extra methods
+
+PatternProxy implements some methods for the benefits of its subclasses link::Classes/Pdefn:: / link::Classes/Pdef:: / link::Classes/Tdef:: which are not useful for link::Classes/PatternProxy:: and link::Classes/TaskProxy::.
+
+method::envir
+provide a default environment for the proxy. If given, it is used as an environment for the routine function. When set for the first time, the routine pattern is rebuilt.
+
+method::set
+set arguments in the environment. If there is none, it is created and the pattern is rebuilt.
+
+method::endless
+returns a Proutine that plays the proxy endlessly, replacing strong::nil:: with a strong::default:: value (1). This allows to create streams that idle on until a new pattern is inserted.
+
+Examples::
+
+code::
+a = PatternProxy(Pseq([1, 2, 3], inf));
+
+x = Pseq([0, 0, a], inf).asStream;
+
+t = Task({ loop({ x.next.postln; 0.3.wait }) }).play;
+
+
+a.source = Pseq([55, 66, 77], inf);
+a.source = Pseq([55, 66, 77], 1);
+
+t.stop;
+::
+
+code::
+// PatternProxy, like Pdefn can be accessed in multiple streams
+
+(
+SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
+	var env, u=1;
+	env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction:2);
+	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };
+	Out.ar(out, Pan2.ar(SinOsc.ar(u + 1 * freq, 0, amp * env), pan));
+
+}).add;
+s.boot;
+)
+
+(
+x = PatternProxy.new;
+x.source = Pseq([0, 3, 2], inf);
+
+Pset(\instrument, \Pdefhelp,
+	Ppar([
+	Pbind(\degree, x),
+	Pbind(\degree, x, \dur, 1/3)
+])
+).play;
+)
+
+x.source = Prand([0, 3, [1s, 4]], inf);
+
+x.source = Pn(Pshuf([0, 3, 2, 7, 6], 2), inf);
+
+
+
+// if quant is set, the update is done at the next beat or whatever is specified:
+
+x.quant = 4;
+x.source = Pn(Pseries(0, 1, 8), inf);
+
+x.quant = nil; // reactivate immediacy
+
+(
+x.source = Prout {
+	loop {
+	4.do { |i|
+		#[2, 3, 4].choose.yield;
+		#[5, 0, 11].choose.yield;
+		#[6, 3, 4].choose.do { |j| (i % j).yield };
+	}
+	}
+}
+)
+::

@@ -1,0 +1,74 @@
+title:: audio_rate_mapping
+summary:: audio mapping in ProxySpace
+categories:: Libraries>JITLib>Tutorials
+
+code::
+// todo. expand(numChannels) message
+
+p = ProxySpace.push(s.boot);
+p.fadeTime = 3;
+// some filters
+~f1 = { |a_in=#[0,0], freq=500, dt=0.01| Ringz.ar(a_in, freq, dt) };
+~f2 = { |a_in=#[0,0], dt=0.1| CombL.ar(a_in, 0.5, dt, 15 * dt) };
+~f3 = { |a_in=#[0,0], freq=30| a_in * LFSaw.ar(freq.neg).max(0) };
+
+// some sources
+~x1 = { LFPulse.kr(SinOsc.kr(0.2).exprange(2, 200)) * PinkNoise.ar(0.5.dup) };
+~x2 = { Dust.ar(SinOsc.kr(0.2, [0, pi]).exprange(2, 2000)) };
+
+// the output
+~out.play;
+~out = { |a_in=#[0,0]| a_in };
+
+// some mappings by hand:
+~out.mapn(\a_in, ~x1);
+~out.xmapn(\a_in, ~x2);
+
+~out.xmapn(\a_in, ~f1); ~f1.xmapn(\a_in, ~x1);
+~out.xmapn(\a_in, ~f2); ~f2.xmapn(\a_in, ~x1);
+~out.xmapn(\a_in, ~f2); ~f2.xmapn(\a_in, ~x1);
+~f2.xset(\dt, 0.01);
+
+~mx1 = { MouseX.kr(0.0001, 1, 1) };
+~f2.xmap(\dt, ~mx1);
+
+~out.xmapn(\a_in, ~f3); ~f3.xmapn(\a_in, ~f2); ~f2.xmapn(\a_in, ~x1);
+// this should maybe be:
+// ~f2 --(\a_in)--> ~f3 --(\a_in)--> ~out
+
+~mx1 = { LFNoise1.kr(0.1).exprange(0.0001, 1) };
+~mF = { ~mx1.kr.linexp(0, 1, 1, 10000) };
+~f3.xmap(\freq, ~mF);
+
+~f1.mapn(\a_in, ~x2);
+~f2.xmapn(\a_in, ~f1);
+
+~f1.xmapn(\freq, ~mF, \dt, ~mx1);
+
+~x2 = { Impulse.ar(SinOsc.kr(0.2, [0, pi]).exprange(2, 200)) };
+~x1 = { Saw.ar(20, 0.5.dup) * ~x2.ar };
+~out = ~x1;
+
+
+// possible schema:
+/*
+
+px.map knows always already the number of channels of a proxy, so can decide whether
+to use map or mapn. (map always would mean flat mapping).
+
+px.mapn could do tricky things like:
+px.mapn(\a_in2, [mono1, mono2])
+px.mapn(\a_in2, stereo) would still work
+px.mapn(\a_in2, [stereo, mono]) could use the first of the stereo chans and the mono
+how to get at the second arg of the stereo in? or it could mix/wrap.
+--> px.mapn([\a_inx, \a_iny], stereo)
+
+px.mapn(\a_in, stereo) would take the first of the stereo channels
+px.map(\a_in, stereo) would use the first of the stereo channels
+px.mapn(\a_in, [mono, mono]) would use the first channel
+
+mappings could be saved as is and if the proxy rebuilds with a different channel size, it would unfold?
+
+
+*/
+::
