@@ -1,4 +1,3 @@
-
 GetFileDialog {
 
 	*new { arg function;

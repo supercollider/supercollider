@@ -1,4 +1,3 @@
-
 Pfpar : ListPattern {
 	initStreams { arg priorityQ;
 		list.do({ arg pattern, i;

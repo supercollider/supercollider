@@ -128,9 +128,9 @@ Scale {
 	== { |scale|
 		^degrees == scale.degrees and: { tuning == scale.tuning }
 	}
-	
+
 	hash {
-		^degrees.hash bitXor: tuning.hash	
+		^degrees.hash bitXor: tuning.hash
 	}
 
 	storeOn { |stream|
@@ -151,7 +151,7 @@ Scale {
 	printOn { |stream|
 		this.storeOn(stream)
 	}
-	
+
 
 }
 
@@ -217,7 +217,7 @@ Tuning {
 
 	== { |argTuning|
 		^tuning == argTuning.tuning and: { octaveRatio == argTuning.octaveRatio }	}
-		
+
 	hash {
 		^tuning.hash bitXor: octaveRatio.hash
 	}
@@ -242,7 +242,7 @@ Tuning {
 	printOn { |stream|
 		this.storeOn(stream)
 	}
-	
+
 	storeOn { |stream|
 		var storedKey = this.storedKey;
 		stream << this.class.name;
@@ -254,7 +254,7 @@ Tuning {
 		var stored = TuningInfo.tunings.detect(_ == this);
 		^stored !? { TuningInfo.tunings.findKeyForValue(stored) }
 	}
-	
+
 	storeArgs {
 		^[tuning, octaveRatio, name]
 	}
@@ -638,4 +638,3 @@ TuningInfo {
 
 	}
 }
-

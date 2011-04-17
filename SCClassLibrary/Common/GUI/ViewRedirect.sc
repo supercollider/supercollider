@@ -63,7 +63,7 @@ Stethoscope : ViewRedirect {
 		^this.implClass.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
 	}
 	*key { ^\stethoscope }
-	
+
 }
 ScopeView : ViewRedirect { *key { ^\scopeView }}
 FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to SCFreqScope
@@ -109,13 +109,13 @@ Font : ViewRedirect  {
 	*key { ^\font }
 	*findFirstAvailable { |fontNames, action|
 		Routine {
-			fontNames.do { |name| 
-				if(this.availableFonts.any(_.contains(name))) { 
+			fontNames.do { |name|
+				if(this.availableFonts.any(_.contains(name))) {
 					action.value(name);
 					nil.alwaysYield;
 				}
 			}
-		}.play(AppClock)		
+		}.play(AppClock)
 }
 }
 

@@ -1,4 +1,3 @@
-
 Condition {
 	var <>test, waitingThreads;
 

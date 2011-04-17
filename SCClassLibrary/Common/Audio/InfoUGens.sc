@@ -1,4 +1,3 @@
-
 InfoUGenBase : UGen {
 	*ir {
 		^this.multiNew('scalar')
@@ -43,4 +42,3 @@ BufDur : BufInfoUGenBase {}
 BufChannels : BufInfoUGenBase {}
 
 ////////////////////////////////////////////
-

@@ -10,5 +10,3 @@
 		^ClassBrowser.new(this)
 	}
 }
-
-

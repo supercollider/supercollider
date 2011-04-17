@@ -1,4 +1,3 @@
-
 + SCWindow {
 	flow { arg func,bounds;
 		var f;

@@ -1,4 +1,3 @@
-
 // blackrain at realizedsound dot net - 05/2006
 //	fix key modidiers bug by Stephan Wittwer 08/2006 - thanks!
 //	Knob updates only on value changes - 10/2006

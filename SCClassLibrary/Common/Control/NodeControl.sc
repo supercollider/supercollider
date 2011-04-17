@@ -1,4 +1,3 @@
-
 NodeControl {
 
 	var <node,index,<>name;
@@ -20,4 +19,3 @@ NodeControl {
 	server { ^node.server }
 	group { ^node.group }
 }
-

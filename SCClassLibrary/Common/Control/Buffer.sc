@@ -1,4 +1,3 @@
-
 Buffer {
 	classvar	serverCaches;
 
@@ -232,7 +231,7 @@ Buffer {
 			buffer.alloc(collection.size, numChannels);
 			server.sync;
 			buffer.sendCollection(collection, 0, wait, action);
-		
+
 		}
 		^buffer;
 	}
@@ -289,9 +288,9 @@ Buffer {
 				file.close;
 				if(File.delete(path).not) { ("Could not delete data file:" + path).warn };
 			};
-			
+
 			action.value(array, this);
-			
+
 		}.forkIfNeeded;
 	}
 

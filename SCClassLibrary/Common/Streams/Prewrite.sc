@@ -62,5 +62,3 @@ Prewrite : FilterPattern {
 		^inval
 	}
 }
-
-

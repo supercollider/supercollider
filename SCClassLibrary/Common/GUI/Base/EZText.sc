@@ -59,13 +59,13 @@ EZText : EZGui {
 
 		textField.action = {
 			var newstr = textField.string;
-			var newval = try { newstr.interpret }; 
-			if (newval.notNil or: { newstr == "" }) { 
+			var newval = try { newstr.interpret };
+			if (newval.notNil or: { newstr == "" }) {
 				this.valueAction_(newval);
-			} { 
+			} {
 			//	"EZText compile failed - reset to prev value.".postln;
 				textField.string = this.value.asCompileString;
-			}			
+			}
 		};
 
 		if (initAction) {

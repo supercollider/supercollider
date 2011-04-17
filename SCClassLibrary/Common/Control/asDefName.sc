@@ -1,5 +1,3 @@
-
-
 + SynthDef {
 
 	asSynthDef { ^this }
@@ -93,4 +91,3 @@
 	}
 
 }
-

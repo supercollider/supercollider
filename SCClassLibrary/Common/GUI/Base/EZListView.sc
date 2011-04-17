@@ -51,5 +51,3 @@ EZListView : EZLists{
 				view.background=background;};
 	}
 }
-
-

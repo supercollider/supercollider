@@ -87,7 +87,7 @@ Bag : Collection {
 	setDictionary { arg n;
 		contents = Dictionary.new(n)
 	}
-	
+
 	asBag { ^this }
 }
 
@@ -98,4 +98,3 @@ IdentityBag : Bag
 		contents = IdentityDictionary.new(n)
 	}
 }
-

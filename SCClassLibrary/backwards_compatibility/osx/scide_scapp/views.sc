@@ -1,4 +1,3 @@
-
 + SCView {
 
 	backColor_ { arg color;
@@ -6,4 +5,3 @@
 	}
 
 }
-

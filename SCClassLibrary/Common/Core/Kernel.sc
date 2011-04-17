@@ -77,7 +77,7 @@ Class {
 			class = class.superclass;
 		}
 	}
-	
+
 	dumpByteCodes { arg methodName;
 		var meth;
 		meth = this.findMethod(methodName);
@@ -562,16 +562,16 @@ Interpreter {
 
 	executeFile { arg pathName ... args;
 		var	result, saveExecutingPath = thisProcess.nowExecutingPath;
-		if (File.exists(pathName).not) { 
+		if (File.exists(pathName).not) {
 			"file \"%\" does not exist.\n".postf(pathName);
 			^nil
 		};
 		thisProcess.nowExecutingPath = pathName;
-		protect { 
-			result = this.compileFile(pathName).valueArray(args) 
+		protect {
+			result = this.compileFile(pathName).valueArray(args)
 		} { |exception|
 				exception !? { exception.path = pathName };
-				thisProcess.nowExecutingPath = saveExecutingPath 
+				thisProcess.nowExecutingPath = saveExecutingPath
 		};
 		^result
 	}
@@ -603,4 +603,3 @@ Interpreter {
 	}
 	shallowCopy { ^this }
 }
-

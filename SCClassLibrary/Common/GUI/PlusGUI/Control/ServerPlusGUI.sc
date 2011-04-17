@@ -1,4 +1,3 @@
-
 + Server {
 
 	// splitting makeWindow and makeGui, makes sure that makeWindow can be overridden

@@ -1,4 +1,3 @@
-
 /*
 	Sound File Format strings:
 		header formats:
@@ -54,7 +53,7 @@ SoundFile {
 		file = SoundFile(pathName);
 		if(file.openWrite(pathName)){ ^file}{^nil}
 	}
-	
+
 	*use { arg path, function;
 		var file = this.new, res;
 		protect {
@@ -128,8 +127,8 @@ SoundFile {
 
 	duration { ^numFrames/sampleRate }
 
-	
-	
+
+
 		// normalizer utility
 
 	*normalize { |path, outPath, newHeaderFormat, newSampleFormat,
@@ -192,52 +191,52 @@ SoundFile {
 			MethodError("Unable to write soundfile at: " ++ outPath, this).throw;
 		});
 	}
-	
+
 	*groupNormalize { |paths, outDir, newHeaderFormat, newSampleFormat,
 		maxAmp = 1.0, chunkSize = 4194304,
 		threaded = true|
-		
+
 		var action;
-		
-		action = {	
+
+		action = {
 			var groupPeak = 0.0, files, outFiles;
-			
+
 			"Calculating maximum levels...".postln;
 			paths.do({|path|
 				var	file, peak;
-		
+
 				(file = SoundFile.openRead(path.standardizePath)).notNil.if({
 					"Checking levels for file %\n".postf(path.standardizePath);
 					files = files.add(file);
-					
+
 						peak = file.channelPeaks(0, nil, chunkSize, threaded);
 						Post << "Peak values per channel are: " << peak << "\n";
 						peak.includes(0.0).if({
 							MethodError("At least one of the soundfile channels is zero. Aborting.",
 								this).throw;
 						});
-					
+
 					groupPeak = max(groupPeak, peak.maxItem);
-					
+
 				}, {
 					MethodError("Unable to read soundfile at: " ++ path, this).throw;
 				});
 			});
-			
+
 			"Overall peak level: %\n".postf(groupPeak);
 			outDir = outDir.standardizePath.withTrailingSlash;
-			
+
 			files.do({|file|
-				
+
 				var outPath, outFile;
-				
+
 				outPath = outDir ++ file.path.basename;
-				
+
 				outFile = SoundFile.new.headerFormat_(newHeaderFormat ?? { file.headerFormat })
 					.sampleFormat_(newSampleFormat ?? { file.sampleFormat })
 					.numChannels_(file.numChannels)
 					.sampleRate_(file.sampleRate);
-				
+
 				outFile.openWrite(outPath).if({
 					protect {
 						"Writing normalized file %\n".postf(outPath);
@@ -248,17 +247,17 @@ SoundFile {
 				}, {
 					MethodError("Unable to write soundfile at: " ++ outPath, this).throw;
 				});
-				
+
 			});
-			
+
 			"////// Group Normalize complete //////".postln;
-				
+
 		};
-		
+
 		if(threaded, {
 			Routine(action).play(AppClock)
 		}, action);
-			
+
 	}
 
 	channelPeaks { |startFrame = 0, numFrames, chunkSize = 1048576, threaded = false|
@@ -392,7 +391,7 @@ SoundFile {
 		}
 	}
 
-	
+
 	asBuffer { |server|
 		var buffer, rawData;
 		server = server ? Server.default;

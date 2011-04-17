@@ -1,4 +1,3 @@
-
 // allows to reproduce enclosed randomized pattern
 // by setting the random seed of the resulting routine
 

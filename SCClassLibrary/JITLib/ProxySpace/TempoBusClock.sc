@@ -1,5 +1,3 @@
-
-
 TempoBusClock : TempoClock {
 	var <>control;
 	classvar <>default;
@@ -19,4 +17,3 @@ TempoBusClock : TempoClock {
 	}
 
 }
-

@@ -302,4 +302,3 @@ Array[slot] : ArrayedCollection {
 		^this.first
 	}
 }
-

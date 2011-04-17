@@ -1,4 +1,3 @@
-
 // clocks for timing threads.
 
 Clock {
@@ -340,4 +339,3 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
    *beatInBar { ^TempoClock.default.beatInBar  }
 
 }
-

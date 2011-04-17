@@ -1,4 +1,3 @@
-
 Order : SequenceableCollection {
 
 	var <>array, <>indices;
@@ -436,4 +435,3 @@ SparseArray : Order {
 		}
 	}
 }
-

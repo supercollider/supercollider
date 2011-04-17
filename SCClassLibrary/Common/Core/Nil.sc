@@ -119,4 +119,3 @@ Nil {
 
 	superclassesDo {}
 }
-

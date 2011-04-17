@@ -1,4 +1,3 @@
-
 SoundIn  {
 
 	*ar { arg bus = 0, mul=1.0, add=0.0;

@@ -1,4 +1,3 @@
-
 Pstep : Pattern {
 	var <>list, <>durs,  <>repeats;
 
@@ -55,7 +54,7 @@ Pseg : Pstep {
 				val = valStream.next(inval);
 				dur = durStream.next(inval);
 				curve = curveStream.next(inval);
-				
+
 				val.notNil and: { dur.notNil and: { curve.notNil } }
 			} {
 				startTime = thisThread.endBeat;

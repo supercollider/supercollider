@@ -1,5 +1,3 @@
-
-
 Module {
 	var server, name, id, values, presets, presetIndex, <isOn = false;
 
@@ -43,5 +41,3 @@ Module {
 		server.sendMsg("/n_set", id, \gate, 0);
 	}
 }
-
-

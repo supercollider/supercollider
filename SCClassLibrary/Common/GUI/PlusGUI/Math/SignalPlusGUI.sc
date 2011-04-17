@@ -1,5 +1,3 @@
-
-
 + ArrayedCollection {
 
 	plot { arg name, bounds, discrete=false, numChannels, minval, maxval, parent, labels=true;
@@ -9,7 +7,7 @@
 
 		gui = GUI.current;
 
-		bounds = bounds ?? { 
+		bounds = bounds ?? {
 				if(parent.notNil) {
 					if(parent.respondsTo(\view)) {
 						parent.view.bounds
@@ -28,7 +26,7 @@
 		numChannels = numChannels ? this.first.size.max(1);
 		flattened = if(numChannels > 1) { this.flat } { this };
 		unlaced = flattened.unlace(numChannels);
-		
+
 		minval = if(minval.isArray) {
 			numChannels.collect {|index| minval.wrapAt(index) ?? { unlaced[index].minItem } }
 		} {
@@ -61,8 +59,8 @@
 			}
 		};
 		window = parent ?? { gui.window.new( name, bounds ) };
-	
-		layout = gui.vLayoutView.new(window, 
+
+		layout = gui.vLayoutView.new(window,
 			if(parent.notNil) {
 				Rect(bounds.left + 4, bounds.top + 4, bounds.width - 10, bounds.height - 10)
 			} {
@@ -74,9 +72,9 @@
 			txt = gui.staticText.new(layout, Rect( 8, 0, width, 18))
 					.string_("index: 0, value: " ++ flattened[0].asString);
 		};
-	
+
 		numChannels.do { |i|
-			plotter = gui.multiSliderView.new(layout, 
+			plotter = gui.multiSliderView.new(layout,
 				Rect(0, 0,
 					// compensate for the text
 					layout.bounds.width, layout.bounds.height - if(labels, {26}, {0})
@@ -199,13 +197,13 @@
 
 + AbstractFunction{
 
-	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false, 
+	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,
 				numChannels, minval, maxval, parent, labels = true;
 		var array = Array.interpolation(n, from, to);
 		var res = array.collect { |x| this.value(x) };
 		res.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
 	}
-	
+
 	plotGraph2 { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,Ê
 		numChannels, minval, maxval, parent, labels = true;
 		var array = Array.interpolation(n, from, to);

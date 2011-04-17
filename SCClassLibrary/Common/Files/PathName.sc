@@ -1,4 +1,3 @@
-
 PathName {
 
 	var <fullPath, colonIndices;

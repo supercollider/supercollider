@@ -140,4 +140,3 @@
 + PhidKey { *categories{ ^ #["Streams-Patterns-Events>Patterns>User Input"]  }}
 + PhidSlot { *categories{ ^ #["Streams-Patterns-Events>Patterns>User Input"]  }}
 + Phid { *categories{ ^ #["Streams-Patterns-Events>Patterns>User Input"]  }}
-

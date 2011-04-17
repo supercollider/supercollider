@@ -1,4 +1,3 @@
-
 Message {
 	var <>receiver, <>selector, <>args;
 

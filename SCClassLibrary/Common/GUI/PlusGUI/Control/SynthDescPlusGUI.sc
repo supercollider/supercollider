@@ -122,4 +122,3 @@
 		^w.front; // make window visible and front window.
 	}
 }
-

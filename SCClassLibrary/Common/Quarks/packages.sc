@@ -1,4 +1,3 @@
-
 + Main {
 	// a package is either a quark or a folder in SCClassLibrary or extensions folders
 
@@ -143,7 +142,3 @@
 		})
 	}
 }
-
-
-
-

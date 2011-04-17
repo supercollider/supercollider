@@ -1,4 +1,3 @@
-
 // These Streams are instantiated by math operations on other Streams
 
 UnaryOpStream : Stream {
@@ -102,4 +101,3 @@ NAryOpStream : Stream {
 
 	storeOn { arg stream; stream <<< a << "." << operator << "(" <<<* arglist << ")" }
 }
-

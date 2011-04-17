@@ -1,4 +1,3 @@
-
 Panner : MultiOutUGen {
 	checkNInputs { arg n;
 		if (rate == 'audio') {
@@ -204,4 +203,3 @@ LinXFade2 : XFade {
 	}
  	checkInputs { ^this.checkNInputs(2) }
 }
-

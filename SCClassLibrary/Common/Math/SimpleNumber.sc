@@ -129,10 +129,10 @@ SimpleNumber : Number {
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
 	asRect { ^Rect(this, this, this, this) }
-	
+
 	degrad { ^this*pi/180 }
 	raddeg { ^this*180/pi }
-	
+
 	fontID { ^this }
 
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; ^error("Math operation failed.\n") }
@@ -222,7 +222,7 @@ SimpleNumber : Number {
 		);
 		^pow(outMax/outMin, log(this/inMin) / log(inMax/inMin)) * outMin;
 	}
-	
+
 	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled;
 		switch(clip,
@@ -243,10 +243,10 @@ SimpleNumber : Number {
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
 		scaled = (this - inMin) / (inMax - inMin);
-		
+
 		^b - (a * pow(grow, scaled));
 	}
-	
+
 	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled;
 		switch(clip,
@@ -267,7 +267,7 @@ SimpleNumber : Number {
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
 		scaled = (this - inMin) / (inMax - inMin);
-		
+
 		^log((b - scaled) / a) / curve
 	}
 
@@ -441,23 +441,23 @@ SimpleNumber : Number {
 	// a clock format inspired by ISO 8601 time interval display (truncated representation)
 	// receiver is a time in seconds, returns string "ddd:hh:mm:ss:ttt" where t is milliseconds
 	// see String:asSecs for complement
-	
+
 	asTimeString { arg precision = 0.001, maxDays = 365, dropDaysIfPossible = true;
 		var decimal, days, hours, minutes, seconds, mseconds;
 		decimal = this.asInteger;
 		days = decimal.div(86400).min(maxDays);
-		days = if(dropDaysIfPossible and: { days == 0 }) { 
-			days = "" 
-		} { 
-			days.asString.padLeft(3, "0").add($:); 
+		days = if(dropDaysIfPossible and: { days == 0 }) {
+			days = ""
+		} {
+			days.asString.padLeft(3, "0").add($:);
 		};
 		hours = (decimal.div(3600) % 24).asString.padLeft(2, "0").add($:);
 		minutes = (decimal.div(60) % 60).asString.padLeft(2, "0").add($:);
 		seconds = (decimal % 60).asString.padLeft(2, "0").add($:);
 		mseconds = (this.frac / precision).round(precision).asInteger.asString.padLeft(3, "0");
-		^days ++ hours ++ minutes ++ seconds ++ mseconds 
+		^days ++ hours ++ minutes ++ seconds ++ mseconds
 	}
-	
+
 	asFraction {|denominator=100, fasterBetter=true|
 		_AsFraction
 		// asFraction will return a fraction that is the best approximation up to the given
@@ -473,11 +473,11 @@ SimpleNumber : Number {
 	asBufWithValues {
 		^this
 	}
-	
+
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
 		clock.sched(this, {
 					if (lag != 0) {
-						SystemClock.sched(lag, { 
+						SystemClock.sched(lag, {
 							server.sendBundle(latency ? server.latency, *bundleArray)
 						})
 					} {

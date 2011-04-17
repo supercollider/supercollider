@@ -1,4 +1,3 @@
-
 ProxySpace : LazyEnvir {
 
 	classvar <>all;
@@ -32,7 +31,7 @@ ProxySpace : LazyEnvir {
 			this.initProxy(proxy);
 			^proxy
 	}
-	
+
 	initProxy { arg proxy;
 		proxy.server = server;
 		proxy.clock = clock;
@@ -67,10 +66,10 @@ ProxySpace : LazyEnvir {
 		quant = val;
 		this.do { arg item; item.quant = val };
 	}
-	
+
 	awake_ { arg flag;
 		this.do(_.awake_(flag));
-		awake = flag;	
+		awake = flag;
 	}
 
 	makeTempoClock { arg tempo=1.0, beats, seconds;
@@ -141,23 +140,23 @@ ProxySpace : LazyEnvir {
 			});
 		});
 	}
-	
+
 	// maintaining state
-	
+
 	registerServer {
 		ServerQuit.add(this, server);
-		ServerBoot.add(this, server);	
+		ServerBoot.add(this, server);
 	}
-	
+
 	unregisterServer {
 		ServerQuit.remove(this, server);
 		ServerBoot.remove(this, server);
 	}
-	
+
 	doOnServerBoot { arg server;
 		this.do(_.freeBus);
 	}
-	
+
 	doOnServerQuit { arg server;
 		this.do(_.freeBus);
 	}
@@ -272,7 +271,7 @@ ProxySpace : LazyEnvir {
 
 	includes { |proxy| ^envir.includes(proxy) }
 
-	*findSpace { |proxy, getCode = false| 
+	*findSpace { |proxy, getCode = false|
 		var space = [ currentEnvironment, thisProcess.interpreter.p ]
 			.detect { |cand|  cand.isKindOf(this) and: { cand.includes(proxy) } };
 		if (space.notNil) { ^space };

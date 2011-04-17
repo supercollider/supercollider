@@ -98,4 +98,3 @@ Char : Magnitude {
 
 	archiveAsCompileString { ^true }
 }
-

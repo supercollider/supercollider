@@ -92,5 +92,3 @@ RunningSum : UGen
 		^(RunningSum.ar(in.squared,numsamp)*(numsamp.reciprocal)).sqrt;
 	}
 }
-
-

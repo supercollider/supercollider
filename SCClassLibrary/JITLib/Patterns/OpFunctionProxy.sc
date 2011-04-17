@@ -119,5 +119,3 @@ NAryValueProxy : NAryOpFunctionProxy {
 		stream << "o(" <<< a << "," <<<* arglist << ")" // is it always so?
 	}
 }
-
-

@@ -201,20 +201,20 @@ Dpoll : DUGen {
 
 Dunique : UGen {
 	var <>source, stutter, numUses;
-	
+
 	*new { arg source;
 		^super.new.source_(source).init
 	}
-	
+
 	init {
 		numUses = 0;
 		stutter = Dstutter(1, source);
 	}
-	
+
 	asUGenInput {
 		numUses = numUses + 1;
 		stutter.inputs[0] = numUses;
 		^stutter
 	}
-	
+
 }

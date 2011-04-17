@@ -1,4 +1,3 @@
-
 // These Unit Generators are instantiated by math operations on UGens
 
 BasicOpUGen : UGen {
@@ -285,5 +284,3 @@ MulAdd : UGen {
 		^false
 	}
 }
-
-

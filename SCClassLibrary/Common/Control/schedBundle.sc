@@ -1,4 +1,3 @@
-
 // these support different ways of specifying the timing of a scheduled event
 // see the atTime help file
 
@@ -69,4 +68,3 @@
 		});
 	}
 }
-

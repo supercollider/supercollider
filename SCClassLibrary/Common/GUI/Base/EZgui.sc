@@ -129,7 +129,7 @@ EZLists : EZGui{  // an abstract class
 
 		// init the views (handled by subclasses)
 		this.initViews(  parentView, bounds, label, labelWidth,labelHeight,layout );
-		
+
 		this.items=argItems ? [];
 
 		globalAction=argGlobalAction;

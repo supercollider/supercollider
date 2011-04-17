@@ -113,7 +113,7 @@ SCDoc {
     *classHasArKrIr {|c|
         ^#[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
     }
-    
+
     *makeArgString {|m|
         var res = "";
         var value;
@@ -244,7 +244,7 @@ SCDoc {
         f.close;
         "SCDoc: wrote docMap cache".postln;
     }
-    
+
     *docMap {
         if(doc_map.isNil) {
             this.getAllMetaData;
@@ -254,7 +254,7 @@ SCDoc {
 
     *makeProgressWindow {
         if(GUI.scheme.name != \QtGUI, {^nil});
-        
+
         if(progressWindow.isNil) {
             progressWindow = Window("Documentation update",500@200).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
             progressWindow.onClose = {progressWindow = nil};
@@ -299,7 +299,7 @@ SCDoc {
             this.cleanState(force);
             this.getAllMetaData;
             this.tickProgress;
-            
+
             fileList = Dictionary.new;
             count = 0;
             this.postProgress("Updating all files",true);
@@ -445,7 +445,7 @@ SCDoc {
         }
         ^url;
     }
-    
+
     *makeClassTemplate {|name,path|
         var class = name.asSymbol.asClass;
         var n, m, cats, methodstemplate, f;
@@ -480,7 +480,7 @@ SCDoc {
 
             n = this.addMethodList(class.class,n,\classmethods);
             n = this.addMethodList(class,n,\instancemethods);
-            
+
             f = {|x|
                 if(x.tag==\method) {
                     methodstemplate = methodstemplate ++ "Method::" + x.text ++ "\n(describe method here)\n\nreturns:: (returnvalue)\n\n";
@@ -513,7 +513,7 @@ SCDoc {
         };
         ^false;
     }
-    
+
     *findHelpSourceDirs {
         if(helpSourceDirs.notNil) {^this};
         this.postProgress("Finding HelpSource folders...");
@@ -524,7 +524,7 @@ SCDoc {
         };
         this.postProgress(helpSourceDirs.asString);
     }
-    
+
     *syncNonHelpFiles {
         this.findHelpSourceDirs;
         this.postProgress("Synchronizing non-schelp files");
@@ -532,7 +532,7 @@ SCDoc {
             ("rsync -rlt --exclude '*.schelp' --exclude '.*'"+dir.escapeChar($ )++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
         };
     }
-    
+
     *getAllMetaData {
         var subtarget, classes, cats, t = Main.elapsedTime;
         var update = false, doc, ndocs = 0;
@@ -584,7 +584,7 @@ SCDoc {
             };
         };
         this.postProgress("Added"+ndocs+"new documents");
-       
+
         this.postProgress("Processing"+classes.size+"undocumented classes");
         undocumentedClasses = classes;
         ndocs = 0;
@@ -634,7 +634,7 @@ SCDoc {
             e.removeAt(\keep); //remove the key since we don't need it anymore
         };
         this.postProgress("Removed"+ndocs+"documents from cache");
-        
+
         if(update) {
             this.writeDocMap;
             this.postProgress("Writing JSON doc map");

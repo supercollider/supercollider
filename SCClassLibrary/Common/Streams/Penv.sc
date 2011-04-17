@@ -1,4 +1,3 @@
-
 Penv : Env {
 	embedInStream { arg inval;
 		var startTime;

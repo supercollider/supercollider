@@ -123,4 +123,3 @@ NotificationRegistration {
 		NotificationCenter.unregister(object,message,listener)
 	}
 }
-

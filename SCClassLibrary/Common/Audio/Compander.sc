@@ -1,4 +1,3 @@
-
 Amplitude : UGen {
 	*ar { arg in = 0.0, attackTime = 0.01, releaseTime = 0.01, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', in, attackTime, releaseTime).madd(mul, add)

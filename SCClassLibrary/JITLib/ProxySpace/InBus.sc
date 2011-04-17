@@ -9,7 +9,7 @@ InBus {
 	}
 
 	*getOutput { | bus, argRate, numChannels, offset = 0 |
-		
+
 		var out, index;
 		var rate = bus.rate;
 		var startIndex = bus.index + offset;
@@ -30,7 +30,7 @@ InBus {
 						{ XInFeedback.ar(index, numChannels) }
 						{ XIn.kr(index, numChannels) }
 			};
-			
+
 		^if(argRate === rate) { out } { // if not the same rate, convert rates
 			if(argRate === 'audio') { K2A.ar(out) } { A2K.kr(out) }
 		};
@@ -42,15 +42,15 @@ InBus {
 XIn {
 
 	*ar { | which, n |
-	
+
 		^XFade2.ar( // use equal power crossfading for audio rate
 			In.ar(which.round(2), n),
 			In.ar(which.trunc(2) + 1, n),
 			(which * 2 - 1).fold2(1)
 		)
-		
+
 	}
-	
+
 	*kr { | which, n |
 		^LinXFade2.kr( // use linear crossfading for control rate
 			In.kr(which.round(2), n),
@@ -70,7 +70,7 @@ XInFeedback {
 			(which * 2 - 1).fold2(1)
 		);
 	}
-	
+
 }
 
 
@@ -78,35 +78,35 @@ XInFeedback {
 // plays out to various other indices.
 
 Monitor {
-	classvar <>warnPlayN = true; 
-	
+	classvar <>warnPlayN = true;
+
 	var <ins, <outs, <amps = #[1.0], <vol = 1.0;
 	var <group, synthIDs, synthAmps, <>fadeTime = 0.02;
-	
+
 	var <usedPlayN;  // default case
-	
+
 	usedPlayN_ { |flag|
 		var old, new, states;
-		
-	//	[\noWarn, warnPlayN.not, \noInit, usedPlayN.isNil, \stays, usedPlayN == flag, \noOuts, outs.isNil].postln; 
-		
+
+	//	[\noWarn, warnPlayN.not, \noInit, usedPlayN.isNil, \stays, usedPlayN == flag, \noOuts, outs.isNil].postln;
+
 			// normal case: init or stay the same
-		if (warnPlayN.not or: { usedPlayN.isNil or: { usedPlayN == flag } } /*or: { outs.isNil }*/) { 
+		if (warnPlayN.not or: { usedPlayN.isNil or: { usedPlayN == flag } } /*or: { outs.isNil }*/) {
 			usedPlayN = flag;
-			^nil 
-		}; 
-		
+			^nil
+		};
+
 		states = [\playN, \play];
 		#old, new = if (usedPlayN, states, { states.reverse });
-		warn("monitor switched from % to % - channels may be wrong! \n" 
+		warn("monitor switched from % to % - channels may be wrong! \n"
 			"\t Settings were: outs: % amps: % ins: % vol: %!".format(old, new, outs, amps, ins, vol)
 		);
-		usedPlayN = flag; 
+		usedPlayN = flag;
 	}
-	
+
 	play { | fromIndex, fromNumChannels=2, toIndex, toNumChannels,
 			target, multi=false, volume, fadeTime=0.02, addAction |
-			
+
 		var server, inGroup, numChannels, bundle, divider;
 
 		inGroup = target.asGroup;
@@ -117,7 +117,7 @@ Monitor {
 			bundle, fromIndex, fromNumChannels, toIndex,
 			toNumChannels, inGroup, multi, volume, fadeTime, addAction
 		);
-		server.listSendBundle(server.latency, bundle); 
+		server.listSendBundle(server.latency, bundle);
 		this.usedPlayN_(false);
 	}
 
@@ -221,14 +221,14 @@ Monitor {
 
 	// bundling
 
-	playNToBundle { | 	bundle, 
-					argOuts = (outs ?? {(0..ins.size-1)}), 
-					argAmps = (amps), 
-					argIns = (ins), 
-					argVol = (vol), 
-					argFadeTime = (fadeTime), 
-					inGroup, 
-					addAction, 
+	playNToBundle { | 	bundle,
+					argOuts = (outs ?? {(0..ins.size-1)}),
+					argAmps = (amps),
+					argIns = (ins),
+					argVol = (vol),
+					argFadeTime = (fadeTime),
+					inGroup,
+					addAction,
 					defName = "system_link_audio_1" |
 
 		var triplets, server;
@@ -275,7 +275,7 @@ Monitor {
 
 	playToBundle { | bundle, fromIndex, fromNumChannels=2, toIndex, toNumChannels,
 			inGroup, multi = false, volume, inFadeTime, addAction |
-			
+
 		var server, numChannels, defname, chanRange, n;
 
 		toIndex = toIndex ?? { if(outs.notNil, { outs[0] }, 0) };

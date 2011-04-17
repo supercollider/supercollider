@@ -1,4 +1,3 @@
-
 FilterPattern : Pattern {
 	var <>pattern;
 
@@ -18,12 +17,12 @@ Pn : FilterPattern {
 		if(key.isNil) {
 			repeats.value.do { event = pattern.embedInStream(event) };
 		} {
-			repeats.value.do { 
+			repeats.value.do {
 				event = pattern.embedInStream(event);
 				event[key] = true;
 			};
 			event[key] = false;
-		};	
+		};
 		^event;
 	}
 }
@@ -44,7 +43,7 @@ Pgate  : Pn {
 			} {
 				event = output.copy.embedInStream(event)
 			}
-		};		
+		};
 		^event;
 	}
 }

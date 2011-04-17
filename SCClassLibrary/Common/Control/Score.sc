@@ -164,4 +164,3 @@ Score {
 
 	asScore {}
 }
-

@@ -1,4 +1,3 @@
-
 Stream : AbstractFunction {
 	// 'reset' is defined in class Object to do nothing.
 	// reading

@@ -268,5 +268,3 @@ FrameInspector : Inspector {
 	makeBody {}
 
 }
-
-

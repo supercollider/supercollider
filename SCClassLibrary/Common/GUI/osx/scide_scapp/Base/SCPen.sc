@@ -1,7 +1,7 @@
 SCPen {
-	
+
 	classvar font, fillColor, strokeColor;
-	
+
 	*font_ { arg argFont;
 		font = argFont;
 	}
@@ -29,7 +29,7 @@ SCPen {
 	*stringRightJustIn { arg str, inRect;
 		str.drawRightJustIn( inRect, font ? SCFont.default, fillColor ? Color.black );
 	}
-	
+
 	*image { arg img;
 		img.drawAtPoint( Point( 0, 0 ), img.bounds );
 	}
@@ -72,17 +72,17 @@ SCPen {
 		_Pen_Translate
 		^this.primitiveFailed
 	}
-	
+
 	*scale { arg x=0, y=0;
 		_Pen_Scale
 		^this.primitiveFailed
 	}
-	
+
 	*skew { arg x=0, y=0;
 		_Pen_Skew
 		^this.primitiveFailed
 	}
-	
+
 	*rotate { arg angle=0, x=0, y=0;
 		_Pen_Rotate
 		^this.primitiveFailed
@@ -101,56 +101,56 @@ SCPen {
 		this.endPath;
 		^res
 	}
-	
+
 	*beginPath {
 		_Pen_BeginPath
 		^this.primitiveFailed
 	}
-	
+
 	*moveTo { arg point;
 		_Pen_MoveTo
 		^this.primitiveFailed
 	}
-	
+
 	*lineTo { arg point;
 		_Pen_LineTo
 		^this.primitiveFailed
 	}
-	
+
 	*line { arg p1, p2;
 		^this.moveTo(p1).lineTo(p2);
 	}
-	
+
 	*addArc { arg center, radius, startAngle, arcAngle;
 		_Pen_AddArc
 		^this.primitiveFailed
 	}
-	
+
 	*addWedge { arg center, radius, startAngle, arcAngle;
 		_Pen_AddWedge
 		^this.primitiveFailed
 	}
-	
+
 	*addAnnularWedge { arg center, innerRadius, outerRadius, startAngle, arcAngle;
 		_Pen_AddAnnularWedge
 		^this.primitiveFailed
 	}
-	
+
 	*addRect { arg rect;
 		_Pen_AddRect
 		^this.primitiveFailed
 	}
-	
+
 	*stroke {
 		_Pen_StrokePath
 		^this.primitiveFailed
 	}
-	
+
 	*fill {
 		_Pen_FillPath
 		^this.primitiveFailed
 	}
-	
+
 	*clip {
 		_Pen_ClipPath
 		^this.primitiveFailed
@@ -164,17 +164,17 @@ SCPen {
 		_Pen_StrokeRect
 		^this.primitiveFailed
 	}
-	
+
 	*fillRect { arg rect;
 		_Pen_FillRect
 		^this.primitiveFailed
 	}
-	
+
 	*strokeOval { arg rect;
 		_Pen_StrokeOval
 		^this.primitiveFailed
 	}
-	
+
 	*fillOval { arg rect;
 		_Pen_FillOval
 		^this.primitiveFailed
@@ -261,7 +261,7 @@ SCPen {
 	25 - PlusDarker
 	26 - PlusLighter
 	*/
-	
+
 	*blendMode_{ arg mode;
 		_Pen_SetBlendMode
 		^this.primitiveFailed
@@ -315,9 +315,9 @@ SCPen {
 		this.prFillAxialGradient(startPoint, endPoint, color0, color1);
 	}
 
-	*fillRadialGradient { arg innerCircleCenter, outerCircleCenter, startRadius, 
+	*fillRadialGradient { arg innerCircleCenter, outerCircleCenter, startRadius,
 			endRadius, color0, color1;
-		this.prFillRadialGradient(innerCircleCenter, outerCircleCenter, startRadius, 
+		this.prFillRadialGradient(innerCircleCenter, outerCircleCenter, startRadius,
 			endRadius, color0, color1)
 	}
 
@@ -326,7 +326,7 @@ SCPen {
 		^this.primitiveFailed
 	}
 
-	*prFillRadialGradient { arg innerCircleCenter, outerCircleCenter, startRadius, 
+	*prFillRadialGradient { arg innerCircleCenter, outerCircleCenter, startRadius,
 			endRadius, color0, color1;
 		_Pen_DrawRadialGradient
 		^this.primitiveFailed
@@ -337,10 +337,9 @@ SCPen {
 		_Pen_Push
 		^this.primitiveFailed
 	}
-	
+
 	*pop {
 		_Pen_Pop
 		^this.primitiveFailed
 	}
 }
-

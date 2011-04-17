@@ -333,7 +333,7 @@ Document {
 	currentLine {
 		^this.getSelectedLines(this.selectionStart, 0);
 	}
-	
+
 	getSelectedLines { | rangestart = -1, rangesize = 0 |
 		var start, end, str, max;
 		str = this.string;
@@ -486,23 +486,23 @@ Document {
 			this.path == doc.path
 		}
 	}
-	
+
 	hash {
-		^(this.path ? this).hash 	
+		^(this.path ? this).hash
 	}
-	
+
 	*defaultUsesAutoInOutdent_ {|bool|
 		Document.implementationClass.prDefaultUsesAutoInOutdent_(bool)
 	}
-	
+
 	usesAutoInOutdent_ {|bool|
 		this.prUsesAutoInOutdent_(bool)
 	}
-	
+
 	*prDefaultUsesAutoInOutdent_{|bool|
 		this.subclassResponsibility(thisMethod);
 	}
-	
+
 	prUsesAutoInOutdent_{|bool|
 		^this.subclassResponsibility(thisMethod);
 	}
@@ -743,5 +743,3 @@ Document {
 	}
 
 }
-
-

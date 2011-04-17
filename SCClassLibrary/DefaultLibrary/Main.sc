@@ -144,7 +144,7 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 	escapeWindow { platform.escapeWindow }
 
 	exitFullScreen { platform.exitFullScreen }
-	
+
 	setDeferredTaskInterval { |interval| platform.setDeferredTaskInterval(interval) }
 
 	*overwriteMsg { _MainOverwriteMsg ^this.primitiveFailed }
@@ -153,26 +153,26 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 
 MethodOverride {
 	var <ownerClass, <selector, <activePath, <overriddenPath;
-		
+
 	*new { arg ownerClass, selector, activePath, overriddenPath;
 		^super.newCopyArgs(ownerClass, selector, activePath, overriddenPath)
 	}
-	
+
 	*fromLine { arg string;
 		var parts = string.split(Char.tab);
 		var class, selector;
 		#class, selector = parts[0].split($:);
 		^this.new(class.asSymbol.asClass, selector, parts[1], parts[2])
 	}
-	
+
 	openFiles {
-		var path2 = if(overriddenPath.beginsWith("/Common")) { 
+		var path2 = if(overriddenPath.beginsWith("/Common")) {
 			Platform.classLibraryDir +/+ overriddenPath
 			} { overriddenPath };
 		activePath.openTextFile;
 		path2.openTextFile;
 	}
-	
+
 	*simplifyPath { arg path;
 		var extDir, sysExtDir, quarkDir;
 		extDir = Platform.userExtensionDir;
@@ -182,15 +182,15 @@ MethodOverride {
 		path = path.replace("'" ++ sysExtDir, "Platform.systemExtensionDir ++ '");
 		path = path.replace("'" ++ quarkDir, "LocalQuarks.globalPath ++ '");
 		^path
-		
+
 	}
-	
+
 	*all {
 		var msg = Main.overwriteMsg.drop(-1); // drop last newline
 		var lines = msg.split(Char.nl);
 		^lines.collect { |line| this.fromLine(line) };
 	}
-		
+
 	*printAll { arg simplifyPaths = true;
 		var all = this.all;
 		var classes = all.collect(_.ownerClass).as(Set);
@@ -201,7 +201,7 @@ MethodOverride {
 			all.select { |x| x.ownerClass == class }.do { |x|
 				var activePath = x.activePath;
 				var overriddenPath = x.overriddenPath;
-				if(simplifyPaths) { 
+				if(simplifyPaths) {
 					activePath = this.simplifyPath(x.activePath);
 					overriddenPath = this.simplifyPath(x.overriddenPath);
 				};
@@ -212,7 +212,7 @@ MethodOverride {
 			"\n".post;
 		}
 	}
-	
+
 	*printAllShort {
 		var all = this.all;
 		var classes = all.collect(_.ownerClass).as(Set);
@@ -222,8 +222,7 @@ MethodOverride {
 			all.select { |x| x.ownerClass == class }.collect { |x| x.selector }.as(Set).do { |x|
 				postf("\t%:%\n", class, x);
 			}
-		}		
+		}
 	}
-	
-}
 
+}

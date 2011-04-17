@@ -1,5 +1,3 @@
-
-
 PingPong {
 	//your buffer should be the same numChannels as your inputs
 	*ar { arg  bufnum=0,  inputs, delayTime, feedback=0.7, rotate=1;

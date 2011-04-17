@@ -1,4 +1,3 @@
-
 /*
 	Noise Generators
 
@@ -304,4 +303,3 @@ LinCong : UGen {
 //		^this.multiNew('control', a, b, c, d).madd(mul, add)
 //	}
 //}
-

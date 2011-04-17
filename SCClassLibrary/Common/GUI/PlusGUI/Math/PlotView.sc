@@ -1,4 +1,3 @@
-
 Plot {
 
 	var <>plotter, <value, <>spec, <>domainSpec;

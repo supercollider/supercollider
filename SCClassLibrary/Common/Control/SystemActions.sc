@@ -1,5 +1,3 @@
-
-
 AbstractSystemAction {
 
 	*init {
@@ -225,4 +223,3 @@ ServerTree : AbstractServerAction {
 	}
 
 }
-

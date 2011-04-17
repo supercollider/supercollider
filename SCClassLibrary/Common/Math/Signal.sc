@@ -101,7 +101,7 @@ Signal[float] : FloatArray {
 		_SignalRotate
 		^this.primitiveFailed
 	}
-	
+
 	zeroPad { arg minSize;
 		var size = max(minSize ? 0, this.size).nextPowerOfTwo;
 		^this ++ Signal.newClear(size - this.size);
@@ -343,4 +343,3 @@ Wavetable[float] : FloatArray {
 	//	this.plot(names.last);
 	//}
 }
-

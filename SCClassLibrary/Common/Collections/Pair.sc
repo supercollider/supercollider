@@ -99,4 +99,3 @@ Pair : Collection {
 		stream << this.class.name << "(" <<<* this.storeArgs << ")"
 	}
 }
-

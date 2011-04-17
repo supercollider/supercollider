@@ -1,4 +1,3 @@
-
 /*
  ScoreStreamPlayer collects OSC commands from an EventStream into a Score. It is derived from server to provide allocation of nodeIDs, bufums, etc.
 

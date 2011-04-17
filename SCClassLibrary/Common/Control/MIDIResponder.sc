@@ -1,4 +1,3 @@
-
 // see MIDIResponder help for all classes on this page
 
 
@@ -266,4 +265,3 @@ ProgramChangeResponder : MIDIResponder {
 		pcr.remove(resp);
 	}
 }
-

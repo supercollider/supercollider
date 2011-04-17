@@ -1,4 +1,3 @@
-
 // SCViewHolder makes it possible to add more capabilities by holding an SCView, not subclassing it
 SCViewHolder {
 
@@ -242,8 +241,8 @@ FlowView : SCViewHolder {
 		//		resize self to fit
 	}
 	front {
-		// window.front 
-		
+		// window.front
+
 	}
 
 	wouldExceedBottom { arg aBounds; ^this.decorator.wouldExceedBottom(aBounds) }
@@ -325,4 +324,3 @@ FlowView : SCViewHolder {
 	}
 	prClose { view.prClose }
 }
-

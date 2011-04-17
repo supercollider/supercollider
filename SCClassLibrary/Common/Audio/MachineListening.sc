@@ -1,4 +1,3 @@
-
 //4 outs
 BeatTrack : MultiOutUGen {
 

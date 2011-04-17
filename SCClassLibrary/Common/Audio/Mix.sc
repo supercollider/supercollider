@@ -1,4 +1,3 @@
-
 Mix {
 	*new { arg array;
 		var sum;
@@ -22,7 +21,7 @@ Mix {
 NumChannels {
 
 	*ar { arg input, numChannels = 2, mixdown = true;
-		
+
 		if(input.size > 1) { // collection
 		   ^input
 			.clump(input.size / numChannels)
@@ -37,12 +36,12 @@ NumChannels {
 					}
 				}
 			}
-		} { 
+		} {
 			// single ugen or single item collection
 			if(input.isSequenceableCollection) {
 				input = input.at(0);
 			};
-			
+
 			if(numChannels == 1) {
 				^input
 			} {

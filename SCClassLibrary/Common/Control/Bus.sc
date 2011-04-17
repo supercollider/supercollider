@@ -1,4 +1,3 @@
-
 Bus {
 
 	var <rate,<index,<numChannels,<server;
@@ -33,7 +32,7 @@ Bus {
 	*new { arg rate=\audio,index=0,numChannels=2,server;
 		^super.newCopyArgs(rate,index,numChannels,server ? Server.default)
 	}
-	
+
 	isSettable {
 		^rate != \audio
 	}
@@ -63,28 +62,28 @@ Bus {
 			^["/c_setn",index,values.size] ++ values;
 		}, {error("Cannot set an audio rate bus"); ^nil});
 	}
-	setAt { |offset ... values|  
+	setAt { |offset ... values|
 		// shouldn't be larger than this.numChannels - offset
 		if(this.isSettable, {
 			server.sendBundle(nil,(["/c_set"]
 				++ values.collect({ arg v,i; [index + offset + i ,v] }).flat));
 		}, {error("Cannot set an audio rate bus")});
 	}
-	setnAt { |offset, values| 
+	setnAt { |offset, values|
 		// could throw an error if values.size > numChannels
 		if(this.isSettable, {
 			server.sendBundle(nil,
 				["/c_setn",index + offset, values.size] ++ values);
 		}, {error("Cannot set an audio rate bus")});
 	}
-	setPairs { | ... pairs| 
+	setPairs { | ... pairs|
 		if(this.isSettable, {
 			server.sendBundle(nil,(["/c_set"]
 				++ pairs.clump(2).collect({ arg pair; [pair[0] + index, pair[1]] }).flat));
 		}, {error("Cannot set an audio rate bus")});
 	}
 
-	get { arg action; 
+	get { arg action;
 		if(numChannels == 1, {
 			action = action ? { |vals| "Bus % index: % value: %.\n".postf(rate, index, vals); };
 			OSCpathResponder(server.addr,['/c_set',index], { arg time, r, msg;
@@ -92,7 +91,7 @@ Bus {
 			server.listSendMsg(["/c_get",index]);
 		}, {this.getn(action)});
 	}
-	
+
 	getn { arg count, action;
 		action = action ? { |vals| "Bus % index: % values: %.\n".postf(rate, index, vals); };
 		OSCpathResponder(server.addr,['/c_setn',index],{arg time, r, msg;
@@ -233,4 +232,3 @@ Bus {
 	}
 
 }
-

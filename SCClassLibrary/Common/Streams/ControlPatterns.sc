@@ -1,4 +1,3 @@
-
 //human device interface pattern. pulls values from devices like gamepads etc.
 
 Phid : Pattern {
@@ -40,4 +39,3 @@ Phid : Pattern {
 		})
 	}
 }
-

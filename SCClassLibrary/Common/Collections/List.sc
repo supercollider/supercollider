@@ -118,4 +118,3 @@ List : SequenceableCollection {
 
 	asList { ^this }
 }
-

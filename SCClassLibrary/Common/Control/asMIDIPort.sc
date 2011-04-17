@@ -1,4 +1,3 @@
-
 + SequenceableCollection {
 	asMIDIInPortUID {
 		^this.collect(_.asMIDIInPortUID)
@@ -25,4 +24,3 @@
 + Nil {
 	asMIDIInPortUID {}
 }
-

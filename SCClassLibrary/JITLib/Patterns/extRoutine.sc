@@ -1,5 +1,3 @@
-
-
 +Pattern {
 	lock { arg n=1;
 		^Pfin(n.asStream, this.asStream)
@@ -55,4 +53,3 @@
 		this.stop;
 	}
 }
-

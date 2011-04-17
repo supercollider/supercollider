@@ -1,4 +1,3 @@
-
 FlowLayout {
 	var <bounds, <>margin, <>gap;
 	var <>left, <>top, <>maxHeight,<>maxRight;
@@ -73,5 +72,3 @@ FlowLayout {
 			inb.height - (top - inb.top - margin.y))
 	}
 }
-
-

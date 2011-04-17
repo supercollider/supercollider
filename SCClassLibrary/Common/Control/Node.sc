@@ -1,4 +1,3 @@
-
 Node {
 
 	var <>nodeID, <>server, <>group;

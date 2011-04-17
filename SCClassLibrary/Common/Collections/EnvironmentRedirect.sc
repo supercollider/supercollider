@@ -1,5 +1,3 @@
-
-
 // abstract class that dispatches assignment / reference in environments.
 
 EnvironmentRedirect {

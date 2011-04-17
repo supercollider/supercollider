@@ -108,4 +108,3 @@ Here is a simple example of its use:
 		^this[\group].asGroup
 	}
 }
-

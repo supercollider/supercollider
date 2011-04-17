@@ -1,12 +1,11 @@
-
 NodeMapSetting {
 
 	var <>key, <>value, <>busNumChannels, <>isMultiChannel=false, <>isMapped=false, <>mappedRate;
-	
+
 	*new { arg key, value, busNumChannels;
 		^super.newCopyArgs(key, value, busNumChannels)
 	}
-	
+
 	map { arg index;
 		value = index;
 		isMultiChannel = false;
@@ -35,7 +34,7 @@ NodeMapSetting {
 	getValue { // unmapped, single channel only
 		^if(this.isMapped.not and: { this.isMultiChannel.not }) { value } { nil }
 	}
-	
+
 	addToEvent { arg event;
 		var mapPrefix;
 		if(isMapped) {
@@ -44,7 +43,7 @@ NodeMapSetting {
 		} {
 			event.put(key, value)
 		}
-		
+
 	}
 
 	updateNodeMap { arg nodeMap;
@@ -89,7 +88,7 @@ NodeMapSetting {
 	printOn { arg stream;
 		stream << this.storeArgs
 	}
-	
+
 	*prNew { arg key, value, busNumChannels, isMultiChannel=false, isMapped=false, mappedRate;
 		^super.newCopyArgs(key, value, busNumChannels, isMultiChannel, isMapped, mappedRate)
 	}
@@ -103,7 +102,7 @@ ProxyNodeMapSetting : NodeMapSetting {
 	isEmpty {
 		^value.isNil and: { rate.isNil }
 	}
-	
+
 	map { arg proxy;
 		value = proxy;
 		isMapped = true;
@@ -123,4 +122,3 @@ ProxyNodeMapSetting : NodeMapSetting {
 	}
 
 }
-

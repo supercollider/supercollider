@@ -1,4 +1,3 @@
-
 // contains numerical / value patterns
 
 PatternProxy : Pattern {
@@ -68,7 +67,7 @@ PatternProxy : Pattern {
 		if(envir.isNil) { this.envir = this.class.event };
 		args.pairsDo { arg key, val; envir.put(key, val) };
 	}
-	
+
 	unset { arg ... args;
 		if(envir.notNil) { args.do { arg key; envir.removeAt(key) } };
 	}

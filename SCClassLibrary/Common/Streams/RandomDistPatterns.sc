@@ -1,4 +1,3 @@
-
 Plprand : Pwhite {
 	embedInStream { |inval|
 		var	localLength = length.value(inval),

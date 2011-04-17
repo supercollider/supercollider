@@ -1,4 +1,3 @@
-
 + Object {
 
 	// create a gui using the guiClass passing in args
@@ -46,4 +45,3 @@
 	asFlowView {}
 	asPageLayout {} // should be compatible
 }
-

@@ -1,4 +1,3 @@
-
 // method extensions
 // 	add or replace methods
 
@@ -22,4 +21,3 @@
 		^this.class.new(x, y.neg)
 	}
 }
-

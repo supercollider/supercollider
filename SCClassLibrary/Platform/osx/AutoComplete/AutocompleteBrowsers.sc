@@ -1,4 +1,3 @@
-
 AutoCompMethodBrowser {
 	classvar	<>wWidth = 400, <>wHeight = 360;
 	classvar	<methodExclusions, <classExclusions;

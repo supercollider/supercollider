@@ -100,4 +100,3 @@
 		HelpBrowser.openHelpFor(this);
 	}
 }
-

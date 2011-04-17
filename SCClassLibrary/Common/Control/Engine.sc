@@ -1,4 +1,3 @@
-
 NodeIDAllocator
 {
 	var <user, initTemp, temp, perm, mask, permFreed;

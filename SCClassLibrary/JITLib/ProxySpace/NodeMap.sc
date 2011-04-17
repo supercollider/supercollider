@@ -95,7 +95,7 @@ NodeMap {
 		node = node.asTarget;
 		this.send(node.server, node.nodeID, latency)
 	}
-	
+
 	controlNames {
 		this.updateBundle;
 		^controlNames
@@ -136,8 +136,8 @@ NodeMap {
 				}
 			}
 	}
-	
-	addToEvent { arg event;	
+
+	addToEvent { arg event;
 		settings.do { |x| x.addToEvent(event) }
 	}
 
@@ -289,5 +289,3 @@ ProxyNodeMap : NodeMap {
 		}
 
 }
-
-

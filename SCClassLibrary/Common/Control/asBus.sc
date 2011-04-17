@@ -1,4 +1,3 @@
-
 + Server {
 	asBus { arg rate,numChannels=1;
 		^Bus.alloc(rate,this,numChannels)
@@ -24,4 +23,3 @@
 		})
 	}
 }
-

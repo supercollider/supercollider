@@ -58,4 +58,3 @@
 		GUI.freqScope.new;
 	}
 }
-

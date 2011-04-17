@@ -1,4 +1,3 @@
-
 GrainSin : MultiOutUGen {
 	*ar	{ arg numChannels = 1, trigger = 0, dur = 1, freq = 440, pan = 0, envbufnum = -1,
 			maxGrains = 512, mul = 1, add = 0;

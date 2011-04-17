@@ -11,7 +11,7 @@
 			inval = yield(this.at(thisThread.beats - startTime));
 		}
 	}
-	
+
 	asStream {
 		^Routine({ arg inval; this.embedInStream(inval) })
 	}

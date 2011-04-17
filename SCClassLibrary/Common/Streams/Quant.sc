@@ -32,4 +32,3 @@ Quant {
 
 	storeArgs { ^[quant, phase, timingOffset] }
 }
-

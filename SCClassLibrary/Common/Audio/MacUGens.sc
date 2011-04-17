@@ -1,4 +1,3 @@
-
 MouseX : UGen
 {
 	// warp 0 = linear
@@ -30,4 +29,3 @@ KeyState : UGen {
 	}
 	signalRange { ^\unipolar }
 }
-

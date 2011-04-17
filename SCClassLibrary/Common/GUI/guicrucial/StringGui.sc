@@ -1,4 +1,3 @@
-
 // just a label with the name of the object
 
 StringGui : ObjectGui {
@@ -34,12 +33,10 @@ StringGui : ObjectGui {
 			.align_(\left)
 			.object_(string);
 
-		if(parent.isNil,{ 
-			layout.resizeToFit; 
-			layout.front 
+		if(parent.isNil,{
+			layout.resizeToFit;
+			layout.front
 		});
 	}
 
 }
-
-

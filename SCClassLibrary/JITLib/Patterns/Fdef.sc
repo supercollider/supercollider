@@ -1,4 +1,3 @@
-
 // maybe we want to call "value" "reduce" and only use one class.
 
 Maybe : Ref {

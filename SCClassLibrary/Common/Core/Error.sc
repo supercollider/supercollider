@@ -1,4 +1,3 @@
-
 Exception {
 	classvar <>handling = false;
 	classvar <>debug = false;
@@ -176,4 +175,3 @@ DeprecatedError : Error {
 
 	}
 }
-

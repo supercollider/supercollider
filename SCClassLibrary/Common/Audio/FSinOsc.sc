@@ -68,11 +68,11 @@ DynKlank : UGen {
 	*ar { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 		^this.multiNew(\audio, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
 	}
-	
+
 	*kr { arg specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 		^this.multiNew(\control, specificationsArrayRef, input, freqscale, freqoffset, decayscale)
 	}
-	
+
 	*new1 { arg rate, specificationsArrayRef, input, freqscale = 1.0, freqoffset = 0.0, decayscale = 1.0;
 		var spec = specificationsArrayRef.value;
 		var selector = this.methodSelectorForRate(rate);
@@ -94,7 +94,7 @@ DynKlang : UGen {
 	*kr { arg specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		^this.multiNew(\control, specificationsArrayRef, freqscale, freqoffset);
 	}
-	
+
 	*new1 { arg rate, specificationsArrayRef, freqscale = 1.0, freqoffset = 0.0;
 		var spec = specificationsArrayRef.value;
 		var selector = this.methodSelectorForRate(rate);
@@ -133,4 +133,3 @@ Pulse : UGen {
 		^this.multiNew('control', freq, width).madd(mul, add)
 	}
 }
-

@@ -1,4 +1,3 @@
-
 SCWindow {
 	classvar <>allWindows, <currentFullScreen, <>initAction;
 
