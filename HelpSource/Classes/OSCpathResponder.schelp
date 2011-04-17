@@ -1,7 +1,7 @@
 class:: OSCpathResponder
 summary:: client side network responder
 related:: Guides/OSC_communication, Classes/OSCresponderNode
-categories:: Control, OpenSoundControl
+categories:: OpenSoundControl
 
 description::
 Register a function to be called upon receiving a command with a specific path.

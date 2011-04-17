@@ -2,7 +2,6 @@ title:: play
 summary:: Start a process
 categories:: Common methods
 
-section:: Introduction
 method:: play
 The code::play:: message is of common use in sc. Different objects respond to it in various
 ways, but the simple meaning is: strong::start a process::.

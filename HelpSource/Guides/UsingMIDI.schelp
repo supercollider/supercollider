@@ -1,8 +1,9 @@
 title:: Using MIDI
 summary:: Notes on MIDI support in SuperCollider
-related:: Reference/MIDI
-categories:: Control, MIDI
+related:: Guides/MIDI
+categories:: MIDI
 
+keyword::MIDI
 section::Introduction
 
 SuperCollider's out of the box MIDI support is fairly thorough (although not as complete as you'll find in commercial sequencers). All MIDI devices accessible to your operating system (CoreMIDI on OSX, ALSA on Linux, PortMIDI on Windows) are accessible to SuperCollider.
@@ -26,7 +27,8 @@ definitionList::
 
 In most cases, each physical MIDI connection (pair of in/out jacks on the MIDI interface) has one MIDIEndPoint object to represent it in the client.
 
-section::Receiving MIDI input: MIDIResponder classes
+section::Receiving MIDI input
+subsection:: MIDIResponder classes
 
 For most uses, the preferred way to receive MIDI input is using the link::Classes/MIDIResponder:: classes. The advantage of this approach is that any number of responders can be registered. (By contrast, using link::Classes/MIDIIn:: responder functions directly means that only one function can exist per incoming message type. That is not an ideal programming practice.)
 
@@ -43,7 +45,7 @@ list::
 
 See link::#playing_notes_on_your_midi_keyboard#Playing notes on your MIDI keyboard:: below for a simple example using the note-on and note-off responders.
 
-section::Receiving MIDI input: MIDIIn
+subsection:: MIDIIn
 
 MIDIIn has a number of class variables holding functions to be evaluated when a MIDI event comes in. Technical details on each function can be found in the link::Classes/MIDIIn:: help file.
 

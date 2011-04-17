@@ -1,7 +1,7 @@
 class:: OSCresponderNode
 summary:: client side network responder
 related:: Guides/OSC_communication, Classes/OSCpathResponder, Classes/NetAddr
-categories:: Control, OpenSoundControl
+categories:: OpenSoundControl
 
 description::
 Register a function to be called upon receiving a specific command from a specific OSC address. Same interface like link::Classes/OSCresponder::, but allows strong::multiple responders to the same command::.

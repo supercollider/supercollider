@@ -1,7 +1,7 @@
 class:: MIDIResponder
 summary:: Register multiple functions to be evaluated when MIDI events occur
 related:: Classes/MIDIIn, Reference/MIDI, Reference/UsingMIDI
-categories:: Control, MIDI
+categories:: MIDI
 
 description::
 MIDIResponder is an emphasis::abstract:: class. Its subclasses allow functions to be registered to respond to midi events.
