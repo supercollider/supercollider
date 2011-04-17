@@ -43,6 +43,9 @@ p {
 a:link, a:visited, a:hover {
     text-decoration: none;
     color: #449;
+    /* add padding to work around "text-decoration: underline" not
+     * having effect when hovered if font size less then 11pt */
+    padding-bottom: 1px;
 }
 
 a:hover {
