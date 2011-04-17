@@ -1,4 +1,3 @@
-
 SCView {  // abstract class
 	classvar <>currentDrag, <>currentDragString;
 	classvar <>globalKeyDownAction, <>globalKeyUpAction;
@@ -12,9 +11,9 @@ SCView {  // abstract class
 	*new { arg parent, bounds;
 		^super.new.init(parent, bounds);
 	}
-	
+
 	*viewClass { ^this }
-	
+
 	*paletteExample { arg parent, bounds;
 		^this.new(parent, bounds);
 	}
@@ -56,12 +55,12 @@ SCView {  // abstract class
 	canFocus_ { arg bool;
 		this.setProperty(\canFocus, bool)
 	}
-	
+
 	focus { arg flag=true;
 		_SCView_Focus
 		^this.primitiveFailed
 	}
-	
+
 	hasFocus {
 		_SCView_HasFocus
 		^this.primitiveFailed
@@ -89,7 +88,7 @@ SCView {  // abstract class
 		_SCView_Refresh
 		^this.primitiveFailed
 	}
-	
+
 	findByID { arg id;
 		_SCView_FindByID
 		^this.primitiveFailed
@@ -124,11 +123,11 @@ SCView {  // abstract class
 		8 - horizontally elastic, fixed to bottom
 		9 - fixed to right, fixed to bottom
 	*/
-	
+
 	resize {
 		^this.getProperty(\resize)
 	}
-	
+
 	resize_ { arg resize;
 		this.setProperty(\resize, resize)
 	}
@@ -137,27 +136,27 @@ SCView {  // abstract class
 		background = color;
 		this.setProperty(\background, color)
 	}
-	
+
 	addAction { arg func, selector=\action;
 		this.perform(selector.asSetter, this.perform(selector).addFunc(func));
 	}
-	
+
 	removeAction { arg func, selector=\action;
 		this.perform(selector.asSetter, this.perform(selector).removeFunc(func));
 	}
-	
+
 	mouseDown { arg x, y, modifiers, buttonNumber, clickCount;
 		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount);
 	}
-	
+
 	mouseUp { arg x, y, modifiers;
 		mouseUpAction.value(this, x, y, modifiers)
 	}
-	
+
 	mouseMove { arg x, y, modifiers;
 		mouseMoveAction.value(this, x, y, modifiers)
 	}
-	
+
 	mouseOver { arg x, y;
 		mouseOverAction.value(this, x, y);
 	}
@@ -187,7 +186,7 @@ SCView {  // abstract class
 	}
 
 	defaultKeyDownAction { ^nil }
-	
+
 	handleKeyDownBubbling { arg view, char, modifiers, unicode, keycode;
 		var result;
 		// nil from keyDownAction --> pass it on
@@ -209,9 +208,9 @@ SCView {  // abstract class
 		globalKeyUpAction.value(this, char, modifiers, unicode, keycode);
 		this.handleKeyUpBubbling(this, char, modifiers, unicode, keycode);
 	}
-	
+
 	defaultKeyUpAction { ^nil }
-	
+
 	handleKeyUpBubbling { arg view, char, modifiers, unicode, keycode;
 		var result;
 		// nil from keyDownAction --> pass it on
@@ -235,22 +234,22 @@ SCView {  // abstract class
 		};
 		currentDragString = currentDrag.asCompileString;
 	}
-	
+
 	defaultGetDrag { ^nil }
-	
+
 	canReceiveDrag {
-		^if(canReceiveDragHandler.notNil) { 
-			canReceiveDragHandler.value(this) 
-		} { 
-			this.defaultCanReceiveDrag 
+		^if(canReceiveDragHandler.notNil) {
+			canReceiveDragHandler.value(this)
+		} {
+			this.defaultCanReceiveDrag
 		}
 	}
 	defaultCanReceiveDrag { ^false }
 	receiveDrag { |x, y|
-		if(receiveDragHandler.notNil) { 
-			receiveDragHandler.value(this, x, y) 
-		} { 
-			this.defaultReceiveDrag(x, y) 
+		if(receiveDragHandler.notNil) {
+			receiveDragHandler.value(this, x, y)
+		} {
+			this.defaultReceiveDrag(x, y)
 		};
 		currentDrag = currentDragString = nil;
 	}
@@ -269,16 +268,16 @@ SCView {  // abstract class
 	}
 
 	properties {
-		^#[\bounds, \visible, \enabled, \canFocus, \resize, \background, 
+		^#[\bounds, \visible, \enabled, \canFocus, \resize, \background,
 				\minWidth, \maxWidth, \minHeight, \maxHeight, \focusColor]
 	}
-	
+
 	getPropertyList {
 		^this.properties.collect( { arg name;
 			[name, this.perform(name)]
 		});
 	}
-	
+
 	setPropertyList { arg list;
 		list.do( { arg item;
 			var name, value;
@@ -292,7 +291,7 @@ SCView {  // abstract class
 		_SCView_New
 		^this.primitiveFailed
 	}
-	
+
 	prClose { dataptr = nil; onClose.value(this); }
 	prRemove {
 		_SCView_Remove
@@ -373,7 +372,7 @@ SCCompositeView : SCContainerView {
 }
 
 SCTopView : SCCompositeView {
-	
+
 	// created by SCWindow
 	handleKeyModifiersChangedBubbling { arg view, modifiers;
 		keyModifiersChangedAction.value(view, modifiers);
@@ -618,7 +617,7 @@ SCSliderBase : SCControlView {
 	//	this.setPropertyWithAction(\step, stepSize); // action really needed?
 		this.setProperty(\step, stepSize);
 	}
-	
+
 	step {
 		^this.getProperty(\step)
 	}
@@ -876,19 +875,19 @@ SC2DTabletSlider : SC2DSlider {
 
 //	var <>mouseDownAction, <>mouseUpAction;
 
-	mouseDown { arg x, y, pressure, tiltx, tilty, deviceID, 
+	mouseDown { arg x, y, pressure, tiltx, tilty, deviceID,
 			 buttonNumber, clickCount, absoluteZ, rotation;
-		mouseDownAction.value(this, x, y, pressure, tiltx, tilty, deviceID, 
+		mouseDownAction.value(this, x, y, pressure, tiltx, tilty, deviceID,
 			buttonNumber, clickCount, absoluteZ, rotation);
 	}
-	mouseUp { arg x, y, pressure, tiltx, tilty, deviceID, 
+	mouseUp { arg x, y, pressure, tiltx, tilty, deviceID,
 			buttonNumber, clickCount, absoluteZ, rotation;
-		mouseUpAction.value(this, x, y, pressure, tiltx, tilty, deviceID, 
+		mouseUpAction.value(this, x, y, pressure, tiltx, tilty, deviceID,
 			buttonNumber, clickCount, absoluteZ, rotation);
 	}
-	doAction { arg x, y, pressure, tiltx, tilty, deviceID, 
+	doAction { arg x, y, pressure, tiltx, tilty, deviceID,
 			buttonNumber, clickCount, absoluteZ, rotation;
-		action.value(this, x, y, pressure, tiltx, tilty, deviceID, 
+		action.value(this, x, y, pressure, tiltx, tilty, deviceID,
 			buttonNumber, clickCount, absoluteZ, rotation);
 	}
 }
@@ -900,7 +899,7 @@ SCButton : SCControlView {
 		var v;
 		v = this.new(parent, bounds);
 		v.states = [
-			["Push", Color.black, Color.red], 
+			["Push", Color.black, Color.red],
 			["Pop", Color.white, Color.blue]];
 		^v
 	}

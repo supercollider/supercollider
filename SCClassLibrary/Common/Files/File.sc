@@ -145,5 +145,3 @@ Pipe : UnixFILE {
 		^this.primitiveFailed;
 	}
 }
-
-

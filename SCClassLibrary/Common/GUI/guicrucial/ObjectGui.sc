@@ -1,4 +1,3 @@
-
 ObjectGui : SCViewHolder {
 	/*
 		this is a controller class. it creates the views and implements the relationship between them and the model
@@ -26,7 +25,7 @@ ObjectGui : SCViewHolder {
 		new.model_(model);
 		^new
 	}
-	
+
 	gui { arg parent, bounds ... args;
 		var layout;
 		layout=this.guify(parent,bounds);
@@ -56,7 +55,7 @@ ObjectGui : SCViewHolder {
 		// i am not really a view in the hierarchy
 		parent.removeOnClose(this);
 		^parent
-	}	
+	}
 	model_ { |newModel|
 		if(model.notNil,{ // a view has its model swapped with another
 			model.removeDependant(this);
@@ -97,4 +96,3 @@ ObjectGui : SCViewHolder {
 	}
 
 }
-

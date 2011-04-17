@@ -1,4 +1,3 @@
-
 SCView {  // abstract class
 	classvar <>currentDrag, <>currentDragString;
 	classvar <>globalKeyDownAction, <>globalKeyUpAction;

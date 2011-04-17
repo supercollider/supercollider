@@ -1,4 +1,3 @@
-
 ApplicationStart : StartUp {
 	classvar <>objects;
 

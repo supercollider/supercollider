@@ -1,4 +1,3 @@
-
 // these are internal classes, used by Pmono and PmonoArtic
 // they're not likely to work well if you try to use them outside that context
 
@@ -13,7 +12,7 @@ PmonoStream : Stream {
 	*new { |pattern|
 		^super.newCopyArgs(pattern)
 	}
-	
+
 	embedInStream { |inevent|
 		inevent ?? { ^nil.yield };
 
@@ -23,14 +22,14 @@ PmonoStream : Stream {
 		loop {
 			if(this.prDoStreams) {
 				cleanup.update(event);
-				inevent = event.yield;	
-				this.prSetNextEvent(inevent);		
+				inevent = event.yield;
+				this.prSetNextEvent(inevent);
 			} {
 				^cleanup.exit(inevent)
 			}
 		}
 	}
-	
+
 		// private methods abstracted out for the benefit of subclasses
 		// you should not use these directly
 	prInit { |inevent|
@@ -53,31 +52,31 @@ PmonoStream : Stream {
 			msgFunc = ~msgFunc;
 		}
 	}
-	
+
 	prInitNode {
 		event.use {
-			if (~id.notNil) {	
-				~type = \monoSet;	
+			if (~id.notNil) {
+				~type = \monoSet;
 			} {
-				~type = \monoNote; 
+				~type = \monoNote;
 				~instrument = pattern.synthName;
-				~updatePmono = { | argID, argServer | 
+				~updatePmono = { | argID, argServer |
 					 id = argID;
 					 server = argServer;
 					 schedBundleArray = ~schedBundleArray;
 					 schedBundle = ~schedBundle;
 				};
 				cleanup.addFunction(event, currentCleanupFunc = { | flag |
-					if (flag) { (id: id, server: server, type: \off, 
+					if (flag) { (id: id, server: server, type: \off,
 						hasGate: hasGate,
 						schedBundleArray: schedBundleArray,
 						schedBundle: schedBundle).play
 					}
-				}); 
+				});
 			}
 		};
 	}
-	
+
 	prDoStreams {
 		forBy (0, endval, 2) { | i |
 			name = streampairs[i];
@@ -91,12 +90,12 @@ PmonoStream : Stream {
 		};
 		^true
 	}
-	
+
 	prSetNextEvent { |inevent|
 		event = inevent.copy;
 		event.use{
 			~server = server;
-			~id = id; 
+			~id = id;
 			~type = \monoSet;
 			~msgFunc= msgFunc;
 		};
@@ -123,7 +122,7 @@ PmonoArticStream : PmonoStream {
 				} { rearticulating = false };
 				cleanup.update(event);
 				inevent = event.yield;
-				this.prSetNextEvent(inevent);	
+				this.prSetNextEvent(inevent);
 				if(rearticulating) {
 					event[\id] = nil;
 					this.prInitNode;

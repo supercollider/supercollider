@@ -179,26 +179,26 @@ Dictionary : Set {
 	merge {|that, func, fill = true|
 		var commonKeys, myKeys = this.keys, otherKeys = that.keys;
 		var res = ();
-	
+
 		if (myKeys == otherKeys) {
 			commonKeys = myKeys
 		} {
 			commonKeys = myKeys.sect(otherKeys);
 		};
-		
+
 		commonKeys.do { |key|
 			res[key] = func.value(this[key], that[key], key)
 		};
-		
+
 		if (fill) {
 			myKeys.difference(otherKeys).do { |key| res[key] = this[key] };
 			otherKeys.difference(myKeys).do { |key| res[key] = that[key] };
 		};
 		^res
 	}
-	
+
 	blend { |that, blend = 0.5, fill = true, specs|
-		
+
 		^this.merge(that, { |a, b, key|
 			var spec = if (specs.notNil) { specs[key].asSpec };
 			if (spec.notNil) {
@@ -464,4 +464,3 @@ IdentityDictionary : Dictionary {
 	asQuant { ^this.copy }
 	timingOffset { ^this[\timingOffset] }		// for synchWithQuant()
 }
-

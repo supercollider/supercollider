@@ -269,7 +269,7 @@ String[char] : RawArray {
 	insert { arg index, string;
 		^this.keep(index) ++ string ++ this.drop(index)
 	}
-	
+
 	wrapExtend { arg size;
 		^this.dup(size div: this.size).join
 	}
@@ -277,15 +277,15 @@ String[char] : RawArray {
 	zeroPad {
 		^" " ++ this ++ " "
 	}
-	
+
 	padLeft { arg size, string = " ";
 		^string.wrapExtend(max(0, size - this.size)) ++ this
 	}
-	
+
 	padRight { arg size, string = " ";
 		^this ++ string.wrapExtend(max(0, size - this.size))
 	}
-	
+
 	underlined { arg char = $-;
 		^this ++ "\n" ++ String.fill(this.size, char)
 	}

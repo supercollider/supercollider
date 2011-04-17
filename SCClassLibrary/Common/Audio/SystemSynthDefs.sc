@@ -1,4 +1,3 @@
-
 // synthdefs needed by classes
 
 SystemSynthDefs {
@@ -48,4 +47,3 @@ SystemSynthDefs {
 
 
 }
-

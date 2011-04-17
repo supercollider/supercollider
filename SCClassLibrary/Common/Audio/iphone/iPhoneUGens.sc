@@ -1,4 +1,3 @@
-
 AccelerometerX : UGen
 {
 	// warp 0 = linear

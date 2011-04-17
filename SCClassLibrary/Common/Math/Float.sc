@@ -1,4 +1,3 @@
-
 Float : SimpleNumber {
 	isFloat { ^true }
 	asFloat { ^this }

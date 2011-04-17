@@ -1,4 +1,3 @@
-
 + StartRow {
 	children { ^nil }
 }
@@ -132,5 +131,3 @@
 		}
 	}
 }
-
-

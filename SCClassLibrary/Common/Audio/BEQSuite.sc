@@ -1,4 +1,3 @@
-
 BEQSuite : Filter {}
 
 BLowPass : BEQSuite {
@@ -187,4 +186,3 @@ BHiPass4 {
 		^SOS.ar(SOS.ar(in, *coefs), *coefs ++ [mul, add]);
 	}
 }
-

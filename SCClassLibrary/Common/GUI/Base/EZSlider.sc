@@ -1,4 +1,3 @@
-
 EZSlider : EZGui {
 
 	var <sliderView, <numberView, <unitView, <>controlSpec,

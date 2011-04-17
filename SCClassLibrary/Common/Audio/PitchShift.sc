@@ -1,5 +1,3 @@
-
-
 PitchShift : UGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 	*ar { arg in = 0.0, windowSize = 0.2, pitchRatio = 1.0,

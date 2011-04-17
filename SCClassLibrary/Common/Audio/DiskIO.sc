@@ -1,4 +1,3 @@
-
 DiskOut : UGen {
 	*ar { arg bufnum, channelsArray;
 		^this.multiNewList(['audio', bufnum] ++ channelsArray.asArray)
@@ -38,4 +37,3 @@ VDiskIn : MultiOutUGen {
 		^this.initOutputs(numChannels, rate)
 	}
 }
-

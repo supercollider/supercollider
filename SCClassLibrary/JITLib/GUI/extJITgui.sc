@@ -1,4 +1,4 @@
-+ NodeProxy { 
++ NodeProxy {
 	gui { | numItems, bounds, preset|
 		// which options to support?
 		^NdefGui(this, numItems, nil, bounds, options: preset);
@@ -17,7 +17,7 @@
 	}
 }
 
-+ Tdef { 
++ Tdef {
 	*gui { | numItems, bounds, preset|
 		^TdefAllGui(numItems, nil, bounds, options: preset);
 	}
@@ -25,7 +25,7 @@
 		^TdefGui(this, numItems, nil, bounds, options: preset);
 	}
 }
-+ Pdef { 
++ Pdef {
 	*gui { | numItems, bounds, preset|
 		^PdefAllGui(numItems, nil, bounds, options: preset);
 	}
@@ -34,7 +34,7 @@
 	}
 }
 
-+ Dictionary { 
++ Dictionary {
 	gui { | numItems, bounds, preset|
 		^EnvirGui(this, numItems, nil, bounds, options: preset);
 	}

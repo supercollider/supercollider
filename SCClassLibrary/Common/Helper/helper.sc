@@ -76,4 +76,3 @@ Helper {
 			  	{ ^UGenHelper.new( undocumentedObject, path ) }
 		}
 }
-

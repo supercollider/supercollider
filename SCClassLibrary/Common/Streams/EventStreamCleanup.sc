@@ -1,4 +1,3 @@
-
 // Cleanup functions are passed a flag.
 // The flag is set false if nodes have already been freed by CmdPeriod
 // This caused a minor change to TempoClock:clear and TempoClock:cmdPeriod
@@ -50,4 +49,3 @@ EventStreamCleanup {
 	}
 
 }
-

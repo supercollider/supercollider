@@ -1,17 +1,16 @@
-
-ProxyMonitorGui { 
+ProxyMonitorGui {
 	classvar <>lastOutBus = 99;
 
 	var <proxy, <usesPlayN = false, <usesName, <usesPausSend;
 	var <win, <zone, <flow;
-	var <ampSl, <playBut, <nameView, <setOutBox, <playNDialogBut, <pauseBut, <sendBut; 
+	var <ampSl, <playBut, <nameView, <setOutBox, <playNDialogBut, <pauseBut, <sendBut;
 	var <skipjack, <oldState = #[];
-	
+
 	*new { |proxy, w, bounds, showLevel=false, showPlayN=true, showName=true, showPauseSend = true,
 		makeWatcher=true, skin|
-		
+
 		^super.new.init(w, bounds, showLevel, showPlayN, showName, showPauseSend, makeWatcher, skin)
-			.proxy_(proxy); 
+			.proxy_(proxy);
 	}
 	proxy_ { |inproxy|
 		if (proxy.isNil or: proxy.isKindOf(NodeProxy)) {
@@ -21,7 +20,7 @@ ProxyMonitorGui {
 			warn("ProxyMonitorGui: % is not a nodeproxy.".format(inproxy))
 		};
 	}
-	
+
 	init { |w, bounds, showLevel, showPlayN, showName, showPauseSend, makeWatcher, skin|
 		var font;
 		var nameWid = 60;
@@ -55,12 +54,12 @@ ProxyMonitorGui {
 			win = Window(this.class.name.asString, winBounds, false).front;
 		};
 
-		
-		zone = GUI.compositeView.new(win, viewBounds); 
+
+		zone = GUI.compositeView.new(win, viewBounds);
 		zone.background_(skin.foreground);
 		flow = FlowLayout(zone.bounds, 0@0, 0@0);
 		zone.decorator = flow;
-		zone.resize_(2); 
+		zone.resize_(2);
 
 		if (viewBounds.isKindOf(Rect)) { viewBounds = viewBounds.extent };
 
@@ -73,7 +72,7 @@ ProxyMonitorGui {
 		sliderWidth = viewBounds.x - widthSum;
 
 		height = viewBounds.y;
-		
+
 		ampSl = EZSlider(zone, (sliderWidth @ height), \vol, \db,
 			{ arg slid;
 				if(proxy.notNil) {
@@ -84,10 +83,10 @@ ProxyMonitorGui {
 			numberWidth: showLevel.binaryValue * 40);
 		ampSl.labelView.font_(font).align_(0);
 		ampSl.view.resize_(2);
-		
-				
+
+
 			// should have four states: ...
-		
+
 		playBut = Button(zone, Rect(0,0,playWid, height))
 			.font_(font).resize_(3)
 			.states_([
@@ -97,20 +96,20 @@ ProxyMonitorGui {
 
 		playBut.action_({ arg btn, modif;
 			if(proxy.notNil) {
-				[ 	{ 	if (modif.isAlt) { proxy.end } { proxy.stop }; }, 
+				[ 	{ 	if (modif.isAlt) { proxy.end } { proxy.stop }; },
 					{ 	if (modif.isAlt) { proxy.vol_(0) };
 						if (usesPlayN) { proxy.playN } { proxy.play }
 					}
 				].at(btn.value).value
 			}
 		});
-		
+
 		setOutBox = EZNumber(zone, outWid@height, nil, [0, lastOutBus, \lin, 1],
 			{ |box, mod|
 				if (proxy.notNil) {
 					if (proxy.monitor.isNil) {
 						"ProxyMonitorGui - cant set outs yet.".postln
-					} { 
+					} {
 						proxy.monitor.out_(box.value.asInteger);
 					};
 				};
@@ -119,7 +118,7 @@ ProxyMonitorGui {
 		setOutBox.view.resize_(3);
 		setOutBox.numberView.font_(font).align_(0);
 
-		if (usesPlayN) { 
+		if (usesPlayN) {
 			playNDialogBut = GUI.button.new(zone, Rect(0,0, playNWid, height))
 				.font_(font).resize_(3)
 				.states_([
@@ -131,7 +130,7 @@ ProxyMonitorGui {
 					box.value_(1 - box.value);
 				});
 		};
-		
+
 		if (usesName) {
 			nameView = DragBoth(zone, Rect(0,0, nameWid, height));
 			nameView.font_(font).align_(0).resize_(3)
@@ -143,20 +142,20 @@ ProxyMonitorGui {
 			pauseBut = GUI.button.new(zone, Rect(0,0,34,height))
 				.font_(font).resize_(3)
 				.states_([
-					["paus", skin.fontColor, skin.onColor], 
+					["paus", skin.fontColor, skin.onColor],
 					["rsum", skin.fontColor, skin.offColor]
 				])
-				.action_({ arg btn; 
+				.action_({ arg btn;
 				if(proxy.notNil, {
 						[ 	{ proxy.resume; }, { proxy.pause; }  ].at(btn.value).value;
 					})
 				});
-			
+
 			sendBut = Button(zone, Rect(0,0,34,height))
 				.font_(font).resize_(3)
-				.states_([ 
-					["send", skin.fontColor, skin.offColor], 
-					["send", skin.fontColor, skin.onColor] 
+				.states_([
+					["send", skin.fontColor, skin.offColor],
+					["send", skin.fontColor, skin.onColor]
 				])
 				.action_({ arg btn, mod;
 					if(proxy.notNil and: (btn.value == 0)) {
@@ -165,23 +164,23 @@ ProxyMonitorGui {
 					btn.value_(1 - btn.value)
 				})
 		};
-				
+
 		if (makeWatcher) { this.makeWatcher };
 	}
 
-	makeWatcher { 
+	makeWatcher {
 		skipjack.stop;
-		skipjack = SkipJack({ this.updateAll }, 
+		skipjack = SkipJack({ this.updateAll },
 			0.5, 			{ win.isClosed },			("ProxyMon" + try { proxy.key }).asSymbol		);		skipjack.start;	}		updateAll {		var monitor, outs, amps, newHasSeriesOut;
-		 
+
 		var currState;
 		var currVol=0, pxname='<no proxy>', isAudio=false, plays=0, playsSpread=false, pauses=0, canSend=0;
 		var type = "-";
-		
+
 		if (win.isClosed) {skipjack.stop; ^this };
-		
+
 		if (proxy.notNil) {
-		
+
 			pxname = proxy.key ? 'anon';
 			type = proxy.typeStr;
 			canSend = proxy.objects.notEmpty.binaryValue;
@@ -191,10 +190,10 @@ ProxyMonitorGui {
 			monitor = proxy.monitor;
 			plays = monitor.isPlaying.binaryValue;
 
-			if (monitor.notNil, { 
+			if (monitor.notNil, {
 				currVol = proxy.monitor.vol;
 				playsSpread = proxy.monitor.hasSeriesOuts.not;
-				outs = monitor.outs; 
+				outs = monitor.outs;
 			});
 		};
 

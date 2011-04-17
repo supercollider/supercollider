@@ -1,4 +1,4 @@
-+ ServerOptions { 
++ ServerOptions {
 	// get options from command line passed by SCSpawn.exe
 	setFromCmdString { arg str;
 		var segments;

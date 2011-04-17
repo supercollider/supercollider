@@ -1,4 +1,3 @@
-
 Filter : UGen {
  	checkInputs { ^this.checkSameRateAsFirstInput }
 }
@@ -319,4 +318,3 @@ DetectSilence : Filter {
 //		^this.multiNew('control', in)
 //	}
 //}
-

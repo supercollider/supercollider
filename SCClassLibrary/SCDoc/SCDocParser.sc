@@ -85,7 +85,7 @@ SCDocParser {
         current = node = (tag:tag, display:display, text:text, children:if(children,{List.new},{nil}));
         tree.add(current);
         if(children, {tree = current.children}); //recurse into children list
-        if(text.isNil) {this.endCurrent}; //we don't have any text field to add to for this tag, so start fresh..    
+        if(text.isNil) {this.endCurrent}; //we don't have any text field to add to for this tag, so start fresh..
         ^node;
     }
 
@@ -147,7 +147,7 @@ SCDocParser {
             switch(tag,
                 'description::',        noNameSection, //level 1
                 'classmethods::',       noNameSection,
-                'instancemethods::',    noNameSection,                
+                'instancemethods::',    noNameSection,
                 'examples::',           noNameSection,
                 'section::',            namedSection.(1),
                 'subsection::',         namedSection.(2),
@@ -271,7 +271,7 @@ SCDocParser {
     parse {|string|
         var lines = string.split($\n); //split lines
 //        var lines = string.findRegexp("[^\n]+").flop[1]; //doesn't work for empty lines
-        
+
         var w, split, split2, word;
         this.init;
         lines.do {|line,l|
@@ -496,7 +496,7 @@ SCDocParser {
     generateUndocumentedMethods {|class,node,title|
         var syms, name, mets, l = Array.new;
         var docmets = IdentitySet.new;
-        
+
         var addMet = {|n|
             n.text.findRegexp("\\(.*\\)|[^ ,]+").flop[1].do {|m|
                 if(m[0] != $() {
@@ -518,9 +518,9 @@ SCDocParser {
         };
 
         if(class.isNil, {^nil});
-        
+
         do_children.(node.children);
-        
+
         (mets = class.methods) !? {
             //ignore these methods by default. Note that they can still be explicitly documented.
             docmets = docmets | IdentitySet[\categories, \init, \checkInputs, \new1, \argNamesInputsOffset];
@@ -630,7 +630,7 @@ SCDocParser {
                 l.add((tag:\strong, text:k));
                 l.add((tag:\tree, children:m=List.new));
                 dumpCats.value(subs[k],m,z);
-            };    
+            };
         };
 
         sorted = tree.keys.asList.sort {|a,b| a<b};
@@ -643,7 +643,7 @@ SCDocParser {
 //                node.add((tag:'prose', text:" ", display:\inline));
             };
         };
-        
+
         sorted.do {|k|
             node.add((tag:\section, text:k, children:m=List.new));
             m.add((tag:\tree, children:l=List.new));
@@ -656,7 +656,7 @@ SCDocParser {
         r.add((tag:'title', text:"Document Categories"));
         r.add((tag:'summary', text:"All documents by categories"));
         r.add((tag:'related', text:"Overviews/Documents, Browse, Search"));
-        
+
         this.makeCategoryTree(catMap,r,toc:false);
 
         root = r;
@@ -713,7 +713,7 @@ SCDocParser {
         r.add((tag:'title', text:"Methods"));
         r.add((tag:'summary', text:"Alphabetical index of all methods"));
         r.add((tag:'related', text:"Overviews/ClassTree, Overviews/Classes"));
-        
+
         r.add((tag:'prose', text:"This is an alphabetical list of all implemented methods, including private and undocumented methods.", display:\block));
         r.add((tag:'prose', text:"The classnames are prefixed by * for classmethods and postfixed by + for extensionmethods.", display:\block));
 
@@ -824,9 +824,8 @@ SCDocParser {
         r.add((tag:'title', text:"Server stuff"));
         r.add((tag:'summary', text:"Overview of server related stuff"));
 
-        this.makeCategoryTree(catMap,r,"^Server$"); 
+        this.makeCategoryTree(catMap,r,"^Server$");
         this.makeCategoryTree(catMap,r,"^UGens$");
         root = r;
     }*/
 }
-

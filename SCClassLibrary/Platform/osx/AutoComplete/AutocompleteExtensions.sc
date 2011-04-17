@@ -1,4 +1,3 @@
-
 // class extensions needed for autocomplete
 
 + Document {

@@ -1,4 +1,3 @@
-
 + Object {
 
 	stopToBundle {}
@@ -133,5 +132,3 @@
 		});
 	}
 }
-
-

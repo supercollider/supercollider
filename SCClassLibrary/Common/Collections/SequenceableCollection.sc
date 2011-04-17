@@ -293,7 +293,7 @@ SequenceableCollection : Collection {
 	keysValuesDo { arg function;
 		^this.pairsDo(function)
 	}
-	
+
 	doAdjacentPairs { arg function;
 		(this.size - 1).do({ arg i;
 			function.value(this.at(i), this.at(i+1), i);

@@ -48,5 +48,3 @@ EZPopUpMenu : EZLists{
 	}
 
 }
-
-

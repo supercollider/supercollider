@@ -1,4 +1,3 @@
-
 + Object {
 
 	debug { arg caller;
@@ -35,4 +34,3 @@
 		});
 	}
 }
-	

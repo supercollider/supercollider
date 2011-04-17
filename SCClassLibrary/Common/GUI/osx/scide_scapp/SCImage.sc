@@ -1,4 +1,3 @@
-
 // blackrain at realizedsound dot net and charles picasso - thelych at gmail dot com
 // 09-2008
 
@@ -117,9 +116,9 @@ SCImage {
 	 */
 	*colorToPixel { arg col;
 		^Integer.fromRGBA(
-			(col.red * 255 ).asInteger, 
-			(col.green * 255).asInteger, 
-			(col.blue * 255 ).asInteger, 
+			(col.red * 255 ).asInteger,
+			(col.green * 255).asInteger,
+			(col.blue * 255 ).asInteger,
 			(col.alpha * 255 ).asInteger);
 	}
 

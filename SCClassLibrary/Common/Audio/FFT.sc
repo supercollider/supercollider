@@ -1,4 +1,3 @@
-
 // fft uses a local buffer for holding the buffered audio.
 // wintypes are defined in the C++ source. 0 is default, Welch; 1 is Hann; -1 is rect.
 
@@ -23,22 +22,22 @@ IFFT : UGen
 	*kr { | buffer, wintype = 0, winsize=0|
 		^this.multiNew('control', buffer, wintype, winsize).do({|ifft| _.initSiblings});
 	}
-	
+
 	initSiblings { siblings = Set.new; }
-	
+
 	removeAntecedent { arg ugen;
 		antecedents.remove(ugen);
 		siblings = siblings.addAll(ugen.descendants);
 		this.makeAvailable;
 	}
-	
+
 	makeAvailable {
 		var ind;
-		if (antecedents.size == 0, {	
+		if (antecedents.size == 0, {
 			ind = synthDef.available.detectIndex({|av|
 				siblings.includes(av) || siblings.includesAny(av.descendants)
 			}) ? synthDef.available.size;
-			
+
 			synthDef.available = synthDef.available.insert(ind, this);
 			siblings = nil;
 		});
@@ -227,6 +226,3 @@ PV_LoBitEncoder : PV_ChainUGen
 	}
 }
 */
-
-
-

@@ -1,4 +1,3 @@
-
 //these extensions provide means to wrap Objects so that they
 //make sense within the server bus system according to a node proxy.
 
@@ -347,6 +346,3 @@
 		)
 	}
 }
-
-
-

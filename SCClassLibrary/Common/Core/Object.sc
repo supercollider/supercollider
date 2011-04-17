@@ -91,20 +91,20 @@ Object  {
 			performList(item[0], item[1], item[2..])
 		}
 	}
-	
+
 	performWithEnvir { |selector, envir|
 		var argNames, args;
 		var method = this.class.findRespondingMethodFor(selector);
 		if(method.isNil) { ^this.doesNotUnderstand(selector) };
-		
+
 		envir = method.makeEnvirFromArgs.putAll(envir);
-		
+
 		argNames = method.argNames.drop(1);
 		args = envir.atAll(argNames);
 		^this.performList(selector, args)
 	}
 
-	performKeyValuePairs { |selector, pairs|		
+	performKeyValuePairs { |selector, pairs|
 		^this.performWithEnvir(selector, ().putPairs(pairs))
 	}
 
@@ -168,7 +168,7 @@ Object  {
 		var indices = if(instVarNames.notNil) {
 			instVarNames.collect(this.slotIndex(_))
 		} {
-			(0..this.instVarSize-1) 
+			(0..this.instVarSize-1)
 		};
 		indices.do { |i|
 			var obj = this.instVarAt(i);
@@ -318,7 +318,7 @@ Object  {
 		_ObjectCompileString
 		^String.streamContents({ arg stream; this.storeOn(stream); });
 	}
-	
+
 	cs { ^this.asCompileString }
 
 	printClassNameOn { arg stream;
@@ -338,8 +338,8 @@ Object  {
 		var args = this.storeArgs;
 		if(args.notEmpty) {
 			stream << "(" <<<* this.simplifyStoreArgs(args) << ")";
-		} { 
-			stream << ".new" 
+		} {
+			stream << ".new"
 		}
 	}
 	simplifyStoreArgs { arg args;
@@ -348,7 +348,7 @@ Object  {
 		methodArgs = newMethod.prototypeFrame.drop(1);
 		args.size.reverseDo { |i|
 			if(methodArgs[i] != args[i]) {
-				^args.keep(i + 1)	
+				^args.keep(i + 1)
 			}
 		}
 		^[]
@@ -475,8 +475,8 @@ Object  {
 	// instance specific method support
 	addUniqueMethod { arg selector, function;
 		var methodDict;
-		if(function.isKindOf(Function).not) { 
-			Error("A method must be defined using a function").throw 
+		if(function.isKindOf(Function).not) {
+			Error("A method must be defined using a function").throw
 		};
 		if(uniqueMethods.isNil, { uniqueMethods = IdentityDictionary.new });
 		methodDict = uniqueMethods.at(this);
@@ -534,7 +534,7 @@ Object  {
 	>> { arg that; ^rightShift(this, that) }
 	+>> { arg that; ^unsignedRightShift(this, that) }
 	<! { arg that; ^firstArg(this, that) }
-	
+
 	asInt { ^this.asInteger }
 
 	blend { arg that, blendFrac = 0.5;

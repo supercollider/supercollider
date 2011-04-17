@@ -44,14 +44,13 @@ OSXPlatform : UnixPlatform
 	findHelpFile { | string |
 		^string.findHelpFile;
 	}
-	
+
 	getMouseCoords {
 		^this.prGetMouseCoords(Point.new);
 	}
-	
+
 	prGetMouseCoords {|point|
 		_Mouse_getCoords
 		^this.primitiveFailed
 	}
 }
-

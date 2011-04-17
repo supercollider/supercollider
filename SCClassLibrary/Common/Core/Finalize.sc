@@ -1,4 +1,3 @@
-
 /*
 
 Finalization is a way for the C primitives to release resources back to the system.
@@ -26,5 +25,3 @@ Finalizer {
 	notFinalized { ^cFunction.notNil }
 	isFinalized { ^cFunction.isNil }
 }
-
-

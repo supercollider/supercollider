@@ -1,4 +1,3 @@
-
 OSCBundle {
 	var <messages, <preparationMessages;
 
@@ -113,4 +112,3 @@ MixedBundle : OSCBundle {
 	}
 
 }
-

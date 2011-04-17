@@ -13,4 +13,3 @@ FuncStreamAsRoutine : Routine {
 
 	reset { ^resetFunc.value }
 }
-

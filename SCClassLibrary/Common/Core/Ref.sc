@@ -1,4 +1,3 @@
-
 // a Ref is a handle to a value. you can use it to return results by reference
 // example:
 //		x = Ref.new(nil);
@@ -51,4 +50,3 @@ RefCopy : Ref
 {
 	next { ^value.copy }
 }
-

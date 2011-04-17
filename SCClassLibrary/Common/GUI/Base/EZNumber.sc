@@ -1,4 +1,3 @@
-
 EZNumber : EZGui{
 	var <numberView, <unitView, <>controlSpec,
 		 numSize,numberWidth,unitWidth, gap, gap2;
@@ -212,4 +211,3 @@ EZNumber : EZGui{
 
 
 }
-

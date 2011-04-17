@@ -1,4 +1,3 @@
-
 //watches a server address for node-related messages
 
 AbstractNodeWatcher {

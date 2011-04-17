@@ -1,5 +1,3 @@
-
-
 SCTextFieldOld : SCNumberBoxOld {
 
 	*viewClass { ^SCNumberBoxOld }

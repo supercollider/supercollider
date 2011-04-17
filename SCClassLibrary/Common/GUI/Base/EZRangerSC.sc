@@ -1,4 +1,3 @@
-
 EZRanger : EZGui {
 
 	var <rangeSlider, <hiBox,<loBox, <unitView, <>controlSpec,
@@ -102,7 +101,7 @@ EZRanger : EZGui {
 	}
 
 	doAction { action.value(this); }
-	
+
 	set { arg label, spec, argAction, initVal, initAction = false;
 		labelView.notNil.if { labelView.string = label.asString };
 		spec.notNil.if { controlSpec = spec.asSpec };

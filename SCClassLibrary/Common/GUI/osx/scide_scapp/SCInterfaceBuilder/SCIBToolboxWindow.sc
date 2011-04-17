@@ -532,4 +532,3 @@ SCIBPallatteDrag : SCIBDrag
 
 	asString { ^class.asString }
 }
-

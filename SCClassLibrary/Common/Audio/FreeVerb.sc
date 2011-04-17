@@ -20,4 +20,3 @@ FreeVerb2 : MultiOutUGen {
 		^channels
 	}
 }
-

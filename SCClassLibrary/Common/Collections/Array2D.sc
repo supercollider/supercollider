@@ -1,4 +1,3 @@
-
 Array2D : Collection {
 	var <rows, <cols, <array;
 	*new { arg rows=1, cols=1;
@@ -61,4 +60,3 @@ Array2D : Collection {
 		this.storeModifiersOn(stream);
 	}
 }
-

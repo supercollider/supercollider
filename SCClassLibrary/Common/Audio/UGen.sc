@@ -1,4 +1,3 @@
-
 UGen : AbstractFunction {
 	classvar <>buildSynthDef; // the synth currently under construction
 	var <>synthDef;
@@ -166,33 +165,33 @@ UGen : AbstractFunction {
 		^pow(outMax/outMin, log(this.prune(inMin, inMax, clip)/inMin)
 			/ log(inMax/inMin)) * outMin;
 	}
-	
+
 	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled;
 		if (curve.isNumber and: { abs(curve) < 0.25 }) {
-			^this.linlin(inMin, inMax, outMin, outMax, clip) 
+			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
 		scaled = (this.prune(inMin, inMax, clip) - inMin) / (inMax - inMin);
-		
+
 		^b - (a * pow(grow, scaled));
 	}
-	
+
 	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled;
 		if (curve.isNumber and: { abs(curve) < 0.25 }) {
-			^this.linlin(inMin, inMax, outMin, outMax, clip) 
+			^this.linlin(inMin, inMax, outMin, outMax, clip)
 		};
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
 		b = outMin + a;
 		scaled = (this.prune(inMin, inMax, clip) - inMin) / (inMax - inMin);
-		
+
 		^log((b - scaled) / a) / curve
 	}
-	
+
 	signalRange { ^\bipolar }
 	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
 

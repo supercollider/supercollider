@@ -72,7 +72,7 @@ WiiMote {
 				\nax, \nay, \naz, \nao, \nsx, \nsy, \nbZ, \nbC
 			],
 			wii_classic: [
-				\cbX, \cbY, \cbA, \cbB, \cbL, \cbR, 
+				\cbX, \cbY, \cbA, \cbB, \cbL, \cbR,
 				\cbZL, \cbZR,
 				\cbUp, \cbDown, \cbLeft, \cbRight,
 				\cbMinus, \cbHome, \cbPlus,

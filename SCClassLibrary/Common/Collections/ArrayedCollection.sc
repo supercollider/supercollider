@@ -1,4 +1,3 @@
-
 ArrayedCollection : SequenceableCollection {
 	*newClear { arg indexedSize = 0;
 		_BasicNewClear
@@ -518,4 +517,3 @@ DoubleArray[double] : RawArray {
 	// readFromStream not implemented yet
 SymbolArray[symbol] : RawArray {
 }
-

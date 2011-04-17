@@ -1,4 +1,3 @@
-
 MIDIEndPoint {
 	var <>device, <>name, <>uid;
 	*new{ arg device, name, uid;

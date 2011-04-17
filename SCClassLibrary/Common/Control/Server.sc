@@ -1,4 +1,3 @@
-
 ServerOptions
 {
 
@@ -61,11 +60,11 @@ ServerOptions
 
 	// prevent buffer conflicts in Server-prepareForRecord and Server-scope by
 	// ensuring reserved buffers
-	
+
 	numBuffers {
 		^numBuffers - 2
 	}
-	
+
 	numBuffers_ { | argNumBuffers |
 		numBuffers = argNumBuffers + 2
 	}
@@ -724,7 +723,7 @@ Server : Model {
 			}
 		}
 	}
-	
+
 	*allRunningServers {
 		^this.all.select(_.serverRunning)
 	}
@@ -925,7 +924,7 @@ Server : Model {
 		);
 		stream << codeStr;
 	}
-	
+
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 

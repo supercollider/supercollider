@@ -1,4 +1,3 @@
-
 Env {
 	// envelope specification for an EnvGen, Env is not a UGen itself
 	var <levels;
@@ -203,7 +202,7 @@ Env {
 		};
 		loopNode = 0;
 	}
-	
+
 	/*
 	plot {
 		var timeScale;
@@ -301,4 +300,3 @@ Env {
 	}
 
 }
-

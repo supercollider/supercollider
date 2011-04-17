@@ -1,14 +1,12 @@
-
-
 // lightweight objects that insulate different ways of playing/stopping.
 // the bundle that is passed in is a MixedBundle
 
 
 AbstractPlayControl {
-	
+
 	var <source, <>channelOffset;
 	var <paused=false;
-	
+
 	classvar <>buildMethods, <>proxyControlClasses; // see wrapForNodeProxy for methods
 
 	*new { | source, channelOffset = 0 |
@@ -58,7 +56,7 @@ AbstractPlayControl {
 
 
 StreamControl : AbstractPlayControl {
-	
+
 	var stream, clock;
 
 	playToBundle { | bundle |
@@ -76,7 +74,7 @@ StreamControl : AbstractPlayControl {
 
 	pause { stream.pause; paused=true }
 	resume { | clock, quant = 1.0 |
-		stream.resume(clock, quant); 
+		stream.resume(clock, quant);
 		paused = false;
 	}
 
@@ -93,22 +91,22 @@ StreamControl : AbstractPlayControl {
 
 
 PatternControl : StreamControl {
-	
+
 	var fadeTime, <array;
 
 	playStream { | str |
 		var dt;
 		dt = fadeTime.value;
 		array = array.add(str);
-		if(dt <= 0.02) { 
-			str.play(clock, false, 0.0) 
-		} { 
-			str.xplay(dt / clock.beatDur, clock, false, 0.0) 
+		if(dt <= 0.02) {
+			str.play(clock, false, 0.0)
+		} {
+			str.xplay(dt / clock.beatDur, clock, false, 0.0)
 		}
 	}
 
 	stopStreams { | streams, dt |
-		
+
 		dt = (dt ? fadeTime).value;
 		if(dt <= 0.02) {
 			streams.do { arg item; item.stop  }
@@ -134,11 +132,11 @@ PatternControl : StreamControl {
 		bundle.onSend({ this.stopStreams(streams, dt) });
 	}
 
-	pause { 
-		array.do(_.pause); 
+	pause {
+		array.do(_.pause);
 		paused = true;
 	}
-	
+
 	resume { | clock, quant = 1.0 |
 		array.do(_.resume(clock, quant));
 		paused = false;
@@ -161,8 +159,8 @@ PatternControl : StreamControl {
 		^nil // return a nil object instead of a synth
 	}
 
-	stop { 
-		this.stopStreams(array.copy); 
+	stop {
+		this.stopStreams(array.copy);
 		array = nil;
 	}
 
@@ -171,14 +169,14 @@ PatternControl : StreamControl {
 
 
 SynthControl : AbstractPlayControl {
-	
+
 	var <server, <>nodeID;
 	var <canReleaseSynth=false, <canFreeSynth=false;
 
 	loadToBundle {} // assumes that SynthDef is loaded in the server
-	
+
 	asDefName { ^source }
-	
+
 	distributable { ^canReleaseSynth } // n_free not implemented in shared node proxy
 
 	build { | proxy | 	// assumes audio rate proxy if not initialized
@@ -246,7 +244,7 @@ SynthControl : AbstractPlayControl {
 			nodeID = nil;
 		}
 	}
-	
+
 	set { | ... args |
 		server.sendBundle(server.latency, ["/n_set", nodeID] ++ args);
 	}
@@ -254,11 +252,11 @@ SynthControl : AbstractPlayControl {
 	pause { | clock, quant = 1 |
 		this.run(clock, quant, false);
 	}
-	
+
 	resume { | clock, quant = 1 |
 		this.run(clock, quant, true);
 	}
-	
+
 	run { | clock, quant, flag = true |
 		if(nodeID.notNil) {
 			(clock ? SystemClock).play({
@@ -280,14 +278,14 @@ SynthControl : AbstractPlayControl {
 	}
 
 	synthDefPath { ^SynthDef.synthDefDir ++ this.asDefName ++ ".scsyndef" }
-	
+
 	store { SynthDescLib.global.read(this.synthDefPath) }
 
 }
 
 
 SynthDefControl : SynthControl {
-	
+
 	var <synthDef, <parents;
 
 	readyForPlay { ^synthDef.notNil }
@@ -345,17 +343,16 @@ SynthDefControl : SynthControl {
 	asDefName { ^synthDef.name }
 
 	wakeUpParentsToBundle { | bundle, checkedAlready |
-		parents.do { | proxy | 
-			proxy.wakeUpToBundle(bundle, checkedAlready) 
+		parents.do { | proxy |
+			proxy.wakeUpToBundle(bundle, checkedAlready)
 		}
 	}
-	
+
 	addParent { | proxy |
 		if(parents.isNil) { parents = IdentitySet.new };
 		parents.add(proxy);
 	}
-	
+
 	controlNames { ^synthDef.allControlNames }
 
 }
-

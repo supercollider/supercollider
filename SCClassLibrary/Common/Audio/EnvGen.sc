@@ -1,4 +1,3 @@
-
 Done : UGen {
 	*kr { arg src;
 		^this.multiNew('control', src)
@@ -67,4 +66,3 @@ Linen : UGen {
 		^this.multiNew('control', gate, attackTime, susLevel, releaseTime, doneAction)
 	}
 }
-

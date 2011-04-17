@@ -1,4 +1,3 @@
-
 NodeProxy : BusPlug {
 
 	var <group, <objects, <nodeMap;
@@ -940,9 +939,9 @@ Ndef : NodeProxy {
 		};
 		^dict
 	}
-	
+
 	proxyspace {
-		^this.class.dictFor(this.server)	
+		^this.class.dictFor(this.server)
 	}
 
 	storeOn { | stream |
@@ -957,4 +956,3 @@ Ndef : NodeProxy {
 
 
 }
-

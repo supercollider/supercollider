@@ -439,6 +439,3 @@ Archive : LibraryBase
 		global.writeArchive(expandedFileName);
 	}
 }
-
-
-

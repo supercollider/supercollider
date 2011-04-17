@@ -313,4 +313,4 @@ GeneralHIDSlot{
 		^In.kr( bus );
 	}
 
-}  
+}

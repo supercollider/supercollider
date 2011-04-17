@@ -270,4 +270,3 @@ SCWindow {
 		stream << ".front;";
 	}
 }
-

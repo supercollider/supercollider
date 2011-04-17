@@ -178,10 +178,10 @@ AbstractFunction {
 	degreeToKey { arg scale, stepsPerOctave=12;
 		^this.composeNAryOp('degreeToKey', [scale, stepsPerOctave])
 	}
-	
+
 	degrad { ^this.composeUnaryOp('degrad') }
 	raddeg { ^this.composeUnaryOp('raddeg') }
-	
+
 	applyTo { arg ... args;
 		^this.valueArray(args)
 	}
@@ -190,7 +190,7 @@ AbstractFunction {
 		// function composition
 		^{|...args| this.value(that.value(*args)) }
 	}
-	
+
 	sampled{ |n=80,from=0.0,to=1.0|
 		var valueArray;
 		valueArray = (from,(to-from)/(n-1) .. to).collect{|x| this.value(x) };

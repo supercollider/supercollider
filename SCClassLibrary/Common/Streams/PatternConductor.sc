@@ -48,4 +48,3 @@ PatternConductor  {
 	}
 	cmdPeriod { clock = nil }
 }
-

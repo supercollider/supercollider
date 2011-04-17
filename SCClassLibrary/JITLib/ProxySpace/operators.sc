@@ -1,5 +1,3 @@
-
-
 AbstractOpPlug : AbstractFunction {
 
 	composeUnaryOp { arg aSelector;
@@ -119,4 +117,3 @@ BinaryOpPlug : AbstractOpPlug  {
 
 
 }
-

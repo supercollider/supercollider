@@ -423,5 +423,3 @@ SCFreqScopeWindow { //was FreqScope
 	}
 
 }
-
-

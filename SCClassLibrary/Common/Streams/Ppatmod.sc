@@ -1,4 +1,3 @@
-
 Plazy : Pattern {
 	var <>func;
 	*new { arg func;

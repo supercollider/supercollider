@@ -1,4 +1,3 @@
-
 /**
   *
   * Subversion based package repository and package manager
@@ -79,4 +78,3 @@ LocalQuarks
 		^path
 	}
 }
-

@@ -10,29 +10,29 @@ OSCresponder {
 	*initClass {
 		all = Set.new;
 	}
-		
+
 	init { arg argAddr, argCmdName, argAction;
 		addr = argAddr;
 		action = argAction;
 		this.cmdName = argCmdName;
 	}
-	
+
 	cmdName_ { arg string;
 		string = string.asString;
 		if(string[0] == $/) { string = string.drop(1) };
 		cmdNameWithoutSlash = string.asSymbol;
 		cmdName = ("/" ++ string).asSymbol;
 	}
-	
+
 
 	*respond { arg time, addr, msg;
 		var cmdName, hit = false;
 		#cmdName = msg;
 		all.do { |resp|
 			if(
-				(resp.cmdName === cmdName) 
-				or: 
-				{ resp.cmdNameWithoutSlash === cmdName } 
+				(resp.cmdName === cmdName)
+				or:
+				{ resp.cmdNameWithoutSlash === cmdName }
 				and: { addr.matches(resp.addr) }
 			) {
 				resp.value(time, msg, addr);
@@ -96,9 +96,9 @@ OSCMultiResponder : OSCresponder {
 
 
 OSCresponderNode : OSCresponder {
-	
+
 	var <added = false;
-	
+
 	add {
 		var made, found;
 		if(added.not, {
@@ -142,4 +142,3 @@ OSCresponderNode : OSCresponder {
 	}
 
 }
-

@@ -1,4 +1,3 @@
-
 EZKnob : EZGui {
 
 	classvar <>compactRatio=0.87;
@@ -120,7 +119,7 @@ EZKnob : EZGui {
 		spec.notNil.if { controlSpec = spec.asSpec };
 		argAction.notNil.if { action = argAction };
 		initVal = initVal ? value ? controlSpec.default;
-		
+
 		if (initAction) {
 			this.valueAction_(initVal);
 		}{

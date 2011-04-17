@@ -1,4 +1,3 @@
-
 PfadeIn : FilterPattern {
 	var <>fadeTime, <>holdTime=0, <>tolerance;
 	*new { arg pattern, fadeTime=1.0, holdTime=0.0, tolerance=0.0001;

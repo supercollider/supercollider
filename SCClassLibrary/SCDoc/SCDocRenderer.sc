@@ -40,7 +40,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         };
         ^ "file://" ++ SCDoc.helpTargetDir +/+ path;
     }
-    
+
     *checkBrokenLinks {
         var f,m,p,file;
         var check_link = {|link|
@@ -84,7 +84,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         };
         postln("Done");
     }
-    
+
     escapeSpecialChars {|str|
         ^str.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
     }
@@ -105,7 +105,7 @@ SCDocHTMLRenderer : SCDocRenderer {
     autoLinkClasses {|txt|
         var x = "", z = 0;
         if(enableClassLinksInCode) {
-            // FIXME: also match plural? like "Floats".. - if word was not class but ends in s and is a class without that s, then use that. 
+            // FIXME: also match plural? like "Floats".. - if word was not class but ends in s and is a class without that s, then use that.
             // it would be useful in prose, but not code examples..
             txt.findRegexp("\\b[A-Z][A-Za-z_0-9]+").select{|m| m[1].asSymbol.asClass.notNil}.do {|m|
                 x = x ++ txt.copyRange(z,m[0]-1);
@@ -257,7 +257,7 @@ SCDocHTMLRenderer : SCDocRenderer {
 
                 collectedArgs = [];
                 do_children.();
-                
+
                 if(collectedArgs.notEmpty) {
                     file.write("<h4>Parameters:</h4>\n");
                     file.write("<table class='arguments'>\n");
@@ -437,7 +437,7 @@ SCDocHTMLRenderer : SCDocRenderer {
             'related', { },
             'categories', { },
             'headerimage', { },
-            
+
             'root', {
                 do_children.();
             },
@@ -558,7 +558,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                 "<a href='"++baseDir +/+ "Browse.html#"++r++"'>"++r++"</a>"
             }.join(", "));
             f.write("</div>");
-        });    
+        });
 
         f.write("<h1>"++name);
         if((folder=="") and: {name=="Help"}, {
@@ -601,7 +601,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                 f.write("<div id='filename'>Location: <b>NOT INSTALLED!</b></div>");
             };
         };
-        
+
         x = parser.findNode(\related);
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
@@ -663,7 +663,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                 this.addUndocumentedMethods(currentClass.class,\classmethods);
                 this.addUndocumentedMethods(currentClass,\instancemethods);
                 //TODO: add methods from +ClassName.schelp (recursive search)
-                
+
                 x = parser.findNode(\redirect).text.stripWhiteSpace;
                 if(x.notEmpty) {
                     try {
@@ -701,4 +701,3 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.close;
     }
 }
-
