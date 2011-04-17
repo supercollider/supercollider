@@ -436,7 +436,10 @@ Server : Model {
 
 		^Routine({
 			while({
-				(serverRunning.not or: (serverBooting and: mBootNotifyFirst.not)) and: {(limit = limit - 1) > 0}
+				((serverRunning.not
+				  or: (serverBooting and: mBootNotifyFirst.not))
+				 and: {(limit = limit - 1) > 0})
+				and: pid.pidRunning
 			},{
 				0.2.wait;
 			});
