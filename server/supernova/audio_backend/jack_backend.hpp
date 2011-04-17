@@ -90,6 +90,7 @@ public:
         /* initialize callbacks */
         jack_set_thread_init_callback (client, jack_thread_init_callback, NULL);
         jack_set_process_callback (client, jack_process_callback, this);
+        jack_on_info_shutdown(client, jack_on_info_shutdown_callback, NULL);
 
         /* register ports */
         input_ports.clear();
@@ -234,6 +235,13 @@ private:
         return static_cast<jack_backend*>(arg)->perform(frames);
     }
 
+    static int jack_on_info_shutdown_callback(jack_status_t code, const char *reason, void *arg)
+    {
+        std::cerr << "Jack server was shut down: " << reason << std::endl;
+        std::cerr << "Exiting ..." << std::endl;
+        exit(0); // TODO: later we may want to call a function
+    }
+
     int perform(jack_nframes_t frames)
     {
         engine_functor::init_tick();
@@ -257,8 +265,7 @@ private:
 
             engine_functor::run_tick();
 
-            for (uint16_t i = 0; i != output_channels; ++i)
-            {
+            for (uint16_t i = 0; i != output_channels; ++i) {
                 copyvec(outputs[i], super::output_samples[i].get(), frames);
                 outputs[i] += blocksize_;
             }
