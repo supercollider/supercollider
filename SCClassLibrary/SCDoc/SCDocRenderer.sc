@@ -574,7 +574,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         if(type==\class) {
             if(currentClass.notNil) {
                 m = currentClass.filenameSymbol.asString;
-                f.write("<div id='filename'>Location: "++m.dirname++"/<a href='file://"++m++"'>"++m.basename++"</a></div>");
+                f.write("<div id='filename'>Source: "++m.dirname++"/<a href='file://"++m++"'>"++m.basename++"</a></div>");
                 if(currentClass != Object) {
                     f.write("<div class='inheritance'>");
                     f.write("Inherits from: ");

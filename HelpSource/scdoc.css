@@ -152,7 +152,9 @@ a.hidetoggle1:hover {
     font-weight: bold;
     margin-top: 0.5em;
 }
-
+#filename {
+    word-break: break-all;
+}
 .headerimage {
     float: right;
     margin-right: 1ex;

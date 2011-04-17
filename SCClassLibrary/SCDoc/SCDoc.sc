@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 3;
+    classvar version = 4;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -147,14 +147,14 @@ SCDoc {
     }
 
     *addToDocMap {|parser, path|
-        var c, folder = path.dirname, x = parser.findNode(\class).text;
+        var c, folder = path.dirname, classname = parser.findNode(\class).text;
         var doc = (
             path:path,
             summary:parser.findNode(\summary).text,
             categories:parser.findNode(\categories).text
         );
 
-        doc.title = if(x.notEmpty,x,{parser.findNode(\title).text});
+        doc.title = if(classname.notEmpty,classname,{parser.findNode(\title).text});
 
         if(doc.title.isEmpty) {
             doc.title = "NO TITLE:"+path;
@@ -167,7 +167,7 @@ SCDoc {
             warn("Document at"+path+"has no categories::");
         };
 
-        if(x.notEmpty) {
+        if(classname.notEmpty) {
             if(path.basename != doc.title) {
                 warn("Document at"+path+"is not named according to class name:"+doc.title);
             };
@@ -548,7 +548,7 @@ SCDoc {
         this.postProgress("Parsing metadata...");
         // parse all files in fileList
         helpSourceDirs.do {|dir|
-            var path, mtime, ext, sym;
+            var path, mtime, ext, sym, class;
             ext = (dir != helpSourceDir);
             this.postProgress("- Collecting from"+dir);
             Platform.case(
@@ -574,8 +574,11 @@ SCDoc {
                 doc.keep = true;
                 if(subtarget.dirname=="Classes") {
                     sym = subtarget.basename.asSymbol;
-                    if(sym.asClass.notNil) {
+                    class = sym.asClass;
+                    if(class.notNil) {
                         classes.remove(sym);
+                        doc.superclass = if(class!=Object, {class.superclass.name},nil);
+                        doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
                     } {
                         doc.installed = \missing;
                     };
