@@ -38,6 +38,8 @@ class WebView : public QWebView
   Q_PROPERTY( QWebPage::LinkDelegationPolicy linkDelegationPolicy
               READ linkDelegationPolicy WRITE setLinkDelegationPolicy )
   Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
+  Q_PROPERTY( bool enterInterpretsSelection
+              READ interpretSelection WRITE setInterpretSelection );
 
 public:
 
@@ -51,6 +53,8 @@ public:
   void setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy );
   bool delegateReload() const;
   void setDelegateReload( bool );
+  bool interpretSelection() const { return _interpretSelection; }
+  void setInterpretSelection( bool b ) { _interpretSelection = b; }
 
   inline static QUrl urlFromString( const QString & str ) {
     QUrl url( str );
@@ -61,14 +65,20 @@ public:
 Q_SIGNALS:
   void linkActivated( const QString & );
   void reloadTriggered( const QString & );
+  void interpret( const QString & code );
 
 public Q_SLOTS:
   void findText( const QString &searchText, bool reversed = false );
+
+protected:
+  virtual void keyPressEvent( QKeyEvent * );
 
 private Q_SLOTS:
   void onLinkClicked( const QUrl & );
   void onPageReload();
 
+private:
+  bool _interpretSelection;
 };
 
 class WebPage : public QWebPage

@@ -41,9 +41,20 @@ class QcTextEdit : public QTextEdit, QcHelper
               READ dummyVariantList WRITE setRangeFont );
   Q_PROPERTY( VariantList rangeText
               READ dummyVariantList WRITE setRangeText );
+  Q_PROPERTY( bool enterInterpretsSelection
+              READ interpretSelection WRITE setInterpretSelection );
 
   public:
+    QcTextEdit();
     Q_INVOKABLE void select( int start, int size );
+    bool interpretSelection() const { return _interpretSelection; }
+    void setInterpretSelection( bool b ) { _interpretSelection = b; }
+
+  Q_SIGNALS:
+    void interpret( const QString & code );
+
+  protected:
+    virtual void keyPressEvent( QKeyEvent * );
 
   private:
     QString documentFilename() const;
@@ -58,6 +69,7 @@ class QcTextEdit : public QTextEdit, QcHelper
     void setRangeText( const VariantList & );
 
     QString _document;
+    bool _interpretSelection;
 };
 
 #endif

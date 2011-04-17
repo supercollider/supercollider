@@ -29,10 +29,15 @@
 
 class QcApplication : public QApplication
 {
+  Q_OBJECT
+
   public:
     QcApplication( int & argc, char ** argv );
     virtual ~QcApplication();
     static bool compareThread();
+
+  public Q_SLOTS:
+    void interpret( const QString & code );
 
   private:
     bool event( QEvent * );

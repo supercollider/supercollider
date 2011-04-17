@@ -23,9 +23,14 @@
 
 #include <PyrLexer.h>
 #include <VMGlobals.h>
+#include <PyrKernel.h>
+#include <PyrSlot.h>
+#include <GC.h>
 
 #include <QThread>
 #include <QFileOpenEvent>
+
+extern bool compiledOK;
 
 QcApplication * QcApplication::_instance = 0;
 QMutex QcApplication::_mutex;
@@ -79,6 +84,24 @@ bool QcApplication::compareThread()
   _mutex.unlock();
 
   return same;
+}
+
+void QcApplication::interpret( const QString &str )
+{
+  if( compiledOK ) {
+      QtCollider::lockLang();
+      if( compiledOK ) {
+          VMGlobals *g = gMainVMGlobals;
+
+          PyrString *strObj = newPyrString( g->gc, str.toStdString().c_str(), 0, true );
+
+          SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
+          g->gc->GCWrite(slotRawObject(&g->process->interpreter), strObj);
+
+          runLibrary( QtCollider::s_interpretPrintCmdLine );
+      }
+      QtCollider::unlockLang();
+  }
 }
 
 bool QcApplication::event( QEvent *e )

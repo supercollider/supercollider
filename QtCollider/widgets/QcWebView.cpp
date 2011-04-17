@@ -25,12 +25,16 @@
 #include <QWebFrame>
 #include <QAction>
 #include <QShortcut>
+#include <QKeyEvent>
+#include <QApplication>
 
 static QcWidgetFactory<QtCollider::WebView> factory;
 
 namespace QtCollider {
 
-WebView::WebView( QWidget *parent ) : QWebView( parent )
+WebView::WebView( QWidget *parent ) :
+  QWebView( parent ),
+  _interpretSelection(false)
 {
   QtCollider::WebPage *page = new WebPage(this);
   page->setDelegateReload(true);
@@ -51,6 +55,10 @@ WebView::WebView( QWidget *parent ) : QWebView( parent )
   connect( this, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
   connect( page->action(QWebPage::Reload), SIGNAL(triggered(bool)),
            this, SLOT(onPageReload()) );
+
+  connect( this, SIGNAL(interpret(QString)),
+           qApp, SLOT(interpret(QString)),
+           Qt::QueuedConnection );
 }
 
 QString WebView::url() const
@@ -119,6 +127,22 @@ void WebView::onPageReload()
 {
   Q_EMIT( reloadTriggered( url() ) );
 }
+
+void WebView::keyPressEvent( QKeyEvent *e )
+{
+  if( _interpretSelection && e->modifiers() & Qt::ControlModifier
+      && ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) )
+  {
+    QString selection = selectedText();
+    if( !selection.isEmpty() ) {
+      Q_EMIT( interpret( selection ) );
+      return;
+    }
+  }
+
+  QWebView::keyPressEvent( e );
+}
+
 
 void WebPage::triggerAction ( WebAction action, bool checked )
 {
