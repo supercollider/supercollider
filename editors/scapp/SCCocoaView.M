@@ -1183,12 +1183,14 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector
 {
 
-	unsigned short keycode = [[NSApp currentEvent] keyCode];
+	NSEvent *currentEvent = [NSApp currentEvent];
+	unsigned short keycode = [currentEvent keyCode];
+	NSUInteger modFlags = [currentEvent modifierFlags];
 	
 	//printf("keycode: %d\n", keycode);
 	
 	// Exec on Ctrl c or Enter
-	if ( (aSelector == @selector(insertNewline:) && enterExecutesSelection && (keycode == 76)) || ( keycode == 8) ) {
+	if ( (aSelector == @selector(insertNewline:) && enterExecutesSelection && (keycode == 76)) || ( keycode == 8 && (modFlags & NSControlKeyMask)) ) {
 			
 			if (!compiledOK) {
 				return NO;
@@ -2490,7 +2492,6 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 	[mWebView setSCObject: this];
 	
 	[mWebView setFocusRingType:NSFocusRingTypeNone];
-	[mWebView setEditable:YES];
 	[mWebView setEnterExecutesSelection:YES];
 	
 	setVisibleFromParent();
