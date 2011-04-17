@@ -1,12 +1,12 @@
 QTextView : QAbstractScroll {
   var <stringColor, <font, <editable=true;
 
-  /*TODO*/ var <enterInterpretsSelection;
-
   *qtClass { ^"QcTextEdit" }
 
-  enterInterpretsSelection_ {
-    this.nonimpl( "enterInterpretsSelection" );
+  enterInterpretsSelection { ^this.getProperty( \enterInterpretsSelection ); }
+
+  enterInterpretsSelection_ { arg bool;
+    this.setProperty( \enterInterpretsSelection, bool );
   }
 
   editable_ { arg aBool;

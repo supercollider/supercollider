@@ -13,6 +13,7 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
 
 set( QT_COLLIDER_HDRS
+  QcApplication.h
   QObjectProxy.h
   QWidgetProxy.h
   widgets/BasicWidgets.h

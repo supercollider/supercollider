@@ -92,6 +92,12 @@ QWebView : QView {
     onReload = func;
   }
 
+  enterInterpretsSelection { ^this.getProperty( \enterInterpretsSelection ); }
+
+  enterInterpretsSelection_ { arg bool;
+    this.setProperty( \enterInterpretsSelection, bool );
+  }
+
 //---------------------------------- private --------------------------------------//
 
   prLoadFinished { arg ok;

@@ -23,6 +23,8 @@
 #include "../QcWidgetFactory.h"
 
 #include <QFile>
+#include <QKeyEvent>
+#include <QApplication>
 
 class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
 {
@@ -32,6 +34,14 @@ class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
 };
 
 static QcTextEditFactory factory;
+
+QcTextEdit::QcTextEdit() : _interpretSelection(false)
+{
+  connect( this, SIGNAL(interpret(QString)),
+           qApp, SLOT(interpret(QString)),
+           Qt::QueuedConnection );
+}
+
 
 QString QcTextEdit::documentFilename() const
 {
@@ -144,4 +154,19 @@ void QcTextEdit::setRangeText( const VariantList & list )
   cursor.setPosition( start );
   cursor.setPosition( start + size, QTextCursor::KeepAnchor );
   cursor.insertText( text );
+}
+
+void QcTextEdit::keyPressEvent( QKeyEvent *e )
+{
+  if( _interpretSelection && e->modifiers() & Qt::ControlModifier
+      && ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) )
+  {
+    QString selection = selectedString();
+    if( !selection.isEmpty() ) {
+      Q_EMIT( interpret( selection ) );
+      return;
+    }
+  }
+
+  QTextEdit::keyPressEvent( e );
 }
