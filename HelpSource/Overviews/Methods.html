@@ -14,7 +14,15 @@ div.result_item {
     margin-bottom: 0.2em;
     margin-left: 2em;
 }
-
+div.met_subclasses {
+    font-size: 9pt;
+    color: #777;
+    margin-left: 3em;
+    text-align: left;
+}
+div.met_subclasses a {
+    color: #444;
+}
 .method_name {
     font-family: Andale Mono, monospace;
     font-size: 9.5pt;
@@ -37,6 +45,8 @@ div.result_item {
 
 <script type="text/javascript">
 var methods;
+var subclassCache = {};
+var docmapdict = {};
 function buildMethodList() {
     methods = {};
     for(var i=0;i<docmap.length;i++) {
@@ -55,6 +65,20 @@ function buildMethodList() {
         }
     }
 }
+function getSubClasses(doc) {
+    var a = [];
+    if(doc.subclasses) {
+        for(var i=0;i<doc.subclasses.length;i++) {
+            var x = doc.subclasses[i];
+            var v = docmapdict["Classes/"+x];
+            a.push(x);
+            if(v)
+                a = a.concat(getSubClasses(v));
+        }
+    }
+    return a;
+}
+
 function showMethod(mname, node) {
     var div = document.createElement("div");
     div.className = "method_item";
@@ -101,6 +125,35 @@ function showMethod(mname, node) {
             res += " - missing!";
         n.innerHTML = res+"]";
         div2.appendChild(n);
+
+        if(v.path=="Classes/Object") {
+            var n = document.createElement("div");
+            n.className = "met_subclasses";
+            n.appendChild(document.createTextNode("Inherited by: All classes"));
+            div2.appendChild(n);
+        } else {
+            if(v.subclasses && v.subclasses.length>0) {
+                var n;
+                if(subclassCache[v.path]) {
+                    n = subclassCache[v.path].cloneNode(true);
+                } else {
+                    var subs = getSubClasses(v);
+                    n = document.createElement("div");
+                    n.className = "met_subclasses";
+                    n.appendChild(document.createTextNode("Inherited by: "));
+                    for(var j=0;j<subs.length;j++) {
+                        var a = document.createElement("a");
+                        a.setAttribute("href", "Classes/"+subs[j]+".html");
+                        if(j>0)
+                            n.appendChild(document.createTextNode(", "));
+                        a.innerHTML = subs[j];
+                        n.appendChild(a);
+                    }
+                    subclassCache[v.path] = n;
+                }
+                div2.appendChild(n);
+            }
+        }
     }
 
     node.appendChild(div);
@@ -108,6 +161,14 @@ function showMethod(mname, node) {
 
 function did_load() {
     helpRoot=".."; fixTOC();
+
+    for(var i=0;i<docmap.length;i++) {
+        var doc = docmap[i];
+        docmapdict[doc.path] = doc;
+    }
+
+    buildMethodList();
+
     showmethods();
 }
 
@@ -116,8 +177,6 @@ function showmethods() {
     var hash = unescape(window.location.hash.slice(1));
     var res = document.getElementById("methods");
     res.innerHTML = "";
-    
-    buildMethodList();
     
     if(hash && ! /^section_/.test(hash)) {
         document.getElementById("total_count").innerHTML = "Showing single method:";
