@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 4;
+    classvar version = 5;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -577,7 +577,7 @@ SCDoc {
                     class = sym.asClass;
                     if(class.notNil) {
                         classes.remove(sym);
-                        doc.superclass = if(class!=Object, {class.superclass.name},nil);
+                        doc.superclasses = class.superclasses.collect(_.name).reject(_.isMetaClassName);
                         doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
                     } {
                         doc.installed = \missing;
