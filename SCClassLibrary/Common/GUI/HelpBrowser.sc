@@ -120,8 +120,10 @@ HelpBrowser {
 		webView.onLinkActivated = {|wv, url|
 			this.goTo(url);
 		};
-		webView.onReload = {|wv, url|
-			this.goTo(url);
+		if(webView.respondsTo(\onReload_)) {
+			webView.onReload = {|wv, url|
+				this.goTo(url);
+			};
 		};
 
 		toolbar[\Home].action = { this.goHome };
