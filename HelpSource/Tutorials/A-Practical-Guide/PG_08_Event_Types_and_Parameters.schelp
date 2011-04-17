@@ -404,7 +404,7 @@ Very important: Arrays normally multi-channel expand in patterns. So, you must w
 subsection::Miscellaneous
 
 definitionList::
-## phrase || See link::Guides/recursive_phrasing_(JITLib)::.
+## phrase || See link::Tutorials/JITLib/recursive_phrasing::.
 
 ## setProperties || Set variables belonging to a given object. One possible use is to control a GUI using a pattern.
 definitionList::

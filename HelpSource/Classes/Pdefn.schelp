@@ -1,0 +1,249 @@
+class:: Pdefn
+summary:: non event stream reference definition
+categories:: Libraries>JITLib>Patterns
+related:: Classes/Pdef
+
+description::
+Pdefn provides an interface to its superclass link::Classes/PatternProxy::, keeping a reference to a stream that can be replaced while playing. One pattern may be used in many streams in different places. A change in the pattern definition propagates through all streams.
+
+code::
+Pdefn(key)	//returns the instance
+Pdefn(key, pat)	//defines the pattern and returns the instance, like Pdef, Tdef and Ndef.
+::
+
+It is very similar to link::Classes/PatternProxy::.
+
+Pdefn can be used to store value patterns globally (for strong::event patterns::, see link::Classes/Pdef::). Overview: link::Overviews/JITLib::
+
+subsection::First Example
+
+code::
+s.boot;
+
+Pdefn(\x, Pbrown(0, 6, 0.1, inf));
+Pbind(\note, Pdefn(\x), \dur, 0.3).play;
+Pbind(\note, Pdefn(\x), \dur, 0.1, \ctranspose, 15).play;
+// now change the definition
+Pdefn(\x, Pseq([0, 3, 5, 7, 9, 11], inf));
+Pdefn(\x, Pseq([0, 3, 3, 7], inf) + Pseq([0, [0, 3], [0, 5, 7]], inf));
+::
+
+ClassMethods::
+
+private::initClass
+
+subsection::Creation
+
+method::new
+Store the pattern in a global dictionary under key, replacing its pattern with the new one. If the pattern is a strong::function::, Pdefn creates a link::Classes/Prout:: with this function, passing in the envir, if given(see below).
+
+Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
+
+method::default
+Default source, if none is given. The default is a Pattern that returns 1.0 (This is 1 and not 0 to avoid deadlocks when used as a duration pattern. In a sense, 1 is just as generic as 0).
+
+method::removeAll
+Remove all proxies from the global dictionary ( link::#*all::)
+
+method::clear
+Clear all proxies, setting their source to silence.
+
+method::all
+Set or return the environment ( link::Classes/IdentityDictionary:: ) that stores all Pdefns.
+
+InstanceMethods::
+
+private::prAdd
+
+Examples::
+
+subsection::Pdefn in expressions
+
+code::
+Pdefn(\c, Pdefn(\a) + Pdefn(\b));
+
+t = Pdefn(\c).asStream; // create a stream from Pdefn(\c)
+
+t.value; // default value for a Pdefn is 1, so that it is a good time value default.
+
+Pdefn(\a, 100); // (re)define Pdefn(\a) as 100
+
+t.value;
+
+Pdefn(\b, Pseq([1, 2, 3], inf)); // (re)define Pdefn(\b) as Pseq([1, 2, 3], inf)
+
+3.do { t.value.postln };
+
+Pdefn(\c, Pdefn(\a) * Pdefn(\b) - Pdefn(\a)); // (re)define Pdefn(\c)
+
+8.do { t.value.postln };
+
+Pdefn(\a, Prand([1, 4, 2], inf)); // (re)define Pdefn(\a)
+::
+
+subsection::Embedding Pdefn in other patterns
+
+code::
+Pdefn(\x, Pseq([1, 2, 3], inf));
+
+x = Pseq([0, 0, Pdefn(\x)], inf).asStream;
+
+t = Task({ loop({ x.next.postln; 0.3.wait }) }).play;
+
+
+Pdefn(\x, Pseq([55, 66, 77],inf));
+Pdefn(\x, Pseq([55, 66, 77],1));
+
+t.stop;
+
+
+
+// Pdefn can be accessed in multiple streams
+
+(
+SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
+	var env, u=1;
+	env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction:2);
+	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };
+	Out.ar(out, Pan2.ar(SinOsc.ar(u + 1 * freq, 0, amp * env), pan));
+
+}).add;
+s.boot;
+)
+
+(
+Pdefn(\deg, Pseq([0, 3, 2],inf));
+
+Pset(\instrument, \Pdefhelp,
+	Ppar([
+		Pbind(\degree, Pdefn(\deg), \pan, -0.8),
+		Pbind(\degree, Pdefn(\deg), \dur, 1/3, \pan, 0.8)
+])
+).play;
+)
+
+Pdefn(\deg, Prand([0, 3, [1s, 4]],inf));
+
+Pdefn(\deg, Pn(Pshuf([0, 3, 2, 7, 6],2),inf));
+
+(
+Pdefn(\deg, Plazy { var pat;
+	pat = [Pshuf([0, 3, 2, 7, 6],2), Pseries(0, 1, 11), Pseries(11, -1, 11)].choose;
+	Pn(pat, inf)
+});
+)
+::
+
+subsection::Timing
+
+When does the definition change?
+
+If quant is set, the update is done at the next beat or whatever is specified:
+
+code::
+Pdefn(\deg).quant = 4;
+Pdefn(\deg, Pn(Pseries(0, 1, 8),inf));
+
+Pdefn(\deg).quant = nil; // activate immediately again
+
+(
+Pdefn(\deg, {
+	loop {
+	5.do { |i|
+		#[1, 3, 4].choose.yield;
+		#[5, 0, 12].choose.yield;
+		#[14, 3, 4].choose.do { |j| (i % j).postln.yield };
+	}
+	}
+})
+)
+::
+
+subsection::update condition
+
+In order to be able to switch to a new pattern under a certain condition, the instance variable strong::condition:: can be set to a function that returns a boolean. Value and a count index are passed to the function. The condition is always valid for the strong::next pattern:: inserted. For stuck conditions, the strong::reset:: message can be used.
+
+As counting up (such as emphasis::"every nth event, a swap can happen"::) is a common task, there is a method for this, called strong::count(n)::.
+
+code::
+z = Pbind(\degree, Pdefn(\x, \), \dur, 0.25).play;
+Pdefn(\x, Pseq((0..5), inf)).condition_({ |val, i| i.postln % 6 == 0 });
+Pdefn(\x, Pseq((7..0), inf)).condition_({ |val, i| i.postln % 8 == 0 });
+
+
+// the above is equvalent to:
+Pdefn(\x, Pseq((7..0), inf)).count(8);
+::
+
+subsection::Reset
+
+code::
+// reset to change immediately:
+Pdefn(\x).reset;
+
+Pdefn(\x).stop;
+::
+
+subsection::Functions as arguments to Pdefn
+
+code::
+Pdefn(\deg, { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });
+
+// equivalent to:
+
+Pdefn(\deg, Proutine { loop { yield(0.1.rand.round(0.01) + [2, 3, 9].choose) } });
+
+// this is not exactly true, see below..
+::
+
+subsection::The (inner) environment
+
+code::
+// set() creates a local environment that overrides the outer currentEnvironment
+
+Pdefn(\z).set(\a, 1, \b, 5);
+(
+Pdefn(\z, { |e|
+	loop { yield((e.a + e.b) + 0.1.rand.round(0.01)) }
+})
+); // [1]
+
+t = Pdefn(\z).asStream;
+
+t.nextN(3);
+
+(
+Pdefn(\z, { |e|
+	//(e.a + e.b) + 0.1.rand.round(0.01) 1
+	Pseq([1, 2, e.a], 1)
+})
+);
+
+Pdefn(\z, Pseq([1, 2, 3], 1));
+
+e = Pdefn(\z).envir
+
+
+Pdefn(\z).set(\a, 3);
+
+t.next;
+
+Pdefn(\z).set(\a, Pseq([1, 2, 3], inf));
+
+t.reset;
+t.nextN(3);
+
+Pdefn(\z).envir; // post the envir
+
+
+
+// if you want to keep using the currentEnvironment at the same time,
+// assign the currentEnvironment to the envir's parent (or proto) field
+// (this shouldn't be a proxy space of course.)
+
+Pdefn(\z).envir.parent = currentEnvironment;
+~a = 9;
+~b = 10;
+
+t.nextN(3);
+::

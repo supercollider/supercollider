@@ -1,0 +1,195 @@
+class:: ProxyMixer
+summary:: mix control for a proxyspace
+categories:: Libraries>JITLib>GUI
+related:: Classes/ProxySpace, Classes/NdefGui, Classes/JITGui, Classes/MonitorGui, Classes/NdefParamGui
+
+description::
+
+warning::
+ProxyMixer has been updated - some little adaptations to existing uses may be needed. If you like, you can also replace "ProxyMixer" with "ProxyMixerOld" to keep using the old style of ProxyMixer.
+
+table::
+## strong::Old:: || strong::New::
+## ProxyMixerOld || ProxyMixer
+## *new( || *new(
+## space, || object,
+## nProxies, || numItems,
+## title, //is inferred from ProxySpace.asCode || parent, // a view to display proxymixer on, if nil, a new window is made.
+## where // can be set in bounds || bounds, // can be nil for default size, or a point for a specific location onscreen, or a Rect
+##  || [makeSkip,
+##  || options]
+## ) || )
+::
+::
+
+ProxyMixer provides controls for handling and editing the node proxies in a proxyspace and their monitors (cross-platform graphics). It replaces the earlier ProxyMixer class. For Ndefs, use link::Classes/NdefMixer::.
+
+Overview: link::Overviews/JITLib::
+
+ClassMethods::
+
+subsection::Creation
+
+method::new
+
+argument::object
+the proxyspace to show and control
+
+argument::numItems
+how many ar and kr proxies can be shown
+
+argument::parent
+by default nil, so a window is made automatically. if a parent is supplied, the ProxyMixer will be shown there.
+
+argument::bounds
+window bounds - default is nil, so it determines it size.
+
+argument::makeSkip
+a flag whether to make make a skijack
+
+argument::options
+additional settings - currently none provided.
+
+Examples::
+
+code::
+(
+p = ProxySpace.push(s.boot, p);
+"abcde".do { |k| p[k.asSymbol].ar };
+m = ProxyMixer(p, 8, options: [\playN]);
+p.do(_.play(0));
+)
+
+m.object_(nil);
+m.object_(p);
+
+"abcdefghijk".do { |k| p[k.asSymbol].ar };
+
+"lmnopqrtuvw".do { |k| p[k.asSymbol].kr };
+
+"abcdefghijk".do { |k| p[k.asSymbol].playN };
+
+
+
+	// the top left menu sets which proxies will be shown.
+
+		// existingProxies: even an empty proxy is shown
+~test.ar;
+
+(		// activeProxies: proxy appears when it is alive
+~test = { |freq=250, intv=19, timescale=1, curve=0, loopnode=0|
+	var env = EnvGen.kr(
+		Env({ 1.0.rand2 }!11, {1.0.rand}!10, curve, releaseNode: 9, loopNode: loopnode),
+		timeScale: timescale);
+	var pitch = (env * [1, 0.33, -1] * intv).midiratio * freq;
+	Splay.ar(Formant.ar(pitch, pitch.scramble * 2, pitch.scramble)) * 0.1;
+};
+)
+~test.lag(\freq, 4);
+
+		// playingProxies : only those that really play are shown.
+~test.playN(vol: 1);
+
+// switch back to active proxies...
+		// the reduce button removes all proxies that are not playing
+		// and that are not used as sources in other proxies:
+~otto = { |dens=12| Dust.ar(dens) };
+
+~otto.clear;		// remove it
+p.reduce;
+
+		// doc and docSel post the current proxyspace as code
+p.document;
+
+		// ProxyMixer has three preset widths:
+m.switchSize(0);	// ar zone only
+m.switchSize(1);	// ar + kr
+m.switchSize(2);	// ar = kr + edit zone
+
+		// R opens a Record utility, see below.
+
+	// the line of controls for one proxy and its monitor is
+	// a ProxyMonitorGui, so for full details see ProxyMonitorGui.help.
+
+	// it displays current volume,
+~test.vol_(0.05);
+~test.vol_(0.1);
+
+	// proxy name; play/stop/end control:
+~test.playN;		// playN as is
+~test.stop;		// stop
+~test.end;		// option-click on stop : end the monitor and the proxy itself.
+~test.playN(vol: 0);	// option-click on play : start playing with volume zero.
+
+~test.vol_(0.1);
+
+s.scope(8);
+~test.playN(4);	// set proxy's first output channel:
+~test.playN(0);
+
+	// the "-=" / "-<" button supports multichannel monitoring,
+	// see ProxyMonitorGui.help
+
+	//	paus/rsum toggles pause and resume:
+~test.pause;
+~test.resume;
+
+	// send button resends the proxy,
+	// option-click on send rebuilds the proxy
+	// (e.g. for lookup in client-site state)
+~test.send;
+~test.send;
+~test.send;
+~test.rebuild;
+~test.rebuild;
+~test.rebuild;
+
+
+	// the ed button sends this proxy to the editor - see below
+
+		// kr proxies show up in the middle
+~lfo = { SinOsc.kr(2) };
+~lfnoyz0 = { |lofreq = 0.5, mul=1, add| LFDNoise0.kr(lofreq, mul, add) };
+
+		// the editor zone is a NodeProxyEditor
+		// open it and set some params
+m.switchSize(2);
+m.editGui.object_(~test);
+~test.set(\freq, exprand(80, 1250));	// set ~tests parameters
+~test.set(\intv, 1.0.linrand);
+
+	//	if you declare global specs for the range of a parameter,
+	//	they can be used in the editor:
+Spec.add(\intv, [0, 36, \lin]);
+Spec.add(\timescale, [0.001, 10, \exp]);
+Spec.add(\loopnode, [0, 7, \lin, 1]);
+Spec.add(\curve, [-10, 10]);
+
+m.editGui.object_(~test);
+
+		// you can map a kr proxy to a control param;
+~test.map(\intv, ~lfnoyz0);
+~test.unmap(\intv);
+		// this also works by dragging the kr proxy name
+		// the field left of the param name.
+
+
+	//	some more tests :
+	// if there are too many ar proxies, a scroller appears
+(		// test too many
+10.do { |i| p[("test" ++ i).asSymbol] = {
+	Pan2.ar(Ringz.ar(Impulse.ar(exprand(0.5, 4)), exprand(300, 3000), 0.02), 1.0.rand2, 0.2) };
+};
+)
+
+10.do { |i| p[("test" ++ i).asSymbol].playN(vol: linrand(1.0), fadeTime: exprand(0.01, 5)) };
+
+	// and the same for kr proxies
+10.do { |i| p[("kr" ++ i).asSymbol] = { LFNoise0.kr(exprand(5, 50)) }; };
+
+p.krProxyNames.do { |key| p.removeAt(key) };
+
+p.reduce(method: \clear);
+
+p.clean;
+::

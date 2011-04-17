@@ -1,0 +1,128 @@
+title:: jitlib_basic_concepts_04
+summary:: Timing in NodeProxy
+categories:: Libraries>JITLib>Tutorials
+related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_03
+
+Changes that happen to NodeProxy, most importantly setting its source, are normally done
+whenever the put method is called (or, in ProxySpace, the assignment operation = ).
+Sometimes it is desirable to time these changes relative to a clock.
+
+list::
+## link::#a)_clock#a) clock::
+## link::#b)_quant_and_offset#b) quant and offset::
+## link::#c)_connecting_client_and_server_tempo#c) client and server tempo::
+## link::#d)_sample_accurate_output#d) sample accurate output::
+::
+
+section::a) clock
+
+generally, every node proxy can have its own time base, usually a tempo clock. the clock is responsible for the timing of insertion of new functions, per default at the next beat of the clock.
+
+code::
+p = ProxySpace.push(s.boot);
+~x.play; ~y.play;
+
+// these two synths are started at the time when they are inserted:
+~x = { Ringz.ar(Impulse.ar(1), 400, 0.05).dup };
+~y = { Ringz.ar(Impulse.ar(1), 600, 0.05).dup };
+
+// adding a common clock:
+~x.clock = TempoClock.default; ~x.quant = 1.0;
+~y.clock = TempoClock.default; ~y.quant = 1.0;
+
+// now they are in sync
+~x = { Ringz.ar(Impulse.ar(1), 400, 0.05).dup };
+~y = { Ringz.ar(Impulse.ar(1), 600, 0.05).dup };
+
+// for simplicity, one can provide a clock and a quant for a whole proxy space:
+
+p.clock = TempoClock.default; p.quant = 1.0;
+~y = { Ringz.ar(Impulse.ar(1), 800, 0.05).dup };
+
+~z.play;
+~z = { Ringz.ar(Impulse.ar(1), [500, 514], 0.8).dup * 0.1};
+~z = { Ringz.ar(Impulse.ar(1), exprand(300, 400 ! 2), 1.8).dup * 0.1 };
+~z = { Ringz.ar(Impulse.ar(2), exprand(300, 3400 ! 2), 0.08).dup * 0.2 };
+~z.end;
+
+p.clear; // clear all.
+::
+
+subsection::sequence of events
+
+When inserting a new function into the proxy, the synthdef is built, sent to the server who sends back a message when it has completed. Then the proxy waits for the next beat to start the synth. When using node proxies with patterns, the patterns are played using the clock as a scheduler.
+
+section::b) quant and offset
+
+In order to be able to control the offset/quant point of insertion, the 'quant' instance variable can be used, which can be either a number or an array of the form [quant, offset], just like in pattern.play(quant).
+
+code::
+~z.play; ~y.play;
+~z = { Ringz.ar(Impulse.ar(2), exprand(300, 3400 ! 2), 0.08).dup * 0.2 };
+~y.quant = [1, 0.3]; // offset of 0.3, quant of 1.0
+~y = { Ringz.ar(Impulse.ar(1), 600, 0.05).dup };
+~y.quant = [2, 1/3]; // offset of 1/3, quant of 2.0
+~y = { Ringz.ar(Impulse.ar(0.5), 600, 0.05).dup };
+::
+
+quant and offset scheduling is used for the following operations:
+strong::play::, strong::put::, strong::removeAt::, strong::setNodeMap::, strong::wakeUp::, strong::rebuild:: (and the rebuild operations lag, setRates, bus_). For more information about quantisation in SC, see link::Classes/Quant::.
+
+section::c) connecting client and server tempo
+
+a ProxySpace has the method link::Classes/ProxySpace#-makeTempoClock::, which creates an instance of link::Classes/TempoBusClock:: together with a node proxy (~tempo) which it keeps in sync.
+
+code::
+p.makeTempoClock(2.0); // create a new tempoclock with 2 beats/sec
+~y.play; ~x.play;
+~y.quant = 1; // set the quant back to 1 and the offset to 0
+~y = { Ringz.ar(Impulse.ar(~tempo.kr), 600, 0.05).dup }; // impulse uses tempo
+~x = Pbind(\instrument, \default, \freq, Pseq([300, 400], inf)); // pattern uses tempoclock
+
+p.clock.tempo = 1.0; // set the tempo to 1
+p.clock.tempo = 2.2; // set the tempo to 2.2
+
+~x.free;
+~y.free;
+::
+
+section::d) sample accurate output
+
+for efficiency, NodeProxy uses a normal Out UGen for writing to its bus. If sample accurate playback is needed (link::Classes/OffsetOut::), the ProxySynthDef class variable link::Classes/ProxySynthDef#-sampleAccurate:: can be set to true. Note that for audio through from external sources, this creates a delay for up to one block (e.g. about 1 ms.)
+
+code::
+// example
+
+ProxySynthDef.sampleAccurate = false;
+
+~x.play;
+
+// the grain frees itself
+~x = { SinOsc.ar(800) * EnvGen.ar(Env.perc(0.001, 0.03, 0.4), doneAction:2) };
+
+
+// jittery tone.
+(
+r = Routine {
+	loop {
+		200.do { arg i;
+			~x.spawn;
+			(0.005).wait;
+		};
+		1.wait;
+	}
+}.play;
+)
+
+ProxySynthDef.sampleAccurate = true;
+
+// steady tone, because sample accurate.
+
+~x.rebuild;
+
+r.stop;
+
+p.clear; // remove all.
+::
+
+previous: link::Tutorials/JITLib/jitlib_basic_concepts_03::

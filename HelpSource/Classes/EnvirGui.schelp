@@ -1,0 +1,182 @@
+class:: EnvirGui
+summary:: display the contents of an environment for editing
+categories:: Libraries>JITLib>GUI
+related:: Classes/EZText, Classes/TdefGui, Classes/PdefGui
+
+description::
+EnvirGui displays all keys and values of an environment, so one can change them flexibly. Single number get displayed with an link::Classes/EZSlider::, pairs of numbers with an link::Classes/EZRanger::, and anything else is shown as an link::Classes/EZText:: (a text field).
+
+ClassMethods::
+
+subsection::Creation
+
+method::new
+create a new EnvirGui
+
+code::
+// simple example
+g = EnvirGui.new(nil, 5);				// empty with 5 slots
+g.object_((a: 1, b: \werty, freq: [500, 2000]));	// put some things in
+g.envir.put(\karl, \otto1);				// one more
+g.envir.putAll((b: -12, r: 1, s: 2, t: 3, u: 4, v: 5))
+
+g.object_((x: 2));	// put something else in
+
+g.envir.putAll((b: -12, r: 1, s: 2, t: 3, u: 4, v: 5))
+
+g.envir.removeAt(\b)
+g.envir.removeAt(\r)
+g.envir.removeAt(\s)
+g.envir.removeAt(\t)
+g.envir.removeAt(\u)
+g.envir.removeAt(\v)
+
+g.parent.close;
+::
+
+argument::object
+the envir to display
+
+argument::numItems
+the number of items to display. If an envir is given, and no num, num is envir.size.
+
+argument::parent
+the parent view to display in; if none is given, a new window is created.
+
+argument::bounds
+the bounds within which to display; if none is given, bounds are calculated.
+
+argument::makeSkip
+flag whether to make a skipjack to manage updates of the envirgui.
+
+InstanceMethods::
+
+subsection::Instance Variables
+
+method::numItems
+how many envir items to display
+
+method::envir
+the envir displayed - actually an alias for object.
+
+method::zone
+the composite view the envirgui makes for itself
+
+method::valFields
+the areas in which the key-value pairs are displayed.
+
+method::widgets
+the EZGuis that display the values:
+list::
+## Single numbers will have an link::Classes/EZSlider::,
+## pairs of numbers will be shown as an link::Classes/EZRanger::,
+## all other values are shown as compileStrings in an link::Classes/EZText::.
+::
+
+method::specs
+EZSlider and EZRanger needs specs for their display ranges; if there is a global spec for that key (key.asSpec), it will be used. If not, a spec is generated (see the link::#-getSpec:: method) and kept in these (local) specs.
+
+method::keysRotation
+if the size of envir exceeds numItems, the keys displayed can be rotated: e.g. with 10 keys displayed on 5 valFields, keysRotation 0 means show keys (0..4), keysRotation 2 means show keys (2..6), etc.
+
+subsection::Some Methods
+
+method::object
+set the environment to show
+
+argument::obj
+can be nil, a dictionary, an environment, or an event.
+
+code::
+g = EnvirGui((freq: 120, \amp: 0.2, \pan: -0.5), 12, nil, bounds: Rect(20, 400, 220, 100));
+g.object_((a: 1, b: [2, 3], c: \symbol, d: [4, 5, 6], f: { "boing".postln }))
+::
+
+method::envir
+same as object_(obj)
+
+method::name
+if in its own window, set the window's name
+
+code::
+g.name_("Yoohoo");
+::
+
+method::getSpec
+For editing, specs for the parameter ranges are needed. These can be set locally in the EnvirGui, or global specs will be looked up. If no local or global specs exist for that parameter name, getSpec makes a usable guess for them.
+
+code::
+// inline example
+g = EnvirGui.new;
+g.getSpec(\freq, 400);		// \freq exists as global spec, so use that
+g.object_((freq: 150));
+
+g.getSpec(\iFrek, 500);		// no global spec, so make a new one:
+				// exponential from val * 0.05 to val * 20;
+g.specs;			// and keep it here
+g.envir.put(\iFrek, 500);
+::
+
+argument::key
+the parameter name for which to find a spec
+
+argument::value
+the current value of that param, which may be used for guessing specs.
+
+method::putSpec
+add a spec for a given key, or (if it is a global key) override a global spec with a local one:
+
+code::
+g.putSpec(\iFrek, [10, 1000, \exp]);
+g.putSpec(\freq, [100, 1000, \exp]);
+g.object_((freq: 200, iFrek: 20));
+::
+
+subsection::Some internal methods
+
+method::setField
+set a field by index, with the new key, value;
+
+argument::sameKey
+means the field had the same key already.
+
+method::setByKeys
+update the widgets for the current keys
+
+method::clearField
+remove the link::Classes/EZGui:: at this index
+
+method::clearFields
+remove all unused EZGuis
+
+Examples::
+
+code::
+	// Setting envir variables in a Tdef:
+(
+Tdef(\text).set(\note, [0, 2, 7], \dur, { [0.1, 0.2, 0.4].choose }, \pan, 0, \amp, 0.1);
+
+w = Window("EZTexts", Rect(200, 400, 304, 120)).front;
+w.addFlowLayout;
+
+TdefGui(Tdef(\text), 0, parent: w);
+
+e = EnvirGui(Tdef(\text).envir, 4, parent: w);
+
+Tdef(\text, { |ev|
+	var mydur;
+	loop {
+		mydur = ev.dur;
+		(note: ev.note, dur: mydur, amp: ev.amp, pan: ev.pan).postln.play;
+		mydur.wait;
+	}
+}).play;
+)
+
+	// or equivalently, use the built-in EnvirGui in TdefGui:
+TdefGui(Tdef(\text), 4);
+
+Tdef(\text).set(\yuhu, Prand([2, 3, 5, 8, 13], inf), \magic, [\abra, \cadabra]);
+
+Tdef(\text).clear;
+::

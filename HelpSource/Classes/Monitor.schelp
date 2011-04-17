@@ -1,0 +1,103 @@
+class:: Monitor
+summary:: link between busses
+categories:: Libraries>JITLib>NodeProxy
+related:: Classes/NodeProxy
+
+description::
+For playing contiguous channels to other contiguous busses, one uses strong::play::; for more complex routings, such as splitting, spreading etc to multiple channels, strong::playN::.
+
+InstanceMethods::
+
+method::play
+plays from a bus index with a number of channels to another index with a number of channels, within a target group, or a server.
+
+argument::multi
+keep old links and add new one
+
+argument::volume
+volume at which to monitor
+
+argument::fadeTime
+fade in fade out time
+
+method::playN
+
+the arguments strong::out::, strong::amp:: and strong::in:: can be nested arrays. see also link::Reference/playN::
+
+argument::out
+array of destination channels
+
+argument::amp
+array of amplitudes for each channel
+
+argument::in
+array of source channels
+
+argument::vol
+global scaling for amplitudes
+
+argument::fadeTime
+fade in and out
+
+argument::target, addAction
+where to play (default: server default group)
+
+method::isPlaying
+returns true if the group is still playing
+
+method::stop
+stops within the fadeTime
+
+method::vol
+set the volume
+
+method::out
+set the output index. doesn't work right now.
+
+method::playToBundle
+adds all playing osc messages to the bundle. the bundle should support the message strong::.add::
+
+Examples::
+
+code::
+Server.default = s = Server.internal;
+s.boot;
+s.scope(16);
+
+{ Out.ar(87, SinOsc.ar(MouseX.kr(40, 10000, 1) * [1, 2, 3], 0, 0.2)) }.play;
+x = Monitor.new;
+x.play(87, 3, 1, 2);
+x.out = 0;
+x.stop(3.0);
+x.play(87, 1, 0, 1); // in > out : now mixes down (wrapping)
+x.play(89, 1, 0, 2); // in < out : now distributes to 2 channels
+x.stop;
+
+// multiple play
+x.play(87, 1, 0, 2, multi:true);
+x.play(88, 1, 0, 2, multi:true);
+x.play(89, 1, 0, 2, multi:true);
+x.stop;
+::
+
+subsection::multichannel playing
+
+code::
+// examples: args are // outs, amps, ins, vol, fadeTime
+
+
+(	x.playN(
+		[0, 1, 4], 		// to these outs
+		[0.1, 0.4, 0.3], 	// with these volumes
+		[87, 88, 89]		// from these ins
+	);
+)
+(
+	x.playN(
+		[0, [1, 3, 2], 4], 		// outs can be nested: 87 -> 0, 88 -> [1, 3, 2], 89 -> 4
+		[0.1, [0.4, 0.2, 0.1], 0.3],	// with nested volumes 0.1, [0.4, 0.2, 0.1], and 0.3
+		[87, 88, 89]); 			// reading from these ins
+)
+		// can also set global volume and fadetime
+	x.playN(vol: 0.0, fadeTime:4);
+::

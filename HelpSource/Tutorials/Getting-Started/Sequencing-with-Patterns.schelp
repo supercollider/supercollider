@@ -143,7 +143,7 @@ The link::Overviews/Streams:: documentation explains how all of this works in de
 
 - The delta value in the event tells SuperCollider how long to wait until playing the next event.
 
-An introductory tutorial cannot cover all the possibilities. Learning a set of core pattern classes is important; the link::Tutorials/PG_01_Introduction##Practical Guide to Patterns:: help file series is a more comprehensive introduction. Pattern manipulations, and ways to combine or nest patterns, open up the field to nearly every compositional need.
+An introductory tutorial cannot cover all the possibilities. Learning a set of core pattern classes is important; the link::Tutorials/A-Practical-Guide/PG_01_Introduction##Practical Guide to Patterns:: help file series is a more comprehensive introduction. Pattern manipulations, and ways to combine or nest patterns, open up the field to nearly every compositional need.
 
 For example, we can generate a rhythmic (but not necessarily metric) bassline by choosing randomly from a set of Pbind sequences. (Some of these will use Pmono, which is a variant of Pbind designed to play monophonic synth lines.) While this is a bigger block of code, its structure is fairly simple and it brings together several concepts introduced in the sequencing tutorials. Note that the quant argument to play is used to keep a couple of distinct sequences together on the beat.
 
@@ -210,7 +210,7 @@ k.stop;
 
 section::Further reading
 
-link::Overviews/Streams::, link::Tutorials/Streams-Patterns-Events1##Streams-Patterns-Events::, link::Tutorials/PG_01_Introduction##Practical Guide to Patterns::
+link::Overviews/Streams::, link::Tutorials/Streams-Patterns-Events1##Streams-Patterns-Events::, link::Tutorials/A-Practical-Guide/PG_01_Introduction##Practical Guide to Patterns::
 
 section::Suggested exercises
 

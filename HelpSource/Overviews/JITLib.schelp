@@ -1,0 +1,138 @@
+title:: JITLib
+summary:: An overview of the Just In Time library
+categories:: Libraries>JITLib
+
+section::Introduction
+
+emphasis::"Passenger to taxtidriver: take me to number 37. I'll give you the street name when we are there."::
+footnote::
+an austrian math teacher's joke
+::
+
+Disclaimer: there is no time, really; punctuality is your personal responsibility though.
+
+
+emphasis::Just in time programming:: (or: emphasis::conversational programming, live coding:: footnote::For Live Coding see: http://toplap.org ::emphasis::, on-the fly-programming, interactive programming::) is a paradigm that includes the programming activity itself in the program's operation. This means a program is not taken as a tool that is made first, then to be productive, but a dynamic construction process of description and conversation - writing code thus becoming a closer part of musical or experimental practice. SuperCollider, being a dynamic programming language, provides several possibilities for modification of a running program - this library attempts to extend, simplify and develop them, mainly by providing abstract placeholders strong::(proxies):: that can be modified and used in calculations while playing. There is some specific networking classes which are made to simplify the distribution of live coding activity.
+
+JITLib simplifies and unifies some orthogonal aspects of SuperCollider.
+It consists of a number of strong::placeholders:: (server side and client side) and strong::schemes of access::.
+These two aspects of space corresponding to emphasis::inclusion:: and emphasis::reference::, depend on their context - here the placeholders are like roles which have a certain behaviour and can be fulfilled by certain objects.
+It is useful to be aware of the three aspects of such a placeholder: a certain set of elements can be their strong::source::, they can be used in a set of strong::contexts:: and have a default source, if none is given.
+
+
+Frequently used classes:
+	link::Classes/Tdef:: (for tasks), link::Classes/ProxySpace::, link::Classes/NodeProxy:: and link::Classes/Ndef:: (for synths), link::Classes/Pdef:: and link::Classes/Pdefn:: (for patterns).
+
+
+
+For additional functionality, see also strong::JITLib extensions Quark::. To install it, evaluate:
+code::
+"JITLib extensions".include;
+::
+
+
+section::Tutorial: Interactive Programming with SuperCollider and jitlib
+
+This tutorial focusses on some basic concepts used in JITLib. There are many possibilities,
+such as server messaging and pattern proxies which are not covered in tutorial form presently.
+
+definitionList::
+## content: || 
+definitionList::
+## placeholders in sc || link::Tutorials/JITLib/jitlib_basic_concepts_01::
+## referencing and environments || link::Tutorials/JITLib/jitlib_basic_concepts_02::
+## internal structure of node proxy || link::Tutorials/JITLib/jitlib_basic_concepts_03::
+## timing in node proxy || link::Tutorials/JITLib/jitlib_basic_concepts_04::
+::
+::
+
+
+section::Overview of the different classes and techniques
+
+list::
+## One way or style of access is the strong::'def':: classes (Pdef, Ndef etc.). It binds a symbol to an object in a specific way:
+code::
+Pdef(\name)		//returns the proxy
+::
+code::
+Pdef(\name, object)	//sets the source and returns the proxy
+::
+the rest of the behaviour depends on its use.
+
+client side: link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Pbindef::, link::Classes/Psym::, link::Classes/Pnsym::, link::Classes/Fdef::
+
+server side: link::Classes/Ndef::
+
+## Another way, for server side NodeProxies, is an strong::environment:: that returns placeholders on demand:
+code::
+ProxySpace.push
+::
+code::
+~out = { ...}
+::
+
+helpfile: link::Classes/ProxySpace:: for the use together with other environments, see link::Tutorials/JITLib/jitlib_basic_concepts_02::
+
+## There is also direct access strong::without using the access schemes:: : NodeProxy, TaskProxy etc. provide it. Internally the former use these as base classes.
+
+client side: link::Classes/PatternProxy::, link::Classes/EventPatternProxy::, link::Classes/TaskProxy::, link::Classes/PbindProxy::, link::Classes/Pdict::
+
+server side: link::Classes/NodeProxy::
+
+## To record all textual changes, link::Classes/History:: is provides navigation and a memory of code.
+
+## For playing back on multichannel systems, link::Classes/Monitor:: (used internally) has a link::Reference/playN:: method.
+
+## GUI classes: overviews and mixers: link::Classes/ProxyMixer::, link::Classes/TdefAllGui::, link::Classes/PdefAllGui::, link::Classes/NdefMixer::
+
+(for separate use: link::Classes/TdefGui::, link::Classes/PdefGui::, link::Classes/MonitorGui::, link::Classes/NdefGui::, link::Classes/NdefParamGui::)
+::
+
+
+section::Tutorials
+
+definitionList::
+## link::Tutorials/JITLib/proxyspace_examples:: || (a broad variety of inputs and uses)
+## link::Tutorials/JITLib/jitlib_efficiency:: || (optimising code)
+## link::Tutorials/JITLib/the_lazy_proxy:: || (how the initialisation works)
+## link::Tutorials/JITLib/jitlib_fading:: || (how crossfade of code works)
+## link::Tutorials/JITLib/jitlib_asCompileString:: || (storing and reproducing proxies)
+## link::Tutorials/JITLib/recursive_phrasing:: || (a specific use of Pdef)
+## link::Tutorials/JITLib/jitlib_asCompileString:: || (how to reproduce source code from objects)
+## link::Tutorials/JITLib/jitlib_networking:: || (how to collaborative live code with JITLib)
+## link::Tutorials/JITLib/basic_live_coding_techniques:: || (live coding without jitlib)
+::
+
+section::Networking
+
+list::
+## in remote and local networks thanks to sc-architecture node proxies can be strong::used on any server::, as long as it notifies the client and has a correctly initialized default node. strong::note that the client id should be set::.
+::
+
+section::Internal classes / abstract classes
+
+definitionList::
+## link::Classes/BusPlug:: || (listener on a bus)
+## link::Classes/SkipJack:: || (a task that keeps awake across cmd-period)
+## link::Classes/LazyEnvir:: || (and environment that returns proxies)
+## link::Classes/EnvironmentRedirect:: || (abstract superclass for redirecting environments)
+## link::Classes/EnvGate:: || (singleton fade envelope)
+## link::Reference/NodeProxy_roles:: || (adverbial syntax for NodeProxy sources)
+::
+
+
+section::Feedback
+
+for suggestions / comments contact me
+Julian Rohrhuber, rohrhuber@uni-hamburg.de.
+
+History and GUI classes are written by Alberto de Campo.
+
+Thanks a lot for all the feedback and ideas!
+
+
+
+_____________________________________________________________
+
+The research for this project is funded by: German Research Foundation (DFG)
+and the Future Funds of Styria, Austria.

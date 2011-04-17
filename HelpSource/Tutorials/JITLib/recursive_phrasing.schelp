@@ -1,0 +1,597 @@
+title:: recursive_phrasing
+summary:: Recursive phrases and granular composite sounds
+categories:: Libraries>JITLib>Tutorials
+related:: Overviews/JITLib, Classes/Pdef, Classes/PlazyEnvir
+
+Pdef can be used as a global storage for event patterns. Here a way is provided by which these definitions can be used as an instrument that consists of several events (a emphasis::phrase::), such as a cloud of short grains. Furthermore, this scheme can be applied recursively, so that structures like a cloud of clouds can be constructed.
+
+When the event type code::\phrase:: is passed in, the event looks for a pattern in code::Pdef.all:: if it can find a definition.
+list::
+## if it finds one it plays this pattern in the context of the outer pattern's event.
+## f there is no definition to be found there, it uses a link::Classes/SynthDef:: with this name, if present.
+::
+
+When passing a emphasis::function:: to Pdef it creates a PlazyEnvir internally. Its function is evaluated in the context of the outer environment (see link::Classes/PlazyEnvir::) which should return a pattern or a stream.
+
+code::
+(
+s.boot;
+
+SynthDef(\pgrain,
+	{ arg out = 0, freq=800, sustain=0.001, amp=0.5, pan = 0;
+		var window;
+		window = Env.sine(sustain, amp * AmpCompA.kr(freq));
+		Out.ar(out,
+			Pan2.ar(
+				SinOsc.ar(freq),
+				pan
+			) * EnvGen.ar(window, doneAction:2)
+		)
+	}
+).add;
+
+SynthDef(\noiseGrain,
+	{ arg out = 0, freq=800, sustain=0.001, amp=0.5, pan = 0;
+		var window;
+		window = Env.perc(0.002, sustain, amp * AmpCompA.kr(freq));
+		Out.ar(out,
+			Pan2.ar(
+				Ringz.ar(PinkNoise.ar(0.1), freq, 2.6),
+				pan
+			) * EnvGen.ar(window, doneAction:2)
+		)
+	}
+).add;
+
+
+
+Pdef(\sweep, { arg sustain=1, n=8, freq=440, ratio=0.1;
+	Pbind(
+		\instrument, \pgrain,
+		\dur, sustain.value / n,
+		\freq, Pseq((1..n)) * ratio + 1 * freq.value // freq is a function, has to be evaluated
+	)
+});
+Pdef(\sweep2, { arg sustain=1, n=8, freq=440, ratio=0.1;
+	Pbind(
+		\instrument, \noiseGrain,
+		\dur, sustain.value / n, // sustain is also a function, has to be evaluated
+		\freq, Pseq((1..n).scramble) * ratio + 1 * freq.value,
+		\recursionLevel, 2
+	)
+});
+Pdef(\sweep3, { arg freq=440;
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\freq, Pfunc({ rrand(0.8, 1.3) }) * freq.value,
+		\dur, 0.3,
+		\legato, 1.3,
+		\n, 5
+	)
+});
+)
+
+
+
+
+// the pattern that is found in Pdef.all (or your own defined library) is truncated in time
+// using the sustain provided by the outer pattern.
+(
+Pbind(
+	\type, \phrase, // phrase event from global library
+	\instrument, \sweep,
+	\n, 15,
+	\degree, Pseq([0, 4, 6, 3], inf),
+	\sustain, Pseq([1.3, 0.2, 0.4],inf)
+).play
+)
+
+// multichannel expansion is propagated into the subpatterns
+(
+Pbind(
+	\type, \phrase, // phrase event from global library
+	\instrument, \sweep,
+	\n, 15,
+	\degree, Pseq([0, 0, 6, 3], inf) + Prand([0, [0, 3], [0, 5], [0, 15]], inf),
+	\ratio, Prand([ 0.1, 0.1, [0.1, -0.1] ], inf)
+).play
+)
+
+// various instruments and synthdefs can be used on the same level
+(
+Pbind(
+	\type, \phrase,
+	\instrument, Pseq([\sweep, \default, \sweep2, \sweep3, \pgrain, \pgrain], inf),
+	\degree, Pseq([0, 3, 2], inf),
+	\dur, Pseq([1, 0.5], inf) * 0.7,
+	\n, Pseq([4, 6, 25, 10], inf),
+	\ratio, Prand([0.03, 0.1, 0.4, -0.1],inf) + Pseq([0, 0, [0, 0.02]], inf),
+	\legato, Pseq(#[0.5, 1, 0.5, 0.1, 0.1],inf)
+).play;
+)
+
+
+//////// of course also a patten can be used directly in a Pdef
+
+(
+Pdef(\sweep,
+	Pbind(
+		\instrument, Pseq([\pgrain, \noiseGrain],inf),
+		\dur, Pseq([1, 2, 1, 3, 1, 4, 1, 5]) * 0.05,
+		\legato, Prand([0.5, 0.5, 3],inf)
+	)
+)
+)
+
+// play directly, emebdded in stream (see Pdef.help)
+
+Pn(Pdef(\sweep), 2).play;
+Pdef(\sweep).fork; // play without changing player state (see Pdef.help)
+
+
+// play within a pattern
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\degree, Pseq([0, 1b, 4, 2, 3, 1b], inf),
+	\pan, Pfunc(#{ 1.0.rand2 })
+).play
+)
+
+
+
+//////// recursion examples //////////
+
+// the given pattern can be recursively applied to itself
+// resulting in selfsimilar sound structures, like lindenmeyer systems (see also Prewrite)
+// special care is taken so that no infinite loops can happen.
+// just like with non recursive phrasing, new values override old values,
+// any values that are not provided within the pattern definition
+// are passed in from the outer event.
+
+
+
+(
+Pdef(\sweep, { arg dur=1, n=4, freq=440, ratio=0.3;
+	Pbind(
+		\instrument, \pgrain,
+		\dur, dur.value / n,	// now dur is dependant on outer dur.
+		\freq, Pseries(1, 1, inf) * ratio + 1 * freq.value % 17000
+	)
+});
+)
+
+
+// no recursion
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\degree, Pseq((0..5),inf)
+	).play;
+)
+
+// no recursion, with legato > 1.0 and varying notes
+// note how subpatterns are truncated to note length
+// provided by outer pattern (in this case determined by legato)
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\degree, Pseq((0..5),inf),
+		\legato, Pseq([1.2, 2.8, 0.3], inf)
+	).play;
+)
+
+// to block the proliferation of \legato into the phrase, set \transparency to 0
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\transparency, 0,
+		\degree, Pseq((0..5),inf),
+		\legato, Pseq([1.2, 2.8, 0.3], inf)
+	).play;
+)
+
+
+// recursion over one level
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\degree, Pseq([0, 1, 2, 3], inf),
+		\recursionLevel, 1
+	).play
+)
+
+// recursion over one level: legato is recursively applied
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\degree, Pseq([0, 1, 2, 3], inf),
+		\legato, Pseq([0.5, 1, 1.5, 1.8], inf),
+		\recursionLevel, 1
+	).play
+)
+
+// to block the proliferation of properties such as \legato and \degree
+// into the phrase, set \transparency to 0.
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\degree, Pseq([0, 1, 2, 3], inf),
+		\legato, Pseq([0.5, 1, 1.5, 1.8], inf),
+		\recursionLevel, 1,
+		\transparency, 0
+	).play
+)
+
+// recursion over 3 levels: legato is recursively applied
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\degree, 1,
+		\legato, Pseq([0.5, 1, 1.3], inf),
+		\recursionLevel, 3,
+		\n, 3
+	).play
+)
+
+// to block the proliferation of \legato into the phrase, set \transparency to a level at which
+// to stop passing the value.
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\degree, 1,
+		\legato, Pseq([0.5, 1, 2.3], inf),
+		\recursionLevel, 3,
+		\n, 3,
+		\transparency, Pstutter(8, Prand([0, 1, 2], inf))
+	).play
+)
+
+
+
+// to modify this recursion, assign values explicitly:
+(
+Pdef(\sweep, { arg dur=1, n=4, ratio=0.5, freq=440;
+	var legato;
+	freq = freq.value;
+	legato = freq % 200 / 200 * 3 + 0.2;
+	Pbind(
+		\instrument, \pgrain,
+		\dur, dur.value / n,
+		\legato, legato,
+		\freq, Pseq((1..n) * ratio + 1 * freq)
+	)
+});
+)
+
+// recursion over one level: degree is assigned to each phrase,
+// because freq is calculated internally and overrides degree on the second level
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\degree, Pseq((0..10),inf),
+		\recursionLevel, 1
+	).play
+)
+
+
+
+// recursion over two levels
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\degree, 0,
+	\recursionLevel, 2
+).play
+)
+
+// recursion over three levels with variable number of grains
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\degree, -5,
+	\n, Pseq([1, 2, 3],inf),
+	\recursionLevel, 3
+).play
+)
+
+
+// "zoom" in
+TempoClock.default.tempo = 0.2;
+TempoClock.default.tempo = 1.0;
+
+
+// recursion over variable levels
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\n, Prand([2, 7, 3], inf),
+	\degree, -5,
+	\recursionLevel, Prand([0, 1, 2],inf)
+).play
+)
+
+
+
+// replace the frequency based pattern with a degree based pattern
+(
+Pdef(\sweep, { arg sustain=1, n=8, degree=0, ratio=1;
+	Pbind(
+		\instrument, \pgrain,
+		\dur, sustain.value / n,
+		\degree, Pseq((1..n)) * ratio + 1 + degree.value
+	)
+});
+)
+
+
+// drunken master
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\n, Prand([2, 4, 3, 8], inf),
+	\degree, Pseq([-5, 0, -2], inf),
+	\legato, Pseq([1.4, 0.5, 2], inf),
+	\scale, #[0, 2, 5, 7, 10],
+	\recursionLevel, Prand([0, 1, 2],inf)
+).play
+)
+
+
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\synthDef, Prand([\pgrain, \default, \noiseGrain],inf),
+	\n, Prand([2, 4, 3, 8], inf),
+	\degree, Pseq([-5, 0, -2], inf),
+	\recursionLevel, Prand([0, 1],inf)
+).play
+)
+
+
+// use a different parent event in the inner pattern
+(
+e = Event.default;
+e.use { ~sustain = { 2.0.exprand(0.05) } };
+Pdef(\sweep, { arg sustain=1, n=8, degree=0, ratio=1;
+	Pbind(
+		\parent, e, // replace by some other event
+		\instrument, \pgrain,
+		\dur, sustain.value / n,
+		\degree, Pseq((1..n)) * ratio + 1 + degree.value
+	)
+});
+)
+
+
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\n, Prand([2, 4, 3, 8], inf),
+	\degree, Pseq([-5, 0, -2], inf),
+	\recursionLevel, Prand([0, 1],inf)
+).play
+)
+
+
+// pass in a pattern from outside
+
+(
+Pdef(\sweep, { arg sustain=1, n=8, degree=0, ratio=1;
+	n = n.value;
+	Pbind(
+		\instrument, \pgrain,
+		\dur, sustain.value / n,
+		\degree, Pseq([ 1, 2, 3, 4, 5 ] * ratio + 1 + degree.value) )
+});
+)
+
+
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\n, { Pshuf([2, 4, 3, 8, 16, 32], inf) }, // use a function to insulate from embedInStream
+	\degree, Pseq([-5, 0, -2], inf),
+	\recursionLevel, Prand([0, 1],inf)
+).play
+)
+
+
+
+
+// recursion inside the pattern definition
+
+(
+Pdef(\sweep2, { arg sustain=1, n=2, degree=0, ratio=1;
+	Pbind(
+		\type, \phrase,
+		\instrument, \sweep,
+		\dur, sustain.value / n,
+		\degree, Pseq((1..5).scramble * ratio + 1 + degree.value),
+		\recursionLevel, 2
+	)
+});
+)
+
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep2,
+	\n, 3,
+	\degree, Pseq([-5, 0, -2], inf)
+).play
+)
+
+
+// instruments do not crossfade while they play (to make phrasing more efficient).
+
+
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \sweep,
+	\n, 3,
+	\degree, Pseq([0, 2b, 3, 4], inf),
+	\dur, 2,
+	\legato, 2
+).play
+)
+
+// change pattern definition while playing:
+(
+Pdef(\sweep,
+	Pbind(
+		\instrument, \pgrain,
+		\dur, exprand(0.01, 0.1),
+		\legato, rrand(0.01, 2.0),
+		\octave, rrand(5, 7)
+	)
+)
+)
+
+
+// koch "snowflake"
+(
+Pdef(\koch, { arg dur=1, freq=440;
+	Pbind(
+		\dur, dur.value / 3,
+		\freq, freq.value * Pseq([1, 1.2, 1])
+	)
+});
+)
+
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \koch,
+		\synthDef, \pgrain,
+		\dur, 9,
+		\recursionLevel, 2,
+		\legato, 1.1
+	).play
+)
+
+(
+	Pbind(
+		\type, \phrase,
+		\instrument, \koch,
+		\synthDef, \pgrain,
+		\dur, 9,
+		\recursionLevel, 4,
+		\legato, 1.1
+	).play
+)
+
+(
+Pdef(\koch, { arg dur=1, degree=0;
+	Pbind(
+		\dur, dur.value / 3,
+		\degree, degree + Pseq([0, 2, 0])
+	)
+});
+)
+
+
+
+
+
+// soundfile example
+
+
+(
+SynthDef(\play_from_to, { arg out, bufnum, from=0.0, to=1.0, sustain=1.0;
+	var env;
+	env = EnvGen.ar(Env.linen(0.01, sustain, 0.01), 1, doneAction:2);
+	Out.ar(out,
+		BufRd.ar(1, bufnum,
+			Line.ar(from, to, sustain) * BufFrames.kr(bufnum)
+		) * env
+	)
+
+
+}).add;
+)
+
+s.sendMsg("/b_allocRead", 170, "sounds/a11wlk01.wav");
+
+
+(
+Pdef(\poch, { arg sustain=1.0, from=0.0, to=1.0, n=3;
+		var step;
+		sustain = sustain.value;
+		step = (to - from) / n;
+		Pbind(
+			\instrument, \play_from_to,
+			\from, Pseries(from, step, n),
+			\to, Pseries(from, step, n) + step,
+			\legato, 1.0,
+			\dur, sustain / n
+		)
+})
+)
+
+// this plays it straight
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \poch,
+	\recursionLevel, 3,
+	\from, 0,
+	\to, 1,
+	\dur, 3,
+	\bufnum, 170
+).play
+)
+
+// now turn round every middle part of every middle part
+(
+Pdef(\poch, { arg sustain=1.0, from=0.0, to=1.0, n=3;
+	var step, f, t, i;
+	sustain = sustain.value;
+	step = (to - from) / n;
+	f = Array.series(n, from, step) +.t [0.0, step];
+	i = n div: 2;
+	f[i] = f[i].reverse;
+	Pbind(
+		\instrument, \play_from_to,
+		[\from, \to], Pseq(f),
+		\legato, 1.0,
+		\dur, sustain / n
+	)
+})
+)
+
+
+// varying recursion
+(
+Pbind(
+	\type, \phrase,
+	\instrument, \poch,
+	\recursionLevel, Prand([0, 1, 2, 3], inf),
+	\from, 0,
+	\to, Prand([-1, 1], inf),
+	\dur, 3,
+	\n, Prand([1, 2, 3], inf),
+	\bufnum, 170,
+	\amp, 0.2
+).play
+)
+::

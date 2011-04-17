@@ -1,0 +1,119 @@
+class:: MonitorGui
+summary:: display and control a Monitor
+categories:: Libraries>JITLib>GUI
+related:: Classes/NodeProxy, Classes/Ndef, Classes/JITGui, Classes/NdefGui
+
+description::
+
+MonitorGui displays the state of a link::Classes/NodeProxy::'s link::Classes/Monitor::. It is used in link::Classes/NdefGui::, link::Classes/ProxyMixer::, and link::Classes/NdefMixer::.
+
+subsection::First examples
+
+code::
+s.boot;
+Ndef(\a).ar;
+Ndef(\k).kr;
+
+	// make a MonitorGui with all bells and whistles
+m = MonitorGui.new(bounds: 500@40, options: [\playN, \name, \level, \fade]);
+
+	// when it has a kr proxy, it is visible, but disabled
+m.object_(Ndef(\k));
+	// with an ar proxy, it is enabled
+m.object_(Ndef(\a));
+
+	// show its play state
+Ndef(\a).play		//
+	// and volume
+Ndef(\a).vol_(0.25);
+Ndef(\a).stop
+
+	// switch to playN mode - spread outputs should show
+Ndef(\a).playN([0, 2]);
+	// switch back to play - spread outbox goes back
+Ndef(\a).stop;
+Ndef(\a).play(0);
+::
+
+ClassMethods::
+
+private::initClass
+
+subsection::Creation
+
+method::new
+
+code::
+g = MonitorGui(Ndef(\a));	// barebones
+(
+w = Window.new.front;
+w.addFlowLayout;
+g = MonitorGui(Ndef(\a), w, 300@40);
+)
+	// different options:
+	// a playN dialog button
+g = MonitorGui.new(Ndef(\a), options: [\playN])
+
+	// bounds
+MonitorGui.new(Ndef(\a), bounds: Rect(100, 100, 400, 30), options: [\playN])
+MonitorGui.new(Ndef(\a), bounds: 400@24, options: [\playN])
+
+	// level name and numerical value
+MonitorGui.new(Ndef(\a), options: [\playN, \level])
+
+	// a nameView and a fadeTime setter box
+MonitorGui.new(Ndef(\a), options: [\playN, \name, \fade])
+
+	// all of 'em
+MonitorGui.new(Ndef(\a), options: [\playN, \level, \name, \fade])
+::
+
+argument::object
+the nodeproxy whose monitor state will be shown, or nil.
+
+argument::parent
+a parent view where MonitorGui is to be shown. If nil, a window is made.
+
+argument::bounds
+bounds where the view (or window) will be shown.
+
+argument::makeSkip
+a flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
+
+argument::options
+an array of symbols for options of what to display.
+
+subsection::Class Variables
+
+method::lastOutBus
+the highest outbus number to allow. Default is 99.
+
+InstanceMethods::
+
+subsection::Instance Variables
+
+method::config
+some information on what to display
+
+method::ampSl
+an link::Classes/EZSlider:: for link::Classes/Monitor:: volume
+
+method::playBut
+a play button - shows play or playN
+
+method::setOutBox
+a numberbox to set output routing
+
+method::playNDialogBut
+opens a dialog window for playN output routing by code
+
+method::fadeBox
+a numberbox for setting monitor fadeTime.
+
+subsection::Some Methods
+
+method::playNMode
+switches between playN mode (true) and play mode (false)
+
+method::checkUpdate
+compare previous state with current state, and update gui elements.

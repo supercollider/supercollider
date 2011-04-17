@@ -1,0 +1,129 @@
+class:: ProxyMonitorGui
+summary:: controls the top-level of a nodeproxy and its monitor
+categories:: Libraries>JITLib>GUI
+related:: Classes/ProxyMixer, Classes/NodeProxyEditor
+
+description::
+
+is a GUI for controlling the top-level of a nodeproxy and its monitor. It is e.g. used in ProxyMixer, and NodeProxyEditor, and it is cross-platform.
+
+Examples::
+
+code::
+(
+Server.default = s = Server.internal;
+s.boot;
+)
+
+	// make a proxy space and a test proxy
+(
+s.scope(8);
+p = ProxySpace.push;
+
+~test = { |freq=1000, dens=5, amp=1, lev=3|
+	var freqline = { exprand(0.3, 3) } ! 3 * XLine.kr(0.125, 1, 2);
+	Ringz.ar(Dust.ar(dens ! 3, dens.reciprocal.sqrt), freq * freqline, 0.1)
+};
+~test.playN(0, vol: 0.1);
+)
+
+	// make a ProxyMonitorGui
+z = ProxyMonitorGui();
+
+	// switching between proxies: drag-view displays proxy key
+z.proxy = ~otto12345;	// up to 9 letters or so on OSX
+z.proxy = ~test;		// make audio controls available if proy is audio
+z.proxy = nil;
+z.proxy = ~otto; ~otto.kr;	//
+z.proxy = ~test;
+
+
+
+	// configuration variants
+
+	// pudgier
+ProxyMonitorGui(~test, bounds: 300@30);
+
+	// place it in an existing window:
+ProxyMonitorGui(~test, Window("ProxyMonitor", Rect(200, 200, 400, 100)).front);
+
+ProxyMonitorGui(~test, Window("ProxyMonitor").front, bounds: 350@40);
+
+ProxyMonitorGui(~test, Window("ProxyMonitor").front, bounds: Rect(20, 20, 360, 20));
+
+
+	// show level in dB - off by default
+ProxyMonitorGui(~test, showLevel: true, showPlayN: false);
+
+	// without multichan out button - then uses proxy.play. true = playN by default.
+ProxyMonitorGui(~test, showPlayN: false);
+
+	// show proxy name or not. on by default.
+ProxyMonitorGui(~test, showName: false);
+
+	// show proxy pause and send buttons - true by default
+ProxyMonitorGui(~test, showPauseSend: true, showPlayN: false);
+
+
+	// turn off SkipJack view updates - updates are on by default.
+ProxyMonitorGui(~test, makeWatcher: false);
+
+	// minimal:
+ProxyMonitorGui.new(~test, bounds: 300@40, showPlayN: false, showPauseSend: false);
+
+
+	// the GUI functions:
+
+ProxyMonitorGui(~test);
+	// left slider is vol
+~test.vol_(0.1);
+~test.vol_(0.25);
+
+~test.stop;	// play / stop button:
+~test.playN;	//
+~test.end;	// alt-stop fully ends the proxy.
+~test.playN(vol: 0);	// alt-playN starts with volume 0.
+
+	// number box sets first output channel
+	// when you want to play out of adjacent channels.
+~test.playN(0);
+~test.out_(1);
+
+	// playing out to multiple channels
+~test.playN([0, 2, 5]);
+~test.playN([1, 2, 5]);
+	// switches the button next to it to show a different output shape:
+	// ("-<" is multiple outs, "-=" is directly adjacent outs.
+	// clicking on that button opens an editing dialog:
+~test.playNDialog;		// needs testing with SwingOSC.
+
+~test.out_(0);
+
+	// the pause button pauses and resumes
+~test.pause;
+~test.resume;
+
+	// snd button re-sends proxy's sound as compiled,
+~test.send;
+	// or with option-click, it rebuilds the proxy's sound function,
+	// so e.g. normal random numbers or lookups in the lang get remade.
+~test.rebuild;
+
+
+//	ProxyMonitorGui gets its look from GUI.skin, so you could customize it there,
+//	or pass your own look in:
+
+ProxyMonitorGui(skin: <your look here>)
+
+
+// 	Quick SwingOsc tests.
+
+g = SwingOSC.default;
+g.boot;
+GUI.swing;
+
+y = ProxyMonitorGui(~test);
+
+GUI.cocoa;
+y = ProxyMonitorGui(~test);
+::
