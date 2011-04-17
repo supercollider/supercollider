@@ -40,11 +40,10 @@
 #endif
 
 using namespace nova;
+using namespace std;
 
 namespace
 {
-
-using namespace std;
 
 /* signal handler */
 void terminate(int i)
@@ -63,7 +62,7 @@ void register_handles(void)
 bool check_connection_string(string const & str)
 {
     if (str.find(":") != string::npos) {
-        std::cerr << "connecting to individual ports not yet implemented" << std::endl;
+        cerr << "connecting to individual ports not yet implemented" << endl;
         return false;
     }
     return true;
@@ -116,8 +115,8 @@ void start_audio_backend(server_arguments const & args)
     int real_sampling_rate = instance->get_samplerate();
 
     if (args.samplerate && args.samplerate != real_sampling_rate) {
-        std::cout << "samplerate mismatch between command line argument and jack" << endl;
-        std::cout << "forcing samplerate of " << real_sampling_rate << "Hz" << endl;
+        cout << "samplerate mismatch between command line argument and jack" << endl;
+        cout << "forcing samplerate of " << real_sampling_rate << "Hz" << endl;
 
         server_arguments::set_samplerate((uint32_t)real_sampling_rate);
         sc_factory->reset_sampling_rate(real_sampling_rate);
@@ -141,7 +140,7 @@ boost::filesystem::path resolve_home(void)
     wordexp_t wexp;
     int status = wordexp("~", &wexp, 0);
     if (status || wexp.we_wordc != 1)
-        throw std::runtime_error("cannot detect home directory");
+        throw runtime_error("cannot detect home directory");
 
     path home (wexp.we_wordv[0]);
     wordfree(&wexp);
@@ -160,7 +159,7 @@ void set_plugin_paths(void)
 
     if (!args.ugen_paths.empty())
     {
-        foreach(std::string const & path, args.ugen_paths)
+        foreach(string const & path, args.ugen_paths)
             sc_factory->load_plugin_folder(path);
     }
     else
@@ -175,12 +174,12 @@ void set_plugin_paths(void)
         sc_factory->load_plugin_folder(home / "Library/Application Support/SuperCollider/supernova_plugins/");
         sc_factory->load_plugin_folder("/Library/Application Support/SuperCollider/supernova_plugins/");
 #else
-        std::cerr << "Don't know how to locate plugins on this platform. Please specify search path in command line."
+        cerr << "Don't know how to locate plugins on this platform. Please specify search path in command line."
 #endif
     }
 
 #ifndef NDEBUG
-    std::cout << "Unit Generators initialized" << std::endl;
+    cout << "Unit Generators initialized" << endl;
 #endif
 }
 
@@ -195,11 +194,11 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
         register_synthdefs(server, sc_read_synthdefs_dir(home / "Library/Application Support/SuperCollider/synthdefs/"));
         register_synthdefs(server, sc_read_synthdefs_dir("Library/Application Support/SuperCollider/synthdefs/"));
 #else
-        std::cerr << "Don't know how to locate synthdefs on this platform. Please load them dynamically."
+        cerr << "Don't know how to locate synthdefs on this platform. Please load them dynamically."
 #endif
     }
 #ifndef NDEBUG
-    std::cout << "SynthDefs loaded" << std::endl;
+    cout << "SynthDefs loaded" << endl;
 #endif
 }
 
@@ -240,9 +239,9 @@ int main(int argc, char * argv[])
 
     rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
 
-    std::cout << "Supernova booting" << std::endl;
+    cout << "Supernova booting" << endl;
 #ifndef NDEBUG
-    std::cout << "compiled for debugging" << std::endl;
+    cout << "compiled for debugging" << endl;
 #endif
 
     nova_server server(args);
@@ -254,8 +253,13 @@ int main(int argc, char * argv[])
     load_synthdefs(server, args);
 
     if (!args.non_rt) {
-        start_audio_backend(args);
-        std::cout << "Supernova ready" << std::endl;
+        try {
+            start_audio_backend(args);
+            cout << "Supernova ready" << endl;
+        } catch (exception const & e) {
+            cout << "Error: " << e.what() << endl;
+            exit(1);
+        }
         server.run();
     } else
         server.run_nonrt_synthesis(args);
