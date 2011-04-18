@@ -38,7 +38,12 @@ function did_load() {
 //    restoreMenu();
     helpRoot=".."; fixTOC();
     node = document.getElementById("doclist");
-    docs = docmap.sort(function(a,b) {
+    docs = [];
+    for(var k in docmap) {
+        if(docmap.hasOwnProperty(k))
+            docs.push(docmap[k]);
+    }
+    docs = docs.sort(function(a,b) {
         a = a.title.toUpperCase();
         b = b.title.toUpperCase();
         if(a<b) return -1;

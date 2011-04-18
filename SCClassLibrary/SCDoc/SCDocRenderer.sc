@@ -140,7 +140,13 @@ SCDocHTMLRenderer : SCDocRenderer {
             },
             'section', {
                 file.write("<h2><a class='anchor' name='"++this.class.simplifyName(node.text)++"'>"++this.escapeSpecialChars(node.text)++"</a></h2>\n");
-                do_children.();
+                if(node.makeDiv.isNil) {
+                    do_children.();
+                } {
+                    file.write("<div id='"++node.makeDiv++"'>");
+                    do_children.();
+                    file.write("</div>");
+                };
             },
             'subsection', {
                 file.write("<h3><a class='anchor' name='"++this.class.simplifyName(node.text)++"'>"++this.escapeSpecialChars(node.text)++"</a></h3>\n");
@@ -535,6 +541,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++baseDir++"/scdoc.css' type='text/css' />");
         f.write("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />");
         f.write("<script src='" ++ baseDir ++ "/scdoc.js' type='text/javascript'></script>");
+        f.write("<script src='" ++ baseDir ++ "/docmap.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/prettify.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/lang-sc.js' type='text/javascript'></script>");
         f.write("<script type='text/javascript'>var helpRoot='"++baseDir++"';</script>");
@@ -625,8 +632,7 @@ SCDocHTMLRenderer : SCDocRenderer {
 
     addUndocumentedMethods {|class,tag|
         var node = parser.findNode(tag);
-        var mets = parser.generateUndocumentedMethods(class, node,
-            "Undocumented "++if(tag==\classmethods,"class methods","instance methods"));
+        var mets = parser.generateUndocumentedMethods(class, node, "Undocumented methods");
         mets !? {
             if(node.tag.isNil, { //no subtree, create one
                 parser.root.add(node = (tag:tag, children:List.new));
@@ -676,11 +682,15 @@ SCDocHTMLRenderer : SCDocRenderer {
             parser.root.do {|n|
                 switch(n.tag,
                     \description,       { n.sort = 0 },
-                    \classmethods,      { n.sort = 1 },
-                    \instancemethods,   { n.sort = 2 },
-                    \examples,          { n.sort = 3 },
+                    \classmethods,      { n.sort = 3 },
+                    \instancemethods,   { n.sort = 4 },
+                    \examples,          { n.sort = 7 },
                     { n.sort = x = x + 1 }
                 );
+            };
+            if(currentClass != Object) {
+                parser.root.add((tag:\section, text:"Inherited class methods", children:[], sort:5, makeDiv:"inheritedclassmets")); // or 1?
+                parser.root.add((tag:\section, text:"Inherited instance methods", children:[], sort:6, makeDiv:"inheritedinstmets")); // or 2?
             };
             parser.root.sort {|a,b| a.sort<b.sort};
 

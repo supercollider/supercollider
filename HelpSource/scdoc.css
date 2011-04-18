@@ -52,6 +52,35 @@ a:hover {
     text-decoration: underline;
 }
 
+.inheritedmets_class {
+    font-weight: bold;
+    color: #555;
+    margin-top: 0.5em;
+    margin-bottom: 0.25em;
+}
+ul.inheritedmets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-left: 2em;
+    margin-top: 0.25em;
+}
+ul.inheritedmets li {
+    font-family: Andale Mono, monospace;
+}
+a.inheritedmets_toggle {
+    font-size: 9pt;
+    color: #555;
+    font-weight: normal;
+    margin-left: 2em;
+}
+
+a.inheritedmets_toggle:hover {
+    text-decoration: none;
+    color: #000;
+}
+
+
 #menubar {
     font-family: Arial, Helvetica, sans-serif;
     width: 100%;
@@ -126,15 +155,6 @@ a.navlink {
     font-weight: bold;
 }
 
-/*a.hidetoggle1 {
-    font-size: 9pt;
-    color: #aaa;
-}
-
-a.hidetoggle1:hover {
-    text-decoration: none;
-    color: #000;
-}*/
 
 .header {
     border-bottom: 6px solid #000;

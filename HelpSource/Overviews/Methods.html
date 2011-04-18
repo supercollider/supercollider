@@ -51,11 +51,11 @@ div.met_subclasses a.seemore {
 <script type="text/javascript">
 var methods;
 var subclassCache = {};
-var docmapdict = {};
+
 function buildMethodList() {
     methods = {};
-    for(var i=0;i<docmap.length;i++) {
-        var doc = docmap[i];
+    for(var k in docmap) {
+        var doc = docmap[k];
         var mets = doc.methods;
         if(mets) {
             for(var j=0;j<mets.length;j++) {
@@ -75,7 +75,7 @@ function getSubClasses(doc) {
     if(doc.subclasses) {
         for(var i=0;i<doc.subclasses.length;i++) {
             var x = doc.subclasses[i];
-            var v = docmapdict["Classes/"+x];
+            var v = docmap["Classes/"+x];
             a.push(x);
             if(v)
                 a = a.concat(getSubClasses(v));
@@ -101,7 +101,7 @@ function showMethod(mname, node) {
             else
             return 0;
     });
-        
+
     for(var i=0;i<x.length;i++) {
         var m = x[i];
         var v = m.doc;
@@ -190,22 +190,16 @@ function showMethod(mname, node) {
 function did_load() {
     helpRoot=".."; fixTOC();
 
-    for(var i=0;i<docmap.length;i++) {
-        var doc = docmap[i];
-        docmapdict[doc.path] = doc;
-    }
-
     buildMethodList();
 
     showmethods();
 }
 
 function showmethods() {
-//    restoreMenu();
     var hash = unescape(window.location.hash.slice(1));
     var res = document.getElementById("methods");
     res.innerHTML = "";
-    
+
     if(hash && ! /^section_/.test(hash)) {
         document.getElementById("total_count").innerHTML = "Showing single method:";
         document.getElementById("method_note").innerHTML = "";
@@ -239,7 +233,7 @@ function showmethods() {
             mets.push(k);
         }
         mets = mets.sort();
-       
+
         for(var i=0;i<mets.length;i++) {
             var k = mets[i];
             if(cap != k[0]) {
@@ -257,15 +251,11 @@ function showmethods() {
 
         var x = document.createElement("h2");
         x.innerHTML = section.toUpperCase();
-//        var a = document.createElement("a");
-//        a.setAttribute("name","section_"+section);
-//        res.appendChild(a);
         res.appendChild(x);
-        
+
         var count = 0;
         for(var i = 0; i<mets.length;i++) {
             var k = mets[i];
-            
             if(k[0]==section) {
                 showMethod(k, res);
                 count++;
