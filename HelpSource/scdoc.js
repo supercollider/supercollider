@@ -79,7 +79,20 @@ function fixTOC() {
 // make all code examples editable!
     var x = document.getElementsByClassName("lang-sc");
     for(var i=0;i<x.length;i++) {
-        x[i].setAttribute("contentEditable",true);
+        var e = x[i];
+        e.setAttribute("contentEditable",true);
+/* FIXME: select whole line. hopefully this happens before WebView responds to the key event??
+        e.onkeydown = function(ev) {
+            if(ev.keycode == 13 && ev.ctrlKey == true || ev.shiftKey == true) {
+                // s =  window.getSelection()
+                // if(s.isCollapsed) {
+                // find nodes at start and end of (or start of next) line
+                // s.removeAllRanges();
+                // r=document.createRange(); r.setStart(start,0); r.setEnd(end,0); s.addRange(r)
+                // }
+            }
+        }
+*/
     }
 
     if(sessionStorage == undefined)
