@@ -532,7 +532,7 @@ Server : Model {
 	cachedBuffersDo { |func| Buffer.cachedBuffersDo(this, func) }
 	cachedBufferAt { |bufnum| ^Buffer.cachedBufferAt(this, bufnum) }
 
-	startAliveThread { arg delay=4.0;
+	startAliveThread { arg delay=0.0;
 		^aliveThread ?? {
 			this.addStatusWatcher;
 			aliveThread = Routine({
