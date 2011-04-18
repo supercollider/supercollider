@@ -103,16 +103,16 @@ function updateTree() {
     var done = 0;
     var sel;
     link = "";
-    
+
     while(1) {
         res += "<div class='result'>";
         p=path[lev++];
-        
+
         var l = [];
         for(var k in tree.subcats)
             l.push(k);
         l = l.sort();
-        
+
         sel = "";
         for(var i=0;i<l.length;i++) {
             var k = l[i];
@@ -171,10 +171,10 @@ function buildCategoryTree() {
 
         if(v.installed=="extension" && !check_extensions.checked)
             continue;
-            
+
         if(filter.value != "all" && v.path.split("/")[0].toLowerCase() != filter.value)
             continue;
-        
+
         var c2 = v.categories.match(/[^, ]+[^,]*[^, ]+/g) || ["Uncategorized"];
         for(var i=0;i<c2.length;i++) {
             var c = c2[i];
@@ -207,7 +207,7 @@ function buildCategoryTree() {
 
         for(var i=0;i<files.length;i++)
             e.entries.push(files[i]);
-            
+
         e.entries = e.entries.sort(function(a,b) {
             a=a.title; b=b.title;
             if(a<b) return -1;
@@ -217,9 +217,9 @@ function buildCategoryTree() {
             return 0;
         });
     }
-    
+
     categorytree = tree;
-    
+
     document.getElementById("total_count").innerHTML = countTree({subcats:tree,entries:[],count:0}) + " documents";
 }
 
@@ -238,7 +238,7 @@ window.onload = function() {
     check_extensions.onchange = onChange;
     filter = document.getElementById("menu_filter");
     filter.onchange = onChange;
-    
+
     buildCategoryTree();
     GotoPath(unescape(window.location.hash.slice(1)));
 }

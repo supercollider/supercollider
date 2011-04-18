@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 5;
+    classvar version = 6;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -53,9 +53,9 @@ SCDoc {
         File.delete(path);
         f = File.open(path,"w");
 
-        f.write("docmap = [\n");
+        f.write("docmap = {\n");
         doc_map.pairsDo {|k,v|
-            f.write("{\n");
+            f.write("'"++k++"':"+"{\n");
             v.pairsDo {|k2,v2|
                 if(v2.isKindOf(Array)) {
                     v2 = "["+v2.collect{|x|"'"++x++"'"}.join(",")+"]";
@@ -67,7 +67,7 @@ SCDoc {
 
             f.write("},\n");
         };
-        f.write("]\n");
+        f.write("}\n");
         f.close;
     }
 
@@ -610,13 +610,17 @@ SCDoc {
                     (tag:\summary, text:"(not documented)")
                 ];
                 this.addToDocMap(p,subtarget);
-                doc_map[subtarget].methods =
+                doc = doc_map[subtarget];
+                doc.methods =
                     (this.makeMethodList(class.class).collect{|m| "_*"++m}
                     ++ this.makeMethodList(class).collect{|m| "_-"++m});
 
-                doc_map[subtarget].installed = if(class.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
+                doc.installed = if(class.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
                     {\extension}
                     {\standard};
+
+                doc.superclasses = class.superclasses.collect(_.name).reject(_.isMetaClassName);
+                doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
 
                 ndocs = ndocs + 1;
                 update = true;

@@ -111,7 +111,7 @@ var newinput = "";
 var checkboxes;
 var fields = ["title","summary","categories"];
 var filter;
-var docmapdict = {};
+//var docmapdict = {};
 
 escape_regexp = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
@@ -125,8 +125,8 @@ function debug(str) {
 var methods;
 function buildMethodList() {
     methods = {};
-    for(var i=0;i<docmap.length;i++) {
-        var doc = docmap[i];
+    for(var k in docmap) {
+        var doc = docmap[k];
         var mets = doc.methods;
         if(mets) {
             for(var j=0;j<mets.length;j++) {
@@ -148,7 +148,6 @@ function buildMethodList() {
 }
 
 function onLoad() {
-//    restoreMenu();
     helpRoot="."; fixTOC();
     newinput = document.getElementById("search_input").value;
 
@@ -182,13 +181,8 @@ function onLoad() {
         window.location.hash = "";
     }
 
-    for(var i=0;i<docmap.length;i++) {
-        var doc = docmap[i];
-        docmapdict[doc.path] = doc;
-    }
-
     buildMethodList();
-    
+
     filter = document.getElementById("menu_filter");
     filter.onchange = doSearch;
 
@@ -213,7 +207,7 @@ function matchDoc(doc,file,folder,re) {
         if(folder.toLowerCase() != filter.value)
             return false;
     }
-    
+
     if(doc.installed=="extension" && !document.getElementById("check_extensions").checked)
         return false;
 
@@ -250,7 +244,7 @@ function getSubClasses(doc) {
     if(doc.subclasses) {
         for(var i=0;i<doc.subclasses.length;i++) {
             var x = doc.subclasses[i];
-            var v = docmapdict["Classes/"+x];
+            var v = docmap["Classes/"+x];
             a.push(x);
             if(v)
                 a = a.concat(getSubClasses(v));
@@ -410,7 +404,7 @@ function doPrint() {
                         div2.appendChild(n);
                     }
                 }
-            }            
+            }
 
             node.appendChild(div);
 
@@ -425,7 +419,7 @@ function doPrint() {
 function randomDoc() {
     while(node.hasChildNodes())
         node.removeChild(node.lastChild);
-        
+
     cindex = 0;
     cindex2 = 0;
     mindex = 0;
@@ -434,8 +428,14 @@ function randomDoc() {
 
     document.getElementById("search_input").value = "";
 
+    var list = [];
+    for(var k in docmap) {
+        if(docmap.hasOwnProperty(k))
+            list.push(docmap[k]);
+    }
+
     for(var i=0;i<100;i++) {
-        var v = docmap[Math.floor(Math.random()*docmap.length)];
+        var v = list[Math.floor(Math.random()*list.length)];
         if(! /Undocumented classes/.test(v.categories)) {
             cats = [[v.categories,[v]]];
             break;
@@ -443,7 +443,7 @@ function randomDoc() {
     }
 
     doPrint();
-    
+
     document.getElementById("search_count").innerHTML = "random document";
 }
 
@@ -452,14 +452,14 @@ function doSearch() {
 
     while(node.hasChildNodes())
         node.removeChild(node.lastChild);
-        
+
     cindex = 0;
     cindex2 = 0;
     mindex = 0;
     foundMets = false;
     cats = [];
     mets = [];
-        
+
     if(input!="") {
 
         // setup regexp

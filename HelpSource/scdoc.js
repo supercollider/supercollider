@@ -75,6 +75,64 @@ function resize_handler() {
         toc.style.maxHeight = height * 0.75;
 }
 
+function addInheritedMethods() {
+    var doc = docmap["Classes/"+document.title];
+    if(!doc) return;
+    var sups = doc.superclasses;
+    if(!sups) return;
+    var divs = [document.getElementById("inheritedclassmets"), document.getElementById("inheritedinstmets")];
+    for(var i=0;i<sups.length;i++) {
+        var s = docmap["Classes/"+sups[i]];
+        var d = [];
+        for(var j=0;j<2;j++) {
+            d[j] = document.createElement("ul");
+            d[j].className = "inheritedmets";
+            d[j].style.display = "none";
+        }
+        mets = s.methods;
+        for(var j=0;j<mets.length;j++) {
+            var m = mets[j];
+            if(doc.methods.indexOf(m)<0) { // ignore methods already documented in this helpfile
+                var li = document.createElement("li");
+                li.innerHTML = "<a href='"+helpRoot+"/"+s.path+".html#"+m.slice(1)+"'>"+m.slice(2)+"</a>";
+                if(m[1]=="*") {
+                    d[0].appendChild(li);
+                } else
+                if(m[1]=="-") {
+                    d[1].appendChild(li);
+                }
+            }
+        }
+        for(var j=0;j<2;j++) {
+            var count = d[j].childElementCount;
+            if(count) {
+                var x = document.createElement("div");
+                x.className = "inheritedmets_class";
+                x.innerHTML = count+" methods from <a href='"+helpRoot+"/"+s.path+".html'>"+s.title+"</a>: ";
+                divs[j].appendChild(x);
+                (function(z) {
+                    var a = document.createElement("a");
+                    a.className = "inheritedmets_toggle";
+                    a.setAttribute("href","#");
+                    a.innerHTML = "[ show ]";
+                    a.onclick = function() {
+                        if(z.style.display == "none") {
+                            z.style.display = "block";
+                            a.innerHTML = "[ hide ]";
+                        } else {
+                            z.style.display = "none";
+                            a.innerHTML = "[ show ]";
+                        }
+                        return false;
+                    };
+                    divs[j].appendChild(a);
+                })(d[j]);
+                divs[j].appendChild(d[j]);
+            }
+        }
+    }
+}
+
 function fixTOC() {
 // make all code examples editable!
     var x = document.getElementsByClassName("lang-sc");
@@ -94,6 +152,8 @@ function fixTOC() {
         }
 */
     }
+
+    addInheritedMethods();
 
     if(sessionStorage == undefined)
         sessionStorage = {};
