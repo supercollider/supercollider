@@ -39,9 +39,6 @@ set arguments in the default event. If there is none, it is created and the patt
 
 subsection::a) using as stream reference
 
-method::asStream
-returns an instance of RefStream, which updates its stream as soon as the pattern is changed.
-
 method::embedInStream
 just like any pattern, embeds itself in stream
 
