@@ -76,6 +76,7 @@ function resize_handler() {
 }
 
 function addInheritedMethods() {
+    if(!document.getElementById("filename")) return; // hackish trick, only class-docs has a 'filename' div.
     var doc = docmap["Classes/"+document.title];
     if(!doc) return;
     var sups = doc.superclasses;
