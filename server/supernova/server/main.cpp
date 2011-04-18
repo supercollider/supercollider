@@ -202,10 +202,19 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
 #endif
 }
 
+void drop_rt_scheduling()
+{
+    bool success = nova::thread_set_priority(0);
+    if (!success)
+        cerr << "Warning: cannot drop rt priority" << endl;
+}
+
 } /* namespace */
 
 int main(int argc, char * argv[])
 {
+    drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want it!
+
     server_arguments::initialize(argc, argv);
     server_arguments const & args = server_arguments::instance();
 
