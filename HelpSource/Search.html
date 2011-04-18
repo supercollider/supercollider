@@ -203,6 +203,8 @@ function SearchKeyPressed(e) {
 }*/
 
 function matchDoc(doc,file,folder,re) {
+    doc.matched_kw = null;
+
     if(filter.value != "all") {
         if(folder.toLowerCase() != filter.value)
             return false;
@@ -213,15 +215,18 @@ function matchDoc(doc,file,folder,re) {
 
     for(var i=0;i<fields.length;i++) {
         var f = fields[i];
-        if(checkboxes[i].checked && doc.hasOwnProperty(f) && re.test(doc[f]))
+        if(checkboxes[i].checked && doc.hasOwnProperty(f) && re.test(doc[f])) {
             return true;
+        }
     }
 
     if(doc.hasOwnProperty('keywords')) {
         for(var i=0;i<doc.keywords.length;i++) {
             var kw = doc.keywords[i];
-            if(re.test(kw))
+            if(re.test(kw)) {
+                doc.matched_kw = kw;
                 return true;
+            }
         }
     }
 
@@ -273,7 +278,11 @@ function doPrint() {
             div.className = "result_item";
             
             var n = document.createElement("a");
-            n.setAttribute("href",v.path+".html");
+            if(v.matched_kw) {
+                n.setAttribute("href",v.path+".html#kw_"+v.matched_kw);
+            } else {
+                n.setAttribute("href",v.path+".html");
+            }
             n.innerHTML = v.title;
             div.appendChild(n);
             div.appendChild(document.createTextNode(" - "+v.summary+" "));

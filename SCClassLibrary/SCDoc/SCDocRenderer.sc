@@ -347,10 +347,10 @@ SCDocHTMLRenderer : SCDocRenderer {
                 });
             },
             'anchor', {
-                file.write("<a class='anchor' name='"++node.text++"'></a>");
+                file.write("<a class='anchor' name='"++node.text++"'>&nbsp;</a>");
             },
             'keyword', {
-                file.write("<a class='anchor' name='kw_"++node.text++"'></a>");
+                file.write("<a class='anchor' name='kw_"++node.text++"'>&nbsp;</a>");
             },
             'code', {
                 if(node.display == \block, {
