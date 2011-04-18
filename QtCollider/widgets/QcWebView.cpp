@@ -130,7 +130,7 @@ void WebView::onPageReload()
 
 void WebView::keyPressEvent( QKeyEvent *e )
 {
-  if( _interpretSelection && e->modifiers() & Qt::ControlModifier
+  if( _interpretSelection && e->modifiers() & (Qt::ControlModifier|Qt::ShiftModifier)
       && ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) )
   {
     QString selection = selectedText();
