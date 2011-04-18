@@ -67,8 +67,6 @@ perhaps we need also a flag to tell if it's a original html with no schelp sourc
 * Docs using the classtree:: tag should re-render once every session, since the class tree might have changed.
 How do we force this? perhaps by setting doc.mtime = 0 for these docs in doc_map? Or use "touch -d DATE" to set the html to a very old date?
 
-* Render methodlinks as Class: *classMethod and Class: -instancemethod? or Class:*cmeth och Class:imeth?
-
 PARSER BUGS
 -----------
 * this doesn't work as it should:
