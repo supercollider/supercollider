@@ -106,6 +106,12 @@
 
 @end
 
+@interface SCNSFlippedView : NSView {
+
+}
+
+@end
+
 @interface SCNSWebView : WebView {
 	struct SCWebView *mSCWebView;
 	int loadCount;
