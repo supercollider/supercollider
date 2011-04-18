@@ -1078,6 +1078,13 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 @end
 
+@implementation SCNSFlippedView
+
+- (BOOL)isFlipped { return YES; }
+
+@end
+
+
 @implementation SCNSWebView
 
 -(void)initVars {
@@ -2479,10 +2486,15 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 : SCView(inParent, inObj, inBounds)
 {
 	NSRect matrect = SCtoNSRect(getDrawBounds());
+	//NSLog(@"bounds %@", NSStringFromRect(matrect));
 	mWebView = [[SCNSWebView alloc] initWithFrame:matrect frameName:nil groupName: nil];
 	[mWebView initVars];
 	NSView *view = mTop->GetNSView();
-	[view addSubview: mWebView];
+	SCNSFlippedView *clipView = [[SCNSFlippedView alloc] initWithFrame:[view frame]];
+	[view retain];
+	[[view window] setContentView:clipView];
+	[clipView addSubview:view];
+	[clipView addSubview:mWebView];
 	
 	[mWebView setEditingDelegate:mWebView];
 	[mWebView setFrameLoadDelegate:mWebView];
