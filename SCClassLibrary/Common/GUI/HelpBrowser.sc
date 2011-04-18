@@ -125,6 +125,7 @@ HelpBrowser {
 				this.goTo(url);
 			};
 		};
+		webView.enterInterpretsSelection = true;
 
 		toolbar[\Home].action = { this.goHome };
 		toolbar[\Back].action = { this.goBack };
