@@ -158,7 +158,7 @@ void QcTextEdit::setRangeText( const VariantList & list )
 
 void QcTextEdit::keyPressEvent( QKeyEvent *e )
 {
-  if( _interpretSelection && e->modifiers() & Qt::ControlModifier
+  if( _interpretSelection && e->modifiers() & (Qt::ControlModifier|Qt::ShiftModifier)
       && ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) )
   {
     QString selection = selectedString();
