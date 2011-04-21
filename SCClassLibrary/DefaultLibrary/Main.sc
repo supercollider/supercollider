@@ -75,6 +75,12 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 			this.recvOSCmessage(time, replyAddr, msg);
 		});
 	}
+	
+	addOSCFunc { |func| recvOSCfunc = recvOSCfunc.addFunc(func) }
+	
+	removeOSCFunc { |func| recvOSCfunc = recvOSCfunc.removeFunc(func) }
+	
+	replaceOSCFunc { |func, newFunc| recvOSCfunc = recvOSCfunc.replaceFunc(func, newFunc) }
 
 	newSCWindow {
 		var win, palette;
