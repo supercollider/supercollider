@@ -43,8 +43,9 @@ namespace nova
 
 struct realtime_engine_functor
 {
-    inline void init_tick(void);
-    inline void run_tick(void);
+    static inline void init_tick(void);
+    static void init_thread(void);
+    static inline void run_tick(void);
 };
 
 extern class nova_server * instance;
@@ -105,6 +106,11 @@ struct thread_init_functor
 
 private:
     bool rt;
+};
+
+struct io_thread_init_functor
+{
+    void operator()() const;
 };
 
 /** scheduler hook
@@ -289,7 +295,7 @@ private:
 
 private:
     callback_interpreter<system_callback> system_interpreter;
-    callback_interpreter_threadpool<system_callback> io_interpreter;
+    threaded_callback_interpreter<system_callback, io_thread_init_functor> io_interpreter; // for network IO
 };
 
 inline void run_scheduler_tick(void)
