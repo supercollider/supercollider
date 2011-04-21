@@ -32,6 +32,7 @@
 #include "static_allocator.hpp"
 #include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
+#include "nova-tt/name_thread.hpp"
 
 namespace nova
 {
@@ -74,6 +75,7 @@ private:
 #ifdef NOVA_TT_PRIORITY_RT
         thread_set_priority_rt(thread_priority_interval_rt().first);
 #endif
+        name_thread("Network Receive");
         self->run();
     }
 

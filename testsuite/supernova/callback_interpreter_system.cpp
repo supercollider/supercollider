@@ -33,17 +33,16 @@ BOOST_AUTO_TEST_CASE( callback_system_test )
     BOOST_REQUIRE_EQUAL(i, 1);
 }
 
-BOOST_AUTO_TEST_CASE( callback_interpreter_test )
+BOOST_AUTO_TEST_CASE( threaded_callback_interpreter_test )
 {
-    callback_interpreter<dummy> cbi;
+    threaded_callback_interpreter<dummy> cbi;
 
-    boost::thread thread = cbi.start_thread();
+    cbi.start_thread();
 
     for (int j = 0; j != 20; ++j)
         cbi.add_callback(new dummy());
 
-    cbi.terminate();
-    thread.join();
+    cbi.join_thread();
     BOOST_REQUIRE_EQUAL(i, 21);
 }
 

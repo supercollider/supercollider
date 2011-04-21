@@ -20,6 +20,7 @@
 
 #include "nova-tt/thread_affinity.hpp"
 #include "nova-tt/thread_priority.hpp"
+#include "nova-tt/name_thread.hpp"
 
 #include "server.hpp"
 #include "sync_commands.hpp"
@@ -47,14 +48,10 @@ class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
     scheduler<nova::scheduler_hook, thread_init_functor>(args.threads, !args.non_rt),
-    buffer_manager(1024), sc_osc_handler(args),
-#ifdef NOVA_TT_PRIORITY_RT
-    io_interpreter(1, true, thread_priority_interval_rt().first)
-#else
-    io_interpreter(1, true, thread_priority_interval().second)
-#endif
+    buffer_manager(1024), sc_osc_handler(args)
 {
     assert(instance == 0);
+    io_interpreter.start_thread();
     sc_factory = new sc_ugen_factory;
     instance = this;
 
@@ -89,7 +86,7 @@ nova_server::~nova_server(void)
 
     close_client();
 #endif
-    io_interpreter.join_threads();
+    io_interpreter.terminate();
     instance = 0;
 }
 
@@ -193,8 +190,17 @@ void nova_server::rebuild_dsp_queue(void)
     dsp_queue_dirty = false;
 }
 
+static void name_current_thread(int thread_index)
+{
+    char buf[1024];
+    sprintf(buf, "DSP Thread %d", thread_index);
+    name_thread(buf);
+}
+
 void thread_init_functor::operator()(int thread_index)
 {
+    name_current_thread(thread_index);
+
     if (rt)
     {
         bool success = true;
@@ -216,7 +222,6 @@ void thread_init_functor::operator()(int thread_index)
 #endif
 
 #if defined(NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT) && defined (__APPLE__)
-
         double blocksize = server_arguments::instance().blocksize;
         double samplerate = server_arguments::instance().samplerate;
 
@@ -236,6 +241,18 @@ void thread_init_functor::operator()(int thread_index)
         std::cerr << "Warning: cannot set thread affinity of dsp thread" << std::endl;
 }
 
+void io_thread_init_functor::operator()() const
+{
+#ifdef NOVA_TT_PRIORITY_RT
+    int priority = thread_priority_interval_rt().first;
+    thread_set_priority_rt(priority);
+#else
+    int priority = thread_priority_interval().second;
+    thread_set_priority(priority);
+#endif
+
+    name_thread("Network Send");
+}
 
 void synth_prototype_deleter::dispose(synth_prototype * ptr)
 {
@@ -245,5 +262,12 @@ void synth_prototype_deleter::dispose(synth_prototype * ptr)
         delete ptr;
 }
 
+void realtime_engine_functor::init_thread(void)
+{
+    if (!thread_set_affinity(0))
+        std::cerr << "Warning: cannot set thread affinity of jack thread" << std::endl;
+
+    name_current_thread(0);
+}
 
 } /* namespace nova */

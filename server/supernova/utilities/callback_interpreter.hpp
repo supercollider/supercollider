@@ -37,18 +37,24 @@ namespace nova
 
 namespace detail
 {
+struct nop_functor
+{
+    void operator()() const {}
+};
+} /* namespace detail */
+
+
 
 template <class callback_type,
           class callback_deleter = boost::checked_deleter<callback_type> >
-class callback_interpreter_base:
+class callback_interpreter:
     callback_system<callback_type>
 {
-protected:
-    callback_interpreter_base(void):
+public:
+    callback_interpreter(void):
         sem(0), running(false)
     {}
 
-public:
     void add_callback(callback_type * cb)
     {
         callback_system<callback_type>::add_callback(cb);
@@ -59,6 +65,12 @@ public:
     {
         running.store(true, boost::memory_order_relaxed);
         perform();
+    }
+
+    void terminate(void)
+    {
+        running.store(false, boost::memory_order_relaxed);
+        sem.post();
     }
 
 protected:
@@ -86,45 +98,56 @@ protected:
 };
 
 
-} /* namespace detail */
-
 template <class callback_type,
+          class init_functor = detail::nop_functor,
           class callback_deleter = boost::checked_deleter<callback_type> >
-class callback_interpreter:
-    public detail::callback_interpreter_base<callback_type, callback_deleter>
+class threaded_callback_interpreter:
+    public callback_interpreter<callback_type, callback_deleter>,
+    init_functor
 {
-    typedef detail::callback_interpreter_base<callback_type, callback_deleter> super;
+    typedef callback_interpreter<callback_type, callback_deleter> super;
+
+    boost::thread thread;
 
 public:
-    callback_interpreter(void)
+    threaded_callback_interpreter(void)
     {}
 
-    void terminate(void)
+    ~threaded_callback_interpreter(void)
     {
-        super::running.store(false, boost::memory_order_relaxed);
-        super::sem.post();
+        if (super::running.load())
+            join_thread();
     }
 
-    boost::thread start_thread(void)
+    void start_thread(void)
     {
         semaphore sync_sem;
         semaphore_sync sync(sync_sem);
-        boost::thread thread(boost::bind(&callback_interpreter::run_thread, this, boost::ref(sync_sem)));
-        return boost::thread(thread.move());
+        boost::thread thr(boost::bind(&threaded_callback_interpreter::run_thread, this, boost::ref(sync_sem)));
+        thread = thr.move();
     }
 
     void run_thread(semaphore & sync_sem)
     {
+        init_functor::operator()();
         super::run(sync_sem);
+    }
+
+    void join_thread(void)
+    {
+        super::terminate();
+        thread.join();
     }
 };
 
 template <class callback_type,
+          class init_functor = detail::nop_functor,
           class callback_deleter = boost::checked_deleter<callback_type> >
 class callback_interpreter_threadpool:
-    public detail::callback_interpreter_base<callback_type, callback_deleter>
+    public callback_interpreter<callback_type, callback_deleter>,
+    init_functor
 {
-    typedef detail::callback_interpreter_base<callback_type, callback_deleter> super;
+    typedef callback_interpreter<callback_type, callback_deleter> super;
 
 public:
     callback_interpreter_threadpool(uint16_t worker_thread_count, bool rt, uint16_t priority):
@@ -163,6 +186,7 @@ private:
 #endif
             thread_set_priority(priority);
 
+        init_functor::operator()();
         super::run(sync_sem);
     }
 
