@@ -188,12 +188,15 @@ OSCMessagePatternDispatcher : OSCMessageDispatcher {
 }
 
 OSCProxy : AbstractResponderProxy {
-	classvar <>defaultDispatcher, <>defaultMatchingDispatcher;
+	classvar <>defaultDispatcher, <>defaultMatchingDispatcher, traceFunc;
 	var <path;
 	
 	*initClass {
 		defaultDispatcher = OSCMessageDispatcher.new;
 		defaultMatchingDispatcher = OSCMessagePatternDispatcher.new;
+		traceFunc = {|time, replyAddr, msg|
+			"OSC Message Received:\n\ttime: %\n\taddress: %\n\t msg: %\n\n".postf(time, replyAddr, msg);
+		}
 	}
 	
 	*new { arg func, path, srcID, dispatcher;
@@ -203,6 +206,18 @@ OSCProxy : AbstractResponderProxy {
 	*newMatching { arg func, path, srcID;
 		^super.new.init(func, path, srcID, defaultMatchingDispatcher);
 	}
+	
+	*trace {|bool = true| 
+		if(bool, {
+			thisProcess.addOSCFunc(traceFunc);
+			CmdPeriod.add(this);
+		}, {
+			thisProcess.removeOSCFunc(traceFunc);
+			CmdPeriod.remove(this);
+		});
+	}
+	
+	*cmdPeriod { this.trace(false) }
 	
 	init {|argfunc, argpath, argsrcID, argdisp|
 		path = (argpath ? path).asString;
