@@ -73,10 +73,6 @@
 // 	#include <wiimote_event.h>
 // 	#include <wiimote_link.h>
 	}
-
-	#ifdef HAVE_CONFIG_H
-	# include "config.h"
-	#endif
 #endif // SC_LINUX
 
 // common:

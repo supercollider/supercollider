@@ -41,10 +41,6 @@
 #include "PyrSched.h"
 #include "GC.h"
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif
-
 #if HAVE_LID
 #include <errno.h>
 #include <fcntl.h>
