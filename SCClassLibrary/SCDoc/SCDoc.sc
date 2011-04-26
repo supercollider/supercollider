@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 7;
+    classvar version = 8;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -86,10 +86,7 @@ SCDoc {
     *addMethodList {|c,n,tag|
         var l, x = this.makeMethodList(c);
         if(x.notEmpty) {
-            l=Array.new;
-            x.do {|m|
-                l = l.add((tag:\method, text:m));
-            };
+            l = x.collect{|m| (tag:\method, text:m)};
             n = n.add((tag:tag, children:l));
         };
         ^n;
@@ -448,7 +445,7 @@ SCDoc {
 
     *makeClassTemplate {|name,path|
         var class = name.asSymbol.asClass;
-        var n, m, cats, methodstemplate, f;
+        var n, m, cats, f;
 //        f = class.filenameSymbol.asString.escapeChar($ );
         f = (helpTargetDir+/+"version").escapeChar($ );
         if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
@@ -481,29 +478,52 @@ SCDoc {
             n = this.addMethodList(class.class,n,\classmethods);
             n = this.addMethodList(class,n,\instancemethods);
 
-            f = {|x|
-                if(x.tag==\method) {
-                    methodstemplate = methodstemplate ++ "Method::" + x.text ++ "\n(describe method here)\n\nreturns:: (returnvalue)\n\n";
+            f = {|tag|
+                var txt,c,m,l,last,sym;
+                if(tag==\classmethods) {
+                    txt = "\nCLASSMETHODS::\n\n";
+                    c = class.class;
+                } {
+                    txt = "\nINSTANCEMETHODS::\n\n";
+                    c = class;
                 };
+                p.findNode(tag,n).children.do {|x|
+                    if(x.tag==\method) {
+                        txt = txt ++ "METHOD::" + x.text ++ "\n(describe method here)\n\n";
+                        sym = x.text.asSymbol;
+                        m = c.findRespondingMethodFor(sym.asSetter);
+                        m = m ?? {c.findRespondingMethodFor(sym)};
+                        m !? {
+                            l = m.argNames;
+                            last = l.size-1;
+                            l.do {|a,i|
+                                if (i>0) { //skip 'this' (first arg)
+                                    txt = txt ++ "argument:: ";
+                                    if(i==last and: {m.varArgs}) {
+                                        txt = txt ++ " ... ";
+                                    };
+                                    txt = txt ++ a ++ "\n(describe argument here)\n\n";
+                                }
+                            }
+                        }
+                    };
+                    txt = txt ++ "returns:: (returnvalue)\n\n";
+                };
+                txt;
             };
-
-            methodstemplate = "\nClassMethods::\n\n";
-            p.findNode(\classmethods,n).children.do(f);
-            methodstemplate = methodstemplate ++ "\nInstanceMethods::\n\n";
-            p.findNode(\instancemethods,n).children.do(f);
 
             n = n.add((
                 tag:\section, text:"Help Template", children:[
                     (tag:\prose, display:\block,
                     text:"Fill out and save the template below to HelpSource/Classes/"++name++".schelp"),
                     (tag:\code,
-                    text:"Class::"+name
+                    text:"CLASS::"+name
                     ++"\nsummary:: (put short description here)\n"
                     ++"categories::"+cats
                     ++"\nrelated:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.\n\n"
-                    ++"Description::\n(put long description here)\n\n"
-                    ++methodstemplate
-                    ++"\nExamples::\n\ncode::\n(some example code)\n::\n",
+                    ++"DESCRIPTION::\n(put long description here)\n\n"
+                    ++ f.(\classmethods) ++ f.(\instancemethods)
+                    ++"\nEXAMPLES::\n\ncode::\n(some example code)\n::\n",
                     display:\block)
                 ]
             ));
