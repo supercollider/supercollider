@@ -23,10 +23,6 @@ AbstractResponderProxy {
 		dispatcher.updateFuncForProxy(this);
 	}
 	
-	postAll { this.subclassResponsibility(thisMethod) }
-	
-	postActive { this.subclassResponsibility(thisMethod) }
-	
 	gui { this.subclassResponsibility(thisMethod) }
 	
 	cmdPeriod { this.disable }
