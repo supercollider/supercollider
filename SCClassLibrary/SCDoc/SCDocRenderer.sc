@@ -265,7 +265,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                 do_children.();
 
                 if(collectedArgs.notEmpty) {
-                    file.write("<h4>Parameters:</h4>\n");
+                    file.write("<h4>Arguments:</h4>\n");
                     file.write("<table class='arguments'>\n");
                     collectedArgs.do {|a|
                         file.write("<tr><td class='argumentname'>"+a.text+"<td class='argumentdesc'>");
