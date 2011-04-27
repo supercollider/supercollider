@@ -26,7 +26,7 @@ AbstractResponderProxy {
 	
 	gui { this.subclassResponsibility(thisMethod) }
 	
-	cmdPeriod { this.disable }
+	cmdPeriod { this.clear }
 	
 	oneShot {
 		var oneShotFunc, wrappedFunc;
