@@ -20,7 +20,7 @@ Slew.scopeResponse
 */
 
 + Function {
-	scopeResponse{ |server, freqMode=1, label="Empirical Frequency response"|
+	scopeResponse{ |server, freqMode=1, label="Empirical Frequency response", mute = false|
 
 		var bus1, bus2, synth, win, fs;
 		server = server ?? {GUI.stethoscope.defaultServer};
@@ -46,12 +46,13 @@ Slew.scopeResponse
 			server.sync;
 			// Create a synth using this function and the busses
 			synth = {
-			    var son1, son2;
-			    son1 = PinkNoise.ar;
-			    son2 = this.value(son1);
-			    Out.ar(bus1, son1);
-			    Out.ar(bus2, son2);
-			    Out.ar(0, [son1, son2] * 0.1); // audible
+				var noise = PinkNoise.ar;
+				var filtered = this.value(noise);
+				if (not(mute)) {
+					Out.ar(0, (filtered * 0.1) ! 2);   // filter only
+				};
+				Out.ar(bus1, noise);
+				Out.ar(bus2, filtered);
 			}.play(Node.basicNew(server, fs.node), addAction: \addBefore);
 		}.play;
 
