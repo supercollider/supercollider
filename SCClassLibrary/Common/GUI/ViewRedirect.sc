@@ -66,9 +66,9 @@ Stethoscope : ViewRedirect {
 
 }
 ScopeView : ViewRedirect { *key { ^\scopeView }}
-FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to SCFreqScope
+FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to FreqScope
 
-FreqScope : ViewRedirect { // redirects to SCFreqScopeWindow
+FreqScope : ViewRedirect { // redirects to FreqScopeWindow
 	*new { arg width=512, height=300, busNum=0, scopeColor, bgColor;
 		busNum = busNum.asControlInput;
 		^this.implClass.new(width, height, busNum, scopeColor)

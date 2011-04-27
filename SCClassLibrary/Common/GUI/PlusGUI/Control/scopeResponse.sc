@@ -25,6 +25,11 @@ Slew.scopeResponse
 		var bus1, bus2, synth, win, fs;
 		server = server ?? {GUI.stethoscope.defaultServer};
 
+		if (server != FreqScope.server) {
+			"Function-scopeReponse: resetting Freqscope.server".warn;
+			FreqScope.server = server;
+		};
+
 		// Create two private busses
 		bus1 = Bus.audio(server, 1).postln;
 		bus2 = Bus.audio(server, 1).postln;
@@ -33,28 +38,33 @@ Slew.scopeResponse
 		// Also, onClose must free the synth and the busses
 
 		win = GUI.window.new(label, Rect(100, 100, 511, 300));
-		fs = GUI.freqScopeView.response(win, win.view.bounds, bus1, bus2, freqMode);
-		win.onClose_{
+		fs = FreqScope.response(win, win.view.bounds, bus1, bus2, freqMode);
+
+		win.onClose_ {
 			fs.kill;
-			server.bind{[synth, bus1, bus2].do(_.free)};
+			synth.release;
 		};
+
 		win.front;
 		fs.active_(true);
 
-		Task{
-			1.5.wait;
-			server.sync;
-			// Create a synth using this function and the busses
-			synth = {
-				var noise = PinkNoise.ar;
-				var filtered = this.value(noise);
-				if (not(mute)) {
-					Out.ar(0, (filtered * 0.1) ! 2);   // filter only
-				};
-				Out.ar(bus1, noise);
-				Out.ar(bus2, filtered);
-			}.play(Node.basicNew(server, fs.node), addAction: \addBefore);
-		}.play;
+		// Create a synth using this function and the busses
+		synth = { |gate = 1|
+			var noise = PinkNoise.ar;
+			var filtered = this.value(noise);
+			var env = EnvGen.kr(Env.asr(0.1, 1, 0.1, \sine), gate, 0.1, doneAction: 2);
+			if (not(mute)) {
+				Out.ar(0, (filtered * env) ! 2);   // filter only
+			};
+			Out.ar(bus1, noise);
+			Out.ar(bus2, filtered);
+		}.play(fs.synth.asTarget, addAction: \addBefore);
+		synth.register;
+		synth.onFree {
+			{
+				[bus1, bus2].do(_.free);
+			}.defer;
+		}
 
 		^fs
 	}
