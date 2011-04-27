@@ -9,6 +9,7 @@ AbstractResponderProxy {
 			if(permanent.not, { CmdPeriod.add(this) });
 			dispatcher.add(this);
 			enabled = true;
+			allProxies.add(this);
 		});
 	} 
 	
