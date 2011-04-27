@@ -111,7 +111,7 @@ a.put(\commune, 1871);
 a.at(\commune);
 ::
 
-method::envirPut(aValue)
+method::envirPut
 
 put a value to the current environment using receiver as key
 
@@ -159,15 +159,15 @@ a.setn(\freq, [330, 367]);
 a.release;
 ::
 
-method::ar(val, lag)
+method::ar
 
 Return an audio rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
 
-method::ir(val)
+method::ir
 
 Return an intitalization rate NamedControl input with a default value (val). If val is an array, the control will be multichannel.
 
-method::tr(val)
+method::tr
 
 Return a TrigControl input with a default value (val). If val is an array, the control will be multichannel.
 discussion::
