@@ -340,7 +340,7 @@
 		// msg[1] controls included
 		// msg[2] nodeID of queried group
 		// initial number of children
-		resp = OSCresponderNode(addr, '/g_queryTree.reply', { arg time, responder, msg;
+		resp = OSCProxy({ arg msg;
 
 			var finalEvent;
 			var i = 2, j, controls, printControls = false, dumpFunc;
@@ -466,11 +466,11 @@
 					drawFunc.value(levels);
 				};
 			}.defer
-		}).add.removeWhenDone;
+		}, '/g_queryTree.reply', addr).oneShot;
 		this.sendMsg("/g_queryTree", 0, 0);
 		SystemClock.sched(3, {
 			done.not.if({
-				resp.remove;
+				resp.clear;
 				"Server failed to respond to Group:queryTree!".warn;
 			});
 		});

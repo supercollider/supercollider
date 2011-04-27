@@ -303,15 +303,15 @@ Buffer {
 		refcount = (count / 1633).roundUp;
 		count = count + pos;
 		//("refcount" + refcount).postln;
-		resp = OSCresponderNode(server.addr, '/b_setn', { arg time, responder, msg;
+		resp = OSCProxy({ arg msg;
 			if(msg[1] == bufnum, {
 				//("received" + msg).postln;
 				array = array.overWrite(FloatArray.newFrom(msg.copyToEnd(4)), msg[2] - index);
 				refcount = refcount - 1;
 				//("countDown" + refcount).postln;
-				if(refcount <= 0, {done = true; responder.remove; action.value(array, this); });
+				if(refcount <= 0, {done = true; resp.clear; action.value(array, this); });
 			});
-		}).add;
+		}, '/b_setn', server.addr);
 		{
 			while({pos < count}, {
 				// 1633 max size for getn under udp
@@ -325,7 +325,7 @@ Buffer {
 		}.forkIfNeeded;
 		// lose the responder if the network choked
 		SystemClock.sched(timeout,
-			{ done.not.if({ resp.remove; "Buffer-streamToFloatArray failed!".warn;
+			{ done.not.if({ resp.clear; "Buffer-streamToFloatArray failed!".warn;
 				"Try increasing wait time".postln;});
 		});
 	}
@@ -531,13 +531,12 @@ Buffer {
 	}
 
 	query {
-		OSCresponderNode(server.addr,'/b_info',{ arg time,responder,msg;
+		OSCProxy({ arg msg;
 			Post << "bufnum      :" << msg[1] << Char.nl
 				<< "numFrames   : " << msg[2] << Char.nl
 				<< "numChannels : " << msg[3] << Char.nl
 				<< "sampleRate  :" << msg[4] << Char.nl << Char.nl;
-			responder.remove;
-		}).add;
+		}, '/b_info', server.addr).oneShot;
 		server.sendMsg("/b_query",bufnum)
 	}
 
@@ -571,7 +570,7 @@ Buffer {
 	*initServerCache { |server|
 		serverCaches[server] ?? {
 			serverCaches[server] = IdentityDictionary.new;
-			serverCaches[server][\responder] = OSCresponderNode(server.addr, '/b_info', { |t, r, m|
+			serverCaches[server][\responder] = OSCProxy({ |m|
 				var	buffer = serverCaches[server][m[1]];
 				if(buffer.notNil) {
 					buffer.numFrames = m[2];
@@ -579,7 +578,7 @@ Buffer {
 					buffer.sampleRate = m[4];
 					buffer.queryDone;
 				};
-			}).add;
+			}, '/b_info', server.addr).fix;
 			NotificationCenter.register(server,\newAllocators,this,{
 				this.clearServerCaches(server);
 			});
@@ -587,7 +586,7 @@ Buffer {
 	}
 	*clearServerCaches { |server|
 		if(serverCaches[server].notNil) {
-			serverCaches[server][\responder].remove;
+			serverCaches[server][\responder].clear;
 			serverCaches.removeAt(server);
 		}
 	}

@@ -126,7 +126,7 @@ QLevelIndicator : QView {
       numRMSSamps = server.sampleRate / updateFreq;
       numRMSSampsRecip = 1 / numRMSSamps;
       (numIns > 0).if({
-        inresp = OSCresponder(server.addr, "/" ++ server.name ++ "InLevels", { |t, r, msg|      {try {
+        inresp = OSCProxy({ |msg, t|      {try {
           msg.copyToEnd(3).pairsDo({|val, peak, i|
             var meter;
             i = i * 0.5;
@@ -134,9 +134,9 @@ QLevelIndicator : QView {
             meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
             meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
           }) }}.defer;
-        }).add;
+        }, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix;
       });
-      outresp = OSCresponder(server.addr, "/" ++ server.name ++ "OutLevels", { |t, r, msg|      {try {
+      outresp = OSCProxy({ |msg, t|      {try {
         msg.copyToEnd(3).pairsDo({|val, peak, i|
           var meter;
           i = i * 0.5;
@@ -144,7 +144,7 @@ QLevelIndicator : QView {
           meter.value = (val.max(0.0) * numRMSSampsRecip).sqrt.ampdb.linlin(dBLow, 0, 0, 1);
           meter.peakLevel = peak.ampdb.linlin(dBLow, 0, 0, 1);
         }) }}.defer;
-      }).add;
+      }, ("/" ++ server.name ++ "OutLevels").asSymbol, server.addr).fix;
       server.bind({
         (numIns > 0).if({
           insynth = SynthDef(server.name ++ "InputLevels", {
@@ -177,8 +177,8 @@ QLevelIndicator : QView {
     };
 
     window.onClose_({
-      (server.options.numInputBusChannels > 0).if({ inresp.remove;});
-      outresp.remove;
+      (server.options.numInputBusChannels > 0).if({ inresp.clear;});
+      outresp.clear;
       insynth.free;
       outsynth.free;
       ServerTree.remove(func);
