@@ -30,7 +30,7 @@ AbstractResponderProxy {
 	oneShot {
 		var oneShotFunc, wrappedFunc;
 		wrappedFunc = func;
-		oneShotFunc = { arg ...args; wrappedFunc.value(*args); this.disable };
+		oneShotFunc = { arg ...args; wrappedFunc.value(*args); this.clear };
 		this.func_(oneShotFunc);
 	}
 	
