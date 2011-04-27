@@ -108,25 +108,27 @@ function addInheritedMethods() {
             var count = d[j].childElementCount;
             if(count) {
                 var x = document.createElement("div");
+                var show = "&#9658; show";
+                var hide = "&#9660; hide";
                 x.className = "inheritedmets_class";
-                x.innerHTML = count+" methods from <a href='"+helpRoot+"/"+s.path+".html'>"+s.title+"</a>: ";
+                x.innerHTML = count+" methods from <a href='"+helpRoot+"/"+s.path+".html'>"+s.title+"</a> ";
                 divs[j].appendChild(x);
                 (function(z) {
                     var a = document.createElement("a");
                     a.className = "inheritedmets_toggle";
                     a.setAttribute("href","#");
-                    a.innerHTML = "[ show ]";
+                    a.innerHTML = show;
                     a.onclick = function() {
                         if(z.style.display == "none") {
                             z.style.display = "block";
-                            a.innerHTML = "[ hide ]";
+                            a.innerHTML = hide;
                         } else {
                             z.style.display = "none";
-                            a.innerHTML = "[ show ]";
+                            a.innerHTML = show;
                         }
                         return false;
                     };
-                    divs[j].appendChild(a);
+                    x.appendChild(a);
                 })(d[j]);
                 divs[j].appendChild(d[j]);
             }
