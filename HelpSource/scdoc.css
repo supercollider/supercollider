@@ -58,6 +58,9 @@ a:hover {
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
+.inheritedmets_class a {
+    color: #333;
+}
 ul.inheritedmets {
     list-style: none;
     padding: 0;
@@ -70,9 +73,9 @@ ul.inheritedmets li {
 }
 a.inheritedmets_toggle {
     font-size: 9pt;
-    color: #555;
+    color: #558;
     font-weight: normal;
-    margin-left: 2em;
+/*    margin-left: 2em;*/
 }
 
 a.inheritedmets_toggle:hover {
