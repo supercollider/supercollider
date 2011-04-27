@@ -135,8 +135,12 @@ AbstractDispatcher {
 	
 }
 
-AbstractFuncWrap {
+// Proxies below store by the 'most significant' message argument for fast lookup
+// These are for use when more than just the 'most significant' argument needs to be matched
+AbstractMessageMatcher {
 	var <>func;
+	
+	value { this.subclassResponsibility(thisMethod) }
 	
 	valueArray {arg args; ^this.value(*args) } // needed to work in FunctionLists
 
@@ -147,7 +151,7 @@ AbstractFuncWrap {
 OSCMessageDispatcher : AbstractDispatcher {
 	
 	wrapFunc {|proxy| ^if(proxy.srcID.notNil, {
-			OSCProxyFuncWrap(proxy.srcID, proxy.func);
+			OSCProxyMessageMatcher(proxy.srcID, proxy.func);
 		}, { proxy.func });
 	}
 	
@@ -261,7 +265,7 @@ OSCdef : OSCProxy {
 
 
 // if you need to test for address func gets wrapped in this
-OSCProxyFuncWrap : AbstractFuncWrap {
+OSCProxyMessageMatcher : AbstractMessageMatcher {
 	var addr;
 	
 	*new {|addr, func| ^super.new.init(addr, func);}
@@ -300,11 +304,11 @@ MIDIMessageDispatcher : AbstractDispatcher {
 		chan = proxy.chan;
 		srcID = proxy.srcID;
 		^case(
-			{ srcID.notNil && chan.isArray }, {MIDIProxyBothCAFuncWrap(chan, srcID, func)},
-			{ srcID.notNil && chan.notNil }, {MIDIProxyBothFuncWrap(chan, srcID, func)},
-			{ srcID.notNil }, {MIDIProxySrcFuncWrap(srcID, func)},
-			{ chan.isArray }, {MIDIProxyChanArrayFuncWrap(chan, func)},
-			{ chan.notNil }, {MIDIProxyChanFuncWrap(chan, func)},
+			{ srcID.notNil && chan.isArray }, {MIDIProxyBothCAMessageMatcher(chan, srcID, func)},
+			{ srcID.notNil && chan.notNil }, {MIDIProxyBothMessageMatcher(chan, srcID, func)},
+			{ srcID.notNil }, {MIDIProxySrcMessageMatcher(srcID, func)},
+			{ chan.isArray }, {MIDIProxyChanArrayMessageMatcher(chan, func)},
+			{ chan.notNil }, {MIDIProxyChanMessageMatcher(chan, func)},
 			{ func }
 		);
 	}
@@ -327,7 +331,7 @@ MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 		srcID = proxy.srcID;
 		// are these right?
 		^case(
-			{ srcID.notNil }, {MIDIProxySrcFuncWrapNV(srcID, func)},
+			{ srcID.notNil }, {MIDIProxySrcMessageMatcherNV(srcID, func)},
 			{ func }
 		);
 	}
@@ -455,7 +459,7 @@ MIDIdef : MIDIProxy {
 
 
 // if you need to test for srcID func gets wrapped in this
-MIDIProxySrcFuncWrap : AbstractFuncWrap {
+MIDIProxySrcMessageMatcher : AbstractMessageMatcher {
 	var srcID;
 	
 	*new {|srcID, func| ^super.new.init(srcID, func);}
@@ -468,7 +472,7 @@ MIDIProxySrcFuncWrap : AbstractFuncWrap {
 }
 
 // if you need to test for srcID func gets wrapped in this
-MIDIProxyChanFuncWrap : AbstractFuncWrap {
+MIDIProxyChanMessageMatcher : AbstractMessageMatcher {
 	var chan;
 	
 	*new {|chan, func| ^super.new.init(chan, func);}
@@ -481,7 +485,7 @@ MIDIProxyChanFuncWrap : AbstractFuncWrap {
 }
 
 // if you need to test for chanArray func gets wrapped in this
-MIDIProxyChanArrayFuncWrap : AbstractFuncWrap {
+MIDIProxyChanArrayMessageMatcher : AbstractMessageMatcher {
 	var chanBools, <>func;
 	
 	*new {|chanArray, func|
@@ -500,7 +504,7 @@ MIDIProxyChanArrayFuncWrap : AbstractFuncWrap {
 }
 
 // version for message types which don't pass a val
-MIDIProxySrcFuncWrapNV : MIDIProxySrcFuncWrap {
+MIDIProxySrcMessageMatcherNV : MIDIProxySrcMessageMatcher {
 	
 	value {|num, chan, testSrc|
 		if(srcID == testSrc, {func.value(num, chan, testSrc)}) 
@@ -508,7 +512,7 @@ MIDIProxySrcFuncWrapNV : MIDIProxySrcFuncWrap {
 }
 
 // if you need to test for chan and srcID func gets wrapped in this
-MIDIProxyBothFuncWrap : AbstractFuncWrap {
+MIDIProxyBothMessageMatcher : AbstractMessageMatcher {
 	var chan, srcID;
 	
 	*new {|chan, srcID, func| ^super.new.init(chan, srcID, func);}
@@ -522,7 +526,7 @@ MIDIProxyBothFuncWrap : AbstractFuncWrap {
 
 
 // if you need to test for chanArray and srcID func gets wrapped in this
-MIDIProxyBothCAFuncWrap : AbstractFuncWrap {
+MIDIProxyBothCAMessageMatcher : AbstractMessageMatcher {
 	var chanBools, srcID;
 	
 	*new {|chanArray, srcID, func| 
