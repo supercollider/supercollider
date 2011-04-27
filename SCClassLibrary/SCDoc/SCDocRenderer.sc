@@ -627,7 +627,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         var mets = parser.generateUndocumentedMethods(class, node, "Undocumented methods");
         mets !? {
             if(node.tag.isNil, { //no subtree, create one
-                parser.root.add(node = (tag:tag, children:List.new));
+                parser.root = parser.root.add(node = (tag:tag, children:List.new));
             });
             node.children.add(mets);
         };
@@ -681,10 +681,10 @@ SCDocHTMLRenderer : SCDocRenderer {
                 );
             };
             if(currentClass != Object) {
-                parser.root.add((tag:\section, text:"Inherited class methods", children:[], sort:5, makeDiv:"inheritedclassmets")); // or 1?
-                parser.root.add((tag:\section, text:"Inherited instance methods", children:[], sort:6, makeDiv:"inheritedinstmets")); // or 2?
+                parser.root = parser.root.add((tag:\section, text:"Inherited class methods", children:[], sort:5, makeDiv:"inheritedclassmets")); // or 1?
+                parser.root = parser.root.add((tag:\section, text:"Inherited instance methods", children:[], sort:6, makeDiv:"inheritedinstmets")); // or 2?
             };
-            parser.root.sort {|a,b| a.sort<b.sort};
+            parser.root = parser.root.sort {|a,b| a.sort<b.sort};
 
             this.renderHTMLHeader(f,name,\class,subtarget,toc);
             this.renderHTMLSubTree(f,(tag:'root',children:parser.root));
