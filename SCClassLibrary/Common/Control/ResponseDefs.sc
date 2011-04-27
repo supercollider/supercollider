@@ -157,7 +157,7 @@ OSCMessageDispatcher : AbstractDispatcher {
 	
 	getKeysForProxy {|proxy| ^[proxy.path];}
 	
-	value {|time, addr, msg| active[msg[0]].value(time, msg, addr);}
+	value {|time, addr, msg| active[msg[0]].value(msg, time, addr);}
 	
 	register { 
 		thisProcess.recvOSCfunc = thisProcess.recvOSCfunc.addFunc(this); 
@@ -179,7 +179,7 @@ OSCMessagePatternDispatcher : OSCMessageDispatcher {
 		var pattern;
 		pattern = msg[0];
 		active.keysValuesDo({|key, func|
-			if(key.matchOSCAddressPattern(pattern), {func.value(time, msg, addr);});
+			if(key.matchOSCAddressPattern(pattern), {func.value(msg, time, addr);});
 		})
 	}
 	
