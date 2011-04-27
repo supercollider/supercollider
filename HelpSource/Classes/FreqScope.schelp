@@ -1,186 +1,70 @@
 class:: FreqScope
-redirect:: implClass
-summary:: Frequency analysis view
+summary:: A nice wrapper for FreqScope
 categories:: GUI
-related:: Classes/SCFreqScopeWindow, Classes/SCScope
+related:: Classes/FreqScope
 
 description::
-FreqScope shows the frequency spectrum of a specified audio bus.
+FreqScope shows the frequency spectrum of the specified audio bus. The scope will remain active after a command-period. To turn it off you must either click off the 'Power' button or close the window.
 
-subsection:: A Very Important Issue Regarding FreqScope:
-
-The scope will remain active after a command-period. To turn it off you must use the 'active' method.
-Very important: You must run code::kill():: when the parent window is closed to avoid problems. It also frees the buffers that the scope allocated and stops the FFT analysis synth. So:
-code::
-(
-w = Window("My Analyzer", Rect(0, 0, 511, 300));
-f = FreqScope(w, w.view.bounds);
-w.onClose_({ f.kill }); // YOU MUST HAVE THIS
-w.front;
-)
+Panel commands:
+table::
+## Power || Turns the scope on and off. This is useful for freezing the signal on the display or for saving CPU.
+## BusIn || The audio bus to be analyzed.
+## FrqScl || Determines the mapping of frequencies on the x-axis. Can be linear (lin) or logarithmic (log). Logarithmic is equal spacing per musical octave.
+## dbCut || Determines the lowest decibel shown on the y-axis.
 ::
 
-
-classmethods::
+ClassMethods::
 
 method:: new
-argument:: parent
-The parent view.
-argument:: bounds
-An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
+argument:: width
+Default value is 512.
+argument:: height
+Default value is 300.
+argument:: busNum
+The number of the audio link::Classes/Bus:: to be monitored.
+argument:: scopeColor
+An instance of link::Classes/Color::. The drawing color of the scope.
+argument:: bgColor
+An instance of link::Classes/Color::. The background color of the scope.
 discussion::
 Example:
 code::
-// Start internal server
+// must use internal server
 s = Server.internal.boot;
 
-// Create analyzer in a window
-(
-w = Window("My Analyzer", Rect(0, 0, 511, 300)); // width should be 511
-f = FreqScope(w, w.view.bounds);
-f.active_(true); // turn it on the first time;
+// create a new analyzer
+FreqScope.new(400, 200, 0);
 
-w.onClose_({ f.kill }); // you must have this
-w.front;
-{ SinOsc.ar([500, 1000], 0, 0.25).mean.dup }.play(s); // start two sine waves
-)
+// basic sine
+{ SinOsc.ar(2000, 0, 0.25) }.play(s);
+
+// random saw
+{ RLPF.ar(Saw.ar(110, 0.2), LFNoise2.kr(1,1e4,1e4), LFNoise2.kr(1, 0.2, 0.22)) }.play(s);
+
+// modulate phase
+{ SinOsc.ar(800, SinOsc.ar(XLine.kr(20, 8000, 10), 0, 2pi), 0.25) }.play(s);
+
+// all harmonics
+{ Blip.ar(200, Line.kr(1, 100, 10), 0.2) }.play(s);
 ::
-
-method:: response
-Create a scope in a special frequency-response mode. This uses FFT-based spectral division to estimate the frequency response of some effect, on the assumption that the signal to bus1 is transformed to the signal at bus2 by some linear time-invariant process.
-argument:: parent
-The parent view.
-argument:: bounds
-An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
-argument:: bus1
-The bus on which the "pre" signal is found.
-argument:: bus2
-The bus on which the "post" signal is found.
-argument:: freqMode
-Linear (0) or log(1) frequency mode. Defaults to 1.
-discussion::
-Example:
-code::
-Server.default = s = Stethoscope.defaultServer.boot;
-
-// basic usage. try these. Each one will open a new window
-// move the mouse left and right to test response in different ranges	
-LPF.scopeResponse
-HPF.scopeResponse
-MoogFF.scopeResponse
-BBandPass.scopeResponse
-BLowShelf.scopeResponse // by default BLowShelf doesn't mangle much
-Resonz.scopeResponse
-BRF.scopeResponse
-Integrator.scopeResponse
-Median.scopeResponse // nonlinear, and therefore interesting
-
-// customize the parameters for more informative scoping
-{|in| MoogFF.ar(in, freq: MouseX.kr(10, 10000, 1),
-gain:MouseY.kr(4, 0))}.scopeResponse
 ::
 
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: viewClass
-Returns link::Classes/SCScope::. See also Subclassing and Internal Methods in link::Classes/SCView::.
-warning::Cocoa specific::
+method:: scopeOpen
+Returns a link::Classes/Boolean::, whether the scope is open.
 
-method:: initClass
-Sets the classvar, code::server = Server.internal::.
-
-method:: server
-A classvar. Must be code::Server.internal::.
-
-instancemethods::
-
-method:: kill
-Very important. This must be run when the parent window is closed to avoid problems. It also frees the buffers that the scope allocated and stops the FFT analysis synth.
-
-method:: active
-Turn the scope on or off.
-argument:: bool
-An instance of link::Classes/Boolean::.
-
-method:: freqMode
-argument:: mode
-0 = linear, 1 = logarithmic.
-
-method:: inBus
-The bus to listen on.
-argument:: num
-An audio link::Classes/Bus:: number.
-
-method:: dbRange
-Get/set the amplitude range.
-argument:: db
-A link::Classes/Number::.
-
-method:: special
-Put the scope into a special mode using a user-specified link::Classes/SynthDef::. Note that only very particular SynthDefs should be used, namely ones that are derived from the code::\freqScope0:: or code::\freqScope1:: SynthDefs. Most users will not need to use this method directly, but it can be used to provide a customised analysis shown in the scope.
-argument:: defname
-Name of the link::Classes/SynthDef:: you wish to use.
-argument:: extraArgs
-Extra arguments that you may wish to pass to the synth.
-
+InstanceMethods::
 
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: start
+method::window
+Returns the window in which the FreqScope view is placed.
 
-method:: eventSeq
-argument:: delta
-argument:: funcs
-
-method:: cmdPeriod
-
-method:: initSCFreqScope
-
-method:: sendSynthDefs
-
-method:: allocBuffers
-
-method:: freeBuffers
-
-method:: node
-
-method:: scopebuf
-
-method:: fftbuf
-
-method:: bufSize
-
-examples::
-
-code::
-// Start internal server
-s = Server.internal.boot;
-
-
-// Create analyzer in a window
-(
-w = Window("My Analyzer", Rect(0, 0, 511, 300)); // width should be 511
-f = FreqScope(w, w.view.bounds);
-f.active_(true); // turn it on the first time;
-
-w.onClose_({ f.kill }); // you must have this
-w.front;
-{ SinOsc.ar([500, 1000], 0, 0.25).mean.dup }.play(s); // start two sine waves
-)
-
-f.freqMode_(1); // change to log scale so we can see them
-f.inBus_(1); // look at bus 1
-f.dbRange_(200); // expand amplitude range
-f.active_(false); // turn scope off (watch CPU)
-f.active_(true); // turn it back on				
-
-// Now press command-period. The scope is still running.
-
-{ Mix.ar(SinOsc.ar([500, 1200, 3000, 9000, 12000], 0, [0.2, 0.1, 0.05, 0.03, 0.01])) }.play(s); // restart some sines
-
-// Close window and scope is killed.
-::
+method:: scope
+Returns the FreqScope.

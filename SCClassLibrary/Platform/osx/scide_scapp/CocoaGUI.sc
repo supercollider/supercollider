@@ -27,8 +27,8 @@ CocoaGUI {
 
 	///////////////// Common -> GUI /////////////////
 
-	*freqScope { ^SCFreqScopeWindow }
-	*freqScopeView { ^SCFreqScope }
+	*freqScope     { ^PlusFreqScopeWindow }
+	*freqScopeView { ^PlusFreqScope }
 	*scopeView { ^SCScope }
 	*stethoscope { ^SCStethoscope }
 

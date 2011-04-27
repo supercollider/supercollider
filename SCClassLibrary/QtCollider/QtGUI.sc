@@ -35,8 +35,9 @@ QtGUI {
   *listView { ^QListView }
   *popUpMenu { ^QPopUpMenu }
   *textView { ^QTextView; }
-  *freqScope { ^QFreqScopeWindow }
-  *freqScopeView { ^QFreqScope }
+
+  *freqScope     { ^PlusFreqScopeWindow }
+  *freqScopeView { ^PlusFreqScope }
   *scopeView { ^QScope }
   *stethoscope { ^QStethoscope }
   *soundFileView { ^QSoundFileView }
