@@ -321,13 +321,13 @@ Server : Model {
 		if (condition.isNil) { condition = Condition.new };
 		cmdName = args[0].asString;
 		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
-		resp = OSCresponderNode(addr, "/done", {|time, resp, msg|
+		resp = OSCProxy({|msg|
 			if (msg[1].asString == cmdName) {
-				resp.remove;
+				resp.clear;
 				condition.test = true;
 				condition.signal;
 			};
-		}).add;
+		}, '/done', addr);
 		condition.test = false;
 		addr.sendBundle(nil, args);
 		condition.wait;
@@ -417,12 +417,11 @@ Server : Model {
 	}
 
 	wait { arg responseName;
-		var resp, routine;
+		var routine;
 		routine = thisThread;
-		resp = OSCresponderNode(addr, responseName, {
-			resp.remove; routine.resume(true);
-		});
-		resp.add;
+		OSCProxy({
+			routine.resume(true);
+		}, responseName, addr).oneShot;
 	}
 
 	waitForBoot { arg onComplete, limit=100;
@@ -487,7 +486,7 @@ Server : Model {
 
 	addStatusWatcher {
 		statusWatcher =
-			OSCresponderNode(addr, '/status.reply', { arg time, resp, msg;
+			OSCProxy({ arg msg;
 				var cmd, one;
 				if(notify){
 					if(notified.not){
@@ -503,7 +502,7 @@ Server : Model {
 					this.changed(\counts);
 					nil // no resched
 				}.defer;
-			}).add;
+			}, '/status.reply', addr).fix;
 	}
 	// Buffer objects are cached in an Array for easy
 	// auto buffer info updating
@@ -555,7 +554,7 @@ Server : Model {
 			aliveThread = nil;
 		});
 		if( statusWatcher.notNil, {
-			statusWatcher.remove;
+			statusWatcher.clear;
 			statusWatcher = nil;
 		});
 	}
@@ -863,7 +862,7 @@ Server : Model {
 	queryAllNodes { arg queryControls = false;
 		var resp, done = false;
 		if(isLocal, {this.sendMsg("/g_dumpTree", 0, queryControls.binaryValue);}, {
-			resp = OSCresponderNode(addr, '/g_queryTree.reply', { arg time, responder, msg;
+			resp = OSCProxy({ arg msg;
 				var i = 2, tabs = 0, printControls = false, dumpFunc;
 				if(msg[1] != 0, {printControls = true});
 				("NODE TREE Group" + msg[2]).postln;
@@ -905,11 +904,11 @@ Server : Model {
 					dumpFunc.value(msg[3]);
 				});
 				done = true;
-			}).add.removeWhenDone;
+			}, '/g_queryTree.reply', addr).oneShot;
 			this.sendMsg("/g_queryTree", 0, queryControls.binaryValue);
 			SystemClock.sched(3, {
 				done.not.if({
-					resp.remove;
+					resp.clear;
 					"Remote server failed to respond to queryAllNodes!".warn;
 				});
 			});

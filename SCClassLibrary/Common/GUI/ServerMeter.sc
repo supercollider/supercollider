@@ -126,7 +126,7 @@ ServerMeterView{
 		numRMSSamps = server.sampleRate / updateFreq;
 		numRMSSampsRecip = 1 / numRMSSamps;
 		(numIns > 0).if({
-			inresp = OSCresponderNode(server.addr, "/" ++ server.name ++ "InLevels", { |t, r, msg|
+			inresp = OSCProxy({|msg|
 				{try {
 				var channelCount = msg.size - 3 / 2;
 
@@ -140,10 +140,10 @@ ServerMeterView{
 						meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
 					}
 				}}}.defer;
-			}).add;
+			}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix;
 		});
 		(numOuts > 0).if({
-			outresp = OSCresponderNode(server.addr, "/" ++ server.name ++ "OutLevels", { |t, r, msg|
+			outresp = OSCProxy({|msg|
 				{try {
 				var channelCount = msg.size - 3 / 2;
 
@@ -157,7 +157,7 @@ ServerMeterView{
 						meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
 					}
 				}}}.defer;
-			}).add;
+			}, ("/" ++ server.name ++ "OutLevels").asSymbol, server.addr).fix;
 		});
 	}
 
@@ -192,8 +192,8 @@ ServerMeterView{
 			ServerTree.remove(synthFunc);
 		};
 
-		(numIns > 0).if({ inresp.remove; });
-		(numOuts > 0).if({ outresp.remove; });
+		(numIns > 0).if({ inresp.clear; });
+		(numOuts > 0).if({ outresp.clear; });
 	}
 
 	remove{
