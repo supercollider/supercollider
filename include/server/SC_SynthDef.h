@@ -26,9 +26,13 @@
 
 typedef void (*NodeDtorFunc)(struct Node* inNode);
 
+// Node definition names can be 255 characters long.
+const unsigned int kSCNodeDefNameLen = 64;
+const unsigned int kSCNodeDefNameByteLen = 64 * sizeof(int32);
+
 struct NodeDef
 {
-	int32 mName[kSCNameLen];
+	int32 mName[kSCNodeDefNameLen];
 	int32 mHash;
 
 	size_t mAllocSize;

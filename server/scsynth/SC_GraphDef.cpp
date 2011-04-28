@@ -61,12 +61,21 @@ void ReadName(char*& buffer, int32* name)
 	uint32 namelen = readInt8(buffer);
 	if (namelen >= kSCNameByteLen) {
 		throw std::runtime_error("name too long > 31 chars");
-		namelen = 31;
 	}
 	memset(name, 0, kSCNameByteLen);
 	readData(buffer, (char*)name, namelen);
 }
 
+void ReadNodeDefName(char*& buffer, int32* name);
+void ReadNodeDefName(char*& buffer, int32* name)
+{
+	uint32 namelen = readUInt8(buffer);
+	if (namelen >= kSCNodeDefNameByteLen) {
+		throw std::runtime_error("name too long > 255 chars");
+	}
+	memset(name, 0, kSCNodeDefNameByteLen);
+	readData(buffer, (char*)name, namelen);
+}
 
 void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer);
 void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer)
@@ -166,8 +175,8 @@ void GraphDef_ReadVariant(World *inWorld, char*& buffer, GraphDef* inGraphDef, G
 
 GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 inVersion)
 {
-	int32 name[kSCNameLen];
-	ReadName(buffer, name);
+	int32 name[kSCNodeDefNameLen];
+	ReadNodeDefName(buffer, name);
 
 	GraphDef* graphDef = (GraphDef*)calloc(1, sizeof(GraphDef));
 
@@ -175,7 +184,7 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 
 	graphDef->mNodeDef.mAllocSize = sizeof(Graph);
 
-	memcpy((char*)graphDef->mNodeDef.mName, (char*)name, kSCNameByteLen);
+	memcpy((char*)graphDef->mNodeDef.mName, (char*)name, kSCNodeDefNameByteLen);
 
 	graphDef->mNodeDef.mHash = Hash(graphDef->mNodeDef.mName);
 
