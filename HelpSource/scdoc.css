@@ -322,6 +322,10 @@ pre.formula {
     margin-bottom: 2em;
 }
 
+.argstr {
+    white-space: nowrap;
+}
+
 .extmethod {
     font-size: 9pt;
     color: #444;

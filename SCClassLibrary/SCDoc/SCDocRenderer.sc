@@ -118,6 +118,41 @@ SCDocHTMLRenderer : SCDocRenderer {
         }
     }
 
+    *makeArgString {|m|
+        var res = "";
+        var value;
+        var l = m.argNames;
+        var last = l.size-1;
+        l.do {|a,i|
+            if (i>0) { //skip 'this' (first arg)
+                if(i==last and: {m.varArgs}) {
+                    res = res ++ " <span class='argstr'>";
+                    res = res ++ "... " ++ a;
+                } {
+                    if (i>1) { res = res ++ ", " };
+                    res = res ++ "<span class='argstr'>";
+                    res = res ++ a;
+                    value = m.prototypeFrame[i];
+                    if (value.notNil) {
+                        value = switch(value.class,
+                            Symbol, { "'"++value.asString++"'" },
+                            Char, { "$"++value.asString },
+                            String, { "\""++value.asString++"\"" },
+                            { value.asString }
+                        );
+                        res = res ++ " = " ++ value.asString;
+                    };
+                };
+                res = res ++ "</span>";
+            };
+        };
+        if (res.notEmpty) {
+            ^("("++res++")");
+        } {
+            ^"";
+        };
+    }
+
     renderHTMLSubTree {|file,node,parentTag=false|
         var c, ic, f, m, m2, n, mname, args, split, mstat, sym, css, pfx;
 
@@ -212,7 +247,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                         m = m ?? {c.findRespondingMethodFor(sym.asGetter)};
                         m !? {
                             mstat = mstat | 1;
-                            args = SCDoc.makeArgString(m);
+                            args = this.class.makeArgString(m);
                         };
                         //check for setter
                         m2 = ic !? {ic.findRespondingMethodFor(sym.asSetter)};

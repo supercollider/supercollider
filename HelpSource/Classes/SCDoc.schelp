@@ -113,9 +113,6 @@ argument:: txt
 The string to split.
 returns:: An link::Classes/Array:: of whitespace-stripped strings.
 
-method:: makeArgString
-Returns:: A link::Classes/String:: representing the arguments (with defaults) for a link::Classes/Method::.
-
 method:: classHasArKrIr
 argument:: c
 The link::Classes/Class:: to check.

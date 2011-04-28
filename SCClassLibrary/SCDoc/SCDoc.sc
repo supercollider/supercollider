@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 8;
+    classvar version = 9;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -109,38 +109,6 @@ SCDoc {
 
     *classHasArKrIr {|c|
         ^#[\ar,\kr,\ir].collect {|m| c.class.findRespondingMethodFor(m).notNil }.reduce {|a,b| a or: b};
-    }
-
-    *makeArgString {|m|
-        var res = "";
-        var value;
-        var l = m.argNames;
-        var last = l.size-1;
-        l.do {|a,i|
-            if (i>0) { //skip 'this' (first arg)
-                if(i==last and: {m.varArgs}) {
-                    res = res ++ " ... " ++ a;
-                } {
-                    if (i>1) { res = res ++ ", " };
-                    res = res ++ a;
-                    value = m.prototypeFrame[i];
-                    if (value.notNil) {
-                        value = switch(value.class,
-                            Symbol, { "'"++value.asString++"'" },
-                            Char, { "$"++value.asString },
-                            String, { "\""++value.asString++"\"" },
-                            { value.asString }
-                        );
-                        res = res ++ " = " ++ value.asString;
-                    };
-                };
-            };
-        };
-        if (res.notEmpty) {
-            ^("("++res++")");
-        } {
-            ^"";
-        };
     }
 
     *addToDocMap {|parser, path|
