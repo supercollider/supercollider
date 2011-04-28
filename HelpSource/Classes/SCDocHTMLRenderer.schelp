@@ -24,6 +24,10 @@ returns:: the simplified string.
 method:: checkBrokenLinks
 Scans the entire help tree for broken links
 
+method:: makeArgString
+Used internally.
+Returns:: A link::Classes/String:: representing the arguments (with defaults) for a link::Classes/Method::.
+
 instancemethods::
 
 private:: addUndocumentedMethods, renderFootNotes, renderTOC, escapeSpecialChars, renderHTMLSubTree, renderHTMLHeader, autoLinkClasses, renderClassTree
