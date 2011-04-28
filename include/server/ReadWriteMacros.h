@@ -34,6 +34,12 @@ inline int32 readInt8(FILE *file)
 	return res;
 }
 
+inline uint32 readUInt8(FILE *file)
+{
+    uint8 res = (uint8)fgetc(file);
+    return (uint32)res;
+}
+
 inline int32 readInt16_be(FILE *file)
 {
 	int32 c = fgetc(file);
@@ -76,6 +82,12 @@ inline int32 readInt8(char *&buf)
 {
 	int32 res = *buf++;
 	return res;
+}
+
+inline uint32 readUInt8(char *&buf)
+{
+    uint8 res = (uint8)*buf++;
+    return (uint32)res;
 }
 
 inline int32 readInt16_be(char *&buf)
