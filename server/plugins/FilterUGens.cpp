@@ -73,6 +73,13 @@ struct Lag3UD : public Unit
 	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1a, m_y1b, m_y1c;
 };
 
+struct LinLag : public Unit
+{
+	double m_level, m_slope;
+	int m_counter;
+	float m_in, m_lagTime;
+};
+
 struct OnePole : public Unit
 {
 	float m_b1, m_y1;
@@ -329,6 +336,9 @@ extern "C"
 
 	void Lag3UD_next(Lag3UD *unit, int inNumSamples);
 	void Lag3UD_Ctor(Lag3UD* unit);
+
+	void LinLag_next(LinLag *unit, int inNumSamples);
+	void LinLag_Ctor(LinLag* unit);
 
 	void OnePole_next_a(OnePole *unit, int inNumSamples);
 	void OnePole_next_k(OnePole *unit, int inNumSamples);
@@ -904,6 +914,103 @@ void Lag3UD_Ctor(Lag3UD* unit)
 	unit->m_y1a = unit->m_y1b = unit->m_y1c = ZIN0(0);
 	Lag3UD_next(unit, 1);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+void LinLag_next(LinLag *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = IN(0);
+	float lagTime = ZIN0(1);
+	double slope = unit->m_slope;
+	double level = unit->m_level;
+	int counter = unit->m_counter;
+	int remain = inNumSamples;
+	
+	if ( *in != unit->m_in) {	
+		counter = (int)(lagTime * SAMPLERATE);
+		counter = unit->m_counter = sc_max(1, counter);
+		slope = unit->m_slope = ( *in - unit->m_level) / counter;
+		unit->m_in = *in;
+		unit->m_lagTime = lagTime;
+	} else {
+		if (lagTime != unit->m_lagTime) {
+			float scaleFactor = lagTime/unit->m_lagTime;
+			counter = (int) (unit->m_counter * scaleFactor);
+			counter = unit->m_counter = sc_max(1, counter);
+			slope = unit->m_slope / scaleFactor;
+			unit->m_lagTime = lagTime;
+		}
+	}
+	if(counter >0) {
+		LOOP(remain, 
+			 ZXP(out) = level;
+			 if( counter > 0) { 
+			 level += slope; --counter;
+			 } else {
+			 level = unit->m_in; 
+			 };
+			 )
+	} {	
+		LOOP(remain, ZXP(out) = level ); 
+	}
+	
+	unit->m_level = level;
+	unit->m_slope = slope;
+	unit->m_counter = counter;
+}
+
+
+void LinLag_next_1(LinLag *unit, int inNumSamples)
+{
+	float *out = OUT(0);
+	float in = *IN(0);
+	float lagTime = ZIN0(1);
+	int counter = unit->m_counter;
+	if ( in != unit->m_in) {	
+		counter = (int)(lagTime * SAMPLERATE);
+		unit->m_counter = counter = sc_max(1, counter);
+		unit->m_slope = ( in - unit->m_level) / counter;
+		unit->m_in = in;
+		unit->m_lagTime = lagTime;
+	} {
+		if (lagTime != unit->m_lagTime) {
+			if (counter != 0) {
+				double scaleFactor = lagTime/unit->m_lagTime;
+				counter = (int) (unit->m_counter * scaleFactor);
+				unit->m_counter = counter = sc_max(1, counter);
+			unit->m_slope = unit->m_slope / scaleFactor; }
+		unit->m_lagTime = lagTime; }
+	}
+	*out = unit->m_level;
+	
+	if (unit->m_counter > 0) { 
+		unit->m_level += unit->m_slope; 
+		--unit->m_counter;
+	} else {
+		unit->m_level = unit->m_in; 
+	}
+	
+}
+
+void LinLag_Ctor(LinLag* unit)
+{
+	if (BUFLENGTH == 1) {
+		SETCALC(LinLag_next_1);
+	} else {
+		SETCALC(LinLag_next);
+	}
+	float in = *IN(0);
+	float lagTime = ZIN0(1);
+	unit->m_level = ZIN0(2);
+	int counter = (int)(lagTime * SAMPLERATE);
+	unit->m_counter = counter = sc_max(1, counter);
+	unit->m_slope = ( in - unit->m_level) / counter;
+	unit->m_in = in;
+	unit->m_lagTime = lagTime;
+	ZOUT0(0) = unit->m_level;
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6235,6 +6342,7 @@ PluginLoad(Filter)
 	DefineSimpleUnit(LagUD);
 	DefineSimpleUnit(Lag2UD);
 	DefineSimpleUnit(Lag3UD);
+	DefineSimpleUnit(LinLag);
 	DefineSimpleUnit(OnePole);
 	DefineSimpleUnit(OneZero);
 	DefineSimpleUnit(TwoPole);

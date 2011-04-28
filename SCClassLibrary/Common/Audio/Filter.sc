@@ -95,6 +95,16 @@ LagUD : Filter {
 Lag2UD : LagUD {}
 Lag3UD : LagUD {}
 
+LinLag : Filter {
+
+	*ar { arg in = 0.0, lagTime = 0.1, start, mul = 1.0, add = 0.0;
+		^this.multiNew('audio', in, lagTime, start ? in).madd(mul, add)
+	}
+	*kr { arg in = 0.0, lagTime = 0.1, start, mul = 1.0, add = 0.0;
+		^this.multiNew('control', in, lagTime, start ? in).madd(mul, add)
+	}
+}
+
 LeakDC : Filter {
 
 	*ar { arg in = 0.0, coef = 0.995, mul = 1.0, add = 0.0;

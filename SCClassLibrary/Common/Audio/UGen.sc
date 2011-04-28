@@ -135,6 +135,10 @@ UGen : AbstractFunction {
 		^Lag3UD.multiNew(this.rate, this, lagTimeU, lagTimeD)
 	}
 
+	linlag { arg lagTime=0.1;
+		^LinLag.multiNew(this.rate, this, lagTime)
+	}
+
 	prune { arg min, max, type;
 		switch(type,
 			\minmax, {

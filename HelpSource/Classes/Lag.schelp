@@ -1,6 +1,6 @@
 class:: Lag
 summary:: Exponential lag
-related:: Classes/Lag2, Classes/Lag3, Classes/Ramp, Classes/LagUD
+related:: Classes/Lag2, Classes/Lag3, Classes/LinLag, Classes/LagUD
 categories::  UGens>Filters>Linear
 
 
@@ -11,6 +11,7 @@ dB lag time. This is the time required for the filter to converge to
 within 0.01% of a value. This is useful for smoothing out control
 signals.
 
+For a linear alternative, see link::Classes/LinLag::.
 
 classmethods::
 
@@ -42,14 +43,14 @@ code::
 (
 // used to lag pitch
 {
-	SinOsc.ar(		// sine wave
-		Lag.kr(			// lag the modulator
-			LFPulse.kr(4, 0, 0.5, 50, 400),	// frequency modulator
-			Line.kr(0, 1, 15)				// modulate lag time
-		), 
-		0,	// phase
-		0.3	// sine amplitude
-	) 
+    SinOsc.ar(                              // sine wave
+        Lag.kr(                             // lag the modulator
+            LFPulse.kr(4, 0, 0.5, 50, 400), // frequency modulator
+            Line.kr(0, 1, 15)               // modulate lag time
+        ),
+        0,                                  // phase
+        0.3                                 // sine amplitude
+    )
 }.play
 )
 ::
