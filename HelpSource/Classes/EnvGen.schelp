@@ -1,6 +1,6 @@
 class:: EnvGen
-summary:: Envelope generator.
-related:: 
+summary:: Envelope generator
+related:: Classes/Linen, Classes/Env
 categories::  UGens>Envelopes
 
 
@@ -34,6 +34,7 @@ is used as a simple trigger. If it is an sustaining envelope
 (e.g. Env.adsr, Env.asr), the envelope is held open until the
 gate becomes 0, at which point is released.
 
+If strong::gate:: < 0, force release with time code:: -1.0 - gate ::, see link::#forced_release:: below.
 
 argument::levelScale
 
@@ -64,131 +65,131 @@ The actual minimum duration of a segment is not zero, but one sample step for au
 Examples::
 
 code::
-// example
+(
+SynthDef(\env_help, { | out, gate = 0 |
+    var z;
+    z = EnvGen.kr(Env.adsr, gate) * SinOsc.ar(440, 0, 0.1);
+    Out.ar(out, z)
+}).add;
+)
 
-	(
-	SynthDef(\env_help, { | out, gate = 0 | 
-		var z;
-		z = EnvGen.kr(Env.adsr, gate) * SinOsc.ar(440, 0, 0.1);
-		Out.ar(out, z)
-	}).send(s);
-	)
-	
-	a = Synth(\env_help);
-	
-	
-	// turn on
-	a.set(\gate, 1);
-	
-	// turn off
-	a.set(\gate, 0);
-	
-	// it does not matter to what value the gate is set, as long as it is > 0
-	a.set(\gate, 2);
-	
-	a.free;
-::	
+a = Synth(\env_help);
+
+
+// turn on
+a.set(\gate, 1);
+
+// turn off
+a.set(\gate, 0);
+
+// it does not matter to what value the gate is set, as long as it is > 0
+a.set(\gate, 2);
+
+a.free;
+::
 
 subsection:: Changing an Env while playing
 code::
-	(
-	SynthDef(\env, { arg i_outbus=0;
-		var env, envctl;
-		
-		// make a dummy 8 segment envelope
-		env = Env.newClear(8);
-		
-		// create a control argument array
-		envctl = Control.names([\env]).kr( env.asArray );
-		
-		ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
-	}).send(s);
-	)
-	
-	(
-	SynthDef(\sine, {
-		Out.ar(0, SinOsc.ar(In.kr(0), 0, 0.2));
-	}).send(s);
-	)
-	
-	s.sendMsg(\c_set, 0, 800);
-	
-	s.sendMsg(\s_new, \sine, 1001, 1, 0);
-	
-	e = Env([700, 900, 900, 800], [1, 1, 1]*0.4, \exp).asArray;
-	s.sendBundle(nil, [\s_new, \env, 1002, 2, 1001], [\n_setn, 1002, \env, e.size] ++ e);
-	
-	f = Env([1000, 1000, 800, 1000, 900, 1000], [1, 1, 1, 1, 1]*0.3, \step).asArray;
-	s.sendBundle(nil, [\s_new, \env, 1003, 2, 1001], [\n_setn, 1003, \env, f.size] ++ f);
-	
-	s.sendMsg(\n_free, 1001);
-::	
+(
+SynthDef(\env, { arg i_outbus=0;
+    var env, envctl;
 
-subsection:: Forced release of the EnvGen
-If the gate of an EnvGen is set to -1 or below, then the envelope will cutoff immediately. The time for it to 	cutoff is the amount less than -1, with -1 being as fast as possible, -1.5 being a cutoff in 0.5 seconds, etc. 	The cutoff shape is linear.
-code::
-	(
-	SynthDef(\stealMe, { arg gate = 1;
-		Out.ar(0, {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction:2))
-	}).send(s);
-	)
-	
-	s.sendMsg(\s_new, \stealMe, 1001, 1, 0);
-	
-	s.sendMsg(\n_set, 1001, \gate, -1.1); // cutoff in 0.1 seconds
+    // make a dummy 8 segment envelope
+    env = Env.newClear(8);
+
+    // create a control argument array
+    envctl = \env.kr( env.asArray );
+
+    ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
+}).add;
+)
+
+(
+SynthDef(\sine, {
+    Out.ar(0, SinOsc.ar(In.kr(0), 0, 0.2));
+}).add;
+)
+
+s.sendMsg(\c_set, 0, 800);
+
+s.sendMsg(\s_new, \sine, 1001, 1, 0);
+
+e = Env([700, 900, 900, 800], [1, 1, 1]*0.4, \exp).asArray;
+s.sendBundle(nil, [\s_new, \env, 1002, 2, 1001], [\n_setn, 1002, \env, e.size] ++ e);
+
+f = Env([1000, 1000, 800, 1000, 900, 1000], [1, 1, 1, 1, 1]*0.3, \step).asArray;
+s.sendBundle(nil, [\s_new, \env, 1003, 2, 1001], [\n_setn, 1003, \env, f.size] ++ f);
+
+s.sendMsg(\n_free, 1001);
 ::
-If the synthDef has an arg named "gate", the convenience method of Node can be used: code::	node.release(releaseTime) ::
+
+subsection:: Forced release
+If the gate of an EnvGen is set to -1 or below, then the envelope will cutoff immediately.
+The time for it to cutoff is the amount less than -1, with -1 being as fast as possible, -1.5 being a cutoff in 0.5 seconds, etc.
+The cutoff shape is linear.
 code::
-	d = { arg gate=1; {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction:2) }.play;
-	d.release(3);
+(
+SynthDef(\stealMe, { arg gate = 1;
+    Out.ar(0, {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction:2))
+}).add;
+)
+
+s.sendMsg(\s_new, \stealMe, 1001, 1, 0);
+
+s.sendMsg(\n_set, 1001, \gate, -1.1); // cutoff in 0.1 seconds
+::
+If the synthDef has an arg named "gate", the convenience method of Node can be used: code::node.release(releaseTime)::
+code::
+d = { arg gate=1; {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction:2) }.play;
+d.release(3);
 ::
 
 subsection:: Fast triggering tests
 code::
-	(
-		{
-			EnvGen.kr(
-					Env.new([ 0.001, 1, 0.5, 0 ], [ 0.01, 0.3, 1 ], -4, 2, nil), 
-					Impulse.kr(10)
-			) * SinOsc.ar(440, 0, 0.1)		
-		}.play;
-	)
-	
-	(
-		{ 
-			EnvGen.kr(
-					Env.perc( 0.1, 0.0, 0.5, 1, \welch ), 
-					Impulse.kr(100), 
-					timeScale: 0.1
-				) * SinOsc.ar(440, 0, 0.3)
-		}.play;
-	)
+(
+{
+    EnvGen.kr(
+        Env.new([ 0.001, 1, 0.5, 0 ], [ 0.01, 0.3, 1 ], -4, 2, nil),
+        Impulse.kr(10)
+    ) * SinOsc.ar(440, 0, 0.1)
+}.play;
+)
+
+(
+{
+    EnvGen.kr(
+        Env.perc( 0.1, 0.0, 0.5, 1, \welch ),
+        Impulse.kr(100),
+        timeScale: 0.1
+    ) * SinOsc.ar(440, 0, 0.3)
+}.play;
+)
 ::
 
 subsection:: Modulating the levelScale
 code::
 // no, it doesn't take a ugen in
 (
-	{ 
-		EnvGen.kr(
-				Env.asr( 0.1, 1.0, 0.5, \welch ), 
-				1.0, 
-				FSinOsc.ar(1.0).range(0.0, 1.0), 
-				timeScale: 0.1
-			) * SinOsc.ar(440, 0, 0.3)
-	}.play;
-
+{
+    EnvGen.kr(
+        Env.asr( 0.1, 1.0, 0.5, \welch ),
+        1.0,
+        FSinOsc.ar(1.0).range(0.0, 1.0),
+        timeScale: 0.1
+    ) * SinOsc.ar(440, 0, 0.3)
+}.play;
 )
+
 // an .ir rate input, a float or an ir rate ugen like Rand would work
 (
-	{ 
-		EnvGen.kr(
-				Env.asr( 0.1, 1.0, 0.5, \welch ), 
-				1.0, 
-				Rand(0.1, 1.0), 
-				timeScale: 0.1
-			) * SinOsc.ar(440, 0, 0.3)
-	}.play;
+{
+    EnvGen.kr(
+        Env.asr( 0.1, 1.0, 0.5, \welch ),
+        1.0,
+        Rand(0.1, 1.0),
+        timeScale: 0.1
+    ) * SinOsc.ar(440, 0, 0.3)
+}.play;
 )
 ::
 
