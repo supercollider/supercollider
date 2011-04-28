@@ -1,13 +1,12 @@
 class:: Ramp
 summary:: Break a continuous signal into line segments
-related:: Classes/Lag, Classes/Lag2, Classes/Lag3
+related:: Classes/Lag, Classes/LinLag, Classes/Slew
 categories::  UGens>Filters>Linear
 
 
 Description::
 
 Break a continuous signal into linearly interpolated segments with specific durations.
-Can be useful for smoothing out control signals.
 
 Feeding Ramp with noise is similar to link::Classes/LFNoise1::
 code::
@@ -17,6 +16,8 @@ is equal to:
 code::
 LFNoise1.kr(1 / 0.5)
 ::
+
+For smoothing out control signals, take a look at link::Classes/Lag:: and link::Classes/LinLag::
 
 classmethods::
 
@@ -29,7 +30,7 @@ The input signal.
 
 argument::lagTime
 
-60 dB lag time in seconds.
+segment duration in seconds.
 
 
 argument::mul
