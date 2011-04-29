@@ -1,6 +1,6 @@
 class:: Lag
 summary:: Exponential lag
-related:: Classes/Lag2, Classes/Lag3, Classes/LinLag, Classes/LagUD
+related:: Classes/Lag2, Classes/Lag3, Classes/VarLag, Classes/LagUD
 categories::  UGens>Filters>Linear
 
 
@@ -11,7 +11,7 @@ dB lag time. This is the time required for the filter to converge to
 within 0.01% of a value. This is useful for smoothing out control
 signals.
 
-For a linear alternative, see link::Classes/LinLag::.
+For linear and other alternatives, see link::Classes/VarLag::.
 
 classmethods::
 

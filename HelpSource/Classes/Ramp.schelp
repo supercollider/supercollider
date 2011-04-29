@@ -1,6 +1,6 @@
 class:: Ramp
 summary:: Break a continuous signal into line segments
-related:: Classes/Lag, Classes/LinLag, Classes/Slew
+related:: Classes/Lag, Classes/VarLag, Classes/Slew
 categories::  UGens>Filters>Linear
 
 
@@ -17,7 +17,7 @@ code::
 LFNoise1.kr(1 / 0.5)
 ::
 
-For smoothing out control signals, take a look at link::Classes/Lag:: and link::Classes/LinLag::
+For smoothing out control signals, take a look at link::Classes/Lag:: and link::Classes/VarLag::
 
 classmethods::
 

@@ -73,7 +73,7 @@ struct Lag3UD : public Unit
 	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1a, m_y1b, m_y1c;
 };
 
-struct LinLag : public Unit
+struct VarLag : public Unit
 {
 	double m_level, m_slope;
 	int m_counter;
@@ -337,8 +337,8 @@ extern "C"
 	void Lag3UD_next(Lag3UD *unit, int inNumSamples);
 	void Lag3UD_Ctor(Lag3UD* unit);
 
-	void LinLag_next(LinLag *unit, int inNumSamples);
-	void LinLag_Ctor(LinLag* unit);
+	void VarLag_next(VarLag *unit, int inNumSamples);
+	void VarLag_Ctor(VarLag* unit);
 
 	void OnePole_next_a(OnePole *unit, int inNumSamples);
 	void OnePole_next_k(OnePole *unit, int inNumSamples);
@@ -917,7 +917,7 @@ void Lag3UD_Ctor(Lag3UD* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void LinLag_next(LinLag *unit, int inNumSamples)
+void VarLag_next(VarLag *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = IN(0);
@@ -961,7 +961,7 @@ void LinLag_next(LinLag *unit, int inNumSamples)
 }
 
 
-void LinLag_next_1(LinLag *unit, int inNumSamples)
+void VarLag_next_1(VarLag *unit, int inNumSamples)
 {
 	float *out = OUT(0);
 	float in = *IN(0);
@@ -993,12 +993,12 @@ void LinLag_next_1(LinLag *unit, int inNumSamples)
 	
 }
 
-void LinLag_Ctor(LinLag* unit)
+void VarLag_Ctor(VarLag* unit)
 {
 	if (BUFLENGTH == 1) {
-		SETCALC(LinLag_next_1);
+		SETCALC(VarLag_next_1);
 	} else {
-		SETCALC(LinLag_next);
+		SETCALC(VarLag_next);
 	}
 	float in = *IN(0);
 	float lagTime = ZIN0(1);
@@ -6388,7 +6388,7 @@ PluginLoad(Filter)
 	DefineSimpleUnit(LagUD);
 	DefineSimpleUnit(Lag2UD);
 	DefineSimpleUnit(Lag3UD);
-	DefineSimpleUnit(LinLag);
+	DefineSimpleUnit(VarLag);
 	DefineSimpleUnit(OnePole);
 	DefineSimpleUnit(OneZero);
 	DefineSimpleUnit(TwoPole);
