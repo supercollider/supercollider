@@ -174,6 +174,9 @@ Wraps the receiver in a link::Classes/Lag2UD:: UGen, smoothing its output by cod
 method:: lag3ud
 Wraps the receiver in a link::Classes/Lag3UD:: UGen, smoothing its output by code::lagtimeU:: and code::lagtimeD::.
 
+method:: varlag
+Wraps the receiver in a link::Classes/VarLag:: UGen, smoothing its output by code::time:: seconds.
+
 method:: degreeToKey
 
 Wraps the receiver in a link::Classes/DegreeToKey:: UGen.

@@ -135,8 +135,8 @@ UGen : AbstractFunction {
 		^Lag3UD.multiNew(this.rate, this, lagTimeU, lagTimeD)
 	}
 
-	linlag { arg lagTime=0.1;
-		^LinLag.multiNew(this.rate, this, lagTime)
+	varlag { arg time=0.1, curvature=0, warp=5, start;
+		^VarLag.multiNew(this.rate, this, time, curvature, warp, start)
 	}
 
 	prune { arg min, max, type;

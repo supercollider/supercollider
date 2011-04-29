@@ -1,6 +1,6 @@
 class:: Slew
 summary:: Slew rate limiter.
-related:: Classes/Slope, Classes/Ramp, Classes/Lag, Classes/LinLag
+related:: Classes/Slope, Classes/Ramp, Classes/Lag, Classes/VarLag
 categories::  UGens>Filters>Nonlinear
 
 
@@ -9,7 +9,7 @@ Description::
 Limits the slope of an input signal. The slope is expressed in units per
 second.
 
-For smoothing out control signals, take a look at link::Classes/Lag:: and link::Classes/LinLag::
+For smoothing out control signals, take a look at link::Classes/Lag:: and link::Classes/VarLag::
 
 classmethods::
 
@@ -22,12 +22,12 @@ The input signal.
 
 argument::up
 
-Maximum upward slope.
+Maximum upward slope in units per second.
 
 
 argument::dn
 
-Maximum downward slope.
+Maximum downward slope in units per second.
 
 
 argument::mul
