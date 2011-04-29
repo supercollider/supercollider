@@ -152,7 +152,10 @@ SCDocParser {
                 'section::',            namedSection.(1),
                 'subsection::',         namedSection.(2),
                 'method::',             namedSection.(3),
-                'copymethod::',         simpleTag,
+                'copymethod::',         {
+                    this.enterLevel(3);
+                    simpleTag.value;
+                },
                 'keyword::',            simpleTag,
                 'argument::',           namedSection.(4),
                 'returns::',            {
