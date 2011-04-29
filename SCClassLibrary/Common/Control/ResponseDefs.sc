@@ -273,7 +273,11 @@ OSCProxyMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argaddr, argfunc| addr = argaddr; func = argfunc; }
 	
-	value {|time, msg, testAddr| if(addr == testAddr, {func.value(time, msg, testAddr)}) }
+	value {|time, msg, testAddr| 
+		if(testAddr.addr == addr.addr and: {addr.port.matchItem(testAddr.port)}, {
+			func.value(time, msg, testAddr)
+		})
+	}
 }
 
 ///////////////////// MIDI
