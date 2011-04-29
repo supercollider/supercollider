@@ -23,20 +23,25 @@ argument::times
 an array of durations of segments in seconds. There should be one fewer duration than there are levels.
 
 argument::curve
-this parameter determines the shape of the envelope segments.
+a link::Classes/Symbol::, link::Classes/Float::, or an link::Classes/Array:: of those. Determines the shape of the envelope segments.
+
 The possible values are:
-list::
-## 'step' - flat segments
-## 'linear' - linear segments, the default
-## 'exponential' - natural exponential growth and decay. In this case, the levels must all be nonzero and the have the same sign.
-## 'sine' - sinusoidal S shaped segments.
-## 'welch' - sinusoidal segments shaped like the sides of a Welch window.
-## a link::Classes/Float:: - a curvature value for all segments.
-## An link::Classes/Array:: of Floats - curvature values for each segments.
+table::
+## code::\step:: || || flat segments
+## code::\linear:: || code::\lin:: || linear segments, the default
+## code::\exponential:: || code::\exp:: || natural exponential growth and decay. In this case, the levels must all be nonzero and the have the same sign.
+## code::\sine:: || code::\sin:: || sinusoidal S shaped segments.
+## code::\welch:: || code::\wel:: || sinusoidal segments shaped like the sides of a Welch window.
+## code::\squared::  || code::\sqr:: || squared segment
+## code::\cubed:: || code::\cub:: || cubed segment
+## a link::Classes/Float:: || || a curvature value for all segments. 0 means linear, positive and negative numbers curve the segment up and down.
+## an link::Classes/Array:: of symbols or floats || || curvature values for each segment.
 ::
 
 argument::offset
 used to offset an envelope into negative starttimes.
+
+copymethod:: Env *newClear
 
 InstanceMethods::
 
