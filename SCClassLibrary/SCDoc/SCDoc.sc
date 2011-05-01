@@ -8,6 +8,7 @@ SCDoc {
     classvar doc_map = nil;
     classvar <p, <r;
     classvar <undocumentedClasses;
+    classvar <>verbose = false;
     classvar doWait;
     classvar progressText = nil, progressWindow = nil;
     classvar progressCount = 0, progressMax = 0;
@@ -43,7 +44,7 @@ SCDoc {
             });
             if(progressMax>0) {progressBar.lo_(0).hi_(progressCount/progressMax)};
         };
-        ("SCDoc:"+prg++string).postln;
+        if(verbose) {("SCDoc:"+prg++string).postln};
         this.maybeWait;
     }
 
@@ -193,10 +194,7 @@ SCDoc {
 
         if(doc_map.isNil) {
             doc_map = Dictionary.new;
-            "SCDoc: creating new clean docMap cache".postln;
             ^true;
-        } {
-            "SCDoc: read docMap cache from file".postln;
         };
         ^false;
     }
@@ -207,7 +205,6 @@ SCDoc {
         f = File.open(path,"w");
         f.write(doc_map.asCompileString);
         f.close;
-        "SCDoc: wrote docMap cache".postln;
     }
 
     *docMap {
