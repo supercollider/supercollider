@@ -926,8 +926,8 @@ void VarLag_next(VarLag *unit, int inNumSamples)
 	double level = unit->m_level;
 	int counter = unit->m_counter;
 	int remain = inNumSamples;
-	
-	if ( *in != unit->m_in) {	
+
+	if ( *in != unit->m_in) {
 		counter = (int)(lagTime * SAMPLERATE);
 		counter = unit->m_counter = sc_max(1, counter);
 		slope = unit->m_slope = ( *in - unit->m_level) / counter;
@@ -943,18 +943,18 @@ void VarLag_next(VarLag *unit, int inNumSamples)
 		}
 	}
 	if(counter >0) {
-		LOOP(remain, 
+		LOOP(remain,
 			 ZXP(out) = level;
-			 if( counter > 0) { 
+			 if( counter > 0) {
 			 level += slope; --counter;
 			 } else {
-			 level = unit->m_in; 
+			 level = unit->m_in;
 			 };
 			 )
-	} {	
-		LOOP(remain, ZXP(out) = level ); 
+	} {
+		LOOP(remain, ZXP(out) = level );
 	}
-	
+
 	unit->m_level = level;
 	unit->m_slope = slope;
 	unit->m_counter = counter;
@@ -967,7 +967,7 @@ void VarLag_next_1(VarLag *unit, int inNumSamples)
 	float in = *IN(0);
 	float lagTime = ZIN0(1);
 	int counter = unit->m_counter;
-	if ( in != unit->m_in) {	
+	if ( in != unit->m_in) {
 		counter = (int)(lagTime * SAMPLERATE);
 		unit->m_counter = counter = sc_max(1, counter);
 		unit->m_slope = ( in - unit->m_level) / counter;
@@ -983,14 +983,14 @@ void VarLag_next_1(VarLag *unit, int inNumSamples)
 		unit->m_lagTime = lagTime; }
 	}
 	*out = unit->m_level;
-	
-	if (unit->m_counter > 0) { 
-		unit->m_level += unit->m_slope; 
+
+	if (unit->m_counter > 0) {
+		unit->m_level += unit->m_slope;
 		--unit->m_counter;
 	} else {
-		unit->m_level = unit->m_in; 
+		unit->m_level = unit->m_in;
 	}
-	
+
 }
 
 void VarLag_Ctor(VarLag* unit)
@@ -1411,7 +1411,7 @@ void LeakDC_Ctor(LeakDC *unit)
 		SETCALC(LeakDC_next_1);
 	else {
 		if (INRATE(1) == calc_ScalarRate) {
-			if ((BUFLENGTH & 3) == NULL)
+			if ((BUFLENGTH & 3) == 0)
 				SETCALC(LeakDC_next_i_4);
 			else
 				SETCALC(LeakDC_next_i);
