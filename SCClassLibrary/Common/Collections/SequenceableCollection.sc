@@ -813,29 +813,6 @@ SequenceableCollection : Collection {
 			aComplex.perform(aSelector, item, adverb)
 		})
 	}
-	clip { arg lo, hi; ^this.collect {|item| item.clip(lo,hi) }  }
-	wrap { arg lo, hi; ^this.collect {|item| item.wrap(lo,hi) }  }
-	fold { arg lo, hi; ^this.collect {|item| item.fold(lo,hi) }  }
-
-
-	linlin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, clip=\minmax;
-		^this.collect {|item| item.linlin(inMin, inMax, outMin, outMax, clip) }
-	}
-	linexp { arg inMin = 0, inMax = 1, outMin = 0.001, outMax = 1, clip=\minmax;
-		^this.collect {|item| item.linexp(inMin, inMax, outMin, outMax, clip) }
-	}
-	explin { arg inMin = 0.001, inMax = 1, outMin = 0, outMax = 1, clip=\minmax;
-		^this.collect {|item| item.explin(inMin, inMax, outMin, outMax, clip) }
-	}
-	expexp { arg inMin = 0.001, inMax = 1, outMin = 0.001, outMax = 1, clip=\minmax;
-		^this.collect {|item| item.expexp(inMin, inMax, outMin, outMax, clip) }
-	}
-	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip=\minmax;
-		^this.collect {|item| item.lincurve(inMin, inMax, outMin, outMax, curve, clip) }
-	}
-	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip=\minmax;
-		^this.collect {|item| item.curvelin(inMin, inMax, outMin, outMax, curve, clip) }
-	}
 
 	asFraction { arg denominator=100, fasterBetter=true;
 		^this.collect { |item| item.asFraction(denominator, fasterBetter) }
@@ -855,25 +832,32 @@ SequenceableCollection : Collection {
 		// 'scalar' > 'control' > 'audio'
 	}
 
+	// support some UGen convenience methods.
+	// NOTE: don't forget to add a wrapper here when adding a method to UGen or AbstractFunction
+	clip { arg ... args; ^this.multiChannelPerform('clip', *args) }
+	wrap { arg ... args; ^this.multiChannelPerform('wrap', *args) }
+	fold { arg ... args; ^this.multiChannelPerform('fold', *args) }
+	linlin { arg ... args; ^this.multiChannelPerform('linlin', *args) }
+	linexp { arg ... args; ^this.multiChannelPerform('linexp', *args) }
+	explin { arg ... args; ^this.multiChannelPerform('explin', *args) }
+	expexp { arg ... args; ^this.multiChannelPerform('expexp', *args) }
+	lincurve { arg ... args; ^this.multiChannelPerform('lincurve', *args) }
+	curvelin { arg ... args; ^this.multiChannelPerform('curvelin', *args) }
+	range { arg ... args; ^this.multiChannelPerform('range', *args) }
+	exprange { arg ... args; ^this.multiChannelPerform('exprange', *args) }
+	unipolar { arg ... args; ^this.multiChannelPerform('unipolar', *args) }
+	bipolar { arg ... args; ^this.multiChannelPerform('bipolar', *args) }
+	lag { arg ... args; ^this.multiChannelPerform('lag', *args) }
+	lag2 { arg ... args; ^this.multiChannelPerform('lag2', *args) }
+	lag3 { arg ... args; ^this.multiChannelPerform('lag3', *args) }
+	lagud { arg ... args; ^this.multiChannelPerform('lagud', *args) }
+	lag2ud { arg ... args; ^this.multiChannelPerform('lag2ud', *args) }
+	lag3ud { arg ... args; ^this.multiChannelPerform('lag3ud', *args) }
+	varlag { arg ... args; ^this.multiChannelPerform('varlag', *args) }
+	blend { arg ... args; ^this.multiChannelPerform('blend', *args) }
+	checkBadValues { arg ... args; ^this.multiChannelPerform('checkBadValues', *args) }
+	prune { arg ... args; ^this.multiChannelPerform('prune', *args) }
 
-	// support UGen range
-
-
-	range { arg lo = 0.0, hi = 1.0;
-		^this.multiChannelPerform(\range, lo, hi)
-	}
-	exprange { arg lo = 0.0, hi = 1.0;
-		^this.multiChannelPerform(\exprange, lo, hi)
-	}
-
-	unipolar { arg mul = 1; ^this.collect {|item| item.unipolar(mul) }  }
-	bipolar { arg mul = 1; ^this.collect {|item| item.bipolar(mul) }  }
-
-	// UGen support
-
-	lag { arg t1=0.1, t2; ^this.collect { arg item; item.lag(t1, t2) } }
-	lag2 { arg t1=0.1, t2; ^this.collect { arg item; item.lag2(t1, t2) } }
-	lag3 { arg t1=0.1, t2; ^this.collect { arg item; item.lag3(t1, t2) } }
 	minNyquist { ^min(this, SampleRate.ir * 0.5) }
 
 	// sorting

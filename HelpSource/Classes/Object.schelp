@@ -424,11 +424,20 @@ selector: A Symbol representing a method selector.
 args: Method arguments. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
 
 method::multiChannelPerform
-
-selector: A Symbol representing a method selector.
-args: Method arguments, which if they contain an array, will call the method multiple times for each sub-element.
+Perform selector with multichannel-expansion.
+argument:: selector
+A Symbol representing a method selector.
+argument:: args
+Method arguments, which if they contain an array, will call the method multiple times for each sub-element.
+discussion::
+Example:
+code::
 a = { |a, b, c| format("% plus % times % is %", a, b, c, a + b * c).quote; };
 a.multiChannelPerform(\value, [1, 10, 100, 1000], [2, 7, 9], [3, 7]);
+
+["foo","bar"].multiChannelPerform('++',["l","bro","t"]);
+::
+See also link::Guides/Multichannel-Expansion::
 
 subsection::Unique Methods
 
