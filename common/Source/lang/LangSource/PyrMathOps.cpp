@@ -377,7 +377,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opThresh :	    SetRaw(a, sc_thresh(slotRawInt(a), slotRawInt(b))); break;
 						case opAMClip :		SetRaw(a, sc_amclip(slotRawInt(a), slotRawInt(b))); break;
 						case opScaleNeg :	SetRaw(a, sc_scaleneg(slotRawInt(a), slotRawInt(b))); break;
-						case opClip2 :		SetRaw(a, sc_clip2(slotRawInt(a), -slotRawInt(b))); break;
+						case opClip2 :		SetRaw(a, sc_clip2(slotRawInt(a), slotRawInt(b))); break;
 						case opFold2 :		SetRaw(a, sc_fold2(slotRawInt(a), slotRawInt(b))); break;
 						case opWrap2 :		SetRaw(a, sc_wrap2(slotRawInt(a), slotRawInt(b))); break;
 						case opExcess :		SetRaw(a, sc_excess(slotRawInt(a), slotRawInt(b))); break;
@@ -475,7 +475,7 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opThresh :		SetRaw(a, sc_thresh(slotRawInt(a), slotRawFloat(b))); break;
 						case opAMClip :		SetFloat(a, sc_amclip((double)slotRawInt(a), slotRawFloat(b))); break;
 						case opScaleNeg : 	SetFloat(a, sc_scaleneg((double)slotRawInt(a), slotRawFloat(b))); break;
-						case opClip2 :		SetFloat(a, sc_clip2((double)slotRawInt(a), -slotRawFloat(b))); break;
+						case opClip2 :		SetFloat(a, sc_clip2((double)slotRawInt(a), slotRawFloat(b))); break;
 						case opFold2 :		SetFloat(a, sc_fold2((double)slotRawInt(a), slotRawFloat(b))); break;
 						case opWrap2 :		SetFloat(a, sc_wrap2((double)slotRawInt(a), -slotRawFloat(b))); break;
 						case opExcess :		SetFloat(a, sc_excess((double)slotRawInt(a), slotRawFloat(b))); break;
