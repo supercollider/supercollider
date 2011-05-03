@@ -90,7 +90,7 @@ function addInheritedMethods() {
             d[j].className = "inheritedmets";
             d[j].style.display = "none";
         }
-        mets = s.methods;
+        var mets = s.methods.sort();
         for(var j=0;j<mets.length;j++) {
             var m = mets[j];
             if(doc.methods.indexOf(m)<0) { // ignore methods already documented in this helpfile
