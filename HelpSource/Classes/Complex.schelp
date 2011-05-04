@@ -1,0 +1,216 @@
+CLASS:: Complex
+summary:: complex number
+categories:: Math
+related::Classes/Polar, Classes/SimpleNumber, Classes/Float, Classes/Integer
+
+DESCRIPTION::
+A class representing complex numbers.
+Note that this is a simplified representation of a complex number, which does not implement the full mathematical notion of a complex number. 
+
+CLASSMETHODS::
+method:: new
+Create a new complex number with the given real and imaginary parts.
+argument:: real
+the real part
+argument:: imag
+the imaginary part
+
+returns:: a new instance of Complex.
+discussion::
+code::
+a = Complex(2, 5);
+a.real;
+a.imag;
+::
+
+INSTANCEMETHODS::
+
+subsection:: math support
+method:: real
+The real part of the number.
+
+method:: imag
+The imaginary part of the number.
+
+method:: conjugate
+the complex conjugate.
+discussion::
+code::
+Complex(2, 9).conjugate
+::
+
+method:: +
+Complex addition.
+discussion::
+code::
+Complex(2, 9) + Complex(-6, 2)
+::
+
+method:: -
+Complex subtraction
+discussion::
+code::
+Complex(2, 9) - Complex(-6, 2)
+::
+
+method:: *
+Complex multiplication
+discussion::
+code::
+Complex(2, 9) * Complex(-6, 2)
+::
+
+method:: /
+Complex division.
+discussion::
+code::
+Complex(2, 9) / Complex(-6, 2)
+::
+
+method:: exp
+Complex exponentiation with base e.
+discussion::
+code::
+exp(Complex(2, 9))
+::
+code::
+exp(Complex(0, pi)) == -1 // Euler's formula: true
+::
+
+method:: squared
+Complex self multiplication.
+discussion::
+code::
+squared(Complex(2, 1))
+::
+
+method:: cubed
+complex triple self multiplication.
+discussion::
+code::
+cubed(Complex(2, 1))
+::
+
+method:: **, pow
+Complex exponentiation
+discussion::
+not implemented for all combinations - some are mathematically ambiguous.
+code::
+Complex(0, 2) ** 6
+::
+code::
+2.3 ** Complex(0, 2)
+::
+code::
+Complex(2, 9) ** 1.2 // not defined
+::
+
+
+method:: <
+the comparison of just the real parts.
+discussion::
+code::
+Complex(2, 9) < Complex(5, 1);
+::
+
+method:: ==
+the comparison assuming that the reals (floats) are fully embedded in the complex numbers 
+discussion::
+code::
+Complex(1, 0) == 1;
+Complex(1, 5) == Complex(1, 5);
+::
+
+method:: neg
+negation of both parts
+discussion::
+code::
+Complex(2, 9).neg
+::
+
+method:: abs
+the absoulte value of a complex number is its magnitude.
+discussion::
+code::
+Complex(3, 4).abs
+::
+
+method:: magnitude
+distance to the origin.
+
+method:: magnitudeApx
+
+method:: rho
+the distance to the origin.
+
+method:: angle, phase, theta
+the angle in radians.
+
+
+subsection:: conversion
+method:: asPoint
+Convert to a link::Classes/Point::.
+
+method:: asPolar
+Convert to a Polar
+
+method:: asInteger
+real part as link::Classes/Integer::.
+
+method:: asFloat
+real part as link::Classes/Float::.
+
+method:: asComplex
+returns this
+
+
+subsection:: misc
+method:: coerce
+method:: hash
+a hash value
+method:: printOn
+print this on given stream
+method:: performBinaryOpOnSignal
+method:: performBinaryOpOnComplex
+method:: performBinaryOpOnSimpleNumber
+method:: performBinaryOpOnUGen
+
+
+
+
+EXAMPLES::
+
+Basic example:
+code::
+a = Complex(0, 1);
+a * a; // returns Complex(-1, 0);
+::
+
+Julia set approximation:
+code::
+f = { |z| z * z + Complex(0.70176, 0.3842) };
+
+(
+var n = 80, xs = 400, ys = 400, dx = xs / n, dy = ys / n, zoom = 3, offset = -0.5;
+var field = { |x| { |y| Complex(x / n + offset * zoom, y / n + offset * zoom) } ! n } ! n;
+
+w = Window("Julia set", bounds:Rect(200, 200, xs, ys)).front;
+w.view.background_(Color.black);
+w.drawHook = {
+	n.do { |x|
+		n.do { |y|
+			var z = field[x][y];
+			z = f.(z);
+			field[x][y] = z;
+			Pen.color = Color.gray(z.rho.linlin(-100, 100, 1, 0));
+ 			Pen.addRect(
+				Rect(x * dx, y * dy, dx, dy)
+			);
+			Pen.fill
+		}
+	}
+};
+
+fork({ 6.do { w.refresh; 2.wait } }, AppClock)
+)
+::
