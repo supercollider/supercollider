@@ -642,9 +642,10 @@ SCDoc {
 
 + String {
     stripWhiteSpace {
+        var ws = [$\n, $\r, $\t, $\ ];
         var a=0, b=this.size-1;
-        while({(this[a]==$\n) or: (this[a]==$\ ) or: (this[a]==$\t)},{a=a+1});
-        while({(this[b]==$\n) or: (this[b]==$\ ) or: (this[b]==$\t)},{b=b-1});
+        while({ ws.includes(this[a])},{a=a+1});
+        while({ ws.includes(this[b])},{b=b-1});
         ^this.copyRange(a,b);
     }
 	unixCmdGetStdOutLines {
