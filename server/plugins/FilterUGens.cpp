@@ -73,7 +73,7 @@ struct Lag3UD : public Unit
 	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1a, m_y1b, m_y1c;
 };
 
-struct LinLag : public Unit
+struct VarLag : public Unit
 {
 	double m_level, m_slope;
 	int m_counter;
@@ -337,8 +337,8 @@ extern "C"
 	void Lag3UD_next(Lag3UD *unit, int inNumSamples);
 	void Lag3UD_Ctor(Lag3UD* unit);
 
-	void LinLag_next(LinLag *unit, int inNumSamples);
-	void LinLag_Ctor(LinLag* unit);
+	void VarLag_next(VarLag *unit, int inNumSamples);
+	void VarLag_Ctor(VarLag* unit);
 
 	void OnePole_next_a(OnePole *unit, int inNumSamples);
 	void OnePole_next_k(OnePole *unit, int inNumSamples);
@@ -917,7 +917,7 @@ void Lag3UD_Ctor(Lag3UD* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void LinLag_next(LinLag *unit, int inNumSamples)
+void VarLag_next(VarLag *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = IN(0);
@@ -926,8 +926,8 @@ void LinLag_next(LinLag *unit, int inNumSamples)
 	double level = unit->m_level;
 	int counter = unit->m_counter;
 	int remain = inNumSamples;
-	
-	if ( *in != unit->m_in) {	
+
+	if ( *in != unit->m_in) {
 		counter = (int)(lagTime * SAMPLERATE);
 		counter = unit->m_counter = sc_max(1, counter);
 		slope = unit->m_slope = ( *in - unit->m_level) / counter;
@@ -943,31 +943,31 @@ void LinLag_next(LinLag *unit, int inNumSamples)
 		}
 	}
 	if(counter >0) {
-		LOOP(remain, 
+		LOOP(remain,
 			 ZXP(out) = level;
-			 if( counter > 0) { 
+			 if( counter > 0) {
 			 level += slope; --counter;
 			 } else {
-			 level = unit->m_in; 
+			 level = unit->m_in;
 			 };
 			 )
-	} {	
-		LOOP(remain, ZXP(out) = level ); 
+	} {
+		LOOP(remain, ZXP(out) = level );
 	}
-	
+
 	unit->m_level = level;
 	unit->m_slope = slope;
 	unit->m_counter = counter;
 }
 
 
-void LinLag_next_1(LinLag *unit, int inNumSamples)
+void VarLag_next_1(VarLag *unit, int inNumSamples)
 {
 	float *out = OUT(0);
 	float in = *IN(0);
 	float lagTime = ZIN0(1);
 	int counter = unit->m_counter;
-	if ( in != unit->m_in) {	
+	if ( in != unit->m_in) {
 		counter = (int)(lagTime * SAMPLERATE);
 		unit->m_counter = counter = sc_max(1, counter);
 		unit->m_slope = ( in - unit->m_level) / counter;
@@ -983,22 +983,22 @@ void LinLag_next_1(LinLag *unit, int inNumSamples)
 		unit->m_lagTime = lagTime; }
 	}
 	*out = unit->m_level;
-	
-	if (unit->m_counter > 0) { 
-		unit->m_level += unit->m_slope; 
+
+	if (unit->m_counter > 0) {
+		unit->m_level += unit->m_slope;
 		--unit->m_counter;
 	} else {
-		unit->m_level = unit->m_in; 
+		unit->m_level = unit->m_in;
 	}
-	
+
 }
 
-void LinLag_Ctor(LinLag* unit)
+void VarLag_Ctor(VarLag* unit)
 {
 	if (BUFLENGTH == 1) {
-		SETCALC(LinLag_next_1);
+		SETCALC(VarLag_next_1);
 	} else {
-		SETCALC(LinLag_next);
+		SETCALC(VarLag_next);
 	}
 	float in = *IN(0);
 	float lagTime = ZIN0(1);
@@ -1319,39 +1319,63 @@ void Decay2_next(Decay2* unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void LeakDC_Ctor(LeakDC *unit)
+void LeakDC_next_i_4(LeakDC* unit, int inNumSamples)
 {
-	//printf("LeakDC_Ctor\n");
-	if (BUFLENGTH == 1)
-		SETCALC(LeakDC_next_1);
-	else
-		SETCALC(LeakDC_next);
-	unit->m_b1 = 0.0;
-	unit->m_x1 = 0.0;
-	unit->m_y1 = 0.0;
-	LeakDC_next_1(unit, 1);
-}
-
-
-void LeakDC_next(LeakDC* unit, int inNumSamples)
-{
-	//printf("LeakDC_next_a\n");
-
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 	double b1 = unit->m_b1;
-	unit->m_b1 = ZIN0(1);
-
 	double y1 = unit->m_y1;
 	double x1 = unit->m_x1;
 
-	if (b1 == unit->m_b1) {
-		LOOP1(inNumSamples,
-			double x0 = ZXP(in);
-			ZXP(out) = y1 = x0 - x1 + b1 * y1;
-			x1 = x0;
-		);
+	LOOP1(inNumSamples/4,
+		double x00 = ZXP(in);
+		double x01 = ZXP(in);
+		double x02 = ZXP(in);
+		double x03 = ZXP(in);
+		ZXP(out) = y1 = x00 - x1 + b1 * y1;
+		ZXP(out) = y1 = x01 - x00 + b1 * y1;
+		ZXP(out) = y1 = x02 - x01 + b1 * y1;
+		ZXP(out) = y1 = x03 - x02 + b1 * y1;
+
+		x1 = x03;
+	);
+	unit->m_x1 = x1;
+	unit->m_y1 = zapgremlins(y1);
+}
+
+void LeakDC_next_i(LeakDC* unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *in = ZIN(0);
+	double b1 = unit->m_b1;
+	double y1 = unit->m_y1;
+	double x1 = unit->m_x1;
+
+	LOOP1(inNumSamples,
+		double x0 = ZXP(in);
+		ZXP(out) = y1 = x0 - x1 + b1 * y1;
+		x1 = x0;
+	);
+	unit->m_x1 = x1;
+	unit->m_y1 = zapgremlins(y1);
+}
+
+void LeakDC_next(LeakDC* unit, int inNumSamples)
+{
+	if (ZIN0(1) == unit->m_b1) {
+		if ((inNumSamples & 3) == 0)
+			LeakDC_next_i_4(unit, inNumSamples);
+		else
+			LeakDC_next_i(unit, inNumSamples);
 	} else {
+		float *out = ZOUT(0);
+		float *in = ZIN(0);
+		double b1 = unit->m_b1;
+		unit->m_b1 = ZIN0(1);
+
+		double y1 = unit->m_y1;
+		double x1 = unit->m_x1;
+
 		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		LOOP1(inNumSamples,
 			double x0 = ZXP(in);
@@ -1359,10 +1383,11 @@ void LeakDC_next(LeakDC* unit, int inNumSamples)
 			x1 = x0;
 			b1 += b1_slope;
 		);
+		unit->m_x1 = x1;
+		unit->m_y1 = zapgremlins(y1);
 	}
-	unit->m_x1 = x1;
-	unit->m_y1 = zapgremlins(y1);
 }
+
 
 void LeakDC_next_1(LeakDC* unit, int inNumSamples)
 {
@@ -1378,6 +1403,27 @@ void LeakDC_next_1(LeakDC* unit, int inNumSamples)
 	unit->m_x1 = x1;
 	unit->m_y1 = zapgremlins(y1);
 }
+
+void LeakDC_Ctor(LeakDC *unit)
+{
+	//printf("LeakDC_Ctor\n");
+	if (BUFLENGTH == 1)
+		SETCALC(LeakDC_next_1);
+	else {
+		if (INRATE(1) == calc_ScalarRate) {
+			if ((BUFLENGTH & 3) == 0)
+				SETCALC(LeakDC_next_i_4);
+			else
+				SETCALC(LeakDC_next_i);
+		} else
+			SETCALC(LeakDC_next);
+	}
+	unit->m_b1 = 0.0;
+	unit->m_x1 = ZIN0(0);
+	unit->m_y1 = 0.0;
+	LeakDC_next_1(unit, 1);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6342,7 +6388,7 @@ PluginLoad(Filter)
 	DefineSimpleUnit(LagUD);
 	DefineSimpleUnit(Lag2UD);
 	DefineSimpleUnit(Lag3UD);
-	DefineSimpleUnit(LinLag);
+	DefineSimpleUnit(VarLag);
 	DefineSimpleUnit(OnePole);
 	DefineSimpleUnit(OneZero);
 	DefineSimpleUnit(TwoPole);

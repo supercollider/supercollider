@@ -103,12 +103,7 @@ endif(APPLE)
 set_property ( TARGET QtCollider
                APPEND PROPERTY COMPILE_DEFINITIONS QT_COLLIDER_EXPORTING )
 
-target_link_libraries( QtCollider ${QT_LIBRARIES} )
-
-qt4_wrap_cpp( QC_LANG_CLIENT_MOC_SRCS LanguageClient.h )
-add_library( QcLangClient STATIC LanguageClient.cpp ${QC_LANG_CLIENT_MOC_SRCS} )
-set_property ( TARGET QcLangClient
-               APPEND PROPERTY COMPILE_FLAGS -fpic )
+target_link_libraries( QtCollider ${QT_LIBRARIES} ${MATH_LIBRARY})
 
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")

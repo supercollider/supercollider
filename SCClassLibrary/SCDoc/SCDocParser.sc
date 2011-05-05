@@ -272,7 +272,7 @@ SCDocParser {
     }
 
     parse {|string|
-        var lines = string.split($\n); //split lines
+        var lines = string.replace("\r","").split($\n); //split lines
 //        var lines = string.findRegexp("[^\n]+").flop[1]; //doesn't work for empty lines
 
         var w, split, split2, word;

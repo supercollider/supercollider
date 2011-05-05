@@ -392,6 +392,17 @@ code::
 ([1, 2, 3, 4] * [4, 5, 6, 7]);
 ::
 
+subsection::Multichannel wrappers
+All of the following messages are performed on the elements of this collection, using link::Classes/Object#-multiChannelPerform::.
+
+The result depends on the objects in the collection, but the main use case is for link::Classes/UGen::s.
+
+See also link::Guides/Multichannel-Expansion::
+
+method::clip, wrap, fold, prune, linlin, linexp, explin, expexp, lincurve, curvelin, range, exprange, unipolar, bipolar, lag, lag2, lag3, lagud, lag2ud, lag3ud, varlag, blend, checkBadValues
+Calls code:: this.multiChannelPerform(selector, *args) :: where selector is the name of the message.
+
+
 subsection:: Rhythm-lists
 method:: convertRhythm
 Convert a rhythm-list to durations.

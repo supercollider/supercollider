@@ -82,11 +82,11 @@ set(sclang_sources
 )
 
 if(NOT WIN32)
-    list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
+	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
 endif()
 
 if(WIN32)
-    list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
 
 if(WIN32)
@@ -136,15 +136,9 @@ if(UNIX)
 else(UNIX)
 endif(UNIX)
 
-if (SC_QT)
-	add_definitions(-DSC_QT)
-	include_directories(${CMAKE_SOURCE_DIR}/include/QtCollider)
-endif (SC_QT)
-
 if(WIN32)
-    include_directories (../platform/windows/compat_stuff)
-
-    list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
+	include_directories (../platform/windows/compat_stuff)
+	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
 endif()
 
 if (SC_WII OR APPLE)
@@ -162,6 +156,19 @@ if (SC_WII OR APPLE)
 		include_directories(LangPrimSource/WiiMote_OSX)
 	endif()
 endif()
+
+if (SC_QT)
+	find_package (Qt4 4.5)
+	include(${QT_USE_FILE})
+
+	add_definitions(-DSC_QT -DQT_NO_KEYWORDS)
+	include_directories(${CMAKE_SOURCE_DIR}/include/QtCollider)
+
+	qt4_wrap_cpp( QC_LANG_CLIENT_MOC_SRCS ../QtCollider/LanguageClient.h )
+
+	list(APPEND sclang_sources ../QtCollider/LanguageClient.cpp ${QC_LANG_CLIENT_MOC_SRCS})
+endif ()
+
 
 if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
@@ -191,9 +198,10 @@ else()
 		)
 endif()
 
+
 if (SC_QT)
-	target_link_libraries(libsclang QcLangClient QtCollider)
-endif (SC_QT)
+    target_link_libraries(libsclang QtCollider )
+endif()
 
 set_property(TARGET libsclang
 	PROPERTY OUTPUT_NAME sclang)

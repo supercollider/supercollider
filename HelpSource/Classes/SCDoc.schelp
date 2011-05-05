@@ -40,6 +40,9 @@ get/set the user help target directory. Defaults to code:: thisProcess.platform.
 method:: undocumentedClasses
 A set of all undocumented classes.
 
+method:: verbose
+If code::true::, print progress status messages to post window.
+
 subsection:: Main interface
 
 method:: prepareHelpForURL
