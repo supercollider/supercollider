@@ -98,20 +98,20 @@ Score {
 	}
 
 	recordNRT { arg oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100, headerFormat =
-		"AIFF", sampleFormat = "int16", options, completionString="", duration = nil;
+		"AIFF", sampleFormat = "int16", options, completionString="", duration = nil, action = nil;
 		this.writeOSCFile(oscFilePath, 0, duration);
 		unixCmd(program + " -N" + oscFilePath.quote
 			+ if(inputFilePath.notNil, { inputFilePath.quote }, { "_" })
 			+ outputFilePath.quote
 		 	+ sampleRate + headerFormat + sampleFormat +
 			(options ? Score.options).asOptionsString
-			+ completionString);
+			+ completionString, action);
 	}
 
 	*recordNRT { arg list, oscFilePath, outputFilePath, inputFilePath, sampleRate = 44100,
-		headerFormat = "AIFF", sampleFormat = "int16", options, completionString="", duration = nil;
+		headerFormat = "AIFF", sampleFormat = "int16", options, completionString="", duration = nil, action = nil;
 		this.new(list).recordNRT(oscFilePath, outputFilePath, inputFilePath, sampleRate,
-		headerFormat, sampleFormat, options, completionString, duration);
+		headerFormat, sampleFormat, options, completionString, duration, action);
 	}
 
 

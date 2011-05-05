@@ -86,6 +86,9 @@ the sample format of the output file. The default is 'int16'.
 argument::options
 an instance of link::Classes/ServerOptions::. If not supplied the options of the default link::Classes/Server:: will be used.
 
+argument::action
+A function to be evaluated once the NRT server has finished rendering its score.
+
 InstanceMethods::
 
 method::play
