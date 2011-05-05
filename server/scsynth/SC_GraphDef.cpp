@@ -27,12 +27,9 @@
 #include "SC_UnitSpec.h"
 #include "SC_UnitDef.h"
 #include "SC_HiddenWorld.h"
-#include <stdio.h>
-#include <stdlib.h>
 #ifndef _MSC_VER
 #include <dirent.h>
 #endif //_MSC_VER
-#include <stdexcept>
 #include "ReadWriteMacros.h"
 #include "SC_Prototypes.h"
 #include "SC_CoreAudio.h"
@@ -41,6 +38,12 @@
 #ifdef _WIN32
 #include "SC_Win32Utils.h"
 #endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sstream>
+#include <stdexcept>
+#include <string>
 
 extern Malloc gMalloc;
 
@@ -58,9 +61,12 @@ int32* GetKey(ParamSpec* inParamSpec)
 void ReadName(char*& buffer, int32* name);
 void ReadName(char*& buffer, int32* name)
 {
-	uint32 namelen = readInt8(buffer);
+	uint32 namelen = readUInt8(buffer);
 	if (namelen >= kSCNameByteLen) {
-		throw std::runtime_error("name too long > 31 chars");
+		std::ostringstream os;
+		os << "name too long (> " << kSCNameByteLen - 1 << " chars): "
+		   << std::string(buffer, namelen);
+		throw std::runtime_error(os.str());
 	}
 	memset(name, 0, kSCNameByteLen);
 	readData(buffer, (char*)name, namelen);
@@ -71,7 +77,10 @@ void ReadNodeDefName(char*& buffer, int32* name)
 {
 	uint32 namelen = readUInt8(buffer);
 	if (namelen >= kSCNodeDefNameByteLen) {
-		throw std::runtime_error("name too long > 255 chars");
+		std::ostringstream os;
+		os << "node definition name too long (> " << kSCNodeDefNameByteLen - 1 << " chars): "
+		   << std::string(buffer, namelen);
+		throw std::runtime_error(os.str());
 	}
 	memset(name, 0, kSCNodeDefNameByteLen);
 	readData(buffer, (char*)name, namelen);

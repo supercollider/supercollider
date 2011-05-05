@@ -28,6 +28,7 @@
 #include <jack/jack.h>
 #include <jack/thread.h>
 
+#include "nova-tt/name_thread.hpp"
 #include "nova-tt/thread_affinity.hpp"
 #include "utilities/branch_hints.hpp"
 
@@ -88,7 +89,7 @@ public:
         }
 
         /* initialize callbacks */
-        jack_set_thread_init_callback (client, jack_thread_init_callback, NULL);
+        jack_set_thread_init_callback (client, jack_thread_init_callback, this);
         jack_set_process_callback (client, jack_process_callback, this);
         jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, NULL);
 
@@ -226,8 +227,11 @@ public:
 private:
     static void jack_thread_init_callback(void * arg)
     {
-        if (!thread_set_affinity(0))
-            std::cerr << "Warning: cannot set thread affinity of jack thread" << std::endl;
+        jack_backend * self = static_cast<jack_backend*>(arg);
+        if (jack_client_thread_id(self->client) == pthread_self())
+            engine_functor::init_thread();
+        else
+            name_thread("Jack Helper");
     }
 
     static int jack_process_callback(jack_nframes_t frames, void * arg)
