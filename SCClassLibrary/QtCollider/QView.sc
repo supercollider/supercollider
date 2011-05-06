@@ -73,6 +73,11 @@ QView : QObject {
     this.setProperty( \autoFillBackground, true );
   }
 
+  // NOTE: only for backwards compatibility
+  backColor_ { arg color;
+    this.background = color;
+  }
+
   absoluteBounds {
     ^this.bounds.moveToPoint( this.mapToGlobal( 0@0 ) );
   }
