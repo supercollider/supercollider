@@ -302,21 +302,16 @@ Pchain : Pattern {
 		^this.class.new(*list)
 	}
 	embedInStream { arg inval;
-		var streams, inevent;
+		var streams, inevent, cleanup = EventStreamCleanup.new;
 		streams = patterns.collect(_.asStream);
 		loop {
 			streams.reverseDo { |str|
 				inevent = str.next(inval);
-				if(inevent.isNil) { ^inval };
+				if(inevent.isNil) { ^cleanup.exit(inval) };
 				inval = inevent;
 			};
+			cleanup.update(inevent);
 			inval = yield(inevent);
-			if (inval.isNil) {
-				streams.reverseDo { |str|
-					str.next(inval);
-				};
-				^nil.yield;
-			};
 		};
 	}
 	storeOn { arg stream;
