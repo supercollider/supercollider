@@ -3,7 +3,7 @@ summary:: Mark Polishook tutorial (JP)
 categories:: Tutorials>Mark_Polishook_tutorial>Japanese_version
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
-section::ユニット・ジェネレータの）コントロールのレート
+section::ユニット・ジェネレータのコントロール のレート
 
 いくつかのSuperColliderのugenは、後に.arメッセージが続けられているということに気づいているでしょう。例えば、次の様に
 
@@ -18,7 +18,7 @@ SinOsc.ar
 ::
 
 
-オーディオ・レート
+section::Audio rate
 
 .arメッセージを持つugenはオーディオ・レートで動作します。デフォルトでは、一秒間あたり44,100サンプルです。
 

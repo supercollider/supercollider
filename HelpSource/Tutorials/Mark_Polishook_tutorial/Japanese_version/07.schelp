@@ -15,8 +15,6 @@ section::関数と.scopeメッセージ
 
 実際には、.playと.scopeメッセージは関数に送ることができ、そうすることでこの手法は有益なものになります。なぜなら、.scopeメッセージは関数の中でそのコードを実行し、定義されたシンセシスのプロセスによって生成される波形を視覚的な表現として表示するからです。
 
-The .scope message ONLY works with the internal server - which means that the internal server must be turned on to use it. This can be done manually, by pressing the boot button on the internal server, or through code, as in
-
 しかしながら、.scopeメッセージはインターナル・サーバーに対してしか機能しません。つまり、これを使うためにはインターナル・サーバーがオンになっていなければならないということです。これを手動でやるためには、インターナル・サーバーのbootボタンを押すか、コードとして次の様に実行します。
 
 code::
