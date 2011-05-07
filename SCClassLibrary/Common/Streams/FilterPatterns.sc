@@ -115,22 +115,27 @@ Pfset : FuncFilterPattern {
 	}
 	embedInStream { arg event;
 		var inevent, cleanup = EventStreamCleanup.new;
-			// cleanup is passed in
-			// maybe you want to add other cleanup actions
-			// beyond your cleanupFunc
+			// cleanup should actually not be passed in
+			// but retaining (temporarily) for backward compatibility
 		var envir = Event.make({ func.value(cleanup) });
 		var stream = pattern.asStream;
-
-		cleanup.addFunction(event, { |flag|
-			envir.use({ cleanupFunc.value(flag) });
-		});
+		var once = true;
 
 		loop {
 			event = event.copy;
 			event.putAll(envir);
 			inevent = stream.next(event);
-			cleanup.update(inevent);
-			if (inevent.isNil) { ^cleanup.exit(event) };
+			if(once) {
+				cleanup.addFunction(event, { |flag|
+					envir.use({ cleanupFunc.value(flag) });
+				});
+				once = false;
+			};
+			if (inevent.isNil) {
+				^cleanup.exit(event)
+			} {
+				cleanup.update(inevent);
+			};
 			event = yield(inevent);
 			if(event.isNil) { ^cleanup.exit(inevent) }
 		};
