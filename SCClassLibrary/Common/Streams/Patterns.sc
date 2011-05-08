@@ -305,10 +305,10 @@ Pchain : Pattern {
 		var streams, inevent, cleanup = EventStreamCleanup.new;
 		streams = patterns.collect(_.asStream);
 		loop {
+			inevent = inval.copy;
 			streams.reverseDo { |str|
-				inevent = str.next(inval);
+				inevent = str.next(inevent);
 				if(inevent.isNil) { ^cleanup.exit(inval) };
-				inval = inevent;
 			};
 			cleanup.update(inevent);
 			inval = yield(inevent);
