@@ -292,7 +292,7 @@ PlusFreqScopeWindow {
 			freqLabel.size.do({ arg i;
 				freqLabel[i] = StaticText(window, Rect(pad[0] - (freqLabelDist*0.5) + (i*freqLabelDist), pad[2] - 10, freqLabelDist, 10))
 					.font_(font)
-					.align_(0)
+					.align_(\center)
 				;
 				StaticText(window, Rect(pad[0] + (i*freqLabelDist), pad[2], 1, rect.height))
 					.string_("")
@@ -303,7 +303,7 @@ PlusFreqScopeWindow {
 			dbLabel.size.do({ arg i;
 				dbLabel[i] = StaticText(window, Rect(0, pad[2] + (i*dbLabelDist), pad[0], 10))
 					.font_(font)
-					.align_(1)
+					.align_(\left)
 				;
 				StaticText(window, Rect(pad[0], dbLabel[i].bounds.top, rect.width, 1))
 					.string_("")
