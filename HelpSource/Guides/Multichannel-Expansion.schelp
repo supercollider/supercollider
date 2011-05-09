@@ -2,7 +2,7 @@ title:: Multichannel Expansion
 summary:: Explaining multichannel expansion and representation
 categories:: Server>Nodes, UGens>Multichannel
 
-section:: Multiple channels
+section:: Multiple channels as Arrays
 Multiple channels of audio are represented as link::Classes/Array::s.
 code::
 s.boot;
@@ -60,7 +60,112 @@ code::
 { RLPF.ar(Saw.ar([100,250],0.05), XLine.kr([8000,500],[400,7000],5), 0.05) }.play;
 ::
 
-subsection:: Protecting arrays against expansion
+subsection:: Expanding methods and operators
+Many operators and methods also multichannel expand. For example all common math operators:
+code::
+{ Saw.ar([100,250]) * [0.5,0.8] }.play;
+{ Saw.ar(LFNoise1.kr(1).range(0,100) + [100,250]) }.play;
+::
+Also the various UGen convenience functions like code::.clip2::, code::.lag:: and code::.range:: :
+code::
+{ Saw.ar(LFNoise1.kr(1).range(100,[200,300]) }.play;
+{ Saw.ar(LFPulse.kr(1).range(100,[200,300]).lag([0.1,0.2]) }.play;
+::
+The expansion is handled by wrapper-methods defined in link::Classes/SequenceableCollection::.
+
+You can use link::Classes/Object#-multiChannelPerform:: to do multichannel expansion with any method on any kind of object:
+code::
+["foo","bar"].multiChannelPerform(\toUpper);
+::
+The shorter arrays wrap:
+code::
+["foo","bar","zoo"].multiChannelPerform('++', ["l","ba"])
+::
+
+subsection:: Using flop for multichannel expansion
+The method flop swaps columns and rows, allowing to derive series of argument sets:
+code::
+(
+SynthDef("help_multichannel", { |out=0, freq=440, mod=0.1, modrange=20|
+	Out.ar(out,
+		SinOsc.ar(
+			LFPar.kr(mod, 0, modrange) + freq
+		) * EnvGate(0.1)
+	)
+}).send(s);
+)
+::
+code::
+(
+var freq, mod, modrange;
+
+freq = Array.exprand(8, 400, 5000);
+mod = Array.exprand(8, 0.1, 2);
+modrange = Array.rand(8, 0.1, 40);
+
+fork {
+	[\freq, freq, \mod, mod, \modrange, modrange].flop.do { |args|
+		args.postln;
+		Synth("help_multichannel", args);
+		0.3.wait;
+	}
+};
+)
+::
+
+Similarly, link::Classes/Function#flop#Function:flop:: returns an unevaluated function that will expand to its arguments when evaluated:
+code::
+(
+SynthDef("blip", { |freq| Out.ar(0, Line.ar(0.1, 0, 0.05, 1, 0, 2) 
+	* Pulse.ar(freq * [1, 1.02])) }).send(s);
+
+a = { |dur=1, x=1, n=10, freq=400|
+	fork { n.do {
+			if(x.coin) { Synth("blip", [\freq, freq]) };
+			(dur / n).wait;
+	} }
+}.flop;
+)
+
+a.value(5, [0.3, 0.3, 0.2], [12, 32, 64], [1000, 710, 700]);
+::
+
+section:: Pitfalls
+Some UGens create stereo output from mono input, and might not behave as expected regarding multichannel expansion.
+
+For example, link::Classes/Pan2:: :
+code::
+{ Pan2.ar(SinOsc.ar([500,600]),[-0.5,0.5]) }.play;
+::
+The expectation here might be that the two sines would get individual pan positions. And they do, but Pan2 expands into two stereo ugens nested in an outer array, resulting in a total of four output channels. code::play:: will add an link::Classes/Out:: UGen for each of them, resulting in both Pan2's writing to the same output bus:
+code::
+Pan2.ar(SinOsc.ar([500,600]),[-0.5,0.5])
+
+// prints:
+// [ [ an OutputProxy, an OutputProxy ], [ an OutputProxy, an OutputProxy ] ]
+::
+
+In this case, the solution is simply to sum the nested four channels into a single stereo-channel:
+code::
+{ Pan2.ar(SinOsc.ar([500,600]),[-0.5,0.5]).sum }.play;
+::
+
+If we take a look at the resulting UGen graph of the code above, we can see that it is correct. The two Pan2 is mixed together to create a single stereo output:
+code::
+{ Pan2.ar(SinOsc.ar([500,600]),[-0.5,0.5]).sum }.asSynthDef.dumpUGens
+
+// prints:
+// [ 0_Control, scalar, nil ]
+// [ 1_SinOsc, audio, [ 500, 0 ] ]
+// [ 2_Pan2, audio, [ 1_SinOsc, -0.5, 1 ] ]
+// [ 3_SinOsc, audio, [ 600, 0 ] ]
+// [ 4_Pan2, audio, [ 3_SinOsc, 0.5, 1 ] ]
+// [ 5_+, audio, [ 2_Pan2[0], 4_Pan2[0] ] ]
+// [ 6_+, audio, [ 2_Pan2[1], 4_Pan2[1] ] ]
+// [ 7_Out, audio, [ 0_Control[0], 5_+, 6_+ ] ]
+::
+
+section:: Protecting arrays against expansion
 Some unit generators such as link::Classes/Klank:: require arrays of values as inputs. Since all arrays are expanded, you need to protect some arrays by a link::Classes/Ref:: object.
 A Ref instance is an object with a single slot named 'value' that serves as a holder of an object.
 code::Ref.new(object):: is one way to create a Ref, but there is a syntactic shortcut. The backquote code::`:: is a unary operator that is equivalent to calling code::Ref.new(something)::. So to protect arrays that are inputs to a Klank or similar UGens you write:
@@ -76,7 +181,7 @@ code::
 [ Klank.ar(`[[400,500,600],[1,2,1]], z),  Klank.ar(`[[700,800,900],[1,2,1]], z)]
 ::
 
-subsection:: Reducing channel expansion with Mix
+section:: Reducing channel expansion with Mix
 The link::Classes/Mix:: object provides the means for reducing multichannel arrays to a single channel.
 code::
 Mix.new([a, b, c]) // array of channels
@@ -133,51 +238,5 @@ code::
 )
 ::
 
-subsection:: Using flop for multichannel expansion
-The method flop swaps columns and rows, allowing to derive series of argument sets:
-code::
-(
-SynthDef("help_multichannel", { |out=0, freq=440, mod=0.1, modrange=20|
-	Out.ar(out,
-		SinOsc.ar(
-			LFPar.kr(mod, 0, modrange) + freq
-		) * EnvGate(0.1)
-	)
-}).send(s);
-)
-::
-code::
-(
-var freq, mod, modrange;
 
-freq = Array.exprand(8, 400, 5000);
-mod = Array.exprand(8, 0.1, 2);
-modrange = Array.rand(8, 0.1, 40);
-
-fork {
-	[\freq, freq, \mod, mod, \modrange, modrange].flop.do { |args|
-		args.postln;
-		Synth("help_multichannel", args);
-		0.3.wait;
-	}
-};
-)
-::
-
-Similarly, link::Classes/Function#flop#Function:flop:: returns an unevaluated function that will expand to its arguments when evaluated:
-code::
-(
-SynthDef("blip", { |freq| Out.ar(0, Line.ar(0.1, 0, 0.05, 1, 0, 2) 
-	* Pulse.ar(freq * [1, 1.02])) }).send(s);
-
-a = { |dur=1, x=1, n=10, freq=400|
-	fork { n.do {
-			if(x.coin) { Synth("blip", [\freq, freq]) };
-			(dur / n).wait;
-	} }
-}.flop;
-)
-
-a.value(5, [0.3, 0.3, 0.2], [12, 32, 64], [1000, 710, 700]);
-::
 
