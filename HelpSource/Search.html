@@ -173,13 +173,8 @@ function onLoad() {
     document.getElementById("search_input").focus();
 
     node = document.getElementById("search_results");
-   
-    var x = unescape(window.location.hash.slice(1));
-    if(x!="" && newinput!=x) {
-        document.getElementById("search_input").value = x;
-        newinput = x;
-        window.location.hash = "";
-    }
+
+    checkHash();
 
     buildMethodList();
 
@@ -187,6 +182,15 @@ function onLoad() {
     filter.onchange = doSearch;
 
     setInterval(delayed_update,250);
+}
+
+function checkHash() {
+    var x = unescape(window.location.hash.slice(1));
+    if(x!="" && newinput!=x) {
+        document.getElementById("search_input").value = x;
+        newinput = x;
+        window.location.hash = "";
+    }
 }
 
 function SearchKeyPressed(e) {
@@ -216,6 +220,7 @@ function matchDoc(doc,file,folder,re) {
     for(var i=0;i<fields.length;i++) {
         var f = fields[i];
         if(checkboxes[i].checked && doc.hasOwnProperty(f) && re.test(doc[f])) {
+            doc.match_weight = i;
             return true;
         }
     }
@@ -225,6 +230,7 @@ function matchDoc(doc,file,folder,re) {
             var kw = doc.keywords[i];
             if(re.test(kw)) {
                 doc.matched_kw = kw;
+                doc.match_weight = fields.length;
                 return true;
             }
         }
@@ -540,10 +546,6 @@ function doSearch() {
     document.getElementById("search_count").innerHTML = count+" results";
 }
 
-function showReHelp() {
-    window.open("RegExHelp.html","regexhelp","width=450,height=300");
-}
-
 function delayed_update() {
     if(input != newinput) {
         input = newinput;
@@ -552,7 +554,7 @@ function delayed_update() {
         doPrint();
     }
 }
-window.onhashchange = onLoad;
+window.onhashchange = checkHash;
 </script>
 
 </head>
