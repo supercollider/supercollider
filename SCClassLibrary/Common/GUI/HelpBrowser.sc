@@ -6,6 +6,7 @@ HelpBrowser {
 	var <window;
 	var webView;
 	var lblStatus, animCount = 0;
+	var txtPath;
 
 	*instance {
 		var homeUrl;
@@ -92,13 +93,32 @@ HelpBrowser {
 			x = x + w + 2;
 		};
 
-		w = 100;
+		w = "Path:".bounds.width + 5;
 		x = x + 5;
+		StaticText.new( window, Rect(x, y, w, h) )
+			.string_("Path:")
+			.resize_(1);
+		x = x + w;
+
+		w = 200;
+		txtPath = TextField.new( window, Rect(x,y,w,h) ).resize_(2);
+		txtPath.action = {|x|
+			var path, hash;
+			#path, hash = x.string.findRegexp("([^#]+)(#?.*)")[1..].flop[1];
+			if(hash.isEmpty) {
+				this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html")
+			} {
+				this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html" ++ hash)
+			}
+		};
+
+		x = x + w + 5;
+		w = 100;
 		lblStatus = StaticText.new( window, Rect(x, y, w, h) )
 			.resize_(1);
 		lblStatus.font = Font(Font.defaultSansFace).boldVariant.size_(12);
 
-		w = 200;
+		w = 150;
 		x = winRect.width - marg - w;
 		txtFind = TextField.new( window, Rect(x,y,w,h) ).resize_(3);
 
@@ -115,7 +135,15 @@ HelpBrowser {
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
 		webView.html = "Please wait while initializing Help... (This might take several seconds the first time)";
 
-		webView.onLoadFinished = { this.stopAnim; window.name = "SuperCollider Help:"+webView.title };
+		webView.onLoadFinished = {
+			this.stopAnim;
+			window.name = "SuperCollider Help:"+webView.title;
+			if(webView.url.beginsWith("file://"++SCDoc.helpTargetDir)) {
+				txtPath.string = webView.url.findRegexp("file://"++SCDoc.helpTargetDir++"/([\\w/]+)\\.?.*")[1][1];
+			} {
+				txtPath.string = webView.url;
+			}
+		};
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
 			this.goTo(url);
