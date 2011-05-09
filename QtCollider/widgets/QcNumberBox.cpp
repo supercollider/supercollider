@@ -33,7 +33,7 @@ QcNumberBox::QcNumberBox()
 : scroll( true ),
   lastPos( 0 ),
   editedTextColor( QColor( "red" ) ),
-  normalTextColor( QColor( "black" ) ),
+  normalTextColor( palette().color(QPalette::WindowText) ),
   _validator( new QDoubleValidator( this ) ),
   step( 0.1f ),
   scrollStep( 0.1f ),
