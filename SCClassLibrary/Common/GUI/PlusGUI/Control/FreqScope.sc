@@ -134,7 +134,7 @@ PlusFreqScope {
 		var defname = specialSynthDef ?? {"freqScope" ++ freqMode.asString};
 		var args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
-		synth = Synth.new(defname, args, server.asGroup);
+		synth = Synth.tail(RootNode(server), defname, args);
 	}
 
 	kill {
@@ -196,7 +196,10 @@ PlusFreqScope {
 			CmdPeriod.remove(this);
 			active = false;
 			// needs to be deferred to build up synth again properly
-			{ this.active_(true) }.defer( 0.5 );
+			fork {
+				server.sync;
+				this.active_(true);
+			}
 		});
 	}
 
