@@ -404,7 +404,7 @@ SCDoc {
             };
         } {
             isProcessing = false;
-        }
+        };
         ^url;
     }
 
