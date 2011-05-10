@@ -16,11 +16,6 @@ div#search_box {
     background: #eee;
     margin-left: 0.5em;
 }
-/*
-div#search_results {
-    padding-top: 1em;
-}
-*/
 div#search_count {
     border-bottom: 2px solid #999;
     color: #333;
@@ -43,7 +38,6 @@ div.result_category {
     border-bottom: 1px solid #ccc;
 }
 div.met_docs {
-/*    padding-left: 2em;*/
     margin-bottom: 0.2em;
 }
 div.met_subclasses {
@@ -66,7 +60,6 @@ div.met_subclasses a.seemore {
     font-size: 9pt;
     color: #555;
     background: #eee;
-/*    border: 1px solid #ddd;*/
 }
 #search_checks0 {
     font-size: 9pt;
@@ -79,7 +72,6 @@ table#search_settings {
     font-size: 9pt;
     color: #555;
     width: 100%;
-/*    margin: 1em;
     margin-left: 0px;
     margin-right: 0px;*/
     margin: 0px;
@@ -245,7 +237,7 @@ var mindex;
 var inProgress = false;
 var foundMets;
 var mets;
-var cats;
+var docs;
 var re;
 var node;
 var subclassCache = {};
@@ -267,9 +259,9 @@ function getSubClasses(doc) {
 function doPrint() {
     var now = Date.now();
     inProgress = false;
-    for(; cindex<cats.length; cindex++) {
-        var k = cats[cindex][0];
-        var c = cats[cindex][1];
+    for(; cindex<docs.length; cindex++) {
+        var k = docs[cindex][0];
+        var c = docs[cindex][1];
         if(cindex2==0) {
             var div = document.createElement("div");
             div.className="result_category";
@@ -293,15 +285,19 @@ function doPrint() {
             div.appendChild(n);
             div.appendChild(document.createTextNode(" - "+v.summary+" "));
 
-            n = document.createElement("span");
-            n.className = "soft";
-            var res = "["+x[0];
-            if(v.installed=="extension")
-                res += " +";
-            else if(v.installed=="missing")
-                res += " - missing!";
-            n.innerHTML = res+"]";
-            div.appendChild(n);
+            if(v.installed!="standard") {
+                var n = document.createElement("span");
+                n.className = "soft";
+                var res = "[";
+                if(v.installed=="extension")
+                    res += "+";
+                else if(v.installed=="missing")
+                    res += "missing!";
+                n.innerHTML = res+"]";
+
+                div.appendChild(n);
+            }
+
             node.appendChild(div);
 
             if(Date.now()-now > 200) {
@@ -452,7 +448,7 @@ function randomDoc() {
     for(var i=0;i<100;i++) {
         var v = list[Math.floor(Math.random()*list.length)];
         if(! /Undocumented classes/.test(v.categories)) {
-            cats = [[v.categories,[v]]];
+            docs = [[v.path.split("/")[0],[v]]];
             break;
         }
     }
@@ -497,7 +493,7 @@ function doSearch() {
         }
 
         // search docmap
-        cats = {};
+        docs = {};
         for(var k in docmap) {
             var v = docmap[k];
             var x = v.path.split("/");
@@ -505,16 +501,33 @@ function doSearch() {
             var file = x[x.length-1];
 
             if(matchDoc(v,file,folder,re)) {
-                var c = v.categories;
-                if(!cats.hasOwnProperty(c))
-                    cats[c]=[];
-                cats[c].push(v);
-
+              if(!docs.hasOwnProperty(folder))
+                    docs[folder]=[];
+                docs[folder].push(v);
                 count++;
             }
         }
-        var tmp = []; for(var k in cats) tmp.push([k,cats[k]]);
-        cats = tmp;
+        var tmp = []; for(var k in docs) tmp.push(
+            [k, docs[k].sort(function(a,b) {
+                a = a.match_weight;
+                b = b.match_weight;
+                if(a<b) return -1;
+                else
+                if(a>b) return 1;
+                else
+                return 0;
+            })]
+        );
+        var order = { Classes:1, Reference:2, Overviews:3, Guides:4, Tutorials:5 };
+        docs = tmp.sort(function(a,b) {
+            a = order[a[0]] || 10;
+            b = order[b[0]] || 10;
+            if(a<b) return -1;
+            else
+            if(a>b) return 1;
+            else
+            return 0;
+        });
 
         // search methods
         var include_ext_classes = document.getElementById("check_extensions").checked;
