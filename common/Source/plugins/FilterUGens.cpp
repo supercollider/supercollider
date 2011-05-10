@@ -2271,20 +2271,18 @@ void RHPF_next_1(RHPF* unit, int inNumSamples)
 
 void LPF_Ctor(LPF* unit)
 {
-	////printf("LPF_Reset\n");
-
-	if (unit->mBufLength == 1) {
+	if (unit->mBufLength == 1)
 		SETCALC(LPF_next_1);
-	} else {
+	else
 		SETCALC(LPF_next);
-		unit->m_a0 = 0.f;
-		unit->m_b1 = 0.f;
-		unit->m_b2 = 0.f;
-		unit->m_y1 = 0.f;
-		unit->m_y2 = 0.f;
-		unit->m_freq = 0.f;
-		ZOUT0(0) = 0.f;
-	}
+
+	unit->m_a0 = 0.f;
+	unit->m_b1 = 0.f;
+	unit->m_b2 = 0.f;
+	unit->m_y1 = 0.f;
+	unit->m_y2 = 0.f;
+	unit->m_freq = 0.f;
+	ZOUT0(0) = 0.f;
 }
 
 
