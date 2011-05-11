@@ -1,0 +1,42 @@
+Class:: QLayout
+summary:: Superclass of all layouts - GUI components that distribute parent view's space among its children
+categories:: GUI
+related:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.
+
+Description::
+The purpose of a layout is to distribute the amount of space given to the view on which it is installed between the children of that view. Each subclass of QLayout has a specific pattern of space distribution (a line, a 2D grid, etc.). See their documentation for details.
+
+A layout does it's job by resizing and moving the child views according to common sense of what makes the GUI useful and according to size preferences and constraints that the child views declare for themselves. It works dynamically, meaning that it automatically redistributes the space whenever the amount of it changes (the view on which it is installed is resized), whenever children are added or removed and whenever the size constraints of children change. The latter may happen for instance when a property of a child that affects its appearance is changed.
+
+A layout can manage views as well as other layouts directly - a layout can directly occupy a place in another layout's distribution pattern. From the standpoint of methods of layouts, subclasses of QView and QLayout are interchangable.
+
+When a view is created with another view as parent it will automatically become subject to the management of the parent's layout - it will be inserted into the layout in some default way. However, layouts like QGridLayout have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy.
+A view can be constructed with no parent (nil); if it is added into a layout it will automatically become a child of the view on which the layout is or will be installed.
+
+ClassMethods::
+
+
+InstanceMethods::
+
+Method:: spacing_
+The amount of empty pixels left between the managed views.
+
+argument:: spacing
+An integer representing the spacing in pixels.
+
+
+Method:: margins_
+The amount of empty pixels left between the edges of the parent view and the managed children.
+
+argument:: margins
+An array of four integers in the following order: left margin, top margin, right margin, bottom margin; or a single integer that will be applied to all margins.
+
+Examples::
+
+code::
+w = Window.new;
+w.layout = QHLayout( QTextView().string_("One"), QTextView().string_("Two") );
+w.layout.spacing = 20;
+w.layout.margins = [10, 30, 10, 30];
+w.front;
+::
