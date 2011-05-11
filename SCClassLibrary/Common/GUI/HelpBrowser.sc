@@ -9,20 +9,18 @@ HelpBrowser {
 	var txtPath;
 
 	*instance {
-		var homeUrl;
 		if( singleton.isNil ) {
-			homeUrl = defaultHomeUrl;
-			if( homeUrl.isNil ) {
-				homeUrl = SCDoc.helpTargetDir ++ "/Help.html";
-			};
-			singleton = this.new( homeUrl );
+			singleton = this.new;
 			singleton.window.onClose = { singleton = nil; };
 		};
 		^singleton;
 	}
 
-	*new { arg homeUrl;
-		^super.new.init( homeUrl );
+	*new { arg aHomeUrl;
+		if( aHomeUrl.isNil ) {
+			aHomeUrl = defaultHomeUrl ?? { SCDoc.helpTargetDir ++ "/Help.html" };
+		};
+		^super.new.init( aHomeUrl );
 	}
 
 	*openBrowser {
