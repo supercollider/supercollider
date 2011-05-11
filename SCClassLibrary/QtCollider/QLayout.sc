@@ -4,7 +4,7 @@ QLayout : QObject {
   }
 
   margins_ { arg margins;
-    this.setProperty( \margins, margins );
+    this.setProperty( \margins, margins + [0,0,0,0] );
   }
 }
 
