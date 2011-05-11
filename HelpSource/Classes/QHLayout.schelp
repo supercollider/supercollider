@@ -1,0 +1,11 @@
+CLASS:: QHLayout
+summary:: A layout that distributes views in a horizontal line
+categories:: GUI
+related:: Classes/QVLayout, Classes/QGridLayout
+
+DESCRIPTION::
+See documentation of superclass QLineLayout for details.
+
+CLASSMETHODS::
+
+PRIVATE:: layoutClass
