@@ -171,7 +171,7 @@ SCDoc {
         var f, path = this.helpTargetDir +/+ "version";
         if(path.load != version) {
             // FIXME: should we call this.syncNonHelpFiles here to ensure that helpTargetDir exists?
-            this.postProgress("SCDoc: version update, refreshing timestamp");
+            this.postProgress("version update, refreshing timestamp");
             // this will update the mtime of the version file, triggering re-rendering and clean doc_map
             f = File.open(path,"w");
             f.write(version.asCompileString);
@@ -186,7 +186,7 @@ SCDoc {
         var verpath = this.helpTargetDir +/+ "version";
 
         if(this.checkVersion or: {("test"+verpath.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
-            this.postProgress("SCDoc: not reading scdoc_cache due to version timestamp update");
+            this.postProgress("not reading scdoc_cache due to version timestamp update");
             doc_map = nil;
         } {
             doc_map = path.load;
@@ -499,9 +499,16 @@ SCDoc {
         ^false;
     }
 
+    *checkSystemCmd {|cmd|
+        if(("which"+cmd+"> /dev/null").systemCmd != 0) {
+            Error("'"++cmd++"' is not installed. Please install it and try again.").throw;
+        };
+    }
+
     *findHelpSourceDirs {
         if(helpSourceDirs.notNil) {^this};
         this.postProgress("Finding HelpSource folders...");
+        this.checkSystemCmd("find");
         helpSourceDirs = Set[helpSourceDir];
         [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
             helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
@@ -513,6 +520,7 @@ SCDoc {
     *syncNonHelpFiles {
         this.findHelpSourceDirs;
         this.postProgress("Synchronizing non-schelp files");
+        this.checkSystemCmd("rsync");
         helpSourceDirs.do {|dir|
             ("rsync -rlt --exclude '*.schelp' --exclude '.*'"+dir.escapeChar($ )++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
         };
