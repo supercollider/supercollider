@@ -19,37 +19,10 @@
 *
 ************************************************************************/
 
-
 #ifndef _SC_QT_COMMON_H
 #define _SC_QT_COMMON_H
 
-#include <cstdarg>
-
-namespace QtCollider {
-  int debugLevel();
-  void setDebugLevel( int );
-}
-
-#include <QString>
-
-extern void postfl(const char *fmt, ...);
-extern void error(const char *fmt, ...);
-
-#ifdef QC_DEBUG
-  #define qcDebugMsg( LEVEL, MSG ) \
-    if( LEVEL <= QtCollider::debugLevel() ) { \
-      postfl( "Qt:: %s\n", QString(MSG).toStdString().c_str() ); \
-    }
-#else
-  #define qcDebugMsg( LEVEL, MSG )
-#endif
-
-#define qcSCObjectDebugMsg( LEVEL, OBJ, MSG ) \
-  qcDebugMsg( LEVEL, QString("[%1] %2") \
-                    .arg( OBJ ? slotRawSymbol( &OBJ->classptr->name )->name : "null" ) \
-                    .arg(MSG) )
-
-#define qcErrorMsg( MSG ) error( "Qt: %s\n", QString(MSG).toStdString().c_str() )
+#include "debug.h"
 
 #include <QList>
 #include <QVariant>
