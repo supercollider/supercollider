@@ -1,0 +1,63 @@
+CLASS:: QLineLayout
+summary:: Superclass of layouts that distribute views in a line
+categories:: GUI
+related:: LineItem
+
+DESCRIPTION::
+The two subclasses - QHLayout and QVLayout - distribute views in a horizontal or vertical line, respectively. In the direction that a QLineLayout operates, managed items may be given unequal space, proportional to their type and according to principles of GUI usability: in a QHLayout containing a Button and a TextField for example, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left.
+
+subsection:: Fine tuning
+
+Each item can be assigned a stretch factor and an alignment flag to fine tune how its size and position are managed. Moreover, an empty space with an arbitrary stretch factor or an empty space of fixed size may be defined in place of an item.
+
+link::Classes/LineItem::, link::Classes/StretchItem::, and link::Classes/SpacerItem:: classes allow you to do that. See QLineLayout's link::#*new#constructor:: as well as the documentation of the above mentioned classes for details.
+
+Stretch factor
+
+The stretch factor overrides the default size priorities of items in the direction that the layout operates. Every item has a default stretch factor of 0. As soon as a higher stretch factor is assigned to an item, the items will be redistributed according to relative proportions of their stretch factors.
+
+Alignment
+
+The alignment flag specifies how an item is positioned within the space it is given if its size constraints do not allow it to occupy the whole space.
+
+In a QHLayout for example, every item is automatically given the whole height available to the layout, but an item such as a Button might have a smaller maximum allowed height. In that case the alignment flag can control the vertical position of the Button within the extra space available to it.
+
+Redundant space in the direction of layout's operation can also be a result of assigning a stretch factor to an item, thus in turn giving it more space than its size constraints allow in that direction.
+
+CLASSMETHODS::
+
+PRIVATE:: layoutClass
+
+METHOD:: new
+
+Create a QLineLayout and immediately fill it with items given as arguments.
+
+argument:: items
+A set of items that the layout will distribute in the given order. An item can be a QView, a QLayout or a LineItem (and their subclasses). "Wrapping" a QView or a QLayout into a LineItem allows you to specify the stretch factor and the alignment of the item, while StretchItem and SpacerItem allow you to define empty space. See link::Classes/LineItem::, link::Classes/StretchItem::, and link::Classes/SpacerItem:: for details.
+
+
+INSTANCEMETHODS::
+
+METHOD:: add
+Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively.
+
+argument:: item
+See link::#*new#constructor::.
+
+
+EXAMPLES::
+
+Try resizing the window created by the following code.
+
+code::
+w = Window.new;
+w.layout = QVLayout(
+	QTextView(),
+	QHLayout(
+		QButton().states_([["Foo"]]),
+		LineItem( QTextField().string_("Bar"), stretch: 1 ),
+		LineItem( QTextField().string_("BarBarBar"), stretch: 4 )
+	)
+);
+w.front;
+::
