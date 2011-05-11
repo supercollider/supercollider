@@ -22,7 +22,7 @@
 ************************************************************************/
 
 #include "primitives.h"
-#include "../Painting.h"
+#include "../painting.h"
 #include "../Slot.h"
 
 #include <QPainter>

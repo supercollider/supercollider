@@ -20,7 +20,7 @@
 ************************************************************************/
 
 #include "QWidgetProxy.h"
-#include "Painting.h"
+#include "painting.h"
 #include "Common.h"
 
 #include <QApplication>

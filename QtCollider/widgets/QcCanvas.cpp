@@ -20,7 +20,7 @@
 ************************************************************************/
 
 #include "QcCanvas.h"
-#include "../Painting.h"
+#include "../painting.h"
 #include "../Common.h"
 
 #include <QPainter>
