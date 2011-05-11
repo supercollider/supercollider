@@ -105,7 +105,7 @@ HelpBrowser {
 		x = x + w;
 
 		w = 200;
-		txtPath = TextField.new( window, Rect(x,y,w,h) ).resize_(2);
+		txtPath = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
 		txtPath.action = {|x|
 			var path, hash;
 			#path, hash = x.string.findRegexp("([^#]+)(#?.*)")[1..].flop[1];
@@ -117,11 +117,19 @@ HelpBrowser {
 		};
 
 		x = x + w + 10;
-		w = "Same window".bounds.width + 5;
-		Button.new( window, Rect(x, y, w, h) )
-			.resize_(1)
-			.states_([["Same window"],["New window"]])
-			.action_({ |b| openNewWin = b.value.asBoolean });
+		if(GUI.scheme==QtGUI) {
+			w = "Create new windows".bounds.width + 50;
+			QCheckBox.new (window, Rect(x, y, w, h) )
+				.resize_(1)
+				.string_("Create new windows")
+				.action_({ |b| openNewWin = b.value });
+		} {
+			w = "Same window".bounds.width + 5;
+			Button.new( window, Rect(x, y, w, h) )
+				.resize_(1)
+				.states_([["Same window"],["New window"]])
+				.action_({ |b| openNewWin = b.value.asBoolean });
+		};
 
 		w = 150;
 		x = winRect.width - marg - w;
