@@ -457,7 +457,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 }
 
 
-void QObjectProxy::scMethodCallEvent( ScMethodCallEvent *e )
+inline void QObjectProxy::scMethodCallEvent( ScMethodCallEvent *e )
 {
   invokeScMethod( e->method, e->args, 0, e->locked );
 }
