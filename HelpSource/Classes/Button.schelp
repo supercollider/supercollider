@@ -47,7 +47,7 @@ instancemethods::
 method:: states
 An array of labels and colors defining the states of the button.
 argument:: array
-An link::Classes/Array:: of arrays of the form code::[ [String, strColor, bgColor] , .... ]::.
+An link::Classes/Array:: of arrays of the form code:: [ [String, strColor, bgColor] , .... ] ::
 
 method:: value
 Returns the index of the current state. This will not evaluate the function assigned to action (see link::Classes/View::).
