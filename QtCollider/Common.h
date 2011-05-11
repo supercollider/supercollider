@@ -62,32 +62,12 @@ namespace QtCollider {
     Synchronous,
     Asynchronous
   };
-}
-
-struct ScMethodCallEvent : public QEvent
-{
-  ScMethodCallEvent( PyrSymbol *m,
-                     const QList<QVariant> &l = QList<QVariant>(),
-                     bool b_locked = false )
-  : QEvent( (QEvent::Type) QtCollider::Event_ScMethodCall ),
-    method( m ),
-    args( l ),
-    locked( b_locked )
-  {}
-
-  PyrSymbol *method;
-  QList<QVariant> args;
-  bool locked;
-};
-
-namespace QtCollider {
 
   void lockLang();
 
   inline static void unlockLang()
   {
     pthread_mutex_unlock(&gLangMutex);
-    //printf("UNLOCKED\n");
   }
 
   int wrongThreadError ();

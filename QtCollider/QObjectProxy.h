@@ -38,7 +38,6 @@
   qcDebugMsg( LEVEL, QString("[%1]: ").arg(_scClassName) + QString(MSG) )
 
 struct VariantList;
-struct ScMethodCallEvent;
 
 class QObjectProxy;
 class QcSignalSpy;
@@ -48,6 +47,7 @@ class QcFunctionSignalHandler;
 namespace QtCollider {
   struct SetPropertyEvent;
   class DestroyEvent;
+  struct ScMethodCallEvent;
 
   class ProxyToken : public QObject {
     Q_OBJECT
@@ -138,7 +138,7 @@ class QObjectProxy : public QObject
 
   private:
 
-    inline void scMethodCallEvent( ScMethodCallEvent * );
+    void scMethodCallEvent( QtCollider::ScMethodCallEvent * );
     bool setPropertyEvent( QtCollider::SetPropertyEvent * );
     bool destroyEvent( QtCollider::DestroyEvent * );
 
@@ -173,6 +173,22 @@ public:
   QObjectProxy::DestroyAction action() { return _action; }
 private:
   QObjectProxy::DestroyAction _action;
+};
+
+struct ScMethodCallEvent : public QEvent
+{
+  ScMethodCallEvent( PyrSymbol *m,
+                     const QList<QVariant> &l = QList<QVariant>(),
+                     bool b_locked = false )
+  : QEvent( (QEvent::Type) QtCollider::Event_ScMethodCall ),
+    method( m ),
+    args( l ),
+    locked( b_locked )
+  {}
+
+  PyrSymbol *method;
+  QList<QVariant> args;
+  bool locked;
 };
 
 } // namespace
