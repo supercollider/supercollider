@@ -9,7 +9,7 @@ Optional spread and center controls, and levelComp(ensation) (equal power).
 numChans and orientation are as in PanAz.
 
 warning::
-ATTENTION - SplayZ is deprecated because its geometry is wrong. It is only kept for backwards compatibility - please adapt your patches to link::/Classes/SplayAz::! See link::Classes/SplayAz:: help file for the comparison in behavior.
+ATTENTION - SplayZ is deprecated because its geometry is wrong. It is only kept for backwards compatibility - please adapt your patches to link::Classes/SplayAz::! See link::Classes/SplayAz:: help file for the comparison in behavior.
 ::
 
 classmethods::
