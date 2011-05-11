@@ -5,8 +5,9 @@ HelpBrowser {
 	var <>homeUrl;
 	var <window;
 	var webView;
-	var lblStatus, animCount = 0;
+	var animCount = 0;
 	var txtPath;
+	var <>openNewWin = false;
 
 	*instance {
 		if( singleton.isNil ) {
@@ -115,11 +116,12 @@ HelpBrowser {
 			}
 		};
 
-		x = x + w + 5;
-		w = 100;
-		lblStatus = StaticText.new( window, Rect(x, y, w, h) )
-			.resize_(1);
-		lblStatus.font = Font(Font.defaultSansFace).boldVariant.size_(12);
+		x = x + w + 10;
+		w = "Same window".bounds.width + 5;
+		Button.new( window, Rect(x, y, w, h) )
+			.resize_(1)
+			.states_([["Same window"],["New window"]])
+			.action_({ |b| openNewWin = b.value.asBoolean });
 
 		w = 150;
 		x = winRect.width - marg - w;
@@ -149,7 +151,11 @@ HelpBrowser {
 		};
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
-			this.goTo(url);
+			if(openNewWin) {
+				HelpBrowser.new.goTo(url).window.front;
+			} {
+				this.goTo(url);
+			};
 		};
 		if(webView.respondsTo(\onReload_)) {
 			webView.onReload = {|wv, url|
@@ -189,13 +195,13 @@ HelpBrowser {
 				block {|break|
 					loop {
 						progress.do {|p|
-							lblStatus.string_("Loading"+p);
+							window.name = ("Loading"+p);
 							0.3.wait;
 							if(animCount==0) {break.value};
 						};
 					};
 				};
-				lblStatus.string_("");
+//				lblStatus.string_("");
 			}.play(AppClock);
 		};
 	}
