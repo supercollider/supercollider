@@ -19,8 +19,6 @@
 *
 ************************************************************************/
 
-void defineQPenPrimitives();
-
 #include <PyrPrimitive.h>
 #include <VMGlobals.h>
 #include <PyrSlot.h>
