@@ -35,6 +35,7 @@ set( QT_COLLIDER_HDRS
 )
 
 set( QT_COLLIDER_SRCS
+  debug.cpp
   interface.cpp
   QcApplication.cpp
   Common.cpp
