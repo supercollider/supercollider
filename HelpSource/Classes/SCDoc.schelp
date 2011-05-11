@@ -19,7 +19,7 @@ url = SCDoc.prepareHelpForURL(SCDoc.findHelpFile("SinOsc"));
 ::
 
 CLASSMETHODS::
-private:: initClass, addToDocMap, makeMethodList, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, makeProgressWindow, readDocMap, addMethodList, findHelpSourceDirs, getAllMetaData, syncNonHelpFiles, makeClassTemplate, maybeWait, checkVersion
+private:: initClass, addToDocMap, makeMethodList, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, readDocMap, addMethodList, findHelpSourceDirs, getAllMetaData, syncNonHelpFiles, makeClassTemplate, maybeWait, checkVersion
 
 method:: p
 The default link::Classes/SCDocParser:: object, created automatically.
@@ -64,8 +64,6 @@ method:: renderAll
 Render all help-files that need updating and generate overviews and cached metadata index. This can take several minutes. Useful mainly if you want to render all help to put online or similar.
 argument:: force
 Force updating of all files.
-argument:: gui
-If true and code::threaded:: is also true, create a GUI progress window instead of posting progress to the post window.
 argument:: threaded
 When true, runs the process in a link::Classes/Routine:: on link::Classes/AppClock::. This is needed to get progress feedback when running inside a frontend like the SuperCollider app on OSX. If running with the sclang terminal client, this can be set to false for better performance.
 argument:: findExtensions

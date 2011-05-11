@@ -10,9 +10,7 @@ SCDoc {
     classvar <undocumentedClasses;
     classvar <>verbose = false;
     classvar doWait;
-    classvar progressText = nil, progressWindow = nil;
     classvar progressCount = 0, progressMax = 0;
-    classvar progressTopic = nil, progressBar = nil, closeButton = nil;
     classvar new_classes = nil;
     classvar didRun = false;
     classvar isProcessing = false;
@@ -32,18 +30,9 @@ SCDoc {
         helpTargetDir = path.standardizePath;
     }
 
-    *postProgress {|string,setTopic=false|
+    *postProgress {|string|
         var prg = "";
         if(progressMax>0) {prg = (progressCount/progressMax*100).round(0.1).asString ++ "% "};
-        if(progressWindow.notNil) {
-            if(setTopic, {
-                progressTopic.string = string;
-                progressText.string = prg;
-            }, {
-                progressText.string = prg+string;
-            });
-            if(progressMax>0) {progressBar.lo_(0).hi_(progressCount/progressMax)};
-        };
         if(verbose) {("SCDoc:"+prg++string).postln};
         this.maybeWait;
     }
@@ -214,21 +203,6 @@ SCDoc {
         ^doc_map;
     }
 
-    *makeProgressWindow {
-        if(GUI.scheme.name != \QtGUI, {^nil});
-
-        if(progressWindow.isNil) {
-            progressWindow = Window("Documentation update",500@200).alwaysOnTop_(true).userCanClose_(false).layout_(QVLayout.new);
-            progressWindow.onClose = {progressWindow = nil};
-            StaticText(progressWindow).string_("Please wait while updating help files...");
-            progressBar = RangeSlider(progressWindow,300@20).orientation_(\horizontal).background_(Color(0.8,0.8,0.8)).knobColor_(Color(0.5,0.5,0.8));
-            progressTopic = StaticText(progressWindow).font = Font(Font.defaultSansFace,12).boldVariant;
-            progressText = TextView(progressWindow).editable_(false);
-            closeButton = Button(progressWindow).states_([["Close"]]).enabled_(false).action = {progressWindow.close; progressWindow = nil};
-            progressWindow.front;
-        };
-    }
-
     *tickProgress { progressCount = progressCount + 1 }
 
     *maybeWait {
@@ -245,26 +219,27 @@ SCDoc {
         r.render(p,dest,subtarget);
     }
 
-    *renderAll {|force=false,gui=true,threaded=true,findExtensions=true,doneFunc|
-        var count, count2, func, x, fileList, subtarget, dest, t = Main.elapsedTime;
+    *renderAll {|force=false,threaded=true,findExtensions=true,doneFunc|
+        var count, count2, func, x, fileList, subtarget, dest, t = Main.elapsedTime, oldVerbose = verbose;
 
         func = {
             progressMax = 100;
             progressCount = 0;
+            verbose = true;
 
+            this.cleanState(force);
             if(findExtensions) {
                 this.findHelpSourceDirs;
             } {
                 helpSourceDirs = Set[helpSourceDir];
             };
             this.tickProgress;
-            this.cleanState(force);
             this.getAllMetaData;
             this.tickProgress;
 
             fileList = Dictionary.new;
             count = 0;
-            this.postProgress("Updating all files",true);
+            this.postProgress("Updating all files");
             helpSourceDirs.do {|dir|
                 fileList[dir] = ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp'")
                     .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
@@ -274,7 +249,7 @@ SCDoc {
             progressCount = 3 * ((count+count2)/progressMax);
             progressMax = count+count2+progressCount;
 
-            this.postProgress("Found"+count+"help files",true);
+            this.postProgress("Found"+count+"help files");
             helpSourceDirs.do {|dir|
                 x = fileList[dir].size;
                 if(x>0) {
@@ -291,7 +266,7 @@ SCDoc {
                     };
                 };
             };
-            this.postProgress("Found"+count2+"undocumented classes",true);
+            this.postProgress("Found"+count2+"undocumented classes");
             undocumentedClasses.do {|name|
                 dest = helpTargetDir+/+"Classes"+/+name++".html";
                 if(this.makeClassTemplate(name.asString,dest).not) {
@@ -300,15 +275,11 @@ SCDoc {
                 this.tickProgress;
             };
             this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
+            verbose = oldVerbose;
             doneFunc.value();
-            progressWindow !? {
-                progressWindow.userCanClose = true;
-                closeButton.enabled = true;
-            };
         };
 
-        doWait = threaded or: gui;
-        if(gui){this.makeProgressWindow};
+        doWait = threaded;
         if(doWait, {
             Routine(func).play(AppClock);
         }, func);
@@ -318,7 +289,7 @@ SCDoc {
         didRun = false;
         helpSourceDirs = nil;
         if(noCache) {
-            doWait = false;
+            doWait = thisThread.isKindOf(Routine);
             this.syncNonHelpFiles; // ensure helpTargetDir exists
             ("touch"+(helpTargetDir+/+"version").escapeChar($ )).systemCmd;
         }
