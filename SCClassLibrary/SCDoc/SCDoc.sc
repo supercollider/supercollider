@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 9;
+    classvar version = 10;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -90,7 +90,7 @@ SCDoc {
             mets.do {|m| //need to iterate over mets to keep the order
                 name = m.name;
                 if (name.isSetter.not or: {syms.includes(name.asGetter).not}) {
-                    l = l.add(name.asString);
+                    l = l.add(name.asGetter.asString);
                 };
             };
         };

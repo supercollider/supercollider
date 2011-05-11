@@ -351,7 +351,11 @@ SCDocParser {
                                     if("[a-z][a-zA-Z0-9_]*|[-<>@|&%*+/!?=]+".matchRegexp(name).not) {
                                         warn("Methodname not valid: '"++name++"' in"+path);
                                     } {
-                                        m = name.asSymbol.asGetter;
+                                        m = name.asSymbol;
+                                        if(m.isSetter) {
+                                            warn("Methods should be given as getters, without the _ suffix:"+name+"in"+path);
+                                            m = m.asGetter;
+                                        };
                                         methods = methods.add("_"++pfx++m);
                                         switch(pfx,
                                             "*", {cmets.add(m)},
