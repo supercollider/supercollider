@@ -28,3 +28,14 @@ QOrientation {
 
   *new { arg alignment; ^dict[alignment]; }
 }
+
+QLimits {
+  classvar dict;
+
+  *initClass {
+    dict = IdentityDictionary.new;
+    dict.put( \maxWidgetSize, 16777215 );
+  }
+
+  *new { arg limit; ^dict[limit]; }
+}
