@@ -8,9 +8,9 @@ The two subclasses - QHLayout and QVLayout - distribute views in a horizontal or
 
 subsection:: Fine tuning
 
-Each item can be assigned a stretch factor and an alignment flag to fine tune how its size and position are managed. Moreover, an empty space with an arbitrary stretch factor or an empty space of fixed size may be defined in place of an item.
+Each item can be assigned a stretch factor and an alignment flag to fine tune how its size and position are managed at layout link::#*new#construction::, when an item is added with link::#-add:: method or for an already contained item with link::#-setStretch:: and link::#-setAlignment:: methods.
 
-link::Classes/LineItem::, link::Classes/StretchItem::, and link::Classes/SpacerItem:: classes allow you to do that. See QLineLayout's link::#*new#constructor:: as well as the documentation of the above mentioned classes for details.
+Moreover, an empty space with an arbitrary stretch factor or an empty space of fixed size may be placed instead of an item by using link::Classes/StretchItem::  and link::Classes/SpacerItem:: classes. See link::#*new#constructor:: and link::#-add:: for details.
 
 Stretch factor
 
@@ -27,23 +27,81 @@ Redundant space in the direction of layout's operation can also be a result of a
 CLASSMETHODS::
 
 PRIVATE:: layoutClass
+PRIVATE:: parse
 
 METHOD:: new
 
 Create a QLineLayout and immediately fill it with items given as arguments.
 
 argument:: items
-A set of items that the layout will distribute in the given order. An item can be a QView, a QLayout or a LineItem (and their subclasses). "Wrapping" a QView or a QLayout into a LineItem allows you to specify the stretch factor and the alignment of the item, while StretchItem and SpacerItem allow you to define empty space. See link::Classes/LineItem::, link::Classes/StretchItem::, and link::Classes/SpacerItem:: for details.
+A sequence of items that the layout will distribute in the given order. An item can be a QView, a QLayout, a StretchItem or a SpacerItem. You can assign stretch factor and/or alignment to a QView or a QLayout by wrapping it into an array, followed by pairs of (\stretch, factor) and/or (\align, flag), for example:
+
+code::
+w = Window.new;
+w.layout = QVLayout(
+	[Button(), \stretch, 1, \align, \bottomLeft],
+	SpacerItem(20),
+	[TextView(), \stretch, 3]
+);
+w.front;
+::
+
+See link::Classes/StretchItem::, and link::Classes/SpacerItem:: for details about inserting empty space.
 
 
 INSTANCEMETHODS::
 
 METHOD:: add
-Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively.
+Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively. 
 
 argument:: item
-See link::#*new#constructor::.
+The item can be a QView, a QLayout, a StretchItem or a SpacerItem. If it is one of the last two, the following arguments have no effect.
 
+argument:: stretch
+An integer stretch factor.
+
+argument:: align
+A symbol expressing the alignment.
+
+
+METHOD:: setStretch
+Set stretch factor of an item contained in the layout.
+
+argument:: item
+A QView or QLayout managed by the layout.
+
+argument:: stretch
+An integer stretch factor.
+
+
+METHOD:: setStretchAt
+Set stretch factor of an item contained in the layout at given index.
+
+argument:: index
+An integer position of an item in the layout.
+
+argument:: stretch
+An integer stretch factor.
+
+
+METHOD:: setAlignment
+Set alignment of an item contained in the layout.
+
+argument:: item
+A QView or a QLayout managed by the layout.
+
+argument:: align
+A symbol expressing the alignment.
+
+
+METHOD:: setAlignmentAt
+Set alignment of an item contained in the layout at given index.
+
+argument:: index
+An integer position of an item in the layout.
+
+argument:: align
+A symbol expressing the alignment.
 
 EXAMPLES::
 
