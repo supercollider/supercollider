@@ -1,27 +1,10 @@
 Class:: QLayout
-summary:: Superclass of all layouts - GUI components that distribute child views within their parent's space
-categories:: GUI
+summary:: Superclass of all GUI layouts
+categories:: GUI>Layout
+related:: Guides/GUI-Layout-Management
 
-Description::
-The purpose of a layout is to distribute the amount of space given to the view on which it is installed between the children of that view. Each subclass of QLayout has a specific pattern of space distribution (a line, a 2D grid, etc.). See their documentation for details.
-
-subsection:: How a layout performs it's job
-
-A layout does it's job by resizing and moving the child views according to common sense of what makes the GUI useful and according to size preferences and constraints that the child views declare for themselves. It works dynamically, meaning that it automatically redistributes the space whenever the amount of it changes (the view on which it is installed is resized), whenever children are added or removed and whenever the size constraints of children change. The latter may happen for instance when a property of a child that affects its appearance is changed.
-
-subsection:: View and layout hierachy
-
-A layout is installed on a view to manage the space the view occupies and distribute it amongst its child views. These child views can in turn have other layouts installed, managing the space given to them. But a layout can also manage other layouts directly - one layout can directly occupy a place in another layout's distribution pattern. A view's space can thus contain a hierachy of layouts, but in terms of view hierarchy, all views managed by those layouts are direct children of the view on which the top layout is installed.
-
-subsection:: How a layout comes into effect and how it affects parent-child relationships of views
-
-A layout is installed on a view with the view's 'layout' setter method, and from that moment on starts to operate on the space that the view occupies. However, it will not automatically affect child views that where created before the layout was. For views to be managed by a layout they have to be created as children of a view after the layout has been installed on it, or they have to be explicitely inserted into the layout via layout's constructor or its instance methods for this purpose. These two ways are explained in the next two paragraphs.
-
-When a view is created with another view as parent it will implicitely become subject to the management of the parent's layout - it will be inserted into the layout in some default way. However, layouts like QGridLayout have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy, which is explained in the next paragraph.
-
-A view can also be constructed with no parent given; after it is explicitely inserted into a layout via the layout's constructor or an instance method, it will automatically become a child of the view on which the layout is or will be installed. In case the layout occupies place directly in another layout, the view will become a child of the view on wich the topmost layout is installed.
-
-ClassMethods::
+description::
+QLayout is the abstract superclass of all layouts. Any layout can be installed on a view with the view's link::Classes/QView#-layout#'layout':: setter method. See link::Guides/GUI-Layout-Management:: for details of operation common to all layouts.
 
 
 InstanceMethods::
@@ -38,6 +21,8 @@ The amount of empty pixels left between the edges of the parent view and the man
 
 argument:: margins
 An array of four integers defining margins in the following order: left margin, top margin, right margin, bottom margin; or an array of two integers applied to left/right margin and top/bottom margin respectively; or a single integer applied to all margins.
+
+
 
 Examples::
 

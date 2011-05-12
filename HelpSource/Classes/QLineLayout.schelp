@@ -1,28 +1,21 @@
 CLASS:: QLineLayout
 summary:: Superclass of layouts that distribute views in a line
-categories:: GUI
-related:: Classes/LineItem
+categories:: GUI>Layout
+related:: Classes/StretchItem, Classes/SpacerItem, Guides/GUI-Layout-Management
 
 DESCRIPTION::
-The two subclasses - QHLayout and QVLayout - distribute views in a horizontal or vertical line, respectively. In the direction that a QLineLayout operates, managed items may be given unequal space, proportional to their type and according to principles of GUI usability: in a QHLayout containing a Button and a TextField for example, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left.
+The two subclasses - QHLayout and QVLayout - distribute views in a horizontal or vertical line, respectively.
 
 subsection:: Fine tuning
 
-Each item can be assigned a stretch factor and an alignment flag to fine tune how its size and position are managed at layout link::#*new#construction::, when an item is added with link::#-add:: method or for an already contained item with link::#-setStretch:: and link::#-setAlignment:: methods.
+Each item can be assigned a stretch factor and an alignment flag to fine tune how its size and position are managed. This can be done at layout link::#*new#construction::, when an item is added with link::#-add:: method or for an already contained item with link::#-setStretch:: and link::#-setAlignment:: methods.
 
-Moreover, an empty space with an arbitrary stretch factor or an empty space of fixed size may be placed instead of an item by using link::Classes/StretchItem::  and link::Classes/SpacerItem:: classes. See link::#*new#constructor:: and link::#-add:: for details.
+Stretch factors only affects distribution in the direction of the layout (vertical or horizontal). All items have a stretch factor of 0 by default, so only their own preferences will determine space distribution. As soon as an item is assigned a stretch factor higher than 0, the space will be redistributed according to proportions of stretch factors.
 
-Stretch factor
+subsection:: Leaving empty space
 
-The stretch factor overrides the default size priorities of items in the direction that the layout operates. Every item has a default stretch factor of 0. As soon as a higher stretch factor is assigned to an item, the items will be redistributed according to relative proportions of their stretch factors.
+An empty space with an arbitrary stretch factor or an empty space of fixed size may be placed instead of an item by using link::Classes/StretchItem::  and link::Classes/SpacerItem:: classes. See link::#*new#constructor:: and link::#-add:: as well as documentation of those classes for details.
 
-Alignment
-
-The alignment flag specifies how an item is positioned within the space it is given if its size constraints do not allow it to occupy the whole space.
-
-In a QHLayout for example, every item is automatically given the whole height available to the layout, but an item such as a Button might have a smaller maximum allowed height. In that case the alignment flag can control the vertical position of the Button within the extra space available to it.
-
-Redundant space in the direction of layout's operation can also be a result of assigning a stretch factor to an item, thus in turn giving it more space than its size constraints allow in that direction.
 
 CLASSMETHODS::
 
@@ -45,8 +38,6 @@ w.layout = QVLayout(
 );
 w.front;
 ::
-
-See link::Classes/StretchItem::, and link::Classes/SpacerItem:: for details about inserting empty space.
 
 
 INSTANCEMETHODS::

@@ -1,6 +1,6 @@
 CLASS:: LineItem
 summary:: An item of a QLineLayout
-categories:: GUI
+categories:: GUI>Layout
 related:: Classes/QLineLayout
 
 DESCRIPTION::
@@ -9,6 +9,8 @@ This class allows you to assign a stretch factor and alignment to an item of a Q
 You can make an instance of this class giving it a QView or a QLayout and desired stretch factor and alignment as arguments, and then pass it to a QHLayout or QVLayout link::Classes/QLineLayout#*new#constructor::, or their link::Classes/QLineLayout#-add#'add':: method. You pass a StretchItem or a SpacerItem directly to a layout.
 
 note:: There is an alternative method to using LineItem to assign stretch factor and alignment to an item at layout construction. See QLineLayout's link::Classes/QLineLayout#*new#constructor:: for explanation.
+::
+
 
 CLASSMETHODS::
 
