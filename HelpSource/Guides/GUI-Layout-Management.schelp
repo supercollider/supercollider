@@ -1,0 +1,40 @@
+title:: Layout Management
+summary:: Using layout classes to manage distribution of child views within parents
+categories:: GUI>Layout
+related:: Classes/QLayout, Classes/QLineLayout, Classes/QGridLayout
+
+The purpose of layouts is to distribute the amount of space given to the view on which they are installed among the children of that view. Each subclass of QLayout has a specific pattern of space distribution (a line, a 2D grid, etc.). See their documentation for details.
+
+A layout is installed on a view to manage the space the view occupies and distribute it among its child views. These child views can in turn have other layouts installed, managing the space given to them. But a layout can also manage other layouts directly - one layout can directly occupy a place in another layout's distribution pattern. A basic unit on which a layout operates is therefore abstractly called an item and can be a view or another layout.
+
+note::
+While layouts can form a hierachy on their own, in terms of view hierarchy, all views managed by those layouts are direct children of the view on which the top layout is installed.
+::
+
+section:: How a layout does its job
+
+A layout does its job by resizing and moving items within its operational space according to common sense of what makes the GUI useful and according to items' own size preferences and constraints.
+
+It works dynamically, meaning that it automatically redistributes the space whenever the amount of it changes (the view on which it is installed or the parent layout is resized), whenever items are added or removed and whenever the size constraints and preferences of items change. The latter may happen for instance when a property of a view that affects its appearance is changed.
+
+subsection:: Space distribution policy
+
+Items managed by a layout may be given unequal parts of space, proportional to their type and according to principles of GUI usability. According to their type, views possess intrinsic size constraints (e.g. minimum or maximum width or height) and preferences (whether they want to stay at a preferred size, or prefer to grow in one or another direction, etc.), which will be taken into account at space distribution. For example: in a QHLayout (a layout organizing items in a horizontal line) containing a Button and a TextField, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left. 
+
+A layout may also affect space distribution up the layout hierarchy - it will define its own constraints and preferences according to its distribution pattern as well as the sum of constraints and preferences of its items. Ultimately, this means that user's ability to resize a window will be limited by minimum and maximum size constraints determined on the basis of window's contents.
+
+subsection:: User customizability
+
+Layouts typically allow a user to override default distribution principles and preferences and constraints of items by allowing a user to assign stretch factors to items or aspects of its distribution pattern.
+
+The amount of space available to a layout in combination with constraints declared by its items and assigned by user may result in larger amount of space given to an item than the item's own constraints allow. In that case the item will only grow up to its maximum allowed size, and its position within its extra available space may be controlled by user by assigning alignment to an item.
+
+
+
+section:: How view and layout hierachies affect each other
+
+A layout starts to operate on the space that a view occupies from the moment it is installed on that view on. However, it will not automatically affect child views that where created before the layout was. For views to be managed by a layout they have to be created as children of a view after the layout has been installed on it, or they have to be explicitely inserted into the layout via layout's constructor or its instance methods for this purpose. These two ways are explained in the next two paragraphs.
+
+When a view is created with another view as parent it will implicitely become subject to the management of the parent's layout - it will be inserted into the layout in some default way. However, layouts like QGridLayout have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy, which is explained in the next paragraph.
+
+A view can also be constructed with no parent given; after it is explicitely inserted into a layout via the layout's constructor or an instance method, it will automatically become a child of the view on which the layout is or will be installed. In case the layout occupies place directly in another layout, the view will become a child of the view on wich the topmost layout is installed.
