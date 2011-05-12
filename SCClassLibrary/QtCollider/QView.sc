@@ -90,6 +90,28 @@ QView : QObject {
     this.setProperty(\geometry, rect.asRect )
   }
 
+  // a Point can be passed instead of a Size
+  maxSize_ { arg size;
+    var max = QLimits(\maxWidgetSize);
+    size = size.asSize;
+    this.setProperty( \maximumSize, Size( min(max,size.width), min(max,size.height) ) );
+  }
+
+  // a Point can be passed instead of a Size
+  setMinSize_ { arg size; this.setProperty( \minimumSize, size.asSize ); }
+
+  maxWidth_ { arg width;
+    this.setProperty( \maximumWidth, min( width, QLimits(\maxWidgetSize) ) );
+  }
+
+  minWidth_ { arg width; this.setProperty( \minimumWidth, width ); }
+
+  maxHeight_ { arg height;
+    this.setProperty( \maximumHeight, min( height, QLimits(\maxWidgetSize) ) );
+  }
+
+  minHeight_ { arg height; this.setProperty( \minimumHeight, height ); }
+
   // backwards compatibility
   relativeOrigin { ^true }
 
