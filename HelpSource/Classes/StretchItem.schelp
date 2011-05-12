@@ -1,6 +1,6 @@
 CLASS:: StretchItem
 summary:: A stretching empty space within a QLineLayout
-categories:: GUI
+categories:: GUI>Layout
 related:: Classes/SpacerItem, Classes/QLineLayout
 
 DESCRIPTION::

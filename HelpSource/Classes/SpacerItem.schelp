@@ -1,6 +1,6 @@
 CLASS:: SpacerItem
 summary:: An empty space of fixed size within a QLineLayout
-categories:: GUI
+categories:: GUI>Layout
 related:: Classes/StretchItem, Classes/QLineLayout
 
 DESCRIPTION::
