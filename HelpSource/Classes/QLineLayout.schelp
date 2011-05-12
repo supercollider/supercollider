@@ -1,7 +1,7 @@
 CLASS:: QLineLayout
 summary:: Superclass of layouts that distribute views in a line
 categories:: GUI
-related:: LineItem
+related:: Classes/LineItem
 
 DESCRIPTION::
 The two subclasses - QHLayout and QVLayout - distribute views in a horizontal or vertical line, respectively. In the direction that a QLineLayout operates, managed items may be given unequal space, proportional to their type and according to principles of GUI usability: in a QHLayout containing a Button and a TextField for example, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left.
