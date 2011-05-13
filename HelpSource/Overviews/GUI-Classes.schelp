@@ -1,0 +1,98 @@
+title:: List of GUI classes
+summary:: The most used GUI classes and their kit-specific equivalents
+categories:: GUI
+
+section:: Kit-independent GUI classes
+
+The following table contains classes that are independent of GUI implementation, but may use other GUI classes or be used with any of them.
+
+table::
+## strong::Class::  ||  strong::Description::
+## EZSlider         ||
+## EZNumber         ||
+## EZRanger         ||
+## EZListView       ||
+## EZPopUpMenu      ||
+## EZScroller       ||
+## EZKnob           ||
+## EZText           ||
+## Gradient         || Linear gradient between two colors.
+## HiliteGradient   || Radial gradient between two colors
+## FlowLayout       || A decorator that positions views in horizontal series, wrapping to a new line when meeting a border
+## Color            || Representation of colors
+## FreqScopeView    || A view based on ScopeView that displays frequency spectrum
+## FreqScope        || A window containing a FreqScopeView and tools to control its display
+::
+
+section:: Window and views
+
+The following table contains generic classes and their corresponding classes in each GUI kit, for window and most views.
+
+table::
+## strong::Generic::    ||  strong::CocoaGUI::    || strong::SwingGUI::  || strong::Qt GUI::    || strong::Description::
+## Window               || SCWindow               || JSCWindow           || QWindow             || a frame that can contain gadgets
+## N/A                  || SCModalWindow          ||                     || N/A                 || a modal window
+## N/A                  || SCModalSheet           ||                     || N/A                 || a modal sheet to attach to windows
+## View                 || SCView                 || JSCView             || QView               || The base class for most view classes. Important help file.
+## CompositeView        || SCCompositeView        || JSCCompositeView    || QView               || container view for nesting layouts
+## HLayoutView          || SCHLayoutView          || JSCHLayoutView      || QHLayoutView        || container view with horizontal distribution of children
+## VLayoutView          || SCVLayoutView          || JSCVLayoutView      || QVLayoutView        || container view with vertical distribution of children
+## Button               || SCButton               || JSCButton           || QButton             || a multiple state push button
+## PopUpMenu            || SCPopUpMenu            || JSCPopUpMenu        || QPopUpMenu          || a collapsed multiple choice button
+## Slider               || SCSlider               || JSCSlider           || QSlider             || a horizontal or vertical slider
+## RangeSlider          || SCRangeSlider          || JSCRangeSlider      || QRangeSlider        || horizontal or vertical interval slider
+## Slider2D             || SC2DSlider             || JSC2DSlider         || QSlider2D           || a horizontally and vertically moveable slider
+## TextField            || SCTextField            || JSCTextField        || QTextField          || an editable one line text field
+## ListView             || SCListView             || JSCListView         || QListView           || a list of text items
+## StaticText           || SCStaticText           || JSCStaticText       || QStaticText         || a text label
+## NumberBox            || SCNumberBox            || JSCNumberBox        || QNumberBox          || editable number field
+## DragSource           || SCDragSource           || JSCDragSource       || QDragSource         || object container acting as a source for drag-n-drop
+## DragSink             || SCDragSink             || JSCDragSink         || QDragSink           || object container acting as a target for drag-n-drop
+## DragBoth             || SCDragBoth             || JSCDragBoth         || QDragBoth           || combination of DragSource and DragSink
+## Stethoscope          || SCStethoscope          || JStethoscope        || QStethoscope        || oscilloscope tool
+## ScopeView            || SCScope                || JSCScope            || QScope              || oscilloscope view
+## TabletView           || SCTabletView           || JSCTabletView       || N/A                 || view for receiving graphic tablet data
+## TabletSlider2D       || SC2DTabletSlider       || N/A                 || N/A                 || 2D slider with support for graphic tablet data
+## FreqScope            || FreqScope              || FreqScope           || FreqScope           || spectrum tool
+## FreqScopeView        || FreqScopeView          || FreqScopeView       || FreqScopeView       || spectrum view
+## MultiSliderView      || SCMultiSliderView      || JSCMultiSliderView  || QMultiSliderView    || array of sliders
+## EnvelopeView         || SCEnvelopeView         || JSCEnvelopeView     || QEnvelopeView       || breakpoint envelope editor
+## UserView             || SCUserView             || JSCUserView         || QUserView           || view for user-defined drawing operations
+## SoundFileView        || SCSoundFileView        || JSCSoundFileView    || QSoundFileView      || waveform view / editor for sound files
+## MovieView            || SCMovieView            || JSCMovieView        || N/A                 || canvas for movie (QuickTime) and image display
+## TextView             || SCTextView             || JSCTextView         || QTextView           || multiline text editor
+## N/A                  || SCQuartzComposerView   || N/A                 || N/A                 || view for displaying QuartzComposer documents
+## N/A                  || SCImage                || N/A                 || N/A                 || an image component for the Mac OS X
+## N/A                  || SCImageFilter          || N/A                 || N/A                 || a filter class to use with SCImage
+## N/A                  || SCImageKernel          || N/A                 || N/A                 || a kernel class to use with SCImage.
+## Knob                 || SCKnob                 || JKnob               || QKnob               || a knob view
+::
+
+section:: Layout management
+
+The following table contains classes used in layout management.
+
+note:: This classes are only implemented in Qt GUI! ::
+
+table::
+## strong::Class::      || strong::Description::
+## QLayout              || The abstract base class for all layouts.
+## QLineLayout          || The abstract base class of layouts that arrange items in a line.
+## QHLayout             || A layout that arranges items in horizontal line.
+## QVLayout             || A layout that arranges items in vertical line.
+## QGridLayout          || A layout that arranges items in a 2 dimensional grid.
+::
+
+section:: Other GUI classes
+
+table::
+## strong::Generic::    ||  strong::CocoaGUI::    || strong::SwingGUI::  || strong::Qt GUI::    || strong::Description::
+## Dialog               || CocoaDialog            || SwingDialog         || QDialog             || file selection dialog management
+## Font                 || SCFont                 || JFont               || QFont               || a font typeface description.
+## Pen                  || SCPen                  || JPen                || QPen                || custom drawing operations class
+## MouseX               || MouseX                 || JMouseX             || N/A                 || UGen. JMouseX for backward compatiblility only.
+## MouseY               || MouseY                 || JMouseY             || N/A                 || UGen. JMouseY for backward compatiblility only.
+## MouseButton          || MouseButton            || JMouseButton        || N/A                 || UGen. JMouseButton for backward compatiblility only.
+## KeyState             || KeyState               || JKeyState           || N/A                 || UGen. JKeyState for backward compatiblility only.
+## use GUI.speech       || Speech                 || JSpeech             || N/A                 || text-to-speech synthesis management
+::
