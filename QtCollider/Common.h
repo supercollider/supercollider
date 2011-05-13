@@ -68,6 +68,7 @@ namespace QtCollider {
   inline static void unlockLang()
   {
     pthread_mutex_unlock(&gLangMutex);
+    qcDebugMsg(2,"unlocked");
   }
 
   int wrongThreadError ();
