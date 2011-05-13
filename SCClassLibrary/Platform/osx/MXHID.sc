@@ -43,14 +43,10 @@ MXHID {
 	}
 
 	*postDevices {
+		"HID devices at your disposal:".postln;
 		deviceList.do{ |dev,i|
-			[ i, dev[0], dev[1].asString ].postcs;
-		}
-		/*		HIDDeviceService.devices.do({arg dev;
-			//			"".postln;
-			this.class.getInfo( dev ).postcs;
-			//[dev.manufacturer, dev.info.asString, dev.locID].postcs;
-			});*/
+			"\t%:\t%, vendor: %, product: %\n".postf( i, dev[1].name, dev[1].vendor, dev[1].product );
+		};
 	}
 
 	*postDevicesAndProperties {
@@ -61,15 +57,6 @@ MXHID {
 				[ele.type, ele.usage, ele.cookie, ele.min, ele.max, ele.ioType, ele.usagePage, ele.usageType].postln;
 			});
 		};
-		/*		HIDDeviceService.devices.do({arg dev, i;
-			(""++i++": ").postln;
-			this.class.getInfo( dev ).postcs;
-			//	[dev.manufacturer, dev.info.asString, dev.locID].postcs;
-			dev.elements.do({arg ele;
-				"\t".post;
-				[ele.type, ele.usage, ele.cookie, ele.min, ele.max, ele.ioType, ele.usagePage, ele.usageType].postln;
-			});
-			});*/
 	}
 
 	*getInfo{ |dev|

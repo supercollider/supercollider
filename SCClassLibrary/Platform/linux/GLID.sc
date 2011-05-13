@@ -34,22 +34,11 @@ GLID{
 		^deviceList;
 	}
 
-	/*	*deviceList{
-		^LID.deviceList;
-		}*/
-
 	*postDevices {
+		"HID devices at your disposal:".postln;
 		deviceList.do{ |dev,i|
-			[ i, dev[0], dev[1].asString ].postcs;
-		}
-		/*		LID.deviceList.do({arg dev;
-			//			"".postln;
-			if ( dev[1].isKindOf( LIDInfo ), {
-				[ dev[1].vendor, dev[1].asString, dev[0]].postcs;
-			},{
-				dev.postcs;
-			});
-			});*/
+			"\t%:\t%, vendor: %, product: %, path: %\n".postf( i, dev[1].name, dev[1].vendor, dev[1].product, dev[0] );
+		};
 	}
 
 	*postDevicesAndProperties {
