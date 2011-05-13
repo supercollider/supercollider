@@ -79,7 +79,11 @@ function addInheritedMethods() {
     if(!document.getElementById("filename")) return; // hackish trick, only class-docs has a 'filename' div.
     var doc = docmap["Classes/"+document.title];
     if(!doc) return;
-    var sups = doc.superclasses;
+    if(doc.implementor) {
+        var sups = docmap["Classes/"+doc.implementor].superclasses;
+    } else {
+        var sups = doc.superclasses;
+    }
     if(!sups) return;
     var divs = [document.getElementById("inheritedclassmets"), document.getElementById("inheritedinstmets")];
     for(var i=0;i<sups.length;i++) {
