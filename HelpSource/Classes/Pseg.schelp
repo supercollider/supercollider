@@ -11,22 +11,26 @@ ClassMethods::
 
 method::new
 
-argument::levelpattern
-The first level is the initial value of the envelope, all subsequent values are interpolated. If durpattern is nil, then levelpattern specifies the entire envelope by returning arrays of the form: [level, dur, curve]
+argument::levels
+A link::Classes/Pattern:: that returns the levels. The first level is the initial value of the envelope, all subsequent values are interpolated.
 
-argument::durpattern
-duration of segments in seconds.
+argument::durs
+A link::Classes/Pattern:: that returns segments durations in seconds.
 
-argument::curvepattern
-this parameter determines the shape of the envelope segments. The possible values are:
-list::
-## 'step' - flat segments.
-## 'linear' - linear segments, the default.
-## 'exponential' - natural exponential growth and decay. In this case, the levels must all be nonzero and the have the same sign.
-## 'sine' - sinusoidal S shaped segments.
-## 'welch' - sinusoidal segments shaped like the sides of a Welch window.
-## a Float - a curvature value for all segments.
-## An Array of Floats - curvature values for each segments.
+argument::curves
+a link::Classes/Symbol::, link::Classes/Float::, or an link::Classes/Array:: of those. Determines the shape of the segments.
+
+The possible values are:
+table::
+## code::\step:: || || flat segments.
+## code::\linear:: || code::\lin:: || linear segments, the default.
+## code::\exponential:: || code::\exp:: || natural exponential growth and decay. In this case, the levels must all be nonzero and the have the same sign.
+## code::\sine:: || code::\sin:: || sinusoidal S shaped segments.
+## code::\welch:: || code::\wel:: || sinusoidal segments shaped like the sides of a Welch window.
+## code::\squared::  || code::\sqr:: || squared segment.
+## code::\cubed:: || code::\cub:: || cubed segment.
+## a link::Classes/Float:: || || a curvature value for all segments. 0 means linear, positive and negative numbers curve the segment up and down.
+## an link::Classes/Array:: of symbols or floats || || curvature values for each segment.
 ::
 
 Examples::
