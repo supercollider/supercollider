@@ -35,7 +35,7 @@ GeneralHID{
 		// maybe better define interface here instead,
 		// rather than doesNotUnderstand.
 	*doesNotUnderstand { arg selector ... args;
-		["GeneralHID forwarding to scheme:", selector, args].postln;
+		//	["GeneralHID forwarding to scheme:", selector, args].postln;
 		^scheme.performList( selector, args );
 	}
 
@@ -94,6 +94,7 @@ GeneralHIDInfo{
 	printOn { | stream |
 		super.printOn(stream);
 		stream << $( << name << ", ";
+		// " VendorID: " << vendor << ", ProductID: " << product << ", locID: " << physical << ", version: " << version << $);
 		[
 			bustype,
 			vendor,
@@ -140,11 +141,16 @@ GeneralHIDDevice{
 	}
 	/*	info{
 		^device.info;
-		}*/
-	debug_{ |onoff|
+		}
+	*/
+	debug_{ |onoff,allslots=true|
 		device.class.debug_( onoff );
-		slots.do{ |sl|
-			sl.do{ |slt| slt.debug_( onoff ) } };
+		// is this necessary? to also turn on/off all the slot debugging?
+		if ( allslots ){
+			slots.do{ |sl|
+				sl.do{ |slt| slt.debug_( onoff ) } 
+			};
+		};
 	}
 	caps{
 		slots.do{ |sl|
@@ -222,6 +228,7 @@ GeneralHIDSlot{
 	classvar <typeMap;
 	var <action;
 	var <bus, busAction;
+	var <debugAction;
 	var <>key;
 
 	*initClass{
@@ -249,7 +256,9 @@ GeneralHIDSlot{
 
 	init{
 		busAction = {};
-		this.action_( {} );
+		debugAction = {};
+		action = {};
+		devSlot.action = { |v| this.debugAction.value(v); this.busAction.value(v); this.action.value(v) };
 	}
 
 	value {
@@ -266,15 +275,21 @@ GeneralHIDSlot{
 
 	debug_{ |onoff|
 		if ( onoff, {
-			this.action_({ |slot| [ slot.type, slot.code, slot.value, key ].postln; });
+			//	this.action_({ |slot| [ slot.type, slot.code, slot.value, key ].postln; });
+			this.debugAction_({ |slot| [ slot.type, slot.code, slot.value, key ].postln; });
 		},{
-			this.action_({});
+			//	this.action_({});
+			this.debugAction_({});
 		});
+	}
+
+	debugAction_{ |actionFunc|
+		debugAction = actionFunc;
 	}
 
 	action_{ |actionFunc|
 		action = actionFunc;
-		devSlot.action = { |v| action.value(v); busAction.value(v); };
+		//	devSlot.action = { |v| this.action.value(v); this.busAction.value(v); this.debugAction.value(v) };
 	}
 
 	createBus{ |s|
@@ -290,7 +305,7 @@ GeneralHIDSlot{
 			"Server seems not running, so bus will be invalid".warn;
 			});*/
 		busAction = { |v| bus.set( v.value ); };
-		devSlot.action = { |v| action.value(v); busAction.value(v); };
+		//	devSlot.action = { |v| action.value(v); busAction.value(v); };
 	}
 
 	freeBus{
@@ -313,4 +328,4 @@ GeneralHIDSlot{
 		^In.kr( bus );
 	}
 
-}
+}  
