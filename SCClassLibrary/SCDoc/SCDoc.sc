@@ -102,7 +102,7 @@ SCDoc {
     }
 
     *addToDocMap {|parser, path|
-        var c, folder = path.dirname, classname = parser.findNode(\class).text;
+        var folder = path.dirname, classname = parser.findNode(\class).text;
         var doc = (
             path:path,
             summary:parser.findNode(\summary).text,
@@ -512,7 +512,7 @@ SCDoc {
         this.postProgress("Parsing metadata...");
         // parse all files in fileList
         helpSourceDirs.do {|dir|
-            var path, mtime, ext, sym, class;
+            var x, path, mtime, ext, sym, class;
             ext = (dir != helpSourceDir);
             this.postProgress("- Collecting from"+dir);
             Platform.case(
@@ -543,6 +543,10 @@ SCDoc {
                         classes.remove(sym);
                         doc.superclasses = class.superclasses.collect(_.name).reject(_.isMetaClassName);
                         doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
+                        x = p.findNode(\redirect).text.stripWhiteSpace;
+                        if(x.notEmpty) {
+                            try { doc.implementor = class.perform(x.asSymbol) };
+                        };
                     } {
                         doc.installed = \missing;
                     };
