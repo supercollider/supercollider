@@ -27,6 +27,7 @@
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QApplication>
+#include <QStyle>
 
 static QcWidgetFactory<QtCollider::WebView> factory;
 
@@ -40,12 +41,9 @@ WebView::WebView( QWidget *parent ) :
   page->setDelegateReload(true);
   setPage( page );
 
-  /// FIXME: for now we reset the base colors in order to render the help
-  ///        files correctly on a dark background
-  QPalette pal = palette();
-  pal.setColor(QPalette::Base, QColor(Qt::white));
-  pal.setColor(QPalette::Text, QColor(Qt::black));
-  setPalette(pal);
+  // Set the style's standard palette to avoid system's palette incoherencies
+  // get in the way of rendering web pages
+  setPalette( style()->standardPalette() );
 
   QShortcut *scutCopy = new QShortcut( QKeySequence::Copy, this );
   scutCopy->setContext( Qt::WidgetWithChildrenShortcut );
