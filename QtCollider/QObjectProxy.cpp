@@ -253,7 +253,10 @@ bool QObjectProxy::setEventHandler( int eventType, PyrSymbol *method,
   data.type = eventType;
   data.method = method;
   data.sync = sync;
+
+  // NOTE: will replace if same key
   eventHandlers.insert( eventType, data );
+
   return true;
 }
 

@@ -28,6 +28,7 @@
 #include <QWidget>
 #include <QThread>
 #include <QApplication>
+#include <QDrag>
 
 using namespace QtCollider;
 
@@ -106,6 +107,15 @@ QC_LANG_PRIMITIVE( QWidget_SetAlwaysOnTop, 1, PyrSlot *r, PyrSlot *a, VMGlobals 
   QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
 
   QApplication::postEvent( wProxy, new SetAlwaysOnTopEvent( IsTrue(a) ) );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QWidget_StartDrag, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
+  if( !wProxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  QApplication::postEvent( wProxy, new StartDragEvent( Slot::toString(a) ) );
 
   return errNone;
 }

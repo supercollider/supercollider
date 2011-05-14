@@ -55,7 +55,8 @@ namespace QtCollider {
     Event_Proxy_Destroy,
     Event_Proxy_BringFront,
     Event_Proxy_SetFocus,
-    Event_Proxy_SetAlwaysOnTop
+    Event_Proxy_SetAlwaysOnTop,
+    Event_Proxy_StartDrag
   };
 
   enum Synchronicity {
