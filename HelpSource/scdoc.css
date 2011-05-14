@@ -52,11 +52,6 @@ a:hover {
     text-decoration: underline;
 }
 
-select {
-    background: #ddd;
-    color: #333;
-}
-
 .inheritedmets_class {
     font-weight: bold;
     color: #555;
