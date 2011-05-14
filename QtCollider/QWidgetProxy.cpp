@@ -27,6 +27,8 @@
 #include <QLayout>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QPainter>
+#include <QFontMetrics>
 
 using namespace QtCollider;
 
@@ -129,9 +131,37 @@ void QWidgetProxy::customEvent( QEvent *e )
     case QtCollider::Event_Proxy_SetAlwaysOnTop:
       setAlwaysOnTopEvent( static_cast<SetAlwaysOnTopEvent*>(e) );
       return;
+    case QtCollider::Event_Proxy_StartDrag:
+      startDragEvent( static_cast<StartDragEvent*>(e) );
+      return;
     default:
       QObjectProxy::customEvent(e);
   }
+}
+
+bool QWidgetProxy::eventFilter( QObject * object, QEvent * event )
+{
+  QEvent::Type type = event->type();
+  if( type == QEvent::DragEnter
+    || type == QEvent::DragMove
+    || type == QEvent::Drop )
+  {
+    QDropEvent *dnd = static_cast<QDropEvent*>(event);
+    if( !dnd->mimeData()->hasFormat( "application/supercollider" ) ) {
+      // Do not handle events that don't have our data
+      return false;
+    }
+    else if( type == QEvent::DragEnter ) {
+        // NOTE:
+        // always accept a DragEnter event with our mime data
+        // because there is no distinction between enter and
+        // move events in SC API
+        event->accept();
+        return true;
+    }
+  }
+
+  return QObjectProxy::eventFilter( object, event );
 }
 
 void QWidgetProxy::bringFrontEvent() {
@@ -178,6 +208,34 @@ void QWidgetProxy::setAlwaysOnTopEvent( QtCollider::SetAlwaysOnTopEvent *e )
   }
 }
 
+void QWidgetProxy::startDragEvent( StartDragEvent* e )
+{
+  QWidget *w = widget();
+  if( !w ) return;
+
+  QFont f;
+  const QString & label = e->label;
+  QFontMetrics fm( f );
+  QRect r = fm.boundingRect( label ).adjusted(0,0,4,4);
+
+  QPixmap pix( r.size() );
+  QPainter p( &pix );
+  p.setBrush( QColor(255,255,255) );
+  r.moveTo( 0, 0 );
+  p.drawRect(r.adjusted(0,0,-1,-1));
+  p.drawText( r, Qt::AlignCenter, label );
+  p.end();
+
+  QMimeData *mime = new QMimeData();
+  mime->setData( "application/supercollider", QByteArray() );
+
+  QDrag *drag = new QDrag(w);
+  drag->setMimeData( mime );
+  drag->setPixmap( pix );
+  drag->setHotSpot( QPoint( 0, + r.height() + 2 ) );
+  drag->exec();
+}
+
 bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args )
 {
   switch( e->type() ) {
@@ -185,12 +243,25 @@ bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args 
     case QEvent::MouseMove:
     case QEvent::MouseButtonRelease:
     case QEvent::MouseButtonDblClick:
-    case QEvent::Enter: {
+    case QEvent::Enter:
+    {
       if( o == _mouseEventWidget ) {
         interpretMouseEvent( e, args );
         return true;
       }
       else return false;
+    }
+    case QEvent::DragEnter:
+    case QEvent::DragMove:
+    case QEvent::Drop:
+    {
+      // only send DnD events to SC if they occured on mouse event widget
+      if( o == _mouseEventWidget ) {
+        QPoint pos = static_cast<QDropEvent*>(e)->pos();
+        args << pos.x() << pos.y();
+        return true;
+      }
+      return false;
     }
     case QEvent::KeyPress:
     case QEvent::KeyRelease: {

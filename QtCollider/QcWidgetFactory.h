@@ -46,6 +46,7 @@ public:
     QWidget *w = widget; // template parameter type-safety
 
     QWidgetProxy *proxy = new QWidgetProxy ( w, scObject );
+
     // set requested geometry
 
     QRect r;
@@ -53,6 +54,10 @@ public:
     if( r.size().isEmpty() ) r.setSize( w->sizeHint() );
 
     w->setGeometry( r );
+
+    // automatically support drag and drop
+
+    w->setAcceptDrops( true );
 
     // do custom initialization
 

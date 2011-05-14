@@ -48,7 +48,7 @@ QUserView : QView {
   }
 
   mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
-    if( this.enabled ) { ^this.mouseDown( x, y, modifiers, buttonNumber, clickCount ) };
+    if( this.enabled ) { ^super.mouseDownEvent( x, y, modifiers, buttonNumber, clickCount ) };
   }
 
   mouseUpEvent { arg x, y, modifiers, buttonNumber;
