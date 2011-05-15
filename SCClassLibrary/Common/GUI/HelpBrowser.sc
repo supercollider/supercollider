@@ -36,7 +36,7 @@ HelpBrowser {
 	}
 
 	goTo {|url|
-		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt"];
+		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"];
 
 		//FIXME: since multiple scdoc queries can be running at the same time,
 		//it would be best to create a queue and run them in order, but only use the url from the last.
@@ -182,6 +182,9 @@ HelpBrowser {
 		var win, winRect, txt, file, fonts;
 		if(Document.implementationClass.notNil) {
 			^Document.open(path);
+		};
+		if("which xdg-open".systemCmd==0) {
+			^("xdg-open"+path+">/dev/null").systemCmd;
 		};
 		winRect = Rect(0,0,600,400);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
