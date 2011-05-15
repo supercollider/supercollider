@@ -216,12 +216,12 @@ void QWidgetProxy::startDragEvent( StartDragEvent* e )
   QFont f;
   const QString & label = e->label;
   QFontMetrics fm( f );
-  QRect r = fm.boundingRect( label ).adjusted(0,0,4,4);
+  QSize size = fm.size( 0, label ) + QSize(8,4);
 
-  QPixmap pix( r.size() );
+  QPixmap pix( size );
   QPainter p( &pix );
   p.setBrush( QColor(255,255,255) );
-  r.moveTo( 0, 0 );
+  QRect r( pix.rect() );
   p.drawRect(r.adjusted(0,0,-1,-1));
   p.drawText( r, Qt::AlignCenter, label );
   p.end();
