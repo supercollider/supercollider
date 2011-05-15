@@ -250,6 +250,12 @@ QTextField : QTextViewBase {
     this.string_( val.asString );
     this.doAction;
   }
+
+  defaultGetDrag { ^this.string; }
+  defaultCanReceiveDrag { ^true; }
+  defaultReceiveDrag {
+    this.valueAction = QView.currentDrag;
+  }
 }
 
 QButton : QView {
@@ -277,6 +283,14 @@ QButton : QView {
   states_ { arg stateArray;
     states = stateArray;
     super.setProperty( \states, stateArray );
+  }
+
+  defaultGetDrag { ^this.value; }
+  defaultCanReceiveDrag { ^true; }
+  defaultReceiveDrag {
+    if( QView.currentDrag.isNumber )
+      { this.valueAction = QView.currentDrag; }
+      { this.action = QView.currentDrag; };
   }
 }
 
@@ -306,6 +320,12 @@ QCheckBox : QView {
 
   string{
     ^this.getProperty(\text)
+  }
+
+  defaultGetDrag { ^this.value; }
+  defaultCanReceiveDrag { ^((QView.currentDrag == true) || (QView.currentDrag == false)); }
+  defaultReceiveDrag {
+    this.valueAction = QView.currentDrag;
   }
 }
 
@@ -352,6 +372,12 @@ QSlider : QAbstractStepValue {
     orientation = aSymbol;
     this.setProperty( \orientation, QOrientation(aSymbol) );
   }
+
+  defaultGetDrag { ^this.value; }
+  defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
+  defaultReceiveDrag {
+    this.valueAction = QView.currentDrag;
+  }
 }
 
 QPopUpMenu : QItemViewBase {
@@ -373,5 +399,11 @@ QPopUpMenu : QItemViewBase {
 
   stringColor_ { arg color;
     this.setProperty( \palette, this.palette.buttonTextColor_(color) );
+  }
+
+  defaultGetDrag { ^this.value; }
+  defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
+  defaultReceiveDrag {
+    this.valueAction = QView.currentDrag;
   }
 }

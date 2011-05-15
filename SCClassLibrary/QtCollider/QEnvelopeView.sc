@@ -169,4 +169,12 @@ QEnvelopeView : QView
   doMetaAction {
     metaAction.value(this);
   }
+
+  defaultGetDrag {
+    ^this.value;
+  }
+  defaultCanReceiveDrag { ^true; }
+  defaultReceiveDrag {
+    this.value = QView.currentDrag;
+  }
 }

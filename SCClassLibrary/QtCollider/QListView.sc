@@ -73,4 +73,10 @@ QListView : QItemViewBase {
     colors = colorArray;
     this.setProperty( \colors, colorArray );
   }
+
+  defaultGetDrag { ^this.value; }
+  defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
+  defaultReceiveDrag {
+    this.valueAction = QView.currentDrag;
+  }
 }
