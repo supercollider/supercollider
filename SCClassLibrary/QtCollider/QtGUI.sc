@@ -52,9 +52,9 @@ QtGUI {
   *pen { ^QPen; }
   *font { ^QFont }
 
-  *dragSource { ^this.notImplemented( "DragSource"); }
-  *dragSink { ^this.notImplemented( "DragSink"); }
-  *dragBoth { ^this.notImplemented( "DragBoth"); }
+  *dragSource { ^QDragSource; }
+  *dragSink { ^QDragSink; }
+  *dragBoth { ^QDragBoth; }
 
   *dialog { ^QDialog }
 
