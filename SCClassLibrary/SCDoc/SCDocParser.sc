@@ -11,7 +11,7 @@ SCDocParser {
     var isWS;
     var stripFirst;
     var proseDisplay;
-    var currentFile;
+    var <currentFile;
     var <methodList, <keywordList;
     classvar copyMethodCache;
 

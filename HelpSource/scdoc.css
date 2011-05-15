@@ -392,12 +392,14 @@ td p {
 
 .doclink {
     font-size: 9pt;
-/*    font-family: Andale Mono, monospace;*/
     color: #888;
     text-align: right;
     margin-top: 2em;
     margin-bottom: 2em;
-    border-top: 1px solid #bbb;
+    border-top: 1px solid #ddd;
+}
+.doclink a {
+    color: #444;
 }
 
 #sidetoc {
