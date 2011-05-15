@@ -163,4 +163,28 @@ QMultiSliderView : QView {
   doMetaAction {
     metaAction.value(this);
   }
+
+  defaultGetDrag {
+    var val = this.value;
+    var c, i;
+    if( val.size < 1 ) {^nil};
+    c = this.selectionSize;
+    if( c > 1 ) {
+      i = this.index;
+      ^val[i..(i+c-1)];
+    }
+    ^this.value;
+  }
+  defaultCanReceiveDrag { ^true; }
+  defaultReceiveDrag {
+    arg data = QView.currentDrag;
+    if( data.size > 0 ) {
+      if( data[0].size > 0 ) {
+        this.value = data[0];
+        this.reference = data[1];
+      }{
+        this.value = data;
+      }
+    };
+  }
 }

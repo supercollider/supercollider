@@ -80,4 +80,10 @@ QNumberBox : QAbstractStepValue {
     buttonsVisible = aBool;
     this.setProperty( \buttonsVisible, aBool );
   }
+
+  defaultGetDrag { ^this.value; }
+  defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
+  defaultReceiveDrag {
+    this.valueAction = QView.currentDrag;
+  }
 }

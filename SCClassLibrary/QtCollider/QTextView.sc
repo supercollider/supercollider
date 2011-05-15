@@ -75,4 +75,18 @@ QTextView : QAbstractScroll {
   syntaxColorize {
     this.nonimpl( "syntaxColorize" );
   }
+
+  defaultGetDrag {
+    var text = this.string;
+    if( text.size > 150 ) {
+      this.dragLabel = text.copyRange(0,149) ++ "...";
+    }{
+      this.dragLabel = text;
+    }
+    ^text;
+  }
+  defaultCanReceiveDrag { ^true; }
+  defaultReceiveDrag {
+    this.string = QView.currentDrag.asString;
+  }
 }

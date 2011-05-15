@@ -59,10 +59,9 @@ QKnob : QUserView {
 
     this.oldMethodsCompat(skin);
 
-    /*
-    this.receiveDragHandler = { this.valueAction_(SCView.currentDrag); };
+    this.receiveDragHandler = { this.valueAction_(QView.currentDrag); };
     this.beginDragAction = { value.asFloat; };
-    this.canReceiveDragHandler = { SCView.currentDrag.isNumber };*/
+    this.canReceiveDragHandler = { QView.currentDrag.isNumber };
 
     this.drawFunc_( { this.drawKnob } );
   }
@@ -147,7 +146,7 @@ QKnob : QUserView {
   mouseMove { arg x, y, modifiers;
     var mp, pt, angle, inc = 0;
 
-    if (modifiers & 1048576 != 1048576) { // we are not dragging out - apple key
+    //if (modifiers & 1048576 != 1048576) { // we are not dragging out - apple key
       case
         { (mode == \vert) || (modifiers & 262144 == 262144) } { // Control
           if ( hit.y > y, {
@@ -193,8 +192,8 @@ QKnob : QUserView {
             }
           });
 
-        }
-    };
+        };
+    //};
 
     mouseMoveAction.value(this, x, y, modifiers);
   }

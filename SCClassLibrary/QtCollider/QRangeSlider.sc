@@ -95,4 +95,11 @@ QRangeSlider : QAbstractStepValue {
   background_ { arg color;
     this.setProperty( \palette, this.palette.baseColor_(color) )
   }
+
+  defaultGetDrag { ^Point(this.lo,this.hi); }
+  defaultCanReceiveDrag { ^(QView.currentDrag.class === Point); }
+  defaultReceiveDrag {
+    var pt = QView.currentDrag;
+    this.setSpanActive( pt.x, pt.y );
+  }
 }
