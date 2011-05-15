@@ -183,8 +183,8 @@ HelpBrowser {
 		if(Document.implementationClass.notNil) {
 			^Document.open(path);
 		};
-		if("which xdg-open".systemCmd==0) {
-			^("xdg-open"+path+">/dev/null").systemCmd;
+		if("which xdg-open >/dev/null".systemCmd==0) {
+			^("xdg-open"+path).systemCmd;
 		};
 		winRect = Rect(0,0,600,400);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
