@@ -24,7 +24,12 @@ require 'open3'
 require 'optparse'
 
 pipe_loc = "/tmp/sclang-pipe" unless (pipe_loc = ENV["SCVIM_PIPE_LOC"])
-rundir = "/tmp/" unless (rundir = ENV["SCLANG_RUNDIR"])
+rundir = "/tmp/"
+if ENV["SCLANG_RUNDIR"]
+  rundir = ENV["SCLANG_RUNDIR"]
+elsif RUBY_PLATFORM =~ /darwin/
+  rundir = "/Applications/SuperCollider/"
+end
 pid_loc = "/tmp/sclangpipe_app-pid" unless (pid_loc = ENV["SCVIM_PIPE_PID_LOC"])
 app = `which sclang`.chomp
 
