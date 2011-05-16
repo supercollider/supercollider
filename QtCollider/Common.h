@@ -49,7 +49,10 @@ namespace QtCollider {
   };
 
   enum EventType {
-    Event_ScMethodCall = QEvent::User,
+    Event_SCRequest_Input = QEvent::User,
+    Event_SCRequest_Sched,
+    Event_SCRequest_Quit,
+    Event_ScMethodCall,
     Event_Refresh,
     Event_Proxy_SetProperty,
     Event_Proxy_Destroy,

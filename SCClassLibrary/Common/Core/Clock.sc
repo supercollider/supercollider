@@ -47,12 +47,17 @@ AppClock : Clock {
 		scheduler.sched(delta, item)
 	}
 	*tick {
+		var nextTime;
 		var saveClock = thisThread.clock;
 		thisThread.clock = this;
-		scheduler.seconds = Main.elapsedTime;
+		nextTime = (scheduler.seconds = Main.elapsedTime);
 		thisThread.clock = saveClock;
+		^nextTime;
 	}
-
+	*prSchedNotify {
+		// notify clients that something has been scheduled
+		_AppClock_SchedNotify
+	}
 }
 
 Scheduler {
@@ -79,6 +84,7 @@ Scheduler {
 		if (delta.notNil, {
 			fromTime = if (drift, { Main.elapsedTime },{ seconds });
 			queue.put(fromTime + delta, item);
+			clock.prSchedNotify;
 		});
 	}
 	clear { // adc: priorityqueue has no pairsDo method, array has
@@ -95,7 +101,7 @@ Scheduler {
 	}
 
 	seconds_ { | newSeconds  |
-		var delta, item;
+		var delta, item, next;
 		while ({
 			seconds = queue.topPriority;
 			seconds.notNil and: { seconds <= newSeconds }
@@ -106,8 +112,10 @@ Scheduler {
 				this.sched(delta, item);
 			});
 		});
+		next = seconds;
 		seconds = newSeconds;
 		beats = clock.secs2beats(newSeconds);
+		^next;
 	}
 }
 
