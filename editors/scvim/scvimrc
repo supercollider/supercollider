@@ -13,26 +13,26 @@ let g:sclangKillOnExit = 1
 let g:sclangTerm = ""     "Leave it blank like this for the autodetect (just below) to kick in
 "let g:sclangTerm = "xterm -e"
 
-
 "if setting is blank, this code checks for popular terminals:
 if g:sclangTerm == ""
-	" on debians (inc ubuntu) this 'alternatives' entry should point to the user's preferred term
-	for termcmd in ["/etc/alternatives/x-terminal-emulator", "xterm", "urxvtcd", "rxvt"]
-		if executable(termcmd)
-			let g:sclangTerm = termcmd . " -e"
-			break
-		endif
-	endfor
+	if has('mac') || has('macunix')
+		"the following has worked with osx
+		let g:sclangTerm = "open -a /Applications/Utilities/Terminal.app"
+		let g:sclangPipeApp = "/usr/local/bin/sclangpipe_app"
+		" on debians (inc ubuntu) this 'alternatives' entry should point to the user's preferred term
+	else
+		for termcmd in ["/etc/alternatives/x-terminal-emulator", "xterm", "urxvtcd", "rxvt"]
+			if executable(termcmd)
+				let g:sclangTerm = termcmd . " -e"
+				break
+			endif
+		endfor
+	endif
 	if g:sclangTerm == ""
 		echo "scvimrc warning: unable to detect terminal program, hoping xterm exists"
 		let g:sclangTerm = "xterm -e"
 	endif
 endif
-
-
-"the following has worked with osx
-"let g:sclangTerm = "open -a /Applications/Utilities/Terminal.app"
-"let g:sclangPipeApp = "/usr/local/bin/sclangpipe_app"
 
 "this indicates the location to create a pipe for vim to communicate with
 "sclang 
