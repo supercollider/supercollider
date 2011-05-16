@@ -30,8 +30,18 @@ if ENV["SCLANG_RUNDIR"]
 elsif RUBY_PLATFORM =~ /darwin/
   rundir = "/Applications/SuperCollider/"
 end
+
 pid_loc = "/tmp/sclangpipe_app-pid" unless (pid_loc = ENV["SCVIM_PIPE_PID_LOC"])
 app = `which sclang`.chomp
+if app.empty?
+  mac_loc = "/Applications/SuperCollider/sclang"
+  if RUBY_PLATFORM =~ /darwin/ and File.exists?(mac_loc)
+    app = mac_loc
+  else
+    puts "cannot find sclang executable, is it in your path?"
+    exit -1
+  end
+end
 
 sclangargs = "-i scvim"  # this arg must always be passed, so that sclang knows to load classes from folders named "scide_scvim"
 
@@ -72,14 +82,10 @@ end
 
 opts.parse!(ARGV)
 
-File.open(pid_loc, "w"){ |f|
-  f.puts Process.pid
-}
+File.open(pid_loc, "w"){ |f| f.puts Process.pid }
 
 #remove the pipe if it exists
-if File.exists?(pipe_loc)
-  FileUtils.rm(pipe_loc)
-end
+FileUtils.rm(pipe_loc) if File.exists?(pipe_loc)
 #make a new pipe
 system("mkfifo", pipe_loc)
 
