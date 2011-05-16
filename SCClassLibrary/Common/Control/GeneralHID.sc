@@ -227,7 +227,7 @@ GeneralHIDSlot{
 	var <type, <id, <device, <devSlot;
 	classvar <typeMap;
 	var <action;
-	var <bus, busAction;
+	var <bus, <busAction;
 	var <debugAction;
 	var <>key;
 
