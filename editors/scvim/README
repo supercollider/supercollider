@@ -1,7 +1,7 @@
 SCVIM
   created by Alex Norman, it is in its early stages, use at your own risk
   this is SCVIM-svn
-  the webpage is here: http://www.x37v.info/scvim/
+  the webpage is here: http://www.x37v.info/projects/scvim/
   if you have improvements/suggestions email alex at x37v dot info
 ________________________________________________________________________________
 
@@ -9,16 +9,9 @@ REQUIREMENTS:
 - vim
 - supercollider (sclang)
 - ruby
-- unhtml*
 
 OPTIONAL:
-- unrtf [recommended to make help docs from RTF formatted help files - most helpfiles are now html but there are occasionally some rtfs in plugin packs]
 - gvim
-- links (for alternative help file formatting, see bin/scvim_make_help)
-
-  * it is best to use your distro's unhtml package but in case your distro
-    doesn't have it, I've placed a version here:
-    http://www.x37v.info/scvim/files/
 ________________________________________________________________________________
 
 INSTALLATION STEPS:
@@ -30,9 +23,6 @@ dependencies above, simply do:
 
 scons install-user
 sudo scons install-system
-
-optional (but recommended):
-scons build-help
 
 install-user will install the scvim vim files in ~/.vim and create the cache
 dir [for inline docs, syntax highlighting updates, etc] at ~/.scvim
@@ -61,9 +51,6 @@ install-user is made up of:
 	install-vimfiles [installs the vimfiles (syntax/* ftplugin/* indent/* in VIMFILE_DIR]
 	install-doc
 		[installs the SCVim.scd file into CACHE_DIR/doc/, creates CACHE_DIR if it doesn't exist]
-
-build-help
-	[executes ./bin/scvim_make_help to create the inline help docs for scvim]
 
 
 Manual Install:
@@ -161,22 +148,6 @@ line in sclang:
 
   SCVim.updateHelpCache;
 
-This actually calls a Ruby script called scvim_make_help, so can be used
-outside SC if desired. You can do something like:
-
-  ./scvim_make_help -c -s /usr/local/share/SuperCollider/Help
-
-This will delete any help docs that are in your scvim/docs dir, and copy in the
-more up to date [hopefully] docs from /usr/local/share/SuperCollider/Help to
-that dir [after they are formatted].  If you have help docs in more than one
-location you can now copy in more help docs by doing
-
-  ./scvim_make_help -s <other location>
-
-or you can do it all in one go by specifying multiple sources
-
-  ./scvim_make_help -c -s /usr/local/share/SuperCollider/Help -s <other location>
-________________________________________________________________________________
 
 TROUBLE SHOOTING:
 
@@ -203,5 +174,5 @@ Dan Stowell for his help:
    into the SuperCollider svn, etc.
 John Yates for providing the indent functionality [which I have changed slightly] and
    help with the help file processor
-Andrzej Kopec for work on removing html from help [though scvim ended up using unhtml]
+Andrzej Kopec for work on removing html from help
 Renick Bell for testing out the install process and providing notes.

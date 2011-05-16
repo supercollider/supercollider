@@ -1,7 +1,7 @@
 SCVim   SuperCollider in the VIM editor.
 
 created by Alex Norman, SuperCollider class created by Dan Stowell
-the webpage is here: http://www.x37v.info/scvim/
+the webpage is here: http://www.x37v.info/projects/scvim/
 if you have improvements/suggestions email alex at x37v dot info
 
 View the scvim README for installation instructions.
@@ -57,20 +57,3 @@ and to update these help files from the main files you can run the following
 line in sclang (put the cursor on line and hit F6):
 
   SCVim.updateHelpCache
-
-This actually calls a Ruby script called scvim_make_help, so can be used 
-outside SC if desired. You can do something like:
-
-  ./scvim_make_help -c -s /usr/local/share/SuperCollider/Help
-
-This will delete any help docs that are in your ~/.scvim/docs dir, and copy in the
-more up to date [hopefully] docs from /usr/local/share/SuperCollider/Help to
-that dir [after they are formatted].  If you have help docs in more than one
-location you can now copy in more help docs by doing
-
-  ./scvim_make_help -s <other location>
-
-or you can do it all in one go by specifying multiple sources
-
-  ./scvim_make_help -c -s /usr/local/share/SuperCollider/Help -s <other location>
-

@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 #
 #scvim [the executable]
 #
@@ -25,6 +25,11 @@ vim = "vim"
 homercfile = File.join(ENV["HOME"], ".scvimrc")
 localrcfile = "/usr/local/share/scvim/scvimrc"
 usrrcfile = "/usr/share/scvim/scvimrc"
+addonlocs = [
+  File.join(ENV["HOME"], ".vim/"),
+  "/usr/local/share/vim/addons/",
+  "/usr/share/vim/addons/",
+]
 
 #do we use graphical mode
 graphical = false
@@ -91,18 +96,25 @@ unless rcloc
     #no rc file found, no user customizations
     #hopefully ftplugin/supercollider.vim is in the vimruntime
     STDERR.puts "scvimrc file not found"
-    unless graphical
-      exec(vim, "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
-    else
-      exec(vim, "-g", "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", *ARGV)
-    end
   end
 end
 
-puts "scvim: sourcing #{rcloc}"
+vimops = []
 
-vimops = ["--cmd", "source #{rcloc}", 
-	  "-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", 
+#ensure that the supercollider ftplugin is in the runtime path
+addonlocs.each do |loc|
+  if File.exists?(File.join(loc, "ftplugin/supercollider.vim"))
+    vimops += ["-c", "set runtimepath+=#{loc}"]
+    break
+  end
+end
+
+if rcloc
+  vimops += ["--cmd", "source #{rcloc}"] 
+  puts "scvim: sourcing #{rcloc}"
+end
+
+vimops += ["-c", "set filetype=supercollider | runtime ftplugin/supercollider.vim | SClangStart", 
 	  *ARGV]
 
 #add -g if we're going graphical

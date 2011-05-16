@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 #SCvim pipe
 #this is a script to pass things from scvim to sclang
 #
