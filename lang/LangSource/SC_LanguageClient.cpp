@@ -302,6 +302,15 @@ void SC_LanguageClient::tick()
     flush();
 }
 
+bool SC_LanguageClient::tickLocked( double * nextTime )
+{
+	if (isLibraryCompiled()) {
+		::runLibrary(s_tick);
+	}
+	int err = slotDoubleVal( &gMainVMGlobals->result, nextTime );
+	return ( err == 0 );
+}
+
 void SC_LanguageClient::onInitRuntime()
 {
 }
