@@ -11,8 +11,15 @@ install(DIRECTORY indent
 install(DIRECTORY syntax
 		DESTINATION share/vim/addons)
 
-install(FILES scclasses/SCVim.sc
-		DESTINATION share/SuperCollider/Extensions/scvim)
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	install(FILES scclasses/SCVim.sc
+			DESTINATION /Library/Application\ Support/SuperCollider/Extensions/scvim
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+ELSE()
+	install(FILES scclasses/SCVim.sc
+         DESTINATION share/SuperCollider/Extensions/scvim
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+ENDIF()
 
 install(FILES scvimrc SCVim.scd
 		DESTINATION share/scvim)
