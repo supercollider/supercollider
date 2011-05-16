@@ -27,19 +27,19 @@ classvar <scvim_dir, <scvim_cache_dir,
 	if(scvim_cache_dir_env.isNil){
 		scvim_cache_dir = "~/.scvim".standardizePath;
 		setenv("SCVIM_CACHE_DIR", scvim_cache_dir);
+		//inform("SCVim: I've set the cache dir based on the scvim dir");
 	}{
 		scvim_cache_dir = scvim_cache_dir_env;
+		//inform("SCVim: I've set the cache dir based on the environment variable");
 	};
 	StartUp.add{
-		if(Platform.ideName=="scvim"){
-			if(autoFirstRun and:{ File.exists(scvim_cache_dir).not }){
-				Task{
-					"SCVim: generating help docs, it will take a few moments. (This only happens the first time you launch scvim. See SCVim help file for more info.)".inform;
-					this.updateCaches;
-					this.updateHelpCache;
-					"SCVim: finished generating help docs".inform;
-				}.play;
-			};
+		if(autoFirstRun and:{ File.exists(scvim_cache_dir).not }){
+			Task{
+				"SCVim: generating help docs, it will take a few moments. (This only happens the first time you launch scvim. See SCVim help file for more info.)".inform;
+				this.updateCaches;
+				this.updateHelpCache;
+				"SCVim: finished generating help docs".inform;
+			}.play;
 		};
 	};
 }
@@ -53,10 +53,7 @@ classvar <scvim_dir, <scvim_cache_dir,
 	r{
 		//if scvim_cache_dir doesn't exist, make it
 		if(File.exists(scvim_cache_dir +/+ "doc").not){
-			("mkdir -p" + scvim_cache_dir +/+ "doc").unixCmd;
-			//wait until the file exists
-			//while(File.exists(scvim_cache_dir) == false,  1.wait; );
-			1.wait;
+			("mkdir -p" + scvim_cache_dir +/+ "doc").systemCmd;
 		};
 
 		//open the files
@@ -99,10 +96,83 @@ classvar <scvim_dir, <scvim_cache_dir,
 } // end *updateCaches
 
 *updateHelpCache { | helpPaths |
-	var script;
-	if(helpPaths.isNil){ helpPaths = [Platform.helpDir]};
-	// Just run the ruby script
-	("scvim_make_help".quote + "-c -f".scatList(helpPaths.collect{|p| "-s" + p.quote})).systemCmd;
+    var getFiles, createHelp, objHelpPath, docDir, tagsDict, makeHelpFile, plain_text, new_path;
+
+    r{
+        //TODO currently ignoring helpPaths..
+        //if(helpPaths.isNil){ helpPaths = [Platform.helpDir]};
+
+        docDir = SCVim.scvim_cache_dir ++ if((SCVim.scvim_cache_dir.last == "/"), { "doc" }, { "/doc" });
+        tagsDict = Dictionary.new;
+
+        objHelpPath = { |obj|
+            if((obj == Object), { "Object" }, { objHelpPath.value(obj.superclass) ++ "/" ++ obj.asString; });
+        };
+
+        makeHelpFile = { |dest_file, dest_path, source_file|
+            if(File.exists(dest_path).not) {
+                ("mkdir -p " ++ dest_path).systemCmd;
+            };
+            plain_text = File.use(source_file, "r") { |f| 
+                switch(source_file.splitext[1],
+                        "html", { f.readAllStringHTML },
+                        "rtf", { f.readAllStringRTF },
+                        "scd", { f.readAllString },
+                        { Error("unsupported file format " ++ source_file).throw; }
+                      );
+            }.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&").replace("&nbsp;", " ");
+            dest_file = dest_path ++ "/" ++ dest_file;
+            try { File.use(dest_file, "w") { |out| out << plain_text }; }
+            { |error|
+                ("could not write file " ++ dest_file).postln;
+            };
+            dest_file;
+        };
+
+        createHelp = { |subj, path|
+            if(File.exists(path)) {
+                if((subj.class.asString.contains("Meta_")), {
+                        if((subj == Object), {new_path = docDir},
+                            {new_path = docDir ++ "/" ++ objHelpPath.value(subj.superclass)});
+                        tagsDict[subj.asString] = makeHelpFile.value(subj.asString ++ ".scd", new_path, path);
+                    },
+                    {
+                        new_path = docDir ++ "/other";
+                        subj = subj.asString.replace(" ", "_");
+                        tagsDict[subj.asString] = makeHelpFile.value(subj ++ ".scd", new_path, path);
+                    });
+            };
+        };
+
+        getFiles = { |collection|
+            collection.keysValuesDo { |key, value|
+                case
+                { value.class == String } { createHelp.value(key,value); }
+                { value.class == Dictionary } { getFiles.value(value); }
+                ;
+            };
+        };
+
+        postln("SCVim: processing help docs, this takes a little while....");
+        ("mkdir -p " ++ docDir).systemCmd;
+        getFiles.value(Help.tree);
+
+        //add the scvim doc if it doesn't already exist
+        if((File.exists(docDir ++ "/" ++ "SCVim.scd") && tagsDict.keys.asArray.includesAny([SCVim, "SCVim"]).not),
+                { tagsDict["SCVim"] = (docDir ++ "/" ++ "SCVim.scd") }
+          );
+
+        //create the help completion and tags file
+        File.use(docDir ++ "/sc_help_completion", "w") { |completion_file|
+            File.use(docDir ++ "/TAGS_HELP", "w") { |tags_file|
+                tagsDict.keys.asArray.sort.do { |t|
+                    tags_file << ("SC:" ++ t ++ "\t" ++ tagsDict[t] ++ "\t/^\n");
+                    completion_file << (t ++ "\n");
+                };
+            };
+        };
+        postln("..done");
+    }.play;
 }
 
 } // end class

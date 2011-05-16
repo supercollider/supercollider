@@ -1,4 +1,4 @@
-install(FILES bin/sclangpipe_app bin/scvim bin/scvim_make_help
+install(FILES bin/sclangpipe_app bin/scvim
 		DESTINATION bin
 		PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
@@ -14,5 +14,5 @@ install(DIRECTORY syntax
 install(FILES scclasses/SCVim.sc
 		DESTINATION share/SuperCollider/Extensions/scvim)
 
-install(FILES scvimrc
+install(FILES scvimrc SCVim.scd
 		DESTINATION share/scvim)
