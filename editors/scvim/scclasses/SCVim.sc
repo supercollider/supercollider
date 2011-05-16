@@ -116,6 +116,7 @@ classvar <scvim_dir, <scvim_cache_dir,
             plain_text = File.use(source_file, "r") { |f| 
                 switch(source_file.splitext[1],
                         "html", { f.readAllStringHTML },
+                        "htm", { f.readAllStringHTML },
                         "rtf", { f.readAllStringRTF },
                         "scd", { f.readAllString },
                         { Error("unsupported file format " ++ source_file).throw; }
