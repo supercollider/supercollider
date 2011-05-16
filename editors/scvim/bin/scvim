@@ -44,22 +44,35 @@ graphical = false
 #the location of the rc file to source
 rcloc = nil
 
+#the options that we pass to vim
+vimops = []
+
 # debian-based systems do not activate vim plugins automatically, we must check
-if %x[which vim-addons]!="" && %x[vim-addons -q status supercollider | grep installed]==""
-  puts "scvim has detected that you haven't activated the vim supercollider plugin."
-  puts "to enable scvim to work, please execute either "
-  puts "    vim-addons install supercollider"
-  puts "to enable it for the current user, or "
-  puts "    sudo vim-addons -w install supercollider"
-  puts "to enable it system-wide."
-  puts ""
-  puts "Would you like me to run \"vim-addons install supercollider\" for you?"
-  puts "Press 'y' and then Enter if so.  Otherwise just press Enter to exit."
-  userreply = gets.chomp
-  if userreply == 'y'
-    %x[vim-addons install supercollider]
-  else
-    exit
+if %x[which vim-addons]!=""
+  if %x[vim-addons -q status supercollider | grep installed]==""
+    puts "scvim has detected that you haven't activated the vim supercollider plugin."
+    puts "to enable scvim to work, please execute either "
+    puts "    vim-addons install supercollider"
+    puts "to enable it for the current user, or "
+    puts "    sudo vim-addons -w install supercollider"
+    puts "to enable it system-wide."
+    puts ""
+    puts "Would you like me to run \"vim-addons install supercollider\" for you?"
+    puts "Press 'y' and then Enter if so.  Otherwise just press Enter to exit."
+    userreply = gets.chomp
+    if userreply == 'y'
+      %x[vim-addons install supercollider]
+    else
+      exit
+    end
+  end
+else
+  #ensure that the supercollider ftplugin is in the runtime path
+  addonlocs.each do |loc|
+    if File.exists?(File.join(loc, "ftplugin/supercollider.vim"))
+      vimops += ["-c", "set runtimepath+=#{loc}"]
+      break
+    end
   end
 end
 
@@ -103,17 +116,6 @@ unless rcloc
   #if no rc file found, no user customizations
   #hopefully ftplugin/supercollider.vim is in the vimruntime
   STDERR.puts "scvimrc file not found" unless rcloc
-end
-
-#set up the options for vim
-vimops = []
-
-#ensure that the supercollider ftplugin is in the runtime path
-addonlocs.each do |loc|
-  if File.exists?(File.join(loc, "ftplugin/supercollider.vim"))
-    vimops += ["-c", "set runtimepath+=#{loc}"]
-    break
-  end
 end
 
 if rcloc
