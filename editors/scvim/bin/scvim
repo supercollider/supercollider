@@ -132,7 +132,7 @@ vimops += ["-c",
 vimops = ["-g"] + vimops if graphical
 
 #see if the vim install supports servers
-if IO.popen("vim --version") {|f| f.readlines.flatten.join(" ").include?("+clientserver")}
+if IO.popen("#{vim} --version") {|f| f.readlines.flatten.join(" ").include?("+clientserver")}
 	vimops = ["--servername", "scvim"] + vimops
 end
 
