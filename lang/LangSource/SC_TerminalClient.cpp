@@ -73,6 +73,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 	pthread_cond_init (&mCond, NULL);
 	pthread_mutex_init(&mSignalMutex, NULL);
 	pthread_mutex_init(&mInputMutex, NULL);
+	pthread_cond_init(&mInputReadCond, NULL);
 }
 
 SC_TerminalClient::~SC_TerminalClient()
@@ -80,6 +81,7 @@ SC_TerminalClient::~SC_TerminalClient()
 	pthread_cond_destroy (&mCond);
 	pthread_mutex_destroy(&mSignalMutex);
 	pthread_mutex_destroy(&mInputMutex);
+	pthread_cond_destroy(&mInputReadCond);
 }
 
 void SC_TerminalClient::postText(const char* str, size_t len)
@@ -348,6 +350,7 @@ void SC_TerminalClient::interpretInput()
 		else ++i;
 	}
 	mCmdLine.reset();
+	if( mUseReadline ) pthread_cond_signal( &mInputReadCond );
 }
 
 void SC_TerminalClient::onLibraryStartup()
@@ -493,6 +496,9 @@ void SC_TerminalClient::readlineCb( char *cmdLine )
 		client->mCmdLine.append(cmdLine, len);
 		client->mCmdLine.append(kInterpretPrintCmdLine);
 		client->onInput();
+		// Wait for input to be processed,
+		// so that its output is displayed before readline prompt.
+		pthread_cond_wait( &client->mInputReadCond, &client->mInputMutex );
 		client->unlockInput();
 	}
 }
