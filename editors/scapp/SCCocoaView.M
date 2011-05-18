@@ -873,7 +873,11 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 
 	CGContextRef cgc = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	CGContextSaveGState(cgc);
+#if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
+	QDDrawBevelRect(cgc, (*(CGRect *)&([self bounds])), 1, true);
+#else
 	QDDrawBevelRect(cgc, NSRectToCGRect([self bounds]), 1, true);
+#endif
 	CGContextRestoreGState(cgc);
 
 }

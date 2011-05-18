@@ -464,6 +464,7 @@ SCDoc {
                 ]
             ));
             p.root = n;
+            p.currentFile = nil;
             r.render(p,path,"Classes/"++name);
             ^true;
         };

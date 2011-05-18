@@ -16,7 +16,7 @@ Pfx : FilterPattern {
 		pairs.pairsDo {|name, value|
 			event[name] = value;
 		};
-		event[\addAction] = 1; // add to tail of group.
+		event[\addAction] = 0; // \addToHead
 		event[\instrument] = fxname;
 		event[\type] = \on;
 		event[\id] = id;
@@ -79,7 +79,7 @@ Pfxb : Pfx {
 
 PAbstractGroup : FilterPattern {
 	embedInStream { arg inevent;
-		var	server, groupID, event, ingroup, cleanup;
+		var	server, groupID, event, cleanup;
 		var	stream, lag = 0, clock = thisThread.clock,
 			groupReleaseTime = inevent[\groupReleaseTime] ? 0.1, cleanupEvent;
 		var eventType = this.class.eventType;
@@ -89,7 +89,7 @@ PAbstractGroup : FilterPattern {
 		groupID = server.nextNodeID;
 
 		event = inevent.copy;
-		event[\addAction] = 1;
+		event[\addAction] = 0;  // \addToHead
 		event[\type] = eventType;
 		event[\delta] = 1e-9; // no other sync choice for now. (~ 1 / 20000 sample delay)
 		event[\id] = groupID;
@@ -101,7 +101,9 @@ PAbstractGroup : FilterPattern {
 		});
 		inevent = event.yield;
 
-		inevent !? { inevent = inevent.copy; inevent[\group] = ingroup };
+		inevent !? { inevent = inevent.copy;
+			inevent[\group] = groupID;
+		};
 		stream = pattern.asStream;
 		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
@@ -163,7 +165,7 @@ Pbus : FilterPattern {
 		};
 
 		event = inevent.copy;
-		event[\addAction] = 1;
+		event[\addAction] = 0; // \addToHead
 		event[\type] = \group;
 		event[\delta] = 1e-9;
 		event[\id] = groupID;
@@ -174,7 +176,7 @@ Pbus : FilterPattern {
 
 		event[\type] = \on;
 		event[\group] = groupID;
-		event[\addAction] = 3;
+		event[\addAction] = 3; // \addBefore
 		event[\delta] = 1e-9;
 		event[\id] = linkID;
 		event[\fadeTime] = fadeTime;

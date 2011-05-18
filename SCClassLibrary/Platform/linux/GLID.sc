@@ -37,7 +37,7 @@ GLID{
 	*postDevices {
 		"HID devices at your disposal:".postln;
 		deviceList.do{ |dev,i|
-			"\t%:\t%, vendor: %, product: %, path: %\n".postf( i, dev[1].name, dev[1].vendor, dev[1].product, dev[0] );
+			"\t%:\t%, vendor: %, product: %, locID: %, path: %\n".postf( i, dev[1].name, dev[1].vendor, dev[1].product, dev[1].physical, dev[0] );
 		};
 	}
 
