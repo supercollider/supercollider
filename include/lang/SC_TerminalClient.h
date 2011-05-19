@@ -155,9 +155,11 @@ private:
 
 	pthread_t mInputThread;
 	pthread_mutex_t mInputMutex;
+	pthread_cond_t mInputReadCond;
+	bool mInputShouldBeRunning;
+
 	pthread_mutex_t mSignalMutex;
 	pthread_cond_t mCond;
-	pthread_cond_t mInputReadCond;
 
 	bool mInput;
 	bool mSched;

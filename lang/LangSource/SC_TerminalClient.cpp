@@ -498,7 +498,8 @@ void SC_TerminalClient::readlineCb( char *cmdLine )
 		client->onInput();
 		// Wait for input to be processed,
 		// so that its output is displayed before readline prompt.
-		pthread_cond_wait( &client->mInputReadCond, &client->mInputMutex );
+		if (client->mInputShouldBeRunning)
+			pthread_cond_wait( &client->mInputReadCond, &client->mInputMutex );
 		client->unlockInput();
 	}
 }
@@ -745,6 +746,7 @@ void SC_TerminalClient::initCmdLine()
 
 void SC_TerminalClient::startCmdLine()
 {
+	mInputShouldBeRunning = true;
 #ifdef HAVE_READLINE
 	if( mUseReadline )
 		pthread_create( &mInputThread, NULL, &SC_TerminalClient::readlineFunc, this );
@@ -755,6 +757,12 @@ void SC_TerminalClient::startCmdLine()
 
 void SC_TerminalClient::endCmdLine()
 {
+	// wake up the input thread in case it is waiting
+	// for input to be processed
+	lockInput();
+		mInputShouldBeRunning = false;
+		pthread_cond_signal( &mInputReadCond );
+	unlockInput();
 #ifndef _WIN32
 	postfl("client: closing input-thread control pipe\n");
 	close( mCmdPipe[1] );
