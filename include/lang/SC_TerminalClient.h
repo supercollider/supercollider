@@ -132,10 +132,10 @@ private:
 	static void *pipeFunc( void * );
 	void pushCmdLine( SC_StringBuffer &buf, const char *newData, size_t size );
 
-	void initCmdLine();
-	void startCmdLine();
-	void endCmdLine();
-	void cleanupCmdLine();
+	void initInput();
+	void startInput();
+	void endInput();
+	void cleanupInput();
 
 	// helpers
 	void lockSignal() { pthread_mutex_lock(&mSignalMutex); }
@@ -145,24 +145,24 @@ private:
 	int					mReturnCode;
 	Options				mOptions;
 
+	// signals to main thread
+	pthread_mutex_t mSignalMutex;
+	pthread_cond_t mCond;
+	bool mInput; // there is new input
+	bool mSched; // something has been scheduled
+
+	// command input
 	bool mUseReadline;
-	SC_StringBuffer mCmdLine;
+	bool mInputShouldBeRunning;
+	SC_StringBuffer mInputBuf;
 #ifndef _WIN32
-	int mCmdPipe[2];
+	int mInputCtlPipe[2];
 #else
 	HANDLE mQuitInputEvent;
 #endif
-
 	pthread_t mInputThread;
 	pthread_mutex_t mInputMutex;
-	pthread_cond_t mInputReadCond;
-	bool mInputShouldBeRunning;
-
-	pthread_mutex_t mSignalMutex;
-	pthread_cond_t mCond;
-
-	bool mInput;
-	bool mSched;
+	pthread_cond_t mInputCond;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

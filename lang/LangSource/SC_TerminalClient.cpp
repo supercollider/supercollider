@@ -73,7 +73,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 	pthread_cond_init (&mCond, NULL);
 	pthread_mutex_init(&mSignalMutex, NULL);
 	pthread_mutex_init(&mInputMutex, NULL);
-	pthread_cond_init(&mInputReadCond, NULL);
+	pthread_cond_init(&mInputCond, NULL);
 }
 
 SC_TerminalClient::~SC_TerminalClient()
@@ -81,7 +81,7 @@ SC_TerminalClient::~SC_TerminalClient()
 	pthread_cond_destroy (&mCond);
 	pthread_mutex_destroy(&mSignalMutex);
 	pthread_mutex_destroy(&mInputMutex);
-	pthread_cond_destroy(&mInputReadCond);
+	pthread_cond_destroy(&mInputCond);
 }
 
 void SC_TerminalClient::postText(const char* str, size_t len)
@@ -267,11 +267,11 @@ int SC_TerminalClient::run(int argc, char** argv)
 		daemonLoop();
 	}
 	else {
-		initCmdLine();
-		if( shouldBeRunning() ) startCmdLine();
+		initInput();
+		if( shouldBeRunning() ) startInput();
 		if( shouldBeRunning() ) commandLoop();
-		endCmdLine();
-		cleanupCmdLine();
+		endInput();
+		cleanupInput();
 	}
 
 	if (opt.mCallStop) stopMain();
@@ -327,8 +327,8 @@ void SC_TerminalClient::interpretLocked(PyrSymbol* method, const char *buf, size
 // WARNING: Call with input locked!
 void SC_TerminalClient::interpretInput()
 {
-	char *data = mCmdLine.getData();
-	int c = mCmdLine.getSize();
+	char *data = mInputBuf.getData();
+	int c = mInputBuf.getSize();
 	int i = 0;
 	while( i < c ) {
 		if( data[i] == kInterpretCmdLine ) {
@@ -349,8 +349,8 @@ void SC_TerminalClient::interpretInput()
 		}
 		else ++i;
 	}
-	mCmdLine.reset();
-	if( mUseReadline ) pthread_cond_signal( &mInputReadCond );
+	mInputBuf.reset();
+	if( mUseReadline ) pthread_cond_signal( &mInputCond );
 }
 
 void SC_TerminalClient::onLibraryStartup()
@@ -493,13 +493,13 @@ void SC_TerminalClient::readlineCb( char *cmdLine )
 		int len = strlen(cmdLine);
 
 		client->lockInput();
-		client->mCmdLine.append(cmdLine, len);
-		client->mCmdLine.append(kInterpretPrintCmdLine);
+		client->mInputBuf.append(cmdLine, len);
+		client->mInputBuf.append(kInterpretPrintCmdLine);
 		client->onInput();
 		// Wait for input to be processed,
 		// so that its output is displayed before readline prompt.
 		if (client->mInputShouldBeRunning)
-			pthread_cond_wait( &client->mInputReadCond, &client->mInputMutex );
+			pthread_cond_wait( &client->mInputCond, &client->mInputMutex );
 		client->unlockInput();
 	}
 }
@@ -531,7 +531,7 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 
 	while(true) {
 		FD_SET(STDIN_FD, &fds);
-		FD_SET(client->mCmdPipe[0], &fds);
+		FD_SET(client->mInputCtlPipe[0], &fds);
 
 		if( select(FD_SETSIZE, &fds, NULL, NULL, NULL) < 0 ) {
 			postfl("readline: select() error:\n%s\n", strerror(errno));
@@ -539,7 +539,7 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 			break;
 		}
 
-		if( FD_ISSET(client->mCmdPipe[0], &fds) ) {
+		if( FD_ISSET(client->mInputCtlPipe[0], &fds) ) {
 			postfl("readline: quit requested\n");
 			break;
 		}
@@ -579,7 +579,7 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 	bool shouldRead = true;
 	while(shouldRead) {
 		FD_SET(STDIN_FD, &fds);
-		FD_SET(client->mCmdPipe[0], &fds);
+		FD_SET(client->mInputCtlPipe[0], &fds);
 
 		if( select(FD_SETSIZE, &fds, NULL, NULL, NULL) < 0 ) {
 			postfl("pipe-in: select() error:\n%s\n", strerror(errno));
@@ -587,7 +587,7 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 			break;
 		}
 
-		if( FD_ISSET(client->mCmdPipe[0], &fds) ) {
+		if( FD_ISSET(client->mInputCtlPipe[0], &fds) ) {
 			postfl("pipe-in: quit requested\n");
 			break;
 		}
@@ -689,8 +689,8 @@ void SC_TerminalClient::pushCmdLine( SC_StringBuffer &buf, const char *newData, 
 	while (size--) {
 		char c = *newData++;
 		if (c == kInterpretCmdLine || c == kInterpretPrintCmdLine) {
-			mCmdLine.append( buf.getData(), buf.getSize() );
-			mCmdLine.append(c);
+			mInputBuf.append( buf.getData(), buf.getSize() );
+			mInputBuf.append(c);
 			signal = true;
 			buf.reset();
 		} else {
@@ -706,12 +706,12 @@ void SC_TerminalClient::pushCmdLine( SC_StringBuffer &buf, const char *newData, 
 
 
 
-void SC_TerminalClient::initCmdLine()
+void SC_TerminalClient::initInput()
 {
 
 #ifndef _WIN32
 
-	if( pipe( mCmdPipe ) == -1 ) {
+	if( pipe( mInputCtlPipe ) == -1 ) {
 		postfl("Error creating pipe for input thread control:\n%s\n", strerror(errno));
 		quit(1);
 	}
@@ -744,7 +744,7 @@ void SC_TerminalClient::initCmdLine()
 }
 
 
-void SC_TerminalClient::startCmdLine()
+void SC_TerminalClient::startInput()
 {
 	mInputShouldBeRunning = true;
 #ifdef HAVE_READLINE
@@ -755,17 +755,17 @@ void SC_TerminalClient::startCmdLine()
 		pthread_create( &mInputThread, NULL, &SC_TerminalClient::pipeFunc, this );
 }
 
-void SC_TerminalClient::endCmdLine()
+void SC_TerminalClient::endInput()
 {
 	// wake up the input thread in case it is waiting
 	// for input to be processed
 	lockInput();
 		mInputShouldBeRunning = false;
-		pthread_cond_signal( &mInputReadCond );
+		pthread_cond_signal( &mInputCond );
 	unlockInput();
 #ifndef _WIN32
 	postfl("client: closing input-thread control pipe\n");
-	close( mCmdPipe[1] );
+	close( mInputCtlPipe[1] );
 #else
 	postfl("client: signalling input thread quit event\n");
 	SetEvent( mQuitInputEvent );
@@ -778,7 +778,7 @@ void SC_TerminalClient::endCmdLine()
 	postfl("client: input thread joined.\n");
 }
 
-void SC_TerminalClient::cleanupCmdLine()
+void SC_TerminalClient::cleanupInput()
 {
 #ifdef HAVE_READLINE
 	if( mUseReadline ) rl_callback_handler_remove();
