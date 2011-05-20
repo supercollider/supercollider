@@ -101,21 +101,27 @@ Scheduler {
 	}
 
 	seconds_ { | newSeconds  |
-		var delta, item, next;
+		// NOTE: first pop ALL the expired items and only then wake
+		// them up, because we want control to return to the caller
+		// before any tasks scheduled as a result of this call are
+		// performed.
+		var delta, items;
+		items = Array.new(8);
 		while ({
 			seconds = queue.topPriority;
 			seconds.notNil and: { seconds <= newSeconds }
 		},{
-			item = queue.pop;
+			items = items.add( queue.pop );
+		});
+		items.do { | item |
 			delta = item.awake( beats, seconds, clock );
 			if (delta.isNumber, {
 				this.sched(delta, item);
 			});
-		});
-		next = seconds;
+		};
 		seconds = newSeconds;
 		beats = clock.secs2beats(newSeconds);
-		^next;
+		^queue.topPriority;
 	}
 }
 
