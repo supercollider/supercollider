@@ -48,8 +48,9 @@ rcloc = nil
 vimops = []
 
 # debian-based systems do not activate vim plugins automatically, we must check
-if %x[which vim-addons]!=""
-  if %x[vim-addons -q status supercollider | grep installed]==""
+# test to see if we have vim-addons and if vim-addons knows about scvim
+if %x[which vim-addons] != "" and %x[vim-addons -q list | grep supercollider] != ""
+  if %x[vim-addons -q status supercollider | grep installed] == ""
     puts "scvim has detected that you haven't activated the vim supercollider plugin."
     puts "to enable scvim to work, please execute either "
     puts "    vim-addons install supercollider"
