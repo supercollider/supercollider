@@ -1,5 +1,4 @@
 /* Wrapper for HIDDeviceService for General HID support */
-
 MXHID {
 	classvar extraClasses;
 	classvar <usageMap;
@@ -148,10 +147,10 @@ MXHID {
 		// new version, using usage page and usage type
 		devElements.do{ |ele,i|
 			var newSlot, key;
-			if ( mySlots[ ele.usagePage ] ).isNil( {
+			if ( mySlots[ ele.usagePage ].isNil) {
 				mySlots[ ele.usagePage ] = IdentityDictionary.new;
-			});
-			newSlot =  MXHIDSlot.new( device, ele.usagePage, ele.usageType, ele.cookie );
+			};
+			newSlot =  MXHIDSlot.new( this, ele );
 			slots.put( ele.cookie, newSlot);
 				//slots.postln;
 			mySlots[ele.usagePage][ele.usageType] =  GeneralHIDSlot.new( ele.usagePage, ele.usageType, this, newSlot );
@@ -179,8 +178,8 @@ MXHID {
 			});
 		};
 		mySlots = mySlots.select(_.notEmpty);	// remove empty dicts
-		*/
 		^mySlots;
+		*/
 	}
 
 	close{
@@ -295,7 +294,8 @@ MXHID {
 
 
 MXHIDSlot {
-	var <device, <type, <code, <cookie, value=0,  <>action;
+	var <device, <cookie, <value=0, <rawValue=0,  <>action;
+	var <type, <code;
 	var <element;
 	var <spec;
 
@@ -323,14 +323,9 @@ MXHIDSlot {
 		device = dev;
 		element = el;
 		this.initSpec;
-	}
-
-	type{
-		^element.usagePage;
-	}
-
-	code{
-		^element.usageType;
+		cookie = element.cookie;
+		type = element.usagePage;
+		code = element.usageType;
 	}
 
 	initSpec {
