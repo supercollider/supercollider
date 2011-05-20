@@ -163,6 +163,14 @@ GeneralHIDDevice{
 	ungrab{
 		device.ungrab;
 	}
+	
+	hidDeviceAction_{ |func|
+		device.hidDeviceAction = func;	
+	}
+
+	hidDeviceAction{ 
+		^device.hidDeviceAction;	
+	}
 
 	// spec support
 	findSpec{
@@ -220,6 +228,7 @@ GeneralHIDDevice{
 	makeGui{
 		^GeneralHIDDeviceGUI.new( this );
 	}
+
 
 }
 
