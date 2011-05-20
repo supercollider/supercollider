@@ -5,6 +5,8 @@ GLID{
 	classvar <debug = false;
 	classvar <deviceList;
 	var <device;
+	// dummy action, not used, but here for compatibility with osx
+	var <>hidDeviceAction;
 
 	*initClass{
 		if ( \LID.asClass.notNil, {
