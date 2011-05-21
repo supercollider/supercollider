@@ -35,26 +35,30 @@ HelpBrowser {
 		this.instance.goTo(SCDoc.findHelpFile(text)).window.front;
 	}
 
-	goTo {|url|
+	goTo {|url, brokenAction|
 		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"];
 
 		//FIXME: since multiple scdoc queries can be running at the same time,
 		//it would be best to create a queue and run them in order, but only use the url from the last.
-		#newPath, oldPath = [url,webView.url].collect {|x| if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}};
 
 		plainTextExts.do {|x|
-			if(newPath.endsWith(x)) {
-				^this.openTextFile(newPath);
+			if(url.endsWith(x)) {
+				^this.openTextFile(url);
 			}
 		};
 
-		if(newPath != oldPath) {
-			this.startAnim;
-		};
+		this.startAnim;
 
+		brokenAction = brokenAction ? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
 		Routine {
 			try {
-				webView.url = SCDoc.prepareHelpForURL(url) ?? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
+				url = SCDoc.prepareHelpForURL(url) ?? brokenAction;
+				#newPath, oldPath = [url,webView.url].collect {|x|
+					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
+				};
+				webView.url = url;
+				// needed since onLoadFinished is not called if the path did not change:
+				if(newPath == oldPath) {webView.onLoadFinished.value};
 			} {|err|
 				webView.html = err.errorString;
 				err.throw;
@@ -107,12 +111,15 @@ HelpBrowser {
 		w = 200;
 		txtPath = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
 		txtPath.action = {|x|
-			var path, hash;
-			#path, hash = x.string.findRegexp("([^#]+)(#?.*)")[1..].flop[1];
-			if(hash.isEmpty) {
-				this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html")
-			} {
-				this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html" ++ hash)
+			var path, hash, fallback;
+			if(x.string.notEmpty) {
+				#path, hash = x.string.findRegexp("([^#]+)(#?.*)")[1..].flop[1];
+				fallback = {SCDoc.helpTargetDir++"/Search.html#"++x.string};
+				if(hash.isEmpty) {
+					this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html", fallback)
+				} {
+					this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html" ++ hash, fallback)
+				}
 			}
 		};
 
@@ -188,7 +195,7 @@ HelpBrowser {
 		};
 		winRect = Rect(0,0,600,400);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
-
+		path = path.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
 		file = File(path,"r");
 		win = Window(bounds: winRect).name_("SuperCollider Help:"+path.basename);
 		txt = TextView(win,Rect(0,0,600,400)).resize_(5).string_(file.readAllString);
