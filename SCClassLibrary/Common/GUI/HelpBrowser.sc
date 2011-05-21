@@ -54,7 +54,7 @@ HelpBrowser {
 
 		Routine {
 			try {
-				webView.url = SCDoc.prepareHelpForURL(url, true) ?? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
+				webView.url = SCDoc.prepareHelpForURL(url) ?? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
 			} {|err|
 				webView.html = err.errorString;
 				err.throw;

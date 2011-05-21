@@ -674,7 +674,9 @@ SCDocHTMLRenderer : SCDocRenderer {
 
         parser = p;
 
-//        File.delete(filename);
+        if(filename.endsWith(".html").not) {
+            MethodError(this.class.name.asString+"will only render .html files",filename).throw;
+        };
         f = File.open(filename, "w");
 
         //folder is the directory path of the file relative to the help tree,

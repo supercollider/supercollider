@@ -207,7 +207,7 @@ SCDoc {
 
     *maybeWait {
         var t;
-        if(doWait and: {(t = Main.elapsedTime)-lastUITick > 0.2}) {
+        if(doWait and: {(t = Main.elapsedTime)-lastUITick > 0.1}) {
             0.wait;
             lastUITick = t;
         }
@@ -295,15 +295,18 @@ SCDoc {
         }
     }
 
-    *prepareHelpForURL {|url,doYield=false|
+    *prepareHelpForURL {|url|
         var proto, path, anchor;
         var subtarget, src, c;
         var verpath = this.helpTargetDir +/+ "version";
 
-        doWait = doYield;
+        doWait = thisThread.isKindOf(Routine);
 
         if(isProcessing) {
             "SCDoc: prepareHelpForURL already running.. waiting for the first to finish.".warn;
+            if(doWait.not) {
+                Error("SCDoc: cannot wait for already running prepareHelpForURL, this call was not made inside a Routine").throw;
+            };
             c = Condition.new;
             Routine {
                 while {0.5.wait; isProcessing};
@@ -490,12 +493,27 @@ SCDoc {
     }
 
     *syncNonHelpFiles {
+        var cmd, c;
+
+        doWait = thisThread.isKindOf(Routine);
         this.findHelpSourceDirs;
-        this.postProgress("Synchronizing non-schelp files");
+        this.postProgress("Synchronizing non-schelp files...");
         this.checkSystemCmd("rsync");
-        helpSourceDirs.do {|dir|
-            ("rsync -rlt --exclude '*.schelp' --exclude '.*'"+dir.escapeChar($ )++"/"+helpTargetDir.escapeChar($ )+"2>/dev/null").systemCmd;
+
+        cmd = "rsync -rlt --exclude '*.schelp' --exclude '.*' %/"+helpTargetDir.escapeChar($ )+"2>/dev/null";
+
+        if(doWait) {
+            c = Condition.new;
+            helpSourceDirs.do {|dir|
+                cmd.format(dir.escapeChar($ )).unixCmd({c.unhang},false);
+                c.hang;
+            };
+        } {
+            helpSourceDirs.do {|dir|
+                cmd.format(dir.escapeChar($ )).systemCmd;
+            };
         };
+        this.postProgress("Synchronizing non-schelp files: Done");
     }
 
     *getAllMetaData {
