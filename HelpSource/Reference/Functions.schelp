@@ -36,7 +36,7 @@ section:: Arguments
 
 An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list may be omitted. 
 
-Names of arguments in the list may be initialized to a default value by using an equals sign. Arguments which are not explicitly initialized will be set to nil if no value is passed for them.
+Names of arguments in the list may be initialized to a default value by using an equals sign. Arguments which are not explicitly initialized will be set to nil if no value is passed for them. Putting the default value inside parenthesis will use the default value also when nil is explicitly passed as the value.
 
 If the last argument in the list is preceeded by three dots (an ellipsis), then all the remaining arguments that were passed will be assigned to that variable as an link::Classes/Array::. Arguments must be separated by commas.
 
