@@ -145,13 +145,15 @@ Function : AbstractFunction {
 	set { arg ... args; ^this.valueArray(args) }
 	get { arg prevVal; ^prevVal }
 
-	fork { arg clock, quant=0.0, stackSize=64;
+	fork { arg clock, quant, stackSize;
 		^Routine(this, stackSize).play(clock, quant);
 	}
 
-	forkIfNeeded {
-		if(thisThread.isKindOf(Routine), this, { Routine.run(this) })
+	forkIfNeeded { arg clock, quant, stackSize;
+		if(thisThread.isKindOf(Routine), this, { ^this.fork(clock, quant, stackSize) });
+		^thisThread;
 	}
+
 
 	awake { arg beats, seconds, clock;
 		var time = seconds; // prevent optimization
