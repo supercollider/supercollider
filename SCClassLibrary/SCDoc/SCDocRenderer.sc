@@ -185,7 +185,13 @@ SCDocHTMLRenderer : SCDocRenderer {
             },
             'subsection', {
                 file.write("<h3><a class='anchor' name='"++this.class.simplifyName(node.text)++"'>"++this.escapeSpecialChars(node.text)++"</a></h3>\n");
-                do_children.();
+                if(node.makeDiv.isNil) {
+                    do_children.();
+                } {
+                    file.write("<div id='"++node.makeDiv++"'>");
+                    do_children.();
+                    file.write("</div>");
+                };
             },
             'classmethods', {
                 if(node.children.select{|n|n.tag!=\private}.notEmpty) { //FIXME use detect
@@ -669,6 +675,16 @@ SCDocHTMLRenderer : SCDocRenderer {
         ^node;
     }
 
+    addInheritedMethods {|tag,div|
+        var node = parser.findNode(tag);
+        var mets = (tag:\subsection, text:"Inherited methods", children:[], makeDiv:div);
+        if(node.tag.isNil, { //no subtree, create one
+            parser.root = parser.root.add(node = (tag:tag, children:List.new));
+        });
+        node.children.add(mets);
+        ^node;
+    }
+
     render {|p, filename, subtarget, toc=true|
         var f,x,name,folder;
 
@@ -695,6 +711,12 @@ SCDocHTMLRenderer : SCDocRenderer {
             currentImplClass = nil;
 
             currentClass !? {
+                if(currentClass != Object) {
+                    this.addInheritedMethods(\classmethods,"inheritedclassmets");
+                    this.addInheritedMethods(\instancemethods,"inheritedinstmets");
+                };
+
+                // FIXME: should probably get undocumented methods of implementing class?
                 this.addUndocumentedMethods(currentClass.class,\classmethods);
                 this.addUndocumentedMethods(currentClass,\instancemethods);
                 //TODO: add methods from +ClassName.schelp (recursive search)
@@ -716,10 +738,6 @@ SCDocHTMLRenderer : SCDocRenderer {
                     \examples,          { n.sort = 7 },
                     { n.sort = x = x + 1 }
                 );
-            };
-            if(currentClass != Object) {
-                parser.root = parser.root.add((tag:\section, text:"Inherited class methods", children:[], sort:5, makeDiv:"inheritedclassmets")); // or 1?
-                parser.root = parser.root.add((tag:\section, text:"Inherited instance methods", children:[], sort:6, makeDiv:"inheritedinstmets")); // or 2?
             };
             parser.root = parser.root.sort {|a,b| a.sort<b.sort};
 
