@@ -48,10 +48,9 @@ subsection:: Main interface
 method:: prepareHelpForURL
 Prepare help for the given URL by checking if the file needs rendering from schelp source, or some other action needs to be done.
 Use this as a wrapper to get on-the-fly rendering and processing of help files.
+If called from a routine, do some code::0.wait:: while running to give the GUI a chance to respond.
 argument:: url
 The url to prepare. If this is not a local file inside link::#*helpTargetDir:: then it will just pass through the url directly.
-argument:: doYield
-If true, do some code::0.wait:: while running. Useful when used in Routines.
 returns:: the URL or nil if file not found.
 
 method:: findHelpFile
