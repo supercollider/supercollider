@@ -3,9 +3,9 @@ summary:: syntactic sugar
 categories:: Language
 related:: Overviews/SymbolicNotations
 
-This file shows a number of syntax equivalences in the compiler.
+section:: Introduction
 
-section:: multiple ways to write the same thing.
+This file shows a number of syntax equivalences in the compiler.
 
 Because of the multiple syntax equivalences, some expressions can be written in many different ways. All of the following do the same thing and compile to the same code. 
 code::
@@ -35,6 +35,8 @@ collect((1..10), _.squared ); // function call syntax
 ::
 
 You could even start expanding out the equivalent of (1..10) which is really a shortcut for code:: series(1, nil, 10) ::. This could also be written code:: 1.series(nil,10) ::. This adds another 26 variations to the 13 variations above.
+
+section:: Objects, functions, messages and arguments
 
 subsection:: functional and receiver notation
 table::
@@ -66,29 +68,10 @@ table::
 ## code:: min(x, y) :: || code:: x min: y ::
 ::
 
-subsection:: multiple assignment
-table::
-## instead of writing: || you can write:
-## code:: x = z.at(0); y = z.at(1); :: || code:: # x, y = z; ::
-::
-
-subsection:: accessing environment variables
-table::
-## instead of writing: || you can write:
-## code:: 'myName'.envirGet :: || code:: ~myName ::
-## code:: 'myName'.envirSet(9); :: || code:: ~myName = 9; ::
-::
-
 subsection:: instantiate object
 table::
 ## instead of writing: || you can write:
 ## code:: Point.new(3, 4); :: || code:: Point(3, 4) ::
-::
-
-subsection:: create a collection
-table::
-## instead of writing: || you can write:
-## code:: Set.new.add(3).add(4).add(5); :: || code:: Set[3, 4, 5] ::
 ::
 
 subsection:: moving blocks out of argument lists
@@ -105,22 +88,36 @@ table::
 ## code:: { arg x; x < 2 } :: || code:: {|x| x < 2 } ::
 ::
 
-subsection:: shorthand for Symbols
-table::
-## instead of writing: || you can write:
-## code:: 'mySymbol' :: || code:: \mySymbol ::
-::
-
-subsection:: creating a Ref
-table::
-## instead of writing: || you can write:
-## code:: Ref.new(thing) :: || code:: `thing ::
-::
-
 subsection:: calling the 'value' method
 table::
 ## instead of writing: || you can write:
 ## code:: f.value(x) :: || code:: f.(x) ::
+::
+
+subsection:: calling performList
+table::
+## instead of writing: || you can write:
+## code:: object.performList(\method, a, b, array) :: || code:: object.method(a, b, *array) ::
+::
+
+subsection:: partial application
+table::
+## instead of writing: || you can write:
+## code:: {|x| object.msg(a, x, b) } :: || code:: object.msg(a, _, b) ::
+## code:: {|x,y| object.msg(a, x, y) } :: || code:: object.msg(a, _, _) ::
+## code:: {|x| a + x } :: || code:: a + _ ::
+## code:: {|x| [a, b, x] } :: || code:: [a, b, _] ::
+## code:: {|x| (a: x) } :: || code:: (a: _) ::
+::
+
+
+section:: Collections
+
+subsection:: create a collection
+table::
+## instead of writing: || you can write:
+## code:: Set.new.add(3).add(4).add(5); :: || code:: Set[3, 4, 5] ::
+## code:: Array[3, 4, 5]; :: || code:: [3, 4, 5] ::
 ::
 
 subsection:: indexing elements
@@ -133,7 +130,13 @@ table::
 subsection:: creating Events
 table::
 ## instead of writing: || you can write:
-## code:: Event['a'->1,'b'->2] :: || code:: (a: 1, b: 2) ::
+## code:: Event[\a -> 1, \b -> 2] :: || code:: (a: 1, b: 2) ::
+::
+
+subsection:: creating Arrays with key-value pairs
+table::
+## instead of writing: || you can write:
+## code:: [\a, 1, \b, 2] :: || code:: [a: 1, b: 2] ::
 ::
 
 subsection:: creating arithmetic series
@@ -151,19 +154,30 @@ table::
 ## code:: a.copyFromStart(4) :: || code:: a[..4] ::
 ::
 
-subsection:: calling performList
+section:: Other shortcuts
+
+subsection:: multiple assignment
 table::
 ## instead of writing: || you can write:
-## code:: object.performList(\method, a, b, array) :: || code:: object.method(a, b, *array) ::
+## code:: x = z.at(0); y = z.at(1); :: || code:: # x, y = z; ::
 ::
 
-subsection:: partial application
+subsection:: accessing environment variables
 table::
 ## instead of writing: || you can write:
-## code:: {|x| object.msg(a, x, b) } :: || code:: object.msg(a, _, b) ::
-## code:: {|x,y| object.msg(a, x, y) } :: || code:: object.msg(a, _, _) ::
-## code:: {|x| a + x } :: || code:: a + _ ::
-## code:: {|x| [a, b, x] } :: || code:: [a, b, _] ::
-## code:: {|x| (a: x) } :: || code:: (a: _) ::
+## code:: 'myName'.envirGet :: || code:: ~myName ::
+## code:: 'myName'.envirSet(9); :: || code:: ~myName = 9; ::
+::
+
+subsection:: shorthand for Symbols
+table::
+## instead of writing: || you can write:
+## code:: 'mySymbol' :: || code:: \mySymbol ::
+::
+
+subsection:: creating a Ref
+table::
+## instead of writing: || you can write:
+## code:: Ref.new(thing) :: || code:: `thing ::
 ::
 
