@@ -1,5 +1,4 @@
 /* Wrapper for HIDDeviceService for General HID support */
-
 MXHID {
 	classvar extraClasses;
 	classvar <usageMap;
@@ -7,6 +6,9 @@ MXHID {
 	classvar <deviceList;
 	classvar <>debug = false;
 	var <device, <slots;
+	var <>hidDeviceAction;
+	var <>action;
+
 
 	*initClass {
 		Class.initClassTree( Event );
@@ -45,7 +47,7 @@ MXHID {
 	*postDevices {
 		"HID devices at your disposal:".postln;
 		deviceList.do{ |dev,i|
-			"\t%:\t%, vendor: %, product: %, locID: %\n".postf( i, dev[1].name, dev[1].vendor, dev[1].product, dev[1].physical );
+			"\t%:\t[\"%\"], vendor: %, product: %, locID: [%]\n".postf( i, dev[1].name, dev[1].vendor, dev[1].product, dev[1].physical );
 		};
 	}
 
@@ -98,6 +100,7 @@ MXHID {
 		HIDDeviceService.action_({arg productID, vendorID, locID, cookie, val;
 		//	[productID, vendorID, locID, cookie, val].postln;
 		//	if (debug) {("debug"+[productID, vendorID, locID, cookie, val]).postln;};
+			all.at( locID ).hidDeviceAction.value( cookie, val );
 			try {
 				all.at( locID ).slots.at( cookie ).value_(val);
 			} {
@@ -108,6 +111,9 @@ MXHID {
 	}
 
 	init{ |dev|
+		hidDeviceAction = {};
+		action = {};
+
 		dev = dev[0];
 		if ( dev.isKindOf( HIDDevice ),
 				{
@@ -137,6 +143,24 @@ MXHID {
 	getSlots{
 		var mySlots = IdentityDictionary.new;
 		var devElements = device.elements;
+		"From version 3.5, SuperCollider GeneralHID is using a different slot numbering scheme on OSX. Unfortunately, this breaks backwards compatibility. The advantage is that all elements will always be available.".inform;
+		// new version, using usage page and usage type
+		devElements.do{ |ele,i|
+			var newSlot, key;
+			if ( mySlots[ ele.usagePage ].isNil) {
+				mySlots[ ele.usagePage ] = IdentityDictionary.new;
+			};
+			newSlot =  MXHIDSlot.new( this, ele );
+			slots.put( ele.cookie, newSlot);
+				//slots.postln;
+			mySlots[ele.usagePage][ele.usageType] =  GeneralHIDSlot.new( ele.usagePage, ele.usageType, this, newSlot );
+		};
+		^mySlots;
+		
+
+		/*
+		// old version:
+		// using the typemap:
 		GeneralHIDSlot.typeMap.keysValuesDo{ |key|
 			mySlots.put( key, IdentityDictionary.new );
 			};
@@ -155,10 +179,7 @@ MXHID {
 		};
 		mySlots = mySlots.select(_.notEmpty);	// remove empty dicts
 		^mySlots;
-	}
-
-	action_{ |act|
-		device.action = act;
+		*/
 	}
 
 	close{
@@ -193,6 +214,7 @@ MXHID {
 	ungrab{ // not implemented on osx
 	}
 
+	/*
 	*initUsageMap{
 
 	// the usageMap maps the usagePage and usageType to the different slot types we are using
@@ -267,12 +289,17 @@ MXHID {
 		// feel free to fill in
 
 	}
+	*/
 }
 
 
 MXHIDSlot {
-	var <device, <type, <code, <cookie, value=0,  <>action;
+	var <device, <cookie, <value=0, <rawValue=0,  <>action;
+	var <type, <code;
+	var <element;
 	var <spec;
+
+	/*
 	classvar slotTypeMap;
 
 	*initClass {
@@ -283,29 +310,40 @@ MXHIDSlot {
 			0x0011 -> MXHIDLedSlot
 		]);
 	}
-
 	*new { | device, evtType, evtCode, evtCookie |
 		^(slotTypeMap[evtType] ? this).newCopyArgs(device, evtType, evtCode, evtCookie).initSpec
 	}
+	*/
+
+	*new{ |device, element|
+		^super.new.init( device, element )
+	}
+
+	init{ |dev,el|
+		device = dev;
+		element = el;
+		this.initSpec;
+		cookie = element.cookie;
+		type = element.usagePage;
+		code = element.usageType;
+	}
+
 	initSpec {
-		spec = ControlSpec(0, 1, \lin, 1, 0);
+		spec = ControlSpec(element.min, element.max, \lin, 1, 0);
 	}
-	rawValue {
-		^value
-	}
-	value {
-		^spec.unmap(value)
-	}
-	value_ { | rawValue |
-		value = rawValue;
+
+	value_ { | rawval |
+		rawValue = rawval;
+		value = spec.unmap( value );
 		action.value(this);
-		device.action.value( type, code, rawValue, this.value );
+		device.action.value( type, code, rawValue, value );
 	}
 	next {
 		^this.value
 	}
 }
 
+/*
 MXHIDKeySlot : MXHIDSlot {
 	initSpec {
 		super.initSpec;
@@ -367,3 +405,4 @@ MXHIDAbsInfo {
 		<< "flat: " << flat << $)
 	}
 }
+*/

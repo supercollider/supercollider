@@ -26,14 +26,13 @@ HIDDevice {
 	var < elements;
 	var < isQueued = false;
 	var < info, <> closeAction;
-	var <>action;
+
 	*new{arg manufacturer, product, usage, vendorID, productID, locID, version, serial;
 		^super.newCopyArgs(manufacturer, product, usage, vendorID, productID, locID, version, serial).init;
 	}
 	init{
 		info = HIDInfo.new( product, 0, vendorID, productID, version );
 		closeAction = {};
-		action = {};
 		elements = Array.new;
 	}
 
@@ -99,6 +98,7 @@ HIDDeviceService{
 	*initClass {
 		deviceSpecs = IdentityDictionary.new;
 		closeAction = {};
+		ShutDown.add( { this.releaseDeviceList } );
 	}
 
 	*keyToIndex { arg key, locID=0;
@@ -120,8 +120,13 @@ HIDDeviceService{
 
 	*buildDeviceList{arg usagePage=1, usage=4;
 		var devlist, elelist;
+		var alreadyOpen;
+		alreadyOpen = devices.select( _.isQueued ).asArray;
+		alreadyOpen.do{ |it| it.dequeueDevice };
+		alreadyOpen = alreadyOpen.collect( _.locID ).asArray;
+		//alreadyOpen.postln;
 		// the following line would solve the bug when rebuilding the device list, but then there is no way to keep track of already opened devices:
-	//		this.releaseDeviceList;
+		this.releaseDeviceList;
 		devices = Array.new;
 		devlist = this.prbuildDeviceList(usagePage, usage);
 		devlist ?? {"HIDDeviceService: no devices found".warn; ^nil};
@@ -139,6 +144,10 @@ HIDDeviceService{
 						};
 					});
 					devices = devices.add(newdev);
+					// reopen the device if it already was open
+					if ( alreadyOpen.includes( newdev.locID ) ){
+						newdev.queueDevice;	
+					}
 				});
 			});
 		});
