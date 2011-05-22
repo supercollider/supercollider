@@ -308,6 +308,30 @@ SCDocParser {
         file.close;
     }
 
+    merge {|p2|
+        var n;
+        var sects = IdentitySet[\classmethods,\instancemethods,\section,\subsection,\examples];
+        var do_children = {|dest,children|
+            var res;
+            children !? {
+                children.do {|node|
+                    if(sects.includes(node.tag)) {
+                        n = dest.detect {|x| (x.tag==node.tag) and: {x.text==node.text}};
+                        if(n.isNil) {
+                            dest = dest.add(node);
+                        } {
+                            n.children = do_children.(n.children,node.children);
+                        }
+                    } {
+                        dest = dest.add(node);
+                    }
+                }
+            };
+            dest;
+        };
+        root = do_children.(root,p2.root);
+    }
+
     parseMetaData {|path|
         var line, file, tag, text, match;
         var tags = IdentitySet[\class,\title,\summary,\categories,\related,\redirect];
