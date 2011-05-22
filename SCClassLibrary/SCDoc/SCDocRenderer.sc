@@ -663,9 +663,9 @@ SCDocHTMLRenderer : SCDocRenderer {
         if(toc, {this.renderTOC(f,name)});
     }
 
-    addUndocumentedMethods {|class,tag|
+    addUndocumentedMethods {|class,tag,title|
         var node = parser.findNode(tag);
-        var mets = parser.generateUndocumentedMethods(class, node, "Undocumented methods");
+        var mets = parser.generateUndocumentedMethods(class, node, title);
         mets !? {
             if(node.tag.isNil, { //no subtree, create one
                 parser.root = parser.root.add(node = (tag:tag, children:List.new));
@@ -675,9 +675,9 @@ SCDocHTMLRenderer : SCDocRenderer {
         ^node;
     }
 
-    addInheritedMethods {|tag,div|
+    addInheritedMethods {|tag,div,title|
         var node = parser.findNode(tag);
-        var mets = (tag:\subsection, text:"Inherited methods", children:[], makeDiv:div);
+        var mets = (tag:\subsection, text:title, children:[], makeDiv:div);
         if(node.tag.isNil, { //no subtree, create one
             parser.root = parser.root.add(node = (tag:tag, children:List.new));
         });
@@ -712,13 +712,13 @@ SCDocHTMLRenderer : SCDocRenderer {
 
             currentClass !? {
                 if(currentClass != Object) {
-                    this.addInheritedMethods(\classmethods,"inheritedclassmets");
-                    this.addInheritedMethods(\instancemethods,"inheritedinstmets");
+                    this.addInheritedMethods(\classmethods,"inheritedclassmets","Inherited class methods");
+                    this.addInheritedMethods(\instancemethods,"inheritedinstmets","Inherited instance methods");
                 };
 
                 // FIXME: should probably get undocumented methods of implementing class?
-                this.addUndocumentedMethods(currentClass.class,\classmethods);
-                this.addUndocumentedMethods(currentClass,\instancemethods);
+                this.addUndocumentedMethods(currentClass.class,\classmethods,"Undocumented class methods");
+                this.addUndocumentedMethods(currentClass,\instancemethods,"Undocumented instance methods");
                 //TODO: add methods from +ClassName.schelp (recursive search)
 
                 x = parser.findNode(\redirect).text.stripWhiteSpace;

@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 12;
+    classvar version = 13;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -214,8 +214,16 @@ SCDoc {
     }
 
     *parseAndRender {|src,dest,subtarget|
+        var p2;
         SCDoc.postProgress(src+"->"+dest);
         p.parseFile(src);
+
+        doc_map[subtarget].additions.do {|ext|
+            p2 = p2 ?? {p.class.new};
+            p2.parseFile(ext);
+            p.merge(p2);
+        };
+
         r.render(p,dest,subtarget);
     }
 
@@ -241,7 +249,7 @@ SCDoc {
             count = 0;
             this.postProgress("Updating all files");
             helpSourceDirs.do {|dir|
-                fileList[dir] = ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp'")
+                fileList[dir] = ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -not -name '*.ext.schelp'")
                     .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
                 count = count + fileList[dir].size;
             };
@@ -297,7 +305,7 @@ SCDoc {
 
     *prepareHelpForURL {|url|
         var proto, path, anchor;
-        var subtarget, src, c;
+        var subtarget, src, c, cmd;
         var verpath = this.helpTargetDir +/+ "version";
 
         doWait = thisThread.isKindOf(Routine);
@@ -365,9 +373,13 @@ SCDoc {
                     ^nil;
                 };
             } {
-                if(src.notNil and:
-                {("test"+src.escapeChar($ )+"-nt"+path.escapeChar($ )
-                 +"-o"+verpath.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
+                cmd = {
+                    ("test" + ([src,verpath]++doc_map[subtarget].additions).collect {|x|
+                        x.escapeChar($ )+"-nt"+path.escapeChar($ )
+                    }.join(" -o ")).systemCmd == 0
+                };
+
+                if(src.notNil and: cmd) {
                     // target file and helpsource exists, and helpsource is newer than target
                     this.parseAndRender(src,path,subtarget);
                     isProcessing = false;
@@ -536,8 +548,8 @@ SCDoc {
             this.postProgress("- Collecting from"+dir);
             Platform.case(
 //                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -printf '%p;%T@\n'"},
-                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -exec stat -c \"%n;%Z\" {} +"},
-                \osx, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -exec stat -f \"%N;%m\" {} +"}
+                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -not -name '*.ext.schelp' -exec stat -c \"%n;%Z\" {} +"},
+                \osx, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -not -name '*.ext.schelp' -exec stat -f \"%N;%m\" {} +"}
             ).unixCmdGetStdOutLines.do {|line|
                 #path, mtime = line.split($;);
                 subtarget = path[dir.size+1 ..].drop(-7);
@@ -574,6 +586,23 @@ SCDoc {
             };
         };
         this.postProgress("Added"+ndocs+"new documents");
+
+        ndocs = 0;
+        helpSourceDirs.do {|dir|
+            ("find -L"+dir.escapeChar($ )+"-type f -name '*.ext.schelp'").unixCmdGetStdOutLines.do {|file|
+                subtarget = file[dir.size+1 ..].drop(-11);
+                doc = doc_map[subtarget];
+                if(doc.notNil) {
+                    doc.additions = doc.additions.add(file).asSet;
+                    ndocs = ndocs + 1;
+                    this.postProgress("Addition for"+subtarget+":"+file);
+                } {
+                    warn("SCDoc: Ignoring additions for non-existing document:"+file);
+                };
+                this.maybeWait;
+            }
+        };
+        this.postProgress("Found"+ndocs+"document additions");
 
         this.postProgress("Processing"+classes.size+"undocumented classes");
         undocumentedClasses = classes;

@@ -1,0 +1,12 @@
+instancemethods::
+
+subsection:: Extensions by SCDoc
+
+method:: stripWhiteSpace
+Strips whitespace at the beginning and end of the string.
+returns:: The stripped string
+
+method:: unixCmdGetStdOutLines
+Like link::#-unixCmdGetStdOut:: but returns the lines in an Array instead.
+returns:: an link::Classes/Array:: of each line of output
+

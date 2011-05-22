@@ -123,6 +123,8 @@ Anchors for these methods get prefixed with a dot (.) instead of * or -.
 
 SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a code::private\:::: tag right after code::classmethods\:::: or code::instancemethods\::::
 
+Extensions can add methods to existing class docs, see the link::#extensions:: section below.
+
 subsection:: Redirect classes
 Some classes uses the code::*doesNotUnderstand:: trick to redirect to another implementing class. To document such classes, you need to add this tag in the header:
 code::
@@ -225,4 +227,37 @@ If you mention something that should match in search but is not one of the above
 code::
 keyword:: someKeyWords
 ::
+
+section:: Extensions
+subsection:: Quarks and extensions
+Each extension should have their own HelpSource folder with files that should be included in the help system.
+It's recommended that each Quark provides a Quarks/TheQuark.schelp file with categories "Quarks", that explains what the quark is and does.
+
+Example file layout:
+code::
+MyQuark/HelpSource/Quarks/MyQuark.schelp
+MyQuark/HelpSource/Classes/MyClass1.schelp
+MyQuark/HelpSource/Classes/MyClass2.schelp
+MyQuark/HelpSource/Guides/MyGuide.schelp
+MyQuark/HelpSource/Guides/MyPicture.png
+MyQuark/MyClass1.sc
+MyQuark/MyClass2.sc
+::
+
+subsection:: Method extensions
+An extension that adds methods to existing classes should document these in code::Classes/TheClass.ext.schelp::, only including the relevant bits (no title, summary, categories, etc..)
+
+Example: Classes/String.ext.schelp
+code::
+INSTANCEMETHODS::
+
+subsection:: Extensions by SCDoc
+
+method:: stripWhiteSpace
+strips whitespace at the beginning and end of the string
+returns:: the stripped string
+::
+
+The contents are inserted into the right spot (section, subsection, etc).
+It works for all kind of sections, for example one can add a subsection to code::DESCRIPTION\:::: with additional information, or add another top-level section, etc.
 

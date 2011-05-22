@@ -50,12 +50,6 @@ Also deprecate class.categories since this is now in the helpfiles instead?
 
 * cross-platform: check all uses of systemCmd. move to Platform class? Some stuff are not possible on windows, use cygwin or similar?
 
-* Handle methods added by extensions
-Documenting added methods could be done in files named ClassName.ext.
-before we render each class, we need to find all ClassName.ext files and merge their parsed node tree with the current class.
-We should probably find these files first and keep their full paths in a dictionary with classname as key.
-note that they should *add* to classmethods and instancemethods instead of creating new sections for these..
-
 * plain HTML in HelpSource
 Some files might be kept as plain HTML instead of converting to .schelp, for example License.html but perhaps even some tutorials?
 But then we need a way to add these to the doc_map. For example a directory.scdoc file in these folders that contains a list of doc_map Event's:
