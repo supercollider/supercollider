@@ -138,9 +138,13 @@ scons with the `install' target:
 
    $ scons install
 
-any target (including `install') can be cleaned with the `-c' option
+Any target (including `install') can be cleaned with the `-c' option
 to scons; note that cleaning the `install' target also removes locally
 built files.
+
+Thus, to uninstall:
+
+   $ scons -c install
 
 The option SCEL installs the emacs editor. For the sced and scvim editors,
 please use the scons scripts in their respective directories (in editors/).
