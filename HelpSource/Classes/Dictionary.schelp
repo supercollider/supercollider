@@ -73,7 +73,7 @@ method::putPairs
 Add all items to the dictionary, using them as key and value pairwise.
 code::
 d = ();
-d.putPairs(\hello, 10, \whello, "lord", "abc", 7);
+d.putPairs([\hello, 10, \whello, "lord", "abc", 7]);
 ::
 		
 subsection::Accessing
