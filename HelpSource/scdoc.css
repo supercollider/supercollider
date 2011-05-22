@@ -52,6 +52,10 @@ a:hover {
     text-decoration: underline;
 }
 
+#inheritedclassmets, #inheritedinstmets {
+    margin-top: 1em;
+}
+
 .inheritedmets_class {
     font-weight: bold;
     color: #555;

@@ -19,7 +19,7 @@ url = SCDoc.prepareHelpForURL(SCDoc.findHelpFile("SinOsc"));
 ::
 
 CLASSMETHODS::
-private:: initClass, addToDocMap, makeMethodList, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, readDocMap, addMethodList, findHelpSourceDirs, getAllMetaData, syncNonHelpFiles, makeClassTemplate, maybeWait, checkVersion
+private:: initClass, addToDocMap, makeMethodList, postProgress, docMapToJSON, handleUndocumentedClasses, writeDocMap, collectAllMethods, tickProgress, readDocMap, addMethodList, findHelpSourceDirs, getAllMetaData, syncNonHelpFiles, maybeWait, checkVersion
 
 method:: p
 The default link::Classes/SCDocParser:: object, created automatically.
@@ -106,6 +106,15 @@ argument:: noCache
 If true, don't read doc map cache from file and discard any old rendered files. This makes sure that every file is re-rendered, even if there was already a rendered help file. This is similar to starting with an empty Help folder.
 
 subsection:: Utilities
+
+method:: makeClassTemplate
+Create a schelp template for specified class.
+argument:: name
+String or Symbol. The name of the class.
+argument:: path
+File to render the help stub and template to, used internally by SCDoc. Just pass nil (default) to return the template string.
+returns::
+If path was given, true or false. If not given, returns the template string.
 
 method:: splitList
 Split a comma-separated string into an array of whitespace-stripped strings, useful to parse the contents of tags like code::categories\:::: and code::related\::::.
