@@ -397,9 +397,14 @@ SCDoc {
     *makeClassTemplate {|name,path|
         var class = name.asSymbol.asClass;
         var n, m, cats, f;
-//        f = class.filenameSymbol.asString.escapeChar($ );
-        f = (helpTargetDir+/+"version").escapeChar($ );
-        if(class.notNil and: {("test"+f+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0}) {
+
+        doWait = thisThread.isKindOf(Routine);
+
+        if(class.notNil and: {path.isNil
+            or: {
+                ("test"+(helpTargetDir+/+"version").escapeChar($ )+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0
+            }
+        }) {
             this.postProgress("Undocumented class:"+name+", generating stub and template");
             cats = "Undocumented classes";
             if(this.classHasArKrIr(class)) {
@@ -463,27 +468,40 @@ SCDoc {
                 txt;
             };
 
+            m = "CLASS::"+name
+                ++"\nsummary:: (put short description here)\n"
+                ++"categories::"+cats
+                ++"\nrelated:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.\n\n"
+                ++"DESCRIPTION::\n(put long description here)\n\n"
+                ++ f.(\classmethods) ++ f.(\instancemethods)
+                ++"\nEXAMPLES::\n\ncode::\n(some example code)\n::\n";
+
             n = n.add((
                 tag:\section, text:"Help Template", children:[
                     (tag:\prose, display:\block,
-                    text:"Fill out and save the template below to HelpSource/Classes/"++name++".schelp"),
+                    text:"Copy the template below or run"),
                     (tag:\code,
-                    text:"CLASS::"+name
-                    ++"\nsummary:: (put short description here)\n"
-                    ++"categories::"+cats
-                    ++"\nrelated:: Classes/SomeRelatedClass, Reference/SomeRelatedStuff, etc.\n\n"
-                    ++"DESCRIPTION::\n(put long description here)\n\n"
-                    ++ f.(\classmethods) ++ f.(\instancemethods)
-                    ++"\nEXAMPLES::\n\ncode::\n(some example code)\n::\n",
+                    text:"Document.new(string:SCDoc.makeClassTemplate(\\"++name++"))",
+                    display:\block),
+                    (tag:\prose,
+                    text:"to open a new Document with the template.\nSave it to HelpSource/Classes/"++name++".schelp",
+                    display:\block),
+                    (tag:\code,
+                    text:m,
                     display:\block)
                 ]
             ));
-            p.root = n;
-            p.currentFile = nil;
-            r.render(p,path,"Classes/"++name);
-            ^true;
+
+            if(path.notNil) {
+                p.root = n;
+                p.currentFile = nil;
+                r.render(p,path,"Classes/"++name);
+                ^true;
+            } {
+                ^m;
+            };
         };
-        ^false;
+        ^if(path.notNil,false,nil);
     }
 
     *checkSystemCmd {|cmd|

@@ -670,7 +670,7 @@ SCDocHTMLRenderer : SCDocRenderer {
             if(node.tag.isNil, { //no subtree, create one
                 parser.root = parser.root.add(node = (tag:tag, children:List.new));
             });
-            node.children.add(mets);
+            node.children = node.children.add(mets);
         };
         ^node;
     }
@@ -681,7 +681,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         if(node.tag.isNil, { //no subtree, create one
             parser.root = parser.root.add(node = (tag:tag, children:List.new));
         });
-        node.children.add(mets);
+        node.children = node.children.add(mets);
         ^node;
     }
 
