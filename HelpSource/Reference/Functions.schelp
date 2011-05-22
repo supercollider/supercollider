@@ -36,7 +36,22 @@ section:: Arguments
 
 An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list may be omitted. 
 
-Names of arguments in the list may be initialized to a default value by using an equals sign. Arguments which are not explicitly initialized will be set to nil if no value is passed for them. Putting the default value inside parenthesis will use the default value also when nil is explicitly passed as the value.
+Names of arguments in the list may be initialized to a default value using the following syntax forms. Arguments which are not explicitly initialized will be set to nil if no value is passed for them.
+
+"arg" style, default value is a literal:
+code::{ arg x = 1; .... } :: link::#[1]::
+
+"arg" style, default value is an expression:
+code::{ arg x = 10.rand; ... } :: link::#[2]::
+
+"arg" style, default value is a literal but you want to treat it like an expression:
+code::{ arg x = (2); ... } :: link::#[2]::
+
+Pipe style, default value is a literal:
+code::{ |x = 1| ... } :: link::#[1]::
+
+Pipe style, default value is an expression:
+code::{ |x = (10.rand)| ... } :: link::#[2]::
 
 If the last argument in the list is preceeded by three dots (an ellipsis), then all the remaining arguments that were passed will be assigned to that variable as an link::Classes/Array::. Arguments must be separated by commas.
 
@@ -71,6 +86,83 @@ code::
 ::
 
 See link::Reference/Literals:: for more information.
+
+anchor::[1]::
+subsection:: [1] Literal argument defaults
+
+Argument defaults that are literals are stored as part of the link::Classes/FunctionDef::. Arguments passed at runtime -- including nil -- always override the defaults:
+
+code::f = { arg x = 1; x };
+f.value(2);  // prints 2
+
+f.value;   // prints 1
+
+f.value(nil);  // prints nil
+::
+
+anchor::[2]::
+subsection:: [2] Expression argument defaults
+
+Since expressions are evaluated when the function is called, they cannot be stored in the link::Classes/FunctionDef::. They are executed only if the passed-in value is nil.
+
+code::f = { arg x = 10.rand; x };
+f.value(100);  // prints 100
+
+f.value;   // prints a number 0-9
+
+f.value(nil);   // prints a number 0-9!
+::
+
+This means you can use expression-style to define a default that cannot be overridden by nil.
+
+code::f = { arg x = (3); x };
+f.value(nil);   // prints 3
+::
+
+Note: Parentheses are required when initializing an argument to an expression, if the argument list is written inside || pipes.
+
+code::(
+var abc = 2;
+{ arg x = abc+1; x }   // OK
+)
+
+(
+var abc = 2;
+{ |x = abc+1| x }
+)
+ERROR: Parse error
+   in file 'selected text'
+   line 1 char 10:
+  { |x = abc•+1| x } 
+-----------------------------------
+ERROR: Command line parse failed
+
+(
+var abc = 2;
+{ |x = (abc+1)| x }   // OK
+)
+
+(
+var abc = 2;
+{ |x (abc+1)| x }   // In ||, the = may be omitted if () are there
+)
+::
+
+This is because the pipe character also serves as a binary operator. Without parentheses, expressions such as the following are ambiguous:
+
+code::
+{ |a, b, c = a | b | c }
+::
+
+The following produce identical function definitions. Expression-style defaults are simply a shortcut syntax for the latter.
+
+code::{ arg x = 10.rand; x };
+
+{	arg x;
+	x ?? { x = 10.rand };
+	x
+};
+::
 
 section:: Variables
 
