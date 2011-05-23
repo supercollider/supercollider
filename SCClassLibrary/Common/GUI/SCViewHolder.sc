@@ -138,14 +138,7 @@ FlowView : SCViewHolder {
 			};
 		});
 		// this adds the composite view to the parent composite view
-		view = this.class.viewClass.new(parentView, bounds);
-		// now a tricky hack... the parent needs the FlowView as a child, not the composite view
-		// so I will replace the last-added child with THIS
-		if(parentView.children[parentView.children.size-1] === view,{
-			parentView.children[parentView.children.size-1] = this;
-		},{
-			Error("FlowView unexpected result : parent's last child is not my view").throw;
-		});
+		this.view = this.class.viewClass.new(parentView, bounds);
 
 		// the parent might be a vertical, horizontal or flow
 		// and might now have placed me, so get the bounds
@@ -278,14 +271,14 @@ FlowView : SCViewHolder {
 		// am I still alive in the window?
 		view.notClosed.if({
 			// since this is in the parent's children array, view.remove is not enough by itself
-			this.parent.prRemoveChild(this);
+			//this.parent.prRemoveChild(this);
 			view.remove;
 		});
 	}
 	viewDidClose {
 		autoRemoves.do({ arg u; u.remove });
 		autoRemoves = nil;
-		view.viewDidClose;
+		view.tryPerform(\viewDidClose);
 	}
 
 	// mimic SCLayoutView interface
