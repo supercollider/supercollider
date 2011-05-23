@@ -1,4 +1,22 @@
-FlowLayout {
+Decorator {
+	place { arg view; this.subclassResponsibility(\place); }
+
+	remove { arg view; this.subclassResponsibility(\remove); }
+
+	clear { this.subclassResponsibility(\clear); }
+
+	bounds { this.subclassResponsibility(\bounds); }
+
+	bounds_ { arg bounds; this.subclassResponsibility(\bounds_); }
+
+	gap { this.subclassResponsibility(\gap); }
+	gap_ { arg gap; this.subclassResponsibility(\gap_); }
+
+	margin { this.subclassResponsibility(\margin); }
+	margin_ { arg margin; this.subclassResponsibility(\margin_); }
+}
+
+FlowLayout : Decorator {
 	var <bounds, <>margin, <>gap;
 	var <>left, <>top, <>maxHeight,<>maxRight;
 
@@ -10,6 +28,7 @@ FlowLayout {
 		margin = margin ? Point(4,4);
 		this.reset;
 	}
+	clear { this.reset; }
 	reset {
 		maxRight = left = bounds.left + margin.x;
 		top = bounds.top + margin.y;
@@ -71,4 +90,76 @@ FlowLayout {
 			inb.width - (left - inb.left - margin.x),
 			inb.height - (top - inb.top - margin.y))
 	}
+}
+
+LiveFlowLayout : Decorator {
+	var flowLayout;
+	var rows;
+	var fOnViewClose;
+
+	*new { arg bounds, margin, gap;
+		^super.new.prInitFlowViewLayout(bounds, margin, gap);
+	}
+
+	clear {
+		this.reset;
+	}
+
+	reset {
+		rows = [];
+		flowLayout.reset;
+	}
+
+	place { arg view;
+		var row;
+		if (rows.size < 1) {this.prAddRow};
+		rows.last.add( view );
+		// Ensure the action is only added once: it will be removed only if already added.
+		view.removeAction( fOnViewClose, \onClose );
+		view.addAction( fOnViewClose, \onClose );
+		flowLayout.place( view );
+	}
+
+	remove { arg view, reflow = true;
+		rows.copy.do { |row|
+			row.remove(view);
+			if ( (row.size < 1) and: (row !== rows.last) ) {
+				rows.remove(row);
+			};
+		};
+	}
+
+	startRow {
+		this.prAddRow;
+		flowLayout.nextLine;
+	}
+
+	reflow {
+		flowLayout.reset;
+		rows.do { |row|
+			row.do { |view| flowLayout.place(view) };
+			if (row !== rows.last) { flowLayout.nextLine };
+		};
+	}
+
+	rows { ^rows.copy }
+
+	bounds { ^flowLayout.bounds; }
+
+	bounds_ { arg bounds; flowLayout.bounds = bounds; }
+
+	gap { ^flowLayout.gap; }
+	gap_ { arg gap; flowLayout.gap_(gap); }
+
+	margin { ^flowLayout.margin; }
+	margin_ { arg margin; flowLayout.margin_(margin); }
+
+	// PRIVATE:
+
+	prInitFlowViewLayout { arg bounds, margin, gap;
+		flowLayout = FlowLayout( bounds, margin, gap );
+		fOnViewClose = { |view| this.remove(view); };
+	}
+
+	prAddRow { rows = rows.add(List.new); }
 }

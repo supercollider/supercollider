@@ -154,12 +154,11 @@ FlowView : SCViewHolder {
 			bounds = bounds.moveTo(0, 0);
 		};
 		//view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
-		view.decorator = FlowLayout(bounds,margin ?? {2@0},gap ?? {4@4});
+		view.decorator = LiveFlowLayout(bounds, margin ?? {2@0}, gap ?? {4@4}, false);
 		autoRemoves = IdentitySet.new;
 	}
 	startRow {
-		view.add(StartRow.new); //won't really put a view in there yet
-		this.decorator.nextLine
+		this.decorator.startRow;
 	}
 	removeOnClose { arg updater;
 		autoRemoves.add(updater);
@@ -189,14 +188,7 @@ FlowView : SCViewHolder {
 	used { ^this.decorator.used }
 
 	reflowAll {
-		this.decorator.reset;
-		view.children.do({ |widget|
-			if(widget.isKindOf( StartRow ),{
-				this.decorator.nextLine
-			},{
-				this.decorator.place(widget);
-			})
-		});
+		this.decorator.reflow;
 	}
 	// returns the new bounds
 	resizeToFit { arg reflow = false,tryParent = false;
@@ -305,16 +297,6 @@ FlowView : SCViewHolder {
 	}
 	removeAll {
 		view.removeAll;
-		// SCContainerView removeAll is a bit odd
-		// it relies on the children to remove themselves
-		// but a StartRow doesn't ever know its parent
-		// so it doesn't remove itself
-		view.children.do({ |child|
-			if(child.isKindOf(StartRow),{
-				view.prRemoveChild(child)
-			})
-		});
-
 		this.decorator.reset;
 	}
 
