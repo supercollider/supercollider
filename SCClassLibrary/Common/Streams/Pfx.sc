@@ -20,7 +20,7 @@ Pfx : FilterPattern {
 		event[\instrument] = fxname;
 		event[\type] = \on;
 		event[\id] = id;
-		event[\delta] = 0;
+		event[\delta] = 1e-9; // hack to ensure correct ordering of events
 
 		cleanupEvent = (type: \off, parent: event);
 
