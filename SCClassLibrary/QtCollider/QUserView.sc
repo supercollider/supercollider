@@ -40,11 +40,11 @@ QUserView : QView {
   // reimplement mouse and key response to do nothing if enabled = false;
 
   keyDownEvent { arg char, modifiers, unicode, keycode;
-    if( this.enabled ) { ^this.keyDown( char, modifiers, unicode, keycode ) };
+    if( this.enabled ) { ^super.keyDownEvent( char, modifiers, unicode, keycode ) };
   }
 
   keyUpEvent { arg char, modifiers, unicode, keycode;
-    if( this.enabled ) { ^this.keyUp( char, modifiers, unicode, keycode ) };
+    if( this.enabled ) { ^super.keyUpEvent( char, modifiers, unicode, keycode ) };
   }
 
   mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
