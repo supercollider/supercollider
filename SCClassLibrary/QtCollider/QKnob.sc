@@ -15,6 +15,9 @@
 
 QKnob : QUserView {
   classvar <>defaultMode, <>isSquare=false, <>compactRatio=0.87;
+  // The keyboard modifier used to engage vertical mode.
+  // We need to compute it according to platform.
+  classvar vertMod;
   var size, widthDiv2, center, aw8, aw12, aw14, hit;
   var <>color, <value, prevValue, <>step, <>keystep, <>mode, <centered = false;
   var <skin;
@@ -24,6 +27,12 @@ QKnob : QUserView {
     var version;
 
     defaultMode='round';
+
+    // To engage vertical mode, use a modifier that's not used for drag & drop
+    Platform.case (
+      \osx, { vertMod = \ctrl },
+      { vertMod = \shift }
+    );
 
     StartUp.add({
 
@@ -145,10 +154,22 @@ QKnob : QUserView {
 
   mouseMove { arg x, y, modifiers;
     var mp, pt, angle, inc = 0;
+    var m; // mode used
+
+    if( modifiers != 0 ) {
+        case (
+          {modifiers.isAlt}, {m = \horiz},
+          {vertMod === \ctrl && modifiers.isCtrl}, {m = \vert},
+          {vertMod === \shift && modifiers.isShift}, {m = \vert},
+          {m = mode}
+        );
+    }{
+      m = mode;
+    };
 
     //if (modifiers & 1048576 != 1048576) { // we are not dragging out - apple key
       case
-        { (mode == \vert) || (modifiers & 262144 == 262144) } { // Control
+        { (m === \vert) } {
           if ( hit.y > y, {
             inc = step;
           }, {
@@ -164,7 +185,7 @@ QKnob : QUserView {
             this.refresh;
           }
         }
-        { (mode == \horiz) || (modifiers & 524288 == 524288) } { // Option
+        { m === \horiz } {
           if ( hit.x > x, {
             inc = step.neg;
           }, {
@@ -180,7 +201,7 @@ QKnob : QUserView {
             this.refresh;
           }
         }
-        { mode == \round } {
+        { m === \round } {
           pt = center - Point(x,y);
           angle = Point(pt.y, pt.x.neg).theta;
           if ((angle >= -0.80pi) and: { angle <= 0.80pi} , {
@@ -200,9 +221,9 @@ QKnob : QUserView {
 
   getScale { |modifiers|
     ^case
-      { modifiers & 16r2000000 > 0 } { shift_scale }
-      { modifiers & 16r4000000 > 0 } { ctrl_scale }
-      { modifiers & 16r8000000 > 0 } { alt_scale }
+      { modifiers.isShift } { shift_scale }
+      { modifiers.isCtrl } { ctrl_scale }
+      { modifiers.isAlt } { alt_scale }
       { 1 };
   }
 

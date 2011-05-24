@@ -484,7 +484,7 @@ QView : QObject {
   }
 
   keyDownEvent { arg char, modifiers, unicode, keycode;
-    modifiers = QKeyModifiers.toCocoa(modifiers, keycode);
+    modifiers = QKeyModifiers.toCocoa(modifiers);
 
     if( char.size == 1 ) {char = char[0]};
 
@@ -496,7 +496,7 @@ QView : QObject {
   }
 
   keyUpEvent { arg char, modifiers, unicode, keycode;
-    modifiers = QKeyModifiers.toCocoa(modifiers, keycode);
+    modifiers = QKeyModifiers.toCocoa(modifiers);
 
     if( char.size == 1 ) {char = char[0]};
 
@@ -508,24 +508,31 @@ QView : QObject {
   }
 
   mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
-    if( (modifiers & 16r4000000) > 0 ) { // if CTRL mod
+    // WARNING: QDragView overrides this method!
+
+    if( (modifiers & QKeyModifiers.control) > 0 ) { // if Ctrl / Cmd mod
       // Try to get drag obj and start a drag.
       // If successful, block further processing of this event.
       if( this.beginDrag( x, y ) ) { ^false };
     };
+
     // else continue to handle mouse down event
+    modifiers = QKeyModifiers.toCocoa(modifiers);
     ^this.mouseDown( x, y, modifiers, buttonNumber, clickCount );
   }
 
   mouseUpEvent { arg x, y, modifiers, buttonNumber;
+    modifiers = QKeyModifiers.toCocoa(modifiers);
     ^this.mouseUp(  x, y, modifiers, buttonNumber );
   }
 
   mouseMoveEvent { arg x, y, modifiers;
+    modifiers = QKeyModifiers.toCocoa(modifiers);
     ^this.mouseMove( x, y, modifiers );
   }
 
   mouseOverEvent { arg x, y;
+    // WARNING: QUserView overrides this method!
     ^this.mouseOver( x, y );
   }
 

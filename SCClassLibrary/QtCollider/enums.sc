@@ -48,7 +48,7 @@ QKeyModifiers {
     <meta = 16r10000000,
     <keypad = 16r20000000;
 
-  *toCocoa { arg mods, keycode;
+  *toCocoa { arg mods;
     var cmods = 0;
     if (mods & QKeyModifiers.shift > 0) {cmods = cmods | 131072};
     if (mods & QKeyModifiers.alt > 0 ) {cmods = cmods | 524288};
