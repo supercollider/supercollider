@@ -28,6 +28,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include <QStyle>
+#include <QClipboard>
 
 static QcWidgetFactory<QtCollider::WebView> factory;
 
@@ -144,7 +145,15 @@ void WebView::keyPressEvent( QKeyEvent *e )
 
 void WebPage::triggerAction ( WebAction action, bool checked )
 {
-  if( action == QWebPage::Reload && _delegateReload ) return;
+  switch ( action ) {
+    case QWebPage::Reload:
+      if( _delegateReload ) return;
+      break;
+    case QWebPage::Copy:
+      QApplication::clipboard()->setText( selectedText() );
+      return;
+    default: ;
+  }
 
   QWebPage::triggerAction( action, checked );
 }
