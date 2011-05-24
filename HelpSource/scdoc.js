@@ -146,18 +146,82 @@ function fixTOC() {
     for(var i=0;i<x.length;i++) {
         var e = x[i];
         e.setAttribute("contentEditable",true);
-/* FIXME: select whole line. hopefully this happens before WebView responds to the key event??
-        e.onkeydown = function(ev) {
-            if(ev.keycode == 13 && ev.ctrlKey == true || ev.shiftKey == true) {
-                // s =  window.getSelection()
-                // if(s.isCollapsed) {
-                // find nodes at start and end of (or start of next) line
-                // s.removeAllRanges();
-                // r=document.createRange(); r.setStart(start,0); r.setEnd(end,0); s.addRange(r)
-                // }
-            }
+
+// did not work..
+/*        e.oncopy = function(ev) {
+            var txt = window.getSelection().getRangeAt().toString();
+            ev.clipboardData.setData('text/html',txt);
+            ev.preventDefault();
         }
 */
+
+/*
+This key event handler selects the whole line when pressing shift/ctrl-enter with no selection.
+
+But the problem is that it does not update the selection sent to the client.
+This is probably because the WebView catches the key event before javascript does!
+A fix might be to expose a function to JS that evaluates selection, and call it here.
+Or can the WebView make sure that JS has responded to all key events before getting the selection?
+*/
+        e.onkeydown = function(ev) {
+            if(ev.keyCode == 13 && (ev.ctrlKey == true || ev.shiftKey == true)) {
+                var s =  window.getSelection();
+                var r = s.getRangeAt();
+                var r2 = document.createRange();
+                if(r.collapsed) {
+                    // find start of line
+                    var p = r.startContainer;
+                    while(!p.previousSibling && p != ev.target) {
+                        p = p.parentNode;
+                    }
+                    if(p==ev.target) {
+                        r2.setStartBefore(ev.target.firstChild);
+                    } else {
+                        while(p) {
+                            if(p.nodeName == "BR") {
+                                r2.setStartAfter(p);
+                                break;
+                            }
+                            if(p.lastElementChild && p.lastElementChild.nodeName == "BR") {
+                                r2.setStartAfter(p.lastElementChild);
+                                break;
+                            }
+                            p = p.previousSibling;
+                            
+                        }
+                        if(!p)
+                            r2.setStartBefore(ev.target.firstChild);
+                    }
+                    // find end of line
+                    var p = r.endContainer;
+                    while(!p.nextSibling && p != ev.target)
+                        p = p.parentNode;
+                    if(p==ev.target) {
+                        r2.setEndAfter(ev.target.lastChild);
+                    } else {
+                        while(p) {
+                            if(p.nodeName == "BR") {
+                                r2.setEndBefore(p);
+                                break;
+                            }
+                            if(p.firstElementChild && p.firstElementChild.nodeName == "BR") {
+                                r2.setEndBefore(p.firstElementChild);
+                                break;
+                            }
+                            p = p.nextSibling;
+                        }
+                        if(!p)
+                            r2.setEndAfter(ev.target.lastChild);
+                    }
+
+                    s.removeAllRanges();
+                    s.addRange(r2);
+//                    console.log(r2.toString()); // this extracts the range contents as plain text
+                }
+                return false;
+            }
+            return true;
+        }
     }
 
     addInheritedMethods();
