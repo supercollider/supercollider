@@ -383,12 +383,6 @@ QView : QObject {
   defaultKeyUpAction {}
 
   keyDown { arg char, modifiers, unicode, keycode;
-    if( char.size == 1 ) {char = char[0]; keyTyped = char;};
-
-    if( (keycode == 16r1000020) || (keycode == 16r1000021) ||
-        (keycode == 16r1000022) || (keycode == 16r1000023 ) )
-      { this.keyModifiersChanged( modifiers ) };
-
     if( keyDownAction.notNil ) {
       ^keyDownAction.value( this, char, modifiers, unicode, keycode );
     } {
@@ -397,12 +391,7 @@ QView : QObject {
   }
 
   keyUp { arg char, modifiers, unicode, keycode;
-    if( char.size == 1 ) {char = char[0]};
-
-    if( (keycode == 16r1000020) || (keycode == 16r1000021) ||
-        (keycode == 16r1000022) || (keycode == 16r1000023 ) )
-      { this.keyModifiersChanged( modifiers ) };
-
+    keyTyped = char;
     if( keyUpAction.notNil ) {
       ^keyUpAction.value( this, char, modifiers, unicode, keycode );
     } {
@@ -495,10 +484,26 @@ QView : QObject {
   }
 
   keyDownEvent { arg char, modifiers, unicode, keycode;
+    modifiers = QKeyModifiers.toCocoa(modifiers, keycode);
+
+    if( char.size == 1 ) {char = char[0]};
+
+    if( (keycode == 16r1000020) || (keycode == 16r1000021) ||
+        (keycode == 16r1000022) || (keycode == 16r1000023 ) )
+      { this.keyModifiersChanged( modifiers ) };
+
     ^this.keyDown( char, modifiers, unicode, keycode );
   }
 
   keyUpEvent { arg char, modifiers, unicode, keycode;
+    modifiers = QKeyModifiers.toCocoa(modifiers, keycode);
+
+    if( char.size == 1 ) {char = char[0]};
+
+    if( (keycode == 16r1000020) || (keycode == 16r1000021) ||
+        (keycode == 16r1000022) || (keycode == 16r1000023 ) )
+      { this.keyModifiersChanged( modifiers ) };
+
     ^this.keyUp( char, modifiers, unicode, keycode );
   }
 
