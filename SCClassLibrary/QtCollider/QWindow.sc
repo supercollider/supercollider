@@ -187,7 +187,6 @@ QWindow
   addFlowLayout { arg margin, gap; ^view.addFlowLayout( margin, gap ); }
   close { view.close; }
   isClosed { ^view.isClosed; }
-  closed { ^view.isClosed; }
   visible { ^view.visible; }
   visible_ { arg boolean; view.visible_(boolean); }
   front { view.front; }
