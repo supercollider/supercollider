@@ -5,6 +5,7 @@ QView : QObject {
   // drag-and-drop
   classvar <currentDrag, <currentDragString;
 
+  var wasRemoved = false;
   // general props
   var <font, <resize = 1, <alpha = 1.0;
   // container props
@@ -50,6 +51,8 @@ QView : QObject {
 
   remove {
     this.destroy;
+    wasRemoved = true;
+    this.children.do { |child| child.remove };
   }
 
   mapToGlobal { arg point;
@@ -277,15 +280,8 @@ QView : QObject {
   }
 
   isClosed {
-    if( this.isValid ) {
-      // FIXME even after this.isValid == true, the object can become invalid!
-      ^this.visible.not;
-    } {
-      ^true;
-    }
+    ^wasRemoved;
   }
-
-  closed { ^this.isClosed }
 
   notClosed { ^this.isClosed.not }
 
