@@ -140,84 +140,169 @@ function addInheritedMethods() {
     }
 }
 
-function fixTOC() {
+/*
+This key event handler selects the whole line when pressing shift/ctrl-enter with no selection.
+But the problem is that it does not update the selection sent to the client.
+This is probably because the WebView catches the key event before javascript does!
+A fix might be to expose a function to JS that evaluates selection, and call it here.
+Or can the WebView make sure that JS has responded to all key events before getting the selection?
+*/
+function selectLine() {
+    var s =  window.getSelection();
+    var r = s.getRangeAt();
+
+    function findleft(x) {
+        var p = x;
+        var y, j;
+        while(p) {
+            if(p.nodeName == "BR")
+                return [p,j];
+            if(p.childNodes.length>0) {
+                for(var i=p.childNodes.length-1;i>=0;i--) {
+                    y = findleft(p.childNodes[i]);
+                    if(y) return y;
+                }
+            }
+            p = p.previousSibling;
+        }
+        return null;
+    };
+
+    function findright(x) {
+        var p = x;
+        var y, j;
+        while(p) {
+            if(p.nodeName == "BR")
+                return [p,j];
+            for(var i=0;i<p.childNodes.length;i++) {
+                y = findright(p.childNodes[i]);
+                if(y) return y;
+            }
+            p = p.nextSibling;
+        }
+        return null;
+    };
+
+
+    if(r.collapsed) {
+        var r2 = document.createRange();
+        var top = r.startContainer;
+        while(top && top.nodeName != "PRE")
+            top = top.parentNode;
+
+        var p = r.startContainer;
+        while(!p.previousSibling && p != top) {
+            p = p.parentNode;
+        }
+        if(p==top) {
+            r2.setStartBefore(p.firstChild);
+        } else {
+            var found = findleft(p.previousSibling);
+            if(found)
+                r2.setStartAfter(found[0]);
+            else
+                r2.setStartBefore(p.firstChild);
+        }
+        var p = r.startContainer;
+        while(!p.nextSibling && p != top) {
+            p = p.parentNode;
+        }
+        if(p==top) {
+            r2.setEndAfter(p.lastChild);
+        } else {
+            var found = findright(p.nextSibling);
+            if(found)
+                r2.setEndBefore(found[0]);
+            else
+                r2.setEndAfter(p.lastChild);
+        }
+        s.removeAllRanges();
+        s.addRange(r2);
+    }
+}
+
+function selectParens(ev) {
+    var s =  window.getSelection();
+    var r = s.getRangeAt();
+    var r2 = document.createRange();
+    var j;
+
+    function findlpar(x) {
+        var p = x;
+        var y, j;
+        while(p) {
+            if(j = p.nodeValue)
+                if((j=j.indexOf("("))>=0) return [p,j];
+            for(var i=0;i<p.childNodes.length;i++) {
+                y = findlpar(p.childNodes[i]);
+                if(y) return y;
+            }
+            p = p.previousSibling;
+        }
+        return null;
+    }
+
+    function findrpar(x,count) {
+        var p = x;
+        var y, j;
+        count = count || [0];
+        while(p) {
+            if(j = p.nodeValue) {
+                if(j.indexOf("(")>=0) {
+                    count[0]++;
+                }
+                if((j=j.lastIndexOf(")"))>=0) {
+                    if(count[0]==0)
+                        return [p,j];
+                    else
+                        count[0]--;
+                }
+            }
+            for(var i=0;i<p.childNodes.length;i++) {
+                y = findrpar(p.childNodes[i],count);
+                if(y) return y;
+            }
+            p = p.nextSibling;
+        }
+        return null;
+    }
+
+    var p = r.startContainer;
+    if(p.nodeValue && (j = p.nodeValue.indexOf("("))>=0) {
+        r2.setStart(p,j+1);
+        p = p.parentNode.nextSibling;
+    } else {
+        while(!p.previousSibling && p != ev.target) {
+            p = p.parentNode;
+        }
+        if(p==ev.target)
+            return;
+        var found = findlpar(p);
+        if(found)
+            r2.setStart(found[0],found[1]+1);
+    }
+
+    var found = findrpar(p);
+    if(found)
+        r2.setEnd(found[0],found[1]);
+
+    s.removeAllRanges();
+    s.addRange(r2);
+}
+
+function fixTOC() {        
 // make all code examples editable!
     var x = document.getElementsByClassName("lang-sc");
     for(var i=0;i<x.length;i++) {
         var e = x[i];
         e.setAttribute("contentEditable",true);
 
-// did not work..
-/*        e.oncopy = function(ev) {
-            var txt = window.getSelection().getRangeAt().toString();
-            ev.clipboardData.setData('text/html',txt);
-            ev.preventDefault();
-        }
-*/
-
-/*
-This key event handler selects the whole line when pressing shift/ctrl-enter with no selection.
-
-But the problem is that it does not update the selection sent to the client.
-This is probably because the WebView catches the key event before javascript does!
-A fix might be to expose a function to JS that evaluates selection, and call it here.
-Or can the WebView make sure that JS has responded to all key events before getting the selection?
-*/
+        // select parenthesis
+        e.ondblclick = selectParens;
+        // select current line
         e.onkeydown = function(ev) {
             if(ev.keyCode == 13 && (ev.ctrlKey == true || ev.shiftKey == true)) {
-                var s =  window.getSelection();
-                var r = s.getRangeAt();
-                var r2 = document.createRange();
-                if(r.collapsed) {
-                    // find start of line
-                    var p = r.startContainer;
-                    while(!p.previousSibling && p != ev.target) {
-                        p = p.parentNode;
-                    }
-                    if(p==ev.target) {
-                        r2.setStartBefore(ev.target.firstChild);
-                    } else {
-                        while(p) {
-                            if(p.nodeName == "BR") {
-                                r2.setStartAfter(p);
-                                break;
-                            }
-                            if(p.lastElementChild && p.lastElementChild.nodeName == "BR") {
-                                r2.setStartAfter(p.lastElementChild);
-                                break;
-                            }
-                            p = p.previousSibling;
-                            
-                        }
-                        if(!p)
-                            r2.setStartBefore(ev.target.firstChild);
-                    }
-                    // find end of line
-                    var p = r.endContainer;
-                    while(!p.nextSibling && p != ev.target)
-                        p = p.parentNode;
-                    if(p==ev.target) {
-                        r2.setEndAfter(ev.target.lastChild);
-                    } else {
-                        while(p) {
-                            if(p.nodeName == "BR") {
-                                r2.setEndBefore(p);
-                                break;
-                            }
-                            if(p.firstElementChild && p.firstElementChild.nodeName == "BR") {
-                                r2.setEndBefore(p.firstElementChild);
-                                break;
-                            }
-                            p = p.nextSibling;
-                        }
-                        if(!p)
-                            r2.setEndAfter(ev.target.lastChild);
-                    }
-
-                    s.removeAllRanges();
-                    s.addRange(r2);
-//                    console.log(r2.toString()); // this extracts the range contents as plain text
-                }
+                selectLine();
                 return false;
             }
             return true;
