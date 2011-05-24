@@ -584,6 +584,9 @@ Server : Model {
 		bootNotifyFirst = true;
 		this.doWhenBooted({
 			serverBooting = false;
+			if (sendQuit.isNil) {
+				sendQuit = not(this.inProcess) and: {this.isLocal};
+			};
 			this.initTree;
 			(volume.volume != 0.0).if({
 				volume.play;
@@ -675,6 +678,7 @@ Server : Model {
 		dumpMode = 0;
 		pid = nil;
 		serverBooting = false;
+		sendQuit = nil;
 		this.serverRunning = false;
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		RootNode(this).freeAll;
@@ -686,12 +690,10 @@ Server : Model {
 
 	*quitAll {
 		set.do({ arg server;
-			if ((server.sendQuit === true)
-				or: { server.sendQuit.isNil and: { server.remoteControlled }}) {
+			if (server.sendQuit === true) {
 				server.quit
 			};
 		})
-		//		set.do({ arg server; if(server.isLocal or: {server.inProcess} ) {server.quit}; })
 	}
 	*killAll {
 		// if you see Exception in World_OpenUDP: unable to bind udp socket
