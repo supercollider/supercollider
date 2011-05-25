@@ -221,18 +221,37 @@ function selectLine() {
     }
 }
 
+function countChar(str,chr) {
+    var x = 0, a, b;
+    for(var i=0;i<str.length;i++) {
+        if(str[i]==chr) {
+            if(a==undefined) a = i;
+            b = i;
+            x++;
+        }
+    }
+    // return count, first occurence and last occurence
+    return [x,a,b];
+}
+
 function selectParens(ev) {
     var s =  window.getSelection();
     var r = s.getRangeAt();
     var r2 = document.createRange();
     var j;
 
+    // FIXME: it always selects from the left paren, so clicking on the right-par does not select from the matching left-par
+    // need to abort lpar search if rpar was found and then start with the rpar to the right (or closest) instead
     function findlpar(x) {
         var p = x;
         var y, j;
         while(p) {
-            if(j = p.nodeValue)
-                if((j=j.indexOf("("))>=0) return [p,j];
+            if(j = p.nodeValue) {
+                j = countChar(j,"(");
+                if(j[0]>0) {
+                    return [p, j[2]];
+                }
+            }
             for(var i=0;i<p.childNodes.length;i++) {
                 y = findlpar(p.childNodes[i]);
                 if(y) return y;
@@ -248,14 +267,13 @@ function selectParens(ev) {
         count = count || [0];
         while(p) {
             if(j = p.nodeValue) {
-                if(j.indexOf("(")>=0) {
-                    count[0]++;
-                }
-                if((j=j.lastIndexOf(")"))>=0) {
+                count[0] += countChar(j,"(")[0];
+                j = countChar(j,")");
+                if(j[0]>0) {
                     if(count[0]==0)
-                        return [p,j];
+                        return [p,j[1]];
                     else
-                        count[0]--;
+                        count[0] -= j[0];
                 }
             }
             for(var i=0;i<p.childNodes.length;i++) {
