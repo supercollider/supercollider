@@ -548,18 +548,16 @@ SCDoc {
 
     *getAllMetaData {
         var subtarget, classes, cats, t = Main.elapsedTime;
-        var update = false, doc, ndocs = 0;
+        var update = false, doc, ndocs;
 
         this.syncNonHelpFiles; // ensure that helpTargetDir exist
-
+        classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
+        this.readDocMap;
         this.postProgress("Getting metadata for all docs...");
 
-        classes = Class.allClasses.collectAs(_.name,IdentitySet).reject(_.isMetaClassName);
+        //FIXME: if classtree changed, force total re-render (touch version timestamp)
 
-        this.readDocMap;
-
-        this.postProgress("Parsing metadata...");
-        // parse all files in fileList
+        ndocs = 0;
         helpSourceDirs.do {|dir|
             var x, path, mtime, ext, sym, class;
             ext = (dir != helpSourceDir);
@@ -572,39 +570,44 @@ SCDoc {
                 #path, mtime = line.split($;);
                 subtarget = path[dir.size+1 ..].drop(-7);
                 doc = doc_map[subtarget];
+
+                if(subtarget.dirname=="Classes") {
+                    sym = subtarget.basename.asSymbol;
+                    class = sym.asClass;
+                } {
+                    sym = nil;
+                };
+
+                //FIXME: if implementor class changed since last time, force a re-render.
+                //if doc.redirect && doc.implementor != class.tryPerform(doc.redirect.asSymbol).asSymbol
+
                 if(doc.isNil or: {mtime != doc.mtime}) {
                     p.parseMetaData(path);
-                    //FIXME: if doc uses 'classtree::', force a re-render by setting mtime=0 ??
                     this.addToDocMap(p,subtarget);
                     doc = doc_map[subtarget];
                     doc.methods = p.methodList;
                     doc.keywords = p.keywordList;
                     doc.mtime = mtime;
                     doc.installed = if(ext){\extension}{\standard};
+                    if(sym.notNil) { // doc is a class-doc
+                        if(class.notNil) { // class exists
+                            doc.superclasses = class.superclasses.collect(_.name).reject(_.isMetaClassName);
+                            doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
+                            x = p.findNode(\redirect).text.stripWhiteSpace;
+                            if(x.notEmpty) {
+                                x = class.tryPerform(x.asSymbol);
+                                x !? { doc.implementor = x.asSymbol };
+                            };
+                        } {
+                            doc.installed = \missing;
+                        };
+                    };
                     update = true;
                     ndocs = ndocs + 1;
                 };
                 doc.keep = true;
-                if(subtarget.dirname=="Classes") {
-                    sym = subtarget.basename.asSymbol;
-                    class = sym.asClass;
-                    if(class.notNil) {
-                        classes.remove(sym);
-                        doc.superclasses = class.superclasses.collect(_.name).reject(_.isMetaClassName);
-                        doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
-                        x = p.findNode(\redirect).text.stripWhiteSpace;
-                        // FIXME: if implementor changed since last time, we should rerender the file
-                        if(x.notEmpty) {
-                            try {
-                                class = class.perform(x.asSymbol);
-                                if(class.notNil) {
-                                    doc.implementor = class.asSymbol;
-                                };
-                            };
-                        };
-                    } {
-                        doc.installed = \missing;
-                    };
+                if(sym.notNil) {
+                    classes.remove(sym);
                 };
                 this.maybeWait;
             };
@@ -613,11 +616,15 @@ SCDoc {
 
         ndocs = 0;
         helpSourceDirs.do {|dir|
+            var old;
             ("find -L"+dir.escapeChar($ )+"-type f -name '*.ext.schelp'").unixCmdGetStdOutLines.do {|file|
                 subtarget = file[dir.size+1 ..].drop(-11);
                 doc = doc_map[subtarget];
                 if(doc.notNil) {
+                    // FIXME: if this doc adds a method to a non-class doc, it will not show up in doc.methods...
+                    old = doc.additions.copy;
                     doc.additions = doc.additions.add(file).asSet;
+                    update = doc.additions != old;
                     ndocs = ndocs + 1;
                     this.postProgress("Addition for"+subtarget+":"+file);
                 } {
