@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 13;
+    classvar version = 14;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -593,8 +593,14 @@ SCDoc {
                         doc.superclasses = class.superclasses.collect(_.name).reject(_.isMetaClassName);
                         doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
                         x = p.findNode(\redirect).text.stripWhiteSpace;
+                        // FIXME: if implementor changed since last time, we should rerender the file
                         if(x.notEmpty) {
-                            try { doc.implementor = class.perform(x.asSymbol) };
+                            try {
+                                class = class.perform(x.asSymbol);
+                                if(class.notNil) {
+                                    doc.implementor = class.asSymbol;
+                                };
+                            };
                         };
                     } {
                         doc.installed = \missing;
