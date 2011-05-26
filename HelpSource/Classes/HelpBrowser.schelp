@@ -18,6 +18,12 @@ Create a new HelpBrowser instance with given home URL.
 method:: defaultHomeUrl
 Get or set the default home URL.
 
+method:: openNewWindows
+Get or set the default for "open in new windows" toggle.
+
+method:: goTo
+Go to url with singleton instance or a new window, depending on the code::openNewWindows:: setting.
+
 method:: openHelpFor
 Open the relevant help page for given text in the singleton HelpBrowser instance.
 
