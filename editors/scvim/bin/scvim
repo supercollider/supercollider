@@ -23,9 +23,13 @@ require 'optparse'
 
 vim = "vim"
 
-#test for mvim if we're on a darwin/osX box
-if RUBY_PLATFORM =~ /darwin/ and system('which mvim')
-  vim = 'mvim'
+#test for MacVim if we're on a darwin/osX box
+if RUBY_PLATFORM =~ /darwin/
+  if system('which mvim')
+    vim = 'mvim'
+  elsif File.exists?('/Applications/MacVim.app/Contents/MacOS/Vim')
+    vim = '/Applications/MacVim.app/Contents/MacOS/Vim'
+  end
 end
 
 rcfilelocs = [
