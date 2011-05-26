@@ -40,3 +40,9 @@ void QtCollider::init() {
     qcApp->setQuitOnLastWindowClosed( false );
   }
 }
+
+QC_PUBLIC
+void QtCollider::processEvents()
+{
+  if( qApp ) qApp->processEvents();
+}

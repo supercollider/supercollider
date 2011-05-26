@@ -26,6 +26,9 @@
     NSMutableArray *guiWindows;
 	NSTimer *deferredTaskTimer;
 	NSTimer *appClockTimer;
+#ifdef SC_QT
+	NSTimer *qtProcessEventsTimer;
+#endif
 	float deferredTaskInterval;
 }
 
@@ -36,6 +39,9 @@
 - (void)setDeferredTaskInterval: (float) interval;
 - (void)doPeriodicTask: (NSTimer*) timer;
 - (void)doClockTask: (NSTimer*) timer;
+#ifdef SC_QT
+- (void)doProcessEventsTask: (NSTimer*) timer;
+#endif
 - (void)setCmdLine: (const char*) text length: (int)length;
 - (void)sendMain: (char*) methodName;
 
