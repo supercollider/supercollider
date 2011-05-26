@@ -601,7 +601,8 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 					client->pushCmdLine( stack, buf, bytes );
 				}
 				else if( bytes == 0 ) {
-					postfl("pipe-in: EOF. Will stop reading.\n");
+					postfl("pipe-in: EOF. Will quit.\n");
+					client->onQuit(0);
 					shouldRead = false;
 					break;
 				}
