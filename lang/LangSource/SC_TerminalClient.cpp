@@ -654,8 +654,15 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 		if( hIndex == 1 ) {
 			DWORD nAvail;
 			if (!PeekNamedPipe(hStdIn, NULL, 0, NULL, &nAvail, NULL)) {
-				postfl("pipe-in: error trying to peek stdin.\n");
-				client->onQuit(1);
+				DWORD err =  GetLastError();
+				if( err == ERROR_BROKEN_PIPE ) {
+					postfl("pipe-in: Pipe has been ended. Quitting.\n");
+					client->onQuit(0);
+				}
+				else {
+					postfl("pipe-in: Error trying to peek stdin (%Li). Quitting.\n", err);
+					client->onQuit(1);
+				}
 				break;
 			}
 
@@ -664,7 +671,7 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 				char buf[256];
 				DWORD nRead = sc_min(256, nAvail);
 				if (!ReadFile(hStdIn, buf, nRead, &nRead, NULL)) {
-					postfl("pipe-in: error trying to peek stdin.\n");
+					postfl("pipe-in: Error trying to read stdin (%Li). Quitting.\n", GetLastError());
 					client->onQuit(1);
 					shouldRun = false;
 					break;
