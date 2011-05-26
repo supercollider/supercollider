@@ -1,3 +1,5 @@
+scvim doesn't properly exit on mac.  The pipe reading and sclang processes still exist after :SClangKill, though the terminal is killed.
+
 for some reason there are some things that if you send via visual block they
 work, but if you send via the send block function F5, it doesn't.
 
