@@ -1117,39 +1117,76 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	loadCount = 0;
 }
 
+- (BOOL)shouldCloseWithWindow {
+	mSCWebView = nil;
+	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor:self];
+	return YES;
+}
+
 // delegate methods
 - (void)webView:(WebView *)sender didFinishLoadForFrame:(WebFrame *)frame
 {
-	//NSLog(@"frame load finished");
 	loadCount = loadCount - 1;
-	if(loadCount < 0) loadCount = 0;
-	if (loadCount == 0 && mSCWebView) {
-		//NSLog(@"all load finished");
-		mSCWebView->doOnLoadAction();
+	if (loadCount <= 0 && mSCWebView) {
+		loadCount = 0;
+		SEL selector = @selector(doLoadAction);
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+									[sender methodSignatureForSelector: selector]];
+		[invocation setTarget:sender];
+		[invocation setSelector: selector];
+		
+		[[SCVirtualMachine sharedInstance] defer: invocation];
 	}
 }
 
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame
 {
 	loadCount = loadCount + 1;
-	//NSLog(@"load started");
 }
 
 - (void)webView:(WebView *)sender didFailProvisionalLoadWithError:(NSError *)error forFrame:(WebFrame *)frame
 {
 	NSLog(@"didFailProvisionalLoadWithError: %@",[error localizedDescription]);
+	if (error.code == NSURLErrorCancelled) return; // this is Error -999
 	if (mSCWebView) {
 		post("SCWebView load request failed: '%s'\n", [[error localizedDescription] cString]);
+		SEL selector = @selector(doFailAction);
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+									[sender methodSignatureForSelector: selector]];
+		[invocation setTarget:sender];
+		[invocation setSelector: selector];
+		
+		[[SCVirtualMachine sharedInstance] defer: invocation];
+	}
+}
+
+- (void)doFailAction
+{
+	if (mSCWebView) {
 		mSCWebView->doLoadFailedAction();
+	}
+}
+
+- (void)doLoadAction
+{
+	if (mSCWebView) {
+		mSCWebView->doOnLoadAction();
 	}
 }
 
 - (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error
 {
 	NSLog(@"didFailLoadWithError: %@",[error localizedDescription]);
+	if (error.code == NSURLErrorCancelled) return; // this is Error -999
 	if (mSCWebView) {
 		post("SCWebView load request failed: '%s'\n", [[error localizedDescription] cString]);
-		mSCWebView->doLoadFailedAction();
+		SEL selector = @selector(doFailAction);
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+									[sender methodSignatureForSelector: selector]];
+		[invocation setTarget:sender];
+		[invocation setSelector: selector];
+		
+		[[SCVirtualMachine sharedInstance] defer: invocation];
 	}
 }
 
@@ -1167,8 +1204,16 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 		} else {
 			//NSLog(@"fire action");
 			[listener ignore];
-			NSString *urlString = [[request URL] absoluteString];
-			[self doLinkAction:urlString];
+			NSString *urlString = [[[request URL] absoluteString] retain];
+
+			SEL selector = @selector(doLinkAction:);
+			NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:
+										[webView methodSignatureForSelector: selector]];
+			[invocation setTarget:webView];
+			[invocation setSelector: selector];
+			[invocation setArgument:&urlString atIndex:2];
+			
+			[[SCVirtualMachine sharedInstance] defer: invocation];
 		}
 	} else { 
 		[listener use];
@@ -1189,6 +1234,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	const char * cstr = [urlString UTF8String];
 	PyrString *string = newPyrString(g->gc, cstr, 0, true);
 	mSCWebView->doLinkClickedAction(string);
+	[urlString release];
 }
 
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector
@@ -2516,6 +2562,8 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 SCWebView::~SCWebView()
 {
 	[mWebView removeFromSuperview];
+	[mWebView close];
+	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor:mWebView];
 	[mWebView release];
 }
 

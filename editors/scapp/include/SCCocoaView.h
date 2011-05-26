@@ -126,6 +126,8 @@
 - (struct SCWebView*)getSCObject;
 - (void)webView:(WebView *)sender didStartProvisionalLoadForFrame:(WebFrame *)frame;
 - (void)webView:(WebView *)sender didFailProvisionalLoadWithError:(NSError *)error forFrame:(WebFrame *)frame;
+- (void)doFailAction;
+- (void)doLoadAction;
 - (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error;
 - (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector;
 - (BOOL)webView:(WebView *)webView shouldInsertText:(NSString *)text replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action;
