@@ -1,13 +1,14 @@
 HelpBrowser {
 	classvar singleton;
 	classvar <>defaultHomeUrl;
+	classvar <>openNewWindows = false;
 
 	var <>homeUrl;
 	var <window;
 	var webView;
 	var animCount = 0;
 	var txtPath;
-	var <>openNewWin = false;
+	var openNewWin;
 
 	*instance {
 		if( singleton.isNil ) {
@@ -17,22 +18,26 @@ HelpBrowser {
 		^singleton;
 	}
 
-	*new { arg aHomeUrl;
+	*new { arg aHomeUrl, newWin;
 		if( aHomeUrl.isNil ) {
 			aHomeUrl = defaultHomeUrl ?? { SCDoc.helpTargetDir ++ "/Help.html" };
 		};
-		^super.new.init( aHomeUrl );
+		^super.new.init( aHomeUrl, newWin ?? { openNewWindows } );
+	}
+
+	*goTo {|url|
+		if(openNewWindows,{this.new},{this.instance}).goTo(url);
 	}
 
 	*openBrowser {
-		this.instance.goTo(SCDoc.helpTargetDir++"/Browse.html").window.front;
+		this.goTo(SCDoc.helpTargetDir++"/Browse.html");
 	}
 	*openSearch {|text|
 		text = if(text.notNil) {"#"++text} {""};
-		this.instance.goTo(SCDoc.helpTargetDir++"/Search.html"++text).window.front;
+		this.goTo(SCDoc.helpTargetDir++"/Search.html"++text);
 	}
 	*openHelpFor {|text|
-		this.instance.goTo(SCDoc.findHelpFile(text)).window.front;
+		this.goTo(SCDoc.findHelpFile(text));
 	}
 
 	goTo {|url, brokenAction|
@@ -64,6 +69,7 @@ HelpBrowser {
 				err.throw;
 			};
 		}.play(AppClock);
+		window.front;
 	}
 
 	goHome { this.goTo(homeUrl); }
@@ -74,7 +80,7 @@ HelpBrowser {
 
 /* ------------------------------ private ------------------------------ */
 
-	init { arg aHomeUrl;
+	init { arg aHomeUrl, aNewWin;
 		var toolbar;
 		var lblFind, txtFind;
 		var strh = "Tj".bounds.height;
@@ -123,18 +129,21 @@ HelpBrowser {
 			}
 		};
 
+		openNewWin = aNewWin;
 		x = x + w + 10;
 		if(GUI.scheme==QtGUI) {
-			w = "Create new windows".bounds.width + 50;
+			w = "Open new windows".bounds.width + 50;
 			QCheckBox.new (window, Rect(x, y, w, h) )
 				.resize_(1)
-				.string_("Create new windows")
+				.string_("Open new windows")
+				.value_(openNewWin)
 				.action_({ |b| openNewWin = b.value });
 		} {
 			w = "Same window".bounds.width + 5;
 			Button.new( window, Rect(x, y, w, h) )
 				.resize_(1)
 				.states_([["Same window"],["New window"]])
+				.value_(openNewWin.asInteger)
 				.action_({ |b| openNewWin = b.value.asBoolean });
 		};
 
@@ -166,8 +175,14 @@ HelpBrowser {
 		};
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
+			var newPath, oldPath;
 			if(openNewWin) {
-				HelpBrowser.new.goTo(url).window.front;
+				#newPath, oldPath = [url,webView.url].collect {|x|
+					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
+				};
+			};
+			if(newPath!=oldPath) {
+				HelpBrowser.new(newWin:true).goTo(url);
 			} {
 				this.goTo(url);
 			};
@@ -233,6 +248,6 @@ HelpBrowser {
 
 + Help {
 	gui {
-		HelpBrowser.instance.goHome.window.front;
+		HelpBrowser.instance.goHome;
 	}
 }
