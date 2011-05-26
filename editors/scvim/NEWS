@@ -1,17 +1,5 @@
-2008-08-12
-	Now using scons for installation.  See the README for more information.
-2008-05-06
-	I have changed a lot of things in order to make installation *hopefully*
-	easier.  There is now an scvim executable that looks for scvimrc to load in this order:
-	~/.scvimrc, /usr/local/share/scvim/scvimrc, /usr/share/scvim/scvimrc
-	the cache dir defaults to ~/.scvim/
-	there is no need for the SCVIM_DIR environment variable anymore
-2008-04-08
-	Dan Stowell moved the SCVim supercollider code into a class, now SCVim docs
-	and cache data can be updated inside SuperCollider.  Dan has also moved
-	some things around: he created the 'cache/' directory which contains all of
-	the data that is modified by scvim, everything else can be read only.
-2007-07-11
-	we can now parse html help files
-2007-01-30
-	removed dependence on ruby inside of vim.
+2011-05-35
+   Updated README to reflect new cmake install system, see the README for more
+   information.  The installation process is quite simple now.
+   scvim now works quite well on osx, uses Terminal.app instead of xterm.
+   The help generation is now done in SC, removed dependence on unrtf and unhtml.
