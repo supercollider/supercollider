@@ -95,6 +95,63 @@ StartRow : SCViewHolder {
 	}
 }
 
+FlowViewLayout : FlowLayout {
+	var rows;
+	var fOnViewClose;
+
+	*new { arg bounds, margin, gap;
+		^super.new(bounds,margin,gap).prInitFlowViewLayout();
+	}
+
+	clear {
+		rows = [];
+		this.reset;
+	}
+
+	place { arg view;
+		var row;
+		"place".postln;
+		if (rows.size < 1) {this.prAddRow};
+		rows.last.add( view );
+		// Ensure the action is only added once: it will be removed only if already added.
+		view.removeAction( fOnViewClose, \onClose );
+		view.addAction( fOnViewClose, \onClose );
+		super.place( view );
+	}
+
+	remove { arg view, reflow = true;
+		rows.copy.do { |row|
+			row.remove(view);
+			if ( (row.size < 1) and: (row !== rows.last) ) {
+				rows.remove(row);
+			};
+		};
+	}
+
+	startRow {
+		this.prAddRow;
+		this.nextLine;
+	}
+
+	reflow {
+		this.reset;
+		rows.do { |row|
+			row.do { |view| super.place(view) };
+			if (row !== rows.last) { this.nextLine };
+		};
+	}
+
+	rows { ^rows.copy }
+
+	// PRIVATE:
+
+	prInitFlowViewLayout {
+		fOnViewClose = { |view| this.remove(view); };
+	}
+
+	prAddRow { rows = rows.add(List.new); }
+}
+
 /**
   * a composite view with a FlowLayout as its decorator
   */
@@ -147,7 +204,7 @@ FlowView : SCViewHolder {
 			bounds = bounds.moveTo(0, 0);
 		};
 		//view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
-		view.decorator = LiveFlowLayout(bounds, margin ?? {2@0}, gap ?? {4@4}, false);
+		view.decorator = FlowViewLayout(bounds, margin ?? {2@0}, gap ?? {4@4}, false);
 		view.decorator.owner = this;
 		autoRemoves = IdentitySet.new;
 	}
@@ -291,7 +348,7 @@ FlowView : SCViewHolder {
 	}
 	removeAll {
 		view.removeAll;
-		this.decorator.reset;
+		this.decorator.clear;
 	}
 
 	//private
