@@ -19,6 +19,7 @@ Decorator {
 FlowLayout : Decorator {
 	var <bounds, <>margin, <>gap;
 	var <>left, <>top, <>maxHeight,<>maxRight;
+	var <>owner;
 
 	*new { arg bounds, margin, gap;
 		^super.newCopyArgs(bounds, margin, gap).init
@@ -96,6 +97,7 @@ LiveFlowLayout : Decorator {
 	var flowLayout;
 	var rows;
 	var fOnViewClose;
+	var <>owner;
 
 	*new { arg bounds, margin, gap;
 		^super.new.prInitFlowViewLayout(bounds, margin, gap);
@@ -145,7 +147,6 @@ LiveFlowLayout : Decorator {
 	rows { ^rows.copy }
 
 	bounds { ^flowLayout.bounds; }
-
 	bounds_ { arg bounds; flowLayout.bounds = bounds; }
 
 	gap { ^flowLayout.gap; }

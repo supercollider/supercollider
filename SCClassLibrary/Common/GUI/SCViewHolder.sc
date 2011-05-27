@@ -148,6 +148,7 @@ FlowView : SCViewHolder {
 		};
 		//view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
 		view.decorator = LiveFlowLayout(bounds, margin ?? {2@0}, gap ?? {4@4}, false);
+		view.decorator.owner = this;
 		autoRemoves = IdentitySet.new;
 	}
 	startRow {
