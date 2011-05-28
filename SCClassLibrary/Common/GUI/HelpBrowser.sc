@@ -202,6 +202,7 @@ HelpBrowser {
 
 	openTextFile {|path|
 		var win, winRect, txt, file, fonts;
+		path = path.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
 		if(Document.implementationClass.notNil) {
 			^Document.open(path);
 		};
@@ -210,7 +211,6 @@ HelpBrowser {
 		};
 		winRect = Rect(0,0,600,400);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
-		path = path.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
 		file = File(path,"r");
 		win = Window(bounds: winRect).name_("SuperCollider Help:"+path.basename);
 		txt = TextView(win,Rect(0,0,600,400)).resize_(5).string_(file.readAllString);
