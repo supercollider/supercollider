@@ -39,10 +39,10 @@ struct Graph
 	// try this for setting the rate of a control
 	int *mControlRates;
 
-        uint32 mNumUnits;
+	uint32 mNumUnits;
 	struct Unit **mUnits;
 
-	int mNumCalcUnits;
+	uint32 mNumCalcUnits;
 	struct Unit **mCalcUnits; // excludes i-rate units.
 
 	int mSampleOffset;
