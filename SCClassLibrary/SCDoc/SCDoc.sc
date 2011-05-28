@@ -530,17 +530,17 @@ SCDoc {
         this.postProgress("Synchronizing non-schelp files...");
         this.checkSystemCmd("rsync");
 
-        cmd = "rsync -rlt --exclude '*.schelp' --exclude '.*' %/"+helpTargetDir.escapeChar($ )+"2>/dev/null";
+        cmd = "rsync -rlt --exclude '*.schelp' --exclude '.*' %/ %";
 
         if(doWait) {
             c = Condition.new;
             helpSourceDirs.do {|dir|
-                cmd.format(dir.escapeChar($ )).unixCmd({c.unhang},false);
+                cmd.format(dir.escapeChar($ ),helpTargetDir.escapeChar($ )).unixCmd({c.unhang},false);
                 c.hang;
             };
         } {
             helpSourceDirs.do {|dir|
-                cmd.format(dir.escapeChar($ )).systemCmd;
+                cmd.format(dir.escapeChar($ ),helpTargetDir.escapeChar($ )).systemCmd;
             };
         };
         this.postProgress("Synchronizing non-schelp files: Done");
