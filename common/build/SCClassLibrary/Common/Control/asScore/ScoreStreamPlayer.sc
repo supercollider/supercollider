@@ -25,7 +25,13 @@ ScoreStreamPlayer : Server {
 	var <>beats, <>tempo;
 	var <>bundleList, <>maxTime;
 
-	*new { ^super.new("record").latency_(0) }
+	*new { ^super.new("record").initScoreStreamPlayer }
+
+	initScoreStreamPlayer {
+		this.latency_(0);
+		Server.set.remove(this); // we do not want to be part of the server list
+		^this
+	}
 
 	beats2secs { | beats | ^beats }
 	secs2beats { | beats | ^beats }
