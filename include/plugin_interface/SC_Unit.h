@@ -39,7 +39,7 @@ struct Unit
 	struct World *mWorld;
 	struct UnitDef *mUnitDef;
 	struct Graph *mParent;
-	uint16 mNumInputs, mNumOutputs;
+	uint32 mNumInputs, mNumOutputs; // changed from uint16 for synthdef ver 2
 	int16 mCalcRate;
 	int16 mSpecialIndex;		// used by unary and binary ops
 	int16 mParentIndex;

@@ -41,11 +41,11 @@ Unit* Unit_New(World *inWorld, UnitSpec *inUnitSpec, char*& memory)
 	unit->mWorld = inWorld;
 	unit->mUnitDef = def;
 
-	int numInputs = inUnitSpec->mNumInputs;
-	int numOutputs = inUnitSpec->mNumOutputs;
+	uint32 numInputs = inUnitSpec->mNumInputs;
+	uint32 numOutputs = inUnitSpec->mNumOutputs;
 	unit->mNumInputs = numInputs;
 	unit->mNumOutputs = numOutputs;
-	int numPorts = numInputs + numOutputs;
+	uint64 numPorts = numInputs + numOutputs;
 
 	unit->mInput = (Wire**)memory;
 	memory += numPorts * sizeof(Wire*);
@@ -73,8 +73,8 @@ void Unit_Dtor(Unit *inUnit)
 
 void Unit_ZeroOutputs(Unit *unit, int inNumSamples)
 {
-	long numOuts = unit->mNumOutputs;
-	for (int i=0; i<numOuts; ++i) {
+	uint32 numOuts = unit->mNumOutputs;
+	for (uint32 i=0; i<numOuts; ++i) {
 		float *out = OUT(i);
 		Clear(inNumSamples, out);
 	}
