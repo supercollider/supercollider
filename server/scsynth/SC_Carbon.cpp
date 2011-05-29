@@ -63,7 +63,8 @@ bool sc_HasVectorUnit()
 	return response & (1<<gestaltPowerPCHasVectorInstructions);
 }
 
-#if TARGET_CPU_X86
+#ifdef __SSE__
+#include <xmmintrin.h>
 
 void sc_SetDenormalFlags()
 {
