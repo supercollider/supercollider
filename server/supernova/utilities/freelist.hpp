@@ -34,10 +34,10 @@ class freelist
 {
     struct freelist_node
     {
-        boost::lockfree::tagged_ptr<freelist_node> next;
+        boost::lockfree::detail::tagged_ptr<freelist_node> next;
     };
 
-    typedef boost::lockfree::tagged_ptr<freelist_node> tagged_ptr;
+    typedef boost::lockfree::detail::tagged_ptr<freelist_node> tagged_ptr;
 
 public:
     freelist(void):
@@ -56,7 +56,7 @@ public:
             freelist_node * new_pool_ptr = old_pool->next.get_ptr();
             tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);
 
-            if (pool_.compare_exchange_strong(old_pool, new_pool)) {
+            if (pool_.compare_exchange_weak(old_pool, new_pool)) {
                 void * ptr = old_pool.get_ptr();
                 return reinterpret_cast<void*>(ptr);
             }
@@ -75,7 +75,7 @@ public:
 
             new_pool->next.set_ptr(old_pool.get_ptr());
 
-            if (pool_.compare_exchange_strong(old_pool, new_pool))
+            if (pool_.compare_exchange_weak(old_pool, new_pool))
                 return;
         }
     }

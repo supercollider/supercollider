@@ -461,7 +461,7 @@ private:
     int run_next_item(thread_count_t index)
     {
         dsp_thread_queue_item * item;
-        bool success = runnable_set.pop(&item);
+        bool success = runnable_set.pop(item);
 
         if (!success)
             return fifo_empty;
