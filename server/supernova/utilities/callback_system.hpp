@@ -52,7 +52,7 @@ public:
         {
             callback_type* runme;
 
-            if (not callbacks.dequeue(&runme))
+            if (not callbacks.dequeue(runme))
                 break;
 
             run_callback(runme);
