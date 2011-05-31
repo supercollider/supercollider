@@ -193,6 +193,13 @@ HelpBrowser {
 			};
 		};
 		webView.enterInterpretsSelection = true;
+		if (webView.class === \QWebView.asClass) {
+			webView.keyDownAction = { arg view, char, mods;
+				if( (char.ascii == 13) && (mods.isCtrl || mods.isCmd || mods.isShift) ) {
+					view.evaluateJavaScript("selectLine()");
+				};
+			};
+		};
 
 		toolbar[\Home].action = { this.goHome };
 		toolbar[\Back].action = { this.goBack };
