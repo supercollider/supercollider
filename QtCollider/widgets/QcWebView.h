@@ -55,6 +55,7 @@ public:
   void setDelegateReload( bool );
   bool interpretSelection() const { return _interpretSelection; }
   void setInterpretSelection( bool b ) { _interpretSelection = b; }
+  Q_INVOKABLE void evaluateJavaScript ( const QString &script );
 
   inline static QUrl urlFromString( const QString & str ) {
     QUrl url( str );

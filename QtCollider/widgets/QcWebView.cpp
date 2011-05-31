@@ -110,6 +110,13 @@ void WebView::setDelegateReload( bool flag )
   p->setDelegateReload( flag );
 }
 
+void WebView::evaluateJavaScript ( const QString &script )
+{
+  if( script.isEmpty() ) return;
+  QWebFrame *frame = page()->currentFrame();
+  if( frame ) frame->evaluateJavaScript( script );
+}
+
 void WebView::findText( const QString &searchText, bool reversed )
 {
   QWebPage::FindFlags flags( QWebPage::FindWrapsAroundDocument );
