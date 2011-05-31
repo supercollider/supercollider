@@ -31,8 +31,7 @@ QView : QObject {
   }
 
   *new { arg parent, bounds;
-    var p = parent;
-	while { (p = p.asView).isKindOf(QView).not };
+    var p = parent.asView;
     ^super.new( this.qtClass, [p, bounds.asRect] )
           .initQView( p );
   }
