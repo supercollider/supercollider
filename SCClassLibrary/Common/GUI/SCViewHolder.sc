@@ -138,7 +138,14 @@ FlowView : SCViewHolder {
 			};
 		});
 		// this adds the composite view to the parent composite view
-		this.view = this.class.viewClass.new(parentView, bounds);
+		view = this.class.viewClass.new(parentView, bounds);
+		// now a tricky hack... the parent needs the FlowView as a child, not the composite view
+		// so I will replace the last-added child with THIS
+		if(parentView.children[parentView.children.size-1] === view,{
+			parentView.children[parentView.children.size-1] = this;
+		},{
+			Error("FlowView unexpected result : parent's last child is not my view").throw;
+		});
 
 		// the parent might be a vertical, horizontal or flow
 		// and might now have placed me, so get the bounds
@@ -147,11 +154,12 @@ FlowView : SCViewHolder {
 			bounds = bounds.moveTo(0, 0);
 		};
 		//view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
-		view.decorator = LiveFlowLayout(bounds, margin ?? {2@0}, gap ?? {4@4}, false);
+		view.decorator = FlowLayout(bounds,margin ?? {2@0},gap ?? {4@4});
 		autoRemoves = IdentitySet.new;
 	}
 	startRow {
-		this.decorator.startRow;
+		view.add(StartRow.new); //won't really put a view in there yet
+		this.decorator.nextLine
 	}
 	removeOnClose { arg updater;
 		autoRemoves.add(updater);
@@ -181,7 +189,14 @@ FlowView : SCViewHolder {
 	used { ^this.decorator.used }
 
 	reflowAll {
-		this.decorator.reflow;
+		this.decorator.reset;
+		view.children.do({ |widget|
+			if(widget.isKindOf( StartRow ),{
+				this.decorator.nextLine
+			},{
+				this.decorator.place(widget);
+			})
+		});
 	}
 	// returns the new bounds
 	resizeToFit { arg reflow = false,tryParent = false;
@@ -271,14 +286,14 @@ FlowView : SCViewHolder {
 		// am I still alive in the window?
 		view.notClosed.if({
 			// since this is in the parent's children array, view.remove is not enough by itself
-			// this.parent.prRemoveChild(this);
+			this.parent.prRemoveChild(this);
 			view.remove;
 		});
 	}
 	viewDidClose {
 		autoRemoves.do({ arg u; u.remove });
 		autoRemoves = nil;
-		view.tryPerform(\viewDidClose);
+		view.viewDidClose;
 	}
 
 	// mimic SCLayoutView interface
@@ -290,6 +305,16 @@ FlowView : SCViewHolder {
 	}
 	removeAll {
 		view.removeAll;
+		// SCContainerView removeAll is a bit odd
+		// it relies on the children to remove themselves
+		// but a StartRow doesn't ever know its parent
+		// so it doesn't remove itself
+		view.children.do({ |child|
+			if(child.isKindOf(StartRow),{
+				view.prRemoveChild(child)
+			})
+		});
+
 		this.decorator.reset;
 	}
 
