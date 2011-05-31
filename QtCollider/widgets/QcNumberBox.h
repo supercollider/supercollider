@@ -54,8 +54,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     void setScrollStep( float step_ ) { scrollStep = step_; }
     void setScroll( bool b ) { scroll = b; }
     void setLocked( bool );
-    void setEditedTextColor( const QColor& c ) { editedTextColor = c; }
-    void setTextColor( const QColor& c ) { normalTextColor = c; }
+    void setTextColor( const QColor& c );
+    void setEditedTextColor( const QColor& c );
     void setValue( double );
     double value() const;
     int decimals() const { return maxDecimals(); }
@@ -82,6 +82,7 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     void stepBy( int steps, float stepSize );
     double roundedVal( double val );
     QString stringForVal( double val );
+    void updateTextColor();
     inline void doAction();
 
     bool scroll;

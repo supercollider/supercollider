@@ -60,19 +60,24 @@ void QcNumberBox::setLocked( bool locked )
   if( locked ) {
     setReadOnly( true );
     setSelection( 0, 0 );
-    if( normalTextColor.isValid() ) {
-      QPalette p( palette() );
-      p.setColor( QPalette::Text, normalTextColor );
-      setPalette( p );
-    }
   }
   else {
     setReadOnly( false );
-    if( editedTextColor.isValid() ) {
-      QPalette p( palette() );
-      p.setColor( QPalette::Text, editedTextColor );
-      setPalette( p );
-    }
+  }
+  updateTextColor();
+}
+
+void QcNumberBox::setTextColor( const QColor& c ) {
+  if( c.isValid() ) {
+    normalTextColor = c;
+    updateTextColor();
+  }
+}
+
+void QcNumberBox::setEditedTextColor( const QColor& c ) {
+  if( c.isValid() ) {
+    editedTextColor = c;
+    updateTextColor();
   }
 }
 
@@ -164,6 +169,13 @@ QString QcNumberBox::stringForVal( double val )
       str = str.left(i+1) + dec;
   }
   return str;
+}
+
+void QcNumberBox::updateTextColor()
+{
+  QPalette p( palette() );
+  p.setColor( QPalette::Text, isReadOnly() ? normalTextColor : editedTextColor );
+  setPalette( p );
 }
 
 void QcNumberBox::keyPressEvent ( QKeyEvent * event )
