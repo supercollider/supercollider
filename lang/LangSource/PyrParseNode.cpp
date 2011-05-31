@@ -3827,7 +3827,7 @@ PyrBlockNode* newPyrBlockNode(PyrArgListNode *arglist, PyrVarListNode *varlist, 
 	return node;
 }
 
-void PyrBlockNode::compile(PyrSlot* result)
+void PyrBlockNode::compile(PyrSlot* slotResult)
 {
 	PyrBlock *block, *prevBlock;
 	PyrMethodRaw *methraw;
@@ -3836,12 +3836,10 @@ void PyrBlockNode::compile(PyrSlot* result)
 	PyrVarDefNode *vardef;
 	PyrObject *proto;
 	PyrSymbolArray *argNames, *varNames;
-	PyrSlot *slotResult;
 	PyrSlot dummy;
 	bool hasVarExprs = false;
 
 	//postfl("->block\n");
-	slotResult = (PyrSlot*)result;
 
 	// create a new block object
 
