@@ -31,6 +31,8 @@
 #include <QPalette>
 #include <QWidget>
 
+#include <qmath.h>
+
 using namespace QtCollider;
 
 static QPalette::ColorRole paletteColorRoles[] = {
@@ -276,13 +278,18 @@ QFont Slot::toFont( PyrSlot *slot )
   PyrSlot *slots = slotRawObject(slot)->slots;
 
   QString family = Slot::toString( slots+0 );
-  //NOTE we allow empty family field;
-  int size = IsInt( slots+1 ) ? Slot::toInt( slots+1 ) : -1;
+  float fsize = Slot::toFloat( slots+1 );
   bool bold = IsTrue( slots+2 );
   bool italic = IsTrue( slots+3 );
 
-  QFont f( family, size, bold ? QFont::Bold : QFont::Normal, italic );
-  f.setPixelSize( size );
+  QFont f;
+  if( !family.isEmpty() ) f.setFamily( family );
+  if( fsize > 0.f ) {
+    int pixSize = ( fsize > 1.f ? qRound(fsize) : 1 );
+    f.setPixelSize( pixSize );
+  }
+  f.setBold( bold );
+  f.setItalic( italic );
 
   return f;
 }
