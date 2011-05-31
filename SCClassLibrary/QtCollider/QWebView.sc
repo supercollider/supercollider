@@ -33,6 +33,10 @@ QWebView : QView {
     this.invokeMethod( \findText, [string, reverse] );
   }
 
+  evaluateJavaScript { arg script;
+    this.invokeMethod( \evaluateJavaScript, script );
+  }
+
   // The given function will be evaluated when a page has loaded successfully.
   // The calling QWebView object is passed to the function.
 
