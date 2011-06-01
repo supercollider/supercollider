@@ -40,6 +40,7 @@ QcNumberBox::QcNumberBox()
   _validator( new QDoubleValidator( this ) ),
   step( 0.1f ),
   scrollStep( 0.1f ),
+  dragDist( 10.f ),
   _value( 0. ),
   _minDec(0),
   _maxDec(2)
@@ -215,16 +216,22 @@ void QcNumberBox::mouseMoveEvent ( QMouseEvent * event )
       && ( event->buttons() & Qt::LeftButton )
       && isReadOnly() )
   {
-    int dif = event->globalY() - lastPos;
-    if( dif != 0 ) {
-      lastPos = event->globalY();
-      //Q_EMIT( scrolled( dif * -1 ) );
-      stepBy( dif * -1, scrollStep );
+    int steps = (event->globalY() - lastPos) / dragDist;
+    if( steps != 0 ) {
+      lastPos = lastPos + (steps * dragDist);
+      stepBy( -steps, scrollStep );
       Q_EMIT( action() );
     }
   }
   else
     QLineEdit::mouseMoveEvent( event );
+}
+
+void QcNumberBox::wheelEvent ( QWheelEvent * event )
+{
+  if( isReadOnly() && event->orientation() == Qt::Vertical ) {
+    stepBy( event->delta() > 0 ? 1 : -1, scrollStep );
+  }
 }
 
 #if 0
