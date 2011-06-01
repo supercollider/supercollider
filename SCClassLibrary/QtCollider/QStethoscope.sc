@@ -69,11 +69,13 @@ QStethoscope {
     xZoomSlider.background = Color.grey(0.6);
     xZoomSlider.focusColor = Color.clear;
 
-    indexView = QNumberBox(view, Rect(10, 10, 30, 20)).value_(0);
+    indexView = QNumberBox(view, Rect(10, 10, 30, 20))
+                .value_(0).decimals_(0).step_(1).scroll_step_(1);
     indexView.action = { this.index = indexView.value;  };
     indexView.resize = 9;
     indexView.font = QFont("Monaco", 9);
-    nChanView = QNumberBox(view, Rect(10, 10, 25, 20)).value_(numChannels);
+    nChanView = QNumberBox(view, Rect(10, 10, 25, 20))
+                .value_(numChannels).decimals_(0).step_(1).scroll_step_(1);
     nChanView.action = { this.numChannels = nChanView.value.asInteger  };
     nChanView.resize = 9;
     nChanView.font = QFont("Monaco", 9);
