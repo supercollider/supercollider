@@ -1,6 +1,11 @@
 Model {
 	var <>dependants;
 
+	*new {
+		this.deprecated(thisMethod, Object.class.findMethod(\new));
+		"NB Model's functionality is duplicated by Object".postln;
+		^super.new;
+	}
 	changed { arg what ... moreArgs;
 		dependants.do({ arg item;
 			item.update(this, what, *moreArgs);

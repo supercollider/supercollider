@@ -189,7 +189,7 @@ ServerOptions
 	}
 }
 
-Server : Model {
+Server {
 	classvar <>local, <>internal, <default, <>named, <>set, <>program, <>sync_s = true;
 
 	var <name, <>addr, <clientID=0;
