@@ -309,22 +309,15 @@ function selectParens(ev) {
 }
 
 function fixTOC() {        
-// make all code examples editable!
     var x = document.getElementsByClassName("lang-sc");
     for(var i=0;i<x.length;i++) {
         var e = x[i];
+
+        // make all code examples editable!
         e.setAttribute("contentEditable",true);
 
-        // select parenthesis
+        // select parenthesis on double-click
         e.ondblclick = selectParens;
-        // select current line
-        e.onkeydown = function(ev) {
-            if(ev.keyCode == 13 && (ev.ctrlKey == true || ev.shiftKey == true)) {
-                selectLine();
-                return false;
-            }
-            return true;
-        }
     }
 
     addInheritedMethods();
