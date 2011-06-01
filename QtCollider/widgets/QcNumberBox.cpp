@@ -27,6 +27,9 @@
 #include <QMouseEvent>
 #include <QApplication>
 
+#include <math.h>
+#include <qmath.h>
+
 static QcWidgetFactory<QcNumberBox> factory;
 
 QcNumberBox::QcNumberBox()
@@ -37,9 +40,11 @@ QcNumberBox::QcNumberBox()
   _validator( new QDoubleValidator( this ) ),
   step( 0.1f ),
   scrollStep( 0.1f ),
-  _value( 0. )
+  _value( 0. ),
+  _minDec(0),
+  _maxDec(2)
 {
-  _validator->setDecimals( 2 );
+  _validator->setDecimals( _maxDec );
   setValidator( _validator );
   setLocked( true );
   connect( this, SIGNAL( editingFinished() ),
@@ -75,6 +80,8 @@ void QcNumberBox::setValue( double val )
   if( val > _validator->top() ) val = _validator->top();
   else if ( val < _validator->bottom() ) val = _validator->bottom();
 
+  val = roundedVal( val );
+
   _value = val;
 
   Q_EMIT( valueChanged() );
@@ -87,6 +94,28 @@ double QcNumberBox::value () const
 
 void QcNumberBox::setDecimals( int d )
 {
+  if( d < 0 ) return;
+  _minDec = _maxDec = d;
+  _validator->setDecimals( d );
+  setValue( _value );
+}
+
+void QcNumberBox::setMinDecimals( int d )
+{
+  if( d < 0 ) return;
+  _minDec = d;
+  if( _minDec > _maxDec ) {
+    _maxDec = d;
+    _validator->setDecimals( d );
+  }
+  setValue( _value );
+}
+
+void QcNumberBox::setMaxDecimals( int d )
+{
+  if( d < 0 ) return;
+  _maxDec = d;
+  if( _maxDec < _minDec ) _minDec = d;
   _validator->setDecimals( d );
   setValue( _value );
 }
@@ -101,17 +130,7 @@ void QcNumberBox::onEditingFinished()
 
 void QcNumberBox::onValueChanged()
 {
-  QLocale loc = locale();
-  QString str = loc.toString( _value, 'f', _validator->decimals() );
-  int i = str.indexOf( loc.decimalPoint() );
-  if( i > -1 ) {
-    QString dec = str.mid(i+1);
-    while( dec.endsWith('0') ) dec.chop(1);
-    if( dec.isEmpty() )
-      str = str.left(i);
-    else
-      str = str.left(i+1) + dec;
-  }
+  QString str = stringForVal( _value );
 
   blockSignals(true);
   setText( str );
@@ -122,6 +141,28 @@ void QcNumberBox::stepBy( int steps, float stepSize )
 {
   modifyStep( &stepSize );
   setValue( value() + (steps * stepSize) );
+}
+
+double QcNumberBox::roundedVal( double val )
+{
+  double k = pow( 10, _maxDec );
+  return round( val * k ) / k;
+}
+
+QString QcNumberBox::stringForVal( double val )
+{
+  QLocale loc = locale();
+  QString str = loc.toString( val, 'f', _maxDec );
+  int i = str.indexOf( loc.decimalPoint() );
+  if( i > -1 ) {
+    QString dec = str.mid(i+1);
+    while( dec.size() > _minDec && dec.endsWith('0') ) dec.chop(1);
+    if( dec.isEmpty() )
+      str = str.left(i);
+    else
+      str = str.left(i+1) + dec;
+  }
+  return str;
 }
 
 void QcNumberBox::keyPressEvent ( QKeyEvent * event )

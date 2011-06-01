@@ -1,5 +1,5 @@
 QNumberBox : QAbstractStepValue {
-  var <clipLo, <clipHi, <scroll, <scroll_step, <decimals;
+  var <clipLo, <clipHi, <scroll, <scroll_step;
   var <align, <buttonsVisible = false;
   var <normalColor, <typingColor;
 
@@ -40,10 +40,13 @@ QNumberBox : QAbstractStepValue {
     this.setProperty( \scrollStep, aFloat );
   }
 
-  decimals_ {  arg anInt;
-    decimals = anInt;
-    this.setProperty( \decimals, anInt );
-  }
+  decimals { ^this.getProperty(\decimals); }
+  minDecimals { ^this.getProperty(\minDecimals); }
+  maxDecimals { ^this.getProperty(\maxDecimals); }
+
+  decimals_ {  arg decimals; this.setProperty( \decimals, decimals ); }
+  minDecimals_ { arg decimals; this.setProperty( \minDecimals, decimals ); }
+  maxDecimals_ { arg decimals; this.setProperty( \maxDecimals, decimals ); }
 
   align_ { arg alignment;
     align = alignment;
