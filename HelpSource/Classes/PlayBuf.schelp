@@ -56,12 +56,13 @@ SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 		PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum), doneAction:2)
 	)
 }).play(s, [\out, 0, \bufnum, b]);
+::
 
-In the above example, note how the doneAction:2 causes the synth to free itself when the buffer reaches its end.
+In the above example, note how the code::doneAction:2:: causes the synth to free itself when the buffer reaches its end.
 
 Note again that the number of channels must be fixed for the SynthDef. It cannot vary depending on which buffer you use.
 
-
+code::
 // loop is true
 SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 	Out.ar(out, 
