@@ -37,6 +37,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
   Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
 
   Q_PROPERTY( int decimals READ decimals WRITE setDecimals );
+  Q_PROPERTY( int maxDecimals READ maxDecimals WRITE setMaxDecimals );
+  Q_PROPERTY( int minDecimals READ minDecimals WRITE setMinDecimals );
   Q_PROPERTY( double value READ value WRITE setValue );
 
   Q_PROPERTY( float step READ dummyFloat WRITE setStep )
@@ -56,8 +58,13 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     void setTextColor( const QColor& c ) { normalTextColor = c; }
     void setValue( double );
     double value() const;
+    int decimals() const { return maxDecimals(); }
+    int minDecimals() const { return _minDec; }
+    int maxDecimals() const { return _maxDec; }
     void setDecimals( int );
-    int decimals() const { return _validator->decimals(); }
+    void setMinDecimals( int );
+    void setMaxDecimals( int );
+
   Q_SIGNALS:
     void scrolled( int steps );
     void valueChanged();
@@ -72,6 +79,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     virtual void mouseMoveEvent ( QMouseEvent * event );
   private:
     void stepBy( int steps, float stepSize );
+    double roundedVal( double val );
+    QString stringForVal( double val );
     inline void doAction();
 
     bool scroll;
@@ -83,6 +92,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     float step;
     float scrollStep;
     double _value;
+    int _minDec;
+    int _maxDec;
 };
 
 #if 0
