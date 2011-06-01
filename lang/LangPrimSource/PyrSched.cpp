@@ -34,10 +34,22 @@
 
 #ifndef SC_WIN32
 #include <sys/time.h>
+#include <sys/wait.h>
 #endif
 
 #include "SC_Win32Utils.h"
 #include "SCBase.h"
+
+extern bool compiledOK;
+
+static PyrSymbol * s_callWrapper;
+static PyrSymbol * s_doAction;
+static PyrClass * class_subproc = NULL;
+static int bg_parent_fd = -1;
+struct sc_bgproc {
+	pid_t pid;
+	int fd;
+};
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
@@ -1328,9 +1340,164 @@ int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+
+static int call_fork_child(PyrSlot *func)
+{
+	char *string = NULL;
+	int err;
+	ssize_t nbytes;
+
+	VMGlobals *g = gMainVMGlobals;
+	if(compiledOK) {
+		g->canCallOS = true;
+		++g->sp; SetObject(g->sp, class_subproc);
+		++g->sp; slotCopy(g->sp, func);
+		++g->sp; SetInt(g->sp, getpid());
+		runInterpreter(g, s_callWrapper, 3);
+		g->canCallOS = false;
+	}
+
+	PyrSlot *a = &g->result;
+	if (!isKindOfSlot(a, class_string)) {
+		goto err;
+	}
+	string = (char*)malloc(slotRawObject(a)->size + 1);
+	err = slotStrVal(a, string, slotRawObject(a)->size + 1);
+	if(err) {
+		free(string);
+		goto err;
+	}
+	nbytes = write(bg_parent_fd, string, strlen(string));
+	free(string);
+
+err:
+	close(bg_parent_fd);
+	return 0;
+}
+
+static void call_parent_action(char *buf, pid_t pid, int done)
+{
+	pthread_mutex_lock (&gLangMutex);
+	if(compiledOK) {
+		VMGlobals *g = gMainVMGlobals;
+		PyrObject *scstring = (PyrObject*)newPyrString(g->gc, buf, 0, true);
+		g->canCallOS = true;
+		++g->sp; SetObject(g->sp, class_subproc);
+		++g->sp; SetInt(g->sp, pid);
+		++g->sp; SetObject(g->sp, scstring);
+		++g->sp; SetBool(g->sp, done);
+		runInterpreter(g, s_doAction, 4);
+		g->canCallOS = false;
+	}
+	pthread_mutex_unlock (&gLangMutex);
+}
+
+void* read_child_thread(void *data)
+{
+	struct sc_bgproc *process = (struct sc_bgproc *)data;
+	pid_t pid = process->pid;
+	int fd = process->fd;
+	int blocksize = 1024;
+	int size = blocksize;
+	int index = 0;
+	char *buf = (char*)malloc(size);
+
+	free(process);
+
+	while (1) {
+		int n = read(fd, &buf[index], 1);
+		if(n<=0) {
+			buf[index] = '\0';
+			break;
+		}
+		if(buf[index]=='\x1') {
+			buf[index] = '\0';
+			call_parent_action(buf, pid, false);
+			index = 0;
+			continue;
+		}
+		index++;
+		if(index+blocksize >= size) {
+			size += blocksize;
+			buf = (char*)realloc(buf, size);
+		}
+	}
+
+	waitpid(pid, NULL, 0);
+	call_parent_action(buf, pid, true);
+
+	return 0;
+}
+
+int prSendToParent(struct VMGlobals *g, int numArgsPushed)
+{
+	char *string;
+	int err, nbytes;
+	PyrSlot *a = g->sp;
+	if(bg_parent_fd<0) {
+		error("_SendToParent must be called from child process\n");
+		return errFailed;
+	}
+	string = (char*)malloc(slotRawObject(a)->size + 1);
+	err = slotStrVal(a, string, slotRawObject(a)->size + 1);
+	if(err) {
+		free(string);
+		error("_SendToParent: argument not a string\n");
+		return errFailed;
+	}
+	nbytes = write(bg_parent_fd, string, strlen(string));
+	nbytes = write(bg_parent_fd, "\x1", 1);
+	free(string);
+	return errNone;
+}
+
+int prRunSubProc(struct VMGlobals *g, int numArgsPushed)
+{
+	int pid, fd[2];
+	PyrSlot *self = g->sp-1;
+	PyrSlot *func = g->sp;
+
+	if(!class_subproc) {
+		PyrSymbol * sym = getsym("SubProcess");
+		if(!sym) {
+			error("SubProcess class not found\n");
+			return errFailed;
+		}
+		class_subproc = sym->u.classobj;
+	}
+
+	if (pipe(fd) < 0)
+		return errFailed;
+
+	if ((pid = fork())==0)
+	{
+		close(fd[0]);
+		bg_parent_fd = fd[1];
+		call_fork_child(func);
+		pthread_mutex_unlock (&gLangMutex);
+		wait(NULL);
+		exit(0);
+	}
+	else
+	{
+		struct sc_bgproc *process = (struct sc_bgproc *)malloc(sizeof(struct sc_bgproc));
+		pthread_t thread;
+		process->pid = pid;
+		process->fd = fd[0];
+		close(fd[1]);
+		pthread_create(&thread, NULL, read_child_thread, (void*)process);
+		pthread_detach(thread);
+		SetInt(self, pid);
+	}
+	return errNone;
+}
+
 void initSchedPrimitives()
 {
 	int base, index=0;
+
+	s_callWrapper = getsym("prCallWrapper");
+	s_doAction = getsym("prDoAction");
 
 	base = nextPrimitiveIndex();
 
@@ -1355,4 +1522,7 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_SystemClock_SchedAbs", prSystemClock_SchedAbs, 3, 0);
 
 	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);
+
+	definePrimitive(base, index++, "_RunSubProc", prRunSubProc, 2, 0);
+	definePrimitive(base, index++, "_SendToParent", prSendToParent, 2, 0);
 }
