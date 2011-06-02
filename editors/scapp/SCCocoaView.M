@@ -1253,7 +1253,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 				return NO;
 			}
 			
-			NSString* selection = [self stringByEvaluatingJavaScriptFromString:@"(function (){selObj = window.getSelection(); string = selObj.toString(); selObj.collapseToEnd(); return string })();"];
+		NSString* selection = [self stringByEvaluatingJavaScriptFromString:@"(function (){selectLine(); selObj = window.getSelection(); string = selObj.toString(); selObj.collapseToEnd(); return string })();"];
 			const char *text = [selection UTF8String];
 			int textlength = strlen(text);
 			
