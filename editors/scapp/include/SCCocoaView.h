@@ -135,6 +135,14 @@
 - (void)webView:(WebView *)webView unableToImplementPolicyWithError:(NSError *)error frame:(WebFrame *)frame;
 - (void)doLinkAction:(NSString *)urlString;
 - (void) setEnterExecutesSelection: (BOOL) flag;
+- (void)sendSelection: (char*) methodName;
+- (void)setSelection;
+- (IBAction)openCode:(id)sender;
+- (IBAction) showHelpFor: (id) sender;
+- (IBAction)showHelpSearch:(id)sender;
+
+- (IBAction)methodTemplates: (id)sender;
+- (IBAction)methodReferences: (id)sender;
 
 @end
 

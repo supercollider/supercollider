@@ -1253,11 +1253,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 				return NO;
 			}
 			
-		NSString* selection = [self stringByEvaluatingJavaScriptFromString:@"(function (){selectLine(); selObj = window.getSelection(); string = selObj.toString(); selObj.collapseToEnd(); return string })();"];
-			const char *text = [selection UTF8String];
-			int textlength = strlen(text);
-			
-			[[SCVirtualMachine sharedInstance] setCmdLine: text length: textlength];
+			[self setSelection];
 			
 			pthread_mutex_lock(&gLangMutex);
 			runLibrary(getsym("interpretPrintCmdLine"));
@@ -1303,6 +1299,53 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (void) setEnterExecutesSelection: (BOOL) flag
 {
 	enterExecutesSelection = flag;
+}
+
+- (void)sendSelection: (char*) methodName
+{
+    if (!compiledOK) {
+        return;
+    }
+	
+	[self setSelection];
+	
+    pthread_mutex_lock(&gLangMutex);
+    runLibrary(getsym(methodName));
+    pthread_mutex_unlock(&gLangMutex);
+	
+}
+
+- (void)setSelection;
+{
+	NSString* selection = [self stringByEvaluatingJavaScriptFromString:@"(function (){selectLine(); selObj = window.getSelection(); string = selObj.toString(); selObj.collapseToEnd(); return string })();"];
+	const char *text = [selection UTF8String];
+	int textlength = strlen(text);
+	
+	[[SCVirtualMachine sharedInstance] setCmdLine: text length: textlength];
+}
+
+- (IBAction)openCode:(id)sender
+{
+    [self sendSelection: "openCodeFile"];
+}
+
+- (IBAction) showHelpFor: (id) sender
+{
+	[self sendSelection: "showHelp"];
+}
+
+- (IBAction)showHelpSearch:(id)sender {
+	[self sendSelection: "showHelpSearch"];
+}
+
+- (IBAction)methodTemplates: (id)sender
+{
+    [self sendSelection: "methodTemplates"];
+}
+
+- (IBAction)methodReferences: (id)sender
+{
+    [self sendSelection: "methodReferences"];
 }
 
 @end
