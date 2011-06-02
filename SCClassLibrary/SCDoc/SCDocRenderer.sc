@@ -616,7 +616,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                 m = currentClass.filenameSymbol.asString;
                 f.write("<div id='filename'>Source: "++m.dirname++"/<a href='file://"++m++"'>"++m.basename++"</a></div>");
                 if(currentClass != Object) {
-                    f.write("<div class='inheritance'>");
+                    f.write("<div id='superclasses'>");
                     f.write("Inherits from: ");
                     f.write(currentClass.superclasses.collect {|c|
                         "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
@@ -624,11 +624,16 @@ SCDocHTMLRenderer : SCDocRenderer {
                     f.write("</div>");
                 };
                 if(currentClass.subclasses.notNil) {
-                    f.write("<div class='inheritance'>");
+                    f.write("<div id='subclasses'>");
                     f.write("Subclasses: ");
-                    f.write(currentClass.subclasses.collect {|c|
-                        "<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
+                    z = false;
+                    f.write(currentClass.subclasses.collect(_.name).sort.collect {|c,i|
+                        if(i==12,{z=true;"<span id='hiddensubclasses' style='display:none;'>"},{""})
+                        ++"<a href=\"../Classes/"++c++".html\">"++c++"</a>"
                     }.join(", "));
+                    if(z) {
+                        f.write("</span><a class='subclass_toggle' href='#' onclick='javascript:showAllSubclasses(this)'>&hellip;&nbsp;see&nbsp;all</a>");
+                    };
                     f.write("</div>");
                 };
                 if(currentImplClass.notNil) {

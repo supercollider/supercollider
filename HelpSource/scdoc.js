@@ -140,6 +140,12 @@ function addInheritedMethods() {
     }
 }
 
+function showAllSubclasses(a) {
+    var e = document.getElementById("hiddensubclasses");
+    e.style.display = "";
+    a.style.display = "none";
+}
+
 /*
 This key event handler selects the whole line when pressing shift/ctrl-enter with no selection.
 But the problem is that it does not update the selection sent to the client.

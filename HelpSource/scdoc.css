@@ -87,6 +87,16 @@ a.inheritedmets_toggle:hover {
     color: #000;
 }
 
+a.subclass_toggle {
+    color: #555;
+    font-weight: normal;
+}
+
+a.subclass_toggle:hover {
+    text-decoration: none;
+    color: #000;
+}
+
 
 #menubar {
     font-family: Arial, Helvetica, sans-serif;
