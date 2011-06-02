@@ -151,8 +151,7 @@ function selectLine() {
     var s =  window.getSelection();
     var r = s.getRangeAt();
 
-    function findleft(x) {
-        var p = x;
+    function findleft(p) {
         var y, j;
         while(p) {
             if(p.nodeName == "BR")
@@ -168,8 +167,7 @@ function selectLine() {
         return null;
     };
 
-    function findright(x) {
-        var p = x;
+    function findright(p) {
         var y, j;
         while(p) {
             if(p.nodeName == "BR")
@@ -195,26 +193,28 @@ function selectLine() {
             p = p.parentNode;
         }
         if(p==top) {
-            r2.setStartBefore(p.firstChild);
+            r2.setStartBefore(top.firstChild);
         } else {
             var found = findleft(p.previousSibling);
-            if(found)
+            if(found) {
                 r2.setStartAfter(found[0]);
-            else
-                r2.setStartBefore(p.firstChild);
+            } else {
+                r2.setStartBefore(top.firstChild);
+            }
         }
         var p = r.startContainer;
         while(!p.nextSibling && p != top) {
             p = p.parentNode;
         }
         if(p==top) {
-            r2.setEndAfter(p.lastChild);
+            r2.setEndAfter(top.lastChild);
         } else {
             var found = findright(p.nextSibling);
-            if(found)
+            if(found) {
                 r2.setEndBefore(found[0]);
-            else
-                r2.setEndAfter(p.lastChild);
+            } else {
+                r2.setEndAfter(top.lastChild);
+            }
         }
         s.removeAllRanges();
         s.addRange(r2);
