@@ -1237,33 +1237,6 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	[urlString release];
 }
 
-- (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector
-{
-
-	NSEvent *currentEvent = [NSApp currentEvent];
-	unsigned short keycode = [currentEvent keyCode];
-	NSUInteger modFlags = [currentEvent modifierFlags];
-	
-	//printf("keycode: %d\n", keycode);
-	
-	// Exec on Ctrl c or Enter
-	if ( (aSelector == @selector(insertNewline:) && enterExecutesSelection && (keycode == 76)) || ( keycode == 8 && (modFlags & NSControlKeyMask)) ) {
-			
-			if (!compiledOK) {
-				return NO;
-			}
-			
-			[self setSelection];
-			
-			pthread_mutex_lock(&gLangMutex);
-			runLibrary(getsym("interpretPrintCmdLine"));
-			pthread_mutex_unlock(&gLangMutex);
-			
-			return YES;
-		} 
-	return NO;
-}
-
 - (BOOL)webView:(WebView *)webView shouldInsertText:(NSString *)insertText replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action
 {
 	//post("sctir\n");
@@ -1278,6 +1251,12 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 		[[self window] keyDown:event];
 	}
 	mSCWebView->keyDown(character, modifiers,[event keyCode]);
+	if ([characters isEqual: @"\03"] ||
+		(([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && ([event modifierFlags] & (NSControlKeyMask | NSShiftKeyMask)))) {
+		[self executeSelection: self];
+		return NO;
+	}
+	
 	return YES;
 }
 
@@ -1293,7 +1272,13 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 		[[self window] keyDown:event];
 	}
 	mSCWebView->keyDown(character, modifiers,[event keyCode]);
-	[super keyDown:event];
+	if ([characters isEqual: @"\03"] ||
+		(([characters isEqual: @"\n"] || [characters isEqual: @"\r"]) && ([event modifierFlags] & (NSControlKeyMask | NSShiftKeyMask)))) {
+		[self executeSelection: self];
+	} else {
+		[super keyDown:event];
+	}
+	
 }
 
 - (void) setEnterExecutesSelection: (BOOL) flag
@@ -1346,6 +1331,12 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (IBAction)methodReferences: (id)sender
 {
     [self sendSelection: "methodReferences"];
+}
+
+- (IBAction)executeSelection: (id) sender
+{
+	if(enterExecutesSelection)
+		[self sendSelection: "interpretPrintCmdLine" ];
 }
 
 @end

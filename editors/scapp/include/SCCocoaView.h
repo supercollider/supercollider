@@ -129,7 +129,6 @@
 - (void)doFailAction;
 - (void)doLoadAction;
 - (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error;
-- (BOOL)webView:(WebView *)aWebView doCommandBySelector:(SEL)aSelector;
 - (BOOL)webView:(WebView *)webView shouldInsertText:(NSString *)text replacingDOMRange:(DOMRange *)range givenAction:(WebViewInsertAction)action;
 - (void)webView:(WebView *)webView decidePolicyForNavigationAction:(NSDictionary *)actionInformation request:(NSURLRequest *)request frame:(WebFrame *)frame decisionListener:(id )listener;
 - (void)webView:(WebView *)webView unableToImplementPolicyWithError:(NSError *)error frame:(WebFrame *)frame;
@@ -143,6 +142,7 @@
 
 - (IBAction)methodTemplates: (id)sender;
 - (IBAction)methodReferences: (id)sender;
+- (IBAction)executeSelection: (id) sender;
 
 @end
 
