@@ -1654,7 +1654,7 @@ inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 		nova::setvec_simd(OUT(0), (float)level, inNumSamples);
 		return;
 	}
-	if (counter >= inNumSamples)
+	if (counter > inNumSamples)
 	{
 		double grow = unit->mGrowth;
 		nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, inNumSamples);
@@ -1676,7 +1676,7 @@ inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
 		nova::setvec_simd<64>(OUT(0), (float)level);
 		return;
 	}
-	if (counter >= 64)
+	if (counter > 64)
 	{
 		double grow = unit->mGrowth;
 		nova::set_exp_vec_simd(OUT(0), (float)level, (float)grow, 64);
