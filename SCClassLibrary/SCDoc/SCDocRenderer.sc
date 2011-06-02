@@ -632,7 +632,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                         ++"<a href=\"../Classes/"++c++".html\">"++c++"</a>"
                     }.join(", "));
                     if(z) {
-                        f.write("</span><a class='subclass_toggle' href='#' onclick='javascript:showAllSubclasses(this)'>&hellip;&nbsp;see&nbsp;all</a>");
+                        f.write("</span><a class='subclass_toggle' href='#' onclick='javascript:showAllSubclasses(this); return false'>&hellip;&nbsp;see&nbsp;all</a>");
                     };
                     f.write("</div>");
                 };
