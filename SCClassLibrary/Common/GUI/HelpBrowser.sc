@@ -82,12 +82,13 @@ HelpBrowser {
 
 	init { arg aHomeUrl, aNewWin;
 		var toolbar;
-		var lblFind, txtFind;
+		var lblFind, txtFind, findView, saveSize, toggleFind;
 		var strh = "Tj".bounds.height;
 		var vPad = 10, hPad = 20;
 		var marg = 10;
 		var winRect;
 		var x, y, w, h;
+		var str;
 
 		homeUrl = aHomeUrl;
 
@@ -107,10 +108,11 @@ HelpBrowser {
 			x = x + w + 2;
 		};
 
-		w = "Path:".bounds.width + 5;
+		str = "Path:";
+		w = str.bounds.width + 5;
 		x = x + 5;
 		StaticText.new( window, Rect(x, y, w, h) )
-			.string_("Path:")
+			.string_(str)
 			.resize_(1);
 		x = x + w;
 
@@ -132,29 +134,36 @@ HelpBrowser {
 		openNewWin = aNewWin;
 		x = x + w + 10;
 		if(GUI.scheme==QtGUI) {
-			w = "Open new windows".bounds.width + 50;
+			str = "Open links in new window";
+			w = str.bounds.width + 50;
 			QCheckBox.new (window, Rect(x, y, w, h) )
 				.resize_(1)
-				.string_("Open new windows")
+				.string_(str)
 				.value_(openNewWin)
 				.action_({ |b| openNewWin = b.value });
 		} {
-			w = "Same window".bounds.width + 5;
+			str = "Open links in same window";
+			w = str.bounds.width + 5;
 			Button.new( window, Rect(x, y, w, h) )
 				.resize_(1)
-				.states_([["Same window"],["New window"]])
+				.states_([[str],["Open links in new window"]])
 				.value_(openNewWin.asInteger)
 				.action_({ |b| openNewWin = b.value.asBoolean });
 		};
 
-		w = 150;
+		x = 0;
+		y = marg + h + 5;
+		w = winRect.width;
+		findView = CompositeView(window, Rect(x,y,w,h+10)).visible_(false).resize_(2);
+		y = marg;
+		w = 200;
 		x = winRect.width - marg - w;
-		txtFind = TextField.new( window, Rect(x,y,w,h) ).resize_(3);
-
-		w = "Find:".bounds.width + 5;
-		x = x - w;
-		lblFind = StaticText.new( window, Rect(x, y, w, h) )
-			.string_("Find:")
+		txtFind = TextField.new( findView, Rect(x,y,w,h) ).resize_(3);
+		str = "Find text in document:";
+		w = str.bounds.width + 5;
+		x = x - w - 5;
+		lblFind = StaticText.new( findView, Rect(x, y, w, h) )
+			.string_(str)
 			.resize_(3);
 
 		x = 5;
@@ -192,13 +201,33 @@ HelpBrowser {
 				this.goTo(url);
 			};
 		};
-		webView.enterInterpretsSelection = true;
-		if (webView.class === \QWebView.asClass) {
-			webView.keyDownAction = { arg view, char, mods;
-				if( (char.ascii == 13) && (mods.isCtrl || mods.isCmd || mods.isShift) ) {
-					view.evaluateJavaScript("selectLine()");
+
+		toggleFind = {
+				if(findView.visible.not) {
+					saveSize = webView.bounds;
+					h = findView.bounds.height + marg;
+					webView.bounds = Rect(saveSize.left,saveSize.top+h,saveSize.width,saveSize.height-h);
+					findView.visible = true;
+					txtFind.focus;
+				} {
+					webView.bounds = saveSize;
+					findView.visible = false;
 				};
+		};
+
+		webView.enterInterpretsSelection = true;
+		webView.keyDownAction = { arg view, char, mods;
+			if( (char.ascii == 13) && (mods.isCtrl || mods.isCmd || mods.isShift) ) {
+				view.tryPerform(\evaluateJavaScript,"selectLine()");
 			};
+		};
+		window.view.keyDownAction = { arg view, char, mods;
+			if( ((char.ascii == 6) && mods.isCtrl) || (char == $f && mods.isCmd) ) {
+				toggleFind.value;
+			};
+			if(char.ascii==27) {
+				if(findView.visible) {toggleFind.value};
+			}
 		};
 
 		toolbar[\Home].action = { this.goHome };
