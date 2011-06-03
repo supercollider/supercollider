@@ -62,7 +62,7 @@
 		active.string = this.name.asString;
 		active.align = \center;
 		active.font = gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
-		active.background = Color.white;
+		active.background = Color.clear;
 		if(serverRunning,running,stopped);
 
 		makeDefault = gui.button.new(w, Rect(0,0, 54, 18));
@@ -170,10 +170,10 @@
 			running = {
 				active.stringColor_(Color.new255(74, 120, 74));
 				active.string = "running";
-				active.background = Color.white;
+				active.background = Color.clear;
 			};
 			stopped = {
-				active.stringColor_(Color.grey(0.3));
+				active.stringColor_(Color.grey(0.5));
 				active.string = "inactive";
 
 			};
