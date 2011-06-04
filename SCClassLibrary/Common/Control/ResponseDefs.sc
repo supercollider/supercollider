@@ -21,7 +21,7 @@ AbstractResponderProxy {
 	
 	func_ {|newFunc|  
 		func = newFunc; 
-		dispatcher.updateFuncForProxy(this);
+		this.changed(\function);
 	}
 	
 	gui { this.subclassResponsibility(thisMethod) }
@@ -102,10 +102,12 @@ AbstractDispatcher {
 	
 	unregister { this.subclassResponsibility(thisMethod) } // unregister this dispatcher so it no longer listens
 	
-	clear { this.unregister; all.remove(this) } // 
+	clear { this.unregister; all.remove(this) } // I'm done
 	
 	typeKey { this.subclassResponsibility(thisMethod) } // a Symbol
 	
+	update { } // code here to update any changed state in this dispatcher's proxies, e.g. a new function; default does nothing
+
 }
 
 // basis for the default dispatchers
@@ -117,6 +119,7 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 	
 	add {|proxy| 
 		var func, keys;
+		proxy.addDependant(this);
 		func = this.wrapFunc(proxy);
 		wrappedFuncs[proxy] = func;
 		keys = this.getKeysForProxy(proxy);
@@ -126,6 +129,7 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 	
 	remove {|proxy|
 		var func, keys;
+		proxy.removeDependant(this);
 		keys = this.getKeysForProxy(proxy);
 		func = wrappedFuncs[proxy];
 		keys.do({|key| active[key] = active[key].removeFunc(func) }); // support multiple keys
@@ -147,9 +151,13 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 	
 	getKeysForProxy { this.subclassResponsibility(thisMethod) }
 	
+	update {|proxy, what| if(what == \function, { this.updateFuncForProxy(proxy) }) }
+	
+	clear { wrappedFuncs.keys.do({|proxy| proxy.removeDependant(this) }); super.clear }
+	
 }
 
-// Proxies below store by the 'most significant' message argument for fast lookup
+// The default dispatchers below store by the 'most significant' message argument for fast lookup
 // These are for use when more than just the 'most significant' argument needs to be matched
 AbstractMessageMatcher {
 	var <>func;
