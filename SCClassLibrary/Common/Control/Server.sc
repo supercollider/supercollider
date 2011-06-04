@@ -486,24 +486,28 @@ Server : Model {
 	}
 
 	addStatusWatcher {
-		statusWatcher =
-			OSCProxy({ arg msg;
-				var cmd, one;
-				if(notify){
-					if(notified.not){
-						this.sendNotifyRequest;
-						"Receiving notification messages from server %\n".postf(this.name);
-					}
-				};
-				alive = true;
-				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
-					avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
-				{
-					this.serverRunning_(true);
-					this.changed(\counts);
-					nil // no resched
-				}.defer;
-			}, '/status.reply', addr).fix;
+		if(statusWatcher.isNil) {
+			statusWatcher =
+				OSCProxy({ arg msg;
+					var cmd, one;
+					if(notify){
+						if(notified.not){
+							this.sendNotifyRequest;
+							"Receiving notification messages from server %\n".postf(this.name);
+						}
+					};
+					alive = true;
+					#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
+						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
+					{
+						this.serverRunning_(true);
+						this.changed(\counts);
+						nil // no resched
+					}.defer;
+				}, '/status.reply', addr).fix;
+		} {
+			statusWatcher.enable
+		};
 	}
 	// Buffer objects are cached in an Array for easy
 	// auto buffer info updating
@@ -533,8 +537,8 @@ Server : Model {
 	cachedBufferAt { |bufnum| ^Buffer.cachedBufferAt(this, bufnum) }
 
 	startAliveThread { arg delay=0.0;
+		this.addStatusWatcher;
 		^aliveThread ?? {
-			this.addStatusWatcher;
 			aliveThread = Routine({
 				// this thread polls the server to see if it is alive
 				delay.wait;
@@ -666,6 +670,8 @@ Server : Model {
 			"/quit sent\n".inform;
 		});
 		alive = false;
+		statusWatcher !? { statusWatcher.disable };
+		notified = false;
 		dumpMode = 0;
 		pid = nil;
 		serverBooting = false;
