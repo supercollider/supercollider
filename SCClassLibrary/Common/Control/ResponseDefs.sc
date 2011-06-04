@@ -79,16 +79,41 @@ AbstractResponderProxy {
 	
 }
 
+// defines the required interface
 AbstractDispatcher {
 	classvar <>all;
 	var registered = false;
-	var <active, <wrappedFuncs;
 	
 	*new { ^super.new.init; }
 	
-	init { all.add(this); active = IdentityDictionary.new; wrappedFuncs = IdentityDictionary.new; }
+	init { all.add(this);}
 		
 	*initClass { all = IdentitySet.new }
+	
+	add {|proxy| this.subclassResponsibility(thisMethod) } // proxies call this to add themselves to this dispatcher; should register this if needed
+	
+	remove {|proxy| this.subclassResponsibility(thisMethod) } // proxies call this to remove themselves from this dispatcher; should unregister if needed
+		
+	value { this.subclassResponsibility(thisMethod) }
+	
+	valueArray {arg args; ^this.value(*args) } // needed to work in FunctionLists
+	
+	register { this.subclassResponsibility(thisMethod) } // register this dispatcher to listen for its message type
+	
+	unregister { this.subclassResponsibility(thisMethod) } // unregister this dispatcher so it no longer listens
+	
+	clear { this.unregister; all.remove(this) } // 
+	
+	typeKey { this.subclassResponsibility(thisMethod) } // a Symbol
+	
+}
+
+// basis for the default dispatchers
+// uses function wrappers for matching
+AbstractWrappingDispatcher :  AbstractDispatcher {
+	var active, <wrappedFuncs;
+	
+	init { super.init; active = IdentityDictionary.new; wrappedFuncs = IdentityDictionary.new; }
 	
 	add {|proxy| 
 		var func, keys;
@@ -108,7 +133,7 @@ AbstractDispatcher {
 		if(active.size == 0, {this.unregister});
 	}
 	
-	// old Funk vs. new Funk
+		// old Funk vs. new Funk
 	updateFuncForProxy {|proxy|
 		var func, oldFunc, keys;
 		func = this.wrapFunc(proxy);
@@ -121,18 +146,6 @@ AbstractDispatcher {
 	wrapFunc { this.subclassResponsibility(thisMethod) }
 	
 	getKeysForProxy { this.subclassResponsibility(thisMethod) }
-		
-	value { this.subclassResponsibility(thisMethod) }
-	
-	valueArray {arg args; ^this.value(*args) } // needed to work in FunctionLists
-	
-	register { this.subclassResponsibility(thisMethod) }
-	
-	unregister { this.subclassResponsibility(thisMethod) }
-	
-	clear { this.unregister; all.remove(this) }
-	
-	typeKey { this.subclassResponsibility(thisMethod) } // a Symbol
 	
 }
 
@@ -149,7 +162,7 @@ AbstractMessageMatcher {
 
 ///////////////////// OSC
 
-OSCMessageDispatcher : AbstractDispatcher {
+OSCMessageDispatcher : AbstractWrappingDispatcher {
 	
 	wrapFunc {|proxy| ^if(proxy.srcID.notNil, {
 			OSCProxyMessageMatcher(proxy.srcID, proxy.func);
@@ -283,7 +296,7 @@ OSCProxyMessageMatcher : AbstractMessageMatcher {
 ///////////////////// MIDI
 
 // for \noteOn, \noteOff, \control, \polytouch
-MIDIMessageDispatcher : AbstractDispatcher {
+MIDIMessageDispatcher : AbstractWrappingDispatcher {
 	var <>messageType;
 	
 	*new {|messageType| ^super.new.messageType_(messageType) }
