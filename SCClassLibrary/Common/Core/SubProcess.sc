@@ -1,21 +1,30 @@
 /* examples:
 SubProcess.run { |pid| ("child: got pid"+pid).postln; {1.0.rand} ! 100 } { |res, done, pid| ("parent: child"+pid+"sent"+res).postln }
-SubProcess.run { 3.do{|i| SubProcess.send(i)}; (foo:123) } { |res, done, pid| ("parent: child"+pid+"sent"+res+"done:"+done).postln }
+SubProcess.run { 3.do{|i| SubProcess.yield(i)}; (foo:123) } { |res, done, pid| ("parent: child"+pid+"sent"+res+"done:"+done).postln }
+SubProcess.run { var x = 0; 5.do{|i| x=SubProcess.yield(i+x)}; 0} {|res| ("parent: got"+res).postln; res*10 }
 */
 
 SubProcess {
     classvar actions;
 
-    *run { |func, action|
-        var pid = this.prBackground(func);
+    // run childFunc with arguments (pid) in a forked child process
+    // call actionFunc with arguments (result, done, pid) when child yields a value or returns
+    // the value returned from actionFunc will be returned from the child yield call
+    *run { |childFunc, actionFunc|
+        var pid = this.prBackground(childFunc);
         actions ?? { actions = IdentityDictionary.new };
-        actions[pid] = action;
+        actions[pid] = actionFunc;
         ^pid;
     }
 
-    *send { |value|
-        this.prSendToParent(value.asCompileString);
+    // call this from the child to yield a value to the parent
+    // this call will block while parents actionFunc is running,
+    // returns the value returned by the parents actionFunc.
+    *yield { |value|
+        ^this.prSendToParent(value.asCompileString).interpret;
     }
+
+// ------------------ private -----------------------
 
     *prSendToParent { |value|
         _SendToParent
@@ -23,8 +32,9 @@ SubProcess {
     }
 
     *prDoAction { |pid, result, done|
-        actions[pid].value(result.interpret, done, pid);
+        var res = actions[pid].value(result.interpret, done, pid);
         if(done) { actions.removeAt(pid) };
+        ^res.asCompileString;
     }
 
     *prBackground { |func|

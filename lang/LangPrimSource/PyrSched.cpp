@@ -45,10 +45,11 @@ extern bool compiledOK;
 static PyrSymbol * s_callWrapper;
 static PyrSymbol * s_doAction;
 static PyrClass * class_subproc = NULL;
-static int bg_parent_fd = -1;
+static int fd_parent_send = -1, fd_parent_recv = 1;
 struct sc_bgproc {
 	pid_t pid;
-	int fd;
+	int fd_child_send;
+	int fd_child_recv;
 };
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
@@ -1340,7 +1341,9 @@ int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+#ifndef SC_WIN32
 
+// called from child process
 static int call_fork_child(PyrSlot *func)
 {
 	char *string = NULL;
@@ -1349,7 +1352,7 @@ static int call_fork_child(PyrSlot *func)
 
 	VMGlobals *g = gMainVMGlobals;
 	if(compiledOK) {
-		g->canCallOS = true;
+		g->canCallOS = false;
 		++g->sp; SetObject(g->sp, class_subproc);
 		++g->sp; slotCopy(g->sp, func);
 		++g->sp; SetInt(g->sp, getpid());
@@ -1367,36 +1370,62 @@ static int call_fork_child(PyrSlot *func)
 		free(string);
 		goto err;
 	}
-	nbytes = write(bg_parent_fd, string, strlen(string));
+	// note: we don't send the null-termination here, instead we
+	// make an end-of-file so the parent knows this was the return-value
+	nbytes = write(fd_parent_send, string, strlen(string));
 	free(string);
 
 err:
-	close(bg_parent_fd);
+	close(fd_parent_send);
+	close(fd_parent_recv);
 	return 0;
 }
 
-static void call_parent_action(char *buf, pid_t pid, int done)
+// called from read_child_thread
+static void call_parent_action(char *buf, pid_t pid, int done, int fd)
 {
+	char *string;
+	int err, nbytes;
 	pthread_mutex_lock (&gLangMutex);
 	if(compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
 		PyrObject *scstring = (PyrObject*)newPyrString(g->gc, buf, 0, true);
-		g->canCallOS = true;
+		g->canCallOS = false;
 		++g->sp; SetObject(g->sp, class_subproc);
 		++g->sp; SetInt(g->sp, pid);
 		++g->sp; SetObject(g->sp, scstring);
 		++g->sp; SetBool(g->sp, done);
 		runInterpreter(g, s_doAction, 4);
 		g->canCallOS = false;
+
+		if(!done) {
+			PyrSlot *a = &g->result;
+			if (!isKindOfSlot(a, class_string)) {
+				printf("ERR: not string\n");
+				goto err;
+			}
+			string = (char*)malloc(slotRawObject(a)->size + 1);
+			err = slotStrVal(a, string, slotRawObject(a)->size + 1);
+			if(err) {
+				printf("ERR: could not get string\n");
+				free(string);
+				goto err;
+			}
+			nbytes = write(fd, string, strlen(string) + 1);
+			free(string);
+		}
+err:;
 	}
 	pthread_mutex_unlock (&gLangMutex);
 }
 
+// running in parent
 void* read_child_thread(void *data)
 {
 	struct sc_bgproc *process = (struct sc_bgproc *)data;
 	pid_t pid = process->pid;
-	int fd = process->fd;
+	int fd = process->fd_child_recv;
+	int fd2 = process->fd_child_send;
 	int blocksize = 1024;
 	int size = blocksize;
 	int index = 0;
@@ -1410,9 +1439,8 @@ void* read_child_thread(void *data)
 			buf[index] = '\0';
 			break;
 		}
-		if(buf[index]=='\x1') {
-			buf[index] = '\0';
-			call_parent_action(buf, pid, false);
+		if(buf[index]=='\0') {
+			call_parent_action(buf, pid, false, fd2);
 			index = 0;
 			continue;
 		}
@@ -1422,19 +1450,23 @@ void* read_child_thread(void *data)
 			buf = (char*)realloc(buf, size);
 		}
 	}
-
+	close(fd);
+	close(fd2);
 	waitpid(pid, NULL, 0);
-	call_parent_action(buf, pid, true);
+	call_parent_action(buf, pid, true, 0);
 
 	return 0;
 }
 
+// called in child
 int prSendToParent(struct VMGlobals *g, int numArgsPushed)
 {
 	char *string;
 	int err, nbytes;
+	char buf[1024];
 	PyrSlot *a = g->sp;
-	if(bg_parent_fd<0) {
+
+	if(fd_parent_send<0) {
 		error("_SendToParent must be called from child process\n");
 		return errFailed;
 	}
@@ -1445,52 +1477,57 @@ int prSendToParent(struct VMGlobals *g, int numArgsPushed)
 		error("_SendToParent: argument not a string\n");
 		return errFailed;
 	}
-	nbytes = write(bg_parent_fd, string, strlen(string));
-	nbytes = write(bg_parent_fd, "\x1", 1);
+	nbytes = write(fd_parent_send, string, strlen(string) + 1);
 	free(string);
+	nbytes = read(fd_parent_recv, buf, 1023);
+	buf[nbytes] = '\0';
+	SetObject(g->sp-1,(PyrObject*)newPyrString(g->gc, buf, 0, true));
 	return errNone;
 }
 
+// called in parent
 int prRunSubProc(struct VMGlobals *g, int numArgsPushed)
 {
-	int pid, fd[2];
+	int pid, fd1[2], fd2[2];
 	PyrSlot *self = g->sp-1;
 	PyrSlot *func = g->sp;
 
 	if(!class_subproc) {
-		PyrSymbol * sym = getsym("SubProcess");
-		if(!sym) {
-			error("SubProcess class not found\n");
-			return errFailed;
-		}
-		class_subproc = sym->u.classobj;
+		class_subproc = slotRawClass(self);
 	}
 
-	if (pipe(fd) < 0)
+	if (pipe(fd1) < 0)
+		return errFailed;
+	if (pipe(fd2) < 0)
 		return errFailed;
 
 	if ((pid = fork())==0)
-	{
-		close(fd[0]);
-		bg_parent_fd = fd[1];
+	{	// child
+		close(fd1[0]);
+		fd_parent_send = fd1[1];
+		close(fd2[1]);
+		fd_parent_recv = fd2[0];
 		call_fork_child(func);
 		pthread_mutex_unlock (&gLangMutex);
 		wait(NULL);
 		exit(0);
 	}
 	else
-	{
+	{	// parent
 		struct sc_bgproc *process = (struct sc_bgproc *)malloc(sizeof(struct sc_bgproc));
 		pthread_t thread;
 		process->pid = pid;
-		process->fd = fd[0];
-		close(fd[1]);
+		close(fd1[1]);
+		process->fd_child_recv = fd1[0];
+		close(fd2[0]);
+		process->fd_child_send = fd2[1];
 		pthread_create(&thread, NULL, read_child_thread, (void*)process);
 		pthread_detach(thread);
 		SetInt(self, pid);
 	}
 	return errNone;
 }
+#endif
 
 void initSchedPrimitives()
 {
@@ -1523,6 +1560,8 @@ void initSchedPrimitives()
 
 	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);
 
+#ifndef SC_WIN32
 	definePrimitive(base, index++, "_RunSubProc", prRunSubProc, 2, 0);
 	definePrimitive(base, index++, "_SendToParent", prSendToParent, 2, 0);
+#endif
 }
