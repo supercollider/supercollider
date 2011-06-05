@@ -31,6 +31,7 @@
 #include <math.h>
 #include <stdexcept>
 #include <new>
+#include <vector>
 
 #ifdef SC_WIN32
 # include <winsock2.h>
@@ -76,6 +77,9 @@ PyrString* newPyrString(VMGlobals *g, char *s, int flags, bool collect);
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
 const char* gPassword;
 extern bool compiledOK;
+
+std::vector<SC_UdpCustomInPort *> gCustomUdpPorts;
+
 
 #define USE_SCHEDULER 1
 
@@ -245,8 +249,8 @@ int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 	return errNone;
 }
 
-void PerformOSCBundle(int inSize, char *inData, PyrObject *inReply);
-void PerformOSCMessage(int inSize, char *inData, PyrObject *inReply);
+void PerformOSCBundle(int inSize, char *inData, PyrObject *inReply, int inPortNum);
+void PerformOSCMessage(int inSize, char *inData, PyrObject *inReply, int inPortNum);
 PyrObject* ConvertReplyAddress(ReplyAddress *inReply);
 
 void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
@@ -258,9 +262,9 @@ void localServerReplyFunc(struct ReplyAddress *inReplyAddr, char* inBuf, int inS
 	if (compiledOK) {
 		PyrObject *replyObj = ConvertReplyAddress(inReplyAddr);
 		if (isBundle) {
-			PerformOSCBundle(inSize, inBuf, replyObj);
+			PerformOSCBundle(inSize, inBuf, replyObj, gUDPport->RealPortNum());
 		} else {
-			PerformOSCMessage(inSize, inBuf, replyObj);
+			PerformOSCMessage(inSize, inBuf, replyObj, gUDPport->RealPortNum());
 		}
 	}
     pthread_mutex_unlock (&gLangMutex);
@@ -674,7 +678,7 @@ PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
     return obj;
 }
 
-void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj)
+void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj, int inPortNum)
 {
     // convert all data to arrays
 
@@ -685,6 +689,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj)
     ++g->sp; SetObject(g->sp, g->process);
     ++g->sp; SetFloat(g->sp, seconds);
     ++g->sp; SetObject(g->sp, replyObj);
+	++g->sp; SetInt(g->sp, inPortNum);
 
     PyrSlot *stackBase = g->sp;
     char *data = inData + 16;
@@ -699,7 +704,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj)
 
 	int numMsgs = g->sp - stackBase;
 
-    runInterpreter(g, s_recvoscbndl, 3+numMsgs);
+    runInterpreter(g, s_recvoscbndl, 4+numMsgs);
 }
 
 void ConvertOSCBundle(int inSize, char* inData, PyrObject *replyObj)
@@ -724,7 +729,7 @@ void ConvertOSCBundle(int inSize, char* inData, PyrObject *replyObj)
     }
 }
 
-void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj)
+void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj, int inPortNum)
 {
 
     PyrObject *arrayObj = ConvertOSCMessage(inSize, inData);
@@ -734,9 +739,10 @@ void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj)
     ++g->sp; SetObject(g->sp, g->process);
     ++g->sp; SetFloat(g->sp, elapsedTime());	// time
     ++g->sp; SetObject(g->sp, replyObj);
+	++g->sp; SetInt(g->sp, inPortNum);
     ++g->sp; SetObject(g->sp, arrayObj);
 
-    runInterpreter(g, s_recvoscmsg, 4);
+    runInterpreter(g, s_recvoscmsg, 5);
 
 
 }
@@ -750,7 +756,7 @@ void FreeOSCPacket(OSC_Packet *inPacket)
     }
 }
 
-void ProcessOSCPacket(OSC_Packet* inPacket)
+void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum)
 {
     //post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
 	inPacket->mIsBundle = IsBundle(inPacket->mData);
@@ -760,9 +766,9 @@ void ProcessOSCPacket(OSC_Packet* inPacket)
 		PyrObject *replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
 		if (compiledOK) {
 			if (inPacket->mIsBundle) {
-				PerformOSCBundle(inPacket->mSize, inPacket->mData, replyObj);
+				PerformOSCBundle(inPacket->mSize, inPacket->mData, replyObj, inPortNum);
 			} else {
-				PerformOSCMessage(inPacket->mSize, inPacket->mData, replyObj);
+				PerformOSCMessage(inPacket->mSize, inPacket->mData, replyObj, inPortNum);
 			}
 		}
 	}
@@ -789,6 +795,39 @@ void init_OSC(int port)
     } catch (...) {
         postfl("No networking.");
     }
+}
+	
+int prOpenUDPPort(VMGlobals *g, int numArgsPushed);
+int prOpenUDPPort(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	int port;
+	int err = slotIntVal(b, &port);
+	if (err) return err;
+	
+	SC_UdpCustomInPort* newUDPport;
+	
+	try {
+		SetTrue(a);
+		newUDPport = new SC_UdpCustomInPort(port);
+		gCustomUdpPorts.push_back(newUDPport);
+    } catch (...) {
+		SetFalse(a);
+        postfl("Could not bind to requested port. This may mean it is in use already by another application.\n");
+    }
+	return errNone;
+}
+	
+void closeAllCustomPorts();
+void closeAllCustomPorts()
+{
+	// close all custom sockets
+	if(gCustomUdpPorts.empty()) postfl("empty\n");
+	for(int i=0; i<gCustomUdpPorts.size(); i++){
+		delete gCustomUdpPorts[i];
+	}
+	gCustomUdpPorts.clear();
 }
 
 void cleanup_OSC()
@@ -1080,6 +1119,7 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);
 	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);
 	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);
+	definePrimitive(base, index++, "_OpenUDPPort", prOpenUDPPort, 2, 0);
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");
