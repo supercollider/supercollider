@@ -26,12 +26,12 @@ AbstractResponderProxy {
 	
 	gui { this.subclassResponsibility(thisMethod) }
 	
-	cmdPeriod { this.clear }
+	cmdPeriod { this.free }
 	
 	oneShot {
 		var oneShotFunc, wrappedFunc;
 		wrappedFunc = func;
-		oneShotFunc = { arg ...args; wrappedFunc.value(*args); this.clear };
+		oneShotFunc = { arg ...args; wrappedFunc.value(*args); this.free };
 		this.func_(oneShotFunc);
 	}
 	
@@ -42,7 +42,7 @@ AbstractResponderProxy {
 	
 	fix { this.permanent_(true) }
 	
-	clear { allProxies.remove(this); this.disable }
+	free { allProxies.remove(this); this.disable }
 	
 	*allProxies { 
 		var result;
@@ -102,7 +102,7 @@ AbstractDispatcher {
 	
 	unregister { this.subclassResponsibility(thisMethod) } // unregister this dispatcher so it no longer listens
 	
-	clear { this.unregister; all.remove(this) } // I'm done
+	free { this.unregister; all.remove(this) } // I'm done
 	
 	typeKey { this.subclassResponsibility(thisMethod) } // a Symbol
 	
@@ -153,7 +153,7 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 	
 	update {|proxy, what| if(what == \function, { this.updateFuncForProxy(proxy) }) }
 	
-	clear { wrappedFuncs.keys.do({|proxy| proxy.removeDependant(this) }); super.clear }
+	free { wrappedFuncs.keys.do({|proxy| proxy.removeDependant(this) }); super.free }
 	
 }
 
@@ -281,7 +281,7 @@ OSCdef : OSCProxy {
 	
 	addToAll {|argkey| key = argkey; all.put(key, this) }
 	
-	clear { all[key] = nil; super.clear; }
+	free { all[key] = nil; super.free; }
 	
 }
 
@@ -479,7 +479,7 @@ MIDIdef : MIDIProxy {
 	
 	addToAll {|argkey| key = argkey; all.put(key, this) }
 	
-	clear { all[key] = nil; super.clear; }
+	free { all[key] = nil; super.free; }
 	
 }
 
