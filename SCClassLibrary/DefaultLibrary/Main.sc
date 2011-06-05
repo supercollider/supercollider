@@ -6,6 +6,7 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 
 	var <platform, argv;
 	var <>recvOSCfunc;
+	var <customPorts;
 
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
 		// should be nil most of the time
@@ -63,16 +64,16 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 		CmdPeriod.hardRun;
 	}
 
-	recvOSCmessage { arg time, replyAddr, msg;
+	recvOSCmessage { arg time, replyAddr, recvPort, msg;
 		// this method is called when an OSC message is received.
-		recvOSCfunc.value(time, replyAddr, msg);
+		recvOSCfunc.value(time, replyAddr, recvPort, msg);
 		OSCresponder.respond(time, replyAddr, msg);
 	}
 
-	recvOSCbundle { arg time, replyAddr ... msgs;
+	recvOSCbundle { arg time, replyAddr, recvPort ... msgs;
 		// this method is called when an OSC bundle is received.
 		msgs.do({ arg msg;
-			this.recvOSCmessage(time, replyAddr, msg);
+			this.recvOSCmessage(time, replyAddr, recvPort, msg);
 		});
 	}
 	
@@ -81,7 +82,18 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 	removeOSCFunc { |func| recvOSCfunc = recvOSCfunc.removeFunc(func) }
 	
 	replaceOSCFunc { |func, newFunc| recvOSCfunc = recvOSCfunc.replaceFunc(func, newFunc) }
-
+	
+	openUDPPort {|portNum|
+		var result;
+		result = this.prOpenUDPPort(portNum);
+		if(result, { customPorts = customPorts ++ [portNum]; });
+		^result;
+	}
+	
+	prOpenUDPPort {|portNum|
+		_OpenUDPPort
+	}
+	
 	newSCWindow {
 		var win, palette;
 		win = SCWindow("construction");

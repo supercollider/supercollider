@@ -2212,6 +2212,7 @@ void aboutToCompileLibrary()
 
 void closeAllGUIScreens();
 void TempoClock_stopAll(void);
+void closeAllCustomPorts();
 
 void shutdownLibrary();
 void shutdownLibrary()
@@ -2220,6 +2221,7 @@ void shutdownLibrary()
 	aboutToCompileLibrary();
 	schedStop();
 	TempoClock_stopAll();
+	closeAllCustomPorts();
 }
 
 SC_DLLEXPORT_C bool compileLibrary()

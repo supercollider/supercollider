@@ -172,14 +172,22 @@ AbstractMessageMatcher {
 
 OSCMessageDispatcher : AbstractWrappingDispatcher {
 	
-	wrapFunc {|proxy| ^if(proxy.srcID.notNil, {
-			OSCProxyMessageMatcher(proxy.srcID, proxy.func);
-		}, { proxy.func });
+	wrapFunc {|proxy|
+		var func, srcID, recvPort;
+		func = proxy.func;
+		srcID = proxy.srcID;
+		recvPort = proxy.recvPort;
+		^case(
+			{ srcID.notNil && recvPort.notNil }, { OSCProxyBothMessageMatcher(srcID, recvPort, func) },
+			{ srcID.notNil }, { OSCProxyAddrMessageMatcher(srcID, func) },
+			{ recvPort.notNil }, { OSCProxyRecvPortMessageMatcher(recvPort, func) },
+			{ func }
+		);
 	}
 	
 	getKeysForProxy {|proxy| ^[proxy.path];}
 	
-	value {|time, addr, msg| active[msg[0]].value(msg, time, addr);}
+	value {|time, addr, recvPort, msg| active[msg[0]].value(msg, time, addr, recvPort);}
 	
 	register { 
 		thisProcess.recvOSCfunc = thisProcess.recvOSCfunc.addFunc(this); 
@@ -191,42 +199,42 @@ OSCMessageDispatcher : AbstractWrappingDispatcher {
 		registered = false;
 	}
 	
-	typeKey { ^('OSC ' ++ \unmatched).asSymbol }
+	typeKey { ^('OSC unmatched').asSymbol }
 	
 }
 
 OSCMessagePatternDispatcher : OSCMessageDispatcher {
 	
-	value {|time, addr, msg| 
+	value {|time, addr, recvPort, msg| 
 		var pattern;
 		pattern = msg[0];
 		active.keysValuesDo({|key, func|
-			if(key.matchOSCAddressPattern(pattern), {func.value(msg, time, addr);});
+			if(key.matchOSCAddressPattern(pattern), {func.value(msg, time, addr, recvPort);});
 		})
 	}
 	
-	typeKey { ^('OSC ' ++ \matched).asSymbol }
+	typeKey { ^('OSC matched').asSymbol }
 	
 }
 
 OSCProxy : AbstractResponderProxy {
 	classvar <>defaultDispatcher, <>defaultMatchingDispatcher, traceFunc;
-	var <path;
+	var <path, <recvPort;
 	
 	*initClass {
 		defaultDispatcher = OSCMessageDispatcher.new;
 		defaultMatchingDispatcher = OSCMessagePatternDispatcher.new;
-		traceFunc = {|time, replyAddr, msg|
-			"OSC Message Received:\n\ttime: %\n\taddress: %\n\t msg: %\n\n".postf(time, replyAddr, msg);
+		traceFunc = {|time, replyAddr, recvPort, msg|
+			"OSC Message Received:\n\ttime: %\n\taddress: %\n\trecvPort: %\n\tmsg: %\n\n".postf(time, replyAddr, recvPort, msg);
 		}
 	}
 	
-	*new { arg func, path, srcID, dispatcher;
-		^super.new.init(func, path, srcID, dispatcher ? defaultDispatcher);
+	*new { arg func, path, srcID, recvPort, dispatcher;
+		^super.new.init(func, path, srcID, recvPort, dispatcher ? defaultDispatcher);
 	}
 	
-	*newMatching { arg func, path, srcID;
-		^super.new.init(func, path, srcID, defaultMatchingDispatcher);
+	*newMatching { arg func, path, srcID, recvPort;
+		^super.new.init(func, path, srcID, recvPort, defaultMatchingDispatcher);
 	}
 	
 	*trace {|bool = true| 
@@ -241,11 +249,12 @@ OSCProxy : AbstractResponderProxy {
 	
 	*cmdPeriod { this.trace(false) }
 	
-	init {|argfunc, argpath, argsrcID, argdisp|
+	init {|argfunc, argpath, argsrcID, argrecvPort, argdisp|
 		path = (argpath ? path).asString;
 		if(path[0] != $/, {path = "/" ++ path}); // demand OSC compliant paths
 		path = path.asSymbol;
 		srcID = argsrcID ? srcID;
+		recvPort = argrecvPort ? recvPort;
 		func = argfunc;
 		dispatcher = argdisp ? dispatcher;
 		this.enable;
@@ -264,16 +273,16 @@ OSCdef : OSCProxy {
 		all = IdentityDictionary.new;
 	}
 	
-	*new { arg key, func, path, srcID;
+	*new { arg key, func, path, srcID, recvPort, dispatcher;
 		var res = all.at(key);
 		if(res.isNil) {
-			^super.new(func, path, srcID).addToAll(key);
+			^super.new(func, path, srcID, recvPort, dispatcher).addToAll(key);
 		} {
 			if(func.notNil) { 
 				if(res.enabled, {
 					res.disable;
-					res.init(func, srcID, path);
-				}, { res.init(func, srcID, path).disable; });
+					res.init(func, path, srcID, recvPort, dispatcher);
+				}, { res.init(func, path, srcID, recvPort, dispatcher).disable; });
 			}
 		}
 		^res
@@ -287,16 +296,45 @@ OSCdef : OSCProxy {
 
 
 // if you need to test for address func gets wrapped in this
-OSCProxyMessageMatcher : AbstractMessageMatcher {
+OSCProxyAddrMessageMatcher : AbstractMessageMatcher {
 	var addr;
 	
 	*new {|addr, func| ^super.new.init(addr, func);}
 	
 	init {|argaddr, argfunc| addr = argaddr; func = argfunc; }
 	
-	value {|time, msg, testAddr| 
+	value {|time, msg, testAddr, recvPort| 
 		if(testAddr.addr == addr.addr and: {addr.port.matchItem(testAddr.port)}, {
-			func.value(time, msg, testAddr)
+			func.value(msg, time, testAddr, recvPort)
+		})
+	}
+}
+
+// if you need to test for recvPort func gets wrapped in this
+OSCProxyRecvPortMessageMatcher : AbstractMessageMatcher {
+	var recvPort;
+	
+	*new {|recvPort, func| ^super.new.init(recvPort, func);}
+	
+	init {|argrecvPort, argfunc| recvPort = argrecvPort; func = argfunc; }
+	
+	value {|time, msg, addr, testRecvPort| 
+		if(testRecvPort == recvPort, {
+			func.value(msg, time, addr, testRecvPort)
+		})
+	}
+}
+
+OSCProxyBothMessageMatcher : AbstractMessageMatcher {
+	var addr, recvPort;
+	
+	*new {|addr, recvPort, func| ^super.new.init(addr, recvPort, func);}
+	
+	init {|argaddr, argrecvPort, argfunc| addr = argaddr; recvPort = argrecvPort; func = argfunc; }
+	
+	value {|time, msg, testAddr, testRecvPort| 
+		if(testAddr.addr == addr.addr and: {addr.port.matchItem(testAddr.port)} and: {testRecvPort == recvPort}, {
+			func.value(msg, time, testAddr, testRecvPort)
 		})
 	}
 }

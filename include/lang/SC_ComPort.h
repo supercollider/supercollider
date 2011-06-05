@@ -87,6 +87,24 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+class SC_UdpCustomInPort : public SC_ComPort
+{
+protected:
+	struct sockaddr_in mReplySockAddr;
+	virtual ReplyFunc GetReplyFunc();
+	bool mRunning;
+	
+public:
+	SC_UdpCustomInPort(int inPortNum);
+	~SC_UdpCustomInPort();
+	
+	int PortNum() const { return mPortNum; }
+	
+	void* Run();
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class SC_TcpInPort : public SC_ComPort
 {
         SC_Semaphore mConnectionAvailable;
