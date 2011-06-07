@@ -17,6 +17,7 @@
 
 import gtk
 import gedit
+import gio
 
 from LogPanel import LogPanel
 from ScLang import ScLang
@@ -56,6 +57,7 @@ scui_str = """<ui>
         <separator/>
         <menuitem action="ScedFindDefinition"/>
         <menuitem action="ScedBrowseClass"/>
+        <menuitem action="ScedOpenDevFile"/>
         <separator/>
         <menuitem action="ScedInspectObject"/>
         <separator/>
@@ -142,11 +144,15 @@ class WindowHelper:
              self.on_find_definition),
 
             ("ScedBrowseClass", None, _("Browse class"), None,
-             _("Browse class (needs running SwingOSC server)"),
+             _("Browse class"),
              self.on_browse_class),
 
+            ("ScedOpenDevFile", None, _("Open development file"), "<control><alt>K",
+             _("Open corresponding development file for current document"),
+             self.on_open_dev_file),
+
             ("ScedInspectObject", None, _("Inspect Object"), None,
-             _("Inspect object state (needs running SwingOSC server)"),
+             _("Inspect object state"),
              self.on_inspect_object),
 
             ("ScedRestartInterpreter", None, _("Restart Interpreter"), None,
@@ -281,6 +287,11 @@ class WindowHelper:
     def on_browse_class(self, action):
         text = self.get_selection()
         self.__lang.evaluate("" + text + ".browse", silent=True)
+
+    def on_open_dev_file(self, action):
+        doc = self.__window.get_active_document()
+        path = gio.File(doc.get_uri()).get_path() #get_location()
+        self.__lang.evaluate("(\"gedit\"+thisProcess.platform.devLoc(\""+path+"\")).systemCmd", silent=True);
 
     def on_inspect_object(self, action):
         text = self.get_selection()
