@@ -66,6 +66,8 @@ struct SlotRef {
 
 class PyrGC
 {
+	static const int kLazyCollectThreshold = 1024;
+
 public:
 	PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize);
 
@@ -132,6 +134,11 @@ public:
 
 	void Collect();
 	void Collect(int32 inNumToScan);
+	void LazyCollect()
+	{
+		if (mUncollectedAllocations > kLazyCollectThreshold)
+			Collect();
+	}
 	void FullCollection();
 	void ScanFinalizers();
 	GCSet* GetGCSet(PyrObjectHdr* inObj);
@@ -200,7 +207,7 @@ private:
 	int32 mNumGrey;
 	int32 mCurSet;
 
-	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned;
+	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned, mUncollectedAllocations;
 
 	unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
 	bool mCanSweep;

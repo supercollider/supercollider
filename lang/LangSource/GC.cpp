@@ -239,6 +239,7 @@ PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long p
 	mCanSweep = false;
 	mPartialScanObj = NULL;
 	mPartialScanSlot = 0;
+	mUncollectedAllocations = 0;
 
 	mGrey.classptr = NULL;
 	mGrey.obj_sizeclass = 0;
@@ -319,6 +320,12 @@ PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect)
 {
 	if (inCollect && mNumToScan >= kScanThreshold)
 		Collect();
+	else {
+		if (inCollect)
+			mUncollectedAllocations = 0;
+		else
+			++mUncollectedAllocations;
+	}
 
 	GCSet *gcs = mSets + sizeclass;
 
@@ -722,6 +729,8 @@ void PyrGC::Collect()
 		//TraceAnyPathToAllGrey();
 	}
 	//post("mNumToScan %d\n", mNumToScan);
+
+	mUncollectedAllocations = 0;
 #ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
