@@ -100,6 +100,9 @@ extern PyrClass *gClassList;
 // 	runLibrary
 // 	interpretCmdLine
 
+static void endInterpreter(VMGlobals *g);
+
+
 SC_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
 		//postfl("->runInterpreter\n");
@@ -407,7 +410,7 @@ bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 }
 
 
-void endInterpreter(VMGlobals *g)
+static void endInterpreter(VMGlobals *g)
 {
 	slotCopy(&g->result, g->sp);
 //	dumpObjectSlot(&g->result);

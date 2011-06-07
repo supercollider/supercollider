@@ -33,7 +33,6 @@ extern int gNumClassVars;
 bool initInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
 bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool);
 void Interpret(VMGlobals *g);
-void endInterpreter(VMGlobals *g);
 
 int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed);
 int prSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed);
