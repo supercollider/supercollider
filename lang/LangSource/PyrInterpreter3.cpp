@@ -413,6 +413,7 @@ void endInterpreter(VMGlobals *g)
 //	dumpObjectSlot(&g->result);
 	g->gc->Stack()->size = 0;
 	g->sp = g->gc->Stack()->slots - 1;
+	g->gc->LazyCollect();
 }
 
 
