@@ -1668,7 +1668,7 @@ void Pitch_Ctor(Pitch *unit)
 	unit->m_execPeriod = (int)(unit->m_srate / execfreq);
 	unit->m_execPeriod = sc_max(unit->m_execPeriod, unit->mWorld->mFullRate.mBufLength);
 
-	unit->m_size = unit->m_maxperiod << 1;
+	unit->m_size = sc_max(unit->m_maxperiod << 1, unit->m_execPeriod);
 
 	unit->m_buffer = (float*)RTAlloc(unit->mWorld, unit->m_size * sizeof(float));
 
