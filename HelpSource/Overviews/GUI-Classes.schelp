@@ -90,9 +90,9 @@ table::
 ## Dialog               || CocoaDialog            || SwingDialog         || QDialog             || file selection dialog management
 ## Font                 || SCFont                 || JFont               || QFont               || a font typeface description.
 ## Pen                  || SCPen                  || JPen                || QPen                || custom drawing operations class
-## MouseX               || MouseX                 || JMouseX             || N/A                 || UGen. JMouseX for backward compatiblility only.
-## MouseY               || MouseY                 || JMouseY             || N/A                 || UGen. JMouseY for backward compatiblility only.
-## MouseButton          || MouseButton            || JMouseButton        || N/A                 || UGen. JMouseButton for backward compatiblility only.
-## KeyState             || KeyState               || JKeyState           || N/A                 || UGen. JKeyState for backward compatiblility only.
+## MouseX               || MouseX                 || JMouseX             || MouseX              || UGen. JMouseX for backward compatiblility only.
+## MouseY               || MouseY                 || JMouseY             || MouseY              || UGen. JMouseY for backward compatiblility only.
+## MouseButton          || MouseButton            || JMouseButton        || MouseButton         || UGen. JMouseButton for backward compatiblility only.
+## KeyState             || KeyState               || JKeyState           || KeyState            || UGen. JKeyState for backward compatiblility only.
 ## use GUI.speech       || Speech                 || JSpeech             || N/A                 || text-to-speech synthesis management
 ::
