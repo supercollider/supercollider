@@ -1,5 +1,17 @@
 SynthDef2 : SynthDef {
 	
+	writeDefFile { arg dir, overwrite;
+		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
+			super.writeDefFile2(name, dir, overwrite);
+		} {
+			// actual error, not just warning as in .send and .load,
+			// because you might try to write the file somewhere other than
+			// the default location - could be fatal later, so crash now
+			MethodError("This SynthDef (%) was reconstructed from a .scsyndef file. It does not contain all the required structure to write back to disk. File was not written."
+				.format(name), this).throw
+		}
+	}
+	
 	writeDef { arg file;
 		// This describes the file format for the synthdef files.
 		var allControlNamesTemp, allControlNamesMap;
@@ -153,5 +165,30 @@ SynthDef2 : SynthDef {
 		//[\inpspc, this.class.name, constIndex, this].postln;
 		file.putInt32(-1);
 		file.putInt32(constIndex);
+	}
+}
+
++ Object {
+	
+	writeDefFile2 { arg name, dir, overwrite = (true);
+
+		StartUp.defer { // make sure the synth defs are written to the right path
+			var file;
+			dir = dir ? SynthDef.synthDefDir;
+			if (name.isNil) { error("missing SynthDef file name") } {
+				name = dir +/+ name ++ ".scsyndef";
+				if(overwrite or: { pathMatch(name).isEmpty })
+					{
+					file = File(name, "w");
+					protect {
+						AbstractMDPlugin.clearMetadata(name);
+						this.asArray.writeDef2(file);
+					}{
+						file.close;
+					}
+				}
+			}
+		}
+
 	}
 }
