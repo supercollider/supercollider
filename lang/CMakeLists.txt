@@ -2,6 +2,8 @@ find_package(FFTW3f)
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     LangSource/Bison)
 
