@@ -241,6 +241,7 @@ PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long p
 	mCanSweep = false;
 	mPartialScanObj = NULL;
 	mPartialScanSlot = 0;
+	mUncollectedAllocations = 0;
 
 	mGrey.classptr = NULL;
 	mGrey.obj_sizeclass = 0;
@@ -317,6 +318,7 @@ void PyrGC::BecomeImmutable(PyrObject *inObject)
 
 void DumpBackTrace(VMGlobals *g);
 
+
 PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect)
 {
 	PyrObject *obj = NULL;
@@ -344,6 +346,11 @@ PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCol
 	mNumToScan += credit;
 	if (inCollect && mNumToScan >= kScanThreshold) {
 		Collect();
+	} else {
+		if (inCollect)
+			mUncollectedAllocations = 0;
+		else
+			++mUncollectedAllocations;
 	}
 
 	GCSet *gcs = mSets + sizeclass;
@@ -408,6 +415,11 @@ PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool 
 		if (mNumToScan >= kScanThreshold) {
 			Collect();
 		}
+	} else {
+		if (inAccount)
+			mUncollectedAllocations = 0;
+		else
+			++mUncollectedAllocations;
 	}
 
 	GCSet *gcs = mSets + sizeclass;
@@ -464,6 +476,11 @@ PyrObject *PyrGC::NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, boo
 
 	if (inCollect && mNumToScan >= kScanThreshold) {
 		Collect();
+	} else {
+		if (inCollect)
+			mUncollectedAllocations = 0;
+		else
+			++mUncollectedAllocations;
 	}
 
 	GCSet *gcs = mSets + kFinalizerSet;
@@ -745,6 +762,9 @@ void PyrGC::Collect()
 		//TraceAnyPathToAllGrey();
 	}
 	//post("mNumToScan %d\n", mNumToScan);
+
+	mUncollectedAllocations = 0;
+
 #if SANITYCHECK
 	SanityCheck();
 #endif
