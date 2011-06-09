@@ -298,12 +298,13 @@ SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
 
 SC_UdpCustomInPort::~SC_UdpCustomInPort()
 {
-	mRunning = false;
+	mRunning.store(false);
 #ifdef SC_WIN32
 	if (mSocket != -1) closesocket(mSocket);
 #else
 	if (mSocket != -1) close(mSocket);
 #endif
+	pthread_join(mThread, NULL);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -394,8 +395,8 @@ void* SC_UdpCustomInPort::Run()
 	OSC_Packet *packet = 0;
 	
 	//printf("SC_UdpInPort::Run\n"); fflush(stdout);
-	mRunning = true;
-	while (mRunning) {
+	mRunning.store(true);
+	while (mRunning.load(boost::memory_order_consume)) {
 		if (!packet) {
 			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 		}

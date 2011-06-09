@@ -16,6 +16,8 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/unicode/
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}
+        ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+        ${CMAKE_SOURCE_DIR}/external_libraries/boost
 	)
 
 find_package(Sndfile)
