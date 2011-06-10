@@ -811,7 +811,7 @@ Server : Model {
 			}{
 				recordNode.run(true)
 			};
-			"Recording".postln;
+			"Recording: %\n".postf(recordBuf.path);
 		};
 	}
 
@@ -820,13 +820,15 @@ Server : Model {
 	}
 
 	stopRecording {
-		recordNode.notNil.if({
+		if(recordNode.notNil) {
 			recordNode.free;
 			recordNode = nil;
 			recordBuf.close({ arg buf; buf.free; });
+			"Recording Stopped: %\n".postf(recordBuf.path);
 			recordBuf = nil;
-			"Recording Stopped".postln },
-		{ "Not Recording".warn });
+		} {
+			"Not Recording".warn
+		};
 	}
 
 	prepareForRecord { arg path;
@@ -846,6 +848,7 @@ Server : Model {
 		recordBuf = Buffer.alloc(this, 65536, recChannels,
 			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
 			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
+		recordBuf.path = path;
 		SynthDef("server-record", { arg bufnum;
 			DiskOut.ar(bufnum, In.ar(0, recChannels))
 		}).send(this);
