@@ -131,7 +131,7 @@ b.setn(\ring, Array.rand(4, 0.005, 1.0))
 
 subsection:: Symbols
 
-Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see: link::Classes/ControlName::, and link::Classes/Symbol::)
+Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see: link::Classes/NamedControl::, and link::Classes/Symbol::)
 	
 definitionlist::
 ## code:: \name.kr(val, lag) ::
