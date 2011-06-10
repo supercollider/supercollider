@@ -506,7 +506,7 @@ Server : Model {
 					}.defer;
 				}, '/status.reply', addr).fix;
 		} {
-			statusWatcher.enable
+			statusWatcher.enable;
 		};
 	}
 	// Buffer objects are cached in an Array for easy
@@ -665,6 +665,26 @@ Server : Model {
 	}
 
 	quit {
+		var	serverReallyQuitWatcher, serverReallyQuit = false;
+		statusWatcher !? {
+			statusWatcher.disable;
+			if(notified) {
+				serverReallyQuitWatcher = OSCProxy({ |msg|
+					if(msg[1] == '/quit') {
+						statusWatcher.enable;
+						serverReallyQuit = true;
+						serverReallyQuitWatcher.clear;
+					};
+				}, '/done', addr);
+				// don't accumulate quit-watchers if /done doesn't come back
+				AppClock.sched(3.0, {
+					if(serverReallyQuit.not) {
+						"Server % failed to quit after 3.0 seconds.".format(this.name).warn;
+						serverReallyQuitWatcher.clear;
+					};
+				});
+			};
+		};
 		addr.sendMsg("/quit");
 		if (inProcess, {
 			this.quitInProcess;
@@ -673,7 +693,6 @@ Server : Model {
 			"/quit sent\n".inform;
 		});
 		alive = false;
-		statusWatcher !? { statusWatcher.disable };
 		notified = false;
 		dumpMode = 0;
 		pid = nil;

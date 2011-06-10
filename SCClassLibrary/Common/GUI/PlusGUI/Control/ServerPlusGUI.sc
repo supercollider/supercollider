@@ -155,7 +155,7 @@
 			};
 			stopDump = {
 				this.dumpOSC(0);
-				this.startAliveThread;
+				if(serverRunning) { this.startAliveThread };
 				dumping = false;
 				w.name = label;
 				CmdPeriod.remove(blockAliveThread);
