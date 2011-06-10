@@ -1,5 +1,20 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
+SuperCollider v3.4.2, released 2011-06
+======================================
+
+Tim Blechmann (10):
+      sclang: mathematical operators - clip2 fix
+      plugins: LPF - fix control-rate initialization
+      sclang: wii - don't use address of temporary
+      SCClassLibrary: ScoreStreamPlayer - do not add instances to server list
+      scsynth: apple - set denormal handling flags, if __SSE__ is defined
+      sclang: slotString - crash fix
+      plugins: XLine - correct handling of done actions
+      sclang: gc - introduce LazyCollect to avoid leak of frames and argument lists
+      plugins: Pitch.ar - fix crash for high execution period
+      3.4.4 version bump
+
 SuperCollider v3.4.2, released 2011-03
 ======================================
 
