@@ -22,14 +22,14 @@ SynthDef2 : SynthDef {
 
 		//controls have been added by the Control UGens
 		file.putInt32(controls.size);
-		"numControls: %\n".postf(controls.size);
+		//"numControls: %\n".postf(controls.size);
 		controls.do { | item |
 			file.putFloat(item);
 		};
 
 		allControlNamesTemp = allControlNames.reject { |cn| cn.rate == \noncontrol };
 		file.putInt32(allControlNamesTemp.size);
-		"numParamsSpecs: %\n".postf(allControlNamesTemp.size);
+		//"numParamsSpecs: %\n".postf(allControlNamesTemp.size);
 		allControlNamesTemp.do { | item |
 			if (item.name.notNil) {
 				file.putPascalString(item.name.asString);
@@ -38,13 +38,13 @@ SynthDef2 : SynthDef {
 		};
 
 		file.putInt32(children.size);
-		"numUGenSpecs: %\n".postf(children.size);
+		//"numUGenSpecs: %\n".postf(children.size);
 		children.do { | item |
 			item.writeDef2(file);
 		};
 
 		file.putInt16(variants.size);
-		"numVariants: %\n".postf(variants.size);
+		//"numVariants: %\n".postf(variants.size);
 		if (variants.size > 0) {
 			allControlNamesMap = ();
 			allControlNamesTemp.do { |cn|
@@ -86,7 +86,7 @@ SynthDef2 : SynthDef {
 				};
 			};
 		};
-		"/////// End lang side //////// ".postln; 
+		//"/////// End lang side //////// ".postln; 
 	}
 	
 	writeConstants { arg file;
@@ -96,7 +96,7 @@ SynthDef2 : SynthDef {
 		};
 
 		file.putInt32(constants.size);
-		"numConstants: %\n".postf(constants.size);
+		//"numConstants: %\n".postf(constants.size);
 		array.do { | item |
 			file.putFloat(item)
 		};
@@ -129,16 +129,16 @@ SynthDef2 : SynthDef {
 	
 	writeDef2 { arg file;
 		//[\WR, this.class.name, rate, this.numInputs, this.numOutputs].postln;
-		"//UGen Spec: %\n".postf(this.name);
+		//"//UGen Spec: %\n".postf(this.name);
 		file.putPascalString(this.name);
 		file.putInt8(this.rateNumber);
-		"rate: %\n".postf(this.rateNumber);
+		//"rate: %\n".postf(this.rateNumber);
 		file.putInt32(this.numInputs);
-		"numInputs: %\n".postf(this.numInputs);
+		//"numInputs: %\n".postf(this.numInputs);
 		file.putInt32(this.numOutputs);
-		"numOutputs: %\n".postf(this.numOutputs);
+		//"numOutputs: %\n".postf(this.numOutputs);
 		file.putInt16(this.specialIndex);
-		"specialInd: %\n".postf(this.specialIndex);
+		//"specialInd: %\n".postf(this.specialIndex);
 		// write wire spec indices.
 		inputs.do({ arg input;
 			input.writeInputSpec2(file, synthDef);
@@ -149,9 +149,9 @@ SynthDef2 : SynthDef {
 	
 	writeInputSpec2 { arg file, synthDef;
 		file.putInt32(synthIndex);
-		"fromUnitIndex: %\n".postf(synthIndex);
+		//"fromUnitIndex: %\n".postf(synthIndex);
 		file.putInt32(this.outputIndex);
-		"fromOutputIndex: %\n".postf(this.outputIndex);
+		//"fromOutputIndex: %\n".postf(this.outputIndex);
 	}
 	
 }
