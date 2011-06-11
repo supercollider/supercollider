@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <stdarg.h>
 #include "SCBase.h"
+#include <fcntl.h>
 
 #ifndef SC_WIN32
 # include <unistd.h>
@@ -299,12 +300,13 @@ SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
 SC_UdpCustomInPort::~SC_UdpCustomInPort()
 {
 	mRunning.store(false);
+	pthread_join(mThread, NULL);
 #ifdef SC_WIN32
 	if (mSocket != -1) closesocket(mSocket);
 #else
 	if (mSocket != -1) close(mSocket);
 #endif
-	pthread_join(mThread, NULL);
+	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -394,30 +396,45 @@ void* SC_UdpCustomInPort::Run()
 	char buf[kTextBufSize];
 	OSC_Packet *packet = 0;
 	
-	//printf("SC_UdpInPort::Run\n"); fflush(stdout);
+	const int fd = mSocket;
+	const int max_fd = fd+1;
+	
 	mRunning.store(true);
 	while (mRunning.load(boost::memory_order_consume)) {
-		if (!packet) {
-			packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-		}
-		packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
-		int size = recvfrom(mSocket, buf, kTextBufSize , 0,
-							(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
+		fd_set rfds;
 		
-		if (size > 0) {
-			//dumpOSC(3, size, buf);
-			//fflush(stdout);
+		FD_ZERO(   &rfds);
+		FD_SET(fd, &rfds);
+
+		struct timeval timeout;
+		timeout.tv_sec = 0;
+		timeout.tv_usec = 500000;
+		
+		int n = select(max_fd, &rfds, 0, 0, &timeout);
+		if ((n > 0) && FD_ISSET(fd, &rfds)) {
+			if (!packet) {
+				packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+			}
+			packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
+			int size = recvfrom(mSocket, buf, kTextBufSize , 0,
+								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
 			
-			char *data = (char*)malloc(size);
-			packet->mReplyAddr.mReplyFunc = udp_reply_func;
-			packet->mSize = size;
-			packet->mData = data;
-			packet->mReplyAddr.mSocket = mSocket;
-			memcpy(data, buf, size);
-			ProcessOSCPacket(packet, mPortNum);
-			packet = 0;
+			if (size > 0 && mRunning.load(boost::memory_order_consume)) {
+				//dumpOSC(3, size, buf);
+				//fflush(stdout);
+				
+				char *data = (char*)malloc(size);
+				packet->mReplyAddr.mReplyFunc = udp_reply_func;
+				packet->mSize = size;
+				packet->mData = data;
+				packet->mReplyAddr.mSocket = mSocket;
+				memcpy(data, buf, size);
+				ProcessOSCPacket(packet, mPortNum);
+				packet = 0;
+			}
 		}
 	}
+	FreeOSCPacket(packet); // just in case
 	return 0;
 }
 
