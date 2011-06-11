@@ -218,7 +218,7 @@ OSCMessagePatternDispatcher : OSCMessageDispatcher {
 }
 
 OSCProxy : AbstractResponderProxy {
-	classvar <>defaultDispatcher, <>defaultMatchingDispatcher, traceFunc;
+	classvar <>defaultDispatcher, <>defaultMatchingDispatcher, traceFunc, traceRunning = false;
 	var <path, <recvPort;
 	
 	*initClass {
@@ -239,11 +239,15 @@ OSCProxy : AbstractResponderProxy {
 	
 	*trace {|bool = true| 
 		if(bool, {
-			thisProcess.addOSCFunc(traceFunc);
-			CmdPeriod.add(this);
+			if(traceRunning.not, {
+				thisProcess.addOSCFunc(traceFunc);
+				CmdPeriod.add(this);
+				traceRunning = true;
+			});
 		}, {
 			thisProcess.removeOSCFunc(traceFunc);
 			CmdPeriod.remove(this);
+			traceRunning = false;
 		});
 	}
 	
