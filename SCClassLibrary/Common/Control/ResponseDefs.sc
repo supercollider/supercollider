@@ -307,7 +307,7 @@ OSCProxyAddrMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argaddr, argfunc| addr = argaddr; func = argfunc; }
 	
-	value {|time, msg, testAddr, recvPort| 
+	value {|msg, time, testAddr, recvPort| 
 		if(testAddr.addr == addr.addr and: {addr.port.matchItem(testAddr.port)}, {
 			func.value(msg, time, testAddr, recvPort)
 		})
@@ -322,7 +322,7 @@ OSCProxyRecvPortMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argrecvPort, argfunc| recvPort = argrecvPort; func = argfunc; }
 	
-	value {|time, msg, addr, testRecvPort| 
+	value {|msg, time, addr, testRecvPort| 
 		if(testRecvPort == recvPort, {
 			func.value(msg, time, addr, testRecvPort)
 		})
@@ -336,7 +336,7 @@ OSCProxyBothMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argaddr, argrecvPort, argfunc| addr = argaddr; recvPort = argrecvPort; func = argfunc; }
 	
-	value {|time, msg, testAddr, testRecvPort| 
+	value {|msg, time, testAddr, testRecvPort| 
 		if(testAddr.addr == addr.addr and: {addr.port.matchItem(testAddr.port)} and: {testRecvPort == recvPort}, {
 			func.value(msg, time, testAddr, testRecvPort)
 		})
