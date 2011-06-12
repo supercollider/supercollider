@@ -71,7 +71,7 @@ private:
 // =====================================================================
 // SC_LibraryConfig
 //    library configuration management
-// Copyright 2003 Maurizio Umberto Puxeddu
+// Copyright 2003 Maurizio Umberto Puxeddu <umbpux@tin.it>
 // =====================================================================
 
 class SC_LibraryConfig
