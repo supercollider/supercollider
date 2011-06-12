@@ -1,5 +1,10 @@
 SynthDef2 : SynthDef {
 	
+	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
+		^this.prNew(name).variants_(variants).metadata_(metadata).children_(Array.new(64))
+			.build(ugenGraphFunc, rates, prependArgs)
+	}
+	
 	writeDefFile { arg dir, overwrite;
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
 			super.writeDefFile2(name, dir, overwrite);
