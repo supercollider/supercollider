@@ -3,7 +3,14 @@ Changes are listed below, grouped under each point release of SuperCollider.
 SuperCollider v3.4.4, released 2011-06
 ======================================
 
-Tim Blechmann (10):
+Dan Stowell (2):
+      Improve format of copyright/GPL notices (issue raised in debian pkging)
+      Clarify Fontana copyright in MoogFF (and don't use keyword 'copyright'     in files where he doesn't have copyright)
+
+Nick Collins (1):
+      Initial fix for headphones problem where plugging in or out headphones while using Built-in Output leads to loss of audio on OS X. Aggregate Devices not tackled at this point
+
+Tim Blechmann (11):
       sclang: mathematical operators - clip2 fix
       plugins: LPF - fix control-rate initialization
       sclang: wii - don't use address of temporary
@@ -14,6 +21,7 @@ Tim Blechmann (10):
       sclang: gc - introduce LazyCollect to avoid leak of frames and argument lists
       plugins: Pitch.ar - fix crash for high execution period
       3.4.4 version bump
+      changelog: fix version number
 
 SuperCollider v3.4.2, released 2011-03
 ======================================
