@@ -268,19 +268,20 @@ Env {
 
 	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
 
-
 	prAsArray {
-		var contents, curvesArray;
-		contents = [levels.at(0), times.size,
-				releaseNode ? -99, loopNode ? -99];
+		var contents, curvesArray, size;
+		size = times.size;
+		contents = Array.new((size + 1) * 4);
+		contents.add(levels.at(0));
+		contents.add(size);
+		contents.add(releaseNode ? -99);
+		contents.add(loopNode ? -99);
 		curvesArray = curves.asArray;
-		times.size.do({ arg i;
-			contents = contents ++ [
-				levels.at(i+1),
-				times.at(i),
-				this.class.shapeNumber(curvesArray.wrapAt(i)),
-				this.curveValue(curvesArray.wrapAt(i))
-			];
+		size.do({ arg i;
+			contents.add(levels.at(i+1));
+			contents.add(times.at(i));
+			contents.add(this.class.shapeNumber(curvesArray.wrapAt(i)));
+			contents.add(this.curveValue(curvesArray.wrapAt(i)));
 		});
 		^contents
 	}
