@@ -5,7 +5,7 @@ As described in the paper entitled
 by Federico Fontana
 appeared in the Proc. ICMC07, Copenhagen, 25-31 August 2007
 
-Original Java code Copyright F. Fontana - August 2007
+Original Java code created by F. Fontana - August 2007
 federico.fontana@univr.it
 
 Ported to C++ for SuperCollider by Dan Stowell - August 2007

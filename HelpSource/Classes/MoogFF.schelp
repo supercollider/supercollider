@@ -8,7 +8,7 @@ A digital implementation of the Moog VCF (filter). footnote::
 The design of this filter is described in the conference paper Fontana, F. (2007) emphasis::Preserving the Digital Structure of the Moog VCF::. In Proc. ICMC07, Copenhagen, 25-31 August 2007.
 ::
 footnote::
-Original Java code Copyright F. Fontana - August 2007 - federico.fontana@univr.it
+Original Java code created by F. Fontana - August 2007 - federico.fontana@univr.it
 Ported to C++ for SuperCollider by Dan Stowell
 ::
 
