@@ -200,6 +200,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     option(LTO "Use GCC's link time optimizer' (experimental).")
 endif()
 
+option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
+
 #############################################
 # some preprocessor flags
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -281,10 +283,53 @@ else()
 	set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
 endif()
 
-install(DIRECTORY SCClassLibrary
-	DESTINATION ${auxresourcesdir}
-	REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-)
+if(APPLE)
+	#if directory contains symlinks, unlink them.
+	if(EXISTS "${auxresourcesdir}/SCClassLibrary")
+		file(GLOB classlibraryfolders "${auxresourcesdir}/SCClassLibrary/[^.]*")
+		foreach(onedirectory ${classlibraryfolders})
+			if(IS_SYMLINK "${onedirectory}")
+				install( CODE "EXECUTE_PROCESS(COMMAND unlink ${onedirectory} )" )
+			endif()
+		endforeach(onedirectory)
+	endif()
+
+	if(SC_SYMLINK_CLASSLIB)
+
+		#if there are folders inside SCCLassLibrary abort cmake.
+		file(GLOB classlibraryfolders "${auxresourcesdir}/SCClassLibrary/[^.]*")
+		foreach(onedirectory ${classlibraryfolders})
+			if(NOT IS_SYMLINK "${onedirectory}")
+				message(FATAL_ERROR "Symlinking will fail ! SCClassLibrary folder already exists and has directories inside, please delete it first." )
+			endif()
+		endforeach(onedirectory)
+
+		message(STATUS "Will create symlink of SCClassLibrary to ${auxresourcesdir}/SCClassLibrary" )
+		if(NOT EXISTS "${auxresourcesdir}/SCClassLibrary")
+			install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${auxresourcesdir}/SCClassLibrary)" )
+		endif()
+		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
+		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
+		foreach(onedirectory ${classlibraryfolders})
+			if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
+				install( CODE
+					"EXECUTE_PROCESS(COMMAND ln -s ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+			endif()
+		endforeach(onedirectory)
+	else()
+		message(STATUS "Will copy SCCLassLibrary to ${auxresourcesdir}")
+		install(DIRECTORY SCClassLibrary
+			DESTINATION ${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+		)
+	endif()
+else()
+	install(DIRECTORY SCClassLibrary
+		DESTINATION ${auxresourcesdir}
+		REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+	)
+endif()
+
 
 install(DIRECTORY Help examples sounds HelpSource
 	DESTINATION ${auxresourcesdir}
