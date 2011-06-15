@@ -509,7 +509,7 @@ void SC_TerminalClient::cleanupCmdLine()
 void SC_TerminalClient::commandLoop()
 {
 #ifndef _WIN32
-	struct timespec tv = { 0, 1e9 / ticks_per_second };
+	struct timespec tv = { 0, 1000000000 / ticks_per_second };
 #else
 	int period = 1000 / ticks_per_second;
 #endif
@@ -531,7 +531,7 @@ void SC_TerminalClient::commandLoop()
 
 void SC_TerminalClient::daemonLoop()
 {
-	struct timespec tv = { 0, 1e9 / ticks_per_second };
+	struct timespec tv = { 0, 1000000000 / ticks_per_second };
 
 	while (shouldBeRunning()) {
 		tick(); // also flushes post buffer
