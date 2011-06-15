@@ -28,8 +28,8 @@ PR.registerLangHandler(
         [PR.PR_LITERAL,     /^-?(?:(?:\d+(\.\d+)?)(?:e[+\-]?\d+)?)(pi)?|pi/],
         /* other stuff */
         [PR.PR_PLAIN, /^[a-z_]\w*/i],
-//        [PR.PR_PUNCTUATION, /^[-.,;!#$%&/+*<>=@()\[\]{}]/]
-        [PR.PR_PUNCTUATION, /^[-.,;!?#$%&\|/+*<>=@()\[\]{}]/]
+//        [PR.PR_PUNCTUATION, /^[-.,;!?#$%&\|/+*<>=@()\[\]{}]/]
+        [PR.PR_PUNCTUATION, /^[-.,;#()\[\]{}]/]
     ]),
     ['sc']);
 

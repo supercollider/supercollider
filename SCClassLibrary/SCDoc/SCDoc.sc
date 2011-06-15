@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 15;
+    classvar version = 16;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;

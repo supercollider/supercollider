@@ -571,7 +571,10 @@ SCDocHTMLRenderer : SCDocRenderer {
     renderHTMLHeader {|f,name,type,subtarget,toc=true|
         var x, cats, m, z;
         var folder = subtarget.dirname;
-        f.write("<html><head><title>"++name++"</title><link rel='stylesheet' href='"++baseDir++"/scdoc.css' type='text/css' />");
+        f.write("<html><head><title>"++name++"</title>");
+        f.write("<link rel='stylesheet' href='"++baseDir++"/scdoc.css' type='text/css' />");
+        f.write("<link rel='stylesheet' href='"++baseDir++"/frontend.css' type='text/css' />");
+        f.write("<link rel='stylesheet' href='"++baseDir++"/custom.css' type='text/css' />");
         f.write("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />");
         f.write("<script src='" ++ baseDir ++ "/scdoc.js' type='text/javascript'></script>");
         f.write("<script src='" ++ baseDir ++ "/docmap.js' type='text/javascript'></script>");
