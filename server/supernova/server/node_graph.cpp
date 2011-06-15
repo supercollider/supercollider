@@ -98,12 +98,12 @@ void node_graph::remove_node(server_node * n)
         group_count_ -= 1;
 }
 
-std::auto_ptr<node_graph::dsp_thread_queue> node_graph::generate_dsp_queue(void)
+node_graph::dsp_thread_queue_ptr node_graph::generate_dsp_queue(void)
 {
     dependency_graph_generator gen;
 
     node_graph::dsp_thread_queue * ret = gen(this);
-    return std::auto_ptr<node_graph::dsp_thread_queue>(ret);
+    return dsp_thread_queue_ptr(ret);
 }
 
 void node_graph::synth_reassign_id(int32_t node_id)

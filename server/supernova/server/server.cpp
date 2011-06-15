@@ -185,8 +185,12 @@ void nova_server::register_prototype(synth_prototype_ptr const & prototype)
 void nova_server::rebuild_dsp_queue(void)
 {
     assert(dsp_queue_dirty);
-    std::auto_ptr<dsp_thread_queue> new_queue = node_graph::generate_dsp_queue();
+    node_graph::dsp_thread_queue_ptr new_queue = node_graph::generate_dsp_queue();
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+    scheduler<scheduler_hook, thread_init_functor>::reset_queue_sync(std::move(new_queue));
+#else
     scheduler<scheduler_hook, thread_init_functor>::reset_queue_sync(new_queue);
+#endif
     dsp_queue_dirty = false;
 }
 

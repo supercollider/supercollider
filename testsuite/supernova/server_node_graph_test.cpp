@@ -4,6 +4,10 @@
 
 #include "test_synth.hpp"
 
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+#define auto_ptr unique_ptr
+#endif
+
 using namespace nova;
 using namespace std;
 
