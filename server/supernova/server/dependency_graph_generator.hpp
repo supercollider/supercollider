@@ -201,9 +201,7 @@ private:
 
         successor_container ret(collected_nodes.size());
 
-        memcpy(&ret[0], &collected_nodes[0], collected_nodes.size() * sizeof(thread_queue_item *));
-/*      for (std::size_t i = 0; i != collected_nodes.size(); ++i)
-            ret[i] = collected_nodes[i]; */
+        memcpy(ret.data, collected_nodes.data(), collected_nodes.size() * sizeof(thread_queue_item *));
         return ret;
     }
 };
