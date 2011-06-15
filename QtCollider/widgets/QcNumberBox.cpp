@@ -126,6 +126,20 @@ void QcNumberBox::setMaxDecimals( int d )
   setValue( _value );
 }
 
+void QcNumberBox::increment( float factor )
+{
+  onEditingFinished();
+  setValue( value() + (step * factor) );
+  Q_EMIT( action() );
+}
+
+void QcNumberBox::decrement( float factor )
+{
+  onEditingFinished();
+  setValue( value() - (step * factor) );
+  Q_EMIT( action() );
+}
+
 void QcNumberBox::onEditingFinished()
 {
   if( isReadOnly() ) return;

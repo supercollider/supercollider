@@ -59,6 +59,10 @@ class QcRangeSlider :
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
 
+  public Q_SLOTS:
+    void increment( float factor );
+    void decrement( float factor );
+
   Q_SIGNALS:
     void action();
 

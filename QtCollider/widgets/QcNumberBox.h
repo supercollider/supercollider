@@ -65,10 +65,15 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     void setMinDecimals( int );
     void setMaxDecimals( int );
 
+  public Q_SLOTS:
+    void increment( float factor );
+    void decrement( float factor );
+
   Q_SIGNALS:
     void scrolled( int steps );
     void valueChanged();
     void action();
+
   private Q_SLOTS:
     void onEditingFinished();
     void onValueChanged();
