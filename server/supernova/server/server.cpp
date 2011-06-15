@@ -86,7 +86,7 @@ nova_server::~nova_server(void)
 
     close_client();
 #endif
-    io_interpreter.terminate();
+    io_interpreter.join_thread();
     instance = 0;
 }
 
