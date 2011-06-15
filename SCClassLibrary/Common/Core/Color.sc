@@ -171,6 +171,25 @@ Color {
 	set {
 		this.setStroke.setFill;
 	}
+	
+	hexString { // ignores alpha
+		var hexRed, hexGreen, hexBlue;
+		#hexRed, hexGreen, hexBlue = [red, green, blue] * 255;
+		^hexRed.round.asInteger.asStringToBase(16, 2) 
+			++ hexGreen.round.asInteger.asStringToBase(16, 2) 
+			++ hexBlue.round.asInteger.asStringToBase(16, 2)
+
+	}
+	
+	*fromHexString {|string|
+		var red, green, blue;
+		if(string[0] == $#, {string = string.copyToEnd(1)});
+		if(string.size == 3, {string = string[0] ++ string[0] ++ string[1] ++ string[1] ++ string[2] ++ string[2]});
+		red = ("0x" ++ string.copyRange(0, 1)).interpret;
+		green = ("0x" ++ string.copyRange(2, 3)).interpret;
+		blue = ("0x" ++ string.copyRange(4, 5)).interpret;
+		^this.new255(red, green, blue, 255);
+	}	
 }
 
 /*	X-windows colors :

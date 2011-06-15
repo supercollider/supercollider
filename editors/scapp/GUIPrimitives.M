@@ -241,7 +241,7 @@ int prTextWindow_GetBackgroundColor(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-extern SCColor synColText, synColClass, synColString, synColSymbol, synColComment, synColNumber;
+extern SCColor synColText, synColClass, synColString, synColSymbol, synColComment, synColNumber, synColSpecialVals, synColSpecialVars, synColDecl, synColPunc;
 
 int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed);
 int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed)
@@ -252,6 +252,10 @@ int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *colSymbol;
 	PyrSlot *colComment;
 	PyrSlot *colNumber;
+	PyrSlot *colVals;
+	PyrSlot *colVars;
+	PyrSlot *colDecl;
+	PyrSlot *colPunc;
 
 	colText = g->sp - numArgsPushed + 2;
 	colClass = colText + 1;
@@ -259,6 +263,10 @@ int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed)
 	colSymbol = colString + 1;
 	colComment = colSymbol + 1;
 	colNumber = colComment + 1;
+	colVals = colNumber + 1;
+	colVars = colVals + 1;
+	colDecl = colVars + 1;
+	colPunc = colDecl + 1;
 
 	if (isKindOfSlot(colText, s_color->u.classobj)) {
 		int err = slotColorVal(colText, &synColText);
@@ -287,6 +295,26 @@ int prSetSyntaxColorTheme(struct VMGlobals *g, int numArgsPushed)
 
 	if (isKindOfSlot(colNumber, s_color->u.classobj)) {
 		int err = slotColorVal(colNumber, &synColNumber);
+		if(err) return err;
+	};
+	
+	if (isKindOfSlot(colVals, s_color->u.classobj)) {
+		int err = slotColorVal(colVals, &synColSpecialVals);
+		if(err) return err;
+	};
+	
+	if (isKindOfSlot(colVars, s_color->u.classobj)) {
+		int err = slotColorVal(colVars, &synColSpecialVars);
+		if(err) return err;
+	};
+	
+	if (isKindOfSlot(colDecl, s_color->u.classobj)) {
+		int err = slotColorVal(colDecl, &synColDecl);
+		if(err) return err;
+	};
+	
+	if (isKindOfSlot(colPunc, s_color->u.classobj)) {
+		int err = slotColorVal(colPunc, &synColPunc);
 		if(err) return err;
 	};
 
@@ -3929,7 +3957,7 @@ void initGUIPrimitives()
 	definePrimitive(base, index++, "_TextWindow_PromptToSave", prTextWindow_PromptToSave, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_SetDefaultFont", prTextWindow_SetDefaultFont, 2, 0);
 	definePrimitive(base, index++, "_PostWindow_SetTextColor", prSetPostTextColor, 2, 0);
-	definePrimitive(base, index++, "_TextWindow_SetSyntaxColorTheme", prSetSyntaxColorTheme, 6, 0);
+	definePrimitive(base, index++, "_TextWindow_SetSyntaxColorTheme", prSetSyntaxColorTheme, 10, 0);
 	definePrimitive(base, index++, "_TextWindow_BalanceParens", prBalanceParens, 1, 0);
 	definePrimitive(base, index++, "_TextWindow_UsesAutoInOutdent", prTextWindow_UsesAutoInOutdent, 2, 0);
 	definePrimitive(base, index++, "_TextWindow_DefaultUsesAutoInOutdent", prTextWindow_DefaultUsesAutoInOutdent, 2, 0);
