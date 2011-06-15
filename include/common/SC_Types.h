@@ -64,8 +64,10 @@ typedef union {
 const unsigned int kSCNameLen = 8;
 const unsigned int kSCNameByteLen = 8 * sizeof(int32);
 
-#ifdef __GNUC__
-#define sc_typeof_cast(x) (typeof(x))
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+#define sc_typeof_cast(x) (decltype(x))
+#elif defined(__GNUC__)
+#define sc_typeof_cast(x) (__typeof__(x))
 #else
 #define sc_typeof_cast(x) /* (typeof(x)) */
 #endif
