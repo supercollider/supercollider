@@ -329,7 +329,7 @@ void SyntaxColorize(NSTextView* textView)
 		endrun = textpos;
 		if(c != 0){ 
 			range = NSMakeRange(startrun, endrun - startrun);
-			[textStorage addAttribute:NSForegroundColorAttributeName value: specialVarsColor range: range];
+			[textStorage addAttribute:NSForegroundColorAttributeName value: declColor range: range];
 		}
 		continue;
 	comment1:	/* comment -- to end of line */
