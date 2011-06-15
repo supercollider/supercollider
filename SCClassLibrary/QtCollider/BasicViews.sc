@@ -110,6 +110,14 @@ QAbstractStepValue : QView {
     this.setProperty( \altScale, aFloat );
   }
 
+  getScale { |modifiers|
+    ^case
+      { modifiers.isShift } { shift_scale }
+      { modifiers.isCtrl } { ctrl_scale }
+      { modifiers.isAlt } { alt_scale }
+      { 1 };
+  }
+
   increment {
     this.nonimpl( \increment );
   }
@@ -324,57 +332,6 @@ QCheckBox : QView {
 
   defaultGetDrag { ^this.value; }
   defaultCanReceiveDrag { ^((QView.currentDrag == true) || (QView.currentDrag == false)); }
-  defaultReceiveDrag {
-    this.valueAction = QView.currentDrag;
-  }
-}
-
-QSlider : QAbstractStepValue {
-  //compatibility stuff:
-  var <orientation;
-  var <> thumbSize;
-
-  *qtClass { ^"QcSlider" }
-
-  *new { arg parent, bounds;
-    ^super.new( parent, bounds ).initQSlider( bounds );
-  }
-
-  knobColor {
-    ^this.palette.buttonColor;
-  }
-
-  knobColor_ { arg color;
-    this.setProperty( \palette, this.palette.buttonColor_(color) );
-  }
-
-  increment { arg factor = 1.0; this.invokeMethod( \increment, factor.asFloat ); }
-  decrement { arg factor = 1.0; this.invokeMethod( \decrement, factor.asFloat ); }
-
-  initQSlider { arg bounds;
-    var r;
-    if( bounds.notNil ) {
-      r = bounds.asRect;
-      if( r.width > r.height ) {
-        this.orientation_( \horizontal );
-      } {
-        this.orientation_( \vertical );
-      }
-    }
-  }
-
-  pixelStep {
-    // FIXME for now we are using step instead
-    ^this.step;
-  }
-
-  orientation_ { arg aSymbol;
-    orientation = aSymbol;
-    this.setProperty( \orientation, QOrientation(aSymbol) );
-  }
-
-  defaultGetDrag { ^this.value; }
-  defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
   defaultReceiveDrag {
     this.valueAction = QView.currentDrag;
   }
