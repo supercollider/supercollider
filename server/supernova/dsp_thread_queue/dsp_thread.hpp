@@ -121,11 +121,16 @@ class dsp_threads
 
     typedef nova::dsp_thread<runnable, thread_init_functor, Alloc> dsp_thread;
 
+
 public:
     typedef typename dsp_queue_interpreter::node_count_t node_count_t;
     typedef typename dsp_queue_interpreter::thread_count_t thread_count_t;
 
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+    typedef std::unique_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
+#else
     typedef std::auto_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
+#endif
 
     dsp_threads(thread_count_t count, thread_init_functor const & init_functor = thread_init_functor()):
         interpreter(std::min(count, (thread_count_t)boost::thread::hardware_concurrency()))
@@ -147,10 +152,18 @@ public:
      *
      *  don't call, if threads are currently accessing the queue
      * */
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+    dsp_thread_queue_ptr reset_queue(dsp_thread_queue_ptr && new_queue)
+    {
+        dsp_thread_queue_ptr ret = interpreter.reset_queue(std::move(new_queue));
+        return std::move(ret);
+    }
+#else
     dsp_thread_queue_ptr reset_queue(dsp_thread_queue_ptr & new_queue)
     {
         return interpreter.reset_queue(new_queue);
     }
+#endif
 
     dsp_thread_queue_ptr release_queue(void)
     {
