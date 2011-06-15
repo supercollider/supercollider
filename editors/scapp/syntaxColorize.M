@@ -167,8 +167,8 @@ void SyntaxColorize(NSTextView* textView)
 		}
 		
 		if (c == '|' && bracket) goto arglist;
-		if (c == '{') { bracket = true; continue; }
-		bracket = false;
+		if (c == '{') { bracket = true; }
+			else bracket = false;
 		
 		if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') goto ident;
 		else if (c == '\\') goto symbol1;
@@ -192,7 +192,7 @@ void SyntaxColorize(NSTextView* textView)
 		}
 		else if(c == '-')	goto negnumber; //might be a negative number
 		else if(c >= '0' && c <= '9')	goto number;
-		else if([[NSCharacterSet punctuationCharacterSet] characterIsMember:c])	goto punct;
+		else if(c==':' || c==';' || c=='.' || c=='(' || c==')' || c=='[' || c==']' || c=='{' || c=='}')	goto punct;
 		else {
 			continue; 
 		}
