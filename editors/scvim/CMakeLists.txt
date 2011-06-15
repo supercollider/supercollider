@@ -11,6 +11,10 @@ install(DIRECTORY indent
 install(DIRECTORY syntax
 		DESTINATION share/vim/addons)
 
+configure_file(registry/supercollider-vim.yaml.in registry/supercollider-vim.yaml)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/registry/supercollider-vim.yaml
+		DESTINATION share/vim/registry)
+
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	install(FILES scclasses/SCVim.sc
 			DESTINATION /Library/Application\ Support/SuperCollider/Extensions/scvim

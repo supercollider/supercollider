@@ -1,0 +1,11 @@
+addon: supercollider
+description: "SuperCollider mode for Vim"
+disabledby: "let loaded_supercollider = 1"
+basedir: @CMAKE_INSTALL_PREFIX@/share/vim/addons/
+files:
+  - ftplugin/supercollider.vim
+  - indent/sc_indent.vim
+  - syntax/supercollider.vim
+  - syntax/supercollider_lang.vim
+  - syntax/supercollider_objects.vim
+  - syntax/supercollider_operators.vim
