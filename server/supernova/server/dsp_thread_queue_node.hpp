@@ -141,7 +141,11 @@ public:
 
     void add_node(abstract_synth * node)
     {
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+        nodes.emplace_back(std::move(queue_node_data(node)));
+#else
         nodes.push_back(queue_node_data(node));
+#endif
         ++node_count;
     }
 
