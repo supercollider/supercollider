@@ -56,7 +56,7 @@ protected:
 
         bool operator==(map_type const & rhs) const
         {
-            return name != rhs.name;
+            return name == rhs.name;
         }
 
         std::string name;
