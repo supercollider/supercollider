@@ -118,13 +118,8 @@ QAbstractStepValue : QView {
       { 1 };
   }
 
-  increment {
-    this.nonimpl( \increment );
-  }
-
-  decrement {
-    this.nonimpl( \decrement );
-  }
+  increment { arg factor = 1.0; this.invokeMethod( \increment, factor.asFloat ); }
+  decrement { arg factor = 1.0; this.invokeMethod( \decrement, factor.asFloat ); }
 }
 
 /////////////////////// CONTAINERS ////////////////////////////////

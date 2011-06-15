@@ -39,8 +39,8 @@ class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
   public:
     QcSlider();
   public Q_SLOTS:
-    void increment( float factor = 1.f );
-    void decrement( float factor = 1.f );
+    void increment( float factor );
+    void decrement( float factor );
   Q_SIGNALS:
     void action();
   private Q_SLOTS:
