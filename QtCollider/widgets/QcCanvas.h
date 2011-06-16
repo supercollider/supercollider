@@ -24,6 +24,8 @@
 
 #include <QWidget>
 #include <QPixmap>
+#include <QBasicTimer>
+#include <QTime>
 
 class QcCanvas : public QWidget
 {
@@ -65,9 +67,16 @@ private:
   bool _clearOnce;
   bool _resize;
   float _fps;
+  float _fpsActual;
   int _timerId;
   bool _animating;
   int _frameCount; // SC has no idea of unsigned integers
+
+  QBasicTimer _fpsTimer;
+  int _meterPeriod; // msecs between actual fps recalculation
+  QTime _meterTime;
+  int _meterFrames;
+
 };
 
 #endif
