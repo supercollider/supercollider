@@ -108,6 +108,9 @@ Platform
 		outpath = outpath.replace( "SuperCollider", devpath );
 		^outpath;
 	}
+	
+	// hook for clients to write frontend.css
+	writeClientCSS {}
 
 }
 
