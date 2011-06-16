@@ -286,6 +286,7 @@ Document {
 
 	*setTheme { | themeName |
 		theme = themes[themeName];
+		thisProcess.platform.writeClientCSS;
 		Document.implementationClass.prSetSyntaxColorTheme(
 			theme.textColor,
 			theme.classColor,
