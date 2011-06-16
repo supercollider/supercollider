@@ -211,4 +211,16 @@ QGridLayout : QLayout {
   setAlignmentAt { arg row, column, align;
     this.invokeMethod( \setAlignment, [row, column, QAlignment(align)], true );
   }
+
+  minRowHeight { arg row; ^this.invokeMethod( \minRowHeight, row ); }
+
+  setMinRowHeight { arg row, height;
+    this.invokeMethod( \setMinRowHeight, [row, height] );
+  }
+
+  minColumnWidth { arg column; ^this.invokeMethod( \minColumnWidth, column ); }
+
+  setMinColumnWidth { arg column, width;
+    this.invokeMethod( \setMinColumnWidth, [column, width] );
+  }
 }
