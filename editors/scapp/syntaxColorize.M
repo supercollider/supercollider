@@ -41,7 +41,8 @@ SCColor synColText = SCMakeColor(0, 0, 0, 1),
 		synColSpecialVals = SCMakeColor(0.2, 0.2, 0.75, 1), // true false nil inf 
 		synColSpecialVars = SCMakeColor(0.4, 0.4, 0.75, 1), // super, thisProcess
 		synColDecl = SCMakeColor(0, 0, 1, 1), // var, const, args
-		synColPunc = SCMakeColor(0.33333333333333, 0.33333333333333, 0.33333333333333, 1);
+		synColPunc = SCMakeColor(0.33333333333333, 0.33333333333333, 0.33333333333333, 1), // : ; ' [ ] { } ( )
+		synColEnv = SCMakeColor(1.0, 0.4, 0, 1);
 
 static bool streq(char *cstr, unichar *ustr)
 {
@@ -146,6 +147,7 @@ void SyntaxColorize(NSTextView* textView)
 	NSColor* specialVarsColor = [NSColor colorWithCalibratedRed: synColSpecialVars.red green: synColSpecialVars.green blue: synColSpecialVars.blue alpha: synColSpecialVars.alpha];
 	NSColor* declColor = [NSColor colorWithCalibratedRed: synColDecl.red green: synColDecl.green blue: synColDecl.blue alpha: synColDecl.alpha];
 	NSColor* puncColor = [NSColor colorWithCalibratedRed: synColPunc.red green: synColPunc.green blue: synColPunc.blue alpha: synColPunc.alpha];
+	NSColor* environColor = [NSColor colorWithCalibratedRed: synColEnv.red green: synColEnv.green blue: synColEnv.blue alpha: synColEnv.alpha]; 
 	NSTextStorage *textStorage = [textView textStorage];
 	
 	if (!startColorizer(textView)) return;
@@ -193,6 +195,7 @@ void SyntaxColorize(NSTextView* textView)
 		else if(c == '-')	goto negnumber; //might be a negative number
 		else if(c >= '0' && c <= '9')	goto number;
 		else if(c==':' || c==';' || c=='.' || c == ',' || c=='(' || c==')' || c=='[' || c==']' || c=='{' || c=='}')	goto punct;
+		else if(c=='~') goto environment;
 		else {
 			continue; 
 		}
@@ -371,6 +374,16 @@ void SyntaxColorize(NSTextView* textView)
  		endrun = textpos - 1;
  		range = NSMakeRange(startrun, endrun - startrun);
  		[textStorage addAttribute:NSForegroundColorAttributeName value: numberColor range: range];
+		unput(c);
+ 		continue;
+	environment:
+ 		startrun = textpos -1;
+ 		do {
+ 			c = input0();
+ 		}	while (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_' || c >= '0' && c <= '9');
+ 		endrun = textpos - 1;
+ 		range = NSMakeRange(startrun, endrun - startrun);
+ 		[textStorage addAttribute:NSForegroundColorAttributeName value: environColor range: range];
 		unput(c);
  		continue;
 	characterLiteral:

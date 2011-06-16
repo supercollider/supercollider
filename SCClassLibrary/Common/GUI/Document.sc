@@ -45,7 +45,8 @@ Document {
 				specialValsColor: Color(0.2, 0.2, 0.75, 1), // true false nil inf 
 				specialVarsColor: Color(0.4, 0.4, 0.75, 1), // super, thisProcess
 				declColor: Color(0, 0, 1, 1), // var, const, args
-				puncColor: Color(0.33333333333333, 0.33333333333333, 0.33333333333333, 1)
+				puncColor: Color(0.33333333333333, 0.33333333333333, 0.33333333333333, 1),
+				environColor: Color(1.0, 0.4, 0, 1)
 				)
 			);
 		theme = themes.default;
@@ -295,7 +296,8 @@ Document {
 			theme.specialValsColor,
 			theme.specialVarsColor,
 			theme.declColor,
-			theme.puncColor
+			theme.puncColor,
+			theme.environColor
 		);
 	}
 
@@ -541,7 +543,7 @@ Document {
 		^this.subclassResponsibility(thisMethod)
 	}
 
-	*prSetSyntaxColorTheme{ |textC, classC, stringC, symbolC, commentC, numberC, specialValsC, specialVarsC, declC, puncC|
+	*prSetSyntaxColorTheme{ |textC, classC, stringC, symbolC, commentC, numberC, specialValsC, specialVarsC, declC, puncC, environC|
 		^this.subclassResponsibility(thisMethod);
 	}
 
