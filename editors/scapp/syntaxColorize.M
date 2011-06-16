@@ -192,7 +192,7 @@ void SyntaxColorize(NSTextView* textView)
 		}
 		else if(c == '-')	goto negnumber; //might be a negative number
 		else if(c >= '0' && c <= '9')	goto number;
-		else if(c==':' || c==';' || c=='.' || c=='(' || c==')' || c=='[' || c==']' || c=='{' || c=='}')	goto punct;
+		else if(c==':' || c==';' || c=='.' || c == ',' || c=='(' || c==')' || c=='[' || c==']' || c=='{' || c=='}')	goto punct;
 		else {
 			continue; 
 		}
