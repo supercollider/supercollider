@@ -30,6 +30,8 @@ class QcCanvas : public QWidget
   Q_PROPERTY( bool clearOnRefresh READ clearOnRefresh WRITE setClearOnRefresh );
   Q_PROPERTY( bool drawingEnabled READ drawingEnabled WRITE setDrawingEnabled );
   Q_PROPERTY( QColor background READ background WRITE setBackground );
+  Q_PROPERTY( float frameRate READ frameRate WRITE setFrameRate );
+  Q_PROPERTY( int frameCount READ frameCount );
   Q_OBJECT
 public:
   QcCanvas( QWidget *parent = 0 );
@@ -39,15 +41,20 @@ public:
   void setDrawingEnabled( bool b ) { _paint = b; }
   bool clearOnRefresh() const { return _clearOnRefresh; }
   void setClearOnRefresh( bool b ) { _clearOnRefresh = b; }
+  float frameRate() const;
+  void setFrameRate( float rate );
+  int frameCount() const { return _frameCount; }
 public Q_SLOTS:
   void refresh();
   void clear();
+  void animate( bool toggle );
 Q_SIGNALS:
   void painting(QPainter*);
 protected:
   virtual void customEvent( QEvent * );
   virtual void resizeEvent( QResizeEvent * );
   virtual void paintEvent( QPaintEvent * );
+  virtual void timerEvent( QTimerEvent * );
 
 private:
   QPixmap _pixmap;
@@ -57,6 +64,10 @@ private:
   bool _clearOnRefresh;
   bool _clearOnce;
   bool _resize;
+  float _fps;
+  int _timerId;
+  bool _animating;
+  int _frameCount; // SC has no idea of unsigned integers
 };
 
 #endif

@@ -27,6 +27,18 @@ QUserView : QView {
     drawFunc = aFunction;
   }
 
+  draw {
+    // NOTE: it is only allowed to call this while a QPaintEvent is being
+    // processed by this QWidget, or an error will be thrown.
+    drawFunc.value(this);
+  }
+
+  animate_ { arg bool; this.invokeMethod( \animate, bool ); }
+
+  frameRate_ { arg fps; this.setProperty( \frameRate, fps.asFloat ); }
+
+  frame { ^this.getProperty( \frameCount ); }
+
   background_ { arg aColor;
     background = aColor;
     this.setProperty( \background, aColor, true );
