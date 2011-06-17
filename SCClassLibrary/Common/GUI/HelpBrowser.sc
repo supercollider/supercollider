@@ -177,7 +177,7 @@ HelpBrowser {
 			this.stopAnim;
 			window.name = "SuperCollider Help:"+webView.title;
 			if(webView.url.beginsWith("file://"++SCDoc.helpTargetDir)) {
-				txtPath.string = webView.url.findRegexp("file://"++SCDoc.helpTargetDir++"/([\\w/]+)\\.?.*")[1][1];
+				txtPath.string = webView.url.findRegexp("file://"++SCDoc.helpTargetDir++"/([^#]+?)\\.[^\\.]+$")[1][1];
 			} {
 				txtPath.string = webView.url;
 			}
