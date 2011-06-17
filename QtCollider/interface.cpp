@@ -22,7 +22,9 @@
 #include "QtCollider.h"
 #include "QcApplication.h"
 #include "Common.h"
+#include "style/ProxyStyle.hpp"
 
+#include <QPlastiqueStyle>
 #include <QTimer>
 
 QC_PUBLIC
@@ -38,6 +40,9 @@ void QtCollider::init() {
     qcArgv[0] = qcArg0;
     QcApplication *qcApp = new QcApplication( qcArgc, qcArgv );
     qcApp->setQuitOnLastWindowClosed( false );
+#ifdef Q_OS_MAC
+    qcApp->setStyle( new QtCollider::ProxyStyle( new QPlastiqueStyle ) );
+#endif
   }
 }
 
