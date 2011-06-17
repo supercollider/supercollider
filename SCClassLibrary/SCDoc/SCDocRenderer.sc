@@ -364,28 +364,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                 file.write("<span class='soft'>"++this.escapeSpecialChars(node.text)++"</span>");
             },
             'link', {
-                if("^[a-zA-Z]+://.+".matchRegexp(node.text) or: (node.text.first==$/),{
-                    #n, m, f = node.text.split($#); // link, anchor, label
-                    if(f.size<1) {f=node.text};
-                    file.write("<a href=\""++node.text++"\">"++this.escapeSpecialChars(f)++"</a>");
-                },{
-                    #n, m, f = node.text.split($#); // link, anchor, label
-                    c = if(n.size>0) {baseDir+/+n++".html"} {""}; // url
-                    if(m.size>0) {c=c++"#"++m}; // add #anchor
-                    if(f.size<1) { // no label
-                        if(n.size>0) {
-                            f = if(SCDoc.docMap[n].notNil)
-                                {SCDoc.docMap[n].title} // use doc title
-                                {n.basename}; // use filename
-                            if(m.size>0) {
-                                f = f++":"+m;
-                            }
-                        } {
-                            f = if(m.size>0) {m} {"(empty link)"};
-                        };
-                    };
-                    file.write("<a href=\""++c++"\">"++this.escapeSpecialChars(f)++"</a>");
-                });
+                file.write(this.htmlForLink(node.text));
             },
             'anchor', {
                 file.write("<a class='anchor' name='"++node.text++"'>&nbsp;</a>");
@@ -654,11 +633,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         if(x.text.notEmpty, {
             f.write("<div id='related'>");
             f.write("See also: ");
-            f.write(SCDoc.splitList(x.text).collect {|r|
-                z = r.split($#);
-                m = if(z[1].size>0, {"#"++z[1]}, {""});
-                "<a href=\""++baseDir +/+ z[0]++".html"++m++"\">"++r.split($/).last++"</a>"
-            }.join(", "));
+            f.write(SCDoc.splitList(x.text).collect {|r| this.htmlForLink(r)}.join(", "));
             f.write("</div>");
         });
 
@@ -669,6 +644,32 @@ SCDocHTMLRenderer : SCDocRenderer {
 
         f.write("</div>");
         if(toc, {this.renderTOC(f,name)});
+    }
+
+    htmlForLink {|link|
+        var n, m, f, c;
+        #n, m, f = link.split($#); // link, anchor, label
+        ^if ("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)) {
+            if(f.size<1) {f=link};
+            "<a href=\""++link++"\">"++this.escapeSpecialChars(f)++"</a>";
+        } {
+            #n, m, f = link.split($#); // link, anchor, label
+            c = if(n.size>0) {baseDir+/+n++".html"} {""}; // url
+            if(m.size>0) {c=c++"#"++m}; // add #anchor
+            if(f.size<1) { // no label
+                if(n.size>0) {
+                    f = if(SCDoc.docMap[n].notNil)
+                        {SCDoc.docMap[n].title} // use doc title
+                        {n.basename}; // use filename
+                    if(m.size>0) {
+                        f = f++":"+m;
+                    }
+                } {
+                    f = if(m.size>0) {m} {"(empty link)"};
+                };
+            };
+            "<a href=\""++c++"\">"++this.escapeSpecialChars(f)++"</a>";
+        };
     }
 
     addUndocumentedMethods {|class,tag,title|
