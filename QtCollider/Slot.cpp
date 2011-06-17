@@ -278,17 +278,27 @@ QFont Slot::toFont( PyrSlot *slot )
   PyrSlot *slots = slotRawObject(slot)->slots;
 
   QString family = Slot::toString( slots+0 );
-  float fsize = Slot::toFloat( slots+1 );
+  float fSize = Slot::toFloat( slots+1 );
   bool bold = IsTrue( slots+2 );
   bool italic = IsTrue( slots+3 );
+  bool isPtSize = IsTrue( slots+4 );
 
   QFont f;
+
   if( !family.isEmpty() ) f.setFamily( family );
-  if( fsize > 0.f ) {
-    int pixSize = ( fsize > 1.f ? qRound(fsize) : 1 );
-    f.setPixelSize( pixSize );
+
+  if( fSize > 0.f ) {
+    if( isPtSize ) {
+      f.setPointSizeF( fSize );
+    }
+    else {
+      int pixSize = ( fSize > 1.f ? qRound(fSize) : 1 );
+      f.setPixelSize( pixSize );
+    }
   }
+
   f.setBold( bold );
+
   f.setItalic( italic );
 
   return f;
