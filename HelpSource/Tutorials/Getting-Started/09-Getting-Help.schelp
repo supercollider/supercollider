@@ -1,7 +1,7 @@
 title:: Getting-Help
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 This is probably a good point to stop and explore some methods of finding further information. You're already familiar with the clickable links that have been used so far in this tutorial. Here's an example:
 
@@ -50,7 +50,7 @@ SC has numerous other ways of tracking down information on classes, methods, etc
 
 For more information see: 
 
-link::Guides/More-On-Getting-Help::, link::Guides/Internal-Snooping::, link::Reference/Syntax-Shortcuts::
+link::Guides/More-On-09-Getting-Help::, link::Guides/Internal-Snooping::, link::Reference/Syntax-Shortcuts::
 
 section::Suggested Exercise
 
@@ -60,6 +60,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/SynthDefs-and-Synths::
+Click here to go on to the next section: link::Tutorials/Getting-Started/10-SynthDefs-and-Synths::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

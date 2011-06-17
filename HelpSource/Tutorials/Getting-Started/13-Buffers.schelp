@@ -1,7 +1,7 @@
 title:: Buffers
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 Buffers represent server buffers, which are ordered arrays of floats on the server. 'float' is short for floating point number, which means a number with a decimal point, like 1.3. This is in contrast to integers, which are positive or negative whole numbers (or zero), and are written without decimal points. So 1 is an integer, but 1.0 is a float.
 
@@ -106,7 +106,7 @@ b.sampleRate;
 b.free;
 ::
 
-Now (like with the example using an action function in our Bus-get example; see link::Tutorials/Getting-Started/Busses::) because of the small messaging latency between client and server, instance variables will not be immediately updated when you do something like read a file into a buffer. For this reason, many methods in Buffer take action functions as arguments. Remember that an action function is just a Function that will be evaluated after the client has received a reply, and has updated the Buffer's vars. It is passed the Buffer object as an argument.
+Now (like with the example using an action function in our Bus-get example; see link::Tutorials/Getting-Started/11-Busses::) because of the small messaging latency between client and server, instance variables will not be immediately updated when you do something like read a file into a buffer. For this reason, many methods in Buffer take action functions as arguments. Remember that an action function is just a Function that will be evaluated after the client has received a reply, and has updated the Buffer's vars. It is passed the Buffer object as an argument.
 
 code::
 // with an action function
@@ -253,4 +253,4 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

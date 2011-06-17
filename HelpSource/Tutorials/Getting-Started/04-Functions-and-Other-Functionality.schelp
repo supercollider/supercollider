@@ -1,7 +1,7 @@
 title:: Functions-and-Other-Functionality
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 The easiest way to get sound from SC is to use a Function. Below is a simple example of this. Execute this (after making sure the server is booted), and when you're sick of it, press Cmd - . (that's hold down the command key and press the period or fullstop key) to stop the sound. This will always stop all sound in SC. You'll be using it a lot, so commit it to memory.
 
@@ -174,6 +174,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/Functions-and-Sound::
+Click here to go on to the next section: link::Tutorials/Getting-Started/05-Functions-and-Sound::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

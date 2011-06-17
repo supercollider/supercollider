@@ -1,7 +1,7 @@
 title:: First-Steps
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 note::
 This document is OSX (SCapp) specific in key commands, though the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors.
@@ -125,6 +125,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/Start-Your-Engines::
+Click here to go on to the next section: link::Tutorials/Getting-Started/03-Start-Your-Engines::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::
