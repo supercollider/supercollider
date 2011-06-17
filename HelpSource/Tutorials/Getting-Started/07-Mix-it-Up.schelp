@@ -1,7 +1,7 @@
 title:: Mix-it-Up
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 We've already seen that multiplication changes the level of something, but what about mixing UGens together? This turns out to be equally simple. All we need is addition:
 
@@ -75,6 +75,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/Scoping-and-Plotting::
+Click here to go on to the next section: link::Tutorials/Getting-Started/08-Scoping-and-Plotting::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

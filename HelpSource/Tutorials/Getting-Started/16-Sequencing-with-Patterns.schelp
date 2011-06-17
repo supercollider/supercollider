@@ -1,7 +1,7 @@
 title:: Sequencing-with-Patterns
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 The previous section demonstrated how to use data routines to generate sequences of synthesis parameters. However, writing a routine with explicit yields is not a very convenient syntax. Since this is an essential part of creating computer music, we really need an easier way.
 
@@ -223,4 +223,4 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

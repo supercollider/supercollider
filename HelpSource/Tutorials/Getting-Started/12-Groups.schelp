@@ -1,7 +1,7 @@
 title:: Groups
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 Our discussion about the order of synths on the server brings us to the topic of groups. Synths on the server are a type of what are called emphasis::nodes::. There's one other type of node: groups. Groups are simply collections of nodes, and can contain synths, other groups, or combinations of both. They are mostly useful in two ways: First they are very helpful in controlling order, second, they allow you to easily group together nodes and send them messages all at once. As you've probably guessed, there's a handy Server abstraction object to represent group nodes in the client app: Group.
 
@@ -189,6 +189,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/Buffers::
+Click here to go on to the next section: link::Tutorials/Getting-Started/13-Buffers::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

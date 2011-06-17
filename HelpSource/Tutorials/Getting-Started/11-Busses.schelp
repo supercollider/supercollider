@@ -1,7 +1,7 @@
 title:: Busses
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 Now a little bit more about busses on the server. Busses are named after the busses or sends in analog mixing desks, and they serve a similar purpose: Routing signals from one place to another. In SC this means to or from the audio hardware, or between different synths. They come in two types: audio rate and control rate. As you've probably guessed, the former routes audio rate signals and the latter routes control rate signals.
 
@@ -65,7 +65,7 @@ b = Bus.control(s, 2); // Get a two channel control Bus
 c = Bus.audio(s); 	// Get a one channel private audio Bus (one is the default)
 ::
 
-You may be wondering what a 'two channel' bus is, since we haven't mentioned these before. You should recall that when Out has an Array as its second argument it will write the channels of the Array to consecutive busses. Recall this example from link::Tutorials/Getting-Started/SynthDefs-and-Synths:: :
+You may be wondering what a 'two channel' bus is, since we haven't mentioned these before. You should recall that when Out has an Array as its second argument it will write the channels of the Array to consecutive busses. Recall this example from link::Tutorials/Getting-Started/10-SynthDefs-and-Synths:: :
 
 code::
 (
@@ -294,6 +294,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/Groups::
+Click here to go on to the next section: link::Tutorials/Getting-Started/12-Groups::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

@@ -1,7 +1,7 @@
 title:: Start-Your-Engines
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 Before we can make any sound, we need to start or 'boot' a server application. The easiest way to do this is to use one of the server windows which is automatically created by the client app. These can be found in the bottom left-hand corner of your screen. Look for the one that says 'localhost server'. It should look like this:
 
@@ -46,6 +46,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/Functions-and-Other-Functionality::
+Click here to go on to the next section: link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

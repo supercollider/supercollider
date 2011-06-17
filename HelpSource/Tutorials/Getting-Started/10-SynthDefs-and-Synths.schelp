@@ -1,7 +1,7 @@
 title:: SynthDefs-and-Synths
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 Now that we've covered some basic information we're going to start looking at server abstractions, which are the various classes in the language app which represent things on the server. When looking at these it is important to understand that these objects are just client-side emphasis::representations:: of parts of the server's architecture, and should not be confused with those parts themselves. Server abstraction objects are simply conveniences.
 
@@ -182,6 +182,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/Busses::
+Click here to go on to the next section: link::Tutorials/Getting-Started/11-Busses::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

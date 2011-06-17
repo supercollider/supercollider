@@ -1,7 +1,7 @@
 title:: Introductory-Remarks
 summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
-related:: Tutorials/Getting-Started/Getting-Started-With-SC
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 The following text is intended to serve as an introduction to SuperCollider 3, an object-oriented language for sound synthesis and digital signal processing (DSP). This tutorial does not assume a background in computer science, but does assume basic familiarity with your computer and its OS, as well as a basic knowledge of acoustics and digital audio. (I'm assuming here that words like frequency and sample will not cause any confusion.)
 
@@ -17,7 +17,7 @@ section::Links
 
 Within the text, and at the end of each section there might be a list links to other documents, that will look something like this:
 
-See also: link::Tutorials/Getting-Started/Introductory-Remarks#Links##Some other document::
+See also: link::Tutorials/Getting-Started/01-Introductory-Remarks#Links##Some other document::
 
 Most of these are meant to expand upon what you have just read, but some just point you in the direction of further information which you will probably need in the future. Some of the linked documents are written in fairly technical language, and may duplicate information which is presented in this tutorial in a more casual form. Often they are designed as reference documents for people already familiar with SC, so don't worry if everything in them doesn't immediately make sense. You won't need to have seen and/or fully understood them in order to continue with the tutorial.
 
@@ -37,6 +37,6 @@ ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
 
-Click here to go on to the next section: link::Tutorials/Getting-Started/First-Steps::
+Click here to go on to the next section: link::Tutorials/Getting-Started/02-First-Steps::
 
-Click here to return to the table of Contents: link::Tutorials/Getting-Started/Getting-Started-With-SC::
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::
