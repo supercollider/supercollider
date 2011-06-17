@@ -58,12 +58,12 @@ void QcTextEdit::setDocument( const QString &filename )
   _document = filename;
 }
 
-int QcTextEdit::selectionStart()
+int QcTextEdit::selectionStart() const
 {
   return textCursor().selectionStart();
 }
 
-int QcTextEdit::selectionSize()
+int QcTextEdit::selectionSize() const
 {
   QTextCursor cursor = textCursor();
   return cursor.selectionEnd() - cursor.selectionStart();
@@ -82,11 +82,20 @@ void QcTextEdit::select( int start, int size )
   setTextCursor( cursor );
 }
 
-QString QcTextEdit::selectedString()
+QString QcTextEdit::selectedString() const
 {
   // NOTE QTextCuror.selectedText() contains unicode paragraph separators U+2029
   // instead of newline \n characters
   return textCursor().selectedText().replace( QChar( 0x2029 ), QChar( '\n' ) );
+}
+
+void QcTextEdit::replaceSelectedText( const QString &string )
+{
+  QTextCursor cursor( textCursor() );
+  if( cursor.hasSelection() ) {
+    cursor.removeSelectedText();
+    cursor.insertText( string );
+  }
 }
 
 void QcTextEdit::setTextFont( const QFont &f )
