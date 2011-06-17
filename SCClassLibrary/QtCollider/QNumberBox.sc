@@ -20,6 +20,33 @@ QNumberBox : QAbstractStepValue {
     typingColor = Color.red;
   }
 
+  value {
+    var type = this.getProperty( \valueType );
+    var val;
+    switch( type,
+      0 /* Number */, { val = this.getProperty( \value ) },
+      1 /* Inf */, { val = inf },
+      2 /* -Inf */, { val = -inf },
+      3 /* NaN */, { val = 0 },
+      4 /* Text */, { val = 0 }
+    );
+    ^val;
+  }
+
+  value_ { arg value;
+    case
+      // isNaN has to be on the first plase, because a NaN is also equal to inf and -inf
+      { value.isNaN } { this.invokeMethod( \setNaN ); }
+      { value == inf } { this.invokeMethod( \setInfinite, true ); }
+      { value == -inf } { this.invokeMethod( \setInfinite, false ); }
+      { this.setProperty( \value, value.asFloat ); }
+    ;
+  }
+
+  string { ^this.getProperty( \text ); }
+
+  string_ { arg string; this.setProperty( \text, string ); }
+
   clipLo_ { arg aFloat;
     clipLo = aFloat;
     this.setProperty( \minimum, aFloat; );

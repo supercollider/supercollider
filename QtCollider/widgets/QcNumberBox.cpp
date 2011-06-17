@@ -42,6 +42,7 @@ QcNumberBox::QcNumberBox()
   scrollStep( 0.1f ),
   dragDist( 10.f ),
   _value( 0. ),
+  _valueType( Number ),
   _minDec(0),
   _maxDec(2)
 {
@@ -51,7 +52,7 @@ QcNumberBox::QcNumberBox()
   connect( this, SIGNAL( editingFinished() ),
            this, SLOT( onEditingFinished() ) );
   connect( this, SIGNAL( valueChanged() ),
-           this, SLOT( onValueChanged() ), Qt::QueuedConnection );
+           this, SLOT( updateText() ), Qt::QueuedConnection );
   setValue( 0 );
 }
 
@@ -89,8 +90,27 @@ void QcNumberBox::setValue( double val )
   val = roundedVal( val );
 
   _value = val;
+  _valueType = Number;
 
   Q_EMIT( valueChanged() );
+}
+
+void QcNumberBox::setInfinite( bool positive )
+{
+  _valueType = positive ? Infinite : InfiniteNegative;
+  Q_EMIT( valueChanged() );
+}
+
+void QcNumberBox::setNaN()
+{
+  _valueType = NaN;
+  Q_EMIT( valueChanged() );
+}
+
+void QcNumberBox::setTextValue( const QString &str )
+{
+  _valueType = Text;
+  setText( str );
 }
 
 double QcNumberBox::value () const
@@ -103,7 +123,8 @@ void QcNumberBox::setDecimals( int d )
   if( d < 0 ) return;
   _minDec = _maxDec = d;
   _validator->setDecimals( d );
-  setValue( _value );
+  if( _valueType == Number )
+    setValue( _value ); // round current value
 }
 
 void QcNumberBox::setMinDecimals( int d )
@@ -114,7 +135,8 @@ void QcNumberBox::setMinDecimals( int d )
     _maxDec = d;
     _validator->setDecimals( d );
   }
-  setValue( _value );
+  if( _valueType == Number )
+    setValue( _value ); // round current value
 }
 
 void QcNumberBox::setMaxDecimals( int d )
@@ -123,19 +145,20 @@ void QcNumberBox::setMaxDecimals( int d )
   _maxDec = d;
   if( _maxDec < _minDec ) _minDec = d;
   _validator->setDecimals( d );
-  setValue( _value );
+  if( _valueType == Number )
+    setValue( _value ); // round current value
 }
 
 void QcNumberBox::increment( float factor )
 {
-  onEditingFinished();
+  if( !isReadOnly() || _valueType != Number ) return;
   setValue( value() + (step * factor) );
   Q_EMIT( action() );
 }
 
 void QcNumberBox::decrement( float factor )
 {
-  onEditingFinished();
+  if( !isReadOnly() || _valueType != Number ) return;
   setValue( value() - (step * factor) );
   Q_EMIT( action() );
 }
@@ -144,21 +167,36 @@ void QcNumberBox::onEditingFinished()
 {
   if( isReadOnly() ) return;
   setValue( locale().toDouble( text() ) );
-  setLocked( true );
   Q_EMIT( action() );
 }
 
-void QcNumberBox::onValueChanged()
+void QcNumberBox::updateText()
 {
-  QString str = stringForVal( _value );
+  QString str;
+
+  switch( _valueType ) {
+    case Number:
+      str = stringForVal( _value );
+      break;
+    case Text:
+      return; // text was already set
+    case Infinite:
+      str = "+inf"; break;
+    case InfiniteNegative:
+      str = "-inf"; break;
+    case NaN:
+      str = "NaN"; break;
+  }
 
   blockSignals(true);
   setText( str );
+  setLocked( true );
   blockSignals(false);
 }
 
 void QcNumberBox::stepBy( int steps, float stepSize )
 {
+  if( _valueType != Number ) return;
   modifyStep( &stepSize );
   setValue( value() + (steps * stepSize) );
 }
@@ -194,21 +232,22 @@ void QcNumberBox::updateTextColor()
 
 void QcNumberBox::keyPressEvent ( QKeyEvent * event )
 {
+  if( !isReadOnly() ) return QLineEdit::keyPressEvent( event );
+
   int key = event->key();
 
   if( key == Qt::Key_Up ){
-    onEditingFinished();
     stepBy( 1, step );
     Q_EMIT( action() );
     return;
   }
   else if( key == Qt::Key_Down ) {
-    onEditingFinished();
     stepBy( -1, step );
     Q_EMIT( action() );
     return;
   }
-  else if( isReadOnly() ) {
+  else {
+    // unlock typing if valid char is entered
     QString t = event->text();
     int i = 0;
     if( !t.isEmpty() &&
@@ -238,9 +277,8 @@ void QcNumberBox::mousePressEvent ( QMouseEvent * event )
 
 void QcNumberBox::mouseMoveEvent ( QMouseEvent * event )
 {
-  if( scroll
-      && ( event->buttons() & Qt::LeftButton )
-      && isReadOnly() )
+  if( scroll && isReadOnly() && _valueType == Number
+      && ( event->buttons() & Qt::LeftButton ) )
   {
     int steps = (event->globalY() - lastPos) / dragDist;
     if( steps != 0 ) {
@@ -255,8 +293,11 @@ void QcNumberBox::mouseMoveEvent ( QMouseEvent * event )
 
 void QcNumberBox::wheelEvent ( QWheelEvent * event )
 {
-  if( isReadOnly() && event->orientation() == Qt::Vertical ) {
+  if( scroll && isReadOnly() && _valueType == Number
+      && event->orientation() == Qt::Vertical )
+  {
     stepBy( event->delta() > 0 ? 1 : -1, scrollStep );
+    Q_EMIT( action() );
   }
 }
 
