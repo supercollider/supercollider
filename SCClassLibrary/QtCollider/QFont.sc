@@ -1,14 +1,14 @@
 QFont {
   classvar defaultSansFace, defaultSerifFace, defaultMonoFace;
-  var <>name, <>size, <>bold, <>italic;
+  var <>name, <size, <>bold, <>italic, <hasPointSize=false;
   /* ----------------- class -------------------*/
 
   *initClass {
 
   }
 
-  *new { arg n, s, b = false, i = false;
-    ^super.newCopyArgs( n, s, b, i );
+  *new { arg name, size, bold = false, italic = false, usePointSize = false;
+    ^super.newCopyArgs( name, size, bold, italic, usePointSize );
   }
 
   *availableFonts {
@@ -45,6 +45,22 @@ QFont {
   boldVariant {
     ^this.class.new( name, size, true, italic );
   }
+
+  size_ { arg pixelSize; this.pixelSize_( pixelSize ); }
+
+  pixelSize_ { arg pixelSize;
+    size = pixelSize;
+    hasPointSize = false;
+  }
+
+  pointSize_ { arg pointSize;
+    size = pointSize;
+    hasPointSize = true;
+  }
+
+  pixelSize { ^( if(hasPointSize){nil}{size} ) }
+
+  pointSize { ^( if(hasPointSize){size}{nil} ) }
 
   /* ------------------ private -----------------*/
 
