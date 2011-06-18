@@ -290,9 +290,38 @@ bool sc_ugen_factory::register_ugen_command_function(const char * ugen_name, con
                                                      UnitCmdFunc func)
 {
     sc_ugen_def * def = find_ugen(ugen_name);
-    if (!def)
+    if (def)
         return false;
     return def->add_command(cmd_name, func);
+}
+
+bool sc_ugen_factory::register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data)
+{
+    cmdplugin_set_t::iterator it = cmdplugin_map.find(cmd_name,
+                                                      compare_def<sc_cmdplugin_def>());
+    if (it != cmdplugin_map.end()) {
+        std::cerr << "cmd plugin already registered: " << cmd_name << std::endl;
+        return false;
+    }
+
+    sc_cmdplugin_def * def = new sc_cmdplugin_def(cmd_name, func, user_data);
+    cmdplugin_map.insert(*def);
+
+    return true;
+}
+
+bool sc_ugen_factory::run_cmd_plugin(const char * name, struct sc_msg_iter *args, void *replyAddr)
+{
+    cmdplugin_set_t::iterator it = cmdplugin_map.find(name,
+                                                      compare_def<sc_cmdplugin_def>());
+    if (it == cmdplugin_map.end()) {
+        std::cerr << "unable to find cmd plugin: " << name << std::endl;
+        return false;
+    }
+
+    it->run(&world, args, replyAddr);
+
+    return true;
 }
 
 

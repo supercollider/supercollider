@@ -262,7 +262,6 @@ void free_parent_group(Unit * unit)
     sc_factory->add_done_node(group);
 }
 
-
 } /* namespace */
 } /* namespace nova */
 
@@ -302,8 +301,7 @@ bool define_unitcmd(const char * unitClassName, const char * cmdName, UnitCmdFun
 
 bool define_plugincmd(const char * name, PlugInCmdFunc func, void * user_data)
 {
-    std::cerr << "plugin commands not implemented: " << name << std::endl;
-    return false;
+    return nova::sc_factory->register_cmd_plugin(name, func, user_data);
 }
 
 void * rt_alloc(World * dummy, size_t size)
@@ -485,6 +483,18 @@ void send_node_reply(Node* node, int reply_id, const char* command_name, int arg
     nova::instance->send_node_reply(node->mID, reply_id, command_name, argument_count, values);
 }
 
+int do_asynchronous_command(World *inWorld, void* replyAddr, const char* cmdName, void *cmdData,
+                            AsyncStageFn stage2, // stage2 is non real time
+                            AsyncStageFn stage3, // stage3 is real time - completion msg performed if stage3 returns true
+                            AsyncStageFn stage4, // stage4 is non real time - sends done if stage4 returns true
+                            AsyncFreeFn cleanup,
+                            int completionMsgSize, void* completionMsgData)
+{
+    nova::instance->do_asynchronous_command(inWorld, replyAddr, cmdName, cmdData,
+                                            stage2, stage3, stage4, cleanup,
+                                            completionMsgSize, completionMsgData);
+    return 0;
+};
 
 } /* extern "C" */
 
@@ -567,6 +577,8 @@ void sc_plugin_interface::initialize(server_arguments const & args)
     sc_interface.fSCfftDoFFT = &scfft_dofft;
     sc_interface.fSCfftDoIFFT = &scfft_doifft;
 
+    /* osc plugins */
+    sc_interface.fDoAsynchronousCommand = &do_asynchronous_command;
 
     /* initialize world */
     /* control busses */

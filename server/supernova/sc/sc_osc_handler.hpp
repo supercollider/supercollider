@@ -36,14 +36,16 @@
 #include "../utilities/static_pool.hpp"
 #include "../utilities/time_tag.hpp"
 
-
 namespace nova
 {
+typedef bool (*AsyncStageFn)(World *inWorld, void* cmdData);
+typedef void (*AsyncFreeFn)(World *inWorld, void* cmdData);
 
 namespace detail
 {
 using namespace boost::asio;
 using namespace boost::asio::ip;
+
 
 /**
  * observer to receive osc notifications
@@ -472,6 +474,11 @@ public:
     sc_scheduled_bundles scheduled_bundles;
     time_tag now;
 /* @} */
+
+
+    void do_asynchronous_command(World * world, void* replyAddr, const char* cmdName, void *cmdData,
+                                 AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
+                                 int completionMsgSize, void* completionMsgData);
 
 private:
     /* @{ */
