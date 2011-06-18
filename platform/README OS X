@@ -60,11 +60,6 @@ For example, by default cmake will create a "release" build, but if you want a
 
 	cmake -DCMAKE_BUILD_TYPE=Debug ..
 
-By default cmake will create a symlink of the SCClassLibrary at the root directory to the app directory,
- so that changes to classes in the class library are reflected in git. To turn off the symlinking do:
-
-	cmake -DSC_SYMLINK=OFF .. 
-
 For a 32bit build on a 64bit machine (i.e. recent Mac systems), you need to 
 configure cmake like this:
 

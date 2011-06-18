@@ -200,8 +200,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     option(LTO "Use GCC's link time optimizer' (experimental).")
 endif()
 
-option(SC_SYMLINK "Place a symlink of SCCLassLibrary into the app directory" OFF)
-
 #############################################
 # some preprocessor flags
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -283,37 +281,10 @@ else()
 	set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
 endif()
 
-if(SC_SYMLINK)
-    message(STATUS "Creating symlink of SCClassLibrary into app directory" )
-    if(NOT EXISTS "${auxresourcesdir}/SCClassLibrary")
-    	install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${auxresourcesdir}/SCClassLibrary)" )
-    endif()	 
-    file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
-    foreach(onedirectory ${classlibraryfolders})
-        if(IS_DIRECTORY "${auxresourcesdir}/SCClassLibrary/${onedirectory}")
-            message(FATAL_ERROR "Symlinking will fail ! SCClassLibrary folder already exists and has directories inside, please delete it first." )
-        endif()
-        if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
-	    install( CODE
-            "EXECUTE_PROCESS(COMMAND ln -fs ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
-        endif()
-	endforeach(onedirectory)
-else()
-    if(EXISTS "${auxresourcesdir}/SCClassLibrary")
-        file(GLOB classlibraryfolders "${auxresourcesdir}/SCClassLibrary/[^.]*")
-        foreach(onedirectory ${classlibraryfolders})
-	        if(IS_SYMLINK "${onedirectory}")
-	            install( CODE "EXECUTE_PROCESS(COMMAND unlink ${onedirectory} )" )
-            endif()
-	    endforeach(onedirectory)
-    endif()
-    message(STATUS "Copying SCCLassLibrary to app directory ") 
-    install(DIRECTORY SCClassLibrary
-	    DESTINATION ${auxresourcesdir}
-	    REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-    )
-endif()
-
+install(DIRECTORY SCClassLibrary
+	DESTINATION ${auxresourcesdir}
+	REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+)
 
 install(DIRECTORY Help examples sounds HelpSource
 	DESTINATION ${auxresourcesdir}
