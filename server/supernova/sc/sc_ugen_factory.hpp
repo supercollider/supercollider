@@ -153,6 +153,39 @@ public:
     }
 };
 
+class sc_cmdplugin_def:
+    public bi::set_base_hook<>
+{
+    const std::string name_;
+
+public:
+    const PlugInCmdFunc func;
+    void * user_data;
+
+    sc_cmdplugin_def(const char * name, PlugInCmdFunc func, void * user_data):
+        name_(name), func(func), user_data(user_data)
+    {}
+
+    std::string const & name(void) const
+    {
+        return name_;
+    }
+
+    void run(World * world, struct sc_msg_iter *args, void *replyAddr)
+    {
+        (func)(world, user_data, args, replyAddr);
+    }
+
+public:
+    /* sort by name */
+    friend bool operator< (sc_cmdplugin_def const & a,
+                           sc_cmdplugin_def const & b)
+    {
+        return a.name_ < b.name_;
+    }
+};
+
+
 /** factory class for supercollider ugens
  *
  *  \todo do we need to take care of thread safety? */
@@ -167,11 +200,13 @@ class sc_ugen_factory:
                              > ugen_set_type;
 
     typedef bi::set<sc_bufgen_def> bufgen_set_t;
+    typedef bi::set<sc_cmdplugin_def> cmdplugin_set_t;
 
     ugen_set_type::bucket_type node_buckets[ugen_set_bucket_count];
     ugen_set_type ugen_set;
 
     bufgen_set_t bufgen_map;
+    cmdplugin_set_t cmdplugin_map;
 
     std::vector<void*> open_handles;
 
@@ -218,6 +253,9 @@ public:
     sc_ugen_def * find_ugen(std::string const & name);
 
     bool register_ugen_command_function(const char * ugen_name, const char * cmd_name, UnitCmdFunc);
+    bool register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data);
+
+    bool run_cmd_plugin(const char * name, struct sc_msg_iter *args, void *replyAddr);
 
 private:
     void close_handles(void);

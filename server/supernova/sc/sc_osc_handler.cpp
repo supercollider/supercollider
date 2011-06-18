@@ -2853,6 +2853,15 @@ void handle_u_cmd(received_message const & msg, int size)
     synth->apply_unit_cmd(cmd_name, ugen_index, &args);
 }
 
+void handle_cmd(received_message const & msg, int size, nova_endpoint const & endpoint, int skip_bytes)
+{
+    sc_msg_iter args(size, msg.AddressPattern() + skip_bytes);
+
+    const char * cmd = args.gets();
+
+    sc_factory->run_cmd_plugin(cmd, &args, const_cast<nova_endpoint*>(&endpoint));
+}
+
 } /* namespace */
 
 template <bool realtime>
@@ -3093,6 +3102,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
 
     case cmd_p_new:
         handle_p_new(message);
+        break;
+
+    case cmd_cmd:
+        handle_cmd(message, msg_size, endpoint, 4);
         break;
 
     default:
@@ -3480,8 +3493,80 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
         return;
     }
 
+    if (strcmp(address+1, "cmd") == 0) {
+        handle_cmd(message, msg_size, endpoint, 8);
+        return;
+    }
+
     handle_unhandled_message(message);
 }
+
+
+template <bool realtime>
+void handle_asynchronous_plugin_cleanup(World * world, void *cmdData,
+                                       AsyncFreeFn cleanup)
+{
+    if (cleanup)
+        (cleanup)(world, cmdData);
+
+    if (cmdData)
+        nova::rt_pool.free(cmdData);
+}
+
+template <bool realtime>
+void handle_asynchronous_plugin_stage4(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage4,
+                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+{
+    if (stage4)
+        (stage4)(world, cmdData);
+
+    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(handle_asynchronous_plugin_cleanup<realtime>, world, cmdData,
+                                                           cleanup));
+
+    send_done_message(endpoint, cmdName);
+}
+
+template <bool realtime>
+void handle_asynchronous_plugin_stage3(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage3, AsyncStageFn stage4,
+                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+{
+    if (stage3) {
+        bool success = (stage3)(world, cmdData);
+        if (success)
+            msg.handle(endpoint);
+    }
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(handle_asynchronous_plugin_stage4<realtime>, world, cmdName,
+                                                               cmdData, stage4, cleanup, msg, endpoint));
+}
+
+template <bool realtime>
+void handle_asynchronous_plugin_stage2(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage2,
+                                       AsyncStageFn stage3, AsyncStageFn stage4,
+                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+{
+    if (stage2)
+        (stage2)(world, cmdData);
+
+    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(handle_asynchronous_plugin_stage3<realtime>, world, cmdName,
+                                                           cmdData, stage3, stage4,
+                                                           cleanup, msg, endpoint));
+}
+
+void sc_osc_handler::do_asynchronous_command(World * world, void* replyAddr, const char* cmdName, void *cmdData,
+                                             AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
+                                             int completionMsgSize, void* completionMsgData)
+{
+    completion_message msg(completionMsgSize, completionMsgData);
+    nova_endpoint endpoint(*static_cast<nova_endpoint*>(replyAddr));
+
+    if (world->mRealTime)
+        cmd_dispatcher<true>::fire_system_callback(boost::bind(handle_asynchronous_plugin_stage2<true>, world, cmdName,
+                                                               cmdData, stage2, stage3, stage4, cleanup, msg, endpoint));
+    else
+        cmd_dispatcher<false>::fire_system_callback(boost::bind(handle_asynchronous_plugin_stage2<false>, world, cmdName,
+                                                                cmdData, stage2, stage3, stage4, cleanup, msg, endpoint));
+}
+
 
 } /* namespace detail */
 } /* namespace nova */
