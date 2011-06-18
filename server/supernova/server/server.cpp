@@ -86,7 +86,7 @@ nova_server::~nova_server(void)
 
     close_client();
 #endif
-    scheduler::terminate();
+    scheduler<scheduler_hook, thread_init_functor>::terminate();
     io_interpreter.join_thread();
     instance = 0;
 }
