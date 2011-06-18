@@ -3,11 +3,17 @@ QSoundFileView : QView {
   var <>soundfile;
   var <metaAction;
   var <waveColors;
+  var curDoneAction;
 
   *qtClass { ^"QcWaveform" }
 
-  load { arg filename, startframe, frames;
+  load { arg filename, startframe, frames, block, doneAction;
     if( filename.isString && filename != "" ) {
+      if( curDoneAction.notNil )
+        { this.disconnectFunction( 'loadingDone()', curDoneAction ) };
+      this.connectFunction( 'loadingDone()', doneAction );
+      curDoneAction = doneAction;
+
       if( startframe.notNil && frames.notNil ) {
         this.invokeMethod( \load, [filename, startframe.asFloat, frames.asFloat] );
       }{
@@ -16,20 +22,22 @@ QSoundFileView : QView {
     }
   }
 
-  readFile { arg aSoundFile, startframe, frames;
-    this.load( soundfile.path, startframe, frames );
+  readFile { arg aSoundFile, startframe, frames, block, closeFile, doneAction;
+    this.load( aSoundFile.path, startframe, frames, block, doneAction );
   }
 
-  read { arg startframe, frames;
-    if( soundfile.notNil ) { this.readFile( soundfile, startframe, frames ) };
+  read { arg startframe, frames, block, closeFile, doneAction;
+    if( soundfile.notNil ) {
+      this.readFile( soundfile, startframe, frames, block, nil, doneAction );
+    };
   }
 
-  readFileWithTask { arg aSoundFile, startframe, frames;
-    this.readFile( aSoundFile, startframe, frames );
+  readFileWithTask { arg aSoundFile, startframe, frames, block, doneAction, showProgress;
+    this.readFile( aSoundFile, startframe, frames, block, nil, doneAction );
   }
 
-  readWithTask { arg startframe, frames;
-    this.read( startframe, frames );
+  readWithTask { arg startframe, frames, block, doneAction, showProgress;
+    this.read( startframe, frames, block, nil, doneAction );
   }
 
   drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
