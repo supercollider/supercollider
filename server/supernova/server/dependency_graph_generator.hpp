@@ -207,7 +207,7 @@ private:
 
         successor_container ret(collected_nodes.size());
 
-        memcpy(ret.data, collected_nodes.data(), collected_nodes.size() * sizeof(thread_queue_item *));
+        memcpy(ret.data->content, collected_nodes.data(), collected_nodes.size() * sizeof(thread_queue_item *));
         return ret;
     }
 };
