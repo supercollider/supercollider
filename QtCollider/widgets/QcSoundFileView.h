@@ -115,8 +115,10 @@ public:
   ~QcWaveform();
 
   Q_INVOKABLE void load( const QString& filename );
+  // NOTE. Using float instead of quint64. We can not get 64 bit integers from SC.
+  Q_INVOKABLE void load( const QString& filename, float beginning, float duration );
   float loadProgress();
-  quint64 frames() { return sfInfo.frames; }
+  quint64 frames() { return _rangeDur; }
   quint64 viewFrames() { return _dur; }
   quint64 scrollPos() { return _beg; }
   float zoom(); //visible fraction
@@ -202,6 +204,7 @@ protected:
 
 private:
 
+  void doLoad( SNDFILE *new_sf, const SF_INFO &new_info, quint64 beginning, quint64 duration );
   inline void updateFPP() { _fpp = width() ? (double) _dur / width() : 0.0; }
   void rebuildCache ( int maxFramesPerCache, int maxRawFrames );
   void draw ( QPixmap *, int x, int width, double beginning, double duration );
@@ -209,6 +212,9 @@ private:
   // data
   SNDFILE *sf;
   SF_INFO sfInfo;
+  quint64 _rangeBeg;
+  quint64 _rangeDur;
+  quint64 _rangeEnd;
 
   SoundCacheStream *_cache;
 
@@ -259,11 +265,11 @@ private:
 
 class SoundStream {
 public:
-  inline int channels() { return ch; }
+  inline int channels() { return _ch; }
 
-  inline double beginning() { return beg; }
+  inline double beginning() { return _beg; }
 
-  inline double duration() { return dur; }
+  inline double duration() { return _dur; }
 
   virtual bool displayData( int channel, double offset, double duration,
                             short *minBuffer,
@@ -276,12 +282,12 @@ public:
 
 protected:
   SoundStream()
-  : ch( 0 ), beg( 0.0 ), dur( 0.0 ) {}
+  : _ch( 0 ), _beg( 0.0 ), _dur( 0.0 ) {}
   SoundStream( int channels, double beginning, double duration ) :
-    ch( channels ), beg( beginning ), dur( duration ) {}
-  int ch;
-  double beg;
-  double dur;
+    _ch( channels ), _beg( beginning ), _dur( duration ) {}
+  int _ch;
+  double _beg;
+  double _dur;
 };
 
 class SoundFileStream : public SoundStream
@@ -321,9 +327,11 @@ class SoundCacheStream : public QObject, public SoundStream
 public:
   SoundCacheStream();
   ~SoundCacheStream();
-  void load( SNDFILE *sf, const SF_INFO &info, int maxFramesPerUnit, int maxRawFrames );
+  void load( SNDFILE *sf, const SF_INFO &info, double beg, double dur,
+             int maxFramesPerUnit, int maxRawFrames );
   inline double fpu() { return _fpu; }
-  inline int size() { return _cacheSize; }
+  inline quint64 offset() { return _dataOffset; }
+  inline int size() { return _dataSize; }
   inline bool ready() { return _ready; }
   inline bool loading() { return _loading; }
   inline int loadProgress() { return _loadProgress; }
@@ -345,8 +353,9 @@ private Q_SLOTS:
 
 private:
   SoundCache *_caches;
-  double _fpu; // soundfile frames per cache frame
-  int _cacheSize;
+  double _fpu; // soundfile frames per cache unit
+  quint64 _dataOffset; // offset into soundfile of first frame cached (in frames)
+  int _dataSize; // amount of cache units
   bool _ready;
   bool _loading;
   SoundCacheLoader *_loader;

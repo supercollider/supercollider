@@ -6,22 +6,31 @@ QSoundFileView : QView {
 
   *qtClass { ^"QcWaveform" }
 
-  load { arg filename; this.invokeMethod( \load, filename ); }
-
-  readFile { arg aSoundFile;
-    var path = soundfile.path;
-    if( path.isString && path != "" ) {
-      this.load( path );
+  load { arg filename, startframe, frames;
+    if( filename.isString && filename != "" ) {
+      if( startframe.notNil && frames.notNil ) {
+        this.invokeMethod( \load, [filename, startframe.asFloat, frames.asFloat] );
+      }{
+        this.invokeMethod( \load, filename );
+      }
     }
   }
 
-  read {
-    if( soundfile.notNil ) { this.readFile( soundfile ) }
+  readFile { arg aSoundFile, startframe, frames;
+    this.load( soundfile.path, startframe, frames );
   }
 
-  readFileWithTask { arg aSoundFile; this.readFile( aSoundFile ); }
+  read { arg startframe, frames;
+    if( soundfile.notNil ) { this.readFile( soundfile, startframe, frames ) };
+  }
 
-  readWithTask { this.read }
+  readFileWithTask { arg aSoundFile, startframe, frames;
+    this.readFile( aSoundFile, startframe, frames );
+  }
+
+  readWithTask { arg startframe, frames;
+    this.read( startframe, frames );
+  }
 
   drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
 
