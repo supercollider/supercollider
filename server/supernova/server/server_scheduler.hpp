@@ -117,7 +117,7 @@ public:
         threads.start_threads();
     }
 
-    ~scheduler(void)
+    void terminate()
     {
         cbs.run_callbacks();
         threads.terminate_threads();
