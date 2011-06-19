@@ -15,7 +15,7 @@ QSoundFileView : QView {
       curDoneAction = doneAction;
 
       if( startframe.notNil && frames.notNil ) {
-        this.invokeMethod( \load, [filename, startframe.asFloat, frames.asFloat] );
+        this.invokeMethod( \load, [filename, startframe.asInteger, frames.asInteger] );
       }{
         this.invokeMethod( \load, filename );
       }
