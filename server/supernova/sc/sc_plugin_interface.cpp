@@ -1012,17 +1012,9 @@ void sc_plugin_interface::buffer_zero(uint32_t index)
     zerovec(buf->data + unrolled, remain);
 }
 
-sample * sc_plugin_interface::buffer_generate(uint32_t index, const char* cmd_name, struct sc_msg_iter & msg)
+sample * sc_plugin_interface::buffer_generate(uint32_t buffer_index, const char* cmd_name, struct sc_msg_iter & msg)
 {
-    SndBuf * buf = World_GetNRTBuf(&world, index);
-    sample * data = buf->data;
-
-    BufGenFunc bufgen = sc_factory->find_bufgen(cmd_name);
-    (bufgen)(&world, buf, &msg);
-    if (data == buf->data)
-        return NULL;
-    else
-        return data;
+    return sc_factory->run_bufgen(&world, cmd_name, buffer_index, &msg);
 }
 
 void sc_plugin_interface::buffer_sync(uint32_t index)

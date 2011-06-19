@@ -132,6 +132,19 @@ UnitCmdFunc sc_ugen_def::find_command(const char * cmd_name)
         return it->func;
 }
 
+sample * sc_bufgen_def::run(World * world, uint32_t buffer_index, struct sc_msg_iter *args)
+{
+    SndBuf * buf = World_GetNRTBuf(world, buffer_index);
+    sample * data = buf->data;
+
+    (func)(world, buf, args);
+
+    if (data == buf->data)
+        return NULL;
+    else
+        return data;
+}
+
 void sc_plugin_container::register_ugen(const char *inUnitClassName, size_t inAllocSize,
                                     UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
 {
@@ -143,16 +156,6 @@ void sc_plugin_container::register_bufgen(const char * name, BufGenFunc func)
 {
     sc_bufgen_def * def = new sc_bufgen_def(name, func);
     bufgen_set.insert(*def);
-}
-
-BufGenFunc sc_plugin_container::find_bufgen(const char * name)
-{
-    bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
-    if (it == bufgen_set.end()) {
-        std::cerr << "unable to find buffer generator: " << name << std::endl;
-        throw std::runtime_error("unable to create ugen");
-    }
-    return it->func;
 }
 
 sc_ugen_def * sc_plugin_container::find_ugen(std::string const & name)
@@ -187,6 +190,18 @@ bool sc_plugin_container::register_cmd_plugin(const char * cmd_name, PlugInCmdFu
 
     return true;
 }
+
+sample * sc_plugin_container::run_bufgen(World * world, const char * name, uint32_t buffer_index, struct sc_msg_iter *args)
+{
+    bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
+    if (it == bufgen_set.end()) {
+        std::cerr << "unable to find buffer generator: " << name << std::endl;
+        return NULL;
+    }
+
+    return it->run(world, buffer_index, args);
+}
+
 
 bool sc_plugin_container::run_cmd_plugin(World * world, const char * name, struct sc_msg_iter *args, void *replyAddr)
 {
