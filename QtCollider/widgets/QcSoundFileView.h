@@ -83,8 +83,8 @@ class QcWaveform : public QWidget, public QcHelper {
 
   Q_PROPERTY( float readProgress READ loadProgress );
   Q_PROPERTY( int frames READ frames );
-  Q_PROPERTY( int viewFrames READ viewFrames );
-  Q_PROPERTY( int scrollPos READ scrollPos WRITE scrollTo );
+  Q_PROPERTY( double viewFrames READ viewFrames );
+  Q_PROPERTY( double scrollPos READ scrollPos WRITE scrollTo );
   Q_PROPERTY( int currentSelection READ currentSelection WRITE setCurrentSelection );
   Q_PROPERTY( VariantList selections READ selections );
   Q_PROPERTY( QColor peakColor READ dummyColor WRITE setPeakColor );
@@ -119,8 +119,8 @@ public:
   Q_INVOKABLE void load( const QString& filename, int beginning, int duration );
   float loadProgress();
   sf_count_t frames() { return _rangeDur; }
-  sf_count_t viewFrames() { return _dur; }
-  sf_count_t scrollPos() { return _beg; }
+  double viewFrames() { return _dur; }
+  double scrollPos() { return _beg; }
   float zoom(); //visible fraction
   float xZoom(); //visible seconds
   float yZoom(); //factor
@@ -171,8 +171,8 @@ public Q_SLOTS:
   //void zoomTo( float fraction, quint64 frame );
   void zoomBy( float factor );
   void zoomAllOut();
-  void scrollTo( sf_count_t frame );
-  void scrollBy( sf_count_t frames );
+  void scrollTo( double frame );
+  void scrollBy( double frames );
   void scrollToStart();
   void scrollToEnd();
   void setYZoom( float factor );
@@ -235,8 +235,8 @@ private:
   QColor _gridColor;
 
   // view
-  sf_count_t _beg;
-  sf_count_t _dur;
+  double _beg;
+  double _dur;
   double _fpp;
   float _yZoom;
 
@@ -261,6 +261,7 @@ private:
   QPointF _dragPoint;
   sf_count_t _dragFrame;
   double _dragData;
+  double _dragData2;
 };
 
 class SoundStream {
