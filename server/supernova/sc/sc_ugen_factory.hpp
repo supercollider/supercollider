@@ -125,12 +125,7 @@ struct sc_cmdplugin_def:
     }
 };
 
-
-/** factory class for supercollider ugens
- *
- *  \todo do we need to take care of thread safety? */
-class sc_ugen_factory:
-    public sc_plugin_interface
+class sc_plugin_container
 {
     static const std::size_t ugen_set_bucket_count = 512;
     typedef bi::unordered_set< sc_ugen_def,
@@ -162,20 +157,45 @@ class sc_ugen_factory:
     cmdplugin_set_type::bucket_type cmdplugin_set_buckets[cmdplugin_set_bucket_count];
     cmdplugin_set_type cmdplugin_set;
 
-    std::vector<void*> open_handles;
-
-public:
-    sc_ugen_factory (void):
+protected:
+    sc_plugin_container (void):
         ugen_set(ugen_set_type::bucket_traits(ugen_set_buckets, ugen_set_bucket_count)),
         bufgen_set(bufgen_set_type::bucket_traits(bufgen_set_buckets, bufgen_set_bucket_count)),
         cmdplugin_set(cmdplugin_set_type::bucket_traits(cmdplugin_set_buckets, cmdplugin_set_bucket_count))
     {}
 
-    ~sc_ugen_factory (void)
+    ~sc_plugin_container (void)
     {
         ugen_set.clear_and_dispose(boost::checked_delete<sc_ugen_def>);
         bufgen_set.clear_and_dispose(boost::checked_delete<sc_bufgen_def>);
         cmdplugin_set.clear_and_dispose(boost::checked_delete<sc_cmdplugin_def>);
+    }
+
+public:
+    void register_ugen(const char *inUnitClassName, size_t inAllocSize,
+                       UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
+
+    void register_bufgen(const char * name, BufGenFunc func);
+    BufGenFunc find_bufgen(const char * name);
+
+    sc_ugen_def * find_ugen(std::string const & name);
+
+    bool register_ugen_command_function(const char * ugen_name, const char * cmd_name, UnitCmdFunc);
+    bool register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data);
+
+    bool run_cmd_plugin(World * world , const char * name, struct sc_msg_iter *args, void *replyAddr);
+};
+
+/** factory class for supercollider ugens
+ *
+ *  \todo do we need to take care of thread safety? */
+class sc_ugen_factory:
+    public sc_plugin_interface,
+    public sc_plugin_container
+{
+public:
+    ~sc_ugen_factory(void)
+    {
         close_handles();
     }
 
@@ -197,26 +217,19 @@ public:
     }
     /* @} */
 
-
     void load_plugin_folder(boost::filesystem::path const & path);
     void load_plugin(boost::filesystem::path const & path);
 
-    void register_ugen(const char *inUnitClassName, size_t inAllocSize,
-                       UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
-
-    void register_bufgen(const char * name, BufGenFunc func);
-    BufGenFunc find_bufgen(const char * name);
-
-    sc_ugen_def * find_ugen(std::string const & name);
-
-    bool register_ugen_command_function(const char * ugen_name, const char * cmd_name, UnitCmdFunc);
-    bool register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data);
-
-    bool run_cmd_plugin(const char * name, struct sc_msg_iter *args, void *replyAddr);
+    bool run_cmd_plugin(const char * name, struct sc_msg_iter *args, void *replyAddr)
+    {
+        return sc_plugin_container::run_cmd_plugin(&world, name, args, replyAddr);
+    }
 
 private:
     void close_handles(void);
+
     uint32_t ugen_count_;
+    std::vector<void*> open_handles;
 };
 
 extern sc_ugen_factory * sc_factory;
