@@ -260,7 +260,7 @@ void sc_synth::run_traced(void)
         Unit * unit = calc_units[i];
 
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-        printf("  unit %zd %s\n    in ", i, def->name().c_str());
+        printf("  unit %zd %s\n    in ", i, def->name());
         for (uint16_t j=0; j!=unit->mNumInputs; ++j)
             printf(" %g", unit->mInBuf[j][0]);
         putchar('\n');
