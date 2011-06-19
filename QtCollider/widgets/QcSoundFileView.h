@@ -115,8 +115,8 @@ public:
   ~QcWaveform();
 
   Q_INVOKABLE void load( const QString& filename );
-  // NOTE. Using float instead of quint64. We can not get 64 bit integers from SC.
-  Q_INVOKABLE void load( const QString& filename, float beginning, float duration );
+  // NOTE: Using int instead of sf_count_t for accessibility from SC language.
+  Q_INVOKABLE void load( const QString& filename, int beginning, int duration );
   float loadProgress();
   sf_count_t frames() { return _rangeDur; }
   sf_count_t viewFrames() { return _dur; }

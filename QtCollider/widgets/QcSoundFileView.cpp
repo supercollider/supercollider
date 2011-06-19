@@ -168,7 +168,7 @@ void QcWaveform::load( const QString& filename )
   doLoad( new_sf, new_info, 0, new_info.frames );
 }
 
-void QcWaveform::load( const QString& filename, float beg, float dur )
+void QcWaveform::load( const QString& filename, int beg, int dur )
 {
   qcDebugMsg( 1, "QcWaveform::load( beg, dur )" );
 
@@ -179,12 +179,6 @@ void QcWaveform::load( const QString& filename, float beg, float dur )
 
   if( !new_sf ) {
     qcErrorMsg("Could not open soundfile.");
-    return;
-  }
-
-  if( beg < 0 || dur < 0 ) {
-    qcErrorMsg("Invalid beginning and/or duration.");
-    sf_close( new_sf );
     return;
   }
 
@@ -199,7 +193,7 @@ void QcWaveform::doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t be
 
   // check beginning and duration validity
 
-  if( dur < 1 || beg + dur > new_info.frames ) {
+  if( beg < 0 || dur < 1 || beg + dur > new_info.frames ) {
     qcErrorMsg("Invalid beginning and/or duration.");
     sf_close( new_sf );
     return;
