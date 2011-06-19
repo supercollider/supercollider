@@ -63,9 +63,9 @@ QSoundFileView : QView {
 
   //// Navigation
 
-  zoom { arg factor; this.invokeMethod( \zoomBy, factor ); }
+  zoom { arg factor; this.invokeMethod( \zoomBy, factor.asFloat ); }
 
-  zoomToFrac { arg fraction; this.invokeMethod( \zoomTo, fraction ); }
+  zoomToFrac { arg fraction; this.invokeMethod( \zoomTo, fraction.asFloat ); }
 
   zoomAllOut { this.invokeMethod( \zoomAllOut ); }
 
