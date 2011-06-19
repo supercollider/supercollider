@@ -191,7 +191,7 @@ void QcWaveform::load( const QString& filename, float beg, float dur )
   doLoad( new_sf, new_info, beg, dur );
 }
 
-void QcWaveform::doLoad( SNDFILE *new_sf, const SF_INFO &new_info, quint64 beg, quint64 dur )
+void QcWaveform::doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t beg, sf_count_t dur )
 {
   // set up soundfile to scale data in range [-1,1] to int range
   // when reading floating point data as int
@@ -281,7 +281,7 @@ VariantList QcWaveform::selection( int i ) const
   return l;
 }
 
-void QcWaveform::setSelection( int i, quint64 a, quint64 b )
+void QcWaveform::setSelection( int i, sf_count_t a, sf_count_t b )
 {
   if( i < 0 || i > 63 ) return;
   Selection& s = _selections[i];
@@ -296,21 +296,21 @@ void QcWaveform::setSelection( int i, VariantList l )
   setSelection( i, l.data[0].toInt(), l.data[1].toInt() );
 }
 
-void QcWaveform::setSelectionStart( int i, quint64 frame )
+void QcWaveform::setSelectionStart( int i, sf_count_t frame )
 {
   if( i < 0 || i > 63 ) return;
   Selection& s = _selections[i];
-  quint64 frame2 = s.start + s.size;
+  sf_count_t frame2 = s.start + s.size;
   s.start = qMin( frame, frame2 );
   s.size = qMax( frame, frame2 ) - s.start;
   update();
 }
 
-void QcWaveform::setSelectionEnd( int i, quint64 frame )
+void QcWaveform::setSelectionEnd( int i, sf_count_t frame )
 {
   if( i < 0 || i > 63 ) return;
   Selection& s = _selections[i];
-  quint64 frame2 = s.start;
+  sf_count_t frame2 = s.start;
   s.start = qMin( frame, frame2 );
   s.size = qMax( frame, frame2 ) - s.start;
   update();
@@ -380,24 +380,15 @@ void QcWaveform::zoomAllOut()
   redraw();
 }
 
-void QcWaveform::scrollTo( quint64 startFrame )
+void QcWaveform::scrollTo( sf_count_t startFrame )
 {
   _beg = qBound( _rangeBeg, startFrame, _rangeEnd - _dur );
   redraw();
 }
 
-void QcWaveform::scrollBy( qint64 f )
+void QcWaveform::scrollBy( sf_count_t f )
 {
-  // NOTE take care of signedness
-  quint64 dest;
-  if( f < 0 ) {
-    qint64 reversed = -f;
-    dest = ( _beg > reversed ) ? ( _beg - reversed ) : 0;
-  }
-  else {
-    dest = _beg + f;
-  }
-  scrollTo( dest );
+  scrollTo( _beg + f );
 }
 
 void QcWaveform::scrollToStart()
@@ -433,7 +424,7 @@ void QcWaveform::zoomSelection( int i )
     return;
 
   _beg = qMax( s.start, _rangeBeg );
-  quint64 end = qMin( s.start + s.size, _rangeEnd );
+  sf_count_t end = qMin( s.start + s.size, _rangeEnd );
   _dur = end - _beg;
 
   // clear the selection
@@ -553,6 +544,7 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
   if( btn == Qt::LeftButton ) {
 
     if( (mods & Qt::ShiftModifier) && ( mods & CTRL ) ) {
+      _dragFrame = _selections[_curSel].start;
       _dragAction = MoveSelection;
     }
     else if( mods & Qt::ShiftModifier ) {
@@ -609,18 +601,16 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
 {
   if( _dragAction == Scroll ) {
     double dpos = _dragPoint.x() - ev->pos().x();
-    quint64 beg = qMax( dpos * _fpp + _dragFrame, 0.0 );
-    scrollTo( beg );
+    scrollTo( dpos * _fpp + _dragFrame );
   }
   else if( _dragAction == Zoom ) {
     double factor = pow( 2, (ev->pos().y() - _dragPoint.y()) * 0.008 );
     double zoom_0 = _dragData;
     zoomTo( zoom_0 * factor );
-    double beg = qMax( 0.0, _dragFrame - (_dragPoint.x() * _fpp) );
-    scrollTo( beg );
+    scrollTo( _dragFrame - (_dragPoint.x() * _fpp) );
   }
   else if( _dragAction == Select ) {
-    quint64 frame = qBound( 0, ev->pos().x(), width() ) * _fpp + _beg;
+    sf_count_t frame = qBound( 0, ev->pos().x(), width() ) * _fpp + _beg;
     setSelection( _curSel, _dragFrame, frame );
     update();
     Q_EMIT( action() );
@@ -628,9 +618,8 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
   else if( _dragAction == MoveSelection ) {
     double dpos = ev->pos().x() - _dragPoint.x();
     Selection &s = _selections[_curSel];
-    s.start = qMax( s.start + (dpos * _fpp), (double)_rangeBeg );
-    s.start = qMin( s.start, s.size < _rangeDur ? _rangeEnd - s.size : _rangeBeg );
-    _dragPoint = ev->pos();
+    s.start = _dragFrame + (dpos * _fpp);
+    s.start = qBound( _rangeBeg, s.start, _rangeEnd - s.size );
     update();
     Q_EMIT( action() );
   }
@@ -659,8 +648,8 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   if( f_beg < _rangeBeg || f_beg + f_dur > _rangeEnd ) return;
 
   // data indexes
-  quint64 i_beg = floor(f_beg); // data beginning;
-  int i_count = ceil( f_beg + f_dur ) - i_beg; // data count;
+  sf_count_t i_beg = floor(f_beg); // data beginning;
+  sf_count_t i_count = ceil( f_beg + f_dur ) - i_beg; // data count;
   bool haveOneMore;
   if( _rangeEnd - (f_beg + f_dur) >= 1 ) {
     ++i_count;
