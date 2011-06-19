@@ -36,43 +36,16 @@ namespace nova
 namespace
 {
 
-template<typename def>
-struct compare_def
-{
-    bool operator()(def const & lhs,
-                    std::string const & rhs) const
-    {
-        return lhs.name() < rhs;
-    }
-
-    bool operator()(std::string const & lhs,
-                    def const & rhs) const
-    {
-        return lhs < rhs.name();
-    }
-
-    bool operator()(def const & lhs,
-                    const char * rhs) const
-    {
-        return (strcmp(lhs.name().c_str(), rhs) < 0);
-    }
-
-    bool operator()(const char * lhs,
-                    def const & rhs) const
-    {
-        return (strcmp(lhs, rhs.name().c_str()) < 0);
-    }
-};
-
-template<typename def>
 struct equal_def
 {
+    template<typename def>
     bool operator()(def const & lhs,
                     std::string const & rhs) const
     {
         return lhs.name() == rhs;
     }
 
+    template<typename def>
     bool operator()(std::string const & lhs,
                     def const & rhs) const
     {
@@ -80,23 +53,28 @@ struct equal_def
     }
 };
 
-template<typename def>
 struct hash_def
 {
-    std::size_t operator()(std::string const & value)
+    template<typename def>
+    std::size_t operator()(def const & arg)
     {
-        return def::hash(value);
+        return arg.hash();
+    }
+
+    std::size_t operator()(const char * str)
+    {
+        return string_hash(str);
+    }
+
+    std::size_t operator()(std::string const & str)
+    {
+        return string_hash(str.c_str());
     }
 };
 
 }
 
 sc_ugen_factory * sc_factory;
-
-sc_ugen_def::sc_ugen_def (const char *inUnitClassName, size_t inAllocSize,
-                          UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags):
-    name_(inUnitClassName), alloc_size(inAllocSize), ctor(inCtor), dtor(inDtor), flags(inFlags)
-{}
 
 Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk)
 {
@@ -181,15 +159,15 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
 bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func)
 {
     sc_unitcmd_def * def = new sc_unitcmd_def(cmd_name, func);
-    commands.insert(*def);
+    unitcmd_set.insert(*def);
     return true;
 }
 
 UnitCmdFunc sc_ugen_def::find_command(const char * cmd_name)
 {
-    unit_commands_set::iterator it = commands.find(cmd_name, compare_def<sc_unitcmd_def>());
+    unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, hash_def(), equal_def());
 
-    if (it == commands.end())
+    if (it == unitcmd_set.end())
         return NULL;
     else
         return it->func;
@@ -261,14 +239,13 @@ void sc_ugen_factory::register_ugen(const char *inUnitClassName, size_t inAllocS
 void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
 {
     sc_bufgen_def * def = new sc_bufgen_def(name, func);
-    bufgen_map.insert(*def);
+    bufgen_set.insert(*def);
 }
 
 BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
 {
-    bufgen_set_t::iterator it = bufgen_map.find(name,
-                                                compare_def<sc_bufgen_def>());
-    if (it == bufgen_map.end()) {
+    bufgen_set_type::iterator it = bufgen_set.find(name, hash_def(), equal_def());
+    if (it == bufgen_set.end()) {
         std::cerr << "unable to find buffer generator: " << name << std::endl;
         throw std::runtime_error("unable to create ugen");
     }
@@ -277,8 +254,7 @@ BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
 
 sc_ugen_def * sc_ugen_factory::find_ugen(std::string const & name)
 {
-    ugen_set_type::iterator it = ugen_set.find(name,
-                                               hash_def<sc_ugen_def>(), equal_def<sc_ugen_def>());
+    ugen_set_type::iterator it = ugen_set.find(name, hash_def(), equal_def());
     if (it == ugen_set.end()) {
         std::cerr << "ugen not registered: " << name << std::endl;
         return 0;
@@ -297,24 +273,22 @@ bool sc_ugen_factory::register_ugen_command_function(const char * ugen_name, con
 
 bool sc_ugen_factory::register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data)
 {
-    cmdplugin_set_t::iterator it = cmdplugin_map.find(cmd_name,
-                                                      compare_def<sc_cmdplugin_def>());
-    if (it != cmdplugin_map.end()) {
+    cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, hash_def(), equal_def());
+    if (it != cmdplugin_set.end()) {
         std::cerr << "cmd plugin already registered: " << cmd_name << std::endl;
         return false;
     }
 
     sc_cmdplugin_def * def = new sc_cmdplugin_def(cmd_name, func, user_data);
-    cmdplugin_map.insert(*def);
+    cmdplugin_set.insert(*def);
 
     return true;
 }
 
 bool sc_ugen_factory::run_cmd_plugin(const char * name, struct sc_msg_iter *args, void *replyAddr)
 {
-    cmdplugin_set_t::iterator it = cmdplugin_map.find(name,
-                                                      compare_def<sc_cmdplugin_def>());
-    if (it == cmdplugin_map.end()) {
+    cmdplugin_set_type::iterator it = cmdplugin_set.find(name, hash_def(), equal_def());
+    if (it == cmdplugin_set.end()) {
         std::cerr << "unable to find cmd plugin: " << name << std::endl;
         return false;
     }

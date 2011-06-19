@@ -34,17 +34,14 @@ namespace nova
 {
 namespace bi = boost::intrusive;
 
-
-struct sc_unitcmd_def:
-    public bi::set_base_hook<>
+class sc_plugin_definition:
+    public bi::unordered_set_base_hook<>
 {
     const std::string name_;
 
 public:
-    const UnitCmdFunc func;
-
-    sc_unitcmd_def(const char * cmd_name, UnitCmdFunc func):
-        name_(cmd_name), func(func)
+    sc_plugin_definition(const char * name):
+        name_(name)
     {}
 
     std::string const & name(void) const
@@ -52,47 +49,59 @@ public:
         return name_;
     }
 
-public:
-    /* sort by name */
-    friend bool operator< (sc_unitcmd_def const & a,
-                           sc_unitcmd_def const & b)
+    friend std::size_t hash_value(sc_plugin_definition const & that)
     {
-        return a.name_ < b.name_;
+        return string_hash(that.name().c_str());
     }
+
+    std::size_t hash(void) const
+    {
+        return hash_value(*this);
+    }
+
+    friend bool operator== (sc_plugin_definition const & a,
+                            sc_plugin_definition const & b)
+    {
+        return a.name_ == b.name_;
+    }
+};
+
+struct sc_unitcmd_def:
+    public sc_plugin_definition
+{
+    const UnitCmdFunc func;
+
+    sc_unitcmd_def(const char * cmd_name, UnitCmdFunc func):
+        sc_plugin_definition(cmd_name), func(func)
+    {}
 };
 
 
 class sc_ugen_def:
-    public bi::unordered_set_base_hook<>
+    public sc_plugin_definition
 {
 private:
-    const std::string name_;
     const size_t alloc_size;
     const UnitCtorFunc ctor;
     const UnitDtorFunc dtor;
     const uint32_t flags;
 
-    typedef bi::set<sc_unitcmd_def> unit_commands_set;
-    unit_commands_set commands;
+    static const std::size_t unitcmd_set_bucket_count = 4;
+    typedef bi::unordered_set< sc_unitcmd_def,
+                               bi::constant_time_size<false>,
+                               bi::power_2_buckets<true>,
+                               bi::store_hash<true>
+                             > unitcmd_set_type;
+
+    unitcmd_set_type::bucket_type unitcmd_set_buckets[unitcmd_set_bucket_count];
+    unitcmd_set_type unitcmd_set;
 
 public:
     sc_ugen_def(const char *inUnitClassName, size_t inAllocSize,
-                UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
-
-    std::string const & name(void) const
-    {
-        return name_;
-    }
-
-    static std::size_t hash(std::string const & value)
-    {
-        return string_hash(value.c_str());
-    }
-
-    friend std::size_t hash_value(sc_ugen_def const & that)
-    {
-        return hash(that.name());
-    }
+                UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags):
+        sc_plugin_definition(inUnitClassName), alloc_size(inAllocSize), ctor(inCtor), dtor(inDtor), flags(inFlags),
+        unitcmd_set(unitcmd_set_type::bucket_traits(unitcmd_set_buckets, unitcmd_set_bucket_count))
+    {}
 
     Unit * construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk);
 
@@ -119,69 +128,31 @@ public:
 
     bool add_command(const char * cmd_name, UnitCmdFunc func);
     UnitCmdFunc find_command(const char * cmd_name);
-
-    friend bool operator== (sc_ugen_def const & a,
-                           sc_ugen_def const & b)
-    {
-        return a.name_ == b.name_;
-    }
 };
 
-class sc_bufgen_def:
-    public bi::set_base_hook<>
+struct sc_bufgen_def:
+    public sc_plugin_definition
 {
-    const std::string name_;
-
-public:
     const BufGenFunc func;
 
     sc_bufgen_def(const char * name, BufGenFunc func):
-        name_(name), func(func)
+        sc_plugin_definition(name), func(func)
     {}
-
-    std::string const & name(void) const
-    {
-        return name_;
-    }
-
-public:
-    /* sort by name */
-    friend bool operator< (sc_bufgen_def const & a,
-                           sc_bufgen_def const & b)
-    {
-        return a.name_ < b.name_;
-    }
 };
 
-class sc_cmdplugin_def:
-    public bi::set_base_hook<>
+struct sc_cmdplugin_def:
+    public sc_plugin_definition
 {
-    const std::string name_;
-
-public:
     const PlugInCmdFunc func;
     void * user_data;
 
     sc_cmdplugin_def(const char * name, PlugInCmdFunc func, void * user_data):
-        name_(name), func(func), user_data(user_data)
+        sc_plugin_definition(name), func(func), user_data(user_data)
     {}
-
-    std::string const & name(void) const
-    {
-        return name_;
-    }
 
     void run(World * world, struct sc_msg_iter *args, void *replyAddr)
     {
         (func)(world, user_data, args, replyAddr);
-    }
-
-public:
-    /* sort by name */
-    friend bool operator< (sc_cmdplugin_def const & a,
-                           sc_cmdplugin_def const & b)
-    {
-        return a.name_ < b.name_;
     }
 };
 
@@ -199,26 +170,43 @@ class sc_ugen_factory:
                                bi::store_hash<true>
                              > ugen_set_type;
 
-    typedef bi::set<sc_bufgen_def> bufgen_set_t;
-    typedef bi::set<sc_cmdplugin_def> cmdplugin_set_t;
+    static const std::size_t bufgen_set_bucket_count = 64;
+    typedef bi::unordered_set< sc_bufgen_def,
+                               bi::constant_time_size<false>,
+                               bi::power_2_buckets<true>,
+                               bi::store_hash<true>
+                             > bufgen_set_type;
 
-    ugen_set_type::bucket_type node_buckets[ugen_set_bucket_count];
+    static const std::size_t cmdplugin_set_bucket_count = 8;
+    typedef bi::unordered_set< sc_cmdplugin_def,
+                               bi::constant_time_size<false>,
+                               bi::power_2_buckets<true>,
+                               bi::store_hash<true>
+                             > cmdplugin_set_type;
+
+    ugen_set_type::bucket_type ugen_set_buckets[ugen_set_bucket_count];
     ugen_set_type ugen_set;
 
-    bufgen_set_t bufgen_map;
-    cmdplugin_set_t cmdplugin_map;
+    bufgen_set_type::bucket_type bufgen_set_buckets[bufgen_set_bucket_count];
+    bufgen_set_type bufgen_set;
+
+    cmdplugin_set_type::bucket_type cmdplugin_set_buckets[cmdplugin_set_bucket_count];
+    cmdplugin_set_type cmdplugin_set;
 
     std::vector<void*> open_handles;
 
 public:
     sc_ugen_factory (void):
-        ugen_set(ugen_set_type::bucket_traits(node_buckets, ugen_set_bucket_count))
+        ugen_set(ugen_set_type::bucket_traits(ugen_set_buckets, ugen_set_bucket_count)),
+        bufgen_set(bufgen_set_type::bucket_traits(bufgen_set_buckets, bufgen_set_bucket_count)),
+        cmdplugin_set(cmdplugin_set_type::bucket_traits(cmdplugin_set_buckets, cmdplugin_set_bucket_count))
     {}
 
     ~sc_ugen_factory (void)
     {
         ugen_set.clear_and_dispose(boost::checked_delete<sc_ugen_def>);
-        bufgen_map.clear_and_dispose(boost::checked_delete<sc_bufgen_def>);
+        bufgen_set.clear_and_dispose(boost::checked_delete<sc_bufgen_def>);
+        cmdplugin_set.clear_and_dispose(boost::checked_delete<sc_cmdplugin_def>);
         close_handles();
     }
 
