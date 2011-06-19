@@ -132,6 +132,76 @@ UnitCmdFunc sc_ugen_def::find_command(const char * cmd_name)
         return it->func;
 }
 
+void sc_plugin_container::register_ugen(const char *inUnitClassName, size_t inAllocSize,
+                                    UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
+{
+    sc_ugen_def * def = new sc_ugen_def(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
+    ugen_set.insert(*def);
+}
+
+void sc_plugin_container::register_bufgen(const char * name, BufGenFunc func)
+{
+    sc_bufgen_def * def = new sc_bufgen_def(name, func);
+    bufgen_set.insert(*def);
+}
+
+BufGenFunc sc_plugin_container::find_bufgen(const char * name)
+{
+    bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
+    if (it == bufgen_set.end()) {
+        std::cerr << "unable to find buffer generator: " << name << std::endl;
+        throw std::runtime_error("unable to create ugen");
+    }
+    return it->func;
+}
+
+sc_ugen_def * sc_plugin_container::find_ugen(std::string const & name)
+{
+    ugen_set_type::iterator it = ugen_set.find(name, named_hash_hash(), named_hash_equal());
+    if (it == ugen_set.end()) {
+        std::cerr << "ugen not registered: " << name << std::endl;
+        return 0;
+    }
+    return &*it;
+}
+
+bool sc_plugin_container::register_ugen_command_function(const char * ugen_name, const char * cmd_name,
+                                                     UnitCmdFunc func)
+{
+    sc_ugen_def * def = find_ugen(ugen_name);
+    if (def)
+        return false;
+    return def->add_command(cmd_name, func);
+}
+
+bool sc_plugin_container::register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data)
+{
+    cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, named_hash_hash(), named_hash_equal());
+    if (it != cmdplugin_set.end()) {
+        std::cerr << "cmd plugin already registered: " << cmd_name << std::endl;
+        return false;
+    }
+
+    sc_cmdplugin_def * def = new sc_cmdplugin_def(cmd_name, func, user_data);
+    cmdplugin_set.insert(*def);
+
+    return true;
+}
+
+bool sc_plugin_container::run_cmd_plugin(World * world, const char * name, struct sc_msg_iter *args, void *replyAddr)
+{
+    cmdplugin_set_type::iterator it = cmdplugin_set.find(name, named_hash_hash(), named_hash_equal());
+    if (it == cmdplugin_set.end()) {
+        std::cerr << "unable to find cmd plugin: " << name << std::endl;
+        return false;
+    }
+
+    it->run(world, args, replyAddr);
+
+    return true;
+}
+
+
 void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
 {
     using namespace boost::filesystem;
@@ -186,76 +256,5 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 void sc_ugen_factory::close_handles(void)
 {}
 #endif
-
-
-void sc_ugen_factory::register_ugen(const char *inUnitClassName, size_t inAllocSize,
-                                    UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
-{
-    sc_ugen_def * def = new sc_ugen_def(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
-    ugen_set.insert(*def);
-}
-
-void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
-{
-    sc_bufgen_def * def = new sc_bufgen_def(name, func);
-    bufgen_set.insert(*def);
-}
-
-BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
-{
-    bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
-    if (it == bufgen_set.end()) {
-        std::cerr << "unable to find buffer generator: " << name << std::endl;
-        throw std::runtime_error("unable to create ugen");
-    }
-    return it->func;
-}
-
-sc_ugen_def * sc_ugen_factory::find_ugen(std::string const & name)
-{
-    ugen_set_type::iterator it = ugen_set.find(name, named_hash_hash(), named_hash_equal());
-    if (it == ugen_set.end()) {
-        std::cerr << "ugen not registered: " << name << std::endl;
-        return 0;
-    }
-    return &*it;
-}
-
-bool sc_ugen_factory::register_ugen_command_function(const char * ugen_name, const char * cmd_name,
-                                                     UnitCmdFunc func)
-{
-    sc_ugen_def * def = find_ugen(ugen_name);
-    if (def)
-        return false;
-    return def->add_command(cmd_name, func);
-}
-
-bool sc_ugen_factory::register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data)
-{
-    cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, named_hash_hash(), named_hash_equal());
-    if (it != cmdplugin_set.end()) {
-        std::cerr << "cmd plugin already registered: " << cmd_name << std::endl;
-        return false;
-    }
-
-    sc_cmdplugin_def * def = new sc_cmdplugin_def(cmd_name, func, user_data);
-    cmdplugin_set.insert(*def);
-
-    return true;
-}
-
-bool sc_ugen_factory::run_cmd_plugin(const char * name, struct sc_msg_iter *args, void *replyAddr)
-{
-    cmdplugin_set_type::iterator it = cmdplugin_set.find(name, named_hash_hash(), named_hash_equal());
-    if (it == cmdplugin_set.end()) {
-        std::cerr << "unable to find cmd plugin: " << name << std::endl;
-        return false;
-    }
-
-    it->run(&world, args, replyAddr);
-
-    return true;
-}
-
 
 } /* namespace nova */
