@@ -243,7 +243,7 @@ HelpBrowser {
 			^Document.open(path);
 		};
 		if("which xdg-open >/dev/null".systemCmd==0) {
-			^("xdg-open"+path).systemCmd;
+			^("xdg-open"+path.escapeChar($ )).systemCmd;
 		};
 		winRect = Rect(0,0,600,400);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
