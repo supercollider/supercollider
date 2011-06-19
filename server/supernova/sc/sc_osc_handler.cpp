@@ -2859,7 +2859,7 @@ void handle_cmd(received_message const & msg, int size, nova_endpoint const & en
 
     const char * cmd = args.gets();
 
-    sc_factory->run_cmd_plugin(cmd, &args, const_cast<nova_endpoint*>(&endpoint));
+    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, const_cast<nova_endpoint*>(&endpoint));
 }
 
 } /* namespace */

@@ -222,11 +222,6 @@ public:
     void load_plugin_folder(boost::filesystem::path const & path);
     void load_plugin(boost::filesystem::path const & path);
 
-    bool run_cmd_plugin(const char * name, struct sc_msg_iter *args, void *replyAddr)
-    {
-        return sc_plugin_container::run_cmd_plugin(&world, name, args, replyAddr);
-    }
-
 private:
     void close_handles(void);
 
