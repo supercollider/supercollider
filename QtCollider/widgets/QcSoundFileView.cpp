@@ -389,6 +389,16 @@ void QcWaveform::scrollBy( double f )
   scrollTo( _beg + f );
 }
 
+float QcWaveform::scrollPos()
+{
+  double scrollRange = _rangeDur - _dur;
+  return scrollRange > 0.0 ? (_beg - _rangeBeg) / scrollRange : 0.f;
+}
+void QcWaveform::setScrollPos( float fraction )
+{
+  scrollTo( fraction * (_rangeDur - _dur) + _rangeBeg );
+}
+
 void QcWaveform::scrollToStart()
 {
   scrollTo( _rangeBeg );
