@@ -107,6 +107,8 @@ struct sc_bufgen_def:
     sc_bufgen_def(const char * name, BufGenFunc func):
         named_hash_entry(name), func(func)
     {}
+
+    sample * run(World * world, uint32_t buffer_index, struct sc_msg_iter *args);
 };
 
 struct sc_cmdplugin_def:
@@ -176,13 +178,13 @@ public:
                        UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags);
 
     void register_bufgen(const char * name, BufGenFunc func);
-    BufGenFunc find_bufgen(const char * name);
 
     sc_ugen_def * find_ugen(std::string const & name);
 
     bool register_ugen_command_function(const char * ugen_name, const char * cmd_name, UnitCmdFunc);
     bool register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data);
 
+    sample * run_bufgen(World * world, const char * name, uint32_t buffer_index, struct sc_msg_iter *args);
     bool run_cmd_plugin(World * world , const char * name, struct sc_msg_iter *args, void *replyAddr);
 };
 
