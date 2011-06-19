@@ -114,6 +114,11 @@ void QcSoundFileView::updateZoomScrollBar()
 
 QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   sf(0),
+
+  _rangeBeg(0),
+  _rangeDur(0),
+  _rangeEnd(0),
+
   _cache(0),
 
   _curSel(0),
@@ -127,7 +132,6 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _gridResolution(1.0),
   _gridOffset(0.0),
   _gridColor(QColor(100,100,200)),
-
 
   _beg(0.0),
   _dur(0.0),
