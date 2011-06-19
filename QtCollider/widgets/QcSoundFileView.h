@@ -105,8 +105,8 @@ public:
 
   struct Selection {
     Selection() : start(0), size(0), editable(true), color(QColor(0,0,150)) {}
-    quint64 start;
-    quint64 size;
+    sf_count_t start;
+    sf_count_t size;
     bool editable;
     QColor color;
   };
@@ -118,9 +118,9 @@ public:
   // NOTE. Using float instead of quint64. We can not get 64 bit integers from SC.
   Q_INVOKABLE void load( const QString& filename, float beginning, float duration );
   float loadProgress();
-  quint64 frames() { return _rangeDur; }
-  quint64 viewFrames() { return _dur; }
-  quint64 scrollPos() { return _beg; }
+  sf_count_t frames() { return _rangeDur; }
+  sf_count_t viewFrames() { return _dur; }
+  sf_count_t scrollPos() { return _beg; }
   float zoom(); //visible fraction
   float xZoom(); //visible seconds
   float yZoom(); //factor
@@ -129,10 +129,10 @@ public:
   int currentSelection() const { return _curSel; }
   void setCurrentSelection( int i );
   Q_INVOKABLE VariantList selection( int index ) const;
-  void setSelection( int i, quint64 a, quint64 b );
+  void setSelection( int i, sf_count_t a, sf_count_t b );
   Q_INVOKABLE void setSelection( int index, VariantList data );
-  Q_INVOKABLE void setSelectionStart( int i, quint64 frame );
-  Q_INVOKABLE void setSelectionEnd( int i, quint64 frame );
+  Q_INVOKABLE void setSelectionStart( int i, sf_count_t frame );
+  Q_INVOKABLE void setSelectionEnd( int i, sf_count_t frame );
   Q_INVOKABLE void setSelectionEditable( int index, bool editable );
   Q_INVOKABLE void setSelectionColor( int index, const QColor &clr );
   Q_PROPERTY( VariantList waveColors READ waveColors WRITE setWaveColors );
@@ -171,8 +171,8 @@ public Q_SLOTS:
   //void zoomTo( float fraction, quint64 frame );
   void zoomBy( float factor );
   void zoomAllOut();
-  void scrollTo( quint64 frame );
-  void scrollBy( qint64 frames );
+  void scrollTo( sf_count_t frame );
+  void scrollBy( sf_count_t frames );
   void scrollToStart();
   void scrollToEnd();
   void setYZoom( float factor );
@@ -204,7 +204,7 @@ protected:
 
 private:
 
-  void doLoad( SNDFILE *new_sf, const SF_INFO &new_info, quint64 beginning, quint64 duration );
+  void doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t beginning, sf_count_t duration );
   inline void updateFPP() { _fpp = width() ? (double) _dur / width() : 0.0; }
   void rebuildCache ( int maxFramesPerCache, int maxRawFrames );
   void draw ( QPixmap *, int x, int width, double beginning, double duration );
@@ -212,9 +212,9 @@ private:
   // data
   SNDFILE *sf;
   SF_INFO sfInfo;
-  quint64 _rangeBeg;
-  quint64 _rangeDur;
-  quint64 _rangeEnd;
+  sf_count_t _rangeBeg;
+  sf_count_t _rangeDur;
+  sf_count_t _rangeEnd;
 
   SoundCacheStream *_cache;
 
@@ -224,7 +224,7 @@ private:
 
   // cursor
   bool _showCursor;
-  quint64 _cursorPos;
+  sf_count_t _cursorPos;
   QColor _cursorColor;
   bool _cursorEditable;
 
@@ -235,8 +235,8 @@ private:
   QColor _gridColor;
 
   // view
-  quint64 _beg;
-  quint64 _dur;
+  sf_count_t _beg;
+  sf_count_t _dur;
   double _fpp;
   float _yZoom;
 
@@ -259,7 +259,7 @@ private:
   };
   DragAction _dragAction;
   QPointF _dragPoint;
-  quint64 _dragFrame;
+  sf_count_t _dragFrame;
   double _dragData;
 };
 
