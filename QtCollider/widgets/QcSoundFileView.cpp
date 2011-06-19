@@ -274,7 +274,7 @@ VariantList QcWaveform::selection( int i ) const
   VariantList l;
   if( i < 0 || i > 63 ) return l;
   const Selection &s = _selections[i];
-  l.data << QVariant(static_cast<int>(s.start));
+  l.data << QVariant(static_cast<int>(s.start - _rangeBeg));
   l.data << QVariant(static_cast<int>(s.size));
   return l;
 }
@@ -291,7 +291,9 @@ void QcWaveform::setSelection( int i, sf_count_t a, sf_count_t b )
 void QcWaveform::setSelection( int i, VariantList l )
 {
   if( l.data.count() < 2 ) return;
-  setSelection( i, l.data[0].toInt(), l.data[1].toInt() );
+  sf_count_t start = l.data[0].toInt() + _rangeBeg;
+  sf_count_t end = start + l.data[1].toInt();
+  setSelection( i, start, end );
 }
 
 void QcWaveform::setSelectionStart( int i, sf_count_t frame )
@@ -602,7 +604,7 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
 
 void QcWaveform::mouseDoubleClickEvent ( QMouseEvent * )
 {
-  setSelection( _curSel, _rangeBeg, _rangeDur );
+  setSelection( _curSel, _rangeBeg, _rangeEnd );
   Q_EMIT( action() );
 }
 

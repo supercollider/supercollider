@@ -133,9 +133,11 @@ public:
   VariantList selections() const;
   int currentSelection() const { return _curSel; }
   void setCurrentSelection( int i );
+  // for SC: selection start relative to first loaded frame
   Q_INVOKABLE VariantList selection( int index ) const;
-  void setSelection( int i, sf_count_t a, sf_count_t b );
+  // for SC: selection start relative to first loaded frame
   Q_INVOKABLE void setSelection( int index, VariantList data );
+  void setSelection( int i, sf_count_t a, sf_count_t b );
   Q_INVOKABLE void setSelectionStart( int i, sf_count_t frame );
   Q_INVOKABLE void setSelectionEnd( int i, sf_count_t frame );
   Q_INVOKABLE void setSelectionEditable( int index, bool editable );
