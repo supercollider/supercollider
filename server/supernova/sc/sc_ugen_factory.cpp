@@ -122,14 +122,12 @@ bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func)
     return true;
 }
 
-UnitCmdFunc sc_ugen_def::find_command(const char * cmd_name)
+void sc_ugen_def::run_unit_command(const char * cmd_name, Unit * unit, struct sc_msg_iter *args)
 {
     unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, named_hash_hash(), named_hash_equal());
 
-    if (it == unitcmd_set.end())
-        return NULL;
-    else
-        return it->func;
+    if (it != unitcmd_set.end())
+        it->run(unit, args);
 }
 
 sample * sc_bufgen_def::run(World * world, uint32_t buffer_index, struct sc_msg_iter *args)

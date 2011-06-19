@@ -44,6 +44,11 @@ struct sc_unitcmd_def:
     sc_unitcmd_def(const char * cmd_name, UnitCmdFunc func):
         named_hash_entry(cmd_name), func(func)
     {}
+
+    void run(Unit * unit, struct sc_msg_iter *args)
+    {
+        (func)(unit, args);
+    }
 };
 
 class sc_ugen_def:
@@ -96,7 +101,7 @@ public:
     }
 
     bool add_command(const char * cmd_name, UnitCmdFunc func);
-    UnitCmdFunc find_command(const char * cmd_name);
+    void run_unit_command(const char * cmd_name, Unit * unit, struct sc_msg_iter *args);
 };
 
 struct sc_bufgen_def:
