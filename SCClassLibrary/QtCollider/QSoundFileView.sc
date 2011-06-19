@@ -55,7 +55,7 @@ QSoundFileView : QView {
 
   numFrames { ^this.getProperty( \frames ); }
 
-  scrollPos { ^this.getProperty( \scrollPos ); }
+  scrollPos { ^this.getProperty( \scrollPos ); } // a fraction of the full scrolling range
 
   viewFrames { ^this.getProperty( \viewFrames ); }
 
@@ -74,14 +74,13 @@ QSoundFileView : QView {
     this.invokeMethod( \zoomSelection, selection );
   }
 
-  scrollTo { arg pos; // absolute. from 0 to 1
-    var frame = pos * (this.numFrames - this.viewFrames);
-    this.setProperty( \scrollPos, frame );
+  scrollTo { arg fraction; // a fraction of the full scrolling range
+    this.setProperty( \scrollPos, fraction );
   }
 
-  scroll { arg amount; // a fraction of visible frames to move by
-    var pos = this.viewFrames * amount + this.scrollPos;
-    this.setProperty( \scrollPos, pos );
+  scroll { arg fraction; // a fraction of the visible range
+    var frames = this.viewFrames * fraction + this.getProperty(\viewStartFrame);
+    this.setProperty( \viewStartFrame, frames );
   }
 
   scrollToStart { this.invokeMethod( \scrollToStart ); }

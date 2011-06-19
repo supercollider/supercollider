@@ -85,7 +85,8 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( int startFrame READ startFrame );
   Q_PROPERTY( int frames READ frames );
   Q_PROPERTY( double viewFrames READ viewFrames );
-  Q_PROPERTY( double scrollPos READ scrollPos WRITE scrollTo );
+  Q_PROPERTY( double viewStartFrame READ viewStartFrame WRITE scrollTo );
+  Q_PROPERTY( float scrollPos READ scrollPos WRITE setScrollPos );
   Q_PROPERTY( int currentSelection READ currentSelection WRITE setCurrentSelection );
   Q_PROPERTY( VariantList selections READ selections );
   Q_PROPERTY( QColor peakColor READ dummyColor WRITE setPeakColor );
@@ -121,8 +122,10 @@ public:
   float loadProgress();
   sf_count_t startFrame() { return _rangeBeg; }
   sf_count_t frames() { return _rangeDur; }
+
+  double viewStartFrame() { return _beg; }
   double viewFrames() { return _dur; }
-  double scrollPos() { return _beg; }
+  float scrollPos(); // as fraction of scrolling range
   float zoom(); //visible fraction
   float xZoom(); //visible seconds
   float yZoom(); //factor
@@ -173,13 +176,15 @@ public Q_SLOTS:
   //void zoomTo( float fraction, quint64 frame );
   void zoomBy( float factor );
   void zoomAllOut();
+  void zoomSelection( int selectionIndex );
   void scrollTo( double frame );
   void scrollBy( double frames );
+  void setScrollPos( float fraction ); // as fraction of scrolling range
   void scrollToStart();
   void scrollToEnd();
   void setYZoom( float factor );
   void setXZoom( float seconds );
-  void zoomSelection( int selectionIndex );
+
 
 Q_SIGNALS:
 
