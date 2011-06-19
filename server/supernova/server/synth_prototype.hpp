@@ -71,7 +71,7 @@ private:
 
 protected:
     slot_resolver(void):
-        slot_resolver_map(slot_resolver_map_t::bucket_traits(buckets, 1024))
+        slot_resolver_map(slot_resolver_map_t::bucket_traits(buckets, resolver_map_bucket_count))
     {}
 
     ~slot_resolver(void)
@@ -110,10 +110,12 @@ public:
     /*@}*/
 
 private:
+    static const int resolver_map_bucket_count = 512;
+
     typedef boost::intrusive::unordered_set<map_type,
                                             boost::intrusive::power_2_buckets<true>
                                            > slot_resolver_map_t;
-    slot_resolver_map_t::bucket_type buckets[1024];
+    slot_resolver_map_t::bucket_type buckets[resolver_map_bucket_count];
     slot_resolver_map_t slot_resolver_map;
 };
 
@@ -138,49 +140,22 @@ struct synth_prototype_deleter
  *
  * */
 class synth_prototype:
-    public detail::slot_resolver,
-    public boost::intrusive::unordered_set_base_hook<>,
-    public intrusive_refcountable<>
+    public named_hash_entry,
+    public intrusive_refcountable<>,
+    public detail::slot_resolver
 {
 public:
     synth_prototype(std::string const & name):
-        name_(strdup(name.c_str())), hash_(hash(name.c_str()))
+        named_hash_entry(name)
     {}
 
-    static size_t hash(const char * str)
-    {
-        return string_hash(str);
-    }
-
     virtual ~synth_prototype(void)
-    {
-        free((char*)name_);
-    }
+    {}
 
     virtual abstract_synth * create_instance(int node_id) = 0;
 
-    friend bool operator == (synth_prototype const & a,
-                           synth_prototype const & b)
-    {
-        return strcmp(a.name_, b.name_) == 0;
-    }
-
-    friend std::size_t hash_value(synth_prototype const & value)
-    {
-        return value.hash_;
-    }
-
-    const char * name(void) const
-    {
-        return name_;
-    }
-
     template <typename synth_t>
     static inline synth_t * allocate(void);
-
-private:
-    std::size_t hash_;
-    const char * name_;
 };
 
 typedef boost::intrusive_ptr<synth_prototype> synth_prototype_ptr;
