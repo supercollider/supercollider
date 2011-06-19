@@ -267,9 +267,9 @@ class SoundStream {
 public:
   inline int channels() { return _ch; }
 
-  inline double beginning() { return _beg; }
+  inline sf_count_t beginning() { return _beg; }
 
-  inline double duration() { return _dur; }
+  inline sf_count_t duration() { return _dur; }
 
   virtual bool displayData( int channel, double offset, double duration,
                             short *minBuffer,
@@ -278,25 +278,27 @@ public:
                             short *maxRMS,
                             int bufferSize ) = 0;
 
-  virtual short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved ) = 0;
+  virtual short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved ) = 0;
 
 protected:
   SoundStream()
-  : _ch( 0 ), _beg( 0.0 ), _dur( 0.0 ) {}
-  SoundStream( int channels, double beginning, double duration ) :
+  : _ch( 0 ), _beg( 0 ), _dur( 0 ) {}
+
+  SoundStream( int channels, sf_count_t beginning, sf_count_t duration ) :
     _ch( channels ), _beg( beginning ), _dur( duration ) {}
+
   int _ch;
-  double _beg;
-  double _dur;
+  sf_count_t _beg;
+  sf_count_t _dur;
 };
 
 class SoundFileStream : public SoundStream
 {
 public:
   SoundFileStream();
-  SoundFileStream( SNDFILE *sf, const SF_INFO &sf_info, double beginning, double duration );
+  SoundFileStream( SNDFILE *sf, const SF_INFO &sf_info, sf_count_t beginning, sf_count_t duration );
   ~SoundFileStream();
-  void load( SNDFILE *sf, const SF_INFO &sf_info, double beginning, double duration );
+  void load( SNDFILE *sf, const SF_INFO &sf_info, sf_count_t beginning, sf_count_t duration );
   bool integrate( int channel, double offset, double duration,
                   short *minBuffer,
                   short *maxBuffer,
@@ -309,11 +311,11 @@ public:
                     short *minRMS,
                     short *maxRMS,
                     int bufferSize );
-  short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
+  short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
 private:
   short *_data;
-  int _dataSize;
-  quint64 _dataOffset;
+  sf_count_t _dataSize;
+  sf_count_t _dataOffset;
 };
 
 class SoundCacheLoader;
@@ -327,11 +329,9 @@ class SoundCacheStream : public QObject, public SoundStream
 public:
   SoundCacheStream();
   ~SoundCacheStream();
-  void load( SNDFILE *sf, const SF_INFO &info, double beg, double dur,
+  void load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf_count_t dur,
              int maxFramesPerUnit, int maxRawFrames );
   inline double fpu() { return _fpu; }
-  inline quint64 offset() { return _dataOffset; }
-  inline int size() { return _dataSize; }
   inline bool ready() { return _ready; }
   inline bool loading() { return _loading; }
   inline int loadProgress() { return _loadProgress; }
@@ -341,7 +341,7 @@ public:
                     short *minRMS,
                     short *maxRMS,
                     int bufferSize );
-  short *rawFrames( int channel, quint64 beginning, quint64 duration, bool *interleaved );
+  short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
 
 Q_SIGNALS:
   void loadProgress( int );
@@ -354,8 +354,8 @@ private Q_SLOTS:
 private:
   SoundCache *_caches;
   double _fpu; // soundfile frames per cache unit
-  quint64 _dataOffset; // offset into soundfile of first frame cached (in frames)
-  int _dataSize; // amount of cache units
+  sf_count_t _dataOffset; // offset into soundfile of first frame cached (in frames)
+  sf_count_t _dataSize; // amount of cache units
   bool _ready;
   bool _loading;
   SoundCacheLoader *_loader;

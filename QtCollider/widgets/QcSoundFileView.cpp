@@ -659,11 +659,11 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   if( f_beg < _rangeBeg || f_beg + f_dur > _rangeEnd ) return;
 
   // data indexes
-  quint64 d_beg = floor(f_beg); // data beginning;
-  int d_count = ceil( f_beg + f_dur ) - d_beg; // data count;
+  quint64 i_beg = floor(f_beg); // data beginning;
+  int i_count = ceil( f_beg + f_dur ) - i_beg; // data count;
   bool haveOneMore;
   if( _rangeEnd - (f_beg + f_dur) >= 1 ) {
-    ++d_count;
+    ++i_count;
     haveOneMore = true;
   }
   else {
@@ -677,7 +677,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   if( _fpp > 1.0 ? (_fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
     qcDebugMsg( 1, QString("use file") );
     soundStream = &sfStream;
-    sfStream.load( sf, sfInfo, d_beg, d_count );
+    sfStream.load( sf, sfInfo, i_beg, i_count );
   }
   else {
     qcDebugMsg( 1, QString("use cache") );
@@ -763,27 +763,27 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
       // draw lines between actual values
 
       qreal ppf = 1.0 / _fpp;
-      qreal dx = (d_beg - f_beg) * ppf;
+      qreal dx = (i_beg - f_beg) * ppf;
 
       bool interleaved = false;
-      short *data = soundStream->rawFrames( ch, d_beg, d_count, &interleaved );
+      short *data = soundStream->rawFrames( ch, i_beg, i_count, &interleaved );
       //printf("got raw frames ok: %i\n", data != 0 );
       Q_ASSERT( data != 0 );
       int step = interleaved ? soundStream->channels() : 1;
 
       QPainterPath path;
 
-      if( d_count ) {
+      if( i_count ) {
         QPointF pt( dx, (qreal) *data );
         path.moveTo( pt );
       }
       int f; // frame
-      for( f = 1; f < d_count; ++f ) {
+      for( f = 1; f < i_count; ++f ) {
         data += step;
         QPointF pt( f * ppf + dx, (qreal) *data );
         path.lineTo( pt );
       }
-      if( d_count && !haveOneMore ) {
+      if( i_count && !haveOneMore ) {
         path.lineTo( QPointF( f * ppf + dx, (qreal)*data ) );
       }
 
@@ -800,7 +800,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 SoundFileStream::SoundFileStream() : _data(0), _dataSize(0), _dataOffset(0)
 {}
 
-SoundFileStream::SoundFileStream( SNDFILE *sf, const SF_INFO &info, double b, double d )
+SoundFileStream::SoundFileStream( SNDFILE *sf, const SF_INFO &info, sf_count_t b, sf_count_t d )
 : _data(0)
 {
   load( sf, info, b, d );
@@ -811,12 +811,12 @@ SoundFileStream::~SoundFileStream()
   delete[] _data;
 }
 
-void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, double b, double d )
+void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf_count_t dur )
 {
   delete[] _data;
 
-  _dataOffset = floor(b);
-  _dataSize = ceil(b + d) - _dataOffset;
+  _dataOffset = beg;
+  _dataSize = dur;
 
   _data = new short [_dataSize * info.channels];
   sf_seek( sf, _dataOffset, SEEK_SET);
@@ -828,17 +828,18 @@ void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, double b, double d
 }
 
 bool SoundFileStream::integrate
-( int ch, double off, double dur,
+( int ch, double f_beg, double f_dur,
   short *minBuffer, short *maxBuffer, float *sumBuf, float *sum2Buf, int bufferSize )
 {
   bool ok = _data != 0
             && ch < channels()
-            && ( off >= beginning() )
-            && ( off + dur <= beginning() + duration() );
+            && ( f_beg >= beginning() )
+            && ( f_beg + f_dur <= beginning() + duration() );
   if( !ok ) return false;
 
-  double fpu = dur / bufferSize;
-  double f_pos = off - beginning();
+  double fpu = f_dur / bufferSize;
+  double f_pos = f_beg - _dataOffset;
+  double f_pos_max = _dataSize;
 
   int i;
   for( i = 0; i < bufferSize; ++i ) {
@@ -847,12 +848,12 @@ bool SoundFileStream::integrate
     // increment position
 
     // slower, but error-proof:
-    // f_pos = (double)(i+1) / width() * dur + off;
+    // f_pos = (double)(i+1) / width() * f_dur + f_beg;
 
     // the following is a faster variant, but floating point operations are fallible,
     // so we need to make sure we stay within the constraints of f_dur;
     double f_pos1 = f_pos + fpu;
-    if( f_pos1 > dur ) f_pos1 = dur;
+    if( f_pos1 > f_pos_max ) f_pos1 = f_pos_max;
 
     int frame_count = ceil(f_pos1) - data_pos;
 
@@ -893,17 +894,18 @@ bool SoundFileStream::integrate
 }
 
 bool SoundFileStream::displayData
-( int ch, double off, double dur,
+( int ch, double f_beg, double f_dur,
   short *minBuffer, short *maxBuffer, short *minRMS, short *maxRMS, int bufferSize )
 {
   bool ok = _data != 0
             && ch < channels()
-            && ( off >= beginning() )
-            && ( off + dur <= beginning() + duration() );
+            && ( f_beg >= beginning() )
+            && ( f_beg + f_dur <= beginning() + duration() );
   if( !ok ) return false;
 
-  double fpu = dur / bufferSize;
-  double f_pos = off - beginning();
+  double fpu = f_dur / bufferSize;
+  double f_pos = f_beg - _dataOffset;
+  double f_pos_max = _dataSize;
 
   short min = SHRT_MAX;
   short max = SHRT_MIN;
@@ -914,12 +916,12 @@ bool SoundFileStream::displayData
     // increment position
 
     // slower, but error-proof:
-    // f_pos = (double)(i+1) / width() * dur + off;
+    // f_pos = (double)(i+1) / width() * f_dur + f_beg;
 
     // the following is a faster variant, but floating point operations are fallible,
     // so we need to make sure we stay within the constraints of f_dur;
     double f_pos1 = f_pos + fpu;
-    if( f_pos1 > dur ) f_pos1 = dur;
+    if( f_pos1 > f_pos_max ) f_pos1 = f_pos_max;
 
     int frame_count = ceil(f_pos1) - data_pos;
 
@@ -964,11 +966,11 @@ bool SoundFileStream::displayData
   return true;
 }
 
-short *SoundFileStream::rawFrames( int ch, quint64 b, quint64 d, bool *interleaved )
+short *SoundFileStream::rawFrames( int ch, sf_count_t b, sf_count_t d, bool *interleaved )
 {
   if( ch > channels() || b < _dataOffset || b + d > _dataOffset + _dataSize ) return 0;
   *interleaved = true;
-  int offset = (b - _dataOffset) * channels() + ch;
+  sf_count_t offset = (b - _dataOffset) * channels() + ch;
   return ( _data + offset );
 }
 
@@ -990,7 +992,7 @@ SoundCacheStream::SoundCacheStream()
   connect( _loader, SIGNAL(loadingDone()), this, SLOT(onLoadingDone()), Qt::QueuedConnection );
 }
 
-void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info, double beg, double dur,
+void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf_count_t dur,
                              int maxFramesPerUnit, int maxRawFrames )
 {
   Q_ASSERT( maxRawFrames > 0 && maxFramesPerUnit > 0 );
@@ -1005,26 +1007,22 @@ void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info, double beg, doubl
   delete [] _caches;
 
   _ch = info.channels;
-  _beg = beg;
+  _beg = _dataOffset = beg;
   _dur = dur;
 
-  // round beginning and duration to integral values
-  _dataOffset = floor(beg);
-  int frames = ceil(beg + dur) - _dataOffset;
-
   // adjust data size for data amount limit
-  if( frames <= maxRawFrames ) {
+  if( _dur <= maxRawFrames ) {
      // ok, not crossing the limit
-    _dataSize = frames;
+    _dataSize = _dur;
     _fpu = 1.0;
   }
   else {
     _dataSize = maxRawFrames;
-    _fpu = (double) frames / _dataSize;
+    _fpu = (double) _dur / _dataSize;
     // re-adjust for data resolution limit
     if( _fpu > maxFramesPerUnit ) {
-      _dataSize = (double) frames / maxFramesPerUnit;
-      _fpu = (double) frames / _dataSize;
+      _dataSize = (double) _dur / maxFramesPerUnit;
+      _fpu = (double) _dur / _dataSize;
     }
   }
 
@@ -1051,18 +1049,18 @@ SoundCacheStream::~SoundCacheStream()
 }
 
 bool SoundCacheStream::displayData
-( int ch, double off, double dur,
+( int ch, double f_beg, double f_dur,
   short *minBuffer, short *maxBuffer, short *minRMS, short *maxRMS, int bufferSize )
 {
   bool ok = _ready
             && ch < channels()
-            && ( off >= beginning() )
-            && ( off + dur <= beginning() + duration() )
-            && bufferSize <= dur * _fpu;
+            && ( f_beg >= beginning() )
+            && ( f_beg + f_dur <= beginning() + duration() )
+            && bufferSize <= f_dur * _fpu;
   if( !ok ) return false;
 
-  double ratio = dur / _fpu / bufferSize;
-  double cache_pos = (off - _dataOffset) / _fpu ;
+  double ratio = f_dur / _fpu / bufferSize;
+  double cache_pos = (f_beg - _dataOffset) / _fpu ;
 
   short min = SHRT_MAX;
   short max = SHRT_MIN;
@@ -1108,7 +1106,7 @@ bool SoundCacheStream::displayData
       ++f;
     }
 
-    double n = dur / bufferSize;
+    double n = f_dur / bufferSize;
     double avg = sum / n;
     double stdDev = sqrt( abs((sum2 - (sum*avg) ) / n) );
 
@@ -1125,7 +1123,7 @@ bool SoundCacheStream::displayData
   return true;
 }
 
-short *SoundCacheStream::rawFrames( int ch, quint64 b, quint64 d, bool *interleaved )
+short *SoundCacheStream::rawFrames( int ch, sf_count_t b, sf_count_t d, bool *interleaved )
 {
   if( !_ready || _fpu != 1.0 || ch > channels() ||
       b < _dataOffset || b + d > _dataOffset + _dataSize )
@@ -1182,7 +1180,10 @@ void SoundCacheLoader::run()
     double beg = i * fpu + offset;
     double dur = chunkSize * fpu;
 
-    SoundFileStream sfStream( _sf, _info, beg, dur );
+    sf_count_t i_beg = floor(beg);
+    sf_count_t i_dur = ceil(beg+dur) - i_beg;
+
+    SoundFileStream sfStream( _sf, _info, i_beg, i_dur );
 
     int ch;
     for( ch = 0; ch < channels; ++ch ) {
