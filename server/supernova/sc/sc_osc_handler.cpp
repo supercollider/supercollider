@@ -3508,9 +3508,6 @@ void handle_asynchronous_plugin_cleanup(World * world, void *cmdData,
 {
     if (cleanup)
         (cleanup)(world, cmdData);
-
-    if (cmdData)
-        nova::rt_pool.free(cmdData);
 }
 
 template <bool realtime>
