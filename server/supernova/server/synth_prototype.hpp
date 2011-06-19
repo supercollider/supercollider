@@ -25,73 +25,31 @@
 #include <boost/checked_delete.hpp>
 #include <boost/intrusive/unordered_set.hpp>
 
-#include "utilities/exists.hpp"
+#include "utilities/named_hash_entry.hpp"
 #include "utilities/utils.hpp"
 
-namespace nova
-{
+namespace nova {
 
 typedef boost::int16_t slot_index_t;
 typedef std::string slot_identifier_type;
 
-
-namespace detail
-{
+namespace detail {
 
 /** class to resolve alphanumeric string to slot id */
 class slot_resolver
 {
 protected:
     struct map_type:
-        public boost::intrusive::unordered_set_base_hook<>
+        public named_hash_entry
     {
         map_type(slot_identifier_type const & name, slot_index_t index):
-            name(name), index(index)
+            named_hash_entry(name), index(index)
         {}
 
-        friend std::size_t hash_value(map_type const & map)
-        {
-            return string_hash(map.name.c_str());
-        }
-
-        bool operator==(map_type const & rhs) const
-        {
-            return name == rhs.name;
-        }
-
-        std::string name;
         slot_index_t index;
     };
 
 private:
-    struct equal_string
-    {
-        bool operator()(const char * lhs, map_type const & rhs) const
-        {
-            const char * rhstr = rhs.name.c_str();
-
-            for(;;++lhs, ++rhstr)
-            {
-                if (*lhs == 0) {
-                    if (*rhstr == 0)
-                        return true;
-                    else
-                        return false;
-                }
-                if (*rhstr == 0)
-                    return false;
-            }
-        }
-    };
-
-    struct hash_string
-    {
-        std::size_t operator()(const char * str)
-        {
-            return string_hash(str);
-        }
-    };
-
     struct hash_value
     {
         hash_value(std::size_t v):
@@ -108,7 +66,7 @@ private:
 
     bool exists(const char * str) const
     {
-        return slot_resolver_map.find(str, hash_string(), equal_string()) != slot_resolver_map.end();
+        return slot_resolver_map.find(str, named_hash_hash(), named_hash_equal()) != slot_resolver_map.end();
     }
 
 protected:
@@ -143,8 +101,7 @@ public:
 
     slot_index_t resolve_slot(const char * str, std::size_t hashed_value) const
     {
-        slot_resolver_map_t::const_iterator it = slot_resolver_map.find(str, hash_value(hashed_value),
-                                                                        equal_string());
+        slot_resolver_map_t::const_iterator it = slot_resolver_map.find(str, hash_value(hashed_value), named_hash_equal());
         if (it == slot_resolver_map.end())
             return -1;
         else

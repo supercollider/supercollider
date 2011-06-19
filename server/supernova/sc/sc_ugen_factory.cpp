@@ -33,47 +33,6 @@
 namespace nova
 {
 
-namespace
-{
-
-struct equal_def
-{
-    template<typename def>
-    bool operator()(def const & lhs,
-                    std::string const & rhs) const
-    {
-        return lhs.name() == rhs;
-    }
-
-    template<typename def>
-    bool operator()(std::string const & lhs,
-                    def const & rhs) const
-    {
-        return lhs == rhs.name();
-    }
-};
-
-struct hash_def
-{
-    template<typename def>
-    std::size_t operator()(def const & arg)
-    {
-        return arg.hash();
-    }
-
-    std::size_t operator()(const char * str)
-    {
-        return string_hash(str);
-    }
-
-    std::size_t operator()(std::string const & str)
-    {
-        return string_hash(str.c_str());
-    }
-};
-
-}
-
 sc_ugen_factory * sc_factory;
 
 Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk)
@@ -165,7 +124,7 @@ bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func)
 
 UnitCmdFunc sc_ugen_def::find_command(const char * cmd_name)
 {
-    unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, hash_def(), equal_def());
+    unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, named_hash_hash(), named_hash_equal());
 
     if (it == unitcmd_set.end())
         return NULL;
@@ -244,7 +203,7 @@ void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
 
 BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
 {
-    bufgen_set_type::iterator it = bufgen_set.find(name, hash_def(), equal_def());
+    bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == bufgen_set.end()) {
         std::cerr << "unable to find buffer generator: " << name << std::endl;
         throw std::runtime_error("unable to create ugen");
@@ -254,7 +213,7 @@ BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
 
 sc_ugen_def * sc_ugen_factory::find_ugen(std::string const & name)
 {
-    ugen_set_type::iterator it = ugen_set.find(name, hash_def(), equal_def());
+    ugen_set_type::iterator it = ugen_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == ugen_set.end()) {
         std::cerr << "ugen not registered: " << name << std::endl;
         return 0;
@@ -273,7 +232,7 @@ bool sc_ugen_factory::register_ugen_command_function(const char * ugen_name, con
 
 bool sc_ugen_factory::register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data)
 {
-    cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, hash_def(), equal_def());
+    cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, named_hash_hash(), named_hash_equal());
     if (it != cmdplugin_set.end()) {
         std::cerr << "cmd plugin already registered: " << cmd_name << std::endl;
         return false;
@@ -287,7 +246,7 @@ bool sc_ugen_factory::register_cmd_plugin(const char * cmd_name, PlugInCmdFunc f
 
 bool sc_ugen_factory::run_cmd_plugin(const char * name, struct sc_msg_iter *args, void *replyAddr)
 {
-    cmdplugin_set_type::iterator it = cmdplugin_set.find(name, hash_def(), equal_def());
+    cmdplugin_set_type::iterator it = cmdplugin_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == cmdplugin_set.end()) {
         std::cerr << "unable to find cmd plugin: " << name << std::endl;
         return false;

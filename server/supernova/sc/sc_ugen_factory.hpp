@@ -30,55 +30,24 @@
 #include "SC_InterfaceTable.h"
 #include "SC_Unit.h"
 
+#include "utilities/named_hash_entry.hpp"
+
 namespace nova
 {
 namespace bi = boost::intrusive;
 
-class sc_plugin_definition:
-    public bi::unordered_set_base_hook<>
-{
-    const std::string name_;
-
-public:
-    sc_plugin_definition(const char * name):
-        name_(name)
-    {}
-
-    std::string const & name(void) const
-    {
-        return name_;
-    }
-
-    friend std::size_t hash_value(sc_plugin_definition const & that)
-    {
-        return string_hash(that.name().c_str());
-    }
-
-    std::size_t hash(void) const
-    {
-        return hash_value(*this);
-    }
-
-    friend bool operator== (sc_plugin_definition const & a,
-                            sc_plugin_definition const & b)
-    {
-        return a.name_ == b.name_;
-    }
-};
-
 struct sc_unitcmd_def:
-    public sc_plugin_definition
+    public named_hash_entry
 {
     const UnitCmdFunc func;
 
     sc_unitcmd_def(const char * cmd_name, UnitCmdFunc func):
-        sc_plugin_definition(cmd_name), func(func)
+        named_hash_entry(cmd_name), func(func)
     {}
 };
 
-
 class sc_ugen_def:
-    public sc_plugin_definition
+    public named_hash_entry
 {
 private:
     const size_t alloc_size;
@@ -99,7 +68,7 @@ private:
 public:
     sc_ugen_def(const char *inUnitClassName, size_t inAllocSize,
                 UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags):
-        sc_plugin_definition(inUnitClassName), alloc_size(inAllocSize), ctor(inCtor), dtor(inDtor), flags(inFlags),
+        named_hash_entry(inUnitClassName), alloc_size(inAllocSize), ctor(inCtor), dtor(inDtor), flags(inFlags),
         unitcmd_set(unitcmd_set_type::bucket_traits(unitcmd_set_buckets, unitcmd_set_bucket_count))
     {}
 
@@ -131,23 +100,23 @@ public:
 };
 
 struct sc_bufgen_def:
-    public sc_plugin_definition
+    public named_hash_entry
 {
     const BufGenFunc func;
 
     sc_bufgen_def(const char * name, BufGenFunc func):
-        sc_plugin_definition(name), func(func)
+        named_hash_entry(name), func(func)
     {}
 };
 
 struct sc_cmdplugin_def:
-    public sc_plugin_definition
+    public named_hash_entry
 {
     const PlugInCmdFunc func;
     void * user_data;
 
     sc_cmdplugin_def(const char * name, PlugInCmdFunc func, void * user_data):
-        sc_plugin_definition(name), func(func), user_data(user_data)
+        named_hash_entry(name), func(func), user_data(user_data)
     {}
 
     void run(World * world, struct sc_msg_iter *args, void *replyAddr)
