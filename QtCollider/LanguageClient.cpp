@@ -23,8 +23,9 @@
 #include "QcApplication.h"
 #include "QtCollider.h"
 
-#include <QDateTime>
 #include <qmath.h>
+
+extern double elapsedTime();
 
 using namespace QtCollider;
 
@@ -60,8 +61,8 @@ void LangClient::doSchedule()
   unlock();
 
   if( next ) {
+    t -= elapsedTime();
     t *= 1000;
-    t -= QDateTime::currentMSecsSinceEpoch();
     int ti = qMax(0,qCeil(t));
     qcDebugMsg(2, QString("next at %1").arg(ti) );
     appClockTimer.start( ti, this );
