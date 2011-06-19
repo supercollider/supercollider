@@ -239,8 +239,7 @@ void sc_synth::apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, st
     Unit * unit = units[unit_index];
     sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
 
-    UnitCmdFunc func = def->find_command(unit_cmd);
-    (func)(unit, args);
+    def->run_unit_command(unit_cmd, unit, args);
 }
 
 
