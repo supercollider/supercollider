@@ -51,16 +51,15 @@ QSoundFileView : QView {
 
   //// Info
 
-  startFrame { ^0 }
+  startFrame { ^this.getProperty( \startFrame ); }
 
   numFrames { ^this.getProperty( \frames ); }
+
+  scrollPos { ^this.getProperty( \scrollPos ); }
 
   viewFrames { ^this.getProperty( \viewFrames ); }
 
   readProgress { ^this.getProperty( \readProgress ); }
-
-  scrollPos { ^this.getProperty( \scrollPos ); }
-
 
   //// Navigation
 
@@ -80,7 +79,10 @@ QSoundFileView : QView {
     this.setProperty( \scrollPos, frame );
   }
 
-  scroll { arg amount; this.scrollTo( this.scrollPos + amount ); }
+  scroll { arg amount; // a fraction of visible frames to move by
+    var pos = this.viewFrames * amount + this.scrollPos;
+    this.setProperty( \scrollPos, pos );
+  }
 
   scrollToStart { this.invokeMethod( \scrollToStart ); }
 

@@ -82,6 +82,7 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_OBJECT
 
   Q_PROPERTY( float readProgress READ loadProgress );
+  Q_PROPERTY( int startFrame READ startFrame );
   Q_PROPERTY( int frames READ frames );
   Q_PROPERTY( double viewFrames READ viewFrames );
   Q_PROPERTY( double scrollPos READ scrollPos WRITE scrollTo );
@@ -118,6 +119,7 @@ public:
   // NOTE: Using int instead of sf_count_t for accessibility from SC language.
   Q_INVOKABLE void load( const QString& filename, int beginning, int duration );
   float loadProgress();
+  sf_count_t startFrame() { return _rangeBeg; }
   sf_count_t frames() { return _rangeDur; }
   double viewFrames() { return _dur; }
   double scrollPos() { return _beg; }
