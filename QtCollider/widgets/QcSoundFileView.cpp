@@ -237,12 +237,12 @@ float QcWaveform::loadProgress()
 float QcWaveform::zoom()
 {
   // NOTE We have limited _rangeDur to 1 minimum.
-  return (double) _dur / _rangeDur;
+  return _dur / _rangeDur;
 }
 
 float QcWaveform::xZoom()
 {
-  return ( sfInfo.samplerate ? (double) _dur / sfInfo.samplerate : 0 );
+  return ( sfInfo.samplerate ? _dur / sfInfo.samplerate : 0 );
 }
 
 float QcWaveform::yZoom()
@@ -374,13 +374,13 @@ void QcWaveform::zoomAllOut()
   redraw();
 }
 
-void QcWaveform::scrollTo( sf_count_t startFrame )
+void QcWaveform::scrollTo( double startFrame )
 {
-  _beg = qBound( _rangeBeg, startFrame, _rangeEnd - _dur );
+  _beg = qBound( (double)_rangeBeg, startFrame, _rangeEnd - _dur );
   redraw();
 }
 
-void QcWaveform::scrollBy( sf_count_t f )
+void QcWaveform::scrollBy( double f )
 {
   scrollTo( _beg + f );
 }
@@ -418,7 +418,7 @@ void QcWaveform::zoomSelection( int i )
     return;
 
   _beg = qMax( s.start, _rangeBeg );
-  sf_count_t end = qMin( s.start + s.size, _rangeEnd );
+  double end = qMin( s.start + s.size, _rangeEnd );
   _dur = end - _beg;
 
   // clear the selection
@@ -576,10 +576,11 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
     if( mods & Qt::ShiftModifier ) {
       _dragAction = Zoom;
       _dragData = zoom();
+      _dragData2 = ev->pos().x() * _fpp + _beg;
     }
     else {
       _dragAction = Scroll;
-      _dragFrame = _beg;
+      _dragData = _beg;
     }
 
   }
@@ -595,13 +596,13 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
 {
   if( _dragAction == Scroll ) {
     double dpos = _dragPoint.x() - ev->pos().x();
-    scrollTo( dpos * _fpp + _dragFrame );
+    scrollTo( dpos * _fpp + _dragData );
   }
   else if( _dragAction == Zoom ) {
     double factor = pow( 2, (ev->pos().y() - _dragPoint.y()) * 0.008 );
     double zoom_0 = _dragData;
     zoomTo( zoom_0 * factor );
-    scrollTo( _dragFrame - (_dragPoint.x() * _fpp) );
+    scrollTo( _dragData2 - (_dragPoint.x() * _fpp) );
   }
   else if( _dragAction == Select ) {
     sf_count_t frame = qBound( 0, ev->pos().x(), width() ) * _fpp + _beg;
@@ -645,7 +646,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   sf_count_t i_beg = floor(f_beg); // data beginning;
   sf_count_t i_count = ceil( f_beg + f_dur ) - i_beg; // data count;
   bool haveOneMore;
-  if( _rangeEnd - (f_beg + f_dur) >= 1 ) {
+  if( i_beg + i_count < _rangeEnd ) {
     ++i_count;
     haveOneMore = true;
   }
