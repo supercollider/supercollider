@@ -71,6 +71,12 @@ public:
             input_specs(in_specs), output_specs(out_specs)
         {}
 
+#ifdef BOOST_HAS_RVALUE_REFS
+        unit_spec_t(unit_spec_t && rhs):
+            name(std::move(rhs.name)), rate(rhs.rate), special_index(rhs.special_index),
+            input_specs(std::move(rhs.input_specs)), output_specs(std::move(rhs.output_specs))
+        {}
+#endif
         string name;
         int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
         int16_t special_index;
@@ -98,6 +104,14 @@ public:
     typedef std::vector<int32_t, aligned_allocator<int32_t> > calc_units_t;
 
     explicit sc_synthdef(const char *& buffer);
+
+#ifdef BOOST_HAS_RVALUE_REFS
+    sc_synthdef(sc_synthdef && rhs):
+        name_(std::move(rhs.name_)), constants(std::move(rhs.constants)), parameters(std::move(rhs.parameters)),
+        parameter_map(std::move(rhs.parameter_map)), graph(std::move(rhs.graph)), buffer_count(rhs.buffer_count),
+        calc_unit_indices(std::move(rhs.calc_unit_indices)), memory_requirement_(rhs.memory_requirement_)
+    {}
+#endif
 
     string dump(void) const;
 

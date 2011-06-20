@@ -183,16 +183,25 @@ void set_plugin_paths(void)
 #endif
 }
 
+void load_synthdefs(nova_server & server, path const & folder)
+{
+#ifdef BOOST_HAS_RVALUE_REFS
+    register_synthdefs(server, std::move(sc_read_synthdefs_dir(folder)));
+#else
+    register_synthdefs(server, sc_read_synthdefs_dir(folder));
+#endif
+}
+
 void load_synthdefs(nova_server & server, server_arguments const & args)
 {
     if (args.load_synthdefs) {
         path home = resolve_home();
 
 #ifdef __linux__
-        register_synthdefs(server, sc_read_synthdefs_dir(home / "share/SuperCollider/synthdefs/"));
+        load_synthdefs(server, home / "share/SuperCollider/synthdefs/");
 #elif defined(__APPLE__)
-        register_synthdefs(server, sc_read_synthdefs_dir(home / "Library/Application Support/SuperCollider/synthdefs/"));
-        register_synthdefs(server, sc_read_synthdefs_dir("Library/Application Support/SuperCollider/synthdefs/"));
+        load_synthdefs(server, home / "Library/Application Support/SuperCollider/synthdefs/");
+        load_synthdefs(server, "/Library/Application Support/SuperCollider/synthdefs/");
 #else
         cerr << "Don't know how to locate synthdefs on this platform. Please load them dynamically."
 #endif

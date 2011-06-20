@@ -143,16 +143,14 @@ sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer)
     int16 outputs = read_int16(buffer);
     special_index = read_int16(buffer);
 
-    for (int i = 0; i != inputs; ++i)
-    {
+    for (int i = 0; i != inputs; ++i) {
         int16_t source = read_int16(buffer);
         int16_t index = read_int16(buffer);
         input_spec spec(source, index);
         input_specs.push_back(spec);
     }
 
-    for (int i = 0; i != outputs; ++i)
-    {
+    for (int i = 0; i != outputs; ++i) {
         char rate = read_int8(buffer);
         output_specs.push_back(rate);
     }
