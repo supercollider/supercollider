@@ -11,6 +11,12 @@ simple_pool<false> rt_pool;
 
 using namespace nova;
 
+#ifdef BOOST_HAS_RVALUE_REFS
+using std::move;
+#else
+using boost::move;
+#endif
+
 BOOST_AUTO_TEST_CASE( sized_array_test_1 )
 {
     sized_array<int> array(5);
@@ -34,14 +40,14 @@ BOOST_AUTO_TEST_CASE( sized_array_test_1 )
 
     // move assignment
     sized_array<int> array3(0);
-    boost::move(&array, &array+1, &array3);
+    move(&array, &array+1, &array3);
     BOOST_REQUIRE_EQUAL( array3.size(), 5u );
     BOOST_REQUIRE_EQUAL( array3[1], 3 );
     BOOST_REQUIRE_EQUAL( array3[0], -1 );
     BOOST_REQUIRE_EQUAL( array.size(), 0u );
 
     // move assignment
-    sized_array<int> array4(boost::move(array3));
+    sized_array<int> array4(move(array3));
     BOOST_REQUIRE_EQUAL( array4.size(), 5u );
     BOOST_REQUIRE_EQUAL( array4[1], 3 );
     BOOST_REQUIRE_EQUAL( array4[0], -1 );
