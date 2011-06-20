@@ -238,7 +238,7 @@ HelpBrowser {
 
 	openTextFile {|path|
 		var win, winRect, txt, file, fonts;
-		path = path.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
+		path = path.replace("%20"," ").findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
 		if(Document.implementationClass.notNil) {
 			^Document.open(path);
 		};
