@@ -181,6 +181,13 @@ public:
         typedef aligned_allocator<U> other;
     };
 
+    aligned_allocator(void)
+    {}
+
+    template <class U>
+    aligned_allocator(aligned_allocator<U> const & rhs)
+    {}
+
     pointer address(reference x) const
     {
         return &x;

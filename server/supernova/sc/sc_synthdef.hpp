@@ -26,6 +26,9 @@
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/path.hpp>
 
+#include "utilities/malloc_aligned.hpp"
+
+
 #include "SC_Types.h"
 #include "SC_Wire.h"
 
@@ -35,14 +38,16 @@ namespace nova
 class sc_synthdef
 {
     typedef std::string string;
-    typedef std::vector<float> fvector;
-    typedef std::vector<string> svector;
+    typedef std::vector<float, aligned_allocator<float> > fvector;
+    typedef std::vector<string, aligned_allocator<string> > svector;
 
     typedef boost::int16_t int16;
     typedef boost::int32_t int32;
 
+    typedef std::vector<char, aligned_allocator<char> > char_vector;
+
 public:
-    typedef std::map<string, int> parameter_map_t;
+    typedef std::map<string, int, std::less<string>, aligned_allocator<int> > parameter_map_t;
 
     struct input_spec
     {
@@ -53,14 +58,15 @@ public:
         int16_t source;   /* index of ugen or -1 for constant */
         int16_t index;    /* number of output or constant index */
     };
+    typedef std::vector<input_spec, aligned_allocator<struct input_spec> > input_spec_vector;
 
     struct unit_spec_t
     {
         explicit unit_spec_t(const char *& buffer);
 
         unit_spec_t(string const & name, int16_t rate, int16_t special_index,
-                    std::vector<input_spec> const & in_specs,
-                    std::vector<char> const & out_specs):
+                    input_spec_vector const & in_specs,
+                    char_vector const & out_specs):
             name(name), rate(rate), special_index(special_index),
             input_specs(in_specs), output_specs(out_specs)
         {}
@@ -69,9 +75,9 @@ public:
         int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
         int16_t special_index;
 
-        std::vector<input_spec> input_specs;
-        std::vector<char> output_specs;      /* calculation rates */
-        std::vector<int16_t> buffer_mapping;
+        input_spec_vector input_specs;
+        char_vector output_specs;      /* calculation rates */
+        std::vector<int16_t, aligned_allocator<int16_t> > buffer_mapping;
 
         std::size_t memory_requirement(void)
         {
@@ -88,8 +94,8 @@ public:
     friend class sc_ugen_factory;
     friend class sc_ugen_def;
 
-    typedef std::vector<unit_spec_t> graph_t;
-    typedef std::vector<int32_t> calc_units_t;
+    typedef std::vector<unit_spec_t, aligned_allocator<unit_spec_t> > graph_t;
+    typedef std::vector<int32_t, aligned_allocator<int32_t> > calc_units_t;
 
     explicit sc_synthdef(const char *& buffer);
 
