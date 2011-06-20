@@ -52,6 +52,7 @@ struct sc_unitcmd_def:
 };
 
 class sc_ugen_def:
+    public aligned_class,
     public named_hash_entry
 {
 private:

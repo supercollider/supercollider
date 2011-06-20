@@ -25,6 +25,7 @@
 #include <boost/checked_delete.hpp>
 #include <boost/intrusive/unordered_set.hpp>
 
+#include "utilities/aligned_class.hpp"
 #include "utilities/named_hash_entry.hpp"
 #include "utilities/utils.hpp"
 
@@ -140,6 +141,7 @@ struct synth_prototype_deleter
  *
  * */
 class synth_prototype:
+    public aligned_class,
     public named_hash_entry,
     public intrusive_refcountable<>,
     public detail::slot_resolver
