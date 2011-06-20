@@ -3000,6 +3000,17 @@ void PyrBinopCallNode::compileCall(PyrSlot *result)
 				compileOpcode(opSendSpecialMsg, numArgs);
 				compileByte(index);
 				break;
+			case selUnary :
+					COMPILENODE(arg1, &dummy, false);
+					COMPILENODE(arg2, &dummy, false);
+					if (arg3)
+						COMPILENODE(arg3, &dummy, false);
+					compileTail();
+					if (arg3)
+						compileOpcode(opSpecialOpcode, opcDrop); // drop third argument
+					compileOpcode(opSpecialOpcode, opcDrop);     // drop second argument
+					compileOpcode(opSendSpecialUnaryArithMsg, index);
+				break;
 			case selBinary :
 				if (arg3) {
 					COMPILENODE(arg1, &dummy, false);
