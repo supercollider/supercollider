@@ -46,6 +46,8 @@ PURE inline bool strequal(const char * lhs, const char * rhs)
         }
         if (*rhs == 0)
             return false;
+        if (*lhs != *rhs)
+            return false;
     }
 }
 
