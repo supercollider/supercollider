@@ -214,7 +214,7 @@ Process {
 		Archive.write;
 	}
 	tick { // called repeatedly by SCVirtualMachine::doPeriodicTask
-		AppClock.tick;
+		^AppClock.tick;
 	}
 
 	*tailCallOptimize { _GetTailCallOptimize }
