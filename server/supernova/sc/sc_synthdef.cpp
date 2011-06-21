@@ -283,7 +283,7 @@ void sc_synthdef::prepare(void)
         {
             /* we cannot prepare the synthdef, if the ugens are not installed */
             boost::format frmt("Cannot load synth %1%: Unit generator %2% not installed");
-            frmt % name_ % spec.name;
+            frmt % name_.c_str() % spec.name.c_str();
 
             throw std::runtime_error(frmt.str());
         }
@@ -341,7 +341,7 @@ std::string sc_synthdef::dump(void) const
 
     stringstream stream;
 
-    stream << "name " << name() << endl;
+    stream << "name " << name().c_str() << endl;
 
     stream << "constant: " << endl;
     for (uint i = 0; i != constants.size(); ++i)
@@ -354,11 +354,11 @@ std::string sc_synthdef::dump(void) const
     stream << "parameter names: " << endl;
     for (parameter_map_t::const_iterator it = parameter_map.begin();
          it != parameter_map.end(); ++it)
-        stream << "\t" << it->first << " " << it->second << endl;
+        stream << "\t" << it->first.c_str() << " " << it->second << endl;
 
     stream << "ugens: " << endl;
     for (uint i = 0; i != graph.size(); ++i) {
-        stream << "\t" << graph[i].name << ": rate " << graph[i].rate
+        stream << "\t" << graph[i].name.c_str() << ": rate " << graph[i].rate
                << endl;
         stream << "\tinputs:" << endl;
         for (uint j = 0; j != graph[i].input_specs.size(); ++j) {
