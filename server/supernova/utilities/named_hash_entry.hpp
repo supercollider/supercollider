@@ -24,10 +24,16 @@
 
 #include "utils.hpp"
 
+#ifdef __GNUC__
+#define PURE __attribute__((pure))
+#else
+#define PURE /*__attribute__((pure))*/
+#endif
+
 namespace nova   {
 namespace bi = boost::intrusive;
 
-inline bool strequal(const char * lhs, const char * rhs)
+PURE inline bool strequal(const char * lhs, const char * rhs)
 {
     for(;;++lhs, ++rhs) {
         if (*lhs == 0) {
@@ -184,4 +190,5 @@ struct named_hash_hash
 
 }
 
+#undef PURE
 #endif /* UTILITIES_NAMED_HASH_ENTRY_HPP */
