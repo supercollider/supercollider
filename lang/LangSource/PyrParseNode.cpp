@@ -3438,7 +3438,8 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop)
 						compileByte(index & 255);
 					} else {
 						compileByte(opStoreClassVar);
-						compileByte(vindex);
+						assert(false);
+						compileByte(vindex); // FIXME: vindex is not initalized!!!!
 						compileByte(index);
 						compileByte((opSpecialOpcode<<4) | opcDrop);
 					}
