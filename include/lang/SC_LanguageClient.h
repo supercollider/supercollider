@@ -132,6 +132,10 @@ public:
 	// AppClock driver
 	//    to be called from client mainloop.
 	void tick();
+	// AppClock driver. WARNING: Must be called locked!
+	// Returns whether there is anything scheduled,
+	// and writes the scheduled absolute time, if any, into nextTime.
+	bool tickLocked( double * nextTime );
 
 protected:
 	// language notifications, subclasses can override

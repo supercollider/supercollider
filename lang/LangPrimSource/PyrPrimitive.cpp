@@ -3388,7 +3388,11 @@ int prOverwriteMsg(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
+int prAppClockSchedNotify(struct VMGlobals *g, int numArgsPushed)
+{
+	//NOTE: the _AppClock_SchedNotify primitive shall be redefined by language clients
+	// if they wish to respond to AppClock scheduling notifications
+}
 
 #define PRIMGROWSIZE 480
 PrimitiveTable gPrimitiveTable;
@@ -3942,6 +3946,8 @@ void initPrimitives()
 	definePrimitive(base, index++, "_Blork", prBlork, 1, 0);
 	definePrimitive(base, index++, "_UGenCodeString", prUGenCodeString, 5, 0);
 	definePrimitive(base, index++, "_MainOverwriteMsg", prOverwriteMsg, 1, 0);
+
+	definePrimitive(base, index++, "_AppClock_SchedNotify", prAppClockSchedNotify, 1, 0);
 
 	//void initOscilPrimitives();
 	//void initControllerPrimitives();

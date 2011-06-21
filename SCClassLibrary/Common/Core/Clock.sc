@@ -47,12 +47,17 @@ AppClock : Clock {
 		scheduler.sched(delta, item)
 	}
 	*tick {
+		var nextTime;
 		var saveClock = thisThread.clock;
 		thisThread.clock = this;
-		scheduler.seconds = Main.elapsedTime;
+		nextTime = (scheduler.seconds = Main.elapsedTime);
 		thisThread.clock = saveClock;
+		^nextTime;
 	}
-
+	*prSchedNotify {
+		// notify clients that something has been scheduled
+		_AppClock_SchedNotify
+	}
 }
 
 Scheduler {
@@ -79,6 +84,7 @@ Scheduler {
 		if (delta.notNil, {
 			fromTime = if (drift, { Main.elapsedTime },{ seconds });
 			queue.put(fromTime + delta, item);
+			clock.prSchedNotify;
 		});
 	}
 	clear { // adc: priorityqueue has no pairsDo method, array has
@@ -95,19 +101,27 @@ Scheduler {
 	}
 
 	seconds_ { | newSeconds  |
-		var delta, item;
+		// NOTE: first pop ALL the expired items and only then wake
+		// them up, because we want control to return to the caller
+		// before any tasks scheduled as a result of this call are
+		// performed.
+		var delta, items;
+		items = Array.new(8);
 		while ({
 			seconds = queue.topPriority;
 			seconds.notNil and: { seconds <= newSeconds }
 		},{
-			item = queue.pop;
+			items = items.add( queue.pop );
+		});
+		items.do { | item |
 			delta = item.awake( beats, seconds, clock );
 			if (delta.isNumber, {
 				this.sched(delta, item);
 			});
-		});
+		};
 		seconds = newSeconds;
 		beats = clock.secs2beats(newSeconds);
+		^queue.topPriority;
 	}
 }
 
