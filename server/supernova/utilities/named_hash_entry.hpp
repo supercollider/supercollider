@@ -76,6 +76,10 @@ private:
             str(str), hash(string_hash(str))
         {}
 
+        explicit symbol_data(const char * str, size_t hash):
+            str(str), hash(hash)
+        {}
+
         symbol_data(symbol_data const & rhs):
             str(rhs.str), hash(rhs.hash)
         {}
@@ -176,8 +180,16 @@ public:
     }
 
 public:
+    c_string ():
+        data(NULL, 0)
+    {}
+
     explicit c_string (const char * str):
         data(lookup_string(str))
+    {}
+
+    c_string (std::string const & str):
+        data(lookup_string(str.c_str(), str.size()))
     {}
 
     c_string (const char * str, std::size_t length):
@@ -204,6 +216,14 @@ public:
         return lhs.data == rhs.data;
     }
 
+    friend bool operator< (c_string const & lhs,
+                            c_string const & rhs)
+    {
+        return lhs.data.str < rhs.data.str;
+    }
+
+
+
     symbol_data data;
 };
 
@@ -214,6 +234,10 @@ class named_hash_entry:
 
 public:
     named_hash_entry(const char * name):
+        name_(name)
+    {}
+
+    named_hash_entry(c_string const & name):
         name_(name)
     {}
 
@@ -260,6 +284,20 @@ struct named_hash_equal
     }
 
     template<typename def>
+    bool operator()(def const & lhs,
+                    c_string const & rhs) const
+    {
+        return operator()(lhs.name(), rhs.c_str());
+    }
+
+    template<typename def>
+    bool operator()(c_string const & lhs,
+                    def const & rhs) const
+    {
+        return operator()(lhs.c_str(), rhs.name());
+    }
+
+    template<typename def>
     bool operator()(const char * lhs, def const & rhs) const
     {
         return operator()(lhs, rhs.name());
@@ -282,7 +320,7 @@ struct named_hash_hash
     template<typename def>
     std::size_t operator()(def const & arg)
     {
-        return arg.hash();
+        return hash_value(arg);
     }
 
     std::size_t operator()(const char * str)

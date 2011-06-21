@@ -13,7 +13,7 @@ struct test_synth_prototype:
     public synth_prototype
 {
     test_synth_prototype():
-        synth_prototype("foo")
+        synth_prototype(c_string("foo"))
     {}
 
     abstract_synth * create_instance(int node_id)

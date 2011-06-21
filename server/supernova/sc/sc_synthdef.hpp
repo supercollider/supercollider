@@ -27,6 +27,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include "utilities/malloc_aligned.hpp"
+#include "utilities/named_hash_entry.hpp"
 
 
 #include "SC_Types.h"
@@ -37,9 +38,9 @@ namespace nova
 
 class sc_synthdef
 {
-    typedef std::string string;
+    typedef c_string string;
     typedef std::vector<float, aligned_allocator<float> > fvector;
-    typedef std::vector<string, aligned_allocator<string> > svector;
+    typedef std::vector<c_string, aligned_allocator<string> > svector;
 
     typedef boost::int16_t int16;
     typedef boost::int32_t int32;
@@ -113,7 +114,7 @@ public:
     {}
 #endif
 
-    string dump(void) const;
+    std::string dump(void) const;
 
     string const & name(void) const
     {
