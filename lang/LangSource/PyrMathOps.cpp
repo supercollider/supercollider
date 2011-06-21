@@ -22,10 +22,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef __APPLE__
-double log2(double x);
-#endif
-
 #include "Opcodes.h"
 #include "PyrInterpreter.h"
 #include "PyrPrimitive.h"
@@ -85,7 +81,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opOctCPS : SetFloat(a, sc_octcps((double)slotRawInt(a))); break;
 				case opCPSOct : SetFloat(a, sc_cpsoct((double)slotRawInt(a))); break;
 				case opLog : SetFloat(a, log((double)slotRawInt(a))); break;
-				case opLog2 : SetFloat(a, log2((double)slotRawInt(a))); break;
+				case opLog2 : SetFloat(a, sc_log2((double)slotRawInt(a))); break;
 				case opLog10 : SetFloat(a, log10((double)slotRawInt(a))); break;
 				case opSin : SetFloat(a, sin((double)slotRawInt(a))); break;
 				case opCos : SetFloat(a, cos((double)slotRawInt(a))); break;
@@ -245,7 +241,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opOctCPS : SetRaw(a, sc_octcps(slotRawFloat(a))); break;
 				case opCPSOct : SetRaw(a, sc_cpsoct(slotRawFloat(a))); break;
 				case opLog : SetRaw(a, log(slotRawFloat(a))); break;
-				case opLog2 : SetRaw(a, log2(slotRawFloat(a))); break;
+				case opLog2 : SetRaw(a, sc_log2(slotRawFloat(a))); break;
 				case opLog10 : SetRaw(a, log10(slotRawFloat(a))); break;
 				case opSin : SetRaw(a, sin(slotRawFloat(a))); break;
 				case opCos : SetRaw(a, cos(slotRawFloat(a))); break;
