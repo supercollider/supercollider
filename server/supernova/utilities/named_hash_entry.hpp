@@ -21,8 +21,10 @@
 #include <string>
 
 #include <boost/intrusive/unordered_set_hook.hpp>
+#include <boost/unordered_set.hpp>
 
 #include "utils.hpp"
+#include "nova-tt/nova-tt/rw_mutex.hpp"
 
 #ifdef __GNUC__
 #define PURE __attribute__((pure))
@@ -50,13 +52,6 @@ PURE inline bool strequal(const char * lhs, const char * rhs)
 struct c_string
 {
 private:
-    const char * str_;
-
-    static const char * duplicate_string(const char * str)
-    {
-        return duplicate_string(str, strlen(str));
-    }
-
     static const char * duplicate_string(const char * str, std::size_t length)
     {
         assert(strlen(str) == length);
@@ -68,35 +63,132 @@ private:
         return string;
     }
 
+    static const char * duplicate_string(const char * str)
+    {
+        return duplicate_string(str, strlen(str));
+    }
+
+    struct symbol_data
+    {
+        explicit symbol_data(const char * str):
+            str(str), hash(string_hash(str))
+        {}
+
+        symbol_data(symbol_data const & rhs):
+            str(rhs.str), hash(rhs.hash)
+        {}
+
+        friend size_t hash_value(symbol_data const & value)
+        {
+            return value.hash;
+        }
+
+        bool operator==(symbol_data const & rhs) const
+        {
+            return str == rhs.str;
+        }
+
+        const char * str;
+        size_t hash;
+    };
+
+    struct hash_by_string
+    {
+        size_t operator()(const char * str) const
+        {
+            return string_hash(str);
+        }
+        size_t operator()(symbol_data const & data) const
+        {
+            return data.hash;
+        }
+    };
+
+    struct equal_by_string
+    {
+        static const char * get_string(const char * arg)
+        {
+            return arg;
+        }
+
+        static const char * get_string(symbol_data const & arg)
+        {
+            return arg.str;
+        }
+
+        template <typename T1, typename T2>
+        bool operator()(T1 const & lhs, T2 const & rhs) const
+        {
+            return strequal(get_string(lhs), get_string(rhs));
+        }
+    };
+
+    struct symbol_table
+    {
+        typedef boost::unordered_set<symbol_data> table_type;
+        typedef std::pair<table_type::const_iterator, bool> lookup_result_type;
+
+public:
+        symbol_table(void):
+            table(16384)
+        {}
+
+        symbol_data const & find(const char * str, size_t strlen)
+        {
+            table_type::iterator it = table.find(str, hash_by_string(), equal_by_string());
+            if (it != table.end())
+                return *it;
+
+            std::pair<table_type::iterator, bool> inserted = table.insert(symbol_data(duplicate_string(str, strlen)));
+            assert(inserted.second);
+            return *inserted.first;
+        }
+
+    private:
+        table_type table;
+    };
+
+    symbol_data lookup_string(const char * str, std::size_t length)
+    {
+        static symbol_table table;
+        return table.find(str, length);
+    }
+
+    symbol_data lookup_string(const char * str)
+    {
+        return lookup_string(str, strlen(str));
+    }
+
 public:
     explicit c_string (const char * str):
-        str_(duplicate_string(str))
+        data(lookup_string(str))
     {}
 
     c_string (const char * str, std::size_t length):
-        str_(duplicate_string(str, length))
+        data(lookup_string(str, length))
     {}
 
-    ~c_string (void)
-    {
-        free_aligned((void*)str_);
-    }
+    c_string (c_string const & rhs):
+        data(rhs.data)
+    {}
 
     const char * c_str(void) const
     {
-        return str_;
+        return data.str;
     }
 
     friend std::size_t hash_value(c_string const & value)
     {
-        return string_hash(value.str_);
+        return value.data.hash;
     }
 
     friend bool operator== (c_string const & lhs,
                             c_string const & rhs)
     {
-        return strequal(lhs.str_, rhs.str_);
+        return lhs.data == rhs.data;
     }
+
+    symbol_data data;
 };
 
 class named_hash_entry:
@@ -120,12 +212,12 @@ public:
 
     friend std::size_t hash_value(named_hash_entry const & that)
     {
-        return hash_value(that.name_);
+        return that.hash();
     }
 
     std::size_t hash(void) const
     {
-        return hash_value(*this);
+        return name_.data.hash;
     }
 
     friend bool operator== (named_hash_entry const & a,
