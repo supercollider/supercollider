@@ -244,6 +244,11 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	if (SC_OX)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 	endif()
+
+	# disable warnings
+	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
+	add_definitions(-diag-disable 279) # controlling expression is constant
+
 endif()
 
 if (SC_MEMORY_DEBUGGING)
