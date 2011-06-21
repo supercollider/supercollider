@@ -101,6 +101,10 @@ if (${CMAKE_CXX_COMPILER} MATCHES icpc)
 	add_definitions(-simd)
 endif()
 
+if (${CMAKE_CXX_COMPILER} MATCHES clang)
+	set(CMAKE_COMPILER_IS_CLANG 1)
+endif()
+
 if(APPLE)
 	set_property(DIRECTORY
 		APPEND
@@ -205,7 +209,7 @@ option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying
 
 #############################################
 # some preprocessor flags
-if (CMAKE_COMPILER_IS_GNUCXX)
+if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if (SSE)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse -mfpmath=sse")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
