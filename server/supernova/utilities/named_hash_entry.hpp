@@ -123,7 +123,7 @@ private:
         }
     };
 
-    struct symbol_table
+    class symbol_table
     {
         typedef boost::unordered_set<symbol_data> table_type;
         typedef std::pair<table_type::const_iterator, bool> lookup_result_type;
@@ -135,9 +135,16 @@ public:
 
         symbol_data const & find(const char * str, size_t strlen)
         {
-            table_type::iterator it = table.find(str, hash_by_string(), equal_by_string());
-            if (it != table.end())
-                return *it;
+            mutex.lock_shared();
+            lookup_result_type lookup_result = symbol_lookup(str);
+            mutex.unlock_shared();
+            if (lookup_result.second)
+                return *lookup_result.first;
+
+            nonrecursive_rw_mutex::unique_lock lock(mutex);
+            lookup_result = symbol_lookup(str);
+            if (lookup_result.second)
+                return *lookup_result.first;
 
             std::pair<table_type::iterator, bool> inserted = table.insert(symbol_data(duplicate_string(str, strlen)));
             assert(inserted.second);
@@ -145,7 +152,14 @@ public:
         }
 
     private:
+        lookup_result_type symbol_lookup(const char * str) const
+        {
+            table_type::iterator it = table.find(str, hash_by_string(), equal_by_string());
+            return std::make_pair(it, it != table.end());
+        }
+
         table_type table;
+        nova::nonrecursive_rw_mutex mutex;
     };
 
     symbol_data lookup_string(const char * str, std::size_t length)
