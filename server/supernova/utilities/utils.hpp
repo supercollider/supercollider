@@ -44,6 +44,13 @@ typedef unsigned int uint;
 
 #include "malloc_aligned.hpp"
 
+#ifdef __GNUC__
+#define PURE __attribute__((pure))
+#else
+#define PURE /*__attribute__((pure))*/
+#endif
+
+
 namespace nova
 {
 /* we're using some member of the boost namespace */
@@ -193,7 +200,7 @@ struct compare_by_instance
 };
 
 
-inline std::size_t string_hash(const char * str)
+PURE inline std::size_t string_hash(const char * str)
 {
     std::size_t ret = 0;
 
@@ -208,4 +215,5 @@ inline std::size_t string_hash(const char * str)
 
 } /* namespace nova */
 
+#undef PURE
 #endif /* UTILITIES_UTILS_HPP */
