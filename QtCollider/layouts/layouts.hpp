@@ -65,10 +65,14 @@ public:
 
     QVariant varObject = item.data[0];
 
+    if( !varObject.isValid() ) {
+      BOXLAYOUT::addStretch( stretch );
+      return;
+    }
+
     if( varObject.canConvert<int>() ) {
       int size = varObject.toInt();
-      if( size > 0 ) BOXLAYOUT::addSpacing( size );
-      else BOXLAYOUT::addStretch( stretch );
+      BOXLAYOUT::addSpacing( size );
       return;
     }
 
