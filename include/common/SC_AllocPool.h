@@ -42,7 +42,7 @@ const int kMaxSmallBinSize = kNumSmallBins * kBinWidth;
 const int kBinBlockWidth = 4;
 const int kBinBlockMask = kBinBlockWidth - 1;
 
-const size_t kAlign = 16;
+const size_t kAlign = 64;
 const size_t kAlignMask = kAlign - 1;
 const size_t kChunkFree = 0;
 const size_t kChunkInUse = 1;
@@ -123,8 +123,7 @@ private:
 };
 
 const size_t kMinAllocSize = 2 * kAlign;
-// FIXME: add kAlign to overhead? <sk>
-const size_t kAreaOverhead = sizeof(AllocAreaHdr) + 2 * sizeof(AllocChunk);
+const size_t kAreaOverhead = sizeof(AllocAreaHdr) + 2 * sizeof(AllocChunk) + kAlign;
 
 typedef void* (*NewAreaFunc)(size_t size);
 typedef void (*FreeAreaFunc)(void *);
