@@ -11,7 +11,10 @@ QSoundFileView : QView {
     if( filename.isString && filename != "" ) {
       if( curDoneAction.notNil )
         { this.disconnectFunction( 'loadingDone()', curDoneAction ) };
-      this.connectFunction( 'loadingDone()', doneAction );
+      if( doneAction.notNil ) {
+        this.connectFunction( 'loadingDone()', doneAction );
+      };
+
       curDoneAction = doneAction;
 
       if( startframe.notNil && frames.notNil ) {
