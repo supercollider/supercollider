@@ -2643,11 +2643,11 @@ void handle_c_getn(received_message const & msg, nova_endpoint const & endpoint)
 std::pair<sc_synth_prototype_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> && defs)
 {
     std::vector<sc_synthdef> synthdefs(std::move(defs));
-    size_t count = defs.size();
+    size_t count = synthdefs.size();
     sc_synth_prototype_ptr * prototypes = new sc_synth_prototype_ptr [count];
 
     for (size_t i = 0; i != count; ++i)
-        prototypes[i].reset(new sc_synth_prototype(std::move(defs[i])));
+        prototypes[i].reset(new sc_synth_prototype(std::move(synthdefs[i])));
     return std::make_pair(prototypes, count);
 }
 #endif
@@ -2671,11 +2671,12 @@ void d_recv_nrt(movable_array<char> & def, completion_message & msg, nova_endpoi
 {
     size_t count;
     sc_synth_prototype_ptr * prototypes;
+    std::vector<sc_synthdef> synthdefs (read_synthdefs(def.data()));
 
 #ifdef BOOST_HAS_RVALUE_REFS
-    boost::tie(prototypes, count) = wrap_synthdefs(std::move(read_synthdefs(def.data())));
+    boost::tie(prototypes, count) = wrap_synthdefs(std::move(synthdefs));
 #else
-    boost::tie(prototypes, count) = wrap_synthdefs(read_synthdefs(def.data()));
+    boost::tie(prototypes, count) = wrap_synthdefs(synthdefs);
 #endif
 
     cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(d_recv_rt2<realtime>, prototypes, count, msg, endpoint));
