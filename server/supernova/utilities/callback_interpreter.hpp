@@ -122,7 +122,7 @@ public:
     void start_thread(void)
     {
         semaphore sync_sem;
-        semaphore_sync sync(sync_sem);
+        semaphore_sync<semaphore> sync(sync_sem);
         boost::thread thr(boost::bind(&threaded_callback_interpreter::run_thread, this, boost::ref(sync_sem)));
         thread = thr.move();
     }
