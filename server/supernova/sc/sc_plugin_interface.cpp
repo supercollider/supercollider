@@ -68,7 +68,7 @@ void free_node_and_preceding(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        log("parallel groups have no notion of preceding nodes\n");
         return;
     }
 
@@ -83,7 +83,7 @@ void free_node_and_pause_preceding(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        log("parallel groups have no notion of preceding nodes\n");
         return;
     }
 
@@ -98,7 +98,7 @@ void free_node_and_preceding_children(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        log("parallel groups have no notion of preceding nodes");
         return;
     }
 
@@ -120,7 +120,7 @@ void free_node_and_preceding_deep(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        log("parallel groups have no notion of preceding nodes\n");
         return;
     }
 
@@ -141,12 +141,11 @@ void free_node_and_all_preceding(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of preceding nodes" << std::endl;
+        log("parallel groups have no notion of preceding nodes\n");
         return;
     }
 
-    for(;;)
-    {
+    for(;;) {
         node = node->previous_node();
         if (node)
             sc_factory->add_done_node(node);
@@ -161,7 +160,7 @@ void free_node_and_following(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        log("parallel groups have no notion of following nodes\n");
         return;
     }
 
@@ -176,7 +175,7 @@ void free_node_and_pause_following(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        log("parallel groups have no notion of following nodes\n");
         return;
     }
 
@@ -191,7 +190,7 @@ void free_node_and_following_children(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        log("parallel groups have no notion of following nodes\n");
         return;
     }
 
@@ -212,7 +211,7 @@ void free_node_and_following_deep(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        log("parallel groups have no notion of following nodes\n");
         return;
     }
 
@@ -233,12 +232,11 @@ void free_node_and_all_following(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
-        std::cerr << "parallel groups have no notion of following nodes" << std::endl;
+        log("parallel groups have no notion of following nodes\n");
         return;
     }
 
-    for(;;)
-    {
+    for(;;) {
         node = node->previous_node();
         if (node)
             sc_factory->add_done_node(node);
@@ -375,8 +373,7 @@ int print(const char *fmt, ...)
 void done_action(int done_action, struct Unit *unit)
 {
     using namespace nova;
-    switch(done_action)
-    {
+    switch(done_action) {
     case 0:
         // do nothing when the UGen is finished
         return;

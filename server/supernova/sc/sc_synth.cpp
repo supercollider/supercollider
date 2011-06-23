@@ -22,6 +22,7 @@
 
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
+#include "../server/server.hpp"
 
 namespace nova
 {
@@ -136,9 +137,8 @@ void sc_synth::prepare(void)
 
 void sc_synth::set(slot_index_t slot_index, sample val)
 {
-    if (slot_index >= mNumControls)
-    {
-        std::cerr << "argument number out of range" << std::endl;
+    if (slot_index >= mNumControls) {
+        log("argument number out of range\n");
         return;
     }
 
@@ -252,24 +252,23 @@ void sc_synth::run_traced(void)
 {
     using namespace std;
 
-    printf("\nTRACE %d  %s    #units: %d\n", id(), this->prototype_name(), calc_unit_count);
+    log_printf("\nTRACE %d  %s    #units: %d\n", id(), this->prototype_name(), calc_unit_count);
 
-    for (size_t i = 0; i != calc_unit_count; ++i)
-    {
+    for (size_t i = 0; i != calc_unit_count; ++i) {
         Unit * unit = calc_units[i];
 
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-        printf("  unit %zd %s\n    in ", i, def->name());
+        log_printf("  unit %zd %s\n    in ", i, def->name());
         for (uint16_t j=0; j!=unit->mNumInputs; ++j)
-            printf(" %g", unit->mInBuf[j][0]);
-        putchar('\n');
+            log_printf(" %g", unit->mInBuf[j][0]);
+        log("\n");
 
         (unit->mCalcFunc)(unit, unit->mBufLength);
 
-        fputs("    out", stdout);
+        log("    out");
         for (int j=0; j<unit->mNumOutputs; ++j)
-            printf(" %g", unit->mOutBuf[j][0]);
-        putchar('\n');
+            log_printf(" %g", unit->mOutBuf[j][0]);
+        log("\n");
     }
     std::cout << std::endl;
 
