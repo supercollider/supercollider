@@ -291,16 +291,6 @@ struct cmd_dispatcher
         instance->add_sync_callback(new fn_sync_callback<Functor>(f));
     }
 
-    static void fire_done_message(nova_endpoint const & endpoint)
-    {
-        fire_io_callback(boost::bind(send_done_message, endpoint));
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
-    {
-        fire_io_callback(boost::bind(send_done_message, endpoint, cmd));
-    }
-
     static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
     {
         fire_io_callback(boost::bind(send_done_message, endpoint, cmd, index));
@@ -326,17 +316,6 @@ struct cmd_dispatcher<false>
     static void fire_io_callback(Functor f)
     {
         f();
-    }
-
-
-    static void fire_done_message(nova_endpoint const & endpoint)
-    {
-        send_done_message (endpoint);
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
-    {
-        send_done_message (endpoint, cmd);
     }
 
     static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
