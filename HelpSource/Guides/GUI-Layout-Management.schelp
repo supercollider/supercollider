@@ -58,9 +58,9 @@ subsection:: Stretch factors
 Layouts typically allow the user to override their default distribution policy by assigning stretch factors to items or aspects of the layout's distribution pattern.
 
 code::
-w = Window.new(bounds:Rect(100,100,300,80)).layout_(
+w = Window.new(bounds:Rect(100,100,400,80)).layout_(
 	QHLayout(
-		[Button().states_([["Super"]]), \stretch, 1],
+		[Button().states_([["Super"]]), stretch:1],
 		TextField().string_("Collider")
 	)
 ).front;
@@ -86,9 +86,9 @@ The combination of size constraints and preferences of all items in a layout hie
 code::
 w = Window.new.layout_(
 	QHLayout(
-		[Button.new.states_([["Super"]]), \align, \bottom],
+		[Button.new.states_([["Super"]]), align:\bottom],
 		TextView(),
-		[Button.new.states_([["Collider"]]), \align, \top]
+		[Button.new.states_([["Collider"]]), align:\top]
 	)
 ).front;
 ::
