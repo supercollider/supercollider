@@ -31,6 +31,7 @@
 #include "../sc/sc_ugen_factory.hpp"
 #include "../utilities/callback_interpreter.hpp"
 #include "../utilities/static_pooled_class.hpp"
+#include "../utilities/asynchronous_log.hpp"
 
 #ifdef PORTAUDIO_BACKEND
 #include "audio_backend/audio_frontend.hpp"
@@ -38,8 +39,7 @@
 #include "audio_backend/jack_backend.hpp"
 #endif
 
-namespace nova
-{
+namespace nova {
 
 struct realtime_engine_functor
 {
@@ -125,6 +125,7 @@ struct scheduler_hook
 
 
 class nova_server:
+    public asynchronous_log_thread,
     public node_graph,
     public scheduler<scheduler_hook, thread_init_functor>,
 #if defined(JACK_BACKEND)
@@ -334,6 +335,23 @@ inline void realtime_engine_functor::run_tick(void)
 inline void scheduler_hook::operator()(void)
 {
     instance->execute_scheduled_bundles();
+}
+
+inline bool log_printf(const char *fmt, ...)
+{
+    va_list vargs;
+    va_start(vargs, fmt);
+    return instance->log_printf(fmt, vargs);
+}
+
+inline bool log(const char * string)
+{
+    return instance->log(string);
+}
+
+inline bool log(const char * string, size_t length)
+{
+    return instance->log(string, length);
 }
 
 } /* namespace nova */
