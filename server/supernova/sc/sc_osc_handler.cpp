@@ -28,13 +28,11 @@
 
 #include "SC_OSC_Commands.h"
 
-namespace nova
-{
+namespace nova {
 
 using namespace std;
 
-namespace
-{
+namespace {
 
 int32_t last_generated = 0;
 
@@ -46,7 +44,8 @@ server_node * find_node(int32_t target_id)
     server_node * node = instance->find_node(target_id);
 
     if (node == NULL)
-        cerr << "node not found" << endl;
+        log("node not found\n");
+
     return node;
 }
 
@@ -58,14 +57,14 @@ abstract_group * find_group(int32_t target_id)
     abstract_group * node = instance->find_group(target_id);
 
     if (node == NULL)
-        cerr << "node not found or not a group" << endl;
+        log("node not found or not a group\n");
     return node;
 }
 
 bool check_node_id(int node_id)
 {
     if (!instance->node_id_available(node_id)) {
-        cerr << "node id " << node_id << " already in use" << endl;
+        log("node id %d already in use\n", node_id);
         return false;
     }
     return true;
@@ -348,8 +347,8 @@ struct cmd_dispatcher<false>
 
 } /* namespace */
 
-namespace detail
-{
+namespace detail {
+using nova::log;
 
 void fire_notification(movable_array<char> & msg)
 {
@@ -636,10 +635,8 @@ void sc_osc_handler::handle_message(received_message const & message, size_t msg
             handle_message_int_address<realtime>(message, msg_size, endpoint);
         else
             handle_message_sym_address<realtime>(message, msg_size, endpoint);
-    }
-    catch (std::exception const & e)
-    {
-        cerr << e.what() << endl;
+    } catch (std::exception const & e) {
+        log_printf("exception in handle_message: %s\n", e.what());
     }
 }
 
@@ -758,7 +755,7 @@ void handle_error(received_message const & message)
 
 void handle_unhandled_message(received_message const & msg)
 {
-    cerr << "unhandled message " << msg.AddressPattern() << endl;
+    log_printf("unhandled message: %s\n", msg.AddressPattern());
 }
 
 sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
@@ -869,10 +866,8 @@ void handle_s_new(received_message const & msg)
     {
         try {
             set_control(synth, args);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /s_new handler: " << e.what() << endl;
+        } catch(std::exception & e) {
+            log_printf("exception in /s_new: %s\n", e.what());
         }
     }
 }
@@ -951,7 +946,7 @@ void handle_g_freeall(received_message const & msg)
         bool success = instance->group_free_all(group);
 
         if (!success)
-            cerr << "/g_freeAll failue" << endl;
+            log("/g_freeAll failue\n");
     }
 }
 
@@ -971,7 +966,7 @@ void handle_g_deepFree(received_message const & msg)
         bool success = instance->group_free_deep(group);
 
         if (!success)
-            cerr << "/g_freeDeep failue" << endl;
+            log("/g_freeDeep failue\n");
     }
 }
 
@@ -1058,50 +1053,58 @@ void handle_g_queryTree(received_message const & msg, nova_endpoint const & endp
             g_query_tree<realtime>(id, flag, endpoint);
         }
         catch (std::exception & e) {
-            cerr << e.what() << endl;
+            log_printf("exception in handle_g_queryTree: %s\n", e.what());
         }
     }
 }
 
-void fill_spaces(int level)
+typedef std::basic_stringstream <char,
+                                 std::char_traits <char>/*,
+                                 rt_pool_allocator<char>*/ > rt_string_stream;
+
+void fill_spaces(rt_string_stream & stream, int level)
 {
     for (int i = 0; i != level*3; ++i)
-        cout << ' ';
+        stream << ' ';
 }
 
-void g_dump_node(server_node & node, bool flag, int level)
+void g_dump_node(rt_string_stream & stream, server_node & node, bool flag, int level)
 {
     using namespace std;
-    fill_spaces(level);
+    fill_spaces(stream, level);
 
     if (node.is_synth()) {
         abstract_synth const & synth = static_cast<abstract_synth const &>(node);
-        cout << synth.id() << " " << synth.prototype_name() << endl;
+        stream << synth.id() << " " << synth.prototype_name() << endl;
 
         if (flag) {
             /* dump controls */
         }
     } else {
         abstract_group & group = static_cast<abstract_group &>(node);
-        cout << group.id();
+        stream << group.id();
 
         if (group.is_parallel())
-            cout << " parallel group";
+            stream << " parallel group";
         else
-            cout << " group";
-        cout << endl;
-        group.apply_on_children(boost::bind(g_dump_node, _1, flag, level + 1));
+            stream << " group";
+        stream << endl;
+        group.apply_on_children(boost::bind(g_dump_node, boost::ref(stream), _1, flag, level + 1));
     }
 }
 
 void g_dump_tree(int id, bool flag)
 {
-    std::cout << "NODE TREE Group " << id << std::endl;
     server_node * node = find_node(id);
     if (!node)
         return;
 
-    g_dump_node(*node, flag, 1);
+    // FIXME: can we completely avoid all internal allocations?
+    rt_string_stream stream;
+    stream << "NODE TREE Group " << id << std::endl;
+
+    g_dump_node(stream, *node, flag, 1);
+    log(stream.str().c_str(), stream.str().size());
 }
 
 void handle_g_dumpTree(received_message const & msg)
@@ -1116,7 +1119,7 @@ void handle_g_dumpTree(received_message const & msg)
             g_dump_tree(id, flag);
         }
         catch (std::exception & e) {
-            cerr << e.what() << endl;
+            log_printf("exception in /g_dumpTree: %s\n", e.what());
         }
     }
 }
@@ -1138,7 +1141,7 @@ void handle_n_free(received_message const & msg)
             instance->free_node(node);
         }
         catch (std::exception & e) {
-            cerr << e.what() << endl;
+            log_printf("exception in /n_free: %s\n", e.what());
         }
     }
 }
@@ -1154,18 +1157,14 @@ void handle_n_##cmd(received_message const & msg)                       \
     osc::int32 id = it->AsInt32(); ++it;                                \
                                                                         \
     server_node * node = find_node(id);                                 \
-    if(!node)                                                           \
+    if (!node)                                                          \
         return;                                                         \
                                                                         \
-    while(it != msg.ArgumentsEnd())                                     \
-    {                                                                   \
-        try                                                             \
-        {                                                               \
+    while (it != msg.ArgumentsEnd()) {                                  \
+        try {                                                           \
             function(node, it);                                         \
-        }                                                               \
-        catch(std::exception & e)                                       \
-        {                                                               \
-            cout << "Exception during /n_" #cmd "handler: " << e.what() << endl; \
+        } catch(std::exception & e) {                                   \
+            log_printf("Exception during /n_" #cmd "handler: %s\n", e.what());\
             return;                                                     \
         }                                                               \
     }                                                                   \
