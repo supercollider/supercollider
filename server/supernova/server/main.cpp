@@ -59,29 +59,18 @@ void register_handles(void)
 }
 
 #ifdef JACK_BACKEND
-bool check_connection_string(string const & str)
-{
-    if (str.find(":") != string::npos) {
-        cerr << "connecting to individual ports not yet implemented" << endl;
-        return false;
-    }
-    return true;
-}
-
 void connect_jack_ports(void)
 {
     using namespace boost;
     using namespace boost::algorithm;
 
     const char * input_string = getenv("SC_JACK_DEFAULT_INPUTS");
-    if (input_string)
-    {
+    if (input_string) {
         string input_port(input_string);
 
-        if (check_connection_string(input_port))
+        if (input_port.find(":") == string::npos)
             instance->connect_all_inputs(input_port.c_str());
-        else
-        {
+        else {
             vector<string> portnames;
             boost::split(portnames, input_port, is_any_of(":"));
             for (int i = 0; i != portnames.size(); ++i)
@@ -90,14 +79,12 @@ void connect_jack_ports(void)
     }
 
     const char * output_string = getenv("SC_JACK_DEFAULT_OUTPUTS");
-    if (output_string)
-    {
+    if (output_string) {
         string output_port(output_string);
 
-        if (check_connection_string(output_port))
+        if (output_port.find(":") == string::npos)
             instance->connect_all_outputs(output_port.c_str());
-        else
-        {
+        else {
             vector<string> portnames;
             boost::split(portnames, output_port, is_any_of(":"));
             for (int i = 0; i != portnames.size(); ++i)
@@ -157,13 +144,10 @@ void set_plugin_paths(void)
 {
     server_arguments const & args = server_arguments::instance();
 
-    if (!args.ugen_paths.empty())
-    {
+    if (!args.ugen_paths.empty()) {
         foreach(string const & path, args.ugen_paths)
             sc_factory->load_plugin_folder(path);
-    }
-    else
-    {
+    } else {
         path home = resolve_home();
 
 #ifdef __linux__
