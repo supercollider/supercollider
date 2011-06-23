@@ -4,8 +4,7 @@
 // James Harkins
 
 ClassBrowser {
-	classvar	updateProtos, searchMenuKeys, viewList, buttonSet,
-			black, gray, clear;
+	classvar	updateProtos, searchMenuKeys, viewList, buttonSet, gray;
 
 	var	<views,
 			// historyPos == 0 means one item in history[0]
@@ -40,7 +39,6 @@ ClassBrowser {
 
 			~currentClassNameView = gui.textField.new(~window, Rect(0,0, 308, 32));
 			~currentClassNameView.font = gui.font.new( gui.font.defaultSansFace, 18 ).boldVariant;
-			~currentClassNameView.background = clear;
 			~currentClassNameView.align = \center;
 
 			~currentClassNameView.action = {
@@ -53,7 +51,7 @@ ClassBrowser {
 			~window.view.decorator.nextLine;
 
 			~bakButton = gui.button.new(~window, Rect(0,0, 24, 24));
-			~bakButton.states = [["<", black, clear]];
+			~bakButton.states = [["<"]];
 			~bakButton.action = {
 				if (historyPos > 0) {
 					historyPos = historyPos - 1;
@@ -62,7 +60,7 @@ ClassBrowser {
 			};
 
 			~fwdButton = gui.button.new(~window, Rect(0,0, 24, 24));
-			~fwdButton.states = [[">", black, clear]];
+			~fwdButton.states = [[">"]];
 			~fwdButton.action = {
 				if (historyPos < (history.size - 1)) {
 					historyPos = historyPos + 1;
@@ -72,7 +70,7 @@ ClassBrowser {
 
 
 			~superButton = gui.button.new(~window, Rect(0,0, 50, 24));
-			~superButton.states = [["super", black, clear]];
+			~superButton.states = [["super"]];
 
 			~superButton.action = {
 				if(currentState.currentClass.notNil) {
@@ -81,7 +79,7 @@ ClassBrowser {
 			};
 
 			~metaButton = gui.button.new(~window, Rect(0,0, 50, 24));
-			~metaButton.states = [["meta", black, clear]];
+			~metaButton.states = [["meta"]];
 
 			~metaButton.action = {
 				if(currentState.currentClass.notNil) {
@@ -91,7 +89,7 @@ ClassBrowser {
 
 
 			~helpButton = gui.button.new(~window, Rect(0,0, 50, 24));
-			~helpButton.states = [["help", black, clear]];
+			~helpButton.states = [["help"]];
 
 			~helpButton.action = {
 				if(currentState.currentClass.notNil) {
@@ -100,7 +98,7 @@ ClassBrowser {
 			};
 
 			~classSourceButton = gui.button.new(~window, Rect(0,0, 90, 24));
-			~classSourceButton.states = [["class source", black, clear]];
+			~classSourceButton.states = [["class source"]];
 
 			~classSourceButton.action = {
 				if(currentState.currentClass.notNil) {
@@ -109,7 +107,7 @@ ClassBrowser {
 			};
 
 			~methodSourceButton = gui.button.new(~window, Rect(0,0, 90, 24));
-			~methodSourceButton.states = [["method source", black, clear]];
+			~methodSourceButton.states = [["method source"]];
 			~methodSourceButton.action = {
 				if(currentState.currentMethod.notNil) {
 					currentState.currentMethod.openCodeFile;
@@ -117,7 +115,7 @@ ClassBrowser {
 			};
 
 			~implementationButton = gui.button.new(~window, Rect(0,0, 100, 24));
-			~implementationButton.states = [["implementations", black, clear]];
+			~implementationButton.states = [["implementations"]];
 			~implementationButton.action = {
 				if(currentState.currentMethod.notNil) {
 					thisProcess.interpreter.cmdLine = currentState.currentMethod.name.asString;
@@ -126,7 +124,7 @@ ClassBrowser {
 			};
 
 			~refsButton = gui.button.new(~window, Rect(0,0, 70, 24));
-			~refsButton.states = [["references", black, clear]];
+			~refsButton.states = [["references"]];
 			~refsButton.action = {
 				if(currentState.currentMethod.notNil) {
 					thisProcess.interpreter.cmdLine = currentState.currentMethod.name.asString;
@@ -136,7 +134,7 @@ ClassBrowser {
 
 			if(this.respondsTo(\openSVN)) {
 				~svnButton = gui.button.new(~window, Rect(0,0, 32, 24));
-				~svnButton.states = [["svn", black, clear]];
+				~svnButton.states = [["svn"]];
 				~svnButton.action = {
 					var filename, svnAddr;
 					if(currentState.currentMethod.notNil) {
@@ -160,10 +158,10 @@ ClassBrowser {
 			GUI.staticText.new(~window, Rect(0, 0, 15, 20)).string_("in").align_(\center);
 			~searchMenu = GUI.popUpMenu.new(~window, Rect(0, 0, 200, 20));
 			~matchCaseButton = GUI.button.new(~window, Rect(0, 0, 100, 20))
-				.states_([["Case insensitive", black, clear], ["Match case", black, clear]]);
+				.states_([["Case insensitive"], ["Match case"]]);
 
 			~searchButton = GUI.button.new(~window, Rect(0, 0, 40, 20))
-				.states_([["GO", black, clear]])
+				.states_([["GO"]])
 				.action_({
 					this.searchClasses(views.searchField.string,
 						views.searchMenu.value, views.matchCaseButton.value);
@@ -206,7 +204,7 @@ ClassBrowser {
 			~window.view.decorator.nextLine;
 		};
 
-		this	.addInstanceActions
+		this.addInstanceActions
 			.makeState(class, \class);
 
 		views.window.front;
@@ -249,19 +247,9 @@ ClassBrowser {
 			viewList.do { |viewname|
 				updaters[viewname].value(viewname.envirGet);
 			};
-			updaters[\buttonsDisabled].do { |viewname|
-				if((view = viewname.envirGet).notNil) {
-					bstate = view.states.copy;
-					bstate[0].put(1, gray);
-					view.states = bstate;
-				};
-			};
-			(buttonSet - updaters[\buttonsDisabled]).do { |viewname|
-				if((view = viewname.envirGet).notNil) {
-					bstate = view.states.copy;
-					bstate[0].put(1, black);
-					view.states = bstate;
-				};
+			buttonSet.do { |viewname|
+				viewname.envirGet.tryPerform(\enabled_,
+					updaters[\buttonsDisabled].includes(viewname).not);
 			};
 			~window.refresh;
 		}
@@ -363,9 +351,7 @@ ClassBrowser {
 
 	*initGUI {
 		updateProtos ?? {
-			black = Color.black;
-			gray = Color.gray;
-			clear = Color.clear;
+			gray = Color.grey(0.5);
 
 			searchMenuKeys = #[classSearch, methodSearch, classSearch, methodSearch, classSearch];
 			viewList = #[currentClassNameView, superClassNameView, filenameView,
@@ -411,9 +397,9 @@ ClassBrowser {
 					methodView: { |v|
 						var colorFunc = { |class, name|
 							if(class.findOverriddenMethod(name.asSymbol).isNil) {
-								Color.clear
+								nil
 							} {
-								Color.grey(0.8)
+								Color.grey(0.5, 0.8)
 							}
 						};
 						var classMethodColors = ~classMethodNames.collect { |name|
