@@ -48,7 +48,14 @@ QcNumberBox::QcNumberBox()
 {
   _validator->setDecimals( _maxDec );
   setValidator( _validator );
+
+  // Do not display thousands separator. It only eats up precious space.
+  QLocale loc( locale() );
+  loc.setNumberOptions( QLocale::OmitGroupSeparator );
+  setLocale( loc );
+
   setLocked( true );
+
   connect( this, SIGNAL( editingFinished() ),
            this, SLOT( onEditingFinished() ) );
   connect( this, SIGNAL( valueChanged() ),
@@ -190,6 +197,9 @@ void QcNumberBox::updateText()
 
   blockSignals(true);
   setText( str );
+  // Set cursor to beginning so most significant digits are shown
+  // if widget size too small.
+  setCursorPosition(0);
   setLocked( true );
   blockSignals(false);
 }
@@ -266,12 +276,16 @@ void QcNumberBox::keyPressEvent ( QKeyEvent * event )
 void QcNumberBox::mouseDoubleClickEvent ( QMouseEvent * event )
 {
   Q_UNUSED( event );
+  setCursorPosition( cursorPositionAt( event->pos() ) );
   setLocked( false );
 }
 
 void QcNumberBox::mousePressEvent ( QMouseEvent * event )
 {
   lastPos = event->globalY();
+  // If locked, prevent cursor position change. Cursor has to stay at 0
+  // so most significant digits are shown if widget size too small.
+  if( isReadOnly() ) return;
   QLineEdit::mousePressEvent( event );
 }
 
