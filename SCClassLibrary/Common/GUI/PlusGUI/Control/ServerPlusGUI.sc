@@ -19,6 +19,7 @@
 		var recorder, scoper;
 		var countsViews, ctlr;
 		var label, gui, font, volumeNum;
+		var greenAlpha02 = Color.green.alpha_(0.2);
 
 		if (window.notNil) { ^window.front };
 
@@ -37,8 +38,8 @@
 			booter = gui.button.new(w, Rect(0,0, 44, 18));
 			booter.canFocus = false;
 			booter.font = font;
-			booter.states = [["Boot", Color.black, Color.clear],
-						   ["Quit", Color.black, Color.green.alpha_(0.2)]];
+			booter.states = [["Boot"],
+						     ["Quit", nil, greenAlpha02]];
 
 			booter.action = { arg view;
 				if(view.value == 1, {
@@ -52,7 +53,7 @@
 			booter.setProperty(\value,serverRunning.binaryValue);
 
 			killer = gui.button.new(w, Rect(0,0, 20, 18));
-			killer.states = [["K", Color.black, Color.clear]];
+			killer.states = [["K"]];
 			killer.font = font;
 			killer.canFocus = false;
 			killer.action = { Server.killAll; stopped.value; };
@@ -62,13 +63,13 @@
 		active.string = this.name.asString;
 		active.align = \center;
 		active.font = gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
-		active.background = Color.clear;
 		if(serverRunning,running,stopped);
 
 		makeDefault = gui.button.new(w, Rect(0,0, 54, 18));
 		makeDefault.font = font;
 		makeDefault.canFocus = false;
-		makeDefault.states = [["-> default", Color.black, Color.clear], ["-> default", Color.black, Color.green.alpha_(0.2)]];
+		makeDefault.states = [["-> default"],
+			["-> default", nil, greenAlpha02]];
 		makeDefault.value_((this == Server.default).binaryValue);
 		makeDefault.action = { Server.default_(this) };
 
@@ -78,8 +79,8 @@
 			recorder = gui.button.new(w, Rect(0,0, 66, 18));
 			recorder.font = font;
 			recorder.states = [
-				["record >", Color.black, Color.clear],
-				["stop []", Color.black, Color.red.alpha_(0.3)]
+				["record >", nil, Color.clear],
+				["stop []", nil, greenAlpha02]
 			];
 			recorder.action = {
 				if (recorder.value == 1) { this.record } { this.stopRecording };
@@ -88,8 +89,6 @@
 		};
 
 		w.view.keyDownAction = { arg view, char, modifiers;
-
-
 				// if any modifiers except shift key are pressed, skip action
 			if(modifiers & 16515072 == 0) {
 
@@ -117,7 +116,6 @@
 		};
 
 		if (isLocal) {
-
 			running = {
 				active.stringColor_(Color.new255(74, 120, 74));
 				active.string = "running";
@@ -175,7 +173,6 @@
 			stopped = {
 				active.stringColor_(Color.grey(0.5));
 				active.string = "inactive";
-
 			};
 			booting = {
 				active.stringColor_(Color.new255(255, 140, 0));
@@ -206,8 +203,8 @@
 
 		countsViews =
 		#[
-			"Avg CPU :", "Peak CPU :",
-			"UGens :", "Synths :", "Groups :", "SynthDefs :"
+			"Avg CPU:", "Peak CPU:",
+			"UGens:", "Synths:", "Groups:", "SynthDefs:"
 		].collect { arg name, i;
 			var label,numView, pctView;
 			label = gui.staticText.new(w, Rect(0,0, 80, 12));
@@ -242,14 +239,14 @@
 
 			gui.staticText.new(w, Rect(0,0, 44, 18))
 				.font_(font)
-				.string_(" volume :");
+				.string_("volume:");
 
-			muteButton = gui.button.new(w, Rect(0, 0, 20, 16))
+			muteButton = gui.button.new(w, Rect(0, 0, 20, 18))
 				.font_(font)
 				.canFocus_(false)
 				.states_([
-					["M", Color.black, Color.clear],
-					["M", Color.black, Color.red.alpha_(0.3)]
+					["M", nil, Color.clear],
+					["M", nil, Color.red.alpha_(0.3)]
 					])
 				.action_({arg me;
 					this.serverRunning.if({
@@ -260,7 +257,7 @@
 						})
 					});
 
-			volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 15))
+			volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 18))
 				.font_(font)
 				.value_(0.0)
 				.align_(\center)
@@ -271,7 +268,7 @@
 					volumeSlider.value_(volSpec.unmap(newdb));
 					});
 
-			volumeSlider = gui.slider.new(w, Rect(0, 0, 172, 16))
+			volumeSlider = gui.slider.new(w, Rect(0, 0, 172, 18))
 				.value_(volSpec.unmap(0))
 				.onClose_{volController.remove}
 				.action_({arg me;
