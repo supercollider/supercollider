@@ -241,6 +241,9 @@ bool QWidgetProxy::filterEvent( QObject *o, QEvent *e, EventHandlerData &eh, QLi
     case QEvent::Enter:
       return eh.enabled && interpretMouseEvent( o, e, args );
 
+    case QEvent::Wheel:
+      return interpretMouseWheelEvent( o, e, args );
+
     case QEvent::DragEnter:
     case QEvent::DragMove:
     case QEvent::Drop:
@@ -301,6 +304,34 @@ bool QWidgetProxy::interpretMouseEvent( QObject *o, QEvent *e, QList<QVariant> &
       args << 2; break;
     default: ;
   }
+
+  return true;
+}
+
+bool QWidgetProxy::interpretMouseWheelEvent( QObject *o, QEvent *e, QList<QVariant> &args )
+{
+  // NOTE: There seems to be a bug in wheel event propagation:
+  // the event is propagated to parent twice!
+  // Therefore we do not let the propagated events through to SC,
+  // (we only let the "spontaneous" ones).
+
+  if( o != _mouseEventWidget || !e->spontaneous() || !_mouseEventWidget->isEnabled() ) return false;
+
+  QWheelEvent *we = static_cast<QWheelEvent*>(e);
+
+  QWidget *w = widget();
+  QPoint pt = _mouseEventWidget == w ?
+              we->pos() :
+              _mouseEventWidget->mapTo( w, we->pos() );
+  Qt::Orientation ort = we->orientation();
+  // calculate degrees: delta is in 1/8 of a degree.
+  int deg = we->delta() / 8;
+
+  args << pt.x();
+  args << pt.y();
+  args << (int) we->modifiers();
+  args << (ort == Qt::Horizontal ? deg : 0);
+  args << (ort == Qt::Vertical ? deg : 0);
 
   return true;
 }

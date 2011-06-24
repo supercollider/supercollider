@@ -85,6 +85,7 @@ private Q_SLOTS:
 
 private:
   bool interpretMouseEvent( QObject *, QEvent *, QList<QVariant> &args );
+  bool interpretMouseWheelEvent( QObject *, QEvent *, QList<QVariant> &args );
   bool interpretKeyEvent( QObject *, QEvent *, QList<QVariant> &args );
   bool interpretDragEvent( QObject *, QEvent *, QList<QVariant> &args );
 

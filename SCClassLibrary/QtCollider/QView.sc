@@ -14,7 +14,7 @@ QView : QObject {
   var <>userCanClose=true, <>deleteOnClose = true;
   // actions
   var <action;
-  var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseMoveAction;
+  var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseMoveAction, <mouseWheelAction;
   var <keyDownAction, <keyUpAction, <keyModifiersChangedAction;
   var <>keyTyped;
   // focus
@@ -372,6 +372,11 @@ QView : QObject {
     this.setEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true );
   }
 
+  mouseWheelAction_ { arg aFunction;
+    mouseWheelAction = aFunction;
+    this.setEventHandler( QObject.mouseWheelEvent, \mouseWheelEvent, true );
+  }
+
   beginDragAction_ { arg handler;
     beginDragAction = handler;
     this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )
@@ -460,6 +465,10 @@ QView : QObject {
     mouseOverAction.value( this, x, y );
   }
 
+  mouseWheel { arg x, y, modifiers, xDelta, yDelta;
+    ^mouseWheelAction.value( this, x, y, modifiers, xDelta, yDelta );
+  }
+
   /* ---------------- private ----------------------- */
 
   *setCurrentDrag { arg obj; currentDrag = obj; currentDragString = obj.asCompileString; }
@@ -500,6 +509,8 @@ QView : QObject {
       {this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true )};
     if( this.overrides( \mouseOver ) )
       {this.setEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true )};
+    if( this.overrides( \mouseWheel ) )
+      {this.setEventHandler( QObject.wheelEvent, \mouseWheelEvent, true )};
 
     // DnD events
     if( this.respondsTo(\defaultCanReceiveDrag) ) {
@@ -590,6 +601,11 @@ QView : QObject {
   mouseOverEvent { arg x, y;
     var dummy = x; // prevent this method from being optimized away
     ^this.mouseOver( x, y );
+  }
+
+  mouseWheelEvent { arg x, y, modifiers, xDelta, yDelta;
+    modifiers = QKeyModifiers.toCocoa(modifiers);
+    ^this.mouseWheel( x, y, modifiers, xDelta, yDelta );
   }
 
   beginDrag { arg x, y;
