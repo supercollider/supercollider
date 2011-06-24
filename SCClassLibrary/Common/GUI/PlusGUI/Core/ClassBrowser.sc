@@ -202,6 +202,10 @@ ClassBrowser {
 			~argView.resize = 4;
 
 			~window.view.decorator.nextLine;
+
+			[~classVarView, ~instVarView, ~subclassView, ~methodView, ~argView].do (
+				_.beginDragAction_({nil})
+			);
 		};
 
 		this.addInstanceActions
