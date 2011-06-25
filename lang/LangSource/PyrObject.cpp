@@ -761,13 +761,70 @@ struct compareByName
 	}
 };
 
+
+template <class T>
+class pyr_pool_compile_allocator
+{
+public:
+	typedef std::size_t size_type;
+	typedef std::ptrdiff_t difference_type;
+	typedef T*        pointer;
+	typedef const T*  const_pointer;
+	typedef T&        reference;
+	typedef const T&  const_reference;
+	typedef T         value_type;
+
+	template <class U> struct rebind
+	{
+		typedef pyr_pool_compile_allocator<U> other;
+	};
+
+	pyr_pool_compile_allocator(void)
+	{}
+
+	template <class U>
+	pyr_pool_compile_allocator(pyr_pool_compile_allocator<U> const &)
+	{}
+
+	pointer address(reference x) const
+	{
+		return &x;
+	}
+
+	const_pointer address(const_reference x) const
+	{
+		return &x;
+	}
+
+	pointer allocate(size_type n, const_pointer hint = 0)
+	{
+		return (pointer)pyr_pool_compile->Alloc(n*sizeof(T));
+	}
+
+	void deallocate(pointer p, size_type n)
+	{
+		pyr_pool_compile->Free(p);
+	}
+
+	void construct(pointer p, const T& val)
+	{
+		::new(p) T(val);
+	}
+
+	void destroy(pointer p)
+	{
+		p->~T();
+	}
+};
+
+
 /* sort list of classes:
  * we fill a binary search tree
  *
  */
 static PyrClass * sortClasses(PyrClass * aClassList)
 {
-	typedef std::set<PyrClass*, compareByName> classSetType;
+	typedef std::set<PyrClass*, compareByName, pyr_pool_compile_allocator<PyrClass*> > classSetType;
 	classSetType classSet;
 
 	PyrClass * insertHead = aClassList;
