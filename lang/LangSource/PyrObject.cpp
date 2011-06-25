@@ -33,6 +33,7 @@
 #include "Hash.h"
 #include "SC_Constants.h"
 
+#include <set>
 
 PyrClass *gClassList = NULL;
 int gNumSelectors = 0;
@@ -752,18 +753,54 @@ bool classFindConst(PyrClass** classobj, PyrSymbol *name, int *index)
 	return false;
 }
 
+struct compareByName
+{
+	bool operator()(PyrClass * lhs, PyrClass * rhs) const
+	{
+		return strcmp(slotRawSymbol(&lhs->name)->name, slotRawSymbol(&rhs->name)->name) < 0;
+	}
+};
+
+/* sort list of classes:
+ * we fill a binary search tree
+ *
+ */
+static PyrClass * sortClasses(PyrClass * aClassList)
+{
+	typedef std::set<PyrClass*, compareByName> classSetType;
+	classSetType classSet;
+
+	PyrClass * insertHead = aClassList;
+	do {
+		assert(classSet.find(insertHead) == classSet.end());
+		classSet.insert(insertHead);
+		insertHead = slotRawClass(&insertHead->nextclass);
+	} while (insertHead);
+
+	classSetType::iterator it = classSet.begin();
+	PyrClass * sortedClasses = *it;
+	++it;
+
+	PyrClass * lastClass = sortedClasses;
+	for (; it != classSet.end(); ++it) {
+		PyrClass * current = *it;
+		SetObject(&lastClass->nextclass, (PyrObject*)current);
+		lastClass = current;
+	}
+	SetNil(&lastClass->nextclass);
+	return sortedClasses;
+}
 
 void buildClassTree()
 {
 	// after all classes are compiled this function builds the tree and
 	// indexes the classes
-	PyrClass *classobj, *superclassobj;
 
 	// count subclasses
 	//postfl("count subclasses\n");
-	classobj = gClassList;
+	PyrClass *classobj = gClassList;
 	while (classobj) {
-		superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
+		PyrClass * superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 		if (superclassobj) {
 			//postfl("     superclassobj %s\n", slotRawSymbol(&superclassobj->name)->name);
 			SetRaw(&superclassobj->subclasses, slotRawInt(&superclassobj->subclasses) + 1);
@@ -790,7 +827,7 @@ void buildClassTree()
 	classobj = gClassList;
 	while (classobj) {
 		//postfl("  %s\n", slotRawSymbol(&classobj->name)->name);
-		superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
+		PyrClass *superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 		if (superclassobj) {
 			objAddIndexedObject(slotRawObject(&superclassobj->subclasses), (PyrObject*)classobj);
 			//postfl("     superclassobj %s %d\n", slotRawSymbol(&superclassobj->name)->name,
@@ -800,26 +837,7 @@ void buildClassTree()
 	}
 
 	// alpha sort the classes via insertion sort
-	{
-		PyrClass *alpha, *prev, *cur, *subj;
-		alpha = gClassList;
-		gClassList = slotRawClass(&gClassList->nextclass);
-		SetNil(&alpha->nextclass);
-		while (gClassList) {
-			subj = gClassList;
-			gClassList = slotRawClass(&gClassList->nextclass);
-			prev = NULL;
-			cur = alpha;
-			while (cur && strcmp(slotRawSymbol(&subj->name)->name, slotRawSymbol(&cur->name)->name)>0) {
-				prev = cur;
-				cur = slotRawClass(&cur->nextclass);
-			}
-			SetObjectOrNil(&subj->nextclass, (PyrObject*)cur);
-			if (prev) SetObjectOrNil(&prev->nextclass, (PyrObject*)subj);
-			else alpha = subj;
-		}
-		gClassList = alpha;
-	}
+	gClassList = sortClasses(gClassList);
 }
 
 void indexClassTree(PyrClass *classobj, int numSuperMethods)
