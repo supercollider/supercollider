@@ -42,11 +42,11 @@
 		};
 
 		btn = gui.button.new(w, 48 @ 20);
-		btn.states = [["test", Color.black, Color.clear]];
+		btn.states = [["test"]];
 		btn.action = testFn;
 
 		btn = gui.button.new(w, 48 @ 20);
-		btn.states = [["window", Color.black, Color.clear]];
+		btn.states = [["window"]];
 		btn.action = {
 			var item;
 			item = this[synthDescListView.item.asSymbol];
