@@ -43,7 +43,6 @@ void indexClassTree(PyrClass *classobj, int numSuperMethods);
 void postClassTree(PyrClass *classobj, int level);
 void setSelectorFlags();
 void buildBigMethodMatrix();
-void fillClassRow(PyrClass *classobj, struct PyrMethod** bigTable);
 
 bool funcFindArg(PyrBlock* func, PyrSymbol *name, int *index);
 bool funcFindVar(PyrBlock* func, PyrSymbol *name, int *index);
