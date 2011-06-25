@@ -506,7 +506,11 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot * sp)
 #endif
 }
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__INTEL_COMPILER)
+#define LABELS_AS_VALUES
+#endif
+
+#ifdef LABELS_AS_VALUES
 #define dispatch_opcode \
 	op1 = ip[1];		\
 	++ip;				\
@@ -538,7 +542,7 @@ void Interpret(VMGlobals *g)
 	PyrMethod *meth;
 	int m,mmax;
 
-#ifdef __GNUC__
+#ifdef LABELS_AS_VALUES
 	static void * opcode_labels[] = {
 		&&handle_op_0,
 		&&handle_op_1,
