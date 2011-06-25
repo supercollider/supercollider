@@ -358,16 +358,16 @@ Quarks
 
 		if ( quarks.size == 0 ){
 			GUI.button.new(window, Rect(0, 0, 229, 20))
-			.states_([["checkout Quarks DIRECTORY", Color.black, Color.gray(0.5)]])
+			.states_([["checkout Quarks DIRECTORY", nil, Color.gray(0.5, 0.8)]])
 			.action_({ this.checkoutDirectory; });
 		}{
 			GUI.button.new(window, Rect(0, 0, 229, 20))
-			.states_([["update Quarks DIRECTORY", Color.black, Color.gray(0.5)]])
+			.states_([["update Quarks DIRECTORY", nil, Color.gray(0.5, 0.8)]])
 			.action_({ this.updateDirectory;});
 		};
 
 		GUI.button.new(window, Rect(0, 0, 200, 20))
-		.states_([["refresh Quarks listing", Color.black, Color.gray(0.5)]])
+		.states_([["refresh Quarks listing", nil, Color.gray(0.5, 0.8)]])
 		.action_({
 			window.close;
 			this.gui;
@@ -376,19 +376,21 @@ Quarks
 		window.view.decorator.nextLine;
 
 		GUI.button.new(window, Rect(0, 0, 150, 20))
-			.states_([["browse all help", Color.black, Color.gray(0.5)]])
+			.states_([["browse all help", nil, Color.gray(0.5, 0.8)]])
 			.action_({ Help(this.local.path).gui });
 
 		// add open directory button (open is only implemented in OS X)
 		(thisProcess.platform.name == \osx).if{
-			GUI.button.new(window, Rect(15,15,150,20)).states_([["open quark directory", Color.black, Color.gray(0.5)]]).action_{ arg butt;
+			GUI.button.new(window, Rect(15,15,150,20))
+			.states_([["open quark directory", nil, Color.gray(0.5, 0.8)]])
+			.action_{ arg butt;
 				"open %".format(this.local.path.escapeChar($ )).unixCmd;
 			};
 		};
 
 		resetButton = GUI.button.new(window, Rect(15,15,75,20));
 		resetButton.states = [
-			["reset", Color.black, Color.gray(0.5)]
+			["reset", nil, Color.gray(0.5, 0.8)]
 		];
 		resetButton.action = { arg butt;
 			views.do(_.reset);
@@ -396,7 +398,7 @@ Quarks
 
 		saveButton = GUI.button.new(window, Rect(15,15,75,20));
 		saveButton.states = [
-			["save", Color.black, Color.blue(1, 0.5)]
+			["save", nil, Color.blue(1, 0.5)]
 		];
 		saveButton.action = { arg butt;
 			Task{
@@ -427,7 +429,8 @@ Quarks
 		warning.font_( GUI.font.new( GUI.font.defaultSansFace, 18 ));
 
 		window.view.decorator.nextLine;
-		GUI.staticText.new( window, 492 @ 1 ).background_( Color.grey );		window.view.decorator.nextLine;
+		GUI.staticText.new( window, 492 @ 1 ).background_( Color.grey );
+		window.view.decorator.nextLine;
 
 		flowLayout.margin_( 0 @0 ).gap_( 0@0 );
 		scrollview = GUI.scrollView.new(window, 500 @ (height - 165))

@@ -234,8 +234,8 @@ QuarkView {
 		isInstalled.if({
 			// Quark is currently installed
 			installButton.states = [
-				["+", Color.black, Color.green],		// installed
-				["x", Color.black, Color.red],		// selected to deinstall
+				["+", nil, Color.green(1, 0.5)],		// installed
+				["x", nil, Color.red(1, 0.5)],		    // selected to deinstall
 			];
 			installButton.action = { arg butt;
 				toBeDeinstalled = butt.value>0;
@@ -244,8 +244,8 @@ QuarkView {
 		},{
 			// Quark is currently not installed
 			installButton.states = [
-				["-", Color.black, Color.clear],		// never installed
-				["*", Color.black, Color.blue(alpha: 0.5)],				// selected to install
+				["-", nil, ],		// never installed
+				["*", nil, Color.blue(1, 0.5)],				// selected to install
 			];
 			installButton.action = { arg butt;
 				toBeInstalled = butt.value>0;
