@@ -1004,6 +1004,8 @@ int compareColDescs(const void *va, const void *vb)
 double elapsedTime();
 #endif
 
+static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable);
+
 void buildBigMethodMatrix()
 {
 	PyrMethod **bigTable, **temprow, **row;
@@ -1038,15 +1040,8 @@ void buildBigMethodMatrix()
 		classobj = slotRawClass(&classobj->nextclass);
 	}
 
-	fillClassRow(class_object, bigTable);
-
-	{
-		int numentries = 0;
-		for (int z = 0; z<bigTableSize; ++z) {
-			if (bigTable[z] != NULL) numentries ++ ;
-		}
-		post("numentries = %d / %d = %.2g\n", numentries, bigTableSize, (double)numentries/(double)bigTableSize);
-	}
+	size_t numentries = fillClassRow(class_object, bigTable);
+	post("\tnumentries = %lu / %d = %.2g\n", numentries, bigTableSize, (double)numentries/(double)bigTableSize);
 
 	// fill selector table
 	//post("fill selector table\n");
@@ -1194,20 +1189,20 @@ void buildBigMethodMatrix()
 */
 }
 
-void fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
+static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 {
-	PyrClass* superclassobj;
-	PyrMethod **superrow, **myrow, *method;
-	int i, selectorIndex;
-	int bigTableSize;
+	size_t ret = 0;
 
-	bigTableSize = gNumSelectors * gNumClasses;
-
-	myrow = bigTable + slotRawInt(&classobj->classIndex) * gNumSelectors;
-	superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
+	PyrMethod ** myrow = bigTable + slotRawInt(&classobj->classIndex) * gNumSelectors;
+	PyrClass* superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 	if (superclassobj) {
-		superrow = bigTable + slotRawInt(&superclassobj->classIndex) * gNumSelectors;
-		memcpy(myrow, superrow, gNumSelectors * sizeof(PyrMethod*));
+		PyrMethod ** superrow = bigTable + slotRawInt(&superclassobj->classIndex) * gNumSelectors;
+
+		for (int i = 0; i != gNumSelectors; ++i) {
+			myrow[i] = superrow[i];
+			if (superrow[i])
+				++ret;
+		}
 	} else {
 		memset(myrow, 0, gNumSelectors * sizeof(PyrMethod*));
 	}
@@ -1215,19 +1210,23 @@ void fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 	if (IsObj(&classobj->methods)) {
 		PyrObject * methods = slotRawObject(&classobj->methods);
 		//postfl("        %d\n", methods->size);
-		for (i=0; i<methods->size; ++i) {
-			method = slotRawMethod(&methods->slots[i]);
-			selectorIndex = slotRawSymbol(&method->name)->u.index;
+		for (int i=0; i<methods->size; ++i) {
+			PyrMethod* method = slotRawMethod(&methods->slots[i]);
+			int selectorIndex = slotRawSymbol(&method->name)->u.index;
+
+			if (myrow[selectorIndex] == 0)
+				++ret;
+
 			myrow[selectorIndex] = method;
 		}
 	}
 
 	if (IsObj(&classobj->subclasses)) {
 		PyrObject * subclasses = slotRawObject(&classobj->subclasses);
-		for (i=0; i<subclasses->size; ++i) {
-			fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable);
-		}
+		for (int i=0; i<subclasses->size; ++i)
+			ret += fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable);
 	}
+	return ret;
 }
 
 
