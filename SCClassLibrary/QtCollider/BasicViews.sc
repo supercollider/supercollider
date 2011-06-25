@@ -317,6 +317,11 @@ QCheckBox : QView {
     this.setProperty(\value,val)
   }
 
+  valueAction_ { |val|
+    this.value_(val);
+    this.doAction;
+  }
+
   string_{ |string|
     this.setProperty(\text,string)
   }
