@@ -10,7 +10,8 @@
 		var outputsListView;
 		var synthDescList;
 		var hvBold12;
-		var updateViews;
+		var updateSynthDefs;
+		var updateSynthDefData;
 		var btn, testFn;
 		var fntMono, gui;
 
@@ -83,13 +84,19 @@
 		inputsListView.resize = 4;
 		outputsListView.resize = 4;
 
-		// this is a trick to not show hilighting.
-		controlsListView.hiliteColor = Color.clear;
-		inputsListView.hiliteColor = Color.clear;
-		outputsListView.hiliteColor = Color.clear;
-		controlsListView.selectedStringColor = Color.black;
-		inputsListView.selectedStringColor = Color.black;
-		outputsListView.selectedStringColor = Color.black;
+		if (GUI.id == \qt) {
+			[controlsListView, inputsListView, outputsListView].do {
+				|listview| listview.selectionMode = \none
+			};
+		} {
+			// this is a trick to not show hilighting.
+			controlsListView.hiliteColor = Color.clear;
+			inputsListView.hiliteColor = Color.clear;
+			outputsListView.hiliteColor = Color.clear;
+			controlsListView.selectedStringColor = Color.black;
+			inputsListView.selectedStringColor = Color.black;
+			outputsListView.selectedStringColor = Color.black;
+		};
 
 		controlsListView.font	= fntMono;
 		inputsListView.font	= fntMono;
@@ -101,22 +108,28 @@
 			.value_(synthDescLibListView.items.indexOf(name) ? 0);
 		synthDescLibListView.action = {
 			synthDescListView.value = 0;
-			updateViews.value;
+			updateSynthDefs.value;
 		};
 
 		synthDescListView.items = [];
 		synthDescListView.action = {
-			updateViews.value;
+			updateSynthDefData.value;
 		};
 		synthDescListView.enterKeyAction = testFn;
 
-		updateViews = {
-			var libName, synthDesc;
+		updateSynthDefs = {
+			var libName;
 
 			libName = synthDescLibListView.item;
 			synthDescLib = SynthDescLib.all[libName];
 			synthDescList = synthDescLib.synthDescs.values.sort {|a,b| a.name <= b.name };
 			synthDescListView.items = synthDescList.collect {|desc| desc.name.asString };
+
+			updateSynthDefData.value;
+		};
+
+		updateSynthDefData = {
+			var synthDesc;
 
 			synthDesc = synthDescList[synthDescListView.value];
 
@@ -158,7 +171,7 @@
 			};
 		};
 
-		updateViews.value;
+		updateSynthDefs.value;
 
 		w.front;
 	}
