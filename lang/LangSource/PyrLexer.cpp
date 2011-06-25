@@ -26,9 +26,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <cerrno>
+#include <limits>
 
 #ifdef SC_WIN32
-//# include <wx/wx.h>
 # include <direct.h>
 #else
 # include <sys/param.h>
@@ -1112,17 +1112,11 @@ int processident(char *token)
 		return NILOBJ;
 	}
 	if (strcmp("inf",token) ==0) {
-#ifdef SC_WIN32
-    double a = 0.0;
-    double b = 1.0/a;
-    SetFloat(&slot, b);
-#else
-    SetFloat(&slot, INFINITY);
-#endif
+		SetFloat(&slot, std::numeric_limits<double>::infinity());
 		node = newPyrSlotNode(&slot);
 		zzval = (long)node;
-    return SC_FLOAT;
-  }
+		return SC_FLOAT;
+	}
 
 	sym = getsym(token);
 
