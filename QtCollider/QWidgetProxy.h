@@ -67,8 +67,8 @@ private Q_SLOTS:
   void customPaint( QPainter * );
 
 private:
-  void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
-  void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
+  bool interpretMouseEvent( QObject *, QEvent *, QList<QVariant> &args );
+  bool interpretKeyEvent( QObject *, QEvent *, QList<QVariant> &args );
 
   void bringFrontEvent();
   void setFocusEvent( QtCollider::SetFocusEvent * );
