@@ -50,34 +50,5 @@ QUserView : QView {
     action = func;
   }
 
-  // reimplement mouse and key response to do nothing if enabled = false;
-  // NOTE: call superclass' implementation to handle modifiers conversion
-
-  keyDownEvent { arg char, modifiers, unicode, keycode;
-    if( this.enabled ) { ^super.keyDownEvent( char, modifiers, unicode, keycode ) };
-  }
-
-  keyUpEvent { arg char, modifiers, unicode, keycode;
-    if( this.enabled ) { ^super.keyUpEvent( char, modifiers, unicode, keycode ) };
-  }
-
-  mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
-    if( this.enabled ) { ^super.mouseDownEvent( x, y, modifiers, buttonNumber, clickCount ) };
-  }
-
-  mouseUpEvent { arg x, y, modifiers, buttonNumber;
-    if( this.enabled ) { ^super.mouseUpEvent( x, y, modifiers, buttonNumber ) };
-  }
-
-  mouseMoveEvent { arg x, y, modifiers;
-    if( this.enabled ) { ^super.mouseMoveEvent( x, y, modifiers ) };
-  }
-
-  mouseOverEvent { arg x, y;
-    // NOTE: do not call superclass, because its implementation gets optimized away
-    // so 'mouseOver' will not be looked up in subclasses!
-    if( this.enabled ) { ^this.mouseOver( x, y ) };
-  }
-
   doDrawFunc { drawFunc.value(this) }
 }

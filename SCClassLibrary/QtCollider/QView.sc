@@ -528,7 +528,7 @@ QView : QObject {
   }
 
   mouseOverEvent { arg x, y;
-    // WARNING: QUserView overrides this method!
+    var dummy = x; // prevent this method from being optimized away
     ^this.mouseOver( x, y );
   }
 
