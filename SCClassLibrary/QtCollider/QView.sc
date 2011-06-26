@@ -183,19 +183,23 @@ QView : QObject {
   // ------------------ container stuff ----------------------------
 
   children { arg class = QView;
-    ^super.children( class );
+    var ch = super.children( class );
+    ^ch.select { |v| (v.tryPerform(\isClosed) ? false).not };
   }
 
   parent { arg class = QView;
-    ^super.parent(class);
+    if (wasRemoved) { ^nil } { ^super.parent(class) };
   }
 
   parents {
     var allParents;
-    var p = this.parent;
-    while { p.notNil } {
-      allParents = allParents.add( p );
-      p = p.parent;
+    var p;
+    if (wasRemoved.not) {
+      p = this.parent;
+      while { p.notNil } {
+        allParents = allParents.add( p );
+        p = p.parent;
+      };
     };
     ^allParents;
   }
