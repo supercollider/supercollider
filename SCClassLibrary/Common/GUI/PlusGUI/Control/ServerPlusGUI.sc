@@ -19,12 +19,21 @@
 		var recorder, scoper;
 		var countsViews, ctlr;
 		var label, gui, font, volumeNum;
-		var greenAlpha02 = Color.green.alpha_(0.2);
+		var buttonColor, faintGreen, faintRed;
 
 		if (window.notNil) { ^window.front };
 
 		gui = GUI.current;
 		font = GUI.font.new(Font.defaultSansFace, 10);
+
+		if (QtGUI.id == \qt) {
+			buttonColor = QtGUI.palette.buttonColor;
+			faintGreen = buttonColor.blend(Color.green, 0.2);
+			faintRed = buttonColor.blend(Color.red, 0.25);
+		} {
+			faintGreen = Color.green.alpha_(0.2);
+			faintRed = Color.red.alpha_(0.3)
+		};
 
 		if(w.isNil) {
 			label = name.asString + "server";
@@ -39,7 +48,7 @@
 			booter.canFocus = false;
 			booter.font = font;
 			booter.states = [["Boot"],
-						     ["Quit", nil, greenAlpha02]];
+						     ["Quit", nil, faintGreen]];
 
 			booter.action = { arg view;
 				if(view.value == 1, {
@@ -69,7 +78,7 @@
 		makeDefault.font = font;
 		makeDefault.canFocus = false;
 		makeDefault.states = [["-> default"],
-			["-> default", nil, greenAlpha02]];
+			["-> default", nil, faintGreen]];
 		makeDefault.value_((this == Server.default).binaryValue);
 		makeDefault.action = { Server.default_(this) };
 
@@ -79,8 +88,8 @@
 			recorder = gui.button.new(w, Rect(0,0, 66, 18));
 			recorder.font = font;
 			recorder.states = [
-				["record >", nil, Color.clear],
-				["stop []", nil, greenAlpha02]
+				["record >"],
+				["stop []", nil, faintGreen]
 			];
 			recorder.action = {
 				if (recorder.value == 1) { this.record } { this.stopRecording };
@@ -245,8 +254,8 @@
 				.font_(font)
 				.canFocus_(false)
 				.states_([
-					["M", nil, Color.clear],
-					["M", nil, Color.red.alpha_(0.3)]
+					["M"],
+					["M", nil, faintRed]
 					])
 				.action_({arg me;
 					this.serverRunning.if({
