@@ -53,5 +53,24 @@ endif()
 
 add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
 
-add_library(boost_thread_shared SHARED ${boost_thread_src} ${boost_thread_platform})
-target_link_libraries(boost_thread_shared ${PTHREADS_LIBRARY})
+add_library(supercollider_boost_thread SHARED ${boost_thread_src} ${boost_thread_platform})
+target_link_libraries(supercollider_boost_thread ${PTHREADS_LIBRARY})
+
+if(APPLE)
+	# determines the app name and app install location (scappbundlename, scappdir):
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+
+	install(TARGETS supercollider_boost_thread
+			DESTINATION "${scappauxresourcesdir}"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+			COMPONENT app)
+elseif(WIN32)
+	install(TARGETS supercollider_boost_thread
+			DESTINATION "SuperCollider"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+else()
+	install(TARGETS supercollider_boost_thread
+			LIBRARY DESTINATION "lib"
+			RUNTIME DESTINATION "bin"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
