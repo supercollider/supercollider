@@ -438,7 +438,7 @@ Server {
 				((serverRunning.not
 				  or: (serverBooting and: mBootNotifyFirst.not))
 				 and: {(limit = limit - 1) > 0})
-				and: pid.pidRunning
+				and: { pid.tryPerform(\pidRunning) == true }
 			},{
 				0.2.wait;
 			});
@@ -673,14 +673,14 @@ Server {
 					if(msg[1] == '/quit') {
 						statusWatcher.enable;
 						serverReallyQuit = true;
-						serverReallyQuitWatcher.clear;
+						serverReallyQuitWatcher.free;
 					};
 				}, '/done', addr);
 				// don't accumulate quit-watchers if /done doesn't come back
 				AppClock.sched(3.0, {
 					if(serverReallyQuit.not) {
 						"Server % failed to quit after 3.0 seconds.".format(this.name).warn;
-						serverReallyQuitWatcher.clear;
+						serverReallyQuitWatcher.free;
 					};
 				});
 			};
