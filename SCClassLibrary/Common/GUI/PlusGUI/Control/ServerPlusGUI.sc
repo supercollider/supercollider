@@ -26,8 +26,8 @@
 		gui = GUI.current;
 		font = GUI.font.new(Font.defaultSansFace, 10);
 
-		if (QtGUI.id == \qt) {
-			buttonColor = QtGUI.palette.buttonColor;
+		if (gui.id == \qt) {
+			buttonColor = gui.palette.buttonColor;
 			faintGreen = buttonColor.blend(Color.green, 0.2);
 			faintRed = buttonColor.blend(Color.red, 0.25);
 		} {
