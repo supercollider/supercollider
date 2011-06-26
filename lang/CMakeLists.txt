@@ -269,7 +269,7 @@ if (GC_SANITYCHECK)
 	add_definitions(-DGC_SANITYCHECK)
 endif()
 
-target_link_libraries(libsclang ${PTHREADS_LIBRARY} boost_thread_shared)
+target_link_libraries(libsclang ${PTHREADS_LIBRARY} supercollider_boost_thread)
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
 target_link_libraries(sclang libsclang boost_thread)
