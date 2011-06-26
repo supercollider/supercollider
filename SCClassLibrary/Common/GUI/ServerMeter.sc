@@ -127,37 +127,47 @@ ServerMeterView{
 		numRMSSampsRecip = 1 / numRMSSamps;
 		(numIns > 0).if({
 			inresp = OSCProxy({|msg|
-				{try {
-				var channelCount = msg.size - 3 / 2;
+				{
+					try {
+						var channelCount = msg.size - 3 / 2;
 
-				channelCount.do {|channel|
-					var baseIndex = 3 + (2*channel);
-					var peakLevel = msg.at(baseIndex);
-					var rmsValue  = msg.at(baseIndex + 1);
-					var meter = inmeters.at(channel);
-					if (meter.isClosed.not) {
-						meter.pealLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
-						meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
-					}
-				}}}.defer;
+						channelCount.do {|channel|
+							var baseIndex = 3 + (2*channel);
+							var peakLevel = msg.at(baseIndex);
+							var rmsValue  = msg.at(baseIndex + 1);
+							var meter = inmeters.at(channel);
+							if (meter.isClosed.not) {
+								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
+								meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+							}
+						}
+					} { |error|
+						if(error.isKindOf(PrimitiveFailedError).not) { error.throw }
+					};
+				}.defer;
 			}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix;
 		});
 		(numOuts > 0).if({
 			outresp = OSCProxy({|msg|
-				{try {
-				var channelCount = msg.size - 3 / 2;
+				{
+					try {
+						var channelCount = msg.size - 3 / 2;
 
-				channelCount.do {|channel|
-					var baseIndex = 3 + (2*channel);
-					var peakLevel = msg.at(baseIndex);
-					var rmsValue  = msg.at(baseIndex + 1);
-					var meter = outmeters.at(channel);
-					if (meter.isClosed.not) {
-						meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
-						meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
-					}
-				}}}.defer;
-			}, ("/" ++ server.name ++ "OutLevels").asSymbol, server.addr).fix;
+						channelCount.do {|channel|
+							var baseIndex = 3 + (2*channel);
+							var peakLevel = msg.at(baseIndex);
+							var rmsValue  = msg.at(baseIndex + 1);
+							var meter = outmeters.at(channel);
+							if (meter.isClosed.not) {
+								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
+								meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+							}
+						}
+					} { |error|
+						if(error.isKindOf(PrimitiveFailedError).not) { error.throw }
+					};
+				}.defer;
+			});
 		});
 	}
 
