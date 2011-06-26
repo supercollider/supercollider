@@ -1073,7 +1073,7 @@ void buildBigMethodMatrix()
 	int rowTableSize;
 	int bigTableSize;
 	int numSelectors = gNumSelectors;
-	int numClasses = gNumClasses;
+	const int numClasses = gNumClasses;
 	//post("allocate arrays\n");
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
@@ -1195,7 +1195,10 @@ void buildBigMethodMatrix()
 	rowTableSize = (freeIndex + numClasses)  * sizeof(PyrMethod*);
 	gRowTable = (PyrMethod**)pyr_pool_runtime->Alloc(rowTableSize);
 	MEMFAIL(gRowTable);
-	memset(gRowTable, 0, (freeIndex + numClasses) * sizeof(PyrMethod*));
+
+	// having the method ptr always be valid saves a branch in SendMessage()
+	for (i=0; i<freeIndex + numClasses; ++i)
+		gRowTable[i] = gNullMethod;
 
 	//post("fill compressed table\n");
 	//{ FILE* fp;
@@ -1208,16 +1211,16 @@ void buildBigMethodMatrix()
 		row = bigTable + sels[i].minClassIndex * numSelectors + i;
 		PyrMethod **table = gRowTable;
 		for (j=offset,k=0; j<maxwidth; ++j, k+=numSelectors) {
-			table[j] = row[k];
+			if (row[k])
+				table[j] = row[k];
 		}
 	}
 	//fclose(fp);
 	//}
 
-	// having the method ptr always be valid saves a branch in SendMessage()
-	for (i=0; i<freeIndex + numClasses; ++i) {
-		if (gRowTable[i] == NULL) gRowTable[i] = gNullMethod;
-	}
+	for (i=0; i<freeIndex + numClasses; ++i)
+		assert(gRowTable[i]);
+
 
 	//post("freeIndex %d\n", freeIndex);
 	//post("widthSum %d\n", widthSum);
