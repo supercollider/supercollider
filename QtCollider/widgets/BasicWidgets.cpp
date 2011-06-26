@@ -68,7 +68,8 @@ void QcListWidget::setColors( const VariantList & colors ) const
   int ic = count();
   for( int i=0; i<cc && i < ic; ++i ) {
     QListWidgetItem *it = item(i);
-    it->setBackground( colors.data[i].value<QColor>() );
+    QColor color( colors.data[i].value<QColor>() );
+    if( color.isValid() ) it->setBackground( color );
   }
 }
 
