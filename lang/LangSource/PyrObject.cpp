@@ -1288,9 +1288,13 @@ void buildBigMethodMatrix()
 	compileThreadPool.size_controller().resize(0); // terminate threads
 }
 
-static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
+#include <boost/atomic.hpp>
+
+static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, boost::atomic<size_t> * rCount);
+
+static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, boost::atomic<size_t> * rCount)
 {
-	size_t ret = 0;
+	size_t count = 0;
 
 	PyrMethod ** myrow = bigTable + slotRawInt(&classobj->classIndex) * gNumSelectors;
 	PyrClass* superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
@@ -1300,7 +1304,7 @@ static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 		for (int i = 0; i != gNumSelectors; ++i) {
 			myrow[i] = superrow[i];
 			if (superrow[i])
-				++ret;
+				++count;
 		}
 	} else {
 		memset(myrow, 0, gNumSelectors * sizeof(PyrMethod*));
@@ -1314,18 +1318,45 @@ static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 			int selectorIndex = slotRawSymbol(&method->name)->u.index;
 
 			if (myrow[selectorIndex] == 0)
-				++ret;
+				++count;
 
 			myrow[selectorIndex] = method;
 		}
 	}
 
+	*rCount += count;
+
 	if (IsObj(&classobj->subclasses)) {
 		PyrObject * subclasses = slotRawObject(&classobj->subclasses);
-		for (int i=0; i<subclasses->size; ++i)
-			ret += fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable);
+		size_t numSubclasses = subclasses->size;
+
+		if (numSubclasses > 4*cpuCount) {
+			int subclassesPerThread = numSubclasses / cpuCount;
+			for (int i = 0; i != helperThreadCount; ++i)
+				compileThreadPool.schedule(boost::bind(&fillClassRowSubClasses, subclasses,
+													   subclassesPerThread * i, subclassesPerThread * (i+1),
+													   bigTable, rCount));
+			fillClassRowSubClasses(subclasses, subclassesPerThread * helperThreadCount, numSubclasses, bigTable, rCount);
+		}
+		else
+			fillClassRowSubClasses(subclasses, 0, numSubclasses, bigTable, rCount);
 	}
-	return ret;
+}
+
+static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, boost::atomic<size_t> * rCount)
+{
+	for (int i = begin; i != end; ++i)
+		fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable, rCount);
+}
+
+
+static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
+{
+	boost::atomic<size_t> ret (0);
+
+	fillClassRow(classobj, bigTable, &ret);
+	if (helperThreadCount) compileThreadPool.wait();
+	return ret.load(boost::memory_order_acquire);
 }
 
 
