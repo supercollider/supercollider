@@ -167,7 +167,7 @@ ServerMeterView{
 						if(error.isKindOf(PrimitiveFailedError).not) { error.throw }
 					};
 				}.defer;
-			});
+			}, ("/" ++ server.name ++ "OutLevels").asSymbol, server.addr).fix;
 		});
 	}
 
