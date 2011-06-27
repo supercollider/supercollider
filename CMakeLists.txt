@@ -12,7 +12,8 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-	message(FATAL_ERROR "Rejecting in-place build. Please use a build directory")
+	message(FATAL_ERROR "Rejecting in-place build:\n"
+		"please remove ${CMAKE_SOURCE_DIR}/CMakeCache.txt ${CMAKE_SOURCE_DIR}/CMakeFiles and try again with a build directory")
 endif()
 
 
