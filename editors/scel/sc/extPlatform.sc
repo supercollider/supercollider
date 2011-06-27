@@ -5,3 +5,11 @@
 		};
 	}
 }
+
++ LinuxPlatform {
+	recompile{
+		if ( this.hasFeature( \emacs ) ) {
+			Emacs.evalLispExpression( "(sclang-recompile)" );
+		};
+	}
+}
