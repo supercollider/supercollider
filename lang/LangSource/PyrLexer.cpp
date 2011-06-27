@@ -2208,7 +2208,6 @@ void closeAllGUIScreens();
 void TempoClock_stopAll(void);
 void closeAllCustomPorts();
 
-void shutdownLibrary();
 void shutdownLibrary()
 {
 	closeAllGUIScreens();
@@ -2216,6 +2215,12 @@ void shutdownLibrary()
 	schedStop();
 	TempoClock_stopAll();
 	closeAllCustomPorts();
+
+	pthread_mutex_lock (&gLangMutex);
+	if (gVMGlobals.gc)
+		gVMGlobals.gc->ScanFinalizers(); // run finalizers
+	pyr_pool_runtime->FreeAll();
+	pthread_mutex_unlock (&gLangMutex);
 }
 
 SC_DLLEXPORT_C bool compileLibrary()
@@ -2226,7 +2231,8 @@ SC_DLLEXPORT_C bool compileLibrary()
 	pthread_mutex_lock (&gLangMutex);
 	gNumCompiledFiles = 0;
 	compiledOK = false;
-        compileStartTime = elapsedTime();
+
+	compileStartTime = elapsedTime();
 
 	totalByteCodes = 0;
 
