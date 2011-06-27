@@ -39,7 +39,8 @@ public:
 	enum
 	{
 		kInterpretCmdLine = 0x1b,
-		kInterpretPrintCmdLine = 0x0c
+		kInterpretPrintCmdLine = 0x0c,
+		kRecompileLibrary = 0x18 // ctrl+x
 	};
 
 	struct Options : public SC_LanguageClient::Options
@@ -108,6 +109,8 @@ protected:
 	virtual void onScheduleChanged();
 	// Language requested the application to quit
 	virtual void onQuit( int exitCode );
+	// Request to recompile the class library
+	virtual void onRecompileLibrary();
 	// See super class
 	virtual void onLibraryStartup();
 
@@ -122,6 +125,7 @@ protected:
 	static int prArgv(struct VMGlobals* g, int);
 	static int prExit(struct VMGlobals* g, int);
 	static int prScheduleChanged( struct VMGlobals *, int);
+	static int prRecompile(struct VMGlobals *, int);
 
 private:
 	// NOTE: called from input thread:
@@ -150,6 +154,7 @@ private:
 	pthread_cond_t mCond;
 	bool mInput; // there is new input
 	bool mSched; // something has been scheduled
+	bool mRecompile; // class lib recompilation requested
 
 	// command input
 	bool mUseReadline;
