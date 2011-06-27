@@ -52,6 +52,7 @@ namespace QtCollider {
     Event_SCRequest_Input = QEvent::User,
     Event_SCRequest_Sched,
     Event_SCRequest_Quit,
+    Event_SCRequest_Recompile,
     Event_ScMethodCall,
     Event_Refresh,
     Event_Proxy_SetProperty,

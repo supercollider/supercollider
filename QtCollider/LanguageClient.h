@@ -57,6 +57,7 @@ protected:
   virtual void onScheduleChanged();
   virtual void onInput();
   virtual void onQuit( int exitCode );
+  virtual void onRecompileLibrary();
 
   virtual void customEvent( QEvent * );
   virtual void timerEvent( QTimerEvent * );

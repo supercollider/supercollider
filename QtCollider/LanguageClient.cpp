@@ -99,6 +99,11 @@ void LangClient::onQuit( int exitCode )
     new SCRequestEvent( Event_SCRequest_Quit, exitCode ) );
 }
 
+void LangClient::onRecompileLibrary()
+{
+  QApplication::postEvent( this, new SCRequestEvent( Event_SCRequest_Recompile ) );
+}
+
 void LangClient::customEvent( QEvent *e )
 {
   int type = e->type();
@@ -116,6 +121,9 @@ void LangClient::customEvent( QEvent *e )
       qApp->exit( code );
       break;
     }
+    case Event_SCRequest_Recompile:
+      recompileLibrary();
+      break;
     default: ;
   }
 }
