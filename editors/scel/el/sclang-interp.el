@@ -342,6 +342,13 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (sclang-kill)
   (sclang-release-command-fifo))
 
+(defun sclang-recompile ()
+  "Recompile class library."
+  (interactive)
+  (when (sclang-get-process)
+    (process-send-string sclang-process "\x18")
+    ))
+
 ;; =====================================================================
 ;; command process
 ;; =====================================================================

@@ -74,6 +74,7 @@
    '(
      ["Start Interpreter"	sclang-start :included (not (sclang-library-initialized-p))]
      ["Restart Interpreter"	sclang-start :included (sclang-library-initialized-p)]
+     ["Recompile Class Library"	sclang-recompile :included (sclang-library-initialized-p)]
      ["Stop Interpreter"	sclang-stop  :included (sclang-get-process)]
      ["Kill Interpreter"	sclang-kill  :included (sclang-get-process)]
      "-"
@@ -107,7 +108,8 @@
 
 (defun sclang-fill-mode-map (map)
   ;; process control
-  (define-key map "\C-c\C-l"			'sclang-start)
+  (define-key map "\C-c\C-l"			'sclang-recompile)
+  (define-key map "\C-c\C-o"			'sclang-start)
   ;; post buffer control
   (define-key map "\C-c<"			'sclang-clear-post-buffer)
   (define-key map "\C-c>"			'sclang-show-post-buffer)
