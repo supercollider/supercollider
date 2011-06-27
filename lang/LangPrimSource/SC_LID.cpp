@@ -361,11 +361,13 @@ int SC_LIDManager::start()
 
 int SC_LIDManager::stop()
 {
+	if (m_running == false)
+		return errNone;
+
 	Command cmd;
-	int err;
 
 	cmd.id = kStop;
-	err = sendCommand(cmd);
+	int err = sendCommand(cmd);
 	if (err) return err;
 
 	err = pthread_join(m_thread, 0);
@@ -452,6 +454,7 @@ void* SC_LIDManager::threadFunc(void* arg)
 
 void SC_LIDManager::loop()
 {
+	m_running = true;
 	post("LID: event loop started\n");
 
 	while (true) {
@@ -511,6 +514,7 @@ void SC_LIDManager::loop()
 	}
 
  quit:
+	m_running = false;
 	post("LID: event loop stopped\n");
 }
 
