@@ -284,7 +284,7 @@ QView : QObject {
   }
 
   isClosed {
-    ^wasRemoved;
+    if (wasRemoved) {^true} {^this.isValid.not};
   }
 
   notClosed { ^this.isClosed.not }
