@@ -158,7 +158,6 @@ void SC_LanguageClient::shutdownLibrary()
 
 void SC_LanguageClient::recompileLibrary()
 {
-	shutdownLibrary();
 	compileLibrary();
 }
 
