@@ -732,12 +732,17 @@ void SC_TerminalClient::pushCmdLine( SC_StringBuffer &buf, const char *newData, 
 
 	while (size--) {
 		char c = *newData++;
-		if (c == kInterpretCmdLine || c == kInterpretPrintCmdLine) {
+		switch (c) {
+		case kRecompileLibrary:
+		case kInterpretCmdLine:
+		case kInterpretPrintCmdLine:
 			mInputBuf.append( buf.getData(), buf.getSize() );
 			mInputBuf.append(c);
 			signal = true;
 			buf.reset();
-		} else {
+			break;
+
+		default:
 			buf.append(c);
 		}
 	}
