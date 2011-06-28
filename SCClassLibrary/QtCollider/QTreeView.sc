@@ -86,14 +86,6 @@ QTreeViewItem {
   var finalizer;
   var <treeView;
 
-  *new { arg treeView;
-    ^super.new.initQTreeViewItem( treeView );
-  }
-
-  initQTreeViewItem { arg treeView_;
-    treeView = treeView_;
-  }
-
   == { arg other;
     ^ other.class == QTreeViewItem and: {id == other.id}
   }
