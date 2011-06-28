@@ -214,17 +214,18 @@ void QcTreeWidget::Item::initialize (
   VMGlobals *g, PyrObject *obj, const QcTreeWidget::ItemPtr &ptr )
 {
   Q_ASSERT( isKindOf( obj, class_QTreeViewItem ) );
-  // store the SafePtr
-  if( ptr != 0 ) {
+  if( ptr.id() ) {
+    // store the SafePtr
     QcTreeWidget::ItemPtr *newPtr = new QcTreeWidget::ItemPtr( ptr );
     SetPtr( obj->slots+0, newPtr );
+    // store the id for equality comparison
+    SetPtr( obj->slots+1, ptr.id() );
+    // install finalizer
   }
   else {
     SetNil( obj->slots+0 );
+    SetNil( obj->slots+1 );
   }
-  // set id slot to actual pointer
-  SetPtr( obj->slots+1, ptr.id() );
-  // install finalizer
   InstallFinalizer( g, obj, 2, &QcTreeWidget::Item::finalize );
 }
 

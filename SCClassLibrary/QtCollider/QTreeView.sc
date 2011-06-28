@@ -95,8 +95,10 @@ QTreeViewItem {
   }
 
   == { arg other;
-    ^ other.class == QTreeViewItem and: {id.notNil && (id == other.id)}
+    ^ other.class == QTreeViewItem and: {id == other.id}
   }
+
+  isNull { ^ id.isNil }
 
   parent {
     ^treeView.invokeMethod( \parentItem, this ).prValidItem(treeView);
