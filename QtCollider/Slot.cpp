@@ -108,6 +108,27 @@ int Slot::setPalette( PyrSlot *slot, const QPalette &plt )
   return errNone;
 }
 
+void Slot::setQObject( PyrSlot *s, QObject *o )
+{
+  if( !o ) {
+    SetNil(s);
+    return;
+  }
+
+  QObjectProxy *proxy = QObjectProxy::fromObject(o);
+  if( proxy && proxy->scObject() )
+    SetObject( s, proxy->scObject() );
+  else
+    SetNil( s );
+}
+
+void Slot::setTreeWidgetItem( PyrSlot *s, const SafePtr<QcTreeWidget::Item> & itemPtr )
+{
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_QTreeViewItem, 0, true, true );
+  QcTreeWidget::Item::initialize( gMainVMGlobals, obj, itemPtr );
+  SetObject( s, obj );
+}
+
 void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
 {
   VMGlobals *g = gMainVMGlobals;
@@ -159,12 +180,21 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
     case QMetaType::Int:
         SetInt( slot, val.toInt() );
         return errNone;
+    case QMetaType::QObjectStar:
+        Slot::setQObject( slot, val.value<QObject*>() );
+        return errNone;
+    case QMetaType::QWidgetStar:
+        Slot::setQObject( slot, val.value<QWidget*>() );
+        return errNone;
     case QMetaType::Void:
         SetNil( slot );
         return errNone;
     default:
         if( type == qMetaTypeId<VariantList>() ) {
           Slot::setVariantList( slot, val.value<VariantList>() );
+        }
+        else if( type == qMetaTypeId<QcTreeWidget::ItemPtr>() ) {
+          Slot::setTreeWidgetItem( slot, val.value< QtCollider::SafePtr<QcTreeWidget::Item> >() );
         }
         else {
           qcErrorMsg( "the QVariant could not be interpreted!" );
@@ -354,6 +384,19 @@ QObjectProxy* Slot::toObjectProxy( PyrSlot *slot )
   return proxy;
 }
 
+QcTreeWidget::ItemPtr Slot::toTreeWidgetItem( PyrSlot *slot )
+{
+  if( !isKindOfSlot( slot, class_QTreeViewItem ) ) return QcTreeWidget::ItemPtr();
+  PyrSlot *ptrSlot = slotRawObject(slot)->slots+0;
+  if( IsPtr( ptrSlot ) ) {
+    QcTreeWidget::ItemPtr *safePtr = static_cast<QcTreeWidget::ItemPtr*>( slotRawPtr(ptrSlot) );
+    return *safePtr;
+  }
+  else {
+    return QcTreeWidget::ItemPtr();
+  }
+}
+
 QVariant Slot::toVariant( PyrSlot *slot )
 {
   QObjectProxy *proxy;
@@ -398,6 +441,9 @@ QVariant Slot::toVariant( PyrSlot *slot )
       }
       else if( isKindOfSlot( slot, class_Array ) || isKindOfSlot( slot, class_SymbolArray ) ) {
         return QVariant::fromValue<VariantList>( toVariantList(slot) );
+      }
+      else if( isKindOfSlot( slot, class_QTreeViewItem ) ) {
+        return QVariant::fromValue<QcTreeWidget::ItemPtr>( toTreeWidgetItem(slot) );
       }
       else {
         qcErrorMsg("Could not interpret slot!");
@@ -472,6 +518,10 @@ void QtCollider::Variant::setData( PyrSlot *slot )
           _type = qMetaTypeId<QObjectProxy*>();
           _ptr = new QObjectProxy*( proxy );
         }
+      }
+      else if( isKindOfSlot( slot, class_QTreeViewItem ) ) {
+        _type = qMetaTypeId<QcTreeWidget::ItemPtr>();
+        _ptr = new QcTreeWidget::ItemPtr( toTreeWidgetItem(slot) );
       }
       else {
         qcErrorMsg("Could not interpret slot!");

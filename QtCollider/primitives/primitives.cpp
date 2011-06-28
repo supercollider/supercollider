@@ -50,6 +50,7 @@ PyrSymbol *s_QPalette;
 PyrSymbol *s_QFont;
 PyrSymbol *s_QObject;
 PyrSymbol *s_QLayout;
+PyrSymbol *s_QTreeViewItem;
 
 QC_PUBLIC
 void initPrimitives () {
@@ -83,6 +84,7 @@ void initPrimitives () {
   s_QLayout = getsym("QLayout");
   s_QFont = getsym("QFont");
   s_QPalette = getsym("QPalette");
+  s_QTreeViewItem = getsym("QTreeViewItem");
 }
 
 } // namespace QtCollider

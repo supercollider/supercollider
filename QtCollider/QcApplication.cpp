@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "QcApplication.h"
+#include "widgets/QcTreeWidget.h"
 
 #include <PyrLexer.h>
 #include <VMGlobals.h>
@@ -61,6 +62,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _instance = this;
   _mutex.unlock();
   qRegisterMetaType<VariantList>();
+  qRegisterMetaType<QcTreeWidget::ItemPtr>();
 }
 
 QcApplication::~QcApplication()

@@ -93,6 +93,7 @@ namespace QtCollider {
   extern PyrSymbol *s_QFont;
   extern PyrSymbol *s_QObject;
   extern PyrSymbol *s_QLayout;
+  extern PyrSymbol *s_QTreeViewItem;
 
 #define class_Rect s_Rect->u.classobj
 #define class_Point s_Point->u.classobj
@@ -106,6 +107,8 @@ namespace QtCollider {
 #define class_QFont s_QFont->u.classobj
 #define class_QObject s_QObject->u.classobj
 #define class_QLayout s_QLayout->u.classobj
+#define class_QTreeViewItem s_QTreeViewItem->u.classobj
+
 }
 
 #endif //_SC_QT_COMMON_H

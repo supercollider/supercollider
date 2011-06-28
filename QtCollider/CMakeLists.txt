@@ -17,6 +17,7 @@ set( QT_COLLIDER_HDRS
   QObjectProxy.h
   QWidgetProxy.h
   widgets/BasicWidgets.h
+  widgets/QcTreeWidget.h
   widgets/QcScrollArea.h
   widgets/QcNumberBox.h
   widgets/QcSlider.h
@@ -49,6 +50,7 @@ set( QT_COLLIDER_SRCS
   primitives/prim_misc.cpp
   primitives/prim_QWidget.cpp
   widgets/BasicWidgets.cpp
+  widgets/QcTreeWidget.cpp
   widgets/QcScrollArea.cpp
   widgets/QcAbstractStepValue.cpp
   widgets/QcNumberBox.cpp
