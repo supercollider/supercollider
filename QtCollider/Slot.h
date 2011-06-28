@@ -33,6 +33,7 @@
 #include <PyrSlot.h>
 
 #include "Common.h"
+#include "widgets/QcTreeWidget.h"
 
 class QObjectProxy;
 
@@ -52,6 +53,7 @@ namespace Slot
   QPalette toPalette( PyrSlot * );
   VariantList toVariantList( PyrSlot * );
   QObjectProxy * toObjectProxy( PyrSlot * );
+  QcTreeWidget::ItemPtr toTreeWidgetItem( PyrSlot * );
   QVariant toVariant( PyrSlot * );
 
   int setRect( PyrSlot *, const QRectF & );
@@ -59,6 +61,8 @@ namespace Slot
   void setString( PyrSlot *, const QString & );
   int setColor( PyrSlot *, const QColor & );
   int setPalette( PyrSlot *, const QPalette & );
+  void setQObject( PyrSlot *, QObject * );
+  void setTreeWidgetItem( PyrSlot *, const QcTreeWidget::ItemPtr & );
   void setVariantList( PyrSlot *, const VariantList& );
   int setVariant( PyrSlot *, const QVariant & );
 };
