@@ -9,6 +9,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost
+                    ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     LangSource/Bison)
 
@@ -268,10 +269,10 @@ if (GC_SANITYCHECK)
 	add_definitions(-DGC_SANITYCHECK)
 endif()
 
-target_link_libraries(libsclang ${PTHREADS_LIBRARY})
+target_link_libraries(libsclang ${PTHREADS_LIBRARY} boost_thread_shared)
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
-target_link_libraries(sclang libsclang)
+target_link_libraries(sclang libsclang boost_thread)
 
 set_property(TARGET sclang
 	APPEND

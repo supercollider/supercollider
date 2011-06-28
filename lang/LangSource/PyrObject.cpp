@@ -848,8 +848,17 @@ static PyrClass * sortClasses(PyrClass * aClassList)
 	return sortedClasses;
 }
 
+#include <boost/threadpool.hpp>
+
+static int cpuCount = boost::thread::hardware_concurrency();
+static int helperThreadCount = cpuCount - 1;
+static boost::threadpool::fifo_pool compileThreadPool;
+
 void buildClassTree()
 {
+	// the first time we use the pool
+	compileThreadPool.size_controller().resize(helperThreadCount);
+
 	// after all classes are compiled this function builds the tree and
 	// indexes the classes
 
@@ -1063,6 +1072,38 @@ double elapsedTime();
 
 static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable);
 
+
+static void updateSelectorRowWidth(ColumnDescriptor* sels, size_t begin, size_t end)
+{
+	for (int i=begin; i<end; ++i) {
+		//if (chunkSize > sels[i].largestChunk) {
+		//	sels[i].largestChunk = chunkSize;
+		//	sels[i].chunkOffset = chunkOffset;
+		//}
+		sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
+	}
+}
+
+static void binsortClassRows(PyrMethod ** bigTable, const ColumnDescriptor* sels, size_t numSelectors, size_t begin, size_t end)
+{
+	// bin sort the class rows to the new ordering
+	//post("reorder rows\n");
+	const int allocaThreshold = 4096;
+
+	PyrMethod** temprow = (numSelectors < allocaThreshold) ? (PyrMethod**)alloca(numSelectors * sizeof(PyrMethod*))
+														   : (PyrMethod**)malloc(numSelectors * sizeof(PyrMethod*));
+
+	for (int j=begin; j<end; ++j) {
+		PyrMethod** row = bigTable + j * numSelectors;
+		memcpy(temprow, row, numSelectors * sizeof(PyrMethod*));
+		for (int i=0; i<numSelectors; ++i)
+			row[i] = temprow[sels[i].selectorIndex];
+	}
+
+	if (numSelectors >= allocaThreshold)
+		free(temprow);
+}
+
 void buildBigMethodMatrix()
 {
 	PyrMethod **bigTable, **temprow, **row;
@@ -1072,7 +1113,7 @@ void buildBigMethodMatrix()
 	int rowOffset, freeIndex;
 	int rowTableSize;
 	int bigTableSize;
-	int numSelectors = gNumSelectors;
+	const int numSelectors = gNumSelectors;
 	const int numClasses = gNumClasses;
 	//post("allocate arrays\n");
 
@@ -1149,32 +1190,29 @@ void buildBigMethodMatrix()
 			}
 		}
 	}
-	for (i=0; i<numSelectors; ++i) {
-		//if (chunkSize > sels[i].largestChunk) {
-		//	sels[i].largestChunk = chunkSize;
-		//	sels[i].chunkOffset = chunkOffset;
-		//}
-		sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
-	}
+
+	const int selectorsPerThread = numSelectors/cpuCount;
+	for (i = 0; i != helperThreadCount; ++i)
+		compileThreadPool.schedule(boost::bind(&updateSelectorRowWidth, sels,
+											   selectorsPerThread * i, selectorsPerThread * (i+1)));
+
+	updateSelectorRowWidth(sels, helperThreadCount*selectorsPerThread, numSelectors);
+	if (helperThreadCount) compileThreadPool.wait();
 
 	//post("qsort\n");
 	// sort rows by largest chunk, then by width, then by chunk offset
 	//qsort(sels, numSelectors, sizeof(ColumnDescriptor), (std::_compare_function)compareColDescs);
 	qsort(sels, numSelectors, sizeof(ColumnDescriptor), compareColDescs);
+
 	// bin sort the class rows to the new ordering
 	//post("reorder rows\n");
-	// pyrmalloc:
-	// lifetime: kill after compile
-	temprow = (PyrMethod**)pyr_pool_compile->Alloc(numSelectors * sizeof(PyrMethod*));
-	MEMFAIL(temprow);
-	for (j=0; j<numClasses; ++j) {
-		row = bigTable + j * numSelectors;
-		memcpy(temprow, row, numSelectors * sizeof(PyrMethod*));
-		for (i=0; i<numSelectors; ++i) {
-			row[i] = temprow[sels[i].selectorIndex];
-		}
-	}
-	pyr_pool_compile->Free(temprow);
+	const int classesPerThread = numClasses/cpuCount;
+	for (i = 0; i != helperThreadCount; ++i)
+		compileThreadPool.schedule(boost::bind(&binsortClassRows, bigTable, sels, numSelectors,
+											   classesPerThread * i, classesPerThread * (i+1)));
+
+	binsortClassRows(bigTable, sels, numSelectors, helperThreadCount*classesPerThread, numClasses);
+	if (helperThreadCount) compileThreadPool.wait();
 
 	//post("calc row offsets %d\n", numSelectors);
 	widthSum = 0;
@@ -1247,6 +1285,7 @@ void buildBigMethodMatrix()
 	pyr_pool_compile->Free(bigTable);
 	pyr_pool_compile->Free(sels);
 */
+	compileThreadPool.size_controller().resize(0); // terminate threads
 }
 
 static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
