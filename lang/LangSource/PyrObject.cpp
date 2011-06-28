@@ -1126,13 +1126,13 @@ static void prepareColumnTable(ColumnDescriptor * sels, int numSelectors)
 	}
 }
 
-static void calcRowStats(PyrMethod** bigTable, ColumnDescriptor * sels, int numSelectors, int begin, int end)
+static void calcRowStats(PyrMethod** bigTable, ColumnDescriptor * sels, int numClasses, int numSelectors, int begin, int end)
 {
 		//chunkSize = 0;
 		//chunkOffset = 0;
 	PyrMethod** methodPtr = bigTable;
-	for (int j=begin; j<end; ++j) {
-		for (int i=0; i<numSelectors; ++i) {
+	for (int j=0; j<numClasses; ++j) {
+		for (int i=begin; i<end; ++i) {
 			PyrMethod* method = bigTable[j * numSelectors + i];
 			if (method) {
 				//classobj = method->ownerclass.uoc;
@@ -1206,14 +1206,14 @@ void buildBigMethodMatrix()
 	// calc row stats
 	//post("calc row stats\n");
 	const int classesPerThread = numClasses/cpuCount;
+	const int selectorsPerThread = numSelectors/cpuCount;
 	for (i = 0; i != helperThreadCount; ++i)
-		compileThreadPool.schedule(boost::bind(&calcRowStats, bigTable, sels, numSelectors,
-											   classesPerThread * i, classesPerThread * (i+1)));
+		compileThreadPool.schedule(boost::bind(&calcRowStats, bigTable, sels, numClasses, numSelectors,
+											   selectorsPerThread * i, selectorsPerThread * (i+1)));
 
-	calcRowStats(bigTable, sels, numSelectors, helperThreadCount*classesPerThread, numClasses);
+	calcRowStats(bigTable, sels, numClasses, numSelectors, helperThreadCount*selectorsPerThread, numSelectors);
 	if (helperThreadCount) compileThreadPool.wait();
 
-	const int selectorsPerThread = numSelectors/cpuCount;
 	for (i = 0; i != helperThreadCount; ++i)
 		compileThreadPool.schedule(boost::bind(&updateSelectorRowWidth, sels,
 											   selectorsPerThread * i, selectorsPerThread * (i+1)));
@@ -1268,7 +1268,7 @@ void buildBigMethodMatrix()
 		offset = sels[i].rowOffset + sels[i].minClassIndex;
 		maxwidth = offset + sels[i].rowWidth;
 		row = bigTable + sels[i].minClassIndex * numSelectors + i;
-		PyrMethod **table = gRowTable;
+		PyrMethod ** table = gRowTable;
 		for (j=offset,k=0; j<maxwidth; ++j, k+=numSelectors) {
 			if (row[k])
 				table[j] = row[k];
