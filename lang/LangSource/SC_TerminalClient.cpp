@@ -570,6 +570,7 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 		FD_SET(client->mInputCtlPipe[0], &fds);
 
 		if( select(FD_SETSIZE, &fds, NULL, NULL, NULL) < 0 ) {
+			if( errno == EINTR ) continue;
 			postfl("readline: select() error:\n%s\n", strerror(errno));
 			client->onQuit(1);
 			break;
@@ -618,7 +619,8 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 		FD_SET(client->mInputCtlPipe[0], &fds);
 
 		if( select(FD_SETSIZE, &fds, NULL, NULL, NULL) < 0 ) {
-			postfl("pipe-in: select() error:\n%s\n", strerror(errno));
+			if( errno == EINTR ) continue;
+			postfl("pipe-in: select() error: %s\n", strerror(errno));
 			client->onQuit(1);
 			break;
 		}
@@ -647,7 +649,7 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 						break; // no more to read this time;
 					}
 					else if( errno != EINTR ){
-						postfl("pipe-in: read() error:\n%s\n", strerror(errno));
+						postfl("pipe-in: read() error: %s\n", strerror(errno));
 						client->onQuit(1);
 						shouldRead = false;
 						break;
