@@ -231,7 +231,7 @@ void QcTreeWidget::Item::initialize (
 
 int QcTreeWidget::Item::finalize( VMGlobals *g, PyrObject *obj )
 {
-  qcDebugMsg(0,"finalizing QTreeViewItem!");
+  qcDebugMsg(1,"finalizing QTreeViewItem!");
   if( IsPtr( obj->slots+0 ) ) {
     QcTreeWidget::ItemPtr *ptr = static_cast<QcTreeWidget::ItemPtr*>( slotRawPtr(obj->slots+0) );
     delete ptr;
