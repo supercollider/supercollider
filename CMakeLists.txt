@@ -258,12 +258,12 @@ endif()
 
 #############################################
 # subdirectories
+add_subdirectory(external_libraries)
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(bindings)
 add_subdirectory(platform)
 add_subdirectory(editors)
-add_subdirectory(external_libraries)
 
 if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )

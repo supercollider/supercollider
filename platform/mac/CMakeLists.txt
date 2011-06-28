@@ -16,8 +16,9 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/unicode/
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}
-        ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
-        ${CMAKE_SOURCE_DIR}/external_libraries/boost
+	${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+	${CMAKE_SOURCE_DIR}/external_libraries/boost
+	${CMAKE_SOURCE_DIR}/external_libraries/threadpool
 	)
 
 find_package(Sndfile)
@@ -212,6 +213,7 @@ set_property(TARGET ${scappbundlename}
 # also TODO, separate gui name? (currently using MACOSX_BUNDLE_BUNDLE_NAME twice)
 
 target_link_libraries(${scappbundlename} icucore)
+target_link_libraries(${scappbundlename} boost_thread)
 
 target_link_libraries(${scappbundlename} "-framework ApplicationServices")
 target_link_libraries(${scappbundlename} "-framework Carbon")

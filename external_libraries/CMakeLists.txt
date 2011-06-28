@@ -2,27 +2,23 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
     message(FATAL_ERROR "nova-simd submodule is missing: please run `git submodule init && git submodule update' from the toplevel of your git working tree")
 endif()
 
+# boost thread
+aux_source_directory(boost/libs/thread/src/ boost_thread_src )
+
+include_directories(boost)
+
+if(WIN32)
+	aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
+	add_definitions(-DBOOST_THREAD_BUILD_DLL)
+elseif(PTHREADS_FOUND)
+	aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
+else()
+	message(SEND_ERROR "we need to implement boost_thread")
+endif()
+
+include_directories(${PTHREADS_INCLUDE_DIR})
+
 if (SUPERNOVA)
-	#boost
-	aux_source_directory(boost/libs/thread/src/ boost_thread )
-
-	include_directories(boost)
-
-	if(WIN32)
-		aux_source_directory(boost/libs/thread/src/win32/ boost_thread_platform )
-		add_definitions(-DBOOST_THREAD_BUILD_DLL)
-	elseif(PTHREADS_FOUND)
-		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
-	else()
-		message(SEND_ERROR "we need to implement boost_thread")
-	endif()
-
-	add_library(boost_thread STATIC ${boost_thread} ${boost_thread_platform})
-	target_link_libraries(boost_thread ${PTHREADS_LIBRARY})
-
-	include_directories(${PTHREADS_INCLUDE_DIR})
-
-
 	aux_source_directory(boost/libs/program_options/src/ boost_program_options )
 	add_library(boost_program_options STATIC ${boost_program_options})
 
@@ -50,3 +46,12 @@ if (SUPERNOVA)
 					APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 endif()
+
+if (${CMAKE_COMPILER_IS_GNUCXX} AND ${DSO_VISIBILITY})
+	remove_definitions(-fvisibility=hidden)
+endif()
+
+add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
+
+add_library(boost_thread_shared SHARED ${boost_thread_src} ${boost_thread_platform})
+target_link_libraries(boost_thread_shared ${PTHREADS_LIBRARY})
