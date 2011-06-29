@@ -39,10 +39,10 @@ if (SUPERNOVA)
 
 
 	if(LTO)
-		set_property(TARGET boost_thread boost_program_options boost_system boost_filesystem oscpack tlsf
+		set_property(TARGET boost_program_options boost_system boost_filesystem oscpack tlsf
 					APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-		set_property(TARGET boost_thread boost_program_options boost_system boost_filesystem oscpack tlsf
+		set_property(TARGET boost_program_options boost_system boost_filesystem oscpack tlsf
 					APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 endif()
@@ -55,6 +55,15 @@ add_library(boost_thread STATIC ${boost_thread_src} ${boost_thread_platform})
 
 add_library(supercollider_boost_thread SHARED ${boost_thread_src} ${boost_thread_platform})
 target_link_libraries(supercollider_boost_thread ${PTHREADS_LIBRARY})
+
+if(LTO)
+	set_property(TARGET boost_thread supercollider_boost_thread
+				APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+
+	set_property(TARGET boost_thread supercollider_boost_thread
+				APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
+endif()
+
 
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
