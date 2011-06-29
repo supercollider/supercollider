@@ -56,6 +56,15 @@ public:
             source(source), index(index)
         {}
 
+        bool operator<(input_spec const & rhs) const
+        {
+            if (source < rhs.source)
+                return true;
+            if (source > rhs.source)
+                return false;
+            return index < rhs.index;
+        }
+
         int16_t source;   /* index of ugen or -1 for constant */
         int16_t index;    /* number of output or constant index */
     };
