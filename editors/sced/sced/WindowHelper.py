@@ -45,6 +45,7 @@ scui_str = """<ui>
         <menuitem action="ScedRecord"/>
         <separator/>
         <menuitem action="ScedServerGUI"/>
+        <menuitem action="ScedServerMeter"/>
         <menuitem action="ScedStartServer"/>
         <menuitem action="ScedStopServer"/>
         <separator/>
@@ -62,6 +63,7 @@ scui_str = """<ui>
         <menuitem action="ScedInspectObject"/>
         <separator/>
         <menuitem action="ScedRestartInterpreter"/>
+        <menuitem action="ScedRecompile"/>
         <menuitem action="ScedClearOutput"/>
       </menu>
     </placeholder>
@@ -159,6 +161,10 @@ class WindowHelper:
              _("Restart sclang"),
              self.on_restart),
 
+            ("ScedRecompile", None, _("Recompile class library"), "<control><shift>R",
+             _("Recompile class library"),
+             self.on_recompile),
+
             ("ScedClearOutput", gtk.STOCK_CLEAR, _("Clear output"), None,
              _("Clear interpreter log"),
              self.on_clear_log),
@@ -166,6 +172,10 @@ class WindowHelper:
             ("ScedServerGUI", None, _("Show Server GUI"), None,
              _("Show GUI for default server"),
              self.on_server_gui),
+
+            ("ScedServerMeter", None, _("Show level meters"), None,
+             _("Show level meters for default server"),
+             self.on_server_meter),
 
             ("ScedStartServer", None, _("Start Server"), None,
              _("Start the default server"),
@@ -297,6 +307,9 @@ class WindowHelper:
         text = self.get_selection()
         self.__lang.evaluate("" + text + ".inspect", silent=True)
 
+    def on_recompile(self, action):
+        self.__lang.stdin.write("\x18")
+
     def on_restart(self, action):
         if self.__lang.running():
             self.__lang.stop()
@@ -308,6 +321,9 @@ class WindowHelper:
 
     def on_server_gui(self, action):
         self.__lang.evaluate("Server.default.makeGui;", silent=True)
+
+    def on_server_meter(self, action):
+        self.__lang.evaluate("Server.default.meter;", silent=True)
 
     def on_start_server(self, action):
         # FIXME: make these actions possible only if interpreter is running and okay
