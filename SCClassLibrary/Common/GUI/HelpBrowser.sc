@@ -92,7 +92,7 @@ HelpBrowser {
 
 		homeUrl = aHomeUrl;
 
-		winRect = Rect(0,0,800,600);
+		winRect = Rect(0, 0, 800, (Window.screenBounds.height - 50));
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
 
 		window = Window.new( bounds: winRect ).name_("SuperCollider Help");
