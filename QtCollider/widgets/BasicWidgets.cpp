@@ -138,7 +138,7 @@ void QcPopUpMenu::doAction( int choice )
 QcWidgetFactory<QcButton> buttonFactory;
 
 QcButton::QcButton()
-: currentState(0)
+: currentState(0), defaultPalette( palette() )
 {
   connect( this, SIGNAL(clicked()), this, SLOT(doAction()) );
 }
@@ -169,7 +169,7 @@ void QcButton::setState( int i )
   int c = states.count();
   if( !c ) return;
 
-  i = qMax( 0, qMin( c-1, i ) );
+  i = qBound( 0, i, c-1 );
 
   currentState = i;
 
@@ -177,11 +177,13 @@ void QcButton::setState( int i )
 
   setText( state.text );
 
-  QPalette p = palette();
+  QPalette p ( defaultPalette );
+
   if( state.textColor.isValid() )
     p.setColor( QPalette::ButtonText, state.textColor );
   if( state.buttonColor.isValid() )
     p.setColor( QPalette::Button, state.buttonColor );
+
   setPalette( p );
 }
 

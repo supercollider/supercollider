@@ -135,6 +135,7 @@ class QcButton : public QPushButton, public QcHelper
     void cycleStates();
     QList<State> states;
     int currentState;
+    QPalette defaultPalette;
 };
 
 class QcCustomPainted : public QcCanvas, QcHelper
