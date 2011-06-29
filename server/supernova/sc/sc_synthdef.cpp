@@ -317,7 +317,6 @@ void sc_synthdef::prepare(void)
                 buffer_id = can_alias ? allocator.allocate_buffer(ugen_index)
                                       : allocator.allocate_buffer_noalias(ugen_index);
 
-                assert(fount == last_ref);
                 allocator.set_last_reference(buffer_id, last_ref);
             }
             else
