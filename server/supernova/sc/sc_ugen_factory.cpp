@@ -42,6 +42,7 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     const size_t output_count = unit_spec.output_specs.size();
 
     /* size for wires and buffers */
+    memset(chunk, 0, alloc_size);
     Unit * unit = (Unit*)chunk;     chunk += alloc_size;
     unit->mInput  = (Wire**)chunk;  chunk += unit_spec.input_specs.size() * sizeof(Wire*);
     unit->mOutput = (Wire**)chunk;  chunk += unit_spec.output_specs.size() * sizeof(Wire*);
