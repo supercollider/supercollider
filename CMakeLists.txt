@@ -67,12 +67,10 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	add_definitions("-fschedule-insns2" "-fomit-frame-pointer")
 
+	add_definitions("-Wreturn-type")
+
 	if (${_gcc_version} VERSION_GREATER 4.0.99)
 		add_definitions("-ffast-math")
-	endif()
-
-	if (${_gcc_version} VERSION_GREATER 4.5.99)
-		add_definitions("-fpermissive") # boost.atomic is using a deprecated syntax
 	endif()
 
 	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
