@@ -260,12 +260,8 @@ private:
             outputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
 
         jack_nframes_t processed = 0;
-        while (processed != frames)
-        {
-            for (uint16_t i = 0; i != input_channels; ++i) {
-                copyvec(super::input_samples[i].get(), inputs[i], frames);
-                inputs[i] += blocksize_;
-            }
+        while (processed != frames) {
+            fetch_inputs(inputs, frames);
 
             engine_functor::run_tick();
 
@@ -278,6 +274,54 @@ private:
         }
 
         return 0;
+    }
+
+    void fetch_inputs(jack_default_audio_sample_t ** inputs, size_t frames)
+    {
+        if (is_multiple_of_vectorsize(frames)) {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                if (is_aligned(inputs[i]))
+                    copyvec_simd(super::input_samples[i].get(), inputs[i], frames);
+                else
+                    copyvec(super::input_samples[i].get(), inputs[i], frames);
+                inputs[i] += blocksize_;
+            }
+        } else {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                copyvec(super::input_samples[i].get(), inputs[i], frames);
+                inputs[i] += blocksize_;
+            }
+        }
+    }
+
+    void deliver_outputs(jack_default_audio_sample_t ** outputs, size_t frames)
+    {
+        if (is_multiple_of_vectorsize(frames)) {
+            for (uint16_t i = 0; i != output_channels; ++i) {
+                if (is_aligned(outputs[i]))
+                    copyvec_simd(outputs[i], super::output_samples[i].get(), frames);
+                else
+                    copyvec(outputs[i], super::output_samples[i].get(), frames);
+                outputs[i] += blocksize_;
+            }
+        } else {
+            for (uint16_t i = 0; i != output_channels; ++i) {
+                copyvec(outputs[i], super::output_samples[i].get(), frames);
+                outputs[i] += blocksize_;
+            }
+        }
+
+    }
+
+
+    static bool is_aligned(void * arg)
+    {
+        return !((size_t)arg & 127);
+    }
+
+    static bool is_multiple_of_vectorsize(size_t count)
+    {
+        return !(count & (vec<float>::size-1));
     }
 
     static int jack_buffersize_callback(jack_nframes_t frames, void * arg)
