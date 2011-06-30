@@ -173,6 +173,16 @@ public:
         }
     }
 
+    float to_samples(float samplerate)
+    {
+        float seconds = get_fractional_seconds();
+        uint32_t secs = get_secs();
+
+        if (secs == 0)
+            seconds += (float)secs;
+        return seconds * samplerate;
+    }
+
     static time_tag from_ptime(boost::posix_time::ptime const & pt)
     {
         using namespace boost::gregorian;

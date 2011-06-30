@@ -43,7 +43,7 @@ namespace nova {
 
 struct realtime_engine_functor
 {
-    static inline void init_tick(void);
+    static inline void sync_clock(void);
     static void init_thread(void);
     static inline void run_tick(void);
 };
@@ -272,7 +272,6 @@ public:
     }
 
 private:
-    time_tag time_per_tick;
 
 public:
     void operator()(void)
@@ -321,7 +320,7 @@ inline void run_scheduler_tick(void)
     }
 }
 
-inline void realtime_engine_functor::init_tick(void)
+inline void realtime_engine_functor::sync_clock(void)
 {
     instance->update_time_from_system();
 }

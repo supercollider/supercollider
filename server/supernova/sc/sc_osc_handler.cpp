@@ -456,19 +456,30 @@ void sc_scheduled_bundles::insert_bundle(time_tag const & timeout, const char * 
     bundle_q.insert(*node);
 }
 
-void sc_scheduled_bundles::execute_bundles(time_tag const & now)
+void sc_scheduled_bundles::execute_bundles(time_tag const & last, time_tag const & now)
 {
-    while(!bundle_q.empty())
-    {
+    World * world = &sc_factory->world;
+    while(!bundle_q.empty()) {
         bundle_node & front = *bundle_q.top();
+        time_tag const & current = front.timeout_;
 
-        if (front.timeout_ <= now) {
-            front.run();
-            bundle_q.erase_and_dispose(bundle_q.top(), &dispose_bundle);
-        }
-        else
-            return;
+        if (now < current)
+            break;
+
+        time_tag time_since_last = current - last;
+        float samples_since_last = time_since_last.to_samples(world->mSampleRate);
+
+        float sample_offset;
+        float subsample_offset = std::modf(samples_since_last, &sample_offset);
+
+        world->mSampleOffset = (int)sample_offset;
+        world->mSubsampleOffset = subsample_offset;
+
+        front.run();
+        bundle_q.erase_and_dispose(bundle_q.top(), &dispose_bundle);
     }
+
+    world->mSampleOffset = world->mSubsampleOffset = 0;
 }
 
 
@@ -515,6 +526,85 @@ bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned in
         return true;
     }
     return false;
+}
+
+void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
+                        std::size_t bytes_transferred)
+{
+    if (unlikely(error == error::operation_aborted))
+        return;    /* we're done */
+
+    if (error == error::message_size) {
+        overflow_vector.insert(overflow_vector.end(),
+                                recv_buffer_.begin(), recv_buffer_.end());
+        return;
+    }
+
+    if (error) {
+        std::cout << "sc_osc_handler received error code " << error << std::endl;
+        start_receive_udp();
+        return;
+    }
+
+    if (overflow_vector.empty())
+        handle_packet_async(recv_buffer_.begin(), bytes_transferred, udp_remote_endpoint_);
+    else {
+        overflow_vector.insert(overflow_vector.end(), recv_buffer_.begin(), recv_buffer_.end());
+        handle_packet_async(overflow_vector.data(), overflow_vector.size(), udp_remote_endpoint_);
+        overflow_vector.clear();
+    }
+
+    start_receive_udp();
+    return;
+}
+
+void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
+{
+    bool check_password = true;
+
+    if (check_password) {
+        boost::array<char, 32> password;
+        size_t size;
+        uint32_t msglen;
+        for (unsigned int i=0; i!=4; ++i) {
+            size = socket_.receive(boost::asio::buffer(&msglen, 4));
+            if (size != 4)
+                return;
+
+            msglen = ntohl(msglen);
+            if (msglen > password.size())
+                return;
+
+            size = socket_.receive(boost::asio::buffer(password.data(), msglen));
+
+            bool verified = true;
+            if (size != msglen ||
+                strcmp(password.data(), self->tcp_password_) != 0)
+                verified = false;
+
+            if (!verified)
+                throw std::runtime_error("cannot verify password");
+        }
+    }
+
+    size_t size;
+    uint32_t msglen;
+    size = socket_.receive(boost::asio::buffer(&msglen, 4));
+    if (size != sizeof(uint32_t))
+        throw std::runtime_error("read error");
+
+    msglen = ntohl(msglen);
+
+    sized_array<char> recv_vector(msglen + sizeof(uint32_t));
+
+    std::memcpy((void*)recv_vector.data(), &msglen, sizeof(uint32_t));
+    size_t transfered = socket_.read_some(boost::asio::buffer((void*)(recv_vector.data()+sizeof(uint32_t)),
+                                          recv_vector.size()-sizeof(uint32_t)));
+
+    if (transfered != size_t(msglen))
+        throw std::runtime_error("socket read sanity check failure");
+
+    self->handle_packet_async(recv_vector.data(), recv_vector.size(), socket_.remote_endpoint());
 }
 
 
