@@ -587,6 +587,8 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 	}
 
 	printf("readline stopped.\n");
+
+	return NULL;
 }
 /*
 // Completion from sclang dictionary TODO
@@ -660,6 +662,8 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 	}
 
 	postfl("pipe-in: stopped.\n");
+
+	return NULL;
 }
 
 #else
@@ -722,6 +726,10 @@ void *SC_TerminalClient::pipeFunc( void *arg )
 			}
 		}
 	}
+
+	postfl("pipe-in: stopped.\n");
+
+	return NULL;
 }
 
 #endif
