@@ -54,6 +54,7 @@ public:
     _refCount = other._refCount;
     _mutex = other._mutex;
     ref();
+    return *this;
   }
 
   ~SafePtr() {

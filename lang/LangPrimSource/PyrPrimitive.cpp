@@ -3392,6 +3392,7 @@ int prAppClockSchedNotify(struct VMGlobals *g, int numArgsPushed)
 {
 	//NOTE: the _AppClock_SchedNotify primitive shall be redefined by language clients
 	// if they wish to respond to AppClock scheduling notifications
+	return errNone;
 }
 
 #define PRIMGROWSIZE 480

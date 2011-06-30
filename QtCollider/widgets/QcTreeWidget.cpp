@@ -45,10 +45,14 @@ VariantList QcTreeWidget::columns() const
 {
   VariantList varList;
   QTreeWidgetItem *header = headerItem();
-  for( int i = 0; i < header->columnCount(); ++i ) {
-    varList.data << header->text(i);
+  if( header ) {
+    for( int i = 0; i < header->columnCount(); ++i ) {
+      varList.data << header->text(i);
+    }
   }
+  return varList;
 }
+
 void QcTreeWidget::setColumns( const VariantList & varList )
 {
   int count = varList.data.size();
@@ -236,4 +240,5 @@ int QcTreeWidget::Item::finalize( VMGlobals *g, PyrObject *obj )
     QcTreeWidget::ItemPtr *ptr = static_cast<QcTreeWidget::ItemPtr*>( slotRawPtr(obj->slots+0) );
     delete ptr;
   }
+  return errNone;
 }
