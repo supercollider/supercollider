@@ -57,6 +57,8 @@ nova_server::nova_server(server_arguments const & args):
 
     /** todo: backend may force sample rate */
     time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate);
+
+    start_receive_thread();
 }
 
 void nova_server::prepare_backend(void)

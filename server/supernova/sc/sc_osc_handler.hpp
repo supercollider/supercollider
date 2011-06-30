@@ -227,6 +227,11 @@ public:
             throw std::runtime_error("cannot open socket");
     }
 
+    void start_receive_thread(void)
+    {
+        detail::network_thread::start_receive();
+    }
+
     ~sc_osc_handler(void)
     {}
 
