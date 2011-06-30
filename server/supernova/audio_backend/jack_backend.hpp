@@ -33,6 +33,7 @@
 #include "utilities/branch_hints.hpp"
 
 #include "audio_backend_common.hpp"
+#include <utilities/time_tag.hpp>
 
 namespace nova
 {
@@ -57,7 +58,7 @@ class jack_backend:
 
 public:
     jack_backend(void):
-        client(NULL)
+        client(NULL), time_is_synced(false)
     {}
 
     ~jack_backend(void)
@@ -248,7 +249,10 @@ private:
 
     int perform(jack_nframes_t frames)
     {
-        engine_functor::init_tick();
+        if (unlikely(!time_is_synced)) {
+            engine_functor::sync_clock();
+            time_is_synced = true;
+        }
 
         /* get port regions */
         jack_default_audio_sample_t * inputs[input_channels];
@@ -310,9 +314,7 @@ private:
                 outputs[i] += blocksize_;
             }
         }
-
     }
-
 
     static bool is_aligned(void * arg)
     {
@@ -342,6 +344,7 @@ private:
     jack_status_t status;
 
     bool is_active;
+    bool time_is_synced;
     uint32_t blocksize_;
 
     std::vector<jack_port_t*> input_ports, output_ports;

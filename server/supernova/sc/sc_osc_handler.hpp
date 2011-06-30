@@ -186,7 +186,7 @@ public:
     void insert_bundle(time_tag const & timeout, const char * data, size_t length,
                        nova_endpoint const & endpoint);
 
-    void execute_bundles(time_tag const & now);
+    void execute_bundles(time_tag const & last, time_tag const & now);
 
     void clear_bundles(void)
     {
@@ -268,40 +268,7 @@ private:
     }
 
     void handle_receive_udp(const boost::system::error_code& error,
-                            std::size_t bytes_transferred)
-    {
-        if (unlikely(error == error::operation_aborted))
-            return;    /* we're done */
-
-        if (error == error::message_size)
-        {
-            overflow_vector.insert(overflow_vector.end(),
-                                   recv_buffer_.begin(), recv_buffer_.end());
-            return;
-        }
-
-        if (error)
-        {
-            std::cout << "sc_osc_handler received error code " << error << std::endl;
-            start_receive_udp();
-            return;
-        }
-
-        if (overflow_vector.empty())
-            handle_packet_async(recv_buffer_.begin(), bytes_transferred, udp_remote_endpoint_);
-        else
-        {
-            overflow_vector.insert(overflow_vector.end(),
-                                   recv_buffer_.begin(), recv_buffer_.end());
-
-            handle_packet_async(overflow_vector.data(), overflow_vector.size(), udp_remote_endpoint_);
-
-            overflow_vector.clear();
-        }
-
-        start_receive_udp();
-        return;
-    }
+                            std::size_t bytes_transferred);
     /* @} */
 
     /* @{ */
@@ -322,56 +289,7 @@ private:
             return socket_;
         }
 
-        void start(sc_osc_handler * self)
-        {
-            bool check_password = true;
-
-            if (check_password)
-            {
-                boost::array<char, 32> password;
-                size_t size;
-                uint32_t msglen;
-                for (unsigned int i=0; i!=4; ++i)
-                {
-                    size = socket_.receive(boost::asio::buffer(&msglen, 4));
-                    if (size != 4)
-                        return;
-
-                    msglen = ntohl(msglen);
-                    if (msglen > password.size())
-                        return;
-
-                    size = socket_.receive(boost::asio::buffer(password.data(), msglen));
-
-                    bool verified = true;
-                    if (size != msglen ||
-                        strcmp(password.data(), self->tcp_password_) != 0)
-                        verified = false;
-
-                    if (!verified)
-                        throw std::runtime_error("cannot verify password");
-                }
-            }
-
-            size_t size;
-            uint32_t msglen;
-            size = socket_.receive(boost::asio::buffer(&msglen, 4));
-            if (size != sizeof(uint32_t))
-                throw std::runtime_error("read error");
-
-            msglen = ntohl(msglen);
-
-            sized_array<char> recv_vector(msglen + sizeof(uint32_t));
-
-            std::memcpy((void*)recv_vector.data(), &msglen, sizeof(uint32_t));
-            size_t transfered = socket_.read_some(boost::asio::buffer((void*)(recv_vector.data()+sizeof(uint32_t)),
-                                                                      recv_vector.size()-sizeof(uint32_t)));
-
-            if (transfered != size_t(msglen))
-                throw std::runtime_error("socket read sanity check failure");
-
-            self->handle_packet_async(recv_vector.data(), recv_vector.size(), socket_.remote_endpoint());
-        }
+        void start(sc_osc_handler * self);
 
     private:
         tcp_connection(boost::asio::io_service& io_service)
@@ -453,17 +371,19 @@ public:
 
     void execute_scheduled_bundles(void)
     {
-        scheduled_bundles.execute_bundles(now);
+        scheduled_bundles.execute_bundles(last, now);
     }
 
     void increment_logical_time(time_tag const & diff)
     {
+        last = now;
         now += diff;
     }
 
     void update_time_from_system(void)
     {
-        now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
+        now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::local_time());
+        last = now - time_per_tick;
     }
 
     time_tag const & current_time(void) const
@@ -472,7 +392,8 @@ public:
     }
 
     sc_scheduled_bundles scheduled_bundles;
-    time_tag now;
+    time_tag now, last;
+    time_tag time_per_tick;
 /* @} */
 
 
