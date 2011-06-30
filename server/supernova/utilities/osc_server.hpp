@@ -45,14 +45,16 @@ using namespace boost::asio::ip;
 class network_thread
 {
 public:
-    network_thread(void):
-        thread_(network_thread::start, this)
+    void start_receive(void)
     {
+        thread_ = boost::thread(network_thread::start, this);
         sem.wait();
     }
 
     ~network_thread(void)
     {
+        if (!thread_.joinable())
+            return;
         io_service_.stop();
         thread_.join();
     }
