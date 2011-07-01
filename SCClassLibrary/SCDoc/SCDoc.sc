@@ -624,7 +624,7 @@ SCDoc {
                     // FIXME: if this doc adds a method to a non-class doc, it will not show up in doc.methods...
                     old = doc.additions.copy;
                     doc.additions = doc.additions.add(file).asSet;
-                    update = doc.additions != old;
+                    update = update or: {doc.additions != old};
                     ndocs = ndocs + 1;
                     this.postProgress("Addition for"+subtarget+":"+file);
                 } {
@@ -678,6 +678,7 @@ SCDoc {
         this.postProgress("Generated metadata for"+ndocs+"undocumented classes");
         // NOTE: If we remove a Classes/Name.schelp for an existing class, the doc_map won't get updated.
         // but this shouldn't happen in real-life anyhow..
+
         ndocs = 0;
         doc_map.pairsDo{|k,e|
             if(e.keep!=true, {
