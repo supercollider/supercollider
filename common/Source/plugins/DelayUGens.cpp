@@ -794,6 +794,11 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	} \
 	if(!unit->mOut){ \
 		unit->mOut = (float**)RTAlloc(unit->mWorld, numOutputs * sizeof(float*)); \
+		if (unit->mOut == NULL) { \
+			unit->mDone = true; \
+			ClearUnitOutputs(unit, inNumSamples); \
+			return; \
+		} \
 	} \
 	float **out = unit->mOut; \
 	for (uint32 i=0; i<numOutputs; ++i){ \
@@ -811,12 +816,17 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		if(unit->mWorld->mVerbosity > -1 && !unit->mDone){ \
 			Print("buffer-writing UGen channel mismatch: numInputs %i, yet buffer has %i channels\n", numInputs, bufChannels); \
 		} \
-                unit->mDone = true; \
+		unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
 	if(!unit->mIn){ \
 		unit->mIn = (float**)RTAlloc(unit->mWorld, numInputs * sizeof(float*)); \
+		if (unit->mIn == NULL) { \
+			unit->mDone = true; \
+			ClearUnitOutputs(unit, inNumSamples); \
+			return; \
+		} \
 	} \
 	float **in = unit->mIn; \
 	for (uint32 i=0; i<numInputs; ++i) { \
