@@ -6,18 +6,12 @@ platform/mac/*.xcodeproj/*.pbxuser
 platform/mac/*.xcodeproj/*.mode1v3
 platform/mac/build
 
-# scons specific files
-config.log
-scache.conf
-.sconsign.dblite
-.sconf_temp
-*.os
-*.o
-
 # working files made by packager script
 common/Packager/LinuxExclusions.txt
 common/Packager/SuperCollider*.tar.gz
 common/Packager/SuperCollider*.dmg
 
-#build directory
+#build directories
 /build*
+
+*~
