@@ -3,14 +3,16 @@ Changes are listed below, grouped under each point release of SuperCollider.
 SuperCollider v3.4.4, released 2011-06
 ======================================
 
-Dan Stowell (2):
+Dan Stowell (4):
       Improve format of copyright/GPL notices (issue raised in debian pkging)
       Clarify Fontana copyright in MoogFF (and don't use keyword 'copyright'     in files where he doesn't have copyright)
+      Update AUTHORS file
+      Remove unneeded PDF (debian raised query over copyright)
 
 Nick Collins (1):
       Initial fix for headphones problem where plugging in or out headphones while using Built-in Output leads to loss of audio on OS X. Aggregate Devices not tackled at this point
 
-Tim Blechmann (11):
+Tim Blechmann (15):
       sclang: mathematical operators - clip2 fix
       plugins: LPF - fix control-rate initialization
       sclang: wii - don't use address of temporary
@@ -22,6 +24,36 @@ Tim Blechmann (11):
       plugins: Pitch.ar - fix crash for high execution period
       3.4.4 version bump
       changelog: fix version number
+      update changelog
+      sclang: parser - support message send syntax for unary operators
+      plugins: delay ugens - rt memory allocation may fail
+      sclang: compile fix
+
+SuperCollider v3.4.3
+======================================
+
+Dan Stowell (2):
+      SC 3.4 set correct SOVERSION 1.0.0 for libs, and install more properly.     (Changes ported from downstream debian packaging.)
+      lib SOVERSIONs back from 1.0.0 to 1, following debian-multimedia advice
+
+James Harkins (8):
+      Fix nowExecutingPath bug in scel (never backported?)
+      fix two bugs in NotificationCenter registerOneShot:
+      fix corner case in ClassBrowser
+      Fix asPseg bug for short curves array (which should wrap, not kill the stream)
+      Clear dataptr when closing a file (so that isClosed answers correctly)
+      Incorrectly used dataptr instead of fileptr in previous commit on this file
+      replace old, unsafe Dictionary test with a safer (but less OOPy) test
+      rats... I missed two others of the same
+
+Joshua Parmenter (1):
+      update version number
+
+Tim Blechmann (3):
+      scsynth: set ftz flag on osx
+      two commits: (1) simplify access to the superclass tree in Class. (2) when looking for a code file (openCodeFile) or cmd-J, it is now enough to select a full line, instead of havin
+      scons build system: libsclang build fix
+
 
 SuperCollider v3.4.2, released 2011-03
 ======================================
