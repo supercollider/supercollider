@@ -748,7 +748,7 @@ Plotter {
 
 	plot2 { |duration = 0.01, server, bounds, minval, maxval|
 		var name = this.asCompileString, plotter;
-		if(name.size > 50) { name = "function plot" };
+		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = [0].plot2(name, bounds);
 		server = server ? Server.default;
 		server.waitForBoot {
