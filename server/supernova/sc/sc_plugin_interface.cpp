@@ -17,7 +17,6 @@
 //  Boston, MA 02111-1307, USA.
 
 #include <cstdarg>
-#include <cstdio>
 
 #include "sndfile.hh"
 
@@ -359,14 +358,10 @@ int print(const char *fmt, ...)
     va_list vargs;
     va_start(vargs, fmt);
 
-    char data[1024];
-
-    vsprintf(data, fmt, vargs);
-
-    std::cout << data << std::endl;
+    bool status = nova::instance->log_printf(fmt, vargs);
 
     va_end(vargs);
-    return 0;
+    return (status == true) ? 0 : -1;
 }
 
 /* todo: we need to implement most of the done actions */
