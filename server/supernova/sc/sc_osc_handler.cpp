@@ -871,6 +871,7 @@ void set_control_array(server_node * node, control_id_type control, osc::Receive
     sized_array<float, rt_pool_allocator<float> > control_array(array_size);
 
     ++it; // advance to first element
+    /// FIXME: currently we do not support arrayed arguments with bus mapping
     for (size_t i = 0; i != array_size; ++i)
         control_array[i] = extract_float_argument(it++);
     assert(it->IsArrayEnd());
@@ -879,27 +880,50 @@ void set_control_array(server_node * node, control_id_type control, osc::Receive
     node->set(control, array_size, control_array.c_array());
 }
 
+template <typename slot_type>
+void handle_n_map_group(server_node & node, slot_type slot, int control_bus_index);
+template <typename slot_type>
+void handle_n_mapa_group(server_node & node, slot_type slot, int audio_bus_index);
+
+template <typename ControlSpecifier>
+void set_control(server_node * node, ControlSpecifier const & control, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsArrayStart())
+        set_control_array(node, control, it);
+    else if (it->IsString() || it->IsSymbol()) {
+        char const * name = it->AsStringUnchecked(); ++it;
+        int bus_id;
+
+        switch (name[0]) {
+        case 'c':
+            bus_id = atoi(name+1);
+            handle_n_map_group(*node, control, bus_id);
+            break;
+
+        case 'a':
+            bus_id = atoi(name+1);
+            handle_n_mapa_group(*node, control, bus_id);
+            break;
+
+        default:
+            throw runtime_error("invalid name for control mapping");
+        }
+
+    } else {
+        float value = extract_float_argument(it++);
+        node->set(control, value);
+    }
+}
+
 /* set control values of node from string/float or int/float pair */
 void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
     if (it->IsInt32()) {
         osc::int32 index = it->AsInt32Unchecked(); ++it;
-        if (it->IsArrayStart())
-            set_control_array(node, index, it);
-        else {
-            float value = extract_float_argument(it++);
-            node->set(index, value);
-        }
-    }
-    else if (it->IsString()) {
-        const char * str = it->AsString(); ++it;
-
-        if (it->IsArrayStart())
-            set_control_array(node, str, it);
-        else {
-            float value = extract_float_argument(it++);
-            node->set(str, value);
-        }
+        set_control(node, index, it);
+    } else if (it->IsString()) {
+        const char * str = it->AsStringUnchecked(); ++it;
+        set_control(node, str, it);
     } else
         throw runtime_error("invalid argument");
 }
@@ -931,8 +955,7 @@ void handle_s_new(received_message const & msg)
     if (synth == NULL)
         return;
 
-    while(args != msg.ArgumentsEnd())
-    {
+    while (args != msg.ArgumentsEnd()) {
         try {
             set_control(synth, args);
         } catch(std::exception & e) {
