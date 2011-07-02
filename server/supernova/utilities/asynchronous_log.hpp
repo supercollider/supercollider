@@ -42,7 +42,9 @@ struct asynchronous_log:
         va_list vargs;
         va_start(vargs, fmt);
 
-        return log_printf(fmt, vargs);
+        bool result = log_printf(fmt, vargs);
+        va_end(vargs);
+        return result;
     }
 
     bool log_printf(const char *fmt, va_list vargs)
