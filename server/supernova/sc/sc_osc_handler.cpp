@@ -867,17 +867,33 @@ inline void verify_argument(osc::ReceivedMessageArgumentIterator const & it,
 template <typename control_id_type>
 void set_control_array(server_node * node, control_id_type control, osc::ReceivedMessageArgumentIterator & it)
 {
-    size_t array_size = it->ArraySize();
-    sized_array<float, rt_pool_allocator<float> > control_array(array_size);
+    size_t array_size = it->ArraySize(); ++it;
 
-    ++it; // advance to first element
-    /// FIXME: currently we do not support arrayed arguments with bus mapping
-    for (size_t i = 0; i != array_size; ++i)
-        control_array[i] = extract_float_argument(it++);
-    assert(it->IsArrayEnd());
-    ++it; // skip array end
+    for (size_t i = 0; i != array_size; ++i) {
+        if (it->IsString() || it->IsSymbol()) {
+            char const * name = it->AsStringUnchecked(); ++it;
+            int bus_id;
 
-    node->set_control_array(control, array_size, control_array.c_array());
+            switch (name[0]) {
+            case 'c':
+                bus_id = atoi(name+1);
+                static_cast<sc_synth*>(node)->map_control_bus<false>(control, i, bus_id);
+                break;
+
+            case 'a':
+                bus_id = atoi(name+1);
+                static_cast<sc_synth*>(node)->map_control_bus<true>(control, i, bus_id);
+                break;
+
+            default:
+                throw runtime_error("invalid name for control mapping");
+            }
+        } else {
+            float value = extract_float_argument(it++);
+            node->set_control_array_element(control, i, value);
+        }
+    }
+    assert(it->IsArrayEnd()); ++it; // skip array end
 }
 
 template <typename slot_type>
