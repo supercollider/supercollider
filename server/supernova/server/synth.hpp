@@ -110,6 +110,22 @@ public:
     }
 
     virtual void set_control_array(slot_index_t slot_id, size_t n, float * values) = 0;
+
+    virtual void set_control_array_element(slot_index_t slot_id, size_t index, float val)
+    {
+        this->set(slot_id + index, val);
+    }
+
+    void set_control_array_element(const char * slot_str, size_t index, sample val)
+    {
+        set_control_array_element(slot_str, string_hash(slot_str), index, val);
+    }
+
+    void set_control_array_element(const char * slot_str, size_t hashed_str, size_t index, sample val)
+    {
+        slot_index_t slot_id = prototype_instance::resolve_slot(slot_str, hashed_str);
+        this->set(slot_id + index, val);
+    }
     /* @} */
 };
 
