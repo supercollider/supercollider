@@ -313,7 +313,8 @@ table::
 ## strong::int:: || add target ID
 ## N * || table::
     ## strong::int:: or strong::string:: || a control index or name
-	## strong::float:: or strong::int:: || a control value
+	## strong::float:: or strong::int:: or strong::string::|| floating point and integer arguments are interpreted as control value.
+                                                              a symbol argument consisting of the letter 'c' or 'a' (for control or audio) followed by the bus's index.
     ::
 ::
 
