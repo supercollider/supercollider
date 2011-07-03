@@ -877,7 +877,7 @@ void set_control_array(server_node * node, control_id_type control, osc::Receive
     assert(it->IsArrayEnd());
     ++it; // skip array end
 
-    node->set(control, array_size, control_array.c_array());
+    node->set_control_array(control, array_size, control_array.c_array());
 }
 
 template <typename slot_type>
@@ -1281,7 +1281,7 @@ void set_control_n(server_node * node, osc::ReceivedMessageArgumentIterator & it
         for (int i = 0; i != count; ++i)
             values[i] = extract_float_argument(it++);
 
-        node->set(str, count, values.c_array());
+        node->set_control_array(str, count, values.c_array());
     } else
         throw runtime_error("invalid argument");
 }
@@ -1307,7 +1307,7 @@ void fill_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
         for (int i = 0; i != count; ++i)
             values[i] = value;
 
-        node->set(str, count, values.c_array());
+        node->set_control_array(str, count, values.c_array());
     } else
         throw runtime_error("invalid argument");
 }

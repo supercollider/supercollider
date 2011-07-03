@@ -146,7 +146,7 @@ void sc_synth::set(slot_index_t slot_index, sample val)
     mControls[slot_index] = val;
 }
 
-void sc_synth::set(slot_index_t slot_index, size_t count, sample * val)
+void sc_synth::set_control_array(slot_index_t slot_index, size_t count, sample * val)
 {
     if (slot_index+count >= mNumControls)
         return;
