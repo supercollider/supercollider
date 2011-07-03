@@ -112,15 +112,44 @@ public:
 
     /* @{ */
     /** control mapping */
-    void map_control_bus(unsigned int slot_index, int control_bus_index);
-    void map_control_buses(unsigned int slot_index, int control_bus_index, int count);
+private:
+    void map_control_bus_control(unsigned int slot_index, int control_bus_index);
+    void map_control_buses_control(unsigned int slot_index, int control_bus_index, int count);
     void map_control_bus_audio(unsigned int slot_index, int audio_bus_index);
     void map_control_buses_audio(unsigned int slot_index, int audio_bus_index, int count);
 
-    void map_control_bus(const char * slot_name, int control_bus_index);
-    void map_control_buses(const char * slot_name, int control_bus_index, int count);
-    void map_control_bus_audio(const char * slot_name, int audio_bus_index);
-    void map_control_buses_audio(const char * slot_name, int audio_bus_index, int count);
+public:
+    template <bool ControlBusIsAudio>
+    void map_control_bus(unsigned int slot_index, int bus_index)
+    {
+        if (ControlBusIsAudio)
+            map_control_bus_audio(slot_index, bus_index);
+        else
+            map_control_bus_control(slot_index, bus_index);
+    }
+
+    template <bool ControlBusIsAudio>
+    void map_control_buses(unsigned int slot_index, int bus_index, int count)
+    {
+        if (ControlBusIsAudio)
+            map_control_buses_audio(slot_index, bus_index, count);
+        else
+            map_control_buses_control(slot_index, bus_index, count);
+    }
+
+    template <bool ControlBusIsAudio>
+    void map_control_bus(const char * slot_name, int bus_index)
+    {
+        int slot_index = resolve_slot(slot_name);
+        map_control_bus<ControlBusIsAudio>(slot_index, bus_index);
+    }
+
+    template <bool ControlBusIsAudio>
+    void map_control_buses(const char * slot_name, int bus_index, int count)
+    {
+        int slot_index = resolve_slot(slot_name);
+        map_control_buses<ControlBusIsAudio>(slot_index, bus_index, count);
+    }
     /* @} */
 
     void enable_tracing(void)
