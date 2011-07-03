@@ -150,6 +150,19 @@ public:
         int slot_index = resolve_slot(slot_name);
         map_control_buses<ControlBusIsAudio>(slot_index, bus_index, count);
     }
+
+    template <bool ControlBusIsAudio>
+    void map_control_bus(unsigned int slot_index, size_t arrayed_slot_index, int bus_index)
+    {
+        map_control_bus<ControlBusIsAudio>(slot_index + arrayed_slot_index, bus_index);
+    }
+
+    template <bool ControlBusIsAudio>
+    void map_control_bus(const char * slot_name, size_t arrayed_slot_index, int bus_index)
+    {
+        size_t slot_index = resolve_slot(slot_name) + arrayed_slot_index;
+        map_control_bus<ControlBusIsAudio>(slot_index, bus_index);
+    }
     /* @} */
 
     void enable_tracing(void)
