@@ -155,7 +155,7 @@ void sc_synth::set_control_array(slot_index_t slot_index, size_t count, sample *
 }
 
 
-void sc_synth::map_control_bus (unsigned int slot_index, int control_bus_index)
+void sc_synth::map_control_bus_control (unsigned int slot_index, int control_bus_index)
 {
     if (slot_index >= mNumControls)
         return;
@@ -171,7 +171,7 @@ void sc_synth::map_control_bus (unsigned int slot_index, int control_bus_index)
     }
 }
 
-void sc_synth::map_control_buses (unsigned int slot_index, int control_bus_index, int count)
+void sc_synth::map_control_buses_control (unsigned int slot_index, int control_bus_index, int count)
 {
     if (slot_index >= mNumControls)
         return;
@@ -179,7 +179,7 @@ void sc_synth::map_control_buses (unsigned int slot_index, int control_bus_index
     int slots_to_set = std::min(count, int(mNumControls - slot_index));
 
     for (int i = 0; i != slots_to_set; ++i)
-        map_control_bus(slot_index+i, control_bus_index+i);
+        map_control_bus_control(slot_index+i, control_bus_index+i);
 }
 
 void sc_synth::map_control_bus_audio (unsigned int slot_index, int audio_bus_index)
@@ -206,31 +206,7 @@ void sc_synth::map_control_buses_audio (unsigned int slot_index, int audio_bus_i
     int slots_to_set = std::min(count, int(mNumControls - slot_index));
 
     for (int i = 0; i != slots_to_set; ++i)
-        map_control_bus(slot_index+i, audio_bus_index+i);
-}
-
-void sc_synth::map_control_bus (const char * slot_name, int control_bus_index)
-{
-    int index = resolve_slot(slot_name);
-    map_control_bus(index, control_bus_index);
-}
-
-void sc_synth::map_control_buses (const char * slot_name, int control_bus_index, int count)
-{
-    int index = resolve_slot(slot_name);
-    map_control_buses(index, control_bus_index, count);
-}
-
-void sc_synth::map_control_bus_audio (const char * slot_name, int audio_bus_index)
-{
-    int index = resolve_slot(slot_name);
-    map_control_bus_audio(index, audio_bus_index);
-}
-
-void sc_synth::map_control_buses_audio (const char * slot_name, int audio_bus_index, int count)
-{
-    int index = resolve_slot(slot_name);
-    map_control_buses_audio(index, audio_bus_index, count);
+        map_control_bus_audio(slot_index+i, audio_bus_index+i);
 }
 
 void sc_synth::apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, struct sc_msg_iter *args)
@@ -240,7 +216,6 @@ void sc_synth::apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, st
 
     def->run_unit_command(unit_cmd, unit, args);
 }
-
 
 void sc_synth::run(void)
 {

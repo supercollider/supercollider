@@ -1319,7 +1319,7 @@ template <typename slot_type>
 void handle_n_map_group(server_node & node, slot_type slot, int control_bus_index)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_bus(slot, control_bus_index);
+        static_cast<sc_synth&>(node).map_control_bus<false>(slot, control_bus_index);
     else
         static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_map_group<slot_type>, _1,
                                                                          slot, control_bus_index));
@@ -1333,7 +1333,7 @@ void map_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 
         if (node->is_synth()) {
             sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_bus(control_index, control_bus_index);
+            synth->map_control_bus<false>(control_index, control_bus_index);
         }
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group<slot_index_t>, _1,
@@ -1345,7 +1345,7 @@ void map_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 
         if (node->is_synth()) {
             sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_bus(control_name, control_bus_index);
+            synth->map_control_bus<false>(control_name, control_bus_index);
         }
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group<const char*>, _1,
@@ -1361,7 +1361,7 @@ template <typename slot_type>
 void handle_n_mapn_group(server_node & node, slot_type slot, int control_bus_index, int count)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_buses(slot, control_bus_index, count);
+        static_cast<sc_synth&>(node).map_control_buses<false>(slot, control_bus_index, count);
     else
         static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapn_group<slot_type>, _1,
                                                                          slot, control_bus_index, count));
@@ -1376,7 +1376,7 @@ void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 
         if (node->is_synth()) {
             sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_buses(control_index, control_bus_index, count);
+            synth->map_control_buses<false>(control_index, control_bus_index, count);
         }
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<slot_index_t>, _1,
@@ -1389,7 +1389,7 @@ void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 
         if (node->is_synth()) {
             sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_buses(control_name, control_bus_index, count);
+            synth->map_control_buses<false>(control_name, control_bus_index, count);
         }
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<const char*>, _1,
@@ -1404,7 +1404,7 @@ template <typename slot_type>
 void handle_n_mapa_group(server_node & node, slot_type slot, int audio_bus_index)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_bus_audio(slot, audio_bus_index);
+        static_cast<sc_synth&>(node).map_control_bus<true>(slot, audio_bus_index);
     else
         static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapa_group<slot_type>, _1,
                                                                          slot, audio_bus_index));
@@ -1418,19 +1418,17 @@ void mapa_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 
         if (node->is_synth()) {
             sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_bus_audio(control_index, audio_bus_index);
-        }
-        else
+            synth->map_control_bus<false>(control_index, audio_bus_index);
+        } else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group<slot_index_t>, _1,
                                                                                 control_index, audio_bus_index));
-    }
-    else if (it->IsString()) {
+    } else if (it->IsString()) {
         const char * control_name = it->AsStringUnchecked(); ++it;
         osc::int32 audio_bus_index = it->AsInt32(); ++it;
 
         if (node->is_synth()) {
             sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_bus_audio(control_name, audio_bus_index);
+            synth->map_control_bus<true>(control_name, audio_bus_index);
         }
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group<const char *>, _1,
@@ -1445,7 +1443,7 @@ template <typename slot_type>
 void handle_n_mapan_group(server_node & node, slot_type slot, int audio_bus_index, int count)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_buses_audio(slot, audio_bus_index, count);
+        static_cast<sc_synth&>(node).map_control_buses<true>(slot, audio_bus_index, count);
     else
         static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapan_group<slot_type>, _1,
                                                                          slot, audio_bus_index, count));
@@ -1461,7 +1459,7 @@ void mapan_control(server_node * node, osc::ReceivedMessageArgumentIterator & it
 
             if (node->is_synth()) {
                 sc_synth * synth = static_cast<sc_synth*>(node);
-                synth->map_control_buses_audio(control_index, audio_bus_index, count);
+                synth->map_control_buses<true>(control_index, audio_bus_index, count);
             }
             else
                 static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group<slot_index_t>, _1,
@@ -1474,7 +1472,7 @@ void mapan_control(server_node * node, osc::ReceivedMessageArgumentIterator & it
 
         if (node->is_synth()) {
             sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_buses_audio(control_name, audio_bus_index, count);
+            synth->map_control_buses<true>(control_name, audio_bus_index, count);
         }
         else
             static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group<const char *>, _1,
