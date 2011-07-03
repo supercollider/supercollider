@@ -122,6 +122,13 @@ public:
     /* @} */
 
     /* @{ */
+    /* set an element of an arrayed slot */
+    virtual void set_control_array_element(slot_index_t slot_str, size_t n, float values) = 0;
+    virtual void set_control_array_element(const char * slot_str, size_t n, float values) = 0;
+    virtual void set_control_array_element(const char * slot_str, size_t hashed_str, size_t n, float values) = 0;
+    /* @} */
+
+    /* @{ */
     /** group traversing */
     inline const server_node * previous_node(void) const;
     inline server_node * previous_node(void);

@@ -203,6 +203,10 @@ public:
     void set_control_array(const char * slot_str, size_t count, float * val);
     void set_control_array(const char * slot_str, size_t hashed_str, size_t count, float * val);
 
+    void set_control_array_element(slot_index_t slot_str, size_t count, float val);
+    void set_control_array_element(const char * slot_str, size_t count, float val);
+    void set_control_array_element(const char * slot_str, size_t hashed_str, size_t count, float val);
+
     friend class node_graph;
     std::size_t child_synths_, child_groups_;
 };
