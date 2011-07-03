@@ -177,16 +177,17 @@ void abstract_group::remove_child(server_node * node)
     node->clear_parent();
 }
 
+void abstract_group::set(slot_index_t slot_id, float val)
+{
+    for(server_node_list::iterator it = child_nodes.begin();
+        it != child_nodes.end(); ++it)
+        it->set(slot_id, val);
+}
+
 void abstract_group::set(const char * slot_str, float val)
 {
     size_t hashed_str = string_hash(slot_str);
     set(slot_str, hashed_str, val);
-}
-
-void abstract_group::set(const char * slot_str, size_t count, float * val)
-{
-    size_t hashed_str = string_hash(slot_str);
-    set(slot_str, hashed_str, count, val);
 }
 
 void abstract_group::set(const char * slot_str, std::size_t hashed_str, float val)
@@ -196,26 +197,25 @@ void abstract_group::set(const char * slot_str, std::size_t hashed_str, float va
         it->set(slot_str, hashed_str, val);
 }
 
-void abstract_group::set(const char * slot_str, std::size_t hashed_str, size_t count, float * val)
+
+void abstract_group::set_control_array(const char * slot_str, size_t count, float * val)
 {
-    for(server_node_list::iterator it = child_nodes.begin();
-        it != child_nodes.end(); ++it)
-        it->set(slot_str, hashed_str, count, val);
+    size_t hashed_str = string_hash(slot_str);
+    set_control_array(slot_str, hashed_str, count, val);
 }
 
-
-void abstract_group::set(slot_index_t slot_id, float val)
+void abstract_group::set_control_array(const char * slot_str, std::size_t hashed_str, size_t count, float * val)
 {
     for(server_node_list::iterator it = child_nodes.begin();
         it != child_nodes.end(); ++it)
-        it->set(slot_id, val);
+        it->set_control_array(slot_str, hashed_str, count, val);
 }
 
-void abstract_group::set(slot_index_t slot_id, size_t count, float * val)
+void abstract_group::set_control_array(slot_index_t slot_id, size_t count, float * val)
 {
     for(server_node_list::iterator it = child_nodes.begin();
         it != child_nodes.end(); ++it)
-        it->set(slot_id, count, val);
+        it->set_control_array(slot_id, count, val);
 }
 
 

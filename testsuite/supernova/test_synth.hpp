@@ -16,7 +16,7 @@ public:
     virtual void set(slot_index_t slot_id, sample val)
     {}
 
-    virtual void set(slot_index_t slot_id, size_t count, sample * val)
+    virtual void set_control_array(slot_index_t slot_id, size_t count, sample * val)
     {}
 };
 
