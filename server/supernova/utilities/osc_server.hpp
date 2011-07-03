@@ -105,6 +105,7 @@ public:
     osc_server(unsigned int port):
         socket_(network_thread::io_service_, udp::endpoint(udp::v4(), port))
     {
+        network_thread::start_receive();
         start_receive();
     }
 
