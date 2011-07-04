@@ -272,7 +272,6 @@ QuarkView {
 		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
 		GUI.textView.new( window, Rect(4, 4, 392, 170 + (helpdoc.isNil.binaryValue * 22)))
 			.font_( GUI.font.new( GUI.font.defaultSansFace, 12 ) )
-			.background_( Color.grey( 0.9 ) )
 			.resize_( 5 )
 			.autohidesScrollers_( true )
 			.hasVerticalScroller_( true )
