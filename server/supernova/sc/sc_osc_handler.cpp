@@ -2518,11 +2518,10 @@ void b_gen_rt_2(uint32_t index, sample * free_buf, nova_endpoint const & endpoin
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_gen_nrt_3, index, free_buf, endpoint));
 }
 
-const char * b_free = "/b_free";
 void b_gen_nrt_3(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
 {
     free_aligned(free_buf);
-    send_done_message(endpoint, b_free, index);
+    send_done_message(endpoint, "/b_gen", index);
 }
 
 template <bool realtime>
