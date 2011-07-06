@@ -34,6 +34,7 @@
 #include <QDesktopWidget>
 #include <QFontDatabase>
 #include <QStyleFactory>
+#include <QWebSettings>
 
 using namespace QtCollider;
 
@@ -161,5 +162,14 @@ QC_LANG_PRIMITIVE( Qt_AvailableStyles, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   }
 
   Slot::setVariantList( r, list );
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QWebView_ClearMemoryCaches, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QWebSettings::clearMemoryCaches();
+
   return errNone;
 }
