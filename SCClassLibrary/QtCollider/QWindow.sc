@@ -110,7 +110,7 @@ QWindow
   }
 
   *new { arg name,
-         bounds = Rect( 128, 64, 400, 400 ),
+         bounds,
          resizable = true,
          border = true,
          server,
@@ -118,8 +118,12 @@ QWindow
 
     //NOTE server is only for compatibility with SwingOSC
 
-    var b = QWindow.flipY( bounds.asRect );
-    ^super.new.initQWindow( name, b, resizable, border, scroll );
+    if( bounds.isNil ) {
+      bounds = Rect(0,0,400,400).center_( QWindow.availableBounds.center );
+    }{
+      bounds = QWindow.flipY( bounds.asRect );
+    };
+    ^super.new.initQWindow( name, bounds, resizable, border, scroll );
   }
 
   //------------------------ QWindow specific  -----------------------//
