@@ -1,6 +1,25 @@
-FlowLayout {
+Decorator {
+	place { arg view; this.subclassResponsibility(\place); }
+
+	remove { arg view; this.subclassResponsibility(\remove); }
+
+	clear { this.subclassResponsibility(\clear); }
+
+	bounds { this.subclassResponsibility(\bounds); }
+
+	bounds_ { arg bounds; this.subclassResponsibility(\bounds_); }
+
+	gap { this.subclassResponsibility(\gap); }
+	gap_ { arg gap; this.subclassResponsibility(\gap_); }
+
+	margin { this.subclassResponsibility(\margin); }
+	margin_ { arg margin; this.subclassResponsibility(\margin_); }
+}
+
+FlowLayout : Decorator {
 	var <bounds, <>margin, <>gap;
 	var <>left, <>top, <>maxHeight,<>maxRight;
+	var <>owner;
 
 	*new { arg bounds, margin, gap;
 		^super.newCopyArgs(bounds, margin, gap).init
@@ -10,6 +29,7 @@ FlowLayout {
 		margin = margin ? Point(4,4);
 		this.reset;
 	}
+	clear { this.reset; }
 	reset {
 		maxRight = left = bounds.left + margin.x;
 		top = bounds.top + margin.y;
