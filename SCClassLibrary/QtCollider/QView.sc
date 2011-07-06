@@ -109,6 +109,12 @@ QView : QObject {
   // a Point can be passed instead of a Size
   minSize_ { arg size; this.setProperty( \minimumSize, size.asSize ); }
 
+  fixedSize_ { arg size;
+    size = size.asSize;
+    this.setProperty( \minimumSize, size );
+    this.setProperty( \maximumSize, size );
+  }
+
   maxWidth_ { arg width;
     this.setProperty( \maximumWidth, min( width, QLimits(\maxWidgetSize) ) );
   }
