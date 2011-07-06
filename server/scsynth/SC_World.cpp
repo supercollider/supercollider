@@ -326,6 +326,7 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
 		world->hw->mQuitProgram = new SC_Semaphore(0);
+		world->hw->mTerminating = false;
 
 		extern Malloc gMalloc;
 
