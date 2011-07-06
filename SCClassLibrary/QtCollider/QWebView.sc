@@ -4,6 +4,11 @@ QWebView : QView {
 
   *qtClass { ^'QtCollider::WebView'; }
 
+  *clearCache {
+    _QWebView_ClearMemoryCaches
+    ^this.primitiveFailed
+  }
+
   url { ^this.getProperty( \url ); }
 
   url_ { arg address; this.setProperty( \url, address ); }
