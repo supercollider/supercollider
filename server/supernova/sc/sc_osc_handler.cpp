@@ -459,21 +459,26 @@ void sc_scheduled_bundles::insert_bundle(time_tag const & timeout, const char * 
 void sc_scheduled_bundles::execute_bundles(time_tag const & last, time_tag const & now)
 {
     World * world = &sc_factory->world;
+
     while(!bundle_q.empty()) {
         bundle_node & front = *bundle_q.top();
-        time_tag const & current = front.timeout_;
+        time_tag const & next_timestamp = front.timeout_;
 
-        if (now < current)
+        if (now < next_timestamp)
             break;
 
-        time_tag time_since_last = current - last;
-        float samples_since_last = time_since_last.to_samples(world->mSampleRate);
+        if (last < next_timestamp) {
+            // between last and now
+            time_tag time_since_last = last - next_timestamp;
+            float samples_since_last = time_since_last.to_samples(world->mSampleRate);
 
-        float sample_offset;
-        float subsample_offset = std::modf(samples_since_last, &sample_offset);
+            float sample_offset;
+            float subsample_offset = std::modf(samples_since_last, &sample_offset);
 
-        world->mSampleOffset = (int)sample_offset;
-        world->mSubsampleOffset = subsample_offset;
+            world->mSampleOffset = (int)sample_offset;
+            world->mSubsampleOffset = subsample_offset;
+        } else
+            world->mSampleOffset = world->mSubsampleOffset = 0;
 
         front.run();
         bundle_q.erase_and_dispose(bundle_q.top(), &dispose_bundle);
