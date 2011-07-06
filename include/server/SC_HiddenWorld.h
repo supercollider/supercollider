@@ -87,7 +87,6 @@ typedef HashTable<struct GraphDef, Malloc> GrafDefTable;
 
 struct HiddenWorld
 {
-
 	class AllocPool *mAllocPool;
 	IntHashTable<struct Node, AllocPool> *mNodeLib;
 	GrafDefTable *mGraphDefLib;
@@ -106,6 +105,7 @@ struct HiddenWorld
 	DeleteGraphDefsFifo mDeleteGraphDefs;
 
 	SC_Semaphore* mQuitProgram;
+	bool mTerminating;
 
 #ifndef NO_LIBSNDFILE
 	SNDFILE *mNRTInputFile;
