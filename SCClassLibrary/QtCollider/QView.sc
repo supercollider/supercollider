@@ -17,6 +17,8 @@ QView : QObject {
   var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseMoveAction;
   var <keyDownAction, <keyUpAction, <keyModifiersChangedAction;
   var <>keyTyped;
+  // focus
+  var <focusGainedAction, <focusLostAction;
   // drag-and-drop
   var <>dragLabel;
   var <beginDragAction, <canReceiveDragHandler, <receiveDragHandler;
@@ -379,6 +381,16 @@ QView : QObject {
                                \onWindowDeactivateEvent );
   }
 
+  focusGainedAction_ { arg handler;
+    focusGainedAction = handler;
+    this.registerEventHandler( 8 /* QEvent::FocusIn */, \focusInEvent );
+  }
+
+  focusLostAction_ { arg handler;
+    focusLostAction = handler;
+    this.registerEventHandler( 9 /* QEvent::FocusOut */, \focusOutEvent );
+  }
+
   onClose_ { arg func;
     this.manageFunctionConnection( onClose, func, 'destroyed()', false );
     onClose = func;
@@ -492,6 +504,9 @@ QView : QObject {
   onWindowDeactivateEvent {
     endFrontAction.value(this);
   }
+
+  focusInEvent { focusGainedAction.value(this) }
+  focusOutEvent { focusLostAction.value(this) }
 
   keyDownEvent { arg char, modifiers, unicode, keycode;
     modifiers = QKeyModifiers.toCocoa(modifiers);
