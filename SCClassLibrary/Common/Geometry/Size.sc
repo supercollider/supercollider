@@ -1,5 +1,5 @@
 Size {
-	var <width = 0, <height = 0;
+	var <>width = 0, <>height = 0;
 
 	*new { arg width=0, height=0;
 		^super.newCopyArgs(width, height);
