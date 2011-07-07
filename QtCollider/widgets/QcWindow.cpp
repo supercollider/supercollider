@@ -25,6 +25,8 @@
 #include "QcScrollArea.h"
 
 #include <QShortcut>
+#include <QApplication>
+#include <QDesktopWidget>
 
 class QcWindowFactory : public QcAbstractFactory
 {
@@ -56,6 +58,11 @@ public:
     // size, resizability
 
     QRect geom = arguments[1].value<QRect>();
+
+    if( geom.isEmpty() ) {
+      geom = QApplication::desktop()->availableGeometry();
+      geom.setSize( window->sizeHint() );
+    }
 
     bool resizable = arguments[2].value<bool>();
     if( resizable ) {
