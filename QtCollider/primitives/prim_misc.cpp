@@ -57,6 +57,20 @@ QC_LANG_PRIMITIVE( QWindow_ScreenBounds, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlo
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QWindow_AvailableGeometry, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QRect rect = QApplication::desktop()->availableGeometry();
+
+  int err = Slot::setRect( rectSlot, rect );
+  if( err ) return err;
+
+  slotCopy( r, rectSlot );
+
+  return errNone;
+}
+
 QC_LANG_PRIMITIVE( Qt_StringBounds, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString str = Slot::toString( a );

@@ -101,6 +101,10 @@ QWindow
     ^this.prScreenBounds( Rect.new );
   }
 
+  *availableBounds {
+    ^this.prAvailableBounds( Rect() );
+  }
+
   *closeAll {
     allWindows.copy.do { |win| win.close };
   }
@@ -217,6 +221,11 @@ QWindow
 
   *prScreenBounds { arg return;
     _QWindow_ScreenBounds
+    ^this.primitiveFailed
+  }
+
+  *prAvailableBounds { arg return;
+    _QWindow_AvailableGeometry
     ^this.primitiveFailed
   }
 
