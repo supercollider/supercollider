@@ -53,6 +53,9 @@ Rect {
 	leftBottom { ^Point.new(this.left, this.bottom) }
 	rightBottom { ^Point.new(this.right, this.bottom) }
 
+	size { ^Size(width,height) }
+	size_ { |sz| width = sz.width; height = sz.height }
+
 	moveBy { arg h, v;
 		^this.class.new(left + h, top + v, width, height)
 	}
@@ -180,6 +183,4 @@ Rect {
 			this.height - thatRect.height
 		)
 	}
-
-
 }

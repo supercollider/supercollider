@@ -124,32 +124,3 @@ QtGUI {
     ^this.primitiveFailed
   }
 }
-
-Size {
-  var <width, <height;
-
-  *new { arg width=0.0, height=0.0;
-    ^super.new.initSize( width, height );
-  }
-
-  initSize{ arg w, h;
-    width = w;
-    height = h;
-  }
-
-  asRect { ^Rect(0,0,width,height); }
-
-  asPoint { ^Point(width,height); }
-
-  asString {
-    ^( "Size(" ++ width ++ ", " ++ height ++ ")" );
-  }
-}
-
-+ Rect {
-  asSize { ^Size( width, height ); }
-}
-
-+ Point {
-  asSize { ^Size( x, y ); }
-}
