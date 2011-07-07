@@ -58,6 +58,7 @@ namespace Slot
 
   int setRect( PyrSlot *, const QRectF & );
   int setPoint( PyrSlot *, const QPointF & );
+  void setSize( PyrSlot *, const QSizeF & );
   void setString( PyrSlot *, const QString & );
   int setColor( PyrSlot *, const QColor & );
   int setPalette( PyrSlot *, const QPalette & );

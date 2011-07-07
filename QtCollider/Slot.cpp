@@ -74,6 +74,16 @@ int Slot::setPoint( PyrSlot *slot, const QPointF &pt )
   return errNone;
 }
 
+void Slot::setSize( PyrSlot *slot, const QSizeF &sz )
+{
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Size, 0, true, true );
+  SetObject( slot, obj );
+
+  PyrSlot *slots = obj->slots;
+  SetFloat( slots+0, sz.width() );
+  SetFloat( slots+1, sz.height() );
+}
+
 void Slot::setString( PyrSlot *slot, const QString& arg )
 {
   PyrString *str = newPyrString( gMainVMGlobals->gc,
@@ -163,6 +173,10 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
     case QMetaType::QPoint:
     case QMetaType::QPointF:
         return Slot::setPoint( slot, val.toPointF() );
+    case QMetaType::QSize:
+    case QMetaType::QSizeF:
+        Slot::setSize( slot, val.toSizeF() );
+        return errNone;
     case QMetaType::QRect:
     case QMetaType::QRectF:
         return Slot::setRect( slot, val.toRectF() );
