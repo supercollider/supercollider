@@ -188,6 +188,8 @@ QWindow
 
   //------------------- simply redirected to QView ---------------------//
 
+  sizeHint { ^view.sizeHint }
+  minSizeHint { ^view.minSizeHint }
   alpha_ { arg value; view.alpha_(value); }
   addFlowLayout { arg margin, gap; ^view.addFlowLayout( margin, gap ); }
   close { view.close; }
