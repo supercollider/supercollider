@@ -13,6 +13,7 @@ Point {
 	asPoint { ^this }
 	asComplex { ^Complex.new(x,y) }
 	asPolar { ^Polar.new(this.rho, this.theta) }
+	asSize { ^Size(x,y) }
 	asRect { ^Rect.new(0,0,x,y) }
 	asArray { ^[this.x, this.y] }
 
