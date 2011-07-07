@@ -110,7 +110,6 @@ FlowViewLayout : FlowLayout {
 
 	place { arg view;
 		var row;
-		"place".postln;
 		if (rows.size < 1) {this.prAddRow};
 		rows.last.add( view );
 		// Ensure the action is only added once: it will be removed only if already added.
