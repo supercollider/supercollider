@@ -151,10 +151,7 @@ QWindow
   bounds_ { arg aRect;
     var r = QWindow.flipY( aRect.asRect );
     view.setProperty( \geometry, r );
-    if( resizable.not ) {
-      view.setProperty( \minimumSize, r.asSize );
-      view.setProperty( \maximumSize, r.asSize );
-    }
+    if( resizable.not ) { view.fixedSize = r.size }
   }
 
   bounds {
