@@ -99,6 +99,10 @@ QView : QObject {
     this.setProperty(\geometry, rect.asRect )
   }
 
+  sizeHint { ^this.getProperty(\sizeHint) }
+
+  minSizeHint { ^this.getProperty(\minimumSizeHint) }
+
   // a Point can be passed instead of a Size
   maxSize_ { arg size;
     var max = QLimits(\maxWidgetSize);
