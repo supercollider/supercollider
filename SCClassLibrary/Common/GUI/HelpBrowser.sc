@@ -10,6 +10,16 @@ HelpBrowser {
 	var txtPath;
 	var openNewWin;
 
+	*initClass {
+		StartUp.add {
+			NotificationCenter.register(SCDoc, \docMapDidUpdate, this) {
+				if(WebView.implClass.respondsTo(\clearCache)) {
+					WebView.clearCache;
+				}
+			}
+		}
+	}
+
 	*instance {
 		if( singleton.isNil ) {
 			singleton = this.new;

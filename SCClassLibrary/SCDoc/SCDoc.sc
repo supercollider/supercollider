@@ -694,6 +694,7 @@ SCDoc {
             this.writeDocMap;
             this.postProgress("Writing JSON doc map");
             this.docMapToJSON(helpTargetDir +/+ "docmap.js");
+            NotificationCenter.notify(SCDoc, \docMapDidUpdate);
         };
         this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
     }
