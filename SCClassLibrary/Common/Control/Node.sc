@@ -138,8 +138,8 @@ Node {
 
 	release { arg releaseTime;
 		server.sendMsg(*this.releaseMsg(releaseTime))
-    	}
-    	releaseMsg { arg releaseTime;
+	}
+	releaseMsg { arg releaseTime;
 		//assumes a control called 'gate' in the synth
 		if(releaseTime.isNil, {
 			releaseTime = 0.0;
