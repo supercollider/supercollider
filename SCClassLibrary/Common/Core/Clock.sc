@@ -349,7 +349,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
    *beats2bars { | beats | ^TempoClock.default.beats2bars(beats)  }
    *bars2beats { | bars | ^TempoClock.default.bars2beats(bars)  }
    *bar { ^TempoClock.default.bar  }
-   *nextBar { | beat | ^TempoClock.default.nextBar  }
+   *nextBar { | beat | ^TempoClock.default.nextBar(beat)  }
    *beatInBar { ^TempoClock.default.beatInBar  }
 
 }
