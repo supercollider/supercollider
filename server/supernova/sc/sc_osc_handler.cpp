@@ -44,7 +44,7 @@ server_node * find_node(int32_t target_id)
     server_node * node = instance->find_node(target_id);
 
     if (node == NULL)
-        log("node not found\n");
+        log_printf("node not found: %d\n", target_id);
 
     return node;
 }
@@ -843,6 +843,8 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 
     node_position_constraint pos = make_pair(target, node_position(action));
     abstract_synth * synth = instance->add_synth(name, node_id, pos);
+    if (!synth)
+        log_printf("Cannot create synth (synthdef: %s, node id: %d\n", name, node_id);
 
     last_generated = node_id;
     return static_cast<sc_synth*>(synth);
