@@ -1243,7 +1243,7 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 		int32 iphase = (int32)phase;
 		float* table0 = bufData + iphase * bufChannels;
 		for (uint32 channel=0; channel<numInputs; ++channel)
-			table0[channel] = IN(channel)[k];
+			table0[channel] = IN(channel+3)[k];
 	}
 }
 
