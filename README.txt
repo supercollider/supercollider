@@ -35,11 +35,7 @@ And be careful you're not using TextEdit or a web browser instead of the SuperCo
 Building the Source Code
 ========================
 
-Platform specific build and install instructions can be found in:
-
-	platform/
-
-
+Platform specific build and install instructions can be found in the README_${PLATOFORM}.txt files
 
 We hope you enjoy SuperCollider; please get involved in the active community!
 
@@ -53,3 +49,5 @@ SuperCollider is free software; you can redistribute it and/or modify it under t
 
 SuperCollider 3.1 was released on October 31, 2007
 SuperCollider 3.2 was released on February 19, 2008
+SuperCollider 3.3 was released on April 30, 2009
+SuperCollider 3.4 was released on July 15, 2010
