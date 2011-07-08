@@ -120,8 +120,6 @@ Event : Environment {
 		StartUp.add {
 			Event.makeDefaultSynthDef;
 		};
-
-
 	}
 
 	*makeDefaultSynthDef {
