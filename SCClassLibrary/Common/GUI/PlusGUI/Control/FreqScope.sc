@@ -13,7 +13,9 @@ PlusFreqScope {
 
 	*initClass {
 		server = Server.internal;   // FIXME: Some systems don't have an internal server
-		this.initSynthDefs;
+		StartUp.add {
+			this.initSynthDefs;
+		}
 	}
 
 	*new { arg parent, bounds;
@@ -21,11 +23,6 @@ PlusFreqScope {
 	}
 
 	*initSynthDefs {
-		Class.initClassTree(SynthDef);
-		Class.initClassTree(SynthDescLib);
-		Class.initClassTree(Server);
-		UGen.allSubclasses.do(Class.initClassTree(_));
-
 		// dbFactor -> 2/dbRange
 
 		// linear
