@@ -350,6 +350,10 @@ SynthDescLib {
 		Class.initClassTree(Server);
 		all = IdentityDictionary.new;
 		global = this.new(\global);
+
+		ServerBoot.add {|server|
+			this.send(server)
+		}
 	}
 
 	*getLib { arg libname;
@@ -400,12 +404,21 @@ SynthDescLib {
 	}
 	*match { |key| ^global.match(key) }
 
-	send {
+	send {|aServer|
+		var targetServers;
+		if (aServer.isNil) {
+			targetServers = servers
+		} {
+			targetServers = #[aServer]
+		};
+
+		// sent to all
 		servers.do {|server|
 			synthDescs.do {|desc| desc.send(server.value) };
 		};
 	}
-	read	{ arg path;
+
+	read { arg path;
 		if (path.isNil) {
 			path = SynthDef.synthDefDir ++ "*.scsyndef";
 		};

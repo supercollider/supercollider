@@ -132,7 +132,7 @@ Event : Environment {
 						XLine.kr(Rand(4000,5000), Rand(2500,3200), 1)
 					) * Linen.kr(gate, 0.01, 0.7, 0.3, 2);
 				OffsetOut.ar(out, Pan2.ar(z, pan, amp));
-			}, [\ir]).storeOnce;
+			}, [\ir]).add;
 	}
 
 	*makeParentEvents {
