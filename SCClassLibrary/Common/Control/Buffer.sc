@@ -226,12 +226,11 @@ Buffer {
 
 	// send a Collection to a buffer one UDP sized packet at a time
 	*sendCollection { arg server, collection, numChannels = 1, wait = 0.0, action;
-		var buffer = this.alloc(server, ceil(collection.size / numChannels), numChannels);
+		var buffer = this.new(server, ceil(collection.size / numChannels), numChannels);
 		forkIfNeeded {
-			buffer.alloc(collection.size, numChannels);
+			buffer.alloc;
 			server.sync;
 			buffer.sendCollection(collection, 0, wait, action);
-
 		}
 		^buffer;
 	}
