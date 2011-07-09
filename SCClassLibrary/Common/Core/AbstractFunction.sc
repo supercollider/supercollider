@@ -199,6 +199,10 @@ AbstractFunction {
 
 	// embed in ugen graph
 	asUGenInput { arg for; ^this.value(for) }
+	asAudioRateInput { |for|
+		var result = this.value(for);
+		^if(result.rate != \audio) { K2A.ar(result) } { result }
+	}
 	// convert to control input
 	asControlInput { ^this.value }
 	isValidUGenInput { ^true }
