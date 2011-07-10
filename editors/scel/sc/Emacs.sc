@@ -211,7 +211,7 @@ Emacs {
 		var outFileName, newServer;
 		Class.initClassTree(EmacsInterface);
 		Class.initClassTree(EmacsDocument);
-		Class.initClassTree(AbstractResponderProxy);
+		Class.initClassTree(AbstractResponderFunc);
 		Class.initClassTree(OSCresponder);
 		Class.initClassTree(Server);
 		requestHandlers = IdentityDictionary.new;
