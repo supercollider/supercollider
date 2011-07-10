@@ -37,6 +37,10 @@ void defineMiscPrimitives();
 void defineQWidgetPrimitives();
 void defineQPalettePrimitives();
 void defineQImagePrimitives();
+    
+#ifdef SC_DARWIN
+    void defineQcQuartzComposerPrimitives();
+#endif
 
 void initPrimitives () {
   QtCollider::init();
@@ -49,6 +53,10 @@ void initPrimitives () {
   defineMiscPrimitives();
   defineQPalettePrimitives();
   defineQImagePrimitives();
+    
+#ifdef SC_DARWIN
+    defineQcQuartzComposerPrimitives();
+#endif
 
 #define QC_DO_SYMBOL(SYM) sym_##SYM = getsym(#SYM);
 QC_DO_SYMBOLS
