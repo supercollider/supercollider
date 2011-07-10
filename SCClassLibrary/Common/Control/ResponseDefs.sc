@@ -19,10 +19,14 @@ AbstractResponderFunc {
 		enabled = false;
 	}
 	
-	func_ {|newFunc|  
+	prFunc_ {|newFunc|  
 		func = newFunc; 
 		this.changed(\function);
 	}
+	
+	add {|newFunc| func = func.addFunc(newFunc); this.changed(\function); }
+	
+	remove {|removeFunc| func = func.removeFunc(removeFunc); this.changed(\function); }
 	
 	gui { this.subclassResponsibility(thisMethod) }
 	
@@ -32,7 +36,7 @@ AbstractResponderFunc {
 		var oneShotFunc, wrappedFunc;
 		wrappedFunc = func;
 		oneShotFunc = { arg ...args; wrappedFunc.value(*args); this.free };
-		this.func_(oneShotFunc);
+		this.prFunc_(oneShotFunc);
 	}
 	
 	permanent_{|bool| 
@@ -43,6 +47,8 @@ AbstractResponderFunc {
 	fix { this.permanent_(true) }
 	
 	free { allFuncProxies.remove(this); this.disable }
+	
+	clear { this.prFunc_(nil) }
 	
 	*allFuncProxies { 
 		var result;

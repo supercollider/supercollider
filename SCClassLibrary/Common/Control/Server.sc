@@ -323,7 +323,7 @@ Server {
 		if (cmdName[0] != $/) { cmdName = cmdName.insert(0, $/) };
 		resp = OSCFunc({|msg|
 			if (msg[1].asString == cmdName) {
-				resp.clear;
+				resp.free;
 				condition.test = true;
 				condition.signal;
 			};
@@ -559,7 +559,7 @@ Server {
 			aliveThread = nil;
 		});
 		if( statusWatcher.notNil, {
-			statusWatcher.clear;
+			statusWatcher.free;
 			statusWatcher = nil;
 		});
 	}
@@ -939,7 +939,7 @@ Server {
 			this.sendMsg("/g_queryTree", 0, queryControls.binaryValue);
 			SystemClock.sched(3, {
 				done.not.if({
-					resp.clear;
+					resp.free;
 					"Remote server failed to respond to queryAllNodes!".warn;
 				});
 			});

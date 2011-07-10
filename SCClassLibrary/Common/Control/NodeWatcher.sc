@@ -41,9 +41,9 @@ AbstractNodeWatcher {
 	}
 	stop {
 		if(isWatching, {
-			responders.do({ arg item; item.clear });
+			responders.do({ arg item; item.free });
 			isWatching = false;
-			this.clear;
+			this.free;
 		})
 	}
 

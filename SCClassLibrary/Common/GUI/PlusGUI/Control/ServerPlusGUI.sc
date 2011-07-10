@@ -476,7 +476,7 @@
 		this.sendMsg("/g_queryTree", 0, 0);
 		SystemClock.sched(3, {
 			done.not.if({
-				resp.clear;
+				resp.free;
 				"Server failed to respond to Group:queryTree!".warn;
 			});
 		});
