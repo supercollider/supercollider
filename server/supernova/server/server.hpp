@@ -156,7 +156,9 @@ public:
     /* @} */
 
     /* @{ */
-    /** system interpreter */
+    /** system interpreter
+      * \note: should only be called from the main audio thread
+      */
     void add_system_callback(system_callback * cb)
     {
         system_interpreter.add_callback(cb);
@@ -195,8 +197,7 @@ private:
     {
         if (node.is_synth())
             server->notification_node_ended(&node);
-        else
-        {
+        else {
             abstract_group * group = static_cast<abstract_group*>(&node);
             group->apply_on_children(boost::bind(nova_server::free_deep_notify, server, _1));
         }
@@ -294,7 +295,7 @@ private:
     bool dsp_queue_dirty;
 
 private:
-    callback_interpreter<system_callback> system_interpreter;
+    callback_interpreter<system_callback, false> system_interpreter; // rt to system thread
     threaded_callback_interpreter<system_callback, io_thread_init_functor> io_interpreter; // for network IO
 };
 
