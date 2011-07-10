@@ -346,7 +346,7 @@
 		// msg[1] controls included
 		// msg[2] nodeID of queried group
 		// initial number of children
-		resp = OSCProxy({ arg msg;
+		resp = OSCFunc({ arg msg;
 
 			var finalEvent;
 			var i = 2, j, controls, printControls = false, dumpFunc;

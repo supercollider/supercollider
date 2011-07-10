@@ -152,7 +152,7 @@ Node {
 		server.sendMsg(10, nodeID);//"/n_trace"
 	}
 	query {
-		OSCProxy({ arg msg;
+		OSCFunc({ arg msg;
 			var cmd,argnodeID,parent,prev,next,isGroup,head,tail;
 			# cmd,argnodeID,parent,prev,next,isGroup,head,tail = msg;
 			// assuming its me ... if(nodeID == argnodeID)
@@ -335,7 +335,7 @@ AbstractGroup : Node {
 
 	queryTree { //|action|
 		var resp, done = false;
-		resp = OSCProxy({ arg msg;
+		resp = OSCFunc({ arg msg;
 			var i = 2, tabs = 0, printControls = false, dumpFunc;
 			if(msg[1] != 0, {printControls = true});
 			("NODE TREE Group" + msg[2]).postln;

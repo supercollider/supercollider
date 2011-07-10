@@ -126,7 +126,7 @@ ServerMeterView{
 		numRMSSamps = server.sampleRate / updateFreq;
 		numRMSSampsRecip = 1 / numRMSSamps;
 		(numIns > 0).if({
-			inresp = OSCProxy({|msg|
+			inresp = OSCFunc({|msg|
 				{
 					try {
 						var channelCount = msg.size - 3 / 2;
@@ -148,7 +148,7 @@ ServerMeterView{
 			}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix;
 		});
 		(numOuts > 0).if({
-			outresp = OSCProxy({|msg|
+			outresp = OSCFunc({|msg|
 				{
 					try {
 						var channelCount = msg.size - 3 / 2;
