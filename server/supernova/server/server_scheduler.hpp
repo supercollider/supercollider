@@ -119,12 +119,14 @@ public:
 
     void terminate()
     {
-        cbs.run_callbacks();
+        cbs.run_callbacks(); // audio backend must be closed by now
         threads.terminate_threads();
     }
 
     void add_sync_callback(audio_sync_callback * cb)
     {
+        /* we need to guard, because it can be called from the main (system) thread and the network receiver thread */
+        boost::mutex::scoped_lock lock(sync_mutex);
         cbs.add_callback(cb);
     }
 
@@ -143,8 +145,9 @@ public:
     }
 
 private:
-    callback_system<audio_sync_callback> cbs;
+    callback_system<audio_sync_callback, false> cbs;
     dsp_threads threads;
+    boost::mutex sync_mutex;
 };
 
 } /* namespace nova */
