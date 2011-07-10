@@ -302,7 +302,7 @@ Buffer {
 		refcount = (count / 1633).roundUp;
 		count = count + pos;
 		//("refcount" + refcount).postln;
-		resp = OSCProxy({ arg msg;
+		resp = OSCFunc({ arg msg;
 			if(msg[1] == bufnum, {
 				//("received" + msg).postln;
 				array = array.overWrite(FloatArray.newFrom(msg.copyToEnd(4)), msg[2] - index);
@@ -530,7 +530,7 @@ Buffer {
 	}
 
 	query {
-		OSCProxy({ arg msg;
+		OSCFunc({ arg msg;
 			Post << "bufnum      :" << msg[1] << Char.nl
 				<< "numFrames   : " << msg[2] << Char.nl
 				<< "numChannels : " << msg[3] << Char.nl
@@ -569,7 +569,7 @@ Buffer {
 	*initServerCache { |server|
 		serverCaches[server] ?? {
 			serverCaches[server] = IdentityDictionary.new;
-			serverCaches[server][\responder] = OSCProxy({ |m|
+			serverCaches[server][\responder] = OSCFunc({ |m|
 				var	buffer = serverCaches[server][m[1]];
 				if(buffer.notNil) {
 					buffer.numFrames = m[2];

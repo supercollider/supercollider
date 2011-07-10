@@ -1,15 +1,15 @@
-AbstractResponderProxy {
-	classvar allProxies;
+AbstractResponderFunc {
+	classvar allFuncProxies;
 	var <func, <srcID, <enabled = false, <dispatcher, <permanent = false;
 	
-	*initClass { Class.initClassTree(AbstractDispatcher); allProxies = IdentitySet.new; }
+	*initClass { Class.initClassTree(AbstractDispatcher); allFuncProxies = IdentitySet.new; }
 	
 	enable { 
 		if(enabled.not, {
 			if(permanent.not, { CmdPeriod.add(this) });
 			dispatcher.add(this);
 			enabled = true;
-			allProxies.add(this);
+			allFuncProxies.add(this);
 		});
 	} 
 	
@@ -42,15 +42,15 @@ AbstractResponderProxy {
 	
 	fix { this.permanent_(true) }
 	
-	free { allProxies.remove(this); this.disable }
+	free { allFuncProxies.remove(this); this.disable }
 	
-	*allProxies { 
+	*allFuncProxies { 
 		var result;
 		result = IdentityDictionary.new;
-		allProxies.do({|proxy|
+		allFuncProxies.do({|funcProxy|
 			var key;
-			key = proxy.dispatcher.typeKey;
-			result[key] = result[key].add(proxy)
+			key = funcProxy.dispatcher.typeKey;
+			result[key] = result[key].add(funcProxy)
 		});
 		^result;
 	}
@@ -58,10 +58,10 @@ AbstractResponderProxy {
 	*allEnabled { 
 		var result;
 		result = IdentityDictionary.new;
-		allProxies.select(_.enabled).do({|proxy|
+		allFuncProxies.select(_.enabled).do({|funcProxy|
 			var key;
-			key = proxy.dispatcher.typeKey;
-			result[key] = result[key].add(proxy)
+			key = funcProxy.dispatcher.typeKey;
+			result[key] = result[key].add(funcProxy)
 		});
 		^result;	
 	}
@@ -69,10 +69,10 @@ AbstractResponderProxy {
 	*allDisabled { 
 		var result;
 		result = IdentityDictionary.new;
-		allProxies.reject(_.enabled).do({|proxy|
+		allFuncProxies.reject(_.enabled).do({|funcProxy|
 			var key;
-			key = proxy.dispatcher.typeKey;
-			result[key] = result[key].add(proxy)
+			key = funcProxy.dispatcher.typeKey;
+			result[key] = result[key].add(funcProxy)
 		});
 		^result;	
 	}
@@ -90,9 +90,9 @@ AbstractDispatcher {
 		
 	*initClass { all = IdentitySet.new }
 	
-	add {|proxy| this.subclassResponsibility(thisMethod) } // proxies call this to add themselves to this dispatcher; should register this if needed
+	add {|funcProxy| this.subclassResponsibility(thisMethod) } // proxies call this to add themselves to this dispatcher; should register this if needed
 	
-	remove {|proxy| this.subclassResponsibility(thisMethod) } // proxies call this to remove themselves from this dispatcher; should unregister if needed
+	remove {|funcProxy| this.subclassResponsibility(thisMethod) } // proxies call this to remove themselves from this dispatcher; should unregister if needed
 		
 	value { this.subclassResponsibility(thisMethod) }
 	
@@ -117,43 +117,43 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 	
 	init { super.init; active = IdentityDictionary.new; wrappedFuncs = IdentityDictionary.new; }
 	
-	add {|proxy| 
+	add {|funcProxy| 
 		var func, keys;
-		proxy.addDependant(this);
-		func = this.wrapFunc(proxy);
-		wrappedFuncs[proxy] = func;
-		keys = this.getKeysForProxy(proxy);
+		funcProxy.addDependant(this);
+		func = this.wrapFunc(funcProxy);
+		wrappedFuncs[funcProxy] = func;
+		keys = this.getKeysForFuncProxy(funcProxy);
 		keys.do({|key| active[key] = active[key].addFunc(func) }); // support multiple keys
 		if(registered.not, {this.register});
 	}
 	
-	remove {|proxy|
+	remove {|funcProxy|
 		var func, keys;
-		proxy.removeDependant(this);
-		keys = this.getKeysForProxy(proxy);
-		func = wrappedFuncs[proxy];
+		funcProxy.removeDependant(this);
+		keys = this.getKeysForFuncProxy(funcProxy);
+		func = wrappedFuncs[funcProxy];
 		keys.do({|key| active[key] = active[key].removeFunc(func) }); // support multiple keys
-		wrappedFuncs[proxy] = nil;
+		wrappedFuncs[funcProxy] = nil;
 		if(active.size == 0, {this.unregister});
 	}
 	
 		// old Funk vs. new Funk
-	updateFuncForProxy {|proxy|
+	updateFuncForFuncProxy {|funcProxy|
 		var func, oldFunc, keys;
-		func = this.wrapFunc(proxy);
-		oldFunc = wrappedFuncs[proxy];
-		wrappedFuncs[proxy] = func;
-		keys = this.getKeysForProxy(proxy);
+		func = this.wrapFunc(funcProxy);
+		oldFunc = wrappedFuncs[funcProxy];
+		wrappedFuncs[funcProxy] = func;
+		keys = this.getKeysForFuncProxy(funcProxy);
 		keys.do({|key| active[key] = active[key].replaceFunc(oldFunc, func) }); // support multiple keys
 	}
 		
 	wrapFunc { this.subclassResponsibility(thisMethod) }
 	
-	getKeysForProxy { this.subclassResponsibility(thisMethod) }
+	getKeysForFuncProxy { this.subclassResponsibility(thisMethod) }
 	
-	update {|proxy, what| if(what == \function, { this.updateFuncForProxy(proxy) }) }
+	update {|funcProxy, what| if(what == \function, { this.updateFuncForFuncProxy(funcProxy) }) }
 	
-	free { wrappedFuncs.keys.do({|proxy| proxy.removeDependant(this) }); super.free }
+	free { wrappedFuncs.keys.do({|funcProxy| funcProxy.removeDependant(this) }); super.free }
 	
 }
 
@@ -172,20 +172,20 @@ AbstractMessageMatcher {
 
 OSCMessageDispatcher : AbstractWrappingDispatcher {
 	
-	wrapFunc {|proxy|
+	wrapFunc {|funcProxy|
 		var func, srcID, recvPort;
-		func = proxy.func;
-		srcID = proxy.srcID;
-		recvPort = proxy.recvPort;
+		func = funcProxy.func;
+		srcID = funcProxy.srcID;
+		recvPort = funcProxy.recvPort;
 		^case(
-			{ srcID.notNil && recvPort.notNil }, { OSCProxyBothMessageMatcher(srcID, recvPort, func) },
-			{ srcID.notNil }, { OSCProxyAddrMessageMatcher(srcID, func) },
-			{ recvPort.notNil }, { OSCProxyRecvPortMessageMatcher(recvPort, func) },
+			{ srcID.notNil && recvPort.notNil }, { OSCFuncBothMessageMatcher(srcID, recvPort, func) },
+			{ srcID.notNil }, { OSCFuncAddrMessageMatcher(srcID, func) },
+			{ recvPort.notNil }, { OSCFuncRecvPortMessageMatcher(recvPort, func) },
 			{ func }
 		);
 	}
 	
-	getKeysForProxy {|proxy| ^[proxy.path];}
+	getKeysForFuncProxy {|funcProxy| ^[funcProxy.path];}
 	
 	value {|time, addr, recvPort, msg| active[msg[0]].value(msg, time, addr, recvPort);}
 	
@@ -217,7 +217,7 @@ OSCMessagePatternDispatcher : OSCMessageDispatcher {
 	
 }
 
-OSCProxy : AbstractResponderProxy {
+OSCFunc : AbstractResponderFunc {
 	classvar <>defaultDispatcher, <>defaultMatchingDispatcher, traceFunc, traceRunning = false;
 	var <path, <recvPort;
 	
@@ -262,14 +262,14 @@ OSCProxy : AbstractResponderProxy {
 		func = argfunc;
 		dispatcher = argdisp ? dispatcher;
 		this.enable;
-		allProxies.add(this);
+		allFuncProxies.add(this);
 	}
 	
 	printOn { arg stream; stream << this.class.name << "(" <<* [path, srcID] << ")" }
 	
 }
 
-OSCdef : OSCProxy {
+OSCdef : OSCFunc {
 	classvar <all; 
 	var <key;
 	
@@ -300,7 +300,7 @@ OSCdef : OSCProxy {
 
 
 // if you need to test for address func gets wrapped in this
-OSCProxyAddrMessageMatcher : AbstractMessageMatcher {
+OSCFuncAddrMessageMatcher : AbstractMessageMatcher {
 	var addr;
 	
 	*new {|addr, func| ^super.new.init(addr, func);}
@@ -315,7 +315,7 @@ OSCProxyAddrMessageMatcher : AbstractMessageMatcher {
 }
 
 // if you need to test for recvPort func gets wrapped in this
-OSCProxyRecvPortMessageMatcher : AbstractMessageMatcher {
+OSCFuncRecvPortMessageMatcher : AbstractMessageMatcher {
 	var recvPort;
 	
 	*new {|recvPort, func| ^super.new.init(recvPort, func);}
@@ -329,7 +329,7 @@ OSCProxyRecvPortMessageMatcher : AbstractMessageMatcher {
 	}
 }
 
-OSCProxyBothMessageMatcher : AbstractMessageMatcher {
+OSCFuncBothMessageMatcher : AbstractMessageMatcher {
 	var addr, recvPort;
 	
 	*new {|addr, recvPort, func| ^super.new.init(addr, recvPort, func);}
@@ -351,7 +351,7 @@ MIDIMessageDispatcher : AbstractWrappingDispatcher {
 	
 	*new {|messageType| ^super.new.messageType_(messageType) }
 	
-	getKeysForProxy {|proxy| ^(proxy.msgNum ? (0..127)).asArray;} // noteNum, etc.
+	getKeysForFuncProxy {|funcProxy| ^(funcProxy.msgNum ? (0..127)).asArray;} // noteNum, etc.
 	
 	value {|src, chan, num, val| active[num].value(val, num, chan, src);}
 	
@@ -366,17 +366,17 @@ MIDIMessageDispatcher : AbstractWrappingDispatcher {
 	}
 	
 	// wrapper objects based on arg type and testing requirements
-	wrapFunc {|proxy|
+	wrapFunc {|funcProxy|
 		var func, chan, srcID;
-		func = proxy.func;
-		chan = proxy.chan;
-		srcID = proxy.srcID;
+		func = funcProxy.func;
+		chan = funcProxy.chan;
+		srcID = funcProxy.srcID;
 		^case(
-			{ srcID.notNil && chan.isArray }, {MIDIProxyBothCAMessageMatcher(chan, srcID, func)},
-			{ srcID.notNil && chan.notNil }, {MIDIProxyBothMessageMatcher(chan, srcID, func)},
-			{ srcID.notNil }, {MIDIProxySrcMessageMatcher(srcID, func)},
-			{ chan.isArray }, {MIDIProxyChanArrayMessageMatcher(chan, func)},
-			{ chan.notNil }, {MIDIProxyChanMessageMatcher(chan, func)},
+			{ srcID.notNil && chan.isArray }, {MIDIFuncBothCAMessageMatcher(chan, srcID, func)},
+			{ srcID.notNil && chan.notNil }, {MIDIFuncBothMessageMatcher(chan, srcID, func)},
+			{ srcID.notNil }, {MIDIFuncSrcMessageMatcher(srcID, func)},
+			{ chan.isArray }, {MIDIFuncChanArrayMessageMatcher(chan, func)},
+			{ chan.notNil }, {MIDIFuncChanMessageMatcher(chan, func)},
 			{ func }
 		);
 	}
@@ -387,26 +387,26 @@ MIDIMessageDispatcher : AbstractWrappingDispatcher {
 // for \touch, \program, \bend
 MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 	
-	getKeysForProxy {|proxy| ^(proxy.chan ? (0..15)).asArray;} // chan
+	getKeysForFuncProxy {|funcProxy| ^(funcProxy.chan ? (0..15)).asArray;} // chan
 	
 	value {|src, chan, val| active[chan].value(val, chan, src);}
 	
 	// wrapper objects based on arg type and testing requirements
-	wrapFunc {|proxy|
+	wrapFunc {|funcProxy|
 		var func, chan, srcID;
-		func = proxy.func;
-		chan = proxy.chan;
-		srcID = proxy.srcID;
+		func = funcProxy.func;
+		chan = funcProxy.chan;
+		srcID = funcProxy.srcID;
 		// are these right?
 		^case(
-			{ srcID.notNil }, {MIDIProxySrcMessageMatcherNV(srcID, func)},
+			{ srcID.notNil }, {MIDIFuncSrcMessageMatcherNV(srcID, func)},
 			{ func }
 		);
 	}
 }
 
 
-MIDIProxy : AbstractResponderProxy {
+MIDIFunc : AbstractResponderFunc {
 	classvar <>defaultDispatchers;
 	var <chan, <msgNum, <msgVal, <msgType;
 	
@@ -460,7 +460,7 @@ MIDIProxy : AbstractResponderProxy {
 		msgType = argType ? msgType;
 		dispatcher = argdisp ? dispatcher;
 		this.enable;
-		allProxies.add(this);
+		allFuncProxies.add(this);
 	}
 	
 	// post pretty
@@ -468,7 +468,7 @@ MIDIProxy : AbstractResponderProxy {
 
 }
 
-MIDIdef : MIDIProxy {
+MIDIdef : MIDIFunc {
 	classvar <>all; // same as other def classes, do we need a setter really?
 	var <key;
 	
@@ -527,7 +527,7 @@ MIDIdef : MIDIProxy {
 
 
 // if you need to test for srcID func gets wrapped in this
-MIDIProxySrcMessageMatcher : AbstractMessageMatcher {
+MIDIFuncSrcMessageMatcher : AbstractMessageMatcher {
 	var srcID;
 	
 	*new {|srcID, func| ^super.new.init(srcID, func);}
@@ -540,7 +540,7 @@ MIDIProxySrcMessageMatcher : AbstractMessageMatcher {
 }
 
 // if you need to test for srcID func gets wrapped in this
-MIDIProxyChanMessageMatcher : AbstractMessageMatcher {
+MIDIFuncChanMessageMatcher : AbstractMessageMatcher {
 	var chan;
 	
 	*new {|chan, func| ^super.new.init(chan, func);}
@@ -553,7 +553,7 @@ MIDIProxyChanMessageMatcher : AbstractMessageMatcher {
 }
 
 // if you need to test for chanArray func gets wrapped in this
-MIDIProxyChanArrayMessageMatcher : AbstractMessageMatcher {
+MIDIFuncChanArrayMessageMatcher : AbstractMessageMatcher {
 	var chanBools, <>func;
 	
 	*new {|chanArray, func|
@@ -572,7 +572,7 @@ MIDIProxyChanArrayMessageMatcher : AbstractMessageMatcher {
 }
 
 // version for message types which don't pass a val
-MIDIProxySrcMessageMatcherNV : MIDIProxySrcMessageMatcher {
+MIDIFuncSrcMessageMatcherNV : MIDIFuncSrcMessageMatcher {
 	
 	value {|num, chan, testSrc|
 		if(srcID == testSrc, {func.value(num, chan, testSrc)}) 
@@ -580,7 +580,7 @@ MIDIProxySrcMessageMatcherNV : MIDIProxySrcMessageMatcher {
 }
 
 // if you need to test for chan and srcID func gets wrapped in this
-MIDIProxyBothMessageMatcher : AbstractMessageMatcher {
+MIDIFuncBothMessageMatcher : AbstractMessageMatcher {
 	var chan, srcID;
 	
 	*new {|chan, srcID, func| ^super.new.init(chan, srcID, func);}
@@ -594,7 +594,7 @@ MIDIProxyBothMessageMatcher : AbstractMessageMatcher {
 
 
 // if you need to test for chanArray and srcID func gets wrapped in this
-MIDIProxyBothCAMessageMatcher : AbstractMessageMatcher {
+MIDIFuncBothCAMessageMatcher : AbstractMessageMatcher {
 	var chanBools, srcID;
 	
 	*new {|chanArray, srcID, func| 
