@@ -202,8 +202,8 @@ ServerMeterView{
 			ServerTree.remove(synthFunc);
 		};
 
-		(numIns > 0).if({ inresp.clear; });
-		(numOuts > 0).if({ outresp.clear; });
+		(numIns > 0).if({ inresp.free; });
+		(numOuts > 0).if({ outresp.free; });
 	}
 
 	remove{

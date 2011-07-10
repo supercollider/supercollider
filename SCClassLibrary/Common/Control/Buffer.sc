@@ -324,7 +324,7 @@ Buffer {
 		}.forkIfNeeded;
 		// lose the responder if the network choked
 		SystemClock.sched(timeout,
-			{ done.not.if({ resp.clear; "Buffer-streamToFloatArray failed!".warn;
+			{ done.not.if({ resp.free; "Buffer-streamToFloatArray failed!".warn;
 				"Try increasing wait time".postln;});
 		});
 	}
@@ -585,7 +585,7 @@ Buffer {
 	}
 	*clearServerCaches { |server|
 		if(serverCaches[server].notNil) {
-			serverCaches[server][\responder].clear;
+			serverCaches[server][\responder].free;
 			serverCaches.removeAt(server);
 		}
 	}
