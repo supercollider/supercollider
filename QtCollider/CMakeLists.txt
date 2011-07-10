@@ -122,23 +122,31 @@ if(QT_COLLIDER_LANG_CLIENT)
     list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_DIR}/LanguageClient.h)
     list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/LanguageClient.cpp)
 endif()
+	
 
-if(APPLE)
-  set( QT_COLLIDER_OBJCPP_SRCS
-      ${QT_COLLIDER_DIR}/hacks/hacks_mac.mm
-  )
-endif()
+set( QT_USE_QTWEBKIT TRUE )
 
-if( CMAKE_COMPILER_IS_GNUCXX )
-  set_source_files_properties( ${QT_COLLIDER_OBJCPP_SRCS}
-      PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions"
-  )
-endif()
 
 include(${QT_USE_FILE})
 
 qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 qt4_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
+
+if(APPLE)
+	qt4_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
+	list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
+	list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.mm)
+	list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/primitives/prim_QQuartzComposer.mm)
+  	set( QT_COLLIDER_OBJCPP_SRCS
+  		${QT_COLLIDER_OBJ_MOC_SRCS}
+		${QT_COLLIDER_DIR}/hacks/hacks_mac.mm
+		${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.mm
+		${QT_COLLIDER_DIR}/primitives/prim_QQuartzComposer.mm
+  	)
+  set_source_files_properties( ${QT_COLLIDER_OBJCPP_SRCS}
+      PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions"
+  )
+endif()
 
 list( APPEND QT_COLLIDER_SRCS
   ${QT_COLLIDER_OBJCPP_SRCS}
@@ -152,6 +160,8 @@ set (QT_COLLIDER_LIBS ${QT_LIBRARIES} ${MATH_LIBRARY})
 
 if(APPLE)
   list(APPEND QT_COLLIDER_LIBS "-framework Cocoa" )
+  list(APPEND QT_COLLIDER_LIBS "-framework Quartz" )
+  list(APPEND QT_COLLIDER_LIBS "-framework AppKit" )
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
 endif()
 

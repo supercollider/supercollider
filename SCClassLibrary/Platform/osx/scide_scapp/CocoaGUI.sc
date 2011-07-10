@@ -76,6 +76,7 @@ CocoaGUI {
 	*pen { ^SCPen }
 	*image { ^SCImage }
 	*webView {^SCWebView }
+	*qcView {^SCQuartzComposerView }
 
 	///////////////// Common -> Audio /////////////////
 
