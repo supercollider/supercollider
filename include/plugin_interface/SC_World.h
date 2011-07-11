@@ -100,7 +100,7 @@ struct World
 	const char* mRestrictedPath; // OSC commands to read/write data can only do it within this path, if specified
 
 #ifdef SUPERNOVA
-	nova::rw_spinlock * mAudioBusLocks;
+	nova::padded_rw_spinlock * mAudioBusLocks;
 #endif
 };
 
