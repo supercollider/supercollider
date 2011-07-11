@@ -302,6 +302,8 @@ OSCdef : OSCFunc {
 	
 	free { all[key] = nil; super.free; }
 	
+	printOn { arg stream; stream << this.class.name << "(" <<* [key, path, srcID] << ")" }
+	
 }
 
 
@@ -528,6 +530,9 @@ MIDIdef : MIDIFunc {
 	addToAll {|argkey| key = argkey; all.put(key, this) }
 	
 	free { all[key] = nil; super.free; }
+	
+	// post pretty
+	printOn { arg stream; stream << this.class.name << "(" <<* [key, msgType, msgNum, chan] << ")" }
 	
 }
 
