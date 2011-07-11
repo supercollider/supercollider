@@ -146,7 +146,7 @@ table::
 ## N * strong::string:: || synth def name
 ::
 
-Removes a synth definition once all synths using it have ended. 
+Removes a synth definition. The definition is removed immediately, and does not wait for synth nodes based on that definition to end.
 
 section:: Node Commands
 
