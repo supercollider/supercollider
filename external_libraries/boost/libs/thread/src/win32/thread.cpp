@@ -9,7 +9,6 @@
 
 #include <boost/thread/thread.hpp>
 #include <algorithm>
-#include <windows.h>
 #ifndef UNDER_CE
 #include <process.h>
 #endif
@@ -20,6 +19,7 @@
 #include <boost/throw_exception.hpp>
 #include <boost/thread/detail/tss_hooks.hpp>
 #include <boost/date_time/posix_time/conversion.hpp>
+#include <windows.h>
 
 namespace boost
 {
@@ -32,7 +32,12 @@ namespace boost
         {
             tss_cleanup_implemented(); // if anyone uses TSS, we need the cleanup linked in
             current_thread_tls_key=TlsAlloc();
-            BOOST_ASSERT(current_thread_tls_key!=TLS_OUT_OF_INDEXES);
+			#if defined(UNDER_CE)
+				// Windows CE does not define the TLS_OUT_OF_INDEXES constant.
+				BOOST_ASSERT(current_thread_tls_key!=0xFFFFFFFF);
+			#else
+				BOOST_ASSERT(current_thread_tls_key!=TLS_OUT_OF_INDEXES);
+			#endif
         }
 
         void cleanup_tls_key()
@@ -62,7 +67,7 @@ namespace boost
                 boost::throw_exception(thread_resource_error());
         }
 
-#ifdef BOOST_NO_THREADEX
+#ifndef BOOST_HAS_THREADEX
 // Windows CE doesn't define _beginthreadex
 
         struct ThreadProxyData

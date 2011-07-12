@@ -1,7 +1,6 @@
 //  (C) Copyright Yuriy Krasnoschek 2009. 
 //  (C) Copyright John Maddock 2001 - 2003. 
 //  (C) Copyright Jens Maurer 2001 - 2003. 
-// (C) Copyright Bryce Lelbach 2010
 //  Use, modification and distribution are subject to the 
 //  Boost Software License, Version 1.0. (See accompanying file 
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -10,20 +9,20 @@
 
 //  symbian specific config options:
 
+
 #define BOOST_PLATFORM "Symbian"
 #define BOOST_SYMBIAN 1
 
+
 #if defined(__S60_3X__)
-// Open C / C++ plugin was introdused in this SDK, earlier versions don't have
-// CRT / STL
-#  define BOOST_NIX            1 
-//#  define BOOST_GENETIC_NIX    1
-//#  define BOOST_TRADEMARK_NIX  1
-#  define BOOST_FUNCTIONAL_NIX 1
+// Open C / C++ plugin was introdused in this SDK, earlier versions don't have CRT / STL
 #  define BOOST_S60_3rd_EDITION_FP2_OR_LATER_SDK
 // make sure we have __GLIBC_PREREQ if available at all
-#  include <cstdlib>
-// boilerplate code:
+#ifdef __cplusplus
+#include <cstdlib>
+#else
+#include <stdlib.h>
+#endif// boilerplate code:
 #  define BOOST_HAS_UNISTD_H
 #  include <boost/config/posix_features.hpp>
 // S60 SDK defines _POSIX_VERSION as POSIX.1
