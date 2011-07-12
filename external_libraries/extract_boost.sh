@@ -4,7 +4,7 @@
 # run from the root of the supercollider repository
 
 # root of the boost source tree
-BOOST_ROOT=/home/tim/nightly/boost_1_46_0/
+BOOST_ROOT=/home/tim/boost_1_47_0/
 
 bcp --boost=${BOOST_ROOT} \
 	--scan server/supernova/*/*pp \
