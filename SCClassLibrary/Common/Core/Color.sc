@@ -42,7 +42,7 @@ Color {
 	scaleByAlpha {
 		^Color.new(red * alpha, green * alpha, blue * alpha, 1.0)
 	}
-	blend { arg that, blend;
+	blend { arg that, blend = 0.5;
 		^Color.fromArray(blend(this.asArray, that.asArray, blend));
 	}
 	vary { arg val=0.1, lo=0.3, hi=0.9, alphaVal=0;
