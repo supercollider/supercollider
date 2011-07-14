@@ -25,9 +25,9 @@ Slew.scopeResponse
 		var bus1, bus2, synth, win, fs;
 		server = server ?? {GUI.stethoscope.defaultServer};
 
-		if (server != FreqScope.server) {
-			"Function-scopeReponse: resetting Freqscope.server".warn;
-			FreqScope.server = server;
+		if (server != GUI.freqScopeView.server) {
+			"Function-scopeReponse: resetting GUI.freqScopeView.server".warn;
+			GUI.freqScopeView.server = server;
 		};
 
 		// Create two private busses
@@ -38,7 +38,7 @@ Slew.scopeResponse
 		// Also, onClose must free the synth and the busses
 
 		win = GUI.window.new(label, Rect(100, 100, 511, 300));
-		fs = FreqScope.response(win, win.view.bounds, bus1, bus2, freqMode);
+		fs = GUI.freqScopeView.response(win, win.view.bounds, bus1, bus2, freqMode);
 
 		win.onClose_ {
 			fs.kill;
