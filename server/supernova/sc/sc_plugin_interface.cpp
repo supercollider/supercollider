@@ -44,10 +44,10 @@
 #undef scfft_doifft
 #undef scfft_destroy
 
-namespace nova
-{
-namespace
-{
+namespace nova {
+namespace {
+
+static spin_lock log_guard; // needs to be acquired for logging from the helper threads!
 
 void pause_node(Unit * unit)
 {
@@ -67,6 +67,7 @@ void free_node_and_preceding(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of preceding nodes\n");
         return;
     }
@@ -82,6 +83,7 @@ void free_node_and_pause_preceding(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of preceding nodes\n");
         return;
     }
@@ -97,6 +99,7 @@ void free_node_and_preceding_children(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of preceding nodes");
         return;
     }
@@ -140,6 +143,7 @@ void free_node_and_all_preceding(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of preceding nodes\n");
         return;
     }
@@ -159,6 +163,7 @@ void free_node_and_following(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of following nodes\n");
         return;
     }
@@ -174,6 +179,7 @@ void free_node_and_pause_following(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of following nodes\n");
         return;
     }
@@ -189,6 +195,7 @@ void free_node_and_following_children(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of following nodes\n");
         return;
     }
@@ -210,6 +217,7 @@ void free_node_and_following_deep(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of following nodes\n");
         return;
     }
@@ -231,6 +239,7 @@ void free_node_and_all_following(Unit * unit)
     sc_factory->add_done_node(node);
 
     if (node->get_parent()->is_parallel()) {
+        spin_lock::scoped_lock lock(log_guard);
         log("parallel groups have no notion of following nodes\n");
         return;
     }
@@ -358,7 +367,9 @@ int print(const char *fmt, ...)
     va_list vargs;
     va_start(vargs, fmt);
 
+    nova::log_guard.lock();
     bool status = nova::instance->log_printf(fmt, vargs);
+    nova::log_guard.unlock();
 
     va_end(vargs);
     return (status == true) ? 0 : -1;
