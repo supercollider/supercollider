@@ -1147,7 +1147,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (void)webView:(WebView *)sender didFailProvisionalLoadWithError:(NSError *)error forFrame:(WebFrame *)frame
 {
 	NSLog(@"didFailProvisionalLoadWithError: %@",[error localizedDescription]);
-	if (error.code == NSURLErrorCancelled) return; // this is Error -999
+	if ([error code] == NSURLErrorCancelled) return; // this is Error -999
 	if (mSCWebView) {
 		post("SCWebView load request failed: '%s'\n", [[error localizedDescription] cString]);
 		SEL selector = @selector(doFailAction);
@@ -1177,7 +1177,7 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 - (void)webView:(WebView *)sender didFailLoadWithError:(NSError *)error
 {
 	NSLog(@"didFailLoadWithError: %@",[error localizedDescription]);
-	if (error.code == NSURLErrorCancelled) return; // this is Error -999
+	if ([error code] == NSURLErrorCancelled) return; // this is Error -999
 	if (mSCWebView) {
 		post("SCWebView load request failed: '%s'\n", [[error localizedDescription] cString]);
 		SEL selector = @selector(doFailAction);
