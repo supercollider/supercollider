@@ -355,8 +355,6 @@ cwiid_wiimote_t * SC_WIIManager::discover()
 	bdaddr_t bdaddr = {0, 0, 0, 0, 0, 0};
 	cwiid_wiimote_t* wiimotediscovered;
 
-	memset(&bdaddr,0,sizeof(bdaddr_t)); // using bdaddr = *BDADDR_ANY (which would be better) prints a warning: taking address of temporary
-
 	if ( (wiimotediscovered = cwiid_open(&bdaddr, 0)) == NULL ) {
 		return NULL;
 		}
