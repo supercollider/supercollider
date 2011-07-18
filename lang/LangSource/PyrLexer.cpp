@@ -2221,6 +2221,7 @@ void shutdownLibrary()
 	closeAllCustomPorts();
 
 	pyr_pool_runtime->FreeAll();
+	compiledOK = false;
 	pthread_mutex_unlock (&gLangMutex);
 }
 
