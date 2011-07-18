@@ -16,10 +16,10 @@
 ;; USA
 
 (eval-when-compile
-  (require 'cl))
-
-(eval-and-compile
-  (require 'sclang-util))
+  (require 'cl)
+  (require 'sclang-util)
+  (require 'compile)
+  )
 
 ;; =====================================================================
 ;; post buffer access
@@ -318,7 +318,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
       (set-process-sentinel proc 'sclang-process-sentinel)
       (set-process-filter proc 'sclang-process-filter)
       (set-process-coding-system proc 'mule-utf-8 'mule-utf-8)
-      (process-kill-without-query proc)
+      (set-process-query-on-exit-flag proc nil)
       proc)))
 
 (defun sclang-kill ()
@@ -412,7 +412,7 @@ Change this if \"cat\" has a non-standard name or location."
 	;; this is important. use a unibyte stream without eol
 	;; conversion for communication.
 	(set-process-coding-system proc 'no-conversion 'no-conversion)
-	(process-kill-without-query proc)))
+	(set-process-query-on-exit-flag proc nil)))
     (unless (get-process sclang-command-process)
       (message "SCLang: Couldn't start command process"))))
 
@@ -530,7 +530,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
       (sclang-eval-string string (not silent-p)))
     (and sclang-eval-line-forward
 	 (/= (line-end-position) (point-max))
-	 (next-line 1))
+	 (forward-line 1))
     string))
 
 (defun sclang-eval-region (&optional silent-p)
