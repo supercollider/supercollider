@@ -2214,11 +2214,12 @@ void shutdownLibrary()
 	aboutToCompileLibrary();
 	schedStop();
 	TempoClock_stopAll();
-	closeAllCustomPorts();
 
 	pthread_mutex_lock (&gLangMutex);
 	if (gVMGlobals.gc)
 		gVMGlobals.gc->ScanFinalizers(); // run finalizers
+	closeAllCustomPorts();
+
 	pyr_pool_runtime->FreeAll();
 	pthread_mutex_unlock (&gLangMutex);
 }
