@@ -81,7 +81,7 @@ protected:
 
 	void interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine);
 	void interpretCmdLine(PyrSymbol* method, const char* cmdLine);
-	void interpretLocked(PyrSymbol* method, const char *buf, size_t size);
+	void interpretCmdLine(PyrSymbol* method, const char *buf, size_t size);
 
 	void lockInput() { pthread_mutex_lock(&mInputMutex); }
 	void unlockInput() { pthread_mutex_unlock(&mInputMutex); }

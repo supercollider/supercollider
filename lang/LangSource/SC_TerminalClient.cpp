@@ -308,21 +308,11 @@ void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char* cmdLine)
 }
 
 
-void SC_TerminalClient::interpretLocked(PyrSymbol* method, const char *buf, size_t size)
+void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char *cmdLine, size_t size)
 {
-	// NOTE: re-implementing interpretCmdLine() to do the same without locking lang
-	if (isLibraryCompiled()) {
-		VMGlobals *g = gMainVMGlobals;
-
-		PyrString* strobj = newPyrStringN(g->gc, size, 0, true);
-		memcpy(strobj->s, buf, size);
-
-		SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
-		g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
-
-		::runLibrary(method);
-		flush();
-	}
+	setCmdLine(cmdLine, size);
+	runLibrary(method);
+	flush();
 }
 
 // WARNING: Call with input locked!
@@ -334,14 +324,10 @@ void SC_TerminalClient::interpretInput()
 	while( i < c ) {
 		switch (data[i]) {
 		case kInterpretCmdLine:
-			lock();
-			interpretLocked(s_interpretCmdLine, data, i);
-			unlock();
+			interpretCmdLine(s_interpretCmdLine, data, i);
 			break;
 		case kInterpretPrintCmdLine:
-			lock();
-			interpretLocked(s_interpretPrintCmdLine, data, i);
-			unlock();
+			interpretCmdLine(s_interpretPrintCmdLine, data, i);
 			break;
 
 		case kRecompileLibrary:
