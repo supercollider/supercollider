@@ -128,7 +128,7 @@ void* string_popen_thread_func(void *data)
 	res = WEXITSTATUS(res);
 
 	if(process->postOutput)
-		post("RESULT = %d\n", res);
+		postfl("RESULT = %d\n", res);
 
 	free(process);
 
