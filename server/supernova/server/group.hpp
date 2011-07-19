@@ -60,7 +60,7 @@ protected:
     const bool is_parallel_;
 
     abstract_group(int node_id, bool is_parallel):
-        server_node(node_id, false), is_parallel_(is_parallel), child_synths_(0), child_groups_(0)
+        server_node(node_id, false), is_parallel_(is_parallel), child_synth_count(0), child_group_count(0)
     {}
 
 public:
@@ -98,7 +98,7 @@ public:
     /* returns true, if this or any of the child group has synth children */
     bool has_synth_children(void) const
     {
-        if (child_synths_)
+        if (child_synth_count)
             return true;
 
         for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
@@ -110,14 +110,16 @@ public:
 
     std::size_t child_count(void) const
     {
-        return child_synths_ + child_groups_;
+        assert(child_group_count == child_groups.size());
+        assert(child_synth_count + child_group_count == child_nodes.size());
+        return child_synth_count + child_group_count;
     }
 
     /* number of child synths and groups */
     std::pair<std::size_t, std::size_t> child_count_deep(void) const
     {
-        std::size_t synths = child_synths_;
-        std::size_t groups = child_groups_;
+        std::size_t synths = child_synth_count;
+        std::size_t groups = child_group_count;
 
         for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
         {
@@ -174,8 +176,8 @@ public:
     void free_children(void)
     {
         child_nodes.clear_and_dispose(boost::mem_fn(&server_node::clear_parent));
-        assert(child_synths_ == 0);
-        assert(child_groups_ == 0);
+        assert(child_synth_count == 0);
+        assert(child_group_count == 0);
     }
 
     void free_synths_deep(void)
@@ -188,7 +190,7 @@ public:
             abstract_group * group = static_cast<abstract_group*>(&*it);
             group->free_synths_deep();
         }
-        assert(child_synths_ == 0);
+        assert(child_synth_count == 0);
     }
 
     /** remove node from child_nodes, clear node->parent */
@@ -208,16 +210,16 @@ public:
     void set_control_array_element(const char * slot_str, size_t hashed_str, size_t count, float val);
 
     friend class node_graph;
-    std::size_t child_synths_, child_groups_;
+    std::size_t child_synth_count, child_group_count;
 };
 
 
 inline void server_node::clear_parent(void)
 {
     if (is_synth())
-        --parent_->child_synths_;
+        --parent_->child_synth_count;
     else {
-        --parent_->child_groups_;
+        --parent_->child_group_count;
         static_cast<abstract_group*>(this)->unregister_as_child();
     }
 
@@ -232,9 +234,9 @@ inline void server_node::set_parent(abstract_group * parent)
     parent_ = parent;
 
     if (is_synth())
-        ++parent->child_synths_;
+        ++parent->child_synth_count;
     else {
-        ++parent->child_groups_;
+        ++parent->child_group_count;
         static_cast<abstract_group*>(this)->register_as_child();
     }
 }

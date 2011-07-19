@@ -240,7 +240,7 @@ void abstract_group::set_control_array_element(slot_index_t slot_id, size_t inde
 
 int parallel_group::tail_nodes(void) const
 {
-    int ret = child_synths_;
+    int ret = child_synth_count;
     for(group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
         ret += it->tail_nodes();
 

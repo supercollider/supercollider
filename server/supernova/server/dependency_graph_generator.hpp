@@ -102,7 +102,7 @@ private:
         size_t children = g.child_count();
 
         sequential_child_list sequential_children;
-        sequential_children.reserve(g.child_synths_);
+        sequential_children.reserve(g.child_synth_count);
 
         for (r_iterator it = g.child_nodes.rbegin();
             it != g.child_nodes.rend(); ++it)
@@ -175,7 +175,7 @@ private:
     {
         assert (g.has_synth_children());
         std::vector<thread_queue_item*, rt_pool_allocator<void*> > collected_nodes;
-        collected_nodes.reserve(g.child_synths_ + g.child_groups_ * 16); // pessimize
+        collected_nodes.reserve(g.child_synth_count + g.child_group_count * 16); // pessimize
 
         for (server_node_list::iterator it = g.child_nodes.begin();
             it != g.child_nodes.end(); ++it)
