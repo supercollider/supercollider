@@ -2199,6 +2199,7 @@ void aboutToCompileLibrary()
 		++gMainVMGlobals->sp;
 		SetObject(gMainVMGlobals->sp, gMainVMGlobals->process);
 		runInterpreter(gMainVMGlobals, s_shutdown, 1);
+		gVMGlobals.gc->ScanFinalizers(); // run finalizers
 	}
 	pthread_mutex_unlock (&gLangMutex);
 	//printf("<-aboutToCompileLibrary\n");
@@ -2211,13 +2212,12 @@ void closeAllCustomPorts();
 void shutdownLibrary()
 {
 	closeAllGUIScreens();
-	aboutToCompileLibrary();
 	schedStop();
+	aboutToCompileLibrary();
+
 	TempoClock_stopAll();
 
 	pthread_mutex_lock (&gLangMutex);
-	if (gVMGlobals.gc)
-		gVMGlobals.gc->ScanFinalizers(); // run finalizers
 	closeAllCustomPorts();
 
 	pyr_pool_runtime->FreeAll();
