@@ -434,6 +434,8 @@ void SC_TerminalClient::commandLoop()
 				unlockSignal();
 				unlock();
 
+				flush();
+
 				//postfl("tick -> next time = %f\n", haveNext ? secs : -1);
 				ElapsedTimeToTimespec( secs, &nextAbsTime );
 			}

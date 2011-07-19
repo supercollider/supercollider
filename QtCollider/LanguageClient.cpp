@@ -60,6 +60,8 @@ void LangClient::doSchedule()
   QApplication::removePostedEvents( this, Event_SCRequest_Sched );
   unlock();
 
+  flush();
+
   if( next ) {
     t -= elapsedTime();
     t *= 1000;
