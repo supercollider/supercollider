@@ -1402,7 +1402,8 @@ HANDLE_N_DECORATOR(mapa, map_control<true>)
 HANDLE_N_DECORATOR(mapn, mapn_control<false>)
 HANDLE_N_DECORATOR(mapan, mapn_control<true>)
 
-void handle_n_before(received_message const & msg)
+template <int Relation>
+void handle_n_before_or_after(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1416,30 +1417,14 @@ void handle_n_before(received_message const & msg)
         abstract_group * a_parent = a->get_parent();
         abstract_group * b_parent = b->get_parent();
 
-        /** \todo this can be optimized if a_parent == b_parent */
-        a_parent->remove_child(a);
-        b_parent->add_child(a, make_pair(b_parent, before));
-    }
-}
 
-void handle_n_after(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-
-    while(!args.Eos())
-    {
-        osc::int32 node_a, node_b;
-        args >> node_a >> node_b;
-
-        server_node * a = find_node(node_a);
-        server_node * b = find_node(node_b);
-
-        abstract_group * a_parent = a->get_parent();
-        abstract_group * b_parent = b->get_parent();
+        a->add_ref(); // ensure that the node won't be freed
 
         /** \todo this can be optimized if a_parent == b_parent */
         a_parent->remove_child(a);
-        b_parent->add_child(a, make_pair(b_parent, after));
+        b_parent->add_child(a, make_pair(b, Relation));
+
+        a->release();
     }
 }
 
@@ -1515,8 +1500,7 @@ void handle_n_run(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 node_id, run_flag;
         args >> node_id >> run_flag;
 
@@ -1546,8 +1530,7 @@ void handle_n_trace(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 node_id;
         args >> node_id;
 
@@ -1564,8 +1547,7 @@ void handle_s_noid(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 node_id;
         args >> node_id;
         instance->synth_reassign_id(node_id);
@@ -3012,11 +2994,11 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_n_before:
-        handle_n_before(message);
+        handle_n_before_or_after<before>(message);
         break;
 
     case cmd_n_after:
-        handle_n_after(message);
+        handle_n_before_or_after<after>(message);
         break;
 
     case cmd_n_trace:
@@ -3230,12 +3212,12 @@ void dispatch_node_commands(const char * address, received_message const & messa
     }
 
     if (strcmp(address+3, "before") == 0) {
-        handle_n_before(message);
+        handle_n_before_or_after<before>(message);
         return;
     }
 
     if (strcmp(address+3, "after") == 0) {
-        handle_n_after(message);
+        handle_n_before_or_after<after>(message);
         return;
     }
 
