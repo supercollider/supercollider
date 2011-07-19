@@ -58,8 +58,8 @@ void QcListWidget::setItems( const VariantList & items )
   clear();
   Q_FOREACH( QVariant item, items.data )
     addItem( item.toString() );
-  _emitAction = true;
   setCurrentRow( 0 );
+  _emitAction = true;
 }
 
 void QcListWidget::setColors( const VariantList & colors ) const
