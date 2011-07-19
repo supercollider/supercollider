@@ -217,7 +217,7 @@ class sc_osc_handler:
 public:
     sc_osc_handler(server_arguments const & args):
         sc_notify_observers(detail::network_thread::io_service_),
-        dump_osc_packets(0), error_posting(1), quit_received(false)
+        dump_osc_packets(0), error_posting(1), quit_received(false),
         tcp_acceptor_(detail::network_thread::io_service_),
         tcp_password_(args.server_password.c_str())
     {
@@ -406,9 +406,9 @@ public:
                                  AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
                                  int completionMsgSize, void* completionMsgData);
 
-private:
     bool quit_received;
 
+private:
     /* @{ */
 /*    udp::socket udp_socket_;*/
     udp::endpoint udp_remote_endpoint_;

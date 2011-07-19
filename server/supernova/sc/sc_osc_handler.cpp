@@ -743,7 +743,7 @@ void quit_perform(nova_endpoint const & endpoint)
 template <bool realtime>
 void handle_quit(nova_endpoint const & endpoint)
 {
-    quit_received = true;
+    instance->quit_received = true;
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(quit_perform, endpoint));
 }
 
@@ -765,7 +765,7 @@ void handle_notify(received_message const & message, nova_endpoint const & endpo
 
 void status_perform(nova_endpoint const & endpoint)
 {
-    if (unlikely(quit_received)) // we don't reply once we are about to quit
+    if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
         return;
 
     char buffer[1024];
