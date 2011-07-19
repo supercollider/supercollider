@@ -382,7 +382,7 @@ PlusFreqScopeWindow {
 			window.onClose_({ scope.kill;
 				scopeOpen = false;
 			}).front;
-			^this.newCopyArgs(scope, window)
+			^super.newCopyArgs(scope, window)
 		});
 	}
 }
