@@ -1,7 +1,13 @@
 /////////////////////// ABSTRACT CLASSES ////////////////////////////
 
 QTextViewBase : QView {
+  var <object, <>setBoth = true;
   var <align;
+
+  object_  { arg obj;
+    if( setBoth ) { this.string = obj.asString };
+    object = obj
+  }
 
   align_ { arg aSymbol;
     align = aSymbol;

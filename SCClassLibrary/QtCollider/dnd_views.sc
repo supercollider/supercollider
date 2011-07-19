@@ -1,8 +1,5 @@
 QDragView : QTextField
 {
-  var <>setBoth = true;
-  var <object;
-
   *new { arg parent, bounds; ^super.new(parent,bounds).initQDragView }
 
   initQDragView {
@@ -10,11 +7,6 @@ QDragView : QTextField
     plt.baseColor = plt.windowColor;
     this.palette = plt;
     this.setProperty(\readOnly, true);
-  }
-
-  object_  { arg obj;
-    if( setBoth ) { this.string = obj.asString };
-    object = obj;
   }
 
   // override QView.mouseDownEvent to initiate drag without keyboard modifier
