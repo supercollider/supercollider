@@ -2,6 +2,7 @@ QNumberBox : QAbstractStepValue {
   var <clipLo, <clipHi, <scroll, <scroll_step;
   var <align, <buttonsVisible = false;
   var <normalColor, <typingColor;
+  var <object, <>setBoth = true;
 
   *qtClass { ^"QcNumberBox" }
 
@@ -18,6 +19,13 @@ QNumberBox : QAbstractStepValue {
     scroll_step = 1;
     normalColor = Color.black;
     typingColor = Color.red;
+  }
+
+  object_  { arg obj;
+    if( setBoth ) {
+      if( obj.isNumber ) { this.value = obj } { this.string = obj.asString }
+    };
+    object = obj
   }
 
   value {
