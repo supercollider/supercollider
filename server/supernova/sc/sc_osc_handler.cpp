@@ -989,60 +989,23 @@ void handle_s_new(received_message const & msg)
 }
 
 
-void insert_group(int node_id, int action, int target_id)
-{
-    if (node_id == -1)
-        node_id = instance->generate_node_id();
-    else if (!check_node_id(node_id))
-        return;
-
-    server_node * target = find_node(target_id);
-
-    if (!target)
-        return;
-
-    node_position_constraint pos = make_pair(target, node_position(action));
-
-    instance->add_group(node_id, pos);
-    last_generated = node_id;
-}
-
 void handle_g_new(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
-        osc::int32 id, action, target;
-        args >> id >> action >> target;
+    while(!args.Eos()) {
+        osc::int32 node_id, action, target_id;
+        args >> node_id >> action >> target_id;
 
-        insert_group(id, action, target);
-    }
-}
+        if (node_id == -1)
+            node_id = instance->generate_node_id();
+        else if (!check_node_id(node_id))
+            continue;
 
-void handle_g_head(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+        server_node * target = find_node(target_id);
 
-    while(!args.Eos())
-    {
-        osc::int32 id, target;
-        args >> id >> target;
-
-        insert_group(id, head, target);
-    }
-}
-
-void handle_g_tail(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-
-    while(!args.Eos())
-    {
-        osc::int32 id, target;
-        args >> id >> target;
-
-        insert_group(id, tail, target);
+        if (!target)
+            continue;
     }
 }
 
@@ -1412,7 +1375,10 @@ void handle_n_before_or_after(received_message const & msg)
         args >> node_a >> node_b;
 
         server_node * a = find_node(node_a);
+        if (!a) continue;
+
         server_node * b = find_node(node_b);
+        if (!b) continue;
 
         abstract_group * a_parent = a->get_parent();
         abstract_group * b_parent = b->get_parent();
@@ -1427,6 +1393,36 @@ void handle_n_before_or_after(received_message const & msg)
         a->release();
     }
 }
+
+
+
+template <int Position>
+void handle_g_head_or_tail(received_message const & msg)
+{
+    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+
+    while(!args.Eos()) {
+        osc::int32 node_id, target_id;
+        args >> node_id >> target_id;
+
+        server_node * node = find_node(node_id);
+        if (!node) continue;
+
+        abstract_group * target_group = find_group(target_id);
+        if (!target_group) continue;
+
+        abstract_group * node_parent = node->get_parent();
+
+        node->add_ref(); // ensure that the node won't be freed
+
+        node_parent->remove_child(node);
+        target_group->add_child(node, make_pair(target_group, Position));
+
+        node->release();
+    }
+}
+
+
 
 void handle_n_query(received_message const & msg, nova_endpoint const & endpoint)
 {
@@ -2926,11 +2922,11 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_g_head:
-        handle_g_head(message);
+        handle_g_head_or_tail<head>(message);
         break;
 
     case cmd_g_tail:
-        handle_g_tail(message);
+        handle_g_head_or_tail<tail>(message);
         break;
 
     case cmd_g_freeAll:
@@ -3133,11 +3129,11 @@ void dispatch_group_commands(const char * address, received_message const & mess
         return;
     }
     if (strcmp(address+3, "head") == 0) {
-        handle_g_head(message);
+        handle_g_head_or_tail<head>(message);
         return;
     }
     if (strcmp(address+3, "tail") == 0) {
-        handle_g_tail(message);
+        handle_g_head_or_tail<tail>(message);
         return;
     }
     if (strcmp(address+3, "freeAll") == 0) {
