@@ -387,7 +387,7 @@ public:
 
     void update_time_from_system(void)
     {
-        now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::local_time());
+        now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
         last = now - time_per_tick;
     }
 
