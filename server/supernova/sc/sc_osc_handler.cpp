@@ -1401,14 +1401,14 @@ void handle_n_before_or_after(received_message const & msg)
 
 
 
-template <int Position>
+template <nova::node_position Position>
 void handle_g_head_or_tail(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
     while(!args.Eos()) {
         osc::int32 node_id, target_id;
-        args >> node_id >> target_id;
+        args >> target_id >> node_id;
 
         server_node * node = find_node(node_id);
         if (!node) continue;
@@ -1421,7 +1421,7 @@ void handle_g_head_or_tail(received_message const & msg)
         node->add_ref(); // ensure that the node won't be freed
 
         node_parent->remove_child(node);
-        target_group->add_child(node, make_pair(target_group, Position));
+        target_group->add_child(node, Position);
 
         node->release();
     }
