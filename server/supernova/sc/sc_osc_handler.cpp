@@ -1006,6 +1006,11 @@ void handle_g_new(received_message const & msg)
 
         if (!target)
             continue;
+
+        node_position_constraint pos = make_pair(target, node_position(action));
+
+        instance->add_group(node_id, pos);
+        last_generated = node_id;
     }
 }
 
