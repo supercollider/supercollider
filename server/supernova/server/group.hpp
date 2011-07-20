@@ -1,5 +1,5 @@
 //  group
-//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010, 2011 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -208,6 +208,75 @@ public:
     void set_control_array_element(slot_index_t slot_str, size_t count, float val);
     void set_control_array_element(const char * slot_str, size_t count, float val);
     void set_control_array_element(const char * slot_str, size_t hashed_str, size_t count, float val);
+
+    /* move node to head or tail of target */
+    template <node_position Position>
+    static void move_to_head_or_tail(server_node * node, abstract_group * target)
+    {
+        assert((Position == head) || (Position == tail));
+
+        server_node_list::const_iterator target_iterator = (Position == head) ? target->child_nodes.begin()
+                                                                              : target->child_nodes.end();
+
+        server_node_list::const_iterator node_iterator = server_node_list::s_iterator_to(*node);
+
+        abstract_group * node_parent = node->get_parent();
+        if (node_parent != target) {
+            if (node->is_synth()) {
+                node_parent->child_synth_count -= 1;
+                target->child_synth_count += 1;
+            } else {
+                node_parent->child_group_count -= 1;
+                target->child_group_count += 1;
+
+                group_list::const_iterator group_target_iterator = (Position == head) ? target->child_groups.begin()
+                                                                                    : target->child_groups.end();
+
+                abstract_group * node_as_group = static_cast<abstract_group*>(node);
+                target->child_groups.splice(group_target_iterator, node_parent->child_groups,
+                                            group_list::s_iterator_to(*node_as_group));
+            }
+        }
+
+        target->child_nodes.splice(target_iterator, node_parent->child_nodes, node_iterator);
+    }
+
+    template <node_position Relation>
+    static void move_before_or_after(server_node * node, server_node * target)
+    {
+        assert((Relation == before) || (Relation == after));
+        abstract_group * target_parent = node->get_parent();
+
+        if (Relation == after && target->next_node() == NULL) {
+            // for the sake of simplicity, move the node to the tail of the target's parent group
+            move_to_head_or_tail<tail>(node, target_parent);
+            return;
+        }
+
+        server_node * node_behind = (Relation == before) ? target
+                                                         : target->next_node();
+        assert(node_behind);
+        server_node_list::const_iterator target_iterator = server_node_list::s_iterator_to(*node_behind);
+        server_node_list::const_iterator node_iterator = server_node_list::s_iterator_to(*node);
+
+        abstract_group * node_parent = node->get_parent();
+        if (node_parent != target_parent) {
+            if (node->is_synth()) {
+                node_parent->child_synth_count -= 1;
+                target_parent->child_synth_count += 1;
+            } else {
+                node_parent->child_group_count -= 1;
+                target_parent->child_group_count += 1;
+
+                group_list::const_iterator group_target_iterator = group_list::s_iterator_to(*static_cast<abstract_group*>(node));
+
+                target_parent->child_groups.splice(target_parent->child_groups.end(), node_parent->child_groups,
+                                                group_target_iterator);
+            }
+        }
+
+        target_parent->child_nodes.splice(target_iterator, node_parent->child_nodes, node_iterator);
+    }
 
     friend class node_graph;
     std::size_t child_synth_count, child_group_count;
