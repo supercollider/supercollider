@@ -1370,7 +1370,7 @@ HANDLE_N_DECORATOR(mapa, map_control<true>)
 HANDLE_N_DECORATOR(mapn, mapn_control<false>)
 HANDLE_N_DECORATOR(mapan, mapn_control<true>)
 
-template <int Relation>
+template <nova::node_position Relation>
 void handle_n_before_or_after(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -1385,17 +1385,7 @@ void handle_n_before_or_after(received_message const & msg)
         server_node * b = find_node(node_b);
         if (!b) continue;
 
-        abstract_group * a_parent = a->get_parent();
-        abstract_group * b_parent = b->get_parent();
-
-
-        a->add_ref(); // ensure that the node won't be freed
-
-        /** \todo this can be optimized if a_parent == b_parent */
-        a_parent->remove_child(a);
-        b_parent->add_child(a, make_pair(b, Relation));
-
-        a->release();
+        abstract_group::move_before_or_after<Relation>(a, b);
     }
 }
 
@@ -1416,14 +1406,7 @@ void handle_g_head_or_tail(received_message const & msg)
         abstract_group * target_group = find_group(target_id);
         if (!target_group) continue;
 
-        abstract_group * node_parent = node->get_parent();
-
-        node->add_ref(); // ensure that the node won't be freed
-
-        node_parent->remove_child(node);
-        target_group->add_child(node, Position);
-
-        node->release();
+        abstract_group::move_to_head_or_tail<Position>(node, target_group);
     }
 }
 
