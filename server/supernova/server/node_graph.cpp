@@ -276,13 +276,12 @@ void parallel_group::add_child(server_node * node, node_position_constraint cons
 void group::add_child(server_node * node, node_position position)
 {
     assert (not has_child(node));
+    assert((position == head) || (position == tail));
 
     if (position == head)
         child_nodes.push_front(*node);
-    else {
-        assert(position == tail);
+    else
         child_nodes.push_back(*node);
-    }
     node->set_parent(this);
 }
 
