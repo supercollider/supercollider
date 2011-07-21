@@ -34,11 +34,6 @@ struct netaddr {
 typedef struct netaddr netaddr;
 
 
-// ways to fail
-#define BUFFEROVERFLOW return
-//#define BUFFEROVERFLOW  throw std::runtime_error("buffer overflow")
-
-
 template <int MaxPacketSize = 8192>
 struct scpacket {
 	static const int kBufSize = MaxPacketSize / sizeof(int32); // round down
@@ -46,6 +41,11 @@ struct scpacket {
 	char *tagwrpos;
 	int inbundle;
 	int32 buf[kBufSize];
+
+	void throw_overflow_exception()
+	{
+		throw std::runtime_error("buffer overflow");
+	}
 
 	scpacket() { reset(); }
 	void reset()
@@ -56,7 +56,7 @@ struct scpacket {
 	}
 	void addi(int i)
 	{
-		if (wrpos >= endpos) BUFFEROVERFLOW;
+		if (wrpos >= endpos) throw_overflow_exception();
 		*wrpos++ = htonl(i);
 	}
 	void addii(int64 ii)
@@ -69,14 +69,14 @@ struct scpacket {
 	}
 	void addf(float f)
 	{
-		if (wrpos >= endpos) BUFFEROVERFLOW;
+		if (wrpos >= endpos) throw_overflow_exception();
 		elem32 slot;
 		slot.f = f;
 		*wrpos++ = htonl(slot.i);
 	}
 	void addd(double f)
 	{
-		if (wrpos >= endpos) BUFFEROVERFLOW;
+		if (wrpos >= endpos) throw_overflow_exception();
 		elem64 slot;
 		slot.f = f;
 		*wrpos++ = htonl(slot.i >> 32);
@@ -86,7 +86,7 @@ struct scpacket {
 	{
 		size_t len = strlen(src);
 		size_t len4 = (len + 4) >> 2;
-		if (wrpos + len4 > endpos) BUFFEROVERFLOW;
+		if (wrpos + len4 > endpos) throw_overflow_exception();
 		wrpos[len4 - 1] = 0;
 		memcpy(wrpos, src, len);
 		wrpos += len4;
@@ -95,7 +95,7 @@ struct scpacket {
 	{
 		size_t len = strlen(src);
 		size_t len4 = (len + 5) >> 2;
-		if (wrpos + len4 > endpos) BUFFEROVERFLOW;
+		if (wrpos + len4 > endpos) throw_overflow_exception();
 		wrpos[len4 - 1] = 0;
 		char* wrpos_c = (char*)wrpos;
 		*wrpos_c = '/';
@@ -105,7 +105,7 @@ struct scpacket {
 	void adds(const char *src, size_t len)
 	{
 		size_t len4 = (len + 4) >> 2;
-		if (wrpos + len4 > endpos) BUFFEROVERFLOW;
+		if (wrpos + len4 > endpos) throw_overflow_exception();
 		wrpos[len4 - 1] = 0;
 		memcpy(wrpos, src, len);
 		wrpos += len4;
@@ -113,7 +113,7 @@ struct scpacket {
 	void addb(uint8 *src, size_t len)
 	{
 		size_t len4 = (len + 3) >> 2;
-		if (wrpos + (len4 + 1) > endpos) BUFFEROVERFLOW;
+		if (wrpos + (len4 + 1) > endpos) throw_overflow_exception();
 		wrpos[len4 - 1] = 0;
 		int32 swaplen = len;
 		*wrpos++ = htonl(swaplen);
@@ -123,7 +123,7 @@ struct scpacket {
 	void addtag(char c) { *tagwrpos++ = c; }
 	void skip(int n)
 	{
-		if (wrpos + n > endpos) BUFFEROVERFLOW;
+		if (wrpos + n > endpos) throw_overflow_exception();
 		wrpos += n;
 	}
 	void maketags(int n)

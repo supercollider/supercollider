@@ -76,9 +76,6 @@ PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
 const char* gPassword;
 extern bool compiledOK;
 
-#define USE_SCHEDULER 1
-
-
 ///////////
 
 inline bool IsBundle(char* ptr)
@@ -96,11 +93,10 @@ const int ivxNetAddr_Socket = 3;
 void makeSockAddr(struct sockaddr_in &toaddr, int32 addr, int32 port);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
-int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
+static int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
 int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
 
-void addMsgSlot(big_scpacket *packet, PyrSlot *slot);
-void addMsgSlot(big_scpacket *packet, PyrSlot *slot)
+static int addMsgSlot(big_scpacket *packet, PyrSlot *slot)
 {
 	switch (GetTag(slot)) {
 		case tagInt :
@@ -122,7 +118,9 @@ void addMsgSlot(big_scpacket *packet, PyrSlot *slot)
 				if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
 					makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
 				} else {
-					makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
+					int error = makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
+					if (error != errNone)
+						return error;
 				}
 				packet->addb((uint8*)packet2.data(), packet2.size());
 			}
@@ -138,10 +136,10 @@ void addMsgSlot(big_scpacket *packet, PyrSlot *slot)
 			else packet->addf(slotRawFloat(slot));
 			break;
 	}
+	return errNone;
 }
 
-void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot);
-void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
+static int addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 {
 	switch (GetTag(slot)) {
 		case tagInt :
@@ -169,7 +167,9 @@ void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 					if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
 						makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
 					} else {
-						makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
+						int error = makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
+						if (error != errNone)
+							return error;
 					}
 					packet->addb((uint8*)packet2.data(), packet2.size());
 				} else {
@@ -201,23 +201,24 @@ void addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 			}
 			break;
 	}
+	return errNone;
 }
 
-int makeSynthMsg(big_scpacket *packet, PyrSlot *slots, int size);
-int makeSynthMsg(big_scpacket *packet, PyrSlot *slots, int size)
+static int makeSynthMsg(big_scpacket *packet, PyrSlot *slots, int size)
 {
 	packet->BeginMsg();
 
 	for (int i=0; i<size; ++i) {
-		addMsgSlot(packet, slots+i);
+		int error = addMsgSlot(packet, slots+i);
+		if (error != errNone)
+			return error;
 	}
 
 	packet->EndMsg();
 	return errNone;
 }
 
-int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
-int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
+static int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 {
 	packet->BeginMsg();
 
@@ -226,8 +227,10 @@ int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 	//  expressing it as a symbol (e.g. \g_new) - we add it back on here, for OSC compliance.
 	if(GetTag(slots) == tagSym && slotRawSymbol(slots)->name[0]!='/'){
 		packet->adds_slpre(slotRawSymbol(slots)->name);
-	}else{
-		addMsgSlot(packet, slots);
+	} else {
+		int error = addMsgSlot(packet, slots);
+		if (error != errNone)
+			return error;
 	}
 
 	// skip space for tags
@@ -235,8 +238,15 @@ int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size)
 
 	packet->addtag(',');
 
-	for (int i=1; i<size; ++i) {
-		addMsgSlotWithTags(packet, slots+i);
+	try {
+		for (int i=1; i<size; ++i) {
+			int error = addMsgSlotWithTags(packet, slots+i);
+			if (error != errNone)
+				return error;
+		}
+	} catch (std::runtime_error & e) {
+		error("makeSynthMsgWithTags: %s\n", e.what());
+		return errFailed;
 	}
 
 	packet->EndMsg();
@@ -287,7 +297,9 @@ int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElap
 	for (int i=1; i<size; ++i) {
 		if (isKindOfSlot(slots+i, class_array)) {
 			PyrObject *obj = slotRawObject(&slots[i]);
-			makeSynthMsgWithTags(packet, obj->slots, obj->size);
+			int error = makeSynthMsgWithTags(packet, obj->slots, obj->size);
+			if (error != errNone)
+				return error;
 		}
 	}
 	packet->CloseBundle();
@@ -321,13 +333,9 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		if (err) return err;
 
 		if (addr == 0) {
-#ifdef NO_INTERNAL_SERVER
-      // no internal server under SC_WIN32 yet
-#else
 			if (gInternalSynthServer.mWorld) {
 				World_SendPacket(gInternalSynthServer.mWorld, msglen, bufptr, &localServerReplyFunc);
 			}
-#endif
 			return errNone;
 		}
 
@@ -448,7 +456,9 @@ int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 	big_scpacket packet;
 
 	int numargs = numArgsPushed - 1;
-	makeSynthMsgWithTags(&packet, args, numargs);
+	int error = makeSynthMsgWithTags(&packet, args, numargs);
+	if (error != errNone)
+		return error;
 
 	//for (int i=0; i<packet.size()/4; i++) post("%d %08X\n", i, packet.buf[i]);
 
@@ -546,7 +556,10 @@ int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 
 	int numargs = slotRawObject(args)->size;
 	if (numargs < 1) return errFailed;
-	makeSynthMsgWithTags(&packet, slotRawObject(args)->slots, numargs);
+	int error = makeSynthMsgWithTags(&packet, slotRawObject(args)->slots, numargs);
+	if (error != errNone)
+		return error;
+
 	SetInt(args, packet.size());
 	return errNone;
 }
@@ -576,7 +589,9 @@ int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 	if (IsFloat(args) || IsNil(args) || IsInt(args)) {
 		makeSynthBundle(&packet, args, numargs, false);
 	} else if (IsSym(args) || isKindOfSlot(args, class_string)) {
-		makeSynthMsgWithTags(&packet, args, numargs);
+		int error = makeSynthMsgWithTags(&packet, args, numargs);
+		if (error != errNone)
+			return error;
 	} else {
 		return errWrongType;
 	}
