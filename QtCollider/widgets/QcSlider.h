@@ -38,6 +38,9 @@ class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
 
   public:
     QcSlider();
+    float value() { return QSlider::value() * 0.0001f; }
+    void setStep( float );
+    void setValue( float val ) { QSlider::setValue( val * 10000 ); }
   public Q_SLOTS:
     void increment( float factor );
     void decrement( float factor );
@@ -46,10 +49,6 @@ class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
   private Q_SLOTS:
     void action( int val );
   private:
-    float value() { return QSlider::value() * 0.0001f; }
-    void setStep( float );
-    void setValue( float val ) { QSlider::setValue( val * 10000 ); }
-
     int lastVal;
     bool bDoAction;
 };
