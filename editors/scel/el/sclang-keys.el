@@ -25,7 +25,8 @@
 ;; (defun sclang-execute-key (char)
 ;;   (sclang-eval-string (sclang-format "Emacs.executeKey(%o)" char)))
 
-(require 'sclang-interp)
+(eval-and-compile (require 'sclang-util)
+                  (require 'sclang-interp))
 
 (defun sclang-read-keys ()
   (interactive)
@@ -34,7 +35,7 @@
     (while t
       (setq char (read-event))
       (clear-this-command-keys)
-      (when (char-valid-p char)
+      (when (characterp char)
 	(message "%s (%d)" (char-to-string char) char)
 	(sclang-eval-string (format "Emacs.keys.at(%d).value(%d)" char char))))))
 

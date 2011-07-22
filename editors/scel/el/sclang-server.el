@@ -15,8 +15,12 @@
 ;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 ;; USA
 
-(eval-and-compile
-  (require 'cl))
+(eval-when-compile
+  (require 'cl)
+  (require 'sclang-util)
+  (require 'sclang-interp)
+  (require 'sclang-language)
+  (require 'sclang-mode))
 
 (defcustom sclang-server-panel "Server.default.makeWindow"
   "*Expression to execute when `sclang-show-server-panel' is invoked."
