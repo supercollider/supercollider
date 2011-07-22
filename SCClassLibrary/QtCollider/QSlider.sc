@@ -53,10 +53,12 @@ QSlider : QAbstractStepValue {
           16r1000014, { this.increment(scale) },
           16r5b, { this.decrement(scale) },
           16r1000015, { this.decrement(scale) },
-          16r1000012, { this.decrement(scale) }
+          16r1000012, { this.decrement(scale) },
+          { ^this; } // if unhandled, let Qt process the event
         );
       }
     );
+    ^true; // accept the event and stop its processing
   }
 
   defaultGetDrag { ^this.value; }
