@@ -18,7 +18,8 @@
 (eval-when-compile
   (require 'cl)
   (load "cl-seq" nil t)
-  (require 'font-lock))
+  (require 'font-lock)
+  (require 'sclang-util))
 
 (require 'sclang-interp)
 (require 'sclang-language)
@@ -154,7 +155,7 @@
 ;; font-lock support
 ;; =====================================================================
 
-(defvar sclang-font-lock-keyword-list
+(defconst sclang-font-lock-keyword-list
   '(
     "arg"
     "classvar"
@@ -170,7 +171,7 @@
     )
   "*List of keywords to highlight in SCLang mode.")
 
-(defvar sclang-font-lock-builtin-list
+(defconst sclang-font-lock-builtin-list
   '(
     "false"
     "inf"
@@ -179,7 +180,7 @@
     )
   "*List of builtins to highlight in SCLang mode.")
 
-(defvar sclang-font-lock-method-list
+(defconst sclang-font-lock-method-list
   '(
     "ar"
     "for"
@@ -193,7 +194,7 @@
     )
   "*List of methods to highlight in SCLang mode.")
 
-(defvar sclang-font-lock-error-list
+(defconst sclang-font-lock-error-list
   '(
     "die"
     "error"
@@ -215,7 +216,7 @@
 (defvar sclang-font-lock-keywords-3 nil
   "Gaudy level highlighting for SCLang mode.")
 
-(defconst sclang-font-lock-keywords nil
+(defvar sclang-font-lock-keywords nil
   "Default expressions to highlight in SCLang mode.")
 
 (defconst sclang-font-lock-defaults '((sclang-font-lock-keywords
