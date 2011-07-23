@@ -538,6 +538,10 @@ ul.tree li:last-child {
  background: #fff url(images/lastnode.png) no-repeat;
 }
 
+:target {
+    background: #ffa;
+}
+
 /* auto class links. note that color can be overridden by prettify rules below */
 a.clslnk {
 }
