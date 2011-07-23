@@ -15,6 +15,7 @@
 
 
 (eval-when-compile
+  (require 'sclang-util)
   (require 'sclang-interp)
   )
 
