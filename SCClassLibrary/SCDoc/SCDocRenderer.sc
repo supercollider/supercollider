@@ -639,7 +639,8 @@ SCDocHTMLRenderer : SCDocRenderer {
 
         // FIXME: Remove this when conversion to new help system is done!
         if((type==\class) and: {currentClass.notNil}, {
-            f.write("[ <a href='"++Help.findHelpFile(currentClass.name.asString)++"'>old help</a> ]");
+            x = Help.findHelpFile(currentClass.name.asString);
+            x !? { f.write("[ <a href='"++x++"'>old help</a> ]") };
         });
 
         f.write("</div>");
