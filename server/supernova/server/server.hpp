@@ -275,7 +275,7 @@ public:
     }
 
 public:
-    void operator()(void)
+    HOT void operator()(void)
     {
         if (unlikely(dsp_queue_dirty))
             rebuild_dsp_queue();

@@ -26,12 +26,6 @@
 #include "utils.hpp"
 #include "nova-tt/nova-tt/rw_mutex.hpp"
 
-#ifdef __GNUC__
-#define PURE __attribute__((pure))
-#else
-#define PURE /*__attribute__((pure))*/
-#endif
-
 namespace nova   {
 namespace bi = boost::intrusive;
 

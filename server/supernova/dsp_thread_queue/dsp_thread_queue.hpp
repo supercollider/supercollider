@@ -36,7 +36,9 @@
 #include <boost/lockfree/stack.hpp>
 
 #include "nova-tt/semaphore.hpp"
+
 #include "utilities/branch_hints.hpp"
+#include "utilities/utils.hpp"
 
 namespace nova
 {
@@ -177,11 +179,9 @@ public:
         printf("\titem %p\n", this);
         printf("\tactivation limit %d\n", int(activation_limit));
 
-        if (!successors.empty())
-        {
+        if (!successors.empty()) {
             printf("\tsuccessors:\n");
-            BOOST_FOREACH(dsp_thread_queue_item * item, successors)
-            {
+            BOOST_FOREACH(dsp_thread_queue_item * item, successors) {
                 printf("\t\t%p\n", item);
             }
         }
@@ -195,8 +195,7 @@ private:
     {
         dsp_thread_queue_item * ptr;
         std::size_t i = 0;
-        for (;;)
-        {
+        for (;;) {
             if (i == successors.size())
                 return NULL;
 
@@ -205,8 +204,7 @@ private:
                 break; // no need to update the next item to run
         }
 
-        while (i != successors.size())
-        {
+        while (i != successors.size()) {
             dsp_thread_queue_item * next = successors[i++]->dec_activation_count(interpreter);
             if (next)
                 interpreter.mark_as_runnable(next);
@@ -514,7 +512,7 @@ private:
         {} // busy-wait for helper threads to finish
     }
 
-    int run_next_item(thread_count_t index)
+    HOT int run_next_item(thread_count_t index)
     {
         dsp_thread_queue_item * item;
         bool success = runnable_set.pop(item);
@@ -524,8 +522,7 @@ private:
 
         node_count_t consumed = 0;
 
-        do
-        {
+        do {
             item = item->run(*this, index);
             consumed += 1;
         } while (item != NULL);
