@@ -29,6 +29,7 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <QFontMetrics>
+#include <QUrl>
 
 using namespace QtCollider;
 
@@ -139,31 +140,6 @@ void QWidgetProxy::customEvent( QEvent *e )
   }
 }
 
-bool QWidgetProxy::eventFilter( QObject * object, QEvent * event )
-{
-  QEvent::Type type = event->type();
-  if( type == QEvent::DragEnter
-    || type == QEvent::DragMove
-    || type == QEvent::Drop )
-  {
-    QDropEvent *dnd = static_cast<QDropEvent*>(event);
-    if( !dnd->mimeData()->hasFormat( "application/supercollider" ) ) {
-      // Do not handle events that don't have our data
-      return false;
-    }
-    else if( type == QEvent::DragEnter ) {
-        // NOTE:
-        // always accept a DragEnter event with our mime data
-        // because there is no distinction between enter and
-        // move events in SC API
-        event->accept();
-        return true;
-    }
-  }
-
-  return QObjectProxy::eventFilter( object, event );
-}
-
 void QWidgetProxy::bringFrontEvent() {
   QWidget *w = widget();
   if( !w ) return;
@@ -252,13 +228,7 @@ bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args 
     case QEvent::DragMove:
     case QEvent::Drop:
     {
-      // only send DnD events to SC if they occured on mouse event widget
-      if( o == _mouseEventWidget ) {
-        QPoint pos = static_cast<QDropEvent*>(e)->pos();
-        args << pos.x() << pos.y();
-        return true;
-      }
-      return false;
+      return interpretDragEvent( o, e, args );
     }
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
@@ -337,6 +307,49 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
 
   return true;
 }
+
+bool QWidgetProxy::interpretDragEvent( QObject *o, QEvent *e, QList<QVariant> &args )
+{
+  if( o != _mouseEventWidget ) return false;
+
+  QDropEvent *dnd = static_cast<QDropEvent*>(e);
+
+  if( dnd->type() == QEvent::DragEnter ) {
+    const QMimeData *data = dnd->mimeData();
+    if( data->hasFormat( "application/supercollider" ) ) {
+      // nothing to do; drag data is stored in QView.currentDrag
+      return true;
+    }
+    else if( data->hasColor() ) {
+      args << data->colorData();
+    }
+    else if( data->hasUrls() ) {
+      QList<QUrl> urls = data->urls();
+      if( urls.count() > 1 ) {
+        VariantList urlArray;
+        Q_FOREACH( QUrl url, data->urls() ) urlArray.data << url.toString();
+        args << QVariant::fromValue<VariantList>( urlArray );
+      }
+      else if( urls.count() == 1 ) {
+        args << urls[0].toString();
+      }
+    }
+    else if( data->hasText() ) {
+      args << data->text();
+    }
+    else {
+      // we can't use the data, let the widget handle DnD
+      return false;
+    }
+  }
+  else {
+    QPoint pos = dnd->pos();
+    args << pos.x() << pos.y();
+  }
+
+  return true;
+}
+
 
 void QWidgetProxy::customPaint( QPainter *painter )
 {
