@@ -360,8 +360,8 @@ QView : QObject {
 
   canReceiveDragHandler_ { arg handler;
     canReceiveDragHandler = handler;
-    this.registerEventHandler( 60, \dragCheckEvent, true );
-    this.registerEventHandler( 61, \dragCheckEvent, true );
+    this.registerEventHandler( 60, \dragEnterEvent, true );
+    this.registerEventHandler( 61, \dragMoveEvent, true );
   }
 
   receiveDragHandler_ { arg handler;
@@ -482,8 +482,8 @@ QView : QObject {
 
     // DnD events
     if( this.respondsTo(\defaultCanReceiveDrag) ) {
-        this.registerEventHandler( 60, \dragCheckEvent, true );
-        this.registerEventHandler( 61, \dragCheckEvent, true );
+        this.registerEventHandler( 60, \dragEnterEvent, true );
+        this.registerEventHandler( 61, \dragMoveEvent, true );
     };
     if( this.respondsTo(\defaultReceiveDrag) )
       {this.registerEventHandler( 63, \dropEvent, true )};
@@ -579,7 +579,16 @@ QView : QObject {
     ^this.primitiveFailed;
   }
 
-  dragCheckEvent { arg x, y;
+  dragEnterEvent { arg data;
+    // if the drag was initiated within SC, 'data' arg is nil
+    // and drag data has been already stored in QView.setCurrentDrag;
+    // otherwise 'data' arg holds the data of the drag initiated externally
+    if( data.notNil ) { QView.setCurrentDrag(data); }
+    // always accept the event
+    ^true;
+  }
+
+  dragMoveEvent { arg x, y;
     if( canReceiveDragHandler.notNil )
       { ^this.canReceiveDragHandler.value( this, x, y ) }
       { ^( this.tryPerform( \defaultCanReceiveDrag, x, y ) ? false ) };
