@@ -37,12 +37,7 @@ extern "C"
 #include "nova-tt/dummy_mutex.hpp"
 #include "nova-tt/mlock.hpp"
 
-#ifdef __GNUC__
-#define MALLOC_ATTRIBUTE __attribute__ ((malloc))
-#else
-#define MALLOC_ATTRIBUTE /* */
-#endif
-
+#include "function_attributes.h"
 
 namespace nova {
 
@@ -111,12 +106,12 @@ public:
     {}
 
 #ifdef NOVA_MEMORY_DEBUGGING
-    void * MALLOC_ATTRIBUTE malloc(std::size_t size)
+    void * MALLOC malloc(std::size_t size)
     {
         return ::malloc(size);
     }
 
-    void * MALLOC_ATTRIBUTE realloc(void * p, std::size_t size)
+    void * MALLOC realloc(void * p, std::size_t size)
     {
         return ::realloc(p, size);
     }
@@ -131,13 +126,13 @@ public:
         return std::numeric_limits<std::size_t>::max();
     }
 #else
-    void * MALLOC_ATTRIBUTE malloc(std::size_t size)
+    void * MALLOC malloc(std::size_t size)
     {
         scoped_lock lock(data_);
         return malloc_ex(size, data_.pool);
     }
 
-    void * MALLOC_ATTRIBUTE realloc(void * p, std::size_t size)
+    void * MALLOC realloc(void * p, std::size_t size)
     {
         scoped_lock lock(data_);
         return realloc_ex(p, size, data_.pool);
@@ -160,6 +155,5 @@ private:
 
 } /* namespace nova */
 
-#undef MALLOC_ATTRIBUTE
 #endif /* UTILITIES_SIMPLE_POOL_HPP */
 

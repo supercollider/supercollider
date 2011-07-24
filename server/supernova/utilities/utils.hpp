@@ -44,11 +44,7 @@ typedef unsigned int uint;
 
 #include "malloc_aligned.hpp"
 
-#ifdef __GNUC__
-#define PURE __attribute__((pure))
-#else
-#define PURE /*__attribute__((pure))*/
-#endif
+#include "function_attributes.h"
 
 
 namespace nova
@@ -215,5 +211,4 @@ PURE inline std::size_t string_hash(const char * str)
 
 } /* namespace nova */
 
-#undef PURE
 #endif /* UTILITIES_UTILS_HPP */
