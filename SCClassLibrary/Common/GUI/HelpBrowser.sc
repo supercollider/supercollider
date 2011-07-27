@@ -7,7 +7,7 @@ HelpBrowser {
 	var <window;
 	var webView;
 	var animCount = 0;
-	var txtPath;
+	var srchBox;
 	var openNewWin;
 
 	*initClass {
@@ -118,17 +118,9 @@ HelpBrowser {
 			x = x + w + 2;
 		};
 
-		str = "Path:";
-		w = str.bounds.width + 5;
-		x = x + 5;
-		StaticText.new( window, Rect(x, y, w, h) )
-			.string_(str)
-			.resize_(1);
-		x = x + w;
-
 		w = 200;
-		txtPath = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
-		txtPath.action = {|x|
+		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
+		srchBox.action = {|x|
 			var path, hash, fallback;
 			if(x.string.notEmpty) {
 				#path, hash = x.string.findRegexp("([^#]+)(#?.*)")[1..].flop[1];
@@ -185,12 +177,14 @@ HelpBrowser {
 
 		webView.onLoadFinished = {
 			this.stopAnim;
-			window.name = "SuperCollider Help:"+webView.title;
+			window.name = "SuperCollider Help: %".format(webView.title);
+			/*
 			if(webView.url.beginsWith("file://"++SCDoc.helpTargetDir)) {
-				txtPath.string = webView.url.findRegexp("file://"++SCDoc.helpTargetDir++"/([^#]+?)\\.[^\\.]+$")[1][1];
+				webView.url.findRegexp("file://"++SCDoc.helpTargetDir++"/([\\w/]+)\\.?.*")[1][1];
 			} {
-				txtPath.string = webView.url;
-			}
+				webView.url;
+			});
+			*/
 		};
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
