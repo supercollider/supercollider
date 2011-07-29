@@ -126,9 +126,12 @@ private:
 public:
     static inline void * allocate(std::size_t size)
     {
+#ifndef NOVA_MEMORY_DEBUGGING
         size = std::max(2*sizeof(void*), size); /* size requirement for lockfree freelist */
-
         return allocator::allocate(size);
+#else
+        return malloc(size);
+#endif
     }
 
     inline void* operator new(std::size_t size)
@@ -138,8 +141,7 @@ public:
 
     static inline void free_disposed_objects(void)
     {
-        for(;;)
-        {
+        for(;;) {
             if (free_disposed_object())
                 return;
         }
@@ -147,7 +149,11 @@ public:
 
     static inline void deallocate(void * p)
     {
+#ifndef NOVA_MEMORY_DEBUGGING
         disposed_objects.push(p);
+#else
+        free(p);
+#endif
     }
 
     inline void operator delete(void * p)
