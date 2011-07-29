@@ -1663,8 +1663,7 @@ struct completion_message
     completion_message(size_t size, const void * data):
         size_(size)
     {
-        if (size)
-        {
+        if (size) {
             data_ = system_callback::allocate(size);
             memcpy(data_, data, size);
         }
@@ -1678,9 +1677,15 @@ struct completion_message
     /** copy constructor has move semantics!!! */
     completion_message(completion_message const & rhs)
     {
+        operator=(rhs);
+    }
+
+    completion_message& operator=(completion_message const & rhs)
+    {
         size_ = rhs.size_;
         data_ = rhs.data_;
         const_cast<completion_message&>(rhs).size_ = 0;
+        return *this;
     }
 
     ~completion_message(void)
@@ -1694,8 +1699,7 @@ struct completion_message
      */
     void trigger_async(nova_endpoint const & endpoint)
     {
-        if (size_)
-        {
+        if (size_) {
             sc_osc_handler::received_packet * p =
                 sc_osc_handler::received_packet::alloc_packet((char*)data_, size_, endpoint);
             instance->add_sync_callback(p);
