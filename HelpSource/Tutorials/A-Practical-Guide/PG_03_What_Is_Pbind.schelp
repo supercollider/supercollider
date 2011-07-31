@@ -204,7 +204,7 @@ section::Writing SynthDefs for patterns
 
 SynthDefs should have a couple of specific features to work well with patterns.
 
-subsection::Synths should release themselves::
+subsection::Synths should release themselves
 
 The default event prototype relies on the synth to remove itself from the server when it's finished. This can be done in several ways:
 
