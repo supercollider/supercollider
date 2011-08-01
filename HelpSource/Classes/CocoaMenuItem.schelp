@@ -36,7 +36,7 @@ argument:: bool
 method:: remove
 Remove the receiver and its children (if any).
 
-method:: enabled_
+method:: enabled
 Enable or disable this menu item.
 argument:: bool
 A link::Classes/Boolean:: indicating whether this item should be enabled or disabled.

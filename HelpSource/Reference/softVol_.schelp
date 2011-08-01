@@ -6,11 +6,13 @@ related:: Reference/softSet, Reference/softPut
 description::
 Extension method to link::Classes/NodeProxy:: to set vol conditionally.
 
-method:: softVol_ (param, val, within = 0.025, pause = true, lastVal, spec)
+method:: softVol
+setter.
+
 argument:: val
 the volume value to set to
 argument:: within
-the normalized range within which the set is accepted - default is 0.025
+the normalized range within which the set is accepted
 argument:: pause
 a flag whether to pause the nodeproxy when volume is 0.
 waits for 0.2 seconds for volume to go down first.
