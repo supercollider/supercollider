@@ -15,6 +15,8 @@ allocates a new SimpleNumber.
 
 INSTANCEMETHODS::
 
+private:: prSimpleNumberSeries
+
 subsection:: math support 
 
 method:: +
@@ -696,9 +698,9 @@ argument::inMin
 assumed input minimum
 argument::inMax
 assumed input maximum
+argument::outCenter
 argument::outMin
 output minimum
-argument::outCenter
 argument::outMax
 output maximum
 argument::clip
@@ -727,9 +729,9 @@ argument::inMin
 assumed input minimum
 argument::inMax
 assumed input maximum
+argument::outCenter
 argument::outMin
 output minimum
-argument::outCenter
 argument::outMax
 output maximum
 argument::clip
@@ -884,7 +886,7 @@ method:: playAndDelta
 method:: numChannels
 method:: asBufWithValues
 method:: firstArg
-private:: prSimpleNumberSeries
+
 
 
 

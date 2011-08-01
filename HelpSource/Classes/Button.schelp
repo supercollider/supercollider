@@ -12,7 +12,7 @@ Failure to set any states at all results in an invisible button.
 
 The button performs its action upon releasing the mouse. In musical contexts, you might want to use code::mouseDownAction_():: to set a function to be performed on pressing the mouse (see link::Classes/View::, and examples below).
 
-If the drag contains a number, then code::valueAction_():: is performed using the currentDrag. If the drag contains anything else, action is set to the current drag. You could, for example, drag a function to an Button, and action would then be set to that function.
+If the drag contains a number, then code::valueAction_():: is performed using the code::currentDrag::. If the drag contains anything else, code::action:: is set to the current drag. You could, for example, drag a function to an Button, and action would then be set to that function.
 
 classmethods::
 
@@ -46,22 +46,22 @@ instancemethods::
 
 method:: states
 An array of labels and colors defining the states of the button.
-argument:: array
+argument:: stateArray
 An link::Classes/Array:: of arrays of the form code:: [ [String, strColor, bgColor] , .... ] ::
 
 method:: value
-Sets or returns the index of the current state. This will not evaluate the function assigned to action (see link::Classes/View::).
+Sets or returns the index of the current state. This will strong::not:: evaluate the function assigned to strong::action:: (see link::Classes/View::).
 argument:: argVal
 The index of an item in the states array.
 
 method:: valueAction
-Sets the button to display the item at index anInt of the states array, and evaluates action (see link::Classes/View::), if the value has changed.
-argument:: asInt
+Sets the button to display the item at index strong::anInt:: of the states array, and evaluates strong::action:: (see link::Classes/View::), if the value has changed.
+argument:: anInt
 The index of an item in the states array.
 
 method:: font
 Sets the Font of the button. Default value is the default font: Font.default .
-argument:: argFont
+argument:: f
 An instance of link::Classes/Font::.
 
 
@@ -72,7 +72,7 @@ The following methods are usually not used directly or are called by a primitive
 method:: doAction
 The method called by the primitive upon releasing the mouse.
 argument:: modifiers
-A key modifier number, which is passed to the action as its second argument upon mouse-releasing the button.
+A key modifier number, which is passed to the strong::action:: as its second argument upon mouse-releasing the button.
 
 method:: defaultKeyDownAction
 argument:: char
@@ -96,7 +96,7 @@ returns::
 [ \bounds, \visible, \enabled, \canFocus, \resize, \background, \minWidth, \maxWidth, \minHeight, \maxHeight, \value, \font, \states, \focusColor ]
 
 method:: defaultGetDrag
-The method called by default when initiating a drag from a Button. Returns the same as value.
+The method called by default when initiating a drag strong::from:: a Button. Returns the same as link::#-value::.
 
 method:: defaultCanReceiveDrag
 The method called by default when attempting to drop a drag in this object. By default, Button will respond only to drags where the drag contains a link::Classes/Number:: or link::Classes/Function::.

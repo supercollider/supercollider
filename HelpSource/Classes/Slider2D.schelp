@@ -36,29 +36,21 @@ subsection:: Accessing Instance and Class Variables
 
 method:: x
 The horizontal value of the 2d slider. Gets/sets the property, code::\x::, by calling code::get/setProperty(\x, val)::. This will not do the action of the slider.
-argument:: val
 
 method:: activex
 Sets the property, code::\x::, by calling code::setPropertyWithAction(\x, val)::. Does the sliders action, if the x value has changed.
-argument:: val
 
 method:: y
 The vertical value of the 2d slider. Gets/sets the property, \y, by calling get/setProperty(\y, val). This will not do the action of the slider.
-argument:: val
 
 method:: activey
 Sets the property, code::\y::, by calling code::setPropertyWithAction(\y, val)::. Does the sliders action, if the y value has changed.
-argument:: val
 
 method:: setXY
 A convenience method which performs both the x_ and y_ setters. This will not do the action of the slider.
-argument:: x
-argument:: y
 
 method:: setXYActive
 A convenience method which performs both the x_ and y_ setters. Does the action of the slider.
-argument:: x
-argument:: y
 
 method:: incrementY
 Increments y by code::1 / bounds.height::, unless the hight value is out of bounds. Does the action of the slider.
