@@ -76,10 +76,8 @@ definitionList::
 ::
 
 method::pos
-returns the current position in the file (in bytes).
-
-method::pos_
-a shortcut for seek(0, value), so moves to a given location from the beginning of the file. the value is clipped so that it lies between 0 inclusively and the file length exclusively.
+sets or returns the current position in the file (in bytes).
+when used as a setter, this method is a shortcut for seek(0, value). so setting the pos moves the current file position to a given location from the beginning of the file. the value is clipped so that it lies between 0 inclusively and the file length exclusively.
 
 method::length
 returns the current file size in bytes.

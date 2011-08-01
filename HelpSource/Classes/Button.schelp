@@ -50,16 +50,13 @@ argument:: array
 An link::Classes/Array:: of arrays of the form code:: [ [String, strColor, bgColor] , .... ] ::
 
 method:: value
-Returns the index of the current state. This will not evaluate the function assigned to action (see link::Classes/View::).
-
-method:: value_
-Sets the button to display the state at index val of the states array. This will not evaluate the function assigned to action (see link::Classes/View::).
-argument:: val
+Sets or returns the index of the current state. This will not evaluate the function assigned to action (see link::Classes/View::).
+argument:: argVal
 The index of an item in the states array.
 
-method:: valueAction_
-Sets the button to display the item at index val of the states array, and evaluates action (see SCView), if the value has changed.
-argument:: val
+method:: valueAction
+Sets the button to display the item at index anInt of the states array, and evaluates action (see link::Classes/View::), if the value has changed.
+argument:: asInt
 The index of an item in the states array.
 
 method:: font
