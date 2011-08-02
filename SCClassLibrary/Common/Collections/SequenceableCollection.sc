@@ -832,6 +832,16 @@ SequenceableCollection : Collection {
 		// 'scalar' > 'control' > 'audio'
 	}
 
+	// if we don't catch the special case of an empty array,
+	// Object:multiChannelPerform goes into infinite recursion
+	multiChannelPerform { arg selector ... args;
+		if(this.size > 0) {
+			^super.multiChannelPerform(selector, *args);
+		} {
+			^this.class.new
+		}
+	}
+
 	// support some UGen convenience methods.
 	// NOTE: don't forget to add a wrapper here when adding a method to UGen or AbstractFunction
 	clip { arg ... args; ^this.multiChannelPerform('clip', *args) }
