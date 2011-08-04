@@ -636,6 +636,10 @@ QView : QObject {
   }
 
   *nonimpl { arg methodName;
-    (this.asString ++ ": " ++ methodName.asString ++ " is not implemented yet").postln;
+    this.debug( msg: methodName.asString ++ " is not implemented yet" )
+  }
+
+  *debug { arg level = 1, msg = "";
+    if( QtGUI.debugLevel >= level ) { ("Qt: " ++ this.asString ++ ": " ++ msg).postln }
   }
 }
