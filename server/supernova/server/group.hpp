@@ -236,6 +236,7 @@ public:
                 target->child_groups.splice(group_target_iterator, node_parent->child_groups,
                                             group_list::s_iterator_to(*node_as_group));
             }
+            node->parent_ = target;
         }
 
         target->child_nodes.splice(target_iterator, node_parent->child_nodes, node_iterator);
@@ -273,6 +274,7 @@ public:
                 target_parent->child_groups.splice(target_parent->child_groups.end(), node_parent->child_groups,
                                                 group_target_iterator);
             }
+            node->parent_ = target_parent;
         }
 
         target_parent->child_nodes.splice(target_iterator, node_parent->child_nodes, node_iterator);
