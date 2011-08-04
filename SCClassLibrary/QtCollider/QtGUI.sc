@@ -8,6 +8,11 @@ QtGUI {
 
   *stop { }
 
+  *debugLevel {
+    _QtGUI_DebugLevel
+    ^this.primitiveFailed
+  }
+
   *debugLevel_ { arg level;
     _QtGUI_SetDebugLevel
     ^this.primitiveFailed;
