@@ -763,7 +763,8 @@ SCDocHTMLRenderer : SCDocRenderer {
         this.renderFootNotes(f);
 
         parser.currentFile !? {
-            f.write("<div class='doclink'>source: <a href='file://"++parser.currentFile++"'>"++parser.currentFile++"</a></div>");
+            f.write("<div class='doclink'>source: <a href='file://"++parser.currentFile++"'>"++parser.currentFile++"</a><br>");
+            f.write("link::"++subtarget++"::</div>");
         };
         //f.write("<div class='version'>SuperCollider version "++Main.version++"</div>");
         f.write("</div></body></html>");

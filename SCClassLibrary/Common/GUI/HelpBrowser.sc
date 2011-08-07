@@ -119,6 +119,7 @@ HelpBrowser {
 		};
 
 		w = 200;
+		x = x + 10;
 		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
 		srchBox.action = {|x|
 			var path, hash, fallback;
@@ -178,13 +179,6 @@ HelpBrowser {
 		webView.onLoadFinished = {
 			this.stopAnim;
 			window.name = "SuperCollider Help: %".format(webView.title);
-			/*
-			if(webView.url.beginsWith("file://"++SCDoc.helpTargetDir)) {
-				webView.url.findRegexp("file://"++SCDoc.helpTargetDir++"/([\\w/]+)\\.?.*")[1][1];
-			} {
-				webView.url;
-			});
-			*/
 		};
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
