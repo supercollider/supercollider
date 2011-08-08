@@ -23,27 +23,31 @@ Should not be called directly. See link::#*discover::.
 ::
 
 method::start
-Starts the eventloop. Only really necessary on Mac, but use it for cross platform robustness.
+Starts the eventloop. Called automatically by link::#*discover::, so no real need to call this method.
 
 argument::updtime
 updatetime of the eventloop in milliseconds.
 
 method::discover
-Discovers a new device. This calls for the creation of a new device and class instance by calling the method strong::new::. (strong::new:: should not be called directly). When discover is called, the buttons 1 and 2 on the Wii Remote should be pushed to put the device in discovery mode.
+Discovers a new device. This calls for the creation of a new device and class instance by calling the method link::#*new::. ( strong::new:: should not be called directly). This method is synchronous, and will block until a device is found or until it times out.
+
+When discover is called, the buttons 1 and 2 on the Wii Remote should be pushed to put the device in discovery mode.
+
+returns:: A new WiiMote object for the device discovered, or code::nil:: if no device was discovered.
+
+discussion::
+Example to start up:
+code::
+w = WiiMote.discover;   // discover a new device
+w.battery;              // post the battery status of the device
+
+// cleanup:
+WiiMote.closeAll;       // close all devices
+WiiMote.stop;
+::
 
 method::all
 Returns an link::Classes/Array:: with all WiiMote devices.
-
-code::
-// Example to start up:
-WiiMote.start;    // start the eventloop
-WiiMote.discover; // discover a new device
-WiiMote.all;      // post an array of all devices
-
-// cleanup:
-WiiMote.closeAll; // close all devices
-WiiMote.stop;
-::
 
 method::closeAll
 Close all WiiMote devices.
@@ -156,11 +160,10 @@ Examples::
 code::
 // Example to start up and view values
 WiiMote.start;    // start the eventloop
-WiiMote.discover; // discover a new device (wait for post about connected)
+w = WiiMote.discover; // discover a new device (wait for post about connected)
 
 WiiMote.all;      // post an array of all devices
 
-w = WiiMote.all[0];
 x = WiiMoteGUI.new( w ); // create a GUI (only covers the WiiMote and NunChuk currently)
 
 w.enableMotionSensor( 1 );
@@ -191,3 +194,44 @@ WiiMote.closeAll; // close all devices
 WiiMote.stop;
 x.w.close;
 ::
+
+subsection:: IR tracking
+This example shows a window displaying the objects being tracked by the WiiMote IR camera.
+code::
+(
+var q, w, u;
+q = WiiMote.discover;
+if(q.isNil) {
+    "No wiimote found, aborting.".error;
+} {
+    q.enableIRSensor(1);
+    w = Window("IR sensor", Rect(100, 100, 400, 400)).front;
+    w.onClose = { q.close };
+    u = UserView(w, Rect(0, 0, 400, 400));
+    u.background = Color.black;
+    u.drawFunc = {
+        var p;
+        q.remote_ir.do {|ir, i|
+            if(ir.valid>0) {
+                p = Point(ir.posx*400, ir.posy*400);
+                Pen.addArc(p, ir.size*500.0, 0, pi*2);
+                Pen.fillColor = Color.hsv(i/5, 1, 1);
+                Pen.fill;
+                Pen.stringAtPoint(
+                    "% @ % %".format(
+                        ir.posx.round(0.01),
+                        ir.posy.round(0.01),
+                        (ir.size*1000).floor
+                    ),
+                    p,
+                    Font(Font.defaultSansFace, 9),
+                    Color.white
+                );
+            };
+        };
+    };
+    u.animate = true;
+};
+)
+::
+

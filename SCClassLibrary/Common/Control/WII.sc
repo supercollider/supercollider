@@ -276,8 +276,9 @@ WiiMote {
 		if(this.prDiscover( newid, newall )) {
 			// prDiscover returns true if the device was added, so then update the 'all' array.
 			all = newall;
+			^newwii;
 		};
-		^this.all;
+		^nil;
 	}
 
 	*stop{
