@@ -721,7 +721,7 @@ Server {
 		// you can't cause them to quit via OSC (the boot button)
 
 		// this brutally kills them all off
-		"killall -9 scsynth".unixCmd;
+		thisProcess.platform.killAll(this.program.basename);
 		this.quitAll;
 	}
 	freeAll {
