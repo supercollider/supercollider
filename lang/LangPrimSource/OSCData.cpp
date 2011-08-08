@@ -338,9 +338,11 @@ int netAddrSend(PyrObject *netAddrObj, int msglen, char *bufptr, bool sendMsgLen
 		if (err) return err;
 
 		if (addr == 0) {
+#ifdef NO_INTERNAL_SERVER
 			if (gInternalSynthServer.mWorld) {
 				World_SendPacket(gInternalSynthServer.mWorld, msglen, bufptr, &localServerReplyFunc);
 			}
+#endif
 			return errNone;
 		}
 
