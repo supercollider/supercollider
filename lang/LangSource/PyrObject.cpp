@@ -32,6 +32,7 @@
 #include "InitAlloc.h"
 #include "Hash.h"
 #include "SC_Constants.h"
+#include "SC_Alloca.h"
 
 #include <set>
 
