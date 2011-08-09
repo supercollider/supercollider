@@ -347,6 +347,10 @@ QPopUpMenu : QItemViewBase {
 
   *qtClass { ^"QcPopUpMenu" }
 
+  allowsReselection { ^this.getProperty( \signalReactivation ) }
+
+  allowsReselection_ { arg flag; ^this.setProperty( \signalReactivation, flag ) }
+
   value {
     var v = this.getProperty( \currentIndex );
     if( v < 0 ) { ^nil } { ^v };

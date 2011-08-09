@@ -113,7 +113,7 @@ bool QcListWidget::eventFilter( QObject *o, QEvent *e )
 QcWidgetFactory<QcPopUpMenu> popUpMenuFactory;
 
 QcPopUpMenu::QcPopUpMenu()
-: lastChoice( -1 )
+: lastChoice( -1 ), _reactivation(false)
 {
   connect( this, SIGNAL(activated(int)), this, SLOT(doAction(int)) );
 }
@@ -127,7 +127,7 @@ void QcPopUpMenu::setItems( const VariantList & items )
 
 void QcPopUpMenu::doAction( int choice )
 {
-  if( choice != lastChoice ) {
+  if( _reactivation || (choice != lastChoice) ) {
     lastChoice = choice;
     Q_EMIT( action() );
   }
