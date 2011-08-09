@@ -87,9 +87,12 @@ class QcPopUpMenu : public QComboBox, public QcHelper
 {
   Q_OBJECT
   Q_PROPERTY( VariantList items READ dummyVariantList WRITE setItems );
+  Q_PROPERTY( bool signalReactivation READ signalReactivation WRITE setSignalReactivation )
 
   public:
     QcPopUpMenu();
+    bool signalReactivation() const { return _reactivation; }
+    void setSignalReactivation( bool b ) { _reactivation = b; }
   Q_SIGNALS:
     void action();
   private Q_SLOTS:
@@ -97,6 +100,7 @@ class QcPopUpMenu : public QComboBox, public QcHelper
   private:
     void setItems( const VariantList & );
     int lastChoice;
+    bool _reactivation;
 };
 
 class QcTextField : public QLineEdit
