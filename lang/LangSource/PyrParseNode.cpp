@@ -2259,11 +2259,12 @@ bool isAnInlineableBlock(PyrParseNode *node)
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
+#ifdef SC_WARN_NONINLINE
 				post("WARNING: FunctionDef contains variable declarations and so"
 				" will not be inlined.\n");
 				if (bnode->mArglist) nodePostErrorLine((PyrParseNode*)bnode->mArglist);
 				else nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
-
+#endif
 			} else {
 				res = true;
 			}
@@ -2282,11 +2283,12 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode *node)
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
+#ifdef SC_WARN_NONINLINE
 				post("WARNING: FunctionDef contains variable declarations and so"
 				" will not be inlined.\n");
 				if (bnode->mArglist) nodePostErrorLine((PyrParseNode*)bnode->mArglist);
 				else nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
-
+#endif
 			} else {
 				if (bnode->mBody->mClassno == pn_DropNode && ((PyrDropNode*)bnode->mBody)->mExpr2->mClassno == pn_BlockReturnNode) {
 					res = isAtomicLiteral(((PyrDropNode*)bnode->mBody)->mExpr1);

@@ -1,5 +1,9 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
+
+
+* 2010-08-10  only warn about FunctionDef not being inlined if a compiler flag is set - ds
+
 SuperCollider v3.4.2, released 2011-01
 ======================================
 
