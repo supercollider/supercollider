@@ -416,7 +416,7 @@ MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 
 MIDIFunc : AbstractResponderFunc {
 	classvar <>defaultDispatchers;
-	var <chan, <msgNum, <msgVal, <msgType;
+	var <chan, <msgNum, <msgType;
 	
 	*initClass {
 		defaultDispatchers = IdentityDictionary.new;
