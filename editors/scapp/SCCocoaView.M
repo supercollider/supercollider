@@ -1721,11 +1721,12 @@ int SCCocoaTextView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	char *name = symbol->name;
+	VMGlobals *g = gMainVMGlobals;
 
 	if (strcmp(name, "string")==0) {
 		NSString* str = [mTextView string];
         const char * cstr = [str UTF8String];
-        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(slot, string);
 		return errNone;
 	}
@@ -1733,7 +1734,7 @@ int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "selectedString")==0) {
 		NSString* str = [mTextView currentlySelectedTextOrLine:NULL];
         const char * cstr = [str UTF8String];
-        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(slot, string);
 		return errNone;
 	}
@@ -1753,7 +1754,7 @@ int SCCocoaTextView::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 	if (strcmp(name, "path")==0) {
 		if(mLastURL) {
 			const char * cstr = [[mLastURL path] UTF8String];
-			PyrString *string = newPyrString(NULL, cstr, 0, true);
+			PyrString *string = newPyrString(g->gc, cstr, 0, true);
 			SetObject(slot, string);
 		} else SetNil(slot);
 		return errNone;
@@ -1833,7 +1834,7 @@ bool SCCocoaTextView::linkAction(NSString *url)
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
 			const char * cstr = [url UTF8String];
-			PyrString *string = newPyrString(NULL, cstr, 0, true);
+			PyrString *string = newPyrString(g->gc, cstr, 0, true);
 			++g->sp;  SetObject(g->sp, mObj);
 			++g->sp;  SetObject(g->sp, string);
 			++g->sp;  SetObject(g->sp, string);
@@ -2446,7 +2447,8 @@ int SCQuartzComposerView::getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSS
 		return errNone;
 	} else if([type isEqualToString:QCPortTypeString]) {
 		const char * cstr = [nsObject UTF8String];
-		PyrString *string = newPyrString(NULL, cstr, 0, true);
+		VMGlobals *g = gMainVMGlobals;
+		PyrString *string = newPyrString(g->gc, cstr, 0, true);
 		SetObject(slot, string);
 		return errNone;
 	} else if([type isEqualToString:QCPortTypeColor]) {
@@ -3077,11 +3079,12 @@ int SCTextField::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 int SCTextField::getProperty(PyrSymbol *symbol, PyrSlot *slot)
 {
 	char *name = symbol->name;
+	VMGlobals *g = gMainVMGlobals;
 
 	if (strcmp(name, "string")==0) {
 		NSString* str = [mTextField stringValue];
         const char * cstr = [str UTF8String];
-        PyrString *string = newPyrString(NULL, cstr, 0, true);
+        PyrString *string = newPyrString(g->gc, cstr, 0, true);
         SetObject(slot, string);
 		return errNone;
 	}
