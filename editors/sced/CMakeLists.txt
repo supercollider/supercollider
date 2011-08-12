@@ -19,4 +19,4 @@ install(FILES data/supercollider.lang
 		DESTINATION share/gtksourceview-3.0/language-specs)
 
 install(FILES sced3/supercollider.plugin sced3/supercollider.py
-		DESTINATION lib/gedit-3/plugins)
+		DESTINATION lib/gedit/plugins)
