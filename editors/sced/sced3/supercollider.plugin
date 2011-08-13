@@ -1,0 +1,10 @@
+[Plugin]
+Loader=python
+Module=supercollider
+IAge=3
+Name=SuperCollider
+Description=SuperCollider interaction plugin for gedit.
+Authors=Artem Popov <artfwo@gmail.com>;Eckard Riedenklau <eriedenk@techfak.uni-bielefeld.de>;Marije Baalman <nescivi AT gmail DOT com>
+Copyright=Copyright © 2006-2011 Artem Popov <artfwo@gmail.com>
+Website=http://supercollider.sourceforge.net
+Version=3.4.4
