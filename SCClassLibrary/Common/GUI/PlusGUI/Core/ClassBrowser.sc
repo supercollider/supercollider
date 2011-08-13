@@ -316,7 +316,10 @@ ClassBrowser {
 					^this	// just to force early exit
 				};
 			};
-		if(isClassSearch) {
+		case { string.isEmpty } {
+			result = pool.sort({ |a, b| a.name < b.name });
+		}
+		{ isClassSearch } {
 			result = (if(matchCase) {
 				pool.select({ |class|
 					class.isMetaClass.not and: { class.name.asString.contains(string) }
@@ -326,7 +329,8 @@ ClassBrowser {
 					class.isMetaClass.not and: { class.name.asString.containsi(string) }
 				})
 			}).sort({ |a, b| a.name < b.name });
-		} {
+		}
+		{	// default case - method search
 			result = Array.new;
 			if(matchCase) {
 				pool.do({ |class|
