@@ -4,50 +4,11 @@
     Sced aims to simplify SuperCollider experience on Linux systems
     as far as possible.
 
-SCONS
-=====
-
-You can install SCED by invoking the main SC scons script with the options SCED
-
-$ scons SCED=1
-$ sudo scons install
-
-The notes below are for manual install
-
 Installation
 ============
 
-1. Get the Sced tarball and unpack it.
-
-2. Put the data/supercollider.lang file in any of these folders:
-
-    * /usr/share/gtksourceview-2.0/language-specs
-    * $HOME/.gnome2/gtksourceview-2.0/language-specs
-
-3. Put the data/supercollider.xml file in any of these folders:
-
-    * /usr/share/mime/packages
-    * $HOME/.local/share/mime/packages
-
-4. Run update-mime-database with the appropriate folder, i.e.:
-
-    $ update-mime-database $HOME/.local/share/mime
-
-5. Place BOTH data/sced.gedit-plugin file and sced/ folder
-   into either of these folders:
-
-    * /usr/lib/gedit-2/plugins
-    * $HOME/.gnome2/gedit/plugins
-
-6. Activate Sced from the gedit preferences dialog.
-   Make sure to click "Configure plugin" and select a proper runtime folder
-   (also create a folder, named "synthdefs" inside the runtime folder).
-
-Steps 2 to 4 are only required if you want syntax highlighting. Also, be aware
-that if you start your code with comments (both // and /**/), gedit might think
-that it's C code (due to a magic pattern in the shared-mime-info package).
-
-Step 6 is only required for older SuperCollider versions.
+To install sced via cmake, configure the build directory with
+`cmake -DSC_ED=yes'
 
 Usage
 =====
