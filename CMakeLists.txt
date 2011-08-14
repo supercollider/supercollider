@@ -281,7 +281,7 @@ if(APPLE)
 	set(auxresourcesdir ${scappauxresourcesdir})
 
 	# Some aux files which go in the app's folder
-	install(FILES README ChangeLog
+	install(FILES README.txt ChangeLog
 		DESTINATION ${auxresourcesdir}
 	)
 	install(FILES COPYING AUTHORS
