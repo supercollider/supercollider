@@ -27,6 +27,8 @@
 #include <QPlastiqueStyle>
 #include <QTimer>
 
+#include <clocale>
+
 QC_PUBLIC
 void QtCollider::init() {
   if( !QApplication::instance() ) {
@@ -43,6 +45,9 @@ void QtCollider::init() {
 #ifdef Q_OS_MAC
     qcApp->setStyle( new QtCollider::ProxyStyle( new QPlastiqueStyle ) );
 #endif
+    // NOTE: Qt may tamper with the C language locale, affecting POSIX number-string conversions.
+    // Revert the locale to default:
+    setlocale( LC_NUMERIC, "C" );
   }
 }
 
