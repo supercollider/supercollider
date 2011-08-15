@@ -87,7 +87,7 @@ AbstractResponderFunc {
 
 // defines the required interface
 AbstractDispatcher {
-	classvar <>all;
+	classvar <all;
 	var registered = false;
 	
 	*new { ^super.new.init; }
