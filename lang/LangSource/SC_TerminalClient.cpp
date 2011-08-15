@@ -493,14 +493,14 @@ static int sc_rl_mainstop(int i1, int i2)
 	return 0;
 }
 
-static int sc_rl_recompile(int i1, int i2)
+int SC_TerminalClient::readlineRecompile(int i1, int i2)
 {
-	SC_TerminalClient::instance()->recompileLibrary();
+	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())->onRecompileLibrary();
 	sc_rl_cleanlf();
 	return 0;
 }
 
-void SC_TerminalClient::readlineCb( char *cmdLine )
+void SC_TerminalClient::readlineCmdLine( char *cmdLine )
 {
 	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(instance());
 
@@ -536,10 +536,10 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 	rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
 	//rl_attempted_completion_function = sc_rl_completion;
 	rl_bind_key(0x02, &sc_rl_mainstop);
-	rl_bind_key(CTRL('x'), &sc_rl_recompile);
+	rl_bind_key(CTRL('x'), &readlineRecompile);
 	// TODO 0x02 is ctrl-B;
 	// ctrl-. would be nicer but keycode not working here (plain "." is 46 (0x2e))
-	rl_callback_handler_install( "sc3> ", &readlineCb );
+	rl_callback_handler_install( "sc3> ", &readlineCmdLine );
 
 	// Set our handler for SIGINT that will clear the line instead of terminating.
 	// NOTE: We prevent readline from setting its own signal handlers,

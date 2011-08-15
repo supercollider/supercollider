@@ -130,8 +130,9 @@ protected:
 private:
 	// NOTE: called from input thread:
 #ifdef HAVE_READLINE
-	static void readlineCb( char *cmdLine );
-	static void *readlineFunc( void * );
+	static void *readlineFunc(void *);
+	static int readlineRecompile(int, int);
+	static void readlineCmdLine(char *cmdLine);
 #endif
 	static void *pipeFunc( void * );
 	void pushCmdLine( SC_StringBuffer &buf, const char *newData, size_t size );
