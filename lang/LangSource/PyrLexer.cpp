@@ -251,6 +251,9 @@ text:
                         if (c == OPENCURLY) level++;
                         else if (c == CLOSCURLY) level--;
                     }
+				} else if (strncmp(txt+rdpos,"\'a0",3)==0 || (strncmp(txt+rdpos,"\'A0",3)==0)) 
+				{
+					txt[wrpos++] = ' '; rdpos = rdpos + 3;
                 } else {
                     if (txt[rdpos]==CLOSCURLY || txt[rdpos]==OPENCURLY
                             || txt[rdpos]=='\\' || txt[rdpos]=='\t'|| txt[rdpos]=='\n')
