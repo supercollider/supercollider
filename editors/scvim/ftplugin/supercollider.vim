@@ -317,6 +317,19 @@ function SChelp(subject)
 	endif
 endfun
 
+"--open HelpBrowser
+function HelpBrowser()
+	call SendToSC('Help.gui;')
+endfunction
+
+"--open help by class name
+function HelpBrowser_find(subject)
+    let string= "HelpBrowser.openHelpFor"
+    let format= "(\"" . a:subject . "\");"
+    let string= string . format
+    call SendToSC(string)
+endfunction
+
 function ListSCObjects(A,L,P)
 	return system("cat $SCVIM_CACHE_DIR/sc_object_completion")
 endfun
