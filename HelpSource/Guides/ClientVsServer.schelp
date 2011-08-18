@@ -88,7 +88,7 @@ definitionlist::
 
 section:: A final remark for the advanced reader
 
-Apart from sclang, it is possible to control scsynth from any other client which provides for OSC messaging (e.g. from Java, Python, Max/MSP, etc.). For networking, see link::Reference/Server-Architecture::, link::Classes/NetAddr::, link::Classes/OSCresponder::, link::Classes/OSCresponderNode::.
+Apart from sclang, it is possible to control scsynth from any other client which provides for OSC messaging (e.g. from Java, Python, Max/MSP, etc.). For networking, see link::Reference/Server-Architecture::, link::Classes/NetAddr::, link::Classes/OSCFunc::.
 
 In general however, sclang is the preferable way to communicate with scsynth for three reasons:
 list::

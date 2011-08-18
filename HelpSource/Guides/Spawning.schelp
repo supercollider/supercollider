@@ -187,7 +187,7 @@ t.clock.tempo = 0.25;	// Get the Task's clock and change the tempo. This works s
 t.pause;		// Same as t.stop
 ::
 
-TSpawn's functionality can be replicated with link::Classes/SendTrig:: and link::Classes/OSCresponder:: or link::Classes/OSCresponderNode::. See their individual helpfiles for details on their arguments and functionality.
+TSpawn's functionality can be replicated with link::Classes/SendTrig:: and link::Classes/OSCFunc::. See their individual helpfiles for details on their arguments and functionality.
 
 code::
 (
@@ -207,7 +207,7 @@ SynthDef("help-SendTrig", {
 	
 (
 // this receives the trigger on the client side and 'Spawns' a new Synth on the server
-OSCresponder(s.addr, '/tr', { 
+OSCFunc({ 
 	SynthDef("help-EnvGen", { arg out = 0;
 		Out.ar(
 			out,
@@ -215,7 +215,7 @@ OSCresponder(s.addr, '/tr', {
 			* SinOsc.ar(440, 0, 0.1)
 		)
 	}).play(s);
-}).add;
+}, '/tr', s.addr);
 
 // Start 'spawning'
 Synth("help-SendTrig");

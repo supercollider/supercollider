@@ -138,10 +138,12 @@ fork {
 		RecordBuf.ar(car, b, loop: 0, doneAction: 2);
 		car ! 2
 	}.play;
-	OSCpathResponder(s.addr, ['/n_end', recorder.nodeID], { |time, resp, msg|
-		"done recording".postln;
-		resp.remove;
-	}).add;	
+	o = OSCFunc({ |msg|
+		if(msg[1] == recorder.nodeID, {
+			"done recording".postln;
+			o.free;
+		});
+	}, '/n_end', s.addr);	
 };
 SynthDef(\sampler, { |out, bufnum, freq = 1, amp = 1|
 	var	sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: 2) * amp;
@@ -215,13 +217,13 @@ fork {
 		Synth(\sampleSource, [freq: ~midinotes[i].midicps, bufnum: buf]);
 	});
 };
-OSCresponderNode(s.addr, '/n_end', { |t, r, m|
+o = OSCFunc({ |msg|
 	bufCount = bufCount - 1;
 	if(bufCount == 0) {
 		"done recording".postln;
-		r.remove;
+		o.free;
 	};
-}).add;
+}, '/n_end', s.addr);
 
 SynthDef(\multiSampler, { |out, bufnum, bufBase, baseFreqBuf, freq = 440, amp = 1|
 	var	buf1 = bufnum.floor,

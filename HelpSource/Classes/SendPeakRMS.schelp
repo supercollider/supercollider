@@ -1,6 +1,6 @@
 CLASS:: SendPeakRMS
 summary:: Track peak and power of a signal for GUI applications.
-related:: Classes/Peak, Classes/PeakFollower
+related:: Classes/Peak, Classes/PeakFollower, Classes/OSCFunc
 categories::  UGens>Analysis>Amplitude
 
 
@@ -58,9 +58,10 @@ code::
 )
 
 (
-o.remove; o = OSCresponder(nil, "/replyAddress", { |t, r, msg|
+o = OSCFunc({ |msg|
 	"rms: %, peak: %".format(msg[3], msg[4]).postln
-}).add;
+}, '/replyAddress');
 )
+o.free;
 ::
 

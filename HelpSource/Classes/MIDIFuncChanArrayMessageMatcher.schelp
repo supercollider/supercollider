@@ -1,0 +1,40 @@
+CLASS:: MIDIFuncChanArrayMessageMatcher
+summary:: Matches incoming MIDI messages to responder funcs based on message channel
+categories:: MIDI
+related:: Classes/AbstractMessageMatcher, Classes/MIDIFuncSrcMessageMatcher, Classes/MIDIFuncChanMessageMatcher, Classes/MIDIFuncSrcMessageMatcherNV, Classes/MIDIFuncBothMessageMatcher, Classes/MIDIFuncBothCAMessageMatcher
+
+DESCRIPTION::
+This is used by link::Classes/MIDIMessageDispatcher:: to match incoming MIDI messages to instances of link::Classes/MIDIFunc:: or link::Classes/MIDIdef:: using MIDI channel (when the MIDIFunc specifies an array of channels). This class is private, and generally users should not need to address instances directly.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Make a new instance.
+
+argument:: chanArray
+(describe argument here)
+
+argument:: func
+The link::Classes/Function:: to evaluate if a match is found.
+
+returns:: An MIDIFuncChanArrayMessageMatcher.
+
+
+INSTANCEMETHODS::
+private:: init
+
+METHOD:: value
+Check to see if a message matches, and evaulate func if it does.
+
+argument:: value
+The message value (e.g. velocity, etc.) of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-127.
+
+argument:: num
+The message number (e.g. note number, etc.) of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-127.
+
+argument:: testChan
+The channel number of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-15.
+
+argument:: srcID
+The UID of the source of the MIDI message as an link::Classes/Integer::.

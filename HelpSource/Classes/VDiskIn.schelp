@@ -74,24 +74,24 @@ x = { VDiskIn.ar(1, b, LFNoise2.kr(0.2).range(0.2, 0.9), 1, sendID: 14) }.play;
 // register to receive this message
 
 (
-o = OSCresponder(s.addr,'/diskin',{ arg time,responder,msg;
+o = OSCFunc({ arg msg;
 	var sendID = msg[2];
 	var index = msg[3];
 	msg.postln;
 	"id: % pos: % frames (% sec)\n"
 		.postf(sendID, index % c.numFrames, (index % c.numFrames / c.sampleRate));
-}).add
+},'/diskin', s.addr)
 );
 
 b.close; b.free;
 
 b.alloc; b.cueSoundFile("sounds/a11wlk01-44_1.aiff", 0); c = SoundFile("sounds/a11wlk01-44_1.aiff").info;
 
-x.free; b.close; b.free; o.remove; // clean up eventually
+x.free; b.close; b.free; o.free; // clean up eventually
 
 
 
-// the same example in OSC Messaging style, see [Node Messaging]
+// the same example in OSC Messaging style, see link::Guides/NodeMessaging::
 
 // allocate a disk i/o buffer
 s.sendMsg("/b_alloc", 0, 65536, 1);
