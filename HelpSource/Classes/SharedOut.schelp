@@ -10,7 +10,7 @@ Reads from a control bus shared between the internal server and the SC
 client. Control rate only. Reading from a shared control bus on the
 client is synchronous. When not using the internal server use the get
 method of Bus (or /c_get in messaging style) or
-link::Classes/SendTrig::  with an link::Classes/OSCresponder:: or link::Classes/OSCresponderNode::.
+link::Classes/SendTrig:: with an link::Classes/OSCFunc::.
 
 
 classmethods::

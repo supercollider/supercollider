@@ -1,6 +1,7 @@
 class:: SendTrig
 summary:: Send a trigger message from the server back to the client.
 categories::  UGens>Triggers
+related:: Classes/OSCFunc
 
 
 Description::
@@ -58,15 +59,18 @@ code::
 s = Server.local;
 s.boot;
 
+(
 SynthDef("help-SendTrig",{
 	SendTrig.kr(Dust.kr(1.0),0,0.9);
 }).send(s);
 
 // register to receive this message
-OSCresponder(s.addr,'/tr',{ arg time,responder,msg;
-	[time,responder,msg].postln;
-}).add;
+o = OSCFunc({ arg msg, time;
+	[time, msg].postln;
+},'/tr', s.addr);
+)
 
 Synth("help-SendTrig");
 
+o.free;
 ::

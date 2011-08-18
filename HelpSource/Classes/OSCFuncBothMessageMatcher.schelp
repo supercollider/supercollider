@@ -1,0 +1,44 @@
+CLASS:: OSCFuncBothMessageMatcher
+summary:: Matches incoming messages to responder funcs based on receive port and sender address
+categories:: OpenSoundControl
+related:: Classes/AbstractMessageMatcher, Classes/OSCFuncAddrMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher
+
+DESCRIPTION::
+This is used by link::Classes/OSCMessageDispatcher:: and link::Classes/OSCPatternMessageDispatcher:: to match incoming OSC messages  to instances of link::Classes/OSCFunc:: or link::Classes/OSCdef:: using receive port and sender address. This class is private, and generally users should not need to address instances directly.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Make a new instance.
+
+argument:: addr
+The link::Classes/NetAddr:: to attempt to match.
+
+argument:: recvPort
+The receive port to attempt to match, in the form of an link::Classes/Integer::.
+
+argument:: func
+The link::Classes/Function:: to evaluate if a match is found.
+
+returns:: An OSCFuncBothMessageMatcher.
+
+
+INSTANCEMETHODS::
+private:: init
+
+METHOD:: value
+Check to see if a message matches, and evaulate func if it does.
+
+argument:: msg
+The OSC message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::.
+
+argument:: time
+A link::Classes/Float:: indicating the time the incoming message was sent.
+
+argument:: testAddr
+A link::Classes/NetAddr:: indicating the source of the message.
+
+argument:: testRecvPort
+An link::Classes/Integer:: indicating the port on which the message was received.
+

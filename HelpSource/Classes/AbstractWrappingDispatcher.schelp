@@ -1,0 +1,62 @@
+CLASS:: AbstractWrappingDispatcher
+summary:: A dispatcher which wraps functions to support multiple paramter matching
+categories:: OpenSoundControl, MIDI
+related:: Classes/AbstractDispatcher, Classes/AbstractMessageMatcher, Classes/OSCMessageDispatcher, Classes/OSCMessagePatternDispatcher, Classes/MIDIMessageDispatcher, Classes/OSCFunc, Classes/OSCdef, Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractResponderFunc
+
+DESCRIPTION::
+AbstractWrappingDispatcher extends AbstractDispatcher to provide the facility to wrap response functions in specialised objects (instances of subclasses of link::Classes/AbstractMessageMatcher:: to efficiently support matching of multiple parameters. Its subclasses link::Classes/OSCMessageDispatcher:: and link::Classes/MIDIMessageDispatcher:: match using a flat dictionary lookup of the 'most significant' parameter, and only attempt to match other parameters if an initial match is found. This approach is faster than others (such as multi-level dictionaries) for most configurations.
+
+
+CLASSMETHODS::
+
+
+INSTANCEMETHODS::
+private:: init
+
+METHOD:: wrappedFuncs
+Get a dictionary of all currently wrapped functions, stored using their owning responder funcs as keys.
+
+returns:: An link::Classes/IdentityDictionary::.
+
+METHOD:: add
+Add a responder func to this dispatcher. Subclasses should extend this to do any necessary bookkeeping. Generally this method should add this dispatcher as a dependant of the responder func, so that it can respond to any changes.
+
+argument:: funcProxy
+An instance of a subclass of link::Classes/AbstractResponderFunc:: to add.
+
+METHOD:: remove
+Remove a responder func from this dispatcher.
+
+argument:: funcProxy
+An instance of a subclass of link::Classes/AbstractResponderFunc:: to remove.
+
+METHOD:: updateFuncForFuncProxy
+This method is called within link::#-update:: to update any changes to one of this dispatcher's responder funcs' function(s). Users should not call this method directly, but subclasses may need to extend this method to do additional bookkeeping.
+
+argument:: funcProxy
+An instance of a subclass of link::Classes/AbstractResponderFunc::.
+
+METHOD:: wrapFunc
+Subclasses should override this method to implement wrapping of functions by instances of appropriate subclasses of link::Classes/AbstractMessageMatcher::.
+
+METHOD:: getKeysForFuncProxy
+Subclasses should override this to return an Array containing all the keys at which the specified responder func's functions are stored in this dispatchers active dictionary.
+
+argument:: funcProxy
+An instance of a subclass of link::Classes/AbstractResponderFunc::.
+
+returns:: An link::Classes/Array::.
+
+METHOD:: update
+Subclasses of link::Classes/AbstractResponderFunc:: should call update on their dispatcher whenever their function (or something else significant) changes.
+
+argument:: funcProxy
+An instance of a subclass of link::Classes/AbstractResponderFunc::.
+
+argument:: what
+A link::Classes/Symbol:: indicating what has changed. Currently the only thing supported is code::\function::.
+
+METHOD:: free
+This method removes this dispatcher from its responder func's dependants dictionaries, and deactivates it. Users should only call this method if you are finished with this dispatcher.
+
+

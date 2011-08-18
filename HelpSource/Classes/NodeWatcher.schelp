@@ -42,10 +42,10 @@ Remove the node from the list of nodes. This happens also when a node is freed.
 InstanceMethods::
 
 method::start
-Add the OSCresponderNode to listen to the address.
+Add the OSCFunc to listen to the address.
 
 method::stop
-Remove the OSCresponderNode to stop listen to the address.
+Remove the OSCFunc to stop listen to the address.
 
 Examples::
 

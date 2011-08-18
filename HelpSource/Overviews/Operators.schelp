@@ -261,8 +261,8 @@ SynthDef("help-> trig", {
 	SendTrig.kr(Amplitude.kr(SoundIn.ar(0)) > 0.2);
 }).play(s);
 
-// responder to trigger synth
-OSCresponderNode(s.addr,'/tr',{ "triggered".postln; Synth.new("help-EnvGen") }).add;
+// OSCFunc to trigger synth
+OSCFunc({ "triggered".postln; Synth.new("help-EnvGen") },'/tr', s.addr);
 )
 ::
 

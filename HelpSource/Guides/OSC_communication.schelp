@@ -15,7 +15,7 @@ b.sendMsg("/hello", "there");	// send the application the message "hello" with t
 
 section::Receiving OSC from another application
 
-To listen to another application, that application needs to send a message to the port SuperCollider is listening on, normally this is 57120, but it can change. The current port can be retrieved with
+To listen to another application, that application needs to send a message to the port SuperCollider is listening on. Normally the default port is 57120, but it could be something different if that port was already bound when SC started. The current default port can be retrieved with
 code::
 NetAddr.langPort;	// retrieve the current port SC is listening to
 ::
@@ -24,38 +24,49 @@ code::
 NetAddr.localAddr	// retrieve the current IP and port
 ::
 
-To listen to incoming messages, an link::Classes/OSCresponderNode:: needs to be created in SuperCollider. If the sending application strong::has a fixed port it sends message from::, you can set the OSCresponderNode to listen only to messages coming from that IP and port:
+You can open additional ports using link::Classes/Main#-openUDPPort::. This will return a link::Classes/Boolean:: indicating whether SC succeeded in opening the new port.
+code::
+thisProcess.openUDPPort(1121); // attempt to open 1121thisProcess.customPorts; // list all open custom ports
+::
+
+To listen to incoming messages, an link::Classes/OSCFunc:: needs to be created in SuperCollider. If the sending application strong::has a fixed port it sends message from::, you can set the OSCFunc to listen only to messages coming from that IP and port:
 code::
 n = NetAddr.new("127.0.0.1", 7771);	// create the NetAddr
 // create the OSCresponderNode
-o = OSCresponderNode.new(n, "/goodbye", { arg time, resp, msg; [time,resp].postln; } ).add;
-o.remove;	// remove the OSCresponderNode when you are done.
+o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln; }, '/goodbye', n);
+o.free;	// remove the OSCFunc when you are done.
 ::
-
-Why link::Classes/OSCresponderNode::: rather than link::Classes/OSCresponder::? If you create two OSCresponders with the same message name -- e.g. code::"/goodbye":: above -- the second OSCresponder will overwrite the first. You can have only one OSCresponder per message name at the same time. OSCresponderNodes do not have that restriction -- many OSCresponderNodes with the same name can coexist. (This also means you have to keep track of your OSCresponderNodes to remove them when they are no longer needed.) See also link::Classes/OSCpathResponder::.
 
 section::Receiving from an application that is sending from a variable port
 
-Some applications (notably Pd and Max) do not send messages from a fixed port, but instead use a different port each time they send out a message. In that case the OSCresponderNode needs to be set up, so that it listens to messages coming from anywhere:
+Some applications (notably Pd and Max) do not send messages from a fixed port, but instead use a different port each time they send out a message. In that case the OSCFunc needs to be set up, so that it listens to messages coming from anywhere. You do this by passing nil as the srcID argument.
 code::
-o = OSCresponderNode.new(nil, "/goodbye", { arg time, resp, msg; [time,resp].postln; } ).add; // create the OSCresponderNode
-o.remove;	// remove the OSCresponderNode when you are done.
+o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln; }, '/goodbye'); // create the OSCresponderNode
+o.free;	// remove the OSCresponderNode when you are done.
 ::
 
 section::Testing incoming traffic
 
-All incoming OSC messages call the message recvOSCmessage, or recvOSCbundle in link::Classes/Main::.
-To see the incoming traffic, one may set a function called recvOSCfunc in Main:
+OSCFunc has a convenience method, link::Classes/OSCFunc#*trace:: which posts all incoming OSC messages:
 code::
-// post all incoming traffic except the server status messages
+OSCFunc.trace(true); // Turn posting on
+OSCFunc.trace(false); // Turn posting off
+::
+
+section::Custom OSC message processing
+
+All incoming OSC messages call the message recvOSCmessage, or recvOSCbundle in link::Classes/Main::. If needed, one can add a custom link::Classes/Function:: or other object to Main's recvOSCFunc variable. Although one can do this directly using the corresponding setter, it is better to use the link::Classes/Main#-addOSCFunc:: and link::Classes/Main#-removeOSCFunc:: to avoid overwriting any other functions that may have been added by class code.
+code::
+// this example is basically like OSCFunc.trace
 (
-thisProcess.recvOSCfunc = { |time, addr, msg|
+f = { |time, addr, msg|
 	if(msg[0] != '/status.reply') {
 		"time: % sender: %\nmessage: %\n".postf(time, addr, msg);
 	}
-}
+};
+thisProcess.addOSCFunc(f);
 );
 
 // stop posting.
-thisProcess.recvOSCfunc = nil;
+thisProcess.removeOSCFunc(f);
 ::
