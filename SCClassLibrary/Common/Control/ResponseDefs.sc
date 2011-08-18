@@ -155,7 +155,7 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 		
 	wrapFunc { this.subclassResponsibility(thisMethod) }
 	
-	getKeysForFuncProxy { this.subclassResponsibility(thisMethod) }
+	getKeysForFuncProxy { |funcProxy| this.subclassResponsibility(thisMethod) }
 	
 	update {|funcProxy, what| if(what == \function, { this.updateFuncForFuncProxy(funcProxy) }) }
 	
