@@ -298,6 +298,10 @@ OSCdef : OSCFunc {
 		^res
 	}
 	
+	*newMatching { arg key, func, path, srcID, recvPort;
+		^this.new(key, func, path, srcID, recvPort, defaultMatchingDispatcher);
+	}
+	
 	addToAll {|argkey| key = argkey; all.put(key, this) }
 	
 	free { all[key] = nil; super.free; }
