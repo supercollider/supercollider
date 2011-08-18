@@ -359,7 +359,7 @@ OSCFuncBothMessageMatcher : AbstractMessageMatcher {
 
 // for \noteOn, \noteOff, \control, \polytouch
 MIDIMessageDispatcher : AbstractWrappingDispatcher {
-	var <>messageType;
+	var >messageType;
 	
 	*new {|messageType| ^super.new.messageType_(messageType) }
 	
@@ -569,7 +569,7 @@ MIDIFuncChanMessageMatcher : AbstractMessageMatcher {
 
 // if you need to test for chanArray func gets wrapped in this
 MIDIFuncChanArrayMessageMatcher : AbstractMessageMatcher {
-	var chanBools, <>func;
+	var chanBools;
 	
 	*new {|chanArray, func|
 		var chanBools;
