@@ -125,7 +125,7 @@ MIDIIn {
 		this.perform(what.asSetter, this.perform(what).addFunc(func))
 	}
 	
-	*removeFuncTo { |what, func|
+	*removeFuncFrom { |what, func|
 		this.perform(what.asSetter, this.perform(what).removeFunc(func))
 	}
 	
