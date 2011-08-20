@@ -35,7 +35,7 @@ argument:: srcID
 An optional instance of link::Classes/NetAddr:: indicating the IP address of the sender. If set this object will only respond to messages from that source.
 
 argument:: recvPort
-An optional link::Classes/Integer indicating the port on which messages will be received. If set this object will only respond to message received on that port. Note that you will have to use link::Classes/Main::'s openUDPPort method to enable listening on that port.
+An optional link::Classes/Integer:: indicating the port on which messages will be received. If set this object will only respond to message received on that port. Note that you will have to use the link::Classes/Main#-openUDPPort:: method to enable listening on that port.
 
 argument:: dispatcher
 An optional instance of an appropriate subclass of link::Classes/AbstractDispatcher::. This can be used to allow for customised dispatching. Normally this should not be needed.
@@ -55,7 +55,7 @@ argument:: srcID
 An optional instance of link::Classes/NetAddr:: indicating the IP address of the sender. If set this object will only respond to messages from that source.
 
 argument:: recvPort
-An optional link::Classes/Integer indicating the port on which messages will be received. Note that you will have to use link::Classes/Main::'s openUDPPort method to enable listening on that port.
+An optional link::Classes/Integer:: indicating the port on which messages will be received. Note that you will have to use the link::Classes/Main#-openUDPPort:: method to enable listening on that port.
 
 returns:: A new instance of OSCFunc.
 
