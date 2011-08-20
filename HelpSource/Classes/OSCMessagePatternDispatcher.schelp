@@ -1,5 +1,5 @@
 CLASS:: OSCMessagePatternDispatcher
-summary:: The default pattern matching dispatcher for link::Classes/OSCFunc:: and link::Classes/OSCdef::.
+summary:: The default pattern matching dispatcher for OSCFunc and OSCdef.
 categories:: OpenSoundControl
 related:: Classes/OSCFunc, Classes/OSCdef, Classes/AbstractWrappingDispatcher, Classes/AbstractDispatcher, Classes/AbstractMessageMatcher, Classes/OSCMessageDispatcher, Classes/OSCFuncAddrMessageMatcher, Classes/OSCFuncRecvPortMessageMatcher, Classes/OSCFuncBothMessageMatcher, Guides/OSC_communication
 
