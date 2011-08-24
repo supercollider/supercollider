@@ -355,6 +355,21 @@ OSCFuncBothMessageMatcher : AbstractMessageMatcher {
 	}
 }
 
+OSCArgsMatcher : AbstractMessageMatcher {
+	var argTemplate;
+
+	*new{|argTemplate, func| ^super.new.init(argTemplate, func) }
+	
+	init {|argArgTemplate, argFunc| argTemplate = argArgTemplate.asArray; func = argFunc; }
+	
+	value {|testMsg, time, addr, recvPort|Ê
+		testMsg[1..].do({|item, i|
+			if(argTemplate[i].matchItem(item).not, {^this});
+		});
+		func.value(testMsg, time, addr, recvPort)
+	}
+}
+
 ///////////////////// MIDI
 
 // for \noteOn, \noteOff, \control, \polytouch
