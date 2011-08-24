@@ -6,7 +6,7 @@ related:: Guides/OSC_communication, Classes/OSCFunc, Classes/OSCresponderNode, C
 DESCRIPTION::
 OSCdef provides a global reference to the functionality of its superclass link::Classes/OSCFunc::. Essentially it stores itself at a key within a global dictionary, allowing replacement at any time. Most methods are inherited from its superclass.
 
-note:: Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally. link::Classes/OSCFunc:: and OSCdef are faster, safer, have more logical argument order, and support pattern matching. Thus they are the recommended way of registering for incoming OSC messages as of SC 3.5.::
+note:: Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally. link::Classes/OSCFunc:: and OSCdef are faster, safer, have more logical argument order, and support pattern matching. Thus they are the recommended way of registering for incoming OSC messages as of SC 3.5. (See below for an example demonstrating OSCpathResponder-type arg matching.)::
 
 
 CLASSMETHODS::
@@ -24,7 +24,7 @@ argument:: key
 The key at which to store this OSCdef in the global collection. Generally this will be a link::Classes/Symbol::.
 
 argument:: func
-A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::, the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::, the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received. For more complicated matching, one can use an link::Classes/OSCArgMatcher:: or similar object.
 
 argument:: path
 A link::Classes/Symbol:: indicating the path of the OSC address of this object. Note that OSCdef demands OSC compliant addresses. If the path does not begin with a / one will be added automatically.
@@ -47,7 +47,7 @@ argument:: key
 The key at which to store this OSCdef in the global collection. Generally this will be a link::Classes/Symbol::.
 
 argument:: func
-A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: [OSCAddress, other args], the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: [OSCAddress, other args], the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received. For more complicated matching, one can use an link::Classes/OSCArgMatcher:: or similar object.
 
 argument:: path
 A link::Classes/Symbol:: indicating the path of the OSC address of this object. Note that OSCdef demands OSC compliant addresses. If the path does not begin with a / one will be added automatically. Pattern matching will be applied to any incoming messages to see if they match this address. Note that according to the OSC spec, regular expression wildcards are only permitted in the incoming message's address pattern. Thus path should not contain wildcards. For more details on OSC pattern matching, see http://opensoundcontrol.org/spec-1_0
@@ -107,4 +107,11 @@ m.sendMsg("/chat", "Hello App 1");
 OSCdef(\test).clear; // remove all functions
 m.sendMsg("/chat", "Hello App 1");
 
+
+//////// Use an OSCArgsMatcher for finer grained matching
+
+s.boot;
+x = Synth(\default);
+OSCdef(\watchForXEnd, OSCArgsMatcher([x.nodeID], { 'ended!'.postln }), '/n_end', s.addr).oneShot;
+x.release(3);
 ::

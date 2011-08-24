@@ -1,0 +1,53 @@
+CLASS:: OSCArgsMatcher
+summary:: Test for specific OSC arguments before evaluating a Function
+categories:: Undocumented classes
+related:: Classes/OSCFunc, Guides/OSC_communication
+
+DESCRIPTION::
+OSCArgMatcher matches an argument template to a link::Classes/Function:: or similar object. When its value method is called, it evaluates the function if all of the arguments in its template pass a link::Reference/matchItem:: test.  Normally this is passed as the func arg for an link::Classes/OSCFunc:: or link::Classes/OSCdef::.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Make a new OSCArgsMatcher
+
+argument:: argTemplate
+An link::Classes/Array:: comprising a template for determining if incoming arguments match. For each argument that you wish to test, you may include a constant (for exact matching), code::nil:: (indicating that all possible values and types will match), or a link::Classes/Function:: to test the incoming argument (see link::Reference/matchItem:: for examples). These should be in the same order as the items in the incoming OSC message, starting from index 1. (Index 0 is the OSC address.)
+
+argument:: func
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: in the form code::[OSCAddress, ...otherArgs]::, the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
+
+
+INSTANCEMETHODS::
+private:: init
+
+METHOD:: value
+Test if an incoming message's arguments match, and if so evaluate this object's function. In normal usage (within an OSCFunc) this is done behind the scenes.
+
+argument:: testMsg
+An link::Classes/Array:: in the form code::[OSCAddress, …msgArgs]::.
+
+argument:: time
+The time that the message was sent as a link::Classes/Float::.
+
+argument:: addr
+A link::Classes/NetAddr:: corresponding to the IP address of the sender.
+
+argument:: recvPort
+An link::Classes/Integer:: corresponding to the port on which the message was received.
+
+
+EXAMPLES::
+
+code::
+// Basic example (standalone use)
+m = OSCArgsMatcher([1, nil, 2], {'matches!'.postln});
+m.value(['/myAddress', 1, 3, 2], 0.0, NetAddr.localAddr, NetAddr.langPort); // matches!
+
+// more typical usage, with an OSCFunc for finer grained matching
+s.boot;
+x = Synth(\default);
+OSCFunc(OSCArgsMatcher([x.nodeID], { 'ended!'.postln }), '/n_end', s.addr).oneShot;
+x.release(3);
+::
