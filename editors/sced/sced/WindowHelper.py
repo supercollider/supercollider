@@ -55,6 +55,7 @@ scui_str = """<ui>
         <menuitem action="ScedFindHelp"/>
         <menuitem action="ScedBrowseHelp"/>
         <menuitem action="ScedSearchHelp"/>
+        <menuitem action="ScedMethodArgs"/>
         <separator/>
         <menuitem action="ScedFindDefinition"/>
         <menuitem action="ScedBrowseClass"/>
@@ -140,6 +141,10 @@ class WindowHelper:
             ("ScedSearchHelp", None, _("Search Help"), "<control><alt>U",
              _("Search for help"),
              self.on_search_help),
+
+            ("ScedMethodArgs", None, _("Show method args"), "<alt>A",
+             _("Show method arguments and defaults"),
+             self.on_method_args),
 
             ("ScedFindDefinition", None, _("Find Definition"), "<control>Y",
              _("Find and open class definition"),
@@ -289,6 +294,10 @@ class WindowHelper:
     def on_search_help(self, action):
         text = self.get_selection()
         self.__lang.evaluate("HelpBrowser.openSearch(\"" + text + "\");")
+
+    def on_method_args(self, action):
+        text = self.get_selection()
+        self.__lang.evaluate("Help.methodArgs(\"" + text + "\");")
 
     def on_find_definition(self, action):
         text = self.get_selection()
