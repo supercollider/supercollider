@@ -979,6 +979,12 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 		x = -x;
 		neg = true;
 	}
+	
+	if (x == 0.0) {
+		SetInt(slots+0, 0);
+		SetInt(slots+1, 1);
+		return errNone;
+	}
 
 	if (x < 1.0) {
 		upper_num = 1.0;
