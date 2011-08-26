@@ -1,8 +1,13 @@
 Platform
 {
+	classvar defaultStartupFile;
 	var <classLibraryDir, <helpDir, <>recordingsDir, features;
 
 	var <>devpath;
+
+	*initClass {
+		defaultStartupFile = this.userConfigDir +/+ "startup.scd"
+	}
 
 	initPlatform {
 		classLibraryDir = thisMethod.filenameSymbol.asString.dirname.dirname;
@@ -61,7 +66,23 @@ Platform
 	startup { }
 	shutdown { }
 
-	startupFiles { ^#[] }
+	startupFiles {
+		^[defaultStartupFile];
+	}
+
+	*deprecatedStartupFiles {|paths|
+		var postWarning = false;
+		paths.do {|path|
+			if (File.exists(path.standardizePath)) {
+				warn("Deprecated startup file found: %\n".format(path));
+				postWarning = true;
+			}
+		};
+		if (postWarning) {
+			postln("Please use % as startup file.\nDeprecated startup files will be ignored in future versions.\n".format(defaultStartupFile));
+		}
+	}
+
 	loadStartupFiles { this.startupFiles.do{|afile|
 		afile = afile.standardizePath;
 		if(File.exists(afile), {afile.load})
@@ -111,7 +132,7 @@ Platform
 		outpath = outpath.replace( "SuperCollider", devpath );
 		^outpath;
 	}
-	
+
 	// hook for clients to write frontend.css
 	writeClientCSS {}
 
