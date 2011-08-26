@@ -55,6 +55,11 @@ static int prPlatform_userExtensionDir(struct VMGlobals *g, int numArgsPushed)
 	PATH_CONSTANT_PRIM_BODY(sc_GetUserExtensionDirectory);
 }
 
+static int prPlatform_userConfigDir(struct VMGlobals *g, int numArgsPushed)
+{
+	PATH_CONSTANT_PRIM_BODY(sc_GetUserConfigDirectory);
+}
+
 static int prPlatform_ideName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
@@ -74,6 +79,7 @@ void initPlatformPrimitives()
 	definePrimitive(base, index++, "_Platform_userAppSupportDir", prPlatform_userAppSupportDir, 1, 0);
 	definePrimitive(base, index++, "_Platform_systemExtensionDir", prPlatform_systemExtensionDir, 1, 0);
 	definePrimitive(base, index++, "_Platform_userExtensionDir", prPlatform_userExtensionDir, 1, 0);
+	definePrimitive(base, index++, "_Platform_userConfigDir", prPlatform_userConfigDir, 1, 0);
 	definePrimitive(base, index++, "_Platform_ideName", prPlatform_ideName, 1, 0);
 }
 

@@ -47,6 +47,9 @@ system application support directory
 method:: userAppSupportDir
 user application support directory
 
+method:: userConfigDir
+directory for configuration files
+
 method:: systemExtensionDir
 system extension directory (see link::Guides/Using-Extensions::)
 
@@ -84,6 +87,9 @@ system application support directory
 
 method:: userAppSupportDir
 user application support directory
+
+method:: userConfigDir
+directory for configuration files
 
 method:: systemExtensionDir
 system extension directory (see link::Guides/Using-Extensions::)
