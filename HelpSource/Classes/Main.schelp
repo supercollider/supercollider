@@ -6,11 +6,11 @@ related:: Classes/StartUp
 description::
 
 Main is the concrete instance of link::Classes/Process:: (the runtime environment for the virtual machine and interpreter).
-Main overrides some methods of Process. There are two methods of interest. One is named startup and is 
+Main overrides some methods of Process. There are two methods of interest. One is named startup and is
 called after the class library has been compiled. The other is called shutdown which gets called when the library gets re-compiled.
 
 method:: thisProcess
-The singleton instance of Main is available through the special keyword thisProcess. 
+The singleton instance of Main is available through the special keyword thisProcess.
 For example, to find out what platform you're on:
 
 code::
@@ -53,7 +53,7 @@ This calls the superclass' startup, which among other things initializes the lin
 
 Main's startup then stores Server.default in the interpreter variable s, sets the platform default's link::Classes/GUI:: kit, initializes the link::Classes/GeneralHID:: system, calls a link::Classes/Platform:: specific startup method (for example OSXPlatform's startup opens the server windows), and finally invokes StartUp.run.
 
-To add your own startup functionalities, you could either edit the special startup-file ( discussed in link::Guides/Using-the-Startup-File:: ), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
+To add your own startup functionalities, you could either edit the special startup-file (discussed in link::Overviews/StartupFile::), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
 
 method::shutdown
 
@@ -96,10 +96,10 @@ code::
 // post all incoming traffic except the server status messages
 // basically the same as OSCFunc.trace
 (
-f = { |time, replyAddr, msg| 
+f = { |time, replyAddr, msg|
 	if(msg[0] != '/status.reply') {
 		"At time %s received message % from %\n".postf( time, msg, replyAddr )
-	}  
+	}
 };
 thisProcess.addOSCFunc(f);
 );
