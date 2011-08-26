@@ -29,42 +29,36 @@ Primitives for platform dependent directories, constants etc.
 
 #define PATH_CONSTANT_PRIM_BODY(func) \
 	PyrSlot *a = g->sp; \
-	char* path = (char*)malloc(PATH_MAX); \
+	char path[PATH_MAX]; \
 	func(path, PATH_MAX); \
-	PyrString* string = newPyrString(g->gc, path, 0, false); \
+	PyrString* string = newPyrString(g->gc, path, 0, true); \
 	SetObject(a, string); \
-	free(path); \
 	return errNone
 
-int prPlatform_systemAppSupportDir(struct VMGlobals *g, int numArgsPushed);
-int prPlatform_systemAppSupportDir(struct VMGlobals *g, int numArgsPushed)
+static int prPlatform_systemAppSupportDir(struct VMGlobals *g, int numArgsPushed)
 {
 	PATH_CONSTANT_PRIM_BODY(sc_GetSystemAppSupportDirectory);
 }
 
-int prPlatform_userAppSupportDir(struct VMGlobals *g, int numArgsPushed);
-int prPlatform_userAppSupportDir(struct VMGlobals *g, int numArgsPushed)
+static int prPlatform_userAppSupportDir(struct VMGlobals *g, int numArgsPushed)
 {
 	PATH_CONSTANT_PRIM_BODY(sc_GetUserAppSupportDirectory);
 }
 
-int prPlatform_systemExtensionDir(struct VMGlobals *g, int numArgsPushed);
-int prPlatform_systemExtensionDir(struct VMGlobals *g, int numArgsPushed)
+static int prPlatform_systemExtensionDir(struct VMGlobals *g, int numArgsPushed)
 {
 	PATH_CONSTANT_PRIM_BODY(sc_GetSystemExtensionDirectory);
 }
 
-int prPlatform_userExtensionDir(struct VMGlobals *g, int numArgsPushed);
-int prPlatform_userExtensionDir(struct VMGlobals *g, int numArgsPushed)
+static int prPlatform_userExtensionDir(struct VMGlobals *g, int numArgsPushed)
 {
 	PATH_CONSTANT_PRIM_BODY(sc_GetUserExtensionDirectory);
 }
 
-int prPlatform_ideName(struct VMGlobals *g, int numArgsPushed);
-int prPlatform_ideName(struct VMGlobals *g, int numArgsPushed)
+static int prPlatform_ideName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* string = newPyrString(g->gc, gIdeName, 0, false);
+	PyrString* string = newPyrString(g->gc, gIdeName, 0, true);
 	SetObject(a, string);
 	return errNone;
 }
