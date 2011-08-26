@@ -26,6 +26,7 @@
 #include "SC_LanguageClient.h"
 #include "SC_LibraryConfig.h"
 #include <cstring>
+#include <string>
 #include <cerrno>
 
 #ifdef SC_WIN32
@@ -123,25 +124,32 @@ bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* file
 
 bool SC_LanguageClient::readDefaultLibraryConfig()
 {
-#ifndef SC_WIN32
-	const char* paths[3] = { ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg" };
+	char config_dir[PATH_MAX];
+	sc_GetUserConfigDirectory(config_dir, PATH_MAX);
+	std::string config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang.cfg";
 
-	char opath[PATH_MAX];
-
-	for (int i=0; i < 3; i++) {
+	// skip deprecated config files
+	const char* paths[2] = { ".sclang.cfg", "~/.sclang.cfg"};
+	for (int i=0; i < 2; i++) {
 		const char * ipath = paths[i];
+		char opath[PATH_MAX];
 		if (sc_StandardizePath(ipath, opath)) {
-			bool success = readLibraryConfig(opath, ipath);
-			if (success) return true;
+			FILE * fp = fopen(opath, "r");
+			if (fp) {
+				fclose(fp);
+				postfl("skipping deprecated config file: %s\n"
+					   "please use %s instead\n", opath, config_file.c_str());
+			}
 		}
 	}
 
+	if (readLibraryConfig(config_file.c_str()))
+		return true;
+
+	if (readLibraryConfig("/etc/sclang.cfg"))
+		return true;
+
 	return false;
-#else
-// $$$todo rewrite for win32 (home folder ?)
-  //assert(0);
-  return false;
-#endif
 }
 
 void SC_LanguageClient::compileLibrary()
