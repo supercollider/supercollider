@@ -91,6 +91,19 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 {
 	// start virtual machine
 	if (!mRunning) {
+#ifdef __linux__
+		char deprecatedSupportDirectory[PATH_MAX];
+		sc_GetUserHomeDirectory(deprecatedSupportDirectory, PATH_MAX);
+		sc_AppendToPath(deprecatedSupportDirectory, "share/SuperCollider");
+
+		if (sc_DirectoryExists(deprecatedSupportDirectory)) {
+			char supportDirectory[PATH_MAX];
+			sc_GetUserAppSupportDirectory(supportDirectory, PATH_MAX);
+			postfl("deprecated support directory detected: %s\n"
+				"new location: %s\n", deprecatedSupportDirectory, supportDirectory);
+		}
+#endif
+
 		mRunning = true;
 		if (opt.mRuntimeDir) {
 			int err = chdir(opt.mRuntimeDir);
