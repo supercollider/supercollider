@@ -1,7 +1,11 @@
 LinuxPlatform : UnixPlatform
 {
 	name { ^\linux }
-	startupFiles { ^#["~/.sclang.sc"] }
+	startupFiles {
+		var deprecated = #["~/.sclang.sc"];
+		Platform.deprecatedStartupFiles(deprecated);
+		^(deprecated ++ super.startupFiles)
+	}
 	startup {
 
 		helpDir = this.systemAppSupportDir++"/Help";

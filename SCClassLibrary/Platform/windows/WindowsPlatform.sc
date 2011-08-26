@@ -1,7 +1,12 @@
 WindowsPlatform : Platform
 {
 	name { ^\windows }
-	startupFiles { ^["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath] }
+	startupFiles {
+		var deprecated = ["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath];
+		Platform.deprecatedStartupFiles(deprecated);
+		^(deprecated ++ super.startupFiles)
+	}
+
 	startup {
 		// Server setup
 		Server.program = "scsynth.exe";
