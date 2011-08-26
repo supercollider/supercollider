@@ -211,12 +211,12 @@ editor out of emacs/vim/gedit. see the README files in `linux/*' for
 installation and usage. as an alternative you can simply run the
 `sclang' executable which will provide a readline-based interface.
 
-sclang executes the startup file `~/.sclang.sc' after class library
+sclang executes the startup file `~/.config/SuperCollider/startup.scd' after class library
 initialization. this file can contain statements to set up your
 supercollider environment, like setting default variables. an example can
 be found in `linux/examples/sclang.sc'.
 
-you _have_ to have a directory `~/share/SuperCollider/'. This is where
+you _have_ to have a directory `~/.local/share/SuperCollider/'. This is where
 automatically a synthdefs directory is created. It is also the place
 to put Extensions to the class library, in a folder called Extensions.
 
@@ -226,7 +226,7 @@ path specified with the `-d' option.
 for advanced setups, sclang's compilation search path can be
 customized with a library configuration file. an example is provided
 in `linux/examples/sclang.cfg'; install it as `/etc/sclang.cfg' or
-`~/.sclang.cfg'. This config file is only needed when you want to
+`~/.config/SuperCollider/sclang.cfg'. This config file is only needed when you want to
 _exclude_ directories from the class library. Otherwise (so in most cases)
 it is not needed.
 
