@@ -360,6 +360,9 @@ SCDocHTMLRenderer : SCDocRenderer {
             'teletype', {
                 file.write("<tt>"++this.escapeSpecialChars(node.text)++"</tt>");
             },
+            'pre', {
+                file.write("<pre>"++this.escapeSpecialChars(node.text)++"</pre>");
+            },
             'strong', {
                 file.write("<strong>"++this.escapeSpecialChars(node.text)++"</strong>");
             },

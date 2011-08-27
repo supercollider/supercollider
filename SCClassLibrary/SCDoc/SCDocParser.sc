@@ -124,7 +124,7 @@ SCDocParser {
         };
 
         // modal tags ignore all other tags until their closing tag occurs.
-        // here we check if we are in a modal tag (code, emphasis, link, teletype) and then
+        // here we check if we are in a modal tag (code, emphasis, link, teletype, pre) and then
         // if we got the closing tag.
         if(modalTag.notNil, {
             //only allow modal block tags to be closed with the closing tag as the first word on a line
@@ -184,6 +184,7 @@ SCDocParser {
                 'formula::',            modalRangeTag,
                 'emphasis::',           modalRangeTag,
                 'teletype::',           modalRangeTag,
+                'pre::',                modalRangeTag,
                 'strong::',             modalRangeTag,
                 'link::',               modalRangeTag,
                 'anchor::',             modalRangeTag,
