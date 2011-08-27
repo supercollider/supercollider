@@ -1,0 +1,55 @@
+title:: Using Extensions
+summary:: Using Extensions
+categories:: Internals
+related:: Guides/WritingUGens, Guides/Quarks, Guides/WritingClasses
+
+SC supports extensions to its class library, documentation, and server UGen plugins. Extensions should be packaged as a
+single folder containing all three (for convenient addition or removal), or any combination, which can then be placed in
+platform-specific extension directories in order to be included.
+
+
+
+section:: Platform Specific Directories
+
+You can install extensions simply by copying the extensions to the following location. There are different directories
+for per-user and system-wide extensions that apply to all users.. The locations can be obtained by running
+code::Platform.userExtensionDir:: and code::Platform.systemExtensionDir::.
+
+Typical user-specific extensions directories:
+table::
+## OSX     || ~/Library/Application Support/SuperCollider/Extensions/
+## Linux   || ~/.local/share/SuperCollider/Extensions/
+::
+
+Typical system-wide extension directories:
+table::
+## OSX     || /Library/Application Support/SuperCollider/Extensions/
+## Linux   || /usr/share/SuperCollider/Extensions/
+::
+
+section:: How Extensions Folders Should be Organised
+
+warning::The following section describes the old OSX-based extension directory layout. This is subject to change.::
+
+Class files and UGen plugins are recognised by their file extensions. Anything placed within a folder named help/ or
+ignore/ (case insensitive) will be ignored when compiling the class library or loading plugins, but anything in the
+former will be added to the search path for help files.
+
+Here is an example folder layout:
+
+tree::
+## teletype::MyExtension::
+    tree::
+    ## teletype::classes::
+    tree::
+        ## teletype::myClass.sc myUGens.sc::
+        ::
+    ## teletype::plugins::
+    tree::
+        ## teletype::myUGenPlugins.scx::
+        ::
+    ## teletype::help::
+    tree::
+        ## teletype::myClass.html myUGen1.html myUGen2.html::
+        ::
+::
