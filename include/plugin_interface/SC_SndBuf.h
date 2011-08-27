@@ -22,19 +22,12 @@
 #define _SndBuf_
 
 #include <sys/types.h>
-#ifndef NO_LIBSNDFILE
-	#ifdef _WIN32
-		#include <sndfile-win.h>
-	#else
-		#include <sndfile.h>
-	#endif
-#else
-	#include "SC_sndfile_stub.h"
-#endif
 
 #ifdef SUPERNOVA
 #include "nova-tt/rw_spinlock.hpp"
 #endif
+
+typedef struct SNDFILE_tag SNDFILE;
 
 struct SndBuf
 {
