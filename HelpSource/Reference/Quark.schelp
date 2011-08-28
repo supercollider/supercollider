@@ -1,7 +1,7 @@
 title:: Quark
 summary:: Quark file format
-categories:: Guides
-related:: Guides/Quarks
+categories:: Quarks
+related:: Guides/Quarks, Classes/Quark
 
 A Quark is a package of SC classes, helpfiles, C++ source for UGens and other SC code. A Quark object is created from
 the quark file found in {Application Support}/quarks/DIRECTORY. These Quark objects are mostly used just by the Quarks

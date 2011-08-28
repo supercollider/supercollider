@@ -1,7 +1,7 @@
 title:: Quarks
 summary:: Quarks package manager
-categories:: Guides
-related:: Reference/Quark
+categories:: Quarks
+related:: Reference/Quark, Classes/Quarks
 
 SC supports extensions to its class library, documentation, and server UGen plugins. These extensions are stored in
 subfolders of code::Platform.userExtensionDir::. For more info see link::Guides/UsingExtensions:.
