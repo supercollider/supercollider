@@ -31,6 +31,12 @@
 #import "SCTextView.h"
 #import "SCVirtualMachine.h"
 
+#ifndef NO_LIBSNDFILE
+#include <sndfile.h>
+#else
+#include "SC_sndfile_stub.h"
+#endif
+
 //jan t
 struct SCSoundFileSelection {
 		bool startIsEditable;
