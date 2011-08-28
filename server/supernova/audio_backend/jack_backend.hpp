@@ -265,14 +265,11 @@ private:
 
         jack_nframes_t processed = 0;
         while (processed != frames) {
-            fetch_inputs(inputs, frames);
+            fetch_inputs(inputs, blocksize_);
 
             engine_functor::run_tick();
 
-            for (uint16_t i = 0; i != output_channels; ++i) {
-                copyvec(outputs[i], super::output_samples[i].get(), frames);
-                outputs[i] += blocksize_;
-            }
+            deliver_outputs(outputs, blocksize_);
 
             processed += blocksize_;
         }
