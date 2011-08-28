@@ -358,10 +358,11 @@ SCDocHTMLRenderer : SCDocRenderer {
                 file.write("<em>"++this.escapeSpecialChars(node.text)++"</em>");
             },
             'teletype', {
-                file.write("<tt>"++this.escapeSpecialChars(node.text)++"</tt>");
-            },
-            'pre', {
-                file.write("<pre>"++this.escapeSpecialChars(node.text)++"</pre>");
+                if(node.display == \block, {
+                    file.write("<pre>"++this.escapeSpecialChars(node.text)++"</pre>");
+                }, {
+                    file.write("<code>"++this.escapeSpecialChars(node.text)++"</code>");
+                });
             },
             'strong', {
                 file.write("<strong>"++this.escapeSpecialChars(node.text)++"</strong>");

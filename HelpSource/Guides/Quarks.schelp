@@ -219,7 +219,7 @@ Once you're authorised:
 
 In a shell go to {Application Support}/quarks/ and execute:
 
-pre::
+teletype::
 svn add quarkname
 
 svn add DIRECTORY/quarkname.quark
