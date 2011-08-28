@@ -384,9 +384,9 @@ a.someMethodThatDoesNotExist
 
 section:: Tricks and Traps
 
-definitionList:: 
+definitionList::
 
-## "Superclass not found..." 
+## "Superclass not found..."
 
 || In one given code file, you can only put classes that inherit from each Object, each other, and one external class.
 In other words, you can't inherit from two separate classes that are defined in separate files.

@@ -112,7 +112,6 @@ link            V                            x        x
 anchor          V                            x        x
 emphasis        V                            x        x
 teletype        V                            x        x
-pre             V                            x        x
 strong          V                            x        x
 soft            V                            x        x
 image           V                            x        x
@@ -241,7 +240,6 @@ emphasis::
 strong::
 soft::
 teletype::
-pre::
 ::
 All of above are closed with \::
 If they are used as block tags, the closing \:: must be written as a single word on its own line.

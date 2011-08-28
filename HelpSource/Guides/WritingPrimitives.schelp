@@ -18,7 +18,7 @@ section:: Primitive source code
 
 In your primitive source code define the primitive:
 
-pre::
+teletype::
 void initCocoaFilePrimitives()
 {
     int base, index;
@@ -35,7 +35,7 @@ void initCocoaFilePrimitives()
 
 Here is the prototype for definePrimitive:
 
-pre::
+teletype::
 int definePrimitive(int base, int index, char *name, PrimitiveHandler handler, int numArgs, int varArgs);
 ::
 
@@ -51,7 +51,7 @@ teletype::g->sp - inNumArgsPushed + 1 :: is the receiver and where the result go
 
 In this example, the numArgsPushed will be 2 (as specified in definePrimitive)
 
-pre::
+teletype::
 int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 {
     if (!g->canCallOS) return errCantCallOS; //if its deferred, does this matter ?
@@ -97,6 +97,6 @@ assume that the receiver will be of the correct type because this is ensured by 
 section:: FAQ
 
 definitionList::
-## Now where do i put the thing to return it ?
-|| into teletype::g->sp - inNumArgsPushed + 1::. In most primitives this is referred to by the variable teletype::a::.
+## Now where do i put the thing to return it?
+|| into teletype::g->sp - inNumArgsPushed + 1 :: (In most primitives this is referred to by the variable teletype::a::).
 ::
