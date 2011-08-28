@@ -1,6 +1,6 @@
 title:: Writing Classes
 summary:: Writing SuperCollider Classes
-categories:: Language
+categories:: Language>OOP
 related:: Reference/Classes
 
 For a basic tutorial on how standard object-orientated classes are composed, look elsewhere
