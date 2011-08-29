@@ -1,6 +1,5 @@
 ServerOptions
 {
-
 	var <>numAudioBusChannels=128;
 	var <>numControlBusChannels=4096;
 	var <>numInputBusChannels=8;
@@ -37,6 +36,7 @@ ServerOptions
 	var <>remoteControlVolume = false;
 
 	var <>memoryLocking = false;
+	var <>threads = nil; // for supernova
 
 	device
 	{
@@ -143,6 +143,11 @@ ServerOptions
 		});
 		if (memoryLocking, {
 			o = o ++ " -L";
+		});
+		if (threads.notNil, {
+			if (Server.program.asString.endsWith("supernova")) {
+				o = o ++ " -T " ++ threads;
+			}
 		});
 		^o
 	}
