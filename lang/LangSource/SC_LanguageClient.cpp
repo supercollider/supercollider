@@ -99,8 +99,10 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 		if (sc_DirectoryExists(deprecatedSupportDirectory)) {
 			char supportDirectory[PATH_MAX];
 			sc_GetUserAppSupportDirectory(supportDirectory, PATH_MAX);
-			postfl("deprecated support directory detected: %s\n"
-				"new location: %s\n", deprecatedSupportDirectory, supportDirectory);
+			postfl("WARNING: Deprecated support directory detected: %s\n"
+				"Extensions and other contents in this directory will not be available until you move them to the new support directory:\n"
+				"%s\n"
+				"Quarks will need to be reinstalled due to broken symbolic links.\n\n", deprecatedSupportDirectory, supportDirectory);
 		}
 #endif
 
