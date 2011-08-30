@@ -2342,8 +2342,10 @@ PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool collect)
 	PyrObject* array;
 
 	int numbytes = size * sizeof(PyrSlot);
-	if (!gc) array = (PyrObject*)PyrGC::NewPermanent(numbytes, flags, obj_slot);
-	else array = (PyrObject*)gc->New(numbytes, flags, obj_slot, collect);
+	if (!gc)
+		array = PyrGC::NewPermanent(numbytes, flags, obj_slot);
+	else
+		array = gc->New(numbytes, flags, obj_slot, collect);
 	array->classptr = class_array;
 	return array;
 }
