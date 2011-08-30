@@ -125,7 +125,9 @@ struct PyrThread : public PyrObjectHdr
 
 
 struct PyrMethodRaw {
-
+#ifdef _PYRSLOTGENERIC_H_
+	int padding; // used for the tag in 64bit sclang
+#endif
 	unsigned short unused1;
 	unsigned short specialIndex;
 	unsigned short methType;
