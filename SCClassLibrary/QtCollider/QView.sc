@@ -533,7 +533,7 @@ QView : QObject {
   }
 
   mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
-    // WARNING: QDragView overrides this method!
+    // WARNING: QDragView and QListView override this method!
 
     if( (modifiers & QKeyModifiers.control) > 0 ) { // if Ctrl / Cmd mod
       // Try to get drag obj and start a drag.
@@ -598,6 +598,9 @@ QView : QObject {
     if( receiveDragHandler.notNil )
       { this.receiveDragHandler.value( this, x, y ) }
       { this.tryPerform( \defaultReceiveDrag, x, y ) };
+    // Never propagate the event.
+    // If we got to this point it should be accepted and consumed by SC.
+    ^true
   }
 
   prMapToGlobal { arg point, retPoint;
