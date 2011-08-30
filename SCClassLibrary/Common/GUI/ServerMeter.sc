@@ -227,7 +227,13 @@ ServerMeter{
 							false);
 		window.view.background = Color.grey(0.4);
 
-		meterView = ServerMeterView(server,window,0@0,numIns,numOuts);
+		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
+		meterView.view.keyDownAction_({ arg view, char, modifiers;
+			if(modifiers & 16515072 == 0) {
+				case
+				{char === 27.asAscii } { window.close };
+			};
+		});
 
 		window.front;
 
