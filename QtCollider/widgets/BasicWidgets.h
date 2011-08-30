@@ -77,9 +77,7 @@ class QcListWidget : public QListWidget, public QcHelper
     void onCurrentItemChanged();
   private:
     void keyPressEvent( QKeyEvent * );
-    bool eventFilter( QObject *, QEvent * );
 
-    int _indexOnPress;
     bool _emitAction;
 };
 
