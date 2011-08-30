@@ -245,10 +245,10 @@ public:
 
     void register_prototype(synth_prototype_ptr const & prototype);
 
-    float cpu_load(void) const
+    void cpu_load(float & peak, float & average) const
     {
 #ifdef JACK_BACKEND
-        return get_cpuload();
+        return get_cpuload(peak, average);
 #else
         return 0.f;
 #endif

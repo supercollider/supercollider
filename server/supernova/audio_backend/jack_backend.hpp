@@ -33,7 +33,7 @@
 #include "utilities/branch_hints.hpp"
 
 #include "audio_backend_common.hpp"
-#include <utilities/time_tag.hpp>
+#include "cpu_time_info.hpp"
 
 namespace nova
 {
@@ -154,12 +154,9 @@ public:
         is_active = false;
     }
 
-    float get_cpuload(void) const
+    void get_cpuload(float & peak, float & average) const
     {
-        if (likely(client))
-            return jack_cpu_load(client);
-        else
-            return 0.f;
+        cpu_time_accumulator.get(peak, average);
     }
 
     int connect_input(int channel, const char * portname)
@@ -274,6 +271,8 @@ private:
             processed += blocksize_;
         }
 
+        cpu_time_accumulator.update(jack_cpu_load(client));
+
         return 0;
     }
 
@@ -346,6 +345,7 @@ private:
 
     std::vector<jack_port_t*> input_ports, output_ports;
     jack_nframes_t jack_frames;
+    cpu_time_info cpu_time_accumulator;
 };
 
 } /* namespace nova */

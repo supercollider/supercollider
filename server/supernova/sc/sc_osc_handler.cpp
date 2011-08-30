@@ -770,17 +770,21 @@ void status_perform(nova_endpoint const & endpoint)
 
     char buffer[1024];
     typedef osc::int32 i32;
+
+    float peak_load, average_load;
+    instance->cpu_load(peak_load, average_load);
+
     osc::OutboundPacketStream p(buffer, 1024);
     p << osc::BeginMessage("/status.reply")
-      << (i32)1                                    /* unused */
-      << (i32)sc_factory->ugen_count()   /* ugens */
-      << (i32)instance->synth_count()     /* synths */
-      << (i32)instance->group_count()     /* groups */
-      << (i32)instance->prototype_count() /* synthdefs */
-      << instance->cpu_load()                 /* average cpu % */
-      << instance->cpu_load()                 /* peak cpu % */
-      << instance->get_samplerate()           /* nominal samplerate */
-      << instance->get_samplerate()           /* actual samplerate */
+      << (i32)1                                 /* unused */
+      << (i32)sc_factory->ugen_count()          /* ugens */
+      << (i32)instance->synth_count()           /* synths */
+      << (i32)instance->group_count()           /* groups */
+      << (i32)instance->prototype_count()       /* synthdefs */
+      << average_load                           /* average cpu % */
+      << peak_load                              /* peak cpu % */
+      << instance->get_samplerate()             /* nominal samplerate */
+      << instance->get_samplerate()             /* actual samplerate */
       << osc::EndMessage;
 
     instance->send(p.Data(), p.Size(), endpoint);
