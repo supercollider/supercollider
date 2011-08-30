@@ -49,7 +49,6 @@ QcListWidget::QcListWidget() : _emitAction(true)
 {
   connect( this, SIGNAL( currentItemChanged( QListWidgetItem*, QListWidgetItem* ) ),
            this, SLOT( onCurrentItemChanged() ) );
-  viewport()->installEventFilter( this );
 }
 
 void QcListWidget::setItems( const VariantList & items )
@@ -91,21 +90,6 @@ void QcListWidget::keyPressEvent( QKeyEvent *e )
   QListWidget::keyPressEvent( e );
   if( e->key() == Qt::Key_Return )
     Q_EMIT( returnPressed() );
-}
-
-bool QcListWidget::eventFilter( QObject *o, QEvent *e )
-{
-  if( o == viewport() ) {
-    if( e->type() == QEvent::MouseButtonPress ) {
-      _emitAction = false;
-      _indexOnPress = currentRow();
-    }
-    else if( e->type() == QEvent::MouseButtonRelease ) {
-      _emitAction = true;
-      if( currentRow() != _indexOnPress ) Q_EMIT( action() );
-    }
-  }
-  return QListWidget::eventFilter( o, e );
 }
 
 ////////////////////////// QcPopUpMenu /////////////////////////////////////////
