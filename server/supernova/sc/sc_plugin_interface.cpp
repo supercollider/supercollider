@@ -711,16 +711,25 @@ inline void sndbuf_copy(SndBuf * dest, const SndBuf * src)
     dest->sndfile = src->sndfile;
 }
 
-void read_channel(SndfileHandle & sf, uint32_t channel_count, const uint32_t * channel_data,
-                  uint32 frames, sample * data)
+static inline size_t compute_remaining_samples(size_t frames_per_read, size_t i, size_t frames)
+{
+    int remain = frames_per_read;
+    int already_read = i * frames_per_read;
+    if (already_read + frames_per_read > frames)
+        remain = frames - already_read;
+    return remain;
+}
+
+void read_channel(SndfileHandle & sf, uint32_t channel_count, const uint32_t * channel_data, uint32 total_frames, sample * data)
 {
     const unsigned int frames_per_read = 1024;
     sized_array<sample> read_frame(sf.channels() * frames_per_read);
 
     if (channel_count == 1) {
         // fast-path for single-channel read
-        for (size_t i = 0; i < frames; i += frames_per_read) {
-            size_t read = sf.readf(read_frame.c_array(), frames_per_read);
+        for (size_t i = 0; i < total_frames; i += frames_per_read) {
+            int remaining_samples = compute_remaining_samples(frames_per_read, i, total_frames);
+            size_t read = sf.readf(read_frame.c_array(), remaining_samples);
 
             size_t channel_mapping = channel_data[0];
             for (size_t frame = 0; frame != read; ++frame) {
@@ -729,8 +738,9 @@ void read_channel(SndfileHandle & sf, uint32_t channel_count, const uint32_t * c
             }
         }
     } else {
-        for (size_t i = 0; i < frames; i += frames_per_read) {
-            size_t read = sf.readf(read_frame.c_array(), frames_per_read);
+        for (size_t i = 0; i < total_frames; i += frames_per_read) {
+            int remaining_samples = compute_remaining_samples(frames_per_read, i, total_frames);
+            size_t read = sf.readf(read_frame.c_array(), remaining_samples);
 
             for (size_t frame = 0; frame != read; ++frame) {
                 for (size_t c = 0; c != channel_count; ++c) {
