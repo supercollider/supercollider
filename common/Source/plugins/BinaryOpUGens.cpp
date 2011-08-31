@@ -2020,7 +2020,7 @@ void div_ai_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = ZIN0(1);
 
-	nova::times_vec_simd(OUT(0), IN(0), xb, inNumSamples);
+	nova::times_vec_simd(OUT(0), IN(0), 1.f/xb, inNumSamples);
 	unit->mPrevB = xb;
 }
 
