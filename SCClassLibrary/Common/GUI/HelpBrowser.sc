@@ -136,7 +136,7 @@ HelpBrowser {
 
 		openNewWin = aNewWin;
 		x = x + w + 10;
-		if(GUI.scheme==QtGUI) {
+		if(GUI.scheme.name == 'QtGUI') {
 			str = "Open links in new window";
 			w = str.bounds.width + 50;
 			QCheckBox.new (window, Rect(x, y, w, h) )
