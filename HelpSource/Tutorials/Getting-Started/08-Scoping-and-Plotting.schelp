@@ -19,7 +19,9 @@ code::
 	
 This can be useful to check what's happening, and if you're getting the output you think you're getting.
 
-The second method, Function-scope, shows an oscilloscope-like display of the Function's output. This only works with what is called the internal server, so you'll need to boot that before it will work. You can do this using the internal server window
+The second method, Function-scope, shows an oscilloscope-like display of the Function's output. Scoping works a little bit differently depending on the operating system and GUI framework that you're using. So far you have been using the local server. When you want to use the oscilloscope, the local server is okay for Windows, but in Mac/Linux environments, you will have to use the "internal" server for scope.
+
+If you need to use the internal server, you'll need to boot it before it will work. You can do this using the internal server window
 
 image::Scoping-and-Plotting00.png::
 
@@ -29,7 +31,7 @@ code::
 Server.internal.boot;
 ::
 	
-BTW, clicking on the '-> default' button on the localhost or internal server's window sets that server to be the default, and stores it in the variable 's'. Thereafter, that will be the server on which all audio is played, unless you specify another one. Since Function-scope only works with the internal server, however, it will always play on it.
+Then click on the '-> default' button on the internal server's window to set that server to be the default, and store it in the variable 's'. Thereafter, that will be the server on which all audio is played, unless you specify another one. Since Function-scope only works with the internal server, however, we want the audio play there!
 
 So let's try to scope some audio:
 
