@@ -14,6 +14,7 @@ number of channels
 
 argument:: bufnum
 buffer number
+Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
 
 argument:: rate
 controls the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.

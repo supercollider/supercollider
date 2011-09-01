@@ -16,10 +16,11 @@ method::ar
 argument::bufnum
 The number of the buffer to write to (prepared with /b-write or
 Buffer.write)
+Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
 
 argument::channelsArray
 The Array of channels to write to the file.
-Note:: the number of channels in the buffer and the channelsArray must be the same, otherwise DiskOut will fail silently (and not write anything to your file). ::
+Note:: The number of channels in the buffer and the channelsArray must be the same, otherwise DiskOut will fail silently (and not write anything to your file). ::
 
 returns:: The number of frames written to disk.
 

@@ -15,10 +15,11 @@ private:: categories
 method::ar
 
 argument::numChannels
-Number of channels
+Number of channels. This must match the number of channels in the buffer.
 
 argument::bufnum
 Buffer number
+Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
 
 argument:: loop
 If set to 1, the soundfile will loop.
