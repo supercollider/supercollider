@@ -30,13 +30,22 @@ SCDocHTMLRenderer : SCDocRenderer {
     }
 
     findHelpFile {|str|
-        var path = "Help.html";
+        var path = "Help.html", old;
         if(str.notNil and: {str.notEmpty}) {
             path = if(str[0].isUpper) {
-                if(str.asSymbol.asClass.notNil)
-                    {"Classes" +/+ str ++ ".html"}
-                    {"Search.html#" ++ str};
-            } {"Overviews/Methods.html#" ++ str};
+                if(str.asSymbol.asClass.notNil) {
+                        if(SCDoc.docMap["Classes"+/+str].categories.find("Undocumented").notNil) {
+                            old = Help.findHelpFile(str);
+                            old !? { "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html" }
+                        } ?? {
+                            "Classes" +/+ str ++ ".html"
+                        }
+                } {
+                    "Search.html#" ++ str
+                };
+            } {
+                "Overviews/Methods.html#" ++ str
+            };
         };
         ^ "file://" ++ SCDoc.helpTargetDir +/+ path;
     }
@@ -557,6 +566,7 @@ SCDocHTMLRenderer : SCDocRenderer {
     renderHTMLHeader {|f,name,type,subtarget,toc=true|
         var x, cats, m, z;
         var folder = subtarget.dirname;
+        var undocumented = false;
         f.write("<html><head><title>"++name++"</title>");
         f.write("<link rel='stylesheet' href='"++baseDir++"/scdoc.css' type='text/css' />");
         f.write("<link rel='stylesheet' href='"++baseDir++"/frontend.css' type='text/css' />");
@@ -582,6 +592,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         f.write("</div>");
         x = parser.findNode(\categories);
         if(x.text.notEmpty, {
+            undocumented = x.text.find("Undocumented").notNil;
             f.write("<div id='categories'>");
             f.write(SCDoc.splitList(x.text).collect {|r|
                 "<a href='"++baseDir +/+ "Browse.html#"++r++"'>"++r++"</a>"
@@ -645,10 +656,14 @@ SCDocHTMLRenderer : SCDocRenderer {
         });
 
         // FIXME: Remove this when conversion to new help system is done!
-        if((type==\class) and: {currentClass.notNil}, {
-            x = Help.findHelpFile(currentClass.name.asString);
-            x !? { f.write("[ <a href='"++x++"'>old help</a> ]") };
-        });
+        if(undocumented) {
+            x = Help.findHelpFile(name);
+            x !? {
+                f.write("[ <a href='" ++ baseDir ++ "/OldHelpWrapper.html#"
+                ++x++"?"++SCDoc.helpTargetDir +/+ subtarget ++ ".html"
+                ++"'>old help</a> ]")
+            };
+        };
 
         f.write("</div>");
         if(toc, {this.renderTOC(f,name)});
