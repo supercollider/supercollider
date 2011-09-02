@@ -75,12 +75,16 @@ public:
     }
 
 public:
-    void open_client(std::string const & name, uint32_t input_port_count, uint32_t output_port_count, uint32_t blocksize)
+    void open_client(std::string const & server_name, std::string const & name, uint32_t input_port_count,
+                     uint32_t output_port_count, uint32_t blocksize)
     {
         blocksize_ = blocksize;
 
         /* open client */
-        client = jack_client_open(name.c_str(), JackNoStartServer, &status);
+        client = server_name.empty() ? jack_client_open(name.c_str(), JackNoStartServer, &status)
+                                     : jack_client_open(name.c_str(), jack_options_t(JackNoStartServer | JackServerName),
+                                                        &status, server_name.c_str());
+
         if (status & JackServerFailed)
             throw std::runtime_error("Unable to connect to JACK server");
 
