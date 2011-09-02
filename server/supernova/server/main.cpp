@@ -93,9 +93,31 @@ void connect_jack_ports(void)
     }
 }
 
+void get_jack_names(server_arguments const & args, string & server_name, string & client_name)
+{
+    client_name = "supernova";
+
+    if (!args.hw_name.empty()) {
+        vector<string> names;
+        boost::split(names, args.hw_name, boost::algorithm::is_any_of(":"));
+
+        if (names.size() == 1) {
+            server_name = names[0];
+        } else if (names.size() == 2) {
+            server_name = names[0];
+            client_name = names[1];
+        } else {
+            cout << "Error: cannot parse hardware device name. Using defaults." << endl;
+        }
+    }
+}
+
 void start_audio_backend(server_arguments const & args)
 {
-    instance->open_client("supernova", args.input_channels, args.output_channels, args.blocksize);
+    string server_name, client_name;
+    get_jack_names(args, server_name, client_name);
+
+    instance->open_client(server_name, client_name, args.input_channels, args.output_channels, args.blocksize);
     instance->prepare_backend();
     instance->activate_audio();
 
