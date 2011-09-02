@@ -711,12 +711,11 @@ inline void sndbuf_copy(SndBuf * dest, const SndBuf * src)
     dest->sndfile = src->sndfile;
 }
 
-static inline size_t compute_remaining_samples(size_t frames_per_read, size_t i, size_t frames)
+static inline size_t compute_remaining_samples(size_t frames_per_read, size_t already_read, size_t total_frames)
 {
     int remain = frames_per_read;
-    int already_read = i * frames_per_read;
-    if (already_read + frames_per_read > frames)
-        remain = frames - already_read;
+    if (already_read + frames_per_read > total_frames)
+        remain = total_frames - already_read;
     return remain;
 }
 
