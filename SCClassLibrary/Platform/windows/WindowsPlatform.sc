@@ -32,4 +32,10 @@ WindowsPlatform : Platform
 	killAll { |cmdLineArgs|
 		("taskkill /F /IM " ++ cmdLineArgs).unixCmd;
 	}
+
+	defaultTempDir {
+		// +/+ "" looks funny but ensures trailing slash
+		var tmp = this.userAppSupportDir +/+ "";
+		^if(File.exists(tmp)) { tmp }
+	}
 }
