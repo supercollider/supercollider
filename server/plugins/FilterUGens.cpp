@@ -3203,7 +3203,7 @@ void Resonz_Ctor(Resonz* unit)
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_rq = 0.f;
-	Resonz_next(unit, 1);
+	ZOUT0(0) = 0.f;
 }
 
 
