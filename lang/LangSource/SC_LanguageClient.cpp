@@ -59,6 +59,7 @@ extern PyrString* newPyrStringN(class PyrGC *gc, long length, long flags, long c
 // =====================================================================
 
 SC_LanguageClient* SC_LanguageClient::gInstance = 0;
+SC_Lock SC_LanguageClient::gInstanceMutex;
 
 PyrSymbol* SC_LanguageClient::s_interpretCmdLine = 0;
 PyrSymbol* SC_LanguageClient::s_interpretPrintCmdLine = 0;
@@ -72,19 +73,26 @@ SC_LanguageClient::SC_LanguageClient(const char* name)
 	  mScratch(0),
 	  mRunning(false)
 {
+	lockInstance();
+
 	if (gInstance) {
+		unlockInstance();
 		fprintf(stderr, "SC_LanguageClient already running\n");
 		abort();
 	}
 
 	mName = strdup(name);
 	gInstance = this;
+
+	unlockInstance();
 }
 
 SC_LanguageClient::~SC_LanguageClient()
 {
+	lockInstance();
 	free(mName);
 	gInstance = 0;
+	unlockInstance();
 }
 
 void SC_LanguageClient::initRuntime(const Options& opt)
@@ -365,7 +373,9 @@ int vpost(const char *fmt, va_list ap)
 	char buf[512];
 	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
 	if (n > 0) {
-		SC_LanguageClient::instance()->postText(buf, sc_min(n, sizeof(buf) - 1));
+		SC_LanguageClient *client = SC_LanguageClient::lockedInstance();
+		if (client) client->postText(buf, sc_min(n, sizeof(buf) - 1));
+		SC_LanguageClient::unlockInstance();
 	}
 	return 0;
 }
@@ -384,18 +394,24 @@ void postfl(const char *fmt, ...)
     va_start(ap, fmt);
 	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
 	if (n > 0) {
-		SC_LanguageClient::instance()->postFlush(buf, sc_min(n, sizeof(buf) - 1));
+		SC_LanguageClient *client = SC_LanguageClient::lockedInstance();
+		if (client) client->postFlush(buf, sc_min(n, sizeof(buf) - 1));
+		SC_LanguageClient::unlockInstance();
 	}
 }
 
 void postText(const char *str, long len)
 {
-	SC_LanguageClient::instance()->postFlush(str, len);
+	SC_LanguageClient *client = SC_LanguageClient::lockedInstance();
+	if (client) client->postFlush(str, len);
+	SC_LanguageClient::unlockInstance();
 }
 
 void postChar(char c)
 {
-	SC_LanguageClient::instance()->postFlush(&c, sizeof(char));
+	SC_LanguageClient *client = SC_LanguageClient::lockedInstance();
+	if (client) client->postFlush(&c, sizeof(char));
+	SC_LanguageClient::unlockInstance();
 }
 
 void error(const char *fmt, ...)
@@ -405,7 +421,9 @@ void error(const char *fmt, ...)
 	va_start(ap, fmt);
 	int n = vsnprintf(buf, sizeof(buf), fmt, ap);
 	if (n > 0) {
-		SC_LanguageClient::instance()->postError(buf, sc_min(n, sizeof(buf) - 1));
+		SC_LanguageClient *client = SC_LanguageClient::lockedInstance();
+		if (client) client->postError(buf, sc_min(n, sizeof(buf) - 1));
+		SC_LanguageClient::unlockInstance();
 	}
 }
 
