@@ -34,6 +34,9 @@ Platform
 	userExtensionDir { _Platform_userExtensionDir }
 	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
 
+	defaultTempDir { ^this.subclassResponsibility(\defaultTempDir) }
+	*defaultTempDir { ^thisProcess.platform.defaultTempDir }
+
 	// The "ideName" is for ide-dependent compilation.
 	// From SC.app, the value is "scapp" meaning "scide_scapp" folders will be compiled and other "scide_*" ignored.
 	ideName { _Platform_ideName }
@@ -129,5 +132,12 @@ UnixPlatform : Platform
 		arch = pipe.getLine;
 		pipe.close;
 		^arch.asSymbol;
+	}
+
+	defaultTempDir {
+		// +/+ "" looks funny but ensures trailing slash
+		^["/tmp/", this.userAppSupportDir +/+ ""].detect({ |path|
+			File.exists(path);
+		});
 	}
 }
