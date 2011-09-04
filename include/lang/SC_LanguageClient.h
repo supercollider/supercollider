@@ -28,6 +28,8 @@
 
 #include "SC_StringBuffer.h"
 #include "SC_Export.h"
+#include "SC_Lock.h"
+
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -67,8 +69,13 @@ public:
 	SC_LanguageClient(const char* name);
 	virtual ~SC_LanguageClient();
 
+	// singleton instance access locking
+	static void lockInstance() { gInstanceMutex.Lock(); }
+	static void unlockInstance() { gInstanceMutex.Unlock(); }
+
 	// return the singleton instance
 	static SC_LanguageClient* instance() { return gInstance; }
+	static SC_LanguageClient* lockedInstance() { lockInstance(); return gInstance; }
 
 	// initialize language runtime
 	void initRuntime(const Options& opt=Options());
@@ -160,6 +167,7 @@ private:
 	SC_StringBuffer				mScratch;
 	bool						mRunning;
 	static SC_LanguageClient*	gInstance;
+	static SC_Lock gInstanceMutex;
 };
 
 // =====================================================================
