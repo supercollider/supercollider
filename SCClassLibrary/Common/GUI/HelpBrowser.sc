@@ -111,7 +111,7 @@ HelpBrowser {
 
 		h = strh + vPad;
 		x = marg; y = marg;
-		[\Home, \Back, \Forward].do { |sym|
+		[\Back, \Forward].do { |sym|
 			var str = sym.asString;
 			var w = str.bounds.width + hPad;
 			toolbar[sym] = Button( window, Rect(x,y,w,h) ).states_([[str]]);
@@ -228,7 +228,6 @@ HelpBrowser {
 			}
 		};
 
-		toolbar[\Home].action = { this.goHome };
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
 		txtFind.action = { |x| webView.findText( x.string ); };
