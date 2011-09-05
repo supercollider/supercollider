@@ -141,6 +141,7 @@ void QcGraph::setCurves( const VariantList & curves )
       _model.elementAt(i)->setCurveType( var );
     }
   }
+  update();
 }
 
 void QcGraph::setStringAt( int i, const QString & str )
@@ -283,6 +284,112 @@ QPointF QcGraph::value( const QPointF & pos )
   return QPointF( x, y );
 }
 
+void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *e2 )
+{
+  QcGraphElement::CurveType type = e1->curveType;
+
+  const QPointF &pt1 = e1->value;
+  const QPointF &pt2 = e2->value;
+
+  // coefficients for control points of cubic curve
+  // approximating first quarter of sinusoid
+  // technically: y = sin(pi*x/2) over x = [0,1]
+  static const float ax = 1.0/3.0;
+  static const float ay = 0.52359877f; // pi/6
+  static const float bx = 2.0/3.0;
+  static const float by = 1.0;
+
+  switch( type ) {
+  case QcGraphElement::Step:
+    path.moveTo( pt1 );
+    path.lineTo( pt1.x(), pt2.y() );
+    path.lineTo( pt2 );
+    break;
+  case QcGraphElement::Linear:
+    path.moveTo( pt1 );
+    path.lineTo( pt2 );
+    break;
+  case QcGraphElement::Sine: {
+    // half of difference between end points
+    float dx = (pt2.x() - pt1.x()) * 0.5f;
+    float dy = (pt2.y() - pt1.y()) * 0.5f;
+
+    // middle point
+    QPointF mid = pt1 + QPointF( dx, dy );
+
+    path.moveTo( pt1 );
+    path.cubicTo( pt1 + QPointF( dx*(1-bx), dy*(1-by) ), pt1 + QPointF( dx*(1-ax), dy*(1-ay) ), mid );
+    path.cubicTo( mid + QPointF( dx*ax, dy*ay ), mid + QPointF( dx*bx, dy*by ), pt2 );
+
+    break;
+  }
+  case QcGraphElement::Welch: {
+    // difference between points
+    float dx = (pt2.x() - pt1.x());
+    float dy = (pt2.y() - pt1.y());
+
+    path.moveTo( pt1 );
+    if( dy > 0 )
+      path.cubicTo( pt1 + QPointF( dx*ax, dy*ay ), pt1 + QPointF( dx*bx, dy*by ), pt2 );
+    else
+      path.cubicTo( pt1 + QPointF( dx*(1-bx), dy*(1-by) ), pt1 + QPointF( dx*(1-ax), dy*(1-ay) ), pt2 );
+
+    break;
+  }
+  case QcGraphElement::Exponential: {
+
+    // FIXME: find a Bezier curve approximation
+
+    path.moveTo( pt1 );
+
+    float dx = (pt2.x() - pt1.x());
+    float dy = (pt2.y() - pt1.y());
+
+    // prevent NaN, optimize
+    if( pt1.y() <= 0.f || pt2.y() <= 0.f ) {
+      path.lineTo( dy < 0 ? QPointF(pt1.x(),pt2.y()) : QPointF(pt2.x(), pt1.y()) );
+      path.lineTo( pt2 );
+    }
+    else {
+      const float n = 100.f;
+      const float yratio = pt2.y() / pt1.y();
+      for( float ph=1/n; ph<=(1-1/n); ph+=1/n ) {
+        qreal y = pt1.y() * pow( yratio, ph );
+        path.lineTo( pt1.x() + (dx * ph), y );
+      }
+      path.lineTo( pt2 );
+    }
+
+    break;
+  }
+  case QcGraphElement::Curvature:
+
+    // FIXME: find a Bezier curve approximation
+
+    path.moveTo( pt1 );
+
+    // prevent NaN
+    double curve = qBound( -100.f, e1->curvature, 100.f );
+
+    if( abs( curve ) < 0.0001f ) {
+      path.lineTo( pt2 );
+    }
+    else {
+      float dx = (pt2.x() - pt1.x());
+      float dy = (pt2.y() - pt1.y());
+      double denom = 1.0 - exp( curve );
+      const float n = 100.f;
+      for( float ph=1/n; ph<=(1-1/n); ph+=1/n ) {
+        double numer = 1.0 - exp( ph * curve );
+        qreal y = pt1.y() + dy * (numer / denom);
+        path.lineTo( pt1.x() + (dx * ph), y );
+      }
+      path.lineTo( pt2 );
+    }
+    break;
+  }
+}
+
 void QcGraph::paintEvent( QPaintEvent * )
 {
   QPainter p( this );
@@ -342,27 +449,29 @@ void QcGraph::paintEvent( QPaintEvent * )
     if( conns.count() ) {
 
       Q_FOREACH( QcGraphModel::Connection c, conns ) {
-        lines.moveTo( pos( c.a->value ) );
-        lines.lineTo( pos( c.b->value ) );
+        addCurve( lines, c.a, c.b );
       }
 
     }
     else {
 
-      QPointF pt = pos( elems[0]->value );
-      lines.moveTo( pt );
+      QcGraphElement *e1 = elems[0];
       int i;
-
       for( i = 1; i < c; ++i ) {
-        pt = pos( elems[i]->value );
-        lines.lineTo( pt );
+        QcGraphElement *e2 = elems[i];
+        addCurve( lines, e1, e2 );
+        e1 = e2;
       }
 
     }
 
+    p.save();
+    p.setRenderHint( QPainter::Antialiasing, true );
     p.setBrush( Qt::NoBrush );
+    p.translate( contentsRect.x(), contentsRect.y() + contentsRect.height() );
+    p.scale( contentsRect.width(), -contentsRect.height() );
     p.drawPath( lines );
-
+    p.restore();
   }
 
   // draw rects and strings

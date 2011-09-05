@@ -28,15 +28,23 @@
 #include <QWidget>
 
 struct QcGraphElement {
+
   enum CurveType {
     Step,
     Linear,
-    Exponential,
     Sine,
     Welch,
+    Exponential,
     Curvature
   };
-  QcGraphElement() : fillColor( QColor(0,0,0) ), curvature( 0.f ), editable( true ) {};
+
+  QcGraphElement() :
+    fillColor( QColor(0,0,0) ),
+    curveType( Linear ),
+    curvature( 0.f ),
+    editable( true )
+  {};
+
   void setCurveType( QVariant data ) {
     if( data.type() == QVariant::String ) {
       QString curveName = data.toString();
@@ -53,6 +61,7 @@ struct QcGraphElement {
       curvature = data.value<float>();
     }
   }
+
   QPointF value;
   QString text;
   QColor fillColor;
@@ -178,6 +187,7 @@ class QcGraph : public QWidget, QcHelper
     inline void setValue( QcGraphElement *, const QPointF & );
     QPointF pos( const QPointF & value );
     QPointF value( const QPointF & pos );
+    void addCurve( QPainterPath &, QcGraphElement *e1, QcGraphElement *e2 );
     void paintEvent( QPaintEvent * );
     void mousePressEvent( QMouseEvent * );
     void mouseMoveEvent( QMouseEvent * );
