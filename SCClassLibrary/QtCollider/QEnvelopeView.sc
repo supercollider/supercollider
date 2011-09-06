@@ -21,6 +21,14 @@ QEnvelopeView : QView
     this.setProperty( \step, aFloat );
   }
 
+  keepTimeOrder {
+    ^this.getProperty( \movePolicy ) != 0;
+  }
+
+  keepTimeOrder_ { arg bool;
+    this.setProperty( \movePolicy, if(bool){1}{0} );
+  }
+
   value {
     ^this.getProperty( \value );
   }
