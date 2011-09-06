@@ -39,6 +39,7 @@ QcGraph::QcGraph() :
   _drawRects( true ),
   _editable( true ),
   _step( 0.f ),
+  _movePolicy( QcGraphElement::Free ),
   _gridOn( false ),
   selIndex( -1 ),
   dragIndex( -1 )
@@ -242,6 +243,33 @@ inline void QcGraph::setValue( QcGraphElement * e, const QPointF& pt )
   x = qMax( 0.f, qMin( 1.f, x ) );
   y = qMax( 0.f, qMin( 1.f, y ) );
   e->value = QPointF( x, y );
+}
+
+inline void QcGraph::move( QcGraphElement *e, int index, const QPointF &pt )
+{
+  switch( _movePolicy ) {
+
+    case QcGraphElement::Free:
+
+      setValue( e, pt );
+      break;
+
+    case QcGraphElement::NeighbourRestricted: {
+
+      QPointF val(pt);
+
+      QcGraphElement *other = index > 0 ? _model.elementAt(index-1) : 0;
+      if( other && val.x() < other->value.x() ) val.setX( other->value.x() );
+      other = index < _model.elementCount() - 1 ? _model.elementAt(index+1) : 0;
+      if( other && val.x() > other->value.x() ) val.setX( other->value.x() );
+
+      setValue( e, val );
+
+      break;
+    }
+
+    default: break;
+  }
 }
 
 QPointF QcGraph::pos( const QPointF & value )
@@ -542,7 +570,7 @@ void QcGraph::mouseMoveEvent( QMouseEvent *ev )
   if( !e->editable ) return;
 
   QPointF mpos = ev->pos() - dragDelta;
-  setValue( e, value( mpos ) );
+  move( e, dragIndex, value( mpos ) );
   update();
   doAction( ev->modifiers() );
 }
@@ -584,7 +612,7 @@ void QcGraph::keyPressEvent( QKeyEvent *event )
   }
 
   if( val != e->value ) {
-    setValue( e, val );
+    move( e, selIndex, val );
     update();
     doAction( event->modifiers() );
   }

@@ -38,6 +38,11 @@ struct QcGraphElement {
     Curvature
   };
 
+  enum MovePolicy {
+    Free,
+    NeighbourRestricted
+  };
+
   QcGraphElement() :
     fillColor( QColor(0,0,0) ),
     curveType( Linear ),
@@ -134,6 +139,7 @@ class QcGraph : public QWidget, QcHelper
   Q_PROPERTY( bool drawRects READ dummyBool WRITE setDrawRects );
   Q_PROPERTY( bool editable READ dummyBool WRITE setEditable );
   Q_PROPERTY( float step READ dummyFloat WRITE setStep );
+  Q_PROPERTY( int movePolicy READ movePolicy WRITE setMovePolicy );
   Q_PROPERTY( float x READ currentX WRITE setCurrentX );
   Q_PROPERTY( float y READ currentY WRITE setCurrentY );
   Q_PROPERTY( QPointF grid READ grid WRITE setGrid );
@@ -174,6 +180,8 @@ class QcGraph : public QWidget, QcHelper
     void setEditable( bool b ) { _editable = b; update(); }
     Q_INVOKABLE void setEditableAt( int, bool );
     void setStep( float f );
+    int movePolicy() const { return (int)_movePolicy; }
+    void setMovePolicy( int i ) { _movePolicy = (QcGraphElement::MovePolicy) i; }
     void setGrid( const QPointF &pt ) { _gridMetrics = pt; update(); }
     void setGridOn( bool b ) { _gridOn = b; update(); }
     QSize sizeHint() const { return QSize( 200,200 ); }
@@ -185,6 +193,7 @@ class QcGraph : public QWidget, QcHelper
 
   private:
     inline void setValue( QcGraphElement *, const QPointF & );
+    inline void move( QcGraphElement *, int index, const QPointF & );
     QPointF pos( const QPointF & value );
     QPointF value( const QPointF & pos );
     void addCurve( QPainterPath &, QcGraphElement *e1, QcGraphElement *e2 );
@@ -208,6 +217,7 @@ class QcGraph : public QWidget, QcHelper
 
     bool _editable;
     float _step;
+    QcGraphElement::MovePolicy _movePolicy;
 
     int selIndex;
     int dragIndex;
