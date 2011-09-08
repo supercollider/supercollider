@@ -111,10 +111,10 @@ HelpBrowser {
 
 		h = strh + vPad;
 		x = marg; y = marg;
-		[\Back, \Forward].do { |sym|
-			var str = sym.asString;
+		[[\Back,"<"], [\Forward,">"], [\Reload, "Reload"]].do { |item|
+			var str = item[1];
 			var w = str.bounds.width + hPad;
-			toolbar[sym] = Button( window, Rect(x,y,w,h) ).states_([[str]]);
+			toolbar[item[0]] = Button( window, Rect(x,y,w,h) ).states_([[str]]);
 			x = x + w + 2;
 		};
 
@@ -230,6 +230,7 @@ HelpBrowser {
 
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
+		toolbar[\Reload].action = { this.goTo( webView.url ) };
 		txtFind.action = { |x| webView.findText( x.string ); };
 	}
 
