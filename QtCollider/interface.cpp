@@ -26,6 +26,7 @@
 
 #include <QPlastiqueStyle>
 #include <QTimer>
+#include <QEventLoop>
 
 #include <clocale>
 
@@ -54,5 +55,5 @@ void QtCollider::init() {
 QC_PUBLIC
 void QtCollider::processEvents()
 {
-  if( qApp ) qApp->processEvents();
+  QcApplication::processEvents();
 }
