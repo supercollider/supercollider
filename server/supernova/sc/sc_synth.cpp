@@ -119,10 +119,9 @@ void free_ugen(struct Unit * unit)
 
 sc_synth::~sc_synth(void)
 {
-    rt_pool.free(mControls);
     std::for_each(units, units + unit_count, free_ugen);
-
     sc_factory->free_ugens(unit_count);
+    rt_pool.free(mControls);
 }
 
 void sc_synth::prepare(void)
