@@ -23,6 +23,7 @@
 #include <cstdio>
 #include <cstdarg>
 
+#include <boost/bind.hpp>
 #include <boost/thread.hpp>
 #include <boost/lockfree/ringbuffer.hpp>
 #include <boost/mpl/if.hpp>
@@ -49,6 +50,7 @@ struct asynchronous_log:
 
     bool log_printf(const char *fmt, va_list vargs)
     {
+        array<char, 4096> scratchpad;
         int print_result = vsnprintf(scratchpad.c_array(), scratchpad.size(), fmt, vargs);
 
         if (print_result >= scratchpad.size())
@@ -121,7 +123,6 @@ struct asynchronous_log:
 private:
     lockfree::ringbuffer<char, 32768> buffer;
     nova::semaphore sem;
-    array<char, 4096> scratchpad;
 };
 
 struct asynchronous_log_thread:
