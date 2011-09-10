@@ -51,9 +51,3 @@ void QtCollider::init() {
     setlocale( LC_NUMERIC, "C" );
   }
 }
-
-QC_PUBLIC
-void QtCollider::processEvents()
-{
-  QcApplication::processEvents();
-}
