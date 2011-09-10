@@ -582,6 +582,18 @@ QView : QObject {
     ^false;
   }
 
+  canReceiveDrag { arg x, y;
+    if( canReceiveDragHandler.notNil )
+      { ^this.canReceiveDragHandler.value( this, x, y ) }
+      { ^( this.tryPerform( \defaultCanReceiveDrag, x, y ) ? false ) };
+  }
+
+  receiveDrag { arg x, y;
+    if( receiveDragHandler.notNil )
+      { this.receiveDragHandler.value( this, x, y ) }
+      { this.tryPerform( \defaultReceiveDrag, x, y ) };
+  }
+
   prStartDrag { arg label;
     _QWidget_StartDrag
     ^this.primitiveFailed;
@@ -597,15 +609,12 @@ QView : QObject {
   }
 
   dragMoveEvent { arg x, y;
-    if( canReceiveDragHandler.notNil )
-      { ^this.canReceiveDragHandler.value( this, x, y ) }
-      { ^( this.tryPerform( \defaultCanReceiveDrag, x, y ) ? false ) };
+    var a = nil; // prevent optimizing the method away
+    ^this.canReceiveDrag( x, y );
   }
 
   dropEvent { arg x, y;
-    if( receiveDragHandler.notNil )
-      { this.receiveDragHandler.value( this, x, y ) }
-      { this.tryPerform( \defaultReceiveDrag, x, y ) };
+    this.receiveDrag( x, y );
     // Never propagate the event.
     // If we got to this point it should be accepted and consumed by SC.
     ^true
