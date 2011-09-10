@@ -408,9 +408,9 @@ QView : QObject {
     action.value(this);
   }
 
-  defaultKeyDownAction {}
+  defaultKeyDownAction { arg char, modifiers, unicode, keycode; }
 
-  defaultKeyUpAction {}
+  defaultKeyUpAction { arg char, modifiers, unicode, keycode; }
 
   keyDown { arg char, modifiers, unicode, keycode;
     if( keyDownAction.notNil ) {
