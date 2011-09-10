@@ -469,7 +469,7 @@ void sc_scheduled_bundles::execute_bundles(time_tag const & last, time_tag const
 
         if (last < next_timestamp) {
             // between last and now
-            time_tag time_since_last = last - next_timestamp;
+            time_tag time_since_last = next_timestamp - last;
             float samples_since_last = time_since_last.to_samples(world->mSampleRate);
 
             float sample_offset;
