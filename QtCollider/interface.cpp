@@ -51,3 +51,10 @@ void QtCollider::init() {
     setlocale( LC_NUMERIC, "C" );
   }
 }
+
+QC_PUBLIC
+int QtCollider::exec( int argc, char** argv ) {
+  QtCollider::init();
+  Q_ASSERT( qApp );
+  return qApp->exec();
+}
