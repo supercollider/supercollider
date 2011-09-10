@@ -88,7 +88,9 @@ QC_LANG_PRIMITIVE( QObject_Destroy, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  proxy->destroy( QObjectProxy::DestroyObject );
+  // Post the destruction event asynchronously;
+  DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyObject );
+  QApplication::postEvent( proxy, e );
 
   return errNone;
 }

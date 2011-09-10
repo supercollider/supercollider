@@ -345,14 +345,14 @@ void QObjectProxy::destroy( DestroyAction action )
 {
   switch( action ) {
     case DestroyObject:
-      if( qObject ) qObject->deleteLater();
+      delete qObject;
       return;
     case  DestroyProxy:
-      deleteLater();
+      delete this;
       return;
     case DestroyProxyAndObject:
-      if( qObject ) qObject->deleteLater();
-      deleteLater();
+      delete qObject;
+      delete this;
       return;
   }
 }
