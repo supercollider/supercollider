@@ -39,10 +39,6 @@
 
 #include <pthread.h>
 
-#ifdef SC_QT
-# include "QtCollider.h"
-#endif
-
 #if (MAC_OS_X_VERSION_MIN_REQUIRED <= MAC_OS_X_VERSION_10_4)
 #define class_getName(a)	((a)->name)
 #endif
@@ -96,11 +92,6 @@ static id sharedSCVM = nil;
 
 - (void)start
 {
-	// force multithreaded, just in case
-	[NSThread detachNewThreadSelector:@selector(becomeMultiThreaded:)
-							 toTarget:self
-						   withObject:nil];
-	
 	gIdeName = "scapp"; // declare that code specific to SC.app IDE will be compiled in
 	deferredTaskTimer =
 			[NSTimer scheduledTimerWithTimeInterval: deferredTaskInterval target: self selector:
@@ -109,18 +100,6 @@ static id sharedSCVM = nil;
 	appClockTimer =
 			[NSTimer scheduledTimerWithTimeInterval: 0.020 target: self selector:
 				@selector(doClockTask:) userInfo: nil repeats: YES];
-#ifdef SC_QT
-	qtProcessEventsTimer =
-			[NSTimer scheduledTimerWithTimeInterval: 0.1 target: self selector:
-				@selector(doProcessEventsTask:) userInfo: nil repeats: YES];
-	[qtProcessEventsTimer retain];
-	
-	[[NSRunLoop currentRunLoop] addTimer: qtProcessEventsTimer
-								 forMode: NSModalPanelRunLoopMode];
-	
-	[[NSRunLoop currentRunLoop] addTimer: qtProcessEventsTimer
-								 forMode: NSEventTrackingRunLoopMode];
-#endif
 
 	[deferredTaskTimer retain];
 	[appClockTimer retain];
@@ -157,11 +136,6 @@ static id sharedSCVM = nil;
 	[[[NSWorkspace sharedWorkspace] notificationCenter] addObserver: self
 			selector: @selector(receiveWakeNote:) name: NSWorkspaceDidWakeNotification object: NULL];
 
-}
-
-- (void)becomeMultiThreaded: (int)fakeArg
-{
-	// do nothing, just exit
 }
 
 -(void)setDeferredTaskInterval: (float) interval
@@ -213,13 +187,6 @@ static id sharedSCVM = nil;
     }
     flushPostBuf();
 }
-
-#ifdef SC_QT
-- (void)doProcessEventsTask: (NSTimer*) timer
-{
-	QtCollider::processEvents();
-}
-#endif
 
 
 - (void)setCmdLine: (const char*) text length: (int)length
