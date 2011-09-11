@@ -315,7 +315,7 @@ Quarks
 	*repos { ^this.global.repos }
 	*help  {|name| ^this.global.help(name) }
 	*gui {
-		^this.global.gui
+		if( GUI.id === \qt ) { ^this.global.qtGui } { ^this.global.gui }
 	}
 
 	// a gui for Quarks. 2007 by LFSaw.de
@@ -443,4 +443,172 @@ Quarks
 		^window;
 	}
 
+	qtGui {
+		var window, lblCaption,
+			btnFetch, btnRefresh, btnHelp, btnOpenDir, btnReset, btnApply,
+			lblStatus, lblExplanation, quarksView,
+			infoView, btnQuarkHelp, btnQuarkOpen, txtDescription, btnCloseDetails;
+		var quarks, views, curQuark;
+		var fillPage;
+		var screen, palette, gizmo;
+
+		fillPage = {
+			quarksView.invokeMethod( \clear );
+			quarksView.canSort = false;
+			views = quarks.collect{|quark|
+				var qView = QuarkView.new(quarksView, 500@20, quark,
+					this.installed.detect{|it| it == quark}.notNil);
+				qView;
+			};
+			quarksView.canSort = true;
+			quarksView.sort( 1 );
+			quarksView.invokeMethod( \resizeColumnToContents, 0 );
+			quarksView.invokeMethod( \resizeColumnToContents, 1 );
+			views
+		};
+
+		// note, this doesn't actually contact svn
+		// it only reads the DIRECTORY entries you've already checked out
+		quarks = this.repos.quarks.copy
+			.sort({ |a, b| a.name < b.name });
+
+		palette = GUI.current.palette;
+		screen = Window.flipY(Window.availableBounds);
+		window = Window( this.name, Rect( 0, 0, 500, screen.height * 0.9 ).center_(screen.center) );
+
+		lblCaption = StaticText().font_( GUI.font.new(size:16,usePointSize:true) ).string_(this.name);
+
+		btnFetch = Button()
+			.states_([["Fetch"]])
+			.setProperty( \toolTip, "Download the latest state of the Quarks repository and update the local directory");
+		if ( quarks.size == 0 )
+			{ btnFetch.action_({ this.checkoutDirectory }) }
+			{ btnFetch.action_({ this.updateDirectory }) };
+
+		btnRefresh = Button()
+			.states_([["Refresh"]])
+			.setProperty( \toolTip, "Refresh the Quarks listing below with the information from the local directory")
+			.action_({window.close;this.qtGui});
+
+		btnHelp = Button().states_([["Help"]])
+			.setProperty( \toolTip, "Browse help for all the Quarks - Not yet available!")
+			.enabled_(false);
+
+		btnOpenDir = Button().states_([["Directory"]])
+			.setProperty( \toolTip, "Open the local Quarks directory")
+			.action_({ Quarks.systemOpen( "%".format(this.local.path) ) });
+
+		btnReset = Button()
+			.states_([["Reset"]])
+			.setProperty( \toolTip, "Clear the marked changes")
+			.action_({ arg butt; views.do(_.reset) });
+
+		btnApply = Button().states_([["Apply",nil,Color.blue.blend(palette.buttonColor,0.6)]])
+			.setProperty( \toolTip, "Apply the marked changes")
+			.action_({ arg butt;
+				Task{
+					lblStatus.string = "Applying changes, please wait";
+					lblStatus.background_(Color(1.0, 1.0, 0.9));
+					0.1.wait;
+					views.do{|qView|
+						qView.toBeInstalled.if({
+							this.install(qView.quark.name);
+							qView.flush
+						});
+						qView.toBeDeinstalled.if({
+							this.uninstall(qView.quark.name);
+							qView.flush;
+						})
+					};
+					lblStatus.string = "Done. You should now recompile sclang";
+					lblStatus.background_(Color(0.9, 1.0, 0.9));
+				}.play(AppClock);
+			});
+
+		lblExplanation = StaticText().string_(
+			"\"+\" installed, \"-\" not installed, \"*\" to install, \"x\" to uninstall"
+		);
+
+		lblStatus = StaticText().font_( GUI.font.new( size:12, usePointSize:true ) );
+
+		quarksView = \QTreeView.asClass.new
+			.setProperty( \rootIsDecorated, false )
+			.columns_([nil,"Name","Author"])
+			.action_({ |v|
+				var curItem = v.currentItem;
+				var i = 0, c = views.size;
+				curQuark = nil;
+				if( curItem.notNil ) {
+					while { (i < c) and: {views[i].treeItem != curItem} } { i = i + 1; };
+					if( i < c ){
+						curQuark = quarks[i];
+						txtDescription.string = curQuark.longDesc;
+						btnQuarkOpen.enabled = curQuark.isLocal;
+						infoView.visible = true;
+					}
+				};
+				if( curQuark.isNil ) { infoView.visible = false }
+			});
+
+		txtDescription = TextView(bounds:10@10)
+			.font_( GUI.font.new( size:10, usePointSize:true ) )
+			.autohidesScrollers_( true )
+			.hasVerticalScroller_( true )
+			.editable_( false )
+			//.minSize_(Size(0,0));
+			.minHeight_(50);
+
+		btnQuarkHelp = Button()
+			.states_([["Help"]])
+			.setProperty( \toolTip, "Show help for this Quark - Not yet available!")
+			.enabled_(false);
+
+		btnQuarkOpen = Button()
+			.states_([["Source"]])
+			.setProperty( \toolTip, "Open the source directory of this Quark")
+			.action_({
+				Quarks.systemOpen( "%/%".format(Quarks.local.path, curQuark.path) );
+			});
+
+		btnCloseDetails = StaticText()
+			.string_("X")
+			.align_(\center)
+			.setProperty( \toolTip, "Hide Quark information panel")
+			.mouseDownAction_({
+				infoView.visible = false;
+			});
+		gizmo = btnCloseDetails.sizeHint;
+		gizmo.width = gizmo.width + 20;
+		btnCloseDetails.fixedSize = gizmo;
+
+		infoView = View();
+		infoView.layout = \QVLayout.asClass.new(
+			\QHLayout.asClass.new( btnQuarkHelp, btnQuarkOpen, btnCloseDetails ).margins_(0),
+			txtDescription
+		).spacing_(0).margins_(0);
+		infoView.visible = false;
+
+		window.layout =
+			\QVLayout.asClass.new(
+				lblCaption,
+				\QHLayout.asClass.new( btnFetch, btnRefresh, btnOpenDir, btnHelp ),
+				lblStatus,
+				\QHLayout.asClass.new( btnReset, btnApply, [lblExplanation, s:1] ).margins_(0),
+				[quarksView, s:5],
+				[infoView, s:2]
+			);
+
+		fillPage.value;
+		window.front;
+		^window;
+	}
+
+	*systemOpen { arg path;
+		if("which xdg-open >/dev/null".systemCmd==0) {
+			^("xdg-open"+path.escapeChar($ )).systemCmd;
+		};
+		if("which open >/dev/null".systemCmd==0) {
+			^("open"+path.escapeChar($ )).systemCmd;
+		};
+	}
 }
