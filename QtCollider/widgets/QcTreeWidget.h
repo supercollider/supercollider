@@ -85,6 +85,8 @@ public:
   Q_INVOKABLE void setItemWidget( const QcTreeWidget::ItemPtr &, int column, QObjectProxy * );
   Q_INVOKABLE void removeItemWidget( const QcTreeWidget::ItemPtr &, int column );
 
+  Q_INVOKABLE void sort( int column, bool descending );
+
 Q_SIGNALS:
 
   void action();

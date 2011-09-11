@@ -30,6 +30,13 @@ QTreeView : QView {
     ^this.invokeMethod( \item, [QTreeViewItem(), index] ).prValidItem(this);
   }
 
+  canSort { ^this.getProperty( \sortingEnabled ) }
+  canSort_ { arg bool; this.setProperty( \sortingEnabled, bool ) }
+
+  sort { arg column, descending = false;
+    this.invokeMethod( \sort, [column, descending] )
+  }
+
 /*
   NOTE:
   These methods can only operate on top level items

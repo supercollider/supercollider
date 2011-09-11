@@ -186,6 +186,11 @@ void QcTreeWidget::removeItemWidget( const QcTreeWidget::ItemPtr &item, int colu
   if( item ) QTreeWidget::removeItemWidget( item, column );
 }
 
+void QcTreeWidget::sort( int column, bool descending )
+{
+  sortItems( column, descending ? Qt::DescendingOrder : Qt::AscendingOrder );
+}
+
 void QcTreeWidget::onCurrentItemChanged()
 {
   if( _emitAction ) Q_EMIT( action() );
