@@ -530,23 +530,24 @@ void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, d
 
 	PyrSlot *schedqSlot = queueobj->slots;
 	if (!IsObj(schedqSlot)) {
-		size = 16;
+		size = 32;
 		schedq = newPyrArray(g->gc, size, 0, true);
+		schedq->size = 1;
+		SetInt(schedq->slots + 0, 0); // stability count
 		SetObject(schedqSlot, schedq);
 		g->gc->GCWrite(queueobj, schedq);
 	} else {
 		schedq = slotRawObject(schedqSlot);
 		maxsize = ARRAYMAXINDEXSIZE(schedq);
 		size = schedq->size;
-		if (size+2 > maxsize) {
+		if (size+3 > maxsize) {
 			PyrSlot *pslot, *qslot;
 
 			newschedq = newPyrArray(g->gc, maxsize*2, 0, true);
 			newschedq->size = size;
 
-			pslot = schedq->slots - 1;
-			qslot = newschedq->slots - 1;
-			for (int i=0; i<size; ++i) slotCopy(++qslot, ++pslot);
+			slotCopy(newschedq->slots, schedq->slots, size);
+			assert(IsInt(newschedq->slots));
 
 			SetObject(schedqSlot, newschedq);
 			g->gc->GCWrite(queueobj, newschedq);
@@ -598,8 +599,8 @@ void PriorityQueueTop(PyrObject *queueobj, PyrSlot *result)
 
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = slotRawObject(schedqSlot);
-		if (schedq->size > 0) {
-			slotCopy(result,&schedq->slots[0]);
+		if (schedq->size > 1) {
+			slotCopy(result,&schedq->slots[1]);
 		} else {
 			SetNil(result);
 		}
@@ -615,7 +616,8 @@ void PriorityQueueClear(PyrObject *queueobj)
 
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = slotRawObject(schedqSlot);
-		schedq->size = 0;
+		SetInt(schedq->slots, 0); // stability count
+		schedq->size = 1;
 	}
 }
 
@@ -626,7 +628,7 @@ bool PriorityQueueEmpty(PyrObject *queueobj)
 
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = slotRawObject(schedqSlot);
-		if (schedq->size > 0) {
+		if (schedq->size > 1) {
 			return false;
 		}
 	}
