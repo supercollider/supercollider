@@ -181,7 +181,9 @@ Quark
 
 QuarkView {
 	var	<quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton,
-		nameView, authorView, infoButton, srcButton, browseHelpButton;
+		nameView, authorView, infoButton, srcButton, browseHelpButton,
+		<treeItem;
+
 	*new { |parent, extent, quark, isInstalled|
 		^super.new.init(parent, extent, quark, isInstalled)
 	}
@@ -189,53 +191,67 @@ QuarkView {
 		var installBounds, descrBounds, authorBounds, infoBounds, sourceBounds,
 			pad = 5,checkoutBounds, remainder;
 
-		//installBounds = Rect(0,0, extent.y, extent.y);
-		infoBounds = Rect(0,0, 25, extent.y);
-		sourceBounds = Rect(0, 0, 20, extent.y);
-		checkoutBounds = Rect(0,0,50,extent.y);
-		remainder = extent.x - (infoBounds.width*2)  - sourceBounds.width -
-			checkoutBounds.width - (4*pad);
-		descrBounds = Rect(0, 0, (remainder * 0.60).asInteger, extent.y);
-		authorBounds = Rect(0, 0, (remainder * 0.40).asInteger, extent.y);
 		quark = aQuark;
 		isInstalled = argIsInstalled;
 
-		installButton = GUI.button.new(parent, Rect(15,15,17,17));
-		this.updateButtonStates;
+		if( parent.class.name === \QTreeView ) {
+			installButton = Button().maxWidth_(20).minWidth_(20);
+			treeItem = parent.addItem( [nil, quark.name, quark.author] )
+				.setView( 0, installButton );
+		}{
+			//installBounds = Rect(0,0, extent.y, extent.y);
+			infoBounds = Rect(0,0, 25, extent.y);
+			sourceBounds = Rect(0, 0, 20, extent.y);
+			checkoutBounds = Rect(0,0,50,extent.y);
+			remainder = extent.x - (infoBounds.width*2)  - sourceBounds.width -
+				checkoutBounds.width - (4*pad);
+			descrBounds = Rect(0, 0, (remainder * 0.60).asInteger, extent.y);
+			authorBounds = Rect(0, 0, (remainder * 0.40).asInteger, extent.y);
 
-		// the name with author
-		nameView = GUI.staticText.new(parent, descrBounds).string_(quark.name);
-		authorView = GUI.staticText.new(parent, authorBounds).string_(quark.author);
-		infoButton = GUI.button.new(parent, infoBounds)
-			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
-			.states_([["info"]]).action_{this.fullDescription};
+			installButton = GUI.button.new(parent, Rect(15,15,17,17));
 
-		browseHelpButton = GUI.button.new(parent, infoBounds)
-			.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
-			.states_([["help"]])
-			.action_({ Help(quark.parent.local.path +/+ quark.path).gui });
-
-		if(quark.isLocal and: {thisProcess.platform.name == \osx}) {
-			srcButton = GUI.button.new(parent, sourceBounds)
+			// the name with author
+			nameView = GUI.staticText.new(parent, descrBounds).string_(quark.name);
+			authorView = GUI.staticText.new(parent, authorBounds).string_(quark.author);
+			infoButton = GUI.button.new(parent, infoBounds)
 				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
-				.states_([["src"]]).action_{
-					("open " ++ ("%/%".format(Quarks.local.path, quark.path).escapeChar($ ))).unixCmd;
-				};
+				.states_([["info"]]).action_{this.fullDescription};
+
+			browseHelpButton = GUI.button.new(parent, infoBounds)
+				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+				.states_([["help"]])
+				.action_({ Help(quark.parent.local.path +/+ quark.path).gui });
+
+			if(quark.isLocal and: {thisProcess.platform.name == \osx}) {
+				srcButton = GUI.button.new(parent, sourceBounds)
+					.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+					.states_([["src"]]).action_{
+						("open " ++ ("%/%".format(Quarks.local.path, quark.path).escapeChar($ ))).unixCmd;
+					};
+			};
+
+			/*if(quark.isLocal.not,{
+				GUI.button.new(parent, checkoutBounds)
+					.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+					.states_([["checkout"]]).action_{
+						Quarks.checkout(quark.name);
+					};
+			});*/
 		};
-		/*if(quark.isLocal.not,{
-			GUI.button.new(parent, checkoutBounds)
-				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
-				.states_([["checkout"]]).action_{
-					Quarks.checkout(quark.name);
-				};
-		});*/
+
+		this.updateButtonStates;
 	}
 	updateButtonStates {
+		var palette = GUI.current.tryPerform(\palette);
+		var c = palette !? {palette.buttonColor};
+
 		isInstalled.if({
 			// Quark is currently installed
 			installButton.states = [
-				["+", nil, Color.green(1, 0.5)],		// installed
-				["x", nil, Color.red(1, 0.5)],		    // selected to deinstall
+				// installed
+				["+", nil, if(c.notNil){Color.green.blend(c,0.5)}{Color.green(1, 0.5)}],
+				// selected to deinstall
+				["x", nil, if(c.notNil){Color.red.blend(c,0.5)}{Color.red(1, 0.5)}]
 			];
 			installButton.action = { arg butt;
 				toBeDeinstalled = butt.value>0;
@@ -244,8 +260,10 @@ QuarkView {
 		},{
 			// Quark is currently not installed
 			installButton.states = [
-				["-", nil, ],		// never installed
-				["*", nil, Color.blue(1, 0.5)],				// selected to install
+				// never installed
+				["-", nil, ],
+				// selected to install
+				["*", nil, if(c.notNil){Color.blue.blend(c,0.5)}{Color.blue(1, 0.5)}]
 			];
 			installButton.action = { arg butt;
 				toBeInstalled = butt.value>0;
