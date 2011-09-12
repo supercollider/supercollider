@@ -196,8 +196,10 @@ QuarkView {
 
 		if( parent.class.name === \QTreeView ) {
 			installButton = Button().maxWidth_(20).minWidth_(20);
-			treeItem = parent.addItem( [nil, quark.name, quark.author] )
-				.setView( 0, installButton );
+			treeItem = parent.addItem([
+				nil, quark.name,
+				quark.summary.replace("\n"," ").replace($\t.asString,"")
+			]).setView( 0, installButton );
 		}{
 			//installBounds = Rect(0,0, extent.y, extent.y);
 			infoBounds = Rect(0,0, 25, extent.y);
