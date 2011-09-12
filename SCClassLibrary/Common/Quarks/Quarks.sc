@@ -474,7 +474,7 @@ Quarks
 
 		palette = GUI.current.palette;
 		screen = Window.flipY(Window.availableBounds);
-		window = Window( this.name, Rect( 0, 0, 500, screen.height * 0.9 ).center_(screen.center) );
+		window = Window( this.name, Rect( 0, 0, 700, screen.height * 0.9 ).center_(screen.center) );
 
 		lblCaption = StaticText().font_( GUI.font.new(size:16,usePointSize:true) ).string_(this.name);
 
@@ -533,7 +533,7 @@ Quarks
 
 		quarksView = \QTreeView.asClass.new
 			.setProperty( \rootIsDecorated, false )
-			.columns_([nil,"Name","Author"])
+			.columns_([nil,"Name","Summary"])
 			.action_({ |v|
 				var curItem = v.currentItem;
 				var i = 0, c = views.size;
