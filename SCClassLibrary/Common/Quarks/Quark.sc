@@ -42,14 +42,14 @@ Quark
 	*fromFile { | path, parent |
 		var string = { File.use(path, "r", _.readAllString) }.try;
 		if (string.isNil) {
-			Error(path + "is an invalid quark file").throw;
+			Error(path + "is an invalid quark file.").throw;
 		};
 		^this.fromString(string, parent)
 	}
 	*fromString { | string , parent|
 		var blob = { string.interpret }.try;
 		if (blob.isNil or: { blob.isKindOf(IdentityDictionary).not }) {
-			Error("invalid quark").throw;
+			Error("Can not interpret quark definition.").throw;
 		};
 		^this.new(blob, parent)
 	}
@@ -83,7 +83,7 @@ Quark
 	getName { | obj |
 		var name = obj.asString;
 		if (name.isEmpty) {
-			error("invalid name")
+			Error("Can not parse a quark: invalid name.").throw;
 		};
 		^name.split(Char.nl).first/*.strip*/
 	}
@@ -93,39 +93,42 @@ Quark
 	getVersion { | obj |
 		if (obj.notNil) {
 			if (obj.respondsTo(\asFloat).not) {
-				Error("invalid version type").throw;
+				Error("Can not parse quark '" ++ this.name ++ "': invalid version type.").throw;
 			};
 			^obj.asFloat
 		};
 		^nil
 	}
 	getDependencies { | obj |
-		var name, version;
+		var deps;
 		if (obj.isNil) {
 			^[]
 		};
 		if (obj.isSequenceableCollection.not) {
-			error("invalid deps");
+			Error("Can not parse quark '" ++ this.name ++ "': invalid dependencies.").throw;
 		};
-		^obj.collectAs({ | spec |
-			if (spec.isString) {
-				QuarkDependency(spec, nil)
-			} {
-				if (spec.isKindOf(ArrayedCollection)) {
-						QuarkDependency(
-							spec[0].asString,
-							this.getVersion(spec[1]),
-							spec[2] !? {spec[2].asString}
-							);
-				} {
-					if (spec.isKindOf(Association)) {
-						QuarkDependency(
-							spec.key.asString,
-							this.getVersion(spec.value));
-					}
-				}
+		deps = Array(obj.size);
+		obj.do { | spec |
+			var dep;
+			case
+			{spec.isString} {
+				dep = QuarkDependency(spec, nil)
 			}
-		}, Array)
+			{spec.isKindOf(ArrayedCollection)} {
+				dep = QuarkDependency(
+					spec[0].asString,
+					this.getVersion(spec[1]),
+					spec[2] !? {spec[2].asString})
+			}
+			{spec.isKindOf(Association)} {
+				dep = QuarkDependency(
+					spec.key.asString,
+					this.getVersion(spec.value))
+			}
+			{Error("Can not parse quark '" ++ this.name ++ "': an invalid dependency.").throw};
+			deps add: dep
+		};
+		^deps;
 	}
 	printOn { arg stream;
 		stream << "Quark: " << name;
