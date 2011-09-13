@@ -174,7 +174,7 @@ a.navlink {
 
 
 .header {
-    border-bottom: 6px solid #000;
+    border-bottom: 3px solid #000;
 }
 #label, #label a {
     font-weight: bold;
@@ -189,6 +189,7 @@ a.navlink {
     font-size: 9pt;
 }
 #related {
+    text-align: left;
     font-weight: bold;
     margin-top: 0.5em;
 }
@@ -244,7 +245,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 4px solid #aaa;
+    border-bottom: 2px solid #bbb;
     letter-spacing: 0.05em;
     margin-top: 1.5em;
     text-align: left;
@@ -253,7 +254,7 @@ h2 {
 }
 
 h3 {
-    border-bottom: 2px solid #aaa;
+    border-bottom: 1px solid #bbb;
     margin-bottom: 2px;
     text-align: left;
 }
