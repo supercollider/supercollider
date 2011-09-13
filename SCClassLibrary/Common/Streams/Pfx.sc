@@ -164,6 +164,8 @@ Pbus : FilterPattern {
 			freeBus = { server.controlBusAllocator.free(bus) };
 		};
 
+		CmdPeriod.doOnce(freeBus);
+
 		event = inevent.copy;
 		event[\addAction] = 0; // \addToHead
 		event[\type] = \group;
