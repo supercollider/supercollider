@@ -4,14 +4,21 @@
 # include <QtCollider.h>
 #endif
 
+#ifdef SC_QT
+
 int main(int argc, char *argv[])
 {
-#ifdef SC_QT
+
 	[NSApplication sharedApplication];
 	[NSBundle loadNibNamed:@"MainMenu" owner:NSApp];
 	return QtCollider::exec( argc, argv );
-#else
-	return NSApplicationMain(argc, argv);
-#endif
 }
 
+#else
+
+int main(int argc, const char *argv[])
+{
+	return NSApplicationMain(argc, argv);
+}
+
+#endif
