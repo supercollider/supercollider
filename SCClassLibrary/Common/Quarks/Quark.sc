@@ -195,7 +195,7 @@ QuarkView {
 		isInstalled = argIsInstalled;
 
 		if( parent.class.name === \QTreeView ) {
-			installButton = Button().maxWidth_(20).minWidth_(20);
+			installButton = Button().fixedSize_(Size(20,20));
 			treeItem = parent.addItem([
 				nil, quark.name,
 				quark.summary.replace("\n"," ").replace($\t.asString,"")
