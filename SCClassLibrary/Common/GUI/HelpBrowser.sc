@@ -99,6 +99,7 @@ HelpBrowser {
 		var winRect;
 		var x, y, w, h;
 		var str;
+		var first_search = true;
 
 		homeUrl = aHomeUrl;
 
@@ -120,7 +121,7 @@ HelpBrowser {
 
 		w = 200;
 		x = x + 10;
-		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
+		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1).string_("Search...");
 		srchBox.action = {|x|
 			var path, hash, fallback;
 			if(x.string.notEmpty) {
@@ -131,6 +132,12 @@ HelpBrowser {
 				} {
 					this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html" ++ hash, fallback)
 				}
+			}
+		};
+		srchBox.mouseDownAction = {
+			if(first_search) {
+				srchBox.string = "";
+				first_search = false;
 			}
 		};
 
