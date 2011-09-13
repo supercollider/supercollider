@@ -30,11 +30,6 @@
 #include "sc/sc_synth_prototype.hpp"
 #include "sc/sc_ugen_factory.hpp"
 
-#ifdef JACK_BACKEND
-#include "jack/jack.h"
-#endif
-
-
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
 #include <CoreAudio/HostTime.h>
