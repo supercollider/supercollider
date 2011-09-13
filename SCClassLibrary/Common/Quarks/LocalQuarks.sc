@@ -28,12 +28,16 @@ LocalQuarks
 		^PathName(path).fileName;
 	}
 	quarks {
-		var paths,quarks;
+		var paths, quarks;
 		all.isNil.if{
 			// check through each quark in repos/directory
 			paths = (path ++ "/DIRECTORY/*.quark").pathMatch;
-			quarks = paths.collect({ |p| Quark.fromFile(p, parent) });
-
+			quarks = Array(paths.size);
+			paths.do { |p|
+				try
+				{ var q = Quark.fromFile(p, parent); quarks add: q }
+				{ |e| e.errorString.postln }
+			};
 			// check paths that do exist locally
 			all = quarks.select({ |q| (path ++ "/" ++ q.path).pathMatch.notEmpty })
 		};
