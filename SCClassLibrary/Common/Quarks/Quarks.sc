@@ -508,7 +508,7 @@ Quarks
 			.action_({ arg butt;
 				Task{
 					lblStatus.string = "Applying changes, please wait";
-					lblStatus.background_(Color(1.0, 1.0, 0.9));
+					lblStatus.background = palette.buttonColor.blend(Color.yellow,0.2);
 					0.1.wait;
 					views.do{|qView|
 						qView.toBeInstalled.if({
@@ -521,7 +521,7 @@ Quarks
 						})
 					};
 					lblStatus.string = "Done. You should now recompile sclang";
-					lblStatus.background_(Color(0.9, 1.0, 0.9));
+					lblStatus.background = palette.buttonColor.blend(Color.green,0.2);
 				}.play(AppClock);
 			});
 
@@ -552,6 +552,7 @@ Quarks
 
 		txtDescription = TextView(bounds:10@10)
 			.font_( GUI.font.new( size:10, usePointSize:true ) )
+			.tabWidth_(15)
 			.autohidesScrollers_( true )
 			.hasVerticalScroller_( true )
 			.editable_( false )
@@ -583,7 +584,7 @@ Quarks
 
 		infoView = View();
 		infoView.layout = \QVLayout.asClass.new(
-			\QHLayout.asClass.new( btnQuarkHelp, btnQuarkOpen, btnCloseDetails ).margins_(0),
+			\QHLayout.asClass.new( btnCloseDetails, btnQuarkHelp, btnQuarkOpen, nil ).margins_(0),
 			txtDescription
 		).spacing_(0).margins_(0);
 		infoView.visible = false;
