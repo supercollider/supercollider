@@ -1,7 +1,7 @@
 QTopScrollWidget : QObject {
   var <>win;
   *new { ^super.new("QcScrollWidget") }
-  doDrawFunc { win.drawHook.value(win); }
+  doDrawFunc { win.drawFunc.value(win); }
 }
 
 QScrollTopView : QScrollView {
@@ -79,14 +79,14 @@ QTopView : QView {
 
   findWindow { ^window; }
 
-  doDrawFunc { window.drawHook.value(window) }
+  doDrawFunc { window.drawFunc.value(window) }
 }
 
 QWindow
 {
   classvar <allWindows, <>initAction;
 
-  var resizable, <drawHook, <onClose;
+  var resizable, <drawFunc, <onClose;
   var <view;
 
   //TODO
@@ -168,9 +168,18 @@ QWindow
 
   background_ { arg aColor; view.background = aColor; }
 
-  drawHook_ { arg aFunction;
+  drawFunc_ { arg aFunction;
     view.drawingEnabled = aFunction.notNil;
-    drawHook = aFunction;
+    drawFunc = aFunction;
+  }
+  // deprecation
+  drawHook {
+    this.deprecated(thisMethod, this.class.findMethod(\drawFunc));
+    ^drawFunc
+  }
+  drawHook_ { |aFunction|
+    this.deprecated(thisMethod, this.class.findMethod(\drawFunc_));
+    this.drawFunc_(aFunction)
   }
 
   setTopLeftBounds{ arg rect, menuSpacer=45;
