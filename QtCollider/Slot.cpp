@@ -204,7 +204,10 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
         SetNil( slot );
         return errNone;
     default:
-        if( type == qMetaTypeId<VariantList>() ) {
+        if( type == qMetaTypeId<PyrObject*>() ) {
+          SetObject( slot, val.value<PyrObject*>() );
+        }
+        else if( type == qMetaTypeId<VariantList>() ) {
           Slot::setVariantList( slot, val.value<VariantList>() );
         }
         else if( type == qMetaTypeId<QcTreeWidget::ItemPtr>() ) {

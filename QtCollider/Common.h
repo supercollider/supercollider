@@ -40,6 +40,7 @@ struct VariantList {
 };
 
 Q_DECLARE_METATYPE( VariantList );
+Q_DECLARE_METATYPE( PyrObject * );
 
 namespace QtCollider {
 
@@ -75,6 +76,12 @@ namespace QtCollider {
     pthread_mutex_unlock(&gLangMutex);
     qcDebugMsg(2,"unlocked");
   }
+
+  void runLang (
+    PyrObjectHdr *receiver,
+    PyrSymbol *method,
+    const QList<QVariant> & args = QList<QVariant>(),
+    PyrSlot *result = 0 );
 
   int wrongThreadError ();
 
