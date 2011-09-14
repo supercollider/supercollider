@@ -181,17 +181,7 @@ void QObjectProxy::invokeScMethod
   }
 
   if( _scObject ) {
-    VMGlobals *g = gMainVMGlobals;
-    g->canCallOS = true;
-    ++g->sp;  SetObject(g->sp, _scObject);
-    Q_FOREACH( QVariant var, args ) {
-      ++g->sp;
-      if( Slot::setVariant( g->sp, var ) )
-        SetNil( g->sp );
-    }
-    runInterpreter(g, method, args.size() + 1);
-    g->canCallOS = false;
-    if (result) slotCopy(result, &g->result);
+    QtCollider::runLang( _scObject, method, args, result );
   }
   else {
     SetNil( result );
