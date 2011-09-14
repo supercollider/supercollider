@@ -27,7 +27,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
-#include <QMap>
+#include <QHash>
 #include <QEvent>
 
 #include <PyrObject.h>
@@ -79,6 +79,7 @@ class QObjectProxy : public QObject
       int type;
       PyrSymbol *method;
       QtCollider::Synchronicity sync;
+      bool enabled;
     };
 
     QObjectProxy( QObject *qObject, PyrObject *scObject );
@@ -111,7 +112,8 @@ class QObjectProxy : public QObject
     bool connectMethod( const char *signal, PyrSymbol *method, Qt::ConnectionType );
     bool disconnectObject( const char *signal, PyrObject *object );
     bool disconnectMethod( const char *signal, PyrSymbol *method);
-    bool setEventHandler( int eventType, PyrSymbol *method, QtCollider::Synchronicity );
+    bool setEventHandler( int eventType, PyrSymbol *method, QtCollider::Synchronicity, bool enabled = true );
+    bool setEventHandlerEnabled( int eventType, bool enabled );
 
     // thread-safe if connection == queued
     bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
@@ -130,7 +132,11 @@ class QObjectProxy : public QObject
 
     virtual void customEvent( QEvent * );
 
-    virtual bool interpretEvent( QObject *, QEvent *, QList<QVariant> & ) { return true; }
+    virtual bool filterEvent( QObject *, QEvent *, EventHandlerData &, QList<QVariant> & args );
+
+    bool invokeEventHandler( QEvent *e, EventHandlerData &, QList<QVariant> & args );
+
+    const QHash<int,EventHandlerData> & eventHandlers() { return _eventHandlers; }
 
   private Q_SLOTS:
 
@@ -148,7 +154,7 @@ class QObjectProxy : public QObject
     // NOTE: for the reason above we extract SC class name at construction
     QString _scClassName;
 
-    QMap<int,EventHandlerData> eventHandlers;
+    QHash<int,EventHandlerData> _eventHandlers;
     QList<QcMethodSignalHandler*> methodSigHandlers;
     QList<QcFunctionSignalHandler*> funcSigHandlers;
     QMutex mutex;

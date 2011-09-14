@@ -67,8 +67,13 @@ QObject {
     ^this.primitiveFailed
   }
 
-  registerEventHandler{ arg event, method, direct=false;
+  setEventHandler{ arg event, method, direct=false, enabled=true;
     _QObject_SetEventHandler
+    ^this.primitiveFailed
+  }
+
+  setEventHandlerEnabled { arg event, enabled=true;
+    _QObject_SetEventHandlerEnabled
     ^this.primitiveFailed
   }
 

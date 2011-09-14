@@ -236,16 +236,40 @@ QVariant QObjectProxy::property( const char *property )
   return qObject ? qObject->property( property ) : QVariant();
 }
 
-bool QObjectProxy::setEventHandler( int eventType, PyrSymbol *method,
-                                    QtCollider::Synchronicity sync )
+bool QObjectProxy::setEventHandler( int type, PyrSymbol *method,
+                                    QtCollider::Synchronicity sync, bool enable )
 {
   EventHandlerData data;
-  data.type = eventType;
+  data.type = type;
   data.method = method;
   data.sync = sync;
 
+  // if 'enable' is true, insert the new event handler enabled,
+  // otherwise copy current state, or set disabled if none.
+  if( enable ) {
+    data.enabled = true;
+  }
+  else {
+    EventHandlerData d = _eventHandlers.value( type );
+    if( d.type != QEvent::None ) data.enabled = d.enabled;
+    else data.enabled = false;
+  }
+
   // NOTE: will replace if same key
-  eventHandlers.insert( eventType, data );
+  _eventHandlers.insert( type, data );
+
+  return true;
+}
+
+bool QObjectProxy::setEventHandlerEnabled( int type, bool enabled )
+{
+  EventHandlerData d = _eventHandlers.value( type );
+  if( d.type != type ) return false;
+
+  if( d.enabled != enabled ) {
+    d.enabled = enabled;
+    _eventHandlers.insert( type, d );
+  }
 
   return true;
 }
@@ -411,44 +435,49 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
 {
   int type = event->type();
 
-  if( type == QtCollider::Event_ScMethodCall ) {
-    ScMethodCallEvent* mce = static_cast<ScMethodCallEvent*>( event );
-    qcProxyDebugMsg(1, QString("ScMethodCallEvent -> ") + QString(mce->method->name ) );
-    scMethodCallEvent( mce );
-    return true;
-  }
-  else {
-    EventHandlerData eh = eventHandlers.value( type, EventHandlerData() );
-    if( eh.type == type ) {
-      PyrSymbol *symMethod = eh.method;
-      qcProxyDebugMsg(1,QString("Catched event: type %1 -> '%2'").arg(type).arg(symMethod->name) );
+  EventHandlerData eh;
+  QList<QVariant> args;
 
-      QList<QVariant> args;
-      if( !interpretEvent( watched, event, args ) ) return false;
-
-      if( eh.sync == Synchronous ) {
-        qcProxyDebugMsg(2,"direct!");
-        PyrSlot result;
-        invokeScMethod( symMethod, args, &result );
-        if( IsTrue( &result ) ) {
-          event->accept();
-          return true;
-        }
-        else if( IsFalse( &result ) ) {
-          event->ignore();
-          return true;
-        }
-      }
-      else {
-        qcProxyDebugMsg(2,"indirect");
-        ScMethodCallEvent *e = new ScMethodCallEvent( symMethod, args );
-        QApplication::postEvent( this, e );
-      }
-    }
+  if( !filterEvent( watched, event, eh, args ) ) {
     return false;
   }
+
+  qcProxyDebugMsg(1,QString("Caught event: type %1 -> '%2'").arg(type).arg(eh.method->name) );
+
+  return invokeEventHandler( event, eh, args );
 }
 
+bool QObjectProxy::invokeEventHandler( QEvent *event, EventHandlerData &eh, QList<QVariant> & args )
+{
+  PyrSymbol *method = eh.method;
+
+  if( eh.sync == Synchronous ) {
+    qcProxyDebugMsg(2,"direct!");
+    PyrSlot result;
+    invokeScMethod( method, args, &result );
+    if( IsTrue( &result ) ) {
+      event->accept();
+      return true;
+    }
+    else if( IsFalse( &result ) ) {
+      event->ignore();
+      return true;
+    }
+  }
+  else {
+    qcProxyDebugMsg(2,"indirect");
+    ScMethodCallEvent *e = new ScMethodCallEvent( method, args );
+    QApplication::postEvent( this, e );
+  }
+  return false;
+}
+
+bool QObjectProxy::filterEvent( QObject *, QEvent *e, EventHandlerData & eh, QList<QVariant> & args )
+{
+  int type = e->type();
+  eh = _eventHandlers.value( type, EventHandlerData() );
+  return ( eh.type == type ) && eh.enabled;
+}
 
 inline void QObjectProxy::scMethodCallEvent( ScMethodCallEvent *e )
 {
