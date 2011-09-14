@@ -326,77 +326,77 @@ QView : QObject {
 
   keyDownAction_ { arg aFunction;
     keyDownAction = aFunction;
-    this.registerEventHandler( QObject.keyDownEvent, \keyDownEvent, true );
+    this.setEventHandler( QObject.keyDownEvent, \keyDownEvent, true );
   }
 
   keyUpAction_ { arg aFunction;
     keyUpAction = aFunction;
-    this.registerEventHandler( QObject.keyUpEvent, \keyUpEvent, true );
+    this.setEventHandler( QObject.keyUpEvent, \keyUpEvent, true );
   }
 
   keyModifiersChangedAction_ { arg aFunction;
     keyModifiersChangedAction = aFunction;
-    this.registerEventHandler( QObject.keyDownEvent, \keyDownEvent, true );
-    this.registerEventHandler( QObject.keyUpEvent, \keyUpEvent, true );
+    this.setEventHandler( QObject.keyDownEvent, \keyDownEvent, true );
+    this.setEventHandler( QObject.keyUpEvent, \keyUpEvent, true );
   }
 
   mouseDownAction_ { arg aFunction;
     mouseDownAction = aFunction;
-    this.registerEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true );
-    this.registerEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true );
+    this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true );
+    this.setEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true );
   }
 
   mouseUpAction_ { arg aFunction;
     mouseUpAction = aFunction;
-    this.registerEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true );
+    this.setEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true );
   }
 
   mouseMoveAction_ { arg aFunction;
     mouseMoveAction = aFunction;
-    this.registerEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
+    this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
   }
 
   mouseOverAction_ { arg aFunction;
     mouseOverAction = aFunction;
-    this.registerEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true );
+    this.setEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true );
   }
 
   beginDragAction_ { arg handler;
     beginDragAction = handler;
-    this.registerEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )
+    this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )
   }
 
   canReceiveDragHandler_ { arg handler;
     canReceiveDragHandler = handler;
-    this.registerEventHandler( 60, \dragEnterEvent, true );
-    this.registerEventHandler( 61, \dragMoveEvent, true );
+    this.setEventHandler( 60, \dragEnterEvent, true );
+    this.setEventHandler( 61, \dragMoveEvent, true );
   }
 
   receiveDragHandler_ { arg handler;
     receiveDragHandler = handler;
-    this.registerEventHandler( 63, \dropEvent, true );
+    this.setEventHandler( 63, \dropEvent, true );
   }
 
   toFrontAction_ { arg aFunction;
     toFrontAction = aFunction;
-    this.registerEventHandler( QObject.windowActivateEvent,
+    this.setEventHandler( QObject.windowActivateEvent,
                                \onWindowActivateEvent );
   }
 
   endFrontAction_ { arg aFunction;
     endFrontAction = aFunction;
-    this.registerEventHandler( QObject.windowDeactivateEvent,
+    this.setEventHandler( QObject.windowDeactivateEvent,
                                \onWindowDeactivateEvent );
   }
 
   focusGainedAction_ { arg handler;
     focusGainedAction = handler;
-    this.registerEventHandler( 8 /* QEvent::FocusIn */, \focusInEvent );
+    this.setEventHandler( 8 /* QEvent::FocusIn */, \focusInEvent );
   }
 
   focusLostAction_ { arg handler;
     focusLostAction = handler;
-    this.registerEventHandler( 9 /* QEvent::FocusOut */, \focusOutEvent );
+    this.setEventHandler( 9 /* QEvent::FocusOut */, \focusOutEvent );
   }
 
   onClose_ { arg func;
@@ -461,7 +461,7 @@ QView : QObject {
         if( parent.decorator.notNil ) { parent.decorator.place(this) }
     };
 
-    this.registerEventHandler( QObject.closeEvent, \onCloseEvent, true );
+    this.setEventHandler( QObject.closeEvent, \onCloseEvent, true );
 
     // key events
     handleKeyDown = handleKeyUp = this.overrides( \keyModifiersChanged );
@@ -471,30 +471,30 @@ QView : QObject {
       { handleKeyUp = this.overrides( \defaultKeyUpAction )};
 
     if( handleKeyDown )
-      { this.registerEventHandler( QObject.keyDownEvent, \keyDownEvent, true ) };
+      { this.setEventHandler( QObject.keyDownEvent, \keyDownEvent, true ) };
     if( handleKeyUp )
-      { this.registerEventHandler( QObject.keyUpEvent, \keyUpEvent, true ) };
+      { this.setEventHandler( QObject.keyUpEvent, \keyUpEvent, true ) };
 
     // mouse events
     overridesMouseDown = this.overrides( \mouseDown );
     if( this.respondsTo(\defaultGetDrag) || overridesMouseDown )
-      {this.registerEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )};
+      {this.setEventHandler( QObject.mouseDownEvent, \mouseDownEvent, true )};
     if( overridesMouseDown )
-      {this.registerEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true )};
+      {this.setEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true )};
     if( this.overrides( \mouseUp ) )
-      {this.registerEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true )};
+      {this.setEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true )};
     if( this.overrides( \mouseMove ) )
-      {this.registerEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true )};
+      {this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true )};
     if( this.overrides( \mouseOver ) )
-      {this.registerEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true )};
+      {this.setEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true )};
 
     // DnD events
     if( this.respondsTo(\defaultCanReceiveDrag) ) {
-        this.registerEventHandler( 60, \dragEnterEvent, true );
-        this.registerEventHandler( 61, \dragMoveEvent, true );
+        this.setEventHandler( 60, \dragEnterEvent, true );
+        this.setEventHandler( 61, \dragMoveEvent, true );
     };
     if( this.respondsTo(\defaultReceiveDrag) )
-      {this.registerEventHandler( 63, \dropEvent, true )};
+      {this.setEventHandler( 63, \dropEvent, true )};
   }
 
   onCloseEvent {

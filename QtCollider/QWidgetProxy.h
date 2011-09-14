@@ -58,7 +58,7 @@ protected:
 
   virtual void customEvent( QEvent * );
 
-  virtual bool interpretEvent( QObject *, QEvent *, QList<QVariant> & );
+  virtual bool filterEvent( QObject *, QEvent *, EventHandlerData &, QList<QVariant> & args );
 
 private Q_SLOTS:
 

@@ -212,12 +212,17 @@ void QWidgetProxy::startDragEvent( StartDragEvent* e )
   drag->exec();
 }
 
-bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args )
+bool QWidgetProxy::filterEvent( QObject *o, QEvent *e, EventHandlerData &eh, QList<QVariant> & args )
 {
   // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
   // it wasn't existing
 
-  switch( e->type() ) {
+  int type = e->type();
+
+  eh = eventHandlers().value( type );
+  if( eh.type != type || !eh.enabled ) return false;
+
+  switch( type ) {
     case QEvent::MouseButtonPress:
     case QEvent::MouseMove:
     case QEvent::MouseButtonRelease:
@@ -227,14 +232,12 @@ bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args 
     case QEvent::DragEnter:
     case QEvent::DragMove:
     case QEvent::Drop:
-    {
       return interpretDragEvent( o, e, args );
-    }
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
       return interpretKeyEvent( o, e, args );
     default:
-      return QObjectProxy::interpretEvent( o, e, args );
+      return true;
   }
 }
 

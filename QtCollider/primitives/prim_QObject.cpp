@@ -196,7 +196,7 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QObject_SetEventHandler, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
@@ -204,15 +204,37 @@ QC_LANG_PRIMITIVE( QObject_SetEventHandler, 3, PyrSlot *r, PyrSlot *a, VMGlobals
   int eventType = Slot::toInt( a+0 );
   PyrSymbol *method = 0; slotSymbolVal( a+1, &method );
   Synchronicity sync = IsTrue( a+2 ) ? Synchronous : Asynchronous;
+  bool enabled = IsTrue( a+3 );
 
   qcSCObjectDebugMsg( 1, slotRawObject(r),
-                      QString("EVENT HANDLER: type %1 -> %2 [%3]")
+                      QString("SET EVENT HANDLER: type %1 -> %2 [%3, %4]")
                       .arg(eventType).arg(method->name)
-                      .arg(sync == Synchronous ? "SYNC" : "ASYNC") );
+                      .arg(sync == Synchronous ? "SYNC" : "ASYNC")
+                      .arg(enabled ? "on" : "off") );
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  bool ok = proxy->setEventHandler( eventType, method, sync );
+  bool ok = proxy->setEventHandler( eventType, method, sync, enabled );
+
+  return ok ? errNone : errFailed;
+}
+
+QC_LANG_PRIMITIVE( QObject_SetEventHandlerEnabled, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( NotInt( a+0 ) ) return errWrongType;
+  bool enabled = IsTrue( a+1 );
+  if( !enabled && !IsFalse( a+1 ) ) return errWrongType;
+  int type = Slot::toInt( a+0 );
+
+  qcSCObjectDebugMsg( 1, slotRawObject(r),
+                      QString("SET EVENT HANDLER STATE: type %1 = %2")
+                      .arg(type).arg(enabled ? "on" : "off") );
+
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  bool ok = proxy->setEventHandlerEnabled( type, enabled );
 
   return ok ? errNone : errFailed;
 }
