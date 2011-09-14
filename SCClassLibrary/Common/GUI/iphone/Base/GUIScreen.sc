@@ -3,7 +3,7 @@ SCWindow {
 
 	var dataptr, <name, <>onClose, <view, <userCanClose=true;
 	var <alwaysOnTop=false;
-	var <>drawHook;
+	var <>drawFunc;
 	var <acceptsMouseOver=false;
 	var <isClosed = false;
 	var <acceptsClickThrough = true;
@@ -199,8 +199,8 @@ SCWindow {
 		_SCWindow_GetScreenBounds
 		^this.primitiveFailed
 	}
-	callDrawHook {
-		drawHook.value(this);
+	callDrawFunc {
+		drawFunc.value(this);
 	}
 
 	didBecomeKey {

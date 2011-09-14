@@ -43,7 +43,7 @@ CGRect SCtoCGRect(SCRect screct);
 extern PyrSymbol *s_draw;
 extern PyrSymbol *s_scview;
 extern PyrSymbol *s_closed;
-extern PyrSymbol *s_callDrawHook;
+extern PyrSymbol *s_callDrawFunc;
 extern PyrSymbol *s_toggleEditMode;
 
 @implementation SCGraphView
@@ -809,7 +809,7 @@ const int circDiam = 20;
         VMGlobals *g = gMainVMGlobals;
         g->canCallOS = true;
         ++g->sp;  SetObject(g->sp, mWindowObj); // push window obj
-        runInterpreter(g, s_callDrawHook, 1);
+        runInterpreter(g, s_callDrawFunc, 1);
         g->canCallOS = false;
 
         CGContextRestoreGState(cgc);

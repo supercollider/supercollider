@@ -441,7 +441,7 @@ Plotter {
 			bounds = parent.view.bounds.insetBy(5, 0).moveBy(-5, 0);
 			interactionView = UserView(parent, bounds);
 			if(GUI.skin.at(\plot).at(\expertMode).not) { this.makeButtons };
-			parent.drawHook = { this.draw };
+			parent.drawFunc = { this.draw };
 			parent.front;
 			parent.onClose = { parent = nil };
 
