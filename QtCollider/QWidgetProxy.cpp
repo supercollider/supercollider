@@ -33,6 +33,8 @@
 
 using namespace QtCollider;
 
+QAtomicInt QWidgetProxy::_globalEventMask = 0;
+
 QWidgetProxy::QWidgetProxy( QWidget *w, PyrObject *po )
 : QObjectProxy( w, po ), _keyEventWidget( w ), _mouseEventWidget( w )
 { }
@@ -220,24 +222,33 @@ bool QWidgetProxy::filterEvent( QObject *o, QEvent *e, EventHandlerData &eh, QLi
   int type = e->type();
 
   eh = eventHandlers().value( type );
-  if( eh.type != type || !eh.enabled ) return false;
+  if( eh.type != type ) return false;
 
   switch( type ) {
+
+    case QEvent::KeyPress:
+      return ((_globalEventMask & KeyPress) || eh.enabled)
+        && interpretKeyEvent( o, e, args );
+
+    case QEvent::KeyRelease:
+      return ((_globalEventMask & KeyRelease) || eh.enabled)
+        && interpretKeyEvent( o, e, args );
+
     case QEvent::MouseButtonPress:
     case QEvent::MouseMove:
     case QEvent::MouseButtonRelease:
     case QEvent::MouseButtonDblClick:
     case QEvent::Enter:
-      return interpretMouseEvent( o, e, args );
+      return eh.enabled && interpretMouseEvent( o, e, args );
+
     case QEvent::DragEnter:
     case QEvent::DragMove:
     case QEvent::Drop:
-      return interpretDragEvent( o, e, args );
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease:
-      return interpretKeyEvent( o, e, args );
+      return eh.enabled && interpretDragEvent( o, e, args );
+
     default:
-      return true;
+      return eh.enabled;
+
   }
 }
 
@@ -307,6 +318,7 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
   args << (int) ke->modifiers();
   args << unicode;
   args << ke->key();
+  args << ke->spontaneous();
 
   return true;
 }

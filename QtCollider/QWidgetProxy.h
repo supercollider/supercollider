@@ -25,6 +25,7 @@
 #include "QObjectProxy.h"
 
 #include <QWidget>
+#include <QAtomicInt>
 
 namespace QtCollider {
   struct SetFocusEvent;
@@ -35,6 +36,24 @@ namespace QtCollider {
 class QWidgetProxy : public QObjectProxy
 {
   Q_OBJECT
+
+public:
+
+  enum GlobalEvent {
+    KeyPress = 0x001,
+    KeyRelease = 0x002
+  };
+
+public:
+
+  static void setGlobalEventEnabled ( GlobalEvent ev, bool b ) {
+    int mask = _globalEventMask;
+    if(b)
+      mask |= ev;
+    else
+      mask &= ~ev;
+    _globalEventMask = mask;
+  }
 
 public:
 
@@ -78,6 +97,7 @@ private:
 
   QWidget *_keyEventWidget;
   QWidget *_mouseEventWidget;
+  static QAtomicInt _globalEventMask;
 };
 
 namespace QtCollider {

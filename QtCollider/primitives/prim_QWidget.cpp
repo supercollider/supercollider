@@ -119,3 +119,14 @@ QC_LANG_PRIMITIVE( QWidget_StartDrag, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) 
 
   return errNone;
 }
+
+QC_LANG_PRIMITIVE( QWidget_SetGlobalEventEnabled, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+  if( NotInt( a+0 ) ) return errWrongType;
+  int event = Slot::toInt(a+0);
+  bool enabled = IsTrue(a+1);
+  if( !enabled && !IsFalse(a+1) ) return errWrongType;
+
+  QWidgetProxy::setGlobalEventEnabled( (QWidgetProxy::GlobalEvent) event, enabled );
+
+  return errNone;
+}
