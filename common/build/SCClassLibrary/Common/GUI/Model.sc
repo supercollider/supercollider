@@ -40,10 +40,12 @@ SimpleController {
 	}
 	update { arg theChanger, what ... moreArgs;
 		var action;
-		action = actions.at(what);
-		if (action.notNil, {
-			action.valueArray(theChanger, what, moreArgs);
-		});
+		if(actions.notNil) {
+			action = actions.at(what);
+			if (action.notNil, {
+				action.valueArray(theChanger, what, moreArgs);
+			});
+		};
 	}
 	remove {
 		model.removeDependant(this);
