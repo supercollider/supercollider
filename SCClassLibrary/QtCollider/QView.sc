@@ -1,5 +1,5 @@
 QView : QObject {
-  classvar <>globalKeyDownAction, <>globalKeyUpAction;
+  classvar <globalKeyDownAction, <globalKeyUpAction;
   classvar <hSizePolicy;
   classvar <vSizePolicy;
   // drag-and-drop
@@ -324,20 +324,31 @@ QView : QObject {
     this.perform(selector.asSetter, this.perform(selector).removeFunc(func));
   }
 
+  *globalKeyDownAction_ { arg action;
+    globalKeyDownAction = action;
+    this.setGlobalEventEnabled( 16r01 /* KeyPress */, true );
+  }
+
+
+  *globalKeyUpAction_ { arg action;
+    globalKeyUpAction = action;
+    this.setGlobalEventEnabled( 16r02 /* KeyRelease */, true );
+  }
+
   keyDownAction_ { arg aFunction;
     keyDownAction = aFunction;
-    this.setEventHandler( QObject.keyDownEvent, \keyDownEvent, true );
+    this.setEventHandlerEnabled( QObject.keyDownEvent, true );
   }
 
   keyUpAction_ { arg aFunction;
     keyUpAction = aFunction;
-    this.setEventHandler( QObject.keyUpEvent, \keyUpEvent, true );
+    this.setEventHandlerEnabled( QObject.keyUpEvent, true );
   }
 
   keyModifiersChangedAction_ { arg aFunction;
     keyModifiersChangedAction = aFunction;
-    this.setEventHandler( QObject.keyDownEvent, \keyDownEvent, true );
-    this.setEventHandler( QObject.keyUpEvent, \keyUpEvent, true );
+    this.setEventHandlerEnabled( QObject.keyDownEvent, true );
+    this.setEventHandlerEnabled( QObject.keyUpEvent, true );
   }
 
   mouseDownAction_ { arg aFunction;
@@ -453,6 +464,10 @@ QView : QObject {
 
   *setCurrentDrag { arg obj; currentDrag = obj; currentDragString = obj.asCompileString; }
 
+  *setGlobalEventEnabled { arg event, enabled;
+    _QWidget_SetGlobalEventEnabled
+  }
+
   initQView { arg parent;
 
     var handleKeyDown, handleKeyUp, overridesMouseDown;
@@ -470,10 +485,8 @@ QView : QObject {
     if( handleKeyUp.not )
       { handleKeyUp = this.overrides( \defaultKeyUpAction )};
 
-    if( handleKeyDown )
-      { this.setEventHandler( QObject.keyDownEvent, \keyDownEvent, true ) };
-    if( handleKeyUp )
-      { this.setEventHandler( QObject.keyUpEvent, \keyUpEvent, true ) };
+    this.setEventHandler( QObject.keyDownEvent, \keyDownEvent, true, enabled: handleKeyDown );
+    this.setEventHandler( QObject.keyUpEvent, \keyUpEvent, true, enabled: handleKeyUp );
 
     // mouse events
     overridesMouseDown = this.overrides( \mouseDown );
@@ -516,10 +529,15 @@ QView : QObject {
   focusInEvent { focusGainedAction.value(this) }
   focusOutEvent { focusLostAction.value(this) }
 
-  keyDownEvent { arg char, modifiers, unicode, keycode;
+  keyDownEvent { arg char, modifiers, unicode, keycode, spontaneous;
     modifiers = QKeyModifiers.toCocoa(modifiers);
 
     if( char.size == 1 ) {char = char[0]};
+
+    if( spontaneous ) {
+      // this event has never been propagated to parent yet
+      QView.globalKeyDownAction.value( this, char, modifiers, unicode, keycode );
+    };
 
     if( (keycode == 16r1000020) || (keycode == 16r1000021) ||
         (keycode == 16r1000022) || (keycode == 16r1000023 ) )
@@ -528,10 +546,15 @@ QView : QObject {
     ^this.keyDown( char, modifiers, unicode, keycode );
   }
 
-  keyUpEvent { arg char, modifiers, unicode, keycode;
+  keyUpEvent { arg char, modifiers, unicode, keycode, spontaneous;
     modifiers = QKeyModifiers.toCocoa(modifiers);
 
     if( char.size == 1 ) {char = char[0]};
+
+    if( spontaneous ) {
+      // this event has never been propagated to parent yet
+      QView.globalKeyUpAction.value( this, char, modifiers, unicode, keycode );
+    };
 
     if( (keycode == 16r1000020) || (keycode == 16r1000021) ||
         (keycode == 16r1000022) || (keycode == 16r1000023 ) )
