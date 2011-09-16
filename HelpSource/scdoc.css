@@ -275,7 +275,7 @@ dd {
 }
 
 code.code, pre.code {
-    font-family: Monaco, Andale Mono, monospace;
+    font-family: Andale Mono, monospace;
     font-size: 9pt;
     color: #121;
 }
@@ -288,7 +288,7 @@ pre.code {
 }
 
 code.formula, pre.formula {
-    font-family: Monaco, Andale Mono, monospace;
+    font-family: Andale Mono, monospace;
     font-size: 10pt;
     font-weight: normal;
     color: #333;
