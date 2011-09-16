@@ -439,10 +439,17 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
   QList<QVariant> args;
 
   if( !filterEvent( watched, event, eh, args ) ) {
+    qcProxyDebugMsg(3,QString("Event (%1, %2) not handled, forwarding to the widget")
+      .arg(type)
+      .arg(event->spontaneous() ? "spontaneous" : "inspontaneous") );
     return false;
   }
 
-  qcProxyDebugMsg(1,QString("Caught event: type %1 -> '%2'").arg(type).arg(eh.method->name) );
+  qcProxyDebugMsg(1,QString("Will handle event (%1, %2) -> (%3, %4)")
+    .arg(type)
+    .arg(event->spontaneous() ? "spontaneous" : "inspontaneous")
+    .arg(eh.method->name)
+    .arg(eh.sync == Synchronous ? "sync" : "async") );
 
   return invokeEventHandler( event, eh, args );
 }
@@ -452,23 +459,25 @@ bool QObjectProxy::invokeEventHandler( QEvent *event, EventHandlerData &eh, QLis
   PyrSymbol *method = eh.method;
 
   if( eh.sync == Synchronous ) {
-    qcProxyDebugMsg(2,"direct!");
     PyrSlot result;
     invokeScMethod( method, args, &result );
     if( IsTrue( &result ) ) {
+      qcProxyDebugMsg(2,"Event accepted");
       event->accept();
       return true;
     }
     else if( IsFalse( &result ) ) {
+      qcProxyDebugMsg(2,"Event ignored");
       event->ignore();
       return true;
     }
   }
   else {
-    qcProxyDebugMsg(2,"indirect");
     ScMethodCallEvent *e = new ScMethodCallEvent( method, args );
     QApplication::postEvent( this, e );
   }
+
+  qcProxyDebugMsg(2,"Forwarding event to the system");
   return false;
 }
 
