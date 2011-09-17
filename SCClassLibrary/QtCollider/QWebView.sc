@@ -107,6 +107,13 @@ QWebView : QView {
     this.setProperty( \enterInterpretsSelection, bool );
   }
 
+  // Set a specific font family to be used in place of a CSS-specified generic font family.
+  // Possible values for generic font family are listed in QWebFontFamily class.
+
+  setFontFamily { arg generic, specific;
+    this.invokeMethod( \setFontFamily, [generic,specific] )
+  }
+
 //---------------------------------- private --------------------------------------//
 
   prLoadFinished { arg ok;

@@ -65,3 +65,13 @@ QKeyModifiers {
     ^cmods;
   }
 }
+
+QWebFontFamily {
+  classvar
+    <standard = 0,
+    <fixed = 1,
+    <serif = 2,
+    <sansSerif = 3,
+    <cursive = 4,
+    <fantasy = 5;
+}

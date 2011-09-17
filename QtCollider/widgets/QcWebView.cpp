@@ -110,6 +110,11 @@ void WebView::setDelegateReload( bool flag )
   p->setDelegateReload( flag );
 }
 
+void WebView::setFontFamily( int generic, const QString & specific )
+{
+  settings()->setFontFamily( (QWebSettings::FontFamily) generic, specific );
+}
+
 void WebView::evaluateJavaScript ( const QString &script )
 {
   if( script.isEmpty() ) return;
