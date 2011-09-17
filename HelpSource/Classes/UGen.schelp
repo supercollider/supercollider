@@ -38,24 +38,32 @@ code::
 { UGen.buildSynthDef.dump; Silent.ar }.play;
 ::
 
-subsection:: Internally used methods
+subsection:: Internally used class methods
 
 method:: multiNew
-code::(rate, ...args):: See multiNewList.
+These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar/*kr:: methods delegate to link::#*multiNewList::.
+argument:: ... args
+The first argument is rate, then the rest of the arguments. code::(rate, ...args)::
 
 method:: multiNewList
-code::([rate, ...args])::
-discussion::
-These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar/*kr:: methods delegate to code::multiNewList::.
+See link::#*multiNew::.
+argument:: args
+An array where the first argument is rate, then the rest of the arguments. code::([rate, ...args])::
 
 method:: new1
 This method returns a single instance of the UGen, not multichannel expanded. It is called inside multiNewList, whenever a new single instance is needed.
 
 method:: methodSelectorForRate
-Returns an appropriate message selector (Symbol like code::\ar, \kr, \ir:: ) for a given rate like code:: \audio, \control, \scalar ::.
+argument:: rate
+A link::Classes/Symbol::, code:: \audio, \control, \scalar ::
+Returns::
+An appropriate message selector ( link::Classes/Symbol:: like code:: \ar, \kr, \ir :: ) for the given rate.
 
 method:: replaceZeroesWithSilence
-Returns a new array, where every zero is replaced by a link::Classes/Silent:: UGen. This is required internally sometimes for UGens like link::Classes/Out::.
+Returns::
+A new link::Classes/Array::, where every zero is replaced by a link::Classes/Silent:: UGen.
+discussion::
+This is required internally sometimes for UGens like link::Classes/Out::.
 
 instancemethods::
 
@@ -98,7 +106,7 @@ code::
 
 // multichannel polling:
 (
-{ 
+{
     var freqs = SinOsc.ar([0.2, 0.3]).range(420, 460);
     freqs.poll(label: [\freq1, \freq2]);
     SinOsc.ar(freqs, 0, 0.2);
@@ -203,7 +211,7 @@ code::
 // modulate some values
 (
 { Line.ar(-1, 5, 0.1).lincurve(SinOsc.ar(100), SinOsc.ar(130) + 3, -1, 1, clip: nil) }
-	.plot(0.1, minval: -15, maxval: 5)
+    .plot(0.1, minval: -15, maxval: 5)
 )
 ::
 
@@ -326,7 +334,7 @@ This is for the most part only used in UGen class definitions in order to allow 
 
 method:: isValidUGenInput
 Returns:: true
-	
+
 method:: asUGenInput
 Returns:: the receiver
 discussion::
@@ -345,10 +353,10 @@ code::
 ::
 
 
-subsection:: Internally used methods
+subsection:: Internally used instance methods
 
 method:: methodSelectorForRate
-See class method with same name.
+See link::#*methodSelectorForRate::
 
 method:: init
 By default, this method stores the inputs (e.g. the arguments to code::*ar:: and code::*kr::) in the UGen.
