@@ -1158,7 +1158,7 @@ void BufRd_Ctor(BufRd *unit)
 
 	unit->m_fbufnum = -1e9f;
 
-	ClearUnitOutputs(unit, 1);
+	BufRd_next_1(unit, 1);
 }
 
 void BufRd_next_4(BufRd *unit, int inNumSamples)
