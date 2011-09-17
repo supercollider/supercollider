@@ -44,6 +44,7 @@ class WebView : public QWebView
 public:
   Q_INVOKABLE void setHtml ( const QString &html, const QString &baseUrl = QString() );
   Q_INVOKABLE void evaluateJavaScript ( const QString &script );
+  Q_INVOKABLE void setFontFamily( int genericFontFamily, const QString & fontFamily );
 
 public Q_SLOTS:
   void findText( const QString &searchText, bool reversed = false );
