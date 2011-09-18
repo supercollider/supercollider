@@ -190,6 +190,13 @@ HelpBrowser {
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
 		webView.html = "Please wait while initializing Help... (This might take several seconds the first time)";
 
+		if(webView.respondsTo(\setFontFamily)) {
+			webView.setFontFamily(\fixed, Platform.case(
+				\osx, { "Monaco" },
+				\linux, { "Andale Mono" }
+			))
+		};
+
 		webView.onLoadFinished = {
 			this.stopAnim;
 			window.name = "SuperCollider Help: %".format(webView.title);
