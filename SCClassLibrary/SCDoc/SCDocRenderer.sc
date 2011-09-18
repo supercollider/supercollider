@@ -34,12 +34,12 @@ SCDocHTMLRenderer : SCDocRenderer {
         if(str.notNil and: {str.notEmpty}) {
             path = if(str[0].isUpper) {
                 if(str.asSymbol.asClass.notNil) {
-                        if(SCDoc.docMap["Classes"+/+str].categories.find("Undocumented").notNil) {
-                            old = Help.findHelpFile(str);
-                            old !? { "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html" }
-                        } ?? {
-                            "Classes" +/+ str ++ ".html"
-                        }
+                    if(SCDoc.findHelpSource("Classes"+/+str).isNil) {
+                        old = Help.findHelpFile(str);
+                        old !? { "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html" }
+                    } ?? {
+                        "Classes" +/+ str ++ ".html"
+                    }
                 } {
                     "Search.html#" ++ str
                 };

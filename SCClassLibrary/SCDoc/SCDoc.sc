@@ -303,6 +303,21 @@ SCDoc {
         }
     }
 
+    *findHelpSource {|subtarget|
+        var src;
+        this.findHelpSourceDirs;
+        block {|break|
+            helpSourceDirs.do {|dir|
+                var x = dir+/+subtarget++".schelp";
+                if(File.exists(x)) {
+                    src = x;
+                    break.value;
+                };
+            };
+        };
+        ^src
+    }
+
     *prepareHelpForURL {|url|
         var proto, path, anchor;
         var subtarget, src, c, cmd;
@@ -346,16 +361,7 @@ SCDoc {
             subtarget = path[helpTargetDir.size+1 .. path.findBackwards(".")?path.size-1];
 
             // find help source file
-            block {|break|
-                src = nil;
-                helpSourceDirs.do {|dir|
-                    var x = dir+/+subtarget++".schelp";
-                    if(File.exists(x)) {
-                        src = x;
-                        break.value;
-                    };
-                };
-            };
+            src = this.findHelpSource(subtarget);
 
             // create a simple stub if class was undocumented
             if(src.isNil and: {subtarget.dirname=="Classes"}) {

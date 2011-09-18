@@ -56,6 +56,8 @@ HelpBrowser {
 		//FIXME: since multiple scdoc queries can be running at the same time,
 		//it would be best to create a queue and run them in order, but only use the url from the last.
 
+		window.front;
+
 		plainTextExts.do {|x|
 			if(url.endsWith(x)) {
 				^this.openTextFile(url);
@@ -86,7 +88,6 @@ HelpBrowser {
 				err.throw;
 			};
 		}.play(AppClock);
-		window.front;
 	}
 
 	goHome { this.goTo(homeUrl); }
