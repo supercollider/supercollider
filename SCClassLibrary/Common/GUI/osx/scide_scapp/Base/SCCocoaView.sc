@@ -283,6 +283,10 @@ SCWebView : SCView{
 		this.setProperty(\enterExecutesSelection, bool);
 	}
 
+	setFontFamily { arg generic, specific;
+		this.setProperty(\fontFamily, [generic, specific]);
+	}
+
 	*paletteExample{ arg parent, bounds;
 		^this.new(parent, bounds).url_("http://supercollider.sourceforge.net");
 	}

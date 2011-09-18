@@ -2598,6 +2598,7 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 	
 	[mWebView setFocusRingType:NSFocusRingTypeNone];
 	[mWebView setEnterExecutesSelection:YES];
+	[mWebView setPreferencesIdentifier:@"SuperCollider"];
 	
 	setVisibleFromParent();
 }
@@ -2802,7 +2803,35 @@ int SCWebView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 		else [mWebView setEnterExecutesSelection:NO];
 		return errNone;
 	}
-	
+
+	if (strcmp(name, "fontFamily")==0) {
+		if(!isKindOfSlot(slot, class_array)) return errWrongType;
+		PyrSlot *slots = slotRawObject(slot)->slots;
+		if(!IsSym(slots+0)) return errWrongType;
+		PyrString* pstring = slotRawString(slots+1);
+		if(!pstring) return errFailed;
+
+		PyrSymbol *genericFont = slotRawSymbol(slots+0);
+		NSString *specificFont = [[NSString alloc] initWithCString: pstring->s length: pstring->size];
+
+		if (genericFont == getsym("standard"))
+			[[mWebView preferences] setStandardFontFamily: specificFont];
+		else if (genericFont == getsym("fixed"))
+			[[mWebView preferences] setFixedFontFamily: specificFont];
+		else if (genericFont == getsym("serif"))
+			[[mWebView preferences] setSerifFontFamily: specificFont];
+		else if (genericFont == getsym("sansSerif"))
+			[[mWebView preferences] setSansSerifFontFamily: specificFont];
+		else if (genericFont == getsym("cursive"))
+			[[mWebView preferences] setCursiveFontFamily: specificFont];
+		else if (genericFont == getsym("fantasy"))
+			[[mWebView preferences] setFantasyFontFamily: specificFont];
+
+		[specificFont release];
+
+		return errNone;
+	}
+
 	return SCView::setProperty(symbol, slot);
 }
 
