@@ -51,7 +51,7 @@ HelpBrowser {
 	}
 
 	goTo {|url, brokenAction|
-		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"];
+		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"], c;
 
 		//FIXME: since multiple scdoc queries can be running at the same time,
 		//it would be best to create a queue and run them in order, but only use the url from the last.
@@ -70,6 +70,13 @@ HelpBrowser {
 				url = SCDoc.prepareHelpForURL(url) ?? brokenAction;
 				#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
+				};
+				// detect old helpfiles and open them in OldHelpWrapper
+				if(block{|break| Help.do {|key,path| if(url.endsWith(path)) {break.value(true)}}; false}) {
+					url = "file://" ++ SCDoc.helpTargetDir +/+ "OldHelpWrapper.html#"++url++"?"++
+					SCDoc.helpTargetDir +/+ if((c=url.basename.split($.).first).asSymbol.asClass.notNil)
+						{"Classes" +/+ c ++ ".html"}
+						{"Guides/WritingHelp.html"}
 				};
 				webView.url = url;
 				// needed since onLoadFinished is not called if the path did not change:
