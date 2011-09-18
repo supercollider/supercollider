@@ -12,15 +12,19 @@
 }
 </style>
 <script>
-function onLoad() {
-    var urls = window.location.hash.substr(1).split("?");
+function checkHash() {
+    var urls = unescape(window.location.hash.slice(1)).split("?");
     document.getElementById("oldframe").setAttribute("src",urls[0]);
     document.getElementById("newlink").setAttribute("href",urls[1]);
     var title = urls[0].split("/").pop().split(".")[0];
     document.getElementById("oldtitle").innerHTML = title;
     document.title = title;
+}
+function onLoad() {
+    checkHash();
     helpRoot="."; fixTOC();
 }
+window.onhashchange = checkHash;
 </script>
 </head>
 <ul id="menubar"></ul>
