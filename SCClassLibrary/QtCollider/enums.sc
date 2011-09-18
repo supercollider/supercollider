@@ -74,4 +74,6 @@ QWebFontFamily {
     <sansSerif = 3,
     <cursive = 4,
     <fantasy = 5;
+
+  *new { arg symbol; ^this.perform( symbol.asGetter ); }
 }
