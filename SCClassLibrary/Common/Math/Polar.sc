@@ -42,6 +42,10 @@ Polar : Number {
 
 	neg { ^Polar.new(rho, theta + pi) }
 
+	performBinaryOpOnSomething { |aSelector, thing, adverb|
+		^thing.asComplex.perform(aSelector, this, adverb)
+	}
+
 	performBinaryOpOnUGen { arg aSelector, aUGen;
 		^Complex.new(
 			BinaryOpUGen.new(aSelector, aUGen, this.real),
