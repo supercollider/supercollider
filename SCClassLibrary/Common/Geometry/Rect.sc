@@ -161,6 +161,9 @@ Rect {
 
 	asArray { ^[this.left, this.top, this.width, this.height] }
 
+	performBinaryOpOnSomething { |aSelector, thing, adverb|
+		^thing.asRect.perform(aSelector, this, adverb)
+	}
 	+ {|that|
 		var thatRect;
 		thatRect = that.asRect;

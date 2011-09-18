@@ -22,6 +22,9 @@ Point {
 	}
 	hash { ^ (x.hash << 1) bitXor: y.hash }
 
+	performBinaryOpOnSomething { |aSelector, thing, adverb|
+		^thing.asPoint.perform(aSelector, this, adverb)
+	}
 	+ { arg delta;
 		var deltaPoint;
 		deltaPoint = delta.asPoint;
