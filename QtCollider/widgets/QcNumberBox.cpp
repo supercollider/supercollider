@@ -39,7 +39,7 @@ QcNumberBox::QcNumberBox()
   normalTextColor( palette().color(QPalette::Text) ),
   _validator( new QDoubleValidator( this ) ),
   step( 0.1f ),
-  scrollStep( 0.1f ),
+  scrollStep( 1.0f ),
   dragDist( 10.f ),
   _value( 0. ),
   _valueType( Number ),
