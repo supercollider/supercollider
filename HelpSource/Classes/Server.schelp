@@ -218,6 +218,13 @@ s.reorder(x, g, \addToTail);
 s.queryAllNodes;
 ::
 
+method:: inputBus
+Return a link::Classes/Bus:: object that represents the input audio bus.
+
+method:: outputBus
+Return a link::Classes/Bus:: object that represents the output audio bus.
+
+
 subsection:: Information and debugging
 
 method:: dumpOSC

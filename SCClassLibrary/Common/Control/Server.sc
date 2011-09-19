@@ -216,7 +216,8 @@ Server {
 
 	var <window, <>scopeWindow;
 	var <emacsbuf;
-	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float"; 	var <>recChannels=2;
+	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float";
+	var <>recChannels=2;
 
 	var <volume;
 
@@ -540,6 +541,14 @@ Server {
 
 	cachedBuffersDo { |func| Buffer.cachedBuffersDo(this, func) }
 	cachedBufferAt { |bufnum| ^Buffer.cachedBufferAt(this, bufnum) }
+
+	inputBus {
+		^Bus(\audio, this.options.numOutputBusChannels, this.options.numInputBusChannels, this);
+	}
+
+	outputBus {
+		^Bus(\audio, 0, this.options.numOutputBusChannels, this);
+	}
 
 	startAliveThread { arg delay=0.0;
 		this.addStatusWatcher;
