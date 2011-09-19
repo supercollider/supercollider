@@ -2576,11 +2576,18 @@ SCWebView::SCWebView(SCContainerView *inParent, PyrObject* inObj, SCRect inBound
 	mWebView = [[SCNSWebView alloc] initWithFrame:matrect frameName:nil groupName: nil];
 	[mWebView initVars];
 	NSView *view = mTop->GetNSView();
-	SCNSFlippedView *clipView = [[SCNSFlippedView alloc] initWithFrame:[view frame]];
-	[view retain];
-	[[view window] setContentView:clipView];
-	[clipView addSubview:view];
-	[clipView addSubview:mWebView];
+	flipView = [[view window] contentView];
+	if (![flipView isKindOfClass: [SCNSFlippedView class]] ) {
+		flipView = [[SCNSFlippedView alloc] initWithFrame:[view frame]]; // a wrapper view hack to get coords right
+		[view retain];
+		[view setAutoresizingMask: 63];
+		[flipView setAutoresizesSubviews:YES];
+		[[view window] setContentView:flipView];
+		[flipView addSubview:view];
+	} else {
+		[flipView retain]; // increment the retain count
+	}
+	[view addSubview:mWebView];
 	
 	[mWebView setEditingDelegate:mWebView];
 	[mWebView setFrameLoadDelegate:mWebView];
@@ -2601,6 +2608,16 @@ SCWebView::~SCWebView()
 	[mWebView close];
 	[[SCVirtualMachine sharedInstance] removeDeferredOperationsFor:mWebView];
 	[mWebView release];
+	if ([flipView retainCount] == 1) { // if nobody else needs this wrapperView, clean it up
+		NSView *view = mTop->GetNSView();
+		[[view window] setContentView:view];
+		[view release];
+		[flipView removeFromSuperview];
+		[flipView release];
+	} else {
+		[flipView release]; // otherwise just decrement the retain count
+	}
+
 }
 
 void SCWebView::setBounds(SCRect screct)
