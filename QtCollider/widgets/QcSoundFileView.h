@@ -174,18 +174,18 @@ public:
   QSize minimumSizeHint() const { return QSize( 100, 20 ); }
 
 public Q_SLOTS:
-  void zoomTo( float fraction );
+  void zoomTo( double fraction );
   //void zoomTo( float fraction, quint64 frame );
-  void zoomBy( float factor );
+  void zoomBy( double factor );
   void zoomAllOut();
   void zoomSelection( int selectionIndex );
   void scrollTo( double frame );
   void scrollBy( double frames );
-  void setScrollPos( float fraction ); // as fraction of scrolling range
+  void setScrollPos( double fraction ); // as fraction of scrolling range
   void scrollToStart();
   void scrollToEnd();
-  void setYZoom( float factor );
-  void setXZoom( float seconds );
+  void setYZoom( double factor );
+  void setXZoom( double seconds );
 
 
 Q_SIGNALS:

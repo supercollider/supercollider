@@ -189,7 +189,7 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
         return Slot::setPalette( slot, val.value<QPalette>() );
     case QMetaType::Float:
     case QMetaType::Double:
-        SetFloat( slot, val.value<float>() );
+        SetFloat( slot, val.value<double>() );
         return errNone;
     case QMetaType::Int:
         SetInt( slot, val.toInt() );
@@ -238,6 +238,13 @@ float Slot::toFloat( PyrSlot *slot )
   float f;
   if( slotFloatVal( slot, &f ) ) return 0.f;
   return f;
+}
+
+double Slot::toDouble( PyrSlot *slot )
+{
+  double d;
+  if( slotDoubleVal( slot, &d ) ) return 0.0;
+  return d;
 }
 
 QString Slot::toString( PyrSlot *slot )
@@ -468,7 +475,7 @@ QVariant Slot::toVariant( PyrSlot *slot )
       }
     }
     default:
-      return QVariant( toFloat( slot ) );
+      return QVariant( toDouble( slot ) );
   }
 }
 
@@ -548,7 +555,7 @@ void QtCollider::Variant::setData( PyrSlot *slot )
       break;
     }
     default :
-      _type = QMetaType::Float;
-      _ptr = new float( toFloat(slot) );
+      _type = QMetaType::Double;
+      _ptr = new double( toDouble(slot) );
   }
 }

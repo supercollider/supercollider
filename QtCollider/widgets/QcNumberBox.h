@@ -87,8 +87,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     void setMaxDecimals( int );
 
   public Q_SLOTS:
-    void increment( float factor );
-    void decrement( float factor );
+    void increment( double factor );
+    void decrement( double factor );
 
   Q_SIGNALS:
     void scrolled( int steps );

@@ -90,12 +90,12 @@ QSize QcRangeSlider::minimumSizeHint() const
   return ( _ort == Qt::Horizontal ? QSize( 30, 10 ) : QSize( 10, 30 ) );
 }
 
-void QcRangeSlider::increment( float factor )
+void QcRangeSlider::increment( double factor )
 {
   moveBy( factor * _step );
 }
 
-void QcRangeSlider::decrement( float factor )
+void QcRangeSlider::decrement( double factor )
 {
   moveBy( -factor * _step );
 }

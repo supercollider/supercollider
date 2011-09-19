@@ -44,6 +44,7 @@ namespace Slot
   bool toBool( PyrSlot * );
   int toInt( PyrSlot * );
   float toFloat( PyrSlot * );
+  double toDouble( PyrSlot * );
   QString toString( PyrSlot * );
   QPointF toPoint( PyrSlot * );
   QRectF toRect( PyrSlot * );

@@ -354,11 +354,11 @@ void QcWaveform::setWaveColors( const VariantList &list )
   redraw();
 }
 
-void QcWaveform::zoomTo( float z )
+void QcWaveform::zoomTo( double z )
 {
-  z = qMax( 0.f, qMin( 1.f, z ) );
+  z = qMax( 0.0, qMin( 1.0, z ) );
 
-  _dur = qMax( _rangeDur * z, 1.f );
+  _dur = qMax( _rangeDur * z, 1.0 );
 
   //printf("dur: %Li view: %Li\n", sfInfo.frames, _dur);
   if( _beg + _dur > _rangeEnd ) _beg = _rangeEnd - _dur;
@@ -367,7 +367,7 @@ void QcWaveform::zoomTo( float z )
   redraw();
 }
 
-void QcWaveform::zoomBy( float factor )
+void QcWaveform::zoomBy( double factor )
 {
   zoomTo( zoom() * factor );
 }
@@ -396,7 +396,7 @@ float QcWaveform::scrollPos()
   double scrollRange = _rangeDur - _dur;
   return scrollRange > 0.0 ? (_beg - _rangeBeg) / scrollRange : 0.f;
 }
-void QcWaveform::setScrollPos( float fraction )
+void QcWaveform::setScrollPos( double fraction )
 {
   scrollTo( fraction * (_rangeDur - _dur) + _rangeBeg );
 }
@@ -411,14 +411,14 @@ void QcWaveform::scrollToEnd()
   scrollTo( _rangeEnd - _dur );
 }
 
-void QcWaveform::setXZoom( float seconds )
+void QcWaveform::setXZoom( double seconds )
 {
   // NOTE We have limited _rangeDur to 1 minimum.
-  float frac = seconds * sfInfo.samplerate / _rangeDur;
+  double frac = seconds * sfInfo.samplerate / _rangeDur;
   zoomTo( frac );
 }
 
-void QcWaveform::setYZoom( float factor )
+void QcWaveform::setYZoom( double factor )
 {
   _yZoom = factor;
   redraw();

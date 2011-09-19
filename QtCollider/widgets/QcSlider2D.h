@@ -47,10 +47,10 @@ class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
     QSize sizeHint() const { return QSize(150,150); }
     QSize minimumSizeHint() const { return QSize(30,30); }
   public Q_SLOTS:
-    void incrementX( float factor = 1.f );
-    void decrementX( float factor = 1.f );
-    void incrementY( float factor = 1.f );
-    void decrementY( float factor = 1.f );
+    void incrementX( double factor = 1.f );
+    void decrementX( double factor = 1.f );
+    void incrementY( double factor = 1.f );
+    void decrementY( double factor = 1.f );
   Q_SIGNALS:
     void action();
     void randomize();
