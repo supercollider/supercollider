@@ -37,12 +37,12 @@ QcSlider::QcSlider()
            this, SLOT(action( int )));
 }
 
-void  QcSlider::increment( float factor )
+void  QcSlider::increment( double factor )
 {
   QSlider::setValue( QSlider::singleStep() * factor + QSlider::value() );
 }
 
-void  QcSlider::decrement( float factor )
+void  QcSlider::decrement( double factor )
 {
   QSlider::setValue( QSlider::singleStep() * (-factor) + QSlider::value() );
 }

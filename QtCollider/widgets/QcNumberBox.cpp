@@ -170,14 +170,14 @@ void QcNumberBox::setMaxDecimals( int d )
     setValue( _value ); // round current value
 }
 
-void QcNumberBox::increment( float factor )
+void QcNumberBox::increment( double factor )
 {
   if( !isReadOnly() || _valueType != Number ) return;
   setValue( value() + (step * factor) );
   Q_EMIT( action() );
 }
 
-void QcNumberBox::decrement( float factor )
+void QcNumberBox::decrement( double factor )
 {
   if( !isReadOnly() || _valueType != Number ) return;
   setValue( value() - (step * factor) );
