@@ -341,8 +341,7 @@ Quarks
 
 		// note, this doesn't actually contact svn
 		// it only reads the DIRECTORY entries you've already checked out
-		quarks = this.repos.quarks.copy
-			.sort({ |a, b| a.name < b.name });
+		quarks = this.repos.quarks.copy;
 
 		scrB = GUI.window.screenBounds;
 		height = min(quarks.size * 25 + 120, scrB.height - 60);
@@ -445,15 +444,16 @@ Quarks
 
 	qtGui {
 		var window, lblCaption,
-			btnFetch, btnRefresh, btnHelp, btnOpenDir, btnReset, btnApply,
+			btnUpdate, btnHelp, btnOpenDir, btnReset, btnApply,
 			lblStatus, lblExplanation, quarksView,
 			infoView, btnQuarkHelp, btnQuarkOpen, txtDescription, btnCloseDetails;
 		var quarks, views, curQuark;
-		var fillPage;
+		var refresh, msgWorking, msgDone;
 		var screen, palette, gizmo;
 
-		fillPage = {
+		refresh = {
 			quarksView.invokeMethod( \clear );
+			quarks = this.repos.quarks.copy;
 			quarksView.canSort = false;
 			views = quarks.collect{|quark|
 				var qView = QuarkView.new(quarksView, 500@20, quark,
@@ -467,10 +467,15 @@ Quarks
 			views
 		};
 
-		// note, this doesn't actually contact svn
-		// it only reads the DIRECTORY entries you've already checked out
-		quarks = this.repos.quarks.copy
-			.sort({ |a, b| a.name < b.name });
+		msgWorking = { arg msg;
+			lblStatus.background = palette.buttonColor.blend(Color.yellow,0.2);
+			lblStatus.string = msg;
+		};
+
+		msgDone =  { arg msg;
+			lblStatus.background = palette.buttonColor.blend(Color.green,0.2);
+			lblStatus.string = msg;
+		};
 
 		palette = GUI.current.palette;
 		screen = Window.flipY(Window.availableBounds);
@@ -478,17 +483,23 @@ Quarks
 
 		lblCaption = StaticText().font_( GUI.font.new(size:16,usePointSize:true) ).string_(this.name);
 
-		btnFetch = Button()
-			.states_([["Fetch"]])
-			.setProperty( \toolTip, "Download the latest state of the Quarks repository and update the local directory");
-		if ( quarks.size == 0 )
-			{ btnFetch.action_({ this.checkoutDirectory }) }
-			{ btnFetch.action_({ this.updateDirectory }) };
-
-		btnRefresh = Button()
-			.states_([["Refresh"]])
-			.setProperty( \toolTip, "Refresh the Quarks listing below with the information from the local directory")
-			.action_({window.close;this.qtGui});
+		btnUpdate = Button()
+			.states_([["Update"]])
+			.setProperty( \toolTip, "Download the latest information and update the Quarks listing")
+			.action_({
+				quarksView.enabled = false;
+				msgWorking.value("Downloading the latest information...");
+				AppClock.sched( 0.2, {
+					protect {
+						this.updateDirectory;
+					} {
+						refresh.value;
+						quarksView.enabled = true;
+						msgDone.value("Quarks listing has been updated with the latest information.")
+					}
+				});
+				this
+			});
 
 		btnHelp = Button().states_([["Help"]])
 			.setProperty( \toolTip, "Browse help for all the Quarks - Not yet available!")
@@ -506,23 +517,27 @@ Quarks
 		btnApply = Button().states_([["Apply",nil,Color.blue.blend(palette.buttonColor,0.6)]])
 			.setProperty( \toolTip, "Apply the marked changes")
 			.action_({ arg butt;
-				Task{
-					lblStatus.string = "Applying changes, please wait";
-					lblStatus.background = palette.buttonColor.blend(Color.yellow,0.2);
-					0.1.wait;
-					views.do{|qView|
-						qView.toBeInstalled.if({
-							this.install(qView.quark.name);
-							qView.flush
-						});
-						qView.toBeDeinstalled.if({
-							this.uninstall(qView.quark.name);
-							qView.flush;
-						})
-					};
-					lblStatus.string = "Done. You should now recompile sclang";
-					lblStatus.background = palette.buttonColor.blend(Color.green,0.2);
-				}.play(AppClock);
+				quarksView.enabled = false;
+				msgWorking.value("Applying changes, please wait...");
+				AppClock.sched( 0.2, {
+					protect {
+						views.do{|qView|
+							qView.toBeInstalled.if({
+								this.install(qView.quark.name);
+								qView.flush
+							});
+							qView.toBeDeinstalled.if({
+								this.uninstall(qView.quark.name);
+								qView.flush;
+							})
+						};
+					} {
+						msgDone.value("Changes applied." +
+							"You should recompile the class library for changes to take effect."
+						);
+						quarksView.enabled = true;
+					}
+				});
 			});
 
 		lblExplanation = StaticText().string_(
@@ -592,14 +607,14 @@ Quarks
 		window.layout =
 			\QVLayout.asClass.new(
 				lblCaption,
-				\QHLayout.asClass.new( btnFetch, btnRefresh, btnOpenDir, btnHelp ),
+				\QHLayout.asClass.new( btnUpdate, btnOpenDir, btnHelp, nil ),
 				lblStatus,
 				\QHLayout.asClass.new( btnReset, btnApply, [lblExplanation, s:1] ).margins_(0),
 				[quarksView, s:5],
 				[infoView, s:2]
 			);
 
-		fillPage.value;
+		refresh.value;
 		window.front;
 		^window;
 	}
