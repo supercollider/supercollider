@@ -218,6 +218,7 @@ public:
 	
 protected:
 	SCNSWebView *mWebView;
+	SCNSFlippedView *flipView;
 };
 
 //class SCTextField : public SCStaticText
