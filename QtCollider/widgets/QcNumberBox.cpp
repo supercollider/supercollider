@@ -92,7 +92,7 @@ void QcNumberBox::setEditedTextColor( const QColor& c ) {
 void QcNumberBox::setValue( double val )
 {
   if( val > _validator->top() ) val = _validator->top();
-  else if ( val < _validator->bottom() ) val = _validator->bottom();
+  if ( val < _validator->bottom() ) val = _validator->bottom();
 
   val = roundedVal( val );
 
@@ -123,6 +123,20 @@ void QcNumberBox::setTextValue( const QString &str )
 double QcNumberBox::value () const
 {
   return _value;
+}
+
+void QcNumberBox::setMinimum( double min )
+{
+  _validator->setBottom(min);
+  if( _valueType == Number )
+    setValue( _value ); // clip current value
+}
+
+void QcNumberBox::setMaximum( double max )
+{
+  _validator->setTop(max);
+  if( _valueType == Number )
+    setValue( _value ); // clip current value
 }
 
 void QcNumberBox::setDecimals( int d )

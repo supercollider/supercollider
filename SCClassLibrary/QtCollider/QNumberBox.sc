@@ -1,5 +1,5 @@
 QNumberBox : QAbstractStepValue {
-  var <clipLo, <clipHi, <scroll, <scroll_step;
+  var <scroll, <scroll_step;
   var <align, <buttonsVisible = false;
   var <normalColor, <typingColor;
   var <object, <>setBoth = true;
@@ -13,8 +13,6 @@ QNumberBox : QAbstractStepValue {
   }
 
   initQNumberBox {
-    clipLo = inf;
-    clipHi = inf;
     scroll = true;
     scroll_step = 1;
     normalColor = Color.black;
@@ -55,15 +53,11 @@ QNumberBox : QAbstractStepValue {
 
   string_ { arg string; this.setProperty( \text, string ); }
 
-  clipLo_ { arg aFloat;
-    clipLo = aFloat;
-    this.setProperty( \minimum, aFloat; );
-  }
+  clipLo { ^this.getProperty(\minimum) }
+  clipLo_ { arg aFloat; this.setProperty( \minimum, aFloat ) }
 
-  clipHi_ { arg aFloat;
-    clipHi = aFloat;
-    this.setProperty( \maximum, aFloat; );
-  }
+  clipHi { ^this.getProperty(\maximum) }
+  clipHi_ { arg aFloat; this.setProperty( \maximum, aFloat ) }
 
   scroll_ { arg aBool;
     scroll = aBool;

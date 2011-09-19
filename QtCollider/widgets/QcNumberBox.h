@@ -36,6 +36,8 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
   Q_PROPERTY( float ctrlScale READ dummyFloat WRITE setCtrlScale );
   Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
 
+  Q_PROPERTY( double minimum READ minimum WRITE setMinimum );
+  Q_PROPERTY( double maximum READ maximum WRITE setMaximum );
   Q_PROPERTY( int decimals READ decimals WRITE setDecimals );
   Q_PROPERTY( int maxDecimals READ maxDecimals WRITE setMaxDecimals );
   Q_PROPERTY( int minDecimals READ minDecimals WRITE setMinDecimals );
@@ -73,6 +75,10 @@ class QcNumberBox : public QLineEdit, QcHelper, QcAbstractStepValue
     void setTextValue( const QString & );
     double value() const;
     int valueType() const { return (int) _valueType; }
+    double minimum() const { return _validator->bottom(); }
+    double maximum() const { return _validator->top(); }
+    void setMinimum( double );
+    void setMaximum( double );
     int decimals() const { return maxDecimals(); }
     int minDecimals() const { return _minDec; }
     int maxDecimals() const { return _maxDec; }
