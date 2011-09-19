@@ -551,12 +551,12 @@ Quarks
 			.columns_([nil,"Name","Summary"])
 			.action_({ |v|
 				var curItem = v.currentItem;
-				var i = 0, c = views.size;
+				var curView;
 				curQuark = nil;
 				if( curItem.notNil ) {
-					while { (i < c) and: {views[i].treeItem != curItem} } { i = i + 1; };
-					if( i < c ){
-						curQuark = quarks[i];
+					curView = views.detect { |view| view.treeItem == curItem };
+					if( curView.notNil ) {
+						curQuark = curView.quark;
 						txtDescription.string = curQuark.longDesc;
 						btnQuarkOpen.enabled = curQuark.isLocal;
 						infoView.visible = true;
