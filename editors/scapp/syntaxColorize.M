@@ -404,12 +404,18 @@ void SyntaxColorize(NSTextView* textView)
  		continue;
 	negnumber:
 		bool numFound = false; //no digit found yet, after minus sign
+		bool reachedStart = false;
 		int tempTextpos = textpos, tempCharno = charno, tempYylen = yylen, tempLineno = lineno;
 		do { //go backwards until you find stg. other than whitespace and numbers
 			unput(c); unput(c); 
 			c = input0();
+			if(textpos <= 1) { //beginning of doc. escape!
+				reachedStart = true;
+				break;
+			}
 		} while (c == ' ' || c == '\n' || c == '\t' || c == '\v' || c == '\f' ||  c == '\r' || c == 0 || (c >= '0' && c <= '9'));
 		textpos = tempTextpos; charno = tempCharno; yylen = tempYylen; lineno = tempLineno; //restore original position
+		if(reachedStart) continue;
 		if(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_' || c == ')' || c == ']') continue; //it must be a subtraction operator, skip.
 		startrun = textpos - 1;
 		do {
