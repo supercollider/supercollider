@@ -35,14 +35,14 @@
   :options '(:must-match))
 
 (defcustom sclang-help-path (list sclang-system-help-dir
-				  "~/share/SuperCollider/Help")
+				  "~/.local/share/SuperCollider/Help")
   "*List of directories where SuperCollider help files are kept."
   :group 'sclang-interface
   :version "21.4"
   :type '(repeat directory))
 
 (defconst sclang-extension-path (list sclang-system-extension-dir
-				      "~/share/SuperCollider/Extensions")
+				      "~/.local/share/SuperCollider/Extensions")
   "List of SuperCollider extension directories.")
 
 (defcustom sclang-help-fill-column fill-column
