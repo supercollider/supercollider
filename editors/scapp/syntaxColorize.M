@@ -37,11 +37,11 @@ SCColor synColText = SCMakeColor(0, 0, 0, 1),
 		synColString = SCMakeColor(0.375, 0.375, 0.375, 1), 
 		synColSymbol = SCMakeColor(0, 0.45, 0, 1), 
 		synColComment = SCMakeColor(0.75, 0, 0, 1), 
-		synColNumber = SCMakeColor(0.0, 0.4, 0.4, 1),
+		synColNumber = SCMakeColor(0.0, 0.0, 0.0, 1),
 		synColSpecialVals = SCMakeColor(0.2, 0.2, 0.75, 1), // true false nil inf 
 		synColSpecialVars = SCMakeColor(0.4, 0.4, 0.75, 1), // super, thisProcess
 		synColDecl = SCMakeColor(0, 0, 1, 1), // var, const, args
-		synColPunc = SCMakeColor(0.33333333333333, 0.33333333333333, 0.33333333333333, 1), // : ; ' [ ] { } ( )
+		synColPunc = SCMakeColor(0.0, 0.0, 0.0, 1), // : ; ' [ ] { } ( )
 		synColEnv = SCMakeColor(1.0, 0.4, 0, 1);
 
 static bool streq(char *cstr, unichar *ustr)
