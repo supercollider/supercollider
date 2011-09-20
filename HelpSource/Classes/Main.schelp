@@ -96,9 +96,9 @@ code::
 // post all incoming traffic except the server status messages
 // basically the same as OSCFunc.trace
 (
-f = { |time, replyAddr, msg|
+f = { |time, replyAddr, recvPort, msg|
 	if(msg[0] != '/status.reply') {
-		"At time %s received message % from %\n".postf( time, msg, replyAddr )
+		"At time %s received message % from %\n".postf( time, msg, replyAddr, recvPort )
 	}
 };
 thisProcess.addOSCFunc(f);
