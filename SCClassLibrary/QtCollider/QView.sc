@@ -312,7 +312,10 @@ QView : QObject {
   // ----------------- actions .....................................
 
   action_ { arg func;
-    this.manageMethodConnection( action, func, 'action()', \doAction );
+    // NOTE: not all widgets have action() signal
+    try {
+      this.manageMethodConnection( action, func, 'action()', \doAction );
+    };
     action = func;
   }
 
