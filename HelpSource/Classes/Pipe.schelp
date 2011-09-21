@@ -27,7 +27,9 @@ argument::mode
 A link::Classes/String:: passed to popen, so should be one of: "r","w"
 
 method::close
-Closes the pipe. You must do this explicitly before the Pipe object is garbage collected.
+Closes the pipe, waiting for the command to finish. You must do this explicitly before the Pipe object is garbage collected.
+
+returns:: The exit status of the command (an Integer).
 
 Examples::
 
