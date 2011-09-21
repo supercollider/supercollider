@@ -87,6 +87,9 @@ QC_LANG_PRIMITIVE( Qt_StringBounds, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QFontMetrics fm( f );
   QRect bounds = fm.boundingRect( str );
 
+  // we keep the font height even on empty string;
+  if( str.isEmpty() ) bounds.setHeight( fm.height() );
+
   Slot::setRect( a+2, bounds );
   slotCopy( r, a+2 );
 
