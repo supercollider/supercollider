@@ -123,9 +123,10 @@ Pipe : UnixFILE {
 	}
 
 	close {
-		this.prClose;
+		var res = this.prClose;
 		fileptr = nil;
 		openFiles.remove(this);
+		^res;
 	}
 
 	prClose { // close the file
