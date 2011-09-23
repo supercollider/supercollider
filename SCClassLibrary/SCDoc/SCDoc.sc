@@ -536,7 +536,7 @@ SCDoc {
         this.postProgress("Synchronizing non-schelp files...");
         this.checkSystemCmd("rsync");
 
-        cmd = "rsync -rlt --exclude '*.schelp' --exclude '.*' %/ %";
+        cmd = "rsync -rlt --chmod=u+rwX --exclude '*.schelp' --exclude '.*' %/ %";
 
         if(doWait) {
             c = Condition.new;
