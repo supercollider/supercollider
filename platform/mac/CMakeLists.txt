@@ -118,6 +118,7 @@ set(scapp_sources
 
 set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/main.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaFilePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/DrawBackground.M
@@ -144,7 +145,6 @@ set(objc_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCNSWindow.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/TabletEvents.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/TextFinder.m
-	${CMAKE_SOURCE_DIR}/editors/scapp/main.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLAdvancedFindController.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLStatusBarTextFieldCell.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/ICUMatcher.m
