@@ -277,8 +277,7 @@ SCDocHTMLRenderer : SCDocRenderer {
                         mstat = 1;
                     };
                     file.write("<h3 class='"++css++"'>");
-//                    file.write("<a class='anchor' name='"++(pfx??".")++mname++"'>");
-                    file.write("<span class='methprefix'>"++"<a class='anchor' name='"++(pfx??".")++mname++"'>"++(pfx??"&nbsp;")++"</a></span>"++"<a href='"++baseDir+/+"Overviews/Methods.html#"++this.escapeSpecialChars(mname)++"'>"++this.escapeSpecialChars(mname)++"</a>");
+                    file.write("<span class='methprefix'>"++(pfx??"&nbsp;")++"</span>"++"<a name='"++(pfx??".")++mname++"' href='"++baseDir+/+"Overviews/Methods.html#"++this.escapeSpecialChars(mname)++"'>"++this.escapeSpecialChars(mname)++"</a>");
 
                     switch (mstat,
                         // getter only
