@@ -116,6 +116,16 @@ struct Pitch : public Unit
 	bool m_getClarity;
 };
 
+struct InterpolationUnit
+{
+	static const float minDelaySamples = 1.f;
+};
+
+struct CubicInterpolationUnit
+{
+	static const float minDelaySamples = 2.f;
+};
+
 struct BufDelayUnit : public Unit
 {
 	float m_fbufnum;
@@ -126,47 +136,37 @@ struct BufDelayUnit : public Unit
 	uint32 m_numoutput;
 };
 
-struct BufDelayN : public BufDelayUnit
-{
-};
+struct BufDelayN : public BufDelayUnit, InterpolationUnit
+{};
 
-struct BufDelayL : public BufDelayUnit
-{
-};
+struct BufDelayL : public BufDelayUnit, InterpolationUnit
+{};
 
-struct BufDelayC : public BufDelayUnit
-{
-};
+struct BufDelayC : public BufDelayUnit, CubicInterpolationUnit
+{};
 
 struct BufFeedbackDelay : public BufDelayUnit
 {
 	float m_feedbk, m_decaytime;
 };
 
-struct BufCombN : public BufFeedbackDelay
-{
-};
+struct BufCombN : public BufFeedbackDelay, InterpolationUnit
+{};
 
-struct BufCombL : public BufFeedbackDelay
-{
-};
+struct BufCombL : public BufFeedbackDelay, InterpolationUnit
+{};
 
-struct BufCombC : public BufFeedbackDelay
-{
-};
+struct BufCombC : public BufFeedbackDelay, CubicInterpolationUnit
+{};
 
-struct BufAllpassN : public BufFeedbackDelay
-{
-};
+struct BufAllpassN : public BufFeedbackDelay, InterpolationUnit
+{};
 
-struct BufAllpassL : public BufFeedbackDelay
-{
-};
+struct BufAllpassL : public BufFeedbackDelay, InterpolationUnit
+{};
 
-struct BufAllpassC : public BufFeedbackDelay
-{
-};
-
+struct BufAllpassC : public BufFeedbackDelay, CubicInterpolationUnit
+{};
 
 struct DelayUnit : public Unit
 {
@@ -178,46 +178,37 @@ struct DelayUnit : public Unit
 	long m_numoutput;
 };
 
-struct DelayN : public DelayUnit
-{
-};
+struct DelayN : public DelayUnit, InterpolationUnit
+{};
 
-struct DelayL : public DelayUnit
-{
-};
+struct DelayL : public DelayUnit, InterpolationUnit
+{};
 
-struct DelayC : public DelayUnit
-{
-};
+struct DelayC : public DelayUnit, InterpolationUnit
+{};
 
 struct FeedbackDelay : public DelayUnit
 {
 	float m_feedbk, m_decaytime;
 };
 
-struct CombN : public FeedbackDelay
-{
-};
+struct CombN : public FeedbackDelay, InterpolationUnit
+{};
 
-struct CombL : public FeedbackDelay
-{
-};
+struct CombL : public FeedbackDelay, InterpolationUnit
+{};
 
-struct CombC : public FeedbackDelay
-{
-};
+struct CombC : public FeedbackDelay, CubicInterpolationUnit
+{};
 
-struct AllpassN : public FeedbackDelay
-{
-};
+struct AllpassN : public FeedbackDelay, InterpolationUnit
+{};
 
-struct AllpassL : public FeedbackDelay
-{
-};
+struct AllpassL : public FeedbackDelay, InterpolationUnit
+{};
 
-struct AllpassC : public FeedbackDelay
-{
-};
+struct AllpassC : public FeedbackDelay, CubicInterpolationUnit
+{};
 
 struct BufInfoUnit : public Unit
 {
@@ -225,7 +216,7 @@ struct BufInfoUnit : public Unit
 	SndBuf *m_buf;
 };
 
-struct Pluck : public FeedbackDelay
+struct Pluck : public FeedbackDelay, CubicInterpolationUnit
 {
 	float m_lastsamp, m_prevtrig, m_coef;
 	long m_inputsamps;
@@ -2159,10 +2150,16 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 }
 #endif
 
-#define BufCalcDelay(delaytime) (sc_clip(delaytime * (float)SAMPLERATE, 1.f, \
-										 (float)(PREVIOUSPOWEROFTWO(bufSamples))-1))
 
-static void BufDelayUnit_Reset(BufDelayUnit *unit)
+template <typename Unit>
+static float BufCalcDelay(const Unit * unit, int bufSamples, float delayTime)
+{
+	float minDelay = Unit::minDelaySamples;
+	return sc_clip(delayTime * (float)SAMPLERATE, minDelay, (float)(PREVIOUSPOWEROFTWO(bufSamples))-1);
+}
+
+template <typename Unit>
+static void BufDelayUnit_Reset(Unit *unit)
 {
 	//Print("->DelayUnit_Reset\n");
 	//unit->m_maxdelaytime = ZIN0(1);
@@ -2175,14 +2172,15 @@ static void BufDelayUnit_Reset(BufDelayUnit *unit)
 	//Print("->GET_BUF\n");
 	GET_BUF
 	//Print("<-GET_BUF\n");
-	unit->m_dsamp = BufCalcDelay(unit->m_delaytime);
+	unit->m_dsamp = BufCalcDelay(unit, bufSamples, unit->m_delaytime);
 	unit->m_numoutput = 0;
 	unit->m_iwrphase = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void BufFeedbackDelay_Reset(BufFeedbackDelay *unit)
+template <typename Unit>
+static void BufFeedbackDelay_Reset(Unit *unit)
 {
 	BufDelayUnit_Reset(unit);
 
@@ -2803,7 +2801,7 @@ inline void BufDelayX_perform(BufDelayX *unit, int inNumSamples, UnitCalcFunc re
 			PerformClass::perform(in, out, bufData, iwrphase, idsamp, frac, mask);
 		);
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP1(inNumSamples,
@@ -2841,7 +2839,7 @@ inline void BufDelayX_perform_a(BufDelayX *unit, int inNumSamples, UnitCalcFunc 
 	long iwrphase = unit->m_iwrphase;
 
 	LOOP1(inNumSamples,
-		float dsamp = BufCalcDelay(ZXP(delaytime));
+		float dsamp = BufCalcDelay(unit, bufSamples, ZXP(delaytime));
 		long idsamp = (long)dsamp;
 
 		float frac = dsamp - idsamp;
@@ -2884,7 +2882,7 @@ void BufDelayN_next(BufDelayN *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(bufSamples));
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP1(inNumSamples,
@@ -2914,8 +2912,7 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		DelayN_delay_loop<true>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(bufSamples));
 	} else {
-
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP1(inNumSamples,
@@ -3066,7 +3063,7 @@ inline void BufFilterX_perform(BufCombX *unit, int inNumSamples, UnitCalcFunc re
 			PerformClass::perform(in, out, bufData, iwrphase, idsamp, frac, mask, feedbk);
 		);
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3110,7 +3107,7 @@ inline void BufFilterX_perform_a(BufCombX *unit, int inNumSamples, UnitCalcFunc 
 
 	LOOP1(inNumSamples,
 		float del = ZXP(delaytime);
-		float dsamp = BufCalcDelay(del);
+		float dsamp = BufCalcDelay(unit, bufSamples, del);
 		float feedbk = sc_CalcFeedback(del, decaytime);
 
 		long idsamp = (long)dsamp;
@@ -3202,7 +3199,7 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 		}
 		iwrphase += inNumSamples;
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3299,8 +3296,7 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 			unit->m_decaytime = decaytime;
 		}
 	} else {
-
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3508,7 +3504,7 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 		}
 		iwrphase += inNumSamples;
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3612,7 +3608,7 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 			unit->m_decaytime = decaytime;
 		}
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3761,13 +3757,16 @@ static void DelayUnit_AllocDelayLine(DelayUnit *unit)
 	unit->m_mask = delaybufsize - 1;
 }
 
-static float CalcDelay(DelayUnit *unit, float delaytime)
+template <typename Unit>
+static float CalcDelay(Unit *unit, float delaytime)
 {
+	float minDelay = Unit::minDelaySamples;
 	float next_dsamp = delaytime * (float)SAMPLERATE;
-	return sc_clip(next_dsamp, 1.f, unit->m_fdelaylen);
+	return sc_clip(next_dsamp, minDelay, unit->m_fdelaylen);
 }
 
-static void DelayUnit_Reset(DelayUnit *unit)
+template <typename Unit>
+static void DelayUnit_Reset(Unit *unit)
 {
 	unit->m_maxdelaytime = ZIN0(1);
 	unit->m_delaytime = ZIN0(2);
@@ -3789,7 +3788,8 @@ void DelayUnit_Dtor(DelayUnit *unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void FeedbackDelay_Reset(FeedbackDelay *unit)
+template <typename Unit>
+static void FeedbackDelay_Reset(Unit *unit)
 {
 	unit->m_decaytime = ZIN0(3);
 
