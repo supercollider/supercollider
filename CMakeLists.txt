@@ -167,6 +167,7 @@ option(SSE42 "Compile with support for SSE4.2 instructions.")
 
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
+option(INSTALL_OLD_HELP "Install old and deprecated help files" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -350,8 +351,15 @@ endif()
 install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
 )
+
+if(INSTALL_OLD_HELP)
+	install(DIRECTORY Help
+		DESTINATION ${auxresourcesdir}
+	)
+endif()
+
 if(INSTALL_HELP)
-	install(DIRECTORY Help examples HelpSource
+	install(DIRECTORY examples HelpSource
 		DESTINATION ${auxresourcesdir}
 	)
 endif()
