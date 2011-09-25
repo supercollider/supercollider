@@ -248,15 +248,9 @@ String[char] : RawArray {
 
 
 	escapeChar { arg charToEscape; // $"
-		^this.class.streamContents({ arg st;
-			this.do({ arg char;
-				if(char == charToEscape,{
-					st << $\\
-				});
-				st << char;
-			})
-		})
+		_String_EscapeChar
 	}
+
 	quote {
 		^"\"" ++ this ++ "\""
 	}
