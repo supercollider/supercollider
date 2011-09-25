@@ -588,20 +588,18 @@ QC_QPEN_PRIMITIVE( QPen_StringAtPoint, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( str.isEmpty() ) return errNone;
   QPointF pt = Slot::toPoint( a+1 );
 
-  if( NotNil( a+2 ) || NotNil( a+3 ) ) {
-    painter->save();
-    if( NotNil( a+2 ) ) painter->setFont( Slot::toFont( a+2 ) );
-    if( NotNil( a+3 ) ) painter->setPen( Slot::toColor( a+3 ) );
-  }
+  painter->save();
+  if( NotNil( a+2 ) ) painter->setFont( Slot::toFont( a+2 ) );
+  QPen pen( painter->pen() );
+  pen.setColor( NotNil( a+3 ) ? Slot::toColor( a+3 ) : painter->brush().color() );
+  painter->setPen( pen );
 
   QFont f( painter->font() );
   QFontMetrics fm( f );
   QRect rect = fm.boundingRect( str );
   painter->drawText( pt - rect.topLeft(), str );
 
-  if( NotNil( a+2 ) || NotNil( a+3 ) ) {
-    painter->restore();
-  }
+  painter->restore();
 
   return errNone;
 }
@@ -612,11 +610,11 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( str.isEmpty() ) return errNone;
   QRectF rect = Slot::toRect( a+1 );
 
-  if( NotNil( a+2 ) || NotNil( a+3 ) ) {
-    painter->save();
-    if( NotNil( a+2 ) ) painter->setFont( Slot::toFont( a+2 ) );
-    if( NotNil( a+3 ) ) painter->setPen( Slot::toColor( a+3 ) );
-  }
+  painter->save();
+  if( NotNil( a+2 ) ) painter->setFont( Slot::toFont( a+2 ) );
+  QPen pen( painter->pen() );
+  pen.setColor( NotNil( a+3 ) ? Slot::toColor( a+3 ) : painter->brush().color() );
+  painter->setPen( pen );
 
   Qt::Alignment align;
   if( NotNil(a+4) ) align = static_cast<Qt::Alignment>( Slot::toInt( a+4 ) );
@@ -624,9 +622,7 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   painter->drawText( rect, align, str );
 
-  if( NotNil( a+2 ) || NotNil( a+3 ) ) {
-    painter->restore();
-  }
+  painter->restore();
 
   return errNone;
 }
