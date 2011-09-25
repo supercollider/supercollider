@@ -247,7 +247,8 @@ If EOB-P is non-nil, positions cursor at end of buffer."
     (format "*** %s %s ***" proc (substring msg 0 -1))
     "\n\n"))
   (when (memq (process-status proc) '(exit signal))
-    (sclang-on-library-shutdown)))
+    (sclang-on-library-shutdown)
+    (sclang-stop-command-process)))
 
 (defun sclang-process-filter (process string)
   (let ((buffer (process-buffer process)))
@@ -342,7 +343,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 	(incf i)
 	(sit-for 0.5))))
   (sclang-kill)
-  (sclang-release-command-fifo))
+  (sclang-stop-command-process))
 
 (defun sclang-recompile ()
   "Recompile class library."
@@ -373,6 +374,11 @@ Change this if \"cat\" has a non-standard name or location."
 (defconst sclang-command-process "SCLang Command"
   "Subprocess for receiving command results from sclang.")
 
+(defconst sclang-cmd-helper-proc "SCLang Command Helper"
+  "Dummy subprocess that will keep the command fifo open for writing
+   so reading does not fail automatically when sclang closes its own
+   writing end of the fifo")
+
 (defvar sclang-command-fifo nil
   "FIFO for communicating with the subprocess.")
 
@@ -397,20 +403,21 @@ Change this if \"cat\" has a non-standard name or location."
       (message "SCLang: Couldn't create command fifo")
       (setq sclang-command-fifo nil))))
 
-(defun sclang-command-process-sentinel (proc msg)
-  (and (memq (process-status proc) '(exit signal))
-       (sclang-release-command-fifo)))
-
 (defun sclang-start-command-process ()
   (sclang-create-command-fifo)
   (when sclang-command-fifo
+    ;; start the dummy process to keep the fifo open
+    (let ((process-connection-type nil))
+      (let ((proc (start-process-shell-command
+        sclang-cmd-helper-proc nil
+        (concat sclang-cat-program " > " sclang-command-fifo))))
+	    (set-process-query-on-exit-flag proc nil)))
     ;; sclang gets the fifo path via the environment
     (setenv "SCLANG_COMMAND_FIFO" sclang-command-fifo)
     (let ((process-connection-type nil))
       (let ((proc (start-process
 		   sclang-command-process nil
 		   sclang-cat-program sclang-command-fifo)))
-	(set-process-sentinel proc 'sclang-command-process-sentinel)
 	(set-process-filter proc 'sclang-command-process-filter)
 	;; this is important. use a unibyte stream without eol
 	;; conversion for communication.
@@ -418,6 +425,14 @@ Change this if \"cat\" has a non-standard name or location."
 	(set-process-query-on-exit-flag proc nil)))
     (unless (get-process sclang-command-process)
       (message "SCLang: Couldn't start command process"))))
+
+(defun sclang-stop-command-process ()
+  (when (get-process sclang-cmd-helper-proc)
+    (kill-process sclang-cmd-helper-proc)
+    (delete-process sclang-cmd-helper-proc))
+  ;; the real command process should now quit automatically,
+  ;; since there is no more writers to the command fifo
+  (sclang-release-command-fifo))
 
 (defvar sclang-command-process-previous nil
   "Unprocessed command process output.")
