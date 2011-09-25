@@ -655,6 +655,44 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
+int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
+{
+	PyrSlot* arg = g->sp - 1;
+	PyrSlot* charToEscapeSlot = g->sp - 1; // ignoreCase
+
+	assert (isKindOfSlot(arg, class_string));
+
+	if (!IsChar(charToEscapeSlot))
+		return errWrongType;
+
+	char charToEscape = slotRawChar(charToEscapeSlot);
+
+	PyrString* argString = (PyrString*)arg;
+	int length = argString->size;
+	PyrString* resultString = newPyrStringN(g->gc, length*2 + 1, 0, 1); // pressimize
+
+	char * original = argString->s;
+	char * result = resultString->s;
+
+	int resultLength = length;
+	for (int i = 0; i != length; ++i) {
+		char current = *original++;
+		if (current == charToEscape) {
+			*result++ = '\\';
+			resultLength += 1;
+		}
+		*result++ = current;
+	}
+	*result = 0;
+
+	resultString->size = resultLength;
+
+	SetRaw(arg, resultString);
+
+	return errNone;
+}
+
+
 void initStringPrimitives();
 void initStringPrimitives()
 {
@@ -681,6 +719,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
+	definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
 }
 
 #if _SC_PLUGINS_
