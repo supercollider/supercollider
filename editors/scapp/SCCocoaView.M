@@ -1339,6 +1339,26 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 		[self sendSelection: "interpretPrintCmdLine" ];
 }
 
+// workaround for plaintext copy
+- (BOOL)webView:(WebView *)webView doCommandBySelector:(SEL)command
+{
+	if (command == @selector(copy:)) {
+		NSString *markup = [[self selectedDOMRange] markupString];
+		NSData *data = [markup dataUsingEncoding: NSUTF8StringEncoding];
+		NSNumber *n = [NSNumber numberWithUnsignedInteger: NSUTF8StringEncoding];
+		NSDictionary *options = [NSDictionary dictionaryWithObject:n forKey: NSCharacterEncodingDocumentOption];
+		NSAttributedString *as = [[NSAttributedString alloc] initWithHTML:data options:options documentAttributes: NULL];
+		NSString *selectedString = [as string];
+		[as autorelease];
+		
+		NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+		[pasteboard clearContents];
+		NSArray *objectsToCopy = [NSArray arrayWithObject: selectedString];
+		[pasteboard writeObjects:objectsToCopy];
+		return YES;
+	}
+	return NO;
+}
 @end
 
 NSRect SCtoNSRect(SCRect screct);
