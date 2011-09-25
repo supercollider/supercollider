@@ -16,8 +16,7 @@ Plot {
 					fontColor: Color.grey(0.3),
 					plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
 					background: Color.new255(235, 235, 235),
-					//gridLinePattern: FloatArray[1, 5],
-					gridLinePattern: FloatArray[1, 0],
+					gridLinePattern: nil,
 					gridLineSmoothing: false,
 					labelX: "",
 					labelY: "",
@@ -43,7 +42,7 @@ Plot {
 			fontColor = ~fontColor;
 			backgroundColor = ~background;
 			gridLineSmoothing = ~gridLineSmoothing;
-			gridLinePattern = ~gridLinePattern.as(FloatArray);
+			gridLinePattern = ~gridLinePattern !? {~gridLinePattern.as(FloatArray)};
 			labelX = ~labelX;
 			labelY = ~labelY;
 		};
@@ -111,32 +110,24 @@ Plot {
 		var top = plotBounds.top;
 		var base = plotBounds.bottom;
 		Pen.fillColor = fontColor;
+		Pen.font = font;
 		this.drawOnGridX { |hpos, val, i|
 			var string = val.asStringPrec(5) ++ domainSpec.units;
-			Pen.font = font;
 			Pen.stringAtPoint(string, hpos @ base);
-			Pen.stroke;
 		};
-		Pen.stroke;
-
 	}
 
 	drawNumbersY {
-
 		var left = plotBounds.left;
 		var right = plotBounds.right;
 		Pen.fillColor = fontColor;
-
+		Pen.font = font;
 		this.drawOnGridY { |vpos, val, i|
 			var string = val.asStringPrec(5).asString ++ spec.units;
 			if(gridOnX.not or: { i > 0 }) {
-				Pen.font = font;
 				Pen.stringAtPoint(string, left @ vpos);
 			}
 		};
-
-		Pen.stroke;
-
 	}
 
 
@@ -344,19 +335,16 @@ Plot {
 	}
 
 	prStrokeGrid {
-		Pen.width = 1;
+		Pen.push;
 
+		Pen.width = 1;
 		try {
 			Pen.smoothing_(gridLineSmoothing);
-			Pen.lineDash_(gridLinePattern);
+			if(gridLinePattern.notNil) {Pen.lineDash_(gridLinePattern)};
 		};
-
 		Pen.stroke;
 
-		try {
-			Pen.smoothing_(true);
-			Pen.lineDash_(FloatArray[1, 0])
-		};
+		Pen.pop;
 	}
 
 }
