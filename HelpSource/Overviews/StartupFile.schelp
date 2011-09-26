@@ -18,7 +18,6 @@ code::
 // placing the following code in the file will cause these modifications to be made
 // at startup (see also: ServerOptions)
 
-
 Server.local.options.numOutputBusChannels = 4;	// change number of input and output channels
 Server.local.options.numInputBusChannels = 4;
 Server.internal.options.numOutputBusChannels = 4;
@@ -39,5 +38,10 @@ Server.internal.options.sampleRate = nil;	// use the currently selected samplera
 
 // change the standard archive path to a custom one:
 Archive.archiveDir = "~/scwork".standardizePath;
+
+// hook up jack ports to audio channels
+"SC_JACK_DEFAULT_INPUTS".setenv("system");
+"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+
 ::
 Naturally the file must contain only valid SC expressions.
