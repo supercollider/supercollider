@@ -286,11 +286,77 @@ Plot {
 	// editing
 
 
-	editData { |x, y, plotIndex|
-		var index = this.getIndex(x);
+	editDataIndex { |index, x, y, plotIndex|
+		// WARNING: assuming index is in range!
 		var val = this.getRelativePositionY(y);
 		plotter.editFunc.value(plotter, plotIndex, index, val, x, y);
-		value.clipPut(index, val);
+		value.put(index, val);
+		valueCache = nil;
+	}
+
+	editData { |x, y, plotIndex|
+		var index = this.getIndex(x);
+		this.editDataIndex( index, x, y, plotIndex );
+	}
+
+	editDataLine { |pt1, pt2, plotIndex|
+		var ptLeft, ptRight, ptLo, ptHi;
+		var xSpec, ySpec;
+		var i1, i2, iLo, iHi;
+		var val;
+
+		// get indexes related to ends of the line
+		i1 = this.getIndex(pt1.x);
+		i2 = this.getIndex(pt2.x);
+
+		// if both ends at same index, simplify
+		if( i1 == i2 ) {
+			^this.editDataIndex( i2, pt2.x, pt2.y, plotIndex );
+		};
+
+		// order points and indexes
+		if( i1 < i2 ) {
+			iLo = i1; iHi = i2;
+			ptLeft = pt1; ptRight = pt2;
+		}{
+			iLo = i2; iHi = i1;
+			ptLeft = pt2; ptRight = pt1;
+		};
+
+		// if same value all over, simplify
+		if( ptLeft.y == ptRight.y ) {
+			val = this.getRelativePositionY(ptLeft.y);
+			while( {iLo <= iHi} ) {
+				value.put( iLo, val );
+				iLo = iLo + 1;
+			};
+			// trigger once for second end of the line
+			plotter.editFunc.value(plotter, plotIndex, i2, val, pt2.x, pt2.y);
+			valueCache = nil;
+			^this;
+		};
+
+		// get actual points corresponding to indexes
+		xSpec = ControlSpec( ptLeft.x, ptRight.x );
+		ySpec = ControlSpec( ptLeft.y, ptRight.y );
+		ptLo = Point();
+		ptHi = Point();
+		ptLo.x = domainSpec.unmap(iLo) * plotBounds.width + plotBounds.left;
+		ptHi.x = domainSpec.unmap(iHi) * plotBounds.width + plotBounds.left;
+		ptLo.y = ySpec.map( xSpec.unmap(ptLo.x) );
+		ptHi.y = ySpec.map( xSpec.unmap(ptHi.x) );
+
+		// interpolate and store
+		ySpec = ControlSpec( this.getRelativePositionY(ptLo.y), this.getRelativePositionY(ptHi.y) );
+		xSpec = ControlSpec( iLo, iHi );
+		while( {iLo <= iHi} ) {
+			val = ySpec.map( xSpec.unmap(iLo) );
+			value.put( iLo, val );
+			iLo = iLo+1;
+		};
+
+		// trigger once for second end of the line
+		plotter.editFunc.value(plotter, plotIndex, i2, val, pt2.x, pt2.y);
 		valueCache = nil;
 	}
 
@@ -359,6 +425,7 @@ Plotter {
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
+	var editPlotIndex, editPos;
 
 	var <>drawFunc, <>editFunc;
 
@@ -394,21 +461,27 @@ Plotter {
 			.mouseDownAction_({ |v, x, y, modifiers|
 				cursorPos = x @ y;
 				if(editMode && superpose.not) {
-					this.editData(x, y);
-					if(this.numFrames < 200) { this.refresh };
+					editPlotIndex = this.pointIsInWhichPlot(cursorPos);
+					editPlotIndex !? {
+						editPos = x @ y; // new Point instead of cursorPos!
+						plots.at(editPlotIndex).editData(x, y, editPlotIndex);
+						if(this.numFrames < 200) { this.refresh };
+					}
 				};
 				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
 			.mouseMoveAction_({ |v, x, y, modifiers|
 				cursorPos = x @ y;
-				if(editMode && superpose.not) {
-					this.editData(x, y);
+				if(editMode && superpose.not && editPlotIndex.notNil) {
+					plots.at(editPlotIndex).editDataLine( editPos, cursorPos, editPlotIndex );
+					editPos = x @ y;  // new Point instead of cursorPos!
 					if(this.numFrames < 200) { this.refresh };
 				};
 				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
 			.mouseUpAction_({
 				cursorPos = nil;
+				editPlotIndex = nil;
 				if(editMode && superpose.not) { this.refresh };
 			})
 			.keyDownAction_({ |view, char, modifiers, unicode, keycode|
