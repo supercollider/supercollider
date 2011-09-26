@@ -658,7 +658,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
 {
 	PyrSlot* arg = g->sp - 1;
-	PyrSlot* charToEscapeSlot = g->sp - 1; // ignoreCase
+	PyrSlot* charToEscapeSlot = g->sp;
 
 	assert (isKindOfSlot(arg, class_string));
 
@@ -667,7 +667,7 @@ int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
 
 	char charToEscape = slotRawChar(charToEscapeSlot);
 
-	PyrString* argString = (PyrString*)arg;
+	PyrString* argString = slotRawString(arg);
 	int length = argString->size;
 	PyrString* resultString = newPyrStringN(g->gc, length*2 + 1, 0, 1); // pressimize
 
@@ -687,7 +687,7 @@ int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
 
 	resultString->size = resultLength;
 
-	SetRaw(arg, resultString);
+	SetRaw(arg, (PyrObject*)resultString);
 
 	return errNone;
 }
