@@ -122,6 +122,10 @@ class QcButton : public QPushButton, public QcHelper
     QcButton();
   Q_SIGNALS:
     void action();
+  protected:
+#ifdef Q_WS_MAC
+    bool hitButton( const QPoint & ) const;
+#endif
   private Q_SLOTS:
     void doAction();
   private:
