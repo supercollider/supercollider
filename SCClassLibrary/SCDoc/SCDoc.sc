@@ -142,7 +142,7 @@ SCDoc {
         var cats, c, map;
         this.postProgress("Creating category map...");
         map = Dictionary.new;
-        doc_map.pairsDo {|k,v|
+        this.docMap.pairsDo {|k,v|
             cats = this.splitList(v.categories);
             cats = cats ? ["Uncategorized"];
             cats.do {|cat|
