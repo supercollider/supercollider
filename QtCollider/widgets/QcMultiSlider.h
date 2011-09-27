@@ -77,7 +77,7 @@ class QcMultiSlider : public QWidget, QcHelper
     void setValue( float f );
     void setStepSize( float f );
     void setIndex( int i );
-    void setSelectionSize( int i ) { _selectionSize = i; update(); }
+    void setSelectionSize( int i );
     void setOrientation( Qt::Orientation o ) { ort = o; update(); }
     void setElastic( bool b ) { elastic = b; update(); }
     void setIndexThumbSize( float f ) { thumbSize.setWidth(f); update(); }
