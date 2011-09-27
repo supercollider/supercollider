@@ -49,6 +49,7 @@ set(libsupernova_src
     sc/sc_ugen_factory.cpp
     ../scsynth/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
     server/buffer_manager.cpp
     server/dsp_context.cpp
     server/memory_pool.cpp

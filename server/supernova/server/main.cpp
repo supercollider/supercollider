@@ -39,6 +39,8 @@
 # include <sys/mman.h>
 #endif
 
+#include "SC_DirUtils.h"
+
 using namespace nova;
 using namespace std;
 
@@ -189,8 +191,11 @@ void set_plugin_paths(void)
 #endif
 }
 
-void load_synthdefs(nova_server & server, path const & folder)
+void load_synthdef_folder(nova_server & server, path const & folder, bool verbose)
 {
+    if (verbose)
+        std::printf("Loading synthdefs from path: %s\n", folder.c_str());
+
 #ifdef BOOST_HAS_RVALUE_REFS
     register_synthdefs(server, std::move(sc_read_synthdefs_dir(folder)));
 #else
@@ -201,16 +206,22 @@ void load_synthdefs(nova_server & server, path const & folder)
 void load_synthdefs(nova_server & server, server_arguments const & args)
 {
     if (args.load_synthdefs) {
-        path home = resolve_home();
+        const char * env_synthdef_path = getenv("SC_SYNTHDEF_PATH");
+        vector<path> directories;
+        if (env_synthdef_path) {
+            boost::split(directories, env_synthdef_path, boost::is_any_of(":"));
+        } else {
+            char resourceDir[MAXPATHLEN];
+            if(sc_IsStandAlone())
+                sc_GetResourceDirectory(resourceDir, MAXPATHLEN);
+            else
+                sc_GetUserAppSupportDirectory(resourceDir, MAXPATHLEN);
 
-#ifdef __linux__
-        load_synthdefs(server, home / "share/SuperCollider/synthdefs/");
-#elif defined(__APPLE__)
-        load_synthdefs(server, home / "Library/Application Support/SuperCollider/synthdefs/");
-        load_synthdefs(server, "/Library/Application Support/SuperCollider/synthdefs/");
-#else
-        cerr << "Don't know how to locate synthdefs on this platform. Please load them dynamically."
-#endif
+            directories.push_back(path(resourceDir) / "synthdefs");
+        }
+
+        foreach(path const & directory, directories)
+            load_synthdef_folder(server, directory, args.verbosity > 0);
     }
 #ifndef NDEBUG
     cout << "SynthDefs loaded" << endl;
