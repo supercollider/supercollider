@@ -1,5 +1,5 @@
 QMultiSliderView : QView {
-  var <size=0, <editable=true, <step=0;
+  var <editable=true, <step=0;
   var <reference;
   var <indexIsHorizontal=true, <elasticMode=false;
   var <indexThumbSize=12, <valueThumbSize=12, <gap=1;
@@ -17,10 +17,8 @@ QMultiSliderView : QView {
     this.setProperty( \palette, this.palette.baseColor_(color) );
   }
 
-  size_ { arg int;
-    size = int;
-    this.setProperty( \size, int );
-  }
+  size { ^this.getProperty(\sliderCount) }
+  size_ { arg int; this.setProperty( \sliderCount, int ) }
 
   indexIsHorizontal_ { arg bool;
     indexIsHorizontal = bool;

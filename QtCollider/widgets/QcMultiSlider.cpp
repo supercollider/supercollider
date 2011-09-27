@@ -50,7 +50,7 @@ QcMultiSlider::QcMultiSlider() :
   connect( this, SIGNAL(interacted()), this, SLOT(doAction()) );
 }
 
-void QcMultiSlider::setSize( int newSize )
+void QcMultiSlider::setSliderCount( int newSize )
 {
   while( newSize > _values.size() )
     _values.append( 0.f );
