@@ -47,6 +47,21 @@
 namespace nova {
 namespace {
 
+inline Node * as_Node(server_node * node)
+{
+    if (node == NULL)
+        return NULL;
+
+    // hack!!! we only assume that the 32bit integer mID member can be accessed via Node
+    if (node->is_synth()) {
+        sc_synth * s = static_cast<sc_synth*>(node);
+        return &s->mNode;
+    } else {
+        void * nodePointer = &node->node_id;
+        return (Node*)nodePointer;
+    }
+}
+
 static spin_lock log_guard; // needs to be acquired for logging from the helper threads!
 
 void pause_node(Unit * unit)
@@ -362,6 +377,18 @@ void node_end(struct Node * node)
     nova::sc_factory->add_done_node(s);
 }
 
+void node_set_run(struct Node * node, int run)
+{
+    using namespace nova;
+    server_node * s = instance->find_node(node->mID);
+
+    if (run == 0)
+        sc_factory->add_pause_node(s);
+    else
+        sc_factory->add_resume_node(s);
+}
+
+
 int print(const char *fmt, ...)
 {
     va_list vargs;
@@ -478,6 +505,12 @@ void world_unlock(World *world)
     world->mNRTLock->Unlock();
 }
 
+Node * get_node(World *world, int id)
+{
+    nova::server_node * node = nova::instance->find_node(id);
+    return nova::as_Node(node);
+}
+
 void send_node_reply(Node* node, int reply_id, const char* command_name, int argument_count, const float* values)
 {
     if (!nova::sc_factory->world.mRealTime)
@@ -530,6 +563,7 @@ void sc_plugin_interface::initialize(server_arguments const & args)
 {
     done_nodes.reserve(64);
     pause_nodes.reserve(16);
+    resume_nodes.reserve(16);
     freeAll_nodes.reserve(16);
     freeDeep_nodes.reserve(16);
 
@@ -541,6 +575,8 @@ void sc_plugin_interface::initialize(server_arguments const & args)
 
     /* interface functions */
     sc_interface.fNodeEnd = &node_end;
+    sc_interface.fGetNode = &get_node;
+    sc_interface.fNodeRun = &node_set_run;
     sc_interface.fPrint = &print;
     sc_interface.fDoneAction = &done_action;
 
@@ -639,6 +675,9 @@ void sc_done_action_handler::update_nodegraph(void)
 {
     std::for_each(done_nodes.begin(), done_nodes.end(), boost::bind(&nova_server::free_node, instance, _1));
     done_nodes.clear();
+
+    std::for_each(resume_nodes.begin(), resume_nodes.end(), boost::bind(&nova_server::node_resume, instance, _1));
+    resume_nodes.clear();
 
     std::for_each(pause_nodes.begin(), pause_nodes.end(), boost::bind(&nova_server::node_pause, instance, _1));
     pause_nodes.clear();

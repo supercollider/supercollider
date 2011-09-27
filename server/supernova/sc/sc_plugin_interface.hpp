@@ -48,6 +48,12 @@ public:
         pause_nodes.push_back(node);
     }
 
+    void add_resume_node(server_node * node)
+    {
+        spin_lock::scoped_lock lock(cmd_lock);
+        resume_nodes.push_back(node);
+    }
+
     void add_done_node(server_node * node)
     {
         spin_lock::scoped_lock lock(cmd_lock);
@@ -70,7 +76,7 @@ public:
 
 protected:
     typedef rt_pool_allocator<int> Alloc;
-    std::vector<server_node*, Alloc> done_nodes, pause_nodes;
+    std::vector<server_node*, Alloc> done_nodes, pause_nodes, resume_nodes;
     std::vector<abstract_group*, Alloc> freeAll_nodes, freeDeep_nodes;
 
 private:

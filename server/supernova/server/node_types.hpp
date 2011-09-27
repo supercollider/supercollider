@@ -63,9 +63,9 @@ protected:
         node_id = new_id;
     }
 
+public:
     int32_t node_id;
 
-public:
     int32_t id(void) const
     {
         return node_id;
