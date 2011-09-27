@@ -117,6 +117,14 @@ void QcMultiSlider::setStepSize( float f ) {
   update();
 }
 
+void QcMultiSlider::setIndex( int i ) {
+  if( i >= 0 && i < _values.count() ) {
+    _currentIndex = i;
+    _selectionSize = 1;
+    update();
+  }
+}
+
 inline float QcMultiSlider::valueFromPos( float pos, float range )
 {
   float thumbH = thumbSize.height();
