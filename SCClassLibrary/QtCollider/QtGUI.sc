@@ -29,6 +29,7 @@ QtGUI {
 
   *staticText { ^QStaticText }
   *button { ^QButton; }
+  *checkBox { ^QCheckBox; }
   *textField { ^QTextField }
   *numberBox { ^QNumberBox }
   *slider { ^QSlider }
@@ -38,6 +39,7 @@ QtGUI {
   *tabletSlider2D { ^this.notImplemented( "TabletSlider2D"); }
   *knob { ^QKnob; }
   *listView { ^QListView }
+  *treeView { ^QTreeView }
   *popUpMenu { ^QPopUpMenu }
   *textView { ^QTextView; }
 
