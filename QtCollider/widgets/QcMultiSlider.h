@@ -33,6 +33,7 @@ class QcMultiSlider : public QWidget, QcHelper
   Q_PROPERTY( VariantList values READ values WRITE setValues );
   Q_PROPERTY( VariantList reference READ dummyVariantList WRITE setReference );
   Q_PROPERTY( float value READ value WRITE setValue );
+  Q_PROPERTY( int sliderCount READ sliderCount WRITE setSliderCount);
   Q_PROPERTY( float stepSize READ dummyFloat WRITE setStepSize );
   Q_PROPERTY( int index READ index WRITE setIndex );
   Q_PROPERTY( int selectionSize READ selectionSize WRITE setSelectionSize );
@@ -69,7 +70,8 @@ class QcMultiSlider : public QWidget, QcHelper
     int index() const { return _currentIndex; }
     int selectionSize() const { return _selectionSize; }
 
-    void setSize( int size );
+    int sliderCount() const { return _values.size(); }
+    void setSliderCount( int size );
     void setValues( const VariantList & );
     void setReference( const VariantList & );
     void setValue( float f );
