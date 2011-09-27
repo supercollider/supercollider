@@ -676,7 +676,7 @@ SCDocHTMLRenderer : SCDocRenderer {
             "<a href=\""++link++"\">"++this.escapeSpecialChars(f)++"</a>";
         } {
             #n, m, f = link.split($#); // link, anchor, label
-            c = if(n.size>0) {baseDir+/+n++".html"} {""}; // url
+            c = if(n.size>0) {baseDir+/+n++if("[^.]+\\.\\w+$".matchRegexp(n),"",".html")} {""}; // url
             if(m.size>0) {c=c++"#"++m}; // add #anchor
             if(f.size<1) { // no label
                 if(n.size>0) {
