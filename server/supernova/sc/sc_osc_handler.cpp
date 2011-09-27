@@ -852,7 +852,7 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
     node_position_constraint pos = make_pair(target, node_position(action));
     abstract_synth * synth = instance->add_synth(name, node_id, pos);
     if (!synth)
-        log_printf("Cannot create synth (synthdef: %s, node id: %d\n", name, node_id);
+        log_printf("Cannot create synth (synthdef: %s, node id: %d)\n", name, node_id);
 
     last_generated = node_id;
     return static_cast<sc_synth*>(synth);
