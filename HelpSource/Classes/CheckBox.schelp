@@ -1,0 +1,59 @@
+CLASS:: CheckBox
+redirect:: implClass
+summary:: A view that toggles between two states.
+categories:: GUI>Views
+
+DESCRIPTION::
+
+A view that toggles between two states when clicked, displaying or hiding a check mark accordingly.
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+
+INSTANCEMETHODS::
+
+
+
+SUBSECTION:: Data
+
+
+
+METHOD:: value
+	Stating which of the two states the view is currently in, false meaning unchecked and true meaning checked. Default to false.
+
+	argument::
+		A Boolean.
+
+METHOD:: valueAction
+	Sets link::#-value:: and triggeres link::#-action::.
+
+	argument::
+		A Boolean.
+
+METHOD:: string
+	The text displayed next to the check mark.
+
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+	The action object evaluated whenever the user toggles the state.
+
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		The link::#-value::.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		True if the current drag data is a Boolean.
+
+METHOD:: defaultReceiveDrag
+	Sets link::#-valueAction:: to the current drag data.

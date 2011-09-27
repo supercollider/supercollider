@@ -1,0 +1,205 @@
+CLASS:: NumberBox
+redirect:: implClass
+summary:: A view displaying a modifiable numerical value.
+categories:: GUI>Views
+
+DESCRIPTION::
+
+A view that displays a numerical value and allows to modify it by typing the value in, and incrementing or decrementing it using the keyboard, or mouse.
+
+Using the keyboard, the value will change on each arrow key press by the amount defined by link::#-step::.
+
+Mouse scrolling is performed by pressing a mouse button inside the view and dragging the mouse vertically. The value will change according to the mouse cursor movement, in steps defined by link::#-scroll_step::.
+
+By default, holding down the Shift, Ctrl, or Alt key while incrementing or decrementing the value will multiply the steps by 100, 10, or 0.1 respectively, though you can customize this by setting link::#-shift_scale::, link::#-ctrl_scale::, or link::#-alt_scale::. Scrolling can be enabled or disabled by modifying the link::#-scroll:: variable.
+
+
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+
+
+INSTANCEMETHODS::
+
+
+
+
+SUBSECTION:: Data
+
+METHOD:: value
+	Numerical value between 0 and 1.
+
+	argument::
+		A Float.
+
+METHOD:: valueAction
+	Sets link::#-value:: to the argument and triggeres link::#-action::.
+
+METHOD:: increment
+	Increments the value by link::#-step:: multiplied by 'factor'.
+
+	argument:: factor
+		Any number.
+
+METHOD:: decrement
+	Decrements the value by link::#-step:: multiplied by 'factor'.
+
+	argument:: factor
+		Any number.
+
+METHOD:: string
+	Text to be displayed instead of the numerical value. Setting link::#-value:: after this will display the value again.
+
+	argument::
+		A String.
+
+METHOD:: object
+	If link::#-setBoth:: is true, setting this variable also sets link::#-string:: to the argument interpreted link::Classes/Object#-asString#as String::.
+
+	argument::
+		Any object, typically one which makes sense to display as a string, such as a Float.
+
+METHOD:: setBoth
+	A variable stating whether setting link::#-object:: will also set link::#-string::.
+
+	argument::
+		A Boolean.
+
+
+
+
+SUBSECTION:: Restrictions on data
+
+METHOD:: clipLo
+	The lowest numerical value allowed. Trying to set a lower value will clip it to this.
+
+	argument::
+		A Float.
+
+METHOD:: clipHi
+	The highest numerical value allowed. Trying to set a higher value will clip it to this.
+
+	argument::
+		A Float.
+
+METHOD:: minDecimals
+	The minimum amount of decimal places displayed. If the value can be completely described with less decimal places, zeros will be appended until reaching this.
+
+	argument::
+		An Integer.
+
+METHOD:: maxDecimals
+	The maximum amount of decimal places displayed. The value will always be rounded to this amount of decimals.
+
+	argument::
+		An Integer.
+
+METHOD:: decimals
+	Sets both link::#-minDecimals:: and link::#-maxDecimals:: to the argument.
+
+	argument::
+		An Integer.
+
+
+
+
+SUBSECTION:: Appearance
+
+METHOD:: align
+	The alignment of the displayed value.
+
+	argument::
+		One of the following symbols: \centered, \left, or \right.
+
+METHOD:: stringColor
+	The color used to display the value before it is ever changed by user interaction.
+
+	argument::
+		A Color.
+
+METHOD:: normalColor
+	The color used to display the value after is has been typed in.
+
+	argument::
+		A Color.
+
+METHOD:: typingColor
+	The color used to display the value while it is being typed in.
+
+	argument::
+		A Color.
+
+
+
+
+SUBSECTION:: Interaction
+
+METHOD:: step
+	The amount by which the value will changed when link::#-increment:: or link::#-decrement:: is called, or when related keys are pressed.
+
+	argument::
+		A Float.
+
+METHOD:: scroll_step
+	The amount by which the value will changed when scrolled using the mouse.
+
+	argument::
+		A Float.
+
+METHOD:: shift_scale
+	The factor by which link::#-step:: or link::#-scroll_step:: is multiplied when incrementing or decrementing the value using keyboard or mouse while the Shift key is pressed.
+
+	argument::
+		A Float.
+
+METHOD:: ctrl_scale
+	The factor by which link::#-step:: or link::#-scroll_step:: is multiplied when incrementing or decrementing the value using keyboard or mouse while the Ctrl key is pressed.
+
+	argument::
+		A Float.
+
+METHOD:: alt_scale
+	The factor by which link::#-step:: or link::#-scroll_step:: is multiplied when incrementing or decrementing the value using keyboard or mouse while the Alt key is pressed.
+
+	argument::
+		A Float.
+
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+	The action object evaluated whenever the user changes the value by interacting with the view.
+
+METHOD:: defaultKeyDownAction
+
+	Any key representing a character that can make part of a floating point number representation will initiated the editing of the value. Pressing Return (or Enter) will finish the editing and store the value typed in as a Float.
+
+	Aside from that, this method implements the default effects of key presses as follows:
+
+	table::
+	## strong::Key::   || strong::Effect::
+	## up arrow        || increment
+	## down arrow      || decrement
+	## right arrow     || increment
+	## left arrow      || decrement
+	::
+
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		The link::#-value::.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		True if the current drag data is a number.
+
+METHOD:: defaultReceiveDrag
+	Sets link::#-valueAction:: to the current drag data.

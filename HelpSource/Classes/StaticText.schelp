@@ -1,0 +1,62 @@
+CLASS:: StaticText
+redirect:: implClass
+summary:: A view displaying non-editable text
+categories:: GUI>Views
+
+DESCRIPTION::
+A view displaying non-editable text
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+
+INSTANCEMETHODS::
+
+SUBSECTION:: Data
+
+METHOD:: string
+	The text displayed by the view.
+
+	argument::
+		A String.
+
+METHOD:: object
+	If link::#-setBoth:: is true, setting this variable also sets link::#-string:: to the value interpreted link::Classes/Object#-asString#as String::.
+
+	argument::
+		Any object, typically one which makes sense to display as a string, such as a Float.
+
+METHOD:: setBoth
+	A variable stating whether setting link::#-object:: will also set link::#-string::.
+
+	argument::
+		A Boolean.
+
+SUBSECTION:: Appearance
+
+METHOD:: align
+	The alignment of the displayed text.
+
+	argument::
+		One of the following symbols: \centered, \left, or \right.
+
+METHOD:: font
+	The font used to display the text.
+
+	argument::
+		A Font.
+
+METHOD:: stringColor
+	The color used to display the text.
+
+	argument::
+		A Color.
+
+METHOD:: background
+	Setting this variable colors the whole area occupied by the view under the text with the given color.
+
+	argument::
+		A Color.

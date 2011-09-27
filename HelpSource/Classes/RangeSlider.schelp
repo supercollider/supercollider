@@ -1,0 +1,183 @@
+CLASS:: RangeSlider
+redirect:: implClass
+summary:: A view consisting of a sliding extendable handle
+categories:: GUI>Views
+
+DESCRIPTION::
+
+A view that allows setting two numerical values between 0 and 1, represented by the two ends of a movable and extendable handle. It can have horizontal or vertical orientation, meaning the direction in which the handle moves and extends.
+
+Clicking and moving the mouse pointer within the view will define the two ends of the range. Doing the same while holding down the Ctrl key will move the whole range without changing its size.
+
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+METHOD:: new
+
+    When a new RangeSlider is created, its link::#-orientation:: is determined by the initial size: if it is wider than high, the orientation will be horizontal, otherwise it will be vertical.
+
+
+
+
+INSTANCEMETHODS::
+
+SUBSECTION:: Data
+
+METHOD:: lo
+
+	The low end of the range.
+
+	If you attempt to set it higher then the current link::#-hi::, -hi will be set instead, and -lo will become the old -hi.
+
+	When setting -lo the value will always be clipped to the range between 0 and 1.
+
+	argument::
+		A Float between 0 and 1.
+
+METHOD:: hi
+
+	The high end of the range. If you attempt to set it lower then the current link::#-lo::, -lo will be set instead, and -hi will become the old -lo.
+
+	When setting -hi the value will always be clipped to the range between 0 and 1.
+
+	argument::
+		A Float between 0 and 1.
+
+METHOD:: activeLo
+
+	Sets link::#-lo:: to the argument and triggers link::#-action::.
+
+METHOD:: activeHi
+
+	Sets link::#-hi:: to the argument and triggers link::#-action::.
+
+METHOD:: range
+
+	The difference between link::#-hi:: and link::#-lo::. Setting -range will set -hi to -lo + -range.
+
+METHOD:: activeRange
+
+	Sets link::#-range:: to the argument and triggers link::#-action::.
+
+METHOD:: setSpan
+
+	Sets link::#-lo:: and link::#-hi:: to each of the arguments, respectively.
+
+METHOD:: setSpanActive
+
+	Calls link::#-setSpan::, forwarding the arguments, and triggers link::#-action::.
+
+METHOD:: setDeviation
+
+	Sets link::#-lo:: and link::#-hi:: according to their deviation and their average instead of their absolute values.
+
+	argument:: deviation
+		A Float determining the absolute deviation of -lo and -hi from their average.
+	argument:: average
+		A Float determining the average of -lo and -hi.
+
+METHOD:: increment
+	Increments both link::#-lo:: and link::#-hi:: by link::#-step:: multiplied by 'factor'.
+
+	argument:: factor
+		A Float.
+
+METHOD:: decrement
+	Decrements both link::#-lo:: and link::#-hi:: by link::#-step:: multiplied by 'factor'.
+
+	argument:: factor
+		A Float.
+
+
+
+
+
+SUBSECTION:: Appearance
+
+METHOD:: orientation
+	The orientation of the RangeSlider - the direction in which the handle moves and is extendable. The default value depends on the size of the view when created.
+
+	argument::
+		One of the two Symbols: \horizontal or \vertical.
+
+METHOD:: knobColor
+	The color of the handle.
+
+	argument::
+		A Color.
+
+
+
+
+SUBSECTION:: Interaction
+
+METHOD:: step
+	The amount by which the range will change when link::#-increment:: or link::#-decrement:: is called, or when related keys are pressed.
+
+	argument::
+		A Float.
+
+METHOD:: pixelStep
+	The absolute amount by which the range would change if the handle moved by one pixel.
+
+	returns::
+		A Float.
+
+METHOD:: shift_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the range by keyboard while the Shift key is pressed.
+
+	argument::
+		A Float.
+
+METHOD:: ctrl_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the range by keyboard while the Ctrl key is pressed.
+
+	argument::
+		A Float.
+
+METHOD:: alt_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the range by keyboard while the Alt key is pressed.
+
+	argument::
+		A Float.
+
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+	The action object evaluated whenever the user changes the position or size of the handle.
+
+METHOD:: defaultKeyDownAction
+
+	Implements the default effects of key presses as follows:
+
+	table::
+	## strong::Key::   || strong::Effect::
+	## a               || lo_(0), hi_(1), and triggers action
+	## n               || lo_(0), hi_(0), and triggers action
+	## x               || lo_(1), hi_(1), and triggers action
+	## c               || lo_(0.5), hi_(0.5), and triggers action
+	## up arrow        || increment
+	## down arrow      || decrement
+	## right arrow     || increment
+	## left arrow      || decrement
+	::
+
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		A Point of which the x and y coordinates are set to link::#-lo:: and link::#-hi::, respectively.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		True if the current drag data is a Point.
+
+METHOD:: defaultReceiveDrag
+	Sets  link::#-lo:: and link::#-hi:: to the two coordinates of the Point stored as the current drag data, respectively, and triggers the link::#-action::.

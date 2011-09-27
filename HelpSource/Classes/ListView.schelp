@@ -1,0 +1,129 @@
+CLASS:: ListView
+redirect:: implClass
+summary:: A view displaying a list of text items.
+categories:: GUI>Views
+
+DESCRIPTION::
+
+A view that displays a list of text items and allows one of them to be selected.
+
+An item can be selected by clicking on it. Pressing the up or down arrow keys while an item is selected will select the previous or next item respectively (if available).
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+
+
+INSTANCEMETHODS::
+
+
+
+SUBSECTION:: Data
+
+METHOD:: items
+	The list of items displayed by the view.
+
+	argument::
+		An Array of Strings, each String defining the text to represent an item.
+
+METHOD:: value
+	The index of the currently selected item, or nil when no item is selected.
+
+	argument::
+		An Integer or nil.
+
+METHOD:: valueAction
+	Sets link::#-value:: and triggers the link::#-action::.
+
+
+
+SUBSECTION:: Appearance
+
+METHOD:: colors
+	The background colors of the items.
+
+	argument::
+		An Array of Colors, one Color for each item.
+
+METHOD:: stringColor
+	The color used to display all the text of all unselected items.
+
+	argument::
+		A Color.
+
+METHOD:: selectedStringColor
+	The color used to display the selected item's text.
+
+	argument::
+		A Color.
+
+METHOD:: hiliteColor
+	The color used to indicate the selected item (aside from the color of its text).
+
+	argument::
+		A Color.
+
+
+
+
+SUBSECTION:: Interaction
+
+METHOD:: selectionMode
+	note:: Only available in Qt GUI ::
+
+	The allowed mode of item selection, according to the following table:
+
+	table::
+	## strong::Value::  || strong::Meaning::
+	## \none            || No item can be selected.
+	## \single          || Only a single item can be selected at once.
+	## \multi           || Multiple items can be selected. An item's selection is toggled when clicked.
+	## \extended        || Multiple items can be selected, individually by holding the Ctrl key, and in a batch by holding the Shift key.
+	## \contiguous      || Mutliple neighbouring items can be selected by holding the Shift key.
+	::
+
+	arguments::
+		One of the Symbols listed in the table above.
+
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+	The action object evaluated whenever the user changes the item selection.
+
+METHOD:: enterKeyAction
+	The action object evaluated whenever the user presses the Enter (Return) key.
+
+METHOD:: defaultKeyDownAction
+
+	Implements the default effects of key presses as follows:
+
+	table::
+	## strong::Key::   || strong::Effect::
+	## space           || select next item and trigger action
+	## r               || trigger enterKeyAction
+	## n               || trigger enterKeyAction
+	## a number        || trigger enterKeyAction
+	## up arrow        || select previous item and trigger action
+	## down arrow      || select next item and trigger action
+	## left arrow      || select previous item and trigger action
+	## right arrow     || select next item and trigger action
+	::
+
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		The link::#-value::.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		True if the current drag data is a number.
+
+METHOD:: defaultReceiveDrag
+	Sets link::#-valueAction:: to the current drag data.
