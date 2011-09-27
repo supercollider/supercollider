@@ -125,6 +125,11 @@ void QcMultiSlider::setIndex( int i ) {
   }
 }
 
+void QcMultiSlider::setSelectionSize( int i ) {
+  _selectionSize = qMin(i, _values.count() - _currentIndex);
+  update();
+}
+
 inline float QcMultiSlider::valueFromPos( float pos, float range )
 {
   float thumbH = thumbSize.height();
