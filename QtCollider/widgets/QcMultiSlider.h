@@ -76,9 +76,7 @@ class QcMultiSlider : public QWidget, QcHelper
     void setReference( const VariantList & );
     void setValue( float f );
     void setStepSize( float f );
-    void setIndex( int i ) {
-      if( i >= 0 && i < _values.count() ) { _currentIndex = i; update(); }
-    }
+    void setIndex( int i );
     void setSelectionSize( int i ) { _selectionSize = i; update(); }
     void setOrientation( Qt::Orientation o ) { ort = o; update(); }
     void setElastic( bool b ) { elastic = b; update(); }
