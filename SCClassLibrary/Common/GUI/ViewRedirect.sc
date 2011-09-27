@@ -126,3 +126,7 @@ LevelIndicator : ViewRedirect  {	*key { ^\levelIndicator }}
 Image : ViewRedirect { *key { ^\image }}
 
 WebView : ViewRedirect { *key { ^\webView }}
+
+CheckBox : ViewRedirect { *key { ^\checkBox }}
+
+TreeView : ViewRedirect { *key { ^\treeView }}
