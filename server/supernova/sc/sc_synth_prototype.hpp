@@ -26,8 +26,7 @@
 #include "server/synth_prototype.hpp"
 #include "utilities/sized_array.hpp"
 
-namespace nova
-{
+namespace nova {
 
 using boost::filesystem::path;
 
