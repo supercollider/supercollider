@@ -162,6 +162,15 @@ QMultiSliderView : QView {
     metaAction.value(this);
   }
 
+  defaultKeyDownAction { arg char, mod, uni, key;
+    key.switch (
+      QKey.left, { this.index = this.index - 1 },
+      QKey.right, { this.index = this.index + 1 },
+      QKey.up, { this.currentvalue = this.currentvalue + this.step },
+      QKey.down, { this.currentvalue = this.currentvalue - this.step }
+    );
+  }
+
   defaultGetDrag {
     var val = this.value;
     var c, i;

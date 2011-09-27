@@ -40,6 +40,14 @@ QLimits {
   *new { arg limit; ^dict[limit]; }
 }
 
+QKey {
+  classvar
+    <left = 16r1000012,
+    <up = 16r1000013,
+    <right = 16r1000014,
+    <down = 16r1000015;
+}
+
 QKeyModifiers {
   classvar
     <shift = 16r2000000,
