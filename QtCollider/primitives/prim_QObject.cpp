@@ -101,9 +101,6 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
 
   QObjectProxy *proxy = (QObjectProxy*) slotRawPtr( obj->slots );
 
-  // avoid multiple finalization
-  if( !proxy ) return errNone;
-
   // Invalidate proxy's SC object pointer directly.
   // Note that it is protected by language mutex;
   proxy->finalize();
@@ -111,9 +108,6 @@ int QObject_Finalize( struct VMGlobals *, struct PyrObject *obj )
   // Post the destruction event asynchronously;
   DestroyEvent *e = new DestroyEvent( QObjectProxy::DestroyProxyAndObject );
   QApplication::postEvent( proxy, e );
-
-  // prevent multiple finalization
-  SetNil( obj->slots );
 
   return errNone;
 }
