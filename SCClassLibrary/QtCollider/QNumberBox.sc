@@ -49,6 +49,11 @@ QNumberBox : QAbstractStepValue {
     ;
   }
 
+  valueAction_ { arg val;
+    this.value_(val);
+    action.value(this);
+  }
+
   string { ^this.getProperty( \text ); }
 
   string_ { arg string; this.setProperty( \text, string ); }

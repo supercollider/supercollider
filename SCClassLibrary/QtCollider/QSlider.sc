@@ -9,6 +9,19 @@ QSlider : QAbstractStepValue {
     ^super.new( parent, bounds ).initQSlider( bounds );
   }
 
+  value {
+    ^this.getProperty( \value );
+  }
+
+  value_ { arg argVal;
+    this.setProperty( \value, argVal );
+  }
+
+  valueAction_ { arg val;
+    this.value_(val);
+    action.value(this);
+  }
+
   knobColor {
     ^this.palette.buttonColor;
   }

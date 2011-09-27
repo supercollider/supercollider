@@ -88,19 +88,6 @@ QAbstractStepValue : QView {
     this.setProperty( \step, aFloat );
   }
 
-  value {
-    ^this.getProperty( \value );
-  }
-
-  value_ { arg argVal;
-    this.setProperty( \value, argVal );
-  }
-
-  valueAction_ { arg val;
-    this.value_(val);
-    action.value(this);
-  }
-
   shift_scale_ { arg aFloat;
     shift_scale = aFloat;
     this.setProperty( \shiftScale, aFloat );
