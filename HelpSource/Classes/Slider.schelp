@@ -1,0 +1,151 @@
+CLASS:: Slider
+redirect:: implClass
+summary:: A view consisting of a sliding handle.
+categories:: GUI>Views
+
+DESCRIPTION::
+
+A view that allows setting a numerical value by means of moving a sliding handle. It can have horizontal or vertical orientation, meaning the direction in which the handle moves.
+
+
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+METHOD:: new
+
+	When a new Slider is created, its link::#-orientation:: is determined by the initial size: if it is wider than high, the orientation will be horizontal, otherwise it will be vertical.
+
+
+
+
+
+INSTANCEMETHODS::
+
+
+
+SUBSECTION:: Data
+
+METHOD:: value
+	Numerical value between 0 and 1, represented by the handle position within the groove.
+
+	argument::
+		A Float.
+
+METHOD:: valueAction
+	Sets link::#-value:: and triggeres link::#-action::.
+
+METHOD:: increment
+	Increments the value by link::#-step:: multiplied by 'factor'.
+
+	argument:: factor
+		Any number.
+
+METHOD:: decrement
+	Decrements the value by link::#-step:: multiplied by 'factor'.
+
+	argument:: factor
+		Any number.
+
+
+
+
+SUBSECTION:: Appearance
+
+METHOD:: orientation
+	The orientation of the Slider - the direction in which the handle moves. The default value depends on the size of the view when created.
+
+	argument::
+		One of the two Symbols: \horizontal or \vertical.
+
+METHOD:: thumbSize
+	The size of the handle - its width or height, depending on link::#-orientation::.
+
+	argument::
+		An Integer amount of pixels.
+
+METHOD:: knobColor
+	The color of the handle.
+
+	argument::
+		A Color.
+
+
+
+SUBSECTION:: Interaction
+
+METHOD:: step
+	The amount by which the value will changed when link::#-increment:: or link::#-decrement:: is called, or when related keys are pressed.
+
+	argument::
+		A Float.
+
+METHOD:: pixelStep
+	The absolute amount by which the value would change if the handle moved by one pixel.
+
+	returns::
+		A Float.
+
+METHOD:: shift_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Shift key is pressed.
+
+	argument::
+		A Float.
+
+METHOD:: ctrl_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Ctrl key is pressed.
+
+	argument::
+		A Float.
+
+METHOD:: alt_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the value by keyboard while the Alt key is pressed.
+
+	argument::
+		A Float.
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+	The action object evaluated whenever the user moves the handle.
+
+METHOD:: defaultKeyDownAction
+
+	Implements the default effects of key presses as follows:
+
+	table::
+	## strong::Key::   || strong::Effect::
+	## r               || valueAction_(1.0.rand)
+	## n               || valueAction_(0)
+	## x               || valueAction_(1)
+	## c               || valueAction_(0.5)
+	## ]               || increment
+	## [               || decrement
+	## up arrow        || increment
+	## down arrow      || decrement
+	## right arrow     || increment
+	## left arrow      || decrement
+	::
+
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		The link::#-value::.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		True if the current drag data is a number.
+
+METHOD:: defaultReceiveDrag
+	Sets link::#-valueAction:: to the current drag data.
+
+
+
+
+

@@ -1,7 +1,7 @@
 CLASS:: View
 redirect:: implClass
 summary:: The basic visible element of GUI
-categories:: GUI
+categories:: GUI>Views
 
 DESCRIPTION::
 The View class is the superclass of all view classes.
