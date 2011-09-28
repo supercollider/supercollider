@@ -83,7 +83,7 @@ bool SC_LibraryConfig::pathIsExcluded(const char *path)
 	return false;
 }
 
-void SC_LibraryConfig::addIncludedDirectory(char *path)
+void SC_LibraryConfig::addIncludedDirectory(const char *path)
 {
 	if (path == 0) return;
 
@@ -93,7 +93,7 @@ void SC_LibraryConfig::addIncludedDirectory(char *path)
 	mIncludedDirectories.push_back(string(standardPath));
 }
 
-void SC_LibraryConfig::addExcludedDirectory(char *path)
+void SC_LibraryConfig::addExcludedDirectory(const char *path)
 {
 	if (path == 0) return;
 
