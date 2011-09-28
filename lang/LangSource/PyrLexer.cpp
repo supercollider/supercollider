@@ -27,12 +27,14 @@
 #include <ctype.h>
 #include <cerrno>
 #include <limits>
+#include <set>
 
 #ifdef SC_WIN32
 # include <direct.h>
 #else
 # include <sys/param.h>
 #endif
+
 
 #include "PyrParseNode.h"
 #include "Bison/lang11d_tab.h"
@@ -115,7 +117,7 @@ int textpos;
 int errLineOffset, errCharPosOffset;
 int parseFailed = 0;
 bool compiledOK = false;
-
+std::set<std::string> compiledDirectories;
 
 /* so the text editor's dumb paren matching will work */
 #define OPENPAREN '('
@@ -1999,6 +2001,7 @@ void initPassOne()
 	compileErrors = 0;
 	numClassDeps = 0;
 	compiledOK = false;
+	compiledDirectories.clear();
 }
 
 void finiPassOne()
@@ -2008,9 +2011,15 @@ void finiPassOne()
     //postfl("<-finiPassOne\n");
 }
 
-bool passOne_ProcessDir(const char *dirname, int level);
-bool passOne_ProcessDir(const char *dirname, int level)
+static bool passOne_ProcessDir(const char *dirname, int level)
 {
+	if (!sc_DirectoryExists(dirname))
+		return true;
+
+	if (compiledDirectories.find(std::string(dirname)) != compiledDirectories.end())
+		// already compiled
+		return true;
+
 	bool success = true;
 
 	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
@@ -2042,24 +2051,17 @@ bool passOne_ProcessDir(const char *dirname, int level)
 		if (!success) break;
 	}
 
+	compiledDirectories.insert(std::string(dirname));
 	sc_CloseDir(dir);
 	return success;
 }
 
 // Locate directories to compile.
 
-static void sc_InitCompileDirectories(void);
 static void sc_InitCompileDirectories(void)
 {
 	sc_GetResourceDirectory(gCompileDir, MAXPATHLEN-32);
-	sc_AppendToPath(gCompileDir,"SCClassLibrary");
-
-#ifdef SC_DATA_DIR
-	if (!sc_DirectoryExists(gCompileDir)) {
-		strncpy(gCompileDir, SC_DATA_DIR, MAXPATHLEN-32);
-		sc_AppendToPath(gCompileDir,"SCClassLibrary");
-	}
-#endif
+	sc_AppendToPath(gCompileDir, "SCClassLibrary");
 
 	if (!sc_IsStandAlone()) {
 		sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
@@ -2069,35 +2071,26 @@ static void sc_InitCompileDirectories(void)
 
 bool passOne()
 {
-	bool success;
 	initPassOne();
 	// This function must be provided by the host environment.
 	// It should choose a directory to scan recursively and call
 	// passOne_ProcessOneFile(char *filename) for each file
 
-	if (!gLibraryConfig) {
-	        sc_InitCompileDirectories();
+	sc_InitCompileDirectories();
 
-		success = passOne_ProcessDir(gCompileDir, 0);
-		if (!success) return false;
+	if (!passOne_ProcessDir(gCompileDir, 0))
+		return false;
 
-		if (!sc_IsStandAlone()) {
-			if(sc_DirectoryExists(gSystemExtensionDir)) {
-			  success = passOne_ProcessDir(gSystemExtensionDir,0);
-			  if (!success) return false;
-			}
+	if (!sc_IsStandAlone()) {
+		if (!passOne_ProcessDir(gSystemExtensionDir, 0))
+			return false;
 
-			if(sc_DirectoryExists(gUserExtensionDir) &&
-			   (strcmp(gSystemExtensionDir,gUserExtensionDir) != 0)) {
-			  success = passOne_ProcessDir(gUserExtensionDir,0);
-			  if (!success) return false;
-			}
-		}
-	} else {
-		success = gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir);
-		if (!success) return false;
+		if (!passOne_ProcessDir(gUserExtensionDir, 0))
+			return false;
+
+		if (!gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir))
+			return false;
 	}
-
 	finiPassOne();
 	return true;
 }
