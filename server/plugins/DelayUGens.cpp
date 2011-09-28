@@ -118,12 +118,12 @@ struct Pitch : public Unit
 
 struct InterpolationUnit
 {
-	static const float minDelaySamples = 1.f;
+	static const int minDelaySamples = 1;
 };
 
 struct CubicInterpolationUnit
 {
-	static const float minDelaySamples = 2.f;
+	static const int minDelaySamples = 2;
 };
 
 struct BufDelayUnit : public Unit
