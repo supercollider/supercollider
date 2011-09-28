@@ -80,12 +80,6 @@ int gNumCompiledFiles;
 thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 */
 
-//#ifdef SC_LINUX
-# define ENABLE_LIBRARY_CONFIGURATOR 1
-//#else
-//# undef ENABLE_LIBRARY_CONFIGURATOR
-//#endif // SC_LINUX
-
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
 char gCompileDir[MAXPATHLEN];
@@ -251,7 +245,7 @@ text:
                         if (c == OPENCURLY) level++;
                         else if (c == CLOSCURLY) level--;
                     }
-				} else if (strncmp(txt+rdpos,"\'a0",3)==0 || (strncmp(txt+rdpos,"\'A0",3)==0)) 
+				} else if (strncmp(txt+rdpos,"\'a0",3)==0 || (strncmp(txt+rdpos,"\'A0",3)==0))
 				{
 					txt[wrpos++] = ' '; rdpos = rdpos + 3;
                 } else {
@@ -2019,14 +2013,12 @@ bool passOne_ProcessDir(const char *dirname, int level)
 {
 	bool success = true;
 
-#ifdef ENABLE_LIBRARY_CONFIGURATOR
- 	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
+	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
 		post("\texcluding dir: '%s'\n", dirname);
 		return success;
- 	}
-#endif
+	}
 
- 	if (level == 0) post("\tcompiling dir: '%s'\n", dirname);
+	if (level == 0) post("\tcompiling dir: '%s'\n", dirname);
 
 	SC_DirHandle *dir = sc_OpenDir(dirname);
 	if (!dir) {
@@ -2102,10 +2094,8 @@ bool passOne()
 			}
 		}
 	} else {
-#ifdef ENABLE_LIBRARY_CONFIGURATOR
 		success = gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir);
 		if (!success) return false;
-#endif // ENABLE_LIBRARY_CONFIGURATOR
 	}
 
 	finiPassOne();
@@ -2135,12 +2125,10 @@ bool passOne_ProcessOneFile(const char * filenamearg, int level)
 		return success;
 	}
 
-#ifdef ENABLE_LIBRARY_CONFIGURATOR
- 	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(filename)) {
- 	  post("\texcluding file: '%s'\n", filename);
- 	  return success;
- 	}
-#endif
+	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(filename)) {
+	  post("\texcluding file: '%s'\n", filename);
+	  return success;
+	}
 
 	if (isValidSourceFileName(filename)) {
 		gNumCompiledFiles++;
