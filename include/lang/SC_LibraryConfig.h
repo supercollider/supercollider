@@ -90,7 +90,7 @@ public:
 	typedef std::vector<std::string> DirVector;
 
 	SC_LibraryConfig(void);
-	virtual ~SC_LibraryConfig();
+	~SC_LibraryConfig();
 
 	const DirVector& includedDirectories() { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() { return mExcludedDirectories; }
@@ -100,8 +100,8 @@ public:
 
 	bool pathIsExcluded(const char *path);
 
-	void addIncludedDirectory(char *name);
-	void addExcludedDirectory(char *name);
+	void addIncludedDirectory(const char *name);
+	void addExcludedDirectory(const char *name);
 
 	// convenience functions to access the global library config
 	static bool readLibraryConfig(SC_LibraryConfigFile& file, const char* fileName);
