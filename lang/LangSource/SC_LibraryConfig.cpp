@@ -40,6 +40,9 @@
 # include <libgen.h>
 #endif
 
+#include <fstream>
+#include "yaml-cpp/yaml.h"
+
 using namespace std;
 
 SC_LibraryConfig *gLibraryConfig = 0;
@@ -108,6 +111,49 @@ bool SC_LibraryConfig::readLibraryConfig(SC_LibraryConfigFile& file, const char*
 	freeLibraryConfig();
 	gLibraryConfig = new SC_LibraryConfig();
 	return file.read(fileName, gLibraryConfig);
+}
+
+bool SC_LibraryConfig::readLibraryConfigYAML(const char* fileName)
+{
+	freeLibraryConfig();
+	gLibraryConfig = new SC_LibraryConfig();
+
+	using namespace YAML;
+	try {
+		std::ifstream fin(fileName);
+		Parser parser(fin);
+
+		Node doc;
+		while(parser.GetNextDocument(doc)) {
+			const Node * includePaths = doc.FindValue("includePaths");
+			if (includePaths && includePaths->Type() == NodeType::Sequence) {
+				for (Iterator it = includePaths->begin(); it != includePaths->end(); ++it) {
+					Node const & pathNode = *it;
+					if (pathNode.Type() != NodeType::Scalar)
+						continue;
+					string path;
+					pathNode.GetScalar(path);
+					gLibraryConfig->addIncludedDirectory(path.c_str());
+				}
+			}
+
+			const Node * excludePaths = doc.FindValue("excludePaths");
+			if (excludePaths && excludePaths->Type() == NodeType::Sequence) {
+				for (Iterator it = excludePaths->begin(); it != excludePaths->end(); ++it) {
+					Node const & pathNode = *it;
+					if (pathNode.Type() != NodeType::Scalar)
+						continue;
+					string path;
+					pathNode.GetScalar(path);
+					gLibraryConfig->addExcludedDirectory(path.c_str());
+				}
+			}
+		}
+		return true;
+	} catch (...)
+	{
+		return false;
+	}
 }
 
 void SC_LibraryConfig::freeLibraryConfig()

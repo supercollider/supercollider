@@ -87,6 +87,7 @@ public:
 	// library startup/shutdown
 	bool readLibraryConfig(const char* filePath, const char* fileName=0);
 	bool readDefaultLibraryConfig();
+	bool readLibraryConfigYAML(const char* filePath, const char* fileName = 0);
 	bool isLibraryCompiled() { return compiledOK; }
 	void compileLibrary();
 	void shutdownLibrary();
