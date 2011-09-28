@@ -45,6 +45,15 @@
 #include "PyrDeepFreezer.h"
 //#include "Wacom.h"
 #include "InitAlloc.h"
+#include "SC_LibraryConfig.h"
+#include "SC_DirUtils.h"
+
+
+#ifdef SC_WIN32
+# include <direct.h>
+#else
+# include <sys/param.h>
+#endif
 
 #ifdef SC_QT
 #  include "QtCollider.h"
@@ -3395,6 +3404,111 @@ int prAppClockSchedNotify(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+enum {includePaths, excludePaths};
+
+static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPushed, int pathType)
+{
+	PyrSlot *result = g->sp;
+
+	typedef SC_LibraryConfig::DirVector DirVector;
+
+	DirVector const & dirVector = (pathType == includePaths) ? gLibraryConfig->includedDirectories()
+															 : gLibraryConfig->excludedDirectories();
+
+	size_t numberOfPaths = dirVector.size();
+	PyrObject * resultArray = newPyrArray(g->gc, numberOfPaths, 0, true);
+	SetObject(result, resultArray);
+	resultArray->size = numberOfPaths;
+
+	for (size_t i = 0; i != numberOfPaths; ++i)
+		SetObject(resultArray->slots + i, newPyrString(g->gc, dirVector[i].c_str(), 0, true));
+	return errNone;
+}
+
+static int prLanguageConfig_getIncludePaths(struct VMGlobals * g, int numArgsPushed)
+{
+	return prLanguageConfig_getLibraryPaths(g, numArgsPushed, includePaths);
+}
+
+static int prLanguageConfig_getExcludePaths(struct VMGlobals * g, int numArgsPushed)
+{
+	return prLanguageConfig_getLibraryPaths(g, numArgsPushed, excludePaths);
+}
+
+static int prLanguageConfig_addLibraryPath(struct VMGlobals * g, int numArgsPushed, int pathType)
+{
+	PyrSlot *result = g->sp - 1;
+	PyrSlot *removeString = g->sp;
+
+	char path[MAXPATHLEN];
+	bool error = slotStrVal(removeString, path, MAXPATHLEN);
+	if (error)
+		return errWrongType;
+
+	if (pathType == includePaths)
+		gLibraryConfig->addIncludedDirectory(path);
+	else
+		gLibraryConfig->addExcludedDirectory(path);
+	return errNone;
+}
+
+static int prLanguageConfig_addIncludePath(struct VMGlobals * g, int numArgsPushed)
+{
+	return prLanguageConfig_addLibraryPath(g, numArgsPushed, includePaths);
+}
+
+static int prLanguageConfig_addExcludePath(struct VMGlobals * g, int numArgsPushed)
+{
+	return prLanguageConfig_addLibraryPath(g, numArgsPushed, excludePaths);
+}
+
+static int prLanguageConfig_removeLibraryPath(struct VMGlobals * g, int numArgsPushed, int pathType)
+{
+	PyrSlot *result = g->sp - 1;
+	PyrSlot *dirString = g->sp;
+
+	char path[MAXPATHLEN];
+	bool error = slotStrVal(dirString, path, MAXPATHLEN);
+	if (error)
+		return errWrongType;
+
+	if (pathType == includePaths)
+		gLibraryConfig->removeIncludedDirectory(path);
+	else
+		gLibraryConfig->removeExcludedDirectory(path);
+	return errNone;
+}
+
+static int prLanguageConfig_removeIncludePath(struct VMGlobals * g, int numArgsPushed)
+{
+	return prLanguageConfig_removeLibraryPath(g, numArgsPushed, includePaths);
+}
+
+static int prLanguageConfig_removeExcludePath(struct VMGlobals * g, int numArgsPushed)
+{
+	return prLanguageConfig_removeLibraryPath(g, numArgsPushed, excludePaths);
+}
+
+static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp - 1;
+	PyrSlot *fileString = g->sp;
+
+	char path[MAXPATHLEN];
+	if (NotNil(fileString)) {
+		bool error = slotStrVal(fileString, path, MAXPATHLEN);
+		if (error)
+			return errWrongType;
+	} else {
+		sc_GetUserConfigDirectory(path, PATH_MAX);
+		sc_AppendToPath(path, "sclang_conf.yaml");
+	}
+
+	gLibraryConfig->writeLibraryConfigYAML(path);
+	return errNone;
+}
+
+
 #define PRIMGROWSIZE 480
 PrimitiveTable gPrimitiveTable;
 
@@ -3949,6 +4063,13 @@ void initPrimitives()
 	definePrimitive(base, index++, "_MainOverwriteMsg", prOverwriteMsg, 1, 0);
 
 	definePrimitive(base, index++, "_AppClock_SchedNotify", prAppClockSchedNotify, 1, 0);
+	definePrimitive(base, index++, "_LanguageConfig_getIncludePaths", prLanguageConfig_getIncludePaths, 1, 0);
+	definePrimitive(base, index++, "_LanguageConfig_getExcludePaths", prLanguageConfig_getExcludePaths, 1, 0);
+	definePrimitive(base, index++, "_LanguageConfig_addIncludePath", prLanguageConfig_addIncludePath, 2, 0);
+	definePrimitive(base, index++, "_LanguageConfig_addExcludePath", prLanguageConfig_addExcludePath, 2, 0);
+	definePrimitive(base, index++, "_LanguageConfig_removeIncludePath", prLanguageConfig_removeIncludePath, 2, 0);
+	definePrimitive(base, index++, "_LanguageConfig_removeExcludePath", prLanguageConfig_removeExcludePath, 2, 0);
+	definePrimitive(base, index++, "_LanguageConfig_writeConfigFile", prLanguageConfig_writeConfigFile, 2, 0);
 
 	//void initOscilPrimitives();
 	//void initControllerPrimitives();

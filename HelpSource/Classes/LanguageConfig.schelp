@@ -1,0 +1,34 @@
+CLASS:: LanguageConfig
+summary:: Access and modify interpreter configuration
+categories:: Language
+
+DESCRIPTION::
+The LanguageConfig class provides access to the interpreter configuration.
+
+CLASSMETHODS::
+
+METHOD:: store
+Store the current configuration to file.
+
+argument:: file
+Configuration file to store. If the value is code::nil:: it defaults to code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
+
+METHOD:: includePaths
+Return the class library include paths.
+
+note::The list does not contain the default paths for the class library or the extension folders::
+
+METHOD:: addIncludePath
+Add new class library include path.
+
+METHOD:: removeIncludePath
+Remove path from class library include paths.
+
+METHOD:: excludePaths
+Return the class library exclude paths.
+
+METHOD:: addExcludePath
+Add new class library exclude path.
+
+METHOD:: removeExcludePath
+Remove path from class library exclude paths.
