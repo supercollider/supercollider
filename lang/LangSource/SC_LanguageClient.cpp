@@ -145,6 +145,23 @@ bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* file
 	return false;
 }
 
+bool SC_LanguageClient::readLibraryConfigYAML(const char* filePath, const char* fileName)
+{
+	if (!fileName) fileName = filePath;
+	bool success = SC_LibraryConfig::readLibraryConfigYAML(fileName);
+	if (!success)
+		SC_LibraryConfig::freeLibraryConfig();
+	return success;
+}
+
+static bool file_exists(const char * fileName)
+{
+	FILE * fp = fopen(fileName, "r");
+	if (fp)
+		fclose(fp);
+	return fp != NULL;
+}
+
 bool SC_LanguageClient::readDefaultLibraryConfig()
 {
 	char config_dir[PATH_MAX];
@@ -157,13 +174,19 @@ bool SC_LanguageClient::readDefaultLibraryConfig()
 		const char * ipath = paths[i];
 		char opath[PATH_MAX];
 		if (sc_StandardizePath(ipath, opath)) {
-			FILE * fp = fopen(opath, "r");
-			if (fp) {
-				fclose(fp);
+			if (file_exists(opath))
 				postfl("skipping deprecated config file: %s\n"
 					   "please use %s instead\n", opath, config_file.c_str());
-			}
 		}
+	}
+
+	std::string yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";
+	if (file_exists(yaml_config_file.c_str())) {
+		if (file_exists(config_file.c_str()))
+			postfl("skipping deprecated config file: %s\n"
+					"please use %s instead\n", config_file.c_str(), yaml_config_file.c_str());
+		readLibraryConfigYAML(yaml_config_file.c_str());
+		return true;
 	}
 
 	if (readLibraryConfig(config_file.c_str()))

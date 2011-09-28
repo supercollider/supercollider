@@ -105,6 +105,7 @@ public:
 
 	// convenience functions to access the global library config
 	static bool readLibraryConfig(SC_LibraryConfigFile& file, const char* fileName);
+	static bool readLibraryConfigYAML(const char* fileName);
 	static void freeLibraryConfig();
 
 private:
