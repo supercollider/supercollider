@@ -56,9 +56,6 @@ QtGUI {
 
   *userView { ^QUserView }
 
-  *pen { ^QPen; }
-  *font { ^QFont }
-
   *dragSource { ^QDragSource; }
   *dragSink { ^QDragSink; }
   *dragBoth { ^QDragBoth; }
@@ -71,6 +68,11 @@ QtGUI {
   *ezPopUpMenu { ^EZPopUpMenu}
   *ezNumber { ^EZNumber}
   *ezRanger { ^EZRanger }
+
+  *pen { ^QPen }
+
+  *font { ^QFont }
+  *image { ^this.notImplemented( "Image" ) }
 
   *notImplemented { arg class;
     ("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
