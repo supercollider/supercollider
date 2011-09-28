@@ -73,7 +73,6 @@ extern const char * gIdeName; // string used for conditional compilation accordi
 // Support for Bundles
 
 void sc_GetResourceDirectory(char* pathBuf, int length);
-void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length);
 bool sc_IsStandAlone();
 
 // Support for Extensions
