@@ -72,38 +72,52 @@ SC_LibraryConfig::SC_LibraryConfig(void)
 SC_LibraryConfig::~SC_LibraryConfig()
 {}
 
-bool SC_LibraryConfig::pathIsExcluded(const char *path)
+static bool findPath(SC_LibraryConfig::DirVector & vec, const char * path, bool addIfMissing)
 {
 	char standardPath[PATH_MAX];
 	sc_StandardizePath(path, standardPath);
 
-	DirVector &vec = mExcludedDirectories;
-	DirVector::iterator it;
-	for (it=vec.begin(); it!=vec.end(); ++it) {
-		if (!strcmp(standardPath, it->c_str())) return true;
-	}
+	for (SC_LibraryConfig::DirVector::iterator it = vec.begin(); it != vec.end(); ++it)
+		if (!strcmp(standardPath, it->c_str()))
+			return true;
+
+	if (addIfMissing)
+		vec.push_back(string(standardPath));
 
 	return false;
+}
+
+bool SC_LibraryConfig::pathIsExcluded(const char *path)
+{
+	return findPath(mExcludedDirectories, path, false);
 }
 
 void SC_LibraryConfig::addIncludedDirectory(const char *path)
 {
 	if (path == 0) return;
-
-	char standardPath[PATH_MAX];
-	sc_StandardizePath(path, standardPath);
-
-	mIncludedDirectories.push_back(string(standardPath));
+	findPath(mIncludedDirectories, path, true);
 }
 
 void SC_LibraryConfig::addExcludedDirectory(const char *path)
 {
 	if (path == 0) return;
+	findPath(mExcludedDirectories, path, true);
+}
 
+void SC_LibraryConfig::removeIncludedDirectory(const char *path)
+{
 	char standardPath[PATH_MAX];
 	sc_StandardizePath(path, standardPath);
+	string str(standardPath);
+	DirVector::iterator end = std::remove(mIncludedDirectories.begin(), mIncludedDirectories.end(), str);
+	mIncludedDirectories.erase(end, mIncludedDirectories.end());
+}
 
-	mExcludedDirectories.push_back(string(standardPath));
+void SC_LibraryConfig::removeExcludedDirectory(const char *path)
+{
+	string str(path);
+	DirVector::iterator end = std::remove(mExcludedDirectories.begin(), mExcludedDirectories.end(), str);
+	mExcludedDirectories.erase(end, mExcludedDirectories.end());
 }
 
 bool SC_LibraryConfig::readLibraryConfig(SC_LibraryConfigFile& file, const char* fileName)
@@ -155,6 +169,37 @@ bool SC_LibraryConfig::readLibraryConfigYAML(const char* fileName)
 		return false;
 	}
 }
+
+bool SC_LibraryConfig::writeLibraryConfigYAML(const char* fileName)
+{
+	using namespace YAML;
+	Emitter out;
+	out.SetIndent(4);
+	out.SetMapFormat(Block);
+	out.SetSeqFormat(Block);
+
+	out << BeginMap;
+
+	out << Key << "includePaths";
+	out << Value << BeginSeq;
+	for (DirVector::iterator it = gLibraryConfig->mIncludedDirectories.begin();
+		 it != gLibraryConfig->mIncludedDirectories.end(); ++it)
+		out << *it;
+	out << EndSeq;
+
+	out << Key << "excludePaths";
+	out << Value << BeginSeq;
+	for (DirVector::iterator it = gLibraryConfig->mExcludedDirectories.begin();
+		 it != gLibraryConfig->mExcludedDirectories.end(); ++it)
+		out << *it;
+	out << EndSeq;
+
+	out << EndMap;
+	ofstream fout(fileName);
+	fout << out.c_str();
+	return true;
+}
+
 
 void SC_LibraryConfig::freeLibraryConfig()
 {
