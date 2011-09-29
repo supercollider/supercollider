@@ -367,7 +367,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (pathMatch(supportDir).isEmpty) { logFolder = ""; ^this };
 
 		if (pathMatch(specialFolder).isEmpty) {
-			unixCmd("mkdir \"" ++ specialFolder ++ "\"");
+			specialFolder.mkdir;
 			if (pathMatch(specialFolder).isEmpty) {
 				logFolder = supportDir; // if not there, put it in flat
 			}

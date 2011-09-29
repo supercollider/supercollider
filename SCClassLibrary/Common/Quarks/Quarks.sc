@@ -122,7 +122,7 @@ Quarks
 		d = (Platform.userExtensionDir +/+ local.name).escapeChar($ );
 		if(d.pathMatch.isEmpty,{
 			("creating: " + d).inform;
-			("mkdir -p" + d).systemCmd;
+			d.mkdir;
 		});
 	}
 	checkedOut {
@@ -200,7 +200,7 @@ Quarks
 		// Ensure the correct folder-hierarchy exists first
 		dirname = (Platform.userExtensionDir +/+  local.name +/+ q.path).dirname;
 		if(File.exists(dirname).not, {
-			("mkdir -p " + dirname.escapeChar($ )).systemCmd;
+			dirname.mkdir
 		});
 
 		// install via symlink to Extensions/<quarks-dir>

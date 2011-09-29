@@ -60,7 +60,7 @@ OSXPlatform : UnixPlatform
 	writeClientCSS {
 		var theme, file, string;
 		theme = Document.theme;
-		("mkdir"+SCDoc.helpTargetDir.escapeChar($ )).systemCmd;
+		SCDoc.helpTargetDir.mkdir;
 		file = File.open(SCDoc.helpTargetDir ++ "/frontend.css", "w");
 		string = ".str { color: %; } /* strings */
 .kwd { color: %; } /* special values like true, nil.. */

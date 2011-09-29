@@ -27,7 +27,7 @@ GeneralHIDSpec{
 		testfile = File(folder +/+ testname, "w");
 
 		if (testfile.isOpen.not)
-			{ unixCmd("mkdir" + folder.escapeChar($ )) }
+			{ folder.mkdir }
 			{ testfile.close;  unixCmd("rm" + folder.escapeChar($ ) +/+ testname) }
 	}
 
