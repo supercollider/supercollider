@@ -867,7 +867,7 @@ Server {
 	prepareForRecord { arg path;
 		if (path.isNil) {
 			if(File.exists(thisProcess.platform.recordingsDir).not) {
-				systemCmd("mkdir" + thisProcess.platform.recordingsDir.quote);
+				thisProcess.platform.recordingsDir.mkdir
 			};
 
 			// temporary kludge to fix Date's brokenness on windows

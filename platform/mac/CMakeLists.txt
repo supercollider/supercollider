@@ -116,6 +116,10 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/NSStringICUAdditions.m
 	)
 
+file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
+file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*cpp)
+list(APPEND scapp_sources ${boost_fs_sources} ${boost_system_sources})
+
 set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/main.M

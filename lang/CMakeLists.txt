@@ -88,6 +88,10 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
 
+file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
+file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*cpp)
+list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources})
+
 if(NOT WIN32)
 	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
 endif()

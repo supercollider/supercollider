@@ -486,4 +486,9 @@ String[char] : RawArray {
 	toUpper {
 		^this.collect(_.toUpper)
 	}
+
+	mkdir {
+		_String_Mkdir
+		^this.primitiveFailed
+	}
 }
