@@ -82,9 +82,7 @@ thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
-char gCompileDir[MAXPATHLEN];
-char gSystemExtensionDir[MAXPATHLEN];
-char gUserExtensionDir[MAXPATHLEN];
+static char gCompileDir[MAXPATHLEN];
 
 //#define DEBUGLEX 1
 bool gDebugLexer = false;
@@ -157,6 +155,13 @@ double sc_strtof(const char *str, int n, int base)
 	//calculation previously included decimal point in count of columns (was n-decptpos); there are 1 less than n characters which are columns in the number contribution
 	z = z / pow((double)base, n -1- decptpos);
 	return z;
+}
+
+static void sc_InitCompileDirectory(void)
+{
+	// main class library folder: only used for relative path resolution
+	sc_GetResourceDirectory(gCompileDir, MAXPATHLEN-32);
+	sc_AppendToPath(gCompileDir, "SCClassLibrary");
 }
 
 extern void asRelativePath(char *inPath, char *outPath)
@@ -2000,6 +2005,7 @@ void initPassOne()
 	numClassDeps = 0;
 	compiledOK = false;
 	compiledDirectories.clear();
+	sc_InitCompileDirectory();
 }
 
 void finiPassOne()
@@ -2054,41 +2060,18 @@ static bool passOne_ProcessDir(const char *dirname, int level)
 	return success;
 }
 
-// Locate directories to compile.
-
-static void sc_InitCompileDirectories(void)
-{
-	sc_GetResourceDirectory(gCompileDir, MAXPATHLEN-32);
-	sc_AppendToPath(gCompileDir, "SCClassLibrary");
-
-	if (!sc_IsStandAlone()) {
-		sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
-		sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
-	}
-}
-
 bool passOne()
 {
 	initPassOne();
-	// This function must be provided by the host environment.
-	// It should choose a directory to scan recursively and call
-	// passOne_ProcessOneFile(char *filename) for each file
 
-	sc_InitCompileDirectories();
-
-	if (!passOne_ProcessDir(gCompileDir, 0))
-		return false;
-
-	if (!sc_IsStandAlone()) {
-		if (!passOne_ProcessDir(gSystemExtensionDir, 0))
+	if (sc_IsStandAlone()) {
+		/// FIXME: this should be moved to the LibraryConfig file
+		if (!passOne_ProcessDir(gCompileDir, 0))
 			return false;
-
-		if (!passOne_ProcessDir(gUserExtensionDir, 0))
-			return false;
-
+	} else
 		if (!gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir))
 			return false;
-	}
+
 	finiPassOne();
 	return true;
 }
