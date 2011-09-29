@@ -54,8 +54,6 @@
 #include "PyrObjectProto.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrKernelProto.h"
-#include "SC_InlineUnaryOp.h"
-#include "SC_InlineBinaryOp.h"
 #include "InitAlloc.h"
 #include "bullet.h"
 #include "PredefinedSymbols.h"
