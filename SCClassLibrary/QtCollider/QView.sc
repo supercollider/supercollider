@@ -14,7 +14,8 @@ QView : QObject {
   var <>userCanClose=true, <>deleteOnClose = true;
   // actions
   var <action;
-  var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseMoveAction, <mouseWheelAction;
+  var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseLeaveAction;
+  var <mouseMoveAction, <mouseWheelAction;
   var <keyDownAction, <keyUpAction, <keyModifiersChangedAction;
   var <>keyTyped;
   // focus
@@ -375,6 +376,11 @@ QView : QObject {
     this.setEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true );
   }
 
+  mouseLeaveAction_ { arg aFunction;
+    mouseLeaveAction = aFunction;
+    this.setEventHandler( QObject.mouseLeaveEvent, \mouseLeaveEvent, true );
+  }
+
   mouseWheelAction_ { arg aFunction;
     mouseWheelAction = aFunction;
     this.setEventHandler( QObject.mouseWheelEvent, \mouseWheelEvent, true );
@@ -468,6 +474,10 @@ QView : QObject {
     mouseOverAction.value( this, x, y );
   }
 
+  mouseLeave { arg x, y;
+    mouseLeaveAction.value( this, x, y );
+  }
+
   mouseWheel { arg x, y, modifiers, xDelta, yDelta;
     ^mouseWheelAction.value( this, x, y, modifiers, xDelta, yDelta );
   }
@@ -512,6 +522,8 @@ QView : QObject {
       {this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true )};
     if( this.overrides( \mouseOver ) )
       {this.setEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true )};
+    if( this.overrides( \mouseLeave ) )
+      {this.setEventHandler( QObject.mouseLeaveEvent, \mouseLeaveEvent, true )};
     if( this.overrides( \mouseWheel ) )
       {this.setEventHandler( QObject.wheelEvent, \mouseWheelEvent, true )};
 
@@ -604,6 +616,11 @@ QView : QObject {
   mouseOverEvent { arg x, y;
     var dummy = x; // prevent this method from being optimized away
     ^this.mouseOver( x, y );
+  }
+
+  mouseLeaveEvent { arg x, y;
+    var dummy = x; // prevent this method from being optimized away
+    ^this.mouseLeave( x, y );
   }
 
   mouseWheelEvent { arg x, y, modifiers, xDelta, yDelta;
