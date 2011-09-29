@@ -3508,6 +3508,29 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 	return errNone;
 }
 
+extern bool gPostInlineWarnings;
+static int prLanguageConfig_getPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetBool(result, gPostInlineWarnings);
+	return errNone;
+}
+
+static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp - 1;
+	PyrSlot *arg    = g->sp;
+
+	if (IsTrue(arg))
+		gPostInlineWarnings = true;
+	else if (IsFalse(arg))
+		gPostInlineWarnings = false;
+	else
+		errWrongType;
+
+	return errNone;
+}
+
 
 #define PRIMGROWSIZE 480
 PrimitiveTable gPrimitiveTable;
@@ -4070,6 +4093,8 @@ void initPrimitives()
 	definePrimitive(base, index++, "_LanguageConfig_removeIncludePath", prLanguageConfig_removeIncludePath, 2, 0);
 	definePrimitive(base, index++, "_LanguageConfig_removeExcludePath", prLanguageConfig_removeExcludePath, 2, 0);
 	definePrimitive(base, index++, "_LanguageConfig_writeConfigFile", prLanguageConfig_writeConfigFile, 2, 0);
+	definePrimitive(base, index++, "_LanguageConfig_getPostInlineWarnings", prLanguageConfig_getPostInlineWarnings, 1, 0);
+	definePrimitive(base, index++, "_LanguageConfig_setPostInlineWarnings", prLanguageConfig_setPostInlineWarnings, 2, 0);
 
 	//void initOscilPrimitives();
 	//void initControllerPrimitives();

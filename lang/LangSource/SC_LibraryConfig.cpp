@@ -127,6 +127,7 @@ bool SC_LibraryConfig::readLibraryConfig(SC_LibraryConfigFile& file, const char*
 	return file.read(fileName, gLibraryConfig);
 }
 
+extern bool gPostInlineWarnings;
 bool SC_LibraryConfig::readLibraryConfigYAML(const char* fileName)
 {
 	freeLibraryConfig();
@@ -162,6 +163,15 @@ bool SC_LibraryConfig::readLibraryConfigYAML(const char* fileName)
 					gLibraryConfig->addExcludedDirectory(path.c_str());
 				}
 			}
+
+			const Node * inlineWarnings = doc.FindValue("postInlineWarnings");
+			if (inlineWarnings) {
+				try {
+					gPostInlineWarnings = inlineWarnings->to<bool>();
+				} catch(...) {
+					postfl("Warning: Cannot parse config file entry \"postInlineWarnings\"\n");
+				}
+			}
 		}
 		return true;
 	} catch (...)
@@ -177,6 +187,7 @@ bool SC_LibraryConfig::writeLibraryConfigYAML(const char* fileName)
 	out.SetIndent(4);
 	out.SetMapFormat(Block);
 	out.SetSeqFormat(Block);
+	out.SetBoolFormat(TrueFalseBool);
 
 	out << BeginMap;
 
@@ -193,6 +204,9 @@ bool SC_LibraryConfig::writeLibraryConfigYAML(const char* fileName)
 		 it != gLibraryConfig->mExcludedDirectories.end(); ++it)
 		out << *it;
 	out << EndSeq;
+
+	out << Key << "postInlineWarnings";
+	out << Value << gPostInlineWarnings;
 
 	out << EndMap;
 	ofstream fout(fileName);
