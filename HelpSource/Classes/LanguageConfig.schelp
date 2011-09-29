@@ -32,3 +32,6 @@ Add new class library exclude path.
 
 METHOD:: removeExcludePath
 Remove path from class library exclude paths.
+
+METHOD:: postInlineWarnings
+Get or set the compiler flag, whether warnings should be posted if a FunctionDef cannot be inlined.

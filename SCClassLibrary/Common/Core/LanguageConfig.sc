@@ -28,4 +28,11 @@ LanguageConfig {
 		^this.primitiveFailed
 	}
 
+	*postInlineWarnings {
+		_LanguageConfig_getPostInlineWarnings
+	}
+	*postInlineWarnings_ {|aBoolean|
+		_LanguageConfig_setPostInlineWarnings
+		^this.primitiveFailed
+	}
 }
