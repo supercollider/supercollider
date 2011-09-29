@@ -22,11 +22,19 @@ QEnvelopeView : QView
   }
 
   keepTimeOrder {
-    ^this.getProperty( \movePolicy ) != 0;
+    ^this.getProperty( \timeOrder ) != 0;
   }
 
   keepTimeOrder_ { arg bool;
-    this.setProperty( \movePolicy, if(bool){1}{0} );
+    this.setProperty( \timeOrder, if(bool){1}{0} );
+  }
+
+  elasticSelection {
+    ^this.getProperty( \selectionForm ) == 0;
+  }
+
+  elasticSelection_ { arg bool;
+    this.setProperty( \selectionForm, if(bool){0}{1} );
   }
 
   value {
@@ -46,12 +54,25 @@ QEnvelopeView : QView
     ^this.getProperty( \index );
   }
 
+  index_ { arg index;
+    ^this.setProperty( \index, index );
+  }
+
   lastIndex {
     ^this.index;
   }
 
-  selectIndex { arg anInt;
-    this.setProperty( \index, anInt );
+  selectIndex { arg index;
+    if( index < 0 ){
+      this.invokeMethod( \deselectAll );
+    }{
+      this.invokeMethod( \select, [index,false] );
+    };
+    this.index = index;
+  }
+
+  deselectIndex { arg index;
+    this.invokeMethod( \deselect, index );
   }
 
   x {
