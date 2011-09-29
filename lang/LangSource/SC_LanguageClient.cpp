@@ -202,6 +202,7 @@ bool SC_LanguageClient::readDefaultLibraryConfig()
 	if (readLibraryConfig("/etc/sclang.cfg"))
 		return true;
 
+	SC_LibraryConfig::defaultLibraryConfig();
 	return false;
 }
 

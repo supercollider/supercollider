@@ -11,8 +11,8 @@ The configuration file is stored in YAML format, which contains one dictionary. 
 the following table:
 
 definitionList::
-## teletype::includePaths:: || A list of additional class library paths.
-## teletype::excludePaths:: || A list of paths to exclude from the class library files.
+## teletype::includePaths:: || List of class library paths.
+## teletype::excludePaths:: || List of paths to exclude from the class library files (overrides teletype::includePaths::).
 ## teletype::postInlineWarnings:: || Boolean flag to post warnings about missing inline opportunities.
 ::
 
@@ -32,8 +32,6 @@ note::Changes to the class library paths won't have any effect before recompilin
 
 METHOD:: includePaths
 Return the class library include paths.
-
-note::The list does not contain the default paths for the class library or the extension folders::
 
 METHOD:: addIncludePath
 Add new class library include path.

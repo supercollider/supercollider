@@ -1,7 +1,3 @@
-// emacs:		-*- c++ -*-
-// file:		SC_LibraryConfig.h
-// cvs:			$Id$
-
 /*
  *  Copyright 2003 Maurizio Umberto Puxeddu
  *  Copyright 2011 Jakob Leben
@@ -110,6 +106,7 @@ public:
 	static bool readLibraryConfigYAML(const char* fileName);
 	static bool writeLibraryConfigYAML(const char* fileName);
 	static void freeLibraryConfig();
+	static bool defaultLibraryConfig(void);
 
 private:
 	DirVector mIncludedDirectories;

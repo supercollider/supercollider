@@ -214,6 +214,28 @@ bool SC_LibraryConfig::writeLibraryConfigYAML(const char* fileName)
 	return true;
 }
 
+bool SC_LibraryConfig::defaultLibraryConfig(void)
+{
+	freeLibraryConfig();
+	gLibraryConfig = new SC_LibraryConfig();
+
+	char compileDir[MAXPATHLEN];
+	char systemExtensionDir[MAXPATHLEN];
+	char userExtensionDir[MAXPATHLEN];
+
+	sc_GetResourceDirectory(compileDir, MAXPATHLEN-32);
+	sc_AppendToPath(compileDir, "SCClassLibrary");
+	gLibraryConfig->addIncludedDirectory(compileDir);
+
+	if (!sc_IsStandAlone()) {
+		sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
+		gLibraryConfig->addIncludedDirectory(systemExtensionDir);
+
+		sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
+		gLibraryConfig->addIncludedDirectory(userExtensionDir);
+	}
+	return true;
+}
 
 void SC_LibraryConfig::freeLibraryConfig()
 {
