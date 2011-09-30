@@ -567,34 +567,55 @@ Either visit file internally (.sc) or start external editor (.rtf)."
   (interactive
    (list
     (let ((topic (or (and mark-active (buffer-substring-no-properties (region-beginning) (region-end)))
-		     (sclang-help-topic-at-point)
-		     "Help")))
+                     (sclang-help-topic-at-point)
+                     "Help")))
       (completing-read (format "Help topic%s: " (if (sclang-get-help-file topic)
-						    (format " (default %s)" topic) ""))
-		       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic))))
+                                                    (format " (default %s)" topic) ""))
+                       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic))))
   (let ((file (sclang-get-help-file topic)))
     (if file
-	(if (file-exists-p file)
-	    (let* ((buffer-name (sclang-help-buffer-name topic))
-		   (buffer (get-buffer buffer-name)))
-	      (unless buffer
-		(if (sclang-html-file-p file)
-		     (w3m-find-file file)
-		   ;;  (sclang-goto-help-browser)
-		;; not a sclang-html file
-		(setq buffer (get-buffer-create buffer-name))
-		(with-current-buffer buffer
-		  (insert-file-contents file)
-		  (let ((sclang-current-help-file file)
-			(default-directory (file-name-directory file)))
-		    (sclang-help-mode))
-		  (set-buffer-modified-p nil)))
-	      (switch-to-buffer buffer))
-	      (if (sclang-html-file-p file)
-		  (sclang-goto-help-browser))
-	      )
-	  (sclang-message "Help file not found") nil)
+        (if (file-exists-p file)
+            (let* ((buffer-name (sclang-help-buffer-name topic))
+                   (buffer (get-buffer buffer-name)))
+              (unless buffer
+                (if (sclang-html-file-p file)
+                    (w3m-find-file file)
+                  ;;  (sclang-goto-help-browser)
+                  ;; not a sclang-html file
+                  (setq buffer (get-buffer-create buffer-name))
+                  (with-current-buffer buffer
+                    (insert-file-contents file)
+                    (let ((sclang-current-help-file file)
+                          (default-directory (file-name-directory file)))
+                      (sclang-help-mode))
+                    (set-buffer-modified-p nil)))
+                (switch-to-buffer buffer))
+              (if (sclang-html-file-p file)
+                  (sclang-goto-help-browser))
+              )
+          (sclang-message "Help file not found") nil)
       (sclang-message "No help for \"%s\"" topic) nil)))
+
+
+(defun sclang-open-help-gui ()
+  "Open SCDoc Help Browser"
+  (interactive)
+  (sclang-eval-string (sclang-format "Help.gui"))
+  )
+
+(defun sclang-find-help-in-gui (topic)
+  "Search for topic in SCDoc Help Browser"
+  (interactive
+   (list
+    (let ((topic (or (and mark-active (buffer-substring-no-properties (region-beginning) (region-end)))
+                     (sclang-help-topic-at-point)
+                     "Help")))
+      (completing-read (format "Help topic%s: " (if (sclang-get-help-file topic)
+                                                    (format " (default %s)" topic) ""))
+                       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic)))
+   )
+  (sclang-eval-string (sclang-format "HelpBrowser.openHelpFor(%o)" topic))
+)
 
 ;; =====================================================================
 ;; module setup
