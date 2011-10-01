@@ -197,6 +197,18 @@ EmacsInterface {
 			//	devpath.postln;
 			Document.open( devpath ).front;
 			name -> devpath
+		})
+		.put( \helpSymbols, {
+			var result = IdentitySet.newFrom(SCDoc.docMap.keys);
+			Class.allClasses.do { | class |
+				if (class.isMetaClass.not) {
+					result.add(class.name.asString);
+				};
+				class.methods.do { | method |
+					result.add(method.name.asString);
+				};
+			};
+			result.asArray
 		});
 	}
 }
