@@ -31,6 +31,11 @@
 #include <QFontMetrics>
 #include <QUrl>
 
+#ifdef Q_WS_X11
+#include <QX11Info>
+#include "hacks/hacks_x11.hpp"
+#endif
+
 using namespace QtCollider;
 
 QAtomicInt QWidgetProxy::_globalEventMask = 0;
@@ -142,6 +147,9 @@ void QWidgetProxy::customEvent( QEvent *e )
   }
 }
 
+
+
+
 void QWidgetProxy::bringFrontEvent() {
   QWidget *w = widget();
   if( !w ) return;
@@ -151,7 +159,9 @@ void QWidgetProxy::bringFrontEvent() {
   w->show();
   w->raise();
 
-  return;
+#ifdef Q_WS_X11
+  raise_window(QX11Info::display(), w);
+#endif
 }
 
 void QWidgetProxy::setFocusEvent( QtCollider::SetFocusEvent *e ) {
