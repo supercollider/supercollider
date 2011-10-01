@@ -67,12 +67,6 @@ public:
 
   void *id() const { return (void*) d; } // useful for checking internal pointer identity
 
-  void lock() { if(d) d->mutex.lock(); }
-
-  bool tryLock() { return d ? d->mutex.tryLock() : true; }
-
-  void unlock() { if(d) d->mutex.unlock(); }
-
   void invalidate() { qcDebugMsg(2,"SafePtr: invalidating"); if(d) d->ptr = 0; }
 
 private:
@@ -80,7 +74,6 @@ private:
     Data ( T * ptr_ ) : ptr(ptr_), refCount(1) {}
     QAtomicPointer<T> ptr;
     QAtomicInt refCount;
-    QMutex mutex;
   };
 
   void ref() {
