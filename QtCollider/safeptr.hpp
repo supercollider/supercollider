@@ -34,25 +34,21 @@ namespace QtCollider {
 template<typename T> class SafePtr
 {
 public:
-  SafePtr() : _ptr(0), _refCount(0), _mutex(0) {}
+  SafePtr() : d(0) {}
 
   SafePtr( const SafePtr & other )
-  : _ptr( other._ptr ), _refCount( other._refCount ), _mutex( other._mutex )
+  : d ( other.d )
   {
     ref();
   }
 
   SafePtr( T* ptr )
-  : _ptr(new QAtomicPointer<T>(ptr)),
-    _refCount(new QAtomicInt(1)),
-    _mutex(new QMutex())
+  : d ( new Data( ptr ) )
   {}
 
   SafePtr & operator= ( const SafePtr & other ) {
     deref();
-    _ptr = other._ptr;
-    _refCount = other._refCount;
-    _mutex = other._mutex;
+    d = other.d;
     ref();
     return *this;
   }
@@ -61,49 +57,50 @@ public:
     deref();
   }
 
-  T * operator-> () const { return *_ptr; }
+  T * operator-> () const { return d->ptr; }
 
-  T & operator* () const { return **_ptr; }
+  T & operator* () const { return *d->ptr; }
 
-  operator T* () const { return _ptr ? *_ptr : 0; }
+  operator T* () const { return (d ? d->ptr : 0); }
 
-  T *ptr() const {
-    if( _ptr ) return *_ptr;
-    else return 0;
-  }
+  T *ptr() const { return (d ? d->ptr : 0); }
 
-  void *id() const { return (void*) _ptr; } // useful for checking internal pointer identity
+  void *id() const { return (void*) d; } // useful for checking internal pointer identity
 
-  void lock() { if(_mutex) _mutex->lock(); }
+  void lock() { if(d) d->mutex.lock(); }
 
-  bool tryLock() { return _mutex ? _mutex->tryLock() : true; }
+  bool tryLock() { return d ? d->mutex.tryLock() : true; }
 
-  void unlock() { if(_mutex) _mutex->unlock(); }
+  void unlock() { if(d) d->mutex.unlock(); }
 
-  void invalidate() { qcDebugMsg(2,"SafePtr: invalidating"); if(_ptr) *_ptr = 0; }
+  void invalidate() { qcDebugMsg(2,"SafePtr: invalidating"); if(d) d->ptr = 0; }
 
 private:
+  struct Data {
+    Data ( T * ptr_ ) : ptr(ptr_), refCount(1) {}
+    QAtomicPointer<T> ptr;
+    QAtomicInt refCount;
+    QMutex mutex;
+  };
+
   void ref() {
-    if(_refCount) {
-      _refCount->ref();
-      qcDebugMsg(2,QString("SafePtr: +refcount = %1").arg(*_refCount));
+    if( d ) {
+      d->refCount.ref();
+      qcDebugMsg(2,QString("SafePtr: +refcount = %1").arg(d->refCount));
     }
   }
   void deref() {
-    if( _refCount ) {
-      bool ref = _refCount->deref();
-      qcDebugMsg(2,QString("SafePtr: -refcount = %1").arg(*_refCount));
+    if( d ) {
+      bool ref = d->refCount.deref();
+      qcDebugMsg(2,QString("SafePtr: -refcount = %1").arg(d->refCount));
       if( !ref ) {
         qcDebugMsg(2,"SafePtr: unreferenced!");
-        delete _refCount;
-        delete _ptr;
-        delete _mutex;
+        delete d;
       }
     }
   }
-  QAtomicPointer<T> *_ptr;
-  QAtomicInt * _refCount;
-  QMutex * _mutex;
+
+  Data *d;
 };
 
 } // namespace QtCollider
