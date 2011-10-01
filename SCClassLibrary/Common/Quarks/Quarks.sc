@@ -383,7 +383,7 @@ Quarks
 			GUI.button.new(window, Rect(15,15,150,20))
 			.states_([["open quark directory", nil, Color.gray(0.5, 0.8)]])
 			.action_{ arg butt;
-				"open %".format(this.local.path.escapeChar($ )).unixCmd;
+				openOS(this.local.path.escapeChar($ ))
 			};
 		};
 
@@ -507,7 +507,7 @@ Quarks
 
 		btnOpenDir = Button().states_([["Directory"]])
 			.setProperty( \toolTip, "Open the local Quarks directory")
-			.action_({ Quarks.systemOpen( "%".format(this.local.path) ) });
+			.action_({ openOS(this.local.path) });
 
 		btnReset = Button()
 			.states_([["Reset"]])
@@ -583,7 +583,7 @@ Quarks
 			.states_([["Source"]])
 			.setProperty( \toolTip, "Open the source directory of this Quark")
 			.action_({
-				Quarks.systemOpen( "%/%".format(Quarks.local.path, curQuark.path) );
+				openOS( "%/%".format(Quarks.local.path, curQuark.path) );
 			});
 
 		btnCloseDetails = StaticText()
@@ -617,14 +617,5 @@ Quarks
 		refresh.value;
 		window.front;
 		^window;
-	}
-
-	*systemOpen { arg path;
-		if("which xdg-open >/dev/null".systemCmd==0) {
-			^("xdg-open"+path.escapeChar($ )).systemCmd;
-		};
-		if("which open >/dev/null".systemCmd==0) {
-			^("open"+path.escapeChar($ )).systemCmd;
-		};
 	}
 }

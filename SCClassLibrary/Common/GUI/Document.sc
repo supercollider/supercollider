@@ -42,7 +42,7 @@ Document {
 				commentColor: Color(0.75, 0, 0, 1),
 				symbolColor: Color(0, 0.45, 0, 1),
 				numberColor: Color(0, 0, 0, 1),
-				specialValsColor: Color(0.2, 0.2, 0.75, 1), // true false nil inf 
+				specialValsColor: Color(0.2, 0.2, 0.75, 1), // true false nil inf
 				specialVarsColor: Color(0.4, 0.4, 0.75, 1), // super, thisProcess
 				declColor: Color(0, 0, 1, 1), // var, const, args
 				puncColor: Color(0, 0, 0, 1),
@@ -451,7 +451,7 @@ Document {
 			or: { selectedText.containsStringAt(0, "file://") } }
 		{
 			// open URL
-			("open " ++ selectedText).unixCmd;
+			openOS(selectedText)
 		}
 		{ selectedText.containsStringAt(selectedText.size-1, "/") }
 		{
