@@ -30,32 +30,26 @@ SCDocHTMLRenderer : SCDocRenderer {
     }
 
     findHelpFile {|str|
-        var path = "Help.html", old, sym;
-        if(str.notNil and: {str.notEmpty}) {
-            sym = str.asSymbol;
-            path = if(str[0].isUpper) {
-                if(sym.asClass.notNil) {
-                    if(SCDoc.findHelpSource("Classes"+/+str).isNil) {
-                        old = Help.findHelpFile(str);
-                        old !? { "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html" }
-                    } ?? {
-                        "Classes" +/+ str ++ ".html"
-                    }
-                } {
-                    "Search.html#" ++ str
-                };
-            } {
-                if(block {|brk|
-                    Class.allClasses.do{|c| if(c.findMethod(sym).notNil) {brk.value(true)}};
-                    false;
-                }) {
-                    "Overviews/Methods.html#" ++ str
-                } {
-                    "Search.html#" ++ str
+        var path, old, sym, pfx = "file://" ++ SCDoc.helpTargetDir;
+
+        if(str.isNil or: {str.isEmpty}) { ^pfx +/+ "Help.html" };
+        if(SCDoc.findHelpSource(str).notNil) { ^pfx +/+ str ++ ".html" };
+
+        sym = str.asSymbol;
+        if(sym.asClass.notNil) {
+            ^pfx +/+ (if(SCDoc.findHelpSource("Classes"+/+str).isNil) {
+                (old = Help.findHelpFile(str)) !? {
+                    "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html"
                 }
-            };
+            } ?? { "Classes" +/+ str ++ ".html" })
         };
-        ^ "file://" ++ SCDoc.helpTargetDir +/+ path;
+
+        ^pfx +/+ if(block {|brk|
+            Class.allClasses.do{|c| if(c.findMethod(sym).notNil) {brk.value(true)}};
+            false;
+        }) {
+            "Overviews/Methods.html#" ++ str
+        } { "Search.html#" ++ str }
     }
 
     *checkBrokenLinks {
