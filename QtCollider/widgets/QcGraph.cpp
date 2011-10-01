@@ -66,7 +66,7 @@ QcGraph::QcGraph() :
   _editable( true ),
   _step( 0.f ),
   _selectionForm( ElasticSelection ),
-  _timeOrder( NoTimeOrder ),
+  _xOrder( NoOrder ),
   _gridOn( false ),
   _curIndex( -1 )
 {
@@ -231,7 +231,7 @@ void QcGraph::setCurrentX( float f )
   QcGraphElement *e = _model.elementAt(_curIndex);
   QPointF val = e->value;
   val.setX( f );
-  if( _timeOrder != NoTimeOrder ) timeRestrictValue(e,val,true);
+  if( _xOrder != NoOrder ) orderRestrictValue(e,val,true);
   else restrictValue(val);
   e->value = val;
   update();
@@ -243,7 +243,7 @@ void QcGraph::setCurrentY( float f )
   QcGraphElement *e = _model.elementAt(_curIndex);
   QPointF val = e->value;
   val.setY( f );
-  if( _timeOrder != NoTimeOrder ) timeRestrictValue(e,val,true);
+  if( _xOrder != NoOrder ) orderRestrictValue(e,val,true);
   else restrictValue(val);
   e->value = val;
   update();
@@ -288,9 +288,9 @@ void QcGraph::setStep( double step )
   };
 }
 
-void QcGraph::setTimeOrder( int i ) {
-  _timeOrder = (TimeOrder) i;
-  if( _timeOrder != NoTimeOrder ) {
+void QcGraph::setHorizontalOrder( int i ) {
+  _xOrder = (Order) i;
+  if( _xOrder != NoOrder ) {
     ensureOrder();
     update();
   }
@@ -362,7 +362,7 @@ inline void QcGraph::restrictValue( QPointF & val )
   val.setY(y);
 }
 
-void QcGraph::timeRestrictValue( QcGraphElement *e, QPointF & val, bool selected )
+void QcGraph::orderRestrictValue( QcGraphElement *e, QPointF & val, bool selected )
 {
   restrictValue(val);
 
@@ -400,7 +400,7 @@ void QcGraph::ensureOrder()
   for( int i = 0; i < c; ++i ) {
     QcGraphElement *e = _model.elementAt(i);
     QPointF val = e->value;
-    if( _timeOrder != NoTimeOrder && val.x() < x_min ) val.setX(x_min);
+    if( _xOrder != NoOrder && val.x() < x_min ) val.setX(x_min);
     setValue( e, val );
     x_min = e->value.x();
   }
@@ -412,11 +412,11 @@ void QcGraph::moveFree( QcGraphElement *e, const QPointF & val )
   setValue( e, val );
 }
 
-void QcGraph::moveTimeRestricted( QcGraphElement *e, const QPointF & val )
+void QcGraph::moveOrderRestricted( QcGraphElement *e, const QPointF & val )
 {
   if( !e->editable ) return;
   QPointF v(val);
-  timeRestrictValue( e, v, true );
+  orderRestrictValue( e, v, true );
   e->value = v;
 }
 
@@ -428,9 +428,9 @@ void QcGraph::moveSelected( const QPointF & dif, SelectionForm form, bool cached
 
   case ElasticSelection: {
 
-    switch( _timeOrder ) {
+    switch( _xOrder ) {
 
-    case NoTimeOrder:
+    case NoOrder:
 
       for( int i = 0; i < c; ++i ) {
         SelectedElement & se = _selection.elems[i];
@@ -439,18 +439,18 @@ void QcGraph::moveSelected( const QPointF & dif, SelectionForm form, bool cached
 
       break;
 
-    case RigidTimeOrder:
+    case RigidOrder:
 
       if( dif.x() <= 0 ) {
         for( int i = 0; i < c; ++i ) {
           SelectedElement & se = _selection.elems[i];
-          moveTimeRestricted( se.elem, (cached ? se.moveOrigin : se.elem->value) + dif );
+          moveOrderRestricted( se.elem, (cached ? se.moveOrigin : se.elem->value) + dif );
         }
       }
       else {
         for( int i = _selection.count() - 1; i >= 0; --i ) {
           SelectedElement & se = _selection.elems[i];
-          moveTimeRestricted( se.elem, (cached ? se.moveOrigin : se.elem->value) + dif );
+          moveOrderRestricted( se.elem, (cached ? se.moveOrigin : se.elem->value) + dif );
         }
       }
 
@@ -471,11 +471,11 @@ void QcGraph::moveSelected( const QPointF & dif, SelectionForm form, bool cached
       if( !se.elem->editable ) return;
       QPointF val0 = (cached ? se.moveOrigin : se.elem->value);
       QPointF val = val0 + d;
-      if( _timeOrder == NoTimeOrder ) {
+      if( _xOrder == NoOrder ) {
         restrictValue( val );
       }
       else {
-        timeRestrictValue( se.elem, val, false );
+        orderRestrictValue( se.elem, val, false );
       }
       d = val - val0;
     }
