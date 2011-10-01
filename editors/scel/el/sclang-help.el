@@ -603,28 +603,49 @@ Either visit file internally (.sc) or start external editor (.rtf)."
   (sclang-eval-string (sclang-format "Help.gui"))
   )
 
+(defvar sclang-scdoc-topics (make-hash-table :size 16385)
+  "List of all scdoc topics.")
+
+(sclang-set-command-handler
+ 'helpSymbols
+ (lambda (list-of-symbols)
+   (mapcar (lambda (arg)
+             (puthash arg nil sclang-scdoc-topics))
+           list-of-symbols)
+   ))
+
 (defun sclang-find-help-in-gui (topic)
   "Search for topic in SCDoc Help Browser"
   (interactive
    (list
-    (let ((topic (or (and mark-active (buffer-substring-no-properties (region-beginning) (region-end)))
-                     (sclang-help-topic-at-point)
-                     "Help")))
-      (completing-read (format "Help topic%s: " (if (sclang-get-help-file topic)
-                                                    (format " (default %s)" topic) ""))
-                       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic)))
+    (let ((topic (sclang-symbol-at-point)))
+      (completing-read (format "Help topic%s: " (if topic
+                                                    (format " (default %s)" topic)
+                                                  ""))
+                       sclang-scdoc-topics nil nil nil 'sclang-help-topic-history topic)))
    )
-  (sclang-eval-string (sclang-format "HelpBrowser.openHelpFor(%o)" topic))
-)
+  (if topic
+      (sclang-eval-string (sclang-format "HelpBrowser.openHelpFor(%o)" topic))
+    (sclang-eval-string (sclang-format "Help.gui"))
+    )
+  )
+
 
 ;; =====================================================================
 ;; module setup
 ;; =====================================================================
 
-(add-hook 'sclang-library-startup-hook (lambda ()
-					 (condition-case nil
-					     (sclang-index-help-topics)
-					   (error nil))))
+(add-hook 'sclang-library-startup-hook
+          (lambda ()
+            (sclang-perform-command 'helpSymbols)
+            (condition-case nil
+                (sclang-index-help-topics)
+              (error nil))))
+
+(add-hook 'sclang-library-shutdown-hook
+          (lambda ()
+            (clrhash sclang-scdoc-topics)))
+
 (add-to-list 'auto-mode-alist '("\\.rtf$" . sclang-help-mode))
 ;; ========= ADDITION for HTML help files?? ============
 ;; (add-to-list 'auto-mode-alist '("\\.html$" . sclang-help-mode))
