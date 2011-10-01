@@ -148,7 +148,7 @@ class QcGraph : public QWidget, QcHelper
   Q_PROPERTY( bool editable READ dummyBool WRITE setEditable );
   Q_PROPERTY( double step READ step WRITE setStep );
   Q_PROPERTY( int selectionForm READ selectionForm WRITE setSelectionForm );
-  Q_PROPERTY( int timeOrder READ timeOrder WRITE setTimeOrder );
+  Q_PROPERTY( int horizontalOrder READ horizontalOrder WRITE setHorizontalOrder );
   Q_PROPERTY( float x READ currentX WRITE setCurrentX );
   Q_PROPERTY( float y READ currentY WRITE setCurrentY );
   Q_PROPERTY( QPointF grid READ grid WRITE setGrid );
@@ -176,10 +176,9 @@ class QcGraph : public QWidget, QcHelper
       RigidSelection
     };
 
-    enum TimeOrder {
-      NoTimeOrder,
-      RigidTimeOrder,
-      ElasticTimeOrder
+    enum Order {
+      NoOrder,
+      RigidOrder
     };
 
   public:
@@ -213,8 +212,8 @@ class QcGraph : public QWidget, QcHelper
     void setStep( double );
     int selectionForm() const { return (int)_selectionForm; }
     void setSelectionForm( int i ) { _selectionForm = (SelectionForm) i; }
-    int timeOrder() const { return (int)_timeOrder; }
-    void setTimeOrder( int i );
+    int horizontalOrder() const { return (int)_xOrder; }
+    void setHorizontalOrder( int i );
     void setGrid( const QPointF &pt ) { _gridMetrics = pt; update(); }
     void setGridOn( bool b ) { _gridOn = b; update(); }
     QSize sizeHint() const { return QSize( 200,200 ); }
@@ -238,11 +237,11 @@ class QcGraph : public QWidget, QcHelper
     void setAllDeselected();
     void setIndexSelected( int index, bool selected );
     void restrictValue( QPointF & );
-    void timeRestrictValue( QcGraphElement *, QPointF &, bool selected );
+    void orderRestrictValue( QcGraphElement *, QPointF &, bool selected );
     void setValue( QcGraphElement *, const QPointF & );
     void ensureOrder();
     void moveFree( QcGraphElement *, const QPointF & );
-    void moveTimeRestricted( QcGraphElement *, const QPointF & );
+    void moveOrderRestricted( QcGraphElement *, const QPointF & );
     void moveSelected( const QPointF & dValue, SelectionForm, bool fromCache );
     QPointF pos( const QPointF & value );
     QPointF value( const QPointF & pos );
@@ -268,7 +267,7 @@ class QcGraph : public QWidget, QcHelper
     bool _editable;
     double _step;
     SelectionForm _selectionForm;
-    TimeOrder _timeOrder;
+    Order _xOrder;
 
     int _curIndex;
 

@@ -21,12 +21,12 @@ QEnvelopeView : QView
     this.setProperty( \step, aFloat );
   }
 
-  keepTimeOrder {
-    ^this.getProperty( \timeOrder ) != 0;
+  keepHorizontalOrder {
+    ^this.getProperty( \horizontalOrder ) != 0;
   }
 
-  keepTimeOrder_ { arg bool;
-    this.setProperty( \timeOrder, if(bool){1}{0} );
+  keepHorizontalOrder_ { arg bool;
+    this.setProperty( \horizontalOrder, if(bool){1}{0} );
   }
 
   elasticSelection {
