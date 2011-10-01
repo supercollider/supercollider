@@ -262,18 +262,7 @@ HelpBrowser {
 		if(Document.implementationClass.notNil) {
 			^Document.open(path);
 		};
-		if("which xdg-open >/dev/null".systemCmd==0) {
-			^("xdg-open"+path.escapeChar($ )).systemCmd;
-		};
-		winRect = Rect(0,0,600,400);
-		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
-		file = File(path,"r");
-		win = Window(bounds: winRect).name_("SuperCollider Help:"+path.basename);
-		txt = TextView(win,Rect(0,0,600,400)).resize_(5).string_(file.readAllString);
-		file.close;
-		fonts = Font.availableFonts;
-		txt.font = Font(["Monaco","Monospace"].detect {|x| fonts.includesEqual(x)} ?? {Font.defaultMonoFace}, 12);
-		win.front;
+		^path.openOS;
 	}
 
 	startAnim {
