@@ -30,10 +30,11 @@ SCDocHTMLRenderer : SCDocRenderer {
     }
 
     findHelpFile {|str|
-        var path = "Help.html", old;
+        var path = "Help.html", old, sym;
         if(str.notNil and: {str.notEmpty}) {
+            sym = str.asSymbol;
             path = if(str[0].isUpper) {
-                if(str.asSymbol.asClass.notNil) {
+                if(sym.asClass.notNil) {
                     if(SCDoc.findHelpSource("Classes"+/+str).isNil) {
                         old = Help.findHelpFile(str);
                         old !? { "OldHelpWrapper.html#"++old++"?"++SCDoc.helpTargetDir +/+ "Classes" +/+ str ++ ".html" }
@@ -44,7 +45,14 @@ SCDocHTMLRenderer : SCDocRenderer {
                     "Search.html#" ++ str
                 };
             } {
-                "Overviews/Methods.html#" ++ str
+                if(block {|brk|
+                    Class.allClasses.do{|c| if(c.findMethod(sym).notNil) {brk.value(true)}};
+                    false;
+                }) {
+                    "Overviews/Methods.html#" ++ str
+                } {
+                    "Search.html#" ++ str
+                }
             };
         };
         ^ "file://" ++ SCDoc.helpTargetDir +/+ path;
