@@ -378,10 +378,9 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		// ("// History.logFolder:" +  logFolder).postln;
 	}
 
-	*showLogFolder { unixCmd("open \"" ++ logFolder ++ "\"") }
+	*showLogFolder { openOS(logFolder) }
 
 	*checkLogStarted {
-
 		var isOpen;
 		if (logFile.isNil) { this.startLog };
 

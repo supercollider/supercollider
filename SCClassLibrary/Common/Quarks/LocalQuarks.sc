@@ -60,9 +60,9 @@ LocalQuarks
 	}
 	openFolder { arg name, version;
 		if(name.isNil) {
-			unixCmd("open" + path.escapeChar($ ))
+			openOS(path)
 		} {
-			unixCmd("open" + this.findPath(name, version).escapeChar($ ))
+			openOS(this.findPath(name, version))
 		}
 	}
 
