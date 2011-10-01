@@ -44,6 +44,7 @@ set( QT_COLLIDER_SRCS
   QWidgetProxy.cpp
   Slot.cpp
   QcObjectFactory.cpp
+  hacks/hacks_x11.cpp
   primitives/primitives.cpp
   primitives/prim_QObject.cpp
   primitives/prim_QPen.cpp
