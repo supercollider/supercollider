@@ -78,7 +78,7 @@ QSlider2D : QAbstractStepValue {
     this.setProperty( \palette, this.palette.baseColor_(color) );
   }
 
-  defaultGetDrag { ^Point(this.lo,this.hi); }
+  defaultGetDrag { ^Point(this.x,this.y); }
   defaultCanReceiveDrag { ^(QView.currentDrag.class === Point); }
   defaultReceiveDrag {
     var pt = QView.currentDrag;
