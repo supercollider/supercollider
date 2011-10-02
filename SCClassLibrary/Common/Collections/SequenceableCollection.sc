@@ -166,17 +166,15 @@ SequenceableCollection : Collection {
 		});
 		^nil
 	}
-	indicesOfEqual { |item|
-		var indices, i=0, offset=0;
-		while {
-			i = this.indexOfEqual(item, offset);
-			i.notNil
-		}{
-			indices = indices.add(i);
-			offset = i + 1;
-		}
-		^indices
-	}
+
+        indicesOfEqual { |item|
+                var indices;
+                this.do { arg val, i;
+                        if (item == val) { indices = indices.add(i) }
+                };
+                ^indices
+        }
+
 
 	find { |sublist, offset=0|
 		var subSize_1 = sublist.size - 1, first = sublist.first, index;
