@@ -141,6 +141,6 @@ QObject {
     ^this.primitiveFailed
   }
 
-  doFunction { arg f ... args; f.valueArray( this, args ); }
+  doFunction { arg f ... args; f.performList(\value, this, args); }
 
 }
