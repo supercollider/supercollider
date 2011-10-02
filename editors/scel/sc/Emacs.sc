@@ -204,12 +204,9 @@ EmacsInterface {
 			dt = {
 				result = IdentitySet.new(16384);
 				SCDoc.helpSourceDirs.do {|dir|
-					var list = ("%/*/*.schelp").format(dir).pathMatch;
-					list = list ++ ("%/*/*/*.schelp").format(dir).pathMatch;
-					list = list ++ ("%/*/*/*/*.schelp").format(dir).pathMatch;
-					list = list.collect {|path| path.asRelativePath(dir).removeExtension};
-					list.do {|topic|
-						result.add(topic)
+					("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -not -name '*.ext.schelp'")
+					.unixCmdGetStdOutLines.do {|file|
+						result.add(file[dir.size+1 ..].drop(-7))
 					}
 				};
 
