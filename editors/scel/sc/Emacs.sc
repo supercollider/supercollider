@@ -199,16 +199,33 @@ EmacsInterface {
 			name -> devpath
 		})
 		.put( \helpSymbols, {
-			var result = IdentitySet.newFrom(SCDoc.docMap.keys);
-			Class.allClasses.do { | class |
-				if (class.isMetaClass.not) {
-					result.add(class.name.asString);
+			var result, dt;
+
+			dt = {
+				result = IdentitySet.new(16384);
+				SCDoc.helpSourceDirs.do {|dir|
+					var list = ("%/*/*.schelp").format(dir).pathMatch;
+					list = list ++ ("%/*/*/*.schelp").format(dir).pathMatch;
+					list = list ++ ("%/*/*/*/*.schelp").format(dir).pathMatch;
+					list = list.collect {|path| path.asRelativePath(dir).removeExtension};
+					list.do {|topic|
+						result.add(topic)
+					}
 				};
-				class.methods.do { | method |
-					result.add(method.name.asString);
+
+				Class.allClasses.do { | class |
+					if (class.isMetaClass.not) {
+						result.add(class.name.asString);
+					};
+					class.methods.do { | method |
+						result.add(method.name.asString);
+					};
 				};
-			};
-			result.asArray
+
+				result = result.asArray
+			}.bench(false);
+			"Emacs: Index help topics in % seconds\n".postf(dt.asStringPrec(3));
+			result
 		});
 	}
 }
