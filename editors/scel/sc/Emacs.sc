@@ -45,8 +45,7 @@ EmacsInterface {
 			var result, dt;
 
 			dt = {
-				result = IdentitySet.new;
-
+				result = IdentitySet(16384);
 				Class.allClasses.do { | class |
 					if (class.isMetaClass.not) {
 						result.add(class.name);
@@ -56,14 +55,12 @@ EmacsInterface {
 					};
 				};
 
-				File.use(fileName, "w", { | file |
-					result.collectAs(_.asString, Array).storeLispOn(file);
-				});
+				result = result.collectAs(_.asString, Array)
 			}.bench(false);
 
 			"Emacs: Built symbol table in % seconds\n".postf(dt.asStringPrec(3));
 
-			true
+			result
 		})
 		.put(\openDefinition, { | name |
 			var class, method, res;
