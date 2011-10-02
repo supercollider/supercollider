@@ -216,21 +216,8 @@ low-resource systems."
  'symbolTable
  (lambda (arg)
    (when (and sclang-use-symbol-table arg)
-     (let ((file sclang-symbol-table-file))
-       (when (and file (file-exists-p file))
-	 (with-current-buffer (get-buffer-create (sclang-make-buffer-name "SymbolTable" t))
-	   (erase-buffer)
-	   (unwind-protect
-	       (insert-file-contents file)
-	     (delete-file file))
-	   (setq sclang-symbol-table-file nil)
-	   (goto-char (point-min))
-	   (let ((table (condition-case nil
-			    (read (current-buffer))
-			  (error nil))))
-	     (unless table (sclang-message "Couldn't retrieve symbol table."))
-	     (setq sclang-symbol-table (sort table 'string<))
-	     (sclang-update-font-lock))))))))
+     (setq sclang-symbol-table (sort arg 'string<))
+     (sclang-update-font-lock))))
 
 (add-hook 'sclang-library-startup-hook
 	  (lambda ()
