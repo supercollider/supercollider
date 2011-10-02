@@ -129,17 +129,13 @@ HelpBrowser {
 
 		w = 200;
 		x = x + 10;
-		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1).string_("Search...");
+		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1).string_("Quick lookup...");
 		srchBox.action = {|x|
-			var path, hash, fallback;
 			if(x.string.notEmpty) {
-				#path, hash = x.string.findRegexp("([^#]+)(#?.*)")[1..].flop[1];
-				fallback = {SCDoc.helpTargetDir++"/Search.html#"++x.string};
-				if(hash.isEmpty) {
-					this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html", fallback)
-				} {
-					this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html" ++ hash, fallback)
-				}
+				this.goTo(if(x.string.first==$#)
+					{SCDoc.helpTargetDir++"/Search.html#"++x.string.drop(1)}
+					{SCDoc.findHelpFile(x.string)}
+				);
 			}
 		};
 		srchBox.mouseDownAction = {
