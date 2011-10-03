@@ -589,7 +589,7 @@ METHOD:: defaultKeyDownAction
 
 	The method called when a key is pressed and link::#-keyDownAction:: is nil. Subclass it to define your own functionality on key-press.
 
-	See link::#key_actionsKey actions :: for explanation of arguments.
+	See link::#key_actions#Key actions :: for explanation of arguments.
 
 	returns:: nil, if the key event is not handled by the view, which will propagated it to the parent.
 
