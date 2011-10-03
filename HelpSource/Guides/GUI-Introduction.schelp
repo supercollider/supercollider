@@ -342,7 +342,7 @@ StaticText(w,Rect(50,150,350,50)).string_("To Test Drag and Drop,\nHold down Cmd
 
 subsection:: The advanced way: subclassing the UserView
 
-Subclassing the UserView differs in many aspects from the example above. For a subclassing template and a quick tutorial on how to write a custom widget as a UserView subclass, see link::Classes/UserView#subclassing::.
+Subclassing the UserView differs in many aspects from the example above. For a subclassing template and a quick tutorial on how to write a custom widget as a UserView subclass, see the link::Guides/UserView-Subclassing:: guide.
 
 
 
