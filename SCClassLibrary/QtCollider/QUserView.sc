@@ -1,5 +1,5 @@
 QUserView : QView {
-  var <drawFunc, <background;
+  var <drawFunc, <drawingEnabled=true, <background;
 
   *qtClass { ^"QcCustomPainted" }
 
@@ -13,8 +13,12 @@ QUserView : QView {
     ^Point(150,150);
   }
 
-  drawingEnabled { ^this.getProperty( \drawingEnabled ); }
-  drawingEnabled_ { arg boolean; this.setProperty( \drawingEnabled, boolean ); }
+  drawingEnabled_ { arg boolean;
+    // Allow setting the property apart from the instance variable
+    // to optimize when drawFunc is nil. See drawFunc_ implementation.
+    drawingEnabled = boolean;
+    this.setProperty( \drawingEnabled, boolean );
+  }
 
   clearOnRefresh { ^this.getProperty( \clearOnRefresh ); }
   clearOnRefresh_ { arg boolean; this.setProperty( \clearOnRefresh, boolean ); }
@@ -22,8 +26,7 @@ QUserView : QView {
   clearDrawing { this.invokeMethod( \clear ); }
 
   drawFunc_ { arg aFunction;
-    if( drawFunc.isNil ) { this.drawingEnabled = true };
-    if( aFunction.isNil ) { this.drawingEnabled = false };
+    this.setProperty( \drawingEnabled, aFunction.notNil );
     drawFunc = aFunction;
   }
 
