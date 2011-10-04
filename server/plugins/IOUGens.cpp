@@ -84,6 +84,7 @@ struct LocalIn : public Unit
 {
 	float *m_bus;
 	int32 *m_busTouched;
+	float *m_realData;
 };
 
 extern "C"
@@ -1618,12 +1619,17 @@ void LocalIn_Ctor(LocalIn* unit)
 	World *world = unit->mWorld;
 
 	int busDataSize = numChannels * BUFLENGTH;
-	unit->m_bus = (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int32));
+
+	// align the buffer to 256 bytes so that we can use avx instructions
+	unit->m_realData = (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int32) + 32 * sizeof(float));
+	size_t alignment = (unsigned long)unit->m_realData & 31;
+
+	unit->m_bus = alignment ? (float*)(size_t(unit->m_realData + 32) & ~31)
+	                        : unit->m_realData;
+
 	unit->m_busTouched = (int32*)(unit->m_bus + busDataSize);
 	for (int i=0; i<numChannels; ++i)
-	{
 		unit->m_busTouched[i] = -1;
-	}
 
 	if (unit->mCalcRate == calc_FullRate) {
 		if (unit->mParent->mLocalAudioBusUnit)
@@ -1659,7 +1665,7 @@ void LocalIn_Ctor(LocalIn* unit)
 void LocalIn_Dtor(LocalIn* unit)
 {
 	World *world = unit->mWorld;
-	RTFree(world, unit->m_bus);
+	RTFree(world, unit->m_realData);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
