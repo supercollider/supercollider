@@ -565,7 +565,7 @@ Plotter {
 				.states_([["?", Color.black, Color.clear]])
 				.focusColor_(Color.clear)
 				.resize_(3)
-				.font_(Font( Font.defaultSansFace, 9 ))
+				.font_(Font.sansSerif( 9 ))
 				.action_ { this.class.openHelpFile };
 	}
 

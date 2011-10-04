@@ -33,7 +33,7 @@ ServerMeterView{
 		// dB scale
 		UserView(innerView, Rect(0,0,meterWidth,195)).drawFunc_({
 			Pen.color = Color.white;
-			Pen.font = Font(Font.defaultSansFace, 10).boldVariant;
+			Pen.font = Font.sansSerif(10).boldVariant;
 			Pen.stringCenteredIn("0", Rect(0, 0, meterWidth, 12));
 			Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12));
 		});
@@ -41,14 +41,14 @@ ServerMeterView{
 		(numIns > 0).if({
 			// ins
 			StaticText(view, Rect(10, 5, 100, 15))
-				.font_(Font(Font.defaultSansFace, 10).boldVariant)
+				.font_(Font.sansSerif(10).boldVariant)
 				.stringColor_(Color.white)
 				.string_("Inputs");
 			inmeters = Array.fill( numIns, { arg i;
 				var comp;
 				comp = CompositeView(innerView, Rect(0,0,meterWidth,195)).resize_(5);
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
-					.font_(Font(Font.defaultSansFace, 9).boldVariant)
+					.font_(Font.sansSerif(9).boldVariant)
 					.stringColor_(Color.white)
 					.string_(i.asString);
 				LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
@@ -70,14 +70,14 @@ ServerMeterView{
 		// outs
 		(numOuts > 0).if({
 			StaticText(view, Rect(10 + if(numIns > 0 , ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
-				.font_(Font(Font.defaultSansFace, 10).boldVariant)
+				.font_(Font.sansSerif(10).boldVariant)
 				.stringColor_(Color.white)
 				.string_("Outputs");
 			outmeters = Array.fill( numOuts, { arg i;
 				var comp;
 				comp = CompositeView(innerView, Rect(0,0,meterWidth,195));
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
-					.font_(Font(Font.defaultSansFace, 9).boldVariant)
+					.font_(Font.sansSerif(9).boldVariant)
 					.stringColor_(Color.white)
 					.string_(i.asString);
 				LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)

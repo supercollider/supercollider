@@ -24,7 +24,7 @@
 		if (window.notNil) { ^window.front };
 
 		gui = GUI.current;
-		font = GUI.font.new(Font.defaultSansFace, 10);
+		font = Font.sansSerif(10);
 
 		if (gui.id == \qt) {
 			buttonColor = gui.palette.buttonColor;
@@ -71,7 +71,7 @@
 		active = gui.staticText.new(w, Rect(0,0, 78, 18));
 		active.string = this.name.asString;
 		active.align = \center;
-		active.font = gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
+		active.font = Font.sansSerif( 12 ).boldVariant;
 		if(serverRunning,running,stopped);
 
 		makeDefault = gui.button.new(w, Rect(0,0, 54, 18));
@@ -426,7 +426,7 @@
 						var thisSize, rect, endYTabs;
 						xtabs = xtabs + 1;
 						ytabs = ytabs + 1;
-						Pen.font = Font(Font.defaultSansFace, 11);
+						Pen.font = Font.sansSerif(11);
 						group.do({|node|
 							if(node.value.isArray, {
 

@@ -37,6 +37,18 @@ QFont {
     ^QFont();
   }
 
+  *mono {|size, bold = false, italic = false, usePointSize = false|
+     ^this.new(this.defaultMonoFace, size, bold, italic, usePointSize)
+  }
+
+  *serif {|size, bold = false, italic = false, usePointSize = false|
+     ^this.new(this.defaultSerifFace, size, bold, italic, usePointSize)
+  }
+
+  *sansSerif {|size, bold = false, italic = false, usePointSize = false|
+     ^this.new(this.defaultSansFace, size, bold, italic, usePointSize)
+  }
+
   /* ------------------instance------------------*/
 
   setDefault {

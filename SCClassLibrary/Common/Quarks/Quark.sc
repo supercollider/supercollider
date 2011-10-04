@@ -219,17 +219,17 @@ QuarkView {
 			nameView = GUI.staticText.new(parent, descrBounds).string_(quark.name);
 			authorView = GUI.staticText.new(parent, authorBounds).string_(quark.author);
 			infoButton = GUI.button.new(parent, infoBounds)
-				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+				.font_( Font.sansSerif( 10 ))
 				.states_([["info"]]).action_{this.fullDescription};
 
 			browseHelpButton = GUI.button.new(parent, infoBounds)
-				.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+				.font_( Font.sansSerif( 10 ))
 				.states_([["help"]])
 				.action_({ Help(quark.parent.local.path +/+ quark.path).gui });
 
 			if(quark.isLocal and: {thisProcess.platform.name == \osx}) {
 				srcButton = GUI.button.new(parent, sourceBounds)
-					.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+					.font_( Font.sansSerif( 10 ))
 					.states_([["src"]]).action_{
 						("open " ++ ("%/%".format(Quarks.local.path, quark.path).escapeChar($ ))).unixCmd;
 					};
@@ -237,7 +237,7 @@ QuarkView {
 
 			/*if(quark.isLocal.not,{
 				GUI.button.new(parent, checkoutBounds)
-					.font_( GUI.font.new( GUI.font.defaultSansFace, 10 ))
+					.font_( Font.sansSerif( 10 ))
 					.states_([["checkout"]]).action_{
 						Quarks.checkout(quark.name);
 					};
@@ -293,8 +293,8 @@ QuarkView {
 			if(File.exists(helpdoc).not) { helpdoc = nil };
 		};
 		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
-		GUI.textView.new( window, Rect(4, 4, 392, 170 + (helpdoc.isNil.binaryValue * 22)))
-			.font_( GUI.font.new( GUI.font.defaultSansFace, 12 ) )
+		GUI.textView.new( Rect, window(4, 4, 392, 170 + (helpdoc.isNil.binaryValue * 22)))
+			.font_( Font.sansSerif( 12 ) )
 			.resize_( 5 )
 			.autohidesScrollers_( true )
 			.hasVerticalScroller_( true )

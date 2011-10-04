@@ -17,8 +17,8 @@
 
 		gui = GUI.current;
 
-		hvBold12	= gui.font.new( gui.font.defaultSansFace, 12 ).boldVariant;
-		fntMono	= gui.font.new( gui.font.defaultMonoFace, 10 );
+		hvBold12 = Font.sansSerif( 12 ).boldVariant;
+		fntMono	= Font.mono( 10 );
 
 		w = gui.window.new("SynthDef browser", Rect(128, (gui.window.screenBounds.height - 638).clip(0, 320),
 			700, 608));
