@@ -97,6 +97,7 @@ void CheckBadValues_Ctor(CheckBadValues* unit)
 	unit->prevclass = FP_NORMAL;
 	unit->sameCount = 0;
 	SETCALC(CheckBadValues_next);
+	CheckBadValues_next(unit, 1);
 }
 
 
