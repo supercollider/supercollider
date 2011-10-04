@@ -570,9 +570,9 @@ static bool ChooseOperatorFunc(BinaryOpUGen *unit);
 
 void BinaryOpUGen_Ctor(BinaryOpUGen *unit)
 {
-	bool initialized = ChooseOperatorFunc(unit);
 	unit->mPrevA = ZIN0(0);
 	unit->mPrevB = ZIN0(1);
+	bool initialized = ChooseOperatorFunc(unit);
 	if (unit->mCalcRate == calc_DemandRate) {
 		OUT0(0) = 0.f;
 	} else {
