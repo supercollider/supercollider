@@ -55,7 +55,7 @@ QcSignalSpy( QObjectProxy *proxy, const char *sigName,
   int sigId = mo->indexOfSignal( signal );
 
   if( sigId < 0 ) {
-    qcErrorMsg( QString("No such signal: '%1'").arg(signal.constData()) );
+    qcDebugMsg( 0, QString("WARNING: No such signal to connect: '%1'").arg(signal.constData()) );
     return;
   }
 
