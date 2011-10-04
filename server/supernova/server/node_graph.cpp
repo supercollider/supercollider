@@ -129,6 +129,23 @@ void node_graph::synth_reassign_id(int32_t node_id)
     node_set.insert(*node);
 }
 
+int32_t node_graph::generate_node_id(void)
+{
+    int32_t new_id;
+    do {
+        for (;;) {
+            new_id = -std::abs<int32_t>(server_node::hash(generated_id));
+            if (likely (new_id != generated_id))
+                break;
+
+            generated_id -= 1;
+        }
+
+    } while (!node_id_available(new_id));
+    generated_id = new_id;
+    return generated_id;
+}
+
 
 abstract_group::~abstract_group(void)
 {
