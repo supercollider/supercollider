@@ -496,7 +496,7 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             doc.select_range(i1, i2)
 
         text = doc.get_text(i1, i2, False)
-        cmd = '(\"xdg-open \" ++ ((\"' + text + '\").findHelpFile ? \"Help\".findHelpFile).escapeChar($ )).unixCmd;'
+        cmd = 'HelpBrowser.openHelpFor(\"' + text + '\");'
         self.__lang.evaluate(cmd, silent=True)
 
     def on_find_definition(self, action, data=None):
