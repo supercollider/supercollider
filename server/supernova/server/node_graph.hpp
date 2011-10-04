@@ -106,14 +106,7 @@ public:
     void synth_reassign_id(int32_t node_id);
 
     /** generate new hidden (negative) node id  */
-    int32_t generate_node_id(void)
-    {
-        boost::hash<int32_t> hasher;
-        do
-            generated_id = -std::abs<int32_t>(hasher(generated_id));
-        while (!node_id_available(generated_id));
-        return generated_id;
-    }
+    int32_t generate_node_id(void);
 
 private:
     int32_t generated_id;
