@@ -351,7 +351,7 @@ Quarks
 		window.view.decorator = flowLayout;
 
 		caption = GUI.staticText.new(window, Rect(20,15,400,30));
-		caption.font_( GUI.font.new( GUI.font.defaultSansFace, 24 ));
+		caption.font_( Font.sansSerif( 24 ));
 		caption.string = this.name;
 		window.view.decorator.nextLine;
 
@@ -425,7 +425,7 @@ Quarks
 		window.view.decorator.nextLine;
 
 		warning = GUI.staticText.new(window, Rect(20,15,400,30));
-		warning.font_( GUI.font.new( GUI.font.defaultSansFace, 18 ));
+		warning.font_( Font.sansSerif( 18 ));
 
 		window.view.decorator.nextLine;
 		GUI.staticText.new( window, 492 @ 1 ).background_( Color.grey );
