@@ -318,7 +318,8 @@ private:
 
     static bool is_aligned(void * arg)
     {
-        return !((size_t)arg & 127);
+        size_t mask = sizeof(vec<float>::size) * sizeof(float) * 8 - 1;
+        return !((size_t)arg & mask);
     }
 
     static bool is_multiple_of_vectorsize(size_t count)
