@@ -1225,15 +1225,15 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 	GET_BUF
 	if (!checkBuffer(unit, bufData, bufChannels, inNumSamples))
 		return;
-	uint32 numInputs = unit->mNumInputs;
 
+	uint32 numInputChannels = unit->mNumInputs - 3;
 	double loopMax = (double)(bufFrames - (loop ? 0 : 1));
 
 	for (int32 k=0; k<inNumSamples; ++k) {
 		double phase = sc_loop((Unit*)unit, ZXP(phasein), loopMax, loop);
 		int32 iphase = (int32)phase;
 		float* table0 = bufData + iphase * bufChannels;
-		for (uint32 channel=0; channel<numInputs; ++channel)
+		for (uint32 channel=0; channel<numInputChannels; ++channel)
 			table0[channel] = IN(channel+3)[k];
 	}
 }
