@@ -214,8 +214,8 @@ void QWidgetProxy::startDragEvent( StartDragEvent* e )
   p.drawText( r, Qt::AlignCenter, label );
   p.end();
 
-  QMimeData *mime = new QMimeData();
-  mime->setData( "application/supercollider", QByteArray() );
+  QMimeData *mime = e->data;
+  e->data = 0; // prevent deleting the data when event destroyed;
 
   QDrag *drag = new QDrag(w);
   drag->setMimeData( mime );
@@ -370,35 +370,11 @@ bool QWidgetProxy::interpretDragEvent( QObject *o, QEvent *e, QList<QVariant> &a
 
   QDropEvent *dnd = static_cast<QDropEvent*>(e);
 
-  if( dnd->type() == QEvent::DragEnter ) {
-    const QMimeData *data = dnd->mimeData();
-    if( data->hasFormat( "application/supercollider" ) ) {
-      // nothing to do; drag data is stored in QView.currentDrag
-      return true;
-    }
-    else if( data->hasColor() ) {
-      args << data->colorData();
-    }
-    else if( data->hasUrls() ) {
-      QList<QUrl> urls = data->urls();
-      if( urls.count() > 1 ) {
-        VariantList urlArray;
-        Q_FOREACH( QUrl url, data->urls() ) urlArray.data << url.toString();
-        args << QVariant::fromValue<VariantList>( urlArray );
-      }
-      else if( urls.count() == 1 ) {
-        args << urls[0].toString();
-      }
-    }
-    else if( data->hasText() ) {
-      args << data->text();
-    }
-    else {
-      // we can't use the data, let the widget handle DnD
-      return false;
-    }
-  }
-  else {
+  const QMimeData *data = dnd->mimeData();
+  if ( !data->hasFormat( "application/supercollider" ) )
+    return false;
+
+  if( dnd->type() != QEvent::DragEnter ) {
     QPoint pos = dnd->pos();
     args << pos.x() << pos.y();
   }

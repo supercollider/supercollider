@@ -26,6 +26,7 @@
 
 #include <QWidget>
 #include <QAtomicInt>
+#include <QMimeData>
 
 namespace QtCollider {
   struct SetFocusEvent;
@@ -123,11 +124,13 @@ struct SetAlwaysOnTopEvent  : public QEvent
 
 struct StartDragEvent : public QEvent
 {
-  StartDragEvent( const QString &string )
+  StartDragEvent( const QString &label_, QMimeData *data_ )
   : QEvent( (QEvent::Type) QtCollider::Event_Proxy_StartDrag ),
-    label( string )
+    label( label_ ), data( data_ )
   {}
+  ~StartDragEvent() { delete data; }
   QString label;
+  QMimeData *data;
 };
 
 }
