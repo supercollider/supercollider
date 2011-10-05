@@ -22,13 +22,16 @@
 #include "primitives.h"
 #include "Slot.h"
 #include "../QWidgetProxy.h"
+#include "../Common.h"
 
 #include <PyrKernel.h>
+#include <SCBase.h>
 
 #include <QWidget>
 #include <QThread>
 #include <QApplication>
 #include <QDrag>
+#include <QMimeData>
 
 using namespace QtCollider;
 
@@ -111,6 +114,26 @@ QC_LANG_PRIMITIVE( QWidget_SetAlwaysOnTop, 1, PyrSlot *r, PyrSlot *a, VMGlobals 
   return errNone;
 }
 
+namespace QtCollider {
+
+struct MimeData : public QMimeData {
+  virtual ~MimeData() {
+    qcDebugMsg(1,"Drag data object destroyed, clearing QView.currentDrag.");
+
+    QtCollider::lockLang();
+
+    PyrClass *classView = getsym("View")->u.classobj;
+    PyrSymbol *symClearDrag = getsym("prClearCurrentDrag");
+    if( !classView || !symClearDrag ) return;
+
+    QtCollider::runLang( classView, symClearDrag );
+
+    QtCollider::unlockLang();
+  }
+};
+
+}
+
 QC_LANG_PRIMITIVE( QWidget_StartDrag, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
   if( !wProxy->compareThread() ) return QtCollider::wrongThreadError();
@@ -118,7 +141,7 @@ QC_LANG_PRIMITIVE( QWidget_StartDrag, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g ) 
   PyrSlot *data = a+1;
   QString str = Slot::toString(a+2);
 
-  QMimeData *mime = new QMimeData();
+  QMimeData *mime = new QtCollider::MimeData;
 
   mime->setData( "application/supercollider", QByteArray() );
 
