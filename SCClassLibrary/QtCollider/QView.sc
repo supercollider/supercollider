@@ -393,13 +393,12 @@ QView : QObject {
 
   canReceiveDragHandler_ { arg handler;
     canReceiveDragHandler = handler;
-    this.setEventHandler( 60, \dragEnterEvent, true );
-    this.setEventHandler( 61, \dragMoveEvent, true );
+    this.setDragEventsEnabled( true );
   }
 
   receiveDragHandler_ { arg handler;
     receiveDragHandler = handler;
-    this.setEventHandler( 63, \dropEvent, true );
+    this.setDragEventsEnabled( true );
   }
 
   toFrontAction_ { arg aFunction;
@@ -492,7 +491,7 @@ QView : QObject {
 
   initQView { arg parent;
 
-    var handleKeyDown, handleKeyUp, overridesMouseDown;
+    var handleKeyDown, handleKeyUp, overridesMouseDown, handleDrag;
 
     if (parent.notNil) {
         if( parent.decorator.notNil ) { parent.decorator.place(this) }
@@ -528,12 +527,10 @@ QView : QObject {
       {this.setEventHandler( QObject.wheelEvent, \mouseWheelEvent, true )};
 
     // DnD events
-    if( this.respondsTo(\defaultCanReceiveDrag) ) {
-        this.setEventHandler( 60, \dragEnterEvent, true );
-        this.setEventHandler( 61, \dragMoveEvent, true );
-    };
-    if( this.respondsTo(\defaultReceiveDrag) )
-      {this.setEventHandler( 63, \dropEvent, true )};
+    handleDrag = this.respondsTo(\defaultCanReceiveDrag) or: {this.respondsTo(\defaultReceiveDrag)};
+    this.setEventHandler( 60, \dragEnterEvent, true, enabled:handleDrag );
+    this.setEventHandler( 61, \dragMoveEvent, true, enabled:handleDrag );
+    this.setEventHandler( 63, \dropEvent, true, enabled:handleDrag );
   }
 
   onCloseEvent {
@@ -629,13 +626,14 @@ QView : QObject {
   }
 
   beginDrag { arg x, y;
-    var obj;
+    var obj, str;
     if( beginDragAction.notNil )
       { obj = beginDragAction.value( this, x, y ) }
       { obj = this.tryPerform( \defaultGetDrag, x, y ) };
     if( obj.notNil ) {
       QView.setCurrentDrag( obj );
-      this.prStartDrag( dragLabel ?? {obj.asString} );
+      str = obj.asString;
+      this.prStartDrag( dragLabel ?? str, obj, str );
       ^true;
     };
     ^false;
@@ -653,30 +651,35 @@ QView : QObject {
       { this.tryPerform( \defaultReceiveDrag, x, y ) };
   }
 
-  prStartDrag { arg label;
+  prStartDrag { arg label, data, dataAsString;
     _QWidget_StartDrag
     ^this.primitiveFailed;
   }
 
-  dragEnterEvent { arg data;
-    // if the drag was initiated within SC, 'data' arg is nil
-    // and drag data has been already stored in QView.setCurrentDrag;
-    // otherwise 'data' arg holds the data of the drag initiated externally
-    if( data.notNil ) { QView.setCurrentDrag(data); }
+  dragEnterEvent {
     // always accept the event
     ^true;
   }
 
   dragMoveEvent { arg x, y;
-    var a = nil; // prevent optimizing the method away
-    ^this.canReceiveDrag( x, y );
+    // make sure the event is always consumed
+    ^this.canReceiveDrag( x, y ).switch (
+      true, true,
+      false, false,
+      false
+    )
   }
 
   dropEvent { arg x, y;
     this.receiveDrag( x, y );
-    // Never propagate the event.
-    // If we got to this point it should be accepted and consumed by SC.
+    // always accept the event
     ^true
+  }
+
+  setDragEventsEnabled { arg enabled;
+    this.setEventHandlerEnabled( 60, enabled );
+    this.setEventHandlerEnabled( 61, enabled );
+    this.setEventHandlerEnabled( 63, enabled );
   }
 
   prMapToGlobal { arg point, retPoint;

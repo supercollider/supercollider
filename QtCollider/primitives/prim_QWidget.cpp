@@ -111,11 +111,24 @@ QC_LANG_PRIMITIVE( QWidget_SetAlwaysOnTop, 1, PyrSlot *r, PyrSlot *a, VMGlobals 
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QWidget_StartDrag, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+QC_LANG_PRIMITIVE( QWidget_StartDrag, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
   if( !wProxy->compareThread() ) return QtCollider::wrongThreadError();
 
-  QApplication::postEvent( wProxy, new StartDragEvent( Slot::toString(a) ) );
+  PyrSlot *data = a+1;
+  QString str = Slot::toString(a+2);
+
+  QMimeData *mime = new QMimeData();
+
+  mime->setData( "application/supercollider", QByteArray() );
+
+  if( isKindOfSlot( data, class_Color ) )
+    mime->setColorData( QVariant(Slot::toColor(data)) );
+
+  if( !str.isEmpty() )
+    mime->setText( str );
+
+  QApplication::postEvent( wProxy, new StartDragEvent( Slot::toString(a), mime ) );
 
   return errNone;
 }
