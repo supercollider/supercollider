@@ -483,7 +483,8 @@ QView : QObject {
 
   /* ---------------- private ----------------------- */
 
-  *setCurrentDrag { arg obj; currentDrag = obj; currentDragString = obj.asCompileString; }
+  *prSetCurrentDrag { arg obj; currentDrag = obj; currentDragString = obj.asCompileString; }
+  *prClearCurrentDrag { currentDrag = nil; currentDragString = nil; }
 
   *setGlobalEventEnabled { arg event, enabled;
     _QWidget_SetGlobalEventEnabled
@@ -631,7 +632,7 @@ QView : QObject {
       { obj = beginDragAction.value( this, x, y ) }
       { obj = this.tryPerform( \defaultGetDrag, x, y ) };
     if( obj.notNil ) {
-      QView.setCurrentDrag( obj );
+      QView.prSetCurrentDrag( obj );
       str = obj.asString;
       this.prStartDrag( dragLabel ?? str, obj, str );
       ^true;
