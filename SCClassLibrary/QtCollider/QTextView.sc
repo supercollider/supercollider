@@ -77,16 +77,13 @@ QTextView : QAbstractScroll {
   }
 
   defaultGetDrag {
-    var text = this.string;
+    var text = this.selectedString;
+    if( text.size < 1 ) { ^nil };
     if( text.size > 150 ) {
       this.dragLabel = text.copyRange(0,149) ++ "...";
     }{
       this.dragLabel = text;
     }
     ^text;
-  }
-  defaultCanReceiveDrag { ^true; }
-  defaultReceiveDrag {
-    this.string = QView.currentDrag.asString;
   }
 }
