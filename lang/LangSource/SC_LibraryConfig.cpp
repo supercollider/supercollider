@@ -124,8 +124,16 @@ bool SC_LibraryConfig::readLibraryConfig(const char* fileName)
 {
 	freeLibraryConfig();
 	gLibraryConfig = new SC_LibraryConfig();
+
 	SC_LibraryConfigFile file(::post);
-	if (!file.read(fileName, gLibraryConfig))
+	bool success = file.open(fileName);
+	if (!success)
+		return false;
+
+	bool error = file.read(fileName, gLibraryConfig);
+	file.close();
+
+	if (!error)
 		return true;
 
 	freeLibraryConfig();
