@@ -206,17 +206,11 @@ void QcButton::doAction()
 class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
 {
 protected:
-  virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments )
+  virtual void initialize( QWidgetProxy *p, QcCustomPainted *w, QList<QVariant> & args )
   {
-    QObjectProxy *proxy =
-        QcWidgetFactory<QcCustomPainted>::newInstance( scObject, arguments );
-
-    if( proxy ) {
-      QObject::connect( proxy->object(), SIGNAL(painting(QPainter*)),
-                        proxy, SLOT(customPaint(QPainter*)) );
-    }
-
-    return proxy;
+    Q_UNUSED(args);
+    QObject::connect( w, SIGNAL(painting(QPainter*)),
+                      p, SLOT(customPaint(QPainter*)) );
   }
 };
 
