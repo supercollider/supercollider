@@ -144,18 +144,8 @@ QC_LANG_PRIMITIVE( QObject_SetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return ok ? errNone : errFailed;
 }
 
-QC_LANG_PRIMITIVE( QObject_GetProperties, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+static void qcGetProperties( const QMetaObject *mo, PyrSlot *r, VMGlobals *g )
 {
-  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
-  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
-
-  QObject *obj = proxy->object();
-  if( !obj ) {
-    SetNil(r);
-    return errNone;
-  }
-
-  const QMetaObject *mo = obj->metaObject();
   int count = mo->propertyCount();
 
   PyrObject *array = newPyrArray( g->gc, count, 0, true );
@@ -167,26 +157,13 @@ QC_LANG_PRIMITIVE( QObject_GetProperties, 0, PyrSlot *r, PyrSlot *a, VMGlobals *
     array->size++;
     g->gc->GCWrite( array, s );
   }
-
-  return errNone;
 }
 
-QC_LANG_PRIMITIVE( QObject_GetMethods, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+static void qcGetMethods (
+  const QMetaObject *mo,
+  bool getPlain, bool getSignals, bool getSlots,
+  PyrSlot *r, VMGlobals *g )
 {
-  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
-  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
-
-  QObject *obj = proxy->object();
-  if( !obj ) {
-    SetNil(r);
-    return errNone;
-  }
-
-  bool getPlain = IsTrue(a+0);
-  bool getSignals = IsTrue(a+1);
-  bool getSlots = IsTrue(a+2);
-
-  const QMetaObject *mo = obj->metaObject();
   int count = mo->methodCount();
 
   PyrObject *array = newPyrArray( g->gc, count, 0, true );
@@ -213,6 +190,84 @@ QC_LANG_PRIMITIVE( QObject_GetMethods, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     g->gc->GCWrite( array, s );
     ++s;
   }
+}
+
+QC_LANG_PRIMITIVE( QObject_GetPropertiesOf, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QString className = Slot::toString(a);
+
+  QcAbstractFactory *f = QtCollider::factories().value( className );
+
+  if( !f ) {
+    qcErrorMsg( QString("Factory for class '%1' not found!").arg(className) );
+    return errFailed;
+  }
+
+  const QMetaObject *mo = f->metaObject();
+  qcGetProperties( mo, r, g );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_GetProperties, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  QObject *obj = proxy->object();
+  if( !obj ) {
+    SetNil(r);
+    return errNone;
+  }
+
+  const QMetaObject *mo = obj->metaObject();
+  qcGetProperties( mo, r, g );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_GetMethodsOf, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QString className = Slot::toString(a+0);
+
+  QcAbstractFactory *f = QtCollider::factories().value( className );
+
+  if( !f ) {
+    qcErrorMsg( QString("Factory for class '%1' not found!").arg(className) );
+    return errFailed;
+  }
+
+  bool getPlain = IsTrue(a+1);
+  bool getSignals = IsTrue(a+2);
+  bool getSlots = IsTrue(a+3);
+
+  const QMetaObject *mo = f->metaObject();
+  qcGetMethods( mo, getPlain, getSignals, getSlots, r, g );
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_GetMethods, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  QObject *obj = proxy->object();
+  if( !obj ) {
+    SetNil(r);
+    return errNone;
+  }
+
+  bool getPlain = IsTrue(a+0);
+  bool getSignals = IsTrue(a+1);
+  bool getSlots = IsTrue(a+2);
+
+  const QMetaObject *mo = obj->metaObject();
+  qcGetMethods( mo, getPlain, getSignals, getSlots, r, g );
 
   return errNone;
 }
