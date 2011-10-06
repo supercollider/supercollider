@@ -37,7 +37,7 @@ QFont {
     ^QFont();
   }
 
-  *mono {|size, bold = false, italic = false, usePointSize = false|
+  *monospace {|size, bold = false, italic = false, usePointSize = false|
      ^this.new(this.defaultMonoFace, size, bold, italic, usePointSize)
   }
 
