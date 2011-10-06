@@ -2097,6 +2097,7 @@ void COsc_Ctor(COsc *unit)
 	SETCALC(COsc_next);
 	unit->m_phase1 = 0;
 	unit->m_phase2 = 0;
+	unit->mTableSize = -1;
 	COsc_next(unit, 1);
 }
 
