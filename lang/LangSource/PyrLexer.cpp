@@ -2194,6 +2194,10 @@ SC_DLLEXPORT_C bool compileLibrary()
 	gNumCompiledFiles = 0;
 	compiledOK = false;
 
+	// FIXME: the library config should have been initialized earlier!
+	if (!gLibraryConfig)
+		SC_LibraryConfig::readDefaultLibraryConfig();
+
 	compileStartTime = elapsedTime();
 
 	totalByteCodes = 0;
