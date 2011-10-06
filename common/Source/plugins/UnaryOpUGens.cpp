@@ -823,7 +823,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opArcTan : func = &atan_nova; break;
 		case opSinH : func = &sinh_a; break;
 		case opCosH : func = &cosh_a; break;
-		case opTanH : func = &tanh_nova; break;
+		case opTanH : func = &tanh_a; break;
 
 		case opDistort : func = &distort_a; break;
 		case opSoftClip : func = &softclip_nova_64; break;
