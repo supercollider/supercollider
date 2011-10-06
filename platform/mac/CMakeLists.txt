@@ -19,6 +19,7 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
 	${CMAKE_SOURCE_DIR}/external_libraries/boost
 	${CMAKE_SOURCE_DIR}/external_libraries/threadpool
+	${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/include
 	)
 
 find_package(Sndfile)
