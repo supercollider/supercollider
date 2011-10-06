@@ -7,12 +7,10 @@ QTopScrollWidget : QObject {
 QScrollTopView : QScrollView {
   var >window;
 
-  *qtClass {^"QcWindow"}
+  *qtClass {^"QcScrollWindow"}
 
-  // NOTE: Since the scroll arg is true, this should actually
-  // instantiate a QcScrollArea
   *new { arg win, name, bounds, resizable, border;
-    ^super.newCustom([name, bounds, resizable, border, true /*scroll*/])
+    ^super.newCustom([name, bounds, resizable, border])
           .initQScrollTopView(win);
   }
 
@@ -49,10 +47,8 @@ QTopView : QView {
 
   *qtClass {^"QcWindow"}
 
-  // NOTE: Since the scroll arg is false, this should actually
-  // instantiate a QcCustomPainted
   *new { arg win, name, bounds, resizable, border;
-    ^super.newCustom([name, bounds, resizable, border, false /*scroll*/])
+    ^super.newCustom([name, bounds, resizable, border])
           .initQTopView(win);
   }
 

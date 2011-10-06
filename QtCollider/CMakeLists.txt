@@ -32,6 +32,7 @@ set( QT_COLLIDER_HDRS
   widgets/QcSoundFileView.h
   widgets/QcFileDialog.h
   widgets/QcWebView.h
+  widgets/QcWindow.h
   layouts/layouts.hpp
 )
 
