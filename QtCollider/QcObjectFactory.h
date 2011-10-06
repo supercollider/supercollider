@@ -27,6 +27,7 @@
 
 #include <PyrObject.h>
 
+#include <QMetaObject>
 #include <QObject>
 #include <QWidget>
 #include <QHash>
@@ -46,6 +47,7 @@ public:
     qcDebugMsg( 2, QString("Declaring class '%1'").arg(className) );
     QtCollider::factories().insert( className, this );
   }
+  virtual const QMetaObject *metaObject() = 0;
   virtual QObjectProxy *newInstance( PyrObject *, QList<QVariant> & arguments ) = 0;
 };
 
@@ -54,6 +56,10 @@ template <class QOBJECT> class QcObjectFactory : public QcAbstractFactory
 {
 public:
   QcObjectFactory() : QcAbstractFactory( QOBJECT::staticMetaObject.className() ) {}
+
+  const QMetaObject *metaObject() {
+    return &QOBJECT::staticMetaObject;
+  }
 
   virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments ) {
     QOBJECT *qobject = new QOBJECT();

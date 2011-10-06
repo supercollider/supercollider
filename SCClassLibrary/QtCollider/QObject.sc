@@ -18,6 +18,16 @@ QObject {
   var qObject, finalizer;
   var virtualSlots;
 
+  *qtProperties { arg className;
+    _QObject_GetPropertiesOf
+    ^this.primitiveFailed
+  }
+
+  *qtMethods { arg className, plain = true, signals = false, slots = true;
+    _QObject_GetMethodsOf
+    ^this.primitiveFailed
+  }
+
   *new { arg className, argumentArray;
     ^super.new.initQObject( className, argumentArray );
   }
@@ -61,10 +71,12 @@ QObject {
 
   properties {
     _QObject_GetProperties
+    ^this.primitiveFailed
   }
 
   methods { arg plain = true, signals = false, slots = true;
     _QObject_GetMethods
+    ^this.primitiveFailed
   }
 
   getProperty{ arg property, preAllocatedReturn;
