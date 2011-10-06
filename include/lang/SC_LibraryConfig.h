@@ -102,11 +102,12 @@ public:
 	void removeExcludedDirectory(const char *name);
 
 	// convenience functions to access the global library config
-	static bool readLibraryConfig(SC_LibraryConfigFile& file, const char* fileName);
+	static bool readLibraryConfig(const char* fileName);
 	static bool readLibraryConfigYAML(const char* fileName);
 	static bool writeLibraryConfigYAML(const char* fileName);
 	static void freeLibraryConfig();
 	static bool defaultLibraryConfig(void);
+	static bool readDefaultLibraryConfig();
 
 private:
 	DirVector mIncludedDirectories;
