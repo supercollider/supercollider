@@ -29,6 +29,11 @@
 #include <PyrObject.h>
 #include <PyrKernel.h>
 #include <GC.h>
+#include <SCBase.h>
+
+#include <QMetaObject>
+#include <QMetaProperty>
+#include <QMetaMethod>
 
 #define IS_OBJECT_NIL( a ) \
   IsNil( slotRawObject(a)->slots )
@@ -137,6 +142,79 @@ QC_LANG_PRIMITIVE( QObject_SetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   bool ok = proxy->setParent( parent );
 
   return ok ? errNone : errFailed;
+}
+
+QC_LANG_PRIMITIVE( QObject_GetProperties, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  QObject *obj = proxy->object();
+  if( !obj ) {
+    SetNil(r);
+    return errNone;
+  }
+
+  const QMetaObject *mo = obj->metaObject();
+  int count = mo->propertyCount();
+
+  PyrObject *array = newPyrArray( g->gc, count, 0, true );
+  SetObject( r, array );
+
+  PyrSlot *s = array->slots;
+  for( int i = 0; i < count; ++i, ++s ) {
+    Slot::setString( s, QString::fromLatin1( mo->property(i).name() ) );
+    array->size++;
+    g->gc->GCWrite( array, s );
+  }
+
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QObject_GetMethods, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
+  if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
+
+  QObject *obj = proxy->object();
+  if( !obj ) {
+    SetNil(r);
+    return errNone;
+  }
+
+  bool getPlain = IsTrue(a+0);
+  bool getSignals = IsTrue(a+1);
+  bool getSlots = IsTrue(a+2);
+
+  const QMetaObject *mo = obj->metaObject();
+  int count = mo->methodCount();
+
+  PyrObject *array = newPyrArray( g->gc, count, 0, true );
+  SetObject( r, array );
+
+  PyrSlot *s = array->slots;
+  for( int i = 0; i < count; ++i ) {
+    QMetaMethod method = mo->method(i);
+    switch( method.methodType() ) {
+      case QMetaMethod::Method:
+        if( !getPlain || (method.access() != QMetaMethod::Public) ) continue;
+        break;
+      case QMetaMethod::Signal:
+        if( !getSignals ) continue;
+        break;
+      case QMetaMethod::Slot:
+        if( !getSlots || (method.access() != QMetaMethod::Public) ) continue;
+        break;
+      default:
+        continue;
+    }
+    Slot::setString( s, QString::fromLatin1( method.signature() ) );
+    array->size++;
+    g->gc->GCWrite( array, s );
+    ++s;
+  }
+
+  return errNone;
 }
 
 QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )

@@ -59,6 +59,14 @@ QObject {
     ^this.primitiveFailed
   }
 
+  properties {
+    _QObject_GetProperties
+  }
+
+  methods { arg plain = true, signals = false, slots = true;
+    _QObject_GetMethods
+  }
+
   getProperty{ arg property, preAllocatedReturn;
     _QObject_GetProperty
     ^this.primitiveFailed
