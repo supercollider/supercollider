@@ -55,6 +55,7 @@
 #include "PyrSlot.h"
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"   // for gIdeName
+#include "SC_LibraryConfig.h"
 
 #define STDIN_FD 0
 
@@ -248,10 +249,13 @@ int SC_TerminalClient::run(int argc, char** argv)
 	// read library configuration file
 	bool success;
 	if (opt.mLibraryConfigFile) {
-		readLibraryConfig(opt.mLibraryConfigFile, opt.mLibraryConfigFile);
-	} else {
-		readDefaultLibraryConfig();
-	}
+		int argLength = strlen(opt.mLibraryConfigFile);
+		if (strcmp(opt.mLibraryConfigFile + argLength - 5, ".yaml"))
+			SC_LibraryConfig::readLibraryConfig(opt.mLibraryConfigFile);
+		else
+			SC_LibraryConfig::readLibraryConfigYAML(opt.mLibraryConfigFile);
+	} else
+		SC_LibraryConfig::readDefaultLibraryConfig();
 
 	// initialize runtime
 	initRuntime(opt);

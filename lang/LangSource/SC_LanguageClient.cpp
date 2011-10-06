@@ -132,49 +132,6 @@ void SC_LanguageClient::shutdownRuntime()
 	cleanup_OSC();
 }
 
-bool SC_LanguageClient::readLibraryConfig(const char* filePath, const char* fileName)
-{
-	SC_LibraryConfigFile file(&::post);
-	if (!fileName) fileName = filePath;
-	if (file.open(filePath)) {
-		bool success = SC_LibraryConfig::readLibraryConfig(file, fileName);
-		file.close();
-		return success;
-	}
-	SC_LibraryConfig::freeLibraryConfig();
-	return false;
-}
-
-bool SC_LanguageClient::readDefaultLibraryConfig()
-{
-	char config_dir[PATH_MAX];
-	sc_GetUserConfigDirectory(config_dir, PATH_MAX);
-	std::string config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang.cfg";
-
-	// skip deprecated config files
-	const char* paths[2] = { ".sclang.cfg", "~/.sclang.cfg"};
-	for (int i=0; i < 2; i++) {
-		const char * ipath = paths[i];
-		char opath[PATH_MAX];
-		if (sc_StandardizePath(ipath, opath)) {
-			FILE * fp = fopen(opath, "r");
-			if (fp) {
-				fclose(fp);
-				postfl("skipping deprecated config file: %s\n"
-					   "please use %s instead\n", opath, config_file.c_str());
-			}
-		}
-	}
-
-	if (readLibraryConfig(config_file.c_str()))
-		return true;
-
-	if (readLibraryConfig("/etc/sclang.cfg"))
-		return true;
-
-	return false;
-}
-
 void SC_LanguageClient::compileLibrary()
 {
 	::compileLibrary();

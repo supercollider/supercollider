@@ -40,6 +40,9 @@
 # include <libgen.h>
 #endif
 
+#include <fstream>
+#include "yaml-cpp/yaml.h"
+
 using namespace std;
 
 SC_LibraryConfig *gLibraryConfig = 0;
@@ -69,46 +72,230 @@ SC_LibraryConfig::SC_LibraryConfig(void)
 SC_LibraryConfig::~SC_LibraryConfig()
 {}
 
-bool SC_LibraryConfig::pathIsExcluded(const char *path)
+static bool findPath(SC_LibraryConfig::DirVector & vec, const char * path, bool addIfMissing)
 {
 	char standardPath[PATH_MAX];
 	sc_StandardizePath(path, standardPath);
 
-	DirVector &vec = mExcludedDirectories;
-	DirVector::iterator it;
-	for (it=vec.begin(); it!=vec.end(); ++it) {
-		if (!strcmp(standardPath, it->c_str())) return true;
-	}
+	for (SC_LibraryConfig::DirVector::iterator it = vec.begin(); it != vec.end(); ++it)
+		if (!strcmp(standardPath, it->c_str()))
+			return true;
+
+	if (addIfMissing)
+		vec.push_back(string(standardPath));
 
 	return false;
+}
+
+bool SC_LibraryConfig::pathIsExcluded(const char *path)
+{
+	return findPath(mExcludedDirectories, path, false);
 }
 
 void SC_LibraryConfig::addIncludedDirectory(const char *path)
 {
 	if (path == 0) return;
-
-	char standardPath[PATH_MAX];
-	sc_StandardizePath(path, standardPath);
-
-	mIncludedDirectories.push_back(string(standardPath));
+	findPath(mIncludedDirectories, path, true);
 }
 
 void SC_LibraryConfig::addExcludedDirectory(const char *path)
 {
 	if (path == 0) return;
-
-	char standardPath[PATH_MAX];
-	sc_StandardizePath(path, standardPath);
-
-	mExcludedDirectories.push_back(string(standardPath));
+	findPath(mExcludedDirectories, path, true);
 }
 
-bool SC_LibraryConfig::readLibraryConfig(SC_LibraryConfigFile& file, const char* fileName)
+void SC_LibraryConfig::removeIncludedDirectory(const char *path)
+{
+	char standardPath[PATH_MAX];
+	sc_StandardizePath(path, standardPath);
+	string str(standardPath);
+	DirVector::iterator end = std::remove(mIncludedDirectories.begin(), mIncludedDirectories.end(), str);
+	mIncludedDirectories.erase(end, mIncludedDirectories.end());
+}
+
+void SC_LibraryConfig::removeExcludedDirectory(const char *path)
+{
+	string str(path);
+	DirVector::iterator end = std::remove(mExcludedDirectories.begin(), mExcludedDirectories.end(), str);
+	mExcludedDirectories.erase(end, mExcludedDirectories.end());
+}
+
+bool SC_LibraryConfig::readLibraryConfig(const char* fileName)
 {
 	freeLibraryConfig();
 	gLibraryConfig = new SC_LibraryConfig();
-	return file.read(fileName, gLibraryConfig);
+	SC_LibraryConfigFile file(::post);
+	if (!file.read(fileName, gLibraryConfig))
+		return true;
+
+	freeLibraryConfig();
+	return false;
 }
+
+extern bool gPostInlineWarnings;
+bool SC_LibraryConfig::readLibraryConfigYAML(const char* fileName)
+{
+	freeLibraryConfig();
+	gLibraryConfig = new SC_LibraryConfig();
+
+	using namespace YAML;
+	try {
+		std::ifstream fin(fileName);
+		Parser parser(fin);
+
+		Node doc;
+		while(parser.GetNextDocument(doc)) {
+			const Node * includePaths = doc.FindValue("includePaths");
+			if (includePaths && includePaths->Type() == NodeType::Sequence) {
+				for (Iterator it = includePaths->begin(); it != includePaths->end(); ++it) {
+					Node const & pathNode = *it;
+					if (pathNode.Type() != NodeType::Scalar)
+						continue;
+					string path;
+					pathNode.GetScalar(path);
+					gLibraryConfig->addIncludedDirectory(path.c_str());
+				}
+			}
+
+			const Node * excludePaths = doc.FindValue("excludePaths");
+			if (excludePaths && excludePaths->Type() == NodeType::Sequence) {
+				for (Iterator it = excludePaths->begin(); it != excludePaths->end(); ++it) {
+					Node const & pathNode = *it;
+					if (pathNode.Type() != NodeType::Scalar)
+						continue;
+					string path;
+					pathNode.GetScalar(path);
+					gLibraryConfig->addExcludedDirectory(path.c_str());
+				}
+			}
+
+			const Node * inlineWarnings = doc.FindValue("postInlineWarnings");
+			if (inlineWarnings) {
+				try {
+					gPostInlineWarnings = inlineWarnings->to<bool>();
+				} catch(...) {
+					postfl("Warning: Cannot parse config file entry \"postInlineWarnings\"\n");
+				}
+			}
+		}
+		return true;
+	} catch (...)
+	{
+		freeLibraryConfig();
+		return false;
+	}
+}
+
+bool SC_LibraryConfig::writeLibraryConfigYAML(const char* fileName)
+{
+	using namespace YAML;
+	Emitter out;
+	out.SetIndent(4);
+	out.SetMapFormat(Block);
+	out.SetSeqFormat(Block);
+	out.SetBoolFormat(TrueFalseBool);
+
+	out << BeginMap;
+
+	out << Key << "includePaths";
+	out << Value << BeginSeq;
+	for (DirVector::iterator it = gLibraryConfig->mIncludedDirectories.begin();
+		 it != gLibraryConfig->mIncludedDirectories.end(); ++it)
+		out << *it;
+	out << EndSeq;
+
+	out << Key << "excludePaths";
+	out << Value << BeginSeq;
+	for (DirVector::iterator it = gLibraryConfig->mExcludedDirectories.begin();
+		 it != gLibraryConfig->mExcludedDirectories.end(); ++it)
+		out << *it;
+	out << EndSeq;
+
+	out << Key << "postInlineWarnings";
+	out << Value << gPostInlineWarnings;
+
+	out << EndMap;
+	ofstream fout(fileName);
+	fout << out.c_str();
+	return true;
+}
+
+bool SC_LibraryConfig::defaultLibraryConfig(void)
+{
+	freeLibraryConfig();
+	gLibraryConfig = new SC_LibraryConfig();
+
+	char compileDir[MAXPATHLEN];
+	char systemExtensionDir[MAXPATHLEN];
+	char userExtensionDir[MAXPATHLEN];
+
+	sc_GetResourceDirectory(compileDir, MAXPATHLEN-32);
+	sc_AppendToPath(compileDir, "SCClassLibrary");
+	gLibraryConfig->addIncludedDirectory(compileDir);
+
+	if (!sc_IsStandAlone()) {
+		sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
+		gLibraryConfig->addIncludedDirectory(systemExtensionDir);
+
+		sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
+		gLibraryConfig->addIncludedDirectory(userExtensionDir);
+	}
+	return true;
+}
+
+static bool file_exists(const char * fileName)
+{
+	FILE * fp = fopen(fileName, "r");
+	if (fp)
+		fclose(fp);
+	return fp != NULL;
+}
+
+bool SC_LibraryConfig::readDefaultLibraryConfig()
+{
+	char config_dir[PATH_MAX];
+	sc_GetUserConfigDirectory(config_dir, PATH_MAX);
+	std::string config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang.cfg";
+	std::string yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";
+
+	// skip deprecated config files
+	const char* paths[2] = { ".sclang.cfg", "~/.sclang.cfg"};
+	for (int i=0; i < 2; i++) {
+		const char * ipath = paths[i];
+		char opath[PATH_MAX];
+		if (sc_StandardizePath(ipath, opath)) {
+			if (file_exists(opath))
+				postfl("skipping deprecated config file: %s\n"
+					   "please use %s instead\n", opath, yaml_config_file.c_str());
+		}
+	}
+
+	if (file_exists(yaml_config_file.c_str())) {
+		if (file_exists(config_file.c_str()))
+			postfl("skipping deprecated config file: %s\n", config_file.c_str());
+
+		bool success = readLibraryConfigYAML(yaml_config_file.c_str());
+		if (success)
+			return true;
+	}
+
+	if (readLibraryConfig(config_file.c_str()))
+		return true;
+
+	if (file_exists("/etc/sclang_conf.yaml")) {
+		if (file_exists("/etc/sclang.cfg"))
+			postfl("skipping deprecated config file: /etc/sclang.cfg\n");
+		readLibraryConfigYAML(yaml_config_file.c_str());
+		return true;
+	}
+
+	if (readLibraryConfig("/etc/sclang.cfg"))
+		return true;
+
+	SC_LibraryConfig::defaultLibraryConfig();
+	return false;
+}
+
 
 void SC_LibraryConfig::freeLibraryConfig()
 {

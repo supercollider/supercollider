@@ -27,12 +27,14 @@
 #include <ctype.h>
 #include <cerrno>
 #include <limits>
+#include <set>
 
 #ifdef SC_WIN32
 # include <direct.h>
 #else
 # include <sys/param.h>
 #endif
+
 
 #include "PyrParseNode.h"
 #include "Bison/lang11d_tab.h"
@@ -52,8 +54,6 @@
 #include "PyrObjectProto.h"
 #include "PyrPrimitiveProto.h"
 #include "PyrKernelProto.h"
-#include "SC_InlineUnaryOp.h"
-#include "SC_InlineBinaryOp.h"
 #include "InitAlloc.h"
 #include "bullet.h"
 #include "PredefinedSymbols.h"
@@ -82,9 +82,7 @@ thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
-char gCompileDir[MAXPATHLEN];
-char gSystemExtensionDir[MAXPATHLEN];
-char gUserExtensionDir[MAXPATHLEN];
+static char gCompileDir[MAXPATHLEN];
 
 //#define DEBUGLEX 1
 bool gDebugLexer = false;
@@ -115,7 +113,7 @@ int textpos;
 int errLineOffset, errCharPosOffset;
 int parseFailed = 0;
 bool compiledOK = false;
-
+std::set<std::string> compiledDirectories;
 
 /* so the text editor's dumb paren matching will work */
 #define OPENPAREN '('
@@ -157,6 +155,13 @@ double sc_strtof(const char *str, int n, int base)
 	//calculation previously included decimal point in count of columns (was n-decptpos); there are 1 less than n characters which are columns in the number contribution
 	z = z / pow((double)base, n -1- decptpos);
 	return z;
+}
+
+static void sc_InitCompileDirectory(void)
+{
+	// main class library folder: only used for relative path resolution
+	sc_GetResourceDirectory(gCompileDir, MAXPATHLEN-32);
+	sc_AppendToPath(gCompileDir, "SCClassLibrary");
 }
 
 extern void asRelativePath(char *inPath, char *outPath)
@@ -1999,6 +2004,8 @@ void initPassOne()
 	compileErrors = 0;
 	numClassDeps = 0;
 	compiledOK = false;
+	compiledDirectories.clear();
+	sc_InitCompileDirectory();
 }
 
 void finiPassOne()
@@ -2008,9 +2015,15 @@ void finiPassOne()
     //postfl("<-finiPassOne\n");
 }
 
-bool passOne_ProcessDir(const char *dirname, int level);
-bool passOne_ProcessDir(const char *dirname, int level)
+static bool passOne_ProcessDir(const char *dirname, int level)
 {
+	if (!sc_DirectoryExists(dirname))
+		return true;
+
+	if (compiledDirectories.find(std::string(dirname)) != compiledDirectories.end())
+		// already compiled
+		return true;
+
 	bool success = true;
 
 	if (gLibraryConfig && gLibraryConfig->pathIsExcluded(dirname)) {
@@ -2042,61 +2055,22 @@ bool passOne_ProcessDir(const char *dirname, int level)
 		if (!success) break;
 	}
 
+	compiledDirectories.insert(std::string(dirname));
 	sc_CloseDir(dir);
 	return success;
 }
 
-// Locate directories to compile.
-
-static void sc_InitCompileDirectories(void);
-static void sc_InitCompileDirectories(void)
-{
-	sc_GetResourceDirectory(gCompileDir, MAXPATHLEN-32);
-	sc_AppendToPath(gCompileDir,"SCClassLibrary");
-
-#ifdef SC_DATA_DIR
-	if (!sc_DirectoryExists(gCompileDir)) {
-		strncpy(gCompileDir, SC_DATA_DIR, MAXPATHLEN-32);
-		sc_AppendToPath(gCompileDir,"SCClassLibrary");
-	}
-#endif
-
-	if (!sc_IsStandAlone()) {
-		sc_GetSystemExtensionDirectory(gSystemExtensionDir, MAXPATHLEN);
-		sc_GetUserExtensionDirectory(gUserExtensionDir, MAXPATHLEN);
-	}
-}
-
 bool passOne()
 {
-	bool success;
 	initPassOne();
-	// This function must be provided by the host environment.
-	// It should choose a directory to scan recursively and call
-	// passOne_ProcessOneFile(char *filename) for each file
 
-	if (!gLibraryConfig) {
-	        sc_InitCompileDirectories();
-
-		success = passOne_ProcessDir(gCompileDir, 0);
-		if (!success) return false;
-
-		if (!sc_IsStandAlone()) {
-			if(sc_DirectoryExists(gSystemExtensionDir)) {
-			  success = passOne_ProcessDir(gSystemExtensionDir,0);
-			  if (!success) return false;
-			}
-
-			if(sc_DirectoryExists(gUserExtensionDir) &&
-			   (strcmp(gSystemExtensionDir,gUserExtensionDir) != 0)) {
-			  success = passOne_ProcessDir(gUserExtensionDir,0);
-			  if (!success) return false;
-			}
-		}
-	} else {
-		success = gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir);
-		if (!success) return false;
-	}
+	if (sc_IsStandAlone()) {
+		/// FIXME: this should be moved to the LibraryConfig file
+		if (!passOne_ProcessDir(gCompileDir, 0))
+			return false;
+	} else
+		if (!gLibraryConfig->forEachIncludedDirectory(passOne_ProcessDir))
+			return false;
 
 	finiPassOne();
 	return true;
@@ -2219,6 +2193,10 @@ SC_DLLEXPORT_C bool compileLibrary()
 	pthread_mutex_lock (&gLangMutex);
 	gNumCompiledFiles = 0;
 	compiledOK = false;
+
+	// FIXME: the library config should have been initialized earlier!
+	if (!gLibraryConfig)
+		SC_LibraryConfig::readDefaultLibraryConfig();
 
 	compileStartTime = elapsedTime();
 

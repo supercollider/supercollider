@@ -242,7 +242,7 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 	sc_GetUserAppSupportDirectory(pathBuf, length);
 }
 
-#else
+#elif defined(__unix__)
 
 bool sc_IsStandAlone()
 {
@@ -251,18 +251,35 @@ bool sc_IsStandAlone()
 
 void sc_GetResourceDirectory(char* pathBuf, int length)
 {
-	sc_GetResourceDirectoryFromAppDirectory(pathBuf, length);
+#ifdef SC_DATA_DIR
+	strncpy(pathBuf, SC_DATA_DIR, length);
+#else
+	strncpy(pathBuf, "/usr/share/SuperCollider", length);
+#endif
 }
 
+#else
 
-#endif
+bool sc_IsStandAlone()
+{
+	return false;
+}
 
-void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
+static void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length)
 {
 	char * result = getcwd(pathBuf, length);
 	if (result != pathBuf)
 		throw std::runtime_error("cannot get current working directory");
 }
+
+
+void sc_GetResourceDirectory(char* pathBuf, int length)
+{
+	return sc_GetResourceDirectoryFromAppDirectory(pathBuf, length);
+}
+
+#endif
+
 
 
 // Support for Extensions

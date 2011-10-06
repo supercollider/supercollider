@@ -1,7 +1,3 @@
-// emacs:		-*- c++ -*-
-// file:		SC_LibraryConfig.h
-// cvs:			$Id$
-
 /*
  *  Copyright 2003 Maurizio Umberto Puxeddu
  *  Copyright 2011 Jakob Leben
@@ -102,10 +98,16 @@ public:
 
 	void addIncludedDirectory(const char *name);
 	void addExcludedDirectory(const char *name);
+	void removeIncludedDirectory(const char *name);
+	void removeExcludedDirectory(const char *name);
 
 	// convenience functions to access the global library config
-	static bool readLibraryConfig(SC_LibraryConfigFile& file, const char* fileName);
+	static bool readLibraryConfig(const char* fileName);
+	static bool readLibraryConfigYAML(const char* fileName);
+	static bool writeLibraryConfigYAML(const char* fileName);
 	static void freeLibraryConfig();
+	static bool defaultLibraryConfig(void);
+	static bool readDefaultLibraryConfig();
 
 private:
 	DirVector mIncludedDirectories;

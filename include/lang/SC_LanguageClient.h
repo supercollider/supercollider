@@ -85,8 +85,6 @@ public:
 	const char* getName() const { return mName; }
 
 	// library startup/shutdown
-	bool readLibraryConfig(const char* filePath, const char* fileName=0);
-	bool readDefaultLibraryConfig();
 	bool isLibraryCompiled() { return compiledOK; }
 	void compileLibrary();
 	void shutdownLibrary();
