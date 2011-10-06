@@ -44,7 +44,7 @@ The default serif face Font.
 
 method:: defaultMonoFace
 returns::
-The default mono face Font.
+The default monospace face Font.
 
 method:: default
 Gets/sets the default Font.
@@ -54,8 +54,8 @@ Create a new sans serif face Font.
 argument:: size
 An instance of link::Classes/Float::.
 
-method:: mono
-Create a new mono face Font.
+method:: monospace
+Create a new monospace face Font.
 argument:: size
 An instance of link::Classes/Float::.
 

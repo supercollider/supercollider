@@ -38,7 +38,7 @@ SCFont {
 		^"Monaco";
 	}
 
-	*mono {|size|
+	*monospace {|size|
 		^this.new(this.defaultMonoFace, size)
 	}
 
@@ -46,7 +46,7 @@ SCFont {
 		^this.new(this.defaultSerifFace, size)
 	}
 
-	*sansSerif {|size, bold = false, italic = false, usePointSize = false|
+	*sansSerif {|size|
 		^this.new(this.defaultSansFace, size)
 	}
 }
