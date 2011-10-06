@@ -10,6 +10,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost
                     ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
+                    ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/include
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     LangSource/Bison)
 
@@ -91,6 +92,9 @@ set(sclang_sources
 file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
 file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*cpp)
 list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources})
+
+file(GLOB yaml_sources ../external_libraries/yaml-cpp-0.2.6/src/*cpp)
+list(APPEND sclang_sources ${yaml_sources})
 
 if(NOT WIN32)
 	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)

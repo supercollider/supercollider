@@ -1,0 +1,54 @@
+CLASS:: LanguageConfig
+summary:: Access and modify interpreter configuration
+categories:: Language
+
+DESCRIPTION::
+The LanguageConfig class provides access to the interpreter configuration.
+
+
+section:: Configuration File Format
+The configuration file is stored in YAML format, which contains one dictionary. The semantics of the dictionary is listed in
+the following table:
+
+definitionList::
+## teletype::includePaths:: || List of class library paths.
+## teletype::excludePaths:: || List of paths to exclude from the class library files (overrides teletype::includePaths::).
+## teletype::postInlineWarnings:: || Boolean flag to post warnings about missing inline opportunities.
+::
+
+CLASSMETHODS::
+
+METHOD:: store
+Store the current configuration to file.
+
+argument:: file
+Configuration file to store. If the value is code::nil:: it defaults to code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
+
+subsection:: Library Path Handling
+
+The language configuration mechanism provides a way to add or exclude specific paths for the class library.
+
+note::Changes to the class library paths won't have any effect before recompiling the class library.::
+
+METHOD:: includePaths
+Return the class library include paths.
+
+METHOD:: addIncludePath
+Add new class library include path.
+
+METHOD:: removeIncludePath
+Remove path from class library include paths.
+
+METHOD:: excludePaths
+Return the class library exclude paths.
+
+METHOD:: addExcludePath
+Add new class library exclude path.
+
+METHOD:: removeExcludePath
+Remove path from class library exclude paths.
+
+subsection:: Compiler Warnings
+
+METHOD:: postInlineWarnings
+Get or set the compiler flag, whether warnings should be posted if a FunctionDef cannot be inlined.

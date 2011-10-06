@@ -53,7 +53,7 @@ public:
 			  mArgc(0), mArgv(0)
 		{ }
 
-		char*			mLibraryConfigFile;
+		const char*		mLibraryConfigFile;
 		bool			mDaemon;
 		bool			mCallRun;
 		bool			mCallStop;
