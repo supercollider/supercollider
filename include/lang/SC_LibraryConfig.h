@@ -1,5 +1,5 @@
 /*
- *  Copyright 2003 Maurizio Umberto Puxeddu
+ *  Copyright 2003 Maurizio Umberto Puxeddu <umbpux@tin.it>
  *  Copyright 2011 Jakob Leben
  *
  *  This file is part of SuperCollider.
@@ -34,7 +34,7 @@
 //    simple library configuration file parser
 // =====================================================================
 
-class SC_LibraryConfig;
+class SC_LanguageConfig;
 
 class SC_LibraryConfigFile
 {
@@ -45,7 +45,7 @@ public:
     SC_LibraryConfigFile(ErrorFunc errorFunc=0);
 
     bool open(const char* filePath);
-    bool read(const char* fileName, SC_LibraryConfig* libConf);
+    bool read(const char* fileName, SC_LanguageConfig* libConf);
     void close();
 
 protected:
@@ -65,8 +65,8 @@ protected:
 		kMaxIncludeDepth = 10
 	};
 
-    bool read(int depth, const char* fileName, SC_LibraryConfig* libConf);
-	bool parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LibraryConfig* libConf);
+    bool read(int depth, const char* fileName, SC_LanguageConfig* libConf);
+	bool parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LanguageConfig* libConf);
 	static void defaultErrorFunc(const char* fmt, ...);
 
 private:
@@ -74,19 +74,10 @@ private:
 	FILE*				mFile;
 };
 
-// =====================================================================
-// SC_LibraryConfig
-//    library configuration management
-// Copyright 2003 Maurizio Umberto Puxeddu <umbpux@tin.it>
-// =====================================================================
-
-class SC_LibraryConfig
+class SC_LanguageConfig
 {
 public:
 	typedef std::vector<std::string> DirVector;
-
-	SC_LibraryConfig(void);
-	~SC_LibraryConfig();
 
 	const DirVector& includedDirectories() { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() { return mExcludedDirectories; }
@@ -114,6 +105,6 @@ private:
 	DirVector mExcludedDirectories;
 };
 
-extern SC_LibraryConfig* gLibraryConfig;
+extern SC_LanguageConfig* gLibraryConfig;
 
 #endif // SC_LIBRARYCONFIG_H_INCLUDED

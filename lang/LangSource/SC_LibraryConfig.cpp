@@ -45,9 +45,9 @@
 
 using namespace std;
 
-SC_LibraryConfig *gLibraryConfig = 0;
+SC_LanguageConfig *gLibraryConfig = 0;
 
-void SC_LibraryConfig::postExcludedDirectories(void)
+void SC_LanguageConfig::postExcludedDirectories(void)
 {
 	DirVector &vec = mExcludedDirectories;
 	DirVector::iterator it;
@@ -56,7 +56,7 @@ void SC_LibraryConfig::postExcludedDirectories(void)
 	}
 }
 
-bool SC_LibraryConfig::forEachIncludedDirectory(bool (*func)(const char *, int))
+bool SC_LanguageConfig::forEachIncludedDirectory(bool (*func)(const char *, int))
 {
 	DirVector &vec = mIncludedDirectories;
 	DirVector::iterator it;
@@ -66,18 +66,12 @@ bool SC_LibraryConfig::forEachIncludedDirectory(bool (*func)(const char *, int))
 	return true;
 }
 
-SC_LibraryConfig::SC_LibraryConfig(void)
-{}
-
-SC_LibraryConfig::~SC_LibraryConfig()
-{}
-
-static bool findPath(SC_LibraryConfig::DirVector & vec, const char * path, bool addIfMissing)
+static bool findPath( SC_LanguageConfig::DirVector & vec, const char * path, bool addIfMissing)
 {
 	char standardPath[PATH_MAX];
 	sc_StandardizePath(path, standardPath);
 
-	for (SC_LibraryConfig::DirVector::iterator it = vec.begin(); it != vec.end(); ++it)
+	for ( SC_LanguageConfig::DirVector::iterator it = vec.begin(); it != vec.end(); ++it)
 		if (!strcmp(standardPath, it->c_str()))
 			return true;
 
@@ -87,24 +81,24 @@ static bool findPath(SC_LibraryConfig::DirVector & vec, const char * path, bool 
 	return false;
 }
 
-bool SC_LibraryConfig::pathIsExcluded(const char *path)
+bool SC_LanguageConfig::pathIsExcluded(const char *path)
 {
 	return findPath(mExcludedDirectories, path, false);
 }
 
-void SC_LibraryConfig::addIncludedDirectory(const char *path)
+void SC_LanguageConfig::addIncludedDirectory(const char *path)
 {
 	if (path == 0) return;
 	findPath(mIncludedDirectories, path, true);
 }
 
-void SC_LibraryConfig::addExcludedDirectory(const char *path)
+void SC_LanguageConfig::addExcludedDirectory(const char *path)
 {
 	if (path == 0) return;
 	findPath(mExcludedDirectories, path, true);
 }
 
-void SC_LibraryConfig::removeIncludedDirectory(const char *path)
+void SC_LanguageConfig::removeIncludedDirectory(const char *path)
 {
 	char standardPath[PATH_MAX];
 	sc_StandardizePath(path, standardPath);
@@ -113,17 +107,17 @@ void SC_LibraryConfig::removeIncludedDirectory(const char *path)
 	mIncludedDirectories.erase(end, mIncludedDirectories.end());
 }
 
-void SC_LibraryConfig::removeExcludedDirectory(const char *path)
+void SC_LanguageConfig::removeExcludedDirectory(const char *path)
 {
 	string str(path);
 	DirVector::iterator end = std::remove(mExcludedDirectories.begin(), mExcludedDirectories.end(), str);
 	mExcludedDirectories.erase(end, mExcludedDirectories.end());
 }
 
-bool SC_LibraryConfig::readLibraryConfig(const char* fileName)
+bool SC_LanguageConfig::readLibraryConfig(const char* fileName)
 {
 	freeLibraryConfig();
-	gLibraryConfig = new SC_LibraryConfig();
+	gLibraryConfig = new SC_LanguageConfig();
 
 	SC_LibraryConfigFile file(::post);
 	bool success = file.open(fileName);
@@ -141,10 +135,10 @@ bool SC_LibraryConfig::readLibraryConfig(const char* fileName)
 }
 
 extern bool gPostInlineWarnings;
-bool SC_LibraryConfig::readLibraryConfigYAML(const char* fileName)
+bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName)
 {
 	freeLibraryConfig();
-	gLibraryConfig = new SC_LibraryConfig();
+	gLibraryConfig = new SC_LanguageConfig();
 
 	using namespace YAML;
 	try {
@@ -194,7 +188,7 @@ bool SC_LibraryConfig::readLibraryConfigYAML(const char* fileName)
 	}
 }
 
-bool SC_LibraryConfig::writeLibraryConfigYAML(const char* fileName)
+bool SC_LanguageConfig::writeLibraryConfigYAML(const char* fileName)
 {
 	using namespace YAML;
 	Emitter out;
@@ -228,10 +222,10 @@ bool SC_LibraryConfig::writeLibraryConfigYAML(const char* fileName)
 	return true;
 }
 
-bool SC_LibraryConfig::defaultLibraryConfig(void)
+bool SC_LanguageConfig::defaultLibraryConfig(void)
 {
 	freeLibraryConfig();
-	gLibraryConfig = new SC_LibraryConfig();
+	gLibraryConfig = new SC_LanguageConfig();
 
 	char compileDir[MAXPATHLEN];
 	char systemExtensionDir[MAXPATHLEN];
@@ -259,7 +253,7 @@ static bool file_exists(const char * fileName)
 	return fp != NULL;
 }
 
-bool SC_LibraryConfig::readDefaultLibraryConfig()
+bool SC_LanguageConfig::readDefaultLibraryConfig()
 {
 	char config_dir[PATH_MAX];
 	sc_GetUserConfigDirectory(config_dir, PATH_MAX);
@@ -300,12 +294,12 @@ bool SC_LibraryConfig::readDefaultLibraryConfig()
 	if (readLibraryConfig("/etc/sclang.cfg"))
 		return true;
 
-	SC_LibraryConfig::defaultLibraryConfig();
+	SC_LanguageConfig::defaultLibraryConfig();
 	return false;
 }
 
 
-void SC_LibraryConfig::freeLibraryConfig()
+void SC_LanguageConfig::freeLibraryConfig()
 {
 	if (gLibraryConfig) {
 		delete gLibraryConfig;
@@ -341,12 +335,12 @@ void SC_LibraryConfigFile::close()
 	}
 }
 
-bool SC_LibraryConfigFile::read(const char* fileName, SC_LibraryConfig* libConf)
+bool SC_LibraryConfigFile::read(const char* fileName, SC_LanguageConfig* libConf)
 {
 	return read(0, fileName, libConf);
 }
 
-bool SC_LibraryConfigFile::read(int depth, const char* fileName, SC_LibraryConfig* libConf)
+bool SC_LibraryConfigFile::read(int depth, const char* fileName, SC_LanguageConfig* libConf)
 {
 	if (!mFile) return false;
 
@@ -373,7 +367,7 @@ bool SC_LibraryConfigFile::read(int depth, const char* fileName, SC_LibraryConfi
 	return error;
 }
 
-bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LibraryConfig* libConf)
+bool SC_LibraryConfigFile::parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LanguageConfig* libConf)
 {
 	char action = 0;
 	SC_StringBuffer path;

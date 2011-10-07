@@ -251,11 +251,11 @@ int SC_TerminalClient::run(int argc, char** argv)
 	if (opt.mLibraryConfigFile) {
 		int argLength = strlen(opt.mLibraryConfigFile);
 		if (strcmp(opt.mLibraryConfigFile + argLength - 5, ".yaml"))
-			SC_LibraryConfig::readLibraryConfig(opt.mLibraryConfigFile);
+			SC_LanguageConfig::readLibraryConfig(opt.mLibraryConfigFile);
 		else
-			SC_LibraryConfig::readLibraryConfigYAML(opt.mLibraryConfigFile);
+			SC_LanguageConfig::readLibraryConfigYAML(opt.mLibraryConfigFile);
 	} else
-		SC_LibraryConfig::readDefaultLibraryConfig();
+		SC_LanguageConfig::readDefaultLibraryConfig();
 
 	// initialize runtime
 	initRuntime(opt);
