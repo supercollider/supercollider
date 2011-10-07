@@ -33,7 +33,7 @@ argument:: parent
 The instance of View or Window that the new View will become a child of.
 
 argument:: bounds
-A Rect or a Point describing size and position of the new View. If a Point is given, its coordinates will denote the view's size, while the view's position will be (0,0). The view's position coordinates are relative to its parent.
+A Rect or a Point describing size and position of the new View. If a Point is given, its coordinates will denote the view's size, while the view's position will be (0,0). Position is measured relative to the parent's top-left corner.
 
 returns::
 note::
@@ -154,7 +154,7 @@ SUBSECTION:: Size and position
 
 METHOD:: bounds
 
-	Gets or sets both the position and the size of the view. The position is relative to the parent view. Some containers, such as HLayoutView and VLayoutView, will use only the width and height of a child view's bounds.
+	Gets or sets both the position and the size of the view. The position is relative to the parent view's top-left corner. Some containers, such as HLayoutView and VLayoutView, will use only the width and height of a child view's bounds.
 
 	The setter takes a Rect or a Point interpreted link::Classes/Point#-asRect#as Rect::. The getter always returns a Rect.
 
@@ -246,10 +246,10 @@ METHOD:: resizeTo
 		An Int: the new vertical size of the view.
 
 METHOD:: resize
-	Sets the mode of behavior of the view's position and size when its parent is resized.
+	Determines what happens with the view's position and size when its parent is resized. See link::Guides/GUI-Introduction#view:: for further explanation.
 
 	argument::
-		An Int (1 to 9) defining the auto-resize behavior. See link::Reference/Resize:: for a list of resize modes, and link::Guides/GUI-Introduction#view:: for further explanation.
+		An Int (1 to 9) defining the auto-resize behavior. See link::Reference/Resize:: for a list of valid resize modes.
 
 METHOD:: decorator
 	note:: only in Qt GUI ::
