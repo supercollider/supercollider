@@ -181,8 +181,9 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName)
 			}
 		}
 		return true;
-	} catch (...)
+	} catch (std::exception & e)
 	{
+		postfl("Exception when parsing YAML config file: %s\n", e.what());
 		freeLibraryConfig();
 		return false;
 	}
