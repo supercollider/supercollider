@@ -1,0 +1,260 @@
+CLASS:: Window
+redirect:: implClass
+summary:: Top-level container of views
+categories:: GUI>Views
+
+DESCRIPTION::
+
+The Window is the most fundamental element of the GUI. It occupies a rectangular space on the screen within which other GUI elements (Views) are displayed.
+
+A child view is added into a window by passing the window to the view's constructor. See link::Classes/View#*new::.
+
+note::
+In strong::Qt GUI:: there is no distinction between windows, views, and containers; a View can be displayed directly on screen, and can contain other views. Therefore, visual descriptions of Window and most of the methods that are specific to Window in other GUI kits, also apply to and make part of View in Qt, and are thus shared by all its subclasses.
+
+The Window class is provided in Qt GUI for compatibility as well as convenience: e.g. unlike View, Window will be created by default in the center of the screen, and various aspects can be conveniently controlled using its constructor arguments.
+::
+
+The Window is usually drawn with a bar on its top edge that displays the window's title which you can set in the link::#*new#constructor::, or using link::#-name::.
+
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+METHOD:: new
+
+	Creates a new Window instance. You will need to call link::#-front:: on it to become visible.
+
+	argument:: name
+		A String for the text that will be displayed in the title bar. The default is 'panel'.
+	argument:: bounds
+		A Rect specifying position and size of the window. The size does not include the border and title bar. Position is measured from the bottom-left corner of the screen (this is different than link::Classes/View#-bounds::). The default is size 400x400 at position 128x64, but in Qt the window is centered on the screen by default.
+	argument:: resizable
+		A Boolean indicating whether this window is resizable by the user. The default is code::true::.
+	argument:: border
+		A Boolean indicating whether this window has a border. Borderless windows have no title bar and thus can only be closed in code. The default is code::true::.
+	argument:: server
+		This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect.
+	argument:: scroll
+		A Boolean indicating whether this window will add scrollbars if its contents exceed its bounds. If this is set to code::true::, then link::Classes/View#-resize:: settings will be ignored for contained views. The default is false.
+
+METHOD:: allWindows
+
+	An array of all existing Window instances.
+
+METHOD:: closeAll
+
+	Calls link::#-close:: an all existing Window instances.
+
+METHOD:: initAction
+
+	The default action object to be evaluated whenever a new Window is instantiated.
+
+METHOD:: screenBounds
+
+	Returns a Rect with the size of the screen in pixels
+
+METHOD:: availableBounds
+
+	Returns a Rect describing the area of the screen that windows can actually occupy (i.e. excluding the Mac dock, the task bar, or similar).
+
+
+
+
+INSTANCEMETHODS::
+
+SUBSECTION:: View hierarchy
+
+METHOD:: view
+	When a Window is created, it creates a container view, accessible using this method, that occupies the whole area of the window, and which will be used as the actual parent of the child widgets.
+
+	returns::
+		A View.
+
+METHOD:: asView
+	Equivalent to link::#-view::
+
+METHOD:: currentSheet
+	note:: Only in Cocoa GUI ::
+	returns:
+		The current modal sheet attached to this window, if it exists. See link::Classes/SCModalSheet::.
+
+
+
+
+SUBSECTION:: Visibility
+
+METHOD:: front
+	Displays the window on the screen (In Qt GUI this has the same effect as setting link::#-visible:: to true).
+
+METHOD:: minimize
+	Hides the window, only keeping its representation in the dock, taskbar, etc..
+
+METHOD:: unminimize
+	Restores the window's previous state after being minimized.
+
+METHOD:: fullScreen
+	Displays the window full-screen.
+
+METHOD:: endFullScreen
+	Restores the window's previous state after being displayed full-screen.
+
+METHOD:: alwaysOnTop
+	Whether the window should always stay on top of other windows, even when it is not the active one.
+
+	argument::
+		A Boolean.
+
+METHOD:: visible
+	note:: only in Qt GUI ::
+
+	Wether the window is visible.
+
+	Setting this to code::true:: has the same effect as link::#-front::, and setting it to false closes the window without destroying it.
+
+	argument::
+		A Boolean.
+
+METHOD:: close
+
+	Closes and destroys the window.
+
+METHOD:: isClosed
+	returns:: A Boolean stating whether the view has been closed.
+
+
+
+
+SUBSECTION:: Geometry
+
+METHOD:: bounds
+
+	The position and size of the window. The position is relative to the bottom-left corner of the screen.
+
+	argument::
+		A Rect or a Point interpreted link::Classes/Point#-asRect#as Rect::.
+	returns::
+		A Rect.
+
+METHOD:: setTopLeftBounds
+
+	A convenience method that, unlike link::#-bounds::, sets the bounds by measuring position from the top-left corner of the screen, and vertically offset by code::menuSpacer::.
+
+	argument:: rect
+		A Rect.
+	argument:: menuSpacer
+		An Integer amount of pixels.
+
+METHOD:: setInnerExtent
+
+	Resizes the window, keeping its position intact.
+
+	In strong:: Qt GUI ::, this is equivalent to link::Classes/View#-resizeTo:: called on the link::#-view::.
+
+	argument:: w
+		An Integer width in pixels.
+	argument:: h
+		An Integer height in pixels.
+
+METHOD:: sizeHint
+	note:: only in Qt GUI ::
+	Redirects to link::Classes/View#-sizeHint:: of the link::#-view::.
+
+METHOD:: minSizeHint
+	note:: only in Qt GUI ::
+	Redirects to link::Classes/View#-minSizeHint:: of the link::#-view::.
+
+METHOD:: addFlowLayout
+
+	A convenience method which sets code::decorator:: of the link::#-view:: to a new instance of FlowLayout. See link::Classes/FlowLayout:: for examples.
+
+	argument:: margin
+		A Point describing the link::Classes/FlowLayout#-margin#margin:: of the FlowLayout.
+
+	argument:: gap
+		A Point describing the link::Classes/FlowLayout#-gap#gap:: of the FlowLayout.
+
+	returns:: The new FlowLayout instance.
+
+METHOD:: layout
+	note:: only in Qt GUI ::
+	Redirects to link::Classes/View#-layout:: of the link::#-view::.
+
+
+
+SUBSECTION:: Appearance
+
+METHOD:: name
+	The title of the window.
+
+	argument::
+		A String.
+
+METHOD:: background
+	The background color of the window.
+
+	argument::
+		A Color.
+
+METHOD:: alpha
+	The transparancy of the window.
+
+	argument::
+		A Float between 0.0 (invisible) and 1.0 (opaque).
+
+METHOD:: refresh
+	Redraws the window and all its children.
+
+
+
+SUBSECTION:: Interaction
+
+METHOD:: userCanClose
+	Whether the user can close the window. The default is code::true::.
+
+	argument::
+		A Boolean.
+
+METHOD:: acceptsClickThrough
+	Whether the window receives clicks when it is not front-most. The default is code::true::.
+
+	argument::
+		A Boolean.
+
+METHOD:: acceptsMouseOver
+	Whether the window receives mouse-over events. The default is code::false::.
+
+	argument::
+		A Boolean.
+
+
+
+SUBSECTION:: Actions and hooks
+
+METHOD:: drawFunc
+	Just like the link::Classes/UserView::, the window can be given a Function to evalute whenever it is asked to redraw itself, so you can use the link::Classes/Pen:: class to draw on the window. See link::Classes/UserView#-drawFunc:: for explanation.
+
+	argument::
+		A Function.
+
+METHOD:: toFrontAction
+
+	The action object to be evaluated whenever the window becomes the active one.
+
+METHOD:: endFrontAction
+
+	The action object to be evaluated whenever the window ceases to be the active one.
+
+METHOD:: onClose
+
+	The action object to be evaluated when the window is closed.
+
+METHOD:: addToOnClose
+
+	Adds an object to link::#-onClose::, wrapping the current value into an Array, if it is not yet.
+
+METHOD:: removeFromOnClose
+
+	Removes an object from link::#-onClose::, if the latter is an Array.
