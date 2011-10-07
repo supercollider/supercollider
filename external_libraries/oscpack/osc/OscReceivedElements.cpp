@@ -463,6 +463,7 @@ std::size_t ReceivedMessageArgument::ArraySize() const
             ret += 1;
         }
     }
+    return ret;
 }
 
 
