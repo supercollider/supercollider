@@ -886,31 +886,41 @@ void set_control_array(server_node * node, control_id_type control, osc::Receive
 {
     size_t array_size = it->ArraySize(); ++it;
 
-    for (size_t i = 0; i != array_size; ++i) {
-        if (it->IsString() || it->IsSymbol()) {
-            char const * name = it->AsStringUnchecked(); ++it;
-            int bus_id;
+    if (it->IsArrayStart()) {
+        // nested arrays are basically user errors, but we handle them like normal arrays
+        log("Warning in /s_new handler: nested array argument detected");
+        set_control_array<control_id_type>(node, control, it);
+        return;
+    } else {
+        for (size_t i = 0; i != array_size; ++i) {
+            if (it->IsString() || it->IsSymbol()) {
+                char const * name = it->AsStringUnchecked(); ++it;
+                int bus_id;
 
-            switch (name[0]) {
-            case 'c':
-                bus_id = atoi(name+1);
-                static_cast<sc_synth*>(node)->map_control_bus<false>(control, i, bus_id);
-                break;
+                switch (name[0]) {
+                case 'c':
+                    bus_id = atoi(name+1);
+                    static_cast<sc_synth*>(node)->map_control_bus<false>(control, i, bus_id);
+                    break;
 
-            case 'a':
-                bus_id = atoi(name+1);
-                static_cast<sc_synth*>(node)->map_control_bus<true>(control, i, bus_id);
-                break;
+                case 'a':
+                    bus_id = atoi(name+1);
+                    static_cast<sc_synth*>(node)->map_control_bus<true>(control, i, bus_id);
+                    break;
 
-            default:
-                throw runtime_error("invalid name for control mapping");
+                default:
+                    throw runtime_error("invalid name for control mapping");
+                }
+            } else {
+                float value = extract_float_argument(it++);
+                node->set_control_array_element(control, i, value);
             }
-        } else {
-            float value = extract_float_argument(it++);
-            node->set_control_array_element(control, i, value);
         }
     }
-    assert(it->IsArrayEnd()); ++it; // skip array end
+
+    if (!it->IsArrayEnd())
+        throw runtime_error("missing array end tag");
+    ++it; // skip array end
 }
 
 template <typename ControlSpecifier>
@@ -944,10 +954,11 @@ void set_control(server_node * node, ControlSpecifier const & control, osc::Rece
 }
 
 /* set control values of node from string/float or int/float pair */
-void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it, osc::ReceivedMessageArgumentIterator end)
 {
     if (it->IsInt32()) {
         osc::int32 index = it->AsInt32Unchecked(); ++it;
+        if (it == end) return; // sclang sometimes uses an integer instead of an empty argument list
         set_control(node, index, it);
     } else if (it->IsString()) {
         const char * str = it->AsStringUnchecked(); ++it;
@@ -958,7 +969,7 @@ void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 
 void handle_s_new(received_message const & msg)
 {
-    osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin(), end = msg.ArgumentsEnd();
 
     const char * def_name = args->AsString(); ++args;
     int32_t id = args->AsInt32(); ++args;
@@ -968,12 +979,12 @@ void handle_s_new(received_message const & msg)
 
     int32_t action, target;
 
-    if (args != msg.ArgumentsEnd()) {
+    if (args != end) {
         action = args->AsInt32(); ++args;
     } else
         action = 0;
 
-    if (args != msg.ArgumentsEnd()) {
+    if (args != end) {
         target = args->AsInt32(); ++args;
     } else
         target = 0;
@@ -983,12 +994,11 @@ void handle_s_new(received_message const & msg)
     if (synth == NULL)
         return;
 
-    while (args != msg.ArgumentsEnd()) {
-        try {
-            set_control(synth, args);
-        } catch(std::exception & e) {
-            log_printf("exception in /s_new: %s\n", e.what());
-        }
+    try {
+        while (args != end)
+            set_control(synth, args, end);
+    } catch(std::exception & e) {
+        log_printf("exception in /s_new: %s\n", e.what());
     }
 }
 
@@ -1248,15 +1258,26 @@ void handle_n_##cmd(received_message const & msg)                       \
     if (!node)                                                          \
         return;                                                         \
                                                                         \
-    while (it != msg.ArgumentsEnd()) {                                  \
-        try {                                                           \
+    try {                                                               \
+        while (it != msg.ArgumentsEnd())                                \
             function(node, it);                                         \
-        } catch(std::exception & e) {                                   \
-            log_printf("Exception during /n_" #cmd "handler: %s\n", e.what());\
-            return;                                                     \
-        }                                                               \
+    } catch(std::exception & e) {                                       \
+        log_printf("Exception during /n_" #cmd "handler: %s\n", e.what());\
     }                                                                   \
 }
+
+void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        osc::int32 index = it->AsInt32Unchecked(); ++it;
+        set_control(node, index, it);
+    } else if (it->IsString()) {
+        const char * str = it->AsStringUnchecked(); ++it;
+        set_control(node, str, it);
+    } else
+        throw runtime_error("invalid argument");
+}
+
 
 HANDLE_N_DECORATOR(set, set_control)
 
