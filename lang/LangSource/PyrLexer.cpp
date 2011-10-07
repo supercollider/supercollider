@@ -2196,7 +2196,7 @@ SC_DLLEXPORT_C bool compileLibrary()
 
 	// FIXME: the library config should have been initialized earlier!
 	if (!gLibraryConfig)
-		SC_LibraryConfig::readDefaultLibraryConfig();
+		SC_LanguageConfig::readDefaultLibraryConfig();
 
 	compileStartTime = elapsedTime();
 

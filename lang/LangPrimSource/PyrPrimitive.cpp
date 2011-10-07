@@ -3410,7 +3410,7 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 {
 	PyrSlot *result = g->sp;
 
-	typedef SC_LibraryConfig::DirVector DirVector;
+	typedef SC_LanguageConfig::DirVector DirVector;
 
 	DirVector const & dirVector = (pathType == includePaths) ? gLibraryConfig->includedDirectories()
 															 : gLibraryConfig->excludedDirectories();
