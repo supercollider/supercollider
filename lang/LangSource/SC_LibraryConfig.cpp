@@ -254,45 +254,52 @@ static bool file_exists(const char * fileName)
 	return fp != NULL;
 }
 
+static bool file_exists(std::string const & fileName)
+{
+	return file_exists(fileName.c_str());
+}
+
+
 bool SC_LanguageConfig::readDefaultLibraryConfig()
 {
 	char config_dir[PATH_MAX];
+	bool configured = false;
 	sc_GetUserConfigDirectory(config_dir, PATH_MAX);
-	std::string config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang.cfg";
-	std::string yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";
 
-	// skip deprecated config files
-	const char* paths[2] = { ".sclang.cfg", "~/.sclang.cfg"};
-	for (int i=0; i < 2; i++) {
+	std::string user_yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";
+	if (file_exists(user_yaml_config_file))
+		configured = readLibraryConfigYAML(user_yaml_config_file.c_str());
+
+	if (!configured) {
+		char global_yaml_config_file[] = "/etc/sclang_conf.yaml";
+		if (file_exists(global_yaml_config_file))
+			configured = readLibraryConfigYAML(global_yaml_config_file);
+	}
+
+	std::string config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang.cfg";
+
+	// deprecated config files
+	const char* paths[4] = { config_file.c_str(), ".sclang.cfg", "~/.sclang.cfg", "/etc/sclang.cfg"};
+
+	bool deprecatedConfigFileDetected = false;
+	for (int i=0; i < 4; i++) {
 		const char * ipath = paths[i];
 		char opath[PATH_MAX];
 		if (sc_StandardizePath(ipath, opath)) {
-			if (file_exists(opath))
-				postfl("skipping deprecated config file: %s\n"
-					   "please use %s instead\n", opath, yaml_config_file.c_str());
+			if (!configured) {
+				if (file_exists(opath)) {
+					deprecatedConfigFileDetected = true;
+					postfl("reading deprecated config file: %s\n", opath);
+					configured = readLibraryConfig(opath);
+				}
+			}
 		}
 	}
 
-	if (file_exists(yaml_config_file.c_str())) {
-		if (file_exists(config_file.c_str()))
-			postfl("skipping deprecated config file: %s\n", config_file.c_str());
+	if (deprecatedConfigFileDetected)
+		postfl("Please migrate your sclang config file to %s.\n", user_yaml_config_file.c_str());
 
-		bool success = readLibraryConfigYAML(yaml_config_file.c_str());
-		if (success)
-			return true;
-	}
-
-	if (readLibraryConfig(config_file.c_str()))
-		return true;
-
-	if (file_exists("/etc/sclang_conf.yaml")) {
-		if (file_exists("/etc/sclang.cfg"))
-			postfl("skipping deprecated config file: /etc/sclang.cfg\n");
-		readLibraryConfigYAML(yaml_config_file.c_str());
-		return true;
-	}
-
-	if (readLibraryConfig("/etc/sclang.cfg"))
+	if (configured)
 		return true;
 
 	SC_LanguageConfig::defaultLibraryConfig();
