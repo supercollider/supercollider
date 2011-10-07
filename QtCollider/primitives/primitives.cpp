@@ -35,6 +35,7 @@ LangPrimitiveList& QtCollider::langPrimitives() {
 
 namespace QtCollider {
 
+PyrSymbol *s_interpretCmdLine;
 PyrSymbol *s_interpretPrintCmdLine;
 PyrSymbol *s_doFunction;
 PyrSymbol *s_doDrawFunc;
@@ -67,6 +68,7 @@ void initPrimitives () {
     definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
   }
 
+  s_interpretCmdLine = getsym("interpretCmdLine");
   s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
 
   s_doFunction = getsym("doFunction");
