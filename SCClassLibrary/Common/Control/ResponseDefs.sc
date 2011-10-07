@@ -35,7 +35,7 @@ AbstractResponderFunc {
 	oneShot {
 		var oneShotFunc, wrappedFunc;
 		wrappedFunc = func;
-		oneShotFunc = { arg ...args; wrappedFunc.value(*args); this.free };
+		oneShotFunc = { arg ...args; this.free; wrappedFunc.value(*args); };
 		this.prFunc_(oneShotFunc);
 	}
 	
