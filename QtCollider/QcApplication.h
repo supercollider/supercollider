@@ -58,7 +58,7 @@ class QcApplication : public QApplication
     }
 
   public Q_SLOTS:
-    void interpret( const QString & code );
+    void interpret( const QString & code, bool printResult = true );
 
   private:
     bool event( QEvent * );
