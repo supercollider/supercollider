@@ -1,13 +1,13 @@
 QTopScrollWidget : QObject {
   var <>win;
-  *new { ^super.new("QcScrollWidget") }
+  *qtClass { ^'QcScrollWidget' }
   doDrawFunc { win.drawFunc.value(win); }
 }
 
 QScrollTopView : QScrollView {
   var >window;
 
-  *qtClass {^"QcScrollWindow"}
+  *qtClass {^'QcScrollWindow'}
 
   *new { arg win, name, bounds, resizable, border;
     ^super.newCustom([name, bounds, resizable, border])
@@ -45,7 +45,7 @@ QTopView : QView {
   var >window;
   var <background;
 
-  *qtClass {^"QcWindow"}
+  *qtClass {^'QcWindow'}
 
   *new { arg win, name, bounds, resizable, border;
     ^super.newCustom([name, bounds, resizable, border])

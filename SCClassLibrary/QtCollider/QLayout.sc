@@ -13,7 +13,7 @@ QLayout : QObject {
 QLineLayout : QLayout {
   *new { arg ...items;
     var serializedItems = items.collect( { |x| this.parse(x) } );
-    ^super.new( this.layoutClass, serializedItems );
+    ^super.new( serializedItems );
   }
 
   *parse { arg in;
@@ -37,8 +37,6 @@ QLineLayout : QLayout {
     ^out;
   }
 
-  *layoutClass { ^'' }
-
   add { arg item, stretch = 0, align;
     this.invokeMethod( \addItem, [[item, stretch, QAlignment(align)]], true );
   }
@@ -57,19 +55,22 @@ QLineLayout : QLayout {
 }
 
 QHLayout : QLineLayout {
-  *layoutClass { ^'QcHBoxLayout'; }
+  *qtClass { ^'QcHBoxLayout'; }
 }
 
 QVLayout : QLineLayout {
-  *layoutClass { ^'QcVBoxLayout'; }
+  *qtClass { ^'QcVBoxLayout'; }
 }
 
 // GRID LAYOUT ///////////////////////////////////////////////////
 
 QGridLayout : QLayout {
   *new {
-    ^super.new( "QcGridLayout" );
+    // get rid of QObject's arguments
+    ^super.new;
   }
+
+  *qtClass { ^'QcGridLayout' }
 
   *parse { arg in, row, col;
     var out = [nil,row,col,1,1,nil];

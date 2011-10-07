@@ -35,15 +35,14 @@ QView : QObject {
 
   *new { arg parent, bounds;
     var p = parent.asView;
-    ^super.new( this.qtClass, [p, bounds.asRect] )
-          .initQView( p );
+    ^super.new( [p, bounds.asRect] ).initQView( p );
   }
 
   *newCustom { arg customArgs;
-    ^super.new( this.qtClass, customArgs ).initQView( nil );
+    ^super.new( customArgs ).initQView( nil );
   }
 
-  *qtClass { ^"QcDefaultWidget" }
+  *qtClass { ^'QcDefaultWidget' }
 
   asView { ^this }
 

@@ -1,3 +1,21 @@
+QMetaObject {
+  var className;
+
+  *new { arg className;
+    ^super.newCopyArgs(className);
+  }
+
+  properties {
+    _QMetaObject_Properties
+    ^this.primitiveFailed
+  }
+
+  methods { arg plain = true, signals = false, slots = true;
+    _QMetaObject_Methods
+    ^this.primitiveFailed
+  }
+}
+
 QObject {
   classvar
     heap,
@@ -18,17 +36,15 @@ QObject {
   var qObject, finalizer;
   var virtualSlots;
 
-  *qtProperties { arg className;
-    _QObject_GetPropertiesOf
-    ^this.primitiveFailed
-  }
+  *qtClass { ^nil }
 
-  *qtMethods { arg className, plain = true, signals = false, slots = true;
-    _QObject_GetMethodsOf
-    ^this.primitiveFailed
-  }
+  *meta { ^QMetaObject(this.qtClass); }
 
-  *new { arg className, argumentArray;
+  *new { arg argumentArray;
+    var className = this.qtClass;
+    if( className.isNil ) {
+      Error("Qt:" + this.name + "is an abstract class and can not be instantiated.").throw;
+    };
     ^super.new.initQObject( className, argumentArray );
   }
 
@@ -162,5 +178,4 @@ QObject {
   }
 
   doFunction { arg f ... args; f.performList(\value, this, args); }
-
 }

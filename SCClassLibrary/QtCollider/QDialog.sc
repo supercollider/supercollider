@@ -1,7 +1,9 @@
 QFileDialog : QObject {
+  *qtClass { ^'QcFileDialog' }
+
   *new { arg okFunc, cancelFunc, fileMode, acceptMode, stripResult = false;
 
-    var me = super.new("QcFileDialog", [fileMode, acceptMode] );
+    var me = super.new( [fileMode, acceptMode] );
 
     if( okFunc.notNil ) {
       me.connectFunction( 'accepted(VariantList)', {
