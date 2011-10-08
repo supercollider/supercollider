@@ -35,6 +35,8 @@
 # include <sys/wait.h>
 #endif
 
+#include "../../common/server_shm.hpp"
+
 
 #ifdef _WIN32
 
@@ -309,6 +311,16 @@ int main(int argc, char* argv[])
 		scprintf("ERROR: number of audio bus channels < inputs + outputs.\n");
 		Usage();
 	}
+
+	std::auto_ptr<server_shared_memory_creator> shmem;
+	if (options.mRealTime) {
+		int port = (udpPortNum > 0) ? udpPortNum
+									: tcpPortNum;
+		shmem.reset(new server_shared_memory_creator(port, options.mNumControlBusChannels));
+		options.mSharedControls = shmem->get_control_busses();
+		options.mNumSharedControls = -5; // tag to enable shared memory access to control busses
+	}
+
 
 	struct World *world = World_New(&options);
 	if (!world) return 1;
