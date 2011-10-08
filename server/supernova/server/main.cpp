@@ -279,6 +279,7 @@ int main(int argc, char * argv[])
     cout << "compiled for debugging" << endl;
 #endif
 
+    server_shared_memory_creator::cleanup(args.port());
     nova_server server(args);
     register_handles();
 

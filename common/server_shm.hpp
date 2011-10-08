@@ -81,6 +81,11 @@ public:
 		shm = segment.construct<server_shared_memory>(shmem_name.c_str())(boost::ref(segment), control_busses);
 	}
 
+	static void cleanup(uint port_number)
+	{
+		shared_memory_object::remove(detail::make_shmem_name(port_number).c_str());
+	}
+
 	~server_shared_memory_creator(void)
 	{
 		shm->destroy(segment);
