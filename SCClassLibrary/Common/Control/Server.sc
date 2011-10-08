@@ -194,6 +194,30 @@ ServerOptions
 	}
 }
 
+ServerShmInterface {
+	// order matters!
+	var ptr, finalizer;
+
+	*new {|port|
+		^super.new.connect(port)
+	}
+
+	connect {
+		_ServerShmInterface_connectSharedMem
+		^this.primitiveFailed
+	}
+
+	disconnect {
+		_ServerShmInterface_disconnectSharedMem
+		^this.primitiveFailed
+	}
+
+	getControlBusValue {
+		_ServerShmInterface_getControlBusValue
+		^this.primitiveFailed
+	}
+}
+
 Server {
 	classvar <>local, <>internal, <default, <>named, <>set, <>program, <>sync_s = true;
 
@@ -222,6 +246,7 @@ Server {
 	var <volume;
 
 	var <pid;
+	var serverInterface;
 
 	*default_ { |server|
 		default = server; // sync with s?
@@ -601,6 +626,12 @@ Server {
 			if (sendQuit.isNil) {
 				sendQuit = not(this.inProcess) and: {this.isLocal};
 			};
+
+			if (sendQuit) {
+				// local and not internal
+				serverInterface = ServerShmInterface(addr.port);
+			};
+
 			this.initTree;
 			(volume.volume != 0.0).if({
 				volume.play;
@@ -621,6 +652,11 @@ Server {
 			//this.serverRunning = true;
 			pid = thisProcess.pid;
 		},{
+			if (serverInterface.notNil) {
+				serverInterface.disconnect;
+				serverInterface = nil;
+			};
+
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
 			//unixCmd(program ++ options.asOptionsString(addr.port)).postln;
 			("booting " ++ addr.port.asString).inform;
