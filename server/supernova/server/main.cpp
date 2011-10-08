@@ -282,8 +282,6 @@ int main(int argc, char * argv[])
     nova_server server(args);
     register_handles();
 
-    sc_factory->initialize(args);
-
     set_plugin_paths();
     load_synthdefs(server, args);
 

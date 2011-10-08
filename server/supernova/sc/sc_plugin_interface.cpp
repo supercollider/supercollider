@@ -559,7 +559,7 @@ inline void initialize_rate(Rate & rate, double sample_rate, int blocksize)
 }
 
 
-void sc_plugin_interface::initialize(server_arguments const & args)
+void sc_plugin_interface::initialize(server_arguments const & args, float * control_busses)
 {
     done_nodes.reserve(64);
     pause_nodes.reserve(16);
@@ -621,7 +621,7 @@ void sc_plugin_interface::initialize(server_arguments const & args)
 
     /* initialize world */
     /* control busses */
-    world.mControlBus = new float[args.control_busses];
+    world.mControlBus = control_busses;
     world.mNumControlBusChannels = args.control_busses;
     world.mControlBusTouched = new int32[args.control_busses];
     std::fill(world.mControlBusTouched, world.mControlBusTouched + args.control_busses, -1);

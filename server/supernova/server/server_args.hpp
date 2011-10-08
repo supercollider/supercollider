@@ -49,6 +49,14 @@ public:
         instance_->samplerate = samplerate;
     }
 
+    uint32_t port(void) const
+    {
+        if (udp_port)
+            return udp_port;
+        else
+            return tcp_port;
+    }
+
     uint32_t udp_port, tcp_port;
     uint32_t control_busses, audio_busses;
     uint32_t blocksize, samplerate;
