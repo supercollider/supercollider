@@ -1,6 +1,5 @@
-QTopScrollWidget : QObject {
+QTopScrollWidget : QScrollCanvas {
   var <>win;
-  *qtClass { ^'QcScrollWidget' }
   doDrawFunc { win.drawFunc.value(win); }
 }
 

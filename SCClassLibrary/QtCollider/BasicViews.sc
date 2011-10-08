@@ -125,6 +125,10 @@ QVLayoutView : QView {
   *qtClass { ^"QcVLayoutWidget" }
 }
 
+QScrollCanvas : QObject {
+  *qtClass { ^'QcScrollWidget' }
+}
+
 QScrollView : QAbstractScroll {
   var <canvas;
   var <background, <hasBorder=true;
@@ -169,7 +173,7 @@ QScrollView : QAbstractScroll {
   initQScrollView {
     // NOTE: The canvas widget must not be a QView, so that asking its
     // children for parent will skip it and hit this view instead.
-    this.canvas = QObject("QcScrollWidget");
+    this.canvas = QScrollCanvas();
   }
 }
 
