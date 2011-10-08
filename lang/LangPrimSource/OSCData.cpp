@@ -57,6 +57,8 @@ typedef int socklen_t;
 # endif
 #endif
 
+#include "../../../common/server_shm.hpp"
+
 struct InternalSynthServerGlobals
 {
 	struct World *mWorld;
@@ -1106,6 +1108,87 @@ int prSetSharedControl(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+static int disconnectSharedMem(VMGlobals *g, PyrObject * object)
+{
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = object->slots + ptrIndex;
+
+	if (IsNil(ptrSlot))
+		// already disconnected
+		return errNone;
+
+	assert(IsPtr(ptrSlot));
+
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+	delete client;
+	SetNil(ptrSlot);
+	return errNone;
+
+}
+
+int prConnectSharedMem(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+
+	assert(IsObj(a));
+
+	PyrObject * self = slotRawObject(a);
+	int portNumber = slotRawInt(b);
+
+	int ptrIndex       = 0;
+	int finalizerIndex = 1;
+
+	try {
+		server_shared_memory_client * client = new server_shared_memory_client(portNumber);
+		SetPtr(self->slots + ptrIndex, client);
+
+		InstallFinalizer(g, self, finalizerIndex, disconnectSharedMem);
+
+		postfl("Shared memory server interface initialized\n");
+	} catch (std::exception & e) {
+		postfl("Cannot connect to shared memory: %s\n", e.what());
+		return errFailed;
+	}
+
+	return errNone;
+}
+
+int prDisconnectSharedMem(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	return disconnectSharedMem(g, self);
+}
+
+int prGetControlBusValue(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	PyrObject * self = slotRawObject(a);
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = self->slots + ptrIndex;
+
+	assert(IsObj(a));
+
+	if (!IsInt(b))
+		return errFailed;
+
+	int busIndex = slotRawInt(b);
+
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+
+	float value = client->get_control_busses()[busIndex];
+	SetFloat(a, value);
+	return errNone;
+}
+
+
 void init_OSC_primitives();
 void init_OSC_primitives()
 {
@@ -1137,6 +1220,11 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);
 	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);
 	definePrimitive(base, index++, "_OpenUDPPort", prOpenUDPPort, 2, 0);
+
+	// server shared memory interface
+	definePrimitive(base, index++, "_ServerShmInterface_connectSharedMem", prConnectSharedMem, 2, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_disconnectSharedMem", prDisconnectSharedMem, 1, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValue", prGetControlBusValue, 2, 0);
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");
