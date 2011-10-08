@@ -357,13 +357,19 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		world->mErrorNotification = 1;  // i.e., 0x01 | 0x02
 		world->mLocalErrorNotification = 0;
 
-		world->mNumSharedControls = inOptions->mNumSharedControls;
-		world->mSharedControls = inOptions->mSharedControls;
+		// we use -5 to enable shared memory access to control busses
+		if (inOptions->mNumSharedControls == -5) {
+			world->mNumSharedControls = 0;
+			world->mSharedControls = inOptions->mSharedControls;
+			world->mControlBus = inOptions->mSharedControls;
+		} else {
+			world->mNumSharedControls = inOptions->mNumSharedControls;
+			world->mSharedControls = inOptions->mSharedControls;
+			world->mControlBus = (float*)zalloc(world->mNumControlBusChannels, sizeof(float));
+		}
 
 		int numsamples = world->mBufLength * world->mNumAudioBusChannels;
 		world->mAudioBus = (float*)zalloc(numsamples, sizeof(float));
-
-		world->mControlBus = (float*)zalloc(world->mNumControlBusChannels, sizeof(float));
 
 		world->mAudioBusTouched = (int32*)zalloc(inOptions->mNumAudioBusChannels, sizeof(int32));
 		world->mControlBusTouched = (int32*)zalloc(inOptions->mNumControlBusChannels, sizeof(int32));
@@ -1025,7 +1031,8 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 
 	free(world->mControlBusTouched);
 	free(world->mAudioBusTouched);
-	free(world->mControlBus);
+	if (world->mControlBus != world->mSharedControls) // not in shared memory
+		free(world->mControlBus);
 	free(world->mAudioBus);
 	delete [] world->mRGen;
 	if (hw) {
