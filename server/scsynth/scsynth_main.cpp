@@ -316,6 +316,8 @@ int main(int argc, char* argv[])
 	if (options.mRealTime) {
 		int port = (udpPortNum > 0) ? udpPortNum
 									: tcpPortNum;
+
+		server_shared_memory_creator::cleanup(port);
 		shmem.reset(new server_shared_memory_creator(port, options.mNumControlBusChannels));
 		options.mSharedControls = shmem->get_control_busses();
 		options.mNumSharedControls = -5; // tag to enable shared memory access to control busses
