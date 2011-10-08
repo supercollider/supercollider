@@ -624,8 +624,7 @@ void sc_plugin_interface::initialize(server_arguments const & args)
     world.mControlBus = new float[args.control_busses];
     world.mNumControlBusChannels = args.control_busses;
     world.mControlBusTouched = new int32[args.control_busses];
-    for (size_t i = 0; i != args.control_busses; ++i)
-        world.mControlBusTouched[i] = -1;
+    std::fill(world.mControlBusTouched, world.mControlBusTouched + args.control_busses, -1);
 
     /* audio busses */
     audio_busses.initialize(args.audio_busses, args.blocksize);
@@ -634,8 +633,7 @@ void sc_plugin_interface::initialize(server_arguments const & args)
     world.mNumAudioBusChannels = args.audio_busses;
     world.mAudioBusTouched = new int32[args.audio_busses];
     world.mAudioBusLocks = audio_busses.locks;
-    for (size_t i = 0; i != args.audio_busses; ++i)
-        world.mAudioBusTouched[i]   = -1;
+    std::fill(world.mAudioBusTouched, world.mAudioBusTouched + args.audio_busses, -1);
 
     /* audio buffers */
     world.mNumSndBufs = args.buffers;
