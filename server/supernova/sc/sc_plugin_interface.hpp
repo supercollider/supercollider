@@ -88,7 +88,7 @@ class sc_plugin_interface:
     public sc_done_action_handler
 {
 public:
-    void initialize(class server_arguments const & args);
+    void initialize(class server_arguments const & args, float * control_busses);
     void reset_sampling_rate(int sr);
 
     sc_plugin_interface(void):
