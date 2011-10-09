@@ -951,7 +951,7 @@ void VarLag_next(VarLag *unit, int inNumSamples)
 			 level = unit->m_in;
 			 };
 			 )
-	} {
+	} else {
 		LOOP(remain, ZXP(out) = level );
 	}
 
