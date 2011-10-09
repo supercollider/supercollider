@@ -31,7 +31,7 @@ PackFFT : PV_ChainUGen {
 }
 
 // Conveniences to apply calculations to an FFT chain
-PV_ChainUGen : UGen {
+PV_ChainUGen : WidthFirstUGen {
 
 	// Give it a func to apply to whole set of vals: func(mags, phases)
 	pvcalc { |numframes, func, frombin=0, tobin, zeroothers=0|

@@ -1,6 +1,18 @@
 // fft uses a local buffer for holding the buffered audio.
 // wintypes are defined in the C++ source. 0 is default, Welch; 1 is Hann; -1 is rect.
 
+WidthFirstUGen : UGen
+{
+	addToSynth {
+		synthDef = buildSynthDef;
+		if (synthDef.notNil, { 
+			synthDef.addUGen(this);
+			synthDef.widthFirstUGens = synthDef.widthFirstUGens.add(this);
+		});
+	}
+}
+
+
 FFT : PV_ChainUGen
 {
 	*new { | buffer, in = 0.0 , hop = 0.5, wintype = 0 , active = 1, winsize=0|
@@ -8,9 +20,8 @@ FFT : PV_ChainUGen
 	}
 }
 
-IFFT : UGen
+IFFT : WidthFirstUGen
 {
-	var siblings;
 	*new { | buffer, wintype = 0, winsize=0|
 		^this.ar(buffer, wintype, winsize)
 	}
@@ -23,25 +34,6 @@ IFFT : UGen
 		^this.multiNew('control', buffer, wintype, winsize).do({|ifft| _.initSiblings});
 	}
 
-	initSiblings { siblings = Set.new; }
-
-	removeAntecedent { arg ugen;
-		antecedents.remove(ugen);
-		siblings = siblings.addAll(ugen.descendants);
-		this.makeAvailable;
-	}
-
-	makeAvailable {
-		var ind;
-		if (antecedents.size == 0, {
-			ind = synthDef.available.detectIndex({|av|
-				siblings.includes(av) || siblings.includesAny(av.descendants)
-			}) ? synthDef.available.size;
-
-			synthDef.available = synthDef.available.insert(ind, this);
-			siblings = nil;
-		});
-	}
 }
 
 PV_MagAbove : PV_ChainUGen

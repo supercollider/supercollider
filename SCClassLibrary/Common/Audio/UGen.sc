@@ -6,7 +6,7 @@ UGen : AbstractFunction {
 
 	var <>synthIndex = -1, <>specialIndex=0;
 
-	var <>antecedents, <>descendants; // topo sorting
+	var <>antecedents, <>descendants, <>widthFirstAntecedents; // topo sorting
 
 	// instance creation
 	*new1 { arg rate ... args;
@@ -395,6 +395,11 @@ UGen : AbstractFunction {
 				antecedents.add(input.source);
 				input.source.descendants.add(this);
 			});
+		});
+		
+		widthFirstAntecedents.do({ arg ugen;
+			antecedents.add(ugen);
+			ugen.descendants.add(this);
 		})
 	}
 
