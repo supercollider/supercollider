@@ -28,15 +28,22 @@
 #include <QTimer>
 #include <QEventLoop>
 
+#ifdef Q_WS_X11
+# include <X11/Xlib.h>
+#endif
+
 #include <clocale>
 
 QC_PUBLIC
 void QtCollider::init() {
   if( !QApplication::instance() ) {
     qcDebugMsg( 1, "Initializing QtCollider" );
-    #ifdef Q_OS_MAC
-      QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
-    #endif
+#ifdef Q_WS_X11
+    XInitThreads();
+#endif
+#ifdef Q_OS_MAC
+    QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
+#endif
     static int qcArgc = 1;
     static char qcArg0[] = "";
     static char *qcArgv[1];
