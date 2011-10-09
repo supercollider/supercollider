@@ -154,9 +154,13 @@ UGen : AbstractFunction {
 		^this
 	}
 	linlin { arg inMin, inMax, outMin, outMax, clip = \minmax;
-		^LinLin.multiNew(this.rate, this.prune(inMin, inMax, clip),
-						inMin, inMax, outMin, outMax)
+		if (this.rate == \audio) {
+			^LinLin.ar(this.prune(inMin, inMax, clip), inMin, inMax, outMin, outMax)
+		} {
+			^LinLin.kr(this.prune(inMin, inMax, clip), inMin, inMax, outMin, outMax)
+		}
 	}
+
 	linexp { arg inMin, inMax, outMin, outMax, clip = \minmax;
 		^LinExp.multiNew(this.rate, this.prune(inMin, inMax, clip),
 						inMin, inMax, outMin, outMax)
