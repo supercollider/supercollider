@@ -143,6 +143,13 @@ inline void Clear(int numSamples, float *out)
 	memset(out, 0, numSamples * sizeof(float));
 }
 
+inline void Clear(int numSamples, double *out)
+{
+	// The memset approach is valid on any system using IEEE floating-point. On other systems, please check...
+	memset(out, 0, numSamples * sizeof(double));
+}
+
+
 inline void Copy(int numSamples, float *out, float *in)
 {
 	memcpy(out, in, numSamples * sizeof(float));
