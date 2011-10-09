@@ -45,32 +45,38 @@ struct Ramp : public Unit
 
 struct Lag : public Unit
 {
-	float m_lag, m_b1, m_y1;
+	float m_lag;
+	double m_b1, m_y1;
 };
 
 struct Lag2 : public Unit
 {
-	float m_lag, m_b1, m_y1a, m_y1b;
+	float m_lag;
+	double m_b1, m_y1a, m_y1b;
 };
 
 struct Lag3 : public Unit
 {
-	float m_lag, m_b1, m_y1a, m_y1b, m_y1c;
+	float m_lag;
+	double m_b1, m_y1a, m_y1b, m_y1c;
 };
 
 struct LagUD : public Unit
 {
-	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1;
+	float m_lagu, m_lagd;
+	double m_b1u, m_b1d, m_y1;
 };
 
 struct Lag2UD : public Unit
 {
-	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1a, m_y1b;
+	float m_lagu, m_lagd;
+	double m_b1u, m_b1d, m_y1a, m_y1b;
 };
 
 struct Lag3UD : public Unit
 {
-	float m_lagu, m_lagd, m_b1u, m_b1d, m_y1a, m_y1b, m_y1c;
+	float m_lagu, m_lagd;
+	double m_b1u, m_b1d, m_y1a, m_y1b, m_y1c;
 };
 
 struct VarLag : public Unit
@@ -82,28 +88,31 @@ struct VarLag : public Unit
 
 struct OnePole : public Unit
 {
-	float m_b1, m_y1;
+	double m_b1, m_y1;
 };
 
 struct OneZero : public Unit
 {
-	float m_b1, m_x1;
+	double m_b1, m_x1;
 };
 
 struct Integrator : public Unit
 {
-	float m_b1, m_y1;
+	double m_b1, m_y1;
 };
 
 struct Decay : public Unit
 {
-	float m_decayTime, m_y1, m_b1;
+	float m_decayTime;
+	double m_y1, m_b1;
 };
 
 struct Decay2 : public Unit
 {
-	float m_attackTime, m_y1a, m_b1a;
-	float m_decayTime, m_y1b, m_b1b;
+	float m_attackTime;
+	double m_y1a, m_b1a;
+	float m_decayTime;
+	double m_y1b, m_b1b;
 };
 
 struct LeakDC : public Unit
@@ -113,47 +122,50 @@ struct LeakDC : public Unit
 
 struct TwoPole : public Unit
 {
-	float m_y1, m_y2, m_b1, m_b2, m_freq, m_reson;
+	float m_freq, m_reson;
+	double m_y1, m_y2, m_b1, m_b2;
 };
 
 struct APF : public Unit
 {
-	float m_y1, m_y2, m_x1, m_x2, m_b1, m_b2, m_freq, m_reson;
+	float m_freq, m_reson;
+	double m_y1, m_y2, m_x1, m_x2, m_b1, m_b2;
 };
 
 struct TwoZero : public Unit
 {
-	float m_x1, m_x2, m_b1, m_b2, m_freq, m_reson;
+	float m_freq, m_reson;
+	double m_x1, m_x2, m_b1, m_b2;
 };
 
 struct LPZ1 : public Unit
 {
-	float m_x1;
+	double m_x1;
 };
 
 struct HPZ1 : public Unit
 {
-	float m_x1;
+	double m_x1;
 };
 
 struct HPZ2 : public Unit
 {
-	float m_x1, m_x2;
+	double m_x1, m_x2;
 };
 
 struct BPZ2 : public Unit
 {
-	float m_x1, m_x2;
+	double m_x1, m_x2;
 };
 
 struct BRZ2 : public Unit
 {
-	float m_x1, m_x2;
+	double m_x1, m_x2;
 };
 
 struct LPZ2 : public Unit
 {
-	float m_x1, m_x2;
+	double m_x1, m_x2;
 };
 
 struct Flip : public Unit
@@ -172,76 +184,83 @@ struct Delay2 : public Unit
 
 struct Slope : public Unit
 {
-	float m_x1;
+	double m_x1;
 };
 
 struct Slew : public Unit
 {
-	float mLevel;
+	double mLevel;
 };
 
 struct RLPF : public Unit
 {
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq, m_reson;
+	float m_freq, m_reson;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
 };
 
 struct RHPF : public Unit
 {
-	double m_y1, m_y2, m_a0, m_b1, m_b2;
 	float m_freq, m_reson;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
 };
 
 struct LPF : public Unit
 {
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq;
+	float m_freq;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
 };
 
 struct HPF : public Unit
 {
-	double m_y1, m_y2, m_a0, m_b1, m_b2;
 	float m_freq;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
 };
 
 struct BPF : public Unit
 {
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq, m_bw;
+	float m_freq, m_bw;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
 };
 
 struct BRF : public Unit
 {
-	float m_y1, m_y2, m_a0, m_a1, m_b2, m_freq, m_bw;
+	float m_freq, m_bw;
+	double m_y1, m_y2, m_a0, m_a1, m_b2;
 };
 
 struct MidEQ : public Unit
 {
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq, m_bw, m_db;
+	float m_freq, m_bw, m_db;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
 };
 
 struct Resonz : public Unit
 {
-	float m_y1, m_y2, m_a0, m_b1, m_b2, m_freq, m_rq;
+	float m_freq, m_rq;
+	double m_y1, m_y2, m_a0, m_b1, m_b2;
 };
 
 struct Ringz : public Unit
 {
-	float m_y1, m_y2, m_b1, m_b2, m_freq, m_decayTime;
+	float m_freq, m_decayTime;
+	double m_y1, m_y2, m_b1, m_b2;
 };
 
 struct FOS : public Unit
 {
-	float m_y1, m_a0, m_a1, m_b1;
+	double m_y1, m_a0, m_a1, m_b1;
 };
 
 struct SOS : public Unit
 {
-	float m_y1, m_y2, m_a0, m_a1, m_a2, m_b1, m_b2;
+	double m_y1, m_y2, m_a0, m_a1, m_a2, m_b1, m_b2;
 };
 
 struct Formlet : public Unit
 {
 	float m_freq, m_decayTime, m_attackTime;
-	float m_y01, m_y02, m_b01, m_b02;
-	float m_y11, m_y12, m_b11, m_b12;
+	double m_y01, m_y02, m_b01, m_b02;
+	double m_y11, m_y12, m_b11, m_b12;
 };
 
 const int kMAXMEDIANSIZE = 32;
@@ -286,8 +305,8 @@ struct DetectSilence : public Unit
 
 struct Hilbert : public Unit
 {
-	float m_coefs[12];
-	float m_y1[12];
+	double m_coefs[12];
+	double m_y1[12];
 };
 
 struct FreqShift : public Unit
@@ -305,7 +324,7 @@ struct MoogFF : public Unit
 	float m_freq, m_b0, m_a1; // Resonant freq and corresponding vals; stored because we need to compare against prev vals
 	double m_wcD;
 
-	float m_s1, m_s2, m_s3, m_s4; // 1st order filter states
+	double m_s1, m_s2, m_s3, m_s4; // 1st order filter states
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -562,22 +581,21 @@ void Lag_next(Lag *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float lag = ZIN0(1);
 
-
-	float y1 = unit->m_y1;
-	float b1 = unit->m_b1;
+	double y1 = unit->m_y1;
+	double b1 = unit->m_b1;
 
 	if (lag == unit->m_lag) {
 		LOOP1(inNumSamples,
-			float y0 = ZXP(in);
+			double y0 = ZXP(in);
 			ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 		);
 	} else {
 		unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
-		float b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		unit->m_lag = lag;
 		LOOP1(inNumSamples,
 			b1 += b1_slope;
-			float y0 = ZXP(in);
+			double y0 = ZXP(in);
 			ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 		);
 	}
@@ -590,16 +608,16 @@ void Lag_next_1(Lag *unit, int inNumSamples)
 	float *in = IN(0);
 	float lag = IN0(1);
 
-	float y1 = unit->m_y1;
-	float b1 = unit->m_b1;
+	double y1 = unit->m_y1;
+	double b1 = unit->m_b1;
 
 	if (lag == unit->m_lag) {
-		float y0 = *in;
+		double y0 = *in;
 		*out = y1 = y0 + b1 * (y1 - y0);
 	} else {
 		unit->m_b1 = b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
-		float y0 = *in;
+		double y0 = *in;
 		*out = y1 = y0 + b1 * (y1 - y0);
 	}
 	unit->m_y1 = zapgremlins(y1);
@@ -626,13 +644,13 @@ void LagUD_next(LagUD *unit, int inNumSamples)
 	float lagu = ZIN0(1);
 	float lagd = ZIN0(2);
 
-	float y1 = unit->m_y1;
-	float b1u = unit->m_b1u;
-	float b1d = unit->m_b1d;
+	double y1 = unit->m_y1;
+	double b1u = unit->m_b1u;
+	double b1d = unit->m_b1d;
 
 	if ( (lagu == unit->m_lagu) && (lagd == unit->m_lagd) ) {
 		LOOP1(inNumSamples,
-			float y0 = ZXP(in);
+			double y0 = ZXP(in);
 			if ( y0 > y1 )
 				ZXP(out) = y1 = y0 + b1u * (y1 - y0);
 			else
@@ -640,15 +658,15 @@ void LagUD_next(LagUD *unit, int inNumSamples)
 		);
 	} else {
 		unit->m_b1u = lagu == 0.f ? 0.f : exp(log001 / (lagu * unit->mRate->mSampleRate));
-		float b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
+		double b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
 		unit->m_lagu = lagu;
 		unit->m_b1d = lagd == 0.f ? 0.f : exp(log001 / (lagd * unit->mRate->mSampleRate));
-		float b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
+		double b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
 		unit->m_lagd = lagd;
 		LOOP1(inNumSamples,
 			b1u += b1u_slope;
 			b1d += b1d_slope;
-			float y0 = ZXP(in);
+			double y0 = ZXP(in);
 			if ( y0 > y1 )
 				ZXP(out) = y1 = y0 + b1u * (y1 - y0);
 			else
@@ -678,24 +696,24 @@ static void Lag2_next_k(Lag2 *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float lag = ZIN0(1);
 
-	float y1a = unit->m_y1a;
-	float y1b = unit->m_y1b;
-	float b1 = unit->m_b1;
+	double y1a = unit->m_y1a;
+	double y1b = unit->m_y1b;
+	double b1 = unit->m_b1;
 
 	if (lag == unit->m_lag) {
 		LOOP1(inNumSamples,
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			y1a = y0a + b1 * (y1a - y0a);
 			y1b = y1a + b1 * (y1b - y1a);
 			ZXP(out) = y1b;
 		);
 	} else {
 		unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
-		float b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		unit->m_lag = lag;
 		LOOP1(inNumSamples,
 			b1 += b1_slope;
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			y1a = y0a + b1 * (y1a - y0a);
 			y1b = y1a + b1 * (y1b - y1a);
 			ZXP(out) = y1b;
@@ -710,12 +728,12 @@ static void Lag2_next_i(Lag2 *unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float y1a = unit->m_y1a;
-	float y1b = unit->m_y1b;
-	float b1 = unit->m_b1;
+	double y1a = unit->m_y1a;
+	double y1b = unit->m_y1b;
+	double b1 = unit->m_b1;
 
 	LOOP1(inNumSamples,
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			y1a = y0a + b1 * (y1a - y0a);
 			y1b = y1a + b1 * (y1b - y1a);
 			ZXP(out) = y1b;
@@ -726,9 +744,9 @@ static void Lag2_next_i(Lag2 *unit, int inNumSamples)
 
 static void Lag2_next_1_i(Lag2 *unit, int inNumSamples)
 {
-	float y1a = unit->m_y1a;
-	float y1b = unit->m_y1b;
-	float b1 = unit->m_b1;
+	double y1a = unit->m_y1a;
+	double y1b = unit->m_y1b;
+	double b1 = unit->m_b1;
 
 	float y0a = ZIN0(0);
 	y1a = y0a + b1 * (y1a - y0a);
@@ -770,14 +788,14 @@ void Lag2UD_next(Lag2UD *unit, int inNumSamples)
 	float lagu = ZIN0(1);
 	float lagd = ZIN0(2);
 
-	float y1a = unit->m_y1a;
-	float y1b = unit->m_y1b;
-	float b1u = unit->m_b1u;
-	float b1d = unit->m_b1d;
+	double y1a = unit->m_y1a;
+	double y1b = unit->m_y1b;
+	double b1u = unit->m_b1u;
+	double b1d = unit->m_b1d;
 
 	if ( (lagu == unit->m_lagu) && (lagd == unit->m_lagd) ) {
 		LOOP1(inNumSamples,
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			if ( y0a > y1a ) {
 				y1a = y0a + b1u * (y1a - y0a);
 			} else {
@@ -791,15 +809,15 @@ void Lag2UD_next(Lag2UD *unit, int inNumSamples)
 		);
 	} else {
 		unit->m_b1u = lagu == 0.f ? 0.f : exp(log001 / (lagu * unit->mRate->mSampleRate));
-		float b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
+		double b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
 		unit->m_lagu = lagu;
 		unit->m_b1d = lagd == 0.f ? 0.f : exp(log001 / (lagd * unit->mRate->mSampleRate));
-		float b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
+		double b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
 		unit->m_lagd = lagd;
 		LOOP1(inNumSamples,
 			b1u += b1u_slope;
 			b1d += b1d_slope;
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			if ( y0a > y1a ) {
 				y1a = y0a + b1u * (y1a - y0a);
 			} else {
@@ -836,14 +854,14 @@ void Lag3_next(Lag3 *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float lag = ZIN0(1);
 
-	float y1a = unit->m_y1a;
-	float y1b = unit->m_y1b;
-	float y1c = unit->m_y1c;
-	float b1 = unit->m_b1;
+	double y1a = unit->m_y1a;
+	double y1b = unit->m_y1b;
+	double y1c = unit->m_y1c;
+	double b1 = unit->m_b1;
 
 	if (lag == unit->m_lag) {
 		LOOP1(inNumSamples,
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			y1a = y0a + b1 * (y1a - y0a);
 			y1b = y1a + b1 * (y1b - y1a);
 			y1c = y1b + b1 * (y1c - y1b);
@@ -851,11 +869,11 @@ void Lag3_next(Lag3 *unit, int inNumSamples)
 		);
 	} else {
 		unit->m_b1 = lag == 0.f ? 0.f : exp(log001 / (lag * unit->mRate->mSampleRate));
-		float b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		unit->m_lag = lag;
 		LOOP1(inNumSamples,
 			b1 += b1_slope;
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			y1a = y0a + b1 * (y1a - y0a);
 			y1b = y1a + b1 * (y1b - y1a);
 			y1c = y1b + b1 * (y1c - y1b);
@@ -886,15 +904,15 @@ void Lag3UD_next(Lag3UD *unit, int inNumSamples)
 	float lagu = ZIN0(1);
 	float lagd = ZIN0(2);
 
-	float y1a = unit->m_y1a;
-	float y1b = unit->m_y1b;
-	float y1c = unit->m_y1c;
-	float b1u = unit->m_b1u;
-	float b1d = unit->m_b1d;
+	double y1a = unit->m_y1a;
+	double y1b = unit->m_y1b;
+	double y1c = unit->m_y1c;
+	double b1u = unit->m_b1u;
+	double b1d = unit->m_b1d;
 
 	if ( (lagu == unit->m_lagu) && (lagd == unit->m_lagd) ) {
 		LOOP1(inNumSamples,
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			if ( y0a > y1a ) {
 				y1a = y0a + b1u * (y1a - y0a);
 			} else {
@@ -914,15 +932,15 @@ void Lag3UD_next(Lag3UD *unit, int inNumSamples)
 		);
 	} else {
 		unit->m_b1u = lagu == 0.f ? 0.f : exp(log001 / (lagu * unit->mRate->mSampleRate));
-		float b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
+		double b1u_slope = CALCSLOPE(unit->m_b1u, b1u);
 		unit->m_lagu = lagu;
 		unit->m_b1d = lagd == 0.f ? 0.f : exp(log001 / (lagd * unit->mRate->mSampleRate));
-		float b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
+		double b1d_slope = CALCSLOPE(unit->m_b1d, b1d);
 		unit->m_lagd = lagd;
 		LOOP1(inNumSamples,
 			b1u += b1u_slope;
 			b1d += b1d_slope;
-			float y0a = ZXP(in);
+			double y0a = ZXP(in);
 			if ( y0a > y1a ) {
 				y1a = y0a + b1u * (y1a - y0a);
 			} else {
@@ -1066,11 +1084,11 @@ void OnePole_next_a(OnePole *unit, int inNumSamples)
 	float *in = ZIN(0);
 	float *b1p = ZIN(1);
 
-	float y1 = unit->m_y1;
+	double y1 = unit->m_y1;
 
 	LOOP1(inNumSamples,
-		float y0 = ZXP(in);
-		float b1 = ZXP(b1p);
+		double y0 = ZXP(in);
+		double b1 = ZXP(b1p);
 		ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 	);
 	unit->m_y1 = zapgremlins(y1);
@@ -1082,40 +1100,40 @@ void OnePole_next_k(OnePole *unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float b1 = unit->m_b1;
+	double b1 = unit->m_b1;
 	unit->m_b1 = ZIN0(1);
 
-	float y1 = unit->m_y1;
+	double y1 = unit->m_y1;
 
 	if (b1 == unit->m_b1) {
 		if (b1 >= 0.f) {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 			);
 		} else {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0 + b1 * (y1 + y0);
 			);
 		}
 	} else {
-		float b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		if (b1 >= 0.f && unit->m_b1 >= 0) {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0 + b1 * (y1 - y0);
 				b1 += b1_slope;
 			);
 		} else if (b1 <= 0.f && unit->m_b1 <= 0) {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0 + b1 * (y1 + y0);
 				b1 += b1_slope;
 			);
 		} else {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = (1.f - std::abs(b1)) * y0 + b1 * y1;
 				b1 += b1_slope;
 			);
@@ -1153,43 +1171,43 @@ void OneZero_next(OneZero* unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float b1 = unit->m_b1;
+	double b1 = unit->m_b1;
 	unit->m_b1 = ZIN0(1);
 
-	float x1 = unit->m_x1;
+	double x1 = unit->m_x1;
 	if (b1 == unit->m_b1) {
 		if (b1 >= 0.f) {
 			LOOP1(inNumSamples,
-				float x0 = ZXP(in);
+				double x0 = ZXP(in);
 				ZXP(out) = x0 + b1 * (x1 - x0);
 				x1 = x0;
 			);
 		} else {
 			LOOP1(inNumSamples,
-				float x0 = ZXP(in);
+				double x0 = ZXP(in);
 				ZXP(out) = x0 + b1 * (x1 + x0);
 				x1 = x0;
 			);
 		}
 	} else {
-		float b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		if (b1 >= 0.f && unit->m_b1 >= 0) {
 			LOOP1(inNumSamples,
-				float x0 = ZXP(in);
+				double x0 = ZXP(in);
 				ZXP(out) = x0 + b1 * (x1 - x0);
 				x1 = x0;
 				b1 += b1_slope;
 			);
 		} else if (b1 <= 0.f && unit->m_b1 <= 0) {
 			LOOP1(inNumSamples,
-				float x0 = ZXP(in);
+				double x0 = ZXP(in);
 				ZXP(out) = x0 + b1 * (x1 + x0);
 				x1 = x0;
 				b1 += b1_slope;
 			);
 		} else {
 			LOOP1(inNumSamples,
-				float x0 = ZXP(in);
+				double x0 = ZXP(in);
 				ZXP(out) = (1.f - std::abs(b1)) * x0 + b1 * x1;
 				x1 = x0;
 				b1 += b1_slope;
@@ -1216,32 +1234,32 @@ void Integrator_next(Integrator* unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float b1 = unit->m_b1;
+	double b1 = unit->m_b1;
 	unit->m_b1 = ZIN0(1);
 
-	float y1 = unit->m_y1;
+	double y1 = unit->m_y1;
 
 	if (b1 == unit->m_b1) {
 		if (b1 == 1.f) {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0 + y1;
 			);
 		} else if (b1 == 0.f) {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0;
 			);
 		} else {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0 + b1 * y1;
 			);
 		}
 	} else {
-		float b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		LOOP1(inNumSamples,
-			float y0 = ZXP(in);
+			double y0 = ZXP(in);
 			ZXP(out) = y1 = y0 + b1 * y1;
 			b1 += b1_slope;
 		);
@@ -1268,27 +1286,27 @@ void Decay_next(Decay* unit, int inNumSamples)
 	float *in = ZIN(0);
 	float decayTime = ZIN0(1);
 
-	float y1 = unit->m_y1;
-	float b1 = unit->m_b1;
+	double y1 = unit->m_y1;
+	double b1 = unit->m_b1;
 	if (decayTime == unit->m_decayTime) {
 		if (b1 == 0.f) {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0;
 			);
 		} else {
 			LOOP1(inNumSamples,
-				float y0 = ZXP(in);
+				double y0 = ZXP(in);
 				ZXP(out) = y1 = y0 + b1 * y1;
 			);
 		}
 	} else {
 		unit->m_b1 = decayTime == 0.f ? 0.f : exp(log001 / (decayTime * SAMPLERATE));
 		unit->m_decayTime = decayTime;
-		float b1_slope = CALCSLOPE(unit->m_b1, b1);
+		double b1_slope = CALCSLOPE(unit->m_b1, b1);
 		//printf("decayTime %g  %g %g\n", unit->m_decayTime, next_b1, b1);
 		LOOP1(inNumSamples,
-			float y0 = ZXP(in);
+			double y0 = ZXP(in);
 			ZXP(out) = y1 = y0 + b1 * y1;
 			b1 += b1_slope;
 		);
@@ -1325,13 +1343,13 @@ void Decay2_next(Decay2* unit, int inNumSamples)
 	float attackTime = ZIN0(1);
 	float decayTime = ZIN0(2);
 
-	float y1a = unit->m_y1a;
-	float y1b = unit->m_y1b;
-	float b1a = unit->m_b1a;
-	float b1b = unit->m_b1b;
+	double y1a = unit->m_y1a;
+	double y1b = unit->m_y1b;
+	double b1a = unit->m_b1a;
+	double b1b = unit->m_b1b;
 	if (decayTime == unit->m_decayTime && attackTime == unit->m_attackTime) {
 		LOOP1(inNumSamples,
-			float y0 = ZXP(in);
+			double y0 = ZXP(in);
 			y1a = y0 + b1a * y1a;
 			y1b = y0 + b1b * y1b;
 			ZXP(out) = y1a - y1b;
@@ -1339,15 +1357,15 @@ void Decay2_next(Decay2* unit, int inNumSamples)
 	} else {
 		unit->m_decayTime = decayTime;
 		unit->m_attackTime = attackTime;
-		float next_b1a = decayTime  == 0.f ? 0.f : exp(log001 / (decayTime * SAMPLERATE));
-		float next_b1b = attackTime == 0.f ? 0.f : exp(log001 / (attackTime * SAMPLERATE));
+		double next_b1a = decayTime  == 0.f ? 0.f : exp(log001 / (decayTime * SAMPLERATE));
+		double next_b1b = attackTime == 0.f ? 0.f : exp(log001 / (attackTime * SAMPLERATE));
 		unit->m_decayTime = decayTime;
-		float b1a_slope = CALCSLOPE(next_b1a, b1a);
-		float b1b_slope = CALCSLOPE(next_b1b, b1b);
+		double b1a_slope = CALCSLOPE(next_b1a, b1a);
+		double b1b_slope = CALCSLOPE(next_b1b, b1b);
 		unit->m_b1a = next_b1a;
 		unit->m_b1b = next_b1b;
 		LOOP1(inNumSamples,
-			float y0 = ZXP(in);
+			double y0 = ZXP(in);
 			y1a = y0 + b1a * y1a;
 			y1b = y0 + b1b * y1b;
 			ZXP(out) = y1a - y1b;
@@ -1501,17 +1519,17 @@ void TwoPole_next(TwoPole* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float reson = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
-		float b1 = unit->m_b1;
-		float b2 = unit->m_b2;
-		float b1_next = 2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
-		float b2_next = -(reson * reson);
-		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
+		double b1 = unit->m_b1;
+		double b2 = unit->m_b2;
+		double b1_next = 2 * reson * cos(freq * unit->mRate->mRadiansPerSample);
+		double b2_next = -(reson * reson);
+		double b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			ZXP(out) = y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = y2 = ZXP(in) + b1 * y0 + b2 * y1;
@@ -1531,8 +1549,8 @@ void TwoPole_next(TwoPole* unit, int inNumSamples)
 		unit->m_b1 = b1;
 		unit->m_b2 = b2;
 	} else {
-		float b1 = unit->m_b1;
-		float b2 = unit->m_b2;
+		double b1 = unit->m_b1;
+		double b2 = unit->m_b2;
 		LOOP(unit->mRate->mFilterLoops,
 			ZXP(out) = y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = y2 = ZXP(in) + b1 * y0 + b2 * y1;
@@ -1576,17 +1594,17 @@ void TwoZero_next(TwoZero* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float reson = ZIN0(2);
 
-	float x0;
-	float x1 = unit->m_x1;
-	float x2 = unit->m_x2;
+	double x0;
+	double x1 = unit->m_x1;
+	double x2 = unit->m_x2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
-		float b1 = unit->m_b1;
-		float b2 = unit->m_b2;
-		float b1_next = -2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
-		float b2_next = (reson * reson);
-		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
+		double b1 = unit->m_b1;
+		double b2 = unit->m_b2;
+		double b1_next = -2 * reson * cos(freq * unit->mRate->mRadiansPerSample);
+		double b2_next = (reson * reson);
+		double b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			x0 = ZXP(in);
 			ZXP(out) = x0 + b1 * x1 + b2 * x2;
@@ -1610,8 +1628,8 @@ void TwoZero_next(TwoZero* unit, int inNumSamples)
 		unit->m_b1 = b1;
 		unit->m_b2 = b2;
 	} else {
-		float b1 = unit->m_b1;
-		float b2 = unit->m_b2;
+		double b1 = unit->m_b1;
+		double b2 = unit->m_b2;
 		LOOP(unit->mRate->mFilterLoops,
 			x0 = ZXP(in);
 			ZXP(out) = x0 + b1 * x1 + b2 * x2;
@@ -1662,19 +1680,19 @@ void APF_next(APF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float reson = ZIN0(2);
 
-	float x0, y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float x1 = unit->m_x1;
-	float x2 = unit->m_x2;
+	double x0, y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double x1 = unit->m_x1;
+	double x2 = unit->m_x2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
-		float b1 = unit->m_b1;
-		float b2 = unit->m_b2;
-		float b1_next = 2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
-		float b2_next = -(reson * reson);
-		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
+		double b1 = unit->m_b1;
+		double b2 = unit->m_b2;
+		double b1_next = 2.f * reson * cos(freq * unit->mRate->mRadiansPerSample);
+		double b2_next = -(reson * reson);
+		double b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			x0 = ZXP(in);
 			ZXP(out) = y0 = x0 + b1 * (y1 - x1) + b2 * (y2 - x2);
@@ -1700,8 +1718,8 @@ void APF_next(APF* unit, int inNumSamples)
 		unit->m_b1 = b1;
 		unit->m_b2 = b2;
 	} else {
-		float b1 = unit->m_b1;
-		float b2 = unit->m_b2;
+		double b1 = unit->m_b1;
+		double b2 = unit->m_b2;
 		LOOP(unit->mRate->mFilterLoops,
 			float in0 = ZXP(in);
 			float in1 = ZXP(in);
@@ -1749,18 +1767,18 @@ void LPZ1_next(LPZ1* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float x0;
-	float x1 = unit->m_x1;
+	double x0;
+	double x1 = unit->m_x1;
 
 	LOOP(inNumSamples >> 2,
 		x0 = ZXP(in);
-		float out0 = 0.5f * (x0 + x1);
+		float out0 = 0.5 * (x0 + x1);
 		x1 = ZXP(in);
-		float out1 = 0.5f * (x1 + x0);
+		float out1 = 0.5 * (x1 + x0);
 		x0 = ZXP(in);
-		float out2 = 0.5f * (x0 + x1);
+		float out2 = 0.5 * (x0 + x1);
 		x1 = ZXP(in);
-		float out3 = 0.5f * (x1 + x0);
+		float out3 = 0.5 * (x1 + x0);
 
 		ZXP(out) = out0;
 		ZXP(out) = out1;
@@ -1769,7 +1787,7 @@ void LPZ1_next(LPZ1* unit, int inNumSamples)
 	);
 	LOOP(inNumSamples & 3,
 		x0 = ZXP(in);
-		ZXP(out) = 0.5f * (x0 + x1);
+		ZXP(out) = 0.5 * (x0 + x1);
 		x1 = x0;
 	);
 
@@ -1795,18 +1813,18 @@ void HPZ1_next(HPZ1* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float x0;
-	float x1 = unit->m_x1;
+	double x0;
+	double x1 = unit->m_x1;
 
 	LOOP(inNumSamples >> 2,
 		x0 = ZXP(in);
-		float out0 = 0.5f * (x0 - x1);
+		float out0 = 0.5 * (x0 - x1);
 		x1 = ZXP(in);
-		float out1 = 0.5f * (x1 - x0);
+		float out1 = 0.5 * (x1 - x0);
 		x0 = ZXP(in);
-		float out2 = 0.5f * (x0 - x1);
+		float out2 = 0.5 * (x0 - x1);
 		x1 = ZXP(in);
-		float out3 = 0.5f * (x1 - x0);
+		float out3 = 0.5 * (x1 - x0);
 
 		ZXP(out) = out0;
 		ZXP(out) = out1;
@@ -1842,11 +1860,11 @@ void Slope_next(Slope* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float x1 = unit->m_x1;
+	double x1 = unit->m_x1;
 
-	float sr = SAMPLERATE;
+	double sr = SAMPLERATE;
 	LOOP1(inNumSamples,
-		float x0 = ZXP(in);
+		double x0 = ZXP(in);
 		ZXP(out) = sr * (x0 - x1);
 		x1 = x0;
 	);
@@ -1954,9 +1972,9 @@ void Delay2_next(Delay2* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float x0;
-	float x1 = unit->m_x1;
-	float x2 = unit->m_x2;
+	double x0;
+	double x1 = unit->m_x1;
+	double x2 = unit->m_x2;
 
 	LOOP(unit->mRate->mFilterLoops,
 		x0 = ZXP(in);
@@ -1998,17 +2016,17 @@ void LPZ2_next(LPZ2* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float x0;
-	float x1 = unit->m_x1;
-	float x2 = unit->m_x2;
+	double x0;
+	double x1 = unit->m_x1;
+	double x2 = unit->m_x2;
 
 	LOOP(unit->mRate->mFilterLoops,
 		x0 = ZXP(in);
-		float out0  = (x0 + 2.f * x1 + x2) * 0.25f;
+		float out0  = (x0 + 2.0 * x1 + x2) * 0.25;
 		x2 = ZXP(in);
-		float out1 = (x2 + 2.f * x0 + x1) * 0.25f;
+		float out1 = (x2 + 2.0 * x0 + x1) * 0.25;
 		x1 = ZXP(in);
-		float out2 = (x1 + 2.f * x2 + x0) * 0.25f;
+		float out2 = (x1 + 2.0 * x2 + x0) * 0.25;
 
 		ZXP(out) = out0;
 		ZXP(out) = out1;
@@ -2016,7 +2034,7 @@ void LPZ2_next(LPZ2* unit, int inNumSamples)
 	);
 	LOOP(unit->mRate->mFilterRemain,
 		x0 = ZXP(in);
-		ZXP(out) = (x0 + 2.f * x1 + x2) * 0.25f;
+		ZXP(out) = (x0 + 2. * x1 + x2) * 0.25;
 		x2 = x1;
 		x1 = x0;
 	);
@@ -2045,24 +2063,24 @@ void HPZ2_next(HPZ2* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float x0;
-	float x1 = unit->m_x1;
-	float x2 = unit->m_x2;
+	double x0;
+	double x1 = unit->m_x1;
+	double x2 = unit->m_x2;
 
 	LOOP(unit->mRate->mFilterLoops,
 		x0 = ZXP(in);
-		float out0 = (x0 - 2.f * x1 + x2) * 0.25f;
+		float out0 = (x0 - 2.0 * x1 + x2) * 0.25;
 		x2 = ZXP(in);
-		float out1 = (x2 - 2.f * x0 + x1) * 0.25f;
+		float out1 = (x2 - 2.0 * x0 + x1) * 0.25;
 		x1 = ZXP(in);
-		float out2 = (x1 - 2.f * x2 + x0) * 0.25f;
+		float out2 = (x1 - 2.0 * x2 + x0) * 0.25;
 		ZXP(out) = out0;
 		ZXP(out) = out1;
 		ZXP(out) = out2;
 	);
 	LOOP(unit->mRate->mFilterRemain,
 		x0 = ZXP(in);
-		ZXP(out) = (x0 - 2.f * x1 + x2) * 0.25f;
+		ZXP(out) = (x0 - 2.0 * x1 + x2) * 0.25;
 		x2 = x1;
 		x1 = x0;
 	);
@@ -2091,21 +2109,21 @@ void BPZ2_next(BPZ2* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float x0;
-	float x1 = unit->m_x1;
-	float x2 = unit->m_x2;
+	double x0;
+	double x1 = unit->m_x1;
+	double x2 = unit->m_x2;
 
 	LOOP(unit->mRate->mFilterLoops,
 		x0 = ZXP(in);
-		ZXP(out) = (x0 - x2) * 0.5f;
+		ZXP(out) = (x0 - x2) * 0.5;
 		x2 = ZXP(in);
-		ZXP(out) = (x2 - x1) * 0.5f;
+		ZXP(out) = (x2 - x1) * 0.5;
 		x1 = ZXP(in);
-		ZXP(out) = (x1 - x0) * 0.5f;
+		ZXP(out) = (x1 - x0) * 0.5;
 	);
 	LOOP(unit->mRate->mFilterRemain,
 		x0 = ZXP(in);
-		ZXP(out) = (x0 - x2) * 0.5f;
+		ZXP(out) = (x0 - x2) * 0.5;
 		x2 = x1;
 		x1 = x0;
 	);
@@ -2134,21 +2152,21 @@ void BRZ2_next(BRZ2* unit, int inNumSamples)
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
 
-	float x0;
-	float x1 = unit->m_x1;
-	float x2 = unit->m_x2;
+	double x0;
+	double x1 = unit->m_x1;
+	double x2 = unit->m_x2;
 
 	LOOP(unit->mRate->mFilterLoops,
 		x0 = ZXP(in);
-		ZXP(out) = (x0 + x2) * 0.5f;
+		ZXP(out) = (x0 + x2) * 0.5;
 		x2 = ZXP(in);
-		ZXP(out) = (x2 + x1) * 0.5f;
+		ZXP(out) = (x2 + x1) * 0.5;
 		x1 = ZXP(in);
-		ZXP(out) = (x1 + x0) * 0.5f;
+		ZXP(out) = (x1 + x0) * 0.5;
 	);
 	LOOP(unit->mRate->mFilterRemain,
 		x0 = ZXP(in);
-		ZXP(out) = (x0 + x2) * 0.5f;
+		ZXP(out) = (x0 + x2) * 0.5;
 		x2 = x1;
 		x1 = x0;
 	);
@@ -2177,9 +2195,9 @@ void Slew_next(Slew* unit, int inNumSamples)
 	float *in = ZIN(0);
 	float upf = ZIN0(1) * sampleDur;
 	float dnf = 0.f - ZIN0(2) * sampleDur;
-	float level = unit->mLevel;
+	double level = unit->mLevel;
 	LOOP1(inNumSamples,
-		float slope = ZXP(in) - level;
+		double slope = ZXP(in) - level;
 		level += sc_clip(slope, dnf, upf);
 		ZXP(out) = level;
 	);
@@ -2235,39 +2253,39 @@ void RLPF_next(RLPF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float reson = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
 
-		float qres = sc_max(0.001, reson);
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
+		double qres = sc_max(0.001, reson);
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
 
-		float D = tan(pfreq * qres * 0.5);
-		float C = ((1.f-D)/(1.f+D));
-		float cosf = cos(pfreq);
+		double D = tan(pfreq * qres * 0.5);
+		double C = ((1.0-D)/(1.0+D));
+		double cosf = cos(pfreq);
 
-		float next_b1 = (1.f + C) * cosf;
-		float next_b2 = -C;
-		float next_a0 = (1.f + C - next_b1) * .25;
+		double next_b1 = (1.0 + C) * cosf;
+		double next_b2 = -C;
+		double next_a0 = (1.0 + C - next_b1) * .25;
 		//post("%g %g %g   %g %g   %g %g %g   %g %g\n", *freq, pfreq, qres, D, C, cosf, next_b1, next_b2, next_a0, y1, y2);
 
-		float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-		float b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
+		double a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = y0 + 2.f * y1 + y2;
+			ZXP(out) = y0 + 2.0 * y1 + y2;
 
 			y2 = a0 * ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = y2 + 2.f * y0 + y1;
+			ZXP(out) = y2 + 2.0 * y0 + y1;
 
 			y1 = a0 * ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = y1 + 2.f * y2 + y0;
+			ZXP(out) = y1 + 2.0 * y2 + y0;
 
 			a0 += a0_slope;
 			b1 += b1_slope;
@@ -2275,7 +2293,7 @@ void RLPF_next(RLPF* unit, int inNumSamples)
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = y0 + 2.f * y1 + y2;
+			ZXP(out) = y0 + 2.0 * y1 + y2;
 			y2 = y1;
 			y1 = y0;
 		);
@@ -2288,17 +2306,17 @@ void RLPF_next(RLPF* unit, int inNumSamples)
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = y0 + 2.f * y1 + y2;
+			ZXP(out) = y0 + 2.0 * y1 + y2;
 
 			y2 = a0 * ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = y2 + 2.f * y0 + y1;
+			ZXP(out) = y2 + 2.0 * y0 + y1;
 
 			y1 = a0 * ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = y1 + 2.f * y2 + y0;
+			ZXP(out) = y1 + 2.0 * y2 + y0;
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = y0 + 2.f * y1 + y2;
+			ZXP(out) = y0 + 2.0 * y1 + y2;
 			y2 = y1;
 			y1 = y0;
 		);
@@ -2316,27 +2334,27 @@ void RLPF_next_1(RLPF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float reson = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
-		float qres = sc_max(0.001f, reson);
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
+		double qres = sc_max(0.001f, reson);
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
 
-		float D = tan(pfreq * qres * 0.5f);
-		float C = ((1.f-D)/(1.f+D));
-		float cosf = cos(pfreq);
+		double D = tan(pfreq * qres * 0.5f);
+		double C = ((1.f-D)/(1.f+D));
+		double cosf = cos(pfreq);
 
-		b1 = (1.f + C) * cosf;
+		b1 = (1.0 + C) * cosf;
 		b2 = -C;
-		a0 = (1.f + C - b1) * .25f;
+		a0 = (1.0 + C - b1) * .25;
 
 		y0 = a0 * in + b1 * y1 + b2 * y2;
-		ZOUT0(0) = y0 + 2.f * y1 + y2;
+		ZOUT0(0) = y0 + 2.0 * y1 + y2;
 		y2 = y1;
 		y1 = y0;
 
@@ -2347,7 +2365,7 @@ void RLPF_next_1(RLPF* unit, int inNumSamples)
 		unit->m_b2 = b2;
 	} else {
 		y0 = a0 * in + b1 * y1 + b2 * y2;
-		ZOUT0(0) = y0 + 2.f * y1 + y2;
+		ZOUT0(0) = y0 + 2.0 * y1 + y2;
 		y2 = y1;
 		y1 = y0;
 	}
@@ -2393,16 +2411,16 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
-		float qres = sc_max(0.001f, reson);
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
+		double qres = sc_max(0.001f, reson);
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
 
 		double D = tan(pfreq * qres * 0.5f);
-		double C = ((1.-D)/(1.+D));
+		double C = ((1.0-D)/(1.0+D));
 		double cosf = cos(pfreq);
 
-		double next_b1 = (1. + C) * cosf;
+		double next_b1 = (1.0 + C) * cosf;
 		double next_b2 = -C;
-		double next_a0 = (1. + C + next_b1) * .25;
+		double next_a0 = (1.0 + C + next_b1) * .25;
 
 		//post("%g %g %g   %g %g   %g %g %g   %g %g\n", *freq, pfreq, qres, D, C, cosf, next_b1, next_b2, next_a0, y1, y2);
 
@@ -2411,13 +2429,13 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = y0 - 2.f * y1 + y2;
+			ZXP(out) = y0 - 2.0 * y1 + y2;
 
 			y2 = a0 * ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = y2 - 2.f * y0 + y1;
+			ZXP(out) = y2 - 2.0 * y0 + y1;
 
 			y1 = a0 * ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = y1 - 2.f * y2 + y0;
+			ZXP(out) = y1 - 2.0 * y2 + y0;
 
 			a0 += a0_slope;
 			b1 += b1_slope;
@@ -2425,7 +2443,7 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = y0 - 2.f * y1 + y2;
+			ZXP(out) = y0 - 2.0 * y1 + y2;
 			y2 = y1;
 			y1 = y0;
 		);
@@ -2438,17 +2456,17 @@ void RHPF_next(RHPF* unit, int inNumSamples)
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = y0 - 2.f * y1 + y2;
+			ZXP(out) = y0 - 2.0 * y1 + y2;
 
 			y2 = a0 * ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = y2 - 2.f * y0 + y1;
+			ZXP(out) = y2 - 2.0 * y0 + y1;
 
 			y1 = a0 * ZXP(in) + b1 * y2 + b2 * y0;
-			ZXP(out) = y1 - 2.f * y2 + y0;
+			ZXP(out) = y1 - 2.0 * y2 + y0;
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			double y0 = a0 * ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = y0 - 2.f * y1 + y2;
+			ZXP(out) = y0 - 2.0 * y1 + y2;
 			y2 = y1;
 			y1 = y0;
 		);
@@ -2472,8 +2490,8 @@ void RHPF_next_1(RHPF* unit, int inNumSamples)
 	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || reson != unit->m_reson) {
-		float qres = sc_max(0.001f, reson);
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
+		double qres = sc_max(0.001f, reson);
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
 
 		double D = tan(pfreq * qres * 0.5f);
 		double C = ((1.-D)/(1.+D));
@@ -2484,7 +2502,7 @@ void RHPF_next_1(RHPF* unit, int inNumSamples)
 		a0 = (1. + C + b1) * .25;
 
 		double y0 = a0 * in + b1 * y1 + b2 * y2;
-		ZOUT0(0) = y0 - 2.f * y1 + y2;
+		ZOUT0(0) = y0 - 2.0 * y1 + y2;
 		y2 = y1;
 		y1 = y0;
 
@@ -2495,7 +2513,7 @@ void RHPF_next_1(RHPF* unit, int inNumSamples)
 		unit->m_b2 = b2;
 	} else {
 		double y0 = a0 * in + b1 * y1 + b2 * y2;
-		ZOUT0(0) = y0 - 2.f * y1 + y2;
+		ZOUT0(0) = y0 - 2.0 * y1 + y2;
 		y2 = y1;
 		y1 = y0;
 	}
@@ -2531,35 +2549,35 @@ void LPF_next(LPF* unit, int inNumSamples)
 	float *in = ZIN(0);
 	float freq = ZIN0(1);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq) {
 
-		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
+		double pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = 1.f / tan(pfreq);
-		float C2 = C * C;
-		float sqrt2C = C * sqrt2_f;
-		float next_a0 = 1.f / (1.f + sqrt2C + C2);
-		float next_b1 = -2.f * (1.f - C2) * next_a0 ;
-		float next_b2 = -(1.f - sqrt2C + C2) * next_a0;
+		double C = 1.f / tan(pfreq);
+		double C2 = C * C;
+		double sqrt2C = C * sqrt2_f;
+		double next_a0 = 1.f / (1.f + sqrt2C + C2);
+		double next_b1 = -2.f * (1.f - C2) * next_a0 ;
+		double next_b2 = -(1.f - sqrt2C + C2) * next_a0;
 
 		//post("%g %g %g   %g %g   %g %g %g   %g %g\n", *freq, pfreq, qres, D, C, cosf, next_b1, next_b2, next_a0, y1, y2);
 
-		float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-		float b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
+		double a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
+			ZXP(out) = a0 * (y0 + 2. * y1 + y2);
 
 			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			ZXP(out) = a0 * (y2 + 2.f * y0 + y1);
+			ZXP(out) = a0 * (y2 + 2. * y0 + y1);
 
 			y1 = ZXP(in) + b1 * y2 + b2 * y0;
 			ZXP(out) = a0 * (y1 + 2.f * y2 + y0);
@@ -2570,7 +2588,7 @@ void LPF_next(LPF* unit, int inNumSamples)
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
+			ZXP(out) = a0 * (y0 + 2. * y1 + y2);
 			y2 = y1;
 			y1 = y0;
 		);
@@ -2582,20 +2600,20 @@ void LPF_next(LPF* unit, int inNumSamples)
 	} else {
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			float out0 = a0 * (y0 + 2.f * y1 + y2);
+			float out0 = a0 * (y0 + 2. * y1 + y2);
 
 			y2 = ZXP(in) + b1 * y0 + b2 * y1;
-			float out1 = a0 * (y2 + 2.f * y0 + y1);
+			float out1 = a0 * (y2 + 2. * y0 + y1);
 
 			y1 = ZXP(in) + b1 * y2 + b2 * y0;
-			float out2 = a0 * (y1 + 2.f * y2 + y0);
+			float out2 = a0 * (y1 + 2. * y2 + y0);
 			ZXP(out) = out0;
 			ZXP(out) = out1;
 			ZXP(out) = out2;
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
-			ZXP(out) = a0 * (y0 + 2.f * y1 + y2);
+			ZXP(out) = a0 * (y0 + 2. * y1 + y2);
 			y2 = y1;
 			y1 = y0;
 		);
@@ -2610,26 +2628,26 @@ void LPF_next_1(LPF* unit, int inNumSamples)
 	float in = ZIN0(0);
 	float freq = ZIN0(1);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq) {
 
-		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
+		double pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
-		float C = 1.f / tan(pfreq);
-		float C2 = C * C;
-		float sqrt2C = C * sqrt2_f;
+		double C = 1.f / tan(pfreq);
+		double C2 = C * C;
+		double sqrt2C = C * sqrt2_f;
 		a0 = 1.f / (1.f + sqrt2C + C2);
 		b1 = -2.f * (1.f - C2) * a0 ;
 		b2 = -(1.f - sqrt2C + C2) * a0;
 
 		y0 = in + b1 * y1 + b2 * y2;
-		ZOUT0(0) = a0 * (y0 + 2.f * y1 + y2);
+		ZOUT0(0) = a0 * (y0 + 2. * y1 + y2);
 		y2 = y1;
 		y1 = y0;
 
@@ -2640,7 +2658,7 @@ void LPF_next_1(LPF* unit, int inNumSamples)
 	} else {
 
 		y0 = in + b1 * y1 + b2 * y2;
-		ZOUT0(0) = a0 * (y0 + 2.f * y1 + y2);
+		ZOUT0(0) = a0 * (y0 + 2. * y1 + y2);
 		y2 = y1;
 		y1 = y0;
 
@@ -2682,7 +2700,7 @@ void HPF_next(HPF* unit, int inNumSamples)
 	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq) {
-		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
+		double pfreq = freq * unit->mRate->mRadiansPerSample * 0.5;
 
 		double C = tan(pfreq);
 		double C2 = C * C;
@@ -2755,7 +2773,7 @@ void HPF_next_1(HPF* unit, int inNumSamples)
 	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq) {
-		float pfreq = freq * unit->mRate->mRadiansPerSample * 0.5f;
+		double pfreq = freq * unit->mRate->mRadiansPerSample * 0.5f;
 
 		double C = tan(pfreq);
 		double C2 = C * C;
@@ -2814,28 +2832,28 @@ void BPF_next(BPF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float bw = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || bw != unit->m_bw) {
 
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		float pbw   = bw   * pfreq * 0.5f;
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
+		double pbw   = bw   * pfreq * 0.5f;
 
-		float C = 1.f / tan(pbw);
-		float D = 2.f * cos(pfreq);
+		double C = 1.f / tan(pbw);
+		double D = 2.f * cos(pfreq);
 
-		float next_a0 = 1.f / (1.f + C);
-		float next_b1 = C * D * next_a0 ;
-		float next_b2 = (1.f - C) * next_a0;
+		double next_a0 = 1.f / (1.f + C);
+		double next_b1 = C * D * next_a0 ;
+		double next_b2 = (1.f - C) * next_a0;
 
-		float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-		float b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
+		double a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * (y0 - y2);
@@ -2892,24 +2910,24 @@ void BPF_next_1(BPF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float bw = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || bw != unit->m_bw) {
 
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		float pbw   = bw   * pfreq * 0.5;
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
+		double pbw   = bw   * pfreq * 0.5;
 
-		float C = 1.f / tan(pbw);
-		float D = 2.f * cos(pfreq);
+		double C = 1.f / tan(pbw);
+		double D = 2.f * cos(pfreq);
 
-		float a0 = 1.f / (1.f + C);
-		float b1 = C * D * a0 ;
-		float b2 = (1.f - C) * a0;
+		double a0 = 1.f / (1.f + C);
+		double b1 = C * D * a0 ;
+		double b2 = (1.f - C) * a0;
 
 		y0 = in + b1 * y1 + b2 * y2;
 		ZOUT0(0) = a0 * (y0 - y2);
@@ -2962,28 +2980,28 @@ void BRF_next(BRF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float bw = ZIN0(2);
 
-	float ay;
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float a1 = unit->m_a1;
-	float b2 = unit->m_b2;
+	double ay;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double a1 = unit->m_a1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || bw != unit->m_bw) {
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		float pbw   = bw   * pfreq * 0.5f;
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
+		double pbw   = bw   * pfreq * 0.5f;
 
-		float C = tan(pbw);
-		float D = 2.f * cos(pfreq);
+		double C = tan(pbw);
+		double D = 2.f * cos(pfreq);
 
-		float next_a0 = 1.f / (1.f + C);
-		float next_a1 = -D * next_a0;
-		float next_b2 = (1.f - C) * next_a0;
+		double next_a0 = 1.f / (1.f + C);
+		double next_a1 = -D * next_a0;
+		double next_b2 = (1.f - C) * next_a0;
 
-		float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-		float a1_slope = (next_a1 - a1) * unit->mRate->mFilterSlope;
-		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
+		double a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		double a1_slope = (next_a1 - a1) * unit->mRate->mFilterSlope;
+		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 
 		LOOP(unit->mRate->mFilterLoops,
 			ay = a1 * y1;
@@ -3051,24 +3069,24 @@ void BRF_next_1(BRF* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float bw = ZIN0(2);
 
-	float ay;
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float a1 = unit->m_a1;
-	float b2 = unit->m_b2;
+	double ay;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double a1 = unit->m_a1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || bw != unit->m_bw) {
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		float pbw   = bw   * pfreq * 0.5f;
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
+		double pbw   = bw   * pfreq * 0.5f;
 
-		float C = tan(pbw);
-		float D = 2.f * cos(pfreq);
+		double C = tan(pbw);
+		double D = 2.f * cos(pfreq);
 
-		float a0 = 1.f / (1.f + C);
-		float a1 = -D * a0;
-		float b2 = (1.f - C) * a0;
+		double a0 = 1.f / (1.f + C);
+		double a1 = -D * a0;
+		double b2 = (1.f - C) * a0;
 
 		ay = a1 * y1;
 		y0 = in - ay - b2 * y2;
@@ -3125,29 +3143,29 @@ void MidEQ_next(MidEQ* unit, int inNumSamples)
 	float bw = ZIN0(2);
 	float db = ZIN0(3);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 	if (freq != unit->m_freq || bw != unit->m_bw || db != unit->m_db) {
 
-		float amp = sc_dbamp(db) - 1.0f;
-		float pfreq = freq * unit->mRate->mRadiansPerSample;
-		float pbw   = bw   * pfreq * 0.5f;
+		double amp = sc_dbamp(db) - 1.0f;
+		double pfreq = freq * unit->mRate->mRadiansPerSample;
+		double pbw   = bw   * pfreq * 0.5f;
 
-		float C = 1.f / tan(pbw);
-		float D = 2.f * cos(pfreq);
+		double C = 1.f / tan(pbw);
+		double D = 2.f * cos(pfreq);
 
-		float next_a0 = 1.f / (1.f + C);
-		float next_b1 = C * D * next_a0 ;
-		float next_b2 = (1.f - C) * next_a0;
+		double next_a0 = 1.f / (1.f + C);
+		double next_b1 = C * D * next_a0 ;
+		double next_b2 = (1.f - C) * next_a0;
 		next_a0 *= amp;
-		float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-		float b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
-		float zin;
+		double a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+		double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
+		double zin;
 		LOOP(unit->mRate->mFilterLoops,
 			zin = ZXP(in);
 			y0 = zin + b1 * y1 + b2 * y2;
@@ -3180,7 +3198,7 @@ void MidEQ_next(MidEQ* unit, int inNumSamples)
 		unit->m_b1 = b1;
 		unit->m_b2 = b2;
 	} else {
-		float zin;
+		double zin;
 		LOOP(unit->mRate->mFilterLoops,
 			zin = ZXP(in);
 			y0 = zin + b1 * y1 + b2 * y2;
@@ -3311,26 +3329,26 @@ void Resonz_next(Resonz* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float rq = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || rq != unit->m_rq) {
-		float ffreq = freq * unit->mRate->mRadiansPerSample;
-		float B = ffreq * rq;
-		float R = 1.f - B * 0.5f;
-		float twoR = 2.f * R;
-		float R2 = R * R;
-		float cost = (twoR * cos(ffreq)) / (1.f + R2);
-		float b1_next = twoR * cost;
-		float b2_next = -R2;
-		float a0_next = (1.f - R2) * 0.5f;
-		float a0_slope = (a0_next - a0) * unit->mRate->mFilterSlope;
-		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
+		double ffreq = freq * unit->mRate->mRadiansPerSample;
+		double B = ffreq * rq;
+		double R = 1.f - B * 0.5f;
+		double twoR = 2.f * R;
+		double R2 = R * R;
+		double cost = (twoR * cos(ffreq)) / (1.f + R2);
+		double b1_next = twoR * cost;
+		double b2_next = -R2;
+		double a0_next = (1.f - R2) * 0.5f;
+		double a0_slope = (a0_next - a0) * unit->mRate->mFilterSlope;
+		double b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * (y0 - y2);
@@ -3407,23 +3425,23 @@ void Ringz_next(Ringz* unit, int inNumSamples)
 	float freq = ZIN0(1);
 	float decayTime = ZIN0(2);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = 0.5f;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = 0.5f;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
 
 	if (freq != unit->m_freq || decayTime != unit->m_decayTime) {
-		float ffreq = freq * unit->mRate->mRadiansPerSample;
-		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
-		float twoR = 2.f * R;
-		float R2 = R * R;
-		float cost = (twoR * cos(ffreq)) / (1.f + R2);
-		float b1_next = twoR * cost;
-		float b2_next = -R2;
-		float b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
-		float b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
+		double ffreq = freq * unit->mRate->mRadiansPerSample;
+		double R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
+		double twoR = 2.f * R;
+		double R2 = R * R;
+		double cost = (twoR * cos(ffreq)) / (1.f + R2);
+		double b1_next = twoR * cost;
+		double b2_next = -R2;
+		double b1_slope = (b1_next - b1) * unit->mRate->mFilterSlope;
+		double b2_slope = (b2_next - b2) * unit->mRate->mFilterSlope;
 		LOOP(unit->mRate->mFilterLoops,
 			y0 = ZXP(in) + b1 * y1 + b2 * y2;
 			ZXP(out) = a0 * (y0 - y2);
@@ -3505,55 +3523,55 @@ void Formlet_next(Formlet* unit, int inNumSamples)
 	float attackTime = ZIN0(2);
 	float decayTime = ZIN0(3);
 
-	float y00;
-	float y10;
-	float y01 = unit->m_y01;
-	float y11 = unit->m_y11;
-	float y02 = unit->m_y02;
-	float y12 = unit->m_y12;
+	double y00;
+	double y10;
+	double y01 = unit->m_y01;
+	double y11 = unit->m_y11;
+	double y02 = unit->m_y02;
+	double y12 = unit->m_y12;
 
-	float b01 = unit->m_b01;
-	float b11 = unit->m_b11;
-	float b02 = unit->m_b02;
-	float b12 = unit->m_b12;
-	float ain;
+	double b01 = unit->m_b01;
+	double b11 = unit->m_b11;
+	double b02 = unit->m_b02;
+	double b12 = unit->m_b12;
+	double ain;
 
 	if (freq != unit->m_freq || decayTime != unit->m_decayTime || attackTime != unit->m_attackTime) {
-		float ffreq = freq * unit->mRate->mRadiansPerSample;
+		double ffreq = freq * unit->mRate->mRadiansPerSample;
 
-		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
-		float twoR = 2.f * R;
-		float R2 = R * R;
-		float cost = (twoR * cos(ffreq)) / (1.f + R2);
-		float b01_next = twoR * cost;
-		float b02_next = -R2;
-		float b01_slope = (b01_next - b01) * unit->mRate->mFilterSlope;
-		float b02_slope = (b02_next - b02) * unit->mRate->mFilterSlope;
+		double R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
+		double twoR = 2.f * R;
+		double R2 = R * R;
+		double cost = (twoR * cos(ffreq)) / (1.f + R2);
+		double b01_next = twoR * cost;
+		double b02_next = -R2;
+		double b01_slope = (b01_next - b01) * unit->mRate->mFilterSlope;
+		double b02_slope = (b02_next - b02) * unit->mRate->mFilterSlope;
 
 		R = attackTime == 0.f ? 0.f : exp(log001/(attackTime * SAMPLERATE));
 		twoR = 2.f * R;
 		R2 = R * R;
 		cost = (twoR * cos(ffreq)) / (1.f + R2);
-		float b11_next = twoR * cost;
-		float b12_next = -R2;
-		float b11_slope = (b11_next - b11) * unit->mRate->mFilterSlope;
-		float b12_slope = (b12_next - b12) * unit->mRate->mFilterSlope;
+		double b11_next = twoR * cost;
+		double b12_next = -R2;
+		double b11_slope = (b11_next - b11) * unit->mRate->mFilterSlope;
+		double b12_slope = (b12_next - b12) * unit->mRate->mFilterSlope;
 
 		LOOP(unit->mRate->mFilterLoops,
 			ain = ZXP(in);
 			y00 = ain + b01 * y01 + b02 * y02;
 			y10 = ain + b11 * y11 + b12 * y12;
-			ZXP(out) = 0.25f * ((y00 - y02) - (y10 - y12));
+			ZXP(out) = 0.25 * ((y00 - y02) - (y10 - y12));
 
 			ain = ZXP(in);
 			y02 = ain + b01 * y00 + b02 * y01;
 			y12 = ain + b11 * y10 + b12 * y11;
-			ZXP(out) = 0.25f * ((y02 - y01) - (y12 - y11));
+			ZXP(out) = 0.25 * ((y02 - y01) - (y12 - y11));
 
 			ain = ZXP(in);
 			y01 = ain + b01 * y02 + b02 * y00;
 			y11 = ain + b11 * y12 + b12 * y10;
-			ZXP(out) = 0.25f * ((y01 - y00) - (y11 - y10));
+			ZXP(out) = 0.25 * ((y01 - y00) - (y11 - y10));
 
 			b01 += b01_slope;
 			b02 += b02_slope;
@@ -3564,7 +3582,7 @@ void Formlet_next(Formlet* unit, int inNumSamples)
 			ain = ZXP(in);
 			y00 = ain + b01 * y01 + b02 * y02;
 			y10 = ain + b11 * y11 + b12 * y12;
-			ZXP(out) = 0.25f * ((y00 - y02) - (y10 - y12));
+			ZXP(out) = 0.25 * ((y00 - y02) - (y10 - y12));
 			y02 = y01;
 			y01 = y00;
 			y12 = y11;
@@ -3583,23 +3601,23 @@ void Formlet_next(Formlet* unit, int inNumSamples)
 			ain = ZXP(in);
 			y00 = ain + b01 * y01 + b02 * y02;
 			y10 = ain + b11 * y11 + b12 * y12;
-			ZXP(out) = 0.25f * ((y00 - y02) - (y10 - y12));
+			ZXP(out) = 0.25 * ((y00 - y02) - (y10 - y12));
 
 			ain = ZXP(in);
 			y02 = ain + b01 * y00 + b02 * y01;
 			y12 = ain + b11 * y10 + b12 * y11;
-			ZXP(out) = 0.25f * ((y02 - y01) - (y12 - y11));
+			ZXP(out) = 0.25 * ((y02 - y01) - (y12 - y11));
 
 			ain = ZXP(in);
 			y01 = ain + b01 * y02 + b02 * y00;
 			y11 = ain + b11 * y12 + b12 * y10;
-			ZXP(out) = 0.25f * ((y01 - y00) - (y11 - y10));
+			ZXP(out) = 0.25 * ((y01 - y00) - (y11 - y10));
 		);
 		LOOP(unit->mRate->mFilterRemain,
 			ain = ZXP(in);
 			y00 = ain + b01 * y01 + b02 * y02;
 			y10 = ain + b11 * y11 + b12 * y12;
-			ZXP(out) = 0.25f * ((y00 - y02) - (y10 - y12));
+			ZXP(out) = 0.25 * ((y00 - y02) - (y10 - y12));
 			y02 = y01;
 			y01 = y00;
 			y12 = y11;
@@ -3621,26 +3639,26 @@ void Formlet_next_1(Formlet* unit, int inNumSamples)
 	float attackTime = ZIN0(2);
 	float decayTime = ZIN0(3);
 
-	float y00;
-	float y10;
-	float y01 = unit->m_y01;
-	float y11 = unit->m_y11;
-	float y02 = unit->m_y02;
-	float y12 = unit->m_y12;
+	double y00;
+	double y10;
+	double y01 = unit->m_y01;
+	double y11 = unit->m_y11;
+	double y02 = unit->m_y02;
+	double y12 = unit->m_y12;
 
-	float b01 = unit->m_b01;
-	float b11 = unit->m_b11;
-	float b02 = unit->m_b02;
-	float b12 = unit->m_b12;
-	float ain;
+	double b01 = unit->m_b01;
+	double b11 = unit->m_b11;
+	double b02 = unit->m_b02;
+	double b12 = unit->m_b12;
+	double ain;
 
 	if (freq != unit->m_freq || decayTime != unit->m_decayTime || attackTime != unit->m_attackTime) {
-		float ffreq = freq * unit->mRate->mRadiansPerSample;
+		double ffreq = freq * unit->mRate->mRadiansPerSample;
 
-		float R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
-		float twoR = 2.f * R;
-		float R2 = R * R;
-		float cost = (twoR * cos(ffreq)) / (1.f + R2);
+		double R = decayTime == 0.f ? 0.f : exp(log001/(decayTime * SAMPLERATE));
+		double twoR = 2.f * R;
+		double R2 = R * R;
+		double cost = (twoR * cos(ffreq)) / (1.f + R2);
 		b01 = twoR * cost;
 		b02 = -R2;
 
@@ -3717,9 +3735,9 @@ void FOS_next_a(FOS* unit, int inNumSamples)
 	float *a1 = ZIN(2);
 	float *b1 = ZIN(3);
 
-	float y1 = unit->m_y1;
+	double y1 = unit->m_y1;
 	LOOP1(inNumSamples,
-		float y0 = ZXP(in) + ZXP(b1) * y1;
+		double y0 = ZXP(in) + ZXP(b1) * y1;
 		ZXP(out) = ZXP(a0) * y0 + ZXP(a1) * y1;
 		y1 = y0;
 	);
@@ -3733,9 +3751,9 @@ void FOS_next_1(FOS* unit, int inNumSamples)
 	float a1 = ZIN0(2);
 	float b1 = ZIN0(3);
 
-	float y1 = unit->m_y1;
+	double y1 = unit->m_y1;
 
-	float y0 = in + b1 * y1;
+	double y0 = in + b1 * y1;
 	ZOUT0(0) = a0 * y0 + a1 * y1;
 	y1 = y0;
 
@@ -3751,15 +3769,15 @@ void FOS_next_k(FOS* unit, int inNumSamples)
 	float next_a1 = ZIN0(2);
 	float next_b1 = ZIN0(3);
 
-	float y1 = unit->m_y1;
-	float a0 = unit->m_a0;
-	float a1 = unit->m_a1;
-	float b1 = unit->m_b1;
-	float a0_slope = CALCSLOPE(next_a0, a0);
-	float a1_slope = CALCSLOPE(next_a1, a1);
-	float b1_slope = CALCSLOPE(next_b1, b1);
+	double y1 = unit->m_y1;
+	double a0 = unit->m_a0;
+	double a1 = unit->m_a1;
+	double b1 = unit->m_b1;
+	double a0_slope = CALCSLOPE(next_a0, a0);
+	double a1_slope = CALCSLOPE(next_a1, a1);
+	double b1_slope = CALCSLOPE(next_b1, b1);
 	LOOP1(inNumSamples,
-		float y0 = ZXP(in) + b1 * y1;
+		double y0 = ZXP(in) + b1 * y1;
 		ZXP(out) = a0 * y0 + a1 * y1;
 		y1 = y0;
 
@@ -3814,9 +3832,9 @@ void SOS_next_a(SOS *unit, int inNumSamples)
 	float *b1 = ZIN(4);
 	float *b2 = ZIN(5);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
 	LOOP(unit->mRate->mFilterLoops,
 		y0 = ZXP(in) + ZXP(b1) * y1 + ZXP(b2) * y2;
 		ZXP(out) = ZXP(a0) * y0 + ZXP(a1) * y1 + ZXP(a2) * y2;
@@ -3848,19 +3866,19 @@ void SOS_next_k(SOS *unit, int inNumSamples)
 	float next_b1 = ZIN0(4);
 	float next_b2 = ZIN0(5);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
-	float a0 = unit->m_a0;
-	float a1 = unit->m_a1;
-	float a2 = unit->m_a2;
-	float b1 = unit->m_b1;
-	float b2 = unit->m_b2;
-	float a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
-	float a1_slope = (next_a1 - a1) * unit->mRate->mFilterSlope;
-	float a2_slope = (next_a2 - a2) * unit->mRate->mFilterSlope;
-	float b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
-	float b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
+	double a0 = unit->m_a0;
+	double a1 = unit->m_a1;
+	double a2 = unit->m_a2;
+	double b1 = unit->m_b1;
+	double b2 = unit->m_b2;
+	double a0_slope = (next_a0 - a0) * unit->mRate->mFilterSlope;
+	double a1_slope = (next_a1 - a1) * unit->mRate->mFilterSlope;
+	double a2_slope = (next_a2 - a2) * unit->mRate->mFilterSlope;
+	double b1_slope = (next_b1 - b1) * unit->mRate->mFilterSlope;
+	double b2_slope = (next_b2 - b2) * unit->mRate->mFilterSlope;
 	LOOP(unit->mRate->mFilterLoops,
 		y0 = ZXP(in) + b1 * y1 + b2 * y2;
 		ZXP(out) = a0 * y0 + a1 * y1 + a2 * y2;
@@ -3902,9 +3920,9 @@ void SOS_next_1(SOS *unit, int inNumSamples)	// optimized for SOS.kr
 	float b1 = ZIN0(4);
 	float b2 = ZIN0(5);
 
-	float y0;
-	float y1 = unit->m_y1;
-	float y2 = unit->m_y2;
+	double y0;
+	double y1 = unit->m_y1;
+	double y2 = unit->m_y2;
 
 	y0 = in + b1 * y1 + b2 * y2;
 	ZOUT0(0) = a0 * y0 + a1 * y1 + a2 * y2;
@@ -4458,19 +4476,19 @@ void Hilbert_Ctor(Hilbert *unit)
 	// calculate coefs based on SampleRate, store in the struct
 	SETCALC(Hilbert_next);
 
-	float gamconst = (15.0f * pi_f) / SAMPLERATE;
-	float gamma01 = gamconst * 0.3609f;
-	float gamma02 = gamconst * 2.7412f;
-	float gamma03 = gamconst * 11.1573f;
-	float gamma04 = gamconst * 44.7581f;
-	float gamma05 = gamconst * 179.6242f;
-	float gamma06 = gamconst * 798.4578f;
-	float gamma07 = gamconst * 1.2524f;
-	float gamma08 = gamconst * 5.5671f;
-	float gamma09 = gamconst * 22.3423f;
-	float gamma10 = gamconst * 89.6271f;
-	float gamma11 = gamconst * 364.7914f;
-	float gamma12 = gamconst * 2770.1114f;
+	double gamconst = (15.0f * pi_f) / SAMPLERATE;
+	double gamma01 = gamconst * 0.3609f;
+	double gamma02 = gamconst * 2.7412f;
+	double gamma03 = gamconst * 11.1573f;
+	double gamma04 = gamconst * 44.7581f;
+	double gamma05 = gamconst * 179.6242f;
+	double gamma06 = gamconst * 798.4578f;
+	double gamma07 = gamconst * 1.2524f;
+	double gamma08 = gamconst * 5.5671f;
+	double gamma09 = gamconst * 22.3423f;
+	double gamma10 = gamconst * 89.6271f;
+	double gamma11 = gamconst * 364.7914f;
+	double gamma12 = gamconst * 2770.1114f;
 	unit->m_coefs[0] = (gamma01 - 1.f) / (gamma01 + 1.f);
 	unit->m_coefs[1] = (gamma02 - 1.f) / (gamma02 + 1.f);
 	unit->m_coefs[2] = (gamma03 - 1.f) / (gamma03 + 1.f);
@@ -4501,11 +4519,11 @@ void Hilbert_next(Hilbert *unit, int inNumSamples)
 		coefs[i] = unit->m_coefs[i];
 	}
 
-	float ay1, ay2, ay3, ay4, ay5, ay6;
-	float ay7, ay8, ay9, ay10, ay11, ay12;
+	double ay1, ay2, ay3, ay4, ay5, ay6;
+	double ay7, ay8, ay9, ay10, ay11, ay12;
 
-	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
-	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	double y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+	double y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
 	LOOP1(inNumSamples,
 		float thisin = ZXP(in);
@@ -4548,19 +4566,19 @@ void FreqShift_Ctor(FreqShift *unit)
 	unit->m_cpstoinc = tableSizeSin * SAMPLEDUR * 65536.;
 	unit->m_phasein = IN0(2);
 
-	float gamconst = (15.0 * pi) / SAMPLERATE;
-	float gamma01 = gamconst * 0.3609f;
-	float gamma02 = gamconst * 2.7412f;
-	float gamma03 = gamconst * 11.1573f;
-	float gamma04 = gamconst * 44.7581f;
-	float gamma05 = gamconst * 179.6242f;
-	float gamma06 = gamconst * 798.4578f;
-	float gamma07 = gamconst * 1.2524f;
-	float gamma08 = gamconst * 5.5671f;
-	float gamma09 = gamconst * 22.3423f;
-	float gamma10 = gamconst * 89.6271f;
-	float gamma11 = gamconst * 364.7914f;
-	float gamma12 = gamconst * 2770.1114f;
+	double gamconst = (15.0 * pi) / SAMPLERATE;
+	double gamma01 = gamconst * 0.3609f;
+	double gamma02 = gamconst * 2.7412f;
+	double gamma03 = gamconst * 11.1573f;
+	double gamma04 = gamconst * 44.7581f;
+	double gamma05 = gamconst * 179.6242f;
+	double gamma06 = gamconst * 798.4578f;
+	double gamma07 = gamconst * 1.2524f;
+	double gamma08 = gamconst * 5.5671f;
+	double gamma09 = gamconst * 22.3423f;
+	double gamma10 = gamconst * 89.6271f;
+	double gamma11 = gamconst * 364.7914f;
+	double gamma12 = gamconst * 2770.1114f;
 	unit->m_coefs[0] = (gamma01 - 1.f) / (gamma01 + 1.f);
 	unit->m_coefs[1] = (gamma02 - 1.f) / (gamma02 + 1.f);
 	unit->m_coefs[2] = (gamma03 - 1.f) / (gamma03 + 1.f);
@@ -4587,8 +4605,8 @@ void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 	float outcos, outsin; // the sample by sample output of the Hilbert
 	float outsinosc, outsinoscHalfPi; // the samples from the oscil.
 	int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
-	float y1[12];
-	float coefs[12];
+	double y1[12];
+	double coefs[12];
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
@@ -4605,11 +4623,11 @@ void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 		coefs[i] = unit->m_coefs[i];
 	}
 
-	float ay1, ay2, ay3, ay4, ay5, ay6;
-	float ay7, ay8, ay9, ay10, ay11, ay12;
+	double ay1, ay2, ay3, ay4, ay5, ay6;
+	double ay7, ay8, ay9, ay10, ay11, ay12;
 
-	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
-	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	double y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+	double y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
 	LOOP1(inNumSamples,
 		float thisin = ZXP(in);
@@ -4642,8 +4660,8 @@ void FreqShift_next_aa(FreqShift *unit, int inNumSamples)
 	float outcos, outsin; // the sample by sample output of the Hilbert
 	float outsinosc, outsinoscHalfPi; // the samples from the oscil.
 	int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
-	float y1[12];
-	float coefs[12];
+	double y1[12];
+	double coefs[12];
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
@@ -4656,11 +4674,11 @@ void FreqShift_next_aa(FreqShift *unit, int inNumSamples)
 		coefs[i] = unit->m_coefs[i];
 	}
 
-	float ay1, ay2, ay3, ay4, ay5, ay6;
-	float ay7, ay8, ay9, ay10, ay11, ay12;
+	double ay1, ay2, ay3, ay4, ay5, ay6;
+	double ay7, ay8, ay9, ay10, ay11, ay12;
 
-	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
-	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	double y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+	double y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
 	LOOP1(inNumSamples,
 		float thisin = ZXP(in);
@@ -4693,8 +4711,8 @@ void FreqShift_next_ak(FreqShift *unit, int inNumSamples)
 	float outcos, outsin; // the sample by sample output of the Hilbert
 	float outsinosc, outsinoscHalfPi; // the samples from the oscil.
 	int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
-	float y1[12];
-	float coefs[12];
+	double y1[12];
+	double coefs[12];
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
@@ -4709,11 +4727,11 @@ void FreqShift_next_ak(FreqShift *unit, int inNumSamples)
 		coefs[i] = unit->m_coefs[i];
 	}
 
-	float ay1, ay2, ay3, ay4, ay5, ay6;
-	float ay7, ay8, ay9, ay10, ay11, ay12;
+	double ay1, ay2, ay3, ay4, ay5, ay6;
+	double ay7, ay8, ay9, ay10, ay11, ay12;
 
-	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
-	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	double y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+	double y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
 	LOOP1(inNumSamples,
 		float thisin = ZXP(in);
@@ -4748,8 +4766,8 @@ void FreqShift_next_ka(FreqShift *unit, int inNumSamples)
 	float outcos, outsin; // the sample by sample output of the Hilbert
 	float outsinosc, outsinoscHalfPi; // the samples from the oscil.
 	int32 halfPi = (int32)(unit->m_radtoinc * (0.5 * pi));
-	float y1[12];
-	float coefs[12];
+	double y1[12];
+	double coefs[12];
 
 	float *table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
@@ -4764,11 +4782,11 @@ void FreqShift_next_ka(FreqShift *unit, int inNumSamples)
 		coefs[i] = unit->m_coefs[i];
 	}
 
-	float ay1, ay2, ay3, ay4, ay5, ay6;
-	float ay7, ay8, ay9, ay10, ay11, ay12;
+	double ay1, ay2, ay3, ay4, ay5, ay6;
+	double ay7, ay8, ay9, ay10, ay11, ay12;
 
-	float y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
-	float y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
+	double y0_1, y0_2, y0_3, y0_4, y0_5, y0_6;
+	double y0_7, y0_8, y0_9, y0_10, y0_11, y0_12;
 
 	LOOP1(inNumSamples,
 		float thisin = ZXP(in);
@@ -4846,10 +4864,10 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 	k = k > 4.f? 4.f : (k<0.f ? 0.f : k);
 
 	// Load state from the struct
-	float s1 = unit->m_s1;
-	float s2 = unit->m_s2;
-	float s3 = unit->m_s3;
-	float s4 = unit->m_s4;
+	double s1 = unit->m_s1;
+	double s2 = unit->m_s2;
+	double s3 = unit->m_s3;
+	double s4 = unit->m_s4;
 	float freq = unit->m_freq;///
 
 	// Reset filter state if requested
@@ -4857,7 +4875,7 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 		s1 = s2 = s3 = s4 = 0.f;
 
 	float a1 = unit->m_a1, b0 = unit->m_b0; // Filter coefficient parameters
-	float o, u; // System's null response, loop input
+	double o, u; // System's null response, loop input
 
 	// Update filter coefficients, but only if freq changes since it involves some expensive operations
 	if(freq != IN0(1)) {
@@ -4880,14 +4898,14 @@ void MoogFF_next(MoogFF *unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		// compute loop values
 		o = s4 + b0*(s3 + b0*(s2 + b0*s1));
-		float ins = ZXP(in);
-		float outs = (b0*b0*b0*b0*ins + o) * sc_reciprocal(1.f + b0*b0*b0*b0*k);
+		double ins = ZXP(in);
+		double outs = (b0*b0*b0*b0*ins + o) * sc_reciprocal(1.0 + b0*b0*b0*b0*k);
 		ZXP(out) = outs;
 		u = ins - k*outs;
 
 		// update 1st order filter states
-		float past = u;
-		float future = b0*past + s1;
+		double past = u;
+		double future = b0*past + s1;
 		s1 = b0*past - a1*future;
 
 		past = future;
