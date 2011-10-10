@@ -42,9 +42,9 @@ discussion::
 code::
 chain = chain.pvcollect(numframes, func, frombin, tobin, zeroothers)
 ::
-pvcollect applies function code::func:: to each bin of an FFT chain. func should be a function that takes code:: magnitude, phase, index :: as inputs and returns a resulting code::[magnitude, phase]::.
+pvcollect applies function code::func:: to each bin of an FFT chain. func should be a function that takes code:: magnitude, phase, bin, index :: as inputs and returns a resulting code::[magnitude, phase]::.
 
-The "index" is the integer bin number, starting at 0 for DC. You can optionally ignore the phase and only return a single (magnitude) value, in which case the phase is assumed to be left unchanged.
+The "bin" is the integer bin number, starting at 0 for DC, while "index" is the iteration number, always starting with 0. You can optionally ignore the phase and only return a single (magnitude) value, in which case the phase is assumed to be left unchanged.
 
 frombin, tobin, and zeroothers are optional arguments which limit the processing to a specified integer range of FFT bins. If zeroothers is set to 1 then bins outside of the range being processed are silenced.
 

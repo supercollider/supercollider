@@ -70,7 +70,7 @@ PV_ChainUGen : UGen {
 		var magsphases, ret;
 		magsphases = UnpackFFT(this, numframes, frombin, tobin).clump(2);
 		magsphases = magsphases.collect({ |mp, index|
-			ret = func.value(mp[0], mp[1], index).asArray;
+			ret = func.value(mp[0], mp[1], index + frombin, index).asArray;
 			ret = if(ret.size==1, {ret ++ mp[1]}, ret); // Add phase if it's been ignored
 		}).flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
