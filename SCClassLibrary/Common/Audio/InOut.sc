@@ -100,7 +100,13 @@ LagControl : Control {
 		var outputs;
 
 		values = values.asArray;
-		lags = lags.asArray;
+
+		if (lags.isNumber) {
+			lags = lags ! values.size
+		} {
+			lags = lags.asArray;
+		};
+
 		if (values.size != lags.size, {
 			"LagControl values.size != lags.size".error;
 			^nil
