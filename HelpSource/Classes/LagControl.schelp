@@ -1,25 +1,25 @@
 class:: LagControl
-summary:: FIXME: LagControl purpose.
+summary:: Lagged control input
 related:: Classes/Control, Classes/TrigControl
-categories::  UGens>Synth control, UGens>Undocumented
+categories::  UGens>Synth control
 
 
 Description::
 
-FIXME: LagControl description.
-
+code::Control:: ugen with fixed-time lags.
 
 classmethods::
+
+private::ir
 
 method::kr
 
 argument::values
 
-FIXME: explain parameter values.
-
+Initial value (code::Float:: or code::Array:: of Floats).
 
 argument::lags
 
-FIXME: explain parameter lags.
+Lag times (code::Float:: or code::Array:: of Floats).
 
 
