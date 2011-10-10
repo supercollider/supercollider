@@ -180,7 +180,6 @@ Node {
 		};
 		this.register;
 		this.addDependant(f);
-		^f;
 	}
 	waitForFree {
 		var c = Condition.new;
