@@ -68,9 +68,10 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	add_definitions("-Wreturn-type")
 
-	if (${_gcc_version} VERSION_GREATER 4.0.99)
-		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
-	endif()
+#	disabled for now: -ffast-math breaks avx intrinsics and -fsigned-zeros/-fno-associative-math are not available in some versions
+#	if (${_gcc_version} VERSION_GREATER 4.0.99)
+#		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
+#	endif()
 
 	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
 
