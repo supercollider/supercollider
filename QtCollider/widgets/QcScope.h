@@ -40,6 +40,7 @@ class QcScope : public QWidget, QcHelper
   Q_PROPERTY( int style READ dummyInt WRITE setStyle );
   Q_PROPERTY( VariantList waveColors READ dummyVariantList WRITE setWaveColors );
   Q_PROPERTY( QColor background READ background WRITE setBackground );
+  Q_PROPERTY( int updateInterval READ updateInterval WRITE setUpdateInterval );
 
   public:
     QcScope();
@@ -53,6 +54,8 @@ class QcScope : public QWidget, QcHelper
     void setWaveColors( const VariantList & colors );
     QColor background() const { return _bkg; }
     void setBackground( const QColor &c ) { _bkg = c; update(); }
+    int updateInterval() const;
+    void setUpdateInterval( int i );
     QSize sizeHint() const { return QSize( 500, 300 ); }
     QSize minimumSizeHint() const { return QSize( 50, 50 ); }
   private Q_SLOTS:
