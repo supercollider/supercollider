@@ -216,6 +216,11 @@ ServerShmInterface {
 		_ServerShmInterface_getControlBusValue
 		^this.primitiveFailed
 	}
+
+	getControlBusValues {
+		_ServerShmInterface_getControlBusValues
+		^this.primitiveFailed
+	}
 }
 
 Server {
