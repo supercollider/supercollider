@@ -6,6 +6,11 @@ categories::  UGens>InOut
 
 Description::
 
+warning::
+SharedIn has been deprecated. Synchronous access to busses on local servers is possible via
+link::Classes/Bus#-getSynchronous:: and link::Classes/Bus#-setSynchronous::
+::
+
 Reads from a control bus shared between the internal server and the SC
 client. Control rate only. Writing to a shared control bus from the
 client is synchronous. When not using the internal server use node

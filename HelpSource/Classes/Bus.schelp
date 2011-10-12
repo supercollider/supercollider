@@ -130,9 +130,10 @@ subsection:: Synchronous Control Bus Methods
 
 anchor::synchronous::
 
-Synchronous access to control busses only works for the local server and for the internal server, unless shared control
-busses are allocated. Otherwise one should use the internal server's shared control busses and link::Classes/SharedIn::
-/ link::Classes/SharedOut::.
+Synchronous access to control busses only works for local servers.
+
+note:: Before 3.5 the the internal server could be controlled via shared control busses and link::Classes/SharedIn:: and
+link::Classes/SharedOut::. These classes have been deprecated and will be removed.  ::
 
 method:: getSynchronous
 Get the current value of this control bus. This command is synchronous.
