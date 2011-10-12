@@ -1032,4 +1032,20 @@ Server {
 		target = target.asTarget;
 		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))); //"/n_order"
 	}
+
+	getControlBusValue {|busIndex|
+		if (serverInterface.isNil) {
+			error("Server-getControlBusValue only supports local servers")
+		} {
+			^serverInterface.getControlBusValue(busIndex)
+		}
+	}
+
+	getControlBusValues {|busIndex, busChannels|
+		if (serverInterface.isNil) {
+			error("Server-getControlBusValues only supports local servers")
+		} {
+			^serverInterface.getControlBusValues(busIndex, busChannels)
+		}
+	}
 }
