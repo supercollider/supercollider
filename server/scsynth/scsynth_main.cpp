@@ -35,9 +35,6 @@
 # include <sys/wait.h>
 #endif
 
-#include "../../common/server_shm.hpp"
-
-
 #ifdef _WIN32
 
 // according to this page: http://www.mkssoftware.com/docs/man3/setlinebuf.3.asp
@@ -312,16 +309,13 @@ int main(int argc, char* argv[])
 		Usage();
 	}
 
-	std::auto_ptr<server_shared_memory_creator> shmem;
 	if (options.mRealTime) {
 		int port = (udpPortNum > 0) ? udpPortNum
 									: tcpPortNum;
 
-		server_shared_memory_creator::cleanup(port);
-		shmem.reset(new server_shared_memory_creator(port, options.mNumControlBusChannels));
-		options.mSharedControls = shmem->get_control_busses();
-		options.mNumSharedControls = -5; // tag to enable shared memory access to control busses
-	}
+		options.mSharedMemoryID = port;
+	} else
+		options.mSharedMemoryID = 0;
 
 
 	struct World *world = World_New(&options);

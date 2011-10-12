@@ -122,6 +122,7 @@ struct HiddenWorld
 #endif
 	const char *mInDeviceName;
 	const char *mOutDeviceName;
+	class server_shared_memory_creator * mShmem;
 };
 
 typedef struct HiddenWorld HiddenWorld;

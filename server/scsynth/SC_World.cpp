@@ -59,6 +59,9 @@
 # include <sys/mman.h>
 #endif
 
+#include "server_shm.hpp"
+
+
 InterfaceTable gInterfaceTable;
 PrintFunc gPrint = 0;
 
@@ -357,16 +360,15 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		world->mErrorNotification = 1;  // i.e., 0x01 | 0x02
 		world->mLocalErrorNotification = 0;
 
-		// we use -5 to enable shared memory access to control busses
-		if (inOptions->mNumSharedControls == -5) {
-			world->mNumSharedControls = 0;
-			world->mSharedControls = inOptions->mSharedControls;
-			world->mControlBus = inOptions->mSharedControls;
-		} else {
-			world->mNumSharedControls = inOptions->mNumSharedControls;
-			world->mSharedControls = inOptions->mSharedControls;
+		if (inOptions->mSharedMemoryID) {
+			server_shared_memory_creator::cleanup(inOptions->mSharedMemoryID);
+			hw->mShmem = new server_shared_memory_creator(inOptions->mSharedMemoryID, inOptions->mNumControlBusChannels);
+			world->mControlBus = hw->mShmem->get_control_busses();
+		} else
 			world->mControlBus = (float*)zalloc(world->mNumControlBusChannels, sizeof(float));
-		}
+
+		world->mNumSharedControls = 0;
+		world->mSharedControls = inOptions->mSharedControls;
 
 		int numsamples = world->mBufLength * world->mNumAudioBusChannels;
 		world->mAudioBus = (float*)zalloc(numsamples, sizeof(float));

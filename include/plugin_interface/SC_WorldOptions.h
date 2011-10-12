@@ -76,6 +76,8 @@ struct WorldOptions
 	const char *mOutDeviceName;
 
 	const char *mRestrictedPath;
+
+	int mSharedMemoryID;
 };
 
 const struct WorldOptions kDefaultWorldOptions =
@@ -90,6 +92,7 @@ const struct WorldOptions kDefaultWorldOptions =
 	,0, 0, 0
 	,0
 	,1
+	,0
 	,0
 	,0
 	,0

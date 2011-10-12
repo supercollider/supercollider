@@ -984,6 +984,13 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
 
+		// internal servers use the PID to identify the shared memory region
+#ifndef _WIN32
+		options.mSharedMemoryID = getpid();
+#else
+		options.mSharedMemoryID = GetCurrentProcessId()
+#endif
+
 		gInternalSynthServer.mWorld = World_New(&options);
 	}
 
