@@ -221,6 +221,16 @@ ServerShmInterface {
 		_ServerShmInterface_getControlBusValues
 		^this.primitiveFailed
 	}
+
+	setControlBusValue {
+		_ServerShmInterface_getControlBusValue
+		^this.primitiveFailed
+	}
+
+	setControlBusValues {
+		_ServerShmInterface_getControlBusValues
+		^this.primitiveFailed
+	}
 }
 
 Server {
@@ -1046,6 +1056,22 @@ Server {
 			error("Server-getControlBusValues only supports local servers")
 		} {
 			^serverInterface.getControlBusValues(busIndex, busChannels)
+		}
+	}
+
+	setControlBusValue {|busIndex, value|
+		if (serverInterface.isNil) {
+			error("Server-getControlBusValue only supports local servers")
+		} {
+			^serverInterface.setControlBusValue(busIndex, value)
+		}
+	}
+
+	setControlBusValues {|busIndex, valueArray|
+		if (serverInterface.isNil) {
+			error("Server-getControlBusValues only supports local servers")
+		} {
+			^serverInterface.setControlBusValues(busIndex, valueArray)
 		}
 	}
 }
