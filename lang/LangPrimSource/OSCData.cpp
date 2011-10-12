@@ -1123,7 +1123,6 @@ static int disconnectSharedMem(VMGlobals *g, PyrObject * object)
 	delete client;
 	SetNil(ptrSlot);
 	return errNone;
-
 }
 
 int prConnectSharedMem(VMGlobals *g, int numArgsPushed)
@@ -1167,11 +1166,13 @@ int prGetControlBusValue(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
+
+	assert(IsObj(a));
 	PyrObject * self = slotRawObject(a);
 	int ptrIndex       = 0;
 	PyrSlot * ptrSlot = self->slots + ptrIndex;
-
-	assert(IsObj(a));
+	if (NotPtr(ptrSlot))
+		return errFailed;
 
 	if (!IsInt(b))
 		return errFailed;
@@ -1188,6 +1189,42 @@ int prGetControlBusValue(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prGetControlBusValues(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = self->slots + ptrIndex;
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	if (!IsInt(b))
+		return errFailed;
+
+	int busIndex = slotRawInt(b);
+
+	if (!IsInt(c))
+		return errFailed;
+
+	int numberOfChannels = slotRawInt(c);
+
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+
+	PyrObject * ret = newPyrArray(g->gc, numberOfChannels, 0, 1);
+	ret->size = numberOfChannels;
+
+	for (int i = 0; i != numberOfChannels; ++i) {
+		float value = client->get_control_busses()[busIndex + i];
+		SetFloat(ret->slots+i, value);
+	}
+
+	SetObject(a, ret);
+	return errNone;
+}
 
 void init_OSC_primitives();
 void init_OSC_primitives()
@@ -1225,6 +1262,7 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_ServerShmInterface_connectSharedMem", prConnectSharedMem, 2, 0);
 	definePrimitive(base, index++, "_ServerShmInterface_disconnectSharedMem", prDisconnectSharedMem, 1, 0);
 	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValue", prGetControlBusValue, 2, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValues", prGetControlBusValues, 3, 0);
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");
