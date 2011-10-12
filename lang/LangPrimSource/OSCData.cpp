@@ -1226,6 +1226,74 @@ int prGetControlBusValues(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSetControlBusValue(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = self->slots + ptrIndex;
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	if (!IsInt(b))
+		return errFailed;
+
+	int busIndex = slotRawInt(b);
+
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	float value;
+	int error = slotFloatVal(c, &value);
+	if (error != errNone)
+		return error;
+
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+
+	client->get_control_busses()[busIndex] = value;
+	return errNone;
+}
+
+int prSetControlBusValues(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = self->slots + ptrIndex;
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	if (!IsInt(b))
+		return errFailed;
+
+	int busIndex = slotRawInt(b);
+
+	if (!IsObj(c))
+		return errFailed;
+
+	PyrObject * values = slotRawObject(c);
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+	float * control_busses = client->get_control_busses() + busIndex;
+
+	for (int i = 0; i != values->size; ++i) {
+		float value;
+		int error = slotFloatVal(values->slots + i, &value);
+		if (error != errNone)
+			return error;
+
+		control_busses[i] = value;
+	}
+	return errNone;
+}
+
 void init_OSC_primitives();
 void init_OSC_primitives()
 {
@@ -1263,6 +1331,9 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_ServerShmInterface_disconnectSharedMem", prDisconnectSharedMem, 1, 0);
 	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValue", prGetControlBusValue, 2, 0);
 	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValues", prGetControlBusValues, 3, 0);
+
+	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValue", prSetControlBusValue, 2, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValues", prSetControlBusValues, 3, 0);
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");

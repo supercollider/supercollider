@@ -121,6 +121,26 @@ Bus {
 		}
 	}
 
+	setSynchronous { |... values|
+		if (not(this.isSettable)) {
+			error ("Bus-getSynchronous only works for control-rate busses");
+		} {
+			if (values.size == 1) {
+				server.getControlBusValue(index, values[0])
+			} {
+				server.getControlBusValues(index, values)
+			}
+		}
+	}
+
+	setnSynchronous {|values|
+		if (not(this.isSettable)) {
+			error ("Bus-getnSynchronous only works for control-rate busses");
+		} {
+			server.setControlBusValues(index, values)
+		}
+	}
+
 	fill { arg value,numChans;
 		// could throw an error if numChans > numChannels
 		server.sendBundle(nil,
