@@ -642,9 +642,12 @@ Server {
 				sendQuit = not(this.inProcess) and: {this.isLocal};
 			};
 
-			if (sendQuit) {
-				// local and not internal
-				serverInterface = ServerShmInterface(addr.port);
+			if (this.inProces) {
+				serverInterface = ServerShmInterface(thisProcess.pid);
+			} {
+				if (isLocal) {
+					serverInterface = ServerShmInterface(addr.port);
+				}
 			};
 
 			this.initTree;
