@@ -642,7 +642,7 @@ Server {
 				sendQuit = not(this.inProcess) and: {this.isLocal};
 			};
 
-			if (this.inProces) {
+			if (this.inProcess) {
 				serverInterface = ServerShmInterface(thisProcess.pid);
 			} {
 				if (isLocal) {
