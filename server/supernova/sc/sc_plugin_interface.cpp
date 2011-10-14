@@ -283,6 +283,14 @@ void free_parent_group(Unit * unit)
     sc_factory->add_done_node(group);
 }
 
+int get_scope_buffers(World * inWorld, int index, float **outBuffer, int **outFrames, int *outMaxFrames)
+{
+    int maxFrames = instance->get_scope_buffer(index, outBuffer, outFrames);
+
+    *outMaxFrames = maxFrames;
+    return 0;
+}
+
 } /* namespace */
 } /* namespace nova */
 
@@ -615,6 +623,9 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
     sc_interface.fSCfftDestroy = &scfft_destroy;
     sc_interface.fSCfftDoFFT = &scfft_dofft;
     sc_interface.fSCfftDoIFFT = &scfft_doifft;
+
+    /* scope API */
+    sc_interface.fGetScopeBuffer = get_scope_buffers;
 
     /* osc plugins */
     sc_interface.fDoAsynchronousCommand = &do_asynchronous_command;
