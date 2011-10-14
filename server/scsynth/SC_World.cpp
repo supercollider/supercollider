@@ -187,7 +187,8 @@ void *zalloc(size_t n, size_t size)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void InterfaceTable_Init();
+static int getScopeBuffer(World *inWorld, int index, float **outBuffer, int **outFrames, int *outMaxFrames);
+
 void InterfaceTable_Init()
 {
 	InterfaceTable *ft = &gInterfaceTable;
@@ -248,6 +249,8 @@ void InterfaceTable_Init()
 	ft->fSCfftDestroy = &scfft_destroy;
 	ft->fSCfftDoFFT = &scfft_dofft;
 	ft->fSCfftDoIFFT = &scfft_doifft;
+
+	ft->fGetScopeBuffer = &getScopeBuffer;
 }
 
 void initialize_library(const char *mUGensPluginPath);
@@ -1064,6 +1067,19 @@ void World_NRTUnlock(World *world)
 {
 	world->mNRTLock->Unlock();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+int getScopeBuffer(World *inWorld, int index, float **outBuffer, int **outFrames, int *outMaxFrames)
+{
+	server_shared_memory_creator * shm = inWorld->hw->mShmem;
+
+	int maxFrames = shm->get_scope_buffer(index, outBuffer, outFrames);
+	*outMaxFrames = maxFrames;
+
+	return 0;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 

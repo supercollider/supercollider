@@ -244,6 +244,7 @@ Server {
 	var <controlBusAllocator;
 	var <audioBusAllocator;
 	var <bufferAllocator;
+	var <scopeBufferAllocator;
 	var <syncThread, <syncTasks;
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
@@ -303,6 +304,7 @@ Server {
 		this.newNodeAllocators;
 		this.newBusAllocators;
 		this.newBufferAllocators;
+		this.newScopeBufferAllocators;
 		NotificationCenter.notify(this, \newAllocators);
 	}
 
@@ -318,6 +320,12 @@ Server {
 
 	newBufferAllocators {
 		bufferAllocator = ContiguousBlockAllocator.new(options.numBuffers);
+	}
+
+	newScopeBufferAllocators {
+		if (serverInterface.notNil) {
+			scopeBufferAllocator = ContiguousBlockAllocator.new(128);
+		}
 	}
 
 	nextNodeID {

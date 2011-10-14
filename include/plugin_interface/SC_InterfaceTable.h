@@ -147,6 +147,9 @@ struct InterfaceTable
 
 	// destroy any resources held internally.
 	void (*fSCfftDestroy)(scfft *f, SCFFT_Allocator & alloc);
+
+	// Get scope buffer. Returns the maximum number of possile frames.
+	int (*fGetScopeBuffer)(World *inWorld, int index, float **outBuffer, int **outFrames, int *outMaxFrames);
 };
 
 typedef struct InterfaceTable InterfaceTable;

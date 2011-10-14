@@ -1,0 +1,42 @@
+ScopeBuffer {
+	var <index, <numChannels, <server;
+
+	*alloc { arg server, numChannels=1;
+		var alloc;
+		server = server ? Server.default;
+		alloc = server.scopeBufferAllocator.alloc(numChannels);
+		if (alloc.isNil) {
+			error("Meta_ScopeBuffer:alloc: failed to get a scope buffer allocated."
+				+ "numChannels:" + numChannels + "server:" + server.name);
+			^nil
+		};
+		^this.new(alloc, numChannels, server)
+	}
+
+	*new { arg rate=\audio, index=0, numChannels=1, server;
+		^super.newCopyArgs(index, numChannels, server ? Server.default)
+	}
+
+	free {
+		if (index.isNil) {
+			(this.asString + " has already been freed").warn;
+			^this
+		};
+
+		server.scopeBufferAllocator.free(index);
+		index = nil;
+		numChannels = nil;
+	}
+
+	printOn { arg stream;
+		stream << this.class.name << "(" <<*
+			[index, numChannels, server]  <<")"
+	}
+
+	storeOn { arg stream;
+		stream << this.class.name << "(" <<*
+			[index, numChannels, server.asCompileString]  <<")"
+	}
+
+	hash { ^index.hash bitXor: numChannels.hash bitXor: server.hash }
+}

@@ -4991,6 +4991,7 @@ void ScopeOut_next(ScopeOut *unit, int inNumSamples)
 
 void ScopeOut_Ctor(ScopeOut *unit)
 {
+
 	unit->m_fbufnum = -1e9;
 	unit->m_framepos = 0;
 	unit->m_framecount = 0;
@@ -5001,6 +5002,95 @@ void ScopeOut_Ctor(ScopeOut *unit)
 void ScopeOut_Dtor(ScopeOut *unit)
 {
 	TAKEDOWN_IN
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct ScopeOut2 : public Unit
+{
+	float ** bufData;
+	float scopeFrames;
+	uint32 m_framepos;
+};
+
+
+void ScopeOut2_next(ScopeOut2 *unit, int inNumSamples)
+{
+	const int inputOffset = 2;
+	const int scopeFrames = unit->scopeFrames;
+
+	uint32 framepos = unit->m_framepos;
+	if (framepos >= scopeFrames)
+		unit->m_framepos = 0;
+
+	int numChannels = unit->mNumInputs - 2;
+
+	int remain = (scopeFrames - framepos), wrap = 0;
+
+	if(inNumSamples <= remain)
+		remain = inNumSamples;
+	else
+		wrap = inNumSamples - remain;
+
+	for (int i = 0; i != numChannels; ++i) {
+		float * scopeBuf = unit->bufData[i];
+
+		const float * in = IN(inputOffset + i);
+		memcpy(scopeBuf + framepos, in, remain * sizeof(float));
+		if (wrap)
+			memcpy(scopeBuf, in + remain, wrap * sizeof(float));
+	}
+
+	framepos += inNumSamples;
+	if (framepos > scopeFrames)
+		framepos = sc_wrap(framepos, 0, scopeFrames);
+	unit->m_framepos = framepos;
+
+	// TODO: count completed writes
+}
+
+void ScopeOut2_Ctor(ScopeOut2 *unit)
+{
+	uint32 numChannels = unit->mNumInputs - 2;
+	uint32_t scopeNum = (uint32_t)ZIN0(0);
+	int requestedScopeFrames = (uint32_t)ZIN0(1);
+	int scopeFrames = requestedScopeFrames;
+
+	unit->bufData = (float**)RTAlloc(unit->mWorld, numChannels * sizeof(float));
+
+	for (int i = 0; i != numChannels; ++i) {
+		int *scopeFrameCount;
+		int maxFrames;
+
+		int error = (*(ft->fGetScopeBuffer))(unit->mWorld, scopeNum + i, unit->bufData + i, &scopeFrameCount, &maxFrames);
+
+		if (*scopeFrameCount && unit->mWorld->mVerbosity > -1 && !unit->mDone)
+			Print("Scope Buffer %d already in use\n", scopeNum + i);
+
+		scopeFrames = std::min(maxFrames, scopeFrames);
+		*scopeFrameCount = scopeFrames; // mark as used
+	}
+
+	unit->m_framepos = 0;
+	SETCALC(ScopeOut2_next);
+}
+
+void ScopeOut2_Dtor(ScopeOut2 *unit)
+{
+	uint32_t scopeNum = (uint32_t)ZIN0(0);
+	uint32 numChannels = unit->mNumInputs - 2;
+	for (int i = 0; i != numChannels; ++i) {
+		float * buf;
+		int *scopeFrameCount;
+		int maxFrames;
+
+		int error = (*(ft->fGetScopeBuffer))(unit->mWorld, scopeNum + i, &buf, &scopeFrameCount, &maxFrames);
+
+		*scopeFrameCount = 0; // mark as unused
+	}
+
+	if (unit->bufData)
+		RTFree(unit->mWorld, unit->bufData);
 }
 
 
@@ -7559,6 +7649,7 @@ PluginLoad(Delay)
 	DefineSimpleUnit(GrainTap);
 	DefineSimpleCantAliasUnit(TGrains);
 	DefineDtorUnit(ScopeOut);
+	DefineDtorUnit(ScopeOut2);
 	DefineDelayUnit(Pluck);
 
 	DefineSimpleUnit(DelTapWr);
