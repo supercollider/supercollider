@@ -23,12 +23,15 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 
-namespace detail {
+namespace detail_server_shm {
+
+using namespace std;
+using namespace boost;
+using namespace boost::interprocess;
 
 struct server_shared_memory
 {
-	typedef boost::interprocess::managed_shared_memory managed_shared_memory;
-	typedef boost::interprocess::offset_ptr<float> sh_float_ptr;
+	typedef offset_ptr<float> sh_float_ptr;
 
 	server_shared_memory(managed_shared_memory & segment, int control_busses):
 		num_control_busses(control_busses)
@@ -57,11 +60,9 @@ private:
 	sh_float_ptr control_busses_; // control busses
 };
 
-static inline std::string make_shmem_name(uint port_number)
+static inline string make_shmem_name(uint port_number)
 {
-	return std::string("SuperColliderServer_") + boost::lexical_cast<std::string>(port_number);
-}
-
+	return string("SuperColliderServer_") + lexical_cast<string>(port_number);
 }
 
 class server_shared_memory_creator
@@ -70,11 +71,11 @@ class server_shared_memory_creator
 	typedef boost::interprocess::shared_memory_object shared_memory_object;
 	typedef boost::interprocess::open_or_create_t open_or_create_t;
 	typedef std::string string;
-	typedef detail::server_shared_memory server_shared_memory;
+	typedef detail_server_shm::server_shared_memory server_shared_memory;
 
 public:
 	server_shared_memory_creator(uint port_number, uint control_busses):
-		shmem_name(detail::make_shmem_name(port_number)),
+		shmem_name(detail_server_shm::make_shmem_name(port_number)),
 		segment(open_or_create_t(), shmem_name.c_str(), 65536)
 	{
 		segment.flush();
@@ -83,7 +84,7 @@ public:
 
 	static void cleanup(uint port_number)
 	{
-		shared_memory_object::remove(detail::make_shmem_name(port_number).c_str());
+		shared_memory_object::remove(detail_server_shm::make_shmem_name(port_number).c_str());
 	}
 
 	~server_shared_memory_creator(void)
@@ -109,17 +110,12 @@ protected:
 
 class server_shared_memory_client
 {
-	typedef boost::interprocess::open_only_t open_only_t;
-	typedef std::string string;
-	typedef detail::server_shared_memory server_shared_memory;
-	typedef boost::interprocess::managed_shared_memory managed_shared_memory;
-
 public:
 	server_shared_memory_client(uint port_number):
-		shmem_name(detail::make_shmem_name(port_number)),
-		segment(open_only_t(), shmem_name.c_str())
+		shmem_name(detail_server_shm::make_shmem_name(port_number)),
+		segment(open_only, shmem_name.c_str())
 	{
-		std::pair<detail::server_shared_memory*, std::size_t> res = segment.find<server_shared_memory> (shmem_name.c_str());
+		pair<detail_server_shm::server_shared_memory*, size_t> res = segment.find<server_shared_memory> (shmem_name.c_str());
 		if (res.second != 1)
 			throw std::runtime_error("Cannot connect to shared memory");
 		shm = res.first;
@@ -133,7 +129,12 @@ public:
 private:
 	string shmem_name;
 	managed_shared_memory segment;
-	detail::server_shared_memory * shm;
+	detail_server_shm::server_shared_memory * shm;
 };
+
+}
+
+using detail_server_shm::server_shared_memory_client;
+using detail_server_shm::server_shared_memory_creator;
 
 #endif /* SERVER_SHM_HPP */

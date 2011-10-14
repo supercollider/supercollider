@@ -32,6 +32,8 @@
 #include "SC_Reply.h"
 #include "MsgFifo.h"
 
+#include "../../common/server_shm.hpp"
+
 extern HashTable<struct UnitDef, Malloc> *gUnitDefLib;
 
 
