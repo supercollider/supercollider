@@ -1,7 +1,7 @@
 class:: Dbufrd
 summary:: Buffer read demand ugen
 categories:: UGens>Buffer, UGens>Demand
-related:: Classes/Dbufrd
+related:: Classes/Dbufwr
 
 classmethods::
 
