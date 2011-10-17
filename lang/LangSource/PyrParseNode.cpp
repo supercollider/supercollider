@@ -4560,9 +4560,9 @@ void initSpecialSelectors()
 	//sel[opNotIdentical] = getsym("!==");
 	sel[opMin] = getsym("min");
 	sel[opMax] = getsym("max");
-	sel[opBitAnd] = getsym("&");
-	sel[opBitOr] = getsym("|");
-	sel[opBitXor] = getsym("bitxor");
+	sel[opBitAnd] = getsym("bitAnd");
+	sel[opBitOr] = getsym("bitOr");
+	sel[opBitXor] = getsym("bitXor");
 	sel[opLCM] = getsym("lcm");
 	sel[opGCD] = getsym("gcd");
 	sel[opRound] = getsym("round");
