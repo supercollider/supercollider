@@ -251,17 +251,17 @@ enum {
 
 inline float sc_andt(float a, float b)
 {
-	return a > 0.f && b > 0.f ? 1.f : 0.f;
+	return int(a) & int(b);
 }
 
 inline float sc_ort(float a, float b)
 {
-	return a > 0.f || b > 0.f ? 1.f : 0.f;
+	return int(a) | int(b);
 }
 
 inline float sc_xort(float a, float b)
 {
-	return a > 0.f ? (b > 0.f ? 0.f : 1.f) : (b > 0.f ? 1.f : 0.f);
+	return int(a) ^ int(b);
 }
 
 struct BinaryOpUGen : public Unit
