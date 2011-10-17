@@ -55,7 +55,7 @@ SynthDef(\test, {arg roomsize, revtime, damping, inputbw, spread = 15, drylevel,
 		drylevel.dbamp,
 		earlylevel.dbamp,
 		taillevel.dbamp,
-		roomsize, 0.3) + a)}).load(s)
+		roomsize, 0.3) + a)}).add
 
 s = Server.internal.boot;
 s.scope(2);

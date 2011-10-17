@@ -67,7 +67,7 @@ SynthDef("conformer1", {
 	chain = FFT(0, in);
 	chain=PV_ConformalMap(chain, MouseX.kr(-1.0,1.0), MouseY.kr(-1.0,1.0));
 	Out.ar(0, Pan2.ar(IFFT(chain),0));
-}).load(s);
+}).add;
 )
 
 s.sendMsg("/b_alloc", 0, 1024, 1);
@@ -85,7 +85,7 @@ SynthDef("conformer2", {
 	out=IFFT(chain);
 
 	Out.ar(0, Pan2.ar(CombN.ar(out,0.1,0.1,10,0.5,out),0));
-}).load(s);
+}).add;
 )
 
 

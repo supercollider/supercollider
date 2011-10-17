@@ -260,7 +260,7 @@ s.waitForBoot({
 			x = x * EnvGen.kr(Env.cutoff, gate, doneAction: 2);
 			Out.ar(0, x);
 		}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]
-	).load(s);
+	).add;
 
 
 

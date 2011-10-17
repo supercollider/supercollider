@@ -301,7 +301,7 @@ SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, g
 		x = x * EnvGen.kr(Env.cutoff, gate, doneAction: 2);
 		Out.ar(0, x);
 	}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]
-).load(s);
+).add;
 
 
 
@@ -398,7 +398,7 @@ SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal = 0, amp=0.4,
 		x = x * EnvGen.kr(Env.cutoff, gate, 5, doneAction: 2);
 		Out.ar(0, x);
 	}, [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0]
-).load(s);
+).add;
 
 
 params = ["note", "fc", "rq", "bal", "amp", "width"];
