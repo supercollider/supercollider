@@ -530,8 +530,7 @@ SynthDef(\play_from_to, { arg out, bufnum, from=0.0, to=1.0, sustain=1.0;
 }).add;
 )
 
-s.sendMsg("/b_allocRead", 170, "sounds/a11wlk01.wav");
-
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav")
 
 (
 Pdef(\poch, { arg sustain=1.0, from=0.0, to=1.0, n=3;
@@ -557,7 +556,7 @@ Pbind(
 	\from, 0,
 	\to, 1,
 	\dur, 3,
-	\bufnum, 170
+	\bufnum, b
 ).play
 )
 
@@ -590,7 +589,7 @@ Pbind(
 	\to, Prand([-1, 1], inf),
 	\dur, 3,
 	\n, Prand([1, 2, 3], inf),
-	\bufnum, 170,
+	\bufnum, b,
 	\amp, 0.2
 ).play
 )

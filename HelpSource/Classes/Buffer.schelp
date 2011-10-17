@@ -124,7 +124,8 @@ N.B. You cannot rely on the buffer's instance variables being instantly updated,
 code::
 // read a soundfile
 s.boot;
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+p = Platform.exampleSoundFile;
+b = Buffer.read(p);
 
 // now play it
 (
@@ -139,7 +140,7 @@ x.free; b.free;
 // with an action function
 // note that the vars are not immediately up-to-date
 (
-b = Buffer.read(s, "sounds/a11wlk01.wav", action: { arg buffer;
+b = Buffer.read(s, p, action: { arg buffer;
     ("After update:" + buffer.numFrames).postln;
     x = { PlayBuf.ar(1, buffer, BufRateScale.kr(buffer)) }.play;
 });
@@ -168,26 +169,29 @@ discussion::
 code::
 s.boot;
 // first a standard read so we can see what's in the file
-b = Buffer.read(s, "sounds/SinedPink.aiff");
-// "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
+b = Buffer.read(s, Help.dir +/+ "sounds/SinedPink.aiff");
+// Help.dir +/+ "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
 b.plot;
 b.free;
 
 // Now just the sine
-b = Buffer.readChannel(s, "sounds/SinedPink.aiff", channels: [0]);
+b = Buffer.readChannel(s, Help.dir +/+ "sounds/SinedPink.aiff", channels: [0]);
 b.plot;
 b.free;
 
 // Now just the pink noise
-b = Buffer.readChannel(s, "sounds/SinedPink.aiff", channels: [1]);
+b = Buffer.readChannel(s, Help.dir +/+ "sounds/SinedPink.aiff", channels: [1]);
 b.plot;
 b.free;
 
 // Now reverse channel order
-b = Buffer.readChannel(s, "sounds/SinedPink.aiff", channels: [1, 0]);
+b = Buffer.readChannel(s, Help.dir +/+ "sounds/SinedPink.aiff", channels: [1, 0]);
 b.plot;
 b.free;
 ::
+
+method:: readExample
+Read example sound file to buffer via code::read::.
 
 method:: readNoUpdate
 As code::read:: above, but without the automatic update of instance variables. Call code::updateInfo:: (see below) to update the vars.
@@ -215,7 +219,7 @@ SynthDef(\help_Buffer,{ arg out=0, bufnum;
 }).add;
 
 y = Synth.basicNew(\help_Buffer); // not sent yet
-b = Buffer.readNoUpdate(s,"sounds/a11wlk01.wav",
+b = Buffer.readNoUpdate(s, Platform.exampleSoundFile,
 	completionMessage: { arg buffer;
 		// synth add its s_new msg to follow
 		// after the buffer read completes
@@ -258,7 +262,7 @@ SynthDef(\help_Buffer_cue,{ arg out=0,bufnum;
 
 (
 s.makeBundle(nil, {
-	b = Buffer.cueSoundFile(s,"sounds/a11wlk01-44_1.aiff", 0, 1);
+	b = Buffer.cueSoundFile(s, Platform.exampleSoundFile, 0, 1);
 	y = Synth(\help_Buffer_cue, [\bufnum, b], s);
 });
 )
@@ -463,7 +467,7 @@ discussion::
 code::
 s.boot;
 b = Buffer.new(s);
-b.allocRead("sounds/a11wlk01.wav");
+b.allocRead(Platform.exampleSoundFile);
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * 0.5 }.play;
 x.free; b.free;
 ::
@@ -485,7 +489,7 @@ code::
 s.boot;
 b = Buffer.new(s);
 // read only the first channel (a Sine wave) of a stereo file
-b.allocReadChannel("sounds/SinedPink.aiff", channels: [0]);
+b.allocReadChannel(Help.dir +/+ "sounds/SinedPink.aiff", channels: [0]);
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * 0.5 }.play;
 x.free; b.free;
 ::
@@ -545,11 +549,11 @@ discussion::
 code::
 s.boot;
 //create with cueSoundFile class method
-b = Buffer.cueSoundFile(s, "sounds/a11wlk01-44_1.aiff", 0, 1);
+b = Buffer.cueSoundFile(s, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
 x = { DiskIn.ar(1, b) }.play;
 b.close;	// must call close in between cueing
 // now use like named instance method, but different arguments
-b.cueSoundFile("sounds/a11wlk01-44_1.aiff");
+b.cueSoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff");
 // have to do all this to clean up properly!
 x.free; b.close; b.free;
 ::
@@ -700,7 +704,7 @@ discussion::
 This is safer than getToFloatArray but only works with a server on your local machine. In general this is the safest way to get a large range of values from a server buffer into the client app.
 code::
 s.boot;
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 // same as Buffer.plot
 b.loadToFloatArray(action: { arg array; a = array; {a.plot;}.defer; "done".postln;});
 b.free;
@@ -722,7 +726,7 @@ discussion::
 This is more risky than loadToFloatArray but does works with servers on remote machines. In high traffic situations it is possible for data to be lost. If this method has not received all its replies by timeout it will post a warning saying that the method has failed. In general use loadToFloatArray instead wherever possible.
 code::
 s.boot;
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 // like Buffer.plot
 b.getToFloatArray(wait:0.01,action:{arg array; a = array; {a.plot;}.defer;"done".postln;});
 b.free;
@@ -748,7 +752,7 @@ SynthDef(\help_Buffer_copy, { arg out=0, buf;
 )
 
 (
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 c = Buffer.alloc(s, 120000);
 )
 
@@ -793,7 +797,7 @@ a window to place the plot in. If nil, one will be created for you
 discussion::
 code::
 s.boot;
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 b.plot;
 b.free;
 ::
@@ -807,7 +811,7 @@ A value by which to scale the output. The default is 1.
 discussion::
 code::
 s.boot;
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 b.play; // frees itself
 x = b.play(true);
 x.free; b.free;
@@ -823,7 +827,7 @@ A Function to be evaluated once the file has been read and this Buffer's instanc
 discussion::
 code::
 s.boot;
-b = Buffer.readNoUpdate(s, "sounds/a11wlk01.wav");
+b = Buffer.readNoUpdate(s, Platform.exampleSoundFile);
 b.numFrames; // incorrect, shows nil
 b.updateInfo({|buf| buf.numFrames.postln; }); // now it's right
 b.free;

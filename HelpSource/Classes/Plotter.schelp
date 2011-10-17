@@ -40,7 +40,7 @@ code::
 { SinOsc.ar([700, 357]) * SinOsc.ar([400, 476]) * 0.2 }.plot2;
 
 // Buffer
-Buffer.read(s, "sounds/SinedPink.aiff").plot2;
+Buffer.read(s, Help.dir +/+ "sounds/SinedPink.aiff").plot2;
 
 // Env
 Env.perc(0.4, 0.6).plot2;
@@ -360,8 +360,8 @@ Env.perc(0.4, 0.6).plot2;
 Env.new({ 1.0.rand2 }! 8, { 1.0.rand } ! 7, \sin).plot2;
 
 // Buffer:plot
-b = Buffer.read(s, "sounds/SinedPink.aiff");
-		// "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
+b = Buffer.read(s, Help.dir +/+ "sounds/SinedPink.aiff");
+		// Help.dir +/+ "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
 b.plot2;
 b.free;
 ::

@@ -333,7 +333,7 @@ x.free;
 // use sync
 (
 s.makeBundle(nil, {
-	b = Buffer.read(s, "sounds/a11wlk01.wav");
+	b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 	s.sync; // wait until load is done and then send the rest of the bundle
 	x = { PlayBuf.ar(1, b) * 0.5 }.play;
 });

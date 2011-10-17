@@ -26,14 +26,15 @@ Examples::
 
 code::
 
-s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
+b = Buffer.readExample;
 
 // indexing with a phasor
-{ BufRd.ar(1, 0, Phasor.ar(0, BufRateScale.kr(0), 0, BufFrames.kr(0))) }.play;
-
+{ BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b), 0, BufFrames.kr(b))) }.play;
 
 // indexing by hand
-{ BufRd.ar(1, 0, K2A.ar(MouseX.kr(0, BufFrames.kr(0)))) }.play;
+{ BufRd.ar(1, b, K2A.ar(MouseX.kr(0, BufFrames.kr(b)))) }.play;
+
+b.free
 
 ::
 
