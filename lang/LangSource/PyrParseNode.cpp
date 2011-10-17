@@ -4592,7 +4592,7 @@ void initSpecialSelectors()
 	sel[opFold2] = getsym("fold2");
 	sel[opWrap2] = getsym("wrap2");
 	sel[opExcess] = getsym("excess");
-	sel[opFirstArg] = getsym("<!");
+	sel[opFirstArg] = getsym("firstArg");
 	sel[opRandRange] = getsym("rrand");
 	sel[opExpRandRange] = getsym("exprand");
 
