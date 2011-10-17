@@ -52,7 +52,7 @@ s.boot;
 (
 b = Buffer.alloc(s,2048,1);
 c = Buffer.alloc(s,2048,1);
-d = Buffer.read(s,"sounds/a11wlk01.wav");
+d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 )
 
 (

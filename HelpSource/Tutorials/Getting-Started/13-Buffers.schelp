@@ -40,7 +40,7 @@ Buffer has another class method called 'read', which reads a sound file into mem
 
 code::
 // read a soundfile
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 // now play it
 (
@@ -82,7 +82,7 @@ SynthDef("tutorial-Buffer-cue",{ arg out=0,bufnum;
 }).send(s);
 )
 
-b = Buffer.cueSoundFile(s,"sounds/a11wlk01-44_1.aiff", 0, 1);
+b = Buffer.cueSoundFile(s,Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
 y = Synth.new("tutorial-Buffer-cue", [\bufnum,b], s);
 
 b.free; y.free;
@@ -98,7 +98,7 @@ Buffer has a number of other instance variables with getters which can provide h
 
 code::
 // watch the post window
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 b.bufnum;
 b.numFrames;
 b.numChannels;
@@ -112,7 +112,7 @@ code::
 // with an action function
 // note that the vars are not immediately up-to-date
 (
-b = Buffer.read(s, "sounds/a11wlk01.wav", action: { arg buffer;
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav", action: { arg buffer;
 	("numFrames after update:" + buffer.numFrames).postln;
 	x = { PlayBuf.ar(1, buffer, BufRateScale.kr(buffer)) }.play;
 });
@@ -211,7 +211,7 @@ Buffer has two useful convenience methods: 'plot' and 'play'.
 
 code::
 // see the waveform
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 b.plot;
 
 // play the contents
