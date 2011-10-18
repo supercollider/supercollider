@@ -30,7 +30,7 @@ numberedList::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Two helpful commands in the SuperCollider Edit menu: 
+Two helpful commands in the SuperCollider Edit menu:
 
 numberedList::
 ## "Go to Line ..." transports you to the line number of your choice. Use this when an error message identifies the line number on which a problem occured.

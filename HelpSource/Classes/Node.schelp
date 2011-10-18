@@ -42,13 +42,13 @@ method:: nodeID
 Returns:: the Node's node ID number.
 discussion::
 Normally you should not need to access this since instances of Node can be passed directly as link::Classes/UGen:: inputs or link::Classes/Synth:: args.
-	
+
 method:: group
 Returns:: an instance of Group or RootNode corresponding to this Node's group on the server.
-	
+
 method:: server
 Returns:: an instance of Server corresponding to this Node's server app.
-	
+
 method:: isPlaying
 Returns:: a boolean indicating if this node is currently on the server, providing this Node has been registered with a link::Classes/NodeWatcher::.
 discussion::
@@ -63,7 +63,7 @@ subsection:: Node Commands
 
 See the Node Commands section in link::Reference/Server-Command-Reference:: for the OSC equivalents of the methods outlined below.
 
-method:: free, freeMsg 
+method:: free, freeMsg
 Stop this Node and free it from its parent group on the server. Once a Node has been freed, you cannot restart it.
 argument:: sendFlag
 a boolean indicating whether the free message should be sent. If false an n_free message will not be sent to this Node's server, but its isPlaying and isRunning variables will be set to false. The default for sendFlag is true.
@@ -74,7 +74,7 @@ s.boot;
 x = Synth("default");
 x.free;
 ::
-		
+
 method:: run, runMsg
 Set the running state of this Node according to a boolean. False will pause the node without freeing it. The default is true.
 discussion::
@@ -82,14 +82,14 @@ If this Node is a Group this will set the running state of all Nodes within the 
 code::
 s.boot;
 (
-x = SynthDef("help-node-set", {arg freq = 440, out = 0; 
+x = SynthDef("help-node-set", {arg freq = 440, out = 0;
 	Out.ar(out, SinOsc.ar(freq, 0, 0.1));}).play(s);
 )
 x.run(false);
 x.run; // default is true
 x.free;
 ::
-	
+
 method:: set, setMsg
 Set controls in this Node to values.
 discussion::
@@ -119,7 +119,7 @@ x.set(\freq, [1,2,3] * 400 + [1,2,3], \out, 1); // two pairs
 x.set(\freq, [3] * 400 + [1,2,3], \out, 1); // two pairs
 x.set(0, [660, 680, 720], 1, 0); // freq is the first argument, so it's index is 0. out is index 1.
 x.free;
-::			
+::
 
 method:: setn, setnMsg
 Set sequential ranges of controls in this Node to values.
@@ -129,14 +129,14 @@ code::
 s.boot;
 (
 x = SynthDef("help-node-setn", {
-	arg freq1 = 440, freq2 = 440, freq3 = 440, amp1 = 0.05, amp2 = 0.05, amp3 = 0.05; 
+	arg freq1 = 440, freq2 = 440, freq3 = 440, amp1 = 0.05, amp2 = 0.05, amp3 = 0.05;
 	Out.ar(0, Mix(SinOsc.ar([freq1, freq2, freq3], 0, [amp1, amp2, amp3])));}).play(s);
 )
 // set 3 controls starting from \freq1, and 3 controls starting from \amp1
 x.setn(\freq1, [440, 880, 441], \amp1, [0.3, 0.1, 0.3]);
 x.free;
 ::
-	
+
 method:: fill, fillMsg
 Set sequential ranges of controls in this Node to a single value.
 discussion::
@@ -155,7 +155,7 @@ s.boot;
 (
 b = Bus.control(s, 1); b.set(880);
 c = Bus.control(s, 1);	c.set(884);
-x = SynthDef("help-Node-map", { arg freq1 = 440, freq2 = 440; 
+x = SynthDef("help-Node-map", { arg freq1 = 440, freq2 = 440;
 	Out.ar(0, SinOsc.ar([freq1, freq2], 0, 0.1));
 }).play(s);)
 x.map(\freq1, b, \freq2, c);
@@ -164,7 +164,7 @@ x.free; b.free; c.free;
 // same as above with a multichannel Bus and Control
 (
 b = Bus.control(s, 2); b.set(880, 884);
-x = SynthDef("help-Node-map2", { arg freqs = #[440, 440]; 
+x = SynthDef("help-Node-map2", { arg freqs = #[440, 440];
 	Out.ar(0, SinOsc.ar(freqs, 0, 0.1));
 }).play(s);)
 x.map(\freqs, b);
@@ -213,9 +213,9 @@ x.free; g.free;
 method:: register
 Registers the node at the link::Classes/NodeWatcher:: object.
 discussion::
-This will enable two variables, isPlaying and isRunning, which you can use for checking purposes. 
+This will enable two variables, isPlaying and isRunning, which you can use for checking purposes.
 code::
-(	
+(
 b = s.makeBundle(false, {
 	a = Group.new(s); //create a node object
 	a.register; // register before creating on the server
@@ -241,7 +241,7 @@ Move this Node to be directly after aNode. N.B. n_after, the OSC message which t
 
 method:: moveBefore, moveBeforeMsg
 Move this Node to be directly before aNode. N.B. n_before, the OSC message which this method encapsulates, allows already freed nodes as targets. This is so that one may attempt a series of moves, with the last successful one taking effect. For this reason this method will fail silently if either the target or this node have already been freed. If you will need to check, you may register the relevant nodes with a NodeWatcher.
-	
+
 method:: moveToHead, moveToHeadMsg
 If aGroup is a Group then this method will move this Node to the head of that Group. If it is nil this will move this Node to the head of the default_group of this Node's Server.
 
@@ -252,10 +252,10 @@ subsection:: Other Methods
 
 method:: asTarget
 Returns:: this Node. See the link::Reference/asTarget:: help file for more details.
-	
+
 method:: printOn
 Prints this Node's link::Classes/Class:: (link::Classes/Synth:: or link::Classes/Group::) and nodeID on stream.
-	
+
 method:: hash
 Returns:: server.hash bitXor: nodeID.hash
 

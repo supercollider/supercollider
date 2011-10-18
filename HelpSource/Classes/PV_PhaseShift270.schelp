@@ -32,8 +32,8 @@ c = Buffer.alloc(Server.internal,2048,1);
 	in = SinOsc.ar(500, 0, 0.4);
 	fft = FFT(b.bufnum, in);
 	fft2 = FFT(c.bufnum, in);
-	shifted = PV_PhaseShift270(fft); 
-	Out.ar(0,  [IFFT(fft2), IFFT(shifted)]);  
+	shifted = PV_PhaseShift270(fft);
+	Out.ar(0,  [IFFT(fft2), IFFT(shifted)]);
 }.scope
 )
 

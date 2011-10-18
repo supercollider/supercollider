@@ -33,7 +33,7 @@ code::
 // other slot numbers are accessed by positive integers:
 
 ~y[1] = { Saw.ar([400, 401.3], 0.4) };
-~y[0] = { Saw.ar([300, 301], 0.4) }; 
+~y[0] = { Saw.ar([300, 301], 0.4) };
 
 // to remove one of them, nil is used:
 

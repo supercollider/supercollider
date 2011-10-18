@@ -34,22 +34,22 @@ code::
 // example
 
 (
-{ 
+{
 	var a, freq, trig;
 	a = Dgeom(1, 1.2, 15);
 	trig = Impulse.kr(MouseX.kr(1, 40, 1));
-	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	freq = Demand.kr(trig, 0, a) * 30 + 340;
 	SinOsc.ar(freq) * 0.1
 
 }.play;
 )
 
 (
-{ 
+{
 	var a, freq, trig;
 	a = Dgeom(1, 1.2, inf);
 	trig = Dust.kr(MouseX.kr(1, 40, 1));
-	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	freq = Demand.kr(trig, 0, a) * 30 + 340;
 	SinOsc.ar(freq) * 0.1
 
 }.play;

@@ -43,9 +43,9 @@ A random offset of from zero to
 code::timeDispersion::  seconds is added to the
 delay of each grain. Use of some dispersion can alleviate a hard
 comb filter effect due to uniform grain placement. It can also be
-an effect in itself. 
+an effect in itself.
 code::timeDispersion::  can be
-no larger than 
+no larger than
 code::windowSize:: .
 
 
@@ -88,8 +88,8 @@ var grainSize;
 grainSize = 0.5;
 play({
 	PitchShift.ar(
-		AudioIn.ar([1,2]), 
-		grainSize, 		
+		AudioIn.ar([1,2]),
+		grainSize,
 		1,						// nominal pitch rate = 1
 		MouseX.kr(0,1), 			// pitch dispersion
 		MouseY.kr(0, grainSize)	// time dispersion

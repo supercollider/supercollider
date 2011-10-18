@@ -59,7 +59,7 @@ code::
 
 subsection::example 3 - Stream-embedInStream
 
-The message code::embedInStream:: is what allows Patterns to do this kind of nesting. Most objects 
+The message code::embedInStream:: is what allows Patterns to do this kind of nesting. Most objects
 (such as the number 3 below) respond to code::embedInStream:: by yielding themselves once and returning. Streams respond to embedInStream by iterating themselves to completion, effectively "taking over" the calling stream for that time.
 
 A Routine can perform a pattern simply by replacing calls to code::yield:: with calls to code::embedInStream::.

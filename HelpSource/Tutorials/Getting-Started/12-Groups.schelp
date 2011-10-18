@@ -23,7 +23,7 @@ code::
 SynthDef(\tutorial_DecaySin2, { arg outBus = 0, effectBus, direct = 0.5, freq = 440;
 	var source;
 	// 1.0.rand2 returns a random number from -1 to 1, used here for a random pan
-	source = Pan2.ar(Decay2.ar(Impulse.ar(Rand(0.3, 1), 0, 0.125), 0.3, 1, 
+	source = Pan2.ar(Decay2.ar(Impulse.ar(Rand(0.3, 1), 0, 0.125), 0.3, 1,
 		SinOsc.ar(SinOsc.kr(0.2, 0, 110, freq))), Rand(-1.0, 1.0));
 	Out.ar(outBus, source * direct);
 	Out.ar(effectBus, source * (1 - direct));
@@ -73,7 +73,7 @@ Environment.new.push;
 // restore old environment
 currentEnvironment.pop;
 ::
-	
+
 section::All the addActions
 
 At this point it's probably good to cover the remaining add actions. In addition to \addBefore and \addAfter, there is also the (rarely) used \addReplace, and two add actions which apply to Groups: \addToHead and \addToTail. The former adds the receiver to the beginning of the group, so that it will execute first, the latter to the end of the group, so that it will execute last. Like the other addActions, \addToHead and \addToTail have convenience methods called 'head' and 'tail'.
@@ -181,7 +181,7 @@ Group.findRespondingMethodFor('postln');	// Object-postln;
 Group.helpFileForMethod('postln'); 		// opens class Object help file
 ::
 
-For more information see: 
+For more information see:
 
 link::Classes/Group::, link::Classes/Node::, link::Reference/default_group::, link::Classes/RootNode::, link::Guides/Intro-to-Objects::, link::Guides/Order-of-execution::, link::Classes/Synth::, link::Guides/More-On-Getting-Help::, link::Guides/Internal-Snooping::
 

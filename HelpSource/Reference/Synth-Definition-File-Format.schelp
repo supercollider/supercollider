@@ -13,10 +13,10 @@ definitionlist::
 ## int16 || a 16 bit integer.
 ## int8 || an 8 bit integer.
 ## float32 || a 32 bit IEEE floating point number.
-## pstring || a pascal format string: a byte giving the length followed by that many bytes. 
+## pstring || a pascal format string: a byte giving the length followed by that many bytes.
 ::
 
-section:: File Format 
+section:: File Format
 
 a strong::synth-definition-file:: is :
 list::
@@ -74,7 +74,7 @@ list::
 ## int8 - calculation rate
 ::
 
-section:: File Format as Tree 
+section:: File Format as Tree
 
 soft::added by Jonatan Liljedahl::
 

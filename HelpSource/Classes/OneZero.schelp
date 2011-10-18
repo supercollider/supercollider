@@ -30,17 +30,17 @@ Feed forward coefficient.
 
 
 +0.5 makes a two point averaging filter
-(see also 
+(see also
 link::Classes/LPZ1:: ).
 
 
 -0.5 makes a differentiator
-(see also 
+(see also
 link::Classes/HPZ1:: ).
 
 
 +1 makes a single sample delay
-(see also 
+(see also
 link::Classes/Delay1:: ).
 
 

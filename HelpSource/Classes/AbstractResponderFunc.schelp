@@ -16,7 +16,7 @@ private:: initClass
 METHOD:: allFuncProxies
 Get all current instances of this classes concrete subclasses, sorted by type.
 
-returns:: An link::Classes/IdentityDictionary::. 
+returns:: An link::Classes/IdentityDictionary::.
 
 METHOD:: allEnabled
 As allFuncProxies above, but only return those instances currently listening for input.

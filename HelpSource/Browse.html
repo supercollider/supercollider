@@ -131,7 +131,7 @@ function updateTree() {
         for(var i=0;i<tree.entries.length;i++) {
             var v = tree.entries[i];
             var x = v.path.split("/");
-            
+
             res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> <span class='soft'>["+x[0];
             if(v.installed=="extension")
                 res += " +";
@@ -187,7 +187,7 @@ function buildCategoryTree() {
     var tree = {};
     var p,l,e,a;
     for(var cat in cats) {
-        var files = cats[cat];    
+        var files = cats[cat];
 
         p=tree;
         l=cat.split(">");

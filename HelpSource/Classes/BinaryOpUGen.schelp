@@ -41,10 +41,10 @@ b.operator; // +
 
 // sound example
 (
-{ 
+{
 	var a = LFSaw.ar(300);
 	var b = LFSaw.ar(329.1);
-	a % b * 0.1 
+	a % b * 0.1
 }.play;
 )
 ::

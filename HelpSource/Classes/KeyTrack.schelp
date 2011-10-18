@@ -33,7 +33,7 @@ d = Buffer.read(s,"/Volumes/data/stevebeattrack/samples/100.wav");
 // F major; hard to track!
 d = Buffer.read(s,"/Volumes/data/stevebeattrack/samples/115.wav");
 
-// straight forward since no transients; training set from MIREX2006 
+// straight forward since no transients; training set from MIREX2006
 // 01 = A major
 // 57 = b minor
 // 78 e minor
@@ -44,7 +44,7 @@ b = Buffer.alloc(s, 4096, 1); // for sampling rates 44100 and 48000
 
 (
 {
-var in, fft, resample; 
+var in, fft, resample;
 var key, transientdetection;
 
 in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
@@ -53,9 +53,9 @@ fft = FFT(b, in);
 
 key=KeyTrack.kr(fft, 2.0, 0.5);
 
-key.poll; 
+key.poll;
 
-Out.ar(0,Pan2.ar(in)); 
+Out.ar(0,Pan2.ar(in));
 }.play
 )
 ::
@@ -66,13 +66,13 @@ code::
 // alternating major and minor chords as a test
 (
 {
-var in, fft, resample; 
+var in, fft, resample;
 var key, transientdetection;
 
-in = Mix(SinOsc.ar((60 + [0, MouseX.kr(3, 4).round(1), 7]).midicps, 0, 0.1)); 
+in = Mix(SinOsc.ar((60 + [0, MouseX.kr(3, 4).round(1), 7]).midicps, 0, 0.1));
 
 // major dom 7 and minor 7; major keys preferred here
-//in = Mix(SinOsc.ar((60 + (MouseY.kr(0, 11).round(1.0)) + [0, MouseX.kr(3, 4).round(1), 7, 10]).midicps, 0, 0.1)); 
+//in = Mix(SinOsc.ar((60 + (MouseY.kr(0, 11).round(1.0)) + [0, MouseX.kr(3, 4).round(1), 7, 10]).midicps, 0, 0.1));
 
 fft = FFT(b, in);
 
@@ -119,14 +119,14 @@ Out.ar(0,Pan2.ar(in, -0.5) + Pan2.ar(sympath, 0.5));
 
 
 code::
-// Research Notes: 
+// Research Notes:
 // See the MIREX2006 audio key tracking competition and Emilia Gomez's PhD thesis, Tonal Description of Music Audio Signals
 
-// The following code was used to create the datasets for the UGen, and would be the basis of extensions 
+// The following code was used to create the datasets for the UGen, and would be the basis of extensions
 
 // Need one set of bin data for 44100 and one for 48000
 
-// KeyTrack calculations, need to make arrays of FFT bins and weights for each chromatic tone. 
+// KeyTrack calculations, need to make arrays of FFT bins and weights for each chromatic tone.
 // greater resolution, 4096 FFT, avoid lower octaves, too messy there
 // 60*6*2 output arrays
 
@@ -138,34 +138,34 @@ var wtlist, binlist;
 
 sr = 48000; //44100;
 
-fftN = 4096; 
+fftN = 4096;
 fftBins = fftN.div(2);
 binsize = sr / fftN;
 
 midinotes = (33..92); // 60 notes, 55 Hz up to 1661.2187903198 Hz
 
-wtlist = List[]; 
-binlist = List[]; 
-	
-// for each note have six harmonic locations	
-midinotes.do{ |note|
-	var freq, whichbin, lowerbin, prop; 
+wtlist = List[];
+binlist = List[];
 
-	freq = note.midicps; 
+// for each note have six harmonic locations
+midinotes.do{ |note|
+	var freq, whichbin, lowerbin, prop;
+
+	freq = note.midicps;
 
 	6.do{|j|
 		var partialfreq, partialamp;
 
 		partialamp = 1.0 / (j + 1);
-		partialfreq = freq * (j + 1); 
+		partialfreq = freq * (j + 1);
 
-		whichbin = partialfreq / binsize; 
-		lowerbin = whichbin.asInteger; 
+		whichbin = partialfreq / binsize;
+		lowerbin = whichbin.asInteger;
 		prop = 1.0 - (whichbin - lowerbin);
 
 		binlist.add(lowerbin).add(lowerbin + 1);
 		wtlist.add(prop * partialamp).add((1.0 - prop) * partialamp);
-	
+
 	};
 
 };

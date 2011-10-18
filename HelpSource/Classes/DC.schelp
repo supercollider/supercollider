@@ -5,7 +5,7 @@ categories::  UGens>Generators>Single-value
 
 Description::
 
-This UGen simply outputs the initial value you give it. 
+This UGen simply outputs the initial value you give it.
 
 classmethods::
 
@@ -19,7 +19,7 @@ code::
 //won't work (the output is 0.5*0.0), which is why we need the DC UGen!
 {0.5}.play
 
-//constantly zero 
+//constantly zero
 {DC.ar(0.0) }.play;
 
 
@@ -33,7 +33,7 @@ code::
 
 //For these examples, you might want to boot the internal server
 Server.default =s = Server.internal;
-s.boot; 
+s.boot;
 s.scope
 ::
 

@@ -131,7 +131,7 @@ Document.postColor_(Color.green);
 Document.postColor_(Color.blue);
 Document.postColor_(Color.black);
 (
-r = Routine({ 
+r = Routine({
 	10.do({
 		Document.postColor_(Color.rand);
 		"There is no blue without yellow and without orange.".postln;
@@ -168,7 +168,7 @@ If you want to have your own themes for syntax colorization, you need to put you
 code::
 //putting a custom color theme into Document.themes
 Document.themes.put
-(\myTheme, 
+(\myTheme,
 	(
 		classColor: Color.new255(53, 74, 187),
 		textColor: Color.new255(0, 0, 0),
@@ -405,7 +405,7 @@ code::
 //add a mouse action to this document:
 //example: easy button:
 //when you click in front of a 17 a SinOsc will start up;
-s.waitForBoot({	
+s.waitForBoot({
 	Document.current.mouseUpAction_({arg doc;
 		var char;
 		char = doc.rangeText(doc.selectionStart, 2);
@@ -679,7 +679,7 @@ code::
 	*openAutoComplete
 	autoComplete
 ::
-	
+
 
 
 subsection:: Subclassing and Internal Methods
@@ -693,7 +693,7 @@ code::
 	keyUp (character, modifiers, unicode, keycode)
 	getIdentifierCoordFromEnd (endPos)
 	dataptr
-	
+
 	Private. Used only internally:
 	*newFromIndex (idx)
 	*prnumberOfOpen
@@ -703,7 +703,7 @@ code::
 	prAdd
 	prGetLastIndex
 	setFont (font, rangeStart, rangeSize)
-	setTextColor (color, rangeStart, rangeSize)	
+	setTextColor (color, rangeStart, rangeSize)
 	propen (path, selectionStart, selectionLength)
 	rangeText (rangestart, rangesize)
 	insertTextRange (string, rangestart, rangesize)
@@ -724,7 +724,7 @@ code::
 	envir
 	envir_ (ev)
 	text
-	removeUndo 
+	removeUndo
 	selectedText
 	selectUnderlinedText (clickPos)
 	linkAtClickPos (clickPos)

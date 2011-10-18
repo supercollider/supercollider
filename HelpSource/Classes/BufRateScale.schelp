@@ -29,8 +29,8 @@ code::
 s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
 
 (
-x = { arg rate=1; 
-	BufRd.ar(1, 0, Phasor.ar(0, BufRateScale.kr(0) * rate, 0, BufFrames.kr(0))) 
+x = { arg rate=1;
+	BufRd.ar(1, 0, Phasor.ar(0, BufRateScale.kr(0) * rate, 0, BufFrames.kr(0)))
 }.play;
 )
 ::

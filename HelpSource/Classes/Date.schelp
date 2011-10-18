@@ -1,6 +1,6 @@
 class:: Date
 summary:: an object describing a point in time
-related:: 
+related::
 categories:: Control
 
 
@@ -94,7 +94,7 @@ definitionList::
 || Replaced by the locale's full month name. [ tm_mon]
 
 ## %c
-|| Replaced by the locale's appropriate date and time representation. 
+|| Replaced by the locale's appropriate date and time representation.
 
 ## %C
 || Replaced by the year divided by 100 and truncated to an integer, as a decimal number [00,99]. [ tm_year]

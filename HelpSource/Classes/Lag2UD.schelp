@@ -21,7 +21,7 @@ code::
 (
 // used to lag pitch
        SynthDef( \lag2ud_help,
-      
+
 	{ arg freq=300,lagup=1, lagdown=5;
 		Out.ar( 0,
 			SinOsc.ar( // sine wave
@@ -38,7 +38,7 @@ code::
 )
 
 x = Synth.new( \lag2ud_help ); // create the synth
-      
+
 x.set( \freq, 500 ); // set the frequency to a higher value (takes 1 second)
 x.set( \freq, 100 ); // set the frequency to a lower value (takes 5 seconds)
 x.free;

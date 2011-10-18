@@ -8,10 +8,10 @@ Unit generators in SuperCollider can have many inputs, but always have a single 
 
 section::Instantiation. Audio Rate, Control Rate
 
-A unit generator is created by sending the 'ar' or 'kr' message to the unit generator's class object. The 'ar' message creates a unit generator that runs at audio rate. The 'kr' message creates a unit generator that runs 
+A unit generator is created by sending the 'ar' or 'kr' message to the unit generator's class object. The 'ar' message creates a unit generator that runs at audio rate. The 'kr' message creates a unit generator that runs
 at control rate. Control rate unit generators are used for low frequency or slowly changing control signals. Control rate unit generators produce only a single sample per control cycle and therefore use less processing power than audio rate unit generators.
 
-The input parameters for a unit generator are given in the documentation for that class. 
+The input parameters for a unit generator are given in the documentation for that class.
 
 code::
 FSinOsc.ar(800, 0.0, 0.2); // create a sine oscillator at 800 Hz, phase 0.0, amplitude 0.2

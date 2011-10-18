@@ -103,7 +103,7 @@ Retuns stream.
 
 subsection::Dependancy
 
-All the messages for the Dependancy protocol (See class link::Classes/Object::) are defined in class Nil 
+All the messages for the Dependancy protocol (See class link::Classes/Object::) are defined in class Nil
 to do nothing. This eliminates the need to check for nil when sending dependancy messages.
 
 subsection::Other Methods

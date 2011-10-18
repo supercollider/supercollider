@@ -37,8 +37,8 @@ Examples::
 code::
 
 (
-SynthDef("help-SinOsc", { arg freq=440, out; 
-	Out.ar(out, SinOsc.ar(freq, 0, 0.1)) 
+SynthDef("help-SinOsc", { arg freq=440, out;
+	Out.ar(out, SinOsc.ar(freq, 0, 0.1))
 }).send(s);
 
 SynthDef("help-XOut", { arg out=0, xFade=1;

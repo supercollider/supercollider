@@ -83,7 +83,7 @@ SynthDef("conformer2", {
 	chain = FFT(0, in);
 	chain=PV_ConformalMap(chain, MouseX.kr(0.01,2.0, 'exponential'), MouseY.kr(0.01,10.0, 'exponential'));
 	out=IFFT(chain);
-	
+
 	Out.ar(0, Pan2.ar(CombN.ar(out,0.1,0.1,10,0.5,out),0));
 }).load(s);
 )

@@ -48,7 +48,7 @@ Creates a new instance and copies the arguments to the instance variables in the
 code::
 MyClass{
 	var a,b,c;
-	
+
 	*new{ |arg1,arg2,arg3|
 		^super.newCopyArgs(arg1,arg2,arg3) //will copy arg1,arg2,arg3 to variables a,b,c
 	}
@@ -169,7 +169,7 @@ Write an object to disk as a text archive. pathname is a String containing the r
 
 subsection::Equality and Identity
 
-method::== 
+method::==
 
 equality: Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical (see below).
 
@@ -185,7 +185,7 @@ a === b; // not identical
 ::
 
 
-method::=== 
+method::===
 
 identity: Answer whether the receiver is the exact same object as anotherObject.
 
@@ -195,7 +195,7 @@ code::
 'worth trying' === 'worth trying'; // identical (symbols are unique)
 ::
 
-method::!= 
+method::!=
 
 non-equality: Answer whether the receiver does not equal anotherObject. The default implementation in Object is to answer if the two objects are not identical (see below).
 

@@ -37,7 +37,7 @@ SynthDef("help-magMul", { arg out=0, bufnumA=0, bufnumB=1;
 	inB = LFSaw.ar(100, 0, 0.2);
 	chainA = FFT(bufnumA, inA);
 	chainB = FFT(bufnumB, inB);
-	chain = PV_MagMul(chainA, chainB); 
+	chain = PV_MagMul(chainA, chainB);
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum ]);
 )
@@ -49,7 +49,7 @@ SynthDef("help-magMul2", { arg out=0, bufnumA=0, bufnumB=1, soundBufnum=2;
 	inB = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chainA = FFT(bufnumA, inA);
 	chainB = FFT(bufnumB, inB);
-	chain = PV_MagMul(chainA, chainB); 
+	chain = PV_MagMul(chainA, chainB);
 	Out.ar(out,  0.1 * IFFT(chain));
 }).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum, \soundBufnum, d.bufnum]);
 )

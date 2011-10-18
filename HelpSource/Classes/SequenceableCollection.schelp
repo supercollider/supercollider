@@ -409,7 +409,7 @@ Convert a rhythm-list to durations.
 discussion::
 supports a variation of Mikael Laurson's rhythm list RTM-notation. footnote::
 see Laurson and Kuuskankare's 2003, "From RTM-notation to ENP-score-notation"
-http://jim2003.agglo-montbeliard.fr/articles/laurson.pdf 
+http://jim2003.agglo-montbeliard.fr/articles/laurson.pdf
 ::
 
 The method converts a collection of the form code:: [beat-count, [rtm-list], repeats] :: to a link::Classes/List:: of link::Classes/Float::s. A negative integer within the rtm-list equates to a value tied over to the duration following. The method is recursive in that any subdivision within the rtm-list can itself be a nested convertRhythm collection (see example below). The repeats integer has a default value of 1.

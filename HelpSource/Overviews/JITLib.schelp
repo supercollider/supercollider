@@ -37,7 +37,7 @@ This tutorial focusses on some basic concepts used in JITLib. There are many pos
 such as server messaging and pattern proxies which are not covered in tutorial form presently.
 
 definitionList::
-## content: || 
+## content: ||
 definitionList::
 ## placeholders in sc || link::Tutorials/JITLib/jitlib_basic_concepts_01::
 ## referencing and environments || link::Tutorials/JITLib/jitlib_basic_concepts_02::

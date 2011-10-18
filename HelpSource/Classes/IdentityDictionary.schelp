@@ -4,7 +4,7 @@ related::Classes/Environment, Classes/Event
 categories::Collections>Unordered
 
 DESCRIPTION::
-An IdentityDictionary is an associative collection mapping keys to values. 
+An IdentityDictionary is an associative collection mapping keys to values.
 Keys match only if they are strong::identical objects::. (i.e. === returns true.)
 
 (In Dictionary, keys match if they are equal valued. This makes IdentityDictionary faster than link::Classes/Dictionary::)
@@ -38,7 +38,7 @@ Sets key to newValue, returns the previous value of key.
 subsection::Accessing Instance Variables
 
 method::proto, parent, know
-				
+
 subsection::IdentityDictionary reimplements the following methods of Dictionary
 
 method::at, put, includesKey, findKeyForValue, scanFor

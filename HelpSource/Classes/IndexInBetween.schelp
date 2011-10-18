@@ -60,7 +60,7 @@ s.listSendMsg( b.allocMsg( b.setnMsg(0, t) ).postln );
 	index = IndexInBetween.kr(bufnum, f0);
 	f1 = IndexL.kr(bufnum, index);
 	SinOsc.ar([f0, f1]) * 0.1
-	
+
 }.play;
 )
 
@@ -68,8 +68,8 @@ b.free;
 
 
 // One way to map across from an arbitrary piecewise curve, onto another:
-// We use IndexInBetween to "unmap" your input into integer slots, 
-// and then use IndexL to do the reverse, to "map" onto your other distribution. 
+// We use IndexInBetween to "unmap" your input into integer slots,
+// and then use IndexL to do the reverse, to "map" onto your other distribution.
 // This example maps a sort-of-exponential curve onto a sort-of-sinusoidal curve:
 
 ~from = [1, 2, 4, 8, 16];

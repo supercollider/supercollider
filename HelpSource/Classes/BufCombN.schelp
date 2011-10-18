@@ -42,7 +42,7 @@ code::
 // allocate buffer
 b = Buffer.alloc(s,44100,1);
 
-// Comb used as a resonator. The resonant fundamental is equal to 
+// Comb used as a resonator. The resonant fundamental is equal to
 // reciprocal of the delay time.
 { BufCombN.ar(b.bufnum, WhiteNoise.ar(0.01), XLine.kr(0.0001, 0.01, 20), 0.2) }.play;
 
@@ -57,7 +57,7 @@ b = Buffer.alloc(s,44100,1);
 
 { BufCombC.ar(b.bufnum, WhiteNoise.ar(0.01), XLine.kr(0.0001, 0.01, 20), -0.2) }.play;
 
-// used as an echo. 
+// used as an echo.
 { BufCombN.ar(b.bufnum, Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 3) }.play;
 
 ::

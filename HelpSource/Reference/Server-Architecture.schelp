@@ -7,7 +7,7 @@ note:: Converted to new help system 2010 by Jonatan Liljedahl. Some stuff in thi
 
 section:: Introduction
 
-The SuperCollider 3 Synth Server is a simple but powerful synthesis engine. While synthesis is running, new modules can be created, destroyed and repatched, sample buffers can be created and reallocated. Effects processes can be created and patched into a signal flow dynamically at scheduled times.  All running modules are ordered in a tree of nodes that define an order of execution. Patching between modules is done through global audio and control buses. 
+The SuperCollider 3 Synth Server is a simple but powerful synthesis engine. While synthesis is running, new modules can be created, destroyed and repatched, sample buffers can be created and reallocated. Effects processes can be created and patched into a signal flow dynamically at scheduled times.  All running modules are ordered in a tree of nodes that define an order of execution. Patching between modules is done through global audio and control buses.
 
 All commands are received via TCP or UDP using a simplified version of link::Browse#OpenSoundControl#Open Sound Control:: (OSC). The synth server and its client(s) may be on the same machine or across a network. The synth server does not send or receive MIDI. It is expected that the client will send all control commands. If MIDI is desired, it is up to the client to receive it and convert it to appropriate OSC commands for the synth engine.
 
@@ -40,7 +40,7 @@ subsection:: Buffers
 Buffers are arrays of 32 bit floating point values with a small descriptive header. Buffers are stored in a single global array indexed by integers beginning with zero. Buffers may be safely allocated, loaded and freed while synthesis is running, even while unit generators are using them. Buffers are used for wave tables, sample buffers, delay lines, envelopes, or for any other need which can use an array of floating point values. Sound files may be loaded into or written from buffers.
 
 subsection:: Unit Generator Definitions
-Unit Generator Definitions are plug-ins loaded automatically when the program starts. They are binary code libraries that are used as building blocks by Synths to build synthesis algorithms. Unit Generator Definitions have names that match the names of SuperCollider language classes used in building Synth Definitions. 
+Unit Generator Definitions are plug-ins loaded automatically when the program starts. They are binary code libraries that are used as building blocks by Synths to build synthesis algorithms. Unit Generator Definitions have names that match the names of SuperCollider language classes used in building Synth Definitions.
 
 
 section:: Command Line Arguments
@@ -48,14 +48,14 @@ section:: Command Line Arguments
 One of -u or -t must be supplied. Both may be supplied.
 definitionlist::
 ## -u udp-port-number
-|| a port number 0-65535. 
+|| a port number 0-65535.
 
 ## -t tcp-port-number
 || a port number 0-65535
-	
+
 ## -v verbosity
 || Controls the verbosity of server messages. A value of 0 is normal behaviour, -1 suppresses informational messages, and -2 suppresses informational and many error messages.
-	
+
 ## -a num-audio-bus-channels
 || number of audio bus channels (default = 128). The space allocated for audio buses is: (numchannels * (blocksize + 1) * 4)
 
@@ -97,7 +97,7 @@ definitionlist::
 
 ## -w max-interconnect-buffers
 || The maximum number of buffers that are allocated for buffers to interconnect unit generators. Sets the limit of complexity of synth defs that can be loaded at runtime. This value will be increased if a more complex synth-def is loaded at start up time, but it cannot be increased once synthesis has begun. (default = 64)
-	
+
 ## -l max-logins
 || maximum number of named return addresses stored (default = 64). also maximum number of tcp connections accepted
 
@@ -106,19 +106,19 @@ definitionlist::
 
 ## -H device-name
 || name of the hardware I/O device. If not provided, the default device is used.
-	
+
 ## -I input-streams-enable-string
 || Allows turning off input streams that you are not interested in on the device. If the string is 01100, for example, then only the second and third input streams on the device will be enabled. Turning off streams can reduce CPU load.
 
 ## -O output-streams-enable-string
 || Allows turning off output streams that you are not interested in on the device. If the string is 11000, for example, then only the first two output streams on the device will be enabled. Turning off streams can reduce CPU load.
-	
+
 ## -N cmd-filename input-filename output-filename sample-rate header-format sample-format
 || Run in non-real-time mode.
 
-The cmd-filename should be a file that contains OSC bundles sorted in ascending time order. If cmd-filename is the underscore character _, then OSC will be streamed from standard input. 
+The cmd-filename should be a file that contains OSC bundles sorted in ascending time order. If cmd-filename is the underscore character _, then OSC will be streamed from standard input.
 
-The audio input will taken from input-filename. If input-filename is the underscore character _, then no input file will be read. 
+The audio input will taken from input-filename. If input-filename is the underscore character _, then no input file will be read.
 
 Output will be written to output-filename.
 
@@ -128,13 +128,13 @@ The output file's sample rate is specified by sample-rate. The output file heade
 subsection:: Example
 code::
 scscynth -u 57117 >synth_log &
-	
-	Accept commands via UDP on port 57117. 
+
+	Accept commands via UDP on port 57117.
 	Send output to file "synth_log"
 	Run asynchronously: &.
 
-scsynth -N score.osc _ out.aiff 48000 AIFF int24 
-	
+scsynth -N score.osc _ out.aiff 48000 AIFF int24
+
 	Run in non real time mode with command file score.osc,
 	no input file, and output file named out.aiff.
 	Sample rate is 48000. Output file header format is aiff,
@@ -153,7 +153,7 @@ table::
 ## float || a 32 bit single precision floating point number.
 ## double || a 64 bit double precision floating point number.
 ## string || a string of 8 bit ASCII characters, zero padded to a multiple of 4 bytes.
-## bytes || a buffer of data preceeded by a 32 bit length field and padded to a multiple of 4 bytes. 
+## bytes || a buffer of data preceeded by a 32 bit length field and padded to a multiple of 4 bytes.
 ::
 
 subsection:: Tags

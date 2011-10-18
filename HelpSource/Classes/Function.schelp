@@ -5,7 +5,7 @@ categories::Core>Kernel
 description::
 A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the Functions help file for a basic introduction.
 
-Because it inherits from AbstractFunction, Functions respond to math operations by creating a new Function. 
+Because it inherits from AbstractFunction, Functions respond to math operations by creating a new Function.
 
 code::
 // example
@@ -118,9 +118,9 @@ code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performWithEnvir(\value, (a: 1, c: 3, d: 4, b: 2));
 ::
-	
+
 argument::selector
-A Symbol representing a method selector. 
+A Symbol representing a method selector.
 argument::envir
 The remaining arguments derived from the environment and passed as arguments to the method named by the selector.
 
@@ -130,9 +130,9 @@ code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performKeyValuePairs(\value, [\a, 1, \b, 2, \c, 3, \d, 4]);
 ::
-	
+
 argument::selector
-A Symbol representing a method selector. 
+A Symbol representing a method selector.
 argument::pairs
 Array or List with key-value pairs.
 
@@ -181,7 +181,7 @@ code::
 { 4.rand }.sum(8);
 ::
 
-method::choose 
+method::choose
 
 evaluates the function. This makes it polymorphic to SequenceableCollection, Bag and Set.
 
@@ -230,7 +230,7 @@ block {|break|
 
 method::thunk
 
-Return a Thunk, which is an unevaluated value that can be used in calculations 
+Return a Thunk, which is an unevaluated value that can be used in calculations
 
 code::
 x = thunk { 4.rand };
@@ -251,7 +251,7 @@ f.value(2, 3);
 
 method::envirFlop
 
-like flop, but implements an environment argument passing (valueEnvir). 
+like flop, but implements an environment argument passing (valueEnvir).
 Less efficient in generation than flop, but not a big difference in evaluation.
 
 code::
@@ -334,7 +334,7 @@ Executes the receiver. If an exception is thrown the catch function handler is e
 
 method::protect
 
-Executes the receiver. The cleanup function handler is executed with an error as an argument, or nil if there was no error. The error continues to be in effect. 
+Executes the receiver. The cleanup function handler is executed with an error as an argument, or nil if there was no error. The error continues to be in effect.
 
 subsection::Audio
 
@@ -349,16 +349,16 @@ x.defName; // the name of the resulting SynthDef (generated automatically in a c
 x.release(4); // fadeout over 4 seconds
 ::
 
-Many of the examples make use of the Function.play syntax. 
+Many of the examples make use of the Function.play syntax.
 Note that reusing such code in a SynthDef requires the addition of an Out ugen.
 
 code::
 // the following two lines produce equivalent results
-{ SinOsc.ar(440, 0, 0.3) }.play(fadeTime: 0.0); 
+{ SinOsc.ar(440, 0, 0.3) }.play(fadeTime: 0.0);
 SynthDef(\help_FuncPlay, { Out.ar(0, SinOsc.ar(440, 0, 0.3))}).play;
 ::
 
-Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice. 
+Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.
 
 argument::target
 a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
@@ -368,7 +368,7 @@ argument::fadeTime
 a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.
 argument::addAction
 see Synth for a list of valid addActions. The default is \addToHead.
-	
+
 method::scope
 
 As play above, but plays it on the internal Server, and calls Server-scope to open a scope window in which to view the output. Currently only works on OSX.
@@ -376,7 +376,7 @@ As play above, but plays it on the internal Server, and calls Server-scope to op
 code::
 { FSinOsc.ar(440, 0, 0.3) }.scope(1)
 ::
-	
+
 argument::numChannels
 The number of channels to display in the scope window, starting from outbus. The default is 2.
 argument::outbus
@@ -394,7 +394,7 @@ Calculates duration in seconds worth of the output of this function, and plots i
 
 code::
 { SinOsc.ar(440) }.plot(0.01, bounds: Window.screenBounds);
-	
+
 { {|i| SinOsc.ar(1 + i)}.dup(7) }.plot(1);
 ::
 
@@ -460,7 +460,7 @@ x.nextN(8);
 This is useful for using ListComprehensions in Patterns:
 
 code::
-Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play; 
+Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
 
 examples::

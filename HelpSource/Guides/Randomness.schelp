@@ -3,13 +3,13 @@ categories:: Random
 summary:: Randomness in SC
 related:: Reference/randomSeed
 
-As in any computer program, there are no "truly random" number generators in SC. 
-They are pseudo-random, meaning they use very complex, but deterministic 
-algorithms to generate sequences of numbers that are long enough and complicated enough 
+As in any computer program, there are no "truly random" number generators in SC.
+They are pseudo-random, meaning they use very complex, but deterministic
+algorithms to generate sequences of numbers that are long enough and complicated enough
 to seem "random" for human beings. (i.e. the patterns are too complex for us to detect.)
 
-If you start a random number generator algorithm with the same "seed" number 
-several times, you get the same sequence of random numbers. 
+If you start a random number generator algorithm with the same "seed" number
+several times, you get the same sequence of random numbers.
 (See example below, randomSeed)
 
 section:: Create single random numbers
@@ -25,7 +25,7 @@ subsection:: Between -<number> and <number>
 code::
 5.0.rand2       // evenly distributed.
 
-10.bilinrand    // probability is highest around 0, 
+10.bilinrand    // probability is highest around 0,
                 // decreases linearly toward +-<number>.
 
 1.0.sum3rand    // quasi-gaussian, bell-shaped distribution.
@@ -35,7 +35,7 @@ subsection:: Within a given range
 code::
 rrand(24, 48)       // linear distribution in the given range.
 
-exprand(0.01, 1)    // exponential distribution; 
+exprand(0.01, 1)    // exponential distribution;
                     // both numbers must have the same sign.
 ::
 
@@ -47,19 +47,19 @@ code::
 
 20.do({ 5.0.rand2.postln; });		// even
 
-20.do({ 10.bilinrand.postln; });		// probability is highest around 0, 
+20.do({ 10.bilinrand.postln; });		// probability is highest around 0,
 							// decreases linearly toward +-<number>.
-							
+
 20.do({ 1.0.sum3rand.postln; });	// quasi-gaussian, bell-shaped.
 ::
 
 subsection:: Collect the results in an array
 code::
-Array.fill(10, { 1000.linrand }).postln; 
+Array.fill(10, { 1000.linrand }).postln;
 
-// or more compact: 
+// or more compact:
 
-{ 1.0.sum3rand }.dup(100) 
+{ 1.0.sum3rand }.dup(100)
 
 // or:
 
@@ -67,13 +67,13 @@ Array.fill(10, { 1000.linrand }).postln;
 ::
 
 subsection:: Seeding
-You can seed a random generator in order to repeat 
+You can seed a random generator in order to repeat
 the same sequence of random numbers:
 code::
 (
-5.do({ 
+5.do({
 	thisThread.randSeed = 4;
-	Array.fill(10, { 1000.linrand}).postln; 
+	Array.fill(10, { 1000.linrand}).postln;
 });
 )
 
@@ -98,7 +98,7 @@ Array.fill(500, {  1.0.linrand }).plot("Sequence of 500x 1.0.linrand");
 Array.fill(500, {  1.0.sum3rand }).plot("Sequence of 500x 1.0.sum3rand");
 ::
 
-Use a histogram to display how often each (integer) 
+Use a histogram to display how often each (integer)
 occurs in a collection of random numbers, :
 code::
 (
@@ -155,7 +155,7 @@ histogram.plot("histogram for sum3rand " ++ minValue ++ " to " ++ maxValue);
 
 
 subsection:: on Collections
-All of the single-number methods also work for (Sequenceable)Collections, 
+All of the single-number methods also work for (Sequenceable)Collections,
 simply by applying the given random message to each element of the collection:
 code::
 [ 1.0, 10, 100.0, \aSymbol ].rand.postln;		// note: Symbols are left as they are.
@@ -173,16 +173,16 @@ var randomNumbers, histogram, distribution, randomTable, randTableSize=200;
 var minValue = -250, maxValue = 250, numVals = 10000, numBins = 500;
 
 // create some random distribution with values between 0 and 1
-distribution = Array.fill(randTableSize, 
+distribution = Array.fill(randTableSize,
 	{ arg i; (i/ randTableSize * 35).sin.max(0) * (i / randTableSize) }
 );
 
 // render a randomTable
-randomTable = distribution.asRandomTable; 
+randomTable = distribution.asRandomTable;
 
 // get random numbers, scale them
 
-randomNumbers = Array.fill(numVals, { randomTable.tableRand * (maxValue - minValue) + minValue; }); 
+randomNumbers = Array.fill(numVals, { randomTable.tableRand * (maxValue - minValue) + minValue; });
 histogram = randomNumbers.histo(numBins, minValue, maxValue);
 
 
@@ -193,12 +193,12 @@ distribution.plot("this was the histogram we wanted");
 
 section:: Random decisions
 
-code:: coin :: simulates a coin toss and results in true or false. 
+code:: coin :: simulates a coin toss and results in true or false.
 1.0 is always true, 0.0 is always false, 0.5 is 50:50 chance.
 code::
 20.do({ 0.5.coin.postln });
 ::
-biased random decision can be simulated bygenerating a single value 
+biased random decision can be simulated bygenerating a single value
 and check against a threshhold:
 code::
 20.do({ (1.0.linrand > 0.5).postln });
@@ -207,20 +207,20 @@ code::
 
 section:: Generating Collections of random numbers
 code::
-		// size, minVal, maxVal 
-Array.rand(7, 0.0, 1.0).postln;				
+		// size, minVal, maxVal
+Array.rand(7, 0.0, 1.0).postln;
 
 // is short for:
 
-Array.fill(7, { rrand(0.0, 1.0) }).postln;	
+Array.fill(7, { rrand(0.0, 1.0) }).postln;
 ::
 code::
-		// size, minVal, maxVal 
-List.linrand(7, 10.0, 15.0).postln;			
+		// size, minVal, maxVal
+List.linrand(7, 10.0, 15.0).postln;
 
 // is short for:
 
-List.fill(7, { 10 + 5.0.linrand }).postln;	
+List.fill(7, { 10 + 5.0.linrand }).postln;
 ::
 
 code::
@@ -233,14 +233,14 @@ section:: Random choice from Collections
 
 code::choose:: : equal chance for each element.
 code::
-10.do({ [ 1, 2, 3 ].choose.postln });			
+10.do({ [ 1, 2, 3 ].choose.postln });
 ::
 
 Weighted choice:
 
 code::wchoose(weights):: : An array of weights sets the chance for each element.
 code::
-10.do({ [ 1, 2, 3 ].wchoose([0.1, 0.2, 0.7]).postln });	
+10.do({ [ 1, 2, 3 ].wchoose([0.1, 0.2, 0.7]).postln });
 ::
 
 section:: Randomize the order of a Collection
@@ -305,9 +305,9 @@ definitionlist::
 ::
 
 subsection:: Seeding
-Like using randSeed to set the random generatorsfor each thread in sclang,  
+Like using randSeed to set the random generatorsfor each thread in sclang,
 you can choose which of several random generators on the server to use,
-and you can reset (seed) these random generators: 
+and you can reset (seed) these random generators:
 list::
 ## link::Classes/RandID::
 ## link::Classes/RandSeed::
@@ -360,7 +360,7 @@ Pwrand([ 1, 2, 3 ], [0.1, 0.3, 0.6], 20);
 some basic examples
 code::
 (
-Pbind(\note, Prand([ 0, 2, 4 ], inf), 
+Pbind(\note, Prand([ 0, 2, 4 ], inf),
 	\dur, 0.2
 ).play;
 )

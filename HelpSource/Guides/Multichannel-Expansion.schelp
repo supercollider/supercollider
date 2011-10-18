@@ -40,7 +40,7 @@ Multichannel expansion will propagate through the expression graph. When a unit 
 code::
 { RLPF.ar(Saw.ar([100,250],0.05), XLine.kr(8000,400,5), 0.05) }.play;
 
-// the [100,250] array of frequency inputs to Saw causes Saw.ar to return 
+// the [100,250] array of frequency inputs to Saw causes Saw.ar to return
 // an array of two Saws, that array causes RLPF.ar to create two RLPFs.
 // Both RLPFs share a single instance of XLine.
 ::
@@ -116,7 +116,7 @@ fork {
 Similarly, link::Classes/Function#flop#Function:flop:: returns an unevaluated function that will expand to its arguments when evaluated:
 code::
 (
-SynthDef("blip", { |freq| Out.ar(0, Line.ar(0.1, 0, 0.05, 1, 0, 2) 
+SynthDef("blip", { |freq| Out.ar(0, Line.ar(0.1, 0, 0.05, 1, 0, 2)
 	* Pulse.ar(freq * [1, 1.02])) }).send(s);
 
 a = { |dur=1, x=1, n=10, freq=400|
@@ -207,7 +207,7 @@ Mix.new( [ [a, b], [c, d], [e, f] ] ) // input is an array of stereo pairs
 is equivalent to:
 code::
 // mixed to a single stereo pair
-[ Mix.new( [a, c, e] ), Mix.new( [b, d, f] ) ] 
+[ Mix.new( [a, c, e] ), Mix.new( [b, d, f] ) ]
 ::
 Currently it is not recursive. You cannot use Mix on arrays of arrays of arrays.
 
@@ -223,12 +223,12 @@ code::
 				Dust.ar( // random impulses as an excitation function
 					// an array to cause expansion of Dust to n channels
 					// 1 means one impulse per second on average
-					Array.fill(n, 1), 
+					Array.fill(n, 1),
 					0.3 // amplitude
-				), 
+				),
 				0.01, // max delay time in seconds
 				// array of different random lengths for each 'string'
-				Array.fill(n, {0.004.rand+0.0003}), 
+				Array.fill(n, {0.004.rand+0.0003}),
 				4 // decay time in seconds
 			),
 			Array.fill(n,{1.0.rand2}) // give each voice a different pan position

@@ -76,7 +76,7 @@ Clears this MIDIdef from the global collection and deactivates it.
 EXAMPLES::
 
 code::
-n = NetAddr("127.0.0.1", 57120); // local machine 
+n = NetAddr("127.0.0.1", 57120); // local machine
 
 OSCdef(\test, {|time, msg, addr| \unmatching.postln}, '/chat', n); // def style
 OSCdef.newMatching(\test2, {|time, msg, addr| \matching.postln}, '/chat', n); // path matching

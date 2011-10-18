@@ -66,7 +66,7 @@ code::
 History.clear.end;		// clear to start over
 History.start; 			// starts recording, opens log file
 
-				// execute these lines one by one 
+				// execute these lines one by one
 1 + 2;
 p = ProxySpace.push(s.boot);
 ~a = {Dust.ar([1,1] * 30 ) * 0.3 }; //

@@ -41,7 +41,7 @@ Duration of the grain in seconds.
 
 argument::pan
 A value from -1 to 1. Determines where to pan the output in the
-same manner as 
+same manner as
 link::Classes/PanAz:: .
 
 argument::amp
@@ -179,13 +179,13 @@ s.sendMsg(\b_allocRead, 10, "sounds/a11wlk01.wav");
 	var trate, dur, z, d;
 	trate = MouseX.kr(1, 100, 1);
 	d = { Dwhite(0.1, 0.2, 1) };
-	z = { 
-		Drand([Dgeom(0.1, 1 + d.value, Diwhite(20, 40)), Dgeom(1, 1 - d.value, Diwhite(20, 40))]) 
+	z = {
+		Drand([Dgeom(0.1, 1 + d.value, Diwhite(20, 40)), Dgeom(1, 1 - d.value, Diwhite(20, 40))])
 	};
-	TGrains.ar(2, 
+	TGrains.ar(2,
 		Impulse.ar(trate),
-		bufnum: 10, 
-		rate: Dseq([1, 1, z.value, 0.5, 0.5, 0.2, 0.1, 0.1, 0.1, 0.1], inf) * 2 + 1, 
+		bufnum: 10,
+		rate: Dseq([1, 1, z.value, 0.5, 0.5, 0.2, 0.1, 0.1, 0.1, 0.1], inf) * 2 + 1,
 		centerPos: Dseq(z.dup(8), inf),
 		dur: Dseq([1, d.value, 1, z.value, 0.5, 0.5, 0.1, z.value] * 2, inf) / trate,
 		pan: Dseq([1, 1, 1, 0.5, 0.2, 0.1, 0, 0, 0], inf) * 2 - 1,

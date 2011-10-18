@@ -156,12 +156,12 @@ code::
 (
 a = { (0..30).scramble }.dup(2).plot2;
 a.setProperties(
-	\fontColor, Color.red, 
-	\plotColor, Color.blue, 
+	\fontColor, Color.red,
+	\plotColor, Color.blue,
 	\backgroundColor, Color.black,
 	\gridColorX, Color.white,
 	\labelX, "Humidity"
-); 
+);
 a.refresh;
 );
 
@@ -254,7 +254,7 @@ a.specs = \freq; a.plotMode = \levels;
 a.editMode = true;
 x = {
 	var phase = SinOsc.ar(\rate.kr(a.value[1]));
-	SinOsc.ar(\freq.kr(a.value[0]), phase).mean * 0.1 
+	SinOsc.ar(\freq.kr(a.value[0]), phase).mean * 0.1
 }.play;
 a.editFunc = { |plotter, plotIndex, i, val|
 	x.setn(\freq, a.value[0]);
@@ -275,7 +275,7 @@ Slider.new(w, Rect(10, 10, 490, 20)).resize_(2).action_ { |v|
 	w.refresh;
 };
 z = CompositeView(w, Rect(10, 35, 490, 200)).background_(Color.rand(0.7)).resize_(5);
-a = Plotter("plot", parent: z).value_([0, 1, 2, 3, 4].scramble * 100); 
+a = Plotter("plot", parent: z).value_([0, 1, 2, 3, 4].scramble * 100);
 w.front;
 )
 

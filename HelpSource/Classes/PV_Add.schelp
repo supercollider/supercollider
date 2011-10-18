@@ -42,7 +42,7 @@ SynthDef("help-add", { arg out=0, bufnumA=0, bufnumB=1, soundBufnum;
 	inB =  PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum) * 0.5, loop: 1);
 	chainA = FFT(bufnumA, inA);
 	chainB = FFT(bufnumB, inB);
-	chain = PV_Add(chainA, chainB); 
+	chain = PV_Add(chainA, chainB);
 	Out.ar(out,  0.1 * IFFT(chain).dup);
 }).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum, \soundBufnum, d.bufnum]);
 )

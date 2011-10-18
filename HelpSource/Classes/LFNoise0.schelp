@@ -37,7 +37,7 @@ code::
 { SinOsc.ar(
 		LFNoise0.ar(4, 400, 450),
 		0, 0.2
-	) 
+	)
 }.play;
 )
 

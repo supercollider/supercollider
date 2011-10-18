@@ -74,14 +74,14 @@ code::
 
 method::at
 Return the item at strong::index::.
-	
+
 method::clipAt
 Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be clipped to the last index.
 code::
 y = [ 1, 2, 3 ];
 y.clipAt(13).postln;
 ::
- 
+
 method::wrapAt
 Same as link::#-at::, but values for strong::index:: greater than the size of the ArrayedCollection will be wrapped around to 0.
 code::
@@ -387,7 +387,7 @@ Array.fill(10, {
 ::
 
 method::normalizeSum
-Returns the Array resulting from : 
+Returns the Array resulting from :
 code::
 (this / this.sum)
 ::

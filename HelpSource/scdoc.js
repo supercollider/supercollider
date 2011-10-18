@@ -314,7 +314,7 @@ function selectParens(ev) {
     s.addRange(r2);
 }
 
-function fixTOC() {        
+function fixTOC() {
     var x = document.getElementsByClassName("lang-sc");
     for(var i=0;i<x.length;i++) {
         var e = x[i];

@@ -30,7 +30,7 @@ Classes are what you use to make objects. They're like a template. You do this t
 code::
 SinOsc.ar(440, 0, 0.2)
 ::
-	
+
 This tells the class SinOsc to make an instance of itself. All SinOscs are an example of what are called unit generators, or UGens. These are objects which produce audio or control signals. SinOsc is a sine wave oscillator. This means that it will produce a signal consisting of a single frequency. A graph of it's waveform would look like this:
 
 image::Functions-and-Sound-00.png#(don't worry about the 'index' and 'value' stuff; it's not important just now)::
@@ -95,7 +95,7 @@ And what we have in the end is a SinOsc that fades gently in and out. Shifting t
 
 Patching together UGens in this way is the basic way that you make sound in SC. For an overview of the various types of UGens available in SC, see link::Browse#UGens:: or link::Guides/Tour_of_UGens::.
 
-For more information see: 
+For more information see:
 
 link::Reference/Functions::, link::Classes/Function::, link::Browse#UGens:: link::Guides/Tour_of_UGens::
 

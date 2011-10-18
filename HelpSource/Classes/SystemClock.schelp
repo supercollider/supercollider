@@ -18,7 +18,7 @@ SystemClock.sched(0.0,{ arg time;
 	rrand(0.1,0.9);
 });
 )
-::	
+::
 code::
 (
 SystemClock.sched(2.0,{
@@ -41,9 +41,9 @@ SystemClock.schedAbs( (thisThread.seconds + 4.0).round(1.0),{ arg time;
 	("the time is exactly " ++ time.asString
 		++ " seconds since starting SuperCollider").postln;
 });
-)			
+)
 ::
-	
+
 method::play
 Calls to the cocoa framework (including all GUI) may not be made directly from actions triggered by SystemClock or incoming socket messages (OSCFunc).
 

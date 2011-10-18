@@ -38,23 +38,23 @@ Examples::
 code::
 
 (
-{ 
+{
 	SinOsc.ar(
-			Peak.ar(Dust.ar(20), Impulse.ar(0.4)) * 500 + 200, 
+			Peak.ar(Dust.ar(20), Impulse.ar(0.4)) * 500 + 200,
 			0, 0.2
 	)
-	
+
 }.play;
 )
 
 // follow a sine lfo, reset rate controlled by mouse x
 (
-{ 
+{
 	SinOsc.ar(
-			Peak.kr(SinOsc.kr(0.2), Impulse.kr(MouseX.kr(0.01, 2, 1))) * 500 + 200, 
+			Peak.kr(SinOsc.kr(0.2), Impulse.kr(MouseX.kr(0.01, 2, 1))) * 500 + 200,
 			0, 0.2
 	)
-	
+
 }.play;
 )
 

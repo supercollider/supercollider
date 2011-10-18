@@ -38,7 +38,7 @@ sqrt(level)
 ::
 
 
-For a simpler but more flexible curve, see  link::Classes/AmpComp:: 
+For a simpler but more flexible curve, see  link::Classes/AmpComp::
 
 classmethods::
 
@@ -69,19 +69,19 @@ code::
 
 // with one that uses amplitude compensation
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 15000, 1);
-	SinOsc.ar(freq) * 0.3 * AmpCompA.kr(freq) 
+	SinOsc.ar(freq) * 0.3 * AmpCompA.kr(freq)
 }.play;
 )
 
 
-// adjust the minimum and root amp 
-// (in this way one can flatten out the curve for higher amplitudes) 
+// adjust the minimum and root amp
+// (in this way one can flatten out the curve for higher amplitudes)
 
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 18000, 1);
 	Formant.ar(300, freq, 20, 0.1) * AmpCompA.kr(freq, 300, 0.6, 0.3)
@@ -108,28 +108,28 @@ code::
 
 // amplitude compensation in frequency modulation (using Fletscher-Munson curve)
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 15000, 1);
 	freq = freq * SinOsc.ar(MouseY.kr(3, 200, 1), 0, 0.5, 1);
-	SinOsc.ar(freq) * 0.1 * AmpCompA.ar(freq, 300) 
+	SinOsc.ar(freq) * 0.1 * AmpCompA.ar(freq, 300)
 }.play;
 )
 
 // amplitude compensation in frequency modulation (using AmpComp exponential decay)
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 15000, 1);
 	freq = freq * SinOsc.ar(MouseY.kr(3, 200, 1), 0, 0.5, 1);
-	SinOsc.ar(freq) * 0.1 * AmpComp.ar(freq, 300) 
+	SinOsc.ar(freq) * 0.1 * AmpComp.ar(freq, 300)
 }.play;
 )
 
 
 // without amplitude compensation
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 15000, 1);
 	freq = freq * SinOsc.ar(MouseY.kr(3, 200, 1), 0, 0.5, 1);
@@ -141,7 +141,7 @@ code::
 
 
 
-[1] Function freq -> dB, 
+[1] Function freq -> dB,
 	derived from http://www.beis.de/Elektronik/AudioMeasure/WeightingFilters.html
 	and modified to map freq -> amp
 

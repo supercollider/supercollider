@@ -20,7 +20,7 @@ z.postln;
 
 UGens can also use if
 
-the condition ugen is 0 / 1 
+the condition ugen is 0 / 1
 
 code::
 (

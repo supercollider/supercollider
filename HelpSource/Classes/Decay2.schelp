@@ -37,7 +37,7 @@ argument::decayTime
 Examples::
 
 code::
-// since attack and decay are a difference of two Decays, 
+// since attack and decay are a difference of two Decays,
 // swapping the values, the envelope turns upside down:
 plot({ Decay2.ar(Impulse.ar(1), 0.001, 0.01) })
 plot({ Decay2.ar(Impulse.ar(1), 0.01, 0.001) })

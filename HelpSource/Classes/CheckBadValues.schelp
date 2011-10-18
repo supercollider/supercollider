@@ -35,7 +35,7 @@ x.set(\test, -1.sqrt);
 // don't post, but do something with the output
 (
 x = { arg freq = 440;
-	var good; 
+	var good;
 	good = BinaryOpUGen('==', CheckBadValues.kr(freq, 0, 0), 0);
 	SinOsc.ar(freq, 0, 0.1) * good // silence the output if freq is bad
 }.play;

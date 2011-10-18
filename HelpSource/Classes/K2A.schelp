@@ -27,7 +27,7 @@ code::
 // compare:
 
 (
-{ 
+{
 	[
 		K2A.ar(WhiteNoise.kr(0.3)),
 		WhiteNoise.ar(0.3)
@@ -37,7 +37,7 @@ code::
 
 
 (
-{ 
+{
 	var freq, blockSize, sampleRate;
 	blockSize = Server.internal.options.blockSize; // usually 64
 	sampleRate = Server.internal.sampleRate;
