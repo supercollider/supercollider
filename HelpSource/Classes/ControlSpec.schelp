@@ -7,7 +7,7 @@ description::
 
 The original, and most common spec (see link::Classes/Spec::). A ControlSpec is used by GUI sliders and knobs to specify the range and curve of the controls. ControlSpec may be used in many ways to map from linear 0..1 range to your desired range and back.
 
-The most common way to create a ControlSpec is by 
+The most common way to create a ControlSpec is by
 code::
 anObject.asSpec // the object may be an array or a symbol
 ::
@@ -46,7 +46,7 @@ Maps and constrains a strong::value:: between minval and maxval to the range bet
 code::
 g = ControlSpec(0.01, 2000, \exp, 0.1, 220, "Hz");
 g.map(0.5); // convert from [0..1] to [0.01..2000]
-g.unmap(1000); // convert from [0.01..2000] to [0..1]	
+g.unmap(1000); // convert from [0.01..2000] to [0..1]
 
 // fore and back translation should be close to identical:
 g.unmap(g.map(0.5));
@@ -132,7 +132,7 @@ Instance of ControlSpec {    (0313FF18, gc=00, fmt=00, flg=00, set=03)
 ::
 
 code::
-// make a frequency spec with an exponential range from 20 to 20000, 
+// make a frequency spec with an exponential range from 20 to 20000,
 // give it a rounding of 30 (Hz)
 a = \freq.asSpec;
 a.step = 100;
@@ -142,7 +142,7 @@ a = [20, 20000, 'exp', 100, 440].asSpec;
 a.dump;
 
 a.constrain(800); // make sure it is in range and round it.
-a.constrain(803); // make sure it is in range and round it.	
+a.constrain(803); // make sure it is in range and round it.
 
 a.map(0.5);
 a.map(0.0); // returns min
@@ -153,7 +153,7 @@ a.unmap(22.0);
 ::
 
 code::
-// like in envelopes, a CurveWarp is created by a number:	
+// like in envelopes, a CurveWarp is created by a number:
 
 a = [0, 1, -4].asSpec;
 a.map(0.5);
@@ -180,16 +180,16 @@ c = Slider.new(w, Rect(10, 10, 300, 30));
 d = StaticText.new(w, Rect(10, 40, 300, 30));
 c.action = {
 	d.string = "unmapped value"
-	+ c.value.round(0.01) 
-	+ "......" 
-	+ "mapped value" 
+	+ c.value.round(0.01)
+	+ "......"
+	+ "mapped value"
 	+ a.map(c.value)
 };
 )
 ::
 
 code::
-// ControlSpec-map can also be used to map ugens 
+// ControlSpec-map can also be used to map ugens
 (
 var spec;
 spec = [ 100, 18000, \exp].asSpec;
@@ -197,12 +197,12 @@ spec = [ 100, 18000, \exp].asSpec;
 	var freq,osc;
 	osc = SinOsc.kr(0.1).range(0,1);
 	freq = spec.map( osc );
-	
+
 	freq.dump;// BinaryOpUGen
 
 	SinOsc.ar(
 		freq.poll
 	)
 }.play
-)	
+)
 ::

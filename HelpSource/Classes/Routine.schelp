@@ -4,7 +4,7 @@ summary:: Functions that can return in the middle and then resume where they lef
 related:: Classes/Stream
 
 description::
-Routines are functions that can return in the middle and then resume where 
+Routines are functions that can return in the middle and then resume where
 they left off when called again. Routines can be used to implement co-routines
 as found in Scheme and some other languages.
 Routines are useful for writing things that behave like Streams.
@@ -30,7 +30,7 @@ instanceMethods::
 
 method::next
 
-The Routine function is either started if it has not been called yet, or it is 
+The Routine function is either started if it has not been called yet, or it is
 resumed from where it left off. The argument inval is passed as the argument
 to the Routine function if it is being started, or as the result of the code::yield::
 method if it is being resumed from a yield.
@@ -38,10 +38,10 @@ method if it is being resumed from a yield.
 returns:: The value that the Routine yields.
 
 discussion::
-There are basically 2 conditions for a Routine: one is when the routine starts. The other case is 
-that the routine continues after it has yielded. 
+There are basically 2 conditions for a Routine: one is when the routine starts. The other case is
+that the routine continues after it has yielded.
 
-When the routine starts (by calling the above methods), you are passing in a first inval. 
+When the routine starts (by calling the above methods), you are passing in a first inval.
 This inval is accessible as the routine function argument:
 
 code::
@@ -164,11 +164,11 @@ code::
 r = Routine { arg inval;
 	loop {
 		// thisThread refers to the routine.
-		postf("beats: % seconds: % time: % \n", 
+		postf("beats: % seconds: % time: % \n",
 			thisThread.beats, thisThread.seconds, Main.elapsedTime
 		);
 		1.0.yield;
-		
+
 	}
 }.play;
 )
@@ -182,7 +182,7 @@ r.clock;
 method::beats
 
 returns:: The elapsed beats (logical time) of the routine. The beats do not proceed when the routine is not playing.
-	
+
 method::seconds
 
 returns:: The elapsed seconds (logical time) of the routine. The seconds do not proceed when the routine is not playing, it is the converted beat value.
@@ -264,19 +264,19 @@ code::
 (
 var update, w, b;
 w = SCWindow.new("State Window", Rect(150,SCWindow.screenBounds.height-140,380,60));
-		
+
 // a convenient way to set the button label
-update = { 
-	|but, string| but.states = [[string.asString, Color.black, Color.red]]; 
+update = {
+	|but, string| but.states = [[string.asString, Color.black, Color.red]];
 	but.refresh;
 };
-	
+
 b = SCButton(w, Rect(10,10,360,40));
 b.font_(Font("Impact", 24));
 
 update.value(b, "there is only one state");
-		
-// if an action should do something different each time it is called, a routine is the 
+
+// if an action should do something different each time it is called, a routine is the
 // right thing to use. This is better than creating variables outside and setting them
 // from the action function to keep state from one action to the next
 
@@ -302,18 +302,18 @@ w.view.background_(Color.new255(153, 255, 102).vary);
 
 string = "swing ".dup(24).join;
 
-w.drawHook = Routine {	
+w.drawHook = Routine {
 	var i = 0;
 	var size = 40;
 	var func = { |i, j| sin(i * 0.07 + (j * 0.0023) + 1.5pi) * much + 1 };
 	var scale;
 	Pen.font = Font("Helvetica-Bold", 40);
-	loop {	
+	loop {
 		i = i + 1;
 		string.do {	|char, j|
-			
+
 			scale = func.value(i, j).dup(6);
-			
+
 			Pen.fillColor = Color.new255(0, 120, 120).vary;
 			Pen.matrix = scale * #[1, 0, 0, 1, 1, 0];
 			Pen.stringAtPoint(char.asString,

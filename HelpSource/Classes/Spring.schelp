@@ -20,15 +20,15 @@ argument::damp
 damping
 
 
-examples::	
+examples::
 code::
 // trigger gate is mouse button
 // spring constant is mouse x
 // mouse y controls damping
 (
-{ 
+{
 	var inforce, outforce, freq, k, d;
-	inforce = K2A.ar(MouseButton.kr(0,1,0)) > 0; 
+	inforce = K2A.ar(MouseButton.kr(0,1,0)) > 0;
 	k = MouseY.kr(0.1, 20, 1);
 	d = MouseX.kr(0.00001, 0.1, 1);
 	outforce = Spring.ar(inforce, k, d);
@@ -44,21 +44,21 @@ code::
 // mouse y controls damping
 (
 { 	var m0, m1, m2, m3, d, k, inforce;
-	d = MouseY.kr(0.00001, 0.01, 1); 
+	d = MouseY.kr(0.00001, 0.01, 1);
 	k = MouseX.kr(0.1, 20, 1);
-	inforce = K2A.ar(MouseButton.kr(0,1,0)) > 0; 
+	inforce = K2A.ar(MouseButton.kr(0,1,0)) > 0;
 	m0 = Spring.ar(inforce, k, 0.01);
 	m1 = Spring.ar(m0, 0.5 * k, d);
 	m2 = Spring.ar(m0, 0.6 * k + 0.2, d);
 	m3 = Spring.ar(m1 - m2, 0.4, d);
 	SinOsc.ar(m3 * 200 + 500, 0, 0.2) // modulate frequency with the force
-	
+
 }.play;
 )
 
 // modulating a resonating string with the force
 // spring constant is mouse x
-// mouse y controls damping 
+// mouse y controls damping
 (
 { 	var m0, m1, m2, m3, m4, d, k, t;
 	k = MouseX.kr(0.5, 100, 1);
@@ -70,7 +70,7 @@ code::
 	m3 = Spring.ar([m1,m2], 0.4 * k, d);
 	m4 = Spring.ar(m3 - m1 + m2, 0.1 * k, d);
 	CombL.ar(t, 0.1, LinLin.ar(m4, -10, 10, 1/8000, 1/100), 12)
-	
+
 }.play;
 )
 ::

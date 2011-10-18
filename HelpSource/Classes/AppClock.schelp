@@ -57,6 +57,6 @@ r = Routine({ arg appClockTime;
 AppClock.play(r);
 )
 ::
-	
+
 method::tick
 AppClock.tick is called periodically by the SuperCollider application itself. This updates the link::Classes/Scheduler:: and causes any scheduled tasks to be executed. You should never call this method yourself.

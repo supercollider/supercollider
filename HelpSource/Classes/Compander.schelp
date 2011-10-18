@@ -39,7 +39,7 @@ code::
 play({
     var z;
     z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)), 
+        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
         0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)))
 })
 )
@@ -51,7 +51,7 @@ code::
 play({
     var z;
     z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)), 
+        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
         0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)));
     Compander.ar(z, z,
         thresh: MouseX.kr(0.1, 1),
@@ -70,7 +70,7 @@ code::
 play({
     var z;
     z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)), 
+        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
         0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)));
     Compander.ar(z, z,
         thresh: MouseX.kr(0.1, 1),
@@ -89,7 +89,7 @@ code::
 play({
     var z;
     z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)), 
+        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
         0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)));
     Compander.ar(z, z,
         thresh: MouseX.kr(0.1, 1),
@@ -108,7 +108,7 @@ code::
 play({
     var z;
     z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)), 
+        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
         0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)));
     Compander.ar(z, z,
         thresh: MouseX.kr(0.1, 1),

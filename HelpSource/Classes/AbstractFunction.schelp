@@ -172,14 +172,14 @@ var f, g, product;
 f = { SinOsc.ar(400) };
 g = { LFPulse.kr(8)  };
 product = f * g * 0.1;
-{ Pan2.ar(product, SinOsc.kr(0.3)) }.play; 
+{ Pan2.ar(product, SinOsc.kr(0.3)) }.play;
 )
 ::
 
 method::sampled
 Sample a function.
 discussion::
-code::	
+code::
 //sample a function
 f = { |x| sin(3*x)*cos(8*x) }
 f.plotGraph2(from:0,to:2);

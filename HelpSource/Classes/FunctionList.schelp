@@ -1,4 +1,4 @@
-class::FunctionList			
+class::FunctionList
 summary:: A function that composes multiple functions into one
 categories::Core>Kernel
 
@@ -10,7 +10,7 @@ See the link::Reference/Functions:: help file for a basic introduction.
 
 classMethods::
 
-method::new 
+method::new
 
 create a new instance.
 argument:: functions
@@ -27,14 +27,14 @@ x.array = x.array.insert(2, aFunction);
 ::
 
 method::addFunc
-	
+
 This message is used to be able to add to an Object, to a Function, or to a FunctionList.
 code::nil.addFunc:: returns a function, if only one function is passed in the argument.
-code::function.addFunc:: then returns a FunctionList. 
+code::function.addFunc:: then returns a FunctionList.
 
 method::removeFunc
 
-remove a function from the list. 
+remove a function from the list.
 
 returns:: the last function when only one function is left, or code::nil:: when the last function was removed.
 

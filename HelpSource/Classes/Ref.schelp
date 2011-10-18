@@ -4,7 +4,7 @@ categories:: Core
 
 description::
 
-A Ref holds an object which may be retrieved and altered with the messages value and value_(obj).   
+A Ref holds an object which may be retrieved and altered with the messages value and value_(obj).
 The backquote code:: ` :: is a unary operator that is equivalent to calling code::Ref.new(obj)::.
 
 Refs are most commonly used to prevent multi-channel expansion in link::Classes/SynthDef::s and link::Classes/Pattern::s (see link::Classes/Klank:: for an example).
@@ -81,7 +81,7 @@ Returns the value - this is used when sending a Ref as a control value to a serv
 section::Typical uses of Ref:
 
 subsection::preventing multi-channel expansion
-	
+
 Consult link::Reference/MultiChannel:: for details on multi-channel expansion in SynthDefs.
 
 Refs prevent multi-channel expansion in a SynthDef, so the array below defines one Klank UGen rather than three.
@@ -90,7 +90,7 @@ code::
 { Klank.ar(`[[800, 1071, 1153, 1723], nil, [1, 1, 1, 1]], Impulse.ar(2, 0, 0.1)) }.play;
 ::
 
-Refs cannot be used reliably to suppress multi-channel expansion within Events and Patterns.  
+Refs cannot be used reliably to suppress multi-channel expansion within Events and Patterns.
 Instead, it is necessary to enclose the array of values in another array:
 
 code::
@@ -99,10 +99,10 @@ code::
 		var audio, env;
 		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction:2);
 		audio = Mix(Saw.ar(freq));
-		audio = Pan2.ar(audio * env, pan, amp);	
+		audio = Pan2.ar(audio * env, pan, amp);
 		OffsetOut.ar(out, audio)
 	}).add;
-	
+
 	( instrument: \multi, freq: [ [500, 501, 700] ], sustain: 2).play
 
 )
@@ -112,10 +112,10 @@ code::
 (
 	Pbind(*[
 		instrument: \multi,
-		freq: 	Prand([ 
-						[[100, 141, 103] ], 
-						[[100, 310, 190] ], 
-						[[100, 100.1, 110] ], 
+		freq: 	Prand([
+						[[100, 141, 103] ],
+						[[100, 310, 190] ],
+						[[100, 100.1, 110] ],
 				], inf),
 		dur: 0.2,
 		sustain: 0.3

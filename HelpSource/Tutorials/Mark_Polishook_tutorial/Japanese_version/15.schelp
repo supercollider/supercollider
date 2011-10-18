@@ -51,7 +51,7 @@ r.next;
 
 code::
 (
-r = Routine({ 
+r = Routine({
 	"hello, world".yield;
 	"what a world".yield;
 	"i am a world".yield;
@@ -74,13 +74,13 @@ r.next;
 
 code::
 (
-r = Routine({ 
+r = Routine({
 
 	var array;
 	array = [ "hello, world", "what a world", "i am a world" ];
 
 	3.do({ array.choose.yield })
-	
+
 });
 )
 ::
@@ -97,13 +97,13 @@ code::
 
 code::
 (
-r = Routine({ 
+r = Routine({
 
 	var array;
 	array = [ "hello, world", "what a world", "i am a world" ];
 
 	3.do({ 1.wait; array.choose.postln })
-	
+
 });
 )
 ::
@@ -134,27 +134,27 @@ section::ルーチンを用いたシンセシスのスケジューリング
 
 code::
 (
-SynthDef("fm2", { 
+SynthDef("fm2", {
 	arg bus = 0, freq = 440, carPartial = 1, modPartial = 1, index = 3, mul = 0.2, ts = 1;
 
 	// インデックスの値は通常0から24まで
 	// carPartial :: modPartial => car/mod ratio
-	
+
 	var mod;
 	var car;
-	
+
 	mod = SinOsc.ar(
-		freq * modPartial, 
-		0, 
+		freq * modPartial,
+		0,
 		freq * index * LFNoise1.kr(5.reciprocal).abs
 	);
-		
+
 	car = SinOsc.ar(
-		(freq * carPartial) + mod, 
-		0, 
+		(freq * carPartial) + mod,
+		0,
 		mul
 	);
-	
+
 	Out.ar(
 		bus,
 		car * EnvGen.kr(Env.sine(1), doneAction: 2, timeScale: ts)
@@ -186,7 +186,7 @@ SynthDef("echoplex", {
 		CombN.ar(
 			In.ar(0, 1),
 			0.35,
-			[Rand(0.05, 0.3), Rand(0.05, 0.3)], 
+			[Rand(0.05, 0.3), Rand(0.05, 0.3)],
 			// シンセが生成されるたびにランダムな値を生成する
 			7,
 			0.5
@@ -204,7 +204,7 @@ r = Routine({
 	loop({
 		Synth.head(	// ~sourceグループの先頭にシンセを追加する
 			~source,
-			"fm2", 
+			"fm2",
 			[
 				\outbus, 0, \freq, 400.0.rrand(1200), \modPartial, 0.3.rrand(2.0),
 				\carPartial, 0.5.rrand(11), \ts, 0.1.rrand(0.2)]

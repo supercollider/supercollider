@@ -44,16 +44,16 @@ code::
 (
 {
 	var source, local;
-	
+
 	source = Decay.ar(Impulse.ar(0.3), 0.1) * WhiteNoise.ar(0.2);
-	
+
 	local = LocalIn.ar(2) + [source, 0]; // read feedback, add to source
-	
+
 	local = DelayN.ar(local, 0.2, 0.2); // delay sound
-	
+
 	// reverse channels to give ping pong effect, apply decay factor
-	LocalOut.ar(local.reverse * 0.8); 
-	
+	LocalOut.ar(local.reverse * 0.8);
+
 	local
 }.play;
 )
@@ -61,29 +61,29 @@ code::
 (
 {
 	var local, in;
-	
-	in = Mix.fill(12, { 
+
+	in = Mix.fill(12, {
 		Pan2.ar(
-			Decay2.ar(Dust.ar(0.05), 0.1, 0.5, 0.1) 
-				* FSinOsc.ar(IRand(36,84).midicps).cubed.max(0), 
+			Decay2.ar(Dust.ar(0.05), 0.1, 0.5, 0.1)
+				* FSinOsc.ar(IRand(36,84).midicps).cubed.max(0),
 			Rand(-1,1))
 	});
 	in = in + Pan2.ar(Decay2.ar(Dust.ar(0.03), 0.04, 0.3) * BrownNoise.ar, 0);
-	
+
 	4.do { in = AllpassN.ar(in, 0.03, {Rand(0.005,0.02)}.dup, 1); };
-	
+
 	local = LocalIn.ar(2) * 0.98;
 	local = OnePole.ar(local, 0.5);
-	
+
 	local = Rotate2.ar(local[0], local[1], 0.23);
 	local = AllpassN.ar(local, 0.05, {Rand(0.01,0.05)}.dup, 2);
-	 			
+
 	local = DelayN.ar(local, 0.3, [0.19,0.26]);
 	local = AllpassN.ar(local, 0.05, {Rand(0.03,0.15)}.dup, 2);
-	
-	local = LeakDC.ar(local);	
+
+	local = LeakDC.ar(local);
 	local = local + in;
-		
+
 	LocalOut.ar(local);
 }.play;
 )
@@ -91,23 +91,23 @@ code::
 (
 {
 	var local, in, amp;
-	
+
 	in = AudioIn.ar([1,2]);
-	
+
 	amp = Amplitude.kr(Mix.ar(in));
 	in = in * (amp > 0.02); // noise gate
-	
+
 	local = LocalIn.ar(2);
 	local = OnePole.ar(local, 0.4);
 	local = OnePole.ar(local, -0.08);
-	
+
 	local = Rotate2.ar(local[0], local[1], 0.2);
-	 			
+
 	local = DelayN.ar(local, 0.25, 0.25);
-	
-	local = LeakDC.ar(local);	
+
+	local = LeakDC.ar(local);
 	local = ((local + in) * 1.25).softclip;
-		
+
 	LocalOut.ar(local);
 	local * 0.1;
 }.play;
@@ -118,7 +118,7 @@ code::
 {
 	var in, imp, sound;
 
-	in = LocalIn.ar(1); 
+	in = LocalIn.ar(1);
 	imp = Impulse.ar(1);
 	sound = DelayC.ar(imp + (play * 0.995), 1, 440.reciprocal - ControlRate.ir.reciprocal);
 	LocalOut.ar(sound); // for feedback
@@ -127,8 +127,8 @@ code::
 
 // compare pitch
 {
-	SinOsc.ar(440, 0, 0.2) 
-}.play(s, 1); 
+	SinOsc.ar(440, 0, 0.2)
+}.play(s, 1);
 )
 ::
 

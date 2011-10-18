@@ -54,10 +54,10 @@ f = {
 	d = c.vary(0.5);
 	e = d.vary(0.5);
 };
-g = { 
-	c1 = d.hueBlend(e, k.y).round(0.01); 
-	c2 = c.hueBlend(e, k.x).round(0.01); 
-	k.background = Gradient(c1, c2, \v) 
+g = {
+	c1 = d.hueBlend(e, k.y).round(0.01);
+	c2 = c.hueBlend(e, k.x).round(0.01);
+	k.background = Gradient(c1, c2, \v)
 };
 f.value; g.value;
 k.action = g;

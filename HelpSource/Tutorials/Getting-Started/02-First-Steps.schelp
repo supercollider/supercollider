@@ -22,7 +22,7 @@ compiling class library..
 	Number of Classes 1814
 	Number of Symbols 7595
 	Byte Code Size 180973
-	compiled 296 files in 1.34 seconds 
+	compiled 296 files in 1.34 seconds
 compile done
 RESULT = 256
 Class tree inited in 0.14 seconds
@@ -43,7 +43,7 @@ Hello World!
 Hello World!
 ::
 
-Now let's take a closer look at the code. The first bit, code::"Hello World!"::, is a kind of emphasis::Object::, called a String. An object is basically just a way of representing something in the computer, for instance a bit of text, or an oscillator, that allows you to control it and send messages to it. More about that later, but for now just understand that a String is a way of representing a bit of text. 
+Now let's take a closer look at the code. The first bit, code::"Hello World!"::, is a kind of emphasis::Object::, called a String. An object is basically just a way of representing something in the computer, for instance a bit of text, or an oscillator, that allows you to control it and send messages to it. More about that later, but for now just understand that a String is a way of representing a bit of text.
 
 The second bit, code::.postln;::, says 'print me (or a meaningful description of me) to the post window.' Remember postln, it's your friend. You can apply it to almost anything in SC and get something meaningful back. This can be very handy when tracking down bugs in your code.
 
@@ -53,7 +53,7 @@ code::
 "Hello World!".postln;
 "Hello SC!".postln;
 ::
-	
+
 The first line, 'Hello World' would not have printed if we didn't have the explicit postln. Note also that each line of code ends with a semi-colon. This is how you separate lines of code in SC. If we didn't have a semi-colon between the two lines we would get an error.
 
 In general when you are meant to execute several lines of code at the same time they will be surrounded by parentheses, as in the example below. This is convenient as it allows you to select the whole block of code by double clicking just inside one of the parentheses. Try it out on the example below.
@@ -64,7 +64,7 @@ code::
 "Ishmael.".postln;
 )
 ::
-	
+
 When code is not surrounded by parentheses it is generally intended to be executed one line at a time.
 
 Note that each of the lines within the block of code ends with a semi-colon. This is very important when executing multiple lines of code, as it's how SC knows where to separate commands. Without a semi-colon above, you would get an error posted.
@@ -93,7 +93,7 @@ code::
 "Call me ".post; "Ishmael?".postln;
 ::
 
-A couple of more notes about the post window. It's very useful to be able to see it, but sometimes it can get hidden behind other windows. You can bring it to the front at any time by holding down the Command key, and pressing \ . The Command key is the one with the apple symbol on it. 
+A couple of more notes about the post window. It's very useful to be able to see it, but sometimes it can get hidden behind other windows. You can bring it to the front at any time by holding down the Command key, and pressing \ . The Command key is the one with the apple symbol on it.
 
 By convention this kind of key sequence is written Cmd - \
 
@@ -117,7 +117,7 @@ section::Suggested Exercise
 
 Open a new window by pressing Cmd-n or selecting 'New' from the File menu.Copy some of the posting code from the examples above and paste it into the new document. (The standard Mac Cmd-c and Cmd-v work for copy and paste, or use the Edit menu.)
 
-SC will let you edit the help files and documentation, so it's always a good idea to copy text over before changing it so as to avoid accidentally saving altered files! 
+SC will let you edit the help files and documentation, so it's always a good idea to copy text over before changing it so as to avoid accidentally saving altered files!
 
 Experiment with altering the text between the quotes to print different things to the post window. Do this with both blocks of text wrapped in parentheses, and single lines.
 

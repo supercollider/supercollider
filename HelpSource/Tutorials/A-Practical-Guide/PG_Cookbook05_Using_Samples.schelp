@@ -60,7 +60,7 @@ p = Ptpar([
 				\decayScale, Pseq([6, Pn(1, inf)], 1),
 				\dur, Pwrand(#[0.25, 0.5, 0.75, 1], #[2, 3, 1, 1].normalizeSum, inf)
 			)
-		), 
+		),
 	inf),
 	0.5, Pbind(
 		\instrument, \bell,
@@ -99,7 +99,7 @@ q = Pn(
 			\decayScale, Pseq([6, Pn(1, inf)], 1),
 			\dur, Pwrand(#[0.25, 0.5, 0.75, 1], #[2, 3, 1, 1].normalizeSum, inf)
 		)
-	), 
+	),
 inf).play(quant: [4, 4]);
 
 r = Pbind(
@@ -143,7 +143,7 @@ fork {
 			"done recording".postln;
 			o.free;
 		});
-	}, '/n_end', s.addr);	
+	}, '/n_end', s.addr);
 };
 SynthDef(\sampler, { |out, bufnum, freq = 1, amp = 1|
 	var	sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: 2) * amp;

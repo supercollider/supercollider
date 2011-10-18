@@ -6,7 +6,7 @@ related:: Classes/AbstractWrappingDispatcher, Classes/OSCMessageDispatcher, Clas
 DESCRIPTION::
 Instances of AbstractDispatcher dispatch incoming messages (e.g. MIDI, OSC), to registered instances of link::Classes/AbstractResponderFunc::. There will be a default dispatcher for each message type, but one can have multiple dispatchers per type in order to implement custom dispatching for groups of ResponderFuncs. (The main example of this is OSC pattern matching with link::Classes/OSCMessagePatternDispatcher::.) Normally users do not need to access dispatcher instances directly.
 
-Dispatchers must be registered at the appropriate central point (e.g. Main:recvOSCfunc for OSC messages). In this capacity their interfaces mimic link::Classes/Function:: and link::Classes/FunctionList::. 
+Dispatchers must be registered at the appropriate central point (e.g. Main:recvOSCfunc for OSC messages). In this capacity their interfaces mimic link::Classes/Function:: and link::Classes/FunctionList::.
 
 
 CLASSMETHODS::

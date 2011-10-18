@@ -247,7 +247,7 @@ argument:: aColor
 An instance of Color.
 argument:: blend
 A value between 0 and 1. Default value is 0.
-	
+
 method:: asHSV
 Returns an array with code::[hue, saturation, value, alpha]::, as values between 0 and 1.
 
@@ -291,7 +291,7 @@ w.drawHook = {
 		Pen.addAnnularWedge(
 			0@0,
 			rrand(10, 50),
-			rrand(51, 100),	
+			rrand(51, 100),
 			2pi.rand,
 			2pi.rand
 		);

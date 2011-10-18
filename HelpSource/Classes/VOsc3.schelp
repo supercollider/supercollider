@@ -84,7 +84,7 @@ s = Server.local;
 8.do({ arg i;
 	var n, a;
 	// allocate table
-	s.sendMsg(\b_alloc, i, 1024); 
+	s.sendMsg(\b_alloc, i, 1024);
 	// generate array of harmonic amplitudes
 	n = (i+1)**2;
 	a = Array.fill(n, { arg j; ((n-j)/n).squared.round(0.001) });

@@ -79,7 +79,7 @@ some details..
 ::
 
 section:: Class reference
-Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text should be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. 
+Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text should be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::.
 
 Named subsections can be used under each of the above mentioned top-level sections.
 
@@ -92,19 +92,19 @@ tree::
     tree::
     ## short description of method
     ## code::argument\:::: name
-    tree:: 
+    tree::
         ## description of argument
         ::
     ## code::argument\:::: name
-    tree:: 
+    tree::
         ## description of argument
         ::
     ## code::returns\::::
-    tree:: 
+    tree::
         ## description of return value
         ::
     ## code::discussion\::::
-    tree:: 
+    tree::
         ## optional discussion and example code
         ::
     ::

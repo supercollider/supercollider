@@ -5,7 +5,7 @@ related:: Guides/Randomness, Classes/RandSeed, Classes/Pseed, Classes/Thread
 
 section:: Introduction
 
-Every link::Classes/Thread:: in sclang has a (pseudo-) random number generator that is responsible for all randomization within this thread. Each random number generator has its own seed (starting point) from which the series of values is generated. This seed can be set and after that, the randgen (being strictly deterministic) produces exactly the same numbers again. 
+Every link::Classes/Thread:: in sclang has a (pseudo-) random number generator that is responsible for all randomization within this thread. Each random number generator has its own seed (starting point) from which the series of values is generated. This seed can be set and after that, the randgen (being strictly deterministic) produces exactly the same numbers again.
 
 In order to save diskspace, you can reproduce any sequence of randomized data just by one Integer number that you can write down in your notebook.
 
@@ -32,7 +32,7 @@ Array.fill(7, r);
 
 subsection::Inheriting Seeds
 
-Also it is possible to set the seed of the running thread that 
+Also it is possible to set the seed of the running thread that
 all threads started within will inherit.
 
 code::
@@ -57,10 +57,10 @@ code::
 (
 SynthDef(\help_randomSeed, { arg out=0, freq=440;
 	Out.ar(out,
-		Line.kr(1, 0, 0.3, doneAction:2) * 
+		Line.kr(1, 0, 0.3, doneAction:2) *
 		Resonz.ar(
 			Dust2.ar([10, 10], 270) + WhiteNoise.ar(4),
-		freq, 0.01) 
+		freq, 0.01)
 	)
 }).send(s);
 

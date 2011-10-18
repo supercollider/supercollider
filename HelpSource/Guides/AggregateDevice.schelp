@@ -19,7 +19,7 @@ code::
 
 - you should do this from an user account with administrator privileges. From the Audio menu choose Open Aggregate Device Editor and click on the Plus button to add a new aggregate device. Double click on its name in the list (by default "Aggregate Device") and use a more specific name, for example "Built-in Audio". Then check the Use column for the devices you want to combine, that is your microphone or line input and the built-in output. Here is would it should look like:
 
-Close the editor and quit the Audio MIDI Setup. Now you need to tell SuperCollider to use your new aggregate device. A good place to do this is your default startup file so that SuperCollider will automatically use the new device every time. The startup file is called code::startup.rtf:: and is placed in the folder ~/Application Support/SuperCollider/, where "~" stands for your home folder. 
+Close the editor and quit the Audio MIDI Setup. Now you need to tell SuperCollider to use your new aggregate device. A good place to do this is your default startup file so that SuperCollider will automatically use the new device every time. The startup file is called code::startup.rtf:: and is placed in the folder ~/Application Support/SuperCollider/, where "~" stands for your home folder.
 If you haven't created such a file yet, create a new folder named SuperCollider in your ~/Application Support/ folder, open a new empty document in SuperCollider and save it as startup.rtf in this new folder (~/Application Support/SuperCollider/startup.rtf).
 Add these lines to the startup file:
 
@@ -37,6 +37,6 @@ code::
 "Built-in Audio" Output Device
 ::
 
-voila! 
+voila!
 
 known issues: QuickTime (as of v7.1) has problems using the aggregate sound device (it will take a few seconds before each sound playback starts). Therefore you probably do not want to use your new aggregate device as your system's default device. Note that when you specify a sound device in SuperCollider's ServerOption, there is no need to use the aggregate device as the system preference's default device.

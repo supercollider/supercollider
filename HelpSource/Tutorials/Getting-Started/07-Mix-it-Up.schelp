@@ -40,7 +40,7 @@ code::
 	{ Mix.fill(n, { SinOsc.ar(500 + 500.0.rand, 0, 1 / n) }) }.play;
 )
 ::
-	
+
 The Function will be evaluated n times, each time creating a SinOsc with a random frequency from 500 to 1000 Hz (500 plus a random number between 0 and 500). The mul arg of each SinOsc is set to 1 / n, thus ensuring that the total amplitude will not go outside -1 and 1. By simply changing the value of n, you can have vastly different numbers of SinOscs! (Try it!) This sort of approach makes this code extremely flexible and reusable.
 
 Each time the Function is evaluated it is passed the number of times evaluated so far as an argument. So if 'n' is 8 the Function will be passed values from 0 to 7, in sequence, counting up. By declaring an argument within our Function we can use this value.
@@ -63,7 +63,7 @@ code::
 
 By combining addition and multiplication (or indeed almost any mathematical procedure you could imagine!) with the use of classes like Mix, we have the tools we need to combine multichannel sources of sound into complex mixes and submixes.
 
-For more information see: 
+For more information see:
 
 link::Classes/Mix::, link::Classes/BinaryOpUGen::, link::Overviews/Operators::, link::Reference/Syntax-Shortcuts::
 

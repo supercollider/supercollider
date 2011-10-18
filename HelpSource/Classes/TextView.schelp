@@ -86,7 +86,7 @@ METHOD:: selectedString
 		A String. Setting this variable will replace text in the selection with the argument, or do nothing if there is no selection.
 	returns::
 		A String. If no text is currently selected, an empty String is returned.
-	
+
 
 METHOD:: selectionStart
 	The starting position of the selection. If no text is selected this variable represents the cursor position.

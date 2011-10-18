@@ -60,7 +60,7 @@ code::
 // examples
 
 (
-{ 
+{
 	var trig, seq, freq;
 	trig = Impulse.kr(24);
 	seq = Drand([Dseq((1..5).mirror1, 1), Drand((4..10), 8)], 2000);
@@ -70,7 +70,7 @@ code::
 )
 
 (
-{ 
+{
 	var trig, seq, freq;
 	trig = Impulse.kr(12);
 	seq = Drand([Dseq((1..5).mirror1, 1), Drand((4..10), 8)], 2000) * Drand([1,2,4,8],2000);
@@ -86,7 +86,7 @@ code::
 {
 	var freq, trig, reset, seq;
 	trig = Impulse.kr(10);
-	seq = Diwhite(60, 72, inf).midicps; 
+	seq = Diwhite(60, 72, inf).midicps;
 	freq = Demand.kr(trig, 0, seq);
 	SinOsc.ar(freq + [0,0.7]).cubed.cubed * 0.1;
 }.play;
@@ -96,7 +96,7 @@ code::
 {
 	var freq, trig, reset, seq;
 	trig = Impulse.kr(10);
-	seq = Dseq([72, 75, 79, Drand([82,84,86])], inf).midicps; 
+	seq = Dseq([72, 75, 79, Drand([82,84,86])], inf).midicps;
 	freq = Demand.kr(trig, 0, seq);
 	SinOsc.ar(freq + [0,0.7]).cubed.cubed * 0.1;
 }.play;
@@ -109,11 +109,11 @@ code::
 	trig = Impulse.kr(10);
 	seq = Dswitch1(
 		[
-			Diwhite(60, 72, inf), 
+			Diwhite(60, 72, inf),
 			Dseq([72, 75, 79, Drand([82,84,86])], inf)
-		], 
+		],
 		LFPulse.kr(0.2)
-	); 
+	);
 	freq = Demand.kr(trig, 0, seq.midicps);
 	SinOsc.ar(freq + [0,0.7]).cubed.cubed * 0.1;
 }.play;
@@ -124,8 +124,8 @@ code::
 {
 	var freq, trig, reset, seq1, seq2;
 	trig = Impulse.kr(10);
-	seq1 = Drand([72, 75, 79, 82] - 12, inf).midicps; 
-	seq2 = Dseq([72, 75, 79, Drand([82,84,86])], inf).midicps; 
+	seq1 = Drand([72, 75, 79, 82] - 12, inf).midicps;
+	seq2 = Dseq([72, 75, 79, Drand([82,84,86])], inf).midicps;
 	freq = Demand.kr(trig, 0, [seq1, seq2]);
 	SinOsc.ar(freq + [0,0.7]).cubed.cubed * 0.1;
 }.play;

@@ -21,8 +21,8 @@ The FFT "chain" signal coming originally from an FFT UGen, perhaps via other PV 
 argument:: wintype
 Defines how the data is windowed:
 table::
-## -1 || strong::rectangular:: windowing, simple but typically not recommended; 
-## 0 || (the default) strong::Sine:: windowing, typically recommended for phase-vocoder work; 
+## -1 || strong::rectangular:: windowing, simple but typically not recommended;
+## 0 || (the default) strong::Sine:: windowing, typically recommended for phase-vocoder work;
 ## 1 || strong::Hann:: windowing, typically recommended for analysis work.
 ::
 
@@ -38,7 +38,7 @@ The IFFT UGen converts the FFT data in-place (in the original FFT buffer) and ov
 Examples::
 
 code::
-s = Server.local; 
+s = Server.local;
 
 b = Buffer.alloc(s,2048,1);
 
@@ -47,7 +47,7 @@ SynthDef("help-noopFFT", { arg out=0,bufnum=0;
 	in = WhiteNoise.ar(0.01);
 	chain = FFT(bufnum, in);
 	chain.inspect; // its an FFT
-	Out.ar(out, 
+	Out.ar(out,
 		IFFT(chain) // inverse FFT
 	);
 }).play(s,[\out,0,\bufnum,b.bufnum]);

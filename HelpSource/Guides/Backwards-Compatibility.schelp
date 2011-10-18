@@ -21,13 +21,13 @@ Like code::SynthDef.play::, code::Function.play:: returns a link::Classes/Synth:
 
 code::
 //The following examples are functionally equivalent
-x = { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }.play(fadeTime: 0); 
+x = { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }.play(fadeTime: 0);
 x.set(\freq, 880);		// you can set arguments
 y = Synth.new(x.defName);	// get the arbitrary defname from x
 x.free;
 y.free;
 
-x = SynthDef("backcompat-sine", { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }).play; 
+x = SynthDef("backcompat-sine", { arg freq = 440; Out.ar(1, SinOsc.ar(freq, 0, 0.5)) }).play;
 x.set(\freq, 880);
 y = Synth.new("backcompat-sine");
 x.free;
@@ -41,11 +41,11 @@ A number of other classes and methods have also been added to improve compatibil
 table::
 ## Synth *play || use Function.play or SynthDef.play
 ## GetFileDialog || use link::Classes/Dialog::
-## GetStringDialog || 
+## GetStringDialog ||
 ## Synth *stop || use Server.freeAll
 ## Synth *isPlaying || Server.numSynths (this will include non-running nodes)
 ## Mix *ar *arFill || use Mix *new and *fill
-## SimpleNumber.rgb || 
-## Rawarray.write || 
+## SimpleNumber.rgb ||
+## Rawarray.write ||
 ::
 

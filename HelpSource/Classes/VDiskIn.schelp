@@ -37,13 +37,13 @@ b = Buffer.cueSoundFile(s, "sounds/a11wlk01-44_1.aiff", 0, 1);
 
 x = { VDiskIn.ar(1, b, LFNoise2.kr(0.2).range(0.5, 2), 1, loop:1) }.play;
 
-b.close;	
+b.close;
 
 // again
 // note the like named instance method, but different arguments
-b.cueSoundFile("sounds/a11wlk01-44_1.aiff", 0);	
-	
-x.free; b.close; b.free;	
+b.cueSoundFile("sounds/a11wlk01-44_1.aiff", 0);
+
+x.free; b.close; b.free;
 
 
 // cue and play right away
@@ -57,7 +57,7 @@ x = Synth.basicNew("help-VDiskin");
 m = { arg buf; x.addToHeadMsg(nil, [\bufnum, buf])};
 
 b = Buffer.cueSoundFile(s,"sounds/a11wlk01-44_1.aiff",0,1, completionMessage: m);
-)		
+)
 
 x.free; b.close; b.free;	// clean up
 
@@ -106,7 +106,7 @@ s.sendMsg("/s_new", "help-VDiskin", x = s.nextNodeID, 1, 1);
 s.sendMsg("/b_close", 0); // close the file (very important!)
 
 
-// again 
+// again
 // don't need to reallocate and Synth is still reading
 s.sendMsg("/b_read", 0, "sounds/a11wlk01-44_1.aiff", 0, 0, 0, 1);
 

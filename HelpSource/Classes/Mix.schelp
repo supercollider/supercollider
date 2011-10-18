@@ -12,9 +12,9 @@ More information can be found under link::Guides/Multichannel-Expansion::.
 
 note::
 
-Note that  code::Mix.ar::  and  code::Mix.kr:: 
+Note that  code::Mix.ar::  and  code::Mix.kr::
 in SC2 are equivalent to  code::Mix.new::  in SC3,
-and that  code::Mix.arFill::  and  code::Mix.krFill:: 
+and that  code::Mix.arFill::  and  code::Mix.krFill::
 are equivalent to  code::Mix.fill:: .
 
 ::
@@ -35,7 +35,7 @@ argument::function
 The array filling function.
 
 returns:: Returns:
-A newly created 
+A newly created
 link::Classes/UGen:: .
 
 Examples::
@@ -47,13 +47,13 @@ s.boot;
 { Mix.new([ PinkNoise.ar(0.1), FSinOsc.ar(801, 0.1), LFSaw.ar(40, 0.1)]) }.play
 
 (
-play({ 
-	Mix.new( Array.fill(8, { SinOsc.ar(500 + 500.0.rand, 0, 0.05) }) ); 
+play({
+	Mix.new( Array.fill(8, { SinOsc.ar(500 + 500.0.rand, 0, 0.05) }) );
 }))
 
 (
-play({ 
-	Mix.fill(8, { SinOsc.ar(500 + 500.0.rand, 0, 0.05) }); 
+play({
+	Mix.fill(8, { SinOsc.ar(500 + 500.0.rand, 0, 0.05) });
 }))
 
 ::

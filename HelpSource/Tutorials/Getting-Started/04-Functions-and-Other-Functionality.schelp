@@ -51,7 +51,7 @@ code::
 f = { "Evaluating...".postln; 2 + 3; };
 f.value;
 ::
-	
+
 Often methods simply return the object itself. This is the case with most objects and the message 'value'. The example below demonstrates this. (Everything to the right of the code:://:: is a 'comment', which means that SC just ignores it. Comments are a good idea to make your code clearer.)
 
 code::
@@ -64,7 +64,7 @@ f.value;		// 3.0.rand means return a random value from 0 to 3.0 exclusive.
 f.value;		// something different
 f.value;		// something different
 ::
-	
+
 This means that by using the 'value' method Functions and other objects can be interchangeable in your code. This is an example of emphasis::polymorphism::, which is one of the powerful features of what's called Object Oriented Programming. Polymorphism just means that different objects are interchangeable (at least providing they return something sensible for what you're doing) if they respond to the same message. Object Oriented Programming (or OOP, as it's called for short) just means programming with objects. Simple, yes? Here's another short example showing this in action:
 
 code::
@@ -166,7 +166,7 @@ myFunc;			// throws an error
 
 You may be wondering why we haven't needed to declare variables like code::f::, and why they don't seem to have any particular scope (i.e. they keep there values even when executing code one line at a time). The letters a to z are what are called interpreter variables. These are pre-declared when you start up SC, and have an unlimited, or 'global', scope. This makes them useful for quick tests or examples. You've already encountered one of these, the variable 's', which you'll recall by default refers to the localhost server.
 
-For more information see: 
+For more information see:
 
 link::Reference/Functions::, link::Classes/Function::, link::Reference/Assignment::, link::Guides/Intro-to-Objects::, link::Reference/Literals::, link::Reference/Scope::
 

@@ -5,7 +5,7 @@ summary:: Runtime environment for the virtual machine and interpreter.
 description::
 A Process is the runtime environment for the virtual machine and interpreter.
 It has a subclass named link::Classes/Main:: which is where you should override the methods
-of Process. There are two methods of interest. One is named code::startup:: and is 
+of Process. There are two methods of interest. One is named code::startup:: and is
 called after the class library has been compiled. The other is named code::run:: and
 is called when the user chooses the Run menu command.
 

@@ -37,7 +37,7 @@ f = Pbind(
 	\degree, Pn(4,1),
 	\instrument, \help_sinegrain
 );
-			
+
 // this pattern has indetermined length:
 a = Prand([
 	Pbind(
@@ -71,7 +71,7 @@ b = Psync(a, 1, 2); // create a sequence of elements of either 1 or 2 beats leng
 Pseq([f, f, b, b], inf).play;
 
 (
-b = Psync(a, 2);	// create a sequence of elements with a minimum of 2 beats, 
+b = Psync(a, 2);	// create a sequence of elements with a minimum of 2 beats,
 			// but with undetermined upper limit
 Ppar([
 	Pseq([f, f, b, b], inf), // sequence

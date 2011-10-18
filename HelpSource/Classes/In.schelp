@@ -64,8 +64,8 @@ s.boot;
 )
 
 (
-SynthDef("help-PinkNoise", { arg out=0; 
-	Out.ar(out, PinkNoise.ar(0.1)) 
+SynthDef("help-PinkNoise", { arg out=0;
+	Out.ar(out, PinkNoise.ar(0.1))
 }).send(s);
 
 SynthDef("help-In", { arg out=0, in=0;
@@ -78,10 +78,10 @@ SynthDef("help-In", { arg out=0, in=0;
 
 //play noise on the right channel
 x = Synth("help-PinkNoise", [\out, 1]);
- 
+
 //read the input and play it out on the left channel
-Synth.after(x, "help-In", [\out, 0, \in, 1]); 
-::		
+Synth.after(x, "help-In", [\out, 0, \in, 1]);
+::
 
 read from a  control bus:
 code::
@@ -91,8 +91,8 @@ SynthDef("help-InKr",{ arg out=0, in=0;
 		SinOsc.ar(In.kr(in, 1), 0, 0.1)
 	)
 }).send(s);
-SynthDef("help-lfo", { arg out=0; 
-	Out.kr(out, LFNoise1.kr(0.3, 200, 800)) 
+SynthDef("help-lfo", { arg out=0;
+	Out.kr(out, LFNoise1.kr(0.3, 200, 800))
 }).send(s);
 )
 
@@ -100,7 +100,7 @@ SynthDef("help-lfo", { arg out=0;
 b = Bus.control(s,1);
 b.set(800);
 
-Synth("help-InKr",[\in, b.index]); 
+Synth("help-InKr",[\in, b.index]);
 b.set(400);
 b.set(300);
 Synth("help-lfo", [\out, b.index]);

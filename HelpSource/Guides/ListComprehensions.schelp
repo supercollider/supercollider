@@ -5,7 +5,7 @@ summary:: list comprehensions and generator expressions
 section:: Introduction
 
 List comprehensions are a syntactic feature of functional programming languages like Miranda, Haskell, and Erlang which were later copied into Python.
-You can search the web for "list comprehensions" or "generator expressions" to learn more. 
+You can search the web for "list comprehensions" or "generator expressions" to learn more.
 Basically list comprehensions are for getting a series of solutions to a problem.
 
 in SC these are just a syntax macro for a longer expression. read this as emphasis:: "all [x,y] for x in 1..5, y in 1..x, such that x+y is prime" :::
@@ -54,9 +54,9 @@ code::
 var intervals;
 // a function to generate intervals between all pairs of notes in a chord voicing
 intervals = {|chord|
-	all {: chord[i+gap] - chord[i], 
-		gap <- (1 .. chord.lastIndex), 
-		i <- (0 .. chord.lastIndex - gap) 
+	all {: chord[i+gap] - chord[i],
+		gap <- (1 .. chord.lastIndex),
+		i <- (0 .. chord.lastIndex - gap)
 	}
 };
 
@@ -83,7 +83,7 @@ There are several types of qualifier clauses that can appear after the body.
 
 subsection:: generator clause
 
-The basic clause is the generator clause. Its syntax is 
+The basic clause is the generator clause. Its syntax is
 code::
 name <- expr
 ::
@@ -125,7 +125,7 @@ all {: x, x <- (1..3), y <- (1..4-x) }
 
 subsection:: guard clause
 
-A guard clause is simply an expression. It should return a boolean value. 
+A guard clause is simply an expression. It should return a boolean value.
 code::
 expr
 ::
@@ -206,7 +206,7 @@ z = {: [baker, cooper, fletcher, miller, smith] ,
     baker <- floors,  baker != 5,  // Baker does not live on the top floor.
     // remove baker's floor from the list.
     // var creates a new scope, so the 'floors' on the left is a new binding.
-    var floors = floors.removing(baker), 
+    var floors = floors.removing(baker),
     cooper <- floors, cooper != 1, // Cooper does not live on the bottom floor.
     var floors = floors.removing(cooper), // remove cooper's floor from the list.
     fletcher <- floors, (fletcher != 5) && (fletcher != 1) // Fletcher does not live on either top or bottom floor.

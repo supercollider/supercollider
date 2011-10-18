@@ -19,7 +19,7 @@ argument:: bounds
 An instance of link::Classes/Rect:: or link::Classes/Point::. Default value is code::160@22::.
 
 argument:: label
-The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created. 
+The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
 
 argument:: items
 Default value is code::nil::. An link::Classes/Array:: of link::Classes/Association::s code:: ['label' -> { arg menuObj; value }, ] ::. Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::).
@@ -57,7 +57,7 @@ g = EZPopUpMenu.new(
 	w,
 	230@22,
 	"A PopUpMenu: ",
-	[	
+	[
 		\item0 ->{|a| ("this is item 0 of " ++ a).postln},
 		\item1 ->{|a| ("this is item 1 of " ++ a).postln},
 		\item2 ->{|a| ("this is item 2 of " ++ a).postln},
@@ -87,7 +87,7 @@ g.value = 0;
 instancemethods::
 
 subsection:: Changing Appearance
-	
+
 method:: setColors
 argument:: stringBackground
 An instance of link::Classes/Color::. The code::background:: of the label and unit views.
@@ -99,12 +99,12 @@ argument:: menuStringColor
 An instance of link::Classes/Color::. The code::stringColor:: of the menu.
 argument:: background
 An instance of link::Classes/Color::. The code::background:: of the list view.
-		
+
 method:: font
 Set the link::Classes/Font:: used by all the views.
 argument:: font
 An instance of link::Classes/Font::.
-		
+
 examples::
 code::
 // try several examples together
@@ -127,7 +127,7 @@ w.view.decorator = FlowLayout(w.view.bounds).gap_(2@2);
 };
 w.bounds=w.bounds.moveBy(300,60);
 );
-					
+
 
 // Creates its own window if parentView is nil:
 (
@@ -192,7 +192,7 @@ g.value=0;
 
 g. removeItemAt(0);
 
-		
+
 
 // replace item;
 (

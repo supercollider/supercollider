@@ -4,7 +4,7 @@ related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIResponder, Classes/CCRe
 categories:: MIDI
 
 Description::
-note:: As of SC 3.5 link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: are the recommended way of registering for incoming MIDI messages. They are faster, safer, and have more logical argument order than the old MIDI responder classes. The older class MIDIResponder, and its subclasses NoteOnResponder, NoteOffResponder, BendResponder, TouchResponder, CCResponder, and ProgramChangeResponder are maintained for legacy code only.:: 
+note:: As of SC 3.5 link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: are the recommended way of registering for incoming MIDI messages. They are faster, safer, and have more logical argument order than the old MIDI responder classes. The older class MIDIResponder, and its subclasses NoteOnResponder, NoteOffResponder, BendResponder, TouchResponder, CCResponder, and ProgramChangeResponder are maintained for legacy code only.::
 
 ClassMethods::
 

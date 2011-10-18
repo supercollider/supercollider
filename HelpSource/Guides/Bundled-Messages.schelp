@@ -28,7 +28,7 @@ x.free;
 
 // don't send
 (
-b = s.makeBundle(false, { 	
+b = s.makeBundle(false, {
 	x = { PinkNoise.ar(0.1) * In.kr(0, 1); }.play;
 });
 )

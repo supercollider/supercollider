@@ -54,7 +54,7 @@ CALL STACK:
 	Process-interpretPrintCmdLine
 		arg this = <instance of Main>
 ::
-	
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 The ERROR section explains what went wrong. The RECEIVER section names the the class of the object to which the message was sent. The ARGS section says how many arguments were included in the message. Read the CALL STACK from the bottom to the top to see where the error happened. Reading from bottom to top means going from
@@ -159,15 +159,15 @@ var b;		// b declared but not initialized, so it defaults to nil
 t = Task({
 
 	4.do({ arg item, i;
-	
+
 		if(i != 3)
 			{ i.postln } 		// print the value of i if it doesn't equal 3
 			{ (a * b).postln };	// when i equals 3, do a * b
 						// ... which is a problem if b is nil
 		1.wait;
-		
+
 	})
-	
+
 });
 t.start;
 )

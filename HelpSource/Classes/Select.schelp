@@ -46,7 +46,7 @@ SynthDef("help-Select",{ arg out=0;
 }).play;
 
 )
-	
+
 //Here used as a sequencer:
 (
 SynthDef("help-Select-2",{ arg out=0;
@@ -57,11 +57,11 @@ SynthDef("help-Select-2",{ arg out=0;
 	cycle = a.size  * 0.5;
 
 	s = Saw.ar(
-			Select.kr( 
+			Select.kr(
 				LFSaw.kr(1.0,0.0,cycle,cycle),
 				a
 			),
-			0.2	
+			0.2
 	);
 	Out.ar(out,s )
 }).play;

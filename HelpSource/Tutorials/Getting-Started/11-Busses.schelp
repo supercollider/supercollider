@@ -7,7 +7,7 @@ Now a little bit more about busses on the server. Busses are named after the bus
 
 The control rate busses are fairly simple to understand, each one has an index number, starting from 0.
 
-Audio rate busses are similar, but require slightly more explanation. A server app will have a certain number of output and input channels. These correspond to the first audio busses, with outputs coming before inputs. 
+Audio rate busses are similar, but require slightly more explanation. A server app will have a certain number of output and input channels. These correspond to the first audio busses, with outputs coming before inputs.
 
 For example, if we imagine a server with two output channels and two input channels (i.e. stereo in and out) then the first two audio busses (index 0 and index 1) will be the outputs, and the two immediately following those (index 2 and index 3) will be the inputs. Writing audio out to one of the output busses will result in sound being played from your speakers, and reading audio in from the input busses will get sound into SC for things like recording and processing (providing you have a source such as a microphone connected to your computer's or audio interface's inputs).
 
@@ -75,7 +75,7 @@ SynthDef.new("tutorial-SinOsc-stereo", { var outArray;
 }).play;
 )
 ::
-	
+
 The truth is that there aren't multichannel busses per se, but Bus objects are able to represent a series of busses with consecutive indices. Then emphasis::encapsulate:: several adjacent sever-side busses into a single Bus object, allowing you to treat them as a group. This turns out to be rather handy.
 
 When you're working with so-called 'private' busses (i.e. anything besides the input and output channels; all control busses are 'private') you generally want to make sure that that bus is only used for exactly what you want. The point after all is to keep things separate. You could do this by carefully considering which indices to use, but Bus allows for this to be done automatically. Each Server object has a bus allocator, and when you make a Bus object, it reserves those private indices, and will not give them out again until freed. You can find out the index of a Bus by using its 'index' method. Normally however, you will not need to store this value, as instances of Bus can be passed directly as UGen inputs or Synth args.
@@ -164,13 +164,13 @@ SynthDef("tutorial-DecaySin", { arg outBus = 0, effectBus, direct = 0.5;
 SynthDef("tutorial-Reverb", { arg outBus = 0, inBus;
 	var input;
 	input = In.ar(inBus, 1);
-	
+
 	// a low rent reverb
 	// aNumber.do will evaluate it's function argument a corresponding number of times
 	// {}.dup(n) will evaluate the function n times, and return an Array of the results
 	// The default for n is 2, so this makes a stereo reverb
 	16.do({ input = AllpassC.ar(input, 0.04, { Rand(0.001,0.04) }.dup, 3)});
-	
+
 	Out.ar(outBus, input);
 }).send(s);
 
@@ -195,15 +195,15 @@ Note that we could easily have many more source synths being processed by the si
 
 section::More Fun with Control Busses
 
-There are some other powerful things that you can do with control rate busses. For instance, you can map any arg in a running synth to read from a control bus. This means you don't need an In UGen. You can also write constant values to control busses using Bus' 'set' method, and poll values using its 'get' method. 
+There are some other powerful things that you can do with control rate busses. For instance, you can map any arg in a running synth to read from a control bus. This means you don't need an In UGen. You can also write constant values to control busses using Bus' 'set' method, and poll values using its 'get' method.
 
 code::
 (
-// make two control rate busses and set their values to 880 and 884. 
+// make two control rate busses and set their values to 880 and 884.
 b = Bus.control(s, 1); b.set(880);
 c = Bus.control(s, 1); c.set(884);
 // and make a synth with two frequency arguments
-x = SynthDef("tutorial-map", { arg freq1 = 440, freq2 = 440; 
+x = SynthDef("tutorial-map", { arg freq1 = 440, freq2 = 440;
 	Out.ar(0, SinOsc.ar([freq1, freq2], 0, 0.1));
 }).play(s);
 )
@@ -228,14 +228,14 @@ c.set(200);
 x.free; b.free; c.free;
 ::
 
-Note that unlike audio rate busses, control rate busses hold their last value until something new is written. 
+Note that unlike audio rate busses, control rate busses hold their last value until something new is written.
 
 Also note that Bus-get takes a Function (called an action function) as an argument. This is because it takes a small amount of time for the server to get the reply and send it back. The function, which is passed the value (or Array of values in the case of a multichannel bus) as an argument, allows you to do something with the value once its come back.
 
 This concept of things taking a small amount of time to respond (usually called emphasis::latency::) is quite important to understand. There are a number of other methods in SC which function this way, and it can cause you problems if you're not careful. To illustrate this consider the example below.
 
 code::
-// make a Bus object and set its values 
+// make a Bus object and set its values
 b = Bus.control(s, 1); b.set(880);
 
 // execute this altogether

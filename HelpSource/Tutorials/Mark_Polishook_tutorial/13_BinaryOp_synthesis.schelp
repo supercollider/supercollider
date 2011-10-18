@@ -179,7 +179,7 @@ Create nuanced textures by scaling sine waves with envelopes and then mixing the
 code::
 (
 {	var n = 12;
-	
+
 	Mix.arFill(
 			n,						// generate n sine waves
 			{

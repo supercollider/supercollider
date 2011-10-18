@@ -50,7 +50,7 @@ d.zero;
 (
 SynthDef(\conv_test, { arg kernel1, kernel2, t_trig = 0;
 	var input;
-		
+
 	input = Impulse.ar(1);
 
 	// must have power of two framesize

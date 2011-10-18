@@ -23,7 +23,7 @@ the signal changes from non-positive to positive.
 
 argument::reset
 
-Resets the counter to 
+Resets the counter to
 code::resetval::  when
 triggered.
 
@@ -58,7 +58,7 @@ code::
 SynthDef("help-Stepper",{ arg out=0;
 	Out.ar(out,
 		SinOsc.ar(
-			Stepper.kr(Impulse.kr(10), 0, 4, 16, 1) * 100, 
+			Stepper.kr(Impulse.kr(10), 0, 4, 16, 1) * 100,
 			0, 0.05
 		)
 	)
@@ -67,7 +67,7 @@ SynthDef("help-Stepper",{ arg out=0;
 SynthDef("help-Stepper",{ arg out=0;
 	Out.ar(out,
 		SinOsc.ar(
-			Stepper.kr(Impulse.kr(10), 0, 4, 16, -3) * 100, 
+			Stepper.kr(Impulse.kr(10), 0, 4, 16, -3) * 100,
 			0, 0.05
 		)
 	)
@@ -76,7 +76,7 @@ SynthDef("help-Stepper",{ arg out=0;
 SynthDef("help-Stepper",{ arg out=0;
 	Out.ar(out,
 		SinOsc.ar(
-			Stepper.kr(Impulse.kr(10), 0, 4, 16, 4) * 100, 
+			Stepper.kr(Impulse.kr(10), 0, 4, 16, 4) * 100,
 			0, 0.05
 		)
 	)
@@ -100,7 +100,7 @@ s.performList(\sendMsg, \b_setn, 10, 0, a.size, a);
 (
 SynthDef(\stepper, {
 	var rate, clock, index, freq, ffreq, env, out, rev, lfo;
-	
+
 	rate = MouseX.kr(1,5,1);
 	clock = Impulse.kr(rate);
 	env = Decay2.kr(clock, 0.002, 2.5);
@@ -112,26 +112,26 @@ SynthDef(\stepper, {
 	out = RLPF.ar(out, ffreq, 0.3, env);
 	out = RLPF.ar(out, ffreq, 0.3, env);
 	out = out * 0.02;
-	
+
 	// echo
-	out = CombL.ar(out, 1, 0.66/rate, 2, 0.8, out);	
-	
+	out = CombL.ar(out, 1, 0.66/rate, 2, 0.8, out);
+
 	// reverb
 	rev = out;
 	5.do { rev = AllpassN.ar(rev, 0.05, {0.05.rand}.dup, rrand(1.5,2.0)) };
 	out = out + (0.3 * rev);
-	
+
 	out = LeakDC.ar(out);
-	
+
 	// flanger
 	lfo = SinOsc.kr(0.2, [0,0.5pi], 0.0024, 0.0025);
 	1.do { out = DelayL.ar(out, 0.1, lfo, 1, out) };
-	
+
 	// slight bass emphasis
 	out = OnePole.ar(out, 0.9);
 
 	Out.ar(0, out);
-	
+
 }).send(s);
 )
 

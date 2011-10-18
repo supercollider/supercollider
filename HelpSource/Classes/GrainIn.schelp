@@ -16,14 +16,14 @@ a kr or ar trigger to start a new grain. If ar, grains after the start of the sy
 
 argument:: dur
 size of the grain (in seconds).
-	
+
 argument:: in
 the input to granulate
-	
+
 argument:: pan
 determines where to pan the output.
 list::
-## If numChannels = 1, no panning is done. 
+## If numChannels = 1, no panning is done.
 ## If numChannels = 2, panning is similar to Pan2.
 ## If numChannels > 2, pannins is the same as PanAz.
 ::
@@ -46,7 +46,7 @@ s.boot;
 
 (
 var winenv;
-// a custom envelope 
+// a custom envelope
 winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
 z = Buffer.sendCollection(s, winenv.discretize, 1);
 

@@ -51,11 +51,11 @@ code::
 (
 SynthDef("dataFromABus", {
 	Out.ar(
-		0,					
+		0,
 		[	//　左チャンネルはオーディオ・バスから入力を得る
-			In.ar(0, 1), 			
-			SinOsc.ar(440, 0.2), 
-		]	
+			In.ar(0, 1),
+			SinOsc.ar(440, 0.2),
+		]
 	)
 }).add;
 )

@@ -45,11 +45,11 @@ Examples::
 code::
 
 (
-{ 
+{
 	var a, freq, trig;
 	a = Dibrown(0, 15, 1, inf);
 	trig = Impulse.kr(MouseX.kr(1, 40, 1));
-	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	freq = Demand.kr(trig, 0, a) * 30 + 340;
 	SinOsc.ar(freq) * 0.1
 
 }.play;

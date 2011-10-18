@@ -38,8 +38,8 @@ SynthDef("dirac", { arg out, amp=0.1;
 	var u;
 	u = Impulse.ar(1);
 	FreeSelf.kr(u);
-	Out.ar(out, u * amp); 
-		// multiply by amp after using for release, so amp = 0 
+	Out.ar(out, u * amp);
+		// multiply by amp after using for release, so amp = 0
 		// doesn't cause synth buildup.
 }).send(s);
 )
@@ -53,7 +53,7 @@ Task {
 				s.sendMsg("/s_new", "dirac", -1,0,0, \amp, 1 / i);
 				(0.006 * i).wait;
 			};
-		};	
+		};
 		1.wait;
 	})
 } .play;

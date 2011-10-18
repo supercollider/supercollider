@@ -53,7 +53,7 @@ s.sendMsg("/s_new", "help-Diskin", x = s.nextNodeID, 1, 1);
 s.sendMsg("/b_close", 0); // close the file (very important!)
 
 
-// again 
+// again
 // don't need to reallocate and Synth is still reading
 s.sendMsg("/b_read", 0, "sounds/a11wlk01-44_1.aiff", 0, 0, 0, 1);
 
@@ -70,13 +70,13 @@ b = Buffer.cueSoundFile(s, "sounds/a11wlk01-44_1.aiff", 0, 1);
 
 x = { DiskIn.ar(1, b.bufnum) }.play;
 
-b.close;	
+b.close;
 
 // again
 // note the like named instance method, but different arguments
-b.cueSoundFile("sounds/a11wlk01-44_1.aiff", 0);	
-	
-x.free; b.close; b.free;	
+b.cueSoundFile("sounds/a11wlk01-44_1.aiff", 0);
+
+x.free; b.close; b.free;
 
 
 
@@ -103,13 +103,13 @@ SynthDef("help-Diskin", { arg bufnum = 0;
 	Out.ar(0, DiskIn.ar(1, bufnum));
 }).send(s);
 )
-(		
+(
 x = Synth.basicNew("help-Diskin");
 m = { arg buf; x.addToHeadMsg(nil, [\bufnum,buf.bufnum])};
 
 b = Buffer.cueSoundFile(s,"sounds/a11wlk01-44_1.aiff",0,1, completionMessage: m);
 
-)		
+)
 
 ::
 

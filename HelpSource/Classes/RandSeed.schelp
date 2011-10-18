@@ -40,7 +40,7 @@ code::
 var noise, filterfreq;
 noise = WhiteNoise.ar(0.05 ! 2) + Dust2.ar(70 ! 2);
 filterfreq = LFNoise1.kr(3, 5500, 6000);
-Resonz.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5)  
+Resonz.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5)
 }.play;
 )
 
@@ -49,7 +49,7 @@ Resonz.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5)
 x = { arg seed=1956;
 		RandSeed.kr(Impulse.kr(MouseX.kr(0.1, 100)), seed);
 }.play;
-)	
+)
 
 
 
@@ -59,7 +59,7 @@ x.set(\seed, 1902);
 
 
 // above you can see that the sound of the LFNoise1 is not exactly reproduced (filter frequency)
-// this is due to interference between the internal phase of the noise ugen and the 
+// this is due to interference between the internal phase of the noise ugen and the
 // seed setting rate.
 
 // a solution is to start a new synth:
@@ -69,13 +69,13 @@ SynthDef("pseudorandom", { arg out, sustain=1, seed=1967, id=0;
 	var noise, filterfreq;
 	RandID.ir(id);
 	RandSeed.ir(1, seed);
-	
-	
+
+
 	noise = WhiteNoise.ar(0.05 ! 2) + Dust2.ar(70 ! 2);
 	filterfreq = LFNoise1.kr(3, 5500, 6000);
-	
+
 	Out.ar(out,
-		Resonz.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5) 
+		Resonz.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5)
 		*
 		Line.kr(1, 0, sustain, doneAction:2)
 	)

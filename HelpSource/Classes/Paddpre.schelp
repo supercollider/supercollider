@@ -47,7 +47,7 @@ x = a.asStream;
 code::
 //sound example
 (
-SynthDef(\sinegrain, 
+SynthDef(\sinegrain,
 	{ arg out=0, freq=440, sustain=0.02;
 		var env;
 		env = EnvGen.kr(Env.perc(0.001, sustain), 1, doneAction:2);

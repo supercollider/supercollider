@@ -101,7 +101,7 @@ Environment.use({
 	~x = 7;
 	~y = 8;
 	~z = 9;
-	
+
 	f.valueEnvir(1, 2, 3);	// all values supplied
 	f.valueEnvir(1, 2);	// z is looked up in the current Environment
 	f.valueEnvir(1);	// y and z are looked up in the current Environment
@@ -137,10 +137,10 @@ orc = Environment.make {
 		~freq = exprand(80, 600);
 		~amp = 0.1;
 		~pan = 1.0.rand2;
-		
+
 			// call a randomly chosen instrument function
 			// with values from the environment
-		
+
 		 x = { ~orc.choose.valueEnvir; }.play(fadeTime: 0.2, addAction: \addToHead);
 		 0.2.wait;
 		 x.release(0.2);

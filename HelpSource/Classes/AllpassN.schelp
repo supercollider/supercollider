@@ -40,7 +40,7 @@ Examples::
 code::
 
 // Since the allpass delay has no audible effect as a resonator on
-// steady state sound ... 
+// steady state sound ...
 
 { AllpassC.ar(WhiteNoise.ar(0.1), 0.01, XLine.kr(0.0001, 0.01, 20), 0.2) }.play;
 
