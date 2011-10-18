@@ -2260,14 +2260,17 @@ bool isAnInlineableBlock(PyrParseNode *node)
 		anode = (PyrPushLitNode*)node;
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
-			if (gPostInlineWarnings && (bnode->mArglist || bnode->mVarlist)) {
-				post("WARNING: FunctionDef contains variable declarations and so"
-				" will not be inlined.\n");
-				if (bnode->mArglist) nodePostErrorLine((PyrParseNode*)bnode->mArglist);
-				else nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
-			} else {
+			if (bnode->mArglist || bnode->mVarlist) {
+				if (gPostInlineWarnings) {
+					post("WARNING: FunctionDef contains variable declarations and so"
+					" will not be inlined.\n");
+					if (bnode->mArglist)
+						nodePostErrorLine((PyrParseNode*)bnode->mArglist);
+					else
+						nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
+				}
+			} else
 				res = true;
-			}
 		}
 	}
 	return res;
@@ -2282,15 +2285,20 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode *node)
 		anode = (PyrPushLitNode*)node;
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
-			if (gPostInlineWarnings && (bnode->mArglist || bnode->mVarlist)) {
-				post("WARNING: FunctionDef contains variable declarations and so"
-				" will not be inlined.\n");
-				if (bnode->mArglist) nodePostErrorLine((PyrParseNode*)bnode->mArglist);
-				else nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
+			if (bnode->mArglist || bnode->mVarlist) {
+				if (gPostInlineWarnings) {
+					post("WARNING: FunctionDef contains variable declarations and so"
+					" will not be inlined.\n");
+					if (bnode->mArglist)
+						nodePostErrorLine((PyrParseNode*)bnode->mArglist);
+					else
+						nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
+				}
 			} else {
-				if (bnode->mBody->mClassno == pn_DropNode && ((PyrDropNode*)bnode->mBody)->mExpr2->mClassno == pn_BlockReturnNode) {
+				if (bnode->mBody->mClassno == pn_DropNode && ((PyrDropNode*)bnode->mBody)->mExpr2->mClassno == pn_BlockReturnNode)
 					res = isAtomicLiteral(((PyrDropNode*)bnode->mBody)->mExpr1);
-				} else res = false;
+				else
+					res = false;
 			}
 		}
 	}
