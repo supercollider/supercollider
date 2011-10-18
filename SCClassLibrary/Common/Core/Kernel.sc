@@ -470,9 +470,6 @@ Method : FunctionDef {
 	}
 	archiveAsObject { ^true }
 	checkCanArchive {}
-	deprecate { arg receiver, alternateMethod;
-		DeprecatedError(receiver, this, alternateMethod, this.ownerClass).throw;
-	}
 }
 
 Frame {
