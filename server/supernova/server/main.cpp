@@ -177,6 +177,7 @@ void set_plugin_paths(void)
 #ifdef __linux__
         sc_factory->load_plugin_folder("/usr/local/lib/supernova/plugins");
         sc_factory->load_plugin_folder("/usr/lib/supernova/plugins");
+        sc_factory->load_plugin_folder(home / "/.local/share/SuperCollider/supernova_plugins");
         sc_factory->load_plugin_folder(home / "share/SuperCollider/supernova_plugins");
 #elif defined(__APPLE__)
         sc_factory->load_plugin_folder(home / "Library/Application Support/SuperCollider/supernova_plugins/");
