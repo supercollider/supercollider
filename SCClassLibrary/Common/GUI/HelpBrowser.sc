@@ -23,7 +23,10 @@ HelpBrowser {
 	*instance {
 		if( singleton.isNil ) {
 			singleton = this.new;
-			singleton.window.onClose = { singleton = nil; };
+			singleton.window.onClose = {
+				singleton.stopAnim;
+				singleton = nil;
+			};
 		};
 		^singleton;
 	}
@@ -147,10 +150,10 @@ HelpBrowser {
 
 		openNewWin = aNewWin;
 		x = x + w + 10;
-		if(GUI.scheme.name == 'QtGUI') {
+		if(GUI.current.respondsTo(\checkBox)) {
 			str = "Open links in new window";
 			w = str.bounds.width + 50;
-			QCheckBox.new (window, Rect(x, y, w, h) )
+			CheckBox.new (window, Rect(x, y, w, h) )
 				.resize_(1)
 				.string_(str)
 				.value_(openNewWin)
