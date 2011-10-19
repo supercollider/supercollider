@@ -228,7 +228,7 @@ Object  {
 	// testing
 	? { arg obj; ^this }
 	?? { arg obj; ^this }
-	!? { arg obj; ^obj.value }
+	!? { arg obj; ^obj.value(this) }
 
 	isNil { ^false }
 	notNil { ^true }
