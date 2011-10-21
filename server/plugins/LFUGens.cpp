@@ -1338,23 +1338,20 @@ void A2K_Ctor(A2K* unit)
 
 void T2K_next(T2K *unit, int inNumSamples)
 {
-	float max = 0.f, zout = 0.f;
-	int n;
-	n = (int)unit->mWorld->mBufRate.mSampleRate;
-	for (int i=0; i<n; ++i) {
-			float zin = IN(0)[i];
-			if(fabs(zin) > max) {
-				zout = zin;
-				max = fabs(zin);
-			}
-	}
-	ZOUT0(0) = zout;
+	float out = 0.f, val;
+	float *in = ZIN(0);
+	int n = unit->mWorld->mBufLength;
+	LOOP1(n,
+		val = ZXP(in);
+		if(val>out) out=val;
+	);
+	ZOUT0(0) = out;
 }
 
 void T2K_Ctor(T2K* unit)
 {
 	SETCALC(T2K_next);
-	T2K_next(unit, 1);
+	ZOUT0(0) = ZIN0(0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
