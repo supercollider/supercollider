@@ -292,77 +292,77 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 int prAscTime(struct VMGlobals *g, int numArgsPushed);
 int prAscTime(struct VMGlobals *g, int numArgsPushed)
 {
-        PyrSlot *a = g->sp;
-        PyrSlot *slots = slotRawObject(a)->slots;
+	PyrSlot *a = g->sp;
+	PyrSlot *slots = slotRawObject(a)->slots;
 
-        if (IsNil(slots + 0)) {
-          SetNil(a);
-          return errNone;
-        }
+	if (IsNil(slots + 0)) {
+		SetNil(a);
+		return errNone;
+	}
 
-        struct tm tm0;
+	struct tm tm0;
 
-        if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
-        tm0.tm_year -= 1900;
-        if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
-		tm0.tm_mon -- ;
-        if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
-        if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
-        if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
-        if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
-        if (slotIntVal(slots+6, &tm0.tm_wday)) return errWrongType;
+	if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
+	tm0.tm_year -= 1900;
+	if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
+	tm0.tm_mon -- ;
+	if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
+	if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
+	if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
+	if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
+	if (slotIntVal(slots+6, &tm0.tm_wday)) return errWrongType;
 
-        const char *text = asctime(&tm0);
+	const char *text = asctime(&tm0);
 
-        int size = strlen(text) - 1; // Discard trailing newline
-        PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
-        memcpy(strobj->s, text, size);
+	int size = strlen(text) - 1; // Discard trailing newline
+	PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+	memcpy(strobj->s, text, size);
 
-        SetObject(a, strobj);
+	SetObject(a, strobj);
 
-        return errNone;
+	return errNone;
 }
 
 int prStrFTime(struct VMGlobals *g, int numArgsPushed);
 int prStrFTime(struct VMGlobals *g, int numArgsPushed)
 {
-        PyrSlot *a = g->sp - 1;
-        PyrSlot *b = g->sp;
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
 
-        PyrSlot *slots = slotRawObject(a)->slots;
+	PyrSlot *slots = slotRawObject(a)->slots;
 
-        if (IsNil(slots + 0)) {
-          SetNil(a);
-          return errNone;
-        }
+	if (IsNil(slots + 0)) {
+		SetNil(a);
+		return errNone;
+	}
 
-        struct tm tm0;
+	struct tm tm0;
 
-        if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
-        tm0.tm_year -= 1900;
-        if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
-		tm0.tm_mon --;
-        if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
-        if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
-        if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
-        if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
-        if (slotIntVal(slots+6, &tm0.tm_wday)) return errWrongType;
+	if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
+	tm0.tm_year -= 1900;
+	if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
+	tm0.tm_mon --;
+	if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
+	if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
+	if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
+	if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
+	if (slotIntVal(slots+6, &tm0.tm_wday)) return errWrongType;
 
-        char format[1024];
-        if (slotStrVal(b, format, 1024)) return errWrongType;
+	char format[1024];
+	if (slotStrVal(b, format, 1024)) return errWrongType;
 
-        char buffer[1024];
-        if (strftime(buffer, 1024, format, &tm0) != 0) {
-          int size = strlen(buffer);
-          PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
-          memcpy(strobj->s, buffer, size);
+	char buffer[1024];
+	if (strftime(buffer, 1024, format, &tm0) != 0) {
+		int size = strlen(buffer);
+		PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+		memcpy(strobj->s, buffer, size);
 
-          SetObject(a, strobj);
-        } else {
-          error("could not convert the date to string with the give format");
-          return errFailed;
-        }
-        return errNone;
+		SetObject(a, strobj);
+	} else {
+		error("could not convert the date to string with the give format");
+		return errFailed;
+	}
+	return errNone;
 }
 
 int32 timeseed();
