@@ -256,7 +256,7 @@ Select : UGen {
 SelectX {
 	*new1 { arg rate, which, array;
 		var selector = UGen.methodSelectorForRate(rate);
-		^XFade2.perform(selector,
+		^this.crossfadeClass.perform(selector,
 			Select.perform(selector, which.round(2), array),
 			Select.perform(selector, which.trunc(2) + 1, array),
 			(which * 2 - 1).fold2(1)
@@ -267,6 +267,15 @@ SelectX {
 	}
 	*kr { arg which, array, wrap=1;
 		^this.new1(\control, which, array, wrap);
+	}
+	*crossfadeClass {
+		^XFade2
+	}
+}
+
+LinSelectX : SelectX {
+	*crossfadeClass {
+		^LinXFade2
 	}
 }
 
