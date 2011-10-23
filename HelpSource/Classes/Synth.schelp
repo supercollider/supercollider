@@ -66,12 +66,16 @@ s.queryAllNodes; // note the default group (ID 1)
 x.free;
 
 // Using an arrayed control
+// run this block first to make the SynthDef
 (
-x = SynthDef("help-synth", {| freq = #[440, 450, 460], out = 0 |
+SynthDef("help-synth", {| freq = #[440, 450, 460], out = 0 |
 	Out.ar(out, Mix(SinOsc.ar(freq, 0, 0.1)));
-});
-x = x.play(s, [freq: [500,501,510] ]);
+}).add;
 )
+
+// then this a short while later
+x = Synth("help-synth", [freq: [500,501,510] ]);
+
 x.set(\freq, [1,2,3] * 400 + [1,2,3], \out, 1); // two pairs
 x.set(\freq, [3] * 400 + [1,2,3], \out, 1); // two pairs
 x.set(0, [660, 680, 720], 1, 0); // freq is the first argument, so it's index is 0. out is index 1.
