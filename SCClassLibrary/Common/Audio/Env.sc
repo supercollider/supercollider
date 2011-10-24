@@ -125,7 +125,10 @@ Env : AbstractEnv {
 
 
 	*new { arg levels = #[0,1,0], times = #[1,1], curve = 'lin', releaseNode, loopNode;
-		^super.newCopyArgs(levels, times, curve, releaseNode, loopNode)
+		^super.newCopyArgs(levels, times, curve)
+			// note, we may not use newCopyArgs for these because of other instance vars
+			// in the superclass
+			.releaseNode_(releaseNode).loopNode_(loopNode)
 	}
 
 	releaseNode_ { arg z;
