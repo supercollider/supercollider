@@ -16,7 +16,7 @@
 
 	// move them to init methods
 	rgb { arg green,blue;
-		this.deprecated(thisMethod, Color.class.findMethod(\new));
+		this.deprecated(thisMethod, Color.class.findMethod(\new255));
 		^Color(this / 255.0,green / 255.0, blue / 255.0)
 	}
 
