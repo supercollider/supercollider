@@ -184,6 +184,9 @@ option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
 mark_as_advanced(NO_LIBSNDFILE)
 
+option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+mark_as_advanced(NO_AVAHI)
+
 if(NOT WIN32)
 	option(SCLANG_SERVER "Build with internal server." ON)
 endif()

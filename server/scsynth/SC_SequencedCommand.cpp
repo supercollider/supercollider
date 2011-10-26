@@ -998,9 +998,15 @@ BufWriteCmd::BufWriteCmd(World *inWorld, ReplyAddress *inReplyAddress)
 {
 }
 
+#ifdef NO_LIBSNDFILE
+struct SF_INFO {};
+#endif
+
+
 extern "C" {
 int sndfileFormatInfoFromStrings(SF_INFO *info, const char *headerFormatString, const char *sampleFormatString);
 }
+
 
 int BufWriteCmd::Init(char *inData, int inSize)
 {

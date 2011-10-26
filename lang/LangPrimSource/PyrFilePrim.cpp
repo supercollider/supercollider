@@ -1185,11 +1185,14 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 
 ////////
 
+#ifndef NO_LIBSNDFILE
+
 #ifdef SC_WIN32
 	#include <sndfile-win.h>
 #else
 	#include <sndfile.h>
 #endif
+
 
 int sampleFormatToString(struct SF_INFO *info, const char **string);
 int sampleFormatToString(struct SF_INFO *info, const char **string)
@@ -1638,6 +1641,8 @@ int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
 	return errFailed;
 }
 
+#endif // NO_LIBSNDFILE
+
 
 //////////
 #ifdef NOCLASSIC
@@ -1836,6 +1841,7 @@ void initFilePrimitives()
 	base = nextPrimitiveIndex();
 	index = 0;
 
+#ifndef NO_LIBSNDFILE
 	definePrimitive(base, index++, "_SFOpenRead", prSFOpenRead, 2, 0);
 	definePrimitive(base, index++, "_SFOpenWrite", prSFOpenWrite, 2, 0);
 	definePrimitive(base, index++, "_SFClose", prSFClose, 1, 0);
@@ -1843,6 +1849,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_SFRead", prSFRead, 2, 0);
 	definePrimitive(base, index++, "_SFSeek", prSFSeek, 3, 0);
 	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);
+#endif
 
 #ifndef SC_WIN32
 	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
