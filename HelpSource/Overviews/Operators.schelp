@@ -231,7 +231,9 @@ method:: %
 Floating point modulo.
 
 method:: **
-Exponentiation.
+Exponentiation. When used with UGens which produce a negative signal this function extends the usual definition of
+exponentiation and returns neg(neg(a) ** b). This allows exponentiation of
+negative signal values by noninteger exponents.
 
 subsection:: Comparisions
 
