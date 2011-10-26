@@ -19,7 +19,9 @@ else()
 endif()
 
 
-if (APPLE)
+if (NO_AVAHI)
+
+elseif (APPLE)
 	add_definitions(-DUSE_RENDEZVOUS=1)
 else()
 	find_package(Avahi)
@@ -96,7 +98,7 @@ if(WIN32)
 endif()
 
 if (FFT_GREEN)
-	list(APPEND scsynth_sources ../common/fftlib.c)
+	list(APPEND scsynth_sources ../../common/fftlib.c)
 endif()
 
 if (FFTW3F_FOUND)

@@ -1,4 +1,9 @@
-find_package(FFTW3f)
+
+if (FFT_GREEN)
+        add_definitions("-DSC_FFT_GREEN")
+else()
+        find_package(FFTW3f)
+endif()
 
 if(SC_QT)
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
