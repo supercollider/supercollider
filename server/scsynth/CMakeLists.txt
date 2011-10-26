@@ -112,7 +112,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
 set_property(DIRECTORY
              APPEND
-             PROPERTY COMPILE_DEFINITIONS SC_MEMORY_ALIGNMENT=16)
+             PROPERTY COMPILE_DEFINITIONS SC_MEMORY_ALIGNMENT=32)
 
 if (AUDIOAPI STREQUAL jack)
 	list(APPEND scsynth_sources SC_Jack.cpp)
