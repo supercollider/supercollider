@@ -73,6 +73,13 @@ void nova_server::prepare_backend(void)
         outputs.push_back(sc_factory->world.mAudioBus + blocksize * channel);
 
     audio_backend::output_mapping(outputs.begin(), outputs.end());
+
+#ifdef __SSE__
+    /* denormal handling */
+    _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+    _mm_setcsr(_mm_getcsr() | 0x40);
+#endif
+
 }
 
 nova_server::~nova_server(void)
