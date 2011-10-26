@@ -25,7 +25,7 @@
 
 int gMissingNodeID;
 
-void *SC_ErrorString(SCErr err, char returnString[])
+void SC_ErrorString(SCErr err, char returnString[])
 {
 	switch (err) {
 			case kSCErr_None : sprintf(returnString, "none"); break;
@@ -55,7 +55,7 @@ void *SC_ErrorString(SCErr err, char returnString[])
 			case kSCErr_BufGenNotFound : sprintf(returnString, "buf gen routine not found"); break;
 
 			default : sprintf(returnString, "unknown error");
-			
+
 	}
 }
 
