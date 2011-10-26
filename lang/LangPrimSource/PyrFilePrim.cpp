@@ -1641,7 +1641,44 @@ int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
 	return errFailed;
 }
 
-#endif // NO_LIBSNDFILE
+#else // !NO_LIBSNDFILE
+
+int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFClose(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFWrite(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFRead(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFSeek(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+#endif // !NO_LIBSNDFILE
 
 
 //////////
@@ -1841,7 +1878,6 @@ void initFilePrimitives()
 	base = nextPrimitiveIndex();
 	index = 0;
 
-#ifndef NO_LIBSNDFILE
 	definePrimitive(base, index++, "_SFOpenRead", prSFOpenRead, 2, 0);
 	definePrimitive(base, index++, "_SFOpenWrite", prSFOpenWrite, 2, 0);
 	definePrimitive(base, index++, "_SFClose", prSFClose, 1, 0);
@@ -1849,7 +1885,6 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_SFRead", prSFRead, 2, 0);
 	definePrimitive(base, index++, "_SFSeek", prSFSeek, 3, 0);
 	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);
-#endif
 
 #ifndef SC_WIN32
 	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
