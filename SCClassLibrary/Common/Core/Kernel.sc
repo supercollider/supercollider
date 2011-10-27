@@ -276,13 +276,15 @@ Process {
 
 	methodReferences {
 		// this will not find method calls that are compiled with special byte codes such as 'value'.
-		var name, out, references;
+		var name, out, references, nameString;
 		out = CollStream.new;
 		name = this.getCurrentSelection.asSymbol;
 		references = Class.findAllReferences(name);
 		if (references.notNil, {
 			out << "References to '" << name << "' :\n";
-			references.do({ arg ref; out << "   " << ref.asString << "\n"; });
+			references.do({ arg ref; 
+				nameString = ref.ownerClass.name ++ ":" ++ ref.name;
+				out << "   [" << nameString << "]\n"; });
 			out.collection.newTextWindow(name.asString);
 		},{
 			Post << "\nNo references to '" << name << "'.\n";
