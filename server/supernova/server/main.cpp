@@ -70,11 +70,11 @@ void connect_jack_ports(void)
     if (input_string) {
         string input_port(input_string);
 
-        if (input_port.find(":") == string::npos)
+        if (input_port.find(",") == string::npos)
             instance->connect_all_inputs(input_port.c_str());
         else {
             vector<string> portnames;
-            boost::split(portnames, input_port, is_any_of(":"));
+            boost::split(portnames, input_port, is_any_of(","));
             for (int i = 0; i != portnames.size(); ++i)
                 instance->connect_input(i, portnames[i].c_str());
         }
@@ -84,11 +84,11 @@ void connect_jack_ports(void)
     if (output_string) {
         string output_port(output_string);
 
-        if (output_port.find(":") == string::npos)
+        if (output_port.find(",") == string::npos)
             instance->connect_all_outputs(output_port.c_str());
         else {
             vector<string> portnames;
-            boost::split(portnames, output_port, is_any_of(":"));
+            boost::split(portnames, output_port, is_any_of(","));
             for (int i = 0; i != portnames.size(); ++i)
                 instance->connect_output(i, portnames[i].c_str());
         }
