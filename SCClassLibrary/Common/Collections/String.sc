@@ -360,7 +360,13 @@ String[char] : RawArray {
 		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths
 	}
 	resolveRelative {
-		var path = thisProcess.nowExecutingPath;
+		var path, caller;
+		caller = thisMethod.getBackTrace.caller.functionDef;
+		if(caller == Interpreter.findMethod(\interpretPrintCmdLine), {
+			path = thisProcess.nowExecutingPath;
+		}, {
+			path = caller.filenameSymbol.asString;
+		});
 		if(this[0] == thisProcess.platform.pathSeparator, {^this});
 		if(path.isNil) { Error("can't resolve relative to an unsaved file").throw};
 		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this)
