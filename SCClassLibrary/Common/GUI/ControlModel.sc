@@ -35,7 +35,7 @@ Spec {
 }
 
 ControlSpec : Spec {
-	var <minval, <maxval, <>warp, <>step, <>default, <>units;
+	var <minval, <maxval, <warp, <step, <>default, <>units;
 	var <clipLo, <clipHi;
 
 	*new { arg minval=0.0, maxval=1.0, warp='lin', step=0.0, default, units;
@@ -64,10 +64,20 @@ ControlSpec : Spec {
 	minval_ { arg v;
 		minval = v;
 		this.init;	// rechoose the constrainfunc
+		this.changed(\minval);
 	}
 	maxval_ { arg v;
 		maxval = v;
-		this.init
+		this.init;
+		this.changed(\maxval);
+	}
+	warp_ { arg w;
+		warp = w.asWarp(this);
+		this.changed(\warp);
+	}
+	step_ { arg s;
+		step = s;
+		this.changed(\step);
 	}
 	constrain { arg value;
 		^value.asFloat.clip(clipLo, clipHi).round(step)

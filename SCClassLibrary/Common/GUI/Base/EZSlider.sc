@@ -56,6 +56,8 @@ EZSlider : EZGui {
 		// set view parameters and actions
 
 		controlSpec = argControlSpec.asSpec;
+		controlSpec.addDependant(this);
+		this.onClose = { controlSpec.removeDependant(this) };
 		(unitWidth>0).if{unitView.string = " "++controlSpec.units.asString};
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
@@ -92,6 +94,11 @@ EZSlider : EZGui {
 		}{
 			this.value_(initVal);
 		};
+		
+		labelView.mouseDownAction = {|view, x, y, modifiers, buttonNumber, clickCount|
+			if(clickCount == 2, {this.editSpec});
+		};
+		
 		this.prSetViewParams;
 
 	}
@@ -272,6 +279,31 @@ EZSlider : EZGui {
 
 
 		^[labelBounds, numBounds, sliderBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
+	}
+	
+	update {arg changer, what ...moreArgs;
+		var oldValue;
+		if(changer === controlSpec, {
+			oldValue = this.value;
+			this.value = oldValue;
+			if(this.value != oldValue, { this.doAction });
+		});
+	}
+	
+	editSpec {
+		var ezspec;
+		[labelView, sliderView, numberView, unitView].do({|view|
+			view.notNil.if({ view.enabled_(false).visible_(false)});
+		});
+		ezspec = EZSpecEditor(view, view.bounds.moveTo(0,0), controlSpec: controlSpec, layout: layout);
+		ezspec.labelView.mouseDownAction = {|view, x, y, modifiers, buttonNumber, clickCount|
+			if(clickCount == 2, {
+				ezspec.remove;
+				[labelView, sliderView, numberView, unitView].do({|view|
+					view.notNil.if({ view.enabled_(true).visible_(true)});
+				});
+			});
+		};			
 	}
 
 }
