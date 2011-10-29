@@ -779,12 +779,19 @@ Plotter {
 
 
 + ArrayedCollection {
-
 	plot2 { |name, bounds, discrete=false, numChannels, minval, maxval|
 		var array = this.as(Array), plotter = Plotter(name, bounds);
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
+		array = array.collect {|elem|
+			if (elem.isKindOf(Env)) {
+				elem.asSignal
+			} {
+				elem
+			}
+		};
+
 		plotter.setValue(array, true, false);
 
 		minval !? { plotter.minval = minval; };
@@ -793,7 +800,6 @@ Plotter {
 
 		^plotter
 	}
-
 }
 
 + Collection {
