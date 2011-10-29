@@ -1,19 +1,24 @@
 Exception {
 	classvar <>handling = false;
 	classvar <>debug = false;
+	classvar <>inProtectedFunction = false;
 
-	var <>what, <>backtrace, <>path;
+	var <>what, <>protectedBacktrace, <>path;
 
 	*new { arg what;
-		var backtrace;
-		if (debug) { backtrace = this.getBackTrace.caller };
-		^super.newCopyArgs(what ? this.name, backtrace)
+		var protectedBacktrace, instance;
+		if (debug || inProtectedFunction, { 
+			protectedBacktrace = this.getBackTrace.caller; 
+			inProtectedFunction = false;
+		});
+		^super.newCopyArgs(what ? this.name, protectedBacktrace);
 	}
 	errorString {
 		^"EXCEPTION: " ++ what
 	}
 	reportError {
 		this.errorString.postln;
+		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		this.adviceLink.postln;
 	}
@@ -21,6 +26,37 @@ Exception {
 		^("For advice: [http://supercollider.sf.net/wiki/index.php/%]"
 			.format(this.errorString.tr($ , $_).tr($\n, $_)));
 	}
+	postProtectedBacktrace {
+		var out, currentFrame, def, ownerClass, methodName, pos = 0;
+		out = CollStream.new;
+		"\nPROTECTED CALL STACK:".postln;
+		currentFrame = protectedBacktrace;
+		while({currentFrame.notNil}, {
+			def = currentFrame.functionDef;
+			if(def.isKindOf(Method), {
+				ownerClass = def.ownerClass;
+				methodName = def.name;
+				if(ownerClass == Function && (methodName == 'protect'), {
+					pos = out.pos;
+				});
+				out << "\t%:%\t%\n".format(ownerClass, methodName, currentFrame.address);
+			}, {
+				out << "\ta FunctionDef\t%\n".format(currentFrame.address);
+				out << "\t\tsourceCode = %\n".format(def.sourceCode ? "<an open Function>");
+			});
+			def.argNames.do({|name, i|
+				out << "\t\targ % = %\n".format(name, currentFrame.args[i]);
+			});
+			def.varNames.do({|name, i|
+				out << "\t\targ % = %\n".format(name, currentFrame.args[i]);
+			});
+			currentFrame = currentFrame.caller;
+		});
+		// lose everything after the last Function:protect
+		// it just duplicates the normal stack with less info
+		out.collection.copyFromStart(pos).postln;
+	}
+	
 	isException { ^true }
 }
 
@@ -44,6 +80,7 @@ MethodError : Error {
 		"RECEIVER:\n".post;
 		receiver.dump;
 		this.errorPathString.post;
+		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		this.adviceLink.postln;
 	}
@@ -99,6 +136,7 @@ DoesNotUnderstandError : MethodError {
 		"ARGS:\n".post;
 		args.dumpAll;
 		this.errorPathString.post;
+		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		this.adviceLink.postln;
 	}
@@ -173,6 +211,7 @@ DeprecatedError : MethodError {
 		Error.handling = true;
 		this.reportError;
 		if (Error.debug) {
+			if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 			this.dumpBackTrace;
 			Error.handling = false;
 			this.halt;
