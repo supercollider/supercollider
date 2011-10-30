@@ -295,7 +295,7 @@ EZSlider : EZGui {
 		[labelView, sliderView, numberView, unitView].do({|view|
 			view.notNil.if({ view.enabled_(false).visible_(false)});
 		});
-		ezspec = EZSpecEditor(view, view.bounds.moveTo(0,0), controlSpec: controlSpec, layout: layout);
+		ezspec = EZControlSpecEditor(view, view.bounds.moveTo(0,0), controlSpec: controlSpec, layout: layout);
 		ezspec.labelView.mouseDownAction = {|view, x, y, modifiers, buttonNumber, clickCount|
 			if(clickCount == 2, {
 				ezspec.remove;
