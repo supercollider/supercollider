@@ -1,4 +1,4 @@
-EZSpecEditor : EZGui {
+EZControlSpecEditor : EZGui {
 	
 	var <minView, <maxView, <warpView, <stepView, <controlSpec;
 	
