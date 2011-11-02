@@ -39,36 +39,36 @@ s.boot;
 
 // no decay
 (
-{ 
+{
 	SinOsc.ar(
-			PeakFollower.ar(Dust.ar(20, Line.kr(0, 1, 4)), 1.0) * 1500 + 200, 
+			PeakFollower.ar(Dust.ar(20, Line.kr(0, 1, 4)), 1.0) * 1500 + 200,
 			0, 0.2
 	)
-	
+
 }.play;
 )
 
 // a little decay
 (
-{ 
+{
 	SinOsc.ar(
-			PeakFollower.ar(Dust.ar(20, Line.kr(0, 1, 4)), 0.999) * 1500 + 200, 
+			PeakFollower.ar(Dust.ar(20, Line.kr(0, 1, 4)), 0.999) * 1500 + 200,
 			0, 0.2
 	)
-	
+
 }.play;
 )
 
 // mouse x controls decay, center of the
 (
-{ 
+{
 	var decay;
 	decay = MouseX.kr(0.99, 1.00001).min(1.0);
 	SinOsc.ar(
-			PeakFollower.ar(Dust.ar(20), decay) * 1500 + 200, 
+			PeakFollower.ar(Dust.ar(20), decay) * 1500 + 200,
 			0, 0.2
 	);
-	
+
 }.play;
 )
 
@@ -77,14 +77,14 @@ s.boot;
 
 // follow a sine lfo, decay controlled by mouse x
 (
-{ 
+{
 	var decay;
 	decay = MouseX.kr(0, 1.1).min(1.0);
 	SinOsc.ar(
-			PeakFollower.kr(SinOsc.kr(0.2), decay) * 200 + 500, 
+			PeakFollower.kr(SinOsc.kr(0.2), decay) * 200 + 500,
 			0, 0.2
 	)
-	
+
 }.play;
 )
 

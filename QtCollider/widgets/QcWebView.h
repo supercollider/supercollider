@@ -42,34 +42,39 @@ class WebView : public QWebView
               READ interpretSelection WRITE setInterpretSelection );
 
 public:
-
-  WebView( QWidget *parent = 0 );
-  QString url() const;
-  void setUrl( const QString & );
-  QString html () const;
   Q_INVOKABLE void setHtml ( const QString &html, const QString &baseUrl = QString() );
-  QString plainText () const;
-  QWebPage::LinkDelegationPolicy linkDelegationPolicy () const;
-  void setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy );
-  bool delegateReload() const;
-  void setDelegateReload( bool );
-  bool interpretSelection() const { return _interpretSelection; }
-  void setInterpretSelection( bool b ) { _interpretSelection = b; }
   Q_INVOKABLE void evaluateJavaScript ( const QString &script );
+  Q_INVOKABLE void setFontFamily( int genericFontFamily, const QString & fontFamily );
 
-  inline static QUrl urlFromString( const QString & str ) {
-    QUrl url( str );
-    if( url.scheme().isEmpty() ) url.setScheme( "file" );
-    return url;
-  }
+public Q_SLOTS:
+  void findText( const QString &searchText, bool reversed = false );
 
 Q_SIGNALS:
   void linkActivated( const QString & );
   void reloadTriggered( const QString & );
   void interpret( const QString & code );
 
-public Q_SLOTS:
-  void findText( const QString &searchText, bool reversed = false );
+public:
+
+  WebView( QWidget *parent = 0 );
+
+  QString url() const;
+  void setUrl( const QString & );
+  QString html () const;
+  QString plainText () const;
+
+  QWebPage::LinkDelegationPolicy linkDelegationPolicy () const;
+  void setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy );
+  bool delegateReload() const;
+  void setDelegateReload( bool );
+  bool interpretSelection() const { return _interpretSelection; }
+  void setInterpretSelection( bool b ) { _interpretSelection = b; }
+
+  inline static QUrl urlFromString( const QString & str ) {
+    QUrl url( str );
+    if( url.scheme().isEmpty() ) url.setScheme( "file" );
+    return url;
+  }
 
 protected:
   virtual void keyPressEvent( QKeyEvent * );

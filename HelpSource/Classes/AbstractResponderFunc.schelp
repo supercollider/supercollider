@@ -1,0 +1,101 @@
+CLASS:: AbstractResponderFunc
+summary:: Abstract superclass of responder func objects
+categories:: OpenSoundControl, MIDI
+related:: Classes/OSCFunc, Classes/OSCdef, Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractDispatcher
+
+DESCRIPTION::
+AbstractResponderFunc is the abstract superclass of responder funcs, which are classes which register one or more functions to respond to a particular type of input. It provides some common functionality such as introspection. Its two main subclasses are link::Classes/OSCFunc::, and link::Classes/MIDIFunc::. By default responder funcs persist beyond Cmd-. (see link::#-permanent:: below).
+
+Instances will register with a dispatcher (an instance of a subclass of link::Classes/AbstractDispatcher::), which will actually dispatch incoming messages to an instance's Function(s).
+
+
+CLASSMETHODS::
+
+private:: initClass
+
+METHOD:: allFuncProxies
+Get all current instances of this classes concrete subclasses, sorted by type.
+
+returns:: An link::Classes/IdentityDictionary::.
+
+METHOD:: allEnabled
+As allFuncProxies above, but only return those instances currently listening for input.
+
+returns:: An link::Classes/IdentityDictionary::.
+
+METHOD:: allDisabled
+As allFuncProxies above, but only return those instances currently not listening for input.
+
+returns:: An link::Classes/IdentityDictionary::.
+
+
+INSTANCEMETHODS::
+private:: cmdPeriod, prFunc
+
+METHOD:: func
+Get or set this objects response function.
+
+returns:: The getter returns a link::Classes/Function:: or similar object.
+
+METHOD:: srcID
+Get this object's source.
+
+returns:: The return type will depend on subclass. For link::Classes/OSCFunc:: this will be a link::Classes/NetAddr::, for link::Classes/MIDIFunc:: a UID. This can can be nil, which indicates that the object will respond to any source.
+
+METHOD:: enabled
+Check if this object is currently responding to incoming messages.
+
+returns:: A link::Classes/Boolean::.
+
+METHOD:: dispatcher
+et this object's dispatcher. This is the object which matches incoming messages with responder funcs. Instances can use custom dispatchers to support arbitrary matching schemes.
+
+returns:: An instance of an appropriate subclass of link::Classes/AbstractDispatcher::. (The return type will depend on subclass.)
+
+METHOD:: permanent
+Get or set whether this responder func is persists when the user executes Cmd-. If false this will be disabled and removed from the global lists. The default is true.
+
+argument:: bool
+A link::Classes/Boolean:: indicating if this object is permanent.
+
+returns:: The getter returns a link::Classes/Boolean::.
+
+METHOD:: enable
+Enable this object to receive incoming messages. This is done automatically at creation time.
+
+METHOD:: disable
+Stop this object from receiving incoming messages.
+
+METHOD:: add
+Add a new function to the list of functions which will be executed when this object receives an incoming message.
+
+argument:: newFunc
+A link::Classes/Function:: or similar object to be added.
+
+METHOD:: remove
+Remove a function from the list of functions which will be executed when this object receives an incoming message.
+
+argument:: removeFunc
+The link::Classes/Function:: to be removed.
+
+METHOD:: gui
+Open a subclass specific GUI. (Not yet implemented)
+
+returns:: The GUI object.
+
+METHOD:: oneShot
+Indicate that this object should execute only once and then free itself.
+
+METHOD:: fix
+A synonym for link::#permanent::
+
+METHOD:: free
+Disable this object and remove it from the global lists. This should be done when you are finished using this object.
+
+METHOD:: clear
+Remove all active functions from this object's function list.
+
+
+EXAMPLES::
+
+See link::Classes/OSCFunc:: and link::Classe/MIDIFunc::.

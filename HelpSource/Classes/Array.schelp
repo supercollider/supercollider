@@ -2,7 +2,7 @@ class:: Array
 summary:: fixed size collection
 related:: Reference/Literals, Classes/List
 categories:: Collections>Ordered
-  
+
 description::
 Arrays are ArrayedCollections whose slots may contain any object. Arrays have a fixed maximum size beyond which they cannot grow. For expandable arrays, use the link::Classes/List:: class.
 
@@ -13,7 +13,7 @@ code::
 This allows an efficient use of resources, only growing the array when it needs to. The List class manages the Array for you, and in many cases is more suitable.
 
 Elements can be put into an existing slot with code::a.put(2,obj):: and accessed with
-code::a.at(2):: or code::a[2]:: 
+code::a.at(2):: or code::a[2]::
 
 See link::Classes/ArrayedCollection:: for the principal methods: at, put, clipAt, wrapAt, etc...
 
@@ -32,7 +32,7 @@ argument::indexedSize
 The size of the array.
 
 method::with
-Create a new Array whose slots are filled with the given arguments. 
+Create a new Array whose slots are filled with the given arguments.
 This is the same as the method in ArrayedCollection, but is reimplemented here to be more efficient.
 code::
 Array.with(7, 'eight',  9).postln;
@@ -56,14 +56,14 @@ code::
 ::
 
 method::mirror
-Return a new Array which is the receiver made into a palindrome. 
+Return a new Array which is the receiver made into a palindrome.
 The receiver is unchanged.
 code::
 [1, 2, 3, 4].mirror.postln;
 ::
 
 method::mirror1
-Return a new Array which is the receiver made into a palindrome with the last element removed. 
+Return a new Array which is the receiver made into a palindrome with the last element removed.
 This is useful if the list will be repeated cyclically, the first element will not get played twice.
 The receiver is unchanged.
 code::
@@ -71,7 +71,7 @@ code::
 ::
 
 method::mirror2
-Return a new Array which is the receiver concatenated with a reversal of itself. 
+Return a new Array which is the receiver concatenated with a reversal of itself.
 The center element is duplicated. The receiver is unchanged.
 code::
 [1, 2, 3, 4].mirror2.postln;
@@ -94,7 +94,7 @@ code::
 ::
 argument::n
 Number of elements to rotate. Negative n values rotate left, postive n values
-rotate right. 
+rotate right.
 
 method::pyramid
 Return a new Array whose elements have been reordered via one of 10 "counting" algorithms.
@@ -178,7 +178,7 @@ y.postln;
 ::
 
 method::slide
-Return a new Array whose elements are repeated subsequences from the receiver. 
+Return a new Array whose elements are repeated subsequences from the receiver.
 Easier to demonstrate than explain.
 code::
 [1, 2, 3, 4, 5, 6].slide(3, 1).postcs;
@@ -187,7 +187,7 @@ code::
 ::
 
 method::shift
-Shift the values of the array n steps to the right (n positive) or to the left(n negative), 
+Shift the values of the array n steps to the right (n positive) or to the left(n negative),
 dropping the excess and filling empty space with zero.
 code::
 [1, 2, 3, 4, 5, 6].shift(3).postln;
@@ -259,21 +259,21 @@ a = [
 )
 // join after 0
 (
-Routine { 
+Routine {
 	"join = 0.".postcln;
 	a.fork(0); \doneAll.postln;
 }.play;
 )
 // join after 1
 (
-Routine { 
+Routine {
 	"join = 1.".postcln;
 	a.fork(1); \doneAll.postln;
 }.play;
 )
 // join after all
 (
-Routine { 
+Routine {
 	"join = a.size (default).".postcln;
 	a.fork; \doneAll.postln;
 }.play;
@@ -302,7 +302,7 @@ method::atIdentityHashInPairs
 This method is used by IdentityDictionary to search for a key among its members.
 
 method::asString
-Returns a string representing the Array. May not be compileable due to ellision (...) of excessive arguments. 
+Returns a string representing the Array. May not be compileable due to ellision (...) of excessive arguments.
 
 method::asCompileString
 Returns a string that will compile to return an Array equal to the receiver.

@@ -1,0 +1,89 @@
+title:: 08. Scoping and Plotting
+summary:: Getting Started With SuperCollider
+categories:: Tutorials>Getting-Started
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
+
+section::Scoping Out Some Plots
+
+Function has two other useful audio related methods. The first you've already seen some results of, Function-plot:
+
+code::
+{ PinkNoise.ar(0.2) + SinOsc.ar(440, 0, 0.2) + Saw.ar(660, 0.2) }.plot;
+::
+
+This makes a graph of the signal produced by the output of the Function. You can specify some arguments, such as the duration. The default is 0.01 seconds, but you can set it to anything you want.
+
+code::
+{ PinkNoise.ar(0.2) + SinOsc.ar(440, 0, 0.2) + Saw.ar(660, 0.2) }.plot(1);
+::
+
+This can be useful to check what's happening, and if you're getting the output you think you're getting.
+
+The second method, Function-scope, shows an oscilloscope-like display of the Function's output. Scoping works a little bit differently depending on the operating system and GUI framework that you're using. So far you have been using the local server. When you want to use the oscilloscope, the local server is okay for Windows, but in Mac/Linux environments, you will have to use the "internal" server for scope.
+
+If you need to use the internal server, you'll need to boot it before it will work. You can do this using the internal server window
+
+image::Scoping-and-Plotting00.png::
+
+or you can do it in code, like so:
+
+code::
+Server.internal.boot;
+::
+
+Then click on the '-> default' button on the internal server's window to set that server to be the default, and store it in the variable 's'. Thereafter, that will be the server on which all audio is played, unless you specify another one. Since Function-scope only works with the internal server, however, we want the audio play there!
+
+So let's try to scope some audio:
+
+code::
+{ PinkNoise.ar(0.2) + SinOsc.ar(440, 0, 0.2) + Saw.ar(660, 0.2) }.scope;
+::
+
+This should open a window which looks something like this:
+
+image::Scoping-and-Plotting01.png::
+
+This also works for multiple channels:
+
+code::
+{ [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.scope;
+::
+
+Scope also has a zoom argument. Higher values 'zoom out'.
+
+code::
+{ [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.scope(zoom: 10);
+::
+
+Like Function-plot, Function-scope can be useful for testing purposes, and to see if you're actually getting out what you think you are.
+
+section::Scoping on Demand
+
+You can also scope the output of the internal server at any time, by calling 'scope' on it.
+
+code::
+{ [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.play(Server.internal);
+Server.internal.scope; // you could also use 's' if the internal is the default
+::
+
+You can do the same thing by clicking on the internal server window and pressing the 's' key.
+
+section::Local vs. Internal
+
+If you're wondering what's the difference between the local and the internal servers, it's relatively straightforward: The internal server runs as a process within the client app; basically a program within a program. The main advantage of this is that it allows the two applications to share memory, which allows for things like realtime scoping of audio. The disadvantage is that the two are then interdependent, so if the client crashes, so does the server.
+
+For more information see:
+
+link::Classes/Function::, link::Classes/Server::, link::Classes/Stethoscope::
+
+section::Suggested Exercise
+
+Experiment with scoping and plotting some of the Function examples from earlier sections, or some Functions of your own creation. Try experimenting with different duration or zoom values.
+
+____________________
+
+This document is part of the tutorial strong::Getting Started With SuperCollider::.
+
+Click here to go on to the next section: link::Tutorials/Getting-Started/09-Getting-Help::
+
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

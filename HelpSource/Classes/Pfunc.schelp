@@ -30,7 +30,7 @@ x.reset;
 Sound example
 code::
 (
-SynthDef(\help_sinegrain, 
+SynthDef(\help_sinegrain,
 	{ arg out = 0, freq = 440, sustain = 0.05;
 		var env;
 		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:2);

@@ -18,7 +18,7 @@
 
 */
 
-RandSeed : UGen {
+RandSeed : WidthFirstUGen {
 	*ar { arg trig = 0.0, seed=56789;
 		this.multiNew('audio', trig, seed)
 		^0.0		// RandSeed has no output
@@ -33,7 +33,7 @@ RandSeed : UGen {
 	}
 }
 
-RandID : UGen {
+RandID : WidthFirstUGen {
 	// choose which random number generator to use for this synth .
 	*kr { arg id=0;
 		this.multiNew('control', id)

@@ -1,0 +1,36 @@
+threadpool to-do items
+======================
+
+Documentation
+--------------------------------------------
+- Source code documentation
+- Design rationale
+- Tutorial
+- Finish Quickstart Tutorial/Example
+
+Functionality
+--------------------------------------------
+- Implement a size policy which dynamically 
+  increase/decrease the pool's size:
+  - init with min/max threads
+  - auto increase
+  - auto decrease (using timed cleanup tasks)
+- Add some kind of deadline scheduler
+- Add futures to pool
+
+
+Examples
+--------------------------------------------
+- Buffering Client Requests: Handle 'bursty' client traffic
+  Some applications need more buffering than is provided by OS I/O subsystem
+  
+  Working on 'active' buffer for boost::iostreams
+  buffer_filter which provides a dynamic amount of buffer objects. 
+  buffer_filter uses a threadpool with one thread which provides the buffers to 
+  consumer. (TODO Philipp)
+  
+  2nd implemention step:
+  Flexbile configuration: Buffer capacities can be configured according to
+    - maximum number of requests
+    - maximum number of bytes
+  

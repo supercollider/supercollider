@@ -47,7 +47,7 @@ b = Buffer.alloc(s,512,1);
 b.sine1(1.0/[1,2,3,4,5,6],true,false,true);
 
 SynthDef("help-OscN",{ arg out=0,bufnum=0;
-	Out.ar(out, 
+	Out.ar(out,
 		OscN.ar(bufnum, 500, 0, 0.5)
 	)
 }).play(s,[0,0,1,b.bufnum]);
@@ -66,7 +66,7 @@ b = Buffer.alloc(s,512,1);
 b.sine1(1.0/[1,2,3,4,5,6].squared,true,false,true);
 
 SynthDef("help-OscN",{ arg out=0,bufnum=0;
-	Out.ar(out, 
+	Out.ar(out,
 		OscN.ar(bufnum, XLine.kr(2000,200), 0, 0.5)
 	)
 }).play(s,[\out,0,\bufnum,b.bufnum]);
@@ -74,7 +74,7 @@ SynthDef("help-OscN",{ arg out=0,bufnum=0;
 )
 b.free;
 
-( 
+(
 // sounds very different than the Osc example
 s = Server.local;
 b = Buffer.alloc(s, 512, 1);
@@ -82,13 +82,13 @@ b.sine1([1.0], true, true, true);
 
 SynthDef("help-OscN",{ arg out=0,bufnum=0;
 	Out.ar(out,
-		OscN.ar(bufnum, 
+		OscN.ar(bufnum,
 			OscN.ar(bufnum,
 				XLine.kr(1,1000,9),
 				0,
 				200,
-				800), 
-			0, 
+				800),
+			0,
 			0.25)
 	)
 }).play(s,[\out, 0, \bufnum, b.bufnum]);
@@ -104,12 +104,12 @@ b.sine1([1.0], true, true, true);
 
 SynthDef("help-OscN",{ arg out=0,bufnum=0;
 	Out.ar(out,
-		OscN.ar(bufnum, 
-				800, 
+		OscN.ar(bufnum,
+				800,
 				OscN.ar(bufnum,
 						XLine.kr(20,8000,10),
 						0,
-						2pi), 
+						2pi),
 				0.25)
 	)
 }).play(s,[\out, 0, \bufnum, b.bufnum]);

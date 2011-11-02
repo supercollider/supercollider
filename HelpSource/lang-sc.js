@@ -12,6 +12,7 @@ PR.registerLangHandler(
         /* symbols */
         [PR.PR_ATTRIB_NAME, /^\\\w+/],
         [PR.PR_ATTRIB_NAME, /^'[^']+'/],
+        [PR.PR_ATTRIB_VALUE, /^~\w+/],
         /* special variables */
         [PR.PR_TAG,         /^(?:super|thisFunctionDef|thisFunction|thisMethod|thisProcess|thisThread|this)\b/],
         /* special values */
@@ -28,8 +29,8 @@ PR.registerLangHandler(
         [PR.PR_LITERAL,     /^-?(?:(?:\d+(\.\d+)?)(?:e[+\-]?\d+)?)(pi)?|pi/],
         /* other stuff */
         [PR.PR_PLAIN, /^[a-z_]\w*/i],
-//        [PR.PR_PUNCTUATION, /^[-.,;!#$%&/+*<>=@()\[\]{}]/]
-        [PR.PR_PUNCTUATION, /^[-.,;!?#$%&\|/+*<>=@()\[\]{}]/]
+//        [PR.PR_PUNCTUATION, /^[-.,;!?#$%&\|/+*<>=@()\[\]{}]/]
+        [PR.PR_PUNCTUATION, /^[-.,;#()\[\]{}]/]
     ]),
     ['sc']);
 

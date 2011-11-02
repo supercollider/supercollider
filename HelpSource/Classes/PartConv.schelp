@@ -31,38 +31,38 @@ code::
 s.waitForBoot {
 
 {
-var ir, irbuffer, bufsize; 
-	
+var ir, irbuffer, bufsize;
+
 	// // MONO ONLY
-	// pre-existing impulse response sound files 
+	// pre-existing impulse response sound files
 	// (could also use any general soundfile too for cross-synthesis effects)
 	// irbuffer= Buffer.read(s, "/Volumes/data/audio/ir/ir2.wav");
 	// irbuffer= Buffer.read(s, "/Volumes/data/audio/ir/ir.wav");
 	// this is a two second long hall IR
 	// irbuffer= Buffer.read(s, "/Volumes/data/audio/ir/bighall2.wav");
-	
-	
+
+
 	// synthesise the honourable 'Dan Stowell' impulse response
-	
+
 	ir = ([1] ++0.dup(100) ++ ((1, 0.99998 .. 0).collect{|f| f =
 	f.squared.squared; f = if(f.coin){0}{f.squared}; f =
 	if(0.5.coin){0-f}{f} } * 0.1)).normalizeSum;
 	// ir.plot;
-	
+
 	irbuffer = Buffer.loadCollection(s, ir);
-	
+
 	s.sync;
-	
+
 	bufsize= PartConv.calcBufSize(~fftsize, irbuffer);
-	
+
 	// ~numpartitions= PartConv.calcNumPartitions(~fftsize, irbuffer);
-	
+
 	~irspectrum= Buffer.alloc(s, bufsize, 1);
-	
+
 	~irspectrum.preparePartConv(irbuffer, ~fftsize);
-	
-	s.sync; 
-	
+
+	s.sync;
+
 	irbuffer.free; // don't need time domain data anymore, just needed spectral version
 }.fork;
 
@@ -72,14 +72,14 @@ var ir, irbuffer, bufsize;
 
 
 
-~target= Buffer.read(s, "sounds/a11wlk01.wav");
+~target= Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 // ~target= Buffer.read(s, "sounds/break");
 
 (
 
 { var input, kernel;
-	
-input= PlayBuf.ar(1, ~target, loop:1);	
+
+input= PlayBuf.ar(1, ~target, loop:1);
 
 Out.ar(0, PartConv.ar(input, ~fftsize, ~irspectrum.bufnum, 0.5));
  }.play;
@@ -91,8 +91,8 @@ Out.ar(0, PartConv.ar(input, ~fftsize, ~irspectrum.bufnum, 0.5));
 (
 
 { var input, kernel;
-	
-input= SoundIn.ar(0);	
+
+input= SoundIn.ar(0);
 
 Out.ar(0, PartConv.ar(input, ~fftsize, ~irspectrum.bufnum));
 }.play;
@@ -103,8 +103,8 @@ Out.ar(0, PartConv.ar(input, ~fftsize, ~irspectrum.bufnum));
 (
 
 { var input, kernel;
-	
-input= Impulse.ar(0.25);	
+
+input= Impulse.ar(0.25);
 
 Out.ar(0, PartConv.ar(input, ~fftsize, ~irspectrum.bufnum));
  }.play;

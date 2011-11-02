@@ -65,10 +65,14 @@ public:
 
     QVariant varObject = item.data[0];
 
+    if( !varObject.isValid() ) {
+      BOXLAYOUT::addStretch( stretch );
+      return;
+    }
+
     if( varObject.canConvert<int>() ) {
       int size = varObject.toInt();
-      if( size > 0 ) BOXLAYOUT::addSpacing( size );
-      else BOXLAYOUT::addStretch( stretch );
+      BOXLAYOUT::addSpacing( size );
       return;
     }
 
@@ -189,6 +193,18 @@ public:
       QLayout::setAlignment( l, (Qt::Alignment) a );
       return;
     }
+  }
+  Q_INVOKABLE int minRowHeight( int row ) {
+    return ( row >= 0 && row < rowCount() ) ? rowMinimumHeight( row ) : 0;
+  }
+  Q_INVOKABLE int minColumnWidth( int col ) {
+    return ( col >= 0 && col < columnCount() ) ? columnMinimumWidth( col ) : 0;
+  }
+  Q_INVOKABLE void setMinRowHeight( int row, int h ) {
+    setRowMinimumHeight( row, h );
+  }
+  Q_INVOKABLE void setMinColumnWidth( int col, int w ) {
+    setColumnMinimumWidth( col, w );
   }
 };
 

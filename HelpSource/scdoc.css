@@ -2,6 +2,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
     color: black;
+    background: white;
 /*    max-width: 60em;*/
 /*    margin-left: 20em;*/
     padding: 0;
@@ -73,7 +74,7 @@ ul.inheritedmets {
     margin-top: 0.25em;
 }
 ul.inheritedmets li {
-    font-family: Andale Mono, monospace;
+    font-family: monospace;
 }
 a.inheritedmets_toggle {
     font-size: 9pt;
@@ -174,7 +175,7 @@ a.navlink {
 
 
 .header {
-    border-bottom: 6px solid #000;
+    border-bottom: 3px solid #000;
 }
 #label, #label a {
     font-weight: bold;
@@ -189,6 +190,7 @@ a.navlink {
     font-size: 9pt;
 }
 #related {
+    text-align: left;
     font-weight: bold;
     margin-top: 0.5em;
 }
@@ -244,7 +246,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 4px solid #aaa;
+    border-bottom: 2px solid #bbb;
     letter-spacing: 0.05em;
     margin-top: 1.5em;
     text-align: left;
@@ -253,7 +255,6 @@ h2 {
 }
 
 h3 {
-    border-bottom: 2px solid #aaa;
     margin-bottom: 2px;
     text-align: left;
 }
@@ -274,7 +275,7 @@ dd {
 }
 
 code.code, pre.code {
-    font-family: Andale Mono, monospace;
+    font-family: monospace;
     font-size: 9pt;
     color: #121;
 }
@@ -287,7 +288,7 @@ pre.code {
 }
 
 code.formula, pre.formula {
-    font-family: Andale Mono, monospace;
+    font-family: monospace;
     font-size: 10pt;
     font-weight: normal;
     color: #333;
@@ -316,7 +317,7 @@ pre.formula {
 }
 
 .methodname, .imethodname, .cmethodname {
-    font-family: Andale Mono, monospace;
+    font-family: monospace;
     font-size: 1em;
     font-weight: normal;
     margin-bottom: 0em;
@@ -490,7 +491,7 @@ ul.toc li a:hover {
     color: #444;
 }
 .toc3 {
-    font-family: Andale Mono, monospace;
+    font-family: monospace;
     font-weight: normal;
 /*    font-size: 9.5pt;*/
 }
@@ -504,13 +505,6 @@ a.popoutlink {
     color: #558;
     padding-right: 8px;
     display: inline-block;
-}
-
-.anchor {
-    padding-top:1.5em;
-    margin-top:-1.5em;
-    -webkit-background-clip:content-box;
-    background-clip:content-box;
 }
 
 ul.tree, ul.tree ul {
@@ -538,6 +532,12 @@ ul.tree li:last-child {
  background: #fff url(images/lastnode.png) no-repeat;
 }
 
+:target {
+    border-bottom: 6px solid rgba(255,255,0,0.4);
+    padding-top:20px;
+    margin-top:-20px;
+}
+
 /* auto class links. note that color can be overridden by prettify rules below */
 a.clslnk {
 }
@@ -549,13 +549,12 @@ a.clslnk {
 .com { color: #822; } /* comments */
 .typ { color: #008; } /* class names */
 .lit { color: #066; } /* numbers and character literals */
-.pun { color: #777; } /* punctuation */
+.pun { color: #555; } /* punctuation */
 .pln { color: #000; } /* plain text, methods and variable names */
-.tag { color: #038; } /* special variables like super, thisProcess... */
+.tag { color: #059; } /* special variables like super, thisProcess... */
 .dec { color: #508; } /* declarations like var, const... */
-.atn { color: #286; } /* symbols */
-.atv { color: #080; } /* --- not used --- */
-
+.atn { color: #285; } /* symbols */
+.atv { color: #750; } /* environment vars */
 
 /* Specify class=linenums on a pre to get line numbering */
 ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */

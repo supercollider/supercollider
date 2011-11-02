@@ -20,4 +20,8 @@
 			("/usr/bin/open -a Terminal" + fpath).systemCmd;
 		};
 	}
+
+	openOS {
+		("open " ++ this.escapeChar($ )).systemCmd
+	}
 }

@@ -22,6 +22,7 @@
 
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
+#include "../server/server.hpp"
 
 namespace nova
 {
@@ -35,7 +36,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
     /* initialize sc wrapper class */
     mRGen = &rgen;
-    mSampleOffset = 0;
+    mSubsampleOffset = world.mSubsampleOffset;
+    mSampleOffset = world.mSampleOffset;
     mLocalAudioBusUnit = 0;
     mLocalControlBusUnit = 0;
 
@@ -91,14 +93,12 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
 
     /* allocate unit generators */
     sc_factory->allocate_ugens(synthdef.graph.size());
-    for (size_t i = 0; i != synthdef.graph.size(); ++i)
-    {
+    for (size_t i = 0; i != synthdef.graph.size(); ++i) {
         sc_synthdef::unit_spec_t const & spec = synthdef.graph[i];
         units[i] = spec.prototype->construct(spec, this, &sc_factory->world, chunk);
     }
 
-    for (size_t i = 0; i != synthdef.calc_unit_indices.size(); ++i)
-    {
+    for (size_t i = 0; i != synthdef.calc_unit_indices.size(); ++i) {
         int32_t index = synthdef.calc_unit_indices[i];
         calc_units[i] = units[index];
     }
@@ -119,10 +119,9 @@ void free_ugen(struct Unit * unit)
 
 sc_synth::~sc_synth(void)
 {
-    rt_pool.free(mControls);
     std::for_each(units, units + unit_count, free_ugen);
-
     sc_factory->free_ugens(unit_count);
+    rt_pool.free(mControls);
 }
 
 void sc_synth::prepare(void)
@@ -136,9 +135,8 @@ void sc_synth::prepare(void)
 
 void sc_synth::set(slot_index_t slot_index, sample val)
 {
-    if (slot_index >= mNumControls)
-    {
-        std::cerr << "argument number out of range" << std::endl;
+    if (slot_index >= mNumControls) {
+        log("argument number out of range\n");
         return;
     }
 
@@ -147,7 +145,7 @@ void sc_synth::set(slot_index_t slot_index, sample val)
     mControls[slot_index] = val;
 }
 
-void sc_synth::set(slot_index_t slot_index, size_t count, sample * val)
+void sc_synth::set_control_array(slot_index_t slot_index, size_t count, sample * val)
 {
     if (slot_index+count >= mNumControls)
         return;
@@ -156,7 +154,7 @@ void sc_synth::set(slot_index_t slot_index, size_t count, sample * val)
 }
 
 
-void sc_synth::map_control_bus (unsigned int slot_index, int control_bus_index)
+void sc_synth::map_control_bus_control (unsigned int slot_index, int control_bus_index)
 {
     if (slot_index >= mNumControls)
         return;
@@ -172,7 +170,7 @@ void sc_synth::map_control_bus (unsigned int slot_index, int control_bus_index)
     }
 }
 
-void sc_synth::map_control_buses (unsigned int slot_index, int control_bus_index, int count)
+void sc_synth::map_control_buses_control (unsigned int slot_index, int control_bus_index, int count)
 {
     if (slot_index >= mNumControls)
         return;
@@ -180,7 +178,7 @@ void sc_synth::map_control_buses (unsigned int slot_index, int control_bus_index
     int slots_to_set = std::min(count, int(mNumControls - slot_index));
 
     for (int i = 0; i != slots_to_set; ++i)
-        map_control_bus(slot_index+i, control_bus_index+i);
+        map_control_bus_control(slot_index+i, control_bus_index+i);
 }
 
 void sc_synth::map_control_bus_audio (unsigned int slot_index, int audio_bus_index)
@@ -207,31 +205,7 @@ void sc_synth::map_control_buses_audio (unsigned int slot_index, int audio_bus_i
     int slots_to_set = std::min(count, int(mNumControls - slot_index));
 
     for (int i = 0; i != slots_to_set; ++i)
-        map_control_bus(slot_index+i, audio_bus_index+i);
-}
-
-void sc_synth::map_control_bus (const char * slot_name, int control_bus_index)
-{
-    int index = resolve_slot(slot_name);
-    map_control_bus(index, control_bus_index);
-}
-
-void sc_synth::map_control_buses (const char * slot_name, int control_bus_index, int count)
-{
-    int index = resolve_slot(slot_name);
-    map_control_buses(index, control_bus_index, count);
-}
-
-void sc_synth::map_control_bus_audio (const char * slot_name, int audio_bus_index)
-{
-    int index = resolve_slot(slot_name);
-    map_control_bus_audio(index, audio_bus_index);
-}
-
-void sc_synth::map_control_buses_audio (const char * slot_name, int audio_bus_index, int count)
-{
-    int index = resolve_slot(slot_name);
-    map_control_buses_audio(index, audio_bus_index, count);
+        map_control_bus_audio(slot_index+i, audio_bus_index+i);
 }
 
 void sc_synth::apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, struct sc_msg_iter *args)
@@ -239,10 +213,8 @@ void sc_synth::apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, st
     Unit * unit = units[unit_index];
     sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
 
-    UnitCmdFunc func = def->find_command(unit_cmd);
-    (func)(unit, args);
+    def->run_unit_command(unit_cmd, unit, args);
 }
-
 
 void sc_synth::run(void)
 {
@@ -253,24 +225,23 @@ void sc_synth::run_traced(void)
 {
     using namespace std;
 
-    printf("\nTRACE %d  %s    #units: %d\n", id(), this->prototype_name(), calc_unit_count);
+    log_printf("\nTRACE %d  %s    #units: %d\n", id(), this->prototype_name(), calc_unit_count);
 
-    for (size_t i = 0; i != calc_unit_count; ++i)
-    {
+    for (size_t i = 0; i != calc_unit_count; ++i) {
         Unit * unit = calc_units[i];
 
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-        printf("  unit %zd %s\n    in ", i, def->name().c_str());
+        log_printf("  unit %zd %s\n    in ", i, def->name());
         for (uint16_t j=0; j!=unit->mNumInputs; ++j)
-            printf(" %g", unit->mInBuf[j][0]);
-        putchar('\n');
+            log_printf(" %g", unit->mInBuf[j][0]);
+        log("\n");
 
         (unit->mCalcFunc)(unit, unit->mBufLength);
 
-        fputs("    out", stdout);
+        log("    out");
         for (int j=0; j<unit->mNumOutputs; ++j)
-            printf(" %g", unit->mOutBuf[j][0]);
-        putchar('\n');
+            log_printf(" %g", unit->mOutBuf[j][0]);
+        log("\n");
     }
     std::cout << std::endl;
 

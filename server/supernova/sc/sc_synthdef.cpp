@@ -26,7 +26,8 @@
 #include "sc_synthdef.hpp"
 #include "sc_ugen_factory.hpp"
 
-#include <utilities/sized_array.hpp>
+#include "utilities/sized_array.hpp"
+#include "utilities/exists.hpp"
 
 namespace nova
 {
@@ -143,16 +144,14 @@ sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer)
     int16 outputs = read_int16(buffer);
     special_index = read_int16(buffer);
 
-    for (int i = 0; i != inputs; ++i)
-    {
+    for (int i = 0; i != inputs; ++i) {
         int16_t source = read_int16(buffer);
         int16_t index = read_int16(buffer);
         input_spec spec(source, index);
         input_specs.push_back(spec);
     }
 
-    for (int i = 0; i != outputs; ++i)
-    {
+    for (int i = 0; i != outputs; ++i) {
         char rate = read_int8(buffer);
         output_specs.push_back(rate);
     }
@@ -261,67 +260,68 @@ void sc_synthdef::prepare(void)
 {
     memory_requirement_ = 0;
 
-    const size_t ugens = graph.size();
+    const size_t number_of_ugens = graph.size();
+
+    // store the last references to each output buffer inside a std::map for faster lookup
+    std::map<input_spec, size_t> last_buffer_references;
+    for (graph_t::const_reverse_iterator it = graph.rbegin(); it != graph.rend(); ++it) {
+        for (size_t i = 0; i != it->input_specs.size(); ++i) {
+            input_spec const & in_spec = it->input_specs[i];
+            if (!exists(last_buffer_references, in_spec)) {
+                size_t ugen_index = graph.size() - (it - graph.rbegin()) - 1;
+                last_buffer_references.insert(std::make_pair(in_spec, ugen_index));
+            }
+        }
+    }
 
     buffer_allocator<> allocator;
 
-    for (size_t ugen_index = 0; ugen_index != ugens; ++ugen_index) {
-        unit_spec_t & spec = graph[ugen_index];
+    for (size_t ugen_index = 0; ugen_index != number_of_ugens; ++ugen_index) {
+        unit_spec_t & current_ugen_spec = graph[ugen_index];
 
         /* calc units are stored in an additional vector */
-        switch (spec.rate) {
+        switch (current_ugen_spec.rate) {
         case calc_BufRate:
         case calc_FullRate:
             calc_unit_indices.push_back(ugen_index);
         }
 
-        memory_requirement_ += spec.memory_requirement();
+        memory_requirement_ += current_ugen_spec.memory_requirement();
 
-        spec.buffer_mapping.resize(spec.output_specs.size());
+        current_ugen_spec.buffer_mapping.resize(current_ugen_spec.output_specs.size());
 
-        sc_ugen_def * ugen = sc_factory->find_ugen(spec.name);
-
-        if (unlikely(ugen == NULL))
-        {
+        sc_ugen_def * ugen = sc_factory->find_ugen(current_ugen_spec.name);
+        if (unlikely(ugen == NULL)) {
             /* we cannot prepare the synthdef, if the ugens are not installed */
             boost::format frmt("Cannot load synth %1%: Unit generator %2% not installed");
-            frmt % name_ % spec.name;
+            frmt % name_.c_str() % current_ugen_spec.name.c_str();
 
             throw std::runtime_error(frmt.str());
         }
 
-        spec.prototype = ugen;
+        current_ugen_spec.prototype = ugen;
 
         const bool can_alias = !ugen->cant_alias();
         memory_requirement_ += ugen->memory_requirement();
 
-        for (size_t output_index = 0; output_index != spec.output_specs.size(); ++output_index) {
+        for (size_t output_index = 0; output_index != current_ugen_spec.output_specs.size(); ++output_index) {
             int16_t buffer_id;
-            if (spec.output_specs[output_index] == 2) {
-                if (can_alias)
-                    buffer_id = allocator.allocate_buffer(ugen_index);
-                else
-                    buffer_id = allocator.allocate_buffer_noalias(ugen_index);
-
+            if (current_ugen_spec.output_specs[output_index] == 2) {
                 /* find last reference to this buffer */
                 size_t last_ref = ugen_index;
-                for (size_t i = ugens - 1; i > ugen_index; --i) {
-                    unit_spec_t const & test_spec = graph[i];
-                    for (size_t j = 0; j != test_spec.input_specs.size(); ++j) {
-                        input_spec const & in_spec = test_spec.input_specs[j];
-                        if (in_spec.source == (int16_t)ugen_index &&
-                            in_spec.index == (int16_t)output_index) {
-                            last_ref = i;
-                            goto found_last_reference;
-                        }
-                    }
-                }
-            found_last_reference:
+                input_spec this_input_spec(ugen_index, output_index);
+
+                if (exists(last_buffer_references, this_input_spec))
+                    last_ref = last_buffer_references[this_input_spec];
+
+                buffer_id = can_alias ? allocator.allocate_buffer(ugen_index)
+                                      : allocator.allocate_buffer_noalias(ugen_index);
+
                 allocator.set_last_reference(buffer_id, last_ref);
             }
             else
                 buffer_id = -1;
-            spec.buffer_mapping[output_index] = buffer_id;
+            current_ugen_spec.buffer_mapping[output_index] = buffer_id;
         }
     }
 
@@ -343,7 +343,7 @@ std::string sc_synthdef::dump(void) const
 
     stringstream stream;
 
-    stream << "name " << name() << endl;
+    stream << "name " << name().c_str() << endl;
 
     stream << "constant: " << endl;
     for (uint i = 0; i != constants.size(); ++i)
@@ -356,11 +356,11 @@ std::string sc_synthdef::dump(void) const
     stream << "parameter names: " << endl;
     for (parameter_map_t::const_iterator it = parameter_map.begin();
          it != parameter_map.end(); ++it)
-        stream << "\t" << it->first << " " << it->second << endl;
+        stream << "\t" << it->first.c_str() << " " << it->second << endl;
 
     stream << "ugens: " << endl;
     for (uint i = 0; i != graph.size(); ++i) {
-        stream << "\t" << graph[i].name << ": rate " << graph[i].rate
+        stream << "\t" << graph[i].name.c_str() << ": rate " << graph[i].rate
                << endl;
         stream << "\tinputs:" << endl;
         for (uint j = 0; j != graph[i].input_specs.size(); ++j) {

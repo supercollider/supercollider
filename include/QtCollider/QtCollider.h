@@ -6,7 +6,7 @@
 namespace QtCollider {
   QC_PUBLIC void initPrimitives ();
   QC_PUBLIC void init();
-  QC_PUBLIC void processEvents();
+  QC_PUBLIC int exec(int argc, char** argv);
   int run(int argc, char** argv);
 }
 

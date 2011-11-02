@@ -1,0 +1,130 @@
+title:: 02. First Steps
+summary:: Getting Started With SuperCollider
+categories:: Tutorials>Getting-Started
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
+
+note::
+This document is OSX (SCapp) specific in key commands, though the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors.
+::
+
+section::Hello World, I'm SuperCollider
+
+It is traditional when learning a new programming language to start with a simple program called 'Hello World'. This just makes the program print the text 'Hello World!' to well, wherever it prints text. In SC that's a place called the post window. The post window is the one that opened up when you first started SC, and a bunch of stuff was printed there which looks something like this:
+
+code::
+init_OSC
+compiling class library..
+	NumPrimitives = 587
+	compiling dir: '/Applications/SC3/SCClassLibrary'
+	pass 1 done
+	Method Table Size 3764776 bytes
+	Number of Method Selectors 3184
+	Number of Classes 1814
+	Number of Symbols 7595
+	Byte Code Size 180973
+	compiled 296 files in 1.34 seconds
+compile done
+RESULT = 256
+Class tree inited in 0.14 seconds
+::
+
+Don't worry too much about what all that means just now, just keep in mind that this is where SC will send you information. It's also where we'll get the result of our Hello World program, which you can see below:
+
+code::
+"Hello World!".postln;
+::
+
+To execute it, simply click to place the cursor on the same line as the code and then press the enter key. Note that the 'enter' key is not the same as the 'return' key. The 'enter' key is the one that is on the number pad. On Mac laptops there is usually a separate enter key down at bottom of the keyboard towards the right, or you can hold down the 'fn' or function key, and press 'return'. If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return( on Some Macs), or Shift-Return. Try this now.
+
+If all went well, you should see this in the post window.
+
+code::
+Hello World!
+Hello World!
+::
+
+Now let's take a closer look at the code. The first bit, code::"Hello World!"::, is a kind of emphasis::Object::, called a String. An object is basically just a way of representing something in the computer, for instance a bit of text, or an oscillator, that allows you to control it and send messages to it. More about that later, but for now just understand that a String is a way of representing a bit of text.
+
+The second bit, code::.postln;::, says 'print me (or a meaningful description of me) to the post window.' Remember postln, it's your friend. You can apply it to almost anything in SC and get something meaningful back. This can be very handy when tracking down bugs in your code.
+
+Why did it print twice? Well, when you execute code in SC, it always posts the last thing executed. So in this case we didn't really need the code::postln:: bit. But in the following example we would. Select both lines of text by clicking and dragging over them, and then press enter.
+
+code::
+"Hello World!".postln;
+"Hello SC!".postln;
+::
+
+The first line, 'Hello World' would not have printed if we didn't have the explicit postln. Note also that each line of code ends with a semi-colon. This is how you separate lines of code in SC. If we didn't have a semi-colon between the two lines we would get an error.
+
+In general when you are meant to execute several lines of code at the same time they will be surrounded by parentheses, as in the example below. This is convenient as it allows you to select the whole block of code by double clicking just inside one of the parentheses. Try it out on the example below.
+
+code::
+(
+"Call me,".postln;
+"Ishmael.".postln;
+)
+::
+
+When code is not surrounded by parentheses it is generally intended to be executed one line at a time.
+
+Note that each of the lines within the block of code ends with a semi-colon. This is very important when executing multiple lines of code, as it's how SC knows where to separate commands. Without a semi-colon above, you would get an error posted.
+
+code::
+(
+"Call me?".postln
+"Ishmael.".postln;
+)
+::
+
+Executing the code above results in a 'Parse Error'. With an error of this kind, the dot in the error message shows you where SC ran into trouble. Here it happens just after code::"Ishmael."::.
+
+code::
+ERROR: Parse error
+   in file 'selected text'
+   line 3 char 11 :
+  	"Ishmael.".postln;
+::
+
+Usually the problem actually occurs a little before that, so that's where you should look. In this case of course, it's the lack of a semi-colon at the end of the previous line.
+
+Using semi-colons it's possible to have more than one line of code in the same line of text. This can be handy for execution.
+
+code::
+"Call me ".post; "Ishmael?".postln;
+::
+
+A couple of more notes about the post window. It's very useful to be able to see it, but sometimes it can get hidden behind other windows. You can bring it to the front at any time by holding down the Command key, and pressing \ . The Command key is the one with the apple symbol on it.
+
+By convention this kind of key sequence is written Cmd - \
+
+As well, sometimes the post window becomes full of stuff and hard to read. You can clear it at any time by pressing Cmd-shift-k (hold down the command key and the shift key, and then press k).
+
+section::The World According to SuperCollider
+
+SuperCollider is actually two programs: The language or 'client' app, which is what you're looking at now, and the server, which does the actual synthesis and calculation of audio. The former is a graphical application with menus, document windows, nice GUI features and a sophisticated programming language; and the latter is a mean, lean, efficient UNIX command line application (meaning it runs without a nice modern GUI).
+
+The two communicate by a protocol called Open Sound Control (OSC), over either UDP or TCP, which are network protocols also used on the internet. Don't think from this that the two applications must run on different computers (they can, which can have definite performance advantages), or that they need to be connected to the internet (although it is possible to have clients and servers in diffferent parts of the world communicating!!). Most of the time they will be running on the same machine, and the 'networking' aspect of things will be relatively transparent for you.
+
+You can only communicate with the server using OSC messages over the network, but luckily the language app has lots of powerful objects which represent things on the server and allow you to control them easily and elegantly. Understanding how exactly that works is crucial to mastering SC, so we'll be talking about that in some depth.
+
+But first let's have a little fun, and make some sound...
+
+For more information see:
+
+link::Guides/How-to-Use-the-Interpreter::, link::Reference/Literals::, link::Classes/String::, link::Guides/ClientVsServer::, link::Reference/Server-Architecture::
+
+section::Suggested Exercise
+
+Open a new window by pressing Cmd-n or selecting 'New' from the File menu.Copy some of the posting code from the examples above and paste it into the new document. (The standard Mac Cmd-c and Cmd-v work for copy and paste, or use the Edit menu.)
+
+SC will let you edit the help files and documentation, so it's always a good idea to copy text over before changing it so as to avoid accidentally saving altered files!
+
+Experiment with altering the text between the quotes to print different things to the post window. Do this with both blocks of text wrapped in parentheses, and single lines.
+
+____________________
+
+This document is part of the tutorial strong::Getting Started With SuperCollider::.
+
+Click here to go on to the next section: link::Tutorials/Getting-Started/03-Start-Your-Engines::
+
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

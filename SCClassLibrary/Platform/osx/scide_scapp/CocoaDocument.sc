@@ -29,7 +29,7 @@ CocoaDocument : Document {
 		_TextWindow_SetDefaultFont
 	}
 
-	*prSetSyntaxColorTheme {|textC, classC, stringC, symbolC, commentC, numberC|
+	*prSetSyntaxColorTheme {|textC, classC, stringC, symbolC, commentC, numberC, specialValsC, specialVarsC, declC, puncC, environC|
 		_TextWindow_SetSyntaxColorTheme
 	}
 

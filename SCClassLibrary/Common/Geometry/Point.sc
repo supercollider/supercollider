@@ -13,6 +13,7 @@ Point {
 	asPoint { ^this }
 	asComplex { ^Complex.new(x,y) }
 	asPolar { ^Polar.new(this.rho, this.theta) }
+	asSize { ^Size(x,y) }
 	asRect { ^Rect.new(0,0,x,y) }
 	asArray { ^[this.x, this.y] }
 
@@ -21,6 +22,9 @@ Point {
 	}
 	hash { ^ (x.hash << 1) bitXor: y.hash }
 
+	performBinaryOpOnSomething { |aSelector, thing, adverb|
+		^thing.asPoint.perform(aSelector, this, adverb)
+	}
 	+ { arg delta;
 		var deltaPoint;
 		deltaPoint = delta.asPoint;

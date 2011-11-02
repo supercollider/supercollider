@@ -1,0 +1,107 @@
+CLASS:: MIDIdef
+summary:: MIDI response reference definition
+categories:: MIDI
+related:: Guides/MIDI, Classes/MIDIdef
+
+DESCRIPTION::
+MIDIdef provides a global reference to the functionality of its superclass link::Classes/MIDIFunc::. Essentially it stores itself at a key within a global dictionary, allowing replacement at any time. Most methods are inherited from its superclass.
+
+note:: Use of the older classes MIDIResponder, CCResponder, NoteOnResponder, NoteOffResponder, BendResponder, TouchResponder, and ProgramChangeResponder can be unsafe, since responders in user and class code can override each other unintentionally. MIDIdef and link::Classes/MIDIFunc:: are faster, safer, and have more logical argument order. Thus they are the recommended way of registering for incoming MIDI messages as of SC 3.5.::
+
+
+CLASSMETHODS::
+private:: initClass
+
+METHOD:: all
+Get the global dictionary of all MIDIdefs.
+
+returns:: An link::Classes/IdentityDictionary::.
+
+METHOD:: new
+Create a new, enabled MIDIdef. If a MIDIdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values). Normally one would use one of the message type specific convenience methods below, rather than use this method directly.
+
+argument:: key
+The key at which to store this OSCdef in the global collection. Generally this will be a link::Classes/Symbol::.
+
+argument:: func
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated for noteOn, noteOff, control, and polytouch messages it will be passed the arguments val, num, chan, and src, corresponding to the message value (e.g. velocity, control value, etc.), message number (e.g. note number), MIDI channel, and MIDI source uid. For touch, programme change and bend messages it will be passed only val, chan, and src.
+
+argument:: msgNum
+An link::Classes/Integer:: indicating the MIDI message number (note number, control number, or programme number) for this MIDIFunc. This can be an array. If nil, the MIDIFunc will respond to messages of all possible message numbers.
+
+argument:: chan
+An link::Classes/Integer:: indicating the MIDI channel number for this MIDIFunc. This can be an array. If nil, the MIDIFunc will respond to messages received on all channels.
+
+argument:: msgType
+A link::Classes/Symbol:: indicating which kind of MIDI message this MIDIFunc should respond to. One of code::\noteOn::, code::\noteOff::, code::\control::, code::\touch::, code::\polytouch::, code::\bend::, or code::program::.
+
+argument:: srcID
+An link::Classes/Integer:: corresponding to the uid of the MIDI input. (See link::Classes/MIDIClient::.)
+
+argument:: dispatcher
+An optional instance of an appropriate subclass of link::Classes/AbstractDispatcher::. This can be used to allow for customised dispatching. Normally this should not be needed.
+
+returns:: An instance of MIDIdef.
+
+METHOD:: cc
+A convience method to create a new MIDIdef which responds to MIDI control messages. See link::#*new:: for argument descriptions.
+
+returns:: An instance of MIDIdef which responds to MIDI control messages.
+
+METHOD:: noteOn
+A convience method to create a new MIDIdef which responds to MIDI note on messages. See link::#*new:: for argument descriptions.
+
+returns:: An instance of MIDIdef which responds to MIDI note on messages.
+
+METHOD:: noteOff
+A convience method to create a new MIDIdef which responds to MIDI note off messages. See link::#*new:: for argument descriptions.
+
+returns:: An instance of MIDIdef which responds to MIDI note off messages.
+
+METHOD:: polytouch
+A convience method to create a new MIDIdef which responds to MIDI polytouch messages. See link::#*new:: for argument descriptions.
+
+returns:: An instance of MIDIdef which responds to MIDI polytouch messages.
+
+METHOD:: touch
+A convience method to create a new MIDIdef which responds to MIDI touch messages. See link::#*new:: for argument descriptions.
+
+returns:: An instance of MIDIdef which responds to MIDI touch messages.
+
+METHOD:: bend
+A convience method to create a new MIDIdef which responds to MIDI bend messages. See link::#*new:: for argument descriptions.
+
+returns:: An instance of MIDIdef which responds to MIDI bend messages.
+
+METHOD:: program
+A convience method to create a new MIDIdef which responds to MIDI program change messages. See link::#*new:: for argument descriptions.
+
+returns:: An instance of MIDIdef which responds to MIDI program change messages.
+
+
+INSTANCEMETHODS::
+private:: addToAll, printOn
+
+METHOD:: key
+Get this MIDIdef's key.
+
+returns:: Usually a link::Classes/Symbol::.
+
+METHOD:: free
+Clears this MIDIdef from the global collection and deactivates it.
+
+
+EXAMPLES::
+
+code::
+MIDIIn.connectAll
+MIDIdef.cc(\test1, {arg ...args; args.postln}, 1); // match cc 1
+MIDIdef.cc(\test2, {arg ...args; args.postln}, 1, 1); // match cc1, chan 1
+MIDIdef.cc(\test3, {arg ...args; args.postln}, (1..10)); // match cc 1-10
+MIDIdef.noteOn(\test4, {arg ...args; args.postln}); // match any noteOn
+
+MIDIIn.doNoteOnAction(1, 1, 64, 64); // spoof a note on
+MIDIIn.doControlAction(1, 1, 1, 64); // spoof a cc
+MIDIIn.doControlAction(1, 1, 9, 64);
+MIDIIn.doControlAction(1, 10, 1, 64);
+::

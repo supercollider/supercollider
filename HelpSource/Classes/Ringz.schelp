@@ -44,7 +44,6 @@ This value will be added to the output.
 Examples::
 
 code::
-
 { Ringz.ar(Dust.ar(3, 0.3), 2000, 2) }.play
 
 { Ringz.ar(WhiteNoise.ar(0.005), 2000, 0.5) }.play
@@ -52,26 +51,24 @@ code::
 // modulate frequency
 { Ringz.ar(WhiteNoise.ar(0.005), XLine.kr(100,3000,10), 0.5) }.play
 
-{ Ringz.ar(Impulse.ar(6, 0, 0.3),  XLine.kr(100,3000,10), 0.5) }.play
+{ Ringz.ar(Impulse.ar(6, 0, 0.3), XLine.kr(100,3000,10), 0.5) }.play
 
 // modulate ring time
-{ Ringz.ar(Impulse.ar(6, 0, 0.3),  2000, XLine.kr(4, 0.04, 8)) }.play
+{ Ringz.ar(Impulse.ar(6, 0, 0.3), 2000, XLine.kr(4, 0.04, 8)) }.play
 
 // modulate ring time opposite direction
 { Ringz.ar(Impulse.ar(6, 0, 0.3), 2000, XLine.kr(0.04, 4, 8)) }.play
 
-
 (
-{ 
-	var exciter;
-	exciter = WhiteNoise.ar(0.001);
-	Mix.arFill(10, {
-		Ringz.ar(exciter, 
-			XLine.kr(exprand(100.0,5000.0), exprand(100.0,5000.0), 20),
-			0.5)
-	})
+{
+    var exciter;
+    exciter = WhiteNoise.ar(0.001);
+    Mix.arFill(10, {
+        Ringz.ar(exciter,
+        XLine.kr(exprand(100.0,5000.0), exprand(100.0,5000.0), 20),
+        0.5)
+    })
 }.play
 )
-
 ::
 

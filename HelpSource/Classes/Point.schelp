@@ -25,7 +25,7 @@ Sets the point x and y values.
 
 subsection:: Testing
 
-method::== 
+method::==
 Answers a Boolean whether the receiver equals the argument.
 
 method::hash
@@ -33,16 +33,16 @@ Returns a hash value for the receiver.
 
 subsection:: Math
 
-method::+ 
+method::+
 Addition.
 
-method::- 
+method::-
 Subtraction.
 
-method::* 
+method::*
 Multiplication.
 
-method::/ 
+method::/
 Division.
 
 method::translate

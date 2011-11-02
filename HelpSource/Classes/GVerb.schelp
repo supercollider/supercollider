@@ -47,16 +47,16 @@ SynthDef(\test, {arg roomsize, revtime, damping, inputbw, spread = 15, drylevel,
 //	var a = PlayBuf.ar(1, 0);
 	Out.ar(0, GVerb.ar(
 		a,
-		roomsize, 
-		revtime, 
-		damping, 
-		inputbw, 
-		spread, 
+		roomsize,
+		revtime,
+		damping,
+		inputbw,
+		spread,
 		drylevel.dbamp,
-		earlylevel.dbamp, 
+		earlylevel.dbamp,
 		taillevel.dbamp,
-		roomsize, 0.3) + a)}).load(s)
-	
+		roomsize, 0.3) + a)}).add
+
 s = Server.internal.boot;
 s.scope(2);
 

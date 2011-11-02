@@ -20,7 +20,7 @@ Pfx : FilterPattern {
 		event[\instrument] = fxname;
 		event[\type] = \on;
 		event[\id] = id;
-		event[\delta] = 1e-9; // hack to ensure correct ordering of events
+		event[\delta] = 0;
 
 		cleanupEvent = (type: \off, parent: event);
 
@@ -91,7 +91,7 @@ PAbstractGroup : FilterPattern {
 		event = inevent.copy;
 		event[\addAction] = 0;  // \addToHead
 		event[\type] = eventType;
-		event[\delta] = 1e-9; // no other sync choice for now. (~ 1 / 20000 sample delay)
+		event[\delta] = 0;
 		event[\id] = groupID;
 
 		cleanupEvent = (type: \kill, parent: event);
@@ -164,10 +164,12 @@ Pbus : FilterPattern {
 			freeBus = { server.controlBusAllocator.free(bus) };
 		};
 
+		CmdPeriod.doOnce(freeBus);
+
 		event = inevent.copy;
 		event[\addAction] = 0; // \addToHead
 		event[\type] = \group;
-		event[\delta] = 1e-9;
+		event[\delta] = 0;
 		event[\id] = groupID;
 		event[\group] = ingroup;
 		event.yield;
@@ -177,7 +179,7 @@ Pbus : FilterPattern {
 		event[\type] = \on;
 		event[\group] = groupID;
 		event[\addAction] = 3; // \addBefore
-		event[\delta] = 1e-9;
+		event[\delta] = 0;
 		event[\id] = linkID;
 		event[\fadeTime] = fadeTime;
 		event[\instrument] = format("system_link_%_%", rate, numChannels);
@@ -198,7 +200,6 @@ Pbus : FilterPattern {
 		// remove and deallocate both this synth and the preceeding node
 		// (which is the group).
 		inevent = event.yield;
-
 
 		// now embed the pattern
 		stream = Pchain(pattern, (group: groupID, out: bus)).asStream;

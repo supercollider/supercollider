@@ -1,7 +1,7 @@
 CLASS:: View
 redirect:: implClass
 summary:: The basic visible element of GUI
-categories:: GUI
+categories:: GUI>Views
 
 DESCRIPTION::
 The View class is the superclass of all view classes.
@@ -11,6 +11,8 @@ The view is the basic visible element of which the graphical user interface is c
 
 
 CLASSMETHODS::
+
+PRIVATE:: key
 
 METHOD:: new
 
@@ -31,9 +33,695 @@ argument:: parent
 The instance of View or Window that the new View will become a child of.
 
 argument:: bounds
-A Rect or a Point describing size and position of the new View. If a Point is given, its coordinates will denote the view's size, while the view's position will be (0,0). The view's position coordinates are relative to its parent.
+A Rect or a Point describing size and position of the new View. If a Point is given, its coordinates will denote the view's size, while the view's position will be (0,0). Position is measured relative to the parent's top-left corner.
 
 returns::
 note::
 SuperCollider has different GUI kits implementing the same functionality on different platforms. The View's constructor will return an instance of the equivalent class of the currently active GUI kit. See link::Guides/GUI-Introduction:: for detailed explanation.
 ::
+
+
+METHOD:: globalKeyDownAction
+
+	A settable class variable containing an object (e.g. an instance of Function or FunctionList) which is evaluated (i.e. link::Classes/Object#-value#value:: method is called on it) whenever a key is pressed, independently of keyboard focus. See also link::#-addAction::.
+
+	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode.
+
+
+METHOD:: globalKeyUpAction
+
+	A settable class variable containing an object (e.g. an instance of Function or FunctionList) which is evaluated (i.e. link::Classes/Object#-value#value:: method is called on it) whenever a key is released, independently of keyboard focus. See also link::#-addAction::.
+
+	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode.
+
+
+METHOD:: currentDrag
+
+	A class variable holding the content of the current drag. It is set by beginDrag.
+
+
+METHOD:: currentDragString
+
+	A class variable holding the content of the current drag as link::Classes/Object#-asCompileString#"compile string"::. It is set by beginDrag.
+
+
+
+
+INSTANCEMETHODS::
+
+SUBSECTION:: Hierarchy and existence
+
+METHOD:: parent
+	returns:: The view's parent view, or nil if the view is a top view.
+
+METHOD:: parents
+	returns:: An array of all the parents, grandparents, etc., of the view.
+
+METHOD:: getParents
+	returns:: Same as link::-parents::.
+
+METHOD:: children
+	returns:: An array of all immediate children of the view.
+
+METHOD:: remove
+	Removes the view from its parent view (if any) and destroys the view. After this method is called, the view is not usable anymore.
+
+METHOD:: removeAll
+	Removes all the children of the view and destroys them. After this method is called, the former child views are not usable anymore.
+
+METHOD:: close
+	note:: only in Qt GUI ::
+
+	If link::#-deleteOnClose:: is true, this method has the same effect as link::#-remove::, otherwise makes the view invisible.
+
+METHOD:: isClosed
+	returns:: A Boolean stating whether the view has been destroyed.
+
+METHOD:: notClosed
+	returns:: A Boolean, the opposite of 'isClosed'.
+
+METHOD:: asView
+	Method that allows compatibility with Window and other classes that are not real subclasses of View, but implement a part of its interface.
+
+	returns:: This view.
+
+SUBSECTION:: Visibility
+
+METHOD:: visible
+	Gets or sets wether the view is visible.
+
+	In Qt:
+
+	Making a child view invisible means it does not occupy any space from the standpoint of the layout that contains it, so the layout will distribute the space the view occupied when visible among other views. When the view becomes visible again it is given back the same space.
+
+	If the view has no parent, setting this to true has the same effect as link::#-front::, and setting it to false closes the window without destroying it.
+
+	argument::
+		A Boolean stating the visibility of the view.
+
+METHOD:: front
+	note:: only in Qt GUI ::
+	If the view does not have a parent, displays it on the screen as a window (it has the same effect as setting link::#-visible:: to true), otherwise it has no effect.
+
+METHOD:: minimize
+	note:: only in Qt GUI ::
+	If the view is a window, hides it (only keep it present in the dock/taskbar/etc.).
+
+METHOD:: unminimize
+	note:: only in Qt GUI ::
+	If the view is a window, restores the its previous state after being minimized.
+
+METHOD:: fullScreen
+	note:: only in Qt GUI ::
+	If the view is a window, displays it full-screen.
+
+METHOD:: endFullScreen
+	note:: only in Qt GUI ::
+	If the view is a window, restores its previous state after being displayed full-screen.
+
+METHOD:: alwaysOnTop
+	note:: only in Qt GUI ::
+
+	If the view is a window, gets or sets whether it should always stay on top of other windows.
+
+	argument:: boolean
+		A Boolean stating whether the view should always stay on top.
+
+
+
+
+SUBSECTION:: Size and position
+
+METHOD:: bounds
+
+	Gets or sets both the position and the size of the view. The position is relative to the parent view's top-left corner. Some containers, such as HLayoutView and VLayoutView, will use only the width and height of a child view's bounds.
+
+	The setter takes a Rect or a Point interpreted link::Classes/Point#-asRect#as Rect::. The getter always returns a Rect.
+
+METHOD:: absoluteBounds
+
+	returns:: A Rect describing the absolute position and the size of the view on the screen.
+
+METHOD:: sizeHint
+	note:: only in Qt GUI ::
+	returns:: A Size describing the preferred size of the view to comfortably display its contents and allow useful interaction.
+
+METHOD:: minSizeHint
+	note:: only in Qt GUI ::
+
+	returns:: A Size describing the minimum size of the view to be able to display its contents and allow any interaction.
+
+METHOD:: maxSize
+	note:: only in Qt GUI ::
+	Set maximum allowed size of the view. The view will not be able to grow larger than this size, neither by user interaction nor programmatically.
+
+	argument:: size
+		A Size.
+
+METHOD:: minSize
+	note:: only in Qt GUI ::
+	Set minimum allowed size of the view. The view will not be able to shrink smaller than this size, neither by user interaction nor programmatically.
+
+	argument:: size
+		A Size.
+
+
+METHOD:: fixedSize
+	note:: only in Qt GUI ::
+	Set both minimum and maximum allowed size of the view, thus making it non-resizable.
+
+	argument:: size
+		A Size.
+
+METHOD:: maxWidth
+	note:: only in Qt GUI ::
+	Set maximum allowed width of the view, the view will not be able to grow larger in width, neither by user interaction nor programmatically.
+
+	argument:: width
+		An Int.
+
+
+METHOD:: minWidth
+	note:: only in Qt GUI ::
+	Set minimum allowed width of the view, the view will not be able to shrink smaller in width, neither by user interaction nor programmatically.
+
+	argument:: width
+		An Int.
+
+
+METHOD:: maxHeight
+	note:: only in Qt GUI ::
+	Set maximum allowed height of the view, the view will not be able to grow larger in height, neither by user interaction nor programmatically.
+
+	argument:: height
+		An Int.
+
+
+
+METHOD:: minHeight
+	note:: only in Qt GUI ::
+	Set minimum allowed height of the view, the view will not be able to shrink smaller in height, neither by user interaction nor programmatically.
+
+	argument:: height
+		An Int.
+
+METHOD:: moveTo
+	note:: only in Qt GUI ::
+	Move the view to new position, preserving its size.
+
+	argument:: x
+		An Int: the horizontal position of the new position.
+
+	argument:: y
+			An Int: the vertical position of the new position.
+
+METHOD:: resizeTo
+	note:: only in Qt GUI ::
+	Resize the view, preserving its position.
+
+	argument:: width
+		An Int: the new horizontal size of the view.
+
+	argument:: height
+		An Int: the new vertical size of the view.
+
+METHOD:: resize
+	Determines what happens with the view's position and size when its parent is resized. See link::Guides/GUI-Introduction#view:: for further explanation.
+
+	argument::
+		An Int (1 to 9) defining the auto-resize behavior. See link::Reference/Resize:: for a list of valid resize modes.
+
+METHOD:: decorator
+	note:: only in Qt GUI ::
+
+	Get or set the decorator object, that automatically manages the positioning of new children of the view when they are created. See link::Guides/GUI-Introduction#decorators:: for further explanation.
+
+	argument::
+		An instance of a decorator class (e.g. FlowLayout).
+
+METHOD:: addFlowLayout
+	note:: only in Qt GUI ::
+
+	A convenience method which sets decorator to a new instance of FlowLayout. See link::Classes/FlowLayout:: for examples.
+
+	argument:: margin
+		A Point describing the link::Classes/FlowLayout#-margin#margin:: of the FlowLayout.
+
+	argument:: gap
+		A Point describing the link::Classes/FlowLayout#-gap#gap:: of the FlowLayout.
+
+	returns:: The new FlowLayout instance.
+
+METHOD:: flow
+	note:: only in Qt GUI ::
+
+	Creates a FlowView as a child of the view, and then evalutes the object given in the 'func' argument. It is most common to pass a Function for 'func' in which the FlowView is filled with other child views.
+
+	argument:: func
+		The object that will be evaluated after the creation of the FlowView, passing the new FlowView instance as an argument.
+
+	argument:: bounds
+		A Rect to set as the bounds of the FlowView, or nil, implying the size of this view and position (0,0).
+
+		After 'func' is evaluated, the FlowView will be resized to fit its contents and cast away any extra space it occupies.
+
+	returns:: The new FlowView instance.
+
+METHOD:: layout
+	note:: only in Qt GUI ::
+
+	Get or set the layout object, that automatically manages the position and the size of the children of the view dynamically, in relation to the view's size. See link::Guides/GUI-Introduction#layouts:: for further explanation.
+
+	argument::
+		An instance of a subclass of QLayout.
+
+
+
+
+METHOD:: mapToGlobal
+	note:: only in Qt GUI ::
+
+	Map a point relative to this view's top-left to absolute position on screen.
+
+	argument::
+		A Point describing a position relative to the view.
+
+	returns::
+		A Point describing the same position, but relative to the screen.
+
+
+SUBSECTION:: Appearance
+
+METHOD:: name
+	note:: only in Qt GUI ::
+
+	If the view is a window, sets its title
+
+	argument::
+		A String containing text for the window title.
+
+
+METHOD:: alpha
+	note:: only in Qt GUI ::
+
+	If the view is a window, this controls its transparency.
+
+	argument:: aFloat
+		A Float between 0.0 (invisible) and 1.0 (opaque).
+
+METHOD:: font
+	note:: Only in Qt every view has this method. In other GUI kits, only some views have it. ::
+	The font used by the view to display text (if any).
+
+	argument::
+		A Font.
+
+
+METHOD:: background
+	Get or set the color of whatever is considered the background of the view.
+
+	argument::
+		A Color.
+
+
+METHOD:: focusColor
+	Get or set the color used to display keyboard focus on the view.
+
+	argument::
+		A Color.
+
+METHOD:: refresh
+	Redraws the view and all its children.
+
+
+SUBSECTION:: Common behavior
+
+
+METHOD:: userCanClose
+	note:: only in Qt GUI ::
+
+	If the view is a window, sets or gets whether the user can close it via mouse or key actions.
+
+	argument::
+		A Boolean.
+
+
+METHOD:: deleteOnClose
+	note:: only in Qt GUI ::
+
+	Sets or gets whether the view should be destroyed when closed.
+
+	argument::
+		A Boolean.
+
+METHOD:: enabled
+	Sets or gets whether the view allows the user to interact with it. Usually, when a view is disabled it will be displayed differently (typically it will be greyed out).
+
+	argument::
+		A Boolean.
+
+
+METHOD:: canFocus
+	Sets or gets whether the view can receive keyboard focus.
+
+	argument::
+		A Boolean.
+
+METHOD:: focus
+	If 'flag' is true, gives keyboard focus to the view (if possible), otherwise removes the keayboard focus from it.
+
+	argument:: flag
+		A Boolean.
+
+METHOD:: hasFocus
+
+	returns:: A Boolean, stating whether the view currently has the keyboard focus.
+
+
+
+
+SUBSECTION:: Actions in general
+
+METHOD:: action
+	Gets or sets the default action of the view, i.e. the object to be evaluated when the user interacts with the view in an essential way (e.g. a Button is clicked, a ListView item is selected, etc.).
+
+	argument:: func
+		Any object to set as default action, usually a Function or a FunctionList. When evaluated, it will be passed the view as an argument.
+
+
+METHOD:: doAction
+	Evaluates the default link::#-action#action::.
+
+
+METHOD:: addAction
+METHOD:: removeAction
+
+	Adds/removes 'func' to or from the list of objects in the variable determined by 'selector'. If 'selector' is not an Array or a List, it will become one, containing the previous object plus 'func'.
+
+	This is useful for adding functionality to existing frameworks that have action functions already.
+
+	argument:: func
+		Any object to add as an action, usually a Function.
+
+	argument:: selector
+		A Symbol containing the name of the action variable to which 'func' will be added. In other words, 'add' method will be invoked on that variable; by default that is \action, but any other (sensible) instance or class variable of the view could work (e.g. \globalKeyDownAction or \mouseUpAction or \onClose, etc.). See the other action variables below.
+
+
+
+
+SUBSECTION:: Mouse actions
+
+Use the methods below to set or get the view's actions in response to mouse interaction with the view. A view must be enabled for the mouse actions to work.
+
+When the action object is evaluated, it is passed one or more arguments from the following list (in that order):
+
+list::
+## strong::view:: - the view
+## strong::x:: - the x coordinate
+## strong::y:: - the y coordinate
+## strong::modifiers:: - A bitwise or of integers indicating the modifier keys in effect. For a list of these, see link::Reference/Modifiers::.
+## strong::buttonNumber:: - 0-left, 1-right, 2-middle, etc.
+## strong::clickCount:: - the number of clicks within the system click time limit. At least 1.
+::
+
+METHOD:: mouseDownAction
+	Sets or gets the object to be evaluated when a mouse button is pressed on the view.
+
+		It is passed the following arguments: view, x, y, modifiers, buttonNumber, clickCount.
+
+METHOD:: mouseUpAction
+	Sets or gets the object to be evaluated when a mouse button is released after it was pressed on the view.
+
+		It is passed the following arguments: view, x, y, modifiers.
+
+METHOD:: mouseMoveAction
+	Sets or gets the object to be evaluated whenever the mouse pointer moves after a mouse button was pressed on the view.
+
+		It is passed the following arguments: view, x, y, modifiers.
+
+METHOD:: mouseOverAction
+	Sets or gets the object to be evaluated when the mouse pointer enters the view.
+
+		It is passed the following arguments: view, x, y.
+
+
+
+SUBSECTION:: Key actions
+
+Use the methods below to set or get the view's actions in response to keyboard interaction when the view has the keyboard focus.
+
+If evaluating the action object returns nil, or there is no action set, keyboard event will propagate up to the parent view which may then respond and trigger its actions. On the same condition, it will continue to propagate up unless some view responds or it hits the top of the view hierarchy. You may register an action on the Window's top view to respond to all unhandled keyboard events for the window.
+
+note::
+In Qt GUI, event propagation works differently. After handling a key event within SuperCollider language, the event processing continues in the Qt implementation of the view, and if it is not handled there it propagates to the parent view. If you want to have control over key event propagation, you can return true or false from key actions (meaning that the event was handled and will not propagate, or converse), but note that this will also prevent the Qt view implementation to respond to the key event.
+::
+
+When the action object is evaluated, it is passed one or more arguments from the following list (in that order):
+
+list::
+## strong::view:: - The view.
+
+## strong::char:: - The character associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to. note:: In Qt GUI only printable characters are passed. If a key is not associated with any printable character, nil will be passed instead.::
+
+## strong::modifiers:: - A bitwise or of integers indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator. For a list of these, see link::Reference/Modifiers::.
+
+## strong::unicode:: - The Integer unicode number associated with the 'char' passed.
+
+## strong::keycode:: - The hardware dependent keycode indicating the physical key. This will vary from machine to machine, but is useful for building musical interfaces using the computer keyboard. warning::Function key modifier in combination with another key may change the latter's keycode.::
+::
+
+note::
+In Cocoa GUI, for various reasons the following key events don't make it through to SuperCollider:
+list::
+## most command modifiers
+## ctl-tab
+## ctl-escape
+## tab and shift tab are currently trapped by SC itself for cycling the focus through the views.
+::
+::
+
+
+METHOD:: keyDownAction
+	Sets or gets the object to be evaluated when a key is pressed.
+
+		It is passed the following arguments: strong::view, char, modifiers, unicode, keycode::.
+
+METHOD:: keyUpAction
+	Sets or gets the object to be evaluated when a key is released.
+
+		It is passed the following arguments: strong::view, char, modifiers, unicode, keycode::.
+
+METHOD:: keyModifiersChangedAction
+	Sets or gets the object to be evaluated when a modifier key is pressed or released.
+
+		It is passed the following arguments: strong::view, modifiers::.
+
+
+SUBSECTION:: Drag and drop
+
+Use the methods below to define or override how the view handles drag&drop operations.
+
+METHOD:: beginDragAction
+	Sets or gets the object evaluated when a drag&drop operation is initiated.
+
+	At evaluation, the following arguments will be passed: strong:: view, x, y ::. The view expects an object to be returned which will become the data subject to the drag&drop operation. Returning nil will prevent the drag&drop operation to begin.
+
+	If this variable is nil (the default) the view's link::#-defaultGetDrag:: method is called instead.
+
+METHOD:: canReceiveDragHandler
+	Sets or gets the object evaluated when the mouse pointer moves over the view while a drag&drop operation is taking place.
+
+	At evaluation, the following arguments will be passed: strong:: view, x, y ::. The view expects the link::#*currentDrag#drag&drop data:: to be examined, and a Boolean returned stating whether the view can make use of that data. If true is returned, the data may be dropped on the view, otherwise the drop event will not be handled by this view.
+
+	If this variable is nil (the default) the view's link::#-defaultCanReceiveDrag:: method is called instead.
+
+METHOD:: receiveDragHandler
+	Sets or gets the object evaluated when a drag&drop operation finishes on this view.
+
+	At evaluation, the following arguments will be passed: strong:: view, x, y ::. The link::#*currentDrag#drag&drop data:: is expected to be applied to the view in some way.
+
+	If this variable is nil (the default) the view's link::#-defaultReceiveDrag:: method is called instead.
+
+
+METHOD:: dragLabel
+	Sets or gets the text displayed by the mouse pointer during the drag&drop operation. It is expected to be set while handling the beginning of the operation, i.e. in link::#-beginDragAction:: or link::#-defaultGetDrag::.
+
+	argument::
+		A String containing the text to be displayed.
+
+
+
+
+SUBSECTION:: Other actions and hooks
+
+METHOD:: focusGainedAction
+	note:: only in Qt and SwingOSC GUI::
+
+	Sets or gets the object to be evaluated when the view gains the keyboard focus. It is passed the view as an argument.
+
+METHOD:: focusLostAction
+	note:: only in Qt and SwingOSC GUI::
+
+	Sets or gets the object to be evaluated when the view looses the keyboard focus. It is passed the view as an argument.
+
+METHOD:: toFrontAction
+	note:: only in Qt GUI ::
+
+	Sets or gets the object to be evaluated when the view becomes the active window. It is passed the view as an argument.
+
+METHOD:: endFrontAction
+	note:: only in Qt GUI ::
+
+	Sets or gets the object to be evaluated when the view becomes the active window. It is passed the view as an argument.
+
+METHOD:: onClose
+
+	Sets or gets the object to be evaluated when the view is destroyed (i.e. link::#-close#closed:: or link::#-remove#removed::). It is passed the view as an argument.
+
+
+
+
+SUBSECTION:: Subclassing
+
+The following methods are the default handlers of key press and release events. When subclassing, override them to implement custom functionality. Many view classes in the standard library do that.
+
+METHOD:: defaultKeyDownAction
+
+	The method called when a key is pressed and link::#-keyDownAction:: is nil. Subclass it to define your own functionality on key-press.
+
+	See link::#key_actions#Key actions :: for explanation of arguments.
+
+	returns:: nil, if the key event is not handled by the view, which will propagated it to the parent.
+
+METHOD:: defaultKeyUpAction
+
+	The method called when a key is released and link::#-keyUpAction:: is nil.  Subclass it to define your own functionality on key-release.
+
+	See link::#key_actions#Key actions :: for explanation of arguments.
+
+	returns:: nil, if the key event is not handled by the view, which will propagated it to the parent.
+
+
+METHOD:: keyDown
+	Handles response to a key press event. First evaluates link::#*globalKeyDownAction::, then calls link::#-handleKeyDownBubbling::.
+
+	note::
+	In Qt GUI, instead of calling link::#-handleKeyDownBubbling::, this method directly triggers the action and returns, forwarding the action's return value. See link::#key_actions#Key Actions :: for detailed explanation.
+	::
+
+	See link::#key_actions#Key actions :: for explanation of arguments.
+
+	returns:: strong:: Only in Qt GUI: :: A Boolean, stating whether the event was handled or not (and will not or will propagate to the parent view, respectively), or the view, in which case it lets the Qt view implementation handle the event.
+
+METHOD:: keyUp
+
+	Handles response to a key release event. Sets link::#-keyTyped:: to 'char', evaluates link::#*globalKeyUpAction::, and then calls link::#-handleKeyUpBubbling::.
+
+	note::
+	In Qt GUI, instead of calling link::#-handleKeyUpBubbling::, this method directly triggers the action and returns, forwarding the action's return value. See link::#key_actions#Key Actions :: for detailed explanation.
+	::
+
+	See link::#key_actions#Key actions :: for explanation of arguments.
+
+	returns:: strong:: Only in Qt GUI: :: A Boolean, stating whether the event was handled or not (and will not or will propagate to the parent view, respectively), or the view, in which case it lets the Qt view implementation handle the event.
+
+METHOD:: keyModifiersChanged
+	Handles response to a modifier key press or release event. Calls link::#-handleKeyModifiersChangedBubbling::.
+
+	note::
+	In Qt GUI, instead of calling link::#-handleKeyModifiersChangedBubbling::, a modifier key press or release event also produces a normal key press or release event, and it is the handling of those events that will determine propagation to the parent.
+	::
+
+	See link::#key_actions#Key actions :: for explanation of arguments.
+
+METHOD:: handleKeyDownBubbling
+	note:: Only in Cocoa and SwingOSC GUI ::
+	Triggers key-down action and propagates the key event to the parent view, if the action returns nil.
+
+METHOD:: handleKeyUpBubbling
+	note:: Only in Cocoa and SwingOSC GUI ::
+	Triggers key-up action and propagates the key event to the parent view, if the action returns nil.
+
+METHOD:: handleKeyModifiersChangedBubbling
+	note:: Only in Cocoa and SwingOSC GUI ::
+	Triggers key-modifiers-changed action and propagates the key event to the parent view, if the action returns nil.
+
+METHOD:: keyTyped
+
+	An instance variable containing the key just typed (after it is released).
+
+
+
+METHOD:: mouseDown
+	Handles response to a mouse button press event. Evaluates link::#-mouseDownAction::.
+
+	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
+
+METHOD:: mouseUp
+	Handles response to a mouse button release event. Evaluates link::#-mouseDownAction::.
+
+	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
+
+METHOD:: mouseMove
+	Handles response to mouse pointer moving over the view after a mouse button has been pressed. Evaluates link::#-mouseMoveAction::.
+
+	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
+
+METHOD:: mouseOver
+	Handles response to mouse pointer enterng the view. Evaluates link::#-mouseOverAction::.
+
+	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
+
+
+
+
+METHOD:: defaultGetDrag
+
+	The view's default method to determine the content of the drag&drop operation just initiated.
+
+	returns:: The object to be set as link::#*currentDrag::. If nil is returned, the drag&drop operation will not begin.
+
+METHOD:: defaultCanReceiveDrag
+
+	The view's default evaluation whether the content of the ongoing drag&drop operation can be accepted.
+
+	returns:: A Boolean stating whether link::#*currentDrag:: is useful. If false is returned, the drop will not be handled by this view.
+
+METHOD:: defaultReceiveDrag
+
+	The view's default handling of the data dropped on it (stored in link::#*currentDrag::).
+
+METHOD:: beginDrag
+	Handles initiation of a drag&drop operation. Evaluates link::#-beginDragAction:: or calls link::#-defaultGetDrag:: if the former is nil, then stores the object returned into link::#*currentDrag::, and the object interpreted as link::Classes/Object#-asCompileString#"compile string":: into link::#*currentDragString::. Returns whether link::#*currentDrag:: is not nil.
+
+	note:: The description of arguments and return value is valid strong:: only for Qt GUI: ::. In other GUI kits this method has no arguments and its return value is insignificant. ::
+
+	argument:: x
+		Current horizontal position of the mouse pointer.
+
+	argument:: y
+		Current vertical position of the mouse pointer.
+
+	returns:: A Boolean stating whether the drag&drop operation shall begin.
+
+METHOD:: canReceiveDrag
+	Handles evaluation whether the view can accept the current drag&drop data. Evaluates link::#-canReceiveDragHandler:: or calls link::#-defaultCanReceiveDrag:: if the former is nil, then forwards the return value.
+
+	note:: The description of arguments is valid strong:: only for Qt GUI: ::. In other GUI kits this method has no arguments. ::
+
+	argument:: x
+		Current horizontal position of the mouse pointer.
+
+	argument:: y
+		Current vertical position of the mouse pointer.
+
+	returns:: A Boolean stating whether the current drag&drop content can be dropped on the view.
+
+METHOD:: receiveDrag
+	Handles the end of the drag&drop operation. Evaluates link::#-receiveDragHandler:: or calls link::#-defaultReceiveDrag:: if the former is nil, then sets link::#*currentDrag:: and link::#*currentDragString:: to nil.
+
+	argument:: x
+		Current horizontal position of the mouse pointer.
+
+	argument:: y
+		Current vertical position of the mouse pointer.

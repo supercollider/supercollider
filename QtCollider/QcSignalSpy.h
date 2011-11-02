@@ -55,7 +55,7 @@ QcSignalSpy( QObjectProxy *proxy, const char *sigName,
   int sigId = mo->indexOfSignal( signal );
 
   if( sigId < 0 ) {
-    qcErrorMsg( QString("No such signal: '%1'").arg(signal.constData()) );
+    qcDebugMsg( 0, QString("WARNING: No such signal to connect: '%1'").arg(signal.constData()) );
     return;
   }
 
@@ -118,7 +118,7 @@ inline bool isValid () const { return _sigId > 0; }
 
 protected:
 
-  virtual void react( const QList<QVariant> args ) = 0;
+  virtual void react( QList<QVariant> & args ) = 0;
 
   QObjectProxy *_proxy;
   int _sigId;
@@ -137,7 +137,7 @@ public:
 
 protected:
 
-  virtual void react( const QList<QVariant> args ) {
+  virtual void react( QList<QVariant> & args ) {
 
     qcDebugMsg( 1, QString("SIGNAL: '%1' handled by method '%2'")
                   .arg( _proxy->object() ?
@@ -164,7 +164,7 @@ public:
 
 protected:
 
-  virtual void react( const QList<QVariant> args ) {
+  virtual void react( QList<QVariant> & args ) {
 
     qcDebugMsg( 1, QString("SIGNAL: '%1' handled by a Function")
                   .arg( _proxy->object() ?
@@ -172,30 +172,9 @@ protected:
                         "unknown" )
               );
 
-    // FIXME, reuse QObjectProxy::invokeScMethod. Here a custom implementation just
-    // because Slot does not support a Function.
+    args.prepend( QVariant::fromValue( _handler ) );
 
-    QtCollider::lockLang();
-
-    if( _proxy->scObject() ) {
-      qcDebugMsg(1, QString("SC FUNCTION CALL [+++] ") );
-
-      VMGlobals *g = gMainVMGlobals;
-      g->canCallOS = true;
-      ++g->sp;  SetObject(g->sp, _proxy->scObject());
-      ++g->sp;  SetObject(g->sp, _handler);
-      Q_FOREACH( QVariant var, args ) {
-        ++g->sp;
-        if( QtCollider::Slot::setVariant( g->sp, var ) )
-          SetNil( g->sp );
-      }
-      runInterpreter(g, QtCollider::s_doFunction, args.size() + 2);
-      g->canCallOS = false;
-
-      qcDebugMsg(1, QString("SC FUNCTION CALL [---] ") );
-    }
-
-    QtCollider::unlockLang();
+    _proxy->invokeScMethod( s_doFunction, args );
   }
 
   PyrObject * _handler;

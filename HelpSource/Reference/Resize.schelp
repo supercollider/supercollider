@@ -24,7 +24,7 @@ list::
 ## 7 - fixed to left, fixed to bottom
 ## 8 - horizontally elastic, fixed to bottom
 ## 9 - fixed to right, fixed to bottom
-::	
+::
 
 section:: Examples
 
@@ -43,11 +43,11 @@ a = { |i|
 	x = CompositeView(w, w.view.bounds.insetBy(20,20))
 		.background_(Color.rand)
 		.resize_(i);
-	
-	y = CompositeView(x, x.bounds.moveTo(0,0).insetBy(20,20)) 
+
+	y = CompositeView(x, x.bounds.moveTo(0,0).insetBy(20,20))
 		.background_(Color.rand)
 		.resize_(i);
-		
+
 	y.decorator = FlowLayout(y.bounds).gap_(0.0 @ 0.0);
 
 	t = StaticText(y, Rect(0, 0, 40, 40))
@@ -55,10 +55,10 @@ a = { |i|
 		.resize_(i)
 		.string_(i)
 		.font_(Font("Helvetica", 26));
-	
+
 	p=PopUpMenu(y,40@40).items_((1..9).collect(_.asString)).value_(i-1).resize_(i)
 			.action_{|m| t.string_((m.value+1).asString); [p,t].do(_.resize_(m.value+1))};
-	
+
 	w.front;
 	w.onClose = {a.do(_.close) };
 
@@ -78,7 +78,7 @@ p = PopUpMenu(w, Rect(10,10,80,24))
 	});
 
 f = SoundFile.new;
-f.openRead("sounds/a11wlk01.wav".absolutePath);
+f.openRead(Platform.exampleSoundFile);
 
 a = SoundFileView(w, Rect(10,40, 700, 180))
 	.soundfile_(f)

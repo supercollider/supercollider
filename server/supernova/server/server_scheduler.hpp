@@ -94,10 +94,17 @@ class scheduler:
 
 protected:
     /* called from the driver callback */
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+    void reset_queue_sync(dsp_thread_queue_ptr && qptr)
+    {
+        threads.reset_queue(std::move(qptr));
+    }
+#else
     void reset_queue_sync(dsp_thread_queue_ptr & qptr)
     {
         threads.reset_queue(qptr);
     }
+#endif
 
 public:
     /* start thread_count - 1 scheduler threads */
@@ -110,14 +117,16 @@ public:
         threads.start_threads();
     }
 
-    ~scheduler(void)
+    void terminate()
     {
-        cbs.run_callbacks();
+        cbs.run_callbacks(); // audio backend must be closed by now
         threads.terminate_threads();
     }
 
     void add_sync_callback(audio_sync_callback * cb)
     {
+        /* we need to guard, because it can be called from the main (system) thread and the network receiver thread */
+        boost::mutex::scoped_lock lock(sync_mutex);
         cbs.add_callback(cb);
     }
 
@@ -136,8 +145,9 @@ public:
     }
 
 private:
-    callback_system<audio_sync_callback> cbs;
+    callback_system<audio_sync_callback, false> cbs;
     dsp_threads threads;
+    boost::mutex sync_mutex;
 };
 
 } /* namespace nova */

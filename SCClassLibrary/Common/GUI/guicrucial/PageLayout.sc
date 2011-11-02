@@ -53,7 +53,8 @@ PageLayout  {
 		});
 		autoRemoves = [];
 	}
-	asView { ^this.view }
+	asView { ^this.view.asView }
+	asFlowView { ^this.view }
 	bounds { ^this.view.bounds }
 	add { arg view;
 		this.view.add(view);

@@ -1,291 +1,325 @@
 class:: EnvelopeView
 redirect:: implClass
 summary:: A configurable view with nodes and connections
-categories:: GUI
+categories:: GUI>Views
 related:: Classes/MultiSliderView, Classes/SCEnvelopeEdit
 
-description::
+DESCRIPTION::
+
 A view which can graphically display nodes at x/y coordinates, connection lines, cross-connections, node markers, and labels. All of the values for these are stored in arrays. While this view is typically used to make editable envelopes interfaces, it can be used to draw very complex interconnection graphs as well.
 
-subsection:: Some Important Issues Regarding EnvelopeView
+You can make the view display an link::Classes/Env:: using link::#-setEnv::. Note however that the view will work on a copy of the data of the Env object, therefore moving the nodes through the view will have no effect on the Env.
 
-The instance variable step must be explicitly set for the code::defautlKeyDownAction:: to work.
+Multiple nodes can be selected and moved using mouse or keyboard. See link::#-defaultKeyDownAction:: for details.
 
+The last selected node is considered to be the current, and can be moved programmatically using link::#-x:: and link::#-y::. It is also possible to change the selection and switch the current node programmatically using link::#-selectIndex::, link::#-deselectIndex:: and link::#-index::, as well as move the current node .
 
-classmethods::
+In strong::Qt GUI::, link::#-keepHorizontalOrder:: allows you to enforce the order of nodes in horizontal direction to match their index order. In that case, node movement to the left and to the right will be restricted by the positions of their immediate neighbours. This is especially useful when EnvelopeView is used to display an link::Classes/Env::.
 
-method:: new
-argument:: parent
-The parent view.
-argument:: bounds
-An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
-discussion::
-Example:
-code::
-(
-	w = Window("envelope", Rect(150 , Window.screenBounds.height-250, 250, 100)).front;
-	b = EnvelopeView(w, Rect(10, 10, 230, 70))
-		.resize_(5)
-		.action_({arg b; [b.index,b.value].postln})
-		.value_([[0.0, 0.15, 0.5, 1.0],[0.1, 1.0, 0.7, 0.0]])
-		.curves_([5, 5, -5]);
-)
-::
-::
+In strong::Qt GUI::, link::#-elasticSelection:: determines whether moving multiple nodes will be blocked altogether if any of the nodes meet an obstacle (the view bounds or a neighbour node), or only those individual nodes will be blocked.
 
-instancemethods::
-
-method:: editable
-Determines if the any node is editable.
-argument:: val
-An instance of link::Classes/Boolean::.
-
-method:: setEditable
-Determines if the the node at index is editable.
-argument:: index
-An link::Classes/Integer::.
-argument:: boolean
-An instance of link::Classes/Boolean::.
-
-method:: step
-Quantizes the values to the nearest multiple of stepSize.
-argument:: stepSize
-An instance of link::Classes/Float::.
-
-method:: value
-Gets/sets the property, code::\value::, by calling get/setProperty(\value, val). The setter also sets size to the size of val. This will not do the action of the slider.
-argument:: val
-An instance of link::Classes/Array::. The values must be between 0 and 1. The form of the array must be:
-code::
-[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]
-::
-
-method:: valueAction
-Sets the property, code::\value::, by calling (\value, val). Also sets size to the size of val. Does the sliders action.
-argument:: val
-An instance of link::Classes/Array::. The values must be between 0 and 1. The form of the array must be:
-code::
-[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]
-::
-
-method:: index
-Gets theselected index. -1 if none selected.
-argument:: inx
-An link::Classes/Integer::.
-
-method:: lastIndex
-Returns the index last selected.
-
-method:: selectIndex
-Selects the node at index, and refreshes the view.
-argument:: index
-An link::Classes/Integer::.
-
-method:: x
-Get/set the x or y value at the selected index.
-argument:: ax
-An instance of link::Classes/Float::, between 0 and 1.
-
-method:: y
-Get/set the x or y value at the selected index.
-argument:: ay
-An instance of link::Classes/Float::, between 0 and 1.
-
-method:: currentvalue
-Gets/sets the y - value at the current index.
-argument:: iny
-A link::Classes/Float:: between 0 and 1.
-
-method:: setString
-Draw the string inside the thumb at index. Make sure that ths stroke color contrasts the fill color.
-argument:: index
-An link::Classes/Integer::.
-argument:: astring
-An instance of link::Classes/String::.
-
-method:: strings
-Draw a string inside the thumb at the corresponding index in the array. Make sure that ths stroke color contrasts the fill color.
-argument:: astrings
-An link::Classes/Array:: of link::Classes/String::s;
-
-method:: curves
-Set a shape to draw the connection between points. The shapes defined by link::Classes/Env:: are accepted.
-argument:: incurves
-An  link::Classes/Array:: of link::Classes/Symbol::s, An link::Classes/Array:: of link::Classes/SimpleNumber::s, a link::Classes/Symbol:: or a link::Classes/SimpleNumber::.
-
-method:: setEnv
-Set an link::Classes/Env:: to be shown in the view.
-argument:: env
-
-method:: grid
-Set a grid using a link::Classes/Point::. x and y correspond to times and levels respectively. Specify a value of 0.0 if you do not want that axis to be drawn.
-argument:: point
-
-method:: gridOn
-Show a grid.
-argument:: flag
-A false or true
-
-method:: gridColor
-Set the Color of the grid.
-
-method:: connect
-Replaces the connections which were drawn at init time, and then draws new ones from the index, from, to the each of the code::aconnections:: indexes.
-argument:: from
-An link::Classes/Integer::. The index form which the lines originate.
-argument:: aconnections
-An link::Classes/Array:: of numbers. The indexes to which the lines are drawn.
-
-method:: metaAction
-Gets/sets a function to be evaluate on Ctrl-click
-argument:: arg1
-An instance of link::Classes/Function::. Default value is code::nil::.
+note:: The variable link::#-step:: must be explicitly set to allow moving nodes using keyboard. ::
 
 
 
-subsection:: Customizing Appearance
+INSTANCEMETHODS::
 
-method:: strokeColor
-The line and text color of the view.
-argument:: acolor
-An instance of link::Classes/Color::.
+SUBSECTION:: Data
 
-method:: colors
-Sets the stroke and fill colors of the view.
-argument:: strokec
-An instance of link::Classes/Color::.
-argument:: fillc
-An instance of link::Classes/Color::.
+METHOD:: setEnv
+	Sets an link::Classes/Env:: to be displayed by the view. The view will extract data from the Env object to display (times, values and curve types).
 
-method:: drawLines
-Draws connecting lines between the nodes.
-argument:: abool
-An instance of link::Classes/Boolean::. default is code::false::.
+	Any nodes existent prior to calling this method will be removed.
 
-method:: drawRects
-Draws rectangles (thumbs) at the nodes .
-argument:: abool
-An instance of link::Classes/Boolean::. default is code::true::.
-
-method:: fillColor
-argument:: color
-
-method:: setFillColor
-The line and text color of the all the nodes (and their text), or of a specific node at code::index::.
-argument:: index
-An link::Classes/Integer::.
-argument:: color
-An instance of link::Classes/Color::.
-
-method:: thumbWidth
-Set the width of all th thumbs.
-argument:: width
-The number of pixels.
-
-method:: thumbHeight
-Set the height of all th thumbs.
-argument:: height
-The number of pixels.
-
-method:: thumbSize
-Set the size(both) of all th thumbs.
-argument:: size
-The number of pixels.
-
-method:: setThumbWidth
-Set the thumb width at a certain index.
-argument:: index
-index - An link::Classes/Integer::.
-argument:: width
-The number of pixels.
-
-method::setThumbHeight
-Set the thumb heightat a certain index.
-argument:: index
-index - An link::Classes/Integer::.
-argument:: height
-The number of pixels.
-
-method:: setThumbSize
-Set the thumb size(both) at a certain index.
-argument:: index
-index - An link::Classes/Integer::.
-argument:: size
-The number of pixels.
-
-method:: selectionColor
-Set the color a thumb has when selected.
-argument:: acolor
-An instance of link::Classes/Color::.
+	argument::
+		An Env.
 
 
+METHOD:: value
+	Sets the positions of the nodes, creating them if not existent.
 
-subsection:: Subclassing and Internal Methods
+	If there were already existent nodes and their amount is different than the amount of x/y pairs in the argument, nodes will be added or removed (in order of creation reversed) until the amounts match, and then the new values will be applied.
 
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
+	argument::
+		An Array containing two other Arrays, of which one contains the horizontal and the other the vertical position of the new nodes. The values must be between 0 and 1. For example: code:: [[ x1, x2, x3, ... ], [ y1, y2, y3, ... ]] ::
 
-method:: defaultKeyDownAction
-argument:: char
-argument:: modifiers
-argument:: unicode
-discussion::
-The default keydown actions are:
-table::
-## key || action || comment
-## shift+unicode 16rF703 || increment x by step || shift + right arrow
-## shift+unicode 16rF702 || decrement x by step || shift + left arrow	
-## unicode 16rF703 || select next index || right arrow
-## unicode 16rF702 || select previous index || left arrow	
-## unicode 16rF700 || increment y by step || up arrow
-## unicode 16rF701 || decrement y by step || down arrow
-::
-note:: Step must be explicitly set fro this to work.
+METHOD:: valueAction
+	Sets link::#-value:: to the argument and triggers the link::#-action::.
+
+METHOD:: x
+	The horizontal position of the emphasis::current:: node.
+
+	argument::
+		A Float between 0 and 1.
+
+METHOD:: y
+	The vertical position of the emphasis::current:: node.
+
+	argument::
+		A Float between 0 and 1.
+
+METHOD:: currentvalue
+	Synonym for link::#-y::.
+
+METHOD:: curves
+	The shapes of connections between nodes. See below for the valid objects that describe a shape.
+
+	If a single shape is given, it will be applied to all the existing nodes. If an Array of shapes is given, each of its elements will be applied to an existing node, in order of index.
+
+	A connection curve shape applied to a node will determine the shape of the connections originating at that node. If no connections have been created using link::#-connect::, the origin node of a connection is the one with lower index. If there are such connections however, their origin is the node that was passed as the first argument to link::#-connect::.
+
+	argument::
+		The valid objects to describe a shape are listed in link::Classes/Env#*new::. The argument can be either a single, or an Array of those values.
+
+METHOD:: strings
+	The labels of the nodes.
+
+	note:: In order for the labels to be visible, you might need to ensure that the link::#-strokeColor:: contrasts the link::#-fillColor:: (depending on how the view draws the nodes and the labels).
+	::
+
+	argument::
+		An Array of Strings.
+
+METHOD:: setString
+	Sets the label of the node at the given index.
+
+	note:: In order for the label to be visible, you might need to ensure that the link::#-strokeColor:: contrasts the link::#-fillColor:: (depending on how the view draws the nodes and the labels).
+
+	argument::
+		A String.
+
+METHOD:: setFillColor
+	Sets the color used to draw the inside of the node at the given index.
+
+	argument:: index
+		An Integer.
+	argument:: color
+		A Color.
+
+METHOD:: setThumbWidth
+	Sets the width of the node at the given index.
+
+	argument:: index
+		An Integer.
+	argument:: width
+		An Integer.
+
+METHOD:: setThumbHeight
+	Sets the height of the node at the given index.
+
+	argument:: index
+		An Integer.
+	argument:: height
+		An Integer.
+
+METHOD:: setThumbSize
+	Sets both width and height of the node at the given index to code::size::.
+
+	argument:: index
+		An Integer.
+	argument:: size
+		An Integer.
 
 
-method:: defaultGetDrag
-Returns code::this.value::.
+METHOD:: connect
+	Removes any connections created when the link::#-value:: was set, and then creates new ones from the node at index given in the first argument to each of the nodes at indexes given in the second argument.
 
-method:: defaultCanReceiveDrag
-The method called by default when attempting to place a drag in this object. Will receive any drag, but the drag should be an array of values of the form:
-code::
-[ [ x1, x2, x3, ... ], [ y1, y2, y3, ... ] ]
-::
-
-method:: defaultReceiveDrag
-The default method called when a drag has been received. Performs code::value_():: and code::reference_():: using code::currentDrag:: as an argument. Does not perform the action.
-
-method:: properties
-A list of properties to which this view responds. See link::Classes/View::.
-returns::
-[ \bounds, \visible, \enabled, \canFocus, \resize, \background, \minWidth, \maxWidth, \minHeight, \maxHeight, \value, \thumbSize, \fillColor, \strokeColor, \xOffset, \x, \y, \showIndex, \drawLines, \drawRects, \selectionSize, \startIndex, \thumbWidth, \absoluteX, \isFilled, \step ]
-
-method:: size
-Called by code::value_::.
-
-method:: items
-Get/set items.
-returns:: An link::Classes/Array::.
+	argument:: index
+		An Integer - the index of the node to become one end of all the new connections.
+	argument:: connections
+		An Array of Integers - indexes of nodes, each to become the second end to a new connection created.
 
 
-method:: doMetaAction
-Not normally called directly (called by the primitive).
 
-method::select
-Selects the node at index, without refreshing the view.
-argument:: index
-An link::Classes/Integer::.
+SUBSECTION:: Appearance
 
-method:: addValue
-argument:: xval
-argument:: yval
+METHOD:: drawLines
+	Whether to draw the connections between the nodes.
 
-method:: fixedSelection
-argument:: bool
+	argument::
+		A Boolean.
 
-method:: allConnections
-argument:: arg1
+METHOD:: drawRects
+	Whether to draw the nodes
 
-examples::
+	argument::
+		A Boolean.
+
+
+METHOD:: gridOn
+	Whether to draw the grid.
+
+	argument::
+		A Boolean.
+
+METHOD:: grid
+	The resolution of the grid.
+
+	argument::
+		A Point of which x and y correspond to grid spacing on the horizontal and the vertical axis, respectively. If one of the two is 0, the grid on that axis will not be drawn.
+
+METHOD:: thumbWidth
+	The default width of the nodes. If the width of a specific node has been set using link::#-setThumbWidth::, it will take precedence.
+
+	argument::
+		An Integer.
+
+METHOD:: thumbHeight
+	The default height of the nodes. If the height of a specific node has been set using link::#-setThumbHeight::, it will take precedence.
+
+	argument::
+		An Integer.
+
+METHOD:: thumbSize
+	Sets both link::#-thumbWidth:: and link::#-thumbHeight:: to the argument.
+
+METHOD:: strokeColor
+	The color used to draw the connections and the node labels.
+
+	argument::
+		A Color.
+
+METHOD:: fillColor
+	The default color used to draw the nodes. If the color of a specific node has been set using link::#-setFillColor::, it will take precedence.
+
+	argument::
+		A Color.
+
+METHOD:: selectionColor
+	The color of a node when it is selected.
+
+	argument::
+		A Color.
+
+
+METHOD:: gridColor
+	The color of the grid.
+
+	argument::
+		A Color.
+
+METHOD:: colors
+	Sets the link::#-strokeColor:: and the link::#-fillColor:: to the arguments, respectively.
+
+
+
+SUBSECTION:: Interaction
+
+METHOD:: index
+	The index of the emphasis::current:: node.
+
+	argument::
+		An Integer.
+
+METHOD:: lastIndex
+	Synonym for link::#-index::.
+
+
+METHOD:: selectIndex
+	Selects the node at given index and makes it the current one, i.e. link::#-currentvalue:: will relate to that node. As a special case, if the argument is -1 all nodes will be deselected.
+
+	argument::
+		An Integer.
+
+METHOD:: deselectIndex
+	Deselects the node at given index.
+
+	note:: Not available in strong:: Cocoa GUI ::. ::
+
+	argument::
+		An Integer.
+
+METHOD:: editable
+	Whether any node is editable.
+
+	argument::
+		A Boolean.
+
+METHOD:: setEditable
+	Sets whether the node at given index is editable. Regardless of this, no node will be editable unless link::#-editable:: is code::true::.
+
+	argument:: index
+		An Integer.
+
+	argument:: flag
+		A Boolean.
+
+METHOD:: step
+	Makes the nodes snap (i.e. quantized) to the nearest multiple of the argument. Unless this is larger than 0, nodes will not be movable using keyboard.
+
+	argument::
+		A Float.
+
+METHOD:: keepHorizontalOrder
+	note:: Only available in strong::Qt GUI:: ::
+
+	Whether the position of nodes on the horizontal axis shall be restricted by their immediate neighbours (in order of their index).
+
+	Setting this to code::true:: will immediately modify the positions of existing nodes to match the order.
+
+	argument::
+		A Boolean.
+
+METHOD:: elasticSelection
+	note:: Only available in strong::Qt GUI:: ::
+
+	Whether the relative positions of nodes within the selection can change when the selection is moved using mouse or keyboard, in order to adapt to obstacles (the view bounds or, in case link::#-keepHorizontalOrder:: is code::true::, a neighbour node).
+
+	If this is code::false::, movement of multiple nodes will be blocked altogether when an obstacles is met, otherwise only the individual nodes will be blocked at their obstacles.
+
+	argument::
+		A Boolean.
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+	The action object evaluated whenever the user moves a node.
+
+METHOD:: metaAction
+	The action object evaluated whenever the user moves a node while the Ctrl key is pressed.
+
+METHOD:: defaultKeyDownAction
+
+	Implements the default effects of key presses as follows:
+
+	table::
+	## strong::Key::           || strong::Effect::
+	## Shift/Alt + right arrow || increment x by step
+	## Shift/Alt + left arrow  || decrement x by step
+	## right arrow             || select next node
+	## left arrow              || select previous node
+	## up arrow                || increment y by step
+	## down arrow              || decrement y by step
+	::
+
+	note:: strong:: Differences between GUI kits ::
+
+		strong::Cocoa:: uses the Shift modifier to move nodes horizontally, while strong::SwingOSC:: uses Alt for the same purpose. strong::Qt:: however will only move nodes at all if Alt is pressed, and holding down Shift will select each node at the current index, as it is changed.
+
+		In strong::Qt::, the default effects of key presses are defined in the view implementation instead of in this method. If you want to override them, you need to return code::true:: from this method, or from link::Classes/View#-keyDownAction::. See link::Classes/View#key_actions#Key actions:: for explanation.
+
+	::
+
+
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		The link::#-value::.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		True for any drag data, but the data should be in the same format as link::#-value::.
+
+METHOD:: defaultReceiveDrag
+	If the drag data is of the acceptable form (see link::#-defaultCanReceiveDrag:: above), sets link::#-value:: using that data.
+
+
+
+EXAMPLES::
 
 Use as envelope view
 code::
@@ -338,15 +372,15 @@ b = EnvelopeView(w, Rect(0, 0, 350, 100))
 r = Routine({
 	var j = 0;
 	20.do({ arg i;
-		b.select((b.size - 1).rand.abs);
+		b.selectIndex((b.size - 1).rand.abs);
 		0.1.wait;
 		b.x_(1.0.rand.abs);
 		b.y_(1.0.rand.abs);
 	});
-	b.select(-1);
+	b.selectIndex(-1);
 });
 AppClock.play(r);
-)	
+)
 ::
 
 Show boxes with a string in it:

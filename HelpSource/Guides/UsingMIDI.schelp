@@ -1,6 +1,6 @@
 title:: Using MIDI
 summary:: Notes on MIDI support in SuperCollider
-related:: Guides/MIDI
+related:: Guides/MIDI, Classes/MIDIFunc, Classes/MIDIdef
 categories:: MIDI
 
 keyword::MIDI
@@ -28,22 +28,13 @@ definitionList::
 In most cases, each physical MIDI connection (pair of in/out jacks on the MIDI interface) has one MIDIEndPoint object to represent it in the client.
 
 section::Receiving MIDI input
-subsection:: MIDIResponder classes
+subsection:: MIDIFunc and MIDIdef
 
-For most uses, the preferred way to receive MIDI input is using the link::Classes/MIDIResponder:: classes. The advantage of this approach is that any number of responders can be registered. (By contrast, using link::Classes/MIDIIn:: responder functions directly means that only one function can exist per incoming message type. That is not an ideal programming practice.)
+For most uses, the preferred way to receive MIDI input is using the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes. The advantage of this approach is that any number of responders can be registered, using extremely flexible matching. (By contrast, using link::Classes/MIDIIn:: responder functions directly means that only one function can exist per incoming message type. That is not an ideal programming practice.)
 
-Six types of MIDI responder exist, corresponding to the most common MIDI messages. They all have similar interfaces, described in the link::Classes/MIDIResponder:: help file. They can also filter incoming MIDI messages, to respond to a particular device, channel number, or specific parameter values.
+link::Classes/MIDIFunc:: has a number of convenience methods allowing you to register for the different MIDI message types. It can  filter incoming MIDI messages to respond to a particular device, channel number, or specific message number, or ranges thereof.
 
-list::
-## link::Classes/NoteOnResponder::
-## link::Classes/NoteOffResponder::
-## link::Classes/CCResponder::
-## link::Classes/BendResponder::
-## link::Classes/TouchResponder::
-## link::Classes/ProgramChangeResponder::
-::
-
-See link::#playing_notes_on_your_midi_keyboard#Playing notes on your MIDI keyboard:: below for a simple example using the note-on and note-off responders.
+See link::#playing_notes_on_your_midi_keyboard#Playing notes on your MIDI keyboard:: below for a simple example using the note-on and note-off MIDIFuncs.
 
 subsection:: MIDIIn
 
@@ -62,11 +53,11 @@ list::
 ## smpte
 ::
 
-To assign a response to a particular kind of MIDI message, assign a function to the class variable: 
+To assign a response to a particular kind of MIDI message, assign a function to the class variable:
 
 code::
 MIDIIn.connect;
-MIDIIn.noteOn = { |port, chan, note, vel| [port, chan, note, vel].postln }; 
+MIDIIn.noteOn = { |port, chan, note, vel| [port, chan, note, vel].postln };
 MIDIIn.noteOn = nil;	// stop responding
 ::
 
@@ -108,16 +99,16 @@ var notes, on, off;
 
 notes = Array.newClear(128);	// array has one slot per possible MIDI note
 
-on = NoteOnResponder({ |src, chan, num, veloc|
+on = MIDIFunc.noteOn({ |veloc, num, chan, src|
 	notes[num] = Synth(\default, [\freq, num.midicps,
 		\amp, veloc * 0.00315]);
 });
 
-off = NoteOffResponder({ |src, chan, num, veloc|
+off = MIDIFunc.noteOff({ |veloc, num, chan, src|
 	notes[num].release;
 });
 
-q = { on.remove; off.remove; };
+q = { on.free; off.free; };
 )
 
 // when done:
@@ -126,7 +117,7 @@ q.value;
 
 The link::Classes/MIDIIn:: help file contains a more elaborate example.
 
-SuperCollider does not have a built-in class to handle this automatically. However, emphasis::dewdrop_lib::, a third party libraries mentioned link::#third_party_libraries#below::, includes Voicer (to simplify note on-off bookkeeping) and VoicerMIDISocket (to trigger Voicer notes by MIDI). Users interested in this functionality may wish to examine that library.
+SuperCollider does not have a built-in class to handle this automatically. However, emphasis::dewdrop_lib::, a third party library mentioned link::#third_party_libraries#below::, includes Voicer (to simplify note on-off bookkeeping) and VoicerMIDISocket (to trigger Voicer notes by MIDI). Users interested in this functionality may wish to examine that library.
 
 section::Sending MIDI out
 

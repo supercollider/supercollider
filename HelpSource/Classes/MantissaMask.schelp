@@ -40,7 +40,7 @@ code::
 
 // the difference.
 (
-{ 
+{
 	var in;
 	in = SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4);
 	Out.ar(0, in - MantissaMask.ar(in, 3));
@@ -48,7 +48,7 @@ code::
 )
 
 
-// preserve 7 bits of mantissa. 
+// preserve 7 bits of mantissa.
 // This makes the lower 16 bits of the floating point number become zero.
 { MantissaMask.ar(SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4), 7) }.play
 
@@ -57,7 +57,7 @@ code::
 
 // the difference.
 (
-{ 
+{
 	var in;
 	in = SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4);
 	Out.ar(0, in - MantissaMask.ar(in, 7));

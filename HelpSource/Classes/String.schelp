@@ -170,7 +170,7 @@ code::
 
 method::asSecs
 Return a link::Classes/Float:: based on converting a time string in format (dd):hh:mm:ss.s. This is the inverse method to link::Classes/SimpleNumber#-asTimeString::.
-code:: 
+code::
 (45296.asTimeString).asSecs;
 "32.1".asSecs;
 "62.1".asSecs;		// warns
@@ -355,6 +355,11 @@ code::
 ~listing.reverse.as(Array).stutter.join.postln; // Mangle
 ::
 
+method::systemCmd
+Executes a unix command synchronously.
+
+returns:: Error code of the unix command
+
 method::runInTerminal
 Execute the String in a new terminal window. (The string is incorporated into a temporary script file and executed using a shell. "/usr/bash" is the default shell used but you can optionally specify which shell to use as an argument.)
 code::
@@ -432,6 +437,14 @@ Split off the extension from a filename or path and return both in an link::Clas
 code::
 "fish.rtf".splitext;
 "Imaginary/Directory/fish.rtf".splitext;
+::
+
+method::openOS
+Open file, directory or URL via the operating system. On OSX this is implemented via teletype::open::, on Linux via
+teletype::xdg-open:: and on Windows via teletype::start::.
+code::
+Platform.userConfigDir.openOS;
+"http://supercollider.sf.net".openOS;
 ::
 
 subsection::Document Support

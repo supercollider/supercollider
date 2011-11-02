@@ -14,6 +14,7 @@ number of channels
 
 argument:: bufnum
 buffer number
+Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
 
 argument:: rate
 controls the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.
@@ -32,17 +33,17 @@ If a sendID is given, the UGen sends an osc message with this id and the file po
 
 examples::
 code::
-b = Buffer.cueSoundFile(s, "sounds/a11wlk01-44_1.aiff", 0, 1);
+b = Buffer.cueSoundFile(s, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
 
 x = { VDiskIn.ar(1, b, LFNoise2.kr(0.2).range(0.5, 2), 1, loop:1) }.play;
 
-b.close;	
+b.close;
 
 // again
 // note the like named instance method, but different arguments
-b.cueSoundFile("sounds/a11wlk01-44_1.aiff", 0);	
-	
-x.free; b.close; b.free;	
+b.cueSoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0);
+
+x.free; b.close; b.free;
 
 
 // cue and play right away
@@ -55,8 +56,8 @@ SynthDef("help-VDiskin", { arg bufnum = 0;
 x = Synth.basicNew("help-VDiskin");
 m = { arg buf; x.addToHeadMsg(nil, [\bufnum, buf])};
 
-b = Buffer.cueSoundFile(s,"sounds/a11wlk01-44_1.aiff",0,1, completionMessage: m);
-)		
+b = Buffer.cueSoundFile(s,Help.dir +/+ "sounds/a11wlk01-44_1.aiff",0,1, completionMessage: m);
+)
 
 x.free; b.close; b.free;	// clean up
 
@@ -67,37 +68,37 @@ x.free; b.close; b.free;	// clean up
 // the ugen knows nothing of the loop (apply a modulo).
 // if you load another file, you need to free the buffer and re-allocate it (see below)
 
-b = Buffer.cueSoundFile(s, "sounds/a11wlk01-44_1.aiff", 0, 1, bufferSize: 4096);
-c = SoundFile("sounds/a11wlk01-44_1.aiff").info;
+b = Buffer.cueSoundFile(s, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1, bufferSize: 4096);
+c = SoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff").info;
 x = { VDiskIn.ar(1, b, LFNoise2.kr(0.2).range(0.2, 0.9), 1, sendID: 14) }.play;
 
 // register to receive this message
 
 (
-o = OSCresponder(s.addr,'/diskin',{ arg time,responder,msg;
+o = OSCFunc({ arg msg;
 	var sendID = msg[2];
 	var index = msg[3];
 	msg.postln;
 	"id: % pos: % frames (% sec)\n"
 		.postf(sendID, index % c.numFrames, (index % c.numFrames / c.sampleRate));
-}).add
+},'/diskin', s.addr)
 );
 
 b.close; b.free;
 
-b.alloc; b.cueSoundFile("sounds/a11wlk01-44_1.aiff", 0); c = SoundFile("sounds/a11wlk01-44_1.aiff").info;
+b.alloc; b.cueSoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0); c = SoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff").info;
 
-x.free; b.close; b.free; o.remove; // clean up eventually
+x.free; b.close; b.free; o.free; // clean up eventually
 
 
 
-// the same example in OSC Messaging style, see [Node Messaging]
+// the same example in OSC Messaging style, see link::Guides/NodeMessaging::
 
 // allocate a disk i/o buffer
 s.sendMsg("/b_alloc", 0, 65536, 1);
 
 // open an input file for this buffer, leave it open
-s.sendMsg("/b_read", 0, "sounds/a11wlk01-44_1.aiff", 0, 65536, 0, 1);
+s.sendMsg("/b_read", 0, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 65536, 0, 1);
 
 // create a diskin node
 s.sendMsg("/s_new", "help-VDiskin", x = s.nextNodeID, 1, 1);
@@ -105,9 +106,9 @@ s.sendMsg("/s_new", "help-VDiskin", x = s.nextNodeID, 1, 1);
 s.sendMsg("/b_close", 0); // close the file (very important!)
 
 
-// again 
+// again
 // don't need to reallocate and Synth is still reading
-s.sendMsg("/b_read", 0, "sounds/a11wlk01-44_1.aiff", 0, 0, 0, 1);
+s.sendMsg("/b_read", 0, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 0, 0, 1);
 
 s.sendMsg("/n_free", x); // stop reading
 

@@ -27,7 +27,7 @@ argument::windowSize
 the size of each grain window.
 
 argument::envbufnum
-the buffer number containing a singal to use for the grain envelope. -1 uses a built-in 
+the buffer number containing a singal to use for the grain envelope. -1 uses a built-in
 Hanning envelope.
 
 argument::overlaps
@@ -38,7 +38,7 @@ the amount of randomness to the windowing function.  Must be between 0 (no
 randomness) to 1.0 (probably to random actually)
 
 argument::interp
-the interpolation method used for pitchshifting grains. 1 = no interpolation. 2 = linear. 
+the interpolation method used for pitchshifting grains. 1 = no interpolation. 2 = linear.
 		4 = cubic interpolation (more computationally intensive).
 
 Examples::
@@ -47,10 +47,10 @@ s.boot;
 
 (
 var winenv;
-// a custom envelope - not a very good one, but you can hear the difference between this 
+// a custom envelope - not a very good one, but you can hear the difference between this
 // and the default
 winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
-b = Buffer.read(s, "sounds/a11wlk01-44_1.aiff");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01-44_1.aiff");
 z = Buffer.sendCollection(s, winenv.discretize, 1);
 
 SynthDef(\warp, {arg buffer = 0, envbuf = -1;

@@ -67,8 +67,14 @@ extern HashTable<struct BufGen, Malloc> *gBufGenLib;
 extern HashTable<PlugInCmd, Malloc> *gPlugInCmds;
 
 extern "C" {
+
+#ifdef NO_LIBSNDFILE
+struct SF_INFO {};
+#endif
+
 int sndfileFormatInfoFromStrings(struct SF_INFO *info,
 	const char *headerFormatString, const char *sampleFormatString);
+
 bool SendMsgToEngine(World *inWorld, FifoMsg& inMsg);
 bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg);
 }
@@ -326,6 +332,7 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
 		world->hw->mQuitProgram = new SC_Semaphore(0);
+		world->hw->mTerminating = false;
 
 		extern Malloc gMalloc;
 
@@ -1159,7 +1166,14 @@ int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatS
 	info->format = (unsigned int)(headerFormat | sampleFormat);
 	return kSCErr_None;
 }
-#endif
+
+#else // NO_LIBSNDFILE
+
+int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatString, const char *sampleFormatString) {
+	return kSCErr_Failed;
+}
+
+#endif // NO_LIBSNDFILE
 
 #include "scsynthsend.h"
 

@@ -1,6 +1,6 @@
 title:: MIDI
 summary:: about MIDI
-related:: Guides/UsingMIDI
+related:: Guides/UsingMIDI, Classes/MIDIFunc, Classes/MIDIdef
 categories:: MIDI
 
 note::

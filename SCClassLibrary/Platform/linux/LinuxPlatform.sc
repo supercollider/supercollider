@@ -1,7 +1,11 @@
 LinuxPlatform : UnixPlatform
 {
 	name { ^\linux }
-	startupFiles { ^#["~/.sclang.sc"] }
+	startupFiles {
+		var deprecated = #["~/.sclang.sc"];
+		Platform.deprecatedStartupFiles(deprecated);
+		^(deprecated ++ super.startupFiles)
+	}
 	startup {
 
 		helpDir = this.systemAppSupportDir++"/Help";
@@ -13,8 +17,8 @@ LinuxPlatform : UnixPlatform
 		Score.program = Server.program;
 
 		// default jack port hookup
-		"SC_JACK_DEFAULT_INPUTS".setenv("system:capture_1,system:capture_2");
-		"SC_JACK_DEFAULT_OUTPUTS".setenv("system:playback_1,system:playback_2");
+		"SC_JACK_DEFAULT_INPUTS".setenv("system");
+		"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
 
 		// automatically start jack when booting the server
 		// can still be overridden with JACK_NO_START_SERVER
@@ -25,9 +29,12 @@ LinuxPlatform : UnixPlatform
 	}
 	defaultHIDScheme { ^\linux_hid }
 
+	recompile {
+		_Recompile
+	}
+
 	initPlatform {
 		super.initPlatform;
 		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
 	}
-
 }

@@ -26,7 +26,7 @@ code::
 			Pulse.ar(LFPulse.kr(3 * [1, 1.02], 0, 0.4, 100, 230)),
 			SinOsc.ar(SinOsc.kr(4 * [1, 1.03], 0, 200, 300))
 		];
-	
+
 	SelectXFocus.ar(MouseX.kr(0, 1) * a.size, a, MouseY.kr(0, a.size)) * 0.2
 }.play;
 )
@@ -56,7 +56,7 @@ code::
 	a = a.add(
 		SinOsc.ar(LFDNoise0.kr(11, SetResetFF.kr(*Dust.kr([1, 2] * 0.3))).range(0, 700) + 220)
 	);
-	SelectXFocus.ar(mx * n, a, my * n) * 0.2 + OnePole.ar(PinkNoise.ar(0.5 ! 2), 0.4) 
+	SelectXFocus.ar(mx * n, a, my * n) * 0.2 + OnePole.ar(PinkNoise.ar(0.5 ! 2), 0.4)
 	* Line.kr(0, 1, 3);
 }.play;
 )
@@ -71,7 +71,7 @@ code::
 	schnauf = 0.3;
 	mx = MouseX.kr;
 	my = MouseY.kr(0.1, 2, 1);
-	
+
 	blas = [0, 12, 24] +.x [60, 64, 67] ++ [60+36];
 	zieh = [62, 67, 71,   74, 77, 81, 83,   86, 89, 93];
 
@@ -80,7 +80,7 @@ code::
 	amp = EnvGen.kr(Env([1, 0, 1], [schnauf, schnauf]), trig);
 	blas = Select.kr(which, [blas, zieh]);
 	u = SelectXFocus.ar(
-		mx * blas.size,	
+		mx * blas.size,
 		blas.collect {|f|
 			Pulse.ar((Rand(-0.04, 0.09) + f).midicps * 0.5, 0.48 + LFNoise1.kr(0.06, 0.1), 0.2)
 		},

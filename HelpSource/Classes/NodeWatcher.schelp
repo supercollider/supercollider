@@ -4,7 +4,7 @@ related:: Reference/Server-Command-Reference, Classes/Node, Classes/DebugNodeWat
 categories:: Control, Server>Nodes
 
 description::
-Node instances (Synths and Groups) can be registered with the NodeWatcher. 
+Node instances (Synths and Groups) can be registered with the NodeWatcher.
 It watches for server node status messages:
 n_go n_end n_off n_on
 
@@ -42,10 +42,10 @@ Remove the node from the list of nodes. This happens also when a node is freed.
 InstanceMethods::
 
 method::start
-Add the OSCresponderNode to listen to the address.
+Add the OSCFunc to listen to the address.
 
 method::stop
-Remove the OSCresponderNode to stop listen to the address.
+Remove the OSCFunc to stop listen to the address.
 
 Examples::
 

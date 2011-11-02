@@ -1,11 +1,11 @@
 class:: UGen
 summary:: Abstract superclass of all unit generators
 categories:: UGens, Server>Abstractions
-related:: Browse#UGens, Guides/Tour_of_UGens, Tutorials/UGens-and-Synths
+related:: Browse#UGens, Guides/Tour_of_UGens, Guides/UGens-and-Synths
 
 description::
 
-UGens represent calculations with signals. They are the basic building blocks of synth definitions on the server, and are used to generate or process both audio and control signals. The many subclasses of UGen are the client-side representations of unit generators, and are used to specify their parameters when constructing synth definitions (see link::Classes/SynthDef::). 
+UGens represent calculations with signals. They are the basic building blocks of synth definitions on the server, and are used to generate or process both audio and control signals. The many subclasses of UGen are the client-side representations of unit generators, and are used to specify their parameters when constructing synth definitions (see link::Classes/SynthDef::).
 
 subsection:: Interface
 All UGens respond to one or more of the following class methods:
@@ -38,24 +38,32 @@ code::
 { UGen.buildSynthDef.dump; Silent.ar }.play;
 ::
 
-subsection:: Internally used methods
+subsection:: Internally used class methods
 
 method:: multiNew
-code::(rate, ...args):: See multiNewList.
+These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar/*kr:: methods delegate to link::#*multiNewList::.
+argument:: ... args
+The first argument is rate, then the rest of the arguments. code::(rate, ...args)::
 
 method:: multiNewList
-code::([rate, ...args])::
-discussion::
-These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar/*kr:: methods delegate to code::multiNewList::.
+See link::#*multiNew::.
+argument:: args
+An array where the first argument is rate, then the rest of the arguments. code::([rate, ...args])::
 
 method:: new1
 This method returns a single instance of the UGen, not multichannel expanded. It is called inside multiNewList, whenever a new single instance is needed.
 
 method:: methodSelectorForRate
-Returns an appropriate message selector (Symbol like code::\ar, \kr, \ir:: ) for a given rate like code:: \audio, \control, \scalar ::.
+argument:: rate
+A link::Classes/Symbol::, code:: \audio, \control, \scalar ::
+Returns::
+An appropriate message selector ( link::Classes/Symbol:: like code:: \ar, \kr, \ir :: ) for the given rate.
 
 method:: replaceZeroesWithSilence
-Returns a new array, where every zero is replaced by a link::Classes/Silent:: UGen. This is required internally sometimes for UGens like link::Classes/Out::.
+Returns::
+A new link::Classes/Array::, where every zero is replaced by a link::Classes/Silent:: UGen.
+discussion::
+This is required internally sometimes for UGens like link::Classes/Out::.
 
 instancemethods::
 
@@ -98,7 +106,7 @@ code::
 
 // multichannel polling:
 (
-{ 
+{
     var freqs = SinOsc.ar([0.2, 0.3]).range(420, 460);
     freqs.poll(label: [\freq1, \freq2]);
     SinOsc.ar(freqs, 0, 0.2);
@@ -186,7 +194,7 @@ method:: minNyquist
 Wraps the receiver in a code::min:: link::Classes/BinaryOpUGen::, such that the lesser of the receiver's output and the Nyquist frequency is output. This can be useful to prevent aliasing.
 
 method:: linlin
-Wraps the receiver so that a linear input range is mapped to a linear output range. 
+Wraps the receiver so that a linear input range is mapped to a linear output range.
 
 discussion::
 The clip argument can be one of the four:
@@ -203,7 +211,7 @@ code::
 // modulate some values
 (
 { Line.ar(-1, 5, 0.1).lincurve(SinOsc.ar(100), SinOsc.ar(130) + 3, -1, 1, clip: nil) }
-	.plot(0.1, minval: -15, maxval: 5)
+    .plot(0.1, minval: -15, maxval: 5)
 )
 ::
 
@@ -242,7 +250,7 @@ outMin and outMax may be zero and of the different sign. For clip argument, see 
 code::
 { Line.ar(-1, 5, 0.1).lincurve(0, 3, -1, 1, curve: -4) }.plot(0.1);
 
-// modulate the curve. Unlike with numbers and CurveSpec, the curve absolute value 
+// modulate the curve. Unlike with numbers and CurveSpec, the curve absolute value
 // should not be much smaller than 0.5.
 { SinOsc.ar(100).lincurve(-1, 1, -1, 1, XLine.kr(-3, -100, 0.1)) * 0.1 }.plot(0.1);
 ::
@@ -297,7 +305,7 @@ method:: synthDef
 The SynthDef which contains the UGen.
 
 method:: inputs
-The array of inputs to the UGen. 
+The array of inputs to the UGen.
 
 method:: rate
 The output rate of the UGen which is one of the link::Classes/Symbol::s code::\audio::, or code::\control::.
@@ -305,7 +313,7 @@ The output rate of the UGen which is one of the link::Classes/Symbol::s code::\a
 method:: signalRange
 Returns:: A symbol indicating the signal range of the receiver. Either code::\bipolar:: or code::\unipolar::.
 
-method:: numChannels 
+method:: numChannels
 Returns:: The number of output channels.
 discussion::
 For a UGen, this will always be 1, but link::Classes/Array:: also implements this method, so multichannel expansion is supported. See link::Guides/Multichannel-Expansion::.
@@ -326,7 +334,7 @@ This is for the most part only used in UGen class definitions in order to allow 
 
 method:: isValidUGenInput
 Returns:: true
-	
+
 method:: asUGenInput
 Returns:: the receiver
 discussion::
@@ -345,10 +353,10 @@ code::
 ::
 
 
-subsection:: Internally used methods
+subsection:: Internally used instance methods
 
 method:: methodSelectorForRate
-See class method with same name.
+See link::#*methodSelectorForRate::
 
 method:: init
 By default, this method stores the inputs (e.g. the arguments to code::*ar:: and code::*kr::) in the UGen.

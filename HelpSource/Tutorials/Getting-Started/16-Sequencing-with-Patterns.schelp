@@ -1,0 +1,226 @@
+title:: 16. Sequencing with Patterns
+summary:: Getting Started With SuperCollider
+categories:: Tutorials>Getting-Started
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
+
+The previous section demonstrated how to use data routines to generate sequences of synthesis parameters. However, writing a routine with explicit yields is not a very convenient syntax. Since this is an essential part of creating computer music, we really need an easier way.
+
+Patterns greatly simplify the use of data streams. A pattern is essentially a factory for a stream. The pattern objects includes the data you want to come out of the stream, and the type of pattern determines how the data will be streamed.
+
+For example, we used this routine to output MIDI note numbers to play a couple of phrases from 'Over the Rainbow.'
+
+code::
+r = Routine({
+	[60, 72, 71, 67, 69, 71, 72, 60, 69, 67].do({ |midi| midi.yield });
+});
+
+while { (m = r.next).notNil } { m.postln };
+::
+
+With patterns, we can express the idea of a stream returning the same values, but more clearly and concisely. Because we don't have to write the yield explicitly, there is nothing in the pattern to distract attention from the data (which are the real concern in composition).
+
+link::Classes/Pseq:: (Pattern-sequence) means simply to spit out the values in the array one by one, in order, as many times as the second argument (here, only once).
+
+code::
+p = Pseq([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1);
+r = p.asStream;
+while { (m = r.next).notNil } { m.postln };
+::
+
+Note that the Pseq is not streamable by itself, but it creates a stream (Routine) when you call asStream on it. This routine can then be used exactly like to any other routine -- the while loop used to read out the stream values is exactly the same for both, even though they are written differently.
+
+Thus the 'Over the Rainbow' example could be rewritten, with less clutter:
+
+code::
+(
+var midi, dur;
+midi = Pseq([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1).asStream;
+dur = Pseq([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1).asStream;
+
+SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
+	var sig;
+	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: 2);
+	Out.ar(0, sig ! 2)
+}).send(s);
+
+r = Task({
+	var delta;
+	while {
+		delta = dur.next;
+		delta.notNil
+	} {
+		Synth(\smooth, [freq: midi.next.midicps, sustain: delta]);
+		delta.yield;
+	}
+}).play(quant: TempoClock.default.beats + 1.0);
+)
+::
+
+section::What else can patterns do?
+
+The SuperCollider pattern library is large (over 120 classes, not including extension libraries), obviously beyond the scope of a tutorial to cover in depth. But some patterns you'll come back to again and again.
+
+Many patterns take lists of values and return them in some order.
+
+definitionList::
+## Pseq(list, repeats, offset) || return the list's values in order
+## Pshuf(list, repeats) || scramble the list into random order
+## Prand(list, repeats) || choose from the list's values randomly
+## Pxrand(list, repeats) || choose randomly, but never return the same list item twice in a row
+## Pwrand(list, weights, repeats) || like Prand, but chooses values according to a list of probabilities/weights
+::
+
+Other patterns generate values according to various parameters. In addition to these basic patterns, there is a whole set of random number generators that produce specific distributions, and also chaotic functions.
+
+definitionList::
+## Pseries(start, step, length) || arithmetic series, e.g., 1, 2, 3, 4, 5
+## Pgeom(start, grow, length) || geometric series, e.g., 1, 2, 4, 8, 16
+## Pwhite(lo, hi, length) || random number generator, uses rrand(lo, hi) -- equal distribution
+## Pexprand(lo, hi, length) || random number generator, uses exprand(lo, hi) -- exponential distribution
+::
+
+Other patterns modify the output of value patterns. These are called FilterPatterns.
+
+definitionList::
+## Pn(pattern, repeats) || repeat the pattern as many times as repeats indicates
+## Pstutter(n, pattern) || repeat individual values from a pattern emphasis::n:: times. emphasis::n:: may be a numeric pattern itself.
+::
+
+You can use patterns inside of other patterns. Here, we generate random numbers over a gradually increasing range. The upper bound on the random number generator is a stream that starts at 0.01, then proceeds to 0.02, 0.03 and so on, as the plot shows clearly.
+
+code::
+p = Pwhite(0.0, Pseries(0.01, 0.01, inf), 100).asStream;
+	// .all pulls from the stream until it returns nil
+	// obviously you don't want to do this for an 'inf' length stream!
+p.all.plot;
+::
+
+Or, for another example, if you want to order a set of numbers randomly so that all numbers come out before a new order is chosen, use Pn to repeat a Pshuf.
+
+code::
+p = Pn(Pshuf([1, 2, 3, 4, 5], 1), inf).asStream;
+p.nextN(15);	// get 15 values from the pattern's stream
+::
+
+This is just a taste, meant to illustrate the kinds of flexibility you can get with patterns. As with any rich and adaptable structure, the best way is to start with simple cases and gradually extend into more complicated setups.
+
+section::Playing notes with a pattern: Pbind
+
+Not only can patterns produce data for notes, but they can also play the notes themselves. 'Over the Rainbow' again.
+
+code::
+(
+SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
+	var sig;
+	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: 2);
+	Out.ar(0, sig ! 2)
+}).add;
+)
+
+(
+p = Pbind(
+		// the name of the SynthDef to use for each note
+	\instrument, \smooth,
+		// MIDI note numbers -- converted automatically to Hz
+	\midinote, Pseq([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1),
+		// rhythmic values
+	\dur, Pseq([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1)
+).play;
+)
+::
+
+The first thing to notice is how short, concise and clean the syntax is. Nothing is extra; it focuses all your attention on what is supposed to play and minimizes distractions from program logic.
+
+The link::Overviews/Streams:: documentation explains how all of this works in detail. The high-level overview goes like this:
+
+- The Pbind pattern generates Event objects, which contain names and values describing how the note is supposed to sound.
+
+- It does this by reading through the 'name, pattern' pairs, getting values from each pattern stream in turn and adding the values to the result Event.
+
+- Then the event is played. It interprets the values according to a set of defaults and rules encoded within the event prototype and performs an action in response. The default action is to play a new synth on the server. You can choose from several other actions defined in the default event prototype, which are documented in the Streams series of help files.
+
+- To play the synth, the event needs to know which values to pass as arguments to the server. SuperCollider can store information about a synthdef into a library of synthdef descriptions using the strong::add:: method.
+
+- The delta value in the event tells SuperCollider how long to wait until playing the next event.
+
+An introductory tutorial cannot cover all the possibilities. Learning a set of core pattern classes is important; the link::Tutorials/A-Practical-Guide/PG_01_Introduction##Practical Guide to Patterns:: help file series is a more comprehensive introduction. Pattern manipulations, and ways to combine or nest patterns, open up the field to nearly every compositional need.
+
+For example, we can generate a rhythmic (but not necessarily metric) bassline by choosing randomly from a set of Pbind sequences. (Some of these will use Pmono, which is a variant of Pbind designed to play monophonic synth lines.) While this is a bigger block of code, its structure is fairly simple and it brings together several concepts introduced in the sequencing tutorials. Note that the quant argument to play is used to keep a couple of distinct sequences together on the beat.
+
+Don't be intimidated by the bassline pattern. At a higher level, it reduces to strong::Pxrand([a, b, c, d], inf)::, which simply chooses items randomly without repeating any of them twice in a row. It happens that each item is an event pattern that plays a series of notes, but this doesn't matter to Pxrand. It just chooses an item, plays it through to the end, and then chooses the next, and so forth. Viewed this way, the pattern is an elegant expression of the idea of selecting phrases. The code representation is straightforward to relate to a musical conception.
+
+code::
+(
+SynthDef(\bass, { |freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 1100, width = 0.15,
+		detune = 1.005, preamp = 4|
+	var	sig,
+		env = Env.adsr(0.01, 0.3, 0.4, 0.1);
+	freq = Lag.kr(freq, slideTime);
+	sig = Mix(VarSaw.ar([freq, freq * detune], 0, width, preamp)).distort * amp
+		* EnvGen.kr(env, gate, doneAction: 2);
+	sig = LPF.ar(sig, ffreq);
+	Out.ar(0, sig ! 2)
+}).add;
+
+TempoClock.default.tempo = 132/60;
+
+p = Pxrand([
+	Pbind(
+		\instrument, \bass,
+		\midinote, 36,
+		\dur, Pseq([0.75, 0.25, 0.25, 0.25, 0.5], 1),
+		\legato, Pseq([0.9, 0.3, 0.3, 0.3, 0.3], 1),
+		\amp, 0.5, \detune, 1.005
+	),
+	Pmono(\bass,
+		\midinote, Pseq([36, 48, 36], 1),
+		\dur, Pseq([0.25, 0.25, 0.5], 1),
+		\amp, 0.5, \detune, 1.005
+	),
+	Pmono(\bass,
+		\midinote, Pseq([36, 42, 41, 33], 1),
+		\dur, Pseq([0.25, 0.25, 0.25, 0.75], 1),
+		\amp, 0.5, \detune, 1.005
+	),
+	Pmono(\bass,
+		\midinote, Pseq([36, 39, 36, 42], 1),
+		\dur, Pseq([0.25, 0.5, 0.25, 0.5], 1),
+		\amp, 0.5, \detune, 1.005
+	)
+], inf).play(quant: 1);
+)
+
+// totally cheesy, but who could resist?
+(
+SynthDef(\kik, { |preamp = 1, amp = 1|
+	var	freq = EnvGen.kr(Env([400, 66], [0.08], -3)),
+		sig = SinOsc.ar(freq, 0.5pi, preamp).distort * amp
+			* EnvGen.kr(Env([0, 1, 0.8, 0], [0.01, 0.1, 0.2]), doneAction: 2);
+	Out.ar(0, sig ! 2);
+}).add;
+
+// before you play:
+// what do you anticipate '\delta, 1' will do?
+k = Pbind(\instrument, \kik, \delta, 1, \preamp, 4.5, \amp, 0.32).play(quant: 1);
+)
+
+p.stop;
+k.stop;
+::
+
+section::Further reading
+
+link::Overviews/Streams::, link::Tutorials/Streams-Patterns-Events1##Streams-Patterns-Events::, link::Tutorials/A-Practical-Guide/PG_01_Introduction##Practical Guide to Patterns::
+
+section::Suggested exercises
+
+list::
+## Choose a familiar tune and write a Pbind for it, using any synthdef you like.
+## Add as many phrases as you wish to the bassline sequence in the previous example.
+::
+
+____________________
+
+This document is part of the tutorial strong::Getting Started With SuperCollider::.
+
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

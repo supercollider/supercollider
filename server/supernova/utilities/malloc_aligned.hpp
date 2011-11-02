@@ -30,9 +30,13 @@
 #include <tbb/cache_aligned_allocator.h>
 #endif /* HAVE_TBB */
 
+#ifdef __GNUC__
+#define MALLOC_ATTRIBUTE __attribute__ ((malloc))
+#else
+#define MALLOC_ATTRIBUTE /* */
+#endif
 
-namespace nova
-{
+namespace nova {
 
 #if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
 /* we have posix_memalign */
@@ -44,7 +48,7 @@ namespace nova
  */
 const int malloc_memory_alignment = 64;
 
-inline void* malloc_aligned(std::size_t nbytes)
+inline void* MALLOC_ATTRIBUTE malloc_aligned(std::size_t nbytes)
 {
     void * ret;
     int status = posix_memalign(&ret, malloc_memory_alignment, nbytes);
@@ -64,7 +68,7 @@ inline void free_aligned(void *ptr)
 const int malloc_memory_alignment = 64;
 
 /* apple's malloc implementation returns 16-byte aligned chunks */
-inline void* malloc_aligned(std::size_t nbytes)
+inline void* MALLOC_ATTRIBUTE malloc_aligned(std::size_t nbytes)
 {
     return malloc(nbytes);
 }
@@ -79,7 +83,7 @@ inline void free_aligned(void *ptr)
 
 const int malloc_memory_alignment = 64;
 
-inline void* malloc_aligned(std::size_t nbytes)
+inline void* MALLOC_ATTRIBUTE malloc_aligned(std::size_t nbytes)
 {
     return _mm_malloc(nbytes, malloc_memory_alignment);
 }
@@ -91,7 +95,7 @@ inline void free_aligned(void *ptr)
 
 #elif defined(HAVE_TBB)
 
-inline void* malloc_aligned(std::size_t nbytes)
+inline void* MALLOC_ATTRIBUTE malloc_aligned(std::size_t nbytes)
 {
     tbb::cache_aligned_allocator<void*> ca_alloc;
     return static_cast<void*>(ca_alloc.allocate(nbytes));
@@ -108,7 +112,7 @@ inline void free_aligned(void *ptr)
 /* on other systems, we use the aligned memory allocation taken
  * from thomas grill's implementation for pd */
 #define VECTORALIGNMENT 128
-inline void* malloc_aligned(std::size_t nbytes)
+inline void* MALLOC_ATTRIBUTE malloc_aligned(std::size_t nbytes)
 {
     void* vec = malloc(nbytes+ (VECTORALIGNMENT/8-1) + sizeof(void *));
 
@@ -176,6 +180,13 @@ public:
     {
         typedef aligned_allocator<U> other;
     };
+
+    aligned_allocator(void)
+    {}
+
+    template <class U>
+    aligned_allocator(aligned_allocator<U> const & rhs)
+    {}
 
     pointer address(reference x) const
     {
@@ -291,5 +302,7 @@ private:
 };
 
 } /* namespace nova */
+
+#undef MALLOC_ATTRIBUTE
 
 #endif /* UTILITIES_MALLOC_ALIGNED_HPP */

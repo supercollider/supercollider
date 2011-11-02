@@ -29,7 +29,7 @@ x = Pn(a, inf).asStream;
 
 
 //Plazy used to produce a sequence of pitches:
- 
+
 (
 SynthDef(\help_sinegrain,
 	{ arg out=0, freq=440, sustain=0.05;
@@ -60,7 +60,7 @@ Routine({
 // using event streams
 
 (
-a = Plazy({ 
+a = Plazy({
 	var x, y;
 	x = Array.series(rrand(2, 4), [1, 5].choose, 1);
 	x.put(x.size.rand, 8+0.1.rand2);

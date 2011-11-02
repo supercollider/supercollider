@@ -30,6 +30,32 @@
 
 static QcWidgetFactory<QcGraph> factory;
 
+void QcGraphModel::append( QcGraphElement * e ) {
+  if( _elems.count() ) {
+    QcGraphElement *prev = _elems.last();
+    prev->_next = e;
+    e->_prev = prev;
+  }
+  _elems.append(e);
+  Q_EMIT( appended(e) );
+}
+
+void QcGraphModel::removeAt( int i ) {
+  QcGraphElement *e = _elems[i];
+  int ci = _conns.count();
+  while( ci-- ) {
+    Connection c = _conns[ci];
+    if( c.a == e || c.b == e ) _conns.removeAt(ci);
+  }
+  if( e->_prev ) e->_prev->_next = e->_next;
+  if( e->_next ) e->_next->_prev = e->_prev;
+  _elems.removeAt(i);
+  Q_EMIT( removed(e) );
+  delete e;
+}
+
+
+
 QcGraph::QcGraph() :
   _thumbSize( QSize( 8, 8 ) ),
   _strokeColor( QColor(0,0,0) ),
@@ -39,12 +65,15 @@ QcGraph::QcGraph() :
   _drawRects( true ),
   _editable( true ),
   _step( 0.f ),
+  _selectionForm( ElasticSelection ),
+  _xOrder( NoOrder ),
   _gridOn( false ),
-  selIndex( -1 ),
-  dragIndex( -1 )
+  _curIndex( -1 )
 {
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+
+  connect( &_model, SIGNAL(removed(QcGraphElement*)), this, SLOT(onElementRemoved(QcGraphElement*)) );
 }
 
 VariantList QcGraph::value() const
@@ -67,15 +96,15 @@ VariantList QcGraph::value() const
 
 float QcGraph::currentX() const
 {
-  if( selIndex < 0 ) return 0.f;
-  QcGraphElement *e = _model.elementAt(selIndex);
+  if( _curIndex < 0 ) return 0.f;
+  QcGraphElement *e = _model.elementAt(_curIndex);
   return e->value.x();
 }
 
 float QcGraph::currentY() const
 {
-  if( selIndex < 0 ) return 0.f;
-  QcGraphElement *e = _model.elementAt(selIndex);
+  if( _curIndex < 0 ) return 0.f;
+  QcGraphElement *e = _model.elementAt(_curIndex);
   return e->value.y();
 }
 
@@ -111,7 +140,9 @@ void QcGraph::setValue( const VariantList &list )
     }
   }
 
-  selIndex = -1;
+  if( newc ) ensureOrder();
+
+  _curIndex = -1;
 
   update();
 }
@@ -141,12 +172,13 @@ void QcGraph::setCurves( const VariantList & curves )
       _model.elementAt(i)->setCurveType( var );
     }
   }
+  update();
 }
 
 void QcGraph::setStringAt( int i, const QString & str )
 {
   int c = _model.elementCount();
-  if( i > 0 && i < c ) {
+  if( i >= 0 && i < c ) {
     QcGraphElement *e = _model.elementAt(i);
     e->text = str;
     update();
@@ -167,23 +199,53 @@ void QcGraph::connectElements( int src, VariantList targets )
   update();
 }
 
+void QcGraph::setIndex( int i ) {
+  if( i >= -1 && i < _model.elementCount() ) {
+    _curIndex = i;
+    update();
+  }
+}
+
+void QcGraph::select( int i, bool exclusive ) {
+  if( i >= 0 && i < _model.elementCount() ) {
+    if( exclusive ) setAllDeselected();
+    setIndexSelected( i, true );
+    update();
+  }
+}
+
+void QcGraph::deselect( int i ) {
+  if( i >= 0 && i < _model.elementCount() ) {
+    setIndexSelected( i, false );
+    update();
+  }
+}
+
+void QcGraph::deselectAll() {
+  setAllDeselected();
+}
+
 void QcGraph::setCurrentX( float f )
 {
-  if( selIndex < 0 ) return;
-  QcGraphElement *e = _model.elementAt(selIndex);
+  if( _curIndex < 0 ) return;
+  QcGraphElement *e = _model.elementAt(_curIndex);
   QPointF val = e->value;
   val.setX( f );
-  setValue( e, val );
+  if( _xOrder != NoOrder ) orderRestrictValue(e,val,true);
+  else restrictValue(val);
+  e->value = val;
   update();
 }
 
 void QcGraph::setCurrentY( float f )
 {
-  if( selIndex < 0 ) return;
-  QcGraphElement *e = _model.elementAt(selIndex);
+  if( _curIndex < 0 ) return;
+  QcGraphElement *e = _model.elementAt(_curIndex);
   QPointF val = e->value;
   val.setY( f );
-  setValue( e, val );
+  if( _xOrder != NoOrder ) orderRestrictValue(e,val,true);
+  else restrictValue(val);
+  e->value = val;
   update();
 }
 
@@ -200,7 +262,7 @@ void QcGraph::setFillColor( const QColor & color )
 void QcGraph::setFillColorAt( int i, const QColor & color )
 {
   int c = _model.elementCount();
-  if( i > 0 && i < c ) {
+  if( i >= 0 && i < c ) {
     QcGraphElement *e = _model.elementAt(i);
     e->fillColor = color;
     update();
@@ -210,37 +272,229 @@ void QcGraph::setFillColorAt( int i, const QColor & color )
 void QcGraph::setEditableAt( int i, bool b )
 {
   int c = _model.elementCount();
-  if( i > 0 && i < c ) {
+  if( i >= 0 && i < c ) {
     QcGraphElement *e = _model.elementAt(i);
     e->editable = b;
   }
 }
 
-void QcGraph::setStep( float f )
+void QcGraph::setStep( double step )
 {
-  _step = qMax( 0.f, f );
+  _step = qMax( 0.0, step );
 
-  QList<QcGraphElement*> elems = _model.elements();
-  Q_FOREACH( QcGraphElement *e, elems ) {
-    setValue( e, e->value );
+  if( _model.elementCount() ) {
+    ensureOrder();
+    update();
+  };
+}
+
+void QcGraph::setHorizontalOrder( int i ) {
+  _xOrder = (Order) i;
+  if( _xOrder != NoOrder ) {
+    ensureOrder();
+    update();
+  }
+}
+
+void QcGraph::onElementRemoved( QcGraphElement *e )
+{
+  _selection.elems.removeAll( SelectedElement(e) );
+}
+
+void QcGraph::setAllDeselected()
+{
+  int c = _model.elementCount();
+  for( int i = 0; i < c; ++i ) {
+    QcGraphElement *e = _model.elementAt(i);
+    e->selected = false;
+  }
+  _selection.elems.clear();
+}
+
+void QcGraph::setIndexSelected( int index, bool select )
+{
+  Q_ASSERT( index >= 0 && index < _model.elementCount() );
+
+  QcGraphElement *e = _model.elementAt( index );
+  if( e->selected == select ) return;
+
+  if( select ) {
+    e->selected = true;
+    int c = _model.elementCount();
+    int si = 0;
+    int i = 0;
+    while( i < index ) {
+      if( _model.elementAt(i)->selected ) ++si;
+      ++i;
+    }
+    _selection.elems.insert( si, SelectedElement(e) );
+  }
+  else {
+    e->selected = false;
+    _selection.elems.removeAll( SelectedElement(e) );
   }
 
-  if( elems.count() ) update();
+  update();
+}
+
+inline static void qc_graph_round( double &val, double &step, bool &grid )
+{
+  if( val < 0.0 ) {
+    val = 0.0;
+  }
+  else if ( grid ) {
+    double ratio = ( val + (step*0.5) > 1.0 ) ? floor(1.0/step) : round(val/step);
+    val = ratio * step;
+  }
+  else if ( val > 1.0 ) {
+    val = 1.0;
+  }
+}
+
+inline void QcGraph::restrictValue( QPointF & val )
+{
+  double x = val.x();
+  double y = val.y();
+  bool grid = _step > 0.0;
+  qc_graph_round(x,_step,grid);
+  qc_graph_round(y,_step,grid);
+  val.setX(x);
+  val.setY(y);
+}
+
+void QcGraph::orderRestrictValue( QcGraphElement *e, QPointF & val, bool selected )
+{
+  restrictValue(val);
+
+  double x0 = e->value.x();
+  double x = val.x();
+
+  if( x == x0 ) {
+    return;
+  }
+  else if( x < x0 ) {
+    // new x is smaller, check if not too small;
+    QcGraphElement *prev = e->prev();
+    if( prev && (selected || !prev->selected) && x < prev->value.x() )
+      val.setX( prev->value.x() );
+  }
+  else {
+    // new x is larger, check if not too large;
+    QcGraphElement *next = e->next();
+    if( next && (selected || !next->selected) && x > next->value.x() )
+      val.setX( next->value.x() );
+  }
 }
 
 inline void QcGraph::setValue( QcGraphElement * e, const QPointF& pt )
 {
-  float x = pt.x();
-  float y = pt.y();
+  QPointF val(pt);
+  restrictValue( val );
+  e->value = val;
+}
 
-  if( _step > 0.f ) {
-    x = round( x / _step ) * _step;
-    y = round( y / _step ) * _step;
+void QcGraph::ensureOrder()
+{
+  int c = _model.elementCount();
+  double x_min = 0.0;
+  for( int i = 0; i < c; ++i ) {
+    QcGraphElement *e = _model.elementAt(i);
+    QPointF val = e->value;
+    if( _xOrder != NoOrder && val.x() < x_min ) val.setX(x_min);
+    setValue( e, val );
+    x_min = e->value.x();
+  }
+}
+
+void QcGraph::moveFree( QcGraphElement *e, const QPointF & val )
+{
+  if( !e->editable ) return;
+  setValue( e, val );
+}
+
+void QcGraph::moveOrderRestricted( QcGraphElement *e, const QPointF & val )
+{
+  if( !e->editable ) return;
+  QPointF v(val);
+  orderRestrictValue( e, v, true );
+  e->value = v;
+}
+
+void QcGraph::moveSelected( const QPointF & dif, SelectionForm form, bool cached )
+{
+  int c = _selection.count();
+
+  switch( form ) {
+
+  case ElasticSelection: {
+
+    switch( _xOrder ) {
+
+    case NoOrder:
+
+      for( int i = 0; i < c; ++i ) {
+        SelectedElement & se = _selection.elems[i];
+        moveFree( se.elem, (cached ? se.moveOrigin : se.elem->value) + dif );
+      }
+
+      break;
+
+    case RigidOrder:
+
+      if( dif.x() <= 0 ) {
+        for( int i = 0; i < c; ++i ) {
+          SelectedElement & se = _selection.elems[i];
+          moveOrderRestricted( se.elem, (cached ? se.moveOrigin : se.elem->value) + dif );
+        }
+      }
+      else {
+        for( int i = _selection.count() - 1; i >= 0; --i ) {
+          SelectedElement & se = _selection.elems[i];
+          moveOrderRestricted( se.elem, (cached ? se.moveOrigin : se.elem->value) + dif );
+        }
+      }
+
+      break;
+    }
+
+    break;
   }
 
-  x = qMax( 0.f, qMin( 1.f, x ) );
-  y = qMax( 0.f, qMin( 1.f, y ) );
-  e->value = QPointF( x, y );
+  case RigidSelection: {
+
+    // reduce dif until acceptable by all nodes
+    QPointF d(dif);
+    for( int i = 0; i < c; ++i ) {
+      SelectedElement & se = _selection.elems[i];
+      // if any node in selection is not editable, abort, since
+      // we want to keep the selection form!
+      if( !se.elem->editable ) return;
+      QPointF val0 = (cached ? se.moveOrigin : se.elem->value);
+      QPointF val = val0 + d;
+      if( _xOrder == NoOrder ) {
+        restrictValue( val );
+      }
+      else {
+        orderRestrictValue( se.elem, val, false );
+      }
+      d = val - val0;
+    }
+
+    // if no dif left, do not bother moving
+    if( d.isNull() ) return;
+
+    // move all with the new dif
+    for( int i = 0; i < c; ++i ) {
+      SelectedElement & se = _selection.elems[i];
+      if( !se.elem->editable ) continue;
+      se.elem->value = (cached ? se.moveOrigin : se.elem->value) + d;
+    }
+
+    break;
+  }
+
+
+  }
 }
 
 QPointF QcGraph::pos( const QPointF & value )
@@ -281,6 +535,112 @@ QPointF QcGraph::value( const QPointF & pos )
     y = 0.f;
 
   return QPointF( x, y );
+}
+
+void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *e2 )
+{
+  QcGraphElement::CurveType type = e1->curveType;
+
+  const QPointF &pt1 = e1->value;
+  const QPointF &pt2 = e2->value;
+
+  // coefficients for control points of cubic curve
+  // approximating first quarter of sinusoid
+  // technically: y = sin(pi*x/2) over x = [0,1]
+  static const float ax = 1.0/3.0;
+  static const float ay = 0.52359877f; // pi/6
+  static const float bx = 2.0/3.0;
+  static const float by = 1.0;
+
+  switch( type ) {
+  case QcGraphElement::Step:
+    path.moveTo( pt1 );
+    path.lineTo( pt1.x(), pt2.y() );
+    path.lineTo( pt2 );
+    break;
+  case QcGraphElement::Linear:
+    path.moveTo( pt1 );
+    path.lineTo( pt2 );
+    break;
+  case QcGraphElement::Sine: {
+    // half of difference between end points
+    float dx = (pt2.x() - pt1.x()) * 0.5f;
+    float dy = (pt2.y() - pt1.y()) * 0.5f;
+
+    // middle point
+    QPointF mid = pt1 + QPointF( dx, dy );
+
+    path.moveTo( pt1 );
+    path.cubicTo( pt1 + QPointF( dx*(1-bx), dy*(1-by) ), pt1 + QPointF( dx*(1-ax), dy*(1-ay) ), mid );
+    path.cubicTo( mid + QPointF( dx*ax, dy*ay ), mid + QPointF( dx*bx, dy*by ), pt2 );
+
+    break;
+  }
+  case QcGraphElement::Welch: {
+    // difference between points
+    float dx = (pt2.x() - pt1.x());
+    float dy = (pt2.y() - pt1.y());
+
+    path.moveTo( pt1 );
+    if( dy > 0 )
+      path.cubicTo( pt1 + QPointF( dx*ax, dy*ay ), pt1 + QPointF( dx*bx, dy*by ), pt2 );
+    else
+      path.cubicTo( pt1 + QPointF( dx*(1-bx), dy*(1-by) ), pt1 + QPointF( dx*(1-ax), dy*(1-ay) ), pt2 );
+
+    break;
+  }
+  case QcGraphElement::Exponential: {
+
+    // FIXME: find a Bezier curve approximation
+
+    path.moveTo( pt1 );
+
+    float dx = (pt2.x() - pt1.x());
+    float dy = (pt2.y() - pt1.y());
+
+    // prevent NaN, optimize
+    if( pt1.y() <= 0.f || pt2.y() <= 0.f ) {
+      path.lineTo( dy < 0 ? QPointF(pt1.x(),pt2.y()) : QPointF(pt2.x(), pt1.y()) );
+      path.lineTo( pt2 );
+    }
+    else {
+      const float n = 100.f;
+      const float yratio = pt2.y() / pt1.y();
+      for( float ph=1/n; ph<=(1-1/n); ph+=1/n ) {
+        qreal y = pt1.y() * pow( yratio, ph );
+        path.lineTo( pt1.x() + (dx * ph), y );
+      }
+      path.lineTo( pt2 );
+    }
+
+    break;
+  }
+  case QcGraphElement::Curvature:
+
+    // FIXME: find a Bezier curve approximation
+
+    path.moveTo( pt1 );
+
+    // prevent NaN
+    double curve = qBound( -100.f, e1->curvature, 100.f );
+
+    if( abs( curve ) < 0.0001f ) {
+      path.lineTo( pt2 );
+    }
+    else {
+      float dx = (pt2.x() - pt1.x());
+      float dy = (pt2.y() - pt1.y());
+      double denom = 1.0 - exp( curve );
+      const float n = 100.f;
+      for( float ph=1/n; ph<=(1-1/n); ph+=1/n ) {
+        double numer = 1.0 - exp( ph * curve );
+        qreal y = pt1.y() + dy * (numer / denom);
+        path.lineTo( pt1.x() + (dx * ph), y );
+      }
+      path.lineTo( pt2 );
+    }
+    break;
+  }
 }
 
 void QcGraph::paintEvent( QPaintEvent * )
@@ -342,27 +702,29 @@ void QcGraph::paintEvent( QPaintEvent * )
     if( conns.count() ) {
 
       Q_FOREACH( QcGraphModel::Connection c, conns ) {
-        lines.moveTo( pos( c.a->value ) );
-        lines.lineTo( pos( c.b->value ) );
+        addCurve( lines, c.a, c.b );
       }
 
     }
     else {
 
-      QPointF pt = pos( elems[0]->value );
-      lines.moveTo( pt );
+      QcGraphElement *e1 = elems[0];
       int i;
-
       for( i = 1; i < c; ++i ) {
-        pt = pos( elems[i]->value );
-        lines.lineTo( pt );
+        QcGraphElement *e2 = elems[i];
+        addCurve( lines, e1, e2 );
+        e1 = e2;
       }
 
     }
 
+    p.save();
+    p.setRenderHint( QPainter::Antialiasing, true );
     p.setBrush( Qt::NoBrush );
+    p.translate( contentsRect.x(), contentsRect.y() + contentsRect.height() );
+    p.scale( contentsRect.width(), -contentsRect.height() );
     p.drawPath( lines );
-
+    p.restore();
   }
 
   // draw rects and strings
@@ -376,10 +738,7 @@ void QcGraph::paintEvent( QPaintEvent * )
 
       QcGraphElement *e = elems[i];
 
-      if( i == selIndex )
-        p.setBrush( _selColor );
-      else
-        p.setBrush( e->fillColor );
+      p.setBrush( e->selected ? _selColor : e->fillColor );
 
       pt = pos( e->value );
 
@@ -413,71 +772,118 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
     QPointF pt = pos( e->value );
     r.moveCenter( pt );
     if( r.contains( mpos ) ) {
-      dragIndex = selIndex = i;
-      dragDelta = mpos - pt;
+      _curIndex = i;
+
+      if( ev->modifiers() & Qt::ShiftModifier ) {
+        setIndexSelected( i, !e->selected );
+      }
+      else {
+        if( !e->selected ) {
+          setAllDeselected();
+          setIndexSelected( i, true );
+        }
+      }
+
+      _selection.cached = false;
+      if( e->selected ) {
+          // if the element that was hit ended up selected
+          // prepare for moving
+        _selection.shallMove = true;
+        _selection.moveOrigin = value(mpos);
+      }
+      else {
+        _selection.shallMove = false;
+      }
+
       update();
       return;
     }
   }
 
-  dragIndex = -1;
+  _selection.shallMove = false;
+
+  if( !(ev->modifiers() & Qt::ShiftModifier) ) {
+    _curIndex = 0;
+    setAllDeselected();
+  }
+
   update();
 }
 
 void QcGraph::mouseMoveEvent( QMouseEvent *ev )
 {
-  if( !_editable ) return;
-  if( dragIndex < 0 || dragIndex >= _model.elementCount() ) return;
+  if( !_editable || !_selection.shallMove || !_selection.size() ) return;
 
-  QcGraphElement *e = _model.elementAt(dragIndex);
-  if( !e->editable ) return;
+  if( !_selection.cached ) {
+    int c = _selection.count();
+    for( int i = 0; i < c; ++i ) {
+      SelectedElement &se = _selection.elems[i];
+      se.moveOrigin = se.elem->value;
+    }
+    _selection.cached = true;
+  }
 
-  QPointF mpos = ev->pos() - dragDelta;
-  setValue( e, value( mpos ) );
+  QPointF dValue( value( ev->pos() ) );
+  dValue = dValue - _selection.moveOrigin;
+
+  moveSelected( dValue, _selectionForm, true );
+
   update();
   doAction( ev->modifiers() );
 }
 
 void QcGraph::keyPressEvent( QKeyEvent *event )
 {
-  if( selIndex < 0 ) return;
+  if( _curIndex < 0 ) return;
 
-  QcGraphElement *e = _model.elementAt(selIndex);
-  bool edit = _editable && e->editable;
-  QPointF val = e->value;
+  if( event->modifiers() & Qt::AltModifier ) {
+    // editing mode
 
-  switch( event->key() ) {
-    case Qt::Key_Up:
+    if( !_editable || !_selection.size() ) return;
 
-      if( edit ) val.setY( val.y() + _step );
-      break;
+    QPointF dValue;;
 
-    case Qt::Key_Down:
+    switch( event->key() ) {
+      case Qt::Key_Up:
+        dValue.setY( _step );
+        break;
+      case Qt::Key_Down:
+        dValue.setY( - _step );
+        break;
+      case Qt::Key_Right:
+        dValue.setX( _step );
+        break;
+      case Qt::Key_Left:
+        dValue.setX( - _step );
+        break;
+      default:
+        return;
+    }
 
-      if( edit ) val.setY( val.y() - _step );
-      break;
+    moveSelected( dValue, _selectionForm, false );
 
-    case Qt::Key_Right:
-
-      if( event->modifiers() & Qt::ShiftModifier ) {
-        if( edit ) val.setX( val.x() + _step );
-      }
-      else { setIndex( selIndex+1 ); return; }
-      break;
-
-    case Qt::Key_Left:
-
-      if( event->modifiers() & Qt::ShiftModifier ) {
-        if( edit ) val.setX( val.x() - _step );
-      }
-      else { setIndex( selIndex-1 ); return; }
-      break;
-  }
-
-  if( val != e->value ) {
-    setValue( e, val );
     update();
     doAction( event->modifiers() );
+
+  }
+  else {
+    // selection mode
+
+    switch( event->key() ) {
+      case Qt::Key_Right:
+        setIndex( _curIndex+1 );
+        if( !(event->modifiers() & Qt::ShiftModifier) ) setAllDeselected();
+        setIndexSelected( _curIndex, true );
+        break;
+      case Qt::Key_Left:
+        // always keep an index current:
+        if( _curIndex > 0 ) setIndex( _curIndex-1 );
+        if( !(event->modifiers() & Qt::ShiftModifier) ) setAllDeselected();
+        setIndexSelected( _curIndex, true );
+        break;
+      default: break;
+    }
+
   }
 }
 

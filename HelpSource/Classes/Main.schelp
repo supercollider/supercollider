@@ -6,11 +6,11 @@ related:: Classes/StartUp
 description::
 
 Main is the concrete instance of link::Classes/Process:: (the runtime environment for the virtual machine and interpreter).
-Main overrides some methods of Process. There are two methods of interest. One is named startup and is 
+Main overrides some methods of Process. There are two methods of interest. One is named startup and is
 called after the class library has been compiled. The other is called shutdown which gets called when the library gets re-compiled.
 
 method:: thisProcess
-The singleton instance of Main is available through the special keyword thisProcess. 
+The singleton instance of Main is available through the special keyword thisProcess.
 For example, to find out what platform you're on:
 
 code::
@@ -42,7 +42,7 @@ returns:: true or false
 
 instanceMethods::
 
-private::prArgv
+private::prArgv, prOpenUDPPort
 
 method::startup
 
@@ -53,7 +53,7 @@ This calls the superclass' startup, which among other things initializes the lin
 
 Main's startup then stores Server.default in the interpreter variable s, sets the platform default's link::Classes/GUI:: kit, initializes the link::Classes/GeneralHID:: system, calls a link::Classes/Platform:: specific startup method (for example OSXPlatform's startup opens the server windows), and finally invokes StartUp.run.
 
-To add your own startup functionalities, you could either edit the special startup-file ( discussed in link::Guides/Using-the-Startup-File:: ), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
+To add your own startup functionalities, you could either edit the special startup-file (discussed in link::Overviews/StartupFile::), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
 
 method::shutdown
 
@@ -78,24 +78,70 @@ code::
 
 method::recvOSCfunc
 
-You can store a custom function in this field that gets called whenever SuperCollider language (the client) receives an OSC message.
+Get or set a custom link::Classes/Function:: in this field that gets called whenever SuperCollider language (the client) receives an OSC message.
 
-discussion::
-This is very useful for debugging OSC-communication with other applications (e.g. Processing, Pure Data, but also the scsynth server).
+warning::Generally speaking users should not use this setter, but instead should use link::#-addOSCFunc:: and link::#-removeOSCFunc:: to avoid overwriting any functions added by system objects.::
+
+argument::func
+A link::Classes/Function:: or similar object to be set. When evaluated, this function will be passed the arguments time, replyAddr, recvPort, and message, corresponding to the time the message was sent, the link::Classes/NetAddr:: of the sender, the port on which the message was received, and the message itself as an link::Classes/Array::.
+
+method::addOSCFunc
+
+Register a link::Classes/Function:: to be evaluated whenever SuperCollider language (the client) receives an OSC message. This will not overwrite any previously registered functions.
+
+argument::func
+A link::Classes/Function:: or similar object to be added. When evaluated, this function will be passed the arguments time, replyAddr, recvPort, and message, corresponding to the time the message was sent, the link::Classes/NetAddr:: of the sender, the port on which the message was received, and the message itself as an link::Classes/Array::.
 
 code::
 // post all incoming traffic except the server status messages
+// basically the same as OSCFunc.trace
 (
-thisProcess.recvOSCfunc = { |time, replyAddr, msg| 
+f = { |time, replyAddr, recvPort, msg|
 	if(msg[0] != '/status.reply') {
-		"At time %s received message % from %\n".postf( time, msg, replyAddr )
-	}  
-}
+		"At time %s received message % from %\n".postf( time, msg, replyAddr, recvPort )
+	}
+};
+thisProcess.addOSCFunc(f);
 );
 
 // stop posting.
-thisProcess.recvOSCfunc = nil;
+thisProcess.removeOSCFunc(f);
 ::
+
+method::removeOSCFunc
+
+Remove a link::Classes/Function:: from the list of those evaluated whenever SuperCollider language (the client) receives an OSC message. This will leave any other registered functions in place.
+
+argument::func
+A link::Classes/Function:: or similar object to be removed.
+
+method::replaceOSCFunc
+
+Replace a link::Classes/Function:: in the list of those evaluated whenever SuperCollider language (the client) receives an OSC message with a different one. This will leave any other registered functions in place.
+
+argument::func
+The link::Classes/Function:: or similar object to be replaced.
+
+argument::newFunc
+A link::Classes/Function:: or similar object to be replace the one being removed. When evaluated, this function will be passed the arguments time, replyAddr, recvPort, and message, corresponding to the time the message was sent, the link::Classes/NetAddr:: of the sender, the port on which the message was received, and the message itself as an link::Classes/Array::.
+
+method::openUDPPort
+Attempt to open a new UDP port for receiving OSC traffic. If another application has already bound to the requested port this will fail. Once opened, ports remain bound until SC is recompiled.
+
+argument::portNum
+An link::Classes/Integer:: indicating the port to attempt to bind.
+
+returns::A link::Classes/Boolean:: indicating whether the attempt was successful.
+
+code::
+thisProcess.openUDPPort(3000); // will return true or false.
+thisProcess.customPorts; // returns all working custom ports
+::
+
+method::customPorts
+Get a collection of all active custom UDP ports.
+
+returns::An link::Classes/Array::.
 
 method::pid
 

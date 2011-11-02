@@ -29,8 +29,16 @@
 #include <QKeyEvent>
 #include <QPainter>
 #include <QFontMetrics>
+#include <QUrl>
+
+#ifdef Q_WS_X11
+#include <QX11Info>
+#include "hacks/hacks_x11.hpp"
+#endif
 
 using namespace QtCollider;
+
+QAtomicInt QWidgetProxy::_globalEventMask = 0;
 
 QWidgetProxy::QWidgetProxy( QWidget *w, PyrObject *po )
 : QObjectProxy( w, po ), _keyEventWidget( w ), _mouseEventWidget( w )
@@ -139,30 +147,8 @@ void QWidgetProxy::customEvent( QEvent *e )
   }
 }
 
-bool QWidgetProxy::eventFilter( QObject * object, QEvent * event )
-{
-  QEvent::Type type = event->type();
-  if( type == QEvent::DragEnter
-    || type == QEvent::DragMove
-    || type == QEvent::Drop )
-  {
-    QDropEvent *dnd = static_cast<QDropEvent*>(event);
-    if( !dnd->mimeData()->hasFormat( "application/supercollider" ) ) {
-      // Do not handle events that don't have our data
-      return false;
-    }
-    else if( type == QEvent::DragEnter ) {
-        // NOTE:
-        // always accept a DragEnter event with our mime data
-        // because there is no distinction between enter and
-        // move events in SC API
-        event->accept();
-        return true;
-    }
-  }
 
-  return QObjectProxy::eventFilter( object, event );
-}
+
 
 void QWidgetProxy::bringFrontEvent() {
   QWidget *w = widget();
@@ -173,7 +159,9 @@ void QWidgetProxy::bringFrontEvent() {
   w->show();
   w->raise();
 
-  return;
+#ifdef Q_WS_X11
+  raise_window(QX11Info::display(), w);
+#endif
 }
 
 void QWidgetProxy::setFocusEvent( QtCollider::SetFocusEvent *e ) {
@@ -226,8 +214,8 @@ void QWidgetProxy::startDragEvent( StartDragEvent* e )
   p.drawText( r, Qt::AlignCenter, label );
   p.end();
 
-  QMimeData *mime = new QMimeData();
-  mime->setData( "application/supercollider", QByteArray() );
+  QMimeData *mime = e->data;
+  e->data = 0; // prevent deleting the data when event destroyed;
 
   QDrag *drag = new QDrag(w);
   drag->setMimeData( mime );
@@ -236,49 +224,50 @@ void QWidgetProxy::startDragEvent( StartDragEvent* e )
   drag->exec();
 }
 
-bool QWidgetProxy::interpretEvent( QObject *o, QEvent *e, QList<QVariant> &args )
+bool QWidgetProxy::filterEvent( QObject *o, QEvent *e, EventHandlerData &eh, QList<QVariant> & args )
 {
-  switch( e->type() ) {
+  // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
+  // it wasn't existing
+
+  int type = e->type();
+
+  eh = eventHandlers().value( type );
+  if( eh.type != type ) return false;
+
+  switch( type ) {
+
+    case QEvent::KeyPress:
+      return ((_globalEventMask & KeyPress) || eh.enabled)
+        && interpretKeyEvent( o, e, args );
+
+    case QEvent::KeyRelease:
+      return ((_globalEventMask & KeyRelease) || eh.enabled)
+        && interpretKeyEvent( o, e, args );
+
     case QEvent::MouseButtonPress:
     case QEvent::MouseMove:
     case QEvent::MouseButtonRelease:
     case QEvent::MouseButtonDblClick:
     case QEvent::Enter:
-    {
-      if( o == _mouseEventWidget ) {
-        interpretMouseEvent( e, args );
-        return true;
-      }
-      else return false;
-    }
+      return eh.enabled && interpretMouseEvent( o, e, args );
+
+    case QEvent::Wheel:
+      return interpretMouseWheelEvent( o, e, args );
+
     case QEvent::DragEnter:
     case QEvent::DragMove:
     case QEvent::Drop:
-    {
-      // only send DnD events to SC if they occured on mouse event widget
-      if( o == _mouseEventWidget ) {
-        QPoint pos = static_cast<QDropEvent*>(e)->pos();
-        args << pos.x() << pos.y();
-        return true;
-      }
-      return false;
-    }
-    case QEvent::KeyPress:
-    case QEvent::KeyRelease: {
-      if( o == _keyEventWidget ) {
-        interpretKeyEvent( e, args );
-        return true;
-      }
-      else return false;
-    }
-    default: return QObjectProxy::interpretEvent( o, e, args );
+      return eh.enabled && interpretDragEvent( o, e, args );
+
+    default:
+      return eh.enabled;
+
   }
 }
 
-void QWidgetProxy::interpretMouseEvent( QEvent *e, QList<QVariant> &args )
+bool QWidgetProxy::interpretMouseEvent( QObject *o, QEvent *e, QList<QVariant> &args )
 {
-  // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
-  // it wasn't existing
+  if( o != _mouseEventWidget || !_mouseEventWidget->isEnabled() ) return false;
 
   QWidget *w = widget();
 
@@ -290,7 +279,7 @@ void QWidgetProxy::interpretMouseEvent( QEvent *e, QList<QVariant> &args )
 
     args << pos.x();
     args << pos.y();
-    return;
+    return true;
   }
 
   QMouseEvent *mouse = static_cast<QMouseEvent*>( e );
@@ -302,7 +291,7 @@ void QWidgetProxy::interpretMouseEvent( QEvent *e, QList<QVariant> &args )
 
   args << (int) mouse->modifiers();
 
-  if( e->type() == QEvent::MouseMove ) return;
+  if( e->type() == QEvent::MouseMove ) return true;
 
   int button;
   switch( mouse->button() ) {
@@ -325,10 +314,42 @@ void QWidgetProxy::interpretMouseEvent( QEvent *e, QList<QVariant> &args )
       args << 2; break;
     default: ;
   }
+
+  return true;
 }
 
-void QWidgetProxy::interpretKeyEvent( QEvent *e, QList<QVariant> &args )
+bool QWidgetProxy::interpretMouseWheelEvent( QObject *o, QEvent *e, QList<QVariant> &args )
 {
+  // NOTE: There seems to be a bug in wheel event propagation:
+  // the event is propagated to parent twice!
+  // Therefore we do not let the propagated events through to SC,
+  // (we only let the "spontaneous" ones).
+
+  if( o != _mouseEventWidget || !e->spontaneous() || !_mouseEventWidget->isEnabled() ) return false;
+
+  QWheelEvent *we = static_cast<QWheelEvent*>(e);
+
+  QWidget *w = widget();
+  QPoint pt = _mouseEventWidget == w ?
+              we->pos() :
+              _mouseEventWidget->mapTo( w, we->pos() );
+  Qt::Orientation ort = we->orientation();
+  // calculate degrees: delta is in 1/8 of a degree.
+  int deg = we->delta() / 8;
+
+  args << pt.x();
+  args << pt.y();
+  args << (int) we->modifiers();
+  args << (ort == Qt::Horizontal ? deg : 0);
+  args << (ort == Qt::Vertical ? deg : 0);
+
+  return true;
+}
+
+bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &args )
+{
+  if( o != _keyEventWidget || !_keyEventWidget->isEnabled() ) return false;
+
   QKeyEvent *ke = static_cast<QKeyEvent*>( e );
 
   QString text = ke->text();
@@ -338,7 +359,29 @@ void QWidgetProxy::interpretKeyEvent( QEvent *e, QList<QVariant> &args )
   args << (int) ke->modifiers();
   args << unicode;
   args << ke->key();
+  args << ke->spontaneous();
+
+  return true;
 }
+
+bool QWidgetProxy::interpretDragEvent( QObject *o, QEvent *e, QList<QVariant> &args )
+{
+  if( o != _mouseEventWidget ) return false;
+
+  QDropEvent *dnd = static_cast<QDropEvent*>(e);
+
+  const QMimeData *data = dnd->mimeData();
+  if ( !data->hasFormat( "application/supercollider" ) )
+    return false;
+
+  if( dnd->type() != QEvent::DragEnter ) {
+    QPoint pos = dnd->pos();
+    args << pos.x() << pos.y();
+  }
+
+  return true;
+}
+
 
 void QWidgetProxy::customPaint( QPainter *painter )
 {

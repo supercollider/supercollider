@@ -5,7 +5,7 @@ categories:: Control
 
 description::
 
-This is an strong::abstract superclass:: for singletons like link::Classes/ServerQuit::, which provides a place for registering functions and objects for events that should happen when something happens in the server. 
+This is an strong::abstract superclass:: for singletons like link::Classes/ServerQuit::, which provides a place for registering functions and objects for events that should happen when something happens in the server.
 No direct call to AbstractServerAction is required.
 
 note:: not fully working on linux and windows.
@@ -24,7 +24,7 @@ list::
 ::
 
 not for registry with a server, but analogous are:
-list::	
+list::
 ## doOnCmdPeriod - link::Classes/CmdPeriod::
 ## doOnStartUp - link::Classes/StartUp::
 ## doOnShutDown - link::Classes/ShutDown::
@@ -55,7 +55,7 @@ ServerBoot.add(f, \default);
 s.quit; // quit the server and observe the post
 s.boot;
 ServerBoot.remove(f, \default); // remove it again
-s.quit; 
+s.quit;
 s.boot;// no post.
 ServerBoot.add(f, Server.internal);
 Server.internal.quit;

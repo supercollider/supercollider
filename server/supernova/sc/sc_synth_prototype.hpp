@@ -26,8 +26,7 @@
 #include "server/synth_prototype.hpp"
 #include "utilities/sized_array.hpp"
 
-namespace nova
-{
+namespace nova {
 
 using boost::filesystem::path;
 
@@ -51,6 +50,10 @@ private:
 typedef boost::intrusive_ptr<sc_synth_prototype> sc_synth_prototype_ptr;
 
 void register_synthdefs(class synth_factory & factory, std::vector<sc_synthdef> const &);
+
+#ifdef BOOST_HAS_RVALUE_REFS
+void register_synthdefs(class synth_factory & factory, std::vector<sc_synthdef> &&);
+#endif
 
 } /* namespace nova */
 

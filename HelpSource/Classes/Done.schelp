@@ -5,7 +5,7 @@ categories::  UGens>Synth control
 
 Description::
 
-Some UGens, such as link::Classes/PlayBuf::, link::Classes/RecordBuf::, link::Classes/Line::, link::Classes/XLine::, link::Classes/EnvGen::, link::Classes/Linen::, link::Classes/BufRd::, link::Classes/BufWr::, link::Classes/Dbufrd::, and the Buffer delay UGens set a 'done' flag when they are finished playing. This UGen echoes that flag when it is set to track a particular UGen. 
+Some UGens, such as link::Classes/PlayBuf::, link::Classes/RecordBuf::, link::Classes/Line::, link::Classes/XLine::, link::Classes/EnvGen::, link::Classes/Linen::, link::Classes/BufRd::, link::Classes/BufWr::, link::Classes/Dbufrd::, and the Buffer delay UGens set a 'done' flag when they are finished playing. This UGen echoes that flag when it is set to track a particular UGen.
 
 classmethods::
 private:: categories
@@ -20,13 +20,13 @@ examples::
 code::
 (
 SynthDef("Done-help", { arg out, t_trig;
-	var line, a, b; 
-	
+	var line, a, b;
+
 	line= Line.kr(1,0,1);
-	
+
 	a= SinOsc.ar(440,0,0.1*line); //sound fading out
 	b= WhiteNoise.ar(Done.kr(line)*0.1); //noise starts at end of line
-	
+
 	Out.ar(out, Pan2.ar(a+b));
 }).send(s);
 )

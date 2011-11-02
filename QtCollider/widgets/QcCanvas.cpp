@@ -31,9 +31,33 @@ QcCanvas::QcCanvas( QWidget *parent )
   _repaintNeeded( true ),
   _clearOnRefresh( true ),
   _clearOnce( false ),
-  _resize( false )
+  _resize( false ),
+  _fps( 60.f ),
+  _fpsActual( 0.f ),
+  _timerId( 0 ),
+  _animating( false ),
+  _frameCount( 0 ),
+  _meterPeriod( 1000 ),
+  _meterFrames( 0 )
 {
   //_bkgColor = palette().color( QPalette::Background );
+}
+
+float QcCanvas::frameRate() const
+{
+  return _fpsActual;
+}
+
+void QcCanvas::setFrameRate( float rate )
+{
+  if( rate != _fps ) {
+    _fps = rate;
+    if( _animating && _fps > 0 ) {
+      // restart animation timer with new frame rate
+      killTimer( _timerId );
+      _timerId = startTimer( 1000.f / _fps );
+    }
+  }
 }
 
 void QcCanvas::refresh()
@@ -45,6 +69,24 @@ void QcCanvas::refresh()
 void QcCanvas::clear()
 {
   _clearOnce = true;
+}
+
+void QcCanvas::animate( bool on )
+{
+  if( on ) {
+    if( !_animating && _fps > 0 ) {
+      _frameCount = 0;
+      _animating = true;
+      _meterTime.start();
+      _timerId = startTimer( 1000.f / _fps );
+      _fpsTimer.start( _meterPeriod, this );
+    }
+  }
+  else if( _animating ) {
+      killTimer( _timerId );
+      _fpsTimer.stop();
+      _animating = false;
+  }
 }
 
 void QcCanvas::customEvent( QEvent *e )
@@ -83,4 +125,22 @@ void QcCanvas::paintEvent( QPaintEvent * )
   QPainter p(this);
   if( _bkgColor.isValid() ) p.fillRect( rect(), _bkgColor );
   if( _paint ) p.drawPixmap( rect(), _pixmap );
+}
+
+void QcCanvas::timerEvent( QTimerEvent *e )
+{
+  if( e->timerId() == _timerId ) {
+    ++_frameCount;
+    ++_meterFrames;
+    _repaintNeeded = true;
+    repaint();
+  }
+  else if( e->timerId() == _fpsTimer.timerId() ) {
+    // recalc actual fps
+    float dTime = _meterTime.elapsed();
+    _fpsActual = (dTime > 0) ? (_meterFrames * 1000.f / dTime) : 0.f;
+    // reset fps meter
+    _meterTime.restart();
+    _meterFrames = 0;
+  }
 }

@@ -25,20 +25,28 @@
 
 #include <boost/checked_delete.hpp>
 
+#include <boost/lockfree/ringbuffer.hpp>
 #include <boost/lockfree/fifo.hpp>
 
 
-namespace nova
-{
+namespace nova {
 
 /** \brief simple templated callback system, using a lockfree fifo */
 template <class callback_type,
+          bool mpmc = true,
           class callback_deleter = boost::checked_deleter<callback_type> >
 class callback_system:
     private callback_deleter
 {
+    typedef typename boost::mpl::if_c<mpmc, boost::lockfree::fifo<callback_type*>,
+                                            boost::lockfree::ringbuffer<callback_type*, 0>
+                                     >::type queue_type;
 
 public:
+    callback_system(size_t element_count = 2048):
+        callbacks(element_count)
+    {}
+
     /** \brief adds a new Callback to the Scheduler, threadsafe */
     inline void add_callback(callback_type * cb)
     {
@@ -48,8 +56,7 @@ public:
     /** \brief run all callbacks */
     inline void run_callbacks(void)
     {
-        for (;;)
-        {
+        for (;;) {
             callback_type* runme;
 
             if (not callbacks.dequeue(runme))
@@ -78,13 +85,10 @@ private:
     bool run_callback(callback_type * runme)
     {
         bool ret;
-        try
-        {
+        try {
             runme->run();
             ret = true;
-        }
-        catch(std::exception const & e)
-        {
+        } catch(std::exception const & e) {
             std::cerr << "unhandled exception while running callback: "  << e.what() << std::endl;
             ret = false;
         }
@@ -93,7 +97,7 @@ private:
     }
 
 protected:
-    boost::lockfree::fifo<callback_type*> callbacks;   /**< \brief fifo for callbacks */
+    queue_type callbacks;   /**< \brief fifo for callbacks */
 };
 
 } /* namespace nova */

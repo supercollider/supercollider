@@ -26,6 +26,13 @@ typedef nova::dsp_queue_interpreter<dummy_runnable> dsp_queue_interpreter;
 typedef nova::dsp_thread_queue_item<dummy_runnable> dsp_thread_queue_item;
 typedef nova::dsp_thread_queue<dummy_runnable> dsp_thread_queue;
 
+#ifdef __GXX_EXPERIMENTAL_CXX0X__
+#define auto_ptr unique_ptr
+#define MOVE(X) std::move(X)
+#else
+#define MOVE(X) X
+#endif
+
 BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_1 )
 {
     dsp_queue_interpreter interpreter(1);
@@ -53,7 +60,7 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_3 )
 
     q->add_initially_runnable(item);
 
-    interpreter.reset_queue(q);
+    interpreter.reset_queue(MOVE(q));
 
     bool runnable = interpreter.init_tick();
     BOOST_REQUIRE(runnable);
@@ -77,7 +84,7 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_4 )
     dsp_thread_queue_item * item2 = q->allocate_queue_item(dummy, sl, 0);
     q->add_initially_runnable(item2);
 
-    interpreter.reset_queue(q);
+    interpreter.reset_queue(MOVE(q));
 
     bool runnable = interpreter.init_tick();
     BOOST_REQUIRE(runnable);
@@ -103,7 +110,7 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_5 )
 
         q->add_initially_runnable(item2);
 
-        interpreter.reset_queue(q);
+        interpreter.reset_queue(MOVE(q));
 
         for (int i = 0; i != 2; ++i) {
             bool runnable = interpreter.init_tick();
@@ -126,7 +133,7 @@ BOOST_AUTO_TEST_CASE( dsp_thread_queue_test_5 )
 
         q->add_initially_runnable(item2);
 
-        interpreter.reset_queue(q);
+        interpreter.reset_queue(MOVE(q));
 
         for (int i = 0; i != 2; ++i) {
             bool runnable = interpreter.init_tick();

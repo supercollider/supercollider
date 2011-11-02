@@ -60,7 +60,7 @@ slider = TabletSlider2D(window, Rect(20, 20,80, 80))
 		.x_(0.5).y_(1);
 slider.mouseDownAction = { arg view, x, y, pressure, tiltx, tilty, deviceID, buttonNumber, clickCount;
 	["down", view, x, y, pressure, tiltx, tilty, deviceID, buttonNumber, clickCount].postln;
-};	
+};
 slider.action = { arg view, x, y, pressure, tiltx, tilty, deviceID, buttonNumber, clickCount;
 	[view, x, y, pressure, tiltx, tilty, deviceID, buttonNumber, clickCount].postln;
 };
@@ -101,11 +101,11 @@ code::
 (
 s.waitForBoot({
 	var w, v, int, synth;
-	
+
 	synth = SynthDef("help-TabletSlider2D", { arg freq = 440,int1 = 5,int2 = -5,
                                                       ffreqInterval = 0, rq = 0.4, gate = 0.0;
 		var p,c,d,f;
-		
+
 		c = LFNoise1.kr(0.1, 0.45, 0.55);
 		d = LFNoise1.kr(0.1, 0.45, 0.55);
 		f = LFNoise1.kr(0.1, 2);
@@ -115,11 +115,11 @@ s.waitForBoot({
 				* EnvGen.kr(Env.adsr, gate, gate)
 		)
 	}, [0.1, 0.1, 0.1, 0.1, 0.1, nil]).play(s);
-	
+
 	w = Window.new.front;
-	
+
 	int = ControlSpec(-48, 48, \linear, 1);
-	
+
 	v = TabletSlider2D(w, Rect(10, 10, 380, 380));
 	v.background = Color.blue.alpha_(0.2);
 	v.knobColor = Color.red;
@@ -131,7 +131,7 @@ s.waitForBoot({
 			\gate, pressure.postln
 		);
 	};
-	
+
 	v.mouseDownAction = { arg view, x, y, pressure;
 		synth.set(
 			\freq , rrand(30,80).midicps,

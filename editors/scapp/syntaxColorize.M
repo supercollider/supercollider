@@ -37,7 +37,12 @@ SCColor synColText = SCMakeColor(0, 0, 0, 1),
 		synColString = SCMakeColor(0.375, 0.375, 0.375, 1), 
 		synColSymbol = SCMakeColor(0, 0.45, 0, 1), 
 		synColComment = SCMakeColor(0.75, 0, 0, 1), 
-		synColNumber = SCMakeColor(0, 0, 0, 1);
+		synColNumber = SCMakeColor(0.0, 0.0, 0.0, 1),
+		synColSpecialVals = SCMakeColor(0.2, 0.2, 0.75, 1), // true false nil inf 
+		synColSpecialVars = SCMakeColor(0.4, 0.4, 0.75, 1), // super, thisProcess
+		synColDecl = SCMakeColor(0, 0, 1, 1), // var, const, args
+		synColPunc = SCMakeColor(0.0, 0.0, 0.0, 1), // : ; ' [ ] { } ( )
+		synColEnv = SCMakeColor(1.0, 0.4, 0, 1);
 
 static bool streq(char *cstr, unichar *ustr)
 {
@@ -138,6 +143,11 @@ void SyntaxColorize(NSTextView* textView)
 	NSColor* symbolColor = [NSColor colorWithCalibratedRed: synColSymbol.red green: synColSymbol.green blue: synColSymbol.blue alpha: synColSymbol.alpha];
 	NSColor* stringColor = [NSColor colorWithCalibratedRed: synColString.red green: synColString.green blue: synColString.blue alpha: synColString.alpha];
 	NSColor* numberColor = [NSColor colorWithCalibratedRed: synColNumber.red green: synColNumber.green blue: synColNumber.blue alpha: synColNumber.alpha];
+	NSColor* specialValsColor = [NSColor colorWithCalibratedRed: synColSpecialVals.red green: synColSpecialVals.green blue: synColSpecialVals.blue alpha: synColSpecialVals.alpha];
+	NSColor* specialVarsColor = [NSColor colorWithCalibratedRed: synColSpecialVars.red green: synColSpecialVars.green blue: synColSpecialVars.blue alpha: synColSpecialVars.alpha];
+	NSColor* declColor = [NSColor colorWithCalibratedRed: synColDecl.red green: synColDecl.green blue: synColDecl.blue alpha: synColDecl.alpha];
+	NSColor* puncColor = [NSColor colorWithCalibratedRed: synColPunc.red green: synColPunc.green blue: synColPunc.blue alpha: synColPunc.alpha];
+	NSColor* environColor = [NSColor colorWithCalibratedRed: synColEnv.red green: synColEnv.green blue: synColEnv.blue alpha: synColEnv.alpha]; 
 	NSTextStorage *textStorage = [textView textStorage];
 	
 	if (!startColorizer(textView)) return;
@@ -159,8 +169,8 @@ void SyntaxColorize(NSTextView* textView)
 		}
 		
 		if (c == '|' && bracket) goto arglist;
-		if (c == '{') { bracket = true; continue; }
-		bracket = false;
+		if (c == '{') { bracket = true; }
+			else bracket = false;
 		
 		if (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_') goto ident;
 		else if (c == '\\') goto symbol1;
@@ -180,10 +190,12 @@ void SyntaxColorize(NSTextView* textView)
 			if (c == '\\') {
 				c = input0();
 			}
-			continue; 
+			goto characterLiteral; 
 		}
 		else if(c == '-')	goto negnumber; //might be a negative number
 		else if(c >= '0' && c <= '9')	goto number;
+		else if(c==':' || c==';' || c=='.' || c == ',' || c=='(' || c==')' || c=='[' || c==']' || c=='{' || c=='}')	goto punct;
+		else if(c=='~') goto environment;
 		else {
 			continue; 
 		}
@@ -214,7 +226,7 @@ void SyntaxColorize(NSTextView* textView)
 					|| streq("const",yytext)
 			) {
 				range = NSMakeRange(startrun, endrun - startrun);
-				[textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
+				[textStorage addAttribute:NSForegroundColorAttributeName value: declColor range: range];
 			}
 			else if (  streq("this",yytext)
 					|| streq("super",yytext)
@@ -224,14 +236,14 @@ void SyntaxColorize(NSTextView* textView)
 					|| streq("thisFunctionDef",yytext)
 					|| streq("thisFunction",yytext)
 			) {
-				[textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
+				[textStorage addAttribute:NSForegroundColorAttributeName value: specialVarsColor range: range];
 			}
 			else if (  streq("nil",yytext)
 					|| streq("false",yytext)
 					|| streq("true",yytext) 
 					|| streq("inf",yytext)
 			) {
-				[textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
+				[textStorage addAttribute:NSForegroundColorAttributeName value: specialValsColor range: range];
 			}
 			continue;
 		}
@@ -259,7 +271,7 @@ void SyntaxColorize(NSTextView* textView)
 			[textStorage addAttribute:NSForegroundColorAttributeName value: symbolColor range: range];
 			continue;
 		}
-	symbol3 : {	
+	symbol3 : {
 			int startline;
 			unichar endchar;
 			startrun = textpos - 1;
@@ -283,7 +295,7 @@ void SyntaxColorize(NSTextView* textView)
 			}
 		}
 
-	string1 : {	
+	string1 : {
 			int startline;
 			unichar endchar;
                         
@@ -320,7 +332,7 @@ void SyntaxColorize(NSTextView* textView)
 		endrun = textpos;
 		if(c != 0){ 
 			range = NSMakeRange(startrun, endrun - startrun);
-			[textStorage addAttribute:NSForegroundColorAttributeName value: classColor range: range];
+			[textStorage addAttribute:NSForegroundColorAttributeName value: declColor range: range];
 		}
 		continue;
 	comment1:	/* comment -- to end of line */
@@ -333,7 +345,7 @@ void SyntaxColorize(NSTextView* textView)
 		[textStorage addAttribute:NSForegroundColorAttributeName value: commentColor range: range];
 		continue;
 
-	comment2 : 
+	comment2:
 		startrun = textpos-2;
 		startline = lineno;
 		prevc = 0;
@@ -362,15 +374,48 @@ void SyntaxColorize(NSTextView* textView)
  		endrun = textpos - 1;
  		range = NSMakeRange(startrun, endrun - startrun);
  		[textStorage addAttribute:NSForegroundColorAttributeName value: numberColor range: range];
+		unput(c);
+ 		continue;
+	environment:
+ 		startrun = textpos -1;
+ 		do {
+ 			c = input0();
+ 		}	while (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_' || c >= '0' && c <= '9');
+ 		endrun = textpos - 1;
+ 		range = NSMakeRange(startrun, endrun - startrun);
+ 		[textStorage addAttribute:NSForegroundColorAttributeName value: environColor range: range];
+		unput(c);
+ 		continue;
+	characterLiteral:
+		if(c == '\\') {
+			startrun = textpos -3;
+		} else {
+			startrun = textpos -2;
+		}
+ 		endrun = textpos;
+ 		range = NSMakeRange(startrun, endrun - startrun);
+ 		[textStorage addAttribute:NSForegroundColorAttributeName value: numberColor range: range];
+ 		continue;
+	punct:
+ 		startrun = textpos -1;
+ 		endrun = textpos;
+ 		range = NSMakeRange(startrun, endrun - startrun);
+ 		[textStorage addAttribute:NSForegroundColorAttributeName value: puncColor range: range];
  		continue;
 	negnumber:
 		bool numFound = false; //no digit found yet, after minus sign
+		bool reachedStart = false;
 		int tempTextpos = textpos, tempCharno = charno, tempYylen = yylen, tempLineno = lineno;
 		do { //go backwards until you find stg. other than whitespace and numbers
 			unput(c); unput(c); 
 			c = input0();
+			if(textpos <= 1) { //beginning of doc. escape!
+				reachedStart = true;
+				break;
+			}
 		} while (c == ' ' || c == '\n' || c == '\t' || c == '\v' || c == '\f' ||  c == '\r' || c == 0 || (c >= '0' && c <= '9'));
 		textpos = tempTextpos; charno = tempCharno; yylen = tempYylen; lineno = tempLineno; //restore original position
+		if(reachedStart) continue;
 		if(c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z' || c == '_' || c == ')' || c == ']') continue; //it must be a subtraction operator, skip.
 		startrun = textpos - 1;
 		do {
@@ -385,7 +430,7 @@ void SyntaxColorize(NSTextView* textView)
 		{
 			range = NSMakeRange(startrun, endrun - startrun);
 			[textStorage addAttribute:NSForegroundColorAttributeName value: numberColor range: range];
-		};
+		} else goto punct;
 		continue;
 	}
 	

@@ -1,5 +1,5 @@
 //  group
-//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
+//  Copyright (C) 2008, 2009, 2010, 2011 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ protected:
     const bool is_parallel_;
 
     abstract_group(int node_id, bool is_parallel):
-        server_node(node_id, false), is_parallel_(is_parallel), child_synths_(0), child_groups_(0)
+        server_node(node_id, false), is_parallel_(is_parallel), child_synth_count(0), child_group_count(0)
     {}
 
 public:
@@ -98,7 +98,7 @@ public:
     /* returns true, if this or any of the child group has synth children */
     bool has_synth_children(void) const
     {
-        if (child_synths_)
+        if (child_synth_count)
             return true;
 
         for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
@@ -110,14 +110,16 @@ public:
 
     std::size_t child_count(void) const
     {
-        return child_synths_ + child_groups_;
+        assert(child_group_count == child_groups.size());
+        assert(child_synth_count + child_group_count == child_nodes.size());
+        return child_synth_count + child_group_count;
     }
 
     /* number of child synths and groups */
     std::pair<std::size_t, std::size_t> child_count_deep(void) const
     {
-        std::size_t synths = child_synths_;
-        std::size_t groups = child_groups_;
+        std::size_t synths = child_synth_count;
+        std::size_t groups = child_group_count;
 
         for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
         {
@@ -174,8 +176,8 @@ public:
     void free_children(void)
     {
         child_nodes.clear_and_dispose(boost::mem_fn(&server_node::clear_parent));
-        assert(child_synths_ == 0);
-        assert(child_groups_ == 0);
+        assert(child_synth_count == 0);
+        assert(child_group_count == 0);
     }
 
     void free_synths_deep(void)
@@ -188,31 +190,107 @@ public:
             abstract_group * group = static_cast<abstract_group*>(&*it);
             group->free_synths_deep();
         }
-        assert(child_synths_ == 0);
+        assert(child_synth_count == 0);
     }
 
     /** remove node from child_nodes, clear node->parent */
     void remove_child(server_node * node);
     /* @} */
 
-    void set(const char * slot_str, float val);
-    void set(const char * slot_str, size_t count, float * val);
-    void set(const char * slot_str, size_t hashed_str, float val);
-    void set(const char * slot_str, size_t hashed_str, size_t count, float * val);
     void set(slot_index_t slot_id, float val);
-    void set(slot_index_t slot_str, size_t count, float * val);
+    void set(const char * slot_str, float val);
+    void set(const char * slot_str, size_t hashed_str, float val);
+
+    void set_control_array(slot_index_t slot_str, size_t count, float * val);
+    void set_control_array(const char * slot_str, size_t count, float * val);
+    void set_control_array(const char * slot_str, size_t hashed_str, size_t count, float * val);
+
+    void set_control_array_element(slot_index_t slot_str, size_t count, float val);
+    void set_control_array_element(const char * slot_str, size_t count, float val);
+    void set_control_array_element(const char * slot_str, size_t hashed_str, size_t count, float val);
+
+    /* move node to head or tail of target */
+    template <node_position Position>
+    static void move_to_head_or_tail(server_node * node, abstract_group * target)
+    {
+        assert((Position == head) || (Position == tail));
+
+        server_node_list::const_iterator target_iterator = (Position == head) ? target->child_nodes.begin()
+                                                                              : target->child_nodes.end();
+
+        server_node_list::const_iterator node_iterator = server_node_list::s_iterator_to(*node);
+
+        abstract_group * node_parent = node->get_parent();
+        if (node_parent != target) {
+            if (node->is_synth()) {
+                node_parent->child_synth_count -= 1;
+                target->child_synth_count += 1;
+            } else {
+                node_parent->child_group_count -= 1;
+                target->child_group_count += 1;
+
+                group_list::const_iterator group_target_iterator = (Position == head) ? target->child_groups.begin()
+                                                                                    : target->child_groups.end();
+
+                abstract_group * node_as_group = static_cast<abstract_group*>(node);
+                target->child_groups.splice(group_target_iterator, node_parent->child_groups,
+                                            group_list::s_iterator_to(*node_as_group));
+            }
+            node->parent_ = target;
+        }
+
+        target->child_nodes.splice(target_iterator, node_parent->child_nodes, node_iterator);
+    }
+
+    template <node_position Relation>
+    static void move_before_or_after(server_node * node, server_node * target)
+    {
+        assert((Relation == before) || (Relation == after));
+        abstract_group * target_parent = node->get_parent();
+
+        if (Relation == after && target->next_node() == NULL) {
+            // for the sake of simplicity, move the node to the tail of the target's parent group
+            move_to_head_or_tail<tail>(node, target_parent);
+            return;
+        }
+
+        server_node * node_behind = (Relation == before) ? target
+                                                         : target->next_node();
+        assert(node_behind);
+        server_node_list::const_iterator target_iterator = server_node_list::s_iterator_to(*node_behind);
+        server_node_list::const_iterator node_iterator = server_node_list::s_iterator_to(*node);
+
+        abstract_group * node_parent = node->get_parent();
+        if (node_parent != target_parent) {
+            if (node->is_synth()) {
+                node_parent->child_synth_count -= 1;
+                target_parent->child_synth_count += 1;
+            } else {
+                node_parent->child_group_count -= 1;
+                target_parent->child_group_count += 1;
+
+                group_list::const_iterator group_target_iterator = group_list::s_iterator_to(*static_cast<abstract_group*>(node));
+
+                target_parent->child_groups.splice(target_parent->child_groups.end(), node_parent->child_groups,
+                                                group_target_iterator);
+            }
+            node->parent_ = target_parent;
+        }
+
+        target_parent->child_nodes.splice(target_iterator, node_parent->child_nodes, node_iterator);
+    }
 
     friend class node_graph;
-    std::size_t child_synths_, child_groups_;
+    std::size_t child_synth_count, child_group_count;
 };
 
 
 inline void server_node::clear_parent(void)
 {
     if (is_synth())
-        --parent_->child_synths_;
+        --parent_->child_synth_count;
     else {
-        --parent_->child_groups_;
+        --parent_->child_group_count;
         static_cast<abstract_group*>(this)->unregister_as_child();
     }
 
@@ -227,9 +305,9 @@ inline void server_node::set_parent(abstract_group * parent)
     parent_ = parent;
 
     if (is_synth())
-        ++parent->child_synths_;
+        ++parent->child_synth_count;
     else {
-        ++parent->child_groups_;
+        ++parent->child_group_count;
         static_cast<abstract_group*>(this)->register_as_child();
     }
 }

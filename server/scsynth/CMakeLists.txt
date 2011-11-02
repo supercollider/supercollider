@@ -19,7 +19,9 @@ else()
 endif()
 
 
-if (APPLE)
+if (NO_AVAHI)
+
+elseif (APPLE)
 	add_definitions(-DUSE_RENDEZVOUS=1)
 else()
 	find_package(Avahi)
@@ -96,7 +98,7 @@ if(WIN32)
 endif()
 
 if (FFT_GREEN)
-	list(APPEND scsynth_sources ../common/fftlib.c)
+	list(APPEND scsynth_sources ../../common/fftlib.c)
 endif()
 
 if (FFTW3F_FOUND)
@@ -110,7 +112,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
 set_property(DIRECTORY
              APPEND
-             PROPERTY COMPILE_DEFINITIONS SC_MEMORY_ALIGNMENT=16)
+             PROPERTY COMPILE_DEFINITIONS SC_MEMORY_ALIGNMENT=32)
 
 if (AUDIOAPI STREQUAL jack)
 	list(APPEND scsynth_sources SC_Jack.cpp)

@@ -122,8 +122,10 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
 #endif
 
   if( _drawPeak && _peak > 0.f ) {
+    float peak = vertical ? _peak : 1 - _peak;
+
     // compensate for border and peak line width
-    float val = (1.f - _peak)
+    float val = (1.f - peak)
           * ( length  - 4 )
           + 2;
     QPen pen( QColor( 255, 200, 0 ) );

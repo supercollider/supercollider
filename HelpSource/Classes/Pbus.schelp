@@ -63,7 +63,7 @@ o = Pfx(r, \wah);
 Ppar(
 	[p, q, r, o].collect(Pbus(_)); // play each in a different bus.
 ).play;
-)	
+)
 
 
 

@@ -1,7 +1,21 @@
-find_package(FFTW3f)
+
+if (FFT_GREEN)
+        add_definitions("-DSC_FFT_GREEN")
+else()
+        find_package(FFTW3f)
+endif()
+
+if(SC_QT)
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
+endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+                    ${CMAKE_SOURCE_DIR}/external_libraries/boost
+                    ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
+                    ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/include
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     LangSource/Bison)
 
@@ -78,8 +92,14 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
-	${CMAKE_SOURCE_DIR}/common/strtod.c
 )
+
+file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
+file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*cpp)
+list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources})
+
+file(GLOB yaml_sources ../external_libraries/yaml-cpp-0.2.6/src/*cpp)
+list(APPEND sclang_sources ${yaml_sources})
 
 if(NOT WIN32)
 	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
@@ -228,7 +248,7 @@ endif()
 if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
 	target_link_libraries(libsclang "-framework CoreAudio")
-	target_link_libraries(libsclang "-framework CoreMidi")
+	target_link_libraries(libsclang "-framework CoreMIDI")
 	target_link_libraries(libsclang "-framework IOKit")
 	target_link_libraries(libsclang "-framework CoreServices")
 endif()
@@ -261,10 +281,10 @@ if (GC_SANITYCHECK)
 	add_definitions(-DGC_SANITYCHECK)
 endif()
 
-target_link_libraries(libsclang ${PTHREADS_LIBRARY})
+target_link_libraries(libsclang ${PTHREADS_LIBRARY} supercollider_boost_thread)
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
-target_link_libraries(sclang libsclang)
+target_link_libraries(sclang libsclang boost_thread)
 
 set_property(TARGET sclang
 	APPEND

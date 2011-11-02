@@ -1,7 +1,7 @@
 class:: Poll
 categories:: UGens>Info
 summary:: Print the current output value of a UGen
-related:: Classes/SendTrig
+related:: Classes/SendTrig, Classes/OSCFunc
 
 description::
 
@@ -22,7 +22,7 @@ a string or symbol to be printed with the polled value
 argument::trigid
 if greater then 0, a '/tr' message is sent back to the client (similar to SendTrig)
 
-returns:: its in signal (and is therefore transparent). 
+returns:: its in signal (and is therefore transparent).
 
 instancemethods::
 private:: checkInputs, init
@@ -50,14 +50,12 @@ s.boot;
 // send a '/tr' message back to the client. This can be useful if the server runs on another
 // computer than the client, i.e. the post messages by the server cannot be read locally.
 
-o = OSCresponderNode(s.addr, '/tr', {arg time, resp, msg;
-	msg.postln;
-	}).add
+o = OSCFunc({arg msg; msg.postln;}, '/tr', s.addr);
 
 {Poll.ar(Impulse.ar(5), Line.ar(0, 1, 1), \test2, 1234)}.play(s);
 {SinOsc.ar(220, 0, 1).poll(Impulse.ar(15), "test", 1234)}.play(s);
-	
-o.remove;
+
+o.free;
 s.quit;
 
 

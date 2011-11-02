@@ -41,7 +41,12 @@ Document {
 				stringColor: Color(0.375, 0.375, 0.375, 1),
 				commentColor: Color(0.75, 0, 0, 1),
 				symbolColor: Color(0, 0.45, 0, 1),
-				numberColor: Color(0, 0, 0, 1)
+				numberColor: Color(0, 0, 0, 1),
+				specialValsColor: Color(0.2, 0.2, 0.75, 1), // true false nil inf
+				specialVarsColor: Color(0.4, 0.4, 0.75, 1), // super, thisProcess
+				declColor: Color(0, 0, 1, 1), // var, const, args
+				puncColor: Color(0, 0, 0, 1),
+				environColor: Color(1.0, 0.4, 0, 1)
 				)
 			);
 		theme = themes.default;
@@ -281,13 +286,19 @@ Document {
 
 	*setTheme { | themeName |
 		theme = themes[themeName];
+		thisProcess.platform.writeClientCSS;
 		Document.implementationClass.prSetSyntaxColorTheme(
 			theme.textColor,
 			theme.classColor,
 			theme.stringColor,
 			theme.symbolColor,
 			theme.commentColor,
-			theme.numberColor
+			theme.numberColor,
+			theme.specialValsColor,
+			theme.specialVarsColor,
+			theme.declColor,
+			theme.puncColor,
+			theme.environColor
 		);
 	}
 
@@ -440,7 +451,7 @@ Document {
 			or: { selectedText.containsStringAt(0, "file://") } }
 		{
 			// open URL
-			("open " ++ selectedText).unixCmd;
+			openOS(selectedText)
 		}
 		{ selectedText.containsStringAt(selectedText.size-1, "/") }
 		{
@@ -533,7 +544,7 @@ Document {
 		^this.subclassResponsibility(thisMethod)
 	}
 
-	*prSetSyntaxColorTheme{ |textC, classC, stringC, symbolC, commentC, numberC|
+	*prSetSyntaxColorTheme{ |textC, classC, stringC, symbolC, commentC, numberC, specialValsC, specialVarsC, declC, puncC, environC|
 		^this.subclassResponsibility(thisMethod);
 	}
 

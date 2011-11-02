@@ -1,0 +1,88 @@
+Change Log
+
+0.2.5
+  - Made threadpool compatible to boost::thread 1.37
+  - Fixed hang problem in shutdown method (Thanks to Sohail Somani)
+  - Adapted repository layout to boost (Thanks to Alex Ott)
+    
+0.2.4 (Stable)
+  - Made threadpool compatible to boost::thread 1.35.x code base
+  - Fixed compiler warning in scope_guard.hpp
+
+0.2.3 (Development)
+  - Implemented workaround for Sun C++ Pro compiler bug in pool_core
+  - Removed subtask implementation (there was no demand for this feature)
+  - Improved shutdown policies
+
+0.2.2 (Development)
+  - Refactored SizePolicy and added SizePolicyController
+  - Moved policies into separate files
+  - Fixed some compiler problems (GCC)
+  - Implemented size_controller handling
+  - Implemented two size policies: static_size and fixed_size
+  - Refactored worker_thread handling, moved policies from pool_core to pool
+  - Specialized schedule function for usage with futures
+  - Added compile test project
+  - Improved constness in pool core class
+  - Fixed timed wait
+  - Implemented futures (in progress)
+  - Added result_type to all functors
+
+0.2.1 (Development)
+  - Pool base class (thread_pool) has now reference semantics
+  - Large refactorings: Removed scoped_pool, reimplemented worker (now worker_thread)
+  - Fixed odd resize behaviour. Now resize changes the number of threads immediately
+  - Apply pimpl idiom on pool core class (to make the ugly scoped_pool class needless)
+  - Introduced scheduling policies
+  - Switched to policy-based design (PBD), inspired by Scott Meyers C++ workshop
+  - Cosmetic code change: Replaced keyword 'class' with 'typename' in template definitions
+  - Revised tutorials
+  - New requirements: tasks functions should not and schedulers shall not throw exceptions
+  
+
+0.2.0 (Development)
+  - Moved threadpool into the boost namespace: boost::threadpool
+  - Used keyword volatile to indicate thread-safe member functions
+  - Used volatile on primitve types were appropriate
+  - Moved worker to detail directory
+  - Fixed thread deletion
+  - Extended wait functionality (waiting for idle threads was implemented)
+  - Renamed 'join()' to 'wait()' as 'join' indicates the termination of thread. That was not the case in pool::join.
+  - Changed internal container of lifo and fifo schedulers to improve efficiency.
+  - Improved code reference documentation (source code browser)
+  - Renamed thread_func into task_func
+  - Added += operator to scoped_pool to ease scheduling of tasks
+  - Refactored file structures and class names
+  - Added a new task concept (named subtask) which allows the combination of sequential and parallel execution
+  - Added new task adaptor for looped or timed tasks: looped_task_func
+  - Introduced function clear() which can be used to remove all tasks from the pool and schedulers
+  - New function pool::active() which returns the number of active tasks
+
+0.1.8 (Development)
+  - Fixed some compile errors which were reported by gcc
+  - Wrote tutorial "Prioritized Tasks"
+
+0.1.7 (Development)
+  - Added Visual Studio 2005 project files for tutorial and examples
+
+0.1.6 (Development)
+  - Replaced task adaptor 'task' with boost::bind
+  - Workers are unregistered from thread_group when they are terminated
+  - Working on example boost::iostreams packet_filter
+
+0.1.5 (Development)
+  - Finished threadpool reference
+  - Class pool_adaptor was replaced by smart_pool
+  - Minor pool improvements
+  - First tutorial page online 
+
+0.1.4 (Development)
+  - Created the pool's homepage: http://threadpool.sourceforge.net
+  - Improved documentation
+  - Added build scripts
+
+0.1.3 (Development)
+  - First public release
+  - Added mergesort example
+  - Added tutorial 
+  - Implementation of threadpool core and related classes

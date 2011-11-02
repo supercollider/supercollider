@@ -25,6 +25,7 @@
 #include "../Common.h"
 
 #include <QFileDialog>
+#include <QPointer>
 
 class QcFileDialog : public QObject
 {
@@ -39,6 +40,10 @@ public:
     connect( dialog, SIGNAL(finished(int)), this, SLOT(onFinished(int)) );
   }
 
+  ~QcFileDialog() {
+    delete dialog;
+  }
+
   QFileDialog *theDialog() { return dialog; }
 
 Q_SIGNALS:
@@ -50,7 +55,7 @@ private Q_SLOTS:
 
   void show() {
     dialog->exec();
-    dialog->deleteLater();
+    delete dialog;
   }
 
   void onFinished( int res ) {
@@ -69,7 +74,7 @@ private Q_SLOTS:
 
 private:
 
-  QFileDialog *dialog;
+  QPointer<QFileDialog> dialog;
 };
 
 #endif // QC_FILE_DIALOG_H

@@ -36,7 +36,7 @@ argument:: numChannels
 Number of channels to allocate
 
 method:: audio
-Allocate an audio bus on the server. 
+Allocate an audio bus on the server.
 
 argument:: server
 The link::Classes/Server::. Defaults to Server.default.
@@ -56,23 +56,23 @@ method:: new
 This method does not allocate a bus index, but assumes that you
 already have allocated the appropriate bus index and can supply it
 yourself.
-		
+
 method:: newFrom
 This method creates a new Bus that is a subset of the bus. The bus will be at the same rate as the input bus.
 offset is the index into the given bus. numChannels is the desired number of channels.
 If the combination of offset and numChannels is outside the input bus' range, an error will be thrown.
-	
+
 InstanceMethods::
 
 method:: index
 Get the Bus' index. Normally you should not need to do this since instances of Bus can be passed directly as link::Classes/UGen:: inputs or link::Classes/Synth:: args.
-	
+
 method:: free
 Return the bus' indices to the server's bus allocator so they can be reallocated.
-	
+
 method:: rate
 Get the Bus' rate. This is a symbol, either \control or \audio.
-	
+
 method:: numChannels
 Get the Bus' number of channels.
 
@@ -82,7 +82,7 @@ Get the Bus' server object.
 method:: asMap
 Returns:: a symbol consisting of the letter 'c' or 'a' (for control or audio) followed by the bus's index. This may be used when setting a synth node's control inputs to map the input to the control bus.
 discussion::
-See the link::Classes/Node:: help file for more information on mapping controls to buses. 
+See the link::Classes/Node:: help file for more information on mapping controls to buses.
 code::
 (
 a = Bus.control(s, 1).set(440);
@@ -104,13 +104,13 @@ The following commands apply only to control buses and are asynchronous. For syn
 
 method:: value
 Set all channels to this float value. This command is asynchronous.
-	
+
 method:: set
 A list of values for each channel of the control bus.  The list of values supplied should not be greater than the number of channels. This command is asynchronous.
 
 method:: setn
 As set but takes an array as an argument.
-	
+
 method:: get
 Get the current value of this control bus. This command is asynchronous.
 argument:: action
@@ -123,7 +123,7 @@ the number of channels to read, starting from this bus' first channel.
 argument:: action
 a function that will be evaluated when the server responds, with the current values of the bus in an array passed as an argument.
 
-subsection:: conveniences for multichannel buses: 
+subsection:: conveniences for multichannel buses:
 method:: setAt
 set the bus value(s) beginning at offset. asynchronous.
 
@@ -140,9 +140,9 @@ use a bus like a UGen. The numChannels and offset arguments can be used to get a
 discussion::
 By default, all the bus channels are used. E.g. in an 8 channel bus,
 list::
-## code::b.kr:: will return an link::Classes/In:: ugen reading from all the 8 channels of the bus; 
-## code::b.kr(4):: will return the first four channels, and 
-## code::b.kr(2, 5):: will return two channels, starting from the bus's channels at index 5 and 6. 
+## code::b.kr:: will return an link::Classes/In:: ugen reading from all the 8 channels of the bus;
+## code::b.kr(4):: will return the first four channels, and
+## code::b.kr(2, 5):: will return two channels, starting from the bus's channels at index 5 and 6.
 ::
 
 subsection:: OSC Bundle Methods
@@ -161,7 +161,7 @@ Returns a msg of the type /c_set for use in osc bundles.
 method:: setnMsg
 Returns a msg of the type /c_setn for use in osc bundles.
 argument:: values
-an array of values to which adjacent channels should be set, starting at this bus' first channel. 
+an array of values to which adjacent channels should be set, starting at this bus' first channel.
 
 method:: fillMsg
 Returns a msg of the type /c_fill for use in osc bundles.
@@ -173,7 +173,7 @@ Examples::
 code::
 s = Server.local;
 s.boot;
-	
+
 (
 // something to play with
 SynthDef(\help_Bus, { arg out=0,ffreq=100;
@@ -214,15 +214,15 @@ b.get({arg value; a = value; ("after the server responds a is set to:" + a).post
 )
 
 x.free;
-	
-	// buses can also be used with kr or ar like UGens: 
+
+	// buses can also be used with kr or ar like UGens:
 (
 
 SynthDef(\help_Bus, {
-	var ffreq = b.kr; 
-	Out.ar(0, 
+	var ffreq = b.kr;
+	Out.ar(0,
 		RLPF.ar(
-			LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1), 
+			LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1),
 			ffreq, 0.1
 		).clip2(0.4)
 	);
@@ -232,21 +232,21 @@ SynthDef(\help_Bus, {
 b.free; // release it so it may be reallocated!
 
 
-// using and setting multichannel buses: 
+// using and setting multichannel buses:
 
 (
 b = Bus.control(s, 4);
 
-x = SynthDef(\helpBusMulti, { 
+x = SynthDef(\helpBusMulti, {
 	var freqs = b.kr;
 	Out.ar(0, Splay.ar(SinOsc.ar(freqs) * Decay2.ar(Dust.ar(10 ! 4), 0.001, 0.1)) * 0.5);
 }).play;
 )
 
-	// set bus beginning at index 0: 
-	// none of these methods checks whether the indexes remain 
-	// within the bus's range. 
-	
+	// set bus beginning at index 0:
+	// none of these methods checks whether the indexes remain
+	// within the bus's range.
+
 b.set(234, 345, 456, 567);
 b.getn;
 b.setn([100, 200, 300, 400]);
@@ -266,7 +266,7 @@ b.getn;
 b.set(300, 500, 700, 900);
 
 (	// just get the first 2 channels
-x = SynthDef(\helpBusMulti, { 
+x = SynthDef(\helpBusMulti, {
 	Out.ar(0, SinOsc.ar(b.kr(2)) * 0.2);
 }).play;
 )
@@ -274,7 +274,7 @@ b.set(300, 303);
 x.free;
 
 (	// just channels[[2, 3]];
-y = SynthDef(\helpBusMulti, { 
+y = SynthDef(\helpBusMulti, {
 	Out.ar(0, LFNoise2.ar(b.kr(2, 2)) * 0.2);
 }).play;
 )

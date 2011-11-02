@@ -42,7 +42,7 @@ Examples::
 code::
 (
 SynthDef(\help_Control, { | freq = 200 |
-	
+
 	freq.inspect; // at the time of compiling the def
 
 }).add
@@ -51,7 +51,7 @@ SynthDef(\help_Control, { | freq = 200 |
 // synonym:
 (
 SynthDef(\help_Control, {
-	
+
 	\freq.kr(200).inspect; // at the time of compiling the def
 
 }).add
@@ -66,16 +66,16 @@ code::
 (
 SynthDef(\help_Control, { arg out=0, i_freq;
 	var klank, harm, amp, ring;
-	
+
 	// harmonics
 	harm = Control.names([\harm]).ir(Array.series(4, 1, 1).postln);
 	// amplitudes
 	amp = Control.names([\amp]).ir(Array.fill(4, 0.05));
 	// ring times
 	ring = Control.names([\ring]).ir(Array.fill(4, 1));
-	
+
 	klank = Klank.ar(`[harm, amp, ring], { ClipNoise.ar(0.01) }.dup, i_freq);
-	
+
 	Out.ar(out, klank);
 }).add;
 )
@@ -104,7 +104,7 @@ b.setn(\array, Array.rand(20, 200, 1600));
 (
 SynthDef(\help_Control_DynKlank, { arg out=0, freq = 440;
 	var klank, harm, amp, ring;
-	
+
 	// harmonics
 	harm = Control.names(\harm).kr(Array.series(4, 1, 1));
 	// amplitudes
@@ -131,8 +131,8 @@ b.setn(\ring, Array.rand(4, 0.005, 1.0))
 
 subsection:: Symbols
 
-Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see: link::Classes/ControlName::, and link::Classes/Symbol::)
-	
+Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see: link::Classes/NamedControl::, and link::Classes/Symbol::)
+
 definitionlist::
 ## code:: \name.kr(val, lag) ::
 || Return a control rate link::Classes/NamedControl:: input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
@@ -144,7 +144,7 @@ a = { SinOsc.ar(\freq.kr([440, 460], 1.2)) }.play;
 a.setn(\freq, [330, 367]);
 a.release;
 ::
-	
+
 ## code:: \name.ar(val, lag) ::
 || Return an audio rate link::Classes/NamedControl:: input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
 

@@ -76,7 +76,7 @@ function resize_handler() {
 }
 
 function addInheritedMethods() {
-    if(!document.getElementById("filename")) return; // hackish trick, only class-docs has a 'filename' div.
+    if(! /\/Classes\/[^\/]+/.test(window.location.pathname)) return; // skip this if not a class doc
     var doc = docmap["Classes/"+document.title];
     if(!doc) return;
     if(doc.implementor) {
@@ -314,7 +314,7 @@ function selectParens(ev) {
     s.addRange(r2);
 }
 
-function fixTOC() {        
+function fixTOC() {
     var x = document.getElementsByClassName("lang-sc");
     for(var i=0;i<x.length;i++) {
         var e = x[i];

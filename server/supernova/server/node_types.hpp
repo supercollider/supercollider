@@ -63,9 +63,9 @@ protected:
         node_id = new_id;
     }
 
+public:
     int32_t node_id;
 
-public:
     int32_t id(void) const
     {
         return node_id;
@@ -107,16 +107,26 @@ public:
         return !synth_;
     }
 
-    /** set a slot */
     /* @{ */
+    /* set a scalar slot */
     virtual void set(slot_index_t slot_id, float val) = 0;
-    virtual void set(slot_index_t slot_str, size_t n, float * values) = 0;
     virtual void set(const char * slot_str, float val) = 0;
-    virtual void set(const char * slot_str, size_t n, float * values) = 0;
     virtual void set(const char * slot_str, size_t hashed_str, float val) = 0;
-    virtual void set(const char * slot_str, size_t hashed_str, size_t n, float * values) = 0;
     /* @} */
 
+    /* @{ */
+    /* set an arrayed slot from array */
+    virtual void set_control_array(slot_index_t slot_str, size_t n, float * values) = 0;
+    virtual void set_control_array(const char * slot_str, size_t n, float * values) = 0;
+    virtual void set_control_array(const char * slot_str, size_t hashed_str, size_t n, float * values) = 0;
+    /* @} */
+
+    /* @{ */
+    /* set an element of an arrayed slot */
+    virtual void set_control_array_element(slot_index_t slot_str, size_t n, float values) = 0;
+    virtual void set_control_array_element(const char * slot_str, size_t n, float values) = 0;
+    virtual void set_control_array_element(const char * slot_str, size_t hashed_str, size_t n, float values) = 0;
+    /* @} */
 
     /* @{ */
     /** group traversing */

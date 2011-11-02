@@ -166,17 +166,15 @@ SequenceableCollection : Collection {
 		});
 		^nil
 	}
-	indicesOfEqual { |item|
-		var indices, i=0, offset=0;
-		while {
-			i = this.indexOfEqual(item, offset);
-			i.notNil
-		}{
-			indices = indices.add(i);
-			offset = i + 1;
-		}
-		^indices
-	}
+
+        indicesOfEqual { |item|
+                var indices;
+                this.do { arg val, i;
+                        if (item == val) { indices = indices.add(i) }
+                };
+                ^indices
+        }
+
 
 	find { |sublist, offset=0|
 		var subSize_1 = sublist.size - 1, first = sublist.first, index;
@@ -830,6 +828,16 @@ SequenceableCollection : Collection {
 		if(this.size == 1, { ^this.first.rate });
 		^this.collect({ arg item; item.rate }).minItem;
 		// 'scalar' > 'control' > 'audio'
+	}
+
+	// if we don't catch the special case of an empty array,
+	// Object:multiChannelPerform goes into infinite recursion
+	multiChannelPerform { arg selector ... args;
+		if(this.size > 0) {
+			^super.multiChannelPerform(selector, *args);
+		} {
+			^this.class.new
+		}
 	}
 
 	// support some UGen convenience methods.

@@ -1,7 +1,8 @@
 QNumberBox : QAbstractStepValue {
-  var <clipLo, <clipHi, <scroll, <scroll_step;
+  var <scroll, <scroll_step;
   var <align, <buttonsVisible = false;
   var <normalColor, <typingColor;
+  var <object, <>setBoth = true;
 
   *qtClass { ^"QcNumberBox" }
 
@@ -12,23 +13,56 @@ QNumberBox : QAbstractStepValue {
   }
 
   initQNumberBox {
-    clipLo = inf;
-    clipHi = inf;
     scroll = true;
     scroll_step = 1;
     normalColor = Color.black;
     typingColor = Color.red;
   }
 
-  clipLo_ { arg aFloat;
-    clipLo = aFloat;
-    this.setProperty( \minimum, aFloat; );
+  object_  { arg obj;
+    if( setBoth ) {
+      if( obj.isNumber ) { this.value = obj } { this.string = obj.asString }
+    };
+    object = obj
   }
 
-  clipHi_ { arg aFloat;
-    clipHi = aFloat;
-    this.setProperty( \maximum, aFloat; );
+  value {
+    var type = this.getProperty( \valueType );
+    var val;
+    switch( type,
+      0 /* Number */, { val = this.getProperty( \value ) },
+      1 /* Inf */, { val = inf },
+      2 /* -Inf */, { val = -inf },
+      3 /* NaN */, { val = 0 },
+      4 /* Text */, { val = 0 }
+    );
+    ^val;
   }
+
+  value_ { arg value;
+    case
+      // isNaN has to be on the first plase, because a NaN is also equal to inf and -inf
+      { value.isNaN } { this.invokeMethod( \setNaN ); }
+      { value == inf } { this.invokeMethod( \setInfinite, true ); }
+      { value == -inf } { this.invokeMethod( \setInfinite, false ); }
+      { this.setProperty( \value, value.asFloat ); }
+    ;
+  }
+
+  valueAction_ { arg val;
+    this.value_(val);
+    action.value(this);
+  }
+
+  string { ^this.getProperty( \text ); }
+
+  string_ { arg string; this.setProperty( \text, string ); }
+
+  clipLo { ^this.getProperty(\minimum) }
+  clipLo_ { arg aFloat; this.setProperty( \minimum, aFloat ) }
+
+  clipHi { ^this.getProperty(\maximum) }
+  clipHi_ { arg aFloat; this.setProperty( \maximum, aFloat ) }
 
   scroll_ { arg aBool;
     scroll = aBool;

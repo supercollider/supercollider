@@ -1,0 +1,256 @@
+CLASS:: MultiSliderView
+redirect:: implClass
+summary:: A view displaying an array of sliders
+categories:: GUI>Views
+
+DESCRIPTION::
+
+MultiSliderView displays a collection of values, each represented by the position of one of the sliders placed side by side.
+
+When clicking into the view, the value of the slider under the mouse pointer will be set. Whenever the mouse is moved with a mouse button pressed, the slider currently under the mouse pointer will be adjusted.
+
+The last slider modified is considered to be the strong::current:: one, i.e. the link::#-index:: method will return its index, and link::#-currentValue:: relates to its value.
+
+The current slider is also considered to be the strong::selected:: one. Selection can be extended to more than one slider by modifying link::#-selectionSize::. Whenever a different slider becomes the current one, the selection size shrinks back to 1. Note that the selection will only be visually indicated if link::#-showIndex:: is code::true::.
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+METHOD:: new
+
+	note:: strong:: In Qt GUI: ::
+
+	A new MultiSliderView is created empty, without any columns. link::#-size:: or link::#-value:: has to be set in order to create some columns.
+	::
+
+	note:: strong:: Other GUI kits: ::
+
+	A new MultiSliderView is created with code::bounds.width/12:: sliders. However, the default link::#-thumbSize:: is 12 and the default link::#-gap:: is 1. The view width has to be code::13*n+2:: for all the sliders to automatically fit in the view.
+
+	So if you want a specific number of sliders, then it is best to specify the link::#-size:: and set link::#-elasticMode:: to 1. Then you will get a MultiSliderView which distributes link::#-size:: amount of sliders over code::bounds.width::, where the slider widths are at maximum link::#-indexThumbSize:: (default 12) and the link::#-gap:: is adjusted accordingly.
+	::
+
+
+
+INSTANCEMETHODS::
+
+SUBSECTION:: Data
+
+METHOD:: size
+	The amount of sliders.
+
+	When setting -size, if the new amount is larger then the current, new sliders will be added with the value of 0. In the opposite case, the value of sliders up to the new amount will be preserved, and the rest of the sliders will be removed.
+
+	note:: strong:: In Cocoa and SwingOSC GUIs: ::
+
+	Changing -size after the view has been drawn or after the link::#-value:: array has been set will lead to unexpected results. Instead, you should change the link::#-value::, if you need to change the contents of the view.
+
+	::
+
+	argument::
+		An Integer.
+
+METHOD:: value
+
+	Sets the values of the sliders to those of the elements of the argument.
+
+	note::
+	If the amount of elements in the argument does not match link::#-size::, then makes link::#-size:: match before applying the new values.
+	::
+
+	argument::
+		An array of Floats.
+
+METHOD:: valueAction
+
+	Sets link::#-value:: and triggeres link::#-action::.
+
+METHOD:: reference
+
+	The reference values in relation to which the values will be visually represented. The default for each slider is 0.
+
+	argument::
+		An array of Floats.
+
+METHOD:: index
+
+	The index of the current slider, i.e. the first one in the selection.
+
+	argument::
+		An Integer.
+
+METHOD:: selectionSize
+
+	The amount of sliders in the selection (starting at link::#-index::).
+
+METHOD:: currentvalue
+
+	The value of the slider at link::#-index::
+
+	argument::
+		A Float.
+
+
+
+SUBSECTION:: Display
+
+METHOD:: indexIsHorizontal
+
+	The orientation of the view: if true, the sliders are displayed in a horizontal order, otherwise in a vertical order.
+
+	argument::
+		A Boolean.
+
+METHOD:: elasticMode
+
+	If enabled (set to 1), the sliders from link::#-startIndex:: to the last one will be distributed so as to occupy the whole area of the view. The link::#-gap:: variable will be ignored. The size of each slider in the direction of index will be maximally link::#-indexThumbSize::, or smaller in order for all the sliders to fit into the view.
+
+	argument::
+		0 (disabled) or 1 (enabled).
+
+METHOD:: gap
+
+	The gap between the sliders in pixels when link::#-elasticMode:: is disabled.
+
+	argument::
+		An Integer.
+
+METHOD:: indexThumbSize
+
+	The size of the sliders in the direction of index in pixels . If link::#-elasticMode:: is enabled, this will be the maximum size, but the actual size might be smaller in order for all the sliders to fit into the view.
+
+	argument::
+		An Integer.
+
+METHOD:: valueThumbSize
+
+	The size of the slider handles in the direction of value in pixels (if drawn).
+
+	argument::
+		An Integer.
+
+METHOD:: thumbSize
+
+	Sets both link::#-indexThumbSize:: and link::#-valueThumbSize:: to the argument.
+
+METHOD:: startIndex
+
+	The index of the slider displayed at the left or top edge of the view (depending on whether link::#-indexIsHorizontal:: is true or false, respectively). Sliders with lower index than this will not be visible.
+
+	argument::
+		An Integer.
+
+
+SUBSECTION:: Appearance
+
+METHOD:: showIndex
+
+	Wether the slider selection is visually indicated.
+
+	argument::
+		A Boolean.
+
+METHOD:: drawRects
+
+	Whether to draw the sliders.
+
+	argument::
+		A Boolean.
+
+METHOD:: drawLines
+
+	Whether to draw a line connecting the points that represent the link::#-value#values:: of the sliders, and a line connecting the points that represent the link::#-reference#references::.
+
+	argument::
+		A Boolean.
+
+METHOD:: isFilled
+
+	If true, the sliders will have their area between the link::#-reference:: and the link::#-value:: colored, and the area bounded by the lines connecting the reference and the value points will be colored as well.
+
+	argument::
+		A Boolean.
+
+METHOD:: strokeColor
+
+	The color used to draw the lines described in link::#-drawLines::.
+
+	argument::
+		A Color.
+
+METHOD:: fillColor
+
+	The color used to visualize the areas described in link::#-isFilled::.
+
+	argument::
+		A Color.
+
+METHOD:: colors
+
+	Sets link::#-strokeColor:: and link::#-fillColor:: to the two arguments, respectively.
+
+
+
+SUBSECTION:: Interaction
+
+METHOD:: editable
+
+	Whether the values can be edited using mouse or keyboard.
+
+	argument::
+		A Boolean.
+
+METHOD:: readOnly
+
+	The opposite if link::#-editable::.
+
+	argument::
+		A Boolean.
+
+METHOD:: step
+
+	If the argument is larger than 0, makes the MultiSliderView keep the values quantized to the nearest multiple of the argument.
+
+
+
+SUBSECTION:: Actions
+
+
+METHOD:: action
+	The action object evaluated whenever the user changes the value of a slider.
+
+METHOD:: metaAction
+	The action object evaluated whenever the user changes the value of a slider while the Ctrl key is pressed.
+
+METHOD:: defaultKeyDownAction
+
+	Implements the default effects of key presses as follows:
+
+	table::
+	## strong::Key::   || strong::Effect::
+	## up arrow        || Qt: increment -currentValue by -step; Cocoa: decrement -gap by 1
+	## down arrow      || Qt: decrement -currentValue by -step; Cocoa: increment -gap by 1
+	## right arrow     || increment -index by 1
+	## left arrow      || decrement -index by 1
+	::
+
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		a) If link::#-selectionSize:: is 0, returns link::#-value::.
+
+		b) If link::#-selectionSize:: > 1, returns an Array with the values at the indexes in the selection.
+
+		If link::#-reference:: is not nil, returns an Array containing (a) or (b), and an Array of the corresponding reference values: code:: [[values], [references]] ::.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		True for any drag data, but the data should either be an Array of values ( code:: [values] :: ), or an Array containg an Array of values and an Array of corresponding reference values ( code:: [[values], [references]] :: ).
+
+METHOD:: defaultReceiveDrag
+	If the drag data is in one of the acceptable forms (see link::#-defaultCanReceiveDrag:: above), sets link::#-value:: (and link::#-reference::) using that data.

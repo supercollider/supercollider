@@ -4,7 +4,7 @@ related::Classes/SparseArray
 categories:: Collections>Ordered
 
 DESCRIPTION::
-Keeps elements in an order and allows to put them at arbitrary slots 
+Keeps elements in an order and allows to put them at arbitrary slots
 without having to allocate a large array.
 
 note::

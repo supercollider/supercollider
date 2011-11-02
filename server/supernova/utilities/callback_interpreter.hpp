@@ -46,10 +46,13 @@ struct nop_functor
 
 
 template <class callback_type,
+          bool mpmc = true,
           class callback_deleter = boost::checked_deleter<callback_type> >
 class callback_interpreter:
-    callback_system<callback_type>
+    callback_system<callback_type, mpmc, callback_deleter>
 {
+    typedef callback_system<callback_type, mpmc, callback_deleter> super_t;
+
 public:
     callback_interpreter(void):
         sem(0), running(false)
@@ -57,7 +60,7 @@ public:
 
     void add_callback(callback_type * cb)
     {
-        callback_system<callback_type>::add_callback(cb);
+        super_t::add_callback(cb);
         sem.post();
     }
 
@@ -87,9 +90,8 @@ private:
         do
         {
             sem.wait();
-            callback_system<callback_type>::run_callbacks();
-        }
-        while(likely(running.load(boost::memory_order_relaxed)));
+            super_t::run_callbacks();
+        } while(likely(running.load(boost::memory_order_relaxed)));
     }
 
 protected:
@@ -102,10 +104,10 @@ template <class callback_type,
           class init_functor = detail::nop_functor,
           class callback_deleter = boost::checked_deleter<callback_type> >
 class threaded_callback_interpreter:
-    public callback_interpreter<callback_type, callback_deleter>,
+    public callback_interpreter<callback_type, true, callback_deleter>,
     init_functor
 {
-    typedef callback_interpreter<callback_type, callback_deleter> super;
+    typedef callback_interpreter<callback_type, true, callback_deleter> super;
 
     boost::thread thread;
 
@@ -122,7 +124,7 @@ public:
     void start_thread(void)
     {
         semaphore sync_sem;
-        semaphore_sync sync(sync_sem);
+        semaphore_sync<semaphore> sync(sync_sem);
         boost::thread thr(boost::bind(&threaded_callback_interpreter::run_thread, this, boost::ref(sync_sem)));
         thread = thr.move();
     }
@@ -144,10 +146,10 @@ template <class callback_type,
           class init_functor = detail::nop_functor,
           class callback_deleter = boost::checked_deleter<callback_type> >
 class callback_interpreter_threadpool:
-    public callback_interpreter<callback_type, callback_deleter>,
+    public callback_interpreter<callback_type, true, callback_deleter>,
     init_functor
 {
-    typedef callback_interpreter<callback_type, callback_deleter> super;
+    typedef callback_interpreter<callback_type, true, callback_deleter> super;
 
 public:
     callback_interpreter_threadpool(uint16_t worker_thread_count, bool rt, uint16_t priority):

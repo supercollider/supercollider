@@ -42,9 +42,9 @@ discussion::
 code::
 chain = chain.pvcollect(numframes, func, frombin, tobin, zeroothers)
 ::
-pvcollect applies function code::func:: to each bin of an FFT chain. func should be a function that takes code:: magnitude, phase, index :: as inputs and returns a resulting code::[magnitude, phase]::.
+pvcollect applies function code::func:: to each bin of an FFT chain. func should be a function that takes code:: magnitude, phase, bin, index :: as inputs and returns a resulting code::[magnitude, phase]::.
 
-The "index" is the integer bin number, starting at 0 for DC. You can optionally ignore the phase and only return a single (magnitude) value, in which case the phase is assumed to be left unchanged.
+The "bin" is the integer bin number, starting at 0 for DC, while "index" is the iteration number, always starting with 0. You can optionally ignore the phase and only return a single (magnitude) value, in which case the phase is assumed to be left unchanged.
 
 frombin, tobin, and zeroothers are optional arguments which limit the processing to a specified integer range of FFT bins. If zeroothers is set to 1 then bins outside of the range being processed are silenced.
 
@@ -66,7 +66,7 @@ subsection:: pvcalc
 code::
 (
 s.boot.doWhenBooted{
-	c = Buffer.read(s,"sounds/a11wlk01.wav");
+	c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 }
 )
 
@@ -75,7 +75,7 @@ x = {
 	var in, chain, v;
 	in = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(LocalBuf(1024), in);
-		
+
 	chain = chain.pvcalc(1024, {|mags, phases|
 //////// Try uncommenting each of these lines in turn and re-running the synth:
 		[mags * {1.5.rand}.dup(mags.size), phases + {pi.rand}.dup(phases.size)]; // Arbitrary filter, arbitrary phase shift
@@ -83,7 +83,7 @@ x = {
 		//[mags.differentiate, phases.differentiate]; // Differentiate along frequency axis
 		//[mags[30..] ++ mags[..30], phases[30..] ++ phases[..30]]; // ".rotate" doesn't work directly, but this is equivalent
 	}, frombin: 0, tobin: 250, zeroothers: 0);
-	
+
 	Out.ar(0, 0.5 * IFFT(chain).dup);
 }.play(s);
 )
@@ -94,7 +94,7 @@ subsection:: pvcalc2
 code::
 (
 s.boot.doWhenBooted {
-c = Buffer.read(s,"sounds/a11wlk01.wav");
+c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 }
 )
 
@@ -104,7 +104,7 @@ x = {
 	var in, chain, in2, chain2, out;
 	in = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(LocalBuf(fftsize), in);
-		
+
 	// in2 = PlayBuf.ar(1, e, BufRateScale.kr(e), loop: 1);
 	// JMcC babbling brook
 	in2 = ({
@@ -115,11 +115,11 @@ x = {
 		)
 			* 4;
 	chain2 = FFT(LocalBuf(fftsize), in2);
-	
+
 	chain = chain.pvcalc2(chain2, fftsize, {|mags, phases, mags2, phases2|
 		[mags * mags2 / 10, phases2 + phases]
 	}, frombin: 0, tobin: 125, zeroothers: 0);
-	
+
 	out = IFFT(chain);
 	Out.ar(0, 0.5 * out.dup);
 }.play(s);
@@ -131,7 +131,7 @@ subsection:: pvcollect
 code::
 (
 s.boot.doWhenBooted{
-c = Buffer.read(s,"sounds/a11wlk01.wav");
+c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 }
 )
 
@@ -140,9 +140,9 @@ x = {
 	var in, chain, v;
 	in = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(LocalBuf(1024), in);
-	
+
 	v = LFPar.kr(0.5).range(0.1, 1);
-	
+
 	chain = chain.pvcollect(1024, {|mag, phase, index|
 //////// Try uncommenting each of these lines in turn and re-running the synth:
 		//mag;
@@ -158,7 +158,7 @@ x = {
 		//mag + DelayN.kr(mag, 1, v); // Spectral delay
 		if((index-LFPar.kr(0.1).range(2, 1024/20)).abs < 10, mag, 0); // Swept bandpass
 	}, frombin: 0, tobin: 250, zeroothers: 0);
-	
+
 	Out.ar(0, 0.5 * IFFT(chain).dup);
 }.play(s);
 )

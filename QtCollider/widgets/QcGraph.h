@@ -28,15 +28,28 @@
 #include <QWidget>
 
 struct QcGraphElement {
+
+  friend class QcGraphModel;
+
   enum CurveType {
     Step,
     Linear,
-    Exponential,
     Sine,
     Welch,
+    Exponential,
     Curvature
   };
-  QcGraphElement() : fillColor( QColor(0,0,0) ), curvature( 0.f ), editable( true ) {};
+
+  QcGraphElement() :
+    fillColor( QColor(0,0,0) ),
+    curveType( Linear ),
+    curvature( 0.f ),
+    editable( true ),
+    selected( false ),
+    _prev(0),
+    _next(0)
+  {};
+
   void setCurveType( QVariant data ) {
     if( data.type() == QVariant::String ) {
       QString curveName = data.toString();
@@ -53,17 +66,30 @@ struct QcGraphElement {
       curvature = data.value<float>();
     }
   }
+
+  QcGraphElement *prev() { return _prev; }
+  QcGraphElement *next() { return _next; }
+
   QPointF value;
   QString text;
   QColor fillColor;
   CurveType curveType;
   float curvature;
   bool editable;
+  bool selected;
+
+private:
+  QcGraphElement *_prev;
+  QcGraphElement *_next;
 };
 
-class QcGraphModel
+class QcGraphModel : public QObject
 {
+  Q_OBJECT
+
   public:
+
+    QcGraphModel( QObject * parent = 0 ) : QObject(parent) {}
 
     struct Connection {
       Connection( QcGraphElement * a_ = 0, QcGraphElement * b_ = 0 ) : a(a_), b(b_) {}
@@ -77,19 +103,11 @@ class QcGraphModel
 
     inline int elementCount() const { return _elems.count(); }
 
-    inline void append( QcGraphElement * e ) { _elems.append(e); }
+    void append( QcGraphElement * e );
+
+    void removeAt( int i );
 
     inline QList<Connection> connections() const { return _conns; }
-
-    void removeAt( int i ) {
-      QcGraphElement *e = _elems[i];
-      int ci = _conns.count();
-      while( ci-- ) {
-        Connection c = _conns[ci];
-        if( c.a == e || c.b == e ) _conns.removeAt(ci);
-      }
-      _elems.removeAt(i);
-    }
 
     void connect( int xi, int yi ) {
       QcGraphElement *x = _elems[xi];
@@ -101,6 +119,10 @@ class QcGraphModel
       }
       _conns.append( Connection(x,y) );
     }
+
+  Q_SIGNALS:
+    void appended( QcGraphElement * );
+    void removed( QcGraphElement * );
 
   private:
 
@@ -124,32 +146,54 @@ class QcGraph : public QWidget, QcHelper
   Q_PROPERTY( bool drawLines READ dummyBool WRITE setDrawLines );
   Q_PROPERTY( bool drawRects READ dummyBool WRITE setDrawRects );
   Q_PROPERTY( bool editable READ dummyBool WRITE setEditable );
-  Q_PROPERTY( float step READ dummyFloat WRITE setStep );
+  Q_PROPERTY( double step READ step WRITE setStep );
+  Q_PROPERTY( int selectionForm READ selectionForm WRITE setSelectionForm );
+  Q_PROPERTY( int horizontalOrder READ horizontalOrder WRITE setHorizontalOrder );
   Q_PROPERTY( float x READ currentX WRITE setCurrentX );
   Q_PROPERTY( float y READ currentY WRITE setCurrentY );
   Q_PROPERTY( QPointF grid READ grid WRITE setGrid );
   Q_PROPERTY( bool gridOn READ dummyBool WRITE setGridOn );
 
   public:
+    Q_INVOKABLE void connectElements( int, VariantList );
+    Q_INVOKABLE void setCurves( const VariantList & curves );
+    Q_INVOKABLE void setStringAt( int, const QString & );
+    Q_INVOKABLE void setFillColorAt( int, const QColor & );
+    Q_INVOKABLE void setEditableAt( int, bool );
+
+  public Q_SLOTS:
+    Q_INVOKABLE void select( int index, bool exclusive = true );
+    Q_INVOKABLE void deselect( int index );
+    Q_INVOKABLE void deselectAll();
+
+  Q_SIGNALS:
+    void action();
+    void metaAction();
+
+  public:
+    enum SelectionForm {
+      ElasticSelection,
+      RigidSelection
+    };
+
+    enum Order {
+      NoOrder,
+      RigidOrder
+    };
+
+  public:
     QcGraph();
 
     VariantList value() const;
-    int index() const { return selIndex; }
+    int index() const { return _curIndex; }
     float currentX() const;
     float currentY() const;
     QPointF grid() const { return _gridMetrics; }
 
     void setValue( const VariantList & );
     void setStrings( const VariantList &list );
-    Q_INVOKABLE void setCurves( const VariantList & curves );
-    Q_INVOKABLE void setStringAt( int, const QString & );
-    Q_INVOKABLE void connectElements( int, VariantList );
-    void setIndex( int i ) {
-      if( i>=0 && i<_model.elementCount() ) {
-        selIndex = i;
-        update();
-      }
-    }
+
+    void setIndex( int i );
     void setCurrentX( float );
     void setCurrentY( float );
     void setThumbSize( float f ) { _thumbSize = QSize(f,f); update(); }
@@ -157,27 +201,51 @@ class QcGraph : public QWidget, QcHelper
     void setThumbHeight( float f ) { _thumbSize.setHeight(f); update(); }
     void setStrokeColor( const QColor & c ) { _strokeColor = c; update(); }
     void setFillColor( const QColor & c );
-    Q_INVOKABLE void setFillColorAt( int, const QColor & );
+
     void setSelectionColor( const QColor & c ) { _selColor = c; update(); }
     void setGridColor( const QColor & c ) { _gridColor = c; update(); }
     void setDrawLines( bool b ) { _drawLines = b; update(); }
     void setDrawRects( bool b ) { _drawRects = b; update(); }
     void setEditable( bool b ) { _editable = b; update(); }
-    Q_INVOKABLE void setEditableAt( int, bool );
-    void setStep( float f );
+
+    double step() const { return _step; }
+    void setStep( double );
+    int selectionForm() const { return (int)_selectionForm; }
+    void setSelectionForm( int i ) { _selectionForm = (SelectionForm) i; }
+    int horizontalOrder() const { return (int)_xOrder; }
+    void setHorizontalOrder( int i );
     void setGrid( const QPointF &pt ) { _gridMetrics = pt; update(); }
     void setGridOn( bool b ) { _gridOn = b; update(); }
     QSize sizeHint() const { return QSize( 200,200 ); }
     QSize minimumSizeHint() const { return QSize( 50,50 ); }
 
-  Q_SIGNALS:
-    void action();
-    void metaAction();
+  private Q_SLOTS:
+    void onElementRemoved( QcGraphElement *e );
 
   private:
-    inline void setValue( QcGraphElement *, const QPointF & );
+    struct SelectedElement {
+      SelectedElement( QcGraphElement *e ) : elem(e) {}
+      bool operator == (const SelectedElement & other) {
+        return elem == other.elem;
+      }
+
+      QcGraphElement *elem;
+      QPointF moveOrigin; // in data domain
+    };
+
+  private:
+    void setAllDeselected();
+    void setIndexSelected( int index, bool selected );
+    void restrictValue( QPointF & );
+    void orderRestrictValue( QcGraphElement *, QPointF &, bool selected );
+    void setValue( QcGraphElement *, const QPointF & );
+    void ensureOrder();
+    void moveFree( QcGraphElement *, const QPointF & );
+    void moveOrderRestricted( QcGraphElement *, const QPointF & );
+    void moveSelected( const QPointF & dValue, SelectionForm, bool fromCache );
     QPointF pos( const QPointF & value );
     QPointF value( const QPointF & pos );
+    void addCurve( QPainterPath &, QcGraphElement *e1, QcGraphElement *e2 );
     void paintEvent( QPaintEvent * );
     void mousePressEvent( QMouseEvent * );
     void mouseMoveEvent( QMouseEvent * );
@@ -197,11 +265,22 @@ class QcGraph : public QWidget, QcHelper
     bool _drawRects;
 
     bool _editable;
-    float _step;
+    double _step;
+    SelectionForm _selectionForm;
+    Order _xOrder;
 
-    int selIndex;
-    int dragIndex;
-    QPointF dragDelta;
+    int _curIndex;
+
+    struct Selection {
+      Selection () : cached(false), shallMove(false) {}
+      int size() { return elems.size(); }
+      int count() { return elems.count(); }
+
+      QList<SelectedElement> elems;
+      bool cached;
+      bool shallMove;
+      QPointF moveOrigin; // in data domain
+    } _selection;
 };
 
 #endif

@@ -51,9 +51,13 @@
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
+#include "PyrLexer.h"
 #include "PyrSlot.h"
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"   // for gIdeName
+#include "SC_LibraryConfig.h"
+
+#define STDIN_FD 0
 
 static FILE* gPostDest = stdout;
 
@@ -63,8 +67,23 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mShouldBeRunning(false),
 	  mReturnCode(0),
-	  mUseReadline(false)
+	  mUseReadline(false),
+	  mInput(false),
+	  mSched(true),
+	  mRecompile(false)
 {
+	pthread_cond_init (&mCond, NULL);
+	pthread_mutex_init(&mSignalMutex, NULL);
+	pthread_mutex_init(&mInputMutex, NULL);
+	pthread_cond_init(&mInputCond, NULL);
+}
+
+SC_TerminalClient::~SC_TerminalClient()
+{
+	pthread_cond_destroy (&mCond);
+	pthread_mutex_destroy(&mSignalMutex);
+	pthread_mutex_destroy(&mInputMutex);
+	pthread_cond_destroy(&mInputCond);
 }
 
 void SC_TerminalClient::postText(const char* str, size_t len)
@@ -230,10 +249,13 @@ int SC_TerminalClient::run(int argc, char** argv)
 	// read library configuration file
 	bool success;
 	if (opt.mLibraryConfigFile) {
-		readLibraryConfig(opt.mLibraryConfigFile, opt.mLibraryConfigFile);
-	} else {
-		readDefaultLibraryConfig();
-	}
+		int argLength = strlen(opt.mLibraryConfigFile);
+		if (strcmp(opt.mLibraryConfigFile + argLength - 5, ".yaml"))
+			SC_LanguageConfig::readLibraryConfig(opt.mLibraryConfigFile);
+		else
+			SC_LanguageConfig::readLibraryConfigYAML(opt.mLibraryConfigFile);
+	} else
+		SC_LanguageConfig::readDefaultLibraryConfig();
 
 	// initialize runtime
 	initRuntime(opt);
@@ -246,11 +268,15 @@ int SC_TerminalClient::run(int argc, char** argv)
 	if (codeFile) executeFile(codeFile);
 	if (opt.mCallRun) runMain();
 
-	if (opt.mDaemon) daemonLoop();
+	if (opt.mDaemon) {
+		daemonLoop();
+	}
 	else {
-		initCmdLine();
-		if( mShouldBeRunning ) commandLoop();
-		cleanupCmdLine();
+		initInput();
+		if( shouldBeRunning() ) startInput();
+		if( shouldBeRunning() ) commandLoop();
+		endInput();
+		cleanupInput();
 	}
 
 	if (opt.mCallStop) stopMain();
@@ -285,50 +311,277 @@ void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char* cmdLine)
 	flush();
 }
 
-#ifdef HAVE_READLINE
-// Function called by readline "up to ten times a second" while waiting for input
-int sc_rl_ticker();
-int sc_rl_ticker(){
-	SC_TerminalClient::instance()->tick();
-	return 0;
+
+void SC_TerminalClient::interpretCmdLine(PyrSymbol* method, const char *cmdLine, size_t size)
+{
+	setCmdLine(cmdLine, size);
+	runLibrary(method);
+	flush();
 }
 
-void sc_rl_signalhandler(int sig);
-void sc_rl_signalhandler(int sig){
+// WARNING: Call with input locked!
+void SC_TerminalClient::interpretInput()
+{
+	char *data = mInputBuf.getData();
+	int c = mInputBuf.getSize();
+	int i = 0;
+	while( i < c ) {
+		switch (data[i]) {
+		case kInterpretCmdLine:
+			interpretCmdLine(s_interpretCmdLine, data, i);
+			break;
+		case kInterpretPrintCmdLine:
+			interpretCmdLine(s_interpretPrintCmdLine, data, i);
+			break;
+
+		case kRecompileLibrary:
+			recompileLibrary();
+			break;
+
+		default:
+			++i;
+			continue;
+		}
+
+		data += i+1;
+		c -= i+1;
+		i = 0;
+	}
+	mInputBuf.reset();
+	if( mUseReadline ) pthread_cond_signal( &mInputCond );
+}
+
+void SC_TerminalClient::onLibraryStartup()
+{
+	SC_LanguageClient::onLibraryStartup();
+	int base, index = 0;
+	base = nextPrimitiveIndex();
+	definePrimitive(base, index++, "_Argv", &SC_TerminalClient::prArgv, 1, 0);
+	definePrimitive(base, index++, "_Exit", &SC_TerminalClient::prExit, 1, 0);
+	definePrimitive(base, index++, "_AppClock_SchedNotify",
+		&SC_TerminalClient::prScheduleChanged, 1, 0);
+	definePrimitive(base, index++, "_Recompile", &SC_TerminalClient::prRecompile, 1, 0);
+}
+
+void SC_TerminalClient::onScheduleChanged()
+{
+	lockSignal();
+	mSched = true;
+	pthread_cond_signal( &mCond );
+	unlockSignal();
+}
+
+void SC_TerminalClient::onInput()
+{
+	lockSignal();
+	mInput = true;
+	pthread_cond_signal( &mCond );
+	unlockSignal();
+}
+
+void SC_TerminalClient::onQuit( int exitCode )
+{
+	lockSignal();
+	postfl("client: quit request %i\n", exitCode);
+	quit( exitCode );
+	pthread_cond_signal( &mCond );
+	unlockSignal();
+}
+
+void SC_TerminalClient::onRecompileLibrary()
+{
+	lockSignal();
+	mRecompile = true;
+	pthread_cond_signal( &mCond );
+	unlockSignal();
+}
+
+extern void ElapsedTimeToTimespec(double elapsed, struct timespec *spec);
+
+void SC_TerminalClient::commandLoop()
+{
+	bool haveNext = false;
+	struct timespec nextAbsTime;
+
+	lockSignal();
+
+	while( shouldBeRunning() )
+	{
+
+		while ( mInput || mSched || mRecompile ) {
+			bool input = mInput;
+			bool sched = mSched;
+			bool recompile = mRecompile;
+
+			unlockSignal();
+
+			if (input) {
+				//postfl("input\n");
+				lockInput();
+				interpretInput();
+				// clear input signal, as we've processed anything signalled so far.
+				lockSignal();
+				mInput = false;
+				unlockSignal();
+				unlockInput();
+			}
+
+			if (sched) {
+				//postfl("tick\n");
+				double secs;
+				lock();
+				haveNext = tickLocked( &secs );
+				// clear scheduler signal, as we've processed all items scheduled up to this time.
+				// and will enter the wait according to schedule.
+				lockSignal();
+				mSched = false;
+				unlockSignal();
+				unlock();
+
+				flush();
+
+				//postfl("tick -> next time = %f\n", haveNext ? secs : -1);
+				ElapsedTimeToTimespec( secs, &nextAbsTime );
+			}
+
+			if (recompile) {
+				recompileLibrary();
+				lockSignal();
+				mRecompile = false;
+				unlockSignal();
+			}
+
+			lockSignal();
+		}
+
+		if( !shouldBeRunning() ) {
+			break;
+		}
+		else if( haveNext ) {
+			int result = pthread_cond_timedwait( &mCond, &mSignalMutex, &nextAbsTime );
+			if( result == ETIMEDOUT ) mSched = true;
+		}
+		else {
+			pthread_cond_wait( &mCond, &mSignalMutex );
+		}
+	}
+
+	unlockSignal();
+}
+
+void SC_TerminalClient::daemonLoop()
+{
+	commandLoop();
+}
+
+#ifdef HAVE_READLINE
+
+static void sc_rl_cleanlf(void)
+{
+	rl_reset_line_state();
+	rl_crlf();
+	rl_redisplay();
+}
+
+static void sc_rl_signalhandler(int sig)
+{
 	// ensure ctrl-C clears line rather than quitting (ctrl-D will quit nicely)
 	rl_replace_line("", 0);
-	rl_reset_line_state();
-	rl_crlf();
-	rl_redisplay();
+	sc_rl_cleanlf();
 }
 
-int sc_rl_mainstop(int i1, int i2);
-int sc_rl_mainstop(int i1, int i2){
+static int sc_rl_mainstop(int i1, int i2)
+{
 	SC_TerminalClient::instance()->stopMain();
-	// We also push a newline so that there's some UI feedback
-	rl_reset_line_state();
-	rl_crlf();
-	rl_redisplay();
+	sc_rl_cleanlf(); // We also push a newline so that there's some UI feedback
 	return 0;
 }
 
-void SC_TerminalClient::readlineCb(char *cmdLine)
+int SC_TerminalClient::readlineRecompile(int i1, int i2)
 {
-	SC_TerminalClient *lang =
-		static_cast<SC_TerminalClient*>( instance() );
+	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())->onRecompileLibrary();
+	sc_rl_cleanlf();
+	return 0;
+}
 
-	if( cmdLine == 0 ) {
+void SC_TerminalClient::readlineCmdLine( char *cmdLine )
+{
+	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(instance());
+
+	if( cmdLine == NULL ) {
 		printf("\nExiting sclang (ctrl-D)\n");
-		lang->quit(0);
+		client->onQuit(0);
 		return;
 	}
+
 	if(*cmdLine!=0){
 		// If line wasn't empty, store it so that uparrow retrieves it
 		add_history(cmdLine);
-		lang->interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
+		int len = strlen(cmdLine);
+
+		client->lockInput();
+		client->mInputBuf.append(cmdLine, len);
+		client->mInputBuf.append(kInterpretPrintCmdLine);
+		client->onInput();
+		// Wait for input to be processed,
+		// so that its output is displayed before readline prompt.
+		if (client->mInputShouldBeRunning)
+			pthread_cond_wait( &client->mInputCond, &client->mInputMutex );
+		client->unlockInput();
 	}
 }
 
+void *SC_TerminalClient::readlineFunc( void *arg )
+{
+	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
+
+	// Setup readline
+	rl_readline_name = "sclang";
+	rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
+	//rl_attempted_completion_function = sc_rl_completion;
+	rl_bind_key(0x02, &sc_rl_mainstop);
+	rl_bind_key(CTRL('x'), &readlineRecompile);
+	// TODO 0x02 is ctrl-B;
+	// ctrl-. would be nicer but keycode not working here (plain "." is 46 (0x2e))
+	rl_callback_handler_install( "sc3> ", &readlineCmdLine );
+
+	// Set our handler for SIGINT that will clear the line instead of terminating.
+	// NOTE: We prevent readline from setting its own signal handlers,
+	// to not override ours.
+	rl_catch_signals = 0;
+	struct sigaction sact;
+	memset( &sact, 0, sizeof(struct sigaction) );
+	sact.sa_handler = &sc_rl_signalhandler;
+	sigaction( SIGINT, &sact, 0 );
+
+	fd_set fds;
+	FD_ZERO(&fds);
+
+	while(true) {
+		FD_SET(STDIN_FD, &fds);
+		FD_SET(client->mInputCtlPipe[0], &fds);
+
+		if( select(FD_SETSIZE, &fds, NULL, NULL, NULL) < 0 ) {
+			if( errno == EINTR ) continue;
+			postfl("readline: select() error:\n%s\n", strerror(errno));
+			client->onQuit(1);
+			break;
+		}
+
+		if( FD_ISSET(client->mInputCtlPipe[0], &fds) ) {
+			postfl("readline: quit requested\n");
+			break;
+		}
+
+		if( FD_ISSET(STDIN_FD, &fds) ) {
+			rl_callback_read_char();
+		}
+	}
+
+	printf("readline stopped.\n");
+
+	return NULL;
+}
 /*
 // Completion from sclang dictionary TODO
 char ** sc_rl_completion (const char *text, int start, int end);
@@ -340,207 +593,248 @@ char ** sc_rl_completion (const char *text, int start, int end){
 */
 #endif
 
-static const int fd = 0;
-#ifndef _WIN32
-static struct pollfd pfds = { fd, POLLIN, 0 };
-#endif
-
-void SC_TerminalClient::initCmdLine()
-{
 #ifndef _WIN32
 
-#ifdef HAVE_READLINE
-
-	if(strcmp(gIdeName, "none") == 0){ // Other clients (emacs, vim, ...) won't want to interact through rl
-		// Set up rl for sclang-specific nicenesses
-		rl_readline_name = "sclang";
-		rl_callback_handler_install( "sc3> ", &SC_TerminalClient::readlineCb );
-		rl_set_keyboard_input_timeout(1e6/ticks_per_second);
-		rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
-		//rl_attempted_completion_function = sc_rl_completion;
-		rl_bind_key(0x02, &sc_rl_mainstop); // TODO 0x02 is ctrl-B; ctrl-. would be nicer but keycode not working here (plain "." is 46 (0x2e))
-
-		// Set our handler for SIGINT that will clear the line instead of terminating.
-		// NOTE: We have to prevent readline from setting its own signal handlers,
-		// to not override ours.
-		rl_catch_signals = 0;
-		struct sigaction sact;
-		memset( &sact, 0, sizeof(struct sigaction) );
-		sact.sa_handler = &sc_rl_signalhandler;
-		sigaction( SIGINT, &sact, 0 );
-
-		mUseReadline = true;
-	}else{
-
-#endif
-
-		if (fcntl(fd, F_SETFL, O_NONBLOCK) == -1) {
-			perror(getName());
-			quit(1);
-			return;
-		}
-
-		mUseReadline = false;
-
-#ifdef HAVE_READLINE
-	} // end gIdeName!="none"
-#endif
-
-#else // _WIN32
-
-#endif // _WIN32
-}
-
-static SC_StringBuffer gCmdLine;
-
-#ifdef HAVE_READLINE
-void SC_TerminalClient::readCmdLineRL()
+void *SC_TerminalClient::pipeFunc( void *arg )
 {
-	int nfds = poll(&pfds, 1, 0);
-	if (nfds > 0) {
-		const int bufSize = 128;
-		char buf[bufSize];
+	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
 
-		int n = read(fd, buf, bufSize);
+	ssize_t bytes;
+	const size_t toRead = 256;
+	char buf[toRead];
+	SC_StringBuffer stack;
 
-		for (int i=0; i<n; ++i) {
-			rl_stuff_char(buf[i]);
-			rl_callback_read_char();
+	fd_set fds;
+	FD_ZERO(&fds);
+
+	bool shouldRead = true;
+	while(shouldRead) {
+		FD_SET(STDIN_FD, &fds);
+		FD_SET(client->mInputCtlPipe[0], &fds);
+
+		if( select(FD_SETSIZE, &fds, NULL, NULL, NULL) < 0 ) {
+			if( errno == EINTR ) continue;
+			postfl("pipe-in: select() error: %s\n", strerror(errno));
+			client->onQuit(1);
+			break;
 		}
 
-		if (n < 0 && errno != EINTR) {
-			perror(getName()); quit(1);
+		if( FD_ISSET(client->mInputCtlPipe[0], &fds) ) {
+			postfl("pipe-in: quit requested\n");
+			break;
+		}
+
+		if( FD_ISSET(STDIN_FD, &fds) ) {
+
+			while(true) {
+				bytes = read( STDIN_FD, buf, toRead );
+
+				if( bytes > 0 ) {
+					client->pushCmdLine( stack, buf, bytes );
+				}
+				else if( bytes == 0 ) {
+					postfl("pipe-in: EOF. Will quit.\n");
+					client->onQuit(0);
+					shouldRead = false;
+					break;
+				}
+				else {
+					if( errno == EAGAIN ) {
+						break; // no more to read this time;
+					}
+					else if( errno != EINTR ){
+						postfl("pipe-in: read() error: %s\n", strerror(errno));
+						client->onQuit(1);
+						shouldRead = false;
+						break;
+					}
+				}
+			}
 		}
 	}
-	else if (nfds == -1 && errno != EINTR) {
-		perror(getName()); quit(1);
-	}
+
+	postfl("pipe-in: stopped.\n");
+
+	return NULL;
 }
-#endif // HAVE_READLINE
+
+#else
+
+void *SC_TerminalClient::pipeFunc( void *arg )
+{
+	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(arg);
+
+	SC_StringBuffer stack;
+	HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
+	HANDLE hnds[] = { client->mQuitInputEvent, hStdIn };
+
+	bool shouldRun = true;
+	while (shouldRun) {
+		DWORD result = WaitForMultipleObjects( 2, hnds, false, INFINITE );
+
+		if( result == WAIT_FAILED ) {
+			postfl("pipe-in: wait error.\n");
+			client->onQuit(1);
+			break;
+		}
+
+		int hIndex = result - WAIT_OBJECT_0;
+
+		if( hIndex == 0 ) {
+			postfl("pipe-in: quit requested.\n");
+			break;
+		}
+
+		if( hIndex == 1 ) {
+			DWORD nAvail;
+			if (!PeekNamedPipe(hStdIn, NULL, 0, NULL, &nAvail, NULL)) {
+				DWORD err =  GetLastError();
+				if( err == ERROR_BROKEN_PIPE ) {
+					postfl("pipe-in: Pipe has been ended. Quitting.\n");
+					client->onQuit(0);
+				}
+				else {
+					postfl("pipe-in: Error trying to peek stdin (%Li). Quitting.\n", err);
+					client->onQuit(1);
+				}
+				break;
+			}
+
+			while (nAvail > 0)
+			{
+				char buf[256];
+				DWORD nRead = sc_min(256, nAvail);
+				if (!ReadFile(hStdIn, buf, nRead, &nRead, NULL)) {
+					postfl("pipe-in: Error trying to read stdin (%Li). Quitting.\n", GetLastError());
+					client->onQuit(1);
+					shouldRun = false;
+					break;
+				}
+				else if (nRead > 0) {
+					client->pushCmdLine( stack, buf, nRead );
+				}
+
+				nAvail -= nRead;
+			}
+		}
+	}
+
+	postfl("pipe-in: stopped.\n");
+
+	return NULL;
+}
+
+#endif
+
+void SC_TerminalClient::pushCmdLine( SC_StringBuffer &buf, const char *newData, size_t size)
+{
+	lockInput();
+
+	bool signal = false;
+
+	while (size--) {
+		char c = *newData++;
+		switch (c) {
+		case kRecompileLibrary:
+		case kInterpretCmdLine:
+		case kInterpretPrintCmdLine:
+			mInputBuf.append( buf.getData(), buf.getSize() );
+			mInputBuf.append(c);
+			signal = true;
+			buf.reset();
+			break;
+
+		default:
+			buf.append(c);
+		}
+	}
+
+	if(signal) onInput();
+
+	unlockInput();
+}
+
+
+
+
+void SC_TerminalClient::initInput()
+{
 
 #ifndef _WIN32
 
-void SC_TerminalClient::readCmdLineStream()
-{
-	int nfds = poll(&pfds, 1, 0);
-	if (nfds > 0) {
-		int n = 0;
-		do {
-			const int bufSize = 256;
-			char buf[bufSize];
-
-			n = read(fd, buf, bufSize);
-
-			if (n > 0) {
-				pushCmdLine(buf, n, gCmdLine);
-			}
-			else if ( n == 0 ) {
-				quit(0);
-			}
-			else if ( errno != EAGAIN ) {
-				perror(getName());
-				quit(1);
-			}
-		} while ( n > 0 );
-	} else if (nfds == -1 && errno != EINTR) {
-		perror(getName());
+	if( pipe( mInputCtlPipe ) == -1 ) {
+		postfl("Error creating pipe for input thread control:\n%s\n", strerror(errno));
 		quit(1);
+	}
+
+#ifdef HAVE_READLINE
+
+	if (strcmp(gIdeName, "none") == 0) {
+		// Other clients (emacs, vim, ...) won't want to interact through rl
+		mUseReadline = true;
 		return;
 	}
-}
+
+#endif
+
+	if( fcntl( STDIN_FD, F_SETFL, O_NONBLOCK ) == -1 ) {
+		postfl("Error setting up non-blocking pipe reading:\n%s\n", strerror(errno));
+		quit(1);
+	}
 
 #else // !_WIN32
 
-void SC_TerminalClient::readCmdLineStream()
-{
-	DWORD nAvail;
-	HANDLE hStdIn = GetStdHandle(STD_INPUT_HANDLE);
-	if (!PeekNamedPipe(hStdIn, NULL, 0, NULL, &nAvail, NULL)) {
-		return;
+	mQuitInputEvent = CreateEvent( NULL, false, false, NULL );
+	if( mQuitInputEvent == NULL ) {
+		postfl("Error creating event for input thread control.\n");
+		quit(1);
 	}
-
-	while (nAvail > 0)
-	{
-		char buf[256];
-		DWORD nRead = sc_min(256, nAvail);
-		if (!ReadFile(hStdIn, buf, nRead, &nRead, NULL)) {
-			quit(1); return;
-		}
-		else if (nRead > 0) {
-			pushCmdLine(buf, nRead, gCmdLine);
-		}
-		nAvail -= nRead;
-	}
-}
+	postfl("Created input thread control event.\n");
 
 #endif // !_WIN32
+}
 
-void SC_TerminalClient::readCmdLine()
+
+void SC_TerminalClient::startInput()
 {
-#if defined( HAVE_READLINE ) && !defined( _WIN32 )
-	if (mUseReadline)
-		readCmdLineRL();
+	mInputShouldBeRunning = true;
+#ifdef HAVE_READLINE
+	if( mUseReadline )
+		pthread_create( &mInputThread, NULL, &SC_TerminalClient::readlineFunc, this );
 	else
 #endif
-		readCmdLineStream();
+		pthread_create( &mInputThread, NULL, &SC_TerminalClient::pipeFunc, this );
 }
 
-void SC_TerminalClient::pushCmdLine(const char *buf, int bufc, SC_StringBuffer& cmdLine)
+void SC_TerminalClient::endInput()
 {
-	while (bufc--) {
-		char c = *buf++;
-		if (c == kInterpretCmdLine) {
-			interpretCmdLine(s_interpretCmdLine, cmdLine);
-		} else if (c == kInterpretPrintCmdLine) {
-			interpretCmdLine(s_interpretPrintCmdLine, cmdLine);
-		} else {
-			cmdLine.append(c);
-		}
-	}
+	// wake up the input thread in case it is waiting
+	// for input to be processed
+	lockInput();
+		mInputShouldBeRunning = false;
+		pthread_cond_signal( &mInputCond );
+	unlockInput();
+
+#ifndef _WIN32
+	postfl("client: closing input-thread control pipe\n");
+	close( mInputCtlPipe[1] );
+#else
+	postfl("client: signalling input thread quit event\n");
+	SetEvent( mQuitInputEvent );
+#endif
+
+	postfl("client: stopped, waiting for input thread to join...\n");
+
+	pthread_join( mInputThread, NULL );
+
+	postfl("client: input thread joined.\n");
 }
 
-void SC_TerminalClient::cleanupCmdLine()
+void SC_TerminalClient::cleanupInput()
 {
 #ifdef HAVE_READLINE
 	if( mUseReadline ) rl_callback_handler_remove();
 #endif
-}
-
-void SC_TerminalClient::commandLoop()
-{
-#ifndef _WIN32
-	struct timespec tv = { 0, 1e9 / ticks_per_second };
-#else
-	int period = 1000 / ticks_per_second;
-#endif
-
-	while (shouldBeRunning()) {
-		tick(); // also flushes post buffer
-		readCmdLine();
-#ifndef _WIN32
-		if (nanosleep(&tv, 0) == -1 && errno != EINTR) {
-			perror(getName());
-			quit(1);
-			break;
-		}
-#else
-		Sleep(period);
-#endif
-	}
-}
-
-void SC_TerminalClient::daemonLoop()
-{
-	struct timespec tv = { 0, 1e9 / ticks_per_second };
-
-	while (shouldBeRunning()) {
-		tick(); // also flushes post buffer
-		if (nanosleep(&tv, 0) == -1 && errno != EINTR) {
-			perror(getName());
-			quit(1);
-			break;
-		}
-	}
 }
 
 int SC_TerminalClient::prArgv(struct VMGlobals* g, int)
@@ -570,17 +864,20 @@ int SC_TerminalClient::prExit(struct VMGlobals* g, int)
 	int err = slotIntVal(g->sp, &code);
 	if (err) return err;
 
-	((SC_TerminalClient*)SC_LanguageClient::instance())->quit(code);
+	((SC_TerminalClient*)SC_LanguageClient::instance())->onQuit( code );
 
 	return errNone;
 }
 
-void SC_TerminalClient::onLibraryStartup()
+int SC_TerminalClient::prScheduleChanged( struct VMGlobals *g, int numArgsPushed)
 {
-	int base, index = 0;
-	base = nextPrimitiveIndex();
-	definePrimitive(base, index++, "_Argv", &SC_TerminalClient::prArgv, 1, 0);
-	definePrimitive(base, index++, "_Exit", &SC_TerminalClient::prExit, 1, 0);
+	static_cast<SC_TerminalClient*>(instance())->onScheduleChanged();
+	return errNone;
 }
 
+int SC_TerminalClient::prRecompile(struct VMGlobals *, int)
+{
+	static_cast<SC_TerminalClient*>(instance())->onRecompileLibrary();
+	return errNone;
+}
 // EOF

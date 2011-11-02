@@ -53,6 +53,9 @@ Rect {
 	leftBottom { ^Point.new(this.left, this.bottom) }
 	rightBottom { ^Point.new(this.right, this.bottom) }
 
+	size { ^Size(width,height) }
+	size_ { |sz| width = sz.width; height = sz.height }
+
 	moveBy { arg h, v;
 		^this.class.new(left + h, top + v, width, height)
 	}
@@ -158,6 +161,9 @@ Rect {
 
 	asArray { ^[this.left, this.top, this.width, this.height] }
 
+	performBinaryOpOnSomething { |aSelector, thing, adverb|
+		^thing.asRect.perform(aSelector, this, adverb)
+	}
 	+ {|that|
 		var thatRect;
 		thatRect = that.asRect;
@@ -180,6 +186,4 @@ Rect {
 			this.height - thatRect.height
 		)
 	}
-
-
 }

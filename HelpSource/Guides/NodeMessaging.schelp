@@ -31,8 +31,8 @@ is
 code::
 n = Synth("default");
 n.free;
-::	
-	
+::
+
 when passing arguments:
 code::
 n = s.nextNodeID;
@@ -40,14 +40,14 @@ s.sendMsg("/s_new", "default", n, 0, 0, "freq", 850);
 s.sendMsg("/n_set", n, "freq", 500);
 s.sendMsg("/n_free", n);
 ::
-	
+
 it is
 code::
 n = Synth("default", [\freq, 850]);
 n.set(\freq, 500)
 n.free;
 ::
-	
+
 note that Symbols may be used instead of Strings:
 code::
 n = s.nextNodeID;
@@ -67,22 +67,22 @@ The answer to the question of whether one should work with node objects or direc
 The encapsulation of node objects results in a certain generalization, meaning that other compound objects can respond to the same messages and thus exploit polymorphism. They also provide a certain level of convienence, keeping track of indexes and IDs, etc.
 
 In certain cases, such as for granular synthesis it is recommended to use messages directly, because there is no benefit to be gained from the node objects (i.e. no need to message them) and they add cpu load to the client side.
-code::	
+code::
 (
-SynthDef("grain", { 
+SynthDef("grain", {
 	Out.ar(0, Line.kr(0.1, 0, 0.01, doneAction:2) * FSinOsc.ar(12000))
 }).send(s);
 )
 
 (
-Routine({ 
+Routine({
 	20.do({
-		s.sendMsg("/s_new", "grain", -1); 
+		s.sendMsg("/s_new", "grain", -1);
 		0.01.wait;
 	})
 }).play;
 )
-::	
+::
 
 In cases where you need to keep track of the synth's state, it is advisable to use node objects and register them with a link::Classes/NodeWatcher::. (see helpfile)
 
@@ -121,7 +121,7 @@ SynthDescLib.global[\controlList]
 ::
 Prints:
 code::
-SynthDesc 'controlList' 
+SynthDesc 'controlList'
 Controls:
 ControlName  P 0 freq control 440
 ControlName  P 1 amp control 0.10000000149012

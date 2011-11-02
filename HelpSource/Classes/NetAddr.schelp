@@ -1,6 +1,6 @@
 class:: NetAddr
 summary:: network address
-related:: Classes/OSCresponder
+related:: Classes/OSCFunc
 categories:: Control, OpenSoundControl
 
 ClassMethods::
@@ -65,7 +65,7 @@ Examples::
 
 code::
 n = NetAddr("127.0.0.1", 57120); // 57120 is sclang default port
-r = OSCresponder(n, '/good/news', { arg time, resp, msg; [time, msg].postln }).add;
+r = OSCFunc({ arg msg, time; [time, msg].postln }, '/good/news', n);
 
 n.sendMsg("/good/news", "you", "not you");
 n.sendMsg("/good/news", 1, 1.3, 77);
@@ -73,12 +73,12 @@ n.sendMsg("/good/news", 1, 1.3, 77);
 
 n.sendBundle(0.2, ["/good/news", 1, 1.3, 77]);
 
-r.remove;
+r.free;
 n.disconnect;
 
 // note that different NetAddr objects with the same port and ip are independent.
 
-r = OSCresponder(nil, '/x', { "message arrived".postln }).add;
+r = OSCFunc({ "message arrived".postln }, '/x');
 
 n = NetAddr("127.0.0.1", 57120);
 n.sendMsg("/x")
@@ -91,7 +91,7 @@ n.disconnect
 
 u.sendMsg("/x");
 
-r.remove;
+r.free;
 u.disconnect;
 ::
 

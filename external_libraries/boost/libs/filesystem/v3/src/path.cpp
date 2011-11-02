@@ -27,6 +27,7 @@
 #include <boost/scoped_array.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/assert.hpp>
+#include <algorithm>
 #include <cstddef>
 #include <cstring>
 #include <cassert>
@@ -83,6 +84,7 @@ namespace
   const wchar_t* preferred_separator_string = L"\\";
   const wchar_t colon = L':';
   const wchar_t dot = L'.';
+  const wchar_t questionmark = L'?';
   const fs::path dot_path(L".");
   const fs::path dot_dot_path(L"..");
 
@@ -155,27 +157,17 @@ namespace filesystem3
 
 # ifdef BOOST_WINDOWS_API
 
-  void path::m_portable()
-  {
-    for (string_type::iterator it = m_pathname.begin();
-          it != m_pathname.end(); ++it)
-    {
-      if (*it == L'\\')
-        *it = L'/';
-    }
-  }
-
   const std::string path::generic_string(const codecvt_type& cvt) const
   { 
     path tmp(*this);
-    tmp.m_portable();
+    std::replace(tmp.m_pathname.begin(), tmp.m_pathname.end(), L'\\', L'/');
     return tmp.string(cvt);
   }
 
   const std::wstring path::generic_wstring() const
   { 
     path tmp(*this);
-    tmp.m_portable();
+    std::replace(tmp.m_pathname.begin(), tmp.m_pathname.end(), L'\\', L'/');
     return tmp.wstring();
   }
 
@@ -216,12 +208,7 @@ namespace filesystem3
 # ifdef BOOST_WINDOWS_API
   path & path::make_preferred()
   {
-    for (string_type::iterator it = m_pathname.begin();
-          it != m_pathname.end(); ++it)
-    {
-      if (*it == L'/')
-        *it = L'\\';
-    }
+    std::replace(m_pathname.begin(), m_pathname.end(), L'/', L'\\');
     return *this;
   }
 # endif
@@ -441,8 +428,8 @@ namespace
   bool is_non_root_separator(const string_type & str, size_type pos)
     // pos is position of the separator
   {
-    BOOST_ASSERT(!str.empty() && is_separator(str[pos])
-      && "precondition violation");
+    BOOST_ASSERT_MSG(!str.empty() && is_separator(str[pos]),
+      "precondition violation");
 
     // subsequent logic expects pos to be for leftmost slash of a set
     while (pos > 0 && is_separator(str[pos-1]))
@@ -503,6 +490,19 @@ namespace
     if (size == 2
       && is_separator(path[0])
       && is_separator(path[1])) return string_type::npos;
+
+#   ifdef BOOST_WINDOWS_API
+  	// case "\\?\"
+  	if (size > 4
+  	  && is_separator(path[0])
+  	  && is_separator(path[1])
+  	  && path[2] == questionmark
+  	  && is_separator(path[3]))
+  	{
+  	  string_type::size_type pos(path.find_first_of(separators, 4));
+        return pos < size ? pos : string_type::npos;
+  	}
+#   endif
 
     // case "//net {/}"
     if (size > 3
@@ -621,7 +621,8 @@ namespace filesystem3
 
   void path::m_path_iterator_increment(path::iterator & it)
   {
-    BOOST_ASSERT(it.m_pos < it.m_path_ptr->m_pathname.size() && "path::basic_iterator increment past end()");
+    BOOST_ASSERT_MSG(it.m_pos < it.m_path_ptr->m_pathname.size(),
+      "path::basic_iterator increment past end()");
 
     // increment to position past current element
     it.m_pos += it.m_element.m_pathname.size();
@@ -677,7 +678,7 @@ namespace filesystem3
 
   void path::m_path_iterator_decrement(path::iterator & it)
   {
-    BOOST_ASSERT(it.m_pos && "path::iterator decrement past begin()");
+    BOOST_ASSERT_MSG(it.m_pos, "path::iterator decrement past begin()");
 
     size_type end_pos(it.m_pos);
 
@@ -726,11 +727,6 @@ namespace
   //                              locale helpers                                        //
   //------------------------------------------------------------------------------------//
 
-  // std::locale construction can throw (if LC_MESSAGES is wrong, for example),
-  // so a static at function scope is used to ensure that exceptions can be
-  // caught. (A previous version was at namespace scope, so initialization
-  // occurred before main(), preventing exceptions from being caught.)
-
   std::locale default_locale()
   {
 #   ifdef BOOST_WINDOWS_API
@@ -740,32 +736,43 @@ namespace
 
 #   elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
     // "All BSD system functions expect their string parameters to be in UTF-8 encoding
-    // and nothing else." http://developer.apple.com/mac/library/documentation/MacOSX/Conceptual/BPInternational/Articles/FileEncodings.html
+    // and nothing else." See
+    // http://developer.apple.com/mac/library/documentation/MacOSX/Conceptual/BPInternational/Articles/FileEncodings.html
     //
     // "The kernel will reject any filename that is not a valid UTF-8 string, and it will
     // even be normalized (to Unicode NFD) before stored on disk, at least when using HFS.
     // The right way to deal with it would be to always convert the filename to UTF-8
-    // before trying to open/create a file." http://lists.apple.com/archives/unix-porting/2007/Sep/msg00023.html
+    // before trying to open/create a file." See
+    // http://lists.apple.com/archives/unix-porting/2007/Sep/msg00023.html
     //
     // "How a file name looks at the API level depends on the API. Current Carbon APIs
     // handle file names as an array of UTF-16 characters; POSIX ones handle them as an
     // array of UTF-8, which is why UTF-8 works well in Terminal. How it's stored on disk
     // depends on the disk format; HFS+ uses UTF-16, but that's not important in most
-    // cases." http://lists.apple.com/archives/applescript-users/2002/Sep/msg00319.html
+    // cases." See
+    // http://lists.apple.com/archives/applescript-users/2002/Sep/msg00319.html
     //
     // Many thanks to Peter Dimov for digging out the above references!
+
     std::locale global_loc = std::locale();
     std::locale loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet);
     return loc;
 
-#   else
-    // ISO C calls this "the locale-specific native environment":
+#   else  // Other POSIX
+
+    // ISO C calls std::locale("") "the locale-specific native environment", and this
+    // locale is the default for many POSIX-based operating systems such as Linux.
+
+    // std::locale("") construction can throw (if environmental variables LC_MESSAGES or
+    // or LANG are wrong, for example), so dynamic initialization is used to ensure
+    // that exceptions can be caught.
+
     return std::locale("");
 
 #   endif
   }
 
-  std::locale & path_locale()
+  std::locale& path_locale()
   {
     static std::locale loc(default_locale());
     return loc;
@@ -782,8 +789,7 @@ namespace boost
 namespace filesystem3
 {
 
-  const path::codecvt_type *&
-    path::wchar_t_codecvt_facet()
+  const path::codecvt_type *& path::wchar_t_codecvt_facet()
   {
    static const std::codecvt<wchar_t, char, std::mbstate_t> *
      facet(
@@ -796,12 +802,12 @@ namespace filesystem3
   {
     std::locale temp(path_locale());
     path_locale() = loc;
-    wchar_t_codecvt_facet() = &std::use_facet
-        <std::codecvt<wchar_t, char, std::mbstate_t> >(path_locale());
+    wchar_t_codecvt_facet() =
+      &std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t> >(path_locale());
     return temp;
   }
 
 }  // namespace filesystem3
 }  // namespace boost
 
-#endif  // no wide character support
+#endif  // has wide character support

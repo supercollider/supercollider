@@ -1,9 +1,5 @@
-// emacs:		-*- c++ -*-
-// file:		SC_LibraryConfig.h
-// cvs:			$Id$
-
 /*
- *  Copyright 2003 Maurizio Umberto Puxeddu
+ *  Copyright 2003 Maurizio Umberto Puxeddu <umbpux@tin.it>
  *  Copyright 2011 Jakob Leben
  *
  *  This file is part of SuperCollider.
@@ -38,7 +34,7 @@
 //    simple library configuration file parser
 // =====================================================================
 
-class SC_LibraryConfig;
+class SC_LanguageConfig;
 
 class SC_LibraryConfigFile
 {
@@ -49,7 +45,7 @@ public:
     SC_LibraryConfigFile(ErrorFunc errorFunc=0);
 
     bool open(const char* filePath);
-    bool read(const char* fileName, SC_LibraryConfig* libConf);
+    bool read(const char* fileName, SC_LanguageConfig* libConf);
     void close();
 
 protected:
@@ -69,8 +65,8 @@ protected:
 		kMaxIncludeDepth = 10
 	};
 
-    bool read(int depth, const char* fileName, SC_LibraryConfig* libConf);
-	bool parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LibraryConfig* libConf);
+    bool read(int depth, const char* fileName, SC_LanguageConfig* libConf);
+	bool parseLine(int depth, const char* fileName, int lineNumber, const char* line, SC_LanguageConfig* libConf);
 	static void defaultErrorFunc(const char* fmt, ...);
 
 private:
@@ -78,19 +74,10 @@ private:
 	FILE*				mFile;
 };
 
-// =====================================================================
-// SC_LibraryConfig
-//    library configuration management
-// Copyright 2003 Maurizio Umberto Puxeddu
-// =====================================================================
-
-class SC_LibraryConfig
+class SC_LanguageConfig
 {
 public:
 	typedef std::vector<std::string> DirVector;
-
-	SC_LibraryConfig(void);
-	virtual ~SC_LibraryConfig();
 
 	const DirVector& includedDirectories() { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() { return mExcludedDirectories; }
@@ -100,18 +87,24 @@ public:
 
 	bool pathIsExcluded(const char *path);
 
-	void addIncludedDirectory(char *name);
-	void addExcludedDirectory(char *name);
+	void addIncludedDirectory(const char *name);
+	void addExcludedDirectory(const char *name);
+	void removeIncludedDirectory(const char *name);
+	void removeExcludedDirectory(const char *name);
 
 	// convenience functions to access the global library config
-	static bool readLibraryConfig(SC_LibraryConfigFile& file, const char* fileName);
+	static bool readLibraryConfig(const char* fileName);
+	static bool readLibraryConfigYAML(const char* fileName);
+	static bool writeLibraryConfigYAML(const char* fileName);
 	static void freeLibraryConfig();
+	static bool defaultLibraryConfig(void);
+	static bool readDefaultLibraryConfig();
 
 private:
 	DirVector mIncludedDirectories;
 	DirVector mExcludedDirectories;
 };
 
-extern SC_LibraryConfig* gLibraryConfig;
+extern SC_LanguageConfig* gLibraryConfig;
 
 #endif // SC_LIBRARYCONFIG_H_INCLUDED

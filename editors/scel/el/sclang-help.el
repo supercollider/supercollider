@@ -35,14 +35,14 @@
   :options '(:must-match))
 
 (defcustom sclang-help-path (list sclang-system-help-dir
-				  "~/share/SuperCollider/Help")
+				  "~/.local/share/SuperCollider/Help")
   "*List of directories where SuperCollider help files are kept."
   :group 'sclang-interface
   :version "21.4"
   :type '(repeat directory))
 
 (defconst sclang-extension-path (list sclang-system-extension-dir
-				      "~/share/SuperCollider/Extensions")
+				      "~/.local/share/SuperCollider/Extensions")
   "List of SuperCollider extension directories.")
 
 (defcustom sclang-help-fill-column fill-column
@@ -567,43 +567,85 @@ Either visit file internally (.sc) or start external editor (.rtf)."
   (interactive
    (list
     (let ((topic (or (and mark-active (buffer-substring-no-properties (region-beginning) (region-end)))
-		     (sclang-help-topic-at-point)
-		     "Help")))
+                     (sclang-help-topic-at-point)
+                     "Help")))
       (completing-read (format "Help topic%s: " (if (sclang-get-help-file topic)
-						    (format " (default %s)" topic) ""))
-		       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic))))
+                                                    (format " (default %s)" topic) ""))
+                       sclang-help-topic-alist nil t nil 'sclang-help-topic-history topic))))
   (let ((file (sclang-get-help-file topic)))
     (if file
-	(if (file-exists-p file)
-	    (let* ((buffer-name (sclang-help-buffer-name topic))
-		   (buffer (get-buffer buffer-name)))
-	      (unless buffer
-		(if (sclang-html-file-p file)
-		     (w3m-find-file file)
-		   ;;  (sclang-goto-help-browser)
-		;; not a sclang-html file
-		(setq buffer (get-buffer-create buffer-name))
-		(with-current-buffer buffer
-		  (insert-file-contents file)
-		  (let ((sclang-current-help-file file)
-			(default-directory (file-name-directory file)))
-		    (sclang-help-mode))
-		  (set-buffer-modified-p nil)))
-	      (switch-to-buffer buffer))
-	      (if (sclang-html-file-p file)
-		  (sclang-goto-help-browser))
-	      )
-	  (sclang-message "Help file not found") nil)
+        (if (file-exists-p file)
+            (let* ((buffer-name (sclang-help-buffer-name topic))
+                   (buffer (get-buffer buffer-name)))
+              (unless buffer
+                (if (sclang-html-file-p file)
+                    (w3m-find-file file)
+                  ;;  (sclang-goto-help-browser)
+                  ;; not a sclang-html file
+                  (setq buffer (get-buffer-create buffer-name))
+                  (with-current-buffer buffer
+                    (insert-file-contents file)
+                    (let ((sclang-current-help-file file)
+                          (default-directory (file-name-directory file)))
+                      (sclang-help-mode))
+                    (set-buffer-modified-p nil)))
+                (switch-to-buffer buffer))
+              (if (sclang-html-file-p file)
+                  (sclang-goto-help-browser))
+              )
+          (sclang-message "Help file not found") nil)
       (sclang-message "No help for \"%s\"" topic) nil)))
+
+
+(defun sclang-open-help-gui ()
+  "Open SCDoc Help Browser"
+  (interactive)
+  (sclang-eval-string (sclang-format "Help.gui"))
+  )
+
+(defvar sclang-scdoc-topics (make-hash-table :size 16385)
+  "List of all scdoc topics.")
+
+(sclang-set-command-handler
+ 'helpSymbols
+ (lambda (list-of-symbols)
+   (mapcar (lambda (arg)
+             (puthash arg nil sclang-scdoc-topics))
+           list-of-symbols)
+   ))
+
+(defun sclang-find-help-in-gui (topic)
+  "Search for topic in SCDoc Help Browser"
+  (interactive
+   (list
+    (let ((topic (sclang-symbol-at-point)))
+      (completing-read (format "Help topic%s: " (if topic
+                                                    (format " (default %s)" topic)
+                                                  ""))
+                       sclang-scdoc-topics nil nil nil 'sclang-help-topic-history topic)))
+   )
+  (if topic
+      (sclang-eval-string (sclang-format "HelpBrowser.openHelpFor(%o)" topic))
+    (sclang-eval-string (sclang-format "Help.gui"))
+    )
+  )
+
 
 ;; =====================================================================
 ;; module setup
 ;; =====================================================================
 
-(add-hook 'sclang-library-startup-hook (lambda ()
-					 (condition-case nil
-					     (sclang-index-help-topics)
-					   (error nil))))
+(add-hook 'sclang-library-startup-hook
+          (lambda ()
+            (sclang-perform-command 'helpSymbols)
+            (condition-case nil
+                (sclang-index-help-topics)
+              (error nil))))
+
+(add-hook 'sclang-library-shutdown-hook
+          (lambda ()
+            (clrhash sclang-scdoc-topics)))
+
 (add-to-list 'auto-mode-alist '("\\.rtf$" . sclang-help-mode))
 ;; ========= ADDITION for HTML help files?? ============
 ;; (add-to-list 'auto-mode-alist '("\\.html$" . sclang-help-mode))

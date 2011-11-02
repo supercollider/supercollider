@@ -1,7 +1,7 @@
 class:: SendReply
 summary:: Send an array of values from the server to all notified clients
 categories:: UGens>Triggers
-related:: Classes/SendTrig
+related:: Classes/SendTrig, Classes/OSCFunc, Classes/SendReply, Classes/SendTrig
 
 description::
 A message is sent to all notified clients. See link::Classes/Server::.
@@ -31,21 +31,23 @@ examples::
 code::
 (
 {
-	SendReply.kr(Impulse.kr(3), 'the_answer', [40, 41, 42, 43] + MouseX.kr, 1905);
+	SendReply.kr(Impulse.kr(3), '/the_answer', [40, 41, 42, 43] + MouseX.kr, 1905);
 }.play(s);
 )
 
-o.remove; o = OSCresponder(nil, 'the_answer', { |t, r, msg| msg.postln }).add;
+o = OSCFunc({ |msg| msg.postln }, '/the_answer');
 
 
 // multichannel expansion
 (
 {
-	SendReply.kr(Impulse.kr(3), 
-		'the_answer', 
-		values: [[40, 80], [41, 56], 42, [43, 100, 200]], 
+	SendReply.kr(Impulse.kr(3),
+		'/the_answer',
+		values: [[40, 80], [41, 56], 42, [43, 100, 200]],
 		replyID: [1905, 1906, 1907, 1908]
 	);
 }.play(s);
 )
+
+o.free;
 ::

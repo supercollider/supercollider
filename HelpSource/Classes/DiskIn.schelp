@@ -15,10 +15,11 @@ private:: categories
 method::ar
 
 argument::numChannels
-Number of channels
+Number of channels. This must match the number of channels in the buffer.
 
 argument::bufnum
 Buffer number
+Note:: The Buffer's numFrames must be a power of two and is recommended to be at least 65536 -- preferably 131072 or 262144. Smaller buffer sizes mean more frequent disk access, which can cause glitches. ::
 
 argument:: loop
 If set to 1, the soundfile will loop.
@@ -44,7 +45,7 @@ code::
 s.sendMsg("/b_alloc", 0, 65536, 1);
 
 // open an input file for this buffer, leave it open
-s.sendMsg("/b_read", 0, "sounds/a11wlk01-44_1.aiff", 0, 65536, 0, 1);
+s.sendMsg("/b_read", 0, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 65536, 0, 1);
 
 // create a diskin node
 s.sendMsg("/s_new", "help-Diskin", x = s.nextNodeID, 1, 1);
@@ -52,9 +53,9 @@ s.sendMsg("/s_new", "help-Diskin", x = s.nextNodeID, 1, 1);
 s.sendMsg("/b_close", 0); // close the file (very important!)
 
 
-// again 
+// again
 // don't need to reallocate and Synth is still reading
-s.sendMsg("/b_read", 0, "sounds/a11wlk01-44_1.aiff", 0, 0, 0, 1);
+s.sendMsg("/b_read", 0, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 0, 0, 1);
 
 s.sendMsg("/n_free", x); // stop reading
 
@@ -65,23 +66,23 @@ s.sendMsg("/b_free", 0); // frees the buffer
 
 subsection:: Using Buffer (Object Style)
 code::
-b = Buffer.cueSoundFile(s, "sounds/a11wlk01-44_1.aiff", 0, 1);
+b = Buffer.cueSoundFile(s, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
 
 x = { DiskIn.ar(1, b.bufnum) }.play;
 
-b.close;	
+b.close;
 
 // again
 // note the like named instance method, but different arguments
-b.cueSoundFile("sounds/a11wlk01-44_1.aiff", 0);	
-	
-x.free; b.close; b.free;	
+b.cueSoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0);
+
+x.free; b.close; b.free;
 
 
 
 // loop it (for better looping use PlayBuf!)
 (
-p = "sounds/a11wlk01-44_1.aiff";
+p = Help.dir +/+ "sounds/a11wlk01-44_1.aiff";
 a = SoundFile.new;
 a.openRead(p);
 d = a.numFrames/s.sampleRate; // get the duration
@@ -102,13 +103,13 @@ SynthDef("help-Diskin", { arg bufnum = 0;
 	Out.ar(0, DiskIn.ar(1, bufnum));
 }).send(s);
 )
-(		
+(
 x = Synth.basicNew("help-Diskin");
 m = { arg buf; x.addToHeadMsg(nil, [\bufnum,buf.bufnum])};
 
-b = Buffer.cueSoundFile(s,"sounds/a11wlk01-44_1.aiff",0,1, completionMessage: m);
+b = Buffer.cueSoundFile(s,Help.dir +/+ "sounds/a11wlk01-44_1.aiff",0,1, completionMessage: m);
 
-)		
+)
 
 ::
 

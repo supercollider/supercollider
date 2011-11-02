@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(eval-when-compile (require 'sclang-util)
+                   (require 'sclang-language))
 (eval-and-compile (require 'sclang-interp))
 
 (defvar sclang-widgets nil)

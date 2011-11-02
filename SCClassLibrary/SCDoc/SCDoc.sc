@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 15;
+    classvar version = 21;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -142,7 +142,7 @@ SCDoc {
         var cats, c, map;
         this.postProgress("Creating category map...");
         map = Dictionary.new;
-        doc_map.pairsDo {|k,v|
+        this.docMap.pairsDo {|k,v|
             cats = this.splitList(v.categories);
             cats = cats ? ["Uncategorized"];
             cats.do {|cat|
@@ -303,6 +303,21 @@ SCDoc {
         }
     }
 
+    *findHelpSource {|subtarget|
+        var src;
+        this.findHelpSourceDirs;
+        block {|break|
+            helpSourceDirs.do {|dir|
+                var x = dir+/+subtarget++".schelp";
+                if(File.exists(x)) {
+                    src = x;
+                    break.value;
+                };
+            };
+        };
+        ^src
+    }
+
     *prepareHelpForURL {|url|
         var proto, path, anchor;
         var subtarget, src, c, cmd;
@@ -346,16 +361,7 @@ SCDoc {
             subtarget = path[helpTargetDir.size+1 .. path.findBackwards(".")?path.size-1];
 
             // find help source file
-            block {|break|
-                src = nil;
-                helpSourceDirs.do {|dir|
-                    var x = dir+/+subtarget++".schelp";
-                    if(File.exists(x)) {
-                        src = x;
-                        break.value;
-                    };
-                };
-            };
+            src = this.findHelpSource(subtarget);
 
             // create a simple stub if class was undocumented
             if(src.isNil and: {subtarget.dirname=="Classes"}) {
@@ -530,7 +536,7 @@ SCDoc {
         this.postProgress("Synchronizing non-schelp files...");
         this.checkSystemCmd("rsync");
 
-        cmd = "rsync -rlt --exclude '*.schelp' --exclude '.*' %/ %";
+        cmd = "rsync -rlt --chmod=u+rwX --exclude '*.schelp' --exclude '.*' %/ %";
 
         if(doWait) {
             c = Condition.new;
@@ -624,7 +630,7 @@ SCDoc {
                     // FIXME: if this doc adds a method to a non-class doc, it will not show up in doc.methods...
                     old = doc.additions.copy;
                     doc.additions = doc.additions.add(file).asSet;
-                    update = doc.additions != old;
+                    update = update or: {doc.additions != old};
                     ndocs = ndocs + 1;
                     this.postProgress("Addition for"+subtarget+":"+file);
                 } {
@@ -678,6 +684,7 @@ SCDoc {
         this.postProgress("Generated metadata for"+ndocs+"undocumented classes");
         // NOTE: If we remove a Classes/Name.schelp for an existing class, the doc_map won't get updated.
         // but this shouldn't happen in real-life anyhow..
+
         ndocs = 0;
         doc_map.pairsDo{|k,e|
             if(e.keep!=true, {
@@ -693,6 +700,7 @@ SCDoc {
             this.writeDocMap;
             this.postProgress("Writing JSON doc map");
             this.docMapToJSON(helpTargetDir +/+ "docmap.js");
+            NotificationCenter.notify(SCDoc, \docMapDidUpdate);
         };
         this.postProgress("Done! time spent:"+(Main.elapsedTime-t)+"sec");
     }
@@ -734,4 +742,10 @@ SCDoc {
                     {true})
         );
     }
+}
+
++ Help {
+	*dir {
+		^SCDoc.helpTargetDir
+	}
 }

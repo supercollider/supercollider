@@ -13,7 +13,7 @@ method::new
 
 argument::list
 a list consisting of the stream which gives input signals to determine state transitions, and then dictionary entries, one for each state, mapping the destinattion state and yield streams to those input signals.
-			
+
 argument::startState
 an integer index for the state to start with.
 
@@ -33,18 +33,18 @@ definitionList::
 ## list syntax:
 || [
 definitionList::
-## signal stream, || 
-## ( // state 0, || 
+## signal stream, ||
+## ( // state 0, ||
 definitionList::
-## signal value : [destination state, return stream or pattern], || 
-## signal value : [destination state, return stream or pattern] || 
+## signal value : [destination state, return stream or pattern], ||
+## signal value : [destination state, return stream or pattern] ||
 ::
-## ), || 
-## ... // state 1 ... N || 
+## ), ||
+## ... // state 1 ... N ||
 ::
-## ] || 
+## ] ||
 ::
-	
+
 Any number of states can be given, and are indexed by the order in which they are given.
 
 If the fsm is in state x and it receives a strong::signal value:: y it looks up y in the state dictionary supplied for x, if there is no y entry, it looks for a \default entry and uses that.
@@ -66,7 +66,7 @@ code::
 		0,
 		2
 	).asStream;
-	
+
 	11.do({ p.next.postln });
 )
 
@@ -84,7 +84,7 @@ var p;
 p = Pdfsm(
 	[
 		Prand([0,1,2],inf),	// signalStream
-	
+
 		IdentityDictionary[	// state 0
 			0 -> [ 2, Pseq([67,68,69], 2) ],
 			1 -> [ 0, 66 ],
@@ -168,7 +168,7 @@ for( 1, n, { arg i;
 					\default : [ 2, Pbind(
 									\degree, Prand(base - (i*7), 5),
 									\dur, Prand([0.6,0.8],5)
-								) 
+								)
 							]
 				)
 			],

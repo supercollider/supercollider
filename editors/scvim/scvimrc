@@ -67,6 +67,12 @@ au Filetype supercollider,supercollider_help nmap <buffer> K yiw :call SChelp("
 au Filetype supercollider,supercollider_help imap <buffer>  yiw :call SChelp(""")<CR>
 au Filetype supercollider,supercollider_help nmap <buffer>  yiw :call SCdef(""")<CR>
 au Filetype supercollider,supercollider_help imap <buffer>  yiw :call SCdef(""")<CR>
+au Filetype supercollider,supercollider_help nmap <buffer> <F1> :call HelpBrowser()<CR>
+au Filetype supercollider,supercollider_help imap <buffer> <F1> :call HelpBrowser()<CR>a
+au Filetype supercollider,supercollider_help vmap <buffer> <F1> :call HelpBrowser()<CR>
+au Filetype supercollider,supercollider_help nmap <buffer> <F2> yiw :call HelpBrowser_find(""")<CR>
+au Filetype supercollider,supercollider_help imap <buffer> <F2> yiw :call HelpBrowser_find(""")<CR>a
+au Filetype supercollider,supercollider_help vmap <buffer> <F2> yiw :call HelpBrowser_find(""")<CR>
 au Filetype supercollider,supercollider_help nmap <buffer> <F5> :call SClang_block()<CR>
 au Filetype supercollider,supercollider_help imap <buffer> <F5> :call SClang_block()<CR>a
 au Filetype supercollider,supercollider_help vmap <buffer> <F5> :call SClang_send()<CR>

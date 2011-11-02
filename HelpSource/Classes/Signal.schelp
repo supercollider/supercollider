@@ -117,9 +117,9 @@ method::waveFill
 Fill the Signal with a function evaluated over an interval.
 code::
 (
-s = Signal.newClear(512);
-s.waveFill({ arg x, i; sin(x).max(0) }, 0, 3pi);
-s.plot;
+a = Signal.newClear(512);
+a.waveFill({ arg x, i; sin(x).max(0) }, 0, 3pi);
+a.plot;
 )
 ::
 argument::function
@@ -333,6 +333,6 @@ y = Signal.fill(512, { |i| (i * pi / 64).sin });
 	.plot(numChannels: 6);
 )
 ::
-method::+, -, *, /, div, %, **, min, max, ring1, ring2, ring3, ring4, 
+method::+, -, *, /, div, %, **, min, max, ring1, ring2, ring3, ring4,
 difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, <!
 

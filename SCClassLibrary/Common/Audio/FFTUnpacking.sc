@@ -31,7 +31,7 @@ PackFFT : PV_ChainUGen {
 }
 
 // Conveniences to apply calculations to an FFT chain
-PV_ChainUGen : UGen {
+PV_ChainUGen : WidthFirstUGen {
 
 	// Give it a func to apply to whole set of vals: func(mags, phases)
 	pvcalc { |numframes, func, frombin=0, tobin, zeroothers=0|
@@ -70,7 +70,7 @@ PV_ChainUGen : UGen {
 		var magsphases, ret;
 		magsphases = UnpackFFT(this, numframes, frombin, tobin).clump(2);
 		magsphases = magsphases.collect({ |mp, index|
-			ret = func.value(mp[0], mp[1], index).asArray;
+			ret = func.value(mp[0], mp[1], index + frombin, index).asArray;
 			ret = if(ret.size==1, {ret ++ mp[1]}, ret); // Add phase if it's been ignored
 		}).flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);

@@ -18,7 +18,7 @@ HistoryGui {
 		var closebut, listV, font, flow;
 		bounds = where @ (where + (300@400));
 
-		font = Font(Font.defaultMonoFace, 9);	////
+		font = Font.monospace(9);	////
 		w = Window("History", bounds).front;	////
 		flow = w.addFlowLayout(2@2, 1@1);
 		history = inHist;

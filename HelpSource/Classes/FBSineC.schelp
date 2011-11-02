@@ -56,8 +56,8 @@ code::
 // randomly modulate params
 (
 { FBSineC.ar(
-	LFNoise2.kr(1, 1e4, 1e4), 
-	LFNoise2.kr(1, 32, 33), 
+	LFNoise2.kr(1, 1e4, 1e4),
+	LFNoise2.kr(1, 32, 33),
 	LFNoise2.kr(1, 0.5),
 	LFNoise2.kr(1, 0.05, 1.05),
 	LFNoise2.kr(1, 0.3, 0.3)

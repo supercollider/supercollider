@@ -226,12 +226,11 @@ Buffer {
 
 	// send a Collection to a buffer one UDP sized packet at a time
 	*sendCollection { arg server, collection, numChannels = 1, wait = 0.0, action;
-		var buffer = this.alloc(server, ceil(collection.size / numChannels), numChannels);
+		var buffer = this.new(server, ceil(collection.size / numChannels), numChannels);
 		forkIfNeeded {
-			buffer.alloc(collection.size, numChannels);
+			buffer.alloc;
 			server.sync;
 			buffer.sendCollection(collection, 0, wait, action);
-
 		}
 		^buffer;
 	}
@@ -303,7 +302,7 @@ Buffer {
 		refcount = (count / 1633).roundUp;
 		count = count + pos;
 		//("refcount" + refcount).postln;
-		resp = OSCProxy({ arg msg;
+		resp = OSCFunc({ arg msg;
 			if(msg[1] == bufnum, {
 				//("received" + msg).postln;
 				array = array.overWrite(FloatArray.newFrom(msg.copyToEnd(4)), msg[2] - index);
@@ -325,7 +324,7 @@ Buffer {
 		}.forkIfNeeded;
 		// lose the responder if the network choked
 		SystemClock.sched(timeout,
-			{ done.not.if({ resp.clear; "Buffer-streamToFloatArray failed!".warn;
+			{ done.not.if({ resp.free; "Buffer-streamToFloatArray failed!".warn;
 				"Try increasing wait time".postln;});
 		});
 	}
@@ -531,7 +530,7 @@ Buffer {
 	}
 
 	query {
-		OSCProxy({ arg msg;
+		OSCFunc({ arg msg;
 			Post << "bufnum      :" << msg[1] << Char.nl
 				<< "numFrames   : " << msg[2] << Char.nl
 				<< "numChannels : " << msg[3] << Char.nl
@@ -570,7 +569,7 @@ Buffer {
 	*initServerCache { |server|
 		serverCaches[server] ?? {
 			serverCaches[server] = IdentityDictionary.new;
-			serverCaches[server][\responder] = OSCProxy({ |m|
+			serverCaches[server][\responder] = OSCFunc({ |m|
 				var	buffer = serverCaches[server][m[1]];
 				if(buffer.notNil) {
 					buffer.numFrames = m[2];
@@ -586,7 +585,7 @@ Buffer {
 	}
 	*clearServerCaches { |server|
 		if(serverCaches[server].notNil) {
-			serverCaches[server][\responder].clear;
+			serverCaches[server][\responder].free;
 			serverCaches.removeAt(server);
 		}
 	}

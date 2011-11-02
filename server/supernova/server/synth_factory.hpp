@@ -25,32 +25,15 @@
 #include "synth.hpp"
 #include "synth_prototype.hpp"
 
-namespace nova
-{
+namespace nova {
+
 class synth_factory
 {
-    struct hash_prototype
-    {
-        std::size_t operator()(const char * lhs) const
-        {
-            return synth_prototype::hash(lhs);
-        }
-    };
-
-    struct equal_prototype
-    {
-        bool operator()(const char * lhs, synth_prototype const & rhs) const
-        {
-            return strcmp(lhs, rhs.name()) == 0;
-        }
-    };
-
 public:
     void register_prototype(synth_prototype_ptr const & prototype)
     {
-        prototype_map_type::iterator it = prototype_map.find(*prototype);
-        if (it != prototype_map.end())
-        {
+        prototype_map_type::iterator it = prototype_map.find(prototype->name(), named_hash_hash(), named_hash_equal());
+        if (it != prototype_map.end()) {
             prototype_map.erase(it);
             it->release();
         }
@@ -61,9 +44,7 @@ public:
 
     abstract_synth * create_instance(const char * name, int node_id)
     {
-        prototype_map_type::iterator it = prototype_map.find(name,
-                                                             hash_prototype(),
-                                                             equal_prototype());
+        prototype_map_type::iterator it = prototype_map.find(name, named_hash_hash(), named_hash_equal());
         if (it == prototype_map.end())
             return 0;
 
@@ -72,9 +53,7 @@ public:
 
     void remove_prototype(const char * name)
     {
-        prototype_map_type::iterator it = prototype_map.find(name,
-                                                             hash_prototype(),
-                                                             equal_prototype());
+        prototype_map_type::iterator it = prototype_map.find(name, named_hash_hash(), named_hash_equal());
         if (it == prototype_map.end())
             return;
 
@@ -88,7 +67,7 @@ public:
     }
 
     synth_factory(void):
-        prototype_map(prototype_map_type::bucket_traits(buckets, 1024))
+        prototype_map(prototype_map_type::bucket_traits(buckets, bucket_count))
     {}
 
     ~synth_factory(void)
@@ -101,12 +80,13 @@ public:
     }
 
 private:
+    static const int bucket_count = 2048;
+
     typedef boost::intrusive::unordered_set<synth_prototype,
                                             boost::intrusive::power_2_buckets<true>
                                            > prototype_map_type;
-    prototype_map_type::bucket_type buckets[1024];
+    prototype_map_type::bucket_type buckets[bucket_count];
     prototype_map_type prototype_map;
-
 };
 
 } /* namespace nova */

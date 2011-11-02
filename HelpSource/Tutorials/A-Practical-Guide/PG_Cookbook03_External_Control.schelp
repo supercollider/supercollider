@@ -14,9 +14,9 @@ For MIDI, the best approach is to save an incoming value into a variable, and th
 code::
 (
 ~legato = 1;
-c = CCResponder({ |src, chan, num, value|
+c = MIDIFunc.cc({ |value, num, chan, src|
 	~legato = value.linlin(0, 127, 0.1, 2.5)
-}, num: 1);	// num: 1 means modwheel
+}, 1);	// 1 means modwheel
 )
 
 (
@@ -28,7 +28,7 @@ p = Pbind(
 )
 
 p.stop;
-c.remove;
+c.free;
 ::
 
 If Pfunc code::{  }:: is bothersome in the Pbind, a link::Classes/PatternProxy:: or link::Classes/Pdefn:: could also serve the purpose.
@@ -36,9 +36,9 @@ If Pfunc code::{  }:: is bothersome in the Pbind, a link::Classes/PatternProxy::
 code::
 (
 ~legato = PatternProxy(1);
-c = CCResponder({ |src, chan, num, value|
+c = MIDIFunc.cc({ |value, num, chan, src|
 	~legato.source = value.linlin(0, 127, 0.1, 2.5)
-}, num: 1);
+}, 1);
 )
 
 (
@@ -55,7 +55,7 @@ c.remove;
 
 subsection::Triggering patterns by external control
 
-Issuing code::play:: to a pattern can occur in an action function for many different kinds of objects: GUI, MIDI, OSCresponder, HID actions. This allows triggering patterns from a variety of interfaces.
+Issuing code::play:: to a pattern can occur in an action function for many different kinds of objects: GUI, MIDI, OSCFunc, HID actions. This allows triggering patterns from a variety of interfaces.
 
 It's very unlikely that an action function would be triggered exactly in sync with a clock. If the pattern being played needs to run in time with other patterns, use the code::quant:: argument to control its starting time (see link::Classes/Quant::).
 
@@ -102,19 +102,19 @@ var	pattern = Pbind(
 	),
 	player;
 
-~noteOnResp = NoteOnResponder({
+~noteOnFunc = MIDIFunc.noteOn({
 	if(player.isNil or: { player.isPlaying.not }) {
 		player = pattern.play;
 	} {
 		player.stop;
 	};
-// num: 60 limits this responder to listen to middle-C only
+// 60 limits this MIDIFunc to listen to middle-C only
 // but it will pick up that note from any port, any channel
-}, num: 60);
+}, 60);
 )
 
 // when done
-~noteOnResp.remove;
+~noteOnFunc.free;
 ::
 
 subsection::Triggering a pattern by signal amplitude
@@ -127,7 +127,7 @@ code::
 	inbus: s.options.numOutputBusChannels
 ::
 
-In this configuration, the first trigger starts the pattern and the second trigger stops it. You might want the pattern to play while the input signal is above the threshold, and stop when the signal drops to a quieter level. The comparison code::amp >= thresh:: can send a trigger only when the signal goes from softer to lower, so if we want the pattern to stop when the signal becomes quiet, we need to send a trigger when crossing the threshold in both directions. 
+In this configuration, the first trigger starts the pattern and the second trigger stops it. You might want the pattern to play while the input signal is above the threshold, and stop when the signal drops to a quieter level. The comparison code::amp >= thresh:: can send a trigger only when the signal goes from softer to lower, so if we want the pattern to stop when the signal becomes quiet, we need to send a trigger when crossing the threshold in both directions.
 
 code::
 	var	amp = Amplitude.kr(In.ar(inbus, 1), attackTime: 0.01, releaseTime: decay),
@@ -152,8 +152,8 @@ var	pattern = Pbind(
 ~w = Window("threshold setting", Rect(15, 100, 300, 100))
 	.onClose_({
 		~ampSynth.free;
-		~ampUpdater.remove;
-		~oscTrigResp.remove;
+		~ampUpdater.free;
+		~oscTrigResp.free;
 		player.stop;
 	});
 ~w.view.decorator = FlowLayout(~w.view.bounds, 2@2, 2@2);
@@ -173,22 +173,22 @@ StaticText(~w, 295@5).background_(Color.gray);
 ~ampSynth = SynthDef(\ampSynth, { |inbus, thresh = 0.8, decay = 1|
 	var	amp = Amplitude.kr(In.ar(inbus, 1), attackTime: 0.01, releaseTime: decay);
 		// this trigger (id==0) is to update the gui only
-	SendTrig.kr(Impulse.kr(10), 0, amp);
+	SendReply.kr(Impulse.kr(10), '/amp', amp);
 		// this trigger gets sent only when amplitude crosses threshold
-	SendTrig.kr(amp >= thresh, 1, 1);
+	SendTrig.kr(amp >= thresh, '/amptrig');
 }).play(args: [inbus: s.options.numOutputBusChannels, thresh: ~threshView.value, decay: ~decayView.value]);
 
-~ampUpdater = OSCpathResponder(s.addr, ['/tr', ~ampSynth.nodeID, 0], { |time, resp, msg|
+~ampUpdater = OSCFunc({ |msg|
 	defer { ~ampView.value = msg[3] }
-}).add;
+}, '/amp', s.addr);
 
-~oscTrigResp = OSCpathResponder(s.addr, ['/tr', ~ampSynth.nodeID, 1], { |time, resp, msg|
+~oscTrigResp = OSCFunc({ |msg|
 	if(player.isNil or: { player.isPlaying.not }) {
 		player = pattern.play;
 	} {
 		player.stop;
 	};
-}).add;
+}, '/amptrig', s.addr);
 )
 ::
 

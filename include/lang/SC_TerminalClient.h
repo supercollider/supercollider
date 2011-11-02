@@ -39,7 +39,8 @@ public:
 	enum
 	{
 		kInterpretCmdLine = 0x1b,
-		kInterpretPrintCmdLine = 0x0c
+		kInterpretPrintCmdLine = 0x0c,
+		kRecompileLibrary = 0x18 // ctrl+x
 	};
 
 	struct Options : public SC_LanguageClient::Options
@@ -52,7 +53,7 @@ public:
 			  mArgc(0), mArgv(0)
 		{ }
 
-		char*			mLibraryConfigFile;
+		const char*		mLibraryConfigFile;
 		bool			mDaemon;
 		bool			mCallRun;
 		bool			mCallStop;
@@ -61,6 +62,7 @@ public:
 	};
 
 	SC_TerminalClient(const char* name);
+	virtual ~SC_TerminalClient();
 
 	const Options& options() const { return mOptions; }
 	bool shouldBeRunning() const { return mShouldBeRunning; }
@@ -73,39 +75,100 @@ public:
 	virtual void postError(const char* str, size_t len);
 	virtual void flush();
 
-	// subclasses should call periodically during their commandLoop().
-	void readCmdLine();
-
 protected:
 	bool parseOptions(int& argc, char**& argv, Options& opt);
 	void printUsage();
 
 	void interpretCmdLine(PyrSymbol* method, SC_StringBuffer& cmdLine);
 	void interpretCmdLine(PyrSymbol* method, const char* cmdLine);
+	void interpretCmdLine(PyrSymbol* method, const char *buf, size_t size);
 
-	// subclasses should override
+	void lockInput() { pthread_mutex_lock(&mInputMutex); }
+	void unlockInput() { pthread_mutex_unlock(&mInputMutex); }
+
+	// --------------------------------------------------------------
+
+	// NOTE: Subclasses should call when signalled:
+	// Must be called with input locked:
+	void interpretInput();
+	// Must be called with interpreter locked:
+	// SC_LanguageClinet::tickLocked()
+
+	// --------------------------------------------------------------
+
+	// NOTE: Subclasses should respond to following signals:
+
+	// Called from input thread with input locked.
+	// Calls for interpretInput() on main thread:
+	virtual void onInput();
+
+	// The following are called from language,
+	// locked, and may be called from any thread:
+
+	// Calls for tickLocked() and adjusting timing according to new schedule
+	virtual void onScheduleChanged();
+	// Language requested the application to quit
+	virtual void onQuit( int exitCode );
+	// Request to recompile the class library
+	virtual void onRecompileLibrary();
+	// See super class
+	virtual void onLibraryStartup();
+
+	// --------------------------------------------------------------
+
+	// NOTE: Subclasses should override:
 	virtual void commandLoop();
 	virtual void daemonLoop();
 
+	// --------------------------------------------------------------
+
 	static int prArgv(struct VMGlobals* g, int);
 	static int prExit(struct VMGlobals* g, int);
-	virtual void onLibraryStartup();
+	static int prScheduleChanged( struct VMGlobals *, int);
+	static int prRecompile(struct VMGlobals *, int);
 
 private:
-	void initCmdLine();
-	void cleanupCmdLine();
+	// NOTE: called from input thread:
 #ifdef HAVE_READLINE
-	void readCmdLineRL();
+	static void *readlineFunc(void *);
+	static int readlineRecompile(int, int);
+	static void readlineCmdLine(char *cmdLine);
 #endif
-	void readCmdLineStream();
-	void pushCmdLine(const char *buf, int bufc, SC_StringBuffer& cmdLine);
-	static void readlineCb( char * );
+	static void *pipeFunc( void * );
+	void pushCmdLine( SC_StringBuffer &buf, const char *newData, size_t size );
+
+	void initInput();
+	void startInput();
+	void endInput();
+	void cleanupInput();
+
+	// helpers
+	void lockSignal() { pthread_mutex_lock(&mSignalMutex); }
+	void unlockSignal() { pthread_mutex_unlock(&mSignalMutex); }
 
 	bool				mShouldBeRunning;
 	int					mReturnCode;
 	Options				mOptions;
 
+	// signals to main thread
+	pthread_mutex_t mSignalMutex;
+	pthread_cond_t mCond;
+	bool mInput; // there is new input
+	bool mSched; // something has been scheduled
+	bool mRecompile; // class lib recompilation requested
+
+	// command input
 	bool mUseReadline;
+	bool mInputShouldBeRunning;
+	SC_StringBuffer mInputBuf;
+#ifndef _WIN32
+	int mInputCtlPipe[2];
+#else
+	HANDLE mQuitInputEvent;
+#endif
+	pthread_t mInputThread;
+	pthread_mutex_t mInputMutex;
+	pthread_cond_t mInputCond;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

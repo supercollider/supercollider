@@ -32,6 +32,7 @@ typedef int socklen_t;
 
 #include "SC_Msg.h"
 #include "SC_Sem.h"
+#include "boost/atomic.hpp"
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -82,6 +83,24 @@ public:
 
 	int PortNum() const { return mPortNum; }
 
+	void* Run();
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SC_UdpCustomInPort : public SC_ComPort
+{
+protected:
+	struct sockaddr_in mReplySockAddr;
+	virtual ReplyFunc GetReplyFunc();
+	boost::atomic<bool> mRunning;
+	
+public:
+	SC_UdpCustomInPort(int inPortNum);
+	~SC_UdpCustomInPort();
+	
+	int PortNum() const { return mPortNum; }
+	
 	void* Run();
 };
 

@@ -4,7 +4,7 @@ categories:: Server>Architecture, OpenSoundControl
 
 The name "SuperCollider" is in fact used to indicate five different things (Figure 1):
 numberedlist::
-## an audio server 
+## an audio server
 ## an audio programming language
 ## an interpreter for the language, i.e. a program able to interpret it
 ## the interpreter program as a client for the server
@@ -17,7 +17,7 @@ The SuperCollider application is thus made up of two distinct, autonomous, compo
 
 section:: Description
 
-The SuperCollider application makes use of client/server architecture which separates two functions, respectively one providing and the other requesting services. The client and the server communicate through a network. 
+The SuperCollider application makes use of client/server architecture which separates two functions, respectively one providing and the other requesting services. The client and the server communicate through a network.
 
 image::s8kfFC-clientServerEn.png#Figure 2. Client/Server architecture::
 
@@ -31,21 +31,21 @@ The client of this server is emphasis::sclang::. Sclang performs two distinct ta
 definitionList::
 ## Client || it is the emphasis::client:: for the server, i.e. it sends OSC messages to the server.
 In order to write a letter to server, you need a paper sheet and a mailer: sclang is both.
-## Interpreter || it is the emphasis::interpreter:: for the SuperCollider programming language, i.e. it allows to the user to write code in the aforementioned language and interactively execute the resulting commands, e.g. to control the audio server. In particular OSC messages can be cumbersome to write, as they share with the server its low-level perspective. The SuperCollider language is a high-level, fully featured object oriented language, allowing the user to gain a much more expressive power than OSC messages. Typically, the interpreter translates the code in SuperCollider language in OSC messages for the server. The user writes poetry (so to speak) in the SuperCollider language which is then paraphrased in OSC prose by the sclang interpreter, to be sent to the server. 
+## Interpreter || it is the emphasis::interpreter:: for the SuperCollider programming language, i.e. it allows to the user to write code in the aforementioned language and interactively execute the resulting commands, e.g. to control the audio server. In particular OSC messages can be cumbersome to write, as they share with the server its low-level perspective. The SuperCollider language is a high-level, fully featured object oriented language, allowing the user to gain a much more expressive power than OSC messages. Typically, the interpreter translates the code in SuperCollider language in OSC messages for the server. The user writes poetry (so to speak) in the SuperCollider language which is then paraphrased in OSC prose by the sclang interpreter, to be sent to the server.
 ::
 
 From inside sclang, starting a server app can be accomplished by:
 code::
-s = Server.default; // create a new Server object and assign it to variable s 
+s = Server.default; // create a new Server object and assign it to variable s
 s.boot;             // boot the server app, i.e. tell the server to be ready to work
 ::
 The sclang interpreter can send OSC messages to scsynth in two fashions:
 definitionList::
-## directly || in this case, sclang offers a thin syntax layer which allows one to deal with raw OSC messages. All the server's functionality is in this case available "by hand" using the .sendMsg method of link::Classes/Server::, and other similar messages. 
+## directly || in this case, sclang offers a thin syntax layer which allows one to deal with raw OSC messages. All the server's functionality is in this case available "by hand" using the .sendMsg method of link::Classes/Server::, and other similar messages.
 code::
 n = s.nextNodeID;                   // get an available nodeID from the server and assign it to n
-s.sendMsg("/s_new", "default", n);  // use the SynthDef "default" to create a synth with ID n 
-s.sendMsg("/n_free", n);            // release the synth n	
+s.sendMsg("/s_new", "default", n);  // use the SynthDef "default" to create a synth with ID n
+s.sendMsg("/n_free", n);            // release the synth n
 ::
 ## indirectly || the language app provides you with convienent OOP functionality to keep track of and manipulate things on the server. The high-level syntax is translated into low-level OSC messages by sclang and sent to the server (language wrapping).
 code::
@@ -76,11 +76,11 @@ section:: Pros/Cons
 The client/server architecture provides three main advantages:
 definitionList::
 ## stability || if the client crashes, the server keeps on working, i.e. the audio does not stop. This is intuitively relevant for a live situation. Vice versa, the server can crash letting you still manage the situation from the client.
-## modularity || synthesis is one thing, control another. Separating the two aspects allows one to (for example) control scsynth from applications besides sclang. The only important thing is that they are able to send the right OSC messages to the server. 
-## remote control || the client/server network can be external to your computer, e.g. over the Internet. This allows one to control an audio server in Alaska from a client (sclang or other) in India, for example.    
+## modularity || synthesis is one thing, control another. Separating the two aspects allows one to (for example) control scsynth from applications besides sclang. The only important thing is that they are able to send the right OSC messages to the server.
+## remote control || the client/server network can be external to your computer, e.g. over the Internet. This allows one to control an audio server in Alaska from a client (sclang or other) in India, for example.
 ::
 
-There are two notable drawbacks: 
+There are two notable drawbacks:
 definitionlist::
 ## latency || The messaging process introduces a small amount of latency. This should not be confused with audio latency which can be quite low. It only means that there is a small, usually insignificant delay between the one side sending a message and the other receiving it and acting upon it. (This can be minimized by using the 'internal' server. See link::Classes/Server:: for more detail.)
 ## asynchronous execution || In some cases the client might need to know that a task on the server (for instance processing a large sound file) has been completed before continuing with another task. Since some tasks take an arbitrary length of time to complete, a reply mechanism is necessary. This can add some complexity to your code, but is in principle not an issue. (See link::Classes/OSCresponder:: and link::Classes/OSCresponderNode::.) Some server abstraction objects such as link::Classes/Buffer:: provide for this automatically through 'action' functions which wait for completion before executing.
@@ -88,12 +88,12 @@ definitionlist::
 
 section:: A final remark for the advanced reader
 
-Apart from sclang, it is possible to control scsynth from any other client which provides for OSC messaging (e.g. from Java, Python, Max/MSP, etc.). For networking, see link::Reference/Server-Architecture::, link::Classes/NetAddr::, link::Classes/OSCresponder::, link::Classes/OSCresponderNode::.
+Apart from sclang, it is possible to control scsynth from any other client which provides for OSC messaging (e.g. from Java, Python, Max/MSP, etc.). For networking, see link::Reference/Server-Architecture::, link::Classes/NetAddr::, link::Classes/OSCFunc::.
 
 In general however, sclang is the preferable way to communicate with scsynth for three reasons:
 list::
 ## it gives you the expressive power of the SuperCollider language;
-## the language is explicitly fitted to scsynth's needs (and, more importantly, to musician's ones) 
+## the language is explicitly fitted to scsynth's needs (and, more importantly, to musician's ones)
 ## it allows one to create and load SynthDefs onto scsynth (see link::Classes/SynthDef::), which is a not such an easy task to accomplished in another client app.
 ::
 

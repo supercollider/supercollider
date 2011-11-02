@@ -1,0 +1,52 @@
+<html>
+<head>
+    <title>SCDoc syntax color test</title>
+    <link rel='stylesheet' href='./scdoc.css' type='text/css' />
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <script src="prettify.js" type="text/javascript"></script>
+    <script src="lang-sc.js" type="text/javascript"></script>
+</head>
+<style>
+body {
+    margin: 1em;
+}
+</style>
+<body onload="prettyPrint()">
+<h2>Syntax Color Test</h2>
+<p>
+<div class="str">&#9658; Strings</div>
+<div class="kwd">&#9658; Special values like true, nil</div>
+<div class="com">&#9658; Comments</div>
+<div class="typ">&#9658; Class names</div>
+<div class="lit">&#9658; Numbers and character literals</div>
+<div class="pun">&#9658; Punctuation</div>
+<div class="pln">&#9658; Plain text, methods and variable names</div>
+<div class="tag">&#9658; Special variables like super, thisProcess</div>
+<div class="dec">&#9658; Declarations like var, const</div>
+<div class="atn">&#9658; Symbols</div>
+<div class="atv">&#9658; Environment vars</div>
+
+<pre class="code prettyprint lang-sc">
+/* Some example nonsense code to test syntax coloring */
+
+~foo = SomeClass.new(\abc, 123, "xyz") { |one, two, three=42.7|
+    var myVariable, test = pi*5, bool = true;
+
+    if ((two & one) &lt; 3) { // A comment...
+        "hello".postln;
+        (abc: $x, def: \y, ghi: nil);
+    } {
+        [~bar, zoo, thisProcess.platform];
+    };
+};
+
+Routine {
+    inf.do {|i|
+        ("count"+i).postln;
+        5.0.rand.wait;
+    };
+}.play;
+</pre>
+
+</body>
+</html>

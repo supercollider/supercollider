@@ -8,7 +8,9 @@ IPhonePlatform : UnixPlatform
 
 	startupFiles {
 		var filename = "startup.rtf";
-		^[this.systemAppSupportDir +/+ filename];
+		var deprecated = [this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
+		Platform.deprecatedStartupFiles(deprecated);
+		^(deprecated ++ super.startupFiles)
 	}
 
 	startup {
@@ -31,4 +33,8 @@ IPhonePlatform : UnixPlatform
 		// only osx uses Cocoa guis
 	defaultGUIScheme { ^\iphone }
 	defaultHIDScheme { ^\osx_hid }
+
+	open {|aPath|
+		("open " ++ aPath.escapeChar($ )).systemCmd
+	}
 }

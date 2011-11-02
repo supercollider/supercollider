@@ -50,7 +50,7 @@ QcMultiSlider::QcMultiSlider() :
   connect( this, SIGNAL(interacted()), this, SLOT(doAction()) );
 }
 
-void QcMultiSlider::setSize( int newSize )
+void QcMultiSlider::setSliderCount( int newSize )
 {
   while( newSize > _values.size() )
     _values.append( 0.f );
@@ -114,6 +114,19 @@ void QcMultiSlider::setStepSize( float f ) {
   int c = _values.count();
   int i;
   for( i=0; i<c; ++i ) setValue( i, _values[i] );
+  update();
+}
+
+void QcMultiSlider::setIndex( int i ) {
+  if( i >= 0 && i < _values.count() ) {
+    _currentIndex = i;
+    _selectionSize = 1;
+    update();
+  }
+}
+
+void QcMultiSlider::setSelectionSize( int i ) {
+  _selectionSize = qMin(i, _values.count() - _currentIndex);
   update();
 }
 

@@ -1,4 +1,12 @@
-Changes are listed below, grouped under each point release of SuperCollider.
+User-visible changes (started after 3.4)
+
+* sclang startup file moved to thisProcess.platform.userConfigDir +/+ "sclang.scd" - tb
+* library configuration file moved to thisProcess.platform.userConfigDir +/+ "sclang.cfg" - tb
+* only warn about FunctionDef not being inlined if a compiler flag is set - ds
+
+
+
+Changes up to 3.4 are listed below, grouped under each point release of SuperCollider.
 
 SuperCollider v3.4.2, released 2011-01
 ======================================
@@ -151,7 +159,7 @@ Bugfixes:
 * 2010-03-11 SequenceableCollection:reduce no longer returns nil if the collection has only 1 element - ds
 * 2010-03-28 fix memory leak of empty command line, for interactive sclang mode - tb
 * 2010-03-29 main menu for Mac lang editor app: correction to key for evaluate selection, used to be return, now return+shift - nc
-* 2010-04-19 fix missing font issue in Plotter -jr 
+* 2010-04-19 fix missing font issue in Plotter -jr
 
 Other additions/improvements:
 -----------------------------

@@ -251,17 +251,27 @@ enum {
 
 inline float sc_andt(float a, float b)
 {
-	return a > 0.f && b > 0.f ? 1.f : 0.f;
+	return int(a) & int(b);
 }
 
 inline float sc_ort(float a, float b)
 {
-	return a > 0.f || b > 0.f ? 1.f : 0.f;
+	return int(a) | int(b);
 }
 
 inline float sc_xort(float a, float b)
 {
-	return a > 0.f ? (b > 0.f ? 0.f : 1.f) : (b > 0.f ? 1.f : 0.f);
+	return int(a) ^ int(b);
+}
+
+inline float sc_rst(float a, float b)
+{
+	return int(a) >> int(b);
+}
+
+inline float sc_lst(float a, float b)
+{
+	return int(a) << int(b);
 }
 
 struct BinaryOpUGen : public Unit
@@ -570,9 +580,9 @@ static bool ChooseOperatorFunc(BinaryOpUGen *unit);
 
 void BinaryOpUGen_Ctor(BinaryOpUGen *unit)
 {
-	bool initialized = ChooseOperatorFunc(unit);
 	unit->mPrevA = ZIN0(0);
 	unit->mPrevB = ZIN0(1);
+	bool initialized = ChooseOperatorFunc(unit);
 	if (unit->mCalcRate == calc_DemandRate) {
 		OUT0(0) = 0.f;
 	} else {
@@ -733,6 +743,30 @@ void xor_d(BinaryOpUGen *unit, int inNumSamples)
 		float a = DEMANDINPUT_A(0, inNumSamples);
 		float b = DEMANDINPUT_A(1, inNumSamples);
 		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_xort(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void rightShift_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_rst(a, b);
+	} else {
+		RESETINPUT(0);
+		RESETINPUT(1);
+	}
+}
+
+void leftShift_d(BinaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float a = DEMANDINPUT_A(0, inNumSamples);
+		float b = DEMANDINPUT_A(1, inNumSamples);
+		OUT0(0) = sc_isnan(a) || sc_isnan(b) ? NAN : sc_lst(a, b);
 	} else {
 		RESETINPUT(0);
 		RESETINPUT(1);
@@ -1166,6 +1200,20 @@ void xor_1(BinaryOpUGen *unit, int inNumSamples)
 	float xa = ZIN0(0);
 	float xb = ZIN0(1);
 	ZOUT0(0) = sc_xort(xa, xb);
+}
+
+void rightShift_1(BinaryOpUGen *unit, int inNumSamples)
+{
+	float xa = ZIN0(0);
+	float xb = ZIN0(1);
+	ZOUT0(0) = sc_rst(xa, xb);
+}
+
+void leftShift_1(BinaryOpUGen *unit, int inNumSamples)
+{
+	float xa = ZIN0(0);
+	float xb = ZIN0(1);
+	ZOUT0(0) = sc_lst(xa, xb);
 }
 
 void amclip_1(BinaryOpUGen *unit, int inNumSamples)
@@ -2027,7 +2075,7 @@ inline_functions void div_ai_nova(BinaryOpUGen *unit, int inNumSamples)
 {
 	float xb = ZIN0(1);
 
-	nova::times_vec_simd(OUT(0), IN(0), xb, inNumSamples);
+	nova::times_vec_simd(OUT(0), IN(0), 1.f/xb, inNumSamples);
 	unit->mPrevB = xb;
 }
 
@@ -2581,7 +2629,7 @@ void xor_ka(BinaryOpUGen *unit, int inNumSamples)
 	if (xa == next_a) {
 		LOOP1(inNumSamples,
 			float xb = ZXP(b);
-			ZXP(out) = sc_ort(xa, xb);
+			ZXP(out) = sc_xort(xa, xb);
 		);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
@@ -2620,6 +2668,185 @@ void xor_ai(BinaryOpUGen *unit, int inNumSamples)
 	);
 	unit->mPrevB = xb;
 }
+
+
+
+
+void rightShift_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float *b = ZIN(1);
+
+	LOOP1(inNumSamples,
+		float xa = ZXP(a);
+		float xb = ZXP(b);
+		ZXP(out) = sc_rst(xa, xb) ;
+	);
+}
+
+void rightShift_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+
+	if (xb == next_b) {
+		LOOP1(inNumSamples,
+			float xa = ZXP(a);
+			ZXP(out) = sc_rst(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		LOOP1(inNumSamples,
+			float xa = ZXP(a);
+			ZXP(out) = sc_rst(xa, xb);
+			xb += slope;
+		);
+		unit->mPrevB = xb;
+	}
+}
+
+void rightShift_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+
+	if (xa == next_a) {
+		LOOP1(inNumSamples,
+			float xb = ZXP(b);
+			ZXP(out) = sc_rst(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		LOOP1(inNumSamples,
+			float xb = ZXP(b);
+			ZXP(out) = sc_rst(xa, xb);
+			xa += slope;
+		);
+		unit->mPrevA = xa;
+	}
+}
+
+void rightShift_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = ZIN0(0);
+	float *b = ZIN(1);
+
+	LOOP1(inNumSamples,
+		float xb = ZXP(b);
+		ZXP(out) = sc_rst(xa, xb);
+	);
+	unit->mPrevA = xa;
+}
+
+
+void rightShift_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = ZIN0(1);
+
+	LOOP1(inNumSamples,
+		float xa = ZXP(a);
+		ZXP(out) = sc_rst(xa, xb);
+	);
+	unit->mPrevB = xb;
+}
+
+
+
+void leftShift_aa(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float *b = ZIN(1);
+
+	LOOP1(inNumSamples,
+		float xa = ZXP(a);
+		float xb = ZXP(b);
+		ZXP(out) = sc_lst(xa, xb) ;
+	);
+}
+
+void leftShift_ak(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = unit->mPrevB;
+	float next_b = ZIN0(1);
+
+	if (xb == next_b) {
+		LOOP1(inNumSamples,
+			float xa = ZXP(a);
+			ZXP(out) = sc_lst(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_b, xb);
+		LOOP1(inNumSamples,
+			float xa = ZXP(a);
+			ZXP(out) = sc_lst(xa, xb);
+			xb += slope;
+		);
+		unit->mPrevB = xb;
+	}
+}
+
+void leftShift_ka(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = unit->mPrevA;
+	float *b = ZIN(1);
+	float next_a = ZIN0(0);
+
+	if (xa == next_a) {
+		LOOP1(inNumSamples,
+			float xb = ZXP(b);
+			ZXP(out) = sc_lst(xa, xb);
+		);
+	} else {
+		float slope = CALCSLOPE(next_a, xa);
+		LOOP1(inNumSamples,
+			float xb = ZXP(b);
+			ZXP(out) = sc_lst(xa, xb);
+			xa += slope;
+		);
+		unit->mPrevA = xa;
+	}
+}
+
+void leftShift_ia(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float xa = ZIN0(0);
+	float *b = ZIN(1);
+
+	LOOP1(inNumSamples,
+		float xb = ZXP(b);
+		ZXP(out) = sc_lst(xa, xb);
+	);
+	unit->mPrevA = xa;
+}
+
+
+void leftShift_ai(BinaryOpUGen *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	float xb = ZIN0(1);
+
+	LOOP1(inNumSamples,
+		float xa = ZXP(a);
+		ZXP(out) = sc_lst(xa, xb);
+	);
+	unit->mPrevB = xb;
+}
+
+
 
 
 
@@ -5386,6 +5613,8 @@ static BinaryOpFunc ChooseOneSampleFunc(BinaryOpUGen *unit)
 		case opBitAnd : func = &and_1; break;
 		case opBitOr : func = &or_1; break;
 		case opBitXor : func = &xor_1; break;
+		case opShiftRight : func = &rightShift_1; break;
+		case opShiftLeft : func = &leftShift_1; break;
 		case opRound : func = &round_1; break;
 		case opRoundUp : func = &roundUp_1; break;
 		case opTrunc : func = &trunc_1; break;
@@ -5439,6 +5668,8 @@ static BinaryOpFunc ChooseDemandFunc(BinaryOpUGen *unit)
 		case opBitAnd : func = &and_d; break;
 		case opBitOr : func = &or_d; break;
 		case opBitXor : func = &xor_d; break;
+		case opShiftRight : func = &rightShift_d; break;
+		case opShiftLeft : func = &leftShift_d; break;
 		case opRound : func = &round_d; break;
 		case opRoundUp : func = &roundUp_d; break;
 		case opTrunc : func = &trunc_d; break;
@@ -5499,6 +5730,8 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_aa; break;
 						case opBitOr : func = &or_aa; break;
 						case opBitXor : func = &xor_aa; break;
+						case opShiftRight : func = &rightShift_aa; break;
+						case opShiftLeft : func = &leftShift_aa; break;
 						case opRound : func = &round_aa; break;
 						case opRoundUp : func = &roundUp_aa; break;
 						case opTrunc : func = &trunc_aa; break;
@@ -5546,6 +5779,8 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_ak; break;
 						case opBitOr : func = &or_ak; break;
 						case opBitXor : func = &xor_ak; break;
+						case opShiftRight : func = &rightShift_ak; break;
+						case opShiftLeft : func = &leftShift_ak; break;
 						case opRound : func = &round_ak; break;
 						case opRoundUp : func = &roundUp_ak; break;
 						case opTrunc : func = &trunc_ak; break;
@@ -5593,6 +5828,8 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_ai; break;
 						case opBitOr : func = &or_ai; break;
 						case opBitXor : func = &xor_ai; break;
+						case opShiftRight : func = &rightShift_ai; break;
+						case opShiftLeft : func = &leftShift_ai; break;
 						case opRound : func = &round_ai; break;
 						case opRoundUp : func = &roundUp_ai; break;
 						case opTrunc : func = &trunc_ai; break;
@@ -5642,6 +5879,8 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 					case opBitAnd : func = &and_ka; break;
 					case opBitOr : func = &or_ka; break;
 					case opBitXor : func = &xor_ka; break;
+					case opShiftRight : func = &rightShift_ka; break;
+					case opShiftLeft : func = &leftShift_ka; break;
 					case opRound : func = &round_ka; break;
 					case opRoundUp : func = &roundUp_ka; break;
 					case opTrunc : func = &trunc_ka; break;
@@ -5694,6 +5933,8 @@ static BinaryOpFunc ChooseNormalFunc(BinaryOpUGen *unit)
 					case opBitAnd : func = &and_ia; break;
 					case opBitOr : func = &or_ia; break;
 					case opBitXor : func = &xor_ia; break;
+					case opShiftRight : func = &rightShift_ia; break;
+					case opShiftLeft : func = &leftShift_ia; break;
 					case opRound : func = &round_ia; break;
 					case opRoundUp : func = &roundUp_ia; break;
 					case opTrunc : func = &trunc_ia; break;
@@ -5761,6 +6002,8 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_aa; break;
 						case opBitOr : func = &or_aa; break;
 						case opBitXor : func = &xor_aa; break;
+						case opShiftRight : func = &rightShift_aa; break;
+						case opShiftLeft : func = &leftShift_aa; break;
 						case opRound : func = &round_aa; break;
 						case opRoundUp : func = &roundUp_aa; break;
 						case opTrunc : func = &trunc_aa; break;
@@ -5808,6 +6051,8 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_ak; break;
 						case opBitOr : func = &or_ak; break;
 						case opBitXor : func = &xor_ak; break;
+						case opShiftRight : func = &rightShift_ak; break;
+						case opShiftLeft : func = &leftShift_ak; break;
 						case opRound : func = &round_ak; break;
 						case opRoundUp : func = &roundUp_ak; break;
 						case opTrunc : func = &trunc_ak; break;
@@ -5855,6 +6100,8 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_ai; break;
 						case opBitOr : func = &or_ai; break;
 						case opBitXor : func = &xor_ai; break;
+						case opShiftRight : func = &rightShift_ai; break;
+						case opShiftLeft : func = &leftShift_ai; break;
 						case opRound : func = &round_ai; break;
 						case opRoundUp : func = &roundUp_ai; break;
 						case opTrunc : func = &trunc_ai; break;
@@ -5904,6 +6151,8 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 					case opBitAnd : func = &and_ka; break;
 					case opBitOr : func = &or_ka; break;
 					case opBitXor : func = &xor_ka; break;
+					case opShiftRight : func = &rightShift_ka; break;
+					case opShiftLeft : func = &leftShift_ka; break;
 					case opRound : func = &round_ka; break;
 					case opRoundUp : func = &roundUp_ka; break;
 					case opTrunc : func = &trunc_ka; break;
@@ -5956,6 +6205,8 @@ static BinaryOpFunc ChooseNovaSimdFunc_64(BinaryOpUGen *unit)
 					case opBitAnd : func = &and_ia; break;
 					case opBitOr : func = &or_ia; break;
 					case opBitXor : func = &xor_ia; break;
+					case opShiftRight : func = &rightShift_ia; break;
+					case opShiftLeft : func = &leftShift_ia; break;
 					case opRound : func = &round_ia; break;
 					case opRoundUp : func = &roundUp_ia; break;
 					case opTrunc : func = &trunc_ia; break;
@@ -6026,6 +6277,8 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_aa; break;
 						case opBitOr : func = &or_aa; break;
 						case opBitXor : func = &xor_aa; break;
+						case opShiftRight : func = &rightShift_aa; break;
+						case opShiftLeft : func = &leftShift_aa; break;
 						case opRound : func = &round_aa; break;
 						case opRoundUp : func = &roundUp_aa; break;
 						case opTrunc : func = &trunc_aa; break;
@@ -6073,6 +6326,8 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_ak; break;
 						case opBitOr : func = &or_ak; break;
 						case opBitXor : func = &xor_ak; break;
+						case opShiftRight : func = &rightShift_ak; break;
+						case opShiftLeft : func = &leftShift_ak; break;
 						case opRound : func = &round_ak; break;
 						case opRoundUp : func = &roundUp_ak; break;
 						case opTrunc : func = &trunc_ak; break;
@@ -6120,6 +6375,8 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 						case opBitAnd : func = &and_ai; break;
 						case opBitOr : func = &or_ai; break;
 						case opBitXor : func = &xor_ai; break;
+						case opShiftRight : func = &rightShift_ai; break;
+						case opShiftLeft : func = &leftShift_ai; break;
 						case opRound : func = &round_ai; break;
 						case opRoundUp : func = &roundUp_ai; break;
 						case opTrunc : func = &trunc_ai; break;
@@ -6169,6 +6426,8 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 					case opBitAnd : func = &and_ka; break;
 					case opBitOr : func = &or_ka; break;
 					case opBitXor : func = &xor_ka; break;
+					case opShiftRight : func = &rightShift_ka; break;
+					case opShiftLeft : func = &leftShift_ka; break;
 					case opRound : func = &round_ka; break;
 					case opRoundUp : func = &roundUp_ka; break;
 					case opTrunc : func = &trunc_ka; break;
@@ -6221,6 +6480,8 @@ static BinaryOpFunc ChooseNovaSimdFunc(BinaryOpUGen *unit)
 					case opBitAnd : func = &and_ia; break;
 					case opBitOr : func = &or_ia; break;
 					case opBitXor : func = &xor_ia; break;
+					case opShiftRight : func = &rightShift_ia; break;
+					case opShiftLeft : func = &leftShift_ia; break;
 					case opRound : func = &round_ia; break;
 					case opRoundUp : func = &roundUp_ia; break;
 					case opTrunc : func = &trunc_ia; break;

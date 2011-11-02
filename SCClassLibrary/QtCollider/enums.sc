@@ -40,6 +40,14 @@ QLimits {
   *new { arg limit; ^dict[limit]; }
 }
 
+QKey {
+  classvar
+    <left = 16r1000012,
+    <up = 16r1000013,
+    <right = 16r1000014,
+    <down = 16r1000015;
+}
+
 QKeyModifiers {
   classvar
     <shift = 16r2000000,
@@ -64,4 +72,16 @@ QKeyModifiers {
     // TODO: caps-lock, func, help
     ^cmods;
   }
+}
+
+QWebFontFamily {
+  classvar
+    <standard = 0,
+    <fixed = 1,
+    <serif = 2,
+    <sansSerif = 3,
+    <cursive = 4,
+    <fantasy = 5;
+
+  *new { arg symbol; ^this.perform( symbol.asGetter ); }
 }

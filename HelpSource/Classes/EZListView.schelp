@@ -62,7 +62,7 @@ w.view.decorator = FlowLayout(w.view.bounds);
 g = EZListView.new(w,
 	230@230,
 	"An ListView:",
-	[	
+	[
 		\item0 ->{ |a| ("this is item 0 of " ++ a).postln },
 		\item1 ->{ |a| ("this is item 1 of " ++ a).postln },
 		\item2 ->{ |a| ("this is item 2 of " ++ a).postln },
@@ -75,7 +75,7 @@ g = EZListView.new(w,
 	layout: \vert,
 	gap: 2@2
 	);
-	
+
 )
 
 // or a more simple syntax (uses decorator gap settings):

@@ -61,7 +61,7 @@ s.boot.doWhenBooted {
 	b = Buffer.alloc(s, 512);
 	// Feel free to load a more interesting clip!
 	// a11wlk01 is not an ideal example of musical onsets.
-	d = Buffer.read(s, "sounds/a11wlk01.wav");
+	d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 };
 )
 
@@ -70,16 +70,16 @@ s.boot.doWhenBooted {
 (
 x = {
 	var sig, chain, onsets, pips;
-	
+
 	// A simple generative signal
 	sig = LPF.ar(Pulse.ar(TIRand.kr(63, 75, Impulse.kr(2)).midicps), LFNoise2.kr(0.5).exprange(100, 10000)) * Saw.ar(2).range(0, 1);
 	// or, uncomment this line if you want to play the buffer in
 	//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
-	
+
 	chain = FFT(b, sig);
-	
+
 	onsets = Onsets.kr(chain, MouseX.kr(0,1), \rcomplex);
-	
+
 	// You'll hear percussive "ticks" whenever an onset is detected
 	pips = WhiteNoise.ar(EnvGen.kr(Env.perc(0.001, 0.1, 0.2), onsets));
 	Out.ar(0, Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1));
@@ -88,9 +88,9 @@ x = {
 x.free; // Free the synth
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// Or we could expand this multichannel, run a series of different thresholds at the same time, 
+// Or we could expand this multichannel, run a series of different thresholds at the same time,
 // to sonify the effect of the threshold value.
-// A little hard to listen to at first: try and identify a pitch at which the best sort of 
+// A little hard to listen to at first: try and identify a pitch at which the best sort of
 // detection is happening.
 // You'll hear "bobbling" at low pitches where the threshold is definitely too low.
 
@@ -98,16 +98,16 @@ x.free; // Free the synth
 var threshes = (0.1, 0.2 .. 1);
 x = {
 	var sig, chain, onsets, pips;
-	
+
 	// A simple generative signal
 	sig = LPF.ar(Pulse.ar(TIRand.kr(63, 75, Impulse.kr(2)).midicps), LFNoise2.kr(0.5).exprange(100, 10000)) * Saw.ar(2).range(0, 1);
 	// or, uncomment this line if you want to play the buffer in
 	//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
-	
+
 	chain = FFT(b, sig);
-	
+
 	onsets = Onsets.kr(chain, threshes, \rcomplex);
-	
+
 	// Generate pips at a variety of pitches
 	pips = SinOsc.ar((threshes).linexp(0, 1, 440, 3520), 0, EnvGen.kr(Env.perc(0.001, 0.1, 0.5), onsets)).mean;
 	Out.ar(0, Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1));

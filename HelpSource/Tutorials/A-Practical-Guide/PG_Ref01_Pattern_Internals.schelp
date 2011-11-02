@@ -62,7 +62,7 @@ code::
 Prand : ListPattern {
 	embedInStream { arg inval;
 		var item;
-		
+
 		repeats.value.do({ arg i;
 			item = list.at(list.size.rand);
 			inval = item.embedInStream(inval);
@@ -77,7 +77,7 @@ This definition doesn't show the instance variables or code::*new:: method. Wher
 code::
 ListPattern : Pattern {
 	var <>list, <>repeats=1;
-	
+
 	*new { arg list, repeats=1;
 		if (list.size > 0) {
 			^super.new.list_(list).repeats_(repeats)
@@ -234,7 +234,7 @@ code::
 
 		// #1 - make the EventStreamCleanup instance
 		var	cleanup = EventStreamCleanup.new;
-		
+
 		// #2 - make persistent resource, and add cleanup function
 		// could be some kind of resource other than a Synth
 		synth = (... make the Synth here...);
@@ -246,10 +246,10 @@ code::
 
 		loop {
 			outputEvent = (... get output event...);
-			
+
 			// #4 - cleanup.exit
 			if(outputEvent.isNil) { ^cleanup.exit(inval) };
-	
+
 			// #3 - update the EventStreamCleanup before yield
 			cleanup.update(outputEvent);
 			inval = outputEvent.yield;

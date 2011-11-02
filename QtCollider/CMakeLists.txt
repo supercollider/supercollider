@@ -17,6 +17,7 @@ set( QT_COLLIDER_HDRS
   QObjectProxy.h
   QWidgetProxy.h
   widgets/BasicWidgets.h
+  widgets/QcTreeWidget.h
   widgets/QcScrollArea.h
   widgets/QcNumberBox.h
   widgets/QcSlider.h
@@ -31,6 +32,7 @@ set( QT_COLLIDER_HDRS
   widgets/QcSoundFileView.h
   widgets/QcFileDialog.h
   widgets/QcWebView.h
+  widgets/QcWindow.h
   layouts/layouts.hpp
 )
 
@@ -43,12 +45,14 @@ set( QT_COLLIDER_SRCS
   QWidgetProxy.cpp
   Slot.cpp
   QcObjectFactory.cpp
+  hacks/hacks_x11.cpp
   primitives/primitives.cpp
   primitives/prim_QObject.cpp
   primitives/prim_QPen.cpp
   primitives/prim_misc.cpp
   primitives/prim_QWidget.cpp
   widgets/BasicWidgets.cpp
+  widgets/QcTreeWidget.cpp
   widgets/QcScrollArea.cpp
   widgets/QcAbstractStepValue.cpp
   widgets/QcNumberBox.cpp

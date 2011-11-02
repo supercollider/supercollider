@@ -33,6 +33,9 @@
 static QcWidgetFactory<QcSoundFileView> sfViewFactory;
 static QcWidgetFactory<QcWaveform> waveformFactory;
 
+const int kMaxRawFrames = 300000;
+const int kMaxFramesPerCacheUnit = 128;
+
 QcSoundFileView::QcSoundFileView() :
   hScrollMultiplier( 0.f )
 {
@@ -111,6 +114,11 @@ void QcSoundFileView::updateZoomScrollBar()
 
 QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   sf(0),
+
+  _rangeBeg(0),
+  _rangeDur(0),
+  _rangeEnd(0),
+
   _cache(0),
 
   _curSel(0),
@@ -124,7 +132,6 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _gridResolution(1.0),
   _gridOffset(0.0),
   _gridColor(QColor(100,100,200)),
-
 
   _beg(0.0),
   _dur(0.0),
@@ -150,16 +157,53 @@ QcWaveform::~QcWaveform()
 
 void QcWaveform::load( const QString& filename )
 {
+  qcDebugMsg( 1, "QcWaveform::load()" );
+
   SF_INFO new_info;
   memset( &new_info, 0, sizeof(SF_INFO) );
 
   SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
-  sf_command( new_sf, SFC_SET_SCALE_FLOAT_INT_READ, NULL, SF_TRUE );
 
   if( !new_sf ) {
-    printf("Could not open soundfile!\n");
+    qcErrorMsg("Could not open soundfile.");
     return;
   }
+
+  doLoad( new_sf, new_info, 0, new_info.frames );
+}
+
+void QcWaveform::load( const QString& filename, int beg, int dur )
+{
+  qcDebugMsg( 1, "QcWaveform::load( beg, dur )" );
+
+  SF_INFO new_info;
+  memset( &new_info, 0, sizeof(SF_INFO) );
+
+  SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
+
+  if( !new_sf ) {
+    qcErrorMsg("Could not open soundfile.");
+    return;
+  }
+
+  doLoad( new_sf, new_info, beg, dur );
+}
+
+void QcWaveform::doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t beg, sf_count_t dur )
+{
+  // set up soundfile to scale data in range [-1,1] to int range
+  // when reading floating point data as int
+  sf_command( new_sf, SFC_SET_SCALE_FLOAT_INT_READ, NULL, SF_TRUE );
+
+  // check beginning and duration validity
+
+  if( beg < 0 || dur < 1 || beg + dur > new_info.frames ) {
+    qcErrorMsg("Invalid beginning and/or duration.");
+    sf_close( new_sf );
+    return;
+  }
+
+  // cleanup previous state
 
   // NOTE we have to delete SoundCacheStream before closing the soundfile, as it might be still
   // loading it
@@ -170,8 +214,10 @@ void QcWaveform::load( const QString& filename )
 
   sf = new_sf;
   sfInfo = new_info;
-  _beg = 0;
-  _dur = sfInfo.frames;
+  _beg = _rangeBeg = beg;
+  _dur = _rangeDur = dur;
+  _rangeEnd = _rangeBeg + _rangeDur;
+
   updateFPP();
 
   _cache = new SoundCacheStream();
@@ -182,7 +228,7 @@ void QcWaveform::load( const QString& filename )
   connect( _cache, SIGNAL(loadingDone()), this, SIGNAL(loadingDone()) );
   connect( _cache, SIGNAL(loadingDone()), this, SLOT(redraw()) );
 
-  _cache->load( sf, sfInfo, 128, 300000 );
+  _cache->load( sf, sfInfo, beg, dur, kMaxFramesPerCacheUnit, kMaxRawFrames );
 
   redraw();
 }
@@ -194,12 +240,13 @@ float QcWaveform::loadProgress()
 
 float QcWaveform::zoom()
 {
-  return sfInfo.frames ? (double) _dur / sfInfo.frames : 0;
+  // NOTE We have limited _rangeDur to 1 minimum.
+  return _dur / _rangeDur;
 }
 
 float QcWaveform::xZoom()
 {
-  return ( sfInfo.samplerate ? (double) _dur / sfInfo.samplerate : 0 );
+  return ( sfInfo.samplerate ? _dur / sfInfo.samplerate : 0 );
 }
 
 float QcWaveform::yZoom()
@@ -227,12 +274,12 @@ VariantList QcWaveform::selection( int i ) const
   VariantList l;
   if( i < 0 || i > 63 ) return l;
   const Selection &s = _selections[i];
-  l.data << QVariant(static_cast<int>(s.start));
+  l.data << QVariant(static_cast<int>(s.start - _rangeBeg));
   l.data << QVariant(static_cast<int>(s.size));
   return l;
 }
 
-void QcWaveform::setSelection( int i, quint64 a, quint64 b )
+void QcWaveform::setSelection( int i, sf_count_t a, sf_count_t b )
 {
   if( i < 0 || i > 63 ) return;
   Selection& s = _selections[i];
@@ -244,24 +291,26 @@ void QcWaveform::setSelection( int i, quint64 a, quint64 b )
 void QcWaveform::setSelection( int i, VariantList l )
 {
   if( l.data.count() < 2 ) return;
-  setSelection( i, l.data[0].toInt(), l.data[1].toInt() );
+  sf_count_t start = l.data[0].toInt() + _rangeBeg;
+  sf_count_t end = start + l.data[1].toInt();
+  setSelection( i, start, end );
 }
 
-void QcWaveform::setSelectionStart( int i, quint64 frame )
+void QcWaveform::setSelectionStart( int i, sf_count_t frame )
 {
   if( i < 0 || i > 63 ) return;
   Selection& s = _selections[i];
-  quint64 frame2 = s.start + s.size;
+  sf_count_t frame2 = s.start + s.size;
   s.start = qMin( frame, frame2 );
   s.size = qMax( frame, frame2 ) - s.start;
   update();
 }
 
-void QcWaveform::setSelectionEnd( int i, quint64 frame )
+void QcWaveform::setSelectionEnd( int i, sf_count_t frame )
 {
   if( i < 0 || i > 63 ) return;
   Selection& s = _selections[i];
-  quint64 frame2 = s.start;
+  sf_count_t frame2 = s.start;
   s.start = qMin( frame, frame2 );
   s.size = qMax( frame, frame2 ) - s.start;
   update();
@@ -305,72 +354,71 @@ void QcWaveform::setWaveColors( const VariantList &list )
   redraw();
 }
 
-void QcWaveform::zoomTo( float z )
+void QcWaveform::zoomTo( double z )
 {
-  z = qMax( 0.f, qMin( 1.f, z ) );
+  z = qMax( 0.0, qMin( 1.0, z ) );
 
-  _dur = sfInfo.frames ? qMax( 10.f, sfInfo.frames * z ) : 0;
+  _dur = qMax( _rangeDur * z, 1.0 );
 
   //printf("dur: %Li view: %Li\n", sfInfo.frames, _dur);
-  if( _beg + _dur > sfInfo.frames ) _beg = sfInfo.frames - _dur;
+  if( _beg + _dur > _rangeEnd ) _beg = _rangeEnd - _dur;
 
   updateFPP();
   redraw();
 }
 
-void QcWaveform::zoomBy( float factor )
+void QcWaveform::zoomBy( double factor )
 {
-  double z = zoom() * factor;
-  zoomTo( z );
-  redraw();
+  zoomTo( zoom() * factor );
 }
 
 void QcWaveform::zoomAllOut()
 {
-  _beg = 0.0;
-  _dur = sfInfo.frames;
+  _beg = _rangeBeg;
+  _dur = _rangeDur;
   updateFPP();
   redraw();
 }
 
-void QcWaveform::scrollTo( quint64 startFrame )
+void QcWaveform::scrollTo( double startFrame )
 {
-  _beg = qMax( (quint64) 0, qMin( (quint64) sfInfo.frames - _dur, startFrame ) );
+  _beg = qBound( (double)_rangeBeg, startFrame, _rangeEnd - _dur );
   redraw();
 }
 
-void QcWaveform::scrollBy( qint64 f )
+void QcWaveform::scrollBy( double f )
 {
-  // NOTE take care of signedness
-  quint64 dest;
-  if( f < 0 ) {
-    qint64 reversed = -f;
-    dest = ( _beg > reversed ) ? ( _beg - reversed ) : 0;
-  }
-  else {
-    dest = _beg + f;
-  }
-  scrollTo( dest );
+  scrollTo( _beg + f );
+}
+
+float QcWaveform::scrollPos()
+{
+  double scrollRange = _rangeDur - _dur;
+  return scrollRange > 0.0 ? (_beg - _rangeBeg) / scrollRange : 0.f;
+}
+void QcWaveform::setScrollPos( double fraction )
+{
+  scrollTo( fraction * (_rangeDur - _dur) + _rangeBeg );
 }
 
 void QcWaveform::scrollToStart()
 {
-  scrollTo( _beg );
+  scrollTo( _rangeBeg );
 }
 
 void QcWaveform::scrollToEnd()
 {
-  scrollTo( sfInfo.frames - _dur );
+  scrollTo( _rangeEnd - _dur );
 }
 
-void QcWaveform::setXZoom( float seconds )
+void QcWaveform::setXZoom( double seconds )
 {
-  float frac = seconds * sfInfo.samplerate / sfInfo.frames;
-  printf("frac %f\n", frac );
+  // NOTE We have limited _rangeDur to 1 minimum.
+  double frac = seconds * sfInfo.samplerate / _rangeDur;
   zoomTo( frac );
 }
 
-void QcWaveform::setYZoom( float factor )
+void QcWaveform::setYZoom( double factor )
 {
   _yZoom = factor;
   redraw();
@@ -382,11 +430,14 @@ void QcWaveform::zoomSelection( int i )
 
   Selection &s = _selections[i];
 
-  if( s.size <= 0 || s.start >= sfInfo.frames ) return;
+  if( s.start >= _rangeEnd || s.size < 1 || s.start + s.size <= _rangeBeg )
+    return;
 
-  _beg = s.start;
-  _dur = qMin( s.size, sfInfo.frames - s.start );
+  _beg = qMax( s.start, _rangeBeg );
+  double end = qMin( s.start + s.size, _rangeEnd );
+  _dur = end - _beg;
 
+  // clear the selection
   s.size = 0;
 
   updateFPP();
@@ -503,6 +554,7 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
   if( btn == Qt::LeftButton ) {
 
     if( (mods & Qt::ShiftModifier) && ( mods & CTRL ) ) {
+      _dragFrame = _selections[_curSel].start;
       _dragAction = MoveSelection;
     }
     else if( mods & Qt::ShiftModifier ) {
@@ -540,9 +592,11 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
     if( mods & Qt::ShiftModifier ) {
       _dragAction = Zoom;
       _dragData = zoom();
+      _dragData2 = ev->pos().x() * _fpp + _beg;
     }
     else {
       _dragAction = Scroll;
+      _dragData = _beg;
     }
 
   }
@@ -550,7 +604,7 @@ void QcWaveform::mousePressEvent( QMouseEvent *ev )
 
 void QcWaveform::mouseDoubleClickEvent ( QMouseEvent * )
 {
-  setSelection( _curSel, 0, sfInfo.frames );
+  setSelection( _curSel, _rangeBeg, _rangeEnd );
   Q_EMIT( action() );
 }
 
@@ -558,19 +612,16 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
 {
   if( _dragAction == Scroll ) {
     double dpos = _dragPoint.x() - ev->pos().x();
-    qint64 dif = qMax( _beg * -1.0, dpos * _fpp );
-    scrollTo( _beg + dif );
-    _dragPoint = ev->pos();
+    scrollTo( dpos * _fpp + _dragData );
   }
   else if( _dragAction == Zoom ) {
     double factor = pow( 2, (ev->pos().y() - _dragPoint.y()) * 0.008 );
     double zoom_0 = _dragData;
     zoomTo( zoom_0 * factor );
-    double beg = qMax( 0.0, _dragFrame - (_dragPoint.x() * _fpp) );
-    scrollTo( beg );
+    scrollTo( _dragData2 - (_dragPoint.x() * _fpp) );
   }
   else if( _dragAction == Select ) {
-    quint64 frame = qMax( 0, qMin( width(), ev->pos().x() ) ) * _fpp + _beg;
+    sf_count_t frame = qBound( 0, ev->pos().x(), width() ) * _fpp + _beg;
     setSelection( _curSel, _dragFrame, frame );
     update();
     Q_EMIT( action() );
@@ -578,14 +629,13 @@ void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
   else if( _dragAction == MoveSelection ) {
     double dpos = ev->pos().x() - _dragPoint.x();
     Selection &s = _selections[_curSel];
-    s.start = qMax( 0.0, s.start + (dpos * _fpp) );
-    s.start = qMin( s.start, s.size < sfInfo.frames ? sfInfo.frames - s.size : 0 );
-    _dragPoint = ev->pos();
+    s.start = _dragFrame + (dpos * _fpp);
+    s.start = qBound( _rangeBeg, s.start, _rangeEnd - s.size );
     update();
     Q_EMIT( action() );
   }
   else if( _dragAction == MoveCursor ) {
-    _cursorPos = qMax( 0, qMin( width(), ev->pos().x() ) ) * _fpp + _beg;
+    _cursorPos = qBound( 0, ev->pos().x(), width() ) * _fpp + _beg;
     update();
     Q_EMIT( metaAction() );
   }
@@ -606,14 +656,14 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   if( !sf || !_cache || !_cache->ready() ) return;
 
   // check for sane situation:
-  if( f_beg < 0 || f_beg + f_dur > sfInfo.frames ) return;
+  if( f_beg < _rangeBeg || f_beg + f_dur > _rangeEnd ) return;
 
   // data indexes
-  quint64 d_beg = floor(f_beg); // data beginning;
-  int d_count = ceil( f_beg + f_dur ) - d_beg; // data count;
+  sf_count_t i_beg = floor(f_beg); // data beginning;
+  sf_count_t i_count = ceil( f_beg + f_dur ) - i_beg; // data count;
   bool haveOneMore;
-  if( sfInfo.frames - (f_beg + f_dur) >= 1 ) {
-    ++d_count;
+  if( i_beg + i_count < _rangeEnd ) {
+    ++i_count;
     haveOneMore = true;
   }
   else {
@@ -627,7 +677,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   if( _fpp > 1.0 ? (_fpp < _cache->fpu()) : _cache->fpu() > 1.0 ) {
     qcDebugMsg( 1, QString("use file") );
     soundStream = &sfStream;
-    sfStream.load( sf, sfInfo, d_beg, d_count );
+    sfStream.load( sf, sfInfo, i_beg, i_count );
   }
   else {
     qcDebugMsg( 1, QString("use cache") );
@@ -713,27 +763,27 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
       // draw lines between actual values
 
       qreal ppf = 1.0 / _fpp;
-      qreal dx = (d_beg - f_beg) * ppf;
+      qreal dx = (i_beg - f_beg) * ppf;
 
       bool interleaved = false;
-      short *data = soundStream->rawFrames( ch, d_beg, d_count, &interleaved );
+      short *data = soundStream->rawFrames( ch, i_beg, i_count, &interleaved );
       //printf("got raw frames ok: %i\n", data != 0 );
       Q_ASSERT( data != 0 );
       int step = interleaved ? soundStream->channels() : 1;
 
       QPainterPath path;
 
-      if( d_count ) {
+      if( i_count ) {
         QPointF pt( dx, (qreal) *data );
         path.moveTo( pt );
       }
       int f; // frame
-      for( f = 1; f < d_count; ++f ) {
+      for( f = 1; f < i_count; ++f ) {
         data += step;
         QPointF pt( f * ppf + dx, (qreal) *data );
         path.lineTo( pt );
       }
-      if( d_count && !haveOneMore ) {
+      if( i_count && !haveOneMore ) {
         path.lineTo( QPointF( f * ppf + dx, (qreal)*data ) );
       }
 
@@ -750,7 +800,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 SoundFileStream::SoundFileStream() : _data(0), _dataSize(0), _dataOffset(0)
 {}
 
-SoundFileStream::SoundFileStream( SNDFILE *sf, const SF_INFO &info, double b, double d )
+SoundFileStream::SoundFileStream( SNDFILE *sf, const SF_INFO &info, sf_count_t b, sf_count_t d )
 : _data(0)
 {
   load( sf, info, b, d );
@@ -761,34 +811,35 @@ SoundFileStream::~SoundFileStream()
   delete[] _data;
 }
 
-void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, double b, double d )
+void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf_count_t dur )
 {
   delete[] _data;
 
-  _dataOffset = floor(b);
-  _dataSize = ceil(b + d) - _dataOffset;
+  _dataOffset = beg;
+  _dataSize = dur;
 
   _data = new short [_dataSize * info.channels];
   sf_seek( sf, _dataOffset, SEEK_SET);
   _dataSize = sf_readf_short( sf, _data, _dataSize );
 
-  ch = info.channels;
-  beg = _dataOffset;
-  dur = _dataSize;
+  _ch = info.channels;
+  _beg = _dataOffset;
+  _dur = _dataSize;
 }
 
 bool SoundFileStream::integrate
-( int ch, double off, double dur,
+( int ch, double f_beg, double f_dur,
   short *minBuffer, short *maxBuffer, float *sumBuf, float *sum2Buf, int bufferSize )
 {
   bool ok = _data != 0
             && ch < channels()
-            && ( off >= beginning() )
-            && ( off + dur <= beginning() + duration() );
+            && ( f_beg >= beginning() )
+            && ( f_beg + f_dur <= beginning() + duration() );
   if( !ok ) return false;
 
-  double fpu = dur / bufferSize;
-  double f_pos = off - beginning();
+  double fpu = f_dur / bufferSize;
+  double f_pos = f_beg - _dataOffset;
+  double f_pos_max = _dataSize;
 
   int i;
   for( i = 0; i < bufferSize; ++i ) {
@@ -797,12 +848,12 @@ bool SoundFileStream::integrate
     // increment position
 
     // slower, but error-proof:
-    // f_pos = (double)(i+1) / width() * dur + off;
+    // f_pos = (double)(i+1) / width() * f_dur + f_beg;
 
     // the following is a faster variant, but floating point operations are fallible,
     // so we need to make sure we stay within the constraints of f_dur;
     double f_pos1 = f_pos + fpu;
-    if( f_pos1 > dur ) f_pos1 = dur;
+    if( f_pos1 > f_pos_max ) f_pos1 = f_pos_max;
 
     int frame_count = ceil(f_pos1) - data_pos;
 
@@ -843,17 +894,18 @@ bool SoundFileStream::integrate
 }
 
 bool SoundFileStream::displayData
-( int ch, double off, double dur,
+( int ch, double f_beg, double f_dur,
   short *minBuffer, short *maxBuffer, short *minRMS, short *maxRMS, int bufferSize )
 {
   bool ok = _data != 0
             && ch < channels()
-            && ( off >= beginning() )
-            && ( off + dur <= beginning() + duration() );
+            && ( f_beg >= beginning() )
+            && ( f_beg + f_dur <= beginning() + duration() );
   if( !ok ) return false;
 
-  double fpu = dur / bufferSize;
-  double f_pos = off - beginning();
+  double fpu = f_dur / bufferSize;
+  double f_pos = f_beg - _dataOffset;
+  double f_pos_max = _dataSize;
 
   short min = SHRT_MAX;
   short max = SHRT_MIN;
@@ -864,12 +916,12 @@ bool SoundFileStream::displayData
     // increment position
 
     // slower, but error-proof:
-    // f_pos = (double)(i+1) / width() * dur + off;
+    // f_pos = (double)(i+1) / width() * f_dur + f_beg;
 
     // the following is a faster variant, but floating point operations are fallible,
     // so we need to make sure we stay within the constraints of f_dur;
     double f_pos1 = f_pos + fpu;
-    if( f_pos1 > dur ) f_pos1 = dur;
+    if( f_pos1 > f_pos_max ) f_pos1 = f_pos_max;
 
     int frame_count = ceil(f_pos1) - data_pos;
 
@@ -914,11 +966,11 @@ bool SoundFileStream::displayData
   return true;
 }
 
-short *SoundFileStream::rawFrames( int ch, quint64 b, quint64 d, bool *interleaved )
+short *SoundFileStream::rawFrames( int ch, sf_count_t b, sf_count_t d, bool *interleaved )
 {
   if( ch > channels() || b < _dataOffset || b + d > _dataOffset + _dataSize ) return 0;
   *interleaved = true;
-  int offset = (b - _dataOffset) * channels() + ch;
+  sf_count_t offset = (b - _dataOffset) * channels() + ch;
   return ( _data + offset );
 }
 
@@ -927,7 +979,8 @@ SoundCacheStream::SoundCacheStream()
 : SoundStream ( 0, 0.0, 0.0 ),
   _caches(0),
   _fpu(0.0),
-  _cacheSize(0),
+  _dataOffset(0),
+  _dataSize(0),
   _ready(false),
   _loading(false),
   _loadProgress(0)
@@ -939,9 +992,11 @@ SoundCacheStream::SoundCacheStream()
   connect( _loader, SIGNAL(loadingDone()), this, SLOT(onLoadingDone()), Qt::QueuedConnection );
 }
 
-void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info,
+void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf_count_t dur,
                              int maxFramesPerUnit, int maxRawFrames )
 {
+  Q_ASSERT( maxRawFrames > 0 && maxFramesPerUnit > 0 );
+
   _ready = false;
   _loadProgress = 0;
 
@@ -951,30 +1006,33 @@ void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info,
   }
   delete [] _caches;
 
-  ch = info.channels;
-  beg = 0.0;
-  dur = (double) info.frames;
+  _ch = info.channels;
+  _beg = _dataOffset = beg;
+  _dur = dur;
 
-  if( info.frames <= maxRawFrames ) {
-    _cacheSize = info.frames;
+  // adjust data size for data amount limit
+  if( _dur <= maxRawFrames ) {
+     // ok, not crossing the limit
+    _dataSize = _dur;
     _fpu = 1.0;
   }
   else {
-    _cacheSize = maxRawFrames;
-    _fpu = (double) info.frames / _cacheSize;
+    _dataSize = maxRawFrames;
+    _fpu = (double) _dur / _dataSize;
+    // re-adjust for data resolution limit
     if( _fpu > maxFramesPerUnit ) {
-      _fpu = maxFramesPerUnit;
-      _cacheSize = info.frames / _fpu;
+      _dataSize = (double) _dur / maxFramesPerUnit;
+      _fpu = (double) _dur / _dataSize;
     }
   }
 
   _caches = new SoundCache [info.channels];
   int ch;
   for( ch = 0; ch < info.channels; ++ch ) {
-    _caches[ch].min = new short [_cacheSize];
-    _caches[ch].max = new short [_cacheSize];
-    _caches[ch].sum = new float [_cacheSize];
-    _caches[ch].sum2 = new float [_cacheSize];
+    _caches[ch].min = new short [_dataSize];
+    _caches[ch].max = new short [_dataSize];
+    _caches[ch].sum = new float [_dataSize];
+    _caches[ch].sum2 = new float [_dataSize];
   }
 
   _loading = true;
@@ -991,20 +1049,18 @@ SoundCacheStream::~SoundCacheStream()
 }
 
 bool SoundCacheStream::displayData
-( int ch, double off, double dur,
+( int ch, double f_beg, double f_dur,
   short *minBuffer, short *maxBuffer, short *minRMS, short *maxRMS, int bufferSize )
 {
-  // we assume that beginning() == 0
-
   bool ok = _ready
             && ch < channels()
-            && ( off >= beginning() )
-            && ( off + dur <= beginning() + duration() )
-            && bufferSize <= dur * _fpu;
+            && ( f_beg >= beginning() )
+            && ( f_beg + f_dur <= beginning() + duration() )
+            && bufferSize <= f_dur * _fpu;
   if( !ok ) return false;
 
-  double ratio = dur / _fpu / bufferSize;
-  double cache_pos = off / _fpu;
+  double ratio = f_dur / _fpu / bufferSize;
+  double cache_pos = (f_beg - _dataOffset) / _fpu ;
 
   short min = SHRT_MAX;
   short max = SHRT_MIN;
@@ -1016,7 +1072,7 @@ bool SoundCacheStream::displayData
 
     cache_pos += ratio;
     // Due to possibility of floating point operation failures.
-    if( cache_pos > _cacheSize ) cache_pos = _cacheSize;
+    if( cache_pos > _dataSize ) cache_pos = _dataSize;
     int frame_count = ceil(cache_pos) - f ;
     float frac1 = cache_pos + 1.f - ceil(cache_pos);
 
@@ -1050,7 +1106,7 @@ bool SoundCacheStream::displayData
       ++f;
     }
 
-    double n = dur / bufferSize;
+    double n = f_dur / bufferSize;
     double avg = sum / n;
     double stdDev = sqrt( abs((sum2 - (sum*avg) ) / n) );
 
@@ -1067,11 +1123,14 @@ bool SoundCacheStream::displayData
   return true;
 }
 
-short *SoundCacheStream::rawFrames( int ch, quint64 b, quint64 d, bool *interleaved )
+short *SoundCacheStream::rawFrames( int ch, sf_count_t b, sf_count_t d, bool *interleaved )
 {
-  if( !_ready || _fpu > 1.0 || ch > channels() || b + d > _cacheSize ) return 0;
+  if( !_ready || _fpu != 1.0 || ch > channels() ||
+      b < _dataOffset || b + d > _dataOffset + _dataSize )
+    return 0;
+
   *interleaved = false;
-  return _caches[ch].min + b;
+  return _caches[ch].min + b - _dataOffset;
 }
 
 /*SoundCacheLoader::SoundCacheLoader( SNDFILE *sf, const SF_INFO &info,
@@ -1110,18 +1169,25 @@ void SoundCacheLoader::run()
 
   int channels = _cache->channels();
   double fpu = _cache->_fpu;
-  int cacheSize = _cache->_cacheSize;
+  int size = _cache->_dataSize;
+  double offset = _cache->_dataOffset;
   SoundCache *chanCaches = _cache->_caches;
 
   int i = 0;
-  while( i < cacheSize ) {
-    int chunkSize = qMin( 1000, cacheSize - i );
+  while( i < size ) {
+    int chunkSize = qMin( 1000, size - i );
 
-    SoundFileStream sfStream( _sf, _info, i * fpu, chunkSize * fpu );
+    double beg = i * fpu + offset;
+    double dur = chunkSize * fpu;
+
+    sf_count_t i_beg = floor(beg);
+    sf_count_t i_dur = ceil(beg+dur) - i_beg;
+
+    SoundFileStream sfStream( _sf, _info, i_beg, i_dur );
 
     int ch;
     for( ch = 0; ch < channels; ++ch ) {
-      sfStream.integrate( ch, i * fpu, chunkSize * fpu,
+      sfStream.integrate( ch, beg, dur,
                           chanCaches[ch].min + i, chanCaches[ch].max + i,
                           chanCaches[ch].sum + i, chanCaches[ch].sum2 + i,
                           chunkSize );
@@ -1129,7 +1195,7 @@ void SoundCacheLoader::run()
 
     i += chunkSize;
 
-    Q_EMIT( loadProgress( i * 100 / cacheSize ) );
+    Q_EMIT( loadProgress( i * 100 / size ) );
   }
 
   Q_EMIT( loadingDone() );

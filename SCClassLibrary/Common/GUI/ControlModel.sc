@@ -148,6 +148,7 @@ ControlSpec : Spec {
 
 	*initClass {
 		Class.initClassTree(Warp);
+		Class.initClassTree(Server);
 		specs = specs.addAll([
 			// set up some ControlSpecs for common mappings
 			// you can add your own after the fact.

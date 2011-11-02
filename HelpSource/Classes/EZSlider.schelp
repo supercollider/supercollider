@@ -21,7 +21,7 @@ argument:: bounds
 An instance of link::Classes/Rect:: or link::Classes/Point::. Default value is code::160@20::.
 
 argument:: label
-The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created. 
+The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
 
 argument:: controlSpec
 The link::Classes/ControlSpec:: for scaling the value.
@@ -121,7 +121,7 @@ method:: visible
 Sets/gets it the component views are visible.
 argument:: bool
 An instance of link::Classes/Boolean::. Default is code::true::.
-				
+
 subsection:: Changing Appearance
 
 method:: setColors
@@ -174,9 +174,9 @@ w.view.decorator.gap=2@2;
 Window.closeAll  // use this to close all the windows
 
 /////////////////////////////////////////////////////////////////
-////////// click these parentheses to see all features and layouts 
+////////// click these parentheses to see all features and layouts
 
-(   
+(
 
 m=nil;
 //m=2@2;		// uncomment this for margin
@@ -186,7 +186,7 @@ m=nil;
 
 (		// all features, small font
 		g=EZSlider(nil, 400@14," freq  ", \freq,unitWidth:30, numberWidth:60,layout:\horz, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180,50);
 		g.font_(Font("Helvetica",10));
@@ -194,13 +194,13 @@ m=nil;
 
 (		// no unitView
 		g=EZSlider(nil, 400@16," freq  ", \freq,unitWidth:0, numberWidth:60,layout:\horz, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180, -20);
 );
 (		// no label, so use window name as label
 		g=EZSlider(nil, 400@16, nil, \freq,unitWidth:0, numberWidth:60,layout:\horz, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180, -90);
 		g.window.name="Freq";
@@ -211,21 +211,21 @@ m=nil;
 
 (		// all features
 		g=EZSlider(nil, 300@42," freq  ", \freq,unitWidth:30, numberWidth:60,layout:\line2, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180,-160);
 );
 
 (		// no unitView, with label
 		g=EZSlider(nil, 300@42," freq  ", \freq,unitWidth:0, numberWidth:60,layout:\line2, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180,-260);
 );
 
 (		// no label
 		g=EZSlider(nil, 300@42,nil, \freq, unitWidth:30, numberWidth:60,layout:\line2, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180,-360);
 		g.window.name="Freq";
@@ -233,7 +233,7 @@ m=nil;
 
 (		// no lablel, so use window name as label
 		g=EZSlider(nil, 150@42,nil, \freq,unitWidth:0, numberWidth:60,layout:\line2, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180,-460);
 		g.window.name="Freq";
@@ -244,41 +244,41 @@ m=nil;
 
 (		// all features, small font
 		g=EZSlider(nil, 45@300," Vol  ", \db.asSpec.step_(0.01),unitWidth:30, numberWidth:60,layout:\vert, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(250,50);
 		g.font_(Font("Helvetica",10));
 );
 (		// no label, small font
 		g=EZSlider(nil, 45@300, nil, \db.asSpec.step_(0.01),unitWidth:30, numberWidth:60,layout:\vert, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(310,50);
 		g.font_(Font("Helvetica",10));
 );
 (		// no Units small font
 		g=EZSlider(nil, 45@300, " Vol", \db.asSpec.step_(0.01),unitWidth:0, numberWidth:60,layout:\vert, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(370,50);
 		g.font_(Font("Helvetica",10));
 );
 (		// no unitView, no Units small font
 		g=EZSlider(nil, 45@300, nil, \db.asSpec.step_(0.01),unitWidth:0, numberWidth:60,layout:\vert, margin: m);
-		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, 
+		g.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(430,50);
 		g.font_(Font("Helvetica",10));
 );
 
-)	
-	
-		
+)
+
+
 
 
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
-		
+
 
 // Sound example
 (
@@ -301,7 +301,7 @@ SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, g
 		x = x * EnvGen.kr(Env.cutoff, gate, doneAction: 2);
 		Out.ar(0, x);
 	}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]
-).load(s);
+).add;
 
 
 
@@ -338,27 +338,27 @@ w.view.decorator.nextLine;
 noteControl = EZSlider(w, 430 @ 20, "Note ", ControlSpec(24, 60, \lin, 1, 36, \note),
 	{|ez| node.set( "note", ez.value )}, unitWidth:30)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 w.view.decorator.nextLine;
 cutoffControl = EZSlider(w, 430 @ 20, "Cutoff ", ControlSpec(200, 5000, \exp,0.01,1000,\Hz),
 	{|ez| node.set( "fc", ez.value )}, unitWidth:30)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 w.view.decorator.nextLine;
 resonControl = EZSlider(w, 430 @ 20, "Reson ", ControlSpec(0.1, 0.7,\lin,0.001,0.2,\rq),
 	{|ez| node.set( "rq", ez.value )}, unitWidth:30)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 w.view.decorator.nextLine;
 balanceControl = EZSlider(w, 430 @ 20, "Balance ", \bipolar,
 	{|ez| node.set( "bal", ez.value )},  unitWidth:30)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 w.view.decorator.nextLine;
 ampControl = EZSlider(w, 430 @ 20, "Amp ", \db,
 	{|ez| node.set( "amp", ez.value.dbamp )}, -6, unitWidth:30)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 
 // set start button to zero upon a cmd-period
 cmdPeriodFunc = { startButton.value = 0; };
@@ -375,7 +375,7 @@ w.onClose = {
 
 
 
-// a variant of the above example so one can 
+// a variant of the above example so one can
 // add new parameters and more views are created automatically
 
 (
@@ -398,7 +398,7 @@ SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal = 0, amp=0.4,
 		x = x * EnvGen.kr(Env.cutoff, gate, 5, doneAction: 2);
 		Out.ar(0, x);
 	}, [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0]
-).load(s);
+).add;
 
 
 params = ["note", "fc", "rq", "bal", "amp", "width"];
@@ -410,7 +410,7 @@ specs = [
 	ControlSpec(0.0001, 2, \exp, 0, 0.3, \vol), // db spec acts weird, so use self made one
 	ControlSpec(0, 1, \lin, 0, 0.3, \width),
 ];
-	
+
 // make the window
 w = Window("another control panel", Rect(20, 400, 440, 180));
 w.front; // make window visible and front window.
@@ -428,7 +428,7 @@ startButton.action = {|view|
 		var args;
 		if (view.value == 1) {
 			// start sound
-			params.do { |param, i| 
+			params.do { |param, i|
 				args = args.add(param);
 				args = args.add(sliders[i].value)
 			};
@@ -441,7 +441,7 @@ startButton.action = {|view|
 
 // create controls for all parameters
 w.view.decorator.nextLine;
-sliders = params.collect { |param, i| 
+sliders = params.collect { |param, i|
 	EZSlider(w, 430 @ 20, param, specs[i], {|ez| node.set( param, ez.value )})
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
 };

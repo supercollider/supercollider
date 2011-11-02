@@ -9,19 +9,22 @@ This is the object you pass to other gui objects to set their font name or size.
 
 classmethods::
 
+private::key
+
 method:: new
 argument:: name
 An instance of link::Classes/String::. Must coincide with the name of a font on the system. See link::#*availableFonts::.
 argument:: size
-An Instance of link::Classes/Float::.
+An instance of link::Classes/Float::.
 discussion::
 Example:
 code::
-g = Font.new("Helvetica", 12);
+g = Font("Helvetica", 12);
 ::
 
 method:: availableFonts
-Returns an array of the available fonts.
+returns::
+link::Classes/Array:: of the available fonts.
 
 method:: antiAliasing
 argument:: flag
@@ -32,16 +35,34 @@ argument:: flag
 An instance of link::Classes/Boolean::. Default value is code::false::.
 
 method:: defaultSansFace
-Returns the default sans face Font.
+returns::
+The default sans serif face Font.
 
 method:: defaultSerifFace
-Returns the default serif face Font.
+returns::
+The default serif face Font.
 
 method:: defaultMonoFace
-Returns the default mono face Font.
+returns::
+The default monospace face Font.
 
 method:: default
 Gets/sets the default Font.
+
+method:: sansSerif
+Create a new sans serif face Font.
+argument:: size
+An instance of link::Classes/Float::.
+
+method:: monospace
+Create a new monospace face Font.
+argument:: size
+An instance of link::Classes/Float::.
+
+method:: serif
+Create a new serif face Font.
+argument:: size
+An instance of link::Classes/Float::.
 
 instancemethods::
 
@@ -63,7 +84,12 @@ method:: storeArgs
 Returns:: an link::Classes/Array::, code:: [ name, size ] ::.
 
 method:: boldVariant
-Appendes code::"-Bold":: to the name. This is only useful for fonts that have bold variants.
+
+note:: On the Cocoa GUI it appendes teletype::"-Bold":: to the name. This is only useful for fonts that have bold
+variants.
+::
+returns::
+Bold variant of the Font.
 
 
 examples::
@@ -135,7 +161,7 @@ w.view.decorator = f = FlowLayout(w.view.bounds,Point(4, 4),Point(4, 2));
 		s = Button(w, Rect(0, 0, 140, height + 2));
 		s.font = Font(name, 13);
 		s.states = [[name]];
-		
+
 		n = NumberBox(w, Rect(0, 0, 56, height + 2));
 		n.font = Font(name, 13);
 		n.object = pi;
@@ -167,7 +193,7 @@ Font.availableFonts.do({ arg name;
 		s.font = font;
 		s.states = [[name]];
 		s.action = { font.asCompileString.postln; };
-		
+
 		n = NumberBox(b, Rect(0, 0, 56, height + 2));
 		n.font = font;
 		n.object = pi;

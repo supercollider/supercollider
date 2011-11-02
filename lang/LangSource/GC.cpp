@@ -29,8 +29,6 @@
 
 #define PAUSETIMES 0
 
-const int kScanThreshold =  256;
-
 
 double pauseBeginTime = 0.;
 double totalPauseTime = 0.;
@@ -239,6 +237,7 @@ PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long p
 	mCanSweep = false;
 	mPartialScanObj = NULL;
 	mPartialScanSlot = 0;
+	mUncollectedAllocations = 0;
 
 	mGrey.classptr = NULL;
 	mGrey.obj_sizeclass = 0;
@@ -314,37 +313,6 @@ void PyrGC::BecomeImmutable(PyrObject *inObject)
 }
 
 void DumpBackTrace(VMGlobals *g);
-
-PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect)
-{
-	if (inCollect && mNumToScan >= kScanThreshold)
-		Collect();
-
-	GCSet *gcs = mSets + sizeclass;
-
-	PyrObject * obj = (PyrObject*)gcs->mFree;
-	if (!IsMarker(obj)) {
-		// from free list
-		gcs->mFree = obj->next;
-		assert(obj->obj_sizeclass == sizeclass);
-	} else {
-		if (sizeclass > kMaxPoolSet) {
-			SweepBigObjects();
-			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-			obj = (PyrObject*)mPool->Alloc(allocSize);
-		} else {
-			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
-			obj = (PyrObject*)mNewPool.Alloc(allocSize);
-		}
-		if (!obj) {
-			post("alloc failed. size = %d\n", inNumBytes);
-			MEMFAILED;
-		}
-		DLInsertAfter(&gcs->mWhite, obj);
-		obj->obj_sizeclass = sizeclass;
-	}
-	return obj;
-}
 
 PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect)
 {
@@ -722,6 +690,8 @@ void PyrGC::Collect()
 		//TraceAnyPathToAllGrey();
 	}
 	//post("mNumToScan %d\n", mNumToScan);
+
+	mUncollectedAllocations = 0;
 #ifdef GC_SANITYCHECK
 	SanityCheck();
 #endif
@@ -1251,34 +1221,10 @@ void PyrGC::ClearMarks()
 	}
 }
 
-
-void PyrGC::ToGrey(PyrObjectHdr* obj)
+void PyrGC::throwMemfailed(size_t inNumBytes)
 {
-	/* move obj from white to grey */
-	/* link around object */
-	DLRemove(obj);
-
-	/* link in new place */
-	DLInsertAfter(&mGrey, obj);
-
-	/* set grey list pointer to obj */
-	obj->gc_color = mGreyColor;
-	mNumGrey ++ ;
-	mNumToScan += 1L << obj->obj_sizeclass;
-}
-
-void PyrGC::ToGrey2(PyrObjectHdr* obj)
-{
-	/* move obj from white to grey */
-	/* link around object */
-	DLRemove(obj);
-
-	/* link in new place */
-	DLInsertAfter(&mGrey, obj);
-
-	/* set grey list pointer to obj */
-	obj->gc_color = mGreyColor;
-	mNumGrey ++ ;
+	post("alloc failed. size = %d\n", inNumBytes);
+	MEMFAILED;
 }
 
 

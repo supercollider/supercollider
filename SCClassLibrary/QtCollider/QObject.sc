@@ -1,3 +1,21 @@
+QMetaObject {
+  var className;
+
+  *new { arg className;
+    ^super.newCopyArgs(className);
+  }
+
+  properties {
+    _QMetaObject_Properties
+    ^this.primitiveFailed
+  }
+
+  methods { arg plain = true, signals = false, slots = true;
+    _QMetaObject_Methods
+    ^this.primitiveFailed
+  }
+}
+
 QObject {
   classvar
     heap,
@@ -10,13 +28,23 @@ QObject {
     < mouseDblClickEvent = 4,
     < mouseMoveEvent = 5,
     < mouseOverEvent = 10,
+    < mouseLeaveEvent = 11,
+    < mouseWheelEvent = 31,
     < keyDownEvent = 6,
     < keyUpEvent = 7;
 
   var qObject, finalizer;
   var virtualSlots;
 
-  *new { arg className, argumentArray;
+  *qtClass { ^nil }
+
+  *meta { ^QMetaObject(this.qtClass); }
+
+  *new { arg argumentArray;
+    var className = this.qtClass;
+    if( className.isNil ) {
+      Error("Qt:" + this.name + "is an abstract class and can not be instantiated.").throw;
+    };
     ^super.new.initQObject( className, argumentArray );
   }
 
@@ -57,6 +85,16 @@ QObject {
     ^this.primitiveFailed
   }
 
+  properties {
+    _QObject_GetProperties
+    ^this.primitiveFailed
+  }
+
+  methods { arg plain = true, signals = false, slots = true;
+    _QObject_GetMethods
+    ^this.primitiveFailed
+  }
+
   getProperty{ arg property, preAllocatedReturn;
     _QObject_GetProperty
     ^this.primitiveFailed
@@ -67,8 +105,13 @@ QObject {
     ^this.primitiveFailed
   }
 
-  registerEventHandler{ arg event, method, direct=false;
+  setEventHandler{ arg event, method, direct=false, enabled=true;
     _QObject_SetEventHandler
+    ^this.primitiveFailed
+  }
+
+  setEventHandlerEnabled { arg event, enabled=true;
+    _QObject_SetEventHandlerEnabled
     ^this.primitiveFailed
   }
 
@@ -134,6 +177,5 @@ QObject {
     ^this.primitiveFailed
   }
 
-  doFunction { arg f ... args; f.valueArray( this, args ); }
-
+  doFunction { arg f ... args; f.performList(\value, this, args); }
 }

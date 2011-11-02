@@ -10,68 +10,35 @@ QLayout : QObject {
 
 // LINE LAYOUTS ///////////////////////////////////////////////////
 
-LineItem {
-  var <object;
-  var <stretch;
-  var <align;
-
-  *new { arg object, stretch = 0, align = 0;
-    ^super.new.initLineItem( object, stretch, align );
-  }
-
-  *wrap { arg other;
-    if( other.isKindOf( LineItem ) ) {^other} {^LineItem.new(other)};
-  }
-
-  initLineItem { arg o, s, a;
-    object = o;
-    stretch = s;
-    align = a;
-  }
-
-  serialized { ^[ object, stretch, QAlignment(align)] }
-}
-
-StretchItem : LineItem {
-  *new { arg factor = 0; ^super.new( 0, factor ) }
-}
-
-SpacerItem : LineItem {
-  *new { arg size; ^super.new( size ); }
-}
-
 QLineLayout : QLayout {
   *new { arg ...items;
     var serializedItems = items.collect( { |x| this.parse(x) } );
-    ^super.new( this.layoutClass, serializedItems );
+    ^super.new( serializedItems );
   }
 
   *parse { arg in;
-    var i = 1;
-    var out;
+    var out = [nil,0,0];
+    var key;
+    var i;
     if( in.isKindOf(Array) ) {
-      out = [in[0],0,0];
+      out[0] = in[0];
+      i = 1;
       while { i + 1 < in.size } {
-        switch ( in[i],
-          \stretch, { out[1] = in[i+1] },
-          \align, { out[2] = QAlignment(in[i+1]) }
+        key = in[i];
+        case (
+          { (key === \stretch) || (key === \s) }, { out[1] = in[i+1] },
+          { (key === \align) || (key === \a) }, { out[2] = QAlignment(in[i+1]) }
         );
         i = i + 2;
       };
     }{
-      out = LineItem.wrap(in).serialized;
+      out[0] = in;
     };
-    out.postln;
     ^out;
   }
 
-  *layoutClass { ^'' }
-
   add { arg item, stretch = 0, align;
-    var data;
-    if( item.isKindOf(LineItem) )
-      {data = item.serialized} {data = [item, stretch, QAlignment(align)]};
-    this.invokeMethod( \addItem, [data], true );
+    this.invokeMethod( \addItem, [[item, stretch, QAlignment(align)]], true );
   }
 
   setStretch { arg item, stretch;
@@ -88,56 +55,41 @@ QLineLayout : QLayout {
 }
 
 QHLayout : QLineLayout {
-  *layoutClass { ^'QcHBoxLayout'; }
+  *qtClass { ^'QcHBoxLayout'; }
 }
 
 QVLayout : QLineLayout {
-  *layoutClass { ^'QcVBoxLayout'; }
+  *qtClass { ^'QcVBoxLayout'; }
 }
 
 // GRID LAYOUT ///////////////////////////////////////////////////
 
-GridItem {
-  var <object, <rowSpan, <columnSpan, <alignment;
-
-  *new { arg object, rowSpan=1, columnSpan=1, align;
-    ^super.new.initGridItem( object, rowSpan, columnSpan, align; );
-  }
-
-  *wrap { arg other;
-     if( other.isKindOf( GridItem ) ) {^other} {^GridItem(other);}
-  }
-
-  initGridItem { arg o, rs, cs, a;
-    object = o;
-    rowSpan = rs;
-    columnSpan = cs;
-    alignment = a;
-  }
-
-  serialize { arg r, c; ^[object, r, c, rowSpan, columnSpan, QAlignment(alignment)] }
-}
-
 QGridLayout : QLayout {
   *new {
-    ^super.new( "QcGridLayout" );
+    // get rid of QObject's arguments
+    ^super.new;
   }
 
+  *qtClass { ^'QcGridLayout' }
+
   *parse { arg in, row, col;
-    var i = 1;
-    var out;
+    var out = [nil,row,col,1,1,nil];
+    var key;
+    var i;
     if( in.isKindOf(Array) ) {
-      out = [in[0],row,col,1,1,nil];
+      out[0] = in[0];
+      i = 1;
       while { i + 1 < in.size } {
-        switch ( in[i],
-          \rowSpan, { out[3] = in[i+1] },
-          \colSpan, { out[4] = in[i+1] },
-          \align, { out[5] = QAlignment(in[i+1]) }
+        key = in[i];
+        case (
+          { (key === \rows) || (key === \r) }, { out[3] = in[i+1] },
+          { (key === \columns) || (key === \c) }, { out[4] = in[i+1] },
+          { (key === \align) || (key === \a) }, { out[5] = QAlignment(in[i+1]) }
         );
         i = i + 2;
       };
     }{
-      out = GridItem.wrap(in).serialize(row,col);
+      out[0] = in;
     };
     ^out;
   }
@@ -210,5 +162,17 @@ QGridLayout : QLayout {
 
   setAlignmentAt { arg row, column, align;
     this.invokeMethod( \setAlignment, [row, column, QAlignment(align)], true );
+  }
+
+  minRowHeight { arg row; ^this.invokeMethod( \minRowHeight, row ); }
+
+  setMinRowHeight { arg row, height;
+    this.invokeMethod( \setMinRowHeight, [row, height] );
+  }
+
+  minColumnWidth { arg column; ^this.invokeMethod( \minColumnWidth, column ); }
+
+  setMinColumnWidth { arg column, width;
+    this.invokeMethod( \setMinColumnWidth, [column, width] );
   }
 }

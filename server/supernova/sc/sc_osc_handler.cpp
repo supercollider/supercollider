@@ -28,13 +28,11 @@
 
 #include "SC_OSC_Commands.h"
 
-namespace nova
-{
+namespace nova {
 
 using namespace std;
 
-namespace
-{
+namespace {
 
 int32_t last_generated = 0;
 
@@ -46,7 +44,8 @@ server_node * find_node(int32_t target_id)
     server_node * node = instance->find_node(target_id);
 
     if (node == NULL)
-        cerr << "node not found" << endl;
+        log_printf("node not found: %d\n", target_id);
+
     return node;
 }
 
@@ -58,14 +57,14 @@ abstract_group * find_group(int32_t target_id)
     abstract_group * node = instance->find_group(target_id);
 
     if (node == NULL)
-        cerr << "node not found or not a group" << endl;
+        log("node not found or not a group\n");
     return node;
 }
 
 bool check_node_id(int node_id)
 {
     if (!instance->node_id_available(node_id)) {
-        cerr << "node id " << node_id << " already in use" << endl;
+        log("node id %d already in use\n", node_id);
         return false;
     }
     return true;
@@ -292,16 +291,6 @@ struct cmd_dispatcher
         instance->add_sync_callback(new fn_sync_callback<Functor>(f));
     }
 
-    static void fire_done_message(nova_endpoint const & endpoint)
-    {
-        fire_io_callback(boost::bind(send_done_message, endpoint));
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
-    {
-        fire_io_callback(boost::bind(send_done_message, endpoint, cmd));
-    }
-
     static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
     {
         fire_io_callback(boost::bind(send_done_message, endpoint, cmd, index));
@@ -329,17 +318,6 @@ struct cmd_dispatcher<false>
         f();
     }
 
-
-    static void fire_done_message(nova_endpoint const & endpoint)
-    {
-        send_done_message (endpoint);
-    }
-
-    static void fire_done_message(nova_endpoint const & endpoint, const char * cmd)
-    {
-        send_done_message (endpoint, cmd);
-    }
-
     static void fire_done_message(nova_endpoint const & endpoint, const char * cmd, osc::int32 index)
     {
         send_done_message (endpoint, cmd, index);
@@ -348,8 +326,8 @@ struct cmd_dispatcher<false>
 
 } /* namespace */
 
-namespace detail
-{
+namespace detail {
+using nova::log;
 
 void fire_notification(movable_array<char> & msg)
 {
@@ -478,19 +456,35 @@ void sc_scheduled_bundles::insert_bundle(time_tag const & timeout, const char * 
     bundle_q.insert(*node);
 }
 
-void sc_scheduled_bundles::execute_bundles(time_tag const & now)
+void sc_scheduled_bundles::execute_bundles(time_tag const & last, time_tag const & now)
 {
-    while(!bundle_q.empty())
-    {
-        bundle_node & front = *bundle_q.top();
+    World * world = &sc_factory->world;
 
-        if (front.timeout_ <= now) {
-            front.run();
-            bundle_q.erase_and_dispose(bundle_q.top(), &dispose_bundle);
-        }
-        else
-            return;
+    while(!bundle_q.empty()) {
+        bundle_node & front = *bundle_q.top();
+        time_tag const & next_timestamp = front.timeout_;
+
+        if (now < next_timestamp)
+            break;
+
+        if (last < next_timestamp) {
+            // between last and now
+            time_tag time_since_last = next_timestamp - last;
+            float samples_since_last = time_since_last.to_samples(world->mSampleRate);
+
+            float sample_offset;
+            float subsample_offset = std::modf(samples_since_last, &sample_offset);
+
+            world->mSampleOffset = (int)sample_offset;
+            world->mSubsampleOffset = subsample_offset;
+        } else
+            world->mSampleOffset = world->mSubsampleOffset = 0;
+
+        front.run();
+        bundle_q.erase_and_dispose(bundle_q.top(), &dispose_bundle);
     }
+
+    world->mSampleOffset = world->mSubsampleOffset = 0;
 }
 
 
@@ -537,6 +531,85 @@ bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned in
         return true;
     }
     return false;
+}
+
+void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
+                        std::size_t bytes_transferred)
+{
+    if (unlikely(error == error::operation_aborted))
+        return;    /* we're done */
+
+    if (error == error::message_size) {
+        overflow_vector.insert(overflow_vector.end(),
+                                recv_buffer_.begin(), recv_buffer_.end());
+        return;
+    }
+
+    if (error) {
+        std::cout << "sc_osc_handler received error code " << error << std::endl;
+        start_receive_udp();
+        return;
+    }
+
+    if (overflow_vector.empty())
+        handle_packet_async(recv_buffer_.begin(), bytes_transferred, udp_remote_endpoint_);
+    else {
+        overflow_vector.insert(overflow_vector.end(), recv_buffer_.begin(), recv_buffer_.end());
+        handle_packet_async(overflow_vector.data(), overflow_vector.size(), udp_remote_endpoint_);
+        overflow_vector.clear();
+    }
+
+    start_receive_udp();
+    return;
+}
+
+void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
+{
+    bool check_password = true;
+
+    if (check_password) {
+        boost::array<char, 32> password;
+        size_t size;
+        uint32_t msglen;
+        for (unsigned int i=0; i!=4; ++i) {
+            size = socket_.receive(boost::asio::buffer(&msglen, 4));
+            if (size != 4)
+                return;
+
+            msglen = ntohl(msglen);
+            if (msglen > password.size())
+                return;
+
+            size = socket_.receive(boost::asio::buffer(password.data(), msglen));
+
+            bool verified = true;
+            if (size != msglen ||
+                strcmp(password.data(), self->tcp_password_) != 0)
+                verified = false;
+
+            if (!verified)
+                throw std::runtime_error("cannot verify password");
+        }
+    }
+
+    size_t size;
+    uint32_t msglen;
+    size = socket_.receive(boost::asio::buffer(&msglen, 4));
+    if (size != sizeof(uint32_t))
+        throw std::runtime_error("read error");
+
+    msglen = ntohl(msglen);
+
+    sized_array<char> recv_vector(msglen + sizeof(uint32_t));
+
+    std::memcpy((void*)recv_vector.data(), &msglen, sizeof(uint32_t));
+    size_t transfered = socket_.read_some(boost::asio::buffer((void*)(recv_vector.data()+sizeof(uint32_t)),
+                                          recv_vector.size()-sizeof(uint32_t)));
+
+    if (transfered != size_t(msglen))
+        throw std::runtime_error("socket read sanity check failure");
+
+    self->handle_packet_async(recv_vector.data(), recv_vector.size(), socket_.remote_endpoint());
 }
 
 
@@ -636,10 +709,8 @@ void sc_osc_handler::handle_message(received_message const & message, size_t msg
             handle_message_int_address<realtime>(message, msg_size, endpoint);
         else
             handle_message_sym_address<realtime>(message, msg_size, endpoint);
-    }
-    catch (std::exception const & e)
-    {
-        cerr << e.what() << endl;
+    } catch (std::exception const & e) {
+        log_printf("exception in handle_message: %s\n", e.what());
     }
 }
 
@@ -672,6 +743,7 @@ void quit_perform(nova_endpoint const & endpoint)
 template <bool realtime>
 void handle_quit(nova_endpoint const & endpoint)
 {
+    instance->quit_received = true;
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(quit_perform, endpoint));
 }
 
@@ -693,19 +765,26 @@ void handle_notify(received_message const & message, nova_endpoint const & endpo
 
 void status_perform(nova_endpoint const & endpoint)
 {
+    if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
+        return;
+
     char buffer[1024];
     typedef osc::int32 i32;
+
+    float peak_load, average_load;
+    instance->cpu_load(peak_load, average_load);
+
     osc::OutboundPacketStream p(buffer, 1024);
     p << osc::BeginMessage("/status.reply")
-      << (i32)1                                    /* unused */
-      << (i32)sc_factory->ugen_count()   /* ugens */
-      << (i32)instance->synth_count()     /* synths */
-      << (i32)instance->group_count()     /* groups */
-      << (i32)instance->prototype_count() /* synthdefs */
-      << instance->cpu_load()                 /* average cpu % */
-      << instance->cpu_load()                 /* peak cpu % */
-      << instance->get_samplerate()           /* nominal samplerate */
-      << instance->get_samplerate()           /* actual samplerate */
+      << (i32)1                                 /* unused */
+      << (i32)sc_factory->ugen_count()          /* ugens */
+      << (i32)instance->synth_count()           /* synths */
+      << (i32)instance->group_count()           /* groups */
+      << (i32)instance->prototype_count()       /* synthdefs */
+      << average_load                           /* average cpu % */
+      << peak_load                              /* peak cpu % */
+      << instance->get_samplerate()             /* nominal samplerate */
+      << instance->get_samplerate()             /* actual samplerate */
       << osc::EndMessage;
 
     instance->send(p.Data(), p.Size(), endpoint);
@@ -758,7 +837,7 @@ void handle_error(received_message const & message)
 
 void handle_unhandled_message(received_message const & msg)
 {
-    cerr << "unhandled message " << msg.AddressPattern() << endl;
+    log_printf("unhandled message: %s\n", msg.AddressPattern());
 }
 
 sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
@@ -772,6 +851,8 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 
     node_position_constraint pos = make_pair(target, node_position(action));
     abstract_synth * synth = instance->add_synth(name, node_id, pos);
+    if (!synth)
+        log_printf("Cannot create synth (synthdef: %s, node id: %d)\n", name, node_id);
 
     last_generated = node_id;
     return static_cast<sc_synth*>(synth);
@@ -797,50 +878,98 @@ inline void verify_argument(osc::ReceivedMessageArgumentIterator const & it,
         throw std::runtime_error("unexpected end of argument list");
 }
 
+template <bool IsAudio, typename slot_type>
+static void apply_control_bus_mapping(server_node & node, slot_type slot, int bus_index);
 
 template <typename control_id_type>
 void set_control_array(server_node * node, control_id_type control, osc::ReceivedMessageArgumentIterator & it)
 {
-    size_t array_size = it->ArraySize();
-    sized_array<float, rt_pool_allocator<float> > control_array(array_size);
+    size_t array_size = it->ArraySize(); ++it;
 
-    ++it; // advance to first element
-    for (size_t i = 0; i != array_size; ++i)
-        control_array[i] = extract_float_argument(it++);
-    assert(it->IsArrayEnd());
+    if (it->IsArrayStart()) {
+        // nested arrays are basically user errors, but we handle them like normal arrays
+        log("Warning in /s_new handler: nested array argument detected");
+        set_control_array<control_id_type>(node, control, it);
+        return;
+    } else {
+        for (size_t i = 0; i != array_size; ++i) {
+            if (it->IsString() || it->IsSymbol()) {
+                char const * name = it->AsStringUnchecked(); ++it;
+                int bus_id;
+
+                switch (name[0]) {
+                case 'c':
+                    bus_id = atoi(name+1);
+                    static_cast<sc_synth*>(node)->map_control_bus<false>(control, i, bus_id);
+                    break;
+
+                case 'a':
+                    bus_id = atoi(name+1);
+                    static_cast<sc_synth*>(node)->map_control_bus<true>(control, i, bus_id);
+                    break;
+
+                default:
+                    throw runtime_error("invalid name for control mapping");
+                }
+            } else {
+                float value = extract_float_argument(it++);
+                node->set_control_array_element(control, i, value);
+            }
+        }
+    }
+
+    if (!it->IsArrayEnd())
+        throw runtime_error("missing array end tag");
     ++it; // skip array end
+}
 
-    node->set(control, array_size, control_array.c_array());
+template <typename ControlSpecifier>
+void set_control(server_node * node, ControlSpecifier const & control, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsArrayStart())
+        set_control_array(node, control, it);
+    else if (it->IsString() || it->IsSymbol()) {
+        char const * name = it->AsStringUnchecked(); ++it;
+        int bus_id;
+
+        switch (name[0]) {
+        case 'c':
+            bus_id = atoi(name+1);
+            apply_control_bus_mapping<false>(*node, control, bus_id);
+            break;
+
+        case 'a':
+            bus_id = atoi(name+1);
+            apply_control_bus_mapping<true>(*node, control, bus_id);
+            break;
+
+        default:
+            throw runtime_error("invalid name for control mapping");
+        }
+
+    } else {
+        float value = extract_float_argument(it++);
+        node->set(control, value);
+    }
 }
 
 /* set control values of node from string/float or int/float pair */
-void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it, osc::ReceivedMessageArgumentIterator end)
 {
     if (it->IsInt32()) {
         osc::int32 index = it->AsInt32Unchecked(); ++it;
-        if (it->IsArrayStart())
-            set_control_array(node, index, it);
-        else {
-            float value = extract_float_argument(it++);
-            node->set(index, value);
-        }
-    }
-    else if (it->IsString()) {
-        const char * str = it->AsString(); ++it;
-
-        if (it->IsArrayStart())
-            set_control_array(node, str, it);
-        else {
-            float value = extract_float_argument(it++);
-            node->set(str, value);
-        }
+        if (it == end) return; // sclang sometimes uses an integer instead of an empty argument list
+        set_control(node, index, it);
+    } else if (it->IsString()) {
+        const char * str = it->AsStringUnchecked(); ++it;
+        set_control(node, str, it);
     } else
         throw runtime_error("invalid argument");
 }
 
 void handle_s_new(received_message const & msg)
 {
-    osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
+    osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin(), end = msg.ArgumentsEnd();
 
     const char * def_name = args->AsString(); ++args;
     int32_t id = args->AsInt32(); ++args;
@@ -850,12 +979,12 @@ void handle_s_new(received_message const & msg)
 
     int32_t action, target;
 
-    if (args != msg.ArgumentsEnd()) {
+    if (args != end) {
         action = args->AsInt32(); ++args;
     } else
         action = 0;
 
-    if (args != msg.ArgumentsEnd()) {
+    if (args != end) {
         target = args->AsInt32(); ++args;
     } else
         target = 0;
@@ -865,73 +994,37 @@ void handle_s_new(received_message const & msg)
     if (synth == NULL)
         return;
 
-    while(args != msg.ArgumentsEnd())
-    {
-        try {
-            set_control(synth, args);
-        }
-        catch(std::exception & e)
-        {
-            cout << "Exception during /s_new handler: " << e.what() << endl;
-        }
+    try {
+        while (args != end)
+            set_control(synth, args, end);
+    } catch(std::exception & e) {
+        log_printf("exception in /s_new: %s\n", e.what());
     }
 }
 
-
-void insert_group(int node_id, int action, int target_id)
-{
-    if (node_id == -1)
-        node_id = instance->generate_node_id();
-    else if (!check_node_id(node_id))
-        return;
-
-    server_node * target = find_node(target_id);
-
-    if (!target)
-        return;
-
-    node_position_constraint pos = make_pair(target, node_position(action));
-
-    instance->add_group(node_id, pos);
-    last_generated = node_id;
-}
 
 void handle_g_new(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
-        osc::int32 id, action, target;
-        args >> id >> action >> target;
+    while(!args.Eos()) {
+        osc::int32 node_id, action, target_id;
+        args >> node_id >> action >> target_id;
 
-        insert_group(id, action, target);
-    }
-}
+        if (node_id == -1)
+            node_id = instance->generate_node_id();
+        else if (!check_node_id(node_id))
+            continue;
 
-void handle_g_head(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
+        server_node * target = find_node(target_id);
 
-    while(!args.Eos())
-    {
-        osc::int32 id, target;
-        args >> id >> target;
+        if (!target)
+            continue;
 
-        insert_group(id, head, target);
-    }
-}
+        node_position_constraint pos = make_pair(target, node_position(action));
 
-void handle_g_tail(received_message const & msg)
-{
-    osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
-
-    while(!args.Eos())
-    {
-        osc::int32 id, target;
-        args >> id >> target;
-
-        insert_group(id, tail, target);
+        instance->add_group(node_id, pos);
+        last_generated = node_id;
     }
 }
 
@@ -951,7 +1044,7 @@ void handle_g_freeall(received_message const & msg)
         bool success = instance->group_free_all(group);
 
         if (!success)
-            cerr << "/g_freeAll failue" << endl;
+            log("/g_freeAll failue\n");
     }
 }
 
@@ -971,7 +1064,7 @@ void handle_g_deepFree(received_message const & msg)
         bool success = instance->group_free_deep(group);
 
         if (!success)
-            cerr << "/g_freeDeep failue" << endl;
+            log("/g_freeDeep failue\n");
     }
 }
 
@@ -1058,50 +1151,58 @@ void handle_g_queryTree(received_message const & msg, nova_endpoint const & endp
             g_query_tree<realtime>(id, flag, endpoint);
         }
         catch (std::exception & e) {
-            cerr << e.what() << endl;
+            log_printf("exception in handle_g_queryTree: %s\n", e.what());
         }
     }
 }
 
-void fill_spaces(int level)
+typedef std::basic_stringstream <char,
+                                 std::char_traits <char>/*,
+                                 rt_pool_allocator<char>*/ > rt_string_stream;
+
+void fill_spaces(rt_string_stream & stream, int level)
 {
     for (int i = 0; i != level*3; ++i)
-        cout << ' ';
+        stream << ' ';
 }
 
-void g_dump_node(server_node & node, bool flag, int level)
+void g_dump_node(rt_string_stream & stream, server_node & node, bool flag, int level)
 {
     using namespace std;
-    fill_spaces(level);
+    fill_spaces(stream, level);
 
     if (node.is_synth()) {
         abstract_synth const & synth = static_cast<abstract_synth const &>(node);
-        cout << synth.id() << " " << synth.prototype_name() << endl;
+        stream << synth.id() << " " << synth.prototype_name() << endl;
 
         if (flag) {
             /* dump controls */
         }
     } else {
         abstract_group & group = static_cast<abstract_group &>(node);
-        cout << group.id();
+        stream << group.id();
 
         if (group.is_parallel())
-            cout << " parallel group";
+            stream << " parallel group";
         else
-            cout << " group";
-        cout << endl;
-        group.apply_on_children(boost::bind(g_dump_node, _1, flag, level + 1));
+            stream << " group";
+        stream << endl;
+        group.apply_on_children(boost::bind(g_dump_node, boost::ref(stream), _1, flag, level + 1));
     }
 }
 
 void g_dump_tree(int id, bool flag)
 {
-    std::cout << "NODE TREE Group " << id << std::endl;
     server_node * node = find_node(id);
     if (!node)
         return;
 
-    g_dump_node(*node, flag, 1);
+    // FIXME: can we completely avoid all internal allocations?
+    rt_string_stream stream;
+    stream << "NODE TREE Group " << id << std::endl;
+
+    g_dump_node(stream, *node, flag, 1);
+    log(stream.str().c_str(), stream.str().size());
 }
 
 void handle_g_dumpTree(received_message const & msg)
@@ -1116,7 +1217,7 @@ void handle_g_dumpTree(received_message const & msg)
             g_dump_tree(id, flag);
         }
         catch (std::exception & e) {
-            cerr << e.what() << endl;
+            log_printf("exception in /g_dumpTree: %s\n", e.what());
         }
     }
 }
@@ -1138,7 +1239,7 @@ void handle_n_free(received_message const & msg)
             instance->free_node(node);
         }
         catch (std::exception & e) {
-            cerr << e.what() << endl;
+            log_printf("exception in /n_free: %s\n", e.what());
         }
     }
 }
@@ -1154,22 +1255,29 @@ void handle_n_##cmd(received_message const & msg)                       \
     osc::int32 id = it->AsInt32(); ++it;                                \
                                                                         \
     server_node * node = find_node(id);                                 \
-    if(!node)                                                           \
+    if (!node)                                                          \
         return;                                                         \
                                                                         \
-    while(it != msg.ArgumentsEnd())                                     \
-    {                                                                   \
-        try                                                             \
-        {                                                               \
+    try {                                                               \
+        while (it != msg.ArgumentsEnd())                                \
             function(node, it);                                         \
-        }                                                               \
-        catch(std::exception & e)                                       \
-        {                                                               \
-            cout << "Exception during /n_" #cmd "handler: " << e.what() << endl; \
-            return;                                                     \
-        }                                                               \
+    } catch(std::exception & e) {                                       \
+        log_printf("Exception during /n_" #cmd "handler: %s\n", e.what());\
     }                                                                   \
 }
+
+void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
+{
+    if (it->IsInt32()) {
+        osc::int32 index = it->AsInt32Unchecked(); ++it;
+        set_control(node, index, it);
+    } else if (it->IsString()) {
+        const char * str = it->AsStringUnchecked(); ++it;
+        set_control(node, str, it);
+    } else
+        throw runtime_error("invalid argument");
+}
+
 
 HANDLE_N_DECORATOR(set, set_control)
 
@@ -1190,7 +1298,7 @@ void set_control_n(server_node * node, osc::ReceivedMessageArgumentIterator & it
         for (int i = 0; i != count; ++i)
             values[i] = extract_float_argument(it++);
 
-        node->set(str, count, values.c_array());
+        node->set_control_array(str, count, values.c_array());
     } else
         throw runtime_error("invalid argument");
 }
@@ -1216,226 +1324,118 @@ void fill_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
         for (int i = 0; i != count; ++i)
             values[i] = value;
 
-        node->set(str, count, values.c_array());
+        node->set_control_array(str, count, values.c_array());
     } else
         throw runtime_error("invalid argument");
 }
 
 HANDLE_N_DECORATOR(fill, fill_control)
 
-
-template <typename slot_type>
-void handle_n_map_group(server_node & node, slot_type slot, int control_bus_index)
+template <bool IsAudio, typename slot_type>
+void apply_control_bus_mapping(server_node & node, slot_type slot, int bus_index)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_bus(slot, control_bus_index);
+        static_cast<sc_synth&>(node).map_control_bus<IsAudio>(slot, bus_index);
     else
-        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_map_group<slot_type>, _1,
-                                                                         slot, control_bus_index));
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(apply_control_bus_mapping<IsAudio, slot_type>, _1,
+                                                                         slot, bus_index));
 }
 
+template <bool IsAudio, typename slot_type>
+void apply_control_busn_mapping(server_node & node, slot_type slot, int bus_index, int count)
+{
+    if (node.is_synth())
+        static_cast<sc_synth&>(node).map_control_buses<IsAudio>(slot, bus_index, count);
+    else
+        static_cast<abstract_group&>(node).apply_on_children(boost::bind(apply_control_busn_mapping<IsAudio, slot_type>, _1,
+                                                                         slot, bus_index, count));
+}
+
+template <bool IsAudio>
 void map_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
     if (it->IsInt32()) {
         osc::int32 control_index = it->AsInt32Unchecked(); ++it;
         osc::int32 control_bus_index = it->AsInt32(); ++it;
 
-        if (node->is_synth()) {
-            sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_bus(control_index, control_bus_index);
-        }
-        else
-            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group<slot_index_t>, _1,
-                                                                              control_index, control_bus_index));
+        apply_control_bus_mapping<IsAudio>(*node, control_index, control_bus_index);
     }
     else if (it->IsString()) {
         const char * control_name = it->AsStringUnchecked(); ++it;
         osc::int32 control_bus_index = it->AsInt32(); ++it;
 
-        if (node->is_synth()) {
-            sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_bus(control_name, control_bus_index);
-        }
-        else
-            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_map_group<const char*>, _1,
-                                                                              control_name, control_bus_index));
+        apply_control_bus_mapping<IsAudio>(*node, control_name, control_bus_index);
     } else
         throw runtime_error("invalid argument");
 }
 
-HANDLE_N_DECORATOR(map, map_control)
-
-
-template <typename slot_type>
-void handle_n_mapn_group(server_node & node, slot_type slot, int control_bus_index, int count)
-{
-    if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_buses(slot, control_bus_index, count);
-    else
-        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapn_group<slot_type>, _1,
-                                                                         slot, control_bus_index, count));
-}
-
+template <bool IsAudio>
 void mapn_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
 {
     if (it->IsInt32()) {
         osc::int32 control_index = it->AsInt32Unchecked(); ++it;
-        osc::int32 control_bus_index = it->AsInt32(); ++it;
+        osc::int32 bus_index = it->AsInt32(); ++it;
         osc::int32 count = it->AsInt32(); ++it;
 
-        if (node->is_synth()) {
-            sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_buses(control_index, control_bus_index, count);
-        }
-        else
-            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<slot_index_t>, _1,
-                                                                                control_index, control_bus_index, count));
+        apply_control_busn_mapping<IsAudio>(*node, control_index, bus_index, count);
     }
     else if (it->IsString()) {
         const char * control_name = it->AsStringUnchecked(); ++it;
-        osc::int32 control_bus_index = it->AsInt32(); ++it;
+        osc::int32 bus_index = it->AsInt32(); ++it;
         osc::int32 count = it->AsInt32(); ++it;
 
-        if (node->is_synth()) {
-            sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_buses(control_name, control_bus_index, count);
-        }
-        else
-            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapn_group<const char*>, _1,
-                                                                              control_name, control_bus_index, count));
+        apply_control_busn_mapping<IsAudio>(*node, control_name, bus_index, count);
     } else
         throw runtime_error("invalid argument");
 }
 
-HANDLE_N_DECORATOR(mapn, mapn_control)
 
-template <typename slot_type>
-void handle_n_mapa_group(server_node & node, slot_type slot, int audio_bus_index)
-{
-    if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_bus_audio(slot, audio_bus_index);
-    else
-        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapa_group<slot_type>, _1,
-                                                                         slot, audio_bus_index));
-}
+HANDLE_N_DECORATOR(map, map_control<false>)
+HANDLE_N_DECORATOR(mapa, map_control<true>)
+HANDLE_N_DECORATOR(mapn, mapn_control<false>)
+HANDLE_N_DECORATOR(mapan, mapn_control<true>)
 
-void mapa_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
-{
-    if (it->IsInt32()) {
-        osc::int32 control_index = it->AsInt32Unchecked(); ++it;
-        osc::int32 audio_bus_index = it->AsInt32(); ++it;
-
-        if (node->is_synth()) {
-            sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_bus_audio(control_index, audio_bus_index);
-        }
-        else
-            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group<slot_index_t>, _1,
-                                                                                control_index, audio_bus_index));
-    }
-    else if (it->IsString()) {
-        const char * control_name = it->AsStringUnchecked(); ++it;
-        osc::int32 audio_bus_index = it->AsInt32(); ++it;
-
-        if (node->is_synth()) {
-            sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_bus_audio(control_name, audio_bus_index);
-        }
-        else
-            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapa_group<const char *>, _1,
-                                                                              control_name, audio_bus_index));
-    } else
-        throw runtime_error("invalid argument");
-}
-
-HANDLE_N_DECORATOR(mapa, mapa_control)
-
-template <typename slot_type>
-void handle_n_mapan_group(server_node & node, slot_type slot, int audio_bus_index, int count)
-{
-    if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_buses_audio(slot, audio_bus_index, count);
-    else
-        static_cast<abstract_group&>(node).apply_on_children(boost::bind(handle_n_mapan_group<slot_type>, _1,
-                                                                         slot, audio_bus_index, count));
-}
-
-void mapan_control(server_node * node, osc::ReceivedMessageArgumentIterator & it)
-{
-    if (it->IsInt32()) {
-        if (it->IsInt32()) {
-            osc::int32 control_index = it->AsInt32Unchecked(); ++it;
-            osc::int32 audio_bus_index = it->AsInt32(); ++it;
-            osc::int32 count = it->AsInt32(); ++it;
-
-            if (node->is_synth()) {
-                sc_synth * synth = static_cast<sc_synth*>(node);
-                synth->map_control_buses_audio(control_index, audio_bus_index, count);
-            }
-            else
-                static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group<slot_index_t>, _1,
-                                                                                  control_index, audio_bus_index, count));
-    }
-    else if (it->IsString()) {
-        const char * control_name = it->AsStringUnchecked(); ++it;
-        osc::int32 audio_bus_index = it->AsInt32(); ++it;
-        osc::int32 count = it->AsInt32(); ++it;
-
-        if (node->is_synth()) {
-            sc_synth * synth = static_cast<sc_synth*>(node);
-            synth->map_control_buses_audio(control_name, audio_bus_index, count);
-        }
-        else
-            static_cast<abstract_group*>(node)->apply_on_children(boost::bind(handle_n_mapan_group<const char *>, _1,
-                                                                              control_name, audio_bus_index, count));
-        }
-    } else
-        throw runtime_error("invalid argument");
-}
-
-HANDLE_N_DECORATOR(mapan, mapan_control)
-
-void handle_n_before(received_message const & msg)
+template <nova::node_position Relation>
+void handle_n_before_or_after(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 node_a, node_b;
         args >> node_a >> node_b;
 
         server_node * a = find_node(node_a);
+        if (!a) continue;
+
         server_node * b = find_node(node_b);
+        if (!b) continue;
 
-        abstract_group * a_parent = a->get_parent();
-        abstract_group * b_parent = b->get_parent();
-
-        /** \todo this can be optimized if a_parent == b_parent */
-        a_parent->remove_child(a);
-        b_parent->add_child(a, make_pair(b_parent, before));
+        abstract_group::move_before_or_after<Relation>(a, b);
     }
 }
 
-void handle_n_after(received_message const & msg)
+
+
+template <nova::node_position Position>
+void handle_g_head_or_tail(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
-        osc::int32 node_a, node_b;
-        args >> node_a >> node_b;
+    while(!args.Eos()) {
+        osc::int32 node_id, target_id;
+        args >> target_id >> node_id;
 
-        server_node * a = find_node(node_a);
-        server_node * b = find_node(node_b);
+        server_node * node = find_node(node_id);
+        if (!node) continue;
 
-        abstract_group * a_parent = a->get_parent();
-        abstract_group * b_parent = b->get_parent();
+        abstract_group * target_group = find_group(target_id);
+        if (!target_group) continue;
 
-        /** \todo this can be optimized if a_parent == b_parent */
-        a_parent->remove_child(a);
-        b_parent->add_child(a, make_pair(b_parent, after));
+        abstract_group::move_to_head_or_tail<Position>(node, target_group);
     }
 }
+
+
 
 void handle_n_query(received_message const & msg, nova_endpoint const & endpoint)
 {
@@ -1509,8 +1509,7 @@ void handle_n_run(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 node_id, run_flag;
         args >> node_id >> run_flag;
 
@@ -1540,8 +1539,7 @@ void handle_n_trace(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 node_id;
         args >> node_id;
 
@@ -1558,8 +1556,7 @@ void handle_s_noid(received_message const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    while(!args.Eos())
-    {
+    while(!args.Eos()) {
         osc::int32 node_id;
         args >> node_id;
         instance->synth_reassign_id(node_id);
@@ -1691,8 +1688,7 @@ struct completion_message
     completion_message(size_t size, const void * data):
         size_(size)
     {
-        if (size)
-        {
+        if (size) {
             data_ = system_callback::allocate(size);
             memcpy(data_, data, size);
         }
@@ -1706,9 +1702,15 @@ struct completion_message
     /** copy constructor has move semantics!!! */
     completion_message(completion_message const & rhs)
     {
+        operator=(rhs);
+    }
+
+    completion_message& operator=(completion_message const & rhs)
+    {
         size_ = rhs.size_;
         data_ = rhs.data_;
         const_cast<completion_message&>(rhs).size_ = 0;
+        return *this;
     }
 
     ~completion_message(void)
@@ -1722,8 +1724,7 @@ struct completion_message
      */
     void trigger_async(nova_endpoint const & endpoint)
     {
-        if (size_)
-        {
+        if (size_) {
             sc_osc_handler::received_packet * p =
                 sc_osc_handler::received_packet::alloc_packet((char*)data_, size_, endpoint);
             instance->add_sync_callback(p);
@@ -2523,11 +2524,10 @@ void b_gen_rt_2(uint32_t index, sample * free_buf, nova_endpoint const & endpoin
     cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_gen_nrt_3, index, free_buf, endpoint));
 }
 
-const char * b_free = "/b_free";
 void b_gen_nrt_3(uint32_t index, sample * free_buf, nova_endpoint const & endpoint)
 {
     free_aligned(free_buf);
-    send_done_message(endpoint, b_free, index);
+    send_done_message(endpoint, "/b_gen", index);
 }
 
 template <bool realtime>
@@ -2639,6 +2639,18 @@ void handle_c_getn(received_message const & msg, nova_endpoint const & endpoint)
     cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
+#ifdef BOOST_HAS_RVALUE_REFS
+std::pair<sc_synth_prototype_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> && defs)
+{
+    std::vector<sc_synthdef> synthdefs(std::move(defs));
+    size_t count = synthdefs.size();
+    sc_synth_prototype_ptr * prototypes = new sc_synth_prototype_ptr [count];
+
+    for (size_t i = 0; i != count; ++i)
+        prototypes[i].reset(new sc_synth_prototype(std::move(synthdefs[i])));
+    return std::make_pair(prototypes, count);
+}
+#endif
 std::pair<sc_synth_prototype_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> const & defs)
 {
     size_t count = defs.size();
@@ -2659,7 +2671,13 @@ void d_recv_nrt(movable_array<char> & def, completion_message & msg, nova_endpoi
 {
     size_t count;
     sc_synth_prototype_ptr * prototypes;
-    boost::tie(prototypes, count) = wrap_synthdefs(read_synthdefs(def.data()));
+    std::vector<sc_synthdef> synthdefs (read_synthdefs(def.data()));
+
+#ifdef BOOST_HAS_RVALUE_REFS
+    boost::tie(prototypes, count) = wrap_synthdefs(std::move(synthdefs));
+#else
+    boost::tie(prototypes, count) = wrap_synthdefs(synthdefs);
+#endif
 
     cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(d_recv_rt2<realtime>, prototypes, count, msg, endpoint));
 }
@@ -2853,6 +2871,15 @@ void handle_u_cmd(received_message const & msg, int size)
     synth->apply_unit_cmd(cmd_name, ugen_index, &args);
 }
 
+void handle_cmd(received_message const & msg, int size, nova_endpoint const & endpoint, int skip_bytes)
+{
+    sc_msg_iter args(size, msg.AddressPattern() + skip_bytes);
+
+    const char * cmd = args.gets();
+
+    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, const_cast<nova_endpoint*>(&endpoint));
+}
+
 } /* namespace */
 
 template <bool realtime>
@@ -2912,11 +2939,11 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_g_head:
-        handle_g_head(message);
+        handle_g_head_or_tail<head>(message);
         break;
 
     case cmd_g_tail:
-        handle_g_tail(message);
+        handle_g_head_or_tail<tail>(message);
         break;
 
     case cmd_g_freeAll:
@@ -2980,11 +3007,11 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         break;
 
     case cmd_n_before:
-        handle_n_before(message);
+        handle_n_before_or_after<before>(message);
         break;
 
     case cmd_n_after:
-        handle_n_after(message);
+        handle_n_before_or_after<after>(message);
         break;
 
     case cmd_n_trace:
@@ -3095,6 +3122,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_p_new(message);
         break;
 
+    case cmd_cmd:
+        handle_cmd(message, msg_size, endpoint, 4);
+        break;
+
     default:
         handle_unhandled_message(message);
     }
@@ -3115,11 +3146,11 @@ void dispatch_group_commands(const char * address, received_message const & mess
         return;
     }
     if (strcmp(address+3, "head") == 0) {
-        handle_g_head(message);
+        handle_g_head_or_tail<head>(message);
         return;
     }
     if (strcmp(address+3, "tail") == 0) {
-        handle_g_tail(message);
+        handle_g_head_or_tail<tail>(message);
         return;
     }
     if (strcmp(address+3, "freeAll") == 0) {
@@ -3194,12 +3225,12 @@ void dispatch_node_commands(const char * address, received_message const & messa
     }
 
     if (strcmp(address+3, "before") == 0) {
-        handle_n_before(message);
+        handle_n_before_or_after<before>(message);
         return;
     }
 
     if (strcmp(address+3, "after") == 0) {
-        handle_n_after(message);
+        handle_n_before_or_after<after>(message);
         return;
     }
 
@@ -3480,8 +3511,77 @@ void sc_osc_handler::handle_message_sym_address(received_message const & message
         return;
     }
 
+    if (strcmp(address+1, "cmd") == 0) {
+        handle_cmd(message, msg_size, endpoint, 8);
+        return;
+    }
+
     handle_unhandled_message(message);
 }
+
+
+template <bool realtime>
+void handle_asynchronous_plugin_cleanup(World * world, void *cmdData,
+                                       AsyncFreeFn cleanup)
+{
+    if (cleanup)
+        (cleanup)(world, cmdData);
+}
+
+template <bool realtime>
+void handle_asynchronous_plugin_stage4(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage4,
+                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+{
+    if (stage4)
+        (stage4)(world, cmdData);
+
+    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(handle_asynchronous_plugin_cleanup<realtime>, world, cmdData,
+                                                           cleanup));
+
+    send_done_message(endpoint, cmdName);
+}
+
+template <bool realtime>
+void handle_asynchronous_plugin_stage3(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage3, AsyncStageFn stage4,
+                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+{
+    if (stage3) {
+        bool success = (stage3)(world, cmdData);
+        if (success)
+            msg.handle(endpoint);
+    }
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(handle_asynchronous_plugin_stage4<realtime>, world, cmdName,
+                                                               cmdData, stage4, cleanup, msg, endpoint));
+}
+
+template <bool realtime>
+void handle_asynchronous_plugin_stage2(World * world, const char * cmdName, void *cmdData, AsyncStageFn stage2,
+                                       AsyncStageFn stage3, AsyncStageFn stage4,
+                                       AsyncFreeFn cleanup, completion_message & msg, nova_endpoint const & endpoint)
+{
+    if (stage2)
+        (stage2)(world, cmdData);
+
+    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(handle_asynchronous_plugin_stage3<realtime>, world, cmdName,
+                                                           cmdData, stage3, stage4,
+                                                           cleanup, msg, endpoint));
+}
+
+void sc_osc_handler::do_asynchronous_command(World * world, void* replyAddr, const char* cmdName, void *cmdData,
+                                             AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
+                                             int completionMsgSize, void* completionMsgData)
+{
+    completion_message msg(completionMsgSize, completionMsgData);
+    nova_endpoint endpoint(*static_cast<nova_endpoint*>(replyAddr));
+
+    if (world->mRealTime)
+        cmd_dispatcher<true>::fire_system_callback(boost::bind(handle_asynchronous_plugin_stage2<true>, world, cmdName,
+                                                               cmdData, stage2, stage3, stage4, cleanup, msg, endpoint));
+    else
+        cmd_dispatcher<false>::fire_system_callback(boost::bind(handle_asynchronous_plugin_stage2<false>, world, cmdName,
+                                                                cmdData, stage2, stage3, stage4, cleanup, msg, endpoint));
+}
+
 
 } /* namespace detail */
 } /* namespace nova */

@@ -27,7 +27,7 @@ examples::
 mouse x controls switch of level:
 code::
 (
-{ 
+{
 	var f, sf;
 	sf = K2A.ar(MouseX.kr > 0.5) > 0;
 	f = Ball.ar(sf, MouseY.kr(0.01, 20, 1), 0.01);
@@ -40,7 +40,7 @@ code::
 mouse x controls modulation rate, mouse y controls gravity:
 code::
 (
-{ 
+{
 	var f, sf, g;
 	sf = LFNoise0.ar(MouseX.kr(1, 100, 1));
 	g = MouseY.kr(0.1, 10, 1);
@@ -54,7 +54,7 @@ code::
 the general german police choir. mouse x controls damping, mouse y controls gravity:
 code::
 (
-{ 
+{
 	var f, sf, g;
 	sf = LFPulse.ar(0.6, 0.2, 0.5);
 	g = MouseY.kr(0.1, 10, 1);

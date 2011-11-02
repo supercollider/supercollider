@@ -50,7 +50,7 @@ namespace boost
 
             extern "C"
             {
-                void tls_destructor(void* data)
+                static void tls_destructor(void* data)
                 {
                     boost::detail::thread_data_base* thread_info=static_cast<boost::detail::thread_data_base*>(data);
                     if(thread_info)
@@ -111,7 +111,7 @@ namespace boost
     {
         extern "C"
         {
-            void* thread_proxy(void* param)
+            static void* thread_proxy(void* param)
             {
                 boost::detail::thread_data_ptr thread_info = static_cast<boost::detail::thread_data_base*>(param)->self;
                 thread_info->self.reset();

@@ -1,5 +1,5 @@
 title:: Symbolic Notations
-summary:: Catalog of symbolic notations in SuperCollider 
+summary:: Catalog of symbolic notations in SuperCollider
 categories:: Language
 related:: Overviews/Operators, Reference/Syntax-Shortcuts
 
@@ -7,10 +7,10 @@ section:: Arithmetic operators
 
 Math operators apply to many classes, including arrays and other collections.
 
-Using a basic math operator on a Symbol swallows the operation (returns the symbol) 
+Using a basic math operator on a Symbol swallows the operation (returns the symbol)
 code::
 \symbol * 5
-symbol 
+symbol
 ::
 
 definitionlist::
@@ -189,7 +189,7 @@ a = [nil, 5];
 ::
 code:: ?? { } :: is generally recommended. code::?:: always evaluates the second expression, even if its value will not be used.
 code:: ?? :: evaluates the function conditionally (only when needed).
-If the function defines no variables, the function will be inlined for speed. 
+If the function defines no variables, the function will be inlined for speed.
 
 Especially useful when the absence of an object requires a new object to be created. In this example, it's critical that a new SCSlider not be created if the object was already passed in.
 code::
@@ -226,7 +226,7 @@ f.value(2)
 
 section:: Miscellaneous operators
 definitionlist::
-## code:: object ! number :: || same as code:: object.dup(number) :: 
+## code:: object ! number :: || same as code:: object.dup(number) ::
 code::
 15 ! 5
 [ 15, 15, 15, 15, 15 ]
@@ -268,8 +268,8 @@ f.([10, 75, 512]);
 
 section:: Symbolic notations to define literals/other objects
 definitionlist::
-## code:: $ :: || character prefix: code:: "ABC".at(0) == $A :: 
-## code:: '' :: or code:: \ :: || define a literal link::Classes/Symbol:: : code:: 'abc' === \abc :: 
+## code:: $ :: || character prefix: code:: "ABC".at(0) == $A ::
+## code:: '' :: or code:: \ :: || define a literal link::Classes/Symbol:: : code:: 'abc' === \abc ::
 ## code:: "" :: || define a literal link::Classes/String:: : code:: "SuperCollider is the best" ::
 ## code:: [item, item...] :: || define an link::Classes/Array:: containing given items
 ## code:: Set[item, item...] :: || define a link::Classes/Set:: -- any link::Classes/Collection:: class name can be used other than Set

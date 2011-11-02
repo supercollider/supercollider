@@ -21,7 +21,7 @@ numberedlist::
 ## add the appropriate tags, like title, sections, etc.. (see below)
 ## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#directory_layout:: below)
 ## strong:: check that it rendered OK ::.
-You can run link::Classes/SCDoc#*cleanState:: to make SCDoc detect the new file and add it to the doc map next time you open a file in the link::Classes/HelpBrowser::. If the file already existed and you want to see the changes, just navigate to it again and SCDoc will re-render it.
+You can run code::SCDoc.cleanState:: (link to method documentation: link::Classes/SCDoc#*cleanState::) to make SCDoc detect the new file and add it to the doc map next time you open a file in the link::Classes/HelpBrowser::. If the file already existed and you want to see the changes, just navigate to it again and SCDoc will re-render it.
 ::
 
 A list of all undocumented classes can be seen here: link::Browse#Undocumented classes#Undocumented classes:: (auto-generated).
@@ -79,7 +79,7 @@ some details..
 ::
 
 section:: Class reference
-Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text should be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::. 
+Class reference has some special tags and a more strict structure. Instead of title tag we use class tag, and normal text should be written inside the special top-level sections code::description::, code::classmethods::, code::instancemethods:: and code::examples::.
 
 Named subsections can be used under each of the above mentioned top-level sections.
 
@@ -92,19 +92,19 @@ tree::
     tree::
     ## short description of method
     ## code::argument\:::: name
-    tree:: 
+    tree::
         ## description of argument
         ::
     ## code::argument\:::: name
-    tree:: 
+    tree::
         ## description of argument
         ::
     ## code::returns\::::
-    tree:: 
+    tree::
         ## description of return value
         ::
     ## code::discussion\::::
-    tree:: 
+    tree::
         ## optional discussion and example code
         ::
     ::

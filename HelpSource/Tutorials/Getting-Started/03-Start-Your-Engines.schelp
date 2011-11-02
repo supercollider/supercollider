@@ -1,0 +1,51 @@
+title:: 03. Start Your Engines
+summary:: Getting Started With SuperCollider
+categories:: Tutorials>Getting-Started
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
+
+Before we can make any sound, we need to start or 'boot' a server application. The easiest way to do this is to use one of the server windows which is automatically created by the client app. These can be found in the bottom left-hand corner of your screen. Look for the one that says 'localhost server'. It should look like this:
+
+image::Start-Your-Engines00.png::
+
+'localhost' just means on your local computer, as opposed to running on a different computer connected by a network. To start the server click on the 'Boot' button, or click on the window and press the space bar. After a second or two it should look something like this:
+
+image::Start-Your-Engines01.png::
+
+Notice that the white status box has changed from 'inactive' to 'running', and that the 'Boot' button has changed to 'Quit'. This indicates that the server is running. As well the window provides you with some information about CPU usage, and some other things which probably aren't too clear yet. More about them soon.
+
+Also take a look at the post window, where SC has given you some info, and let you know that it booted okay:
+
+code::
+booting 57110
+<list-of-devices>
+SC_AudioDriver: sample rate = 44100.000000, driver's block size = 512SuperCollider 3 server ready.Receiving notification messages from server localhost
+::
+
+If for some reason it had failed to boot, there would be some information indicating that.
+
+By default you can refer to the localhost server in your code by using the letter code::s::. You can thus send messages to start and stop it like so:
+
+code::
+s.quit;
+s.boot;
+::
+
+Try this out and then leave the server running. Many examples in the documentation have code::s.boot:: at the beginning, but in general you should make sure the server is running before using any examples that generate audio, or otherwise access the server. In general the examples in this tutorial assume that the server is running.
+
+You can also refer to the localhost server with the text code::Server.local::, for example:
+
+code::
+Server.local.boot;
+::
+
+For more information see:
+
+link::Classes/Server::
+
+____________________
+
+This document is part of the tutorial strong::Getting Started With SuperCollider::.
+
+Click here to go on to the next section: link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality::
+
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

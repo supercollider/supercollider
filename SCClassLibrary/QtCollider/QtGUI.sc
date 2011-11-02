@@ -8,6 +8,11 @@ QtGUI {
 
   *stop { }
 
+  *debugLevel {
+    _QtGUI_DebugLevel
+    ^this.primitiveFailed
+  }
+
   *debugLevel_ { arg level;
     _QtGUI_SetDebugLevel
     ^this.primitiveFailed;
@@ -24,6 +29,7 @@ QtGUI {
 
   *staticText { ^QStaticText }
   *button { ^QButton; }
+  *checkBox { ^QCheckBox; }
   *textField { ^QTextField }
   *numberBox { ^QNumberBox }
   *slider { ^QSlider }
@@ -33,6 +39,7 @@ QtGUI {
   *tabletSlider2D { ^this.notImplemented( "TabletSlider2D"); }
   *knob { ^QKnob; }
   *listView { ^QListView }
+  *treeView { ^QTreeView }
   *popUpMenu { ^QPopUpMenu }
   *textView { ^QTextView; }
 
@@ -49,9 +56,6 @@ QtGUI {
 
   *userView { ^QUserView }
 
-  *pen { ^QPen; }
-  *font { ^QFont }
-
   *dragSource { ^QDragSource; }
   *dragSink { ^QDragSink; }
   *dragBoth { ^QDragBoth; }
@@ -64,6 +68,11 @@ QtGUI {
   *ezPopUpMenu { ^EZPopUpMenu}
   *ezNumber { ^EZNumber}
   *ezRanger { ^EZRanger }
+
+  *pen { ^QPen }
+
+  *font { ^QFont }
+  *image { ^this.notImplemented( "Image" ) }
 
   *notImplemented { arg class;
     ("QtGUI: " ++ class.asString ++ " is not implemented yet").postln;
@@ -123,33 +132,4 @@ QtGUI {
     _Qt_StringBounds
     ^this.primitiveFailed
   }
-}
-
-Size {
-  var <width, <height;
-
-  *new { arg width=0.0, height=0.0;
-    ^super.new.initSize( width, height );
-  }
-
-  initSize{ arg w, h;
-    width = w;
-    height = h;
-  }
-
-  asRect { ^Rect(0,0,width,height); }
-
-  asPoint { ^Point(width,height); }
-
-  asString {
-    ^( "Size(" ++ width ++ ", " ++ height ++ ")" );
-  }
-}
-
-+ Rect {
-  asSize { ^Size( width, height ); }
-}
-
-+ Point {
-  asSize { ^Size( x, y ); }
 }

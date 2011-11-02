@@ -26,6 +26,10 @@
 #include <boost/cstdint.hpp>
 #include <boost/filesystem/path.hpp>
 
+#include "utilities/malloc_aligned.hpp"
+#include "utilities/named_hash_entry.hpp"
+
+
 #include "SC_Types.h"
 #include "SC_Wire.h"
 
@@ -34,15 +38,17 @@ namespace nova
 
 class sc_synthdef
 {
-    typedef std::string string;
-    typedef std::vector<float> fvector;
-    typedef std::vector<string> svector;
+    typedef c_string string;
+    typedef std::vector<float, aligned_allocator<float> > fvector;
+    typedef std::vector<c_string, aligned_allocator<string> > svector;
 
     typedef boost::int16_t int16;
     typedef boost::int32_t int32;
 
+    typedef std::vector<char, aligned_allocator<char> > char_vector;
+
 public:
-    typedef std::map<string, int> parameter_map_t;
+    typedef std::map<string, int, std::less<string>, aligned_allocator<int> > parameter_map_t;
 
     struct input_spec
     {
@@ -50,28 +56,44 @@ public:
             source(source), index(index)
         {}
 
+        bool operator<(input_spec const & rhs) const
+        {
+            if (source < rhs.source)
+                return true;
+            if (source > rhs.source)
+                return false;
+            return index < rhs.index;
+        }
+
         int16_t source;   /* index of ugen or -1 for constant */
         int16_t index;    /* number of output or constant index */
     };
+    typedef std::vector<input_spec, aligned_allocator<struct input_spec> > input_spec_vector;
 
     struct unit_spec_t
     {
         explicit unit_spec_t(const char *& buffer);
 
         unit_spec_t(string const & name, int16_t rate, int16_t special_index,
-                    std::vector<input_spec> const & in_specs,
-                    std::vector<char> const & out_specs):
+                    input_spec_vector const & in_specs,
+                    char_vector const & out_specs):
             name(name), rate(rate), special_index(special_index),
             input_specs(in_specs), output_specs(out_specs)
         {}
 
+#ifdef BOOST_HAS_RVALUE_REFS
+        unit_spec_t(unit_spec_t && rhs):
+            name(std::move(rhs.name)), rate(rhs.rate), special_index(rhs.special_index),
+            input_specs(std::move(rhs.input_specs)), output_specs(std::move(rhs.output_specs))
+        {}
+#endif
         string name;
         int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
         int16_t special_index;
 
-        std::vector<input_spec> input_specs;
-        std::vector<char> output_specs;      /* calculation rates */
-        std::vector<int16_t> buffer_mapping;
+        input_spec_vector input_specs;
+        char_vector output_specs;      /* calculation rates */
+        std::vector<int16_t, aligned_allocator<int16_t> > buffer_mapping;
 
         std::size_t memory_requirement(void)
         {
@@ -88,12 +110,20 @@ public:
     friend class sc_ugen_factory;
     friend class sc_ugen_def;
 
-    typedef std::vector<unit_spec_t> graph_t;
-    typedef std::vector<int32_t> calc_units_t;
+    typedef std::vector<unit_spec_t, aligned_allocator<unit_spec_t> > graph_t;
+    typedef std::vector<int32_t, aligned_allocator<int32_t> > calc_units_t;
 
     explicit sc_synthdef(const char *& buffer);
 
-    string dump(void) const;
+#ifdef BOOST_HAS_RVALUE_REFS
+    sc_synthdef(sc_synthdef && rhs):
+        name_(std::move(rhs.name_)), constants(std::move(rhs.constants)), parameters(std::move(rhs.parameters)),
+        parameter_map(std::move(rhs.parameter_map)), graph(std::move(rhs.graph)), buffer_count(rhs.buffer_count),
+        calc_unit_indices(std::move(rhs.calc_unit_indices)), memory_requirement_(rhs.memory_requirement_)
+    {}
+#endif
+
+    std::string dump(void) const;
 
     string const & name(void) const
     {

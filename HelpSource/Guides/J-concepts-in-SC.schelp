@@ -2,7 +2,7 @@ title:: J concepts in SC
 summary:: An overview of concepts borrowed from J
 categories:: Language
 
-The J programming language is a successor of APL. (http://www.jsoftware.com) 
+The J programming language is a successor of APL. (http://www.jsoftware.com)
 These languages are made for processing arrays of data and are able to express
 complex notions of iteration implicitly.
 
@@ -138,13 +138,13 @@ z = {100.rand}.dup(10);
 ::
 order returns an array of indices representing what would be the sorted order of the array:
 code::
-o = z.order; 
+o = z.order;
 y = z[o]; // using the order as an index returns the sorted array
 ::
-calling order on the order returns an array of indices that returns the sorted array to the 
+calling order on the order returns an array of indices that returns the sorted array to the
 original scrambled order:
 code::
-p = o.order; 
+p = o.order;
 x = y[p];
 ::
 
@@ -195,7 +195,7 @@ z +++ [[[11,22,33].pyramidg]];
 
 (
 z = (1..4);
-10.do {|i| 
+10.do {|i|
     z.pyramid(i+1).postln;
     z.pyramidg(i+1).postln;
     "".postln;

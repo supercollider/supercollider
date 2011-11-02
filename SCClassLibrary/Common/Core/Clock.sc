@@ -47,12 +47,17 @@ AppClock : Clock {
 		scheduler.sched(delta, item)
 	}
 	*tick {
+		var nextTime;
 		var saveClock = thisThread.clock;
 		thisThread.clock = this;
-		scheduler.seconds = Main.elapsedTime;
+		nextTime = (scheduler.seconds = Main.elapsedTime);
 		thisThread.clock = saveClock;
+		^nextTime;
 	}
-
+	*prSchedNotify {
+		// notify clients that something has been scheduled
+		_AppClock_SchedNotify
+	}
 }
 
 Scheduler {
@@ -79,12 +84,15 @@ Scheduler {
 		if (delta.notNil, {
 			fromTime = if (drift, { Main.elapsedTime },{ seconds });
 			queue.put(fromTime + delta, item);
+			clock.prSchedNotify;
 		});
 	}
-	clear { // adc: priorityqueue has no pairsDo method, array has
-		if(queue.array.notNil,{
-			queue.array.pairsDo { | time, item | item.removedFromScheduler };
-		});
+	clear {
+		if (queue.size > 1) {
+			forBy(1, queue.size, 3) {|i|
+				queue[i+1].removedFromScheduler
+			};
+		};
 		queue.clear
 	}
 
@@ -95,19 +103,27 @@ Scheduler {
 	}
 
 	seconds_ { | newSeconds  |
-		var delta, item;
+		// NOTE: first pop ALL the expired items and only then wake
+		// them up, because we want control to return to the caller
+		// before any tasks scheduled as a result of this call are
+		// performed.
+		var delta, items;
+		items = Array.new(8);
 		while ({
 			seconds = queue.topPriority;
 			seconds.notNil and: { seconds <= newSeconds }
 		},{
-			item = queue.pop;
+			items = items.add( queue.pop );
+		});
+		items.do { | item |
 			delta = item.awake( beats, seconds, clock );
 			if (delta.isNumber, {
 				this.sched(delta, item);
 			});
-		});
+		};
 		seconds = newSeconds;
 		beats = clock.secs2beats(newSeconds);
+		^queue.topPriority;
 	}
 }
 
@@ -205,7 +221,11 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	clear { | releaseNodes = true |
 		// flag tells EventStreamPlayers that CmdPeriod is removing them, so
 		// nodes are already freed
-		queue.pairsDo { arg time, item; item.removedFromScheduler(releaseNodes) };
+		if (queue.size > 1) {
+			forBy(1, queue.size, 3) {|i|
+				queue[i+1].removedFromScheduler(releaseNodes)
+			};
+		};
 		^this.prClear;
 	}
 
@@ -335,7 +355,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
    *beats2bars { | beats | ^TempoClock.default.beats2bars(beats)  }
    *bars2beats { | bars | ^TempoClock.default.bars2beats(bars)  }
    *bar { ^TempoClock.default.bar  }
-   *nextBar { | beat | ^TempoClock.default.nextBar  }
+   *nextBar { | beat | ^TempoClock.default.nextBar(beat)  }
    *beatInBar { ^TempoClock.default.beatInBar  }
 
 }

@@ -39,6 +39,12 @@
 #  define MAXPATHLEN PATH_MAX
 # endif
 
+#ifdef _WIN32
+#define SC_PATH_DELIMITER "\\"
+#else
+#define SC_PATH_DELIMITER "/"
+#endif
+
 // General path utilities
 
 // Add 'component' to 'path' using the platform path separator.
@@ -67,7 +73,6 @@ extern const char * gIdeName; // string used for conditional compilation accordi
 // Support for Bundles
 
 void sc_GetResourceDirectory(char* pathBuf, int length);
-void sc_GetResourceDirectoryFromAppDirectory(char* pathBuf, int length);
 bool sc_IsStandAlone();
 
 // Support for Extensions
@@ -87,6 +92,8 @@ void sc_GetSystemExtensionDirectory(char *str, int size);
 // Get the User level 'Extensions' directory.
 void sc_GetUserExtensionDirectory(char *str, int size);
 
+// Get the directory for the configuration files.
+void sc_GetUserConfigDirectory(char *str, int size);
 
 // Directory access
 

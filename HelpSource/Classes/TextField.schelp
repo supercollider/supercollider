@@ -1,0 +1,93 @@
+CLASS:: TextField
+redirect:: implClass
+summary:: A view displaying editable text
+categories:: GUI>Views
+
+DESCRIPTION::
+A view displaying editable text.
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+
+INSTANCEMETHODS::
+
+
+SUBSECTION:: Data
+
+METHOD:: string
+	The text displayed in the view.
+
+	argument::
+		A String.
+
+METHOD:: object
+	If link::#-setBoth:: is true, setting this variable also sets link::#-string:: to the value interpreted link::Classes/Object#-asString#as String::.
+
+	argument::
+		Any object, typically one which makes sense to display as a string, such as a Float.
+
+METHOD:: setBoth
+	A variable stating whether setting link::#-object:: will also set link::#-string::.
+
+	argument::
+		A Boolean.
+
+METHOD:: value
+	Gets the same as link::#-string::, but when setting also sets link::#-string:: to the value interpreted link::Classes/Object#-asString#as String:: regardless of the link::#-setBoth:: flag.
+
+	argument::
+		Any object, typically one which makes sense to display as a string, such as a Float.
+
+METHOD:: valueAction
+	Sets link::#-value:: and triggeres link::#-action::.
+
+
+SUBSECTION:: Appearance
+
+METHOD:: align
+	The alignment of the displayed text.
+
+	argument::
+		One of the following symbols: \centered, \left, or \right.
+
+METHOD:: font
+	The font used to display the text.
+
+	argument::
+		A Font.
+
+METHOD:: stringColor
+	The color used to display the text.
+
+	argument::
+		A Color.
+
+METHOD:: background
+	Setting this variable colors the inside of the field under the text with the given color.
+
+	argument::
+		A Color.
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+	The action object evaluated whenever the user changes the text.
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		The displayed link::#-string::.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		Always true.
+
+METHOD:: defaultReceiveDrag
+	Sets link::#-valueAction:: to the current drag data.

@@ -16,10 +16,10 @@
 ;; USA
 
 (eval-when-compile
-  (require 'cl))
-
-(eval-and-compile
-  (require 'sclang-util))
+  (require 'cl)
+  (require 'sclang-util)
+  (require 'compile)
+  )
 
 ;; =====================================================================
 ;; post buffer access
@@ -231,7 +231,9 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 
 (defun sclang-on-library-shutdown ()
   (run-hooks 'sclang-library-shutdown-hook)
-  (setq sclang-library-initialized-p nil))
+  (setq sclang-library-initialized-p nil)
+  (sclang-message "Shutting down library...")
+  )
 
 ;; =====================================================================
 ;; process hooks
@@ -245,7 +247,8 @@ If EOB-P is non-nil, positions cursor at end of buffer."
     (format "*** %s %s ***" proc (substring msg 0 -1))
     "\n\n"))
   (when (memq (process-status proc) '(exit signal))
-    (sclang-on-library-shutdown)))
+    (sclang-on-library-shutdown)
+    (sclang-stop-command-process)))
 
 (defun sclang-process-filter (process string)
   (let ((buffer (process-buffer process)))
@@ -318,7 +321,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
       (set-process-sentinel proc 'sclang-process-sentinel)
       (set-process-filter proc 'sclang-process-filter)
       (set-process-coding-system proc 'mule-utf-8 'mule-utf-8)
-      (process-kill-without-query proc)
+      (set-process-query-on-exit-flag proc nil)
       proc)))
 
 (defun sclang-kill ()
@@ -340,7 +343,15 @@ If EOB-P is non-nil, positions cursor at end of buffer."
 	(incf i)
 	(sit-for 0.5))))
   (sclang-kill)
-  (sclang-release-command-fifo))
+  (sclang-stop-command-process))
+
+(defun sclang-recompile ()
+  "Recompile class library."
+  (interactive)
+  (when (sclang-get-process)
+    (sclang-on-library-shutdown)
+    (process-send-string sclang-process "\x18")
+    ))
 
 ;; =====================================================================
 ;; command process
@@ -362,6 +373,11 @@ Change this if \"cat\" has a non-standard name or location."
 
 (defconst sclang-command-process "SCLang Command"
   "Subprocess for receiving command results from sclang.")
+
+(defconst sclang-cmd-helper-proc "SCLang Command Helper"
+  "Dummy subprocess that will keep the command fifo open for writing
+   so reading does not fail automatically when sclang closes its own
+   writing end of the fifo")
 
 (defvar sclang-command-fifo nil
   "FIFO for communicating with the subprocess.")
@@ -387,27 +403,36 @@ Change this if \"cat\" has a non-standard name or location."
       (message "SCLang: Couldn't create command fifo")
       (setq sclang-command-fifo nil))))
 
-(defun sclang-command-process-sentinel (proc msg)
-  (and (memq (process-status proc) '(exit signal))
-       (sclang-release-command-fifo)))
-
 (defun sclang-start-command-process ()
   (sclang-create-command-fifo)
   (when sclang-command-fifo
+    ;; start the dummy process to keep the fifo open
+    (let ((process-connection-type nil))
+      (let ((proc (start-process-shell-command
+        sclang-cmd-helper-proc nil
+        (concat sclang-cat-program " > " sclang-command-fifo))))
+	    (set-process-query-on-exit-flag proc nil)))
     ;; sclang gets the fifo path via the environment
     (setenv "SCLANG_COMMAND_FIFO" sclang-command-fifo)
     (let ((process-connection-type nil))
       (let ((proc (start-process
 		   sclang-command-process nil
 		   sclang-cat-program sclang-command-fifo)))
-	(set-process-sentinel proc 'sclang-command-process-sentinel)
 	(set-process-filter proc 'sclang-command-process-filter)
 	;; this is important. use a unibyte stream without eol
 	;; conversion for communication.
 	(set-process-coding-system proc 'no-conversion 'no-conversion)
-	(process-kill-without-query proc)))
+	(set-process-query-on-exit-flag proc nil)))
     (unless (get-process sclang-command-process)
       (message "SCLang: Couldn't start command process"))))
+
+(defun sclang-stop-command-process ()
+  (when (get-process sclang-cmd-helper-proc)
+    (kill-process sclang-cmd-helper-proc)
+    (delete-process sclang-cmd-helper-proc))
+  ;; the real command process should now quit automatically,
+  ;; since there is no more writers to the command fifo
+  (sclang-release-command-fifo))
 
 (defvar sclang-command-process-previous nil
   "Unprocessed command process output.")
@@ -523,7 +548,7 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
       (sclang-eval-string string (not silent-p)))
     (and sclang-eval-line-forward
 	 (/= (line-end-position) (point-max))
-	 (next-line 1))
+	 (forward-line 1))
     string))
 
 (defun sclang-eval-region (&optional silent-p)
@@ -549,10 +574,11 @@ if PRINT-P is non-nil. Return STRING if successful, otherwise nil."
 (defun sclang-eval-document (&optional silent-p)
   "Execute the whole document as SuperCollider code."
   (interactive "P")
-  (mark-whole-buffer)
-  (sclang-eval-string
-   (buffer-substring-no-properties (region-beginning) (region-end))
-   (not silent-p)))
+  (save-excursion
+    (mark-whole-buffer)
+    (sclang-eval-string
+     (buffer-substring-no-properties (region-beginning) (region-end))
+     (not silent-p))))
 
 (defvar sclang-eval-results nil
   "Save results of sync SCLang evaluation.")

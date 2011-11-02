@@ -26,8 +26,8 @@ code::
 (
 SynthDef("help-RandID", { arg out=0, id=1;
 	RandID.ir(id);
-	Out.ar(out, 
-		WhiteNoise.ar(0.05) + Dust2.ar(70) 
+	Out.ar(out,
+		WhiteNoise.ar(0.05) + Dust2.ar(70)
 	)
 }).send(s);
 )
@@ -38,14 +38,14 @@ SynthDef("help-RandSeed", { arg seed=1910, id=1;
 		RandID.kr(id);
 		RandSeed.kr(Impulse.kr(FSinOsc.kr(0.2, 0, 10, 11)), seed);
 }).send(s);
-	
+
 )
 
 //start two noise synths on left and right channel with a different randgen id
 a = Synth("help-RandID", [\out, 0, \id, 1]);
 b = Synth("help-RandID", [\out, 1, \id, 2]);
 
-//reset the seed of randgen 1 
+//reset the seed of randgen 1
 x = Synth("help-RandSeed", [\id, 1]);
 
 //change the target randgen to 2 (affects right channel)

@@ -2,13 +2,13 @@ title:: Server Command Reference
 summary:: SuperCollider Server Synth Engine Command Reference
 categories:: Server>Architecture, OpenSoundControl
 
-The following is a list of all server commands and their arguments. 
+The following is a list of all server commands and their arguments.
 
 Each command has a command number which can be sent to the server as a 32 bit integer instead of an OSC style string. Command numbers are listed at the end of this document.
 
 If a command's description contains the word strong::Asynchronous::, then that command will be passed to a background thread to complete so as not to steal CPU time from the audio synthesis thread. All asynchronous commands send a reply to the client when they are completed. Many asynchronous commands can contain an OSC message or bundle to be executed upon completion. eg.
 code::
-    ["/d_load", "synthdefs/void.scsyndef", 
+    ["/d_load", "synthdefs/void.scsyndef",
         ["/s_new", "void", 1001, 1, 0] // completion message
     ]
 ::
@@ -27,7 +27,7 @@ subsection:: /notify - register to receive notifications from server
 table::
 ## strong::int:: || one to receive notifications, zero to stop receiving them.
 ::
-If argument is one, server will remember your return address and send you notifications. if argument is zero, server will stop sending you notifications. 
+If argument is one, server will remember your return address and send you notifications. if argument is zero, server will stop sending you notifications.
 
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
@@ -68,7 +68,7 @@ table::
 ## 0 || turn dumping OFF.
 ## 1 || print the parsed contents of the message.
 ## 2 || print the contents in hexadecimal.
-## 3 || print both the parsed and hexadecimal representations of the contents.	
+## 3 || print both the parsed and hexadecimal representations of the contents.
 ::
 
 subsection:: /sync - notify when async commands have completed.
@@ -111,10 +111,10 @@ section:: Synth Definition Commands
 
 subsection:: /d_recv - receive a synth definition file
 table::
-## strong::bytes:: || buffer of data. 
+## strong::bytes:: || buffer of data.
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
-Loads a file of synth definitions from a buffer in the message. Resident definitions with the same names are overwritten. 
+Loads a file of synth definitions from a buffer in the message. Resident definitions with the same names are overwritten.
 
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
@@ -125,7 +125,7 @@ table::
 ## strong::string:: || pathname of file. Can be a pattern like code:: "synthdefs/perc-*" ::
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
-Loads a file of synth definitions. Resident definitions with the same names are overwritten. 
+Loads a file of synth definitions. Resident definitions with the same names are overwritten.
 
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
@@ -135,7 +135,7 @@ table::
 ## strong::string:: || pathname of directory.
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
-Loads a directory of synth definitions files. Resident definitions with the same names are overwritten. 
+Loads a directory of synth definitions files. Resident definitions with the same names are overwritten.
 
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
@@ -146,7 +146,7 @@ table::
 ## N * strong::string:: || synth def name
 ::
 
-Removes a synth definition once all synths using it have ended. 
+Removes a synth definition. The definition is removed immediately, and does not wait for synth nodes based on that definition to end.
 
 section:: Node Commands
 
@@ -168,7 +168,7 @@ list::
 ## If the run flag set to zero then the node will not be executed.
 ## If the run flag is set back to one, then it will be executed.
 ::
-Using this method to start and stop nodes can cause a click if the node is not silent at the time run flag is toggled. 
+Using this method to start and stop nodes can cause a click if the node is not silent at the time run flag is toggled.
 
 subsection:: /n_set - set a node's control value(s)
 table::
@@ -181,7 +181,7 @@ table::
 
 Takes a list of pairs of control indices and values and sets the controls to those values. If the node is a group, then it sets the controls of every node in the group.
 
-This message now supports array type tags ($[ and $]) in the control/value component of the OSC message.  Arrayed control values are applied in the manner of n_setn (i.e., sequentially starting at the indexed or named control).  
+This message now supports array type tags ($[ and $]) in the control/value component of the OSC message.  Arrayed control values are applied in the manner of n_setn (i.e., sequentially starting at the indexed or named control).
 
 subsection:: /n_setn - set ranges of a node's control value(s)
 
@@ -276,7 +276,7 @@ subsection:: /n_query - get info about a node
 table::
 ## N * strong::int:: || node ID
 ::
-The server sends an /n_info message for each node to registered clients. 
+The server sends an /n_info message for each node to registered clients.
 See Node Notifications below for the format of the /n_info message.
 
 subsection:: /n_trace - trace a node
@@ -292,7 +292,7 @@ table::
 ## strong::int:: || add target ID
 ## N * strong::int:: || node IDs
 ::
-	
+
 Move the listed nodes to the location specified by the target and add action, and place them in the order specified. Nodes which have already been freed will be ignored.
 definitionlist::
 ## add actions: || table::
@@ -313,7 +313,8 @@ table::
 ## strong::int:: || add target ID
 ## N * || table::
     ## strong::int:: or strong::string:: || a control index or name
-	## strong::float:: or strong::int:: || a control value
+	## strong::float:: or strong::int:: or strong::string::|| floating point and integer arguments are interpreted as control value.
+                                                              a symbol argument consisting of the letter 'c' or 'a' (for control or audio) followed by the bus's index.
     ::
 ::
 
@@ -340,7 +341,7 @@ table::
 ## strong::int:: || synth ID
 ## N * strong::int:: or strong::string:: || a control index or name
 ::
-	
+
 Replies to sender with the corresponding strong::/n_set:: command.
 
 subsection:: /s_getn - get ranges of control value(s)
@@ -351,7 +352,7 @@ table::
     ## strong::int:: || number of sequential controls to get (M)
     ::
 ::
-Get contiguous ranges of controls. Replies to sender with the corresponding strong::/n_setn:: command. 
+Get contiguous ranges of controls. Replies to sender with the corresponding strong::/n_setn:: command.
 
 subsection:: /s_noid - auto-reassign synth's ID to a reserved value
 table::
@@ -370,7 +371,7 @@ table::
     ## strong::int:: || add target ID
     ::
 ::
-	
+
 Create a new group and add it to the tree of nodes.
 There are four ways to add the group to the tree as determined by the add action argument which is defined as follows (the same as for strong::/s_new::):
 definitionlist::
@@ -443,7 +444,7 @@ table::
     ## strong::int:: || flag; if not 0 the current control (arg) values for synths will be posted
     ::
 ::
-	
+
 Posts a representation of this group's node subtree, i.e. all the groups and synths contained within it, optionally including the current control values for synths.
 
 subsection:: /g_queryTree - get a representation of this group's node subtree.
@@ -452,7 +453,7 @@ table::
     ## strong::int:: || group ID
     ## strong::int:: || flag: if not 0 the current control (arg) values for synths will be included
     ::
-::	
+::
 Request a representation of this group's node subtree, i.e. all the groups and synths contained within it. Replies to the sender with a strong::/g_queryTree.reply:: message listing all of the nodes contained within the group in the following format:
 table::
 ## strong::int:: || flag: if synth control values are included 1, else 0
@@ -471,7 +472,7 @@ table::
         ::
     ::
 ::
-	
+
 N.B. The order of nodes corresponds to their execution order on the server. Thus child nodes (those contained within a group) are listed immediately following their parent. See the method Server:queryAllNodes for an example of how to process this reply.
 
 section:: Unit Generator Commands
@@ -487,7 +488,7 @@ Sends all arguments following the command name to the unit generator to be perfo
 
 section:: Buffer Commands
 
-Buffers are stored in a global array, indexed by integers starting at zero. 
+Buffers are stored in a global array, indexed by integers starting at zero.
 
 subsection:: /b_alloc - allocate buffer space.
 table::
@@ -509,7 +510,7 @@ table::
 ## strong::int:: || number of frames to read (optional. default = 0, see below)
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
-Allocates buffer to number of channels of file and number of samples requested, or fewer if sound file is smaller than requested. Reads sound file data from the given starting frame in the file. If the number of frames argument is less than or equal to zero, the entire file is read. 
+Allocates buffer to number of channels of file and number of samples requested, or fewer if sound file is smaller than requested. Reads sound file data from the given starting frame in the file. If the number of frames argument is less than or equal to zero, the entire file is read.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
@@ -526,7 +527,7 @@ table::
     ::
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
-	
+
 As b_allocRead, but reads individual channels into the allocated buffer in the order specified.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
@@ -543,7 +544,7 @@ table::
 ## strong::int:: || leave file open (optional. default = 0)
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
-Reads sound file data from the given starting frame in the file and writes it to the given starting frame in the buffer. If number of frames is less than zero, the entire file is read. 
+Reads sound file data from the given starting frame in the file and writes it to the given starting frame in the buffer. If number of frames is less than zero, the entire file is read.
 If reading a file to be used by link::Classes/DiskIn:: ugen then you will want to set "leave file open" to one, otherwise set it to zero.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
@@ -601,7 +602,7 @@ table::
 ## strong::int:: || buffer number
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
-Frees buffer space allocated for this buffer. 
+Frees buffer space allocated for this buffer.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
@@ -612,7 +613,7 @@ table::
 ## strong::int:: || buffer number
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
-Sets all samples in the buffer to zero. 
+Sets all samples in the buffer to zero.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done:: when complete.
 ::
@@ -626,7 +627,7 @@ table::
     ## strong::float:: || a sample value
     ::
 ::
-Takes a list of pairs of sample indices and values and sets the samples to those values. 
+Takes a list of pairs of sample indices and values and sets the samples to those values.
 
 subsection:: /b_setn - set ranges of sample value(s)
 table::
@@ -677,7 +678,7 @@ subsection:: /b_query - get buffer info
 table::
 ## N * strong::int:: || buffer number(s)
 ::
-	
+
 Responds to the sender with a strong::/b_info:: message.  The arguments to /b_info are as follows:
 table::
 ## N * || table::
@@ -693,7 +694,7 @@ table::
 ## strong::int:: || buffer number
 ## N * strong::int:: || a sample index
 ::
-	
+
 Replies to sender with the corresponding strong::/b_set:: command.
 
 subsection:: /b_getn - get ranges of sample value(s)
@@ -704,7 +705,7 @@ table::
     ## strong::int:: || number of sequential samples to get (M)
     ::
 ::
-	
+
 Get contiguous ranges of samples. Replies to sender with the corresponding strong::/b_setn:: command. This is only meant for getting a few samples, not whole buffers or large sections.
 
 
@@ -717,7 +718,7 @@ table::
     ## strong::float:: or strong::int:: || a control value
     ::
 ::
-Takes a list of pairs of bus indices and values and sets the buses to those values. 
+Takes a list of pairs of bus indices and values and sets the buses to those values.
 
 subsection:: /c_setn - set ranges of bus value(s)
 table::
@@ -761,9 +762,9 @@ section:: Non Real Time Mode Commands
 
 subsection:: /nrt_end - end real time mode, close file
 not yet implemented
-	
-This message should be sent in a bundle in non real time mode. 
-The bundle timestamp will establish the ending time of the file. 
+
+This message should be sent in a bundle in non real time mode.
+The bundle timestamp will establish the ending time of the file.
 This command will end non real time mode and close the sound file.
 Replies to sender with strong::/done:: when complete.
 
@@ -900,7 +901,7 @@ Fills a buffer with a series of chebyshev polynomials, which can be defined as:
 formula::
 cheby(n) = amplitude  * cos(n * acos(x))
 ::
-The first float value specifies the amplitude for n = 1, the second float value specifies the amplitude for n = 2, and so on. To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero. 
+The first float value specifies the amplitude for n = 1, the second float value specifies the amplitude for n = 2, and so on. To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero.
 ::
 
 subsection:: Other Commands

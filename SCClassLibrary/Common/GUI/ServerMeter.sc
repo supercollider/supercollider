@@ -33,7 +33,7 @@ ServerMeterView{
 		// dB scale
 		UserView(innerView, Rect(0,0,meterWidth,195)).drawFunc_({
 			Pen.color = Color.white;
-			Pen.font = Font(Font.defaultSansFace, 10).boldVariant;
+			Pen.font = Font.sansSerif(10).boldVariant;
 			Pen.stringCenteredIn("0", Rect(0, 0, meterWidth, 12));
 			Pen.stringCenteredIn("-80", Rect(0, 170, meterWidth, 12));
 		});
@@ -41,14 +41,14 @@ ServerMeterView{
 		(numIns > 0).if({
 			// ins
 			StaticText(view, Rect(10, 5, 100, 15))
-				.font_(Font(Font.defaultSansFace, 10).boldVariant)
+				.font_(Font.sansSerif(10).boldVariant)
 				.stringColor_(Color.white)
 				.string_("Inputs");
 			inmeters = Array.fill( numIns, { arg i;
 				var comp;
 				comp = CompositeView(innerView, Rect(0,0,meterWidth,195)).resize_(5);
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
-					.font_(Font(Font.defaultSansFace, 9).boldVariant)
+					.font_(Font.sansSerif(9).boldVariant)
 					.stringColor_(Color.white)
 					.string_(i.asString);
 				LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
@@ -70,14 +70,14 @@ ServerMeterView{
 		// outs
 		(numOuts > 0).if({
 			StaticText(view, Rect(10 + if(numIns > 0 , ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
-				.font_(Font(Font.defaultSansFace, 10).boldVariant)
+				.font_(Font.sansSerif(10).boldVariant)
 				.stringColor_(Color.white)
 				.string_("Outputs");
 			outmeters = Array.fill( numOuts, { arg i;
 				var comp;
 				comp = CompositeView(innerView, Rect(0,0,meterWidth,195));
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
-					.font_(Font(Font.defaultSansFace, 9).boldVariant)
+					.font_(Font.sansSerif(9).boldVariant)
 					.stringColor_(Color.white)
 					.string_(i.asString);
 				LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
@@ -126,37 +126,47 @@ ServerMeterView{
 		numRMSSamps = server.sampleRate / updateFreq;
 		numRMSSampsRecip = 1 / numRMSSamps;
 		(numIns > 0).if({
-			inresp = OSCProxy({|msg|
-				{try {
-				var channelCount = msg.size - 3 / 2;
+			inresp = OSCFunc({|msg|
+				{
+					try {
+						var channelCount = msg.size - 3 / 2;
 
-				channelCount.do {|channel|
-					var baseIndex = 3 + (2*channel);
-					var peakLevel = msg.at(baseIndex);
-					var rmsValue  = msg.at(baseIndex + 1);
-					var meter = inmeters.at(channel);
-					if (meter.isClosed.not) {
-						meter.pealLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
-						meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
-					}
-				}}}.defer;
+						channelCount.do {|channel|
+							var baseIndex = 3 + (2*channel);
+							var peakLevel = msg.at(baseIndex);
+							var rmsValue  = msg.at(baseIndex + 1);
+							var meter = inmeters.at(channel);
+							if (meter.isClosed.not) {
+								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
+								meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+							}
+						}
+					} { |error|
+						if(error.isKindOf(PrimitiveFailedError).not) { error.throw }
+					};
+				}.defer;
 			}, ("/" ++ server.name ++ "InLevels").asSymbol, server.addr).fix;
 		});
 		(numOuts > 0).if({
-			outresp = OSCProxy({|msg|
-				{try {
-				var channelCount = msg.size - 3 / 2;
+			outresp = OSCFunc({|msg|
+				{
+					try {
+						var channelCount = msg.size - 3 / 2;
 
-				channelCount.do {|channel|
-					var baseIndex = 3 + (2*channel);
-					var peakLevel = msg.at(baseIndex);
-					var rmsValue  = msg.at(baseIndex + 1);
-					var meter = outmeters.at(channel);
-					if (meter.isClosed.not) {
-						meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
-						meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
-					}
-				}}}.defer;
+						channelCount.do {|channel|
+							var baseIndex = 3 + (2*channel);
+							var peakLevel = msg.at(baseIndex);
+							var rmsValue  = msg.at(baseIndex + 1);
+							var meter = outmeters.at(channel);
+							if (meter.isClosed.not) {
+								meter.peakLevel = peakLevel.ampdb.linlin(dBLow, 0, 0, 1);
+								meter.value = rmsValue.ampdb.linlin(dBLow, 0, 0, 1);
+							}
+						}
+					} { |error|
+						if(error.isKindOf(PrimitiveFailedError).not) { error.throw }
+					};
+				}.defer;
 			}, ("/" ++ server.name ++ "OutLevels").asSymbol, server.addr).fix;
 		});
 	}
@@ -192,8 +202,8 @@ ServerMeterView{
 			ServerTree.remove(synthFunc);
 		};
 
-		(numIns > 0).if({ inresp.clear; });
-		(numOuts > 0).if({ outresp.clear; });
+		(numIns > 0).if({ inresp.free; });
+		(numOuts > 0).if({ outresp.free; });
 	}
 
 	remove{
@@ -217,7 +227,13 @@ ServerMeter{
 							false);
 		window.view.background = Color.grey(0.4);
 
-		meterView = ServerMeterView(server,window,0@0,numIns,numOuts);
+		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
+		meterView.view.keyDownAction_({ arg view, char, modifiers;
+			if(modifiers & 16515072 == 0) {
+				case
+				{char === 27.asAscii } { window.close };
+			};
+		});
 
 		window.front;
 

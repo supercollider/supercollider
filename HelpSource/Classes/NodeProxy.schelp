@@ -426,7 +426,7 @@ definitionList::
 ## link::Classes/Tdef:: || played like Task
 ## link::Classes/Event:: || played like in a pattern.
 
-## Associations: || 
+## Associations: ||
 definitionList::
 ## (\filter -> func) || filter previous input (with post control)
 ## (\filterIn -> func) || filter previous input (with pre control)
@@ -437,7 +437,7 @@ definitionList::
 ## (\mix -> func) || mix audio
 ::
 
-## crucial library: || 
+## crucial library: ||
 definitionList::
 ## link::Classes/AbstractPlayer:: || started in a separate bus, mapped to this bus
 ## link::Classes/Instr:: || converted to player and started

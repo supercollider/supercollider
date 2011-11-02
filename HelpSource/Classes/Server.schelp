@@ -10,7 +10,7 @@ It forwards osc-messages and has a number of allocators that keep track of IDs f
 
 The server application is a commandline program, so all commands apart from osc-messages are unix commands.
 
-The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine. 
+The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine.
 
 Most of a Server's options are contolled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
 
@@ -21,7 +21,7 @@ Server apps running on the local machine have two unix environment variables: co
 These can be set within SC using the getenv and setenv methods of class link::Classes/String::.
 code::
 // all defs in this directory will be loaded when a local server boots
-"SC_SYNTHDEF_PATH".setenv("~/scwork/".standardizePath); 
+"SC_SYNTHDEF_PATH".setenv("~/scwork/".standardizePath);
 "echo $SC_SYNTHDEF_PATH".unixCmd;
 ::
 
@@ -87,24 +87,24 @@ s.postln; // internal
 ::
 
 method:: all
-get/set the set of all servers.	
+get/set the set of all servers.
 
 method:: allRunningServers
-returns:: the set of all running servers.	
+returns:: the set of all running servers.
 
 method:: quitAll
 quit all registered servers
-		
+
 method:: killAll
 query the system for any sc-server apps and hard quit them
-		
+
 method:: freeAll
-free all nodes in all registered servers	
+free all nodes in all registered servers
 
 
 
 InstanceMethods::
-						
+
 method:: sendMsg
 send an osc message to the server.
 discussion::
@@ -117,10 +117,10 @@ send an osc bundle to the server.
 discussion::
 Since the network may have irregular performance, time allows for the bundle to be evaluated at a specified point in the future.
 Thus all messages are synchronous relative to each other, but delayed by a constant offset.
-If such a bundle arrives late, the server replies with a late message but still evaluates it.				
-code::	
+If such a bundle arrives late, the server replies with a late message but still evaluates it.
+code::
 s.sendBundle(0.2, ["/s_new", "default", x = s.nextNodeID, 0, 1], ["/n_set", x, "freq", 500]);
-::		
+::
 
 method:: sendRaw
 
@@ -132,13 +132,13 @@ as sendBundle, but takes an array as argument.
 discussion::
 This allows you to collect messages in an array and then send them.
 code::
-s.listSendBundle(0.2, [["/s_new", "default", x = s.nextNodeID, 0, 1], 
+s.listSendBundle(0.2, [["/s_new", "default", x = s.nextNodeID, 0, 1],
     ["/n_set", x, "freq", 600]]);
 ::
 
 method:: sendSynthDef
 send a synthDef to the server that was written in a local directory
-		
+
 method:: loadSynthDef
 load a synthDef that resides in the remote directory
 
@@ -146,16 +146,16 @@ method:: loadDirectory
 load all the SynthDefs in the directory dir.
 argument:: dir
 a link::Classes/String:: which is a valid path.
-		
+
 method:: nextNodeID
-get a unique nodeID. 
+get a unique nodeID.
 
 method:: nextPermNodeID
 get a permanent node ID. This node ID is in a reserved range and will be held until you explicitly free it.
 
 method:: freePermNodeID
 free a permanent node ID for later reuse.
-	
+
 method:: wait
 this can be used within a link::Classes/Routine:: to wait for a server reply
 
@@ -174,13 +174,13 @@ N.B. You cannot locally boot a server app on a remote machine.
 
 method:: quit
 quit the server application
-		
+
 method:: reboot
 quit and restart the server application
-		
+
 method:: freeAll
-free all nodes in this server 
-		
+free all nodes in this server
+
 method:: status
 query the server status
 
@@ -189,14 +189,14 @@ server sends notifications, for example if a node was created, a 'tr' message fr
 
 method:: ping
 measure the time between server and client, which may vary. the code::func:: is
-evaluated after code::n:: number of times and is passed the resulting maximum. 
+evaluated after code::n:: number of times and is passed the resulting maximum.
 
 method:: options
 Get or set this Server's link::Classes/ServerOptions:: object. Changes take effect when the server is rebooted.
 
 method:: defaultGroup
 returns:: this Server's default group.
-	
+
 method:: volume
 Get an instance of Volume that runs after the defualt group, or sets the Volume of the Server's output to level. Level is in db.
 
@@ -217,6 +217,13 @@ s.queryAllNodes;
 s.reorder(x, g, \addToTail);
 s.queryAllNodes;
 ::
+
+method:: inputBus
+Return a link::Classes/Bus:: object that represents the input audio bus.
+
+method:: outputBus
+Return a link::Classes/Bus:: object that represents the output audio bus.
+
 
 subsection:: Information and debugging
 
@@ -275,7 +282,7 @@ allows you to pass in a preexisting bundle and continue adding to it.
 discussion::
 Calling code::sync:: inside func will split the bundle and wait for asynchronous actions to complete before continuing.
 
-If an error is encountered while evaluating code::func:: this method will throw an link::Classes/Error:: and stop message deferral. 
+If an error is encountered while evaluating code::func:: this method will throw an link::Classes/Error:: and stop message deferral.
 code::
 s.boot;
 (
@@ -298,7 +305,7 @@ x.free;
 
 // don't send
 (
-b = s.makeBundle(false, { 	
+b = s.makeBundle(false, {
 	x = { PinkNoise.ar(0.1) * In.kr(0, 1); }.play;
 });
 )
@@ -317,7 +324,7 @@ try {
 		s.farkermartin;
 	});
 } { |error|
-	("Look Ma, normal operations resume even though:\n" + error.errorString).postln; 
+	("Look Ma, normal operations resume even though:\n" + error.errorString).postln;
 	x = { FSinOsc.ar(440, 0, 0.2) }.play; // This works fine
 }
 )
@@ -326,7 +333,7 @@ x.free;
 // use sync
 (
 s.makeBundle(nil, {
-	b = Buffer.read(s, "sounds/a11wlk01.wav");
+	b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 	s.sync; // wait until load is done and then send the rest of the bundle
 	x = { PlayBuf.ar(1, b) * 0.5 }.play;
 });
@@ -384,10 +391,10 @@ method:: makeGui
 Create and show the server window
 
 method:: scope
-Open a scope window showing the output of the Server. 
+Open a scope window showing the output of the Server.
 This only works with the internal server.
 see link::Classes/Stethoscope:: for further details.
-		
+
 argument:: numChannels
 the number of channels to be scoped out. The default is this server's options' numOutputBusChannels.
 argument:: index
@@ -410,7 +417,7 @@ Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
 
 subsection:: Recording Support
 
-The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the link::Classes/DiskOut:: helpfile for more info. For non-realtime recording, see the link::Guides/Non-Realtime-Synthesis:: helpfile. 
+The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the link::Classes/DiskOut:: helpfile for more info. For non-realtime recording, see the link::Guides/Non-Realtime-Synthesis:: helpfile.
 
 This functionality is also available through the recording button on the server windows.
 Pressing it once calls record, and pressing it again calls stopRecording (see below). When doing so the file created will be in your recordings folder and be named for the current date and time.
@@ -441,8 +448,8 @@ SynthDef("bubbles", {
 	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(0, zout);
 }).add;
-SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0; 
-	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) ) 
+SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
+	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
 }).add;
 
 )
@@ -470,22 +477,22 @@ argument:: path
 a link::Classes/String:: representing the path and name of the output file.
 discussion::
 If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called SC_thisDateAndTime. Changes to the header or sample format, or to the number of channels must be made BEFORE calling this.
-		
+
 method:: record
 Starts or resumes recording the output.
 discussion::
 If you have not called prepareForRecord first (see above) then it will be invoked for you (but that adds a slight delay before recording starts for real).
 argument:: path
 this is optional, and is passed to code::prepareForRecord:: (above).
-			
+
 method:: pauseRecording
 Pauses recording. Can be resumed by executing record again.
-		
+
 method:: stopRecording
 Stops recording, closes the file, and frees the associated resources.
 discussion::
 You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
-		
+
 method:: recordNode
 Returns:: the current recording synth so that it can be used as a target. This should only be necessary for nodes which are not created in the default group.
 
@@ -494,7 +501,7 @@ Get/set the number of channels (int) to record. The default is two. Must be call
 
 method:: recHeaderFormat
 Get/set the header format (string) of the output file. The default is "aiff". Must be called BEFORE prepareForRecord.
-	
+
 method:: recSampleFormat
 Get/set the sample format (string) of the output file. The default is "float". Must be called BEFORE prepareForRecord.
 
@@ -531,10 +538,10 @@ Routine.run {
 
 	// create a condition variable to control execution of the Routine
 	c = Condition.new;
-	
+
 	s.bootSync(c);
 	\BOOTED.postln;
-		
+
 	s.sendMsgSync(c, "/b_alloc", 0, 44100, 2);
 	s.sendMsgSync(c, "/b_alloc", 1, 44100, 2);
 	s.sendMsgSync(c, "/b_alloc", 2, 44100, 2);
@@ -548,10 +555,10 @@ Routine.run {
 
 	// create a condition variable to control execution of the Routine
 	c = Condition.new;
-	
+
 	s.bootSync(c);
 	\BOOTED.postln;
-		
+
 	s.sendMsg("/b_alloc", 0, 44100, 2);
 	s.sendMsg("/b_alloc", 1, 44100, 2);
 	s.sendMsg("/b_alloc", 2, 44100, 2);

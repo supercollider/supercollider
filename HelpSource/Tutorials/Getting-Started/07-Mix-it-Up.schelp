@@ -1,0 +1,80 @@
+title:: 07. Mix it Up
+summary:: Getting Started With SuperCollider
+categories:: Tutorials>Getting-Started
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
+
+We've already seen that multiplication changes the level of something, but what about mixing UGens together? This turns out to be equally simple. All we need is addition:
+
+code::
+{ PinkNoise.ar(0.2) + SinOsc.ar(440, 0, 0.2) + Saw.ar(660, 0.2) }.play;
+::
+
+Saw is another type of oscillator, with a waveform that looks like a sawtooth. Note that we use a low value for mul, thus ensuring that the final output will be between -1 and 1, and not clip.
+
+There's another handy class called Mix, which will mix an array of channels down to a single channel or an array of arrays of channels down to a single array of channels. Watch the post window to see Mix's results.
+
+code::
+// one channel
+{ Mix.new([SinOsc.ar(440, 0, 0.2), Saw.ar(660, 0.2)]).postln }.play;
+
+// combine two stereo arrays
+(
+{
+	var a, b;
+	a = [SinOsc.ar(440, 0, 0.2), Saw.ar(662, 0.2)];
+	b = [SinOsc.ar(442, 0, 0.2), Saw.ar(660, 0.2)];
+	Mix([a, b]).postln;
+}.play;
+)
+::
+
+In the first case we get a 'BinaryOpUGen' (in this case this means the two UGens added together), and in the second we get an Array of two BinaryOpUGens.
+
+Note that in the first example we use Mix.new(...), but in the second we use Mix(...). The latter is a shorthand for the former. 'new' is the most common class method for creating a new object. In some cases objects have more than one class method for creating objects, such as the 'ar' and 'kr' methods of UGens. (Mix, however, is actually just a 'convenience' class, and doesn't actually create Mix objects, it just returns the results of its summing, either a BinaryOpUGen or an Array of them.)
+
+Mix also has another class method called fill, which takes two arguments. The first is a number, which determines how many times the second argument, a Function, will be evaluated. The results of the evaluations will be summed. Confusing? Take a look at the following example:
+
+code::
+(
+	var n = 8;
+	{ Mix.fill(n, { SinOsc.ar(500 + 500.0.rand, 0, 1 / n) }) }.play;
+)
+::
+
+The Function will be evaluated n times, each time creating a SinOsc with a random frequency from 500 to 1000 Hz (500 plus a random number between 0 and 500). The mul arg of each SinOsc is set to 1 / n, thus ensuring that the total amplitude will not go outside -1 and 1. By simply changing the value of n, you can have vastly different numbers of SinOscs! (Try it!) This sort of approach makes this code extremely flexible and reusable.
+
+Each time the Function is evaluated it is passed the number of times evaluated so far as an argument. So if 'n' is 8 the Function will be passed values from 0 to 7, in sequence, counting up. By declaring an argument within our Function we can use this value.
+
+code::
+// Look at the post window for frequencies and indices
+(
+	var n = 8;
+	{
+		Mix.fill(n, { arg index;
+			var freq;
+			index.postln;
+			freq = 440 + index;
+			freq.postln;
+			SinOsc.ar(freq , 0, 1 / n)
+		})
+	}.play;
+)
+::
+
+By combining addition and multiplication (or indeed almost any mathematical procedure you could imagine!) with the use of classes like Mix, we have the tools we need to combine multichannel sources of sound into complex mixes and submixes.
+
+For more information see:
+
+link::Classes/Mix::, link::Classes/BinaryOpUGen::, link::Overviews/Operators::, link::Reference/Syntax-Shortcuts::
+
+section::Suggested Exercise
+
+Experiment with altering the Functions in the text above. For instance try changing the frequencies of the SinOsc, or making multi-channel versions of things.
+
+____________________
+
+This document is part of the tutorial strong::Getting Started With SuperCollider::.
+
+Click here to go on to the next section: link::Tutorials/Getting-Started/08-Scoping-and-Plotting::
+
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

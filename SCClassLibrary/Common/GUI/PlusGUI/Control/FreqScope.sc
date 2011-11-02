@@ -13,7 +13,9 @@ PlusFreqScope {
 
 	*initClass {
 		server = Server.internal;   // FIXME: Some systems don't have an internal server
-		this.initSynthDefs;
+		StartUp.add {
+			this.initSynthDefs;
+		}
 	}
 
 	*new { arg parent, bounds;
@@ -21,11 +23,6 @@ PlusFreqScope {
 	}
 
 	*initSynthDefs {
-		Class.initClassTree(SynthDef);
-		Class.initClassTree(SynthDescLib);
-		Class.initClassTree(Server);
-		UGen.allSubclasses.do(Class.initClassTree(_));
-
 		// dbFactor -> 2/dbRange
 
 		// linear
@@ -41,7 +38,7 @@ PlusFreqScope {
 			phasor = LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, numSamples, numSamples + 2);
 			phasor = phasor.round(2); // the evens are magnitude
 			ScopeOut.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
-		}).storeOnce;
+		}).add;
 
 		// logarithmic
 		SynthDef("freqScope1", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02;
@@ -55,7 +52,7 @@ PlusFreqScope {
 			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
 			phasor = phasor.round(2); // the evens are magnitude
 			ScopeOut.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
-		}).storeOnce;
+		}).add;
 
 		// These next two are based on the original two, but adapted by Dan Stowell
 		// to calculate the frequency response between two channels
@@ -77,7 +74,7 @@ PlusFreqScope {
 			phasor = LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, numSamples, numSamples + 2);
 			phasor = phasor.round(2); // the evens are magnitude
 			ScopeOut.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
-		}).storeOnce;
+		}).add;
 
 		SynthDef("freqScope1_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02, in2=1;
 			var signal, chain, result, phasor, halfSamples, mul, add;
@@ -96,7 +93,7 @@ PlusFreqScope {
 			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
 			phasor = phasor.round(2); // the evens are magnitude
 			ScopeOut.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
-		}).storeOnce;
+		}).add;
 	}
 
 	initFreqScope { arg parent, bounds;
@@ -385,7 +382,7 @@ PlusFreqScopeWindow {
 			window.onClose_({ scope.kill;
 				scopeOpen = false;
 			}).front;
-			^this.newCopyArgs(scope, window)
+			^super.newCopyArgs(scope, window)
 		});
 	}
 }

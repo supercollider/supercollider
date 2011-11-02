@@ -25,6 +25,8 @@
 #include "QObjectProxy.h"
 
 #include <QWidget>
+#include <QAtomicInt>
+#include <QMimeData>
 
 namespace QtCollider {
   struct SetFocusEvent;
@@ -35,6 +37,24 @@ namespace QtCollider {
 class QWidgetProxy : public QObjectProxy
 {
   Q_OBJECT
+
+public:
+
+  enum GlobalEvent {
+    KeyPress = 0x001,
+    KeyRelease = 0x002
+  };
+
+public:
+
+  static void setGlobalEventEnabled ( GlobalEvent ev, bool b ) {
+    int mask = _globalEventMask;
+    if(b)
+      mask |= ev;
+    else
+      mask &= ~ev;
+    _globalEventMask = mask;
+  }
 
 public:
 
@@ -58,17 +78,17 @@ protected:
 
   virtual void customEvent( QEvent * );
 
-  virtual bool eventFilter( QObject * watched, QEvent * event );
-
-  virtual bool interpretEvent( QObject *, QEvent *, QList<QVariant> & );
+  virtual bool filterEvent( QObject *, QEvent *, EventHandlerData &, QList<QVariant> & args );
 
 private Q_SLOTS:
 
   void customPaint( QPainter * );
 
 private:
-  void interpretMouseEvent( QEvent *e, QList<QVariant> &args );
-  void interpretKeyEvent( QEvent *e, QList<QVariant> &args );
+  bool interpretMouseEvent( QObject *, QEvent *, QList<QVariant> &args );
+  bool interpretMouseWheelEvent( QObject *, QEvent *, QList<QVariant> &args );
+  bool interpretKeyEvent( QObject *, QEvent *, QList<QVariant> &args );
+  bool interpretDragEvent( QObject *, QEvent *, QList<QVariant> &args );
 
   void bringFrontEvent();
   void setFocusEvent( QtCollider::SetFocusEvent * );
@@ -79,6 +99,7 @@ private:
 
   QWidget *_keyEventWidget;
   QWidget *_mouseEventWidget;
+  static QAtomicInt _globalEventMask;
 };
 
 namespace QtCollider {
@@ -103,11 +124,13 @@ struct SetAlwaysOnTopEvent  : public QEvent
 
 struct StartDragEvent : public QEvent
 {
-  StartDragEvent( const QString &string )
+  StartDragEvent( const QString &label_, QMimeData *data_ )
   : QEvent( (QEvent::Type) QtCollider::Event_Proxy_StartDrag ),
-    label( string )
+    label( label_ ), data( data_ )
   {}
+  ~StartDragEvent() { delete data; }
   QString label;
+  QMimeData *data;
 };
 
 }

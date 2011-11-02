@@ -13,7 +13,7 @@ private:: categories
 
 method::ar, kr
 discussion::
-The middle pan position (pos=0.0) corresponds to the original stereo mix; full left (pos of -1) is essentially just left channel playing, full right (pos of 1) just the right. The output of Balance2 remains a stereo signal.  
+The middle pan position (pos=0.0) corresponds to the original stereo mix; full left (pos of -1) is essentially just left channel playing, full right (pos of 1) just the right. The output of Balance2 remains a stereo signal.
 
 argument::left
 

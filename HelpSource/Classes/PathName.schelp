@@ -200,16 +200,16 @@ GetFileDialog.new(
 	if (ok,
 		{
 			myPathName = PathName.new(path);
-			
+
 			"New PathName object:  ".postc;
 			myPathName.postln;
-			
+
 			"fileName only:        ".postc;
 			myPathName.fileName.postln;
-			
+
 			"path up to file only: ".postc;
 			myPathName.pathOnly.postln;
-			
+
 			"folder Name:          ".postc;
 			myPathName.folderName.postln;
 		}
@@ -229,9 +229,9 @@ GetFileDialog.new(
 	if (ok,
 		{
 			myPathName = PathName.new(path);
-			
+
 			// read your file from disk, e.g. a soundFile/
-			
+
 			myFile = SoundFile.new;
 			if (myFile.openRead(path),
 				{

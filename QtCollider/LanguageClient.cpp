@@ -23,6 +23,10 @@
 #include "QcApplication.h"
 #include "QtCollider.h"
 
+#include <qmath.h>
+
+extern double elapsedTime();
+
 using namespace QtCollider;
 
 int QtCollider::run(int argc, char** argv) {
@@ -35,35 +39,98 @@ LangClient::LangClient( const char* name )
 {
 }
 
+void LangClient::doInput()
+{
+  qcDebugMsg(2, "input");
+  lockInput();
+  interpretInput();
+  QApplication::removePostedEvents( this, Event_SCRequest_Input );
+  unlockInput();
+}
+
+void LangClient::doSchedule()
+{
+  qcDebugMsg(2, "tick");
+
+  double t;
+  bool next;
+
+  lock();
+  next = tickLocked( &t );
+  QApplication::removePostedEvents( this, Event_SCRequest_Sched );
+  unlock();
+
+  flush();
+
+  if( next ) {
+    t -= elapsedTime();
+    t *= 1000;
+    int ti = qMax(0,qCeil(t));
+    qcDebugMsg(2, QString("next at %1").arg(ti) );
+    appClockTimer.start( ti, this );
+  }
+  else {
+    appClockTimer.stop();
+  }
+}
+
 void LangClient::commandLoop()
 {
-  langTimer = new QTimer(this);
-  QObject::connect( langTimer, SIGNAL(timeout()), this, SLOT(cmdLineTick()) );
-  langTimer->start(10);
+  doSchedule();
   QcApplication::instance()->exec();
 }
 
 void LangClient::daemonLoop()
 {
-  langTimer = new QTimer(this);
-  QObject::connect( langTimer, SIGNAL(timeout()), this, SLOT(daemonTick()) );
-  langTimer->start(10);
-  QcApplication::instance()->exec();
+  commandLoop();
 }
 
-void LangClient::cmdLineTick()
+void LangClient::onScheduleChanged()
 {
-  if( shouldBeRunning() ) {
-    tick();
-    readCmdLine();
-  }
-  else {
-    QcApplication::instance()->quit();
+  QApplication::postEvent( this, new SCRequestEvent( Event_SCRequest_Sched ) );
+}
+
+void LangClient::onInput()
+{
+  QApplication::postEvent( this, new SCRequestEvent( Event_SCRequest_Input ) );
+}
+
+void LangClient::onQuit( int exitCode )
+{
+  QApplication::postEvent( this,
+    new SCRequestEvent( Event_SCRequest_Quit, exitCode ) );
+}
+
+void LangClient::onRecompileLibrary()
+{
+  QApplication::postEvent( this, new SCRequestEvent( Event_SCRequest_Recompile ) );
+}
+
+void LangClient::customEvent( QEvent *e )
+{
+  int type = e->type();
+  switch( type ) {
+    case Event_SCRequest_Input:
+      doInput();
+      break;
+    case Event_SCRequest_Sched:
+      doSchedule();
+      break;
+    case Event_SCRequest_Quit:
+    {
+      int code = static_cast<SCRequestEvent*>(e)->data.toInt();
+      qcDebugMsg( 1, QString("Quit requested with code %1").arg(code) );
+      qApp->exit( code );
+      break;
+    }
+    case Event_SCRequest_Recompile:
+      recompileLibrary();
+      break;
+    default: ;
   }
 }
 
-void LangClient::daemonTick()
+void LangClient::timerEvent( QTimerEvent *e )
 {
-  if( shouldBeRunning() ) tick();
-  else QcApplication::instance()->quit();
+  if( e->timerId() == appClockTimer.timerId() ) doSchedule();
 }

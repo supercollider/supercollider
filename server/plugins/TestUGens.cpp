@@ -1,7 +1,7 @@
 /*
  *  TestUGens.cpp
  *  Plugins
- *  Copyright (c) 2007 Scott Wilson. All rights reserved.
+ *  Copyright (c) 2007 Scott Wilson <i@scottwilson.ca>. All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -97,6 +97,7 @@ void CheckBadValues_Ctor(CheckBadValues* unit)
 	unit->prevclass = FP_NORMAL;
 	unit->sameCount = 0;
 	SETCALC(CheckBadValues_next);
+	CheckBadValues_next(unit, 1);
 }
 
 

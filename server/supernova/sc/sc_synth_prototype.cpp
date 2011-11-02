@@ -40,6 +40,19 @@ void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> const 
     }
 }
 
+#ifdef BOOST_HAS_RVALUE_REFS
+void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && defs)
+{
+    std::vector<sc_synthdef> synthdefs(std::move(defs));
+    for (typename std::vector<sc_synthdef>::iterator it = synthdefs.begin();
+         it != synthdefs.end(); ++it) {
+        sc_synth_prototype * sp = new sc_synth_prototype(std::move(*it));
+        factory.register_prototype(sp);
+    }
+}
+#endif
+
+
 std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)
 {
     try {
@@ -61,9 +74,7 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
         return ret;
 
     directory_iterator end;
-    for (directory_iterator it(dir);
-         it != end; ++it)
-    {
+    for (directory_iterator it(dir); it != end; ++it) {
         std::vector<sc_synthdef> to_append;
         if (is_directory(it->status()))
             to_append = sc_read_synthdefs_dir(it->path());

@@ -39,6 +39,8 @@
 # include <sys/mman.h>
 #endif
 
+#include "SC_DirUtils.h"
+
 using namespace nova;
 using namespace std;
 
@@ -59,56 +61,65 @@ void register_handles(void)
 }
 
 #ifdef JACK_BACKEND
-bool check_connection_string(string const & str)
-{
-    if (str.find(":") != string::npos) {
-        cerr << "connecting to individual ports not yet implemented" << endl;
-        return false;
-    }
-    return true;
-}
-
 void connect_jack_ports(void)
 {
     using namespace boost;
     using namespace boost::algorithm;
 
     const char * input_string = getenv("SC_JACK_DEFAULT_INPUTS");
-    if (input_string)
-    {
+    if (input_string) {
         string input_port(input_string);
 
-        if (check_connection_string(input_port))
+        if (input_port.find(",") == string::npos)
             instance->connect_all_inputs(input_port.c_str());
-        else
-        {
+        else {
             vector<string> portnames;
-            boost::split(portnames, input_port, is_any_of(":"));
+            boost::split(portnames, input_port, is_any_of(","));
             for (int i = 0; i != portnames.size(); ++i)
                 instance->connect_input(i, portnames[i].c_str());
         }
     }
 
     const char * output_string = getenv("SC_JACK_DEFAULT_OUTPUTS");
-    if (output_string)
-    {
+    if (output_string) {
         string output_port(output_string);
 
-        if (check_connection_string(output_port))
+        if (output_port.find(",") == string::npos)
             instance->connect_all_outputs(output_port.c_str());
-        else
-        {
+        else {
             vector<string> portnames;
-            boost::split(portnames, output_port, is_any_of(":"));
+            boost::split(portnames, output_port, is_any_of(","));
             for (int i = 0; i != portnames.size(); ++i)
                 instance->connect_output(i, portnames[i].c_str());
         }
     }
 }
 
+void get_jack_names(server_arguments const & args, string & server_name, string & client_name)
+{
+    client_name = "supernova";
+
+    if (!args.hw_name.empty()) {
+        vector<string> names;
+        boost::split(names, args.hw_name, boost::algorithm::is_any_of(":"));
+
+        if (names.size() == 1) {
+            server_name = names[0];
+        } else if (names.size() == 2) {
+            server_name = names[0];
+            client_name = names[1];
+        } else {
+            cout << "Error: cannot parse hardware device name. Using defaults." << endl;
+        }
+    }
+}
+
 void start_audio_backend(server_arguments const & args)
 {
-    instance->open_client("supernova", args.input_channels, args.output_channels, args.blocksize);
+    string server_name, client_name;
+    get_jack_names(args, server_name, client_name);
+
+    instance->open_client(server_name, client_name, args.input_channels, args.output_channels, args.blocksize);
     instance->prepare_backend();
     instance->activate_audio();
 
@@ -157,18 +168,16 @@ void set_plugin_paths(void)
 {
     server_arguments const & args = server_arguments::instance();
 
-    if (!args.ugen_paths.empty())
-    {
+    if (!args.ugen_paths.empty()) {
         foreach(string const & path, args.ugen_paths)
             sc_factory->load_plugin_folder(path);
-    }
-    else
-    {
+    } else {
         path home = resolve_home();
 
 #ifdef __linux__
         sc_factory->load_plugin_folder("/usr/local/lib/supernova/plugins");
         sc_factory->load_plugin_folder("/usr/lib/supernova/plugins");
+        sc_factory->load_plugin_folder(home / "/.local/share/SuperCollider/supernova_plugins");
         sc_factory->load_plugin_folder(home / "share/SuperCollider/supernova_plugins");
 #elif defined(__APPLE__)
         sc_factory->load_plugin_folder(home / "Library/Application Support/SuperCollider/supernova_plugins/");
@@ -183,19 +192,37 @@ void set_plugin_paths(void)
 #endif
 }
 
+void load_synthdef_folder(nova_server & server, path const & folder, bool verbose)
+{
+    if (verbose)
+        std::printf("Loading synthdefs from path: %s\n", folder.c_str());
+
+#ifdef BOOST_HAS_RVALUE_REFS
+    register_synthdefs(server, std::move(sc_read_synthdefs_dir(folder)));
+#else
+    register_synthdefs(server, sc_read_synthdefs_dir(folder));
+#endif
+}
+
 void load_synthdefs(nova_server & server, server_arguments const & args)
 {
     if (args.load_synthdefs) {
-        path home = resolve_home();
+        const char * env_synthdef_path = getenv("SC_SYNTHDEF_PATH");
+        vector<path> directories;
+        if (env_synthdef_path) {
+            boost::split(directories, env_synthdef_path, boost::is_any_of(":"));
+        } else {
+            char resourceDir[MAXPATHLEN];
+            if(sc_IsStandAlone())
+                sc_GetResourceDirectory(resourceDir, MAXPATHLEN);
+            else
+                sc_GetUserAppSupportDirectory(resourceDir, MAXPATHLEN);
 
-#ifdef __linux__
-        register_synthdefs(server, sc_read_synthdefs_dir(home / "share/SuperCollider/synthdefs/"));
-#elif defined(__APPLE__)
-        register_synthdefs(server, sc_read_synthdefs_dir(home / "Library/Application Support/SuperCollider/synthdefs/"));
-        register_synthdefs(server, sc_read_synthdefs_dir("Library/Application Support/SuperCollider/synthdefs/"));
-#else
-        cerr << "Don't know how to locate synthdefs on this platform. Please load them dynamically."
-#endif
+            directories.push_back(path(resourceDir) / "synthdefs");
+        }
+
+        foreach(path const & directory, directories)
+            load_synthdef_folder(server, directory, args.verbosity > 0);
     }
 #ifndef NDEBUG
     cout << "SynthDefs loaded" << endl;

@@ -38,7 +38,7 @@ argument::decayscale
 A scale factor multiplied by all ring times at initialization time.
 
 discussion::
-The parameters in code::specificationsArrayRef:: can't be changed after it has been started. 
+The parameters in code::specificationsArrayRef:: can't be changed after it has been started.
 For a modulatable but less efficient version, see link::Classes/DynKlank::.
 
 
@@ -55,7 +55,7 @@ code::
 
 (
 play({
-	Klank.ar(`[ 
+	Klank.ar(`[
 		Array.rand(12, 800.0, 4000.0),		// frequencies
 		nil,  							// amplitudes (default to 1.0)
 		Array.rand(12, 0.1, 2)				// ring times
@@ -70,16 +70,16 @@ play({
 s = Server.local;
 SynthDef("help-Control", { arg out=0,i_freq;
 	var klank, n, harm, amp, ring;
-	
+
 	// harmonics
 	harm = Control.names([\harm]).ir(Array.series(4,1,1).postln);
 	// amplitudes
 	amp = Control.names([\amp]).ir(Array.fill(4,0.05));
 	// ring times
 	ring = Control.names([\ring]).ir(Array.fill(4,1));
-	
+
 	klank = Klank.ar(`[harm,amp,ring], {ClipNoise.ar(0.003)}.dup, i_freq);
-	
+
 	Out.ar(out, klank);
 }).send(s);
 )

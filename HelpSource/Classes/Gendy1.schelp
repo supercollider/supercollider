@@ -122,17 +122,17 @@ Current number of utilised control points, allows modulation.
 Examples::
 
 warning::
-if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lot because a new CP move happens every sample!	
+if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lot because a new CP move happens every sample!
 ::
 
 code::
-//defaults	
+//defaults
 {Pan2.ar(Gendy1.ar)}.play
 
 //wandering bass/ powerline
 {Pan2.ar(Gendy1.ar(1,1,1.0,1.0,30,100,0.3,0.05,5))}.play
 
-//play me	
+//play me
 {Pan2.ar(RLPF.ar(Gendy1.ar(2,3,minfreq:20,maxfreq:MouseX.kr(100,1000),durscale:0.0,initCPs:40),500,0.3,0.2),0.0)}.play
 
 //scream! - careful with your ears for this one!
@@ -155,7 +155,7 @@ code::
 {Pan2.ar(Gendy1.ar(initCPs:2))}.play
 
 
-//used as an LFO	
+//used as an LFO
 (
 {
     Pan2.ar(
@@ -171,7 +171,7 @@ code::
     0.0)
 }.play
 )
-	
+
 //wasp
 {Pan2.ar(Gendy1.ar(0, 0, SinOsc.kr(0.1, 0, 0.1, 0.9),1.0, 50,1000, 1,0.005, 12, 12, 0.2), 0.0)}.play
 
@@ -192,7 +192,7 @@ code::
 }.play
 )
 
-//use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample 
+//use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample
 {Pan2.ar(Gendy1.ar(6,6,LFPulse.kr(100, 0, 0.4, 1.0), SinOsc.kr(30, 0, 0.5),mul:0.2), 0.0)}.play
 
 

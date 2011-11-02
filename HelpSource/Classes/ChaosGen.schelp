@@ -3,7 +3,7 @@ summary:: UGens that cause chaos
 categories:: UGens>Generators>Chaotic
 
 description::
-"ChaosGen" is an emphasis::abstract class:: - in other words, a class that you do not use directly. Instead, use one of its subclasses. 
+"ChaosGen" is an emphasis::abstract class:: - in other words, a class that you do not use directly. Instead, use one of its subclasses.
 Various things inherit from this abstract class, including link::Classes/HenonN::, link::Classes/LinCongL::, link::Classes/LatoocarfianL::, link::Classes/GbmanL::, link::Classes/CuspL::, link::Classes/StandardL::, and more.
 
 These chaotic UGens generally each represent a deterministic set of equations, which can take different starting parameters. The equations define a system whose evolution over time is highly sensitive to initial conditions, and can exhibit highly intricate behaviour.

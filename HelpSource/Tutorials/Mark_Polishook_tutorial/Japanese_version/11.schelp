@@ -30,7 +30,7 @@ section::ルートノード
 code::
     Group (RootNode, ID 0)
       /
-     / 
+     /
 Synth (ID 1000)
 ::
 
@@ -38,13 +38,13 @@ Synth (ID 1000)
 
 code::
 (
-SynthDef("ringModulation", { 
+SynthDef("ringModulation", {
 	Out.ar(
 		0,
 		Mix.ar(
-			SinOsc.ar([440.067, 441.013], 0, 1) 
-			* 
-			SinOsc.ar([111, 109], 0, 0.2) 
+			SinOsc.ar([440.067, 441.013], 0, 1)
+			*
+			SinOsc.ar([111, 109], 0, 0.2)
 		)
 	)
 }).add;
@@ -84,7 +84,7 @@ SynthDef("pitchFromNoise", { arg out = 0;
 }).add;
 )
 
- 
+
 (
 Synth("ringModulation");
 Synth("pitchFromNoise", [\out, 1]);
@@ -92,8 +92,8 @@ Synth("pitchFromNoise", [\out, 1]);
 ::
 
 です。
- 
- 
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ノードが確実に正しい順序に並べられる様にするというのはユーザーの責任です。そういうわけで、２つのシンセは与えられた順序で評価されなければならないのです。
@@ -190,21 +190,21 @@ code::
 // 3つのSynthDefとグループを作成する
 SynthDef("synthNumber1", { arg mul = 0.2;
 	Out.ar(
-		0, 
+		0,
 		BrownNoise.ar(mul) * LFNoise0.kr([1, 1.01])
-	) 
+	)
 	}, [0.1]).add;
 SynthDef("synthNumber2", { arg mul = 0.2;
 	Out.ar(
-		0, 
+		0,
 		WhiteNoise.ar(mul) * LFNoise1.kr([2.99, 3])
-	) 
+	)
 	}, [0.1]).add;
 SynthDef("synthNumber3", { arg mul = 0.2;
 	Out.ar(
-		0, 
+		0,
 		PinkNoise.ar(mul) * LFNoise2.kr([0.79, 0.67])
-	) 
+	)
 }, [0.1]).add;
 )
 

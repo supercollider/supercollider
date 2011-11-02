@@ -63,7 +63,7 @@ PyrSymbol* s_receiveDrag;
 PyrSymbol* s_canReceiveDrag;
 PyrSymbol* s_mouseDown;
 PyrSymbol* s_mouseUp;
-PyrSymbol* s_callDrawHook;
+PyrSymbol* s_callDrawFunc;
 PyrSymbol* s_toggleEditMode;
 
 extern pthread_mutex_t gLangMutex;
@@ -6807,7 +6807,7 @@ void initSCViewPrimitives()
 	s_canReceiveDrag = getsym("canReceiveDrag");
 	s_mouseDown = getsym("mouseDown");
 	s_mouseUp = getsym("mouseUp");
-	s_callDrawHook = getsym("callDrawHook");
+	s_callDrawFunc = getsym("callDrawFunc");
 	s_toggleEditMode = getsym("toggleEditMode");
 
 	base = nextPrimitiveIndex();

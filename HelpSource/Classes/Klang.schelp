@@ -29,7 +29,7 @@ argument::freqoffset
 An offset added to all frequencies at initialization time.
 
 discussion::
-The parameters in code::specificationsArrayRef:: can't be changed after it has been started. 
+The parameters in code::specificationsArrayRef:: can't be changed after it has been started.
 For a modulatable but less efficient version, see link::Classes/DynKlang::.
 
 
@@ -48,7 +48,7 @@ play({ Klang.ar(`[ Array.rand(12, 600.0, 1000.0), nil, nil ], 1, 0) * 0.05 });
 {
 loop({
 	play({
-		Pan2.ar(Klang.ar(`[ Array.rand(12, 200.0, 2000.0), nil, nil ], 1, 0), 1.0.rand) 
+		Pan2.ar(Klang.ar(`[ Array.rand(12, 200.0, 2000.0), nil, nil ], 1, 0), 1.0.rand)
 			* EnvGen.kr(Env.sine(4), 1, 0.02, doneAction: 2);
 	});
 	2.wait;

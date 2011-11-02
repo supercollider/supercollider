@@ -16,7 +16,7 @@ method::ar, kr
 argument::length
 
 Number of input points in which to find the median. Must be an
-odd number from 1 to 31. If 
+odd number from 1 to 31. If
 code::length::  is 1
 then Median has no effect.
 
@@ -59,7 +59,7 @@ code::
 
 // long Median filters begin chopping off the peaks of the waveform
 (
-{ 
+{
 	x = SinOsc.ar(1000, 0, 0.2);
 	[x, Median.ar(31, x)]
 }.play;
@@ -74,7 +74,7 @@ Synth.play({ Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800,0,0.1)) });
 
 (
 // use LeakDC for low frequency noise
-Synth.play({ 
+Synth.play({
 	LeakDC.ar(Median.ar(31, WhiteNoise.ar(0.1) + SinOsc.ar(800,0,0.1)), 0.9)
 });
 )

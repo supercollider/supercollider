@@ -8,7 +8,7 @@ Description::
 
 Plays back break point envelopes. The envelopes are instances of the
 link::Classes/Env:: class. The envelope and the arguments for  code::levelScale:: ,
-code::levelBias:: , and  code::timeScale:: 
+code::levelBias:: , and  code::timeScale::
 are polled when the EnvGen is triggered and remain constant for the
 duration of the envelope.
 

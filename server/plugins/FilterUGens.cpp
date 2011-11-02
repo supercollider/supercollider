@@ -1437,7 +1437,9 @@ void TwoPole_Ctor(TwoPole *unit)
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_reson = 0.f;
-	ZOUT0(0) = 0.f;
+	PUSH_LOOPVALS
+	TwoPole_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
@@ -1511,7 +1513,9 @@ void TwoZero_Ctor(TwoZero* unit)
 	unit->m_x2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_reson = 0.f;
-	ZOUT0(0) = 0.f;
+	PUSH_LOOPVALS
+	TwoZero_next(unit, 1);
+	POP_LOOPVALS
 }
 
 void TwoZero_next(TwoZero* unit, int inNumSamples)
@@ -1594,7 +1598,9 @@ void APF_Ctor(APF* unit)
 	unit->m_x2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_reson = 0.f;
-	ZOUT0(0) = 0.f;
+	PUSH_LOOPVALS
+	APF_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
@@ -1914,7 +1920,9 @@ void LPZ2_Ctor(LPZ2* unit)
 	//printf("LPZ2_Reset\n");
 	SETCALC(LPZ2_next);
 	unit->m_x1 = unit->m_x2 = ZIN0(0);
-	ZOUT0(0) = 0.f;
+	PUSH_LOOPVALS
+	LPZ2_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
@@ -1955,7 +1963,9 @@ void HPZ2_Ctor(HPZ2* unit)
 	//printf("HPZ2_Reset\n");
 	SETCALC(HPZ2_next);
 	unit->m_x1 = unit->m_x2 = ZIN0(0);
-	ZOUT0(0) = 0.f;
+	PUSH_LOOPVALS
+	HPZ2_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
@@ -1996,7 +2006,9 @@ void BPZ2_Ctor(BPZ2* unit)
 	//printf("BPZ2_Reset\n");
 	SETCALC(BPZ2_next);
 	unit->m_x1 = unit->m_x2 = ZIN0(0);
-	ZOUT0(0) = 0.f;
+	PUSH_LOOPVALS
+	BPZ2_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
@@ -2037,7 +2049,9 @@ void BRZ2_Ctor(BRZ2* unit)
 	//printf("BRZ2_Reset\n");
 	SETCALC(BRZ2_next);
 	unit->m_x1 = unit->m_x2 = ZIN0(0);
-	ZOUT0(0) = 0.f;
+	PUSH_LOOPVALS
+	BRZ2_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
@@ -2077,7 +2091,7 @@ void Slew_Ctor(Slew* unit)
 {
 	//printf("Slew_Reset\n");
 	SETCALC(Slew_next);
-	unit->mLevel = 0.f;
+	unit->mLevel = ZIN0(0);
 	Slew_next(unit, 1);
 }
 
@@ -2088,8 +2102,8 @@ void Slew_next(Slew* unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float upf = ZIN0(1) *  unit->mRate->mSampleDur;
-	float dnf = 0.f - ZIN0(2) *  unit->mRate->mSampleDur;
+	float upf = ZIN0(1) * unit->mRate->mSampleDur;
+	float dnf = 0.f - ZIN0(2) * unit->mRate->mSampleDur;
 	float level = unit->mLevel;
 	LOOP1(inNumSamples,
 		float slope = ZXP(in) - level;
@@ -2135,7 +2149,7 @@ void RLPF_Ctor(RLPF* unit)
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_reson = 0.f;
-	ZOUT0(0) = 0.f;
+	RLPF_next_1(unit, 1);
 }
 
 
@@ -2286,7 +2300,7 @@ void RHPF_Ctor(RHPF* unit)
 	unit->m_y2 = 0.;
 	unit->m_freq = 0.f;
 	unit->m_reson = 0.f;
-	ZOUT0(0) = 0.f;
+	RHPF_next_1(unit, 1);
 }
 
 
@@ -2432,7 +2446,7 @@ void LPF_Ctor(LPF* unit)
 	unit->m_y1 = 0.f;
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
-	ZOUT0(0) = 0.f;
+	LPF_next_1(unit, 1);
 }
 
 
@@ -2574,7 +2588,8 @@ void HPF_Ctor(HPF* unit)
 	unit->m_y1 = 0.;
 	unit->m_y2 = 0.;
 	unit->m_freq = -1e6f;
-	ZOUT0(0) = 0.f;
+
+	HPF_next_1(unit, 1);
 }
 
 
@@ -2710,9 +2725,9 @@ void BPF_Ctor(BPF* unit)
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_bw = 0.f;
-	ZOUT0(0) = 0.f;
-}
 
+	BPF_next_1(unit, 1);
+}
 
 void BPF_next(BPF* unit, int inNumSamples)
 {
@@ -2858,7 +2873,7 @@ void BRF_Ctor(BRF* unit)
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_bw = 0.f;
-	ZOUT0(0) = 0.f;
+	BRF_next_1(unit, 1);
 }
 
 
@@ -3018,7 +3033,9 @@ void MidEQ_Ctor(MidEQ* unit)
 	unit->m_freq = 0.f;
 	unit->m_bw = 0.f;
 	unit->m_db = 0.f;
-	ZOUT0(0) = 0.f;
+	PUSH_LOOPVALS
+	MidEQ_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
@@ -3203,7 +3220,9 @@ void Resonz_Ctor(Resonz* unit)
 	unit->m_y2 = 0.f;
 	unit->m_freq = 0.f;
 	unit->m_rq = 0.f;
+	PUSH_LOOPVALS
 	Resonz_next(unit, 1);
+	POP_LOOPVALS
 }
 
 
@@ -3397,7 +3416,7 @@ void Formlet_Ctor(Formlet* unit)
 	unit->m_freq = 0.f;
 	unit->m_attackTime = 0.f;
 	unit->m_decayTime = 0.f;
-	ZOUT0(0) = 0.f;
+	Formlet_next_1(unit, 1);
 }
 
 void Formlet_next(Formlet* unit, int inNumSamples)
@@ -3611,7 +3630,7 @@ void FOS_Ctor(FOS* unit)
 	unit->m_a0 = 0.f;
 	unit->m_a1 = 0.f;
 	unit->m_b1 = 0.f;
-	ZOUT0(0) = 0.f;
+	FOS_next_1(unit, 1);
 }
 
 void FOS_next_a(FOS* unit, int inNumSamples)
@@ -3706,7 +3725,7 @@ void SOS_Ctor(SOS* unit)
 	unit->m_a2 = 0.f;
 	unit->m_b1 = 0.f;
 	unit->m_b2 = 0.f;
-	ZOUT0(0) = 0.f;
+	SOS_next_1(unit, 1);
 }
 
 void SOS_next_a(SOS *unit, int inNumSamples)
@@ -3832,7 +3851,7 @@ void Compander_Ctor(Compander* unit)
 	unit->m_relaxcoef = 0.f;
 	unit->m_prevmaxval = 0.f;
 	unit->m_gain = 0.f;
-	ZOUT0(0) = 0.f;
+	Compander_next(unit, 1);
 }
 
 void Compander_next(Compander* unit, int inNumSamples)
@@ -3932,7 +3951,7 @@ void Normalizer_Ctor(Normalizer* unit)
 	unit->m_xinbuf = unit->m_table - ZOFF;
 	unit->m_xmidbuf = unit->m_xinbuf + unit->m_bufsize;
 	unit->m_xoutbuf = unit->m_xmidbuf + unit->m_bufsize;
-	ZOUT0(0) = 0.f;
+	Normalizer_next(unit, 1);
 }
 
 
@@ -4033,7 +4052,7 @@ void Limiter_Ctor(Limiter* unit)
 	unit->m_xinbuf = unit->m_table - ZOFF;
 	unit->m_xmidbuf = unit->m_xinbuf + unit->m_bufsize;
 	unit->m_xoutbuf = unit->m_xmidbuf + unit->m_bufsize;
-	ZOUT0(0) = 0.f;
+	Limiter_next(unit, 1);
 }
 
 
@@ -4129,7 +4148,8 @@ void Amplitude_Ctor(Amplitude* unit)
 	float relax = ZIN0(2);
 	unit->m_relaxcoef = relax == 0.0 ? 0.0 : exp(log1/(relax * SAMPLERATE));
 
-	ZOUT0(0) = unit->m_previn = sc_abs(ZIN0(0));
+	unit->m_previn = 0;
+	Amplitude_next(unit, 1);
 }
 
 void Amplitude_next(Amplitude* unit, int inNumSamples)
@@ -4708,6 +4728,20 @@ federico.fontana@univr.it
 
 Ported to C++ for SuperCollider by Dan Stowell - August 2007
 http://www.mcld.co.uk/
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 //////////////////////////////////////////////////////////////////
 
@@ -4836,7 +4870,9 @@ void BLowPass_Ctor(BLowPass* unit)
 	unit->m_y1 = 0.;
 
 	unit->m_y2 = 0.;
-	ClearUnitOutputs(unit, 1);
+	PUSH_LOOPVALS
+	BLowPass_next_kk(unit, 1);
+	POP_LOOPVALS
 }
 
 void BLowPass_next_aa(BLowPass *unit, int inNumSamples)
@@ -5027,7 +5063,9 @@ void BHiPass_Ctor(BHiPass* unit)
 	unit->m_y1 = 0.;
 
 	unit->m_y2 = 0.;
-	ClearUnitOutputs(unit, 1);
+	PUSH_LOOPVALS
+	BHiPass_next_kk(unit, 1);
+	POP_LOOPVALS
 }
 
 void BHiPass_next_aa(BHiPass *unit, int inNumSamples)
@@ -5220,7 +5258,9 @@ void BBandPass_Ctor(BBandPass* unit)
 	unit->m_y1 = 0.;
 
 	unit->m_y2 = 0.;
-	ClearUnitOutputs(unit, 1);
+	PUSH_LOOPVALS
+	BBandPass_next_kk(unit, 1);
+	POP_LOOPVALS
 }
 
 void BBandPass_next_aa(BBandPass *unit, int inNumSamples)
@@ -5407,7 +5447,9 @@ void BBandStop_Ctor(BBandStop* unit)
 	unit->m_y1 = 0.;
 
 	unit->m_y2 = 0.;
-	ClearUnitOutputs(unit, 1);
+	PUSH_LOOPVALS
+	BBandStop_next_kk(unit, 1);
+	POP_LOOPVALS
 }
 
 void BBandStop_next_aa(BBandStop *unit, int inNumSamples)
@@ -5596,7 +5638,9 @@ void BPeakEQ_Ctor(BPeakEQ* unit)
 
 	unit->m_y1 = 0.;
 	unit->m_y2 = 0.;
-	ClearUnitOutputs(unit, 1);
+	PUSH_LOOPVALS
+	BPeakEQ_next_kkk(unit, 1);
+	POP_LOOPVALS
 }
 
 void BPeakEQ_next_aaa(BPeakEQ *unit, int inNumSamples)
@@ -5795,7 +5839,9 @@ void BAllPass_Ctor(BAllPass* unit)
 	unit->m_y1 = 0.;
 
 	unit->m_y2 = 0.;
-	ClearUnitOutputs(unit, 1);
+	PUSH_LOOPVALS
+	BAllPass_next_kk(unit, 1);
+	POP_LOOPVALS
 }
 
 void BAllPass_next_aa(BAllPass *unit, int inNumSamples)
@@ -5990,7 +6036,9 @@ void BLowShelf_Ctor(BLowShelf* unit)
 	unit->m_y1 = 0.;
 
 	unit->m_y2 = 0.;
-	ClearUnitOutputs(unit, 1);
+	PUSH_LOOPVALS
+	BLowShelf_next_kkk(unit, 1);
+	POP_LOOPVALS
 }
 
 void BLowShelf_next_aaa(BLowShelf *unit, int inNumSamples)
@@ -6204,7 +6252,9 @@ void BHiShelf_Ctor(BHiShelf* unit)
 	unit->m_y1 = 0.;
 
 	unit->m_y2 = 0.;
-	ClearUnitOutputs(unit, 1);
+	PUSH_LOOPVALS
+	BHiShelf_next_kkk(unit, 1);
+	POP_LOOPVALS
 }
 
 void BHiShelf_next_aaa(BHiShelf *unit, int inNumSamples)

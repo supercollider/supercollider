@@ -48,7 +48,7 @@ public:
         count = c;
         blocksize = b;
         buffers = calloc_aligned<sample>(count * blocksize);
-        locks = new rw_spinlock[count];
+        locks = new padded_rw_spinlock[count];
     }
 
     ~audio_bus_manager(void)
@@ -80,7 +80,7 @@ private:
     uint16_t count;
     uint16_t blocksize;
     sample * buffers;
-    rw_spinlock * locks;
+    padded_rw_spinlock * locks;
 };
 
 } /* namespace nova */

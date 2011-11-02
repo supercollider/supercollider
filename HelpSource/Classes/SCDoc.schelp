@@ -94,7 +94,7 @@ If the document map cache was not already read from file, it's first read from f
 The returned Dictionary is indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/SCDoc::.
 
 This dictionary is cached in code::helpTargetDir/scdoc_cache::.
- 
+
 method:: makeCategoryMap
 Creates a dictionary of all categories, with a list of documents for each category.
 returns:: A link::Classes/Dictionary:: of all documents grouped by category.
@@ -127,3 +127,14 @@ argument:: c
 The link::Classes/Class:: to check.
 Returns:: code::true:: if the class responds to ar, kr or ir classmethods.
 
+method:: findHelpSource
+Find the helpsource for a help path, if existent.
+argument:: subtarget
+The sub-path for a help file, like "Guides/WritingHelp" or "Classes/SinOsc".
+returns:: The path to the .schelp file, or nil if no file found.
+discussion::
+Example:
+code::
+SCDoc.findHelpSource("Classes/SCDoc"); // a path
+SCDoc.findHelpSource("NoSuch/File"); // nil
+::

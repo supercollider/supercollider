@@ -21,6 +21,22 @@ QEnvelopeView : QView
     this.setProperty( \step, aFloat );
   }
 
+  keepHorizontalOrder {
+    ^this.getProperty( \horizontalOrder ) != 0;
+  }
+
+  keepHorizontalOrder_ { arg bool;
+    this.setProperty( \horizontalOrder, if(bool){1}{0} );
+  }
+
+  elasticSelection {
+    ^this.getProperty( \selectionForm ) == 0;
+  }
+
+  elasticSelection_ { arg bool;
+    this.setProperty( \selectionForm, if(bool){0}{1} );
+  }
+
   value {
     ^this.getProperty( \value );
   }
@@ -38,12 +54,25 @@ QEnvelopeView : QView
     ^this.getProperty( \index );
   }
 
+  index_ { arg index;
+    ^this.setProperty( \index, index );
+  }
+
   lastIndex {
     ^this.index;
   }
 
-  selectIndex { arg anInt;
-    this.setProperty( \index, anInt );
+  selectIndex { arg index;
+    if( index < 0 ){
+      this.invokeMethod( \deselectAll );
+    }{
+      this.invokeMethod( \select, [index,false] );
+    };
+    this.index = index;
+  }
+
+  deselectIndex { arg index;
+    this.invokeMethod( \deselect, index );
   }
 
   x {

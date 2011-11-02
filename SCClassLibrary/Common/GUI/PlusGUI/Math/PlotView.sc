@@ -16,8 +16,7 @@ Plot {
 					fontColor: Color.grey(0.3),
 					plotColor: [Color.black, Color.blue, Color.red, Color.green(0.7)],
 					background: Color.new255(235, 235, 235),
-					//gridLinePattern: FloatArray[1, 5],
-					gridLinePattern: FloatArray[1, 0],
+					gridLinePattern: nil,
 					gridLineSmoothing: false,
 					labelX: "",
 					labelY: "",
@@ -43,7 +42,7 @@ Plot {
 			fontColor = ~fontColor;
 			backgroundColor = ~background;
 			gridLineSmoothing = ~gridLineSmoothing;
-			gridLinePattern = ~gridLinePattern.as(FloatArray);
+			gridLinePattern = ~gridLinePattern !? {~gridLinePattern.as(FloatArray)};
 			labelX = ~labelX;
 			labelY = ~labelY;
 		};
@@ -111,32 +110,24 @@ Plot {
 		var top = plotBounds.top;
 		var base = plotBounds.bottom;
 		Pen.fillColor = fontColor;
+		Pen.font = font;
 		this.drawOnGridX { |hpos, val, i|
 			var string = val.asStringPrec(5) ++ domainSpec.units;
-			Pen.font = font;
 			Pen.stringAtPoint(string, hpos @ base);
-			Pen.stroke;
 		};
-		Pen.stroke;
-
 	}
 
 	drawNumbersY {
-
 		var left = plotBounds.left;
 		var right = plotBounds.right;
 		Pen.fillColor = fontColor;
-
+		Pen.font = font;
 		this.drawOnGridY { |vpos, val, i|
 			var string = val.asStringPrec(5).asString ++ spec.units;
 			if(gridOnX.not or: { i > 0 }) {
-				Pen.font = font;
 				Pen.stringAtPoint(string, left @ vpos);
 			}
 		};
-
-		Pen.stroke;
-
 	}
 
 
@@ -295,16 +286,82 @@ Plot {
 	// editing
 
 
-	editData { |x, y, plotIndex|
-		var index = this.getIndex(x);
+	editDataIndex { |index, x, y, plotIndex|
+		// WARNING: assuming index is in range!
 		var val = this.getRelativePositionY(y);
 		plotter.editFunc.value(plotter, plotIndex, index, val, x, y);
-		value.clipPut(index, val);
+		value.put(index, val);
+		valueCache = nil;
+	}
+
+	editData { |x, y, plotIndex|
+		var index = this.getIndex(x);
+		this.editDataIndex( index, x, y, plotIndex );
+	}
+
+	editDataLine { |pt1, pt2, plotIndex|
+		var ptLeft, ptRight, ptLo, ptHi;
+		var xSpec, ySpec;
+		var i1, i2, iLo, iHi;
+		var val;
+
+		// get indexes related to ends of the line
+		i1 = this.getIndex(pt1.x);
+		i2 = this.getIndex(pt2.x);
+
+		// if both ends at same index, simplify
+		if( i1 == i2 ) {
+			^this.editDataIndex( i2, pt2.x, pt2.y, plotIndex );
+		};
+
+		// order points and indexes
+		if( i1 < i2 ) {
+			iLo = i1; iHi = i2;
+			ptLeft = pt1; ptRight = pt2;
+		}{
+			iLo = i2; iHi = i1;
+			ptLeft = pt2; ptRight = pt1;
+		};
+
+		// if same value all over, simplify
+		if( ptLeft.y == ptRight.y ) {
+			val = this.getRelativePositionY(ptLeft.y);
+			while( {iLo <= iHi} ) {
+				value.put( iLo, val );
+				iLo = iLo + 1;
+			};
+			// trigger once for second end of the line
+			plotter.editFunc.value(plotter, plotIndex, i2, val, pt2.x, pt2.y);
+			valueCache = nil;
+			^this;
+		};
+
+		// get actual points corresponding to indexes
+		xSpec = ControlSpec( ptLeft.x, ptRight.x );
+		ySpec = ControlSpec( ptLeft.y, ptRight.y );
+		ptLo = Point();
+		ptHi = Point();
+		ptLo.x = domainSpec.unmap(iLo) * plotBounds.width + plotBounds.left;
+		ptHi.x = domainSpec.unmap(iHi) * plotBounds.width + plotBounds.left;
+		ptLo.y = ySpec.map( xSpec.unmap(ptLo.x) );
+		ptHi.y = ySpec.map( xSpec.unmap(ptHi.x) );
+
+		// interpolate and store
+		ySpec = ControlSpec( this.getRelativePositionY(ptLo.y), this.getRelativePositionY(ptHi.y) );
+		xSpec = ControlSpec( iLo, iHi );
+		while( {iLo <= iHi} ) {
+			val = ySpec.map( xSpec.unmap(iLo) );
+			value.put( iLo, val );
+			iLo = iLo+1;
+		};
+
+		// trigger once for second end of the line
+		plotter.editFunc.value(plotter, plotIndex, i2, val, pt2.x, pt2.y);
 		valueCache = nil;
 	}
 
 	getRelativePositionX { |x|
-		^this.resampledDomainSpec.map((x - plotBounds.left) / plotBounds.width)
+		^domainSpec.map((x - plotBounds.left) / plotBounds.width)
 	}
 
 	getRelativePositionY { |y|
@@ -344,19 +401,16 @@ Plot {
 	}
 
 	prStrokeGrid {
-		Pen.width = 1;
+		Pen.push;
 
+		Pen.width = 1;
 		try {
 			Pen.smoothing_(gridLineSmoothing);
-			Pen.lineDash_(gridLinePattern);
+			if(gridLinePattern.notNil) {Pen.lineDash_(gridLinePattern)};
 		};
-
 		Pen.stroke;
 
-		try {
-			Pen.smoothing_(true);
-			Pen.lineDash_(FloatArray[1, 0])
-		};
+		Pen.pop;
 	}
 
 }
@@ -371,6 +425,7 @@ Plotter {
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
+	var editPlotIndex, editPos;
 
 	var <>drawFunc, <>editFunc;
 
@@ -386,7 +441,7 @@ Plotter {
 			bounds = parent.view.bounds.insetBy(5, 0).moveBy(-5, 0);
 			interactionView = UserView(parent, bounds);
 			if(GUI.skin.at(\plot).at(\expertMode).not) { this.makeButtons };
-			parent.drawHook = { this.draw };
+			parent.drawFunc = { this.draw };
 			parent.front;
 			parent.onClose = { parent = nil };
 
@@ -406,21 +461,27 @@ Plotter {
 			.mouseDownAction_({ |v, x, y, modifiers|
 				cursorPos = x @ y;
 				if(editMode && superpose.not) {
-					this.editData(x, y);
-					if(this.numFrames < 200) { this.refresh };
+					editPlotIndex = this.pointIsInWhichPlot(cursorPos);
+					editPlotIndex !? {
+						editPos = x @ y; // new Point instead of cursorPos!
+						plots.at(editPlotIndex).editData(x, y, editPlotIndex);
+						if(this.numFrames < 200) { this.refresh };
+					}
 				};
 				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
 			.mouseMoveAction_({ |v, x, y, modifiers|
 				cursorPos = x @ y;
-				if(editMode && superpose.not) {
-					this.editData(x, y);
+				if(editMode && superpose.not && editPlotIndex.notNil) {
+					plots.at(editPlotIndex).editDataLine( editPos, cursorPos, editPlotIndex );
+					editPos = x @ y;  // new Point instead of cursorPos!
 					if(this.numFrames < 200) { this.refresh };
 				};
 				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
 			.mouseUpAction_({
 				cursorPos = nil;
+				editPlotIndex = nil;
 				if(editMode && superpose.not) { this.refresh };
 			})
 			.keyDownAction_({ |view, char, modifiers, unicode, keycode|
@@ -500,12 +561,17 @@ Plotter {
 	}
 
 	makeButtons {
-		Button(parent, Rect(parent.view.bounds.right - 16, 8, 14, 14))
-				.states_([["?", Color.black, Color.clear]])
-				.focusColor_(Color.clear)
-				.resize_(3)
-				.font_(Font( Font.defaultSansFace, 9 ))
-				.action_ { this.class.openHelpFile };
+		var string = "?";
+		var font = Font.sansSerif( 9 );
+		var bounds = string.bounds(font);
+		var padding = 8; // ensure that string is not clipped by round corners
+
+		Button(parent, Rect(parent.view.bounds.right - 16, 8, bounds.width + padding, bounds.height + padding))
+		.states_([["?"]])
+		.focusColor_(Color.clear)
+		.font_(font)
+		.resize_(3)
+		.action_ { this.class.openHelpFile };
 	}
 
 
@@ -713,12 +779,19 @@ Plotter {
 
 
 + ArrayedCollection {
-
 	plot2 { |name, bounds, discrete=false, numChannels, minval, maxval|
 		var array = this.as(Array), plotter = Plotter(name, bounds);
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
+		array = array.collect {|elem|
+			if (elem.isKindOf(Env)) {
+				elem.asSignal
+			} {
+				elem
+			}
+		};
+
 		plotter.setValue(array, true, false);
 
 		minval !? { plotter.minval = minval; };
@@ -727,7 +800,6 @@ Plotter {
 
 		^plotter
 	}
-
 }
 
 + Collection {
@@ -748,7 +820,7 @@ Plotter {
 
 	plot2 { |duration = 0.01, server, bounds, minval, maxval|
 		var name = this.asCompileString, plotter;
-		if(name.size > 50) { name = "function plot" };
+		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = [0].plot2(name, bounds);
 		server = server ? Server.default;
 		server.waitForBoot {

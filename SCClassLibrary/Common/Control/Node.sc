@@ -138,8 +138,8 @@ Node {
 
 	release { arg releaseTime;
 		server.sendMsg(*this.releaseMsg(releaseTime))
-    	}
-    	releaseMsg { arg releaseTime;
+	}
+	releaseMsg { arg releaseTime;
 		//assumes a control called 'gate' in the synth
 		if(releaseTime.isNil, {
 			releaseTime = 0.0;
@@ -152,7 +152,7 @@ Node {
 		server.sendMsg(10, nodeID);//"/n_trace"
 	}
 	query {
-		OSCProxy({ arg msg;
+		OSCFunc({ arg msg;
 			var cmd,argnodeID,parent,prev,next,isGroup,head,tail;
 			# cmd,argnodeID,parent,prev,next,isGroup,head,tail = msg;
 			// assuming its me ... if(nodeID == argnodeID)
@@ -180,7 +180,6 @@ Node {
 		};
 		this.register;
 		this.addDependant(f);
-		^f;
 	}
 	waitForFree {
 		var c = Condition.new;
@@ -335,7 +334,7 @@ AbstractGroup : Node {
 
 	queryTree { //|action|
 		var resp, done = false;
-		resp = OSCProxy({ arg msg;
+		resp = OSCFunc({ arg msg;
 			var i = 2, tabs = 0, printControls = false, dumpFunc;
 			if(msg[1] != 0, {printControls = true});
 			("NODE TREE Group" + msg[2]).postln;
@@ -383,7 +382,7 @@ AbstractGroup : Node {
 		server.sendMsg("/g_queryTree", nodeID);
 		SystemClock.sched(3, {
 			done.not.if({
-				resp.clear;
+				resp.free;
 				"Server failed to respond to Group:queryTree!".warn;
 			});
 		});

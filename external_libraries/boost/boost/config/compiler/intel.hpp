@@ -26,7 +26,19 @@
 #  define BOOST_INTEL_CXX_VERSION __ECC
 #endif
 
+// Flags determined by comparing output of 'icpc -dM -E' with and without '-std=c++0x'
+#if (!(defined(_WIN32) || defined(_WIN64)) && defined(__STDC_HOSTED__) && __STDC_HOSTED__) || defined(__GXX_EXPERIMENTAL_CPP0X__)
+#  define BOOST_INTEL_STDCXX0X
+#endif
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+#  define BOOST_INTEL_STDCXX0X
+#endif
+
+#ifdef BOOST_INTEL_STDCXX0X
+#define BOOST_COMPILER "Intel C++ C++0x mode version " BOOST_STRINGIZE(BOOST_INTEL_CXX_VERSION)
+#else
 #define BOOST_COMPILER "Intel C++ version " BOOST_STRINGIZE(BOOST_INTEL_CXX_VERSION)
+#endif
 #define BOOST_INTEL BOOST_INTEL_CXX_VERSION
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -99,7 +111,7 @@
 #     define BOOST_FUNCTION_SCOPE_USING_DECLARATION_BREAKS_ADL
 #  endif
 #endif
-#if (defined(__GNUC__) && (__GNUC__ < 4)) || defined(_WIN32) || (BOOST_INTEL_CXX_VERSION <= 1110)
+#if (defined(__GNUC__) && (__GNUC__ < 4)) || defined(_WIN32) || (BOOST_INTEL_CXX_VERSION <= 1200)
 // GCC or VC emulation:
 #define BOOST_NO_TWO_PHASE_NAME_LOOKUP
 #endif
@@ -109,6 +121,7 @@
 // in type_traits code among other things, getting this correct
 // for the Intel compiler is actually remarkably fragile and tricky:
 //
+#ifdef __cplusplus
 #if defined(BOOST_NO_INTRINSIC_WCHAR_T)
 #include <cwchar>
 template< typename T > struct assert_no_intrinsic_wchar_t;
@@ -122,8 +135,9 @@ template<> struct assert_intrinsic_wchar_t<wchar_t> {};
 // if you see an error here then define BOOST_NO_INTRINSIC_WCHAR_T on the command line:
 template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #endif
+#endif
 
-#if _MSC_VER+0 >= 1000
+#if defined(_MSC_VER) && (_MSC_VER+0 >= 1000)
 #  if _MSC_VER >= 1200
 #     define BOOST_HAS_MS_INT64
 #  endif
@@ -179,10 +193,43 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #  define BOOST_SYMBOL_IMPORT
 #  define BOOST_SYMBOL_VISIBLE __attribute__((visibility("default")))
 #endif
+//
+// C++0x features
+//     - ICC added static_assert in 11.0 (first version with C++0x support)
+//
+#if defined(BOOST_INTEL_STDCXX0X)
+#  undef  BOOST_NO_STATIC_ASSERT
+//
+// These pass our test cases, but aren't officially supported according to:
+// http://software.intel.com/en-us/articles/c0x-features-supported-by-intel-c-compiler/
+//
+//#  undef  BOOST_NO_LAMBDAS
+//#  undef  BOOST_NO_DECLTYPE
+//#  undef  BOOST_NO_AUTO_DECLARATIONS
+//#  undef  BOOST_NO_AUTO_MULTIDECLARATIONS
+#endif
+
+#if defined(BOOST_INTEL_STDCXX0X) && (BOOST_INTEL_CXX_VERSION >= 1200)
+#  undef  BOOST_NO_RVALUE_REFERENCES
+//#  undef  BOOST_NO_SCOPED_ENUMS  // doesn't really work!!
+#  undef  BOOST_NO_DELETED_FUNCTIONS
+#  undef  BOOST_NO_DEFAULTED_FUNCTIONS
+#  undef  BOOST_NO_LAMBDAS
+#  undef  BOOST_NO_DECLTYPE
+#  undef  BOOST_NO_AUTO_DECLARATIONS
+#  undef  BOOST_NO_AUTO_MULTIDECLARATIONS
+#endif
+
+#if (BOOST_INTEL_CXX_VERSION < 1200)
+//
+// fenv.h appears not to work with Intel prior to 12.0:
+//
+#  define BOOST_NO_FENV_H
+#endif
 
 //
 // last known and checked version:
-#if (BOOST_INTEL_CXX_VERSION > 1110)
+#if (BOOST_INTEL_CXX_VERSION > 1200)
 #  if defined(BOOST_ASSERT_CONFIG)
 #     error "Unknown compiler version - please run the configure tests and report the results"
 #  elif defined(_MSC_VER)

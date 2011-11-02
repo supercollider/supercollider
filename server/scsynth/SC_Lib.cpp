@@ -136,9 +136,10 @@ SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyA
 		err = kSCErr_Failed;
 	}
 	if (err && (inWorld->mLocalErrorNotification <= 0 && inWorld->mErrorNotification)) {
-		const char *errstr = SC_ErrorString(err);
-		CallSendFailureCommand(inWorld, (char*)Name(), (char*)errstr, inReply);
-		scprintf("FAILURE %s %s\n", (char*)Name(), (char*)errstr);
+		char errstr[25];
+		SC_ErrorString(err, errstr);
+		CallSendFailureCommand(inWorld, (char*)Name(), errstr, inReply);
+		scprintf("FAILURE %s %s\n", (char*)Name(), errstr);
 	}
 	return err;
 }

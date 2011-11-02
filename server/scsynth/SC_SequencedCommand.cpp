@@ -998,9 +998,15 @@ BufWriteCmd::BufWriteCmd(World *inWorld, ReplyAddress *inReplyAddress)
 {
 }
 
+#ifdef NO_LIBSNDFILE
+struct SF_INFO {};
+#endif
+
+
 extern "C" {
 int sndfileFormatInfoFromStrings(SF_INFO *info, const char *headerFormatString, const char *sampleFormatString);
 }
+
 
 int BufWriteCmd::Init(char *inData, int inSize)
 {
@@ -1157,6 +1163,7 @@ void AudioQuitCmd::CallDestructor()
 
 bool AudioQuitCmd::Stage2()
 {
+	mWorld->hw->mTerminating = true;
 	return true;
 }
 
@@ -1191,6 +1198,10 @@ void AudioStatusCmd::CallDestructor()
 
 bool AudioStatusCmd::Stage2()
 {
+	// we stop replying to status requests after receiving /quit
+	if (mWorld->hw->mTerminating == true)
+		return false;
+
 	small_scpacket packet;
 	packet.adds("/status.reply");
 	packet.maketags(10);

@@ -40,6 +40,10 @@ Primitives for String.
 # include <regex.h>
 #endif
 
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+
+
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
 {
@@ -75,8 +79,6 @@ int prString_AsInteger(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-extern "C" double sc_strtod(const char *nptr, char **endptr);
-
 int prString_AsFloat(struct VMGlobals *g, int numArgsPushed);
 int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 {
@@ -86,7 +88,7 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 	int err = slotStrVal(a, str, 255);
 	if (err) return err;
 
-	SetFloat(a, sc_strtod(str, NULL));
+	SetFloat(a, atof(str));
 
 	return errNone;
 }
@@ -657,6 +659,61 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
+int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
+{
+	PyrSlot* arg = g->sp - 1;
+	PyrSlot* charToEscapeSlot = g->sp;
+
+	assert (isKindOfSlot(arg, class_string));
+
+	if (!IsChar(charToEscapeSlot))
+		return errWrongType;
+
+	char charToEscape = slotRawChar(charToEscapeSlot);
+
+	PyrString* argString = slotRawString(arg);
+	int length = argString->size;
+	PyrString* resultString = newPyrStringN(g->gc, length*2 + 1, 0, 1); // pressimize
+
+	char * original = argString->s;
+	char * result = resultString->s;
+
+	int resultLength = length;
+	for (int i = 0; i != length; ++i) {
+		char current = *original++;
+		if (current == charToEscape) {
+			*result++ = '\\';
+			resultLength += 1;
+		}
+		*result++ = current;
+	}
+	*result = 0;
+
+	resultString->size = resultLength;
+
+	SetRaw(arg, (PyrObject*)resultString);
+
+	return errNone;
+}
+
+int prString_mkdir(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot* arg = g->sp;
+
+	char argString[MAXPATHLEN];
+	int error = slotStrVal(arg, argString, MAXPATHLEN);
+	if (error != errNone)
+		return error;
+
+	boost::system::error_code error_code;
+	boost::filesystem::create_directories(argString, error_code);
+	if (error_code)
+		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), argString);
+
+	return errNone;
+}
+
+
 void initStringPrimitives();
 void initStringPrimitives()
 {
@@ -683,6 +740,8 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
+	definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
+	definePrimitive(base, index++, "_String_Mkdir", prString_mkdir, 1, 0);
 }
 
 #if _SC_PLUGINS_

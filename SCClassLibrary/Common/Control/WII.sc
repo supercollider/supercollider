@@ -266,22 +266,19 @@ WiiMote {
 		eventLoopIsRunning = true;
 	}
 
-	*discover{ // |connAction|
-		var newid, newwii;
+	*discover{
+		var newid, newwii, newall;
 		if ( eventLoopIsRunning.not, { this.start; } );
 		newid = all.size;
-		//	connAction = connAction ? {};
 		newwii = WiiMote.new;
-		"To discover the Wii, please press buttons 1 and 2 on the device and wait till the LEDs stop blinking".postln;
-		//		"discovering WIIs: this may take some time".postln;
-		//		all = Array.fill( maxdevices, {|i| WiiMote.new(i) } );
-		//		Routine({
-		//			0.5.wait;
-		this.prDiscover( newid, all );
-		//			0.5.wait;
-		//			all.do{ |it| if ( it.isOpen.not, { it.close } ) };
-		//		}).play;
-		^this.all;
+		"To discover the WiiMote, please press buttons 1 and 2 on the device and wait till the LEDs stop blinking".postln;
+		newall = all.copy.add(newwii);
+		if(this.prDiscover( newid, newall )) {
+			// prDiscover returns true if the device was added, so then update the 'all' array.
+			all = newall;
+			^newwii;
+		};
+		^nil;
 	}
 
 	*stop{
@@ -306,7 +303,6 @@ WiiMote {
 
 		this.prOpen;
 
-		all = all.add(this);
 		closeAction = {};
 		connectAction = {};
 		disconnectAction = {};
@@ -326,11 +322,7 @@ WiiMote {
 		^this.primitiveFailed
 	}
 	*prDiscover { |newid,alldevices|
-		//eventLoopIsRunning = true;
-		_Wii_Discover;
-		//		("newid "++newid).postln;
-		all = alldevices.keep( newid+1 );
-		//		all = alldevices;
+		_Wii_Discover
 		^this.primitiveFailed
 	}
 	prOpen {

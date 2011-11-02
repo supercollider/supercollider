@@ -12,13 +12,13 @@ code::
 x = SynthDef("Help-SynthDef", { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).play; // SynthDef-play returns a Synth object.
-) 
+)
 
 // then do this
 (
 SynthDef("help-Rand", { arg out = 0;
 	Out.ar(
-		out, 
+		out,
 		FSinOsc.ar(
 			Rand(200.0, 400.0), // frequency between 200 and 400 Hz
 			0, Line.kr(0.2, 0, 1, doneAction:2) // frees itself
@@ -34,7 +34,7 @@ Clocks, such as link::Classes/SystemClock::, provide a way to schedule things at
 
 code::
 (
-SystemClock.sched(2.0, { 
+SystemClock.sched(2.0, {
 	"2.0 seconds later".postln; // this could be any code, including Synth creation
 	nil // this means don't repeat
 });
@@ -77,13 +77,13 @@ code::
 (
 Synth.play({
 	Spawn.ar(
-		{ EnvGen.ar(Env.perc) * SinOsc.ar(440,0,0.1) }, 
+		{ EnvGen.ar(Env.perc) * SinOsc.ar(440,0,0.1) },
 		1, // one channels
 		1 // new event every second
 	)
 })
 )
-	
+
 // The same example in SC3 (will execute)
 (
 s = Server.default;
@@ -116,7 +116,7 @@ s.boot;
 
 (
 t = TempoClock.new;
-r = Routine.new({ 
+r = Routine.new({
 	10.do({
 		// could be done with an argument instead of a new def, but proves the point
 		SynthDef("help-EnvGen" ++ i, { arg out = 0;
@@ -127,7 +127,7 @@ r = Routine.new({
 			)
 		}).play(s);
 		1.yield;
-	}); 
+	});
 }).play(t); // Note the alternative syntax: Routine.play(aClock)
 )
 ::
@@ -138,7 +138,7 @@ code::
 (
 // this, that and the other
 r = Routine.new({var i = 0; { ("this: " ++ i).postln; i = i + 1; 1.yield; }.loop });
-q = Routine.new({var i = 0; { ("that: " ++ i).postln; i = i + 1; 1.yield; }.loop }); 
+q = Routine.new({var i = 0; { ("that: " ++ i).postln; i = i + 1; 1.yield; }.loop });
 t = Routine.new({var i = 0; { ("the other: " ++ i).postln; i = i + 1; 1.yield; }.loop });
 )
 
@@ -154,7 +154,7 @@ r.reset;		// have to reset this because it's stopped
 c.play(r);		// play this in the new clock; starts from the beginning
 c.tempo = 16;		// increase the tempo of this
 
-SystemClock.clear;	// clear EVERYTHING scheduled in the SystemClock; so that and the other 
+SystemClock.clear;	// clear EVERYTHING scheduled in the SystemClock; so that and the other
 			// but not this
 
 c.clear;		// clear everything scheduled in c, i.e. this
@@ -168,11 +168,11 @@ For convenience pauseable scheduling can be implemented with a link::Classes/Tas
 
 code::
 (
-t = Task.new({ 
+t = Task.new({
 	inf.do({ arg i;
-		i.postln; 
-		0.5.wait 
-	}); 
+		i.postln;
+		0.5.wait
+	});
 });
 )
 
@@ -187,7 +187,7 @@ t.clock.tempo = 0.25;	// Get the Task's clock and change the tempo. This works s
 t.pause;		// Same as t.stop
 ::
 
-TSpawn's functionality can be replicated with link::Classes/SendTrig:: and link::Classes/OSCresponder:: or link::Classes/OSCresponderNode::. See their individual helpfiles for details on their arguments and functionality.
+TSpawn's functionality can be replicated with link::Classes/SendTrig:: and link::Classes/OSCFunc::. See their individual helpfiles for details on their arguments and functionality.
 
 code::
 (
@@ -201,21 +201,21 @@ SynthDef("help-SendTrig", {
 	SendTrig.kr(
 		Dust.kr(1.0), // trigger could be anything, e.g. Amplitude.kr(SoundIn.ar(0) > 0.5)
 		0, 0.9
-	); 
+	);
 }).send(s);
 )
-	
+
 (
 // this receives the trigger on the client side and 'Spawns' a new Synth on the server
-OSCresponder(s.addr, '/tr', { 
+OSCFunc({
 	SynthDef("help-EnvGen", { arg out = 0;
 		Out.ar(
 			out,
-			EnvGen.kr(Env.perc, 1.0, doneAction: 2) 
+			EnvGen.kr(Env.perc, 1.0, doneAction: 2)
 			* SinOsc.ar(440, 0, 0.1)
 		)
 	}).play(s);
-}).add;
+}, '/tr', s.addr);
 
 // Start 'spawning'
 Synth("help-SendTrig");

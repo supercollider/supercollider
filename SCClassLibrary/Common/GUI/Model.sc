@@ -1,6 +1,11 @@
 Model {
 	var <>dependants;
 
+	*new {
+		this.deprecated(thisMethod, Object.class.findMethod(\new));
+		"NB Model's functionality is duplicated by Object".postln;
+		^super.new;
+	}
 	changed { arg what ... moreArgs;
 		dependants.do({ arg item;
 			item.update(this, what, *moreArgs);
@@ -40,10 +45,12 @@ SimpleController {
 	}
 	update { arg theChanger, what ... moreArgs;
 		var action;
-		action = actions.at(what);
-		if (action.notNil, {
-			action.valueArray(theChanger, what, moreArgs);
-		});
+		if(actions.notNil) {
+			action = actions.at(what);
+			if (action.notNil, {
+				action.valueArray(theChanger, what, moreArgs);
+			});
+		};
 	}
 	remove {
 		model.removeDependant(this);

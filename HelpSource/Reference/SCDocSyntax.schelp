@@ -3,7 +3,7 @@ summary:: SCDoc markup language syntax
 categories:: HelpSystem
 related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocParser, Classes/SCDocRenderer
 
-This ML consists of a specification for writing documents with semantic annotations, in a manner which does not target a specific layout or output format. Its purpose is to allow for human-writable documents to be produced in a variety of formats and for a variety of target platforms. Usability and learnability are paramount, so the syntax is as simple as possible. 
+This ML consists of a specification for writing documents with semantic annotations, in a manner which does not target a specific layout or output format. Its purpose is to allow for human-writable documents to be produced in a variety of formats and for a variety of target platforms. Usability and learnability are paramount, so the syntax is as simple as possible.
 
 A guide to writing help can be found here: link::Guides/WritingHelp::.
 
@@ -111,6 +111,7 @@ code            V                            x        x
 link            V                            x        x
 anchor          V                            x        x
 emphasis        V                            x        x
+teletype        V                            x        x
 strong          V                            x        x
 soft            V                            x        x
 image           V                            x        x
@@ -238,6 +239,7 @@ image::
 emphasis::
 strong::
 soft::
+teletype::
 ::
 All of above are closed with \::
 If they are used as block tags, the closing \:: must be written as a single word on its own line.

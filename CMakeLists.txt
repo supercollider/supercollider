@@ -11,6 +11,11 @@ if (NOT CMAKE_BUILD_TYPE)
 	set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
+endif()
+
+
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
 
@@ -49,6 +54,10 @@ if(APPLE)
 	MESSAGE( STATUS "Using HID Utilities from folder '${HID_UTIL_DIR}'")
 endif()
 
+if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+	set(LINUX 1)
+endif()
+
 #############################################
 # Compiler flags etc
 
@@ -57,13 +66,12 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	add_definitions("-fschedule-insns2" "-fomit-frame-pointer")
 
-	if (${_gcc_version} VERSION_GREATER 4.0.99)
-		add_definitions("-ffast-math")
-	endif()
+	add_definitions("-Wreturn-type")
 
-	if (${_gcc_version} VERSION_GREATER 4.5.99)
-		add_definitions("-fpermissive") # boost.atomic is using a deprecated syntax
-	endif()
+#	disabled for now: -ffast-math breaks avx intrinsics and -fsigned-zeros/-fno-associative-math are not available in some versions
+#	if (${_gcc_version} VERSION_GREATER 4.0.99)
+#		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
+#	endif()
 
 	option(DSO_VISIBILITY "DSO visibility support for gcc" OFF)
 
@@ -85,6 +93,16 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 		add_definitions("-pthread")
 	endif()
 endif ()
+
+if (${CMAKE_CXX_COMPILER} MATCHES icpc)
+	set(CMAKE_COMPILER_IS_INTEL 1)
+	add_definitions(-Wno-unknown-pragmas)
+	add_definitions(-simd)
+endif()
+
+if (${CMAKE_CXX_COMPILER} MATCHES clang)
+	set(CMAKE_COMPILER_IS_CLANG 1)
+endif()
 
 if(APPLE)
 	set_property(DIRECTORY
@@ -142,13 +160,14 @@ option(FINAL_BUILD "Build as single source file." OFF)
 option(CURL "Build with curl for remote file download." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
-mark_as_advanced(FFT_GREEN)
 
 option(SSE "Compile with support for SSE instructions.")
 option(SSE41 "Compile with support for SSE4.1 instructions.")
 option(SSE42 "Compile with support for SSE4.2 instructions.")
 
 
+option(INSTALL_HELP "Install help docs and examples along with the software" ON)
+option(INSTALL_OLD_HELP "Install old and deprecated help files" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -162,7 +181,8 @@ option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable m
 option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
-mark_as_advanced(NO_LIBSNDFILE)
+
+option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
 
 if(NOT WIN32)
 	option(SCLANG_SERVER "Build with internal server." ON)
@@ -185,25 +205,50 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     option(LTO "Use GCC's link time optimizer' (experimental).")
 endif()
 
+option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
+option(SC_OX "Try to compile with support for C++0x (experimental, mainly related to supernova)" OFF)
+
 #############################################
 # some preprocessor flags
-if(CMAKE_COMPILER_IS_GNUCXX)
-  if(SSE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse -mfpmath=sse")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
-  endif()
-  if(SSE41)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
-  endif()
-  if(SSE42)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
-  endif()
-  if(NATIVE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
-  endif()
+if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+	if (SSE)
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse -mfpmath=sse")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse -mfpmath=sse")
+	endif()
+	if (SSE41)
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.1")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
+	endif()
+	if (SSE42)
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2")
+	endif()
+	if (NATIVE)
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
+	endif()
+
+	if (SC_OX)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	endif()
+endif()
+
+if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
+	if (SSE42)
+		add_definitions(-xSSE4.2)
+	elseif (SSE41)
+		add_definitions(-xSSE4.1)
+	elseif (SSE)
+		add_definitions(-mia32)
+	endif()
+	if (SC_OX)
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+	endif()
+
+	# disable warnings
+	add_definitions(-diag-disable 170) # pointer points outside of underlying object ... used heavily in sclang
+	add_definitions(-diag-disable 279) # controlling expression is constant
+
 endif()
 
 if (SC_MEMORY_DEBUGGING)
@@ -212,12 +257,12 @@ endif()
 
 #############################################
 # subdirectories
+add_subdirectory(external_libraries)
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(bindings)
 add_subdirectory(platform)
 add_subdirectory(editors)
-add_subdirectory(external_libraries)
 
 if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )
@@ -238,7 +283,7 @@ if(APPLE)
 	set(auxresourcesdir ${scappauxresourcesdir})
 
 	# Some aux files which go in the app's folder
-	install(FILES README ChangeLog
+	install(FILES README.txt ChangeLog
 		DESTINATION ${auxresourcesdir}
 	)
 	install(FILES COPYING AUTHORS
@@ -256,14 +301,73 @@ else()
 	set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
 endif()
 
-install(DIRECTORY SCClassLibrary
+if(APPLE)
+	#if directory contains symlinks, unlink them.
+	if(EXISTS "${auxresourcesdir}/SCClassLibrary")
+		file(GLOB classlibraryfolders "${auxresourcesdir}/SCClassLibrary/[^.]*")
+		foreach(onedirectory ${classlibraryfolders})
+			if(IS_SYMLINK "${onedirectory}")
+				install( CODE "EXECUTE_PROCESS(COMMAND unlink ${onedirectory} )" )
+			endif()
+		endforeach(onedirectory)
+	endif()
+
+	if(SC_SYMLINK_CLASSLIB)
+
+		#if there are folders inside SCCLassLibrary abort cmake.
+		file(GLOB classlibraryfolders "${auxresourcesdir}/SCClassLibrary/[^.]*")
+		foreach(onedirectory ${classlibraryfolders})
+			if(NOT IS_SYMLINK "${onedirectory}")
+				message(FATAL_ERROR "Symlinking will fail ! SCClassLibrary folder already exists and has directories inside, please delete it first." )
+			endif()
+		endforeach(onedirectory)
+
+		message(STATUS "Will create symlink of SCClassLibrary to ${auxresourcesdir}/SCClassLibrary" )
+		if(NOT EXISTS "${auxresourcesdir}/SCClassLibrary")
+			install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${auxresourcesdir}/SCClassLibrary)" )
+		endif()
+		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
+		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
+		foreach(onedirectory ${classlibraryfolders})
+			if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
+				install( CODE
+					"EXECUTE_PROCESS(COMMAND ln -s ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+			endif()
+		endforeach(onedirectory)
+	else()
+		message(STATUS "Will copy SCCLassLibrary to ${auxresourcesdir}")
+		install(DIRECTORY SCClassLibrary
+			DESTINATION ${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+		)
+	endif()
+else()
+	install(DIRECTORY SCClassLibrary
+		DESTINATION ${auxresourcesdir}
+		REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+		PATTERN "*~" EXCLUDE
+		PATTERN "*#" EXCLUDE
+	)
+endif()
+
+
+install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
-	REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
 )
 
-install(DIRECTORY Help examples sounds HelpSource
-	DESTINATION ${auxresourcesdir}
-)
+if(INSTALL_OLD_HELP)
+	install(DIRECTORY Help
+		DESTINATION ${auxresourcesdir}
+	)
+endif()
+
+if(INSTALL_HELP)
+	install(DIRECTORY examples HelpSource
+		DESTINATION ${auxresourcesdir}
+		PATTERN "*~" EXCLUDE
+		PATTERN "*#" EXCLUDE
+	)
+endif()
 
 #############################################
 #

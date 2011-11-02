@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "QcApplication.h"
+#include "widgets/QcTreeWidget.h"
 
 #include <PyrLexer.h>
 #include <VMGlobals.h>
@@ -61,6 +62,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _instance = this;
   _mutex.unlock();
   qRegisterMetaType<VariantList>();
+  qRegisterMetaType<QcTreeWidget::ItemPtr>();
 }
 
 QcApplication::~QcApplication()
@@ -86,42 +88,28 @@ bool QcApplication::compareThread()
   return same;
 }
 
-void QcApplication::interpret( const QString &str )
+void QcApplication::interpret( const QString &str, bool print )
 {
+  QtCollider::lockLang();
   if( compiledOK ) {
-      QtCollider::lockLang();
-      if( compiledOK ) {
-          VMGlobals *g = gMainVMGlobals;
+      VMGlobals *g = gMainVMGlobals;
 
-          PyrString *strObj = newPyrString( g->gc, str.toStdString().c_str(), 0, true );
+      PyrString *strObj = newPyrString( g->gc, str.toStdString().c_str(), 0, true );
 
-          SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
-          g->gc->GCWrite(slotRawObject(&g->process->interpreter), strObj);
+      SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
+      g->gc->GCWrite(slotRawObject(&g->process->interpreter), strObj);
 
-          runLibrary( QtCollider::s_interpretPrintCmdLine );
-      }
-      QtCollider::unlockLang();
+      runLibrary( print ? QtCollider::s_interpretPrintCmdLine : QtCollider::s_interpretCmdLine );
   }
+  QtCollider::unlockLang();
 }
 
 bool QcApplication::event( QEvent *e )
 {
   if( e->type() == QEvent::FileOpen ) {
-
     // open the file dragged onto the application icon on Mac
-
     QFileOpenEvent *fe = static_cast<QFileOpenEvent*>(e);
-
-    QtCollider::lockLang();
-    gMainVMGlobals->canCallOS = true;
-
-    QString cmdLine = QString("Document.open(\"%1\")").arg(fe->file());
-    char *method = strdup( "interpretPrintCmdLine" );
-    interpretCmdLine( cmdLine.toStdString().c_str(), cmdLine.size(), method );
-    free(method);
-
-    gMainVMGlobals->canCallOS = false;
-    QtCollider::unlockLang();
+    interpret( QString("Document.open(\"%1\")").arg(fe->file()), false );
 
     return true;
   }

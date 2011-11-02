@@ -22,27 +22,46 @@
 #include "QtCollider.h"
 #include "QcApplication.h"
 #include "Common.h"
+#include "style/ProxyStyle.hpp"
 
+#include <QPlastiqueStyle>
 #include <QTimer>
+#include <QEventLoop>
+
+#ifdef Q_WS_X11
+# include <X11/Xlib.h>
+#endif
+
+#include <clocale>
 
 QC_PUBLIC
 void QtCollider::init() {
   if( !QApplication::instance() ) {
     qcDebugMsg( 1, "Initializing QtCollider" );
-    #ifdef Q_OS_MAC
-      QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
-    #endif
+#ifdef Q_WS_X11
+    XInitThreads();
+#endif
+#ifdef Q_OS_MAC
+    QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
+#endif
     static int qcArgc = 1;
     static char qcArg0[] = "";
     static char *qcArgv[1];
     qcArgv[0] = qcArg0;
     QcApplication *qcApp = new QcApplication( qcArgc, qcArgv );
     qcApp->setQuitOnLastWindowClosed( false );
+#ifdef Q_OS_MAC
+    qcApp->setStyle( new QtCollider::ProxyStyle( new QPlastiqueStyle ) );
+#endif
+    // NOTE: Qt may tamper with the C language locale, affecting POSIX number-string conversions.
+    // Revert the locale to default:
+    setlocale( LC_NUMERIC, "C" );
   }
 }
 
 QC_PUBLIC
-void QtCollider::processEvents()
-{
-  if( qApp ) qApp->processEvents();
+int QtCollider::exec( int argc, char** argv ) {
+  QtCollider::init();
+  Q_ASSERT( qApp );
+  return qApp->exec();
 }

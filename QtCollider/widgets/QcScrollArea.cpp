@@ -31,18 +31,11 @@
 class QcScrollWidgetFactory : public QcWidgetFactory<QcScrollWidget>
 {
 protected:
-  virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments )
+  virtual void initialize( QWidgetProxy *p, QcScrollWidget *w, QList<QVariant> & args )
   {
-    QObjectProxy *proxy =
-        QcWidgetFactory<QcScrollWidget>::newInstance( scObject, arguments );
-
-    if( proxy ) {
-      QcScrollWidget *w= static_cast<QcScrollWidget*>( proxy->object() );
-      QObject::connect( w, SIGNAL(painting(QPainter*)),
-                        proxy, SLOT(customPaint(QPainter*)) );
-    }
-
-    return proxy;
+    Q_UNUSED(args);
+    QObject::connect( w, SIGNAL(painting(QPainter*)),
+                      p, SLOT(customPaint(QPainter*)) );
   }
 };
 

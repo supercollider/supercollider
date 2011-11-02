@@ -121,6 +121,22 @@ public:
         ctor::init(*this, arg);
     }
 
+#ifdef BOOST_HAS_RVALUE_REFS
+    explicit sized_array(sized_array && arg)
+    {
+        operator=(arg);
+    }
+
+    /** move assignment */
+    sized_array & operator=(sized_array && arg)
+    {
+        data_ = arg.data_;
+        size_ = arg.size();
+        arg.data_ = 0;
+        arg.size_ = 0;
+        return *this;
+    }
+#else
     explicit sized_array(BOOST_RV_REF(sized_array) arg)
     {
         operator=(arg);
@@ -135,6 +151,7 @@ public:
         arg.size_ = 0;
         return *this;
     }
+#endif
 
     ~sized_array(void)
     {

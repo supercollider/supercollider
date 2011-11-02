@@ -66,7 +66,7 @@ d.zero;
 (
 SynthDef( "conv-test", { arg kernel, trig=0;
 	var input;
-		
+
 	input=Impulse.ar(1);
 
 	//must have power of two framesize
@@ -97,11 +97,11 @@ x.set(\trig,1); // after this trigger, the change will take effect.
 
 
 // next example
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 (
 	{ var input, kernel;
-		
+
 	input=AudioIn.ar(1);
 
 	//must have power of two framesize
@@ -116,7 +116,7 @@ b = Buffer.read(s,"sounds/a11wlk01.wav");
 //must have power of two framesize- FFT size will be sorted by Convolution2 to be double this
 //maximum is currently a=8192 for FFT of size 16384
 a=2048;
-s = Server.local; 
+s = Server.local;
 //kernel buffer
 g = Buffer.alloc(s,a,1);
 )
@@ -132,11 +132,11 @@ g.set(0,1.0);
 	{
 	var input,inputAmp,threshhold,gate;
 
-input = AudioIn.ar(1); 
+input = AudioIn.ar(1);
 inputAmp = Amplitude.kr(input);
 threshhold = 0.02;	// noise gating threshold
-gate = Lag.kr(inputAmp > threshhold, 0.01);	
-	
+gate = Lag.kr(inputAmp > threshhold, 0.01);
+
 	Out.ar(0,Convolution2.ar(input*gate,g.bufnum,0, a, 0.5));
 	 }.play;
 
@@ -150,7 +150,7 @@ b.sine1(1.0/[1,2,3,4,5,6], true, true, true);
 
 (
 	{ var input, kernel;
-		
+
 	input=AudioIn.ar(1);
 
 	//must have power of two framesize
@@ -168,7 +168,7 @@ b = Buffer.alloc( s, 2048, 1, _.zeroMsg );
 (
 	x = { arg i_kernel, density = 100, trigPeriod = 5.0, cutOff = 1000, minFreq = 200, maxFreq = 2000;
 		var input, trigFreq, recTrig, irSig, convTrig, convTrigs, bufFrames, conv1, conv2;
-		
+
 		input		= LPF.ar( Dust2.ar( density ), cutOff );
 		trigFreq		= trigPeriod.reciprocal;
 		recTrig		= Impulse.kr( trigFreq );
@@ -181,7 +181,7 @@ b = Buffer.alloc( s, 2048, 1, _.zeroMsg );
 		bufFrames		= BufFrames.ir( i_kernel );
 		// create the two alternatingly updated convolution ugens
 		#conv1, conv2	= Convolution2.ar( input, i_kernel, convTrigs, bufFrames );
-		
+
 		XFade2.ar( conv1, conv2, LFTri.kr( trigFreq * 0.5, 1 )) ! 2;
 	}.play( s, [ \i_kernel, b ]);
 )

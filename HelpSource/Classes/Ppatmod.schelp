@@ -28,7 +28,7 @@ x = a.asStream;
 
 
 //Ppatmod used to modify a pattern that produces a sequence of pitches:
- 
+
 (
 SynthDef(\help_sinegrain,
 	{ arg out=0, freq=440, sustain=0.05;

@@ -1,7 +1,13 @@
-+ Platform {
-	recompile{
++ LinuxPlatform {
+	recompile {
 		if ( this.hasFeature( \emacs ) ) {
-			Emacs.evalLispExpression( "(sclang-start)" );
-		};
+			Emacs.evalLispExpression( "(sclang-recompile)" )
+		} {
+			this.prRecompile
+		}
+	}
+
+	prRecompile {
+		_Recompile
 	}
 }

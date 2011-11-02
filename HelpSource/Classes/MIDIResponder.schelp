@@ -1,9 +1,12 @@
 class:: MIDIResponder
 summary:: Register multiple functions to be evaluated when MIDI events occur
-related:: Classes/MIDIIn, Reference/MIDI, Reference/UsingMIDI
+related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/MIDIIn, Reference/MIDI, Reference/UsingMIDI
 categories:: MIDI
 
 description::
+Description::
+note:: As of SC 3.5 link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: are the recommended way of registering for incoming MIDI messages. They are faster, safer, and have more logical argument order than the old MIDI responder classes. The older class MIDIResponder, and its subclasses NoteOnResponder, NoteOffResponder, BendResponder, TouchResponder, CCResponder, and ProgramChangeResponder are maintained for legacy code only.::
+
 MIDIResponder is an emphasis::abstract:: class. Its subclasses allow functions to be registered to respond to midi events.
 
 Read the general help file here and then see the individual help files.
@@ -56,7 +59,7 @@ definitionList::
 ## Function || Evaluate the function with the incoming value as the argument. The function should return true or false.
 ::
 
-For instance, the following example would respond to note on messages from any port, channels 2 and 7 only, even numbered note numbers only, and only velocity values greater than 50. 
+For instance, the following example would respond to note on messages from any port, channels 2 and 7 only, even numbered note numbers only, and only velocity values greater than 50.
 code::
 NoteOnResponder({ |src, chan, num, vel| [src, chan, num, vel].postln },
 	nil,	// any port

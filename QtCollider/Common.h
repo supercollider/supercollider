@@ -40,6 +40,7 @@ struct VariantList {
 };
 
 Q_DECLARE_METATYPE( VariantList );
+Q_DECLARE_METATYPE( PyrObject * );
 
 namespace QtCollider {
 
@@ -49,7 +50,11 @@ namespace QtCollider {
   };
 
   enum EventType {
-    Event_ScMethodCall = QEvent::User,
+    Event_SCRequest_Input = QEvent::User,
+    Event_SCRequest_Sched,
+    Event_SCRequest_Quit,
+    Event_SCRequest_Recompile,
+    Event_ScMethodCall,
     Event_Refresh,
     Event_Proxy_SetProperty,
     Event_Proxy_Destroy,
@@ -72,8 +77,15 @@ namespace QtCollider {
     qcDebugMsg(2,"unlocked");
   }
 
+  void runLang (
+    PyrObjectHdr *receiver,
+    PyrSymbol *method,
+    const QList<QVariant> & args = QList<QVariant>(),
+    PyrSlot *result = 0 );
+
   int wrongThreadError ();
 
+  extern PyrSymbol *s_interpretCmdLine;
   extern PyrSymbol *s_interpretPrintCmdLine;
   extern PyrSymbol *s_doFunction;
   extern PyrSymbol *s_doDrawFunc;
@@ -89,6 +101,7 @@ namespace QtCollider {
   extern PyrSymbol *s_QFont;
   extern PyrSymbol *s_QObject;
   extern PyrSymbol *s_QLayout;
+  extern PyrSymbol *s_QTreeViewItem;
 
 #define class_Rect s_Rect->u.classobj
 #define class_Point s_Point->u.classobj
@@ -102,6 +115,8 @@ namespace QtCollider {
 #define class_QFont s_QFont->u.classobj
 #define class_QObject s_QObject->u.classobj
 #define class_QLayout s_QLayout->u.classobj
+#define class_QTreeViewItem s_QTreeViewItem->u.classobj
+
 }
 
 #endif //_SC_QT_COMMON_H

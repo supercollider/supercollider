@@ -1,0 +1,111 @@
+CLASS:: MIDIFunc
+summary:: Fast Responder for incoming MIDI Messages
+categories:: MIDI
+related:: Guides/MIDI, Classes/MIDIdef
+
+DESCRIPTION::
+MIDIFunc (and its subclass link::Classes/MIDIdef::) registers one or more functions to respond to an incoming MIDI message. Many of its methods are inherited from its superclass link::Classes/AbstractResponderFunc::.
+
+note:: Use of the older classes MIDIResponder, CCResponder, NoteOnResponder, NoteOffResponder, BendResponder, TouchResponder, and ProgramChangeResponder can be unsafe, since responders in user and class code can override each other unintentionally. MIDIFunc and link::Classes/MIDIdef:: are faster, safer, and have more logical argument order. Thus they are the recommended way of registering for incoming MIDI messages as of SC 3.5.::
+
+
+CLASSMETHODS::
+private:: initClass, cmdPeriod
+
+METHOD:: defaultDispatchers
+Get or set an link::Classes/IndentityDictionary:: containing the default dispatcher objects for MIDIFuncs of different types (these are what you get if you pass nil as the dispatcher argument to link::#*new::). These objects will decide if any of their registered MIDIFuncs should respond to an incoming MIDI message. The dictionary should have the keys code::[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend]:: and values of an appropriate subclass of link::Classes/AbstractDispatcher:: for each message type. By default these will be instances of link::Classes/MIDIMessageDispatcher:: for the the first four message types, and instances of link::Classes/MIDIMessageDispatcherNV:: for the last three.
+
+returns:: The getter returns an link::Classes/IndentityDictionary::.
+
+METHOD:: new
+Create a new, enabled MIDIFunc. Normally one would use one of the message type specific convenience methods below, rather than use this method directly.
+
+argument:: func
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated for noteOn, noteOff, control, and polytouch messages it will be passed the arguments val, num, chan, and src, corresponding to the message value (e.g. velocity, control value, etc.), message number (e.g. note number), MIDI channel, and MIDI source uid. For touch, programme change and bend messages it will be passed only val, chan, and src.
+
+argument:: msgNum
+An link::Classes/Integer:: indicating the MIDI message number (note number, control number, or programme number) for this MIDIFunc. This can be an array. If nil, the MIDIFunc will respond to messages of all possible message numbers.
+
+argument:: chan
+An link::Classes/Integer:: indicating the MIDI channel number for this MIDIFunc. This can be an array. If nil, the MIDIFunc will respond to messages received on all channels.
+
+argument:: msgType
+A link::Classes/Symbol:: indicating which kind of MIDI message this MIDIFunc should respond to. One of code::\noteOn::, code::\noteOff::, code::\control::, code::\touch::, code::\polytouch::, code::\bend::, or code::program::.
+
+argument:: srcID
+An link::Classes/Integer:: corresponding to the uid of the MIDI input. (See link::Classes/MIDIClient::.)
+
+argument:: dispatcher
+An optional instance of an appropriate subclass of link::Classes/AbstractDispatcher::. This can be used to allow for customised dispatching. Normally this should not be needed.
+
+returns:: A new instance of MIDIFunc.
+
+METHOD:: cc
+A convience method to create a new MIDIFunc which responds to MIDI control messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI control messages.
+
+METHOD:: noteOn
+A convience method to create a new MIDIFunc which responds to MIDI note on messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI note on messages.
+
+METHOD:: noteOff
+A convience method to create a new MIDIFunc which responds to MIDI note off messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI note off messages.
+
+METHOD:: polytouch
+A convience method to create a new MIDIFunc which responds to MIDI polytouch messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI polytouch messages.
+
+METHOD:: touch
+A convience method to create a new MIDIFunc which responds to MIDI touch messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI touch messages.
+
+METHOD:: bend
+A convience method to create a new MIDIFunc which responds to MIDI bend messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI bend messages.
+
+METHOD:: program
+A convience method to create a new MIDIFunc which responds to MIDI program change messages. See link::#*new:: for argument descriptions.
+
+returns:: A new instance of MIDIFunc which responds to MIDI program change messages.
+
+
+INSTANCEMETHODS::
+private:: init, printOn
+
+METHOD:: chan
+Get this MIDIFunc's MIDI channel number.
+
+returns:: An link::Classes/Integer::.
+
+METHOD:: msgNum
+Get this MIDIFunc's MIDI message number.
+
+returns:: An link::Classes/Integer::.
+
+METHOD:: msgType
+Get this MIDIFunc's message type.
+
+returns:: A link::Classes/Symbol::; one of code::\noteOn::, code::\noteOff::, code::\control::, code::\touch::, code::\polytouch::, code::\bend::, or code::program::.
+
+
+EXAMPLES::
+
+code::
+MIDIIn.connectAll
+MIDIFunc.cc({arg ...args; args.postln}, 1); // match cc 1
+MIDIFunc.cc({arg ...args; args.postln}, 1, 1); // match cc1, chan 1
+MIDIFunc.cc({arg ...args; args.postln}, (1..10)); // match cc 1-10
+MIDIFunc.noteOn({arg ...args; args.postln}); // match any noteOn
+
+MIDIIn.doNoteOnAction(1, 1, 64, 64); // spoof a note on
+MIDIIn.doControlAction(1, 1, 1, 64); // spoof a cc
+MIDIIn.doControlAction(1, 1, 9, 64);
+MIDIIn.doControlAction(1, 10, 1, 64);
+::

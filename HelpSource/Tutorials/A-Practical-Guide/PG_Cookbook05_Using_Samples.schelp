@@ -17,7 +17,7 @@ The loop actually starts with a half-beat anacrusis, so link::Classes/Ptpar:: de
 
 code::
 (
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 // one loop segment
 SynthDef(\oneLoop, { |out, bufnum, start, time, amp|
@@ -60,7 +60,7 @@ p = Ptpar([
 				\decayScale, Pseq([6, Pn(1, inf)], 1),
 				\dur, Pwrand(#[0.25, 0.5, 0.75, 1], #[2, 3, 1, 1].normalizeSum, inf)
 			)
-		), 
+		),
 	inf),
 	0.5, Pbind(
 		\instrument, \bell,
@@ -99,7 +99,7 @@ q = Pn(
 			\decayScale, Pseq([6, Pn(1, inf)], 1),
 			\dur, Pwrand(#[0.25, 0.5, 0.75, 1], #[2, 3, 1, 1].normalizeSum, inf)
 		)
-	), 
+	),
 inf).play(quant: [4, 4]);
 
 r = Pbind(
@@ -138,10 +138,12 @@ fork {
 		RecordBuf.ar(car, b, loop: 0, doneAction: 2);
 		car ! 2
 	}.play;
-	OSCpathResponder(s.addr, ['/n_end', recorder.nodeID], { |time, resp, msg|
-		"done recording".postln;
-		resp.remove;
-	}).add;	
+	o = OSCFunc({ |msg|
+		if(msg[1] == recorder.nodeID, {
+			"done recording".postln;
+			o.free;
+		});
+	}, '/n_end', s.addr);
 };
 SynthDef(\sampler, { |out, bufnum, freq = 1, amp = 1|
 	var	sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: 2) * amp;
@@ -215,13 +217,13 @@ fork {
 		Synth(\sampleSource, [freq: ~midinotes[i].midicps, bufnum: buf]);
 	});
 };
-OSCresponderNode(s.addr, '/n_end', { |t, r, m|
+o = OSCFunc({ |msg|
 	bufCount = bufCount - 1;
 	if(bufCount == 0) {
 		"done recording".postln;
-		r.remove;
+		o.free;
 	};
-}).add;
+}, '/n_end', s.addr);
 
 SynthDef(\multiSampler, { |out, bufnum, bufBase, baseFreqBuf, freq = 440, amp = 1|
 	var	buf1 = bufnum.floor,

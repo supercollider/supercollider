@@ -34,9 +34,6 @@ namespace nova
 
 struct non_rt_functor
 {
-    static inline void init_tick(void)
-    {}
-
     static inline void init_thread(void)
     {
         realtime_engine_functor::init_thread();

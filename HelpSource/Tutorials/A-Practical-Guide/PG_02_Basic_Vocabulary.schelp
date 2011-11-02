@@ -284,7 +284,7 @@ definitionList::
 ## code::Pbrown(lo, hi, step, length):: || Brownian motion. Each value adds a random code::step:: to the previous value, where the code::step:: has an equal distribution between code::-step:: and code::+step::.
 ## code::Pgbrown(lo, hi, step, length):: || Brownian motion on a geometric scale. Each value multiplies a random code::step:: factor to the previous value.
 
-## code::Pbeta(lo, hi, prob1, prob2, length):: || Beta distribution, where code::prob1 = α:: (alpha) and code::prob2 = β:: (beta).
+## code::Pbeta(lo, hi, prob1, prob2, length):: || Beta distribution, where code::prob1 = α :: (alpha) and code::prob2 = β :: (beta).
 ## code::Pcauchy(mean, spread, length):: || Cauchy distribution.
 ## code::Pgauss(mean, dev, length):: || Guassian (normal) distribution.
 ## code::Phprand(lo, hi, length):: || Returns the greater of two equal-distribution random numbers.

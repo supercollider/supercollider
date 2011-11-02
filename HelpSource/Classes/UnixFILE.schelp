@@ -33,10 +33,10 @@ Writes an item to the file.
 argument::item
 one of the following:
 definitionList::
-## link::Classes/Float:: || 
-## link::Classes/Integer:: || 
-## link::Classes/Char:: || 
-## link::Classes/Color:: || 
+## link::Classes/Float:: ||
+## link::Classes/Integer:: ||
+## link::Classes/Char:: ||
+## link::Classes/Color:: ||
 ## link::Classes/Symbol:: || writes the name of the Symbol as a C string.
 ## link::Classes/RawArray:: || write the bytes from any RawArray in big endian.
 ::

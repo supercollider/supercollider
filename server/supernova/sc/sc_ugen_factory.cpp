@@ -33,70 +33,7 @@
 namespace nova
 {
 
-namespace
-{
-
-template<typename def>
-struct compare_def
-{
-    bool operator()(def const & lhs,
-                    std::string const & rhs) const
-    {
-        return lhs.name() < rhs;
-    }
-
-    bool operator()(std::string const & lhs,
-                    def const & rhs) const
-    {
-        return lhs < rhs.name();
-    }
-
-    bool operator()(def const & lhs,
-                    const char * rhs) const
-    {
-        return (strcmp(lhs.name().c_str(), rhs) < 0);
-    }
-
-    bool operator()(const char * lhs,
-                    def const & rhs) const
-    {
-        return (strcmp(lhs, rhs.name().c_str()) < 0);
-    }
-};
-
-template<typename def>
-struct equal_def
-{
-    bool operator()(def const & lhs,
-                    std::string const & rhs) const
-    {
-        return lhs.name() == rhs;
-    }
-
-    bool operator()(std::string const & lhs,
-                    def const & rhs) const
-    {
-        return lhs == rhs.name();
-    }
-};
-
-template<typename def>
-struct hash_def
-{
-    std::size_t operator()(std::string const & value)
-    {
-        return def::hash(value);
-    }
-};
-
-}
-
 sc_ugen_factory * sc_factory;
-
-sc_ugen_def::sc_ugen_def (const char *inUnitClassName, size_t inAllocSize,
-                          UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags):
-    name_(inUnitClassName), alloc_size(inAllocSize), ctor(inCtor), dtor(inDtor), flags(inFlags)
-{}
 
 Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, char *& chunk)
 {
@@ -105,11 +42,12 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     const size_t output_count = unit_spec.output_specs.size();
 
     /* size for wires and buffers */
+    memset(chunk, 0, alloc_size);
     Unit * unit = (Unit*)chunk;     chunk += alloc_size;
-    unit->mInput  = (Wire**)chunk;  chunk += unit_spec.input_specs.size() * sizeof(Wire*);
-    unit->mOutput = (Wire**)chunk;  chunk += unit_spec.output_specs.size() * sizeof(Wire*);
     unit->mInBuf  = (float**)chunk; chunk += unit_spec.input_specs.size() * sizeof(float*);
     unit->mOutBuf = (float**)chunk; chunk += unit_spec.output_specs.size() * sizeof(float*);
+    unit->mInput  = (Wire**)chunk;  chunk += unit_spec.input_specs.size() * sizeof(Wire*);
+    unit->mOutput = (Wire**)chunk;  chunk += unit_spec.output_specs.size() * sizeof(Wire*);
 
     unit->mNumInputs  = unit_spec.input_specs.size();
     unit->mNumOutputs = unit_spec.output_specs.size();
@@ -181,19 +119,102 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
 bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func)
 {
     sc_unitcmd_def * def = new sc_unitcmd_def(cmd_name, func);
-    commands.insert(*def);
+    unitcmd_set.insert(*def);
     return true;
 }
 
-UnitCmdFunc sc_ugen_def::find_command(const char * cmd_name)
+void sc_ugen_def::run_unit_command(const char * cmd_name, Unit * unit, struct sc_msg_iter *args)
 {
-    unit_commands_set::iterator it = commands.find(cmd_name, compare_def<sc_unitcmd_def>());
+    unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, named_hash_hash(), named_hash_equal());
 
-    if (it == commands.end())
+    if (it != unitcmd_set.end())
+        it->run(unit, args);
+}
+
+sample * sc_bufgen_def::run(World * world, uint32_t buffer_index, struct sc_msg_iter *args)
+{
+    SndBuf * buf = World_GetNRTBuf(world, buffer_index);
+    sample * data = buf->data;
+
+    (func)(world, buf, args);
+
+    if (data == buf->data)
         return NULL;
     else
-        return it->func;
+        return data;
 }
+
+void sc_plugin_container::register_ugen(const char *inUnitClassName, size_t inAllocSize,
+                                    UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
+{
+    sc_ugen_def * def = new sc_ugen_def(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
+    ugen_set.insert(*def);
+}
+
+void sc_plugin_container::register_bufgen(const char * name, BufGenFunc func)
+{
+    sc_bufgen_def * def = new sc_bufgen_def(name, func);
+    bufgen_set.insert(*def);
+}
+
+sc_ugen_def * sc_plugin_container::find_ugen(c_string const & name)
+{
+    ugen_set_type::iterator it = ugen_set.find(name, named_hash_hash(), named_hash_equal());
+    if (it == ugen_set.end()) {
+        std::cerr << "ugen not registered: " << name.c_str() << std::endl;
+        return 0;
+    }
+    return &*it;
+}
+
+bool sc_plugin_container::register_ugen_command_function(const char * ugen_name, const char * cmd_name,
+                                                     UnitCmdFunc func)
+{
+    sc_ugen_def * def = find_ugen(c_string(ugen_name));
+    if (def)
+        return false;
+    return def->add_command(cmd_name, func);
+}
+
+bool sc_plugin_container::register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data)
+{
+    cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, named_hash_hash(), named_hash_equal());
+    if (it != cmdplugin_set.end()) {
+        std::cerr << "cmd plugin already registered: " << cmd_name << std::endl;
+        return false;
+    }
+
+    sc_cmdplugin_def * def = new sc_cmdplugin_def(cmd_name, func, user_data);
+    cmdplugin_set.insert(*def);
+
+    return true;
+}
+
+sample * sc_plugin_container::run_bufgen(World * world, const char * name, uint32_t buffer_index, struct sc_msg_iter *args)
+{
+    bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
+    if (it == bufgen_set.end()) {
+        std::cerr << "unable to find buffer generator: " << name << std::endl;
+        return NULL;
+    }
+
+    return it->run(world, buffer_index, args);
+}
+
+
+bool sc_plugin_container::run_cmd_plugin(World * world, const char * name, struct sc_msg_iter *args, void *replyAddr)
+{
+    cmdplugin_set_type::iterator it = cmdplugin_set.find(name, named_hash_hash(), named_hash_equal());
+    if (it == cmdplugin_set.end()) {
+        std::cerr << "unable to find cmd plugin: " << name << std::endl;
+        return false;
+    }
+
+    it->run(world, args, replyAddr);
+
+    return true;
+}
+
 
 void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
 {
@@ -249,51 +270,5 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 void sc_ugen_factory::close_handles(void)
 {}
 #endif
-
-
-void sc_ugen_factory::register_ugen(const char *inUnitClassName, size_t inAllocSize,
-                                    UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
-{
-    sc_ugen_def * def = new sc_ugen_def(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
-    ugen_set.insert(*def);
-}
-
-void sc_ugen_factory::register_bufgen(const char * name, BufGenFunc func)
-{
-    sc_bufgen_def * def = new sc_bufgen_def(name, func);
-    bufgen_map.insert(*def);
-}
-
-BufGenFunc sc_ugen_factory::find_bufgen(const char * name)
-{
-    bufgen_set_t::iterator it = bufgen_map.find(name,
-                                                compare_def<sc_bufgen_def>());
-    if (it == bufgen_map.end()) {
-        std::cerr << "unable to find buffer generator: " << name << std::endl;
-        throw std::runtime_error("unable to create ugen");
-    }
-    return it->func;
-}
-
-sc_ugen_def * sc_ugen_factory::find_ugen(std::string const & name)
-{
-    ugen_set_type::iterator it = ugen_set.find(name,
-                                               hash_def<sc_ugen_def>(), equal_def<sc_ugen_def>());
-    if (it == ugen_set.end()) {
-        std::cerr << "ugen not registered: " << name << std::endl;
-        return 0;
-    }
-    return &*it;
-}
-
-bool sc_ugen_factory::register_ugen_command_function(const char * ugen_name, const char * cmd_name,
-                                                     UnitCmdFunc func)
-{
-    sc_ugen_def * def = find_ugen(ugen_name);
-    if (!def)
-        return false;
-    return def->add_command(cmd_name, func);
-}
-
 
 } /* namespace nova */

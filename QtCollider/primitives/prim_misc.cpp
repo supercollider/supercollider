@@ -34,12 +34,19 @@
 #include <QDesktopWidget>
 #include <QFontDatabase>
 #include <QStyleFactory>
+#include <QWebSettings>
 
 using namespace QtCollider;
 
 QC_LANG_PRIMITIVE( QtGUI_SetDebugLevel, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QtCollider::setDebugLevel( Slot::toInt(a) );
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QtGUI_DebugLevel, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  SetInt( r, QtCollider::debugLevel() );
   return errNone;
 }
 
@@ -57,6 +64,20 @@ QC_LANG_PRIMITIVE( QWindow_ScreenBounds, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlo
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( QWindow_AvailableGeometry, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QRect rect = QApplication::desktop()->availableGeometry();
+
+  int err = Slot::setRect( rectSlot, rect );
+  if( err ) return err;
+
+  slotCopy( r, rectSlot );
+
+  return errNone;
+}
+
 QC_LANG_PRIMITIVE( Qt_StringBounds, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString str = Slot::toString( a );
@@ -65,6 +86,9 @@ QC_LANG_PRIMITIVE( Qt_StringBounds, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   QFontMetrics fm( f );
   QRect bounds = fm.boundingRect( str );
+
+  // we keep the font height even on empty string;
+  if( str.isEmpty() ) bounds.setHeight( fm.height() );
 
   Slot::setRect( a+2, bounds );
   slotCopy( r, a+2 );
@@ -147,5 +171,14 @@ QC_LANG_PRIMITIVE( Qt_AvailableStyles, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   }
 
   Slot::setVariantList( r, list );
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QWebView_ClearMemoryCaches, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QWebSettings::clearMemoryCaches();
+
   return errNone;
 }

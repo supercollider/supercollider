@@ -1,6 +1,6 @@
 class:: MIDIIn
 summary:: receive MIDI messages
-related:: Classes/MIDIOut, Classes/MIDIResponder, Reference/MIDI, Reference/UsingMIDI
+related:: Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Reference/MIDI, Reference/UsingMIDI
 categories:: MIDI
 
 description::
@@ -9,10 +9,10 @@ This document explains technical details of the MIDI hardware interface class, M
 MIDIIn is a simple and direct interface. When MIDI events come into Super Collider, MIDIIn evaluates simple handler functions.
 
 note::
-For general programming, strong::users should not use the MIDIIn class directly::. See the link::Classes/MIDIResponder:: classes for higher level event matching and more flexible handling of event handlers.
+For general programming, strong::users should not use the MIDIIn class directly::. See the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes for higher level event matching and more flexible handling of event handlers.
 ::
 
-Certain MIDI messages are supported only through MIDIIn. These are: polytouch, program, sysex, sysrt, smpte.
+Certain MIDI messages are supported only through MIDIIn. These are: sysex, sysrt, smpte.
 
 See the link::Reference/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
 
@@ -36,6 +36,42 @@ code::
 MIDIClient.init;
 MIDIClient.sources;
 ::
+
+method::addFuncTo
+Add a link::Classes/Function:: or similar object to be evaluated whenever a particular MIDI message is received. This method is preferable to the setters below, since it will not overwrite any existing functions.
+
+argument::what
+A link::Classes/Symbol:: indicating the message type to wait for, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
+
+argument::func
+A link::Classes/Function:: or similar object to be evaluated when a message of the specified type is received. See the setters below for the arguments which will be passed at evaluation time.
+
+method::removeFuncFrom
+Remove a link::Classes/Function:: or similar object from the list of those to be evaluated whenever a particular MIDI message is received. This method is preferable to the setters below, since it will leave any existing functions in place.
+
+argument::what
+A link::Classes/Symbol:: indicating the message type, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
+
+argument::func
+The link::Classes/Function:: or similar object to be removed.
+
+method::replaceFuncTo
+Replace a link::Classes/Function:: or similar object in the list to be evaluated whenever a particular MIDI message is received with another one. This method is preferable to the setters below, since it will not overwrite any existing functions.
+
+argument::what
+A link::Classes/Symbol:: indicating the message type to wait for, one of code::'noteOn':: code::'noteOff'::, code::'polytouch'::, code::'control'::, code::'program'::, code::'touch'::, code::'bend'::, code::'sysex'::, code::'sysrt'::, code::'smpte'::, or code::'invalid':: (for invalid sysex messages).
+
+argument::func
+The link::Classes/Function:: or similar object to be replaced.
+
+argument::newFunc
+A link::Classes/Function:: or similar object to be evaluated when a message of the specified type is received. See the setters below for the arguments which will be passed at evaluation time.
+
+subsection:: Getter/Setters for Specific Message Types
+
+The methods below allow you to register a function to respond to a particular message type.
+
+note::It is preferable to use the link::#*addFuncTo::, link::#*removeFuncFrom:: and link::#*replaceFuncTo:: methods above instead of these methods, as they will not overwrite any functions added by system objects.::
 
 method::noteOn
 argument::value
@@ -166,18 +202,42 @@ Examples::
 subsection::Quick start for 1 port
 code::
 (
-	MIDIIn.connect;	// init for one port midi interface
+MIDIIn.connect;	// init for one port midi interface
 // register functions:
-	MIDIIn.noteOff = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
-	MIDIIn.noteOn = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
-	MIDIIn.polytouch = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
-	MIDIIn.control = { arg src, chan, num, val;	[chan,num,val].postln; };
-	MIDIIn.program = { arg src, chan, prog;		[chan,prog].postln; };
-	MIDIIn.touch = { arg src, chan, pressure;	[chan,pressure].postln; };
-	MIDIIn.bend = { arg src, chan, bend;		[chan,bend - 8192].postln; };
-	MIDIIn.sysex = { arg src, sysex;		sysex.postln; };
-	MIDIIn.sysrt = { arg src, chan, val;		[chan,val].postln; };
-	MIDIIn.smpte = { arg src, chan, val;		[chan,val].postln; };
+~noteOff = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
+~noteOn = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
+~polytouch = { arg src, chan, num, vel;	[chan,num,vel / 127].postln; };
+~control = { arg src, chan, num, val;	[chan,num,val].postln; };
+~program = { arg src, chan, prog;		[chan,prog].postln; };
+~touch = { arg src, chan, pressure;	[chan,pressure].postln; };
+~bend = { arg src, chan, bend;		[chan,bend - 8192].postln; };
+~sysex = { arg src, sysex;		sysex.postln; };
+~sysrt = { arg src, chan, val;		[chan,val].postln; };
+~smpte = { arg src, chan, val;		[chan,val].postln; };
+MIDIIn.addFuncTo(\noteOn, ~noteOn);
+MIDIIn.addFuncTo(\noteOff, ~noteOff);
+MIDIIn.addFuncTo(\polytouch, ~polytouch);
+MIDIIn.addFuncTo(\control, ~control);
+MIDIIn.addFuncTo(\program, ~program);
+MIDIIn.addFuncTo(\touch, ~touch);
+MIDIIn.addFuncTo(\bend, ~bend);
+MIDIIn.addFuncTo(\sysex, ~sysex);
+MIDIIn.addFuncTo(\sysrt, ~sysrt);
+MIDIIn.addFuncTo(\smpte, ~smpte);
+)
+
+//cleanup
+(
+MIDIIn.removeFuncFrom(\noteOn, ~noteOn);
+MIDIIn.removeFuncFrom(\noteOff, ~noteOff);
+MIDIIn.removeFuncFrom(\polytouch, ~polytouch);
+MIDIIn.removeFuncFrom(\control, ~control);
+MIDIIn.removeFuncFrom(\program, ~program);
+MIDIIn.removeFuncFrom(\touch, ~touch);
+MIDIIn.removeFuncFrom(\bend, ~bend);
+MIDIIn.removeFuncFrom(\sysex, ~sysex);
+MIDIIn.removeFuncFrom(\sysrt, ~sysrt);
+MIDIIn.removeFuncFrom(\smpte, ~smpte);
 )
 ::
 
@@ -198,7 +258,6 @@ code::
 MIDIIn.connect;
 s = Server.local;
 s.boot;
-s.latency = 0;
 
 (
 SynthDef("sik-goo", { arg freq=440,formfreq=100,gate=0.0,bwfreq=800;
@@ -210,26 +269,36 @@ SynthDef("sik-goo", { arg freq=440,formfreq=100,gate=0.0,bwfreq=800;
 	);
 	x = EnvGen.kr(Env.adsr, gate,Latch.kr(gate,gate)) * x;
 	Out.ar(0, x);
-}).send(s);
+}).add;
 )
 
 x = Synth("sik-goo");
 
 //set the action:
 (
-MIDIIn.noteOn = {arg src, chan, num, vel;
+~noteOn = {arg src, chan, num, vel;
 	x.set(\freq, num.midicps / 4.0);
 	x.set(\gate, vel / 200 );
 	x.set(\formfreq, vel / 127 * 1000);
 };
-MIDIIn.noteOff = { arg src,chan,num,vel;
+MIDIIn.addFuncTo(\noteOn, ~noteOn);
+
+~noteOff = { arg src,chan,num,vel;
 	x.set(\gate, 0.0);
 };
-MIDIIn.bend = { arg src,chan,val;
+MIDIIn.addFuncTo(\noteOff, ~noteOff);
+
+~bend = { arg src,chan,val;
 	//(val * 0.048828125).postln;
 	x.set(\bwfreq, val * 0.048828125 );
 };
+MIDIIn.addFuncTo(\bend, ~bend);
 )
+
+//cleanup
+MIDIIn.removeFuncFrom(\noteOn, ~noteOn);
+MIDIIn.removeFuncFrom(\noteOff, ~noteOff);
+MIDIIn.removeFuncFrom(\bend, ~bend);
 ::
 
 subsection::writing to the bus rather than directly to the synth
@@ -242,7 +311,6 @@ code::
 
 s = Server.local;
 s.boot;
-s.latency = 0;
 
 (
 SynthDef("moto-rev", { arg ffreq=100;
@@ -251,7 +319,7 @@ SynthDef("moto-rev", { arg ffreq=100;
 		ffreq, 0.1)
 		.clip2(0.4);
 	Out.ar(0, x);
-}).send(s);
+}).add;
 )
 
 b = Bus.control(s);
@@ -266,20 +334,28 @@ x.map(0, b);
 MIDIIn.connect;
 //set the action:
 (
-MIDIIn.noteOn = {arg src, chan, num, vel;
+~noteOn = {arg src, chan, num, vel;
 	b.value = num.midicps.postln;
 };
-MIDIIn.control = {arg src, chan, num, val;
+MIDIIn.addFuncTo(\noteOn, ~noteOn);
+
+~control = {arg src, chan, num, val;
 	[chan,num,val].postln;
 };
-MIDIIn.bend = {arg src, chan, val;
+MIDIIn.addFuncTo(\control, ~control);
+
+~bend = {arg src, chan, val;
 	val.postln;
 };
+MIDIIn.addFuncTo(\bend, ~bend);
 )
 
 // cleanup
 x.free;
 b.free;
+MIDIIn.removeFuncFrom(\noteOn, ~noteOn);
+MIDIIn.removeFuncFrom(\control, ~control);
+MIDIIn.removeFuncFrom(\bend, ~bend);
 ::
 
 subsection::Keyboard Split for two voices
@@ -302,7 +378,7 @@ SynthDef("funk",{ arg freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, 
 		EnvGen.kr(env,gate)*filterfreq,
 		rez);
 	Out.ar([0,1],x * EnvGen.kr(e, gate, doneAction: 2))
-}).send(s);
+}).add;
 
 SynthDef("strings",{ arg freq = 700, amp = 0.2, gate = 1;
 	var x,enve;
@@ -313,7 +389,7 @@ SynthDef("strings",{ arg freq = 700, amp = 0.2, gate = 1;
 		]),
 		6000,1);
 	Out.ar([0,1],x * EnvGen.kr(enve, gate, doneAction: 2))
-}).send(s);
+}).add;
 )
 
 (
@@ -336,7 +412,7 @@ rezbus.value = 1.0;
 lfospec = ControlSpec(0,50,\linear,0.001);
 lfobus = Bus.new(\control,3,1,s);
 
-MIDIIn.control = {arg src, chan, num, val;
+~control = {arg src, chan, num, val;
 	if(num == 1,{
 		rezbus.value = rezspec.map(val/127.0);
 	});
@@ -344,12 +420,14 @@ MIDIIn.control = {arg src, chan, num, val;
 		lfobus.value = lfospec.map(val/127.0).postln;
 	});
 };
+MIDIIn.addFuncTo(\control, ~control);
 
-MIDIIn.bend = {arg src, chan, val;
+~bend = {arg src, chan, val;
 	cutbus.value = cutspec.map(val/16383.0);
 };
+MIDIIn.addFuncTo(\bend, ~bend);
 
-MIDIIn.noteOn = {arg src, chan, num, vel;
+~noteOn = {arg src, chan, num, vel;
 	var node;
 	if(num < 60, {
 		node = Synth.tail(g, "funk", [\freq, num.midicps, \amp, vel/255]);
@@ -360,13 +438,14 @@ MIDIIn.noteOn = {arg src, chan, num, vel;
 //			node.mapMsg("cutoff",1,"rez",2,"lfospeed",3)
 //		);
 		keys.put(num, node)
-	},{ 
+	},{
 		node = Synth.tail(g, "strings", [\freq, num.midicps, \amp, vel/255]);
 		keys.put(num, node)
 	});
 };
+MIDIIn.addFuncTo(\noteOn, ~noteOn);
 
-MIDIIn.noteOff = {arg src, chan, num, vel;
+~noteOff = {arg src, chan, num, vel;
 	var node;
 	node = keys.at(num);
 	if (node.notNil, {
@@ -376,6 +455,12 @@ MIDIIn.noteOff = {arg src, chan, num, vel;
 		// then free it ... or get the NodeWatcher to do it
 	});
 };
-
+MIDIIn.addFuncTo(\noteOff, ~noteOff);
 )
+
+//cleanup
+MIDIIn.removeFuncFrom(\noteOn, ~noteOn);
+MIDIIn.removeFuncFrom(\control, ~control);
+MIDIIn.removeFuncFrom(\bend, ~bend);
+
 ::

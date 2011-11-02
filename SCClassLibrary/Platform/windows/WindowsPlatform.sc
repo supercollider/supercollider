@@ -1,7 +1,12 @@
 WindowsPlatform : Platform
 {
 	name { ^\windows }
-	startupFiles { ^["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath] }
+	startupFiles {
+		var deprecated = ["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath];
+		Platform.deprecatedStartupFiles(deprecated);
+		^(deprecated ++ super.startupFiles)
+	}
+
 	startup {
 		// Server setup
 		Server.program = "scsynth.exe";
@@ -22,5 +27,15 @@ WindowsPlatform : Platform
 	clearMetadata { |path|
 		path = path.splitext[0].do({ |chr, i| if(chr == $/) { path[i] = $\\.asAscii } });
 		"del %%.*meta%".format(34.asAscii, path, 34.asAscii).systemCmd;
+	}
+
+	killAll { |cmdLineArgs|
+		("taskkill /F /IM " ++ cmdLineArgs).unixCmd;
+	}
+
+	defaultTempDir {
+		// +/+ "" looks funny but ensures trailing slash
+		var tmp = this.userAppSupportDir +/+ "";
+		^if(File.exists(tmp)) { tmp }
 	}
 }

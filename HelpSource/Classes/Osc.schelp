@@ -1,6 +1,6 @@
 class:: Osc
 summary:: Interpolating wavetable oscillator.
-related:: Classes/COsc, Classes/OscN, Classes/VOsc, Classes/VOsc3
+related:: Classes/COsc, Classes/OscN, Classes/VOsc, Classes/VOsc3, Classes/Wavetable
 categories::  UGens>Generators>Deterministic
 
 
@@ -16,13 +16,12 @@ efficiently by the Oscillator. The buffer size must be a power of 2.
 
 
 This can be acheived by creating a Buffer object and sending it one of
-the "b_gen" messages (sine1, sine2, sine3) with the wavetable flag set
+the "b_gen" messages ( link::Classes/Buffer#-sine1::, link::Classes/Buffer#-sine2::, link::Classes/Buffer#-sine3:: ) with the wavetable flag set
 to true.
 
 
-This can also be acheived by creating a Signal object and sending it
-the 'asWavetable' message, saving it to disk, and having the server
-load it from there.
+This can also be achieved by creating a link::Classes/Signal:: object and sending it
+the 'asWavetable' message, thereby creating a Wavetable object in the required format. Then, the wavetable data may be transmitted to the server using the link::Classes/Buffer#*sendCollection:: or link::Classes/Buffer#*loadCollection:: methods.
 
 
 classmethods::
@@ -80,13 +79,13 @@ b.sine1([1.0], true, true, true);
 
 SynthDef("help-Osc",{ arg out=0,bufnum=0;
 	Out.ar(out,
-		Osc.ar(bufnum, 
+		Osc.ar(bufnum,
 			Osc.ar(bufnum,
 				XLine.kr(1,1000,9),
 				0,
 				200,
-				800), 
-			0, 
+				800),
+			0,
 			0.25)
 	)
 }).play(s,[\out, 0, \bufnum, b.bufnum]);
@@ -101,12 +100,12 @@ b.sine1([1.0], true, true, true);
 
 SynthDef("help-Osc",{ arg out=0,bufnum=0;
 	Out.ar(out,
-		Osc.ar(bufnum, 
-				800, 
+		Osc.ar(bufnum,
+				800,
 				Osc.ar(bufnum,
 						XLine.kr(20,8000,10),
 						0,
-						2pi), 
+						2pi),
 				0.25)
 	)
 }).play(s,[\out, 0, \bufnum, b.bufnum]);

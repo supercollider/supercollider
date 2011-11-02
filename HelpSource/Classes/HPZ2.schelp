@@ -44,10 +44,10 @@ code::
 // HPZ2 is useful to detect changes in a signal:
 // see also HPZ1
 (
-{ 	
-	var changingSignal = LFNoise0.ar(1000); 
+{
+	var changingSignal = LFNoise0.ar(1000);
 	var hpz1 = HPZ2.ar(changingSignal);
-	[hpz1, hpz1 > 0] 
+	[hpz1, hpz1 > 0]
 }.plot
 );
 ::

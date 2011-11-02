@@ -166,7 +166,7 @@ function onLoad() {
         }
         doSearch();
     }
-    
+
     document.getElementById("search_input").focus();
 
     node = document.getElementById("search_results");
@@ -279,7 +279,7 @@ function doPrint() {
             var x = v.path.split("/");
             var div = document.createElement("div");
             div.className = "result_item";
-            
+
             var n = document.createElement("a");
             if(v.matched_kw) {
                 n.setAttribute("href",v.path+".html#kw_"+v.matched_kw);
@@ -330,7 +330,7 @@ function doPrint() {
             x.appendChild(document.createTextNode(mname));
             x.className = "result_met";
             div.appendChild(x);
-            
+
             var x = mets[mindex][1].sort(function(a,b) { //document list
                     a = a.pfx + a.doc.title;
                     b = b.pfx + b.doc.title;
@@ -340,7 +340,7 @@ function doPrint() {
                     else
                     return 0;
             });
-                
+
             for(var i=0;i<x.length;i++) {
                 var m = x[i];
                 var v = m.doc;
@@ -348,7 +348,7 @@ function doPrint() {
                 var div2 = document.createElement("div");
                 div2.className = "met_docs";
                 div.appendChild(div2);
-                
+
                 var p = m.pfx;
                 if(p==".") p=" ";
                 div2.appendChild(document.createTextNode(p+" "));
@@ -609,7 +609,7 @@ Search text:<input type="text" id="search_input" value="" size="40" onkeyup="Sea
 <div id="search_checks">
 <input type="checkbox" id="ignore_case" checked="true">Ignore case</input>
 <input class="nonregex" type="checkbox" id="check_word">Whole word</input>
-<input class="nonregex" type="checkbox" id="check_prefix" checked="true">Starts with</input>
+<input class="nonregex" type="checkbox" id="check_prefix">Starts with</input>
 <input class="nonregex" type="checkbox" id="check_suffix">Ends with</input>
 <input type="checkbox" id="check_regexp">Regexp</input>
 </div>

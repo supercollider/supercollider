@@ -39,7 +39,7 @@ code::
 SynthDef(\bass, { |freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 1100, width = 0.15,
 		detune = 1.005, preamp = 4|
 	var	sig,
-		env = Env.adsr(0.01, 0.3, 0.4, 0.1);	
+		env = Env.adsr(0.01, 0.3, 0.4, 0.1);
 	freq = Lag.kr(freq, slideTime);
 	sig = Mix(VarSaw.ar([freq, freq * detune], 0, width, preamp)).distort * amp
 		* EnvGen.kr(env, gate, doneAction: 2);
@@ -175,12 +175,12 @@ code::
 ::
 
 definitionList::
-## Good: || 
+## Good: ||
 list::
 ## code::Psym(**, (pattern1: Pbind(**)) ::
 ## code::Pbind(\someValue, Pnsym(**, (pattern1: Pwhite(**))) ::
 ::
-## Bad: || 
+## Bad: ||
 list::
 ## code::Pbind(\someValue, Psym(**, (pattern1: Pwhite(**))) ::
 ::

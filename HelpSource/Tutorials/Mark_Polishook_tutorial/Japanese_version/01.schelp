@@ -6,7 +6,7 @@ related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 section::シンセシスとスケジューリングは2つの独立したプロセスである
 
 SuperColliderについてまず知らなければならないことは、それがクライアント／サーバー・モデルを使っているということです。このことが意味することは、私たちはSuperColliderの言語でシンセシスのプロセスを定義するプログラムを書くのだということです。私たちが書いたプログラムが正しい限りにおいては、サーバーは言われた通りのことをするでしょう。サーバーはオーディオを処理し、サウンドをシンセサイズします。
- 
+
 クライアント／サーバー・モデルによって、シンセシスの定義とシンセシスのスケジューリングを、2つのはっきり分かれた部分に簡単に分けることができます。シンセシスのスケジューリングからシンセシスの定義を分離することにはアドバンテージがあります。
 
 例えば、シンセシスのプロセスを同時に実行する必要なく、MIDIや、ディスクへのサウンドファイルの読み書きをスケジューリングするのにSuperCollider 3を使うことができます。
@@ -66,7 +66,7 @@ s.sendMsg("s_new", "sine", 1000, 1, 0);
 
 code::
 // ローカル・サーバー
-s = Server("thisMachine", NetAddr("localhost", 57110));	 
+s = Server("thisMachine", NetAddr("localhost", 57110));
 SynthDef("sine", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).send(s);
 s.sendMsg("s_new", "sine", 1000, 1, 0);
 

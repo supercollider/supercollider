@@ -30,7 +30,7 @@ SynthDef("Help-SynthDef", { arg out = 0;
 
 // Load it into the server
 s.loadSynthDef("Help-SynthDef");
-	
+
 // Create a Synth with it
 x = Synth.new("Help-SynthDef", s);
 
@@ -117,8 +117,8 @@ code::
 		var synth, msg;
 		target = target.asTarget;
 
-		synth = Synth.basicNew(name,target.server); // create a Synth, but not a synth node 
-		msg = synth.newMsg(target, addAction, args);// make a message that will add a synth node 
+		synth = Synth.basicNew(name,target.server); // create a Synth, but not a synth node
+		msg = synth.newMsg(target, addAction, args);// make a message that will add a synth node
 		this.send(target.server, msg); // ** send the def, and the message as a completion message
 		^synth // return the Synth object
 	}
@@ -133,7 +133,7 @@ code::
 (
 SynthDef("Help-SynthDef", { arg out=0;
 	Out.ar(out, PinkNoise.ar(0.1))
-}).send(s, ["s_new", "Help-SynthDef", x = s.nextNodeID]); 
+}).send(s, ["s_new", "Help-SynthDef", x = s.nextNodeID]);
 // this is 'messaging' style, see below
 )
 s.sendMsg("n_free", x);
@@ -167,9 +167,8 @@ SynthDef("help-Buffer",{ arg out=0, bufnum;
 
 y = Synth.basicNew("help-Buffer"); // not sent yet
 
-b = Buffer.read(s,"sounds/a11wlk01.wav",
-	completionMessage: { arg buffer; 
-		// synth add its s_new msg to follow 
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav", action: { arg buffer;
+		// synth add its s_new msg to follow
 		// after the buffer read completes
 		y.newMsg(s,\addToTail,[\bufnum,buffer])
 	} // .value NOT needed, unlike in the previous example
@@ -185,7 +184,7 @@ The main purpose of completion messages is to provide OSC messages for the serve
 
 code::
 (
-b = Buffer.alloc(s, 44100, 
+b = Buffer.alloc(s, 44100,
 	completionMessage: { arg buffer; ("bufnum:" + buffer).postln; }
 );
 )
@@ -197,7 +196,7 @@ b = Buffer.alloc;
 )
 ::
 
-One can also evaluate a function in response to a 'done' message, or indeed any other one, using an link::Classes/OSCresponder:: or an link::Classes/OSCresponderNode::. The main difference between the two is that the former allows only a single responder per command, where as the latter allows multiple responders. See their respective helpfiles for details.
+One can also evaluate a function in response to a 'done' message, or indeed any other one, using an link::Classes/OSCFunc::. See its help file for details.
 
 code::
 (
@@ -206,19 +205,19 @@ SynthDef("help-SendTrig",{
 }).send(s);
 
 // register to receive this message
-a = OSCresponderNode(s.addr, '/done', { arg time, responder, msg;
-	("This is the done message for the SynthDef.send:" + [time, responder, msg]).postln;
-}).add.removeWhenDone; // remove me automatically when done
-b = OSCresponderNode(s.addr, '/tr', { arg time, responder, msg;
-	[time, responder, msg].postln;
-}).add;
-c = OSCresponderNode(s.addr, '/tr', { arg time, responder, msg;
+a = OSCFunc({ arg msg, time;
+	("This is the done message for the SynthDef.send:" + [time, msg]).postln;
+}, '/done', a.addr).oneShot; // remove me automatically when done
+b = OSCFunc({ arg msg, time;
+	[time, msg].postln;
+}, '/tr', s.addr);
+c = OSCFunc({ arg msg;
 	"this is another call".postln;
-}).add;
+}, '/tr', s.addr);
 )
 
 x = Synth.new("help-SendTrig");
-b.remove;
-c.remove;
+b.free;
+c.free;
 x.free;
 ::

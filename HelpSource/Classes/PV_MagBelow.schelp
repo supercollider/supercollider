@@ -30,7 +30,7 @@ s.boot;
 
 (
 b = Buffer.alloc(s,2048,1);
-c = Buffer.read(s,"sounds/a11wlk01.wav");
+c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 )
 
 (
@@ -38,7 +38,7 @@ SynthDef("help-magBelow", { arg out=0, bufnum=0;
 	var in, chain;
 	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08, 0, 6, 6.2).squared, 0, 100, 800));
 	chain = FFT(bufnum, in);
-	chain = PV_MagBelow(chain, 10); 
+	chain = PV_MagBelow(chain, 10);
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s,[\out, 0, \bufnum, b.bufnum]);
 )
@@ -48,7 +48,7 @@ SynthDef("help-magBelow2", { arg out=0, bufnum=0;
 	var in, chain;
 	in = WhiteNoise.ar(0.2);
 	chain = FFT(bufnum, in);
-	chain = PV_MagBelow(chain, MouseX.kr(0, 7)); 
+	chain = PV_MagBelow(chain, MouseX.kr(0, 7));
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s,[\out, 0, \bufnum, b.bufnum]);
 )
@@ -58,7 +58,7 @@ SynthDef("help-magBelow3", { arg out=0, bufnum=0, soundBufnum=2;
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
 	chain = FFT(bufnum, in);
-	chain = PV_MagBelow(chain, MouseX.kr(0, 310)); 
+	chain = PV_MagBelow(chain, MouseX.kr(0, 310));
 	Out.ar(out, 0.5 * IFFT(chain).dup);
 }).play(s,[\out, 0, \bufnum, b.bufnum, \soundBufnum, c.bufnum]);
 )

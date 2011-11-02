@@ -196,7 +196,7 @@ x.free;
 
 // To free the bus:
 a.slots[1].at( 272 ).freeBus;
-a.slots[2].at( 8 ).freeBus; 
+a.slots[2].at( 8 ).freeBus;
 // Close the device after use:
 a.close;
 GeneralHID.stopEventLoop

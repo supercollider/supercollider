@@ -1,24 +1,16 @@
-Env {
-	// envelope specification for an EnvGen, Env is not a UGen itself
+AbstractEnv {
 	var <levels;
 	var <times;
 	var <curves = 'lin';		// can also be 'exp', 'sin', 'cos', a float curve value,
-								// or an array of curve values
-	var <releaseNode;	// index of release level, if nil then ignore release;
-	var <loopNode;		// index of loop start level, if nil then does not loop;
-
+							// or an array of curve values
 	var <array;
-
 	classvar <shapeNames;
 
-	*new { arg levels=#[0,1,0], times=#[1,1], curve='lin', releaseNode, loopNode;
-		^super.newCopyArgs(levels, times, curve, releaseNode, loopNode)
-	}
-	*newClear { arg numSegments=8;
+	*newClear { arg numSegments = 8;
 		// make an envelope for filling in later.
-		^this.new(Array.fill(numSegments+1,0), Array.fill(numSegments,1))
+		^this.new(Array.fill(numSegments + 1, 0), Array.fill(numSegments, 1))
 	}
-
+	
 	*initClass {
 		shapeNames = IdentityDictionary[
 			\step -> 0,
@@ -49,40 +41,25 @@ Env {
 		curves = z;
 		array = nil;
 	}
-	releaseNode_ { arg z;
-		releaseNode = z;
-		array = nil;
-	}
-	loopNode_ { arg z;
-		loopNode = z;
-		array = nil;
-	}
-	== { arg that;
-		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode'])
-	}
-	hash {
-		^this.instVarHash(['levels','times','curves','releaseNode','loopNode'])
-	}
-
+	
 	asArray {
 		if (array.isNil) { array = this.prAsArray }
 		^array
 	}
-
-	at { arg time;
-		var array = this.asArray;
-		^if(time.isSequenceableCollection) {
-			time.collect { |t| array.envAt(t) }
-		} {
-			array.envAt(time)
-		}
+	
+	*shapeNumber { arg shapeName;
+		var shape;
+		if (shapeName.isValidUGenInput) { ^5 };
+		shape = shapeNames.at(shapeName);
+		if (shape.notNil) { ^shape };
+		Error("Env shape not defined.").throw;
 	}
-
-	asPseg {
-		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves, inf) };
-		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy
+	
+	curveValue { arg curve;
+		^if(curve.isValidUGenInput) { curve } { 0 };
 	}
-
+	
+	
 	// methods to make some typical shapes :
 
 	// fixed duration envelopes
@@ -115,7 +92,91 @@ Env {
 			curve
 		)
 	}
+	
+	range { |lo = 0.0, hi = 1.0|
+		^this.copy.levels_(levels.linlin(levels.minItem, levels.maxItem, lo, hi))
+	}
 
+	exprange { |lo = 0.01, hi = 1.0|
+		^this.copy.levels_(levels.linexp(levels.minItem, levels.maxItem, lo, hi))
+	}
+	
+	asSignal { arg length = 400;
+		var duration, signal, ratio;
+		duration = times.sum;
+		ratio = duration/(length - 1);
+		signal = Signal(length);
+		length.do({ arg i; signal.add(this.at(i * ratio)) });
+		^signal;
+	}
+	
+	discretize {arg n = 1024;
+		^this.asSignal(n);
+	}
+
+}
+
+
+Env : AbstractEnv {
+	// envelope specification for an EnvGen, Env is not a UGen itself
+
+	var <releaseNode;	// index of release level, if nil then ignore release;
+	var <loopNode;		// index of loop start level, if nil then does not loop;
+
+
+	*new { arg levels = #[0,1,0], times = #[1,1], curve = 'lin', releaseNode, loopNode;
+		^super.newCopyArgs(levels, times, curve)
+			// note, we may not use newCopyArgs for these because of other instance vars
+			// in the superclass
+			.releaseNode_(releaseNode).loopNode_(loopNode)
+	}
+
+	releaseNode_ { arg z;
+		releaseNode = z;
+		array = nil;
+	}
+
+	loopNode_ { arg z;
+		loopNode = z;
+		array = nil;
+	}
+
+	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
+	
+	== { arg that;
+		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode'])
+	}
+	
+	hash {
+		^this.instVarHash(['levels','times','curves','releaseNode','loopNode'])
+	}
+
+	at { arg time;
+		var array = this.asArray;
+		^if(time.isSequenceableCollection) {
+			time.collect { |t| array.envAt(t) }
+		} {
+			array.envAt(time)
+		}
+	}
+
+	embedInStream { arg inval;
+		var startTime;
+		startTime = thisThread.endBeat ? thisThread.beats;
+		thisThread.endBeat = this.times.sum + startTime;
+		loop {
+			inval = yield(this.at(thisThread.beats - startTime));
+		}
+	}
+
+	asStream {
+		^Routine({ arg inval; this.embedInStream(inval) })
+	}
+
+	asPseg {
+		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves, inf) };
+		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy
+	}
 
 	// envelopes with sustain
 	*cutoff { arg releaseTime = 0.1, level = 1.0, curve = \lin;
@@ -127,6 +188,7 @@ Env {
 		};
 		^this.new([level, releaseLevel], [releaseTime], curve, 0)
 	}
+	
 	*dadsr { arg delayTime=0.1, attackTime=0.01, decayTime=0.3,
 			sustainLevel=0.5, releaseTime=1.0,
 				peakLevel=1.0, curve = -4.0, bias = 0.0;
@@ -137,6 +199,7 @@ Env {
 			3
 		)
 	}
+	
 	*adsr { arg attackTime=0.01, decayTime=0.3,
 			sustainLevel=0.5, releaseTime=1.0,
 				peakLevel=1.0, curve = -4.0, bias = 0.0;
@@ -159,7 +222,7 @@ Env {
 
 	releaseTime {
 		if(releaseNode.notNil,{
-			^times.copyRange(releaseNode,times.size - 1).sum
+			^times.copyRange(releaseNode, times.size - 1).sum
 		},{
 			^0.0 // ?
 		})
@@ -180,9 +243,9 @@ Env {
 	delay { arg delay;
 		^Env([levels[0]] ++ levels,
 			[delay] ++ times,
-			if (curves.isArray) {[\lin] ++ curves} {curves},
-			if(releaseNode.notNil) {releaseNode = releaseNode + 1},
-			if(loopNode.notNil) {loopNode = loopNode + 1}
+			if (curves.isArray) { [\lin] ++ curves } { curves },
+			if(releaseNode.notNil) { releaseNode = releaseNode + 1 },
+			if(loopNode.notNil) { loopNode = loopNode + 1 }
 		)
 	}
 
@@ -203,17 +266,6 @@ Env {
 		loopNode = 0;
 	}
 
-	/*
-	plot {
-		var timeScale;
-		timeScale = 0.01 / times.sum;
-		Synth.plot({ arg synth;
-			synth.releaseTime = 0.005;
-			EnvGen.ar(this, 1, 0, 1, 0, timeScale)
-		}, 0.01)
-	}
-	*/
-
 	isSustained {
 		^releaseNode.notNil
 	}
@@ -222,22 +274,6 @@ Env {
 		this.deprecated(thisMethod, this.class.class.findMethod(\shapeNumber));
 		^this.class.shapeNumber(shapeName)
 	}
-	*shapeNumber { arg shapeName;
-		var shape;
-		if (shapeName.isValidUGenInput) { ^5 };
-		shape = shapeNames.at(shapeName);
-		if (shape.notNil) { ^shape };
-		Error("Env shape not defined.").throw;
-	}
-	curveValue { arg curve;
-		if (curve.isValidUGenInput, { ^curve },{ ^0 });
-	}
-
-//	send { arg netAddr, bufnum;
-//		var array;
-//		array = this.asArray;
-//		netAddr.sendMsg("buf.setn", bufnum, 0, array.size, *array);
-//	}
 
 	test { arg releaseTime = 3.0;
 		var id, def, s;
@@ -264,39 +300,28 @@ Env {
 			};
 		};
 	}
-
-
-	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
-
+	
+	plot { arg size = 400, bounds, minval, maxval, parent;
+		this.asSignal(size).plot(bounds: bounds, minval: minval, maxval: maxval, parent: parent);
+	}
 
 	prAsArray {
-		var contents, curvesArray;
-		contents = [levels.at(0), times.size,
-				releaseNode ? -99, loopNode ? -99];
+		var contents, curvesArray, size;
+		size = times.size;
+		contents = Array.new((size + 1) * 4);
+		contents.add(levels.at(0));
+		contents.add(size);
+		contents.add(releaseNode ? -99);
+		contents.add(loopNode ? -99);
 		curvesArray = curves.asArray;
-		times.size.do({ arg i;
-			contents = contents ++ [
-				levels.at(i+1),
-				times.at(i),
-				this.class.shapeNumber(curvesArray.wrapAt(i)),
-				this.curveValue(curvesArray.wrapAt(i))
-			];
+		size.do({ arg i;
+			contents.add(levels.at(i+1));
+			contents.add(times.at(i));
+			contents.add(this.class.shapeNumber(curvesArray.wrapAt(i)));
+			contents.add(this.curveValue(curvesArray.wrapAt(i)));
 		});
 		^contents
 	}
 
-	discretize {arg n = 1024;
-		^this.asSignal(n);
-	}
-
-	range { |lo=0, hi=1|
-		^this.class.new(levels.linlin(levels.minItem, levels.maxItem, lo, hi),
-			times, curves, releaseNode, loopNode)
-	}
-
-	exprange { |lo=0, hi=1|
-		^this.class.new(levels.linexp(levels.minItem, levels.maxItem, lo, hi),
-			times, curves, releaseNode, loopNode)
-	}
 
 }

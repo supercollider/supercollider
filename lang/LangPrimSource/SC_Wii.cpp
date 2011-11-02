@@ -352,10 +352,10 @@ int SC_WIIManager::start( float updtime )
 #ifdef SC_LINUX
 cwiid_wiimote_t * SC_WIIManager::discover()
 {
-	static bdaddr_t bdaddr = {0, 0, 0, 0, 0, 0}; // BDADDR_ANY
- 	cwiid_wiimote_t* wiimotediscovered;
+	bdaddr_t bdaddr = {0, 0, 0, 0, 0, 0};
+	cwiid_wiimote_t* wiimotediscovered;
 
-	if ( (wiimotediscovered = cwiid_open(&bdaddr, CWIID_FLAG_MESG_IFC)) == NULL ) {
+	if ( (wiimotediscovered = cwiid_open(&bdaddr, 0)) == NULL ) {
 		return NULL;
 		}
 	if (cwiid_set_mesg_callback(wiimotediscovered, cwiid_callback)) {
@@ -1156,7 +1156,6 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 	int curid, nmotes;
 	int err;
  	PyrSlot* args = g->sp - 1;
-// 	PyrSlot *slot = g->sp - 2;
 
 	err = slotIntVal(args, &curid);
 	if (err) return err;
@@ -1166,22 +1165,21 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 	PyrObject* allDevsArray = slotRawObject(&args[1]);
 	PyrSlot* slotsArray = allDevsArray->slots;
 
-// 	post( "checked args %i\n", curid );
-// 	fflush( stdout );
-
 #ifdef SC_LINUX
 	cwiid_wiimote_t * thiswii;
 
 	thiswii = SC_WIIManager::instance().discover();
 	if ( thiswii == NULL ){
-		SetInt(g->sp-1, curid-1);
-//		post( "no device found; return errNone\n" );
+		SetFalse(g->sp-2);
+		post( "no device found\n" );
 		return errNone;
 	}
 #endif
 
-	if ( !isKindOfSlot(slotsArray+curid, s_wii->u.classobj ) )
+	if ( !isKindOfSlot(slotsArray+curid, s_wii->u.classobj ) ) {
+		SetFalse(g->sp-2);
 		return errWrongType;
+	}
 	PyrObject* obj = SC_WII::getObject(slotsArray+curid);
 	SC_WII* dev = SC_WII::getDevice(obj);
 
@@ -1196,10 +1194,13 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 #ifdef SC_LINUX
 	dev->m_wiiremote = thiswii;
 #endif
-	if ( SC_WIIManager::instance().add( dev ) )
+	if ( SC_WIIManager::instance().add( dev ) ) {
 		post( "device added\n" );
- 	else
- 		post( "device was already added\n" );
+		SetTrue(g->sp-2);
+	} else {
+		SetFalse(g->sp-2);
+		post( "device was already added\n" );
+	}
 
 	return errNone;
 }

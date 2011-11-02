@@ -7,13 +7,26 @@ HelpBrowser {
 	var <window;
 	var webView;
 	var animCount = 0;
-	var txtPath;
+	var srchBox;
 	var openNewWin;
+
+	*initClass {
+		StartUp.add {
+			NotificationCenter.register(SCDoc, \docMapDidUpdate, this) {
+				if(WebView.implClass.respondsTo(\clearCache)) {
+					WebView.clearCache;
+				}
+			}
+		}
+	}
 
 	*instance {
 		if( singleton.isNil ) {
 			singleton = this.new;
-			singleton.window.onClose = { singleton = nil; };
+			singleton.window.onClose = {
+				singleton.stopAnim;
+				singleton = nil;
+			};
 		};
 		^singleton;
 	}
@@ -41,10 +54,12 @@ HelpBrowser {
 	}
 
 	goTo {|url, brokenAction|
-		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"];
+		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"], c;
 
 		//FIXME: since multiple scdoc queries can be running at the same time,
 		//it would be best to create a queue and run them in order, but only use the url from the last.
+
+		window.front;
 
 		plainTextExts.do {|x|
 			if(url.endsWith(x)) {
@@ -61,6 +76,13 @@ HelpBrowser {
 				#newPath, oldPath = [url,webView.url].collect {|x|
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 				};
+				// detect old helpfiles and open them in OldHelpWrapper
+				if(block{|break| Help.do {|key,path| if(url.endsWith(path)) {break.value(true)}}; false}) {
+					url = "file://" ++ SCDoc.helpTargetDir +/+ "OldHelpWrapper.html#"++url++"?"++
+					SCDoc.helpTargetDir +/+ if((c=url.basename.split($.).first).asSymbol.asClass.notNil)
+						{"Classes" +/+ c ++ ".html"}
+						{"Guides/WritingHelp.html"}
+				};
 				webView.url = url;
 				// needed since onLoadFinished is not called if the path did not change:
 				if(newPath == oldPath) {webView.onLoadFinished.value};
@@ -69,7 +91,6 @@ HelpBrowser {
 				err.throw;
 			};
 		}.play(AppClock);
-		window.front;
 	}
 
 	goHome { this.goTo(homeUrl); }
@@ -89,10 +110,11 @@ HelpBrowser {
 		var winRect;
 		var x, y, w, h;
 		var str;
+		var first_search = true;
 
 		homeUrl = aHomeUrl;
 
-		winRect = Rect(0,0,800,600);
+		winRect = Rect(0, 0, 800, (Window.screenBounds.height * 0.8).floor);
 		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
 
 		window = Window.new( bounds: winRect ).name_("SuperCollider Help");
@@ -101,42 +123,37 @@ HelpBrowser {
 
 		h = strh + vPad;
 		x = marg; y = marg;
-		[\Home, \Back, \Forward].do { |sym|
-			var str = sym.asString;
+		[[\Back,"<"], [\Forward,">"], [\Reload, "Reload"]].do { |item|
+			var str = item[1];
 			var w = str.bounds.width + hPad;
-			toolbar[sym] = Button( window, Rect(x,y,w,h) ).states_([[str]]);
+			toolbar[item[0]] = Button( window, Rect(x,y,w,h) ).states_([[str]]);
 			x = x + w + 2;
 		};
 
-		str = "Path:";
-		w = str.bounds.width + 5;
-		x = x + 5;
-		StaticText.new( window, Rect(x, y, w, h) )
-			.string_(str)
-			.resize_(1);
-		x = x + w;
-
 		w = 200;
-		txtPath = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
-		txtPath.action = {|x|
-			var path, hash, fallback;
+		x = x + 10;
+		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1).string_("Quick lookup...");
+		srchBox.action = {|x|
 			if(x.string.notEmpty) {
-				#path, hash = x.string.findRegexp("([^#]+)(#?.*)")[1..].flop[1];
-				fallback = {SCDoc.helpTargetDir++"/Search.html#"++x.string};
-				if(hash.isEmpty) {
-					this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html", fallback)
-				} {
-					this.goTo(SCDoc.helpTargetDir +/+ path ++ ".html" ++ hash, fallback)
-				}
+				this.goTo(if(x.string.first==$#)
+					{SCDoc.helpTargetDir++"/Search.html#"++x.string.drop(1)}
+					{SCDoc.findHelpFile(x.string)}
+				);
+			}
+		};
+		srchBox.mouseDownAction = {
+			if(first_search) {
+				srchBox.string = "";
+				first_search = false;
 			}
 		};
 
 		openNewWin = aNewWin;
 		x = x + w + 10;
-		if(GUI.scheme==QtGUI) {
+		if(GUI.current.respondsTo(\checkBox)) {
 			str = "Open links in new window";
 			w = str.bounds.width + 50;
-			QCheckBox.new (window, Rect(x, y, w, h) )
+			CheckBox.new (window, Rect(x, y, w, h) )
 				.resize_(1)
 				.string_(str)
 				.value_(openNewWin)
@@ -173,14 +190,16 @@ HelpBrowser {
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
 		webView.html = "Please wait while initializing Help... (This might take several seconds the first time)";
 
+		if(webView.respondsTo(\setFontFamily)) {
+			webView.setFontFamily(\fixed, Platform.case(
+				\osx, { "Monaco" },
+				\linux, { "Andale Mono" }
+			))
+		};
+
 		webView.onLoadFinished = {
 			this.stopAnim;
-			window.name = "SuperCollider Help:"+webView.title;
-			if(webView.url.beginsWith("file://"++SCDoc.helpTargetDir)) {
-				txtPath.string = webView.url.findRegexp("file://"++SCDoc.helpTargetDir++"/([\\w/]+)\\.?.*")[1][1];
-			} {
-				txtPath.string = webView.url;
-			}
+			window.name = "SuperCollider Help: %".format(webView.title);
 		};
 		webView.onLoadFailed = { this.stopAnim };
 		webView.onLinkActivated = {|wv, url|
@@ -230,30 +249,19 @@ HelpBrowser {
 			}
 		};
 
-		toolbar[\Home].action = { this.goHome };
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
+		toolbar[\Reload].action = { this.goTo( webView.url ) };
 		txtFind.action = { |x| webView.findText( x.string ); };
 	}
 
 	openTextFile {|path|
 		var win, winRect, txt, file, fonts;
-		path = path.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
+		path = path.replace("%20"," ").findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
 		if(Document.implementationClass.notNil) {
 			^Document.open(path);
 		};
-		if("which xdg-open >/dev/null".systemCmd==0) {
-			^("xdg-open"+path).systemCmd;
-		};
-		winRect = Rect(0,0,600,400);
-		winRect = winRect.moveToPoint(winRect.centerIn(Window.screenBounds));
-		file = File(path,"r");
-		win = Window(bounds: winRect).name_("SuperCollider Help:"+path.basename);
-		txt = TextView(win,Rect(0,0,600,400)).resize_(5).string_(file.readAllString);
-		file.close;
-		fonts = Font.availableFonts;
-		txt.font = Font(["Monaco","Monospace"].detect {|x| fonts.includesEqual(x)} ?? {Font.defaultMonoFace}, 12);
-		win.front;
+		^path.openOS;
 	}
 
 	startAnim {

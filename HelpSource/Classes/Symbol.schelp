@@ -32,32 +32,32 @@ subsection::Testing
 method::isClassName
 
 Answer whether the symbol can be a class name. This does not say if the class exists.
-	
-code::	
+
+code::
 \Array.isClassName;
 \Bauxite.isClassName;
 ::
 
 method::isMetaClassName
-	
+
 Answer whether the symbol can be meta class name. This does not say if the class exists.
-	
-code::	
+
+code::
 \Meta_Array.isMetaClassName;
 ::
-	
+
 method::isSetter
-	
+
 Answer whether the symbol has a trailing underscore.
-	
+
 code::
 'action_'.isSetter;
 ::
-	
+
 method::isPrimitiveName
-	
+
 Answer whether the symbol is a valid primitive name
-	
+
 code::
 '_SymbolIsClassName'.isPrimitiveName;
 ::
@@ -65,15 +65,15 @@ code::
 subsection::Conversion
 
 method::asString
-	
+
 Convert to a String
-	
+
 method::asInteger
-	
+
 Convert to an Integer
-	
+
 method::asClass
-	
+
 Answer the Class named by the receiver.
 
 method::asSetter
@@ -102,7 +102,7 @@ Convert to a Scale
 
 subsection::Environments
 
-Symbols are used as keys to look up objects in dictionaries and environments, but also in arrays. 
+Symbols are used as keys to look up objects in dictionaries and environments, but also in arrays.
 See link::Classes/IdentityDictionary::, link::Classes/Environment::, link::Classes/Event::
 discussion::
 code::

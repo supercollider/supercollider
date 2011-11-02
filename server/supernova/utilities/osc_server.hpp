@@ -45,14 +45,16 @@ using namespace boost::asio::ip;
 class network_thread
 {
 public:
-    network_thread(void):
-        thread_(network_thread::start, this)
+    void start_receive(void)
     {
+        thread_ = boost::thread(network_thread::start, this);
         sem.wait();
     }
 
     ~network_thread(void)
     {
+        if (!thread_.joinable())
+            return;
         io_service_.stop();
         thread_.join();
     }
@@ -103,6 +105,7 @@ public:
     osc_server(unsigned int port):
         socket_(network_thread::io_service_, udp::endpoint(udp::v4(), port))
     {
+        network_thread::start_receive();
         start_receive();
     }
 

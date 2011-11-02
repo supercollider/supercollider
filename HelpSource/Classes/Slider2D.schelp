@@ -1,116 +1,163 @@
 class:: Slider2D
 redirect:: implClass
-summary:: A two-dimensional GUI slider
-categories:: GUI
+summary:: A view with a handle movable in two dimensions.
+categories:: GUI>Views
 related:: Classes/TabletSlider2D, Classes/TabletView
 
-description::
+DESCRIPTION::
 
-subsection:: Some Important Issues Regarding Slider2D
+A view that allows setting two numerical values represented by the horizontal and vertical position of a handle movable in two dimensions.
 
-Slider2D values always have ranges between zero and one. You must scale the output and input values to your needs. Using code::map:: and code::unmap::, combined with a link::Classes/Spec::, is helpful for this. To set the increment or decrement value of the slider, set the step. By default, the shift, ctrl, and alt keys will modify the stepping by 100x, 10x, or 0.1x respectively, though you can customize this by setting shift_scale, ctrl_scale, or alt_scale  (see link::Classes/SCSliderBase::). Drag and drop returns and accept a link::Classes/Point::. Inherits some formatting form link::Classes/SCSliderBase::.
+The values are always within the range between 0 and 1. Scaling the output and input values to your needs can easily be achieved by using a link::Classes/ControlSpec:: with its link::Classes/ControlSpec#-map#-map:: and link::Classes/ControlSpec#-unmap#-unmap:: methods.
 
-classmethods::
+The link::#-step:: variable determines the amount by which the values will change when the handle is controlled using the keyboard. By default, holding down the Shift, Ctrl, or Alt key will multiply this amount by 100, 10, or 0.1 respectively, though you can customize this by setting link::#-shift_scale::, link::#-ctrl_scale::, or link::#-alt_scale::.
 
-method:: new
-argument:: parent
-The parent view.
-argument:: bounds
-An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
-discussion::
-Example:
-code::
-(
-w = Window("2DSlider", Rect(100, 100, 140, 140)).front;
-t = Slider2D(w, Rect(20, 20, 80, 80))
-	.action_({|sl|
-		[\sliderX, sl.x, \sliderY, sl.y].postln;
-	});
-)
-::
-::
-
-instancemethods::
-
-subsection:: Accessing Instance and Class Variables
-
-method:: x
-The horizontal value of the 2d slider. Gets/sets the property, code::\x::, by calling code::get/setProperty(\x, val)::. This will not do the action of the slider.
-argument:: val
-
-method:: activex_
-Sets the property, code::\x::, by calling code::setPropertyWithAction(\x, val)::. Does the sliders action, if the x value has changed.
-argument:: val
-
-method:: y
-The vertical value of the 2d slider. Gets/sets the property, \y, by calling get/setProperty(\y, val). This will not do the action of the slider.
-argument:: val
-
-method:: activey_
-Sets the property, code::\y::, by calling code::setPropertyWithAction(\y, val)::. Does the sliders action, if the y value has changed.
-argument:: val
-
-method:: setXY
-A convenience method which performs both the x_ and y_ setters. This will not do the action of the slider.
-argument:: x
-argument:: y
-
-method:: setXYActive
-A convenience method which performs both the x_ and y_ setters. Does the action of the slider.
-argument:: x
-argument:: y
-
-method:: incrementY
-Increments y by code::1 / bounds.height::, unless the hight value is out of bounds. Does the action of the slider.
-
-method:: decrementY
-Decrements y by code::1 / bounds.heitght::, unless the hight value is out of bounds. Does the action of the slider.
-
-method:: incrementX
-Increments x by code::1 / bounds.width::, unless the hight value is out of bounds. Does the action of the slider.
-
-method:: decrementX
-Decrements x by code::1 / bounds.width::, unless the hight value is out of bounds. Does the action of the slider.
-
-subsection:: Subclassing and Internal Methods
-
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
-
-method:: defaultKeyDownAction
-argument:: char
-argument:: modifiers
-argument:: unicode
-discussion::
-The default keydown actions are:
-table::		
-## key || action || comment
-## r || activex_(1.rand), activey_(1.rand) with action || random
-## n || activex_(0), activey_(0) with action || left lower corner
-## x || activex_(1), activey_(1) with action || top left corner
-## c || activex_(0.5), activey_(0.5) with action || centered
-## unicode 16rF700 || incrementY || up arrow
-## unicode 16rF703 || incrementX || right arrow
-## unicode 16rF701 || decrementY || down arrow
-## unicode 16rF702 || decrementX || left arrow
-::
-
-method:: defaultGetDrag
-The method called by default when initiating a drag. Returns a link::Classes/Point:: code::(lo@hi)::.
-
-method:: defaultCanReceiveDrag
-The method called by default when attempting to place a drag in this object. By default, link::Classes/SCSlider:: will respond only to drags where the drag contains a link::Classes/Point::.
-
-method:: defaultReceiveDrag
-The default method called when a drag has been received. The default action performed when receiving a drag. Sets x and y respectively using the link::Classes/Point:: code::(currentDrag.x@currentDrag.y)::. Performs the action.
-
-method:: properties
-A list of properties to which this view responds. See link::Classes/SCView::.
-returns::
-[ \bounds, \visible, \enabled, \canFocus, \resize, \background, \minWidth, \maxWidth, \minHeight, \maxHeight, \knobColor, \step, \x, \y ]
+Drag and drop gives and accepts a link::Classes/Point:: of which the two coordinates represent the two values of the Slider2D.
 
 
 
-examples::
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+
+
+INSTANCEMETHODS::
+
+SUBSECTION:: Data
+
+METHOD:: x
+	The value represented by the horizontal position of the handle. It will always be clipped to the range between 0 and 1.
+
+	argument::
+		A Float.
+
+METHOD:: y
+	The value represented by the vertical position of the handle. It will always be clipped to the range between 0 and 1.
+
+	argument::
+		A Float.
+
+METHOD:: activex
+	Sets link::#-x:: and triggers the link::#-action::.
+
+
+METHOD:: activey
+	Sets link::#-y:: and triggers the link::#-action::.
+
+METHOD:: setXY
+	Sets link::#-x:: and link::#-y:: to the two arguments.
+
+METHOD:: setXYActive
+	Sets link::#-x:: and link::#-y:: to the two arguments, and triggers the link::#-action::.
+
+METHOD:: incrementX
+	Increments link::#-x:: by link::#-step:: multiplied by code::factor::.
+
+METHOD:: decrementX
+	Decrements link::#-x:: by link::#-step:: multiplied by code::factor::.
+
+METHOD:: incrementY
+	Increments link::#-y:: by link::#-step:: multiplied by code::factor::.
+
+METHOD:: decrementY
+	Decrements link::#-y:: by link::#-step:: multiplied by code::factor::.
+
+
+
+
+SUBSECTION:: Appearance
+
+METHOD:: knobColor
+	The color of the handle.
+
+	argument::
+		A Color.
+
+
+
+SUBSECTION:: Interaction
+
+METHOD:: step
+	The amount by which link::#-x:: or link::#-y:: will change when incremented or decremented, either by calling relevant methods, or when related keys are pressed.
+
+	argument::
+		A Float.
+
+METHOD:: pixelStepX
+	The absolute amount by which link::#-x:: would change if the handle moved horizontally by one pixel.
+
+	returns::
+		A Float.
+
+METHOD:: pixelStepY
+	The absolute amount by which link::#-y:: would change if the handle moved vertically by one pixel.
+
+	returns::
+		A Float.
+
+METHOD:: shift_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the values by keyboard while the Shift key is pressed.
+
+	argument::
+		A Float.
+
+METHOD:: ctrl_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the values by keyboard while the Ctrl key is pressed.
+
+	argument::
+		A Float.
+
+METHOD:: alt_scale
+	The factor by which link::#-step:: is multiplied when incrementing or decrementing the values by keyboard while the Alt key is pressed.
+
+	argument::
+		A Float.
+
+
+
+SUBSECTION:: Actions
+
+METHOD:: action
+	The action object evaluated whenever the user changes the position or size of the handle.
+
+METHOD:: defaultKeyDownAction
+
+	Implements the default effects of key presses as follows:
+
+	table::
+	## strong::Key::   || strong::Effect::
+	## r               || x_(1.rand), y_(1.rand), and triggers action
+	## n               || x_(0), y_(0), and triggers action
+	## x               || x_(1), y_(1), and triggers action
+	## c               || x_(0.5), y_(0.5), and triggers action
+	## up arrow        || incrementY
+	## down arrow      || decrementY
+	## right arrow     || incrementX
+	## left arrow      || decrementX
+	::
+
+
+
+SUBSECTION:: Drag and drop
+
+METHOD:: defaultGetDrag
+	returns::
+		A Point of which the x and y coordinates are set to link::#-x:: and link::#-y::, respectively.
+
+METHOD:: defaultCanReceiveDrag
+	returns::
+		True if the current drag data is a Point.
+
+METHOD:: defaultReceiveDrag
+	Sets link::#-x:: and link::#-y:: to the two coordinates of the Point stored as the current drag data, respectively, and triggers the link::#-action::.
+
+
+
+
+EXAMPLES::
 
 code::
 (

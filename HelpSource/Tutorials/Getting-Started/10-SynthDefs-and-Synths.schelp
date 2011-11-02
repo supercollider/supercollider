@@ -1,0 +1,187 @@
+title:: 10. SynthDefs and Synths
+summary:: Getting Started With SuperCollider
+categories:: Tutorials>Getting-Started
+related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
+
+Now that we've covered some basic information we're going to start looking at server abstractions, which are the various classes in the language app which represent things on the server. When looking at these it is important to understand that these objects are just client-side emphasis::representations:: of parts of the server's architecture, and should not be confused with those parts themselves. Server abstraction objects are simply conveniences.
+
+Distinguishing between the two can be a little confusing, so in general I refer herein to the client-side classes with uppercase names, and the corresponding aspects of server architecture with lowercase names, i.e. Synth vs. synth.
+
+You've already met one kind of server abstraction, class Server itself. The objects referred to by Server.local and Server.internal (and whichever one is stored in the interpreter variable 's' at any given moment) are instances of Server.
+
+Now it's time to get familiar with the rest of them. The first thing we'll look at is the class SynthDef, which is short for 'synth definition'.
+
+section::Meet the SynthDef
+
+Up until now we've been using Functions to generate audio. This way of working is very useful for quick testing, and in cases where maximum flexibility is needed. This is because each time we execute the code, the Function is evaluated anew, which means the results can vary greatly.
+
+The server, however, doesn't understand Functions, or OOP, or the SC language. It wants information on how to create audio output in a special form called a synth definition. A synth defintion is data about UGens and how they're interconnected. This is sent in a kind of special optimised form, called 'byte code', which the server can deal with very efficiently.
+
+Once the server has a synth definition, it's can very efficiently use it to make a number of synths based on it. Synths on the server are basically just things that make or process sound, or produce control signals to drive other synths.
+
+This relationship between synth definitions and synths is something like that between classes and instances, in that the former is a template for the latter. But remember that the server app knows nothing about OOP.
+
+Luckily for us there are classes in the language such as SynthDef, which make is easy to create the necessary byte code and send it to the server, and to deal with synth definitions in an object oriented way.
+
+Whenever you use any of Function's audio creating methods what happens is that a corresponding instance of SynthDef is created 'behind the scenes', so to speak, and the necessary byte code is generated and sent to the server, where a synth is created to play the desired audio. So Function's audio methods provide a kind of convenience for you, so that you don't have to take care of this.
+
+So how do you make a SynthDef yourself? You use its 'new' method. Let's compare a by now familiar Function based example, and make an equivalent SynthDef. Like Function, SynthDef also has a convenient play method, so we can easily confirm that these two are equivalent.
+
+code::
+//first the Function
+{ SinOsc.ar(440, 0, 0.2) }.play;
+
+// now here's an equivalent SynthDef
+SynthDef.new("tutorial-SinOsc", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).play;
+::
+
+SynthDef-new takes a number of arguments. The first is a name, usually in the form of a String as above. The second is in fact a Function. This argument is called a UGen Graph Function, as it tells the server how to connect together its various UGens.
+
+section::SynthDefs vs. Functions
+
+This UGen Graph Function we used in the second example above is similar to the Function we used in the first one, but with one notable difference: It has an extra UGen called Out. Out writes out an ar or kr signal to one of the server's busses, which can be thought of as mixer channels or outputs. We'll discuss busses in greater detail later, but for now just be aware that they're used for playing audio out of the computer, and for reading it in from sources such as microphones.
+
+Out takes two arguments: The first is the index number of the bus to write out on. These start from 0, which on a stereo setup is usually the left output channel. The second is either a UGen or an Array of UGens. If you provide an array (i.e. a multichannel output) then the first channel will be played out on the bus with the indicated index, the second channel on the bus with the indicated index + 1, and so on.
+
+Here's a stereo example to make clear how this works. The SinOsc with the frequency argument of 440 Hz will be played out on bus 0 (the left channel), and the SinOsc with the frequency argument of 442 Hz will be played out on bus 1 (the right channel).
+
+code::
+(
+SynthDef.new("tutorial-SinOsc-stereo", { var outArray;
+	outArray = [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)];
+	Out.ar(0, outArray)
+}).play;
+)
+::
+
+When you use Function-play an Out UGen is in fact created for you if you do not explicitly create one. The default bus index for this Out UGen is 0.
+
+Both Function-play and SynthDef-play return another type of object, a Synth, which represents a synth on the server. If you store this object by assigning it to a variable you can control it's behaviour in various ways. For instance the method 'free' causes the synth on the server to stop playing and its memory and cpu resources to be freed.
+
+code::
+x = { SinOsc.ar(660, 0, 0.2) }.play;
+y = SynthDef.new("tutorial-SinOsc", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).play;
+x.free;	// free just x
+y.free;	// free just y
+::
+
+This is more flexible than Cmd-., which frees all synths at once.
+
+SynthDef has two methods which cause the corresponding byte code to be sent to the server app without immediately creating a synth: send and load. The difference between these two is that send streams the definition over the network, and load writes the definiton to disk as a file so that the server can load it. Such a file will have the extension .scsyndef (so for example tutorial-SinOsc.scsyndef), and will be written into the synthdefs/ directory within the main SC directory. This will remain there until you specifically delete it, and will be loaded automatically whenever you boot a server.
+
+In general should use 'send' unless you're going to reuse the def all the time. It is however sometimes necessary to use 'load' with very large or complicated defs, due to limits on packet size on the network.
+
+You can create many, many Synths using the same Function or SynthDef, but using SynthDef has certain advantages, as well as certain limitations.
+
+Once you have a def in a server app, you can create many synths from it with a relatively low overhead of CPU. You can do this with Synth's new method, which takes a def's name as its first argument.
+
+code::
+SynthDef.new("tutorial-PinkNoise", { Out.ar(0, PinkNoise.ar(0.3)) }).send(s);
+x = Synth.new("tutorial-PinkNoise");
+y = Synth.new("tutorial-PinkNoise");
+x.free; y.free;
+::
+
+This is more efficient than repeatedly calling play on the same Function, as it saves the effort of evaluating the Function, compiling the byte code, and sending it multiple times. In many cases this saving in CPU usage is so small as to be largely insignificant, but when doing things like 'mass producing' synths, this can be important.
+
+A corresponding limitation to working with SynthDefs directly is that the UGen Graph Function in a SynthDef is evaluated emphasis::once and only once::. (Remember that the server knows nothing about the SC language.) This means that it is somewhat less flexible. Compare these two examples:
+
+code::
+// first with a Function. Note the random frequency each time 'play' is called.
+f = { SinOsc.ar(440 + 200.rand, 0, 0.2) };
+x = f.play;
+y = f.play;
+z = f.play;
+x.free; y.free; z.free;
+
+// Now with a SynthDef. No randomness!
+SynthDef("tutorial-NoRand", { Out.ar(0, SinOsc.ar(440 + 200.rand, 0, 0.2)) }).send(s);
+x = Synth("tutorial-NoRand");
+y = Synth("tutorial-NoRand");
+z = Synth("tutorial-NoRand");
+x.free; y.free; z.free;
+::
+
+Each time you create a new Synth based on the def, the frequency is the same. This is because the Function (and thus code::200.rand::) is only evaluated only once, when the SynthDef is created.
+
+section::Creating Variety with SynthDefs
+
+There are numerous ways of getting variety out of SynthDefs, however. Some things, such as randomness, can be accomplished with various UGens. One example is link::Classes/Rand::, which calculates a random number between low and high values when a synth is first created:
+
+code::
+// With Rand, it works!
+SynthDef("tutorial-Rand", { Out.ar(0, SinOsc.ar(Rand(440, 660), 0, 0.2)) }).send(s);
+x = Synth("tutorial-Rand");
+y = Synth("tutorial-Rand");
+z = Synth("tutorial-Rand");
+x.free; y.free; z.free;
+::
+
+This link::Browse#UGens:: category link lists a number of such UGens.
+
+The most common way of creating variables is through putting arguments into the UGen Graph Function. This allows you to set different values when the synth is created. These are passed in an array as the second argument to Synth-new. The array should contain pairs of arg names and values.
+
+code::
+(
+SynthDef("tutorial-args", { arg freq = 440, out = 0;
+	Out.ar(out, SinOsc.ar(freq, 0, 0.2));
+}).send(s);
+)
+x = Synth("tutorial-args");				// no args, so default values
+y = Synth("tutorial-args", ["freq", 660]);		// change freq
+z = Synth("tutorial-args", ["freq", 880, "out", 1]);	// change freq and output channel
+x.free; y.free; z.free;
+::
+
+This combination of args and UGens means that you can get a lot of mileage out of a single def, but in some cases where maximum flexibility is required, you may still need to use Functions, or create multiple defs.
+
+section::More About Synth
+
+Synth understands some methods which allow you to change the values of args after a synth has been created. For now we'll just look at one, 'set'. Synth-set takes pairs of arg names and values.
+
+code::
+Server.default = Server.internal;
+s = Server.default;
+s.boot;
+(
+SynthDef.new("tutorial-args", { arg freq = 440, out = 0;
+	Out.ar(out, SinOsc.ar(freq, 0, 0.2));
+}).send(s);
+)
+s.scope; // scope so you can see the effect
+x = Synth.new("tutorial-args");
+x.set("freq", 660);
+x.set("freq", 880, "out", 1);
+x.free;
+::
+
+section::Some Notes on Symbols, Strings, SynthDef and Arg Names
+
+SynthDef names and argument names can be either a String, as we've seen above, or another kind of literal called a Symbol. You write symbols in one of two ways, either enclosed in single quotes: code::'tutorial-SinOsc':: or preceded by a backslash: code::\tutorial-SinOsc::. Like Strings Symbols are made up of alpha-numeric sequences. The difference between Strings and Symbols is that all Symbols with the same text are guaranteed to be identical, i.e. the exact same object, whereas with Strings this might not be the case. You can test for this using '==='. Execute the following and watch the post window.
+
+code::
+"a String" === "a String"; 	// this will post false
+\aSymbol === 'aSymbol';		// this will post true
+::
+
+In general in methods which communicate with the server one can use Strings and Symbols interchangeably, but be aware that this is not necessarily true in general code.
+
+code::
+"this" === \this; 	// this will post false
+::
+
+For more information see:
+
+link::Classes/SynthDef::, link::Classes/Synth::, link::Classes/String::, link::Classes/Symbol::, link::Reference/Literals::, link::Guides/Randomness::, link::Browse#UGens::
+
+section::Suggested Exercise
+
+Try converting some of the earlier Function based examples, or Functions of your own, to SynthDef versions, adding Out UGens. Experiment with adding and changing arguments both when the synths are created, and afterwards using 'set'.
+
+____________________
+
+This document is part of the tutorial strong::Getting Started With SuperCollider::.
+
+Click here to go on to the next section: link::Tutorials/Getting-Started/11-Busses::
+
+Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

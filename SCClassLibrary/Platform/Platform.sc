@@ -1,8 +1,13 @@
 Platform
 {
+	classvar defaultStartupFile;
 	var <classLibraryDir, <helpDir, <>recordingsDir, features;
 
 	var <>devpath;
+
+	*initClass {
+		defaultStartupFile = this.userConfigDir +/+ "startup.scd"
+	}
 
 	initPlatform {
 		classLibraryDir = thisMethod.filenameSymbol.asString.dirname.dirname;
@@ -34,6 +39,12 @@ Platform
 	userExtensionDir { _Platform_userExtensionDir }
 	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
 
+	userConfigDir { _Platform_userConfigDir }
+	*userConfigDir { ^thisProcess.platform.userConfigDir }
+
+	defaultTempDir { ^this.subclassResponsibility() }
+	*defaultTempDir { ^thisProcess.platform.defaultTempDir }
+
 	// The "ideName" is for ide-dependent compilation.
 	// From SC.app, the value is "scapp" meaning "scide_scapp" folders will be compiled and other "scide_*" ignored.
 	ideName { _Platform_ideName }
@@ -58,7 +69,23 @@ Platform
 	startup { }
 	shutdown { }
 
-	startupFiles { ^#[] }
+	startupFiles {
+		^[defaultStartupFile];
+	}
+
+	*deprecatedStartupFiles {|paths|
+		var postWarning = false;
+		paths.do {|path|
+			if (File.exists(path.standardizePath)) {
+				warn("Deprecated startup file found: %\n".format(path));
+				postWarning = true;
+			}
+		};
+		if (postWarning) {
+			postln("Please use % as startup file.\nDeprecated startup files will be ignored in future versions.\n".format(defaultStartupFile));
+		}
+	}
+
 	loadStartupFiles { this.startupFiles.do{|afile|
 		afile = afile.standardizePath;
 		if(File.exists(afile), {afile.load})
@@ -109,6 +136,12 @@ Platform
 		^outpath;
 	}
 
+	// hook for clients to write frontend.css
+	writeClientCSS {}
+
+	killAll { |cmdLineArgs|
+		^this.subclassResponsibility(\killAll)
+	}
 }
 
 UnixPlatform : Platform
@@ -129,5 +162,16 @@ UnixPlatform : Platform
 		arch = pipe.getLine;
 		pipe.close;
 		^arch.asSymbol;
+	}
+
+	killAll { |cmdLineArgs|
+		("killall -9 " ++ cmdLineArgs).unixCmd;
+	}
+
+	defaultTempDir {
+		// +/+ "" looks funny but ensures trailing slash
+		^["/tmp/", this.userAppSupportDir +/+ ""].detect({ |path|
+			File.exists(path);
+		});
 	}
 }

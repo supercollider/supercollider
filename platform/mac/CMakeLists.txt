@@ -16,6 +16,10 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/
 	${CMAKE_SOURCE_DIR}/external_libraries/icu/unicode/
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/${HID_UTIL_DIR}
+	${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
+	${CMAKE_SOURCE_DIR}/external_libraries/boost
+	${CMAKE_SOURCE_DIR}/external_libraries/threadpool
+	${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/include
 	)
 
 find_package(Sndfile)
@@ -80,7 +84,6 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
-	${CMAKE_SOURCE_DIR}/common/strtod.c
 
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaFilePrimitives.M
@@ -104,7 +107,7 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/TabletEvents.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/TextFinder.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/UserPanel.M
-	${CMAKE_SOURCE_DIR}/editors/scapp/main.m
+	${CMAKE_SOURCE_DIR}/editors/scapp/main.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/post_queue.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/syntaxColorize.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLAdvancedFindController.m
@@ -114,8 +117,16 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/NSStringICUAdditions.m
 	)
 
+file(GLOB boost_system_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/system/src/*cpp)
+file(GLOB boost_fs_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/filesystem/v3/src/*cpp)
+list(APPEND scapp_sources ${boost_fs_sources} ${boost_system_sources})
+
+file(GLOB yaml_sources ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/src/*cpp)
+list(APPEND scapp_sources ${yaml_sources})
+
 set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
+	${CMAKE_SOURCE_DIR}/editors/scapp/main.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaBridgePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/CocoaFilePrimitives.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/DrawBackground.M
@@ -142,7 +153,6 @@ set(objc_sources
 	${CMAKE_SOURCE_DIR}/editors/scapp/SCNSWindow.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/TabletEvents.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/TextFinder.m
-	${CMAKE_SOURCE_DIR}/editors/scapp/main.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLAdvancedFindController.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/SMLStatusBarTextFieldCell.m
 	${CMAKE_SOURCE_DIR}/editors/scapp/SMLAdvancedFind/ICU/ICUMatcher.m
@@ -210,12 +220,13 @@ set_property(TARGET ${scappbundlename}
 # also TODO, separate gui name? (currently using MACOSX_BUNDLE_BUNDLE_NAME twice)
 
 target_link_libraries(${scappbundlename} icucore)
+target_link_libraries(${scappbundlename} boost_thread)
 
 target_link_libraries(${scappbundlename} "-framework ApplicationServices")
 target_link_libraries(${scappbundlename} "-framework Carbon")
 target_link_libraries(${scappbundlename} "-framework Cocoa")
 target_link_libraries(${scappbundlename} "-framework CoreAudio")
-target_link_libraries(${scappbundlename} "-framework CoreMidi")
+target_link_libraries(${scappbundlename} "-framework CoreMIDI")
 target_link_libraries(${scappbundlename} "-framework CoreServices")
 target_link_libraries(${scappbundlename} "-framework IOBluetooth")
 target_link_libraries(${scappbundlename} "-framework IOKit")

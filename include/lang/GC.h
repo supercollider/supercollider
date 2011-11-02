@@ -37,6 +37,8 @@ const int kMaxPoolSet = 7;
 const int kNumGCSizeClasses = 28;
 const int kFinalizerSet = kNumGCSizeClasses;
 const int kNumGCSets = kNumGCSizeClasses + 1;
+const int kScanThreshold =  256;
+
 
 class GCSet
 {
@@ -66,6 +68,8 @@ struct SlotRef {
 
 class PyrGC
 {
+	static const int kLazyCollectThreshold = 1024;
+
 public:
 	PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize);
 
@@ -132,13 +136,18 @@ public:
 
 	void Collect();
 	void Collect(int32 inNumToScan);
+	void LazyCollect()
+	{
+		if (mUncollectedAllocations > kLazyCollectThreshold)
+			Collect();
+	}
 	void FullCollection();
 	void ScanFinalizers();
 	GCSet* GetGCSet(PyrObjectHdr* inObj);
 	void CompletePartialScan(PyrObject *obj);
 
-	void ToGrey(PyrObjectHdr* inObj);
-	void ToGrey2(PyrObjectHdr* inObj);
+	inline void ToGrey(PyrObjectHdr* inObj);
+	inline void ToGrey2(PyrObjectHdr* inObj);
 	void ToBlack(PyrObjectHdr* inObj);
 	void ToWhite(PyrObjectHdr *inObj);
 	void Free(PyrObjectHdr* inObj);
@@ -166,7 +175,8 @@ public:
 	int32 GetPartialScanIndex() const { return mPartialScanSlot; }
 
 private:
-	PyrObject * Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
+	inline PyrObject * Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
+	static void throwMemfailed(size_t inNumBytes);
 
 	void ScanSlots(PyrSlot *inSlots, long inNumToScan);
 	void SweepBigObjects();
@@ -200,7 +210,7 @@ private:
 	int32 mNumGrey;
 	int32 mCurSet;
 
-	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned;
+	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned, mUncollectedAllocations;
 
 	unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
 	bool mCanSweep;
@@ -279,6 +289,70 @@ inline void PyrGC::Free(PyrObjectHdr* obj)
 
 	obj->gc_color = mFreeColor;
 	obj->size = 0;
+}
+
+inline void PyrGC::ToGrey(PyrObjectHdr* obj)
+{
+	/* move obj from white to grey */
+	/* link around object */
+	DLRemove(obj);
+
+	/* link in new place */
+	DLInsertAfter(&mGrey, obj);
+
+	/* set grey list pointer to obj */
+	obj->gc_color = mGreyColor;
+	mNumGrey ++ ;
+	mNumToScan += 1L << obj->obj_sizeclass;
+}
+
+inline void PyrGC::ToGrey2(PyrObjectHdr* obj)
+{
+	/* move obj from white to grey */
+	/* link around object */
+	DLRemove(obj);
+
+	/* link in new place */
+	DLInsertAfter(&mGrey, obj);
+
+	/* set grey list pointer to obj */
+	obj->gc_color = mGreyColor;
+	mNumGrey ++ ;
+}
+
+inline PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect)
+{
+	if (inCollect && mNumToScan >= kScanThreshold)
+		Collect();
+	else {
+		if (inCollect)
+			mUncollectedAllocations = 0;
+		else
+			++mUncollectedAllocations;
+	}
+
+	GCSet *gcs = mSets + sizeclass;
+
+	PyrObject * obj = (PyrObject*)gcs->mFree;
+	if (!IsMarker(obj)) {
+		// from free list
+		gcs->mFree = obj->next;
+		assert(obj->obj_sizeclass == sizeclass);
+	} else {
+		if (sizeclass > kMaxPoolSet) {
+			SweepBigObjects();
+			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
+			obj = (PyrObject*)mPool->Alloc(allocSize);
+		} else {
+			int32 allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
+			obj = (PyrObject*)mNewPool.Alloc(allocSize);
+		}
+		if (!obj)
+			throwMemfailed(inNumBytes);
+		DLInsertAfter(&gcs->mWhite, obj);
+		obj->obj_sizeclass = sizeclass;
+	}
+	return obj;
 }
 
 #endif

@@ -42,7 +42,7 @@ s.sendMsg("/b_alloc", 0, 44100 * 2);
 
 //write into the buffer with a BufWr
 (
-y = { arg rate=1; 
+y = { arg rate=1;
 	var in;
 	in = SinOsc.ar(LFNoise1.kr(2, 300, 400), 0, 0.1);
 	BufWr.ar(in, 0, Phasor.ar(0, BufRateScale.kr(0) * rate, 0, BufFrames.kr(0)));
@@ -52,8 +52,8 @@ y = { arg rate=1;
 
 //read it with a BufRd
 (
-x = { arg rate=1; 
-	BufRd.ar(1, 0, Phasor.ar(0, BufRateScale.kr(0) * rate, 0, BufFrames.kr(0))) 
+x = { arg rate=1;
+	BufRd.ar(1, 0, Phasor.ar(0, BufRateScale.kr(0) * rate, 0, BufFrames.kr(0)))
 }.play(s);
 )
 

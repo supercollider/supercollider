@@ -5,15 +5,15 @@ categories:: UGens, Server>Nodes
 
 definitionlist::
 ## 1. A Tour of available Unit Generators.
-|| SuperCollider has over 250 unit generators. 
-   If you count the unary and binary operators, there are over 300. 
+|| SuperCollider has over 250 unit generators.
+   If you count the unary and binary operators, there are over 300.
    This tour covers many, but not all of them.
-	
+
     categories of unit generators:
     list::
-    ## sources: periodic, aperiodic 
+    ## sources: periodic, aperiodic
     ## filters
-    ## distortion 
+    ## distortion
     ## panning
     ## reverbs
     ## delays and buffer ugens
@@ -120,7 +120,7 @@ code::
 
 subsection:: Band Limited Oscillators
 
-link::Classes/SinOsc::, link::Classes/FSinOsc::, link::Classes/Blip::, link::Classes/Saw::, link::Classes/Pulse:: - will not alias. 
+link::Classes/SinOsc::, link::Classes/FSinOsc::, link::Classes/Blip::, link::Classes/Saw::, link::Classes/Pulse:: - will not alias.
 
 definitionlist::
 ## link::Classes/SinOsc::, link::Classes/FSinOsc::
@@ -133,7 +133,7 @@ code::
 ::
 code::
 { FSinOsc.ar(800,0,0.1) }.scope(1, zoom: 4);
-// FSinOsc should not be frequency modulated. 
+// FSinOsc should not be frequency modulated.
 // Since it is based on a filter at the edge of stability, it will blow up:
 { FSinOsc.ar(FSinOsc.kr(FSinOsc.kr(0.2,0,8,10),0, 400,800),0,0.1) }.scope(1, zoom: 4);
 ::
@@ -462,7 +462,7 @@ code::
 { SinOsc.ar(300, 0).cubed * 0.2 }.scope(1);
 ::
 
-## distort, softclip, clip2, fold2, wrap2, 
+## distort, softclip, clip2, fold2, wrap2,
 ||
 code::
 { SinOsc.ar(300, 0, MouseX.kr(0.1,80,1)).distort * 0.2 }.scope(1);
@@ -483,7 +483,7 @@ code::
 || (currently there is a limit of 8pi)
 code::
 (
-{ 
+{
 	var in;
 	in = SinOsc.ar(300, 0, MouseX.kr(0.1,8pi,1));
 	SinOsc.ar(0, in, 0.2); // 0 Hz sine oscillator
@@ -570,15 +570,15 @@ code::
 (
 {
 	var w, x, y, p, lf, rf, rr, lr;
-	
+
 	p = BrownNoise.ar; // source
-	
+
 	// B-format encode
-	#w, x, y = PanB2.ar(p, MouseX.kr(-1,1), 0.3); 
-	
+	#w, x, y = PanB2.ar(p, MouseX.kr(-1,1), 0.3);
+
 	// B-format decode to quad. outputs in clockwise order
 	#lf, rf, rr, lr = DecodeB2.ar(4, w, x, y);
-	
+
 	[lf, rf, lr, rr] // reorder to my speaker arrangement: Lf Rf Lr Rr
 }.scope(4);
 )
@@ -589,7 +589,7 @@ code::
 code::
 (
 {
-	// rotation of stereo sound via mouse 
+	// rotation of stereo sound via mouse
 	var x, y;
 	x = Mix.fill(4, { LFSaw.ar(200 + 2.0.rand2, 0, 0.1) }); // left in
 	y = WhiteNoise.ar * LFPulse.kr(3,0,0.7,0.2); // right in
@@ -646,7 +646,7 @@ arguments: code:: in, maximum delay time, current delay time, mul, add ::
 
 code::
 (
-// Dust randomly triggers Decay to create an exponential 
+// Dust randomly triggers Decay to create an exponential
 // decay envelope for the WhiteNoise input source
 {
 z = Decay.ar(Dust.ar(1,0.5), 0.3, WhiteNoise.ar);
@@ -667,10 +667,10 @@ DelayL.ar(z, 0.3, MouseX.kr(0,0.3), 1, z); // input is mixed with delay via the 
 || arguments: code:: in, maximum delay time, current delay time, echo decay time, mul, add ::
 
 code::
-// used as an echo. 
+// used as an echo.
 { CombN.ar(Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.scope(1, zoom:4);
 
-// Comb used as a resonator. The resonant fundamental is equal to 
+// Comb used as a resonator. The resonant fundamental is equal to
 // reciprocal of the delay time.
 { CombN.ar(WhiteNoise.ar(0.02), 0.01, XLine.kr(0.0001, 0.01, 20), 0.2) }.scope(1);
 
@@ -708,7 +708,7 @@ code::
 || arguments: code:: numChannels, buffer number, rate, trigger, start pos, loop ::
 code::
 // read sound
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 { SinOsc.ar(800 + (700 * PlayBuf.ar(1,b, BufRateScale.kr(b),  loop:1)),0,0.3) }.scope(1);
 
@@ -762,7 +762,7 @@ code::
 }.scope(1);
 )
 
-// zig zag around sound 
+// zig zag around sound
 (
 {
 	var rate;
@@ -784,7 +784,7 @@ definitionlist::
 || arguments: code:: numChannels, trigger, buffer number, rate, center pos, dur, pan, amp, interpolation ::
 code::
 // read sound
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 (
 {
@@ -940,7 +940,7 @@ code::
 { SinOsc.ar(Decay.ar(Dust.ar(4), 0.5, 1000, 400), 0, 0.2) }.scope(1, zoom:4);
 ::
 
-## link::Classes/Decay2:: - triggered exponential attack and exponential decay 
+## link::Classes/Decay2:: - triggered exponential attack and exponential decay
 || arguments: code:: trigger, attack time, decay time, mul, add ::
 code::
 { WhiteNoise.ar * Decay2.ar(Impulse.ar(1), 0.2, 0.9, 0.2) }.scope(1, zoom:4);
@@ -976,7 +976,7 @@ code::
 || arguments: code:: trigger, delay time ::
 code::
 (
-{ 
+{
 	var trig;
 	trig = Dust.ar(2);
 	[(Trig1.ar(trig, 0.05) * FSinOsc.ar(600, 0, 0.2)),
@@ -1004,7 +1004,7 @@ code::
 (
 {
 SinOsc.ar(
-			PulseCount.ar(Impulse.ar(10), Impulse.ar(0.4)) * 200, 
+			PulseCount.ar(Impulse.ar(10), Impulse.ar(0.4)) * 200,
 			0, 0.05
 		)
 }.scope(2, zoom:4);
@@ -1015,12 +1015,12 @@ SinOsc.ar(
 || arguments: code:: trigger, div, start ::
 code::
 (
-{	
+{
 	var p, a, b;
 	p = Impulse.ar(8);
 	a = SinOsc.ar(1200, 0, Decay2.ar(p, 0.005, 0.1));
 	b = SinOsc.ar(600,  0, Decay2.ar(PulseDivider.ar(p, MouseX.kr(1,8).round(1)), 0.005, 0.5));
-	
+
 	[a, b] * 0.4
 }.scope(2, zoom:4);
 )
@@ -1041,13 +1041,13 @@ z.release;
 
 (
 // randomly generated envelope
-z = { arg gate=1; 
+z = { arg gate=1;
 	var env, n=32;
 	env = Env(
-				[0]++{1.0.rand.squared}.dup(n-1) ++ [0], 
+				[0]++{1.0.rand.squared}.dup(n-1) ++ [0],
 				{rrand(0.005,0.2)}.dup(n),
 				\lin, n-8, 8 );
-	EnvGen.kr(env, gate, doneAction: 2) * LFTri.ar(220,0,0.4) 
+	EnvGen.kr(env, gate, doneAction: 2) * LFTri.ar(220,0,0.4)
 }.scope(1, zoom:4);
 )
 z.release;
@@ -1066,7 +1066,7 @@ code::
 // alloc a buffer for the FFT
 b = Buffer.alloc(s,2048,1);
 // read a sound
-c = Buffer.read(s, "sounds/a11wlk01.wav");
+c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 
 (
@@ -1085,7 +1085,7 @@ c = Buffer.read(s, "sounds/a11wlk01.wav");
 	var in, chain;
 	in = PlayBuf.ar(1,c, BufRateScale.kr(c), loop:1);
 	chain = FFT(b, in);
-	chain = PV_MagAbove(chain, MouseX.kr(0.1,512,1)); 
+	chain = PV_MagAbove(chain, MouseX.kr(0.1,512,1));
 	0.5 * IFFT(chain);
 }.scope(1);
 )
@@ -1096,7 +1096,7 @@ c = Buffer.read(s, "sounds/a11wlk01.wav");
 	var in, chain;
 	in = PlayBuf.ar(1,c, BufRateScale.kr(c), loop:1);
 	chain = FFT(b, in);
-	chain = PV_MagBelow(chain, MouseX.kr(0.1,512,1)); 
+	chain = PV_MagBelow(chain, MouseX.kr(0.1,512,1));
 	0.5 * IFFT(chain);
 }.scope(1);
 )
@@ -1107,7 +1107,7 @@ c = Buffer.read(s, "sounds/a11wlk01.wav");
 	var in, chain;
 	in = PlayBuf.ar(1,c, BufRateScale.kr(c), loop:1);
 	chain = FFT(b, in);
-	chain = PV_BrickWall(chain, MouseX.kr(-1,1)); 
+	chain = PV_BrickWall(chain, MouseX.kr(-1,1));
 	0.5 * IFFT(chain);
 }.scope(1);
 )
@@ -1165,9 +1165,9 @@ code::
 
 // correlated
 (
-{ var x; 
-	x = Klank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar(7e-3)); 
-	[x,x] 
+{ var x;
+	x = Klank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar(7e-3));
+	[x,x]
 }.scope(2))
 // not correlated
 { Klank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar([7e-3,7e-3])) }.scope(2);
@@ -1183,7 +1183,7 @@ code::
 
 (
 // inter-speaker delays
-{ var x; x = LFTri.ar(1000,0,Decay2.ar(Impulse.ar(4,0,0.2),0.004,0.2)); 
+{ var x; x = LFTri.ar(1000,0,Decay2.ar(Impulse.ar(4,0,0.2),0.004,0.2));
 	[DelayC.ar(x,0.01,0.01),DelayC.ar(x,0.02,MouseX.kr(0.02, 0))]
 }.scope(2);
 )
@@ -1191,7 +1191,7 @@ code::
 (
 // mixing two delays together
 // you hear a phasing sound but the sound is still flat.
-{ var x; x = BrownNoise.ar(0.2); 
+{ var x; x = BrownNoise.ar(0.2);
 	x = Mix.ar([DelayC.ar(x,0.01,0.01),DelayC.ar(x,0.02,MouseX.kr(0,0.02))]);
 	[x,x]
 }.scope(2);
@@ -1199,7 +1199,7 @@ code::
 
 (
 // more spatial sounding. phasing causes you to perceive directionality
-{ var x; x = BrownNoise.ar(0.2); 
+{ var x; x = BrownNoise.ar(0.2);
 	[DelayC.ar(x,0.01,0.01),DelayC.ar(x,0.02,MouseX.kr(0.02, 0))]
 }.scope(2);
 )
@@ -1212,7 +1212,7 @@ code::
 	// mixing sine oscillators in parallel
 	var n = 16; // number of structures to make
 	// mix together  parallel structures
-	Mix.fill(n, 		
+	Mix.fill(n,
 			// this function creates an oscillator at a random frequency
 			{ FSinOsc.ar(200 + 1000.0.rand) }
 	) / (2*n)			// scale amplitude
@@ -1224,7 +1224,7 @@ code::
 	// mixing sine oscillators in parallel
 	var n = 16; // number of structures to make
 	// mix together  parallel structures
-	Mix.fill(n, 		
+	Mix.fill(n,
 			// this function creates an oscillator at a random frequency
 			{ FSinOsc.ar(200 + 1000.0.rand + [0, 0.5]) }
 	) / (2*n)			// scale amplitude
@@ -1236,8 +1236,8 @@ code::
 	// mixing sine oscillators in parallel
 	var n = 16; // number of structures to make
 	// mix together  parallel structures
-	Mix.fill(n, 		
-			{ 
+	Mix.fill(n,
+			{
 				var amp;
 				amp = FSinOsc.kr(exprand(0.1,1),2pi.rand).max(0);
 				Pan2.ar(
@@ -1259,12 +1259,12 @@ code::
 				Dust.ar( // random impulses as an excitation function
 					// an array to cause expansion of Dust to n channels
 					// 1 means one impulse per second on average
-					1.dup(n), 
+					1.dup(n),
 					0.3 // amplitude
-				), 
+				),
 				0.01, // max delay time in seconds
 				// array of different random lengths for each 'string'
-				{0.004.rand+0.0003}.dup(n), 
+				{0.004.rand+0.0003}.dup(n),
 				4 // decay time in seconds
 			),
 			{1.0.rand2}.dup(n) // give each voice a different pan position

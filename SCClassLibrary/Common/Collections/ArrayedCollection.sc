@@ -304,6 +304,9 @@ ArrayedCollection : SequenceableCollection {
 		^this.overWrite(this.copyRange(from, to).performList(selector, argList), from)
 	}
 
+	clipExtend { arg length;
+		^this.extend(length, this.last)
+	}
 
 	// concepts borrowed from J programming language
 	rank {

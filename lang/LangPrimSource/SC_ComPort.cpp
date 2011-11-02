@@ -26,6 +26,7 @@
 #include <stdexcept>
 #include <stdarg.h>
 #include "SCBase.h"
+#include <fcntl.h>
 
 #ifndef SC_WIN32
 # include <unistd.h>
@@ -64,7 +65,7 @@ int recvallfrom(int socket, void *msg, size_t len, struct sockaddr *fromaddr, in
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
 
-void ProcessOSCPacket(OSC_Packet *inPacket);
+void ProcessOSCPacket(OSC_Packet *inPacket, int inPortNum);
 
 void dumpOSCmsg(int inSize, char* inData)
 {
@@ -246,7 +247,8 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum)
 
         bool bound = false;
         for (int i=0; i<10 && !bound; ++i) {
-            mBindSockAddr.sin_port = htons(mPortNum+i);
+			mPortNum = mPortNum+i;
+            mBindSockAddr.sin_port = htons(mPortNum);
             if (bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) >= 0) {
                 bound = true;
             }
@@ -262,6 +264,49 @@ SC_UdpInPort::~SC_UdpInPort()
 #else
 	if (mSocket != -1) close(mSocket);
 #endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
+: SC_ComPort(inPortNum)
+{
+	if ((mSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+		throw std::runtime_error("failed to create udp socket\n");
+	}
+	
+	{
+		int bufsize = 65536;
+#ifdef SC_WIN32
+		setsockopt(mSocket, SOL_SOCKET, SO_SNDBUF, (char*)&bufsize, sizeof(bufsize));
+#else
+		setsockopt(mSocket, SOL_SOCKET, SO_SNDBUF, &bufsize, sizeof(bufsize));
+#endif
+	}
+	
+	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
+	mBindSockAddr.sin_family = AF_INET;
+	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	
+	bool bound = false;
+	mBindSockAddr.sin_port = htons(mPortNum);
+	if (bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) >= 0) {
+		bound = true;
+	}
+	if (!bound) throw std::runtime_error("unable to bind udp socket\n");
+	Start();
+}
+
+SC_UdpCustomInPort::~SC_UdpCustomInPort()
+{
+	mRunning.store(false);
+	pthread_join(mThread, NULL);
+#ifdef SC_WIN32
+	if (mSocket != -1) closesocket(mSocket);
+#else
+	if (mSocket != -1) close(mSocket);
+#endif
+	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -334,10 +379,62 @@ void* SC_UdpInPort::Run()
 			packet->mData = data;
 			packet->mReplyAddr.mSocket = mSocket;
 			memcpy(data, buf, size);
-			ProcessOSCPacket(packet);
+			ProcessOSCPacket(packet, mPortNum);
 			packet = 0;
 		}
 	}
+	return 0;
+}
+
+ReplyFunc SC_UdpCustomInPort::GetReplyFunc()
+{
+	return udp_reply_func;
+}
+
+void* SC_UdpCustomInPort::Run()
+{
+	char buf[kTextBufSize];
+	OSC_Packet *packet = 0;
+	
+	const int fd = mSocket;
+	const int max_fd = fd+1;
+	
+	mRunning.store(true);
+	while (mRunning.load(boost::memory_order_consume)) {
+		fd_set rfds;
+		
+		FD_ZERO(   &rfds);
+		FD_SET(fd, &rfds);
+
+		struct timeval timeout;
+		timeout.tv_sec = 0;
+		timeout.tv_usec = 500000;
+		
+		int n = select(max_fd, &rfds, 0, 0, &timeout);
+		if ((n > 0) && FD_ISSET(fd, &rfds)) {
+			if (!packet) {
+				packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+			}
+			packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
+			int size = recvfrom(mSocket, buf, kTextBufSize , 0,
+								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
+			
+			if (size > 0 && mRunning.load(boost::memory_order_consume)) {
+				//dumpOSC(3, size, buf);
+				//fflush(stdout);
+				
+				char *data = (char*)malloc(size);
+				packet->mReplyAddr.mReplyFunc = udp_reply_func;
+				packet->mSize = size;
+				packet->mData = data;
+				packet->mReplyAddr.mSocket = mSocket;
+				memcpy(data, buf, size);
+				ProcessOSCPacket(packet, mPortNum);
+				packet = 0;
+			}
+		}
+	}
+	FreeOSCPacket(packet); // just in case
 	return 0;
 }
 
@@ -459,7 +556,7 @@ void* SC_TcpConnectionPort::Run()
 		packet->mSize = msglen;
 		packet->mData = data;
 		packet->mReplyAddr.mSocket = mSocket;
-		ProcessOSCPacket(packet);
+		ProcessOSCPacket(packet, mPortNum);
 		packet = 0;
 	}
 leave:
@@ -562,7 +659,7 @@ void* SC_TcpClientPort::Run()
 		packet->mReplyAddr.mSocket = sockfd;
 		packet->mReplyAddr.mReplyFunc = tcp_reply_func;
 		packet->mSize = msglen;
-		ProcessOSCPacket(packet);
+		ProcessOSCPacket(packet, mPortNum);
 
 		packet = 0;
 	}

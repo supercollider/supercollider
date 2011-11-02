@@ -1,0 +1,67 @@
+CLASS:: MIDIMessageDispatcher
+summary:: The default dispatcher for link::Classes/MIDIFunc::s and link::Classes/MIDIdef::s set to respond to noteOn, noteOff, control, and polytouch messages.
+categories:: MIDI
+related:: Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractWrappingDispatcher, Classes/AbstractDispatcher, Classes/MIDIMessageDispatcherNV, Classes/AbstractMessageMatcher, Classes/MIDIFuncSrcMessageMatcher, Classes/MIDIFuncChanMessageMatcher, Classes/MIDIFuncChanArrayMessageMatcher, Classes/MIDIFuncSrcMessageMatcherNV, Classes/MIDIFuncBothMessageMatcher, Classes/MIDIFuncBothCAMessageMatcher, Guides/MIDI
+
+DESCRIPTION::
+MIDIMessageDispatcher is used to dispatch incoming MIDI noteOn, noteOff, control, and polytouch messages to matching functions. Normally users should not have to create or message instances of this class directly.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new instance.
+
+argument:: messageType
+A link::Classes/Symbol:: indicating the message type, one of code::\noteOn::, code::\noteOff::, code::\control::, or code::\polytouch::.
+
+returns:: A new MIDIMessageDispatcher.
+
+
+INSTANCEMETHODS::
+
+METHOD:: messageType
+Get this dispatcher's message type, one of code::\noteOn::, code::\noteOff::, code::\control::, or code::\polytouch::.
+
+returns:: A link::Classes/Symbol::.
+
+METHOD:: getKeysForFuncProxy
+Get the keys at which a responder func's functions are stored in this dispatcher's active dictionary. The keys will be MIDI message numbers.
+
+argument:: funcProxy
+The link::Classes/MIDIFunc:: or link::Classes/MIDIdef:: whose keys should be returned.
+
+returns:: An link::Classes/Array:: containing the funcProxy's message number as an link::Classes/Integer::.
+
+METHOD:: value
+Attempt to match an incoming MIDI message with this dispatcher's responder funcs, and evaluate their functions for all matches found.
+
+argument:: src
+The UID of the source of the MIDI message as an link::Classes/Integer::.
+
+argument:: chan
+The channel number of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-15.
+
+argument:: num
+The message number (e.g. note number, etc.) of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-127.
+
+argument:: val
+The message value (e.g. velocity, etc.) of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-127.
+
+METHOD:: register
+Adds this dispatcher to the appropriate receive hook in link::Classes/MIDIIn::.
+
+METHOD:: unregister
+Removes this dispatcher from the appropriate receive hook in link::Classes/MIDIIn::.
+
+METHOD:: wrapFunc
+Called internally to wrap functions in message matcher objects, if needed.
+
+argument:: funcProxy
+An instance of link::Classes/MIDIFunc:: or link::Classes/MIDIdef:: whose function(s) are to be wrapped.
+
+METHOD:: typeKey
+Gets a key indicating the type of message this dispatcher responds to, in the form: code::('MIDI ' ++ messageType).asSymbol::.
+
+returns:: A link::Classes/Symbol::.
+

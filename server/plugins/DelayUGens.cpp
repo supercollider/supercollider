@@ -47,7 +47,6 @@ struct PlayBuf : public Unit
 	float m_prevtrig;
 	float m_fbufnum;
 	SndBuf *m_buf;
-	float **mOut;
 };
 
 
@@ -79,7 +78,6 @@ struct SimpleLoopBuf : public Unit
 	float m_prevtrig;
 	float m_fbufnum;
 	SndBuf *m_buf;
-	float **mOut;
 };
 #endif
 
@@ -87,14 +85,12 @@ struct BufRd : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
-	float **mOut;
 };
 
 struct BufWr : public Unit
 {
 	float m_fbufnum;
 	SndBuf *m_buf;
-	float **mIn;
 };
 
 struct RecordBuf : public Unit
@@ -120,6 +116,16 @@ struct Pitch : public Unit
 	bool m_getClarity;
 };
 
+struct InterpolationUnit
+{
+	static const int minDelaySamples = 1;
+};
+
+struct CubicInterpolationUnit
+{
+	static const int minDelaySamples = 2;
+};
+
 struct BufDelayUnit : public Unit
 {
 	float m_fbufnum;
@@ -130,47 +136,37 @@ struct BufDelayUnit : public Unit
 	uint32 m_numoutput;
 };
 
-struct BufDelayN : public BufDelayUnit
-{
-};
+struct BufDelayN : public BufDelayUnit, InterpolationUnit
+{};
 
-struct BufDelayL : public BufDelayUnit
-{
-};
+struct BufDelayL : public BufDelayUnit, InterpolationUnit
+{};
 
-struct BufDelayC : public BufDelayUnit
-{
-};
+struct BufDelayC : public BufDelayUnit, CubicInterpolationUnit
+{};
 
 struct BufFeedbackDelay : public BufDelayUnit
 {
 	float m_feedbk, m_decaytime;
 };
 
-struct BufCombN : public BufFeedbackDelay
-{
-};
+struct BufCombN : public BufFeedbackDelay, InterpolationUnit
+{};
 
-struct BufCombL : public BufFeedbackDelay
-{
-};
+struct BufCombL : public BufFeedbackDelay, InterpolationUnit
+{};
 
-struct BufCombC : public BufFeedbackDelay
-{
-};
+struct BufCombC : public BufFeedbackDelay, CubicInterpolationUnit
+{};
 
-struct BufAllpassN : public BufFeedbackDelay
-{
-};
+struct BufAllpassN : public BufFeedbackDelay, InterpolationUnit
+{};
 
-struct BufAllpassL : public BufFeedbackDelay
-{
-};
+struct BufAllpassL : public BufFeedbackDelay, InterpolationUnit
+{};
 
-struct BufAllpassC : public BufFeedbackDelay
-{
-};
-
+struct BufAllpassC : public BufFeedbackDelay, CubicInterpolationUnit
+{};
 
 struct DelayUnit : public Unit
 {
@@ -182,46 +178,37 @@ struct DelayUnit : public Unit
 	long m_numoutput;
 };
 
-struct DelayN : public DelayUnit
-{
-};
+struct DelayN : public DelayUnit, InterpolationUnit
+{};
 
-struct DelayL : public DelayUnit
-{
-};
+struct DelayL : public DelayUnit, InterpolationUnit
+{};
 
-struct DelayC : public DelayUnit
-{
-};
+struct DelayC : public DelayUnit, InterpolationUnit
+{};
 
 struct FeedbackDelay : public DelayUnit
 {
 	float m_feedbk, m_decaytime;
 };
 
-struct CombN : public FeedbackDelay
-{
-};
+struct CombN : public FeedbackDelay, InterpolationUnit
+{};
 
-struct CombL : public FeedbackDelay
-{
-};
+struct CombL : public FeedbackDelay, InterpolationUnit
+{};
 
-struct CombC : public FeedbackDelay
-{
-};
+struct CombC : public FeedbackDelay, CubicInterpolationUnit
+{};
 
-struct AllpassN : public FeedbackDelay
-{
-};
+struct AllpassN : public FeedbackDelay, InterpolationUnit
+{};
 
-struct AllpassL : public FeedbackDelay
-{
-};
+struct AllpassL : public FeedbackDelay, InterpolationUnit
+{};
 
-struct AllpassC : public FeedbackDelay
-{
-};
+struct AllpassC : public FeedbackDelay, CubicInterpolationUnit
+{};
 
 struct BufInfoUnit : public Unit
 {
@@ -229,7 +216,7 @@ struct BufInfoUnit : public Unit
 	SndBuf *m_buf;
 };
 
-struct Pluck : public FeedbackDelay
+struct Pluck : public FeedbackDelay, CubicInterpolationUnit
 {
 	float m_lastsamp, m_prevtrig, m_coef;
 	long m_inputsamps;
@@ -313,7 +300,6 @@ extern "C"
 	void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples);
 	void PlayBuf_Ctor(PlayBuf* unit);
-	void PlayBuf_Dtor(PlayBuf* unit);
 
 	void TGrains_next(TGrains *unit, int inNumSamples);
 	void TGrains_Ctor(TGrains* unit);
@@ -325,13 +311,11 @@ extern "C"
 #endif
 
 	void BufRd_Ctor(BufRd *unit);
-	void BufRd_Dtor(BufRd *unit);
 	void BufRd_next_4(BufRd *unit, int inNumSamples);
 	void BufRd_next_2(BufRd *unit, int inNumSamples);
 	void BufRd_next_1(BufRd *unit, int inNumSamples);
 
 	void BufWr_Ctor(BufWr *unit);
-	void BufWr_Dtor(BufWr *unit);
 	void BufWr_next(BufWr *unit, int inNumSamples);
 
 	void RecordBuf_Ctor(RecordBuf *unit);
@@ -848,28 +832,25 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		return; \
 	}
 
-#define SETUP_OUT \
-	uint32 numOutputs = unit->mNumOutputs; \
-	if (numOutputs > bufChannels) { \
-		if(unit->mWorld->mVerbosity > -1 && !unit->mDone){ \
-			Print("buffer-reading UGen channel mismatch: numOutputs %i, yet buffer has %i channels\n", numOutputs, bufChannels); \
-		} \
-                unit->mDone = true; \
-		ClearUnitOutputs(unit, inNumSamples); \
-		return; \
-	} \
-	if(!unit->mOut){ \
-		unit->mOut = (float**)RTAlloc(unit->mWorld, numOutputs * sizeof(float*)); \
-	} \
-	float **out = unit->mOut; \
-	for (uint32 i=0; i<numOutputs; ++i){ \
-		out[i] = ZOUT(i); \
-	}
+static inline bool checkBuffer(Unit * unit, const float * bufData, uint32 bufChannels,
+							   uint32 expectedChannels, int inNumSamples)
+{
+	if (!bufData)
+		goto handle_failure;
 
-#define TAKEDOWN_OUT \
-	if(unit->mOut){ \
-		RTFree(unit->mWorld, unit->mOut); \
+	if (expectedChannels > bufChannels) {
+		if(unit->mWorld->mVerbosity > -1 && !unit->mDone)
+			Print("Buffer UGen channel mismatch: expected %i, yet buffer has %i channels\n",
+				  expectedChannels, bufChannels);
+		goto handle_failure;
 	}
+	return true;
+
+handle_failure:
+	unit->mDone = true;
+	ClearUnitOutputs(unit, inNumSamples);
+	return false;
+}
 
 #define SETUP_IN(offset) \
 	uint32 numInputs = unit->mNumInputs - (uint32)offset; \
@@ -877,12 +858,17 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		if(unit->mWorld->mVerbosity > -1 && !unit->mDone){ \
 			Print("buffer-writing UGen channel mismatch: numInputs %i, yet buffer has %i channels\n", numInputs, bufChannels); \
 		} \
-                unit->mDone = true; \
+		unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	} \
 	if(!unit->mIn){ \
 		unit->mIn = (float**)RTAlloc(unit->mWorld, numInputs * sizeof(float*)); \
+		if (unit->mIn == NULL) { \
+			unit->mDone = true; \
+			ClearUnitOutputs(unit, inNumSamples); \
+			return; \
+		} \
 	} \
 	float **in = unit->mIn; \
 	for (uint32 i=0; i<numInputs; ++i) { \
@@ -895,7 +881,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	}
 
 
-#define LOOP_BODY_4 \
+#define LOOP_BODY_4(SAMPLE_INDEX) \
 		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
 		const float* table1 = bufData + iphase * bufChannels; \
@@ -927,16 +913,16 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
-		for (uint32 i=0; i<numOutputs; ++i) { \
+		for (uint32 channel=0; channel<numOutputs; ++channel) { \
 			float a = table0[index]; \
 			float b = table1[index]; \
 			float c = table2[index]; \
 			float d = table3[index]; \
-			*++(out[i]) = cubicinterp(fracphase, a, b, c, d); \
+			OUT(channel)[SAMPLE_INDEX] = cubicinterp(fracphase, a, b, c, d); \
 			index++; \
 		}
 
-#define LOOP_BODY_2 \
+#define LOOP_BODY_2(SAMPLE_INDEX) \
 		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
 		const float* table1 = bufData + iphase * bufChannels; \
@@ -950,20 +936,20 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 		} \
 		int32 index = 0; \
 		float fracphase = phase - (double)iphase; \
-		for (uint32 i=0; i<numOutputs; ++i) { \
+		for (uint32 channel=0; channel<numOutputs; ++channel) { \
 			float b = table1[index]; \
 			float c = table2[index]; \
-			*++(out[i]) = b + fracphase * (c - b); \
+			OUT(channel)[SAMPLE_INDEX] = b + fracphase * (c - b); \
 			index++; \
 		}
 
-#define LOOP_BODY_1 \
-        phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
+#define LOOP_BODY_1(SAMPLE_INDEX) \
+		phase = sc_loop((Unit*)unit, phase, loopMax, loop); \
 		int32 iphase = (int32)phase; \
 		const float* table1 = bufData + iphase * bufChannels; \
 		int32 index = 0; \
-		for (uint32 i=0; i<numOutputs; ++i) { \
-			*++(out[i]) = table1[index++]; \
+		for (uint32 channel=0; channel<numOutputs; ++channel) { \
+			OUT(channel)[SAMPLE_INDEX] = table1[index++]; \
 		}
 
 
@@ -985,15 +971,9 @@ void PlayBuf_Ctor(PlayBuf *unit)
 
 	unit->m_fbufnum = -1e9f;
 	unit->m_prevtrig = 0.;
-	unit->mOut = 0;
 	unit->m_phase = ZIN0(3);
 
 	ClearUnitOutputs(unit, 1);
-}
-
-void PlayBuf_Dtor(PlayBuf *unit)
-{
-	TAKEDOWN_OUT
 }
 
 void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
@@ -1019,8 +999,9 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 	int mask __attribute__((__unused__)) = buf->mask;
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
-	CHECK_BUF
-	SETUP_OUT
+	int numOutputs = unit->mNumOutputs;
+	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
@@ -1034,7 +1015,7 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 		}
 		prevtrig = trig;
 
-		LOOP_BODY_4
+		LOOP_BODY_4(i)
 
 		phase += ZXP(ratein);
 	}
@@ -1069,8 +1050,9 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	int mask __attribute__((__unused__)) = buf->mask;
 	int guardFrame __attribute__((__unused__)) = bufFrames - 2;
 
-	CHECK_BUF
-	SETUP_OUT
+	int numOutputs = unit->mNumOutputs;
+	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
@@ -1082,7 +1064,7 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	unit->m_prevtrig = trig;
 	for (int i=0; i<inNumSamples; ++i) {
 
-		LOOP_BODY_4
+		LOOP_BODY_4(i)
 
 		phase += ZXP(ratein);
 	}
@@ -1099,8 +1081,9 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 	int32 loop     = (int32)ZIN0(4);
 
 	GET_BUF_SHARED
-	CHECK_BUF
-	SETUP_OUT
+	int numOutputs = unit->mNumOutputs;
+	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
@@ -1110,8 +1093,7 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 	}
 	unit->m_prevtrig = trig;
 	for (int i=0; i<inNumSamples; ++i) {
-
-		LOOP_BODY_4
+		LOOP_BODY_4(i)
 
 		phase += rate;
 	}
@@ -1127,8 +1109,9 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 	int32 loop     = (int32)ZIN0(4);
 
 	GET_BUF_SHARED
-	CHECK_BUF
-	SETUP_OUT
+	int numOutputs = unit->mNumOutputs;
+	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 	double phase = unit->m_phase;
@@ -1142,7 +1125,7 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 		}
 		prevtrig = trig;
 
-		LOOP_BODY_4
+		LOOP_BODY_4(i)
 
 		phase += rate;
 	}
@@ -1165,14 +1148,8 @@ void BufRd_Ctor(BufRd *unit)
 	}
 
 	unit->m_fbufnum = -1e9f;
-	unit->mOut = 0;
 
-	ClearUnitOutputs(unit, 1);
-}
-
-void BufRd_Dtor(BufRd *unit)
-{
-	TAKEDOWN_OUT
+	BufRd_next_1(unit, 1);
 }
 
 void BufRd_next_4(BufRd *unit, int inNumSamples)
@@ -1181,16 +1158,15 @@ void BufRd_next_4(BufRd *unit, int inNumSamples)
 	int32 loop     = (int32)ZIN0(2);
 
 	GET_BUF_SHARED
-	CHECK_BUF
-	SETUP_OUT
+	uint32 numOutputs = unit->mNumOutputs;
+	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 
 	for (int i=0; i<inNumSamples; ++i) {
 		double phase = ZXP(phasein);
-
-		LOOP_BODY_4
-
+		LOOP_BODY_4(i)
 	}
 }
 
@@ -1200,16 +1176,15 @@ void BufRd_next_2(BufRd *unit, int inNumSamples)
 	int32 loop     = (int32)ZIN0(2);
 
 	GET_BUF_SHARED
-	CHECK_BUF
-	SETUP_OUT
+	uint32 numOutputs = unit->mNumOutputs;
+	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 
 	for (int i=0; i<inNumSamples; ++i) {
 		double phase = ZXP(phasein);
-
-		LOOP_BODY_2
-
+		LOOP_BODY_2(i)
 	}
 }
 
@@ -1219,16 +1194,15 @@ void BufRd_next_1(BufRd *unit, int inNumSamples)
 	int32 loop     = (int32)ZIN0(2);
 
 	GET_BUF_SHARED
-	CHECK_BUF
-	SETUP_OUT
+	uint32 numOutputs = unit->mNumOutputs;
+	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+		return;
 
 	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
 
 	for (int i=0; i<inNumSamples; ++i) {
 		double phase = ZXP(phasein);
-
-		LOOP_BODY_1
-
+		LOOP_BODY_1(i)
 	}
 }
 
@@ -1239,14 +1213,8 @@ void BufWr_Ctor(BufWr *unit)
 	SETCALC(BufWr_next);
 
 	unit->m_fbufnum = -1e9f;
-	unit->mIn = 0;
 
 	ClearUnitOutputs(unit, 1);
-}
-
-void BufWr_Dtor(BufWr *unit)
-{
-	TAKEDOWN_IN
 }
 
 void BufWr_next(BufWr *unit, int inNumSamples)
@@ -1255,17 +1223,18 @@ void BufWr_next(BufWr *unit, int inNumSamples)
 	int32 loop     = (int32)ZIN0(2);
 
 	GET_BUF
-	CHECK_BUF
-	SETUP_IN(3)
+	uint32 numInputChannels = unit->mNumInputs - 3;
+	if (!checkBuffer(unit, bufData, bufChannels, numInputChannels, inNumSamples))
+		return;
+
 	double loopMax = (double)(bufFrames - (loop ? 0 : 1));
 
 	for (int32 k=0; k<inNumSamples; ++k) {
 		double phase = sc_loop((Unit*)unit, ZXP(phasein), loopMax, loop);
 		int32 iphase = (int32)phase;
 		float* table0 = bufData + iphase * bufChannels;
-		for (uint32 i=0; i<numInputs; ++i) {
-			table0[i] = *++(in[i]);
-		}
+		for (uint32 channel=0; channel<numInputChannels; ++channel)
+			table0[channel] = IN(channel+3)[k];
 	}
 }
 
@@ -1739,7 +1708,7 @@ void Pitch_Ctor(Pitch *unit)
 	unit->m_execPeriod = (int)(unit->m_srate / execfreq);
 	unit->m_execPeriod = sc_max(unit->m_execPeriod, unit->mWorld->mFullRate.mBufLength);
 
-	unit->m_size = unit->m_maxperiod << 1;
+	unit->m_size = sc_max(unit->m_maxperiod << 1, unit->m_execPeriod);
 
 	unit->m_buffer = (float*)RTAlloc(unit->mWorld, unit->m_size * sizeof(float));
 
@@ -2181,10 +2150,16 @@ void DelayUnit_AllocDelayLine(DelayUnit *unit)
 }
 #endif
 
-#define BufCalcDelay(delaytime) (sc_clip(delaytime * (float)SAMPLERATE, 1.f, \
-										 (float)(PREVIOUSPOWEROFTWO(bufSamples))-1))
 
-static void BufDelayUnit_Reset(BufDelayUnit *unit)
+template <typename Unit>
+static float BufCalcDelay(const Unit * unit, int bufSamples, float delayTime)
+{
+	float minDelay = Unit::minDelaySamples;
+	return sc_clip(delayTime * (float)SAMPLERATE, minDelay, (float)(PREVIOUSPOWEROFTWO(bufSamples))-1);
+}
+
+template <typename Unit>
+static void BufDelayUnit_Reset(Unit *unit)
 {
 	//Print("->DelayUnit_Reset\n");
 	//unit->m_maxdelaytime = ZIN0(1);
@@ -2197,14 +2172,15 @@ static void BufDelayUnit_Reset(BufDelayUnit *unit)
 	//Print("->GET_BUF\n");
 	GET_BUF
 	//Print("<-GET_BUF\n");
-	unit->m_dsamp = BufCalcDelay(unit->m_delaytime);
+	unit->m_dsamp = BufCalcDelay(unit, bufSamples, unit->m_delaytime);
 	unit->m_numoutput = 0;
 	unit->m_iwrphase = 0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void BufFeedbackDelay_Reset(BufFeedbackDelay *unit)
+template <typename Unit>
+static void BufFeedbackDelay_Reset(Unit *unit)
 {
 	BufDelayUnit_Reset(unit);
 
@@ -2302,6 +2278,7 @@ static inline void DelayN_delay_loop(float * out, const float * in, long & iwrph
 					LOOP(nsmps,
 						ZXP(dlywr) = ZXP(in);
 						ZXP(out) = 0.f;
+						ZXP(dlyrd);
 					);
 			} else {
 				LOOP(nsmps,
@@ -2825,7 +2802,7 @@ inline void BufDelayX_perform(BufDelayX *unit, int inNumSamples, UnitCalcFunc re
 			PerformClass::perform(in, out, bufData, iwrphase, idsamp, frac, mask);
 		);
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP1(inNumSamples,
@@ -2863,7 +2840,7 @@ inline void BufDelayX_perform_a(BufDelayX *unit, int inNumSamples, UnitCalcFunc 
 	long iwrphase = unit->m_iwrphase;
 
 	LOOP1(inNumSamples,
-		float dsamp = BufCalcDelay(ZXP(delaytime));
+		float dsamp = BufCalcDelay(unit, bufSamples, ZXP(delaytime));
 		long idsamp = (long)dsamp;
 
 		float frac = dsamp - idsamp;
@@ -2906,7 +2883,7 @@ void BufDelayN_next(BufDelayN *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		DelayN_delay_loop<false>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(bufSamples));
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP1(inNumSamples,
@@ -2936,8 +2913,7 @@ void BufDelayN_next_z(BufDelayN *unit, int inNumSamples)
 	if (delaytime == unit->m_delaytime) {
 		DelayN_delay_loop<true>(out, in, iwrphase, dsamp, mask, bufData, inNumSamples, PREVIOUSPOWEROFTWO(bufSamples));
 	} else {
-
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		LOOP1(inNumSamples,
@@ -3088,7 +3064,7 @@ inline void BufFilterX_perform(BufCombX *unit, int inNumSamples, UnitCalcFunc re
 			PerformClass::perform(in, out, bufData, iwrphase, idsamp, frac, mask, feedbk);
 		);
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3132,7 +3108,7 @@ inline void BufFilterX_perform_a(BufCombX *unit, int inNumSamples, UnitCalcFunc 
 
 	LOOP1(inNumSamples,
 		float del = ZXP(delaytime);
-		float dsamp = BufCalcDelay(del);
+		float dsamp = BufCalcDelay(unit, bufSamples, del);
 		float feedbk = sc_CalcFeedback(del, decaytime);
 
 		long idsamp = (long)dsamp;
@@ -3224,7 +3200,7 @@ void BufCombN_next(BufCombN *unit, int inNumSamples)
 		}
 		iwrphase += inNumSamples;
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3321,8 +3297,7 @@ void BufCombN_next_z(BufCombN *unit, int inNumSamples)
 			unit->m_decaytime = decaytime;
 		}
 	} else {
-
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3530,7 +3505,7 @@ void BufAllpassN_next(BufAllpassN *unit, int inNumSamples)
 		}
 		iwrphase += inNumSamples;
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3634,7 +3609,7 @@ void BufAllpassN_next_z(BufAllpassN *unit, int inNumSamples)
 			unit->m_decaytime = decaytime;
 		}
 	} else {
-		float next_dsamp = BufCalcDelay(delaytime);
+		float next_dsamp = BufCalcDelay(unit, bufSamples, delaytime);
 		float dsamp_slope = CALCSLOPE(next_dsamp, dsamp);
 
 		float next_feedbk = sc_CalcFeedback(delaytime, decaytime);
@@ -3783,13 +3758,16 @@ static void DelayUnit_AllocDelayLine(DelayUnit *unit)
 	unit->m_mask = delaybufsize - 1;
 }
 
-static float CalcDelay(DelayUnit *unit, float delaytime)
+template <typename Unit>
+static float CalcDelay(Unit *unit, float delaytime)
 {
+	float minDelay = Unit::minDelaySamples;
 	float next_dsamp = delaytime * (float)SAMPLERATE;
-	return sc_clip(next_dsamp, 1.f, unit->m_fdelaylen);
+	return sc_clip(next_dsamp, minDelay, unit->m_fdelaylen);
 }
 
-static void DelayUnit_Reset(DelayUnit *unit)
+template <typename Unit>
+static void DelayUnit_Reset(Unit *unit)
 {
 	unit->m_maxdelaytime = ZIN0(1);
 	unit->m_delaytime = ZIN0(2);
@@ -3811,7 +3789,8 @@ void DelayUnit_Dtor(DelayUnit *unit)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void FeedbackDelay_Reset(FeedbackDelay *unit)
+template <typename Unit>
+static void FeedbackDelay_Reset(Unit *unit)
 {
 	unit->m_decaytime = ZIN0(3);
 
@@ -4860,8 +4839,11 @@ void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples)
 	double loopstart  = (double)ZIN0(2);
 	double loopend    = (double)ZIN0(3);
 	GET_BUF
-	CHECK_BUF
-	SETUP_OUT
+
+	int numOutputs = unit->mNumOutputs;
+	if (!checkBuffer(unit, bufData, bufChannels, numOutputs, inNumSamples))
+		return;
+
 
 	loopend = sc_max(loopend, bufFrames);
 	int32 phase = unit->m_phase;
@@ -4871,13 +4853,12 @@ void SimpleLoopBuf_next_kk(SimpleLoopBuf *unit, int inNumSamples)
 	}
 	unit->m_prevtrig = trig;
 	for (int i=0; i<inNumSamples; ++i) {
-
 		phase = sc_loop1(phase, loopstart, loopend);
 		int32 iphase = (int32)phase;
 		float* table1 = bufData + iphase * bufChannels;
 		int32 index = 0;
-		for (uint32 i=0; i<bufChannels; ++i) {
-			*++(out[i]) = table1[index++];
+		for (uint32 channel=0; channel<bufChannels; ++channel) {
+			OUT(channel[i]) = table1[index++];
 		}
 
 		phase++;
@@ -4892,15 +4873,9 @@ void SimpleLoopBuf_Ctor(SimpleLoopBuf *unit)
 
 	unit->m_fbufnum = -1e9f;
 	unit->m_prevtrig = 0.;
-	unit->mOut = 0;
 	unit->m_phase = ZIN0(2);
 
 	ClearUnitOutputs(unit, 1);
-}
-
-void SimpleLoopBuf_Dtor(SimpleLoopBuf *unit)
-{
-	TAKEDOWN_OUT
 }
 #endif
 
@@ -7547,13 +7522,13 @@ PluginLoad(Delay)
 	DefineBufInfoUnit(BufChannels);
 	DefineBufInfoUnit(BufDur);
 
-	DefineDtorCantAliasUnit(PlayBuf);
+	DefineSimpleCantAliasUnit(PlayBuf);
 #if NOTYET
-	DefineDtorUnit(SimpleLoopBuf);
+	DefineSimpleUnit(SimpleLoopBuf);
 #endif
 	DefineDtorUnit(RecordBuf);
-	DefineDtorUnit(BufRd);
-	DefineDtorUnit(BufWr);
+	DefineSimpleUnit(BufRd);
+	DefineSimpleUnit(BufWr);
 	DefineDtorUnit(Pitch);
 
 	DefineSimpleUnit(BufDelayN);

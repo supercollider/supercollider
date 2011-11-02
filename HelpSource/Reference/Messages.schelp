@@ -1,4 +1,4 @@
-title:: Messages 
+title:: Messages
 summary:: Method calls, sending messages to objects
 categories:: Language>OOP
 related:: Reference/Classes, Classes/Class, Classes/Object, Guides/Intro-to-Objects, Guides/Polymorphism
@@ -8,7 +8,7 @@ section:: Introduction
 Sending messages is the way things get done in an object oriented language. A message consists of a message selector which names the type of operation, a receiver to which the message is sent and in some cases a list of arguments which give additional information pertaining to the operation.
 A message always returns a result. The kind of result depends on the kind of message. In the default case, the return value is the receiver itself.
 
-Messages may be written using binary operators, functional notation or receiver notation. 
+Messages may be written using binary operators, functional notation or receiver notation.
 
 section:: Binary operator messages
 
@@ -19,7 +19,7 @@ code::
 
 An exception is that no operator may begin with code:://:: or code::/*:: which are comment delimiters.
 
-A binary operator expression consists of two expressions with a binary operator between them. 
+A binary operator expression consists of two expressions with a binary operator between them.
 code::
 1 + 2		// sum of one and two
 a - b		// difference of a and b
@@ -33,7 +33,7 @@ code::
 
 section:: Operator Precedence
 
-There is none. All binary operators have the same level of precedence and associate from left to right. 
+There is none. All binary operators have the same level of precedence and associate from left to right.
 For example, the expression:
 code::
 a * b + c * d
@@ -50,7 +50,7 @@ Therefore it is usually better style to fully parenthesize your expressions.
 
 section:: Functional notation messages
 
-The message selector preceeds the parenthesized argument list. The first argument in the list is actually 
+The message selector preceeds the parenthesized argument list. The first argument in the list is actually
 the receiver.
 code::
 sin(x)      // sine of x
@@ -59,7 +59,7 @@ max(a, b)   // maximum of a and b
 
 section:: Receiver notation messages
 
-A method call in functional notation may be converted to receiver notation by putting the receiver before the method name followed by a dot as shown below. 
+A method call in functional notation may be converted to receiver notation by putting the receiver before the method name followed by a dot as shown below.
 code::
 max(a, b)
 
@@ -75,10 +75,10 @@ sin(x)
 
 x.sin
 ::
-	
+
 another example:
 code::
-g(f(a, b), c) 
+g(f(a, b), c)
 
 // is equivalent to:
 
@@ -101,7 +101,7 @@ When calling a method or function with zero arguments you can omit the parenthes
 code::
 // x is declared to take two arguments a and b which default to 1 and 2 respectively.
 // It returns their sum. This syntax will be explained in the section on Functions.
-x = { arg a=1, b=2; a + b }; 
+x = { arg a=1, b=2; a + b };
 
 z = x.value;            // z is set to 3. (a defaults to 1, b defaults to 2)
 z = x.value(10);        // z is set to 12. (a is 10, b defaults to 2)
@@ -114,7 +114,7 @@ section:: Keyword Arguments
 Arguments to Methods may be specified by the name by which they are declared in a method's definition. Such arguments are called keyword arguments.
 Any argument may be passed as a keyword argument except for the receiver code::this::.
 Keyword arguments must come after any normal (aka emphasis::positional::) arguments, and may be specified in any order.
-If a keyword is specified and there is no matching argument then it is ignored and a warning will be printed. This warning may be turned off globally by making the following call: 
+If a keyword is specified and there is no matching argument then it is ignored and a warning will be printed. This warning may be turned off globally by making the following call:
 code::
 keywordWarnings(false)
 ::
@@ -125,18 +125,18 @@ code::
 SinOsc.ar(800, pi, 0.2, 0); // all normal arguments: freq, phase, mul, add
 
 // freq = 800, mul = 0.2, others get default values.
-SinOsc.ar(800, mul: 0.2); 
+SinOsc.ar(800, mul: 0.2);
 
 // freq = 800, phase = pi, mul = 0.2, add gets its default value of zero.
 SinOsc.ar(phase: pi, mul: 0.2, freq: 800);
 
 // keyword value of 1200 overrides the positional arg value of 800
-SinOsc.ar(800, freq: 1200); 
+SinOsc.ar(800, freq: 1200);
 ::
 code::
 SinOsc.ar(zorg: 999); // invalid keyword prints warning
 ::
-The arguments to a Function may also be specified by keyword arguments when using the 'value' message. 
+The arguments to a Function may also be specified by keyword arguments when using the 'value' message.
 code::
 // function args may be specified by keyword.
 { arg a=1, b=2, c=3; [a, b, c].postln }.value(b: 7, c: 8);

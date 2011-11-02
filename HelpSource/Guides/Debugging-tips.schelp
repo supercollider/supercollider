@@ -3,17 +3,17 @@ summary:: tips on debugging synthdefs, client code and more
 categories:: Language, Debugging
 related:: Guides/Understanding-Errors
 
-section:: Debugging synthdefs 
+section:: Debugging synthdefs
 
-The challenge in debugging synthdefs is the invisibility of the server's operations. There are a handful of techniques to expose the output of various UGens. 
+The challenge in debugging synthdefs is the invisibility of the server's operations. There are a handful of techniques to expose the output of various UGens.
 
-subsection:: SendTrig / OSCresponderNode 
+subsection:: SendTrig / OSCFunc
 
-SendTrig is originally intended to send a trigger message back to the client, so the client can take further action on the server. However, it can be used to send any numeric value back to the client, which can then be printed out. 
+SendTrig is originally intended to send a trigger message back to the client, so the client can take further action on the server. However, it can be used to send any numeric value back to the client, which can then be printed out.
 
 To print out the values, you need to create an OSCresponderNode as follows:
 code::
-o = OSCresponderNode(myServer.addr, '/tr', { |time, resp, msg| msg.postln }).add; 
+o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 ::
 Each line of output is an array with four values: code:: ['/tr', defNode, id (from SendTrig), value (from SendTrig)] ::.
 
@@ -29,16 +29,16 @@ code::
 [ /tr, 1000, 0, 966.35247802734 ]
 [ /tr, 1000, 0, 629.31628417969 ]
 
-o.remove;  // when done, you need to clean up the OSCresponderNode
+o.free;  // when done, you need to clean up the OSCFunc
 ::
 
-If you need to track multiple values, you can store them in a collection of arrays and differentiate them by assigning different IDs in the SendTrig UGen. 
+If you need to track multiple values, you can store them in a collection of arrays and differentiate them by assigning different IDs in the SendTrig UGen.
 code::
 l = { List.new } ! 2;
-o = OSCresponderNode(myServer.addr, '/tr', { |time, resp, msg|
+o = OSCFunc({ |msg|
 		// msg[2] is the index
 	l[msg[2]].add(msg[3]);
-}).add; 
+}, '/tr', s.addr);
 
 {	var	freq, amp;
 	freq = LFNoise0.kr(8, 600, 800);
@@ -49,15 +49,15 @@ o = OSCresponderNode(myServer.addr, '/tr', { |time, resp, msg|
 	SinOsc.ar(freq, 0, 0.3) ! 2
 }.play;
 
-o.remove;  // when done, you need to clean up the OSCresponderNode
+o.free;  // when done, you need to clean up the OSCFunc
 
 l[0].array.plot	// view frequencies
 l[1].array.plot	// view amps
 ::
 
-subsection:: Shared controls (Internal server only, control rate only) 
+subsection:: Shared controls (Internal server only, control rate only)
 
-The internal server allocates a number of control buses whose memory addresses are shared with the client. The client can poll these buses without using OSC messages. 
+The internal server allocates a number of control buses whose memory addresses are shared with the client. The client can poll these buses without using OSC messages.
 
 Insert a SharedOut.kr UGen into your synthdef. Then, on the client side, use s.getSharedControl(num) to read the value. If you want to track the value over time, use a routine to poll repeatedly.
 code::
@@ -70,12 +70,12 @@ code::
 l = List.new;
 r = fork { loop { l.add(s.getSharedControl(0)); 0.1.wait } };
 r.stop;
-l.array.plot;  // to view the results graphically 
+l.array.plot;  // to view the results graphically
 ::
 
-subsection:: Server-side trace 
+subsection:: Server-side trace
 
-The code::/n_trace:: message causes the server to print a list of all the UGens in the node as well as their input and output values. 
+The code::/n_trace:: message causes the server to print a list of all the UGens in the node as well as their input and output values.
 
 It takes some practice to read a synthdef trace, but it's the ultimate source of information when a synthdef is not behaving as expected. Signal flow can be identified by looking at the numbers at inputs and outputs. When a UGen's output feeds into another's input, the values will be the same at both ends.
 
@@ -95,7 +95,7 @@ a.free;
 
 		TRACE 1005  resonz    #units: 21
 		  unit 0 Control
-		    in 
+		    in
 		    out 440
 		  unit 1 BinaryOpUGen
 		    in  440 1
@@ -156,14 +156,14 @@ a.free;
 		    out 32785.2
 		  unit 20 Out
 		    in  0 843934 3.02999e+08 9.14995e+10 -5.42883 515.506 32785.2
-		    out 
+		    out
 ::
 
-Two problems leap out from the trace: first, there are six channels of the output (there should be 1), and second, all the outputs are well outside the audio range -1..1. The first is because we use multichannel expansion to produce an array of Resonz filters, but we don't mix them down into a single channel. 
+Two problems leap out from the trace: first, there are six channels of the output (there should be 1), and second, all the outputs are well outside the audio range -1..1. The first is because we use multichannel expansion to produce an array of Resonz filters, but we don't mix them down into a single channel.
 
-Note that there are no out of range signals prior to each Resonz. Looking at the Resonz inputs, we see that the frequency input is negative, which will blow up most digital filters. 
+Note that there are no out of range signals prior to each Resonz. Looking at the Resonz inputs, we see that the frequency input is negative, which will blow up most digital filters.
 
-The resonance frequency derives from multiplying an array by a LFNoise1. Tracing back (the red, italicized numbers), the LFNoise1 is outputting a negative number, where we expected it to be 0.5..1.5. But, the mul and add inputs are reversed! 
+The resonance frequency derives from multiplying an array by a LFNoise1. Tracing back (the red, italicized numbers), the LFNoise1 is outputting a negative number, where we expected it to be 0.5..1.5. But, the mul and add inputs are reversed!
 
 If you look very carefully at the trace, you will see another problem relating to multichannel expansion. The two components of the detuned sawtooth go into alternate Resonz'es, where we expected both to go, combined, into every Resonz. To fix it, the sawtooths need to be mixed as well.
 code::
@@ -193,7 +193,7 @@ s.makeWindow;		// optional
 
 	latency nil		// these messages get sent on bootup
 		[ "/notify", 1 ]
-	
+
 	latency nil
 		[ "/g_new", 1 ]
 
@@ -208,20 +208,20 @@ a.free;
 		[ 11, 1001 ]
 ::
 
-section:: Debugging client code 
- 
-SuperCollider does not have a step trace function, which makes debugging on the client side tougher, but not impossible. 
+section:: Debugging client code
+
+SuperCollider does not have a step trace function, which makes debugging on the client side tougher, but not impossible.
 
 subsection:: Errors
 
 Learning how to read SuperCollider error output is absolutely essential. Error dumps often (though not always) contain a great deal of information: what the action was, which objects are being acted upon, and how the flow of execution reached that point.
 
-See the link::Guides/Understanding-Errors:: help file for a tutorial. 
+See the link::Guides/Understanding-Errors:: help file for a tutorial.
 
 There's also a graphic Inspector for error dumps, which is enabled with the following command:
 code::
 Exception.debug = true;		// enable
-Exception.debug = false;	// disable 
+Exception.debug = false;	// disable
 ::
 In most cases, this will give you more information than a regular error dump. Usually the regular error dump is sufficient. If you are using Environments or prototype-style programming, the graphic inspector is indispensable.
 
@@ -233,10 +233,10 @@ if(a > 0) { positive.value(a) };
 ::
 and
 code::
-if((a > 0).postln) { positive.value(a) }; 
+if((a > 0).postln) { positive.value(a) };
 ::
 
-Common methods to use are: 
+Common methods to use are:
 code::
 .postln
 .postcs		// post the object as a compile string
@@ -260,7 +260,7 @@ positiveFunc-arg a: 5
 50
 ::
 
-The caller argument is optional; however, it's very helpful for tracing the origin of erroneous values. 
+The caller argument is optional; however, it's very helpful for tracing the origin of erroneous values.
 
 Another advantage of .debug is that it's easier to search for debug calls and differentiate them from legitimate postln and postcs calls.
 
@@ -319,23 +319,23 @@ p.stop;
 
 subsection:: Debugging infinite loops or recursion
 code::
-while(true); 
+while(true);
 ::
-This is a bad idea. It will lock up SuperCollider and you will have to force quit. Sometimes this happens in your code and the reason isn't obvious. Debugging these situations is very painful because you might have to force quit, relaunch SuperCollider, and reload your code just to try again. 
+This is a bad idea. It will lock up SuperCollider and you will have to force quit. Sometimes this happens in your code and the reason isn't obvious. Debugging these situations is very painful because you might have to force quit, relaunch SuperCollider, and reload your code just to try again.
 code::
 f = { |func| func.value(func) };
-f.value(f); 
+f.value(f);
 ::
 Infinite recursion, on the other hand, is more likely to cause SuperCollider to quit unexpectedly when the execution stack runs out of space.
 
-In Mac OS X, inserting "post" or "debug" calls will not help with infinite loops or recursion, because posted output is held in a buffer until execution is complete. If execution never completes, you never see the output. 
+In Mac OS X, inserting "post" or "debug" calls will not help with infinite loops or recursion, because posted output is held in a buffer until execution is complete. If execution never completes, you never see the output.
 
 One useful approach is to insert statements that will cause execution to halt. The easiest is .halt, but it provides you with no information about where or how it stopped, or how it got there. If you want a more descriptive message, make up an error and throw it:
 code::
-Error("myFunction-halt").throw; 
+Error("myFunction-halt").throw;
 ::
 When debugging code that crashes, place a line like this somewhere in the code. If you get the error output, you know that the infinite loop is happening after the error--so move the error.throw later and try again.
-If it crashes, you know the infinite loop is earlier. Eventually, after a lot of heartache, you can zero in on the location. 
+If it crashes, you know the infinite loop is earlier. Eventually, after a lot of heartache, you can zero in on the location.
 
 Here is a rogues' gallery of infinite loop gotchas--things that don't look like infinite loops, but they will kill your code quicker than you can wish you hadn't just pushed the enter key:
 code::
@@ -354,16 +354,16 @@ r = Routine({
 	loop {
 		a.do({ |item| item.yield });
 	}
-}); 
+});
 r.next;	// crash
 ::
-This looks pretty innocent: iterate repeatedly over an array and yield each item successively. But, if the array is empty, the do loop never executes and yield never gets called. So, the outer loop{} runs forever, doing nothing. 
+This looks pretty innocent: iterate repeatedly over an array and yield each item successively. But, if the array is empty, the do loop never executes and yield never gets called. So, the outer loop{} runs forever, doing nothing.
 
 Recursion is often used to walk through a tree structure. Tree structures are usually finite--no matter which branch you go down, eventually you will reach the end. If you have a data structure that is self-referential, you can easily get infinite recursion:
 code::
 a = (1..10);
 a.put(5, a);	// now one of the items of a is a itself
-a.postcs;		// crash--postcs has to walk through the entire collection, which loops on itself 
+a.postcs;		// crash--postcs has to walk through the entire collection, which loops on itself
 ::
 Self-referential data structures are sometimes an indication of poor design. If this is the case, avoid them.
 code::
@@ -388,7 +388,7 @@ r = Routine({
 		"debugging".postln;	// looks like regular code, doesn't stand out
 		a.do({ |item| item.yield });
 	}
-}); 
+});
 r.next;	// crash
 
 // vs:
@@ -399,7 +399,7 @@ r = Routine({
 "debugging".postln;	// this obviously sticks out
 		a.do({ |item| item.yield });
 	}
-}); 
+});
 r.next;	// crash
 ::
 

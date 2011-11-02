@@ -125,11 +125,6 @@ struct LinExp : public Unit
 	float m_dstratio, m_rsrcrange, m_rrminuslo, m_dstlo;
 };
 
-struct LinLin : public Unit
-{
-	float m_scale, m_offset;
-};
-
 struct Clip : public Unit
 {
 	float m_lo, m_hi;
@@ -340,9 +335,6 @@ extern "C"
 	void LinExp_next_ak(LinExp *unit, int inNumSamples);
 	void LinExp_next_ka(LinExp *unit, int inNumSamples);
 	void LinExp_Ctor(LinExp* unit);
-
-	void LinLin_next(LinLin *unit, int inNumSamples);
-	void LinLin_Ctor(LinLin* unit);
 
 	void EnvGen_next_k(EnvGen *unit, int inNumSamples);
 	void EnvGen_next_aa(EnvGen *unit, int inNumSamples);
@@ -1346,23 +1338,20 @@ void A2K_Ctor(A2K* unit)
 
 void T2K_next(T2K *unit, int inNumSamples)
 {
-	float max = 0.f, zout = 0.f;
-	int n;
-	n = (int)unit->mWorld->mBufRate.mSampleRate;
-	for (int i=0; i<n; ++i) {
-			float zin = IN(0)[i];
-			if(fabs(zin) > max) {
-				zout = zin;
-				max = fabs(zin);
-			}
-	}
-	ZOUT0(0) = zout;
+	float out = 0.f, val;
+	float *in = ZIN(0);
+	int n = unit->mWorld->mBufLength;
+	LOOP1(n,
+		val = ZXP(in);
+		if(val>out) out=val;
+	);
+	ZOUT0(0) = out;
 }
 
 void T2K_Ctor(T2K* unit)
 {
 	SETCALC(T2K_next);
-	T2K_next(unit, 1);
+	ZOUT0(0) = ZIN0(0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2666,204 +2655,6 @@ void LinExp_Ctor(LinExp* unit)
 	unit->m_rsrcrange = 1. / (srchi - srclo);
 	unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
 	LinExp_next(unit, 1);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void LinLin_next(LinLin *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *in   = ZIN(0);
-
-	float scale = unit->m_scale;
-	float offset = unit->m_offset;
-
-	LOOP1(inNumSamples,
-		ZXP(out) = scale * ZXP(in) + offset;
-	);
-}
-
-void LinLin_next_kk(LinLin *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *in   = ZIN(0);
-	float srclo = ZIN0(1);
-	float srchi = ZIN0(2);
-	float dstlo = ZIN0(3);
-	float dsthi = ZIN0(4);
-	float scale = (dsthi - dstlo) / (srchi - srclo);
-	float offset = dstlo - scale * srclo;
-
-	LOOP1(inNumSamples,
-		ZXP(out) = scale * ZXP(in) + offset;
-	);
-}
-
-void LinLin_next_aa(LinLin *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *in   = ZIN(0);
-	float *srclo = ZIN(1);
-	float *srchi = ZIN(2);
-	float *dstlo = ZIN(3);
-	float *dsthi = ZIN(4);
-
-	LOOP1(inNumSamples,
-		float zdsthi = ZXP(dsthi);
-		float zdstlo = ZXP(dstlo);
-		float zsrchi = ZXP(srchi);
-		float zsrclo = ZXP(srclo);
-
-		float scale = (zdsthi - zdstlo) / (zsrchi - zsrclo);
-		float offset = zdstlo - scale * zsrclo;
-		ZXP(out) = scale * ZXP(in) + offset;
-	);
-}
-
-
-void LinLin_next_ak(LinLin *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *in   = ZIN(0);
-	float *srclo = ZIN(1);
-	float *srchi = ZIN(2);
-	float dstlo = ZIN0(3);
-	float dsthi = ZIN0(4);
-
-	LOOP1(inNumSamples,
-		float zsrchi = ZXP(srchi);
-		float zsrclo = ZXP(srclo);
-
-		float scale = (dsthi - dstlo) / (zsrchi - zsrclo);
-		float offset = dstlo - scale * zsrclo;
-		ZXP(out) = scale * ZXP(in) + offset;
-	);
-}
-
-void LinLin_next_ka(LinLin *unit, int inNumSamples)
-{
-	float *out = ZOUT(0);
-	float *in   = ZIN(0);
-	float srclo = ZIN0(1);
-	float srchi = ZIN0(2);
-	float *dstlo = ZIN(3);
-	float *dsthi = ZIN(4);
-
-	LOOP1(inNumSamples,
-		float zdsthi = ZXP(dsthi);
-		float zdstlo = ZXP(dstlo);
-
-		float scale = (zdsthi - zdstlo) / (srchi - srclo);
-		float offset = zdstlo - scale * srclo;
-		ZXP(out) = scale * ZXP(in) + offset;
-	);
-}
-
-#ifdef NOVA_SIMD
-inline_functions void LinLin_next_nova(LinLin *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(unit->m_scale),
-						  wrap_argument(unit->m_offset), inNumSamples);
-}
-
-inline_functions void LinLin_next_nova_64(LinLin *unit, int inNumSamples)
-{
-	nova::muladd_vec_simd<64>(OUT(0), wrap_argument(IN(0)),
-							  wrap_argument(unit->m_scale), wrap_argument(unit->m_offset));
-}
-
-inline_functions void LinLin_next_kk_nova(LinLin *unit, int inNumSamples)
-{
-	float srclo = ZIN0(1);
-	float srchi = ZIN0(2);
-	float dstlo = ZIN0(3);
-	float dsthi = ZIN0(4);
-	float scale = (dsthi - dstlo) / (srchi - srclo);
-	float offset = dstlo - scale * srclo;
-
-	nova::muladd_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(scale),
-						  wrap_argument(offset), inNumSamples);
-}
-
-inline_functions void LinLin_next_kk_nova_64(LinLin *unit, int inNumSamples)
-{
-	float srclo = ZIN0(1);
-	float srchi = ZIN0(2);
-	float dstlo = ZIN0(3);
-	float dsthi = ZIN0(4);
-	float scale = (dsthi - dstlo) / (srchi - srclo);
-	float offset = dstlo - scale * srclo;
-
-	nova::muladd_vec_simd<64>(OUT(0), wrap_argument(IN(0)), wrap_argument(scale),
-							  wrap_argument(offset));
-}
-
-#endif
-
-void LinLin_SetCalc(LinLin* unit)
-{
-#ifdef NOVA_SIMD
-	if (!(BUFLENGTH & 15))
-	{
-		if(INRATE(1) == calc_FullRate || INRATE(2) == calc_FullRate) {
-			if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
-				SETCALC(LinLin_next_aa); return;
-			} else {
-				SETCALC(LinLin_next_ak); return;
-			}
-		} else {
-			if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
-				SETCALC(LinLin_next_ka); return;
-			}
-		}
-		for(int i = 1; i<5; i++) {
-			if(INRATE(i) != calc_ScalarRate) {
-				if (BUFLENGTH == 64)
-					SETCALC(LinLin_next_kk_nova_64);
-				else
-					SETCALC(LinLin_next_kk_nova);
-				return;
-			}
-		};
-		if (BUFLENGTH == 64)
-			SETCALC(LinLin_next_nova_64);
-		else
-			SETCALC(LinLin_next_nova);
-		return;
-	}
-#endif
-
-	if(INRATE(1) == calc_FullRate || INRATE(2) == calc_FullRate) {
-		if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
-			SETCALC(LinLin_next_aa); return;
-		} else {
-			SETCALC(LinLin_next_ak); return;
-		}
-	} else {
-		if(INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
-			SETCALC(LinLin_next_ka); return;
-		}
-	}
-	for(int i = 1; i<5; i++) {
-		if(INRATE(i) != calc_ScalarRate) {
-			SETCALC(LinLin_next_kk); return;
-		}
-	};
-	SETCALC(LinLin_next);
-
-}
-
-void LinLin_Ctor(LinLin* unit)
-{
-	float srclo = ZIN0(1);
-	float srchi = ZIN0(2);
-	float dstlo = ZIN0(3);
-	float dsthi = ZIN0(4);
-
-	unit->m_scale = (dsthi - dstlo) / (srchi - srclo);
-	unit->m_offset = dstlo - unit->m_scale * srclo;
-	LinLin_SetCalc(unit);
-	LinLin_next(unit, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -5295,7 +5086,6 @@ PluginLoad(LF)
 	DefineSimpleUnit(InRange);
 	DefineSimpleUnit(InRect);
 	DefineSimpleUnit(LinExp);
-	DefineSimpleUnit(LinLin);
 	DefineSimpleUnit(EnvGen);
 	//DefineSimpleUnit(BufEnvGen);
 	DefineSimpleUnit(Linen);

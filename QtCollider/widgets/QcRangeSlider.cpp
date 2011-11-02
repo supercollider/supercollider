@@ -90,6 +90,16 @@ QSize QcRangeSlider::minimumSizeHint() const
   return ( _ort == Qt::Horizontal ? QSize( 30, 10 ) : QSize( 10, 30 ) );
 }
 
+void QcRangeSlider::increment( double factor )
+{
+  moveBy( factor * _step );
+}
+
+void QcRangeSlider::decrement( double factor )
+{
+  moveBy( -factor * _step );
+}
+
 void QcRangeSlider::increment()
 {
   float step = _step;
@@ -227,7 +237,8 @@ void QcRangeSlider::keyPressEvent ( QKeyEvent *e )
       _lo = 1.f; _hi = 1.f; update(); break;
     case Qt::Key_C:
       _lo = 0.5; _hi = 0.5; update(); break;
-    default: QWidget::keyPressEvent( e );
+    default:
+      return QWidget::keyPressEvent( e );
   }
   Q_EMIT( action() );
 }

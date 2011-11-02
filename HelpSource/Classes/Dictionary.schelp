@@ -75,7 +75,7 @@ code::
 d = ();
 d.putPairs([\hello, 10, \whello, "lord", "abc", 7]);
 ::
-		
+
 subsection::Accessing
 
 method::at
@@ -85,6 +85,10 @@ d = (robot: 99);
 d.at(\robot);	// Get the value associated with key
 d[\robot];	// different syntax, same behaviour
 d.at(\monkey);	// Key doesn't exist: return Nil
+::
+
+method::atFail
+Access the value associated with the key. If the key does not exist, return the result of teletype::function::.
 ::
 
 method::keys
@@ -204,7 +208,7 @@ code::
 d = (a: "hello", b: "robot", c: [1, 2, 3]);
 d.associationsDo { |assoc| postln("the association: " ++ assoc) };
 ::
-	
+
 method::pairsDo
 Iterate over the associations, and evaluate the function for each, passing key and value as argument. Identical to link::#-keysValuesDo::
 
@@ -214,7 +218,7 @@ code::
 d = (a: "hello", b: "robot", c: [1, 2, 3]);
 d.invert;
 ::
-		
+
 subsection::Other instance methods
 
 method::order
@@ -231,7 +235,7 @@ code::
 d = (a: 5, b: 7, c: 1, d: 0);
 d.powerset;
 ::
-	
+
 method::merge
 Combine two dictionaries into a new one by applying a function to each value. If strong::fill:: is true (default: true), values missing from one of them are kept as they are.
 code::
@@ -267,7 +271,7 @@ argument::fill
 a link::Classes/Boolean::.
 argument::specs
 a dictionary of link::Classes/Spec::s that are applied to each before blending.
-		
+
 method::asSortedArray
 Return the values in a sorted array of key value pairs.
 code::
@@ -349,4 +353,4 @@ Dictionary[\hello -> 1, \hello -> 0];
 ( \hello: 1, \hello: 0 );
 ::
 
-	
+

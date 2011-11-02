@@ -20,13 +20,15 @@ By default code::envir:: it is set to the current link::Classes/Environment::. H
 
 classmethods::
 
+private:: prGetLast, prSetSyntaxColorTheme, prnumberOfOpen, prBasicNew, prGetIndexOfListener, prDefaultUsesAutoInOutdent, initClass
+
 method:: new
 argument:: title
-An instance of link::Classes/String:: or link::Classes/Symbol::. Default value is code::"Untitled"::.
+An instance of link::Classes/String:: or link::Classes/Symbol::.
 argument:: string
-An instance of link::Classes/String::. Default value is code::""::. The contents of the document.
+An instance of link::Classes/String::. The contents of the document.
 argument:: makeListener
-Makes this document the listener, i.e. the place where SC-lang posts messages. Default value is code::false::.
+Makes this document the listener, i.e. the place where SC-lang posts messages.
 argument:: envir
 An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window. By defualt, it is set to the current link::Classes/Environment::.
 discussion::
@@ -40,9 +42,9 @@ Open a document from a path.
 argument:: path
 The file system path to the document. An instance of link::Classes/String::.
 argument:: selectionStart
-The beginning of the cursor selection of the file content. Default value is code::0::.
+The beginning of the cursor selection of the file content.
 argument:: selectionLength
-The length of the cursor selection of the file content. Default value is code::0::.
+The length of the cursor selection of the file content.
 argument:: envir
 An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By defualt, it is set to the current link::Classes/Environment::.
 discussion::
@@ -64,16 +66,16 @@ warning::
 Closes all open Documents, whether edited or not.
 ::
 argument:: leavePostWindowOpen
-An instance of link::Classes/Boolean::. Default is code::true::.
+An instance of link::Classes/Boolean::.
 
 method:: closeAllUnedited
 Closes all unedited Documents.
 argument:: leavePostWindowOpen
-An instance of link::Classes/Boolean::. Default is code::true::.
+An instance of link::Classes/Boolean::.
 
 method:: current
 Gets/sets the current Document.
-argument:: arg1
+argument:: value
 A Document.
 discussion::
 code::
@@ -84,47 +86,69 @@ Document.current.name.postln; // Prints "Document.html"
 method:: listener
 Returns the current Document which is the listener, i.e. the Document where interpreter messages are posted.
 
-method:: storePostWin
-Stores the content of Document.listener.
-argument:: path
-The file system path. An instance of link::Classes/String::.
-
 method:: allDocuments
-A class variable. Returns all documents. Default value is code::defaultValue::.
+Returns all documents.
 
 method:: globalKeyDownAction
-A class variable. Get/set A global action to be performed when a key is pressed.
-argument:: arg1
+Get/set A global action to be performed when a key is pressed.
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: globalKeyUpAction
-A class variable. Get/set A global action to be performed when a key is released.
-argument:: arg1
+Get/set A global action to be performed when a key is released.
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: initAction
-A class variable. Get/set A an action to be performed up opening or creating a Document.
-argument:: arg1
+Get/set A an action to be performed up opening or creating a Document.
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: autoRun
-A class variable. If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be exectued on opening the file, if autorun is set to true.
-argument:: arg1
+If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be exectued on opening the file, if autorun is set to true.
+argument:: value
 An instance of link::Classes/Boolean::. Default value is code::true::.
 
 method:: wikiBrowse
-A class variable. If set to code::true::, underlining text will create a wiki link.
-argument:: arg1
+If set to code::true::, underlining text will create a wiki link.
+argument:: value
 An instance of link::Classes/Boolean::. Default value is code::true::.
 
 method:: implementationClass
-A class variable. The editor implementation specific class which will handle Documents.
-argument:: arg1
+The editor implementation specific class which will handle Documents.
+argument:: value
 A class for implementing Document, e.g. link::Classes/CocoaDocument::.
+
+method:: postColor
+Get / set the listeners pen color.
+argument:: color
+An instance of link::Classes/Color::.
+discussion::
+code::
+Document.postColor; // returns current post color
+Document.postColor_(Color.red);
+Document.postColor_(Color.green);
+Document.postColor_(Color.blue);
+Document.postColor_(Color.black);
+(
+r = Routine({
+	10.do({
+		Document.postColor_(Color.rand);
+		"There is no blue without yellow and without orange.".postln;
+		0.5.rand.yield;
+	});
+	Document.postColor_(Color.black);
+});
+)
+
+r.play;
+r.stop;
+::
+::
 
 method:: setTheme
 Sets the theme for syntax colorization.
-argument:: arg1
+argument:: themeName
 A link::Classes/Symbol::, defining the name of the theme that you've put into code::Document.themes::.
 discussion::
 The Document class has a preset theme called code::'default'::, which is set as follows (default SC colors):
@@ -144,7 +168,7 @@ If you want to have your own themes for syntax colorization, you need to put you
 code::
 //putting a custom color theme into Document.themes
 Document.themes.put
-(\myTheme, 
+(\myTheme,
 	(
 		classColor: Color.new255(53, 74, 187),
 		textColor: Color.new255(0, 0, 0),
@@ -216,6 +240,8 @@ The file system path to the directory. An instance of link::Classes/String::.
 
 instancemethods::
 
+private:: prGetBackgroundColor, prGetBounds, prIsEditable, propen, prGetTitle, prinitByString, prGetLastIndex, prSetBackgroundColor, prSetFileName, prUsesAutoInOutdent, prclose, prGetSelectedBackgroundColor, prGetFileName, prSetSelectedBackgroundColor, prSelectLine, prinitByIndex, prAdd, prSetBounds, prinsertText, prSetTitle, initFromPath, initByString
+
 subsection:: General Document Properties
 
 method:: bounds
@@ -250,7 +276,7 @@ Document.current == Document.listener; // presumaably returns false
 
 method:: editable
 Get / set the the document is editable.
-argument:: arg1
+argument:: abool
 An instance of link::Classes/Boolean::.
 
 method:: name
@@ -278,33 +304,6 @@ code::
 a = Document("background", "'hardly see anything");
 a.background_(Color.blue(alpha:0.8)); // notice that alpha controls the window transparency
 )
-::
-::
-
-method:: postColor
-Get / set the listeners pen color.
-argument:: color
-An instance of link::Classes/Color::.
-discussion::
-code::
-Document.postColor; // returns current post color
-Document.postColor_(Color.red);
-Document.postColor_(Color.green);
-Document.postColor_(Color.blue);
-Document.postColor_(Color.black);
-(
-r = Routine({ 
-	10.do({
-		Document.postColor_(Color.rand);
-		"There is no blue without yellow and without orange.".postln;
-		0.5.rand.yield;
-	});
-	Document.postColor_(Color.black);
-});
-)
-
-r.play;
-r.stop;
 ::
 ::
 
@@ -373,17 +372,17 @@ Document.listener.unfocusedFront;
 
 method:: onClose
 Get/set the action to be performed on closing the document.
-argument:: arg1
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: endFrontAction
 Get/set the action to be performed when the document becomes no longer the front document.
-method:: arg1
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: toFrontAction
 Get / set the action to be performed when the document become the front document.
-argument:: arg1
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: mouseDownAction
@@ -391,13 +390,13 @@ Get/set the action to be performed on link::Classes/Document#mouseDown::.
 note::
 The Mac OSX built-in editor does not supports this feature. A mouseDownAction that you supply will be ignored.
 ::
-argument:: arg1
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
 
 
 method:: mouseUpAction
 Get/set the action to be performed on link::Classes/Document#mouseUp::.
-argument:: arg1
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
 discussion::
 code::
@@ -406,7 +405,7 @@ code::
 //add a mouse action to this document:
 //example: easy button:
 //when you click in front of a 17 a SinOsc will start up;
-s.waitForBoot({	
+s.waitForBoot({
 	Document.current.mouseUpAction_({arg doc;
 		var char;
 		char = doc.rangeText(doc.selectionStart, 2);
@@ -429,7 +428,7 @@ Document.current.mouseUpAction = nil; // clear mouseUpActiont
 
 method:: keyDownAction
 Get/set the action to be performed on link::Classes/Document#keyDown::.
-argument:: arg1
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::.
 discussion::
 code::
@@ -441,7 +440,7 @@ Document.current.keyDownAction = nil;
 
 method:: keyUpAction
 Get/set the action to be performed on link::Classes/Document#keyUp::.
-argument:: arg1
+argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::.
 code::
 Document.current.keyUpAction = { arg ...args; args.postln };
@@ -455,7 +454,7 @@ Creates a wiki page.
 argument:: wikiWord
 An instance of link::Classes/String::. The name of the document.
 argument:: extension
-An instance of link::Classes/String::. The file extension. Default value is code::".rtf"::.
+An instance of link::Classes/String::. The file extension.
 argument:: directory
 An instance of link::Classes/String::. The directory in which to save the page.
 discussion::
@@ -569,14 +568,12 @@ doc.getSelectedLines(doc.selectionStart - 40, 130).postln;
 
 
 method:: string
-Gets the string within a certain range.
+Gets or sets the string within a certain range.
 argument:: rangestart
 argument:: rangesize
 
-method.: string_
 Sets the string within a certain range.
 argument:: string
-Explanation of string. Default value is code::nil::. Other information.
 argument:: rangestart
 An link::Classes/Integer::. Default value is code::nil::.
 argument:: rangesize
@@ -594,7 +591,7 @@ Document.current.string_(": test test test test test ",
 ::
 
 method:: font
-Gets/sets the font within a certain range.
+Gets or sets the font within a certain range.
 argument:: font
 An instance of link::Classes/Font::.
 argument:: rangestart
@@ -614,10 +611,7 @@ Document.current.font_(Font("Impact", 14),
 ::
 
 method:: stringColor
-Gets the last color set with link::Classes/Document#stringColor_::.
-
-method:: stringColor_
-Sets the string color of a specific range of already printed text. Default is the whole document. To set the listener text color for posting, see: link::Classes/Document#postColor::.
+Gets or sets the string color of a specific range of already printed text. Default is the whole document. To set the listener text color for posting, see: link::Classes/Document#postColor::.
 argument:: color
 An instance of link::Classes/Color::.
 argument:: rangeStart
@@ -637,10 +631,7 @@ Document.current.stringColor_(Color.rand(0.2, 0.8),
 ::
 
 method:: selectedBackground
-Gets the document's background color for selected text.
-
-method:: selectedBackground_
-Sets the document's background color for selected text. Applies to the whole document instance.
+Gets or sets the document's background color for selected text. Applies to the whole document instance.
 argument:: color
 An instance of link::Classes/Color::.
 discussion::
@@ -688,7 +679,7 @@ code::
 	*openAutoComplete
 	autoComplete
 ::
-	
+
 
 
 subsection:: Subclassing and Internal Methods
@@ -702,7 +693,7 @@ code::
 	keyUp (character, modifiers, unicode, keycode)
 	getIdentifierCoordFromEnd (endPos)
 	dataptr
-	
+
 	Private. Used only internally:
 	*newFromIndex (idx)
 	*prnumberOfOpen
@@ -712,7 +703,7 @@ code::
 	prAdd
 	prGetLastIndex
 	setFont (font, rangeStart, rangeSize)
-	setTextColor (color, rangeStart, rangeSize)	
+	setTextColor (color, rangeStart, rangeSize)
 	propen (path, selectionStart, selectionLength)
 	rangeText (rangestart, rangesize)
 	insertTextRange (string, rangestart, rangesize)
@@ -733,7 +724,7 @@ code::
 	envir
 	envir_ (ev)
 	text
-	removeUndo 
+	removeUndo
 	selectedText
 	selectUnderlinedText (clickPos)
 	linkAtClickPos (clickPos)

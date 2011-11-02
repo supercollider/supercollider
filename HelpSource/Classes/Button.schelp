@@ -1,7 +1,7 @@
 class:: Button
 redirect:: implClass
 summary:: A multi-state button
-categories:: GUI
+categories:: GUI>Views
 
 description::
 A multi-state button.
@@ -12,7 +12,7 @@ Failure to set any states at all results in an invisible button.
 
 The button performs its action upon releasing the mouse. In musical contexts, you might want to use code::mouseDownAction_():: to set a function to be performed on pressing the mouse (see link::Classes/View::, and examples below).
 
-If the drag contains a number, then code::valueAction_():: is performed using the currentDrag. If the drag contains anything else, action is set to the current drag. You could, for example, drag a function to an Button, and action would then be set to that function.
+If the drag contains a number, then code::valueAction_():: is performed using the code::currentDrag::. If the drag contains anything else, code::action:: is set to the current drag. You could, for example, drag a function to an Button, and action would then be set to that function.
 
 classmethods::
 
@@ -35,7 +35,7 @@ b = Button(w, Rect(20, 20, 340, 30))
 			["there is a path to cessation of suffering", Color.blue, Color.clear]
 		])
 		.action_({ arg butt;
-			butt.value.postln;	
+			butt.value.postln;
 		});
 w.front;
 )
@@ -46,25 +46,22 @@ instancemethods::
 
 method:: states
 An array of labels and colors defining the states of the button.
-argument:: array
+argument:: stateArray
 An link::Classes/Array:: of arrays of the form code:: [ [String, strColor, bgColor] , .... ] ::
 
 method:: value
-Returns the index of the current state. This will not evaluate the function assigned to action (see link::Classes/View::).
-
-method:: value_
-Sets the button to display the state at index val of the states array. This will not evaluate the function assigned to action (see link::Classes/View::).
-argument:: val
+Sets or returns the index of the current state. This will strong::not:: evaluate the function assigned to strong::action:: (see link::Classes/View::).
+argument:: argVal
 The index of an item in the states array.
 
-method:: valueAction_
-Sets the button to display the item at index val of the states array, and evaluates action (see SCView), if the value has changed.
-argument:: val
+method:: valueAction
+Sets the button to display the item at index strong::anInt:: of the states array, and evaluates strong::action:: (see link::Classes/View::), if the value has changed.
+argument:: anInt
 The index of an item in the states array.
 
 method:: font
 Sets the Font of the button. Default value is the default font: Font.default .
-argument:: argFont
+argument:: f
 An instance of link::Classes/Font::.
 
 
@@ -75,7 +72,7 @@ The following methods are usually not used directly or are called by a primitive
 method:: doAction
 The method called by the primitive upon releasing the mouse.
 argument:: modifiers
-A key modifier number, which is passed to the action as its second argument upon mouse-releasing the button.
+A key modifier number, which is passed to the strong::action:: as its second argument upon mouse-releasing the button.
 
 method:: defaultKeyDownAction
 argument:: char
@@ -99,7 +96,7 @@ returns::
 [ \bounds, \visible, \enabled, \canFocus, \resize, \background, \minWidth, \maxWidth, \minHeight, \maxHeight, \value, \font, \states, \focusColor ]
 
 method:: defaultGetDrag
-The method called by default when initiating a drag from a Button. Returns the same as value.
+The method called by default when initiating a drag strong::from:: a Button. Returns the same as link::#-value::.
 
 method:: defaultCanReceiveDrag
 The method called by default when attempting to drop a drag in this object. By default, Button will respond only to drags where the drag contains a link::Classes/Number:: or link::Classes/Function::.
@@ -120,7 +117,7 @@ b = Button(w, Rect(90, 20, 200, 30))
 			["pulse", Color.black, Color.rand]
 		])
 		.action_({ arg butt;
-			butt.value.postln;	
+			butt.value.postln;
 		});
 w.front;
 )
@@ -146,7 +143,7 @@ s.waitForBoot({
 	b = Button(w, Rect(20, 20, 80, 26))
 			.states_([["play", Color.black, Color.rand]])
 			.mouseDownAction_({
-				a = {EnvGen.kr(Env.adsr, doneAction:2) * SinOsc.ar(440, 0, 0.4)}.play;	
+				a = {EnvGen.kr(Env.adsr, doneAction:2) * SinOsc.ar(440, 0, 0.4)}.play;
 			})
 			.action_({ arg butt, mod;
 				a.release(0.3);
@@ -162,35 +159,35 @@ code::
 (
 s.waitForBoot({
 	var w, p, snd, b;
-	
+
 	w = Window.new;
-	
+
 	b = Button(w, Rect(20, 20, 80, 26))
 			.states_([["start a sound", Color.black, Color.green], ["stop", Color.black, Color.red]])
 			.action_({});
-				
+
 	v = VLayoutView(w, Rect(140, 20, 200, 300)); //Group the following views
 	StaticText(v, Rect(20, 20, 180, 60))
 		.string_("The button does nothing at first, so try dragging a function to the button");
-	
+
 	DragSource(v, Rect(20, 20, 80, 26))
 		.object_(
 			{|b| (b.value == 1).if{ snd = { SinOsc.ar(440,0,0.6) }.play} { snd.free }; } //a button action function
 			)
 		.string_("a play sine function").align_(\center).background_(Color.rand);
-	
+
 	DragSource(v, Rect(20, 20, 80, 26))
 		.object_(
 			{|b| (b.value == 1).if{ snd = { Saw.ar(440,0.4) }.play} { snd.free }; } //a button action function
 			)
 		.string_("a play saw function").align_(\center).background_(Color.rand);
-	
+
 	DragSource(v, Rect(20, 20, 80, 26))
 		.object_(
 			{|b| (b.value == 1).if{ snd = { WhiteNoise.ar(0.4) }.play } { snd.free }; } //a button action function
 			)
 		.string_("a play noise function").align_(\center).background_(Color.rand);
-	
+
 	p = CmdPeriod.add({ b.value_(0) }); // set button to 0 on hitting Cmd-period
 	w.onClose_{ snd.free; CmdPeriod.removeAll };//clean up when window is closed
 	w.front;
@@ -203,22 +200,22 @@ code::
 (
 var update, w, b;
 	w = Window.new("State Window", Rect(150,Window.screenBounds.height - 140, 380, 60));
-	
+
 	// a convenient way to set the button label
 	update = {
 		|but, string| but.states = [[string.asString, Color.black, Color.red]];
 		but.refresh;
 	};
-	
+
 	b = Button(w, Rect(10, 10, 360, 40));
 	b.font_(Font("Impact", 24));
-	
+
 	update.value(b, "there is only one state");
-	
+
 	// if an action should do something different each time it is called, a routine is the
 	// right thing to use. This is better than creating variables outside and setting them
 	// from the action function to keep state from one action to the next
-	
+
 	b.action_(Routine { |butt|
 		rrand(15, 45).do { |i|
 			update.value(butt, "%. there is still only 1 state".format(i + 2));
@@ -235,34 +232,34 @@ code::
 (
 s.waitForBoot({
 	var update, w, b;
-	
+
 	w = Window.new("State Window", Rect(150, Window.screenBounds.height - 140, 380, 60));
-	
+
 	// a convenient way to set the button label
 	update = { |but, string|
 	but.states = [[string.asString, Color.black, Color.red]]; but.refresh };
-	
+
 	b = Button(w, Rect(10, 10, 360, 40));
 	b.font_(Font("Impact", 24));
-	
+
 	update.value(b, "there is only one state");
-	
+
 	// if an action should do something different each time it is called, a routine is the
 	// right thing to use. This is better than creating variables outside and setting them
 	// from the action function to keep state from one action to the next
-	
+
 	b.action_(Routine { |butt|
 		var synth, guessVal;
-		
+
 		update.value(butt, "there are only two states");
 		0.yield; // stop here
-		
+
 		update.value(butt, "click me");
 		0.yield; // stop here
-		
+
 		update.value(butt, "click me again");
 		0.yield; // stop here ..
-		
+
 		// create a synth
 		synth = { |freq = 1000, rate = 5|
 			Ringz.ar(
@@ -270,15 +267,15 @@ s.waitForBoot({
 			)
 		}.play;
 		0.yield;
-		
+
 		guessVal = exprand(200.0, 18000).round;
 		synth.set(\freq, guessVal); // set the synth
 		update.value(butt, "?");
 		0.yield;
-		
+
 		update.value(butt, guessVal.asString + "Hz"); // display frequency
 		0.yield;
-		
+
 		synth.set(\rate, rrand(10, 50)); // set trigger rate
 		// start an independent process
 		fork({ 5.wait; synth.release; update.value(butt, "."); 1.wait; w.close }, AppClock);
@@ -318,7 +315,7 @@ StaticText(w, 400@20).string_("Drag & Drop holding down Cmd-key");
 f.nextLine;
 6.do{arg i;
 	var fxwin, winOpen = false, empty = ["", Color.white, Color.white];
-	
+
 	slots["slot" ++ i] = Button.new(w, 70@70)
 		.states_([empty])
 		.action_({|v|
@@ -348,7 +345,7 @@ f.nextLine;
 					remove.value(i, View.currentDrag);
 				}; });
 };
-	
+
 f.nextLine;
 
 ["a", "b", "c", "d", "e", "f"].do{ arg item, i;

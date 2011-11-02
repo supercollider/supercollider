@@ -33,6 +33,13 @@ method:: fromArray
 argument:: array
 An instance of link::Classes/Array::. 1-4 values between 0 and 1. See new. Same as code::*new(*array)::.
 
+method:: fromHexString
+argument:: string
+A link::Classes/String::. This should be a 6 character web color, or a 3 character CSS style color. A preceding # is optional.
+code::
+Color.fromHexString("#FF6600");
+::
+
 method:: black
 Nothing is darker.
 
@@ -111,27 +118,30 @@ instancemethods::
 subsection:: Accessing Instance Variables
 
 method:: red
-Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::,
+Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
 argument:: arg1
 An instance of link::Classes/Float:: between 0 and 1.
 
 method:: green
-Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::,
+Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
 argument:: arg1
 An instance of link::Classes/Float:: between 0 and 1.
 
 method:: blue
-Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::,
+Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
 argument:: arg1
 An instance of link::Classes/Float:: between 0 and 1.
 
 method:: alpha
-Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::,
+Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
 argument:: arg1
 An instance of link::Classes/Float:: between 0 and 1.
 
-
-subsection:: Doing Some Task (optional)
+method:: hexString
+Returns a link::Classes/String:: containing a 6 character web color code, preceded by a #.
+code::
+Color(1.0, 0.4).hexString;
+::
 
 method:: ==
 Binary operator.
@@ -237,7 +247,7 @@ argument:: aColor
 An instance of Color.
 argument:: blend
 A value between 0 and 1. Default value is 0.
-	
+
 method:: asHSV
 Returns an array with code::[hue, saturation, value, alpha]::, as values between 0 and 1.
 
@@ -281,7 +291,7 @@ w.drawHook = {
 		Pen.addAnnularWedge(
 			0@0,
 			rrand(10, 50),
-			rrand(51, 100),	
+			rrand(51, 100),
 			2pi.rand,
 			2pi.rand
 		);

@@ -1,0 +1,66 @@
+CLASS:: AbstractDispatcher
+summary:: Dispatches incoming messages to Functions
+categories:: OpenSoundControl, MIDI
+related:: Classes/AbstractWrappingDispatcher, Classes/OSCMessageDispatcher, Classes/OSCMessagePatternDispatcher, Classes/MIDIMessageDispatcher, Classes/OSCFunc, Classes/OSCdef, Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractResponderFunc
+
+DESCRIPTION::
+Instances of AbstractDispatcher dispatch incoming messages (e.g. MIDI, OSC), to registered instances of link::Classes/AbstractResponderFunc::. There will be a default dispatcher for each message type, but one can have multiple dispatchers per type in order to implement custom dispatching for groups of ResponderFuncs. (The main example of this is OSC pattern matching with link::Classes/OSCMessagePatternDispatcher::.) Normally users do not need to access dispatcher instances directly.
+
+Dispatchers must be registered at the appropriate central point (e.g. Main:recvOSCfunc for OSC messages). In this capacity their interfaces mimic link::Classes/Function:: and link::Classes/FunctionList::.
+
+
+CLASSMETHODS::
+private:: initClass
+
+METHOD:: all
+Get a collection of all currently active dispatchers.
+
+returns:: An link::Classes/IdentitySet::.
+
+METHOD:: new
+Make a new dispatcher.
+
+returns:: A new instance.
+
+
+INSTANCEMETHODS::
+private:: init
+
+METHOD:: add
+Add a responder func to this dispatcher. Subclasses should override this to do any necessary bookkeeping. Generally this method should add this dispatcher as a dependant of the responder func, so that it can respond to any changes.
+
+argument:: funcProxy
+An instance of a subclass of link::Classes/AbstractResponderFunc:: to add.
+
+METHOD:: remove
+Remove a responder func from this dispatcher.
+
+argument:: funcProxy
+An instance of a subclass of link::Classes/AbstractResponderFunc:: to remove.
+
+METHOD:: value
+Evaluate an incoming message to see if it matches. Subclasses should override this message to take appropriate arguments. If a matching responder func is found, this method should call value on it, passing the message.
+
+METHOD:: valueArray
+As link::#-value:: above, but with the arguments passed as a single link::Classes/Array::. This method is needed so that subclasses can work in FunctionLists in central message registration points such as Main:recvOSCMessage.
+
+argument:: args
+An link::Classes/Array:: containing the message and appropriate arguments.
+
+METHOD:: register
+Register this dispatcher at the appropriate central point (e.g. Main:recvOSCfunc) to receive its message type. Subclasses should take care to not override any other registered objects. (So for example use Main:addOSCFunc for OSC messages rather than Main:recvOSCfunc_.) Generally speaking, dispatchers should register themselves automatically if needed when a responder func is added.
+
+METHOD:: unregister
+Remove this dispatcher from the appropriate central registration point, i.e. deactivate it. Generally speaking a dispatcher should unregister itself automatically when its last responder func is removed.
+
+METHOD:: free
+link::#-unregister:: this dispatcher and remove it from link::#*all::. After this the dispatcher should be discarded.
+
+METHOD:: typeKey
+Subclasses should override this method to return a key indicating the type of message this dispatcher responds to, e.g. code::'OSC matched':: or code::'MIDI control'::.
+
+returns:: A link::Classes/Symbol::.
+
+METHOD:: update
+Subclasses should override this to do any necessary updating when a dispatchers responder funcs indicate they have changed via the standard dependancy mechanism. The default implementation does nothing.
+

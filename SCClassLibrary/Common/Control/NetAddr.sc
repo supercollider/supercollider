@@ -104,9 +104,9 @@ NetAddr {
 			var id = UniqueID.next;
 			var resp;
 
-			resp = OSCProxy({|msg|
+			resp = OSCFunc({|msg|
 				if (msg[1] == id) {
-					resp.clear;
+					resp.free;
 					condition.test = true;
 					condition.signal;
 				};

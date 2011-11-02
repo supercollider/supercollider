@@ -36,7 +36,7 @@ argument:: bool
 method:: remove
 Remove the receiver and its children (if any).
 
-method:: enabled_
+method:: enabled
 Enable or disable this menu item.
 argument:: bool
 A link::Classes/Boolean:: indicating whether this item should be enabled or disabled.
@@ -67,7 +67,7 @@ i.enabled = false;
 j.state = true;
 j.setShortCut("$", true, true); // Cmd-ctrl-alt-$
 
-// using *add	
+// using *add
 CocoaMenuItem.add(["hallo", "world"], { "hallo menu".postln });
 CocoaMenuItem.add(["hallo", "world", "here"], { "hallo here".postln }); // fails correctly
 CocoaMenuItem.add(["mellow", "world", "here"], { "mellow here".postln }); // works.

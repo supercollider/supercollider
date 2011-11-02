@@ -1,7 +1,7 @@
 CLASS:: QLineLayout
 summary:: Superclass of layouts that distribute views in a line
 categories:: GUI>Layout
-related:: Classes/StretchItem, Classes/SpacerItem, Guides/GUI-Layout-Management
+related:: Guides/GUI-Layout-Management
 
 DESCRIPTION::
 The two subclasses - QHLayout and QVLayout - distribute views in a horizontal or vertical line, respectively.
@@ -10,11 +10,11 @@ subsection:: Fine tuning
 
 Each item can be assigned a stretch factor and an alignment flag to fine tune how its size and position are managed. This can be done at layout link::#*new#construction::, when an item is added with link::#-add:: method or for an already contained item with link::#-setStretch:: and link::#-setAlignment:: methods.
 
-Stretch factors only affects distribution in the direction of the layout (vertical or horizontal). All items have a stretch factor of 0 by default, so only their own preferences will determine space distribution. As soon as an item is assigned a stretch factor higher than 0, the space will be redistributed according to proportions of stretch factors.
+Stretch factor only affects distribution in the direction of the layout (vertical or horizontal). All items have a stretch factor of 0 by default, so only their own preferences will determine space distribution. As soon as an item is assigned a stretch factor higher than 0, the space will be redistributed according to proportions of stretch factors.
 
 subsection:: Leaving empty space
 
-An empty space with an arbitrary stretch factor or an empty space of fixed size may be placed instead of an item by using link::Classes/StretchItem::  and link::Classes/SpacerItem:: classes. See link::#*new#constructor:: and link::#-add:: as well as documentation of those classes for details.
+An empty space with an arbitrary stretch factor may be inserted using nil in place of an item in combination with the stretch factor. Similarily, an empty space of fixed size may be inserted using an integer in place of an item. See link::#*new#constructor:: and link::#-add:: for details.
 
 
 CLASSMETHODS::
@@ -27,14 +27,15 @@ METHOD:: new
 Create a QLineLayout and immediately fill it with items given as arguments.
 
 argument:: items
-A sequence of items that the layout will distribute in the given order. An item can be a QView, a QLayout, a StretchItem or a SpacerItem. You can assign stretch factor and/or alignment to a QView or a QLayout by wrapping it into an array, followed by pairs of (\stretch, factor) and/or (\align, flag), for example:
+A sequence of items that the layout will distribute in the given order. An item can be a QView, a QLayout, nil (for stretchable empty space) or an Integer (for fixed-size empty space). You can assign stretch factor and/or alignment to an item by wrapping it into an array, followed by pairs of ('stretch', factor) and/or ('align', flag). 'stretch' and 'align' may be abbreviated with 's' and 'a'. Simplified syntax for placing key-value pairs into an array comes handy. If the item is nil only the stretch parameter will have effect; if the item is an integer none of the parameters will have any effect. For example:
 
 code::
 w = Window.new;
 w.layout = QVLayout(
-	[Button(), \stretch, 1, \align, \bottomLeft],
-	SpacerItem(20),
-	[TextView(), \stretch, 3]
+	[Button().states_([["Foo"]]), stretch:1, align:\bottomLeft],
+	20,
+	[TextView().string_("Bar\nBar\nBar\n"), s:3],
+	[nil, s:1]
 );
 w.front;
 ::
@@ -43,10 +44,10 @@ w.front;
 INSTANCEMETHODS::
 
 METHOD:: add
-Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively. 
+Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively.
 
 argument:: item
-The item can be a QView, a QLayout, a StretchItem or a SpacerItem. If it is one of the last two, the following arguments have no effect.
+The item can be a QView, a QLayout, an Integer (specifying amount in pixels of empty space) or nil (for stretchable empty space). If the item is nil the align argument will have no effect; if the item is an Integer none of the other arguments will have any effect.
 
 argument:: stretch
 An integer stretch factor.
@@ -104,8 +105,8 @@ w.layout = QVLayout(
 	QTextView(),
 	QHLayout(
 		QButton().states_([["Foo"]]),
-		LineItem( QTextField().string_("Bar"), stretch: 1 ),
-		LineItem( QTextField().string_("BarBarBar"), stretch: 4 )
+		[QTextField().string_("Bar"), stretch:1],
+		[QTextField().string_("BarBarBar"), stretch:4]
 	)
 );
 w.front;

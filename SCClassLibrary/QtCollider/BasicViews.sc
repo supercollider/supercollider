@@ -1,7 +1,13 @@
 /////////////////////// ABSTRACT CLASSES ////////////////////////////
 
 QTextViewBase : QView {
+  var <object, <>setBoth = true;
   var <align;
+
+  object_  { arg obj;
+    if( setBoth ) { this.string = obj.asString };
+    object = obj
+  }
 
   align_ { arg aSymbol;
     align = aSymbol;
@@ -82,19 +88,6 @@ QAbstractStepValue : QView {
     this.setProperty( \step, aFloat );
   }
 
-  value {
-    ^this.getProperty( \value );
-  }
-
-  value_ { arg argVal;
-    this.setProperty( \value, argVal );
-  }
-
-  valueAction_ { arg val;
-    this.value_(val);
-    action.value(this);
-  }
-
   shift_scale_ { arg aFloat;
     shift_scale = aFloat;
     this.setProperty( \shiftScale, aFloat );
@@ -110,13 +103,16 @@ QAbstractStepValue : QView {
     this.setProperty( \altScale, aFloat );
   }
 
-  increment {
-    this.nonimpl( \increment );
+  getScale { |modifiers|
+    ^case
+      { modifiers.isShift } { shift_scale }
+      { modifiers.isCtrl } { ctrl_scale }
+      { modifiers.isAlt } { alt_scale }
+      { 1 };
   }
 
-  decrement {
-    this.nonimpl( \decrement );
-  }
+  increment { arg factor = 1.0; this.invokeMethod( \increment, factor.asFloat ); }
+  decrement { arg factor = 1.0; this.invokeMethod( \decrement, factor.asFloat ); }
 }
 
 /////////////////////// CONTAINERS ////////////////////////////////
@@ -127,6 +123,10 @@ QHLayoutView : QView {
 
 QVLayoutView : QView {
   *qtClass { ^"QcVLayoutWidget" }
+}
+
+QScrollCanvas : QObject {
+  *qtClass { ^'QcScrollWidget' }
 }
 
 QScrollView : QAbstractScroll {
@@ -173,7 +173,7 @@ QScrollView : QAbstractScroll {
   initQScrollView {
     // NOTE: The canvas widget must not be a QView, so that asking its
     // children for parent will skip it and hit this view instead.
-    this.canvas = QObject("QcScrollWidget");
+    this.canvas = QScrollCanvas();
   }
 }
 
@@ -314,6 +314,11 @@ QCheckBox : QView {
     this.setProperty(\value,val)
   }
 
+  valueAction_ { |val|
+    this.value_(val);
+    this.doAction;
+  }
+
   string_{ |string|
     this.setProperty(\text,string)
   }
@@ -329,60 +334,13 @@ QCheckBox : QView {
   }
 }
 
-QSlider : QAbstractStepValue {
-  //compatibility stuff:
-  var <orientation;
-  var <> thumbSize;
-
-  *qtClass { ^"QcSlider" }
-
-  *new { arg parent, bounds;
-    ^super.new( parent, bounds ).initQSlider( bounds );
-  }
-
-  knobColor {
-    ^this.palette.buttonColor;
-  }
-
-  knobColor_ { arg color;
-    this.setProperty( \palette, this.palette.buttonColor_(color) );
-  }
-
-  increment { arg factor = 1.0; this.invokeMethod( \increment, factor.asFloat ); }
-  decrement { arg factor = 1.0; this.invokeMethod( \decrement, factor.asFloat ); }
-
-  initQSlider { arg bounds;
-    var r;
-    if( bounds.notNil ) {
-      r = bounds.asRect;
-      if( r.width > r.height ) {
-        this.orientation_( \horizontal );
-      } {
-        this.orientation_( \vertical );
-      }
-    }
-  }
-
-  pixelStep {
-    // FIXME for now we are using step instead
-    ^this.step;
-  }
-
-  orientation_ { arg aSymbol;
-    orientation = aSymbol;
-    this.setProperty( \orientation, QOrientation(aSymbol) );
-  }
-
-  defaultGetDrag { ^this.value; }
-  defaultCanReceiveDrag { ^QView.currentDrag.isNumber; }
-  defaultReceiveDrag {
-    this.valueAction = QView.currentDrag;
-  }
-}
-
 QPopUpMenu : QItemViewBase {
 
   *qtClass { ^"QcPopUpMenu" }
+
+  allowsReselection { ^this.getProperty( \signalReactivation ) }
+
+  allowsReselection_ { arg flag; ^this.setProperty( \signalReactivation, flag ) }
 
   value {
     var v = this.getProperty( \currentIndex );

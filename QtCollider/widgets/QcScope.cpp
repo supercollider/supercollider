@@ -38,6 +38,7 @@ QcScope::QcScope()
 {
   memset( &buffer, 0, sizeof(SndBuf) );
   timer = new QTimer( this );
+  timer->setInterval( 15 );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
   connect( timer, SIGNAL( timeout() ), this, SLOT( updateScope() ) );
 }
@@ -50,8 +51,7 @@ QcScope::~QcScope()
 void QcScope::setBufferNumber( int n )
 {
   bufNum = n;
-  if( !timer->isActive() )
-    timer->start( 40 );
+  timer->start();
 }
 
 void QcScope::setWaveColors( const VariantList & newColors )
@@ -66,6 +66,13 @@ void QcScope::setWaveColors( const VariantList & newColors )
   }
 }
 
+int QcScope::updateInterval() const {
+  return timer->interval();
+}
+
+void QcScope::setUpdateInterval( int interval ) {
+  timer->setInterval( qMax(0, interval) );
+}
 
 int getScopeBuf( uint32 index, SndBuf *buf, bool& changed );
 

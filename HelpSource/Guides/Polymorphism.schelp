@@ -1,5 +1,5 @@
 title:: Polymorphism
-summary:: the ability of different classes to respond to a message in different ways 
+summary:: the ability of different classes to respond to a message in different ways
 categories:: Language>OOP
 related:: Reference/Messages, Reference/Classes, Guides/Intro-to-Objects
 
@@ -37,10 +37,10 @@ code::
 subsection:: Function
 In class link::Classes/Function:: the value method is a primitive:
 code::
-value { arg ... args; 
-    _FunctionValue 
+value { arg ... args;
+    _FunctionValue
     // evaluate a function with args
-    ^this.primitiveFailed 
+    ^this.primitiveFailed
 }
 ::
 
@@ -54,7 +54,7 @@ subsection:: Ref
 The link::Classes/Ref:: class provides a way to create an indirect reference to an object. It can be used to pass a value by reference. Ref objects have a single instance variable called code::value::.
 The code::value:: method returns the value of the instance variable code::value::. Here is the class definition for Ref:
 code::
-Ref : AbstractFunction 
+Ref : AbstractFunction
 {
     var <>value;
     *new { arg thing; ^super.new.value_(thing) }
@@ -91,12 +91,12 @@ definitionlist::
 ## Ref : || this.dereference()
 ::
 code::
-5.value.postln;		
-{ 5.squared }.value.postln;		
+5.value.postln;
+{ 5.squared }.value.postln;
 Ref.new(123).value.postln;
 
-5.dereference.postln;		
-{ 5.squared }.dereference.postln;		
+5.dereference.postln;
+{ 5.squared }.dereference.postln;
 Ref.new(123).dereference.postln;
 ::
 

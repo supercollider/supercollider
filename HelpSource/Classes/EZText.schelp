@@ -152,7 +152,7 @@ w.view.decorator.gap=2@2;
 );
 
 
-// click these parentheses to see three variants 
+// click these parentheses to see three variants
 (
 
 m=nil;
@@ -183,10 +183,10 @@ m=2@2;		//comment for no margin
 		g.window.bounds = g.window.bounds.moveBy(100,50);
 );
 
-)	
-	
-	
-	
+)
+
+
+
 // Simplest sound example
 (
 Tdef(\text).set(\note, [0, 2, 7], \dur, { [0.1, 0.2].choose });
@@ -195,15 +195,15 @@ w = Window("EZTexts", Rect(200, 400, 304, 120)).front;
 w.addFlowLayout;
 
 TdefEditor(Tdef(\text), 0, w: w);
-Tdef(\text).envir.keysValuesDo { |k, v| 
-	EZText(w, Rect(0,0,300,40), k, { |ez| 
+Tdef(\text).envir.keysValuesDo { |k, v|
+	EZText(w, Rect(0,0,300,40), k, { |ez|
 		Tdef(\text).envir.put(*[k, ez.value].postcs);
 	}, v);
 };
 
-Tdef(\text, { |ev| 
+Tdef(\text, { |ev|
 	var mydur;
-	loop { 
+	loop {
 		mydur = ev.dur;
 		(note: ev.note, dur: mydur).postln.play;
 		mydur.wait;

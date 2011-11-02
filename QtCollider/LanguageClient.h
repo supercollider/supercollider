@@ -24,11 +24,23 @@
 
 #include "SC_TerminalClient.h"
 #include "QC_Export.h"
+#include "Common.h"
 
 #include <QObject>
-#include <QTimer>
+#include <QBasicTimer>
+#include <QEvent>
 
 namespace QtCollider {
+
+struct SCRequestEvent : public QEvent
+{
+  SCRequestEvent( QtCollider::EventType type, const QVariant & d = QVariant() ) :
+    QEvent( (QEvent::Type) type ),
+    data( d )
+  {}
+
+  QVariant data;
+};
 
 class LangClient : public QObject, public SC_TerminalClient
 {
@@ -37,13 +49,22 @@ public:
   LangClient( const char* name );
   virtual ~LangClient() {};
 private Q_SLOTS:
-  void cmdLineTick();
-  void daemonTick();
+  void doSchedule();
 protected:
   virtual void commandLoop();
   virtual void daemonLoop();
+
+  virtual void onScheduleChanged();
+  virtual void onInput();
+  virtual void onQuit( int exitCode );
+  virtual void onRecompileLibrary();
+
+  virtual void customEvent( QEvent * );
+  virtual void timerEvent( QTimerEvent * );
 private:
-  QTimer *langTimer;
+  void doInput();
+
+  QBasicTimer appClockTimer;
 };
 
 } // namespace QtCollider

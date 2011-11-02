@@ -33,6 +33,7 @@
 #include "utilities/branch_hints.hpp"
 
 #include "audio_backend_common.hpp"
+#include "cpu_time_info.hpp"
 
 namespace nova
 {
@@ -57,7 +58,7 @@ class jack_backend:
 
 public:
     jack_backend(void):
-        client(NULL)
+        client(NULL), time_is_synced(false)
     {}
 
     ~jack_backend(void)
@@ -74,12 +75,17 @@ public:
     }
 
 public:
-    void open_client(std::string const & name, uint32_t input_port_count, uint32_t output_port_count, uint32_t blocksize)
+    void open_client(std::string const & server_name, std::string const & name, uint32_t input_port_count,
+                     uint32_t output_port_count, uint32_t blocksize)
     {
         blocksize_ = blocksize;
 
         /* open client */
-        client = jack_client_open(name.c_str(), JackNoStartServer, &status);
+        client = server_name.empty() ? jack_client_open(name.c_str(), JackNoStartServer, &status)
+                                     : jack_client_open(name.c_str(), jack_options_t(JackNoStartServer | JackServerName),
+                                                        &status, server_name.c_str());
+        boost::atomic_thread_fence(boost::memory_order_release); // ensure visibility on other threads
+
         if (status & JackServerFailed)
             throw std::runtime_error("Unable to connect to JACK server");
 
@@ -153,12 +159,9 @@ public:
         is_active = false;
     }
 
-    float get_cpuload(void) const
+    void get_cpuload(float & peak, float & average) const
     {
-        if (likely(client))
-            return jack_cpu_load(client);
-        else
-            return 0.f;
+        cpu_time_accumulator.get(peak, average);
     }
 
     int connect_input(int channel, const char * portname)
@@ -227,6 +230,7 @@ public:
 private:
     static void jack_thread_init_callback(void * arg)
     {
+        boost::atomic_thread_fence(boost::memory_order_acquire);
         jack_backend * self = static_cast<jack_backend*>(arg);
         if (jack_client_thread_id(self->client) == pthread_self())
             engine_functor::init_thread();
@@ -248,7 +252,10 @@ private:
 
     int perform(jack_nframes_t frames)
     {
-        engine_functor::init_tick();
+        if (unlikely(!time_is_synced)) {
+            engine_functor::sync_clock();
+            time_is_synced = true;
+        }
 
         /* get port regions */
         jack_default_audio_sample_t * inputs[input_channels];
@@ -260,24 +267,66 @@ private:
             outputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
 
         jack_nframes_t processed = 0;
-        while (processed != frames)
-        {
-            for (uint16_t i = 0; i != input_channels; ++i) {
-                copyvec(super::input_samples[i].get(), inputs[i], frames);
-                inputs[i] += blocksize_;
-            }
+        while (processed != frames) {
+            fetch_inputs(inputs, blocksize_);
 
             engine_functor::run_tick();
 
-            for (uint16_t i = 0; i != output_channels; ++i) {
-                copyvec(outputs[i], super::output_samples[i].get(), frames);
-                outputs[i] += blocksize_;
-            }
+            deliver_outputs(outputs, blocksize_);
 
             processed += blocksize_;
         }
 
+        cpu_time_accumulator.update(jack_cpu_load(client));
+
         return 0;
+    }
+
+    void fetch_inputs(jack_default_audio_sample_t ** inputs, size_t frames)
+    {
+        if (is_multiple_of_vectorsize(frames)) {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                if (is_aligned(inputs[i]))
+                    copyvec_simd(super::input_samples[i].get(), inputs[i], frames);
+                else
+                    copyvec(super::input_samples[i].get(), inputs[i], frames);
+                inputs[i] += blocksize_;
+            }
+        } else {
+            for (uint16_t i = 0; i != input_channels; ++i) {
+                copyvec(super::input_samples[i].get(), inputs[i], frames);
+                inputs[i] += blocksize_;
+            }
+        }
+    }
+
+    void deliver_outputs(jack_default_audio_sample_t ** outputs, size_t frames)
+    {
+        if (is_multiple_of_vectorsize(frames)) {
+            for (uint16_t i = 0; i != output_channels; ++i) {
+                if (is_aligned(outputs[i]))
+                    copyvec_simd(outputs[i], super::output_samples[i].get(), frames);
+                else
+                    copyvec(outputs[i], super::output_samples[i].get(), frames);
+                outputs[i] += blocksize_;
+            }
+        } else {
+            for (uint16_t i = 0; i != output_channels; ++i) {
+                copyvec(outputs[i], super::output_samples[i].get(), frames);
+                outputs[i] += blocksize_;
+            }
+        }
+    }
+
+    static bool is_aligned(void * arg)
+    {
+        size_t mask = sizeof(vec<float>::size) * sizeof(float) * 8 - 1;
+        return !((size_t)arg & mask);
+    }
+
+    static bool is_multiple_of_vectorsize(size_t count)
+    {
+        return !(count & (vec<float>::size-1));
     }
 
     static int jack_buffersize_callback(jack_nframes_t frames, void * arg)
@@ -298,10 +347,12 @@ private:
     jack_status_t status;
 
     bool is_active;
+    bool time_is_synced;
     uint32_t blocksize_;
 
     std::vector<jack_port_t*> input_ports, output_ports;
     jack_nframes_t jack_frames;
+    cpu_time_info cpu_time_accumulator;
 };
 
 } /* namespace nova */

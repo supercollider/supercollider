@@ -21,6 +21,12 @@
 
 #include "node_graph.hpp"
 
+#ifdef BOOST_HAS_RVALUE_REFS
+#define MOVE(X) std::move(X)
+#else
+#define MOVE(X) X
+#endif
+
 namespace nova
 {
 
@@ -96,7 +102,7 @@ private:
         size_t children = g.child_count();
 
         sequential_child_list sequential_children;
-        sequential_children.reserve(g.child_synths_);
+        sequential_children.reserve(g.child_synth_count);
 
         for (r_iterator it = g.child_nodes.rbegin();
             it != g.child_nodes.rend(); ++it)
@@ -129,7 +135,7 @@ private:
                 int activation_limit = get_previous_activation_count(it, g.child_nodes.rend(), previous_activation_limit);
 
                 thread_queue_item * q_item =
-                    q->allocate_queue_item(queue_node(static_cast<abstract_synth*>(*seq_it++), node_count),
+                    q->allocate_queue_item(queue_node(MOVE(queue_node_data(static_cast<abstract_synth*>(*seq_it++))), node_count),
                                             successors, activation_limit);
 
                 queue_node & q_node = q_item->get_job();
@@ -169,7 +175,7 @@ private:
     {
         assert (g.has_synth_children());
         std::vector<thread_queue_item*, rt_pool_allocator<void*> > collected_nodes;
-        collected_nodes.reserve(g.child_synths_ + g.child_groups_ * 16); // pessimize
+        collected_nodes.reserve(g.child_synth_count + g.child_group_count * 16); // pessimize
 
         for (server_node_list::iterator it = g.child_nodes.begin();
             it != g.child_nodes.end(); ++it)
@@ -177,7 +183,7 @@ private:
             server_node & node = *it;
 
             if (node.is_synth()) {
-                thread_queue_item * q_item = q->allocate_queue_item(queue_node(static_cast<abstract_synth*>(&node)),
+                thread_queue_item * q_item = q->allocate_queue_item(queue_node(MOVE(queue_node_data(static_cast<abstract_synth*>(&node)))),
                                                                     successors_from_parent, previous_activation_limit);
 
                 if (previous_activation_limit == 0)
@@ -201,9 +207,7 @@ private:
 
         successor_container ret(collected_nodes.size());
 
-        memcpy(&ret[0], &collected_nodes[0], collected_nodes.size() * sizeof(thread_queue_item *));
-/*      for (std::size_t i = 0; i != collected_nodes.size(); ++i)
-            ret[i] = collected_nodes[i]; */
+        memcpy(ret.data->content, collected_nodes.data(), collected_nodes.size() * sizeof(thread_queue_item *));
         return ret;
     }
 };
