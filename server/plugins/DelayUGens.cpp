@@ -5121,7 +5121,8 @@ void ScopeOut2_Ctor(ScopeOut2 *unit)
 
 	if( !ok ) {
 		if( unit->mWorld->mVerbosity > -1 && !unit->mDone)
-			Print("ScopeOut2: Requested scope buffer %d unavailable!\n", scopeNum);
+			Print("ScopeOut2: Requested scope buffer unavailable! (index: %d, channels: %d, size: %d)\n",
+				  scopeNum, numChannels, maxFrames);
 	}
 	else {
 		unit->m_period = std::max(0, std::min(maxFrames, period));

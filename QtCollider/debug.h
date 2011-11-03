@@ -32,7 +32,7 @@ extern void error(const char *fmt, ...);
 #ifdef QC_DEBUG
   #define qcDebugMsg( LEVEL, MSG ) \
     if( LEVEL <= QtCollider::debugLevel() ) { \
-      postfl( "Qt:: %s\n", QString(MSG).toStdString().c_str() ); \
+      postfl( "Qt: %s\n", QString(MSG).toStdString().c_str() ); \
     }
 #else
   #define qcDebugMsg( LEVEL, MSG )
@@ -44,3 +44,5 @@ extern void error(const char *fmt, ...);
                     .arg(MSG) )
 
 #define qcErrorMsg( MSG ) error( "Qt: %s\n", QString(MSG).toStdString().c_str() )
+
+#define qcWarningMsg( MSG ) postfl( "Qt: %s\n", QString(MSG).toStdString().c_str() )
