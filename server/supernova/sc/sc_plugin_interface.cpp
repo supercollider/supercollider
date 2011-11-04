@@ -283,12 +283,34 @@ void free_parent_group(Unit * unit)
     sc_factory->add_done_node(group);
 }
 
-int get_scope_buffers(World * inWorld, int index, float **outBuffer, int **outFrames, int *outMaxFrames)
+bool get_scope_buffer(World *inWorld, int index, int channels, int maxFrames, ScopeBufferHnd &hnd)
 {
-    int maxFrames = instance->get_scope_buffer(index, outBuffer, outFrames);
+    scope_buffer_writer writer = instance->get_scope_buffer_writer( index, channels, maxFrames );
 
-    *outMaxFrames = maxFrames;
-    return 0;
+    if( writer.valid() ) {
+        hnd.internalData = writer.buffer;
+        hnd.data = writer.data();
+        hnd.channels = channels;
+        hnd.maxFrames = maxFrames;
+        return true;
+    }
+    else {
+        hnd.internalData = 0;
+        return false;
+    }
+}
+
+void push_scope_buffer(World *inWorld, ScopeBufferHnd &hnd, int frames)
+{
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+    writer.push(frames);
+    hnd.data = writer.data();
+}
+
+void release_scope_buffer(World *inWorld, ScopeBufferHnd &hnd)
+{
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+    instance->release_scope_buffer_writer( writer );
 }
 
 } /* namespace */
@@ -625,7 +647,9 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
     sc_interface.fSCfftDoIFFT = &scfft_doifft;
 
     /* scope API */
-    sc_interface.fGetScopeBuffer = get_scope_buffers;
+    sc_interface.fGetScopeBuffer = &get_scope_buffer;
+    sc_interface.fPushScopeBuffer = &push_scope_buffer;
+    sc_interface.fReleaseScopeBuffer = &release_scope_buffer;
 
     /* osc plugins */
     sc_interface.fDoAsynchronousCommand = &do_asynchronous_command;

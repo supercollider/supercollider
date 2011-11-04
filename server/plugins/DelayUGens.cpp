@@ -5054,24 +5054,29 @@ void ScopeOut_Dtor(ScopeOut *unit)
 
 struct ScopeOut2 : public Unit
 {
-	float ** bufData;
-	float scopeFrames;
-	uint32 m_framepos;
+	ScopeBufferHnd m_buffer;
+	float **m_inBuffers;
+	int m_maxPeriod;
+	int m_period;
+	uint32 m_phase;
 };
 
 
 void ScopeOut2_next(ScopeOut2 *unit, int inNumSamples)
 {
+	if( !unit->m_buffer ) return;
+
 	const int inputOffset = 2;
-	const int scopeFrames = unit->scopeFrames;
-
-	uint32 framepos = unit->m_framepos;
-	if (framepos >= scopeFrames)
-		unit->m_framepos = 0;
-
 	int numChannels = unit->mNumInputs - 2;
 
-	int remain = (scopeFrames - framepos), wrap = 0;
+	uint period = (uint32_t)ZIN0(1);
+	uint32 framepos = unit->m_phase;
+
+	period = std::max((uint)inNumSamples, std::min(unit->m_buffer.maxFrames, period));
+
+	if( framepos >= period ) framepos = 0;
+
+	int remain = period - framepos, wrap = 0;
 
 	if(inNumSamples <= remain)
 		remain = inNumSamples;
@@ -5079,64 +5084,57 @@ void ScopeOut2_next(ScopeOut2 *unit, int inNumSamples)
 		wrap = inNumSamples - remain;
 
 	for (int i = 0; i != numChannels; ++i) {
-		float * scopeBuf = unit->bufData[i];
-
+		float * inBuf = unit->m_buffer.channel_data(i);
 		const float * in = IN(inputOffset + i);
-		memcpy(scopeBuf + framepos, in, remain * sizeof(float));
-		if (wrap)
-			memcpy(scopeBuf, in + remain, wrap * sizeof(float));
+
+		memcpy(inBuf + framepos, in, remain * sizeof(float));
+	}
+
+	if(framepos + inNumSamples >= period)
+		(*ft->fPushScopeBuffer)(unit->mWorld, unit->m_buffer, period);
+
+	if (wrap) {
+		for (int i = 0; i != numChannels; ++i) {
+			float * inBuf = unit->m_buffer.channel_data(i);
+			const float * in = IN(inputOffset + i);
+			memcpy(inBuf, in + remain, wrap * sizeof(float));
+		}
 	}
 
 	framepos += inNumSamples;
-	if (framepos > scopeFrames)
-		framepos = sc_wrap(framepos, 0, scopeFrames);
-	unit->m_framepos = framepos;
+	if (framepos >= period)
+		framepos = wrap;
 
-	// TODO: count completed writes
+	unit->m_phase = framepos;
+	unit->m_period = period;
 }
 
 void ScopeOut2_Ctor(ScopeOut2 *unit)
 {
 	uint32 numChannels = unit->mNumInputs - 2;
 	uint32_t scopeNum = (uint32_t)ZIN0(0);
-	int requestedScopeFrames = (uint32_t)ZIN0(1);
-	int scopeFrames = requestedScopeFrames;
+	int period = (uint32_t)ZIN0(1);
 
-	unit->bufData = (float**)RTAlloc(unit->mWorld, numChannels * sizeof(float));
+	static const int maxFrames = 8192;
 
-	for (int i = 0; i != numChannels; ++i) {
-		int *scopeFrameCount;
-		int maxFrames;
+	bool ok = (*ft->fGetScopeBuffer)(unit->mWorld, scopeNum, numChannels, maxFrames, unit->m_buffer);
 
-		int error = (*(ft->fGetScopeBuffer))(unit->mWorld, scopeNum + i, unit->bufData + i, &scopeFrameCount, &maxFrames);
-
-		if (*scopeFrameCount && unit->mWorld->mVerbosity > -1 && !unit->mDone)
-			Print("Scope Buffer %d already in use\n", scopeNum + i);
-
-		scopeFrames = std::min(maxFrames, scopeFrames);
-		*scopeFrameCount = scopeFrames; // mark as used
+	if( !ok ) {
+		if( unit->mWorld->mVerbosity > -1 && !unit->mDone)
+			Print("ScopeOut2: Requested scope buffer %d unavailable!\n", scopeNum);
+	}
+	else {
+		unit->m_period = std::max(0, std::min(maxFrames, period));
+		unit->m_phase = 0;
 	}
 
-	unit->m_framepos = 0;
 	SETCALC(ScopeOut2_next);
 }
 
 void ScopeOut2_Dtor(ScopeOut2 *unit)
 {
-	uint32_t scopeNum = (uint32_t)ZIN0(0);
-	uint32 numChannels = unit->mNumInputs - 2;
-	for (int i = 0; i != numChannels; ++i) {
-		float * buf;
-		int *scopeFrameCount;
-		int maxFrames;
-
-		int error = (*(ft->fGetScopeBuffer))(unit->mWorld, scopeNum + i, &buf, &scopeFrameCount, &maxFrames);
-
-		*scopeFrameCount = 0; // mark as unused
-	}
-
-	if (unit->bufData)
-		RTFree(unit->mWorld, unit->bufData);
+	if( unit->m_buffer )
+		(*ft->fReleaseScopeBuffer)(unit->mWorld, unit->m_buffer);
 }
 
 

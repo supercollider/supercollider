@@ -193,7 +193,9 @@ void *zalloc(size_t n, size_t size)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static int getScopeBuffer(World *inWorld, int index, float **outBuffer, int **outFrames, int *outMaxFrames);
+static bool getScopeBuffer(World *inWorld, int index, int channels, int maxFrames, ScopeBufferHnd &hnd);
+static void pushScopeBuffer(World *inWorld, ScopeBufferHnd &hnd, int frames);
+static void releaseScopeBuffer(World *inWorld, ScopeBufferHnd &hnd);
 
 void InterfaceTable_Init()
 {
@@ -257,6 +259,8 @@ void InterfaceTable_Init()
 	ft->fSCfftDoIFFT = &scfft_doifft;
 
 	ft->fGetScopeBuffer = &getScopeBuffer;
+	ft->fPushScopeBuffer = &pushScopeBuffer;
+	ft->fReleaseScopeBuffer = &releaseScopeBuffer;
 }
 
 void initialize_library(const char *mUGensPluginPath);
@@ -1078,16 +1082,38 @@ void World_NRTUnlock(World *world)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-int getScopeBuffer(World *inWorld, int index, float **outBuffer, int **outFrames, int *outMaxFrames)
+bool getScopeBuffer(World *inWorld, int index, int channels, int maxFrames, ScopeBufferHnd &hnd)
 {
 	server_shared_memory_creator * shm = inWorld->hw->mShmem;
 
-	int maxFrames = shm->get_scope_buffer(index, outBuffer, outFrames);
-	*outMaxFrames = maxFrames;
+	scope_buffer_writer writer = shm->get_scope_buffer_writer( index, channels, maxFrames );
 
-	return 0;
+	if( writer.valid() ) {
+		hnd.internalData = writer.buffer;
+		hnd.data = writer.data();
+		hnd.channels = channels;
+		hnd.maxFrames = maxFrames;
+		return true;
+	}
+	else {
+		hnd.internalData = 0;
+		return false;
+	}
 }
 
+void pushScopeBuffer(World *inWorld, ScopeBufferHnd &hnd, int frames)
+{
+	scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+	writer.push(frames);
+	hnd.data = writer.data();
+}
+
+void releaseScopeBuffer(World *inWorld, ScopeBufferHnd &hnd)
+{
+	scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+	server_shared_memory_creator * shm = inWorld->hw->mShmem;
+	shm->release_scope_buffer_writer( writer );
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

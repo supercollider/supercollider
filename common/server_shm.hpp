@@ -1,5 +1,6 @@
 //  shared memory interface to the supercollider server
 //  Copyright (C) 2011 Tim Blechmann
+//  Copyright (C) 2011 Jakob Leben
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,11 +20,14 @@
 #ifndef SERVER_SHM_HPP
 #define SERVER_SHM_HPP
 
+#include "scope_buffer.hpp"
+
 #include <boost/foreach.hpp>
 #include <boost/ref.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/vector.hpp>
+#include <boost/atomic.hpp>
 
 namespace detail_server_shm {
 
@@ -32,30 +36,39 @@ using namespace boost;
 using namespace boost::interprocess;
 namespace bi = boost::interprocess;
 
-struct scope_buffer
+static inline string make_shmem_name(uint port_number)
 {
-	offset_ptr<float> data;
-	int frames;
-};
+	return string("SuperColliderServer_") + lexical_cast<string>(port_number);
+}
+
+static inline string make_scope_buffer_name(const string &shmem_name, int buffer_index)
+{
+	return shmem_name + "_ScopeBuffer_" + lexical_cast<string>(buffer_index);
+}
 
 struct server_shared_memory
 {
 	typedef offset_ptr<float> sh_float_ptr;
-	typedef bi::allocator<scope_buffer, managed_shared_memory::segment_manager> scope_buffer_allocator;
-	typedef bi::vector<scope_buffer, scope_buffer_allocator> scope_buffer_vector;
+	typedef offset_ptr<scope_buffer> scope_buffer_ptr;
 
-	server_shared_memory(managed_shared_memory & segment, int control_busses, int num_scope_buffers = 128, int max_scope_frames = 8192):
-		num_control_busses(control_busses), scope_buffers(scope_buffer_allocator(segment.get_segment_manager())),
-		max_scope_frames(max_scope_frames)
+	typedef bi::allocator<scope_buffer_ptr, managed_shared_memory::segment_manager> scope_buffer_allocator;
+	typedef bi::vector<scope_buffer_ptr, scope_buffer_allocator> scope_buffer_vector;
+
+	server_shared_memory(
+		managed_shared_memory & segment, const string & shmem_name_,
+		int control_busses, int num_scope_buffers = 128
+	):
+		shmem_name(shmem_name_),
+		num_control_busses(control_busses),
+		scope_buffers(scope_buffer_allocator(segment.get_segment_manager()))
 	{
 		control_busses_ = (float*)segment.allocate(control_busses * sizeof(float));
 		std::fill(control_busses_.get(), control_busses_.get() + control_busses, 0);
 
 		for (int i = 0; i != num_scope_buffers; ++i) {
-			scope_buffer buffer;
-			buffer.data = (float*)segment.allocate(max_scope_frames * sizeof(float));
-			buffer.frames = 0; // set from ugen
-			scope_buffers.push_back(buffer);
+			string name = make_scope_buffer_name(shmem_name_, i);
+			scope_buffer_ptr buf = segment.construct<scope_buffer>(name.c_str())();
+			scope_buffers.push_back(buf);
 		}
 	}
 
@@ -63,8 +76,9 @@ struct server_shared_memory
 	{
 		segment.deallocate(control_busses_.get());
 
-		BOOST_FOREACH(scope_buffer & buf, scope_buffers) {
-			segment.deallocate(buf.data.get());
+		for (int i = 0; i != scope_buffers.size(); ++i) {
+			string name = make_scope_buffer_name(shmem_name,i);
+			segment.destroy<scope_buffer>(name.c_str());
 		}
 	}
 
@@ -78,32 +92,21 @@ struct server_shared_memory
 		return control_busses_.get();
 	}
 
-	int get_scope_buffer(int index, float ** outBuffer, int **outFrames)
+	scope_buffer * get_scope_buffer(uint index)
 	{
-		if (index < scope_buffers.size()) {
-			scope_buffer & buf = scope_buffers[index];
-			*outBuffer = buf.data.get();
-			*outFrames = &buf.frames;
-
-			return max_scope_frames;
-		} else {
-			*outBuffer = NULL;
-			*outFrames = NULL;
+		if (index < scope_buffers.size())
+			return scope_buffers[index].get();
+		else
 			return 0;
-		}
 	}
 
 private:
+	string shmem_name;
 	int num_control_busses;
 	sh_float_ptr control_busses_; // control busses
 	scope_buffer_vector scope_buffers;
-	int max_scope_frames;
+	interprocess_mutex mutex;
 };
-
-static inline string make_shmem_name(uint port_number)
-{
-	return string("SuperColliderServer_") + lexical_cast<string>(port_number);
-}
 
 class server_shared_memory_creator
 {
@@ -113,7 +116,7 @@ public:
 		segment(open_or_create, shmem_name.c_str(), 8192 * 1024)
 	{
 		segment.flush();
-		shm = segment.construct<server_shared_memory>(shmem_name.c_str())(ref(segment), control_busses);
+		shm = segment.construct<server_shared_memory>(shmem_name.c_str())(ref(segment), shmem_name, control_busses);
 	}
 
 	static void cleanup(uint port_number)
@@ -133,9 +136,18 @@ public:
 		return shm->get_control_busses();
 	}
 
-	int get_scope_buffer(int index, float ** outBuffer, int **outFrames)
+	scope_buffer_writer get_scope_buffer_writer(uint index, uint channels, uint size)
 	{
-		return shm->get_scope_buffer(index, outBuffer, outFrames);
+		scope_buffer *buf = shm->get_scope_buffer(index);
+		if (buf)
+			return scope_buffer_writer(buf, segment, channels, size);
+		else
+			return scope_buffer_writer();
+	}
+
+	void release_scope_buffer_writer( scope_buffer_writer & writer )
+	{
+		writer.release( segment );
 	}
 
 private:
@@ -165,9 +177,10 @@ public:
 		return shm->get_control_busses();
 	}
 
-	int get_scope_buffer(int index, float ** outBuffer, int **outFrames)
+	scope_buffer_reader get_scope_buffer_reader(uint index)
 	{
-		return shm->get_scope_buffer(index, outBuffer, outFrames);
+		scope_buffer *buf = shm->get_scope_buffer(index);
+		return scope_buffer_reader(buf);
 	}
 
 private:
@@ -180,5 +193,8 @@ private:
 
 using detail_server_shm::server_shared_memory_client;
 using detail_server_shm::server_shared_memory_creator;
+using detail_server_shm::scope_buffer_writer;
+using detail_server_shm::scope_buffer_reader;
+using detail_server_shm::scope_buffer;
 
 #endif /* SERVER_SHM_HPP */
