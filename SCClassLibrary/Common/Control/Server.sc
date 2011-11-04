@@ -1,6 +1,6 @@
 ServerOptions
 {
-	var <>numAudioBusChannels=128;
+	var <>numPrivateAudioBusChannels=112;
 	var <>numControlBusChannels=4096;
 	var <>numInputBusChannels=8;
 	var <>numOutputBusChannels=8;
@@ -70,9 +70,8 @@ ServerOptions
 		o = if (protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
-		if (numAudioBusChannels != 128, {
-			o = o ++ " -a " ++ numAudioBusChannels;
-		});
+	    o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+
 		if (numControlBusChannels != 4096, {
 			o = o ++ " -c " ++ numControlBusChannels;
 		});
@@ -150,6 +149,14 @@ ServerOptions
 
 	firstPrivateBus { // after the outs and ins
 		^numOutputBusChannels + numInputBusChannels
+	}
+
+	numAudioBusChannels_{
+		this.deprecated(thisMethod);
+	}
+
+	numAudioBusChannels{
+		^numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels
 	}
 
 	bootInProcess {
