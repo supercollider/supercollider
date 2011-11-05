@@ -53,7 +53,7 @@ This calls the superclass' startup, which among other things initializes the lin
 
 Main's startup then stores Server.default in the interpreter variable s, sets the platform default's link::Classes/GUI:: kit, initializes the link::Classes/GeneralHID:: system, calls a link::Classes/Platform:: specific startup method (for example OSXPlatform's startup opens the server windows), and finally invokes StartUp.run.
 
-To add your own startup functionalities, you could either edit the special startup-file (discussed in link::Overviews/StartupFile::), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
+To add your own startup functionalities, you could either edit the special startup-file (discussed in link::Reference/StartupFile::), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
 
 method::shutdown
 
