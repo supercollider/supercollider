@@ -38,8 +38,7 @@ ServerOptions
 	var <>memoryLocking = false;
 	var <>threads = nil; // for supernova
 
-	device
-	{
+	device {
 		^if(inDevice == outDevice)
 		{
 			inDevice
@@ -49,8 +48,7 @@ ServerOptions
 		}
 	}
 
-	device_
-	{
+	device_ {
 		|dev|
 		inDevice = outDevice = dev;
 	}
@@ -171,25 +169,21 @@ ServerOptions
 		^zeroConf;
 	}
 
-	*prListDevices
-	{
+	*prListDevices {
 		arg in, out;
 		_ListAudioDevices
 		^this.primitiveFailed
 	}
 
-	*devices
-	{
+	*devices {
 		^this.prListDevices(1, 1);
 	}
 
-	*inDevices
-	{
+	*inDevices {
 		^this.prListDevices(1, 0);
 	}
 
-	*outDevices
-	{
+	*outDevices {
 		^this.prListDevices(0, 1);
 	}
 }
