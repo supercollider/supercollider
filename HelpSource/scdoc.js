@@ -34,6 +34,7 @@ function readCookie(name) {
 var sidetoc;
 var toc;
 var menubar;
+var allItems;
 function popOutTOC(original_toc, p0) {
     var t = original_toc.cloneNode(true);
     t.id = "sidetoc";
@@ -41,6 +42,8 @@ function popOutTOC(original_toc, p0) {
     var left = c.style.marginLeft;
     c.style.marginLeft = "20.5em";
     document.body.insertBefore(t,c);
+    
+    t.getElementsByClassName("toc_search")[0].getElementsByTagName("input")[0].onkeyup = toc_search;
 
     t.style.top = menubar.clientHeight;
     t.style.maxHeight = "none";
@@ -53,6 +56,7 @@ function popOutTOC(original_toc, p0) {
         c.style.marginLeft = left;
         p0.style.display = "";
         sidetoc = null;
+        allItems = toc.getElementsByTagName("ul")[0].getElementsByTagName("li");
         sessionStorage.popToc = "no";
         return false;
     }
@@ -63,6 +67,7 @@ function popOutTOC(original_toc, p0) {
     p0.style.display = "none";
 
     sidetoc = t;
+    allItems = t.getElementsByTagName("ul")[0].getElementsByTagName("li");
     resize_handler();
     sessionStorage.popToc = "yes";
 }
@@ -314,6 +319,34 @@ function selectParens(ev) {
     s.addRange(r2);
 }
 
+escape_regexp = function(str) {
+  var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
+  return str.replace(specials, "\\$&");
+}
+
+function toc_search(ev) {
+//TODO: on enter, go to first match
+    var re = RegExp("^"+escape_regexp(ev.target.value),"i");
+    for(var i=0;i<allItems.length;i++) {
+        var li = allItems[i];
+        var a = li.firstChild;
+        if(re.test(a.innerHTML)) {
+            li.style.display = "";
+            var lev = li.className[3];
+            for(var i2 = i-1;i2>=0;i2--) {
+                var e = allItems[i2];
+                if(e.className[3]<lev) {
+                    e.style.display = "";
+                    lev -= 1;
+                }
+                if(e.className[3]==1) break;
+            }
+        } else {
+            li.style.display = "none";
+        }
+    }
+}
+
 function fixTOC() {
     var x = document.getElementsByClassName("lang-sc");
     for(var i=0;i<x.length;i++) {
@@ -347,8 +380,8 @@ function fixTOC() {
         inMenu = true;
     }
 
-    document.onclick = function() {
-        if(openMenu && !inMenu) {
+    document.onclick = function(e) {
+        if(openMenu && !inMenu && e.target.id!="toc_search") {
             openMenu.style.display = 'none';
             openMenu = undefined;
         }
@@ -410,19 +443,28 @@ function fixTOC() {
     var t = document.getElementById("toc");
     toc = t;
     if(t) {
+        var div = document.createElement("span");
+        div.className = "toc_search";
+        var ts = document.createElement("input");
+        ts.type = "text";
+        ts.id = "toc_search";
+        ts.value = "";
+        ts.style.border = "1px solid #ddd";
+        allItems = toc.getElementsByTagName("ul")[0].getElementsByTagName("li");
+        ts.onkeyup = toc_search;
+        div.appendChild(document.createTextNode("Find:"));
+        div.appendChild(ts);
+        t.insertBefore(div,t.firstChild);
+
         x.appendChild(document.createTextNode(" - "));
         t.style.display = 'none';
-        t.onclick = function() {
-            t.style.display = 'none';
-            openMenu = undefined;
-            inMenu = false;
-            return true;
-        }
+
         var a = document.createElement("a");
         a.setAttribute("href","#");
         a.innerHTML = "Table of contents &#9660;";
         li.appendChild(a);
         a.onclick = function() {
+            ts.focus();
             toggleMenu(t);
             return false;
         };
