@@ -200,6 +200,17 @@ function showmethods() {
     var res = document.getElementById("methods");
     res.innerHTML = "";
 
+    if(hash && /^section_.$/.test(hash)==false) {
+        var div = document.createElement("p");
+        div.appendChild(document.createTextNode("Do you want to "));
+        var a = document.createElement("a");
+        a.setAttribute("href","../Search.html#"+hash);
+        a.appendChild(document.createTextNode("search for '"+hash+"'"));
+        div.appendChild(a);
+        div.appendChild(document.createTextNode(" instead?"));
+        res.appendChild(div);
+    }
+
     if(hash && ! /^section_/.test(hash)) {
         document.getElementById("total_count").innerHTML = "Showing single method:";
         document.getElementById("method_note").innerHTML = "";
@@ -209,14 +220,6 @@ function showmethods() {
         }
         var div = document.createElement("p");
         div.appendChild(document.createTextNode("Method not found: "+hash));
-        res.appendChild(div);
-        var div = document.createElement("p");
-        div.appendChild(document.createTextNode("Do you want to "));
-        var a = document.createElement("a");
-        a.setAttribute("href","../Search.html#"+hash);
-        a.appendChild(document.createTextNode("search for '"+hash+"'"));
-        div.appendChild(a);
-        div.appendChild(document.createTextNode(" instead?"));
         res.appendChild(div);
     } else {
         var section = undefined;
