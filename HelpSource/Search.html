@@ -514,8 +514,8 @@ function doSearch() {
         }
         var tmp = []; for(var k in docs) tmp.push(
             [k, docs[k].sort(function(a,b) {
-                a = a.match_weight;
-                b = b.match_weight;
+                a = a.title;
+                b = b.title;
                 if(a<b) return -1;
                 else
                 if(a>b) return 1;
