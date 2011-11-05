@@ -61,3 +61,12 @@
 	}
 
 }
+
++ ServerOptions {
+	blockAllocClass {
+		this.deprecated(thisMethod)
+	}
+	blockAllocClass_ {
+		this.deprecated(thisMethod)
+	}
+}
