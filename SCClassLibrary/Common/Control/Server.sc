@@ -25,8 +25,6 @@ ServerOptions
 	var <>inDevice = nil;
 	var <>outDevice = nil;
 
-	var <>blockAllocClass;
-
 	var <>verbosity = 0;
 	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
 
