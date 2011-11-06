@@ -319,7 +319,7 @@ SCDoc {
     }
 
     *prepareHelpForURL {|url|
-        var proto, path, anchor;
+        var proto, path, query, anchor;
         var subtarget, src, c, cmd;
         var verpath = this.helpTargetDir +/+ "version";
 
@@ -342,7 +342,7 @@ SCDoc {
 
             // parse URL
             url = url.replace("%20"," ");
-            #proto, path, anchor = url.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1];
+            #proto, path, query, anchor = url.findRegexp("(^\\w+://)?([^#?]+)(\\?[^#]+)?(#.*)?")[1..].flop[1];
             if(proto.isEmpty) {proto="file://"};
             if(proto!="file://") {isProcessing = false; ^url}; // just pass through remote url's
             if(path.beginsWith(helpTargetDir).not) {isProcessing = false; ^url}; // just pass through remote url's
