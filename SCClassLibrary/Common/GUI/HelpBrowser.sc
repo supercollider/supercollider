@@ -110,7 +110,6 @@ HelpBrowser {
 		var winRect;
 		var x, y, w, h;
 		var str;
-		var first_search = true;
 
 		homeUrl = aHomeUrl;
 
@@ -130,21 +129,22 @@ HelpBrowser {
 			x = x + w + 2;
 		};
 
-		w = 200;
 		x = x + 10;
-		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1).string_("Quick lookup...");
+		str = "Quick lookup:";
+		w = str.bounds.width + 5;
+		StaticText(window, Rect(x,y,w,h)).string_(str);
+		x = x + w;
+		w = 200;
+		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
+		if(srchBox.respondsTo(\setProperty)) {
+			srchBox.setProperty(\toolTip,"Smart quick help lookup. Prefix with # to just search.");
+		};
 		srchBox.action = {|x|
 			if(x.string.notEmpty) {
 				this.goTo(if(x.string.first==$#)
 					{SCDoc.helpTargetDir++"/Search.html#"++x.string.drop(1)}
 					{SCDoc.findHelpFile(x.string)}
 				);
-			}
-		};
-		srchBox.mouseDownAction = {
-			if(first_search) {
-				srchBox.string = "";
-				first_search = false;
 			}
 		};
 
