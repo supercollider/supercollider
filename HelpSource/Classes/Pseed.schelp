@@ -11,8 +11,21 @@ ClassMethods::
 
 method::new
 
-argument::seed
+argument::randSeed
 integer number, pattern or stream that return an integer number.
+
+note::
+randSeed is always treated as a pattern/stream. If you provide a single, constant seed value, it will behave as an infinite-length stream. This will cause the subpattern to be embedded an infinite number of times. Compare:
+
+code::
+// Pwhite repeats its three values forever
+Pseed(1000, Pwhite(1, 10, 3)).asStream.nextN(10);
+
+// Pwhite runs once:
+// the output stream consists of three values, then 'nil' ad infinitum
+Pseed(Pn(1000, 1), Pwhite(1, 10, 3)).asStream.nextN(10);
+::
+::
 
 Examples::
 
