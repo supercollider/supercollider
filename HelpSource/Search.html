@@ -144,6 +144,17 @@ function buildMethodList() {
     }
 }
 
+function getQuerystring(key)
+{
+    key = key.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regex = new RegExp("[\\?&]"+key+"=([^&#]*)");
+    var qs = regex.exec(window.location.href);
+    if(qs == null)
+        return null;
+    else
+        return qs[1];
+}
+
 function onLoad() {
     helpRoot="."; fixTOC();
     newinput = document.getElementById("search_input").value;
@@ -151,12 +162,20 @@ function onLoad() {
     checkboxes = [];
     for(var i=0;i<fields.length;i++) {
         checkboxes[i] = document.getElementById("check_"+fields[i]);
-        checkboxes[i].onchange = doSearch;
     }
 
-    var x = ["check_extensions", "check_methods","ignore_case","check_word","check_prefix","check_suffix"];
+    var x = ["check_extensions", "check_methods","ignore_case","check_word","check_prefix","check_suffix","check_title","check_summary","check_categories"];
     for(var i=0;i<x.length;i++) {
         document.getElementById(x[i]).onchange = doSearch;
+    }
+
+    for(var i=0;i<x.length;i++) {
+        var name = x[i];
+        var val = getQuerystring(name);
+        if(val == "true")
+            document.getElementById(name).checked = true;
+        else if(val == "false")
+            document.getElementById(name).checked = false;
     }
 
     document.getElementById("check_regexp").onchange = function(e) {
@@ -186,7 +205,7 @@ function checkHash() {
     if(x!="" && newinput!=x) {
         document.getElementById("search_input").value = x;
         newinput = x;
-        window.location.hash = "";
+//        window.location.hash = "";
     }
 }
 
@@ -330,6 +349,10 @@ function doPrint() {
             x.appendChild(document.createTextNode(mname));
             x.className = "result_met";
             div.appendChild(x);
+            var cnt = document.createElement("span");
+            cnt.className = "soft";
+            cnt.innerHTML = " ("+mets[mindex][1].length+" matches)";
+            x.appendChild(cnt);
 
             var x = mets[mindex][1].sort(function(a,b) { //document list
                     a = a.pfx + a.doc.title;
