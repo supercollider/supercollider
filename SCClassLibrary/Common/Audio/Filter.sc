@@ -112,7 +112,7 @@ VarLag : Filter {
 			e = Env([start, in], [time], warp).asArray;
 			e[6] = curve;
 			e[7] = curvature;
-			trig = Changed.perform(sel, in);
+			trig = Changed.perform(sel, in) + Impulse.perform(sel, 0);
 			if(time.rate != \scalar) { trig = trig + Changed.kr(time) };
 			EnvGen.perform(sel, e, trig);
 		} {
