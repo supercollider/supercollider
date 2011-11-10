@@ -3,6 +3,20 @@ User-visible changes (started after 3.4)
 * sclang startup file moved to thisProcess.platform.userConfigDir +/+ "sclang.scd" - tb
 * library configuration file moved to thisProcess.platform.userConfigDir +/+ "sclang.cfg" - tb
 * only warn about FunctionDef not being inlined if a compiler flag is set - ds
+* new help system (SCDoc) - jli
+* new help browser (HelpBrowser) - jle/jli
+* bitwise ops (<< >> & | ^) on ugens - jli
+* new VarLag ugen - rk/jli
+* new method: Node-onFree, run function when node finishes - jli
+* new method: Help.methodArgs(string) - jli
+* sced and sced3 updates - jli
+* WiiMote.discover now returns device object, or nil if failed - jli
+* LocalIn now has an input for initial value - jr/jli
+* bugfix ugen collection wrapper methods multichannel expansion - jli
+* _String_Regexp bugfixes - jli
+* CoinGate.ar bugfixes - jli
+* T2K bugfixes - jli
+* WiiMote bugfixes - jli
 
 
 
@@ -25,7 +39,7 @@ Bugfixes:
 * 2010-11-28 prevent asBus from breaking when called with no numChannels - jh
 * 2010-12-03 grain ugens: demand ugen input fix - tb
 * 2010-12-05 SystemClock and TempoClock sched and schedAbs with inf time doesn't schedule the task in the first place. backported from master - tb
-* 2010-12-08 prString_FindRegexp fix: match char array was too short to hold null termination - jl
+* 2010-12-08 prString_FindRegexp fix: match char array was too short to hold null termination - jli
 * 2010-12-11 fix classbrowser colors bugs. backported from master - tb
 * 2010-12-12 fixes the bug where installed quark help files would not be detected - tb/ar
 * 2010-12-13 mark inherited methods in class browser by background colour. backported from master - tb
