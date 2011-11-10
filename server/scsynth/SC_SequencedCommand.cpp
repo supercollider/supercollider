@@ -683,6 +683,7 @@ bool BufReadCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	buf->samplerate = mSampleRate;
+	if (mLeaveFileOpen) buf->mask = buf->mask1 = -1;
 
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
@@ -996,6 +997,7 @@ bool BufReadChannelCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	buf->samplerate = mSampleRate;
+	if (mLeaveFileOpen) buf->mask = buf->mask1 = -1;
 
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;

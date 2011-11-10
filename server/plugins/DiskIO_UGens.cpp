@@ -128,6 +128,11 @@ void DiskIOMsg::Perform()
 			count = buf->sndfile ? sf_readf_float(buf->sndfile, buf->data + mPos * buf->channels, mFrames) : 0;
 			if (count < mFrames) {
 				memset(buf->data + (mPos + count) * buf->channels, 0, (mFrames - count) * buf->channels * sizeof(float));
+				World_GetBuf(mWorld, mBufNum)->mask = mPos + count;
+				// NOTE: Possible race condition above: The disk IO thread may write to the rt SndBuf
+				// while the stage3 of the sequenced commands copies the non-rt SndBuf struct to the rt buf.
+				// This only happens if the buffer is modified via an osc command.
+				// We can't use the non-rt SndBuf above since buf->mask won't be reflected to the rt buf.
 			}
 		break;
 		case kDiskCmd_ReadLoop :
@@ -230,7 +235,7 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 			*out0++ = *bufData++;
 		}
 	}
-
+	if(unit->m_buf->mask1>=0 && unit->m_framepos>=unit->m_buf->mask1) unit->mDone = true;
 	unit->m_framepos += inNumSamples;
 	uint32 bufFrames2 = bufFrames >> 1;
 	if (unit->m_framepos == bufFrames) {
@@ -238,6 +243,7 @@ void DiskIn_next(DiskIn *unit, int inNumSamples)
 		goto sendMessage;
 	} else if (unit->m_framepos == bufFrames2) {
 sendMessage:
+		if (unit->m_buf->mask>=0) unit->m_buf->mask1 = unit->m_buf->mask;
 		if(unit->mWorld->mRealTime){
 			// send a message to read
 			DiskIOMsg msg;
@@ -265,7 +271,8 @@ sendMessage:
 			} else { // non-loop
 				count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
 				if (count < bufFrames2) {
-				memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
+					memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
+					unit->m_buf->mask = mPos + count;
 				}
 			}
 		}
@@ -452,7 +459,9 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 			bufPos -= fbufFrames;
 		}
 	}
-	if ( test ) {
+	if (unit->m_buf->mask1>=0 && bufPos>=unit->m_buf->mask1) unit->mDone = true;
+	if ( test ){
+		if (unit->m_buf->mask>=0) unit->m_buf->mask1 = unit->m_buf->mask;
 		unit->m_count++;
 		if(unit->mWorld->mRealTime) {
 			test = false;
@@ -493,6 +502,7 @@ void VDiskIn_first(VDiskIn *unit, int inNumSamples)
 				count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
 				if (count < bufFrames2) {
 					memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
+					unit->m_buf->mask = mPos + count;
 				}
 			}
 
@@ -566,7 +576,9 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 			bufPos -= fbufFrames;
 		}
 	}
+	if (unit->m_buf->mask1>=0 && bufPos>=unit->m_buf->mask1) unit->mDone = true;
 	if ( test ){
+		if (unit->m_buf->mask>=0) unit->m_buf->mask1 = unit->m_buf->mask;
 		unit->m_count++;
 		if(unit->mWorld->mRealTime){
 				test = false;
@@ -607,6 +619,7 @@ void VDiskIn_next(VDiskIn *unit, int inNumSamples)
 				count = bufr->sndfile ? sf_readf_float(bufr->sndfile, bufr->data + mPos * bufr->channels, bufFrames2) : 0;
 				if (count < bufFrames2) {
 					memset(bufr->data + (mPos + count) * bufr->channels, 0, (bufFrames2 - count) * bufr->channels * sizeof(float));
+					unit->m_buf->mask = mPos + count;
 				}
 			}
 
