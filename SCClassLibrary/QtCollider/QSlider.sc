@@ -69,6 +69,7 @@ QSlider : QAbstractStepValue {
           16r1000012, { this.decrement(scale) },
           { ^this; } // if unhandled, let Qt process the event
         );
+        this.doAction;
       }
     );
     ^true; // accept the event and stop its processing
