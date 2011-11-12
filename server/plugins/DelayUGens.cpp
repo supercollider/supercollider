@@ -3746,16 +3746,27 @@ void BufAllpassC_next_a_z(BufAllpassC *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void DelayUnit_AllocDelayLine(DelayUnit *unit)
+static bool DelayUnit_AllocDelayLine(DelayUnit *unit, const char * className)
 {
 	long delaybufsize = (long)ceil(unit->m_maxdelaytime * SAMPLERATE + 1.f);
 	delaybufsize = delaybufsize + BUFLENGTH;
 	delaybufsize = NEXTPOWEROFTWO(delaybufsize);  // round up to next power of two
 	unit->m_fdelaylen = unit->m_idelaylen = delaybufsize;
 
-	RTFree(unit->mWorld, unit->m_dlybuf);
+	if (unit->m_dlybuf)
+		RTFree(unit->mWorld, unit->m_dlybuf);
 	unit->m_dlybuf = (float*)RTAlloc(unit->mWorld, delaybufsize * sizeof(float));
+
+	if (unit->m_dlybuf == NULL) {
+		SETCALC(ft->fClearUnitOutputs);
+		ClearUnitOutputs(unit, 1);
+
+		if(unit->mWorld->mVerbosity > -2)
+			Print("Failed to allocate memory for %s ugen.\n", className);
+	}
+
 	unit->m_mask = delaybufsize - 1;
+	return (unit->m_dlybuf != NULL);
 }
 
 template <typename Unit>
@@ -3767,18 +3778,20 @@ static float CalcDelay(Unit *unit, float delaytime)
 }
 
 template <typename Unit>
-static void DelayUnit_Reset(Unit *unit)
+static bool DelayUnit_Reset(Unit *unit, const char * className)
 {
 	unit->m_maxdelaytime = ZIN0(1);
 	unit->m_delaytime = ZIN0(2);
 	unit->m_dlybuf = 0;
 
-	DelayUnit_AllocDelayLine(unit);
+	if (!DelayUnit_AllocDelayLine(unit, className))
+		return false;
 
 	unit->m_dsamp = CalcDelay(unit, unit->m_delaytime);
 
 	unit->m_numoutput = 0;
 	unit->m_iwrphase = 0;
+	return true;
 }
 
 
@@ -3790,13 +3803,16 @@ void DelayUnit_Dtor(DelayUnit *unit)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename Unit>
-static void FeedbackDelay_Reset(Unit *unit)
+static bool FeedbackDelay_Reset(Unit *unit, const char * className)
 {
 	unit->m_decaytime = ZIN0(3);
 
-	DelayUnit_Reset(unit);
+	bool allocationSucessful = DelayUnit_Reset(unit, className);
+	if (!allocationSucessful)
+		return false;
 
 	unit->m_feedbk = sc_CalcFeedback(unit->m_delaytime, unit->m_decaytime);
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3916,13 +3932,29 @@ static bool DelayUnit_init_0(DelayUnit *unit)
 		return false;
 }
 
+enum {
+	initializationComplete,
+	initializationIncomplete
+};
+
+template <typename Delay>
+static int Delay_Ctor(Delay *unit, const char *className)
+{
+	bool allocationSucessful = DelayUnit_Reset(unit, "DelayN");
+	if (!allocationSucessful)
+		return initializationComplete;
+
+	// optimize for a constant delay of zero
+	if (DelayUnit_init_0(unit))
+		return initializationComplete;
+	return initializationIncomplete;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void DelayN_Ctor(DelayN *unit)
 {
-	DelayUnit_Reset(unit);
-
-	if (DelayUnit_init_0(unit))
+	if (Delay_Ctor(unit, "DelayN") == initializationComplete)
 		return;
 
 	if (INRATE(2) == calc_FullRate)
@@ -4015,9 +4047,7 @@ void DelayN_next_a_z(DelayN *unit, int inNumSamples)
 
 void DelayL_Ctor(DelayL *unit)
 {
-	DelayUnit_Reset(unit);
-
-	if (DelayUnit_init_0(unit))
+	if (Delay_Ctor(unit, "DelayL") == initializationComplete)
 		return;
 
 	if (INRATE(2) == calc_FullRate)
@@ -4064,9 +4094,7 @@ void DelayL_next_a_z(DelayL *unit, int inNumSamples)
 
 void DelayC_Ctor(DelayC *unit)
 {
-	DelayUnit_Reset(unit);
-
-	if (DelayUnit_init_0(unit))
+	if (Delay_Ctor(unit, "DelayC") == initializationComplete)
 		return;
 
 	if (INRATE(2) == calc_FullRate)
@@ -4203,7 +4231,10 @@ inline void FilterX_perform_a(CombX *unit, int inNumSamples, UnitCalcFunc resetF
 
 void CombN_Ctor(CombN *unit)
 {
-	FeedbackDelay_Reset(unit);
+	bool allocationSucessful = FeedbackDelay_Reset(unit, "CombN");
+	if (!allocationSucessful)
+		return;
+
 	if(INRATE(2) == calc_FullRate)
 		SETCALC(CombN_next_a_z);
 	else
@@ -4417,7 +4448,10 @@ void CombN_next_a_z(CombN *unit, int inNumSamples)
 
 void CombL_Ctor(CombL *unit)
 {
-	FeedbackDelay_Reset(unit);
+	bool allocationSucessful = FeedbackDelay_Reset(unit, "CombL");
+	if (!allocationSucessful)
+		return;
+
 	if(INRATE(2) == calc_FullRate)
 		SETCALC(CombL_next_a_z);
 	else
@@ -4461,7 +4495,10 @@ void CombL_next_a_z(CombL *unit, int inNumSamples)
 
 void CombC_Ctor(CombC *unit)
 {
-	FeedbackDelay_Reset(unit);
+	bool allocationSucessful = FeedbackDelay_Reset(unit, "CombC");
+	if (!allocationSucessful)
+		return;
+
 	if(INRATE(2) == calc_FullRate)
 		SETCALC(CombC_next_a_z);
 	else
@@ -4507,7 +4544,10 @@ void CombC_next_a_z(CombC *unit, int inNumSamples)
 
 void AllpassN_Ctor(AllpassN *unit)
 {
-	FeedbackDelay_Reset(unit);
+	bool allocationSucessful = FeedbackDelay_Reset(unit, "AllpassN");
+	if (!allocationSucessful)
+		return;
+
 	if(INRATE(2) == calc_FullRate)
 		SETCALC(AllpassN_next_a_z);
 	else
@@ -4728,7 +4768,10 @@ void AllpassN_next_a_z(AllpassN *unit, int inNumSamples)
 
 void AllpassL_Ctor(AllpassL *unit)
 {
-	FeedbackDelay_Reset(unit);
+	bool allocationSucessful = FeedbackDelay_Reset(unit, "AllpassL");
+	if (!allocationSucessful)
+		return;
+
 	if(INRATE(2) == calc_FullRate)
 		SETCALC(AllpassL_next_a_z);
 	else
@@ -4773,7 +4816,10 @@ void AllpassL_next_a_z(AllpassL *unit, int inNumSamples)
 
 void AllpassC_Ctor(AllpassC *unit)
 {
-	FeedbackDelay_Reset(unit);
+	bool allocationSucessful = FeedbackDelay_Reset(unit, "AllpassC");
+	if (!allocationSucessful)
+		return;
+
 	if(INRATE(2) == calc_FullRate)
 		SETCALC(AllpassC_next_a_z);
 	else
@@ -6040,7 +6086,10 @@ void Pluck_Ctor(Pluck *unit)
 	float maxdelaytime = unit->m_maxdelaytime = IN0(2);
 	float delaytime = unit->m_delaytime = IN0(3);
 	unit->m_dlybuf = 0;
-	DelayUnit_AllocDelayLine(unit);
+	bool allocationSucessful = DelayUnit_AllocDelayLine(unit, "Pluck");
+	if (!allocationSucessful)
+		return;
+
 	unit->m_dsamp = CalcDelay(unit, unit->m_delaytime);
 
 	unit->m_numoutput = 0;
