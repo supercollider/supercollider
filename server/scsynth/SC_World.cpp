@@ -1036,7 +1036,9 @@ SC_DLLEXPORT_C void World_Cleanup(World *world)
 
 	free(world->mControlBusTouched);
 	free(world->mAudioBusTouched);
-	if (world->mControlBus != world->mSharedControls) // not in shared memory
+	if (hw->mShmem) {
+		delete hw->mShmem;
+	} else
 		free(world->mControlBus);
 	free(world->mAudioBus);
 	delete [] world->mRGen;
