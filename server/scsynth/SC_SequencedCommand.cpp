@@ -663,8 +663,15 @@ bool BufReadCmd::Stage2()
 		sf_readf_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
 
-	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
-	else sf_close(sf);
+	if(buf->sndfile)
+		sf_close(buf->sndfile);
+
+	if (mLeaveFileOpen) {
+		buf->sndfile = sf;
+	} else {
+		sf_close(sf);
+		buf->sndfile = 0;
+	}
 
 	mSampleRate = (double)fileinfo.samplerate;
 
@@ -969,8 +976,15 @@ bool BufReadChannelCmd::Stage2()
 	}
 
 leave:
-	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
-	else sf_close(sf);
+	if(buf->sndfile)
+		sf_close(buf->sndfile);
+
+	if (mLeaveFileOpen) {
+		buf->sndfile = sf;
+	} else {
+		sf_close(sf);
+		buf->sndfile = 0;
+	}
 
 	mSampleRate = (double)fileinfo.samplerate;
 
@@ -1084,8 +1098,15 @@ bool BufWriteCmd::Stage2()
 		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
 
-	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
-	else sf_close(sf);
+	if(buf->sndfile)
+		sf_close(buf->sndfile);
+
+	if (mLeaveFileOpen) {
+		buf->sndfile = sf;
+	} else {
+		sf_close(sf);
+		buf->sndfile = 0;
+	}
 
 	return true;
 #endif
