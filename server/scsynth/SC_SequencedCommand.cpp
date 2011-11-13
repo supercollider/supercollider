@@ -61,7 +61,7 @@ void SndBuf_Init(SndBuf *buf)
 	buf->mask = 0;
 	buf->mask1 = 0;
 	buf->coord = 0;
-	//buf->sndfile = 0;
+	buf->sndfile = 0;
 }
 
 char* allocAndRestrictPath(World *mWorld, const char* inPath, const char* restrictBase);
@@ -420,7 +420,9 @@ bool BufFreeCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	mFreeData = buf->data;
-
+#ifndef NO_LIBSNDFILE
+	if (buf->sndfile) sf_close(buf->sndfile);
+#endif
 	SndBuf_Init(buf);
 	return true;
 }
