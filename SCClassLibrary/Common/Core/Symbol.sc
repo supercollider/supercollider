@@ -56,6 +56,10 @@ Symbol {
 		// returns true if symbol names a bound primitive
 		^this.isPrimitiveName and: { this.primitiveIndex > 0 }
 	}
+	isMap {
+		_Symbol_IsMap
+		// returns true if symbol starts with 'a' or 'c' followed by a number
+	}
 
 	openTextFile { arg selectionStart=0, selectionLength=0;
 		^this.asString.openTextFile(selectionStart, selectionLength)
