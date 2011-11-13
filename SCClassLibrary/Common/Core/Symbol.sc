@@ -60,6 +60,7 @@ Symbol {
 		_Symbol_IsMap
 		// returns true if symbol starts with 'a' or 'c' followed by a number
 	}
+	isRest { ^this.isMap.not }
 
 	openTextFile { arg selectionStart=0, selectionLength=0;
 		^this.asString.openTextFile(selectionStart, selectionLength)

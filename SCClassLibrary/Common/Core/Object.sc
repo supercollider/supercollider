@@ -225,6 +225,8 @@ Object  {
 	finishEvent {}
 	atLimit { ^false }
 
+	isRest { ^false }
+
 	// testing
 	? { arg obj; ^this }
 	?? { arg obj; ^this }

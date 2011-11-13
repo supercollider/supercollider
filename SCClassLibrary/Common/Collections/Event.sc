@@ -458,7 +458,7 @@ Event : Environment {
 						// var schedBundleArray;
 
 						freqs = ~detunedFreq.value;
-						if (freqs.isKindOf(Symbol).not) {
+						if (freqs.isRest.not) {
 
 							// msgFunc gets the synth's control values from the Event
 							msgFunc = ~getMsgFunc.valueEnvir;
@@ -555,7 +555,7 @@ Event : Environment {
 
 						freqs = ~detunedFreq.value;
 
-						if (freqs.isKindOf(Symbol).not) {
+						if (freqs.isRest.not) {
 
 							// msgFunc gets the synth's control values from the Event
 							instr = ( ~synthLib ?? { SynthDescLib.global } ).at(~instrument);
@@ -597,7 +597,7 @@ Event : Environment {
 
 						freqs = ~detunedFreq.value;
 
-						if (freqs.isKindOf(Symbol).not) {
+						if (freqs.isRest.not) {
 							~freq = freqs;
 							~amp = ~amp.value;
 							msgFunc = ~getMsgFunc.valueEnvir;
@@ -628,7 +628,7 @@ Event : Environment {
 						var freqs, lag, dur, strum, bndl, msgFunc;
 						freqs = ~freq = ~detunedFreq.value;
 
-						if (freqs.isKindOf(Symbol).not) {
+						if (freqs.isRest.not) {
 							~server = server;
 							freqs = ~freq;
 							~amp = ~amp.value;
@@ -716,7 +716,7 @@ Event : Environment {
 
 						freqs = ~freq = ~detunedFreq.value;
 
-						if (freqs.isKindOf(Symbol).not) {
+						if (freqs.isRest.not) {
 							~amp = ~amp.value;
 							~midinote = (freqs.cpsmidi).round(1).asInteger;
 							strum = ~strum;
@@ -790,7 +790,7 @@ Event : Environment {
 
 						freqs = ~freq = ~detunedFreq.value;
 
-						if (freqs.isKindOf(Symbol).not) {
+						if (freqs.isRest.not) {
 							~amp = ~amp.value;
 							~sustain = ~sustain.value;
 
