@@ -191,7 +191,7 @@ function did_load() {
     var hash = unescape(window.location.hash.slice(1));
 
     if(hash && ! /^section_/.test(hash)) {
-        window.location.href = "../Search.html?check_title=false&check_summary=false&check_prefix=true&check_suffix=true&ignore_case=false#"+hash;
+        location.replace("../Search.html?check_title=false&check_summary=false&check_prefix=true&check_suffix=true&ignore_case=false#"+hash);
         return;
     }
     helpRoot=".."; fixTOC();
