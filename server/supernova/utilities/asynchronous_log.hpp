@@ -135,8 +135,8 @@ public:
 
     ~asynchronous_log_thread(void)
     {
-        interrrupt();
         running_flag = false;
+        interrrupt();
         thread_.join();
     }
 
