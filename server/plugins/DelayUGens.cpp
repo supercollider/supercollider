@@ -2261,7 +2261,7 @@ static inline void DelayN_delay_loop(float * out, const float * in, long & iwrph
 			if (irdphase < 0) {
 				if ((dlywr - dlyrd) > nsmps) {
 #ifdef NOVA_SIMD
-					if ((nsmps & 15) == 0) {
+					if ((nsmps & (nova::vec<float>::size - 1)) == 0) {
 						nova::copyvec_nn_simd(dlywr + ZOFF, in + ZOFF, nsmps);
 						nova::zerovec_na_simd(out + ZOFF, nsmps);
 					} else
@@ -7149,11 +7149,13 @@ static void DelTapWr_first(DelTapWr *unit, int inNumSamples)
 
 	// zero out the buffer!
 #ifdef NOVA_SIMD
-	uint32 unroll = bufSamples & (~15);
-	nova::zerovec_simd(bufData, unroll);
+	if (nova::vec<float>::is_aligned(bufData)) {
+		uint32 unroll = bufSamples & (~(nova::vec<float>::size - 1));
+		nova::zerovec_simd(bufData, unroll);
 
-	uint32 remain = bufSamples - unroll;
-	Clear(remain, bufData + unroll);
+		uint32 remain = bufSamples - unroll;
+		Clear(remain, bufData + unroll);
+	}
 #else
 	Clear(bufSamples, bufData);
 #endif
