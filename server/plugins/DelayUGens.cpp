@@ -3860,6 +3860,20 @@ inline void DelayX_perform(DelayX *unit, int inNumSamples, UnitCalcFunc resetFun
 			unit->mCalcFunc = resetFunc;
 	}
 }
+/* template function to generate buffer-based delay ugen function, control-rate delay time */
+template <typename PerformClass,
+		  typename BufDelayX
+		 >
+inline void BufDelayX_perform(BufDelayX *unit, int inNumSamples, UnitCalcFunc resetFunc)
+{
+	float *out = ZOUT(0);
+	const float *in = ZIN(1);
+	float delaytime = ZIN0(2);
+
+	GET_BUF
+	CHECK_BUF
+}
+
 
 /* template function to generate delay ugen function, audio-rate delay time */
 template <typename PerformClass,
@@ -3940,7 +3954,7 @@ enum {
 template <typename Delay>
 static int Delay_Ctor(Delay *unit, const char *className)
 {
-	bool allocationSucessful = DelayUnit_Reset(unit, "DelayN");
+	bool allocationSucessful = DelayUnit_Reset(unit, className);
 	if (!allocationSucessful)
 		return initializationComplete;
 
