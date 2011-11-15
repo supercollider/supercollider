@@ -291,7 +291,7 @@ HelpBrowser {
 }
 
 + Help {
-	gui {
+	*gui {
 		HelpBrowser.instance.goHome;
 	}
 }
