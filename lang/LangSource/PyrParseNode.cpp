@@ -1242,19 +1242,15 @@ void PyrMethodNode::compile(PyrSlot *result)
 	if (oldmethod) {
 		++numOverwrites;
 
-		char extPath[1024];
-
 		// accumulate overwrite message onto the string buffer
-		asRelativePath(gCompilingFileSym->name, extPath);
 		size_t prevMsgSize = strlen(overwriteMsg);
 		snprintf(overwriteMsg + prevMsgSize, OVERWRITEMSGBUFSIZE - prevMsgSize,
-			"%s:%s\t'%s'",
+			"%s:%s\t%s",
 			slotRawSymbol(&slotRawClass(&oldmethod->ownerclass)->name)->name, slotRawSymbol(&oldmethod->name)->name,
-			extPath);
-		asRelativePath(slotRawSymbol(&oldmethod->filenameSym)->name, extPath);
+			gCompilingFileSym->name);
 		prevMsgSize = strlen(overwriteMsg);
 		snprintf(overwriteMsg + prevMsgSize, OVERWRITEMSGBUFSIZE - prevMsgSize,
-			"\t'%s'\n", extPath);
+			"\t%s\n", slotRawSymbol(&oldmethod->filenameSym)->name);
 
 		method = oldmethod;
 		freePyrSlot(&method->code);
