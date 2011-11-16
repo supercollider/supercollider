@@ -12,12 +12,17 @@ User-visible changes (started after 3.4)
 * sced and sced3 updates - jli
 * WiiMote.discover now returns device object, or nil if failed - jli
 * LocalIn now has an input for initial value - jr/jli
+* allow Bus-asMap symbols in \freq and friends in patterns - jli
+* /b_free also free's sndfile if open (like /b_close) - jli
+* VDiskIn and DiskIn sets done flag (to be used by Done.kr or FreeSelfWhenDone.kr) - jli
+
+Bugfixes:
+---------
 * bugfix ugen collection wrapper methods multichannel expansion - jli
 * _String_Regexp bugfixes - jli
 * CoinGate.ar bugfixes - jli
 * T2K bugfixes - jli
 * WiiMote bugfixes - jli
-
 
 
 Changes up to 3.4 are listed below, grouped under each point release of SuperCollider.
