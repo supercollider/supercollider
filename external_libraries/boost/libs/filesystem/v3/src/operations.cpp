@@ -77,6 +77,8 @@ using std::wstring;
 
 # ifdef BOOST_POSIX_API
 
+    const fs::path dot_path(".");
+    const fs::path dot_dot_path("..");
 #   include <sys/types.h>
 #   if !defined(__APPLE__) && !defined(__OpenBSD__)
 #     include <sys/statvfs.h>
@@ -98,6 +100,8 @@ using std::wstring;
 
 # else // BOOST_WINDOW_API
 
+    const fs::path dot_path(L".");
+    const fs::path dot_dot_path(L"..");
 #   if (defined(__MINGW32__) || defined(__CYGWIN__)) && !defined(WINVER)
       // Versions of MinGW or Cygwin that support Filesystem V3 support at least WINVER 0x501.
       // See MinGW's windef.h
@@ -431,7 +435,10 @@ namespace
 
     struct stat from_stat;
     if (::stat(from_p.c_str(), &from_stat)!= 0)
-      { return false; }
+    { 
+      ::close(infile);
+      return false;
+    }
 
     int oflag = O_CREAT | O_WRONLY | O_TRUNC;
     if (fail_if_exists)
@@ -746,6 +753,86 @@ namespace detail
 #   else
     return true;
 #   endif
+  }
+
+  BOOST_FILESYSTEM_DECL
+  path canonical(const path& p, const path& base, system::error_code* ec)
+  {
+    path source (p.is_absolute() ? p : absolute(p, base));
+    path result;
+
+    system::error_code local_ec;
+    file_status stat (status(source, local_ec));
+
+    if (stat.type() == fs::file_not_found)
+    {
+      if (ec == 0)
+        BOOST_FILESYSTEM_THROW(filesystem_error(
+          "boost::filesystem::canonical", source,
+          error_code(system::errc::no_such_file_or_directory, system::generic_category())));
+      ec->assign(system::errc::no_such_file_or_directory, system::generic_category());
+      return result;
+    }
+    else if (local_ec)
+    {
+      if (ec == 0)
+        BOOST_FILESYSTEM_THROW(filesystem_error(
+          "boost::filesystem::canonical", source, local_ec));
+      *ec = local_ec;
+      return result;
+    }
+
+    bool scan (true);
+    while (scan)
+    {
+      scan = false;
+      result.clear();
+      for (path::iterator itr = source.begin(); itr != source.end(); ++itr)
+      {
+        if (*itr == dot_path)
+          continue;
+        if (*itr == dot_dot_path)
+        {
+          result.remove_filename();
+          continue;
+        }
+
+        result /= *itr;
+
+        bool is_sym (is_symlink(detail::symlink_status(result, ec)));
+        if (ec && *ec)
+          return path();
+
+        if (is_sym)
+        {
+          path link(detail::read_symlink(result, ec));
+          if (ec && *ec)
+            return path();
+          result.remove_filename();
+
+          if (link.is_absolute())
+          {
+            for (++itr; itr != source.end(); ++itr)
+              link /= *itr;
+            source = link;
+          }
+          else // link is relative
+          {
+            path new_source(result);
+            new_source /= link;
+            for (++itr; itr != source.end(); ++itr)
+              new_source /= *itr;
+            source = new_source;
+          }
+          scan = true;  // symlink causes scan to be restarted
+          break;
+        }
+      }
+    }
+    if (ec != 0)
+      ec->clear();
+    BOOST_ASSERT_MSG(result.is_absolute(), "canonical() implementation error; please report");
+    return result;
   }
 
   BOOST_FILESYSTEM_DECL

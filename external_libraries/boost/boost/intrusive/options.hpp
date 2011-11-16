@@ -775,7 +775,7 @@ template<class Prev, class ...Others>
 struct do_pack<typelist<Prev, Others...> >
 {
    typedef typename Prev::template pack
-      <typename do_pack<typelist<Others...>>::type> type;
+      <typename do_pack<typelist<Others...> >::type> type;
 };
 
 

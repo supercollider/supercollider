@@ -19,7 +19,6 @@
 
 #if defined(BOOST_ASIO_HAS_IOCP)
 
-#include <boost/asio/detail/call_stack.hpp>
 #include <boost/asio/detail/completion_handler.hpp>
 #include <boost/asio/detail/fenced_block.hpp>
 #include <boost/asio/detail/handler_alloc_helpers.hpp>
@@ -36,7 +35,7 @@ void win_iocp_io_service::dispatch(Handler handler)
 {
   if (call_stack<win_iocp_io_service>::contains(this))
   {
-    boost::asio::detail::fenced_block b;
+    fenced_block b(fenced_block::full);
     boost_asio_handler_invoke_helpers::invoke(handler, handler);
   }
   else

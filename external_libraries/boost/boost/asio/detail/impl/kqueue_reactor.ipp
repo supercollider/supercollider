@@ -126,11 +126,16 @@ void kqueue_reactor::init_task()
 int kqueue_reactor::register_descriptor(socket_type descriptor,
     kqueue_reactor::per_descriptor_data& descriptor_data)
 {
-  mutex::scoped_lock lock(registered_descriptors_mutex_);
+  descriptor_data = allocate_descriptor_state();
 
-  descriptor_data = registered_descriptors_.alloc();
+  mutex::scoped_lock lock(descriptor_data->mutex_);
+
   descriptor_data->descriptor_ = descriptor;
   descriptor_data->shutdown_ = false;
+
+  for (int i = 0; i < max_ops; ++i)
+    descriptor_data->op_queue_is_empty_[i] =
+      descriptor_data->op_queue_[i].empty();
 
   return 0;
 }
@@ -139,12 +144,17 @@ int kqueue_reactor::register_internal_descriptor(
     int op_type, socket_type descriptor,
     kqueue_reactor::per_descriptor_data& descriptor_data, reactor_op* op)
 {
-  mutex::scoped_lock lock(registered_descriptors_mutex_);
+  descriptor_data = allocate_descriptor_state();
 
-  descriptor_data = registered_descriptors_.alloc();
+  mutex::scoped_lock lock(descriptor_data->mutex_);
+
   descriptor_data->descriptor_ = descriptor;
   descriptor_data->shutdown_ = false;
   descriptor_data->op_queue_[op_type].push(op);
+
+  for (int i = 0; i < max_ops; ++i)
+    descriptor_data->op_queue_is_empty_[i] =
+      descriptor_data->op_queue_[i].empty();
 
   struct kevent event;
   switch (op_type)
@@ -186,6 +196,21 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
     return;
   }
 
+  if (allow_speculative)
+  {
+    if (descriptor_data->op_queue_is_empty_[op_type]
+        && (op_type != read_op
+          || descriptor_data->op_queue_is_empty_[except_op]))
+    {
+      if (op->perform())
+      {
+        io_service_.post_immediate_completion(op);
+        return;
+      }
+      allow_speculative = false;
+    }
+  }
+
   mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
 
   if (descriptor_data->shutdown_)
@@ -194,12 +219,16 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
     return;
   }
 
-  bool first = descriptor_data->op_queue_[op_type].empty();
+  for (int i = 0; i < max_ops; ++i)
+    descriptor_data->op_queue_is_empty_[i] =
+      descriptor_data->op_queue_[i].empty();
+
+  bool first = descriptor_data->op_queue_is_empty_[op_type];
   if (first)
   {
     if (allow_speculative)
     {
-      if (op_type != read_op || descriptor_data->op_queue_[except_op].empty())
+      if (op_type != read_op || descriptor_data->op_queue_is_empty_[except_op])
       {
         if (op->perform())
         {
@@ -212,6 +241,7 @@ void kqueue_reactor::start_op(int op_type, socket_type descriptor,
   }
 
   descriptor_data->op_queue_[op_type].push(op);
+  descriptor_data->op_queue_is_empty_[op_type] = false;
   io_service_.work_started();
 
   if (first)
@@ -276,7 +306,6 @@ void kqueue_reactor::deregister_descriptor(socket_type descriptor,
     return;
 
   mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
-  mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
 
   if (!descriptor_data->shutdown_)
   {
@@ -311,10 +340,8 @@ void kqueue_reactor::deregister_descriptor(socket_type descriptor,
 
     descriptor_lock.unlock();
 
-    registered_descriptors_.free(descriptor_data);
+    free_descriptor_state(descriptor_data);
     descriptor_data = 0;
-
-    descriptors_lock.unlock();
 
     io_service_.post_deferred_completions(ops);
   }
@@ -327,7 +354,6 @@ void kqueue_reactor::deregister_internal_descriptor(socket_type descriptor,
     return;
 
   mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
-  mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
 
   if (!descriptor_data->shutdown_)
   {
@@ -347,10 +373,8 @@ void kqueue_reactor::deregister_internal_descriptor(socket_type descriptor,
 
     descriptor_lock.unlock();
 
-    registered_descriptors_.free(descriptor_data);
+    free_descriptor_state(descriptor_data);
     descriptor_data = 0;
-
-    descriptors_lock.unlock();
   }
 }
 
@@ -481,6 +505,18 @@ int kqueue_reactor::do_kqueue_create()
     boost::asio::detail::throw_error(ec, "kqueue");
   }
   return fd;
+}
+
+kqueue_reactor::descriptor_state* kqueue_reactor::allocate_descriptor_state()
+{
+  mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
+  return registered_descriptors_.alloc();
+}
+
+void kqueue_reactor::free_descriptor_state(kqueue_reactor::descriptor_state* s)
+{
+  mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
+  registered_descriptors_.free(s);
 }
 
 void kqueue_reactor::do_add_timer_queue(timer_queue_base& queue)

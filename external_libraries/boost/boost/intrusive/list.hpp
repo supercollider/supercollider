@@ -30,7 +30,7 @@
 #include <algorithm>
 #include <functional>
 #include <cstddef>
-//iG pending #include <boost/pointer_cast.hpp>
+#include <boost/move/move.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -114,9 +114,8 @@ class list_impl
    private:
    typedef detail::size_holder<constant_time_size, size_type>          size_traits;
 
-   //Non-copyable and non-moveable
-   list_impl (const list_impl&);
-   list_impl &operator =(const list_impl&);
+   //noncopyable
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(list_impl)
 
    enum { safemode_or_autounlink  = 
             (int)real_value_traits::link_mode == (int)auto_unlink   ||
@@ -173,10 +172,10 @@ class list_impl
    real_value_traits &get_real_value_traits(detail::bool_<true>)
    {  return data_.get_value_traits(*this);  }
 
-   const value_traits &get_value_traits() const
+   const value_traits &priv_value_traits() const
    {  return data_;  }
 
-   value_traits &get_value_traits()
+   value_traits &priv_value_traits()
    {  return data_;  }
 
    protected:
@@ -228,6 +227,21 @@ class list_impl
       node_algorithms::init_header(this->get_root_node());
       this->insert(this->cend(), b, e);
    }
+
+   //! <b>Effects</b>: to-do
+   //!   
+   list_impl(BOOST_RV_REF(list_impl) x)
+      : data_(::boost::move(x.priv_value_traits()))
+   {
+      this->priv_size_traits().set_size(size_type(0));
+      node_algorithms::init_header(this->get_root_node());  
+      this->swap(x);
+   }
+
+   //! <b>Effects</b>: to-do
+   //!   
+   list_impl& operator=(BOOST_RV_REF(list_impl) x) 
+   {  this->swap(x); return *this;  }
 
    //! <b>Effects</b>: If it's not a safe-mode or an auto-unlink value_type 
    //!   the destructor does nothing
@@ -988,8 +1002,8 @@ class list_impl
    {
       if(node_traits::get_next(this->get_root_node()) 
          != node_traits::get_previous(this->get_root_node())){
-         list_impl carry(this->get_value_traits());
-         detail::array_initializer<list_impl, 64> counter(this->get_value_traits());
+         list_impl carry(this->priv_value_traits());
+         detail::array_initializer<list_impl, 64> counter(this->priv_value_traits());
          int fill = 0;
          while(!this->empty()){
             carry.splice(carry.cbegin(), *this, this->cbegin());
@@ -1473,6 +1487,8 @@ class list
    typedef typename Base::real_value_traits     real_value_traits;
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename real_value_traits::value_type, T>::value));
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(list)
+
    public:
    typedef typename Base::value_traits          value_traits;
    typedef typename Base::iterator              iterator;
@@ -1486,6 +1502,13 @@ class list
    list(Iterator b, Iterator e, const value_traits &v_traits = value_traits())
       :  Base(b, e, v_traits)
    {}
+
+   list(BOOST_RV_REF(list) x)
+      :  Base(::boost::move(static_cast<Base&>(x)))
+   {}
+
+   list& operator=(BOOST_RV_REF(list) x)
+   {  this->Base::operator=(::boost::move(static_cast<Base&>(x))); return *this;  }
 
    static list &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<list &>(Base::container_from_end_iterator(end_iterator));   }

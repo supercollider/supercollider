@@ -1,25 +1,84 @@
 
-// Copyright 2005-2008 Daniel James.
+// Copyright 2005-2011 Daniel James.
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+// Note: if you change this include guard, you also need to change
+// container_fwd_compile_fail.cpp
 #if !defined(BOOST_DETAIL_CONTAINER_FWD_HPP)
 #define BOOST_DETAIL_CONTAINER_FWD_HPP
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#if defined(_MSC_VER) && (_MSC_VER >= 1020) && \
+    !defined(BOOST_DETAIL_TEST_CONFIG_ONLY)
 # pragma once
 #endif
 
 #include <boost/config.hpp>
 #include <boost/detail/workaround.hpp>
 
-#if defined(BOOST_DETAIL_NO_CONTAINER_FWD) \
-    || ((defined(__GLIBCPP__) || defined(__GLIBCXX__)) \
-        && (defined(_GLIBCXX_DEBUG) || defined(_GLIBCXX_PARALLEL))) \
-    || BOOST_WORKAROUND(__BORLANDC__, > 0x551) \
-    || BOOST_WORKAROUND(__DMC__, BOOST_TESTED_AT(0x842)) \
-    || (defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION)) \
-    || (defined(_LIBCPP_VERSION))
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+// Define BOOST_DETAIL_NO_CONTAINER_FWD if you don't want this header to      //
+// forward declare standard containers.                                       //
+//                                                                            //
+////////////////////////////////////////////////////////////////////////////////
+
+#if !defined(BOOST_DETAIL_NO_CONTAINER_FWD)
+#  if defined(__SGI_STL_PORT) || defined(_STLPORT_VERSION)
+     // STLport
+#    define BOOST_DETAIL_NO_CONTAINER_FWD
+#  elif defined(__LIBCOMO__)
+     // Comeau STL:
+#    define BOOST_DETAIL_NO_CONTAINER_FWD
+#  elif defined(__STD_RWCOMPILER_H__) || defined(_RWSTD_VER)
+     // Rogue Wave library:
+#    define BOOST_DETAIL_NO_CONTAINER_FWD
+#  elif defined(_LIBCPP_VERSION)
+     // libc++
+#    define BOOST_DETAIL_NO_CONTAINER_FWD
+#  elif defined(__GLIBCPP__) || defined(__GLIBCXX__)
+     // GNU libstdc++ 3
+#    if defined(_GLIBCXX_DEBUG) \
+        || defined(_GLIBCXX_PARALLEL) \
+        || defined(_GLIBCXX_PROFILE)
+#      define BOOST_DETAIL_NO_CONTAINER_FWD
+#    endif
+#  elif defined(__STL_CONFIG_H)
+     // generic SGI STL
+     //
+     // Forward declaration seems to be okay, but it has a couple of odd
+     // implementations.
+#    define BOOST_CONTAINER_FWD_BAD_BITSET
+#    if !defined(__STL_NON_TYPE_TMPL_PARAM_BUG)
+#      define BOOST_CONTAINER_FWD_BAD_DEQUE
+#     endif
+#  elif defined(__MSL_CPP__)
+     // MSL standard lib:
+#    define BOOST_DETAIL_NO_CONTAINER_FWD
+#  elif defined(__IBMCPP__)
+     // The default VACPP std lib, forward declaration seems to be fine.
+#  elif defined(MSIPL_COMPILE_H)
+     // Modena C++ standard library
+#    define BOOST_DETAIL_NO_CONTAINER_FWD
+#  elif (defined(_YVALS) && !defined(__IBMCPP__)) || defined(_CPPLIB_VER)
+     // Dinkumware Library (this has to appear after any possible replacement
+     // libraries)
+     //
+     // Works fine.
+#  else
+#    define BOOST_DETAIL_NO_CONTAINER_FWD
+#  endif
+#endif
+
+// BOOST_DETAIL_TEST_* macros are for testing only
+// and shouldn't be relied upon. But you can use
+// BOOST_DETAIL_NO_CONTAINER_FWD to prevent forward
+// declaration of containers.
+
+#if !defined(BOOST_DETAIL_TEST_CONFIG_ONLY)
+
+#if defined(BOOST_DETAIL_NO_CONTAINER_FWD) && \
+    !defined(BOOST_DETAIL_TEST_FORCE_CONTAINER_FWD)
 
 #include <deque>
 #include <list>
@@ -33,17 +92,6 @@
 #else
 
 #include <cstddef>
-
-#if !defined(__SGI_STL_PORT) && !defined(_STLPORT_VERSION) && \
-        defined(__STL_CONFIG_H)
-
-#define BOOST_CONTAINER_FWD_BAD_BITSET
-
-#if !defined(__STL_NON_TYPE_TMPL_PARAM_BUG)
-#define BOOST_CONTAINER_FWD_BAD_DEQUE
-#endif
-
-#endif
 
 #if defined(BOOST_CONTAINER_FWD_BAD_DEQUE)
 #include <deque>
@@ -74,11 +122,7 @@ namespace std
     #else
         template <class T> class complex;
     #endif
-}
 
-// gcc 3.4 and greater
-namespace std
-{
 #if !defined(BOOST_CONTAINER_FWD_BAD_DEQUE)
     template <class T, class Allocator> class deque;
 #endif
@@ -101,6 +145,9 @@ namespace std
 #pragma warning(pop)
 #endif
 
-#endif
+#endif // BOOST_DETAIL_NO_CONTAINER_FWD &&
+       // !defined(BOOST_DETAIL_TEST_FORCE_CONTAINER_FWD)
+
+#endif // BOOST_DETAIL_TEST_CONFIG_ONLY
 
 #endif

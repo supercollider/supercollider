@@ -398,7 +398,7 @@ public:
       typedef typename traits::string_type seq_type;
       seq_type a(arg_first, arg_last);
       if(a.size())
-         assign(&*a.begin(), &*a.begin() + a.size(), f);
+         assign(static_cast<const charT*>(&*a.begin()), static_cast<const charT*>(&*a.begin() + a.size()), f);
       else
          assign(static_cast<const charT*>(0), static_cast<const charT*>(0), f);
    }

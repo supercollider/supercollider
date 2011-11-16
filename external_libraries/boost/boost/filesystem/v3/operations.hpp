@@ -142,6 +142,8 @@ namespace boost
     BOOST_FILESYSTEM_DECL
     path initial_path(system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
+    path canonical(const path& p, const path& base, system::error_code* ec=0);
+    BOOST_FILESYSTEM_DECL
     void copy(const path& from, const path& to, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
     void copy_directory(const path& from, const path& to, system::error_code* ec=0);
@@ -268,7 +270,17 @@ namespace boost
   path absolute(const path& p, const path& base=current_path());
   //  If base.is_absolute(), throws nothing. Thus no need for ec argument
 
-# ifndef BOOST_FILESYSTEM_NO_DEPRECATED
+  inline
+  path canonical(const path& p, const path& base=current_path())
+                                       {return detail::canonical(p, base);}
+  inline
+  path canonical(const path& p, system::error_code& ec)
+                                       {return detail::canonical(p, current_path(), &ec);}
+  inline
+  path canonical(const path& p, const path& base, system::error_code& ec)
+                                       {return detail::canonical(p, base, &ec);}
+
+ # ifndef BOOST_FILESYSTEM_NO_DEPRECATED
   inline
   path complete(const path& p)
   {
@@ -990,6 +1002,7 @@ namespace boost
   {
     using filesystem3::absolute;
     using filesystem3::block_file;
+    using filesystem3::canonical;
     using filesystem3::character_file;
 //    using filesystem3::copy;
     using filesystem3::copy_file;

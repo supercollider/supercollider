@@ -29,7 +29,7 @@ namespace detail {
 
 inline strand_service::strand_impl::strand_impl()
   : operation(&strand_service::do_complete),
-    count_(0)
+    locked_(false)
 {
 }
 
@@ -41,7 +41,8 @@ struct strand_service::on_dispatch_exit
   ~on_dispatch_exit()
   {
     impl_->mutex_.lock();
-    bool more_handlers = (--impl_->count_ > 0);
+    impl_->ready_queue_.push(impl_->waiting_queue_);
+    bool more_handlers = impl_->locked_ = !impl_->ready_queue_.empty();
     impl_->mutex_.unlock();
 
     if (more_handlers)
@@ -61,7 +62,7 @@ void strand_service::dispatch(strand_service::implementation_type& impl,
   // If we are already in the strand then the handler can run immediately.
   if (call_stack<strand_impl>::contains(impl))
   {
-    boost::asio::detail::fenced_block b;
+    fenced_block b(fenced_block::full);
     boost_asio_handler_invoke_helpers::invoke(handler, handler);
     return;
   }

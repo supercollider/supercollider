@@ -203,7 +203,17 @@ public:
         boost::detail::sp_enable_shared_from_this( this, p, p );
     }
 
-//  generated copy constructor, destructor are fine
+//  generated copy constructor, destructor are fine...
+
+#if defined( BOOST_HAS_RVALUE_REFS )
+
+// ... except in C++0x, move disables the implicit copy
+
+    shared_ptr( shared_ptr const & r ): px( r.px ), pn( r.pn ) // never throws
+    {
+    }
+
+#endif
 
     template<class Y>
     explicit shared_ptr(weak_ptr<Y> const & r): pn(r.pn) // may throw

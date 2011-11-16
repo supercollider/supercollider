@@ -1212,7 +1212,10 @@ namespace boost
 
         struct stat from_stat;
         if ( ::stat( from_file_ph.c_str(), &from_stat ) != 0 )
-          { return error_code( errno, system_category() ); }
+        { 
+          ::close(infile);
+          return error_code( errno, system_category() );
+        }
 
         int oflag = O_CREAT | O_WRONLY | O_TRUNC;
         if ( fail_if_exists )

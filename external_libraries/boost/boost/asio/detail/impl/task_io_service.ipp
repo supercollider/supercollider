@@ -20,7 +20,6 @@
 #if !defined(BOOST_ASIO_HAS_IOCP)
 
 #include <boost/limits.hpp>
-#include <boost/asio/detail/call_stack.hpp>
 #include <boost/asio/detail/event.hpp>
 #include <boost/asio/detail/reactor.hpp>
 #include <boost/asio/detail/task_io_service.hpp>
@@ -48,24 +47,37 @@ struct task_io_service::task_cleanup
   op_queue<operation>* ops_;
 };
 
-struct task_io_service::work_finished_on_block_exit
+struct task_io_service::work_cleanup
 {
-  ~work_finished_on_block_exit()
+  ~work_cleanup()
   {
     task_io_service_->work_finished();
+
+#if defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS) 
+    if (!ops_->empty())
+    {
+      lock_->lock();
+      task_io_service_->op_queue_.push(*ops_);
+    }
+#endif // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
   }
 
   task_io_service* task_io_service_;
+  mutex::scoped_lock* lock_;
+  op_queue<operation>* ops_;
 };
 
-struct task_io_service::idle_thread_info
+struct task_io_service::thread_info
 {
-  event wakeup_event;
-  idle_thread_info* next;
+  event* wakeup_event;
+  op_queue<operation>* private_op_queue;
+  thread_info* next;
 };
 
-task_io_service::task_io_service(boost::asio::io_service& io_service)
+task_io_service::task_io_service(
+    boost::asio::io_service& io_service, std::size_t concurrency_hint)
   : boost::asio::detail::service_base<task_io_service>(io_service),
+    one_thread_(concurrency_hint == 1),
     mutex_(),
     task_(0),
     task_interrupted_(true),
@@ -75,10 +87,6 @@ task_io_service::task_io_service(boost::asio::io_service& io_service)
     first_idle_thread_(0)
 {
   BOOST_ASIO_HANDLER_TRACKING_INIT;
-}
-
-void task_io_service::init(std::size_t /*concurrency_hint*/)
-{
 }
 
 void task_io_service::shutdown_service()
@@ -120,15 +128,22 @@ std::size_t task_io_service::run(boost::system::error_code& ec)
     return 0;
   }
 
-  call_stack<task_io_service>::context ctx(this);
-
-  idle_thread_info this_idle_thread;
-  this_idle_thread.next = 0;
+  thread_info this_thread;
+  event wakeup_event;
+  this_thread.wakeup_event = &wakeup_event;
+  op_queue<operation> private_op_queue;
+#if defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS) 
+  this_thread.private_op_queue = one_thread_ == 1 ? &private_op_queue : 0;
+#else // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
+  this_thread.private_op_queue = 0;
+#endif // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
+  this_thread.next = 0;
+  thread_call_stack::context ctx(this, this_thread);
 
   mutex::scoped_lock lock(mutex_);
 
   std::size_t n = 0;
-  for (; do_one(lock, &this_idle_thread); lock.lock())
+  for (; do_run_one(lock, this_thread, private_op_queue, ec); lock.lock())
     if (n != (std::numeric_limits<std::size_t>::max)())
       ++n;
   return n;
@@ -143,31 +158,53 @@ std::size_t task_io_service::run_one(boost::system::error_code& ec)
     return 0;
   }
 
-  call_stack<task_io_service>::context ctx(this);
-
-  idle_thread_info this_idle_thread;
-  this_idle_thread.next = 0;
+  thread_info this_thread;
+  event wakeup_event;
+  this_thread.wakeup_event = &wakeup_event;
+  op_queue<operation> private_op_queue;
+  this_thread.private_op_queue = 0;
+  this_thread.next = 0;
+  thread_call_stack::context ctx(this, this_thread);
 
   mutex::scoped_lock lock(mutex_);
 
-  return do_one(lock, &this_idle_thread);
+  return do_run_one(lock, this_thread, private_op_queue, ec);
 }
 
 std::size_t task_io_service::poll(boost::system::error_code& ec)
 {
+  ec = boost::system::error_code();
   if (outstanding_work_ == 0)
   {
     stop();
-    ec = boost::system::error_code();
     return 0;
   }
 
-  call_stack<task_io_service>::context ctx(this);
+  thread_info this_thread;
+  this_thread.wakeup_event = 0;
+  op_queue<operation> private_op_queue;
+#if defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS) 
+  this_thread.private_op_queue = one_thread_ == 1 ? &private_op_queue : 0;
+#else // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
+  this_thread.private_op_queue = 0;
+#endif // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
+  this_thread.next = 0;
+  thread_call_stack::context ctx(this, this_thread);
 
   mutex::scoped_lock lock(mutex_);
 
+#if defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS) 
+  // We want to support nested calls to poll() and poll_one(), so any handlers
+  // that are already on a thread-private queue need to be put on to the main
+  // queue now.
+  if (one_thread_)
+    if (thread_info* outer_thread_info = ctx.next_by_key())
+      if (outer_thread_info->private_op_queue)
+        op_queue_.push(*outer_thread_info->private_op_queue);
+#endif // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
+
   std::size_t n = 0;
-  for (; do_one(lock, 0); lock.lock())
+  for (; do_poll_one(lock, private_op_queue, ec); lock.lock())
     if (n != (std::numeric_limits<std::size_t>::max)())
       ++n;
   return n;
@@ -182,11 +219,26 @@ std::size_t task_io_service::poll_one(boost::system::error_code& ec)
     return 0;
   }
 
-  call_stack<task_io_service>::context ctx(this);
+  thread_info this_thread;
+  this_thread.wakeup_event = 0;
+  op_queue<operation> private_op_queue;
+  this_thread.private_op_queue = 0;
+  this_thread.next = 0;
+  thread_call_stack::context ctx(this, this_thread);
 
   mutex::scoped_lock lock(mutex_);
 
-  return do_one(lock, 0);
+#if defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS) 
+  // We want to support nested calls to poll() and poll_one(), so any handlers
+  // that are already on a thread-private queue need to be put on to the main
+  // queue now.
+  if (one_thread_)
+    if (thread_info* outer_thread_info = ctx.next_by_key())
+      if (outer_thread_info->private_op_queue)
+        op_queue_.push(*outer_thread_info->private_op_queue);
+#endif // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
+
+  return do_poll_one(lock, private_op_queue, ec);
 }
 
 void task_io_service::stop()
@@ -215,6 +267,20 @@ void task_io_service::post_immediate_completion(task_io_service::operation* op)
 
 void task_io_service::post_deferred_completion(task_io_service::operation* op)
 {
+#if defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS) 
+  if (one_thread_)
+  {
+    if (thread_info* this_thread = thread_call_stack::contains(this))
+    {
+      if (this_thread->private_op_queue)
+      {
+        this_thread->private_op_queue->push(op);
+        return;
+      }
+    }
+  }
+#endif // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
+
   mutex::scoped_lock lock(mutex_);
   op_queue_.push(op);
   wake_one_thread_and_unlock(lock);
@@ -225,6 +291,20 @@ void task_io_service::post_deferred_completions(
 {
   if (!ops.empty())
   {
+#if defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS) 
+    if (one_thread_)
+    {
+      if (thread_info* this_thread = thread_call_stack::contains(this))
+      {
+        if (this_thread->private_op_queue)
+        {
+          this_thread->private_op_queue->push(ops);
+          return;
+        }
+      }
+    }
+#endif // defined(BOOST_HAS_THREADS) && !defined(BOOST_ASIO_DISABLE_THREADS)
+
     mutex::scoped_lock lock(mutex_);
     op_queue_.push(ops);
     wake_one_thread_and_unlock(lock);
@@ -238,11 +318,10 @@ void task_io_service::abandon_operations(
   ops2.push(ops);
 }
 
-std::size_t task_io_service::do_one(mutex::scoped_lock& lock,
-    task_io_service::idle_thread_info* this_idle_thread)
+std::size_t task_io_service::do_run_one(mutex::scoped_lock& lock,
+    task_io_service::thread_info& this_thread,
+    op_queue<operation>& private_op_queue, const boost::system::error_code& ec)
 {
-  bool polling = !this_idle_thread;
-  bool task_has_run = false;
   while (!stopped_)
   {
     if (!op_queue_.empty())
@@ -254,61 +333,103 @@ std::size_t task_io_service::do_one(mutex::scoped_lock& lock,
 
       if (o == &task_operation_)
       {
-        task_interrupted_ = more_handlers || polling;
+        task_interrupted_ = more_handlers;
 
-        // If the task has already run and we're polling then we're done.
-        if (task_has_run && polling)
-        {
-          task_interrupted_ = true;
-          op_queue_.push(&task_operation_);
-          return 0;
-        }
-        task_has_run = true;
-
-        if (!more_handlers || !wake_one_idle_thread_and_unlock(lock))
+        if (more_handlers && !one_thread_)
+          wake_one_idle_thread_and_unlock(lock);
+        else
           lock.unlock();
 
         op_queue<operation> completed_ops;
-        task_cleanup c = { this, &lock, &completed_ops };
-        (void)c;
+        task_cleanup on_exit = { this, &lock, &completed_ops };
+        (void)on_exit;
 
         // Run the task. May throw an exception. Only block if the operation
         // queue is empty and we're not polling, otherwise we want to return
         // as soon as possible.
-        task_->run(!more_handlers && !polling, completed_ops);
+        task_->run(!more_handlers, completed_ops);
       }
       else
       {
-        if (more_handlers)
+        std::size_t task_result = o->task_result_;
+
+        if (more_handlers && !one_thread_)
           wake_one_thread_and_unlock(lock);
         else
           lock.unlock();
 
         // Ensure the count of outstanding work is decremented on block exit.
-        work_finished_on_block_exit on_exit = { this };
+        work_cleanup on_exit = { this, &lock, &private_op_queue };
         (void)on_exit;
 
-        // Complete the operation. May throw an exception.
-        o->complete(*this); // deletes the operation object
+        // Complete the operation. May throw an exception. Deletes the object.
+        o->complete(*this, ec, task_result);
 
         return 1;
       }
     }
-    else if (this_idle_thread)
-    {
-      // Nothing to run right now, so just wait for work to do.
-      this_idle_thread->next = first_idle_thread_;
-      first_idle_thread_ = this_idle_thread;
-      this_idle_thread->wakeup_event.clear(lock);
-      this_idle_thread->wakeup_event.wait(lock);
-    }
     else
     {
-      return 0;
+      // Nothing to run right now, so just wait for work to do.
+      this_thread.next = first_idle_thread_;
+      first_idle_thread_ = &this_thread;
+      this_thread.wakeup_event->clear(lock);
+      this_thread.wakeup_event->wait(lock);
     }
   }
 
   return 0;
+}
+
+std::size_t task_io_service::do_poll_one(mutex::scoped_lock& lock,
+    op_queue<operation>& private_op_queue, const boost::system::error_code& ec)
+{
+  if (stopped_)
+    return 0;
+
+  operation* o = op_queue_.front();
+  if (o == &task_operation_)
+  {
+    op_queue_.pop();
+    lock.unlock();
+
+    {
+      op_queue<operation> completed_ops;
+      task_cleanup c = { this, &lock, &completed_ops };
+      (void)c;
+
+      // Run the task. May throw an exception. Only block if the operation
+      // queue is empty and we're not polling, otherwise we want to return
+      // as soon as possible.
+      task_->run(false, completed_ops);
+    }
+
+    o = op_queue_.front();
+    if (o == &task_operation_)
+      return 0;
+  }
+
+  if (o == 0)
+    return 0;
+
+  op_queue_.pop();
+  bool more_handlers = (!op_queue_.empty());
+
+  std::size_t task_result = o->task_result_;
+
+  if (more_handlers && !one_thread_)
+    wake_one_thread_and_unlock(lock);
+  else
+    lock.unlock();
+
+  // Ensure the count of outstanding work is decremented on block exit.
+  work_cleanup on_exit = { this, &lock, &private_op_queue };
+  (void)on_exit;
+
+  // Complete the operation. May throw an exception. Deletes the object.
+  o->complete(*this, ec, task_result);
+
+  return 1;
 }
 
 void task_io_service::stop_all_threads(
@@ -318,10 +439,10 @@ void task_io_service::stop_all_threads(
 
   while (first_idle_thread_)
   {
-    idle_thread_info* idle_thread = first_idle_thread_;
+    thread_info* idle_thread = first_idle_thread_;
     first_idle_thread_ = idle_thread->next;
     idle_thread->next = 0;
-    idle_thread->wakeup_event.signal(lock);
+    idle_thread->wakeup_event->signal(lock);
   }
 
   if (!task_interrupted_ && task_)
@@ -336,10 +457,10 @@ bool task_io_service::wake_one_idle_thread_and_unlock(
 {
   if (first_idle_thread_)
   {
-    idle_thread_info* idle_thread = first_idle_thread_;
+    thread_info* idle_thread = first_idle_thread_;
     first_idle_thread_ = idle_thread->next;
     idle_thread->next = 0;
-    idle_thread->wakeup_event.signal_and_unlock(lock);
+    idle_thread->wakeup_event->signal_and_unlock(lock);
     return true;
   }
   return false;

@@ -62,12 +62,16 @@ public:
   {
     friend class kqueue_reactor;
     friend class object_pool_access;
+
+    descriptor_state* next_;
+    descriptor_state* prev_;
+
+    bool op_queue_is_empty_[max_ops];
+
     mutex mutex_;
     int descriptor_;
     op_queue<reactor_op> op_queue_[max_ops];
     bool shutdown_;
-    descriptor_state* next_;
-    descriptor_state* prev_;
   };
 
   // Per-descriptor data.
@@ -164,6 +168,12 @@ private:
   // Create the kqueue file descriptor. Throws an exception if the descriptor
   // cannot be created.
   BOOST_ASIO_DECL static int do_kqueue_create();
+
+  // Allocate a new descriptor state object.
+  BOOST_ASIO_DECL descriptor_state* allocate_descriptor_state();
+
+  // Free an existing descriptor state object.
+  BOOST_ASIO_DECL void free_descriptor_state(descriptor_state* s);
 
   // Helper function to add a new timer queue.
   BOOST_ASIO_DECL void do_add_timer_queue(timer_queue_base& queue);
