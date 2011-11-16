@@ -1,11 +1,24 @@
 title:: UGen done-actions
 summary:: Actions to take when an UGen has finished
 categories:: UGens, Server>Nodes
-related:: Classes/UGen
+related:: Classes/UGen, Classes/Done, Classes/FreeSelfWhenDone
 
-A number of UGens implement doneActions. These allow one to optionally free or pause the enclosing synth and other related nodes when the UGen is finished. These include link::Classes/EnvGen::, link::Classes/Line::, link::Classes/XLine::, link::Classes/Linen::, link::Classes/DetectSilence::, link::Classes/PlayBuf::, link::Classes/Duty::, link::Classes/TDuty:: and link::Classes/Demand::.
+A number of UGens implement doneActions. These allow one to optionally free or pause the enclosing synth and other related nodes when the UGen is finished.
 
-For a list, see strong:: UGens>Synth control :: in the link::Browse#UGens>Synth control:: page.
+list::
+## link::Classes/PlayBuf::
+## link::Classes/RecordBuf::
+## link::Classes/EnvGen::
+## link::Classes/Line::
+## link::Classes/XLine::
+## link::Classes/Linen::
+## link::Classes/LFGauss::
+## link::Classes/DemandEnvGen::
+## link::Classes/DetectSilence::
+## link::Classes/PlayBuf::
+## link::Classes/Duty::
+## link::Classes/TDuty::
+::
 
 section:: Actions
 The available done actions are as follows:
@@ -28,4 +41,7 @@ table::
 ::
 
 For information on code::freeAll:: and code::deepFree::, see link::Classes/Group:: and link::Reference/Server-Command-Reference::.
+
+section:: Alternatives
+Another way to free a synth when some UGen is done playing is to use link::Classes/FreeSelfWhenDone::, or link::Classes/FreeSelf:: in combination with link::Classes/Done::. For example, this can be used to delay the freeing to let reverb tails fade out, etc.
 
