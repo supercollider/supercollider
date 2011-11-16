@@ -25,8 +25,10 @@ class null_fenced_block
   : private noncopyable
 {
 public:
+  enum half_or_full_t { half, full };
+
   // Constructor.
-  null_fenced_block()
+  explicit null_fenced_block(half_or_full_t)
   {
   }
 

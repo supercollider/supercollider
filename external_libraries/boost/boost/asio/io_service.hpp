@@ -658,8 +658,8 @@ private:
   // Prevent assignment.
   void operator=(const work& other);
 
-  // The io_service.
-  boost::asio::io_service& io_service_;
+  // The io_service implementation.
+  detail::io_service_impl& io_service_impl_;
 };
 
 /// Class used to uniquely identify a service.

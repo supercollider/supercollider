@@ -31,6 +31,7 @@
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/treap_algorithms.hpp>
 #include <boost/intrusive/link_mode.hpp>
+#include <boost/move/move.hpp>
 #include <boost/intrusive/priority_compare.hpp>
 
 namespace boost {
@@ -126,8 +127,7 @@ class treap_impl
    typedef detail::size_holder<constant_time_size, size_type>        size_traits;
 
    //noncopyable
-   treap_impl (const treap_impl&);
-   treap_impl operator =(const treap_impl&);
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(treap_impl)
 
    enum { safemode_or_autounlink  = 
             (int)real_value_traits::link_mode == (int)auto_unlink   ||
@@ -175,6 +175,12 @@ class treap_impl
 
    priority_compare &priv_pcomp()
    {  return data_.node_plus_pred_.header_plus_priority_size_.get();  }
+
+   const value_traits &priv_value_traits() const
+   {  return data_;  }
+
+   value_traits &priv_value_traits()
+   {  return data_;  }
 
    const node &priv_header() const
    {  return data_.node_plus_pred_.header_plus_priority_size_.header_plus_size_.header_;  }
@@ -224,7 +230,7 @@ class treap_impl
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
    //!   or the copy constructor of the value_compare/priority_compare objects throw. Basic guarantee.
-   treap_impl( const value_compare &cmp     = value_compare()
+   treap_impl( const value_compare &cmp    = value_compare()
             , const priority_compare &pcmp = priority_compare()
             , const value_traits &v_traits = value_traits()) 
       :  data_(cmp, pcmp, v_traits)
@@ -260,6 +266,23 @@ class treap_impl
       else
          this->insert_equal(b, e);
    }
+
+   //! <b>Effects</b>: to-do
+   //!   
+   treap_impl(BOOST_RV_REF(treap_impl) x)
+      : data_( ::boost::move(x.priv_comp())
+             , ::boost::move(x.priv_pcomp())
+             , ::boost::move(x.priv_value_traits()))
+   {
+      node_algorithms::init_header(&priv_header());  
+      this->priv_size_traits().set_size(size_type(0));
+      this->swap(x);
+   }
+
+   //! <b>Effects</b>: to-do
+   //!   
+   treap_impl& operator=(BOOST_RV_REF(treap_impl) x) 
+   {  this->swap(x); return *this;  }
 
    //! <b>Effects</b>: Detaches all elements from this. The objects in the set 
    //!   are not deleted (i.e. no destructors are called), but the nodes according to 
@@ -1387,6 +1410,8 @@ class treap_impl
       node_algorithms::replace_node( get_real_value_traits().to_node_ptr(*replace_this)
                                    , node_ptr(&priv_header())
                                    , get_real_value_traits().to_node_ptr(with_this));
+      if(safemode_or_autounlink)
+         node_algorithms::init(replace_this.pointed_node());
    }
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a set of
@@ -1699,6 +1724,7 @@ class treap
       Options...
       #endif
       >::type   Base;
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(treap)
 
    public:
    typedef typename Base::value_compare      value_compare;
@@ -1724,6 +1750,13 @@ class treap
        , const value_traits &v_traits = value_traits())
       :  Base(unique, b, e, cmp, pcmp, v_traits)
    {}
+
+   treap(BOOST_RV_REF(treap) x)
+      :  Base(::boost::move(static_cast<Base&>(x)))
+   {}
+
+   treap& operator=(BOOST_RV_REF(treap) x)
+   {  this->Base::operator=(::boost::move(static_cast<Base&>(x))); return *this;  }
 
    static treap &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<treap &>(Base::container_from_end_iterator(end_iterator));   }

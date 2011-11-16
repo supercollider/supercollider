@@ -24,6 +24,7 @@
 
 #include <boost/limits.hpp>
 #include <cstddef>
+#include <boost/asio/detail/fd_set_adapter.hpp>
 #include <boost/asio/detail/mutex.hpp>
 #include <boost/asio/detail/op_queue.hpp>
 #include <boost/asio/detail/reactor_op.hpp>
@@ -182,6 +183,9 @@ private:
 
   // The queues of read, write and except operations.
   reactor_op_queue<socket_type> op_queue_[max_ops];
+
+  // The file descriptor sets to be passed to the select system call.
+  fd_set_adapter fd_sets_[max_select_ops];
 
   // The timer queues.
   timer_queue_set timer_queues_;

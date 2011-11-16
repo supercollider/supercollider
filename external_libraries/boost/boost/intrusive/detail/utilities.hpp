@@ -207,32 +207,33 @@ struct key_nodeptr_comp
    :  private detail::ebo_functor_holder<KeyValueCompare>
 {
    typedef typename Container::real_value_traits         real_value_traits;
+   typedef typename Container::value_type                value_type;
    typedef typename real_value_traits::node_ptr          node_ptr;
    typedef typename real_value_traits::const_node_ptr    const_node_ptr;
    typedef detail::ebo_functor_holder<KeyValueCompare>   base_t;
    key_nodeptr_comp(KeyValueCompare kcomp, const Container *cont)
       :  base_t(kcomp), cont_(cont)
    {}
-
-   template<class KeyType>
-   bool operator()( const_node_ptr node, const KeyType &key
-                  , typename enable_if_c
-                     <!is_convertible<KeyType, const_node_ptr>::value>::type * = 0) const
-   {  return base_t::get()(*cont_->get_real_value_traits().to_value_ptr(node), key); }
-
-   template<class KeyType>
-   bool operator()(const KeyType &key, const_node_ptr node
-                  , typename enable_if_c
-                     <!is_convertible<KeyType, const_node_ptr>::value>::type * = 0) const
-   {  return base_t::get()(key, *cont_->get_real_value_traits().to_value_ptr(node)); }
-
-   bool operator()(const_node_ptr node1, const_node_ptr node2) const
+   
+   template<class T>
+   struct is_node_ptr
    {
-      return base_t::get()
-         ( *cont_->get_real_value_traits().to_value_ptr(node1)
-         , *cont_->get_real_value_traits().to_value_ptr(node2)
-         ); 
-   }
+      static const bool value = is_same<T, const_node_ptr>::value || is_same<T, node_ptr>::value;
+   };
+
+   template<class T>
+   typename enable_if_c<is_node_ptr<T>::value, const value_type &>::type
+      key_forward(const T &node) const
+   {  return *cont_->get_real_value_traits().to_value_ptr(node);  }
+
+   template<class T>
+   typename enable_if_c<!is_node_ptr<T>::value, const T &>::type
+      key_forward(const T &key) const
+   {  return key;}
+
+   template<class KeyType, class KeyType2>
+   bool operator()(const KeyType &key1, const KeyType2 &key2) const
+   {  return base_t::get()(this->key_forward(key1), this->key_forward(key2));  }
 
    const Container *cont_;
 };

@@ -69,7 +69,25 @@ public:
     {
     }
 
-//  generated copy constructor, assignment, destructor are fine
+//  generated copy constructor, destructor are fine...
+
+#if defined( BOOST_HAS_RVALUE_REFS )
+
+// ... except in C++0x, move disables the implicit copy
+
+    shared_array( shared_array const & r ): px( r.px ), pn( r.pn ) // never throws
+    {
+    }
+
+#endif
+
+    // assignment
+
+    shared_array & operator=( shared_array const & r ) // never throws
+    {
+        this_type( r ).swap( *this );
+        return *this;
+    }
 
     void reset(T * p = 0)
     {

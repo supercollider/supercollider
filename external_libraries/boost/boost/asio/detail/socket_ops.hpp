@@ -254,9 +254,11 @@ BOOST_ASIO_DECL int ioctl(socket_type s, state_type& state,
 BOOST_ASIO_DECL int select(int nfds, fd_set* readfds, fd_set* writefds,
     fd_set* exceptfds, timeval* timeout, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL int poll_read(socket_type s, boost::system::error_code& ec);
+BOOST_ASIO_DECL int poll_read(socket_type s,
+    state_type state, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL int poll_write(socket_type s, boost::system::error_code& ec);
+BOOST_ASIO_DECL int poll_write(socket_type s,
+    state_type state, boost::system::error_code& ec);
 
 BOOST_ASIO_DECL int poll_connect(socket_type s, boost::system::error_code& ec);
 

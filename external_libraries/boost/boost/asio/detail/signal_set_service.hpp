@@ -17,8 +17,8 @@
 
 #include <boost/asio/detail/config.hpp>
 
-#include <csignal>
 #include <cstddef>
+#include <signal.h>
 #include <boost/asio/error.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/detail/handler_alloc_helpers.hpp>

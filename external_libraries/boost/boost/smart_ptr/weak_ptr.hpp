@@ -40,8 +40,24 @@ public:
     {
     }
 
-//  generated copy constructor, assignment, destructor are fine
+//  generated copy constructor, assignment, destructor are fine...
 
+#if defined( BOOST_HAS_RVALUE_REFS )
+
+// ... except in C++0x, move disables the implicit copy
+
+    weak_ptr( weak_ptr const & r ): px( r.px ), pn( r.pn ) // never throws
+    {
+    }
+
+    weak_ptr & operator=( weak_ptr const & r ) // never throws
+    {
+        px = r.px;
+        pn = r.pn;
+        return *this;
+    }
+
+#endif
 
 //
 //  The "obvious" converting constructor implementation:
