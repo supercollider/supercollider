@@ -15,6 +15,7 @@ User-visible changes (started after 3.4)
 * allow Bus-asMap symbols in \freq and friends in patterns - jli
 * /b_free also free's sndfile if open (like /b_close) - jli
 * VDiskIn and DiskIn sets done flag (to be used by Done.kr or FreeSelfWhenDone.kr) - jli
+* Demand sets done flag (to be used by Done.kr or FreeSelfWhenDone.kr) - jli
 
 Bugfixes:
 ---------

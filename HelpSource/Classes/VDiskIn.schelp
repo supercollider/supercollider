@@ -31,6 +31,9 @@ If loop is set to 1, the soundfile will loop.
 argument:: sendID
 If a sendID is given, the UGen sends an osc message with this id and the file position each time it reloads the buffer: code::['/diskin', nodeID, sendID, frame]::
 
+discussion::
+This UGen will set the link::Classes/Done##'done' flag:: when finished playing.
+
 examples::
 code::
 b = Buffer.cueSoundFile(s, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
