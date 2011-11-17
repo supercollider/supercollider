@@ -374,33 +374,37 @@ SequenceableCollection : Collection {
 		});
 		^list
 	}
-
+	
 	flat {
-		var list;
-		list = this.species.new;
+		^this.prFlat(this.species.new(this.flatSize))
+	}
+	
+	flatIf { |func|
+		^this.prFlatIf(this.species.new(this.flatSize), func)
+	}
+	
+	prFlat { |list|
 		this.do({ arg item, i;
-			if (item.respondsTo('flat'), {
-				list = list.addAll(item.flat);
+			if (item.respondsTo('prFlat'), {
+				list = item.prFlat(list);
 			},{
 				list = list.add(item);
 			});
 		});
 		^list
 	}
-
-	flatIf { arg func;
-		var list;
-		list = this.species.new;
+	
+	prFlatIf { |list, func, rank = 0|
 		this.do({ arg item, i;
-			if (item.respondsTo('flat') and: { func.value(item, i) }, {
-				list = list.addAll(item.flat);
+			if (item.respondsTo('prFlatIf') and: { func.value(item, i, rank) }, {
+				list = item.prFlatIf(list, func, rank + 1);
 			},{
 				list = list.add(item);
 			});
 		});
 		^list
 	}
-
+	
 	flop {
 		var list, size, maxsize;
 
