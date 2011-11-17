@@ -138,6 +138,11 @@
 
 #endif
 
+// Timeout duration use if BOOST_INTERPROCESS_ENABLE_TIMEOUT_WHEN_LOCKING is set
+#ifndef BOOST_INTERPROCESS_TIMEOUT_WHEN_LOCKING_DURATION_MS
+#define BOOST_INTERPROCESS_TIMEOUT_WHEN_LOCKING_DURATION_MS 10000
+#endif
+
 #include <boost/interprocess/detail/config_end.hpp>
 
 #endif   //#ifndef BOOST_INTERPROCESS_DETAIL_WORKAROUND_HPP

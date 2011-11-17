@@ -19,20 +19,20 @@
 #include <string>
 
 #if defined(BOOST_INTERPROCESS_WINDOWS)
-   #define BOOST_INTERPROCESS_HAS_WINDOWS_KERNEL_BOOTTIME
-   #define BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME
-   #include <boost/interprocess/detail/win32_api.hpp>
+   //#define BOOST_INTERPROCESS_HAS_WINDOWS_KERNEL_BOOTTIME
+   //#define BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME
+   //#include <boost/interprocess/detail/win32_api.hpp>
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
-   #include <sys/sysctl.h>
-   #if defined(CTL_KERN) && defined (KERN_BOOTTIME)
-      #define BOOST_INTERPROCESS_HAS_BSD_KERNEL_BOOTTIME
-      #define BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME
-   #endif
+   //#include <sys/sysctl.h>
+   //#if defined(CTL_KERN) && defined (KERN_BOOTTIME)
+      //#define BOOST_INTERPROCESS_HAS_BSD_KERNEL_BOOTTIME
+      //#define BOOST_INTERPROCESS_HAS_KERNEL_BOOTTIME
+   //#endif
 #endif
 
 namespace boost {
 namespace interprocess {
-namespace detail {
+namespace ipcdetail {
 
 #if defined (BOOST_INTERPROCESS_HAS_WINDOWS_KERNEL_BOOTTIME)
 inline void get_bootstamp(std::string &s, bool add = false)
@@ -52,7 +52,7 @@ inline void get_bootstamp(std::string &s, bool add = false)
    // FreeBSD specific: sysctl "kern.boottime"
    int request[2] = { CTL_KERN, KERN_BOOTTIME };
    struct ::timeval result;
-   size_t result_len = sizeof result;
+   std::size_t result_len = sizeof result;
 
    if (::sysctl (request, 2, &result, &result_len, NULL, 0) < 0)
       return;
@@ -64,9 +64,9 @@ inline void get_bootstamp(std::string &s, bool add = false)
       , '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
    std::size_t char_counter = 0;
-   long fields[2] = { result.tv_sec, result.tv_usec };
+   long long fields[2] = { result.tv_sec, result.tv_usec };
    for(std::size_t field = 0; field != 2; ++field){
-      for(std::size_t i = 0; i != sizeof(long); ++i){
+      for(std::size_t i = 0; i != sizeof(long long); ++i){
          const char *ptr = (const char *)&fields[field];
          bootstamp_str[char_counter++] = Characters[(ptr[i]&0xF0)>>4];
          bootstamp_str[char_counter++] = Characters[(ptr[i]&0x0F)];
@@ -86,7 +86,7 @@ inline void get_tmp_base_dir(std::string &tmp_name)
 {
    #if defined (BOOST_INTERPROCESS_WINDOWS)
    winapi::get_shared_documents_folder(tmp_name);
-   if(tmp_name.empty()){
+   if(tmp_name.empty() || !winapi::is_directory(tmp_name.c_str())){
       tmp_name = get_temporary_path();
    }
    #else
@@ -152,7 +152,8 @@ inline void create_tmp_and_clean_old(std::string &tmp_name)
 inline void create_tmp_and_clean_old_and_get_filename(const char *filename, std::string &tmp_name)
 {
    create_tmp_and_clean_old(tmp_name);
-   tmp_filename(filename, tmp_name);
+   tmp_name += "/";
+   tmp_name += filename;
 }
 
 inline void add_leading_slash(const char *name, std::string &new_name)
@@ -165,7 +166,7 @@ inline void add_leading_slash(const char *name, std::string &new_name)
 
 }  //namespace boost{
 }  //namespace interprocess {
-}  //namespace detail {
+}  //namespace ipcdetail {
 
 #include <boost/interprocess/detail/config_end.hpp>
 

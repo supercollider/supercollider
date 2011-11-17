@@ -13,7 +13,7 @@
 
 namespace boost{
 namespace interprocess{
-namespace detail{
+namespace ipcdetail{
 
 class interprocess_tester
 {
@@ -23,7 +23,7 @@ class interprocess_tester
    {  t.dont_close_on_destruction(); }
 };
 
-}  //namespace detail{
+}  //namespace ipcdetail{
 }  //namespace interprocess{
 }  //namespace boost{
 

@@ -8,8 +8,6 @@
 //
 // See http://www.boost.org/libs/interprocess for documentation.
 //
-// The alignment_of implementation comes from John Maddock's boost::alignment_of code
-//
 //////////////////////////////////////////////////////////////////////////////
 
 #ifndef BOOST_INTERPROCESS_DETAIL_TYPE_TRAITS_HPP
@@ -23,51 +21,9 @@
 
 namespace boost {
 namespace interprocess { 
-namespace detail {
+namespace ipcdetail {
 
 struct nat{};
-
-//boost::alignment_of yields to 10K lines of preprocessed code, so we
-//need an alternative
-template <typename T> struct alignment_of;
-
-template <typename T>
-struct alignment_of_hack
-{
-    char c;
-    T t;
-    alignment_of_hack();
-};
-
-template <unsigned A, unsigned S>
-struct alignment_logic
-{
-    enum{   value = A < S ? A : S  };
-};
-
-template< typename T >
-struct alignment_of
-{
-   enum{ value = alignment_logic
-            < sizeof(alignment_of_hack<T>) - sizeof(T)
-            , sizeof(T)>::value   };
-};
-
-//This is not standard, but should work with all compilers
-union max_align
-{
-   char        char_;
-   short       short_;
-   int         int_;
-   long        long_;
-   #ifdef BOOST_HAS_LONG_LONG
-   long long   long_long_;
-   #endif
-   float       float_;
-   double      double_;
-   long double long_double_;
-   void *      void_ptr_;
-};
 
 template<class T>
 struct remove_reference
@@ -156,7 +112,7 @@ struct is_same
    static const bool value = sizeof(yes_type) == sizeof(is_same_tester(t,u));
 };
 
-} // namespace detail
+} // namespace ipcdetail
 }  //namespace interprocess { 
 }  //namespace boost {
 

@@ -43,7 +43,7 @@
 
 namespace boost {
 namespace interprocess {
-namespace detail {
+namespace ipcdetail {
 
 template<class BasicManagedMemoryImpl>
 class create_open_func;
@@ -86,7 +86,9 @@ class basic_managed_memory_impl
    typedef MemoryAlgorithm                            memory_algorithm;
    typedef typename MemoryAlgorithm::mutex_family     mutex_family;
    typedef CharType                                   char_t;
-   typedef std::ptrdiff_t                             handle_t;
+   typedef typename MemoryAlgorithm::size_type        size_type;
+   typedef typename MemoryAlgorithm::difference_type  difference_type;
+   typedef difference_type                            handle_t;
    typedef typename segment_manager::
       const_named_iterator                            const_named_iterator;
    typedef typename segment_manager::
@@ -102,14 +104,14 @@ class basic_managed_memory_impl
 
    /// @endcond
 
-   static const std::size_t PayloadPerAllocation = segment_manager::PayloadPerAllocation;
+   static const size_type PayloadPerAllocation = segment_manager::PayloadPerAllocation;
 
    private:
    typedef basic_managed_memory_impl
                <CharType, MemoryAlgorithm, IndexType, Offset> self_t;
    protected:
    template<class ManagedMemory>
-   static bool grow(const char *filename, std::size_t extra_bytes)
+   static bool grow(const char *filename, size_type extra_bytes)
    {
       typedef typename ManagedMemory::device_type device_type;
       //Increase file size
@@ -135,7 +137,7 @@ class basic_managed_memory_impl
    static bool shrink_to_fit(const char *filename)
    {
       typedef typename ManagedMemory::device_type device_type;
-      std::size_t new_size, old_size;
+      size_type new_size, old_size;
       try{
          ManagedMemory managed_memory(open_only, filename);
          old_size = managed_memory.get_size();
@@ -163,7 +165,7 @@ class basic_managed_memory_impl
    {  this->close_impl(); }
 
    //!Places segment manager in the reserved space. This can throw.
-   bool  create_impl   (void *addr, std::size_t size)
+   bool  create_impl   (void *addr, size_type size)
    {
       if(mp_header)  return false;
 
@@ -185,7 +187,7 @@ class basic_managed_memory_impl
    }
  
    //!Connects to a segment manager in the reserved buffer. Never throws.
-   bool  open_impl     (void *addr, std::size_t)
+   bool  open_impl     (void *addr, size_type)
    {
       if(mp_header)  return false;
       mp_header = static_cast<segment_manager*>(addr);
@@ -211,7 +213,7 @@ class basic_managed_memory_impl
    }
 
    //!
-   void grow(std::size_t extra_bytes)
+   void grow(size_type extra_bytes)
    {  mp_header->grow(extra_bytes); }
 
    void shrink_to_fit()
@@ -228,12 +230,12 @@ class basic_managed_memory_impl
    {   return reinterpret_cast<char*>(mp_header) - Offset; }
 
    //!Returns the size of memory segment. Never throws.
-   std::size_t   get_size   () const
+   size_type   get_size   () const
    {   return mp_header->get_size() + Offset;  }
 
    //!Returns the number of free bytes of the memory
    //!segment
-   std::size_t get_free_memory() const
+   size_type get_free_memory() const
    {  return mp_header->get_free_memory();  }
 
    //!Returns the result of "all_memory_deallocated()" function
@@ -255,8 +257,8 @@ class basic_managed_memory_impl
    //!The address must belong to the memory segment. Never throws.
    handle_t get_handle_from_address   (const void *ptr) const
    {
-      return reinterpret_cast<const char*>(ptr) - 
-             reinterpret_cast<const char*>(this->get_address());  
+      return (handle_t)(reinterpret_cast<const char*>(ptr) - 
+             reinterpret_cast<const char*>(this->get_address()));  
    }
 
    //!Returns true if the address belongs to the managed memory segment
@@ -274,25 +276,25 @@ class basic_managed_memory_impl
    //!Searches for nbytes of free memory in the segment, marks the
    //!memory as used and return the pointer to the memory. If no 
    //!memory is available throws a boost::interprocess::bad_alloc exception
-   void* allocate             (std::size_t nbytes)
+   void* allocate             (size_type nbytes)
    {   return mp_header->allocate(nbytes);   }
 
    //!Searches for nbytes of free memory in the segment, marks the 
    //!memory as used and return the pointer to the memory. If no memory 
    //!is available returns 0. Never throws.
-   void* allocate             (std::size_t nbytes, std::nothrow_t nothrow)
+   void* allocate             (size_type nbytes, std::nothrow_t nothrow)
    {   return mp_header->allocate(nbytes, nothrow);  }
 
    //!Allocates nbytes bytes aligned to "alignment" bytes. "alignment"
    //!must be power of two. If no memory 
    //!is available returns 0. Never throws.
-   void * allocate_aligned (std::size_t nbytes, std::size_t alignment, std::nothrow_t nothrow)
+   void * allocate_aligned (size_type nbytes, size_type alignment, std::nothrow_t nothrow)
    {   return mp_header->allocate_aligned(nbytes, alignment, nothrow);  }
 
    template<class T>
    std::pair<T *, bool>
-      allocation_command  (boost::interprocess::allocation_type command,   std::size_t limit_size,
-                           std::size_t preferred_size,std::size_t &received_size,
+      allocation_command  (boost::interprocess::allocation_type command,   size_type limit_size,
+                           size_type preferred_size,size_type &received_size,
                            T *reuse_ptr = 0)
    {  
       return mp_header->allocation_command
@@ -302,7 +304,7 @@ class basic_managed_memory_impl
    //!Allocates nbytes bytes aligned to "alignment" bytes. "alignment"
    //!must be power of two. If no 
    //!memory is available throws a boost::interprocess::bad_alloc exception
-   void * allocate_aligned(std::size_t nbytes, std::size_t alignment)
+   void * allocate_aligned(size_type nbytes, size_type alignment)
    {   return mp_header->allocate_aligned(nbytes, alignment);  }
 
    /// @cond
@@ -310,19 +312,19 @@ class basic_managed_memory_impl
    //Experimental. Don't use.
 
    //!Allocates n_elements of elem_size bytes.
-   multiallocation_chain allocate_many(std::size_t elem_bytes, std::size_t num_elements)
+   multiallocation_chain allocate_many(size_type elem_bytes, size_type num_elements)
    {  return mp_header->allocate_many(elem_bytes, num_elements); }
 
    //!Allocates n_elements, each one of elem_sizes[i] bytes.
-   multiallocation_chain allocate_many(const std::size_t *elem_sizes, std::size_t n_elements)
+   multiallocation_chain allocate_many(const size_type *elem_sizes, size_type n_elements)
    {  return mp_header->allocate_many(elem_sizes, n_elements); }
 
    //!Allocates n_elements of elem_size bytes.
-   multiallocation_chain allocate_many(std::size_t elem_bytes, std::size_t num_elements, std::nothrow_t nothrow)
+   multiallocation_chain allocate_many(size_type elem_bytes, size_type num_elements, std::nothrow_t nothrow)
    {  return mp_header->allocate_many(elem_bytes, num_elements, nothrow); }
 
    //!Allocates n_elements, each one of elem_sizes[i] bytes.
-   multiallocation_chain allocate_many(const std::size_t *elem_sizes, std::size_t n_elements, std::nothrow_t nothrow)
+   multiallocation_chain allocate_many(const size_type *elem_sizes, size_type n_elements, std::nothrow_t nothrow)
    {  return mp_header->allocate_many(elem_sizes, n_elements, nothrow); }
 
    //!Allocates n_elements, each one of elem_sizes[i] bytes.
@@ -339,7 +341,7 @@ class basic_managed_memory_impl
    //!buffer and the object count. If not found returned pointer is 0.
    //!Never throws.
    template <class T>
-   std::pair<T*, std::size_t> find  (char_ptr_holder_t name)
+   std::pair<T*, size_type> find  (char_ptr_holder_t name)
    {   return mp_header->template find<T>(name); }
 
    //!Creates a named object or array in memory
@@ -581,7 +583,7 @@ class basic_managed_memory_impl
    //!For all theses reasons, classes with throwing destructors are not 
    //!recommended for  memory.
    template <class T>
-   bool destroy(const detail::unique_instance_t *const )
+   bool destroy(const ipcdetail::unique_instance_t *const )
    {   return mp_header->template destroy<T>(unique_instance);  }
 
    //!Destroys the object (named, unique, or anonymous)
@@ -619,19 +621,19 @@ class basic_managed_memory_impl
    //!Returns the length of an object created with construct/find_or_construct
    //!functions (1 if is a single element, >=1 if it's an array). Does not throw.
    template<class T>
-   static std::size_t get_instance_length(const T *ptr)
+   static size_type get_instance_length(const T *ptr)
    {  return segment_manager::get_instance_length(ptr); }
 
    //!Preallocates needed index resources to optimize the 
    //!creation of "num" named objects in the  memory segment.
    //!Can throw boost::interprocess::bad_alloc if there is no enough memory.
-   void reserve_named_objects(std::size_t num)
+   void reserve_named_objects(size_type num)
    {  mp_header->reserve_named_objects(num);  }
 
    //!Preallocates needed index resources to optimize the 
    //!creation of "num" unique objects in the  memory segment.
    //!Can throw boost::interprocess::bad_alloc if there is no enough memory.
-   void reserve_unique_objects(std::size_t num)
+   void reserve_unique_objects(size_type num)
    {  mp_header->reserve_unique_objects(num);  }
 
    //!Calls shrink_to_fit in both named and unique object indexes
@@ -641,12 +643,12 @@ class basic_managed_memory_impl
 
    //!Returns the number of named objects stored
    //!in the managed segment.
-   std::size_t get_num_named_objects()
+   size_type get_num_named_objects()
    {  return mp_header->get_num_named_objects();  }
 
    //!Returns the number of unique objects stored
    //!in the managed segment.
-   std::size_t get_num_unique_objects()
+   size_type get_num_unique_objects()
    {  return mp_header->get_num_unique_objects();  }
 
    //!Returns a constant iterator to the index storing the
@@ -704,7 +706,7 @@ class basic_managed_memory_impl
    //!buffer and the object count. If not found returned pointer is 0.
    //!Never throws.
    template <class T>
-   std::pair<T*, std::size_t> find_no_lock  (char_ptr_holder_t name)
+   std::pair<T*, size_type> find_no_lock  (char_ptr_holder_t name)
    {   return mp_header->template find_no_lock<T>(name); }
    /// @endcond
 
@@ -722,13 +724,13 @@ template<class BasicManagedMemoryImpl>
 class create_open_func
 {
    public:
-   create_open_func(BasicManagedMemoryImpl * const frontend, detail::create_enum_t type)
+   create_open_func(BasicManagedMemoryImpl * const frontend, ipcdetail::create_enum_t type)
       : m_frontend(frontend), m_type(type){}
 
-   bool operator()(void *addr, std::size_t size, bool created) const
+   bool operator()(void *addr, typename BasicManagedMemoryImpl::size_type size, bool created) const
    {  
-      if(((m_type == detail::DoOpen)   &&  created) || 
-         ((m_type == detail::DoCreate) && !created))
+      if(((m_type == ipcdetail::DoOpen)   &&  created) || 
+         ((m_type == ipcdetail::DoCreate) && !created))
          return false;
 
       if(created)
@@ -739,10 +741,10 @@ class create_open_func
 
    private:
    BasicManagedMemoryImpl *m_frontend;
-   detail::create_enum_t           m_type;
+   ipcdetail::create_enum_t           m_type;
 };
 
-}  //namespace detail {
+}  //namespace ipcdetail {
 }  //namespace interprocess {
 }  //namespace boost {
 

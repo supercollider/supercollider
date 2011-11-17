@@ -38,8 +38,8 @@ namespace interprocess {
 
 inline interprocess_recursive_mutex::interprocess_recursive_mutex()
 {
-   detail::mutexattr_wrapper mut_attr(true);
-   detail::mutex_initializer mut(m_mut, mut_attr);
+   ipcdetail::mutexattr_wrapper mut_attr(true);
+   ipcdetail::mutex_initializer mut(m_mut, mut_attr);
    mut.release();
 }
 
@@ -51,8 +51,18 @@ inline interprocess_recursive_mutex::~interprocess_recursive_mutex()
 
 inline void interprocess_recursive_mutex::lock()
 {
+#ifdef BOOST_INTERPROCESS_ENABLE_TIMEOUT_WHEN_LOCKING
+   boost::posix_time::ptime wait_time
+      = boost::posix_time::microsec_clock::universal_time()
+        + boost::posix_time::milliseconds(BOOST_INTERPROCESS_TIMEOUT_WHEN_LOCKING_DURATION_MS);
+   if (!timed_lock(wait_time))
+   {
+      throw interprocess_exception(timeout_when_locking_error, "Interprocess mutex timeout when locking. Possible deadlock: owner died without unlocking?");
+   }
+#else
    if (pthread_mutex_lock(&m_mut) != 0) 
       throw lock_exception();
+#endif
 }
 
 inline bool interprocess_recursive_mutex::try_lock()
@@ -71,7 +81,7 @@ inline bool interprocess_recursive_mutex::timed_lock(const boost::posix_time::pt
    }
    #ifdef BOOST_INTERPROCESS_POSIX_TIMEOUTS
 
-   timespec ts = detail::ptime_to_timespec(abs_time);
+   timespec ts = ipcdetail::ptime_to_timespec(abs_time);
    int res = pthread_mutex_timedlock(&m_mut, &ts);
    if (res != 0 && res != ETIMEDOUT)
       throw lock_exception();
@@ -94,7 +104,7 @@ inline bool interprocess_recursive_mutex::timed_lock(const boost::posix_time::pt
          return false;
       }
       // relinquish current time slice
-     detail::thread_yield();
+     ipcdetail::thread_yield();
    }while (true);
    return true;
 

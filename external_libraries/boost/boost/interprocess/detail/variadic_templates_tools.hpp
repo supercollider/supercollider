@@ -22,7 +22,7 @@
 
 namespace boost {
 namespace interprocess { 
-namespace detail {
+namespace ipcdetail {
 
 template<typename... Values>
 class tuple;
@@ -146,7 +146,7 @@ struct build_number_seq<0, index_tuple<Indexes...> >
 {  typedef index_tuple<Indexes...> type;  };
 
 
-}}}   //namespace boost { namespace interprocess { namespace detail {
+}}}   //namespace boost { namespace interprocess { namespace ipcdetail {
 
 #include <boost/interprocess/detail/config_end.hpp>
 

@@ -16,7 +16,7 @@
 #endif
 
 #include <boost/interprocess/detail/config_begin.hpp>
-#include <boost/interprocess/containers/container/detail/allocation_type.hpp>
+#include <boost/container/detail/allocation_type.hpp>
 
 namespace boost {
 namespace interprocess {

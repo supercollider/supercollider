@@ -21,7 +21,7 @@
 
 namespace boost {
 namespace interprocess { 
-namespace detail {
+namespace ipcdetail {
 
 template <class T, T val>
 struct integral_constant
@@ -144,7 +144,7 @@ struct ls_zeros<1>
    static const std::size_t value = 0;
 };
 
-}  //namespace detail { 
+}  //namespace ipcdetail { 
 }  //namespace interprocess { 
 }  //namespace boost {
 

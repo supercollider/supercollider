@@ -35,7 +35,7 @@
 
 namespace boost {
 namespace interprocess { 
-namespace detail {
+namespace ipcdetail {
 
 template<class SmartPtr>
 struct smart_ptr_type
@@ -70,25 +70,29 @@ inline void do_swap(T& x, T& y)
 }
 
 //Rounds "orig_size" by excess to round_to bytes
-inline std::size_t get_rounded_size(std::size_t orig_size, std::size_t round_to)
+template<class SizeType>
+inline SizeType get_rounded_size(SizeType orig_size, SizeType round_to)
 {
    return ((orig_size-1)/round_to+1)*round_to;
 }
 
 //Truncates "orig_size" to a multiple of "multiple" bytes.
-inline std::size_t get_truncated_size(std::size_t orig_size, std::size_t multiple)
+template<class SizeType>
+inline SizeType get_truncated_size(SizeType orig_size, SizeType multiple)
 {
    return orig_size/multiple*multiple;
 }
 
 //Rounds "orig_size" by excess to round_to bytes. round_to must be power of two
-inline std::size_t get_rounded_size_po2(std::size_t orig_size, std::size_t round_to)
+template<class SizeType>
+inline SizeType get_rounded_size_po2(SizeType orig_size, SizeType round_to)
 {
    return ((orig_size-1)&(~(round_to-1))) + round_to;
 }
 
 //Truncates "orig_size" to a multiple of "multiple" bytes. multiple must be power of two
-inline std::size_t get_truncated_size_po2(std::size_t orig_size, std::size_t multiple)
+template<class SizeType>
+inline SizeType get_truncated_size_po2(SizeType orig_size, SizeType multiple)
 {
    return (orig_size & (~(multiple-1)));
 }
@@ -115,7 +119,7 @@ struct ct_max_pow2_less<0, 0>
    static const std::size_t value = 0;
 };
 
-}  //namespace detail {
+}  //namespace ipcdetail {
 
 //!Trait class to detect if an index is a node
 //!index. This allows more efficient operations

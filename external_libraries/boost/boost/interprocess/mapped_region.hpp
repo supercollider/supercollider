@@ -48,8 +48,8 @@ namespace boost {
 namespace interprocess {
 
 /// @cond
-namespace detail{ class interprocess_tester; }
-namespace detail{ class raw_mapped_region_creator; }
+namespace ipcdetail{ class interprocess_tester; }
+namespace ipcdetail{ class raw_mapped_region_creator; }
 
 /// @endcond
 
@@ -59,7 +59,7 @@ class mapped_region
 {
    /// @cond
    //Non-copyable
-   BOOST_INTERPROCESS_MOVABLE_BUT_NOT_COPYABLE(mapped_region)
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(mapped_region)
    /// @endcond
 
    public:
@@ -81,12 +81,12 @@ class mapped_region
 
    //!Move constructor. *this will be constructed taking ownership of "other"'s 
    //!region and "other" will be left in default constructor state.
-   mapped_region(BOOST_INTERPROCESS_RV_REF(mapped_region) other)
+   mapped_region(BOOST_RV_REF(mapped_region) other)
    #if defined (BOOST_INTERPROCESS_WINDOWS)
    :  m_base(0), m_size(0), m_offset(0)
    ,  m_extra_offset(0)
    ,  m_mode(read_only)
-   ,  m_file_mapping_hnd(detail::invalid_file())
+   ,  m_file_mapping_hnd(ipcdetail::invalid_file())
    #else
    :  m_base(MAP_FAILED), m_size(0), m_offset(0),  m_extra_offset(0), m_mode(read_only), m_is_xsi(false)
    #endif
@@ -99,7 +99,7 @@ class mapped_region
 
    //!Move assignment. If *this owns a memory mapped region, it will be
    //!destroyed and it will take ownership of "other"'s memory mapped region.
-   mapped_region &operator=(BOOST_INTERPROCESS_RV_REF(mapped_region) other)
+   mapped_region &operator=(BOOST_RV_REF(mapped_region) other)
    {
       mapped_region tmp(boost::interprocess::move(other));
       this->swap(tmp);
@@ -158,8 +158,8 @@ class mapped_region
    bool              m_is_xsi;
    #endif
 
-   friend class detail::interprocess_tester;
-   friend class detail::raw_mapped_region_creator;
+   friend class ipcdetail::interprocess_tester;
+   friend class ipcdetail::raw_mapped_region_creator;
    void dont_close_on_destruction();
    /// @endcond
 };
@@ -188,7 +188,7 @@ inline void*    mapped_region::get_address()  const
 
 inline mapped_region::mapped_region()
    :  m_base(0), m_size(0), m_offset(0),  m_extra_offset(0), m_mode(read_only)
-   ,  m_file_mapping_hnd(detail::invalid_file())
+   ,  m_file_mapping_hnd(ipcdetail::invalid_file())
 {}
 
 template<int dummy>
@@ -207,7 +207,7 @@ inline mapped_region::mapped_region
    ,std::size_t size
    ,const void *address)
    :  m_base(0), m_size(0), m_offset(0),  m_extra_offset(0), m_mode(mode)
-   ,  m_file_mapping_hnd(detail::invalid_file())
+   ,  m_file_mapping_hnd(ipcdetail::invalid_file())
 {
    mapping_handle_t mhandle = mapping.get_mapping_handle();
    file_handle_t native_mapping_handle = 0;
@@ -244,7 +244,7 @@ inline mapped_region::mapped_region
       if(size == 0){
          __int64 total_size;
          if(!winapi::get_file_size
-            (detail::file_handle_from_mapping_handle
+            (ipcdetail::file_handle_from_mapping_handle
                (mapping.get_mapping_handle()), total_size)){
             error_info err(winapi::get_last_error());
             throw interprocess_exception(err);
@@ -261,7 +261,7 @@ inline mapped_region::mapped_region
       //Create file mapping
       native_mapping_handle = 
          winapi::create_file_mapping
-         (detail::file_handle_from_mapping_handle(mapping.get_mapping_handle()), file_map_access, 0, 0, 0, 0);
+         (ipcdetail::file_handle_from_mapping_handle(mapping.get_mapping_handle()), file_map_access, 0, 0, 0, 0);
 
       //Check if all is correct
       if(!native_mapping_handle){
@@ -364,9 +364,9 @@ inline void mapped_region::priv_close()
       m_base = 0;
    }
    #if (defined BOOST_INTERPROCESS_WINDOWS)
-      if(m_file_mapping_hnd != detail::invalid_file()){
+      if(m_file_mapping_hnd != ipcdetail::invalid_file()){
          winapi::close_handle(m_file_mapping_hnd);
-         m_file_mapping_hnd = detail::invalid_file();
+         m_file_mapping_hnd = ipcdetail::invalid_file();
       }
    #endif
 }
@@ -524,7 +524,7 @@ inline mapped_region::mapped_region
 
    //Check for fixed mapping error
    if(address && (old_base != address)){
-      error_info err = system_error_code();
+      error_info err(busy_error);
       this->priv_close();
       throw interprocess_exception(err);
    }
@@ -579,15 +579,15 @@ inline std::size_t mapped_region::get_page_size()
 
 inline void mapped_region::swap(mapped_region &other)
 {
-   detail::do_swap(this->m_base, other.m_base);
-   detail::do_swap(this->m_size, other.m_size);
-   detail::do_swap(this->m_offset, other.m_offset);
-   detail::do_swap(this->m_extra_offset,     other.m_extra_offset);
-   detail::do_swap(this->m_mode,  other.m_mode);
+   ipcdetail::do_swap(this->m_base, other.m_base);
+   ipcdetail::do_swap(this->m_size, other.m_size);
+   ipcdetail::do_swap(this->m_offset, other.m_offset);
+   ipcdetail::do_swap(this->m_extra_offset,     other.m_extra_offset);
+   ipcdetail::do_swap(this->m_mode,  other.m_mode);
    #if (defined BOOST_INTERPROCESS_WINDOWS)
-   detail::do_swap(this->m_file_mapping_hnd, other.m_file_mapping_hnd);
+   ipcdetail::do_swap(this->m_file_mapping_hnd, other.m_file_mapping_hnd);
    #else
-   detail::do_swap(this->m_is_xsi, other.m_is_xsi);
+   ipcdetail::do_swap(this->m_is_xsi, other.m_is_xsi);
    #endif
 }
 

@@ -51,7 +51,7 @@ class deleter
    {}
 
    void operator()(const pointer &p)
-   {  mp_mngr->destroy_ptr(detail::get_pointer(p));   }
+   {  mp_mngr->destroy_ptr(ipcdetail::get_pointer(p));   }
 };
 
 }  //namespace interprocess { 

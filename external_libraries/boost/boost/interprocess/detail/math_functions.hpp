@@ -21,7 +21,7 @@
 
 namespace boost {
 namespace interprocess {
-namespace detail {
+namespace ipcdetail {
 
 // Greatest common divisor and least common multiple
 
@@ -103,7 +103,7 @@ inline std::size_t floor_log2 (std::size_t x)
    return log2;
 }
 
-} // namespace detail
+} // namespace ipcdetail
 } // namespace interprocess
 } // namespace boost
 

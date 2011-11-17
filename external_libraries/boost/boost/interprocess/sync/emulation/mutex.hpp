@@ -25,7 +25,7 @@
 
 namespace boost {
 namespace interprocess {
-namespace detail {
+namespace ipcdetail {
 
 class emulation_mutex
 {
@@ -61,19 +61,19 @@ inline emulation_mutex::~emulation_mutex()
 inline void emulation_mutex::lock(void)
 {
    do{
-      boost::uint32_t prev_s = detail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 1, 0);
+      boost::uint32_t prev_s = ipcdetail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 1, 0);
 
       if (m_s == 1 && prev_s == 0){
             break;
       }
       // relinquish current timeslice
-      detail::thread_yield();
+      ipcdetail::thread_yield();
    }while (true);
 }
 
 inline bool emulation_mutex::try_lock(void)
 {
-   boost::uint32_t prev_s = detail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 1, 0);   
+   boost::uint32_t prev_s = ipcdetail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 1, 0);   
    return m_s == 1 && prev_s == 0;
 }
 
@@ -98,17 +98,19 @@ inline bool emulation_mutex::timed_lock(const boost::posix_time::ptime &abs_time
          return false;
       }
       // relinquish current time slice
-     detail::thread_yield();
+     ipcdetail::thread_yield();
    }while (true);
 
    return true;
 }
 
 inline void emulation_mutex::unlock(void)
-{  detail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 0, 1);   }
+{  ipcdetail::atomic_cas32(const_cast<boost::uint32_t*>(&m_s), 0, 1);   }
 
-}  //namespace detail {
+}  //namespace ipcdetail {
 }  //namespace interprocess {
 }  //namespace boost {
+
+#include <boost/interprocess/detail/config_end.hpp>
 
 #endif   //BOOST_INTERPROCESS_DETAIL_EMULATION_MUTEX_HPP
