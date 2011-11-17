@@ -33,6 +33,8 @@
 #include <PyrSymbol.h>
 #include <PyrObject.h>
 
+#include <pthread.h>
+
 extern pthread_mutex_t gLangMutex;
 
 struct VariantList {
