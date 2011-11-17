@@ -116,7 +116,14 @@ public:
 		segment(open_or_create, shmem_name.c_str(), 8192 * 1024)
 	{
 		segment.flush();
-		shm = segment.construct<server_shared_memory>(shmem_name.c_str())(ref(segment), shmem_name, control_busses);
+
+		const int num_scope_buffers = 128;
+		size_t scope_pool_size = num_scope_buffers * sizeof(float) * 8192; // pessimize, about 4 MB
+		void * memory_for_scope_pool = segment.allocate(scope_pool_size);
+		scope_pool.init(memory_for_scope_pool, scope_pool_size);
+
+		shm = segment.construct<server_shared_memory>(shmem_name.c_str())(ref(segment), shmem_name, control_busses,
+																		  num_scope_buffers);
 	}
 
 	static void cleanup(uint port_number)
@@ -140,19 +147,20 @@ public:
 	{
 		scope_buffer *buf = shm->get_scope_buffer(index);
 		if (buf)
-			return scope_buffer_writer(buf, segment, channels, size);
+			return scope_buffer_writer(buf, scope_pool, channels, size);
 		else
 			return scope_buffer_writer();
 	}
 
 	void release_scope_buffer_writer( scope_buffer_writer & writer )
 	{
-		writer.release( segment );
+		writer.release( scope_pool );
 	}
 
 private:
 	string shmem_name;
 	managed_shared_memory segment;
+	scope_buffer_pool scope_pool;
 
 protected:
 	server_shared_memory * shm;

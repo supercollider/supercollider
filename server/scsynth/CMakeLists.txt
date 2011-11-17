@@ -91,6 +91,8 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/scsynthsend.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
+
+	${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src/tlsf.c
 )
 
 if(WIN32)
@@ -110,6 +112,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface)
+
+include_directories (${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src)
 
 set_property(DIRECTORY
              APPEND
