@@ -22,16 +22,44 @@
 #define SC_SCOPE_BUFFER_HPP
 
 #include <boost/interprocess/offset_ptr.hpp>
-#include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/atomic.hpp>
+
+extern "C" {
+#include "tlsf.h"
+}
 
 namespace detail_server_shm {
 
-using namespace boost;
-using namespace boost::interprocess;
+using boost::interprocess::offset_ptr;
 
 struct scope_buffer_writer;
 struct scope_buffer_reader;
+
+class scope_buffer_pool
+{
+public:
+
+	void init (void * pool, size_t size_of_pool)
+	{
+		pool_ = (char*)pool;
+		memset(pool_, 0, size_of_pool);
+		init_memory_pool(size_of_pool, pool_);
+	}
+
+	void * allocate (size_t bytes)
+	{
+		return malloc_ex(bytes, pool_);
+	}
+
+	void deallocate (void * ptr)
+	{
+		free_ex(ptr, pool_);
+	}
+
+private:
+	friend class server_shared_memory;
+	char * pool_;
+};
 
 class scope_buffer
 {
@@ -92,7 +120,7 @@ private:
 
 	// writer interface
 
-	bool allocate( managed_shared_memory & shm, uint channels, uint size )
+	bool allocate( scope_buffer_pool & pool, uint channels, uint size )
 	{
 		bool available = _status.load( memory_order_relaxed ) == free;
 		if( !available ) return false;
@@ -101,7 +129,7 @@ private:
 		_channels = channels;
 
 		uint asset_size = channels * size;
-		_data = (float*)shm.allocate( asset_size * 3 * sizeof(float) );
+		_data = (float*)pool.allocate( asset_size * 3 * sizeof(float) );
 		_state[0].data = _data;
 		_state[1].data = _data + asset_size;
 		_state[2].data = _data + asset_size + asset_size;
@@ -111,12 +139,12 @@ private:
 		return true;
 	}
 
-	void release( managed_shared_memory & shm )
+	void release( scope_buffer_pool & pool )
 	{
 		bool allocated = _status.load( memory_order_relaxed ) != free;
 		if( !allocated ) return;
 
-		shm.deallocate( _data.get() );
+		pool.deallocate( _data.get() );
 
 		_status.store( free, memory_order_release );
 	}
@@ -162,10 +190,10 @@ struct scope_buffer_writer
 		buffer(buffer)
 	{}
 
-	scope_buffer_writer( scope_buffer *buf, managed_shared_memory & shm, uint channels, uint size ):
+	scope_buffer_writer( scope_buffer *buf, scope_buffer_pool & pool, uint channels, uint size ):
 		buffer(buf)
 	{
-		if( !buffer->allocate( shm, channels, size ) )
+		if( !buffer->allocate( pool, channels, size ) )
 			buffer = 0;
 	}
 
@@ -189,9 +217,9 @@ struct scope_buffer_writer
 		buffer->push( frames );
 	}
 
-	void release( managed_shared_memory & shm )
+	void release( scope_buffer_pool & pool )
 	{
-		buffer->release( shm );
+		buffer->release( pool );
 	}
 };
 
