@@ -110,7 +110,7 @@
 
 #if !defined(BOOST_NO_RVALUE_REFERENCES) && defined(BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG)
 
-#include <boost/interprocess/containers/container/detail/stored_ref.hpp>
+#include <boost/container/detail/stored_ref.hpp>
 
 #define BOOST_INTERPROCESS_PP_MEMBER_FORWARD(z, n, data) \
 ::boost::container::containers_detail::stored_ref< BOOST_PP_CAT(P, n) >::forward( BOOST_PP_CAT(m_p, n) ) \

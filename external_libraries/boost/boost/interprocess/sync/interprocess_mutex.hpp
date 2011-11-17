@@ -21,6 +21,7 @@
 #  pragma once
 #endif
 
+#include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
@@ -37,7 +38,7 @@
 
 namespace boost {
 namespace interprocess {
-namespace detail{
+namespace ipcdetail{
 namespace robust_emulation_helpers {
 
 template<class T>
@@ -108,9 +109,9 @@ class interprocess_mutex
    private:
 
    #if   defined(BOOST_INTERPROCESS_USE_GENERIC_EMULATION)
-   friend class detail::robust_emulation_helpers::mutex_traits<interprocess_mutex>;
+   friend class ipcdetail::robust_emulation_helpers::mutex_traits<interprocess_mutex>;
    void take_ownership(){ mutex.take_ownership(); }
-   detail::emulation_mutex mutex;
+   ipcdetail::emulation_mutex mutex;
    #elif defined(BOOST_INTERPROCESS_USE_POSIX)
       pthread_mutex_t   m_mut;
    #endif   //#if (defined BOOST_INTERPROCESS_WINDOWS)
@@ -128,7 +129,20 @@ namespace interprocess {
 
 inline interprocess_mutex::interprocess_mutex(){}
 inline interprocess_mutex::~interprocess_mutex(){}
-inline void interprocess_mutex::lock(){ mutex.lock(); }
+inline void interprocess_mutex::lock()
+{
+#ifdef BOOST_INTERPROCESS_ENABLE_TIMEOUT_WHEN_LOCKING
+   boost::posix_time::ptime wait_time
+      = boost::posix_time::microsec_clock::universal_time()
+        + boost::posix_time::milliseconds(BOOST_INTERPROCESS_TIMEOUT_WHEN_LOCKING_DURATION_MS);
+   if (!mutex.timed_lock(wait_time))
+   {
+      throw interprocess_exception(timeout_when_locking_error, "Interprocess mutex timeout when locking. Possible deadlock: owner died without unlocking?");
+   }
+#else
+   mutex.lock();
+#endif
+}
 inline bool interprocess_mutex::try_lock(){ return mutex.try_lock(); }
 inline bool interprocess_mutex::timed_lock(const boost::posix_time::ptime &abs_time){ return mutex.timed_lock(abs_time); }
 inline void interprocess_mutex::unlock(){ mutex.unlock(); }

@@ -30,7 +30,7 @@
 
 namespace boost {
 namespace interprocess {
-namespace detail{
+namespace ipcdetail{
 
 #if (defined BOOST_INTERPROCESS_WINDOWS)
 
@@ -192,7 +192,7 @@ inline void get_pid_str(pid_str_t &pid_str, OS_process_id_t pid)
 inline void get_pid_str(pid_str_t &pid_str)
 {  get_pid_str(pid_str, get_current_process_id());  }
 
-}  //namespace detail{
+}  //namespace ipcdetail{
 }  //namespace interprocess {
 }  //namespace boost {
 

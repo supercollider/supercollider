@@ -39,7 +39,7 @@ namespace interprocess {
 
 #if defined(BOOST_INTERPROCESS_WINDOWS)
 
-namespace detail {
+namespace ipcdetail {
 
 template <int Dummy>
 struct unrestricted_permissions_holder
@@ -50,7 +50,7 @@ struct unrestricted_permissions_holder
 template<int Dummy>
 winapi::interprocess_all_access_security unrestricted_permissions_holder<Dummy>::unrestricted;
 
-}  //namespace detail {
+}  //namespace ipcdetail {
 
 #endif   //defined BOOST_INTERPROCESS_WINDOWS
 
@@ -105,7 +105,7 @@ class permissions
    {
       /// @cond
       #if defined (BOOST_INTERPROCESS_WINDOWS)
-      m_perm = &detail::unrestricted_permissions_holder<0>::unrestricted;
+      m_perm = &ipcdetail::unrestricted_permissions_holder<0>::unrestricted;
       #else
       m_perm = 0666;
       #endif

@@ -18,6 +18,7 @@
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 #include <boost/interprocess/detail/type_traits.hpp>
+#include <boost/type_traits/alignment_of.hpp>
 #include <typeinfo>  //typeid
 
 //!\file
@@ -25,7 +26,7 @@
 
 namespace boost {
 namespace interprocess { 
-namespace detail {
+namespace ipcdetail {
 
 struct in_place_interface
 {
@@ -46,7 +47,7 @@ template<class T>
 struct placement_destroy :  public in_place_interface
 {
    placement_destroy()
-      :  in_place_interface(detail::alignment_of<T>::value, sizeof(T), typeid(T).name())
+	   :  in_place_interface(::boost::alignment_of<T>::value, sizeof(T), typeid(T).name())
    {}
 
    virtual void destroy_n(void *mem, std::size_t num, std::size_t &destroyed)
@@ -65,7 +66,7 @@ struct placement_destroy :  public in_place_interface
 
 }
 }
-}   //namespace boost { namespace interprocess { namespace detail {
+}   //namespace boost { namespace interprocess { namespace ipcdetail {
 
 #include <boost/interprocess/detail/config_end.hpp>
 

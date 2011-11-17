@@ -24,7 +24,7 @@
 
 namespace boost {
 namespace interprocess {
-namespace detail{
+namespace ipcdetail{
 
    #if defined BOOST_INTERPROCESS_POSIX_PROCESS_SHARED
 
@@ -157,7 +157,7 @@ namespace detail{
 
    #endif   //#if defined(BOOST_INTERPROCESS_POSIX_BARRIERS) && defined(BOOST_INTERPROCESS_POSIX_PROCESS_SHARED)
 
-}//namespace detail
+}//namespace ipcdetail
 
 }//namespace interprocess
 

@@ -112,7 +112,7 @@ class iset_index
 
    //!This reserves memory to optimize the insertion of n
    //!elements in the index
-   void reserve(std::size_t)
+   void reserve(typename MapConfig::segment_manager_base::size_type)
    {  /*Does nothing, map has not reserve or rehash*/  }
 
    //!This frees all unnecessary memory

@@ -14,14 +14,14 @@
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 
-namespace boost { namespace interprocess { namespace detail {
+namespace boost { namespace interprocess { namespace ipcdetail {
 
 struct static_cast_tag {};
 struct const_cast_tag {};
 struct dynamic_cast_tag {};
 struct reinterpret_cast_tag {};
 
-}}}  //namespace boost { namespace interprocess { namespace detail {
+}}}  //namespace boost { namespace interprocess { namespace ipcdetail {
 
 #include <boost/interprocess/detail/config_end.hpp>
 

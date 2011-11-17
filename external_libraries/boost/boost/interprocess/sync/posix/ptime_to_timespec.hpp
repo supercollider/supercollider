@@ -17,7 +17,7 @@ namespace boost {
 
 namespace interprocess {
 
-namespace detail {
+namespace ipcdetail {
 
 inline timespec ptime_to_timespec (const boost::posix_time::ptime &tm)
 {
@@ -29,7 +29,7 @@ inline timespec ptime_to_timespec (const boost::posix_time::ptime &tm)
    return ts;
 }
 
-}  //namespace detail {
+}  //namespace ipcdetail {
 
 }  //namespace interprocess {
 

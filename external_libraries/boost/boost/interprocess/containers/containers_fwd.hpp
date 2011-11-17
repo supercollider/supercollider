@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2008-2009. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2009. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -8,26 +8,33 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_INTERPROCESS_CONTAINERS_VERSION_TYPE_HPP
-#define BOOST_INTERPROCESS_CONTAINERS_VERSION_TYPE_HPP
+#ifndef BOOST_INTERPROCESS_CONTAINERS_CONTAINERS_FWD_HPP
+#define BOOST_INTERPROCESS_CONTAINERS_CONTAINERS_FWD_HPP
+
+/// @cond
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
 #endif
 
+//////////////////////////////////////////////////////////////////////////////
+//                        Standard predeclarations
+//////////////////////////////////////////////////////////////////////////////
+
 #include <boost/interprocess/detail/config_begin.hpp>
-#include <boost/container/detail/version_type.hpp>
+#include <boost/container/container_fwd.hpp>
 
 namespace boost {
 namespace interprocess {
 
-using boost::container::containers_detail::version_type;
-using boost::container::containers_detail::version;
+using boost::container::ordered_range;
+using boost::container::ordered_unique_range;
 
 }  //namespace interprocess {
 }  //namespace boost {
 
 #include <boost/interprocess/detail/config_end.hpp>
 
-#endif //   #ifndef  BOOST_INTERPROCESS_CONTAINERS_VERSION_TYPE_HPP
+/// @endcond
 
+#endif //   #ifndef  BOOST_INTERPROCESS_CONTAINERS_CONTAINERS_FWD_HPP

@@ -8,26 +8,26 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_INTERPROCESS_CONTAINERS_VERSION_TYPE_HPP
-#define BOOST_INTERPROCESS_CONTAINERS_VERSION_TYPE_HPP
+#ifndef BOOST_INTERPROCESS_CONTAINERS_VECTOR_HPP
+#define BOOST_INTERPROCESS_CONTAINERS_VECTOR_HPP
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
 #endif
 
 #include <boost/interprocess/detail/config_begin.hpp>
-#include <boost/container/detail/version_type.hpp>
+#include <boost/container/vector.hpp>
+#include <boost/interprocess/containers/containers_fwd.hpp>
 
 namespace boost {
 namespace interprocess {
 
-using boost::container::containers_detail::version_type;
-using boost::container::containers_detail::version;
+using boost::container::vector;
 
 }  //namespace interprocess {
 }  //namespace boost {
 
 #include <boost/interprocess/detail/config_end.hpp>
 
-#endif //   #ifndef  BOOST_INTERPROCESS_CONTAINERS_VERSION_TYPE_HPP
+#endif //   #ifndef  BOOST_INTERPROCESS_CONTAINERS_VECTOR_HPP
 

@@ -35,14 +35,14 @@
 
 namespace boost {
 namespace interprocess { 
-namespace detail {
+namespace ipcdetail {
 
 #ifdef BOOST_INTERPROCESS_PERFECT_FORWARDING
 
 template<class T, bool is_iterator, class ...Args>
 struct CtorNArg : public placement_destroy<T>
 {
-   typedef detail::bool_<is_iterator> IsIterator;
+   typedef ipcdetail::bool_<is_iterator> IsIterator;
    typedef CtorNArg<T, is_iterator, Args...> self_t;
    typedef typename build_number_seq<sizeof...(Args)>::type index_tuple_t;
 
@@ -71,15 +71,15 @@ struct CtorNArg : public placement_destroy<T>
 
    private:
    template<int ...IdxPack>
-   void construct(void *mem, detail::true_, const index_tuple<IdxPack...>&)
+   void construct(void *mem, ipcdetail::true_, const index_tuple<IdxPack...>&)
    {  new((void*)mem)T(*boost::interprocess::forward<Args>(get<IdxPack>(args_))...); }
 
    template<int ...IdxPack>
-   void construct(void *mem, detail::false_, const index_tuple<IdxPack...>&)
+   void construct(void *mem, ipcdetail::false_, const index_tuple<IdxPack...>&)
    {  new((void*)mem)T(boost::interprocess::forward<Args>(get<IdxPack>(args_))...); }
 
    template<int ...IdxPack>
-   void do_increment(detail::true_, const index_tuple<IdxPack...>&)
+   void do_increment(ipcdetail::true_, const index_tuple<IdxPack...>&)
    {
       this->expansion_helper(++get<IdxPack>(args_)...);
    }
@@ -89,7 +89,7 @@ struct CtorNArg : public placement_destroy<T>
    {}
 
    template<int ...IdxPack>
-   void do_increment(detail::false_, const index_tuple<IdxPack...>&)
+   void do_increment(ipcdetail::false_, const index_tuple<IdxPack...>&)
    {}
 
    tuple<Args&...> args_;
@@ -163,13 +163,13 @@ struct Ctor0Arg   :  public placement_destroy<T>
 //    struct Ctor2Arg
 //      :  public placement_destroy<T>
 //    {
-//       typedef detail::bool_<is_iterator> IsIterator;
+//       typedef ipcdetail::bool_<is_iterator> IsIterator;
 //       typedef Ctor2Arg self_t;
 //
-//       void do_increment(detail::false_)
+//       void do_increment(ipcdetail::false_)
 //       { ++m_p1; ++m_p2;  }
 //
-//       void do_increment(detail::true_){}
+//       void do_increment(ipcdetail::true_){}
 //
 //       self_t& operator++()
 //       {
@@ -197,10 +197,10 @@ struct Ctor0Arg   :  public placement_destroy<T>
 //       }
 //
 //       private:
-//       void construct(void *mem, detail::true_)
+//       void construct(void *mem, ipcdetail::true_)
 //       {  new((void*)mem)T(*m_p1, *m_p2); }
 //                                                                           
-//       void construct(void *mem, detail::false_)
+//       void construct(void *mem, ipcdetail::false_)
 //       {  new((void*)mem)T(m_p1, m_p2); }
 //
 //       P1 &m_p1; P2 &m_p2;
@@ -218,13 +218,13 @@ struct Ctor0Arg   :  public placement_destroy<T>
    struct BOOST_PP_CAT(BOOST_PP_CAT(Ctor, n), Arg)                         \
       :  public placement_destroy<T>                                       \
    {                                                                       \
-      typedef detail::bool_<is_iterator> IsIterator;                       \
+      typedef ipcdetail::bool_<is_iterator> IsIterator;                       \
       typedef BOOST_PP_CAT(BOOST_PP_CAT(Ctor, n), Arg) self_t;             \
                                                                            \
-      void do_increment(detail::true_)                                     \
+      void do_increment(ipcdetail::true_)                                     \
          { BOOST_PP_ENUM(n, BOOST_INTERPROCESS_AUX_PARAM_INC, _); }        \
                                                                            \
-      void do_increment(detail::false_){}                                  \
+      void do_increment(ipcdetail::false_){}                                  \
                                                                            \
       self_t& operator++()                                                 \
       {                                                                    \
@@ -250,13 +250,13 @@ struct Ctor0Arg   :  public placement_destroy<T>
       }                                                                    \
                                                                            \
       private:                                                             \
-      void construct(void *mem, detail::true_)                             \
+      void construct(void *mem, ipcdetail::true_)                             \
       {                                                                    \
          new((void*)mem) T                                                 \
          (BOOST_PP_ENUM(n, BOOST_INTERPROCESS_PP_MEMBER_IT_FORWARD, _));   \
       }                                                                    \
                                                                            \
-      void construct(void *mem, detail::false_)                            \
+      void construct(void *mem, ipcdetail::false_)                            \
       {                                                                    \
          new((void*)mem) T                                                 \
             (BOOST_PP_ENUM(n, BOOST_INTERPROCESS_PP_MEMBER_FORWARD, _));   \
@@ -342,7 +342,7 @@ class named_proxy
 
 #endif   //#ifdef BOOST_INTERPROCESS_PERFECT_FORWARDING
 
-}}}   //namespace boost { namespace interprocess { namespace detail {
+}}}   //namespace boost { namespace interprocess { namespace ipcdetail {
 
 #include <boost/interprocess/detail/config_end.hpp>
 

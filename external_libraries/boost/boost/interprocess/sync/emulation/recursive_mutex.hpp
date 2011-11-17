@@ -38,7 +38,7 @@
 
 namespace boost {
 namespace interprocess {
-namespace detail {
+namespace ipcdetail {
 
 class emulation_recursive_mutex
 {
@@ -57,22 +57,22 @@ class emulation_recursive_mutex
    private:
    emulation_mutex                     m_mutex;
    unsigned int                        m_nLockCount;
-   volatile detail::OS_systemwide_thread_id_t   m_nOwner;
+   volatile ipcdetail::OS_systemwide_thread_id_t   m_nOwner;
    volatile boost::uint32_t m_s;
 };
 
 inline emulation_recursive_mutex::emulation_recursive_mutex() 
-   : m_nLockCount(0), m_nOwner(detail::get_invalid_systemwide_thread_id()){}
+   : m_nLockCount(0), m_nOwner(ipcdetail::get_invalid_systemwide_thread_id()){}
 
 inline emulation_recursive_mutex::~emulation_recursive_mutex(){}
 
 inline void emulation_recursive_mutex::lock()
 {
-   typedef detail::OS_systemwide_thread_id_t handle_t;
-   const handle_t thr_id(detail::get_current_systemwide_thread_id());
+   typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
+   const handle_t thr_id(ipcdetail::get_current_systemwide_thread_id());
    handle_t old_id;
-   detail::systemwide_thread_id_copy(m_nOwner, old_id);
-   if(detail::equal_systemwide_thread_id(thr_id , old_id)){
+   ipcdetail::systemwide_thread_id_copy(m_nOwner, old_id);
+   if(ipcdetail::equal_systemwide_thread_id(thr_id , old_id)){
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
          throw interprocess_exception("boost::interprocess::emulation_recursive_mutex recursive lock overflow");
@@ -81,18 +81,18 @@ inline void emulation_recursive_mutex::lock()
    }
    else{
       m_mutex.lock();
-      detail::systemwide_thread_id_copy(thr_id, m_nOwner);
+      ipcdetail::systemwide_thread_id_copy(thr_id, m_nOwner);
       m_nLockCount = 1;
    }
 }
 
 inline bool emulation_recursive_mutex::try_lock()
 {
-   typedef detail::OS_systemwide_thread_id_t handle_t;
-   handle_t thr_id(detail::get_current_systemwide_thread_id());
+   typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
+   handle_t thr_id(ipcdetail::get_current_systemwide_thread_id());
    handle_t old_id;
-   detail::systemwide_thread_id_copy(m_nOwner, old_id);
-   if(detail::equal_systemwide_thread_id(thr_id , old_id)) {  // we own it
+   ipcdetail::systemwide_thread_id_copy(m_nOwner, old_id);
+   if(ipcdetail::equal_systemwide_thread_id(thr_id , old_id)) {  // we own it
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
          throw interprocess_exception("boost::interprocess::emulation_recursive_mutex recursive lock overflow");
@@ -101,7 +101,7 @@ inline bool emulation_recursive_mutex::try_lock()
       return true;
    }
    if(m_mutex.try_lock()){
-      detail::systemwide_thread_id_copy(thr_id, m_nOwner);
+      ipcdetail::systemwide_thread_id_copy(thr_id, m_nOwner);
       m_nLockCount = 1;
       return true;
    }
@@ -110,15 +110,15 @@ inline bool emulation_recursive_mutex::try_lock()
 
 inline bool emulation_recursive_mutex::timed_lock(const boost::posix_time::ptime &abs_time)
 {
-   typedef detail::OS_systemwide_thread_id_t handle_t;
+   typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
    if(abs_time == boost::posix_time::pos_infin){
       this->lock();
       return true;
    }
-   const handle_t thr_id(detail::get_current_systemwide_thread_id());
+   const handle_t thr_id(ipcdetail::get_current_systemwide_thread_id());
    handle_t old_id;
-   detail::systemwide_thread_id_copy(m_nOwner, old_id);
-   if(detail::equal_systemwide_thread_id(thr_id , old_id)) {  // we own it
+   ipcdetail::systemwide_thread_id_copy(m_nOwner, old_id);
+   if(ipcdetail::equal_systemwide_thread_id(thr_id , old_id)) {  // we own it
       if((unsigned int)(m_nLockCount+1) == 0){
          //Overflow, throw an exception
          throw interprocess_exception("boost::interprocess::emulation_recursive_mutex recursive lock overflow");
@@ -127,7 +127,7 @@ inline bool emulation_recursive_mutex::timed_lock(const boost::posix_time::ptime
       return true;
    }
    if(m_mutex.timed_lock(abs_time)){
-      detail::systemwide_thread_id_copy(thr_id, m_nOwner);
+      ipcdetail::systemwide_thread_id_copy(thr_id, m_nOwner);
       m_nLockCount = 1;
       return true;
    }
@@ -136,31 +136,31 @@ inline bool emulation_recursive_mutex::timed_lock(const boost::posix_time::ptime
 
 inline void emulation_recursive_mutex::unlock()
 {
-   typedef detail::OS_systemwide_thread_id_t handle_t;
+   typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
    handle_t old_id;
-   detail::systemwide_thread_id_copy(m_nOwner, old_id);
-   const handle_t thr_id(detail::get_current_systemwide_thread_id());
+   ipcdetail::systemwide_thread_id_copy(m_nOwner, old_id);
+   const handle_t thr_id(ipcdetail::get_current_systemwide_thread_id());
    (void)old_id;
    (void)thr_id;
-   BOOST_ASSERT(detail::equal_systemwide_thread_id(thr_id, old_id));
+   BOOST_ASSERT(ipcdetail::equal_systemwide_thread_id(thr_id, old_id));
    --m_nLockCount;
    if(!m_nLockCount){
-      const handle_t new_id(detail::get_invalid_systemwide_thread_id());
-      detail::systemwide_thread_id_copy(new_id, m_nOwner);
+      const handle_t new_id(ipcdetail::get_invalid_systemwide_thread_id());
+      ipcdetail::systemwide_thread_id_copy(new_id, m_nOwner);
       m_mutex.unlock();
    }
 }
 
 inline void emulation_recursive_mutex::take_ownership()
 {
-   typedef detail::OS_systemwide_thread_id_t handle_t;
+   typedef ipcdetail::OS_systemwide_thread_id_t handle_t;
    this->m_nLockCount = 1;
-   const handle_t thr_id(detail::get_current_systemwide_thread_id());
-   detail::systemwide_thread_id_copy
+   const handle_t thr_id(ipcdetail::get_current_systemwide_thread_id());
+   ipcdetail::systemwide_thread_id_copy
       (thr_id, m_nOwner);
 }
 
-}  //namespace detail {
+}  //namespace ipcdetail {
 }  //namespace interprocess {
 }  //namespace boost {
 
