@@ -55,8 +55,11 @@ public:
   }
 
   static void do_complete(io_service_impl* owner, operation* base,
-      boost::system::error_code ec, std::size_t bytes_transferred)
+      const boost::system::error_code& result_ec,
+      std::size_t bytes_transferred)
   {
+    boost::system::error_code ec(result_ec);
+
     // Take ownership of the operation object.
     win_iocp_socket_recvmsg_op* o(
         static_cast<win_iocp_socket_recvmsg_op*>(base));
@@ -90,7 +93,7 @@ public:
     // Make the upcall if required.
     if (owner)
     {
-      boost::asio::detail::fenced_block b;
+      fenced_block b(fenced_block::half);
       BOOST_ASIO_HANDLER_INVOCATION_BEGIN((handler.arg1_, handler.arg2_));
       boost_asio_handler_invoke_helpers::invoke(handler, handler.handler_);
       BOOST_ASIO_HANDLER_INVOCATION_END;

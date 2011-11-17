@@ -941,7 +941,8 @@ bool basic_regex_parser<charT, traits>::parse_repeat(std::size_t low, std::size_
          ++m_position;
       }
       // for perl regexes only check for pocessive ++ repeats.
-      if((0 == (this->flags() & regbase::main_option_type)) 
+      if((m_position != m_end)
+         && (0 == (this->flags() & regbase::main_option_type)) 
          && (this->m_traits.syntax_type(*m_position) == regex_constants::syntax_plus))
       {
          pocessive = true;
@@ -1025,13 +1026,14 @@ bool basic_regex_parser<charT, traits>::parse_repeat(std::size_t low, std::size_
       {
          //
          // Check for illegal following quantifier, we have to do this here, because
-         // the extra states we insert below circumvents are usual error checking :-(
+         // the extra states we insert below circumvents our usual error checking :-(
          //
          switch(this->m_traits.syntax_type(*m_position))
          {
          case regex_constants::syntax_star:
          case regex_constants::syntax_plus:
          case regex_constants::syntax_question:
+         case regex_constants::syntax_open_brace:
             fail(regex_constants::error_badrepeat, m_position - m_base);
             return false;
          }

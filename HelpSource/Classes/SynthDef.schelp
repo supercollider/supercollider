@@ -46,8 +46,8 @@ note:: code::if:: is implemented as a linear signal crossfade when the receiver 
 There are other ways of achieving similar results, however, often using UGens such as Rand. For example, the following def will have a single randomly generated frequency, which will be the same for every Synth based on it:
 code::
 (
-SynthDef(\help_notRand, { 
-	Out.ar(0, 
+SynthDef(\help_notRand, {
+	Out.ar(0,
 		SinOsc.ar(rrand(400, 800), 0, 0.2) * Line.kr(1, 0, 1, doneAction: 2)
 	)
 }).add;
@@ -58,10 +58,10 @@ b = Synth(\help_notRand); // the same freq as a
 This one on the other hand will have a different random freq for each Synth created:
 code::
 (
-SynthDef(\help_isRand, { 
-	Out.ar(0, 
+SynthDef(\help_isRand, {
+	Out.ar(0,
 		SinOsc.ar(Rand(400, 800), 0, 0.2) * Line.kr(1, 0, 1, doneAction: 2)
-	) 
+	)
 }).add;
 )
 a = Synth(\help_isRand);
@@ -85,7 +85,7 @@ A specification can be:
 definitionlist::
 ## nil/zero || A standard control rate link::Classes/Control:: is created.
 ## \ar || An audio rate link::Classes/AudioControl:: is created.
-## a float || the Control will have a lag of the specified time. This can be used to create 
+## a float || the Control will have a lag of the specified time. This can be used to create
 smooth transitions between different values. t_ and i_ args cannot be lagged.
 ## \ir || The Control can be set only at creation ('initial rate'). See discussion above.
 ## \tr || The Control is used as a trigger. See discussion above.
@@ -93,7 +93,7 @@ smooth transitions between different values. t_ and i_ args cannot be lagged.
 
 argument:: prependArgs
 An optional link::Classes/Array:: of objects which will be passed as the first arguments to the ugenGraphFunc when it is evaluated. Arguments which receive values in this way will not be converted to instances of link::Classes/Control::. See the code::wrap:: example below for an example of how this can be used.
-	
+
 argument:: variants
 An optional link::Classes/Event:: containing default argument settings. These can override the defaults specified in the ugenGraphFunc. When creating a Synth a variant can be requested by appending the defName argument in the form  'name.variant' or "name.variant". See example below.
 
@@ -145,38 +145,38 @@ Note that the "dir" and "mdPlugin" arguments do not exist for this method. Becau
 code::
 (
 SynthDef(\help_synth, { |out, freq = 800, sustain = 1, amp = 0.1|
-	Out.ar(out, 
+	Out.ar(out,
 		SinOsc.ar(freq, 0, 0.2) * Line.kr(amp, 0, sustain, doneAction: 2)
-	) 
+	)
 }).add;
 )
 ::
 
 method:: name
 Return this def's name.
-	
+
 method:: func
 Return this def's ugenGraphFunc.
-	
+
 method:: variants
 Return an Event containing this def's variants.
 
-	
+
 subsection:: Special purpose methods
 (for most purposes, the method add is recommended)
-	
+
 method:: writeDefFile
 Writes the def as a file called name.scsyndef in a form readable by a server. Default for dir is synthdefs/. Defs stored in the default directory will be automatically loaded by the local and internal Servers when they are booted.
-		
+
 method:: load
 Write the defFile and send a message to server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC message) is immediately executed by the server. Default for dir is synthdefs/.
-		
+
 method:: send
 Compile the def and send it to server without writing to disk (thus avoiding that annoying SynthDef buildup). When this asynchronous command is completed, the completionMessage (a valid OSC message) is immediately executed by the server.
 
 method:: store
 Write the defFile and store it in the SynthDescLib specified by libname, and send a message to the library's server to load this file. When this asynchronous command is completed, the completionMessage (a valid OSC  message) is immediately executed by the server. Default for libname is \global, for dir is synthdefs/. This is needed to use defs with the event stream system. See Streams and Pattern.
-	
+
 argument:: mdPlugin
 (optional) The metadata plug-in class that will be used to persist metadata. If not supplied, the default plug-in is used. See the SynthDesc help file for details.
 
@@ -187,7 +187,7 @@ This method has been deprecated, use add instead.
 method:: play
 A convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it create one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is \addToHead.
 Returns:: a corresponding Synth object.
-	
+
 
 Examples::
 
@@ -232,17 +232,17 @@ SynthDef(\trigTest, {|t_trig=0, freq=440| // t_trig creates a TrigControl
 
 // This second version makes trig a \tr arg by specifying it in the rates array.
 (
-SynthDef(\trigTest2, {|trig=0, freq=440| 
+SynthDef(\trigTest2, {|trig=0, freq=440|
 	Out.ar(0, SinOsc.ar(freq+[0,1], 0, Decay2.kr(trig, 0.005, 1.0)));
 	}, [\tr, 4]		// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig
-).add; 		
+).add;
 )
 
 // Different way of writing the same thing
 (
 SynthDef(\trigTest2, {
 	Out.ar(0, SinOsc.ar(\freq.kr(440, 4) + [0,1], 0, Decay2.kr(\trig.tr, 0.005, 1.0)));
-}).add; 		
+}).add;
 )
 
 
@@ -250,7 +250,7 @@ SynthDef(\trigTest2, {
 z = Synth.head(s, \trigTest2);
 
 // now trigger the decay envelope
-z.set(\trig, 1); 				// you can do this multiple times 
+z.set(\trig, 1); 				// you can do this multiple times
 z.set(\trig, 1, \freq, 220); 	// hear how the freq lags
 z.set(\trig, 1, \freq, 880);
 
@@ -288,7 +288,7 @@ SynthDef(\arrayarg, { | amp = 0.1, freqs = #[300, 400, 500, 600], gate = 1 |
 	var env, sines;
 	env = Linen.kr(gate, 0.1, 1, 1, 2) * amp;
 	sines = SinOsc.ar(freqs +.t [0,0.5]).cubed.sum; // A mix of 4 oscillators
-	Out.ar(0, sines * env); 
+	Out.ar(0, sines * env);
 }, [0, 0.1, 0]).add;
 )
 
@@ -301,9 +301,9 @@ x.setn(\freqs, [300, 400, 500, 600, 0]);
 
 // Mr. McCartney's more complex example
 (
-fork { 	
+fork {
 	z = Synth(\arrayarg);
-	
+
 	2.wait;
 	10.do {
 		z.setn(\freqs, {exprand(200,800.0)} ! 4);
@@ -317,7 +317,7 @@ fork {
 		(2 ** (0..3).choose * 0.2).wait;
 	};
 	2.wait;
-	
+
 	z.release;
 };
 )
@@ -338,12 +338,12 @@ code::
 		var in, out, env, lfo;
 		in = In.ar(i_bus, numChannels);
 		env = Linen.kr(gate, 2, 1, 2, 2); // fade in the effect
-		
+
 		// call the wrapped function. The in and env arguments are passed to the function
-		// as the first two arguments (prependArgs). 
+		// as the first two arguments (prependArgs).
 		// Any other arguments of the wrapped function will be Controls.
 		out = SynthDef.wrap(func, lags, [in, env]);
-		
+
 		XOut.ar(i_bus, wet * env, out);
 	}, [0, 0, 0.1] ).add;
 
@@ -382,7 +382,7 @@ y = Synth.tail(s, \wah);
 z = Synth.tail(s, \reverb, [\wet, 0.5]);
 
 // we used an arg named gate, so Node-release can crossfade out the effects
-y.release; 
+y.release;
 
 // setting gate to zero has the same result
 z.set(\gate, 0);

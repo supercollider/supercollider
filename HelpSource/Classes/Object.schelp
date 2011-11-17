@@ -48,7 +48,7 @@ Creates a new instance and copies the arguments to the instance variables in the
 code::
 MyClass{
 	var a,b,c;
-	
+
 	*new{ |arg1,arg2,arg3|
 		^super.newCopyArgs(arg1,arg2,arg3) //will copy arg1,arg2,arg3 to variables a,b,c
 	}
@@ -169,7 +169,7 @@ Write an object to disk as a text archive. pathname is a String containing the r
 
 subsection::Equality and Identity
 
-method::== 
+method::==
 
 equality: Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical (see below).
 
@@ -185,7 +185,7 @@ a === b; // not identical
 ::
 
 
-method::=== 
+method::===
 
 identity: Answer whether the receiver is the exact same object as anotherObject.
 
@@ -195,7 +195,7 @@ code::
 'worth trying' === 'worth trying'; // identical (symbols are unique)
 ::
 
-method::!= 
+method::!=
 
 non-equality: Answer whether the receiver does not equal anotherObject. The default implementation in Object is to answer if the two objects are not identical (see below).
 
@@ -287,7 +287,52 @@ If the receiver is nil then answer anObject, otherwise answer the receiver.
 
 method::??
 
-If the receiver is nil, evaluate the Function and return the result.
+If the receiver is nil, evaluate the link::Classes/Function:: and return the result.
+
+method::!?
+
+If the receiver is not nil, evaluate the link::Classes/Function:: passing in the receiver as argument and return the result, otherwise return nil.
+
+note::
+The function will be inlined if it contains no variables or arguments.
+::
+
+discussion::
+This method allow building up chains of actions to be performed on an object (possibly across several methods) without having to check if the object is nil or not. After all the desired actions are performed, link::#-??:: can be used to check if result the result is nil and supply a default value in that case.
+
+Examples:
+code::
+x !? ( _ * 3 ) ?? { "It was a nil, so I give a default value".postln; Point(1,1) }
+::
+With code::x = nil::, this will result in:
+teletype::
+It was a nil, so I give a default value
+Point( 1, 1 )
+::
+But if code::x = Point(3,4)::, the result will be:
+teletype::
+Point( 9, 12 )
+::
+
+Nested nil checks:
+code::
+(
+x = nil;
+y = Point(3,4);
+z = Point(5,6);
+x !? { |x| y !? { |y| z !? { |z|  x.rho * y.rho * z.rho } } }
+)
+::
+Results in teletype::nil::
+code::
+(
+x = Point(1,2);
+y = Point(3,4);
+z = Point(5,6);
+x !? { |x| y !? { |y| z !? {  |z| x.rho * y.rho * z.rho } } }
+)
+::
+Results in teletype::87.321245982865::
 
 method::pointsTo
 

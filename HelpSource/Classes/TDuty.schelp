@@ -66,11 +66,11 @@ s.boot;
 		var trig;
 		trig = TDuty.ar(
 				Dseq([0.1, 0.2, 0.4, 0.3], inf), // demand ugen as durations
-				0, 
+				0,
 				Dseq([0.1, 0.4, 0.01, 0.5, 1.0], inf) // demand ugen as amplitude
-			); 
+			);
 		Ringz.ar(trig, 1000, 0.1)
-	
+
 	}.play;
 )
 
@@ -79,11 +79,11 @@ s.boot;
 		var trig;
 		trig = TDuty.ar(
 				MouseX.kr(0.001, 2, 1), // control rate ugen as durations
-				0, 
+				0,
 				Dseq([0.1, 0.4, 0.01, 0.5, 1.0], inf)
-			); 
+			);
 		Ringz.ar(trig, 1000, 0.1)
-	
+
 	}.play;
 )
 
@@ -107,7 +107,7 @@ s.boot;
 				Dswitch1(a, MouseY.kr(0, n-1))
 			);
 		Ringz.ar(trig, 1000, 0.01)
-	
+
 	}.play;
 )
 
@@ -145,11 +145,11 @@ fork { 10.do { s.sendBundle(0.2, ["/s_new", "delta_demand2", -1]); 1.0.rand.wait
 		var t;
 		t = TDuty.ar(
 				Drand([Dgeom(0.1, 0.8, 20), 1, 2], inf) ! 2,
-				0, 
+				0,
 				[Drand({ 1.0.rand } ! 8, inf), Dseq({ 1.0.rand } ! 8, inf)] * 2
-			); 
+			);
 		x = Ringz.ar(t, [400, 700], 0.1) * 0.1;
-	
+
 	}.play;
 )
 

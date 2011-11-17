@@ -23,7 +23,10 @@ HelpBrowser {
 	*instance {
 		if( singleton.isNil ) {
 			singleton = this.new;
-			singleton.window.onClose = { singleton = nil; };
+			singleton.window.onClose = {
+				singleton.stopAnim;
+				singleton = nil;
+			};
 		};
 		^singleton;
 	}
@@ -107,7 +110,6 @@ HelpBrowser {
 		var winRect;
 		var x, y, w, h;
 		var str;
-		var first_search = true;
 
 		homeUrl = aHomeUrl;
 
@@ -127,9 +129,16 @@ HelpBrowser {
 			x = x + w + 2;
 		};
 
-		w = 200;
 		x = x + 10;
-		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1).string_("Quick lookup...");
+		str = "Quick lookup:";
+		w = str.bounds.width + 5;
+		StaticText(window, Rect(x,y,w,h)).string_(str);
+		x = x + w;
+		w = 200;
+		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
+		if(GUI.current.id == \qt) {
+			srchBox.setProperty(\toolTip,"Smart quick help lookup. Prefix with # to just search.");
+		};
 		srchBox.action = {|x|
 			if(x.string.notEmpty) {
 				this.goTo(if(x.string.first==$#)
@@ -138,19 +147,13 @@ HelpBrowser {
 				);
 			}
 		};
-		srchBox.mouseDownAction = {
-			if(first_search) {
-				srchBox.string = "";
-				first_search = false;
-			}
-		};
 
 		openNewWin = aNewWin;
 		x = x + w + 10;
-		if(GUI.scheme.name == 'QtGUI') {
+		if(GUI.current.respondsTo(\checkBox)) {
 			str = "Open links in new window";
 			w = str.bounds.width + 50;
-			QCheckBox.new (window, Rect(x, y, w, h) )
+			CheckBox.new (window, Rect(x, y, w, h) )
 				.resize_(1)
 				.string_(str)
 				.value_(openNewWin)
@@ -288,7 +291,7 @@ HelpBrowser {
 }
 
 + Help {
-	gui {
+	*gui {
 		HelpBrowser.instance.goHome;
 	}
 }

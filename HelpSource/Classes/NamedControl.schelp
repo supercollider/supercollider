@@ -17,33 +17,33 @@ code::
 
 ClassMethods::
 method:: ar
-add a new instance of link::Classes/AudioControl:: with given name and default values. 
+add a new instance of link::Classes/AudioControl:: with given name and default values.
 If lags are given, apply a Lag UGen to it.
 discussion::
 code::\symbol.ar(values, lags):: is a synonym.
 
 method:: kr
-add a new instance of link::Classes/Control:: (kr) with given name and default values. 
-If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl:: 
+add a new instance of link::Classes/Control:: (kr) with given name and default values.
+If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl::
 (lags cannot be modulated then, but fewer UGens are required).
 discussion::
 code::\symbol.kr(values, lags, fixedLag):: is a synonym.
-		
+
 method:: ir
-add a new instance of link::Classes/Control:: (ir) with given name and default values. 
+add a new instance of link::Classes/Control:: (ir) with given name and default values.
 If lags are given, apply a link::Classes/Lag:: UGen to it.
 discussion::
 code::\symbol.ir(values, lags):: is a synonym.
 
 method:: tr
-add a new instance of link::Classes/TrigControl:: with given name and default values. 
+add a new instance of link::Classes/TrigControl:: with given name and default values.
 If lags are given, apply a link::Classes/Lag:: UGen to it.
 discussion::
 code::\symbol.tr(values, lags):: is a synonym.
-		
+
 method:: new
 add a new instance with the given rate, name and default values.
-If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl:: 
+If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl::
 (lags cannot be modulated then, but fewer UGens are required).
 
 Examples::
@@ -67,7 +67,7 @@ a.set(\freq, 120)
 
 subsection:: Comparison with direct use of Controls
 
-In the situation when functions are used to combine UGens to more complex SynthDefs, it may not be known which ControlNames are already taken by others. NamedControl allows to reuse existing control names. 
+In the situation when functions are used to combine UGens to more complex SynthDefs, it may not be known which ControlNames are already taken by others. NamedControl allows to reuse existing control names.
 code::
 // compare:
 (
@@ -102,8 +102,8 @@ code::
 q = ();
 q.makeEnv = { |q, env, doneAction = 0| EnvGen.kr(env, NamedControl.kr(\gate, 1), doneAction: doneAction) };
 q.chooseNoise = { [ {PinkNoise.ar}, {WhiteNoise.ar}, {LFNoise2.ar(Rand(100, 1000))}].choose.value};
-q.filterInput = { |q, in| [ 
-	{ BPF.ar(in * 15, NamedControl.kr(\freq, 800), 0.2) }, 
+q.filterInput = { |q, in| [
+	{ BPF.ar(in * 15, NamedControl.kr(\freq, 800), 0.2) },
 	{ RHPF.ar(in, NamedControl.kr(\freq, 800, 0.2), 0.2) }
 	].choose.value
 };

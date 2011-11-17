@@ -1,6 +1,6 @@
 ServerOptions
 {
-	var <>numAudioBusChannels=128;
+	var <>numPrivateAudioBusChannels=112;
 	var <>numControlBusChannels=4096;
 	var <>numInputBusChannels=8;
 	var <>numOutputBusChannels=8;
@@ -25,8 +25,6 @@ ServerOptions
 	var <>inDevice = nil;
 	var <>outDevice = nil;
 
-	var <>blockAllocClass;
-
 	var <>verbosity = 0;
 	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
 
@@ -38,8 +36,7 @@ ServerOptions
 	var <>memoryLocking = false;
 	var <>threads = nil; // for supernova
 
-	device
-	{
+	device {
 		^if(inDevice == outDevice)
 		{
 			inDevice
@@ -49,8 +46,7 @@ ServerOptions
 		}
 	}
 
-	device_
-	{
+	device_ {
 		|dev|
 		inDevice = outDevice = dev;
 	}
@@ -74,9 +70,8 @@ ServerOptions
 		o = if (protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
-		if (numAudioBusChannels != 128, {
-			o = o ++ " -a " ++ numAudioBusChannels;
-		});
+	    o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+
 		if (numControlBusChannels != 4096, {
 			o = o ++ " -c " ++ numControlBusChannels;
 		});
@@ -156,6 +151,14 @@ ServerOptions
 		^numOutputBusChannels + numInputBusChannels
 	}
 
+	numAudioBusChannels_{
+		this.deprecated(thisMethod);
+	}
+
+	numAudioBusChannels{
+		^numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels
+	}
+
 	bootInProcess {
 		_BootInProcessServer
 		^this.primitiveFailed
@@ -171,25 +174,21 @@ ServerOptions
 		^zeroConf;
 	}
 
-	*prListDevices
-	{
+	*prListDevices {
 		arg in, out;
 		_ListAudioDevices
 		^this.primitiveFailed
 	}
 
-	*devices
-	{
+	*devices {
 		^this.prListDevices(1, 1);
 	}
 
-	*inDevices
-	{
+	*inDevices {
 		^this.prListDevices(1, 0);
 	}
 
-	*outDevices
-	{
+	*outDevices {
 		^this.prListDevices(0, 1);
 	}
 }

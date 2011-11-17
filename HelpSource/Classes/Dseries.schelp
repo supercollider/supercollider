@@ -34,22 +34,22 @@ Examples::
 code::
 
 (
-{ 
+{
 	var a, freq, trig;
 	a = Dseries(0, 1, 15);
 	trig = Impulse.kr(MouseX.kr(1, 40, 1));
-	freq = Demand.kr(trig, 0, a) * 30 + 340; 
+	freq = Demand.kr(trig, 0, a) * 30 + 340;
 	SinOsc.ar(freq) * 0.1
 
 }.play;
 )
 
 (
-{ 
+{
 	var a, freq, trig;
 	a = Dseries(0, 1, inf);
 	trig = Dust.kr(MouseX.kr(1, 40, 1));
-	freq = Demand.kr(trig, 0, a) % 15 * 30 + 340; 
+	freq = Demand.kr(trig, 0, a) % 15 * 30 + 340;
 	SinOsc.ar(freq) * 0.1
 
 }.play;

@@ -67,7 +67,7 @@ i.enabled = false;
 j.state = true;
 j.setShortCut("$", true, true); // Cmd-ctrl-alt-$
 
-// using *add	
+// using *add
 CocoaMenuItem.add(["hallo", "world"], { "hallo menu".postln });
 CocoaMenuItem.add(["hallo", "world", "here"], { "hallo here".postln }); // fails correctly
 CocoaMenuItem.add(["mellow", "world", "here"], { "mellow here".postln }); // works.

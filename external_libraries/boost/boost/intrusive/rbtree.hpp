@@ -33,7 +33,7 @@
 #include <boost/intrusive/options.hpp>
 #include <boost/intrusive/rbtree_algorithms.hpp>
 #include <boost/intrusive/link_mode.hpp>
-//iG pending #include <boost/pointer_cast.hpp>
+#include <boost/move/move.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -122,8 +122,7 @@ class rbtree_impl
    typedef detail::size_holder<constant_time_size, size_type>        size_traits;
 
    //noncopyable
-   rbtree_impl (const rbtree_impl&);
-   rbtree_impl operator =(const rbtree_impl&);
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(rbtree_impl)
 
    enum { safemode_or_autounlink  = 
             (int)real_value_traits::link_mode == (int)auto_unlink   ||
@@ -157,6 +156,12 @@ class rbtree_impl
 
    value_compare &priv_comp()
    {  return data_.node_plus_pred_.get();  }
+
+   const value_traits &priv_value_traits() const
+   {  return data_;  }
+
+   value_traits &priv_value_traits()
+   {  return data_;  }
 
    const node &priv_header() const
    {  return data_.node_plus_pred_.header_plus_size_.header_;  }
@@ -253,6 +258,21 @@ class rbtree_impl
       else
          this->insert_equal(b, e);
    }
+
+   //! <b>Effects</b>: to-do
+   //!   
+   rbtree_impl(BOOST_RV_REF(rbtree_impl) x)
+      : data_(::boost::move(x.priv_comp()), ::boost::move(x.priv_value_traits()))
+   {
+      node_algorithms::init_header(&priv_header());  
+      this->priv_size_traits().set_size(size_type(0));
+      this->swap(x);
+   }
+
+   //! <b>Effects</b>: to-do
+   //!   
+   rbtree_impl& operator=(BOOST_RV_REF(rbtree_impl) x) 
+   {  this->swap(x); return *this;  }
 
    //! <b>Effects</b>: Detaches all elements from this. The objects in the set 
    //!   are not deleted (i.e. no destructors are called), but the nodes according to 
@@ -1286,6 +1306,8 @@ class rbtree_impl
       node_algorithms::replace_node( get_real_value_traits().to_node_ptr(*replace_this)
                                    , node_ptr(&priv_header())
                                    , get_real_value_traits().to_node_ptr(with_this));
+      if(safemode_or_autounlink)
+         node_algorithms::init(replace_this.pointed_node());
    }
 
    //! <b>Requires</b>: value must be an lvalue and shall be in a set of
@@ -1611,6 +1633,7 @@ class rbtree
       Options...
       #endif
       >::type   Base;
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(rbtree)
 
    public:
    typedef typename Base::value_compare      value_compare;
@@ -1633,6 +1656,13 @@ class rbtree
          , const value_traits &v_traits = value_traits())
       :  Base(unique, b, e, cmp, v_traits)
    {}
+
+   rbtree(BOOST_RV_REF(rbtree) x)
+      :  Base(::boost::move(static_cast<Base&>(x)))
+   {}
+
+   rbtree& operator=(BOOST_RV_REF(rbtree) x)
+   {  this->Base::operator=(::boost::move(static_cast<Base&>(x))); return *this;  }
 
    static rbtree &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<rbtree &>(Base::container_from_end_iterator(end_iterator));   }

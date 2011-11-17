@@ -1345,7 +1345,7 @@ template <bool IsAudio, typename slot_type>
 void apply_control_busn_mapping(server_node & node, slot_type slot, int bus_index, int count)
 {
     if (node.is_synth())
-        static_cast<sc_synth&>(node).map_control_bus<IsAudio>(slot, bus_index, count);
+        static_cast<sc_synth&>(node).map_control_buses<IsAudio>(slot, bus_index, count);
     else
         static_cast<abstract_group&>(node).apply_on_children(boost::bind(apply_control_busn_mapping<IsAudio, slot_type>, _1,
                                                                          slot, bus_index, count));

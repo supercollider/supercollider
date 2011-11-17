@@ -861,7 +861,7 @@ namespace detail
   inline read_until_expr_op<AsyncReadStream, Allocator, RegEx, ReadHandler>
   make_read_until_expr_op(AsyncReadStream& s,
       boost::asio::basic_streambuf<Allocator>& b,
-      const boost::regex& expr, ReadHandler handler)
+      const RegEx& expr, ReadHandler handler)
   {
     return read_until_expr_op<AsyncReadStream, Allocator, RegEx, ReadHandler>(
         s, b, expr, handler);

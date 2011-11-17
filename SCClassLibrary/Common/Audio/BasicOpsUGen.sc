@@ -14,14 +14,7 @@ BasicOpUGen : UGen {
 //	}
 	operator_ { arg op;
 		operator = op;
-			// 'firstArg' exists in the server
-			// but the 'specialIndex' primitive doesn't report the right value
-			// admittedly this is a hack, but the hack was approved on sc-dev
-		if(operator == 'firstArg') {
-			specialIndex = 46
-		} {
-			specialIndex = operator.specialIndex;
-		};
+		specialIndex = operator.specialIndex;
 		if(specialIndex < 0) {
 			Error("Operator '%' applied to a UGen is not supported in scsynth".format(operator)).throw
 		}

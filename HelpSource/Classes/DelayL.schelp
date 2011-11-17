@@ -36,7 +36,7 @@ Examples::
 
 code::
 (
-// Dust randomly triggers Decay to create an exponential 
+// Dust randomly triggers Decay to create an exponential
 // decay envelope for the WhiteNoise input source
 {
 z = Decay.ar(Dust.ar(1,0.5), 0.3, WhiteNoise.ar);

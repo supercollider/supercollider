@@ -82,7 +82,7 @@ function showdocs() {
 
         if(v.installed=="extension" && !check_extensions.checked)
             continue;
-            
+
         if(filter.value != "all" && v.path.split("/")[0].toLowerCase() != filter.value)
             continue;
 
@@ -107,7 +107,7 @@ function showdocs() {
         var v = docs2[i];
         var x = v.path.split("/");
         var c = v.title[0].toUpperCase();
-        
+
         if(cap != c) {
             var y = document.createElement("h2");
             var a = document.createElement("a");

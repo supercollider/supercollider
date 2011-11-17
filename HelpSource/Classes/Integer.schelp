@@ -47,7 +47,7 @@ method:: to
 returns:: an link::Classes/Interval:: from this to strong::hi::.
 
 method:: geom
-returns:: an array with a geometric series of this size from start. 
+returns:: an array with a geometric series of this size from start.
 
 method:: fib
 returns:: an array with a fibonacci series of this size beginning with strong::a:: and strong::b::.

@@ -24,7 +24,7 @@ code::
 // assumes hop of half fftsize, fine
 b = Buffer.alloc(s, 1024, 1); // for sampling rates 44100 and 48000
 //b = Buffer.alloc(s, 2048, 1); // for sampling rates 88200 and 96000
-d = Buffer.read(s, "sounds/a11wlk01.wav");
+d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 // analyse loudness and poll result
 (
@@ -35,9 +35,9 @@ in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
 
 fft = FFT(b, in);
 
-loudness = Loudness.kr(fft).poll(50); 
+loudness = Loudness.kr(fft).poll(50);
 
-Out.ar(0, Pan2.ar(in)); 
+Out.ar(0, Pan2.ar(in));
 }.play
 )
 
@@ -58,7 +58,7 @@ in = SinOsc.ar(1000, 0, 0.001); //should be 1 sone
 //in = SinOsc.ar(1000, 0, 0.01); //should be 4 sone
 //in = SinOsc.ar(1000, 0, 0.1); //should be 16 sone
 //in = SinOsc.ar(1000, 0, 1); //should be 64 sone
-//in = Saw.ar * SinOsc.ar(4); 
+//in = Saw.ar * SinOsc.ar(4);
 //in = WhiteNoise.ar;
 //in = Silent.ar; // should be small, around 2 ** ((0 - 40) / 10) = 2 ** (-4) = 0.0625
 //in = DC.ar(1);
@@ -71,9 +71,9 @@ in = SinOsc.ar(1000, 0, 0.001); //should be 1 sone
 
 fft = FFT(b, in);
 
-loudness = Loudness.kr(fft, 0.25, 6).poll(50); 
+loudness = Loudness.kr(fft, 0.25, 6).poll(50);
 
-Out.ar(0, Pan2.ar(in)); 
+Out.ar(0, Pan2.ar(in));
 K2A.ar(loudness * 0.016)
 }.plot(2.0)
 )

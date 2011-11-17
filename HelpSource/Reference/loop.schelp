@@ -11,7 +11,7 @@ For a full list of implementing classes, see link::Overviews/Methods#loop:: and 
 definitionlist::
 ## link::Classes/Function#-loop:: ||
 	repeats the function forever.
-code::	
+code::
 	f = { 3.yield };
 	x = Routine({ f.loop });
 	10.do({ x.next.postln })
@@ -19,7 +19,7 @@ code::
 
 ## link::Classes/Object#-repeat:: (n) ||
 	repeat to yield the object
-code::	
+code::
 	x = 5;
 	y = x.repeat(6);
 	y.nextN(8);
@@ -27,33 +27,33 @@ code::
 
 ## link::Classes/Pattern#-repeat:: (n) ||
 
-code::	
+code::
 	x = Prand([1, 2]).repeat(6).asStream;
 	x.nextN(8);
 ::
 
 ## link::Classes/Pattern#-loop:: ||
 
-code::	
+code::
 	x = Prand([1, 2]).loop.asStream;
 	x.nextN(8);
-::	
+::
 
 ## link::Classes/Stream#-repeat:: (n) ||
 
 	embeds the stream repeatedly
 
-code::	
+code::
 	x = Routine({ 3.do({ arg i; i.yield }) }).repeat(6);
 	x.nextN(8);
 ::
-	
+
 ## link::Classes/Stream#-loop:: ||
 
 	embeds the stream repeatedly
 
-code::	
+code::
 	x = Routine({ 3.do({ arg i; i.yield }) }).loop;
 	x.nextN(8);
-::	
+::
 ::

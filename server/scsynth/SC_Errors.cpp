@@ -21,36 +21,41 @@
 
 #include "SC_Errors.h"
 
-const char *SC_ErrorString(SCErr err)
+#include "stdio.h"
+
+int gMissingNodeID;
+
+void SC_ErrorString(SCErr err, char returnString[])
 {
 	switch (err) {
-			case kSCErr_None : return "none";
-			case kSCErr_Failed : return "failed";
-			case kSCErr_NodeNotFound : return "Node not found";
-			case kSCErr_TargetNodeNotFound : return "target Node not found";
-			case kSCErr_GroupNotFound : return "Group not found";
-			case kSCErr_SynthDefNotFound : return "SynthDef not found";
-			case kSCErr_NoSuchCommand : return "no such command";
-			case kSCErr_WrongArgType : return "wrong argument type";
-			case kSCErr_IndexOutOfRange : return "index out of range";
-			case kSCErr_AccessDenied : return "access denied";
-			case kSCErr_NoReplyPort : return "no reply port";
-			case kSCErr_InvalidControlIndex : return "invalid control index";
+			case kSCErr_None : sprintf(returnString, "none"); break;
+			case kSCErr_Failed : sprintf(returnString, "failed"); break;
+			case kSCErr_NodeNotFound : sprintf(returnString, "Node %i not found", gMissingNodeID); break;
+			case kSCErr_TargetNodeNotFound : sprintf(returnString, "target Node %i not found", gMissingNodeID); break;
+			case kSCErr_GroupNotFound : sprintf(returnString, "Group %i not found", gMissingNodeID); break;
+			case kSCErr_SynthDefNotFound : sprintf(returnString, "SynthDef not found"); break;
+			case kSCErr_NoSuchCommand : sprintf(returnString, "no such command"); break;
+			case kSCErr_WrongArgType : sprintf(returnString, "wrong argument type"); break;
+			case kSCErr_IndexOutOfRange : sprintf(returnString, "index out of range"); break;
+			case kSCErr_AccessDenied : sprintf(returnString, "access denied"); break;
+			case kSCErr_NoReplyPort : sprintf(returnString, "no reply port"); break;
+			case kSCErr_InvalidControlIndex : sprintf(returnString, "invalid control index"); break;
 
-			case kSCErr_AlreadyLoggedIn : return "already logged in";
-			case kSCErr_NotLoggedIn : return "not logged in";
-			case kSCErr_TooManyUsers : return "too many users";
-			case kSCErr_TooManyNodes : return "too many nodes";
-			case kSCErr_DuplicateNodeID : return "duplicate node ID";
-			case kSCErr_ReservedNodeID : return "negative node IDs are reserved";
-			case kSCErr_OutOfRealTimeMemory : return "out of real time memory";
+			case kSCErr_AlreadyLoggedIn : sprintf(returnString, "already logged in"); break;
+			case kSCErr_NotLoggedIn : sprintf(returnString, "not logged in"); break;
+			case kSCErr_TooManyUsers : sprintf(returnString, "too many users"); break;
+			case kSCErr_TooManyNodes : sprintf(returnString, "too many nodes"); break;
+			case kSCErr_DuplicateNodeID : sprintf(returnString, "duplicate node ID"); break;
+			case kSCErr_ReservedNodeID : sprintf(returnString, "negative node IDs are reserved"); break;
+			case kSCErr_OutOfRealTimeMemory : sprintf(returnString, "out of real time memory"); break;
 
-			case kSCErr_UnsupportedHeaderFormat : return "unsupported header format";
-			case kSCErr_UnsupportedSampleFormat : return "unsupported sample format";
+			case kSCErr_UnsupportedHeaderFormat : sprintf(returnString, "unsupported header format"); break;
+			case kSCErr_UnsupportedSampleFormat : sprintf(returnString, "unsupported sample format"); break;
 
-			case kSCErr_BufGenNotFound : return "buf gen routine not found";
+			case kSCErr_BufGenNotFound : sprintf(returnString, "buf gen routine not found"); break;
 
-			default : return "unknown error";
+			default : sprintf(returnString, "unknown error");
+
 	}
 }
 

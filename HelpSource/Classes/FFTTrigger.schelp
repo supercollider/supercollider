@@ -14,7 +14,7 @@ argument:: polar
 a flag. If 0.0, the buffer will be prepared for complex data, if > 0.0, polar data is set up.
 
 examples::
-code::	
+code::
 (
 s.boot.doWhenBooted{
 	b = Buffer.alloc(s, 512);

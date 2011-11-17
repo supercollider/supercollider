@@ -188,7 +188,7 @@ public:
       socket_base::message_flags, boost::system::error_code& ec)
   {
     // Wait for socket to become ready.
-    socket_ops::poll_write(impl.socket_, ec);
+    socket_ops::poll_write(impl.socket_, impl.state_, ec);
 
     return 0;
   }
@@ -253,7 +253,7 @@ public:
       socket_base::message_flags, boost::system::error_code& ec)
   {
     // Wait for socket to become ready.
-    socket_ops::poll_read(impl.socket_, ec);
+    socket_ops::poll_read(impl.socket_, impl.state_, ec);
 
     return 0;
   }
@@ -327,7 +327,7 @@ public:
       socket_base::message_flags& out_flags, boost::system::error_code& ec)
   {
     // Wait for socket to become ready.
-    socket_ops::poll_read(impl.socket_, ec);
+    socket_ops::poll_read(impl.socket_, impl.state_, ec);
 
     // Clear out_flags, since we cannot give it any other sensible value when
     // performing a null_buffers operation.

@@ -217,6 +217,10 @@
 #define BOOST_NO_UNIFIED_INITIALIZATION_SYNTAX
 #endif
 
+// C++0x features not supported at all yet
+//
+#define BOOST_NO_DECLTYPE_N3276
+
 #ifndef BOOST_COMPILER
 #  define BOOST_COMPILER "GNU C++ version " __VERSION__
 #endif

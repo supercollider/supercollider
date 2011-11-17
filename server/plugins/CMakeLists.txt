@@ -215,17 +215,17 @@ endforeach()
 
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-	find_package(X11)
+	find_package(X11 REQUIRED)
 
-	if(X11_FOUND)
-		include_directories(X11_INCLUDE_DIR)
-
-		foreach (ugen ${uiugens})
-			target_link_libraries(${ugen} ${X11_X11_LIB})
-		endforeach()
-	elseif()
-		message(SEND_ERROR "Cannot find libx11")
+	if (NOT X11_Xt_FOUND)
+		message(FATAL_ERROR "libxt not found")
 	endif()
+
+	include_directories(X11_Xt_INCLUDE_PATH)
+
+	foreach (ugen ${uiugens})
+		target_link_libraries(${ugen} ${X11_X11_LIB})
+	endforeach()
 elseif (APPLE)
 	foreach (ugen ${uiugens})
 		target_link_libraries(${ugen} "-framework CoreServices -framework Carbon")

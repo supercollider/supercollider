@@ -25,7 +25,7 @@ code::
 w = Window.new;
 c = CompositeView(w, Rect(0, 0, 300, 300));
 
-a = Slider2D(c, Rect(10,10,100,100));	
+a = Slider2D(c, Rect(10,10,100,100));
 b = Slider2D(c, Rect(110,110,100,100));
 
 w.front;

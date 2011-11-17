@@ -16,6 +16,7 @@
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/treap.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
+#include <boost/move/move.hpp>
 #include <iterator>
 
 namespace boost {
@@ -42,12 +43,8 @@ class treap_set_impl
    /// @cond
    typedef treap_impl<Config> tree_type;
    //! This class is
-   //! non-copyable
-   treap_set_impl (const treap_set_impl&);
-
-   //! This class is
-   //! non-assignable
-   treap_set_impl &operator =(const treap_set_impl&);
+   //! movable
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(treap_set_impl)
 
    typedef tree_type implementation_defined;
    /// @endcond
@@ -115,6 +112,17 @@ class treap_set_impl
            , const value_traits &v_traits = value_traits())
       : tree_(true, b, e, cmp, pcmp, v_traits)
    {}
+
+   //! <b>Effects</b>: to-do
+   //!   
+   treap_set_impl(BOOST_RV_REF(treap_set_impl) x) 
+      :  tree_(::boost::move(x.tree_))
+   {}
+
+   //! <b>Effects</b>: to-do
+   //!   
+   treap_set_impl& operator=(BOOST_RV_REF(treap_set_impl) x) 
+   {  tree_ = ::boost::move(x.tree_);  return *this;  }
 
    //! <b>Effects</b>: Detaches all elements from this. The objects in the treap_set 
    //!   are not deleted (i.e. no destructors are called).
@@ -1294,6 +1302,7 @@ class treap_set
       Options...
       #endif
       >::type   Base;
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(treap_set)
 
    public:
    typedef typename Base::value_compare      value_compare;
@@ -1318,6 +1327,13 @@ class treap_set
       , const value_traits &v_traits = value_traits())
       :  Base(b, e, cmp, pcmp, v_traits)
    {}
+
+   treap_set(BOOST_RV_REF(treap_set) x)
+      :  Base(::boost::move(static_cast<Base&>(x)))
+   {}
+
+   treap_set& operator=(BOOST_RV_REF(treap_set) x)
+   {  this->Base::operator=(::boost::move(static_cast<Base&>(x))); return *this;  }
 
    static treap_set &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<treap_set &>(Base::container_from_end_iterator(end_iterator));   }
@@ -1355,9 +1371,7 @@ class treap_multiset_impl
    /// @cond
    typedef treap_impl<Config> tree_type;
 
-   //Non-copyable and non-assignable
-   treap_multiset_impl (const treap_multiset_impl&);
-   treap_multiset_impl &operator =(const treap_multiset_impl&);
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(treap_multiset_impl)
    typedef tree_type implementation_defined;
    /// @endcond
 
@@ -1424,6 +1438,17 @@ class treap_multiset_impl
                 , const value_traits &v_traits = value_traits())
       : tree_(false, b, e, cmp, pcmp, v_traits)
    {}
+
+   //! <b>Effects</b>: to-do
+   //!   
+   treap_multiset_impl(BOOST_RV_REF(treap_multiset_impl) x) 
+      :  tree_(::boost::move(x.tree_))
+   {}
+
+   //! <b>Effects</b>: to-do
+   //!   
+   treap_multiset_impl& operator=(BOOST_RV_REF(treap_multiset_impl) x) 
+   {  tree_ = ::boost::move(x.tree_);  return *this;  }
 
    //! <b>Effects</b>: Detaches all elements from this. The objects in the treap_multiset 
    //!   are not deleted (i.e. no destructors are called).
@@ -2499,6 +2524,8 @@ class treap_multiset
       Options...
       #endif
       >::type   Base;
+   //Movable
+   BOOST_MOVABLE_BUT_NOT_COPYABLE(treap_multiset)
 
    public:
    typedef typename Base::value_compare      value_compare;
@@ -2523,6 +2550,13 @@ class treap_multiset
            , const value_traits &v_traits = value_traits())
       :  Base(b, e, cmp, pcmp, v_traits)
    {}
+
+   treap_multiset(BOOST_RV_REF(treap_multiset) x)
+      :  Base(::boost::move(static_cast<Base&>(x)))
+   {}
+
+   treap_multiset& operator=(BOOST_RV_REF(treap_multiset) x)
+   {  this->Base::operator=(::boost::move(static_cast<Base&>(x))); return *this;  }
 
    static treap_multiset &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<treap_multiset &>(Base::container_from_end_iterator(end_iterator));   }

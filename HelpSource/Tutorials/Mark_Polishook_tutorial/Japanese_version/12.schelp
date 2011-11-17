@@ -10,7 +10,7 @@ section::複数の部分からなるシンセシス
 code::
 (
 // ディスクからサウンド・ファイルを読み込む
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 // モノのサンプル・プレーヤー ... １チャンネルのみ
 SynthDef("aMonoSamplePlayer", { arg bus = 0, bufnum = 0, rateScale = 1;
@@ -34,7 +34,7 @@ Synth("aMonoSamplePlayer", [\bus, 0, \bufNum, b]);
 
 
 (
-// コンポーネントの再利用の非常にシンプルな例 ... 
+// コンポーネントの再利用の非常にシンプルな例 ...
 // \busアーギュメントを使用して、同じSynthDefから作られたシンセを別のチャンネルにアサインする
 // この場合には、1チャンネルのサウンド・ファイルを2チャンネルで再生する
 // それぞれのチャンネルの再生レートを変えることで効果を明白にする
@@ -128,7 +128,7 @@ section::サンプルをループする
 code::
 (
 // サウンド・ファイルを読み込む
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 // サウンド・ファイル全体をループ再生するサンプル・プレーヤーを定義する
 SynthDef("aLoopingSamplePlayer", { arg outBus = 0, bufnum = 0, rateScale = 1, mul = 1;
@@ -177,7 +177,7 @@ SynthDef("aLowPassFilter", { arg inBus = 0, outBus = 0, freq = 300, freqDev = 50
 (
 // ソース・グループにサンプル・プレーヤーを追加する
 Synth.head(
-	~source, 
+	~source,
 	"aLoopingSamplePlayer", [\outBus, 3, \bufNum, b, \rateScale, 1, \mul, 0.051]);
 // エフェクト・グループの先頭に振幅変調シンセを追加する
 Synth.head(
@@ -199,7 +199,7 @@ Group (RootNode, ID 0)
 ~source  ~effects	// ~sourceと~effectsはグループ
  |        |      \
  |        |       \
- synth    synth    synth	
+ synth    synth    synth
 ::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -214,7 +214,7 @@ code::
 
 (
 Synth.head(
-	~source, 
+	~source,
 	"aLoopingSamplePlayer", [\outBus, 3, \bufNum, b, \rateScale, 1, \mul, 0.051]);
 Synth.head(
 	~effect,

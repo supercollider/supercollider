@@ -50,6 +50,7 @@ set(libsupernova_src
     ../scsynth/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
     server/buffer_manager.cpp
     server/dsp_context.cpp
     server/memory_pool.cpp
@@ -129,5 +130,5 @@ endif()
 
 if (APPLE)
     target_link_libraries(supernova "-framework vecLib")
-    target_link_libraries(supernova "-framework CoreAudio")
+    target_link_libraries(supernova "-framework CoreAudio -framework CoreServices")
 endif()

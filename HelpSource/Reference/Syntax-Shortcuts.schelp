@@ -7,7 +7,7 @@ section:: Introduction
 
 This file shows a number of syntax equivalences in the compiler.
 
-Because of the multiple syntax equivalences, some expressions can be written in many different ways. All of the following do the same thing and compile to the same code. 
+Because of the multiple syntax equivalences, some expressions can be written in many different ways. All of the following do the same thing and compile to the same code.
 code::
 // new argument syntax
 
@@ -50,8 +50,8 @@ table::
 ## instead of writing: || you can write:
 ## code::
 Thing { var x;
-    x { ^x }  
-    x_ { arg z; x = z; } 
+    x { ^x }
+    x_ { arg z; x = z; }
 }
 :: || code:: Thing { var <>x; } ::
 ::

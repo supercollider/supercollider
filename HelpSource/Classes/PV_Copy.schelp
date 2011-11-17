@@ -18,7 +18,7 @@ examples::
 code::
 (
 s.waitForBoot {
-	d = Buffer.read(s,"sounds/a11wlk01.wav");
+	d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 }
 )
 
@@ -62,8 +62,8 @@ x = { var in, chain, chainB, pan;
 	chain = FFT(LocalBuf(2048), in);
 	chainB = PV_Copy(chain, LocalBuf(2048));
 	pan = MouseX.kr(0.001, 1.001, 'exponential') - 0.001;
-	chain = PV_BrickWall(chain, pan); 
-	chainB = PV_BrickWall(chainB, -1 + pan);  
+	chain = PV_BrickWall(chain, pan);
+	chainB = PV_BrickWall(chainB, -1 + pan);
 	0.5 * IFFT([chain, chainB]);
 }.play(s);
 )
@@ -74,7 +74,7 @@ x.free;
 s.waitForBoot {
 	b = Buffer.alloc(s,2048,1);
 	c = Buffer.alloc(s,2048,1);
-	d = Buffer.read(s,"sounds/a11wlk01.wav");
+	d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 	e = Buffer.alloc(s,2048,1);
 	f = Buffer.alloc(s,2048,1);
 }
@@ -86,7 +86,7 @@ s.waitForBoot {
 x = { var inA, chainA, inB, chainB, chain;
 	inA = LFClipNoise.ar(100);
 	chainA = FFT(b, inA);
-	chainB = PV_Copy(chainA, c);  
+	chainB = PV_Copy(chainA, c);
 	IFFT(chainA) - IFFT(chainB); // cancels to zero so silent!
 }.play(s);
 )
@@ -104,7 +104,7 @@ x = { var in, chain, chainB, chainC;
 	PV_Copy(chain, LocalBuf(2048)); // initial spectrum
 	chain = PV_RectComb(chain, 20, 0, 0.2);
 	PV_Copy(chain, LocalBuf(2048)); // after comb
-	2.do({chain = PV_MagSquared(chain)}); 
+	2.do({chain = PV_MagSquared(chain)});
 	PV_Copy(chain, LocalBuf(2048)); // after magsquared
 	0.00001 * Pan2.ar(IFFT(chain));
 }.play(s);

@@ -21,6 +21,7 @@
 
 #include <boost/limits.hpp>
 #include <boost/asio/io_service.hpp>
+#include <boost/asio/detail/call_stack.hpp>
 #include <boost/asio/detail/mutex.hpp>
 #include <boost/asio/detail/op_queue.hpp>
 #include <boost/asio/detail/scoped_ptr.hpp>
@@ -45,10 +46,11 @@ class win_iocp_io_service
   : public boost::asio::detail::service_base<win_iocp_io_service>
 {
 public:
-  // Constructor.
-  BOOST_ASIO_DECL win_iocp_io_service(boost::asio::io_service& io_service);
 
-  BOOST_ASIO_DECL void init(size_t concurrency_hint);
+  // Constructor. Specifies a concurrency hint that is passed through to the
+  // underlying I/O completion port.
+  BOOST_ASIO_DECL win_iocp_io_service(boost::asio::io_service& io_service,
+      size_t concurrency_hint = 0);
 
   // Destroy all user-defined handler objects owned by the service.
   BOOST_ASIO_DECL void shutdown_service();
@@ -100,6 +102,12 @@ public:
   {
     if (::InterlockedDecrement(&outstanding_work_) == 0)
       stop();
+  }
+
+  // Return whether a handler can be dispatched immediately.
+  bool can_dispatch()
+  {
+    return call_stack<win_iocp_io_service>::contains(this) != 0;
   }
 
   // Request invocation of the given handler.

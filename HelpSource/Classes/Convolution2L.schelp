@@ -53,7 +53,7 @@ code::
 (
 SynthDef(\conv_test, { arg kernel, t_trig=0;
 	var input;
-		
+
 	input=Impulse.ar(1);
 
 	// must have power of two framesize
@@ -84,7 +84,7 @@ code::
 (
 SynthDef( \conv_test2, { arg kernel, t_trig=0;
 	var input;
-		
+
 	input=Impulse.ar(1);
 
 	// must have power of two framesize
@@ -113,11 +113,11 @@ x.free;
 code::
 // next example
 
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 (
 	{ var input, kernel;
-		
+
 	input= SoundIn.ar(0);
 
 	// must have power of two framesize
@@ -149,11 +149,11 @@ g.set(0, 1.0);
 	{
 	var input, inputAmp, threshhold, gate;
 
-	input = SoundIn.ar(0); 
+	input = SoundIn.ar(0);
 	inputAmp = Amplitude.kr(input);
 	threshhold = 0.02;	// noise gating threshold
-	gate = Lag.kr(inputAmp > threshhold, 0.01);	
-	
+	gate = Lag.kr(inputAmp > threshhold, 0.01);
+
 	Convolution2L.ar(input*gate, g, 0, a, 1, 0.5);
 	}.play;
 
@@ -169,7 +169,7 @@ b.sine1(1.0/[1, 2, 3, 4, 5, 6], true, true, true);
 
 (
 	{ var input, kernel;
-		
+
 	input=SoundIn.ar(0);
 
 	// must have power of two framesize

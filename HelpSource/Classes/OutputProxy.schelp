@@ -10,7 +10,7 @@ There is no reason for a user to create an OutputProxy directly.
 code::
 var out;
 // Pan2 uses an OutputProxy for each of its two outputs.
-out = Pan2.ar(WhiteNoise.ar, 0.0); 
+out = Pan2.ar(WhiteNoise.ar, 0.0);
 out.postln;
 ::
 
@@ -25,7 +25,7 @@ discussion::
 code::
 var left, right;
 // Pan2 uses an OutputProxy for each of its two outputs.
-# left, right = Pan2.ar(WhiteNoise.ar, 0.0); 
+# left, right = Pan2.ar(WhiteNoise.ar, 0.0);
 left.source.postln;
 ::
 
@@ -34,7 +34,7 @@ The code::source:: method is also defined in Array, so that the source can be ob
 code::
 var out;
 // Pan2 uses an OutputProxy for each of its two outputs.
-out = Pan2.ar(WhiteNoise.ar, 0.0); 
+out = Pan2.ar(WhiteNoise.ar, 0.0);
 out.postln;
 out.source.postln;
 ::

@@ -2260,14 +2260,17 @@ bool isAnInlineableBlock(PyrParseNode *node)
 		anode = (PyrPushLitNode*)node;
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
-			if (gPostInlineWarnings && (bnode->mArglist || bnode->mVarlist)) {
-				post("WARNING: FunctionDef contains variable declarations and so"
-				" will not be inlined.\n");
-				if (bnode->mArglist) nodePostErrorLine((PyrParseNode*)bnode->mArglist);
-				else nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
-			} else {
+			if (bnode->mArglist || bnode->mVarlist) {
+				if (gPostInlineWarnings) {
+					post("WARNING: FunctionDef contains variable declarations and so"
+					" will not be inlined.\n");
+					if (bnode->mArglist)
+						nodePostErrorLine((PyrParseNode*)bnode->mArglist);
+					else
+						nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
+				}
+			} else
 				res = true;
-			}
 		}
 	}
 	return res;
@@ -2282,15 +2285,20 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode *node)
 		anode = (PyrPushLitNode*)node;
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
-			if (gPostInlineWarnings && (bnode->mArglist || bnode->mVarlist)) {
-				post("WARNING: FunctionDef contains variable declarations and so"
-				" will not be inlined.\n");
-				if (bnode->mArglist) nodePostErrorLine((PyrParseNode*)bnode->mArglist);
-				else nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
+			if (bnode->mArglist || bnode->mVarlist) {
+				if (gPostInlineWarnings) {
+					post("WARNING: FunctionDef contains variable declarations and so"
+					" will not be inlined.\n");
+					if (bnode->mArglist)
+						nodePostErrorLine((PyrParseNode*)bnode->mArglist);
+					else
+						nodePostErrorLine((PyrParseNode*)bnode->mVarlist);
+				}
 			} else {
-				if (bnode->mBody->mClassno == pn_DropNode && ((PyrDropNode*)bnode->mBody)->mExpr2->mClassno == pn_BlockReturnNode) {
+				if (bnode->mBody->mClassno == pn_DropNode && ((PyrDropNode*)bnode->mBody)->mExpr2->mClassno == pn_BlockReturnNode)
 					res = isAtomicLiteral(((PyrDropNode*)bnode->mBody)->mExpr1);
-				} else res = false;
+				else
+					res = false;
 			}
 		}
 	}
@@ -4552,9 +4560,9 @@ void initSpecialSelectors()
 	//sel[opNotIdentical] = getsym("!==");
 	sel[opMin] = getsym("min");
 	sel[opMax] = getsym("max");
-	sel[opBitAnd] = getsym("&");
-	sel[opBitOr] = getsym("|");
-	sel[opBitXor] = getsym("bitxor");
+	sel[opBitAnd] = getsym("bitAnd");
+	sel[opBitOr] = getsym("bitOr");
+	sel[opBitXor] = getsym("bitXor");
 	sel[opLCM] = getsym("lcm");
 	sel[opGCD] = getsym("gcd");
 	sel[opRound] = getsym("round");
@@ -4584,7 +4592,7 @@ void initSpecialSelectors()
 	sel[opFold2] = getsym("fold2");
 	sel[opWrap2] = getsym("wrap2");
 	sel[opExcess] = getsym("excess");
-	sel[opFirstArg] = getsym("<!");
+	sel[opFirstArg] = getsym("firstArg");
 	sel[opRandRange] = getsym("rrand");
 	sel[opExpRandRange] = getsym("exprand");
 

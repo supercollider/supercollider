@@ -82,6 +82,7 @@ Pattern : AbstractFunction {
 
 	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
 	differentiate { ^Pdiff(this) }
+	integrate { ^Plazy { var sum = 0; this.collect { |x| sum = sum + x } } }
 
 	//////////////////////
 

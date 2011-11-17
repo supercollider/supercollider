@@ -26,12 +26,6 @@ namespace boost {
 namespace asio {
 namespace detail {
 
-service_registry::service_registry(boost::asio::io_service& o)
-  : owner_(o),
-    first_service_(0)
-{
-}
-
 service_registry::~service_registry()
 {
   // Shutdown all services. This must be done in a separate loop before the

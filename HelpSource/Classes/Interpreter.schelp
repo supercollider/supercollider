@@ -13,7 +13,7 @@ instanceMethods::
 
 subsection::Accessing
 
-The interpreter defines instance variables code::a:: through code::z:: which are always available in the interpreter. By convention, the variable code::s:: is used to hold the default Server. Assigning another value to code::s:: may cause some of the examples in the documentation to fail. 
+The interpreter defines instance variables code::a:: through code::z:: which are always available in the interpreter. By convention, the variable code::s:: is used to hold the default Server. Assigning another value to code::s:: may cause some of the examples in the documentation to fail.
 
 method::clearAll
 
@@ -58,13 +58,13 @@ z.value;
 
 method::compileFile
 
-Reads the file at pathName, compiles it and returns a Function. 
+Reads the file at pathName, compiles it and returns a Function.
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 
 method::executeFile
 
-Reads the file at pathName, compiles it and executes it, returning the result. 
+Reads the file at pathName, compiles it and executes it, returning the result.
 The file must contain a valid SuperCollider expression, naturally.
 This will not compile class definitions, only expressions.
 

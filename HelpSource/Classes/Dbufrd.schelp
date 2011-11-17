@@ -1,7 +1,7 @@
 class:: Dbufrd
 summary:: Buffer read demand ugen
 categories:: UGens>Buffer, UGens>Demand
-related:: Classes/Dbufrd
+related:: Classes/Dbufwr
 
 classmethods::
 
@@ -41,8 +41,8 @@ c.getn(0, c.numFrames, {|x| x.postln })
 	indexPattern = Dseq([Dseq([0, 3, 5, 0, 3, 7, 0, 5, 9], 3), Dbrown(0, 23, 1, 5)], inf);
 	SinOsc.ar(
 		Duty.kr(
-			Dbufrd(c, Dseries(0, 1, inf)) * 0.5, 
-			0, 
+			Dbufrd(c, Dseries(0, 1, inf)) * 0.5,
+			0,
 			Dbufrd(b, indexPattern)
 		)
 	) * 0.1

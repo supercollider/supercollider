@@ -177,7 +177,7 @@ public:
       const null_buffers&, boost::system::error_code& ec)
   {
     // Wait for descriptor to become ready.
-    descriptor_ops::poll_write(impl.descriptor_, ec);
+    descriptor_ops::poll_write(impl.descriptor_, impl.state_, ec);
 
     return 0;
   }
@@ -239,7 +239,7 @@ public:
       const null_buffers&, boost::system::error_code& ec)
   {
     // Wait for descriptor to become ready.
-    descriptor_ops::poll_read(impl.descriptor_, ec);
+    descriptor_ops::poll_read(impl.descriptor_, impl.state_, ec);
 
     return 0;
   }

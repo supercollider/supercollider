@@ -12,7 +12,7 @@ Buffer objects should not be created or modified within a link::Classes/SynthDef
 
 subsection:: Buffer Numbers and Allocation
 
-Although the number of buffers on a server is set at the time it is booted, memory must still be allocated within the server app before they can hold values. (At boot time all buffers have a size of 0.) 
+Although the number of buffers on a server is set at the time it is booted, memory must still be allocated within the server app before they can hold values. (At boot time all buffers have a size of 0.)
 
 link::Classes/Server::-side buffers are identified by number, starting from 0. When using Buffer objects, buffer numbers are automatically allocated from the Server's bufferAllocator, unless you explicitly supply one. When you call code::.free:: on a Buffer object it will release the buffer's memory on the server, and free the buffer number for future reallocation. See link::Classes/ServerOptions:: for details on setting the number of available buffers.
 
@@ -30,7 +30,7 @@ subsection:: Completion Messages and Action Functions
 
 Many buffer operations (such as reading and writing files) are asynchronous, meaning that they will take an arbitrary amount of time to complete. Asynchronous commands are passed to a background thread on the server so as not to steal CPU time from the audio synthesis thread.
 Since they can last an aribitrary amount of time it is convenient to be able to specify something else that can be done immediately on completion.
-The ability to do this is implemented in two ways in Buffer's various methods: completion messages and action functions. 
+The ability to do this is implemented in two ways in Buffer's various methods: completion messages and action functions.
 
 A completion message is a second OSC command which is included in the message which is sent to the server. (See link::Guides/NodeMessaging:: for a discussion of OSC messages.)
 The server will execute this immediately upon completing the first command.
@@ -70,7 +70,7 @@ s.boot;
 b = Buffer.alloc(s, s.sampleRate * 8.0, 2);
 b.free;
 ::
-	
+
 method:: allocConsecutive
 Allocates a range of consecutively-numbered buffers, for use with UGens like link::Classes/VOsc:: and link::Classes/VOsc3:: that require a contiguous block of buffers, and returns an array of corresponding Buffer objects.
 argument:: numBufs
@@ -98,7 +98,7 @@ b = Buffer.allocConsecutive(8, s, 4096, 1, { |buf, i|
 a = { VOsc.ar(SinOsc.kr(0.5, 0).range(b.first.bufnum + 0.1, b.last.bufnum - 0.1),
 	[440, 441], 0, 0.2) }.play;
 )
-a.free; 
+a.free;
 
 // iterate over the array and free it
 b.do(_.free);
@@ -118,13 +118,14 @@ argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 argument:: bufnum
 An explicitly specified buffer number. Generally this is not needed.
-		
+
 discussion::
 N.B. You cannot rely on the buffer's instance variables being instantly updated, as there is a small amount of latency involved. action will be evaluated upon receipt of the reply to the query, so use this in cases where access to instance variables is needed.
 code::
 // read a soundfile
 s.boot;
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+p = Platform.exampleSoundFile;
+b = Buffer.read(p);
 
 // now play it
 (
@@ -139,7 +140,7 @@ x.free; b.free;
 // with an action function
 // note that the vars are not immediately up-to-date
 (
-b = Buffer.read(s, "sounds/a11wlk01.wav", action: { arg buffer; 
+b = Buffer.read(s, p, action: { arg buffer;
     ("After update:" + buffer.numFrames).postln;
     x = { PlayBuf.ar(1, buffer, BufRateScale.kr(buffer)) }.play;
 });
@@ -168,26 +169,29 @@ discussion::
 code::
 s.boot;
 // first a standard read so we can see what's in the file
-b = Buffer.read(s, "sounds/SinedPink.aiff");
-// "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
+b = Buffer.read(s, Help.dir +/+ "sounds/SinedPink.aiff");
+// Help.dir +/+ "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
 b.plot;
 b.free;
 
 // Now just the sine
-b = Buffer.readChannel(s, "sounds/SinedPink.aiff", channels: [0]);
+b = Buffer.readChannel(s, Help.dir +/+ "sounds/SinedPink.aiff", channels: [0]);
 b.plot;
 b.free;
 
 // Now just the pink noise
-b = Buffer.readChannel(s, "sounds/SinedPink.aiff", channels: [1]);
+b = Buffer.readChannel(s, Help.dir +/+ "sounds/SinedPink.aiff", channels: [1]);
 b.plot;
 b.free;
 
 // Now reverse channel order
-b = Buffer.readChannel(s, "sounds/SinedPink.aiff", channels: [1, 0]);
+b = Buffer.readChannel(s, Help.dir +/+ "sounds/SinedPink.aiff", channels: [1, 0]);
 b.plot;
 b.free;
 ::
+
+method:: readExample
+Read example sound file to buffer via code::read::.
 
 method:: readNoUpdate
 As code::read:: above, but without the automatic update of instance variables. Call code::updateInfo:: (see below) to update the vars.
@@ -205,7 +209,7 @@ argument:: bufnum
 An explicitly specified buffer number. Generally this is not needed.
 discussion::
 code::
-// with a completion message			
+// with a completion message
 s.boot;
 (
 SynthDef(\help_Buffer,{ arg out=0, bufnum;
@@ -215,9 +219,9 @@ SynthDef(\help_Buffer,{ arg out=0, bufnum;
 }).add;
 
 y = Synth.basicNew(\help_Buffer); // not sent yet
-b = Buffer.readNoUpdate(s,"sounds/a11wlk01.wav", 
+b = Buffer.readNoUpdate(s, Platform.exampleSoundFile,
 	completionMessage: { arg buffer;
-		// synth add its s_new msg to follow 
+		// synth add its s_new msg to follow
 		// after the buffer read completes
 		y.newMsg(s,[\bufnum, buffer],\addToTail)
 	});
@@ -258,7 +262,7 @@ SynthDef(\help_Buffer_cue,{ arg out=0,bufnum;
 
 (
 s.makeBundle(nil, {
-	b = Buffer.cueSoundFile(s,"sounds/a11wlk01-44_1.aiff", 0, 1);
+	b = Buffer.cueSoundFile(s, Platform.exampleSoundFile, 0, 1);
 	y = Synth(\help_Buffer_cue, [\bufnum, b], s);
 });
 )
@@ -296,7 +300,7 @@ b.free; x.free;
 l = Signal.sineFill(16384, Array.fill(200, {0}).add(1));
 r = Array.fill(16384, {1.0.rand2});
 m = [Array.newFrom(l), r]; // a multi-dimensional array
-m = m.lace(32768); // interleave the two collections 
+m = m.lace(32768); // interleave the two collections
 b = Buffer.loadCollection(s, m, 2, {|buf|
 	x = { PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1) * 0.5 }.play;
 });
@@ -304,7 +308,7 @@ b = Buffer.loadCollection(s, m, 2, {|buf|
 b.plot;
 x.free; b.free;
 ::
-		
+
 method:: sendCollection
 Stream a large collection into a buffer on the server using multiple setn messages. Returns a Buffer object.
 argument:: server
@@ -345,7 +349,7 @@ discussion::
 code::
 s.boot;
 (
-b = Buffer.loadDialog(s, action: { arg buffer; 
+b = Buffer.loadDialog(s, action: { arg buffer;
 	x = { PlayBuf.ar(buffer.numChannels, buffer, BufRateScale.kr(buffer)) }.play;
 });
 )
@@ -399,7 +403,7 @@ Access a buffer by its number.
 method:: cachedBuffersDo
 Iterate over all cached buffers. The iteration is not in any order, but will touch all buffers.
 
-	
+
 InstanceMethods::
 
 subsection:: Variables
@@ -408,7 +412,7 @@ The following variables have getter methods.
 
 method:: server
 Returns the Buffer's Server object.
-	
+
 method:: bufnum
 Returns the buffer number of the corresponding server-side buffer. In normal use you should not need to access this value, since instances of Buffer can be used directly as UGen inputs or Synth args.
 discussion::
@@ -421,16 +425,16 @@ b.free;
 
 method:: numFrames
 Returns the number of sample frames in the corresponding server-side buffer. Note that multichannel buffers interleave their samples, so when dealing with indices in methods like get and getn, the actual number of available values is numFrames * numChannels.
-	
+
 method:: numChannels
-Returns the number of channels in the corresponding server-side buffer. 
-	
+Returns the number of channels in the corresponding server-side buffer.
+
 method:: sampleRate
 Returns the sample rate of the corresponding server-side buffer.
-	
+
 method:: path
 Returns a string containing the path of a soundfile that has been loaded into the corresponding server-side buffer.
-	
+
 
 subsection:: Explicit allocation
 
@@ -463,7 +467,7 @@ discussion::
 code::
 s.boot;
 b = Buffer.new(s);
-b.allocRead("sounds/a11wlk01.wav");
+b.allocRead(Platform.exampleSoundFile);
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * 0.5 }.play;
 x.free; b.free;
 ::
@@ -485,9 +489,9 @@ code::
 s.boot;
 b = Buffer.new(s);
 // read only the first channel (a Sine wave) of a stereo file
-b.allocReadChannel("sounds/SinedPink.aiff", channels: [0]);
+b.allocReadChannel(Help.dir +/+ "sounds/SinedPink.aiff", channels: [0]);
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * 0.5 }.play;
-x.free; b.free;		
+x.free; b.free;
 ::
 
 subsection:: Other methods
@@ -512,7 +516,7 @@ A valid OSC message or a Function which will return one. A Function will be pass
 
 discussion::
 Note that if the number of frames in the file is greater than the number of frames in the buffer, it will be truncated. Note that readMsg will not auto-update instance variables. Call updateInfo in order to do this.
-		
+
 method:: readChannel, readChannelMsg
 As read above, but allows you to specify which channels to read.
 argument:: path
@@ -532,7 +536,7 @@ argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
-		
+
 method:: cueSoundFile, cueSoundFileMsg
 A convenience method to cue a soundfile into the buffer for use with a link::Classes/DiskIn::. The buffer must have been allocated with a multiple of (2 * the server's block size) frames.  A common size is 32768 frames.
 argument:: path
@@ -545,15 +549,15 @@ discussion::
 code::
 s.boot;
 //create with cueSoundFile class method
-b = Buffer.cueSoundFile(s, "sounds/a11wlk01-44_1.aiff", 0, 1);
-x = { DiskIn.ar(1, b) }.play;	
+b = Buffer.cueSoundFile(s, Help.dir +/+ "sounds/a11wlk01-44_1.aiff", 0, 1);
+x = { DiskIn.ar(1, b) }.play;
 b.close;	// must call close in between cueing
 // now use like named instance method, but different arguments
-b.cueSoundFile("sounds/a11wlk01-44_1.aiff");	
-// have to do all this to clean up properly!	
-x.free; b.close; b.free;	
+b.cueSoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff");
+// have to do all this to clean up properly!
+x.free; b.close; b.free;
 ::
-	
+
 method:: write, writeMsg
 Write the contents of the buffer to a file. See link::Classes/SoundFile:: for information on valid values for headerFormat and sampleFormat.
 argument:: path
@@ -579,7 +583,7 @@ argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 
 method:: set, setMsg
-Set the value in the buffer at index to be equal to float. Additional pairs of indices and floats may be included in the same message. 
+Set the value in the buffer at index to be equal to float. Additional pairs of indices and floats may be included in the same message.
 discussion::
 Note that multichannel buffers interleave their sample data, therefore the actual number of available values is equal to code:: numFrames * numChannels ::. Indices start at 0.
 code::
@@ -587,7 +591,7 @@ s.boot;
 b = Buffer.alloc(s, 4, 2);
 b.set(0, 0.2, 1, 0.3, 7, 0.4); // set the values at indices 0, 1, and 7.
 b.getn(0, 8, {|msg| msg.postln});
-b.free;	
+b.free;
 ::
 
 method:: setn, setnMsg
@@ -617,7 +621,7 @@ A Function to be evaluated once the file has been read and this Buffer's instanc
 
 discussion::
 This allows for larger collections than setn, above, and is in general the safest way to get a large collection into a buffer. The sample rate of the buffer will be the sample rate of the server on which it was created.
-The number of channels and frames will have been determined when the buffer was allocated. You are responsible for making sure that the size of collection is not greater than numFrames, and for interleaving any data if needed. 
+The number of channels and frames will have been determined when the buffer was allocated. You are responsible for making sure that the size of collection is not greater than numFrames, and for interleaving any data if needed.
 code::
 s.boot;
 (
@@ -625,19 +629,19 @@ v = Signal.sineFill(128, 1.0/[1,2,3,4,5,6]);
 b = Buffer.alloc(s, 128);
 )
 (
-b.loadCollection(v, action: {|buf| 
-	x = { PlayBuf.ar(buf.numChannels, buf, BufRateScale.kr(buf), loop: 1) 
+b.loadCollection(v, action: {|buf|
+	x = { PlayBuf.ar(buf.numChannels, buf, BufRateScale.kr(buf), loop: 1)
 		* 0.2 }.play;
 });
 )
 x.free; b.free;
-		
+
 // interleave a multi-dimensional array
 (
 l = Signal.sineFill(16384, Array.fill(200, {0}).add(1));
 r = Array.fill(16384, {1.0.rand2});
 m = [Array.newFrom(l), r]; // a multi-dimensional array
-m = m.lace(32768); // interleave the two collections 
+m = m.lace(32768); // interleave the two collections
 b = Buffer.alloc(s, 16384, 2);
 )
 (
@@ -684,8 +688,8 @@ b.free;
 ::
 
 method:: getn, getMsg
-Send a message requesting the a contiguous range of values of size count starting from index. action is a Function which will be passed the values in an Array as an argument and evaluated when a reply is received. See setn above for an example. 
-discussion::		
+Send a message requesting the a contiguous range of values of size count starting from index. action is a Function which will be passed the values in an Array as an argument and evaluated when a reply is received. See setn above for an example.
+discussion::
 N.B. The maximum number of values that you can get with a single getn message is 1633 when the server is using UDP as its communication protocol. Use loadToFloatArray and getToFloatArray to get larger ranges of values.
 
 method:: loadToFloatArray
@@ -700,7 +704,7 @@ discussion::
 This is safer than getToFloatArray but only works with a server on your local machine. In general this is the safest way to get a large range of values from a server buffer into the client app.
 code::
 s.boot;
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 // same as Buffer.plot
 b.loadToFloatArray(action: { arg array; a = array; {a.plot;}.defer; "done".postln;});
 b.free;
@@ -722,7 +726,7 @@ discussion::
 This is more risky than loadToFloatArray but does works with servers on remote machines. In high traffic situations it is possible for data to be lost. If this method has not received all its replies by timeout it will post a warning saying that the method has failed. In general use loadToFloatArray instead wherever possible.
 code::
 s.boot;
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 // like Buffer.plot
 b.getToFloatArray(wait:0.01,action:{arg array; a = array; {a.plot;}.defer;"done".postln;});
 b.free;
@@ -730,10 +734,10 @@ b.free;
 
 method:: normalize, normalizeMsg
 Normalizes the buffer so that the peak absolute value is newmax (which defaults to 1). If your buffer is in Wavetable format then set the asWavetable argument to true.
-	
+
 method:: fill, fillMsg
 Starting at the index startAt, set the next numFrames to value. Additional ranges may be included in the same message.
-	
+
 method:: copyData, copyMsg
 Starting at the index srcSamplePos, copy numSamples samples from this to the destination buffer buf starting at dstSamplePos. If numSamples is negative, the maximum number of samples possible is copied. The default is start from 0 in the source and copy the maximum number possible starting at 0 in the destination.
 discussion::
@@ -748,23 +752,23 @@ SynthDef(\help_Buffer_copy, { arg out=0, buf;
 )
 
 (
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 c = Buffer.alloc(s, 120000);
 )
 
-Synth(\help_Buffer_copy, [\buf, b]);		
+Synth(\help_Buffer_copy, [\buf, b]);
 
 // copy the whole buffer
 b.copyData(c);
 Synth(\help_Buffer_copy, [\buf, c]);
 
 // copy some samples
-c.zero;								
+c.zero;
 b.copyData(c, numSamples: 4410);
 Synth(\help_Buffer_copy, [\buf, c]);
 
 // buffer "compositing"
-c.zero;								
+c.zero;
 b.copyData(c, numSamples: 4410);
 b.copyData(c, dstStartAt: 4410, numSamples: 15500);
 Synth(\help_Buffer_copy, [\buf, c]);
@@ -777,7 +781,7 @@ method:: close, closeMsg
 After using a Buffer with a DiskOut or DiskIn, it is necessary to close the soundfile. Failure to do so can cause problems.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
-	
+
 method:: plot
 Plot the contents of the Buffer in a GUI window.
 argument:: name
@@ -793,7 +797,7 @@ a window to place the plot in. If nil, one will be created for you
 discussion::
 code::
 s.boot;
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 b.plot;
 b.free;
 ::
@@ -807,7 +811,7 @@ A value by which to scale the output. The default is 1.
 discussion::
 code::
 s.boot;
-b = Buffer.read(s,"sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 b.play; // frees itself
 x = b.play(true);
 x.free; b.free;
@@ -823,7 +827,7 @@ A Function to be evaluated once the file has been read and this Buffer's instanc
 discussion::
 code::
 s.boot;
-b = Buffer.readNoUpdate(s, "sounds/a11wlk01.wav");
+b = Buffer.readNoUpdate(s, Platform.exampleSoundFile);
 b.numFrames; // incorrect, shows nil
 b.updateInfo({|buf| buf.numFrames.postln; }); // now it's right
 b.free;
@@ -905,7 +909,7 @@ argument:: clearFirst
 A Boolean indicating whether or not to clear the buffer before writing. The default is true.
 
 method:: cheby, chebyMsg
-Fill this buffer with a series of chebyshev polynomials, which can be defined as: code::cheby(n) = amplitude  * cos(n * acos(x))::. To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero. 
+Fill this buffer with a series of chebyshev polynomials, which can be defined as: code::cheby(n) = amplitude  * cos(n * acos(x))::. To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero.
 argument:: amplitudes
 An Array containing amplitudes for the harmonics. The first float value specifies the amplitude for n = 1, the second float value specifies the amplitude for n = 2, and so on.
 argument:: normalize
@@ -919,14 +923,14 @@ code::
 s.boot;
 b = Buffer.alloc(s, 512, 1, {arg buf; buf.chebyMsg([1,0,1,1,0,1])});
 (
-x = { 
+x = {
 	Shaper.ar(
-		b, 
+		b,
 		SinOsc.ar(300, 0, Line.kr(0,1,6)),
 		0.5
-	) 
+	)
 }.play;
 )
-x.free; b.free;	
+x.free; b.free;
 ::
 

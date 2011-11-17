@@ -22,7 +22,7 @@ argument:: bounds
 An instance of link::Classes/Rect:: or link::Classes/Point::. Default value is code::160@20::.
 
 argument:: label
-The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.		
+The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
 
 argument:: controlSpec
 The link::Classes/ControlSpec:: for scaling the value.
@@ -40,7 +40,7 @@ argument:: labelWidth
 Number of pixels width for the label. The  default is 60. In the code::\horz:: layout, if you specify the code::numberWidth::, then the code::labelWidth:: is ignored and is set to the code::bounds.width - unitWidth - numberWidth::.
 
 argument:: numberWidth
-Number of pixels width for the number box. The  default is 45. In \line2 layout, numberWidth defaults to the bounds.width minus the unitWidth. 
+Number of pixels width for the number box. The  default is 45. In \line2 layout, numberWidth defaults to the bounds.width minus the unitWidth.
 
 argument:: unitWidth
 Number of pixels width for the unit label. The default is 0.  If code::unitWidth:: is 0, then no code::unitLabel:: is created. In the code::\line2:: layout, if you specify the code::numberWidth::, then the code::unitWidth:: is ignored and is set to the code::bounds.width - unitWidth - numberWidth::.
@@ -72,7 +72,7 @@ g = EZNumber(w,        // parent
 g.setColors(Color.grey,Color.white);
 );
 
-		
+
 // Simplest version, no parent view, so a window is created
 (
 	g = EZNumber(label:" test ", controlSpec: \amp.asSpec.step_(0.01) );
@@ -91,18 +91,18 @@ method:: action
 A function to be evaluated when the value changes. Te first argument will be the EZNumber.
 argument:: arg1
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. Default value is nil.
-				
+
 method:: value
 The value of the slider
 
 method:: round
 Rounds the values in the number box.
 argument:: arg1
-								
+
 method:: controlSpec
 An instance of link::Classes/ControlSpec:: for scaling the values.
 argument:: arg1
-				
+
 method:: value
 Gets/sets the list/menu to the index at value. Does not perform the action.
 argument:: val
@@ -147,7 +147,7 @@ argument:: numTypingColor
 An instance of link::Classes/Color::. The code::typingColor:: of the number view.
 argument:: background
 An instance of link::Classes/Color::. The code::background:: of the enclosing view.
-	
+
 method:: font
 Set the link::Classes/Font:: used by all the views.
 argument:: font
@@ -177,8 +177,8 @@ w.view.decorator.gap=2@2;
 );
 
 
-// click these parentheses to see all features and layouts 
-(   
+// click these parentheses to see all features and layouts
+(
 
 m=nil;
 m=2@2;		//comment for no margin
@@ -235,19 +235,19 @@ m=2@2;		//comment for no margin
 );
 
 
-)	
-	
-	
-	
+)
+
+
+
 // Sound example
 (
 // start server
 s.waitForBoot({
-	
+
 	var w, startButton, noteControl, cutoffControl, resonControl;
 	var balanceControl, ampControl;
 	var node, cmdPeriodFunc;
-	
+
 	// define a synth
 	SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1;
 			var x;
@@ -260,17 +260,17 @@ s.waitForBoot({
 			x = x * EnvGen.kr(Env.cutoff, gate, doneAction: 2);
 			Out.ar(0, x);
 		}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]
-	).load(s);
-	
-	
-	
+	).add;
+
+
+
 	// make the window
 	w = Window("another control panel", Rect(200, 400, 300, 180));
 	w.front; // make window visible and front window.
 	w.view.decorator = FlowLayout(w.view.bounds);
-	
+
 	w.view.background = Color.rand;
-	
+
 	// add a button to start and stop the sound.
 	startButton = Button(w, 75 @ 20);
 	startButton.states = [
@@ -291,33 +291,33 @@ s.waitForBoot({
 				node.release; node = nil;
 			};
 	};
-	
+
 	// create controls for all parameters
 	w.view.decorator.nextLine;
 	noteControl = EZNumber(w, 160 @ 20, "Note ", ControlSpec(24, 60, \lin, 1),
 		{|ez| node.set( "note", ez.value )}, 36);
-		
+
 	w.view.decorator.nextLine;
 	cutoffControl = EZNumber(w, 160 @ 20, "Cutoff ", ControlSpec(200, 5000, \exp),
 		{|ez| node.set( "fc", ez.value )}, 1000);
-		
+
 	w.view.decorator.nextLine;
 	resonControl = EZNumber(w, 160 @ 20, "Reson", ControlSpec(0.1, 0.7),
 		{|ez| node.set( "rq", ez.value )}, 0.2);
-		
+
 	w.view.decorator.nextLine;
 	balanceControl = EZNumber(w, 160 @ 20, "Balance ", \bipolar,
 		{|ez| node.set( "bal", ez.value )}, 0);
-		
+
 	w.view.decorator.nextLine;
 	ampControl = EZNumber(w, 160 @ 20, "Amp ", \db,
 		{|ez| node.set( "amp", ez.value.dbamp )}, -6);
-		
-	
+
+
 	// set start button to zero upon a cmd-period
 	cmdPeriodFunc = { startButton.value = 0; };
 	CmdPeriod.add(cmdPeriodFunc);
-	
+
 	// stop the sound when window closes and remove cmdPeriodFunc.
 	w.onClose = {
 		node.free; node = nil;

@@ -155,6 +155,9 @@
 			};
 			val = UGen.replaceZeroesWithSilence(val.asArray);
 			rate = val.rate;
+			if(rate == \audio) { // convert mixed rate outputs:
+				val = val.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
+			};
 			if(val.size == 0) { numChannels = 1 } { numChannels = val.size };
 			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop:0);
 			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);

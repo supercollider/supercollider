@@ -18,11 +18,11 @@ method::ar, kr
 
 argument::freq
 
-The base frequency of the sine oscillator in Hertz. 
+The base frequency of the sine oscillator in Hertz.
 
 argument::feedback
 
-The second argument is the amplitude of phase feedback in radians. 
+The second argument is the amplitude of phase feedback in radians.
 
 argument::mul
 
@@ -64,7 +64,7 @@ s.boot;
 
 s.sendMsg(\b_alloc, 0, 8192, 2);
 
-{ 
+{
 var z;
 z = SinOscFB.ar([400,301], MouseX.kr(0,4),0.3);
 Out.ar(0, z);

@@ -3,7 +3,7 @@ summary:: flow control
 categories:: Language
 related:: Classes/Boolean
 
-Control structures in SuperCollider are implemented via message sends. Here are a few of those available. 
+Control structures in SuperCollider are implemented via message sends. Here are a few of those available.
 See link::Reference/Syntax-Shortcuts:: for the various ways expressions can be written.
 
 section:: Basic Control Structures
@@ -133,7 +133,7 @@ code::
 
 'they'.do({ arg item; item.postln }); // a Symbol is a singular item
 
-(8..20).do({ arg item; item.postln }); // iterates from eight to twenty 
+(8..20).do({ arg item; item.postln }); // iterates from eight to twenty
 
 (8,10..20).do({ arg item; item.postln }); // iterates from eight to twenty, with stepsize two
 
@@ -183,7 +183,7 @@ switch (z.choose.postln,
 )
 ::
 or:
-code::	
+code::
 (
 var x, z;
 z = [0, 1, 1.1, 1.3, 1.5, 2];

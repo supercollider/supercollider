@@ -36,7 +36,7 @@ code::
 		2)
 }.play
 )
-	
+
 (
 {
 	NumChannels.ar(

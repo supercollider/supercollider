@@ -93,9 +93,11 @@ BOOST_ASIO_DECL int fcntl(int d, long cmd, boost::system::error_code& ec);
 BOOST_ASIO_DECL int fcntl(int d, long cmd,
     long arg, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL int poll_read(int d, boost::system::error_code& ec);
+BOOST_ASIO_DECL int poll_read(int d,
+    state_type state, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL int poll_write(int d, boost::system::error_code& ec);
+BOOST_ASIO_DECL int poll_write(int d,
+    state_type state, boost::system::error_code& ec);
 
 } // namespace descriptor_ops
 } // namespace detail

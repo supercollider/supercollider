@@ -4,7 +4,7 @@ categories:: UGens>Filters>Nonlinear, UGens>Generators>PhysicalModels
 related:: Classes/Ball, Classes/Spring
 
 description::
-models the impacts of a bouncing object that is reflected by a vibrating surface 
+models the impacts of a bouncing object that is reflected by a vibrating surface
 
 classmethods::
 
@@ -27,11 +27,11 @@ code::
 // mouse x controls switch of level
 // mouse y controls gravity
 (
-{ 
+{
 	var t, sf;
 	sf = K2A.ar(MouseX.kr > 0.5) > 0;
 	t = TBall.ar(sf, MouseY.kr(0.01, 1.0, 1), 0.01);
-	Pan2.ar(Ringz.ar(t * 10, 1200, 0.1), MouseX.kr(-1,1)); 
+	Pan2.ar(Ringz.ar(t * 10, 1200, 0.1), MouseX.kr(-1,1));
 }.play;
 )
 
@@ -39,12 +39,12 @@ code::
 // mouse x controls step noise modulation rate
 // mouse y controls gravity
 (
-{ 
+{
 	var t, sf, g;
 	sf = LFNoise0.ar(MouseX.kr(0.5, 100, 1));
 	g = MouseY.kr(0.01, 10, 1);
 	t = TBall.ar(sf, g, 0.01, 0.002);
-	Ringz.ar(t * 4, [600, 645], 0.3); 
+	Ringz.ar(t * 4, [600, 645], 0.3);
 }.play;
 )
 
@@ -52,7 +52,7 @@ code::
 // mouse y controls friction
 // gravity changes slowly
 (
-{ 
+{
 	var f, g, h, fr;
 	fr = MouseX.kr(1, 1000, 1);
 	h = MouseY.kr(0.0001, 0.001, 1);
@@ -66,7 +66,7 @@ code::
 // mouse y controls friction
 // mouse x controls gravity
 (
-{ 
+{
 	var f, g, h, fr;
 	fr = LinExp.kr(SinOsc.kr(0.1), -1, 1, 1, 600);
 	h = MouseY.kr(0.0001, 0.001, 1);
@@ -76,13 +76,13 @@ code::
 }.play;
 )
 
-// this is no mbira: vibrations of a bank of resonators that are 
+// this is no mbira: vibrations of a bank of resonators that are
 // triggered by some bouncing things that bounce one on each resonator
 
 // mouse y controls friction
 // mouse x controls gravity
 (
-	{ 
+	{
 	var sc, g, d, z, lfo, rate;
 	g = MouseX.kr(0.01, 100, 1);
 	d = MouseY.kr(0.00001, 0.2);
@@ -95,14 +95,14 @@ code::
 		in = Decay.ar(
 				Mix(Impulse.ar(rate, [1.0, LFNoise0.kr(rate / 12)].rand, 0.1)), 					0.001
 			);
-		in = Ringz.ar(in, 
+		in = Ringz.ar(in,
 					Array.fill(4, { |i| (i+1) + 0.1.rand2 }) / 2
-					* Decay.ar(in,0.02,rand(0.5,1), lfo)						* u, 
+					* Decay.ar(in,0.02,rand(0.5,1), lfo)						* u,
 					Array.exprand(4, 0.2, 1).sort
 					);
 		in = Mix(in);
 		f = TBall.ar(in * 10, g, d, 0.001);
-		
+
 		in + Mix(Ringz.ar(f, u * Array.fill(4, { |i| (i+1) + 0.3.rand2 }) * 2, 0.1))
 	};
 	Splay.ar(z) * 0.8

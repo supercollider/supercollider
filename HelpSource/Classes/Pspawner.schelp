@@ -27,7 +27,7 @@ Wait strong::dur:: seconds and then return control to the routine.
 
 argument::suspend
 Find the stream in the Spawner and stop it, returns nil if the stream is not found, the stream otherwise.
-	
+
 argument::suspendAll
 Stop all substreams of the Spawner.
 
@@ -58,7 +58,7 @@ Pspawner({ | sp |
 	sp.seq(
 		Pbind(*[ degree: Pseq((0..7).mirror), dur: 0.2, mtranspose: (0,2..14)])
 	);
-	
+
 // scales overlaped at 0.4 second intervals
 
 	10.do {
@@ -69,7 +69,7 @@ Pspawner({ | sp |
 		sp.wait(0.4)
 	};
 	sp.wait(1.6);
-	sp.suspendAll;	
+	sp.suspendAll;
 }).play
 )
 
@@ -90,7 +90,7 @@ Pspawner({ | sp |
 		sp.wait(4);
 		stream;
 	};
-		
+
 	// now stop those streams one by one
 	streams.do { | s | sp.suspend(s); sp.wait(4) };
 }).play
@@ -99,18 +99,18 @@ Pspawner({ | sp |
 (
 // example 3: define a Pspawner and use Pattern manipulations
 p = Pspawner({ | sp |
-	
+
 	sp.par(Pbind(*[octave: 5, degree: Pbrown( -7, 7, 3), dur: 0.2]) );
-	
+
 	sp.wait(2);
 	sp.par(Pbind(*[octave: 5, degree: Pbrown( -7, 7, 3), dur: 0.1]) );
 	sp.wait(1);
 	sp.par(Pbind(*[octave: 6, degree: Pbrown( -7, 7, 3), dur: 0.05]) );
 	sp.wait(0.5);
-	
+
 	sp.wait(4);
 	sp.par(Pbind(*[octave: 5, degree: Pbrown( -7, 7, 3), dur: 0.2]) );
-	
+
 	sp.wait(4);
 	sp.suspendAll;
 });

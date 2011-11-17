@@ -41,14 +41,14 @@ code::
 
 play({ SinOsc.ar(440, 0, 0.2) });
 ::
-	
+
 You will find numerous other examples of syntax shortcuts throughout SC's documentation. If you see something you don't recognize, a good place to check is link::Reference/Syntax-Shortcuts::, which gives examples of most of these.
 
 section::Snooping, etc.
 
 SC has numerous other ways of tracking down information on classes, methods, etc. Most of these won't be too helpful for you at this point, but are good to know about for future use. Information on these can be found in the files link::Guides/More-On-Getting-Help:: and link::Guides/Internal-Snooping::.
 
-For more information see: 
+For more information see:
 
 link::Guides/More-On-09-Getting-Help::, link::Guides/Internal-Snooping::, link::Reference/Syntax-Shortcuts::
 

@@ -24,7 +24,7 @@
 
 typedef int SCErr;
 
-const char *SC_ErrorString(SCErr err);
+void SC_ErrorString(SCErr err, char returnString[]);
 
 enum {
 	kSCErr_None,

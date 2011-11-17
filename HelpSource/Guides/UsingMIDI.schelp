@@ -53,11 +53,11 @@ list::
 ## smpte
 ::
 
-To assign a response to a particular kind of MIDI message, assign a function to the class variable: 
+To assign a response to a particular kind of MIDI message, assign a function to the class variable:
 
 code::
 MIDIIn.connect;
-MIDIIn.noteOn = { |port, chan, note, vel| [port, chan, note, vel].postln }; 
+MIDIIn.noteOn = { |port, chan, note, vel| [port, chan, note, vel].postln };
 MIDIIn.noteOn = nil;	// stop responding
 ::
 

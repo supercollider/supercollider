@@ -27,7 +27,7 @@ s.boot;
 
 // excitation signal is WhiteNoise, triggered twice a second with varying OnePole coef
 (
-	{Pluck.ar(WhiteNoise.ar(0.1), Impulse.kr(2), 440.reciprocal, 440.reciprocal, 10, 
+	{Pluck.ar(WhiteNoise.ar(0.1), Impulse.kr(2), 440.reciprocal, 440.reciprocal, 10,
 		coef:MouseX.kr(-0.999, 0.999))
 	}.play(s)
 )
@@ -37,13 +37,13 @@ s.quit;
 	{
 		var freq, numparts;
 		numparts = 50;
-		freq = SinOsc.kr(Array.fill(numparts, {Rand(0.05, 0.2)}), 
+		freq = SinOsc.kr(Array.fill(numparts, {Rand(0.05, 0.2)}),
 			Array.fill(numparts, {Rand(0, 1.0)})).range(1000, 3000);
 		LeakDC.ar(
 			Pan2.ar(
 				Pluck.ar(
-					WhiteNoise.ar(0.1).dup(numparts), 
-					Impulse.kr(Array.fill(numparts, {Rand(10, 12)})), 
+					WhiteNoise.ar(0.1).dup(numparts),
+					Impulse.kr(Array.fill(numparts, {Rand(10, 12)})),
 					100.reciprocal, freq.reciprocal, 2, Rand(0.01, 0.2), mul: 1),
 				Array.fill(numparts, {Rand.new(-1.0, 1.0)}))
 			.sum

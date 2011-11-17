@@ -13,6 +13,7 @@ SynthDef {
 	// topo sort
 	var <>available;
 	var <>variants;
+	var <>widthFirstUGens;
 
 	var <>desc, <>metadata;
 
@@ -407,6 +408,7 @@ SynthDef {
 	// UGens do these
 	addUGen { arg ugen;
 		ugen.synthIndex = children.size;
+		ugen.widthFirstAntecedents = widthFirstUGens.copy;
 		children = children.add(ugen);
 	}
 	removeUGen { arg ugen;
@@ -469,6 +471,7 @@ SynthDef {
 		children.do { arg ugen;
 			ugen.antecedents = nil;
 			ugen.descendants = nil;
+			ugen.widthFirstAntecedents = nil;
 		};
 	}
 	topologicalSort {

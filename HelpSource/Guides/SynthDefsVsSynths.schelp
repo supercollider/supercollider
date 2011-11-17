@@ -37,19 +37,19 @@ SynthDef("Help-SynthDef", { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).load(s);
 )
-	
+
 // Load it to the server without writing to disk
 (
 SynthDef("Help-SynthDef", { arg out = 0;
 	Out.ar(out, PinkNoise.ar(0.1))
 }).send(s);
 )
-	
+
 // Create a Synth with it
 x = Synth.new("Help-SynthDef", s);
 x.free;
-	
-// Shorthand method to compile and write a SynthDef, and then play it in a Synth when done. 
+
+// Shorthand method to compile and write a SynthDef, and then play it in a Synth when done.
 // Look familiar?
 (
 x = SynthDef("Help-SynthDef", { arg out = 0;
@@ -58,10 +58,10 @@ x = SynthDef("Help-SynthDef", { arg out = 0;
 )
 // The above only starts the new Synth after the def has been sent to the server.
 // Note that SynthDef.play returns a Synth object!
-		
+
 x.set(\out, 1); // change one of the arguments
 x.free;
-	
+
 // SynthDef with a parameter that will be randomly determined each time a new Synth is created
 // (try it several times to hear the differences)
 (

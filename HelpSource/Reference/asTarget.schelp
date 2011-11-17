@@ -44,7 +44,7 @@ x.free; g.free;
 
 // if not using the default Server Integer-asTarget can be problematic
 
-Server.default = Server.local; 
+Server.default = Server.local;
 Server.default.boot;            // quit the default server
 i = Server.internal; i.boot;
 g = i.nextNodeID.asTarget;
@@ -64,10 +64,10 @@ s.sendMsg(\g_new, x = s.nextNodeID);
 // ...
 
 // now if we need to use Node objects for some reason
-y = Synth.head(x.asTarget, "default"); 
+y = Synth.head(x.asTarget, "default");
 
 // this is simpler than Group.basicNew(s, x);, providing you're using the default server:
-z = Synth.head(Group.basicNew(s, x), "default"); 
+z = Synth.head(Group.basicNew(s, x), "default");
 
 y.free; z.free; x.asTarget.free;
 ::

@@ -13,22 +13,22 @@ SynthDef("fm1", { arg bus = 0, freq = 440, carPartial = 1, modPartial = 1, index
 
 	// index values usually are between 0 and 24
 	// carPartial :: modPartial => car/mod ratio
-	
+
 	var mod;
 	var car;
-	
+
 	mod = SinOsc.ar(
 		freq * modPartial,
 		0,
 		freq * index * LFNoise1.kr(5.reciprocal).abs
 	);
-		
+
 	car = SinOsc.ar(
 		(freq * carPartial) + mod,
 		0,
 		mul
 	);
-	
+
 	Out.ar(
 		bus,
 		car
@@ -107,10 +107,10 @@ SynthDef("carrier", { arg inbus = 2, outbus = 0, freq = 440, carPartial = 1, ind
 
 	// index values usually are between 0 and 24
 	// carPartial :: modPartial => car/mod ratio
-	
+
 	var mod;
 	var car;
-	
+
 	mod = In.ar(inbus, 1);
 
 	Out.ar(

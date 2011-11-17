@@ -5,7 +5,7 @@ categories::  UGens>Maths
 
 
 Description::
-A pair of signals x and y are treated as a point (x,y) in 2-D; if they fall within the bounds of the rectangle, then this UGen outputs a one; else it outputs zero. 
+A pair of signals x and y are treated as a point (x,y) in 2-D; if they fall within the bounds of the rectangle, then this UGen outputs a one; else it outputs zero.
 
 
 classmethods::
@@ -29,7 +29,7 @@ code::
 {(InRect.ar(LFNoise0.ar([140,141]),LFNoise0.ar(143),Rect(0,0,0.5,1)).lag(0.1))*LFSaw.ar(SinOsc.ar(10,0,5,400),0,0.1) }.play
 
 
-//for the Rect, create as left, 'top', width, height; 
+//for the Rect, create as left, 'top', width, height;
 r= Rect(0,0,1,1)
 
 r.left

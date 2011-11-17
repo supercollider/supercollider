@@ -8,7 +8,7 @@ Note:: this helpfile is incomplete. ::
 An link::Classes/Event:: responds to a code::play:: message by evaluating ~play in the event, and the default behaviour of ~play is determined by the value of ~type. Commonly-used event types include:
 
 definitionlist::
-## \note || used to instantiate a synth on the server, with specified arguments, and later to free it. The choice of link::Classes/SynthDef:: is specified using the \instrument key. This event type is commonly implicit in much Pattern usage. 
+## \note || used to instantiate a synth on the server, with specified arguments, and later to free it. The choice of link::Classes/SynthDef:: is specified using the \instrument key. This event type is commonly implicit in much Pattern usage.
 ## \set || used to set parameters of some already-running node(s). (See also: note in link::Classes/Pmono:: helpfile)
 ::
 

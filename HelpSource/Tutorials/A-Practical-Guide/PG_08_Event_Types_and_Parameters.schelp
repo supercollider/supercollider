@@ -47,7 +47,7 @@ definitionList::
 
 ## note || This is the default event type, used when code::\type:: is not specified. It plays one or more Synth nodes on the server, with an automatic release after code::\sustain:: beats if the SynthDef has a code::gate:: argument.
 definitionList::
-## Standard Timing and Node control arguments || 
+## Standard Timing and Node control arguments ||
 ## sendGate || Override SynthDef behavior for the code::gate:: argument. If the SynthDef as code::gate::, setting code::sendGate = false:: prevents the release message from being sent. Rarely used.
 ## strum || If multiple notes are produced (usually a chord, given by providing an array to one of the pitch parameters), code::\strum:: is the number of beats to delay each successive note onset. When using code::\strum::, another key is active, code::\strumEndsTogether::. If false (the default), each strummed node will play for its full duration and the releases will be staggered. If true, the releases will occur at the same time.
 
@@ -68,14 +68,14 @@ p.stop;
 
 ## on || Start a Synth node (or nodes) without releasing. The node ID(s) are in the event's code::~id:: variable. Those IDs can be used with the off, set and kill event types.
 definitionList::
-## Standard Timing and Node control arguments || 
+## Standard Timing and Node control arguments ||
 ## callback || A function that will be executed after creating the nodes. Use this for bookkeeping, to keep track of the node IDs for later use. The function receives the finished event as its argument.
-## (sendGate and strum parameters are not used) || 
+## (sendGate and strum parameters are not used) ||
 ::
 
 ## off || Release server nodes nicely if possible. If the SynthDef has a code::gate:: argument, the gate will be set to code::0:: or a user-specified value. Otherwise, the nodes are brutally killed with code::n_free::.
 definitionList::
-## Standard Timing control arguments || 
+## Standard Timing control arguments ||
 ## hasGate || True or false, telling the event whether the SynthDef has a code::gate:: argument or not. The default is assumed true.
 ## id || The node ID(s) must be given explicitly.
 ## gate || By default, the gate will be set to code::0::. Negative values trigger a "forced release" in EnvGen. See the link::Classes/EnvGen:: help file for details.
@@ -83,13 +83,13 @@ definitionList::
 
 ## kill || Immediately remove nodes using code::n_free::.
 definitionList::
-## Standard Timing control arguments || 
+## Standard Timing control arguments ||
 ## id || The node ID(s) must be given explicitly.
 ::
 
 ## set || Send new values to the control inputs of existing nodes.
 definitionList::
-## Standard Timing control arguments || 
+## Standard Timing control arguments ||
 ## id || The node ID(s) must be given explicitly. This may be an integer ID or Synth/Group node object.
 ::
 ::
@@ -154,8 +154,8 @@ a.free;
 ::
 
 definitionList::
-## monoNote || 
-## monoOff || 
+## monoNote ||
+## monoOff ||
 ## monoSet || These event types are used internally by Pmono and PmonoArtic. They should not be used directly.
 ::
 
@@ -164,13 +164,13 @@ subsection::Server control
 definitionList::
 ## group || Create a new group (or groups).
 definitionList::
-## Standard Timing and Node control arguments || 
+## Standard Timing and Node control arguments ||
 ## id  || (Optional) IDs for the new groups. If not specified, the new ID (for one group only) can be found in the event after code::.play::. To create multiple groups, you must provide an array of IDs.
 ::
 
 ## bus || Set the value of a control bus, or contiguous control buses. This assumes that you already have the bus index.
 definitionList::
-## Standard Timing control arguments || 
+## Standard Timing control arguments ||
 ## array || The value(s) to send to the bus(es). If it's only one value, it doesn't have to be an array.
 ## out || The first bus index to be set. A Bus object can be used.
 ::
@@ -183,20 +183,20 @@ All of these buffer event types expect the buffer number to be provided. They wi
 definitionList::
 ## alloc || Allocate memory for a buffer on the server. Only one buffer may be allocated per event.
 definitionList::
-## Standard Timing control arguments || 
+## Standard Timing control arguments ||
 ## bufnum, numchannels, numframes || See the link::Classes/Buffer:: help file.
 ::
 
 ## free || Deallocate the buffer's memory on the server.
 definitionList::
-## Standard Timing control arguments || 
+## Standard Timing control arguments ||
 ## bufnum || Buffer number to free (one only).
 ::
 
 ## gen || Generate wavetable data in the buffer, using one of the server's code::b_gen:: plug-ins. The link::Classes/Buffer:: help file has more detail on the standard plug-ins.
 definitionList::
-## Standard Timing control arguments || 
-## bufnum || 
+## Standard Timing control arguments ||
+## bufnum ||
 ## gencmd || The generator plug-in name: code::\sine1::, code::\sine2::, code::\sine3::, code::\cheby::.
 ## genflags || Three flags, associated with numbers: normalize = code::1::, asWavetable = code::2::, clearFirst = code::4::. Add the numbers for the desired flags. Normally the flags are all true, adding up to code::7::.
 ## genarray || Data parameters for the plug-in. See the link::Reference/Server-Command-Reference:: help file for details on the format for each plug-in.
@@ -204,8 +204,8 @@ definitionList::
 
 ## load || Allocate buffer memory in the server and load a sound file into it, using code::b_allocRead::.
 definitionList::
-## Standard Timing control arguments || 
-## bufnum || 
+## Standard Timing control arguments ||
+## bufnum ||
 ## filename || Path to disk file.
 ## frame || Starting frame to read (default code::0::).
 ## numframes || Number of frames to read (default code::0::, which loads the entire file).
@@ -213,8 +213,8 @@ definitionList::
 
 ## read || Read a sound file into a buffer already allocated on the server. This event type is good to cue a sound file for use with DiskIn.
 definitionList::
-## Standard Timing control arguments || 
-## bufnum || 
+## Standard Timing control arguments ||
+## bufnum ||
 ## filename || Path to disk file.
 ## frame || Starting soundfile frame to read (default code::0::).
 ## numframes || Number of frames to read (default code::0::, which loads the entire file).
@@ -229,7 +229,7 @@ These event types uniquely have automatic cleanup event types associated with th
 
 code::
 // create a buffer
-b = (type: \allocRead, path: "sounds/a11wlk01.wav").play;
+b = (type: \allocRead, path: Platform.exampleSoundFile).play;
 
 a = { PlayBuf.ar(1, b, doneAction: 2) }.play;
 
@@ -302,13 +302,13 @@ definitionList::
 
 ## sine2 || Like strong::sine1::, but the frequency ratio of each partial is also given.
 definitionList::
-## Same arguments as sine1, plus: || 
+## Same arguments as sine1, plus: ||
 ## freqs || Array of frequencies for each partial. code::1.0:: is the fundamental frequency; its sine wave occupies the entire buffer duration.
 ::
 
 ## sine3 || Like strong::sine2::, but the phase of each partial may also be provided.
 definitionList::
-## Same arguments as sine1, plus: || 
+## Same arguments as sine1, plus: ||
 ## phases || Array of phases for each partial, given in radians (0.0 - 2pi).
 ::
 ::
@@ -318,7 +318,7 @@ subsection::MIDI output
 definitionList::
 ## midi || Sends one of several types of MIDI messages to a MIDIOut object.
 definitionList::
-## Standard Timing control arguments (except timingOffset, which is not used) || 
+## Standard Timing control arguments (except timingOffset, which is not used) ||
 ## midicmd || The type of MIDI message to send. This also determines other arguments that should be present in the event.
 ## midiout || The MIDI out object, which connects to one of the MIDI devices listed in code::MIDIClient.destinations::.
 ## chan || The MIDI channel number (0-15) on the device that should receive the message. This applies to all midicmds except the global ones ( strong::smpte::, strong::songPtr::, strong::sysex:: ).
@@ -326,7 +326,7 @@ definitionList::
 ::
 
 definitionList::
-## Available midicmds: || 
+## Available midicmds: ||
 
 definitionList::
 ## noteOn || Starts a note, and optionally stops it. If multiple frequencies are given, one noteOn/noteOff pair is sent for each, and code::\strum:: is also supported.

@@ -127,7 +127,7 @@ play = InFeedback.ar(10, 1); // 10 is feedback channel
 imp = Impulse.ar(1);
 
 // feedback
-OffsetOut.ar(10, DelayC.ar(imp + (play * 0.995), 1, 
+OffsetOut.ar(10, DelayC.ar(imp + (play * 0.995), 1,
 	440.reciprocal - ControlRate.ir.reciprocal)); // subtract block size
 
 OffsetOut.ar(0, play);

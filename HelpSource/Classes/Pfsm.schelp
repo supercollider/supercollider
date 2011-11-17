@@ -13,13 +13,13 @@ definitionList::
 ## list:
 || [
 definitionList::
-## [ entry states ], || 
-## item, [ next states ], || 
-## item, [ next states ], || 
-## ... || 
-## end item (or nil), nil || 
+## [ entry states ], ||
+## item, [ next states ], ||
+## item, [ next states ], ||
+## ... ||
+## end item (or nil), nil ||
 ::
-## ] || 
+## ] ||
 ::
 
 next states: nil is terminal

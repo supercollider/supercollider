@@ -52,11 +52,11 @@ code::
 		var freq;
 		freq = Duty.kr(
 				Drand([0.01, 0.2, 0.4], inf), // demand ugen as durations
-				0, 
+				0,
 				Dseq([204, 400, 201, 502, 300, 200], inf)
-			); 
+			);
 		SinOsc.ar(freq * [1, 1.01]) * 0.1
-	
+
 	}.play;
 )
 
@@ -65,11 +65,11 @@ code::
 		var freq;
 		freq = Duty.kr(
 				MouseX.kr(0.001, 2, 1), // control rate ugen as durations
-				0, 
+				0,
 				Dseq([204, 400, 201, 502, 300, 200], inf)
-			); 
+			);
 		SinOsc.ar(freq * [1, 1.01]) * 0.1
-	
+
 	}.play;
 )
 ::
@@ -80,12 +80,12 @@ code::
 	{
 		var freq;
 		freq = Duty.kr(
-				Dseq([0.2, 0.3, 0.4, Dseq([1, 1, 1, 2, 1, 2], inf)]) / 2, 
+				Dseq([0.2, 0.3, 0.4, Dseq([1, 1, 1, 2, 1, 2], inf)]) / 2,
 				Dust.kr(1), // control rate reset
 				Dseq([0, 1, 2, Dseq([1, 2, 3, 4, 5], inf)])
-			) * 30 + 250; 
+			) * 30 + 250;
 		SinOsc.ar(freq * [1, 1.01]) * 0.1
-	
+
 	}.play;
 )
 
@@ -93,12 +93,12 @@ code::
 	{
 		var freq;
 		freq = Duty.kr(
-				Dseq([0.2, 0.3, 0.4, Dseq([1, 1, 1, 2, 1, 2], inf)]) / 2, 
+				Dseq([0.2, 0.3, 0.4, Dseq([1, 1, 1, 2, 1, 2], inf)]) / 2,
 				Dseq([1, 2, 4, 5], inf), // demand rate reset
 				Dseq([0, 1, 2, Dseq([1, 2, 3, 4, 5], inf)])
-			) * 30 + 250; 
+			) * 30 + 250;
 		SinOsc.ar(freq * [1, 1.01]) * 0.1
-	
+
 	}.play;
 )
 ::
@@ -119,7 +119,7 @@ code::
 				0,
 				Dswitch1(a, MouseY.kr(0, n-1))
 			)
-	
+
 	}.play;
 )
 ::

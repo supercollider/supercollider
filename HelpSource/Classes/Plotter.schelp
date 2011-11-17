@@ -40,7 +40,7 @@ code::
 { SinOsc.ar([700, 357]) * SinOsc.ar([400, 476]) * 0.2 }.plot2;
 
 // Buffer
-Buffer.read(s, "sounds/SinedPink.aiff").plot2;
+Buffer.read(s, Help.dir +/+ "sounds/SinedPink.aiff").plot2;
 
 // Env
 Env.perc(0.4, 0.6).plot2;
@@ -156,12 +156,12 @@ code::
 (
 a = { (0..30).scramble }.dup(2).plot2;
 a.setProperties(
-	\fontColor, Color.red, 
-	\plotColor, Color.blue, 
+	\fontColor, Color.red,
+	\plotColor, Color.blue,
 	\backgroundColor, Color.black,
 	\gridColorX, Color.white,
 	\labelX, "Humidity"
-); 
+);
 a.refresh;
 );
 
@@ -254,7 +254,7 @@ a.specs = \freq; a.plotMode = \levels;
 a.editMode = true;
 x = {
 	var phase = SinOsc.ar(\rate.kr(a.value[1]));
-	SinOsc.ar(\freq.kr(a.value[0]), phase).mean * 0.1 
+	SinOsc.ar(\freq.kr(a.value[0]), phase).mean * 0.1
 }.play;
 a.editFunc = { |plotter, plotIndex, i, val|
 	x.setn(\freq, a.value[0]);
@@ -275,7 +275,7 @@ Slider.new(w, Rect(10, 10, 490, 20)).resize_(2).action_ { |v|
 	w.refresh;
 };
 z = CompositeView(w, Rect(10, 35, 490, 200)).background_(Color.rand(0.7)).resize_(5);
-a = Plotter("plot", parent: z).value_([0, 1, 2, 3, 4].scramble * 100); 
+a = Plotter("plot", parent: z).value_([0, 1, 2, 3, 4].scramble * 100);
 w.front;
 )
 
@@ -360,8 +360,8 @@ Env.perc(0.4, 0.6).plot2;
 Env.new({ 1.0.rand2 }! 8, { 1.0.rand } ! 7, \sin).plot2;
 
 // Buffer:plot
-b = Buffer.read(s, "sounds/SinedPink.aiff");
-		// "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
+b = Buffer.read(s, Help.dir +/+ "sounds/SinedPink.aiff");
+		// Help.dir +/+ "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
 b.plot2;
 b.free;
 ::

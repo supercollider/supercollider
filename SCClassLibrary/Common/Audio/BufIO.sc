@@ -139,7 +139,7 @@ Tap : UGen {
 	}
 }
 
-LocalBuf : UGen {
+LocalBuf : WidthFirstUGen {
 
 	*new { arg numFrames = 1, numChannels = 1;
 		^this.multiNew('scalar', numChannels, numFrames)
@@ -186,13 +186,13 @@ MaxLocalBufs : UGen {
 	}
 }
 
-SetBuf : UGen {
+SetBuf : WidthFirstUGen {
 	*new { arg buf, values, offset = 0;
 		^this.multiNewList(['scalar', buf, offset, values.size] ++ values)
 	}
 }
 
-ClearBuf : UGen {
+ClearBuf : WidthFirstUGen {
 	*new { arg buf;
 		^this.multiNew('scalar', buf)
 	}

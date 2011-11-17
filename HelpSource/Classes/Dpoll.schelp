@@ -38,15 +38,15 @@ code::
 // multichannel expansion:
 
 (
-	{ 
-	var x = Duty.kr(0.5, 0, 
+	{
+	var x = Duty.kr(0.5, 0,
 		Dpoll([Dseries(0, 1, inf), Dgeom(1, 1.1, inf)], ["first", "second"])
 	);
 	LFPulse.ar(100 + (x * 100)) * 0.1
 	}.play
 )
 
-{ Duty.kr(0.5, 0, Dpoll(( Dseries(0, 1, inf) + _ ).dup, ("value" + _).dup)); 0.0 }.play;	
+{ Duty.kr(0.5, 0, Dpoll(( Dseries(0, 1, inf) + _ ).dup, ("value" + _).dup)); 0.0 }.play;
 
 
 // the message dpoll(label, run, trigid) is a shorthand:

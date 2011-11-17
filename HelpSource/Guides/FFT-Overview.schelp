@@ -24,15 +24,15 @@ code::
 { var in, chain;
 	in = WhiteNoise.ar(0.8);
 	chain = FFT(LocalBuf(2048), in);
-	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4)); 
+	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
 	IFFT(chain);
 }.play(s);
 )
 ::
 
 PV Ugens write their output data emphasis:: in place ::, i.e. back into the same buffer from which they read. PV UGens which require two buffers write their data into the first buffer, usually called 'bufferA'.
-code::	
-d = Buffer.read(s,"sounds/a11wlk01.wav");
+code::
+d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 (
 { var inA, chainA, inB, chainB, chain;
@@ -60,7 +60,7 @@ c = Buffer.alloc(s,2048,1);
 x = { var inA, chainA, chainB;
     inA = LFClipNoise.ar(100);
     chainA = FFT(b, inA);
-    chainB = PV_Copy(chainA, c);  
+    chainB = PV_Copy(chainA, c);
     IFFT(chainA) - IFFT(chainB); // cancels to zero so silent!
 }.play(s);
 )
@@ -89,19 +89,19 @@ any Synth using PV UGens might not.
 
 It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect. Here's an example which uses the link::Classes/SequenceableCollection:: methods clump and flop to rearrange the order of the spectral bins:
 code::
-c = Buffer.read(s,"sounds/a11wlk01.wav");
+c = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 (
 x = {
   var in, numFrames=2048, chain, v;
   in = PlayBuf.ar(1, c, loop: 1);
   chain = FFT(LocalBuf(numFrames), in);
- 	
+
   chain = chain.pvcalc(numFrames, {|mags, phases|
       /* Play with the mags and phases, then return them */
       [mags, phases].flop.clump(2).flop.flatten
   }, tobin: 250);
- 
+
   Out.ar(0, 0.5 * IFFT(chain).dup);
 }.play(s);
 )
@@ -168,7 +168,7 @@ definitionlist::
 ## link::Classes/PV_BinShift:: || shift and stretch bin position
 ## link::Classes/PV_BinWipe:: || combine low and high bins from two inputs
 ## link::Classes/PV_BrickWall:: || zero bins
-## link::Classes/PV_ConformalMap:: || complex plane attack 
+## link::Classes/PV_ConformalMap:: || complex plane attack
 ## link::Classes/PV_Copy:: || copy an FFT buffer
 ## link::Classes/PV_CopyPhase:: || copy magnitudes and phases
 ## link::Classes/PV_Diffuser:: || random phase shifting

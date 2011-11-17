@@ -41,10 +41,10 @@ A String or Symbol specifying the name of the SynthDef to use in creating the Sy
 argument:: args
 An optional link::Classes/Array:: specifying initial values for the link::Classes/SynthDef::'s arguments (controls). These are specified in pairs of control name or index and value. If names are used they can be specified with either link::Classes/String::s or link::Classes/Symbol::s. e.g. code:: [\frequency, 440, \amplitude, 1, ...] ::.
 Values that are arrays are sent using OSC array type-tags ($[ and $]).  These values will be assigned to subsequent controls.
-		
+
 argument:: target
 A target for this Synth. If target is not a link::Classes/Group:: or Synth, it will be converted as follows: If it is a link::Classes/Server::, it will be converted to the link::Reference/default_group:: of that server. If it is nil, to the default_group of the default Server. If it is an integer, it is created relative to a group with that id.
-		
+
 argument:: addAction
 one of the following Symbols:
 definitionlist::
@@ -61,20 +61,24 @@ code::
 s.boot;
 // create a Synth at the head of the default Server's default group
 // based on the SynthDef "default"
-x = Synth.new("default"); 
+x = Synth.new("default");
 s.queryAllNodes; // note the default group (ID 1)
 x.free;
 
 // Using an arrayed control
+// run this block first to make the SynthDef
 (
-x = SynthDef("help-synth", {| freq = #[440, 450, 460], out = 0 |
+SynthDef("help-synth", {| freq = #[440, 450, 460], out = 0 |
 	Out.ar(out, Mix(SinOsc.ar(freq, 0, 0.1)));
-});
-x = x.play(s, [freq: [500,501,510] ]);
+}).add;
 )
-x.set(\freq, [1,2,3] * 400 + [1,2,3], \out, 1); // two pairs
-x.set(\freq, [3] * 400 + [1,2,3], \out, 1); // two pairs
-x.set(0, [660, 680, 720], 1, 0); // freq is the first argument, so it's index is 0. out is index 1.
+
+// then this a short while later
+x = Synth("help-synth", [freq: [500,501,510] ]);
+
+x = Synth("help-synth", [freq: [500,501,510] ]);
+x.set(\freq, [1,2,3] * 400 + [1,2,3], \out, 1);
+x.set(\freq, [3] * 400 + [1,2,3], \out, 1);
 x.free;
 ::
 
@@ -82,18 +86,18 @@ method:: newPaused
 As code::new:: above, but creates a node which is paused. This can be started by calling code::run:: on it.
 code::
 s.boot;
-x = Synth.newPaused("default"); 
+x = Synth.newPaused("default");
 s.queryAllNodes; // see I'm here
 x.run; // true is the default
 x.run(false); // pause me again
 x.free;
 ::
-		
+
 method:: grain
 A convenience method which will create a synth node with an node ID of -1. Such a node cannot be messaged after creation. As such this method does not create an object, and returns nil. For details of its arguments see code::new:: above.
 returns:: nil
 
-subsection:: Convenience methods for add actions		
+subsection:: Convenience methods for add actions
 The following convenience methods correspond to the add actions of code::Synth.new:: :
 
 method:: after
@@ -103,34 +107,34 @@ method:: before
 Create and return a Synth and add it immediately before aNode.
 
 method:: head
-Create and return a Synth. If code::aGroup:: is a link::Classes/Group:: add it at the head of that group. If it is a link::Classes/Server::, add it at the head of the link::Reference/default_group:: of that server. If it is nil, add it at the head of the default_group of the default server. If it is an integer, it is created relative to a group with that id. 
-				
+Create and return a Synth. If code::aGroup:: is a link::Classes/Group:: add it at the head of that group. If it is a link::Classes/Server::, add it at the head of the link::Reference/default_group:: of that server. If it is nil, add it at the head of the default_group of the default server. If it is an integer, it is created relative to a group with that id.
+
 method:: tail
-Create and return a Synth. If code::aGroup:: is a link::Classes/Group:: add it at the tail of that group. If it is a link::Classes/Server::, add it at the tail of the link::Reference/default_group:: of that server. If it is nil, add it at the tail of the default_group of the the default server. If it is an integer, it is created relative to a group with that id. 
-		
+Create and return a Synth. If code::aGroup:: is a link::Classes/Group:: add it at the tail of that group. If it is a link::Classes/Server::, add it at the tail of the link::Reference/default_group:: of that server. If it is nil, add it at the tail of the default_group of the the default server. If it is an integer, it is created relative to a group with that id.
+
 method:: replace
 Create and return a Synth and use it to replace code::nodeToReplace::, taking its place in its server's node order.
-		
+
 subsection:: Creation without Instantiation on the Server
 
 For use in message bundles it is also possible to create a Synth object in the client app without immediately creating a synth node on the server. Once done one can call methods which create messages to add to a bundle, which when sent to the server will instantiate the synth.
 
 method:: basicNew
-Create and return a Synth object without creating a synth node on the server. 
+Create and return a Synth object without creating a synth node on the server.
 argument:: defName
 A String or Symbol specifying the name of the SynthDef to use in creating the Synth.
 argument:: server
-An optional instance of Server. If nil this will default to the default Server. 
+An optional instance of Server. If nil this will default to the default Server.
 argument:: nodeID
 An optional node ID number. If not supplied one will be generated by the Server's NodeIDAllocator. Normally you should not need to supply an ID.
 discussion::
-code::		
+code::
 s.boot;
 x = Synth.basicNew("default", s); // Create without sending
 s.sendBundle(nil, x.newMsg;); // Now send a message; create at the head of s' default group
 s.queryAllNodes;
 x.free;
-::		
+::
 
 After creation, use instance methods code::newMsg, addToHeadMsg, addToTailMsg, addBeforeMsg, addAfterMsg, addReplaceMsg:: to instantiate this synth on the server. See link::#instancemethods#Instance Methods:: below.
 
@@ -149,23 +153,23 @@ Use class method code::basicNew:: to create a Synth without instantiating it on 
 method:: newMsg
 See *new above for details of addActions and args.
 Returns:: a message of the type s_new which can be bundled. When sent to the server this message will instantiate this synth. If target is nil, it will default to the default_group of the Server specified in *basicNew when this Synth was created. The default addAction is \addToHead.
-		
+
 method:: addToHeadMsg
 See *new above for details on args.
 Returns:: a message of the type s_new which can be bundled. When sent to the server this message will instantiate this synth. If aGroup is a Group it will be added at the head of that group. If it is nil, it will be added at the head of the default_group of this Synth's server (as specified when *basicNew was called).
-		
+
 method:: addToTailMsg
 See *new above for details on args.
 Returns:: a message of the type s_new which can be bundled. When sent to the server this message will instantiate this synth. If aGroup is a Group it will be added at the tail of that group. If it is nil, it will be added at the tail of the default_group of this Synth's server (as specified when *basicNew was called).
-		
+
 method:: addBeforeMsg
 See *new above for details on args.
 Returns:: a message of the type s_new which can be bundled. When sent to the server this message will instantiate this synth, immediately before aNode.
-		
+
 method:: addAfterMsg
 See *new above for details on args.
 Returns:: a message of the type s_new which can be bundled. When sent to the server this message will instantiate this synth, immediately after aNode.
-		
+
 method:: addReplaceMsg
 See *new above for details on args.
 Returns:: a message of the type s_new which can be bundled. When sent to the server this message will instantiate this synth, replacing nodeToReplace in the server's node order.
@@ -180,10 +184,10 @@ a control name or index
 argument:: action
 a Function which will be evaluated with the value passed as an argument when the reply is received.
 discussion::
-code::	
+code::
 s.boot;
 (
-SynthDef("help-Synth-get", { arg freq = 440; 
+SynthDef("help-Synth-get", { arg freq = 440;
 	Out.ar(0, SinOsc.ar(freq, 0, 0.1));
 }).add;
 )
@@ -200,7 +204,7 @@ a control name or index
 argument:: count
 the number of sequential controls to query, starting at index.
 argument:: action
-a Function which will be evaluated with an link::Classes/Array:: containing the values passed as an argument when the reply is received.	
+a Function which will be evaluated with an link::Classes/Array:: containing the values passed as an argument when the reply is received.
 
 method:: set
 Set the values of one or more link::Classes/Control::s.
@@ -219,18 +223,18 @@ s.boot;
 
 (
 // send a synth def to server
-SynthDef("tpulse", { arg out = 0,freq = 700, sawFreq = 440.0; 
+SynthDef("tpulse", { arg out = 0,freq = 700, sawFreq = 440.0;
 	Out.ar(out, SyncSaw.ar(freq, sawFreq, 0.1));
 }).add;
 )
 
 // Here the defaults for *new will result in a Synth at the head of the default group
 // of the default Server. This will use the SynthDef's default arguments;
-y = Synth.new("tpulse"); 
+y = Synth.new("tpulse");
 y.free;
 
 // The same done explicitly
-y = Synth.new("tpulse", nil, s, \addToHead); 
+y = Synth.new("tpulse", nil, s, \addToHead);
 y.free;
 
 // With some arguments
@@ -267,14 +271,14 @@ code::
 // first collect some things to play with
 SynthDef("moto-rev", { arg out=0;
 	var x;
-	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1), 
+	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1),
 		100, 0.1).clip2(0.4);
 	Out.ar(out, x);
 }).add;
 
 SynthDef("bubbles", { arg out=0;
 	var f, zout;
-	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; 
+	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps;
 	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(out, zout);
 }).add;
@@ -292,12 +296,12 @@ SynthDef("wah", { arg out, rate = 1.5, cfreq = 1400, mfreq = 1200, rq=0.1;
 	cfreq = Lag3.kr(cfreq, 0.1);
 	mfreq = Lag3.kr(mfreq, 0.1);
 	rq   = Ramp.kr(rq, 0.1);
-	zout = RLPF.ar(zin, LFNoise1.kr(rate, mfreq, cfreq), rq, 10).distort 
+	zout = RLPF.ar(zin, LFNoise1.kr(rate, mfreq, cfreq), rq, 10).distort
 					* 0.15;
 
 	// replace the incoming bus with the effected version
-	ReplaceOut.ar( out , zout ); 
-	
+	ReplaceOut.ar( out , zout );
+
 }).add;
 
 SynthDef("modulate",{ arg out = 0, freq = 1, center = 440, plusMinus = 110;

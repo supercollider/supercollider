@@ -452,19 +452,44 @@ public:
 
 
 private:
+    struct backup
+    {
+        backup(int min, int max): min(min), max(max), loops(min) {}
+
+        void run(void)
+        {
+            for (int i = 0; i != loops; ++i)
+                asm(""); // empty asm to avoid optimization
+
+            loops = std::min(loops * 2, max);
+        }
+
+        void reset(void)
+        {
+            loops = min;
+        }
+
+        int min, max, loops;
+    };
+
     void run_item(thread_count_t index)
     {
-        for (;;)
-        {
-            if (node_count.load(boost::memory_order_acquire))
-            {
+        backup b(256, 32768);
+        for (;;) {
+            if (node_count.load(boost::memory_order_acquire)) {
                 /* we still have some nodes to process */
                 int state = run_next_item(index);
 
-                if (state == no_remaining_items)
+                switch (state) {
+                case no_remaining_items:
                     return;
-            }
-            else
+                case fifo_empty:
+                    b.run();
+
+                default:
+                    b.reset();
+                }
+            } else
                 return;
         }
     }

@@ -380,7 +380,7 @@ r = Routine({
 	b.selectIndex(-1);
 });
 AppClock.play(r);
-)	
+)
 ::
 
 Show boxes with a string in it:

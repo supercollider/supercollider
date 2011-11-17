@@ -22,16 +22,16 @@ argument::wipe
 Can range between -1 and +1.
 
 
-If 
+If
 code::wipe::  == 0 then there is no effect.
 
 
-If 
+If
 code::wipe::  > 0 then it acts like a high
 pass filter, clearing bins from the bottom up.
 
 
-If 
+If
 code::wipe::  < 0 then it acts like a low
 pass filter, clearing bins from the top down.
 
@@ -49,7 +49,7 @@ SynthDef("help-brick", { arg out=0, bufnum=0;
 	var in, chain;
 	in = {WhiteNoise.ar(0.2)}.dup;
 	chain = FFT(bufnum, in);
-	chain = PV_BrickWall(chain, SinOsc.kr(0.1)); 
+	chain = PV_BrickWall(chain, SinOsc.kr(0.1));
 	Out.ar(out, IFFT(chain).dup);
 }).play(s,[\out, 0, \bufnum, b.bufnum]);
 )

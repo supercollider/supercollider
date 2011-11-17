@@ -13,7 +13,7 @@ link::Classes/Gendy1:: .
 
 There is some glitching in the oscillator caused by the stochastic
 effects - control points as they vary cause big local jumps of amplitude.
-Put  code::ampscale::  and  code::durscale:: 
+Put  code::ampscale::  and  code::durscale::
 low to minimise the rate of this.
 
 SuperCollider implementation by Nick Collins
@@ -102,7 +102,7 @@ Examples::
 
 code::
 
-//LOUD! defaults like a rougher Gendy1	
+//LOUD! defaults like a rougher Gendy1
 {Pan2.ar(Gendy3.ar(mul:0.5))}.play
 
 {Pan2.ar(Gendy3.ar(freq:MouseX.kr(220,880,'exponential'), durscale:0.01, ampscale:0.02, mul:0.2))}.play
@@ -123,7 +123,7 @@ MouseY.kr(10,10000,'exponential'),0.05)
 )
 
 
-//concrete pH? 
+//concrete pH?
 (
 {Pan2.ar(
 Mix.new(Gendy3.ar(freq:([1,1.2,1.3,1.76,2.3]*MouseX.kr(3,17,'exponential')),mul:0.2)))}.play
@@ -135,16 +135,16 @@ Mix.new(Gendy3.ar(freq:([1,1.2,1.3,1.76,2.3]*MouseX.kr(3,17,'exponential')),mul:
 Mix.new(Gendy3.ar(3,5,1.0,1.0,(Array.fill(5,{LFNoise0.kr(1.3.rand,1,2)})*MouseX.kr(100,378,'exponential')),MouseX.kr(0.01,0.05),MouseY.kr(0.001,0.016),5,mul:0.1)))}.play
 )
 
-//play me	
+//play me
 {Pan2.ar(RLPF.ar(Gendy3.ar(1,3,freq:MouseX.kr(100,1000), durscale:0.0, ampscale:MouseY.kr(0.0,0.1), initCPs:7, knum: MouseY.kr(7,2)), 500,0.3, 0.2), 0.0)}.play
 
 
 
-//used as an LFO	
+//used as an LFO
 (
 {Pan2.ar(SinOsc.ar(Gendy3.kr(2,5,SinOsc.kr(0.1,0,0.49,0.51),SinOsc.kr(0.13,0,0.49,0.51), 0.34, SinOsc.kr(0.17,0,0.49,0.51), SinOsc.kr(0.19,0,0.49,0.51),10,10,mul:50, add:350), 0, 0.3), 0.0)}.play
 )
-	
+
 //buzzpipes
 {Pan2.ar(Mix.new(Gendy3.ar(0, 0, SinOsc.kr(0.1, 0, 0.1, 0.9),1.0, [100,205,410], 0.011,0.005, 12, 12, 0.12)), 0.0)}.play
 
@@ -163,7 +163,7 @@ Mix.new(Gendy3.ar(3,5,1.0,1.0,(Array.fill(5,{LFNoise0.kr(1.3.rand,1,2)})*MouseX.
 {Pan2.ar(Gendy3.ar(1,2,freq:Gendy2.ar(maxfreq:Gendy1.kr(5,4,0.3, 0.7, 0.1, MouseY.kr(0.1,10), 1.0, 1.0, 5,5, 25,26),minfreq:24, knum:MouseX.kr(1,13),mul:150, add:200), durscale:0.01, ampscale:0.01, mul:0.1), 0.0)}.play
 )
 
-//use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample 
+//use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample
 {Pan2.ar(Gendy3.ar(6,6,LFPulse.kr(LFNoise0.kr(19.0,0.5,0.6), 0, 0.4, 0.5), Gendy1.kr(durscale:0.01,ampscale:0.01), MouseX.kr(10,100),mul:0.2), 0.0)}.play
 
 

@@ -34,6 +34,8 @@
 #include "SC_Prototypes.h"
 #include "scsynthsend.h"
 
+extern int gMissingNodeID;
+
 // returns number of bytes in an OSC string.
 int OSCstrlen(char *strin);
 
@@ -44,6 +46,7 @@ Node* Msg_GetNode(World *inWorld, sc_msg_iter& msg)
 	{
 		const char* loc = msg.gets();
 		int32 nodeID = msg.geti();
+		gMissingNodeID = nodeID;
 		node = World_GetNode(inWorld, nodeID);
 		while (*loc)
 		{
@@ -74,6 +77,7 @@ Node* Msg_GetNode(World *inWorld, sc_msg_iter& msg)
 	else
 	{
 		int32 nodeID = msg.geti();
+		gMissingNodeID = nodeID;
 		node = World_GetNode(inWorld, nodeID);
 	}
 	return node;

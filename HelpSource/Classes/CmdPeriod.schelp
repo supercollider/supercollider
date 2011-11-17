@@ -80,7 +80,7 @@ a = { Synth(\default)};
 a.value;
 CmdPeriod.add({{a.value}.defer(0.01)});
 
-// remove all 
+// remove all
 CmdPeriod.removeAll
 
 ::

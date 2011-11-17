@@ -7,14 +7,14 @@ categories::  UGens>Generators>Stochastic
 Description::
 
 Like  link::Classes/LFNoise1:: , it generates linearly interpolated
-random values at a rate given by the  code::freq:: 
+random values at a rate given by the  code::freq::
 argument, with two differences:
 list::
-## no time quantization 
+## no time quantization
 ## fast recovery from low freq values footnote::
 link::Classes/LFNoise0:: ,  link::Classes/LFNoise1::  and
 link::Classes/LFNoise2::  quantize to the nearest integer division
-of the samplerate, and they poll the  code::freq:: 
+of the samplerate, and they poll the  code::freq::
 argument only when scheduled; thus they often seem to hang
 when freqs get very low.
 ::
@@ -42,7 +42,7 @@ Examples::
 code::
 // try wiggling mouse quickly;
 // LFNoise frequently seems stuck, LFDNoise changes smoothly.
- 
+
 {  SinOsc.ar(LFNoise1.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2)  }.play
 
 {  SinOsc.ar(LFDNoise1.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2)  }.play

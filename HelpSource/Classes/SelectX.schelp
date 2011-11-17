@@ -22,11 +22,11 @@ code::
 			Saw.ar(300),
 			Pulse.ar(230)
 		];
-	
+
 	SelectX.ar(MouseX.kr(0, 1) * a.size, a) * 0.2
 }.play;
 )
- 
+
 (
 {
 	var a;
@@ -35,7 +35,7 @@ code::
 			LFSaw.kr(10),
 			LFPulse.kr(0.3)
 		];
-	
+
 	SinOsc.ar(SelectX.kr(MouseX.kr(0, 1) * a.size, a) * 300 + 400) * 0.2
 }.play;
 )

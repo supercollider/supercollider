@@ -11,7 +11,7 @@ definitionlist::
 subsection:: Interpreting code
 definitionlist::
 ## C-c C-d
-(C-c C-c) || Interpret Selection 
+(C-c C-c) || Interpret Selection
 (only if transient-mark-mode is on)
 ## C-c C-c || Interpret current line
 ## C-c C-e || Evaluate expression (in minibuffer)
@@ -92,7 +92,7 @@ subsection:: Navigating and selecting
 definitionlist::
 ## M-g g || Goto line ...
 ## C-x a || Select all
-## C-M-f || zips you forward to matching parenthesis, so if you hover over the opening bracket, hit 
+## C-M-f || zips you forward to matching parenthesis, so if you hover over the opening bracket, hit
 C-<space>, C-M-f, C-c C-c you can quickly execute a block.
 ## C-M-b || zips you backward to matching parenthesis. If you are just to the right of closing brackets this is handier if you've just finished some code.
 ## C-f || Move forward a character

@@ -4,7 +4,7 @@ categories:: UGens>Analysis
 related:: Classes/BeatTrack, Classes/Loudness, Classes/Onsets, Classes/Pitch, Classes/KeyTrack
 
 description::
-Generates a set of MFCCs; these are obtained from a band-based frequency representation (using the Mel scale by default), and then a discrete cosine transform (DCT). The DCT is an efficient approximation for principal components analysis, so that it allows a compression, or reduction of dimensionality, of the data, in this case reducing 42 band readings to a smaller set of MFCCs. A small number of features (the coefficients) end up describing the spectrum. The MFCCs are commonly used as timbral descriptors. 
+Generates a set of MFCCs; these are obtained from a band-based frequency representation (using the Mel scale by default), and then a discrete cosine transform (DCT). The DCT is an efficient approximation for principal components analysis, so that it allows a compression, or reduction of dimensionality, of the data, in this case reducing 42 band readings to a smaller set of MFCCs. A small number of features (the coefficients) end up describing the spectrum. The MFCCs are commonly used as timbral descriptors.
 
 Output values are somewhat normalised for the range 0.0 to 1.0, but there are no guarantees on exact conformance to this. Commonly, the first coefficient will be the highest value.
 
@@ -27,7 +27,7 @@ code::
 b = Buffer.alloc(s, 1024, 1); // for sampling rates 44100 and 48000
 //b = Buffer.alloc(s, 2048, 1); // for sampling rates 88200 and 96000
 
-d = Buffer.read(s, "sounds/a11wlk01.wav");
+d = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 
 (
@@ -123,14 +123,14 @@ freq_bands = 42;
 //
 //lintoscale = {arg freq;
 //switch(whichbandscale,0,{1127 * log(1 + (freq / 700))}, 1, {}, 2, {}).value
-//}; 
+//};
 //scaletolin = {arg scalepos;
 //switch(whichbandscale, 0, {700 * (exp(scalepos / 1127.0) -1);}, 1, {}, 2, {}).value
 //};
 
 lintoscale = {arg freq;
 1127 * log(1 + (freq / 700))
-}; 
+};
 scaletolin = {arg scalepos;
 700 * (exp(scalepos / 1127.0) -1);
 };
@@ -157,7 +157,7 @@ for(1, freq_bands + 1,{|n|
  lin_peak[n] = scaletolin.value(mel_peak[n]); // 700 * (exp(mel_peak[n] / 1127.0) -1);
  fft_peak[n] = ((lin_peak[n] / freqperbin).asInteger).min(halffftsize); // fft size //rounds down here
 
-}); 
+});
 
 //Post << mel_peak << nl;
 //Post << lin_peak << nl;
@@ -176,7 +176,7 @@ freq_bands.do {|i|
 
 	//var normmult=1.0; // preserve power, don't modify band power by area
 	var startbin, endbin, numbins, averager;
-	
+
 	if(i == 0,{
 	startbin = 0;
 	endbin = fft_peak[i + 1] - 1;
@@ -184,27 +184,27 @@ freq_bands.do {|i|
 	startbin = fft_peak[i - 1] + 1;
 	endbin = fft_peak[i + 1] - 1;
 	});
-	
+
 	numbins = endbin - startbin + 1;
 	averager = 1.0 / numbins;
-	
+
 	// linear crossfade (intended in power) between consecutive band centres
-	
+
 	tmp = fft_peak[i] - startbin;
-	
+
 	// could divide by averager but I'm not convinced by the perceptual necessity for this?
 	// ie fftbinmult = fftbinmult ++ (Array.series(tmp + 1, 1.0 / (tmp + 1), 1.0 / (tmp + 1)) * averager);
-	
+
 	fftbinmult = fftbinmult ++ (Array.series(tmp + 1, 1.0 / (tmp + 1), 1.0 / (tmp + 1)));
-	
+
 	tmp= endbin- (fft_peak[i]);
-	
-	fftbinmult = fftbinmult ++ (Array.series(tmp, 1.0 + ((-1.0) / (tmp + 1)), (-1.0) / (tmp + 1))); 
-	
+
+	fftbinmult = fftbinmult ++ (Array.series(tmp, 1.0 + ((-1.0) / (tmp + 1)), (-1.0) / (tmp + 1)));
+
 	fftbinstart[i] = startbin;
-	fftbinend[i] = endbin; 
+	fftbinend[i] = endbin;
 	fftbincumul[i] = pos;
-	
+
 	pos = pos + (endbin - startbin + 1);
 };
 
@@ -227,7 +227,7 @@ a.plot;
 // ERBs (rough calculation, only really valid under 6000Hz, real scale goes up to 42 rather than 37 in 22000 Hz)
 a = Array.fill(220,{|i| var f; f = i * 100; 11.17 * log((f + 312) / (f + 14675)) + 43.0});
 a.plot
-  
+
 // generating DCT coefficients
 // don't generate i=0 coefficient since it
 a = Array.fill(42, {|i| cos(pi / 42.0 * ((0..41) + 0.5) * (i + 1))});

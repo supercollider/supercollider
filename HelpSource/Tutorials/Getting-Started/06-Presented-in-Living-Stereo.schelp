@@ -8,7 +8,7 @@ Okay, but what about our first, unsimplified example? Remember:
 code::
 { [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.play;
 ::
-	
+
 This also has two SinOscs, but in a different arrangement, between two square brackets code::[]::, and with a comma in between. Just like the curly brackets indicate a Function, square brackets define something called an Array. An Array is a type of Collection, which is (you guessed it) a collection of Objects. Collections themselves are Objects, and most types of Collections can hold any types of objects, mixed together, including other Collections! There are many different types of Collections in SC, and you will come to learn that they are one of the SC's most powerful features.
 
 An Array is a particular type of Collection: An ordered collection of limited maximum size. You can make one as we have above, by putting objects in between two square brackets, with commas in between. You can get the different elements of an Array using the method 'at', which takes an index as an argument. Indices correspond to the order of objects in the Array, and start from 0.
@@ -22,7 +22,7 @@ a.at(2);		// returns "nil", as there is no object at index 2
 // there's a shorthand for at that you'll see sometimes:
 a[0];			// same as a.at(0);
 ::
- 
+
 In addition to being used to hold collections of objects, Arrays also have a special use in SC: They are used to implement multichannel audio! If your Function returns an Array of UGens (remember that Functions return the result of their last line of code) then the output will be a number of channels. How many depends on the size of the Array, and each channel will correspond to an element of the Array. So in our example:
 
 code::
@@ -61,8 +61,8 @@ This uses a SinOsc to control the position (remember it outputs values from -1 t
 code::
 { Pan2.ar(PinkNoise.ar(0.2), -0.3) }.play; // slightly to the left
 ::
-	
-For more information see: 
+
+For more information see:
 
 link::Guides/Multichannel-Expansion::, link::Overviews/Collections::, link::Classes/Pan2::
 

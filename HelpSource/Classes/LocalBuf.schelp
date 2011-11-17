@@ -19,7 +19,7 @@ Allocates a new buffer from a given list of values
 argument:: list
 The list may be two-dimensional for numChannels > 1.
 It is then reshaped into the buffer's current format by flattening.
-returns:: a new buffer 
+returns:: a new buffer
 discussion::
 Since newFrom is called by the as message, one may thus convert an array to a LocalBuf:
 code::
@@ -40,7 +40,7 @@ discussion::
 This is important when randomly acessing buffer slots
 (e.g. with a BufRd) or not overwriting them. Clear is not an efficient real time operation
 for larger buffers, so it should be only used when really needed - but then it is essential:
-a LocalBuf is "created" in each new synth, and it may reuse old space. So if an older 
+a LocalBuf is "created" in each new synth, and it may reuse old space. So if an older
 synth has already ended, this part of memory may be the same as the new synth's.
 
 examples::
@@ -52,7 +52,7 @@ code::
 var in, chain;
 	in = WhiteNoise.ar(0.1.dup);
 	chain = FFT({LocalBuf(2048, 1)}.dup, in);
-	chain = PV_BrickWall(chain, SinOsc.kr([0.1, 0.11])); 
+	chain = PV_BrickWall(chain, SinOsc.kr([0.1, 0.11]));
 	IFFT(chain) // inverse FFT
 }.play;
 )
@@ -63,17 +63,17 @@ SynthDef(\fftgrain, { |out, sustain = 1, rate = 0.2|
 	var in, chain;
 	in = WhiteNoise.ar(0.1).dup;
 	chain = FFT({LocalBuf(128, 1)}.dup, in);
-	chain = PV_BrickWall(chain, 
+	chain = PV_BrickWall(chain,
 		SinOsc.kr(rate * XLine.kr(1, 15 * [1, 1.6], sustain), Rand(0, pi))
-	); 
+	);
 	Out.ar(out, IFFT(chain) * XLine.kr(1, 0.001, sustain, doneAction: 2)) // inverse FFT
 }).add;
 )
 
 (
 Pbind(
-	\instrument, \fftgrain, 
-	\rate, Pwhite().linexp(0, 1, 0.01, 300), 
+	\instrument, \fftgrain,
+	\rate, Pwhite().linexp(0, 1, 0.01, 300),
 	\legato, Pwhite(1, 3.0, inf),
 	\dur, Prand([0.2, 1, 1.2], inf)
 ).play
@@ -107,9 +107,9 @@ Pbind(
 (
 play({
 	var mix;
-	
-	mix = 
-	
+
+	mix =
+
 	// lead tone
 	SinOsc.ar(
 		(
@@ -124,11 +124,11 @@ play({
 		).midicps,						// convert midi notes to hertz
 		0,
 		0.1)
-		
+
 	// drone 5ths
 	+ RLPF.ar(LFPulse.ar([48,55].midicps, 0.15),
 		SinOsc.kr(0.1, 0, 10, 72).midicps, 0.1, 0.1);
-		
+
 	// add some 70's euro-space-rock echo
 	CombN.ar(mix, 0.31, 0.31, 2, 1, mix)
 })
@@ -141,8 +141,8 @@ play({
 	var list = Wavetable.sineFill(512, 1.0 / [1, 10, 3, 10, 5, 6, 10]);
 	// list.plot;
 	buf = LocalBuf.newFrom(list);
-	Osc.ar(buf, 
-		XLine.kr(2000, 200 + {30.0.rand}.dup, 10) + SinOsc.ar(Line.kr(2, 300, 10), 
+	Osc.ar(buf,
+		XLine.kr(2000, 200 + {30.0.rand}.dup, 10) + SinOsc.ar(Line.kr(2, 300, 10),
 		0, 100)
 	) * 0.1;
 }.play;
@@ -153,7 +153,7 @@ play({
 (
 {
 	var buf = LocalBuf(2048, 2);
-	BufWr.ar(WhiteNoise.ar(1.dup), buf, LFNoise0.ar(530).range(0, BufFrames.kr(buf))); 
+	BufWr.ar(WhiteNoise.ar(1.dup), buf, LFNoise0.ar(530).range(0, BufFrames.kr(buf)));
 	PlayBuf.ar(2, buf, MouseX.kr(1, 2), loop: 1) * 0.1
 }.play
 )
@@ -162,7 +162,7 @@ play({
 (
 {
 	var buf = LocalBuf(2048, 2).clear;
-	BufWr.ar(WhiteNoise.ar(1.dup), buf, LFNoise0.ar(530).range(0, BufFrames.kr(buf))); 
+	BufWr.ar(WhiteNoise.ar(1.dup), buf, LFNoise0.ar(530).range(0, BufFrames.kr(buf)));
 	PlayBuf.ar(2, buf, MouseX.kr(1, 2), loop: 1) * 0.1
 }.play
 )
@@ -172,7 +172,7 @@ play({
 (
 {
 var z = Decay.ar(Dust.ar(1.dup, 0.1), 0.3, WhiteNoise.ar);
-BufCombC.ar(LocalBuf(SampleRate.ir, 2), z, XLine.kr(0.0001, 0.01, 20), 0.2); 
+BufCombC.ar(LocalBuf(SampleRate.ir, 2), z, XLine.kr(0.0001, 0.01, 20), 0.2);
 }.play
 )
 
@@ -182,7 +182,7 @@ BufCombC.ar(LocalBuf(SampleRate.ir, 2), z, XLine.kr(0.0001, 0.01, 20), 0.2);
 var in, chain, n = 4;
 	in = WhiteNoise.ar(0.1.dup(n));
 	chain = FFT({LocalBuf(2048, 1)}.dup(n), in);
-	chain = PV_BrickWall(chain, LFNoise2.kr(2.dup(n))); 
+	chain = PV_BrickWall(chain, LFNoise2.kr(2.dup(n)));
 	Splay.ar(IFFT(chain)) // inverse FFT
 }.play;
 )

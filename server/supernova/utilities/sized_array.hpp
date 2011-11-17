@@ -48,9 +48,9 @@ class sized_array:
 {
     typedef typename Alloc::template rebind<T>::other Allocator;
 
-public:
-    BOOST_ENABLE_MOVE_EMULATION(sized_array);
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(sized_array)
 
+public:
     // types
     typedef T                                     value_type;
     typedef T*                                    iterator;

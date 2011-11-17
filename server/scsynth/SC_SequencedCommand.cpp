@@ -61,7 +61,7 @@ void SndBuf_Init(SndBuf *buf)
 	buf->mask = 0;
 	buf->mask1 = 0;
 	buf->coord = 0;
-	//buf->sndfile = 0;
+	buf->sndfile = 0;
 }
 
 char* allocAndRestrictPath(World *mWorld, const char* inPath, const char* restrictBase);
@@ -420,7 +420,9 @@ bool BufFreeCmd::Stage2()
 {
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	mFreeData = buf->data;
-
+#ifndef NO_LIBSNDFILE
+	if (buf->sndfile) sf_close(buf->sndfile);
+#endif
 	SndBuf_Init(buf);
 	return true;
 }
@@ -661,8 +663,15 @@ bool BufReadCmd::Stage2()
 		sf_readf_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
 
-	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
-	else sf_close(sf);
+	if(buf->sndfile)
+		sf_close(buf->sndfile);
+
+	if (mLeaveFileOpen) {
+		buf->sndfile = sf;
+	} else {
+		sf_close(sf);
+		buf->sndfile = 0;
+	}
 
 	mSampleRate = (double)fileinfo.samplerate;
 
@@ -674,6 +683,7 @@ bool BufReadCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	buf->samplerate = mSampleRate;
+	if (mLeaveFileOpen) buf->mask = buf->mask1 = -1;
 
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
@@ -967,8 +977,15 @@ bool BufReadChannelCmd::Stage2()
 	}
 
 leave:
-	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
-	else sf_close(sf);
+	if(buf->sndfile)
+		sf_close(buf->sndfile);
+
+	if (mLeaveFileOpen) {
+		buf->sndfile = sf;
+	} else {
+		sf_close(sf);
+		buf->sndfile = 0;
+	}
 
 	mSampleRate = (double)fileinfo.samplerate;
 
@@ -980,6 +997,7 @@ bool BufReadChannelCmd::Stage3()
 {
 	SndBuf* buf = World_GetBuf(mWorld, mBufIndex);
 	buf->samplerate = mSampleRate;
+	if (mLeaveFileOpen) buf->mask = buf->mask1 = -1;
 
 	mWorld->mSndBufUpdates[mBufIndex].writes ++ ;
 	SEND_COMPLETION_MSG;
@@ -998,9 +1016,15 @@ BufWriteCmd::BufWriteCmd(World *inWorld, ReplyAddress *inReplyAddress)
 {
 }
 
+#ifdef NO_LIBSNDFILE
+struct SF_INFO {};
+#endif
+
+
 extern "C" {
 int sndfileFormatInfoFromStrings(SF_INFO *info, const char *headerFormatString, const char *sampleFormatString);
 }
+
 
 int BufWriteCmd::Init(char *inData, int inSize)
 {
@@ -1076,8 +1100,15 @@ bool BufWriteCmd::Stage2()
 		sf_writef_float(sf, buf->data + (mBufOffset * buf->channels), mNumFrames);
 	}
 
-	if (mLeaveFileOpen && !buf->sndfile) buf->sndfile = sf;
-	else sf_close(sf);
+	if(buf->sndfile)
+		sf_close(buf->sndfile);
+
+	if (mLeaveFileOpen) {
+		buf->sndfile = sf;
+	} else {
+		sf_close(sf);
+		buf->sndfile = 0;
+	}
 
 	return true;
 #endif

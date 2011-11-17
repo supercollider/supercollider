@@ -82,9 +82,9 @@ a.setn(\ringtimes, Array.rand(4, 0.2, 4) );
 
 // create multichannel controls directly with literal arrays:
 (
-SynthDef('help-dynKlank', {| 
-	freqs (#[100, 200, 300, 400]), 
-	amps (#[1, 0.3, 0.2, 0.05]), 
+SynthDef('help-dynKlank', {|
+	freqs (#[100, 200, 300, 400]),
+	amps (#[1, 0.3, 0.2, 0.05]),
 	rings (#[1, 1, 1, 2])|
 
 	Out.ar(0, DynKlank.ar(`[freqs, amps, rings], WhiteNoise.ar * 0.001))

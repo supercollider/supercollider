@@ -3,7 +3,7 @@ summary:: Priority queue data structure
 categories:: Collections>Ordered
 
 DESCRIPTION::
-PriorityQueue implements a priority queue data structure, which is used to build schedulers. It allows you to put in items at some arbitrary time and pop them in 
+PriorityQueue implements a priority queue data structure, which is used to build schedulers. It allows you to put in items at some arbitrary time and pop them in
 time order.
 
 INSTANCEMETHODS::

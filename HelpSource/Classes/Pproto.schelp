@@ -58,21 +58,21 @@ SynthDef(\fm, { arg out=0, freq, index, decay=2, gate=1;
 Pproto({
 	~fsynth = ( type: \on, instrument: \fm, freq: 4, index: 1, addAction: 1, db: -30).yield;
 	~fControl = [\set, ~fsynth[\id], ~fsynth[\msgFunc] ];
-	
+
 	~synth = ( type: \on, instrument: \echo, addAction: 1).yield;
 	~sControl = [\set, ~synth[\id], ~synth[\msgFunc] ];
-	
+
 	}, [
 	Pbind(*[
 		#[type, id, msgFunc],	Pkey(\fControl),
-		
+
 		freq:	Pseg([0,1], 10).linexp(0,1, 0.1, 1000),
 		index:	Pseg([0,1], 10).linexp(0,1, 0.1, 100),
 		dur:	0.1
 	]),
 	Pbind(*[
 		#[type, id, msgFunc],	Pkey(\sControl),
-		
+
 		dtime:	Pwhite(0,0.2),
 		decay:	Pwhite(0.1,2),
 		dur:	1
@@ -96,7 +96,7 @@ SynthDef(\help_playbuf, { | out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1
 	var audio;
 	rate = rate * BufRateScale.kr(bufnum);
 	startPos = startPos * BufFrames.kr(bufnum);
-	
+
 	audio = BufRd.ar(1, bufnum, Phasor.ar(0, rate, startPos, BufFrames.ir(bufnum)), 1, 1);
 	audio = EnvGen.ar(Env.sine, 1, timeScale: sustain, doneAction: 2) * audio;
 	audio = Pan2.ar(audio, pan, amp);
@@ -105,7 +105,7 @@ SynthDef(\help_playbuf, { | out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1
 
 a = Pproto({
 	~newgroup = (type: \group).yield;
-	~sf1 = SoundFile("sounds/a11wlk01-44_1.aiff").asEvent.yield;
+	~sf1 = SoundFile(Help.dir +/+ "sounds/a11wlk01-44_1.aiff").asEvent.yield;
 //	(type: \on).yield
 },
 	Pbind(*[
