@@ -137,7 +137,7 @@ HelpBrowser {
 		w = 200;
 		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
 		if(GUI.current.id == \qt) {
-			srchBox.setProperty(\toolTip,"Smart quick help lookup. Prefix with # to just search.");
+			srchBox.toolTip = "Smart quick help lookup. Prefix with # to just search.";
 		};
 		srchBox.action = {|x|
 			if(x.string.notEmpty) {
