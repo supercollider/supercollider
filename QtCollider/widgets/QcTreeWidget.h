@@ -90,7 +90,8 @@ public:
 Q_SIGNALS:
 
   void action();
-  void returnPressed();
+  void itemPressedAction();
+  void currentItemChanged();
 
 public:
 
@@ -102,13 +103,7 @@ public:
   VariantList columns() const;
   void setColumns( const VariantList & );
 
-private Q_SLOTS:
-
-  void onCurrentItemChanged();
-
 private:
-
-  bool eventFilter( QObject *, QEvent * );
 
   QTreeWidgetItem * _itemOnPress;
   bool _emitAction;

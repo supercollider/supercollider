@@ -34,11 +34,15 @@ class QcTreeWidgetFactory : public QcWidgetFactory<QcTreeWidget>
 static QcTreeWidgetFactory treeWidgetFactory;
 
 QcTreeWidget::QcTreeWidget()
-: _itemOnPress(0), _emitAction(true)
 {
-  connect( this, SIGNAL( currentItemChanged( QTreeWidgetItem*, QTreeWidgetItem* ) ),
-           this, SLOT( onCurrentItemChanged() ) );
-  viewport()->installEventFilter( this );
+  // Forward signals to argument-less versions connectable from SC.
+  connect( this, SIGNAL( itemActivated(QTreeWidgetItem*, int) ),
+           this, SIGNAL( action() ) );
+  connect( this, SIGNAL( itemPressed(QTreeWidgetItem*, int) ),
+           this, SIGNAL( itemPressedAction() ) );
+  connect( this, SIGNAL( currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*) ),
+           this, SIGNAL( currentItemChanged() ) );
+
 }
 
 VariantList QcTreeWidget::columns() const
@@ -189,26 +193,6 @@ void QcTreeWidget::removeItemWidget( const QcTreeWidget::ItemPtr &item, int colu
 void QcTreeWidget::sort( int column, bool descending )
 {
   sortItems( column, descending ? Qt::DescendingOrder : Qt::AscendingOrder );
-}
-
-void QcTreeWidget::onCurrentItemChanged()
-{
-  if( _emitAction ) Q_EMIT( action() );
-}
-
-bool QcTreeWidget::eventFilter( QObject *o, QEvent *e )
-{
-  if( o == viewport() ) {
-    if( e->type() == QEvent::MouseButtonPress ) {
-      _emitAction = false;
-      _itemOnPress = QTreeWidget::currentItem();
-    }
-    else if( e->type() == QEvent::MouseButtonRelease ) {
-      _emitAction = true;
-      if( QTreeWidget::currentItem() != _itemOnPress ) Q_EMIT( action() );
-    }
-  }
-  return QTreeWidget::eventFilter( o, e );
 }
 
 QcTreeWidget::ItemPtr QcTreeWidget::Item::safePtr( QTreeWidgetItem * item )
