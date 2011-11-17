@@ -26,7 +26,7 @@ PR.registerLangHandler(
         /* numbers */
         [PR.PR_LITERAL,     /^-?\d+r[\da-zA-Z]+(\.[\da-zA-Z]+)?/],
 //        [PR.PR_LITERAL,     /^-?(?:(?:\d+(?:\.\d*)?)(?:e[+\-]?\d+)?)(pi)?|pi/],
-        [PR.PR_LITERAL,     /^-?(?:(?:\d+(\.\d+)?)(?:e[+\-]?\d+)?)(pi)?|pi/],
+        [PR.PR_LITERAL,     /^-?(?:(?:\d+(\.\d+)?)(?:e[+\-]?\d+)?(pi)?)|(?:pi\b)/],
         /* other stuff */
         [PR.PR_PLAIN, /^[a-z_]\w*/i],
 //        [PR.PR_PUNCTUATION, /^[-.,;!?#$%&\|/+*<>=@()\[\]{}]/]
