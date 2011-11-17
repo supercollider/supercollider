@@ -7,7 +7,7 @@ Exception {
 	*new { arg what;
 		var backtrace;
 		if (debug) { backtrace = this.getBackTrace.caller };
-		^super.newCopyArgs(what ? this.name, backtrace)
+		^super.newCopyArgs(what ? this.name, backtrace, thisProcess.nowExecutingPath)
 	}
 	errorString {
 		^"EXCEPTION: " ++ what
@@ -157,7 +157,7 @@ DeprecatedError : MethodError {
 			str;
 		};
 		var string;
-		string = "WARNING: Method" + methodSignature.value(method)+ "is deprecated and will be removed.";
+		string = "WARNING: Method" + methodSignature.value(method) + "is deprecated and will be removed.";
 		if(alternateMethod.notNil, {
 			string = string + "Use" + methodSignature.value(alternateMethod) + "instead.";
 		});
@@ -166,6 +166,7 @@ DeprecatedError : MethodError {
 
 	reportError {
 		this.errorString.postln;
+		this.errorPathString.post;
 		this.adviceLink.postln;
 	}
 
