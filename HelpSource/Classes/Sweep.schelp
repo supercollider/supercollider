@@ -36,7 +36,7 @@ code::
 
 
 // using sweep to index into a buffer
-b = Buffer.readExample;
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 (
 { var trig;
