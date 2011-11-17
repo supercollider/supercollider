@@ -379,10 +379,6 @@ SequenceableCollection : Collection {
 		^this.prFlat(this.species.new(this.flatSize))
 	}
 	
-	flatIf { |func|
-		^this.prFlatIf(this.species.new(this.flatSize), func)
-	}
-	
 	prFlat { |list|
 		this.do({ arg item, i;
 			if (item.respondsTo('prFlat'), {
@@ -393,11 +389,12 @@ SequenceableCollection : Collection {
 		});
 		^list
 	}
-	
-	prFlatIf { |list, func, rank = 0|
+
+	flatIf { |func|
+		var list = this.species.new(this.size); // as we don't know the size, just guess
 		this.do({ arg item, i;
-			if (item.respondsTo('prFlatIf') and: { func.value(item, i, rank) }, {
-				list = item.prFlatIf(list, func, rank + 1);
+			if (item.respondsTo('flatIf') and: { func.value(item, i) }, {
+				list = list.addAll(item.flatIf(func));
 			},{
 				list = list.add(item);
 			});
