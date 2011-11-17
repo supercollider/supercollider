@@ -124,6 +124,11 @@ list(APPEND scapp_sources ${boost_fs_sources} ${boost_system_sources})
 file(GLOB yaml_sources ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/src/*cpp)
 list(APPEND scapp_sources ${yaml_sources})
 
+if(SC_QT)
+	include(${CMAKE_SOURCE_DIR}/QtCollider/CMakeLists.txt)
+	list(APPEND scapp_sources ${QT_COLLIDER_SRCS})
+endif()
+
 set(objcpp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
 	${CMAKE_SOURCE_DIR}/editors/scapp/main.M
@@ -205,13 +210,8 @@ else()
 		)
 endif()
 
-if (SC_QT)
-	include_directories(${CMAKE_SOURCE_DIR}/include/QtCollider)
-	target_link_libraries(${scappbundlename} QtCollider)
-	set_property(TARGET ${scappbundlename}
-		APPEND
-		PROPERTY COMPILE_DEFINITIONS SC_QT
-		)
+if(SC_QT)
+	target_link_libraries(${scappbundlename} ${QT_COLLIDER_LIBS})
 endif()
 
 # for processing into the plist:
