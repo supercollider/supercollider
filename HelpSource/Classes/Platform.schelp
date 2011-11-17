@@ -59,10 +59,6 @@ user extension directory (see link::Guides/Using-Extensions::)
 method:: platformDir
 platform specific directory for class files (see link::Guides/Using-Extensions::)
 
-method:: exampleSoundFile
-returns::
-Path to example sound file.
-
 method:: pathSeparator
 platform specific path separator
 
