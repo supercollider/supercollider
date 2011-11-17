@@ -193,7 +193,8 @@ HelpBrowser {
 		if(webView.respondsTo(\setFontFamily)) {
 			webView.setFontFamily(\fixed, Platform.case(
 				\osx, { "Monaco" },
-				\linux, { "Andale Mono" }
+				\linux, { "Andale Mono" },
+				{ "Monospace" }
 			))
 		};
 
