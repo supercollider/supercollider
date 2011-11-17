@@ -22,7 +22,7 @@
 #ifndef QC_GRAPH_H
 #define QC_GRAPH_H
 
-#include "Common.h"
+#include "../Common.h"
 #include "../QcHelper.h"
 
 #include <QWidget>
