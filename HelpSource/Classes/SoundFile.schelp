@@ -11,7 +11,7 @@ In most cases you will wish to send commands to the server to get it to load Sou
 code::
 (
 f = SoundFile.new;
-f.openRead("sounds/a11wlk01.wav");
+f.openRead(Platform.exampleSoundFile);
 f.inspect;
 f.close;
 )
@@ -31,11 +31,11 @@ SoundFile.collect("sounds/*").do { |f| f.path.postln };
 method::use
 Reads the data of a SoundFile, evaluates the function (passing the file as argument) and closes it again.
 code::
-SoundFile.use("sounds/a11wlk01.wav", { |f| f.inspect });
+SoundFile.use(Platform.exampleSoundFile, { |f| f.inspect });
 ::
 
 method::normalize
-Normalizes a soundfile to a level set by the user. The normalized audio will be written into a second file. 
+Normalizes a soundfile to a level set by the user. The normalized audio will be written into a second file.
 
 Using this class method (SoundFile.normalize) will automatically open the source file for you. You may also link::#-openRead:: the SoundFile yourself and call link::#-normalize:: on it. In that case, the source path is omitted because the file is already open.
 
@@ -54,7 +54,7 @@ argument::ev
 An link::Classes/Event:: can passed as an argument allowing playback to be customized using the following keys:
 table::
 ## strong::key:: || strong::default value:: || strong::what it does::
-## bufferSize || 65536 || 
+## bufferSize || 65536 ||
 ## firstFrame || 0 || first frame to play
 ## lastFrame || nil || last frame to play (nil plays to end of file)
 ## out: || 0 || sets output bus
@@ -82,7 +82,7 @@ e = f[1].cue;
 
 e = f[1].cue( (addAction: 2, group: 1) );	// synth will play ahead of the default group
 ::
-		
+
 subsection::Read/Write
 
 method::openRead

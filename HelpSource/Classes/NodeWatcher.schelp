@@ -4,7 +4,7 @@ related:: Reference/Server-Command-Reference, Classes/Node, Classes/DebugNodeWat
 categories:: Control, Server>Nodes
 
 description::
-Node instances (Synths and Groups) can be registered with the NodeWatcher. 
+Node instances (Synths and Groups) can be registered with the NodeWatcher.
 It watches for server node status messages:
 n_go n_end n_off n_on
 

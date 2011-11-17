@@ -877,7 +877,6 @@ gui { |sysext=true,userext=true, allowCached=true|
 	*forgetTree { ^global.forgetTree }
 	*dumpTree { |node, prefix = ""| ^global.dumpTree(node, prefix) }
 	*addCatsToTree { |class, fileslist| ^global.addCatsToTree(class, fileslist) }
-	*gui { |sysext = true, userext = true| ^global.gui(sysext, userext) }
 	*all { ^global.all }
 	*do { |action| ^global.do(action) }
 	*pr_do { |action, curdict| ^global.pr_do(action, curdict) }

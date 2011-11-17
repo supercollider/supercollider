@@ -44,9 +44,9 @@ inline int OSCstrlen(const char *strin)
 // returns a float, converting an int if necessary
 inline float32 OSCfloat(const char* inData)
 {
-	elem32* elem = (elem32*)inData;
-	elem->u = ntohl(elem->u);
-	return elem->f;
+	elem32 elem;
+	elem.u = ntohl(*(uint32*)inData);
+	return elem.f;
 }
 
 inline int32 OSCint(const char* inData)

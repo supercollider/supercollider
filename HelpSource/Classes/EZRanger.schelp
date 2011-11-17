@@ -20,7 +20,7 @@ argument:: bounds
 An instance of link::Classes/Rect:: or link::Classes/Point::. Default value is code::160@20::.
 
 argument:: label
-The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created. 
+The label. Default value is code::nil::. If code::nil::, then no link::Classes/StaticText:: is created.
 
 argument:: controlSpec
 The link::Classes/ControlSpec:: for scaling the value.
@@ -72,7 +72,7 @@ The contained views can be accessed via the EZRanger instance variables: code::r
 instancemethods::
 
 subsection:: Accessing Instance and Class Variables
-	
+
 method:: unitView
 The units label. Only appears if code::unitWidth:: was set to > 0.
 
@@ -170,8 +170,8 @@ w.view.decorator.gap=1@1;
 Window.closeAll
 
 /////////////////////////////////////////////////////////////////
-////////// click these parentheses to see all features and layouts 
-(   
+////////// click these parentheses to see all features and layouts
+(
 
 m=nil;
 m=2@2; // comment for no margin
@@ -184,7 +184,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 400@16," freq  ", \freq,
 			initVal:[100.rand,200+2000.rand],unitWidth:30, numberWidth:60,layout:\horz, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white));
 		g.window.bounds = g.window.bounds.moveBy(-180,50);
 		g.font_(Font("Helvetica",10));
@@ -194,7 +194,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 400@16," freq  ", \freq,initVal:[100.rand,200+2000.rand],
 			unitWidth:0, numberWidth:60,layout:\horz, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white));
 		g.window.bounds = g.window.bounds.moveBy(-180, -20);
 		g.font_(Font("Helvetica",10));
@@ -203,7 +203,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 400@16, nil, \freq,initVal:[100.rand,200+2000.rand],
 			unitWidth:0, numberWidth:60,layout:\horz, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white));
 		g.window.bounds = g.window.bounds.moveBy(-180, -90);
 		g.window.name="Freq";
@@ -217,7 +217,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 300@42," freq  ", \freq,initVal:[100.rand,200+2000.rand],
 			unitWidth:30, numberWidth:60,layout:\line2, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white));
 		g.window.bounds = g.window.bounds.moveBy(-180,-160);
 );
@@ -226,7 +226,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 300@42," freq  ", \freq,initVal:[100.rand,200+2000.rand],
 			unitWidth:0, numberWidth:60,layout:\line2, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white));
 		g.window.bounds = g.window.bounds.moveBy(-180,-260);
 );
@@ -235,7 +235,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 300@42,nil, \freq, initVal:[100.rand,200+2000.rand],
 			unitWidth:30, numberWidth:60,layout:\line2, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white));
 		g.window.bounds = g.window.bounds.moveBy(-180,-360);
 		g.window.name="Freq";
@@ -245,7 +245,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 150@42,nil, \freq,initVal:[100.rand,200+2000.rand],
 			unitWidth:0, numberWidth:60,layout:\line2, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white));
 		g.window.bounds = g.window.bounds.moveBy(-180,-460);
 		g.window.name="Freq";
@@ -258,7 +258,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 45@300," Vol  ", \db.asSpec.step_(0.01),initVal:[-3-15.rand,-2.rand],
 			unitWidth:30, numberWidth:60,layout:\vert, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white,\h));
 		g.window.bounds = g.window.bounds.moveBy(250,50);
 		g.font_(Font("Helvetica",9));
@@ -267,7 +267,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 45@300, nil, \db.asSpec.step_(0.01),initVal:[-3-15.rand,-2.rand],
 			unitWidth:30, numberWidth:60,layout:\vert, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white,\h));
 		g.window.bounds = g.window.bounds.moveBy(310,50);
 		g.font_(Font("Helvetica",9));
@@ -276,7 +276,7 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 45@300, " Vol", \db.asSpec.step_(0.01),initVal:[-3-15.rand,-2.rand],
 			unitWidth:0, numberWidth:60,layout:\vert, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white,\h));
 		g.window.bounds = g.window.bounds.moveBy(370,50);
 		g.font_(Font("Helvetica",9));
@@ -285,13 +285,13 @@ m=2@2; // comment for no margin
 		g=EZRanger(nil, 45@300, nil, \db.asSpec.step_(0.01),initVal:[-3-15.rand,-2.rand],
 			unitWidth:0, numberWidth:60,layout:\vert, margin:2@2);
 		g.setColors(Color.grey,Color.white, Color.grey(0.7),
-			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7), 
+			Color.grey, Color.white, Color.yellow, background:Color.grey(0.7),
 				knobColor: HiliteGradient(Color.grey, Color.white,\h));
 		g.window.bounds = g.window.bounds.moveBy(430,50);
 		g.font_(Font("Helvetica",9));
 );
 
-)	
+)
 
 /////////////////
 

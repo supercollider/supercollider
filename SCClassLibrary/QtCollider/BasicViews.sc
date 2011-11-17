@@ -263,10 +263,6 @@ QButton : QView {
 
   *qtClass { ^"QcButton" }
 
-  *properties {
-    ^[\string, \states];
-  }
-
   value {
     ^this.getProperty( \value );
   }

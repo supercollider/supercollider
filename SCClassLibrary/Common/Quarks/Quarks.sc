@@ -549,9 +549,12 @@ Quarks
 		quarksView = \QTreeView.asClass.new
 			.setProperty( \rootIsDecorated, false )
 			.columns_([nil,"Name","Summary"])
-			.action_({ |v|
-				var curItem = v.currentItem;
-				var curView;
+			.itemPressedAction_({ |v|
+				infoView.visible = true;
+			})
+			.onItemChanged_({ |v|
+				var curItem, curView;
+				curItem = v.currentItem;
 				curQuark = nil;
 				if( curItem.notNil ) {
 					curView = views.detect { |view| view.treeItem == curItem };
@@ -559,10 +562,10 @@ Quarks
 						curQuark = curView.quark;
 						txtDescription.string = curQuark.longDesc;
 						btnQuarkOpen.enabled = curQuark.isLocal;
-						infoView.visible = true;
 					}
-				};
-				if( curQuark.isNil ) { infoView.visible = false }
+				}{
+					infoView.visible = false
+				}
 			});
 
 		txtDescription = TextView(bounds:10@10)

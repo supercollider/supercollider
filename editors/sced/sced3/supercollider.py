@@ -36,6 +36,8 @@ scui_str = """<ui>
         <menuitem action="ScedStopSound"/>
         <menuitem action="ScedRecord"/>
         <separator/>
+        <menuitem action="ScedServerGUI"/>
+        <menuitem action="ScedServerMeter"/>
         <menuitem action="ScedStartServer"/>
         <menuitem action="ScedStopServer"/>
         <separator/>
@@ -43,12 +45,17 @@ scui_str = """<ui>
         <menuitem action="ScedStopSwingOSC"/>
         <separator/>
         <menuitem action="ScedFindHelp"/>
+        <menuitem action="ScedBrowseHelp"/>
+        <menuitem action="ScedSearchHelp"/>
+        <menuitem action="ScedMethodArgs"/>
+        <separator/>
         <menuitem action="ScedFindDefinition"/>
         <menuitem action="ScedBrowseClass"/>
-        <separator/>
         <menuitem action="ScedInspectObject"/>
+        <menuitem action="ScedOpenDevFile"/>
         <separator/>
         <menuitem action="ScedRestartInterpreter"/>
+        <menuitem action="ScedRecompile"/>
         <menuitem action="ScedClearOutput"/>
       </menu>
     </placeholder>
@@ -377,6 +384,18 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
              _("Find and open help file"),
              self.on_find_help),
 
+            ("ScedBrowseHelp", None, _("Browse Help"), None,
+             _("Browse help by categories"),
+             self.on_browse_help),
+
+            ("ScedSearchHelp", None, _("Search Help"), "<control><alt>U",
+             _("Search for help"),
+             self.on_search_help),
+
+            ("ScedMethodArgs", None, _("Show method args"), "<alt>A",
+             _("Show method arguments and defaults"),
+             self.on_method_args),
+
             ("ScedFindDefinition", None, _("Find Definition"), "<control>Y",
              _("Find and open class definition"),
              self.on_find_definition),
@@ -389,9 +408,17 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
              _("Inspect object state (needs running SwingOSC server)"),
              self.on_inspect_object),
 
+            ("ScedOpenDevFile", None, _("Open development file"), "<control><alt>K",
+             _("Open corresponding development file for current document"),
+             self.on_open_dev_file),
+
             ("ScedRestartInterpreter", None, _("Restart Interpreter"), None,
              _("Restart sclang"),
              self.on_restart),
+
+            ("ScedRecompile", None, _("Recompile class library"), "<control><shift>R",
+             _("Recompile class library"),
+             self.on_recompile),
 
             ("ScedClearOutput", Gtk.STOCK_CLEAR, _("Clear output"), None,
              _("Clear interpreter log"),
@@ -404,6 +431,14 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             ("ScedStopServer", None, _("Stop Server"), None,
              _("Stop the default server"),
              self.on_stop_server),
+
+            ("ScedServerGUI", None, _("Show Server GUI"), None,
+             _("Show GUI for default server"),
+             self.on_server_gui),
+
+            ("ScedServerMeter", None, _("Show level meters"), None,
+             _("Show level meters for default server"),
+             self.on_server_meter),
 
             ("ScedStartSwingOSC", None, _("Start SwingOSC GUI Server"), None,
              _("Start the SwingOSC GUI server"),
@@ -485,7 +520,7 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     def on_record(self, action, data=None):
         self.__lang.toggle_recording(action.get_active())
 
-    def on_find_help(self, action, data=None):
+    def get_selection(self):
         doc = self.window.get_active_document()
 
         try:
@@ -495,49 +530,44 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             i1, i2 = find_word(doc, i1)
             doc.select_range(i1, i2)
 
-        text = doc.get_text(i1, i2, False)
+        return doc.get_text(i1, i2, False)
+
+    def on_find_help(self, action, data=None):
+        text = self.get_selection()
         cmd = 'HelpBrowser.openHelpFor(\"' + text + '\");'
         self.__lang.evaluate(cmd, silent=True)
 
+    def on_browse_help(self, action):
+        self.__lang.evaluate("HelpBrowser.openBrowser;")
+
+    def on_search_help(self, action):
+        text = self.get_selection()
+        self.__lang.evaluate("HelpBrowser.openSearch(\"" + text + "\");")
+
+    def on_method_args(self, action):
+        text = self.get_selection()
+        self.__lang.evaluate("Help.methodArgs(\"" + text + "\");")
+
     def on_find_definition(self, action, data=None):
-        doc = self.window.get_active_document()
-
-        try:
-            i1, i2 = doc.get_selection_bounds()
-        except ValueError:
-            i1 = doc.get_iter_at_mark(doc.get_insert())
-            i1, i2 = find_word(doc, i1)
-            doc.select_range(i1, i2)
-
-        text = doc.get_text(i1, i2, False)
+        text = self.get_selection()
         cmd = "(\"gedit \" + (\"" + text + "\"" + ".interpret.filenameSymbol.asString)).systemCmd;"
         self.__lang.evaluate(cmd, silent=True)
 
     def on_browse_class(self, action):
-        doc = self.window.get_active_document()
-
-        try:
-            i1, i2 = doc.get_selection_bounds()
-        except ValueError:
-            i1 = doc.get_iter_at_mark(doc.get_insert())
-            i1, i2 = find_word(doc, i1)
-            doc.select_range(i1, i2)
-
-        text = doc.get_text(i1, i2, False)
+        text = self.get_selection()
         self.__lang.evaluate("" + text + ".browse", silent=True)
 
     def on_inspect_object(self, action, data=None):
-        doc = self.window.get_active_document()
-
-        try:
-            i1, i2 = doc.get_selection_bounds()
-        except ValueError:
-            i1 = doc.get_iter_at_mark(doc.get_insert())
-            i1, i2 = find_word(doc, i1)
-            doc.select_range(i1, i2)
-
-        text = doc.get_text(i1, i2, False)
+        text = self.get_selection()
         self.__lang.evaluate("" + text + ".inspect", silent=True)
+
+    def on_open_dev_file(self, action):
+        doc = self.window.get_active_document()
+        path = gio.File(doc.get_uri()).get_path() #get_location()
+        self.__lang.evaluate("(\"gedit\"+thisProcess.platform.devLoc(\""+path+"\")).systemCmd", silent=True);
+
+    def on_recompile(self, action):
+        self.__lang.stdin.write("\x18")
 
     def on_restart(self, action, data=None):
         if self.__lang.running():
@@ -555,6 +585,12 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     def on_stop_server(self, action, data=None):
         # FIXME: make these actions possible only if interpreter is running and okay
         self.__lang.evaluate("Server.default.quit;", silent=True)
+
+    def on_server_gui(self, action, data=None):
+        self.__lang.evaluate("Server.default.makeGui;", silent=True)
+
+    def on_server_meter(self, action, data=None):
+        self.__lang.evaluate("Server.default.meter;", silent=True)
 
     def on_start_swingosc(self, action, data=None):
         # FIXME: make these actions possible only if interpreter is running and okay

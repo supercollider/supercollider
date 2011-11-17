@@ -1,11 +1,28 @@
 class:: Done
 summary:: Monitors another UGen to see when it is finished
-related:: Classes/FreeSelfWhenDone, Classes/PauseSelfWhenDone
+related:: Classes/FreeSelfWhenDone, Classes/PauseSelfWhenDone, Reference/UGen-doneActions
 categories::  UGens>Synth control
 
 Description::
 
-Some UGens, such as link::Classes/PlayBuf::, link::Classes/RecordBuf::, link::Classes/Line::, link::Classes/XLine::, link::Classes/EnvGen::, link::Classes/Linen::, link::Classes/BufRd::, link::Classes/BufWr::, link::Classes/Dbufrd::, and the Buffer delay UGens set a 'done' flag when they are finished playing. This UGen echoes that flag when it is set to track a particular UGen. 
+Some UGens set a 'done' flag when they are finished playing. This UGen echoes that flag when it is set to track a particular UGen.
+
+The UGens trackable by Done are:
+list::
+## link::Classes/PlayBuf::
+## link::Classes/RecordBuf::
+## link::Classes/Line::
+## link::Classes/XLine::
+## link::Classes/EnvGen::
+## link::Classes/Linen::
+## link::Classes/BufRd::
+## link::Classes/BufWr::
+## link::Classes/Dbufrd::
+## link::Classes/Dbufwr::
+## link::Classes/DiskIn::
+## link::Classes/VDiskIn::
+## link::Classes/Demand::
+::
 
 classmethods::
 private:: categories
@@ -17,20 +34,29 @@ argument::src
 UGen to monitor
 
 examples::
+The 'done' flag can be used to trigger other things in the same synth:
 code::
 (
 SynthDef("Done-help", { arg out, t_trig;
-	var line, a, b; 
-	
+	var line, a, b;
+
 	line= Line.kr(1,0,1);
-	
+
 	a= SinOsc.ar(440,0,0.1*line); //sound fading out
 	b= WhiteNoise.ar(Done.kr(line)*0.1); //noise starts at end of line
-	
+
 	Out.ar(out, Pan2.ar(a+b));
 }).send(s);
 )
 
 Synth("Done-help"); //note that this synth doesn't have it's own doneAction, so you'll need to manually deallocate it
 ::
-
+The 'done' flag can be used to trigger a delayed freeing of the current synth, which is not possible by using link::Reference/UGen-doneActions:: :
+code::
+play {
+    var env = Line.kr(1,0,2);
+    var sig = PinkNoise.ar(env);
+    FreeSelf.kr(TDelay.kr(Done.kr(env),3));
+    GVerb.ar(sig,70,7);
+}
+::

@@ -561,12 +561,17 @@ Plotter {
 	}
 
 	makeButtons {
-		Button(parent, Rect(parent.view.bounds.right - 16, 8, 14, 14))
-				.states_([["?", Color.black, Color.clear]])
-				.focusColor_(Color.clear)
-				.resize_(3)
-				.font_(Font.sansSerif( 9 ))
-				.action_ { this.class.openHelpFile };
+		var string = "?";
+		var font = Font.sansSerif( 9 );
+		var bounds = string.bounds(font);
+		var padding = 8; // ensure that string is not clipped by round corners
+
+		Button(parent, Rect(parent.view.bounds.right - 16, 8, bounds.width + padding, bounds.height + padding))
+		.states_([["?"]])
+		.focusColor_(Color.clear)
+		.font_(font)
+		.resize_(3)
+		.action_ { this.class.openHelpFile };
 	}
 
 
@@ -774,12 +779,19 @@ Plotter {
 
 
 + ArrayedCollection {
-
 	plot2 { |name, bounds, discrete=false, numChannels, minval, maxval|
 		var array = this.as(Array), plotter = Plotter(name, bounds);
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
+		array = array.collect {|elem|
+			if (elem.isKindOf(Env)) {
+				elem.asSignal
+			} {
+				elem
+			}
+		};
+
 		plotter.setValue(array, true, false);
 
 		minval !? { plotter.minval = minval; };
@@ -788,7 +800,6 @@ Plotter {
 
 		^plotter
 	}
-
 }
 
 + Collection {

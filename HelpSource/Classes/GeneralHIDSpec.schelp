@@ -114,7 +114,7 @@ c = b.find;
 // load from file:
 b.fromFile( "Impact" );
 
-// the loading and storing mechanism works across SC sessions, as they are stored to file, and GeneralHIDSpec loads the device info of all stored specs at startup of the language. 
+// the loading and storing mechanism works across SC sessions, as they are stored to file, and GeneralHIDSpec loads the device info of all stored specs at startup of the language.
 
 /// A GeneralHIDDevice automatically has a spec, so we can access it even faster:
 
@@ -187,7 +187,7 @@ y[1].map( \amp, b.bus( \b6 ) );
 s.queryAllNodes( true );
 
 // free the synths
-y.do{ |it| it.free; }; x.do{ |it| it.free; }; 
+y.do{ |it| it.free; }; x.do{ |it| it.free; };
 
 
 

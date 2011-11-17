@@ -6,7 +6,7 @@ related:: Classes/Function, Classes/AbstractFunction, Classes/FunctionDef
 section:: Introduction
 
 A link::Classes/Function:: is an expression which defines operations to be performed when it is sent the code::value:: message. In functional languages, a function would be known as a lambda expression.
-Function definitions are enclosed in curly brackets code::{}::. Argument declarations, if any, follow the open bracket. Variable declarations follow argument declarations. An expression follows the declarations. 
+Function definitions are enclosed in curly brackets code::{}::. Argument declarations, if any, follow the open bracket. Variable declarations follow argument declarations. An expression follows the declarations.
 code::
 { arg a, b, c;  var d;   d = a * b; c + d }
 ::
@@ -28,13 +28,13 @@ code::
 ::
 
 A function can be thought as a machine able to perform a task on demand, e.g. a calculator. The calculator can receive input (args) and can output a value, the result of the performed operations. The function definition can then be thought as the building of the calculator: once built, the calculator does nothing until it is requested to work (by passing the value method to a function).
-The following figure depicts an empty function, input without output, output without input, and the general case with input and output. 
- 
+The following figure depicts an empty function, input without output, output without input, and the general case with input and output.
+
 image::functions.png#Functions::
 
 section:: Arguments
 
-An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list may be omitted. 
+An argument list immediately follows the open curly bracket of a function definition. An argument list either begins with the reserved word code::arg::, or is contained between two vertical bars. If a function takes no arguments, then the argument list may be omitted.
 
 Names of arguments in the list may be initialized to a default value using the following syntax forms. Arguments which are not explicitly initialized will be set to nil if no value is passed for them.
 
@@ -133,7 +133,7 @@ var abc = 2;
 ERROR: Parse error
    in file 'selected text'
    line 1 char 10:
-  { |x = abc•+1| x } 
+  { |x = abc•+1| x }
 -----------------------------------
 ERROR: Command line parse failed
 

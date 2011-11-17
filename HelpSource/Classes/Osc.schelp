@@ -79,13 +79,13 @@ b.sine1([1.0], true, true, true);
 
 SynthDef("help-Osc",{ arg out=0,bufnum=0;
 	Out.ar(out,
-		Osc.ar(bufnum, 
+		Osc.ar(bufnum,
 			Osc.ar(bufnum,
 				XLine.kr(1,1000,9),
 				0,
 				200,
-				800), 
-			0, 
+				800),
+			0,
 			0.25)
 	)
 }).play(s,[\out, 0, \bufnum, b.bufnum]);
@@ -100,12 +100,12 @@ b.sine1([1.0], true, true, true);
 
 SynthDef("help-Osc",{ arg out=0,bufnum=0;
 	Out.ar(out,
-		Osc.ar(bufnum, 
-				800, 
+		Osc.ar(bufnum,
+				800,
 				Osc.ar(bufnum,
 						XLine.kr(20,8000,10),
 						0,
-						2pi), 
+						2pi),
 				0.25)
 	)
 }).play(s,[\out, 0, \bufnum, b.bufnum]);

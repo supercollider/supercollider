@@ -46,24 +46,24 @@ Examples::
 code::
 // compare:
 (
-{ 
+{
 	var mod = SinOsc.kr(Line.kr(1, 10, 10));
-	SinOsc.ar(mod * 400 + 500) * 0.1 
+	SinOsc.ar(mod * 400 + 500) * 0.1
 }.play;
 )
 
 (
-{ 
+{
 	var mod = SinOsc.kr(Line.kr(1, 10, 10));
-	SinOsc.ar(LinExp.kr(mod, -1,1, 100, 900)) * 0.1 
+	SinOsc.ar(LinExp.kr(mod, -1,1, 100, 900)) * 0.1
 }.play;
 )
 
 // modulating destination values.
 (
-{ 
+{
 	var mod = LFNoise2.ar(80);
-	SinOsc.ar(LinExp.ar(mod, -1,1, MouseX.kr(200, 8000, 1), MouseY.kr(200, 8000, 1))) * 0.1 
+	SinOsc.ar(LinExp.ar(mod, -1,1, MouseX.kr(200, 8000, 1), MouseY.kr(200, 8000, 1))) * 0.1
 }.play;
 )
 ::
@@ -73,17 +73,17 @@ code::linexp:: and code::exprange:: can be used to create a LinExp implicitly fr
 code::
 // linexp
 (
-{ 
+{
 	var mod = LFNoise2.ar(80);
-	SinOsc.ar(mod.linexp(-1,1, MouseX.kr(200, 8000, 1), MouseY.kr(200, 8000, 1))) * 0.1 
+	SinOsc.ar(mod.linexp(-1,1, MouseX.kr(200, 8000, 1), MouseY.kr(200, 8000, 1))) * 0.1
 }.play;
 )
 
 // exprange
 (
-{ 
+{
 	var mod = LFNoise2.ar(80).exprange(MouseX.kr(200, 8000, 1), MouseY.kr(200, 8000, 1));
-	SinOsc.ar(mod) * 0.1 
+	SinOsc.ar(mod) * 0.1
 }.play;
 )
 ::

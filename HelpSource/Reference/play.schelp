@@ -70,7 +70,7 @@ See link::Classes/Pattern#-play::
 
 section:: Playing single Synths from SynthDefs on the server
 
-The following play messages both cause a SynthDef to be written, send it to the server 
+The following play messages both cause a SynthDef to be written, send it to the server
 and start a synth with it there.
 
 Note that they should not be used in quickly running automated processes,
@@ -107,7 +107,7 @@ a = { |freq = 500| HPF.ar(PinkNoise.ar([1, 1] * 0.4), freq) }.play(args: [\freq,
 
 subsection:: synthDef.play (target, args, addAction)
 returns: a link::Classes/Synth::
-	
+
 Note that you need an out ugen to hear the result.
 Examples of how to write to the busses in the helpfiles: link::Classes/Out:: / link::Classes/ReplaceOut:: / link::Classes/XOut:: / link::Classes/OffsetOut::
 

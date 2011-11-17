@@ -54,7 +54,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     /* we allocate one memory chunk */
     const size_t alloc_size = prototype->memory_requirement();
 
-    const size_t sample_alloc_size = world.mBufLength * synthdef.buffer_count + 64;  /* allocate 64 samples more than required */
+    const size_t sample_alloc_size = world.mBufLength * synthdef.buffer_count
+        + vec<float>::size * sizeof(float) /* for alignment */;
 
     char * chunk = (char*)rt_pool.malloc(alloc_size + sample_alloc_size*sizeof(sample));
     if (chunk == NULL)
@@ -89,7 +90,8 @@ sc_synth::sc_synth(int node_id, sc_synth_prototype_ptr const & prototype):
     calc_units = (Unit**)chunk; chunk += calc_unit_count * sizeof(Unit*);
     unit_buffers = (sample*)chunk; chunk += sample_alloc_size*sizeof(sample);
 
-    unit_buffers = (sample*) ((size_t(unit_buffers) + 63) & ~63); /* next multiple of 64 */
+    const int alignment_mask = vec<float>::size * sizeof(float) - 1;
+    unit_buffers = (sample*) ((size_t(unit_buffers) + alignment_mask) & ~alignment_mask);     /* next aligned pointer */
 
     /* allocate unit generators */
     sc_factory->allocate_ugens(synthdef.graph.size());

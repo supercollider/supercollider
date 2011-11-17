@@ -5,7 +5,7 @@ related::Classes/Polar, Classes/SimpleNumber, Classes/Float, Classes/Integer
 
 DESCRIPTION::
 A class representing complex numbers.
-Note that this is a simplified representation of a complex number, which does not implement the full mathematical notion of a complex number. 
+Note that this is a simplified representation of a complex number, which does not implement the full mathematical notion of a complex number.
 
 CLASSMETHODS::
 method:: new
@@ -114,7 +114,7 @@ Complex(2, 9) < Complex(5, 1);
 ::
 
 method:: ==
-the comparison assuming that the reals (floats) are fully embedded in the complex numbers 
+the comparison assuming that the reals (floats) are fully embedded in the complex numbers
 discussion::
 code::
 Complex(1, 0) == 1;

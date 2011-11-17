@@ -94,7 +94,7 @@ If the document map cache was not already read from file, it's first read from f
 The returned Dictionary is indexed by the documents path relative helpSourceDir, and without file suffix. Like code::Classes/SCDoc::.
 
 This dictionary is cached in code::helpTargetDir/scdoc_cache::.
- 
+
 method:: makeCategoryMap
 Creates a dictionary of all categories, with a list of documents for each category.
 returns:: A link::Classes/Dictionary:: of all documents grouped by category.

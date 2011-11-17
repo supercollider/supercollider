@@ -42,7 +42,7 @@ SynthDef(\Help_SubsampleOffset, { |out, addOffset|
 	sampleOffset = 1 - SubsampleOffset.ir; // balance out subsample offset
 	sampleOffset = sampleOffset + MouseX.kr(0, addOffset); // add a mouse dependent offset
 	// cubic resampling:
-	resampledSignal = DelayC.ar(in, 
+	resampledSignal = DelayC.ar(in,
 							maxdelaytime: sampDur * (1 + extraSamples),
 							delaytime: sampDur * (sampleOffset + extraSamples)
 					);
@@ -71,16 +71,16 @@ s.scope(1, 40, zoom: 0.2);
 // someone could add an example that shows the effect)
 
 (
-SynthDef("Help_Subsample_Grain", 
+SynthDef("Help_Subsample_Grain",
 	{ arg out=0, freq=440, sustain=0.005, attack=0.001;
 		var env, offset, sig, sd;
-		
+
 		sd = SampleDur.ir;
 		offset = (1 - SubsampleOffset.ir) * sd;
 		// free synth after delay:
 		Line.ar(1,0, attack + sustain + offset, doneAction:2); 		env = EnvGen.kr(Env.perc(attack, sustain, 0.2));
 		sig = SinOsc.ar(freq, 0, env);
-		
+
 		sig = DelayC.ar(sig, sd * 4, offset);
 		OffsetOut.ar(out, sig);
 	}, [\ir, \ir, \ir, \ir]).send(s);

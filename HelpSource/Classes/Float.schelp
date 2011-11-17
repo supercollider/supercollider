@@ -26,7 +26,7 @@ argument:: function
 The function to iterate.
 
 method:: coin
-Perform a random test whose probability of success in a range from 
+Perform a random test whose probability of success in a range from
 zero to one is this and return the result.
 returns:: a link::Classes/Boolean::
 discussion::

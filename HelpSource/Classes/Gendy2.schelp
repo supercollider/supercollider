@@ -125,11 +125,11 @@ This value will be added to the output.
 
 Examples::
 warning::
-if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lot because a new CP move happens every sample!	
+if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lot because a new CP move happens every sample!
 ::
 
 code::
-//LOUD! defaults like a rougher Gendy1	
+//LOUD! defaults like a rougher Gendy1
 {Pan2.ar(Gendy2.ar)}.play
 
 //advantages of messing with the random number generation- causes periodicities
@@ -151,7 +151,7 @@ MouseY.kr(10,10000,'exponential'),0.05)
 {Pan2.ar(Gendy2.ar(3,5,1.0,1.0,50,1000,MouseX.kr(0.05,1),MouseY.kr(0.05,1),15, 0.05,0.51,mul:0.5))}.play
 
 
-//play me	
+//play me
 {Pan2.ar(RLPF.ar(Gendy2.ar(1,3,minfreq:20,maxfreq:MouseX.kr(100,1000),durscale:0.0,initCPs:4),500,0.3, 0.2),0.0)}.play
 
 
@@ -162,12 +162,12 @@ MouseY.kr(10,10000,'exponential'),0.05)
 {Pan2.ar(Gendy2.ar(initCPs:2))}.play
 
 
-//used as an LFO	
+//used as an LFO
 (
 {Pan2.ar(SinOsc.ar(Gendy2.kr(2,1,SinOsc.kr(0.1,0,0.49,0.51),SinOsc.kr(0.13,0,0.49,0.51),
 3.4,3.5, SinOsc.kr(0.17,0,0.49,0.51), SinOsc.kr(0.19,0,0.49,0.51),10,10,mul:50, add:350), 0, 0.3), 0.0)}.play
 )
-	
+
 //very angry wasp
 {Pan2.ar(Gendy2.ar(0, 0, SinOsc.kr(0.1, 0, 0.1, 0.9),1.0, 50,1000, 1,0.005, 12, 12, 0.2,0.2,0.2), 0.0)}.play
 
@@ -186,7 +186,7 @@ MouseY.kr(10,10000,'exponential'),0.05)
     1.0, 1.0, 5,5, 500, 600), knum:MouseX.kr(1,13),mul:0.2), 0.0)}.play
 )
 
-//use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample 
+//use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample
 {Pan2.ar(Gendy2.ar(6,6,LFPulse.kr(100, 0, 0.4, 1.0), SinOsc.kr(30, 0, 0.5),mul:0.2), 0.0)}.play
 
 

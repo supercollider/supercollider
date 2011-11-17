@@ -62,21 +62,12 @@ another spot (useful to stop multiple detects on heavy signals).
 Examples::
 
 code::
-
 (
-b=Buffer.alloc(s,2048,1);
-	
-SynthDef(\fftod,
-{
- var source1, detect;
-	
-	source1= AudioIn.ar(1); 
-	
-	detect= PV_JensenAndersen.ar(FFT(b.bufnum,source1), threshold:MouseX.kr(0.1,1.0));
-	
-	Out.ar(0,SinOsc.ar([440,445],0,Decay.ar(0.1*detect,0.1)));
-}).play(s);	
-)	
-
+SynthDef(\fftod, { var source1, detect;
+		source1 = AudioIn.ar(1);
+		detect = PV_JensenAndersen.ar(FFT(LocalBuf(2048), source1),
+			threshold:MouseX.kr(0.1,1.0));
+		Out.ar(0, SinOsc.ar([440,445], 0, Decay.ar(0.1*detect, 0.1)));
+	}).play(s);
+)
 ::
-

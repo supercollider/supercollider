@@ -7,7 +7,7 @@ Internally used by Server.
 
 classmethods::
 method:: new
-Create and return a new instance of Volume for a given server, 
+Create and return a new instance of Volume for a given server,
 ranging from code::startBus:: over code::numChans:: (usually the server's number of output bus channels).
 argument:: startBus
 start bus
@@ -27,19 +27,19 @@ run the synth that controls the volume. If mute is true, mute the output. (defau
 
 method:: free
 free the synth that controls the volume.
-		
-method:: mute 
+
+method:: mute
 mute output
-		
-method:: unmute 
+
+method:: unmute
 unmute output
-		
+
 method:: volume
 set the volume (in db)
-		
+
 method:: lag
 set the lag time that dampens volume changes
-		
+
 method:: setVolumeRange
 set the volume range
 

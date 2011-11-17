@@ -17,7 +17,7 @@ code::
 s.initTree;
 ::
 ::
-This is the default target for all Nodes when using object style and is what you will get if you supply a link::Classes/Server:: as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.  
+This is the default target for all Nodes when using object style and is what you will get if you supply a link::Classes/Server:: as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.
 code::
 Server.default.boot;
 a = Synth.new(\default); // creates a synth in the default group of the default Server
@@ -30,7 +30,7 @@ Server.internal.boot;
 { SinOsc.ar(mul: 0.2) }.scope(1);
 
 // watch the post window;
-Server.internal.queryAllNodes; 
+Server.internal.queryAllNodes;
 
 // our SinOsc synth is within the default group (ID 1)
 // the scope node comes after the default group, so no problems
@@ -43,7 +43,7 @@ s.sendMsg("/s_new", "snd", 1832,0,1); // add to head of group 1
 ::
 The default group can be specifically freed, but there is generally no reason that one would want to do so.
 
-In general one should add nodes to the default group rather than the RootNode unless one has a specific reason to do so (i.e. adding some new functionality such as recording and scoping which is dependent upon a predictable basic node order). When using object style the default group is the default target for all new nodes, so nodes will normally not be added to the RootNode unless that is explicitly specified. It is of course possible to do so, but it should only be done with a proper understanding of the issues involved. 
+In general one should add nodes to the default group rather than the RootNode unless one has a specific reason to do so (i.e. adding some new functionality such as recording and scoping which is dependent upon a predictable basic node order). When using object style the default group is the default target for all new nodes, so nodes will normally not be added to the RootNode unless that is explicitly specified. It is of course possible to do so, but it should only be done with a proper understanding of the issues involved.
 
 For instance, if one were to place an 'effects' synth after the default group and call Server-record or Server-scope, the resulting recording or scope synths may not be correctly ordered:
 tree::

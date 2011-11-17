@@ -15,12 +15,12 @@ How many samples to take the running sum over (initialisation time only, not mod
 examples::
 
 code::
-// distorts of course - would need scaling  
-{ RunningSum.ar(SoundIn.ar) }.play      
-    
-// Running Average over x samples   
+// distorts of course - would need scaling
+{ RunningSum.ar(SoundIn.ar) }.play
+
+// Running Average over x samples
 (
-{ 
+{
     var x = 100;
     RunningSum.ar(LFSaw.ar, x) * (x.reciprocal)
  }.play
@@ -30,12 +30,12 @@ code::
 code::
 // RMS Power
 (
-{ 
+{
     var input, numsamp;
-    
+
     input = LFSaw.ar;
     numsamp = 30;
-    
+
     (RunningSum.ar(input.squared, numsamp) / numsamp).sqrt
 }.play
 )
@@ -43,13 +43,13 @@ code::
 
 code::
 // shortcut in class
-{ RunningSum.rms(SoundIn.ar) }.play     
+{ RunningSum.rms(SoundIn.ar) }.play
 ::
 
 code::
 // play around
 (
-{ 
+{
     var input, numsamp, power;
     numsamp = 500;
     input = SoundIn.ar;

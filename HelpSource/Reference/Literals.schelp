@@ -3,7 +3,7 @@ summary:: values with a direct syntactic representation
 related:: Classes/Number, Classes/Integer, Classes/Float, Classes/SimpleNumber, Classes/String, Classes/Array, Classes/Symbol
 categories:: Language
 
-Literals are values which have a direct syntactic representation. 
+Literals are values which have a direct syntactic representation.
 The following sections describe the types of literals that can be represented.
 
 section::Numbers
@@ -18,8 +18,8 @@ code::
 ::
 
 subsection::Floats
-A float is one or more decimal digits followed by a decimal point followed by one or more decimal digits. 
-You must have digits on both sides of the decimal point.  This distinguishes floating point numbers from 
+A float is one or more decimal digits followed by a decimal point followed by one or more decimal digits.
+You must have digits on both sides of the decimal point.  This distinguishes floating point numbers from
 integer expressions like code::8.rand::.
 
 Examples of floats:
@@ -45,9 +45,9 @@ pi
 ::
 
 subsection::Radix
-Numbers can also be written in radices other than base 10 up to base 36. 
+Numbers can also be written in radices other than base 10 up to base 36.
 The radix is specified in base 10 followed by the letter 'r' followed by the value written in
-that radix using characters 0-9,A-Z, or a-z, for digit values from 0 to 35. 
+that radix using characters 0-9,A-Z, or a-z, for digit values from 0 to 35.
 For example you can write hexidecimal numbers as follows:
 code::
 16rF0
@@ -82,7 +82,7 @@ $\\
 
 section::Symbols
 
-A symbol is written as a string enclosed in single quotes. 
+A symbol is written as a string enclosed in single quotes.
 examples of symbols:
 code::
 'x'
@@ -115,7 +115,7 @@ code::
 Strings may span more than one line. If so, then the new line characters become part of the string:
 code::
 "This
-is 
+is
 also a
 string.
 "
@@ -142,7 +142,7 @@ Pan2
 
 section::Special Values
 
-The singular instances of the classes True, False and Nil are written as the 
+The singular instances of the classes True, False and Nil are written as the
 words true, false, nil and inf.
 code::
 x = true;

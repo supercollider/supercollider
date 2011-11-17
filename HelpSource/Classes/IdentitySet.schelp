@@ -88,7 +88,7 @@ a.as(Set).as(Array);	// and convert back
 
 // note that the following behaves differently:
 a = [ "such", "such", "fallacy", "is", "such", "common", "such" ]
-a.as(IdentitySet);	// convert to set. All elements are still here. 
+a.as(IdentitySet);	// convert to set. All elements are still here.
 			// Different strings may look the same, but be different objects.
 
 // To remove equals in stead of identicals, use Set:

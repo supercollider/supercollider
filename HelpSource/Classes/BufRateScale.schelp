@@ -26,11 +26,11 @@ code::.ir::  will not track the changes.
 Examples::
 
 code::
-s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
+b = Buffer.readExample;
 
 (
-x = { arg rate=1; 
-	BufRd.ar(1, 0, Phasor.ar(0, BufRateScale.kr(0) * rate, 0, BufFrames.kr(0))) 
+x = { arg rate=1;
+	BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b)))
 }.play;
 )
 ::

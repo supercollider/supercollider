@@ -190,9 +190,9 @@ w.view.decorator.gap=2@2;
 Window.closeAll  // use this to close all the windows
 
 /////////////////////////////////////////////////////////////////
-////////// click these parentheses to see all features and layouts 
+////////// click these parentheses to see all features and layouts
 
-(   
+(
 m=nil;
 m=2@2;		// comment this for no margin
 
@@ -201,7 +201,7 @@ m=2@2;		// comment this for no margin
 
 (		// all features, small font
 		g=EZKnob(nil, 128@40," freq  ", \freq,unitWidth:20,layout:\line2, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180,50);
 		g.font_(Font("Helvetica",10));
@@ -209,13 +209,13 @@ m=2@2;		// comment this for no margin
 
 (		// no unitView
 		g=EZKnob(nil, 118@40," freq  ", \freq,unitWidth:0,layout:\line2, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180, -40);
 );
 (		// no label, so use window name as label
 		g=EZKnob(nil, 118@30, nil, \freq,labelWidth:100, unitWidth:20,layout:\line2, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(-180, -130);
 		g.window.name="Freq";
@@ -227,20 +227,20 @@ m=2@2;		// comment this for no margin
 
 (		// all features
 		g=EZKnob(nil, 200@28," freq  ", \freq,unitWidth:30,layout:\horz, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(0,50);
 );
 
 (		// no unitView
 		g=EZKnob(nil, 160@28," freq  ", \freq,layout:\horz, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(0, -30);
 );
 (		// no label, so use window name as label
 		g=EZKnob(nil, 120@28, nil, \freq ,layout:\horz, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(0, -110);
 		g.window.name="Freq";
@@ -253,7 +253,7 @@ m=2@2;		// comment this for no margin
 
 (		// all features
 		g=EZKnob(nil, 82@82," freq  ", \freq,unitWidth:18,layout:\vert, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.font_(Font("Helvetica", 10));
 		g.window.bounds = g.window.bounds.moveBy(220,50);
@@ -261,14 +261,14 @@ m=2@2;		// comment this for no margin
 
 (		// no unitView, with label
 		g=EZKnob(nil, 70@90," freq  ", \freq,unitWidth:0,layout:\vert, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(220,-90);
 );
 
 (		// no label
 		g=EZKnob(nil, 120@60,nil, \freq, unitWidth:30,layout:\vert, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(220,-230);
 		g.window.name="Freq";
@@ -276,7 +276,7 @@ m=2@2;		// comment this for no margin
 
 (		// no lablel, so use window name as label
 		g=EZKnob(nil, 120@60,nil, \freq,unitWidth:0,layout:\vert, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(220,-340);
 		g.window.name="Freq";
@@ -288,7 +288,7 @@ m=2@2;		// comment this for no margin
 
 (		// all features
 		g=EZKnob(nil, 82@82," freq  ", \freq,unitWidth:18,layout:\vert2, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.font_(Font("Helvetica", 10));
 		g.window.bounds = g.window.bounds.moveBy(350,50);
@@ -296,14 +296,14 @@ m=2@2;		// comment this for no margin
 
 (		// no unitView, with label
 		g=EZKnob(nil, 70@90," freq  ", \freq,unitWidth:0,layout:\vert2, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(350,-90);
 );
 
 (		// no label
 		g=EZKnob(nil, 120@60,nil, \freq, unitWidth:30,layout:\vert2, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(350,-230);
 		g.window.name="Freq";
@@ -311,21 +311,21 @@ m=2@2;		// comment this for no margin
 
 (		// no lablel, so use window name as label
 		g=EZKnob(nil, 120@60,nil, \freq,unitWidth:0,layout:\vert2, margin: m);
-		g.setColors(Color.grey,Color.white,Color.grey, 
+		g.setColors(Color.grey,Color.white,Color.grey,
 			Color.white, Color.yellow,nil,nil, Color.grey(0.7));
 		g.window.bounds = g.window.bounds.moveBy(350,-340);
 		g.window.name="Freq";
 );
 
 
-)	
-	
-		
+)
+
+
 
 
 ///////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////
-		
+
 
 // Sound example
 (
@@ -348,7 +348,7 @@ SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, g
 		x = x * EnvGen.kr(Env.cutoff, gate, doneAction: 2);
 		Out.ar(0, x);
 	}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]
-).load(s);
+).add;
 
 
 
@@ -385,27 +385,27 @@ w.view.decorator.nextLine;
 noteControl = EZKnob(w, 220 @ 32, "Note ", ControlSpec(24, 60, \lin, 1, 36, \note),
 	{|ez| node.set( "note", ez.value )}, unitWidth:30,layout:\horz)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 w.view.decorator.nextLine;
 cutoffControl = EZKnob(w, 220 @ 32, "Cutoff ", ControlSpec(200, 5000, \exp,0.01,1000,\Hz),
 	{|ez| node.set( "fc", ez.value )}, unitWidth:30,layout:\horz)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 w.view.decorator.nextLine;
 resonControl = EZKnob(w, 220 @ 32, "Reson ", ControlSpec(0.1, 0.7,\lin,0.001,0.2,\rq),
 	{|ez| node.set( "rq", ez.value )}, unitWidth:30,layout:\horz)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 w.view.decorator.nextLine;
 balanceControl = EZKnob(w, 220 @ 32, "Balance ", \bipolar,
 	{|ez| node.set( "bal", ez.value )},  unitWidth:30,layout:\horz)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 w.view.decorator.nextLine;
 ampControl = EZKnob(w, 220 @ 32, "Amp ", \db,
 	{|ez| node.set( "amp", ez.value.dbamp )}, -6, unitWidth:30,layout:\horz)
 		.setColors(Color.grey,Color.white, Color.grey(0.7),Color.grey, Color.white, Color.yellow);
-	
+
 
 // set start button to zero upon a cmd-period
 cmdPeriodFunc = { startButton.value = 0; };

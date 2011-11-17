@@ -86,7 +86,7 @@ r = Routine({
 
 	// the loop
 	3.do({ array.choose.yield })
-	
+
 });
 )
 ::
@@ -114,7 +114,7 @@ r = Routine({
 		1.wait; 		// pause for 1 second
 		array.choose.postln;
 	})
-	
+
 });
 )
 ::
@@ -167,22 +167,22 @@ SynthDef("fm2", {
 
 	// index values usually are between 0 and 24
 	// carPartial :: modPartial => car/mod ratio
-	
+
 	var mod;
 	var car;
-	
+
 	mod = SinOsc.ar(
 		freq * modPartial,
 		0,
 		freq * index * LFNoise1.kr(5.reciprocal).abs
 	);
-		
+
 	car = SinOsc.ar(
 		(freq * carPartial) + mod,
 		0,
 		mul
 	);
-	
+
 	Out.ar(
 		bus,
 		car * EnvGen.kr(Env.sine(1), doneAction: 2, timeScale: ts)

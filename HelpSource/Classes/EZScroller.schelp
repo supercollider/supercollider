@@ -10,7 +10,7 @@ EZScroller is used JITLib guis like link::Classes/NodeProxyEditor::, link::Class
 examples::
 code::
 (
-w = Window.new("EZScroller test", Rect(100, 400,200, 100)).front;	
+w = Window.new("EZScroller test", Rect(100, 400,200, 100)).front;
 // 5 displays
 v = { |i| DragBoth.new(w, Rect(0, i * 20, 100, 20)) }.dup(5);
 // 12 items

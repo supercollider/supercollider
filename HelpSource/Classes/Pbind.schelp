@@ -166,7 +166,7 @@ definitionList::
 ::
 ::
 ::
-::	
+::
 
 code::
 (
@@ -276,8 +276,8 @@ subsection::Additional arguments
 
 Here is an example with more bindings. Here we have added a filter with cutoff and resonance arguments.
 You will need to hit command '.' before executing the next few pbind ex. without having them stack up.
-also, due to the synthdef's and synthdeclib, if the server is shut down you will have to reload the 
-synthdef and re-read the synthdesclib. 
+also, due to the synthdef's and synthdeclib, if the server is shut down you will have to reload the
+synthdef and re-read the synthdesclib.
 
 code::
 (
@@ -385,7 +385,7 @@ code::
 SynthDef(\pbindefx, { arg out, in, time1=0.25, time2=0.5;
 	var audio, efx;
 	audio = In.ar([20, 21], 2);
-	efx=CombN.ar(audio, 0.5, [time1, time2], 10, 1, audio);	
+	efx=CombN.ar(audio, 0.5, [time1, time2], 10, 1, audio);
 	Out.ar(out, efx);
 }).add;
 

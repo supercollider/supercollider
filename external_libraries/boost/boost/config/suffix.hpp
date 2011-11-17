@@ -359,6 +359,13 @@
 #define BOOST_HAS_VARIADIC_TMPL
 #endif
 
+//
+// Set BOOST_NO_DECLTYPE_N3276 when BOOST_NO_DECLTYPE is defined
+//
+#if !defined(BOOST_NO_DECLTYPE_N3276) && defined(BOOST_NO_DECLTYPE)
+#define BOOST_NO_DECLTYPE_N3276
+#endif
+
 //  BOOST_HAS_ABI_HEADERS
 //  This macro gets set if we have headers that fix the ABI,
 //  and prevent ODR violations when linking to external libraries:

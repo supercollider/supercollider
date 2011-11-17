@@ -103,7 +103,7 @@ Collection.findMethod('select').argNames.dump; // dump its argument names
 Collection.findMethod('select').varNames.dump; // dump its local variable names
 
 // dump its code. mostly for debugging the compiler.
-Collection.findMethod('select').dumpByteCodes;	
+Collection.findMethod('select').dumpByteCodes;
 
 Collection.dumpByteCodes('select');	// a shorter version of the above
 
@@ -120,7 +120,7 @@ code::
 // create some windows to snoop in
 5.do({ arg i;
 	var w, b;
-	w = Window.new("snoop " ++ i.asString, 
+	w = Window.new("snoop " ++ i.asString,
 		Rect.new( 200 + 400.rand, 69 + 300.rand, 172, 90 ));
 	w.front;
 	b = Button.new( w, Rect.new( 23, 28, 127, 25 ));
@@ -130,7 +130,7 @@ code::
 Window.allWindows.dump;	// dump a list of all open SCWindows
 
 // a little more helpful, dump their names
-Window.allWindows.collect({ arg w; w.name }).postln;	
+Window.allWindows.collect({ arg w; w.name }).postln;
 
 (
 // change background colors of all open windows
@@ -145,7 +145,7 @@ subsection:: Snooping in SynthDefs
 code::
 // First execute this:
 (
-f = SynthDef("Help-SnoopSynthDef", 
+f = SynthDef("Help-SnoopSynthDef",
 	{ arg out=0;
 		Out.ar(out, PinkNoise.ar(0.1))
 	});

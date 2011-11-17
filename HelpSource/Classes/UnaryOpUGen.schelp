@@ -9,7 +9,7 @@ code::
 (SinOsc.ar(200).abs).dump;
 (LFSaw.ar(200).sin).dump;
 ::
-As in the examples given here, you don't usually need to instantiate UnaryOpUGen yourself. 
+As in the examples given here, you don't usually need to instantiate UnaryOpUGen yourself.
 
 The unary and binary operators are defined in link::Classes/UGen::'s superclass link::Classes/AbstractFunction::, which creates the
 BinaryOpUGen as a result of the operation.

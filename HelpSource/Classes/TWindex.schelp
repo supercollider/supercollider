@@ -39,7 +39,7 @@ a = SynthDef("help-TWindex",{ arg w1=0.0, w2=0.5, w3=0.5;
 	var trig, index;
 	trig = Impulse.kr(6);
 	index = TWindex.kr(trig, [w1, w2, w3]);
-	
+
 	Out.ar(0,
 		SinOsc.ar(
 			Select.kr(index,[400, 500, 600]),
@@ -63,11 +63,11 @@ a = SynthDef("help-TWindex",{ arg w1=0.0, w2=0.5;
 	var trig, index;
 	trig = Impulse.kr(6);
 	index = TWindex.kr(
-					trig, 
+					trig,
 					[w1, w2, SinOsc.kr(0.3, 0, 0.5, 0.5)],//modulate probability
 					1 //do normalisation
-		); 
-	
+		);
+
 	Out.ar(0,
 		SinOsc.ar(
 			Select.kr(index,[400, 500, 600]),

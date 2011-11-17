@@ -39,9 +39,9 @@ epoll_reactor::epoll_reactor(boost::asio::io_service& io_service)
   : boost::asio::detail::service_base<epoll_reactor>(io_service),
     io_service_(use_service<io_service_impl>(io_service)),
     mutex_(),
+    interrupter_(),
     epoll_fd_(do_epoll_create()),
     timer_fd_(do_timerfd_create()),
-    interrupter_(),
     shutdown_(false)
 {
   // Add the interrupter's descriptor to epoll.
@@ -148,13 +148,19 @@ void epoll_reactor::init_task()
 int epoll_reactor::register_descriptor(socket_type descriptor,
     epoll_reactor::per_descriptor_data& descriptor_data)
 {
-  mutex::scoped_lock lock(registered_descriptors_mutex_);
+  descriptor_data = allocate_descriptor_state();
 
-  descriptor_data = registered_descriptors_.alloc();
-  descriptor_data->descriptor_ = descriptor;
-  descriptor_data->shutdown_ = false;
+  {
+    mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
 
-  lock.unlock();
+    descriptor_data->reactor_ = this;
+    descriptor_data->descriptor_ = descriptor;
+    descriptor_data->shutdown_ = false;
+
+    for (int i = 0; i < max_ops; ++i)
+      descriptor_data->op_queue_is_empty_[i] =
+        descriptor_data->op_queue_[i].empty();
+  }
 
   epoll_event ev = { 0, { 0 } };
   ev.events = EPOLLIN | EPOLLERR | EPOLLHUP | EPOLLOUT | EPOLLPRI | EPOLLET;
@@ -170,14 +176,20 @@ int epoll_reactor::register_internal_descriptor(
     int op_type, socket_type descriptor,
     epoll_reactor::per_descriptor_data& descriptor_data, reactor_op* op)
 {
-  mutex::scoped_lock lock(registered_descriptors_mutex_);
+  descriptor_data = allocate_descriptor_state();
 
-  descriptor_data = registered_descriptors_.alloc();
-  descriptor_data->descriptor_ = descriptor;
-  descriptor_data->shutdown_ = false;
-  descriptor_data->op_queue_[op_type].push(op);
+  {
+    mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
 
-  lock.unlock();
+    descriptor_data->reactor_ = this;
+    descriptor_data->descriptor_ = descriptor;
+    descriptor_data->shutdown_ = false;
+    descriptor_data->op_queue_[op_type].push(op);
+
+    for (int i = 0; i < max_ops; ++i)
+      descriptor_data->op_queue_is_empty_[i] =
+        descriptor_data->op_queue_[i].empty();
+  }
 
   epoll_event ev = { 0, { 0 } };
   ev.events = EPOLLIN | EPOLLERR | EPOLLHUP | EPOLLOUT | EPOLLPRI | EPOLLET;
@@ -208,6 +220,22 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
     return;
   }
 
+  bool perform_speculative = allow_speculative;
+  if (perform_speculative)
+  {
+    if (descriptor_data->op_queue_is_empty_[op_type]
+        && (op_type != read_op
+          || descriptor_data->op_queue_is_empty_[except_op]))
+    {
+      if (op->perform())
+      {
+        io_service_.post_immediate_completion(op);
+        return;
+      }
+      perform_speculative = false;
+    }
+  }
+
   mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
 
   if (descriptor_data->shutdown_)
@@ -216,17 +244,24 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
     return;
   }
 
-  if (descriptor_data->op_queue_[op_type].empty())
+  for (int i = 0; i < max_ops; ++i)
+    descriptor_data->op_queue_is_empty_[i] =
+      descriptor_data->op_queue_[i].empty();
+
+  if (descriptor_data->op_queue_is_empty_[op_type])
   {
-    if (allow_speculative
-        && (op_type != read_op
-          || descriptor_data->op_queue_[except_op].empty()))
+    if (allow_speculative)
     {
-      if (op->perform())
+      if (perform_speculative
+          && (op_type != read_op
+            || descriptor_data->op_queue_is_empty_[except_op]))
       {
-        descriptor_lock.unlock();
-        io_service_.post_immediate_completion(op);
-        return;
+        if (op->perform())
+        {
+          descriptor_lock.unlock();
+          io_service_.post_immediate_completion(op);
+          return;
+        }
       }
     }
     else
@@ -240,6 +275,7 @@ void epoll_reactor::start_op(int op_type, socket_type descriptor,
   }
 
   descriptor_data->op_queue_[op_type].push(op);
+  descriptor_data->op_queue_is_empty_[op_type] = false;
   io_service_.work_started();
 }
 
@@ -274,7 +310,6 @@ void epoll_reactor::deregister_descriptor(socket_type descriptor,
     return;
 
   mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
-  mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
 
   if (!descriptor_data->shutdown_)
   {
@@ -305,10 +340,8 @@ void epoll_reactor::deregister_descriptor(socket_type descriptor,
 
     descriptor_lock.unlock();
 
-    registered_descriptors_.free(descriptor_data);
+    free_descriptor_state(descriptor_data);
     descriptor_data = 0;
-
-    descriptors_lock.unlock();
 
     io_service_.post_deferred_completions(ops);
   }
@@ -321,7 +354,6 @@ void epoll_reactor::deregister_internal_descriptor(socket_type descriptor,
     return;
 
   mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
-  mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
 
   if (!descriptor_data->shutdown_)
   {
@@ -337,15 +369,19 @@ void epoll_reactor::deregister_internal_descriptor(socket_type descriptor,
 
     descriptor_lock.unlock();
 
-    registered_descriptors_.free(descriptor_data);
+    free_descriptor_state(descriptor_data);
     descriptor_data = 0;
-
-    descriptors_lock.unlock();
   }
 }
 
 void epoll_reactor::run(bool block, op_queue<operation>& ops)
 {
+  // This code relies on the fact that the task_io_service queues the reactor
+  // task behind all descriptor operations generated by this function. This
+  // means, that by the time we reach this point, any previously returned
+  // descriptor operations have already been dequeued. Therefore it is now safe
+  // for us to reuse and return them for the task_io_service to queue again.
+
   // Calculate a timeout only if timerfd is not used.
   int timeout;
   if (timer_fd_ != -1)
@@ -392,28 +428,12 @@ void epoll_reactor::run(bool block, op_queue<operation>& ops)
 #endif // defined(BOOST_ASIO_HAS_TIMERFD)
     else
     {
+      // The descriptor operation doesn't count as work in and of itself, so we
+      // don't call work_started() here. This still allows the io_service to
+      // stop if the only remaining operations are descriptor operations.
       descriptor_state* descriptor_data = static_cast<descriptor_state*>(ptr);
-      mutex::scoped_lock descriptor_lock(descriptor_data->mutex_);
-
-      // Exception operations must be processed first to ensure that any
-      // out-of-band data is read before normal data.
-      static const int flag[max_ops] = { EPOLLIN, EPOLLOUT, EPOLLPRI };
-      for (int j = max_ops - 1; j >= 0; --j)
-      {
-        if (events[i].events & (flag[j] | EPOLLERR | EPOLLHUP))
-        {
-          while (reactor_op* op = descriptor_data->op_queue_[j].front())
-          {
-            if (op->perform())
-            {
-              descriptor_data->op_queue_[j].pop();
-              ops.push(op);
-            }
-            else
-              break;
-          }
-        }
-      }
+      descriptor_data->set_ready_events(events[i].events);
+      ops.push(descriptor_data);
     }
   }
 
@@ -491,6 +511,18 @@ int epoll_reactor::do_timerfd_create()
 #endif // defined(BOOST_ASIO_HAS_TIMERFD)
 }
 
+epoll_reactor::descriptor_state* epoll_reactor::allocate_descriptor_state()
+{
+  mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
+  return registered_descriptors_.alloc();
+}
+
+void epoll_reactor::free_descriptor_state(epoll_reactor::descriptor_state* s)
+{
+  mutex::scoped_lock descriptors_lock(registered_descriptors_mutex_);
+  registered_descriptors_.free(s);
+}
+
 void epoll_reactor::do_add_timer_queue(timer_queue_base& queue)
 {
   mutex::scoped_lock lock(mutex_);
@@ -538,6 +570,92 @@ int epoll_reactor::get_timeout(itimerspec& ts)
   return usec ? 0 : TFD_TIMER_ABSTIME;
 }
 #endif // defined(BOOST_ASIO_HAS_TIMERFD)
+
+struct epoll_reactor::perform_io_cleanup_on_block_exit
+{
+  explicit perform_io_cleanup_on_block_exit(epoll_reactor* r)
+    : reactor_(r), first_op_(0)
+  {
+  }
+
+  ~perform_io_cleanup_on_block_exit()
+  {
+    if (first_op_)
+    {
+      // Post the remaining completed operations for invocation.
+      if (!ops_.empty())
+        reactor_->io_service_.post_deferred_completions(ops_);
+
+      // A user-initiated operation has completed, but there's no need to
+      // explicitly call work_finished() here. Instead, we'll take advantage of
+      // the fact that the task_io_service will call work_finished() once we
+      // return.
+    }
+    else
+    {
+      // No user-initiated operations have completed, so we need to compensate
+      // for the work_finished() call that the task_io_service will make once
+      // this operation returns.
+      reactor_->io_service_.work_started();
+    }
+  }
+
+  epoll_reactor* reactor_;
+  op_queue<operation> ops_;
+  operation* first_op_;
+};
+
+epoll_reactor::descriptor_state::descriptor_state()
+  : operation(&epoll_reactor::descriptor_state::do_complete)
+{
+}
+
+operation* epoll_reactor::descriptor_state::perform_io(uint32_t events)
+{
+  perform_io_cleanup_on_block_exit io_cleanup(reactor_);
+  mutex::scoped_lock descriptor_lock(mutex_);
+
+  // Exception operations must be processed first to ensure that any
+  // out-of-band data is read before normal data.
+  static const int flag[max_ops] = { EPOLLIN, EPOLLOUT, EPOLLPRI };
+  for (int j = max_ops - 1; j >= 0; --j)
+  {
+    if (events & (flag[j] | EPOLLERR | EPOLLHUP))
+    {
+      while (reactor_op* op = op_queue_[j].front())
+      {
+        if (op->perform())
+        {
+          op_queue_[j].pop();
+          io_cleanup.ops_.push(op);
+        }
+        else
+          break;
+      }
+    }
+  }
+
+  // The first operation will be returned for completion now. The others will
+  // be posted for later by the io_cleanup object's destructor.
+  io_cleanup.first_op_ = io_cleanup.ops_.front();
+  io_cleanup.ops_.pop();
+  return io_cleanup.first_op_;
+}
+
+void epoll_reactor::descriptor_state::do_complete(
+    io_service_impl* owner, operation* base,
+    const boost::system::error_code& ec, std::size_t bytes_transferred)
+{
+  if (owner)
+  {
+    descriptor_state* descriptor_data = static_cast<descriptor_state*>(base);
+    uint32_t events = static_cast<uint32_t>(bytes_transferred);
+    if (operation* op = descriptor_data->perform_io(events))
+    {
+      op->complete(*owner, ec, 0);
+    }
+  }
+}
 
 } // namespace detail
 } // namespace asio

@@ -10,11 +10,11 @@ Like link::Classes/LFNoise0::, it generates random values at a rate
 given by the  code::freq::  argument, with two differences:
 
 list::
-## no time quantization 
+## no time quantization
 ## fast recovery from low freq values footnote::
 link::Classes/LFNoise0:: ,  link::Classes/LFNoise1::  and
 link::Classes/LFNoise2::  quantize to the nearest integer division
-of the samplerate, and they poll the  code::freq:: 
+of the samplerate, and they poll the  code::freq::
 argument only when scheduled; thus they often seem to hang
 when freqs get very low.
 ::

@@ -80,7 +80,7 @@ SynthDef(\help_RecordBuf_overdub, { arg out=0, bufnum=0;
 	var formant;
 	formant = Formant.ar(XLine.kr(200, 1000, 4), 2000, 800, 0.125);
 	// mixes equally with existing data
-	RecordBuf.ar(formant, bufnum, 0, 0.5, 0.5, doneAction: 2, loop: 0); 
+	RecordBuf.ar(formant, bufnum, 0, 0.5, 0.5, doneAction: 2, loop: 0);
 }).play(s, [\out, 0, \bufnum, b]);
 )
 

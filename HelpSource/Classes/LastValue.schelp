@@ -41,7 +41,7 @@ code::
 (
 d = { arg out=0, val=1;
 	SinOsc.ar(
-			abs(val - LastValue.kr(val)) * 400 + 200, 
+			abs(val - LastValue.kr(val)) * 400 + 200,
 			0, 0.2
 	)
 }.play;

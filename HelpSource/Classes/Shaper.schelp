@@ -18,19 +18,19 @@ The input signal.
 
 
 Examples::
-Examples use the Internal Server to show the effect of waveshaping via a scope. Use .play instead if necessary.  
+Examples use the Internal Server to show the effect of waveshaping via a scope. Use .play instead if necessary.
 code::
 Server.default = s = Server.internal; s.boot;
 
 b = Buffer.alloc(s, 512, 1, { |buf| buf.chebyMsg([1,0,1,1,0,1])});
 
 (
-{ 
+{
 	Shaper.ar(
-		b, 
+		b,
 		SinOsc.ar(300, 0, Line.kr(0,1,6)),
 		0.5
-	) 
+	)
 }.scope;
 )
 
@@ -45,12 +45,12 @@ code::
 b = Buffer.alloc(s, 512, 1, {arg buf; buf.chebyMsg([0.25,0.5,0.25], false)});
 
 (
-{ 
+{
 	Shaper.ar(
-		b, 
+		b,
 		SinOsc.ar(440, 0.5pi, Line.kr(0,1,6)), //input cosine wave
 		0.5 //scale output down because otherwise it goes between -1.05 and 0.5, distorting...
-	) 
+	)
 }.scope;
 )
 
@@ -94,7 +94,7 @@ b.plot
 b.free;
 ::
 
-This way of working then allows you to get creative with your transfer functions! 
+This way of working then allows you to get creative with your transfer functions!
 code::
 b = Buffer.alloc(s, 1024, 1);
 
@@ -117,8 +117,8 @@ b.sendCollection(t.asWavetableNoWrap);  // may also use loadCollection here
 
 // now for a twist
 (
-a = Signal.fill(256, { |i| 
-	var t = i/255.0;  
+a = Signal.fill(256, { |i|
+	var t = i/255.0;
 	t + (0.1 * (max(t, 0.1) - 0.1) * sin(2pi * t * 80 + sin(2pi * 25.6 * t)))
 })
 );
@@ -133,15 +133,15 @@ d.size	//must be buffer size/2 + 1, so 513 is fine
 
 b.sendCollection(d.asWavetableNoWrap);  // may also use loadCollection here
 
-b.plot // wavetable format! 
+b.plot // wavetable format!
 
 // test shaper
 (
-{ 
+{
 	Shaper.ar(
-		b, 
+		b,
 		SinOsc.ar(440, 0.5, Line.kr(0,0.9,6))
-	) 
+	)
 }.scope
 )
 ::

@@ -42,7 +42,7 @@ code::
 b = Buffer.alloc(s,44100,1);
 
 // Since the allpass delay has no audible effect as a resonator on
-// steady state sound ... 
+// steady state sound ...
 
 { BufAllpassC.ar(b.bufnum, WhiteNoise.ar(0.1), XLine.kr(0.0001, 0.01, 20), 0.2) }.play;
 

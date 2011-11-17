@@ -27,11 +27,11 @@ examples::
 
 code::
 (
-x = { arg spread=1, level=0.2, center=0.0; 
+x = { arg spread=1, level=0.2, center=0.0;
  Splay.ar(
-  SinOsc.ar( { |i| LFNoise2.kr( rrand(10, 20), 200, 400) } ! 10), 
-  spread, 
-  level, 
+  SinOsc.ar( { |i| LFNoise2.kr( rrand(10, 20), 200, 400) } ! 10),
+  spread,
+  level,
   center
  );
 }.play;
@@ -48,11 +48,11 @@ x.set(\spread, 1,   \center, 0);  // full stereo
 
  // the same example written with arFill:
 (
-x = { arg spread=1, level=0.2, center=0.0; 
- Splay.arFill(10, 
-  { |i| SinOsc.ar( LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100))  }, 
-  spread, 
-  level, 
+x = { arg spread=1, level=0.2, center=0.0;
+ Splay.arFill(10,
+  { |i| SinOsc.ar( LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100))  },
+  spread,
+  level,
   center
  );
 }.play;
@@ -61,7 +61,7 @@ x = { arg spread=1, level=0.2, center=0.0;
 
  // with mouse control
 (
-x = { var src; 
+x = { var src;
  src = SinOsc.ar( { |i| LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100) } ! 10);
  Splay.ar(src, MouseY.kr(1, 0), 0.2, MouseX.kr(-1, 1));
 }.play;

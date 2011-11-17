@@ -160,7 +160,6 @@ option(FINAL_BUILD "Build as single source file." OFF)
 option(CURL "Build with curl for remote file download." ON)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
-mark_as_advanced(FFT_GREEN)
 
 option(SSE "Compile with support for SSE instructions.")
 option(SSE41 "Compile with support for SSE4.1 instructions.")
@@ -182,7 +181,8 @@ option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable m
 option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
-mark_as_advanced(NO_LIBSNDFILE)
+
+option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
 
 if(NOT WIN32)
 	option(SCLANG_SERVER "Build with internal server." ON)

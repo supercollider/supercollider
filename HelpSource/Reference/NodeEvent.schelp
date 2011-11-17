@@ -43,7 +43,7 @@ method:: tailOf (nodeID)
 moves to immediately to tail of nodeID
 
 subsection:: Multi-channel expansion
-With the exception of ~server, ~latency, and ~instrument any key in the event can have an array as a 
+With the exception of ~server, ~latency, and ~instrument any key in the event can have an array as a
 value and the standard rules of multi-channel expansion will be followed.
 
 Examples::

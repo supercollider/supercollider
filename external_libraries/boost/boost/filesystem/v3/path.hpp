@@ -29,6 +29,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/io/detail/quoted_manip.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/functional/hash_fwd.hpp>
 #include <string>
 #include <iterator>
 #include <cstring>
@@ -95,7 +96,7 @@ namespace filesystem3
     //  TODO: rules needed for operating systems that use / or .
     //  differently, or format directory paths differently from file paths. 
     //
-    //  ************************************************************************
+    //  **********************************************************************************
     //
     //  More work needed: How to handle an operating system that may have
     //  slash characters or dot characters in valid filenames, either because
@@ -107,7 +108,7 @@ namespace filesystem3
     //                                             ^^^^
     //  Note that 0x2F is the ASCII slash character
     //
-    //  ************************************************************************
+    //  **********************************************************************************
 
     //  Supported source arguments: half-open iterator range, container, c-array,
     //  and single pointer to null terminated string.
@@ -116,9 +117,9 @@ namespace filesystem3
     //  multi-byte character strings which may have embedded nulls. Embedded null
     //  support is required for some Asian languages on Windows.
 
-    //  "const codecvt_type& cvt=codecvt()" default arguments are not used because some
-    //  compilers, such as Microsoft prior to VC++ 10, do not handle defaults correctly
-    //  in templates.
+    //  [defaults] "const codecvt_type& cvt=codecvt()" default arguments are not used
+    //  because some compilers, such as Microsoft prior to VC++ 10, do not handle defaults
+    //  correctly in templates.
 
     //  -----  constructors  -----
 
@@ -147,7 +148,7 @@ namespace filesystem3
 
     template <class Source>
     path(Source const& source, const codecvt_type& cvt)
-    //  see note above explaining why codecvt() default arguments are not used
+    //  see [defaults] note above explaining why codecvt() default arguments are not used
     {
       path_traits::dispatch(source, m_pathname, cvt);
     }
@@ -559,18 +560,31 @@ namespace filesystem3
     const path::value_type* l(lhs.c_str());
     while ((*l == *rhs || (*l == L'\\' && *rhs == L'/') || (*l == L'/' && *rhs == L'\\'))
       && *l) { ++l; ++rhs; }
-    return *l == *rhs || (*l == L'\\' && *rhs == L'/') || (*l == L'/' && *rhs == L'\\');  
+    return *l == *rhs;
   }
   inline bool operator==(const path& lhs, const path& rhs)              { return lhs == rhs.c_str(); }
   inline bool operator==(const path& lhs, const path::string_type& rhs) { return lhs == rhs.c_str(); }
   inline bool operator==(const path::string_type& lhs, const path& rhs) { return rhs == lhs.c_str(); }
   inline bool operator==(const path::value_type* lhs, const path& rhs)  { return rhs == lhs; }
+
+  inline std::size_t hash_value(const path& x)
+  {
+    std::size_t seed = 0;
+    for(const path::value_type* it = x.c_str(); *it; ++it)
+      hash_combine(seed, *it == '/' ? L'\\' : *it);
+    return seed;
+  }
 # else   // BOOST_POSIX_API
   inline bool operator==(const path& lhs, const path& rhs)              { return lhs.native() == rhs.native(); }
   inline bool operator==(const path& lhs, const path::string_type& rhs) { return lhs.native() == rhs; }
   inline bool operator==(const path& lhs, const path::value_type* rhs)  { return lhs.native() == rhs; }
   inline bool operator==(const path::string_type& lhs, const path& rhs) { return lhs == rhs.native(); }
   inline bool operator==(const path::value_type* lhs, const path& rhs)  { return lhs == rhs.native(); }
+
+  inline std::size_t hash_value(const path& x)
+  {
+    return hash_range(x.native().begin(), x.native().end());
+  }
 # endif
 
   inline bool operator!=(const path& lhs, const path& rhs)              { return !(lhs == rhs); }
@@ -592,7 +606,7 @@ namespace filesystem3
   operator<<(std::basic_ostream<Char, Traits>& os, const path& p)
   {
     return os
-      << boost::io::quoted(p.string<std::basic_string<Char> >(), static_cast<Char>('&'));
+      << boost::io::quoted(p.template string<std::basic_string<Char> >(), static_cast<Char>('&'));
   }
   
   template <class Char, class Traits>

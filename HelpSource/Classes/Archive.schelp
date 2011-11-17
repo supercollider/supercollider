@@ -14,7 +14,7 @@ private::initClass
 
 method::global
 set or get the global archive instance
-		
+
 method::archiveDir
 set or get the directory that the archive is written to.
 Default: link::Classes/Platform::.userAppSupportDir.

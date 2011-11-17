@@ -253,8 +253,8 @@ The SuperCollider virtual machine is designed so that it can be run at interrupt
 
 SuperCollider version 1.0 was completely rewritten to make it both more expressive and more efficient. This required rethinking the implementation in light of the experience of the first version. It is my opinion that the new version has benefitted significantly from this rethink. It is not simply version 1.0 with more features.
 
-strong::Why use a text based language rather than a graphical language? :: 
-There are at least two answers to this. strong::Dynamism:: : Most graphical synthesis environments use statically allocated unit generators. In SuperCollider, the user can create structures which spawn events dynamically and in a nested fashion. Patches can be built dynamically and parameterized not just by floating point numbers from a static score, but by other graphs of unit generators as well. Or you can construct patches algorithmically on the fly. This kind of fluidity is not possible in a language with statically allocated unit generators. 
+strong::Why use a text based language rather than a graphical language? ::
+There are at least two answers to this. strong::Dynamism:: : Most graphical synthesis environments use statically allocated unit generators. In SuperCollider, the user can create structures which spawn events dynamically and in a nested fashion. Patches can be built dynamically and parameterized not just by floating point numbers from a static score, but by other graphs of unit generators as well. Or you can construct patches algorithmically on the fly. This kind of fluidity is not possible in a language with statically allocated unit generators.
 strong::Brevity:: : In SuperCollider, symmetries in a patch can be exploited by either multichannel expansion or programmatic patch building. For example, the following short program generates a patch of 49 unit generators. In a graphical program this might require a significant amount of time and space to wire up. Another advantage is that the size of the patch below can be easily expanded or contracted just by changing a few constants.
 
 code::
@@ -265,7 +265,7 @@ s = Mix.ar(Array.fill(10, { Resonz.ar(Dust.ar(0.2, 50), 200 + 3000.0.rand, 0.003
 	// reverb predelay time :
 z = DelayN.ar(s, 0.048);
 	// 7 length modulated comb delays in parallel :
-y = Mix.ar(Array.fill(7,{ CombL.ar(z, 0.1, LFNoise1.kr(0.1.rand, 0.04, 0.05), 15) })); 
+y = Mix.ar(Array.fill(7,{ CombL.ar(z, 0.1, LFNoise1.kr(0.1.rand, 0.04, 0.05), 15) }));
 	// two parallel chains of 4 allpass delays (8 total) :
 4.do({ y = AllpassN.ar(y, 0.050, [0.050.rand, 0.050.rand], 1) });
 	// add original sound to reverb and play it :

@@ -23,6 +23,9 @@
 #include <boost/intrusive/detail/slist_node.hpp> //remove-me
 #include <cstddef>
 #include <boost/pointer_cast.hpp>
+#include <boost/move/move.hpp>
+
+
 namespace boost {
 namespace intrusive {
 namespace detail {
@@ -76,6 +79,10 @@ struct bucket_impl : public Slist
 template<class Slist>
 struct bucket_traits_impl
 {
+   private:
+   BOOST_COPYABLE_AND_MOVABLE(bucket_traits_impl)
+
+   public:
    /// @cond
    typedef typename boost::pointer_to_other
       < typename Slist::pointer, bucket_impl<Slist> >::type bucket_ptr;
@@ -85,6 +92,21 @@ struct bucket_traits_impl
    bucket_traits_impl(bucket_ptr buckets, size_type len)
       :  buckets_(buckets), buckets_len_(len)
    {}
+
+   bucket_traits_impl(BOOST_RV_REF(bucket_traits_impl) x)
+      : buckets_(x.buckets_), buckets_len_(x.buckets_len_)
+   {  x.buckets_ = bucket_ptr(0);   x.buckets_len_ = 0;  }
+
+   bucket_traits_impl& operator=(BOOST_RV_REF(bucket_traits_impl) x)
+   {
+      buckets_ = x.buckets_; buckets_len_ = x.buckets_len_;
+      x.buckets_ = bucket_ptr(0);   x.buckets_len_ = 0; return *this;
+   }
+
+   bucket_traits_impl& operator=(BOOST_COPY_ASSIGN_REF(bucket_traits_impl) x)
+   {
+      buckets_ = x.buckets_;  buckets_len_ = x.buckets_len_; return *this;
+   }
 
    bucket_ptr bucket_begin() const
    {  return buckets_;  }

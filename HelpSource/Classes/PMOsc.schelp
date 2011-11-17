@@ -42,7 +42,7 @@ play({ PMOsc.ar(300, 550, Line.ar(0,20,8), 0, 0.1) }); // modulate index
 
 (
 e = Env.linen(2, 5, 2);
-Routine.run({ 
+Routine.run({
 	loop({
 		play({
 			LinPan2.ar(EnvGen.ar(e) *

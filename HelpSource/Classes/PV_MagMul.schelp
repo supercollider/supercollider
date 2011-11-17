@@ -5,8 +5,7 @@ categories:: UGens>FFT
 
 Description::
 
-Multiplies magnitudes of two inputs and keeps the phases of the first
-input.
+Multiplies magnitudes of two inputs and keeps the phases of the first input.
 
 
 classmethods::
@@ -24,35 +23,33 @@ Examples::
 code::
 
 s.boot;
-(
-b = Buffer.alloc(s,2048,1);
-c = Buffer.alloc(s,2048,1);
-d = Buffer.read(s,"sounds/a11wlk01.wav");
-)
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 (
-SynthDef("help-magMul", { arg out=0, bufnumA=0, bufnumB=1;
+SynthDef("help-magMul", { arg out=0;
 	var inA, chainA, inB, chainB, chain;
 	inA = WhiteNoise.ar(0.2);
 	inB = LFSaw.ar(100, 0, 0.2);
-	chainA = FFT(bufnumA, inA);
-	chainB = FFT(bufnumB, inB);
-	chain = PV_MagMul(chainA, chainB); 
-	Out.ar(out, 0.5 * IFFT(chain).dup);
-}).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum ]);
+	chainA = FFT(LocalBuf(2048), inA);
+	chainB = FFT(LocalBuf(2048), inB);
+	chain = PV_MagMul(chainA, chainB);
+	Out.ar(out, 0.1 * IFFT(chain).dup);
+}).play(s);
 )
 
 (
-SynthDef("help-magMul2", { arg out=0, bufnumA=0, bufnumB=1, soundBufnum=2;
+SynthDef("help-magMul2", { arg out=0, soundBufnum=2;
 	var inA, chainA, inB, chainB, chain;
 	inA = LFSaw.ar([100, 150], 0, 0.2);
 	inB = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
-	chainA = FFT(bufnumA, inA);
-	chainB = FFT(bufnumB, inB);
-	chain = PV_MagMul(chainA, chainB); 
-	Out.ar(out,  0.1 * IFFT(chain));
-}).play(s,[\out, 0, \bufnumA, b.bufnum, \bufnumB, c.bufnum, \soundBufnum, d.bufnum]);
+	chainA = FFT(LocalBuf(2048), inA);
+	chainB = FFT(LocalBuf(2048), inB);
+	chain = PV_MagMul(chainA, chainB);
+	Out.ar(out,  0.03 * IFFT(chain));
+}).play(s, [\soundBufnum, b.bufnum]);
 )
+
+b.free
 
 ::
 

@@ -39,7 +39,7 @@ SynthDef("trig1",{ arg dur=0.125;
 	var gate;
 	gate = Trig1.kr(1.0,dur);
 	OffsetOut.ar(0,
-		SinOsc.ar(800, 0.3) 
+		SinOsc.ar(800, 0.3)
 		* EnvGen.kr(
 			Env([0,0.1,0.1,0],[0.01,1.0,0.01],[-4,4],2),
 			gate,
@@ -63,7 +63,7 @@ SynthDef("trig1",{
 	var gate;
 	gate = Trig1.kr(1.0,0.25);
 	OffsetOut.ar(0,
-		SinOsc.ar(800, 0.3) 
+		SinOsc.ar(800, 0.3)
 		* EnvGen.kr(
 			Env([0,0.1,0.1,0],[0.01,1.0,0.01],[-4,4],2),
 			gate,

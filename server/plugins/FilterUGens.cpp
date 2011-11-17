@@ -2091,7 +2091,7 @@ void Slew_Ctor(Slew* unit)
 {
 	//printf("Slew_Reset\n");
 	SETCALC(Slew_next);
-	unit->mLevel = 0.f;
+	unit->mLevel = ZIN0(0);
 	Slew_next(unit, 1);
 }
 
@@ -2102,8 +2102,8 @@ void Slew_next(Slew* unit, int inNumSamples)
 
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	float upf = ZIN0(1) *  unit->mRate->mSampleDur;
-	float dnf = 0.f - ZIN0(2) *  unit->mRate->mSampleDur;
+	float upf = ZIN0(1) * unit->mRate->mSampleDur;
+	float dnf = 0.f - ZIN0(2) * unit->mRate->mSampleDur;
 	float level = unit->mLevel;
 	LOOP1(inNumSamples,
 		float slope = ZXP(in) - level;

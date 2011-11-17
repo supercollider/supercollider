@@ -276,13 +276,15 @@ Process {
 
 	methodReferences {
 		// this will not find method calls that are compiled with special byte codes such as 'value'.
-		var name, out, references;
+		var name, out, references, nameString;
 		out = CollStream.new;
 		name = this.getCurrentSelection.asSymbol;
 		references = Class.findAllReferences(name);
 		if (references.notNil, {
 			out << "References to '" << name << "' :\n";
-			references.do({ arg ref; out << "   " << ref.asString << "\n"; });
+			references.do({ arg ref; 
+				nameString = ref.ownerClass.name ++ ":" ++ ref.name;
+				out << "   [" << nameString << "]\n"; });
 			out.collection.newTextWindow(name.asString);
 		},{
 			Post << "\nNo references to '" << name << "'.\n";
@@ -470,6 +472,21 @@ Method : FunctionDef {
 	}
 	archiveAsObject { ^true }
 	checkCanArchive {}
+	findReferences { arg aSymbol, references;
+		var lits, functionRefs;
+		lits = selectors.asArray;
+		if (lits.includes(aSymbol), {
+			references = references.add(this);
+			^references // we only need to be listed once
+		});
+		lits.do({ arg item;
+			if (item.isKindOf(FunctionDef), {
+				functionRefs = item.findReferences(aSymbol, functionRefs);
+			})
+		});
+		functionRefs.notNil.if({references = references.add(this)});
+		^references
+	}
 }
 
 Frame {

@@ -167,6 +167,16 @@ a.subclass_toggle:hover {
 		font-weight: bold;
 }
 
+.toc_search {
+    margin-left: 10px;
+    color: #999;
+    font-size: 9pt;
+}
+
+.top_search input {
+    border: 1px solid #ddd;
+}
+
 a.navlink {
 /*    color: #fff;*/
     color: #447;

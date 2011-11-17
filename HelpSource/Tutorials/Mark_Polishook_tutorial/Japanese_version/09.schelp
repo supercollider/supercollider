@@ -36,7 +36,7 @@ section::ミキシング＝加算
 code::
 (
 	// 2つのノコギリ波をミックスする
-	{ 
+	{
 		Saw.ar(500, 0.05)	// オブジェクト
 		+			// オペレータ
 		Saw.ar(600, 0.06)	// オペランド
@@ -52,7 +52,7 @@ code::
 
 code::
 (
-{ 
+{
 	// 最初の2つのUGenは1つのBinaryOpUGenに合体する
 	Saw.ar(500, 0.05)
 	+
@@ -70,15 +70,15 @@ MixというUGenを用いることで前の例と同じ結果になります。
 
 code::
 (
-{ 
+{
 	// ミックスしたいUGenを配列の中に入れる
 	Mix.ar(
-		[ 
-			Saw.ar(500, 0.05), 
-			Saw.ar(600, 0.06), 
-			Saw.ar(700, 0.06) 
+		[
+			Saw.ar(500, 0.05),
+			Saw.ar(600, 0.06),
+			Saw.ar(700, 0.06)
 		]
-	) 
+	)
 }.scope
 )
 ::
@@ -106,7 +106,7 @@ code::
 code::
 (
 	// ... 汽車のまね？
-	{ 
+	{
 		(WhiteNoise.ar(0.1) * SinOsc.kr(1, 1))
 		+
 		(BrownNoise.ar(0.1) * SinOsc.kr(2, 1))
@@ -173,10 +173,10 @@ code::
 	var n = 12;
 	Mix.arFill(
 		n,
-		{ 
+		{
 			SinOsc.ar(
 				[67.0.rrand(2000), 67.0.rrand(2000)],
-				0, 
+				0,
 				n.reciprocal * 0.75
 			)
 		}
@@ -200,19 +200,19 @@ section::それぞれのコンポーネントにエンベロープを与える
 code::
 (
 {	var n = 12;
-	
+
 	Mix.arFill(
 			n,						// n個のサイン波を生成する
-			{ 
+			{
 			SinOsc.ar(					// それぞれがlow.rrand(high)の範囲内で起こりうる周波数
 				[67.0.rrand(2000), 67.0.rrand(2000)],	// ... 実数の値
-				0, 
+				0,
 				n.reciprocal				// それぞれのサイン波の振幅をスケーリングする
 									// nの値に従って
 			)
 			*
 			EnvGen.kr(					// サイン波のそれぞれにエンベロープを与える
-				Env.sine(2.0.rrand(17)), 
+				Env.sine(2.0.rrand(17)),
 				doneAction: 0 				// サウンド全体が完了した時にだけ
 									// エンベロープを解放する（なぜ？）
 			)
@@ -220,11 +220,11 @@ code::
 	)
 	*								// パッチ全体に対してエンベロープを与える
 	EnvGen.kr(
-		Env.perc(11, 6), 
-		doneAction: 2, 
+		Env.perc(11, 6),
+		doneAction: 2,
 		levelScale: 0.75
-	) 
-												
+	)
+
 }.scope
 )
 ::
@@ -246,9 +246,9 @@ code::
 
 // 低周波のオシレータ（lfo）でモジュレータの振幅を変調する
 (
-	{ 
-		SinOsc.ar(440, 0, 0.571) 
-		* 
+	{
+		SinOsc.ar(440, 0, 0.571)
+		*
 		(SinOsc.kr(880)				// モジュレータとlfoを括弧の中に包み込む
 		* 					// なぜ？
 		SinOsc.kr([6.99, 8.01].reciprocal)
@@ -271,9 +271,9 @@ code::
 
 // lfoを用いてモジュレータの振幅を変調する
 (
-	{ 
-		SinOsc.ar(440, 0, 0.571) 
-		* 
+	{
+		SinOsc.ar(440, 0, 0.571)
+		*
 		(SinOsc.kr(880).abs			// モジュレータとlfoを括弧の中に包み込む
 		* 					// なぜ？
 		SinOsc.kr([6.99, 8.01].reciprocal)

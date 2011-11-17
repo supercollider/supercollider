@@ -1,13 +1,13 @@
 class::Thread
-summary::represents an individual operating system thread 
+summary::represents an individual operating system thread
 categories::Core>Kernel
 related:: Classes/Routine
 
 description::
 
-Normally there is no need to instantiate a Thread, but its subclass Routine is very useful. 
+Normally there is no need to instantiate a Thread, but its subclass Routine is very useful.
 
-It is wise not to fiddle with the source code for this class; see the warnings in the class file. 
+It is wise not to fiddle with the source code for this class; see the warnings in the class file.
 
 method:: thisThread
 The global pseudo-variable code::thisThread:: always returns the enclosing thread running the given code. A Thread is aware of its own attached clock and associated beats and seconds timing, and has an individual random number seed and exception handler.
@@ -15,10 +15,10 @@ The global pseudo-variable code::thisThread:: always returns the enclosing threa
 classMethods::
 
 method::new
-	
+
 Create a Thread.
 
-discussion:: You will not typically do this yourself but as a result of creating Routines, for example. 
+discussion:: You will not typically do this yourself but as a result of creating Routines, for example.
 
 code::
 g = Thread({"hello".postln;});
@@ -29,12 +29,12 @@ argument::func
 A function with code for the thread to run.
 
 argument::stackSize
-defaults to 64 depth call stack. 
+defaults to 64 depth call stack.
 
 instanceMethods::
-	
+
 method::beats
-Get or set the elapsed beats (logical time) of the thread	
+Get or set the elapsed beats (logical time) of the thread
 
 method::seconds
 Get or set the elapsed seconds (logical time) of the thread.
@@ -50,21 +50,21 @@ code::
 thisThread.beats;
 thisThread.seconds;
 thisThread.clock;
-::		
-		
+::
+
 method::state
 
 The internal state values for a Thread instance can be polled:
-table::		
+table::
 ## 0 || not started
 ## 7 || running
 ## 8 || stopped
-::		
-				
+::
+
 subsection::Seeding the random number generator
 
 see also: link::Reference/randomSeed::
-	
+
 method::randSeed
 Set the random number generator seed using a single integer
 discussion::
@@ -75,13 +75,13 @@ g = thisThread.randSeed = 4;
 ::
 
 method::randData
-	
-Get or set the three integer array which defines the internal basis for the random number generator.  You can use this to get back the exact same random number sequence, and it provides a mechanism for automatic replay for generative music. 
+
+Get or set the three integer array which defines the internal basis for the random number generator.  You can use this to get back the exact same random number sequence, and it provides a mechanism for automatic replay for generative music.
 discussion::
 Example:
 code::
 g = thisThread.randData;
-10.do{1.0.rand2.postln};	
+10.do{1.0.rand2.postln};
 ::
 code::
 // each time the seed is reset, the random number generation should give the same sequence

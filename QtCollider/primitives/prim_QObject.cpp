@@ -153,9 +153,8 @@ static void qcGetProperties( const QMetaObject *mo, PyrSlot *r, VMGlobals *g )
 
   PyrSlot *s = array->slots;
   for( int i = 0; i < count; ++i, ++s ) {
-    Slot::setString( s, QString::fromLatin1( mo->property(i).name() ) );
+    SetSymbol( s, getsym( mo->property(i).name() ) );
     array->size++;
-    g->gc->GCWrite( array, s );
   }
 }
 

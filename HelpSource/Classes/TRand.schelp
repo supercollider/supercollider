@@ -32,7 +32,7 @@ Examples::
 code::
 
 (
-{ 
+{
 	var trig = Dust.kr(10);
 	SinOsc.ar(
 			TRand.kr(300, 3000, trig)
@@ -41,7 +41,7 @@ code::
 )
 
 (
-{ 
+{
 	var trig = Dust.ar(MouseX.kr(1, 8000, 1));
 	SinOsc.ar(
 			TRand.ar(300, 3000, trig)

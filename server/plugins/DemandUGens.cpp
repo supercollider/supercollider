@@ -312,7 +312,7 @@ void Demand_next_aa(Demand *unit, int inNumSamples)
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
 				float x = DEMANDINPUT_A(j, i + 1);
 				//printf("in  %d %g\n", k, x);
-				if (sc_isnan(x)) x = prevout[k];
+				if (sc_isnan(x)) { x = prevout[k]; unit->mDone = true; }
 				else prevout[k] = x;
 				out[k][i] = x;
 			}
@@ -356,7 +356,7 @@ void Demand_next_ak(Demand *unit, int inNumSamples)
 		if (ztrig > 0.f && prevtrig <= 0.f) {
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
 				float x = DEMANDINPUT_A(j, i + 1);
-				if (sc_isnan(x)) x = prevout[k];
+				if (sc_isnan(x)) { x = prevout[k]; unit->mDone = true; }
 				else prevout[k] = x;
 				out[k][i] = x;
 			}
@@ -401,7 +401,7 @@ void Demand_next_ka(Demand *unit, int inNumSamples)
 		if (ztrig > 0.f && prevtrig <= 0.f) {
 			for (int j=2, k=0; j<unit->mNumInputs; ++j, ++k) {
 				float x = DEMANDINPUT_A(j, i + 1);
-				if (sc_isnan(x)) x = prevout[k];
+				if (sc_isnan(x)) { x = prevout[k]; unit->mDone = true; }
 				else prevout[k] = x;
 				out[k][i] = x;
 			}

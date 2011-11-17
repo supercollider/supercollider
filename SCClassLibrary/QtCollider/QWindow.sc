@@ -167,15 +167,6 @@ QWindow
     view.drawingEnabled = aFunction.notNil;
     drawFunc = aFunction;
   }
-  // deprecation
-  drawHook {
-    this.deprecated(thisMethod, this.class.findMethod(\drawFunc));
-    ^drawFunc
-  }
-  drawHook_ { |aFunction|
-    this.deprecated(thisMethod, this.class.findMethod(\drawFunc_));
-    this.drawFunc_(aFunction)
-  }
 
   setTopLeftBounds{ arg rect, menuSpacer=45;
     view.setProperty( \geometry, rect.moveBy( 0, menuSpacer ) );

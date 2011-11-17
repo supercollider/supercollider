@@ -37,7 +37,7 @@ argument::exp
 Exponent: how steep the curve decreases for increasing freq.
 
 discussion::
-Note that for frequencies very much smaller than root the amplitudes can become very high. 
+Note that for frequencies very much smaller than root the amplitudes can become very high.
 In this case limit the freq with code::freq.max(minval)::, or use AmpCompA.
 
 Examples::
@@ -49,21 +49,21 @@ code::
 
 // with one that uses amplitude compensation
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 15000, 1);
-	SinOsc.ar(freq) * 0.1 * AmpComp.kr(freq, 300) 
+	SinOsc.ar(freq) * 0.1 * AmpComp.kr(freq, 300)
 }.play;
 )
 
 
-// different sounds cause quite different loudness perception, 
+// different sounds cause quite different loudness perception,
 // and the desired musical behavior can vary, so the exponent can be tuned:
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 15000, 1);
-	Pulse.ar(freq) * 0.1 * AmpComp.kr(freq, 300, 1.3) 
+	Pulse.ar(freq) * 0.1 * AmpComp.kr(freq, 300, 1.3)
 }.play;
 )
 
@@ -74,7 +74,7 @@ code::
 
 // nearly linear for semitone steps:
 
-(48..72).midicps.collect {|freq| (48.midicps/freq) ** 0.3333 }.plot; 
+(48..72).midicps.collect {|freq| (48.midicps/freq) ** 0.3333 }.plot;
 { AmpComp.ar(Line.ar(48, 72, 1).midicps, 48.midicps) }.plot(1.0);
 
 // exp = 1.2
@@ -85,17 +85,17 @@ code::
 
 // amplitude compensation in frequency modulation
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 15000, 1);
 	freq = freq * SinOsc.ar(MouseY.kr(3, 200, 1), 0, 0.5, 1);
-	SinOsc.ar(freq) * 0.1 * AmpComp.ar(freq, 300) 
+	SinOsc.ar(freq) * 0.1 * AmpComp.ar(freq, 300)
 }.play;
 )
 
 // without amplitude compensation
 (
-{ 
+{
 	var freq;
 	freq = MouseX.kr(300, 15000, 1);
 	freq = freq * SinOsc.ar(MouseY.kr(3, 200, 1), 0, 0.5, 1);
@@ -105,11 +105,11 @@ code::
 
 // in granular synthesis:
 (
-SynthDef("pgrain", 
+SynthDef("pgrain",
 	{ arg out = 0, sustain=0.01, amp=0.5, pan = 0;
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp * AmpComp.ir(freq));
-		Out.ar(out, 
+		Out.ar(out,
 			Pan2.ar(
 				SinOsc.ar(freq),
 				pan
@@ -136,11 +136,11 @@ fork {
 // without AmpComp:
 
 (
-SynthDef("pgrain", 
+SynthDef("pgrain",
 	{ arg out = 0, sustain=0.01, amp=0.5, pan = 0;
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp);
-		Out.ar(out, 
+		Out.ar(out,
 			Pan2.ar(
 				SinOsc.ar(freq),
 				pan
@@ -152,11 +152,11 @@ SynthDef("pgrain",
 
 // with AmpCompA
 (
-SynthDef("pgrain", 
+SynthDef("pgrain",
 	{ arg out = 0, sustain=0.01, amp=0.5, pan = 0;
 		var freq = MouseX.kr(300, 7000, 1);
 		var window = Env.sine(sustain, amp * AmpCompA.ir(freq));
-		Out.ar(out, 
+		Out.ar(out,
 			Pan2.ar(
 				SinOsc.ar(freq),
 				pan

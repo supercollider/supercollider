@@ -34,12 +34,12 @@ argument:: levelComp
 examples::
 code::
 (
-x = { arg spread=1, level=0.2, width=2, center=0.0; 
+x = { arg spread=1, level=0.2, width=2, center=0.0;
  SplayAz.ar(
   4,
-  SinOsc.ar( { |i| LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100) } ! 10), 
-  spread, 
-  level, 
+  SinOsc.ar( { |i| LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100) } ! 10),
+  spread,
+  level,
   width,
   center
  );
@@ -49,7 +49,7 @@ x = { arg spread=1, level=0.2, width=2, center=0.0;
 x.set(\spread, 1,   \center, 0);  // full n chans
 x.set(\spread, 0.5, \center, -0.25); // less wide
 x.set(\spread, 0, \center, 0);  // mono center (depends on orientation, see PanAz)
-x.set(\spread, 0, \center, -0.25); // 
+x.set(\spread, 0, \center, -0.25); //
 x.set(\spread, 0.0, \center, 0.5); // mono, but rotate 1 toward the higher channels
 x.set(\spread, 0.5, \center, 0.5); // spread over the higher channels
 x.set(\spread, 0,   \center, -0.25); // all on first channel
@@ -62,10 +62,10 @@ x.free;
 x = { arg spread=1, level=0.5, width=2, center=0.0;
  SplayAz.arFill(
   4,
-  10, 
-  { |i| SinOsc.ar( LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100) ) }, 
-  spread, 
-  level, 
+  10,
+  { |i| SinOsc.ar( LFNoise2.kr( rrand(10, 20), 200, i + 3 * 100) ) },
+  spread,
+  level,
   width,
   center
  );
@@ -74,13 +74,13 @@ x = { arg spread=1, level=0.5, width=2, center=0.0;
 
  // or with mouse control
 (
-x = { var src; 
+x = { var src;
  src = SinOsc.ar( { |i| LFNoise2.kr( rrand(10, 20), 200, i * 100 + 400) } ! 10);
  SplayAz.ar(4, src, MouseY.kr(1, 0), 0.2, center: MouseX.kr(-1, 1));
 }.scope;
 )
 
-// test for correct behavior: 
+// test for correct behavior:
 	// only on chan 0
 { SplayAz.ar(4, SinOsc.ar * 0.2, orientation: 0) }.scope;
 
@@ -91,11 +91,11 @@ x = { var src;
 { SplayAz.ar(6, SinOsc.ar([2, 3, 5] * 200) * 0.2, orientation: 0) }.scope;
 
 
-	// wrong behavior of SplayZ:  
+	// wrong behavior of SplayZ:
 		// plays on chan 2, but should play on 0
 { SplayZ.ar(4, SinOsc.ar * 0.2, orientation: 0) }.scope;
 
-	//  wrong: mixes both to chan 2, 
+	//  wrong: mixes both to chan 2,
 	// because pan values [-1, 1] are the same pos on the ring
 { SplayZ.ar(6, SinOsc.ar([2, 3] * 200) * 0.2, orientation: 0) }.scope;
 

@@ -208,7 +208,7 @@ code::
 a = Routine({ 20.do({ 33.rand.yield }) });
 b = Routine({ [-100,00,300,400].do({ arg v; v.yield}) });
 
-c = b.neg; // define a composite stream	
+c = b.neg; // define a composite stream
 
 // enumerate and perform all of the unary messages:
 [

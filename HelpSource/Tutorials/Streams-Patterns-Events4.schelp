@@ -110,7 +110,7 @@ Environment.use({
 	~x = 7;
 	~y = 8;
 	~z = 9;
-	
+
 	f.valueEnvir(1, 2, 3);	// all values supplied
 	f.valueEnvir(1, 2);	// z is looked up in the current Environment
 	f.valueEnvir(1);	// y and z are looked up in the current Environment
@@ -146,7 +146,7 @@ Task({
 				~freq = exprand(80, 600);
 				~amp = 0.1 + 0.3.rand;
 				~pan = 1.0.rand2;
-				
+
 					// call a randomly chosen instrument function
 					// with values from the environment
 				out = [a,b,c].choose.valueEnvir;
@@ -259,7 +259,7 @@ The ListPatterns discussed in part 3 can be put around Event Streams to create s
 code::
 (
 var pattern, stream;
-pattern = 
+pattern =
 	Pseq([
 		Pbind( \abc, Pseq([1, 2, 3])),
 		Pbind( \def, Pseq([4, 5, 6])),
@@ -271,7 +271,7 @@ stream = pattern.asStream;
 
 (
 var pattern, stream;
-pattern = 
+pattern =
 	Prand([
 		Pbind( \abc, Pseq([1, 2, 3])),
 		Pbind( \def, Pseq([4, 5, 6])),

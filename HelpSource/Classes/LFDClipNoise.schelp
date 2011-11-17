@@ -9,7 +9,7 @@ Description::
 Like link::Classes/LFClipNoise::, it generates the values -1 or +1 at a rate given
 by the  code::freq::  argument, with two differences:
 list::
-## no time quantization 
+## no time quantization
 ## fast recovery from low freq values footnote::
 link::Classes/LFClipNoise:: , as well as  link::Classes/LFNoise0:: ,
 link::Classes/LFNoise1::  and  link::Classes/LFNoise2::  quantize to the

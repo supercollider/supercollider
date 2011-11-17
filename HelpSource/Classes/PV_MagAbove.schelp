@@ -27,42 +27,38 @@ Examples::
 code::
 
 s.boot;
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
+
 
 (
-b = Buffer.alloc(s,2048,1);
-c = Buffer.read(s,"sounds/a11wlk01.wav");
-)
-
-(
-SynthDef("help-magAbove", { arg out=0, bufnum=0;
+SynthDef("help-magAbove", { arg out=0;
 	var in, chain;
 	in = SinOsc.ar(SinOsc.kr(SinOsc.kr(0.08, 0, 6, 6.2).squared, 0, 100, 800));
 	//in = WhiteNoise.ar(0.2);
-	chain = FFT(bufnum, in);
-	chain = PV_MagAbove(chain, 310); 
-	Out.ar(out, 0.5 * IFFT(chain).dup);
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+	chain = FFT(LocalBuf(2048), in);
+	chain = PV_MagAbove(chain, 310);
+	Out.ar(out, 0.1 * IFFT(chain).dup);
+}).play(s);
 )
 
 (
-SynthDef("help-magAbove2", { arg out=0, bufnum=0;
+SynthDef("help-magAbove2", { arg out=0;
 	var in, chain;
 	in = WhiteNoise.ar(0.2);
-	chain = FFT(bufnum, in);
-	chain = PV_MagAbove(chain, MouseX.kr(0, 10)); 
-	Out.ar(out, 0.5 * IFFT(chain).dup);
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+	chain = FFT(LocalBuf(2048), in);
+	chain = PV_MagAbove(chain, MouseX.kr(0, 10));
+	Out.ar(out, 0.1 * IFFT(chain).dup);
+}).play(s);
 )
 
 (
-SynthDef("help-magAbove3", { arg out=0, bufnum=0, soundBufnum=2;
+SynthDef("help-magAbove3", { arg out=0, soundBufnum=2;
 	var in, chain;
 	in = PlayBuf.ar(1, soundBufnum, BufRateScale.kr(soundBufnum), loop: 1);
-	chain = FFT(bufnum, in);
-	chain = PV_MagAbove(chain, MouseX.kr(0, 310)); 
-	Out.ar(out, 0.5 * IFFT(chain).dup);
-}).play(s,[\out, 0, \bufnum, b.bufnum, \soundBufnum, c.bufnum]);
+	chain = FFT(LocalBuf(2048), in);
+	chain = PV_MagAbove(chain, MouseX.kr(0, 310));
+	Out.ar(out, 0.1 * IFFT(chain).dup);
+}).play(s, [\soundBufnum, b]);
 )
 
 ::
-

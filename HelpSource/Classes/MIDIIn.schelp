@@ -438,7 +438,7 @@ MIDIIn.addFuncTo(\bend, ~bend);
 //			node.mapMsg("cutoff",1,"rez",2,"lfospeed",3)
 //		);
 		keys.put(num, node)
-	},{ 
+	},{
 		node = Synth.tail(g, "strings", [\freq, num.midicps, \amp, vel/255]);
 		keys.put(num, node)
 	});

@@ -1185,11 +1185,14 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 
 ////////
 
+#ifndef NO_LIBSNDFILE
+
 #ifdef SC_WIN32
 	#include <sndfile-win.h>
 #else
 	#include <sndfile.h>
 #endif
+
 
 int sampleFormatToString(struct SF_INFO *info, const char **string);
 int sampleFormatToString(struct SF_INFO *info, const char **string)
@@ -1637,6 +1640,45 @@ int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
 	}
 	return errFailed;
 }
+
+#else // !NO_LIBSNDFILE
+
+int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFClose(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFWrite(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFRead(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFSeek(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
+{
+	return errFailed;
+}
+
+#endif // !NO_LIBSNDFILE
 
 
 //////////

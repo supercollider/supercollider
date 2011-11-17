@@ -55,7 +55,7 @@ argument:: action
 An instance of link::Classes/Function::.
 
 method:: replaceItemAt
-Replace a list/menu item at positiion of index. 
+Replace a list/menu item at positiion of index.
 argument:: index
 An link::Classes/Integer::. The index where to insert an item.
 argument:: name

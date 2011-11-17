@@ -183,7 +183,7 @@ SynthDef(\test, { | out = 0, amp = 0.01, freq = #[300,400,400], pan, gate = 1 |
 	OffsetOut.ar(0, audio );
 }).add;
 )
-::	
+::
 Within an event, arrayed arguments of this sort must be enclosed within an additional array to distinguish them from arguments intended for multi-channel expansion.
 code::
 // one synth, use enclosing array to prevent multi-channel expansion
@@ -360,7 +360,7 @@ octave:		5.0	// octave offest of note
 root:		0.0	// root of the scale
 degree:		0	// degree in scale
 scale:		#[0, 2, 4, 5, 7, 9, 11]	// diatonic major scale
-stepsPerOctave:	12.0	// 
+stepsPerOctave:	12.0	//
 detune:		0.0,	// detune in Hertz
 harmonic:	1.0	// harmonic ratio
 octaveRatio:	2.0	// size of the octave (can be used with the Scale class)

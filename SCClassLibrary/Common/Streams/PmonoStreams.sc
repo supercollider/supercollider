@@ -16,11 +16,12 @@ PmonoStream : Stream {
 	embedInStream { |inevent|
 		inevent ?? { ^nil.yield };
 
-		this.prInit(inevent)
-			.prInitNode;
+		this.prInit(inevent);
 
 		loop {
 			if(this.prDoStreams) {
+				// always on the first iteration; should not happen thereafter
+				if(id.isNil) { this.prInitNode };
 				cleanup.update(event);
 				inevent = event.yield;
 				this.prSetNextEvent(inevent);
@@ -57,15 +58,10 @@ PmonoStream : Stream {
 		event.use {
 			if (~id.notNil) {
 				~type = \monoSet;
+				id = ~id;
 			} {
 				~type = \monoNote;
 				~instrument = pattern.synthName;
-				~updatePmono = { | argID, argServer |
-					 id = argID;
-					 server = argServer;
-					 schedBundleArray = ~schedBundleArray;
-					 schedBundle = ~schedBundle;
-				};
 				cleanup.addFunction(event, currentCleanupFunc = { | flag |
 					if (flag) { (id: id, server: server, type: \off,
 						hasGate: hasGate,
@@ -73,7 +69,14 @@ PmonoStream : Stream {
 						schedBundle: schedBundle).play
 					}
 				});
-			}
+			};
+			// this should happen whether or not ~id is nil
+			~updatePmono = { | argID, argServer |
+				id = argID;
+				server = argServer;
+				schedBundleArray = ~schedBundleArray;
+				schedBundle = ~schedBundle;
+			};
 		};
 	}
 

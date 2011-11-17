@@ -12,7 +12,7 @@ Objects in SuperCollider include numbers, character strings, object collections,
 Operations upon objects are invoked by messages. A message is a request for an object, called the receiver, to perform one of its operations. The means by which the operation is performed is determined by the object's class.
 Objects of different classes may implement the same message in different ways, each appropriate to the class of the object. For example all objects understand the code::value:: message.
 Many objects simply return themselves in response to code::value::, but other objects such as functions and streams first evaluate themselves and return the result of that evaluation.
-The ability for different objects to react differently to the same message is known as emphasis::polymorphism:: and is perhaps the most important concept in object oriented programming since it allows the object's behaviour to be abstract from the point of view of the user of the object (the client). 
+The ability for different objects to react differently to the same message is known as emphasis::polymorphism:: and is perhaps the most important concept in object oriented programming since it allows the object's behaviour to be abstract from the point of view of the user of the object (the client).
 
 The set of messages to which an object responds to is known as its interface. A set of messages that implement a specific kind behaviour is known as a protocol.
 An object's interface may include several protocols which allow the object to interact in several different contexts.
@@ -25,13 +25,13 @@ See link::Reference/Messages:: for more information about messages.
 
 section:: Classes, Instance Variables, Methods
 
-An object's class contains the description of the object's data and operations. A class also describes how to create an object which is an instance of that class. 
+An object's class contains the description of the object's data and operations. A class also describes how to create an object which is an instance of that class.
 
 An object's data is contained in its instance variables. These are named variables that describe the object's state.
 The values of the instance variables are themselves objects. For example, instances of class link::Classes/Point:: have instance variables named 'x' and 'y' which contain the coordinate values of the Point.
 
 An instance variable is only directly accessible from within the class itself. The author of a class may decide to expose instance variable access to clients by adding getter and/or setter messages to the class.
-	
+
 A method is a description of the operations necessary to implement a message for a particular class. The methods in a class tell how to implement messages sent to its instances.
 A class contains a method definition for each message to which its instances respond. Methods generally  fall into several categories. Some methods inquire about some property of the receiver.
 Others ask the receiver to make some change to its internal state. Still others may ask the receiver to return some computed value.

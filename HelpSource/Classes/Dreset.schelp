@@ -1,5 +1,5 @@
 class:: Dreset
-summary:: demand rate reset 
+summary:: demand rate reset
 categories:: UGens>Demand
 
 description::
@@ -15,10 +15,10 @@ a demand or any other UGen. When crossing from nonpositive to positive, it reset
 examples::
 code::
 (
-{ 
+{
 	var a, freq;
 	a = Dreset(Dseries(0, 2, inf), Drand([0, 0, 0, 1], inf));
-	freq = Duty.kr(1/MouseX.kr(1, 40, 1), 0, a) * 30 + 340; 
+	freq = Duty.kr(1/MouseX.kr(1, 40, 1), 0, a) * 30 + 340;
 	SinOsc.ar(freq) * 0.1
 }.play;
 )
@@ -28,14 +28,14 @@ code::
 {
 	var a, freq;
 	a = Dreset(Dseries(0, 2, inf), MouseButton.kr);
-	freq = Duty.kr(1/MouseX.kr(1, 40, 1), 0, a) * 30 + 340; 
+	freq = Duty.kr(1/MouseX.kr(1, 40, 1), 0, a) * 30 + 340;
 	SinOsc.ar(freq) * 0.1
 }.play;
 )
-	
+
 // audio rate
 (
-{ 
+{
 	var a, nmax = 90;
 	a = { Dreset(Dseries(0, 1, inf), Drand(0 ! nmax ++ 1, inf)) } ! 2;
 	Duty.ar(SampleDur.ir, 0, a) * (0.1 / nmax)

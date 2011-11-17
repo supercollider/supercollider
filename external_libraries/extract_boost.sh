@@ -4,7 +4,7 @@
 # run from the root of the supercollider repository
 
 # root of the boost source tree
-BOOST_ROOT=/home/tim/boost_1_47_0/
+BOOST_ROOT=/home/tim/boost_1_48_0/
 
 bcp --boost=${BOOST_ROOT} \
 	--scan common/*pp \

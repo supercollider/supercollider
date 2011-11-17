@@ -79,7 +79,7 @@ sqrt(-1 / ( 2 * log(-60.dbamp))) // 0.269
 
 // rescale the function to the range 0..1
 (
-{ 
+{
 var width = XLine.kr(0.04, 1.0, 1);
 var min = (exp(1.0 / (-2.0 * squared(width))));
 var gauss = LFGauss.ar(0.1, width, loop: 1);
@@ -89,7 +89,7 @@ gauss.linlin(min, 1, 0, 1);
 
 // range does the same implicitly
 (
-{ 
+{
 var width = XLine.kr(0.04, 1.0, 1);
 LFGauss.ar(0.1, width, loop: 1).range(0, 1);
 }.plot(1)
@@ -121,14 +121,14 @@ code::
 (
 { 	var dur = SinOsc.ar(MouseX.kr(2, 1000, 1) * [1, 1.1]).range(0.0006, 0.01);
 	var width = SinOsc.ar(0.5 * [1, 1.1]).range(0.01, 0.3);
-	LFGauss.ar(dur, width) * 0.2 
+	LFGauss.ar(dur, width) * 0.2
 }.play
 );
 
 
 // several frequecies and widths combined
 (
-{ 
+{
 	var mod = LFGauss.ar(MouseX.kr(1, 0.07, 1), 1 * (MouseY.kr(1, 3) ** (-1..-6)));
 	var carr = SinOsc.ar(200 * (1.3 ** (0..5)));
 	(carr * mod).sum * 0.1
@@ -137,7 +137,7 @@ code::
 
 // test spectrum
 (
-{ 
+{
 	var son = LeakDC.ar(LFGauss.ar(0.005, 0.2));
 	BPF.ar(son * 3, MouseX.kr(60, 2000, 1), 0.05)
 }.play;
@@ -152,7 +152,7 @@ var ncycles = 10;
 var width = 0.25;
 var dur = ncycles / freq;
 {
-	
+
 	var env = LFGauss.ar(dur, width, loop: 0, doneAction: 2);
 	var son = FSinOsc.ar(freq, 0.5pi, env);
 	son
@@ -171,7 +171,7 @@ SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_
 
 // modulating various parameters
 (
-Pdef(\x, 
+Pdef(\x,
 	Pbind(
 		\instrument, \gabor,
 		\freq, Pbrown(step:0.01).linexp(0, 1, 100, 14000),
@@ -184,13 +184,13 @@ Pdef(\x,
 
 // modulating width only
 (
-Pdef(\x, 
+Pdef(\x,
 	Pbind(
 		\instrument, \gabor,
 		\freq, 1000,
 		\dur, 0.01,
 		\width, Pseg(Pseq([0.25, 0.002], inf), 10, \exp),
-		\legato, 2	
+		\legato, 2
 	)
 ).play
 )

@@ -82,7 +82,7 @@ MyGUIExtension {
 	*initClass {
 		StartUp.add({
 			var scheme;
-			
+
 			scheme = GUI.get( \cocoa );
 			if( scheme.notNil, {scheme.put( \myText, SCStaticText )});
 			scheme = GUI.get( \swing );
@@ -133,7 +133,7 @@ A link::Classes/Symbol::. The identifier of the scheme to use.
 method:: current
 
 Returns the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls.
-		
+
 Note:: the caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future. ::
 
 
@@ -160,7 +160,7 @@ argument:: id
 The id of the scheme to use during the function execution.
 argument:: func
 A body to execute.
-		
+
 method:: add
 Registers a new scheme. This is typically called by external libraries in their startup procedure. If a scheme with the same identifier (code::scheme.id::) exists, it is overwritten.
 argument:: aScheme

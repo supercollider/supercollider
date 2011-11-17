@@ -42,7 +42,7 @@ p = Pn(
 	Plazy {
 		Pbind(
 			\degree, Pfin(rrand(3, 10), rrand(-4, 11)),
-			\dur, rrand(0.1, 0.4) 
+			\dur, rrand(0.1, 0.4)
 		)
 	},
 	inf

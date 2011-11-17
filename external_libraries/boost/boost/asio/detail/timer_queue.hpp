@@ -159,12 +159,15 @@ public:
   // Dequeue all timers not later than the current time.
   virtual void get_ready_timers(op_queue<operation>& ops)
   {
-    const time_type now = Time_Traits::now();
-    while (!heap_.empty() && !Time_Traits::less_than(now, heap_[0].time_))
+    if (!heap_.empty())
     {
-      per_timer_data* timer = heap_[0].timer_;
-      ops.push(timer->op_queue_);
-      remove_timer(*timer);
+      const time_type now = Time_Traits::now();
+      while (!heap_.empty() && !Time_Traits::less_than(now, heap_[0].time_))
+      {
+        per_timer_data* timer = heap_[0].timer_;
+        ops.push(timer->op_queue_);
+        remove_timer(*timer);
+      }
     }
   }
 

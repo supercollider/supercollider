@@ -25,8 +25,11 @@ code::.ir::  will not track the changes.
 Examples::
 
 code::
-s.sendMsg("/b_allocRead", 0, "sounds/a11wlk01.wav");
+b = Buffer.readExample;
 
-{ BufRd.ar(1, 0,  Sweep.ar(Impulse.ar(BufDur.kr(0).reciprocal), BufSampleRate.kr(0))) }.play;
+{ BufRd.ar(1, b,  Sweep.ar(Impulse.ar(BufDur.kr(b).reciprocal), BufSampleRate.kr(b))) }.play;
+
+b.free
+
 ::
 

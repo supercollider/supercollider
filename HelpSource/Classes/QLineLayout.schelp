@@ -44,7 +44,7 @@ w.front;
 INSTANCEMETHODS::
 
 METHOD:: add
-Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively. 
+Add an item to the right or the bottom end of the line, for QHLayout and QVLayout respectively.
 
 argument:: item
 The item can be a QView, a QLayout, an Integer (specifying amount in pixels of empty space) or nil (for stretchable empty space). If the item is nil the align argument will have no effect; if the item is an Integer none of the other arguments will have any effect.

@@ -127,7 +127,7 @@ code::
 	inbus: s.options.numOutputBusChannels
 ::
 
-In this configuration, the first trigger starts the pattern and the second trigger stops it. You might want the pattern to play while the input signal is above the threshold, and stop when the signal drops to a quieter level. The comparison code::amp >= thresh:: can send a trigger only when the signal goes from softer to lower, so if we want the pattern to stop when the signal becomes quiet, we need to send a trigger when crossing the threshold in both directions. 
+In this configuration, the first trigger starts the pattern and the second trigger stops it. You might want the pattern to play while the input signal is above the threshold, and stop when the signal drops to a quieter level. The comparison code::amp >= thresh:: can send a trigger only when the signal goes from softer to lower, so if we want the pattern to stop when the signal becomes quiet, we need to send a trigger when crossing the threshold in both directions.
 
 code::
 	var	amp = Amplitude.kr(In.ar(inbus, 1), attackTime: 0.01, releaseTime: decay),

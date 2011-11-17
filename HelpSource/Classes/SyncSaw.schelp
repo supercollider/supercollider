@@ -24,7 +24,7 @@ Frequency of the fundamental.
 argument::sawFreq
 
 Frequency of the slave synched sawtooth wave. Should always be
-greater than 
+greater than
 code::syncFreq:: .
 
 
@@ -61,7 +61,7 @@ plot { [
 
 // scoping the saw: hit 's' when focused on the scope window to compare the channels
 (
-scope { 
+scope {
 	var freq = 400;
 	[
 	SyncSaw.ar(freq, freq * MouseX.kr(1, 3)), // modulate saw freq

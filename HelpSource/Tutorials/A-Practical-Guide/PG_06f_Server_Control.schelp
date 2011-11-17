@@ -11,7 +11,7 @@ definitionList::
 ## code::Pbus(pattern, dur, fadeTime, numChannels, rate):: || Creates a private group and bus for the synths played by the pattern. The group and bus are released when the pattern stops. Useful for isolating signals from different patterns.
 ## code::Pgroup(pattern):: || Creates a private group (without private bus) for the pattern's synths.
 
-## code::Pfx(pattern, fxname, pairs):: || 
+## code::Pfx(pattern, fxname, pairs):: ||
 ## code::Pfxb(pattern, fxname, pairs):: || Both of these patterns play an effect synth at the tail of the target group. This synth should read from the bus identified by the code::out:: argument, and write the processed signal onto the same bus using either link::Classes/ReplaceOut:: or link::Classes/XOut::. Pfx uses whatever bus and group are specified in the incoming event. Pfxb allocates a separate bus and group for the effect and the pattern.
 
 There are a lot of permutations when it comes to signal routing and effect management, too many to discuss in depth here. Some of the main scenarios are:
@@ -106,7 +106,7 @@ SynthDef(\playbuf, { |bufnum, start, dur = 1, amp = 0.2, out|
 (
 TempoClock.default.tempo = 1;
 p = Pproto({
-	~buf = (type: \allocRead, path: "sounds/a11wlk01.wav").yield;
+	~buf = (type: \allocRead, path: Platform.exampleSoundFile).yield;
 }, Pbind(
 	\instrument, \playbuf,
 		// access resources in the protoevent by Pkey

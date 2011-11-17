@@ -9,7 +9,7 @@ Listed below are a few techniques for tracking down documentation and functional
 
 NB: Be sure to check out the Further Info section at the bottom of this page.
 
-section:: Basics 				
+section:: Basics
 
 As you've probably already learned selecting any text and pressing Cmd-d will open the corresponding helpfile. Usually helpfiles are either concept related, or document particular classes. In the SC language classes begin with capital letters. Try Cmd-d on the following (double click on the first word; the stuff after the two slashes is a comment):
 code::
@@ -46,7 +46,7 @@ Executing the method dumpInterface on any class will list its class and instance
 code::
 Array.dumpInterface; // Look at the post window (the one that opened when you started SC)
 ::
-Note that since the SuperCollider language is object-oriented many classes inherit methods from farther up the class hierarchy. (The many subclasses of Collection are a good example of this. See the Collections overview for more detail.) It would be impractical and redundant to document every inherited method that a class responds to, so it is important to be able to track down documentation and method definitions.  
+Note that since the SuperCollider language is object-oriented many classes inherit methods from farther up the class hierarchy. (The many subclasses of Collection are a good example of this. See the Collections overview for more detail.) It would be impractical and redundant to document every inherited method that a class responds to, so it is important to be able to track down documentation and method definitions.
 
 The method dumpFullInterface applied to any Class will list all class and instance methods that a class responds to, sorted by the class in which they are implemented. This will include inherited methods. Methods overidden in a subclass are listed under the subclass.
 code::
@@ -68,7 +68,7 @@ select // try it on this method
 Similarly, selecting any text and typing shift-cmd-y will open a window showing all references to the selected text, i.e. each place it is used within the class library. (This will not find methods calls compiled with special byte codes like 'value'.)
 code::
 // try it on these
-asStream 
+asStream
 SCWindow
 ::
 In the resulting window selecting any class and method and pressing Cmd-j will take you to that method definition in that class definition. For example try selecting Pattern-select in the window resulting from the previous example. Note that SC supports defining methods in separate files, so a class' methods may be defined in more than one place. If you try Cmd-j on the following you will see that it will open a file called dumpFullInterface.sc rather than one called Class.sc (its main class definition file). The + Class {.... syntax indicates that these are additional methods.
@@ -85,7 +85,7 @@ Array.helpFileForMethod('select'); // this will open the Collection helpfile; sc
 ::
 In general poking around can be a good way to learn about how things work. See link::Guides/Internal-Snooping:: for more advanced information about how to look 'under the hood.'
 
-section:: For Further Info 
+section:: For Further Info
 
 http://supercollider.sourceforge.net/
 

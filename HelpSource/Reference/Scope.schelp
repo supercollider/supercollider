@@ -1,15 +1,15 @@
-title:: Scoping and Closure 
+title:: Scoping and Closure
 summary:: scoping of variables
 categories:: Language
 
 SuperCollider has nested scoping of variables. A function can refer not only to its own arguments and variables, but also to those declared in any enclosing (defining) contexts.
 
 For example, the function defined below within makeCounter can access all of the arguments and variables declared in code::makeCounter::.
-Other code can call the returned function at some later time and it can access and update the values contained in code::makeCounter:: at the time when the inner function was instantiated. 
+Other code can call the returned function at some later time and it can access and update the values contained in code::makeCounter:: at the time when the inner function was instantiated.
 code::
 (
 var makeCounter;
-makeCounter = { arg curVal=0, stepVal=1; 
+makeCounter = { arg curVal=0, stepVal=1;
      // return a function :
     {
         var temp;
@@ -24,7 +24,7 @@ makeCounter = { arg curVal=0, stepVal=1;
 // Each invocation of makeCounter creates a new set of variables curVal and stepVal:
 
 x = makeCounter.value(10, 1);
-z = makeCounter.value(99, 100); 
+z = makeCounter.value(99, 100);
 )
 ::
 

@@ -16,7 +16,7 @@ N.B. Since end is defined as the wrap point, its value is never
 actually output.
 ::
 
-Phasor is commonly used as an index control with  link::Classes/BufRd:: 
+Phasor is commonly used as an index control with  link::Classes/BufRd::
 and  link::Classes/BufWr:: .
 
 
@@ -88,7 +88,7 @@ code::
 // use phasor to index into a sound file
 
 // allocate a buffer with a sound file
-b = Buffer.read(s, "sounds/a11wlk01.wav");
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 // simple playback (more examples: see BufRd)
 // Start and end here are defined as 0 and the number of frames in the buffer.
@@ -103,7 +103,7 @@ b = Buffer.read(s, "sounds/a11wlk01.wav");
 	rate = MouseX.kr(0.1, 100, 1);
 	trig = Impulse.ar(rate);
 	framesInBuffer = BufFrames.kr(b.bufnum);
-	x = Phasor.ar(trig, BufRateScale.kr(b.bufnum), 0, framesInBuffer, 
+	x = Phasor.ar(trig, BufRateScale.kr(b.bufnum), 0, framesInBuffer,
 		[0, MouseY.kr(0, framesInBuffer)]);
 	BufRd.ar(1, b.bufnum, x);
 }.play;

@@ -35,6 +35,7 @@
 #  define BOOST_NO_DECLTYPE
 #endif
 
+#define BOOST_NO_DECLTYPE_N3276
 #define BOOST_NO_DEFAULTED_FUNCTIONS
 
 #if !__has_feature(cxx_deleted_functions)

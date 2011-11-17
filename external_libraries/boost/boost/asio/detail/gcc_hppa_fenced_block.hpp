@@ -29,8 +29,16 @@ class gcc_hppa_fenced_block
   : private noncopyable
 {
 public:
-  // Constructor.
-  gcc_hppa_fenced_block()
+  enum half_t { half };
+  enum full_t { full };
+
+  // Constructor for a half fenced block.
+  explicit gcc_hppa_fenced_block(half_t)
+  {
+  }
+
+  // Constructor for a full fenced block.
+  explicit gcc_hppa_fenced_block(full_t)
   {
     barrier();
   }
