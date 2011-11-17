@@ -67,6 +67,10 @@ QView : QObject {
     this.setProperty( \font, f );
   }
 
+  toolTip_ { arg t;
+    this.setProperty( \toolTip, t );
+  }
+
   palette {
     ^this.getProperty( \palette, QPalette.new.init );
   }
