@@ -31,6 +31,7 @@ extern "C" {
 namespace detail_server_shm {
 
 using boost::interprocess::offset_ptr;
+using boost::atomic;
 
 struct scope_buffer_writer;
 struct scope_buffer_reader;
@@ -122,7 +123,7 @@ private:
 
 	bool allocate( scope_buffer_pool & pool, uint channels, uint size )
 	{
-		bool available = _status.load( memory_order_relaxed ) == free;
+		bool available = _status.load( boost::memory_order_relaxed ) == free;
 		if( !available ) return false;
 
 		_size = size;
@@ -134,19 +135,19 @@ private:
 		_state[1].data = _data + asset_size;
 		_state[2].data = _data + asset_size + asset_size;
 
-		_status.store( initialized, memory_order_release );
+		_status.store( initialized, boost::memory_order_release );
 
 		return true;
 	}
 
 	void release( scope_buffer_pool & pool )
 	{
-		bool allocated = _status.load( memory_order_relaxed ) != free;
+		bool allocated = _status.load( boost::memory_order_relaxed ) != free;
 		if( !allocated ) return;
 
 		pool.deallocate( _data.get() );
 
-		_status.store( free, memory_order_release );
+		_status.store( free, boost::memory_order_release );
 	}
 
 	float * write_address() { return _state[_in].data.get(); }
@@ -154,28 +155,28 @@ private:
 	void push( uint frames )
 	{
 		_state[_in].frames = frames;
-		_state[_in].changed.store( true, memory_order_relaxed );
-		_in = _stage.exchange( _in, memory_order_release );
+		_state[_in].changed.store( true, boost::memory_order_relaxed );
+		_in = _stage.exchange( _in, boost::memory_order_release );
 	}
 
 	// reader interface
 
 	bool valid()
 	{
-		return _status.load( memory_order_acquire ) == initialized;
+		return _status.load( boost::memory_order_acquire ) == initialized;
 	}
 
 	float * read_address() { return _state[_out].data.get(); }
 
 	uint pull()
 	{
-		int stage = _stage.load( memory_order_relaxed );
-		bool changed = _state[stage].changed.load( memory_order_relaxed );
+		int stage = _stage.load( boost::memory_order_relaxed );
+		bool changed = _state[stage].changed.load( boost::memory_order_relaxed );
 
 		if( changed )
 		{
-			_state[_out].changed.store( false, memory_order_relaxed );
-			_out = _stage.exchange( _out, memory_order_acquire );
+			_state[_out].changed.store( false, boost::memory_order_relaxed );
+			_out = _stage.exchange( _out, boost::memory_order_acquire );
 		}
 
 		return _state[_out].frames;
