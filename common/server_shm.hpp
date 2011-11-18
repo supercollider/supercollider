@@ -31,14 +31,16 @@
 
 namespace detail_server_shm {
 
-using namespace std;
-using namespace boost;
-using namespace boost::interprocess;
+using std::string; using std::pair;
+
+using boost::ref;
+
 namespace bi = boost::interprocess;
+using bi::managed_shared_memory; using bi::shared_memory_object;
 
 static inline string make_shmem_name(uint port_number)
 {
-	return string("SuperColliderServer_") + lexical_cast<string>(port_number);
+	return string("SuperColliderServer_") + boost::lexical_cast<string>(port_number);
 }
 
 struct server_shared_memory
@@ -96,7 +98,6 @@ private:
 	int num_control_busses;
 	sh_float_ptr control_busses_; // control busses
 	scope_buffer_vector scope_buffers;
-	interprocess_mutex mutex;
 };
 
 class server_shared_memory_creator
@@ -104,7 +105,7 @@ class server_shared_memory_creator
 public:
 	server_shared_memory_creator(uint port_number, uint control_busses):
 		shmem_name(detail_server_shm::make_shmem_name(port_number)),
-		segment(open_or_create, shmem_name.c_str(), 8192 * 1024)
+		segment(bi::open_or_create, shmem_name.c_str(), 8192 * 1024)
 	{
 		segment.flush();
 
@@ -163,7 +164,7 @@ class server_shared_memory_client
 public:
 	server_shared_memory_client(uint port_number):
 		shmem_name(detail_server_shm::make_shmem_name(port_number)),
-		segment(open_only, shmem_name.c_str())
+		segment(bi::open_only, shmem_name.c_str())
 	{
 		pair<server_shared_memory*, size_t> res = segment.find<server_shared_memory> (shmem_name.c_str());
 		if (res.second != 1)
