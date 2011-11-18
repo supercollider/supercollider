@@ -41,33 +41,26 @@ static inline string make_shmem_name(uint port_number)
 	return string("SuperColliderServer_") + lexical_cast<string>(port_number);
 }
 
-static inline string make_scope_buffer_name(const string &shmem_name, int buffer_index)
-{
-	return shmem_name + "_ScopeBuffer_" + lexical_cast<string>(buffer_index);
-}
-
 struct server_shared_memory
 {
 	typedef offset_ptr<float> sh_float_ptr;
 	typedef offset_ptr<scope_buffer> scope_buffer_ptr;
 
-	typedef bi::allocator<scope_buffer_ptr, managed_shared_memory::segment_manager> scope_buffer_allocator;
-	typedef bi::vector<scope_buffer_ptr, scope_buffer_allocator> scope_buffer_vector;
+	typedef bi::allocator<scope_buffer_ptr, managed_shared_memory::segment_manager> scope_buffer_ptr_allocator;
+	typedef bi::vector<scope_buffer_ptr, scope_buffer_ptr_allocator> scope_buffer_vector;
 
-	server_shared_memory(
-		managed_shared_memory & segment, const string & shmem_name_,
-		int control_busses, int num_scope_buffers = 128
-	):
-		shmem_name(shmem_name_),
+	server_shared_memory(managed_shared_memory & segment, int control_busses, int num_scope_buffers = 128):
 		num_control_busses(control_busses),
-		scope_buffers(scope_buffer_allocator(segment.get_segment_manager()))
+
+		scope_buffers(scope_buffer_ptr_allocator(segment.get_segment_manager()))
 	{
 		control_busses_ = (float*)segment.allocate(control_busses * sizeof(float));
 		std::fill(control_busses_.get(), control_busses_.get() + control_busses, 0);
 
 		for (int i = 0; i != num_scope_buffers; ++i) {
-			string name = make_scope_buffer_name(shmem_name_, i);
-			scope_buffer_ptr buf = segment.construct<scope_buffer>(name.c_str())();
+			scope_buffer * raw_scope_ptr = (scope_buffer*)segment.allocate(sizeof(scope_buffer));
+			new(raw_scope_ptr) scope_buffer();
+			scope_buffer_ptr buf = raw_scope_ptr;
 			scope_buffers.push_back(buf);
 		}
 	}
@@ -76,10 +69,8 @@ struct server_shared_memory
 	{
 		segment.deallocate(control_busses_.get());
 
-		for (int i = 0; i != scope_buffers.size(); ++i) {
-			string name = make_scope_buffer_name(shmem_name,i);
-			segment.destroy<scope_buffer>(name.c_str());
-		}
+		for (int i = 0; i != scope_buffers.size(); ++i)
+			segment.deallocate(scope_buffers[i].get());
 	}
 
 	void set_control_bus(int bus, float value)
@@ -122,7 +113,7 @@ public:
 		void * memory_for_scope_pool = segment.allocate(scope_pool_size);
 		scope_pool.init(memory_for_scope_pool, scope_pool_size);
 
-		shm = segment.construct<server_shared_memory>(shmem_name.c_str())(ref(segment), shmem_name, control_busses,
+		shm = segment.construct<server_shared_memory>(shmem_name.c_str())(ref(segment), control_busses,
 																		  num_scope_buffers);
 	}
 
