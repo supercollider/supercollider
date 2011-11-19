@@ -21,7 +21,7 @@
 #ifndef _SC_Altivec_
 #define _SC_Altivec_
 
-#if defined(__ALTIVEC__) && !defined(__APPLE_ALTIVEC__)
+#if defined(HAS_ALTIVEC) || defined(__ALTIVEC__) && !defined(__APPLE_ALTIVEC__)
 # include <altivec.h>
 /* From <altivec.h>:
    You are allowed to undef these for C++ compatibility. */
