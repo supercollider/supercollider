@@ -575,6 +575,7 @@ if env['LANG']:
     if PLATFORM == 'darwin' or conf.CheckCHeader('unicode/uregex.h'):
         libraries['libicu'] = Environment(
              LINKFLAGS = '-licui18n -licuuc -licudata',
+             LIBS = [ 'icui18n', 'icuuc', 'icudata' ],
         )
     else:
         print "libicu not found"
@@ -1048,15 +1049,6 @@ elif PLATFORM == 'freebsd':
     langEnv.Append(
     LINKFLAGS = '-Wl,-rpath,build -Wl,-rpath,' + FINAL_PREFIX + '/lib')
 
-if env['CURL']:
-    langEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
-    merge_lib_info(langEnv, libraries['libcurl'])
-
-if env['READLINE'] and env['LANG'] and env['GPL3']:
-    langEnv.Append(CPPDEFINES = ['HAVE_READLINE'])
-    merge_lib_info(langEnv, libraries['readline'])
-
-
 libsclangEnv = langEnv.Clone(
     PKGCONFIG_NAME = 'libsclang',
     PKGCONFIG_DESC = 'SuperCollider synthesis language library',
@@ -1127,6 +1119,15 @@ Source/common/fftlib.c
 if env['LANG']:
     merge_lib_info(libsclangEnv, libraries['libicu'])
 
+if env['CURL']:
+    langEnv.Append(CPPDEFINES = ['HAVE_LIBCURL'])
+    merge_lib_info(libsclangEnv, libraries['libcurl'])
+
+if env['READLINE'] and env['LANG'] and env['GPL3']:
+    langEnv.Append(CPPDEFINES = ['HAVE_READLINE'])
+    merge_lib_info(libsclangEnv, libraries['readline'])
+
+
 # optional features
 if features['midiapi']:
     merge_lib_info(libsclangEnv, libraries['midiapi'])
@@ -1161,8 +1162,8 @@ if PLATFORM == 'linux':
     # HAVE_LID does the right thing in SC_LID.cpp source
     libsclangSources += ['Source/lang/LangPrimSource/SC_LID.cpp']
     if features['wii']:
-                libsclangEnv.Append(CPPDEFINES = 'HAVE_WII')
-                libsclangEnv.Append(LINKFLAGS = '-lcwiid')
+                langEnv.Append(CPPDEFINES = 'HAVE_WII')
+                langEnv.Append(LINKFLAGS = '-lcwiid')
         #langEnv.Append(LINKFLAGS = '-lbluetooth')
         #langEnv.Append(CPPPATH = '-I/usr/local/include/libcwiimote-0.4.0/libcwiimote/' ) #FIXME: to proper include directory
     if features['lid']:
