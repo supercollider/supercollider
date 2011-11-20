@@ -89,9 +89,9 @@ include_directories(
 )
 
 qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
+qt4_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
 
-
-list( APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_MOC_SRCS} )
+list( APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_MOC_SRCS} ${QT_COLLIDER_RCC} )
 
 add_definitions(-DSC_QT -DQT_COLLIDER_EXPORTING -DQT_NO_KEYWORDS)
 
