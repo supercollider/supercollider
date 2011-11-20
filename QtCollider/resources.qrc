@@ -1,0 +1,5 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+     <file alias="icons/sc-cube">../platform/linux/icons/supercollider.png</file>
+</qresource>
+</RCC>
