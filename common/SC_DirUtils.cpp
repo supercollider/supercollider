@@ -202,13 +202,15 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 		}
 	}
 #elif defined(__linux__) || defined(__FreeBSD__)
+	char *resolvedPath;
 	isAlias = sc_IsSymlink(path);
-	if (realpath(path, returnPath))
+	if (resolvedPath = realpath(path, NULL))
 	{
+		strcpy(returnPath, resolvedPath);
+		free(resolvedPath);
 		return 0;
 	}
 
-	return -1;
 #endif
 	strcpy(returnPath, path);
 	return 0;
