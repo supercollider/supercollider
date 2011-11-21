@@ -103,7 +103,6 @@ char *sc_StandardizePath(const char *path, char *newpath2)
 	bool isAlias = false;
 	if(sc_ResolveIfAlias(newpath1, newpath2, isAlias, PATH_MAX)!=0) {
 		strcpy(newpath2, newpath1);
-		return newpath2;
 	}
 
 	return newpath2;
@@ -205,14 +204,6 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 			return 0;
 		}
 	}
-#elif defined(__linux__) || defined(__FreeBSD__)
-	isAlias = sc_IsSymlink(path);
-	if (realpath(path, returnPath))
-	{
-		return 0;
-	}
-
-	return -1;
 #endif
 	strcpy(returnPath, path);
 	return 0;

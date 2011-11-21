@@ -659,6 +659,43 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
+int prString_RealPath(struct VMGlobals* g, int numArgsPushed )
+{
+	PyrSlot* arg = g->sp;
+	char ipath[PATH_MAX];
+	char opathbuf[PATH_MAX];
+	char* opath = opathbuf;
+	int err;
+
+	err = slotStrVal(arg, ipath, PATH_MAX);
+	if (err) return err;
+
+	bool isAlias = false;
+	if(sc_ResolveIfAlias(ipath, opath, isAlias, PATH_MAX)!=0) {
+		return errFailed;
+	}
+
+	if (!realpath(opath, ipath)) {
+		SetNil(arg);
+		return errNone;
+	}
+
+#if SC_DARWIN
+	CFStringRef cfstring =
+		CFStringCreateWithCString(NULL,
+								  ipath,
+								  kCFStringEncodingUTF8);
+	err = !CFStringGetFileSystemRepresentation(cfstring, ipath, PATH_MAX);
+	CFRelease(cfstring);
+	if (err) return errFailed;
+#endif // SC_DARWIN
+
+	PyrString* pyrString = newPyrString(g->gc, ipath, 0, true);
+	SetObject(arg, pyrString);
+
+	return errNone;
+}
+
 int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
 {
 	PyrSlot* arg = g->sp - 1;
@@ -740,6 +777,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
+	definePrimitive(base, index++, "_String_RealPath", prString_RealPath, 1, 0);
 	definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
 	definePrimitive(base, index++, "_String_Mkdir", prString_mkdir, 1, 0);
 }
