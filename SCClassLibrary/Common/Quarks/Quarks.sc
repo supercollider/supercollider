@@ -446,7 +446,8 @@ Quarks
 		var window, lblCaption,
 			btnUpdate, btnHelp, btnOpenDir, btnReset, btnApply,
 			lblStatus, lblExplanation, quarksView,
-			infoView, btnQuarkHelp, btnQuarkOpen, txtDescription, btnCloseDetails;
+			infoView, btnQuarkHelp, btnQuarkOpen, btnQuarkClasses,
+			btnQuarkMethods, txtDescription, btnCloseDetails;
 		var quarks, views, curQuark;
 		var refresh, msgWorking, msgDone;
 		var screen, palette, gizmo;
@@ -553,7 +554,7 @@ Quarks
 				infoView.visible = true;
 			})
 			.onItemChanged_({ |v|
-				var curItem, curView;
+				var curItem, curView, inst;
 				curItem = v.currentItem;
 				curQuark = nil;
 				if( curItem.notNil ) {
@@ -562,6 +563,9 @@ Quarks
 						curQuark = curView.quark;
 						txtDescription.string = curQuark.longDesc;
 						btnQuarkOpen.enabled = curQuark.isLocal;
+						inst = this.installed.detect{|it| it == curQuark}.notNil;
+						btnQuarkClasses.enabled = inst;
+						btnQuarkMethods.enabled = inst;
 					}
 				}{
 					infoView.visible = false
@@ -591,6 +595,80 @@ Quarks
 				openOS( "%/%".format(Quarks.local.path, curQuark.path) );
 			});
 
+		btnQuarkClasses = Button()
+			.states_([["Classes"]])
+			.setProperty( \toolTip, "Show list of classes defined by this Quark")
+			.enabled_(false)
+			.action_({
+				var cls = curQuark.definesClasses;
+				var tree, item, b1, b2;
+				Window("% Classes".format(curQuark.name)).layout_(
+					\QVLayout.asClass.new(
+						tree = \QTreeView.asClass.new
+							.setProperty( \rootIsDecorated, false )
+							.columns_(["Classes"])
+							.onItemChanged_({|v| item = v.currentItem.strings[0]}),
+						\QHLayout.asClass.new(
+							b1 = Button().states_([["Browse"]]).action_({
+								item !? {item.asSymbol.asClass.browse};
+							}).enabled_(false),
+							b2 = Button().states_([["Help"]]).action_({
+								item !? {item.asSymbol.asClass.openHelpFile};
+							}).enabled_(false)
+						)
+					)
+				).front;
+				if(cls.size>0) {
+					cls.do {|c| tree.addItem([c.name.asString])};
+					tree.itemPressedAction = { |v|
+						b1.enabled = true;
+						b2.enabled = true;
+					}
+				} {
+					tree.addItem(["No classes"]);
+				};
+				tree.invokeMethod( \resizeColumnToContents, 0 );
+			});
+
+		btnQuarkMethods = Button()
+			.states_([["Ext methods"]])
+			.setProperty( \toolTip, "Show list of extension methods added by this Quark")
+			.enabled_(false)
+			.action_({
+				var mets = curQuark.definesExtensionMethods;
+				var tree, item, b1, b2;
+				Window("% Extension Methods".format(curQuark.name)).layout_(
+					\QVLayout.asClass.new(
+						tree = \QTreeView.asClass.new
+							.setProperty( \rootIsDecorated, false )
+							.columns_(["Class","Method"])
+							.onItemChanged_({|v| item = v.currentItem}),
+						\QHLayout.asClass.new(
+							b1 = Button().states_([["Browse"]]).action_({
+								item !? {item.strings[0].asSymbol.asClass.browse};
+							}).enabled_(false),
+							b2 = Button().states_([["Help"]]).action_({
+								item !? {HelpBrowser.goTo(Help.dir+/+"Classes"+/+item.strings[0]++".html#"++item.strings[1])};
+							}).enabled_(false)
+						)
+					)
+				).front;
+				if(mets.size>0) {
+					mets.collect{|m|
+						var x = m.ownerClass.name;
+						tree.addItem(if(x.isMetaClassName) {[x.asString[5..],"*"++m.name]} {[x.asString,"-"++m.name]});
+					};
+					tree.itemPressedAction = { |v|
+						b1.enabled = true;
+						b2.enabled = true;
+					}
+				} {
+					tree.addItem([nil,"No extension methods"]);
+				};
+				tree.invokeMethod( \resizeColumnToContents, 0 );
+				tree.invokeMethod( \resizeColumnToContents, 1 );
+			});
+
 		btnCloseDetails = StaticText()
 			.string_("X")
 			.align_(\center)
@@ -604,7 +682,7 @@ Quarks
 
 		infoView = View();
 		infoView.layout = \QVLayout.asClass.new(
-			\QHLayout.asClass.new( btnCloseDetails, btnQuarkHelp, btnQuarkOpen, nil ).margins_(0),
+			\QHLayout.asClass.new( btnCloseDetails, btnQuarkHelp, btnQuarkOpen, btnQuarkClasses, btnQuarkMethods, nil ).margins_(0),
 			txtDescription
 		).spacing_(0).margins_(0);
 		infoView.visible = false;
