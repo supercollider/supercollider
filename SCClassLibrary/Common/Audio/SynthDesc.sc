@@ -1,13 +1,12 @@
 IODesc {
-	var <>rate, <>numberOfChannels, <>startingChannel;
+	var <>rate, <>numberOfChannels, <>startingChannel, <>type;
 
-	*new { arg rate, numberOfChannels, startingChannel="?";
-		^super.newCopyArgs(rate, numberOfChannels, startingChannel)
+	*new { arg rate, numberOfChannels, startingChannel="?", type;
+		^super.newCopyArgs(rate, numberOfChannels, startingChannel, type)
 	}
 
 	printOn { arg stream;
-		stream << rate.asString << " " << startingChannel.source
-				<< " " << numberOfChannels << "\n"
+		stream << rate.asString << " " << type.name << " " << startingChannel << " " << numberOfChannels
 	}
 }
 
@@ -198,20 +197,20 @@ SynthDesc {
 			}
 		} {
 			if (ugenClass.isInputUGen) {
-				bus = ugen.inputs[0].source;
-				if (bus.class.isControlUGen) {
-					control = controls.detect {|item| item.index == bus.specialIndex };
+				bus = ugen.inputs[0];
+				if (bus.isControlProxy) {
+					control = controls.detect {|item| item.index == bus.source.specialIndex };
 					if (control.notNil) { bus = control.name };
 				};
-				inputs = inputs.add( IODesc(rate, numOutputs, bus))
+				inputs = inputs.add( IODesc(rate, ugen.channels.size, bus, ugenClass))
 			} {
 			if (ugenClass.isOutputUGen) {
-				bus = ugen.inputs[0].source;
-				if (bus.class.isControlUGen) {
-					control = controls.detect {|item| item.index == bus.specialIndex };
+				bus = ugen.inputs[0];
+				if (bus.isControlProxy) {
+					control = controls.detect {|item| item.index == bus.source.specialIndex };
 					if (control.notNil) { bus = control.name };
 				};
-				outputs = outputs.add( IODesc(rate, numInputs - ugenClass.numFixedArgs, bus))
+				outputs = outputs.add( IODesc(rate, ugen.numAudioChannels, bus, ugenClass))
 			} {
 				canFreeSynth = canFreeSynth or: { ugen.canFreeSynth };
 			}}

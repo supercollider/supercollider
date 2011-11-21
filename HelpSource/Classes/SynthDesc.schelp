@@ -152,6 +152,11 @@ SynthDescLib.global.at(\default).controlNames.postln;
 method:: controlNames
 returns:: an array of Strings with the names of controls
 
+method:: outputs
+returns:: an array of link::Classes/IODesc:: that describes the available outputs.
+method:: inputs
+returns:: an array of link::Classes/IODesc:: that describes the available inputs.
+
 method:: hasGate
 is true if the Synthdef has a gate input
 
