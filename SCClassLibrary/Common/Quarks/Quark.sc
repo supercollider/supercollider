@@ -130,6 +130,18 @@ Quark
 		};
 		^deps;
 	}
+	openHelpFile {
+		var p = info.helpdoc;
+		if(p.isNil) {^nil};
+		case
+			{p.endsWith(".html")} {
+				HelpBrowser.goTo(HelpBrowser.getOldWrapUrl(parent.local.path +/+ path +/+ p))
+			}
+			{p.endsWith(".scd") or: {p.endsWith(".txt")}} {
+				HelpBrowser.goTo(parent.local.path +/+ path +/+ p)
+			}
+			{ HelpBrowser.openHelpFor(p) };
+	}
 	printOn { arg stream;
 		stream << "Quark: " << name;
 		if(version.notNil,{ stream << " [" << version << "]"; });

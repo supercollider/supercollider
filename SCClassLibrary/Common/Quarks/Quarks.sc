@@ -579,8 +579,10 @@ Quarks
 
 		btnQuarkHelp = Button()
 			.states_([["Help"]])
-			.setProperty( \toolTip, "Show help for this Quark - Not yet available!")
-			.enabled_(false);
+			.setProperty( \toolTip, "Show help for this Quark")
+			.action_({
+				curQuark.openHelpFile
+			});
 
 		btnQuarkOpen = Button()
 			.states_([["Source"]])
