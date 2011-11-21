@@ -316,6 +316,10 @@ String[char] : RawArray {
 		_String_StandardizePath
 		^this.primitiveFailed
 	}
+	realPath {
+		_String_RealPath
+		^this.primitiveFailed
+	}
 	withTrailingSlash {
 		var sep = thisProcess.platform.pathSeparator;
 		if(this.last != sep, {

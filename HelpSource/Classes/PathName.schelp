@@ -13,7 +13,7 @@ private::initClass
 method::new
 
 argument::path
-a link::Classes/String:: which likely contains one or more / as typical for folder separation. ~ will be converted to your fully addressed home directory. Symbolic Links will be expanded, as per link::Classes/String#-standardizePath::.
+a link::Classes/String:: which likely contains one or more / as typical for folder separation. ~ will be converted to your fully addressed home directory, as per link::Classes/String#-standardizePath::.
 code::
 PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
 ::

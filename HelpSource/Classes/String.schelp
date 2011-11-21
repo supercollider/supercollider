@@ -415,10 +415,14 @@ method::resolveRelative
 Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
 
 method::standardizePath
-Expand ~ to your home directory, and resolve symbolic links. See link::Classes/PathName:: for more complex needs.
+Expand ~ to your home directory, and resolve aliases on OSX. See link::Classes/PathName:: for more complex needs.
 code::
 "~/".standardizePath; //This will print your home directory
 ::
+
+method::realPath
+Follow symbolic links (and aliases on OSX) and any parent directory references (like "..") and return the true absolute path.
+returns:: An absolute path or code::nil:: if path did not exist.
 
 method::basename
 Return the filename from a Unix path.
