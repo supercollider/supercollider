@@ -244,6 +244,8 @@ MyQuark/MyClass1.sc
 MyQuark/MyClass2.sc
 ::
 
+In the Quark directory file, set code::\helpdoc:: to the path relative to teletype::HelpSource:: and without the teletype::.schelp:: extension. Example: code::\helpdoc: "Quarks/MyQuark"::
+
 subsection:: Method extensions
 An extension that adds methods to existing classes should document these in code::Classes/TheClass.ext.schelp::, only including the relevant bits (no title, summary, categories, etc..)
 
