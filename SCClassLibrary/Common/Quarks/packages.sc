@@ -50,7 +50,7 @@
 			++
 
 			Quarks.installed.collect({ |q|
-				q.name.asSymbol -> (Main.quarksPackagePrefix +/+ q.path.withTrailingSlash)
+				q.name.asSymbol -> (Platform.userExtensionDir +/+ "quarks" +/+ q.path.withTrailingSlash)
 			}))
 			.sort({ |a,b| a.value.size > b.value.size }) // sort longer paths first
 
@@ -59,15 +59,6 @@
 			f.value(platform.userExtensionDir);
 		Library.put(Quarks,\packages,packages);
 		^packages
-	}
-
-	// ugly hackaround to make the quark directory match the filenameSymbol for classes in quarks,
-	// since Class-filenameSymbol does not resolve symlinks on OSX
-	*quarksPackagePrefix {
-		^Platform.case(
-			\osx, { Platform.userExtensionDir+/+"quarks"},
-			{ Quarks.local.path }
-		)
 	}
 }
 
@@ -107,7 +98,7 @@
 
 	definesClasses {
 		var myPath,end;
-		myPath = Main.quarksPackagePrefix +/+ this.path;
+		myPath = Platform.userExtensionDir +/+ "quarks" +/+ this.path;
 		end = myPath.size-1;
 		^Class.allClasses.reject(_.isMetaClass).select({ |class|
 			class.filenameSymbol.asString.copyRange(0,end) == myPath
@@ -117,7 +108,7 @@
 		// all methods whose path is in this quark folder
 		// where the class is not in this quark
 		var myPath,end;
-		myPath = Main.quarksPackagePrefix +/+  this.path;
+		myPath = Platform.userExtensionDir +/+ "quarks" +/+  this.path;
 		end = myPath.size-1;
 		^Class.allClasses.collect({ |c| c.methods }).reject(_.isNil).flat
 			.select({ |method|
