@@ -20,11 +20,14 @@
 
 #include "SC_PlugIn.h"
 #include <cstdio>
+#include <cmath>
 
 #ifndef MAXFLOAT
 # include <float.h>
 # define MAXFLOAT FLT_MAX
 #endif
+
+using std::floor;
 
 static InterfaceTable *ft;
 
