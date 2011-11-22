@@ -67,7 +67,8 @@ void sc_AppendToPath(char *path, const char *component)
 	strncat(path, component, PATH_MAX);
 }
 
-char *sc_StandardizePath(const char *path, char *newpath2) {
+char *sc_StandardizePath(const char *path, char *newpath2)
+{
 	char newpath1[MAXPATHLEN];
 
 	newpath1[0] = '\0';
@@ -102,7 +103,7 @@ char *sc_StandardizePath(const char *path, char *newpath2) {
 	bool isAlias = false;
 	if(sc_ResolveIfAlias(newpath1, newpath2, isAlias, PATH_MAX)!=0) {
 		strcpy(newpath2, newpath1);
-		return newpath1;
+		return newpath2;
 	}
 
 	return newpath2;
