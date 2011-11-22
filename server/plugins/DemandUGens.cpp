@@ -21,13 +21,10 @@
 #include "SC_PlugIn.h"
 #include <cstdio>
 #include <cmath>
-
-#ifndef MAXFLOAT
-# include <float.h>
-# define MAXFLOAT FLT_MAX
-#endif
+#include <limits>
 
 using std::floor;
+using std::numeric_limits;
 
 static InterfaceTable *ft;
 
@@ -726,7 +723,7 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 				if(sc_isnan(dur)) {
 					release = true;
 					running = false;
-					phase = MAXFLOAT;
+					phase = numeric_limits<float>::max();
 				} else {
 					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + phase;
 				}
@@ -990,7 +987,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				if(sc_isnan(dur)) {
 					release = true;
 					running = false;
-					phase = MAXFLOAT;
+					phase = numeric_limits<float>::max();
 				} else {
 					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + phase;
 				}
