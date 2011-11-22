@@ -1986,7 +1986,7 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 
 			index = (int32)floor(ival + 0.5f);
 			index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
-			val = DEMANDINPUT_A(unit->m_index, inNumSamples);
+			val = DEMANDINPUT_A(index, inNumSamples);
 
 			RESETINPUT(unit->m_index);
 			// printf("resetting index: %i\n", unit->m_index);
