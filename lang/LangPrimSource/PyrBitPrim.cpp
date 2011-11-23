@@ -115,13 +115,14 @@ int prHammingDistance(VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 
-	int	aInt, bInt, count = 0, i, mask = 1;
-	int err = slotIntVal(b, &bInt);
-	if(err) return err;
-	err = slotIntVal(a, &aInt);
-	if(err) return err;
+	if (NotInt(a) || NotInt(b))
+		return errWrongType;
 
-	for(i = 0; i < 32; i++) {
+	int aInt = slotRawInt(a);
+	int bInt = slotRawInt(b);
+
+	int count = 0, mask = 1;
+	for(int i = 0; i < 32; i++) {
 		if((aInt & mask) != (bInt & mask)) count = count + 1;
 		mask = mask << 1;
 	}
