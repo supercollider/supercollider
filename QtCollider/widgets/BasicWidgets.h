@@ -121,7 +121,7 @@ class QcButton : public QPushButton, public QcHelper
   public:
     QcButton();
   Q_SIGNALS:
-    void action();
+    void action(int);
   protected:
 #ifdef Q_WS_MAC
     bool hitButton( const QPoint & ) const;

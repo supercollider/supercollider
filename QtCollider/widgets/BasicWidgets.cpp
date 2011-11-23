@@ -200,7 +200,7 @@ void QcButton::cycleStates()
 void QcButton::doAction()
 {
   cycleStates();
-  Q_EMIT( action() );
+  Q_EMIT( action((int)QApplication::keyboardModifiers()) );
 }
 
 class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
