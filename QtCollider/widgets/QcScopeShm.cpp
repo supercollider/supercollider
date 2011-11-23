@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "QcScopeShm.h"
+#include "scope_shm_interface.hpp"
 #include "../QcWidgetFactory.h"
 #include "../debug.h"
 
@@ -31,7 +32,7 @@ static QcWidgetFactory<QcScopeShm> factory;
 QcScopeShm::QcScopeShm() :
   _srvPort(-1),
   _scopeIndex(-1),
-  _shmClient(0),
+  _shm(new ScopeShm(this)),
   _running(false),
   _data(0),
   _availableFrames(0),
@@ -67,7 +68,7 @@ void QcScopeShm::setBufferNumber( int n )
 {
   if( _running ) {
     // TODO: release used reader?
-    initScopeReader( _shmClient, n );
+    initScopeReader( _shm, n );
   }
   _scopeIndex = n;
 }
@@ -98,12 +99,12 @@ void QcScopeShm::start()
   if( _srvPort < 0 || _scopeIndex < 0 ) return;
 
   connectSharedMemory( _srvPort );
-  if( !_shmClient ) {
+  if( !_shm->client ) {
     stop();
     return;
   }
 
-  initScopeReader( _shmClient, _scopeIndex );
+  initScopeReader( _shm, _scopeIndex );
 
   timer->start();
 
@@ -114,8 +115,8 @@ void QcScopeShm::stop()
 {
   // TODO: release used reader?
 
-  delete _shmClient;
-  _shmClient = 0;
+  delete _shm->client;
+  _shm->client = 0;
 
   timer->stop();
 
@@ -124,14 +125,14 @@ void QcScopeShm::stop()
 
 void QcScopeShm::updateScope()
 {
-  bool valid = _shmReader.valid();
+  bool valid = _shm->reader.valid();
   //qcDebugMsg(1, tr("valid = %1").arg(valid));
   if(!valid) return;
 
-  bool ok = _shmReader.pull( _availableFrames );
+  bool ok = _shm->reader.pull( _availableFrames );
   //qcDebugMsg(1, tr("Got %1 frames").arg(_availableFrames) );
   if(ok) {
-    _data = _shmReader.data();
+    _data = _shm->reader.data();
     update();
   }
 }
@@ -146,8 +147,8 @@ void QcScopeShm::paintEvent ( QPaintEvent * event )
 
   if( !_running || !_availableFrames ) return;
 
-  int chanCount = _shmReader.channels();
-  int maxFrames = _shmReader.max_frames();
+  int chanCount = _shm->reader.channels();
+  int maxFrames = _shm->reader.max_frames();
 
   if( _style == 0 )
     paint1D( false, chanCount, maxFrames, _availableFrames, p );
@@ -274,16 +275,16 @@ void QcScopeShm::connectSharedMemory( int port )
 {
   try {
       server_shared_memory_client * client = new server_shared_memory_client(port);
-      _shmClient = client;
+      _shm->client = client;
       qcDebugMsg(1,"Shared memory connected");
   } catch (std::exception & e) {
-      _shmClient = 0;
+      _shm->client = 0;
       qcErrorMsg(QString("Cannot connect to shared memory: %1").arg(e.what()) );
   }
 }
 
-void QcScopeShm::initScopeReader( server_shared_memory_client *shm, int index )
+void QcScopeShm::initScopeReader( ScopeShm *shm, int index )
 {
-  _shmReader = shm->get_scope_buffer_reader( index );
+  shm->reader = shm->client->get_scope_buffer_reader( index );
   qcDebugMsg(1,QString("Initialized scope buffer reader for index %1.").arg(index));
 }
