@@ -262,10 +262,7 @@ HelpBrowser {
 	openTextFile {|path|
 		var win, winRect, txt, file, fonts;
 		path = path.replace("%20"," ").findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
-		if(Document.implementationClass.notNil) {
-			^Document.open(path);
-		};
-		^path.openOS;
+		path.openDocument;
 	}
 
 	startAnim {
