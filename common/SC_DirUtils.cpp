@@ -67,7 +67,8 @@ void sc_AppendToPath(char *path, const char *component)
 	strncat(path, component, PATH_MAX);
 }
 
-char *sc_StandardizePath(const char *path, char *newpath2) {
+char *sc_StandardizePath(const char *path, char *newpath2)
+{
 	char newpath1[MAXPATHLEN];
 
 	newpath1[0] = '\0';
@@ -76,10 +77,10 @@ char *sc_StandardizePath(const char *path, char *newpath2) {
 	size_t pathLen = strlen(path);
 
 	if ((pathLen >= 2) && (path[0] == '~') && ((path[1] == '/') || (path[1] == '\\'))) {
-      char home[PATH_MAX];
-      sc_GetUserHomeDirectory(home, PATH_MAX);
+		char home[PATH_MAX];
+		sc_GetUserHomeDirectory(home, PATH_MAX);
 
-	    if (home != 0) {
+		if (home != 0) {
 			if ((pathLen - 1 + strlen(home)) >= MAXPATHLEN) {
 				return 0;
 			}
@@ -100,7 +101,10 @@ char *sc_StandardizePath(const char *path, char *newpath2) {
 	}
 
 	bool isAlias = false;
-	sc_ResolveIfAlias(newpath1, newpath2, isAlias, PATH_MAX);
+	if(sc_ResolveIfAlias(newpath1, newpath2, isAlias, PATH_MAX)!=0) {
+		strcpy(newpath2, newpath1);
+		return newpath2;
+	}
 
 	return newpath2;
 }

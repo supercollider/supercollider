@@ -19,8 +19,8 @@
 *
 ************************************************************************/
 
-#include "primitives/primitives.h"
-#include "Common.h"
+#include "primitives.h"
+#include "../Common.h"
 #include "QC_Export.h"
 #include "QtCollider.h"
 

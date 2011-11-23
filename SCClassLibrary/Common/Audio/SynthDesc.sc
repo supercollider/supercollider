@@ -1,13 +1,12 @@
 IODesc {
-	var <>rate, <>numberOfChannels, <>startingChannel;
+	var <>rate, <>numberOfChannels, <>startingChannel, <>type;
 
-	*new { arg rate, numberOfChannels, startingChannel="?";
-		^super.newCopyArgs(rate, numberOfChannels, startingChannel)
+	*new { arg rate, numberOfChannels, startingChannel="?", type;
+		^super.newCopyArgs(rate, numberOfChannels, startingChannel, type)
 	}
 
 	printOn { arg stream;
-		stream << rate.asString << " " << startingChannel.source
-				<< " " << numberOfChannels << "\n"
+		stream << rate.asString << " " << type.name << " " << startingChannel << " " << numberOfChannels
 	}
 }
 
@@ -148,7 +147,7 @@ SynthDesc {
 	readUGenSpec { arg stream;
 		var ugenClass, rateIndex, rate, numInputs, numOutputs, specialIndex;
 		var inputSpecs, outputSpecs;
-		var bus;
+		var addIO;
 		var ugenInputs, ugen;
 		var control;
 
@@ -192,29 +191,29 @@ SynthDesc {
 		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
 		ugen.addToSynth(ugen);
 
+		addIO = {|list, nchan|
+			var b = ugen.inputs[0];
+			if (b.class == OutputProxy and: {b.source.isKindOf(Control)}) {
+				control = controls.detect {|item| item.index == (b.outputIndex+b.source.specialIndex) };
+				if (control.notNil) { b = control.name };
+			};
+			list.add( IODesc(rate, nchan, b, ugenClass))
+		};
+
 		if (ugenClass.isControlUGen) {
+			// Control.newFromDesc does not set the specialIndex, since it doesn't call Control-init.
+			// Therefore we fill it in here:
+			ugen.specialIndex = specialIndex;
 			numOutputs.do { |i|
 				controls[i+specialIndex].rate = rate;
 			}
 		} {
-			if (ugenClass.isInputUGen) {
-				bus = ugen.inputs[0].source;
-				if (bus.class.isControlUGen) {
-					control = controls.detect {|item| item.index == bus.specialIndex };
-					if (control.notNil) { bus = control.name };
-				};
-				inputs = inputs.add( IODesc(rate, numOutputs, bus))
-			} {
-			if (ugenClass.isOutputUGen) {
-				bus = ugen.inputs[0].source;
-				if (bus.class.isControlUGen) {
-					control = controls.detect {|item| item.index == bus.specialIndex };
-					if (control.notNil) { bus = control.name };
-				};
-				outputs = outputs.add( IODesc(rate, numInputs - ugenClass.numFixedArgs, bus))
-			} {
+			case
+			{ugenClass.isInputUGen} {inputs = addIO.value(inputs, ugen.channels.size)}
+			{ugenClass.isOutputUGen} {outputs = addIO.value(outputs, ugen.numAudioChannels)}
+			{
 				canFreeSynth = canFreeSynth or: { ugen.canFreeSynth };
-			}}
+			};
 		};
 	}
 

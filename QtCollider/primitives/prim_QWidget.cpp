@@ -20,7 +20,7 @@
 ************************************************************************/
 
 #include "primitives.h"
-#include "Slot.h"
+#include "../Slot.h"
 #include "../QWidgetProxy.h"
 #include "../Common.h"
 

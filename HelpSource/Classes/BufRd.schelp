@@ -51,7 +51,7 @@ code::
 // read a whole sound into memory
 s = Server.local;
 // note: not *that* columbia, the first one
-b = Buffer.readExample;
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 )
 
 //use any AUDIO rate ugen as an index generator

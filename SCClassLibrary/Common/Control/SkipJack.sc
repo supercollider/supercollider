@@ -18,21 +18,25 @@ SkipJack {
 	*stopAll { all.do(_.stop).clear; }
 
 	init { |autostart=true|
-		task = Task ({
-			if( verbose )	{ ("SkipJack" + name + "starts.").postcln };
-				while { dt.value.wait; stopTest.value.not } { updateFunc.value(this) };
-				this.stop;
-			}, clock ? defaultClock);
-		if ( autostart, { this.start } );
+		task = Routine {
+			if( verbose ) { ("SkipJack" + name + "starts.").postcln };
+			while { dt.value.wait; stopTest.value.not } { updateFunc.value(this) };
+			this.stop;
+		};
+		if ( autostart ) { this.start };
 	}
 
 	cmdPeriod {
-		task.stop.play;
+		task.play(clock ? defaultClock);
 		if( verbose ) { ("SkipJack" + name + "is back up.").postcln };
 	}
 
 	start {
-		task.stop.play;
+		if(task.isPlaying) {
+			if( verbose ) { ("SkipJack" + name + "already playing.").postcln };
+			^this;
+		};
+		task.reset.play(clock ? defaultClock);
 		all.add(this);
 		CmdPeriod.add(this);
 		if( verbose ) { ("SkipJack" + name + "started.").postcln };

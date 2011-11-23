@@ -11,7 +11,7 @@ In most cases you will wish to send commands to the server to get it to load Sou
 code::
 (
 f = SoundFile.new;
-f.openRead(Platform.exampleSoundFile);
+f.openRead(Help.dir +/+ "sounds/a11wlk01.wav");
 f.inspect;
 f.close;
 )
@@ -31,7 +31,7 @@ SoundFile.collect("sounds/*").do { |f| f.path.postln };
 method::use
 Reads the data of a SoundFile, evaluates the function (passing the file as argument) and closes it again.
 code::
-SoundFile.use(Platform.exampleSoundFile, { |f| f.inspect });
+SoundFile.use(Help.dir +/+ "sounds/a11wlk01.wav", { |f| f.inspect });
 ::
 
 method::normalize

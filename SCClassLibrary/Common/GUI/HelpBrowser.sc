@@ -52,14 +52,19 @@ HelpBrowser {
 	*openHelpFor {|text|
 		this.goTo(SCDoc.findHelpFile(text));
 	}
+	*getOldWrapUrl {|url|
+		var c;
+		^("file://" ++ SCDoc.helpTargetDir +/+ "OldHelpWrapper.html#"++url++"?"++
+		SCDoc.helpTargetDir +/+ if((c=url.basename.split($.).first).asSymbol.asClass.notNil)
+			{"Classes" +/+ c ++ ".html"}
+			{"Guides/WritingHelp.html"})
+	}
 
 	goTo {|url, brokenAction|
-		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"], c;
+		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"];
 
 		//FIXME: since multiple scdoc queries can be running at the same time,
 		//it would be best to create a queue and run them in order, but only use the url from the last.
-
-		window.front;
 
 		plainTextExts.do {|x|
 			if(url.endsWith(x)) {
@@ -67,6 +72,7 @@ HelpBrowser {
 			}
 		};
 
+		window.front;
 		this.startAnim;
 
 		brokenAction = brokenAction ? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
@@ -78,10 +84,7 @@ HelpBrowser {
 				};
 				// detect old helpfiles and open them in OldHelpWrapper
 				if(block{|break| Help.do {|key,path| if(url.endsWith(path)) {break.value(true)}}; false}) {
-					url = "file://" ++ SCDoc.helpTargetDir +/+ "OldHelpWrapper.html#"++url++"?"++
-					SCDoc.helpTargetDir +/+ if((c=url.basename.split($.).first).asSymbol.asClass.notNil)
-						{"Classes" +/+ c ++ ".html"}
-						{"Guides/WritingHelp.html"}
+					url = HelpBrowser.getOldWrapUrl(url)
 				};
 				webView.url = url;
 				// needed since onLoadFinished is not called if the path did not change:
@@ -137,7 +140,7 @@ HelpBrowser {
 		w = 200;
 		srchBox = TextField.new( window, Rect(x,y,w,h) ).resize_(1);
 		if(GUI.current.id == \qt) {
-			srchBox.setProperty(\toolTip,"Smart quick help lookup. Prefix with # to just search.");
+			srchBox.toolTip = "Smart quick help lookup. Prefix with # to just search.";
 		};
 		srchBox.action = {|x|
 			if(x.string.notEmpty) {
@@ -193,7 +196,8 @@ HelpBrowser {
 		if(webView.respondsTo(\setFontFamily)) {
 			webView.setFontFamily(\fixed, Platform.case(
 				\osx, { "Monaco" },
-				\linux, { "Andale Mono" }
+				\linux, { "Andale Mono" },
+				{ "Monospace" }
 			))
 		};
 

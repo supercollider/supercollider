@@ -1,7 +1,15 @@
 class:: SkipJack
-summary:: a utility for background tasks that survive cmd-.
-categories:: Libraries>JITLib>GUI
+summary:: A utility for background tasks that survive cmd-period
+categories:: Scheduling, Libraries>JITLib>GUI
 related:: Classes/CmdPeriod
+
+Description::
+SkipJack is a utility to run a function in the background repeatedly, that survive cmd-period.
+
+A typical use is with a window displaying the state of some objects every now and then. (This is better in some cases than
+updating the GUI at every change. If the changes happen fast, you don't choke your CPU on gui updating.)
+
+But SkipJack is useful whenever you need a periodic function to run in the background and not go away if the user hits cmd-period.
 
 ClassMethods::
 
@@ -10,28 +18,73 @@ private::initClass
 method::new
 
 argument::updateFunc
-the function to repeat in the background
+A link::Classes/Function:: to repeat in the background.
 
 argument::dt
-the time interval at which to repeat. can also be a stream or a function that returns a number
+The time interval at which to repeat. It can also be a stream or a function that returns a number.
 
 argument::stopTest
-a test whether to stop the task now
+A test whether to stop the task now. Usually a Function.
 
 argument::name
-is only used for posting information
+A name for this skipjack. Used for posting information and in the link::#*stop:: classmethod.
 
 argument::clock
-the clock that plays the task. default is link::Classes/AppClock::, so SkipJack can call GUI primitives. If you need more precise timing, you can supply your own clock, and use defer only where necessary.
+The clock that plays the task. Default is link::Classes/AppClock::, so SkipJack can call GUI primitives. If you need more precise timing, you can supply your own clock, and use defer only where necessary.
 
 argument::autostart
-when true (default) SkipJack starts automatically as it is created.
+When true (default) SkipJack starts automatically as it is created.
+
+method:: stop
+Stop a skipjack by name.
+
+method:: stopAll
+Stop all skipjacks.
+
+method:: defaultClock
+The default clock (AppClock)
+
+method:: verbose
+When true, SkipJack posts messages when it starts, stops or restarts.
+
+method:: all
+The global set of all skipjacks.
+
+Instancemethods::
+private:: cmdPeriod
+
+method:: dt
+Get or set the time interval.
+
+method:: task
+The internal Routine that wraps updateFunc.
+
+method:: name
+The name of this skipjack.
+
+method:: stopTest
+The current stopTest. (see argument in link::#*new:: )
+
+method:: start
+Start this skipjack.
+
+method:: play
+Same as code::start::
+
+method:: stop
+Stop this skipjack.
+
+method:: clock
+Get or set the clock used. This will only be updated when the skipjack restarts.
+
+method:: updateFunc
+The updateFunc set by the argument to link::#*new::
 
 Examples::
-
+Simple example:
 code::
 w = SkipJack({ "watch...".postln; }, 0.5, name: "test");
-SkipJack.verbose = true;	// post stop/wakeup logs
+SkipJack.verbose = true;    // post stop/wakeup logs
 
 w.stop;
 w.start;
@@ -40,66 +93,47 @@ w.start;
 thisProcess.stop;
 
 w.stop;
+::
 
-	// use stopTest:
+Using stopTest:
+code::
 a = 5;
 w = SkipJack({ "watch...".postln; }, 0.5, { a == 10 }, "test");
 a = 10;	// fulfil stopTest
+::
 
-
-//	Typical use: SkipJack updates a window displaying the state
-//	of some objects every now and then.
-(		// example is mac-only
+Typical use: SkipJack updates a window displaying the state of some objects every now and then.
+code::
+(
 d = (a: 12, b: 24);
-d.win = SCWindow("dict", Rect(0,0,200,60)).front;
+d.win = Window("dict", Rect(0,0,200,60)).front;
 d.views = [\a, \b].collect { |name, i|
-	SCStaticText(d.win, Rect(i * 100,0,96,20))
-		.background_(Color.yellow).align_(0).string_(name);
+    StaticText(d.win, Rect(i * 100,0,96,20))
+        .background_(Color.yellow).align_(0).string_(name);
 };
 w = SkipJack({
-		"...".postln;
-		[\a, \b].do { |name, i|
-			d.views[i].string_(name ++ ":" + d[name])
-		}
-	},
-	0.5,
-	{ d.win.isClosed },
-	"showdict"
+        "...".postln;
+        [\a, \b].do { |name, i|
+            d.views[i].string_(name ++ ":" + d[name])
+        }
+    },
+    0.5,
+    { d.win.isClosed },
+    "showdict"
 );
 )
 
-d.a = 123;	// updates should be displayed
+d.a = 123;      // updates should be displayed
 d.b = \otto;
-d.win.close;	// when window closes, SkipJack stops.
+d.win.close;    // when window closes, SkipJack stops.
+::
 
-(		// the same example, but written in x cross-platform gui style:
-d = (a: 12, b: 24);
-d.win = GUI(\window).new("dict", Rect(0,0,200,60)).front;
-d.views = [\a, \b].collect { |name, i|
-	GUI(\staticText).new(d.win, Rect(i * 100,0,96,20))
-		.background_(Color.yellow).align_(0).string_(name);
-};
-w = SkipJack({
-		"...".postln;
-		[\a, \b].do { |name, i|
-			d.views[i].string_(name ++ ":" + d[name])
-		}
-	},
-	0.5,
-	{ d.win.isClosed },
-	"showdict"
-);
-)
-
-
-//	I prefer this 'lazy' gui idea to a dependency model:
-//	Even when lots of changes happen fast, you don't choke your
-//	cpu on gui updating, you still see some intermediate states.
-
-	//	if you need to get rid of an unreachable skipjack
+If you need to get rid of an unreachable skipjack:
+code::
 SkipJack({ "unreachable, unkillable...".postln }, name: "jack");
 
-SkipJack.stopAll	// do this to stop all;
+SkipJack.stopAll        // do this to stop all;
 
-SkipJack.stop("jack");	// reach it by name and stop
+SkipJack.stop("jack");  // reach it by name and stop
 ::
+

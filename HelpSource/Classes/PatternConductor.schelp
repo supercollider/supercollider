@@ -1,5 +1,5 @@
 class:: PatternConductor
-summary:: event pattern that adds to existing value of one key
+summary:: Simple interactive control for playing patterns
 related:: Classes/Pattern
 categories:: Streams-Patterns-Events>Patterns
 

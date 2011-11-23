@@ -91,6 +91,7 @@ AudioControl : MultiOutUGen {
 		^this.initOutputs(values.size, rate)
 	}
 	*isAudioControlUGen { ^true }
+	*isControlUGen { ^true }
 }
 
 TrigControl : Control {}

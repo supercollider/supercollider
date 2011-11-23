@@ -4321,6 +4321,8 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 				*out++ = 0.f;
 			}
 		}
+		else
+			*out++ = 0.f;
 	}
 	unit->mCounter = counter;
 }

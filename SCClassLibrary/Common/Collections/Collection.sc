@@ -51,6 +51,9 @@ Collection {
 		this.do { tally = tally + 1 };
 		^tally
 	}
+	flatSize {
+		^this.sum(_.flatSize)
+	}
 
 	isEmpty { ^this.size == 0 }
 	notEmpty { ^this.size > 0 }

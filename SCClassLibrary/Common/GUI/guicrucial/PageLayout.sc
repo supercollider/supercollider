@@ -90,11 +90,9 @@ PageLayout  {
 			isClosed = true;
 			autoRemoves.do({ arg updater; updater.remove(false) });
 			autoRemoves = nil;
-			window.do({ arg w;
-				w.close;
-			});
+			window.close;
+			NotificationCenter.notify(window,\didClose);
 			window=view=nil;
-			NotificationCenter.notify(this,\didClose);
 		});
 	}
 	onClose_ { arg f; window.onClose = f; }
