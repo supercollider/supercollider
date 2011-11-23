@@ -147,7 +147,7 @@ SynthDesc {
 	readUGenSpec { arg stream;
 		var ugenClass, rateIndex, rate, numInputs, numOutputs, specialIndex;
 		var inputSpecs, outputSpecs;
-		var bus;
+		var addIO;
 		var ugenInputs, ugen;
 		var control;
 
@@ -191,29 +191,29 @@ SynthDesc {
 		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
 		ugen.addToSynth(ugen);
 
+		addIO = {|list, nchan|
+			var b = ugen.inputs[0];
+			if (b.class == OutputProxy and: {b.source.isKindOf(Control)}) {
+				control = controls.detect {|item| item.index == (b.outputIndex+b.source.specialIndex) };
+				if (control.notNil) { b = control.name };
+			};
+			list.add( IODesc(rate, nchan, b, ugenClass))
+		};
+
 		if (ugenClass.isControlUGen) {
+			// Control.newFromDesc does not set the specialIndex, since it doesn't call Control-init.
+			// Therefore we fill it in here:
+			ugen.specialIndex = specialIndex;
 			numOutputs.do { |i|
 				controls[i+specialIndex].rate = rate;
 			}
 		} {
-			if (ugenClass.isInputUGen) {
-				bus = ugen.inputs[0];
-				if (bus.isControlProxy) {
-					control = controls.detect {|item| item.index == bus.source.specialIndex };
-					if (control.notNil) { bus = control.name };
-				};
-				inputs = inputs.add( IODesc(rate, ugen.channels.size, bus, ugenClass))
-			} {
-			if (ugenClass.isOutputUGen) {
-				bus = ugen.inputs[0];
-				if (bus.isControlProxy) {
-					control = controls.detect {|item| item.index == bus.source.specialIndex };
-					if (control.notNil) { bus = control.name };
-				};
-				outputs = outputs.add( IODesc(rate, ugen.numAudioChannels, bus, ugenClass))
-			} {
+			case
+			{ugenClass.isInputUGen} {inputs = addIO.value(inputs, ugen.channels.size)}
+			{ugenClass.isOutputUGen} {outputs = addIO.value(outputs, ugen.numAudioChannels)}
+			{
 				canFreeSynth = canFreeSynth or: { ugen.canFreeSynth };
-			}}
+			};
 		};
 	}
 
