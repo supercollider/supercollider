@@ -1566,6 +1566,7 @@ void Dseq_next(Dseq *unit, int inNumSamples)
 			float x = DEMANDINPUT_A(0, inNumSamples);
 			unit->m_repeats = sc_isnan(x) ? 0.f : floor(x + 0.5f);
 		}
+		int attempts = 0;
 		while (true) {
 			//Print("   unit->m_index %d   unit->m_repeatCount %d\n", unit->m_index, unit->m_repeatCount);
 			if (unit->m_index >= unit->mNumInputs) {
@@ -1596,6 +1597,11 @@ void Dseq_next(Dseq *unit, int inNumSamples)
 				//Print("   unit->m_index %d   OUT0(0) %g\n", unit->m_index, OUT0(0));
 				unit->m_index++;
 				unit->m_needToResetChild = true;
+				return;
+			}
+
+			if (attempts++ > unit->mNumInputs) {
+				Print("Warning: empty sequence in Dseq\n");
 				return;
 			}
 		}
