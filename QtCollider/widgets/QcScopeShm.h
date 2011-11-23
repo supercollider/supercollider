@@ -25,9 +25,19 @@
 #include "../QcHelper.h"
 
 #include <SC_Types.h>
-#include "../common/server_shm.hpp"
 
 #include <QWidget>
+
+// FIXME: Due to Qt bug #22829, moc can not process headers that include
+// boost/type_traits/detail/has_binary_operator.hp from boost 1.48, so
+// we have to wrap the shm interface into a separate class.
+
+namespace QtCollider
+{
+  class ScopeShm;
+}
+
+using QtCollider::ScopeShm;
 
 class QcScopeShm : public QWidget, QcHelper
 {
@@ -73,15 +83,14 @@ class QcScopeShm : public QWidget, QcHelper
     void updateScope();
   private:
     void connectSharedMemory( int port );
-    void initScopeReader( server_shared_memory_client *, int index );
+    void initScopeReader( ScopeShm *, int index );
     void paint1D( bool overlapped, int channels, int maxFrames, int frames, QPainter & );
     void paint2D( int channels, int maxFrames, int frames, QPainter & );
 
     int _srvPort;
     int _scopeIndex;
 
-    server_shared_memory_client *_shmClient;
-    scope_buffer_reader _shmReader;
+    ScopeShm *_shm;
 
     bool _running;
     float *_data;
