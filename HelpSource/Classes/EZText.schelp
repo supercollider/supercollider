@@ -194,7 +194,7 @@ Tdef(\text).set(\note, [0, 2, 7], \dur, { [0.1, 0.2].choose });
 w = Window("EZTexts", Rect(200, 400, 304, 120)).front;
 w.addFlowLayout;
 
-TdefEditor(Tdef(\text), 0, w: w);
+TdefGui(Tdef(\text), 0, w);
 Tdef(\text).envir.keysValuesDo { |k, v|
 	EZText(w, Rect(0,0,300,40), k, { |ez|
 		Tdef(\text).envir.put(*[k, ez.value].postcs);
