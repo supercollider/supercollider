@@ -30,7 +30,7 @@ SCDocHTMLRenderer : SCDocRenderer {
     }
 
     findHelpFile {|str|
-        var path, old, sym, pfx = "file://" ++ SCDoc.helpTargetDir;
+        var old, sym, pfx = "file://" ++ SCDoc.helpTargetDir;
 
         if(str.isNil or: {str.isEmpty}) { ^pfx +/+ "Help.html" };
         if(SCDoc.findHelpSource(str).notNil) { ^pfx +/+ str ++ ".html" };

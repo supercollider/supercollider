@@ -52,6 +52,18 @@ HelpBrowser {
 	*openHelpFor {|text|
 		this.goTo(SCDoc.findHelpFile(text));
 	}
+	*openHelpForMethod {|method|
+		var cls = method.ownerClass;
+		var met = method.name.asString;
+		if(cls.isMetaClass) {
+			cls = cls.name.asString.drop(5);
+			met = "*"++met;
+		} {
+			cls = cls.name.asString;
+			met = "-"++met;
+		};
+		this.goTo(Help.dir+/+"Classes"+/+cls++".html#"++met);
+	}
 	*getOldWrapUrl {|url|
 		var c;
 		^("file://" ++ SCDoc.helpTargetDir +/+ "OldHelpWrapper.html#"++url++"?"++

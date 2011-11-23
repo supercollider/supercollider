@@ -610,10 +610,10 @@ Quarks
 							.onItemChanged_({|v| item = v.currentItem.strings[0]}),
 						\QHLayout.asClass.new(
 							b1 = Button().states_([["Browse"]]).action_({
-								item !? {item.asSymbol.asClass.browse};
+								item.asSymbol.asClass.browse;
 							}).enabled_(false),
 							b2 = Button().states_([["Help"]]).action_({
-								item !? {item.asSymbol.asClass.openHelpFile};
+								item.asSymbol.asClass.openHelpFile;
 							}).enabled_(false)
 						)
 					)
@@ -645,10 +645,10 @@ Quarks
 							.onItemChanged_({|v| item = v.currentItem}),
 						\QHLayout.asClass.new(
 							b1 = Button().states_([["Browse"]]).action_({
-								item !? {item.strings[0].asSymbol.asClass.browse};
+								item.strings[0].asSymbol.asClass.browse;
 							}).enabled_(false),
 							b2 = Button().states_([["Help"]]).action_({
-								item !? {HelpBrowser.goTo(Help.dir+/+"Classes"+/+item.strings[0]++".html#"++item.strings[1])};
+								mets[item.index].openHelpFile;
 							}).enabled_(false)
 						)
 					)
