@@ -274,7 +274,12 @@ HelpBrowser {
 	openTextFile {|path|
 		var win, winRect, txt, file, fonts;
 		path = path.replace("%20"," ").findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1];
-		path.openDocument;
+		if(File.exists(path)) {
+			path.openDocument;
+		} {
+			webView.url = SCDoc.helpTargetDir++"/BrokenLink.html#"++path;
+			window.front;
+		}
 	}
 
 	startAnim {
