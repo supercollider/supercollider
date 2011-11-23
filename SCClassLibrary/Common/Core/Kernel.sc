@@ -464,7 +464,7 @@ Method : FunctionDef {
 		^this.name.asString.findHelpFile.notNil
 	}
 	openHelpFile {
-		this.name.asString.openHelpFile
+		HelpBrowser.openHelpForMethod(this);
 	}
 	inspectorClass { ^MethodInspector }
 	storeOn { arg stream;
