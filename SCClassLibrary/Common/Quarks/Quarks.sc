@@ -601,29 +601,30 @@ Quarks
 			.enabled_(false)
 			.action_({
 				var cls = curQuark.definesClasses;
-				var tree, item, b1, b2;
+				var tree, item, buts = [
+					Button().states_([["Browse"]]).action_({
+						cls[item.index].browse;
+					}),
+					Button().states_([["Help"]]).action_({
+						cls[item.index].openHelpFile;
+					}),
+					Button().states_([["Source"]]).action_({
+						cls[item.index].openCodeFile;
+					})
+				];
+				buts.do(_.enabled_(false));
 				Window("% Classes".format(curQuark.name)).layout_(
 					\QVLayout.asClass.new(
 						tree = \QTreeView.asClass.new
 							.setProperty( \rootIsDecorated, false )
 							.columns_(["Classes"])
-							.onItemChanged_({|v| item = v.currentItem.strings[0]}),
-						\QHLayout.asClass.new(
-							b1 = Button().states_([["Browse"]]).action_({
-								item.asSymbol.asClass.browse;
-							}).enabled_(false),
-							b2 = Button().states_([["Help"]]).action_({
-								item.asSymbol.asClass.openHelpFile;
-							}).enabled_(false)
-						)
+							.onItemChanged_({|v| item = v.currentItem}),
+						\QHLayout.asClass.new(*buts)
 					)
 				).front;
 				if(cls.size>0) {
 					cls.do {|c| tree.addItem([c.name.asString])};
-					tree.itemPressedAction = { |v|
-						b1.enabled = true;
-						b2.enabled = true;
-					}
+					tree.itemPressedAction = { buts.do(_.enabled_(true)) }
 				} {
 					tree.addItem(["No classes"]);
 				};
@@ -636,21 +637,25 @@ Quarks
 			.enabled_(false)
 			.action_({
 				var mets = curQuark.definesExtensionMethods;
-				var tree, item, b1, b2;
+				var tree, item, buts = [
+					Button().states_([["Browse"]]).action_({
+						mets[item.index].ownerClass.browse;
+					}),
+					Button().states_([["Help"]]).action_({
+						mets[item.index].openHelpFile;
+					}),
+					Button().states_([["Source"]]).action_({
+						mets[item.index].openCodeFile;
+					})
+				];
+				buts.do(_.enabled_(false));
 				Window("% Extension Methods".format(curQuark.name)).layout_(
 					\QVLayout.asClass.new(
 						tree = \QTreeView.asClass.new
 							.setProperty( \rootIsDecorated, false )
 							.columns_(["Class","Method"])
 							.onItemChanged_({|v| item = v.currentItem}),
-						\QHLayout.asClass.new(
-							b1 = Button().states_([["Browse"]]).action_({
-								item.strings[0].asSymbol.asClass.browse;
-							}).enabled_(false),
-							b2 = Button().states_([["Help"]]).action_({
-								mets[item.index].openHelpFile;
-							}).enabled_(false)
-						)
+						\QHLayout.asClass.new(*buts)
 					)
 				).front;
 				if(mets.size>0) {
@@ -658,10 +663,7 @@ Quarks
 						var x = m.ownerClass.name;
 						tree.addItem(if(x.isMetaClassName) {[x.asString[5..],"*"++m.name]} {[x.asString,"-"++m.name]});
 					};
-					tree.itemPressedAction = { |v|
-						b1.enabled = true;
-						b2.enabled = true;
-					}
+					tree.itemPressedAction = { buts.do(_.enabled_(true)) }
 				} {
 					tree.addItem([nil,"No extension methods"]);
 				};
