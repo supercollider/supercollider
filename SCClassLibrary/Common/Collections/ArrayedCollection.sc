@@ -480,6 +480,10 @@ RawArray : ArrayedCollection {
 			this.shouldNotImplement(thisMethod);
 		}
 	}
+
+	powerset {
+		^this.as(Array).powerset
+	}
 }
 
 Int8Array[int8] : RawArray {
