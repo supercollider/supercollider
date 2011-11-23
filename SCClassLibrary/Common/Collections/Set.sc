@@ -203,7 +203,13 @@ IdentitySet : Set {
 
 
 OrderedIdentitySet : IdentitySet {
-	var items;
+	var >items;
+
+	copy {
+		^this.shallowCopy
+		.array_( array.copy )
+		.items_( items.copy )
+	}
 
 	do { arg function;
 		items.do(function)

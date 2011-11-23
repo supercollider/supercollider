@@ -193,6 +193,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 option(SC_QT "Build SuperCollider with Qt GUI" ON)
+if (SC_QT)
+  message( STATUS "Compiling with Qt GUI" )
+endif (SC_QT)
 
 if(WIN32)
 	option(SC_PSYCOLLIDER "Build PsyCollider" ON)
@@ -263,11 +266,6 @@ add_subdirectory(lang)
 add_subdirectory(bindings)
 add_subdirectory(platform)
 add_subdirectory(editors)
-
-if (SC_QT)
-  message( STATUS "Compiling with Qt GUI" )
-  add_subdirectory(QtCollider)
-endif (SC_QT)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
     install(DIRECTORY include/common include/plugin_interface include/server include/lang

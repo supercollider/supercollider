@@ -644,4 +644,8 @@ Buffer {
 		^this
 	}
 
+	*readExample {|server, startFrame = 0, numFrames = -1, action, bufnum|
+		var file = Platform.exampleSoundFile;
+		^this.read(server, file, startFrame, numFrames, action, bufnum)
+	}
 }

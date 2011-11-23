@@ -30,6 +30,7 @@
 
 #include <QThread>
 #include <QFileOpenEvent>
+#include <QIcon>
 
 extern bool compiledOK;
 
@@ -63,6 +64,8 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _mutex.unlock();
   qRegisterMetaType<VariantList>();
   qRegisterMetaType<QcTreeWidget::ItemPtr>();
+
+  setWindowIcon(QIcon(":icons/sc-cube"));
 }
 
 QcApplication::~QcApplication()

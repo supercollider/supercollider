@@ -24,7 +24,7 @@ code::
     \organization:   "My Organization",
     \country:        "My Country",
     \since:          "2004",
-    \helpdoc:        "theName.html",
+    \helpdoc:        "Classes/MyClass",
     \ext_dependancy: "Information on additional software needed to run this quark properly",
     \url:            "http://www.strangeQuark.de",
 
@@ -45,5 +45,12 @@ parent folder and then keep several quarks inside that, in which case your path 
 
 It may even be possible to nest quarks inside of quarks (a kind of aggregate package), though a better way to do that
 would be to define an empty quark (the aggregate) and specify the other sub quarks as dependencies.
+
+The value of code::\helpdoc:: is a help path relative to an included teletype::HelpSource:: folder.
+It is used as the main help file for the quark. (See link::Classes/Quark#-openHelpFile:: )
+For example, if the quark contains teletype::HelpSource/Reference/MyQuark.schelp:: one would use:
+code::
+    \helpdoc: "Reference/MyQuark"
+::
 
 note:: Please test that you don't have any syntax errors in your quark file before commiting it.::

@@ -281,12 +281,25 @@ QButton : QView {
     super.setProperty( \states, stateArray );
   }
 
+  action_ { arg func;
+    this.manageMethodConnection( action, func, 'action(int)', \prDoAction );
+    action = func;
+  }
+
+  doAction { arg modifiers;
+    action.value(this, modifiers);
+  }
+
   defaultGetDrag { ^this.value; }
   defaultCanReceiveDrag { ^true; }
   defaultReceiveDrag {
     if( QView.currentDrag.isNumber )
       { this.valueAction = QView.currentDrag; }
       { this.action = QView.currentDrag; };
+  }
+
+  prDoAction { arg mods;
+    this.doAction(QKeyModifiers.toCocoa(mods));
   }
 }
 

@@ -8,6 +8,7 @@ BOOST_ROOT=/home/tim/boost_1_48_0/
 
 bcp --boost=${BOOST_ROOT} \
 	--scan common/*pp \
+	--scan lang/*/*pp \
 	--scan server/supernova/*/*pp \
 	--scan external_libraries/boost_*/*/*pp \
 	--scan external_libraries/boost_*/*/*/*pp \

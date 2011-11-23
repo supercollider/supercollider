@@ -124,7 +124,7 @@ N.B. You cannot rely on the buffer's instance variables being instantly updated,
 code::
 // read a soundfile
 s.boot;
-p = Platform.exampleSoundFile;
+p = Help.dir +/+ "sounds/a11wlk01.wav";
 b = Buffer.read(p);
 
 // now play it
@@ -219,7 +219,7 @@ SynthDef(\help_Buffer,{ arg out=0, bufnum;
 }).add;
 
 y = Synth.basicNew(\help_Buffer); // not sent yet
-b = Buffer.readNoUpdate(s, Platform.exampleSoundFile,
+b = Buffer.readNoUpdate(s, Help.dir +/+ "sounds/a11wlk01.wav",
 	completionMessage: { arg buffer;
 		// synth add its s_new msg to follow
 		// after the buffer read completes
@@ -262,7 +262,7 @@ SynthDef(\help_Buffer_cue,{ arg out=0,bufnum;
 
 (
 s.makeBundle(nil, {
-	b = Buffer.cueSoundFile(s, Platform.exampleSoundFile, 0, 1);
+	b = Buffer.cueSoundFile(s, Help.dir +/+ "sounds/a11wlk01.wav", 0, 1);
 	y = Synth(\help_Buffer_cue, [\bufnum, b], s);
 });
 )
@@ -467,7 +467,7 @@ discussion::
 code::
 s.boot;
 b = Buffer.new(s);
-b.allocRead(Platform.exampleSoundFile);
+b.allocRead(Help.dir +/+ "sounds/a11wlk01.wav");
 x = { PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * 0.5 }.play;
 x.free; b.free;
 ::
@@ -827,7 +827,7 @@ A Function to be evaluated once the file has been read and this Buffer's instanc
 discussion::
 code::
 s.boot;
-b = Buffer.readNoUpdate(s, Platform.exampleSoundFile);
+b = Buffer.readNoUpdate(s, Help.dir +/+ "sounds/a11wlk01.wav");
 b.numFrames; // incorrect, shows nil
 b.updateInfo({|buf| buf.numFrames.postln; }); // now it's right
 b.free;

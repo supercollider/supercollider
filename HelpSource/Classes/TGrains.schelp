@@ -63,7 +63,7 @@ s.boot;
 )
 
 
-b = Buffer.readExample;
+b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 (
 {

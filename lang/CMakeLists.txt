@@ -5,11 +5,6 @@ else()
         find_package(FFTW3f)
 endif()
 
-if(SC_QT)
-	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
-endif()
-
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_lockfree
@@ -180,18 +175,11 @@ if (SC_WII OR APPLE)
 	endif()
 endif()
 
-if (SC_QT)
-	find_package (Qt4 4.5)
-	include(${QT_USE_FILE})
-
-	add_definitions(-DSC_QT -DQT_NO_KEYWORDS)
-	include_directories(${CMAKE_SOURCE_DIR}/include/QtCollider)
-
-	qt4_wrap_cpp( QC_LANG_CLIENT_MOC_SRCS ../QtCollider/LanguageClient.h )
-
-	list(APPEND sclang_sources ../QtCollider/LanguageClient.cpp ${QC_LANG_CLIENT_MOC_SRCS})
-endif ()
-
+if(SC_QT)
+	set(QT_COLLIDER_LANG_CLIENT ON)
+	include(../QtCollider/CMakeLists.txt)
+	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
+endif()
 
 if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
@@ -221,10 +209,6 @@ else()
 		)
 endif()
 
-
-if (SC_QT)
-    target_link_libraries(libsclang QtCollider )
-endif()
 
 set_property(TARGET libsclang
 	PROPERTY OUTPUT_NAME sclang)
@@ -285,6 +269,10 @@ if (GC_SANITYCHECK)
 endif()
 
 target_link_libraries(libsclang ${PTHREADS_LIBRARY} supercollider_boost_thread)
+
+if(SC_QT)
+	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+endif()
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp)
 target_link_libraries(sclang libsclang boost_thread)

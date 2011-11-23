@@ -20,11 +20,11 @@
 
 #include "SC_PlugIn.h"
 #include <cstdio>
+#include <cmath>
+#include <limits>
 
-#ifndef MAXFLOAT
-# include <float.h>
-# define MAXFLOAT FLT_MAX
-#endif
+using std::floor;
+using std::numeric_limits;
 
 static InterfaceTable *ft;
 
@@ -723,7 +723,7 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 				if(sc_isnan(dur)) {
 					release = true;
 					running = false;
-					phase = MAXFLOAT;
+					phase = numeric_limits<float>::max();
 				} else {
 					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + phase;
 				}
@@ -987,7 +987,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 				if(sc_isnan(dur)) {
 					release = true;
 					running = false;
-					phase = MAXFLOAT;
+					phase = numeric_limits<float>::max();
 				} else {
 					phase = dur * ZIN0(d_env_timeScale) * SAMPLERATE + phase;
 				}
@@ -1971,26 +1971,23 @@ void Dswitch1_Ctor(Dswitch1 *unit)
 
 void Dswitch_next(Dswitch *unit, int inNumSamples)
 {
-	int index;
-	float ival;
 	if (inNumSamples) {
 		float val = DEMANDINPUT_A(unit->m_index, inNumSamples);
 		//printf("index: %i\n", (int) val);
 		if(sc_isnan(val)) {
-			ival = DEMANDINPUT_A(0, inNumSamples);
+			float ival = DEMANDINPUT_A(0, inNumSamples);
 
-			if(sc_isnan(ival)) {
-				OUT0(0) = ival;
-				return;
+			if(sc_isnan(ival))
+				val = ival;
+			else {
+				int index = (int32)floor(ival + 0.5f);
+				index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
+				val = DEMANDINPUT_A(index, inNumSamples);
+
+				RESETINPUT(unit->m_index);
+				// printf("resetting index: %i\n", unit->m_index);
+				unit->m_index = index;
 			}
-
-			index = (int32)floor(ival + 0.5f);
-			index = sc_wrap(index, 0, unit->mNumInputs - 2) + 1;
-			val = DEMANDINPUT_A(unit->m_index, inNumSamples);
-
-			RESETINPUT(unit->m_index);
-			// printf("resetting index: %i\n", unit->m_index);
-			unit->m_index = index;
 		}
 		OUT0(0) = val;
 
@@ -1999,7 +1996,7 @@ void Dswitch_next(Dswitch *unit, int inNumSamples)
 		for (int i=0; i<unit->mNumInputs; ++i) {
 			RESETINPUT(i);
 		}
-		index = (int32)floor(DEMANDINPUT(0) + 0.5f);
+		int index = (int32)floor(DEMANDINPUT(0) + 0.5f);
 		index = sc_wrap(index, 0, unit->mNumInputs - 1) + 1;
 		unit->m_index = index;
 	}
