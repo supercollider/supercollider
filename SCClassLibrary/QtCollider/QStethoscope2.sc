@@ -204,7 +204,7 @@ QStethoscope2 {
     updateColors = {
       var colors;
       bus.do { |b|
-        var c = if(b.rate === \audio){rgb(255, 218, 000)}{rgb(125, 255, 205)};
+        var c = if(b.rate === \audio){Color.new255(255, 218, 000)}{Color.new255(125, 255, 205)};
         colors = colors ++ Array.fill(b.numChannels, c);
       };
       scopeView.waveColors = colors;
