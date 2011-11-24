@@ -400,7 +400,7 @@ Document {
 			if(dirName != ".") {
 				dirName = directory ++ dirName;
 				"created directory: % \n".postf(dirName);
-				unixCmd("mkdir -p" + dirName);
+				dirName.mkdir;
 			};
 		}
 	}
