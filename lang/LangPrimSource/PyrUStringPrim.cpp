@@ -173,7 +173,7 @@ void initUStringPrimitives()
 {
 	int base, index = 0;
 	base = nextPrimitiveIndex();
-	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
+	//definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
 }
 
 #else
