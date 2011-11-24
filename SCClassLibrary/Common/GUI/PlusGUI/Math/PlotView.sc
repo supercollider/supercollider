@@ -425,7 +425,7 @@ Plotter {
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
-	var editPlotIndex, editPos;
+	var <editPlotIndex, <editPos;
 
 	var <>drawFunc, <>editFunc;
 
@@ -460,22 +460,27 @@ Plotter {
 			.focus(true)
 			.mouseDownAction_({ |v, x, y, modifiers|
 				cursorPos = x @ y;
-				if(editMode && superpose.not) {
+				if(superpose.not) {
 					editPlotIndex = this.pointIsInWhichPlot(cursorPos);
 					editPlotIndex !? {
 						editPos = x @ y; // new Point instead of cursorPos!
-						plots.at(editPlotIndex).editData(x, y, editPlotIndex);
-						if(this.numFrames < 200) { this.refresh };
+						if(editMode) {
+							plots.at(editPlotIndex).editData(x, y, editPlotIndex);
+							if(this.numFrames < 200) { this.refresh };
+						};
 					}
 				};
 				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
 			.mouseMoveAction_({ |v, x, y, modifiers|
 				cursorPos = x @ y;
-				if(editMode && superpose.not && editPlotIndex.notNil) {
-					plots.at(editPlotIndex).editDataLine( editPos, cursorPos, editPlotIndex );
+				if(superpose.not && editPlotIndex.notNil) {
+					if(editMode) {
+						plots.at(editPlotIndex).editDataLine(editPos, cursorPos, editPlotIndex);
+						if(this.numFrames < 200) { this.refresh };
+					};
 					editPos = x @ y;  // new Point instead of cursorPos!
-					if(this.numFrames < 200) { this.refresh };
+					
 				};
 				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
