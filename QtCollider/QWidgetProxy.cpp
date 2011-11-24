@@ -249,6 +249,7 @@ bool QWidgetProxy::filterEvent( QObject *o, QEvent *e, EventHandlerData &eh, QLi
     case QEvent::MouseButtonRelease:
     case QEvent::MouseButtonDblClick:
     case QEvent::Enter:
+    case QEvent::Leave:
       return eh.enabled && interpretMouseEvent( o, e, args );
 
     case QEvent::Wheel:
@@ -271,7 +272,7 @@ bool QWidgetProxy::interpretMouseEvent( QObject *o, QEvent *e, QList<QVariant> &
 
   QWidget *w = widget();
 
-  if( e->type() == QEvent::Enter ) {
+  if( e->type() == QEvent::Enter || e->type() == QEvent::Leave ) {
     QPoint pos = QCursor::pos();
 
 

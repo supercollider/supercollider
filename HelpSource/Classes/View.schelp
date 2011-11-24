@@ -464,6 +464,12 @@ METHOD:: mouseOverAction
 
 		It is passed the following arguments: view, x, y.
 
+METHOD:: mouseLeaveAction
+	note:: strong:: Only in Qt GUI :: ::
+
+	Sets or gets the object to be evaluated when the mouse pointer leaves the view.
+
+		It is passed the following arguments: view, x, y.
 
 
 SUBSECTION:: Key actions
@@ -668,10 +674,16 @@ METHOD:: mouseMove
 	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
 
 METHOD:: mouseOver
-	Handles response to mouse pointer enterng the view. Evaluates link::#-mouseOverAction::.
+	Handles response to mouse pointer entering the view. Evaluates link::#-mouseOverAction::.
 
 	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
 
+METHOD:: mouseLeave
+	note:: strong:: Only in Qt GUI :: ::
+
+	Handles response to mouse pointer leaving the view. Evaluates link::#-mouseLeaveAction::.
+
+	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
 
 
 
