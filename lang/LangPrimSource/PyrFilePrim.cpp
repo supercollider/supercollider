@@ -59,6 +59,9 @@ Primitives for File i/o.
 #include <fcntl.h>
 #include <math.h>
 
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+
 #define DELIMITOR ':'
 
 bool filelen(FILE *file, size_t *length);
@@ -80,6 +83,26 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	int err = unlink(filename);
 	SetBool(a, err == 0);
 
+	return errNone;
+}
+
+int prFileMTime(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	char filename[PATH_MAX];
+
+	a = g->sp - 1;
+	b = g->sp;
+	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string))
+		return errWrongType;
+	if (slotRawObject(b)->size > PATH_MAX - 1) return errFailed;
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	time_t mtime = boost::filesystem::last_write_time(filename);
+	SetInt(a, mtime);
 	return errNone;
 }
 
@@ -1892,6 +1915,7 @@ void initFilePrimitives()
 #endif
 
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
+	definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
 	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);
 	definePrimitive(base, index++, "_FileFlush", prFileFlush, 1, 0);

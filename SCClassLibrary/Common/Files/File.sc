@@ -17,6 +17,10 @@ File : UnixFILE {
 		_FileDelete
 		^this.primitiveFailed
 	}
+	*mtime { arg pathName;
+		_FileMTime
+		^this.primitiveFailed
+	}
 	*exists { arg pathName;
 		var file;
 		file = File(pathName,"r");
