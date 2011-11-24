@@ -663,8 +663,7 @@ int prString_RealPath(struct VMGlobals* g, int numArgsPushed )
 {
 	PyrSlot* arg = g->sp;
 	char ipath[PATH_MAX];
-	char opathbuf[PATH_MAX];
-	char* opath = opathbuf;
+	char opath[PATH_MAX];
 	int err;
 
 	err = slotStrVal(arg, ipath, PATH_MAX);
@@ -675,22 +674,25 @@ int prString_RealPath(struct VMGlobals* g, int numArgsPushed )
 		return errFailed;
 	}
 
-	if (!realpath(opath, ipath)) {
+	boost::system::error_code error_code;
+	boost::filesystem::path p = boost::filesystem::canonical(opath,error_code);
+	if(error_code) {
 		SetNil(arg);
 		return errNone;
 	}
+	strcpy(opath,p.string().c_str());
 
 #if SC_DARWIN
 	CFStringRef cfstring =
 		CFStringCreateWithCString(NULL,
-								  ipath,
+								  opath,
 								  kCFStringEncodingUTF8);
-	err = !CFStringGetFileSystemRepresentation(cfstring, ipath, PATH_MAX);
+	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
 	CFRelease(cfstring);
 	if (err) return errFailed;
 #endif // SC_DARWIN
 
-	PyrString* pyrString = newPyrString(g->gc, ipath, 0, true);
+	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
 	SetObject(arg, pyrString);
 
 	return errNone;
