@@ -37,12 +37,16 @@ Primitives for String.
 # include "SC_Win32Utils.h"
 #else
 # include <sys/param.h>
-# include <regex.h>
 #endif
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/regex.hpp>
 
+#include <string>
+#include <vector>
+
+using namespace std;
 
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
@@ -166,26 +170,10 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 };
 
-// no regular expressions for windows yet
-// include pcer at one point...
-#ifndef SC_WIN32
-int matchRegexp(char *string, char *pattern)
-{
-	int    status;
-	regex_t    re;
-	if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0) {
-		return(2);      /* Report error. */
-	}
-	status = regexec(&re, string, (size_t) 0, NULL, 0);
-	regfree(&re);
-		if (status) {
-			return(1);      /* Report error. */
-		}
-	return(0);
-}
-
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 {
+	using namespace boost;
+
 	int err, start, end, ret, len;
 
 	PyrSlot *a = g->sp - 3;
@@ -214,31 +202,99 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	int stringlen = end - start;
-	char *string = (char*)malloc(stringlen + 1);
-	memcpy(string, (char*)(slotRawString(b)->s) + start, stringlen);
-	string[stringlen] = 0;
 
-	char *pattern = (char*)malloc(slotRawObject(a)->size + 1);
-	err = slotStrVal(a, pattern, slotRawObject(a)->size + 1);
-	if (err) {
-		free(string);
-		free(pattern);
-		return err;
-	}
+	std::string string (slotRawString(b)->s + start, stringlen);
+	regex pattern (slotRawString(a)->s, slotRawObject(a)->size,
+		regex_constants::extended | regex_constants::nosubs);
+	match_flag_type flags = match_nosubs | match_any;
 
-	int res = matchRegexp(string, pattern);
-	free(string);
-	free(pattern);
+	bool res = regex_search(string, pattern, flags);
 
-	switch (res) {
-		 case 0 : SetTrue(a); break;
-		 case 1 : SetFalse(a); break;
-		 default : return errFailed;
-	}
+	if(res)
+		SetTrue(a);
+	else
+		SetFalse(a);
 
 	return errNone;
 }
-#endif
+
+struct sc_regexp_match {
+	int pos;
+	int len;
+};
+
+static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
+{
+	using namespace boost;
+
+	PyrSlot *a = g->sp - 2; // source string
+	PyrSlot *b = g->sp - 1; // pattern
+	PyrSlot *c = g->sp;     // offset
+
+	if (!isKindOfSlot(b, class_string) || (NotInt(c))) return errWrongType;
+
+	int offset = slotRawInt(c);
+	int stringlen = std::max(slotRawObject(a)->size - offset, 0);
+	int patternsize =  slotRawObject(b)->size + 1;
+
+	std::string string (slotRawString(a)->s + offset, stringlen);
+	// boost's ECMAScript syntax is equivalent to Perl syntax
+	regex pattern (slotRawString(b)->s, slotRawObject(b)->size, regex_constants::ECMAScript);
+	match_flag_type flags = match_default;
+
+	std::vector<sc_regexp_match> matches;
+
+	match_results<std::string::const_iterator> what;
+	std::string::const_iterator start = string.begin();
+	std::string::const_iterator end = string.end();
+	while (start <= end && regex_search(start, end, what, pattern, flags))
+	{
+		for (int i = 0; i < what.size(); ++i )
+		{
+			sc_regexp_match match;
+			if (what[i].matched) {
+				match.pos = what[i].first - string.begin();
+				match.len = what[i].second - what[i].first;
+			} else {
+				match.pos = 0;
+				match.len = 0;
+			}
+			matches.push_back(match);
+		}
+		start = what[0].second;
+		if(what[0].first == what[0].second) ++start;
+	}
+
+	int match_count = matches.size();
+
+	PyrObject *result_array = newPyrArray(g->gc, match_count, 0, true);
+	result_array->size = 0;
+	SetObject(a, result_array);
+
+	if( !match_count ) return errNone;
+
+	std::string::iterator it;
+	for (int i = 0; i < match_count; ++i )
+	{
+		int pos = matches[i].pos;
+		int len = matches[i].len;
+
+		PyrObject *array = newPyrArray(g->gc, 2, 0, true);
+		SetObject(result_array->slots + i, array);
+		result_array->size++;
+		g->gc->GCWrite(result_array, array);
+
+		PyrString *matched_string = newPyrStringN(g->gc, len, 0, true);
+		memcpy(matched_string->s, string.data() + pos, len);
+
+		array->size = 2;
+		SetInt(array->slots, pos + offset);
+		SetObject(array->slots+1, matched_string);
+		g->gc->GCWrite(array, matched_string);
+	};
+
+	return errNone;
+}
 
 int memcmpi(char *a, char *b, int len)
 {
@@ -772,9 +828,8 @@ void initStringPrimitives()
     definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
 	definePrimitive(base, index++, "_String_FindBackwards", prString_FindBackwards, 4, 0);
     definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
-#ifndef SC_WIN32
 	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 4, 0);
-#endif
+	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);

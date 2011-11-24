@@ -119,7 +119,8 @@ set(scapp_sources
 
 file(GLOB boost_system_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/system/src/*cpp)
 file(GLOB boost_fs_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/filesystem/v3/src/*cpp)
-list(APPEND scapp_sources ${boost_fs_sources} ${boost_system_sources})
+file(GLOB boost_regex_sources ${CMAKE_SOURCE_DIR}/external_libraries/boost/libs/regex/src/*cpp)
+list(APPEND scapp_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
 
 file(GLOB yaml_sources ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/src/*cpp)
 list(APPEND scapp_sources ${yaml_sources})
