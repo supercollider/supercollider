@@ -340,15 +340,17 @@ SequenceableCollection : Collection {
 		^list
 	}
 	clumps { arg groupSizeList;
-		var list, sublist, i=0;
-		list = Array.new;
-		sublist = this.species.new;
+		var i = 0;
+		var list = Array.new;
+		var subSize = groupSizeList.at(0);
+		var sublist = this.species.new(subSize);
 		this.do({ arg item;
 			sublist = sublist.add(item);
-			if (sublist.size >= groupSizeList.wrapAt(i), {
+			if (sublist.size >= subSize, {
 				i = i + 1;
 				list = list.add(sublist);
-				sublist = this.species.new;
+				subSize = groupSizeList.wrapAt(i);
+				sublist = this.species.new(subSize);
 			});
 		});
 		if (sublist.size > 0, { list = list.add(sublist); });
