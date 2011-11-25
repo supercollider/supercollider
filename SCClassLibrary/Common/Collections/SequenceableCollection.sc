@@ -327,14 +327,13 @@ SequenceableCollection : Collection {
 		^list
 	}
 	clump { arg groupSize;
-		var list, sublist;
-		list = Array.new;
-		sublist = this.species.new;
+		var list = Array.new((this.size / groupSize).roundUp.asInteger);
+		var sublist = this.species.new(groupSize);
 		this.do({ arg item;
-			sublist = sublist.add(item);
+			sublist.add(item);
 			if (sublist.size >= groupSize, {
-				list = list.add(sublist);
-				sublist = this.species.new;
+				list.add(sublist);
+				sublist = this.species.new(groupSize);
 			});
 		});
 		if (sublist.size > 0, { list = list.add(sublist); });
