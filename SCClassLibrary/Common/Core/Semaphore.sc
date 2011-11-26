@@ -8,9 +8,8 @@ Semaphore {
 		waitingThreads = LinkedList.new;
 	}
 	wait {
-		if (count > 0) {
-			count = count - 1;
-		} {
+		count = count - 1;
+		if (count < 0) {
 			waitingThreads.add(thisThread);
 			nil.yield;
 		};
