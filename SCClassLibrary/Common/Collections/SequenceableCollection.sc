@@ -341,7 +341,7 @@ SequenceableCollection : Collection {
 	}
 	clumps { arg groupSizeList;
 		var i = 0;
-		var list = Array.new(groupSizeList); // still better estimate than default
+		var list = Array.new(groupSizeList.size); // still better estimate than default
 		var subSize = groupSizeList.at(0);
 		var sublist = this.species.new(subSize);
 		this.do({ arg item;
