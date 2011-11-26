@@ -203,12 +203,13 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 
 	int stringlen = end - start;
 
-	std::string string (slotRawString(b)->s + start, stringlen);
 	regex pattern (slotRawString(a)->s, slotRawObject(a)->size,
 		regex_constants::extended | regex_constants::nosubs);
 	match_flag_type flags = match_nosubs | match_any;
 
-	bool res = regex_search(string, pattern, flags);
+	const char * stringStart = slotRawString(b)->s + start;
+	const char * stringEnd = stringStart + stringlen;
+	bool res = regex_search(stringStart, stringEnd, pattern, flags);
 
 	if(res)
 		SetTrue(a);
@@ -237,23 +238,23 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int stringlen = std::max(slotRawObject(a)->size - offset, 0);
 	int patternsize =  slotRawObject(b)->size + 1;
 
-	std::string string (slotRawString(a)->s + offset, stringlen);
 	// boost's ECMAScript syntax is equivalent to Perl syntax
 	regex pattern (slotRawString(b)->s, slotRawObject(b)->size, regex_constants::ECMAScript);
 	match_flag_type flags = match_default;
 
 	std::vector<sc_regexp_match> matches;
 
-	match_results<std::string::const_iterator> what;
-	std::string::const_iterator start = string.begin();
-	std::string::const_iterator end = string.end();
+	match_results<const char*> what;
+	const char* const stringBegin = slotRawString(a)->s + offset;
+	const char* start = stringBegin;
+	const char* end = start + stringlen;
 	while (start <= end && regex_search(start, end, what, pattern, flags))
 	{
 		for (int i = 0; i < what.size(); ++i )
 		{
 			sc_regexp_match match;
 			if (what[i].matched) {
-				match.pos = what[i].first - string.begin();
+				match.pos = what[i].first - stringBegin;
 				match.len = what[i].second - what[i].first;
 			} else {
 				match.pos = 0;
@@ -273,7 +274,6 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 
 	if( !match_count ) return errNone;
 
-	std::string::iterator it;
 	for (int i = 0; i < match_count; ++i )
 	{
 		int pos = matches[i].pos;
@@ -285,7 +285,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		g->gc->GCWrite(result_array, array);
 
 		PyrString *matched_string = newPyrStringN(g->gc, len, 0, true);
-		memcpy(matched_string->s, string.data() + pos, len);
+		memcpy(matched_string->s, stringBegin + pos, len);
 
 		array->size = 2;
 		SetInt(array->slots, pos + offset);
