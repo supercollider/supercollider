@@ -136,7 +136,7 @@ SCDocParser {
                 modalTag = nil;
                 afterClosing = true;
             },{
-                if(("[^ \\]::$".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
+                if(("\\S[^\\\\]::$".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
                     this.addText(word.drop(-2));
                     this.handleWord("::",lineno,wordno+1);
                 },{
@@ -235,7 +235,7 @@ SCDocParser {
                         this.addTag('link::',word++" ",false,\inline);
                         this.endCurrent;
                     },{
-                        if(("[^ \\]::$".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
+                        if(("\\S[^\\\\]::$".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
                             this.addText(word.drop(-2));
                             this.handleWord("::",lineno,wordno+1);
                         },{
