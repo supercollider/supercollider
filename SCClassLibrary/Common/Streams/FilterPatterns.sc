@@ -15,9 +15,9 @@ Pn : FilterPattern {
 	storeArgs { ^[pattern,repeats, key] }
 	embedInStream { | event |
 		if(key.isNil) {
-			repeats.value.do { event = pattern.embedInStream(event) };
+			repeats.value(event).do { event = pattern.embedInStream(event) };
 		} {
-			repeats.value.do {
+			repeats.value(event).do {
 				event = pattern.embedInStream(event);
 				event[key] = true;
 			};
