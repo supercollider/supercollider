@@ -172,73 +172,22 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 };
 
-int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
-{
-	using namespace boost;
-
-	int err, start, end, ret, len;
-
-	PyrSlot *a = g->sp - 3;
-	PyrSlot *b = g->sp - 2;
-	PyrSlot *c = g->sp - 1;
-	PyrSlot *d = g->sp;
-
-	if (!isKindOfSlot(b, class_string)) return errWrongType;
-	if (NotInt(c) || (NotInt(d) && NotNil(d))) return errWrongType;
-	start = slotRawInt(c);
-
-	len = slotRawObject(b)->size; // last char index instead of size
-
-	if(IsNil(d)) {
-		end = len;
-	} else {
-		end = slotRawInt(d);
-	}
-
-	if(end > len)
-		end = len;
-
-	if(end - start <= 0) {
-		SetFalse(a);
-		return errNone;
-	}
-
-	int stringlen = end - start;
-
-	regex pattern (slotRawString(a)->s, slotRawObject(a)->size,
-		regex_constants::extended | regex_constants::nosubs);
-	match_flag_type flags = match_nosubs | match_any;
-
-	const char * stringStart = slotRawString(b)->s + start;
-	const char * stringEnd = stringStart + stringlen;
-	bool res = regex_search(stringStart, stringEnd, pattern, flags);
-
-	if(res)
-		SetTrue(a);
-	else
-		SetFalse(a);
-
-	return errNone;
-}
-
-struct sc_regexp_match {
-	int pos;
-	int len;
-};
-
 namespace detail {
 
 namespace bin = boost::intrusive;
 
 class regex_lru_cache
 {
+	// boost's ECMAScript syntax is equivalent to Perl syntax
+	static const int regex_flags = boost::regex_constants::ECMAScript | boost::regex_constants::nosubs;
+
 	struct regex_node:
 		bin::list_base_hook<>,
 		bin::unordered_set_base_hook<>
 	{
 	public:
 		regex_node(const char * str, size_t size):
-			pattern(str, size, boost::regex_constants::ECMAScript)
+			pattern(str, size, regex_flags)
 		{}
 
 		boost::regex const & get (void) const
@@ -346,6 +295,60 @@ public:
 /* global cache. not threadsafe, but only called when holding the interpreter lock */
 detail::regex_lru_cache regex_lru_cache;
 
+int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
+{
+	using namespace boost;
+
+	int err, start, end, ret, len;
+
+	PyrSlot *a = g->sp - 3;
+	PyrSlot *b = g->sp - 2;
+	PyrSlot *c = g->sp - 1;
+	PyrSlot *d = g->sp;
+
+	if (!isKindOfSlot(b, class_string)) return errWrongType;
+	if (NotInt(c) || (NotInt(d) && NotNil(d))) return errWrongType;
+	start = slotRawInt(c);
+
+	len = slotRawObject(b)->size; // last char index instead of size
+
+	if(IsNil(d)) {
+		end = len;
+	} else {
+		end = slotRawInt(d);
+	}
+
+	if(end > len)
+		end = len;
+
+	if(end - start <= 0) {
+		SetFalse(a);
+		return errNone;
+	}
+
+	int stringlen = end - start;
+
+	regex const & pattern = regex_lru_cache.get_regex(slotRawString(a)->s, slotRawObject(a)->size);
+	match_flag_type flags = match_nosubs | match_any;
+
+	const char * stringStart = slotRawString(b)->s + start;
+	const char * stringEnd = stringStart + stringlen;
+	bool res = regex_search(stringStart, stringEnd, pattern, flags);
+
+	if(res)
+		SetTrue(a);
+	else
+		SetFalse(a);
+
+	return errNone;
+}
+
+struct sc_regexp_match {
+	int pos;
+	int len;
+};
+
+
 static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 {
 	using namespace boost;
@@ -360,9 +363,8 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int stringlen = std::max(slotRawObject(a)->size - offset, 0);
 	int patternsize =  slotRawObject(b)->size + 1;
 
-	// boost's ECMAScript syntax is equivalent to Perl syntax
 	regex const & pattern = regex_lru_cache.get_regex(slotRawString(b)->s, slotRawObject(b)->size);
-	match_flag_type flags = match_default;
+	match_flag_type flags = match_nosubs | match_any;
 
 	std::vector<sc_regexp_match> matches;
 
