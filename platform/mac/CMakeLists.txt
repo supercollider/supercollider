@@ -41,7 +41,6 @@ set(scapp_sources
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrPlatformPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSerialPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrStringPrim.cpp
-	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrUStringPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrSymbolPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/PyrUnixPrim.cpp
 	${CMAKE_SOURCE_DIR}/lang/LangPrimSource/SC_Speech.M
