@@ -273,10 +273,9 @@ public:
 		if (re_in_cache != re_set.end()) {
 			regex_node & node = *re_in_cache;
 			bin::list<regex_node>::iterator re_in_list = bin::list<regex_node>::s_iterator_to(node);
-			re_list.erase(re_in_list);
-			re_list.push_front(node);
 
-// 			re_list.splice(re_list.begin(), re_list, re_in_cache); // move to the begin of the list
+			re_list.splice(re_list.begin(), re_list, re_in_list); // move to the begin of the list
+			assert(&re_list.front() == &node);
 			return node.get();
 		}
 
