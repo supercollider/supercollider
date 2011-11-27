@@ -14,15 +14,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     LangSource/Bison)
 
-if(APPLE)
-	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/icu
-		"LangPrimSource/${HID_UTIL_DIR}")
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
-	find_package(ICU)
-	if (NOT ICU_FOUND)
-		message(SEND_ERROR "cannot find ICU")
-	endif()
 endif()
 
 if(APPLE)
@@ -51,7 +44,6 @@ set(sclang_sources
 	LangPrimSource/PyrListPrim.cpp
 	LangPrimSource/PyrPlatformPrim.cpp
 	LangPrimSource/PyrStringPrim.cpp
-	LangPrimSource/PyrUStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
 	LangPrimSource/PyrUnixPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
@@ -223,15 +215,6 @@ if(READLINE_FOUND)
 		PROPERTY COMPILE_DEFINITIONS HAVE_READLINE)
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
-
-if (ICU_FOUND)
-	include_directories(${ICU_INCLUDE_DIRS})
-	target_link_libraries(libsclang ${ICU_LIBRARIES} ${ICU_I18N_LIBRARIES})
-else()
-	if (APPLE)
-		target_link_libraries(libsclang icucore)
-	endif()
-endif()
 
 if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
