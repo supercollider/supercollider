@@ -79,7 +79,7 @@ ELSE(MSVC) # Unix / Cygwin / Apple / Etc.
     SET(names pthread)
 ENDIF(MSVC)
     
-FIND_LIBRARY(PTHREADS_LIBRARY ${names}
+FIND_LIBRARY(PTHREADS_LIBRARY NAMES ${names}
     DOC "The Portable Threads Library")
 
 INCLUDE(FindPackageHandleStandardArgs)
