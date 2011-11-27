@@ -179,7 +179,7 @@ namespace bin = boost::intrusive;
 class regex_lru_cache
 {
 	// boost's ECMAScript syntax is equivalent to Perl syntax
-	static const int regex_flags = boost::regex_constants::ECMAScript | boost::regex_constants::nosubs;
+	static const int regex_flags = boost::regex_constants::ECMAScript;
 
 	struct regex_node:
 		bin::list_base_hook<>,
@@ -364,7 +364,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int patternsize =  slotRawObject(b)->size + 1;
 
 	regex const & pattern = regex_lru_cache.get_regex(slotRawString(b)->s, slotRawObject(b)->size);
-	match_flag_type flags = match_nosubs | match_any;
+	match_flag_type flags = match_default;
 
 	std::vector<sc_regexp_match> matches;
 
