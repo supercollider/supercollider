@@ -42,6 +42,8 @@ Primitives for String.
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/regex.hpp>
+#include <boost/intrusive/list.hpp>
+#include <boost/intrusive/unordered_set.hpp>
 
 #include <string>
 #include <vector>
@@ -224,6 +226,126 @@ struct sc_regexp_match {
 	int len;
 };
 
+namespace detail {
+
+namespace bin = boost::intrusive;
+
+class regex_lru_cache
+{
+	struct regex_node:
+		bin::list_base_hook<>,
+		bin::unordered_set_base_hook<>
+	{
+	public:
+		regex_node(const char * str, size_t size):
+			pattern(str, size, boost::regex_constants::ECMAScript)
+		{}
+
+		boost::regex const & get (void) const
+		{
+			return pattern;
+		}
+
+	private:
+		boost::regex pattern;
+	};
+
+	struct regex_equal
+	{
+		bool operator()(regex_node const & lhs, regex_node const & rhs) const
+		{
+			return lhs.get() == rhs.get();
+		}
+
+		bool operator()(const char * lhs, regex_node const & rhs) const
+		{
+			return strcmp(lhs, rhs.get().str().c_str()) == 0;
+		}
+	};
+
+	static inline std::size_t string_hash(const char * str)
+	{
+		std::size_t ret = 0;
+
+		// sdbm hash
+		int c;
+		while ((c = *str++))
+			ret = c + (ret << 6) + (ret << 16) - ret;
+
+		return ret;
+	}
+
+	struct regex_hash
+	{
+		size_t operator()(regex_node const & arg) const
+		{
+			return string_hash(arg.get().str().c_str());
+		}
+
+		size_t operator()(const char * arg) const
+		{
+			return string_hash(arg);
+		}
+	};
+
+	typedef bin::unordered_set<regex_node, bin::equal<regex_equal>, bin::hash<regex_hash>,
+							   bin::power_2_buckets<true>, bin::constant_time_size<false> >
+							   re_set_t;
+	typedef re_set_t::bucket_type     bucket_type;
+	typedef re_set_t::bucket_traits   bucket_traits;
+	bucket_type buckets[128];
+	re_set_t re_set;
+
+	bin::list<regex_node> re_list;
+
+	void pop_lru()
+	{
+		regex_node & rlu = re_list.back();
+		re_list.pop_back();
+		re_set.erase(rlu);
+		delete &rlu;
+	}
+
+public:
+	regex_lru_cache():
+		re_set(bucket_traits(buckets, 128))
+	{}
+
+	~regex_lru_cache()
+	{
+		while (!re_list.empty()) {
+			pop_lru();
+		}
+	}
+
+	boost::regex const & get_regex(const char * str, size_t size)
+	{
+		re_set_t::iterator re_in_cache = re_set.find(str, regex_hash(), regex_equal());
+		if (re_in_cache != re_set.end()) {
+			regex_node & node = *re_in_cache;
+			bin::list<regex_node>::iterator re_in_list = bin::list<regex_node>::s_iterator_to(node);
+			re_list.erase(re_in_list);
+			re_list.push_front(node);
+
+// 			re_list.splice(re_list.begin(), re_list, re_in_cache); // move to the begin of the list
+			return node.get();
+		}
+
+		if (re_list.size() >= 64)
+			pop_lru();
+
+		regex_node * new_node = new regex_node(str, size);
+		re_set.insert(*new_node);
+		re_list.push_front(*new_node);
+		return new_node->get();
+	}
+};
+
+}
+
+/* global cache. not threadsafe, but only called when holding the interpreter lock */
+detail::regex_lru_cache regex_lru_cache;
+
 static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 {
 	using namespace boost;
@@ -239,7 +361,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int patternsize =  slotRawObject(b)->size + 1;
 
 	// boost's ECMAScript syntax is equivalent to Perl syntax
-	regex pattern (slotRawString(b)->s, slotRawObject(b)->size, regex_constants::ECMAScript);
+	regex const & pattern = regex_lru_cache.get_regex(slotRawString(b)->s, slotRawObject(b)->size);
 	match_flag_type flags = match_default;
 
 	std::vector<sc_regexp_match> matches;
