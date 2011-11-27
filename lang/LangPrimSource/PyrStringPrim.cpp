@@ -293,11 +293,11 @@ public:
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 {
 	/* not reentrant */
-    static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
+	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
 
-    using namespace boost;
+	using namespace boost;
 
-    int err, start, end, ret, len;
+	int err, start, end, ret, len;
 
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
@@ -355,9 +355,9 @@ struct sc_regexp_match {
 static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 {
 	/* not reentrant */
-    static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript);
+	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript);
 
-    using namespace boost;
+	using namespace boost;
 
 	PyrSlot *a = g->sp - 2; // source string
 	PyrSlot *b = g->sp - 1; // pattern
