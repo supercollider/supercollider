@@ -178,15 +178,14 @@ namespace bin = boost::intrusive;
 
 class regex_lru_cache
 {
-	// boost's ECMAScript syntax is equivalent to Perl syntax
-	static const int regex_flags = boost::regex_constants::ECMAScript;
+	int regex_flags;
 
 	struct regex_node:
 		bin::list_base_hook<>,
 		bin::unordered_set_base_hook<>
 	{
 	public:
-		regex_node(const char * str, size_t size):
+		regex_node(const char * str, size_t size, int regex_flags):
 			pattern(str, size, regex_flags)
 		{}
 
@@ -256,7 +255,7 @@ class regex_lru_cache
 	}
 
 public:
-	regex_lru_cache():
+    regex_lru_cache(int regex_flags = boost::regex_constants::ECMAScript):
 		re_set(bucket_traits(buckets, 128))
 	{}
 
@@ -282,7 +281,7 @@ public:
 		if (re_list.size() >= 64)
 			pop_lru();
 
-		regex_node * new_node = new regex_node(str, size);
+		regex_node * new_node = new regex_node(str, size, regex_flags);
 		re_set.insert(*new_node);
 		re_list.push_front(*new_node);
 		return new_node->get();
@@ -291,14 +290,14 @@ public:
 
 }
 
-/* global cache. not threadsafe, but only called when holding the interpreter lock */
-detail::regex_lru_cache regex_lru_cache;
-
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 {
-	using namespace boost;
+	/* not reentrant */
+    static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
 
-	int err, start, end, ret, len;
+    using namespace boost;
+
+    int err, start, end, ret, len;
 
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
@@ -355,7 +354,10 @@ struct sc_regexp_match {
 
 static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 {
-	using namespace boost;
+	/* not reentrant */
+    static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript);
+
+    using namespace boost;
 
 	PyrSlot *a = g->sp - 2; // source string
 	PyrSlot *b = g->sp - 1; // pattern
