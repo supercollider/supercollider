@@ -327,19 +327,24 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 
 	int stringlen = end - start;
 
-	regex const & pattern = regex_lru_cache.get_regex(slotRawString(a)->s, slotRawObject(a)->size);
-	match_flag_type flags = match_nosubs | match_any;
+	try {
+		regex const & pattern = regex_lru_cache.get_regex(slotRawString(a)->s, slotRawObject(a)->size);
+		match_flag_type flags = match_nosubs | match_any;
 
-	const char * stringStart = slotRawString(b)->s + start;
-	const char * stringEnd = stringStart + stringlen;
-	bool res = regex_search(stringStart, stringEnd, pattern, flags);
+		const char * stringStart = slotRawString(b)->s + start;
+		const char * stringEnd = stringStart + stringlen;
+		bool res = regex_search(stringStart, stringEnd, pattern, flags);
 
-	if(res)
-		SetTrue(a);
-	else
-		SetFalse(a);
+		if(res)
+			SetTrue(a);
+		else
+			SetFalse(a);
 
-	return errNone;
+		return errNone;
+	} catch (std::exception const & e) {
+		postfl("Warning: Exception in _String_Regexp - %s\n", e.what());
+		return errFailed;
+	}
 }
 
 struct sc_regexp_match {
@@ -362,31 +367,35 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int stringlen = std::max(slotRawObject(a)->size - offset, 0);
 	int patternsize =  slotRawObject(b)->size + 1;
 
-	regex const & pattern = regex_lru_cache.get_regex(slotRawString(b)->s, slotRawObject(b)->size);
-	match_flag_type flags = match_default;
-
 	std::vector<sc_regexp_match> matches;
-
-	match_results<const char*> what;
 	const char* const stringBegin = slotRawString(a)->s + offset;
-	const char* start = stringBegin;
-	const char* end = start + stringlen;
-	while (start <= end && regex_search(start, end, what, pattern, flags))
-	{
-		for (int i = 0; i < what.size(); ++i )
+	try {
+		regex const & pattern = regex_lru_cache.get_regex(slotRawString(b)->s, slotRawObject(b)->size);
+		match_flag_type flags = match_default;
+
+		match_results<const char*> what;
+		const char* start = stringBegin;
+		const char* end = start + stringlen;
+		while (start <= end && regex_search(start, end, what, pattern, flags))
 		{
-			sc_regexp_match match;
-			if (what[i].matched) {
-				match.pos = what[i].first - stringBegin;
-				match.len = what[i].second - what[i].first;
-			} else {
-				match.pos = 0;
-				match.len = 0;
+			for (int i = 0; i < what.size(); ++i )
+			{
+				sc_regexp_match match;
+				if (what[i].matched) {
+					match.pos = what[i].first - stringBegin;
+					match.len = what[i].second - what[i].first;
+				} else {
+					match.pos = 0;
+					match.len = 0;
+				}
+				matches.push_back(match);
 			}
-			matches.push_back(match);
+			start = what[0].second;
+			if(what[0].first == what[0].second) ++start;
 		}
-		start = what[0].second;
-		if(what[0].first == what[0].second) ++start;
+	} catch (std::exception const & e) {
+		postfl("Warning: Exception in _String_FindRegexp - %s\n", e.what());
+		return errFailed;
 	}
 
 	int match_count = matches.size();
