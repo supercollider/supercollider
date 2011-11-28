@@ -12,8 +12,9 @@ PlusFreqScope {
 	var <>specialSynthDef, <specialSynthArgs; // Allows to override the analysis synth
 
 	*initClass {
-		server = Server.internal;   // FIXME: Some systems don't have an internal server
 		StartUp.add {
+			server = if (GUI.id == \qt) {Server.default} {Server.internal};
+
 			this.initSynthDefs;
 		}
 	}
@@ -39,6 +40,19 @@ PlusFreqScope {
 			phasor = phasor.round(2); // the evens are magnitude
 			ScopeOut.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
 		}).add;
+		SynthDef("freqScope0_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02;
+			var signal, chain, result, phasor, numSamples, mul, add;
+			var fftbufnum = LocalBuf(fftBufSize, 1);
+			mul = 0.00285;
+			numSamples = (BufSamples.kr(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
+			signal = In.ar(in);
+			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = PV_MagSmear(chain, 1);
+			// -1023 to 1023, 0 to 2046, 2 to 2048 (skip first 2 elements DC and Nyquist)
+			phasor = LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, numSamples, numSamples + 2);
+			phasor = phasor.round(2); // the evens are magnitude
+			ScopeOut2.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize);
+		}).add;
 
 		// logarithmic
 		SynthDef("freqScope1", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02;
@@ -52,6 +66,19 @@ PlusFreqScope {
 			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
 			phasor = phasor.round(2); // the evens are magnitude
 			ScopeOut.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
+		}).add;
+
+		SynthDef("freqScope1_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02;
+			var signal, chain, result, phasor, halfSamples, mul, add;
+			var fftbufnum = LocalBuf(fftBufSize, 1);
+			mul = 0.00285;
+			halfSamples = BufSamples.kr(fftbufnum) * 0.5;
+			signal = In.ar(in);
+			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = PV_MagSmear(chain, 1);
+			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
+			phasor = phasor.round(2); // the evens are magnitude
+			ScopeOut2.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize);
 		}).add;
 
 		// These next two are based on the original two, but adapted by Dan Stowell
@@ -76,6 +103,26 @@ PlusFreqScope {
 			ScopeOut.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
 		}).add;
 
+		SynthDef("freqScope0_magresponse_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02, in2=1;
+			var signal, chain, result, phasor, numSamples, mul, add;
+			var signal2, chain2, divisionbuf;
+			var fftbufnum = LocalBuf(fftBufSize, 1);
+			mul = 0.00285;
+			numSamples = (BufSamples.kr(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
+			signal = In.ar(in);
+			signal2 = In.ar(in2);
+			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			divisionbuf = LocalBuf(BufFrames.ir(fftbufnum));
+			chain2 = FFT(divisionbuf, signal2, hop: 0.75, wintype:1);
+			// Here we perform complex division to estimate the freq response
+			chain = PV_Div(chain2, chain);
+			chain = PV_MagSmear(chain, 1);
+			// -1023 to 1023, 0 to 2046, 2 to 2048 (skip first 2 elements DC and Nyquist)
+			phasor = LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, numSamples, numSamples + 2);
+			phasor = phasor.round(2); // the evens are magnitude
+			ScopeOut2.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize);
+		}).add;
+
 		SynthDef("freqScope1_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02, in2=1;
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var signal2, chain2, divisionbuf;
@@ -94,10 +141,33 @@ PlusFreqScope {
 			phasor = phasor.round(2); // the evens are magnitude
 			ScopeOut.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum);
 		}).add;
+
+		SynthDef("freqScope1_magresponse_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02, in2=1;
+			var signal, chain, result, phasor, halfSamples, mul, add;
+			var signal2, chain2, divisionbuf;
+			var fftbufnum = LocalBuf(fftBufSize, 1);
+			mul = 0.00285;
+			halfSamples = BufSamples.kr(fftbufnum) * 0.5;
+			signal = In.ar(in);
+			signal2 = In.ar(in2);
+			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			divisionbuf = LocalBuf(BufFrames.ir(fftbufnum));
+			chain2 = FFT(divisionbuf, signal2, hop: 0.75, wintype:1);
+			// Here we perform complex division to estimate the freq response
+			chain = PV_Div(chain2, chain);
+			chain = PV_MagSmear(chain, 1);
+			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
+			phasor = phasor.round(2); // the evens are magnitude
+			ScopeOut2.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize);
+		}).add;
 	}
 
 	initFreqScope { arg parent, bounds;
-		scope = ScopeView(parent, bounds);
+		if ((GUI.id == \qt) and: {server.isLocal}) {
+			scope = QScope2(parent, bounds);
+		} {
+			scope = ScopeView(parent, bounds);
+		};
 
 		active = false;
 		inBus = 0;
@@ -110,14 +180,20 @@ PlusFreqScope {
 	}
 
 	allocBuffersAndStart {
-		Buffer.alloc(server, bufSize/4, 1, { |sbuf|
-			scope.bufnum = sbuf.bufnum;
-			("FreqScope: Buffer allocated ("
+		if (server.isLocal) {
+			scopebuf = ScopeBuffer.alloc(server);
+			scope.bufnum = scopebuf.bufnum;
+			this.start;
+		} {
+			Buffer.alloc(server, bufSize/4, 1, { |sbuf|
+				scope.bufnum = sbuf.bufnum;
+				("FreqScope: Buffer allocated ("
 					++ sbuf.bufnum.asString ++ ")").postln;
 
-			scopebuf = sbuf;
-			this.start;
-		});
+				scopebuf = sbuf;
+				this.start;
+			});
+		}
 	}
 
 	freeBuffers {
@@ -128,7 +204,7 @@ PlusFreqScope {
 	}
 
 	start {
-		var defname = specialSynthDef ?? {"freqScope" ++ freqMode.asString};
+		var defname = specialSynthDef ?? {"freqScope" ++ freqMode.asString ++ if (server.isLocal) {"_shm"} {""}};
 		var args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
 		synth = Synth.tail(RootNode(server), defname, args);

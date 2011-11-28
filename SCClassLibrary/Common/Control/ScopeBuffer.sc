@@ -17,6 +17,11 @@ ScopeBuffer {
 		^super.newCopyArgs(index, numChannels, server ? Server.default)
 	}
 
+	// compatibility method
+	bufnum {
+		^index;
+	}
+
 	free {
 		if (index.isNil) {
 			(this.asString + " has already been freed").warn;
