@@ -11,7 +11,7 @@ QStethoscope2 {
 
   // other objects
   var <server, port;
-  var <bufnum, <bufsize;
+  var scopeBuffer, <bufsize;
   var <bus;
   var aBusSpec, cBusSpec, busSpec;
 
@@ -22,14 +22,14 @@ QStethoscope2 {
 
   *new {
     arg server, numChannels = 2, index = 0, bufsize = 4096,
-        cycle = 1024, rate = \audio, view, bufnum = 0;
+        cycle = 1024, rate = \audio, view;
 
     var bus = Bus(rate, index, numChannels, server);
 
-    ^super.new.initQStethoscope( server, view, bus, bufnum, bufsize, cycle );
+    ^super.new.initQStethoscope( server, view, bus, bufsize, cycle );
   }
 
-  initQStethoscope { arg server_, parent, bus_, bufnum_, bufsize_, cycle_;
+  initQStethoscope { arg server_, parent, bus_, bufsize_, cycle_;
     var singleBus;
 
     server = server_;
@@ -42,7 +42,7 @@ QStethoscope2 {
     };
     if( port.isNil ) {^this};
 
-    bufnum = bufnum_;
+    scopeBuffer = ScopeBuffer.alloc(server_, bus_.numChannels);
     bufsize = max(bufsize_, 128);
 
     bus = bus_;
@@ -83,7 +83,7 @@ QStethoscope2 {
       // WIDGETS
 
       scopeView = QScope2();
-      scopeView.setProperty(\bufferNumber, bufnum);
+      scopeView.setProperty(\bufferNumber, scopeBuffer.index);
       scopeView.setProperty(\channelCount, this.numChannels);
       scopeView.canFocus = true;
 
@@ -137,7 +137,7 @@ QStethoscope2 {
       rateMenu.action = { |me| setRate.value(me.value) };
       styleMenu.action = { |me| setStyle.value(me.value) };
       view.asView.keyDownAction = { |v, char| this.keyDown(char) };
-      view.onClose = { this.stop };
+      view.onClose = { this.stop; scopeBuffer.free; };
 
       // LAUNCH
 
@@ -231,7 +231,7 @@ QStethoscope2 {
       })
       .play(
         RootNode(server),
-        [\bufnum, bufnum, \in, bus.index, \frames, cycle,
+        [\bufnum, scopeBuffer.index, \in, bus.index, \frames, cycle,
           \switch, if('audio' === bus.rate) { 0 } { 1 } ],
         \addToTail
       );
@@ -240,7 +240,7 @@ QStethoscope2 {
         var z = [];
         bus.do { |b| z = z ++ b.ar };
         z.postln;
-        ScopeOut2.ar(z, bufnum, frames);
+        ScopeOut2.ar(z, scopeBuffer.index, frames);
       })
       .play( RootNode(server), [\frames, cycle], \addToTail );
     };
@@ -257,6 +257,7 @@ QStethoscope2 {
     this.stop;
     if( view.notNil ) {view.close};
     window = nil;
+    scopeBuffer.free;
   }
 
   isRunning {
