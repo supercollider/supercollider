@@ -322,7 +322,7 @@ Server {
 	}
 
 	newScopeBufferAllocators {
-		if (serverInterface.notNil) {
+		if (isLocal) {
 			scopeBufferAllocator = ContiguousBlockAllocator.new(128);
 		}
 	}
