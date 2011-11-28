@@ -19,7 +19,7 @@ method::removeAll
 Removes all objects that have been registered.
 
 method::doOnce
-Registers an object o be evaluated once, and then unregistered.
+Registers an object to be evaluated once, and then unregistered.
 
 method::objects
 Get or set the list of objects that are called when CmdPeriod is evaluated.
