@@ -37,12 +37,18 @@ Primitives for String.
 # include "SC_Win32Utils.h"
 #else
 # include <sys/param.h>
-# include <regex.h>
 #endif
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/regex.hpp>
+#include <boost/intrusive/list.hpp>
+#include <boost/intrusive/unordered_set.hpp>
 
+#include <string>
+#include <vector>
+
+using namespace std;
 
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
@@ -166,26 +172,131 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 };
 
-// no regular expressions for windows yet
-// include pcer at one point...
-#ifndef SC_WIN32
-int matchRegexp(char *string, char *pattern)
+namespace detail {
+
+namespace bin = boost::intrusive;
+
+class regex_lru_cache
 {
-	int    status;
-	regex_t    re;
-	if (regcomp(&re, pattern, REG_EXTENDED|REG_NOSUB) != 0) {
-		return(2);      /* Report error. */
-	}
-	status = regexec(&re, string, (size_t) 0, NULL, 0);
-	regfree(&re);
-		if (status) {
-			return(1);      /* Report error. */
+	int regex_flags;
+
+	struct regex_node:
+		bin::list_base_hook<>,
+		bin::unordered_set_base_hook<>
+	{
+	public:
+		regex_node(const char * str, size_t size, int regex_flags):
+			pattern(str, size, regex_flags)
+		{}
+
+		boost::regex const & get (void) const
+		{
+			return pattern;
 		}
-	return(0);
+
+	private:
+		boost::regex pattern;
+	};
+
+	struct regex_equal
+	{
+		bool operator()(regex_node const & lhs, regex_node const & rhs) const
+		{
+			return lhs.get() == rhs.get();
+		}
+
+		bool operator()(const char * lhs, regex_node const & rhs) const
+		{
+			return strcmp(lhs, rhs.get().str().c_str()) == 0;
+		}
+	};
+
+	static inline std::size_t string_hash(const char * str)
+	{
+		std::size_t ret = 0;
+
+		// sdbm hash
+		int c;
+		while ((c = *str++))
+			ret = c + (ret << 6) + (ret << 16) - ret;
+
+		return ret;
+	}
+
+	struct regex_hash
+	{
+		size_t operator()(regex_node const & arg) const
+		{
+			return string_hash(arg.get().str().c_str());
+		}
+
+		size_t operator()(const char * arg) const
+		{
+			return string_hash(arg);
+		}
+	};
+
+	typedef bin::unordered_set<regex_node, bin::equal<regex_equal>, bin::hash<regex_hash>,
+							   bin::power_2_buckets<true>, bin::constant_time_size<false> >
+							   re_set_t;
+	typedef re_set_t::bucket_type     bucket_type;
+	typedef re_set_t::bucket_traits   bucket_traits;
+	bucket_type buckets[128];
+	re_set_t re_set;
+
+	bin::list<regex_node> re_list;
+
+	void pop_lru()
+	{
+		regex_node & rlu = re_list.back();
+		re_list.pop_back();
+		re_set.erase(rlu);
+		delete &rlu;
+	}
+
+public:
+    regex_lru_cache(int regex_flags = boost::regex_constants::ECMAScript):
+		re_set(bucket_traits(buckets, 128))
+	{}
+
+	~regex_lru_cache()
+	{
+		while (!re_list.empty()) {
+			pop_lru();
+		}
+	}
+
+	boost::regex const & get_regex(const char * str, size_t size)
+	{
+		re_set_t::iterator re_in_cache = re_set.find(str, regex_hash(), regex_equal());
+		if (re_in_cache != re_set.end()) {
+			regex_node & node = *re_in_cache;
+			bin::list<regex_node>::iterator re_in_list = bin::list<regex_node>::s_iterator_to(node);
+
+			re_list.splice(re_list.begin(), re_list, re_in_list); // move to the begin of the list
+			assert(&re_list.front() == &node);
+			return node.get();
+		}
+
+		if (re_list.size() >= 64)
+			pop_lru();
+
+		regex_node * new_node = new regex_node(str, size, regex_flags);
+		re_set.insert(*new_node);
+		re_list.push_front(*new_node);
+		return new_node->get();
+	}
+};
+
 }
 
 int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 {
+	/* not reentrant */
+	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
+
+	using namespace boost;
+
 	int err, start, end, ret, len;
 
 	PyrSlot *a = g->sp - 3;
@@ -214,31 +325,110 @@ int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	int stringlen = end - start;
-	char *string = (char*)malloc(stringlen + 1);
-	memcpy(string, (char*)(slotRawString(b)->s) + start, stringlen);
-	string[stringlen] = 0;
 
-	char *pattern = (char*)malloc(slotRawObject(a)->size + 1);
-	err = slotStrVal(a, pattern, slotRawObject(a)->size + 1);
-	if (err) {
-		free(string);
-		free(pattern);
-		return err;
+	try {
+		regex const & pattern = regex_lru_cache.get_regex(slotRawString(a)->s, slotRawObject(a)->size);
+		match_flag_type flags = match_nosubs | match_any;
+
+		const char * stringStart = slotRawString(b)->s + start;
+		const char * stringEnd = stringStart + stringlen;
+		bool res = regex_search(stringStart, stringEnd, pattern, flags);
+
+		if(res)
+			SetTrue(a);
+		else
+			SetFalse(a);
+
+		return errNone;
+	} catch (std::exception const & e) {
+		postfl("Warning: Exception in _String_Regexp - %s\n", e.what());
+		return errFailed;
+	}
+}
+
+struct sc_regexp_match {
+	int pos;
+	int len;
+};
+
+
+static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
+{
+	/* not reentrant */
+	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript);
+
+	using namespace boost;
+
+	PyrSlot *a = g->sp - 2; // source string
+	PyrSlot *b = g->sp - 1; // pattern
+	PyrSlot *c = g->sp;     // offset
+
+	if (!isKindOfSlot(b, class_string) || (NotInt(c))) return errWrongType;
+
+	int offset = slotRawInt(c);
+	int stringlen = std::max(slotRawObject(a)->size - offset, 0);
+	int patternsize =  slotRawObject(b)->size + 1;
+
+	std::vector<sc_regexp_match> matches;
+	const char* const stringBegin = slotRawString(a)->s + offset;
+	try {
+		regex const & pattern = regex_lru_cache.get_regex(slotRawString(b)->s, slotRawObject(b)->size);
+		match_flag_type flags = match_default;
+
+		match_results<const char*> what;
+		const char* start = stringBegin;
+		const char* end = start + stringlen;
+		while (start <= end && regex_search(start, end, what, pattern, flags))
+		{
+			for (int i = 0; i < what.size(); ++i )
+			{
+				sc_regexp_match match;
+				if (what[i].matched) {
+					match.pos = what[i].first - stringBegin;
+					match.len = what[i].second - what[i].first;
+				} else {
+					match.pos = 0;
+					match.len = 0;
+				}
+				matches.push_back(match);
+			}
+			start = what[0].second;
+			if(what[0].first == what[0].second) ++start;
+		}
+	} catch (std::exception const & e) {
+		postfl("Warning: Exception in _String_FindRegexp - %s\n", e.what());
+		return errFailed;
 	}
 
-	int res = matchRegexp(string, pattern);
-	free(string);
-	free(pattern);
+	int match_count = matches.size();
 
-	switch (res) {
-		 case 0 : SetTrue(a); break;
-		 case 1 : SetFalse(a); break;
-		 default : return errFailed;
-	}
+	PyrObject *result_array = newPyrArray(g->gc, match_count, 0, true);
+	result_array->size = 0;
+	SetObject(a, result_array);
+
+	if( !match_count ) return errNone;
+
+	for (int i = 0; i < match_count; ++i )
+	{
+		int pos = matches[i].pos;
+		int len = matches[i].len;
+
+		PyrObject *array = newPyrArray(g->gc, 2, 0, true);
+		SetObject(result_array->slots + i, array);
+		result_array->size++;
+		g->gc->GCWrite(result_array, array);
+
+		PyrString *matched_string = newPyrStringN(g->gc, len, 0, true);
+		memcpy(matched_string->s, stringBegin + pos, len);
+
+		array->size = 2;
+		SetInt(array->slots, pos + offset);
+		SetObject(array->slots+1, matched_string);
+		g->gc->GCWrite(array, matched_string);
+	};
 
 	return errNone;
 }
-#endif
 
 int memcmpi(char *a, char *b, int len)
 {
@@ -772,9 +962,8 @@ void initStringPrimitives()
     definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
 	definePrimitive(base, index++, "_String_FindBackwards", prString_FindBackwards, 4, 0);
     definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
-#ifndef SC_WIN32
 	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 4, 0);
-#endif
+	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
