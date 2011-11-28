@@ -51,7 +51,7 @@ PlusFreqScope {
 			// -1023 to 1023, 0 to 2046, 2 to 2048 (skip first 2 elements DC and Nyquist)
 			phasor = LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, numSamples, numSamples + 2);
 			phasor = phasor.round(2); // the evens are magnitude
-			ScopeOut2.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize);
+			ScopeOut2.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize/rate);
 		}).add;
 
 		// logarithmic
@@ -78,7 +78,7 @@ PlusFreqScope {
 			chain = PV_MagSmear(chain, 1);
 			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
 			phasor = phasor.round(2); // the evens are magnitude
-			ScopeOut2.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize);
+			ScopeOut2.ar( ((BufRd.ar(1, fftbufnum, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize/rate);
 		}).add;
 
 		// These next two are based on the original two, but adapted by Dan Stowell
@@ -120,7 +120,7 @@ PlusFreqScope {
 			// -1023 to 1023, 0 to 2046, 2 to 2048 (skip first 2 elements DC and Nyquist)
 			phasor = LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, numSamples, numSamples + 2);
 			phasor = phasor.round(2); // the evens are magnitude
-			ScopeOut2.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize);
+			ScopeOut2.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize/rate);
 		}).add;
 
 		SynthDef("freqScope1_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, phase=1, dbFactor = 0.02, in2=1;
@@ -158,13 +158,14 @@ PlusFreqScope {
 			chain = PV_MagSmear(chain, 1);
 			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.kr(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
 			phasor = phasor.round(2); // the evens are magnitude
-			ScopeOut2.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize);
+			ScopeOut2.ar( ((BufRd.ar(1, divisionbuf, phasor, 1, 1) * mul).ampdb * dbFactor) + 1, scopebufnum, fftBufSize/rate);
 		}).add;
 	}
 
 	initFreqScope { arg parent, bounds;
 		if ((GUI.id == \qt) and: {server.isLocal}) {
-			scope = QScope2(parent, bounds);
+			scope = \QScope2.asClass.new(parent, bounds);
+			scope.server = server;
 		} {
 			scope = ScopeView(parent, bounds);
 		};
@@ -189,7 +190,6 @@ PlusFreqScope {
 				scope.bufnum = sbuf.bufnum;
 				("FreqScope: Buffer allocated ("
 					++ sbuf.bufnum.asString ++ ")").postln;
-
 				scopebuf = sbuf;
 				this.start;
 			});
@@ -208,6 +208,7 @@ PlusFreqScope {
 		var args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
 		synth = Synth.tail(RootNode(server), defname, args);
+		if (scope.class.name === \QScope2) { scope.start };
 	}
 
 	kill {
@@ -229,6 +230,7 @@ PlusFreqScope {
 				});
 			}, {
 				if(active, {
+					if (scope.class.name === \QScope2) { scope.stop };
 					synth.free;
 					CmdPeriod.remove(this);
 				});
