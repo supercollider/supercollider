@@ -903,7 +903,11 @@ Server {
 			if(recordNode.isNil){
 				recordNode = Synth.tail(RootNode(this), "server-record",
 						[\bufnum, recordBuf.bufnum]);
-			}{
+				CmdPeriod.doOnce {
+					recordNode = nil;
+					if (recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
+				}
+			} {
 				recordNode.run(true)
 			};
 			"Recording: %\n".postf(recordBuf.path);
@@ -947,14 +951,10 @@ Server {
 		SynthDef("server-record", { arg bufnum;
 			DiskOut.ar(bufnum, In.ar(0, recChannels))
 		}).send(this);
-		// cmdPeriod support
-		CmdPeriod.add(this);
 	}
 
 	// CmdPeriod support for Server-scope and Server-record and Server-volume
 	cmdPeriod {
-		if(recordNode.notNil) { recordNode = nil; };
-		if(recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
 		addr = addr.recover;
 		this.changed(\cmdPeriod);
 	}
