@@ -14,7 +14,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     LangSource/Bison)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+if(APPLE)
+	include_directories("LangPrimSource/${HID_UTIL_DIR}")
+elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 endif()
 
