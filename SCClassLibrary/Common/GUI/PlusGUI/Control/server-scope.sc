@@ -1,9 +1,9 @@
 + Server {
-	scope { arg numChannels, index = 0, bufsize = 4096, zoom, rate;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = 1, rate = \audio;
 		numChannels = (numChannels ? 2).min(16);
 		if(scopeWindow.isNil) {
 			if ((GUI.id == \qt) and: (this.isLocal)) {
-				scopeWindow = QStethoscope2(this, numChannels, index, bufsize, 1024, rate);
+				scopeWindow = QStethoscope2(this, numChannels, index, bufsize, 1024 * zoom.asFloat.reciprocal, rate);
 			} {
 				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
 					this.options.numBuffers);
