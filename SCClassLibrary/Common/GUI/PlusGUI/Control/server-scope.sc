@@ -1,14 +1,14 @@
 + Server {
-
-	scope { arg numChannels, index, bufsize = 4096, zoom, rate;
-		var gui;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom, rate;
 		numChannels = (numChannels ? 2).min(16);
 		if(scopeWindow.isNil) {
-			gui = GUI.current;
-			scopeWindow =
-				gui.stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil,
+			if ((GUI.id == \qt) and: (this.isLocal)) {
+				scopeWindow = QStethoscope2(this, numChannels, index, bufsize, 1024, rate);
+			} {
+				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
 					this.options.numBuffers);
-					// prevent buffer conflicts by using reserved bufnum
+				// prevent buffer conflicts by using reserved bufnum
+			};
 			CmdPeriod.add(this);
 		} {
 			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
