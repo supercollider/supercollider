@@ -4129,9 +4129,6 @@ void initPlatformPrimitives();
 void initStringPrimitives();
 	initStringPrimitives();
 
-void initUStringPrimitives();
-	initUStringPrimitives();
-
 void initListPrimitives();
 	initListPrimitives();
 

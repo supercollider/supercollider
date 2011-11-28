@@ -15,14 +15,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     LangSource/Bison)
 
 if(APPLE)
-	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/icu
-		"LangPrimSource/${HID_UTIL_DIR}")
+	include_directories("LangPrimSource/${HID_UTIL_DIR}")
 elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
-	find_package(ICU)
-	if (NOT ICU_FOUND)
-		message(SEND_ERROR "cannot find ICU")
-	endif()
 endif()
 
 if(APPLE)
@@ -51,7 +46,6 @@ set(sclang_sources
 	LangPrimSource/PyrListPrim.cpp
 	LangPrimSource/PyrPlatformPrim.cpp
 	LangPrimSource/PyrStringPrim.cpp
-	LangPrimSource/PyrUStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
 	LangPrimSource/PyrUnixPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
@@ -91,7 +85,8 @@ set(sclang_sources
 
 file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
 file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/v3/src/*cpp)
-list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources})
+file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
+list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
 
 file(GLOB yaml_sources ../external_libraries/yaml-cpp-0.2.6/src/*cpp)
 list(APPEND sclang_sources ${yaml_sources})
@@ -222,15 +217,6 @@ if(READLINE_FOUND)
 		PROPERTY COMPILE_DEFINITIONS HAVE_READLINE)
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
-
-if (ICU_FOUND)
-	include_directories(${ICU_INCLUDE_DIRS})
-	target_link_libraries(libsclang ${ICU_LIBRARIES} ${ICU_I18N_LIBRARIES})
-else()
-	if (APPLE)
-		target_link_libraries(libsclang icucore)
-	endif()
-endif()
 
 if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
