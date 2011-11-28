@@ -10,7 +10,7 @@ QStethoscope2 {
   var cycleSpec, yZoomSpec;
 
   // other objects
-  var <server, port;
+  var <server;
   var scopeBuffer, <bufsize;
   var <bus;
   var aBusSpec, cBusSpec, busSpec;
@@ -33,14 +33,6 @@ QStethoscope2 {
     var singleBus;
 
     server = server_;
-    if( server.inProcess ) {
-        port = thisProcess.pid;
-    }{
-      if( server.isLocal ) {
-        port = server.addr.port;
-      }
-    };
-    if( port.isNil ) {^this};
 
     scopeBuffer = ScopeBuffer.alloc(server_, bus_.numChannels);
     bufsize = max(bufsize_, 128);
@@ -83,8 +75,8 @@ QStethoscope2 {
       // WIDGETS
 
       scopeView = QScope2();
-      scopeView.setProperty(\bufferNumber, scopeBuffer.index);
-      scopeView.setProperty(\channelCount, this.numChannels);
+      scopeView.bufnum = scopeBuffer.index;
+      scopeView.server = server;
       scopeView.canFocus = true;
 
       cycleSlider = QSlider().orientation_(\horizontal).value_(cycleSpec.unmap(cycle));
@@ -217,8 +209,7 @@ QStethoscope2 {
   run {
     this.stop;
 
-    scopeView.setProperty(\serverPort, port);
-    scopeView.invokeMethod(\start);
+    scopeView.start;
 
     if( bus.class === Bus ) {
       synth = SynthDef("stethoscope", { arg in, switch, frames, bufnum;
@@ -248,7 +239,7 @@ QStethoscope2 {
   }
 
   stop {
-    scopeView.invokeMethod(\stop);
+    scopeView.stop;
     if( synthStatus.value ) { synth.free };
     synth = nil;
   }
