@@ -341,6 +341,9 @@ void AudioSessionAudioRouteChangeCbk(void *inClientData, AudioSessionPropertyID 
 		from = [s stringByAppendingString:@"/JITLib"];
 		dest = [dir stringByAppendingString:@"/JITLib"];
 		[manager copyItemAtPath:from toPath:dest error:&error];
+		from = [s stringByAppendingString:@"/SCDoc"];
+		dest = [dir stringByAppendingString:@"/SCDoc"];
+		[manager copyItemAtPath:from toPath:dest error:&error];
 	}
 	dir = [support stringByAppendingString:@"/sounds"];
 	if (![manager fileExistsAtPath:dir])
