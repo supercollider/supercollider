@@ -308,7 +308,7 @@ PlusFreqScopeWindow {
 	classvar <scopeOpen;
 	var <scope, <window;
 
-	*new { arg width=512, height=300, busNum=0, scopeColor, bgColor;
+	*new { arg width=522, height=300, busNum=0, scopeColor, bgColor;
 		var rect, scope, window, pad, font, freqLabel, freqLabelDist, dbLabel, dbLabelDist;
 		var setFreqLabelVals, setDBLabelVals;
 		var nyquistKHz;
@@ -321,8 +321,8 @@ PlusFreqScopeWindow {
 			if(bgColor.isNil, { bgColor = Color.green(0.1) });
 
 			rect = Rect(0, 0, width, height);
-			pad = [30, 38, 14, 10]; // l,r,t,b
-			font = Font("Monaco", 9);
+			pad = [30, 48, 14, 10]; // l,r,t,b
+			font = Font.monospace(9);
 			freqLabel = Array.newClear(12);
 			freqLabelDist = rect.width/(freqLabel.size-1);
 			dbLabel = Array.newClear(17);
