@@ -160,11 +160,11 @@ void QcScopeShm::paintEvent ( QPaintEvent * event )
 
 void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int frameCount, QPainter & painter )
 {
-  if( _availableFrames < 2 ) return;
-
   //qcDebugMsg( 0, tr("Drawing: data %1 / channels %2 / max-size %3").arg(_data!=0).arg(chanCount).arg(maxFrames) );
 
   QRect area = rect();
+  if( frameCount < 2 || area.width() < 1 || area.height() < 1 ) return;
+
   float yRatio = - yZoom * area.height() * 0.5;
   if( !overlapped ) yRatio /= chanCount;
   float yHeight = area.height();
@@ -197,7 +197,8 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
   else
   {
     int w = area.width();
-    float ppf = ((float) w) / frameCount;
+    float fpp = frameCount / (float) w; // frames per x pixel
+    float ypix = yRatio != 0.f ? -1/yRatio : 0.f; // value per y pixel;
 
     for( int ch = 0; ch < chanCount; ch++ )
     {
@@ -208,25 +209,33 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
       painter.save();
       painter.translate( area.x(), area.y() + yOrigin );
       painter.scale( 1, yRatio );
-      painter.setPen(color);
+      QPen pen(color);
+      pen.setWidth(0);
+      painter.setPen(pen);
 
       int p=0, f=1; // pixel, frame
+      float min, max;
+      min = max = frameData[0];
+
       while( p++ < w )
       {
-        float min, max;
-        // include the previous frame to ensure continuity
-        min = max = frameData[f-1];
+        int f_max = fpp * p;
 
-        for(; f * ppf < p; ++f)
+        for(; f < f_max; ++f)
         {
           float d = frameData[f];
           if( d < min ) min = d;
-          else if( d > max ) max = d;
+          if( d > max ) max = d;
         }
 
-        qreal pix = p-1;
-        QLineF line( pix, min, pix, max );
+        qreal x = p-1;
+        QLineF line( x, min, x, max );
         painter.drawLine( line );
+
+        // flip min/max to ensure continuity (expand by one pixel worth of value)
+        float val = min;
+        min = max + ypix;
+        max = val - ypix;
       }
 
       painter.restore();
