@@ -40,9 +40,7 @@
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>NSMainNibFile</key>
-	<array>
-		<string>audio</string>
-	</array>
+	<string>SuperCollider_MainWindow</string>
 	<key>NSMainNibFile~ipad</key>
 	<string>SuperCollider_MainWindow_iPad</string>
 </dict>

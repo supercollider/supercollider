@@ -98,6 +98,10 @@
 		77724C6B0EABF92400732A1C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77724C6A0EABF92400732A1C /* AudioToolbox.framework */; };
 		77724C6D0EABF92400732A1C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77724C6C0EABF92400732A1C /* CoreAudio.framework */; };
 		778F12530F50A72900CB6629 /* synthdefs in CopyFiles */ = {isa = PBXBuildFile; fileRef = 778F12510F50A72900CB6629 /* synthdefs */; };
+		7796FF7C148D8D12003E89BB /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = 7796FF6C148D8D12003E89BB /* Makefile */; };
+		7796FF7D148D8D12003E89BB /* tlsf.c in Sources */ = {isa = PBXBuildFile; fileRef = 7796FF6E148D8D12003E89BB /* tlsf.c */; };
+		7796FF81148D8D5C003E89BB /* scope_buffer.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 7796FF7F148D8D5C003E89BB /* scope_buffer.hpp */; };
+		7796FF82148D8D5C003E89BB /* server_shm.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 7796FF80148D8D5C003E89BB /* server_shm.hpp */; };
 		77A489390FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib in Resources */ = {isa = PBXBuildFile; fileRef = 77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */; };
 		77A4896A0FBFAA1000E909E1 /* iscsynth_MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */; };
 		77AA93A40EB368B700DC0BCB /* SC_AllocPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 777249810EABE96E00732A1C /* SC_AllocPool.cpp */; };
@@ -134,6 +138,7 @@
 		77AA94C70EB3692900DC0BCB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77724C6A0EABF92400732A1C /* AudioToolbox.framework */; };
 		77AA94C80EB3692900DC0BCB /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77724C6C0EABF92400732A1C /* CoreAudio.framework */; };
 		77BA5027129C364A00CE89DD /* FileBrowserViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 77BA5026129C364A00CE89DD /* FileBrowserViewController.mm */; };
+		77DFCE04148D864900237C94 /* libsndfile_iphone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 775995B312FDE5B000603187 /* libsndfile_iphone.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -345,6 +350,12 @@
 		778F12440F50A70400CB6629 /* iscsynth.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = iscsynth.plist; path = "iPhone Resources/iscsynth.plist"; sourceTree = "<group>"; };
 		778F12450F50A70400CB6629 /* iscsynth_MainWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = iscsynth_MainWindow.xib; path = "iPhone Resources/iscsynth_MainWindow.xib"; sourceTree = "<group>"; };
 		778F12510F50A72900CB6629 /* synthdefs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = synthdefs; path = "iPhone Resources/synthdefs"; sourceTree = "<group>"; };
+		7796FF6C148D8D12003E89BB /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		7796FF6D148D8D12003E89BB /* target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = target.h; sourceTree = "<group>"; };
+		7796FF6E148D8D12003E89BB /* tlsf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tlsf.c; sourceTree = "<group>"; };
+		7796FF6F148D8D12003E89BB /* tlsf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tlsf.h; sourceTree = "<group>"; };
+		7796FF7F148D8D5C003E89BB /* scope_buffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = scope_buffer.hpp; sourceTree = "<group>"; };
+		7796FF80148D8D5C003E89BB /* server_shm.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = server_shm.hpp; sourceTree = "<group>"; };
 		77A489370FBFA8DA00E909E1 /* SuperCollider_FileTransfer.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SuperCollider_FileTransfer.xib; path = "iPhone Resources/SuperCollider_FileTransfer.xib"; sourceTree = "<group>"; };
 		77AA93920EB3685400DC0BCB /* libscsynth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libscsynth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		77AB4FC112FB38AC00810BCF /* vec_base.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec_base.hpp; sourceTree = "<group>"; };
@@ -379,6 +390,7 @@
 				77AA94C60EB3692900DC0BCB /* CoreGraphics.framework in Frameworks */,
 				77AA94C70EB3692900DC0BCB /* AudioToolbox.framework in Frameworks */,
 				77AA94C80EB3692900DC0BCB /* CoreAudio.framework in Frameworks */,
+				77DFCE04148D864900237C94 /* libsndfile_iphone.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -505,6 +517,7 @@
 		7752329F12F5924A005AE5FE /* external_libraries */ = {
 			isa = PBXGroup;
 			children = (
+				7796FF5E148D8D12003E89BB /* TLSF-2.4.6 */,
 				775232A412F5926C005AE5FE /* nova-simd */,
 			);
 			name = external_libraries;
@@ -570,6 +583,8 @@
 				777249860EABE96E00732A1C /* SC_StringBuffer.cpp */,
 				777249870EABE96E00732A1C /* SC_StringParser.cpp */,
 				777249880EABE96E00732A1C /* SC_Win32Utils.cpp */,
+				7796FF7F148D8D5C003E89BB /* scope_buffer.hpp */,
+				7796FF80148D8D5C003E89BB /* server_shm.hpp */,
 				777249890EABE96E00732A1C /* scsynthsend.cpp */,
 			);
 			name = common;
@@ -721,6 +736,25 @@
 			path = ../editors/scapp/iPhone;
 			sourceTree = "<group>";
 		};
+		7796FF5E148D8D12003E89BB /* TLSF-2.4.6 */ = {
+			isa = PBXGroup;
+			children = (
+				7796FF6B148D8D12003E89BB /* src */,
+			);
+			path = "TLSF-2.4.6";
+			sourceTree = "<group>";
+		};
+		7796FF6B148D8D12003E89BB /* src */ = {
+			isa = PBXGroup;
+			children = (
+				7796FF6C148D8D12003E89BB /* Makefile */,
+				7796FF6D148D8D12003E89BB /* target.h */,
+				7796FF6E148D8D12003E89BB /* tlsf.c */,
+				7796FF6F148D8D12003E89BB /* tlsf.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -728,6 +762,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7796FF81148D8D5C003E89BB /* scope_buffer.hpp in Headers */,
+				7796FF82148D8D5C003E89BB /* server_shm.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -869,6 +905,8 @@
 				77476EA012FDE633007449B3 /* FFTInterfaceTable.cpp in Sources */,
 				77476EA412FDE651007449B3 /* PartitionedConvolution.cpp in Sources */,
 				77476EA512FDE652007449B3 /* PV_UGens.cpp in Sources */,
+				7796FF7C148D8D12003E89BB /* Makefile in Sources */,
+				7796FF7D148D8D12003E89BB /* tlsf.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1007,11 +1045,13 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/iphone/lib\"",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				SYMROOT = build_iphone;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1037,12 +1077,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
+					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/iphone/lib\"",
 				);
 				OBJROOT = "$(SYMROOT)";
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				SYMROOT = build_iphone;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -1053,10 +1095,14 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_VERSION = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = ../../external_libraries/libsndfile;
+				HEADER_SEARCH_PATHS = (
+					../../external_libraries/libsndfile,
+					../../external_libraries/boost,
+					../../external_libraries/boost_lockfree,
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
@@ -1071,10 +1117,14 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_VERSION = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = ../../external_libraries/libsndfile;
+				HEADER_SEARCH_PATHS = (
+					../../external_libraries/libsndfile,
+					../../external_libraries/boost,
+					../../external_libraries/boost_lockfree,
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				PREBINDING = NO;
 				SDKROOT = iphoneos;
