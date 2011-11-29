@@ -26,6 +26,7 @@
 
 #include <QPainter>
 #include <QTimer>
+#include <QResizeEvent>
 
 static QcWidgetFactory<QcScopeShm> factory;
 
@@ -43,9 +44,13 @@ QcScopeShm::QcScopeShm() :
   _style( 0 ),
   _bkg( QColor(0,0,0) )
 {
+  setAttribute( Qt::WA_OpaquePaintEvent, true );
+  setAutoFillBackground(false);
+
+  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+
   timer = new QTimer( this );
   timer->setInterval( 50 );
-  setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
   connect( timer, SIGNAL( timeout() ), this, SLOT( updateScope() ) );
 }
 
@@ -137,32 +142,50 @@ void QcScopeShm::updateScope()
   }
 }
 
+void QcScopeShm::resizeEvent ( QResizeEvent * ev )
+{
+  _pixmap = QPixmap(ev->size());
+}
+
 void QcScopeShm::paintEvent ( QPaintEvent * event )
 {
   Q_UNUSED( event );
 
-  QPainter p( this );
-  QRect area = rect();
-  p.fillRect( area, _bkg );
+  QPainter p;
 
-  if( !_running || !_availableFrames ) return;
+  _pixmap.fill( _bkg );
 
-  int chanCount = _shm->reader.channels();
-  int maxFrames = _shm->reader.max_frames();
+  if( _running && _availableFrames ) {
 
-  if( _style == 0 )
-    paint1D( false, chanCount, maxFrames, _availableFrames, p );
-  else if( _style == 1 )
-    paint1D( true, chanCount, maxFrames, _availableFrames, p );
-  else if( _style == 2 )
-    paint2D( chanCount, maxFrames, _availableFrames, p );
+    int chanCount = _shm->reader.channels();
+    int maxFrames = _shm->reader.max_frames();
+    QRect area (_pixmap.rect());
+    p.begin(&_pixmap);
+
+    switch (_style) {
+      case 0:
+        paint1D( false, chanCount, maxFrames, _availableFrames, area, p );
+        break;
+      case 1:
+        paint1D( true, chanCount, maxFrames, _availableFrames, area, p );
+        break;
+      case 2:
+        paint2D( chanCount, maxFrames, _availableFrames, area, p );
+        break;
+    }
+
+    p.end();
+  }
+
+  p.begin(this);
+  p.drawPixmap(0, 0, _pixmap);
 }
 
-void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int frameCount, QPainter & painter )
+void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int frameCount,
+                          const QRect &area, QPainter & painter )
 {
   //qcDebugMsg( 0, tr("Drawing: data %1 / channels %2 / max-size %3").arg(_data!=0).arg(chanCount).arg(maxFrames) );
 
-  QRect area = rect();
   if( frameCount < 2 || area.width() < 1 || area.height() < 1 ) return;
 
   float yRatio = - yZoom * area.height() * 0.5;
@@ -243,11 +266,11 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
   }
 }
 
-void QcScopeShm::paint2D( int chanCount, int maxFrames, int frameCount, QPainter & painter )
+void QcScopeShm::paint2D( int chanCount, int maxFrames, int frameCount,
+                          const QRect &area, QPainter & painter )
 {
   QColor color = colors.count() ? colors[0] : QColor(255,255,255);
 
-  QRect area = rect();
   int minSize = qMin( area.width(), area.height() );
   // NOTE: use yZoom for both axis, since both represent value, as opposed to index
   float xRatio = yZoom * minSize * 0.5;
