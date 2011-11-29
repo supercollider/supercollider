@@ -78,14 +78,15 @@ class QcScopeShm : public QWidget, QcHelper
     void start();
     void stop();
   protected:
-    void paintEvent ( QPaintEvent * event );
+    void resizeEvent ( QResizeEvent * );
+    void paintEvent ( QPaintEvent * );
   private Q_SLOTS:
     void updateScope();
   private:
     void connectSharedMemory( int port );
     void initScopeReader( ScopeShm *, int index );
-    void paint1D( bool overlapped, int channels, int maxFrames, int frames, QPainter & );
-    void paint2D( int channels, int maxFrames, int frames, QPainter & );
+    void paint1D( bool overlapped, int channels, int maxFrames, int frames, const QRect &area, QPainter & );
+    void paint2D( int channels, int maxFrames, int frames, const QRect &area, QPainter & );
 
     int _srvPort;
     int _scopeIndex;
@@ -104,6 +105,8 @@ class QcScopeShm : public QWidget, QcHelper
     int _style;
     QList<QColor> colors;
     QColor _bkg;
+
+    QPixmap _pixmap;
 };
 
 #endif
