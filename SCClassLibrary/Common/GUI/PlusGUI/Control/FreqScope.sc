@@ -271,10 +271,10 @@ PlusFreqScope {
 			CmdPeriod.remove(this);
 			active = false;
 			// needs to be deferred to build up synth again properly
-			fork {
+			{
 				server.sync;
 				this.active_(true);
-			}
+			}.fork(AppClock)
 		});
 	}
 
