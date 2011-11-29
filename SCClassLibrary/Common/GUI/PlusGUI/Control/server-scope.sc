@@ -5,7 +5,7 @@
 
 		if(scopeWindow.isNil) {
 			if ((GUI.id == \qt) and: (this.isLocal)) {
-				scopeWindow = QStethoscope2(this, numChannels, index, bufsize, 1024 * zoom.asFloat.reciprocal, rate);
+				scopeWindow = \QStethoscope2.asClass.new(this, numChannels, index, bufsize, 1024 * zoom.asFloat.reciprocal, rate);
 			} {
 				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
 					this.options.numBuffers);
