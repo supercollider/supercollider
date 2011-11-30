@@ -14,7 +14,7 @@ IODesc {
 SynthDesc {
 	classvar <>mdPlugin, <>populateMetadataFunc;
 
-	var <>name, <>controlNames;
+	var <>name, <>controlNames, <>indicesOfControlNames;
 	var <>controls, <>inputs, <>outputs;
 	var <>metadata;
 
@@ -87,6 +87,7 @@ SynthDesc {
 
 		inputs = [];
 		outputs = [];
+		indicesOfControlNames = IdentityDictionary.new;
 
 		name = stream.getPascalString;
 
@@ -114,6 +115,7 @@ SynthDesc {
 				controlIndex = stream.getInt16;
 				controls[controlIndex].name = controlName;
 				controlNames = controlNames.add(controlName);
+				indicesOfControlNames = indicesOfControlNames.put(controlName.asSymbol, controlIndex);
 			};
 
 		numUGens = stream.getInt16;
