@@ -51,16 +51,6 @@
 }
 
 + PageLayout {
-	asFlowView { arg bounds;
-		^if(bounds.notNil,{
-			FlowView(this,bounds)
-		},{
-			this.view
-		})
-
-		//bounds = bounds ?? {this.view.bounds};
-		//^FlowView(this.view,this.layRight(bounds.width - 10,bounds.height - 10))
-	}
 
 	flow { arg func,bounds;
 		^this.view.flow(func,bounds)
