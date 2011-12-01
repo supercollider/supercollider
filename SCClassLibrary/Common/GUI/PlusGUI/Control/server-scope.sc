@@ -11,6 +11,7 @@
 					this.options.numBuffers);
 				// prevent buffer conflicts by using reserved bufnum
 			};
+			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
 			CmdPeriod.add(this);
 		} {
 			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
