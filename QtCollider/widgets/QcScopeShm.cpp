@@ -231,10 +231,11 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
 
       painter.save();
       painter.translate( area.x(), area.y() + yOrigin );
-      painter.scale( 1, yRatio );
       QPen pen(color);
-      pen.setWidth(0);
+      pen.setCapStyle( Qt::FlatCap );
       painter.setPen(pen);
+
+      QPainterPath path;
 
       int p=0, f=1; // pixel, frame
       float min, max;
@@ -252,14 +253,18 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
         }
 
         qreal x = p-1;
-        QLineF line( x, min, x, max );
-        painter.drawLine( line );
+        float y = max * yRatio;
+        path.moveTo( x, y );
+        y = qMax( min * yRatio, y+1 );
+        path.lineTo( x, y );
 
-        // flip min/max to ensure continuity (expand by one pixel worth of value)
+        // flip min/max to ensure continuity
         float val = min;
-        min = max + ypix;
-        max = val - ypix;
+        min = max;
+        max = val;
       }
+
+      painter.drawPath(path);
 
       painter.restore();
     }
