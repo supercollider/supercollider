@@ -1,24 +1,25 @@
 QStethoscope2 {
   // internal functions
-  var makeGui, run, synthStatus, setCycle, setYZoom, setIndex, setNumChannels,
+  var playSynthDef, makeGui, setCycle, setYZoom, setIndex, setNumChannels,
       setRate, setStyle, updateColors;
 
   // gui objects
   var <window, <view, <scopeView, cycleSlider, yZoomSlider,
       idxNumBox, chNumBox, styleMenu, rateMenu;
 
-  var cycleSpec, yZoomSpec;
-
-  // other objects
+  // static (immutable runtime environment)
   var <server;
-  var scopeBuffer, <bufsize;
-  var <bus;
-  var aBusSpec, cBusSpec, busSpec;
+  var scopeBuffer, maxBufSize;
+  var aBusSpec, cBusSpec, cycleSpec, yZoomSpec;
+  var <>smallSize, <>largeSize;
 
-  // runtime
+  // runtime (mutable at runtime)
+  var <bus; // partly immutable; can't change numChannels at runtime
+  var busSpec; // either aBusSpec or cBusSpec, depending on bus rate
   var  <cycle, <yZoom;
-  var sizeToggle=false, <>smallSize, <>largeSize;
-  var synth;
+  var synth, synthWatcher, defName;
+  var sizeToggle=false;
+  var running = false;
 
   *new {
     arg server, numChannels = 2, index = 0, bufsize = 4096,
@@ -34,8 +35,7 @@ QStethoscope2 {
 
     server = server_;
 
-    scopeBuffer = ScopeBuffer.alloc(server_, bus_.numChannels);
-    bufsize = max(bufsize_, 128);
+    maxBufSize = max(bufsize_, 128);
 
     bus = bus_;
     singleBus = bus.class === Bus;
@@ -46,18 +46,16 @@ QStethoscope2 {
       busSpec = if(bus.rate===\audio){aBusSpec}{cBusSpec};
     };
 
+    cycleSpec = ControlSpec( 64, maxBufSize, \exponential );
+    yZoomSpec = ControlSpec( 0.125, 16, \exponential );
+    cycle = cycleSpec.constrain(cycle_);
+    yZoom = yZoomSpec.unmap(1.0);
+
     smallSize = Size(250,250);
     largeSize = Size(500,500);
 
     makeGui = { arg parent;
-      var view, gizmo;
-
-      // SETTINGS
-
-      cycleSpec = ControlSpec( 64, bufsize, \exponential );
-      yZoomSpec = ControlSpec( 0.125, 16, \exponential );
-      cycle = cycleSpec.constrain(cycle_);
-      yZoom = yZoomSpec.unmap(1.0);
+      var gizmo;
 
       // WINDOW, WRAPPER VIEW
 
@@ -75,7 +73,6 @@ QStethoscope2 {
       // WIDGETS
 
       scopeView = QScope2();
-      scopeView.bufnum = scopeBuffer.index;
       scopeView.server = server;
       scopeView.canFocus = true;
 
@@ -129,22 +126,17 @@ QStethoscope2 {
       rateMenu.action = { |me| setRate.value(me.value) };
       styleMenu.action = { |me| setStyle.value(me.value) };
       view.asView.keyDownAction = { |v, char| this.keyDown(char) };
-      view.onClose = { this.stop; scopeBuffer.free; };
+      view.onClose = { view = nil; this.quit; };
 
       // LAUNCH
 
-      updateColors.value;
       scopeView.focus;
       if( window.notNil ) { window.front };
     };
 
-    synthStatus = { synth.notNil and: {synth.isPlaying} };
-
     setCycle = { arg val;
       cycle = val;
-      if( synthStatus.value ) {
-        synth.set(\frames, val)
-      }
+      if( synth.notNil ) { synth.set(\frames, val) }
     };
 
     setYZoom = { arg val;
@@ -155,7 +147,7 @@ QStethoscope2 {
     // NOTE: assuming a single Bus
     setIndex = { arg i;
       bus = Bus(bus.rate, i, bus.numChannels, bus.server);
-      if(synthStatus.value) { synth.set(\in, i) };
+      if(synth.notNil) { synth.set(\in, i) };
     };
 
     // NOTE: assuming a single Bus
@@ -164,7 +156,6 @@ QStethoscope2 {
       this.stop;
       bus = Bus(bus.rate, bus.index, n, bus.server);
       this.run;
-      updateColors.value;
     };
 
     // NOTE: assuming a single Bus
@@ -173,12 +164,12 @@ QStethoscope2 {
         0, {
           bus = Bus(\audio, bus.index, bus.numChannels, bus.server);
           busSpec = aBusSpec;
-          if(synthStatus.value) { synth.set(\switch, 0) };
+          if(synth.notNil) { synth.set(\switch, 0) };
         },
         1, {
           bus = Bus(\control, bus.index, bus.numChannels, bus.server);
           busSpec = cBusSpec;
-          if(synthStatus.value) { synth.set(\switch, 1) };
+          if(synth.notNil) { synth.set(\switch, 1) };
         }
       );
       idxNumBox.clipLo_(busSpec.minval).clipHi_(busSpec.maxval).value_(bus.index);
@@ -202,86 +193,174 @@ QStethoscope2 {
       scopeView.waveColors = colors;
     };
 
+    playSynthDef = { arg def, args;
+      if( synthWatcher.notNil ) {synthWatcher.stop};
+      synthWatcher = fork {
+        def.send(server);
+        server.sync;
+        synth = Synth.tail(RootNode(server), def.name, args);
+        CmdPeriod.add(this);
+        {if(view.notNil){updateColors.value; scopeView.start}}.defer;
+      };
+    };
+
     makeGui.value(parent);
+
+    ServerBoot.add(this, server);
+    ServerQuit.add(this, server);
     this.run;
   }
 
-  run {
-    this.stop;
+  doOnServerBoot {
+      this.run;
+  }
 
-    scopeView.start;
+  doOnServerQuit {
+      this.stop;
+      scopeBuffer.free;
+      scopeBuffer = nil;
+  }
+
+  cmdPeriod {
+    synth = nil;
+    this.stop;
+    CmdPeriod.remove(this);
+  }
+
+  run {
+    var n_chan, bus_i, rate_switch, n_frames;
+
+    if(running || server.serverRunning.not) {^this};
+
+    if(scopeBuffer.isNil){
+      scopeBuffer = ScopeBuffer.alloc(server);
+      scopeView.bufnum = scopeBuffer.index;
+      defName = "stethoscope" ++ scopeBuffer.index.asString;
+    };
 
     if( bus.class === Bus ) {
-      synth = SynthDef("stethoscope", { arg in, switch, frames, bufnum;
-        var z;
-        z = Select.ar(switch, [
-          In.ar(in, bus.numChannels.asInteger),
-          K2A.ar(In.kr(in, bus.numChannels.asInteger))]
-        );
-        ScopeOut2.ar(z, bufnum, frames );
-      })
-      .play(
-        RootNode(server),
-        [\bufnum, scopeBuffer.index, \in, bus.index, \frames, cycle,
-          \switch, if('audio' === bus.rate) { 0 } { 1 } ],
-        \addToTail
-      );
+      n_chan = this.numChannels.asInteger;
+      bus_i = bus.index;
+      rate_switch = if('audio' === bus.rate) { 0 } { 1 };
+      n_frames = cycle;
+      playSynthDef.value (
+        SynthDef(defName, { arg in, switch, frames;
+          var z;
+          z = Select.ar(switch, [
+            In.ar(in, n_chan),
+            K2A.ar(In.kr(in, n_chan))]
+          );
+          ScopeOut2.ar(z, scopeBuffer.index, frames );
+        }),
+        [\in, bus_i, \switch, rate_switch, \frames, n_frames]
+      )
     }{
-      synth = SynthDef("stethoscope", { arg frames;
-        var z = [];
-        bus.do { |b| z = z ++ b.ar };
-        z.postln;
-        ScopeOut2.ar(z, scopeBuffer.index, frames);
-      })
-      .play( RootNode(server), [\frames, cycle], \addToTail );
+      n_frames = cycle;
+      playSynthDef.value (
+        SynthDef(defName, { arg frames;
+          var z = Array(n_chan);
+          bus.do { |b| z = z ++ b.ar };
+          ScopeOut2.ar(z, scopeBuffer.index, frames);
+        }),
+        [\frames, n_frames]
+      );
     };
-    NodeWatcher.register(synth);
+
+    running = true;
   }
 
   stop {
-    scopeView.stop;
-    if( synthStatus.value ) { synth.free };
-    synth = nil;
+    if( view.notNil ) { scopeView.stop };
+
+    if( synthWatcher.notNil ) { synthWatcher.stop };
+
+    if( synth.notNil ) {
+      synth.free;
+      synth = nil;
+    };
+
+    running = false;
   }
 
   quit {
     this.stop;
-    if( view.notNil ) {view.close};
-    window = nil;
-    scopeBuffer.free;
+    ServerBoot.remove(this, server);
+    ServerQuit.remove(this, server);
+    CmdPeriod.remove(this);
+    if(scopeBuffer.notNil) {scopeBuffer.free; scopeBuffer=nil};
+    if(window.notNil) { window.close; window = nil };
   }
 
-  isRunning {
-    ^scopeView.getProperty(\running) == true;
+  setProperties { arg numChannels, index, bufsize=4096, zoom, rate;
+      var new_bus;
+      var isRunning = running;
+
+      if (isRunning) {this.stop};
+
+      // process args
+
+      if(index.notNil || numChannels.notNil || rate.notNil) {
+        bus = if(bus.class === Bus) {
+            Bus (
+              rate ? bus.rate,
+              index ? bus.index,
+              numChannels ? bus.numChannels,
+              server
+            )
+        }{
+            Bus (
+              rate ? \audio,
+              index ? 0,
+              numChannels ? 2,
+              server
+            )
+        };
+      };
+      if(bufsize.notNil) { maxBufSize = max(bufsize, 128) };
+      if(zoom.notNil) { yZoom = yZoomSpec.constrain(zoom) };
+
+      // set other vars related to args
+
+      busSpec = if(bus.rate === \audio) {aBusSpec} {cBusSpec};
+      cycleSpec = ControlSpec( 64, maxBufSize, \exponential );
+      cycle = cycleSpec.constrain(cycle);
+
+      // update GUI
+
+      yZoomSlider.value = yZoom;
+      cycleSlider.value = cycleSpec.unmap(cycle);
+      rateMenu.value_(if(bus.rate === \audio){0}{1}).enabled_(true);
+      idxNumBox.clipLo_(busSpec.minval).clipHi_(busSpec.maxval).value_(bus.index).enabled_(true);
+      chNumBox.value_(bus.numChannels).enabled_(true);
+      scopeView.yZoom = yZoomSpec.map(yZoom);
+
+      if (isRunning) {this.run};
   }
+
+  bufsize { ^maxBufSize }
 
   bus_ { arg b;
     var isSingle = b.class === Bus;
-    var isRunning = this.isRunning;
+    var isRunning = running;
 
     if (isRunning) {this.stop};
 
     bus = b;
 
     if( isSingle ) {
-      rateMenu.value = if(b.rate===\audio){0}{1};
-      idxNumBox.value = b.index;
-      chNumBox.value = b.numChannels;
       busSpec = if(bus.rate === \audio) {aBusSpec} {cBusSpec};
+      rateMenu.value = if(b.rate===\audio){0}{1};
       idxNumBox.clipLo_(busSpec.minval).clipHi_(busSpec.maxval).value_(bus.index);
+      chNumBox.value = b.numChannels;
     }{
+      busSpec = nil;
       rateMenu.value = nil;
       idxNumBox.string = "-";
       chNumBox.string = "-";
-      busSpec = nil;
     };
     rateMenu.enabled = isSingle;
     idxNumBox.enabled = isSingle;
     chNumBox.enabled = isSingle;
-
-    scopeView.setProperty(\channelCount, this.numChannels);
-
-    updateColors.value;
 
     if (isRunning) {this.run};
   }
