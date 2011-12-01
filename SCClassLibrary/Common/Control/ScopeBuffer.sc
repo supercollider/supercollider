@@ -13,7 +13,7 @@ ScopeBuffer {
 		^this.new(alloc, numChannels, server)
 	}
 
-	*new { arg rate=\audio, index=0, numChannels=1, server;
+	*new { arg index=0, numChannels=1, server;
 		^super.newCopyArgs(index, numChannels, server ? Server.default)
 	}
 
