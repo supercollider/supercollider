@@ -6,6 +6,10 @@ ControlName
 		^super.newCopyArgs(name.asSymbol, index, rate, defaultValue, argNum, lag ? 0.0)
 	}
 
+	numChannels {
+		^defaultValue.asArray.size;
+	}
+
 	printOn { arg stream;
 		stream << "ControlName  P " << index.asString;
 		if (name.notNil) { stream << " " << name; };
@@ -26,7 +30,7 @@ Control : MultiOutUGen {
 		names = names.asArray;
 		names.do { |name, i|
 			synthDef.addControlName(
-				ControlName(name.asString, index + i, 'control',
+				ControlName(name, index + i, 'control',
 					nil, synthDef.allControlNames.size)
 			);
 		};
@@ -73,7 +77,7 @@ AudioControl : MultiOutUGen {
 		names = names.asArray;
 		names.do { |name, i|
 			synthDef.addControlName(
-				ControlName(name.asString, index + i, 'audio',
+				ControlName(name, index + i, 'audio',
 					nil, synthDef.allControlNames.size)
 			);
 		};
