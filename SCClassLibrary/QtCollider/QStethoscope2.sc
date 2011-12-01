@@ -26,6 +26,7 @@ QStethoscope2 {
         cycle = 1024, rate = \audio, view;
 
     var bus = Bus(rate, index, numChannels, server);
+    if(server.isNil) {server = Server.default};
 
     ^super.new.initQStethoscope( server, view, bus, bufsize, cycle );
   }
