@@ -12,7 +12,7 @@
 				// prevent buffer conflicts by using reserved bufnum
 			};
 			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
-			CmdPeriod.add(this);
+			ServerTree.add(this, this);
 		} {
 			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
 			scopeWindow.run;

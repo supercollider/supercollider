@@ -956,11 +956,10 @@ Server {
 		if(recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
 		addr = addr.recover;
 		this.changed(\cmdPeriod);
-		if(scopeWindow.notNil) {
-			fork { 0.5.wait; scopeWindow.run } // wait until synth is freed
-		}{
-			CmdPeriod.remove(this)
-		};
+	}
+
+	doOnServerTree {
+		if(scopeWindow.notNil) { scopeWindow.run }
 	}
 
 	defaultGroup { ^Group.basicNew(this, 1) }
