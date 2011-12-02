@@ -131,6 +131,9 @@ private:
 
 		uint asset_size = channels * size;
 		_data = (float*)pool.allocate( asset_size * 3 * sizeof(float) );
+		if (_data == NULL)
+			return false;
+
 		_state[0].data = _data;
 		_state[1].data = _data + asset_size;
 		_state[2].data = _data + asset_size + asset_size;
