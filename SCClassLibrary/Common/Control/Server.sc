@@ -151,7 +151,8 @@ ServerOptions
 		^numOutputBusChannels + numInputBusChannels
 	}
 
-	numAudioBusChannels_{
+	numAudioBusChannels_{|num|
+		this.numPrivateAudioBusChannels = num - (numInputBusChannels + numOutputBusChannels);
 		this.deprecated(thisMethod);
 	}
 
