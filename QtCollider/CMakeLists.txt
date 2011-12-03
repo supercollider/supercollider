@@ -31,6 +31,7 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/widgets/QcCanvas.h
   ${QT_COLLIDER_DIR}/widgets/QcSoundFileView.h
   ${QT_COLLIDER_DIR}/widgets/QcFileDialog.h
+  ${QT_COLLIDER_DIR}/widgets/QcPenPrinter.h
   ${QT_COLLIDER_DIR}/widgets/QcWebView.h
   ${QT_COLLIDER_DIR}/widgets/QcWindow.h
   ${QT_COLLIDER_DIR}/layouts/layouts.hpp
@@ -68,6 +69,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/QcCanvas.cpp
   ${QT_COLLIDER_DIR}/widgets/QcSoundFileView.cpp
   ${QT_COLLIDER_DIR}/widgets/QcFileDialog.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcPenPrinter.cpp
   ${QT_COLLIDER_DIR}/widgets/QcWebView.cpp
   ${QT_COLLIDER_DIR}/layouts/classic_layouts.cpp
   ${QT_COLLIDER_DIR}/layouts/layouts.cpp
