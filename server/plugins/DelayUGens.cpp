@@ -5057,7 +5057,6 @@ struct ScopeOut2 : public Unit
 	ScopeBufferHnd m_buffer;
 	float **m_inBuffers;
 	int m_maxPeriod;
-	int m_period;
 	uint32 m_phase;
 };
 
@@ -5066,13 +5065,13 @@ void ScopeOut2_next(ScopeOut2 *unit, int inNumSamples)
 {
 	if( !unit->m_buffer ) return;
 
-	const int inputOffset = 2;
-	int numChannels = unit->mNumInputs - 2;
+	const int inputOffset = 3;
+	int numChannels = unit->mNumInputs - inputOffset;
 
-	uint period = (uint32_t)ZIN0(1);
+	uint32 period = (uint32)ZIN0(2);
 	uint32 framepos = unit->m_phase;
 
-	period = std::max((uint)inNumSamples, std::min(unit->m_buffer.maxFrames, period));
+	period = std::max((uint32)inNumSamples, std::min(unit->m_buffer.maxFrames, period));
 
 	if( framepos >= period ) framepos = 0;
 
@@ -5106,16 +5105,13 @@ void ScopeOut2_next(ScopeOut2 *unit, int inNumSamples)
 		framepos = wrap;
 
 	unit->m_phase = framepos;
-	unit->m_period = period;
 }
 
 void ScopeOut2_Ctor(ScopeOut2 *unit)
 {
-	uint32 numChannels = unit->mNumInputs - 2;
-	uint32_t scopeNum = (uint32_t)ZIN0(0);
-	int period = (uint32_t)ZIN0(1);
-
-	static const int maxFrames = 8192;
+	uint32 numChannels = unit->mNumInputs - 3;
+	uint32 scopeNum = (uint32)ZIN0(0);
+	uint32 maxFrames = (uint32)ZIN0(1);
 
 	bool ok = (*ft->fGetScopeBuffer)(unit->mWorld, scopeNum, numChannels, maxFrames, unit->m_buffer);
 
@@ -5125,7 +5121,6 @@ void ScopeOut2_Ctor(ScopeOut2 *unit)
 				  scopeNum, numChannels, maxFrames);
 	}
 	else {
-		unit->m_period = std::max(0, std::min(maxFrames, period));
 		unit->m_phase = 0;
 	}
 
