@@ -121,12 +121,12 @@ ScopeOut : UGen {
 }
 
 ScopeOut2 : UGen {
-	*ar { arg inputArray, scopeNum=0, scopeFrames = 1024;
-		this.multiNewList(['audio', scopeNum, scopeFrames] ++ inputArray.asArray);
+	*ar { arg inputArray, scopeNum=0, maxFrames = 4096, scopeFrames;
+		this.multiNewList(['audio', scopeNum, maxFrames, scopeFrames ? maxFrames] ++ inputArray.asArray);
 		^0.0
 	}
-	*kr { arg inputArray, scopeNum=0, scopeFrames = 1024;
-		this.multiNewList(['control', scopeNum, scopeFrames] ++ inputArray.asArray);
+	*kr { arg inputArray, scopeNum=0, maxFrames = 4096, scopeFrames;
+		this.multiNewList(['control', scopeNum, maxFrames, scopeFrames ? maxFrames] ++ inputArray.asArray);
 		^0.0
 	}
 }

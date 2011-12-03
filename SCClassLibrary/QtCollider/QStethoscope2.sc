@@ -229,7 +229,7 @@ QStethoscope2 {
   }
 
   run {
-    var n_chan, bus_i, rate_switch, n_frames;
+    var n_chan;
 
     if(running || server.serverRunning.not) {^this};
 
@@ -239,11 +239,9 @@ QStethoscope2 {
       defName = "stethoscope" ++ scopeBuffer.index.asString;
     };
 
+    n_chan = this.numChannels.asInteger;
+
     if( bus.class === Bus ) {
-      n_chan = this.numChannels.asInteger;
-      bus_i = bus.index;
-      rate_switch = if('audio' === bus.rate) { 0 } { 1 };
-      n_frames = cycle;
       playSynthDef.value (
         SynthDef(defName, { arg in, switch, frames;
           var z;
@@ -251,19 +249,18 @@ QStethoscope2 {
             In.ar(in, n_chan),
             K2A.ar(In.kr(in, n_chan))]
           );
-          ScopeOut2.ar(z, scopeBuffer.index, frames );
+          ScopeOut2.ar(z, scopeBuffer.index, maxBufSize, frames );
         }),
-        [\in, bus_i, \switch, rate_switch, \frames, n_frames]
+        [\in, bus.index, \switch, if('audio' === bus.rate){0}{1}, \frames, cycle]
       )
     }{
-      n_frames = cycle;
       playSynthDef.value (
         SynthDef(defName, { arg frames;
           var z = Array(n_chan);
           bus.do { |b| z = z ++ b.ar };
-          ScopeOut2.ar(z, scopeBuffer.index, frames);
+          ScopeOut2.ar(z, scopeBuffer.index, maxBufSize, frames);
         }),
-        [\frames, n_frames]
+        [\frames, cycle]
       );
     };
 
