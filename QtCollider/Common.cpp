@@ -25,7 +25,7 @@ void QtCollider::runLang (
   ++g->sp;  SetObject(g->sp, receiver);
   Q_FOREACH( QVariant var, args ) {
     ++g->sp;
-    if( Slot::setVariant( g->sp, var ) )
+    if( !Slot::setVariant( g->sp, var ) )
       SetNil( g->sp );
   }
   runInterpreter(g, method, args.size() + 1);

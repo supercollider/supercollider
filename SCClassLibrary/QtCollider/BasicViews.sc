@@ -154,11 +154,11 @@ QScrollView : QAbstractScroll {
   }
 
   innerBounds {
-    ^this.getProperty( \innerBounds, Rect.new );
+    ^this.getProperty( \innerBounds );
   }
 
   visibleOrigin {
-    ^this.getProperty( \visibleOrigin, Point.new );
+    ^this.getProperty( \visibleOrigin );
   }
 
   visibleOrigin_ { arg point;

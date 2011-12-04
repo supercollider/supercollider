@@ -25,13 +25,13 @@ QScrollTopView : QScrollView {
 
   bounds {
     var r;
-    r = this.getProperty( \geometry, Rect.new );
+    r = this.getProperty( \geometry );
     ^r.moveTo(0,0);
   }
 
   bounds_ { arg rect;
     var rNew = rect.asRect;
-    var rOld = this.getProperty( \geometry, Rect.new );
+    var rOld = this.getProperty( \geometry );
     this.setProperty( \geometry, rOld.resizeTo( rNew.width, rNew.height ) );
   }
 
@@ -55,13 +55,13 @@ QTopView : QView {
 
   bounds {
     var r;
-    r = this.getProperty( \geometry, Rect.new );
+    r = this.getProperty( \geometry );
     ^r.moveTo(0,0);
   }
 
   bounds_ { arg rect;
     var rNew = rect.asRect;
-    var rOld = this.getProperty( \geometry, Rect.new );
+    var rOld = this.getProperty( \geometry );
     this.setProperty( \geometry, rOld.resizeTo( rNew.width, rNew.height ) );
   }
 
@@ -93,11 +93,11 @@ QWindow
   }
 
   *screenBounds {
-    ^this.prScreenBounds( Rect.new );
+    _QWindow_ScreenBounds
   }
 
   *availableBounds {
-    ^this.prAvailableBounds( Rect() );
+    _QWindow_AvailableGeometry
   }
 
   *closeAll {
@@ -150,12 +150,12 @@ QWindow
   }
 
   bounds {
-    ^QWindow.flipY( view.getProperty( \geometry, Rect.new ) );
+    ^QWindow.flipY( view.getProperty( \geometry ) );
   }
 
   setInnerExtent { arg w, h;
     // bypass this.bounds, to avoid QWindow flipping the y coordinate
-    var r = view.getProperty(\geometry, Rect.new );
+    var r = view.getProperty(\geometry );
     view.setProperty(\geometry, r.resizeTo( w, h ); )
   }
 
@@ -215,16 +215,6 @@ QWindow
   *flipY { arg aRect;
     var flippedTop = QWindow.screenBounds.height - aRect.top - aRect.height;
     ^Rect( aRect.left, flippedTop, aRect.width, aRect.height );
-  }
-
-  *prScreenBounds { arg return;
-    _QWindow_ScreenBounds
-    ^this.primitiveFailed
-  }
-
-  *prAvailableBounds { arg return;
-    _QWindow_AvailableGeometry
-    ^this.primitiveFailed
   }
 
   *addWindow { arg window;

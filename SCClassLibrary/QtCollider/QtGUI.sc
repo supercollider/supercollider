@@ -92,14 +92,15 @@ QtGUI {
   }
 
   *stringBounds { arg aString, aFont;
-    var bounds = this.prStringBounds( aString, aFont, Rect.new );
+    var bounds = this.prStringBounds( aString, aFont );
     bounds.left = 0;
     bounds.top = 0;
     ^bounds
   }
 
   *palette {
-    ^this.prPalette( QPalette.new.init );
+    _Qt_GlobalPalette
+    ^this.primitiveFailed;
   }
 
   *palette_ { arg p;
@@ -123,12 +124,7 @@ QtGUI {
 
   // private ///////////////////////////////////////////////////////////
 
-  *prPalette { arg ret;
-    _Qt_GlobalPalette
-    ^this.primitiveFailed;
-  }
-
-  *prStringBounds { arg aString, aFont, aRect;
+  *prStringBounds { arg aString, aFont;
     _Qt_StringBounds
     ^this.primitiveFailed
   }

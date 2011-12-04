@@ -166,7 +166,7 @@ QSoundFileView : QView {
   timeCursorPosition { ^this.getProperty( \cursorPosition ); }
   timeCursorPosition_ { arg frame; this.setProperty( \cursorPosition, frame ) }
 
-  timeCursorColor { ^this.getProperty( \cursorColor, Color.new ); }
+  timeCursorColor { ^this.getProperty( \cursorColor ); }
   timeCursorColor_ { arg color; this.setProperty( \cursorColor, color ) }
 
   // grid
@@ -180,7 +180,7 @@ QSoundFileView : QView {
   gridOffset { ^this.getProperty( \gridOffset ) }
   gridOffset_ { arg seconds; this.setProperty( \gridOffset, seconds ) }
 
-  gridColor { ^this.getProperty( \gridColor, Color.new ) }
+  gridColor { ^this.getProperty( \gridColor ) }
   gridColor_ { arg color; this.setProperty( \gridColor, color ) }
 
   // actions

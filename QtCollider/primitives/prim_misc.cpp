@@ -50,35 +50,25 @@ QC_LANG_PRIMITIVE( QtGUI_DebugLevel, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QWindow_ScreenBounds, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlobals *g )
+QC_LANG_PRIMITIVE( QWindow_ScreenBounds, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QRect screenGeometry = QApplication::desktop()->screenGeometry();
-
-  int err = Slot::setRect( rectSlot, screenGeometry );
-  if( err ) return err;
-
-  slotCopy( r, rectSlot );
-
+  Slot::setRect( r, screenGeometry );
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QWindow_AvailableGeometry, 1, PyrSlot *r, PyrSlot *rectSlot, VMGlobals *g )
+QC_LANG_PRIMITIVE( QWindow_AvailableGeometry, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QRect rect = QApplication::desktop()->availableGeometry();
-
-  int err = Slot::setRect( rectSlot, rect );
-  if( err ) return err;
-
-  slotCopy( r, rectSlot );
-
+  Slot::setRect( r, rect );
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( Qt_StringBounds, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( Qt_StringBounds, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QString str = Slot::toString( a );
 
@@ -90,9 +80,7 @@ QC_LANG_PRIMITIVE( Qt_StringBounds, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   // we keep the font height even on empty string;
   if( str.isEmpty() ) bounds.setHeight( fm.height() );
 
-  Slot::setRect( a+2, bounds );
-  slotCopy( r, a+2 );
-
+  Slot::setRect( r, bounds );
   return errNone;
 }
 
@@ -107,15 +95,12 @@ QC_LANG_PRIMITIVE( Qt_AvailableFonts, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( Qt_GlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( Qt_GlobalPalette, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QPalette p( QApplication::palette() );
-
-  if( Slot::setPalette( a, p ) ) return errFailed;
-  slotCopy( r, a );
-
+  Slot::setPalette( r, p );
   return errNone;
 }
 

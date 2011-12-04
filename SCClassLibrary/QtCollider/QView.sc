@@ -58,7 +58,8 @@ QView : QObject {
   }
 
   mapToGlobal { arg point;
-    ^this.prMapToGlobal( point, Point.new );
+    _QWidget_MapToGlobal
+    ^this.primitiveFailed;
   }
 
   // ----------------- properties --------------------------
@@ -72,7 +73,7 @@ QView : QObject {
   }
 
   palette {
-    ^this.getProperty( \palette, QPalette.new.init );
+    ^this.getProperty( \palette );
   }
 
   palette_ { arg p;
@@ -98,7 +99,7 @@ QView : QObject {
   }
 
   bounds {
-    ^this.getProperty(\geometry, Rect.new)
+    ^this.getProperty(\geometry)
   }
 
   bounds_ { arg rect;
@@ -684,11 +685,6 @@ QView : QObject {
     this.setEventHandlerEnabled( 60, enabled );
     this.setEventHandlerEnabled( 61, enabled );
     this.setEventHandlerEnabled( 63, enabled );
-  }
-
-  prMapToGlobal { arg point, retPoint;
-    _QWidget_MapToGlobal
-    ^this.primitiveFailed;
   }
 
   prSetLayout { arg layout;
