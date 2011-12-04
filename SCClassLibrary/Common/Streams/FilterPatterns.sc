@@ -277,7 +277,7 @@ Pstretch : FilterPattern {
 		var evtStream = pattern.asStream;
 
 		loop {
-			inevent = evtStream.next(event);
+			inevent = evtStream.next(event).asEvent;
 			if (inevent.isNil) { ^event };
 			val = valStream.next(inevent);
 			if (val.isNil) { ^event };
@@ -300,7 +300,7 @@ Pstretchp : Pstretch {
 		var evtStream, val, inevent, delta;
 		var valStream = value.asStream;
 		while {
-			val = valStream.next(event);
+			val = valStream.next(event).asEvent;
 			val.notNil
 		} {
 			evtStream = pattern.asStream;
@@ -427,7 +427,7 @@ Pfindur : FilterPattern {
 
 		cleanup ?? { cleanup = EventStreamCleanup.new };
 		loop {
-			inevent = stream.next(event) ?? { ^event };
+			inevent = stream.next(event).asEvent ?? { ^event };
 			cleanup.update(inevent);
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
@@ -460,7 +460,7 @@ Psync : FilterPattern {
 		stream = pattern.asStream;
 
 		loop {
-			inevent = stream.next(event);
+			inevent = stream.next(event).asEvent;
 			if(inevent.isNil) {
 				if(localquant.notNil) {
 					event = Event.silent(elapsed.roundUp(localquant) - elapsed, event);

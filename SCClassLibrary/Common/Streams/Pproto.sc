@@ -26,7 +26,7 @@ Pfpar : ListPattern {
 				priorityQ.notEmpty
 			},{
 				stream = priorityQ.pop;
-				outval = stream.next(inval);
+				outval = stream.next(inval).asEvent;
 				if (outval.isNil, {
 					priorityQ.clear;
 					^cleanup.exit(inval);
