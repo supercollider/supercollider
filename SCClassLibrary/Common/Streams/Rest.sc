@@ -1,15 +1,15 @@
 Rest {
-	var <>dur = 0;
-	*new { |dur(0)|
+	var <>dur = 1;
+	*new { |dur(1)|
 		^super.newCopyArgs(dur)
 	}
 	// for use by Pfunc and Pfuncn
 	*processRest { |inval|
-		inval.put(\type, \rest);
+		inval.put(\isRest, true);
 		^1
 	}
 	processRest { |inval|
-		inval.put(\type, \rest);
+		inval.put(\isRest, true);
 		^dur
 	}
 	// for use e.g. in ListPatterns
@@ -43,4 +43,11 @@ Rest {
 	processRest { |inval|
 		this.do(_.processRest(inval))
 	}
+}
+
+
++ SimpleNumber {
+	// Some patterns call .delta on the eventstream's yield value
+	// since a SimpleNumber is a valid rest, it must answer 'delta' with itself
+	delta {}
 }
