@@ -382,7 +382,7 @@ void SC_TerminalClient::onInput()
 void SC_TerminalClient::onQuit( int exitCode )
 {
 	lockSignal();
-	postfl("client: quit request %i\n", exitCode);
+	postfl("main: quit request %i\n", exitCode);
 	quit( exitCode );
 	pthread_cond_signal( &mCond );
 	unlockSignal();
@@ -509,7 +509,7 @@ void SC_TerminalClient::readlineCmdLine( char *cmdLine )
 	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(instance());
 
 	if( cmdLine == NULL ) {
-		printf("\nExiting sclang (ctrl-D)\n");
+		postfl("\nExiting sclang (ctrl-D)\n");
 		client->onQuit(0);
 		return;
 	}
@@ -578,7 +578,7 @@ void *SC_TerminalClient::readlineFunc( void *arg )
 		}
 	}
 
-	printf("readline stopped.\n");
+	postfl("readline: stopped.\n");
 
 	return NULL;
 }
@@ -820,15 +820,15 @@ void SC_TerminalClient::endInput()
 	char c = 'q';
 	write( mInputCtlPipe[1], &c, 1 );
 #else
-	postfl("client: signalling input thread quit event\n");
+	postfl("main: signalling input thread quit event\n");
 	SetEvent( mQuitInputEvent );
 #endif
 
-	postfl("client: stopped, waiting for input thread to join...\n");
+	postfl("main: stopped, waiting for input thread to join...\n");
 
 	pthread_join( mInputThread, NULL );
 
-	postfl("client: input thread joined.\n");
+	postfl("main: input thread joined.\n");
 }
 
 void SC_TerminalClient::cleanupInput()
