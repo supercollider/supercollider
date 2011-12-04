@@ -71,9 +71,14 @@ namespace QtCollider {
     Asynchronous
   };
 
-  void lockLang();
+  inline void lockLang()
+  {
+    qcDebugMsg(2,"locking lang!");
+    pthread_mutex_lock (&gLangMutex);
+    qcDebugMsg(2,"locked");
+  }
 
-  inline static void unlockLang()
+  inline void unlockLang()
   {
     pthread_mutex_unlock(&gLangMutex);
     qcDebugMsg(2,"unlocked");

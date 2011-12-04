@@ -5,14 +5,6 @@
 #include <VMGlobals.h>
 #include <PyrLexer.h>
 
-void QtCollider::lockLang()
-{
-  qcDebugMsg(2,"locking lang!");
-  pthread_mutex_lock (&gLangMutex);
-  qcDebugMsg(2,"locked");
-  return;
-}
-
 // WARNING: QtCollider::lockLang() must be called before
 void QtCollider::runLang (
   PyrObjectHdr *receiver,
