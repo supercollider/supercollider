@@ -816,8 +816,9 @@ void SC_TerminalClient::endInput()
 	unlockInput();
 
 #ifndef _WIN32
-	postfl("client: closing input-thread control pipe\n");
-	close( mInputCtlPipe[1] );
+	postfl("main: sending quit command to input thread.\n");
+	char c = 'q';
+	write( mInputCtlPipe[1], &c, 1 );
 #else
 	postfl("client: signalling input thread quit event\n");
 	SetEvent( mQuitInputEvent );
