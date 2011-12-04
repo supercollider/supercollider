@@ -66,7 +66,7 @@ QC_LANG_PRIMITIVE( QWidget_Refresh, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
+QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *proxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy( r ) );
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
@@ -76,10 +76,7 @@ QC_LANG_PRIMITIVE( QWidget_MapToGlobal, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   QPoint pt( Slot::toPoint( a ).toPoint() );
   pt = w->mapToGlobal( pt );
-
-  int err = Slot::setPoint( a+1, pt );
-  if( err ) return err;
-  slotCopy( r, a+1 );
+  Slot::setPoint( r, pt );
 
   return errNone;
 }

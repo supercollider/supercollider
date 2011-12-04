@@ -46,32 +46,26 @@ static QPalette::ColorRole paletteColorRoles[] = {
   QPalette::HighlightedText,
 };
 
-int Slot::setRect( PyrSlot *slot, const QRectF &r )
+void Slot::setRect( PyrSlot *slot, const QRectF &r )
 {
-  if( !isKindOfSlot( slot, class_Rect ) ) {
-    return errWrongType;
-  }
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Rect, 0, true, true );
+  SetObject( slot, obj );
 
-  PyrSlot *slots = slotRawObject( slot )->slots;
+  PyrSlot *slots = obj->slots;
   SetFloat( slots+0, r.x() );
   SetFloat( slots+1, r.y() );
   SetFloat( slots+2, r.width() );
   SetFloat( slots+3, r.height() );
-
-  return errNone;
 }
 
-int Slot::setPoint( PyrSlot *slot, const QPointF &pt )
+void Slot::setPoint( PyrSlot *slot, const QPointF &pt )
 {
-  if( !isKindOfSlot( slot, class_Point ) ) {
-    return errWrongType;
-  }
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Point, 0, true, true );
+  SetObject( slot, obj );
 
-  PyrSlot *slots = slotRawObject( slot )->slots;
+  PyrSlot *slots = obj->slots;
   SetFloat( slots+0, pt.x() );
   SetFloat( slots+1, pt.y() );
-
-  return errNone;
 }
 
 void Slot::setSize( PyrSlot *slot, const QSizeF &sz )
@@ -91,31 +85,30 @@ void Slot::setString( PyrSlot *slot, const QString& arg )
   SetObject( slot, str );
 }
 
-int Slot::setColor( PyrSlot *slot, const QColor &c )
+void Slot::setColor( PyrSlot *slot, const QColor &c )
 {
-  if( !isKindOfSlot( slot, class_Color) ) return errWrongType;
+  PyrObject *obj = instantiateObject( gMainVMGlobals->gc, class_Color, 0, true, true );
+  SetObject( slot, obj );
 
-  PyrSlot *slots = slotRawObject( slot )->slots;
-
+  PyrSlot *slots = obj->slots;
   SetFloat( slots+0, c.red() / 255.0 );
   SetFloat( slots+1, c.green() / 255.0 );
   SetFloat( slots+2, c.blue() / 255.0 );
   SetFloat( slots+3, c.alpha() / 255.0 );
-
-  return errNone;
 }
 
-int Slot::setPalette( PyrSlot *slot, const QPalette &plt )
+void Slot::setPalette( PyrSlot *slot, const QPalette &plt )
 {
-  if( !isKindOfSlot( slot, class_QPalette ) ) return errWrongType;
+  PyrGC *gc = gMainVMGlobals->gc;
+  PyrObject *obj = instantiateObject( gc, class_QPalette, 0, true, true );
+  SetObject( slot, obj );
 
-  PyrSlot *s = slotRawObject( slot )->slots;
+  PyrSlot *s = obj->slots;
 
   for( int i=0; i<8; ++i, ++s ) {
-    if( setColor( s, plt.color( paletteColorRoles[i] ) ) ) return errFailed;
+    setColor( s, plt.color( paletteColorRoles[i] ) );
+    gc->GCWrite( obj, s );
   }
-
-  return errNone;
 }
 
 void Slot::setQObject( PyrSlot *s, QObject *o )
@@ -151,7 +144,7 @@ void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
   int i;
   PyrSlot *s = array->slots;
   for( i = 0; i < count; ++i, ++s ) {
-    if( Slot::setVariant( s, varList.data[i] ) ) {
+    if( !Slot::setVariant( s, varList.data[i] ) ) {
       qcDebugMsg(1, "WARNING: Could not set one slot of array" );
     }
     array->size++;
@@ -159,7 +152,7 @@ void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
   }
 }
 
-int Slot::setVariant( PyrSlot *slot, const QVariant &val )
+bool Slot::setVariant( PyrSlot *slot, const QVariant &val )
 {
   bool b_val;
   int type = val.userType();
@@ -169,40 +162,56 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
         b_val = val.toBool();
         if( b_val ) SetTrue( slot );
         else SetFalse( slot );
-        return errNone;
+        break;
+
     case QMetaType::QPoint:
     case QMetaType::QPointF:
-        return Slot::setPoint( slot, val.toPointF() );
+        Slot::setPoint( slot, val.toPointF() );
+        break;
+
     case QMetaType::QSize:
     case QMetaType::QSizeF:
         Slot::setSize( slot, val.toSizeF() );
-        return errNone;
+        break;
+
     case QMetaType::QRect:
     case QMetaType::QRectF:
-        return Slot::setRect( slot, val.toRectF() );
+        Slot::setRect( slot, val.toRectF() );
+        break;
+
     case QMetaType::QString:
         Slot::setString( slot, val.toString() );
-        return errNone;
+        break;
+
     case QMetaType::QColor:
-         return Slot::setColor( slot, val.value<QColor>() );
+         Slot::setColor( slot, val.value<QColor>() );
+         break;
+
     case QMetaType::QPalette:
-        return Slot::setPalette( slot, val.value<QPalette>() );
+        Slot::setPalette( slot, val.value<QPalette>() );
+        break;
+
     case QMetaType::Float:
     case QMetaType::Double:
         SetFloat( slot, val.value<double>() );
-        return errNone;
+        break;
+
     case QMetaType::Int:
         SetInt( slot, val.toInt() );
-        return errNone;
+        break;
+
     case QMetaType::QObjectStar:
         Slot::setQObject( slot, val.value<QObject*>() );
-        return errNone;
+        break;
+
     case QMetaType::QWidgetStar:
         Slot::setQObject( slot, val.value<QWidget*>() );
-        return errNone;
+        break;
+
     case QMetaType::Void:
         SetNil( slot );
-        return errNone;
+        break;
+
     default:
         if( type == qMetaTypeId<PyrObject*>() ) {
           SetObject( slot, val.value<PyrObject*>() );
@@ -215,10 +224,11 @@ int Slot::setVariant( PyrSlot *slot, const QVariant &val )
         }
         else {
           qcErrorMsg( "the QVariant could not be interpreted!" );
-          return errFailed;
+          return false;
         }
-        return errNone;
   }
+
+  return true;
 }
 
 bool Slot::toBool( PyrSlot *slot )

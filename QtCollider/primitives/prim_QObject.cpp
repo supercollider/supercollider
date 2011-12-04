@@ -297,29 +297,24 @@ QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   return errNone;
 }
 
-QC_LANG_PRIMITIVE( QObject_GetProperty, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+QC_LANG_PRIMITIVE( QObject_GetProperty, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   QObjectProxy *proxy = QOBJECT_FROM_SLOT( r );
 
   if( NotSym(a) ) return errWrongType;
   PyrSymbol *symProp = slotRawSymbol( a );
-  PyrSlot *slotRetExtra = a+1;
 
   qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(symProp->name) );
 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   QVariant val = proxy->property( symProp->name );
-
   if( !val.isValid() ) return errFailed;
 
-  bool haveExtra = NotNil( slotRetExtra );
-  int err = Slot::setVariant( ( haveExtra ? slotRetExtra : r ), val );
-  if( err ) return err;
-
-  if( haveExtra ) slotCopy( r, slotRetExtra );
-
-  return errNone;
+  if( Slot::setVariant(r, val) )
+    return errNone;
+  else
+    return errFailed;
 }
 
 QC_LANG_PRIMITIVE( QObject_SetEventHandler, 4, PyrSlot *r, PyrSlot *a, VMGlobals *g )

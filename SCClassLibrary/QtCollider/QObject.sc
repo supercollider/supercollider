@@ -95,7 +95,7 @@ QObject {
     ^this.primitiveFailed
   }
 
-  getProperty{ arg property, preAllocatedReturn;
+  getProperty { arg property;
     _QObject_GetProperty
     ^this.primitiveFailed
   }

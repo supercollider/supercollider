@@ -57,16 +57,16 @@ namespace Slot
   QcTreeWidget::ItemPtr toTreeWidgetItem( PyrSlot * );
   QVariant toVariant( PyrSlot * );
 
-  int setRect( PyrSlot *, const QRectF & );
-  int setPoint( PyrSlot *, const QPointF & );
+  void setRect( PyrSlot *, const QRectF & );
+  void setPoint( PyrSlot *, const QPointF & );
   void setSize( PyrSlot *, const QSizeF & );
   void setString( PyrSlot *, const QString & );
-  int setColor( PyrSlot *, const QColor & );
-  int setPalette( PyrSlot *, const QPalette & );
+  void setColor( PyrSlot *, const QColor & );
+  void setPalette( PyrSlot *, const QPalette & );
   void setQObject( PyrSlot *, QObject * );
   void setTreeWidgetItem( PyrSlot *, const QcTreeWidget::ItemPtr & );
   void setVariantList( PyrSlot *, const VariantList& );
-  int setVariant( PyrSlot *, const QVariant & );
+  bool setVariant( PyrSlot *, const QVariant & );
 };
 
 class Variant
