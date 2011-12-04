@@ -23,7 +23,7 @@ Ppar : ListPattern {
 
 			while { priorityQ.notEmpty } {
 				stream = priorityQ.pop;
-				outval = stream.next(inval);
+				outval = stream.next(inval).asEvent;
 				if (outval.isNil) {
 					nexttime = priorityQ.topPriority;
 					if (nexttime.notNil, {
