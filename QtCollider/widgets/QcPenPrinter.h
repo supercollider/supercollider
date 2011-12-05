@@ -23,11 +23,10 @@
 #define QC_PEN_PRINTER_H
 
 #include "../painting.h"
+#include "../debug.h"
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QPainter>
-
-#include <stdio.h>
 
 class QcPenPrinter : public QObject
 {
@@ -39,10 +38,10 @@ class QcPenPrinter : public QObject
 
 public:
 
-  QcPenPrinter() {
-  }
+  QcPenPrinter(): dialog(0) {}
 
   ~QcPenPrinter() {
+      delete dialog;
   }
 
   QRect pageRect() const { return printer.pageRect(); }
@@ -52,26 +51,26 @@ public:
 
 Q_SIGNALS:
 
-  void ok();
-  void cancel();
+  void dialogDone(int);
   void printFunc();
 
 private Q_SLOTS:
 
   void show() {
-    QPrintDialog dialog(&printer);
-
-    dialog.setWindowTitle( QString("Print Document") );
-    dialog.setOptions (
-      QAbstractPrintDialog::PrintToFile |
-      QAbstractPrintDialog::PrintPageRange |
-      QAbstractPrintDialog::PrintShowPageSize
-    );
-    if (dialog.exec() != QDialog::Accepted) {
-      Q_EMIT( cancel() );
-    } else {
-      Q_EMIT( ok() );
+    if( !dialog ) {
+      dialog = new QPrintDialog(&printer);
+      dialog->setWindowTitle( QString("Print Document") );
+      dialog->setOptions (
+        QAbstractPrintDialog::PrintToFile |
+        QAbstractPrintDialog::PrintPageRange |
+        QAbstractPrintDialog::PrintShowPageSize
+      );
+      connect( dialog, SIGNAL(finished(int)), this, SIGNAL(dialogDone(int)) );
     }
+    if( dialog->isVisible() )
+      qcWarningMsg("WARNING: Print dialog already open.");
+    else
+      dialog->exec();
   }
 
   void print() {
@@ -90,7 +89,7 @@ private Q_SLOTS:
 private:
 
   QPrinter printer;
-
+  QPrintDialog *dialog;
 };
 
 #endif // QC_PEN_PRINTER_H

@@ -19,12 +19,15 @@ QPenPrinter : QObject {
       printFunc.value(this);
       printFunc = nil;
     };
-    this.connectFunction('ok()', synchronous:false) {
-      okFunc.value(this);
+    this.connectFunction('dialogDone(int)', synchronous:false)
+    {
+      arg me, ok;
+      if( ok == 1 ) {
+        okFunc.value(this);
+      }{
+        cancelFunc.value(this);
+      };
       okFunc = nil;
-    };
-    this.connectFunction('cancel()', synchronous:false) {
-      cancelFunc.value(this);
       cancelFunc = nil;
     };
   }
