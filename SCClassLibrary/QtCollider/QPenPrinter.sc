@@ -7,6 +7,13 @@ QPenPrinter : QObject {
     ^super.new.init;
   }
 
+  *print { |printFunc, cancelFunc|
+    QPenPrinter().showDialog(
+      { |p| p.print(printFunc); p.destroy },
+      { |p| cancelFunc.value; p.destroy }
+    )
+  }
+
   init {
     this.connectFunction('printFunc()', synchronous:true) {
       printFunc.value(this);
