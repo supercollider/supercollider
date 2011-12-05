@@ -31,9 +31,8 @@
 class QcScrollWidgetFactory : public QcWidgetFactory<QcScrollWidget>
 {
 protected:
-  virtual void initialize( QWidgetProxy *p, QcScrollWidget *w, QList<QVariant> & args )
+  virtual void initialize( QWidgetProxy *p, QcScrollWidget *w )
   {
-    Q_UNUSED(args);
     QObject::connect( w, SIGNAL(painting(QPainter*)),
                       p, SLOT(customPaint(QPainter*)) );
   }

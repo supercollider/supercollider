@@ -13,7 +13,7 @@ QLayout : QObject {
 QLineLayout : QLayout {
   *new { arg ...items;
     var serializedItems = items.collect( { |x| this.parse(x) } );
-    ^super.new( serializedItems );
+    ^super.new( [serializedItems] );
   }
 
   *parse { arg in;

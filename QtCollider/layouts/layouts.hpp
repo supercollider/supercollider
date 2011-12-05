@@ -28,17 +28,6 @@
 #include <QVBoxLayout>
 #include <QGridLayout>
 
-template<class BOXLAYOUT> class QcBoxLayoutFactory : public QcObjectFactory<BOXLAYOUT>
-{
-protected:
-  virtual void initialize( QObjectProxy *, BOXLAYOUT *l, QList<QVariant> & items ) {
-    Q_FOREACH( QVariant v, items ) {
-      VariantList item = v.value<VariantList>();
-      l->addItem( item );
-    }
-  }
-};
-
 template <class LAYOUT> struct QcLayout : public LAYOUT
 {
 public:
@@ -57,6 +46,15 @@ public:
 template <class BOXLAYOUT> class QcBoxLayout : public QcLayout<BOXLAYOUT>
 {
 public:
+  QcBoxLayout() {}
+
+  QcBoxLayout( const VariantList & items ) {
+    Q_FOREACH( QVariant v, items.data ) {
+      VariantList item = v.value<VariantList>();
+      addItem( item );
+    }
+  }
+
   void addItem( const VariantList & item ) {
     if( item.data.size() < 3 ) return;
 
@@ -126,6 +124,8 @@ class QcHBoxLayout : public QcBoxLayout<QHBoxLayout>
   Q_OBJECT
   Q_PROPERTY( VariantList margins READ margins WRITE setMargins )
 public:
+  QcHBoxLayout() {}
+  Q_INVOKABLE QcHBoxLayout( const VariantList &items ): QcBoxLayout<QHBoxLayout>(items) {}
   Q_INVOKABLE void addItem( const VariantList &data ) { QcBoxLayout<QHBoxLayout>::addItem(data); }
   Q_INVOKABLE void setStretch( int index, int stretch ) {
     QBoxLayout::setStretch( index, stretch );
@@ -147,6 +147,8 @@ class QcVBoxLayout : public QcBoxLayout<QVBoxLayout>
   Q_OBJECT
   Q_PROPERTY( VariantList margins READ margins WRITE setMargins )
 public:
+  QcVBoxLayout() {}
+  Q_INVOKABLE QcVBoxLayout( const VariantList &items ): QcBoxLayout<QVBoxLayout>(items) {}
   Q_INVOKABLE void addItem( const VariantList &data ) { QcBoxLayout<QVBoxLayout>::addItem(data); }
   Q_INVOKABLE void setStretch( int index, int stretch ) {
     QBoxLayout::setStretch( index, stretch );

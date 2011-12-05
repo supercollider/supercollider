@@ -26,7 +26,7 @@
 
 class QcTreeWidgetFactory : public QcWidgetFactory<QcTreeWidget>
 {
-  void initialize( QWidgetProxy *p, QcTreeWidget *w, QList<QVariant> & ) {
+  void initialize( QWidgetProxy *p, QcTreeWidget *w ) {
     p->setMouseEventWidget( w->viewport() );
   }
 };
