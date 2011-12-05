@@ -32,6 +32,8 @@
 #include "SC_Reply.h"
 #include "MsgFifo.h"
 
+#include "../../common/server_shm.hpp"
+
 extern HashTable<struct UnitDef, Malloc> *gUnitDefLib;
 
 
@@ -122,6 +124,7 @@ struct HiddenWorld
 #endif
 	const char *mInDeviceName;
 	const char *mOutDeviceName;
+	class server_shared_memory_creator * mShmem;
 };
 
 typedef struct HiddenWorld HiddenWorld;

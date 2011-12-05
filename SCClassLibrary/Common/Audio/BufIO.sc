@@ -120,6 +120,17 @@ ScopeOut : UGen {
 	}
 }
 
+ScopeOut2 : UGen {
+	*ar { arg inputArray, scopeNum=0, maxFrames = 4096, scopeFrames;
+		this.multiNewList(['audio', scopeNum, maxFrames, scopeFrames ? maxFrames] ++ inputArray.asArray);
+		^0.0
+	}
+	*kr { arg inputArray, scopeNum=0, maxFrames = 4096, scopeFrames;
+		this.multiNewList(['control', scopeNum, maxFrames, scopeFrames ? maxFrames] ++ inputArray.asArray);
+		^0.0
+	}
+}
+
 Tap : UGen {
 	*ar { arg bufnum = 0, numChannels = 1, delaytime = 0.2;
 		var n;

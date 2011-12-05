@@ -57,6 +57,8 @@ typedef int socklen_t;
 # endif
 #endif
 
+#include "../../../common/server_shm.hpp"
+
 struct InternalSynthServerGlobals
 {
 	struct World *mWorld;
@@ -982,6 +984,13 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		options.mNumSharedControls = gInternalSynthServer.mNumSharedControls;
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
 
+		// internal servers use the PID to identify the shared memory region
+#ifndef _WIN32
+		options.mSharedMemoryID = getpid();
+#else
+		options.mSharedMemoryID = GetCurrentProcessId()
+#endif
+
 		gInternalSynthServer.mWorld = World_New(&options);
 	}
 
@@ -1106,6 +1115,192 @@ int prSetSharedControl(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+static int disconnectSharedMem(VMGlobals *g, PyrObject * object)
+{
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = object->slots + ptrIndex;
+
+	if (IsNil(ptrSlot))
+		// already disconnected
+		return errNone;
+
+	assert(IsPtr(ptrSlot));
+
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+	delete client;
+	SetNil(ptrSlot);
+	return errNone;
+}
+
+int prConnectSharedMem(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+
+	assert(IsObj(a));
+
+	PyrObject * self = slotRawObject(a);
+	int portNumber = slotRawInt(b);
+
+	int ptrIndex       = 0;
+	int finalizerIndex = 1;
+
+	try {
+		server_shared_memory_client * client = new server_shared_memory_client(portNumber);
+		SetPtr(self->slots + ptrIndex, client);
+
+		InstallFinalizer(g, self, finalizerIndex, disconnectSharedMem);
+
+		postfl("Shared memory server interface initialized\n");
+	} catch (std::exception & e) {
+		postfl("Cannot connect to shared memory: %s\n", e.what());
+		return errFailed;
+	}
+
+	return errNone;
+}
+
+int prDisconnectSharedMem(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	return disconnectSharedMem(g, self);
+}
+
+int prGetControlBusValue(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = self->slots + ptrIndex;
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	if (!IsInt(b))
+		return errFailed;
+
+	int busIndex = slotRawInt(b);
+
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+
+	float value = client->get_control_busses()[busIndex];
+	SetFloat(a, value);
+	return errNone;
+}
+
+int prGetControlBusValues(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = self->slots + ptrIndex;
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	if (!IsInt(b))
+		return errFailed;
+
+	int busIndex = slotRawInt(b);
+
+	if (!IsInt(c))
+		return errFailed;
+
+	int numberOfChannels = slotRawInt(c);
+
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+
+	PyrObject * ret = newPyrArray(g->gc, numberOfChannels, 0, 1);
+	ret->size = numberOfChannels;
+
+	for (int i = 0; i != numberOfChannels; ++i) {
+		float value = client->get_control_busses()[busIndex + i];
+		SetFloat(ret->slots+i, value);
+	}
+
+	SetObject(a, ret);
+	return errNone;
+}
+
+int prSetControlBusValue(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = self->slots + ptrIndex;
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	if (!IsInt(b))
+		return errFailed;
+
+	int busIndex = slotRawInt(b);
+
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	float value;
+	int error = slotFloatVal(c, &value);
+	if (error != errNone)
+		return error;
+
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+
+	client->get_control_busses()[busIndex] = value;
+	return errNone;
+}
+
+int prSetControlBusValues(VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2;
+	PyrSlot *b = g->sp - 1;
+	PyrSlot *c = g->sp;
+
+	assert(IsObj(a));
+	PyrObject * self = slotRawObject(a);
+	int ptrIndex       = 0;
+	PyrSlot * ptrSlot = self->slots + ptrIndex;
+	if (NotPtr(ptrSlot))
+		return errFailed;
+
+	if (!IsInt(b))
+		return errFailed;
+
+	int busIndex = slotRawInt(b);
+
+	if (!IsObj(c))
+		return errFailed;
+
+	PyrObject * values = slotRawObject(c);
+	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
+	float * control_busses = client->get_control_busses() + busIndex;
+
+	for (int i = 0; i != values->size; ++i) {
+		float value;
+		int error = slotFloatVal(values->slots + i, &value);
+		if (error != errNone)
+			return error;
+
+		control_busses[i] = value;
+	}
+	return errNone;
+}
+
 void init_OSC_primitives();
 void init_OSC_primitives()
 {
@@ -1137,6 +1332,15 @@ void init_OSC_primitives()
 	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);
 	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);
 	definePrimitive(base, index++, "_OpenUDPPort", prOpenUDPPort, 2, 0);
+
+	// server shared memory interface
+	definePrimitive(base, index++, "_ServerShmInterface_connectSharedMem", prConnectSharedMem, 2, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_disconnectSharedMem", prDisconnectSharedMem, 1, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValue", prGetControlBusValue, 2, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValues", prGetControlBusValues, 3, 0);
+
+	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValue", prSetControlBusValue, 2, 0);
+	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValues", prSetControlBusValues, 3, 0);
 
 	//post("initOSCRecs###############\n");
 	s_call = getsym("call");

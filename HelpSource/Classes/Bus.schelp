@@ -100,7 +100,8 @@ Get a new Bus that is a subset of this bus (see code::newFrom::).
 
 subsection:: Asynchronous Control Bus Methods
 
-The following commands apply only to control buses and are asynchronous. For synchronous access to control buses one should use the internal server's shared control buses and link::Classes/SharedIn:: / link::Classes/SharedOut::.
+The following commands apply only to control buses and are asynchronous. For synchronous access to control busses please
+consult link::Classes/Bus#synchronous::.
 
 method:: value
 Set all channels to this float value. This command is asynchronous.
@@ -116,12 +117,43 @@ Get the current value of this control bus. This command is asynchronous.
 argument:: action
 a function that will be evaluated when the server responds, with the current value of the bus passed as an argument. This will be a float for a single channel bus, or an array of floats for a multichannel bus. The default action posts the bus values.
 
+
 method:: getn
 Get the current values of this control bus. This command is asynchronous.
 argument:: count
 the number of channels to read, starting from this bus' first channel.
 argument:: action
 a function that will be evaluated when the server responds, with the current values of the bus in an array passed as an argument.
+
+
+subsection:: Synchronous Control Bus Methods
+
+anchor::synchronous::
+
+Synchronous access to control busses only works for local servers.
+
+note:: Before 3.5 the the internal server could be controlled via shared control busses and link::Classes/SharedIn:: and
+link::Classes/SharedOut::. These classes have been deprecated and will be removed.  ::
+
+method:: getSynchronous
+Get the current value of this control bus. This command is synchronous.
+
+returns::
+Value of the control bus.
+
+method:: getnSynchronous
+Get the current values of this control bus. This command is synchronous.
+argument:: count
+The number of channels to read, starting from this bus' first channel.
+returns::
+Array of values.
+
+method:: setSynchronous
+A list of values for each channel of the control bus.  The list of values supplied should not be greater than the number of channels. This command is synchronous.
+
+method:: setnSynchronous
+As setSynchronous but takes an array as an argument.
+
 
 subsection:: conveniences for multichannel buses:
 method:: setAt
@@ -284,4 +316,3 @@ b.setAt(3, 2400);
 y.free;
 b.free;
 ::
-
