@@ -115,7 +115,7 @@ p.showDialog {
 
         // second page
         p.newPage;
-        Pen.addRect((0@0) @ p.pageSize);
+        Pen.addRect(p.pageSize.asRect);
         Pen.stroke;
     }
 } {
