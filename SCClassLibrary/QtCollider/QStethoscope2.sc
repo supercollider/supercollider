@@ -106,11 +106,11 @@ QStethoscope2 {
           .add(
             QHLayout(
               rateMenu,
-              idxNumBox,
-              chNumBox,
-              styleMenu,
-              nil
-            ).margins_(0).spacing_(3),0,0
+              idxNumBox.minWidth_(35),
+              chNumBox.minWidth_(35),
+              nil,
+              styleMenu
+            ).margins_(0).spacing_(1), 0, 0
           )
           .add(scopeView,1,0)
           .add(yZoomSlider,1,1)
