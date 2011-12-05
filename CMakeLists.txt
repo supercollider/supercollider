@@ -81,10 +81,6 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
-
-		if ("${_gcc_version_info}" MATCHES "darwin10-llvm-g..-4.2")
-			message(FATAL_ERROR "llvm-gcc-4.2 was reported to be broken. please use another compiler.")
-		endif()
 		if ("${_gcc_version_info}" MATCHES "Apple")
 			add_definitions("-fpascal-strings")
 		endif()
