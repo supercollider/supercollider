@@ -73,7 +73,7 @@ long gInliningLevel;
 
 int compileErrors = 0;
 int numOverwrites = 0;
-char overwriteMsg[OVERWRITEMSGBUFSIZE] = "";
+std::string overwriteMsg;
 
 extern bool compilingCmdLine;
 extern int errLineOffset, errCharPosOffset;
@@ -146,7 +146,7 @@ void initParser()
 {
 	compileErrors = 0;
 	numOverwrites = 0;
-	overwriteMsg[0] = 0;
+	overwriteMsg.clear();
 }
 
 void finiParser()
@@ -1243,14 +1243,15 @@ void PyrMethodNode::compile(PyrSlot *result)
 		++numOverwrites;
 
 		// accumulate overwrite message onto the string buffer
-		size_t prevMsgSize = strlen(overwriteMsg);
-		snprintf(overwriteMsg + prevMsgSize, OVERWRITEMSGBUFSIZE - prevMsgSize,
-			"%s:%s\t%s",
-			slotRawSymbol(&slotRawClass(&oldmethod->ownerclass)->name)->name, slotRawSymbol(&oldmethod->name)->name,
-			gCompilingFileSym->name);
-		prevMsgSize = strlen(overwriteMsg);
-		snprintf(overwriteMsg + prevMsgSize, OVERWRITEMSGBUFSIZE - prevMsgSize,
-			"\t%s\n", slotRawSymbol(&oldmethod->filenameSym)->name);
+		overwriteMsg
+			.append(slotRawSymbol(&slotRawClass(&oldmethod->ownerclass)->name)->name)
+			.append(":")
+			.append(slotRawSymbol(&oldmethod->name)->name)
+			.append("\t")
+			.append(gCompilingFileSym->name)
+			.append("\t")
+			.append(slotRawSymbol(&oldmethod->filenameSym)->name)
+			.append("\n");
 
 		method = oldmethod;
 		freePyrSlot(&method->code);

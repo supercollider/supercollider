@@ -534,8 +534,7 @@ PyrParseNode* linkAfterHead(PyrParseNode* a, PyrParseNode* b);
 
 extern int compileErrors;
 extern int numOverwrites;
-const int OVERWRITEMSGBUFSIZE = 4096;
-extern char overwriteMsg[OVERWRITEMSGBUFSIZE];
+extern std::string overwriteMsg;
 
 extern long zzval;
 extern PyrSymbol *ps_newlist;
