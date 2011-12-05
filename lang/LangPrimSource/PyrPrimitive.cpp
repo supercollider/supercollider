@@ -3392,7 +3392,7 @@ int prOverwriteMsg(struct VMGlobals *g, int numArgsPushed);
 int prOverwriteMsg(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* string = newPyrString(g->gc, overwriteMsg, 0, false);
+	PyrString* string = newPyrString(g->gc, overwriteMsg.c_str(), 0, false);
 	SetObject(a, string);
 	return errNone;
 }
