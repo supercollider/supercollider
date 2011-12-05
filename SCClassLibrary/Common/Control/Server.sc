@@ -194,6 +194,45 @@ ServerOptions
 	}
 }
 
+ServerShmInterface {
+	// order matters!
+	var ptr, finalizer;
+
+	*new {|port|
+		^super.new.connect(port)
+	}
+
+	connect {
+		_ServerShmInterface_connectSharedMem
+		^this.primitiveFailed
+	}
+
+	disconnect {
+		_ServerShmInterface_disconnectSharedMem
+		^this.primitiveFailed
+	}
+
+	getControlBusValue {
+		_ServerShmInterface_getControlBusValue
+		^this.primitiveFailed
+	}
+
+	getControlBusValues {
+		_ServerShmInterface_getControlBusValues
+		^this.primitiveFailed
+	}
+
+	setControlBusValue {
+		_ServerShmInterface_getControlBusValue
+		^this.primitiveFailed
+	}
+
+	setControlBusValues {
+		_ServerShmInterface_getControlBusValues
+		^this.primitiveFailed
+	}
+}
+
 Server {
 	classvar <>local, <>internal, <default, <>named, <>set, <>program, <>sync_s = true;
 
@@ -205,6 +244,7 @@ Server {
 	var <controlBusAllocator;
 	var <audioBusAllocator;
 	var <bufferAllocator;
+	var <scopeBufferAllocator;
 	var <syncThread, <syncTasks;
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
@@ -222,6 +262,7 @@ Server {
 	var <volume;
 
 	var <pid;
+	var serverInterface;
 
 	*default_ { |server|
 		default = server; // sync with s?
@@ -263,6 +304,7 @@ Server {
 		this.newNodeAllocators;
 		this.newBusAllocators;
 		this.newBufferAllocators;
+		this.newScopeBufferAllocators;
 		NotificationCenter.notify(this, \newAllocators);
 	}
 
@@ -278,6 +320,12 @@ Server {
 
 	newBufferAllocators {
 		bufferAllocator = ContiguousBlockAllocator.new(options.numBuffers);
+	}
+
+	newScopeBufferAllocators {
+		if (isLocal) {
+			scopeBufferAllocator = StackNumberAllocator.new(0, 127);
+		}
 	}
 
 	nextNodeID {
@@ -601,6 +649,15 @@ Server {
 			if (sendQuit.isNil) {
 				sendQuit = not(this.inProcess) and: {this.isLocal};
 			};
+
+			if (this.inProcess) {
+				serverInterface = ServerShmInterface(thisProcess.pid);
+			} {
+				if (isLocal) {
+					serverInterface = ServerShmInterface(addr.port);
+				}
+			};
+
 			this.initTree;
 			(volume.volume != 0.0).if({
 				volume.play;
@@ -621,6 +678,11 @@ Server {
 			//this.serverRunning = true;
 			pid = thisProcess.pid;
 		},{
+			if (serverInterface.notNil) {
+				serverInterface.disconnect;
+				serverInterface = nil;
+			};
+
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
 			//unixCmd(program ++ options.asOptionsString(addr.port)).postln;
 			("booting " ++ addr.port.asString).inform;
@@ -895,11 +957,10 @@ Server {
 		if(recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
 		addr = addr.recover;
 		this.changed(\cmdPeriod);
-		if(scopeWindow.notNil) {
-			fork { 0.5.wait; scopeWindow.run } // wait until synth is freed
-		}{
-			CmdPeriod.remove(this)
-		};
+	}
+
+	doOnServerTree {
+		if(scopeWindow.notNil) { scopeWindow.run }
 	}
 
 	defaultGroup { ^Group.basicNew(this, 1) }
@@ -990,5 +1051,37 @@ Server {
 	reorder { arg nodeList, target, addAction=\addToHead;
 		target = target.asTarget;
 		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))); //"/n_order"
+	}
+
+	getControlBusValue {|busIndex|
+		if (serverInterface.isNil) {
+			error("Server-getControlBusValue only supports local servers")
+		} {
+			^serverInterface.getControlBusValue(busIndex)
+		}
+	}
+
+	getControlBusValues {|busIndex, busChannels|
+		if (serverInterface.isNil) {
+			error("Server-getControlBusValues only supports local servers")
+		} {
+			^serverInterface.getControlBusValues(busIndex, busChannels)
+		}
+	}
+
+	setControlBusValue {|busIndex, value|
+		if (serverInterface.isNil) {
+			error("Server-getControlBusValue only supports local servers")
+		} {
+			^serverInterface.setControlBusValue(busIndex, value)
+		}
+	}
+
+	setControlBusValues {|busIndex, valueArray|
+		if (serverInterface.isNil) {
+			error("Server-getControlBusValues only supports local servers")
+		} {
+			^serverInterface.setControlBusValues(busIndex, valueArray)
+		}
 	}
 }

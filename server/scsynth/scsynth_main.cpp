@@ -35,7 +35,6 @@
 # include <sys/wait.h>
 #endif
 
-
 #ifdef _WIN32
 
 // according to this page: http://www.mkssoftware.com/docs/man3/setlinebuf.3.asp
@@ -309,6 +308,15 @@ int main(int argc, char* argv[])
 		scprintf("ERROR: number of audio bus channels < inputs + outputs.\n");
 		Usage();
 	}
+
+	if (options.mRealTime) {
+		int port = (udpPortNum > 0) ? udpPortNum
+									: tcpPortNum;
+
+		options.mSharedMemoryID = port;
+	} else
+		options.mSharedMemoryID = 0;
+
 
 	struct World *world = World_New(&options);
 	if (!world) return 1;

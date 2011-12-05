@@ -283,6 +283,36 @@ void free_parent_group(Unit * unit)
     sc_factory->add_done_node(group);
 }
 
+bool get_scope_buffer(World *inWorld, int index, int channels, int maxFrames, ScopeBufferHnd &hnd)
+{
+    scope_buffer_writer writer = instance->get_scope_buffer_writer( index, channels, maxFrames );
+
+    if( writer.valid() ) {
+        hnd.internalData = writer.buffer;
+        hnd.data = writer.data();
+        hnd.channels = channels;
+        hnd.maxFrames = maxFrames;
+        return true;
+    }
+    else {
+        hnd.internalData = 0;
+        return false;
+    }
+}
+
+void push_scope_buffer(World *inWorld, ScopeBufferHnd &hnd, int frames)
+{
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+    writer.push(frames);
+    hnd.data = writer.data();
+}
+
+void release_scope_buffer(World *inWorld, ScopeBufferHnd &hnd)
+{
+    scope_buffer_writer writer(reinterpret_cast<scope_buffer*>(hnd.internalData));
+    instance->release_scope_buffer_writer( writer );
+}
+
 } /* namespace */
 } /* namespace nova */
 
@@ -559,7 +589,7 @@ inline void initialize_rate(Rate & rate, double sample_rate, int blocksize)
 }
 
 
-void sc_plugin_interface::initialize(server_arguments const & args)
+void sc_plugin_interface::initialize(server_arguments const & args, float * control_busses)
 {
     done_nodes.reserve(64);
     pause_nodes.reserve(16);
@@ -616,12 +646,17 @@ void sc_plugin_interface::initialize(server_arguments const & args)
     sc_interface.fSCfftDoFFT = &scfft_dofft;
     sc_interface.fSCfftDoIFFT = &scfft_doifft;
 
+    /* scope API */
+    sc_interface.fGetScopeBuffer = &get_scope_buffer;
+    sc_interface.fPushScopeBuffer = &push_scope_buffer;
+    sc_interface.fReleaseScopeBuffer = &release_scope_buffer;
+
     /* osc plugins */
     sc_interface.fDoAsynchronousCommand = &do_asynchronous_command;
 
     /* initialize world */
     /* control busses */
-    world.mControlBus = new float[args.control_busses];
+    world.mControlBus = control_busses;
     world.mNumControlBusChannels = args.control_busses;
     world.mControlBusTouched = new int32[args.control_busses];
     std::fill(world.mControlBusTouched, world.mControlBusTouched + args.control_busses, -1);

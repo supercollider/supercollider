@@ -20,6 +20,7 @@ include_directories(
 	${CMAKE_SOURCE_DIR}/external_libraries/boost
 	${CMAKE_SOURCE_DIR}/external_libraries/threadpool
 	${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.2.6/include
+	${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
 	)
 
 find_package(Sndfile)

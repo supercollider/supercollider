@@ -1,15 +1,18 @@
 + Server {
-
-	scope { arg numChannels, index, bufsize = 4096, zoom, rate;
-		var gui;
+	scope { arg numChannels, index = 0, bufsize = 4096, zoom = 1, rate = \audio;
 		numChannels = (numChannels ? 2).min(16);
+		zoom = zoom ? 1.0;
+
 		if(scopeWindow.isNil) {
-			gui = GUI.current;
-			scopeWindow =
-				gui.stethoscope.new(this, numChannels, index, bufsize, zoom, rate, nil,
+			if ((GUI.id == \qt) and: (this.isLocal)) {
+				scopeWindow = \QStethoscope2.asClass.new(this, numChannels, index, bufsize, 1024 * zoom.asFloat.reciprocal, rate);
+			} {
+				scopeWindow = Stethoscope(this, numChannels, index, bufsize, zoom, rate, nil,
 					this.options.numBuffers);
-					// prevent buffer conflicts by using reserved bufnum
-			CmdPeriod.add(this);
+				// prevent buffer conflicts by using reserved bufnum
+			};
+			scopeWindow.window.onClose = scopeWindow.window.onClose.addFunc({ scopeWindow = nil });
+			ServerTree.add(this, this);
 		} {
 			scopeWindow.setProperties(numChannels, index, bufsize, zoom, rate);
 			scopeWindow.run;
@@ -21,8 +24,6 @@
 	freqscope {
 		GUI.freqScope.new;
 	}
-
-
 }
 
 + Bus {
@@ -34,12 +35,16 @@
 
 + Function {
 	scope { arg numChannels, outbus = 0, fadeTime = 0.05, bufsize = 4096, zoom;
-		var synth, synthDef, bytes, synthMsg, outUGen, server, gui;
-		gui = GUI.current;
-		server = gui.stethoscope.defaultServer;
-		if(server.serverRunning.not) {
-			(server.name.asString ++ " server not running!").postln;
-			^nil
+		var synth, synthDef, bytes, synthMsg, outUGen, server;
+
+		if (GUI.id == \qt) {
+			server = Server.default;
+		} {
+			server = GUI.stethoscope.defaultServer;
+			if(server.serverRunning.not) {
+				(server.name.asString ++ " server not running!").postln;
+				^nil
+			}
 		};
 		synthDef = this.asSynthDef(name: SystemSynthDefs.generateTempName, fadeTime:fadeTime);
 		outUGen = synthDef.children.detect { |ugen| ugen.class === Out };
@@ -54,7 +59,8 @@
 	}
 
 	freqscope {
-		this.play(GUI.stethoscope.defaultServer);
-		GUI.freqScope.new;
+		var server = if (GUI.id == \qt) { Server.default } { GUI.stethoscope.defaultServer };
+		this.play(server);
+		^GUI.freqScope.new
 	}
 }

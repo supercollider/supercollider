@@ -5037,6 +5037,7 @@ void ScopeOut_next(ScopeOut *unit, int inNumSamples)
 
 void ScopeOut_Ctor(ScopeOut *unit)
 {
+
 	unit->m_fbufnum = -1e9;
 	unit->m_framepos = 0;
 	unit->m_framecount = 0;
@@ -5047,6 +5048,89 @@ void ScopeOut_Ctor(ScopeOut *unit)
 void ScopeOut_Dtor(ScopeOut *unit)
 {
 	TAKEDOWN_IN
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct ScopeOut2 : public Unit
+{
+	ScopeBufferHnd m_buffer;
+	float **m_inBuffers;
+	int m_maxPeriod;
+	uint32 m_phase;
+};
+
+
+void ScopeOut2_next(ScopeOut2 *unit, int inNumSamples)
+{
+	if( !unit->m_buffer ) return;
+
+	const int inputOffset = 3;
+	int numChannels = unit->mNumInputs - inputOffset;
+
+	uint32 period = (uint32)ZIN0(2);
+	uint32 framepos = unit->m_phase;
+
+	period = std::max((uint32)inNumSamples, std::min(unit->m_buffer.maxFrames, period));
+
+	if( framepos >= period ) framepos = 0;
+
+	int remain = period - framepos, wrap = 0;
+
+	if(inNumSamples <= remain)
+		remain = inNumSamples;
+	else
+		wrap = inNumSamples - remain;
+
+	for (int i = 0; i != numChannels; ++i) {
+		float * inBuf = unit->m_buffer.channel_data(i);
+		const float * in = IN(inputOffset + i);
+
+		memcpy(inBuf + framepos, in, remain * sizeof(float));
+	}
+
+	if(framepos + inNumSamples >= period)
+		(*ft->fPushScopeBuffer)(unit->mWorld, unit->m_buffer, period);
+
+	if (wrap) {
+		for (int i = 0; i != numChannels; ++i) {
+			float * inBuf = unit->m_buffer.channel_data(i);
+			const float * in = IN(inputOffset + i);
+			memcpy(inBuf, in + remain, wrap * sizeof(float));
+		}
+	}
+
+	framepos += inNumSamples;
+	if (framepos >= period)
+		framepos = wrap;
+
+	unit->m_phase = framepos;
+}
+
+void ScopeOut2_Ctor(ScopeOut2 *unit)
+{
+	uint32 numChannels = unit->mNumInputs - 3;
+	uint32 scopeNum = (uint32)ZIN0(0);
+	uint32 maxFrames = (uint32)ZIN0(1);
+
+	bool ok = (*ft->fGetScopeBuffer)(unit->mWorld, scopeNum, numChannels, maxFrames, unit->m_buffer);
+
+	if( !ok ) {
+		if( unit->mWorld->mVerbosity > -1 && !unit->mDone)
+			Print("ScopeOut2: Requested scope buffer unavailable! (index: %d, channels: %d, size: %d)\n",
+				  scopeNum, numChannels, maxFrames);
+	}
+	else {
+		unit->m_phase = 0;
+	}
+
+	SETCALC(ScopeOut2_next);
+}
+
+void ScopeOut2_Dtor(ScopeOut2 *unit)
+{
+	if( unit->m_buffer )
+		(*ft->fReleaseScopeBuffer)(unit->mWorld, unit->m_buffer);
 }
 
 
@@ -7610,6 +7694,7 @@ PluginLoad(Delay)
 	DefineSimpleUnit(GrainTap);
 	DefineSimpleCantAliasUnit(TGrains);
 	DefineDtorUnit(ScopeOut);
+	DefineDtorUnit(ScopeOut2);
 	DefineDelayUnit(Pluck);
 
 	DefineSimpleUnit(DelTapWr);

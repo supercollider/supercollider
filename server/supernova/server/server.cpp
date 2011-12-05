@@ -43,16 +43,18 @@ class nova_server * instance = 0;
 
 nova_server::nova_server(server_arguments const & args):
     scheduler<nova::scheduler_hook, thread_init_functor>(args.threads, !args.non_rt),
+    server_shared_memory_creator(args.port(), args.control_busses),
     buffer_manager(1024), sc_osc_handler(args), dsp_queue_dirty(false)
 {
     assert(instance == 0);
     io_interpreter.start_thread();
-    sc_factory = new sc_ugen_factory;
     instance = this;
+    sc_factory = new sc_ugen_factory;
+    sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
+
 
     /** todo: backend may force sample rate */
     time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate);
-
     start_receive_thread();
 }
 
