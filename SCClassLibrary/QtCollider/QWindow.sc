@@ -104,14 +104,16 @@ QWindow
     allWindows.copy.do { |win| win.close };
   }
 
-  *new { arg name,
+  /* NOTE:
+    - 'server' is only for compatibility with SwingOSC
+    - all args have to be of correct type for QWidget constructor to match!
+  */
+  *new { arg name="",
          bounds,
          resizable = true,
          border = true,
          server,
          scroll = false;
-
-    //NOTE server is only for compatibility with SwingOSC
 
     if( bounds.isNil ) {
       bounds = Rect(0,0,400,400).center_( QWindow.availableBounds.center );

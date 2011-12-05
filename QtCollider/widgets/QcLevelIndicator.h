@@ -47,10 +47,10 @@ public:
   void setDrawPeak( bool b ) { _drawPeak = b; update(); }
   void setTicks( int i ) { _ticks = qMax(i,0); update(); }
   void setMajorTicks( int i ) { _majorTicks = qMax(i,0); update(); }
+  virtual QSize sizeHint() const { return QSize( 25, 150 ); }
 private Q_SLOTS:
   void clipTimeout();
 private:
-  QSize sizeHint() const { return QSize( 25, 150 ); }
   void paintEvent( QPaintEvent *e );
   float _value;
   float _warning;

@@ -66,16 +66,23 @@ QC_LANG_PRIMITIVE( QObject_New, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   QObjectProxy *proxy = 0;
 
-  if( isKindOfSlot( a+1, class_Array ) ) {
-    VariantList argVars = Slot::toVariantList( a+1 );
-    proxy = f->newInstance( scObject, argVars.data );
+  Variant arg[10];
+
+  PyrSlot *slotArg = a+1;
+
+  if( isKindOfSlot( slotArg, class_Array ) ) {
+    PyrObject *array = slotRawObject( slotArg );
+    PyrSlot *s = array->slots;
+    int size = array->size;
+    for( int i = 0; i<size && i<10; ++i, ++s ) {
+      arg[i].setData( s );
+    }
   }
   else {
-    QList<QVariant> argList;
-    argList << Slot::toVariant( a+1 );
-    proxy = f->newInstance( scObject, argList );
+    arg[0].setData( slotArg );
   }
 
+  proxy = f->newInstance( scObject, arg );
   if( !proxy ) return errFailed;
 
   SetPtr( scObject->slots, proxy );

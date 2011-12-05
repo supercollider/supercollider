@@ -28,11 +28,17 @@
 class QcWindow : public QcCustomPainted
 {
   Q_OBJECT
+public:
+  QcWindow() {}
+  Q_INVOKABLE QcWindow( const QString &title, const QRectF & geom, bool resizable, bool frame );
 };
 
 class QcScrollWindow : public QcScrollArea
 {
   Q_OBJECT
+public:
+  QcScrollWindow() {}
+  Q_INVOKABLE QcScrollWindow( const QString &title, const QRectF & geom, bool resizable, bool frame );
 };
 
 #endif

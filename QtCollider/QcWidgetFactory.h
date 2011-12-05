@@ -32,25 +32,45 @@ class QcWidgetFactory : public QcObjectFactory<QWIDGET>
 {
 public:
 
-  virtual QObjectProxy *newInstance( PyrObject *scObject, QList<QVariant> & arguments ) {
+  virtual QObjectProxy *newInstance( PyrObject *scObject, QtCollider::Variant arg[10] ) {
 
-    int argc = arguments.count();
+    // Omit the first two arguments - parent and bounds
+
+    QWIDGET *w;
+
+    if( arg[2].type() == QMetaType::Void ) {
+      w = new QWIDGET;
+    }
+    else {
+      QObject *obj = QWIDGET::staticMetaObject.newInstance(
+        arg[2].asGenericArgument(),
+        arg[3].asGenericArgument(),
+        arg[4].asGenericArgument(),
+        arg[5].asGenericArgument(),
+        arg[6].asGenericArgument(),
+        arg[7].asGenericArgument(),
+        arg[8].asGenericArgument(),
+        arg[9].asGenericArgument()
+      );
+
+      w = qobject_cast<QWIDGET*>(obj);
+      if( !w ) {
+        qcErrorMsg( QString("No appropriate constructor found for '%1'.")
+          .arg( QWIDGET::staticMetaObject.className() ) );
+        return 0;
+      }
+    }
+
+    QObjectProxy *prox( proxy(w, scObject) );
 
     // check if parent arg is valid;
 
-    QObjectProxy *parentProxy = argc > 0 ? arguments[0].value<QObjectProxy*>() : 0;
+    QObjectProxy *parentProxy( arg[0].value<QObjectProxy*>() );
 
-    // create the widget
-
-    QWIDGET *widget = new QWIDGET();
-    QWidget *w = widget; // template parameter type-safety
-
-    QWidgetProxy *proxy = new QWidgetProxy ( w, scObject );
 
     // set requested geometry
 
-    QRect r;
-    if( argc > 1 ) r = arguments[1].value<QRect>();
+    QRect r( arg[1].value<QRectF>().toRect() );
     if( r.size().isEmpty() ) r.setSize( w->sizeHint() );
 
     w->setGeometry( r );
@@ -58,10 +78,6 @@ public:
     // automatically support drag and drop
 
     w->setAcceptDrops( true );
-
-    // do custom initialization
-
-    initialize( proxy, widget, arguments ); // use template parameter type
 
     // set parent
 
@@ -79,12 +95,19 @@ public:
       w->show();
     }
 
-    return proxy;
+    return prox;
   }
 
 protected:
 
-  virtual void initialize( QWidgetProxy *, QWIDGET *, QList<QVariant> & ) {};
+  virtual QObjectProxy * proxy( QWIDGET *w, PyrObject *sc_obj )
+  {
+    QWidgetProxy *prox( new QWidgetProxy( w, sc_obj ) );
+    initialize( prox, w );
+    return prox;
+  }
+
+  virtual void initialize( QWidgetProxy *proxy, QWIDGET *obj ) {};
 };
 
 #endif

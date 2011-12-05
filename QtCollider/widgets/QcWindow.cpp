@@ -27,25 +27,49 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-static QWidgetProxy *qcInitWindow( QWidget *window, PyrObject *po, QList<QVariant> & arguments )
+class QcWindowFactory : public QcObjectFactory<QcWindow>
 {
-  if( arguments.count() < 4 ) return 0;
+  // NOTE: use basic object contruction, but return widget proxy
+  public:
+  virtual QObjectProxy *proxy( QcWindow *obj, PyrObject *sc_obj )
+  {
+    QObjectProxy *proxy = new QWidgetProxy( obj, sc_obj );
+    QObject::connect( obj, SIGNAL(painting(QPainter*)),
+                      proxy, SLOT(customPaint(QPainter*)) );
+    return proxy;
+  }
+};
 
+class QcScrollWindowFactory : public QcObjectFactory<QcScrollWindow>
+{
+  // NOTE: use basic object contruction, but return widget proxy
+  // NOTE: painting will be performed by QcScrollWidget and its factory
+  public:
+  virtual QObjectProxy *proxy( QcWindow *obj, PyrObject *sc_obj )
+  {
+    return new QWidgetProxy( obj, sc_obj );
+  }
+};
+
+static QcWindowFactory winFactory;
+static QcScrollWindowFactory scrollWinFactory;
+
+static void qcInitWindow
+  ( QWidget *window, const QString &title, const QRectF & geom_, bool resizable, bool frame )
+{
   // window title
 
-  QString name = arguments[0].toString();
-  window->setWindowTitle( name );
+  window->setWindowTitle( title );
 
   // size, resizability
 
-  QRect geom = arguments[1].value<QRect>();
+  QRect geom(geom_.toRect());
 
   if( geom.isEmpty() ) {
     geom = QApplication::desktop()->availableGeometry();
     geom.setSize( window->sizeHint() );
   }
 
-  bool resizable = arguments[2].value<bool>();
   if( resizable ) {
     window->setGeometry( geom );
   } else {
@@ -55,8 +79,7 @@ static QWidgetProxy *qcInitWindow( QWidget *window, PyrObject *po, QList<QVarian
 
   // frameless?
 
-  bool border = arguments[3].value<bool>();
-  if( !border )
+  if( !frame )
     window->setWindowFlags( window->windowFlags() | Qt::FramelessWindowHint );
 
   // Ctrl+W shortcut: close the window
@@ -65,42 +88,14 @@ static QWidgetProxy *qcInitWindow( QWidget *window, PyrObject *po, QList<QVarian
     new QShortcut( QKeySequence( Qt::CTRL | Qt::Key_W ), window );
   QObject::connect( closeShortcut, SIGNAL(activated()),
                     window, SLOT(close()) );
-
-  // make the proxy
-
-  QWidgetProxy *proxy = new QWidgetProxy( window, po );
-  return proxy;
 }
 
-class QcWindowFactory : public QcWidgetFactory<QcWindow>
+QcWindow::QcWindow( const QString &title, const QRectF & geom, bool resizable, bool frame )
 {
-  public:
-  virtual QObjectProxy *newInstance( PyrObject *pyrobj, QList<QVariant> & args )
-  {
-    QcWindow *w = new QcWindow;
-    QObjectProxy *proxy = qcInitWindow( w, pyrobj, args );
-    if( !proxy ) {
-      delete w;
-      return 0;
-    }
-    QObject::connect( w, SIGNAL(painting(QPainter*)),
-                      proxy, SLOT(customPaint(QPainter*)) );
-    return proxy;
-  }
-};
+  qcInitWindow( this, title, geom, resizable, frame );
+}
 
-class QcScrollWindowFactory : public QcWidgetFactory<QcScrollWindow>
+QcScrollWindow::QcScrollWindow( const QString &title, const QRectF & geom, bool resizable, bool frame )
 {
-  // NOTE: painting will be performed by QcScrollWidget and its factory
-  public:
-  virtual QObjectProxy *newInstance( PyrObject *pyrobj, QList<QVariant> & args )
-  {
-    QcScrollWindow *w = new QcScrollWindow;
-    QObjectProxy *proxy = qcInitWindow( w, pyrobj, args );
-    if( !proxy ) delete w;
-    return proxy;
-  }
-};
-
-static QcWindowFactory winFactory;
-static QcScrollWindowFactory scrollWinFactory;
+  qcInitWindow( this, title, geom, resizable, frame );
+}

@@ -22,10 +22,4 @@
 #include "QcPenPrinter.h"
 #include "../QcObjectFactory.h"
 
-class PenPrinterFactory : public QcObjectFactory<QcPenPrinter>
-{
-  void initialize( QObjectProxy *, QcPenPrinter *penPrinter, QList<QVariant> & args ) {
-  }
-};
-
-static PenPrinterFactory penPrinterFactory;
+static QcObjectFactory<QcPenPrinter> penPrinterFactory;

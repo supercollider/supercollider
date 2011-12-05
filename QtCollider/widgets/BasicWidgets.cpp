@@ -41,7 +41,7 @@ QcWidgetFactory<QcCheckBox> checkBoxFactory;
 
 class QcListWidgetFactory : public QcWidgetFactory<QcListWidget>
 {
-  void initialize( QWidgetProxy *p, QcListWidget *l, QList<QVariant> & ) {
+  void initialize( QWidgetProxy *p, QcListWidget *l ) {
     p->setMouseEventWidget( l->viewport() );
   }
 };
@@ -206,9 +206,8 @@ void QcButton::doAction()
 class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
 {
 protected:
-  virtual void initialize( QWidgetProxy *p, QcCustomPainted *w, QList<QVariant> & args )
+  virtual void initialize( QWidgetProxy *p, QcCustomPainted *w )
   {
-    Q_UNUSED(args);
     QObject::connect( w, SIGNAL(painting(QPainter*)),
                       p, SLOT(customPaint(QPainter*)) );
   }

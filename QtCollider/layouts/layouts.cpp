@@ -21,8 +21,8 @@
 
 #include "layouts.hpp"
 
-static QcBoxLayoutFactory<QcHBoxLayout> hBoxLayoutFactory;
-static QcBoxLayoutFactory<QcVBoxLayout> vBoxLayoutFactory;
+static QcObjectFactory<QcHBoxLayout> hBoxLayoutFactory;
+static QcObjectFactory<QcVBoxLayout> vBoxLayoutFactory;
 static QcObjectFactory<QcGridLayout> gridLayoutFactory;
 
 void QcGridLayout::addItem( const VariantList &dataList )

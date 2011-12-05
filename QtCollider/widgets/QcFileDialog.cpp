@@ -22,37 +22,36 @@
 #include "QcFileDialog.h"
 #include "../QcObjectFactory.h"
 
-class FileDialogFactory : public QcObjectFactory<QcFileDialog>
-{
-  void initialize( QObjectProxy *, QcFileDialog *dialog, QList<QVariant> & args ) {
-    QFileDialog *d = dialog->theDialog();
-    if( args.count() > 0 ) {
-      int mode = args[0].toInt();
-      switch(mode) {
-        case QFileDialog::AnyFile:
-          d->setFileMode( QFileDialog::AnyFile ); break;
-        case QFileDialog::ExistingFile:
-          d->setFileMode( QFileDialog::ExistingFile ); break;
-        case QFileDialog::Directory:
-          d->setFileMode( QFileDialog::Directory ); break;
-        case QFileDialog::ExistingFiles:
-          d->setFileMode( QFileDialog::ExistingFiles ); break;
-        default:
-          qcErrorMsg( "File dialog created with invalid file mode!\n");
-      }
-    }
-    if( args.count() > 1 ) {
-      int mode = args[1].toInt();
-      switch(mode) {
-        case QFileDialog::AcceptOpen:
-          d->setAcceptMode( QFileDialog::AcceptOpen ); break;
-        case QFileDialog::AcceptSave:
-          d->setAcceptMode( QFileDialog::AcceptSave ); break;
-        default:
-          qcErrorMsg( "File dialog created with invalid accept mode!\n");
-      }
-    }
-  }
-};
+static QcObjectFactory<QcFileDialog> fileDialogFactory;
 
-static FileDialogFactory fileDialogFactory;
+QcFileDialog::QcFileDialog( int fileMode, int acceptMode ) {
+  dialog = new QFileDialog();
+
+  dialog->setDirectory( QDir::home() );
+
+  switch(fileMode) {
+    case QFileDialog::AnyFile:
+      dialog->setFileMode( QFileDialog::AnyFile ); break;
+    case QFileDialog::ExistingFile:
+      dialog->setFileMode( QFileDialog::ExistingFile ); break;
+    case QFileDialog::Directory:
+      dialog->setFileMode( QFileDialog::Directory ); break;
+    case QFileDialog::ExistingFiles:
+      dialog->setFileMode( QFileDialog::ExistingFiles ); break;
+    default:
+      qcErrorMsg( "File dialog created with invalid file mode!\n");
+  }
+
+  switch(acceptMode) {
+    case QFileDialog::AcceptOpen:
+      dialog->setAcceptMode( QFileDialog::AcceptOpen ); break;
+    case QFileDialog::AcceptSave:
+      dialog->setAcceptMode( QFileDialog::AcceptSave ); break;
+    default:
+      qcErrorMsg( "File dialog created with invalid accept mode!\n");
+  }
+
+  setParent( dialog );
+
+  connect( dialog, SIGNAL(finished(int)), this, SLOT(onFinished(int)) );
+}

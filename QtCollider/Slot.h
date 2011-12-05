@@ -98,6 +98,13 @@ public:
 
   int type() { return _type; }
 
+  template<typename T> T value() {
+    if( qMetaTypeId<T>() == _type )
+      return *reinterpret_cast<T*>(_ptr);
+    else
+      return T();
+  }
+
 private:
 
   int _type;
