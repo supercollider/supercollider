@@ -59,20 +59,19 @@ Q_SIGNALS:
 private Q_SLOTS:
 
   void show() {
-    QPrintDialog *dialog = new QPrintDialog(&printer);
+    QPrintDialog dialog(&printer);
 
-    dialog->setWindowTitle( QString("Print Document") );
-    dialog->setOptions (
+    dialog.setWindowTitle( QString("Print Document") );
+    dialog.setOptions (
       QAbstractPrintDialog::PrintToFile |
       QAbstractPrintDialog::PrintPageRange |
       QAbstractPrintDialog::PrintShowPageSize
     );
-    if (dialog->exec() != QDialog::Accepted) {
+    if (dialog.exec() != QDialog::Accepted) {
       Q_EMIT( cancel() );
     } else {
       Q_EMIT( ok() );
     }
-    delete dialog;
   }
 
   void print() {
