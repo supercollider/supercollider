@@ -230,10 +230,10 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   (sclang-message "Initializing library...done"))
 
 (defun sclang-on-library-shutdown ()
-  (run-hooks 'sclang-library-shutdown-hook)
-  (setq sclang-library-initialized-p nil)
-  (sclang-message "Shutting down library...")
-  )
+  (when sclang-library-initialized-p
+    (run-hooks 'sclang-library-shutdown-hook)
+    (setq sclang-library-initialized-p nil)
+    (sclang-message "Shutting down library...")))
 
 ;; =====================================================================
 ;; process hooks
@@ -311,6 +311,7 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   "Start SuperCollider process."
   (interactive)
   (sclang-stop)
+  (sclang-on-library-shutdown)
   (sit-for 1)
   (sclang-init-post-buffer)
   (sclang-start-command-process)
@@ -349,7 +350,6 @@ If EOB-P is non-nil, positions cursor at end of buffer."
   "Recompile class library."
   (interactive)
   (when (sclang-get-process)
-    (sclang-on-library-shutdown)
     (process-send-string sclang-process "\x18")
     ))
 
