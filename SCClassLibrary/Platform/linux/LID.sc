@@ -65,10 +65,10 @@ LID {
 			nil, nil, nil, nil,
 			nil, nil, nil
 		];
-		UI.registerForShutdown({
+		ShutDown.add {
 			this.closeAll;
 			this.prStopEventLoop;
-		});
+		};
 		this.prStartEventLoop;
 	}
 

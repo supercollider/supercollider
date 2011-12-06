@@ -7,10 +7,10 @@ SerialPort
 
 	*initClass {
 		allPorts = Array[];
-		UI.registerForShutdown({
+		ShutDown.add {
 			//			this.closeAll;
 			this.cleanupAll;
-		});
+		};
 	}
 
 	// device listing

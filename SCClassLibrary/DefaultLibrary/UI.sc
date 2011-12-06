@@ -6,9 +6,6 @@ UI {
 		shutdownActions = Array.new;
 	}
 
-	*shutdown {
-		shutdownActions.do({ arg function; function.value });
-	}
 	*reset {
 		resetActions.do({ arg function; function.value });
 	}
@@ -17,8 +14,8 @@ UI {
 		arg function;
 		resetActions = resetActions.add(function);
 	}
-	*registerForShutdown {
-		arg function;
-		shutdownActions = shutdownActions.add(function);
+	*registerForShutdown {|aFunction|
+		this.deprecated(thisMethod, ShutDown.class.findMethod(\add));
+		ShutDown.add(aFunction)
 	}
 }
