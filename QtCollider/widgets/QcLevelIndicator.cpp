@@ -33,6 +33,7 @@ QcLevelIndicator::QcLevelIndicator()
   _clipped(false)
 {
   _clipTimer = new QTimer( this );
+  _clipTimer->setSingleShot(true);
   _clipTimer->setInterval( 1000 );
   connect( _clipTimer, SIGNAL(timeout()), this, SLOT(clipTimeout()) );
 }
@@ -40,6 +41,7 @@ QcLevelIndicator::QcLevelIndicator()
 void QcLevelIndicator::clipTimeout()
 {
   _clipped = false;
+  update();
 }
 
 
@@ -58,18 +60,20 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
 
   float colorValue = _drawPeak ? _peak : _value;
 
+  if( colorValue > _critical ) {
+    _clipped = true;
+  }
+  else if( _clipped ) {
+    _clipTimer->start();
+  }
+
   QColor c;
-  if( _clipped || colorValue > _critical )
+  if( _clipped )
     c = QColor(255,100,0);
   else if( colorValue > _warning )
     c = QColor( 255, 255, 0 );
   else
     c = QColor( 0, 255, 0 );
-
-  if( colorValue > _critical ) {
-    _clipped = true;
-    _clipTimer->start();
-  }
 
   p.fillRect( vertical ? QRectF(0,0,groove,height()) : QRectF(0,0,width(),groove),
               QColor( 130,130,130 ) );
