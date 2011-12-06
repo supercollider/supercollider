@@ -251,6 +251,7 @@ Emacs {
 			outStream = CollStream.on(String.new);
 			outFile = File(outFileName, "w");
 			ShutDown.add {
+				Emacs.evalLispExpression( "(sclang-on-library-shutdown)" );
 				if (outFile.notNil) {
 					outFile.close;
 					outFile = nil
