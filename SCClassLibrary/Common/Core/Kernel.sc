@@ -208,7 +208,7 @@ Process {
 	shutdown {
 		// This method is called before recompiling or quitting.
 		// Override in class 'Main' to do whatever you want.
-		UI.shutdown;
+		ShutDown.run;
 		NetAddr.disconnectAll;
 		File.closeAll;
 		Archive.write;

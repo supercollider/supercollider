@@ -258,10 +258,10 @@ WiiMote {
 		}*/
 
 	*start{ |updtime=50|
-		UI.registerForShutdown({
+		ShutDown.add {
 			this.closeAll;
 			this.prStop;
-		});
+		};
 		this.prStart( updtime );
 		eventLoopIsRunning = true;
 	}

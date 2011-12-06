@@ -250,12 +250,12 @@ Emacs {
 			thisProcess.platform.declareFeature( \emacs );
 			outStream = CollStream.on(String.new);
 			outFile = File(outFileName, "w");
-			UI.registerForShutdown({
+			ShutDown.add {
 				if (outFile.notNil) {
 					outFile.close;
 					outFile = nil
 				};
-			});
+			};
 			// initialize servers
 			newServer = { | server update |
 				SimpleController(server)

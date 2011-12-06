@@ -12,7 +12,7 @@ SCWindow {
 	var <currentSheet; // current modal sheet attached to this window, if it exists
 
 	*initClass {
-		UI.registerForShutdown({ this.closeAll });
+		ShutDown.add { this.closeAll };
 	}
 
 	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;

@@ -106,10 +106,6 @@ ShutDown : AbstractSystemAction {
 
 	classvar <>objects;
 
-	*initClass {
-		UI.registerForShutdown({ this.run });
-	}
-
 	*run {
 		objects.copy.do({ arg item; item.doOnShutDown;  });
 	//	"ShutDown done.".postln;

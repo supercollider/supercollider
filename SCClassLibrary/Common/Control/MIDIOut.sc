@@ -37,7 +37,7 @@ MIDIClient {
 
 		this.list;
 
-		UI.registerForShutdown( { this.disposeClient } );
+		ShutDown.add { this.disposeClient };
 
 		Post << "MIDI Sources:" << Char.nl;
 		sources.do({ |x| Post << Char.tab << x << Char.nl });
