@@ -173,11 +173,14 @@ Function : AbstractFunction {
 	}
 
 	protect { arg handler;
-		var result = this.prTry;
+		var result;
+		Exception.inProtectedFunction = true;
+		result = this.prTry;
 		if (result.isException) {
 			handler.value(result);
 			result.throw;
 		}{
+			Exception.inProtectedFunction = false;
 			handler.value; // argument should be nil if there was no exception.
 			^result
 		};
