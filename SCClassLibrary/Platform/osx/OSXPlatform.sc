@@ -39,8 +39,6 @@ OSXPlatform : UnixPlatform
 	defaultGUIScheme { if (GUI.get(\qt).notNil) {^\qt} {^\cocoa} }
 	defaultHIDScheme { ^\osx_hid }
 
-	recompile { _Recompile }
-
 	setDeferredTaskInterval { |interval| _SetDeferredTaskInterval }
 
 	findHelpFile { | string |

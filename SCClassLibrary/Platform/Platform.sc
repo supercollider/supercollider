@@ -18,7 +18,7 @@ Platform
 
 	name { ^this.subclassResponsibility }
 
-	recompile { ^this.subclassResponsibility }
+	recompile { _Recompile }
 	*case { | ... cases |
 		^thisProcess.platform.name.switch(*cases)
 	}
