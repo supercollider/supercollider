@@ -93,7 +93,7 @@
 	BOOL drawPeak, isVertical, criticalAboveWarning;
 	float peakSubtract, peakLevel, peakY, peakHeight;
 	double value, peakValue;
-	float warning, critical;
+	double warning, critical;
 }
 
 - (void)setDrawPeak:(BOOL)flag;
