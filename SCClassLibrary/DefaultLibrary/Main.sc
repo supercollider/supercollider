@@ -46,14 +46,14 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
 		).postln;
 
 		Main.overwriteMsg.split(Char.nl).drop(-1).collect(_.split(Char.tab)).do {|x|
-			if(x[2].beginsWith(Platform.classLibraryDir) and: {x[1].contains("/SystemOverrides/").not}
+			if(x[2].beginsWith(Platform.classLibraryDir) and: {x[1].contains("/SystemOverwrites/").not}
 			) {
-				error("Extension in '%' overwrites % in main class library.".format(x[1],x[0]));
+				warn("Extension in '%' overwrites % in main class library.".format(x[1],x[0]));
 				didWarnOverwrite = true;
 			}
 		};
 		if(didWarnOverwrite) {
-			inform("\nIntentional overwrites must be put in a 'SystemOverrides' subfolder.")
+			inform("\nIntentional overwrites must be put in a 'SystemOverwrites' subfolder.")
 		}
 	}
 
