@@ -282,7 +282,7 @@ Process {
 		references = Class.findAllReferences(name);
 		if (references.notNil, {
 			out << "References to '" << name << "' :\n";
-			references.do({ arg ref; 
+			references.do({ arg ref;
 				nameString = ref.ownerClass.name ++ ":" ++ ref.name;
 				out << "   [" << nameString << "]\n"; });
 			out.collection.newTextWindow(name.asString);
