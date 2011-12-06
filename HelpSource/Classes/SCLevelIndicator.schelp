@@ -1,0 +1,253 @@
+CLASS:: SCLevelIndicator
+summary:: a level indicator GUI widget
+categories:: GUI
+related:: Classes/SCRangeSlider
+
+DESCRIPTION::
+A level indicator view, suitable for use as a level or peak meter, etc.
+
+
+CLASSMETHODS::
+private::paletteExample
+
+INSTANCEMETHODS::
+private::valueAction
+
+METHOD:: value
+Get or set the current level of the view.
+
+argument:: val
+A link::Classes/Float:: between 0 and 1.
+
+returns:: A link::Classes/Float::
+
+METHOD:: warning
+Set the warning threshold. Styles 0 and 2 (see below) implement a warning display. If critical is > warning the view will turn yellow if value is > val. If critical is <= warning the view will turn yellow if value is <= to val. If drawsPeak is true warning will be displayed based on peakLevel rather than value.
+
+argument:: val
+A link::Classes/Float::.
+
+code::(
+w = Window.new.front;
+a = SCLevelIndicator(w, Rect(10, 10, 20, 160));
+a.value = 0.5;
+)
+a.warning = 0.6; a.critical = 0.9;
+a.value = 0.7;
+::
+
+METHOD:: critical
+Set the warning threshold. Styles 0 and 2 (see below) implement a critical display. If critical is > warning the view will turn red if value is > val. If critical is <= warning the view will turn yellow if value is <= to val. If drawsPeak is true critical will be displayed based on peakLevel rather than value.
+
+argument:: val
+A link::Classes/Float::.
+
+code::(
+w = Window.new.front;
+a = SCLevelIndicator(w, Rect(10, 10, 20, 160));
+a.style = 2;
+a.numSteps = 10;
+a.value = 0.5;
+)
+a.warning = 0.6; a.critical = 0.9;
+a.value = 1;
+::
+
+METHOD:: style
+Sets the style of the view.
+
+argument:: val
+An link::Classes/Integer:: from 0 to 3. 0 = colored bar; 1 = graduated black lines; 2 = LED style (see numSteps below); 3 = LED style with custom image (see image below).
+
+code::(
+w = Window.new.front;
+w.addFlowLayout;
+4.do({|i|
+	a = SCLevelIndicator(w, Rect(0, 0, 20, 200));
+	a.style = i;
+	a.numSteps = 10;
+	a.value = 0.5;
+});
+)
+::
+
+METHOD:: numSteps
+The number of steps used in styles 2 and 3. (See style above.)
+
+argument:: val
+An positive link::Classes/Integer::.
+
+code::(
+w = Window.new.front;
+a = SCLevelIndicator(w, Rect(10, 10, 200, 20));
+a.style = 2;
+a.value = 1;
+)
+a.numSteps = 10;
+a.numSteps = 20;
+::
+
+METHOD:: image
+Sets the image used in style 3. See below for an example.
+
+argument:: image
+An link::Classes/SCImage::. The default image is the SC cube.
+
+METHOD:: numTicks
+The number of ticks to display in the view's scale.
+
+argument:: ticks
+An link::Classes/Integer:: >= 0.
+
+code::(
+w = Window.new.front;
+w.view.background = Color.black;
+a = SCLevelIndicator(w, Rect(10, 10, 300, 30));
+a.numTicks = 11;
+a.value = 0.5;
+)
+::
+
+METHOD:: numMajorTicks
+The number of ticks in the view's scale which will be large sized.
+
+argument:: ticks
+An link::Classes/Integer:: >= 0.
+
+code::(
+w = Window.new.front;
+w.view.background = Color.black;
+a = SCLevelIndicator(w, Rect(10, 10, 300, 30));
+a.numTicks = 11;
+a.numMajorTicks = 3;
+a.value = 0.5;
+)
+::
+
+METHOD:: drawsPeak
+Determines whether the view draws a separate peak display. This can be useful for displaying both peak and RMS values. If drawsPeak is true warning and critical (see above) will be displayed based on peakLevel rather than value in styles 0 and 2.
+
+argument:: bool
+A link::Classes/Boolean::. By default the peak is not drawn.
+
+code::(
+w = Window.new.front;
+a = SCLevelIndicator(w, Rect(10, 10, 300, 30));
+a.drawsPeak = true;
+a.style = 1;
+a.value = 0.5;
+a.peakLevel = 0.6;
+)
+::
+
+METHOD:: peakLevel
+Sets the level of the peak display. (See drawsPeak above.)
+
+argument:: val
+A link::Classes/Float::.
+
+code::(
+w = Window.new.front;
+a = SCLevelIndicator(w, Rect(10, 10, 20, 160));
+a.drawsPeak = true;
+a.peakLevel = 0.6)
+)
+::
+
+
+
+EXAMPLES::
+
+code::
+s.boot;
+GUI.cocoa; // just to be sure
+
+// something to meter
+(
+b = Buffer.read(s, "sounds/a11wlk01.wav");	
+x = { var colum, noise, imp, delimp, mul = 1;
+	imp = Impulse.kr(10);
+	delimp = Delay1.kr(imp);
+	colum = PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * mul;
+	// measure rms and Peak
+	SendReply.kr(imp, '/levels', [Amplitude.kr(colum), K2A.ar(Peak.ar(colum, delimp).lag(0, 3))]);
+	colum;
+}.play;
+)
+
+// a window and responder
+// default style is coloured / solid
+(
+w = Window.new.front;
+a = SCLevelIndicator(w, Rect(10, 10, 20, 160));
+o = OSCFunc({arg msg;
+	{
+		a.value = msg[3].ampdb.linlin(-40, 0, 0, 1);
+		a.peakLevel = msg[4].ampdb.linlin(-40, 0, 0, 1);
+	}.defer;
+}, '/levels', s.addr);
+w.onClose = {o.free; x.free};
+)
+
+// styles 0 and 2 support warning and critical levels
+(
+a.warning = -6.dbamp;
+a.critical = -3.dbamp;
+)
+
+// optionally show peak level
+(
+a.warning = 0;
+a.critical = 0;
+a.drawsPeak = true;
+)
+
+// style 1 is black bars
+a.style = 1
+
+// looks good with a background
+a.background = Gradient(Color.red, Color.green, \v);
+
+// all styles can have ticks
+(
+a.background = Color.clear;
+a.numTicks = 11; // includes 0;
+a.numMajorTicks = 3;	
+)
+
+// style 2 is LED
+(
+a.drawsPeak = false;
+a.style = 2;
+a.numSteps = 10;
+a.numTicks = 0;
+)
+
+// style 3 is as 2, but with images
+a.style = 3; // use default image
+
+// make a custom image
+(
+j = SCImage.new(20,20);
+j.draw({ arg image;
+var lozenge;
+lozenge = Rect(3, 3, 16, 16);
+Pen.addOval(lozenge);
+Pen.fillAxialGradient(1@1, 19@19, Color.new255(255, 165, 0), Color.new255(238, 232, 170));
+Pen.width = 1;
+Pen.strokeColor = Color.blue;
+Pen.strokeOval(lozenge);
+});
+a.image = j;
+)
+
+// be inspired
+j = SCImage.openURL("http://bit.ly/uSMWwp");
+
+(
+a.bounds = Rect(10, 10, 380, 80);
+a.numSteps = 5;
+a.image = j;
+)
+
+::
