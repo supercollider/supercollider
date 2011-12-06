@@ -56,15 +56,17 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
 
   float length = vertical ? height() : width();
 
+  float colorValue = _drawPeak ? _peak : _value;
+
   QColor c;
-  if( _clipped || _value >= _critical )
+  if( _clipped || colorValue > _critical )
     c = QColor(255,100,0);
-  else if( _value >= _warning )
+  else if( colorValue > _warning )
     c = QColor( 255, 255, 0 );
   else
     c = QColor( 0, 255, 0 );
 
-  if( _value >= _critical ) {
+  if( colorValue > _critical ) {
     _clipped = true;
     _clipTimer->start();
   }
