@@ -8,38 +8,46 @@ QPenPrinter : QObject {
   }
 
   *print { |printFunc, cancelFunc|
-    QPenPrinter().showDialog(
-      { |p| p.print(printFunc); p.destroy },
-      { |p| cancelFunc.value; p.destroy }
-    )
+    this.new.showDialog( { |p| p.print(printFunc) }, cancelFunc);
   }
 
   init {
+    heap.remove(this);
     this.connectFunction('printFunc()', synchronous:true) {
       printFunc.value(this);
       printFunc = nil;
+      heap.remove(this);
     };
-    this.connectFunction('dialogDone(int)', synchronous:false)
-    {
-      arg me, ok;
+    this.connectFunction('dialogDone(int)', synchronous:false) { |me, ok|
       if( ok == 1 ) {
         okFunc.value(this);
-      }{
+      } {
         cancelFunc.value(this);
       };
       okFunc = nil;
       cancelFunc = nil;
+      heap.remove(this);
     };
   }
 
   showDialog { |aOkFunc, aCancelFunc|
+    if(okFunc.notNil or: cancelFunc.notNil) {
+      "QPenPrinter: dialog already open".warn;
+      ^this;
+    };
     okFunc = aOkFunc;
     cancelFunc = aCancelFunc;
+    heap = heap.add(this);
     this.invokeMethod(\show, synchronous:false);
   }
 
   print { |aPrintFunc|
+    if(printFunc.notNil) {
+      "QPenPrinter: printing already in progress".warn;
+      ^this;
+    };
     printFunc = aPrintFunc;
+    heap = heap.add(this);
     this.invokeMethod(\print, synchronous:false);
   }
 
