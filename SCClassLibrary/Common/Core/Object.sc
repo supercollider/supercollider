@@ -259,7 +259,7 @@ Object  {
 	// errors
 	halt {
 		thisProcess.nowExecutingPath = nil;
-		UI.reset;
+		Reset.run;
 		this.prHalt
 	}
 	prHalt { _Halt }

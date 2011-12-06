@@ -3,16 +3,12 @@ UI {
 
 	initClass {
 		resetActions = Array.new;
-		shutdownActions = Array.new;
+		shutdownActions = Array.new; // braindead extensions may rely on these
 	}
 
-	*reset {
-		resetActions.do({ arg function; function.value });
-	}
-
-	*registerForReset {
-		arg function;
-		resetActions = resetActions.add(function);
+	*registerForReset {|aFunction|
+		this.deprecated(thisMethod, Reset.class.findMethod(\add));
+		Reset.add(aFunction)
 	}
 	*registerForShutdown {|aFunction|
 		this.deprecated(thisMethod, ShutDown.class.findMethod(\add));
