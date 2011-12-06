@@ -985,7 +985,9 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 		options.mSharedControls = gInternalSynthServer.mSharedControls;
 
 		// internal servers use the PID to identify the shared memory region
-#ifndef _WIN32
+#if defined(SC_IPHONE)
+		options.mSharedMemoryID = 0;
+#elif !defined(_WIN32)
 		options.mSharedMemoryID = getpid();
 #else
 		options.mSharedMemoryID = GetCurrentProcessId()
