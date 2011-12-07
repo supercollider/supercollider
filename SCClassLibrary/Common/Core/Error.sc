@@ -7,8 +7,8 @@ Exception {
 
 	*new { arg what;
 		var protectedBacktrace, instance;
-		if (debug || inProtectedFunction, { 
-			protectedBacktrace = this.getBackTrace.caller; 
+		if (debug || inProtectedFunction, {
+			protectedBacktrace = this.getBackTrace.caller;
 			inProtectedFunction = false;
 		});
 		^super.newCopyArgs(what ? this.name, thisProcess.nowExecutingPath);
@@ -56,7 +56,7 @@ Exception {
 		// it just duplicates the normal stack with less info
 		out.collection.copyFromStart(pos).postln;
 	}
-	
+
 	isException { ^true }
 }
 
