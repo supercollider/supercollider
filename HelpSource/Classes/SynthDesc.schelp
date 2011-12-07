@@ -142,12 +142,16 @@ method:: name
 returns:: the name of the SynthDef
 
 method:: controls
-returns:: an array of instances of ControlName, each of which
+returns:: an array of instances of link::Classes/ControlName::, each of which
 have the following fields: name, index, rate, defaultValue
 discussion::
 code::
 SynthDescLib.global.at(\default).controlNames.postln;
 ::
+
+method:: controlDict
+An link::Classes/IdentityDictionary:: of the link::Classes/ControlName::'s, indexed by name.
+This can be used for fast lookup of control index by name, for example to set a specific element of a multichannel control.
 
 method:: controlNames
 returns:: an array of Strings with the names of controls

@@ -13,3 +13,25 @@ x = a.synthDescs.at(\default); // get the default SynthDesc
 x.controls.do { |ctl| [\name, ctl.name, \defaultValue, ctl.defaultValue].postln };"";
 ::
 
+instancemethods::
+private:: printOn
+
+method::name
+The name of the control.
+returns:: a link::Classes/Symbol::
+
+method::index
+The index of the control.
+returns:: an link::Classes/Integer::
+
+method::rate
+The rate of the control.
+returns:: a link::Classes/Symbol:: like code::'audio':: or code::'control'::
+
+method::defaultValue
+Default value of this control. Will be an link::Classes/Array:: for multichannel controls.
+
+method::numChannels
+The number of channels.
+returns:: an link::Classes/Integer::
+
