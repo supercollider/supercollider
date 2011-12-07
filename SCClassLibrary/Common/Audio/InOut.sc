@@ -1,6 +1,6 @@
 ControlName
 {
-	var <>name, <>index, <>rate, <>defaultValue, <>argNum, <>lag, <>numChannels;
+	var <>name, <>index, <>rate, <>defaultValue, <>argNum, <>lag;
 
 	*new { arg name, index, rate, defaultValue, argNum, lag;
 		^super.newCopyArgs(name.asSymbol, index, rate, defaultValue, argNum, lag ? 0.0)
