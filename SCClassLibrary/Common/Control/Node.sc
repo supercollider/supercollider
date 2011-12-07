@@ -79,23 +79,6 @@ Node {
 	mapnMsg { arg ... args;
 		^[48, nodeID] ++ args.asControlInput; //"/n_mapn"
 	}
-	// map to Bus objects
-	busMap { arg firstControl, aBus ... args;
-		var values;
-		this.deprecated(thisMethod, Node.findMethod(\map));
-		values = List.new;
-		args.pairsDo({ arg control, bus; values.addAll([control, bus.index, bus.numChannels])});
-		server.sendMsg(48, nodeID, firstControl, aBus.index, aBus.numChannels, *values);
-		//"/n_mapn"
-	}
-	busMapMsg { arg firstControl, aBus ... args;
-		var values;
-		this.deprecated(thisMethod, Node.findMethod(\mapMsg));
-		values = List.new;
-		args.pairsDo({ arg control, bus; values.addAll([control, bus.index, bus.numChannels])});
-		^[48, nodeID, firstControl, aBus.index, aBus.numChannels] ++ values;
-		//"/n_mapn"
-	}
 
 	set { arg ... args;
 		server.sendMsg(15, nodeID, *(args.asOSCArgArray));  //"/n_set"

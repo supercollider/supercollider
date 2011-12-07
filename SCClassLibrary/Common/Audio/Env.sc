@@ -270,11 +270,6 @@ Env : AbstractEnv {
 		^releaseNode.notNil
 	}
 
-	shapeNumber { arg shapeName;
-		this.deprecated(thisMethod, this.class.class.findMethod(\shapeNumber));
-		^this.class.shapeNumber(shapeName)
-	}
-
 	test { arg releaseTime = 3.0;
 		var id, def, s;
 		s = Server.default;
