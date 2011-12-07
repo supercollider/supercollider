@@ -98,7 +98,7 @@ BusPlug : AbstractFunction {
 		var n;
 		if(UGen.buildSynthDef.isNil) { ^this }; // only return when in ugen graph.
 		something !? {  n = something.numChannels };
-		^if(something.rate == 'audio') { this.ar(n) } { this.kr(n) }
+		^if(something.respondsTo(\rate) and: { something.rate == 'audio'}) { this.ar(n) } { this.kr(n) }
 	}
 
 	composeUnaryOp { | aSelector |
