@@ -1,7 +1,7 @@
 class:: SynthDef
 summary:: Client-side representation of a synth definition
 categories:: Server>Abstractions
-related:: Classes/Synth, Reference/Synth-Definition-File-Format
+related:: Classes/Synth, Reference/Synth-Definition-File-Format, Classes/SynthDesc
 
 description::
 
@@ -161,6 +161,8 @@ Return this def's ugenGraphFunc.
 method:: variants
 Return an Event containing this def's variants.
 
+method:: allControlNames
+An array of link::Classes/ControlName::'s for the controls.
 
 subsection:: Special purpose methods
 (for most purposes, the method add is recommended)
