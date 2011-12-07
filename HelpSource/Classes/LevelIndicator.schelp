@@ -1,14 +1,15 @@
-CLASS:: SCLevelIndicator
+CLASS:: LevelIndicator
+redirect:: implClass
 summary:: a level indicator GUI widget
 categories:: GUI>Views
-related:: Classes/SCRangeSlider
+related:: Classes/RangeSlider
 
 DESCRIPTION::
 A level indicator view, suitable for use as a level or peak meter, etc.
 
 
 CLASSMETHODS::
-private::paletteExample
+private::key
 
 INSTANCEMETHODS::
 private::valueAction
@@ -22,7 +23,7 @@ A link::Classes/Float:: between 0 and 1.
 returns:: A link::Classes/Float::
 
 METHOD:: warning
-Set the warning threshold. Styles 0 and 2 (see below) implement a warning display. If critical is > warning the view will turn yellow if value is > val. If critical is <= warning the view will turn yellow if value is <= to val. If drawsPeak is true warning will be displayed based on peakLevel rather than value.
+Set the warning threshold. Styles 0 and 2 (see link::#-style::) implement a warning display. If link::#-critical:: is > warning the view will turn yellow if link::#-value:: is > code::val::. If critical is <= warning the view will turn yellow if value is <= to code::val::. If link::#-drawsPeak:: is true warning will be displayed based on link::#-peakLevel:: rather than value.
 
 argument:: val
 A link::Classes/Float::.
@@ -37,7 +38,7 @@ a.value = 0.7;
 ::
 
 METHOD:: critical
-Set the warning threshold. Styles 0 and 2 (see below) implement a critical display. If critical is > warning the view will turn red if value is > val. If critical is <= warning the view will turn yellow if value is <= to val. If drawsPeak is true critical will be displayed based on peakLevel rather than value.
+Set the warning threshold. Styles 0 and 2 (see link::#-style::) implement a critical display. If critical is > link::#-warning:: the view will turn red if link::#-value:: is > code::val::. If critical is <= warning the view will turn yellow if value is <= to code::val::. If link::#-drawsPeak:: is true critical will be displayed based on link::#-peakLevel:: rather than value.
 
 argument:: val
 A link::Classes/Float::.
@@ -54,10 +55,11 @@ a.value = 1;
 ::
 
 METHOD:: style
-Sets the style of the view. This method is not available in QLevelIndicator.
+note:: Not yet implemented in Qt GUI ::
+Sets the style of the view.
 
 argument:: val
-An link::Classes/Integer:: from 0 to 3. 0 = colored bar; 1 = graduated black lines; 2 = LED style (see numSteps below); 3 = LED style with custom image (see image below).
+An link::Classes/Integer:: from 0 to 3. 0 = colored bar; 1 = graduated black lines; 2 = LED style (see link::#-numSteps::); 3 = LED style with custom image. (See link::#-image::.)
 
 code::(
 w = Window.new.front;
@@ -72,7 +74,7 @@ w.addFlowLayout;
 ::
 
 METHOD:: numSteps
-The number of steps used in styles 2 and 3. (See style above.)
+The number of steps used in styles 2 and 3. (See link::#-style::.)
 
 argument:: val
 An positive link::Classes/Integer::.
@@ -88,10 +90,11 @@ a.numSteps = 20;
 ::
 
 METHOD:: image
-Sets the image used in style 3. See below for an example. This method is not available in QLevelIndicator.
+note:: Not yet implemented in Qt GUI ::
+Sets the image used in style 3. See below for an example.
 
 argument:: image
-An link::Classes/SCImage::. The default image is the SC cube.
+An link::Classes/Image::. The default image is the SC cube.
 
 METHOD:: numTicks
 The number of ticks to display in the view's scale.
@@ -125,7 +128,7 @@ a.value = 0.5;
 ::
 
 METHOD:: drawsPeak
-Determines whether the view draws a separate peak display. This can be useful for displaying both peak and RMS values. If drawsPeak is true warning and critical (see above) will be displayed based on peakLevel rather than value in styles 0 and 2.
+Determines whether the view draws a separate peak display. This can be useful for displaying both peak and RMS values. If drawsPeak is true link::#-warning:: and link::#-critical:: will be displayed based on link::#-peakLevel:: rather than value in link::#-style#styles:: 0 and 2.
 
 argument:: bool
 A link::Classes/Boolean::. By default the peak is not drawn.
@@ -141,7 +144,7 @@ a.peakLevel = 0.6;
 ::
 
 METHOD:: peakLevel
-Sets the level of the peak display. (See drawsPeak above.)
+Sets the level of the peak display. (See link::#-drawsPeak::.)
 
 argument:: val
 A link::Classes/Float::.
@@ -164,7 +167,7 @@ GUI.cocoa; // just to be sure
 
 // something to meter
 (
-b = Buffer.read(s, "sounds/a11wlk01.wav");	
+b = Buffer.read(s, "sounds/a11wlk01.wav");
 x = { var colum, noise, imp, delimp, mul = 1;
 	imp = Impulse.kr(10);
 	delimp = Delay1.kr(imp);
@@ -212,7 +215,7 @@ a.background = Gradient(Color.red, Color.green, \v);
 (
 a.background = Color.clear;
 a.numTicks = 11; // includes 0;
-a.numMajorTicks = 3;	
+a.numMajorTicks = 3;
 )
 
 // style 2 is LED
@@ -228,7 +231,7 @@ a.style = 3; // use default image
 
 // make a custom image
 (
-j = SCImage.new(20,20);
+j = Image.new(20,20);
 j.draw({ arg image;
 var lozenge;
 lozenge = Rect(3, 3, 16, 16);
@@ -242,7 +245,7 @@ a.image = j;
 )
 
 // be inspired
-j = SCImage.openURL("http://bit.ly/uSMWwp");
+j = Image.openURL("http://bit.ly/uSMWwp");
 
 (
 a.bounds = Rect(10, 10, 380, 80);
