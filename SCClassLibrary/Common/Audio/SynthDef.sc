@@ -657,12 +657,6 @@ SynthDef {
 		};
 	}
 
-
-	memStore { arg libname = \global, completionMsg, keepDef = true;
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\add));
-		this.add(libname, completionMsg, keepDef);
-	}
-
 	play { arg target,args,addAction=\addToHead;
 		var synth, msg;
 //		this.deprecated(thisMethod, Function.findRespondingMethodFor(\play));

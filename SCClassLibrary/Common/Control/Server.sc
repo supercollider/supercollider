@@ -151,11 +151,6 @@ ServerOptions
 		^numOutputBusChannels + numInputBusChannels
 	}
 
-	numAudioBusChannels_{|num|
-		this.numPrivateAudioBusChannels = num - (numInputBusChannels + numOutputBusChannels);
-		this.deprecated(thisMethod);
-	}
-
 	numAudioBusChannels{
 		^numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels
 	}
@@ -163,16 +158,6 @@ ServerOptions
 	bootInProcess {
 		_BootInProcessServer
 		^this.primitiveFailed
-	}
-
-	rendezvous_ {|bool|
-		zeroConf = bool;
-		this.deprecated(thisMethod, ServerOptions.findMethod(\zeroConf_))
-	}
-
-	rendezvous {|bool|
-		this.deprecated(thisMethod, ServerOptions.findMethod(\zeroConf));
-		^zeroConf;
 	}
 
 	*prListDevices {
@@ -562,29 +547,6 @@ Server {
 		} {
 			statusWatcher.enable;
 		};
-	}
-	// Buffer objects are cached in an Array for easy
-	// auto buffer info updating
-	addBuf { |buffer|
-		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cache));
-		buffer.cache;
-	}
-
-	freeBuf { |i|
-		var	buf;
-		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\uncache));
-		if((buf = Buffer.cachedBufferAt(this, i)).notNil) { buf.free };
-	}
-
-	// /b_info on the way
-	// keeps a reference count of waiting Buffers so that only one responder is needed
-	waitForBufInfo {
-		this.deprecated(thisMethod, Buffer.findRespondingMethodFor(\cache));
-	}
-
-	resetBufferAutoInfo {
-		this.deprecated(thisMethod, Meta_Buffer.findRespondingMethodFor(\clearServerCaches));
-		Buffer.clearServerCaches(this);
 	}
 
 	cachedBuffersDo { |func| Buffer.cachedBuffersDo(this, func) }

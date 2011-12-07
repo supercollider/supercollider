@@ -199,10 +199,6 @@ Collection {
 		this.do { | elem | if (elem == obj) { sum=sum+1 } }
 		^sum;
 	}
-	occurencesOf { | obj |
-		this.deprecated(thisMethod, Collection.findRespondingMethodFor(\occurrencesOf));
-		^this.occurrencesOf(obj);
-	}
 	any { | function |
 		this.do {|elem, i| if (function.value(elem, i)) { ^true } }
 		^false;

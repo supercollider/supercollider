@@ -805,11 +805,6 @@ gui { |sysext=true,userext=true, allowCached=true|
 		}
 	}
 
-	searchGUI {
-		this.deprecated(thisMethod, Meta_Help.findRespondingMethodFor(\gui));
-		^this.gui
-	}
-
 	// Returns an array of hits as HelpSearchResult instances
 	search { |query, ignoreCase=true|
 		var results = List.new, file, ext, docstr, pos;
