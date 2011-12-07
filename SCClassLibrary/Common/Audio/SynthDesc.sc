@@ -14,7 +14,7 @@ IODesc {
 SynthDesc {
 	classvar <>mdPlugin, <>populateMetadataFunc;
 
-	var <>name, <>controlNames, <>controlNameDict;
+	var <>name, <>controlNames;
 	var <>controls, <>inputs, <>outputs;
 	var <>metadata;
 
@@ -81,14 +81,12 @@ SynthDesc {
 		^dict
 	}
 	readSynthDef { arg stream, keepDef=false;
-		var numControls, numConstants, numControlNames, numUGens, numVariants;
-		var namedControls;
+		var	numControls, numConstants, numControlNames, numUGens, numVariants;
 
 		protect {
 
 		inputs = [];
 		outputs = [];
-		controlNameDict = IdentityDictionary.new;
 
 		name = stream.getPascalString;
 
@@ -111,19 +109,12 @@ SynthDesc {
 		numControlNames = stream.getInt16;
 		numControlNames.do
 			{
-				var controlName, controlIndex, control;
+				var controlName, controlIndex;
 				controlName = stream.getPascalString;
 				controlIndex = stream.getInt16;
-				control = controls[controlIndex];
-				control.name = controlName;
+				controls[controlIndex].name = controlName;
 				controlNames = controlNames.add(controlName);
-				namedControls = namedControls.add(control);
-				controlNameDict.put(controlName.asSymbol, controls[controlIndex]);
 			};
-		namedControls.doAdjacentPairs { |x, y|
-			x.numChannels = y.index - x.index;
-		};
-		namedControls.last.numChannels = controls.size - namedControls.last.index;
 
 		numUGens = stream.getInt16;
 		numUGens.do {
