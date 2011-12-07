@@ -668,6 +668,7 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
     world.mNumAudioBusChannels = args.audio_busses;
     world.mAudioBusTouched = new int32[args.audio_busses];
     world.mAudioBusLocks = audio_busses.locks;
+    world.mControlBusLock = new spin_lock();
     std::fill(world.mAudioBusTouched, world.mAudioBusTouched + args.audio_busses, -1);
 
     /* audio buffers */

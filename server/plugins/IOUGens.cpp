@@ -25,6 +25,11 @@
 #include "SC_VFP11.h"
 #endif
 
+#ifdef SUPERNOVA
+#include "nova-tt/spin_lock.hpp"
+#include "nova-tt/rw_spinlock.hpp"
+#endif
+
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
 #include "simd_mix.hpp"
@@ -809,8 +814,10 @@ void ReplaceOut_next_k(IOUnit *unit, int inNumSamples)
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out++) {
 		float *in = IN(i+1);
+		ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
 		*out = *in;
 		touched[i] = bufCounter;
+		RELEASE_BUS_CONTROL((int32)fbusChannel + i);
 	}
 }
 
@@ -1077,11 +1084,14 @@ void Out_next_k(IOUnit *unit, int inNumSamples)
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out++) {
 		float *in = IN(i+1);
-		if (touched[i] == bufCounter) *out += *in;
+		ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
+		if (touched[i] == bufCounter)
+			*out += *in;
 		else {
 			*out = *in;
 			touched[i] = bufCounter;
 		}
+		RELEASE_BUS_CONTROL((int32)fbusChannel + i);
 	}
 }
 
@@ -1296,6 +1306,7 @@ void XOut_next_k(XOut *unit, int inNumSamples)
 	int32 bufCounter = unit->mWorld->mBufCounter;
 	for (int i=0; i<numChannels; ++i, out++) {
 		float *in = IN(i+2);
+		ACQUIRE_BUS_CONTROL((int32)fbusChannel + i);
 		if (touched[i] == bufCounter) {
 			float zin = *in;
 			float zout = *out;
@@ -1304,6 +1315,7 @@ void XOut_next_k(XOut *unit, int inNumSamples)
 			*out = xfade * *in;
 			touched[i] = bufCounter;
 		}
+		RELEASE_BUS_CONTROL((int32)fbusChannel + i);
 	}
 }
 

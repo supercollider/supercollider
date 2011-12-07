@@ -29,7 +29,11 @@
 #include "SC_Lock.h"
 
 #ifdef SUPERNOVA
-#include "nova-tt/rw_spinlock.hpp"
+namespace nova
+{
+class spin_lock;
+class padded_rw_spinlock;
+}
 #endif
 
 struct World
@@ -101,6 +105,7 @@ struct World
 
 #ifdef SUPERNOVA
 	nova::padded_rw_spinlock * mAudioBusLocks;
+	nova::spin_lock * mControlBusLock;
 #endif
 };
 

@@ -181,6 +181,10 @@ private:
 #define RELEASE_SNDBUF(buf) buf->lock.unlock()
 #define RELEASE_SNDBUF_SHARED(buf) buf->lock.unlock_shared()
 
+
+#define ACQUIRE_BUS_CONTROL(index) unit->mWorld->mControlBusLock->lock()
+#define RELEASE_BUS_CONTROL(index) unit->mWorld->mControlBusLock->unlock()
+
 #else
 
 #define ACQUIRE_BUS_AUDIO(index)
@@ -200,6 +204,9 @@ private:
 #define ACQUIRE_SNDBUF_SHARED(buf)
 #define RELEASE_SNDBUF(buf)
 #define RELEASE_SNDBUF_SHARED(buf)
+
+#define ACQUIRE_BUS_CONTROL(index)
+#define RELEASE_BUS_CONTROL(index)
 
 #endif
 
