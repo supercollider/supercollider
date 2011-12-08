@@ -32,12 +32,6 @@ definitionList::
 method::open
 same as link::#*new::, but a more intuitive name.
 
-method::exists
-answers if a file exists at that path.
-
-method::delete
-deletes the file at that path. Use only for good, never for evil.
-
 method::getcwd
 POSIX standard 'get current working directory'.
 code::
@@ -47,6 +41,25 @@ File.getcwd;
 
 method::use
 open the file, evaluate the function with the file and close it.
+
+subsection:: Filesystem utilities
+
+method::exists
+answers if a file exists at that path.
+returns:: a link::Classes/Boolean::
+
+method::mkdir
+create directory at path, including any missing parent directories.
+
+method::delete
+deletes the file at that path. Use only for good, never for evil.
+
+method::realpath
+follow symbolic links (and aliases on OSX) and any parent directory references (like "..") and return the true absolute path.
+returns:: a link::Classes/String:: or code::nil:: if path did not exist.
+
+method::copy
+copy file or directory or symlink.
 
 InstanceMethods::
 
