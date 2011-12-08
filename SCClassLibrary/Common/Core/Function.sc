@@ -174,13 +174,11 @@ Function : AbstractFunction {
 
 	protect { arg handler;
 		var result;
-		Exception.inProtectedFunction = true;
 		result = this.prTry;
 		if (result.isException) {
 			handler.value(result);
 			result.throw;
 		}{
-			Exception.inProtectedFunction = false;
 			handler.value; // argument should be nil if there was no exception.
 			^result
 		};
@@ -193,12 +191,15 @@ Function : AbstractFunction {
 	}
 	prTry {
 		var result, thread = thisThread;
-		var next = thread.exceptionHandler;
+		var next = thread.exceptionHandler,
+			wasInProtectedFunc = Exception.inProtectedFunction;
 		thread.exceptionHandler = {|error|
 			thread.exceptionHandler = next; // pop
 			^error
 		};
+		Exception.inProtectedFunction = true;
 		result = this.value;
+		Exception.inProtectedFunction = wasInProtectedFunc;
 		thread.exceptionHandler = next; // pop
 		^result
 	}
