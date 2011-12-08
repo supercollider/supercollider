@@ -114,11 +114,11 @@ ShutDown : AbstractSystemAction {
 }
 
 // things to do on a system reset
-Reset : AbstractSystemAction {
+OnError : AbstractSystemAction {
 	classvar <>objects;
 
 	*run {
-		objects.copy.do({ arg item; item.doOnReset;  });
+		objects.copy.do({ arg item; item.doOnError;  });
 	}
 }
 
