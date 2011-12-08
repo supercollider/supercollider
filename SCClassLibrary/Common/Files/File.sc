@@ -29,6 +29,10 @@ File : UnixFILE {
 		_FileRealPath
 		^this.primitiveFailed
 	}
+	*mkdir { arg pathName;
+		_FileMkDir
+		^this.primitiveFailed
+	}
 	*getcwd {
 		var string;
 		this.prGetcwd(string = String.new(256));
