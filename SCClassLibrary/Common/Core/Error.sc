@@ -8,10 +8,10 @@ Exception {
 	*new { arg what;
 		var protectedBacktrace, instance;
 		if (debug || inProtectedFunction, {
-			protectedBacktrace = this.getBackTrace.caller;
+			protectedBacktrace = this.getBackTrace.caller.dump;
 			inProtectedFunction = false;
 		});
-		^super.newCopyArgs(what ? this.name, thisProcess.nowExecutingPath);
+		^super.newCopyArgs(what ? this.name, protectedBacktrace, thisProcess.nowExecutingPath);
 	}
 	errorString {
 		^"EXCEPTION: " ++ what
