@@ -39,8 +39,6 @@ Primitives for String.
 # include <sys/param.h>
 #endif
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <boost/regex.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>

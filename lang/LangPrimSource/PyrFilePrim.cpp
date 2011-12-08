@@ -60,8 +60,8 @@ Primitives for File i/o.
 #include <fcntl.h>
 #include <math.h>
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
+#define BOOST_FILESYSTEM_VERSION 3
+#include <boost/filesystem.hpp>
 
 #define DELIMITOR ':'
 
@@ -162,6 +162,27 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 	boost::filesystem::create_directories(filename, error_code);
 	if (error_code)
 		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), filename);
+
+	return errNone;
+}
+
+int prFileCopy(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2, *b = g->sp - 1, *c = g->sp;
+	char filename1[PATH_MAX];
+	char filename2[PATH_MAX];
+	int error;
+	error = slotStrVal(b, filename1, PATH_MAX);
+	if (error != errNone)
+		return error;
+	error = slotStrVal(c, filename2, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	boost::system::error_code error_code;
+	boost::filesystem::copy(filename1, filename2, error_code);
+	if (error_code)
+		postfl("Warning: %s (\"%s\" -> \"%s\")\n", error_code.message().c_str(), filename1, filename2);
 
 	return errNone;
 }
@@ -1979,6 +2000,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FileExists", prFileExists, 2, 0);
 	definePrimitive(base, index++, "_FileRealPath", prFileRealPath, 2, 0);
 	definePrimitive(base, index++, "_FileMkDir", prFileMkDir, 2, 0);
+	definePrimitive(base, index++, "_FileCopy", prFileCopy, 3, 0);
 
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
 	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);
