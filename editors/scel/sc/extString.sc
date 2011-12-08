@@ -18,13 +18,13 @@
 
 + String{
 
-	openHelpFile {
+	openHelpFileEmacs {
 		if ( Emacs.initialized) {
 			Emacs.evalLispExpression(['sclang-find-help', this].asLispString);
 		}
 	}
 
-	openHTMLFile {
+	openHTMLFileEmacs {
 		if ( Emacs.initialized) {
 		//		this.findHelpFile;
 			Emacs.evalLispExpression(['w3m-browse-url', this].asLispString);

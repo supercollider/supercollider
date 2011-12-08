@@ -1,9 +1,4 @@
 + Server {
-
-	makeWindow { arg w;
-		this.makeEmacsWindow( w );
-	}
-
 	makeEmacsWindow { arg w;
 		var active, booter, killer, makeDefault, running, booting, stopped;
 		var recorder, scoper;
@@ -158,7 +153,7 @@
 }
 
 + SynthDesc {
-	makeWindow {
+	makeEmacsWindow {
 		var w, s, startButton, sliders;
 		var id, cmdPeriodFunc;
 		var synthDesc;

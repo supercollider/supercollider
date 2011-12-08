@@ -4,7 +4,11 @@
 	// while maintaining the availability of the GUI server window
 
 	makeWindow { arg w;
-		this.makeGui( w );
+		if (Platform.makeServerWindowAction.notNil) {
+			^Platform.makeServerWindowAction.value(this, w)
+		} {
+			^this.makeGui( w );
+		}
 	}
 
 	calculateViewBounds {

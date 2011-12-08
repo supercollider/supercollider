@@ -11,8 +11,11 @@
 		}
 	}
 	openHTMLFile{ arg selectionStart=0, selectionLength=0;
-		// On Linux this will be overridden to ensure it opens rendered HTML
-		this.openTextFile(selectionStart, selectionLength)
+		if (Platform.openHTMLFileAction.notNil) {
+			Platform.openHTMLFileAction.value(this, selectionStart, selectionLength)
+		} {
+			this.openTextFile(selectionStart, selectionLength)
+		}
 	}
 
 	openDocument {
@@ -105,6 +108,10 @@
 	}
 
 	openHelpFile {
-		HelpBrowser.openHelpFor(this);
+		if (Platform.openHelpFileAction.notNil) {
+			Platform.openHelpFileAction.value(this)
+		} {
+			HelpBrowser.openHelpFor(this);
+		}
 	}
 }

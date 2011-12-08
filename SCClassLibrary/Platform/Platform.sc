@@ -1,8 +1,11 @@
 Platform
 {
 	classvar defaultStartupFile;
-	var <classLibraryDir, <helpDir, <>recordingsDir, features;
 
+	// IDE actions
+	classvar <>makeServerWindowAction, <>makeSynthDescWindowAction, <>openHelpFileAction, <>openHTMLFileAction;
+
+	var <classLibraryDir, <helpDir, <>recordingsDir, features;
 	var <>devpath;
 
 	*initClass {
