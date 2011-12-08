@@ -259,7 +259,7 @@ Object  {
 	// errors
 	halt {
 		thisProcess.nowExecutingPath = nil;
-		Reset.run;
+		OnError.run;
 		this.prHalt
 	}
 	prHalt { _Halt }

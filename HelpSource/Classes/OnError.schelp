@@ -1,10 +1,10 @@
-class:: Reset
-summary:: register functions to be evaluated when the system resets
+class:: OnError
+summary:: register functions to be evaluated when an error occurs
 related:: Classes/StartUp, Classes/ShutDown, Classes/ServerQuit, Classes/ServerTree, Classes/CmdPeriod
 categories:: Control
 
 description::
-Reset registers functions to perform an action before system reset.
+OnError registers functions to perform an action when an error occurs.
 
 ClassMethods::
 

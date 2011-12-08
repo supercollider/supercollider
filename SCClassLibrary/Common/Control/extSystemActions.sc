@@ -18,7 +18,7 @@
 	doOnStartUp { this.value }
 	doOnCmdPeriod { this.value }
 	doOnShutDown { this.value }
-	doOnReset { this.value }
+	doOnError { this.value }
 	doOnServerBoot { arg server; this.value(server) }
 	doOnServerQuit { arg server; this.value(server) }
 	doOnServerTree { arg server; this.value(server) }
