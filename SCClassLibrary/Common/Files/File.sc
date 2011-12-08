@@ -33,6 +33,10 @@ File : UnixFILE {
 		_FileMkDir
 		^this.primitiveFailed
 	}
+	*copy { arg pathNameFrom, pathNameTo;
+		_FileCopy
+		^this.primitiveFailed
+	}
 	*getcwd {
 		var string;
 		this.prGetcwd(string = String.new(256));
