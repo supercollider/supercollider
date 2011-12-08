@@ -8,7 +8,7 @@ Exception {
 	*new { arg what;
 		var protectedBacktrace, instance;
 		if (debug || inProtectedFunction, {
-			protectedBacktrace = this.getBackTrace.caller.dump;
+			protectedBacktrace = this.getBackTrace.caller;
 			inProtectedFunction = false;
 		});
 		^super.newCopyArgs(what ? this.name, protectedBacktrace, thisProcess.nowExecutingPath);
