@@ -886,23 +886,6 @@ int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_mkdir(struct VMGlobals * g, int numArgsPushed)
-{
-	PyrSlot* arg = g->sp;
-
-	char argString[MAXPATHLEN];
-	int error = slotStrVal(arg, argString, MAXPATHLEN);
-	if (error != errNone)
-		return error;
-
-	boost::system::error_code error_code;
-	boost::filesystem::create_directories(argString, error_code);
-	if (error_code)
-		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), argString);
-
-	return errNone;
-}
-
 
 void initStringPrimitives();
 void initStringPrimitives()
@@ -930,7 +913,6 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
 	definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
-	definePrimitive(base, index++, "_String_Mkdir", prString_mkdir, 1, 0);
 }
 
 #if _SC_PLUGINS_

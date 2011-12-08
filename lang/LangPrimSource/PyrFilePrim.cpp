@@ -149,6 +149,24 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	return errNone;
 }
 
+int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	boost::system::error_code error_code;
+	boost::filesystem::create_directories(filename, error_code);
+	if (error_code)
+		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), filename);
+
+	return errNone;
+}
+
+
 int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
@@ -1960,6 +1978,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
 	definePrimitive(base, index++, "_FileExists", prFileExists, 2, 0);
 	definePrimitive(base, index++, "_FileRealPath", prFileRealPath, 2, 0);
+	definePrimitive(base, index++, "_FileMkDir", prFileMkDir, 2, 0);
 
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
 	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);
