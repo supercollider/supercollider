@@ -32,6 +32,7 @@ Primitives for File i/o.
 #include "PyrFileUtils.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
+#include "SC_DirUtils.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -109,6 +110,44 @@ int prFileExists(struct VMGlobals * g, int numArgsPushed)
 	return errNone;
 }
 
+int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char ipath[PATH_MAX];
+	char opath[PATH_MAX];
+	int err;
+
+	err = slotStrVal(b, ipath, PATH_MAX);
+	if (err) return err;
+
+	bool isAlias = false;
+	if(sc_ResolveIfAlias(ipath, opath, isAlias, PATH_MAX)!=0) {
+		return errFailed;
+	}
+
+	boost::system::error_code error_code;
+	boost::filesystem::path p = boost::filesystem::canonical(opath,error_code);
+	if(error_code) {
+		SetNil(a);
+		return errNone;
+	}
+	strcpy(opath,p.string().c_str());
+
+#if SC_DARWIN
+	CFStringRef cfstring =
+		CFStringCreateWithCString(NULL,
+								  opath,
+								  kCFStringEncodingUTF8);
+	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
+	CFRelease(cfstring);
+	if (err) return errFailed;
+#endif // SC_DARWIN
+
+	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
+	SetObject(a, pyrString);
+
+	return errNone;
+}
 
 int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1920,6 +1959,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
 	definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
 	definePrimitive(base, index++, "_FileExists", prFileExists, 2, 0);
+	definePrimitive(base, index++, "_FileRealPath", prFileRealPath, 2, 0);
 
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
 	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);

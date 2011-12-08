@@ -25,6 +25,10 @@ File : UnixFILE {
 		_FileExists
 		^this.primitiveFailed
 	}
+	*realpath { arg pathName;
+		_FileRealPath
+		^this.primitiveFailed
+	}
 	*getcwd {
 		var string;
 		this.prGetcwd(string = String.new(256));
