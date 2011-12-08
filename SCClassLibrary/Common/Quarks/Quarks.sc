@@ -444,7 +444,7 @@ Quarks
 
 	qtGui {
 		var window, lblCaption,
-			btnUpdate, btnHelp, btnOpenDir, btnReset, btnApply,
+			btnUpdate, btnHelp, btnUpdateQuarks, btnOpenDir, btnReset, btnApply,
 			lblStatus, lblExplanation, quarksView,
 			infoView, btnQuarkHelp, btnQuarkOpen, btnQuarkClasses,
 			btnQuarkMethods, txtDescription, btnCloseDetails;
@@ -485,7 +485,7 @@ Quarks
 		lblCaption = StaticText().font_( GUI.font.new(size:16,usePointSize:true) ).string_(this.name);
 
 		btnUpdate = Button()
-			.states_([["Update"]])
+			.states_([["Update Quark Listing"]])
 			.setProperty( \toolTip, "Download the latest information and update the Quarks listing")
 			.action_({
 				quarksView.enabled = false;
@@ -497,6 +497,25 @@ Quarks
 						refresh.value;
 						quarksView.enabled = true;
 						msgDone.value("Quarks listing has been updated with the latest information.")
+					}
+				});
+				this
+			});
+
+		btnUpdateQuarks = Button()
+			.states_([["Update Quarks"]])
+			.setProperty( \toolTip, "Update installed Quarks")
+			.action_({
+				quarksView.enabled = false;
+				msgWorking.value("Updating installed Quarks...");
+				AppClock.sched( 0.2, {
+					protect {
+						this.update;
+					} {
+						refresh.value;
+						quarksView.enabled = true;
+						msgDone.value("Quarks have been updated." +
+							" You should recompile the class library for changes to take effect.")
 					}
 				});
 				this
@@ -692,7 +711,7 @@ Quarks
 		window.layout =
 			\QVLayout.asClass.new(
 				lblCaption,
-				\QHLayout.asClass.new( btnUpdate, btnOpenDir, btnHelp, nil ),
+				\QHLayout.asClass.new( btnUpdate, btnUpdateQuarks, btnOpenDir, btnHelp, nil ),
 				lblStatus,
 				\QHLayout.asClass.new( btnReset, btnApply, [lblExplanation, s:1] ).margins_(0),
 				[quarksView, s:5],
