@@ -420,10 +420,6 @@ code::
 "~/".standardizePath; //This will print your home directory
 ::
 
-method::realPath
-Follow symbolic links (and aliases on OSX) and any parent directory references (like "..") and return the true absolute path.
-returns:: An absolute path or code::nil:: if path did not exist.
-
 method::basename
 Return the filename from a Unix path.
 code::
