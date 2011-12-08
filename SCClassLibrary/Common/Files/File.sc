@@ -22,10 +22,8 @@ File : UnixFILE {
 		^this.primitiveFailed
 	}
 	*exists { arg pathName;
-		var file;
-		file = File(pathName,"r");
-		if (file.isOpen, { file.close; ^true });
-		^false
+		_FileExists
+		^this.primitiveFailed
 	}
 	*getcwd {
 		var string;

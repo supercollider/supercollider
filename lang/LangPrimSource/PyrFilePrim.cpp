@@ -68,17 +68,12 @@ bool filelen(FILE *file, size_t *length);
 
 int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
+	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
 
-	a = g->sp - 1;
-	b = g->sp;
-	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string))
-		return errWrongType;
-	if (slotRawObject(b)->size > PATH_MAX - 1) return errFailed;
-
-	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
-	filename[slotRawString(b)->size] = 0;
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
 
 	int err = unlink(filename);
 	SetBool(a, err == 0);
@@ -88,14 +83,8 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 
 int prFileMTime(struct VMGlobals * g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
+	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
-
-	a = g->sp - 1;
-	b = g->sp;
-	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string))
-		return errWrongType;
-	if (slotRawObject(b)->size > PATH_MAX - 1) return errFailed;
 
 	int error = slotStrVal(b, filename, PATH_MAX);
 	if (error != errNone)
@@ -103,6 +92,20 @@ int prFileMTime(struct VMGlobals * g, int numArgsPushed)
 
 	time_t mtime = boost::filesystem::last_write_time(filename);
 	SetInt(a, mtime);
+	return errNone;
+}
+
+int prFileExists(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	bool res = boost::filesystem::exists(filename);
+	SetBool(a, res);
 	return errNone;
 }
 
@@ -1916,6 +1919,8 @@ void initFilePrimitives()
 
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
 	definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
+	definePrimitive(base, index++, "_FileExists", prFileExists, 2, 0);
+
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
 	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);
 	definePrimitive(base, index++, "_FileFlush", prFileFlush, 1, 0);
