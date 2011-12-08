@@ -1,7 +1,10 @@
 +SynthDesc {
-
 	makeWindow{
-		^this.makeGui;
+		if (Platform.makeSynthDescWindowAction.notNil) {
+			^Platform.makeSynthDescWindowAction.value(this)
+		} {
+			^this.makeGui;
+		}
 	}
 
 	makeGui {
