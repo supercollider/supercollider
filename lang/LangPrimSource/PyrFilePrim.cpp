@@ -60,7 +60,6 @@ Primitives for File i/o.
 #include <fcntl.h>
 #include <math.h>
 
-#define BOOST_FILESYSTEM_VERSION 3
 #include <boost/filesystem.hpp>
 
 #define DELIMITOR ':'
@@ -179,11 +178,7 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	boost::system::error_code error_code;
-	boost::filesystem::copy(filename1, filename2, error_code);
-	if (error_code)
-		postfl("Warning: %s (\"%s\" -> \"%s\")\n", error_code.message().c_str(), filename1, filename2);
-
+	boost::filesystem3::copy(filename1, filename2);
 	return errNone;
 }
 

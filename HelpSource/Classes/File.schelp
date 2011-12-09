@@ -59,7 +59,10 @@ follow symbolic links (and aliases on OSX) and any parent directory references (
 returns:: a link::Classes/String:: or code::nil:: if path did not exist.
 
 method::copy
-copy file or directory or symlink.
+copy file, symlink or directory. this method will fail if pathNameTo already exists.
+
+symlinks are copied as symlinks (re-created).
+
 
 InstanceMethods::
 
