@@ -41,8 +41,7 @@
 
 			envir = ();
 			usefulControls.do {|controlName, i|
-				var ctlname;
-				ctlname = controlName.name;
+				var ctlname = controlName.name.asString;
 				if(ctlname[1] == $_ and: { "ti".includes(ctlname[0]) }) {
 					ctlname = ctlname[2..];
 				};
