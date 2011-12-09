@@ -83,7 +83,7 @@
 		usefulControls.do {|controlName, i|
 			var ctlname, ctlname2, capname, spec;
 			ctlname = controlName.name;
-			capname = ctlname.copy;
+			capname = ctlname.asString;
 			capname[0] = capname[0].toUpper;
 			w.view.decorator.nextLine;
 			ctlname = ctlname.asSymbol;
