@@ -268,7 +268,7 @@ QStethoscope2 {
   }
 
   stop {
-    if( view.notNil ) { scopeView.stop };
+    if( view.notNil ) { {scopeView.stop}.defer };
 
     if( synthWatcher.notNil ) { synthWatcher.stop };
 
@@ -286,7 +286,7 @@ QStethoscope2 {
     ServerQuit.remove(this, server);
     CmdPeriod.remove(this);
     if(scopeBuffer.notNil) {scopeBuffer.free; scopeBuffer=nil};
-    if(window.notNil) { window.close; window = nil };
+    if(window.notNil) { var win = window; window = nil; { win.close }.defer; };
   }
 
   setProperties { arg numChannels, index, bufsize=4096, zoom, rate;
