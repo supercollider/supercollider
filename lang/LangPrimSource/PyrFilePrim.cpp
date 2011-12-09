@@ -182,6 +182,34 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	return errNone;
 }
 
+int prFileType(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	boost::filesystem::file_status s(boost::filesystem::symlink_status(filename));
+	SetInt(a, s.type());
+	return errNone;
+}
+
+int prFileSize(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	uintmax_t sz = boost::filesystem::file_size(filename);
+	SetInt(a, sz);
+	return errNone;
+}
+
 
 int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1996,6 +2024,8 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_FileRealPath", prFileRealPath, 2, 0);
 	definePrimitive(base, index++, "_FileMkDir", prFileMkDir, 2, 0);
 	definePrimitive(base, index++, "_FileCopy", prFileCopy, 3, 0);
+	definePrimitive(base, index++, "_FileType", prFileType, 2, 0);
+	definePrimitive(base, index++, "_FileSize", prFileSize, 2, 0);
 
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
 	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);
