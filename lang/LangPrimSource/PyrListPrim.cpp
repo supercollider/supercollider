@@ -685,7 +685,7 @@ void PriorityQueuePostpone(PyrObject* queueobj, double time)
 	if (IsObj(schedqSlot)) {
 		PyrObject *schedq = slotRawObject(schedqSlot);
 		PyrSlot* slots = schedq->slots;
-		for (int i=0; i < schedq->size; i+=2) {
+		for (int i=1; i < schedq->size; i+=3) {
 			SetRaw(&slots[i], slotRawFloat(&slots[i]) + time);
 		}
 	}
