@@ -37,6 +37,19 @@ File : UnixFILE {
 		_FileCopy
 		^this.primitiveFailed
 	}
+	*type { arg pathName;
+		var sym = #[error, not_found, regular, directory, symlink, block, character, fifo, socket, unknown];
+		^sym.clipAt(this.prType(pathName))
+	}
+	*prType { arg pathName;
+		_FileType
+		^this.primitiveFailed
+	}
+	*fileSize { arg pathName;
+		_FileSize
+		^this.primitiveFailed
+	}
+
 	*getcwd {
 		var string;
 		this.prGetcwd(string = String.new(256));

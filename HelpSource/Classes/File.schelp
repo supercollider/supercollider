@@ -8,7 +8,7 @@ A class for reading and writing files. Not sound files.
 
 ClassMethods::
 
-private::prGetcwd
+private::prGetcwd, prType
 
 method::new
 Create a File instance and open the file. If the open fails, link::Classes/UnixFILE#-isOpen#isOpen:: will return false.
@@ -62,6 +62,18 @@ method::copy
 copy file, symlink or directory. this method will fail if pathNameTo already exists.
 
 symlinks are copied as symlinks (re-created).
+
+method::type
+get file type as one of code::\error, \not_found, \regular, \directory, \symlink, \block, \character, \fifo, \socket, \unknown::
+returns:: a link::Classes/Symbol::
+
+method::fileSize
+get size of file in bytes.
+returns:: an link::Classes/Integer::
+
+method::mtime
+get last modification time in seconds since the Epoch.
+returns:: an link::Classes/Integer::
 
 
 InstanceMethods::
