@@ -453,7 +453,7 @@ bool sc_ReadDir(SC_DirHandle* dir, const char* dirname, char* path, bool& skipEn
 
     char entrypathname[PATH_MAX];
 	strncpy(entrypathname, dirname, PATH_MAX);
-	sc_AppendToPath(entrypathname, dir->mEntry.cFileName);
+	sc_AppendToPath(entrypathname, PATH_MAX, dir->mEntry.cFileName);
 
 	bool isAlias = false;
 	sc_ResolveIfAlias(entrypathname, path, isAlias, PATH_MAX);
@@ -567,7 +567,7 @@ const char* sc_GlobNext(SC_GlobHandle* glob)
 	if (glob->mAtEnd)
 		return 0;
 	strncpy(glob->mEntryPath, glob->mFolder, PATH_MAX);
-	sc_AppendToPath(glob->mEntryPath, glob->mEntry.cFileName);
+	sc_AppendToPath(glob->mEntryPath, PATH_MAX, glob->mEntry.cFileName);
 	if (!::FindNextFile(glob->mHandle, &glob->mEntry))
 		glob->mAtEnd = true;
 	return glob->mEntryPath;
