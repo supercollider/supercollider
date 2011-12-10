@@ -85,7 +85,7 @@ NSFont *defaultFont = nil;
 	activeTextView = aTextView;
 	return aTextView;
 }
-	
+
 - (void)initialiseTextViewParams: (SCTextView*)aTextView
 {
     [aTextView setAutoresizingMask: 63];
@@ -95,10 +95,10 @@ NSFont *defaultFont = nil;
     [aTextView setRichText: isRichText];
     [aTextView setSmartInsertDeleteEnabled: NO];
     [aTextView setImportsGraphics: YES];
-	[aTextView setLangClassToCall:@"CocoaDocument" 
+	[aTextView setLangClassToCall:@"CocoaDocument"
 			withKeyDownActionIndex:4 withKeyUpActionIndex:5];
 	[aTextView setObjectKeyDownActionIndex:2 setObjectKeyUpActionIndex:1];
-	[aTextView setAcceptsFirstResponder:YES]; 
+	[aTextView setAcceptsFirstResponder:YES];
 	[aTextView setUsesAutoInOutdent:defaultDocumentUseAutoInOutDent];
 }
 
@@ -111,7 +111,7 @@ NSFont *defaultFont = nil;
 - (void)windowControllerDidLoadNib:(NSWindowController*) aController
 {
     [super windowControllerDidLoadNib:aController];
-	
+
     NSSize contentSize;
     contentSize = [scrollView contentSize];
     if (initTextView) {
@@ -120,18 +120,18 @@ NSFont *defaultFont = nil;
         textView = [self makeTextView];
     }
 	NSWindow *window = [scrollView window];
-	
-	
+
+
 	mySplitView = [[NSSplitView alloc] initWithFrame:[scrollView frame]];
 	[window setContentView: mySplitView];
-	
+
 	[mySplitView addSubview:scrollView];
-	
+
     [scrollView setDocumentView: textView];
     [textView release];
-	
+
     [textView setSelectedRange: NSMakeRange(0,0)];
-	
+
     if (firstWindow) {
         if (initTextView) {
             if (needBlankWindow) {
@@ -142,11 +142,11 @@ NSFont *defaultFont = nil;
             firstWindow = false;
             needBlankWindow = false;
             gPostView = textView;
-            
+
             [[SCVirtualMachine sharedInstance] start];
         }
     }
-    
+
     [window makeKeyWindow];
     [window makeFirstResponder: textView];
 	//jt: call lang..
@@ -183,13 +183,13 @@ NSFont *defaultFont = nil;
 			int length = [string length];
 			unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
 			[string getCharacters: buffer];
-			
+
 			unsigned int start, end;
 			start = affectedCharRange.location;
 			end = start;
-						
+
 			bool doMatchBraks = !blankUnparsedChars(buffer, end, true);
-			
+
 			if(doMatchBraks)
 			{
 				bool res = matchBraks(&start, &end, buffer, length, c, false);
@@ -212,9 +212,9 @@ NSFont *defaultFont = nil;
 	NSRange highlightRange = NSMakeRange(index, 1);
 
 	if (onoff) {
-		[layoutManager addTemporaryAttributes: 
-			[NSDictionary dictionaryWithObjectsAndKeys: [NSColor lightGrayColor], NSBackgroundColorAttributeName, nil] 
-							forCharacterRange: highlightRange];	
+		[layoutManager addTemporaryAttributes:
+			[NSDictionary dictionaryWithObjectsAndKeys: [NSColor lightGrayColor], NSBackgroundColorAttributeName, nil]
+							forCharacterRange: highlightRange];
 	} else {
 		//highlightRange.length++;
 		[layoutManager removeTemporaryAttribute: NSBackgroundColorAttributeName
@@ -228,10 +228,10 @@ NSFont *defaultFont = nil;
 		NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
 		[anInvocation setTarget: self];
 		[anInvocation setSelector: sel];
-		[anInvocation setArgument: &onoff atIndex: 2];  
-		[anInvocation setArgument: &index atIndex: 3];  
-		[anInvocation setArgument: &interval atIndex: 4];  
-		[anInvocation setArgument: &timesLeft atIndex: 5];  
+		[anInvocation setArgument: &onoff atIndex: 2];
+		[anInvocation setArgument: &index atIndex: 3];
+		[anInvocation setArgument: &interval atIndex: 4];
+		[anInvocation setArgument: &timesLeft atIndex: 5];
 		[NSTimer scheduledTimerWithTimeInterval: interval invocation: anInvocation repeats: NO];
 	}
 }
@@ -264,19 +264,19 @@ void SyntaxColorize(NSTextView* textView);
     NSAttributedString *originalSelection = [textStorage attributedSubstringFromRange: selectedRange];
     NSMutableAttributedString *newString = [[NSMutableAttributedString alloc] initWithAttributedString: originalSelection];
 	[newString autorelease];
-	
+
 	[newString replaceCharactersInRange: NSMakeRange([newString length],0) withString: endStr];
 	[newString replaceCharactersInRange: NSMakeRange(0,0) withString: begStr];
-    
+
     if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
-		NSRange newSelectedRange = selectedRange;		
+		NSRange newSelectedRange = selectedRange;
 		if(selectedRange.length > 0) newSelectedRange.length += [begStr length] + [endStr length];
-		else 
+		else
 		{
 			newSelectedRange.length = 0;
 			newSelectedRange.location = newSelectedRange.location + [begStr length];
-		}	
+		}
         [activeTextView setSelectedRange: newSelectedRange];
 		SyntaxColorize(activeTextView);
         [activeTextView didChangeText];
@@ -315,12 +315,12 @@ void SyntaxColorize(NSTextView* textView);
     [newString autorelease];
 
     NSString *string = [originalSelection string];
-    
+
     int length = [string length];
     unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
     [string getCharacters: buffer];
-    
-    
+
+
     int j = 1;
     if (buffer[0] == NSTabCharacter) {
         [newString deleteCharactersInRange: NSMakeRange(0,1)];
@@ -333,10 +333,10 @@ void SyntaxColorize(NSTextView* textView);
             [newString deleteCharactersInRange: NSMakeRange(j,1)];
             j -= 1;
         }
-    }    
+    }
     free(buffer);
     NSRange newSelectedRange = NSMakeRange(selectedRange.location, j);
-    
+
     if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
         [activeTextView setSelectedRange: newSelectedRange];
@@ -358,11 +358,11 @@ void SyntaxColorize(NSTextView* textView);
     [newString autorelease];
 
     NSString *string = [originalSelection string];
-    
+
     int length = [string length];
     unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
     [string getCharacters: buffer];
-    
+
 	[newString replaceCharactersInRange: NSMakeRange(0,0) withString: tabStr];
     int j = 1;
     for (int i=0; i<length-1; ++i, ++j) {
@@ -371,10 +371,10 @@ void SyntaxColorize(NSTextView* textView);
 			[newString replaceCharactersInRange: NSMakeRange(j+1,0) withString: tabStr];
             j += 1;
         }
-    }    
+    }
     free(buffer);
     NSRange newSelectedRange = NSMakeRange(selectedRange.location, j+1);
-    
+
     if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
         [activeTextView setSelectedRange: newSelectedRange];
@@ -396,11 +396,11 @@ void SyntaxColorize(NSTextView* textView);
     [newString autorelease];
 
     NSString *string = [originalSelection string];
-    
+
     int length = [string length];
     unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
     [string getCharacters: buffer];
-    
+
 	[newString replaceCharactersInRange: NSMakeRange(0,0) withString: commentChars];
     int j = 2;
     for (int i=0; i<length-1; ++i, ++j) {
@@ -409,10 +409,10 @@ void SyntaxColorize(NSTextView* textView);
 			[newString replaceCharactersInRange: NSMakeRange(j+1,0) withString: commentChars];
             j += 2;
         }
-    }    
+    }
     free(buffer);
     NSRange newSelectedRange = NSMakeRange(selectedRange.location, j+1);
-   
+
     if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
         [activeTextView didChangeText];
@@ -433,14 +433,14 @@ void SyntaxColorize(NSTextView* textView);
     [newString autorelease];
 
     NSString *string = [originalSelection string];
-    
+
     int length = [string length];
     if (length < 2) return;
-    
+
     unichar* buffer = (unichar*)malloc((length+1) * sizeof(unichar));
     [string getCharacters: buffer];
-    
-    
+
+
     int i = 0;
     int j = 0;
     if (buffer[0] == '/' && buffer[1] == '/') {
@@ -455,10 +455,10 @@ void SyntaxColorize(NSTextView* textView);
             [newString deleteCharactersInRange: NSMakeRange(j+1,2)];
             j -= 2;
         }
-    }    
+    }
     free(buffer);
     NSRange newSelectedRange = NSMakeRange(selectedRange.location, j+2);
-    
+
     if ([activeTextView shouldChangeTextInRange: selectedRange replacementString: [newString string]]) {
         [textStorage replaceCharactersInRange: selectedRange withAttributedString: newString];
         [activeTextView didChangeText];
@@ -466,7 +466,7 @@ void SyntaxColorize(NSTextView* textView);
         SyntaxColorize(activeTextView);
 		[activeTextView didChangeText];
     }
-    
+
 }
 
 - (IBAction) executeSelection: (id) sender
@@ -486,16 +486,16 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			return helpFileWithName(fileManager, @"Help", helpFolderPath);
 		}
 	}
-	
+
 	// If called with no folder check in the bundle (if OS X), SC distribution Help
     // directory, and the System and User Extensions directories.
-    if(!helpFolderPath) { 
+    if(!helpFolderPath) {
 		NSString* helpFilePath;
 		NSString* searchPath;
-		 
+
 		char resourceDirPath[MAXPATHLEN - 32];
 		sc_GetResourceDirectory(resourceDirPath, MAXPATHLEN - 32);
-		sc_AppendToPath(resourceDirPath, "Help/");
+		sc_AppendToPath(resourceDirPath, PATH_MAX - 32, "Help/");
 		searchPath = [NSString stringWithCString:(const char *) resourceDirPath];
 		helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 		if (helpFilePath) return helpFilePath;
@@ -505,12 +505,12 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 						 [fileManager currentDirectoryPath]];
 			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 			if (helpFilePath) return helpFilePath;
-			
+
 			searchPath = @"/Library/Application Support/SuperCollider/Extensions/";
 			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 			if (helpFilePath) return helpFilePath;
-			
-			searchPath = [NSString stringWithFormat: @"%@/Library/Application Support/SuperCollider/Extensions/",  
+
+			searchPath = [NSString stringWithFormat: @"%@/Library/Application Support/SuperCollider/Extensions/",
 						NSHomeDirectory()];
 			helpFilePath = helpFileWithName(fileManager, desiredHelpFile, searchPath);
 			if (helpFilePath) return helpFilePath;
@@ -518,9 +518,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 		return NULL;
     }
 
-    // the name of the help file we are looking for 
+    // the name of the help file we are looking for
     NSString* helpFileName;
-       	
+
 	// substitute for these symbols, as they are not valid filenames on one or more platforms
     if([desiredHelpFile isEqual: @"-"]) {
     	helpFileName = @"subtraction";
@@ -535,7 +535,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	} else if([desiredHelpFile isEqual: @"+"]) {
         helpFileName = @"addition";
 	} else if([desiredHelpFile isEqual: @"<"]) {
-        helpFileName = @"lessthan";	
+        helpFileName = @"lessthan";
 	} else if([desiredHelpFile isEqual: @"<="]) {
         helpFileName = @"lessorequalthan";
 	} else if([desiredHelpFile isEqual: @">"]) {
@@ -634,7 +634,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     NSRange lineRange;
 	if(linenum <= 0) linenum = 1;
     for (numberOfLines = 0, index = 0; index < numberOfGlyphs && (int)numberOfLines < linenum; numberOfLines++) {
-    
+
         (void) [layoutManager lineFragmentRectForGlyphAtIndex:index effectiveRange:&lineRange];
             index = NSMaxRange(lineRange);
     }
@@ -648,7 +648,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 - (IBAction)selectLineWindow: (id) sender
 {
 	[[GoToPanel sharedInstance] orderFrontGotoLinePanel:nil];
-	
+
 }
 
 - (IBAction) advancedFindReplaceAction:(id)sender
@@ -673,9 +673,9 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 {
     NSDocumentController* docctl = [NSDocumentController sharedDocumentController];
 	if (!docctl) return YES;
-	
+
 	NSURL *desiredURL;
-	
+
 	// is it a NSURL link or a NSString link?
 	if ([link isKindOfClass: [NSString class]])
     {
@@ -687,7 +687,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			}
 			desiredURL = [NSURL URLWithString: helpPath];
 		} else desiredURL = [NSURL URLWithString: [link stringByAddingPercentEscapesUsingEncoding: NSUTF8StringEncoding] relativeToURL: [self fileURL]];
-        
+
     } else if ([link isKindOfClass: [NSURL class]])
     {
 
@@ -711,7 +711,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			return NO; // it's http, etc. so pass it on to Safari or whatever
 		} else desiredURL = link; // it's a regular file:// URL
     } else return NO;
-    
+
 	MyDocument *doc = nil;
 	if([[NSFileManager defaultManager] fileExistsAtPath: [desiredURL path]]) {
 
@@ -724,7 +724,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			post("WARNING:\nInvalid hyperlink: '%s' Please repair this.\nSearching help directories for alternative.\n", [[desiredURL path] cString]);
 			// delete extension twice in case something.help.rtf
 			NSString *desiredHelpName = [[[[desiredURL path] lastPathComponent] stringByDeletingPathExtension] stringByDeletingPathExtension];
-			NSString *helpPath = pathOfHelpFileFor(desiredHelpName); 
+			NSString *helpPath = pathOfHelpFileFor(desiredHelpName);
 			if(!helpPath) {
 				post("Can't find Help File Document for: '%s'\n", [desiredHelpName cString]);
 				return YES;
@@ -750,7 +750,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     [window makeKeyAndOrderFront: nil];
     return YES;
 }
-	
+
 // Create a link to a helpfile
 
 - (IBAction) createLink: (id) sender
@@ -770,8 +770,8 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
         return;
 	}
 
-    //	Get the text which will go into the link. 
-	
+    //	Get the text which will go into the link.
+
 	link = pathOfHelpFileFor([activeTextView currentlySelectedTextOrLine: NULL]);
 	if(!link) {
 		NSRunAlertPanel (@"Link to Help file", [NSString stringWithFormat: @"No help named %@ exists.", [activeTextView currentlySelectedTextOrLine: NULL]], nil, nil, nil);
@@ -783,7 +783,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	if((targetInMainHelp && linkInMainHelp) || (!targetInMainHelp && !linkInMainHelp)) {
 		link = pathOfFileRelativeToBaseDir(link, [[[self fileURL] path] stringByDeletingLastPathComponent]);
 	} else link = [NSURL URLWithString: [@"SC://" stringByAppendingString: [activeTextView currentlySelectedTextOrLine: NULL]]];
-	
+
     //	Start to build attributes
     linkAttributes = [NSMutableDictionary dictionaryWithObject: link forKey: NSLinkAttributeName];
 
@@ -792,7 +792,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
     //	Add the attributes. This adds the link attributes to the selected range.
     [[activeTextView textStorage] addAttributes: linkAttributes  range: selection];
-    
+
     // Make sure it saves as HTML as default
     [self setFileType: @"HTML"]; // need to change name to html
     [self updateChangeCount: NSChangeDone];
@@ -800,7 +800,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 
 
 - (void)sendSelection: (char*) methodName
-{        
+{
     if (!compiledOK) {
         return;
     }
@@ -811,14 +811,14 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	int textlength = strlen(text);
 
     [[SCVirtualMachine sharedInstance] setCmdLine: text length: textlength];
-    
+
     NSRange newSelectedRange = NSMakeRange(selectedRange.location + selectedRange.length, 0);
     [activeTextView setSelectedRange: newSelectedRange];
-    
+
     pthread_mutex_lock(&gLangMutex);
     runLibrary(getsym(methodName));
     pthread_mutex_unlock(&gLangMutex);
-    
+
 }
 
 - (NSString *)windowNibName
@@ -843,11 +843,11 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	if(okFlag) {
 		if([[self fileTypeFromLastRunSavePanel] isEqualToString: @"SC Help (HTML)"] && [[textView textStorage] containsAttachments]) {
 			//.../attachments/filename/
-			[self setpathToSaveAttachments: 
+			[self setpathToSaveAttachments:
 				[[[[sender filename] stringByDeletingLastPathComponent] stringByAppendingPathComponent: @"attachments"] stringByAppendingPathComponent: [[[sender filename] lastPathComponent] stringByDeletingPathExtension]]];
 			return filename;
-		} else { 
-			return filename; 
+		} else {
+			return filename;
 		}
 	}
 	return nil;
@@ -858,20 +858,20 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
     BOOL success;
 	NSString* extension = [path pathExtension];
 	if ([extension isEqualToString: @"sc"] || [extension isEqualToString: @"txt"] || [extension isEqualToString: @"scd"] || [extension isEqualToString: @"quark"]
-			|| [aType isEqualToString: @"NSStringPboardType"]) 
+			|| [aType isEqualToString: @"NSStringPboardType"])
 	{
 		NSString *text = [textView string];
 		success = [text writeToFile: path atomically: YES];
 	} else if ([extension isEqualToString: @"html"] || [extension isEqualToString: @"htm"]) {
-		
+
 		[textView setDefaultTabsTo: 28.0f]; // set default tabs to preserve layout
-		
+
 		//[self replaceOldStyleHelpLinksWithHyperLinks];
 		NSTextStorage *textStorage = [textView textStorage];
 		[self convertFileLinksToRelative: textStorage]; // clean up any manually edited file:// links
 		NSRange range = NSMakeRange(0, [textStorage length]);
 		NSDictionary *attributes = [NSDictionary dictionaryWithObject: NSHTMLTextDocumentType forKey:NSDocumentTypeDocumentAttribute];
-		
+
 		// Check for images etc.
 		if ([textStorage containsAttachments]) {
 			// this has wrappers for html and all attachments
@@ -879,7 +879,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			success = wrapper ? YES : NO;
 			// if no wrapper bail out...
 			if(!success) return success;
-			
+
 			// now get the html component so we can clean it up and save it under the requested name
 			NSFileWrapper *indexWrapper = [[wrapper fileWrappers] objectForKey: @"index.html"];
 			[indexWrapper retain];
@@ -887,16 +887,16 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			NSMutableString *html = [[NSMutableString alloc] initWithData: [indexWrapper regularFileContents] encoding: NSUTF8StringEncoding]; // maybe should check here?
 			// strip out "file:" so as to have nice portable relative urls
 			[html replaceOccurrencesOfString: @"file:///" withString: @"" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])];
-			
+
 			// replace "%20" with " " as psycollider doesn't like the former
 			[html replaceOccurrencesOfString: @"%20" withString: @" " options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])];
-			
+
 			// fix faded autosyntax Colours
 			[html replaceOccurrencesOfString: @"color: #0016bd" withString: @"color: #0000bf" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // blue
 			[html replaceOccurrencesOfString: @"color: #ae1a19" withString: @"color: #bf0000" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // red
 			[html replaceOccurrencesOfString: @"color: #2b7000" withString: @"color: #007300" options: NSCaseInsensitiveSearch range: NSMakeRange(0, [html length])]; // green
 			// grey doesn't fade
-			
+
 			// NSTextView doesn't like <b> tags within spans, and unfortunately the export outputs bold underlines that way.
 			// The following figures out what the span name is for underlining, and fixes this
 			fixHTMLBoldUnderline(html);
@@ -920,24 +920,24 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 				// may not be the requested path, but rather a temp save location
 				NSString *thisPath = [pathToSaveAttachments stringByAppendingPathComponent: [thisFile preferredFilename]];
 				NSString *thisFileName = [thisPath lastPathComponent];
-				
+
 				// now check if this is an image and convert to png.
 				NSBitmapImageRep *imageRep = [NSBitmapImageRep imageRepWithData: [thisFile regularFileContents]];
-				
-				if(imageRep) { 
+
+				if(imageRep) {
 					NSData *pngData = [imageRep representationUsingType: NSPNGFileType properties: nil];
-					NSString *pngURL = [[NSString stringWithFormat:@"attachments/%@/", [[path lastPathComponent] stringByDeletingPathExtension]] 
+					NSString *pngURL = [[NSString stringWithFormat:@"attachments/%@/", [[path lastPathComponent] stringByDeletingPathExtension]]
 						stringByAppendingString: [[thisFileName stringByDeletingPathExtension] stringByAppendingPathExtension: @"png"]];
-					[html replaceOccurrencesOfString: [NSString stringWithFormat:@"<img src=\"%@\" alt=\"%@\">", thisFileName, thisFileName] 
-										  withString: [NSString stringWithFormat:@"<img src=\"%@\" alt=\"%@\">", pngURL, pngURL] 
-											 options: NSCaseInsensitiveSearch 
+					[html replaceOccurrencesOfString: [NSString stringWithFormat:@"<img src=\"%@\" alt=\"%@\">", thisFileName, thisFileName]
+										  withString: [NSString stringWithFormat:@"<img src=\"%@\" alt=\"%@\">", pngURL, pngURL]
+											 options: NSCaseInsensitiveSearch
 											   range: NSMakeRange(0, [html length])
 						];
 					success = success && [pngData writeToFile: [pathToSaveAttachments stringByAppendingPathComponent: [pngURL lastPathComponent]] atomically:YES];
 				} else if([[thisFileName pathExtension] isEqualToString:@"pdf"]) {
 					// it's a pdf
 					NSString *correctURL = [[NSString stringWithFormat:@"attachments/%@/", [[path lastPathComponent] stringByDeletingPathExtension]] stringByAppendingString: thisFileName];
-					[html replaceOccurrencesOfString: [NSString stringWithFormat:@"<img src=\"%@\"", thisFileName] 
+					[html replaceOccurrencesOfString: [NSString stringWithFormat:@"<img src=\"%@\"", thisFileName]
 										  withString: [NSString stringWithFormat:@"<img src=\"%@\"", correctURL]
 											 options: NSCaseInsensitiveSearch
 											   range: NSMakeRange(0, [html length])
@@ -946,7 +946,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 				} else {
 					// not an image
 					NSString *correctURL = [[NSString stringWithFormat:@"attachments/%@/", [[path lastPathComponent] stringByDeletingPathExtension]] stringByAppendingString: thisFileName];
-					[html replaceOccurrencesOfString: [NSString stringWithFormat:@"<object data=\"%@\">%@</object>", thisFileName, thisFileName] 
+					[html replaceOccurrencesOfString: [NSString stringWithFormat:@"<object data=\"%@\">%@</object>", thisFileName, thisFileName]
 										  withString: [NSString stringWithFormat:@"<object data=\"%@\">%@</object>", correctURL, correctURL]
 											 options: NSCaseInsensitiveSearch
 											   range: NSMakeRange(0, [html length])
@@ -954,7 +954,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 					success = success && [thisFile writeToFile: thisPath atomically:YES updateFilenames: YES];
 				}
 			}
-			
+
 			// write the html
 			NSFileWrapper *htmlWrapper = [[NSFileWrapper alloc] initRegularFileWithContents: [html dataUsingEncoding: NSUTF8StringEncoding]];
 			if(!htmlWrapper) { NSLog(@"HTML Wrapper init failed."); }
@@ -976,13 +976,13 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 				// grey doesn't fade
 			}
 			data = [html dataUsingEncoding: NSUTF8StringEncoding];
-			success = data ? [data writeToFile: path atomically: YES] : NO; 
+			success = data ? [data writeToFile: path atomically: YES] : NO;
 			[html release];
 		};
-        
+
 	} else {
 		NSTextStorage *textStorage = [textView textStorage];
-	
+
 		NSRange range = NSMakeRange(0, [textStorage length]);
 		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 		if ([textStorage containsAttachments]) {
@@ -1014,7 +1014,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 - (void) loadHTML:(NSURL *)url
 {
 	if (!url) return;
-	
+
 	if (!initTextView) initTextView = [self makeTextView];
 	NSTextStorage* text = [initTextView textStorage];
 
@@ -1030,7 +1030,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 	}
 
 	[text endEditing];
-	
+
 	[url release];
 }
 
@@ -1052,7 +1052,7 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			SEL sel = @selector(loadHTML:);
 			NSMethodSignature *sig = [MyDocument instanceMethodSignatureForSelector: sel];
 			SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
-			
+
 			NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
 			[anInvocation setTarget: self];
 			[anInvocation setSelector: sel];
@@ -1064,14 +1064,14 @@ NSString* helpFileWithName(NSFileManager* fileManager, NSString* desiredHelpFile
 			[self loadHTML:url];
 		}
 		[self setpathToSaveAttachments:[[[path stringByDeletingLastPathComponent] stringByAppendingPathComponent: @"attachments"] stringByAppendingPathComponent: [[path lastPathComponent] stringByDeletingPathExtension]]];
-		
+
 		return YES;
 	}
 
 	[text beginEditing];	// Bracket with begin/end editing for efficiency
 	[[text mutableString] setString:@""];	// Empty the document
 
-	
+
 	NSError *error;
 	success = [text readFromURL:url options:nil documentAttributes:nil error:&error];
 	if(!success) NSLog(@"Error opening file: %@", error);
@@ -1118,11 +1118,11 @@ extern PyrSymbol * s_didBecomeKey;
 extern PyrSymbol * s_didResignKey;
 - (void) windowDidResignKey:(NSNotification *)aNotification
 {
-	
+
 	if(!docCreatedFromLang){
 		[self callSCLangWithMethod: s_didResignKey];
 	}
-	
+
 }
 - (void) callSCLangWithMethod: (PyrSymbol*) method {
 	pthread_mutex_lock (&gLangMutex);
@@ -1185,7 +1185,7 @@ extern PyrSymbol * s_didResignKey;
     // If we are rich and any ofthe text attrs have been changed from the default, then put up an alert first...
     if (isRichText && (length > 0) && (attrs = [[textView textStorage] attributesAtIndex:0 effectiveRange:&range]) && ((attrs == nil) || (range.length < length) || ![[self defaultTextAttributes:YES] isEqual:attrs])) {
         NSBeginAlertSheet(NSLocalizedString(@"Convert document to plain text?", @"Title of alert confirming Make Plain Text"),
-                        NSLocalizedString(@"OK", @"OK"), NSLocalizedString(@"Cancel", @"Button choice allowing user to cancel."), nil, [textView window], 
+                        NSLocalizedString(@"OK", @"OK"), NSLocalizedString(@"Cancel", @"Button choice allowing user to cancel."), nil, [textView window],
                         self, NULL, @selector(didEndToggleRichSheet:returnCode:contextInfo:), NULL,
                         NSLocalizedString(@"Converting will lose fonts, colors, and other text styles in the document.", @"Subtitle of alert confirming Make Plain Text"));
     } else {
@@ -1209,7 +1209,7 @@ extern PyrSymbol * s_didResignKey;
     isRichText = flag;
 
     //if (!isRichText) [self removeAttachments];
-    
+
     [view setRichText:isRichText];
     [view setUsesRuler:isRichText];	/* If NO, this correctly gets rid of the ruler if it was up */
     //if (isRichText && [[Preferences objectForKey:ShowRuler] boolValue]) [view setRulerVisible:YES];	/* Show ruler if rich, and desired */
@@ -1218,7 +1218,7 @@ extern PyrSymbol * s_didResignKey;
 	if (!isRichText) {
 		NSMutableDictionary *textAttributes = [NSMutableDictionary dictionary];
 		[textAttributes setObject: defaultFont forKey: NSFontAttributeName ];
-	
+
 		if ([[textView textStorage] length]) {
 			[[textView textStorage] setAttributes:textAttributes range: NSMakeRange(0, [[textView textStorage] length])];
 		}
@@ -1228,7 +1228,7 @@ extern PyrSymbol * s_didResignKey;
 }
 
 
-/* Menu validation: Arbitrary numbers to determine the state of the menu items whose titles change. Speeds up the validation... Not zero. */   
+/* Menu validation: Arbitrary numbers to determine the state of the menu items whose titles change. Speeds up the validation... Not zero. */
 #define TagForFirst 42
 #define TagForSecond 43
 
@@ -1264,7 +1264,7 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 {
     mWindowObj = inObject;
 }
-    
+
 - (struct PyrObject*)getSCObject
 {
     return mWindowObj;
@@ -1298,7 +1298,7 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 		[textView setInsertionPointColor: [NSColor blackColor]];
 		[textView2 setInsertionPointColor: [NSColor blackColor]];
 	}
-	
+
 	[textView setBackgroundColor: color];
 	[[self initTextView] setBackgroundColor: color];
 	[textView2 setBackgroundColor: color];
@@ -1336,7 +1336,7 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 }
 - (void) mouseDown: (NSEvent*) event
 {
-	
+
 }
 
 - (IBAction)convertHelpLinksToHyperlinks:(id)sender
@@ -1350,11 +1350,11 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 	NSRange underlineRange;
 	NSMutableArray *bracketIndices = [NSMutableArray arrayWithCapacity: 10];
 	while (limitRange.length > 0) {
-		id isUnderlined = [textStorage attribute: NSUnderlineStyleAttributeName 
-										 atIndex: limitRange.location 
-						   longestEffectiveRange: &underlineRange 
+		id isUnderlined = [textStorage attribute: NSUnderlineStyleAttributeName
+										 atIndex: limitRange.location
+						   longestEffectiveRange: &underlineRange
 										 inRange: limitRange];
-		
+
 		if(underlineRange.length<=0) break;
 		if (isUnderlined) {
 			int openBracketIndex = -1, closeBracketIndex = -1;
@@ -1363,13 +1363,13 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 			} else if(underlineRange.location > 0) {
 				if([[textStorage string] characterAtIndex: underlineRange.location - 1] == '[') openBracketIndex = underlineRange.location - 1;
 			}
-			
+
 			if([[textStorage string] characterAtIndex: NSMaxRange(underlineRange) - 1] == ']') {
 				closeBracketIndex = NSMaxRange(underlineRange) - 1;
 			} else if(NSMaxRange(underlineRange) < [textStorage length]) {
 				if([[textStorage string] characterAtIndex: NSMaxRange(underlineRange)] == ']') closeBracketIndex = NSMaxRange(underlineRange);
 			}
-			if(openBracketIndex >= 0 && closeBracketIndex > 0) {	
+			if(openBracketIndex >= 0 && closeBracketIndex > 0) {
 				[bracketIndices addObject: [NSNumber numberWithInt: openBracketIndex]];
 				[bracketIndices addObject: [NSNumber numberWithInt: closeBracketIndex]];
 				//[textStorage beginEditing];
@@ -1382,22 +1382,22 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 				[textView setSelectedRange: NSMakeRange(openBracketIndex + 1, closeBracketIndex - openBracketIndex - 1)];
 				[self createLink:NULL];
 				//[textStorage endEditing];
-				
-			} 			
-			
-		} 
+
+			}
+
+		}
 		limitRange = NSMakeRange(NSMaxRange(underlineRange), [textStorage length] - NSMaxRange(underlineRange));
-		
-		
+
+
 	}
-	
+
 	NSEnumerator *bracketEnum = [bracketIndices reverseObjectEnumerator];
 	NSNumber *bracketIndex;
 	while ((bracketIndex = [bracketEnum nextObject])) {
 		[textStorage deleteCharactersInRange: NSMakeRange([bracketIndex intValue], 1)];
 	}
 }
-	
+
 // the text storage converts relative URLs to file:// URLs on open so this converts them back, and cleans up any manually edited links before saving.
 - (void)convertFileLinksToRelative:(NSTextStorage *)textStorage
 {
@@ -1405,9 +1405,9 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 	NSRange limitRange = NSMakeRange(0, [textStorage length]);
 	NSRange linkRange;
 	while (limitRange.length > 0) {
-		id link = [textStorage attribute: NSLinkAttributeName 
-										 atIndex: limitRange.location 
-						   longestEffectiveRange: &linkRange 
+		id link = [textStorage attribute: NSLinkAttributeName
+										 atIndex: limitRange.location
+						   longestEffectiveRange: &linkRange
 										 inRange: limitRange];
 		if(linkRange.length<=0) break;
 		if (link && [link isKindOfClass: [NSURL class]] && ([[link scheme] isEqualToString: @"file"])) {
@@ -1416,7 +1416,7 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 		}
 		limitRange = NSMakeRange(NSMaxRange(linkRange), NSMaxRange(limitRange) - NSMaxRange(linkRange));
 	}
-	
+
 }
 
 - (IBAction)toggleSplitWindow: (id)sender
@@ -1430,19 +1430,19 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 		[textView2 setUsesAutoInOutdent:[textView usesAutoInOutdent]];
 		scrollView2 = [[NSScrollView alloc] initWithFrame:[scrollView frame]];
 		[scrollView2 setHasVerticalScroller:YES];
-		
+
 		// a bit easier to see
 		[scrollView setBorderType:NSBezelBorder];
 		[scrollView2 setBorderType:NSBezelBorder];
-		
+
 		[mySplitView addSubview:scrollView2];
 		[scrollView2 setDocumentView: textView2];
-		
+
 		[[textView2 layoutManager] replaceTextStorage:[textView textStorage]];
-		
+
 		[textView2 release];
 		[scrollView2 release];
-		
+
 		[mySplitView adjustSubviews];
 		split = YES;
 		[(NSMenuItem*)sender setState:NSOnState];
@@ -1470,7 +1470,7 @@ static void validateToggleItem(NSMenuItem *aCell, BOOL useFirst, NSString *first
 @end
 
 
-NSString* pathOfHelpFileFor(NSString* selection) 
+NSString* pathOfHelpFileFor(NSString* selection)
 {
 
     NSString* helpFilePath = nil;
@@ -1480,7 +1480,7 @@ NSString* pathOfHelpFileFor(NSString* selection)
 
     helpFilePath = helpFileWithName(fileManager, selection, nil);
 	if (helpFilePath) return helpFilePath;
-	
+
     return helpFilePath; // possibly == NULL
 }
 
@@ -1499,11 +1499,11 @@ void showHelpFor(NSString* selection)
             return;
         }
     }
-    
+
     MyDocument *doc = (MyDocument*)[docctl documentForFileName: helpFilePath];
     if (!doc) {
         doc = [docctl openDocumentWithContentsOfURL:[NSURL fileURLWithPath:helpFilePath] display:true error:nil];
-		  
+
 		  if (!doc) {
             post("Can't open Help File Document '%s'\n", [helpFilePath cString]);
             return;
@@ -1522,9 +1522,9 @@ void fixHTMLBoldUnderline(NSMutableString* html) {
 	// NSTextView doesn't like <b> tags within spans, and unfortunately the export outputs bold underlines that way.
 	// The following figures out what the span name is for underlining, and fixes this
 	NSRange underlineSpan = [html rangeOfString: @"{text-decoration: underline}"];
-	
+
 	if(underlineSpan.location != NSNotFound) {
-		
+
 		unsigned lineStart, nameStart;
 		// goto beginning of line
 		[html getLineStart: (NSUInteger*)&lineStart end: NULL contentsEnd: NULL forRange: underlineSpan];
@@ -1534,7 +1534,7 @@ void fixHTMLBoldUnderline(NSMutableString* html) {
 		NSString *underlineBoldSpanTag = [NSString stringWithFormat: @"<span class=\"%@\"><b>", underlineSpanClass];
 		NSString *replaceTag = [NSString stringWithFormat: @"<b><span class=\"%@\">", underlineSpanClass];
 		//NSLog(@"span tag: %@", underlineBoldSpanTag);
-		
+
 		NSRange openTagRange = [html rangeOfString: underlineBoldSpanTag options: NSCaseInsensitiveSearch]; // finds the first one
 		while (openTagRange.location != NSNotFound) {
 			[html replaceCharactersInRange: openTagRange withString: replaceTag];
@@ -1551,7 +1551,7 @@ void fixHTMLBoldUnderline(NSMutableString* html) {
 
 // base is a directory, filepath is a file
 NSString* pathOfFileRelativeToBaseDir(NSString *filepath, NSString *baseDir) {
-	
+
 	if (![filepath isAbsolutePath]) {
 		return filepath;
 	} else if(![baseDir isAbsolutePath]) {
@@ -1561,21 +1561,21 @@ NSString* pathOfFileRelativeToBaseDir(NSString *filepath, NSString *baseDir) {
 	NSArray *baseComponents = [baseDir pathComponents];
 	NSEnumerator *pathEnumerator = [pathComponents objectEnumerator];
 	NSEnumerator *baseEnumerator = [baseComponents objectEnumerator];
-	
+
 	int i = 0, pathCount, baseCount, shortest;
 	pathCount = [pathComponents count];
 	baseCount = [baseComponents count];
 	shortest = pathCount <= baseCount ? pathCount : baseCount;
-	
+
 	while((i < shortest) && [[pathEnumerator nextObject] isEqualToString: [baseEnumerator nextObject]]) {
 		i++;
 	}
-	
+
 	NSString *result = @"";
 	for(int j =0; j < (baseCount - i); j++) {
 		result = [result stringByAppendingString: @"../"];
 	}
-	result = [result stringByAppendingString: [NSString pathWithComponents: [pathComponents subarrayWithRange: NSMakeRange(i, pathCount - i) ]]];	
+	result = [result stringByAppendingString: [NSString pathWithComponents: [pathComponents subarrayWithRange: NSMakeRange(i, pathCount - i) ]]];
 	return result;
 }
 
