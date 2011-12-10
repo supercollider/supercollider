@@ -233,7 +233,7 @@ bool SC_LanguageConfig::defaultLibraryConfig(void)
 	char userExtensionDir[MAXPATHLEN];
 
 	sc_GetResourceDirectory(compileDir, MAXPATHLEN-32);
-	sc_AppendToPath(compileDir, "SCClassLibrary");
+	sc_AppendToPath(compileDir, MAXPATHLEN, "SCClassLibrary");
 	gLibraryConfig->addIncludedDirectory(compileDir);
 
 	if (!sc_IsStandAlone()) {

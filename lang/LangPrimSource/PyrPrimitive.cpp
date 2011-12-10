@@ -3501,7 +3501,7 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 			return errWrongType;
 	} else {
 		sc_GetUserConfigDirectory(path, PATH_MAX);
-		sc_AppendToPath(path, "sclang_conf.yaml");
+		sc_AppendToPath(path, MAXPATHLEN, "sclang_conf.yaml");
 	}
 
 	gLibraryConfig->writeLibraryConfigYAML(path);

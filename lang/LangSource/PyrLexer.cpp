@@ -161,7 +161,7 @@ static void sc_InitCompileDirectory(void)
 {
 	// main class library folder: only used for relative path resolution
 	sc_GetResourceDirectory(gCompileDir, MAXPATHLEN-32);
-	sc_AppendToPath(gCompileDir, "SCClassLibrary");
+	sc_AppendToPath(gCompileDir, MAXPATHLEN, "SCClassLibrary");
 }
 
 extern void asRelativePath(char *inPath, char *outPath)

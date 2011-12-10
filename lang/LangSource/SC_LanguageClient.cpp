@@ -102,7 +102,7 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 #ifdef __linux__
 		char deprecatedSupportDirectory[PATH_MAX];
 		sc_GetUserHomeDirectory(deprecatedSupportDirectory, PATH_MAX);
-		sc_AppendToPath(deprecatedSupportDirectory, "share/SuperCollider");
+		sc_AppendToPath(deprecatedSupportDirectory, PATH_MAX, "share/SuperCollider");
 
 		if (sc_DirectoryExists(deprecatedSupportDirectory)) {
 			char supportDirectory[PATH_MAX];
