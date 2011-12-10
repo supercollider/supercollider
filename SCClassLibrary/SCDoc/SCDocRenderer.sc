@@ -176,7 +176,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         switch(node.tag,
             'prose', {
                 if(node.display == \block, {
-                    file.write("<p>");
+                    file.write("\n<p>");
                 });
                 // FIXME: using autoLinkClasses here is often very nice, but a bit ugly when the word is not meant to be a class,
                 // like "In this building lives a big cat" or "Control your mind", etc..
@@ -393,14 +393,14 @@ SCDocHTMLRenderer : SCDocRenderer {
                 if(node.display == \block, {
                     file.write("<pre class='code prettyprint lang-sc'>"++this.autoLinkClasses(this.escapeSpecialChars(node.text))++"</pre>\n");
                 }, {
-                    file.write("<code class='code prettyprint lang-sc'>"++this.autoLinkClasses(this.escapeSpecialChars(node.text))++"</code>\n");
+                    file.write("<code class='code prettyprint lang-sc'>"++this.autoLinkClasses(this.escapeSpecialChars(node.text))++"</code>");
                 });
             },
             'formula', {
                 if(node.display == \block, {
                     file.write("<pre class='formula'>"++this.escapeSpecialChars(node.text)++"</pre>\n");
                 }, {
-                    file.write("<code class='formula'>"++this.escapeSpecialChars(node.text)++"</code>\n");
+                    file.write("<code class='formula'>"++this.escapeSpecialChars(node.text)++"</code>");
                 });
             },
             'image', {

@@ -112,6 +112,9 @@ SCDocParser {
         };
         var modalRangeTag = {
             singleline = false;
+            if(current.isNil) {
+                tree.add((tag:\prose,display:proseDisplay,text:"",children:nil));
+            };
             this.addTag(tag);
             lastTagLine = lineno;
             modalTag = '::';
@@ -136,7 +139,7 @@ SCDocParser {
                 modalTag = nil;
                 afterClosing = true;
             },{
-                if(("\\S[^\\\\]::$".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
+                if(("[^\\\\]::$".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
                     this.addText(word.drop(-2));
                     this.handleWord("::",lineno,wordno+1);
                 },{
@@ -235,13 +238,10 @@ SCDocParser {
                         this.addTag('link::',word++" ",false,\inline);
                         this.endCurrent;
                     },{
-                        if(("\\S[^\\\\]::$".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
+                        if(("[^\\\\]::$".matchRegexp(word)) and: (lastTagLine==lineno), { //split unhandled tag-like word
                             this.addText(word.drop(-2));
                             this.handleWord("::",lineno,wordno+1);
                         },{
-                            if(word.endsWith("::")) {
-                                warn("SCDocParser: Unknown tag:"+word+"in"+currentFile);
-                            };
                             this.addText(word); //plain text, add the word.
                         });
                     });
