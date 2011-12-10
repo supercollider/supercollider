@@ -27,7 +27,7 @@ method:: r
 The default link::Classes/SCDocRenderer:: object, created automatically. Defaults to an instance of link::Classes/SCDocHTMLRenderer::
 
 method:: helpSourceDir
-get/set the system-wide directory of help sourcefiles. Defaults to code:: thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource" ::
+get/set the system-wide directory of help sourcefiles. Defaults to code::thisProcess.platform.classLibraryDir.dirname +/+ "HelpSource"::
 
 method:: helpSourceDirs
 get the list of HelpSource folders, including extensions and quarks.
@@ -35,7 +35,7 @@ discussion::
 This searches recursively for all folders named "HelpSource" under code::thisProcess.platform.userExtensionDir:: and code::thisProcess.platform.systemExtensionDir:: as well as including the system-wide code::helpSourceDir::
 
 method:: helpTargetDir
-get/set the user help target directory. Defaults to code:: thisProcess.platform.userAppSupportDir +/+ "Help" ::
+get/set the user help target directory. Defaults to code::thisProcess.platform.userAppSupportDir +/+ "Help"::
 
 method:: undocumentedClasses
 A set of all undocumented classes.
