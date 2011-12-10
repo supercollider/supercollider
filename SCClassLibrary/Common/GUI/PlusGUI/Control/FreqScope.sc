@@ -328,7 +328,7 @@ PlusFreqScopeWindow {
 			dbLabel = Array.newClear(17);
 			dbLabelDist = rect.height/(dbLabel.size-1);
 
-			nyquistKHz = Server.internal.sampleRate;
+			nyquistKHz = PlusFreqScope.server.sampleRate;
 			if( (nyquistKHz == 0) || nyquistKHz.isNil, {
 				nyquistKHz = 22.05 // best guess?
 			},{
