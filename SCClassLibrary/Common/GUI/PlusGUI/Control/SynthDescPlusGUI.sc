@@ -61,7 +61,11 @@
 					NodeWatcher.register(synth);
 				};
 			} {
-				synth.release;
+				if (this.hasGate) {
+					synth.release;
+				} {
+					synth.free
+				};
 				synth = nil;
 			};
 		};
