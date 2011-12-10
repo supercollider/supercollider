@@ -23,8 +23,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <string>
-
 #ifdef _WIN32
 # include <direct.h>
 # include "SC_Win32Utils.h"
@@ -37,7 +35,6 @@
 # include <sys/types.h>
 #endif
 
-#include <stdexcept>
 #include "SC_DirUtils.h"
 
 #if defined(__APPLE__) || defined(SC_IPHONE)
@@ -50,8 +47,6 @@
 # include <CoreServices/CoreServices.h>
 #endif
 #endif
-
-using std::string;
 
 const char * gIdeName = "none";
 
@@ -290,7 +285,7 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 void sc_GetUserHomeDirectory(char *str, int size)
 {
 #ifndef _WIN32
-	char *home = getenv("HOME");
+	const char *home = getenv("HOME");
 	if(home!=NULL){
 		strncpy(str, home, size);
 	}else{
@@ -328,28 +323,24 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 void sc_GetUserAppSupportDirectory(char *str, int size)
 {
 	// XDG support according to http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-	char * xdg_data_home = getenv("XDG_DATA_HOME");
+	const char * xdg_data_home = getenv("XDG_DATA_HOME");
 	if (xdg_data_home) {
-		string config_folder = string(xdg_data_home) + SC_PATH_DELIMITER + "SuperCollider";
-		strncpy(str, config_folder.c_str(), size);
+		strncpy(str, xdg_data_home, size);
+		sc_AppendToPath(str, size, "SuperCollider");
 		return;
 	}
 
-	char home[PATH_MAX];
-	sc_GetUserHomeDirectory(home, PATH_MAX);
+	sc_GetUserHomeDirectory(str, size);
 
-	snprintf(str,
-			 size,
 #if defined(SC_IPHONE)
-			"%s/Documents",
+	sc_AppendToPath(str, size, "Documents");
 #elif defined(__APPLE__)
-			 "%s/Library/Application Support/SuperCollider",
+	sc_AppendToPath(str, size, "Library/Application Support/SuperCollider");
 #elif defined(_WIN32)
-			"%s\\SuperCollider",
+	sc_AppendToPath(str, size, "SuperCollider");
 #else
-			 "%s/.local/share/SuperCollider",
+	sc_AppendToPath(str, size, ".local/share/SuperCollider");
 #endif
-			 home);
 }
 
 
@@ -357,10 +348,8 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 
 void sc_GetSystemExtensionDirectory(char *str, int size)
 {
-	char path[PATH_MAX];
-	sc_GetSystemAppSupportDirectory(path, sizeof(path));
-	sc_AppendToPath(path, PATH_MAX, "Extensions");
-	strncpy(str, path, size);
+	sc_GetSystemAppSupportDirectory(str, size);
+	sc_AppendToPath(str, size, "Extensions");
 }
 
 
@@ -368,29 +357,25 @@ void sc_GetSystemExtensionDirectory(char *str, int size)
 
 void sc_GetUserExtensionDirectory(char *str, int size)
 {
-	char path[PATH_MAX];
-	sc_GetUserAppSupportDirectory(path, sizeof(path));
-	sc_AppendToPath(path, PATH_MAX, "Extensions");
-	strncpy(str, path, size);
+	sc_GetUserAppSupportDirectory(str, size);
+	sc_AppendToPath(str, size, "Extensions");
 }
 
 // Get the directory for the configuration files.
 void sc_GetUserConfigDirectory(char *str, int size)
 {
 	// XDG support according to http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-	char * xdg_config_home = getenv("XDG_CONFIG_HOME");
+	const char * xdg_config_home = getenv("XDG_CONFIG_HOME");
 	if (xdg_config_home) {
-		string config_folder = string(xdg_config_home) + SC_PATH_DELIMITER + "SuperCollider";
-		strncpy(str, config_folder.c_str(), size);
-		return;
+		strncpy(str, xdg_config_home, size);
+		sc_AppendToPath(str, size, "SuperCollider");
 	}
 
 #if defined(__linux__) || defined(__freebsd__)
-	char home[PATH_MAX];
+	char * home = str;
 
-	sc_GetUserHomeDirectory(home, PATH_MAX);
-	sc_AppendToPath(home, PATH_MAX, ".config/SuperCollider");
-	strncpy(str, home, size);
+	sc_GetUserHomeDirectory(str, size);
+	sc_AppendToPath(str, size, ".config/SuperCollider");
 #else
 	sc_GetUserAppSupportDirectory(str, size);
 #endif
