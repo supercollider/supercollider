@@ -69,18 +69,10 @@ PARSER BUGS
     blah blah blah blah blah
     blah blah ::
 
-* this doesn't work as it should:
-
-    hello
-
-    strong::there:: is a bug
-
 * tags after each other doesn't work, like returns::link::hello::
+you need to write returns:: link::hello::
 perhaps hard to fix without taking into account if the tag needs closing or not?
 for example, what does this mean: code::foo::link::bar::
-
-* using \::. doesn't work, needs a space: \:: .
-also sometimes non-letters after :: doesn't work as expected, like "(link::hello::)"
 
 VALIDATION
 ----------
