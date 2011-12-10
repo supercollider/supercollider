@@ -1219,9 +1219,9 @@ void PanB2_next_nova(PanB2 *unit, int inNumSamples)
 		nova::times_vec_simd(Xout, in, X_amp, X_slope, inNumSamples);
 		nova::times_vec_simd(Yout, in, Y_amp, Y_slope, inNumSamples);
 
-		unit->m_W_amp = W_amp;
-		unit->m_X_amp = X_amp;
-		unit->m_Y_amp = Y_amp;
+		unit->m_W_amp = next_W_amp;
+		unit->m_X_amp = next_X_amp;
+		unit->m_Y_amp = next_Y_amp;
 	} else {
 		// TODO: can be further optimized by joining the loops
 		nova::times_vec_simd(Wout, in, W_amp, inNumSamples);
