@@ -21,7 +21,7 @@ Normally you should not need to supply a buffer number. You should only do so if
 subsection:: Multichannel Buffers
 
 Multichannel buffers interleave their data. Thus the actual number of available values when requesting or setting values by index using methods such as code::set, setn, get, getn::, etc., is equal to code::numFrames * numChannels::.
-Indices start at 0 and go up to code:: (numFrames * numChannels) - 1 ::.
+Indices start at 0 and go up to code::(numFrames * numChannels) - 1::.
 In a two channel buffer for instance, index 0 will be the first value of the first channel, index 1 will be the first value of the second channel, index 2 will be the second value of the first channel, and so on.
 
 In some cases it is simpler to use multiple single channel buffers instead of a single multichannel one.
@@ -150,7 +150,7 @@ x.free; b.free;
 ::
 
 method:: readChannel
-As code::read:: above, but takes an link::Classes/Array:: of channel indices to read in, allowing one to read only the selected channels.
+As link::#*read:: above, but takes an link::Classes/Array:: of channel indices to read in, allowing one to read only the selected channels.
 argument:: server
 The server on which to allocate the buffer.
 argument:: path
@@ -194,7 +194,7 @@ method:: readExample
 Read example sound file to buffer via code::read::.
 
 method:: readNoUpdate
-As code::read:: above, but without the automatic update of instance variables. Call code::updateInfo:: (see below) to update the vars.
+As link::#*read:: above, but without the automatic update of instance variables. Call code::updateInfo:: (see below) to update the vars.
 argument:: server
 The server on which to allocate the buffer.
 argument:: path
@@ -316,13 +316,13 @@ The server on which to create the buffer.
 argument:: collection
 A subclass of Collection (i.e. an Array) containing only floats and integers. Multi-dimensional arrays will not work.
 argument:: numChannels
-The number of channels that the buffer should have. Note that buffers interleave multichannel data. You are responsible for providing an interleaved collection if needed. Multi-dimensional arrays will not work. See the example in *loadCollection, above, to see how to do this.
+The number of channels that the buffer should have. Note that buffers interleave multichannel data. You are responsible for providing an interleaved collection if needed. Multi-dimensional arrays will not work. See the example in link::#*loadCollection:: above, to see how to do this.
 argument:: wait
 An optional wait time between sending setn messages. In a high traffic situation it may be safer to set this to something above zero, which is the default.
 argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 discussion::
-This allows for larger collections than setn, below. This is not as safe as code::loadCollection::, above, but will work with servers on remote machines. The sample rate of the buffer will be the sample rate of the server on which it is created.
+This allows for larger collections than setn, below. This is not as safe as link::#*loadCollection:: above, but will work with servers on remote machines. The sample rate of the buffer will be the sample rate of the server on which it is created.
 code::
 s.boot;
 (
@@ -334,7 +334,7 @@ b.free;
 ::
 
 method:: loadDialog
-As code::read:: above, but gives you a load dialog window to browse for a file. Cocoa and SwingOSC compatible.
+As link::#*read:: above, but gives you a load dialog window to browse for a file. Cocoa and SwingOSC compatible.
 argument:: server
 The server on which to allocate the buffer.
 argument:: startFrame
@@ -438,7 +438,7 @@ Returns a string containing the path of a soundfile that has been loaded into th
 
 subsection:: Explicit allocation
 
-These methods allocate the necessary memory on the server for a Buffer previously created with code::new::, above.
+These methods allocate the necessary memory on the server for a Buffer previously created with link::#*new::.
 
 method:: alloc, allocMsg
 argument:: completionMessage
@@ -454,7 +454,7 @@ b.free;
 ::
 
 method:: allocRead, allocReadMsg
-Read a soundfile into a buffer on the server for a Buffer previously created with *new, above. Note that this will not autoupdate instance variables. Call code::updateInfo:: in order to do this.
+Read a soundfile into a buffer on the server for a Buffer previously created with link::#*new::. Note that this will not autoupdate instance variables. Call code::updateInfo:: in order to do this.
 argument:: argpath
 A String representing the path of the soundfile to be read.
 argument:: startFrame
@@ -473,7 +473,7 @@ x.free; b.free;
 ::
 
 method:: allocReadChannel, allocReadChannelMsg
-As allocRead above, but allows you to specify which channels to read.
+As link::#-allocRead:: above, but allows you to specify which channels to read.
 argument:: argpath
 A String representing the path of the soundfile to be read.
 argument:: startFrame
@@ -518,7 +518,7 @@ discussion::
 Note that if the number of frames in the file is greater than the number of frames in the buffer, it will be truncated. Note that readMsg will not auto-update instance variables. Call updateInfo in order to do this.
 
 method:: readChannel, readChannelMsg
-As read above, but allows you to specify which channels to read.
+As link::#-read:: above, but allows you to specify which channels to read.
 argument:: path
 A String representing the path of the soundfile to be read.
 argument:: fileStartFrame
@@ -585,7 +585,7 @@ A valid OSC message or a Function which will return one. A Function will be pass
 method:: set, setMsg
 Set the value in the buffer at index to be equal to float. Additional pairs of indices and floats may be included in the same message.
 discussion::
-Note that multichannel buffers interleave their sample data, therefore the actual number of available values is equal to code:: numFrames * numChannels ::. Indices start at 0.
+Note that multichannel buffers interleave their sample data, therefore the actual number of available values is equal to code::numFrames * numChannels::. Indices start at 0.
 code::
 s.boot;
 b = Buffer.alloc(s, 4, 2);
@@ -597,9 +597,9 @@ b.free;
 method:: setn, setnMsg
 Set a contiguous range of values in the buffer starting at the index startAt to be equal to the Array of floats or integers, values. The number of values set corresponds to the size of values. Additional pairs of starting indices and arrays of values may be included in the same message.
 discussion::
-Note that multichannel buffers interleave their sample data, therefore the actual number of available values is equal to code:: numFrames * numChannels ::. You are responsible for interleaving the data in values if needed. Multi-dimensional arrays will not work. Indices start at 0.
+Note that multichannel buffers interleave their sample data, therefore the actual number of available values is equal to code::numFrames * numChannels::. You are responsible for interleaving the data in values if needed. Multi-dimensional arrays will not work. Indices start at 0.
 
-N.B. The maximum number of values that you can set with a single setn message is 1633 when the server is using UDP as its communication protocol. Use code::loadCollection:: and code::sendCollection:: to set larger ranges of values.
+N.B. The maximum number of values that you can set with a single setn message is 1633 when the server is using UDP as its communication protocol. Use link::#-loadCollection:: and link::#-sendCollection:: to set larger ranges of values.
 code::
 s.boot;
 b = Buffer.alloc(s,16);
@@ -690,7 +690,7 @@ b.free;
 method:: getn, getMsg
 Send a message requesting the a contiguous range of values of size count starting from index. action is a Function which will be passed the values in an Array as an argument and evaluated when a reply is received. See setn above for an example.
 discussion::
-N.B. The maximum number of values that you can get with a single getn message is 1633 when the server is using UDP as its communication protocol. Use loadToFloatArray and getToFloatArray to get larger ranges of values.
+N.B. The maximum number of values that you can get with a single getn message is 1633 when the server is using UDP as its communication protocol. Use link::#-loadToFloatArray:: and link::#-getToFloatArray:: to get larger ranges of values.
 
 method:: loadToFloatArray
 Write the buffer to a file and then load it into a FloatArray.
