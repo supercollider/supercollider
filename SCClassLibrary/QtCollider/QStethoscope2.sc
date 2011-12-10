@@ -281,12 +281,13 @@ QStethoscope2 {
   }
 
   quit {
+    var win;
     this.stop;
     ServerBoot.remove(this, server);
     ServerQuit.remove(this, server);
     CmdPeriod.remove(this);
     if(scopeBuffer.notNil) {scopeBuffer.free; scopeBuffer=nil};
-    if(window.notNil) { var win = window; window = nil; { win.close }.defer; };
+    if(window.notNil) { win = window; window = nil; { win.close }.defer; };
   }
 
   setProperties { arg numChannels, index, bufsize=4096, zoom, rate;
