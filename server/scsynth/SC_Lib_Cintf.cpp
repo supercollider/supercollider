@@ -179,7 +179,7 @@ void initialize_library(const char *uGensPluginPath)
 		// load default plugin directory
 		char pluginDir[MAXPATHLEN];
 		sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
-		sc_AppendToPath(pluginDir, SC_PLUGIN_DIR_NAME);
+		sc_AppendToPath(pluginDir, MAXPATHLEN, SC_PLUGIN_DIR_NAME);
 
 		if (sc_DirectoryExists(pluginDir)) {
 			PlugIn_LoadDir(pluginDir, true);

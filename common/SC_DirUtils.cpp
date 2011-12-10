@@ -57,15 +57,21 @@ const char * gIdeName = "none";
 
 // Add a component to a path.
 
-void sc_AppendToPath(char *path, const char *component)
+void sc_AppendToPath(char *path, size_t max_size, const char *component)
 {
-#if defined(_WIN32)
-	strncat(path, "\\", PATH_MAX);
-#else
-	strncat(path, "/", PATH_MAX);
-#endif
-	strncat(path, component, PATH_MAX);
+	size_t currentLength = strlen(path);
+	if (currentLength >= max_size-1)
+		return;
+	path[currentLength] = SC_PATH_DELIMITER[0];
+	path[currentLength+1] = 0;
+	++currentLength;
+
+	char * tail = path + currentLength;
+	size_t remain = max_size - currentLength;
+
+	strncat(tail, component, remain);
 }
+
 
 char *sc_StandardizePath(const char *path, char *newpath2)
 {
@@ -353,7 +359,7 @@ void sc_GetSystemExtensionDirectory(char *str, int size)
 {
 	char path[PATH_MAX];
 	sc_GetSystemAppSupportDirectory(path, sizeof(path));
-	sc_AppendToPath(path, "Extensions");
+	sc_AppendToPath(path, PATH_MAX, "Extensions");
 	strncpy(str, path, size);
 }
 
@@ -364,7 +370,7 @@ void sc_GetUserExtensionDirectory(char *str, int size)
 {
 	char path[PATH_MAX];
 	sc_GetUserAppSupportDirectory(path, sizeof(path));
-	sc_AppendToPath(path, "Extensions");
+	sc_AppendToPath(path, PATH_MAX, "Extensions");
 	strncpy(str, path, size);
 }
 
@@ -383,7 +389,7 @@ void sc_GetUserConfigDirectory(char *str, int size)
 	char home[PATH_MAX];
 
 	sc_GetUserHomeDirectory(home, PATH_MAX);
-	sc_AppendToPath(home, ".config/SuperCollider");
+	sc_AppendToPath(home, PATH_MAX, ".config/SuperCollider");
 	strncpy(str, home, size);
 #else
 	sc_GetUserAppSupportDirectory(str, size);
@@ -492,7 +498,7 @@ bool sc_ReadDir(SC_DirHandle* dir, const char* dirname, char* path, bool& skipEn
 	// construct path from dir entry
 	char entrypathname[PATH_MAX];
 	strncpy(entrypathname, dirname, PATH_MAX);
-	sc_AppendToPath(entrypathname, dir->mEntry->d_name);
+	sc_AppendToPath(entrypathname, PATH_MAX, dir->mEntry->d_name);
 
 	// resolve path
 	bool isAlias = false;
