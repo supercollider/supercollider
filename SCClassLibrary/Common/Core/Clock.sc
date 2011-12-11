@@ -88,11 +88,7 @@ Scheduler {
 		});
 	}
 	clear {
-		if (queue.size > 1) {
-			forBy(1, queue.size, 3) {|i|
-				queue[i+1].removedFromScheduler
-			};
-		};
+		queue.do {|x| x.removedFromScheduler };
 		queue.clear
 	}
 
@@ -221,6 +217,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	clear { | releaseNodes = true |
 		// flag tells EventStreamPlayers that CmdPeriod is removing them, so
 		// nodes are already freed
+		// NOTE: queue is an Array, not a PriorityQueue, but it's used as such internally. That's why each item uses 3 slots.
 		if (queue.size > 1) {
 			forBy(1, queue.size, 3) {|i|
 				queue[i+1].removedFromScheduler(releaseNodes)
