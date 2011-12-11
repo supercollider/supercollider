@@ -7,7 +7,7 @@ UI {
 	}
 
 	*registerForReset {|aFunction|
-		this.deprecated(thisMethod, Reset.class.findMethod(\add));
+		this.deprecated(thisMethod, OnError.class.findMethod(\add));
 		OnError.add(aFunction)
 	}
 	*registerForShutdown {|aFunction|
