@@ -102,6 +102,10 @@ if (FFTW3F_FOUND)
 	target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
 endif()
 
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    target_link_libraries(libsupernova rt)
+endif()
+
 target_link_libraries(libsupernova oscpack tlsf boost_thread boost_system boost_filesystem boost_program_options ${PTHREADS_LIBRARIES})
 target_link_libraries(supernova libsupernova)
 
