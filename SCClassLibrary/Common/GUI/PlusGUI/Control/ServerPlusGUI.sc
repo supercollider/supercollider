@@ -109,17 +109,22 @@
 				{char === $n } { this.queryAllNodes(false) }
 				{char === $N } { this.queryAllNodes(true) }
 				{char === $l } { this.tryPerform(\meter) }
-				{char === $p} { if(serverRunning) { this.plotTree } }
-				{char === $ } { if(serverRunning.not) { this.boot } }
-				{char === $s and: { gui.stethoscope.isValidServer( this ) } } {
-					GUI.use( gui, { this.scope })}
+				{char === $p}  { if(serverRunning) { this.plotTree } }
+				{char === $ }  { if(serverRunning.not) { this.boot } }
+				{char === $s } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
+					                 {this.scope}
+					                 {warn("Scope not supported")}
+				               }
+				{char === $f } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
+					                 {this.freqscope}
+					                 {warn("FreqScope not supported")}
+				               }
 				{char == $d } {
 					if(this.isLocal or: { this.inProcess }) {
 						if(dumping, stopDump, startDump)
 					} {
 						"cannot dump a remote server's messages".inform
 					}
-
 				}
 				{char === $m } { if(this.volume.isMuted) { this.unmute } { this.mute } }
 				{char === $0 and: {volumeNum.hasFocus.not}} {
