@@ -53,8 +53,9 @@ nova_server::nova_server(server_arguments const & args):
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
 
 
-    /** todo: backend may force sample rate */
+    /** first guess: needs to be updated, once the backend is started */
     time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate);
+
     start_receive_thread();
 }
 
@@ -82,6 +83,7 @@ void nova_server::prepare_backend(void)
     _mm_setcsr(_mm_getcsr() | 0x40);
 #endif
 
+    time_per_tick = time_tag::from_samples(blocksize, get_samplerate());
 }
 
 nova_server::~nova_server(void)
