@@ -86,6 +86,24 @@ When a pattern is played, an object called link::Classes/EventStreamPlayer:: is 
 
 - strong::To sum up so far:: : A Pbind's stream generates Events. When an Event is played, it does some work that usually makes noise on the server. This work is defined in an event prototype. The Event class provides a default event prototype that includes powerful options to create and manipulate objects on the server.
 
+subsection::Rests
+
+Rests may be indicated in three ways.
+
+list::
+## strong::Recommended::
+list::
+## emphasis::Rest: :: A link::Classes/Rest:: object that converts the event being processed into a rest.
+::
+## strong::Legacy::
+list::
+## emphasis::Symbol as pitch: :: A symbol, such as strong::\rest::, strong::\r:: or even the empty symbol strong::\::, in a key related to pitch (degree, note, midinote, freq) causes the event to be silent.
+## emphasis::\type, \rest: :: Setting the event's \type to \rest also silences the event.
+::
+::
+
+A more complete discussion is found in the link::Classes/Rest:: help file.
+
 subsection::Useful Pbind variant: Pmono
 
 Pbind plays separate notes by default. Sometimes, you might need a pattern to act more like a monophonic synthesizer, where it plays just one Synth node and changes its values with each event. If Pbind normally corresponds to code::Synth.new:: or code::/s_new::, link::Classes/Pmono:: corresponds to code::aSynth.set:: or code::/n_set::.

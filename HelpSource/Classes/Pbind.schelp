@@ -1,6 +1,6 @@
 class:: Pbind
 summary:: combine several value patterns to one event stream by binding keys to values
-related:: Classes/Pattern, Classes/Event, Classes/Pmono
+related:: Classes/Pattern, Classes/Event, Classes/Pmono, Classes/Rest
 categories:: Streams-Patterns-Events>Patterns>Event
 
 description::
@@ -182,6 +182,10 @@ SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
 (instrument: \test, freq: 20, nharms: 50).play;
 )
 ::
+
+subsection::Rests
+
+See link::Classes/Rest:: for a discussion of marking events as rests in Pbind.
 
 subsection::The Play Method
 

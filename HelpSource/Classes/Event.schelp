@@ -59,6 +59,9 @@ code::
 method::playAndDelta
 Used by link::Classes/EventStreamPlayer:: to play Events and obtain a time increment.
 
+method::isRest
+Returns strong::true:: if the event will be played as a rest, and strong::false:: otherwise. See link::Classes/Rest:: for a more complete discussion of rests in event patterns.
+
 method::asUGenInput
 Calls link::#-asControlInput::.
 
