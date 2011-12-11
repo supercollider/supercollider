@@ -21,8 +21,8 @@
 			(ctlname != "?") && (msgFuncKeepGate or: { ctlname != "gate" })
 		};
 
-		numControls = usefulControls.size;
-		sliders = Array.newClear(numControls);
+		numControls = usefulControls.collect(_.defaultValue).flatten.size;
+		sliders = IdentityDictionary(numControls);
 
 		// make the window
 		w = gui.window.new("another control panel", Rect(20, 400, 440, numControls * 28 + 32));
@@ -43,10 +43,16 @@
 			envir = ();
 			usefulControls.do {|controlName, i|
 				var ctlname = controlName.name.asString;
+				var sliderEntry;
 				if(ctlname[1] == $_ and: { "ti".includes(ctlname[0]) }) {
 					ctlname = ctlname[2..];
 				};
-				envir.put(ctlname.asSymbol, sliders[i].value);
+
+				if (sliderEntry.isArray) {
+					envir.put(controlName.name, sliderEntry.collect(_.value));
+				} {
+					envir.put(controlName.name, sliderEntry.value);
+				}
 			};
 			envir.use {
 				msgFunc.valueEnvir
@@ -57,8 +63,7 @@
 		startButton.action = {|view|
 			if (view.value == 1) {
 				Server.default.bind {
-					synth = Synth(name, getSliderValues.value);
-					NodeWatcher.register(synth);
+					synth = Synth(name, getSliderValues.value.postln).register;
 				};
 			} {
 				if (this.hasGate) {
@@ -71,8 +76,8 @@
 		};
 
 		// create controls for all parameters
-		usefulControls.do {|controlName, i|
-			var ctlname, ctlname2, capname, spec;
+		usefulControls.do {|controlName|
+			var ctlname, ctlname2, capname, spec, controlIndex, slider;
 			ctlname = controlName.name;
 			capname = ctlname.asString;
 			capname[0] = capname[0].toUpper;
@@ -83,18 +88,30 @@
 			} {
 				spec = ctlname.asSpec;
 			};
+
 			if (spec.notNil) {
-				sliders[i] = gui.ezSlider.new(w, 400 @ 24, capname, spec,
+				slider = EZSlider(w, 400 @ 24, capname, spec,
 					{ |ez|
 						if(synth.isPlaying) { synth.set(ctlname, ez.value) }
 					}, controlName.defaultValue);
-			}{
-				spec = ControlSpec(-1e10,1e10);
-				sliders[i] = gui.ezNumber.new(w, 400 @ 24, capname, spec,
-					{ |ez|
-						if(synth.isPlaying) { synth.set(ctlname, ez.value) }
-					}, controlName.defaultValue);
+			} {
+				spec = ControlSpec(-1e10, 1e10);
+				if (controlName.defaultValue.isNumber) {
+					slider = EZNumber(w, 400 @ 24, capname, spec,
+						{ |ez|
+							if(synth.isPlaying) { synth.set(ctlname, ez.value) }
+						}, controlName.defaultValue)
+				} {
+					slider = Array(controlName.defaultValue.size);
+					controlName.defaultValue.do {|value, i|
+						slider.add(EZNumber(w, 400 @ 24, "%[%]".format(capname, i), spec,
+							{ |ez|
+								if(synth.isPlaying) { synth.set(controlName.index + i, ez.value) }
+							}, value))
+					}
+				}
 			};
+			sliders.put(ctlname, slider)
 		};
 
 		// set start button to zero upon a cmd-period
