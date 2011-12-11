@@ -155,17 +155,21 @@
 					string = string.extend(9, $ ) ++ " " ++ x.startingChannel;
 					string = string.extend(19, $ ) ++ " " ++ x.numberOfChannels;
 				};
-				controlsListView.items = synthDesc.controls.collect { |x|
+				controlsListView.items = synthDesc.controls.reject {|a|
+					a.name == '?'
+				}.collect { |x|
 					var string;
 					string = if (x.name.notNil) { x.name.asString.copy; }{ "" };
-					if (x.rate.notNil)
-					{
+					if (x.rate.notNil) {
 						string = string.extend(12, $ ) ++ " " ++ x.rate;
 					};
-					if (x.defaultValue.notNil)
-					{
-						string = string.extend(22, $ ) ++ " "
-							++ x.defaultValue.asStringPrec(6);
+
+					if (x.defaultValue.notNil) {
+						if (x.defaultValue.isArray) {
+							string = string.extend(22, $ ) ++ " " ++ x.defaultValue.collect(_.asStringPrec(6));
+						} {
+							string = string.extend(22, $ ) ++ " " ++ x.defaultValue.asStringPrec(6);
+						}
 					};
 				};
 			};
