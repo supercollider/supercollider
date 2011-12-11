@@ -195,6 +195,11 @@ if (APPLE)
 	target_link_libraries(libscsynth "-framework vecLib -framework CoreServices")
 endif()
 
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	target_link_libraries(libscsynth rt)
+endif()
+
+
 add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth ${PTHREADS_LIBRARY})
 

@@ -255,6 +255,10 @@ if (GC_SANITYCHECK)
 	add_definitions(-DGC_SANITYCHECK)
 endif()
 
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+	target_link_libraries(libsclang rt)
+endif()
+
 target_link_libraries(libsclang ${PTHREADS_LIBRARY} supercollider_boost_thread)
 
 if(SC_QT)
