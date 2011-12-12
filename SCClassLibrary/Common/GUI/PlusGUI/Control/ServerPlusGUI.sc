@@ -112,7 +112,7 @@
 				{char === $p}  { if(serverRunning) { this.plotTree } }
 				{char === $ }  { if(serverRunning.not) { this.boot } }
 				{char === $s } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
-					                 {this.scope}
+					                 {this.scope(options.numOutputBusChannels)}
 					                 {warn("Scope not supported")}
 				               }
 				{char === $f } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
