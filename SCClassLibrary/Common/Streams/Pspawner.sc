@@ -9,13 +9,7 @@ Spawner : Pattern {
 	}
 
 	suspend { | stream |
-		var index = priorityQ.array.indexOf(stream);
-		if (index.notNil) {
-			priorityQ.array.put(index, nil );
-			^stream
-		 } {
-		 	^nil
-		 };
+		priorityQ.removeValue(stream);
 	}
 
 	suspendAll {
