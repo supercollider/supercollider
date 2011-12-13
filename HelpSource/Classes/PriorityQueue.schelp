@@ -7,6 +7,8 @@ PriorityQueue implements a priority queue data structure, which is used to build
 time order.
 
 INSTANCEMETHODS::
+private::prInternalArray
+
 
 method::put
 Puts the item in the queue at the given time.
@@ -25,6 +27,10 @@ Return a link::Classes/Boolean:: whether the queue is empty.
 
 method::notEmpty
 Return a link::Classes/Boolean:: whether the queue is not empty.
+
+method::removeValue
+Remove all instances of value from the queue.
+
 
 EXAMPLES::
 
