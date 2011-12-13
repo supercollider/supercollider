@@ -1,5 +1,5 @@
 PriorityQueue {
-	var <array;
+	var array;
 
 	put { arg time, item;
 		_PriorityQueueAdd
@@ -26,4 +26,22 @@ PriorityQueue {
 		^this.primitiveFailed;
 	}
 	notEmpty { ^this.isEmpty.not }
+
+	removeValue {|value|
+		var newObject = PriorityQueue();
+
+		while {this.notEmpty} {
+			var currentPriority = this.topPriority;
+			var topObject = this.pop;
+			if (topObject != value) {
+				newObject.put(currentPriority, topObject)
+			}
+		};
+		array = newObject.prInternalArray;
+	}
+
+	// private
+	prInternalArray {
+		^array
+	}
 }
