@@ -113,31 +113,31 @@ Pfset : FuncFilterPattern {
 	*new { |func, pattern, cleanupFunc|
 		^super.new(func, pattern).cleanupFunc_(cleanupFunc)
 	}
-	embedInStream { arg event;
-		var inevent, cleanup = EventStreamCleanup.new;
+	embedInStream { arg inevent;
+		var event, cleanup = IneventStreamCleanup.new;
 			// cleanup should actually not be passed in
 			// but retaining (temporarily) for backward compatibility
-		var envir = Event.make({ func.value(cleanup) });
+		var envir = Inevent.make({ func.value(cleanup) });
 		var stream = pattern.asStream;
 		var once = true;
 
 		loop {
-			event = event.copy;
-			event.putAll(envir);
-			inevent = stream.next(event);
+			inevent = inevent.copy;
+			inevent.putAll(envir);
+			event = stream.next(inevent);
 			if(once) {
 				cleanup.addFunction(event, { |flag|
 					envir.use({ cleanupFunc.value(flag) });
 				});
 				once = false;
 			};
-			if (inevent.isNil) {
-				^cleanup.exit(event)
+			if (event.isNil) {
+				^cleanup.exit(inevent)
 			} {
-				cleanup.update(inevent);
+				cleanup.update(event);
 			};
-			event = yield(inevent);
-			if(event.isNil) { ^cleanup.exit(inevent) }
+			inevent = yield(event);
+			if(inevent.isNil) { ^cleanup.exit(event) }
 		};
 	}
 }
