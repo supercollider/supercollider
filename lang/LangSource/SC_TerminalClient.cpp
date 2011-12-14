@@ -247,7 +247,6 @@ int SC_TerminalClient::run(int argc, char** argv)
 	opt.mArgv = argv;
 
 	// read library configuration file
-	bool success;
 	if (opt.mLibraryConfigFile) {
 		int argLength = strlen(opt.mLibraryConfigFile);
 		if (strcmp(opt.mLibraryConfigFile + argLength - 5, ".yaml"))
@@ -818,7 +817,9 @@ void SC_TerminalClient::endInput()
 #ifndef _WIN32
 	postfl("main: sending quit command to input thread.\n");
 	char c = 'q';
-	write( mInputCtlPipe[1], &c, 1 );
+	ssize_t bytes = write( mInputCtlPipe[1], &c, 1 );
+	if( bytes < 1 ) { postfl("WARNING: could not send quit command to input thread.\n"); }
+
 #else
 	postfl("main: signalling input thread quit event\n");
 	SetEvent( mQuitInputEvent );
