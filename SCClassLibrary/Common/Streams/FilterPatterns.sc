@@ -117,7 +117,7 @@ Pfset : FuncFilterPattern {
 		var event, cleanup = IneventStreamCleanup.new;
 			// cleanup should actually not be passed in
 			// but retaining (temporarily) for backward compatibility
-		var envir = Inevent.make({ func.value(cleanup) });
+		var envir = Event.make({ func.value(cleanup) });
 		var stream = pattern.asStream;
 		var once = true;
 
