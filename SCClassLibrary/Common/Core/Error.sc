@@ -84,6 +84,11 @@ MethodError : Error {
 		this.dumpBackTrace;
 		this.adviceLink.postln;
 	}
+	adviceLink {
+		^"For advice: [http://supercollider.sf.net/wiki/index.php/%]"
+		.format(this.class.name)
+	}
+
 }
 
 PrimitiveFailedError : MethodError {
@@ -139,6 +144,10 @@ DoesNotUnderstandError : MethodError {
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		this.adviceLink.postln;
+	}
+	adviceLink {
+		^"For advice: [http://supercollider.sf.net/wiki/index.php/%#%]"
+		.format(this.class.name, selector)
 	}
 }
 
@@ -220,5 +229,8 @@ DeprecatedError : MethodError {
 			Error.handling = false;
 		};
 
+	}
+	adviceLink {
+		^"For advice: [http://supercollider.sf.net/wiki/index.php/DeprecatedError]"
 	}
 }
