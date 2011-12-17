@@ -163,7 +163,7 @@ PlusFreqScope {
 	}
 
 	initFreqScope { arg parent, bounds;
-		if ((GUI.id == \qt) and: {server.isLocal}) {
+		if (this.shmScopeAvailable) {
 			scope = \QScope2.asClass.new(parent, bounds);
 			scope.server = server;
 		} {
@@ -181,7 +181,7 @@ PlusFreqScope {
 	}
 
 	allocBuffersAndStart {
-		if (server.isLocal) {
+		if (this.shmScopeAvailable) {
 			scopebuf = ScopeBuffer.alloc(server);
 			scope.bufnum = scopebuf.bufnum;
 			this.start;
@@ -204,7 +204,7 @@ PlusFreqScope {
 	}
 
 	start {
-		var defname = specialSynthDef ?? {"freqScope" ++ freqMode.asString ++ if (server.isLocal) {"_shm"} {""}};
+		var defname = specialSynthDef ?? {"freqScope" ++ freqMode.asString ++ if (this.shmScopeAvailable) {"_shm"} {""}};
 		var args = [\in, inBus, \dbFactor, dbFactor, \rate, 4, \fftBufSize, bufSize,
 			\scopebufnum, scopebuf.bufnum] ++ specialSynthArgs;
 		synth = Synth.tail(RootNode(server), defname, args);
@@ -301,6 +301,11 @@ PlusFreqScope {
 
 	doesNotUnderstand { arg selector ... args;
 		^scope.performList(selector, args);
+	}
+
+	shmScopeAvailable {
+		if (GUI.id != \qt) { ^false };
+		^(server.isLocal and: (server.inProcess.not))
 	}
 }
 
