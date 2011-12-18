@@ -24,7 +24,10 @@ Exception {
 	}
 	adviceLink {
 		^("For advice: [http://supercollider.sf.net/wiki/index.php/%]"
-			.format(this.errorString.tr($ , $_).tr($\n, $_)));
+			.format(this.adviceLinkPage));
+	}
+	adviceLinkPage {
+		^this.errorString.tr($ , $_).tr($\n, $_);
 	}
 	postProtectedBacktrace {
 		var out, currentFrame, def, ownerClass, methodName, pos = 0;
@@ -84,9 +87,8 @@ MethodError : Error {
 		this.dumpBackTrace;
 		this.adviceLink.postln;
 	}
-	adviceLink {
-		^"For advice: [http://supercollider.sf.net/wiki/index.php/%]"
-		.format(this.class.name)
+	adviceLinkPage {
+		^this.class.name
 	}
 
 }
@@ -145,9 +147,8 @@ DoesNotUnderstandError : MethodError {
 		this.dumpBackTrace;
 		this.adviceLink.postln;
 	}
-	adviceLink {
-		^"For advice: [http://supercollider.sf.net/wiki/index.php/%#%]"
-		.format(this.class.name, selector)
+	adviceLinkPage {
+		^"%#%".format(this.class.name, selector)
 	}
 }
 
@@ -230,7 +231,7 @@ DeprecatedError : MethodError {
 		};
 
 	}
-	adviceLink {
-		^"For advice: [http://supercollider.sf.net/wiki/index.php/DeprecatedError]"
+	adviceLinkPage {
+		^"DeprecatedError"
 	}
 }
