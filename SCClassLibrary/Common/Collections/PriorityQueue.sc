@@ -28,11 +28,11 @@ PriorityQueue {
 	notEmpty { ^this.isEmpty.not }
 
 	removeValue {|value|
-		var newObject = PriorityQueue();
+		var newObject = PriorityQueue(), currentPriority, topObject;
 
 		while {this.notEmpty} {
-			var currentPriority = this.topPriority;
-			var topObject = this.pop;
+			currentPriority = this.topPriority;
+			topObject = this.pop;
 			if (topObject != value) {
 				newObject.put(currentPriority, topObject)
 			}
