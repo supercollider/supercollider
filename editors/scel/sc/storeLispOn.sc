@@ -43,7 +43,7 @@
 	storeLispOn { arg stream;
 		// note, extra space after \\ is for emacs paren matching
 		// not syntactically significant
-		stream.put($").putAll(this.escapeChar($").escapeChar($\\ )).put($")
+		stream.put($").putAll(this.escapeChar($\\ ).escapeChar($")).put($")
 	}
 }
 
