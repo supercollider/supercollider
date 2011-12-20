@@ -61,11 +61,11 @@ SynthDef {
 		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
 	}
 	//only write if no file exists
-	*writeOnce { arg name, func, rates, prependArgs, variants, dir, metadata;
-		this.new(name, func, rates, prependArgs, variants, metadata).writeOnce(dir)
+	*writeOnce { arg name, func, rates, prependArgs, variants, dir, metadata, mdPlugin;
+		this.new(name, func, rates, prependArgs, variants, metadata).writeOnce(dir, mdPlugin)
 	}
-	writeOnce { arg dir;
-		this.writeDefFile(dir, false)
+	writeOnce { arg dir, mdPlugin;
+		this.writeDefFile(dir, false, mdPlugin)
 	}
 
 	initBuild {
@@ -289,9 +289,17 @@ SynthDef {
 		this.asArray.writeDef(stream);
 		^stream.collection;
 	}
-	writeDefFile { arg dir, overwrite;
+	writeDefFile { arg dir, overwrite, mdPlugin;
+		var desc, defFileExistedBefore;
 		if((metadata.tryPerform(\at, \shouldNotSend) ? false).not) {
+			defFileExistedBefore = File.exists(dir +/+ name ++ ".scsyndef");
 			super.writeDefFile(name, dir, overwrite);
+			if(overwrite or: { defFileExistedBefore.not }) {
+				desc = this.asSynthDesc;
+				desc.metadata = metadata;
+				SynthDesc.populateMetadataFunc.value(desc);
+				desc.writeMetadata(dir +/+ name, mdPlugin);
+			};
 		} {
 			// actual error, not just warning as in .send and .load,
 			// because you might try to write the file somewhere other than
@@ -610,7 +618,7 @@ SynthDef {
 				desc = lib[this.name.asSymbol];
 				desc.metadata = metadata;
 				SynthDesc.populateMetadataFunc.value(desc);
-				desc.writeMetadata(path);
+				desc.writeMetadata(path, mdPlugin);
 			} {
 				file.close
 			}
