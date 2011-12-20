@@ -44,7 +44,7 @@ struct scpacket {
 
 	void throw_overflow_exception()
 	{
-		throw std::runtime_error("buffer overflow");
+		throw std::runtime_error(std::string("buffer overflow"));
 	}
 
 	scpacket() { reset(); }
