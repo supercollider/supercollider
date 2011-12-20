@@ -29,6 +29,7 @@
 #include "PyrObjectProto.h"
 #include "GC.h"
 #include <new>
+#include <string>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>

@@ -797,7 +797,7 @@ public:
 		return &x;
 	}
 
-	pointer allocate(size_type n, const_pointer hint = 0)
+	pointer allocate(size_type n, const void*  hint = 0)
 	{
 		return (pointer)pyr_pool_compile->Alloc(n*sizeof(T));
 	}
