@@ -457,9 +457,9 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		}
 	}
 
-	writeMetadata { arg path;
+	writeMetadata { arg path, mdPlugin;
 		if(metadata.isNil) { AbstractMDPlugin.clearMetadata(path); ^this };
-		this.class.mdPlugin.writeMetadata(metadata, def, path);
+		(mdPlugin ?? { this.class.mdPlugin }).writeMetadata(metadata, def, path);
 	}
 
 	// parse the def name out of the bytes array sent with /d_recv
