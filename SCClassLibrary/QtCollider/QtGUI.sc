@@ -1,6 +1,7 @@
 QtGUI {
 
   *initClass {
+    Class.initClassTree( GUI );
     GUI.add( this );
   }
 
