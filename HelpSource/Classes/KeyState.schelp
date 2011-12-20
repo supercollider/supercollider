@@ -42,7 +42,7 @@ s.boot;
 // execute the code below to find out a key's keycode
 // the char and keycode of any key you press will be printed in the post window
 (
-w = SCWindow.new("I catch keystrokes");
+w = Window.new("I catch keystrokes");
 w.view.keyDownAction = { arg view, char, modifiers, unicode, keycode;  [char, keycode].postln; };
 w.front;
 )
