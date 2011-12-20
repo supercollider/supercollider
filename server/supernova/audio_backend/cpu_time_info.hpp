@@ -46,7 +46,11 @@ struct cpu_time_info
     {
         const float average_factor = 1.f/size;
         float sum;
+#ifdef __PATHCC__
+        horizontal_maxsum_vec_simd(peak, sum, &buffer.front(), size);
+#else
         horizontal_maxsum_vec_simd(peak, sum, buffer.data(), size);
+#endif
         average = sum * average_factor;
     }
 

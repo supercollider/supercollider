@@ -239,7 +239,9 @@ class dsp_thread_queue
     typedef boost::uint_fast16_t node_count_t;
 
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
-    typedef std::vector<dsp_thread_queue_item*, Alloc> item_vector_t;
+    typedef std::vector<dsp_thread_queue_item*,
+                        typename Alloc::template rebind<dsp_thread_queue_item*>::other
+                       > item_vector_t;
 
     typedef typename Alloc::template rebind<dsp_thread_queue_item>::other item_allocator;
 
