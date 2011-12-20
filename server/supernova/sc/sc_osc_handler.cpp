@@ -555,7 +555,11 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
         handle_packet_async(recv_buffer_.begin(), bytes_transferred, udp_remote_endpoint_);
     else {
         overflow_vector.insert(overflow_vector.end(), recv_buffer_.begin(), recv_buffer_.end());
+#ifdef __PATHCC__
+        handle_packet_async(&overflow_vector.front(), overflow_vector.size(), udp_remote_endpoint_);
+#else
         handle_packet_async(overflow_vector.data(), overflow_vector.size(), udp_remote_endpoint_);
+#endif
         overflow_vector.clear();
     }
 

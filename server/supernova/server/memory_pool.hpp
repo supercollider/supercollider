@@ -66,8 +66,7 @@ public:
         return &x;
     }
 
-    pointer allocate(size_type size,
-                     void* hint = 0)
+    pointer allocate(size_type size, const void* hint = 0)
     {
         pointer ret = static_cast<pointer>(rt_pool.malloc(size * sizeof(T)));
         if (ret == NULL)
@@ -76,9 +75,7 @@ public:
         return ret;
     }
 
-    pointer reallocate(pointer p,
-                       size_type size,
-                       void* hint = 0)
+    pointer reallocate(pointer p, size_type size, void* hint = 0)
     {
         return static_cast<pointer>(rt_pool.realloc(p, size));
     }
@@ -101,6 +98,17 @@ public:
     void destroy(pointer p)
     {
         p->~T();
+    }
+
+    bool operator==(rt_pool_allocator const & rhs)
+    {
+        return true;
+    }
+
+    template <typename AllocatorType>
+    bool operator==(AllocatorType const & rhs)
+    {
+        return false;
     }
 };
 

@@ -48,7 +48,7 @@ class sc_synthdef
     typedef std::vector<char, aligned_allocator<char> > char_vector;
 
 public:
-    typedef std::map<string, int, std::less<string>, aligned_allocator<int> > parameter_map_t;
+    typedef std::map<string, int, std::less<string>, aligned_allocator<string> > parameter_map_t;
 
     struct input_spec
     {
@@ -68,7 +68,7 @@ public:
         int16_t source;   /* index of ugen or -1 for constant */
         int16_t index;    /* number of output or constant index */
     };
-    typedef std::vector<input_spec, aligned_allocator<struct input_spec> > input_spec_vector;
+    typedef std::vector<input_spec, aligned_allocator<input_spec> > input_spec_vector;
 
     struct unit_spec_t
     {

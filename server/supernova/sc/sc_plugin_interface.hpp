@@ -75,9 +75,10 @@ public:
     void update_nodegraph(void);
 
 protected:
-    typedef rt_pool_allocator<int> Alloc;
-    std::vector<server_node*, Alloc> done_nodes, pause_nodes, resume_nodes;
-    std::vector<abstract_group*, Alloc> freeAll_nodes, freeDeep_nodes;
+    typedef rt_pool_allocator<server_node*> server_node_alloc;
+    typedef rt_pool_allocator<abstract_group*> abstract_group_alloc;
+    std::vector<server_node*, server_node_alloc> done_nodes, pause_nodes, resume_nodes;
+    std::vector<abstract_group*, abstract_group_alloc> freeAll_nodes, freeDeep_nodes;
 
 private:
     spin_lock cmd_lock; /* multiple synths can be scheduled for removal, so we need to guard this
@@ -231,7 +232,7 @@ private:
     bool synths_to_initialize;
 
     void initialize_synths_perform(void);
-    std::vector<abstract_synth*, rt_pool_allocator<synth_ptr> > uninitialized_synths;
+    std::vector<abstract_synth*, rt_pool_allocator<abstract_synth*> > uninitialized_synths;
     /* @} */
 };
 

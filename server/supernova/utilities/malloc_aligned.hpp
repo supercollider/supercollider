@@ -194,8 +194,7 @@ public:
         return &x;
     }
 
-    pointer allocate(size_type n,
-                     const_pointer hint = 0)
+    pointer allocate(size_type n, const void* hint = 0)
     {
         pointer ret = malloc_aligned<T>(n);
         if (ret == 0)

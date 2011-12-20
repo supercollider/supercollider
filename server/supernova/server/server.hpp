@@ -252,7 +252,7 @@ public:
 #ifdef JACK_BACKEND
         return get_cpuload(peak, average);
 #else
-        return 0.f;
+        peak = average = 0.f;
 #endif
     }
 
