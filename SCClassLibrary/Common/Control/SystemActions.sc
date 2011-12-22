@@ -130,11 +130,13 @@ AbstractServerAction : AbstractSystemAction {
 	}
 
 	*performFunction { arg server, function;
-		this.objects.at(server).copy.do(function);
-		if(server === Server.default) {
-			this.objects.at(\default).copy.do(function)
-		};
-		this.objects.at(\all).copy.do(function);
+		if (this.objects.notNil) {
+			this.objects.at(server).copy.do(function);
+			if(server === Server.default) {
+				this.objects.at(\default).copy.do(function)
+			};
+			this.objects.at(\all).copy.do(function);
+		}
 	}
 
 	*run { arg server;
