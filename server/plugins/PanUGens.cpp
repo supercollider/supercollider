@@ -25,6 +25,7 @@
 #include "simd_binary_arithmetic.hpp"
 #include "simd_pan.hpp"
 #include "simd_mix.hpp"
+using nova::slope_argument;
 
 #if defined(__GNUC__) && !defined(__clang__)
 #define inline_functions __attribute__ ((flatten))
@@ -392,8 +393,8 @@ void Balance2_next_ak_nova(Balance2 *unit, int inNumSamples)
 		unit->m_rightamp = nextrightamp;
 
 		//nova::times_vec2_ramp_simd(OUT(0), IN(0), leftamp, leftampslope, OUT(1), IN(1), rightamp, rightampslope, inNumSamples);
-		nova::times_vec_simd(OUT(0), IN(0), leftamp, leftampslope, inNumSamples);
-		nova::times_vec_simd(OUT(1), IN(1), rightamp, rightampslope, inNumSamples);
+		nova::times_vec_simd(OUT(0), IN(0), slope_argument(leftamp, leftampslope), inNumSamples);
+		nova::times_vec_simd(OUT(1), IN(1), slope_argument(rightamp, rightampslope), inNumSamples);
 	} else {
 		//nova::times_vec2_simd(OUT(0), IN(0), leftamp, OUT(1), IN(1), rightamp, inNumSamples);
 		nova::times_vec_simd(OUT(0), IN(0), leftamp, inNumSamples);
@@ -425,8 +426,8 @@ void Balance2_next_ak_nova_64(Balance2 *unit, int inNumSamples)
 		unit->m_rightamp = nextrightamp;
 
 		//nova::times_vec2_ramp_simd(OUT(0), IN(0), leftamp, leftampslope, OUT(1), IN(1), rightamp, rightampslope, inNumSamples);
-		nova::times_vec_simd(OUT(0), IN(0), leftamp, leftampslope, inNumSamples);
-		nova::times_vec_simd(OUT(1), IN(1), rightamp, rightampslope, inNumSamples);
+		nova::times_vec_simd(OUT(0), IN(0), slope_argument(leftamp, leftampslope), inNumSamples);
+		nova::times_vec_simd(OUT(1), IN(1), slope_argument(rightamp, rightampslope), inNumSamples);
 	} else {
 		//nova::times_vec2_simd(OUT(0), IN(0), leftamp, OUT(1), IN(1), rightamp, inNumSamples);
 		nova::times_vec_simd<64>(OUT(0), IN(0), leftamp);
@@ -559,8 +560,8 @@ void XFade2_next_ak_nova(XFade2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		nova::mix_vec_simd(OUT(0), IN(0), leftamp, leftampslope,
-						   IN(1), rightamp, rightampslope, inNumSamples);
+		nova::mix_vec_simd(OUT(0), IN(0), slope_argument(leftamp, leftampslope),
+						   IN(1), slope_argument(rightamp, rightampslope), inNumSamples);
 
 		unit->m_pos = pos;
 		unit->m_level = level;
@@ -588,8 +589,8 @@ void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples)
 		float leftampslope  = (nextleftamp  - leftamp)  * slopeFactor;
 		float rightampslope = (nextrightamp - rightamp) * slopeFactor;
 
-		nova::mix_vec_simd<64>(OUT(0), IN(0), leftamp, leftampslope,
-								  IN(1), rightamp, rightampslope);
+		nova::mix_vec_simd<64>(OUT(0), IN(0), slope_argument(leftamp, leftampslope),
+								  IN(1), slope_argument(rightamp, rightampslope));
 
 		unit->m_pos = pos;
 		unit->m_level = level;
@@ -1215,9 +1216,9 @@ void PanB2_next_nova(PanB2 *unit, int inNumSamples)
 		float X_slope = CALCSLOPE(next_X_amp, X_amp);
 		float Y_slope = CALCSLOPE(next_Y_amp, Y_amp);
 
-		nova::times_vec_simd(Wout, in, W_amp, W_slope, inNumSamples);
-		nova::times_vec_simd(Xout, in, X_amp, X_slope, inNumSamples);
-		nova::times_vec_simd(Yout, in, Y_amp, Y_slope, inNumSamples);
+		nova::times_vec_simd(Wout, in, slope_argument(W_amp, W_slope), inNumSamples);
+		nova::times_vec_simd(Xout, in, slope_argument(X_amp, X_slope), inNumSamples);
+		nova::times_vec_simd(Yout, in, slope_argument(Y_amp, Y_slope), inNumSamples);
 
 		unit->m_W_amp = next_W_amp;
 		unit->m_X_amp = next_X_amp;
