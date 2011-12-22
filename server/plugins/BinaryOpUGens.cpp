@@ -38,6 +38,7 @@
 #define inline_functions
 #endif
 
+using nova::slope_argument;
 
 #define NOVA_BINARY_WRAPPER(SCNAME, NOVANAME)							\
 	inline_functions void SCNAME##_aa_nova(BinaryOpUGen *unit, int inNumSamples) \
@@ -134,7 +135,7 @@
 			nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, inNumSamples); \
 		} else {														\
 			float slope = CALCSLOPE(next_b, xb);						\
-			nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples); \
+			nova::NOVANAME##_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples); \
 			unit->mPrevB = next_b;										\
 		}																\
 	}																	\
@@ -148,7 +149,7 @@
 			nova::NOVANAME##_vec_simd<64>(OUT(0), IN(0), xb);           \
 		} else {														\
 			float slope = CALCSLOPE(next_b, xb);						\
-			nova::NOVANAME##_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples); \
+			nova::NOVANAME##_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples); \
 			unit->mPrevB = next_b;										\
 		}																\
 	}																	\
@@ -162,7 +163,7 @@
 			nova::NOVANAME##_vec_simd(OUT(0), xa, IN(1), inNumSamples); \
 		} else {														\
 			float slope = CALCSLOPE(next_a, xa);						\
-			nova::NOVANAME##_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples); \
+			nova::NOVANAME##_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples); \
 			unit->mPrevA = next_a;										\
 		}																\
 	}                                                                   \
@@ -175,7 +176,7 @@
 			nova::NOVANAME##_vec_simd<64>(OUT(0), xa, IN(1));           \
 		} else {														\
 			float slope = CALCSLOPE(next_a, xa);						\
-			nova::NOVANAME##_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples); \
+			nova::NOVANAME##_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples); \
 			unit->mPrevA = next_a;										\
 		}																\
 	}
@@ -1565,7 +1566,7 @@ inline_functions void add_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 			nova::plus_vec_simd(OUT(0), IN(0), xb, inNumSamples);
 	} else {
 		float slope =  CALCSLOPE(next_b, xb);
-		nova::plus_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		nova::plus_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples);
 		unit->mPrevB = next_b;
 	}
 }
@@ -1582,7 +1583,7 @@ inline_functions void add_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 			nova::plus_vec_simd<64>(OUT(0), IN(0), xb);
 	} else {
 		float slope =  CALCSLOPE(next_b, xb);
-		nova::plus_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		nova::plus_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples);
 		unit->mPrevB = next_b;
 	}
 }
@@ -1600,7 +1601,7 @@ inline_functions void add_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 			nova::plus_vec_simd(OUT(0), IN(1), xa, inNumSamples);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		nova::plus_vec_simd(OUT(0), IN(1), xa, slope, inNumSamples);
+		nova::plus_vec_simd(OUT(0), IN(1), slope_argument(xa, slope), inNumSamples);
 		unit->mPrevA = next_a;
 	}
 }
@@ -1617,7 +1618,7 @@ inline_functions void add_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 			nova::plus_vec_simd<64>(OUT(0), IN(1), xa);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		nova::plus_vec_simd(OUT(0), IN(1), xa, slope, inNumSamples);
+		nova::plus_vec_simd(OUT(0), IN(1), slope_argument(xa, slope), inNumSamples);
 		unit->mPrevA = next_a;
 	}
 }
@@ -1731,7 +1732,7 @@ inline_functions void sub_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 			nova::minus_vec_simd(OUT(0), IN(0), xb, inNumSamples);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		nova::minus_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		nova::minus_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples);
 		unit->mPrevB = next_b;
 	}
 }
@@ -1748,7 +1749,7 @@ inline_functions void sub_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 			nova::minus_vec_simd<64>(OUT(0), IN(0), xb);
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		nova::minus_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		nova::minus_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples);
 		unit->mPrevB = next_b;
 	}
 }
@@ -1765,7 +1766,7 @@ inline_functions void sub_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 			nova::minus_vec_simd(OUT(0), xa, IN(1), inNumSamples);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		nova::minus_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples);
+		nova::minus_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples);
 		unit->mPrevA = next_a;
 	}
 }
@@ -1782,7 +1783,7 @@ inline_functions void sub_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 			nova::minus_vec_simd<64>(OUT(0), xa, IN(1));
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		nova::minus_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples);
+		nova::minus_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples);
 		unit->mPrevA = next_a;
 	}
 }
@@ -1900,7 +1901,7 @@ inline_functions void mul_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 		float slope = CALCSLOPE(next_a, xa);
 		unit->mPrevA = next_a;
 
-		nova::times_vec_simd(OUT(0), IN(1), xa, slope, inNumSamples);
+		nova::times_vec_simd(OUT(0), IN(1), slope_argument(xa, slope), inNumSamples);
 	}
 }
 
@@ -1920,7 +1921,7 @@ inline_functions void mul_ka_nova_64(BinaryOpUGen *unit, int inNumSamples)
 		float slope = CALCSLOPE(next_a, xa);
 		unit->mPrevA = next_a;
 
-		nova::times_vec_simd(OUT(0), IN(1), xa, slope, inNumSamples);
+		nova::times_vec_simd(OUT(0), IN(1), slope_argument(xa, slope), inNumSamples);
 	}
 }
 
@@ -1940,7 +1941,7 @@ inline_functions void mul_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 		float slope = CALCSLOPE(next_b, xb);
 		unit->mPrevB = next_b;
 
-		nova::times_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		nova::times_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples);
 	}
 }
 
@@ -1960,7 +1961,7 @@ inline_functions void mul_ak_nova_64(BinaryOpUGen *unit, int inNumSamples)
 		float slope = CALCSLOPE(next_b, xb);
 		unit->mPrevB = next_b;
 
-		nova::times_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		nova::times_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples);
 	}
 }
 
@@ -2095,7 +2096,7 @@ inline_functions void div_ak_nova(BinaryOpUGen *unit, int inNumSamples)
 		}
 	} else {
 		float slope = CALCSLOPE(next_b, xb);
-		nova::over_vec_simd(OUT(0), IN(0), xb, slope, inNumSamples);
+		nova::over_vec_simd(OUT(0), IN(0), slope_argument(xb, slope), inNumSamples);
 		unit->mPrevB = next_b;
 	}
 }
@@ -2112,7 +2113,7 @@ inline_functions void div_ka_nova(BinaryOpUGen *unit, int inNumSamples)
 			nova::over_vec_simd(OUT(0), xa, IN(1), inNumSamples);
 	} else {
 		float slope = CALCSLOPE(next_a, xa);
-		nova::over_vec_simd(OUT(0), xa, slope, IN(1), inNumSamples);
+		nova::over_vec_simd(OUT(0), slope_argument(xa, slope), IN(1), inNumSamples);
 		unit->mPrevA = xa;
 	}
 }

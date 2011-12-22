@@ -35,6 +35,8 @@
 #include "simd_mix.hpp"
 #include "simd_binary_arithmetic.hpp"
 
+using nova::slope_argument;
+
 #if defined(__GNUC__) && !defined(__clang__)
 #define inline_functions __attribute__ ((flatten))
 #else
@@ -1246,9 +1248,9 @@ inline_functions void XOut_next_a_nova(XOut *unit, int inNumSamples)
 			float *in = IN(i+2);
 			ACQUIRE_BUS_AUDIO((int32)fbusChannel + i);
 			if (touched[i] == bufCounter)
-				nova::mix_vec_simd(out, out, 1-xfade0, -slope, in, xfade0, slope, inNumSamples);
+				nova::mix_vec_simd(out, out, slope_argument(1-xfade0, -slope), in, slope_argument(xfade0, slope), inNumSamples);
 			else {
-				nova::times_vec_simd(out, in, xfade, slope, inNumSamples);
+				nova::times_vec_simd(out, in, slope_argument(xfade, slope), inNumSamples);
 				touched[i] = bufCounter;
 			}
 			RELEASE_BUS_AUDIO((int32)fbusChannel + i);
