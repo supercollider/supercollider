@@ -75,19 +75,8 @@
 				resp.remove;
 			}).add;
 		};
-		bytes = def.asBytes;
 		synthMsg = synth.newMsg(target, [\i_out, outbus, \out, outbus] ++ args, addAction);
-		if(bytes.size > (65535 div: 4)) { // preliminary fix until full size works
-			if(server.isLocal) {
-				def.load(server, synthMsg)
-			}{
-				"synthdef may have been too large to send to remote server".warn;
-				server.sendMsg("/d_recv", bytes, synthMsg);
-			}
-		} {
-			server.sendMsg("/d_recv", bytes, synthMsg)
-		};
+		def.doSend(server, synthMsg);
 		^synth
 	}
-
 }

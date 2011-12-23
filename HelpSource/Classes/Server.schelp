@@ -105,6 +105,8 @@ free all nodes in all registered servers
 
 InstanceMethods::
 
+private:: doSend
+
 method:: sendMsg
 send an osc message to the server.
 discussion::
