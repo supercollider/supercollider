@@ -2047,62 +2047,83 @@ int prDumpBackTrace(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot);
-void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
+/* the DebugFrameConstructor uses a work queue in order to avoid recursions, which could lead to stack overflows */
+struct DebugFrameConstructor
 {
-	int i, j;
-	PyrMethod *meth;
-	PyrMethodRaw *methraw;
+	void makeDebugFrame (VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
+	{
+		workQueue.push_back(std::make_pair(frame, outSlot));
+		run_queue(g);
+	}
 
-	meth = slotRawMethod(&frame->method);
-	methraw = METHRAW(meth);
-
-	PyrObject* debugFrameObj = instantiateObject(g->gc, getsym("DebugFrame")->u.classobj, 0, false, true);
-	SetObject(outSlot, debugFrameObj);
-
-	SetObject(debugFrameObj->slots + 0, meth);
-	SetPtr(debugFrameObj->slots + 5, meth);
-
-	//int numtemps = methraw->numargs;
-	int numargs = methraw->numargs;
-	int numvars = methraw->numvars;
-	if (numargs) {
-		PyrObject* argArray = (PyrObject*)newPyrArray(g->gc, numargs, 0, false);
-		SetObject(debugFrameObj->slots + 1, argArray);
-		for (i=0; i<numargs; ++i) {
-			slotCopy(&argArray->slots[i],&frame->vars[i]);
+private:
+	void run_queue(VMGlobals *g)
+	{
+		while (!workQueue.empty()) {
+			WorkQueueItem work = workQueue.back();
+			workQueue.pop_back();
+			fillDebugFrame(g, work.first, work.second);
 		}
-		argArray->size = numargs;
-	} else {
-		SetNil(debugFrameObj->slots + 1);
-	}
-	if (numvars) {
-		PyrObject* varArray = (PyrObject*)newPyrArray(g->gc, numvars, 0, false);
-		SetObject(debugFrameObj->slots + 2, varArray);
-		for (i=0,j=numargs; i<numvars; ++i,++j) {
-			slotCopy(&varArray->slots[i],&frame->vars[j]);
-		}
-		varArray->size = numvars;
-	} else {
-		SetNil(debugFrameObj->slots + 2);
 	}
 
-	if (slotRawFrame(&frame->caller)) {
-		MakeDebugFrame(g, slotRawFrame(&frame->caller), debugFrameObj->slots + 3);
-	} else {
-		SetNil(debugFrameObj->slots + 3);
+	void fillDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
+	{
+		PyrMethod *meth = slotRawMethod(&frame->method);
+		PyrMethodRaw * methraw = METHRAW(meth);
+
+		PyrObject* debugFrameObj = instantiateObject(g->gc, getsym("DebugFrame")->u.classobj, 0, false, true);
+		SetObject(outSlot, debugFrameObj);
+
+		SetObject(debugFrameObj->slots + 0, meth);
+		SetPtr(debugFrameObj->slots + 5, meth);
+
+		int numargs = methraw->numargs;
+		int numvars = methraw->numvars;
+		if (numargs) {
+			PyrObject* argArray = (PyrObject*)newPyrArray(g->gc, numargs, 0, false);
+			SetObject(debugFrameObj->slots + 1, argArray);
+			for (int i=0; i<numargs; ++i)
+				slotCopy(&argArray->slots[i], &frame->vars[i]);
+
+			argArray->size = numargs;
+		} else
+			SetNil(debugFrameObj->slots + 1);
+
+		if (numvars) {
+			PyrObject* varArray = (PyrObject*)newPyrArray(g->gc, numvars, 0, false);
+			SetObject(debugFrameObj->slots + 2, varArray);
+			for (int i=0, j=numargs; i<numvars; ++i,++j)
+				slotCopy(&varArray->slots[i], &frame->vars[j]);
+
+			varArray->size = numvars;
+		} else
+			SetNil(debugFrameObj->slots + 2);
+
+		if (slotRawFrame(&frame->caller)) {
+			WorkQueueItem newWork = std::make_pair(slotRawFrame(&frame->caller), debugFrameObj->slots + 3);
+			workQueue.push_back(newWork);
+		} else
+			SetNil(debugFrameObj->slots + 3);
+
+		if (IsObj(&frame->context) && slotRawFrame(&frame->context) == frame)
+			SetObject(debugFrameObj->slots + 4, debugFrameObj);
+		else if (NotNil(&frame->context)) {
+			WorkQueueItem newWork = std::make_pair(slotRawFrame(&frame->context), debugFrameObj->slots + 4);
+			workQueue.push_back(newWork);
+		} else
+			SetNil(debugFrameObj->slots + 4);
 	}
 
-	if (IsObj(&frame->context) && slotRawFrame(&frame->context) == frame) {
-		SetObject(debugFrameObj->slots + 4,  debugFrameObj);
-	} else if (NotNil(&frame->context)) {
-		MakeDebugFrame(g, slotRawFrame(&frame->context), debugFrameObj->slots + 4);
-	} else {
-		SetNil(debugFrameObj->slots + 4);
-	}
+	typedef std::pair<PyrFrame*, PyrSlot*> WorkQueueItem;
+	typedef std::vector<WorkQueueItem> WorkQueueType;
+	WorkQueueType workQueue;
+};
+
+static void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
+{
+	DebugFrameConstructor constructor;
+	constructor.makeDebugFrame(g, frame, outSlot);
 }
-
 
 int prGetBackTrace(VMGlobals *g, int numArgsPushed);
 int prGetBackTrace(VMGlobals *g, int numArgsPushed)
