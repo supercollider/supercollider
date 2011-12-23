@@ -1164,7 +1164,7 @@ void returnFromBlock(VMGlobals *g)
 		if (!methraw->needsHeapContext) {
 			g->gc->Free(curframe);
 		} else {
-			SetNil(&curframe->caller);
+			SetInt(&curframe->caller, 0);
 		}
 
 	} else {
@@ -1277,9 +1277,10 @@ void returnFromMethod(VMGlobals *g)
 				methraw = METHRAW(meth);
 				PyrFrame *nextFrame = slotRawFrame(&tempFrame->caller);
 				if (!methraw->needsHeapContext) {
-					g->gc->Free(tempFrame);
+					SetInt(&tempFrame->caller, 0);
 				} else {
-					if (tempFrame != homeContext) SetNil(&tempFrame->caller);
+					if (tempFrame != homeContext)
+						SetInt(&tempFrame->caller, 0);
 				}
 				tempFrame = nextFrame;
 			}
