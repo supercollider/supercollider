@@ -317,17 +317,17 @@ function SChelp(subject)
 	endif
 endfun
 
-"--open HelpBrowser
-function HelpBrowser()
-	call SendToSC('Help.gui;')
-endfunction
-
-"--open help by class name
-function HelpBrowser_find(subject)
-    let string= "HelpBrowser.openHelpFor"
-    let format= "(\"" . a:subject . "\");"
-    let string= string . format
-    call SendToSC(string)
+" search help files for word under the cursor
+" or open the HelpBrowser front page
+function! HelpBrowser(subject)
+    if strlen(a:subject) > 0 && a:subject!~" " && a:subject!~"\t" 
+        let string= "HelpBrowser.openHelpFor"
+        let format= "(\"" . a:subject . "\");"
+        let string= string . format
+        call SendToSC(string)
+    else 
+        call SendToSC('Help.gui;')
+    endif
 endfunction
 
 function ListSCObjects(A,L,P)
