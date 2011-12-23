@@ -65,12 +65,14 @@ QcApplication::QcApplication( int & argc, char ** argv )
   qRegisterMetaType<VariantList>();
   qRegisterMetaType<QcTreeWidget::ItemPtr>();
 
-  QIcon icon;
-  icon.addFile(":icons/sc-cube-128");
-  icon.addFile(":icons/sc-cube-48");
-  icon.addFile(":icons/sc-cube-32");
-  icon.addFile(":icons/sc-cube-16");
-  setWindowIcon(icon);
+  if (QtColliderUseGui()) { // avoid a crash on linux, if x is not available
+    QIcon icon;
+    icon.addFile(":icons/sc-cube-128");
+    icon.addFile(":icons/sc-cube-48");
+    icon.addFile(":icons/sc-cube-32");
+    icon.addFile(":icons/sc-cube-16");
+    setWindowIcon(icon);
+  }
 }
 
 QcApplication::~QcApplication()
