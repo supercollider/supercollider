@@ -505,7 +505,6 @@ SynthDef {
 	}
 
 	// make SynthDef available to all servers
-
 	add { arg libname, completionMsg, keepDef = true;
 		var	servers, desc = this.asSynthDesc(libname ? \global, keepDef);
 		if(libname.isNil) {
@@ -514,7 +513,7 @@ SynthDef {
 			servers = SynthDescLib.getLib(libname).servers
 		};
 		servers.do { |each|
-			each.value.sendMsg("/d_recv", this.asBytes, completionMsg.value(each))
+			this.doSend(each.value, completionMsg.value(each))
 		}
 	}
 
@@ -531,7 +530,6 @@ SynthDef {
 
 	// only send to servers
 	send { arg server, completionMsg;
-
 		var servers = (server ?? { Server.allRunningServers }).asArray;
 		servers.do { |each|
 			if(each.serverRunning.not) {
@@ -540,7 +538,22 @@ SynthDef {
 			if(metadata.trueAt(\shouldNotSend)) {
 				this.loadReconstructed(each, completionMsg);
 			} {
-				each.sendMsg("/d_recv", this.asBytes, completionMsg)
+				this.doSend(each, completionMsg);
+			}
+		}
+	}
+
+	doSend { |server, completionMsg|
+		var bytes = this.asBytes;
+		try {
+			server.sendMsg("/d_recv", this.asBytes, completionMsg)
+		} {
+			if (server.isLocal) {
+				"Possible buffer overflow when sending SynthDef %. Retrying via synthdef file".format(name).warn;
+				this.writeDefFile(synthDefDir);
+				server.sendMsg("/d_load", synthDefDir ++ name ++ ".scsyndef", completionMsg)
+			} {
+				"Possible buffer overflow when sending SynthDef %.".format(name).warn;
 			}
 		}
 	}
@@ -571,7 +584,7 @@ SynthDef {
 				file.close;
 				lib.read(path);
 				lib.servers.do { arg server;
-					server.value.sendMsg("/d_recv", bytes, completionMsg)
+					this.doSend(server.value, completionMsg)
 				};
 				desc = lib[this.name.asSymbol];
 				desc.metadata = metadata;
