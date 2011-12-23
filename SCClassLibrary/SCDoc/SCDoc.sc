@@ -706,7 +706,7 @@ SCDoc {
     }
 
     *findHelpFile {|str|
-        ^r.findHelpFile(str);
+        ^r.findHelpFile(str.stripWhiteSpace);
     }
 }
 
