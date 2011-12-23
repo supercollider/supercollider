@@ -2108,11 +2108,11 @@ bool FrameSanity(PyrFrame *frame, const char *tagstr)
 	bool failed = false;
 	if (frame==NULL) return false;
 	if (NotObj(&frame->method)) {
-		postfl("Frame %X method tag wrong %X\n", frame, GetTag(&frame->method));
+		postfl("Frame %p method tag wrong %p\n", frame, GetTag(&frame->method));
 		failed = true;
 	//} else if (!isKindOf((PyrObject*)slotRawObject(&frame->method)->classptr, class_fundef)) {
 	} else if (slotRawObject(&frame->method)->classptr != class_method && slotRawObject(&frame->method)->classptr != class_fundef) {
-		postfl("Frame %X method class wrong %X\n", frame, slotRawObject(&frame->method)->classptr);
+		postfl("Frame %p method class wrong %p\n", frame, slotRawObject(&frame->method)->classptr);
 		failed = true;
 		//if (slotRawObject(&frame->method)->classptr->classptr == class_class) {
 		postfl("class: '%s'\n", slotRawSymbol(&slotRawObject(&frame->method)->classptr->name)->name);
@@ -2120,29 +2120,29 @@ bool FrameSanity(PyrFrame *frame, const char *tagstr)
 		//	postfl("not even a class\n");
 		//}
 	} else if (NotObj(&slotRawBlock(&frame->method)->code)) {
-		postfl("Method %X code tag wrong %X\n", slotRawBlock(&frame->method), GetTag(&slotRawBlock(&frame->method)->code));
+		postfl("Method %p code tag wrong %p\n", slotRawBlock(&frame->method), GetTag(&slotRawBlock(&frame->method)->code));
 		failed = true;
 	} else if (slotRawObject(&slotRawBlock(&frame->method)->code)->classptr != class_int8array) {
-		postfl("Code %X class wrong %X\n", slotRawObject(&slotRawBlock(&frame->method)->code), slotRawObject(&slotRawBlock(&frame->method)->code)->classptr);
+		postfl("Code %p class wrong %p\n", slotRawObject(&slotRawBlock(&frame->method)->code), slotRawObject(&slotRawBlock(&frame->method)->code)->classptr);
 			postfl("class: '%s'\n", slotRawSymbol(&slotRawObject(&slotRawBlock(&frame->method)->code)->classptr->name)->name);
 		failed = true;
 	}
 	/*
 	if (frame->caller.utag != tagHFrame && frame->caller.utag != tagNil) {
-		postfl("Frame %X caller tag wrong %X\n", frame, frame->caller.utag);
+		postfl("Frame %p caller tag wrong %p\n", frame, frame->caller.utag);
 		failed = true;
 	}
 	if (frame->context.utag != tagHFrame && frame->context.utag != tagNil) {
-		postfl("Frame %X context tag wrong %X\n", frame, frame->context.utag);
+		postfl("Frame %p context tag wrong %p\n", frame, frame->context.utag);
 		failed = true;
 	}
 	if (frame->homeContext.utag != tagHFrame && frame->homeContext.utag != tagNil) {
-		postfl("Frame %X homeContext tag wrong %X\n", frame, frame->homeContext.utag);
+		postfl("Frame %p homeContext tag wrong %p\n", frame, frame->homeContext.utag);
 		failed = true;
 	}
 	*/
 	if (!IsPtr(&frame->ip)) {
-		postfl("Frame %X ip tag wrong %X\n", frame, GetTag(&frame->ip));
+		postfl("Frame %p ip tag wrong %p\n", frame, GetTag(&frame->ip));
 		failed = true;
 	}
 	return failed;
