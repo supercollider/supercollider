@@ -114,12 +114,19 @@ BinaryOpUGen : BasicOpUGen {
 
 		// create a Sum3 if possible.
 		optimizedUGen = this.optimizeToSum3;
+
+		// create a Sum4 if possible.
 		if (optimizedUGen.isNil) {
-			optimizedUGen = this.optimizeToMulAdd;
+			optimizedUGen = this.optimizeToSum4
+		};
+
+		// create a MulAdd if possible.
+		if (optimizedUGen.isNil) {
+			optimizedUGen = this.optimizeToMulAdd
 		};
 
 		if (optimizedUGen.notNil) {
-			synthDef.replaceUGen(this, optimizedUGen);
+			synthDef.replaceUGen(this, optimizedUGen)
 		};
 	}
 
@@ -171,6 +178,22 @@ BinaryOpUGen : BasicOpUGen {
 			and: { b.descendants.size == 1 }}) {
 			buildSynthDef.removeUGen(b);
 			^Sum3(b.inputs[0], b.inputs[1], a);
+		};
+		^nil
+	}
+
+	optimizeToSum4 {
+		var a, b;
+		#a, b = inputs;
+
+		if (a.isKindOf(Sum3) and: { a.descendants.size == 1 }) {
+			buildSynthDef.removeUGen(a);
+			^Sum4(a.inputs[0], a.inputs[1], a.inputs[2], b);
+		};
+
+		if (b.isKindOf(Sum3) and: { b.descendants.size == 1 }) {
+			buildSynthDef.removeUGen(b);
+			^Sum4(b.inputs[0], b.inputs[1], b.inputs[2], a);
 		};
 		^nil
 	}
