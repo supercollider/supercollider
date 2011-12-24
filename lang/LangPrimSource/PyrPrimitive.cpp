@@ -3547,7 +3547,7 @@ static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numA
 	else if (IsFalse(arg))
 		gPostInlineWarnings = false;
 	else
-		errWrongType;
+		return errWrongType;
 
 	return errNone;
 }
