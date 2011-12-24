@@ -102,23 +102,35 @@ BinaryOpUGen : BasicOpUGen {
 	}
 
 	optimizeGraph {
-		var a, b, muladd;
+		var a, b, optimizedUGen;
 		#a, b = inputs;
 
 		//this.constantFolding;
 
 		if (operator == '+', {
+			// create a Sum3 if possible.
+			if (a.isKindOf(BinaryOpUGen) and: { a.operator == '+'
+				and: { a.descendants.size == 1 }}) {
+				buildSynthDef.removeUGen(a);
+				optimizedUGen = Sum3(a.inputs[0], a.inputs[1], b);
+			} {
+			if (b.isKindOf(BinaryOpUGen) and: { b.operator == '+'
+				and: { b.descendants.size == 1 }}) {
+				buildSynthDef.removeUGen(b);
+				optimizedUGen = Sum3(b.inputs[0], b.inputs[1], a);
+			}};
+
 			// create a MulAdd if possible.
 			if (a.isKindOf(BinaryOpUGen) and: { a.operator == '*'
 				and: { a.descendants.size == 1 }},
 			{
 				if (MulAdd.canBeMulAdd(a.inputs[0], a.inputs[1], b), {
 					buildSynthDef.removeUGen(a);
-					muladd = MulAdd.new(a.inputs[0], a.inputs[1], b);
+					optimizedUGen = MulAdd.new(a.inputs[0], a.inputs[1], b);
 				},{
 				if (MulAdd.canBeMulAdd(a.inputs[1], a.inputs[0], b), {
 					buildSynthDef.removeUGen(a);
-					muladd = MulAdd.new(a.inputs[1], a.inputs[0], b)
+					optimizedUGen = MulAdd.new(a.inputs[1], a.inputs[0], b)
 				})});
 			},{
 			if (b.isKindOf(BinaryOpUGen) and: { b.operator == '*'
@@ -126,15 +138,17 @@ BinaryOpUGen : BasicOpUGen {
 			{
 				if (MulAdd.canBeMulAdd(b.inputs[0], b.inputs[1], a), {
 					buildSynthDef.removeUGen(b);
-					muladd = MulAdd.new(b.inputs[0], b.inputs[1], a)
+					optimizedUGen = MulAdd.new(b.inputs[0], b.inputs[1], a)
 				},{
 				if (MulAdd.canBeMulAdd(b.inputs[1], b.inputs[0], a), {
 					buildSynthDef.removeUGen(b);
-					muladd = MulAdd.new(b.inputs[1], b.inputs[0], a)
+					optimizedUGen = MulAdd.new(b.inputs[1], b.inputs[0], a)
 				})});
 			})});
-			if (muladd.notNil, {
-				synthDef.replaceUGen(this, muladd);
+
+
+			if (optimizedUGen.notNil, {
+				synthDef.replaceUGen(this, optimizedUGen);
 			});
 		});
 	}
