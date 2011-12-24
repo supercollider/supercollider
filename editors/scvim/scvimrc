@@ -61,7 +61,7 @@ au Filetype supercollider,supercollider_help let b:match_words = '(:),[:],{:}'
 
 
 "supercollider vim keybindings
-"^R" gives contents of register "
+"expand('<cword>') gives current word under cursor without having to yank
 
 au Filetype supercollider,supercollider_help nmap <buffer> K :call SChelp(expand('<cword>'))<CR>
 au Filetype supercollider,supercollider_help imap <buffer>  :call SChelp(expand('<cword>'))<CR>
