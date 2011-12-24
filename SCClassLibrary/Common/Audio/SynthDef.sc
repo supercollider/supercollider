@@ -417,6 +417,7 @@ SynthDef {
 	}
 	replaceUGen { arg a, b;
 		b.widthFirstAntecedents = a.widthFirstAntecedents;
+		b.descendants = a.descendants;
 		children.remove(b);
 		children.do { arg item, i;
 			if (item === a and: { b.isKindOf(UGen) }) {
