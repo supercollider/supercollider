@@ -339,3 +339,24 @@ Sum3 : UGen {
 		^super.new1(*([rate] ++ sortedArgs))
 	}
 }
+
+Sum4 : UGen {
+	*new { arg in0, in1, in2, in3;
+		^this.multiNew(nil, in0, in1, in2, in3)
+	}
+
+	*new1 { arg dummyRate, in0, in1, in2, in3;
+		var argArray, rate, sortedArgs;
+
+		if (in0 == 0.0) { ^Sum3.new1(nil, in1, in2, in3) };
+		if (in1 == 0.0) { ^Sum3.new1(nil, in0, in2, in3) };
+		if (in2 == 0.0) { ^Sum3.new1(nil, in0, in1, in3) };
+		if (in3 == 0.0) { ^Sum3.new1(nil, in0, in1, in2) };
+
+		argArray = [in0, in1, in2, in3];
+		rate = argArray.rate;
+		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
+
+		^super.new1(rate, in0, in1, in2, in3)
+	}
+}
