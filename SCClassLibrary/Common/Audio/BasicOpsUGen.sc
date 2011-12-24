@@ -125,9 +125,41 @@ BinaryOpUGen : BasicOpUGen {
 			optimizedUGen = this.optimizeToMulAdd
 		};
 
-		if (optimizedUGen.notNil) {
-			synthDef.replaceUGen(this, optimizedUGen)
+		// optimize negative additions
+		if (optimizedUGen.isNil) {
+			optimizedUGen = this.optimizeAddNeg
 		};
+
+		if (optimizedUGen.notNil) {
+			synthDef.replaceUGen(this, optimizedUGen);
+			optimizedUGen.optimizeGraph
+		};
+	}
+
+	optimizeAddNeg {
+		var a, b;
+		#a, b = inputs;
+
+		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' }) {
+			// a + b.neg -> a - b
+			if (b.descendants.size == 1) {
+				buildSynthDef.removeUGen(b);
+			} {
+				b.descendants.remove(this);
+			};
+			^(a - b.inputs[0])
+		};
+
+		if (a.isKindOf(UnaryOpUGen) and: { a.operator == 'neg' }) {
+			// a.neg + b -> b - a
+			if (a.descendants.size == 1) {
+				buildSynthDef.removeUGen(a);
+			} {
+				a.descendants.remove(this);
+			};
+			^(b - a.inputs[0])
+		};
+		^nil
 	}
 
 	optimizeToMulAdd {
