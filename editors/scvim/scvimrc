@@ -63,13 +63,13 @@ au Filetype supercollider,supercollider_help let b:match_words = '(:),[:],{:}'
 "supercollider vim keybindings
 "^R" gives contents of register "
 
-au Filetype supercollider,supercollider_help nmap <buffer> K yiw :call SChelp(""")<CR>
-au Filetype supercollider,supercollider_help imap <buffer>  yiw :call SChelp(""")<CR>
-au Filetype supercollider,supercollider_help nmap <buffer>  yiw :call SCdef(""")<CR>
-au Filetype supercollider,supercollider_help imap <buffer>  yiw :call SCdef(""")<CR>
-au Filetype supercollider,supercollider_help nmap <buffer> <F1> yiw :call HelpBrowser(""")<CR>
-au Filetype supercollider,supercollider_help imap <buffer> <F1> yiw :call HelpBrowser(""")<CR>a
-au Filetype supercollider,supercollider_help vmap <buffer> <F1> yiw :call HelpBrowser(""")<CR>
+au Filetype supercollider,supercollider_help nmap <buffer> K :call SChelp(expand('<cword>'))<CR>
+au Filetype supercollider,supercollider_help imap <buffer>  :call SChelp(expand('<cword>'))<CR>
+au Filetype supercollider,supercollider_help nmap <buffer>  :call SCdef(expand('<cword>'))<CR>
+au Filetype supercollider,supercollider_help imap <buffer>  :call SCdef(expand('<cword>'))<CR>
+au Filetype supercollider,supercollider_help nmap <buffer> <F1> :call HelpBrowser(expand('<cword>'))<CR>
+au Filetype supercollider,supercollider_help imap <buffer> <F1> :call HelpBrowser(expand('<cword>'))<CR>a
+au Filetype supercollider,supercollider_help vmap <buffer> <F1> :call HelpBrowser(expand('<cword>'))<CR>
 au Filetype supercollider,supercollider_help nmap <buffer> <F5> :call SClang_block()<CR>
 au Filetype supercollider,supercollider_help imap <buffer> <F5> :call SClang_block()<CR>a
 au Filetype supercollider,supercollider_help vmap <buffer> <F5> :call SClang_send()<CR>
