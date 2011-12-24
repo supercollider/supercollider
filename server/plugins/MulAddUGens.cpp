@@ -19,21 +19,18 @@
 */
 
 
-#include "SC_PlugIn.h"
+#include "SC_PlugIn.hpp"
 
 
 
-#ifdef NOVA_SIMD
 #include "simd_memory.hpp"
 #include "simd_binary_arithmetic.hpp"
 #include "simd_ternary_arithmetic.hpp"
+#include "simd_mix.hpp"
 
 using nova::slope_argument;
 
 #include "function_attributes.h"
-
-
-#endif
 
 
 
@@ -710,6 +707,177 @@ void MulAdd_Ctor(MulAdd *unit)
 	ampmix_k(unit, 1);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct SIMD_Unit:
+	SCUnit
+{
+	bool canUseSIMD (void) const
+	{
+		return (mBufLength & (nova::vec< float >::objects_per_cacheline - 1)) == 0;
+	}
+};
+
+namespace {
+
+struct Sum3:
+	SIMD_Unit
+{
+	float mPrev1, mPrev2;
+
+	Sum3(void)
+	{
+		mPrev1 = in0(1);
+		mPrev2 = in0(2);
+
+		if (mCalcRate != calc_FullRate) {
+			set_calc_function<Sum3, &Sum3::next_scalar>();
+			return;
+		}
+
+		assert(inRate(0) == calc_FullRate);
+
+		switch (inRate(1)) {
+		case calc_FullRate:
+			switch (inRate(2)) {
+			case calc_FullRate:
+				if (canUseSIMD())
+					set_vector_calc_function<Sum3, &Sum3::next_aaa<true>, &Sum3::next_aaa<false> >();
+				else
+					set_calc_function<Sum3, &Sum3::next_aaa<false> >();
+				return;
+
+			case calc_BufRate:
+				if (canUseSIMD())
+					set_vector_calc_function<Sum3, &Sum3::next_aak<true>, &Sum3::next_aak<false> >();
+				else
+					set_calc_function<Sum3, &Sum3::next_aak<false> >();
+				return;
+
+			case calc_ScalarRate:
+				if (canUseSIMD())
+					set_vector_calc_function<Sum3, &Sum3::next_aai<true>, &Sum3::next_aai<false> >();
+				else
+					set_calc_function<Sum3, &Sum3::next_aai<false> >();
+				return;
+
+			default:
+				assert(false);
+			}
+
+		case calc_BufRate:
+			switch (inRate(2)) {
+				case calc_BufRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum3, &Sum3::next_akk<true>, &Sum3::next_akk<false> >();
+					else
+						set_calc_function<Sum3, &Sum3::next_akk<false> >();
+					return;
+
+				case calc_ScalarRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum3, &Sum3::next_aki<true>, &Sum3::next_aki<false> >();
+					else
+						set_calc_function<Sum3, &Sum3::next_aki<false> >();
+					return;
+
+				default:
+					assert(false);
+			}
+
+		case calc_ScalarRate:
+			assert (inRate(2) == calc_ScalarRate);
+			if (canUseSIMD())
+				set_vector_calc_function<Sum3, &Sum3::next_aii<true>, &Sum3::next_aii<false> >();
+			else
+				set_calc_function<Sum3, &Sum3::next_aii<false> >();
+			return;
+
+		default:
+			assert(false);
+		}
+	}
+
+	template <bool SIMD, typename Arg1, typename Arg2, typename Arg3>
+	static void sum_vec(float * out, Arg1 const & arg1, Arg2 const & arg2, Arg3 const & arg3, int inNumSamples)
+	{
+		if (SIMD)
+			nova::sum_vec_simd(out, arg1, arg2, arg3, inNumSamples);
+		else
+			nova::sum_vec(out, arg1, arg2, arg3, inNumSamples);
+	}
+
+	void next_scalar(int inNumSamples)
+	{
+		out0(0) = in0(0) + in0(1) + in0(2);
+	}
+
+	template <bool SIMD>
+	void next_aaa(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), in(2), inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aak(int inNumSamples)
+	{
+		float next2 = in0(2);
+		if (next2 != mPrev2) {
+			float slope = calcSlope(next2, mPrev2);
+			sum_vec<SIMD>(out(0), in(0), in(1), slope_argument(mPrev2, slope), inNumSamples);
+			mPrev2 = next2;
+		} else
+			next_aai<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aai(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), mPrev2, inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aki(int inNumSamples)
+	{
+		float next1 = in0(1);
+		if (next1 != mPrev1) {
+			float slope = calcSlope(next1, mPrev1);
+			sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, slope), in0(2), inNumSamples);
+			mPrev1 = next1;
+		} else
+			next_aii<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_akk(int inNumSamples)
+	{
+		float next2 = in0(2);
+
+		if (next2 != mPrev2) {
+			float next1 = in0(1);
+			float slope2 = calcSlope(next2, mPrev2);
+			if (next1 != mPrev1) {
+				float slope1 = calcSlope(next1, mPrev1);
+				sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, slope1), slope_argument(mPrev2, slope2), inNumSamples);
+				mPrev1 = next1;
+			} else
+				sum_vec<SIMD>(out(0), in(0), next1, slope_argument(mPrev2, slope2), inNumSamples);
+			mPrev2 = next2;
+			return;
+		} else
+			next_aki<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aii(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in0(1), in0(2), inNumSamples);
+	}
+};
+
+DEFINE_XTORS(Sum3)
+
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -718,4 +886,5 @@ PluginLoad(MulAdd)
 	ft = inTable;
 
 	DefineSimpleUnit(MulAdd);
+	DefineSimpleUnit(Sum3);
 }

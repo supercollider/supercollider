@@ -284,3 +284,22 @@ MulAdd : UGen {
 		^false
 	}
 }
+
+Sum3 : UGen {
+	*new { arg in0, in1, in2;
+		^this.multiNew(nil, in0, in1, in2)
+	}
+
+	*new1 { arg dummyRate, in0, in1, in2;
+		var argArray, rate, sortedArgs;
+		if (in2 == 0.0) { ^(in0 + in1) };
+		if (in1 == 0.0) { ^(in0 + in2) };
+		if (in0 == 0.0) { ^(in1 + in2) };
+
+		argArray = [in0, in1, in2];
+		rate = argArray.rate;
+		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
+
+		^super.new1(*([rate] ++ sortedArgs))
+	}
+}
