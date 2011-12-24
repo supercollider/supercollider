@@ -877,6 +877,292 @@ struct Sum3:
 
 DEFINE_XTORS(Sum3)
 
+struct Sum4:
+	SIMD_Unit
+{
+	float mPrev1, mPrev2, mPrev3;
+
+	Sum4(void)
+	{
+		mPrev1 = in0(1);
+		mPrev2 = in0(2);
+		mPrev3 = in0(3);
+
+		if (mCalcRate != calc_FullRate) {
+			set_calc_function<Sum4, &Sum4::next_scalar>();
+			return;
+		}
+
+		assert(inRate(0) == calc_FullRate);
+
+		switch (inRate(1)) {
+		case calc_FullRate:
+			switch (inRate(2)) {
+			case calc_FullRate:
+				switch (inRate(3)) {
+				case calc_FullRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_aaaa<true>, &Sum4::next_aaaa<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_aaaa<false> >();
+					return;
+
+				case calc_BufRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_aaak<true>, &Sum4::next_aaak<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_aaak<false> >();
+					return;
+
+				case calc_ScalarRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_aaai<true>, &Sum4::next_aaai<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_aaai<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+
+			case calc_BufRate:
+				switch (inRate(3)) {
+				case calc_BufRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_aakk<true>, &Sum4::next_aakk<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_aakk<false> >();
+					return;
+
+				case calc_ScalarRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_aaki<true>, &Sum4::next_aaki<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_aaki<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+
+			case calc_ScalarRate:
+				switch (inRate(3)) {
+				case calc_ScalarRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_aaii<true>, &Sum4::next_aaii<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_aaii<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+			}
+		case calc_BufRate:
+			switch (inRate(2)) {
+			case calc_BufRate:
+				switch (inRate(3)) {
+				case calc_BufRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_akkk<true>, &Sum4::next_akkk<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_akkk<false> >();
+					return;
+
+				case calc_ScalarRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_akki<true>, &Sum4::next_akki<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_akki<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+
+			case calc_ScalarRate:
+				switch (inRate(3)) {
+				case calc_ScalarRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_akii<true>, &Sum4::next_akii<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_akii<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+			}
+
+		case calc_ScalarRate:
+			switch (inRate(2)) {
+			case calc_ScalarRate:
+				switch (inRate(3)) {
+				case calc_ScalarRate:
+					if (canUseSIMD())
+						set_vector_calc_function<Sum4, &Sum4::next_aiii<true>, &Sum4::next_aiii<false> >();
+					else
+						set_calc_function<Sum4, &Sum4::next_aiii<false> >();
+					return;
+
+				default:
+					assert(false);
+				}
+
+			default:
+				assert(false);
+			}
+
+		default:
+			assert(false);
+		}
+	}
+
+	void next_scalar(int inNumSamples)
+	{
+		out0(0) = in0(0) + in0(1) + in0(2) + in0(3);
+	}
+
+	template <bool SIMD, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
+	static void sum_vec(float * out, Arg1 const & arg1, Arg2 const & arg2, Arg3 const & arg3, Arg4 const & arg4, int inNumSamples)
+	{
+		if (SIMD)
+			nova::sum_vec_simd(out, arg1, arg2, arg3, arg4, inNumSamples);
+		else
+			nova::sum_vec(out, arg1, arg2, arg3, arg4, inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaaa(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), in(2), in(3), inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaak(int inNumSamples)
+	{
+		float next3 = in0(3);
+		if (next3 != mPrev3) {
+			sum_vec<SIMD>(out(0), in(0), in(1), in(2), slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
+			mPrev3 = next3;
+		} else
+			next_aaai<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaai(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), in(1), in(2), mPrev3, inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aakk(int inNumSamples)
+	{
+		float next3 = in0(3);
+		if (next3 != mPrev3) {
+			float next2 = in0(2);
+			if (next2 != mPrev2) {
+				sum_vec<SIMD>(out(0), in(0), in(1), slope_argument(mPrev2, calcSlope(next2, mPrev2)),
+							  slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
+				mPrev2 = next2;
+			} else
+				sum_vec<SIMD>(out(0), in(0), in(1), next2, slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
+			mPrev3 = next3;
+		} else
+			next_aaki<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaki(int inNumSamples)
+	{
+		float next2 = in0(2);
+		if (next2 != mPrev2) {
+			sum_vec<SIMD>(out(0), in(0), in(1), slope_argument(mPrev2, calcSlope(next2, mPrev2)),
+							mPrev3, inNumSamples);
+			mPrev2 = next2;
+		} else
+			next_aaii<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aaii(int inNumSamples)
+	{
+		nova::sum_vec(out(0), in(0), in(1), mPrev2, mPrev3, inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_akkk(int inNumSamples)
+	{
+		float next3 = in0(3);
+		if (next3 != mPrev3) {
+			float next2 = in0(2);
+			if (next2 != mPrev2) {
+				float next1 = in0(1);
+				if (next1 != mPrev1) {
+					sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, calcSlope(next1, mPrev1)),
+								  slope_argument(mPrev2, calcSlope(next2, mPrev2)),
+								  slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
+					mPrev1 = next1;
+				} else
+					sum_vec<SIMD>(out(0), in(0), mPrev1, slope_argument(mPrev2, calcSlope(next2, mPrev2)),
+								  slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
+				mPrev2 = next2;
+			} else {
+				float next1 = in0(1);
+				if (next1 != mPrev1) {
+					sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, calcSlope(next1, mPrev1)),
+								  next2, slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
+					mPrev1 = next1;
+				} else
+					sum_vec<SIMD>(out(0), in(0), mPrev1, mPrev2, slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
+			}
+			mPrev3 = next3;
+		} else
+			next_akki<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_akki(int inNumSamples)
+	{
+		float next2 = in0(2);
+		if (next2 != mPrev2) {
+			float next1 = in0(1);
+			if (next1 != mPrev1) {
+				sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, calcSlope(next1, mPrev1)),
+								slope_argument(mPrev2, calcSlope(next2, mPrev2)),
+								mPrev3, inNumSamples);
+				mPrev1 = next1;
+			} else {
+				sum_vec<SIMD>(out(0), in(0), mPrev1, slope_argument(mPrev2, calcSlope(next2, mPrev2)),
+							  mPrev3, inNumSamples);
+			}
+			mPrev2 = next2;
+		} else
+			next_akii<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_akii(int inNumSamples)
+	{
+		float next1 = in0(1);
+		if (next1 != mPrev1) {
+			sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, calcSlope(next1, mPrev1)),
+							mPrev2,
+							mPrev3, inNumSamples);
+			mPrev1 = next1;
+		} else
+			next_aiii<SIMD>(inNumSamples);
+	}
+
+	template <bool SIMD>
+	void next_aiii(int inNumSamples)
+	{
+		sum_vec<SIMD>(out(0), in(0), mPrev1, mPrev2, mPrev3, inNumSamples);
+	}
+};
+
+DEFINE_XTORS(Sum4)
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -887,4 +1173,5 @@ PluginLoad(MulAdd)
 
 	DefineSimpleUnit(MulAdd);
 	DefineSimpleUnit(Sum3);
+	DefineSimpleUnit(Sum4);
 }
