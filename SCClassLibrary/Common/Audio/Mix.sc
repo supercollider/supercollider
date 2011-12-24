@@ -1,19 +1,33 @@
 Mix {
 	*new { arg array;
-		var sum;
-		array.asArray.do({ arg val, i;
-			if (sum.isNil, { sum = val },{ sum = sum + val });
-		});
-		^sum
+		var reducedArray = array.asArray.clump(4);
+		var mixedArray = reducedArray.collect {|a|
+			if (a.size == 4) {
+				Sum4(*a)
+			} {
+				if (a.size == 3) {
+					Sum3(*a)
+				} {
+					a.sum
+				}
+			}
+        };
+
+		if (mixedArray.size < 3) {
+			^mixedArray.sum
+		};
+
+		if (mixedArray.size == 3) {
+			^Sum3(*mixedArray)
+		} {
+			^Mix(mixedArray)
+		}
 	}
+
 	// support this common idiom
 	*fill { arg n, function;
-		var val, sum;
-		n.do({ arg i;
-			val = function.value(i);
-			if (sum.isNil, { sum = val },{ sum = sum + val });
-		});
-		^sum;
+		var array = Array.fill(n, function);
+		^this.new(array);
 	}
 }
 
