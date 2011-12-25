@@ -412,8 +412,8 @@ SynthDef {
 		children = children.add(ugen);
 	}
 	removeUGen { arg ugen;
-		children.remove(ugen);
-		this.indexUGens;
+		// lazy removal: clear entry and later remove all nil enties
+		children[ugen.synthIndex] = nil;
 	}
 	replaceUGen { arg a, b;
 		b.widthFirstAntecedents = a.widthFirstAntecedents;
@@ -423,8 +423,10 @@ SynthDef {
 			if (item === a and: { b.isKindOf(UGen) }) {
 				children[i] = b;
 			};
-			item.inputs.do { arg input, j;
-				if (input === a) { item.inputs[j] = b };
+			if (item.notNil) {
+				item.inputs.do { arg input, j;
+					if (input === a) { item.inputs[j] = b };
+				};
 			};
 		};
 	}
@@ -441,9 +443,17 @@ SynthDef {
 	// so that cache performance of connection buffers is optimized.
 
 	optimizeGraph {
+		var oldSize;
 		this.initTopoSort;
 		children.copy.do { arg ugen;
 			ugen.optimizeGraph;
+		};
+
+		// fixup removed ugens
+		oldSize = children.size;
+		children.removeEvery(#[nil]);
+		if (oldSize != children.size) {
+			this.indexUGens
 		};
 	}
 	collectConstants {
