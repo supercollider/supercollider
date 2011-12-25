@@ -416,13 +416,17 @@ SynthDef {
 		children[ugen.synthIndex] = nil;
 	}
 	replaceUGen { arg a, b;
+		if (b.isKindOf(UGen).not) {
+			error("replaceUGen assumes a UGen ");
+		};
+
 		b.widthFirstAntecedents = a.widthFirstAntecedents;
 		b.descendants = a.descendants;
-		children.remove(b);
+		b.synthIndex = a.synthIndex;
+
+		children[a.synthIndex] = b;
+
 		children.do { arg item, i;
-			if (item === a and: { b.isKindOf(UGen) }) {
-				children[i] = b;
-			};
 			if (item.notNil) {
 				item.inputs.do { arg input, j;
 					if (input === a) { item.inputs[j] = b };
