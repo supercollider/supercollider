@@ -275,7 +275,7 @@ ArrayedCollection : SequenceableCollection {
 	}
 	normalizeSum {
 		_ArrayNormalizeSum
-		^(this / this.sum)
+		^(this * this.sum.reciprocal)
 	}
 	normalize { arg min=0.0, max=1.0;
 		var minItem = this.minItem;
