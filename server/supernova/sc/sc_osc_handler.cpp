@@ -1102,6 +1102,9 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
                     p << scsynth.mControls[i];
             }
         }
+    } else {
+        abstract_group const & group = static_cast<abstract_group const &>(node);
+        group.apply_on_children(boost::bind(g_query_tree_fill_node, boost::ref(p), flag, _1));
     }
 }
 
