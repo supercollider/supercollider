@@ -105,7 +105,12 @@ BinaryOpUGen : BasicOpUGen {
 		//this.constantFolding;
 
 		if (operator == '+') {
-			this.optimizeAdd
+			this.optimizeAdd;
+			^this;
+		};
+
+		if (operator == '-') {
+			this.optimizeSub
 		};
 	}
 
@@ -226,6 +231,25 @@ BinaryOpUGen : BasicOpUGen {
 		if (b.isKindOf(Sum3) and: { b.descendants.size == 1 }) {
 			buildSynthDef.removeUGen(b);
 			^Sum4(b.inputs[0], b.inputs[1], b.inputs[2], a);
+		};
+		^nil
+	}
+
+	optimizeSub {
+		var a, b, replacement;
+		#a, b = inputs;
+
+		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' }) {
+			// a - b.neg -> a + b
+			if (b.descendants.size == 1) {
+				buildSynthDef.removeUGen(b);
+			} {
+				b.descendants.remove(this);
+			};
+			replacement = BinaryOpUGen('+', a, b.inputs[0]);
+
+			synthDef.replaceUGen(this, replacement);
+			replacement.optimizeGraph
 		};
 		^nil
 	}
