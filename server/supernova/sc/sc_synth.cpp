@@ -225,7 +225,15 @@ void sc_synth::run(void)
 
 extern spin_lock log_guard;
 
-static boost::array<char, 32768> trace_scratchpad; // later use a thread-local scatchpad
+#ifdef __GNUC__
+#define thread_local __thread
+#endif
+
+#ifdef thread_local
+static thread_local boost::array<char, 32768> trace_scratchpad;
+#else
+static boost::array<char, 32768> trace_scratchpad;
+#endif
 
 struct scratchpad_printer
 {
@@ -270,7 +278,11 @@ private:
 
 void sc_synth::run_traced(void)
 {
+    trace = 0;
+
+#ifndef thread_local
     spin_lock::scoped_lock lock (log_guard);
+#endif
 
     scratchpad_printer printer(trace_scratchpad.data());
 
@@ -284,6 +296,9 @@ void sc_synth::run_traced(void)
         for (uint16_t j=0; j!=unit->mNumInputs; ++j) {
             printer.printf(" %g", unit->mInBuf[j][0]);
             if (printer.shouldFlush()) {
+#ifdef thread_local
+                spin_lock::scoped_lock lock (log_guard);
+#endif
                 log(printer.data());
                 printer.clear();
             }
@@ -297,6 +312,9 @@ void sc_synth::run_traced(void)
         for (int j=0; j<unit->mNumOutputs; ++j) {
             printer.printf(" %g", unit->mOutBuf[j][0]);
             if (printer.shouldFlush()) {
+#ifdef thread_local
+                spin_lock::scoped_lock lock (log_guard);
+#endif
                 log(printer.data());
                 printer.clear();
             }
@@ -305,9 +323,10 @@ void sc_synth::run_traced(void)
     }
     printer.printf("\n");
 
+#ifdef thread_local
+    spin_lock::scoped_lock lock (log_guard);
+#endif
     log(printer.data());
-
-    trace = 0;
 }
 
 } /* namespace nova */
