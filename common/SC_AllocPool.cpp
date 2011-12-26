@@ -23,6 +23,7 @@
 #include "SC_AllocPool.h"
 #include "SC_BoundsMacros.h"
 #include <assert.h>
+#include <string>
 
 /*
    Requests are `small' if both the corresponding and the next bin are small

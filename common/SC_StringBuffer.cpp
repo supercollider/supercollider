@@ -30,6 +30,8 @@
 # include <stdarg.h>
 #endif
 
+#include <string>
+
 SC_StringBuffer::SC_StringBuffer(size_t initialSize)
 	: mCapacity(0), mPtr(0), mData(0)
 {
