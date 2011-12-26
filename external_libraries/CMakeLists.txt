@@ -47,7 +47,7 @@ if (SUPERNOVA)
 	endif()
 endif()
 
-if (${CMAKE_COMPILER_IS_GNUCXX} AND ${DSO_VISIBILITY})
+if (${DSO_VISIBILITY})
 	remove_definitions(-fvisibility=hidden)
 endif()
 
