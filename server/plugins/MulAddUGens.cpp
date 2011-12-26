@@ -716,6 +716,15 @@ struct SIMD_Unit:
 	{
 		return (mBufLength & (nova::vec< float >::objects_per_cacheline - 1)) == 0;
 	}
+
+	template <typename UnitType, void (UnitType::*VectorCalcFunc)(int), void (UnitType::*ScalarCalcFunc)(int)>
+	void set_vector_calc_function(void)
+	{
+		if (canUseSIMD())
+			SCUnit::set_vector_calc_function<UnitType, VectorCalcFunc, ScalarCalcFunc>();
+		else
+			SCUnit::set_calc_function<UnitType, ScalarCalcFunc>();
+	}
 };
 
 namespace {
@@ -741,24 +750,15 @@ struct Sum3:
 		case calc_FullRate:
 			switch (inRate(2)) {
 			case calc_FullRate:
-				if (canUseSIMD())
-					set_vector_calc_function<Sum3, &Sum3::next_aaa<true>, &Sum3::next_aaa<false> >();
-				else
-					set_calc_function<Sum3, &Sum3::next_aaa<false> >();
+				set_vector_calc_function<Sum3, &Sum3::next_aaa<true>, &Sum3::next_aaa<false> >();
 				return;
 
 			case calc_BufRate:
-				if (canUseSIMD())
-					set_vector_calc_function<Sum3, &Sum3::next_aak<true>, &Sum3::next_aak<false> >();
-				else
-					set_calc_function<Sum3, &Sum3::next_aak<false> >();
+				set_vector_calc_function<Sum3, &Sum3::next_aak<true>, &Sum3::next_aak<false> >();
 				return;
 
 			case calc_ScalarRate:
-				if (canUseSIMD())
-					set_vector_calc_function<Sum3, &Sum3::next_aai<true>, &Sum3::next_aai<false> >();
-				else
-					set_calc_function<Sum3, &Sum3::next_aai<false> >();
+				set_vector_calc_function<Sum3, &Sum3::next_aai<true>, &Sum3::next_aai<false> >();
 				return;
 
 			default:
@@ -768,17 +768,11 @@ struct Sum3:
 		case calc_BufRate:
 			switch (inRate(2)) {
 				case calc_BufRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum3, &Sum3::next_akk<true>, &Sum3::next_akk<false> >();
-					else
-						set_calc_function<Sum3, &Sum3::next_akk<false> >();
+					set_vector_calc_function<Sum3, &Sum3::next_akk<true>, &Sum3::next_akk<false> >();
 					return;
 
 				case calc_ScalarRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum3, &Sum3::next_aki<true>, &Sum3::next_aki<false> >();
-					else
-						set_calc_function<Sum3, &Sum3::next_aki<false> >();
+					set_vector_calc_function<Sum3, &Sum3::next_aki<true>, &Sum3::next_aki<false> >();
 					return;
 
 				default:
@@ -787,10 +781,7 @@ struct Sum3:
 
 		case calc_ScalarRate:
 			assert (inRate(2) == calc_ScalarRate);
-			if (canUseSIMD())
-				set_vector_calc_function<Sum3, &Sum3::next_aii<true>, &Sum3::next_aii<false> >();
-			else
-				set_calc_function<Sum3, &Sum3::next_aii<false> >();
+			set_vector_calc_function<Sum3, &Sum3::next_aii<true>, &Sum3::next_aii<false> >();
 			return;
 
 		default:
@@ -901,24 +892,15 @@ struct Sum4:
 			case calc_FullRate:
 				switch (inRate(3)) {
 				case calc_FullRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_aaaa<true>, &Sum4::next_aaaa<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_aaaa<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_aaaa<true>, &Sum4::next_aaaa<false> >();
 					return;
 
 				case calc_BufRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_aaak<true>, &Sum4::next_aaak<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_aaak<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_aaak<true>, &Sum4::next_aaak<false> >();
 					return;
 
 				case calc_ScalarRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_aaai<true>, &Sum4::next_aaai<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_aaai<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_aaai<true>, &Sum4::next_aaai<false> >();
 					return;
 
 				default:
@@ -928,17 +910,11 @@ struct Sum4:
 			case calc_BufRate:
 				switch (inRate(3)) {
 				case calc_BufRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_aakk<true>, &Sum4::next_aakk<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_aakk<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_aakk<true>, &Sum4::next_aakk<false> >();
 					return;
 
 				case calc_ScalarRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_aaki<true>, &Sum4::next_aaki<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_aaki<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_aaki<true>, &Sum4::next_aaki<false> >();
 					return;
 
 				default:
@@ -948,10 +924,7 @@ struct Sum4:
 			case calc_ScalarRate:
 				switch (inRate(3)) {
 				case calc_ScalarRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_aaii<true>, &Sum4::next_aaii<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_aaii<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_aaii<true>, &Sum4::next_aaii<false> >();
 					return;
 
 				default:
@@ -963,17 +936,11 @@ struct Sum4:
 			case calc_BufRate:
 				switch (inRate(3)) {
 				case calc_BufRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_akkk<true>, &Sum4::next_akkk<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_akkk<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_akkk<true>, &Sum4::next_akkk<false> >();
 					return;
 
 				case calc_ScalarRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_akki<true>, &Sum4::next_akki<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_akki<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_akki<true>, &Sum4::next_akki<false> >();
 					return;
 
 				default:
@@ -983,10 +950,7 @@ struct Sum4:
 			case calc_ScalarRate:
 				switch (inRate(3)) {
 				case calc_ScalarRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_akii<true>, &Sum4::next_akii<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_akii<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_akii<true>, &Sum4::next_akii<false> >();
 					return;
 
 				default:
@@ -999,10 +963,7 @@ struct Sum4:
 			case calc_ScalarRate:
 				switch (inRate(3)) {
 				case calc_ScalarRate:
-					if (canUseSIMD())
-						set_vector_calc_function<Sum4, &Sum4::next_aiii<true>, &Sum4::next_aiii<false> >();
-					else
-						set_calc_function<Sum4, &Sum4::next_aiii<false> >();
+					set_vector_calc_function<Sum4, &Sum4::next_aiii<true>, &Sum4::next_aiii<false> >();
 					return;
 
 				default:
@@ -1087,7 +1048,7 @@ struct Sum4:
 	template <bool SIMD>
 	void next_aaii(int inNumSamples)
 	{
-		nova::sum_vec(out(0), in(0), in(1), mPrev2, mPrev3, inNumSamples);
+		sum_vec<SIMD>(out(0), in(0), in(1), mPrev2, mPrev3, inNumSamples);
 	}
 
 	template <bool SIMD>
