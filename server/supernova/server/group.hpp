@@ -137,6 +137,13 @@ public:
         for (server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
             f(*it);
     }
+
+    template<typename functor>
+    void apply_on_children(functor const & f) const
+    {
+        for (server_node_list::const_iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
+            f(*it);
+    }
     /* @} */
 
     /* @{ */
