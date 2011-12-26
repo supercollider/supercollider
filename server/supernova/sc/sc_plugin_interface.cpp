@@ -45,6 +45,9 @@
 #undef scfft_destroy
 
 namespace nova {
+
+spin_lock log_guard; // needs to be acquired for logging from the helper threads!
+
 namespace {
 
 inline Node * as_Node(server_node * node)
@@ -61,8 +64,6 @@ inline Node * as_Node(server_node * node)
         return (Node*)nodePointer;
     }
 }
-
-static spin_lock log_guard; // needs to be acquired for logging from the helper threads!
 
 void pause_node(Unit * unit)
 {

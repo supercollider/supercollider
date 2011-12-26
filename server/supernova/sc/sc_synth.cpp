@@ -223,29 +223,89 @@ void sc_synth::run(void)
     perform();
 }
 
+extern spin_lock log_guard;
+
+static boost::array<char, 32768> trace_scratchpad; // later use a thread-local scatchpad
+
+struct scratchpad_printer
+{
+    scratchpad_printer(char * str):
+        string(str), position(0)
+    {
+        clear();
+    }
+
+    void printf(const char *fmt, ...)
+    {
+        va_list vargs;
+        va_start(vargs, fmt);
+        printf(fmt, vargs);
+    }
+
+    const char * data(void) const
+    {
+        return string;
+    }
+
+    bool shouldFlush(void) const
+    {
+        return position + 1024 > 32768;
+    }
+
+    void clear(void)
+    {
+        position = 0;
+        string[0] = '\0'; // zero-terminated
+    }
+
+private:
+    void printf(const char *fmt, va_list vargs)
+    {
+        position += vsprintf(string + position, fmt, vargs);
+    }
+
+    char * string;
+    int position;
+};
+
 void sc_synth::run_traced(void)
 {
-    using namespace std;
+    spin_lock::scoped_lock lock (log_guard);
 
-    log_printf("\nTRACE %d  %s    #units: %d\n", id(), this->prototype_name(), calc_unit_count);
+    scratchpad_printer printer(trace_scratchpad.data());
+
+    printer.printf("\nTRACE %d  %s    #units: %d\n", id(), this->prototype_name(), calc_unit_count);
 
     for (size_t i = 0; i != calc_unit_count; ++i) {
         Unit * unit = calc_units[i];
 
         sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
-        log_printf("  unit %zd %s\n    in ", i, def->name());
-        for (uint16_t j=0; j!=unit->mNumInputs; ++j)
-            log_printf(" %g", unit->mInBuf[j][0]);
-        log("\n");
+        printer.printf("  unit %zd %s\n    in ", i, def->name());
+        for (uint16_t j=0; j!=unit->mNumInputs; ++j) {
+            printer.printf(" %g", unit->mInBuf[j][0]);
+            if (printer.shouldFlush()) {
+                log(printer.data());
+                printer.clear();
+            }
+        }
+
+        printer.printf("\n");
 
         (unit->mCalcFunc)(unit, unit->mBufLength);
 
-        log("    out");
-        for (int j=0; j<unit->mNumOutputs; ++j)
-            log_printf(" %g", unit->mOutBuf[j][0]);
-        log("\n");
+        printer.printf("    out");
+        for (int j=0; j<unit->mNumOutputs; ++j) {
+            printer.printf(" %g", unit->mOutBuf[j][0]);
+            if (printer.shouldFlush()) {
+                log(printer.data());
+                printer.clear();
+            }
+        }
+        printer.printf("\n");
     }
-    std::cout << std::endl;
+    printer.printf("\n");
+
+    log(printer.data());
 
     trace = 0;
 }
