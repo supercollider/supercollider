@@ -34,7 +34,6 @@ An object archiving system for SuperCollider.
 #include "PyrPrimitive.h"
 #include "VMGlobals.h"
 #include "GC.h"
-#include "ReadWriteMacros.h"
 
 const int32 kDeepCopierObjectArrayInitialCapacity = 32;
 
