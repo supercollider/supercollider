@@ -97,6 +97,12 @@ if (${CMAKE_CXX_COMPILER} MATCHES icpc)
 endif()
 
 if (${CMAKE_CXX_COMPILER} MATCHES clang)
+	option(DSO_VISIBILITY "DSO visibility support for clang" OFF)
+
+	if (DSO_VISIBILITY)
+		add_definitions(-fvisibility=hidden)
+	endif()
+
 	set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
 
