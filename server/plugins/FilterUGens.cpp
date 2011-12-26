@@ -4148,7 +4148,7 @@ void Amplitude_Ctor(Amplitude* unit)
 	float relax = ZIN0(2);
 	unit->m_relaxcoef = relax == 0.0 ? 0.0 : exp(log1/(relax * SAMPLERATE));
 
-	unit->m_previn = 0;
+	unit->m_previn = std::abs(ZIN0(0));
 	Amplitude_next(unit, 1);
 }
 
