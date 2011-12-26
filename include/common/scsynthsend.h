@@ -25,6 +25,7 @@
 #include "SC_Types.h"
 #include <stdexcept>
 #include <cstring>
+#include <string>
 
 struct netaddr {
 	int socket;
