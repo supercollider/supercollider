@@ -242,7 +242,8 @@ BinaryOpUGen : BasicOpUGen {
 
 MulAdd : UGen {
 	*new { arg in, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', in, mul, add)
+		var rate = [in, mul, add].rate;
+		^this.multiNew(rate, in, mul, add)
 	}
 	*new1 { arg rate, in, mul, add;
 		var minus, nomul, noadd;
@@ -258,11 +259,17 @@ MulAdd : UGen {
   		if (minus, { ^add - in });
 		if (nomul, { ^in + add });
 
- 		^super.new1(rate, in, mul, add)
+		if (this.canBeMulAdd(in, mul, add)) {
+			^super.new1(rate, in, mul, add)
+		};
+		if (this.canBeMulAdd(mul, in, add)) {
+			^super.new1(rate, mul, in, add)
+		};
+		^( (in * mul) + add)
 	}
 	init { arg in, mul, add;
-		rate = in.rate;
 		inputs = [in, mul, add];
+		rate = inputs.rate;
 	}
 
 	*canBeMulAdd { arg in, mul, add;
