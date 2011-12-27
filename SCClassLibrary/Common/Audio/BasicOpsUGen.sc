@@ -51,6 +51,9 @@ UnaryOpUGen : BasicOpUGen {
 		inputs = theInput.asArray;
 	}
 
+	optimizeGraph {
+		super.performDeadCodeElimination
+	}
 }
 
 BinaryOpUGen : BasicOpUGen {
@@ -103,6 +106,11 @@ BinaryOpUGen : BasicOpUGen {
 
 	optimizeGraph {
 		//this.constantFolding;
+
+
+		if (super.performDeadCodeElimination) {
+			^this
+		};
 
 		if (operator == '+') {
 			this.optimizeAdd;
