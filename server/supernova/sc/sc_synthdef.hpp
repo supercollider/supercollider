@@ -86,6 +86,11 @@ public:
             name(std::move(rhs.name)), rate(rhs.rate), special_index(rhs.special_index),
             input_specs(std::move(rhs.input_specs)), output_specs(std::move(rhs.output_specs))
         {}
+
+        unit_spec_t(unit_spec_t const & rhs):
+            name(rhs.name), rate(rhs.rate), special_index(rhs.special_index),
+            input_specs(rhs.input_specs), output_specs(rhs.output_specs)
+        {}
 #endif
         string name;
         int16_t rate;           /* 0: scalar rate, 1: buffer rate, 2: full rate, 3: demand rate */
@@ -120,6 +125,12 @@ public:
         name_(std::move(rhs.name_)), constants(std::move(rhs.constants)), parameters(std::move(rhs.parameters)),
         parameter_map(std::move(rhs.parameter_map)), graph(std::move(rhs.graph)), buffer_count(rhs.buffer_count),
         calc_unit_indices(std::move(rhs.calc_unit_indices)), memory_requirement_(rhs.memory_requirement_)
+    {}
+
+    sc_synthdef(sc_synthdef const & rhs):
+        name_(rhs.name_), constants(rhs.constants), parameters(rhs.parameters),
+        parameter_map(rhs.parameter_map), graph(rhs.graph), buffer_count(rhs.buffer_count),
+        calc_unit_indices(rhs.calc_unit_indices), memory_requirement_(rhs.memory_requirement_)
     {}
 #endif
 
