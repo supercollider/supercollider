@@ -167,7 +167,8 @@ void ampmix_kk(MulAdd *unit, int inNumSamples)
 		if (mix_slope == 0.f) {
 			if (mix_cur == 0.f) {
 				if (amp_cur == 1.f) {
-					// do nothing!
+					if (out != in)
+						ZCopy(inNumSamples, out, in);
 				} else if (amp_cur == 0.f) {
 					ZClear(inNumSamples, out);
 				} else {
@@ -399,7 +400,8 @@ inline_functions void ampmix_kk_nova(MulAdd *unit, int inNumSamples)
 		if (nextMix == mix_cur) {
 			if (mix_cur == 0.f) {
 					if (amp_cur == 1.f) {
-						// do nothing!
+						if (ZOUT(0) != ZIN(0))
+							ZCopy(inNumSamples, ZOUT(0), ZIN(0));
 					} else if (amp_cur == 0.f)
 						nova::zerovec_simd(OUT(0), inNumSamples);
 					else
