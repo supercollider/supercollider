@@ -58,9 +58,7 @@ void QcGraphModel::removeAt( int i ) {
 
 QcGraph::QcGraph() :
   _thumbSize( QSize( 8, 8 ) ),
-  _strokeColor( QColor(0,0,0) ),
   _selColor( QColor(255,0,0) ),
-  _gridColor( QColor(225,225,225) ),
   _drawLines( true ),
   _drawRects( true ),
   _editable( true ),
@@ -70,6 +68,9 @@ QcGraph::QcGraph() :
   _gridOn( false ),
   _curIndex( -1 )
 {
+  QPalette plt( palette() );
+  _strokeColor = plt.color( QPalette::Text );
+  _gridColor = plt.color( QPalette::Midlight );
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
@@ -730,6 +731,7 @@ void QcGraph::paintEvent( QPaintEvent * )
   // draw rects and strings
   if( _drawRects ) {
 
+    QColor defFillColor = plt.color( QPalette::Text );
     QRectF rect; rect.setSize( _thumbSize );
     QPointF pt;
     int i;
@@ -738,7 +740,10 @@ void QcGraph::paintEvent( QPaintEvent * )
 
       QcGraphElement *e = elems[i];
 
-      p.setBrush( e->selected ? _selColor : e->fillColor );
+      if( e->selected )
+        p.setBrush( _selColor );
+      else
+        p.setBrush( e->fillColor.isValid() ? e->fillColor : defFillColor );
 
       pt = pos( e->value );
 
