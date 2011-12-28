@@ -195,10 +195,6 @@ struct DC : public Unit
 	float m_val;
 };
 
-struct Silent : public Unit
-{
-};
-
 struct EnvGen : public Unit
 {
 	double m_a1, m_a2, m_b1, m_y1, m_y2, m_grow, m_level, m_endLevel;
@@ -275,9 +271,6 @@ extern "C"
 
 	void T2A_next(T2A *unit, int inNumSamples);
 	void T2A_Ctor(T2A* unit);
-
-	void Silent_next(Silent *unit, int inNumSamples);
-	void Silent_Ctor(Silent* unit);
 
 	void Line_next(Line *unit, int inNumSamples);
 	void Line_Ctor(Line* unit);
@@ -1438,14 +1431,6 @@ static void DC_Ctor(DC* unit)
 	ZOUT0(0) = unit->m_val;
 }
 
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-void Silent_Ctor(Unit* unit)
-{
-	SETCALC(ClearUnitOutputs);
-	ZOUT0(0) = 0.f;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4155,7 +4140,6 @@ PluginLoad(LF)
 	DefineSimpleUnit(T2K);
 	DefineSimpleUnit(T2A);
 	DefineSimpleUnit(DC);
-	DefineSimpleUnit(Silent);
 	DefineSimpleUnit(Line);
 	DefineSimpleUnit(XLine);
 
