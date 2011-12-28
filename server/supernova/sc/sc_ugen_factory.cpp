@@ -231,13 +231,24 @@ void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
     }
 }
 
-
 #ifdef DLOPEN
 void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
+    using namespace std;
     void * handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
     if (handle == NULL)
         return;
+
+    typedef int (*info_function)();
+
+    info_function api_version = reinterpret_cast<info_function>(dlsym(handle, "api_version"));
+    if (api_version) {
+        if ((*api_version)() != sc_api_version) {
+            cerr << "API Version Mismatch: " << path << endl;
+            dlclose(handle);
+            return;
+        }
+    }
 
     void * load_symbol = dlsym(handle, "load");
     if (!load_symbol) {

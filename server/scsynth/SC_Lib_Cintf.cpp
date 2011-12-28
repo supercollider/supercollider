@@ -56,10 +56,6 @@
 # define SC_PLUGIN_EXT ".scx"
 #endif
 
-// Symbol of initialization routine when loading plugins
-#ifndef SC_PLUGIN_LOAD_SYM
-#define SC_PLUGIN_LOAD_SYM "load"
-#endif
 
 #ifndef _WIN32
 # include <sys/param.h>
@@ -242,6 +238,20 @@ void initialize_library(const char *uGensPluginPath)
 #endif
 }
 
+typedef int (*InfoFunction)();
+
+bool checkAPIVersion(void * f, const char * filename)
+{
+	if (!f)
+		return true;
+
+	InfoFunction fn = (InfoFunction)f;
+	if ((*fn)() == sc_api_version)
+		return true;
+	scprintf("*** ERROR: API Version Mismatch: %s\n", filename);
+	return false;
+}
+
 static bool PlugIn_Load(const char *filename)
 {
 #ifdef _WIN32
@@ -257,7 +267,13 @@ static bool PlugIn_Load(const char *filename)
 		return false;
 	}
 
-	void *ptr = (void *)GetProcAddress( hinstance, SC_PLUGIN_LOAD_SYM );
+	void *apiVersionPtr = (void *)GetProcAddress( hinstance, "api_version" );
+	if (!checkAPIVersion(apiVersionPtr, filename)) {
+		FreeLibrary(hinstance);
+		return false;
+	}
+
+	void *ptr = (void *)GetProcAddress( hinstance, "load" );
 	if (!ptr) {
 		char *s;
 		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -286,11 +302,15 @@ static bool PlugIn_Load(const char *filename)
 		return false;
 	}
 
-	void *ptr;
+	void *apiVersionPtr = (void *)dlsym( handle, "api_version" );
+	if (!checkAPIVersion(apiVersionPtr, filename)) {
+		dlclose(handle);
+		return false;
+	}
 
-	ptr = dlsym(handle, SC_PLUGIN_LOAD_SYM);
+	void *ptr = dlsym(handle, "load");
 	if (!ptr) {
-		scprintf("*** ERROR: dlsym %s err '%s'\n", SC_PLUGIN_LOAD_SYM, dlerror());
+		scprintf("*** ERROR: dlsym load err '%s'\n", dlerror());
 		dlclose(handle);
 		return false;
 	}
