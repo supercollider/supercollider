@@ -305,7 +305,7 @@ QuarkView {
 			if(File.exists(helpdoc).not) { helpdoc = nil };
 		};
 		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
-		GUI.textView.new( Rect, window(4, 4, 392, 170 + (helpdoc.isNil.binaryValue * 22)))
+		GUI.textView.new( window, Rect(4, 4, 392, 170 + (helpdoc.isNil.binaryValue * 22)))
 			.font_( Font.sansSerif( 12 ) )
 			.resize_( 5 )
 			.autohidesScrollers_( true )
