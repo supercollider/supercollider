@@ -34,7 +34,7 @@ QuarkDependency
 
 Quark
 {
-	var <name, <summary, <version, <author, dependencies, <tags, <>path;
+	var <name, <summary, <version, <author, dependencies, <tags, <>path, <>status;
 	var <isLocal;// meaning that a local copy exists either because checked out or is local only
 	var <parent; // the Quarks, if available
 	var <info;
@@ -72,6 +72,7 @@ Quark
 		name = this.getName(blob[\name]);
 		path = this.getString(blob[\path]);
 		summary = this.getString(blob[\summary]);
+		status = this.getString(blob[\status]);
  		version = this.getVersion(blob[\version]);
 		dependencies = this.getDependencies(blob[\dependencies]);
 		author = this.getString(blob[\author]);
@@ -150,12 +151,13 @@ Quark
 	longDesc {
 		var string;
 		string = name;
-		if(version.notNil,{ string = string + "[" ++ version ++ "]"; });
+		if(version.notNil) { string = string + "[" ++ version ++ "]" };
 		string = string
 			++ "\n(by " ++ (author ? "anonymous") ++ ")"
-			++ "\n" ++ summary
+			++ "\n\n" ++ summary
+			++ "\n\n" ++ "Status: " ++ (status ? "unknown")
 			++ "\n" ++ "Checked out: " ++ if(isLocal, "yes", "no");
-		dependencies.notEmpty.if{
+		if(dependencies.notEmpty) {
 			string = string ++ "\nDepends on";
 			dependencies.do{|dep|
 				string = string ++ "\n - " ++ dep.name;
@@ -169,10 +171,10 @@ Quark
 	}
 	== { arg that;
 		^this.compareObject(that,
-			[\name, \summary, \version, \author, \dependencies, \tags, \path]);
+			[\name, \summary, \version, \author, \dependencies, \tags, \path, \status]);
 	}
 	hash { arg that;
-		^this.instVarHash([\name, \summary, \version, \author, \dependencies, \tags, \path]);
+		^this.instVarHash([\name, \summary, \version, \author, \dependencies, \tags, \path, \status]);
 	}
 	dependencies { |recursive = false, knownList|
 		var deps, quark, selfasdep;
