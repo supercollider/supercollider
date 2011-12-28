@@ -27,7 +27,7 @@
 #include "simd_memory.hpp"
 #include "simd_ternary_arithmetic.hpp"
 
-using nova::wrap_argument;
+using nova::slope_argument;
 
 #if defined (__GNUC__) && !(defined(__clang__))
 #define inline_functions __attribute__ ((flatten))
@@ -2041,7 +2041,7 @@ void Clip_next_nova_ii(Clip* unit, int inNumSamples)
 	float lo = unit->m_lo;
 	float hi = unit->m_hi;
 
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo), wrap_argument(hi), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), lo, hi, inNumSamples);
 }
 
 void Clip_next_nova_ki(Clip* unit, int inNumSamples)
@@ -2056,7 +2056,7 @@ void Clip_next_nova_ki(Clip* unit, int inNumSamples)
 	}
 
 	float lo_slope = CALCSLOPE(next_lo, lo);
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo, lo_slope), wrap_argument(hi), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), slope_argument(lo, lo_slope), hi, inNumSamples);
 }
 
 void Clip_next_nova_ik(Clip* unit, int inNumSamples)
@@ -2071,7 +2071,7 @@ void Clip_next_nova_ik(Clip* unit, int inNumSamples)
 	}
 
 	float hi_slope = CALCSLOPE(next_hi, hi);
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo), wrap_argument(hi, hi_slope), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), lo, slope_argument(hi, hi_slope), inNumSamples);
 }
 
 void Clip_next_nova_kk(Clip* unit, int inNumSamples)
@@ -2099,13 +2099,13 @@ void Clip_next_nova_kk(Clip* unit, int inNumSamples)
 	float lo_slope = CALCSLOPE(next_lo, lo);
 	float hi_slope = CALCSLOPE(next_hi, hi);
 
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo, lo_slope), wrap_argument(hi, hi_slope), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), slope_argument(lo, lo_slope), slope_argument(hi, hi_slope), inNumSamples);
 }
 
 void Clip_next_nova_ai(Clip* unit, int inNumSamples)
 {
 	float hi = unit->m_hi;
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(IN(1)), wrap_argument(hi), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), IN(1), hi, inNumSamples);
 }
 
 void Clip_next_nova_ak(Clip* unit, int inNumSamples)
@@ -2120,13 +2120,13 @@ void Clip_next_nova_ak(Clip* unit, int inNumSamples)
 
 	float hi_slope = CALCSLOPE(next_hi, hi);
 
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(IN(1)), wrap_argument(hi, hi_slope), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), IN(1), slope_argument(hi, hi_slope), inNumSamples);
 }
 
 void Clip_next_nova_ia(Clip* unit, int inNumSamples)
 {
 	float lo = unit->m_lo;
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo), wrap_argument(IN(2)), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), lo, IN(2), inNumSamples);
 }
 
 void Clip_next_nova_ka(Clip* unit, int inNumSamples)
@@ -2140,13 +2140,13 @@ void Clip_next_nova_ka(Clip* unit, int inNumSamples)
 	}
 
 	float lo_slope = CALCSLOPE(next_lo, lo);
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(lo, lo_slope), wrap_argument(IN(2)), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), slope_argument(lo, lo_slope), IN(2), inNumSamples);
 }
 
 
 void Clip_next_nova_aa(Clip* unit, int inNumSamples)
 {
-	nova::clip_vec_simd(OUT(0), wrap_argument(IN(0)), wrap_argument(IN(1)), wrap_argument(IN(2)), inNumSamples);
+	nova::clip_vec_simd(OUT(0), IN(0), IN(1), IN(2), inNumSamples);
 }
 
 #endif
