@@ -106,12 +106,13 @@ DC : MultiOutUGen {
 	}
 }
 
-Silent : MultiOutUGen {
+Silent {
 	*ar { arg numChannels = 1;
-		^this.multiNew('audio', numChannels)
-	}
-	init { arg numChannels;
-		inputs = [];
-		^this.initOutputs(numChannels, rate)
+		var sig = DC.ar(0);
+		if (numChannels == 1) {
+			^sig
+		} {
+			^(sig ! numChannels)
+		}
 	}
 }
