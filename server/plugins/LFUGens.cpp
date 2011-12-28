@@ -20,9 +20,11 @@
 
 
 #include "SC_PlugIn.h"
+#include "SIMD_Unit.hpp"
 #include <limits.h>
 #include <cstdio>
 
+<<<<<<< HEAD
 #ifdef NOVA_SIMD
 #include "simd_memory.hpp"
 #include "simd_ternary_arithmetic.hpp"
@@ -33,6 +35,8 @@ using nova::slope_argument;
 
 #endif
 
+=======
+>>>>>>> plugins: DC - port to SIMD_Unit and provide special code for DC.ar/kr(0)
 static InterfaceTable *ft;
 
 struct Vibrato : public Unit
@@ -184,11 +188,6 @@ struct T2K : public Unit
 struct T2A : public Unit
 {
 	float mLevel;
-};
-
-struct DC : public Unit
-{
-	float m_val;
 };
 
 struct EnvGen : public Unit
@@ -1384,49 +1383,37 @@ void T2A_Ctor(T2A* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-#ifdef NOVA_SIMD
-FLATTEN static void DC_next_nova(DC *unit, int inNumSamples)
+struct DC:
+	SIMD_Unit
 {
-	float val = unit->m_val;
-	nova::setvec_simd(OUT(0), val, inNumSamples);
-}
+	float value;
 
-FLATTEN static void DC_next_nova_64(DC *unit, int inNumSamples)
-{
-	float val = unit->m_val;
-	nova::setvec_simd<64>(OUT(0), val);
-}
-#endif
+	DC(void) {
+		value = in0(0);
+		if (bufferSize() == 64) {
+			if (value == 0)
+				set_vector_calc_function<DC, &DC::next_i<unrolled_64, true>, &DC::next_i<scalar, true> >();
+			else
+				set_vector_calc_function<DC, &DC::next_i<unrolled_64, false>, &DC::next_i<scalar, false> >();
+		} else {
+			if (value == 0)
+				set_vector_calc_function<DC, &DC::next_i<unrolled, true>, &DC::next_i<scalar, true> >();
+			else
+				set_vector_calc_function<DC, &DC::next_i<unrolled, false>, &DC::next_i<scalar, false> >();
+		}
+	}
 
-static void DC_next(DC *unit, int inNumSamples)
-{
-	float val = unit->m_val;
-	float *out = ZOUT(0);
-	LOOP1(inNumSamples, ZXP(out) = val;)
-}
+	template <int type, bool isZero>
+	void next_i(int inNumSamples)
+	{
+		if (isZero)
+			zero_vec<type>(out(0), inNumSamples);
+		else
+			set_vec<type>(out(0), value, inNumSamples);
+	}
+};
 
-static void DC_next_1(DC *unit, int inNumSamples)
-{
-	ZOUT0(0) = unit->m_val;
-}
-
-static void DC_Ctor(DC* unit)
-{
-	unit->m_val = IN0(0);
-#ifdef NOVA_SIMD
-	if (BUFLENGTH == 64)
-		SETCALC(DC_next_nova_64);
-	if (!(BUFLENGTH & 15))
-		SETCALC(DC_next_nova);
-	else
-#endif
-	if (BUFLENGTH == 1)
-		SETCALC(DC_next_1);
-	else
-		SETCALC(DC_next);
-	ZOUT0(0) = unit->m_val;
-}
-
+DEFINE_XTORS(DC)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
