@@ -41,7 +41,6 @@ struct QcGraphElement {
   };
 
   QcGraphElement() :
-    fillColor( QColor(0,0,0) ),
     curveType( Linear ),
     curvature( 0.f ),
     editable( true ),
