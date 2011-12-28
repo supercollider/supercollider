@@ -20,45 +20,15 @@
 
 
 #include "SC_PlugIn.hpp"
-
-
-
-#include "simd_memory.hpp"
-#include "simd_binary_arithmetic.hpp"
-#include "simd_ternary_arithmetic.hpp"
-#include "simd_mix.hpp"
-
-using nova::slope_argument;
-
-#include "function_attributes.h"
+#include "SIMD_Unit.hpp"
 
 static InterfaceTable *ft;
-
-struct SIMD_Unit:
-	SCUnit
-{
-	bool canUseSIMD (void) const
-	{
-		return (mBufLength & (nova::vec< float >::objects_per_cacheline - 1)) == 0;
-	}
-
-	template <typename UnitType, void (UnitType::*VectorCalcFunc)(int), void (UnitType::*ScalarCalcFunc)(int)>
-	void set_vector_calc_function(void)
-	{
-		if (canUseSIMD())
-			SCUnit::set_vector_calc_function<UnitType, VectorCalcFunc, ScalarCalcFunc>();
-		else
-			SCUnit::set_calc_function<UnitType, ScalarCalcFunc>();
-	}
-};
 
 namespace {
 
 struct MulAdd:
 	SIMD_Unit
 {
-	enum { scalar, unrolled, unrolled_64};
-
 	float mMulPrev, mAddPrev;
 
 #define MULADD_CALCFUNC(METHOD_NAME)													\
@@ -204,73 +174,6 @@ struct MulAdd:
 		float slope = calcSlope(nextAdd, currentAdd);
 		mAddPrev = nextAdd;
 		return slope_argument(currentAdd, slope);
-	}
-
-	template <int type, typename Arg1, typename Arg2, typename Arg3>
-	static void muladd(float * out, Arg1 const & arg1, Arg2 const & arg2, Arg3 const & arg3, int inNumSamples)
-	{
-		if (type == scalar)
-			nova::muladd_vec(out, arg1, arg2, arg3, inNumSamples);
-		if (type == unrolled)
-			nova::muladd_vec_simd(out, arg1, arg2, arg3, inNumSamples);
-		if (type == unrolled_64)
-			nova::muladd_vec_simd<64>(out, arg1, arg2, arg3);
-	}
-
-	template <int type, typename Arg1, typename Arg2>
-	static void plus_vec(float * out, Arg1 const & arg1, Arg2 const & arg2, int inNumSamples)
-	{
-		if (type == scalar)
-			nova::plus_vec(out, arg1, arg2, inNumSamples);
-		if (type == unrolled)
-			nova::plus_vec_simd(out, arg1, arg2, inNumSamples);
-		if (type == unrolled_64)
-			nova::plus_vec_simd<64>(out, arg1, arg2);
-	}
-
-	template <int type, typename Arg1, typename Arg2>
-	static void times_vec(float * out, Arg1 const & arg1, Arg2 const & arg2, int inNumSamples)
-	{
-		if (type == scalar)
-			nova::times_vec(out, arg1, arg2, inNumSamples);
-		if (type == unrolled)
-			nova::times_vec_simd(out, arg1, arg2, inNumSamples);
-		if (type == unrolled_64)
-			nova::times_vec_simd<64>(out, arg1, arg2);
-	}
-
-	template <int type, typename Arg1, typename Arg2>
-	static void slope_vec(float * out, Arg1 const & base, Arg2 const & slope, int inNumSamples)
-	{
-		if (type == scalar)
-			nova::set_slope_vec(out, base, slope, inNumSamples);
-		else
-			nova::set_slope_vec_simd(out, base, slope, inNumSamples);
-	}
-
-	template <int type>
-	static void copy_vec(float * out, const float * in, int inNumSamples)
-	{
-		if (in == out)
-			return;
-
-		if (type == scalar)
-			nova::copyvec(out, in, inNumSamples);
-		if (type == unrolled)
-			nova::copyvec_simd(out, in, inNumSamples);
-		if (type == unrolled_64)
-			nova::copyvec_simd<64>(out, in);
-	}
-
-	template <int type>
-	static void set_vec(float * out, float value, int inNumSamples)
-	{
-		if (type == scalar)
-			nova::setvec(out, value, inNumSamples);
-		if (type == unrolled)
-			nova::setvec_simd(out, value, inNumSamples);
-		if (type == unrolled_64)
-			nova::setvec_simd<64>(out, value);
 	}
 
 	void next_scalar(int inNumSamples)
