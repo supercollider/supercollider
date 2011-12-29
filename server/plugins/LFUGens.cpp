@@ -1390,17 +1390,12 @@ struct DC:
 
 	DC(void) {
 		value = in0(0);
-		if (bufferSize() == 64) {
-			if (value == 0)
-				set_vector_calc_function<DC, &DC::next_i<unrolled_64, true>, &DC::next_i<scalar, true> >();
-			else
-				set_vector_calc_function<DC, &DC::next_i<unrolled_64, false>, &DC::next_i<scalar, false> >();
-		} else {
-			if (value == 0)
-				set_vector_calc_function<DC, &DC::next_i<unrolled, true>, &DC::next_i<scalar, true> >();
-			else
-				set_vector_calc_function<DC, &DC::next_i<unrolled, false>, &DC::next_i<scalar, false> >();
-		}
+		if (value == 0)
+			set_unrolled_calc_function<DC, &DC::next_i<unrolled_64, true>,
+									   &DC::next_i<unrolled, true>, &DC::next_i<scalar, true> >();
+		else
+			set_unrolled_calc_function<DC, &DC::next_i<unrolled_64, false>,
+									   &DC::next_i<unrolled, false>, &DC::next_i<scalar, false> >();
 	}
 
 	template <int type, bool isZero>

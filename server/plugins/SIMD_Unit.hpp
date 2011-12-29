@@ -46,6 +46,15 @@ struct SIMD_Unit:
 		return (mBufLength & (nova::vec< float >::objects_per_cacheline - 1)) == 0;
 	}
 
+	template <typename UnitType, void (UnitType::*UnrolledCalcFunc)(int), void (UnitType::*VectorCalcFunc)(int), void (UnitType::*ScalarCalcFunc)(int)>
+	void set_unrolled_calc_function(void)
+	{
+		if (bufferSize() == 64)
+			SCUnit::set_vector_calc_function<UnitType, UnrolledCalcFunc, ScalarCalcFunc>();
+		else
+			set_vector_calc_function<UnitType, VectorCalcFunc, ScalarCalcFunc>();
+	}
+
 	template <typename UnitType, void (UnitType::*VectorCalcFunc)(int), void (UnitType::*ScalarCalcFunc)(int)>
 	void set_vector_calc_function(void)
 	{
