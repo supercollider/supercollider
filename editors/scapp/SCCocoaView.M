@@ -2919,32 +2919,6 @@ void SCWebView::setVisibleFromParent()
 	refresh();
 }
 
-void SCWebView::makeFocus(bool focus)
-{
-    if (focus) {
-		if (canFocus() && !isFocus()) {
-			[mWebView setAcceptsFirstResponder:YES];
-			
-			// trick focus ring into drawing
-			SEL sel = @selector(setNeedsDisplay:);
-			NSMethodSignature *sig = [NSView instanceMethodSignatureForSelector: sel];
-			NSInvocation *anInvocation = [NSInvocation invocationWithMethodSignature: sig];
-			SCVirtualMachine* scvm = [SCVirtualMachine sharedInstance];
-			[anInvocation setTarget: [mWebView superview]];
-			[anInvocation setSelector: sel];
-			BOOL flag = YES;
-			[anInvocation setArgument: &flag atIndex: 2];
-			[scvm defer: anInvocation];
-        }
-    } else {
-        if (isFocus()) {
-			[mWebView setAcceptsFirstResponder:NO];
-        }
-    }
-	SCView::makeFocus(focus);
-}
-
-
 
 void SCWebView::tabPrevFocus()
 {

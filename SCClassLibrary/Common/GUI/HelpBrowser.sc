@@ -101,6 +101,7 @@ HelpBrowser {
 				webView.url = url;
 				// needed since onLoadFinished is not called if the path did not change:
 				if(newPath == oldPath) {webView.onLoadFinished.value};
+				webView.focus;
 			} {|err|
 				webView.html = err.errorString;
 				err.throw;
