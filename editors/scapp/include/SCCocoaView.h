@@ -205,7 +205,6 @@ public:
 	virtual int setProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual int getProperty(PyrSymbol *symbol, PyrSlot *slot);
 	virtual void setVisibleFromParent();
-	virtual void makeFocus(bool focus);
 	//virtual void keyDown(int character, int modifiers, unsigned short keycode);
 	void tabPrevFocus();
 	void tabNextFocus();
