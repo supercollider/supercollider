@@ -99,11 +99,14 @@ NotificationCenter {
 		});
 	}
 	*registerOneShot {  arg object,message,listener,action;
+		var nr;
+		nr = NotificationRegistration(object,message,listener);
 		registrations.put(object,message,listener,
 			{ |args|
 				action.value(args);
 				this.unregister(object,message,listener)
-			})
+			});
+		^nr
 	}
 	*clear {
 		registrations = MultiLevelIdentityDictionary.new;
