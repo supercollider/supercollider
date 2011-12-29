@@ -326,7 +326,7 @@ private:
 
     static bool is_multiple_of_vectorsize(size_t count)
     {
-        return !(count & (vec<float>::size-1));
+        return !(count & (vec<float>::objects_per_cacheline - 1));
     }
 
     static int jack_buffersize_callback(jack_nframes_t frames, void * arg)

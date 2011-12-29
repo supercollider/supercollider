@@ -52,8 +52,7 @@ public:
     /* @{  */
     void deliver_dac_output(const_restricted_sample_ptr source, uint channel, uint frames)
     {
-        if (likely(audio_is_active()))
-        {
+        if (likely(audio_is_active())) {
             spin_lock::scoped_lock lock(output_lock);
             active_backend->deliver_dac_output(source, channel, frames);
         }
@@ -61,8 +60,7 @@ public:
 
     void zero_dac_output(uint channel, uint frames)
     {
-        if (likely(audio_is_active()))
-        {
+        if (likely(audio_is_active())) {
             spin_lock::scoped_lock lock(output_lock);
             active_backend->zero_dac_output(channel, frames);
         }
@@ -70,8 +68,7 @@ public:
 
     void deliver_dac_output_64(const_restricted_sample_ptr source, uint channel)
     {
-        if (likely(audio_is_active()))
-        {
+        if (likely(audio_is_active())) {
             spin_lock::scoped_lock lock(output_lock);
             active_backend->deliver_dac_output_64(source, channel);
         }
@@ -81,8 +78,12 @@ public:
     {
         if (likely(audio_is_active()))
             active_backend->fetch_adc_input(destination, channel, frames);
-        else
-            zerovec_simd(destination, frames);
+        else {
+            if ((frames & (vec<F>::objects_per_cacheline - 1)) == 0)
+                zerovec_simd(destination, frames);
+            else
+                zerovec(destination, frames);
+        }
     }
 
     void fetch_adc_input_64(restricted_sample_ptr destination, uint channel)
