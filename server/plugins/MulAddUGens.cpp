@@ -29,7 +29,8 @@ namespace {
 struct MulAdd:
 	SIMD_Unit
 {
-	float mMulPrev, mAddPrev;
+	ControlRateInput<1> mMul;
+	ControlRateInput<2> mAdd;
 
 #define MULADD_CALCFUNC(METHOD_NAME)													\
 	do {																				\
@@ -45,8 +46,8 @@ struct MulAdd:
 
 	MulAdd(void)
 	{
-		mMulPrev = in0(1);
-		mAddPrev = in0(2);
+		mMul.init(this);
+		mAdd.init(this);
 
 		if (mCalcRate != calc_FullRate) {
 			set_calc_function<MulAdd, &MulAdd::next_scalar>();
@@ -65,7 +66,7 @@ struct MulAdd:
 				MULADD_CALCFUNC(next_ak);
 
 			case calc_ScalarRate:
-				if (mAddPrev == 0.f)
+				if (mAdd == 0.f)
 					MULADD_CALCFUNC(next_a0);
 				else
 					MULADD_CALCFUNC(next_ai);
@@ -83,7 +84,7 @@ struct MulAdd:
 				MULADD_CALCFUNC(next_kk);
 
 			case calc_ScalarRate:
-				if (mAddPrev == 0.f)
+				if (mAdd == 0.f)
 					MULADD_CALCFUNC(next_k0);
 				else
 					MULADD_CALCFUNC(next_ki);
@@ -95,37 +96,37 @@ struct MulAdd:
 		case calc_ScalarRate:
 			switch (inRate(2)) {
 			case calc_FullRate:
-				if (mMulPrev == 1.0)
+				if (mMul == 1.0)
 					MULADD_CALCFUNC(next_1a);
-				else if (mMulPrev == 0.f)
+				else if (mMul == 0.f)
 					MULADD_CALCFUNC(next_0a);
 				else
 					MULADD_CALCFUNC(next_ia);
 
 			case calc_BufRate:
-				if (mMulPrev == 1.0)
+				if (mMul == 1.0)
 					MULADD_CALCFUNC(next_1k);
-				else if (mMulPrev == 0.f)
+				else if (mMul == 0.f)
 					MULADD_CALCFUNC(next_0k);
 				else
 					MULADD_CALCFUNC(next_ik);
 
 			case calc_ScalarRate:
-				if (mMulPrev == 1.0) {
-					if (mAddPrev == 0)
+				if (mMul == 1.0) {
+					if (mAdd == 0)
 						MULADD_CALCFUNC(next_10);
 					else
 						MULADD_CALCFUNC(next_1i);
 				}
 
-				else if (mMulPrev == 0.f) {
-					if (mAddPrev == 0.f)
+				else if (mMul == 0.f) {
+					if (mAdd == 0.f)
 						MULADD_CALCFUNC(next_00);
 					else
 						MULADD_CALCFUNC(next_0i);
 				}
 				else {
-					if (mAddPrev == 0.f)
+					if (mAdd == 0.f)
 						MULADD_CALCFUNC(next_i0);
 					else
 						MULADD_CALCFUNC(next_ii);
@@ -142,12 +143,12 @@ struct MulAdd:
 
 	inline bool mulChanged(void) const
 	{
-		return in0(1) != mMulPrev;
+		return mMul.changed(this);
 	}
 
 	inline bool addChanged(void) const
 	{
-		return in0(2) != mAddPrev;
+		return mAdd.changed(this);
 	}
 
 #if __cplusplus < 199711L
@@ -156,11 +157,7 @@ struct MulAdd:
 	decltype(nova::slope_argument(0.f, 0.f)) mulSlope(void)
 #endif
 	{
-		float nextMul = in0(1);
-		float currentMul = mMulPrev;
-		float slope = calcSlope(nextMul, currentMul);
-		mMulPrev = nextMul;
-		return slope_argument(currentMul, slope);
+		return mMul.slope(this);
 	}
 
 #if __cplusplus < 199711L
@@ -169,11 +166,7 @@ struct MulAdd:
 	decltype(nova::slope_argument(0.f, 0.f)) addSlope(void)
 #endif
 	{
-		float nextAdd = in0(2);
-		float currentAdd = mAddPrev;
-		float slope = calcSlope(nextAdd, currentAdd);
-		mAddPrev = nextAdd;
-		return slope_argument(currentAdd, slope);
+		return mAdd.slope(this);
 	}
 
 	void next_scalar(int inNumSamples)
@@ -193,7 +186,7 @@ struct MulAdd:
 		if (addChanged())
 			muladd<SIMD>(out(0), in(0), in(1), addSlope(), inNumSamples);
 		else {
-			if (mAddPrev == 0)
+			if (mAdd == 0.f)
 				times_vec<SIMD>(out(0), in(0), in(1), inNumSamples);
 			else
 				next_ai<SIMD>(inNumSamples);
@@ -203,7 +196,7 @@ struct MulAdd:
 	template <int SIMD>
 	void next_ai(int inNumSamples)
 	{
-		muladd<SIMD>(out(0), in(0), in(1), mAddPrev, inNumSamples);
+		muladd<SIMD>(out(0), in(0), in(1), mAdd, inNumSamples);
 	}
 
 	template <int SIMD>
@@ -222,17 +215,12 @@ struct MulAdd:
 			if (mulChanged())
 				muladd<SIMD>(out(0), in(0), mulSlope(), addSlope(), inNumSamples);
 			else {
-				if (mMulPrev == 0) {
-					float nextAdd = in0(2);
-					float currentAdd = mAddPrev;
-					mAddPrev = nextAdd;
-					slope_vec<SIMD>(out(0), currentAdd, calcSlope(nextAdd, currentAdd), inNumSamples);
-					return;
-				}
-				if (mMulPrev == 1.f)
+				if (mMul == 0)
+					slope_vec<SIMD>(out(0), addSlope(), inNumSamples);
+				else if (mMul == 1.f)
 					plus_vec<SIMD>(out(0), in(0), addSlope(), inNumSamples);
 				else
-					muladd<SIMD>(out(0), in(0), mMulPrev, addSlope(), inNumSamples);
+					muladd<SIMD>(out(0), in(0), mMul, addSlope(), inNumSamples);
 			}
 		} else
 			next_ki<SIMD>(inNumSamples);
@@ -242,7 +230,7 @@ struct MulAdd:
 	void next_ki(int inNumSamples)
 	{
 		if (mulChanged())
-			muladd<SIMD>(out(0), in(0), mulSlope(), mAddPrev, inNumSamples);
+			muladd<SIMD>(out(0), in(0), mulSlope(), mAdd, inNumSamples);
 		else
 			next_ii<SIMD>(inNumSamples);
 	}
@@ -250,29 +238,24 @@ struct MulAdd:
 	template <int SIMD>
 	void next_ia(int inNumSamples)
 	{
-		if (mMulPrev == 0)
+		if (mMul == 0)
 			next_0a<SIMD>(inNumSamples);
-		else if (mMulPrev == 1.0)
+		else if (mMul == 1.0)
 			next_1a<SIMD>(inNumSamples);
 		else
-			muladd<SIMD>(out(0), in(0), mMulPrev, in(2), inNumSamples);
+			muladd<SIMD>(out(0), in(0), mMul, in(2), inNumSamples);
 	}
 
 	template <int SIMD>
 	void next_ik(int inNumSamples)
 	{
 		if (addChanged()) {
-			if (mMulPrev == 0.f) {
-				float nextAdd = in0(2);
-				float currentAdd = mAddPrev;
-				mAddPrev = nextAdd;
-				slope_vec<SIMD>(out(0), currentAdd, calcSlope(nextAdd, currentAdd), inNumSamples);
-				return;
-			}
-			if (mMulPrev == 1.f)
+			if (mMul == 0.f)
+				slope_vec<SIMD>(out(0), addSlope(), inNumSamples);
+			else if (mMul == 1.f)
 				plus_vec<SIMD>(out(0), in(0), addSlope(), inNumSamples);
 			else
-				muladd<SIMD>(out(0), in(0), mMulPrev, addSlope(), inNumSamples);
+				muladd<SIMD>(out(0), in(0), mMul, addSlope(), inNumSamples);
 		} else
 			next_ii<SIMD>(inNumSamples);
 	}
@@ -280,15 +263,15 @@ struct MulAdd:
 	template <int SIMD>
 	void next_ii(int inNumSamples)
 	{
-		if (mMulPrev == 0)
+		if (mMul == 0)
 			next_0i<SIMD>(inNumSamples);
-		else if (mMulPrev == 1.f) {
+		else if (mMul == 1.f) {
 			next_1i<SIMD>(inNumSamples);
 		} else {
-			if (mAddPrev == 0)
-				times_vec<SIMD>(out(0), in(0), mMulPrev, inNumSamples);
+			if (mAdd == 0)
+				times_vec<SIMD>(out(0), in(0), mMul, inNumSamples);
 			else
-				muladd<SIMD>(out(0), in(0), mMulPrev, mAddPrev, inNumSamples);
+				muladd<SIMD>(out(0), in(0), mMul, mAdd, inNumSamples);
 		}
 	}
 
@@ -310,10 +293,10 @@ struct MulAdd:
 	template <int SIMD>
 	void next_1i(int inNumSamples)
 	{
-		if (mAddPrev == 0)
+		if (mAdd == 0)
 			copy_vec<SIMD>(out(0), in(0), inNumSamples);
 		else
-			plus_vec<SIMD>(out(0), in(0), mAddPrev, inNumSamples);
+			plus_vec<SIMD>(out(0), in(0), mAdd, inNumSamples);
 	}
 
 	template <int SIMD>
@@ -325,20 +308,16 @@ struct MulAdd:
 	template <int SIMD>
 	void next_0k(int inNumSamples)
 	{
-		if (addChanged()) {
-			float nextAdd = in0(2);
-			float currentAdd = mAddPrev;
-			mAddPrev = nextAdd;
-			slope_vec<SIMD>(out(0), currentAdd, calcSlope(nextAdd, currentAdd), inNumSamples);
-			return;
-		} else
+		if (addChanged())
+			slope_vec<SIMD>(out(0), addSlope(), inNumSamples);
+		else
 			next_0i<SIMD>(inNumSamples);
 	}
 
 	template <int SIMD>
 	void next_0i(int inNumSamples)
 	{
-		set_vec<SIMD>(out(0), mAddPrev, inNumSamples);
+		set_vec<SIMD>(out(0), mAdd, inNumSamples);
 	}
 
 	template <int SIMD>
@@ -359,12 +338,12 @@ struct MulAdd:
 	template <int SIMD>
 	void next_i0(int inNumSamples)
 	{
-		if (mMulPrev == 0.f)
+		if (mMul == 0.f)
 			next_00<SIMD>(inNumSamples);
-		else if (mMulPrev == 1.f)
+		else if (mMul == 1.f)
 			next_10<SIMD>(inNumSamples);
 		else
-			times_vec<SIMD>(out(0), in(0), mMulPrev, inNumSamples);
+			times_vec<SIMD>(out(0), in(0), mMul, inNumSamples);
 	}
 
 	template <int SIMD>
@@ -378,7 +357,6 @@ struct MulAdd:
 	{
 		set_vec<SIMD>(out(0), 0.f, inNumSamples);
 	}
-
 };
 
 DEFINE_XTORS(MulAdd)
@@ -386,12 +364,13 @@ DEFINE_XTORS(MulAdd)
 struct Sum3:
 	SIMD_Unit
 {
-	float mPrev1, mPrev2;
+	ControlRateInput<1> in1;
+	ControlRateInput<2> in2;
 
 	Sum3(void)
 	{
-		mPrev1 = in0(1);
-		mPrev2 = in0(2);
+		in1.init(this);
+		in2.init(this);
 
 		if (mCalcRate != calc_FullRate) {
 			set_calc_function<Sum3, &Sum3::next_scalar>();
@@ -466,49 +445,35 @@ struct Sum3:
 	template <bool SIMD>
 	void next_aak(int inNumSamples)
 	{
-		float next2 = in0(2);
-		if (next2 != mPrev2) {
-			float slope = calcSlope(next2, mPrev2);
-			sum_vec<SIMD>(out(0), in(0), in(1), slope_argument(mPrev2, slope), inNumSamples);
-			mPrev2 = next2;
-		} else
+		if (in2.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in(1), in2.slope(this), inNumSamples);
+		else
 			next_aai<SIMD>(inNumSamples);
 	}
 
 	template <bool SIMD>
 	void next_aai(int inNumSamples)
 	{
-		sum_vec<SIMD>(out(0), in(0), in(1), mPrev2, inNumSamples);
+		sum_vec<SIMD>(out(0), in(0), in(1), in2, inNumSamples);
 	}
 
 	template <bool SIMD>
 	void next_aki(int inNumSamples)
 	{
-		float next1 = in0(1);
-		if (next1 != mPrev1) {
-			float slope = calcSlope(next1, mPrev1);
-			sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, slope), in0(2), inNumSamples);
-			mPrev1 = next1;
-		} else
+		if (in1.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2, inNumSamples);
+		else
 			next_aii<SIMD>(inNumSamples);
 	}
 
 	template <bool SIMD>
 	void next_akk(int inNumSamples)
 	{
-		float next2 = in0(2);
-
-		if (next2 != mPrev2) {
-			float next1 = in0(1);
-			float slope2 = calcSlope(next2, mPrev2);
-			if (next1 != mPrev1) {
-				float slope1 = calcSlope(next1, mPrev1);
-				sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, slope1), slope_argument(mPrev2, slope2), inNumSamples);
-				mPrev1 = next1;
-			} else
-				sum_vec<SIMD>(out(0), in(0), next1, slope_argument(mPrev2, slope2), inNumSamples);
-			mPrev2 = next2;
-			return;
+		if (in2.changed(this)) {
+			if (in1.changed(this))
+				sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2.slope(this), inNumSamples);
+			else
+				sum_vec<SIMD>(out(0), in(0), in1, in2.slope(this), inNumSamples);
 		} else
 			next_aki<SIMD>(inNumSamples);
 	}
@@ -525,13 +490,15 @@ DEFINE_XTORS(Sum3)
 struct Sum4:
 	SIMD_Unit
 {
-	float mPrev1, mPrev2, mPrev3;
+	ControlRateInput<1> in1;
+	ControlRateInput<2> in2;
+	ControlRateInput<3> in3;
 
 	Sum4(void)
 	{
-		mPrev1 = in0(1);
-		mPrev2 = in0(2);
-		mPrev3 = in0(3);
+		in1.init(this);
+		in2.init(this);
+		in3.init(this);
 
 		if (mCalcRate != calc_FullRate) {
 			set_calc_function<Sum4, &Sum4::next_scalar>();
@@ -656,33 +623,26 @@ struct Sum4:
 	template <bool SIMD>
 	void next_aaak(int inNumSamples)
 	{
-		float next3 = in0(3);
-		if (next3 != mPrev3) {
-			sum_vec<SIMD>(out(0), in(0), in(1), in(2), slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
-			mPrev3 = next3;
-		} else
+		if (in3.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in(1), in(2), in3.slope(this), inNumSamples);
+		else
 			next_aaai<SIMD>(inNumSamples);
 	}
 
 	template <bool SIMD>
 	void next_aaai(int inNumSamples)
 	{
-		sum_vec<SIMD>(out(0), in(0), in(1), in(2), mPrev3, inNumSamples);
+		sum_vec<SIMD>(out(0), in(0), in(1), in(2), in3, inNumSamples);
 	}
 
 	template <bool SIMD>
 	void next_aakk(int inNumSamples)
 	{
-		float next3 = in0(3);
-		if (next3 != mPrev3) {
-			float next2 = in0(2);
-			if (next2 != mPrev2) {
-				sum_vec<SIMD>(out(0), in(0), in(1), slope_argument(mPrev2, calcSlope(next2, mPrev2)),
-							  slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
-				mPrev2 = next2;
-			} else
-				sum_vec<SIMD>(out(0), in(0), in(1), next2, slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
-			mPrev3 = next3;
+		if (in3.changed(this)) {
+			if (in2.changed(this))
+				sum_vec<SIMD>(out(0), in(0), in(1), in2.slope(this), in3.slope(this), inNumSamples);
+			else
+				sum_vec<SIMD>(out(0), in(0), in(1), in2, in3.slope(this), inNumSamples);
 		} else
 			next_aaki<SIMD>(inNumSamples);
 	}
@@ -690,48 +650,33 @@ struct Sum4:
 	template <bool SIMD>
 	void next_aaki(int inNumSamples)
 	{
-		float next2 = in0(2);
-		if (next2 != mPrev2) {
-			sum_vec<SIMD>(out(0), in(0), in(1), slope_argument(mPrev2, calcSlope(next2, mPrev2)),
-							mPrev3, inNumSamples);
-			mPrev2 = next2;
-		} else
+		if (in2.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in(1), in2.slope(this), in3, inNumSamples);
+		else
 			next_aaii<SIMD>(inNumSamples);
 	}
 
 	template <bool SIMD>
 	void next_aaii(int inNumSamples)
 	{
-		sum_vec<SIMD>(out(0), in(0), in(1), mPrev2, mPrev3, inNumSamples);
+		sum_vec<SIMD>(out(0), in(0), in(1), in2, in3, inNumSamples);
 	}
 
 	template <bool SIMD>
 	void next_akkk(int inNumSamples)
 	{
-		float next3 = in0(3);
-		if (next3 != mPrev3) {
-			float next2 = in0(2);
-			if (next2 != mPrev2) {
-				float next1 = in0(1);
-				if (next1 != mPrev1) {
-					sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, calcSlope(next1, mPrev1)),
-								  slope_argument(mPrev2, calcSlope(next2, mPrev2)),
-								  slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
-					mPrev1 = next1;
-				} else
-					sum_vec<SIMD>(out(0), in(0), mPrev1, slope_argument(mPrev2, calcSlope(next2, mPrev2)),
-								  slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
-				mPrev2 = next2;
+		if (in3.changed(this)) {
+			if (in2.changed(this)) {
+				if (in1.changed(this))
+					sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2.slope(this), in3.slope(this), inNumSamples);
+				else
+					sum_vec<SIMD>(out(0), in(0), in1, in2.slope(this), in3.slope(this), inNumSamples);
 			} else {
-				float next1 = in0(1);
-				if (next1 != mPrev1) {
-					sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, calcSlope(next1, mPrev1)),
-								  next2, slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
-					mPrev1 = next1;
-				} else
-					sum_vec<SIMD>(out(0), in(0), mPrev1, mPrev2, slope_argument(mPrev3, calcSlope(next3, mPrev3)), inNumSamples);
+				if (in1.changed(this))
+					sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2, in3.slope(this), inNumSamples);
+				else
+					sum_vec<SIMD>(out(0), in(0), in1, in2, in3.slope(this), inNumSamples);
 			}
-			mPrev3 = next3;
 		} else
 			next_akki<SIMD>(inNumSamples);
 	}
@@ -739,19 +684,11 @@ struct Sum4:
 	template <bool SIMD>
 	void next_akki(int inNumSamples)
 	{
-		float next2 = in0(2);
-		if (next2 != mPrev2) {
-			float next1 = in0(1);
-			if (next1 != mPrev1) {
-				sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, calcSlope(next1, mPrev1)),
-								slope_argument(mPrev2, calcSlope(next2, mPrev2)),
-								mPrev3, inNumSamples);
-				mPrev1 = next1;
-			} else {
-				sum_vec<SIMD>(out(0), in(0), mPrev1, slope_argument(mPrev2, calcSlope(next2, mPrev2)),
-							  mPrev3, inNumSamples);
-			}
-			mPrev2 = next2;
+		if (in2.changed(this)) {
+			if (in1.changed(this))
+				sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2.slope(this), in3, inNumSamples);
+			else
+				sum_vec<SIMD>(out(0), in(0), in1, in2.slope(this), in3, inNumSamples);
 		} else
 			next_akii<SIMD>(inNumSamples);
 	}
@@ -759,20 +696,16 @@ struct Sum4:
 	template <bool SIMD>
 	void next_akii(int inNumSamples)
 	{
-		float next1 = in0(1);
-		if (next1 != mPrev1) {
-			sum_vec<SIMD>(out(0), in(0), slope_argument(mPrev1, calcSlope(next1, mPrev1)),
-							mPrev2,
-							mPrev3, inNumSamples);
-			mPrev1 = next1;
-		} else
+		if (in1.changed(this))
+			sum_vec<SIMD>(out(0), in(0), in1.slope(this), in2, in3, inNumSamples);
+		else
 			next_aiii<SIMD>(inNumSamples);
 	}
 
 	template <bool SIMD>
 	void next_aiii(int inNumSamples)
 	{
-		sum_vec<SIMD>(out(0), in(0), mPrev1, mPrev2, mPrev3, inNumSamples);
+		sum_vec<SIMD>(out(0), in(0), in1, in2, in3, inNumSamples);
 	}
 };
 
