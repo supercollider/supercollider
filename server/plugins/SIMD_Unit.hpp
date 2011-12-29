@@ -46,6 +46,40 @@ struct SIMD_Unit:
 		return (mBufLength & (nova::vec< float >::objects_per_cacheline - 1)) == 0;
 	}
 
+	template <int index>
+	struct ControlRateInput
+	{
+		float value;
+
+		void init(const SIMD_Unit * parent)
+		{
+			value = parent->in0(index);
+		}
+
+		bool changed(const SIMD_Unit * parent) const
+		{
+			return value != parent->in0(index);
+		}
+
+#if __cplusplus < 199711L
+		nova::detail::scalar_ramp_argument<float> slope(const SIMD_Unit * parent)
+#else
+		decltype(nova::slope_argument(0.f, 0.f)) slope(const SIMD_Unit * parent)
+#endif
+		{
+			float next = parent->in0(index);
+			float current = value;
+			float slope = parent->calcSlope(next, current);
+			value = next;
+			return slope_argument(current, slope);
+		}
+
+		operator float(void)
+		{
+			return value;
+		}
+	};
+
 	template <typename UnitType, void (UnitType::*UnrolledCalcFunc)(int), void (UnitType::*VectorCalcFunc)(int), void (UnitType::*ScalarCalcFunc)(int)>
 	void set_unrolled_calc_function(void)
 	{
@@ -104,6 +138,15 @@ struct SIMD_Unit:
 			nova::set_slope_vec(out, base, slope, inNumSamples);
 		else
 			nova::set_slope_vec_simd(out, base, slope, inNumSamples);
+	}
+
+	template <int type, typename Arg1>
+	static void slope_vec(float * out, Arg1 const & slope, int inNumSamples)
+	{
+		if (type == scalar)
+			nova::set_slope_vec(out, slope.data, slope.slope_, inNumSamples);
+		else
+			nova::set_slope_vec_simd(out, slope.data, slope.slope_, inNumSamples);
 	}
 
 	template <int type>
