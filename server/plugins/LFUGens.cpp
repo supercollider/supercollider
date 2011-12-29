@@ -23,20 +23,8 @@
 #include "SIMD_Unit.hpp"
 #include <limits.h>
 #include <cstdio>
-
-<<<<<<< HEAD
-#ifdef NOVA_SIMD
-#include "simd_memory.hpp"
-#include "simd_ternary_arithmetic.hpp"
-
-using nova::slope_argument;
-
 #include "function_attributes.h"
 
-#endif
-
-=======
->>>>>>> plugins: DC - port to SIMD_Unit and provide special code for DC.ar/kr(0)
 static InterfaceTable *ft;
 
 struct Vibrato : public Unit
@@ -170,11 +158,6 @@ struct InRect : public Unit
 //	float m_leftScale, m_rightScale, m_a, m_b, m_c, m_d;
 //};
 
-struct K2A : public Unit
-{
-	float mLevel;
-};
-
 struct A2K : public Unit
 {
 
@@ -254,9 +237,6 @@ extern "C"
 	void SyncSaw_next_ka(SyncSaw *unit, int inNumSamples);
 	void SyncSaw_next_kk(SyncSaw *unit, int inNumSamples);
 	void SyncSaw_Ctor(SyncSaw* unit);
-
-	void K2A_next(K2A *unit, int inNumSamples);
-	void K2A_Ctor(K2A* unit);
 
 	void A2K_next(A2K *unit, int inNumSamples);
 	void A2K_Ctor(A2K* unit);
@@ -1225,69 +1205,41 @@ void SyncSaw_Ctor(SyncSaw* unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void K2A_next(K2A *unit, int inNumSamples)
+struct K2A:
+	SIMD_Unit
 {
-	float *out = ZOUT(0);
-	float in = ZIN0(0);
+	float mLevel;
 
-	float level = unit->mLevel;
-	float slope = CALCSLOPE(in, level);
-
-	LOOP1(inNumSamples,
-		ZXP(out) = level += slope;
-	);
-	unit->mLevel = level;
-}
-
-#ifdef NOVA_SIMD
-FLATTEN void K2A_next_nova(K2A *unit, int inNumSamples)
-{
-	float in = ZIN0(0);
-	float level = unit->mLevel;
-
-	if (level == in)
-		nova::setvec_simd(OUT(0), level, inNumSamples);
-	else
+	K2A(void)
 	{
-		float slope = CALCSLOPE(in, level);
-		nova::set_slope_vec_simd(OUT(0), level, slope, inNumSamples);
+		mLevel = in0(0);
+		if (inRate(0) == calc_ScalarRate)
+			set_unrolled_calc_function<K2A, &K2A::next_i<unrolled_64>, &K2A::next_i<unrolled>, &K2A::next_i<scalar> >();
+		else
+			set_unrolled_calc_function<K2A, &K2A::next_k<unrolled_64>, &K2A::next_k<unrolled>, &K2A::next_k<scalar> >();
 	}
 
-	unit->mLevel = in;
-}
-
-FLATTEN void K2A_next_nova_64(K2A *unit, int inNumSamples)
-{
-	float in = ZIN0(0);
-	float level = unit->mLevel;
-
-	if (level == in)
-		nova::setvec_simd<64>(OUT(0), level);
-	else
+	template <int type>
+	void next_k(int inNumSamples)
 	{
-		float slope = CALCSLOPE(in, level);
-		nova::set_slope_vec_simd(OUT(0), level, slope, 64);
+		float nextLevel = in0(0);
+		if (mLevel != nextLevel) {
+			float slope = calcSlope(nextLevel, mLevel);
+			float currentLevel = mLevel;
+			mLevel = nextLevel;
+			slope_vec<type>(out(0), currentLevel, slope, inNumSamples);
+		} else
+			next_i<type>(inNumSamples);
 	}
 
-	unit->mLevel = in;
-}
+	template <int type>
+	void next_i(int inNumSamples)
+	{
+		set_vec<type>(out(0), mLevel, inNumSamples);
+	}
+};
 
-#endif
-
-void K2A_Ctor(K2A* unit)
-{
-#ifdef NOVA_SIMD
-	if (BUFLENGTH == 64)
-		SETCALC(K2A_next_nova_64);
-	else if (!(BUFLENGTH & 15))
-		SETCALC(K2A_next_nova);
-	else
-#endif
-	SETCALC(K2A_next);
-	unit->mLevel = ZIN0(0);
-
-	ZOUT0(0) = unit->mLevel;
-}
+DEFINE_XTORS(K2A)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
