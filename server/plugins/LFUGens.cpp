@@ -1208,11 +1208,11 @@ void SyncSaw_Ctor(SyncSaw* unit)
 struct K2A:
 	SIMD_Unit
 {
-	float mLevel;
+	ControlRateInput<0> mLevel;
 
 	K2A(void)
 	{
-		mLevel = in0(0);
+		mLevel.init(this);
 		if (inRate(0) == calc_ScalarRate)
 			set_unrolled_calc_function<K2A, &K2A::next_i<unrolled_64>, &K2A::next_i<unrolled>, &K2A::next_i<scalar> >();
 		else
@@ -1222,13 +1222,9 @@ struct K2A:
 	template <int type>
 	void next_k(int inNumSamples)
 	{
-		float nextLevel = in0(0);
-		if (mLevel != nextLevel) {
-			float slope = calcSlope(nextLevel, mLevel);
-			float currentLevel = mLevel;
-			mLevel = nextLevel;
-			slope_vec<type>(out(0), currentLevel, slope, inNumSamples);
-		} else
+		if (mLevel.changed(this))
+			slope_vec<type>(out(0), mLevel.slope(this), inNumSamples);
+		else
 			next_i<type>(inNumSamples);
 	}
 
