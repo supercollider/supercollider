@@ -32,16 +32,13 @@ struct MulAdd:
 	ControlRateInput<1> mMul;
 	ControlRateInput<2> mAdd;
 
-#define MULADD_CALCFUNC(METHOD_NAME)													\
-	do {																				\
-		if (bufferSize() == 64) {														\
-			set_vector_calc_function<MulAdd, 											\
-				&MulAdd::METHOD_NAME<unrolled_64>, &MulAdd::METHOD_NAME<scalar> > ();	\
-		} else {																		\
-			set_vector_calc_function<MulAdd, 											\
-				&MulAdd::METHOD_NAME<unrolled>, &MulAdd::METHOD_NAME<scalar> > ();		\
-		}																				\
-		return;																			\
+#define MULADD_CALCFUNC(METHOD_NAME)				\
+	do {											\
+		set_unrolled_calc_function<MulAdd, 			\
+				&MulAdd::METHOD_NAME<unrolled_64>,	\
+				&MulAdd::METHOD_NAME<unrolled>,		\
+				&MulAdd::METHOD_NAME<scalar> >();	\
+		return;										\
 	} while (0)
 
 	MulAdd(void)
