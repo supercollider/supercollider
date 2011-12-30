@@ -35,6 +35,8 @@
 # include <sys/param.h>
 #endif
 
+#include <boost/filesystem/path.hpp>
+
 
 #include "PyrParseNode.h"
 #include "Bison/lang11d_tab.h"
@@ -2080,8 +2082,17 @@ bool passOne()
 bool isValidSourceFileName(char *filename)
 {
 	int len = strlen(filename);
-	return (len>3 && strncmp(filename+len-3, ".sc",3) == 0)
-            || (len>7 && strncmp(filename+len-7, ".sc.rtf",7) == 0);
+	bool validExtension = (len>3 && strncmp(filename+len-3, ".sc", 3) == 0)
+            || (len>7 && strncmp(filename+len-7, ".sc.rtf", 7) == 0);
+	if (!validExtension)
+		return false;
+
+	boost::filesystem::path pathname(filename);
+
+	if (pathname.filename().c_str()[0] == '.') // hidden filename
+		return false;
+
+	return true;
 }
 
 // sekhar's replacement
