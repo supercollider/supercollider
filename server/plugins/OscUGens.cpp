@@ -2350,9 +2350,9 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 	World *world = unit->mWorld;
 
 	if (bufdiff == 0.f) {
-		float level = cur - floor(cur);
+		float level = cur - (int)cur;
 
-		int bufnum = (int)floor(cur);
+		int bufnum = (int)cur;
 
 		VOSC_GET_BUF
 
@@ -2408,14 +2408,13 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 		int donesmps = 0;
 		int remain = inNumSamples;
 		while (remain) {
-			float level = cur - (float)floor(cur);
+			float level = cur - sc_trunc(cur);
 
 			float cut;
-			if (bufdiff > 0.) {
-				cut = sc_min(nextbufpos, (float)floor(cur+1.f));
-			} else {
+			if (bufdiff >= 0.)
+				cut = sc_min(nextbufpos, sc_trunc(cur+1.f));
+			else
 				cut = sc_max(nextbufpos, ceil(cur-1.f));
-			}
 
 			float sweepdiff = cut - cur;
 			if (cut == nextbufpos) nsmps = remain;
@@ -2427,7 +2426,7 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 
 			float slope = sweepdiff / (float)nsmps;
 
-			int bufnum = (int)floor(cur);
+			int bufnum = (int)cur;
 
 			VOSC_GET_BUF
 
