@@ -36,7 +36,7 @@ METHOD:: setEnv
 
 
 METHOD:: value
-	Sets the positions of the nodes, creating them if not existent.
+	code::value:: retrieves the node positions, returning an array in the format of the Argument below. code::value_(anArray):: Sets the positions of the nodes, creating them if not existent.
 
 	If there were already existent nodes and their amount is different than the amount of x/y pairs in the argument, nodes will be added or removed (in order of creation reversed) until the amounts match, and then the new values will be applied.
 
