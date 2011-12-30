@@ -236,6 +236,9 @@ inline float32 taylorsin(float32 x)
 
 inline float32 sc_trunc(float32 x)
 {
+#ifdef __SSE__
+	return (int)x;
+#endif
 #ifdef HAVE_C99
 	return truncf(x);
 #else
@@ -468,6 +471,9 @@ inline float64 taylorsin(float64 x)
 
 inline float64 sc_trunc(float64 x)
 {
+#ifdef __SSE2__
+	return (long)(x);
+#endif
 	return trunc(x);
 }
 
