@@ -2455,7 +2455,7 @@ static inline void LinExp_next_nova_loop(float * out, const float * in, int inNu
 	} while (--unroll);
 }
 
-static void LinExp_next_nova(LinExp *unit, int inNumSamples)
+static inline_functions void LinExp_next_nova(LinExp *unit, int inNumSamples)
 {
 	float *out = OUT(0);
 	float *in   = IN(0);
@@ -2463,7 +2463,7 @@ static void LinExp_next_nova(LinExp *unit, int inNumSamples)
 	LinExp_next_nova_loop(out, in, inNumSamples, unit->m_dstlo, unit->m_dstratio, unit->m_rsrcrange, unit->m_rrminuslo);
 }
 
-static void LinExp_next_nova_kk(LinExp *unit, int inNumSamples)
+static inline_functions void LinExp_next_nova_kk(LinExp *unit, int inNumSamples)
 {
 	float *out = OUT(0);
 	float *in  = IN(0);
