@@ -2140,20 +2140,25 @@ void COsc_next(COsc *unit, int inNumSamples)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define VOSC_GET_BUF_UNLOCKED \
-const SndBuf *bufs;\
-if (bufnum+1 >= world->mNumSndBufs) { \
-			int localBufNum = bufnum - world->mNumSndBufs; \
-			Graph *parent = unit->mParent; \
-			if(localBufNum <= parent->localBufNum) { \
-				bufs = parent->mLocalSndBufs + localBufNum; \
-			} else { \
-				bufnum = 0; \
-				bufs = world->mSndBufs + bufnum; \
-			} \
-		} else { \
-			bufs = world->mSndBufs + sc_max(0, bufnum); \
-		} \
+#define VOSC_GET_BUF_UNLOCKED						\
+const SndBuf *bufs;									\
+if (bufnum < 0)										\
+	bufnum = 0;										\
+													\
+if (bufnum+1 >= world->mNumSndBufs) {				\
+	int localBufNum = bufnum - world->mNumSndBufs;	\
+	Graph *parent = unit->mParent;					\
+	if(localBufNum <= parent->localBufNum) {		\
+		bufs = parent->mLocalSndBufs + localBufNum; \
+	} else {										\
+		bufnum = 0;									\
+		bufs = world->mSndBufs + bufnum;			\
+	}												\
+} else {											\
+	if (bufnum >= world->mNumSndBufs)				\
+		bufnum = 0;									\
+	bufs = world->mSndBufs + sc_max(0, bufnum);		\
+}
 
 #define VOSC_GET_BUF			\
 	VOSC_GET_BUF_UNLOCKED 		\
@@ -2165,7 +2170,7 @@ void VOsc_Ctor(VOsc *unit)
 
 	float nextbufpos = ZIN0(0);
 	unit->m_bufpos = nextbufpos;
-	uint32 bufnum = (uint32)floor(nextbufpos);
+	int bufnum = floor(nextbufpos);
 	World *world = unit->mWorld;
 
 	VOSC_GET_BUF_UNLOCKED
@@ -2258,7 +2263,7 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 
 			float slope = sweepdiff / (float)nsmps;
 
-			uint32 bufnum = (int)floor(cur);
+			int32 bufnum = (int32)floor(cur);
 
 			VOSC_GET_BUF
 
@@ -2302,7 +2307,7 @@ void VOsc3_Ctor(VOsc3 *unit)
 
 	float nextbufpos = ZIN0(0);
 	unit->m_bufpos = nextbufpos;
-	uint32 bufnum = (uint32)floor(nextbufpos);
+	int32 bufnum = (int32)floor(nextbufpos);
 	World *world = unit->mWorld;
 
 	VOSC_GET_BUF
@@ -2347,7 +2352,7 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 	if (bufdiff == 0.f) {
 		float level = cur - floor(cur);
 
-		uint32 bufnum = (int)floor(cur);
+		int bufnum = (int)floor(cur);
 
 		VOSC_GET_BUF
 
@@ -2422,7 +2427,7 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 
 			float slope = sweepdiff / (float)nsmps;
 
-			uint32 bufnum = (int)floor(cur);
+			int bufnum = (int)floor(cur);
 
 			VOSC_GET_BUF
 
