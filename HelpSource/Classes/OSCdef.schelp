@@ -35,6 +35,9 @@ An optional instance of link::Classes/NetAddr:: indicating the IP address of the
 argument:: recvPort
 An optional link::Classes/Integer:: indicating the port on which messages will be received. If set this object will only respond to message received on that port. Note that you will have to use the link::Classes/Main#-openUDPPort:: method to enable listening on that port.
 
+argument:: argTemplate
+An optional link::Classes/Array:: composed of instances of link::Classes/Integer:: or link::Classes/Function:: (or objects which respond to the method link::Overviews/Methods#matchItem::) used to match the arguments of an incoming OSC message. If a Function, it will be evaluated with the corresponding message arg as an argument, and should return a link::Classes/Boolean:: indicating whether the argument matches and this OSCdef should respond (providing all other arguments match). Template values of nil will match any incoming argument value.
+
 argument:: dispatcher
 An optional instance of an appropriate subclass of link::Classes/AbstractDispatcher::. This can be used to allow for customised dispatching. Normally this should not be needed.
 
@@ -57,6 +60,9 @@ An optional instance of link::Classes/NetAddr:: indicating the IP address of the
 
 argument:: recvPort
 An optional link::Classes/Integer:: indicating the port on which messages will be received. Note that you will have to use the link::Classes/Main#-openUDPPort:: method to enable listening on that port.
+
+argument:: argTemplate
+An optional link::Classes/Array:: composed of instances of link::Classes/Integer:: or link::Classes/Function:: (or objects which respond to the method link::Overviews/Methods#matchItem::) used to match the arguments of an incoming OSC message. If a Function, it will be evaluated with the corresponding message arg as an argument, and should return a link::Classes/Boolean:: indicating whether the argument matches and this OSCFunc should respond (providing all other arguments match). Template values of nil will match any incoming argument value.
 
 returns:: An instance of OSCdef.
 
@@ -108,10 +114,10 @@ OSCdef(\test).clear; // remove all functions
 m.sendMsg("/chat", "Hello App 1");
 
 
-//////// Use an OSCArgsMatcher for finer grained matching
+//////// Use an argTemplate for finer grained matching
 
 s.boot;
 x = Synth(\default);
-OSCdef(\watchForXEnd, OSCArgsMatcher([x.nodeID], { 'ended!'.postln }), '/n_end', s.addr).oneShot;
+OSCdef(\watchForXEnd, { 'ended!'.postln }, '/n_end', s.addr, nil, [x.nodeID]).oneShot;
 x.release(3);
 ::
