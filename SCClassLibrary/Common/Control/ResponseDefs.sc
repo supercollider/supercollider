@@ -179,10 +179,12 @@ AbstractMessageMatcher {
 OSCMessageDispatcher : AbstractWrappingDispatcher {
 	
 	wrapFunc {|funcProxy|
-		var func, srcID, recvPort;
+		var func, srcID, recvPort, argTemplate;
 		func = funcProxy.func;
 		srcID = funcProxy.srcID;
 		recvPort = funcProxy.recvPort;
+		argTemplate = funcProxy.argTemplate;
+		if(argTemplate.notNil, { func = OSCArgsMatcher(argTemplate, func)});
 		^case(
 			{ srcID.notNil && recvPort.notNil }, { OSCFuncBothMessageMatcher(srcID, recvPort, func) },
 			{ srcID.notNil }, { OSCFuncAddrMessageMatcher(srcID, func) },
@@ -225,7 +227,7 @@ OSCMessagePatternDispatcher : OSCMessageDispatcher {
 
 OSCFunc : AbstractResponderFunc {
 	classvar <>defaultDispatcher, <>defaultMatchingDispatcher, traceFunc, traceRunning = false;
-	var <path, <recvPort;
+	var <path, <recvPort, <argTemplate;
 	
 	*initClass {
 		defaultDispatcher = OSCMessageDispatcher.new;
@@ -235,12 +237,12 @@ OSCFunc : AbstractResponderFunc {
 		}
 	}
 	
-	*new { arg func, path, srcID, recvPort, dispatcher;
-		^super.new.init(func, path, srcID, recvPort, dispatcher ? defaultDispatcher);
+	*new { arg func, path, srcID, recvPort, argTemplate, dispatcher;
+		^super.new.init(func, path, srcID, recvPort, argTemplate, dispatcher ? defaultDispatcher);
 	}
 	
-	*newMatching { arg func, path, srcID, recvPort;
-		^super.new.init(func, path, srcID, recvPort, defaultMatchingDispatcher);
+	*newMatching { arg func, path, srcID, argTemplate, recvPort;
+		^super.new.init(func, path, srcID, recvPort, argTemplate, defaultMatchingDispatcher);
 	}
 	
 	*trace {|bool = true| 
@@ -259,19 +261,23 @@ OSCFunc : AbstractResponderFunc {
 	
 	*cmdPeriod { this.trace(false) }
 	
-	init {|argfunc, argpath, argsrcID, argrecvPort, argdisp|
+	init {|argfunc, argpath, argsrcID, argrecvPort, argtemplate, argdisp|
 		path = (argpath ? path).asString;
 		if(path[0] != $/, {path = "/" ++ path}); // demand OSC compliant paths
 		path = path.asSymbol;
 		srcID = argsrcID ? srcID;
 		recvPort = argrecvPort ? recvPort;
+		argtemplate = argtemplate.collect({|oscArg| 
+			if(oscArg.isKindOf(String), {oscArg.asSymbol}, {oscArg}); // match Symbols not Strings
+		});
+		argTemplate = argtemplate ? argTemplate;
 		func = argfunc;
 		dispatcher = argdisp ? dispatcher;
 		this.enable;
 		allFuncProxies.add(this);
 	}
 	
-	printOn { arg stream; stream << this.class.name << "(" <<* [path, srcID] << ")" }
+	printOn { arg stream; stream << this.class.name << "(" <<* [path, srcID, argTemplate] << ")" }
 	
 }
 
@@ -283,30 +289,30 @@ OSCdef : OSCFunc {
 		all = IdentityDictionary.new;
 	}
 	
-	*new { arg key, func, path, srcID, recvPort, dispatcher;
+	*new { arg key, func, path, srcID, recvPort, argTemplate, dispatcher;
 		var res = all.at(key);
 		if(res.isNil) {
-			^super.new(func, path, srcID, recvPort, dispatcher).addToAll(key);
+			^super.new(func, path, srcID, recvPort, argTemplate, dispatcher).addToAll(key);
 		} {
 			if(func.notNil) { 
 				if(res.enabled, {
 					res.disable;
-					res.init(func, path, srcID, recvPort, dispatcher);
-				}, { res.init(func, path, srcID, recvPort, dispatcher).disable; });
+					res.init(func, path, srcID, recvPort, argTemplate, dispatcher);
+				}, { res.init(func, path, srcID, recvPort, argTemplate, dispatcher).disable; });
 			}
 		}
 		^res
 	}
 	
-	*newMatching { arg key, func, path, srcID, recvPort;
-		^this.new(key, func, path, srcID, recvPort, defaultMatchingDispatcher);
+	*newMatching { arg key, func, path, srcID, argTemplate, recvPort;
+		^this.new(key, func, path, srcID, recvPort, argTemplate, defaultMatchingDispatcher);
 	}
 	
 	addToAll {|argkey| key = argkey; all.put(key, this) }
 	
 	free { all[key] = nil; super.free; }
 	
-	printOn { arg stream; stream << this.class.name << "(" <<* [key, path, srcID] << ")" }
+	printOn { arg stream; stream << this.class.name << "(" <<* [key, path, srcID, argTemplate] << ")" }
 	
 }
 
@@ -394,10 +400,12 @@ MIDIMessageDispatcher : AbstractWrappingDispatcher {
 	
 	// wrapper objects based on arg type and testing requirements
 	wrapFunc {|funcProxy|
-		var func, chan, srcID;
+		var func, chan, srcID, argTemplate;
 		func = funcProxy.func;
 		chan = funcProxy.chan;
 		srcID = funcProxy.srcID;
+		argTemplate = funcProxy.argTemplate;
+		if(argTemplate.notNil, { func = MIDIValueMatcher(argTemplate, func)});
 		^case(
 			{ srcID.notNil && chan.isArray }, {MIDIFuncBothCAMessageMatcher(chan, srcID, func)},
 			{ srcID.notNil && chan.notNil }, {MIDIFuncBothMessageMatcher(chan, srcID, func)},
@@ -420,11 +428,12 @@ MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 	
 	// wrapper objects based on arg type and testing requirements
 	wrapFunc {|funcProxy|
-		var func, chan, srcID;
+		var func, chan, srcID, argTemplate;
 		func = funcProxy.func;
 		chan = funcProxy.chan;
 		srcID = funcProxy.srcID;
-		// are these right?
+		argTemplate = funcProxy.argTemplate;
+		if(argTemplate.notNil, { func = MIDIValueMatcher(argTemplate, func)});
 		^case(
 			{ srcID.notNil }, {MIDIFuncSrcMessageMatcherNV(srcID, func)},
 			{ func }
@@ -435,7 +444,7 @@ MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 
 MIDIFunc : AbstractResponderFunc {
 	classvar <>defaultDispatchers;
-	var <chan, <msgNum, <msgType;
+	var <chan, <msgNum, <msgType, <argTemplate;
 	
 	*initClass {
 		defaultDispatchers = IdentityDictionary.new;
@@ -447,51 +456,52 @@ MIDIFunc : AbstractResponderFunc {
 		});
 	}
 	
-	*new { arg func, msgNum, chan, msgType, srcID, dispatcher;
-		^super.new.init(func, msgNum, chan, msgType, srcID, dispatcher ? defaultDispatchers[msgType]);
+	*new { arg func, msgNum, chan, msgType, srcID, argTemplate, dispatcher;
+		^super.new.init(func, msgNum, chan, msgType, srcID, argTemplate, dispatcher ? defaultDispatchers[msgType]);
 	}
 	
-	*cc { arg func, ccNum, chan, srcID, dispatcher;
-		^this.new(func, ccNum, chan, \control, srcID, dispatcher);
+	*cc { arg func, ccNum, chan, srcID, argTemplate, dispatcher;
+		^this.new(func, ccNum, chan, \control, srcID, argTemplate, dispatcher);
 	}
 	
-	*noteOn { arg func, noteNum, chan, srcID, dispatcher;
-		^this.new(func, noteNum, chan, \noteOn, srcID, dispatcher);
+	*noteOn { arg func, noteNum, chan, srcID, argTemplate, dispatcher;
+		^this.new(func, noteNum, chan, \noteOn, srcID, argTemplate, dispatcher);
 	}
 	
-	*noteOff { arg func, noteNum, chan, srcID, dispatcher;
-		^this.new(func, noteNum, chan, \noteOff, srcID, dispatcher);
+	*noteOff { arg func, noteNum, chan, srcID, argTemplate, dispatcher;
+		^this.new(func, noteNum, chan, \noteOff, srcID, argTemplate, dispatcher);
 	}
 	
-	*polytouch { arg func, noteNum, chan, srcID, dispatcher;
-		^this.new(func, noteNum, chan, \polytouch, srcID, dispatcher);
+	*polytouch { arg func, noteNum, chan, srcID, argTemplate, dispatcher;
+		^this.new(func, noteNum, chan, \polytouch, srcID, argTemplate, dispatcher);
 	}
 	
-	*touch { arg func, chan, srcID, dispatcher;
-		^this.new(func, nil, chan, \touch, srcID, dispatcher);
+	*touch { arg func, chan, srcID, argTemplate, dispatcher;
+		^this.new(func, nil, chan, \touch, srcID, argTemplate, dispatcher);
 	}
 	
-	*bend { arg func, chan, srcID, dispatcher;
-		^this.new(func, nil, chan, \bend, srcID, dispatcher);
+	*bend { arg func, chan, srcID, argTemplate, dispatcher;
+		^this.new(func, nil, chan, \bend, srcID, argTemplate, dispatcher);
 	}
 	
-	*program { arg func, chan, srcID, dispatcher;
-		^this.new(func, nil, chan, \program, srcID, dispatcher);
+	*program { arg func, chan, srcID, argTemplate, dispatcher;
+		^this.new(func, nil, chan, \program, srcID, argTemplate, dispatcher);
 	}
 	
-	init {|argfunc, argmsgNum, argchan, argType, argsrcID, argdisp|
+	init {|argfunc, argmsgNum, argchan, argType, argsrcID, argtempl, argdisp|
 		msgNum = msgNum ? argmsgNum;
 		chan = chan ? argchan;
 		srcID = argsrcID ? srcID;
 		func = argfunc;
 		msgType = argType ? msgType;
 		dispatcher = argdisp ? dispatcher;
+		argTemplate = argtempl ? argTemplate;
 		this.enable;
 		allFuncProxies.add(this);
 	}
 	
 	// post pretty
-	printOn { arg stream; stream << this.class.name << "(" <<* [msgType, msgNum, chan] << ")" }
+	printOn { arg stream; stream << this.class.name << "(" <<* [msgType, msgNum, chan, argTemplate] << ")" }
 
 }
 
@@ -503,47 +513,47 @@ MIDIdef : MIDIFunc {
 		all = IdentityDictionary.new;
 	}
 	
-	*new { arg key, func, msgNum, chan, msgType, srcID, dispatcher;
+	*new { arg key, func, msgNum, chan, msgType, srcID, argTemplate, dispatcher;
 		var res = all.at(key);
 		if(res.isNil) {
-			^super.new(func, msgNum, chan, msgType, srcID, dispatcher).addToAll(key);
+			^super.new(func, msgNum, chan, msgType, srcID, argTemplate, dispatcher).addToAll(key);
 		} {
 			if(func.notNil) { 
 				if(res.enabled, {
 					res.disable;
-					res.init(func, msgNum, chan, msgType, srcID, dispatcher ? defaultDispatchers[msgType]);
-				}, { res.init(func, msgNum, chan, msgType, srcID, dispatcher ? defaultDispatchers[msgType]).disable; });
+					res.init(func, msgNum, chan, msgType, srcID, argTemplate, dispatcher ? defaultDispatchers[msgType]);
+				}, { res.init(func, msgNum, chan, msgType, srcID, argTemplate, dispatcher ? defaultDispatchers[msgType]).disable; });
 			}
 		}
 		^res
 	}
 	
-	*cc { arg key, func, ccNum, chan, srcID, dispatcher;
-		^this.new(key, func, ccNum, chan, \control, srcID, dispatcher);
+	*cc { arg key, func, ccNum, chan, srcID, argTemplate, dispatcher;
+		^this.new(key, func, ccNum, chan, \control, srcID, argTemplate, dispatcher);
 	}
 	
-	*noteOn { arg key, func, noteNum, chan, srcID, dispatcher;
-		^this.new(key, func, noteNum, chan, \noteOn, srcID, dispatcher);
+	*noteOn { arg key, func, noteNum, chan, srcID, argTemplate, dispatcher;
+		^this.new(key, func, noteNum, chan, \noteOn, srcID, argTemplate, dispatcher);
 	}
 	
-	*noteOff { arg key, func, noteNum, chan, srcID, dispatcher;
-		^this.new(key, func, noteNum, chan, \noteOff, srcID, dispatcher);
+	*noteOff { arg key, func, noteNum, chan, srcID, argTemplate, dispatcher;
+		^this.new(key, func, noteNum, chan, \noteOff, srcID, argTemplate, dispatcher);
 	}
 	
-	*polytouch { arg key, func, noteNum, chan, srcID, dispatcher;
-		^this.new(key, func, noteNum, chan, \polytouch, srcID, dispatcher);
+	*polytouch { arg key, func, noteNum, chan, srcID, argTemplate, dispatcher;
+		^this.new(key, func, noteNum, chan, \polytouch, srcID, argTemplate, dispatcher);
 	}
 	
-	*touch { arg key, func, chan, srcID, dispatcher;
-		^this.new(key, func, nil, chan, \touch, srcID, dispatcher);
+	*touch { arg key, func, chan, srcID, argTemplate, dispatcher;
+		^this.new(key, func, nil, chan, \touch, srcID, argTemplate, dispatcher);
 	}
 	
-	*bend { arg key, func, chan, srcID, dispatcher;
-		^this.new(key, func, nil, chan, \bend, srcID, dispatcher);
+	*bend { arg key, func, chan, srcID, argTemplate, dispatcher;
+		^this.new(key, func, nil, chan, \bend, srcID, argTemplate, dispatcher);
 	}
 	
-	*program { arg key, func, chan, srcID, dispatcher;
-		^this.new(key, func, nil, chan, \program, srcID, dispatcher);
+	*program { arg key, func, chan, srcID, argTemplate, dispatcher;
+		^this.new(key, func, nil, chan, \program, srcID, argTemplate, dispatcher);
 	}
 	
 	addToAll {|argkey| key = argkey; all.put(key, this) }
@@ -551,7 +561,7 @@ MIDIdef : MIDIFunc {
 	free { all[key] = nil; super.free; }
 	
 	// post pretty
-	printOn { arg stream; stream << this.class.name << "(" <<* [key, msgType, msgNum, chan] << ")" }
+	printOn { arg stream; stream << this.class.name << "(" <<* [key, msgType, msgNum, chan, argTemplate] << ")" }
 	
 }
 
@@ -641,3 +651,15 @@ MIDIFuncBothCAMessageMatcher : AbstractMessageMatcher {
 	}	
 }
 
+// if you want to test for the actual message value, the func gets wrapped in this
+MIDIValueMatcher : AbstractMessageMatcher {
+	var argTemplate;
+
+	*new{|argTemplate, func| ^super.new.init(argTemplate, func) }
+	
+	init {|argArgTemplate, argFunc| argTemplate = argArgTemplate; func = argFunc; }
+	
+	value {|...testMsg|
+		if(argTemplate.matchItem(testMsg.first), {func.value(*testMsg)});
+	}
+}
