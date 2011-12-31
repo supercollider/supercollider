@@ -8,7 +8,7 @@ A class for reading and writing files. Not sound files.
 
 ClassMethods::
 
-private::prGetcwd
+private::prGetcwd, prType
 
 method::new
 Create a File instance and open the file. If the open fails, link::Classes/UnixFILE#-isOpen#isOpen:: will return false.
@@ -32,12 +32,6 @@ definitionList::
 method::open
 same as link::#*new::, but a more intuitive name.
 
-method::exists
-answers if a file exists at that path.
-
-method::delete
-deletes the file at that path. Use only for good, never for evil.
-
 method::getcwd
 POSIX standard 'get current working directory'.
 code::
@@ -47,6 +41,40 @@ File.getcwd;
 
 method::use
 open the file, evaluate the function with the file and close it.
+
+subsection:: Filesystem utilities
+
+method::exists
+answers if a file exists at that path.
+returns:: a link::Classes/Boolean::
+
+method::mkdir
+create directory at path, including any missing parent directories.
+
+method::delete
+deletes the file at that path. Use only for good, never for evil.
+
+method::realpath
+follow symbolic links (and aliases on OSX) and any parent directory references (like "..") and return the true absolute path.
+returns:: a link::Classes/String:: or code::nil:: if path did not exist.
+
+method::copy
+copy file, symlink or directory. this method will fail if pathNameTo already exists.
+
+symlinks are copied as symlinks (re-created).
+
+method::type
+get file type as one of code::\error, \not_found, \regular, \directory, \symlink, \block, \character, \fifo, \socket, \unknown::
+returns:: a link::Classes/Symbol::
+
+method::fileSize
+get size of file in bytes.
+returns:: an link::Classes/Integer::
+
+method::mtime
+get last modification time in seconds since the Epoch.
+returns:: an link::Classes/Integer::
+
 
 InstanceMethods::
 

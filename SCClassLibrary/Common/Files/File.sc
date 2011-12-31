@@ -17,12 +17,39 @@ File : UnixFILE {
 		_FileDelete
 		^this.primitiveFailed
 	}
-	*exists { arg pathName;
-		var file;
-		file = File(pathName,"r");
-		if (file.isOpen, { file.close; ^true });
-		^false
+	*mtime { arg pathName;
+		_FileMTime
+		^this.primitiveFailed
 	}
+	*exists { arg pathName;
+		_FileExists
+		^this.primitiveFailed
+	}
+	*realpath { arg pathName;
+		_FileRealPath
+		^this.primitiveFailed
+	}
+	*mkdir { arg pathName;
+		_FileMkDir
+		^this.primitiveFailed
+	}
+	*copy { arg pathNameFrom, pathNameTo;
+		_FileCopy
+		^this.primitiveFailed
+	}
+	*type { arg pathName;
+		var sym = #[error, not_found, regular, directory, symlink, block, character, fifo, socket, unknown];
+		^sym.clipAt(this.prType(pathName))
+	}
+	*prType { arg pathName;
+		_FileType
+		^this.primitiveFailed
+	}
+	*fileSize { arg pathName;
+		_FileSize
+		^this.primitiveFailed
+	}
+
 	*getcwd {
 		var string;
 		this.prGetcwd(string = String.new(256));

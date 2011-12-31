@@ -39,8 +39,6 @@ Primitives for String.
 # include <sys/param.h>
 #endif
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <boost/regex.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>
@@ -849,45 +847,6 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
-int prString_RealPath(struct VMGlobals* g, int numArgsPushed )
-{
-	PyrSlot* arg = g->sp;
-	char ipath[PATH_MAX];
-	char opath[PATH_MAX];
-	int err;
-
-	err = slotStrVal(arg, ipath, PATH_MAX);
-	if (err) return err;
-
-	bool isAlias = false;
-	if(sc_ResolveIfAlias(ipath, opath, isAlias, PATH_MAX)!=0) {
-		return errFailed;
-	}
-
-	boost::system::error_code error_code;
-	boost::filesystem::path p = boost::filesystem::canonical(opath,error_code);
-	if(error_code) {
-		SetNil(arg);
-		return errNone;
-	}
-	strcpy(opath,p.string().c_str());
-
-#if SC_DARWIN
-	CFStringRef cfstring =
-		CFStringCreateWithCString(NULL,
-								  opath,
-								  kCFStringEncodingUTF8);
-	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
-	CFRelease(cfstring);
-	if (err) return errFailed;
-#endif // SC_DARWIN
-
-	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
-	SetObject(arg, pyrString);
-
-	return errNone;
-}
-
 int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
 {
 	PyrSlot* arg = g->sp - 1;
@@ -925,23 +884,6 @@ int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_mkdir(struct VMGlobals * g, int numArgsPushed)
-{
-	PyrSlot* arg = g->sp;
-
-	char argString[MAXPATHLEN];
-	int error = slotStrVal(arg, argString, MAXPATHLEN);
-	if (error != errNone)
-		return error;
-
-	boost::system::error_code error_code;
-	boost::filesystem::create_directories(argString, error_code);
-	if (error_code)
-		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), argString);
-
-	return errNone;
-}
-
 
 void initStringPrimitives();
 void initStringPrimitives()
@@ -968,9 +910,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_GetResourceDirPath", prString_GetResourceDirPath, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
-	definePrimitive(base, index++, "_String_RealPath", prString_RealPath, 1, 0);
 	definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
-	definePrimitive(base, index++, "_String_Mkdir", prString_mkdir, 1, 0);
 }
 
 #if _SC_PLUGINS_
