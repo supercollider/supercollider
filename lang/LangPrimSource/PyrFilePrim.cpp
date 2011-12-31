@@ -32,6 +32,7 @@ Primitives for File i/o.
 #include "PyrFileUtils.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
+#include "SC_DirUtils.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -59,27 +60,153 @@ Primitives for File i/o.
 #include <fcntl.h>
 #include <math.h>
 
+#include <boost/filesystem.hpp>
+
 #define DELIMITOR ':'
 
 bool filelen(FILE *file, size_t *length);
 
 int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b;
+	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
 
-	a = g->sp - 1;
-	b = g->sp;
-	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string))
-		return errWrongType;
-	if (slotRawObject(b)->size > PATH_MAX - 1) return errFailed;
-
-	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
-	filename[slotRawString(b)->size] = 0;
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
 
 	int err = unlink(filename);
 	SetBool(a, err == 0);
 
+	return errNone;
+}
+
+int prFileMTime(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	time_t mtime = boost::filesystem::last_write_time(filename);
+	SetInt(a, mtime);
+	return errNone;
+}
+
+int prFileExists(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	bool res = boost::filesystem::exists(filename);
+	SetBool(a, res);
+	return errNone;
+}
+
+int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char ipath[PATH_MAX];
+	char opath[PATH_MAX];
+	int err;
+
+	err = slotStrVal(b, ipath, PATH_MAX);
+	if (err) return err;
+
+	bool isAlias = false;
+	if(sc_ResolveIfAlias(ipath, opath, isAlias, PATH_MAX)!=0) {
+		return errFailed;
+	}
+
+	boost::system::error_code error_code;
+	boost::filesystem::path p = boost::filesystem::canonical(opath,error_code);
+	if(error_code) {
+		SetNil(a);
+		return errNone;
+	}
+	strcpy(opath,p.string().c_str());
+
+#if SC_DARWIN
+	CFStringRef cfstring =
+		CFStringCreateWithCString(NULL,
+								  opath,
+								  kCFStringEncodingUTF8);
+	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
+	CFRelease(cfstring);
+	if (err) return errFailed;
+#endif // SC_DARWIN
+
+	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
+	SetObject(a, pyrString);
+
+	return errNone;
+}
+
+int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	boost::system::error_code error_code;
+	boost::filesystem::create_directories(filename, error_code);
+	if (error_code)
+		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), filename);
+
+	return errNone;
+}
+
+int prFileCopy(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 2, *b = g->sp - 1, *c = g->sp;
+	char filename1[PATH_MAX];
+	char filename2[PATH_MAX];
+	int error;
+	error = slotStrVal(b, filename1, PATH_MAX);
+	if (error != errNone)
+		return error;
+	error = slotStrVal(c, filename2, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	boost::filesystem3::copy(filename1, filename2);
+	return errNone;
+}
+
+int prFileType(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	boost::filesystem::file_status s(boost::filesystem::symlink_status(filename));
+	SetInt(a, s.type());
+	return errNone;
+}
+
+int prFileSize(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	uintmax_t sz = boost::filesystem::file_size(filename);
+	SetInt(a, sz);
 	return errNone;
 }
 
@@ -1892,6 +2019,14 @@ void initFilePrimitives()
 #endif
 
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
+	definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
+	definePrimitive(base, index++, "_FileExists", prFileExists, 2, 0);
+	definePrimitive(base, index++, "_FileRealPath", prFileRealPath, 2, 0);
+	definePrimitive(base, index++, "_FileMkDir", prFileMkDir, 2, 0);
+	definePrimitive(base, index++, "_FileCopy", prFileCopy, 3, 0);
+	definePrimitive(base, index++, "_FileType", prFileType, 2, 0);
+	definePrimitive(base, index++, "_FileSize", prFileSize, 2, 0);
+
 	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
 	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);
 	definePrimitive(base, index++, "_FileFlush", prFileFlush, 1, 0);

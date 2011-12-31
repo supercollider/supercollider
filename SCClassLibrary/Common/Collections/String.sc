@@ -498,7 +498,6 @@ String[char] : RawArray {
 	}
 
 	mkdir {
-		_String_Mkdir
-		^this.primitiveFailed
+		File.mkdir(this);
 	}
 }
