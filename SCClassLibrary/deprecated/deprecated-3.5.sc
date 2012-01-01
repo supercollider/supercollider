@@ -51,7 +51,20 @@ Model {
 	}
 }
 
+Panner : MultiOutUGen {
+	checkNInputs { arg n;
+		this.deprecated(UGen.class.findMethod(\checkNInputs));
+		^super.checkNInputs(n)
+	}
+	checkInputs { this.deprecated; ^this.checkNInputs(1) }
+}
 
+XFade : UGen {
+	checkNInputs { arg n;
+		this.deprecated(UGen.class.findMethod(\checkNInputs));
+		^super.checkNInputs(n)
+	}
+}
 
 + Mix {
 
