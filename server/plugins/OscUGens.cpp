@@ -2407,20 +2407,20 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 		int nsmps;
 		int donesmps = 0;
 		int remain = inNumSamples;
-		while (remain) {
+		do {
 			float level = cur - sc_trunc(cur);
 
 			float cut;
 			if (bufdiff >= 0.)
 				cut = sc_min(nextbufpos, sc_trunc(cur+1.f));
 			else
-				cut = sc_max(nextbufpos, ceil(cur-1.f));
+				cut = sc_max(nextbufpos, sc_ceil(cur-1.f));
 
 			float sweepdiff = cut - cur;
 			if (cut == nextbufpos) nsmps = remain;
 			else {
 				float sweep = (float)inNumSamples / bufdiff;
-				nsmps = (int)floor(sweep * sweepdiff + 0.5f) - donesmps;
+				nsmps = sc_floor(sweep * sweepdiff + 0.5f) - donesmps;
 				nsmps = sc_clip(nsmps, 1, remain);
 			}
 
@@ -2481,7 +2481,7 @@ void VOsc3_next_ik(VOsc3 *unit, int inNumSamples)
 			donesmps += nsmps;
 			remain -= nsmps;
 			cur = cut;
-		}
+		} while (remain);
 	}
 	unit->m_bufpos = nextbufpos;
 	unit->m_phase1 = phase1;
