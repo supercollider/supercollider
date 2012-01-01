@@ -15,7 +15,8 @@ UGenHelper {
 	classvar doctype, head, preface, examples, parents ;
 
 	*new { arg class, path ;
-			^super.new.initUGenHelper( class, path )
+		this.deprecated;
+		^super.new.initUGenHelper( class, path )
 	}
 
 	initUGenHelper { arg aClass, aPath ;

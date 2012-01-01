@@ -17,7 +17,8 @@ TopicHelper {
 	classvar text ;
 
 	*new { arg topic, path ;
-			^super.new.initTopicHelper( topic, path )
+		this.deprecated;
+		^super.new.initTopicHelper( topic, path )
 	}
 
 	initTopicHelper { arg aTopic, aPath ;
