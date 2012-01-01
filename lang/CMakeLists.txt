@@ -110,10 +110,6 @@ set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 add_definitions(-DYYSTACK_USE_ALLOCA)
 
-if (SC_QT AND DSO_VISIBILITY)
-	remove_definitions(-fvisibility=hidden)
-endif()
-
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
