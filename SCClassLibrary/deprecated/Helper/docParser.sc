@@ -10,6 +10,7 @@ DocParser {
 
 
 	*new {  arg class ;
+		this.deprecated;
 		^super.new.initDocParser(class) ;
 	}
 

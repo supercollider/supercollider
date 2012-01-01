@@ -15,7 +15,8 @@ ClassHelper {
 	classvar doctype, head, preface, examples, parents ;
 
 	*new { arg class, path ;
-			^super.new.initClassHelper( class, path )
+		this.deprecated;
+		^super.new.initClassHelper( class, path )
 	}
 
 	initClassHelper { arg aClass, aPath ;

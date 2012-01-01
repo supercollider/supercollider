@@ -61,7 +61,8 @@ Help.makeHelp(SinOsc)
 Helper {
 
 	*new { arg undocumentedObject, path ;
-			^super.new.initHelper( undocumentedObject, path )
+		this.deprecated;
+		^super.new.initHelper( undocumentedObject, path )
 	}
 
 	initHelper { arg undocumentedObject, path ;
