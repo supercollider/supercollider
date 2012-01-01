@@ -1,2 +1,2 @@
-3.5~dev-git
-classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
+3.6~dev-git
+classvar scVersionMajor=3, scVersionMinor=6, scVersionPostfix="~dev";
