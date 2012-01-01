@@ -1613,6 +1613,31 @@ void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
 	unit->m_phasein = phasein;
 }
 
+void SinOsc_next_iai(SinOsc *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float *freqin = ZIN(0);
+
+	float *table0 = ft->mSineWavetable;
+	float *table1 = table0 + 1;
+
+	int32 phase = unit->m_phase;
+	int32 lomask = unit->m_lomask;
+
+	float cpstoinc = unit->m_cpstoinc;
+	float radtoinc = unit->m_radtoinc;
+	float phasemod = unit->m_phasein;
+
+	LOOP1(inNumSamples,
+		  int32 pphase = phase + (int32)(radtoinc * phasemod);
+		  float z = lookupi1(table0, table1, pphase, lomask);
+		  phase += (int32)(cpstoinc * ZXP(freqin));
+		  ZXP(out) = z;
+	);
+	unit->m_phase = phase;
+}
+
+
 
 void SinOsc_Ctor(SinOsc *unit)
 {
@@ -1623,15 +1648,14 @@ void SinOsc_Ctor(SinOsc *unit)
 	unit->m_lomask = (tableSize2 - 1) << 3;
 
 	if (INRATE(0) == calc_FullRate) {
-		if (INRATE(1) == calc_FullRate) {
-			//Print("next_iaa\n");
+		if (INRATE(1) == calc_FullRate)
 			SETCALC(SinOsc_next_iaa);
-			unit->m_phase = 0;
-		} else {
-			//Print("next_iak\n");
+		else if (INRATE(1) == calc_BufRate)
 			SETCALC(SinOsc_next_iak);
-			unit->m_phase = 0;
-		}
+		else
+			SETCALC(SinOsc_next_iai);
+
+		unit->m_phase = 0;
 	} else {
 		if (INRATE(1) == calc_FullRate) {
 			//Print("next_ika\n");
