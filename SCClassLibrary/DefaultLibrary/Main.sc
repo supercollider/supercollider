@@ -1,7 +1,7 @@
 Main : Process {
 	// do not change the next lines manually:
 	//==== replace with new version from bash script ====
-classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="~dev";
+classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="beta";
 	//==== end replace ====
 
 	var <platform, argv;
