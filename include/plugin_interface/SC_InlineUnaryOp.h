@@ -26,6 +26,10 @@
 
 #include <cmath>
 
+#ifdef __SSE4_1__
+#include <smmintrin.h>
+#endif
+
 #if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
 #define HAVE_C99
 #endif
@@ -246,10 +250,36 @@ inline float32 sc_trunc(float32 x)
 #endif
 }
 
+
+inline float32 sc_ceil(float32 x)
+{
+#ifdef __SSE4_1__
+	__m128 a = _mm_set_ss(x);
+	const int cntrl = _MM_FROUND_TO_POS_INF;
+	__m128 b = _mm_round_ss(a, a, cntrl);
+	return _mm_cvtss_f32(b);
+#else
+	return std::ceil(x);
+#endif
+}
+
+inline float32 sc_floor(float32 x)
+{
+#ifdef __SSE4_1__
+	__m128 a = _mm_set_ss(x);
+	const int cntrl = _MM_FROUND_TO_NEG_INF;
+	__m128 b = _mm_round_ss(a, a, cntrl);
+	return _mm_cvtss_f32(b);
+#else
+	return std::ceil(x);
+#endif
+}
+
 inline float32 sc_frac(float32 x)
 {
-	return x - std::floor(x);
+	return x - sc_floor(x);
 }
+
 
 inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32 d)
 {
@@ -477,9 +507,33 @@ inline float64 sc_trunc(float64 x)
 	return trunc(x);
 }
 
+inline float64 sc_ceil(float64 x)
+{
+#ifdef __SSE4_1__
+	__m128d a = _mm_set_sd(x);
+	const int cntrl = _MM_FROUND_TO_POS_INF;
+	__m128d b = _mm_round_sd(a, a, cntrl);
+	return _mm_cvtsd_f64(b);
+#else
+	return std::ceil(x);
+#endif
+}
+
+inline float64 sc_floor(float64 x)
+{
+#ifdef __SSE4_1__
+	__m128d a = _mm_set_sd(x);
+	const int cntrl = _MM_FROUND_TO_NEG_INF;
+	__m128d b = _mm_round_sd(a, a, cntrl);
+	return _mm_cvtsd_f64(b);
+#else
+	return std::ceil(x);
+#endif
+}
+
 inline float64 sc_frac(float64 x)
 {
-	return x - std::floor(x);
+	return x - sc_floor(x);
 }
 
 inline float64 sc_wrap1(float64 x)
