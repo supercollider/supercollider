@@ -795,12 +795,6 @@ Pdiff : FilterPattern {
 	}
 }
 
-Pflow : FilterPattern {
-	*new {
-		Error("Pflow was replaced. please use Pstep instead").throw;
-	}
-}
-
 Prorate : FilterPattern {
 	var <>proportion;
 
