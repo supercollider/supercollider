@@ -1,32 +1,3 @@
-Model {
-	var <>dependants;
-
-	*new {
-		this.deprecated(thisMethod, Object.class.findMethod(\new));
-		"NB Model's functionality is duplicated by Object".postln;
-		^super.new;
-	}
-	changed { arg what ... moreArgs;
-		dependants.do({ arg item;
-			item.update(this, what, *moreArgs);
-		});
-	}
-	addDependant { arg dependant;
-		if (dependants.isNil, {
-			dependants = IdentitySet.new(4);
-		});
-		dependants.add(dependant);
-	}
-	removeDependant { arg dependant;
-		if (dependants.notNil, {
-			dependants.remove(dependant);
-		});
-	}
-	release {
-		dependants = nil;
-	}
-}
-
 SimpleController {
 	var model, actions;
 	// responds to updates of a model
