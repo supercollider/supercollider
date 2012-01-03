@@ -867,7 +867,7 @@ Server {
 						[\bufnum, recordBuf.bufnum]);
 				CmdPeriod.doOnce {
 					recordNode = nil;
-					if (recordBuf.notNil) { recordBuf.close {|buf| buf.free; }; recordBuf = nil; };
+					if (recordBuf.notNil) { recordBuf.close {|buf| buf.freeMsg }; recordBuf = nil; };
 				}
 			} {
 				recordNode.run(true)
@@ -884,7 +884,7 @@ Server {
 		if(recordNode.notNil) {
 			recordNode.free;
 			recordNode = nil;
-			recordBuf.close({ arg buf; buf.free; });
+			recordBuf.close({ |buf| buf.freeMsg });
 			"Recording Stopped: %\n".postf(recordBuf.path);
 			recordBuf = nil;
 		} {
