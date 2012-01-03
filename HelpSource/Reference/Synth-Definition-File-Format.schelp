@@ -37,6 +37,8 @@ list::
 ## [ strong::param-name:: ] * N
 ## int32 - number of unit generators (U)
 ## [ strong::ugen-spec:: ] * U
+## int16 - number of variants (V)
+## [ strong::variant-spec:: ] * V
 ::
 
 a strong::param-name:: is :
@@ -72,6 +74,12 @@ list::
 an strong::output-spec:: is :
 list::
 ## int8 - calculation rate
+::
+
+a strong::variant-spec:: is :
+list::
+## pstring - the name of the variant
+## [float32] * P - variant initial parameter values
 ::
 
 section:: File Format as Tree
@@ -121,6 +129,11 @@ tree::
             ## int8 - calculation rate
             ::
         ::
+    ## int16 - number of variants (V)
+    ## [ strong::variant-spec:: ] * V
+        tree::
+        ## pstring - the name of the variant
+        ## [float32] * P - variant initial parameter values
     ::
 ::
 
