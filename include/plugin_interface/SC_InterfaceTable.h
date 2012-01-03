@@ -21,7 +21,7 @@
 #ifndef _SC_SynthInterfaceTable_
 #define _SC_SynthInterfaceTable_
 
-static const int sc_api_version = 1;
+static const int sc_api_version = 2;
 
 #include "SC_Types.h"
 #include "SC_SndBuf.h"
