@@ -242,12 +242,11 @@ typedef int (*InfoFunction)();
 
 bool checkAPIVersion(void * f, const char * filename)
 {
-	if (!f)
-		return true;
-
-	InfoFunction fn = (InfoFunction)f;
-	if ((*fn)() == sc_api_version)
-		return true;
+	if (f) {
+		InfoFunction fn = (InfoFunction)f;
+		if ((*fn)() == sc_api_version)
+			return true;
+	}
 	scprintf("*** ERROR: API Version Mismatch: %s\n", filename);
 	return false;
 }
