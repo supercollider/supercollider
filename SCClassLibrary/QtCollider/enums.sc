@@ -83,5 +83,20 @@ QWebFontFamily {
     <cursive = 4,
     <fantasy = 5;
 
-  *new { arg symbol; ^this.perform( symbol.asGetter ); }
+  *new { arg symbol; ^this.perform(symbol); }
+}
+
+QCurve {
+  classvar
+    <step = 0,
+    <linear = 1, <lin = 1,
+    <sine = 2, <sin = 2,
+    <welch = 3, <wel = 3,
+    <exponential = 4, <exp = 4,
+    <squared = 5, <sqr = 5,
+    <cubed = 6, <cub = 6;
+
+  *new { arg curve;
+    ^ if (curve.isNumber) {curve.asFloat} {this.perform(curve).asInteger};
+  }
 }

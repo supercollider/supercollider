@@ -109,8 +109,9 @@ QEnvelopeView : QView
 
   curves_ { arg curves;
     this.invokeMethod( \setCurves,
-                       if(curves.isKindOf( ArrayedCollection ) )
-                        {[curves]}{[[curves]]} ); }
+      if(curves.size > 0) { [curves.collect{|c| QCurve(c)}] } { QCurve(curves) }
+    );
+  }
 
   setEnv { arg env;
     var times = [0] ++ env.times.integrate;
