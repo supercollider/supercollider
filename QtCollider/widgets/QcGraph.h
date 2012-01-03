@@ -32,38 +32,28 @@ struct QcGraphElement {
   friend class QcGraphModel;
 
   enum CurveType {
-    Step,
+    Step = 0,
     Linear,
     Sine,
     Welch,
     Exponential,
+    Quadratic,
+    Cubic,
     Curvature
   };
 
   QcGraphElement() :
     curveType( Linear ),
-    curvature( 0.f ),
+    curvature( 0.0 ),
     editable( true ),
     selected( false ),
     _prev(0),
     _next(0)
   {};
 
-  void setCurveType( QVariant data ) {
-    if( data.type() == QVariant::String ) {
-      QString curveName = data.toString();
-      //printf("curve name: %s\n",curveName.toStdString().c_str());
-      if( curveName == "step" ) curveType = Step;
-      else if( curveName == "linear" ) curveType = Linear;
-      else if( curveName == "exponential" ) curveType = Exponential;
-      else if( curveName == "sine" ) curveType = Sine;
-      else if( curveName == "welch" ) curveType = Welch;
-    }
-    else {
-      //printf("curvature: %f\n", data.value<float>());
-      curveType = Curvature;
-      curvature = data.value<float>();
-    }
+  void setCurveType( CurveType type, double curve = 0.0 ) {
+    curveType = type;
+    curvature = curve;
   }
 
   QcGraphElement *prev() { return _prev; }
@@ -73,7 +63,7 @@ struct QcGraphElement {
   QString text;
   QColor fillColor;
   CurveType curveType;
-  float curvature;
+  double curvature;
   bool editable;
   bool selected;
 
@@ -155,10 +145,12 @@ class QcGraph : public QWidget, QcHelper
 
   public:
     Q_INVOKABLE void connectElements( int, VariantList );
-    Q_INVOKABLE void setCurves( const VariantList & curves );
     Q_INVOKABLE void setStringAt( int, const QString & );
     Q_INVOKABLE void setFillColorAt( int, const QColor & );
     Q_INVOKABLE void setEditableAt( int, bool );
+    Q_INVOKABLE void setCurves( double curvature );
+    Q_INVOKABLE void setCurves( int type );
+    Q_INVOKABLE void setCurves( const VariantList & curves );
 
   public Q_SLOTS:
     Q_INVOKABLE void select( int index, bool exclusive = true );
