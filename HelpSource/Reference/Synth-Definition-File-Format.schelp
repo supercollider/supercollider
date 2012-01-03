@@ -21,7 +21,7 @@ section:: File Format
 a strong::synth-definition-file:: is :
 list::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
-## int32 - file version, currently 1.
+## int32 - file version, currently 2.
 ## int16 - number of synth definitions in this file (D).
 ## [ strong::synth-definition:: ] * D
 ::
@@ -29,28 +29,28 @@ list::
 a strong::synth-definition:: is :
 list::
 ## pstring - the name of the synth definition
-## int16 - number of constants (K)
+## int32 - number of constants (K)
 ## [float32] * K - constant values
-## int16 - number of parameters (P)
+## int32 - number of parameters (P)
 ## [float32] * P - initial parameter values
-## int16 - number of parameter names (N)
+## int32 - number of parameter names (N)
 ## [ strong::param-name:: ] * N
-## int16 - number of unit generators (U)
+## int32 - number of unit generators (U)
 ## [ strong::ugen-spec:: ] * U
 ::
 
 a strong::param-name:: is :
 list::
 ## pstring - the name of the parameter
-## int16 - its index in the parameter array
+## int32 - its index in the parameter array
 ::
 
 a strong::ugen-spec:: is :
 list::
 ## pstring - the name of the SC unit generator class
 ## int8 - calculation rate
-## int16 - number of inputs (I)
-## int16 - number of outputs (O)
+## int32 - number of inputs (I)
+## int32 - number of outputs (O)
 ## int16 - special index
 ## [ strong::input-spec:: ] * I
 ## [ strong::output-spec:: ] * O
@@ -58,14 +58,14 @@ list::
 
 an strong::input-spec:: is :
 list::
-## int16 - index of unit generator or -1 for a constant
+## int32 - index of unit generator or -1 for a constant
 ## if (unit generator index == -1) :
 list::
-## int16 - index of constant
+## int32 - index of constant
 ::
 ## else :
 list::
-## int16 - index of unit generator output
+## int32 - index of unit generator output
 ::
 ::
 
@@ -81,39 +81,39 @@ soft::added by Jonatan Liljedahl::
 subsection::synth-definition-file
 tree::
 ## int32 - four byte file type id containing the ASCII characters: "SCgf"
-## int32 - file version, currently 1.
+## int32 - file version, currently 2.
 ## int16 - number of synth definitions in this file (D).
 ## [ strong::synth-definition:: ] * D
     tree::
     ## pstring - the name of the synth definition
-    ## int16 - number of constants (K)
+    ## int32 - number of constants (K)
     ## [float32] * K - constant values
-    ## int16 - number of parameters (P)
+    ## int32 - number of parameters (P)
     ## [float32] * P - initial parameter values
-    ## int16 - number of parameter names (N)
+    ## int32 - number of parameter names (N)
     ## [ strong::param-name:: ] * N
         tree::
         ## pstring - the name of the parameter
-        ## int16 - its index in the parameter array
+        ## int32 - its index in the parameter array
         ::
-    ## int16 - number of unit generators (U)
+    ## int32 - number of unit generators (U)
     ## [ strong::ugen-spec:: ] * U
         tree::
         ## pstring - the name of the SC unit generator class
         ## int8 - calculation rate
-        ## int16 - number of inputs (I)
-        ## int16 - number of outputs (O)
+        ## int32 - number of inputs (I)
+        ## int32 - number of outputs (O)
         ## int16 - special index
         ## [ strong::input-spec:: ] * I
             tree::
-            ## int16 - index of unit generator or -1 for a constant
+            ## int32 - index of unit generator or -1 for a constant
             ## if (unit generator index == -1)
                 tree::
-                ## int16 - index of constant
+                ## int32 - index of constant
                 ::
             ## else
                 tree::
-                ## int16 - index of unit generator output
+                ## int32 - index of unit generator output
                 ::
             ::
         ## [ strong::output-spec:: ] * O
@@ -160,5 +160,5 @@ Unit generators should be listed in an order that permits efficient reuse of con
 
 There should be no duplicate values in the constants table.
 
-copyright © 2002 James McCartney - converted to new help system 2010 by Jonatan Liljedahl
+copyright © 2002 James McCartney - converted to new help system 2010 by Jonatan Liljedahl, updated for version 2 by Scott Wilson 2011
 
