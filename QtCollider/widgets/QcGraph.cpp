@@ -71,6 +71,8 @@ QcGraph::QcGraph() :
   QPalette plt( palette() );
   _strokeColor = plt.color( QPalette::Text );
   _gridColor = plt.color( QPalette::Midlight );
+
+  setAttribute( Qt::WA_OpaquePaintEvent, true );
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
@@ -650,13 +652,13 @@ void QcGraph::paintEvent( QPaintEvent * )
   QPalette plt( palette() );
 
   p.setPen( plt.color( QPalette::Mid ) );
-  p.setBrush( Qt::NoBrush );
+  p.setBrush( plt.color( QPalette::Base ) );
   p.drawRect( rect().adjusted(0,0,-1,-1) );
 
   QRect contentsRect( _thumbSize.width() * 0.5f, _thumbSize.height() * 0.5f,
                       width() - _thumbSize.width(), height() - _thumbSize.height() );
   p.setPen( _gridColor );
-  p.setBrush( plt.color( QPalette::Base ) );
+  p.setBrush( Qt::NoBrush );
   p.drawRect( contentsRect );
 
   //draw grid;

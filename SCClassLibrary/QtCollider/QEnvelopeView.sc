@@ -143,6 +143,14 @@ QEnvelopeView : QView
     this.setProperty( \strokeColor, aColor );
   }
 
+  background {
+    ^this.palette.baseColor;
+  }
+
+  background_ { arg color;
+    this.palette = this.palette.baseColor_(color);
+  }
+
   fillColor_ { arg aColor;
     fillColor = aColor;
     this.setProperty( \fillColor, aColor );
