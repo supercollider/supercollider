@@ -57,14 +57,18 @@ SynthDesc {
 		// path is for metadata -- only this method has direct access to the new SynthDesc
 		// really this should be a private method -- use *read instead
 	*readFile { arg stream, keepDefs=false, dict, path;
-		var numDefs;
+		var numDefs, version;
 		dict = dict ?? { IdentityDictionary.new };
 		stream.getInt32; // 'SCgf'
-		stream.getInt32; // version
+		version = stream.getInt32; // version
 		numDefs = stream.getInt16;
 		numDefs.do {
 			var desc;
-			desc = SynthDesc.new.readSynthDef(stream, keepDefs);
+			if(version >= 2, {
+				desc = SynthDesc.new.readSynthDef2(stream, keepDefs);
+			},{
+				desc = SynthDesc.new.readSynthDef(stream, keepDefs);
+			});
 			dict.put(desc.name.asSymbol, desc);
 				// AbstractMDPlugin dynamically determines the md archive type
 				// from the file extension
@@ -149,6 +153,77 @@ SynthDesc {
 		}
 
 	}
+	
+	// synthdef ver 2
+	readSynthDef2 { arg stream, keepDef=false;
+		var	numControls, numConstants, numControlNames, numUGens, numVariants;
+
+		protect {
+
+		inputs = [];
+		outputs = [];
+		controlDict = IdentityDictionary.new;
+
+		name = stream.getPascalString;
+
+		def = SynthDef.prNew(name);
+		UGen.buildSynthDef = def;
+
+		numConstants = stream.getInt32;
+		constants = FloatArray.newClear(numConstants);
+		stream.read(constants);
+
+		numControls = stream.getInt32;
+		def.controls = FloatArray.newClear(numControls);
+		stream.read(def.controls);
+
+		controls = Array.fill(numControls)
+			{ |i|
+				ControlName('?', i, '?', def.controls[i]);
+			};
+
+		numControlNames = stream.getInt32;
+		numControlNames.do
+			{
+				var controlName, controlIndex;
+				controlName = stream.getPascalString.asSymbol;
+				controlIndex = stream.getInt32;
+				controls[controlIndex].name = controlName;
+				controlNames = controlNames.add(controlName);
+				controlDict[controlName] = controls[controlIndex];
+			};
+
+		numUGens = stream.getInt32;
+		numUGens.do {
+			this.readUGenSpec2(stream);
+		};
+
+		controls.inject(nil) {|z,y|
+			if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
+		};
+
+		def.controlNames = controls.select {|x| x.name.notNil };
+		hasArrayArgs = controls.any { |cn| cn.name == '?' };
+
+		numVariants = stream.getInt16;
+		hasVariants = numVariants > 0;
+			// maybe later, read in variant names and values
+			// this is harder than it might seem at first
+
+		def.constants = Dictionary.new;
+		constants.do {|k,i| def.constants.put(k,i) };
+		if (keepDef.not) {
+			// throw away unneeded stuff
+			def = nil;
+			constants = nil;
+		};
+		this.makeMsgFunc;
+
+		} {
+			UGen.buildSynthDef = nil;
+		}
+
+	}
 
 	readUGenSpec { arg stream;
 		var ugenClass, rateIndex, rate, numInputs, numOutputs, specialIndex;
@@ -169,6 +244,80 @@ SynthDesc {
 		specialIndex = stream.getInt16;
 
 		inputSpecs = Int16Array.newClear(numInputs * 2);
+		outputSpecs = Int8Array.newClear(numOutputs);
+
+		stream.read(inputSpecs);
+		stream.read(outputSpecs);
+
+		ugenInputs = [];
+		forBy (0,inputSpecs.size-1,2) {|i|
+			var ugenIndex, outputIndex, input, ugen;
+			ugenIndex = inputSpecs[i];
+			outputIndex = inputSpecs[i+1];
+			input = if (ugenIndex < 0)
+				{
+					constants[outputIndex]
+				}{
+					ugen = def.children[ugenIndex];
+					if (ugen.isKindOf(MultiOutUGen)) {
+						ugen.channels[outputIndex]
+					}{
+						ugen
+					}
+				};
+			ugenInputs = ugenInputs.add(input);
+		};
+
+		rate = #[\scalar,\control,\audio][rateIndex];
+		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
+		ugen.addToSynth(ugen);
+
+		addIO = {|list, nchan|
+			var b = ugen.inputs[0];
+			if (b.class == OutputProxy and: {b.source.isKindOf(Control)}) {
+				control = controls.detect {|item| item.index == (b.outputIndex+b.source.specialIndex) };
+				if (control.notNil) { b = control.name };
+			};
+			list.add( IODesc(rate, nchan, b, ugenClass))
+		};
+
+		if (ugenClass.isControlUGen) {
+			// Control.newFromDesc does not set the specialIndex, since it doesn't call Control-init.
+			// Therefore we fill it in here:
+			ugen.specialIndex = specialIndex;
+			numOutputs.do { |i|
+				controls[i+specialIndex].rate = rate;
+			}
+		} {
+			case
+			{ugenClass.isInputUGen} {inputs = addIO.value(inputs, ugen.channels.size)}
+			{ugenClass.isOutputUGen} {outputs = addIO.value(outputs, ugen.numAudioChannels)}
+			{
+				canFreeSynth = canFreeSynth or: { ugen.canFreeSynth };
+			};
+		};
+	}
+	
+	// synthdef ver 2
+	readUGenSpec2 { arg stream;
+		var ugenClass, rateIndex, rate, numInputs, numOutputs, specialIndex;
+		var inputSpecs, outputSpecs;
+		var addIO;
+		var ugenInputs, ugen;
+		var control;
+
+		ugenClass = stream.getPascalString.asSymbol;
+		if(ugenClass.asClass.isNil,{
+			Error("No UGen class found for" + ugenClass + "which was specified in synth def file: " + this.name ++ ".scsyndef").throw;
+		});
+		ugenClass = ugenClass.asClass;
+
+		rateIndex = stream.getInt8;
+		numInputs = stream.getInt32;
+		numOutputs = stream.getInt32;
+		specialIndex = stream.getInt16;
+
+		inputSpecs = Int32Array.newClear(numInputs * 2);
 		outputSpecs = Int8Array.newClear(numOutputs);
 
 		stream.read(inputSpecs);
