@@ -645,7 +645,7 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
     // prevent NaN
     double curve = qBound( -100.0, e1->curvature, 100.0 );
 
-    if( fabs( curve ) < 0.0001 ) {
+    if( abs( curve ) < 0.0001 ) {
       path.lineTo( pt2 );
     }
     else {
