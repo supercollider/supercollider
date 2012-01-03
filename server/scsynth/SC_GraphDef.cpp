@@ -90,9 +90,7 @@ void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer);
 void ParamSpec_Read(ParamSpec* inParamSpec, char*& buffer)
 {
 	ReadName(buffer, inParamSpec->mName);
-	//scprintf("ParamSpec_Read: %s\n", (char*)inParamSpec->mName);
 	inParamSpec->mIndex = readInt32_be(buffer);
-	//scprintf("inParamSpec->mIndex: %d\n", inParamSpec->mIndex);
 	inParamSpec->mHash = Hash(inParamSpec->mName);
 }
 
@@ -100,9 +98,7 @@ void ParamSpec_ReadVer1(ParamSpec* inParamSpec, char*& buffer);
 void ParamSpec_ReadVer1(ParamSpec* inParamSpec, char*& buffer)
 {
 	ReadName(buffer, inParamSpec->mName);
-	//scprintf("ParamSpec_ReadVer1: %s\n", (char*)inParamSpec->mName);
 	inParamSpec->mIndex = readInt16_be(buffer);
-	//scprintf("inParamSpec->mIndex: %d\n", inParamSpec->mIndex);
 	inParamSpec->mHash = Hash(inParamSpec->mName);
 }
 
@@ -110,9 +106,7 @@ void InputSpec_Read(InputSpec* inInputSpec, char*& buffer);
 void InputSpec_Read(InputSpec* inInputSpec, char*& buffer)
 {
 	inInputSpec->mFromUnitIndex = readInt32_be(buffer);
-	//scprintf("ver2 mFromUnitIndex: %d\n", inInputSpec->mFromUnitIndex);
 	inInputSpec->mFromOutputIndex = readInt32_be(buffer);
-	//scprintf("mFromOutputIndex: %d\n", inInputSpec->mFromOutputIndex);
 
 	inInputSpec->mWireIndex = -1;
 }
@@ -121,7 +115,6 @@ void InputSpec_ReadVer1(InputSpec* inInputSpec, char*& buffer);
 void InputSpec_ReadVer1(InputSpec* inInputSpec, char*& buffer)
 {
 	inInputSpec->mFromUnitIndex = (int16)readInt16_be(buffer);
-	//scprintf("ver1 mFromUnitIndex: %d\n", inInputSpec->mFromUnitIndex);
 	inInputSpec->mFromOutputIndex = (int16)readInt16_be(buffer);
 	
 	inInputSpec->mWireIndex = -1;
@@ -131,7 +124,6 @@ void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer);
 void OutputSpec_Read(OutputSpec* inOutputSpec, char*& buffer)
 {
 	inOutputSpec->mCalcRate = readInt8(buffer);
-	//scprintf("mCalcRate: %i\n", inOutputSpec->mCalcRate);
 	inOutputSpec->mWireIndex = -1;
 	inOutputSpec->mBufferIndex = -1;
 	inOutputSpec->mNumConsumers = 0;
@@ -142,7 +134,6 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 {
 	int32 name[kSCNameLen];
 	ReadName(buffer, name);
-	//scprintf("UGen Read: '%s' .\n", (char*)name);
 	
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
@@ -154,9 +145,7 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 	inUnitSpec->mCalcRate = readInt8(buffer);
 
 	inUnitSpec->mNumInputs = readInt32_be(buffer);
-	//scprintf("mNumInputs %d\n", inUnitSpec->mNumInputs);
 	inUnitSpec->mNumOutputs = readInt32_be(buffer);
-	//scprintf("mNumOutputs %d\n", inUnitSpec->mNumOutputs);
 	inUnitSpec->mSpecialIndex = readInt16_be(buffer);
 	inUnitSpec->mInputSpec = (InputSpec*)malloc(sizeof(InputSpec) * inUnitSpec->mNumInputs);
 	inUnitSpec->mOutputSpec = (OutputSpec*)malloc(sizeof(OutputSpec) * inUnitSpec->mNumOutputs);
@@ -164,7 +153,6 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 		InputSpec_Read(inUnitSpec->mInputSpec + i, buffer);
 	}
 	for (uint32 i=0; i<inUnitSpec->mNumOutputs; ++i) {
-		//scprintf("reading OutputSpec: %i\n", i);
 		OutputSpec_Read(inUnitSpec->mOutputSpec + i, buffer);
 	}
 	uint64 numPorts = inUnitSpec->mNumInputs + inUnitSpec->mNumOutputs;
@@ -195,7 +183,6 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer)
 		InputSpec_ReadVer1(inUnitSpec->mInputSpec + i, buffer);
 	}
 	for (uint32 i=0; i<inUnitSpec->mNumOutputs; ++i) {
-		//scprintf("reading OutputSpecver1: %i\n", i);
 		OutputSpec_Read(inUnitSpec->mOutputSpec + i, buffer);
 	}
 	uint64 numPorts = inUnitSpec->mNumInputs + inUnitSpec->mNumOutputs;
@@ -213,12 +200,9 @@ GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 
 	int32 version = readInt32_be(buffer);
 	
-	//scprintf("received version: %d\n", version);
-	
 	uint32 numDefs, i;
 	switch (version) {
 		case 2:
-			scprintf("version 2\n");
 			numDefs = readInt16_be(buffer);
 			
 			for (i=0; i<numDefs; ++i) {
@@ -228,7 +212,6 @@ GraphDef* GraphDefLib_Read(World *inWorld, char* buffer, GraphDef* inList)
 			break;
 		case 1:
 		case 0:
-			scprintf("version 0 or 1\n");
 			numDefs = readInt16_be(buffer);
 			
 			for (i=0; i<numDefs; ++i) {
@@ -269,7 +252,6 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 {
 	int32 name[kSCNodeDefNameLen];
 	ReadNodeDefName(buffer, name);
-	//scprintf("GraphDef Read: '%s' .\n", (char*)name);
 
 	GraphDef* graphDef = (GraphDef*)calloc(1, sizeof(GraphDef));
 
@@ -283,21 +265,18 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 
 	graphDef->mNumConstants = readInt32_be(buffer);
 	
-	//scprintf("numConstants %d\n", graphDef->mNumConstants);
 	graphDef->mConstants = (float*)malloc(graphDef->mNumConstants * sizeof(float));
 	for (uint32 i=0; i<graphDef->mNumConstants; ++i) {
 		graphDef->mConstants[i] = readFloat_be(buffer);
 	}
 
 	graphDef->mNumControls = readInt32_be(buffer);
-	//scprintf("numControlss %d\n", graphDef->mNumControls);
 	graphDef->mInitialControlValues = (float32*)malloc(sizeof(float32) * graphDef->mNumControls);
 	for (uint32 i=0; i<graphDef->mNumControls; ++i) {
 		graphDef->mInitialControlValues[i] = readFloat_be(buffer);
 	}
 
 	graphDef->mNumParamSpecs = readInt32_be(buffer);
-	//scprintf("numParamsSpecs(controlNames) %d\n", graphDef->mNumParamSpecs);
 	if (graphDef->mNumParamSpecs) {
 		int hashTableSize = NEXTPOWEROFTWO(graphDef->mNumParamSpecs);
 		graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, hashTableSize, false);
@@ -315,7 +294,6 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 
 	graphDef->mNumWires = graphDef->mNumConstants;
 	graphDef->mNumUnitSpecs = readInt32_be(buffer);
-	//scprintf("mNumUnitSpecs %d\n", graphDef->mNumUnitSpecs);
 	graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
 	graphDef->mNumCalcUnits = 0;
 	for (uint32 i=0; i<graphDef->mNumUnitSpecs; ++i) {
@@ -368,7 +346,6 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 	graphDef->mRefCount = 1;
 
 	graphDef->mNumVariants = readInt16_be(buffer);
-	//scprintf("mNumVariants %i\n", graphDef->mNumVariants);
 	if (graphDef->mNumVariants) {
 		graphDef->mVariants = (GraphDef*)calloc(graphDef->mNumVariants, sizeof(GraphDef));
 		for (uint32 i=0; i<graphDef->mNumVariants; ++i) {
@@ -384,7 +361,6 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 {
 	int32 name[kSCNodeDefNameLen];
 	ReadNodeDefName(buffer, name);
-	//scprintf("GraphDef Read: '%s' .\n", (char*)name);
 	
 	GraphDef* graphDef = (GraphDef*)calloc(1, sizeof(GraphDef));
 	
@@ -454,7 +430,6 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 		graphDef->mNumWires += unitSpec->mNumOutputs;
 	}
 	
-	//scprintf("do bufColVer1\n");
 	DoBufferColoring(inWorld, graphDef);
 	
 	graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
@@ -786,9 +761,7 @@ inline bool BufColorAllocator::release(int inIndex)
 
 void ReleaseInputBuffers(GraphDef *inGraphDef, UnitSpec *unitSpec, BufColorAllocator& bufColor)
 {
-	//scprintf("ReleaseInputBuffers %s numinputs %d\n", unitSpec->mUnitDef->mUnitDefName, unitSpec->mNumInputs);
 	for (int64 i=(int64)(unitSpec->mNumInputs)-1; i>=0; --i) {
-		//scprintf("i: %d\n");
 		InputSpec *inputSpec = unitSpec->mInputSpec + i;
 		if (inputSpec->mFromUnitIndex >= 0) {
 			UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
@@ -830,13 +803,9 @@ void DoBufferColoring(World *inWorld, GraphDef *inGraphDef)
 		for (uint32 i=0; i<unitSpec->mNumInputs; ++i) {
 			InputSpec *inputSpec = unitSpec->mInputSpec + i;
 			if (inputSpec->mFromUnitIndex >= 0) {
-				//printf("inputSpec->mFromUnitIndex: %d\n", inputSpec->mFromUnitIndex);
 				UnitSpec *outUnit = inGraphDef->mUnitSpecs + inputSpec->mFromUnitIndex;
-				//printf("inputSpec->mFromOutputIndex: %d\n", inputSpec->mFromOutputIndex);
 				OutputSpec *outputSpec = outUnit->mOutputSpec + inputSpec->mFromOutputIndex;
-				//scprintf("outputSpec->mNumConsumers: %d\n", (outputSpec->mNumConsumers));
 				outputSpec->mNumConsumers ++;
-				//outputSpec->mNumConsumers = outputSpec->mNumConsumers + 1;
 			}
 		}
 	}
