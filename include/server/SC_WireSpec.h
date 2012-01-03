@@ -26,10 +26,10 @@
 struct InputSpec
 {
 	// read from file:
-	int16 mFromUnitIndex;
-	int16 mFromOutputIndex;
+	int32 mFromUnitIndex; // changed from int16, ver 2
+	int32 mFromOutputIndex; // changed from int16, ver 2
 	// computed:
-	int16 mWireIndex;
+	int32 mWireIndex; // changed from int16, ver 2
 };
 typedef struct InputSpec InputSpec;
 
@@ -38,9 +38,9 @@ struct OutputSpec
 	// read from file:
 	int16 mCalcRate;
 	// computed:
-	int16 mWireIndex;
-	int16 mBufferIndex;
-	int16 mNumConsumers;
+	int32 mWireIndex; // changed from uint16, ver 2
+	int64 mBufferIndex;
+	uint32 mNumConsumers;
 };
 typedef struct OutputSpec OutputSpec;
 

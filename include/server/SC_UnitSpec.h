@@ -29,7 +29,7 @@ struct UnitSpec
 {
 	struct UnitDef* mUnitDef;
 	int16 mCalcRate;
-	uint16 mNumInputs, mNumOutputs;
+	uint32 mNumInputs, mNumOutputs; // changed from uint16, ver 2
 	int16 mSpecialIndex;
 	struct InputSpec* mInputSpec;
 	struct OutputSpec* mOutputSpec;
