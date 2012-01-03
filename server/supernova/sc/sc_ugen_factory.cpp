@@ -242,12 +242,14 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     typedef int (*info_function)();
 
     info_function api_version = reinterpret_cast<info_function>(dlsym(handle, "api_version"));
-    if (api_version) {
-        if ((*api_version)() != sc_api_version) {
-            cerr << "API Version Mismatch: " << path << endl;
-            dlclose(handle);
-            return;
-        }
+    int plugin_api_version = 1; // default
+    if (api_version)
+        plugin_api_version = (*api_version)();
+
+    if (plugin_api_version != sc_api_version) {
+        cerr << "API Version Mismatch: " << path << endl;
+        dlclose(handle);
+        return;
     }
 
     void * load_symbol = dlsym(handle, "load");
