@@ -1111,7 +1111,10 @@ void sc_plugin_interface::buffer_sync(uint32_t index)
 
 void sc_plugin_interface::free_buffer(uint32_t index)
 {
-    sndbuf_init(world.mSndBufsNonRealTimeMirror + index);
+    SndBuf * buf = world.mSndBufsNonRealTimeMirror + index;
+    if (buf->sndfile)
+        sf_close(buf->sndfile);
+    sndbuf_init(buf);
 }
 
 void sc_plugin_interface::initialize_synths_perform(void)
