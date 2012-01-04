@@ -478,7 +478,7 @@ Allocates the necessary buffer, etc. for recording the server's output. (See cod
 argument:: path
 a link::Classes/String:: representing the path and name of the output file.
 discussion::
-If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called SC_thisDateAndTime. Changes to the header or sample format, or to the number of channels must be made BEFORE calling this.
+If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called SC_thisDateAndTime. Changes to the header or sample format, or to the number of channels must be made strong::before:: calling this.
 
 method:: record
 Starts or resumes recording the output.
@@ -499,13 +499,13 @@ method:: recordNode
 Returns:: the current recording synth so that it can be used as a target. This should only be necessary for nodes which are not created in the default group.
 
 method:: recChannels
-Get/set the number of channels (int) to record. The default is two. Must be called BEFORE prepareForRecord.
+Get/set the number of channels (int) to record. The default is two. Must be called strong::before:: prepareForRecord.
 
 method:: recHeaderFormat
-Get/set the header format (string) of the output file. The default is "aiff". Must be called BEFORE prepareForRecord.
+Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
 
 method:: recSampleFormat
-Get/set the sample format (string) of the output file. The default is "float". Must be called BEFORE prepareForRecord.
+Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
 
 subsection:: Asynchronous Commands
 
