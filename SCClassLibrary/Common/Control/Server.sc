@@ -3,8 +3,8 @@ ServerOptions
 	// order of variables is important here. Only add new instance variables to the end.
 	var <numAudioBusChannels=128;
 	var <>numControlBusChannels=4096;
-	var <numInputBusChannels=8;
-	var <numOutputBusChannels=8;
+	var <numInputBusChannels=2;
+	var <numOutputBusChannels=2;
 	var numBuffers=1026;
 
 	var <>maxNodes=1024;
@@ -647,6 +647,11 @@ Server {
 		bootNotifyFirst = true;
 		this.doWhenBooted({
 			serverBooting = false;
+			if (recChannels.notNil and: (recChannels != options.numOutputBusChannels)) {
+				"Resetting recChannels to %".format(options.numOutputBusChannels).inform
+			};
+			recChannels = options.numOutputBusChannels;
+
 			if (sendQuit.isNil) {
 				sendQuit = this.inProcess or: {this.isLocal};
 			};

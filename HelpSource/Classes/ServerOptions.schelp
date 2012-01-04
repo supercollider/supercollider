@@ -91,10 +91,10 @@ method:: numControlBusChannels
 The number of internal control rate busses. The default is 4096.
 
 method:: numInputBusChannels
-The number of audio input bus channels. This need not correspond to the number of hardware inputs. The default is 8.
+The number of audio input bus channels. This need not correspond to the number of hardware inputs. The default is 2.
 
 method:: numOutputBusChannels
-The number of audio output bus channels. This need not correspond to the number of hardware outputs (this can be useful for instance in the case of recording). The default is 8.
+The number of audio output bus channels. This need not correspond to the number of hardware outputs (this can be useful for instance in the case of recording). The default is 2.
 
 method:: numRGens
 The number of seedable random number generators. The default is 64.
