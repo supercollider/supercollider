@@ -542,7 +542,7 @@ method:: recordNode
 Returns:: the current recording synth so that it can be used as a target. This should only be necessary for nodes which are not created in the default group.
 
 method:: recChannels
-Get/set the number of channels (int) to record. The default is two. Must be called strong::before:: prepareForRecord.
+Get/set the number of channels (int) to record. Is automatically set to the value of link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.
 
 method:: recHeaderFormat
 Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
