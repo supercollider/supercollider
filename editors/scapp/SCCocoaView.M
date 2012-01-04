@@ -1359,6 +1359,10 @@ void QDDrawBevelRect(CGContextRef cgc, CGRect bounds, float width, bool inout);
 	}
 	return NO;
 }
+
+- (void)cmdF:(id)sender {
+	[self keyDown:[NSApp currentEvent]];
+}
 @end
 
 NSRect SCtoNSRect(SCRect screct);

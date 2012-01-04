@@ -1069,4 +1069,8 @@ extern PyrSymbol* s_doaction;
 
 }
 
+- (void)cmdF:(id)sender {
+	// just so this can be first responder
+}
+
 @end

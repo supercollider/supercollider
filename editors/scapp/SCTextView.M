@@ -819,4 +819,9 @@ bool blankUnparsedChars(unichar* buffer, int length, bool process)
 		
 }
 
+// redirect here to allow SCViews to get Cmd-F
+- (void)cmdF:(id)sender {
+	[[TextFinder sharedInstance] orderFrontFindPanel:sender];
+}
+
 @end

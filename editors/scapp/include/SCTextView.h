@@ -19,6 +19,7 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import "TextFinder.h"
 
 #if __LP64__
 typedef long NSInteger;
@@ -64,6 +65,9 @@ typedef unsigned int NSUInteger;
 
 // If completions textfile exists, ensures it's loaded. Returns false if fail or textfile not found
 - (bool) loadCompletionDict;
+
+// redirect to TextFinder
+- (void)cmdF:(id)sender;
 @end
 
 bool matchBraks(unsigned int *startpos, unsigned int *endpos, unichar *text, int length, unichar rightBrak, bool ignoreImmediateParens);
