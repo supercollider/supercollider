@@ -105,50 +105,21 @@ void buffer_wrapper::read_file_channels(const char * file, size_t start_frame, s
     }
 }
 
+int headerFormatFromString(const char *name);
+int sampleFormatFromString(const char* name);
 
 void buffer_wrapper::write_file(const char * file, const char * header_format, const char * sample_format,
                                 size_t start_frame, size_t frames)
 {
-    std::string header (header_format);
-    std::string sample_format_ (sample_format);
-
-    int format = 0;
-
-    if (header == "wav")
-        format = SF_FORMAT_WAV;
-    else if (header == "aiff")
-        format = SF_FORMAT_AIFF;
-    else if (header == "next")
-        format = SF_FORMAT_AU;
-    else if (header == "ircam")
-        format = SF_FORMAT_IRCAM;
-    else if (header == "ircam")
-        format = SF_FORMAT_IRCAM;
-    else if (header == "raw")
-        format = SF_FORMAT_RAW;
-    else if (header == "flac")
-        format = SF_FORMAT_FLAC;
-    else
+    int format = headerFormatFromString(header_format);
+    if (format == 0)
         throw std::runtime_error("unknown header format requested");
 
-    if (sample_format_ == "int8")
-        format |= SF_FORMAT_PCM_S8;
-    else if (sample_format_ == "int16")
-        format |= SF_FORMAT_PCM_16;
-    else if (sample_format_ == "int24")
-        format |= SF_FORMAT_PCM_24;
-    else if (sample_format_ == "int32")
-        format |= SF_FORMAT_PCM_32;
-    else if (sample_format_ == "float")
-        format |= SF_FORMAT_FLOAT;
-    else if (sample_format_ == "double")
-        format |= SF_FORMAT_DOUBLE;
-    else if (sample_format_ == "mulaw")
-        format |= SF_FORMAT_ULAW;
-    else if (sample_format_ == "alaw")
-        format |= SF_FORMAT_ALAW;
-    else
+    int sample_format_tag = sampleFormatFromString(sample_format);
+    if (sample_format_tag == 0)
         throw std::runtime_error("unknown sample format requested");
+
+    format |= sample_format_tag;
 
     SndfileHandle sndfile(file, SFM_WRITE, format, channels_, sample_rate_);
     if (!sndfile)
