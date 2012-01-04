@@ -143,6 +143,7 @@
 - (IBAction)methodTemplates: (id)sender;
 - (IBAction)methodReferences: (id)sender;
 - (IBAction)executeSelection: (id) sender;
+- (void)cmdF:(id)sender;
 
 @end
 
