@@ -480,7 +480,7 @@ Plotter {
 						if(this.numFrames < 200) { this.refresh };
 					};
 					editPos = x @ y;  // new Point instead of cursorPos!
-					
+
 				};
 				if(modifiers.isAlt) { this.postCurrentValue(x, y) };
 			})
@@ -773,18 +773,11 @@ Plotter {
 			^array.collect { |x| x.asArray.clipExtend(size) }.flop.bubble		};
 		^array
 	}
-
-
-
 }
 
 
-
-// for now, use plot2.
-
-
 + ArrayedCollection {
-	plot2 { |name, bounds, discrete=false, numChannels, minval, maxval|
+	plot { |name, bounds, discrete=false, numChannels, minval, maxval|
 		var array = this.as(Array), plotter = Plotter(name, bounds);
 		if(discrete) { plotter.plotMode = \points };
 
@@ -808,25 +801,63 @@ Plotter {
 }
 
 + Collection {
-
 	plotHisto { arg steps = 100, min, max;
 			var histo = this.histo(steps, min, max);
-			var plotter = histo.plot2;
+			var plotter = histo.plot;
 			plotter.domainSpecs = [[min ?? { this.minItem }, max ?? { this.maxItem }].asSpec];
 			plotter.specs = [[0, histo.maxItem, \linear, 1].asSpec];
 			plotter.plotMode = \steps;
 			^plotter
 	}
-
 }
 
 
 + Function {
+	loadToFloatArray { arg duration = 0.01, server, action;
+		var buffer, def, synth, name, numChannels, val, rate;
+		server = server ? Server.default;
+		if(server.serverRunning.not) { "Server not running!".warn; ^nil };
 
-	plot2 { |duration = 0.01, server, bounds, minval, maxval|
+		name = this.hash.asString;
+		def = SynthDef(name, { |bufnum|
+			var	val = this.value;
+			if(val.isValidUGenInput.not) {
+				val.dump;
+				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
+			};
+			val = UGen.replaceZeroesWithSilence(val.asArray);
+			rate = val.rate;
+			if(rate == \audio) { // convert mixed rate outputs:
+				val = val.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
+			};
+			if(val.size == 0) { numChannels = 1 } { numChannels = val.size };
+			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop:0);
+			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);
+		});
+
+		Routine.run({
+			var c, numFrames;
+			c = Condition.new;
+			numFrames = duration * server.sampleRate;
+			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
+			buffer = Buffer.new(server, numFrames, numChannels);
+			server.sendMsgSync(c, *buffer.allocMsg);
+			server.sendMsgSync(c, "/d_recv", def.asBytes);
+			synth = Synth(name, [\bufnum, buffer], server);
+			OSCpathResponder(server.addr, ['/n_end', synth.nodeID], {
+				buffer.loadToFloatArray(action: { |array, buf|
+					action.value(array, buf);
+					buffer.free;
+					server.sendMsg("/d_free", name);
+				});
+			}).add.removeWhenDone;
+		});
+	}
+
+	plot { |duration = 0.01, server, bounds, minval, maxval|
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
-		plotter = [0].plot2(name, bounds);
+		plotter = [0].plot(name, bounds);
 		server = server ? Server.default;
 		server.waitForBoot {
 			this.loadToFloatArray(duration, server, { |array, buf|
@@ -843,22 +874,19 @@ Plotter {
 		};
 		^plotter
 	}
-
 }
 
 + Wavetable {
-
-	plot2 { |name, bounds, minval, maxval|
-		^this.asSignal.plot2(name, bounds, minval: minval, maxval: maxval)
+	plot { |name, bounds, minval, maxval|
+		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval)
 	}
 }
 
 + Buffer {
-
-	plot2 { |name, bounds, minval, maxval|
+	plot { |name, bounds, minval, maxval|
 		var plotter;
 		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
-		plotter = [0].plot2(
+		plotter = [0].plot(
 			name ? "Buffer plot (bufnum: %)".format(this.bufnum),
 			bounds, minval: minval, maxval: maxval
 		);
@@ -873,14 +901,21 @@ Plotter {
 }
 
 + Env {
-
-	plot2 { |size = 400, bounds, minval, maxval|
+	plot { |size = 400, bounds, minval, maxval|
 		var plotter = this.asSignal(size)
-			.plot2("envelope plot", bounds, minval: minval, maxval: maxval);
+			.plot("envelope plot", bounds, minval: minval, maxval: maxval);
 		plotter.domainSpecs = ControlSpec(0, this.times.sum, units: "s");
 		plotter.setProperties(\labelX, "time");
 		plotter.refresh;
 		^plotter
 	}
+}
 
++ AbstractFunction {
+	plotGraph { arg n=500, from = 0.0, to = 1.0, name, bounds, discrete = false,
+				numChannels, minval, maxval, parent, labels = true;
+		var array = Array.interpolation(n, from, to);
+		var res = array.collect { |x| this.value(x) };
+		res.plot(name, bounds, discrete, numChannels, minval, maxval, parent, labels)
+	}
 }
