@@ -1569,6 +1569,7 @@ int headerFormatFromString(const char *name)
 #if SC_DARWIN || SC_WIN32
 	if (strcasecmp(name, "VORBIS")==0) return SF_FORMAT_VORBIS;
 #endif
+	if (strcasecmp(name, "RF64")==0) return SF_FORMAT_RF64;
 	return 0;
 }
 
