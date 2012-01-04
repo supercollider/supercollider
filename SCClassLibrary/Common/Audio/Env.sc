@@ -10,7 +10,7 @@ AbstractEnv {
 		// make an envelope for filling in later.
 		^this.new(Array.fill(numSegments + 1, 0), Array.fill(numSegments, 1))
 	}
-	
+
 	*initClass {
 		shapeNames = IdentityDictionary[
 			\step -> 0,
@@ -41,12 +41,12 @@ AbstractEnv {
 		curves = z;
 		array = nil;
 	}
-	
+
 	asArray {
 		if (array.isNil) { array = this.prAsArray }
 		^array
 	}
-	
+
 	*shapeNumber { arg shapeName;
 		var shape;
 		if (shapeName.isValidUGenInput) { ^5 };
@@ -54,12 +54,12 @@ AbstractEnv {
 		if (shape.notNil) { ^shape };
 		Error("Env shape not defined.").throw;
 	}
-	
+
 	curveValue { arg curve;
 		^if(curve.isValidUGenInput) { curve } { 0 };
 	}
-	
-	
+
+
 	// methods to make some typical shapes :
 
 	// fixed duration envelopes
@@ -92,7 +92,7 @@ AbstractEnv {
 			curve
 		)
 	}
-	
+
 	range { |lo = 0.0, hi = 1.0|
 		^this.copy.levels_(levels.linlin(levels.minItem, levels.maxItem, lo, hi))
 	}
@@ -100,7 +100,7 @@ AbstractEnv {
 	exprange { |lo = 0.01, hi = 1.0|
 		^this.copy.levels_(levels.linexp(levels.minItem, levels.maxItem, lo, hi))
 	}
-	
+
 	asSignal { arg length = 400;
 		var duration, signal, ratio;
 		duration = times.sum;
@@ -109,7 +109,7 @@ AbstractEnv {
 		length.do({ arg i; signal.add(this.at(i * ratio)) });
 		^signal;
 	}
-	
+
 	discretize {arg n = 1024;
 		^this.asSignal(n);
 	}
@@ -142,11 +142,11 @@ Env : AbstractEnv {
 	}
 
 	storeArgs { ^[levels, times, curves, releaseNode, loopNode] }
-	
+
 	== { arg that;
 		^this.compareObject(that, ['levels','times','curves','releaseNode','loopNode'])
 	}
-	
+
 	hash {
 		^this.instVarHash(['levels','times','curves','releaseNode','loopNode'])
 	}
@@ -188,7 +188,7 @@ Env : AbstractEnv {
 		};
 		^this.new([level, releaseLevel], [releaseTime], curve, 0)
 	}
-	
+
 	*dadsr { arg delayTime=0.1, attackTime=0.01, decayTime=0.3,
 			sustainLevel=0.5, releaseTime=1.0,
 				peakLevel=1.0, curve = -4.0, bias = 0.0;
@@ -199,7 +199,7 @@ Env : AbstractEnv {
 			3
 		)
 	}
-	
+
 	*adsr { arg attackTime=0.01, decayTime=0.3,
 			sustainLevel=0.5, releaseTime=1.0,
 				peakLevel=1.0, curve = -4.0, bias = 0.0;
@@ -295,10 +295,6 @@ Env : AbstractEnv {
 			};
 		};
 	}
-	
-	plot { arg size = 400, bounds, minval, maxval, parent;
-		this.asSignal(size).plot(bounds: bounds, minval: minval, maxval: maxval, parent: parent);
-	}
 
 	prAsArray {
 		var contents, curvesArray, size;
@@ -317,6 +313,4 @@ Env : AbstractEnv {
 		});
 		^contents
 	}
-
-
 }
