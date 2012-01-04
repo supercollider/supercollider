@@ -975,6 +975,7 @@ int headerFormatFromString(const char *name)
     if (strcasecmp(name, "FLAC")==0) return SF_FORMAT_FLAC;
     if (strcasecmp(name, "vorbis")==0) return SF_FORMAT_VORBIS;
     if (strcasecmp(name, "CAF")==0) return SF_FORMAT_CAF;
+    if (strcasecmp(name, "RF64")==0) return SF_FORMAT_RF64;
     return 0;
 }
 
