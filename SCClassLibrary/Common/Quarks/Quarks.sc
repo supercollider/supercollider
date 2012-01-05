@@ -486,7 +486,7 @@ Quarks
 
 		btnUpdate = Button()
 			.states_([["Update Quark Listing"]])
-			.setProperty( \toolTip, "Download the latest information and update the Quarks listing")
+			.toolTip_("Download the latest information and update the Quarks listing")
 			.action_({
 				quarksView.enabled = false;
 				msgWorking.value("Downloading the latest information...");
@@ -504,7 +504,7 @@ Quarks
 
 		btnUpdateQuarks = Button()
 			.states_([["Update Quarks"]])
-			.setProperty( \toolTip, "Update installed Quarks")
+			.toolTip_("Update installed Quarks")
 			.action_({
 				quarksView.enabled = false;
 				msgWorking.value("Updating installed Quarks...");
@@ -522,20 +522,20 @@ Quarks
 			});
 
 		btnHelp = Button().states_([["Help"]])
-			.setProperty( \toolTip, "Browse help for all the Quarks - Not yet available!")
+			.toolTip_("Browse help for all the Quarks - Not yet available!")
 			.enabled_(false);
 
 		btnOpenDir = Button().states_([["Directory"]])
-			.setProperty( \toolTip, "Open the local Quarks directory")
+			.toolTip_("Open the local Quarks directory")
 			.action_({ openOS(this.local.path) });
 
 		btnReset = Button()
 			.states_([["Reset"]])
-			.setProperty( \toolTip, "Clear the marked changes")
+			.toolTip_("Clear the marked changes")
 			.action_({ arg butt; views.do(_.reset) });
 
 		btnApply = Button().states_([["Apply",nil,Color.blue.blend(palette.buttonColor,0.6)]])
-			.setProperty( \toolTip, "Apply the marked changes")
+			.toolTip_("Apply the marked changes")
 			.action_({ arg butt;
 				quarksView.enabled = false;
 				msgWorking.value("Applying changes, please wait...");
@@ -602,21 +602,21 @@ Quarks
 
 		btnQuarkHelp = Button()
 			.states_([["Help"]])
-			.setProperty( \toolTip, "Show help for this Quark")
+			.toolTip_("Show help for this Quark")
 			.action_({
 				curQuark.openHelpFile
 			});
 
 		btnQuarkOpen = Button()
 			.states_([["Source"]])
-			.setProperty( \toolTip, "Open the source directory of this Quark")
+			.toolTip_("Open the source directory of this Quark")
 			.action_({
 				openOS( "%/%".format(Quarks.local.path, curQuark.path) );
 			});
 
 		btnQuarkClasses = Button()
 			.states_([["Classes"]])
-			.setProperty( \toolTip, "Show list of classes defined by this Quark")
+			.toolTip_("Show list of classes defined by this Quark")
 			.enabled_(false)
 			.action_({
 				var cls = curQuark.definesClasses;
@@ -652,7 +652,7 @@ Quarks
 
 		btnQuarkMethods = Button()
 			.states_([["Ext methods"]])
-			.setProperty( \toolTip, "Show list of extension methods added by this Quark")
+			.toolTip_("Show list of extension methods added by this Quark")
 			.enabled_(false)
 			.action_({
 				var mets = curQuark.definesExtensionMethods;
@@ -693,7 +693,7 @@ Quarks
 		btnCloseDetails = StaticText()
 			.string_("X")
 			.align_(\center)
-			.setProperty( \toolTip, "Hide Quark information panel")
+			.toolTip_("Hide Quark information panel")
 			.mouseDownAction_({
 				infoView.visible = false;
 			});
