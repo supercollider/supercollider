@@ -633,12 +633,12 @@ Quarks
 				];
 				buts.do(_.enabled_(false));
 				Window("% Classes".format(curQuark.name)).layout_(
-					\QVLayout.asClass.new(
+					VLayout(
 						tree = \QTreeView.asClass.new
 							.setProperty( \rootIsDecorated, false )
 							.columns_(["Classes"])
 							.onItemChanged_({|v| item = v.currentItem}),
-						\QHLayout.asClass.new(*buts)
+						HLayout(*buts)
 					)
 				).front;
 				if(cls.size>0) {
@@ -669,12 +669,12 @@ Quarks
 				];
 				buts.do(_.enabled_(false));
 				Window("% Extension Methods".format(curQuark.name)).layout_(
-					\QVLayout.asClass.new(
+					VLayout(
 						tree = \QTreeView.asClass.new
 							.setProperty( \rootIsDecorated, false )
 							.columns_(["Class","Method"])
 							.onItemChanged_({|v| item = v.currentItem}),
-						\QHLayout.asClass.new(*buts)
+						HLayout(*buts)
 					)
 				).front;
 				if(mets.size>0) {
@@ -702,18 +702,18 @@ Quarks
 		btnCloseDetails.fixedSize = gizmo;
 
 		infoView = View();
-		infoView.layout = \QVLayout.asClass.new(
-			\QHLayout.asClass.new( btnCloseDetails, btnQuarkHelp, btnQuarkOpen, btnQuarkClasses, btnQuarkMethods, nil ).margins_(0),
+		infoView.layout = VLayout(
+			HLayout( btnCloseDetails, btnQuarkHelp, btnQuarkOpen, btnQuarkClasses, btnQuarkMethods, nil ).margins_(0),
 			txtDescription
 		).spacing_(0).margins_(0);
 		infoView.visible = false;
 
 		window.layout =
-			\QVLayout.asClass.new(
+			VLayout(
 				lblCaption,
-				\QHLayout.asClass.new( btnUpdate, btnUpdateQuarks, btnOpenDir, btnHelp, nil ),
+				HLayout( btnUpdate, btnUpdateQuarks, btnOpenDir, btnHelp, nil ),
 				lblStatus,
-				\QHLayout.asClass.new( btnReset, btnApply, [lblExplanation, s:1] ).margins_(0),
+				HLayout( btnReset, btnApply, [lblExplanation, s:1] ).margins_(0),
 				[quarksView, s:5],
 				[infoView, s:2]
 			);
