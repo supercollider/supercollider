@@ -53,13 +53,8 @@ ControlSpec : Spec {
 
 	init {
 		warp = warp.asWarp(this);
-		if(minval < maxval,{
-			clipLo = minval;
-			clipHi = maxval;
-		}, {
-			clipLo = maxval;
-			clipHi = minval;
-		});
+		clipLo = min(minval, maxval);
+		clipHi = max(minval, maxval);
 	}
 	minval_ { arg v;
 		minval = v;
