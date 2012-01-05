@@ -26,7 +26,7 @@ ViewRedirect { // Abstract class
 		var	impl;
 		if ( this.implScheme.notNil ){
 			if((impl = this.implClass).notNil) {
-				^this.implClass.perform(selector, *args)
+				^impl.perform(selector, *args)
 			} {
 				DoesNotUnderstandError(this, selector, args).throw;
 			}
@@ -130,3 +130,13 @@ WebView : ViewRedirect { *key { ^\webView }}
 CheckBox : ViewRedirect { *key { ^\checkBox }}
 
 TreeView : ViewRedirect { *key { ^\treeView }}
+
+LayoutRedirect : ViewRedirect {
+	*new { arg ... args;
+		^this.implClass.new(*args);
+	}
+}
+
+HLayout : LayoutRedirect { *key { ^\hLayout }}
+VLayout : LayoutRedirect { *key { ^\vLayout }}
+GridLayout : LayoutRedirect { *key { ^\gridLayout }}

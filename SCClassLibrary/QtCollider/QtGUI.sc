@@ -70,6 +70,10 @@ QtGUI {
   *ezNumber { ^EZNumber}
   *ezRanger { ^EZRanger }
 
+  *hLayout { ^QHLayout }
+  *vLayout { ^QVLayout }
+  *gridLayout { ^QGridLayout }
+
   *pen { ^QPen }
 
   *font { ^QFont }
