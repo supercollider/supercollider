@@ -550,8 +550,7 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 
     def on_find_definition(self, action, data=None):
         text = self.get_selection()
-        cmd = "(\"gedit \" + (\"" + text + "\"" + ".interpret.filenameSymbol.asString)).systemCmd;"
-        self.__lang.evaluate(cmd, silent=True)
+        self.__lang.evaluate("" + text + ".openCodeFile", silent=True)
 
     def on_browse_class(self, action):
         text = self.get_selection()
