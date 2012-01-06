@@ -1,5 +1,9 @@
 
 See the platform specific build and install instructions in:
 
-	platform/
-
+README_IPHONE.txt
+README_JAILBROKEN_IPHONE.txt
+README_LINUX.txt
+README_OS_X.txt
+README_WINDOWS.txt
+README.txt
