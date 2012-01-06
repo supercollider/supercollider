@@ -28,7 +28,7 @@ classvar scVersionMajor=3, scVersionMinor=6, scVersionPostfix="~dev";
 		this.platform.startup;
 		StartUp.run;
 
-		("Welcome to SuperCollider"
+		("Welcome to SuperCollider" + Main.version
 			++ (Platform.ideName.switch(
 				"scvim", {", type :SChelp for help"},
 				"scel",  {", type ctrl-c ctrl-h for help"},
