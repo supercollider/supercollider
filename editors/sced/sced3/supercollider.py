@@ -562,8 +562,11 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 
     def on_open_dev_file(self, action):
         doc = self.window.get_active_document()
-        path = gio.File(doc.get_uri()).get_path() #get_location()
-        self.__lang.evaluate("(\"gedit\"+thisProcess.platform.devLoc(\""+path+"\")).systemCmd", silent=True);
+        if doc is None:
+            return None
+        location = doc.get_location()
+        if location is not None and Gedit.utils_location_has_file_scheme(location):
+            self.__lang.evaluate("thisProcess.platform.devLoc(\""+location.get_path()+"\").openTextFile", silent=True)
 
     def on_recompile(self, action):
         self.__lang.stdin.write("\x18")
