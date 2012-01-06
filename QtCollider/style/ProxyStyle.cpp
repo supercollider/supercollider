@@ -6,6 +6,7 @@
 
 using namespace QtCollider;
 
+#ifdef Q_OS_MAC
 void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionComplex *opt,
                                       QPainter *p, const QWidget * w) const
 {
@@ -32,4 +33,18 @@ void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionCom
   }
 
   QProxyStyle::drawComplexControl( ctrl, opt, p, w );
+}
+#endif
+
+int ProxyStyle::styleHint ( StyleHint hint, const QStyleOption * option,
+                            const QWidget * widget, QStyleHintReturn * returnData ) const
+{
+  switch( hint ) {
+    case QStyle::SH_Slider_AbsoluteSetButtons:
+      return Qt::LeftButton;
+    case QStyle::SH_Slider_PageSetButtons:
+      return Qt::NoButton;
+    default:
+      return QProxyStyle::styleHint( hint, option, widget, returnData );
+  }
 }
