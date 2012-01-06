@@ -234,7 +234,7 @@ Quarks
 	}
 
 	help { |name|
-		var q, helpdoc, path;
+		var q;
 
 		q = local.findQuark(name);
 		if(q.isNil,{
@@ -244,15 +244,7 @@ Quarks
 			).throw;
 		});
 
-		helpdoc = q.info.helpdoc;
-
-		if(helpdoc.isNil, {
-			("No primary helpdoc listed for Quark"+name).inform;
-		}, {
-			path = Quarks.local.path.select{|c| (c != $\\)}
-				+/+ q.path +/+ helpdoc;
-			Document.open(path);
-		});
+		q.openHelpFile;
 	}
 
 	name { ^local.name }
