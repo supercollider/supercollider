@@ -72,7 +72,6 @@ QcGraph::QcGraph() :
   _strokeColor = plt.color( QPalette::Text );
   _gridColor = plt.color( QPalette::Midlight );
 
-  setAttribute( Qt::WA_OpaquePaintEvent, true );
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
