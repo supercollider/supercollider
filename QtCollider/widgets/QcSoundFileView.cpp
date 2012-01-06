@@ -333,24 +333,16 @@ void QcWaveform::setSelectionColor( int i, const QColor &c )
 VariantList QcWaveform::waveColors() const
 {
   VariantList clist;
-#if 0
-  // FIXME there is no way to return an Array of Colors to SC
-  // as the Color objects should have been preallocated by the
-  // user, but we don't have an interface for that.
-
-  Q_FOREACH( QColor clr, _waveColors ) {
+  Q_FOREACH( QColor clr, _waveColors )
     clist.data << QVariant(clr);
-  }
-#endif
   return clist;
 }
 
 void QcWaveform::setWaveColors( const VariantList &list )
 {
   _waveColors.clear();
-  Q_FOREACH( QVariant var, list.data ) {
+  Q_FOREACH( QVariant var, list.data )
     _waveColors << var.value<QColor>();
-  }
   redraw();
 }
 
