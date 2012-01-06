@@ -52,6 +52,8 @@ void QtCollider::init() {
     qcApp->setQuitOnLastWindowClosed( false );
 #ifdef Q_OS_MAC
     qcApp->setStyle( new QtCollider::ProxyStyle( new QPlastiqueStyle ) );
+#else
+    qcApp->setStyle( new QtCollider::ProxyStyle() );
 #endif
     // NOTE: Qt may tamper with the C language locale, affecting POSIX number-string conversions.
     // Revert the locale to default:
