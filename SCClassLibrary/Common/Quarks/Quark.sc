@@ -133,7 +133,10 @@ Quark
 	}
 	openHelpFile {
 		var p = info.helpdoc;
-		if(p.isNil) {^nil};
+		if(p.isNil) {
+			("No primary helpdoc listed for Quark"+name).inform;
+			^nil
+		};
 		case
 			{p.endsWith(".html")} {
 				HelpBrowser.goTo(HelpBrowser.getOldWrapUrl(parent.local.path +/+ path +/+ p))
