@@ -48,6 +48,9 @@ QListView : QItemViewBase {
     this.setProperty( \currentRow, val ? -1 );
   }
 
+  background { ^this.palette.baseColor; }
+  background_ { arg color; this.palette = this.palette.baseColor_(color); }
+
   stringColor {
     ^this.palette.baseTextColor;
   }
