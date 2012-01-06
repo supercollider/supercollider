@@ -85,7 +85,7 @@ GetStringDialog  {
 
 	*new { arg prompt,defaultString="",func;
 		var b;
-		this.deprecated(thisMethod, EZText.class.findMethod(\new));
+		this.deprecated(thisMethod);
 		Sheet({ arg l;
 			b = 	TextField(l,Rect(0,0,150,30));
 			b.string = String.new ++ defaultString;
