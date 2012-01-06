@@ -461,23 +461,23 @@ QView : QObject {
   }
 
   mouseDown { arg x, y, modifiers, buttonNumber, clickCount;
-    mouseDownAction.value( this, x, y, modifiers, buttonNumber, clickCount );
+    ^mouseDownAction.value( this, x, y, modifiers, buttonNumber, clickCount );
   }
 
   mouseUp { arg x, y, modifiers, buttonNumber;
-    mouseUpAction.value( this, x, y, modifiers, buttonNumber );
+    ^mouseUpAction.value( this, x, y, modifiers, buttonNumber );
   }
 
   mouseMove { arg x, y, modifiers;
-    mouseMoveAction.value( this, x, y, modifiers );
+    ^mouseMoveAction.value( this, x, y, modifiers );
   }
 
   mouseOver { arg x, y;
-    mouseOverAction.value( this, x, y );
+    ^mouseOverAction.value( this, x, y );
   }
 
   mouseLeave { arg x, y;
-    mouseLeaveAction.value( this, x, y );
+    ^mouseLeaveAction.value( this, x, y );
   }
 
   mouseWheel { arg x, y, modifiers, xDelta, yDelta;
