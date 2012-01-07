@@ -1,13 +1,16 @@
-title:: Quark
-summary:: Quark file format
+class:: Quark
+summary:: Package of SC classes and extensions
 categories:: Quarks
-related:: Guides/Quarks, Classes/Quark
+related:: Guides/UsingQuarks, Classes/Quarks
 
-A Quark is a package of SC classes, helpfiles, C++ source for UGens and other SC code. A Quark object is created from
-the quark file found in {Application Support}/quarks/DIRECTORY. These Quark objects are mostly used just by the Quarks
-class, and you usually don't need to deal with them at all. But to publish a quark, you do need to make the quark file.
+description::
 
-section:: Format of the .quark File
+A Quark is a package of SC classes, helpfiles and other SC code.
+
+A Quark object is created from the quark file found at code::Quarks.local.path +/+ "DIRECTORY" +/+ nameOfQuark ++ ".quark"::.
+These Quark objects are mostly used just by the link::Classes/Quarks:: class, and you usually don't need to deal with them at all. But to publish a quark, you do need to make the quark file.
+
+subsection:: Format of the .quark file
 
 This quarkfile is written in sc code, and should contain a dictionary with basic information about the package.
 
@@ -40,11 +43,9 @@ code::
 ::
 
 Of particular importance for the Quarks interface class is the PATH. This is the path relative to the quark directory.
-In most cases this is simply the name of the quark and also the name of the folder. However, you may wish to create a
-parent folder and then keep several quarks inside that, in which case your path would be: parentfolder/quarkname
+In most cases this is simply the name of the quark and also the name of the folder. However, you may wish to create a parent folder and then keep several quarks inside that, in which case your path would be: parentfolder/quarkname
 
-It may even be possible to nest quarks inside of quarks (a kind of aggregate package), though a better way to do that
-would be to define an empty quark (the aggregate) and specify the other sub quarks as dependencies.
+It may even be possible to nest quarks inside of quarks (a kind of aggregate package), though a better way to do that would be to define an empty quark (the aggregate) and specify the other sub quarks as dependencies.
 
 The value of code::\helpdoc:: is a help path relative to an included teletype::HelpSource:: folder.
 It is used as the main help file for the quark. (See link::Classes/Quark#-openHelpFile:: )
@@ -54,3 +55,24 @@ code::
 ::
 
 note:: Please test that you don't have any syntax errors in your quark file before commiting it.::
+
+classmethods::
+method:: find
+Return the Quark object with specified name, if found.
+
+instancemethods::
+method:: name
+The name of the quark.
+method:: summary
+The summary of the quark.
+method:: version
+The version of the quark.
+method:: author
+The author of the quark.
+method:: path
+The path of the quark.
+method:: info
+The whole info blob as given in the .quark file.
+method:: openHelpFile
+Open the main helpfile for this quark.
+

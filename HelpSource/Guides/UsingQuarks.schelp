@@ -1,10 +1,10 @@
-title:: Quarks
-summary:: Quarks package manager
+title:: Using Quarks
+summary:: A guide to Quarks
 categories:: Quarks
-related:: Reference/Quark, Classes/Quarks
+related:: Classes/Quark, Classes/Quarks
 
 SC supports extensions to its class library, documentation, and server UGen plugins. These extensions are stored in
-subfolders of code::Platform.userExtensionDir::. For more info see link::Guides/UsingExtensions:.
+subfolders of code::Platform.userExtensionDir::. For more info see link::Guides/UsingExtensions::.
 
 A Quark is a more formalized kind of extension folder. It can be shared with others and can be easily installed or
 uninstalled using the Quarks package manager. The package manager has a directory of "quarkfiles" which describe the
