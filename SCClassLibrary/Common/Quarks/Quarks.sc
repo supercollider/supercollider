@@ -306,16 +306,28 @@ Quarks
 	*local { ^this.global.local }
 	*repos { ^this.global.repos }
 	*help  {|name| ^this.global.help(name) }
-	*gui {
-		if( GUI.id === \qt ) { ^this.global.qtGui } { ^this.global.gui }
-	}
+	*gui { ^this.global.gui }
 
-	// a gui for Quarks. 2007 by LFSaw.de
 	gui {
-		var	window, caption, explanation, views, resetButton, saveButton, warning,
-			scrollview, scrB, flowLayout, /* quarksflow, */ height, maxPerPage, nextButton, prevButton;
-		var	quarks;
-		var pageStart = 0, fillPage = { |start|
+		if( GUI.id === \qt ) { ^QuarksViewQt(this) } { ^QuarksView(this) }
+	}
+}
+
+// a gui for Quarks. 2007 by LFSaw.de
+QuarksView {
+	var quarksCtrl, quarks;
+
+	var window, caption, explanation, views, resetButton, saveButton, warning,
+		scrollview, scrB, flowLayout, /* quarksflow, */ height, maxPerPage, nextButton, prevButton;
+
+	*new { |quarksCtrl| ^super.new.init(quarksCtrl) }
+
+	init { |q|
+		var pageStart = 0, fillPage;
+
+		quarksCtrl = q;
+
+		fillPage = { |start|
 			scrollview.visible = false;
 			views.notNil.if({
 				views.do({ |view| view.remove });
@@ -323,7 +335,7 @@ Quarks
 			scrollview.decorator.reset;
 			views = quarks.collect{|quark|
 				var qView = QuarkView.new(scrollview, 500@20, quark,
-					this.installed.detect{|it| it == quark}.notNil);
+					quarksCtrl.installed.detect{|it| it == quark}.notNil);
 				scrollview.decorator.nextLine;
 				qView;
 			};
@@ -333,49 +345,49 @@ Quarks
 
 		// note, this doesn't actually contact svn
 		// it only reads the DIRECTORY entries you've already checked out
-		quarks = this.repos.quarks.copy;
+		quarks = quarksCtrl.repos.quarks.copy;
 
 		scrB = GUI.window.screenBounds;
 		height = min(quarks.size * 25 + 120, scrB.height - 60);
 
-		window = GUI.window.new(this.name, Rect.aboutPoint( scrB.center, 250, height.div( 2 )));
+		window = GUI.window.new(quarksCtrl.name, Rect.aboutPoint( scrB.center, 250, height.div( 2 )));
 		flowLayout = FlowLayout( window.view.bounds );
 		window.view.decorator = flowLayout;
 
 		caption = GUI.staticText.new(window, Rect(20,15,400,30));
 		caption.font_( Font.sansSerif( 24 ));
-		caption.string = this.name;
+		caption.string = quarksCtrl.name;
 		window.view.decorator.nextLine;
 
 		if ( quarks.size == 0 ){
 			GUI.button.new(window, Rect(0, 0, 229, 20))
 			.states_([["checkout Quarks DIRECTORY", nil, Color.gray(0.5, 0.8)]])
-			.action_({ this.checkoutDirectory; });
+			.action_({ quarksCtrl.checkoutDirectory; });
 		}{
 			GUI.button.new(window, Rect(0, 0, 229, 20))
 			.states_([["update Quarks DIRECTORY", nil, Color.gray(0.5, 0.8)]])
-			.action_({ this.updateDirectory;});
+			.action_({ quarksCtrl.updateDirectory;});
 		};
 
 		GUI.button.new(window, Rect(0, 0, 200, 20))
 		.states_([["refresh Quarks listing", nil, Color.gray(0.5, 0.8)]])
 		.action_({
 			window.close;
-			this.gui;
+			quarksCtrl.gui;
 		});
 
 		window.view.decorator.nextLine;
 
 		GUI.button.new(window, Rect(0, 0, 150, 20))
 			.states_([["browse all help", nil, Color.gray(0.5, 0.8)]])
-			.action_({ Help(this.local.path).gui });
+			.action_({ Help(quarksCtrl.local.path).gui });
 
 		// add open directory button (open is only implemented in OS X)
 		(thisProcess.platform.name == \osx).if{
 			GUI.button.new(window, Rect(15,15,150,20))
 			.states_([["open quark directory", nil, Color.gray(0.5, 0.8)]])
 			.action_{ arg butt;
-				openOS(this.local.path.escapeChar($ ))
+				openOS(quarksCtrl.local.path.escapeChar($ ))
 			};
 		};
 
@@ -398,11 +410,11 @@ Quarks
 				0.1.wait;
 				views.do{|qView|
 					qView.toBeInstalled.if({
-						this.install(qView.quark.name);
+						quarksCtrl.install(qView.quark.name);
 						qView.flush
 					});
 					qView.toBeDeinstalled.if({
-						this.uninstall(qView.quark.name);
+						quarksCtrl.uninstall(qView.quark.name);
 						qView.flush;
 					})
 				};
@@ -433,24 +445,32 @@ Quarks
 		fillPage.(pageStart);
 		^window;
 	}
+}
 
-	qtGui {
-		var window, lblCaption,
-			btnUpdate, btnHelp, btnUpdateQuarks, btnOpenDir, btnReset, btnApply,
-			lblStatus, lblExplanation, quarksView,
-			infoView, btnQuarkHelp, btnQuarkOpen, btnQuarkClasses,
-			btnQuarkMethods, txtDescription, btnCloseDetails;
-		var quarks, views, curQuark;
-		var refresh, msgWorking, msgDone;
-		var screen, palette, gizmo;
+QuarksViewQt {
+	var quarksCtrl;
+
+	var window, lblCaption,
+		btnUpdate, btnHelp, btnUpdateQuarks, btnOpenDir, btnReset, btnApply,
+		lblStatus, lblExplanation, quarksView,
+		infoView, btnQuarkHelp, btnQuarkOpen, btnQuarkClasses,
+		btnQuarkMethods, txtDescription, btnCloseDetails;
+	var quarks, views, curQuark;
+	var refresh, msgWorking, msgDone;
+	var screen, palette, gizmo;
+
+	*new { |quarksCtrl| ^super.new.init(quarksCtrl) }
+
+	init { |q|
+		quarksCtrl = q;
 
 		refresh = {
 			quarksView.invokeMethod( \clear );
-			quarks = this.repos.quarks.copy;
+			quarks = quarksCtrl.repos.quarks.copy;
 			quarksView.canSort = false;
 			views = quarks.collect{|quark|
-				var qView = QuarkView.new(quarksView, 500@20, quark,
-					this.installed.detect{|it| it == quark}.notNil);
+				var qView = QuarkViewQt.new(quarksView, quark,
+					quarksCtrl.installed.detect{|it| it == quark}.notNil);
 				qView;
 			};
 			quarksView.canSort = true;
@@ -472,9 +492,9 @@ Quarks
 
 		palette = GUI.current.palette;
 		screen = Window.flipY(Window.availableBounds);
-		window = Window( this.name, Rect( 0, 0, 700, screen.height * 0.9 ).center_(screen.center) );
+		window = Window( quarksCtrl.name, Rect( 0, 0, 700, screen.height * 0.9 ).center_(screen.center) );
 
-		lblCaption = StaticText().font_( GUI.font.new(size:16,usePointSize:true) ).string_(this.name);
+		lblCaption = StaticText().font_( GUI.font.new(size:16,usePointSize:true) ).string_(quarksCtrl.name);
 
 		btnUpdate = Button()
 			.states_([["Update Quark Listing"]])
@@ -484,14 +504,14 @@ Quarks
 				msgWorking.value("Downloading the latest information...");
 				AppClock.sched( 0.2, {
 					protect {
-						this.updateDirectory;
+						quarksCtrl.updateDirectory;
 					} {
 						refresh.value;
 						quarksView.enabled = true;
 						msgDone.value("Quarks listing has been updated with the latest information.")
 					}
 				});
-				this
+				nil
 			});
 
 		btnUpdateQuarks = Button()
@@ -502,7 +522,7 @@ Quarks
 				msgWorking.value("Updating installed Quarks...");
 				AppClock.sched( 0.2, {
 					protect {
-						this.update;
+						quarksCtrl.update;
 					} {
 						refresh.value;
 						quarksView.enabled = true;
@@ -510,7 +530,7 @@ Quarks
 							" You should recompile the class library for changes to take effect.")
 					}
 				});
-				this
+				nil
 			});
 
 		btnHelp = Button().states_([["Help"]])
@@ -519,7 +539,7 @@ Quarks
 
 		btnOpenDir = Button().states_([["Directory"]])
 			.toolTip_("Open the local Quarks directory")
-			.action_({ openOS(this.local.path) });
+			.action_({ openOS(quarksCtrl.local.path) });
 
 		btnReset = Button()
 			.states_([["Reset"]])
@@ -535,11 +555,11 @@ Quarks
 					protect {
 						views.do{|qView|
 							qView.toBeInstalled.if({
-								this.install(qView.quark.name);
+								quarksCtrl.install(qView.quark.name);
 								qView.flush
 							});
 							qView.toBeDeinstalled.if({
-								this.uninstall(qView.quark.name);
+								quarksCtrl.uninstall(qView.quark.name);
 								qView.flush;
 							})
 						};
@@ -574,7 +594,7 @@ Quarks
 						curQuark = curView.quark;
 						txtDescription.string = curQuark.longDesc;
 						btnQuarkOpen.enabled = curQuark.isLocal;
-						inst = this.installed.detect{|it| it == curQuark}.notNil;
+						inst = quarksCtrl.installed.detect{|it| it == curQuark}.notNil;
 						btnQuarkClasses.enabled = inst;
 						btnQuarkMethods.enabled = inst;
 					}
