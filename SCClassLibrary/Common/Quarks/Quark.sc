@@ -236,11 +236,11 @@ QuarkView {
 			.states_([["help"]])
 			.action_({ quark.openHelpFile });
 
-		if(quark.isLocal and: {thisProcess.platform.name == \osx}) {
+		if(quark.isLocal) {
 			srcButton = GUI.button.new(parent, sourceBounds)
 				.font_( Font.sansSerif( 10 ))
 				.states_([["src"]]).action_{
-					("open " ++ ("%/%".format(Quarks.local.path, quark.path).escapeChar($ ))).unixCmd;
+					openOS( "%/%".format(Quarks.local.path, quark.path) );
 				};
 		};
 
