@@ -242,7 +242,7 @@ QuarkView {
 			browseHelpButton = GUI.button.new(parent, infoBounds)
 				.font_( Font.sansSerif( 10 ))
 				.states_([["help"]])
-				.action_({ Help(quark.parent.local.path +/+ quark.path).gui });
+				.action_({ quark.openHelpFile });
 
 			if(quark.isLocal and: {thisProcess.platform.name == \osx}) {
 				srcButton = GUI.button.new(parent, sourceBounds)
@@ -321,9 +321,7 @@ QuarkView {
 			GUI.button.new(window, Rect(125, 176, 150, 20))
 				.resize_(8)
 				.states_([["Open quark help"]])
-				.action_({
-					helpdoc.openHTMLFile
-				});
+				.action_({ quark.openHelpFile });
 		};
 	}
 	remove {
