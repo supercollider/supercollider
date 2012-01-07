@@ -42,8 +42,9 @@ HelpBrowser {
 		if(openNewWindows,{this.new},{this.instance}).goTo(url);
 	}
 
-	*openBrowser {
-		this.goTo(SCDoc.helpTargetDir++"/Browse.html");
+	*openBrowser {|category|
+		category = if(category.notNil) {"#"++category} {""};
+		this.goTo(SCDoc.helpTargetDir++"/Browse.html"++category);
 	}
 	*openSearch {|text|
 		text = if(text.notNil) {"#"++text} {""};
