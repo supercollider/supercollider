@@ -1,0 +1,78 @@
+class:: Quarks
+summary:: Package manager
+categories:: Quarks
+related:: Classes/Quark, Guides/UsingQuarks, Classes/QuarkSVNRepository, Classes/LocalQuarks
+
+description::
+See link::Guides/UsingQuarks:: for more information.
+
+CLASSMETHODS::
+private:: initClass
+
+METHOD:: gui
+Show GUI to manage quarks.
+
+METHOD:: global
+The singleton Quarks instance.
+
+METHOD:: checkoutAll
+Check out all quarks (does not install them)
+
+METHOD:: listCheckedOut
+List all checked out quarks.
+
+METHOD:: listAvailable
+List all available quarks.
+
+METHOD:: listInstalled
+List all installed quarks.
+
+METHOD:: updateDirectory
+Makes sure you have an up-to-date directory listing.
+
+METHOD:: checkout
+Check out a specific quark.
+
+argument:: name
+Name of quark to checkout.
+
+METHOD:: install
+Install a specific quark, by linking it into the user extensions folder.
+
+argument:: name
+Name of quark.
+
+METHOD:: uninstall
+Uninstall quark.
+
+argument:: name
+Name of quark.
+
+METHOD:: update
+Update quark to latest revision.
+
+argument:: quarkName
+Name of quark.
+
+METHOD:: installed
+Get a list of all installed quarks.
+
+METHOD:: isInstalled
+Check if a quark is installed.
+
+argument:: name
+Name of quark.
+
+METHOD:: local
+An instance of link::Classes/LocalQuarks::
+
+METHOD:: help
+Open help for specific quark.
+
+argument:: name
+Name of quark.
+
+
+INSTANCEMETHODS::
+note:: This document needs updating ::
+

@@ -1,7 +1,7 @@
 title:: Using Extensions
 summary:: Using Extensions
 categories:: Internals
-related:: Guides/WritingUGens, Guides/Quarks, Guides/WritingClasses
+related:: Guides/WritingUGens, Guides/UsingQuarks, Guides/WritingClasses
 
 SC supports extensions to its class library, documentation, and server UGen plugins. Extensions should be packaged as a
 single folder containing all three (for convenient addition or removal), or any combination, which can then be placed in
