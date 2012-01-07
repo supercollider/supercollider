@@ -1,6 +1,6 @@
 SCDoc {
     // Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-    classvar version = 21;
+    classvar version = 22;
 
     classvar <helpTargetDir;
     classvar <helpSourceDir;
@@ -591,6 +591,11 @@ SCDoc {
                     p.parseMetaData(path);
                     this.addToDocMap(p,subtarget);
                     doc = doc_map[subtarget];
+                    if(dir.beginsWith(Platform.userExtensionDir +/+ "quarks")) {
+                        x = "Quarks>"++dir.dirname.basename;
+                        if(doc.categories.notEmpty) { x = x ++ ", " ++ doc.categories };
+                        doc.categories = x;
+                    };
                     doc.methods = p.methodList;
                     doc.keywords = p.keywordList;
                     doc.mtime = mtime;
@@ -645,11 +650,16 @@ SCDoc {
         undocumentedClasses = classes;
         ndocs = 0;
         classes.do {|name|
-            var class;
+            var class, dir;
             subtarget = "Classes/"++name.asString;
             if(doc_map[subtarget].isNil) {
                 cats = "Undocumented classes";
                 class = name.asClass;
+                dir = class.filenameSymbol.asString;
+                if(dir.beginsWith(Platform.userExtensionDir +/+ "quarks")) {
+                    cats = cats ++ ", " ++ "Quarks>"++class.package;
+                };
+
                 if(this.classHasArKrIr(class)) {
                     cats = cats ++ ", UGens>Undocumented";
                 };

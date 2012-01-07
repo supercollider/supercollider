@@ -196,7 +196,6 @@ For UGens, you should use the existing categories like UGens>Filter>Nonlinear. V
 code::
 Ball.categories
 ::
-Or the directory layout if categories was not set.
 
 For other documents, you could base it on the old directory layout, or come up with better ones. like Scheduling, Sequencing, Patterns, Streams, Server, etc..
 
@@ -231,7 +230,6 @@ keyword:: someKeyWords
 section:: Extensions
 subsection:: Quarks and extensions
 Each extension should have their own HelpSource folder with files that should be included in the help system.
-It's recommended that each Quark provides a Quarks/TheQuark.schelp file with categories "Quarks", that explains what the quark is and does.
 
 Example file layout:
 code::
@@ -245,6 +243,8 @@ MyQuark/MyClass2.sc
 ::
 
 In the Quark directory file, set code::\helpdoc:: to the path relative to teletype::HelpSource:: and without the teletype::.schelp:: extension. Example: code::\helpdoc: "Quarks/MyQuark"::
+
+All helpfiles contained in a quark will automatically get a category "Quarks>NameOfQuark" added, so you should not add this yourself. This makes it easy to navigate all documentation of a specific quark.
 
 subsection:: Method extensions
 An extension that adds methods to existing classes should document these in code::Classes/TheClass.ext.schelp::, only including the relevant bits (no title, summary, categories, etc..)
