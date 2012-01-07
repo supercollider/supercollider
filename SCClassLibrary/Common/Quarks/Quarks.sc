@@ -380,7 +380,7 @@ QuarksView {
 
 		GUI.button.new(window, Rect(0, 0, 150, 20))
 			.states_([["browse all help", nil, Color.gray(0.5, 0.8)]])
-			.action_({ Help(quarksCtrl.local.path).gui });
+			.action_({ HelpBrowser.openBrowser("Quarks") });
 
 		GUI.button.new(window, Rect(15,15,150,20))
 		.states_([["open quark directory", nil, Color.gray(0.5, 0.8)]])
@@ -531,8 +531,8 @@ QuarksViewQt {
 			});
 
 		btnHelp = Button().states_([["Help"]])
-			.toolTip_("Browse help for all the Quarks - Not yet available!")
-			.enabled_(false);
+			.toolTip_("Browse help for all the Quarks")
+			.action_({ HelpBrowser.openBrowser("Quarks") });
 
 		btnOpenDir = Button().states_([["Directory"]])
 			.toolTip_("Open the local Quarks directory")
