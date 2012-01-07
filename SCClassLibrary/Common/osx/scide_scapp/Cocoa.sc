@@ -2,7 +2,7 @@ CocoaDialog {
 	classvar result, ok, cancel;
 
 	*initClass {
-		Reset.add{ this.clear };
+		OnError.add({ this.clear })
 	}
 
 	*getPaths { arg okFunc, cancelFunc, allowsMultiple=true;
