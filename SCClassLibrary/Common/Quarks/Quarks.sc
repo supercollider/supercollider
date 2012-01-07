@@ -382,13 +382,10 @@ QuarksView {
 			.states_([["browse all help", nil, Color.gray(0.5, 0.8)]])
 			.action_({ Help(quarksCtrl.local.path).gui });
 
-		// add open directory button (open is only implemented in OS X)
-		(thisProcess.platform.name == \osx).if{
-			GUI.button.new(window, Rect(15,15,150,20))
-			.states_([["open quark directory", nil, Color.gray(0.5, 0.8)]])
-			.action_{ arg butt;
-				openOS(quarksCtrl.local.path.escapeChar($ ))
-			};
+		GUI.button.new(window, Rect(15,15,150,20))
+		.states_([["open quark directory", nil, Color.gray(0.5, 0.8)]])
+		.action_{ arg butt;
+			openOS(quarksCtrl.local.path.escapeChar($ ))
 		};
 
 		resetButton = GUI.button.new(window, Rect(15,15,75,20));
