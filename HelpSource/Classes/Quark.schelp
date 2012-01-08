@@ -27,7 +27,7 @@ code::
     \organization:   "My Organization",
     \country:        "My Country",
     \since:          "2004",
-    \helpdoc:        "Classes/MyClass",
+    \schelp:         "Classes/MyClass",
     \ext_dependancy: "Information on additional software needed to run this quark properly",
     \url:            "http://www.strangeQuark.de",
 
@@ -47,14 +47,18 @@ In most cases this is simply the name of the quark and also the name of the fold
 
 It may even be possible to nest quarks inside of quarks (a kind of aggregate package), though a better way to do that would be to define an empty quark (the aggregate) and specify the other sub quarks as dependencies.
 
-The value of code::\helpdoc:: is a help path relative to an included teletype::HelpSource:: folder.
-It is used as the main help file for the quark. (See link::Classes/Quark#-openHelpFile:: )
-For example, if the quark contains teletype::HelpSource/Reference/MyQuark.schelp:: one would use:
+The value of code::\schelp:: optionally sets the main help file for the quark. It is a help path relative to an included teletype::HelpSource:: folder.
+For example, if the quark contains teletype::HelpSource/Reference/MyQuark.schelp:: one could use:
 code::
-    \helpdoc: "Reference/MyQuark"
+    \schelp: "Reference/MyQuark"
+::
+It is used by link::#-openHelpFile::. If no code::\schelp:: is given, it will open the category browser showing all helpfiles for the quark.
+
+note::
+The old help system (sc version 3.4) used code::\helpdoc::, and the new help system (link::Classes/SCDoc::) uses code::\schelp:: instead to be able to support both old and new helpfiles during the transition to the new help system.
 ::
 
-note:: Please test that you don't have any syntax errors in your quark file before commiting it.::
+warning:: Please test that you don't have any syntax errors in your quark file before commiting it.::
 
 classmethods::
 method:: find
@@ -74,5 +78,7 @@ The path of the quark.
 method:: info
 The whole info blob as given in the .quark file.
 method:: openHelpFile
-Open the main helpfile for this quark.
+Open the main helpfile for this quark as given by the code::\schelp:: key in the directory file,
+or the category browser page showing all helpfiles for this quark if no main helpfile was specified.
+This method falls back to opening the old help as given by code::\helpdoc:: if above fails.
 
