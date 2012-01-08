@@ -272,16 +272,10 @@ bool QWidgetProxy::interpretMouseEvent( QObject *o, QEvent *e, QList<QVariant> &
 
   QWidget *w = widget();
 
-  if( e->type() == QEvent::Enter || e->type() == QEvent::Leave ) {
-    QPoint pos = QCursor::pos();
+  QEvent::Type etype = e->type();
 
-
-    if( w ) pos = w->mapFromGlobal( pos );
-
-    args << pos.x();
-    args << pos.y();
+  if( etype == QEvent::Enter || etype == QEvent::Leave )
     return true;
-  }
 
   QMouseEvent *mouse = static_cast<QMouseEvent*>( e );
   QPoint pt = ( _mouseEventWidget == w ?
@@ -292,28 +286,41 @@ bool QWidgetProxy::interpretMouseEvent( QObject *o, QEvent *e, QList<QVariant> &
 
   args << (int) mouse->modifiers();
 
-  if( e->type() == QEvent::MouseMove ) return true;
+  if( etype == QEvent::MouseMove )
+  {
+    int buttons = mouse->buttons();
 
-  int button;
-  switch( mouse->button() ) {
-    case Qt::LeftButton:
-      button = 0; break;
-    case Qt::RightButton:
-      button = 1; break;
-    case Qt::MidButton:
-      button = 2; break;
-    default:
-      button = -1;
+    if( buttons == 0 ) {
+      QWidget *win = w->window();
+      if( !(win && win->property("_qc_win_mouse_tracking").toBool()) )
+        return false;
+    }
+
+    args << (int) mouse->buttons();
   }
+  else
+  {
+    // MouseButtonPress, MouseButtonDblClick, MouseButtonRelease
 
-  args << button;
+    int button;
 
-  switch( e->type() ) {
-    case QEvent::MouseButtonPress:
-      args << 1; break;
-    case QEvent::MouseButtonDblClick:
-      args << 2; break;
-    default: ;
+    switch( mouse->button() ) {
+      case Qt::LeftButton:
+        button = 0; break;
+      case Qt::RightButton:
+        button = 1; break;
+      case Qt::MidButton:
+        button = 2; break;
+      default:
+        button = -1;
+    }
+
+    args << button;
+
+    if( etype == QEvent::MouseButtonPress )
+      args << 1;
+    else if( etype == QEvent::MouseButtonDblClick )
+      args << 2;
   }
 
   return true;
