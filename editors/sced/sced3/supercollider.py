@@ -538,11 +538,11 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         self.__lang.evaluate(cmd, silent=True)
 
     def on_browse_help(self, action):
-        self.__lang.evaluate("HelpBrowser.openBrowser;")
+        self.__lang.evaluate("HelpBrowser.openBrowsePage;")
 
     def on_search_help(self, action):
         text = self.get_selection()
-        self.__lang.evaluate("HelpBrowser.openSearch(\"" + text + "\");")
+        self.__lang.evaluate("HelpBrowser.openSearchPage(\"" + text + "\");")
 
     def on_method_args(self, action):
         text = self.get_selection()
