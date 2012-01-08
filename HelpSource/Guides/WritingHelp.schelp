@@ -233,7 +233,6 @@ Each extension should have their own HelpSource folder with files that should be
 
 Example file layout:
 code::
-MyQuark/HelpSource/Quarks/MyQuark.schelp
 MyQuark/HelpSource/Classes/MyClass1.schelp
 MyQuark/HelpSource/Classes/MyClass2.schelp
 MyQuark/HelpSource/Guides/MyGuide.schelp
@@ -242,9 +241,9 @@ MyQuark/MyClass1.sc
 MyQuark/MyClass2.sc
 ::
 
-In the Quark directory file, set code::\helpdoc:: to the path relative to teletype::HelpSource:: and without the teletype::.schelp:: extension. Example: code::\helpdoc: "Quarks/MyQuark"::
-
 All helpfiles contained in a quark will automatically get a category "Quarks>NameOfQuark" added, so you should not add this yourself. This makes it easy to navigate all documentation of a specific quark.
+
+If you want to set a main help file for the quark, set code::\schelp:: in the Quark directory file to the path for the help file relative to teletype::HelpSource:: and without the teletype::.schelp:: extension. Example: code::\schelp: "Guides/MyGuide"::
 
 subsection:: Method extensions
 An extension that adds methods to existing classes should document these in code::Classes/TheClass.ext.schelp::, only including the relevant bits (no title, summary, categories, etc..)
