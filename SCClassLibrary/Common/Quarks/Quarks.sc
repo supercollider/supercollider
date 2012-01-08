@@ -575,7 +575,7 @@ QuarksViewQt {
 
 		lblStatus = StaticText().font_( GUI.font.new( size:12, usePointSize:true ) );
 
-		quarksView = \QTreeView.asClass.new
+		quarksView = TreeView()
 			.setProperty( \rootIsDecorated, false )
 			.columns_([nil,"Name","Summary"])
 			.itemPressedAction_({ |v|
@@ -643,7 +643,7 @@ QuarksViewQt {
 				buts.do(_.enabled_(false));
 				Window("% Classes".format(curQuark.name)).layout_(
 					VLayout(
-						tree = \QTreeView.asClass.new
+						tree = TreeView()
 							.setProperty( \rootIsDecorated, false )
 							.columns_(["Classes"])
 							.onItemChanged_({|v| item = v.currentItem}),
@@ -679,7 +679,7 @@ QuarksViewQt {
 				buts.do(_.enabled_(false));
 				Window("% Extension Methods".format(curQuark.name)).layout_(
 					VLayout(
-						tree = \QTreeView.asClass.new
+						tree = TreeView()
 							.setProperty( \rootIsDecorated, false )
 							.columns_(["Class","Method"])
 							.onItemChanged_({|v| item = v.currentItem}),
