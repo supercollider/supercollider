@@ -16,6 +16,8 @@ User-visible changes (started after 3.4)
 * /b_free also free's sndfile if open (like /b_close) - jli
 * VDiskIn and DiskIn sets done flag (to be used by Done.kr or FreeSelfWhenDone.kr) - jli
 * Demand sets done flag (to be used by Done.kr or FreeSelfWhenDone.kr) - jli
+* Warn when extensions overwrites methods in main class lib, unless put in SystemOverwrites folder - jli
+* New cross-platform filesystem utilities: File.copy, .mtime, .mkdir, .realpath, .type, .fileSize - jli
 
 Bugfixes:
 ---------
@@ -24,7 +26,8 @@ Bugfixes:
 * CoinGate.ar bugfixes - jli
 * T2K bugfixes - jli
 * WiiMote bugfixes - jli
-
+* SynthDesc bugfixes - jli
+* fix String-openTextFile on systems without Document support - jli
 
 Changes up to 3.4 are listed below, grouped under each point release of SuperCollider.
 
