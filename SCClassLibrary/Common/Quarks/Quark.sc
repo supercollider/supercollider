@@ -132,19 +132,28 @@ Quark
 		^deps;
 	}
 	openHelpFile {
-		var p = info.helpdoc;
-		if(p.isNil) {
-			("No primary helpdoc listed for Quark"+name).inform;
-			^nil
+		var p = info.schelp;
+		if(p.notNil) {
+			HelpBrowser.openHelpFor(p);
+			^this
 		};
-		case
-			{p.endsWith(".html")} {
-				HelpBrowser.goTo(HelpBrowser.getOldWrapUrl(parent.local.path +/+ path +/+ p))
-			}
-			{p.endsWith(".scd") or: {p.endsWith(".txt")}} {
-				HelpBrowser.goTo(parent.local.path +/+ path +/+ p)
-			}
-			{ HelpBrowser.openHelpFor(p) };
+		if(File.exists(parent.local.path +/+ path +/+ "HelpSource")) {
+			HelpBrowser.openBrowsePage("Quarks>"++name);
+			^this;
+		};
+		p = info.helpdoc;
+		if(p.notNil) {
+			case
+				{p.endsWith(".html")} {
+					HelpBrowser.goTo(HelpBrowser.getOldWrapUrl(parent.local.path +/+ path +/+ p))
+				}
+				{p.endsWith(".scd") or: {p.endsWith(".txt")}} {
+					HelpBrowser.goTo(parent.local.path +/+ path +/+ p)
+				}
+				{ "Uknown help file type: %".format(p).warn };
+			^this
+		};
+		HelpBrowser.openBrowsePage("Quarks>"++name);
 	}
 	printOn { arg stream;
 		stream << "Quark: " << name;
@@ -294,21 +303,18 @@ QuarkView {
 	}
 	fullDescription {
 		var window;
-		var helpdoc = quark.info.helpdoc;
 		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
-		GUI.textView.new( window, Rect(4, 4, 392, 170 + (helpdoc.isNil.binaryValue * 22)))
+		GUI.textView.new( window, Rect(4, 4, 392, 192))
 			.font_( Font.sansSerif( 12 ) )
 			.resize_( 5 )
 			.autohidesScrollers_( true )
 			.hasVerticalScroller_( true )
 			.string_( quark.longDesc )
 			.editable_( false );
-		if(helpdoc.notNil) {
-			GUI.button.new(window, Rect(125, 176, 150, 20))
-				.resize_(8)
-				.states_([["Open quark help"]])
-				.action_({ quark.openHelpFile });
-		};
+		GUI.button.new(window, Rect(125, 176, 150, 20))
+			.resize_(8)
+			.states_([["Open quark help"]])
+			.action_({ quark.openHelpFile });
 	}
 	remove {
 		[installButton, nameView, infoButton, srcButton].do(_.remove);
