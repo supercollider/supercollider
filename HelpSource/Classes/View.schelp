@@ -397,6 +397,13 @@ METHOD:: hasFocus
 
 	returns:: A Boolean, stating whether the view currently has the keyboard focus.
 
+METHOD:: acceptsMouseOver
+	If this is a top view, this variable defines whether the view and all its children receive mouse-over events. The default is code::false::.
+
+	See also: link::#-mouseOverAction::.
+
+	argument::
+		A Boolean.
 
 
 
@@ -460,6 +467,15 @@ METHOD:: mouseMoveAction
 		It is passed the following arguments: view, x, y, modifiers.
 
 METHOD:: mouseOverAction
+	Sets or gets the object to be evaluated when the mouse pointer moves over the view with no mouse buttons pressed.
+
+	The action is triggered only when link::Classes/Window#-acceptsMouseOver:: of the containing Window (or, in Qt, link::#-acceptsMouseOver:: of the top View) is code::true::.
+
+		It is passed the following arguments: view, x, y.
+
+METHOD:: mouseEnterAction
+	note:: strong:: Only in Qt GUI :: ::
+
 	Sets or gets the object to be evaluated when the mouse pointer enters the view.
 
 		It is passed the following arguments: view, x, y.
@@ -669,21 +685,26 @@ METHOD:: mouseUp
 	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
 
 METHOD:: mouseMove
-	Handles response to mouse pointer moving over the view after a mouse button has been pressed. Evaluates link::#-mouseMoveAction::.
+	Handles response to mouse pointer moving after a mouse button has been pressed on the view. Evaluates link::#-mouseMoveAction::.
 
 	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
 
 METHOD:: mouseOver
-	Handles response to mouse pointer entering the view. Evaluates link::#-mouseOverAction::.
+	Handles response to mouse pointer moving over the view with no mouse buttons pressed. Evaluates link::#-mouseOverAction::.
+
+	This method is called only if link::Classes/Window#-acceptsMouseOver:: of the containing Window (or, in Qt, link::#-acceptsMouseOver:: of the top View) is code::true::.
 
 	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
+
+METHOD:: mouseEnter
+	note:: strong:: Only in Qt GUI :: ::
+
+	Handles response to mouse pointer entering the view. Evaluates link::#-mouseEnterAction::.
 
 METHOD:: mouseLeave
 	note:: strong:: Only in Qt GUI :: ::
 
 	Handles response to mouse pointer leaving the view. Evaluates link::#-mouseLeaveAction::.
-
-	See link::#mouse_actions#Mouse actions :: for explanation of arguments.
 
 
 
