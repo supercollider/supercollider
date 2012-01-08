@@ -28,10 +28,10 @@ Go to url with singleton instance or a new window, depending on the code::openNe
 method:: openHelpFor
 Open the relevant help page for given text in the singleton HelpBrowser instance.
 
-method:: openSearch
+method:: openSearchPage
 Open the help search page with given text in the singleton HelpBrowser instance.
 
-method:: openBrowser
+method:: openBrowsePage
 Open the category browser page in the singleton HelpBrowser instance.
 
 argument:: category

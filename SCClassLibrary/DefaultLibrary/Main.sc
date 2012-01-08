@@ -123,10 +123,10 @@ classvar scVersionMajor=3, scVersionMinor=6, scVersionPostfix="~dev";
 	}
 
 	showHelpBrowser {
-		HelpBrowser.openBrowser;
+		HelpBrowser.openBrowsePage;
 	}
 	showHelpSearch {
-		HelpBrowser.openSearch(this.getCurrentSelection);
+		HelpBrowser.openSearchPage(this.getCurrentSelection);
 	}
 	showHelp {
 		HelpBrowser.openHelpFor(this.getCurrentSelection);

@@ -42,11 +42,11 @@ HelpBrowser {
 		if(openNewWindows,{this.new},{this.instance}).goTo(url);
 	}
 
-	*openBrowser {|category|
+	*openBrowsePage {|category|
 		category = if(category.notNil) {"#"++category} {""};
 		this.goTo(SCDoc.helpTargetDir++"/Browse.html"++category);
 	}
-	*openSearch {|text|
+	*openSearchPage {|text|
 		text = if(text.notNil) {"#"++text} {""};
 		this.goTo(SCDoc.helpTargetDir++"/Search.html"++text);
 	}
