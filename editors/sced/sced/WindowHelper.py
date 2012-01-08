@@ -289,11 +289,11 @@ class WindowHelper:
         self.__lang.evaluate("HelpBrowser.openHelpFor(\"" + text + "\");")
 
     def on_browse_help(self, action):
-        self.__lang.evaluate("HelpBrowser.openBrowser;")
+        self.__lang.evaluate("HelpBrowser.openBrowsePage;")
 
     def on_search_help(self, action):
         text = self.get_selection()
-        self.__lang.evaluate("HelpBrowser.openSearch(\"" + text + "\");")
+        self.__lang.evaluate("HelpBrowser.openSearchPage(\"" + text + "\");")
 
     def on_method_args(self, action):
         text = self.get_selection()

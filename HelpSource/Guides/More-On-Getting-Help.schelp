@@ -30,7 +30,7 @@ section:: Tracking Down Information
 
 Executing the following
 code::
-HelpBrowser.openBrowser;
+HelpBrowser.openBrowsePage;
 ::
 will open a the "help browser" page which lists all helpfiles in thematic categories. (Equivalently, press Shift-Cmd-D)
 
