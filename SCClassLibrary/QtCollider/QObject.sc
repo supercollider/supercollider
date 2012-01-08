@@ -27,7 +27,7 @@ QObject {
     < mouseUpEvent = 3,
     < mouseDblClickEvent = 4,
     < mouseMoveEvent = 5,
-    < mouseOverEvent = 10,
+    < mouseEnterEvent = 10,
     < mouseLeaveEvent = 11,
     < mouseWheelEvent = 31,
     < keyDownEvent = 6,

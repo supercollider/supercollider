@@ -14,8 +14,8 @@ QView : QObject {
   var <>userCanClose=true, <>deleteOnClose = true;
   // actions
   var <action;
-  var <mouseDownAction, <mouseUpAction, <mouseOverAction, <mouseLeaveAction;
-  var <mouseMoveAction, <mouseWheelAction;
+  var <mouseDownAction, <mouseUpAction, <mouseEnterAction, <mouseLeaveAction;
+  var <mouseMoveAction, <mouseOverAction, <mouseWheelAction;
   var <keyDownAction, <keyUpAction, <keyModifiersChangedAction;
   var <>keyTyped;
   // focus
@@ -313,6 +313,10 @@ QView : QObject {
 
   notClosed { ^this.isClosed.not }
 
+  // TODO: deprecate acceptsMouseOver and expose 'mouseTracking' property directly
+  acceptsMouseOver { ^this.getProperty(\_qc_win_mouse_tracking) == true }
+  acceptsMouseOver_ { arg flag; this.setProperty(\_qc_win_mouse_tracking, flag == true) }
+
   // ----------------- actions .....................................
 
   action_ { arg func;
@@ -374,9 +378,18 @@ QView : QObject {
     this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
   }
 
+  // mouseOverAction responds to same Qt event as mouseMoveAction,
+  // but on different conditions.
+  // See QView:-mouseMoveEvent method.
   mouseOverAction_ { arg aFunction;
     mouseOverAction = aFunction;
-    this.setEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true );
+    this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true );
+    this.setProperty(\mouseTracking, true);
+  }
+
+  mouseEnterAction_ { arg aFunction;
+    mouseEnterAction = aFunction;
+    this.setEventHandler( QObject.mouseEnterEvent, \mouseEnterEvent, true );
   }
 
   mouseLeaveAction_ { arg aFunction;
@@ -476,8 +489,12 @@ QView : QObject {
     ^mouseOverAction.value( this, x, y );
   }
 
-  mouseLeave { arg x, y;
-    ^mouseLeaveAction.value( this, x, y );
+  mouseEnter {
+    ^mouseEnterAction.value(this);
+  }
+
+  mouseLeave {
+    ^mouseLeaveAction.value(this);
   }
 
   mouseWheel { arg x, y, modifiers, xDelta, yDelta;
@@ -521,10 +538,10 @@ QView : QObject {
       {this.setEventHandler( QObject.mouseDblClickEvent, \mouseDownEvent, true )};
     if( this.overrides( \mouseUp ) )
       {this.setEventHandler( QObject.mouseUpEvent, \mouseUpEvent, true )};
-    if( this.overrides( \mouseMove ) )
+    if( this.overrides( \mouseMove ) || this.overrides( \mouseOver ) )
       {this.setEventHandler( QObject.mouseMoveEvent, \mouseMoveEvent, true )};
-    if( this.overrides( \mouseOver ) )
-      {this.setEventHandler( QObject.mouseOverEvent, \mouseOverEvent, true )};
+    if( this.overrides( \mouseEnter ) )
+      {this.setEventHandler( QObject.mouseEnterEvent, \mouseEnterEvent, true )};
     if( this.overrides( \mouseLeave ) )
       {this.setEventHandler( QObject.mouseLeaveEvent, \mouseLeaveEvent, true )};
     if( this.overrides( \mouseWheel ) )
@@ -609,19 +626,23 @@ QView : QObject {
     ^this.mouseUp(  x, y, modifiers, buttonNumber );
   }
 
-  mouseMoveEvent { arg x, y, modifiers;
-    modifiers = QKeyModifiers.toCocoa(modifiers);
-    ^this.mouseMove( x, y, modifiers );
+  mouseMoveEvent { arg x, y, modifiers, buttons;
+    if( buttons != 0 ) {
+      modifiers = QKeyModifiers.toCocoa(modifiers);
+      ^this.mouseMove( x, y, modifiers );
+    }{
+      ^this.mouseOver( x, y )
+    }
   }
 
-  mouseOverEvent { arg x, y;
-    var dummy = x; // prevent this method from being optimized away
-    ^this.mouseOver( x, y );
+  mouseEnterEvent {
+    var dummy = 0; // prevent this method from being optimized away
+    ^this.mouseEnter;
   }
 
-  mouseLeaveEvent { arg x, y;
-    var dummy = x; // prevent this method from being optimized away
-    ^this.mouseLeave( x, y );
+  mouseLeaveEvent {
+    var dummy = 0; // prevent this method from being optimized away
+    ^this.mouseLeave;
   }
 
   mouseWheelEvent { arg x, y, modifiers, xDelta, yDelta;

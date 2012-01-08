@@ -85,7 +85,7 @@ QWindow
   var <view;
 
   //TODO
-  var <>acceptsClickThrough=false, <>acceptsMouseOver=false;
+  var <>acceptsClickThrough=false;
   var <currentSheet;
 
   *initClass {
@@ -211,6 +211,8 @@ QWindow
   toFrontAction { ^view.toFrontAction }
   endFrontAction_ { arg action; view.endFrontAction_(action) }
   endFrontAction { ^view.endFrontAction }
+  acceptsMouseOver { ^view.acceptsMouseOver }
+  acceptsMouseOver_ { arg flag; view.acceptsMouseOver_(flag) }
 
   // ---------------------- private ------------------------------------
 
