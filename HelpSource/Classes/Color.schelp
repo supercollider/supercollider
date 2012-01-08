@@ -9,33 +9,38 @@ An object which stores red, green, blue, and alpha values in instance variables,
 classmethods::
 
 method:: new
+Create a new instance with float values.
 argument:: red
-An instance of link::Classes/Float:: between 0 and 1. Default value is 0.0.
+An instance of link::Classes/Float:: between 0 and 1.
 argument:: green
-An instance of link::Classes/Float:: between 0 and 1. Default value is 0.0.
+An instance of link::Classes/Float:: between 0 and 1.
 argument:: blue
-An instance of link::Classes/Float:: between 0 and 1. Default value is 0.0.
+An instance of link::Classes/Float:: between 0 and 1.
 argument:: alpha
-An instance of link::Classes/Float:: between 0 and 1. Default value is 0.0.
+An instance of link::Classes/Float:: between 0 and 1.
 
 method:: new255
-RGB values from 0-255. Takes 8-bit values as arguments.
+Create a new instance from 8-bit integer values between 0 and 255.
 argument:: red
-An instance of link::Classes/Integer:: between 0 and 255. Default value is 0.0.
+An instance of link::Classes/Integer:: between 0 and 255.
 argument:: green
-An link::Classes/Integer:: between 0 and 255. Default value is 0.0.
+An link::Classes/Integer:: between 0 and 255.
 argument:: blue
-An link::Classes/Integer:: between 0 and 255. Default value is 0.0.
+An link::Classes/Integer:: between 0 and 255.
 argument:: alpha
-An link::Classes/Integer:: between 0 and 255. Default value is 255.
+An link::Classes/Integer:: between 0 and 255.
 
 method:: fromArray
+Same as code::Color.new(*array)::.
 argument:: array
-An instance of link::Classes/Array::. 1-4 values between 0 and 1. See new. Same as code::*new(*array)::.
+An instance of link::Classes/Array::. 1-4 values between 0 and 1. See link::#*new::.
 
 method:: fromHexString
+Creates a new instance from a hex color string.
 argument:: string
-A link::Classes/String::. This should be a 6 character web color, or a 3 character CSS style color. A preceding # is optional.
+A link::Classes/String::.
+discussion::
+The string should be a 6 character web color, or a 3 character CSS style color. A preceding # is optional.
 code::
 Color.fromHexString("#FF6600");
 ::
@@ -52,89 +57,49 @@ Nothing is more clear.
 method:: gray
 American shades of grey.
 argument:: gray
-Shades between 0 (black) and 1 (white) as link::Classes/Float::. Default is 0.5.
+Shades between 0 (black) and 1 (white) as link::Classes/Float::.
 argument:: alpha
-Transparency of gray between 0 and 1 as link::Classes/Float::. Default is 1.
+Transparency of gray between 0 and 1 as link::Classes/Float::.
 
 method:: grey
 British shades of grey.
-argument grey
-Shades between 0 (black) and 1 (white) as link::Classes/Float::. Default is 0.5.
+argument:: grey
+Shades between 0 (black) and 1 (white) as link::Classes/Float::.
 argument:: alpha
-Transparency of grey between 0 and 1 as link::Classes/Float::. Default is 1.
+Transparency of grey between 0 and 1 as link::Classes/Float::.
 
-method:: red
-Default is 1. An instance of link::Classes/Float:: between 0 and 1, where 1 is the bright, fully saturated color, and 0 is black.
-argument:: alpha
-Transparency between 0 and 1 as link::Classes/Float::. Default is 1.
-
-method:: green
-Default is 1. An instance of link::Classes/Float:: between 0 and 1, where 1 is the bright, fully saturated color, and 0 is black.
-argument:: alpha
-Transparency between 0 and 1 as link::Classes/Float::. Default is 1.
-
-method:: blue
-Default is 1. An instance of link::Classes/Float:: between 0 and 1, where 1 is the bright, fully saturated color, and 0 is black.
-argument:: alpha
-Transparency between 0 and 1 as link::Classes/Float::. Default is 1.
-
-method:: cyan
-Default is 1. An instance of link::Classes/Float:: between 0 and 1, where 1 is the bright, fully saturated color, and 0 is black.
-argument:: alpha
-Transparency between 0 and 1 as link::Classes/Float::. Default is 1.
-
-method:: magenta
-Default is 1. An instance of link::Classes/Float:: between 0 and 1, where 1 is the bright, fully saturated color, and 0 is black.
-argument:: alpha
-Transparency between 0 and 1 as link::Classes/Float::. Default is 1.
-
-method:: yellow
+method:: red, green, blue, cyan, magenta, yellow
+Create a new red, green, blue, cyan, magenta or yellow Color.
 argument:: val
-Default is 1. An instance of link::Classes/Float:: between 0 and 1, where 1 is the bright, fully saturated color, and 0 is black.
+An instance of link::Classes/Float:: between 0 and 1, where 1 is the bright, fully saturated color, and 0 is black.
 argument:: alpha
-Transparency between 0 and 1 as link::Classes/Float::. Default is 1.
+Transparency between 0 and 1 as link::Classes/Float::.
 
 method:: rand
 A random RGB Color where the colors are randomly chosen between code::lo:: and code::hi::. See link::Classes/Color#new::.
 argument:: lo
-An instance of link::Classes/Float:: between 0 and 1. Default value is 0.3.
+An instance of link::Classes/Float:: between 0 and 1.
 argument:: hi
-An instance of link::Classes/Float:: between 0 and 1. Default value is 0.9.
+An instance of link::Classes/Float:: between 0 and 1.
 
 method:: hsv
 Maps hsv and alpha values to rgb between 0 and 1.
 argument:: hue
-link::Classes/Float:: between 0 and 0.999. Default value is nil. Default value is nil.
+link::Classes/Float:: between 0 and 0.999.
 argument:: sat
-link::Classes/Float:: between 0 and 1. Default value is nil.
+link::Classes/Float:: between 0 and 1.
 argument:: val
-link::Classes/Float:: between 0 and 1. Default value is nil.
+link::Classes/Float:: between 0 and 1.
 argument:: alpha
-link::Classes/Float:: between 0 and 1. Default value is 1.
+link::Classes/Float:: between 0 and 1.
 
 
 instancemethods::
+private:: printOn, hash
 
-subsection:: Accessing Instance Variables
-
-method:: red
+method:: red, green, blue, alpha
 Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
-argument:: arg1
-An instance of link::Classes/Float:: between 0 and 1.
-
-method:: green
-Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
-argument:: arg1
-An instance of link::Classes/Float:: between 0 and 1.
-
-method:: blue
-Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
-argument:: arg1
-An instance of link::Classes/Float:: between 0 and 1.
-
-method:: alpha
-Get/set one of the instance variables, code::red::, code::green::, code::blue::, or code::alpha::.
-argument:: arg1
+returns::
 An instance of link::Classes/Float:: between 0 and 1.
 
 method:: hexString
@@ -162,18 +127,18 @@ Interpolates the code::red::, code::green::, code::blue::, and code::alpha:: val
 argument:: that
 A second Color.
 argument:: blend
-0 means only this, while 1 means only that. default is 0.5
+0 means only this, while 1 means only that.
 
 method:: vary
 Returns a random variation of a Color.
 argument:: val
-Varies the RGB values +- this amount. Default value is 0.1.
+Varies the RGB values +- this amount.
 argument:: lo
-Low-clips the RGB variation here. Default value is 0.3.
+Low-clips the RGB variation here.
 argument:: hi
-High-clips the RGB variation here. Default value is 0.9.
+High-clips the RGB variation here.
 argument:: alphaVal
-Varies the alpha value +- tis amount, and clips it between 0 and 1.
+Varies the alpha value +/- this amount, and clips it between 0 and 1.
 
 method:: complementary
 Returns the complementary color.
@@ -254,10 +219,6 @@ Returns an array with code::[hue, saturation, value, alpha]::, as values between
 method:: asArray
 Returns an array with code::[red, green, blue, alpha]::, as values between 0 and 1.
 
-method:: printOn
-argument:: stream
-
-
 method:: storeArgs
 Returns an array with code::[red, green, blue, alpha]::.
 
@@ -270,11 +231,8 @@ For use with link::Classes/Pen::. Sets the code::fill:: of link::Classes/Pen:: t
 method:: set
 For use with link::Classes/Pen::. Sets the code::stroke:: and code::fill:: of link::Classes/Pen:: to this.
 
-method:: asInteger
-Returns an integer between -1 (white) and 255 (black).
-
-method:: hash
-
+method:: round
+Round the color.
 
 examples::
 code::
