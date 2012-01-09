@@ -91,7 +91,7 @@ def find_block(doc, where=None):
             break
 
         if not i1.backward_line():
-            raise RuntimeError, "Couldn't find where code block starts!"
+            raise RuntimeError("Couldn't find where code block starts!")
 
     i2 = i1.copy()
     count = 1
@@ -102,7 +102,7 @@ def find_block(doc, where=None):
     # move forward to the end of the block
     while True:
         if not i2.forward_char():
-            raise RuntimeError, "Couldn't find where code block ends!"
+            raise RuntimeError("Couldn't find where code block ends!")
 
         char = i2.get_char()
 
@@ -134,7 +134,7 @@ def find_block(doc, where=None):
     if where.in_range(i1, i2):
         return i1, i2
     else:
-        raise RuntimeError, "Couldn't find code block!"
+        raise RuntimeError("Couldn't find code block!")
 
 def class_char_predicate(c, *args):
     if re.match("[A-Za-z0-9_]", c):
