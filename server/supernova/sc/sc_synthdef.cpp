@@ -89,12 +89,23 @@ int32_t read_int32(const char *& ptr)
     return data;
 }
 
+int32_t read_int(const char *& ptr, int size)
+{
+    if (size == 32)
+        return read_int32(ptr);
+
+    if (size == 16)
+        return read_int16(ptr);
+    assert(false);
+    return 0;
+}
+
 } /* namespace */
 
 std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr)
 {
     /* int32 header = */ read_int32(buf_ptr);
-    /* int32 version = */ read_int32(buf_ptr);
+    int32 version =  read_int32(buf_ptr);
 
     int16 definition_count = read_int16(buf_ptr);
 
@@ -102,7 +113,7 @@ std::vector<sc_synthdef> read_synthdefs(const char * buf_ptr)
 
     for (int i = 0; i != definition_count; ++i) {
         try {
-            sc_synthdef def(buf_ptr);
+            sc_synthdef def(buf_ptr, version);
             ret.push_back(def);
         }
         catch (std::runtime_error const & e) {
@@ -136,70 +147,73 @@ std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & file
     return read_synthdefs(buffer.c_array());
 }
 
-sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer)
+sc_synthdef::unit_spec_t::unit_spec_t(const char *& buffer, int version)
 {
+    const int short_int_size = (version == 1) ? 16 : 32;
+
     name = read_pstring(buffer);
     rate = read_int8(buffer);
-    int16 inputs = read_int16(buffer);
-    int16 outputs = read_int16(buffer);
+    int32_t input_count = read_int(buffer, short_int_size);
+    int32_t output_count = read_int(buffer, short_int_size);
     special_index = read_int16(buffer);
 
-    for (int i = 0; i != inputs; ++i) {
-        int16_t source = read_int16(buffer);
-        int16_t index = read_int16(buffer);
+    for (int i = 0; i != input_count; ++i) {
+        int16_t source = read_int(buffer, short_int_size);
+        int16_t index = read_int(buffer, short_int_size);
         input_spec spec(source, index);
         input_specs.push_back(spec);
     }
 
-    for (int i = 0; i != outputs; ++i) {
+    for (int i = 0; i != output_count; ++i) {
         char rate = read_int8(buffer);
         output_specs.push_back(rate);
     }
 }
 
-sc_synthdef::sc_synthdef(const char*& data)
+sc_synthdef::sc_synthdef(const char*& data, int version)
 {
-    read_synthdef(data);
+    read_synthdef(data, version);
 }
 
-void sc_synthdef::read_synthdef(const char *& ptr)
+void sc_synthdef::read_synthdef(const char *& ptr, int version)
 {
     using namespace std;
+    const int short_int_size = (version == 1) ? 16 : 32;
 
     /* read name */
     name_ = read_pstring(ptr);
 
     /* read constants */
-    int16_t consts = read_int16(ptr);
+    int32_t constant_count = read_int(ptr, short_int_size);
 
-    for (int i = 0; i != consts; ++i) {
+    for (int i = 0; i != constant_count; ++i) {
         float data = read_float(ptr);
         constants.push_back(data);
     }
 
     /* read parameters */
-    int16_t pars = read_int16(ptr);
+    int32_t paramenter_count = read_int(ptr, short_int_size);
 
-    for (int i = 0; i != pars; ++i) {
+    for (int i = 0; i != paramenter_count; ++i) {
         float data = read_float(ptr);
         parameters.push_back(data);
     }
 
     /* read parameter names */
-    int16_t par_names = read_int16(ptr);
+    int32_t parameter_names_count = read_int(ptr, short_int_size);
 
-    for (int i = 0; i != par_names; ++i) {
+    for (int i = 0; i != parameter_names_count; ++i) {
         string data = read_pstring(ptr);
-        int16_t index = read_int16(ptr);
+        int32_t index = read_int(ptr, short_int_size);
 
         parameter_map[data] = index;
     }
 
-    int16_t ugens = read_int16(ptr);
-    graph.reserve(ugens);
+    int32_t ugen_count = read_int(ptr, short_int_size);
+    graph.reserve(ugen_count);
 
-    for (int i = 0; i != ugens; ++i) {
-        unit_spec_t data(ptr);
+    for (int i = 0; i != ugen_count; ++i) {
+        unit_spec_t data(ptr, version);
         graph.push_back(data);
     }
 
