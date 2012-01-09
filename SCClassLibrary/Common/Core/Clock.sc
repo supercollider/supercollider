@@ -38,21 +38,21 @@ SystemClock : Clock {
 AppClock : Clock {
 	classvar scheduler;
 	*initClass {
-		scheduler = Scheduler.new(this, true);
+		scheduler = Scheduler.new(this, drift:true, recursive:false);
 	}
 	*clear {
 		scheduler.clear;
 	}
 	*sched { arg delta, item;
-		scheduler.sched(delta, item)
+		scheduler.sched(delta, item);
+		this.prSchedNotify;
 	}
 	*tick {
-		var nextTime;
 		var saveClock = thisThread.clock;
 		thisThread.clock = this;
-		nextTime = (scheduler.seconds = Main.elapsedTime);
+		scheduler.seconds = Main.elapsedTime;
 		thisThread.clock = saveClock;
-		^nextTime;
+		^scheduler.queue.topPriority;
 	}
 	*prSchedNotify {
 		// notify clients that something has been scheduled
@@ -61,14 +61,26 @@ AppClock : Clock {
 }
 
 Scheduler {
-	var clock, drift, beats = 0.0, <seconds = 0.0, queue;
+	var clock, drift, <>recursive, beats = 0.0, <seconds = 0.0, <queue, expired, wakeup;
 
-	*new { arg clock, drift = false;
-		^super.newCopyArgs(clock, drift).init;
+	*new { arg clock, drift = false, recursive=true;
+		^super.newCopyArgs(clock, drift, recursive).init;
 	}
 	init {
 		beats = thisThread.beats;
 		queue = PriorityQueue.new;
+		expired = Array.new(8);
+		wakeup = { |item|
+			var delta;
+			try {
+				delta = item.awake( beats, seconds, clock );
+				if (delta.isNumber) { this.sched(delta, item) };
+			} { |error|
+				Error.handling = true;
+				if (Error.debug) { error.inspect } { error.reportError };
+				Error.handling = false;
+			}
+		};
 	}
 
 	play { arg task;
@@ -84,7 +96,6 @@ Scheduler {
 		if (delta.notNil, {
 			fromTime = if (drift, { Main.elapsedTime },{ seconds });
 			queue.put(fromTime + delta, item);
-			clock.prSchedNotify;
 		});
 	}
 	clear {
@@ -98,28 +109,39 @@ Scheduler {
 		this.seconds = seconds + delta;
 	}
 
-	seconds_ { | newSeconds  |
-		// NOTE: first pop ALL the expired items and only then wake
-		// them up, because we want control to return to the caller
-		// before any tasks scheduled as a result of this call are
-		// performed.
-		var delta, items;
-		items = Array.new(8);
-		while ({
-			seconds = queue.topPriority;
-			seconds.notNil and: { seconds <= newSeconds }
-		},{
-			items = items.add( queue.pop );
-		});
-		items.do { | item |
-			delta = item.awake( beats, seconds, clock );
-			if (delta.isNumber, {
-				this.sched(delta, item);
-			});
+	seconds_ { | newSeconds |
+		if( recursive ) {
+			while {
+				seconds = queue.topPriority;
+				seconds.notNil and: { seconds <= newSeconds }
+			} {
+				beats = clock.secs2beats(seconds);
+				wakeup.(queue.pop);
+			}
+		} {
+			// First pop all the expired items and only then wake
+			// them up, in order for control to return to the caller
+			// before any tasks scheduled as a result of this call are
+			// awaken.
+
+			while {
+				seconds = queue.topPriority;
+				seconds.notNil and: { seconds <= newSeconds }
+			} {
+				expired = expired.add(seconds);
+				expired = expired.add(queue.pop);
+			};
+
+			expired.pairsDo { | time, item |
+				seconds = time;
+				beats = clock.secs2beats(time);
+				wakeup.(item);
+			};
+			expired.extend(0); // clear
 		};
+
 		seconds = newSeconds;
 		beats = clock.secs2beats(newSeconds);
-		^queue.topPriority;
 	}
 }
 
