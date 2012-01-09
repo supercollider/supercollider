@@ -291,9 +291,20 @@ bool QWidgetProxy::interpretMouseEvent( QObject *o, QEvent *e, QList<QVariant> &
     int buttons = mouse->buttons();
 
     if( buttons == 0 ) {
+      // Special treatment of mouse-tracking events.
+
       QWidget *win = w->window();
+
+      // Only accept if window has a special property enabled.
       if( !(win && win->property("_qc_win_mouse_tracking").toBool()) )
         return false;
+
+      // Reject the events when mouse pointer leaves the window,
+      // resulting in out-of-bounds coordinates
+      if( win == w ) {
+        if( pt.x() < 0 || pt.x() >= w->width() || pt.y() < 0 || pt.y() >= w->height() )
+          return false;
+      }
     }
 
     args << (int) mouse->buttons();
