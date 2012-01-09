@@ -42,17 +42,14 @@ class sc_synthdef
     typedef std::vector<float, aligned_allocator<float> > fvector;
     typedef std::vector<c_string, aligned_allocator<string> > svector;
 
-    typedef boost::int16_t int16;
-    typedef boost::int32_t int32;
-
     typedef std::vector<char, aligned_allocator<char> > char_vector;
 
 public:
-    typedef std::map<string, int, std::less<string>, aligned_allocator<string> > parameter_map_t;
+    typedef std::map<string, int32_t, std::less<string>, aligned_allocator<string> > parameter_map_t;
 
     struct input_spec
     {
-        input_spec(int16_t source, int16_t index):
+        input_spec(int32_t source, int32_t index):
             source(source), index(index)
         {}
 
@@ -65,14 +62,14 @@ public:
             return index < rhs.index;
         }
 
-        int16_t source;   /* index of ugen or -1 for constant */
-        int16_t index;    /* number of output or constant index */
+        int32_t source;   /* index of ugen or -1 for constant */
+        int32_t index;    /* number of output or constant index */
     };
     typedef std::vector<input_spec, aligned_allocator<input_spec> > input_spec_vector;
 
     struct unit_spec_t
     {
-        explicit unit_spec_t(const char *& buffer);
+        explicit unit_spec_t(const char *& buffer, int version);
 
         unit_spec_t(string const & name, int16_t rate, int16_t special_index,
                     input_spec_vector const & in_specs,
@@ -100,7 +97,7 @@ public:
 
         input_spec_vector input_specs;
         char_vector output_specs;      /* calculation rates */
-        std::vector<int16_t, aligned_allocator<int16_t> > buffer_mapping;
+        std::vector<int32_t, aligned_allocator<int32_t> > buffer_mapping;
 
         std::size_t memory_requirement(void)
         {
@@ -120,7 +117,7 @@ public:
     typedef std::vector<unit_spec_t, aligned_allocator<unit_spec_t> > graph_t;
     typedef std::vector<int32_t, aligned_allocator<int32_t> > calc_units_t;
 
-    explicit sc_synthdef(const char *& buffer);
+    sc_synthdef(const char *& buffer, int version);
 
 #ifdef BOOST_HAS_RVALUE_REFS
     sc_synthdef(sc_synthdef && rhs):
@@ -165,7 +162,7 @@ public:
     }
 
 private:
-    void read_synthdef(const char *&);
+    void read_synthdef(const char *&, int version);
 
     /** assign buffers, collect memory requirement & cache ugen prototype */
     void prepare(void);
