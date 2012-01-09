@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import re, os, subprocess, time
+import re, subprocess, time
 from gi.repository import GObject, Gedit, Gtk, Pango
 
 ui_str = """<ui>
@@ -147,7 +147,7 @@ def find_word(doc, where=None):
     else:
         i1 = where.copy()
 
-    scclass_regex = "[A-Za-z0-9_]"
+    #scclass_regex = "[A-Za-z0-9_]"
     
     while i1.backward_char():
         if not re.match("[A-Za-z0-9_]", i1.get_char()):
@@ -263,15 +263,15 @@ class Logger:
             return False
 
         # FIXME: A workaround for a mac character
-        self.__append_to_buffer(unicode(s, 'mac_latin2'))
+        self.__append_to_buffer(s)
 
         if condition & GObject.IO_ERR:
             s = source.read() # can safely read until EOF here
-            self.__append_to_buffer(unicode(s, 'mac_latin2'))
+            self.__append_to_buffer(s)
             return False
         elif condition & GObject.IO_HUP:
             s = source.read() # can safely read until EOF here
-            self.__append_to_buffer(unicode(s, 'mac_latin2'))
+            self.__append_to_buffer(s)
             return False
         elif condition != 1:
             return False
@@ -499,9 +499,8 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
                 try:
                     i1, i2 = find_block(doc, i1)
                 except RuntimeError:
-                    statusbar = self.window.get_statusbar()
-                    
-                    context = statusbar.get_context_id("supercollider")
+                    #statusbar = self.window.get_statusbar()
+                    #context = statusbar.get_context_id("supercollider")
                     # FIXME: no longer works with gir
                     #statusbar.flash_message(context,
                     #    "Code block is not properly closed")
