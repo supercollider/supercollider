@@ -5,6 +5,8 @@ endif()
 # determines the app name and app install location (scappbundlename, scappdir):
 include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
+set(CMAKE_INSTALL_PREFIX "${scappdir}" CACHE PATH "" FORCE)
+
 include_directories(
 	${CMAKE_SOURCE_DIR}/lang/LangSource/Bison
 	${CMAKE_SOURCE_DIR}/include/common
@@ -276,13 +278,17 @@ if (NOT ("${standalone}" STREQUAL ""))
 	endforeach(onefile)
 endif()
 
-# fixup_bundle will fix the dll referencing so the .app can be sent to other people:
-option(SC_APP_BUNDLE_LIBS "Bundle frameworks and libraries in app" OFF)
-if (SC_APP_BUNDLE_LIBS)
-    INSTALL(CODE "
-       include(BundleUtilities)
-       set(BU_CHMOD_BUNDLE_ITEMS TRUE) # allow cmake>=2.8.3 to chmod libs it's including, rather than choking on readonly
-       fixup_bundle(\"${scappdir}/${scappbundlename}.app\"   \"\"   \"${CMAKE_CURRENT_BINARY_DIR}\")
-       "
-    COMPONENT Runtime)
+set(MACOSX_BUNDLE_BUNDLE_NAME "${scappbundlename}")
+
+if(SC_QT)
+	include(DeployQt4)
+	install_qt4_executable("${scappbundlename}.app")
 endif()
+
+# FIXME: "make package" fails with "not a valid bundle"..
+set(CPACK_GENERATOR "DragNDrop")
+set(CPACK_DMG_FORMAT "UDBZ")
+set(CPACK_DMG_VOLUME_NAME "${scappbundlename}")
+set(CPACK_SYSTEM_NAME "OSX")
+set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
+include(CPack)
