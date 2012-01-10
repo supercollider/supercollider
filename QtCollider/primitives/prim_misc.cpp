@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -27,6 +27,10 @@
 #include "../QObjectProxy.h"
 #include "../style/ProxyStyle.hpp"
 #include "QtCollider.h"
+
+#ifdef Q_WS_MAC
+# include "../hacks/hacks_mac.hpp"
+#endif
 
 #include <PyrKernel.h>
 
@@ -119,6 +123,13 @@ QC_LANG_PRIMITIVE( Qt_FocusWidget, 0,  PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QWidget *w = QApplication::focusWidget();
+
+#ifdef Q_WS_MAC
+  // On Mac we need to make additional checks, as Qt does not monitor
+  // focus changes to native Cocoa windows in the same application.
+  if( w && !QtCollider::Mac::isKeyWindow( w ) )
+    w = 0;
+#endif
 
   if( w ) {
     QObjectProxy *proxy = QObjectProxy::fromObject(w);
