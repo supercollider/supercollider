@@ -213,8 +213,45 @@ DeprecatedError : MethodError {
 				{ str = str ++ ":-" ++ m.name };
 			str;
 		};
-		var string;
-		string = "WARNING: Method" + methodSignature.value(method) + "is deprecated and will be removed.";
+		var searchForCaller = { arg backtrace, m;
+			while {
+				backtrace.notNil and: {
+					backtrace.functionDef !== m
+				}
+			} {
+				backtrace = backtrace.caller;
+			};
+			// backtrace.caller may now be a FunctionDef,
+			// useless for troubleshooting
+			// so roll back to the last real method
+			while {
+				backtrace.notNil and: {
+					backtrace = backtrace.caller;
+					backtrace.functionDef.isKindOf(Method).not
+				}
+			};
+			if(backtrace.notNil) { backtrace.tryPerform(\functionDef) };
+		};
+		var caller, string;
+		if(protectedBacktrace.notNil) {
+			caller = searchForCaller.value(protectedBacktrace, method);
+		};
+		if(caller.isNil) {
+			caller = searchForCaller.value(this.getBackTrace, method);
+		};
+		if(caller.isNil) {
+			caller = "{unknown}"
+		} {
+			if(caller.isKindOf(Method)) {
+				caller = methodSignature.value(caller);
+			} {
+				caller = caller.asString;
+			};
+		};
+		string = "WARNING: Called from %, method % is deprecated and will be removed.".format(
+			caller,
+			methodSignature.value(method)
+		);
 		if(alternateMethod.notNil, {
 			string = string + "Use" + methodSignature.value(alternateMethod) + "instead.";
 		});
