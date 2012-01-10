@@ -204,11 +204,11 @@ class ScLang:
 
     # FIXME: use sclang.communicate()
     def evaluate(self, code, silent=False):
-        self.stdin.write(code)
+        self.stdin.write(bytes(code))
         if silent:
-            self.stdin.write("\x1b")
+            self.stdin.write(bytes("\x1b"))
         else:
-            self.stdin.write("\x0c")
+            self.stdin.write(bytes("\x0c"))
         self.stdin.flush()
 
     def toggle_recording(self, record):
@@ -568,7 +568,7 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             self.__lang.evaluate("thisProcess.platform.devLoc(\""+location.get_path()+"\").openTextFile", silent=True)
 
     def on_recompile(self, action):
-        self.__lang.stdin.write("\x18")
+        self.__lang.stdin.write(bytes("\x18"))
 
     def on_restart(self, action, data=None):
         if self.__lang.running():
