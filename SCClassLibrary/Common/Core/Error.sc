@@ -39,7 +39,7 @@ Exception {
 			if(def.isKindOf(Method), {
 				ownerClass = def.ownerClass;
 				methodName = def.name;
-				if(ownerClass == Function && (methodName == 'protect'), {
+				if(ownerClass == Function && { #['protect', 'try'].includes(methodName) }, {
 					pos = out.pos;
 				});
 				out << "\t%:%\t%\n".format(ownerClass, methodName, currentFrame.address);
