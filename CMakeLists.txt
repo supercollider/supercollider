@@ -287,7 +287,7 @@ if(APPLE)
 		DESTINATION ${auxresourcesdir}
 	)
 	install(FILES COPYING AUTHORS
-		DESTINATION ${scappdir}
+		DESTINATION ${auxresourcesdir}
 	)
 elseif (WIN32)
 	set(auxresourcesdir "SuperCollider")
