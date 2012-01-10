@@ -250,9 +250,7 @@ endif(SNDFILE_FOUND)
 
 target_link_libraries(${scappbundlename} ${PTHREADS_LIBRARY})
 
-install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app"
-	DESTINATION ${scappdir}
-	USE_SOURCE_PERMISSIONS)
+install(TARGETS ${scappbundlename} DESTINATION ${scappauxresourcesdir})
 
 if (NOT ("${standalone}" STREQUAL ""))
 	# A synthdefs folder is expected in the bundle
@@ -280,9 +278,11 @@ endif()
 
 set(MACOSX_BUNDLE_BUNDLE_NAME "${scappbundlename}")
 
+include(InstallRequiredSystemLibraries)
+
 if(SC_QT)
 	include(DeployQt4)
-	install_qt4_executable("${scappbundlename}.app")
+	install_qt4_executable("${scappauxresourcesdir}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth")
 endif()
 
 # FIXME: "make package" fails with "not a valid bundle"..
@@ -291,4 +291,6 @@ set(CPACK_DMG_FORMAT "UDBZ")
 set(CPACK_DMG_VOLUME_NAME "${scappbundlename}")
 set(CPACK_SYSTEM_NAME "OSX")
 set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
+set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Resources/SCcube.icns")
 include(CPack)
