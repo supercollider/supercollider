@@ -83,6 +83,18 @@ if(QT_COLLIDER_LANG_CLIENT)
     list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/LanguageClient.cpp)
 endif()
 
+if(APPLE)
+  set( QT_COLLIDER_OBJCPP_SRCS
+      ${QT_COLLIDER_DIR}/hacks/hacks_mac.M
+  )
+endif()
+
+if( CMAKE_COMPILER_IS_GNUCXX )
+  set_source_files_properties( ${QT_COLLIDER_OBJCPP_SRCS}
+      PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions"
+  )
+endif()
+
 set( QT_USE_QTWEBKIT TRUE )
 
 include(${QT_USE_FILE})
@@ -95,11 +107,19 @@ include_directories(
 qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 qt4_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
 
-list( APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_MOC_SRCS} ${QT_COLLIDER_RCC} )
+list( APPEND QT_COLLIDER_SRCS
+  ${QT_COLLIDER_OBJCPP_SRCS}
+  ${QT_COLLIDER_MOC_SRCS}
+  ${QT_COLLIDER_RCC}
+)
 
 add_definitions(-DSC_QT -DQT_COLLIDER_EXPORTING -DQT_NO_KEYWORDS)
 
 set (QT_COLLIDER_LIBS ${QT_LIBRARIES} ${MATH_LIBRARY})
+
+if(APPLE)
+  list(APPEND QT_COLLIDER_LIBS "-framework Cocoa" )
+endif()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(X11)
