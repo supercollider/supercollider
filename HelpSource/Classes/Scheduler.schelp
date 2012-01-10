@@ -11,27 +11,42 @@ method::new
 argument::clock
 A clock, like SystemClock.
 argument::drift
-If true, it will schedule the events relative to Main.elapsedTime, otherwise to the current seconds of the scheduler.
+If code::true::, link::#-sched:: will schedule tasks relative to the current absolute time ( link::Classes/Process#*elapsedTime#Main.elapsedTime:: ), otherwise to the current logical time of the scheduler ( link::#-seconds:: ).
+argument::recursive
+Sets link::#-recursive::.
 
 INSTANCEMETHODS::
 
 method::play
-Schedules the task to play, with the delta time returned from it.
+Schedules the task immediately. Equivalent to code::sched(0, task)::.
 
 method::sched
-Schedule the task.
+Schedule the task at code::delta:: seconds relative to the current time, as defined by the code::drift:: argument of the link::#*new#constructor::.
+
+Regardless of what time a task is scheduled, it will only be awaken the next time link::#-seconds:: is set.
+
+method::schedAbs
+Schedule the task at absolute code::time:: in seconds.
 
 method::advance
-Advance time by n seconds. Any task that is scheduled within the new time, is evaluated, and, if it returns a new time, rescheduled.
+Advance the current logical time by code::delta:: seconds. Has same effect as setting link::#-seconds::.
 
 method::seconds
-Set new time. Any task that is scheduled within the new time, is evaluated, and, if it returns a new time, rescheduled.
+The current logical time of the scheduler.
+
+Setting a new time will wake up (evaluate) any tasks scheduled within that time; a task that returns a new time will be rescheduled accordingly.
 
 method::isEmpty
 Returns whether the scheduling queue is empty.
 
 method::clear
-Clear the scheduling queue
+Clears the scheduling queue
+
+method::queue
+returns:: The instance of link::Classes/PriorityQueue:: used internally as scheduling queue.
+
+method::recursive
+If waking up items results in new items being scheduled, but some of them are already expired (scheduled at current time or earlier), this variable determines whether those items will be awaken as well in the same call to -seconds.
 
 EXAMPLES::
 
