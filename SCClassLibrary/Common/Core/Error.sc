@@ -51,7 +51,7 @@ Exception {
 				out << "\t\targ % = %\n".format(name, currentFrame.args[i]);
 			});
 			def.varNames.do({|name, i|
-				out << "\t\targ % = %\n".format(name, currentFrame.args[i]);
+				out << "\t\tvar % = %\n".format(name, currentFrame.vars[i]);
 			});
 			currentFrame = currentFrame.caller;
 		});
