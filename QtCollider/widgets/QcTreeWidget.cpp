@@ -231,3 +231,9 @@ int QcTreeWidget::Item::finalize( VMGlobals *g, PyrObject *obj )
   }
   return errNone;
 }
+
+bool QcTreeWidget::Item::operator< (const QTreeWidgetItem &other) const
+{
+  int column = treeWidget()->sortColumn();
+  return text(column).toLower() < other.text(column).toLower();
+}
