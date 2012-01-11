@@ -198,12 +198,12 @@ OSCMessageDispatcher : AbstractWrappingDispatcher {
 	value {|time, addr, recvPort, msg| active[msg[0]].value(msg, time, addr, recvPort);}
 	
 	register { 
-		thisProcess.addOSCFunc(this); 
+		thisProcess.addOSCRecvFunc(this); 
 		registered = true; 
 	}
 	
 	unregister { 
-		thisProcess.removeOSCFunc(this);
+		thisProcess.removeOSCRecvFunc(this);
 		registered = false;
 	}
 	
@@ -248,12 +248,12 @@ OSCFunc : AbstractResponderFunc {
 	*trace {|bool = true| 
 		if(bool, {
 			if(traceRunning.not, {
-				thisProcess.addOSCFunc(traceFunc);
+				thisProcess.addOSCRecvFunc(traceFunc);
 				CmdPeriod.add(this);
 				traceRunning = true;
 			});
 		}, {
-			thisProcess.removeOSCFunc(traceFunc);
+			thisProcess.removeOSCRecvFunc(traceFunc);
 			CmdPeriod.remove(this);
 			traceRunning = false;
 		});
