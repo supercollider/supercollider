@@ -427,10 +427,20 @@ endif()
 set(CPACK_PACKAGE_VERSION_MAJOR 3)
 set(CPACK_PACKAGE_VERSION_MINOR 5)
 set(CPACK_PACKAGE_VERSION_PATCH dev)
-include(CPack)
-if(WIN32)
+
+if(APPLE)
+	set(CPACK_GENERATOR "DragNDrop")
+	set(CPACK_DMG_FORMAT "UDBZ")
+	set(CPACK_DMG_VOLUME_NAME "${scappbundlename}")
+	set(CPACK_SYSTEM_NAME "OSX")
+#	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
+	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
+	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
+	set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/platform/mac/Resources/SCcube.icns")
+elseif(WIN32)
 	set(CPACK_MONOLITHIC_INSTALL 1)
 endif()
+include(CPack)
 
 #############################################
 # hide advanced variables
