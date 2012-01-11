@@ -263,15 +263,15 @@ class Logger:
             return False
 
         # FIXME: A workaround for a mac character
-        self.__append_to_buffer(s)
+        self.__append_to_buffer(str(s))
 
         if condition & GObject.IO_ERR:
             s = source.read() # can safely read until EOF here
-            self.__append_to_buffer(s)
+            self.__append_to_buffer(str(s))
             return False
         elif condition & GObject.IO_HUP:
             s = source.read() # can safely read until EOF here
-            self.__append_to_buffer(s)
+            self.__append_to_buffer(str(s))
             return False
         elif condition != 1:
             return False
