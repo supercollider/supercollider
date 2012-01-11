@@ -49,4 +49,9 @@ SCFont {
 	*sansSerif {|size|
 		^this.new(this.defaultSansFace, size)
 	}
+
+	// support Qt GUI in combination with CocoaDocument
+	asSCFont {
+		^this
+	}
 }
