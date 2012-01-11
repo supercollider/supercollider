@@ -1,0 +1,113 @@
+CLASS:: TreeView
+redirect:: implClass
+summary:: A view displaying a tree of items with columns
+categories:: GUI>Views
+
+DESCRIPTION::
+
+A view that displays a hierarchy of items. It is divided into rows and column: each row represents an item, and each column represents a different data field of the items.
+
+The items are represented in code by instances of link::Classes/QTreeViewItem::, returned by the various TreeView methods. Top level items are added via the TreeView interface, while child items are added via the QTreeViewItem interface, which also allows to manipulate items in more detail after their creation.
+
+Items can be visually sorted with link::#-sort::, or by clicking on one of the column headers, if link::#-canSort:: is enabled.
+
+Each item can hold other views in each of its data fields, which allows for rich graphical interaction. See link::Classes/QTreeViewItem#-setView::.
+
+
+CLASSMETHODS::
+
+PRIVATE:: key
+
+INSTANCEMETHODS::
+
+PRIVATE:: prForEachColumnDataPair
+PRIVATE:: prValidItem
+
+
+SUBSECTION:: Data
+
+METHOD:: columns
+	Gets or sets the number of columns (data fields) and their names. When setting a smaller number of columns than the current the extra columns will be removed, and hence all the data stored stored in those columns.
+
+	ARGUMENT::
+		An array of Strings for column names.
+
+METHOD:: numColumns
+	The total number of columns (data fields).
+
+METHOD:: addItem
+	Append a new top-level item.
+
+	ARGUMENT:: strings
+		An array of Strings (or nil), each for the text of one data field.
+	RETURNS::
+		An instance of QTreeViewItem representing the new item.
+
+METHOD:: insertItem
+	Insert a new top-level item at code::index::.
+
+	ARGUMENT:: index
+		The position at which to insert the item.
+	ARGUMENT:: strings
+		An array of Strings (or nil), each for the text of one data field.
+	RETURNS::
+		An instance of QTreeViewItem representing the new item.
+
+METHOD:: removeItem
+	Remove the given code::item::. After the item is removed, any usage of the related QTreeViewItems will have no effect.
+
+	ARGUMENT::
+		An instance of QTreeViewItem.
+
+METHOD:: numItems
+	The total number of items.
+
+METHOD:: currentItem
+	Gets or sets the currently selected item.
+
+	ARGUMENT::
+		An instance of QTreeViewItem.
+	RETURNS::
+		An instance of QTreeViewItem or nil, if no current item.
+
+METHOD:: itemAt
+	The item at code::index::.
+
+
+
+SUBSECTION:: Appearance
+
+METHOD:: sort
+	Sort items by data in code::column::. This works regardless of link::#-canSort::.
+
+	NOTE:: Sorting has no effect on the logical order of the items, it only affects how they are displayed. ::
+
+	ARGUMENT:: column
+		The integer column index to sort by.
+	ARGUMENT:: descending
+		Whether to sort in descending or ascending fashion. The default is ascending.
+
+PRIVATE:: background
+
+
+SUBSECTION:: Interaction
+
+METHOD:: canSort
+	Whether the user can sort the items by clicking on a column header.
+
+	When setting to code::true::, the items will be sorted immediately according to the current sorting column. While code::true::, the view will also automatically sort new items.
+
+	The default is code::false::.
+
+	See also: link::#-sort::.
+
+
+
+
+SUBSECTION:: Actions
+
+METHOD:: itemPressedAction
+	The object to be evaluated when a mouse button is pressed on an item, passing this view as the argument.
+
+METHOD:: onItemChanged
+	The object to be evaluated whenever the current item changes, passing this view as the argument.
