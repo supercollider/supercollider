@@ -31,7 +31,7 @@ classvar scVersionMajor=3, scVersionMinor=6, scVersionPostfix="~dev";
 		("Welcome to SuperCollider" + Main.version
 			++ (Platform.ideName.switch(
 				"scvim", {", type :SChelp for help"},
-				"scel",  {", type ctrl-c ctrl-h for help"},
+				"scel",  {", type C-c C-y for help"},
 				"sced",  {", type ctrl-U for help"},
 				"scapp", {", type cmd-d for help"}
 			) ?? {
@@ -87,24 +87,24 @@ classvar scVersionMajor=3, scVersionMinor=6, scVersionPostfix="~dev";
 			this.recvOSCmessage(time, replyAddr, recvPort, msg);
 		});
 	}
-	
+
 	addOSCFunc { |func| recvOSCfunc = recvOSCfunc.addFunc(func) }
-	
+
 	removeOSCFunc { |func| recvOSCfunc = recvOSCfunc.removeFunc(func) }
-	
+
 	replaceOSCFunc { |func, newFunc| recvOSCfunc = recvOSCfunc.replaceFunc(func, newFunc) }
-	
+
 	openUDPPort {|portNum|
 		var result;
 		result = this.prOpenUDPPort(portNum);
 		if(result, { customPorts = customPorts ++ [portNum]; });
 		^result;
 	}
-	
+
 	prOpenUDPPort {|portNum|
 		_OpenUDPPort
 	}
-	
+
 	newSCWindow {
 		var win, palette;
 		win = SCWindow("construction");
