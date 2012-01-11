@@ -89,11 +89,11 @@ classvar scVersionMajor=3, scVersionMinor=6, scVersionPostfix="~dev";
 		});
 	}
 
-	addOSCFunc { |func| prRecvOSCFunc = prRecvOSCFunc.addFunc(func) }
+	addOSCRecvFunc { |func| prRecvOSCFunc = prRecvOSCFunc.addFunc(func) }
 	
-	removeOSCFunc { |func| prRecvOSCFunc = prRecvOSCFunc.removeFunc(func) }
+	removeOSCRecvFunc { |func| prRecvOSCFunc = prRecvOSCFunc.removeFunc(func) }
 	
-	replaceOSCFunc { |func, newFunc| prRecvOSCFunc = prRecvOSCFunc.replaceFunc(func, newFunc) }
+	replaceOSCRecvFunc { |func, newFunc| prRecvOSCFunc = prRecvOSCFunc.replaceFunc(func, newFunc) }
 	
 	openUDPPort {|portNum|
 		var result;
