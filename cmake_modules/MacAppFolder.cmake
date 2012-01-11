@@ -9,13 +9,6 @@ if(APPLE)
 		set(scappbundlename ${standalone})
 		message(STATUS "Building sc in STANDALONE mode. App name: " ${standalone})
 	endif()
-
-	###### By default on mac, we tell cmake not to install to system but to a subfolder of the build-dir
-	###### You might like to install straight to /Applications - like this:
-	######  cmake -D scappdir:string=/Applications/SuperCollider ../
-	if ("${scappdir}" STREQUAL "")
-		set(scappdir "${CMAKE_BINARY_DIR}/Install")
-	endif()
 	
 	# For standalone, many things go into the bundle rather than beside it
 	if ("${standalone}" STREQUAL "")

@@ -5,7 +5,17 @@ endif()
 # determines the app name and app install location (scappbundlename, scappdir):
 include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
-set(CMAKE_INSTALL_PREFIX "${scappdir}" CACHE PATH "" FORCE)
+# On OSX, everything is installed in a folder named after ${scappauxresourcesdir},
+# which defaults to "SuperCollider". The folder is installed under ${CMAKE_INSTALL_PREFIX},
+# which defaults to <build directory>/Install/
+# This means the app will go in <build dir>/Install/SuperCollider/SuperCollider.app
+# and class lib in <build dir>/Install/SuperCollider/SCClassLibrary, etc..
+# The contents of the install prefix folder will be packaged to a DMG with "make package"
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Install path prefix" FORCE)
+endif()
+message(STATUS "Install prefix ${CMAKE_INSTALL_PREFIX}")
 
 include_directories(
 	${CMAKE_SOURCE_DIR}/lang/LangSource/Bison
