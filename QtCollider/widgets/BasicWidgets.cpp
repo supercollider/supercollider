@@ -91,7 +91,7 @@ void QcListWidget::onCurrentItemChanged()
 void QcListWidget::keyPressEvent( QKeyEvent *e )
 {
   QListWidget::keyPressEvent( e );
-  if( e->key() == Qt::Key_Return )
+  if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
     Q_EMIT( returnPressed() );
 }
 
