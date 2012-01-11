@@ -5,7 +5,7 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="beta";
 	//==== end replace ====
 
 	var <platform, argv;
-	var <>recvOSCfunc;
+	var recvOSCfunc, prRecvOSCFunc;
 	var <customPorts;
 
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
@@ -78,6 +78,7 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="beta";
 	recvOSCmessage { arg time, replyAddr, recvPort, msg;
 		// this method is called when an OSC message is received.
 		recvOSCfunc.value(time, replyAddr, recvPort, msg);
+		prRecvOSCFunc.value(time, replyAddr, recvPort, msg);
 		OSCresponder.respond(time, replyAddr, msg);
 	}
 
@@ -87,12 +88,12 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="beta";
 			this.recvOSCmessage(time, replyAddr, recvPort, msg);
 		});
 	}
+
+	addOSCFunc { |func| prRecvOSCFunc = prRecvOSCFunc.addFunc(func) }
 	
-	addOSCFunc { |func| recvOSCfunc = recvOSCfunc.addFunc(func) }
+	removeOSCFunc { |func| prRecvOSCFunc = prRecvOSCFunc.removeFunc(func) }
 	
-	removeOSCFunc { |func| recvOSCfunc = recvOSCfunc.removeFunc(func) }
-	
-	replaceOSCFunc { |func, newFunc| recvOSCfunc = recvOSCfunc.replaceFunc(func, newFunc) }
+	replaceOSCFunc { |func, newFunc| prRecvOSCFunc = prRecvOSCFunc.replaceFunc(func, newFunc) }
 	
 	openUDPPort {|portNum|
 		var result;

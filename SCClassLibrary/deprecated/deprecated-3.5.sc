@@ -471,3 +471,14 @@ GetStringDialog  {
 		this.plotGraph(n, from, to, name, bounds, discrete, numChannels, minval, maxval, parent, labels)
 	}
 }
+
++ Main {
+	
+	recvOSCfunc { this.deprecated(thisMethod); ^recvOSCfunc; }
+	
+	recvOSCfunc_ { |newFunc|
+		this.deprecated(thisMethod, Main.findMethod(\addOSCFunc));
+		recvOSCfunc = newFunc;	
+	}
+	
+}
