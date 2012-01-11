@@ -198,12 +198,12 @@ OSCMessageDispatcher : AbstractWrappingDispatcher {
 	value {|time, addr, recvPort, msg| active[msg[0]].value(msg, time, addr, recvPort);}
 	
 	register { 
-		thisProcess.recvOSCfunc = thisProcess.recvOSCfunc.addFunc(this); 
+		thisProcess.addOSCFunc(this); 
 		registered = true; 
 	}
 	
 	unregister { 
-		thisProcess.recvOSCfunc = thisProcess.recvOSCfunc.removeFunc(this);
+		thisProcess.removeOSCFunc(this);
 		registered = false;
 	}
 	
