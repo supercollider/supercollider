@@ -285,12 +285,4 @@ if(SC_QT)
 	install_qt4_executable("${scappauxresourcesdir}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth")
 endif()
 
-# FIXME: "make package" fails with "not a valid bundle"..
-set(CPACK_GENERATOR "DragNDrop")
-set(CPACK_DMG_FORMAT "UDBZ")
-set(CPACK_DMG_VOLUME_NAME "${scappbundlename}")
-set(CPACK_SYSTEM_NAME "OSX")
-set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
-set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
-set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Resources/SCcube.icns")
-include(CPack)
+
