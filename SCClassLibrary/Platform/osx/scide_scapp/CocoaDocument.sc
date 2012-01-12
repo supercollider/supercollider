@@ -21,6 +21,7 @@ CocoaDocument : Document {
 	}
 
 	*defaultFont_{|font|
+		font = font.asSCFont;
 		CocoaDocument.prSetDefaultFont(font);
 		defaultFont = font;
 	}
@@ -141,9 +142,12 @@ CocoaDocument : Document {
 
 	//if range is -1 apply to whole doc
 	setFont {arg font, rangeStart= -1, rangeSize=100;
+		this.prSetFont(font.asSCFont, rangeStart, rangeSize);
+	}
+
+	prSetFont { arg font, rangeStart, rangeSize;
 		_TextWindow_SetFont
 		^this.primitiveFailed
-
 	}
 
 	setTextColor { arg color,  rangeStart = -1, rangeSize = 0;

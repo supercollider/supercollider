@@ -91,13 +91,13 @@ returns:: An link::Classes/Integer::
 EXAMPLES::
 
 code::
-n = NetAddr("127.0.0.1", 57120); // local machine
+n = NetAddr("127.0.0.1", NetAddr.langPort); // local machine
 
 OSCFunc.newMatching({|time, msg, addr| \matching.postln}, '/chat', n); // path matching
 OSCFunc({|time, msg, addr| \oneShot.postln}, '/chat', n).oneShot; // once only
 OSCdef(\test, {|time, msg, addr| \unmatching.postln}, '/chat', n); // def style
 
-m = NetAddr("127.0.0.1", 57120); // loopback
+m = NetAddr("127.0.0.1", NetAddr.langPort); // loopback
 
 m.sendMsg("/chat", "Hello App 1");
 m.sendMsg("/chat", "Hello App 1"); // oneshot gone
