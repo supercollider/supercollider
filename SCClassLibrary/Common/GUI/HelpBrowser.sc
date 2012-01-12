@@ -9,6 +9,7 @@ HelpBrowser {
 	var animCount = 0;
 	var srchBox;
 	var openNewWin;
+	var rout;
 
 	*initClass {
 		StartUp.add {
@@ -72,7 +73,7 @@ HelpBrowser {
 			{"Classes" +/+ c ++ ".html"}
 			{"Guides/WritingHelp.html"})
 	}
-
+	cmdPeriod { rout.play(AppClock) }
 	goTo {|url, brokenAction|
 		var newPath, oldPath, plainTextExts = #[".sc",".scd",".txt",".schelp"];
 
@@ -89,7 +90,8 @@ HelpBrowser {
 		this.startAnim;
 
 		brokenAction = brokenAction ? {SCDoc.helpTargetDir++"/BrokenLink.html#"++url};
-		Routine {
+
+		rout = Routine {
 			try {
 				url = SCDoc.prepareHelpForURL(url) ?? brokenAction;
 				#newPath, oldPath = [url,webView.url].collect {|x|
@@ -107,7 +109,10 @@ HelpBrowser {
 				webView.html = err.errorString;
 				err.throw;
 			};
+			CmdPeriod.remove(this);
+			rout = nil;
 		}.play(AppClock);
+		CmdPeriod.add(this);
 	}
 
 	goHome { this.goTo(homeUrl); }
