@@ -632,9 +632,9 @@ int prFilePutInt32(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)slotRawPtr(&pfile->fileptr);
 	if (file == NULL) return errFailed;
 
-        int val;
-        int err = slotIntVal(b, &val);
-        if (err) return err;
+	int val;
+	int err = slotIntVal(b, &val);
+	if (err) return err;
 
 	SC_IOStream<FILE*> scio(file);
 	scio.writeInt32_be(val);
@@ -680,9 +680,9 @@ int prFilePutInt32LE(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)slotRawPtr(&pfile->fileptr);
 	if (file == NULL) return errFailed;
 
-        int val;
-        int err = slotIntVal(b, &val);
-        if (err) return err;
+	int val;
+	int err = slotIntVal(b, &val);
+	if (err) return err;
 
 	SC_IOStream<FILE*> scio(file);
 	scio.writeInt32_le(val);
