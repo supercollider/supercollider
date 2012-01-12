@@ -195,7 +195,7 @@ OSCMessageDispatcher : AbstractWrappingDispatcher {
 	
 	getKeysForFuncProxy {|funcProxy| ^[funcProxy.path];}
 	
-	value {|time, addr, recvPort, msg| active[msg[0]].value(msg, time, addr, recvPort);}
+	value {|msg, time, addr, recvPort| active[msg[0]].value(msg, time, addr, recvPort);}
 	
 	register { 
 		thisProcess.addOSCRecvFunc(this); 
@@ -213,7 +213,7 @@ OSCMessageDispatcher : AbstractWrappingDispatcher {
 
 OSCMessagePatternDispatcher : OSCMessageDispatcher {
 	
-	value {|time, addr, recvPort, msg| 
+	value {|msg, time, addr, recvPort| 
 		var pattern;
 		pattern = msg[0];
 		active.keysValuesDo({|key, func|
@@ -232,8 +232,8 @@ OSCFunc : AbstractResponderFunc {
 	*initClass {
 		defaultDispatcher = OSCMessageDispatcher.new;
 		defaultMatchingDispatcher = OSCMessagePatternDispatcher.new;
-		traceFunc = {|time, replyAddr, recvPort, msg|
-			"OSC Message Received:\n\ttime: %\n\taddress: %\n\trecvPort: %\n\tmsg: %\n\n".postf(time, replyAddr, recvPort, msg);
+		traceFunc = {|msg, time, addr, recvPort|
+			"OSC Message Received:\n\ttime: %\n\taddress: %\n\trecvPort: %\n\tmsg: %\n\n".postf(time, addr, recvPort, msg);
 		}
 	}
 	
