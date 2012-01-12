@@ -507,7 +507,7 @@ bool gIsFullScreen = false;
 
 - (IBAction) executeSelection: (id)sender
 {
-    [self sendMain: "interpretPrintCmdLine" ];
+    [self sendMain: "interpretPrintSelectedText" ];
 }
 - (IBAction) openCode: (id)sender
 {
