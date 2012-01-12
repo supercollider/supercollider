@@ -988,7 +988,7 @@ int prFileGetInt8(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	char z;
+	int8 z;
 
 	a = g->sp;
 
@@ -996,7 +996,7 @@ int prFileGetInt8(struct VMGlobals *g, int numArgsPushed)
 	file = (FILE*)slotRawPtr(&pfile->fileptr);
 	if (file == NULL) return errFailed;
 
-	int count = fread(&z, sizeof(char), 1, file);
+	int count = fread(&z, sizeof(int8), 1, file);
 	if (count==0) SetNil(a);
 	else SetInt(a, z);
 	return errNone;
