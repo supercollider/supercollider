@@ -247,14 +247,6 @@ QView : QObject {
     decorator = decor;
   }
 
-  flow { arg func, bounds;
-    var f;
-    f = FlowView( this, bounds );
-    func.value( f );
-    f.resizeToFit;
-    ^f;
-  }
-
   // ................. top window stuff ............................
 
   name {

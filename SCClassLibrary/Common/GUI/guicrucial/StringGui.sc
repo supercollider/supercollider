@@ -22,14 +22,12 @@ StringGui : ObjectGui {
 		},{
 			bounds = Rect(0,0,
 						string.bounds.width(font).max(30),
-						// String(string.size * 7.0).max(70),
 						GUI.skin.buttonHeight);
 		});
-		//[layout,layout.bounds,bounds].debug(string);
 		this.view = GUI.staticText.new(layout,bounds)
-			.stringColor_(GUI.skin.fontColor)//Color.black
+			.stringColor_(GUI.skin.fontColor)
 			.font_(font)
-			.background_(GUI.skin.background)//Color.white
+			.background_(GUI.skin.background)
 			.align_(\left)
 			.object_(string);
 
@@ -38,5 +36,5 @@ StringGui : ObjectGui {
 			layout.front
 		});
 	}
-
 }
+

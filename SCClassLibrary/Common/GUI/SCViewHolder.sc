@@ -45,7 +45,7 @@ SCViewHolder {
 		view.font = f;
 	}
 
-		// allow all messages the view understands to delegate to the view
+	// delegate to the view
 	doesNotUnderstand { |selector ... args|
 		var	result;
 		view.respondsTo(selector).if({
@@ -57,45 +57,9 @@ SCViewHolder {
 	}
 }
 
-// a decorator for use with composite views that are set to relativeOrigin = false
-// bounds can then be expressed relative to the parent's
-RelativeToParent {
-	var <>bounds;
-	*new { arg bounds;
-		^super.newCopyArgs(bounds)
-	}
-	place { arg view;
-		view.bounds = view.bounds.moveBy(bounds.left,bounds.top)
-	}
-}
-
-SCViewAdapter : SCViewHolder {}
-
-/**
-  * a non-visible view that keeps the place in a flow layout
-  * to mark where a row was started.  then when the view is reflowed due to resizing etc.
-  * the layout can do a new row when this is encountered.
-  * this is only added by FlowView.startRow
-  */
-StartRow : SCViewHolder {
-	*new { arg parent,bounds;
-		var new;
-		new = super.new;
-		if(parent.notNil,{ new.view_(parent) });
-		^new
-	}
-	bounds { ^Rect(0,0,0,0) }
-	bounds_ {}
-	prClose {}
-	remove {
-		super.remove;
-		if(view.notNil,{
-			view.prRemoveChild(this)
-		});
-	}
-}
 
 FlowViewLayout : FlowLayout {
+	
 	var rows;
 	var fOnViewClose;
 
@@ -139,10 +103,11 @@ FlowViewLayout : FlowLayout {
 			if (row !== rows.last) { this.nextLine };
 		};
 	}
+	wouldExceedBottom { arg aBounds;
+		^(top + aBounds.height + margin.y) > bounds.bottom
+	}
 
 	rows { ^rows.copy }
-
-	// PRIVATE:
 
 	prInitFlowViewLayout {
 		fOnViewClose = { |view| this.remove(view); };
@@ -151,13 +116,11 @@ FlowViewLayout : FlowLayout {
 	prAddRow { rows = rows.add(List.new); }
 }
 
-/**
-  * a composite view with a FlowLayout as its decorator
-  */
+
 FlowView : SCViewHolder {
-		// It is no longer officially supported to use absolute-origin views
-		// with FlowView. It "should" work for this but it is not guaranteed.
-//	classvar <>relativeOrigin = true;
+
+	// a CompositeView with a FlowLayout as its decorator
+	// has the advantage that it preserves startRow when the view is resized
 
 	var	<parent;
 	var	autoRemoves,prevMaxHeight,prevMaxRight;
@@ -181,28 +144,16 @@ FlowView : SCViewHolder {
 		parentView = parent.asView;
 		if(bounds.notNil,{
 			bounds = bounds.asRect;
-				// this covers FlowView(nil, Rect(...))
 			if(iMadeParent) { bounds = bounds.moveTo(0, 0) };
 		},{
-			bounds = parentView.bounds;//.insetAll(2,2,2,2);
-			if((parentView.tryPerform(\prRelativeOrigin) ? true)
-					// note, this check (suboptimal, but a necessary compromise
-					// until relativeOrigin is gone for good) assumes a scrollTopView
-					// will have origin 0,0 - should be a safe assumption
-					or: { GUI.schemes.any { |kit| parentView.isKindOf(kit.scrollView) } }) {
-				bounds = bounds.setOriginRelativeTo(parentView);
-			};
+			bounds = parentView.bounds;
 		});
-		// this adds the composite view to the parent composite view
 		this.view = this.class.viewClass.new(parentView, bounds);
 
-		// the parent might be a vertical, horizontal or flow
-		// and might now have placed me, so get the bounds
-		bounds = view.bounds;
-		if(view.tryPerform(\prRelativeOrigin) ? true) {
-			bounds = bounds.moveTo(0, 0);
-		};
-		//view.decorator = FlowLayout(bounds,2@2/*GUI.skin.margin*/,4@4);
+		// parent has placed me, now get my bounds
+		bounds = view.bounds.moveTo(0, 0);
+
+		// note: FlowLayout default is 4@4 4@4
 		view.decorator = FlowViewLayout(bounds, margin ?? {2@0}, gap ?? {4@4}, false);
 		view.decorator.owner = this;
 		autoRemoves = IdentitySet.new;
@@ -213,11 +164,11 @@ FlowView : SCViewHolder {
 	removeOnClose { arg updater;
 		autoRemoves.add(updater);
 	}
-	hr { arg color,height=3,borderStyle=1; // html joke
+	hr { arg color,height=3;
 		this.startRow;
-		// should fill all and still return a minimal bounds
-		GUI.staticText.new(this,Rect(0,0,this.decorator.innerBounds.width - (2 * 4), height,0))
-				.string_("").background_(color ? Color(1,1,1,0.3) ).resize_(2)
+		StaticText(this,Rect(0,0,this.decorator.innerBounds.width - (2 * this.decorator.gap.x), height,0))
+				.string_("").background_(color ?? {Color(1,1,1,0.3)} ).resize_(2);
+		this.startRow;
 	}
 
 	innerBounds { ^this.decorator.innerBounds }
@@ -225,11 +176,7 @@ FlowView : SCViewHolder {
 		if(b != view.bounds,{
 			view.bounds = b;
 			if(this.decorator.notNil,{
-				if(view.tryPerform(\prRelativeOrigin) ? true) {
-					this.decorator.bounds = b.moveTo(0, 0)
-				} {
-					this.decorator.bounds = b
-				};
+				this.decorator.bounds = b.moveTo(0, 0);
 				reflow.if({ this.reflowAll; });
 			})
 		});
@@ -247,20 +194,11 @@ FlowView : SCViewHolder {
 		if(reflow,{ this.reflowAll; });
 
 		used = this.decorator.used;
-
-		// should respect any settings !
-		//used.width = used.width.clip(this.getProperty(\minWidth),this.getProperty(\maxWidth));
-		//used.height = used.height.clip(this.getProperty(\minHeight),this.getProperty(\maxHeight));
-
 		new = view.bounds.resizeTo(used.width,used.height);
 		view.bounds = new;
 
-		// ? but if relativeOrigin is true, then the decorator is already relative
-		if(view.tryPerform(\prRelativeOrigin) ? true) {
-			this.decorator.bounds = new.moveTo(0, 0);
-		} {
-			this.decorator.bounds = new; // if the left/top moved this buggers it
-		};
+		this.decorator.bounds = new.moveTo(0, 0);
+
 		if(reflow,{ this.reflowAll; });
 		// its better to call reflowDeep on the parent
 		if(tryParent,{
@@ -276,15 +214,9 @@ FlowView : SCViewHolder {
 				view.reflowAll.resizeToFit;
 			});
 		});
-		//		best way:
-		//		enlarge the view to full bounds within its parent.
-		// 		this can only be done if you are the last or only child
-		//		call deepReflow on shallow children in reverse order
-		//		resize self to fit
 	}
 	front {
 		// window.front
-
 	}
 
 	wouldExceedBottom { arg aBounds; ^this.decorator.wouldExceedBottom(aBounds) }
@@ -296,14 +228,14 @@ FlowView : SCViewHolder {
 		});
 	}
 
-	// if the view you are adding is unsure how much space it is going to take
-	// then take everything
+	// if what you are adding is unsure how much space it is going to take
+	// then take everything ...
 	allocateRemaining {
 		prevMaxHeight = this.decorator.maxHeight;
 		prevMaxRight = this.decorator.maxRight;
 		^this.decorator.indentedRemaining
 	}
-	// and afterwards
+	// ... and afterwards
 	// state what you actually used.
 	// see FlowView-flow
 	didUseAllocated { arg vbounds;
@@ -318,17 +250,10 @@ FlowView : SCViewHolder {
 		this.decorator.maxHeight = max( prevMaxHeight,vbounds.height);
 	}
 
-	// to replace PageLayout
-	layRight { arg x,y;
-		^Rect(0,0,x,y)
-	}
 	remove {
 		autoRemoves.do({ |updater| updater.remove });
 		autoRemoves = nil;
-		// am I still alive in the window?
 		view.notClosed.if({
-			// since this is in the parent's children array, view.remove is not enough by itself
-			//this.parent.prRemoveChild(this);
 			view.remove;
 		});
 	}
@@ -338,7 +263,6 @@ FlowView : SCViewHolder {
 		view.tryPerform(\viewDidClose);
 	}
 
-	// mimic SCLayoutView interface
 	children { ^view.children }
 	decorator { ^view.decorator }
 	decorator_ { |dec| view.decorator = dec }
@@ -350,9 +274,12 @@ FlowView : SCViewHolder {
 		this.decorator.clear;
 	}
 
-	//private
+	asFlowView {}
+	asPageLayout {}
+
 	prRemoveChild { |child|
 		view.prRemoveChild(child);
 	}
 	prClose { view.prClose }
 }
+
