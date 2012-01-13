@@ -1,6 +1,9 @@
+
+
 ObjectGui : SCViewHolder {
 	/*
-		this is a controller class. it creates the views and implements the relationship between them and the model
+		this is a controller class:
+			it creates the views and implements the relationship between them and the model
 		model: the object for which this is a graphical user interface
 		view: this.view is the flow view (aka the arg layout) that is passed to guiBody
 			individual views/widgets are placed in it and their actions talk to either this object or the model
@@ -92,7 +95,6 @@ ObjectGui : SCViewHolder {
 			.align_(\left)
 			.beginDragAction_({ model })
 			.object_(string);
-		// InspectorLink.icon(model,layout);
 	}
-
 }
+
