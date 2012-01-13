@@ -1,10 +1,3 @@
-
-if (FFT_GREEN)
-        add_definitions("-DSC_FFT_GREEN")
-else()
-        find_package(FFTW3f)
-endif()
-
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
@@ -74,7 +67,6 @@ set(sclang_sources
 	LangSource/dumpByteCodes.cpp
 
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
-	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
