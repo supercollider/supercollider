@@ -609,7 +609,7 @@ Server {
 		this.doWhenBooted({
 			serverBooting = false;
 			if (sendQuit.isNil) {
-				sendQuit = not(this.inProcess) and: {this.isLocal};
+				sendQuit = this.inProcess or: {this.isLocal};
 			};
 
 			if (this.inProcess) {
