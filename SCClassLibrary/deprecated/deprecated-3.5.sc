@@ -482,3 +482,11 @@ GetStringDialog  {
 	}
 	
 }
+
++ SCViewHolder {
+
+	layRight { arg x,y;
+		this.deprecated(thisMethod);
+		^Rect(0,0,x,y)
+	}
+}
