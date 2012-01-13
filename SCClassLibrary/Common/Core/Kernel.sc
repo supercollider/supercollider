@@ -380,6 +380,8 @@ Process {
 		stream << "thisProcess";
 	}
 	archiveAsCompileString { ^true }
+
+	prSchedulerQueue { ^schedulerQueue }
 }
 
 
