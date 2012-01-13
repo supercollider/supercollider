@@ -1,7 +1,7 @@
 class:: ViewRedirect
 summary:: An abstract super class for gui redirection classes
 categories:: GUI>GUI-Tools
-related:: Classes/GUI, Overviews/GUI-Classes, Overviews/GUI-Overview
+related:: Classes/GUI, Overviews/GUI-Classes, Guides/GUI-Introduction
 
 description::
 You will never call this class directly, but will only call its subclasses. ViewRedirect is the abstract superclass of all gui redirect classes. These subclasses in turn use the code::GUI.myView:: mechanism to redirect to the currently active gui kit. ViewRedirect's subclasses provide a simple syntax for creating gui views and widgets, while transparently making the code work with different gui kits.
