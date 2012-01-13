@@ -42,7 +42,7 @@ PriorityQueue {
 
 	do {|func|
 		if (array.size > 1) {
-			forBy(1, array.size, 3) {|i|
+			forBy(1, array.size-1, 3) {|i|
 				func.value(array[i+1],array[i+0])
 			}
 		}
