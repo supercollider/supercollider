@@ -21,8 +21,13 @@ Clock {
 
 SystemClock : Clock {
 	*clear {
-		_SystemClock_Clear
-		^this.primitiveFailed
+		var queue = thisProcess.prSchedulerQueue;
+		if (queue.size > 1) {
+			forBy(1, queue.size-1, 3) {|i|
+				queue[i+1].removedFromScheduler
+			};
+		};
+		this.prClear;
 	}
 	*sched { arg delta, item;
 		_SystemClock_Sched
@@ -32,7 +37,10 @@ SystemClock : Clock {
 		_SystemClock_SchedAbs
 		^this.primitiveFailed
 	}
-
+	*prClear {
+		_SystemClock_Clear
+		^this.primitiveFailed
+	}
 }
 
 AppClock : Clock {
