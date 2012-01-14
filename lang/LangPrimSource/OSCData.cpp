@@ -32,7 +32,6 @@
 #include <stdexcept>
 #include <new>
 #include <vector>
-#include <set>
 
 #ifdef SC_WIN32
 # include <winsock2.h>
@@ -1118,8 +1117,6 @@ int prSetSharedControl(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static std::set<server_shared_memory_client*> gOpenSharedMemoryClients;
-
 static int disconnectSharedMem(VMGlobals *g, PyrObject * object)
 {
 	int ptrIndex       = 0;
@@ -1132,16 +1129,7 @@ static int disconnectSharedMem(VMGlobals *g, PyrObject * object)
 	assert(IsPtr(ptrSlot));
 
 	server_shared_memory_client * client = (server_shared_memory_client*)slotRawPtr(ptrSlot);
-
-	// if the ServerShmInterface instance is copied, the finalizer may be called multiple times
-	// to avoid that, we maintain a set of open clients. unfortunately this will horribly fail, if
-	// the an instance is free, the same pointer is reused for a new object and it is freed by a later
-	// finalizer of the original instance.
-	if (gOpenSharedMemoryClients.find(client) != gOpenSharedMemoryClients.end()) {
-		delete client;
-		gOpenSharedMemoryClients.erase(client);
-	}
-
+	delete client;
 	SetNil(ptrSlot);
 	return errNone;
 }
@@ -1162,7 +1150,6 @@ int prConnectSharedMem(VMGlobals *g, int numArgsPushed)
 	try {
 		server_shared_memory_client * client = new server_shared_memory_client(portNumber);
 		SetPtr(self->slots + ptrIndex, client);
-		gOpenSharedMemoryClients.insert(client);
 
 		InstallFinalizer(g, self, finalizerIndex, disconnectSharedMem);
 
