@@ -204,6 +204,9 @@ void initialize_library(const char *uGensPluginPath)
 		glitches when UGens have to be paged-in. to work around this we preload all the plugins by
 		iterating through their memory space. */
 
+#ifndef __x86_64__
+	/* seems to cause a stack corruption on llvm-gcc-4.2, sdk 10.5 on 10.6 */
+
 	unsigned long images = _dyld_image_count();
 	for(unsigned long i = 0; i < images; i++) {
 		const mach_header	*hdr = _dyld_get_image_header(i);
@@ -235,6 +238,8 @@ void initialize_library(const char *uGensPluginPath)
 			read_section(hdr, slide, "__IMPORT", "__pointers");
 		}
 	}
+#endif
+
 #endif
 }
 
