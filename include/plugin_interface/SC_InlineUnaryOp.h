@@ -271,7 +271,7 @@ inline float32 sc_floor(float32 x)
 	__m128 b = _mm_round_ss(a, a, cntrl);
 	return _mm_cvtss_f32(b);
 #else
-	return std::ceil(x);
+	return std:floor(x);
 #endif
 }
 
@@ -527,7 +527,7 @@ inline float64 sc_floor(float64 x)
 	__m128d b = _mm_round_sd(a, a, cntrl);
 	return _mm_cvtsd_f64(b);
 #else
-	return std::ceil(x);
+	return std::floor(x);
 #endif
 }
 
