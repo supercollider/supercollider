@@ -1,2 +1,2 @@
-3.5beta
-classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="beta";
+3.5beta1
+classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="beta1";
