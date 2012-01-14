@@ -1,6 +1,6 @@
 CLASS:: FlowView
 summary:: CompositeView with a FlowLayout as decorator
-categories:: GUI
+categories:: GUI>Views
 related:: Classes/FlowLayout, Classes/CompositeView
 
 DESCRIPTION::

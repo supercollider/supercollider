@@ -1,6 +1,6 @@
 class:: CocoaMenuItem
 summary:: Abstract superclass of OSX Menu Items
-categories:: GUI
+categories:: GUI>Kits>Cocoa
 related:: Classes/SCMenuItem, Classes/SCMenuGroup, Classes/SCMenuSeparator
 
 description::

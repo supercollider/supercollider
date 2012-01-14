@@ -1,7 +1,7 @@
 class:: Document
 redirect:: implementationClass
 summary:: An abstract class for editor-specific text document editing classes
-categories:: GUI
+categories:: Frontends
 related:: Classes/CocoaDocument, Classes/EmacsDocument, Classes/ScelDocument
 
 description::

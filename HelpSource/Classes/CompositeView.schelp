@@ -1,7 +1,7 @@
 class:: CompositeView
 redirect:: implClass
 summary:: A view that contains other views.
-categories:: GUI
+categories:: GUI>Views
 related:: Classes/FlowView, Classes/FlowLayout
 
 description::

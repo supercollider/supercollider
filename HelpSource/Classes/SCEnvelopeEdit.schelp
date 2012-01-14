@@ -1,6 +1,6 @@
 class:: SCEnvelopeEdit
 summary:: An envelope editor view
-categories:: GUI
+categories:: GUI>Kits>Cocoa
 related:: Classes/EnvelopeView
 
 description::

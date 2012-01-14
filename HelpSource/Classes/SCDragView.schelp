@@ -1,6 +1,6 @@
 class:: SCDragView
 summary:: An abstract superclass for drag views
-categories:: GUI
+categories:: GUI>Kits>Cocoa
 related:: Classes/DragSource, Classes/DragSink, Classes/DragBoth
 
 description::

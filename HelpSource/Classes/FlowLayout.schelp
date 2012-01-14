@@ -1,6 +1,6 @@
 class:: FlowLayout
 summary:: A view decorator which autowraps the view contents
-categories:: GUI>GUI-Tools
+categories:: GUI>Layout
 related:: Classes/SCContainerView, Classes/CompositeView, Classes/SCTopView
 
 description::

@@ -1,6 +1,6 @@
 class:: Gradient
 summary:: A linear color fade between two colors
-categories:: GUI>GUI-Tools
+categories:: GUI>Accessories
 related:: Classes/Color, Classes/HiliteGradient
 
 classmethods::

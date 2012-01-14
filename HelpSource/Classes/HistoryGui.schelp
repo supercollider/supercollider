@@ -1,6 +1,6 @@
 CLASS:: HistoryGui
 summary:: A gui for History objects
-categories:: GUI
+categories:: GUI>Interfaces
 related::
 
 DESCRIPTION::

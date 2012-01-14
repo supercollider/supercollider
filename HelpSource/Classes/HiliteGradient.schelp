@@ -1,6 +1,6 @@
 class:: HiliteGradient
 summary:: A linear color fade between an outside and an inside color
-categories:: GUI>GUI-Tools
+categories:: GUI>Accessories
 related:: Classes/Color, Classes/Gradient
 
 description::

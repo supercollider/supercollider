@@ -1,7 +1,7 @@
 class:: Pen
 summary:: Draw custom graphics
 redirect:: implClass
-categories:: GUI
+categories:: GUI>Accessories
 related:: Classes/QPenPrinter
 
 description::
