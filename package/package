@@ -49,14 +49,14 @@ if [ $package_type == "source" ]; then
     if $include_optionals; then
         cp -Rp optional SuperCollider-Source/optional_installs
         cp OPTIONALS_README_SOURCE.txt SuperCollider-Source/optional_installs/README.txt
-        filename="SuperCollider-$version-Source-With-Extras.tar.gz"
-        filenamelinux="SuperCollider-$version-Source-With-Extras-linux.tar.gz"
+        filename="SuperCollider-$version-Source-With-Extras.tar.bz2"
+        filenamelinux="SuperCollider-$version-Source-With-Extras-linux.tar.bz2"
     else
-        filename="SuperCollider-$version-Source.tar.gz"
-        filenamelinux="SuperCollider-$version-Source-linux.tar.gz"
+        filename="SuperCollider-$version-Source.tar.bz2"
+        filenamelinux="SuperCollider-$version-Source-linux.tar.bz2"
     fi
 
-    # Here we build a list of (many) files that are useless on linux, so as to build a slimline source.tar.gz
+    # Here we build a list of (many) files that are useless on linux, so as to build a slimline source.tar.bz2
     find SuperCollider-Source -iname windows -or -iname osx -or -name "*.xcodeproj" -or -name scide_scapp -or -iname "iPhone*" > LinuxExclusions.txt
 	echo 'SuperCollider-Source/SuperColliderAU
 SuperCollider-Source/editors/Psycollider
@@ -73,8 +73,8 @@ SuperCollider-Source/lang/LangPrimSource/HID_Utilities_10_4
 SuperCollider-Source/lang/LangPrimSource/WiiMote_OSX
 SuperCollider-Source/editors/scapp' >> LinuxExclusions.txt
 
-    tar cfz "$filename" SuperCollider-Source
-    tar cfzX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source
+    tar cfj "$filename" SuperCollider-Source
+    tar cfjX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source
     rm -rf SuperCollider-Source SuperCollider-Source.tmp.tar
     exit
 else
