@@ -5,33 +5,23 @@ categories:: GUI>Views
 related:: Classes/FlowView, Classes/FlowLayout
 
 description::
-A container for grouping other views and widgets. CompositeView inherits all of its methods from ContainerView.
 
-subsection:: Some Important Issues Regarding CompositeView
+note::
+In Qt GUI, every view can be a parent to other views, so CompositeView redirects to the same class as link::Classes/View:: - you can use the latter equivalently.
+::
 
-CompositeView is used for grouping widgets in a window. While it accepts key actions, it does not accept mouse clicks or drags.
+CompositeView can be used as the parent of other views, while also being a child of a Window or another CompositeView itself. Aside from that it has not special methods of its own.
+
+note::
+In Cocoa GUI, this view accepts key actions, but not mouse clicks or drags.
+::
+
 
 classmethods::
 private:: key
 
-method:: new
-argument:: parent
-The parent view.
-argument:: bounds
-An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
-discussion::
-Example:
-code::
-(
-w = Window.new;
-c = CompositeView(w, Rect(0, 0, 300, 300));
 
-a = Slider2D(c, Rect(10,10,100,100));
-b = Slider2D(c, Rect(110,110,100,100));
-
-w.front;
-)
-::
+examples::
 
 subsection:: Coordinate System
 
