@@ -12,10 +12,25 @@ classmethods::
 private::key
 
 method:: new
+
+note:: The strong::bold::, strong::italic:: and strong::isPointSize:: arguments are only available in Qt GUI.
+::
+
 argument:: name
 An instance of link::Classes/String::. Must coincide with the name of a font on the system. See link::#*availableFonts::.
+
 argument:: size
 An instance of link::Classes/Float::.
+
+argument:: bold
+A Boolean.
+
+argument:: italic
+A Boolean.
+
+argument:: isPointSize
+A Boolean. Whether to regard the strong::size:: argument as point-size - adapting to the screen resolution.
+
 discussion::
 Example:
 code::
@@ -67,14 +82,34 @@ An instance of link::Classes/Float::.
 instancemethods::
 
 method:: name
-Gets/sets the name of a font.
+Gets/sets the name of the font.
 argument:: value
 An instance of link::Classes/String::.
 
 method:: size
-Gets/sets the size of a font.
+Gets/sets the size of the font.
+note:: In Qt GUI, setting this variable is always considered as setting the link::#-pixelSize::, while getting it will return any size set. In other GUI kits, size is always considered as pixel-size anyway. See link::#-hasPointSize:: for distinction.::
+
 argument:: value
-An instance of link::Classes/Float::.
+A Float.
+
+method:: hasPointSize
+note::Only in Qt GUI::
+A Boolean variable indicating whether the link::#-size:: is regarded as pixel-size (precise amount of pixels), or point-size (adapting to screen resolution).
+To change this, you need to set the size via link::#-pixelSize:: or link::#-pointSize::.
+
+method:: pixelSize
+note::Only in Qt GUI::
+Gets or sets the pixel-size of the font. When getting, returns nil if the font has point-size instead. See link::#-hasPointSize:: for distinction.::
+Argument::
+	Any number, but note that floats will be rounded to integer values when setting pixel-size.
+
+
+method:: pointSize
+note::Only in Qt GUI::
+Gets or sets the point-size of the font. When getting, returns nil if the font has pixel-size instead. See link::#-hasPointSize:: for distinction.::
+Argument::
+	A Float.
 
 method:: setDefault
 Makes the current instance of Font the default.
