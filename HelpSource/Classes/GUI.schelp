@@ -1,6 +1,6 @@
 class:: GUI
 summary:: Factory abstraction for all GUI related core classes
-categories:: GUI>GUI-Tools
+categories:: GUI>Kits
 related:: Overviews/GUI-Classes, Guides/GUI-Introduction, Classes/ViewRedirect
 
 

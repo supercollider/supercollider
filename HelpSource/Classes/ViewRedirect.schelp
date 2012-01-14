@@ -1,6 +1,6 @@
 class:: ViewRedirect
 summary:: An abstract super class for gui redirection classes
-categories:: GUI>GUI-Tools
+categories:: GUI>Kits
 related:: Classes/GUI, Overviews/GUI-Classes, Guides/GUI-Introduction
 
 description::

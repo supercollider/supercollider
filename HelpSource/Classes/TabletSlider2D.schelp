@@ -1,7 +1,7 @@
 class:: TabletSlider2D
 redirect:: implClass
 summary:: A 2D slider with support for extended wacom data
-categories:: GUI
+categories:: GUI>Views
 related:: Classes/Slider2D, Classes/TabletView
 
 description::

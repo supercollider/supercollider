@@ -1,6 +1,6 @@
 class:: SCContainerView
 summary:: An abstract superclass for container views
-categories:: GUI
+categories:: GUI>Kits>Cocoa
 related:: Classes/CompositeView, Classes/HLayoutView, Classes/VLayoutView, Classes/ScrollView, Classes/SCTopView, Classes/SCScrollTopView
 
 description::

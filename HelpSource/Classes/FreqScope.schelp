@@ -1,6 +1,6 @@
 class:: FreqScope
-summary:: A nice wrapper for FreqScopeView
-categories:: GUI
+summary:: Frequency spectrum visualizer
+categories:: GUI>Interfaces
 related:: Classes/FreqScopeView
 
 description::

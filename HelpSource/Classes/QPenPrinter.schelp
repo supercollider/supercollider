@@ -1,6 +1,6 @@
 CLASS:: QPenPrinter
 summary:: QPen PDF export and printing of vector graphics
-categories:: GUI>Printing
+categories:: GUI>Accessories
 related:: Classes/QPen, Classes/Pen
 
 DESCRIPTION::
