@@ -218,7 +218,10 @@ SCDoc {
         SCDoc.postProgress(src+"->"+dest);
         p.parseFile(src);
 
-        doc_map[subtarget].additions.do {|ext|
+        // hackish workaround: if a doc addition is removed, it is not detected
+        // and removed from the 'additions' set in the docmap entry.
+        // so here we check that the file exists..
+        doc_map[subtarget].additions.select(File.exists(_)).do {|ext|
             p2 = p2 ?? {p.class.new};
             p2.parseFile(ext);
             p.merge(p2);
@@ -635,6 +638,10 @@ SCDoc {
                     // FIXME: if this doc adds a method to a non-class doc, it will not show up in doc.methods...
                     old = doc.additions.copy;
                     doc.additions = doc.additions.add(file).asSet;
+                    // filter out non-existing files in case helpsource moved..
+                    // this is more a hackish workaround than a good solution.
+                    // it will not work if a doc addition is removed instead of moved.
+                    doc.additions = doc.additions.select(File.exists(_));
                     update = update or: {doc.additions != old};
                     ndocs = ndocs + 1;
                     this.postProgress("Addition for"+subtarget+":"+file);
