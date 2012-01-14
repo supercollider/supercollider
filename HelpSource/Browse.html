@@ -21,7 +21,7 @@
 }
 .result_doc {
     border-bottom: 1px solid #ddd;
-/*    margin-top: 0.75em;*/
+    margin-top: 0.5em;
 }
 .result_summary {
     color: #444;
@@ -74,6 +74,14 @@
     font-size: 9pt;
     color: #777;
 }
+.doc_kind {
+    color: #666;
+    float: right;
+    font-size: 8pt;
+    padding: 0 2px;
+    margin-left: 0.5ex;
+    font-weight: bold;
+}
 </style>
 
 <noscript>
@@ -102,6 +110,13 @@ function updateTree() {
     var p;
     var done = 0;
     var sel;
+    var colors = {
+        "Classes": "#7ab",
+        "Reference": "#7b9",
+        "Overviews": "#ca6",
+        "Guides": "#b87",
+        "Tutorials": "#b77",
+    };
     link = "";
 
     while(1) {
@@ -132,12 +147,17 @@ function updateTree() {
             var v = tree.entries[i];
             var x = v.path.split("/");
 
-            res += "<div class='result_doc'><a href='"+v.path+".html'>"+v.title+"</a> <span class='soft'>["+x[0];
+            res += "<div class='result_doc'><span class='doc_kind' ";
+            var clr = colors[x[0]];
+            if(clr) {
+                res += "style='color:"+clr+";'";
+            };
+            res += ">";
             if(v.installed=="extension")
-                res += " +";
+                res += "+";
             else if(v.installed=="missing")
-                res += " - missing!";
-            res += "]</span></div><div class='result_summary'>"+v.summary+"</div>";
+                res += "(not installed) ";
+            res += x[0].toUpperCase()+"</span><a href='"+v.path+".html'>"+v.title+"</a></div><div class='result_summary'>"+v.summary+"</div>";
         }
 
         res += "</div>";
