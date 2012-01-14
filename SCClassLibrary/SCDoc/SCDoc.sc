@@ -609,7 +609,7 @@ SCDoc {
                             doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
                             x = p.findNode(\redirect).text.stripWhiteSpace;
                             if(x.notEmpty) {
-                                x = class.tryPerform(x.asSymbol);
+                                x = try { class.perform(x.asSymbol) };
                                 x !? { doc.implementor = x.asSymbol };
                             };
                         } {
