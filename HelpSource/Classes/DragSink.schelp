@@ -1,36 +1,39 @@
 class:: DragSink
 redirect:: implClass
-summary:: A gui object for receiving drag and drop
-categories:: GUI
+summary:: A simple drag-and-drop receiver.
+categories:: GUI>Views
 related:: Classes/DragBoth, Classes/DragSource
 
-description::
-A gui object for receiving drag and drop. See link::Classes/SCDragView:: for description and examples, and link::Classes/View:: for a general description of the drag and drop mechanism.
+DESCRIPTION::
 
-classmethods::
+link::Classes/DragSource::, link::Classes/DragSink:: and link::Classes/DragBoth:: are a set of view classes intended as simple-to-use drag-and-drop sources and destinations. They are graphically represented as a simple rectangle, and their specialty is that they emphasis::do not require the Cmd/Ctrl key to be held down to initiate dragging::.
 
-method:: new
-argument:: parent
-The parent view.
-argument:: bounds
-An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
+Akin to link::Classes/StaticText:: they can store arbitrary content in the link::Classes/StaticText#-object#-object:: variable, and display it using link::Classes/Object#-asString::. You can set the displayed text separately using link::Classes/StaticText#-string#-string::, and keep it independent of the content if you set link::Classes/StaticText#-setBoth#-setBoth:: to code::false::.
 
+strong::DragSink::, specifically, strong::accepts any:: dropped data and stores it into the strong::-object:: variable, but allows strong::no dragging::.
+
+See: link::Classes/View#drag_and_drop:: for a general description of the drag and drop mechanism.
 
 
-instancemethods::
-
-subsection:: Subclassing and Internal Methods
-
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
-
-method:: defaultCanReceiveDrag
-The method called by default when attempting to drop a drag in this object. By default, DragSink will respond to any drag.
-
-method:: defaultReceiveDrag
-The default method called when a drag has been recieved. By default, this sets the object to the currentDrag and performs the action.
 
 
-examples::
+CLASSMETHODS::
+
+PRIVATE:: key
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: defaultCanReceiveDrag
+	RETURNS:: Allways True.
+
+METHOD:: defaultReceiveDrag
+	Sets the link::Classes/StaticText#-object#-object:: to the current drag data.
+
+
+
+EXAMPLES::
 code::
 (
 s.waitForBoot({	// only needed if you are using sound
