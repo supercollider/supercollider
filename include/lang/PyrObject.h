@@ -165,6 +165,7 @@ extern struct PyrClass *class_interpreter;
 extern struct PyrClass *class_thread;
 extern struct PyrClass *class_routine;
 extern struct PyrClass *class_finalizer;
+extern struct PyrClass *class_server_shm_interface;
 
 extern PyrSymbol *s_none;
 extern PyrSymbol *s_object;
@@ -222,6 +223,7 @@ extern PyrSymbol *s_finalizer;
 extern PyrSymbol *s_awake;
 extern PyrSymbol *s_appclock;
 extern PyrSymbol *s_systemclock;
+extern PyrSymbol *s_server_shm_interface;
 
 
 extern int gFormatElemSize[NUMOBJFORMATS];
