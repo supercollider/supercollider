@@ -1,7 +1,7 @@
 class:: Font
 redirect:: implClass
 summary:: A font object
-categories:: GUI>GUI-Tools
+categories:: GUI>Accessories
 
 description::
 This is the object you pass to other gui objects to set their font name or size.

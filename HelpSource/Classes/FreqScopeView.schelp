@@ -1,13 +1,13 @@
 class:: FreqScopeView
 redirect:: implClass
 summary:: Frequency analysis view
-categories:: GUI
-related:: Classes/SCFreqScopeWindow, Classes/SCScope
+categories:: GUI>Views
+related:: Classes/FreqScope
 
 description::
 FreqScopeView shows the frequency spectrum of a specified audio bus.
 
-subsection:: A Very Important Issue Regarding FreqScope:
+note::
 
 The scope will remain active after a command-period. To turn it off you must use the 'active' method.
 Very important: You must run code::kill():: when the parent window is closed to avoid problems. It also frees the buffers that the scope allocated and stops the FFT analysis synth. So:
@@ -18,6 +18,8 @@ f = FreqScopeView(w, w.view.bounds);
 w.onClose_({ f.kill }); // YOU MUST HAVE THIS
 w.front;
 )
+::
+
 ::
 
 

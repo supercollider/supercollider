@@ -1,5 +1,5 @@
 class:: HelpBrowser
-categories:: HelpSystem
+categories:: HelpSystem, GUI>Interfaces
 related:: Classes/SCDoc
 summary:: Browse the SuperCollider help documentation
 
