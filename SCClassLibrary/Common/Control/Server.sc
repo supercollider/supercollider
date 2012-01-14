@@ -187,6 +187,11 @@ ServerShmInterface {
 		^super.new.connect(port)
 	}
 
+	copy {
+		// never ever copy! will cause duplicate calls to the finalizer!
+		^this
+	}
+
 	connect {
 		_ServerShmInterface_connectSharedMem
 		^this.primitiveFailed
