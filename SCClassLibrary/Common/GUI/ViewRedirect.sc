@@ -1,5 +1,4 @@
-ViewRedirect { // Abstract class
-
+GuiRedirect { // Abstract
 	classvar <>redirectQueries = false;
 
 	*implScheme{
@@ -7,40 +6,46 @@ ViewRedirect { // Abstract class
 	}
 
 	*implClass {
-		^GUI.scheme.perform(this.key)
-	}
-	*key { ^\viewRedirect }
-	*new { arg parent, bounds;
-		var	impl;
-		if ( this.implScheme.notNil ){
-			if((impl = this.implClass).notNil) {
-				^impl.new(parent, bounds)
-			} {
-				MethodError("ViewRedirect is an abstract class and should not be instantiated directly. *new method not valid.", this).throw;}
-		}{
-			("No GUI scheme active: " + this.key ++ ".new" + parent ).warn;
+		var scheme, key, target;
+		scheme = GUI.scheme;
+		if (scheme.isNil) {
+			Error("No GUI scheme active.", this).throw
+		};
+		key = this.key;
+		target = key !? {GUI.scheme.tryPerform(key)};
+		if (target.isNil) {
+			Error("No redirection for" + this.name + "available in the active GUI scheme:" +
+				scheme.id ++ ".", this).throw;
 		}
+		^target;
 	}
-	*browse { ^ClassBrowser(this.implClass ?? { ViewRedirect }) }
-	*doesNotUnderstand{|selector ... args|
-		var	impl;
-		if ( this.implScheme.notNil ){
-			if((impl = this.implClass).notNil) {
-				^impl.perform(selector, *args)
-			} {
-				DoesNotUnderstandError(this, selector, args).throw;
-			}
-		}{
-			("No GUI scheme active: " + selector + args ).warn;
-		}
-	}
+
 	*classRedirect { ^redirectQueries.if({this.implClass ? this}, this)}
+
+	*key { ^nil }
+
+	*new { arg ...args;
+		^this.implClass.new(*args);
+	}
+
+	*doesNotUnderstand{|selector ... args|
+		var impl;
+		^this.implClass.perform(selector, *args);
+	}
+
+	*browse { ^ClassBrowser( this.key !? {this.implClass} ? this ) }
 }
 
-Window : ViewRedirect {
+ViewRedirect : GuiRedirect { // Abstract class
+	*new { arg parent, bounds;
+		^super.new(parent, bounds);
+	}
+}
+
+Window : GuiRedirect {
 	*key { ^\window }
 	*new { arg name = "panel", bounds, resizable = true, border = true, server, scroll = false;
-		^this.implClass.new(name, bounds, resizable, border, server, scroll)
+		^super.new(name, bounds, resizable, border, server, scroll)
 	}
 }
 
@@ -51,16 +56,12 @@ VLayoutView : ViewRedirect { *key { ^\vLayoutView }}
 
 Slider : ViewRedirect { *key { ^\slider }}
 
-//Knob : SCSlider {
-//}
+Pen : GuiRedirect { *key { ^\pen }}
 
-//Font : ViewRedirect { *key { ^\font }}
-Pen : ViewRedirect { *key { ^\pen }}
-
-Stethoscope : ViewRedirect {
+Stethoscope : GuiRedirect {
 	*new {  arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
 		index = index.asControlInput;
-		^this.implClass.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
+		^super.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
 	}
 	*key { ^\stethoscope }
 
@@ -68,15 +69,24 @@ Stethoscope : ViewRedirect {
 ScopeView : ViewRedirect { *key { ^\scopeView }}
 FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to FreqScope
 
-FreqScope : ViewRedirect { // redirects to FreqScopeWindow
+FreqScope : GuiRedirect { // redirects to FreqScopeWindow
 	*new { arg width=512, height=300, busNum=0, scopeColor, bgColor;
 		busNum = busNum.asControlInput;
-		^this.implClass.new(width, height, busNum, scopeColor)
+		^super.new(width, height, busNum, scopeColor)
 	}
 	*key { ^\freqScope }
 }
 
-Dialog : ViewRedirect { *key { ^\dialog }}
+Dialog : GuiRedirect {
+	*key { ^\dialog }
+	*openPanel { arg okFunc, cancelFunc, multipleSelection=false;
+		^super.openPanel(okFunc, cancelFunc, multipleSelection)
+	}
+	*savePanel { arg okFunc, cancelFunc;
+		^super.savePanel(okFunc, cancelFunc)
+	}
+}
+
 View : ViewRedirect { *key { ^\view }}
 
 RangeSlider : ViewRedirect { *key { ^\rangeSlider }}
@@ -103,9 +113,9 @@ TextField : ViewRedirect  { *key { ^\textField }}
 TabletView : ViewRedirect { *key { ^\tabletView }}
 SoundFileView : ViewRedirect { *key { ^\soundFileView }}
 MovieView : ViewRedirect { *key { ^\movieView }}
-TextView : ViewRedirect  {	*key { ^\textView }}
+TextView : ViewRedirect  { *key { ^\textView }}
 
-Font : ViewRedirect  {
+Font : GuiRedirect  {
 	*key { ^\font }
 	*findFirstAvailable { |fontNames, action|
 		Routine {
@@ -116,12 +126,15 @@ Font : ViewRedirect  {
 				}
 			}
 		}.play(AppClock)
-}
+	}
+	*new { arg name, size, bold = false, italic = false, isPointSize = false;
+		super.new(name, size, bold, italic, isPointSize)
+	}
 }
 
-Knob : ViewRedirect  {	*key { ^\knob }}
+Knob : ViewRedirect  { *key { ^\knob }}
 
-LevelIndicator : ViewRedirect  {	*key { ^\levelIndicator }}
+LevelIndicator : ViewRedirect  { *key { ^\levelIndicator }}
 
 Image : ViewRedirect { *key { ^\image }}
 
@@ -131,12 +144,6 @@ CheckBox : ViewRedirect { *key { ^\checkBox }}
 
 TreeView : ViewRedirect { *key { ^\treeView }}
 
-LayoutRedirect : ViewRedirect {
-	*new { arg ... args;
-		^this.implClass.new(*args);
-	}
-}
-
-HLayout : LayoutRedirect { *key { ^\hLayout }}
-VLayout : LayoutRedirect { *key { ^\vLayout }}
-GridLayout : LayoutRedirect { *key { ^\gridLayout }}
+HLayout : GuiRedirect { *key { ^\hLayout }}
+VLayout : GuiRedirect { *key { ^\vLayout }}
+GridLayout : GuiRedirect { *key { ^\gridLayout }}
