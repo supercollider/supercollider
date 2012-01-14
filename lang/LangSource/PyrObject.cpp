@@ -75,6 +75,7 @@ PyrClass *class_interpreter;
 PyrClass *class_thread;
 PyrClass *class_routine;
 PyrClass *class_finalizer;
+PyrClass *class_server_shm_interface;
 
 PyrSymbol *s_none;
 PyrSymbol *s_object;
@@ -121,6 +122,7 @@ PyrSymbol *s_finalizer;
 PyrSymbol *s_awake;
 PyrSymbol *s_appclock;
 PyrSymbol *s_systemclock;
+PyrSymbol *s_server_shm_interface;
 
 PyrSymbol *s_nocomprendo;
 PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
@@ -219,6 +221,7 @@ void initSymbols()
 	s_awake = getsym("awake");
 	s_appclock = getsym("AppClock");
 	s_systemclock = getsym("SystemClock");
+	s_server_shm_interface = getsym("ServerShmInterface");
 
 	s_linear = getsym("linear");
 	s_exponential = getsym("exponential");
@@ -1733,6 +1736,10 @@ void initClasses()
 	class_func = makeIntrinsicClass(s_func, s_absfunc, 2, 0);
 		addIntrinsicVar(class_func, "def", &o_nil);
 		addIntrinsicVar(class_func, "context", &o_nil);
+
+	class_server_shm_interface = makeIntrinsicClass(s_server_shm_interface, s_object, 2, 0);
+		addIntrinsicVar(class_server_shm_interface, "ptr", &o_nil);
+		addIntrinsicVar(class_server_shm_interface, "finalizer", &o_nil);
 
 	gTagClassTable[ 0] = NULL;
 	gTagClassTable[ 1] = NULL;

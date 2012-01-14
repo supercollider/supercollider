@@ -154,6 +154,8 @@ private:
 				putSelf(obj);
 			} else if (isKindOf(obj, class_thread)) {
 				putSelf(obj);
+			} else if (isKindOf(obj, class_server_shm_interface)) {
+				putSelf(obj);
 			} else {
 				putCopy(obj);
 				recurse(obj, obj->size);
