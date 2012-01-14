@@ -1,7 +1,7 @@
 class:: FreqScope
-summary:: A nice wrapper for FreqScope
+summary:: A nice wrapper for FreqScopeView
 categories:: GUI
-related:: Classes/FreqScope
+related:: Classes/FreqScopeView
 
 description::
 FreqScope shows the frequency spectrum of the specified audio bus. The scope will remain active after a command-period. To turn it off you must either click off the 'Power' button or close the window.
@@ -64,7 +64,7 @@ subsection:: Subclassing and Internal Methods
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
 method::window
-Returns the window in which the FreqScope view is placed.
+Returns the window in which the link::Classes/FreqScopeView:: is placed.
 
 method:: scope
-Returns the FreqScope.
+Returns the link::Classes/FreqScopeView::.
