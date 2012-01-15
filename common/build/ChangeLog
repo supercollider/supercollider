@@ -1,5 +1,38 @@
 Changes are listed below, grouped under each point release of SuperCollider.
 
+SuperCollider v3.4.5, released 2012-01
+======================================
+
+Tim Blechmann (7):
+      class library: FreqScope fix
+      sclang: fix crash of scpacket overflow by using exception handling
+      sclang: pad PyrMethodRaw struct
+      sclang: force size of PyrSlot to 16 byte and fix PyrMethodRaw size
+      server plugins: fix div_ai_nova
+      plugins: Resonz - fix initialization
+      plugins: disable simd-optimization for tanh
+
+James Harkins (3):
+      Explicitly show the command to uninstall (for scons idiots like me).
+      (3.4) PathName now sets tmp directory using Platform
+      SimpleController:update would throw error if no actions had been 'put' in
+
+Dan Stowell (1):
+      Remove waf file from 3.4.x - was never used, and contains binary code,     causing linux packaging problems.     See ubuntu bug #529154 for details, and debian bug #529154 for     sc-specific
+
+Mathieu Trudel-Lapierre (1):
+      Fixup environment variables used for linking against readline, libicu, curl, cwiid.
+
+Nick Collins (1):
+      Fix bug in MFCC ugen
+
+Noe Rubinstein (1):
+      Fix PMOsc doc: index -> pmindex
+
+dmotd (1):
+      Include altivec.h on linux powerpc, fixing FTBFS
+
+
 SuperCollider v3.4.4, released 2011-06
 ======================================
 
