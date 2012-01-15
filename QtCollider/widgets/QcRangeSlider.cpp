@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -27,7 +27,7 @@
 #include <QApplication>
 #include <QPainter>
 
-static QcWidgetFactory<QcRangeSlider> factory;
+QC_DECLARE_QWIDGET_FACTORY(QcRangeSlider);
 
 QcRangeSlider::QcRangeSlider() :
   _lo( 0.f ),

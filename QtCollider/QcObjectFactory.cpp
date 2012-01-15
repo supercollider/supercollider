@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -23,8 +23,11 @@
 #include "QcObjectFactory.h"
 
 namespace QtCollider {
-  QcFactoryHash & factories () {
+
+  QcFactoryHash & factories ()
+  {
     static QcFactoryHash *factoryHash = new QcFactoryHash();
     return *factoryHash;
   }
+
 }

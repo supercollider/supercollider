@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010-2011 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of Qt GUI for SuperCollider.
 *
@@ -28,7 +28,7 @@
 #include <QTimer>
 #include <QResizeEvent>
 
-static QcWidgetFactory<QcScopeShm> factory;
+QC_DECLARE_QWIDGET_FACTORY(QcScopeShm);
 
 QcScopeShm::QcScopeShm() :
   _srvPort(-1),

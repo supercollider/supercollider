@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -30,8 +30,8 @@
 #include <climits>
 #include <cmath>
 
-static QcWidgetFactory<QcSoundFileView> sfViewFactory;
-static QcWidgetFactory<QcWaveform> waveformFactory;
+QC_DECLARE_QWIDGET_FACTORY(QcSoundFileView);
+QC_DECLARE_QWIDGET_FACTORY(QcWaveform);
 
 const int kMaxRawFrames = 300000;
 const int kMaxFramesPerCacheUnit = 128;

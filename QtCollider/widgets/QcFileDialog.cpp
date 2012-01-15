@@ -22,7 +22,7 @@
 #include "QcFileDialog.h"
 #include "../QcObjectFactory.h"
 
-static QcObjectFactory<QcFileDialog> fileDialogFactory;
+QC_DECLARE_QOBJECT_FACTORY(QcFileDialog);
 
 QcFileDialog::QcFileDialog( int fileMode, int acceptMode ) {
   dialog = new QFileDialog();

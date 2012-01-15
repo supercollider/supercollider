@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2011 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2011-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -34,10 +34,17 @@
 
 #include <clocale>
 
+namespace QtCollider {
+  void loadFactories ();
+}
+
 QC_PUBLIC
 void QtCollider::init() {
   if( !QApplication::instance() ) {
     qcDebugMsg( 1, "Initializing QtCollider" );
+
+    QtCollider::loadFactories();
+
 #ifdef Q_WS_X11
     XInitThreads();
 #endif

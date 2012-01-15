@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -24,7 +24,7 @@
 
 #include <QPainter>
 
-static QcWidgetFactory<QcLevelIndicator> factory;
+QC_DECLARE_QWIDGET_FACTORY(QcLevelIndicator);
 
 QcLevelIndicator::QcLevelIndicator()
 : _value( 0.f ), _warning(0.6), _critical(0.8),

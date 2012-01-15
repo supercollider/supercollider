@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -109,5 +109,7 @@ protected:
 
   virtual void initialize( QWidgetProxy *proxy, QWIDGET *obj ) {};
 };
+
+#define QC_DECLARE_QWIDGET_FACTORY( QWIDGET ) QC_DECLARE_FACTORY( QWIDGET, QcWidgetFactory<QWIDGET> )
 
 #endif

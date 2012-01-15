@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -30,7 +30,7 @@
 #include <math.h>
 #include <qmath.h>
 
-static QcWidgetFactory<QcNumberBox> factory;
+QC_DECLARE_QWIDGET_FACTORY(QcNumberBox);
 
 QcNumberBox::QcNumberBox()
 : scroll( true ),
