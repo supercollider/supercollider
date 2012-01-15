@@ -1,6 +1,7 @@
 /************************************************************************
 *
 * Copyright 2011 Jonatan Liljedahl <lijon@kymatica.com>
+* Copyright 2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -22,4 +23,4 @@
 #include "QcPenPrinter.h"
 #include "../QcObjectFactory.h"
 
-static QcObjectFactory<QcPenPrinter> penPrinterFactory;
+QC_DECLARE_QOBJECT_FACTORY(QcPenPrinter);

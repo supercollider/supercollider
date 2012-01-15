@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -25,7 +25,7 @@
 #include <QPainter>
 #include <QTimer>
 
-static QcWidgetFactory<QcScope> factory;
+QC_DECLARE_QWIDGET_FACTORY(QcScope);
 
 QcScope::QcScope()
 : bufNum( 0 ),

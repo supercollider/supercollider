@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -28,7 +28,7 @@
 
 #include <cmath>
 
-static QcWidgetFactory<QcMultiSlider> factory;
+QC_DECLARE_QWIDGET_FACTORY(QcMultiSlider);
 
 QcMultiSlider::QcMultiSlider() :
   _currentIndex(0),

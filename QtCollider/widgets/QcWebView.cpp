@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2011 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2011-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -30,7 +30,7 @@
 #include <QStyle>
 #include <QClipboard>
 
-static QcWidgetFactory<QtCollider::WebView> factory;
+QC_DECLARE_QWIDGET_FACTORY(WebView);
 
 namespace QtCollider {
 
