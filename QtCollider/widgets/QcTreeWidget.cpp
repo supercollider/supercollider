@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2011 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2011-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -31,7 +31,7 @@ class QcTreeWidgetFactory : public QcWidgetFactory<QcTreeWidget>
   }
 };
 
-static QcTreeWidgetFactory treeWidgetFactory;
+QC_DECLARE_FACTORY( QcTreeWidget, QcTreeWidgetFactory );
 
 QcTreeWidget::QcTreeWidget()
 {

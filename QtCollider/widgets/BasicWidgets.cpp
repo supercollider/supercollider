@@ -30,12 +30,12 @@
 # include <QMacStyle>
 #endif
 
-QcWidgetFactory<QcDefaultWidget> defaultWidgetFactory;
-QcWidgetFactory<QcHLayoutWidget> hLayoutWidgetFactory;
-QcWidgetFactory<QcVLayoutWidget> vLayoutWidgetFactory;
-QcWidgetFactory<QLabel> labelFactory;
-QcWidgetFactory<QcTextField> textFieldFactory;
-QcWidgetFactory<QcCheckBox> checkBoxFactory;
+QC_DECLARE_QWIDGET_FACTORY( QcDefaultWidget );
+QC_DECLARE_QWIDGET_FACTORY( QcHLayoutWidget );
+QC_DECLARE_QWIDGET_FACTORY( QcVLayoutWidget );
+QC_DECLARE_QWIDGET_FACTORY( QLabel );
+QC_DECLARE_QWIDGET_FACTORY( QcTextField );
+QC_DECLARE_QWIDGET_FACTORY( QcCheckBox );
 
 //////////////////////////// QcListWidget //////////////////////////////////////
 
@@ -46,7 +46,7 @@ class QcListWidgetFactory : public QcWidgetFactory<QcListWidget>
   }
 };
 
-QcListWidgetFactory listWidgetFactory;
+QC_DECLARE_FACTORY( QcListWidget, QcListWidgetFactory );
 
 QcListWidget::QcListWidget() : _emitAction(true)
 {
@@ -97,7 +97,7 @@ void QcListWidget::keyPressEvent( QKeyEvent *e )
 
 ////////////////////////// QcPopUpMenu /////////////////////////////////////////
 
-QcWidgetFactory<QcPopUpMenu> popUpMenuFactory;
+QC_DECLARE_QWIDGET_FACTORY(QcPopUpMenu);
 
 QcPopUpMenu::QcPopUpMenu()
 : lastChoice( -1 ), _reactivation(false)
@@ -122,7 +122,7 @@ void QcPopUpMenu::doAction( int choice )
 
 /////////////////////////////// QcButton ///////////////////////////////////////
 
-QcWidgetFactory<QcButton> buttonFactory;
+QC_DECLARE_QWIDGET_FACTORY(QcButton);
 
 QcButton::QcButton()
 : currentState(0), defaultPalette( palette() )
@@ -203,6 +203,8 @@ void QcButton::doAction()
   Q_EMIT( action((int)QApplication::keyboardModifiers()) );
 }
 
+/////////////////////////////////////////////////////////////////////////
+
 class QcCustomPaintedFactory : public QcWidgetFactory<QcCustomPainted>
 {
 protected:
@@ -213,4 +215,4 @@ protected:
   }
 };
 
-static QcCustomPaintedFactory customPaintedFactory;
+QC_DECLARE_FACTORY( QcCustomPainted, QcCustomPaintedFactory );

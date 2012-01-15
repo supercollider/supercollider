@@ -41,6 +41,7 @@ set( QT_COLLIDER_HDRS
 set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/debug.cpp
   ${QT_COLLIDER_DIR}/interface.cpp
+  ${QT_COLLIDER_DIR}/factories.cpp
   ${QT_COLLIDER_DIR}/QcApplication.cpp
   ${QT_COLLIDER_DIR}/Common.cpp
   ${QT_COLLIDER_DIR}/QObjectProxy.cpp

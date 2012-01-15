@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -21,9 +21,9 @@
 
 #include "layouts.hpp"
 
-static QcObjectFactory<QcHBoxLayout> hBoxLayoutFactory;
-static QcObjectFactory<QcVBoxLayout> vBoxLayoutFactory;
-static QcObjectFactory<QcGridLayout> gridLayoutFactory;
+QC_DECLARE_QOBJECT_FACTORY(QcHBoxLayout);
+QC_DECLARE_QOBJECT_FACTORY(QcVBoxLayout);
+QC_DECLARE_QOBJECT_FACTORY(QcGridLayout);
 
 void QcGridLayout::addItem( const VariantList &dataList )
 {

@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -38,7 +38,7 @@ protected:
   }
 };
 
-static QcScrollWidgetFactory scrollWidgetFactory;
+QC_DECLARE_FACTORY( QcScrollWidget, QcScrollWidgetFactory );
 
 QcScrollWidget::QcScrollWidget( QWidget *parent ) : QcCanvas( parent )
 {
@@ -84,7 +84,7 @@ bool QcScrollWidget::eventFilter ( QObject * watched, QEvent * event ) {
 
 
 
-static QcWidgetFactory<QcScrollArea> scrollAreaFactory;
+QC_DECLARE_QWIDGET_FACTORY(QcScrollArea);
 
 QcScrollArea::QcScrollArea()
 {

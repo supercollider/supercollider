@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010-2011 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -51,8 +51,8 @@ class QcScrollWindowFactory : public QcObjectFactory<QcScrollWindow>
   }
 };
 
-static QcWindowFactory winFactory;
-static QcScrollWindowFactory scrollWinFactory;
+QC_DECLARE_FACTORY( QcWindow, QcWindowFactory );
+QC_DECLARE_FACTORY( QcScrollWindow, QcScrollWindowFactory );
 
 static void qcInitWindow
   ( QWidget *window, const QString &title, const QRectF & geom_, bool resizable, bool frame )

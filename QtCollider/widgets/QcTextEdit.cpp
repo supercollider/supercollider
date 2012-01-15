@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -33,7 +33,7 @@ class QcTextEditFactory : public QcWidgetFactory<QcTextEdit>
   }
 };
 
-static QcTextEditFactory factory;
+QC_DECLARE_FACTORY( QcTextEdit, QcTextEditFactory );
 
 QcTextEdit::QcTextEdit() : _interpretSelection(false)
 {
