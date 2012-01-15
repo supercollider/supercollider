@@ -168,7 +168,7 @@ endif()
 
 if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
-	add_library(libsclang SHARED libsclang_final.cpp ${sclang_parser_source})
+	add_library(libsclang STATIC libsclang_final.cpp ${sclang_parser_source})
 else()
 	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 endif()
@@ -283,7 +283,6 @@ elseif(WIN32)
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 else()
 	install(TARGETS sclang
-			LIBRARY DESTINATION "lib"
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
