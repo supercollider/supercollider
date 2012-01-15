@@ -170,7 +170,7 @@ if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
 	add_library(libsclang SHARED libsclang_final.cpp ${sclang_parser_source})
 else()
-	add_library(libsclang SHARED ${sclang_sources} ${sclang_parser_source})
+	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 endif()
 
 set_property(TARGET libsclang
@@ -273,16 +273,16 @@ if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
-	install(TARGETS libsclang sclang
+	install(TARGETS sclang
 			DESTINATION "${scappauxresourcesdir}"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 			COMPONENT app)
 elseif(WIN32)
-	install(TARGETS libsclang sclang
+	install(TARGETS sclang
 			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 else()
-	install(TARGETS libsclang sclang
+	install(TARGETS sclang
 			LIBRARY DESTINATION "lib"
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
