@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -44,7 +44,7 @@
 #define CLASS_NAME( slot ) \
   slotRawSymbol( &slotRawObject( slot )->classptr->name )->name
 
-using namespace QtCollider;
+namespace QtCollider {
 
 int QObject_Finalize( struct VMGlobals *, struct PyrObject * );
 
@@ -582,3 +582,31 @@ QC_LANG_PRIMITIVE( QObject_GetParent, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   return errNone;
 }
+
+void defineQObjectPrimitives()
+{
+  LangPrimitiveDefiner definer;
+  definer.define<QObject_New>();
+  definer.define<QObject_Destroy>();
+  definer.define<QObject_ManuallyFinalize>();
+  definer.define<QObject_SetParent>();
+  definer.define<QMetaObject_Properties>();
+  definer.define<QMetaObject_Methods>();
+  definer.define<QObject_GetProperties>();
+  definer.define<QObject_GetMethods>();
+  definer.define<QObject_SetProperty>();
+  definer.define<QObject_GetProperty>();
+  definer.define<QObject_SetEventHandler>();
+  definer.define<QObject_SetEventHandlerEnabled>();
+  definer.define<QObject_ConnectMethod>();
+  definer.define<QObject_DisconnectMethod>();
+  definer.define<QObject_ConnectObject>();
+  definer.define<QObject_DisconnectObject>();
+  definer.define<QObject_ConnectSlot>();
+  definer.define<QObject_InvokeMethod>();
+  definer.define<QObject_IsValid>();
+  definer.define<QObject_GetChildren>();
+  definer.define<QObject_GetParent>();
+}
+
+}  // namespace QtCollider

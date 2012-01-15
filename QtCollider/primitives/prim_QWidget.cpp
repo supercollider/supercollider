@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010-2011 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -33,10 +33,10 @@
 #include <QDrag>
 #include <QMimeData>
 
-using namespace QtCollider;
-
 // WARNING these primitives have to always execute asynchronously, or Cocoa language client will
 // hang.
+
+namespace QtCollider {
 
 QC_LANG_PRIMITIVE( QWidget_SetFocus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
@@ -111,8 +111,6 @@ QC_LANG_PRIMITIVE( QWidget_SetAlwaysOnTop, 1, PyrSlot *r, PyrSlot *a, VMGlobals 
   return errNone;
 }
 
-namespace QtCollider {
-
 struct MimeData : public QMimeData {
   virtual ~MimeData() {
     qcDebugMsg(1,"Drag data object destroyed, clearing QView.currentDrag.");
@@ -128,8 +126,6 @@ struct MimeData : public QMimeData {
     QtCollider::unlockLang();
   }
 };
-
-}
 
 QC_LANG_PRIMITIVE( QWidget_StartDrag, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g ) {
   QWidgetProxy *wProxy = qobject_cast<QWidgetProxy*>( Slot::toObjectProxy(r) );
@@ -163,3 +159,19 @@ QC_LANG_PRIMITIVE( QWidget_SetGlobalEventEnabled, 2, PyrSlot *r, PyrSlot *a, VMG
 
   return errNone;
 }
+
+void defineQWidgetPrimitives()
+{
+  LangPrimitiveDefiner definer;
+  definer.define<QWidget_SetFocus>();
+  definer.define<QWidget_BringFront>();
+  definer.define<QWidget_Refresh>();
+  definer.define<QWidget_MapToGlobal>();
+  definer.define<QWidget_SetLayout>();
+  definer.define<QWidget_GetAlwaysOnTop>();
+  definer.define<QWidget_SetAlwaysOnTop>();
+  definer.define<QWidget_StartDrag>();
+  definer.define<QWidget_SetGlobalEventEnabled>();
+}
+
+} // namespace QtCollider
