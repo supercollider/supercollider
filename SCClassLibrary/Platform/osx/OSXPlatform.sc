@@ -35,8 +35,7 @@ OSXPlatform : UnixPlatform
 		};
 	}
 
-	// Prefer qt but fall back to cocoa if qt not installed.
-	defaultGUIScheme { if (GUI.get(\qt).notNil) {^\qt} {^\cocoa} }
+	defaultGUIScheme { if (GUI.get(\cocoa).isNil) {^\qt} {^\cocoa} }
 	defaultHIDScheme { ^\osx_hid }
 
 	setDeferredTaskInterval { |interval| _SetDeferredTaskInterval }
