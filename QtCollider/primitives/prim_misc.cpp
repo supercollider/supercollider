@@ -40,7 +40,7 @@
 #include <QStyleFactory>
 #include <QWebSettings>
 
-using namespace QtCollider;
+namespace QtCollider {
 
 QC_LANG_PRIMITIVE( QtGUI_SetDebugLevel, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
@@ -178,3 +178,22 @@ QC_LANG_PRIMITIVE( QWebView_ClearMemoryCaches, 0, PyrSlot *r, PyrSlot *a, VMGlob
 
   return errNone;
 }
+
+void defineMiscPrimitives()
+{
+  LangPrimitiveDefiner definer;
+  definer.define<QtGUI_SetDebugLevel>();
+  definer.define<QtGUI_DebugLevel>();
+  definer.define<QWindow_ScreenBounds>();
+  definer.define<QWindow_AvailableGeometry>();
+  definer.define<Qt_StringBounds>();
+  definer.define<Qt_AvailableFonts>();
+  definer.define<Qt_GlobalPalette>();
+  definer.define<Qt_SetGlobalPalette>();
+  definer.define<Qt_FocusWidget>();
+  definer.define<Qt_SetStyle>();
+  definer.define<Qt_AvailableStyles>();
+  definer.define<QWebView_ClearMemoryCaches>();
+}
+
+} // namespace QtCollider
