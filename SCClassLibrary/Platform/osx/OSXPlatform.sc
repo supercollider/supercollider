@@ -20,13 +20,13 @@ OSXPlatform : UnixPlatform
 	}
 
 	startup {
+		this.loadStartupFiles;
 		if(Platform.ideName == "scapp"){
 			Document.implementationClass.startup;
 			// make server window
 			Server.internal.makeWindow;
 			Server.local.makeWindow;
 		};
-		this.loadStartupFiles;
 	}
 	shutdown {
 		HIDDeviceService.releaseDeviceList;
