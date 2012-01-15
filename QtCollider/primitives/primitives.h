@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -29,38 +29,49 @@
 
 namespace QtCollider {
 
-struct LangPrimitiveData {
-  PrimitiveHandler mediator;
-  char *name;
-  int argc;
+template <typename T>
+struct LangPrimitive
+{
 };
 
-typedef QList<LangPrimitiveData> LangPrimitiveList;
-
-LangPrimitiveList& langPrimitives();
-
-template <int FN( PyrSlot*, PyrSlot*, VMGlobals* )>
-class LangPrimitive
+class LangPrimitiveDefiner
 {
 public:
-  LangPrimitive ( const char *name, int argc ) {
-    LangPrimitiveData d;
-    d.mediator = &mediate;
-    d.name = strdup(name);
-    d.argc = argc;
-    langPrimitives().append( d );
+  LangPrimitiveDefiner() :
+    _base( nextPrimitiveIndex() ), _index(0)
+  {}
+
+  template<typename T>
+  void define()
+  {
+    LangPrimitive<T>::define( _base, _index++ );
   }
+
 private:
-  static int mediate( VMGlobals *g, int i ) {
-    PyrSlot *stack = g->sp - i + 1;
-    int ret = (*FN)( stack, i > 1 ? stack+1 : 0, g );
-    return ret;
-  }
+  int _base;
+  int _index;
 };
+
 
 } // namespace
 
+#define QC_LANG_PRIMITIVE( NAME, ARGC, RECEIVER, ARGS, GLOBAL ) \
+  struct NAME {}; \
+  template<> struct LangPrimitive <NAME> { \
+      static int implementation ( RECEIVER, ARGS, GLOBAL ); \
+      static int mediate( VMGlobals *g, int i ) { \
+          PyrSlot *stack = g->sp - i + 1; \
+          return implementation( stack, i > 1 ? stack+1 : 0, g ); \
+      } \
+      static void define( int base, int index ) { \
+          definePrimitive( base, index, "_" #NAME, &mediate, ARGC + 1, 0 ); \
+      } \
+  }; \
+  int LangPrimitive<NAME>::implementation( RECEIVER, ARGS, GLOBAL )
+
+#if 0
 #define QC_LANG_PRIMITIVE( name, argc, receiver, args, global ) \
   int name ( receiver, args, global ); \
   static QtCollider::LangPrimitive<&name> p_##name( "_" #name, argc ); \
   int name ( receiver, args, global )
+#endif

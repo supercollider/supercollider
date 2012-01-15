@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -26,13 +26,6 @@
 
 #include <SCBase.h>
 
-using namespace QtCollider;
-
-LangPrimitiveList& QtCollider::langPrimitives() {
-  static LangPrimitiveList * primitives = new LangPrimitiveList();
-  return *primitives;
-}
-
 namespace QtCollider {
 
 PyrSymbol *s_interpretCmdLine;
@@ -53,6 +46,11 @@ PyrSymbol *s_QObject;
 PyrSymbol *s_QLayout;
 PyrSymbol *s_QTreeViewItem;
 
+void defineQObjectPrimitives();
+void defineQPenPrimitives();
+void defineMiscPrimitives();
+void defineQWidgetPrimitives();
+
 QC_PUBLIC
 void initPrimitives () {
   QtCollider::init();
@@ -61,12 +59,11 @@ void initPrimitives () {
 
   int base = nextPrimitiveIndex();
   int index = 0;
-  LangPrimitiveList& primitives = langPrimitives();
 
-  Q_FOREACH( LangPrimitiveData p, primitives ) {
-    qcDebugMsg(2, QString("defining primitive '%1'").arg(p.name) );
-    definePrimitive( base, index++, p.name, p.mediator, p.argc + 1, 0 );
-  }
+  defineQObjectPrimitives();
+  defineQWidgetPrimitives();
+  defineQPenPrimitives();
+  defineMiscPrimitives();
 
   s_interpretCmdLine = getsym("interpretCmdLine");
   s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");

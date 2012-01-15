@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2010-2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * Copyright 2010 Ivan Leben (ivan.leben@gmail.com) (QPen_ArcTo)
 *
@@ -30,44 +30,12 @@
 #include <QVector3D>
 #include <cmath>
 
-namespace QtCollider
-{
-
-template <int FN( PyrSlot*, PyrSlot*, VMGlobals* )>
-class QPenPrimitive
-{
-public:
-  QPenPrimitive ( const char *name, int argc ) {
-    LangPrimitiveData d;
-    d.mediator = &mediate;
-    d.name = strdup(name);
-    d.argc = argc;
-    langPrimitives().append( d );
-  }
-private:
-  static int mediate( VMGlobals *g, int i ) {
-    if( !globalPainter() ) {
-      qcErrorMsg( QString("Usage of QPen is not allowed at this point!") );
-      return errFailed;
-    }
-    PyrSlot *stack = g->sp - i + 1;
-    int ret = (*FN)( stack, i > 1 ? stack+1 : 0, g );
-    return ret;
-  }
-};
-
-}
-
-#define QC_QPEN_PRIMITIVE( name, argc, receiver, args, global ) \
-  int name ( receiver, args, global ); \
-  static QtCollider::QPenPrimitive<&name> p_##name( "_" #name, argc ); \
-  int name ( receiver, args, global )
-
 static bool announced = false;
 static QPainter *painter = 0;
 static QPainterPath path;
 
 namespace QtCollider {
+
   void announcePainting() { announced = true; }
   bool paintingAnnounced() { return announced; }
 
@@ -132,7 +100,30 @@ inline static qreal radToDeg( qreal rad )
   return rad * 180.0 / PI;
 }
 
-using namespace QtCollider;
+inline static bool isPenValid() {
+    if( !painter ) {
+      qcErrorMsg( QString("Usage of QPen is not allowed at this point!") );
+      return false;
+    }
+    return true;
+}
+
+#define QC_QPEN_PRIMITIVE( NAME, ARGC, RECEIVER, ARGS, GLOBAL ) \
+  struct NAME {}; \
+  template<> struct LangPrimitive <NAME> { \
+      static int implementation ( RECEIVER, ARGS, GLOBAL ); \
+      static int mediate( VMGlobals *g, int i ) { \
+          if(!isPenValid()) return errFailed; \
+          PyrSlot *stack = g->sp - i + 1; \
+          return implementation( stack, i > 1 ? stack+1 : 0, g ); \
+      } \
+      static void define( int base, int index ) { \
+          definePrimitive( base, index, "_" #NAME, &mediate, ARGC + 1, 0 ); \
+      } \
+  }; \
+  int LangPrimitive<NAME>::implementation( RECEIVER, ARGS, GLOBAL )
+
+namespace QtCollider {
 
 QC_QPEN_PRIMITIVE( QPen_Save, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
@@ -626,3 +617,44 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
   return errNone;
 }
+
+void defineQPenPrimitives()
+{
+  LangPrimitiveDefiner definer;
+  definer.define<QPen_Save>();
+  definer.define<QPen_Restore>();
+  definer.define<QPen_Clear>();
+  definer.define<QPen_FillColor>();
+  definer.define<QPen_StrokeColor>();
+  definer.define<QPen_Width>();
+  definer.define<QPen_SetJoinStyle>();
+  definer.define<QPen_SetCapStyle>();
+  definer.define<QPen_SetDashPattern>();
+  definer.define<QPen_SetOpacity>();
+  definer.define<QPen_Clip>();
+  definer.define<QPen_AntiAliasing>();
+  definer.define<QPen_SetFont>();
+  definer.define<QPen_Translate>();
+  definer.define<QPen_Scale>();
+  definer.define<QPen_Shear>();
+  definer.define<QPen_Rotate>();
+  definer.define<QPen_Transform>();
+  definer.define<QPen_MoveTo>();
+  definer.define<QPen_LineTo>();
+  definer.define<QPen_CubicTo>();
+  definer.define<QPen_QuadTo>();
+  definer.define<QPen_ArcTo>();
+  definer.define<QPen_AddRect>();
+  definer.define<QPen_AddRoundedRect>();
+  definer.define<QPen_AddEllipse>();
+  definer.define<QPen_AddArc>();
+  definer.define<QPen_AddWedge>();
+  definer.define<QPen_AddAnnularWedge>();
+  definer.define<QPen_Draw>();
+  definer.define<QPen_FillAxialGradient>();
+  definer.define<QPen_FillRadialGradient>();
+  definer.define<QPen_StringAtPoint>();
+  definer.define<QPen_StringInRect>();
+}
+
+} // namespace QtCollider
