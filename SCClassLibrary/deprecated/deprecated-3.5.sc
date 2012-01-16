@@ -58,7 +58,7 @@ Panner : MultiOutUGen {
 	}
 	*new1 {|...x|
 		this.deprecated(thisMethod);
-		^super.new(*x);
+		^super.new1(*x);
 	}
 }
 
@@ -69,7 +69,7 @@ XFade : UGen {
 	}
 	*new1 {|...x|
 		this.deprecated(thisMethod);
-		^super.new(*x);
+		^super.new1(*x);
 	}
 }
 
@@ -473,14 +473,14 @@ GetStringDialog  {
 }
 
 + Main {
-	
+
 	recvOSCfunc { this.deprecated(thisMethod); ^recvOSCfunc; }
-	
+
 	recvOSCfunc_ { |newFunc|
 		this.deprecated(thisMethod, Main.findMethod(\addOSCFunc));
-		recvOSCfunc = newFunc;	
+		recvOSCfunc = newFunc;
 	}
-	
+
 }
 
 + SCViewHolder {
