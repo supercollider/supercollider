@@ -290,9 +290,6 @@ set(MACOSX_BUNDLE_BUNDLE_NAME "${scappbundlename}")
 
 include(InstallRequiredSystemLibraries)
 
-if(SC_QT)
-	include(DeployQt4)
-	install_qt4_executable("${scappauxresourcesdir}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth")
-endif()
-
+include(DeployQt4)
+install_qt4_executable("${scappauxresourcesdir}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth")
 
