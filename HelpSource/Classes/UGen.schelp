@@ -185,6 +185,9 @@ Wraps the receiver in a link::Classes/Lag3UD:: UGen, smoothing its output by cod
 method:: varlag
 Wraps the receiver in a link::Classes/VarLag:: UGen, smoothing its output by code::time:: seconds.
 
+method:: slew
+Wraps the receiver in a link::Classes/Slew:: UGen, limiting the slope of its output.
+
 method:: degreeToKey
 
 Wraps the receiver in a link::Classes/DegreeToKey:: UGen.

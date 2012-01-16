@@ -139,6 +139,10 @@ UGen : AbstractFunction {
 		^VarLag.multiNew(this.rate, this, time, curvature, warp, start)
 	}
 
+	slew { arg up = 1, down = 1;
+		^Slew.multiNew(this.rate, this, up, down)
+	}
+
 	prune { arg min, max, type;
 		switch(type,
 			\minmax, {
