@@ -375,11 +375,11 @@ SequenceableCollection : Collection {
 		});
 		^list
 	}
-	
+
 	flat {
 		^this.prFlat(this.species.new(this.flatSize))
 	}
-	
+
 	prFlat { |list|
 		this.do({ arg item, i;
 			if (item.respondsTo('prFlat'), {
@@ -402,7 +402,7 @@ SequenceableCollection : Collection {
 		});
 		^list
 	}
-	
+
 	flop {
 		var list, size, maxsize;
 
@@ -864,6 +864,7 @@ SequenceableCollection : Collection {
 	lag2ud { arg ... args; ^this.multiChannelPerform('lag2ud', *args) }
 	lag3ud { arg ... args; ^this.multiChannelPerform('lag3ud', *args) }
 	varlag { arg ... args; ^this.multiChannelPerform('varlag', *args) }
+	slew { arg ... args; ^this.multiChannelPerform('slew', *args) }
 	blend { arg ... args; ^this.multiChannelPerform('blend', *args) }
 	checkBadValues { arg ... args; ^this.multiChannelPerform('checkBadValues', *args) }
 	prune { arg ... args; ^this.multiChannelPerform('prune', *args) }
