@@ -49,7 +49,6 @@ set(plugin_sources
 	UnpackFFTUGens.cpp
 
 	KeyboardUGens.cpp
-	MouseUGens.cpp
 )
 
 set(plugins "")
@@ -74,7 +73,7 @@ foreach(plugin ${plugin_sources})
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
-set(uiugens MouseUGens KeyboardUGens)
+set(uiugens KeyboardUGens)
 
 if (WIN32)
     if(MSVC)
@@ -142,7 +141,7 @@ if (SUPERNOVA)
                     APPEND PROPERTY COMPILE_DEFINITIONS  "SUPERNOVA")
 	endforeach(plugin)
 
-	list(APPEND uiugens KeyboardUGens_supernova MouseUGens_supernova)
+	list(APPEND uiugens KeyboardUGens_supernova)
 
 	add_library(FFT_UGens_supernova MODULE
 				FFTInterfaceTable.cpp
