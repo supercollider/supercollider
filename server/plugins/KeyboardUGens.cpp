@@ -65,22 +65,6 @@ struct MouseInputUGen : public Unit
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-extern "C"
-{
-	void KeyState_next(KeyState *unit, int inNumSamples);
-	void KeyState_Ctor(KeyState *unit);
-
-	void MouseX_next(MouseInputUGen *unit, int inNumSamples);
-	void MouseY_next(MouseInputUGen *unit, int inNumSamples);
-	void MouseButton_next(MouseInputUGen *unit, int inNumSamples);
-
-	void MouseX_Ctor(MouseInputUGen *unit);
-	void MouseY_Ctor(MouseInputUGen *unit);
-	void MouseButton_Ctor(MouseInputUGen *unit);
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 #ifdef __APPLE__
 
 void* gstate_update_func(void* arg)
