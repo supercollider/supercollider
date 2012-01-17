@@ -34,6 +34,10 @@ For speed we keep this global, although this makes the code non-thread-safe.
 
 #include "SC_fftlib.h"
 
+#ifdef NOVA_SIMD
+#include "simd_binary_arithmetic.hpp"
+#endif
+
 
 // We include vDSP even if not using for FFT, since we want to use some vectorised add/mul tricks
 #if defined(__APPLE__) && !defined(SC_IPHONE)
@@ -130,8 +134,14 @@ static float* scfft_create_fftwindow(int wintype, int log2n)
 {
 	int size = 1 << log2n;
 	unsigned short i;
+#if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+	float *win;
+	int error = posix_memalign((void**)&win, 64, size * sizeof(float)); // align by cacheline
+	if (error)
+		win = NULL;
+#else
 	float *win = (float*)malloc(size * sizeof(float));
-
+#endif
 	double winc;
 	switch(wintype) {
 		case kSineWindow:
@@ -309,16 +319,21 @@ static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fu
 	if (wintype != kRectWindow) {
 		float *win = fftWindow[wintype][log2_winsize];
 		if (!win) return;
-		#if SC_FFT_VDSP
-			vDSP_vmul(data, 1, win, 1, data, 1, winsize);
-		#else
-			--win;
-			float *in = data - 1;
-			for (int i=0; i< winsize ; ++i) {
-				*++in *= *++win;
-			}
-		#endif
-
+#if SC_FFT_VDSP
+		vDSP_vmul(data, 1, win, 1, data, 1, winsize);
+#elif defined (NOVA_SIMD)
+		using namespace nova;
+		if ((vec<float>::objects_per_cacheline & winsize == 0) && vec<float>::is_aligned(data))
+			times_vec_simd(data, data, win, winsize);
+		else
+			times_vec(data, data, win, winsize);
+#else
+		--win;
+		float *in = data - 1;
+		for (int i=0; i< winsize ; ++i) {
+			*++in *= *++win;
+		}
+#endif
 	}
 
 	// scale factor is different for different libs. But the compiler switch here is about using vDSP's fast multiplication method.

@@ -18,6 +18,9 @@ else()
 	endif()
 endif()
 
+if(NOVA_SIMD)
+	add_definitions(-DNOVA_SIMD)
+endif()
 
 if (NO_AVAHI)
 
