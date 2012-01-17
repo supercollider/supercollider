@@ -271,7 +271,7 @@ OSCFunc : AbstractResponderFunc {
 			if(oscArg.isKindOf(String), {oscArg.asSymbol}, {oscArg}); // match Symbols not Strings
 		});
 		argTemplate = argtemplate ? argTemplate;
-		func = argfunc;
+		func = argfunc ? func;
 		dispatcher = argdisp ? dispatcher;
 		this.enable;
 		allFuncProxies.add(this);
@@ -489,10 +489,10 @@ MIDIFunc : AbstractResponderFunc {
 	}
 	
 	init {|argfunc, argmsgNum, argchan, argType, argsrcID, argtempl, argdisp|
-		msgNum = msgNum ? argmsgNum;
-		chan = chan ? argchan;
+		msgNum = argmsgNum ? msgNum;
+		chan = argchan ? chan;
 		srcID = argsrcID ? srcID;
-		func = argfunc;
+		func = argfunc ? func;
 		msgType = argType ? msgType;
 		dispatcher = argdisp ? dispatcher;
 		argTemplate = argtempl ? argTemplate;
