@@ -9,7 +9,7 @@ if (FFT_GREEN)
 elseif (APPLE)
 	add_definitions("-DSC_FFT_VDSP")
 else()
-	find_package(FFTW3f)
+	find_package(FFTW3f 3.3)
 
 	if (FFTW3F_FOUND)
 		add_definitions("-DSC_FFT_FFTW")
