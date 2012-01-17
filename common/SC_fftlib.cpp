@@ -56,7 +56,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 0
 	#define SC_FFT_GREEN 1
-#elif !SC_FFT_FFTW && defined(__APPLE__)
+#elif !SC_FFT_FFTW && defined(__APPLE__) && !defined(SUPERNOVA)
 	#define SC_FFT_FFTW 0
 	#define SC_FFT_VDSP 1
 	#define SC_FFT_GREEN 0
@@ -80,9 +80,6 @@ typedef struct scfft {
 	short wintype;
 	float *indata, *outdata, *trbuf;
 	float scalefac; // Used to rescale the data to unity gain
-	#if SC_FFT_FFTW
-		fftwf_plan plan;
-	#endif
 } scfft;
 
 
@@ -98,6 +95,13 @@ static float *fftWindow[2][SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 		#include "fftlib.h"
 		static float *cosTable[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 	}
+#endif
+
+#if SC_FFT_FFTW
+static fftwf_plan precompiledForwardPlans[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
+static fftwf_plan precompiledBackwardPlans[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
+static fftwf_plan precompiledForwardPlansInPlace[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
+static fftwf_plan precompiledBackwardPlansInPlace[SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1];
 #endif
 
 #define pi 3.1415926535898f
@@ -185,7 +189,20 @@ static bool scfft_global_initialization (void)
 	splitBuf.imagp = (float*) malloc ( SC_FFT_MAXSIZE * sizeof(float) / 2);
 	//printf("SC FFT global init: vDSP initialised.\n");
 #elif SC_FFT_FFTW
-	//printf("SC FFT global init: FFTW, no init needed.\n");
+	size_t maxSize = 1<<SC_FFT_LOG2_MAXSIZE;
+	float * buffer1 = (float*)fftwf_malloc((maxSize + 1) * sizeof(float));
+	float * buffer2 = (float*)fftwf_malloc((maxSize + 1) * sizeof(float));
+	for (int i= SC_FFT_LOG2_MINSIZE; i < SC_FFT_LOG2_MAXSIZE+1; ++i) {
+		size_t currentSize = 1<<i;
+
+		precompiledForwardPlans[i]  = fftwf_plan_dft_r2c_1d(currentSize, buffer1, (fftwf_complex*) buffer2, FFTW_ESTIMATE);
+		precompiledBackwardPlans[i] = fftwf_plan_dft_c2r_1d(currentSize, (fftwf_complex*) buffer2, buffer1, FFTW_ESTIMATE);
+
+		precompiledForwardPlansInPlace[i]  = fftwf_plan_dft_r2c_1d(currentSize, buffer1, (fftwf_complex*) buffer1, FFTW_ESTIMATE);
+		precompiledBackwardPlansInPlace[i] = fftwf_plan_dft_c2r_1d(currentSize, (fftwf_complex*) buffer1, buffer1, FFTW_ESTIMATE);
+	}
+	fftwf_free(buffer1);
+	fftwf_free(buffer2);
 #endif
 	return false;
 }
@@ -233,13 +250,6 @@ scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction winty
 	if (fullsize > SC_FFT_MAXSIZE)
 		scfft_ensurewindow(f->log2nfull, f->log2nwin, wintype);
 
-#if SC_FFT_FFTW
-	if(forward)
-		f->plan = fftwf_plan_dft_r2c_1d(fullsize, trbuf, (fftwf_complex*) trbuf, FFTW_ESTIMATE);
-	else
-		f->plan = fftwf_plan_dft_c2r_1d(fullsize, (fftwf_complex*) trbuf, outdata, FFTW_ESTIMATE);
-#endif
-
 	// The scale factors rescale the data to unity gain. The old Green lib did this itself, meaning scalefacs would here be 1...
 	if(forward){
 #if SC_FFT_VDSP
@@ -282,13 +292,13 @@ void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsiz
 	}
 
 	// Ensure our FFT twiddle factors (or whatever) have been created
- 	#if SC_FFT_VDSP
-		if(fftSetup[log2_fullsize] == 0)
-			fftSetup[log2_fullsize] = vDSP_create_fftsetup (log2_fullsize, FFT_RADIX2);
-	#elif SC_FFT_GREEN
-		if(cosTable[log2_fullsize] == 0)
-			cosTable[log2_fullsize] = create_cosTable(log2_fullsize);
-   	#endif
+#if SC_FFT_VDSP
+	if(fftSetup[log2_fullsize] == 0)
+		fftSetup[log2_fullsize] = vDSP_create_fftsetup (log2_fullsize, FFT_RADIX2);
+#elif SC_FFT_GREEN
+	if(cosTable[log2_fullsize] == 0)
+		cosTable[log2_fullsize] = create_cosTable(log2_fullsize);
+#endif
 }
 
 // these do the main jobs.
@@ -311,14 +321,14 @@ static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fu
 
 	}
 
-		// scale factor is different for different libs. But the compiler switch here is about using vDSP's fast multiplication method.
-	#if SC_FFT_VDSP
-		vDSP_vsmul(data, 1, &scalefac, data, 1, winsize);
-	#else
-		for(int i=0; i<winsize; ++i){
-			data[i] *= scalefac;
-		}
-	#endif
+	// scale factor is different for different libs. But the compiler switch here is about using vDSP's fast multiplication method.
+#if SC_FFT_VDSP
+	vDSP_vsmul(data, 1, &scalefac, data, 1, winsize);
+#else
+	for(int i=0; i<winsize; ++i){
+		data[i] *= scalefac;
+	}
+#endif
 
 	// Zero-padding:
 	memset(data + winsize, 0, (fullsize - winsize) * sizeof(float));
@@ -329,61 +339,57 @@ void scfft_dofft(scfft * f)
 	// Data goes to transform buf
 	memcpy(f->trbuf, f->indata, f->nwin * sizeof(float));
 	scfft_dowindowing(f->trbuf, f->nwin, f->nfull, f->log2nwin, f->wintype, f->scalefac);
-	#if SC_FFT_FFTW
-		fftwf_execute(f->plan);
-		// Rearrange output data onto public buffer
-		memcpy(f->outdata, f->trbuf, f->nfull * sizeof(float));
-		f->outdata[1] = f->trbuf[f->nfull]; // Pack nyquist val in
-	#elif SC_FFT_VDSP
-		// Perform even-odd split
-		vDSP_ctoz((COMPLEX*) f->trbuf, 2, &splitBuf, 1, f->nfull >> 1);
-		// Now the actual FFT
-		vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_FORWARD);
-		// Copy the data to the public output buf, transforming it back out of "split" representation
-		vDSP_ztoc(&splitBuf, 1, (DSPComplex*) f->outdata, 2, f->nfull >> 1);
-	#elif SC_FFT_GREEN
-		// Green FFT is in-place
-		rffts(f->trbuf, f->log2nfull, 1, cosTable[f->log2nfull]);
-		// Copy to public buffer
-		memcpy(f->outdata, f->trbuf, f->nfull * sizeof(float));
-	#endif
+#if SC_FFT_FFTW
+	// forward transformation is in-place
+	fftwf_execute_dft_r2c(precompiledForwardPlansInPlace[f->log2nfull], f->trbuf, (fftwf_complex*)f->trbuf);
+
+	// Rearrange output data onto public buffer
+	memcpy(f->outdata, f->trbuf, f->nfull * sizeof(float));
+	f->outdata[1] = f->trbuf[f->nfull]; // Pack nyquist val in
+#elif SC_FFT_VDSP
+	// Perform even-odd split
+	vDSP_ctoz((COMPLEX*) f->trbuf, 2, &splitBuf, 1, f->nfull >> 1);
+	// Now the actual FFT
+	vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_FORWARD);
+	// Copy the data to the public output buf, transforming it back out of "split" representation
+	vDSP_ztoc(&splitBuf, 1, (DSPComplex*) f->outdata, 2, f->nfull >> 1);
+#elif SC_FFT_GREEN
+	// Green FFT is in-place
+	rffts(f->trbuf, f->log2nfull, 1, cosTable[f->log2nfull]);
+	// Copy to public buffer
+	memcpy(f->outdata, f->trbuf, f->nfull * sizeof(float));
+#endif
 }
 
 void scfft_doifft(scfft * f)
 {
-	#if SC_FFT_FFTW
-		float *trbuf = f->trbuf;
-		size_t bytesize = f->nfull * sizeof(float);
-		memcpy(trbuf, f->indata, bytesize);
-		trbuf[1] = 0.f;
-		trbuf[f->nfull] = f->indata[1];  // Nyquist goes all the way down to the end of the line...
-		trbuf[f->nfull+1] = 0.f;
+#if SC_FFT_FFTW
+	float *trbuf = f->trbuf;
+	size_t bytesize = f->nfull * sizeof(float);
+	memcpy(trbuf, f->indata, bytesize);
+	trbuf[1] = 0.f;
+	trbuf[f->nfull] = f->indata[1];  // Nyquist goes all the way down to the end of the line...
+	trbuf[f->nfull+1] = 0.f;
 
-		fftwf_execute(f->plan);
-		// NB the plan already includes copying data to f->outbuf
+	fftwf_execute_dft_c2r(precompiledBackwardPlans[f->log2nfull], (fftwf_complex*)trbuf, f->outdata);
 
-	#elif SC_FFT_VDSP
-		vDSP_ctoz((COMPLEX*) f->indata, 2, &splitBuf, 1, f->nfull >> 1);
-		vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_INVERSE);
-		vDSP_ztoc(&splitBuf, 1, (DSPComplex*) f->outdata, 2, f->nfull >> 1);
-	#elif SC_FFT_GREEN
-		float *trbuf = f->trbuf;
-		size_t bytesize = f->nfull * sizeof(float);
-		memcpy(trbuf, f->indata, bytesize);
-		// Green FFT is in-place
-		riffts(trbuf, f->log2nfull, 1, cosTable[f->log2nfull]);
-		// Copy to public buffer
-		memcpy(f->outdata, trbuf, f->nwin * sizeof(float));
-	#endif
+#elif SC_FFT_VDSP
+	vDSP_ctoz((COMPLEX*) f->indata, 2, &splitBuf, 1, f->nfull >> 1);
+	vDSP_fft_zrip(fftSetup[f->log2nfull], &splitBuf, 1, f->log2nfull, FFT_INVERSE);
+	vDSP_ztoc(&splitBuf, 1, (DSPComplex*) f->outdata, 2, f->nfull >> 1);
+#elif SC_FFT_GREEN
+	float *trbuf = f->trbuf;
+	size_t bytesize = f->nfull * sizeof(float);
+	memcpy(trbuf, f->indata, bytesize);
+	// Green FFT is in-place
+	riffts(trbuf, f->log2nfull, 1, cosTable[f->log2nfull]);
+	// Copy to public buffer
+	memcpy(f->outdata, trbuf, f->nwin * sizeof(float));
+#endif
 	scfft_dowindowing(f->outdata, f->nwin, f->nfull, f->log2nwin, f->wintype, f->scalefac);
 }
 
 void scfft_destroy(scfft *f, SCFFT_Allocator & alloc)
 {
-	if (f == NULL)
-		return;
-#if SC_FFT_FFTW
-	fftwf_destroy_plan(f->plan);
-#endif
 	alloc.free(f);
 }
