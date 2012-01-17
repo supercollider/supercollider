@@ -36,6 +36,9 @@ if(MEMORY_DEBUGGING)
                  PROPERTY COMPILE_DEFINITIONS_DEBUG NOVA_MEMORY_DEBUGGING)
 endif()
 
+if(NOVA_SIMD)
+    add_definitions(-DNOVA_SIMD)
+endif()
 
 
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
