@@ -80,7 +80,7 @@ void* gstate_update_func(void* arg)
 	float rscreenHeight = 1. / (screenBounds.bottom - screenBounds.top);
 #endif
 	for (;;) {
-		GetKeys(gKeyState->keys);
+		GetKeys(gKeyStateGlobals.keys);
 
 #if (__x86_64__)
 		HIPoint point;
