@@ -298,40 +298,44 @@ else()
 endif()
 
 if(APPLE)
-	#if directory contains symlinks, unlink them.
-	if(EXISTS "${auxresourcesdir}/SCClassLibrary")
-		file(GLOB classlibraryfolders "${auxresourcesdir}/SCClassLibrary/[^.]*")
-		foreach(onedirectory ${classlibraryfolders})
-			if(IS_SYMLINK "${onedirectory}")
-				install( CODE "EXECUTE_PROCESS(COMMAND unlink ${onedirectory} )" )
-			endif()
-		endforeach(onedirectory)
-	endif()
 
 	if(SC_SYMLINK_CLASSLIB)
 
 		#if there are folders inside SCCLassLibrary abort cmake.
-		file(GLOB classlibraryfolders "${auxresourcesdir}/SCClassLibrary/[^.]*")
+		file(GLOB classlibraryfolders "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/[^.]*")
 		foreach(onedirectory ${classlibraryfolders})
+			message( "${onedirectory}" )
 			if(NOT IS_SYMLINK "${onedirectory}")
 				message(FATAL_ERROR "Symlinking will fail ! SCClassLibrary folder already exists and has directories inside, please delete it first." )
 			endif()
 		endforeach(onedirectory)
 
-		message(STATUS "Will create symlink of SCClassLibrary to ${auxresourcesdir}/SCClassLibrary" )
-		if(NOT EXISTS "${auxresourcesdir}/SCClassLibrary")
-			install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${auxresourcesdir}/SCClassLibrary)" )
+		message(STATUS "Will create symlink of SCClassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary" )
+		if(NOT EXISTS "{CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
+			install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary)" )
 		endif()
 		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
 		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
 		foreach(onedirectory ${classlibraryfolders})
 			if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
 				install( CODE
-					"EXECUTE_PROCESS(COMMAND ln -s ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
 			endif()
 		endforeach(onedirectory)
 	else()
-		message(STATUS "Will copy SCCLassLibrary to ${auxresourcesdir}")
+		message(STATUS "Will copy SCCLassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/${auxresourcesdir}")
+
+		#if directory contains symlinks, unlink them.
+		if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
+			file(GLOB classlibraryfolders "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/[^.]*")
+			foreach(onedirectory ${classlibraryfolders})
+				if(IS_SYMLINK "${onedirectory}")
+					message(STATUS "Unlinking ${onedirectory}")
+					install( CODE "EXECUTE_PROCESS(COMMAND unlink ${onedirectory} )" )
+				endif()
+			endforeach(onedirectory)
+		endif()
+
 		install(DIRECTORY SCClassLibrary
 			DESTINATION ${auxresourcesdir}
 			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
@@ -360,11 +364,34 @@ if(INSTALL_OLD_HELP)
 endif()
 
 if(INSTALL_HELP)
-	install(DIRECTORY examples HelpSource
-		DESTINATION ${auxresourcesdir}
-		PATTERN "*~" EXCLUDE
-		PATTERN "*#" EXCLUDE
-	)
+	if(SC_SYMLINK_CLASSLIB AND APPLE)
+		message(STATUS "Will create symlink of HelpSource to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
+		if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
+			message(FATAL_ERROR "Symlinking will fail ! HelpSource folder already exists, please delete it first." )
+		endif()
+		install(DIRECTORY examples
+			DESTINATION ${auxresourcesdir}
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
+		install( CODE
+					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
+	else()
+		message(STATUS "Will copy HelpSource to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/")
+		if(APPLE)
+			if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
+				if(IS_SYMLINK "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
+					message(STATUS "Unlinking ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
+					install( CODE "EXECUTE_PROCESS(COMMAND unlink ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
+				endif()
+			endif()
+		endif()
+		install(DIRECTORY examples HelpSource
+			DESTINATION ${auxresourcesdir}
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
+	endif()
 endif()
 
 #############################################
