@@ -21,6 +21,7 @@
 
 #include "QcMultiSlider.h"
 #include "../QcWidgetFactory.h"
+#include "../style/routines.hpp"
 
 #include <QApplication>
 #include <QMouseEvent>
@@ -31,11 +32,12 @@
 QC_DECLARE_QWIDGET_FACTORY(QcMultiSlider);
 
 QcMultiSlider::QcMultiSlider() :
+  QtCollider::Style::Client(this),
   _currentIndex(0),
   _selectionSize(1),
   roundStep( 0.f ),
   editable( true ),
-  ort( Qt::Horizontal),
+  ort( Qt::Vertical),
   elastic( false ),
   thumbSize( QSizeF( 12.f, 12.f ) ),
   gap( 1 ),
@@ -45,6 +47,7 @@ QcMultiSlider::QcMultiSlider() :
   highlight( false ),
   startIndex( 0 )
 {
+  setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
   connect( this, SIGNAL(modified()), this, SLOT(update()) );
   connect( this, SIGNAL(interacted()), this, SLOT(doAction()) );
@@ -130,16 +133,6 @@ void QcMultiSlider::setSelectionSize( int i ) {
   update();
 }
 
-inline float QcMultiSlider::valueFromPos( float pos, float range )
-{
-  float thumbH = thumbSize.height();
-  if( thumbH >= range ) return 0.f;
-  pos -= thumbH * 0.5;
-  pos /= range - thumbH;
-  if( ort == Qt::Horizontal ) pos = 1.f - pos ;
-  return pos;
-}
-
 inline void QcMultiSlider::setValue( int index, float value )
 {
   if( roundStep > 0.f )
@@ -147,25 +140,47 @@ inline void QcMultiSlider::setValue( int index, float value )
   _values.replace( index, qMax( 0.f, qMin( 1.f, value ) ) );
 }
 
+QRect QcMultiSlider::contentsRect()
+{
+  return QtCollider::Style::sunkenContentsRect(rect()).adjusted(2, 2,-2,-2);
+}
+
+QRectF QcMultiSlider::valueRect()
+{
+  QRectF r( QtCollider::Style::sunkenContentsRect(rect()).adjusted(2, 2,-2,-2) );
+  if( !isFilled ) {
+    double half_hnd = thumbSize.height() * 0.5;
+    if( ort == Qt::Horizontal )
+      return r.adjusted( half_hnd, 0, -half_hnd, 0 );
+    else
+      return r.adjusted( 0, half_hnd, 0, -half_hnd );
+  }
+  return r;
+}
+
 void QcMultiSlider::mousePressEvent( QMouseEvent *e )
 {
+  using namespace QtCollider::Style;
+
   moveOrigin = e->pos();
   int c = _values.count();
 
   if( !c ) return;
 
+  QRectF r( valueRect() );
+
   int i;
   float val;
 
-  if( ort == Qt::Horizontal ) {
-    float step = elastic ? (float) width() / c : thumbSize.width() + gap;
-    i = step != 0.f ? moveOrigin.x() / step : moveOrigin.x();
-    val = valueFromPos( moveOrigin.y(), height() );
+  if( ort == Qt::Vertical ) {
+    float step = elastic ? (float) r.width() / c : thumbSize.width() + gap;
+    i = step > 0.f ? (moveOrigin.x() - r.x()) / step : 0;
+    val = yValue((qreal)moveOrigin.y(), r);
   }
   else {
     float step = elastic ? (float) height() / c : thumbSize.width() + gap;
-    i = step != 0.f ? moveOrigin.y() / step : moveOrigin.y();
-    val = valueFromPos( moveOrigin.x(), width() );
+    i = step > 0.f ? (moveOrigin.y() - r.y()) / step : moveOrigin.y();
+    val = xValue((qreal)moveOrigin.x(), r);
   }
 
   i += startIndex;
@@ -183,6 +198,8 @@ void QcMultiSlider::mousePressEvent( QMouseEvent *e )
 
 void QcMultiSlider::mouseMoveEvent( QMouseEvent *e )
 {
+  using namespace QtCollider::Style;
+
   if( !e->buttons() ) return;
 
   int c = _values.count();
@@ -194,24 +211,28 @@ void QcMultiSlider::mouseMoveEvent( QMouseEvent *e )
     return;
   }
 
-  float xOrig, yOrig, xDest, yDest, xStep;
+  QRectF r( valueRect() );
 
-  if( ort == Qt::Horizontal ) {
+  float xOrig, yOrig, xDest, yDest, xStep;
+  int i;
+
+  if( ort == Qt::Vertical ) {
     xOrig = moveOrigin.x();
-    yOrig = valueFromPos(moveOrigin.y(), height());
+    yOrig = yValue(moveOrigin.y(), r);
     xDest = pos.x();
-    yDest = valueFromPos(pos.y(), height());
-    xStep = elastic ? (float) width() / c : thumbSize.width() + gap;
+    yDest = yValue(pos.y(), r);
+    xStep = elastic ? (float) r.width() / c : thumbSize.width() + gap;
+    i = floor( (xOrig - r.left()) / xStep );
   }
   else {
     xOrig = moveOrigin.y();
-    yOrig = valueFromPos(moveOrigin.x(), width());
+    yOrig = xValue(moveOrigin.x(), r);
     xDest = pos.y();
-    yDest = valueFromPos(pos.x(), width());
-    xStep = elastic ? (float) height() / c : thumbSize.width() + gap;
+    yDest = xValue(pos.x(), r);
+    xStep = elastic ? (float) r.height() / c : thumbSize.width() + gap;
+    i = floor( (xOrig - r.top()) / xStep );
   }
 
-  int i = floor( xOrig / xStep );
   float x = (i * xStep) - xOrig;
   float xDif = xDest - xOrig;
   float k = xDif != 0.f ? ( yDest - yOrig ) / xDif : 0.f;
@@ -260,37 +281,49 @@ void QcMultiSlider::mouseMoveEvent( QMouseEvent *e )
 
 void QcMultiSlider::paintEvent( QPaintEvent *e )
 {
+  using namespace QtCollider::Style;
+
   Q_UNUSED(e);
   QPainter p(this);
+  p.setRenderHint( QPainter::Antialiasing, true );
 
   QPalette pal = palette();
-  p.fillRect( rect(), pal.color( QPalette::Base ) );
+
+  RoundRect frame(rect(), 3);
+  drawSunken( &p, pal, frame, pal.color(QPalette::Base), hasFocus() ? focusColor() : QColor() );
 
   if( !_values.count() ) return;
+
+  QRect bounds( contentsRect() );
+  p.setClipRect( bounds.adjusted(1,1,-1,-1) );
 
   QColor fillColor =
     _fillColor.isValid() ? _fillColor : pal.color( QPalette::Text );
   QColor strokeColor =
     _strokeColor.isValid() ? _strokeColor : pal.color( QPalette::Text );
 
-  float iRange, vRange;
-  if( ort == Qt::Horizontal ) {
-    iRange = width(); vRange = height();
+  float iRange, vRange, iOrig, vOrig;
+  if( ort == Qt::Vertical ) {
+    iRange = bounds.width(); vRange = bounds.height();
+    iOrig = bounds.left(); vOrig = bounds.top();
   } else {
-    iRange = height(); vRange = width();
+    iRange = bounds.height(); vRange = bounds.width();
+    iOrig = bounds.top(); vOrig = bounds.left();
   }
 
   float spacing = elastic ?
                   iRange / _values.count() :
                   thumbSize.width() + gap;
 
-  float iOffset = - startIndex * spacing;
+  float iOffset = - startIndex * spacing + (ort == Qt::Horizontal ? bounds.x() : bounds.y());
 
-  float vOffset = thumbSize.height() * 0.5f;
-  if( ort == Qt::Horizontal ) vOffset = vRange - vOffset;
+  float vOffset = isFilled ? 0.f : thumbSize.height() * 0.5f;
+  if( ort == Qt::Vertical ) vOffset = vRange - vOffset;
+  vOffset += vOrig;
 
-  float vScale = vRange - thumbSize.height();
-  if( ort == Qt::Horizontal ) vScale *= -1.f;
+  float vScale = vRange;
+  if( !isFilled ) vScale -= thumbSize.height();
+  if( ort == Qt::Vertical ) vScale = -vScale;
 
   float iPos;
   float vPos;
@@ -298,7 +331,7 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
   float vSize;
 
   float *x, *y, *w, *h;
-  if( ort == Qt::Horizontal ) {
+  if( ort == Qt::Vertical ) {
     x = &iPos; y = &vPos; w = &iSize, h = &vSize;
   }
   else {

@@ -24,11 +24,12 @@
 
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
+#include "../style/style.hpp"
 
 #include <QWidget>
 
 class QcRangeSlider :
-  public QWidget, public QcHelper, public QcAbstractStepValue
+  public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Style::Client
 {
   Q_OBJECT
   Q_PROPERTY( Qt::Orientation orientation
@@ -39,6 +40,8 @@ class QcRangeSlider :
   Q_PROPERTY( float ctrlScale READ dummyFloat WRITE setCtrlScale );
   Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
   Q_PROPERTY( float step READ dummyFloat WRITE setStep )
+  Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
+  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
 
   public:
     enum MouseMode {
@@ -68,7 +71,8 @@ class QcRangeSlider :
 
   private:
     QRect thumbRect();
-    float valueFromPos( const QPoint& pos );
+    QRect valueRect();
+    double valueFromPos( const QPoint& pos );
     void moveBy( float );
     void increment();
     void decrement();

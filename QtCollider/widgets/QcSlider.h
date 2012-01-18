@@ -24,10 +24,11 @@
 
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
+#include "../style/style.hpp"
 
 #include <QSlider>
 
-class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
+class QcSlider : public QSlider, QcHelper, QcAbstractStepValue, public QtCollider::Style::Client
 {
   Q_OBJECT
   Q_PROPERTY( float shiftScale READ dummyFloat WRITE setShiftScale );
@@ -35,6 +36,8 @@ class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
   Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
   Q_PROPERTY( float step READ dummyFloat WRITE setStep )
   Q_PROPERTY( float value READ value WRITE setValue );
+  Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
+  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
 
   public:
     QcSlider();
