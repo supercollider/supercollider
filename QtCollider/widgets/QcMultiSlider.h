@@ -23,10 +23,11 @@
 #define QC_MULTI_SLIDER
 
 #include "../QcHelper.h"
+#include "../style/style.hpp"
 
 #include <QWidget>
 
-class QcMultiSlider : public QWidget, QcHelper
+class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
 {
   // TODO setting selection with mouse
   Q_OBJECT
@@ -51,6 +52,7 @@ class QcMultiSlider : public QWidget, QcHelper
   Q_PROPERTY( QColor strokeColor READ dummyColor WRITE setStrokeColor );
   Q_PROPERTY( bool editable READ dummyBool WRITE setEditable );
   Q_PROPERTY( int startIndex READ dummyInt WRITE setStartIndex );
+  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
 
   Q_SIGNALS:
     void modified();
@@ -100,6 +102,8 @@ class QcMultiSlider : public QWidget, QcHelper
     void setEditable( bool b ) { editable = b; }
     void setStartIndex( int i ) { startIndex = i; update(); }
 
+    QRect contentsRect();
+    QRectF valueRect();
     inline float valueFromPos( float pos, float range );
     inline void setValue( int index, float value );
 
@@ -124,6 +128,7 @@ class QcMultiSlider : public QWidget, QcHelper
     bool highlight;
     QColor _fillColor;
     QColor _strokeColor;
+    QColor _focusColor;
     int startIndex;
 
     // temporary

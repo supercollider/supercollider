@@ -26,8 +26,10 @@
 
 QC_DECLARE_QWIDGET_FACTORY(QcSlider);
 
-QcSlider::QcSlider()
-: lastVal(0), bDoAction( false )
+QcSlider::QcSlider() :
+  QtCollider::Style::Client(this),
+  lastVal(0),
+  bDoAction( false )
 {
   setRange(0, 10000);
   setStep( 0.01 );

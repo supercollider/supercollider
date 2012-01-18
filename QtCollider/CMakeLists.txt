@@ -36,6 +36,7 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/widgets/QcWebView.h
   ${QT_COLLIDER_DIR}/widgets/QcWindow.h
   ${QT_COLLIDER_DIR}/layouts/layouts.hpp
+  ${QT_COLLIDER_DIR}/style/style.hpp
 )
 
 set( QT_COLLIDER_SRCS
@@ -77,6 +78,8 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/layouts/classic_layouts.cpp
   ${QT_COLLIDER_DIR}/layouts/layouts.cpp
   ${QT_COLLIDER_DIR}/style/ProxyStyle.cpp
+  ${QT_COLLIDER_DIR}/style/style.cpp
+  ${QT_COLLIDER_DIR}/style/slider_style.cpp
 )
 
 if(QT_COLLIDER_LANG_CLIENT)
