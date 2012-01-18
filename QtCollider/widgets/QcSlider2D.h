@@ -24,10 +24,11 @@
 
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
+#include "../style/style.hpp"
 
 #include <QWidget>
 
-class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
+class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Style::Client
 {
   Q_OBJECT
   Q_PROPERTY( float xValue READ xValue WRITE setXValue )
@@ -36,6 +37,8 @@ class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
   Q_PROPERTY( float ctrlScale READ dummyFloat WRITE setCtrlScale );
   Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
   Q_PROPERTY( float step READ dummyFloat WRITE setStep )
+  Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
+  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
 
   public:
     QcSlider2D();
@@ -56,7 +59,6 @@ class QcSlider2D : public QWidget, public QcHelper, public QcAbstractStepValue
     void randomize();
   private:
     QRect thumbRect();
-    QPointF valueFromPos( const QPoint pos );
     void setValue( const QPointF val, bool doAction = true );
     void mouseMoveEvent ( QMouseEvent * );
     void mousePressEvent ( QMouseEvent * );
