@@ -485,7 +485,7 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
 
 
 
-PluginLoad(KeyboardUGens)
+PluginLoad(UIUGens)
 {
 	ft = inTable;
 
