@@ -46,7 +46,6 @@ struct KeyboardUGenGlobalState {
 
 struct KeyState : public Unit
 {
-	KeyboardUGenGlobalState* gstate;
 	float m_y1, m_b1, m_lag;
 };
 
@@ -58,7 +57,6 @@ struct MouseUGenGlobalState {
 
 struct MouseInputUGen : public Unit
 {
-	MouseUGenGlobalState* gstate;
 	float m_y1, m_b1, m_lag;
 };
 
@@ -69,9 +67,6 @@ struct MouseInputUGen : public Unit
 
 void* gstate_update_func(void* arg)
 {
-	KeyboardUGenGlobalState* gKeyState = &gKeyStateGlobals;
-	MouseUGenGlobalState* gMouseState = &gMouseUGenGlobals;
-
 #if (__x86_64__)
 	CGDirectDisplayID display = kCGDirectMainDisplay; // to grab the main display ID
 	CGRect bounds = CGDisplayBounds(display);
@@ -92,15 +87,15 @@ void* gstate_update_func(void* arg)
 		HICoordinateSpace space = 2;
 		HIGetMousePosition(space, NULL, &point);
 
-		gMouseState->mouseX = point.x * rscreenWidth; //(float)p.h * rscreenWidth;
-		gMouseState->mouseY = point.y * rscreenHeight; //(float)p.v * rscreenHeight;
-		gMouseState->mouseButton = Button();
+		gMouseUGenGlobals.mouseX = point.x * rscreenWidth; //(float)p.h * rscreenWidth;
+		gMouseUGenGlobals.mouseY = point.y * rscreenHeight; //(float)p.v * rscreenHeight;
+		gMouseUGenGlobals.mouseButton = Button();
 #else
 		Point p;
 		GetGlobalMouse(&p);
-		gMouseState->mouseX = (float)p.h * rscreenWidth;
-		gMouseState->mouseY = (float)p.v * rscreenHeight;
-		gMouseState->mouseButton = Button();
+		gMouseUGenGlobals.mouseX = (float)p.h * rscreenWidth;
+		gMouseUGenGlobals.mouseY = (float)p.v * rscreenHeight;
+		gMouseUGenGlobals.mouseButton = Button();
 #endif
 		usleep(17000);
 	}
@@ -112,25 +107,22 @@ void* gstate_update_func(void* arg)
 
 void* gstate_update_func(void* arg)
 {
-	KeyboardUGenGlobalState* gKeyState = &gKeyStateGlobals;
-
 	POINT p;
 	int mButton;
-	MouseUGenGlobalState* gMouseState = &gMouseUGenGlobals;
 
 	if(GetSystemMetrics(SM_SWAPBUTTON))
 		mButton = VK_RBUTTON; // if  swapped
-		else
-			mButton = VK_LBUTTON; // not swapped (normal)
+	else
+		mButton = VK_LBUTTON; // not swapped (normal)
 
-		int screenWidth  = GetSystemMetrics( SM_CXSCREEN );
-		int screenHeight = GetSystemMetrics( SM_CYSCREEN );
+	int screenWidth  = GetSystemMetrics( SM_CXSCREEN );
+	int screenHeight = GetSystemMetrics( SM_CYSCREEN );
 	// default: SM_CX/CYSCREEN gets the size of a primary screen.
-		// lines uncommented below are just for a specially need on multi-display.
-		//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN );
-		//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
-		float r_screenWidth  = 1.f / (float)(screenWidth  -1);
-		float r_screenHeight = 1.f / (float)(screenHeight -1);
+	// lines uncommented below are just for a specially need on multi-display.
+	//int screenWidth  = GetSystemMetrics( SM_CXVIRTUALSCREEN );
+	//int screenHeight = GetSystemMetrics( SM_CYVIRTUALSCREEN );
+	float r_screenWidth  = 1.f / (float)(screenWidth  -1);
+	float r_screenHeight = 1.f / (float)(screenHeight -1);
 
 
 	for(;;) {
@@ -138,9 +130,9 @@ void* gstate_update_func(void* arg)
 		//GetKey((long*)gstate->keys);
 
 		GetCursorPos(&p);
-		gstate->mouseX = (float)p.x * r_screenWidth;
-		gstate->mouseY = 1.f - (float)p.y * r_screenHeight;
-		gstate->mouseButton = (GetKeyState(mButton) < 0);
+		gMouseUGenGlobals.mouseX = (float)p.x * r_screenWidth;
+		gMouseUGenGlobals.mouseY = 1.f - (float)p.y * r_screenHeight;
+		gMouseUGenGlobals.mouseButton = (GetKeyState(mButton) < 0);
 		::Sleep(17); // 17msec.
 	}
 	return 0;
@@ -150,7 +142,6 @@ void* gstate_update_func(void* arg)
 static Display * d = 0;
 void* gstate_update_func(void* arg)
 {
-	KeyboardUGenGlobalState* gKeyState;
 	Window r;
 	struct timespec requested_time , remaining_time;
 
@@ -162,7 +153,6 @@ void* gstate_update_func(void* arg)
 	d = XOpenDisplay ( NULL );
 	if (!d) return 0;
 
-	MouseUGenGlobalState* gMouseState;
 	Window rep_root, rep_child;
 	XWindowAttributes attributes;
 	int rep_rootx, rep_rooty ;
@@ -176,22 +166,18 @@ void* gstate_update_func(void* arg)
 	r_width = 1.0 / (float)attributes.width;
 	r_height = 1.0 / (float)attributes.height;
 
-	gMouseState = &gMouseUGenGlobals;
-
-	gKeyState = &gKeyStateGlobals;
-
 	for (;;) {
-		XQueryKeymap ( d , (char *) (gKeyState->keys) );
+		XQueryKeymap ( d , (char *) (gKeyStateGlobals.keys) );
 		XQueryPointer ( d, r,
 						&rep_root, &rep_child,
 				  &rep_rootx, &rep_rooty,
 				  &dx, &dy,
 				  &rep_mask);
 
-		gMouseState->mouseX = (float)dx * r_width;
-		gMouseState->mouseY = 1.f - ( (float)dy * r_height );
+		gMouseUGenGlobals.mouseX = (float)dx * r_width;
+		gMouseUGenGlobals.mouseY = 1.f - ( (float)dy * r_height );
 
-		gMouseState->mouseButton = (bool) ( rep_mask & Button1Mask );
+		gMouseUGenGlobals.mouseButton = (bool) ( rep_mask & Button1Mask );
 
 		nanosleep ( &requested_time , &remaining_time );
 	}
@@ -205,7 +191,7 @@ void* gstate_update_func(void* arg)
 void KeyState_next(KeyState *unit, int inNumSamples)
 {
 	// minval, maxval, warp, lag
-	uint8 *keys = (uint8*)unit->gstate->keys;
+	uint8 *keys = (uint8*)gKeyStateGlobals.keys;
 	int keynum = (int)ZIN0(0);
 #ifdef __APPLE__
 	int byte = (keynum >> 3) & 15;
@@ -234,7 +220,6 @@ void KeyState_next(KeyState *unit, int inNumSamples)
 void KeyState_Ctor(KeyState *unit)
 {
 	SETCALC(KeyState_next);
-	unit->gstate = &gKeyStateGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	KeyState_next(unit, 1);
@@ -258,7 +243,7 @@ void MouseX_next(MouseInputUGen *unit, int inNumSamples)
 		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
-	float y0 = unit->gstate->mouseX;
+	float y0 = gMouseUGenGlobals.mouseX;
 	if (warp == 0.0) {
 		y0 = (maxval - minval) * y0 + minval;
 	} else {
@@ -271,7 +256,6 @@ void MouseX_next(MouseInputUGen *unit, int inNumSamples)
 void MouseX_Ctor(MouseInputUGen *unit)
 {
 	SETCALC(MouseX_next);
-	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseX_next(unit, 1);
@@ -294,7 +278,7 @@ void MouseY_next(MouseInputUGen *unit, int inNumSamples)
 		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
-	float y0 = unit->gstate->mouseY;
+	float y0 = gMouseUGenGlobals.mouseY;
 	if (warp == 0.0) {
 		y0 = (maxval - minval) * y0 + minval;
 	} else {
@@ -307,7 +291,6 @@ void MouseY_next(MouseInputUGen *unit, int inNumSamples)
 void MouseY_Ctor(MouseInputUGen *unit)
 {
 	SETCALC(MouseY_next);
-	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseY_next(unit, 1);
@@ -329,7 +312,7 @@ void MouseButton_next(MouseInputUGen *unit, int inNumSamples)
 		unit->m_b1 = lag == 0.f ? 0.f : (float)exp(log001 / (lag * unit->mRate->mSampleRate));
 		unit->m_lag = lag;
 	}
-	float y0 = unit->gstate->mouseButton ? maxval : minval;
+	float y0 = gMouseUGenGlobals.mouseButton ? maxval : minval;
 	ZOUT0(0) = y1 = y0 + b1 * (y1 - y0);
 	unit->m_y1 = zapgremlins(y1);
 }
@@ -337,7 +320,6 @@ void MouseButton_next(MouseInputUGen *unit, int inNumSamples)
 void MouseButton_Ctor(MouseInputUGen *unit)
 {
 	SETCALC(MouseButton_next);
-	unit->gstate = &gMouseUGenGlobals;
 	unit->m_b1 = 0.f;
 	unit->m_lag = 0.f;
 	MouseButton_next(unit, 1);
@@ -489,8 +471,8 @@ PluginLoad(UIUGens)
 {
 	ft = inTable;
 
-	pthread_t keybListenThread;
-	pthread_create (&keybListenThread, NULL, gstate_update_func, (void*)0);
+	pthread_t uiListenThread;
+	pthread_create (&uiListenThread, NULL, gstate_update_func, (void*)0);
 
 	DefineSimpleUnit(KeyState);
 
