@@ -128,7 +128,7 @@ Font : GuiRedirect  {
 		}.play(AppClock)
 	}
 	*new { arg name, size, bold = false, italic = false, isPointSize = false;
-		super.new(name, size, bold, italic, isPointSize)
+		^super.new(name, size, bold, italic, isPointSize)
 	}
 }
 
