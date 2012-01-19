@@ -303,8 +303,10 @@ PlusFreqScope {
 	}
 
 	*response{ |parent, bounds, bus1, bus2, freqMode=1|
-		^this.new(parent, bounds).inBus_(bus1.index)
-			.special("freqScope%_magresponse".format(freqMode), [\in2, bus2])
+		var scope = this.new(parent, bounds).inBus_(bus1.index);
+		var synthDefName = "freqScope%_magresponse%".format(freqMode, if (scope.shmScopeAvailable) {"_shm"} {""});
+
+		^scope.special(synthDefName, [\in2, bus2])
 	}
 
 	doesNotUnderstand { arg selector ... args;
