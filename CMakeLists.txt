@@ -7,8 +7,8 @@ enable_testing()
 include (cmake_modules/FinalFile.cmake)
 
 if (NOT CMAKE_BUILD_TYPE)
-	message(STATUS "Build type defaulting to \"Release\"")
-	set(CMAKE_BUILD_TYPE "Release")
+	message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
+	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
 endif()
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
