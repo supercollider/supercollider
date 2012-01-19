@@ -148,7 +148,7 @@ GeneralHIDDevice{
 		// is this necessary? to also turn on/off all the slot debugging?
 		if ( allslots ){
 			slots.do{ |sl|
-				sl.do{ |slt| slt.debug_( onoff ) } 
+				sl.do{ |slt| slt.debug_( onoff ) }
 			};
 		};
 	}
@@ -168,7 +168,7 @@ GeneralHIDDevice{
 		device.hidDeviceAction = func;	
 	}
 
-	hidDeviceAction{ 
+	hidDeviceAction{
 		^device.hidDeviceAction;	
 	}
 
@@ -337,4 +337,4 @@ GeneralHIDSlot{
 		^In.kr( bus );
 	}
 
-}  
+}

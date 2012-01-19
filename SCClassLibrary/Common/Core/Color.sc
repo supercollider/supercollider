@@ -175,8 +175,8 @@ Color {
 	hexString { // ignores alpha
 		var hexRed, hexGreen, hexBlue;
 		#hexRed, hexGreen, hexBlue = [red, green, blue] * 255;
-		^$# ++ hexRed.round.asInteger.asStringToBase(16, 2) 
-			++ hexGreen.round.asInteger.asStringToBase(16, 2) 
+		^$# ++ hexRed.round.asInteger.asStringToBase(16, 2)
+			++ hexGreen.round.asInteger.asStringToBase(16, 2)
 			++ hexBlue.round.asInteger.asStringToBase(16, 2)
 
 	}

@@ -100,8 +100,8 @@ Complex : Number {
 		p_real = aNumber.real;
 		p_imag = aNumber.imag;
 		if(p_real == 0.0 and: { p_imag == 0 }) { ^Complex(1.0, 0.0) };
-		if(p_imag == 0.0 and: { imag == 0.0 } and: { real > 0.0 }) { 
-			^Complex(real ** p_real, 0.0) 
+		if(p_imag == 0.0 and: { imag == 0.0 } and: { real > 0.0 }) {
+			^Complex(real ** p_real, 0.0)
 		};
 		
 		t_mag = this.magnitude;
@@ -126,7 +126,7 @@ Complex : Number {
 	theta { ^atan2(imag, real) }
 
 	coerce { arg aNumber; ^aNumber.asComplex }
-	round { arg aNumber = 1.0; 
+	round { arg aNumber = 1.0;
 		^Complex(real.round(aNumber), imag.round(aNumber))
 	}
 
