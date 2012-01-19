@@ -82,7 +82,7 @@ Slew.scopeResponse
 		var hasFreqInput = argNames.includes(\freq);
 
 		^if(hasFreqInput){
-			{|in| this.ar(in: in, freq:MouseX.kr(10, 10000, 1)) * Line.ar(0,1,0.1) }
+			{|in| this.ar(in: in, freq:MouseX.kr(10, SampleRate.ir / 4, 1)) * Line.ar(0,1,0.1) }
 				.scopeResponse(server, freqMode,
 					label ?? {"%: empirical frequency response (move mouse to change freq)".format(this.asString)}
 					)
