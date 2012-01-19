@@ -182,7 +182,7 @@ code::
 {
 	var a;
 	a = Line.ar(-2, 2, 0.01);
-	a.distort
+	a.softclip
 }.plot
 )
 
