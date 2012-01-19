@@ -58,11 +58,13 @@ Slew.scopeResponse
 			};
 			Out.ar(bus1, noise);
 			Out.ar(bus2, filtered);
-		}.play(fs.synth.asTarget, addAction: \addBefore);
+		}.play(server.defaultGroup);
 		synth.register;
 		synth.onFree {
 			{
 				[bus1, bus2].do(_.free);
+				fs.active_(false);
+				win.close;
 			}.defer;
 		}
 
