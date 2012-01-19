@@ -4,23 +4,23 @@ AbstractResponderFunc {
 	
 	*initClass { Class.initClassTree(AbstractDispatcher); allFuncProxies = IdentitySet.new; }
 	
-	enable { 
+	enable {
 		if(enabled.not, {
 			if(permanent.not, { CmdPeriod.add(this) });
 			dispatcher.add(this);
 			enabled = true;
 			allFuncProxies.add(this);
 		});
-	} 
+	}
 	
-	disable { 
+	disable {
 		if(permanent.not, { CmdPeriod.remove(this) });
 		dispatcher.remove(this);
 		enabled = false;
 	}
 	
-	prFunc_ {|newFunc|  
-		func = newFunc; 
+	prFunc_ {|newFunc|
+		func = newFunc;
 		this.changed(\function);
 	}
 	
@@ -39,7 +39,7 @@ AbstractResponderFunc {
 		this.prFunc_(oneShotFunc);
 	}
 	
-	permanent_{|bool| 
+	permanent_{|bool|
 		permanent = bool;
 		if(bool && enabled, { CmdPeriod.remove(this) }, {CmdPeriod.add(this) })
 	}
@@ -50,7 +50,7 @@ AbstractResponderFunc {
 	
 	clear { this.prFunc_(nil) }
 	
-	*allFuncProxies { 
+	*allFuncProxies {
 		var result;
 		result = IdentityDictionary.new;
 		allFuncProxies.do({|funcProxy|
@@ -61,7 +61,7 @@ AbstractResponderFunc {
 		^result;
 	}
 	
-	*allEnabled { 
+	*allEnabled {
 		var result;
 		result = IdentityDictionary.new;
 		allFuncProxies.select(_.enabled).do({|funcProxy|
@@ -72,7 +72,7 @@ AbstractResponderFunc {
 		^result;	
 	}
 	
-	*allDisabled { 
+	*allDisabled {
 		var result;
 		result = IdentityDictionary.new;
 		allFuncProxies.reject(_.enabled).do({|funcProxy|
@@ -123,7 +123,7 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 	
 	init { super.init; active = IdentityDictionary.new; wrappedFuncs = IdentityDictionary.new; }
 	
-	add {|funcProxy| 
+	add {|funcProxy|
 		var func, keys;
 		funcProxy.addDependant(this);
 		func = this.wrapFunc(funcProxy);
@@ -197,12 +197,12 @@ OSCMessageDispatcher : AbstractWrappingDispatcher {
 	
 	value {|msg, time, addr, recvPort| active[msg[0]].value(msg, time, addr, recvPort);}
 	
-	register { 
-		thisProcess.addOSCRecvFunc(this); 
-		registered = true; 
+	register {
+		thisProcess.addOSCRecvFunc(this);
+		registered = true;
 	}
 	
-	unregister { 
+	unregister {
 		thisProcess.removeOSCRecvFunc(this);
 		registered = false;
 	}
@@ -213,7 +213,7 @@ OSCMessageDispatcher : AbstractWrappingDispatcher {
 
 OSCMessagePatternDispatcher : OSCMessageDispatcher {
 	
-	value {|msg, time, addr, recvPort| 
+	value {|msg, time, addr, recvPort|
 		var pattern;
 		pattern = msg[0];
 		active.keysValuesDo({|key, func|
@@ -245,7 +245,7 @@ OSCFunc : AbstractResponderFunc {
 		^super.new.init(func, path, srcID, recvPort, argTemplate, defaultMatchingDispatcher);
 	}
 	
-	*trace {|bool = true| 
+	*trace {|bool = true|
 		if(bool, {
 			if(traceRunning.not, {
 				thisProcess.addOSCRecvFunc(traceFunc);
@@ -267,7 +267,7 @@ OSCFunc : AbstractResponderFunc {
 		path = path.asSymbol;
 		srcID = argsrcID ? srcID;
 		recvPort = argrecvPort ? recvPort;
-		argtemplate = argtemplate.collect({|oscArg| 
+		argtemplate = argtemplate.collect({|oscArg|
 			if(oscArg.isKindOf(String), {oscArg.asSymbol}, {oscArg}); // match Symbols not Strings
 		});
 		argTemplate = argtemplate ? argTemplate;
@@ -282,7 +282,7 @@ OSCFunc : AbstractResponderFunc {
 }
 
 OSCdef : OSCFunc {
-	classvar <all; 
+	classvar <all;
 	var <key;
 	
 	*initClass {
@@ -294,7 +294,7 @@ OSCdef : OSCFunc {
 		if(res.isNil) {
 			^super.new(func, path, srcID, recvPort, argTemplate, dispatcher).addToAll(key);
 		} {
-			if(func.notNil) { 
+			if(func.notNil) {
 				if(res.enabled, {
 					res.disable;
 					res.init(func, path, srcID, recvPort, argTemplate, dispatcher);
@@ -325,7 +325,7 @@ OSCFuncAddrMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argaddr, argfunc| addr = argaddr; func = argfunc; }
 	
-	value {|msg, time, testAddr, recvPort| 
+	value {|msg, time, testAddr, recvPort|
 		if(testAddr.addr == addr.addr and: {addr.port.matchItem(testAddr.port)}, {
 			func.value(msg, time, testAddr, recvPort)
 		})
@@ -340,7 +340,7 @@ OSCFuncRecvPortMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argrecvPort, argfunc| recvPort = argrecvPort; func = argfunc; }
 	
-	value {|msg, time, addr, testRecvPort| 
+	value {|msg, time, addr, testRecvPort|
 		if(testRecvPort == recvPort, {
 			func.value(msg, time, addr, testRecvPort)
 		})
@@ -354,7 +354,7 @@ OSCFuncBothMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argaddr, argrecvPort, argfunc| addr = argaddr; recvPort = argrecvPort; func = argfunc; }
 	
-	value {|msg, time, testAddr, testRecvPort| 
+	value {|msg, time, testAddr, testRecvPort|
 		if(testAddr.addr == addr.addr and: {addr.port.matchItem(testAddr.port)} and: {testRecvPort == recvPort}, {
 			func.value(msg, time, testAddr, testRecvPort)
 		})
@@ -388,12 +388,12 @@ MIDIMessageDispatcher : AbstractWrappingDispatcher {
 	
 	value {|src, chan, num, val| active[num].value(val, num, chan, src);}
 	
-	register { 
-		MIDIIn.perform(messageType.asSetter, MIDIIn.perform(messageType.asGetter).addFunc(this)); 
-		registered = true; 
+	register {
+		MIDIIn.perform(messageType.asSetter, MIDIIn.perform(messageType.asGetter).addFunc(this));
+		registered = true;
 	}
 	
-	unregister { 
+	unregister {
 		MIDIIn.perform(messageType.asSetter, MIDIIn.perform(messageType.asGetter).removeFunc(this));
 		registered = false;
 	}
@@ -518,7 +518,7 @@ MIDIdef : MIDIFunc {
 		if(res.isNil) {
 			^super.new(func, msgNum, chan, msgType, srcID, argTemplate, dispatcher).addToAll(key);
 		} {
-			if(func.notNil) { 
+			if(func.notNil) {
 				if(res.enabled, {
 					res.disable;
 					res.init(func, msgNum, chan, msgType, srcID, argTemplate, dispatcher ? defaultDispatchers[msgType]);
@@ -575,7 +575,7 @@ MIDIFuncSrcMessageMatcher : AbstractMessageMatcher {
 	init {|argsrcID, argfunc| srcID = argsrcID; func = argfunc; }
 	
 	value {|value, num, chan, testSrc|
-		if(srcID == testSrc, {func.value(value, num, chan, testSrc)}) 
+		if(srcID == testSrc, {func.value(value, num, chan, testSrc)})
 	}
 }
 
@@ -588,7 +588,7 @@ MIDIFuncChanMessageMatcher : AbstractMessageMatcher {
 	init {|argchan, argfunc| chan = argchan; func = argfunc; }
 	
 	value {|value, num, testChan, srcID|
-		if(chan == testChan, {func.value(value, num, testChan, srcID)}) 
+		if(chan == testChan, {func.value(value, num, testChan, srcID)})
 	}
 }
 
@@ -605,9 +605,9 @@ MIDIFuncChanArrayMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argchanbools, argfunc| chanBools = argchanbools; func = argfunc; }
 	
-	value {|value, num, testChan, srcID| 
+	value {|value, num, testChan, srcID|
 		// lookup bool by index fastest
-		if(chanBools[testChan], {func.value(value, num, testChan, srcID)}) 
+		if(chanBools[testChan], {func.value(value, num, testChan, srcID)})
 	}
 }
 
@@ -615,7 +615,7 @@ MIDIFuncChanArrayMessageMatcher : AbstractMessageMatcher {
 MIDIFuncSrcMessageMatcherNV : MIDIFuncSrcMessageMatcher {
 	
 	value {|num, chan, testSrc|
-		if(srcID == testSrc, {func.value(num, chan, testSrc)}) 
+		if(srcID == testSrc, {func.value(num, chan, testSrc)})
 	}
 }
 
@@ -627,8 +627,8 @@ MIDIFuncBothMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argchan, argsrcID, argfunc| chan = argchan; srcID = argsrcID; func = argfunc; }
 	
-	value {|value, num, testChan, testSrc| 
-		if(srcID == testSrc and: {chan == testChan}, {func.value(value, num, testChan, testSrc)}) 
+	value {|value, num, testChan, testSrc|
+		if(srcID == testSrc and: {chan == testChan}, {func.value(value, num, testChan, testSrc)})
 	}	
 }
 
@@ -637,7 +637,7 @@ MIDIFuncBothMessageMatcher : AbstractMessageMatcher {
 MIDIFuncBothCAMessageMatcher : AbstractMessageMatcher {
 	var chanBools, srcID;
 	
-	*new {|chanArray, srcID, func| 
+	*new {|chanArray, srcID, func|
 		var chanBools;
 		// lookup bool by index fastest, so construct an Array here
 		chanBools = Array.fill(16, {|i| chanArray.includes(i) });
@@ -646,8 +646,8 @@ MIDIFuncBothCAMessageMatcher : AbstractMessageMatcher {
 	
 	init {|argbools, argsrcID, argfunc| chanBools = argbools; srcID = argsrcID; func = argfunc; }
 	
-	value {|value, num, testChan, testSrc| 
-		if(srcID == testSrc and: {chanBools[testChan]}, {func.value(value, num, testChan, testSrc)}) 
+	value {|value, num, testChan, testSrc|
+		if(srcID == testSrc and: {chanBools[testChan]}, {func.value(value, num, testChan, testSrc)})
 	}	
 }
 

@@ -5,7 +5,7 @@ WidthFirstUGen : UGen
 {
 	addToSynth {
 		synthDef = buildSynthDef;
-		if (synthDef.notNil, { 
+		if (synthDef.notNil, {
 			synthDef.addUGen(this);
 			synthDef.widthFirstUGens = synthDef.widthFirstUGens.add(this);
 		});
