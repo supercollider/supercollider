@@ -135,9 +135,13 @@ SimpleNumber : Number {
 
 	fontID { ^this }
 
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber; ^error("Math operation failed.\n") }
+	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
+		 BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
+	}
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
-	performBinaryOpOnSignal { arg aSelector, aSignal; ^error("Math operation failed.\n") }
+	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
+		BinaryOpFailureError(this, aSelector, [aSignal, adverb]).throw;
+	}
 
 	nextPowerOfTwo { ^this.nextPowerOf(2) }
 	nextPowerOf { arg base; ^pow(base, ceil(log(this) / log(base))) }
