@@ -23,11 +23,14 @@ Slew.scopeResponse
 	scopeResponse{ |server, freqMode=1, label="Empirical Frequency response", mute = false|
 
 		var bus1, bus2, synth, win, fs;
-		server = server ?? {GUI.stethoscope.defaultServer};
 
-		if (server != GUI.freqScopeView.server) {
-			"Function-scopeReponse: resetting GUI.freqScopeView.server".warn;
-			GUI.freqScopeView.server = server;
+		if (server.isNil) {
+			server = GUI.freqScopeView.server;
+		} {
+			if (server != GUI.freqScopeView.server) {
+				"Function-scopeReponse: resetting GUI.freqScopeView.server".warn;
+				GUI.freqScopeView.server = server;
+			};
 		};
 
 		// Create two private busses
