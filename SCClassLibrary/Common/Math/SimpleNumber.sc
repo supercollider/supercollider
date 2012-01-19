@@ -133,8 +133,6 @@ SimpleNumber : Number {
 	degrad { ^this*pi/180 }
 	raddeg { ^this*180/pi }
 
-	fontID { ^this }
-
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
 		 BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
 	}

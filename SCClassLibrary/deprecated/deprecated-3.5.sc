@@ -490,3 +490,12 @@ GetStringDialog  {
 		^Rect(0,0,x,y)
 	}
 }
+
+
++ Nil {
+	fontID { this.deprecated(thisMethod); ^nil }
+}
+
++ SimpleNumber {
+	fontID { this.deprecated(thisMethod); ^this }
+}
