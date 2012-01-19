@@ -881,7 +881,6 @@ method:: performBinaryOpOnComplex
 
 method:: performBinaryOpOnSimpleNumber
 method:: hypotApx
-method:: fontID
 method:: playAndDelta
 method:: numChannels
 method:: asBufWithValues

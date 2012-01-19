@@ -3,7 +3,6 @@
 	asView {}
 
 	// graphical support
-	fontID { ^nil }
 	asRect { ^Rect.new }
 	asArray { ^[] }
 }
