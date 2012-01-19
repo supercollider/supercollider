@@ -42,7 +42,7 @@ function popOutTOC(original_toc, p0) {
     var left = c.style.marginLeft;
     c.style.marginLeft = "20.5em";
     document.body.insertBefore(t,c);
-    
+
     t.getElementsByClassName("toc_search")[0].getElementsByTagName("input")[0].onkeyup = toc_search;
 
     t.style.top = menubar.clientHeight;

@@ -71,8 +71,8 @@ b = Buffer.read(s, Help.dir +/+ "sounds/a11wlk01.wav");
 
 //change rate and interpolation
 (
-x = { arg rate=1, inter=2; 
-	BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b)), 1, inter) 
+x = { arg rate=1, inter=2;
+	BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b)), 1, inter)
 }.play;
 )
 
@@ -95,7 +95,7 @@ y = { arg rate=1;
 //read it with a BufRd
 (
 x = { arg rate=1;
-	BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b))) 
+	BufRd.ar(1, b, Phasor.ar(0, BufRateScale.kr(b) * rate, 0, BufFrames.kr(b)))
 }.play;
 )
 

@@ -113,7 +113,7 @@ Rewrite the parser in C or some fast external script?
   extensions should be able to add such descriptions too, but not overwrite existing descriptions?
 
 * handle formula:: tag. generate a hash hexstring for use as filename, HelpSource/formulas/xxxxxxxx.png
-The renderer would render formula:: by displaying that image if it exists, if not and if LaTeX is installed, convert formula to image first. if LaTeX not installed and image don't exist, show the latex code. (use img alt text?) 
+The renderer would render formula:: by displaying that image if it exists, if not and if LaTeX is installed, convert formula to image first. if LaTeX not installed and image don't exist, show the latex code. (use img alt text?)
 
 * comments (* like this? *)
 

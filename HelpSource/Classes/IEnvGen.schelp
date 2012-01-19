@@ -45,7 +45,7 @@ SynthDef(\test, {
 	sin = SinOsc.ar(440, 0, MouseX.kr(0, 1));
 	// use offset so negative values of SinOsc will map into the InterplEnv
 	env = InterplEnv([-1, -0.7, 0.7, 1], [ 0.8666, 0.2666, 0.8668 ], \lin, -1.0);
-	Out.ar(0, IEnvGen.ar(env, sin)) 
+	Out.ar(0, IEnvGen.ar(env, sin))
 }).add;
 
 s.sendMsg(\s_new, \test, a = s.nextNodeID, 0, 1);
@@ -58,7 +58,7 @@ SynthDef(\test, {arg inbus;
 	point = Amplitude.ar(In.ar(inbus), 0.01, 0.2);
 	// use offset so negative values of SinOsc will map into the InterplEnv
 	env = InterplXYC([[0, 330, \exp], [0.5, 440, \exp], [1.0, 1760]]);
-	Out.ar(1, SinOsc.ar(IEnvGen.kr(env, point), 0, 0.2)) 
+	Out.ar(1, SinOsc.ar(IEnvGen.kr(env, point), 0, 0.2))
 }).add;
 
 s.sendMsg(\s_new, \test, a = s.nextNodeID, 0, 1, \inbus, s.options.numOutputBusChannels);
