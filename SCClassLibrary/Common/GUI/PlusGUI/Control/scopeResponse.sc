@@ -34,8 +34,8 @@ Slew.scopeResponse
 		};
 
 		// Create two private busses
-		bus1 = Bus.audio(server, 1).postln;
-		bus2 = Bus.audio(server, 1).postln;
+		bus1 = Bus.audio(server, 1);
+		bus2 = Bus.audio(server, 1);
 
 		// Create the SCFreqScope.response using the same simple window as in the helpfile
 		// Also, onClose must free the synth and the busses
