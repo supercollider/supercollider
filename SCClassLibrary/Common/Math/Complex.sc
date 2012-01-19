@@ -72,7 +72,7 @@ Complex : Number {
 		^aSignal.asComplex.perform(aSelector, this)
 	}
 	performBinaryOpOnComplex { arg aSelector, aNumber, adverb;
-		^error("Math operation failed.\n")
+		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
 	}
 	performBinaryOpOnUGen { arg aSelector, aUGen, adverb;
 		^aUGen.asComplex.perform(aSelector, this, adverb)

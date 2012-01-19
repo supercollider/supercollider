@@ -288,7 +288,9 @@ Signal[float] : FloatArray {
 	imag { ^0.0 }
 
 	//PRIVATE:
-	performBinaryOpOnSignal { arg aSelector, aNumber; ^error("Math operation failed.\n") }
+	performBinaryOpOnSignal { arg aSelector, aNumber, adverb;
+		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
+	}
 	performBinaryOpOnComplex { arg aSelector, aComplex; ^aComplex.perform(aSelector, this.asComplex) }
 	performBinaryOpOnSimpleNumber { arg aSelector, aSimpleNumber; ^aSimpleNumber.perform(aSelector, this) }
 }
