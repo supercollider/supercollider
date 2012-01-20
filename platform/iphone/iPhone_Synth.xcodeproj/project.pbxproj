@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B09F52114C9D5260048AB9A /* function_attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = 0B09F52014C9D5260048AB9A /* function_attributes.h */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
@@ -155,6 +156,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B09F52014C9D5260048AB9A /* function_attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = function_attributes.h; path = ../include/common/function_attributes.h; sourceTree = "<group>"; };
 		0B1F3B1514C9C2E900DCE518 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_WorldOptions.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* iscsynth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iscsynth.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -572,6 +574,7 @@
 		7772497D0EABE96E00732A1C /* common */ = {
 			isa = PBXGroup;
 			children = (
+				0B09F52014C9D5260048AB9A /* function_attributes.h */,
 				7759953812FDE0C900603187 /* SC_fftlib.cpp */,
 				778F12660F50A85200CB6629 /* iPhone */,
 				7772497F0EABE96E00732A1C /* fftlib.c */,
@@ -764,6 +767,7 @@
 			files = (
 				7796FF81148D8D5C003E89BB /* scope_buffer.hpp in Headers */,
 				7796FF82148D8D5C003E89BB /* server_shm.hpp in Headers */,
+				0B09F52114C9D5260048AB9A /* function_attributes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
