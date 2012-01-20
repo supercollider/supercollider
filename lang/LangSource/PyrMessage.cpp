@@ -52,7 +52,7 @@ void initUniqueMethods()
 	cvxUniqueMethods = classVarOffset("Object", "uniqueMethods", &dummyclass);
 }
 
-void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, long numKeyArgsPushed)
+HOT void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, long numKeyArgsPushed)
 {
 	PyrMethod *meth = NULL;
 	PyrMethodRaw *methraw;
@@ -185,7 +185,7 @@ void sendMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, 
 }
 
 
-void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
+HOT void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 {
 	PyrMethod *meth = NULL;
 	PyrMethodRaw *methraw;
@@ -370,7 +370,7 @@ void sendMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 }
 
 
-void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, long numKeyArgsPushed)
+HOT void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPushed, long numKeyArgsPushed)
 {
 	PyrMethod *meth = NULL;
 	PyrMethodRaw *methraw;
@@ -504,7 +504,7 @@ void sendSuperMessageWithKeys(VMGlobals *g, PyrSymbol *selector, long numArgsPus
 }
 
 
-void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
+HOT void sendSuperMessage(VMGlobals *g, PyrSymbol *selector, long numArgsPushed)
 {
 	PyrMethod *meth = NULL;
 	PyrMethodRaw *methraw;
@@ -835,7 +835,7 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 #endif
 }
 
-void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, long numKeyArgsPushed)
+HOT void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, long numKeyArgsPushed)
 {
 	PyrMethodRaw *methraw;
 	PyrFrame *frame;
@@ -991,7 +991,7 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed, lo
 }
 
 
-void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
+HOT void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 {
 	PyrMethodRaw *methraw;
 	PyrFrame *frame;
@@ -1126,7 +1126,7 @@ void executeMethod(VMGlobals *g, PyrMethod *meth, long numArgsPushed)
 
 void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed);
 
-void returnFromBlock(VMGlobals *g)
+HOT void returnFromBlock(VMGlobals *g)
 {
 	PyrFrame *curframe;
 	PyrFrame *returnFrame;
@@ -1184,7 +1184,7 @@ void returnFromBlock(VMGlobals *g)
 }
 
 
-void returnFromMethod(VMGlobals *g)
+HOT void returnFromMethod(VMGlobals *g)
 {
 	PyrFrame *returnFrame, *curframe, *homeContext;
 	PyrMethod *meth;

@@ -27,11 +27,7 @@
 #include "simd_mix.hpp"
 using nova::slope_argument;
 
-#if defined(__GNUC__) && !defined(__clang__)
-#define inline_functions __attribute__ ((flatten))
-#else
-#define inline_functions
-#endif
+#include "function_attributes.h"
 
 #endif
 
@@ -110,8 +106,8 @@ extern "C"
 
 	void Balance2_next_ak(Balance2 *unit, int inNumSamples);
 #ifdef NOVA_SIMD
-	inline_functions void Balance2_next_ak_nova(Balance2 *unit, int inNumSamples);
-	inline_functions void Balance2_next_ak_nova_64(Balance2 *unit, int inNumSamples);
+	FLATTEN void Balance2_next_ak_nova(Balance2 *unit, int inNumSamples);
+	FLATTEN void Balance2_next_ak_nova_64(Balance2 *unit, int inNumSamples);
 #endif
 	void Balance2_next_aa(Balance2 *unit, int inNumSamples);
 	void Balance2_Ctor(Balance2* unit);
@@ -157,8 +153,8 @@ extern "C"
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-inline_functions void LinPan2_next_ak_nova(LinPan2 *unit, int inNumSamples);
-inline_functions void LinPan2_next_ak_nova_64(LinPan2 *unit, int inNumSamples);
+FLATTEN void LinPan2_next_ak_nova(LinPan2 *unit, int inNumSamples);
+FLATTEN void LinPan2_next_ak_nova_64(LinPan2 *unit, int inNumSamples);
 #endif
 
 void LinPan2_Ctor(LinPan2 *unit)
@@ -476,8 +472,8 @@ void Balance2_next_aa(Balance2 *unit, int inNumSamples)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-inline_functions void XFade2_next_ak_nova(XFade2 *unit, int inNumSamples);
-inline_functions void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples);
+FLATTEN void XFade2_next_ak_nova(XFade2 *unit, int inNumSamples);
+FLATTEN void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples);
 #endif
 
 void XFade2_Ctor(XFade2 *unit)

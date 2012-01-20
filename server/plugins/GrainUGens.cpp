@@ -29,11 +29,7 @@
 
 #include "SC_PlugIn.h"
 
-#if defined (__GNUC__) && !defined(__clang__)
-#define inline_functions __attribute__ ((flatten))
-#else
-#define inline_functions
-#endif
+#include "function_attributes.h"
 
 static InterfaceTable *ft;
 
@@ -1222,22 +1218,22 @@ static void GrainBuf_next_k(GrainBuf * unit, int inNumSamples)
 	unit->curtrig = trig;
 }
 
-inline_functions static void GrainBuf_next_k_1(GrainBuf * unit, int inNumSamples)
+FLATTEN static void GrainBuf_next_k_1(GrainBuf * unit, int inNumSamples)
 {
 	GrainBuf_next_k<true>(unit, inNumSamples);
 }
 
-inline_functions static void GrainBuf_next_k_2(GrainBuf * unit, int inNumSamples)
+FLATTEN static void GrainBuf_next_k_2(GrainBuf * unit, int inNumSamples)
 {
 	GrainBuf_next_k<false>(unit, inNumSamples);
 }
 
-inline_functions static void GrainBuf_next_a_1(GrainBuf * unit, int inNumSamples)
+FLATTEN static void GrainBuf_next_a_1(GrainBuf * unit, int inNumSamples)
 {
 	GrainBuf_next_a<true>(unit, inNumSamples);
 }
 
-inline_functions static void GrainBuf_next_a_2(GrainBuf * unit, int inNumSamples)
+FLATTEN static void GrainBuf_next_a_2(GrainBuf * unit, int inNumSamples)
 {
 	GrainBuf_next_a<false>(unit, inNumSamples);
 }

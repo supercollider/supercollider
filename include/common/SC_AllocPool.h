@@ -32,6 +32,7 @@ Improved bit block scanning by using a count leading zeroes instruction.
 
 #include "SC_List.h"
 #include "clz.h"
+#include "function_attributes.h"
 #include <stdlib.h>
 
 const int kNumAllocBins = 128;
@@ -137,8 +138,8 @@ public:
 
 	void Reinit();
 
-	void *Alloc(size_t inBytes);
-	void *Realloc(void* inPtr, size_t inBytes);
+	MALLOC void *Alloc(size_t inBytes);
+	MALLOC void *Realloc(void* inPtr, size_t inBytes);
 	void Free(void* inPtr);
 	void FreeAll();
 	void FreeAllInternal();

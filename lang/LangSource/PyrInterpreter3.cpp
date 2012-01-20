@@ -53,6 +53,7 @@
 #include <new>
 #include "InitAlloc.h"
 #include "bullet.h"
+#include "function_attributes.h"
 
 //void tellPlugInsAboutToRun();
 double timeNow();
@@ -524,7 +525,7 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot * sp)
 #endif
 
 
-void Interpret(VMGlobals *g)
+HOT void Interpret(VMGlobals *g)
 {
 	// byte code values
 	unsigned char *ip;

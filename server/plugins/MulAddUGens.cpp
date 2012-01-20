@@ -30,11 +30,7 @@
 
 using nova::slope_argument;
 
-#if defined(__GNUC__) && !defined(__clang__)
-#define inline_functions __attribute__ ((flatten))
-#else
-#define inline_functions
-#endif
+#include "function_attributes.h"
 
 
 #endif
@@ -289,18 +285,18 @@ void ampmix_ii(MulAdd *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-inline_functions void ampmix_aa_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_aa_nova(MulAdd *unit, int inNumSamples)
 {
 	nova::muladd_vec_simd(OUT(0), IN(0), MULIN,
 						  ADDIN, inNumSamples);
 }
 
-inline_functions void ampmix_aa_nova_64(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_aa_nova_64(MulAdd *unit, int inNumSamples)
 {
 	nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN, ADDIN);
 }
 
-inline_functions void ampmix_ak_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ak_nova(MulAdd *unit, int inNumSamples)
 {
 	float mix_cur = unit->mPrevAdd;
 	float nextMix = ADDIN[0];
@@ -317,7 +313,7 @@ inline_functions void ampmix_ak_nova(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_ak_nova_64(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ak_nova_64(MulAdd *unit, int inNumSamples)
 {
 	float mix_cur = unit->mPrevAdd;
 	float nextMix = ADDIN[0];
@@ -335,19 +331,19 @@ inline_functions void ampmix_ak_nova_64(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_ai_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ai_nova(MulAdd *unit, int inNumSamples)
 {
 	nova::muladd_vec_simd(OUT(0), IN(0), MULIN,
 						  unit->mPrevAdd, inNumSamples);
 }
 
-inline_functions void ampmix_ai_nova_64(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ai_nova_64(MulAdd *unit, int inNumSamples)
 {
 	nova::muladd_vec_simd<64>(OUT(0), IN(0), MULIN,
 							  unit->mPrevAdd);
 }
 
-inline_functions void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
@@ -368,7 +364,7 @@ inline_functions void ampmix_ka_nova(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_ka_nova_64(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ka_nova_64(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
@@ -389,7 +385,7 @@ inline_functions void ampmix_ka_nova_64(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_kk_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_kk_nova(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
@@ -444,7 +440,7 @@ inline_functions void ampmix_kk_nova(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_ki_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ki_nova(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
@@ -466,7 +462,7 @@ inline_functions void ampmix_ki_nova(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_ki_nova_64(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ki_nova_64(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur = unit->mPrevMul;
 	float nextAmp = MULIN[0];
@@ -488,19 +484,19 @@ inline_functions void ampmix_ki_nova_64(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_ia_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ia_nova(MulAdd *unit, int inNumSamples)
 {
 	nova::muladd_vec_simd(OUT(0), IN(0), unit->mPrevMul,
 						  ADDIN, inNumSamples);
 }
 
-inline_functions void ampmix_ia_nova_64(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ia_nova_64(MulAdd *unit, int inNumSamples)
 {
 	nova::muladd_vec_simd<64>(OUT(0), IN(0), unit->mPrevMul,
 							  ADDIN);
 }
 
-inline_functions void ampmix_ik_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ik_nova(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur = unit->mPrevMul;
 	float mix_cur = unit->mPrevAdd;
@@ -520,7 +516,7 @@ inline_functions void ampmix_ik_nova(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_ik_nova_64(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ik_nova_64(MulAdd *unit, int inNumSamples)
 {
 	float amp_cur = unit->mPrevMul;
 	float mix_cur = unit->mPrevAdd;
@@ -539,13 +535,13 @@ inline_functions void ampmix_ik_nova_64(MulAdd *unit, int inNumSamples)
 	}
 }
 
-inline_functions void ampmix_ii_nova(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ii_nova(MulAdd *unit, int inNumSamples)
 {
 	nova::muladd_vec_simd(OUT(0), IN(0), unit->mPrevMul,
 						  unit->mPrevAdd, inNumSamples);
 }
 
-inline_functions void ampmix_ii_nova_64(MulAdd *unit, int inNumSamples)
+FLATTEN void ampmix_ii_nova_64(MulAdd *unit, int inNumSamples)
 {
 	nova::muladd_vec_simd<64>(OUT(0), IN(0), unit->mPrevMul,
 							  unit->mPrevAdd);

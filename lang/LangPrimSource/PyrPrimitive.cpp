@@ -825,7 +825,7 @@ int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 	}
 }
 
-int blockValue(struct VMGlobals *g, int numArgsPushed)
+HOT int blockValue(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *args;
 	PyrSlot *vars;
