@@ -108,7 +108,7 @@ MIDIEvent {
 }
 
 MIDIIn {
-	var <>port;
+	var port;
 	classvar <>action,
 	<> noteOn, <> noteOff, <> polytouch,
 	<> control, <> program,
@@ -304,10 +304,6 @@ MIDIIn {
 	}
 	*disconnectByUID {arg inport, uid;
 		_DisconnectMIDIIn
-	}
-
-	*new { arg port;
-		^super.new.port_(port)
 	}
 
 	*prDispatchEvent { arg eventList, status, port, chan, b, c;
