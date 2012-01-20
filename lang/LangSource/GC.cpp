@@ -149,19 +149,49 @@ inline int ScanSize(PyrObjectHdr *obj) { return obj->obj_format <= obj_slot ? ob
 
 HOT void PyrGC::ScanSlots(PyrSlot *inSlots, long inNumToScan)
 {
+	if (inNumToScan == 0)
+		return;
+
 	unsigned char whiteColor = mWhiteColor;
+	unsigned char greyColor  = mGreyColor;
+
+	mSlotsScanned += inNumToScan;
+
+	int foundGreyObjects = 0;
+	PyrObjectHdr * grey     = &mGrey;
+	PyrObjectHdr * greyNext = grey->next;
 
 	PyrSlot *slot = inSlots;
 	PyrSlot *endslot = inSlots + inNumToScan;
-	for (; slot < endslot; ++slot) {
+	do {
 		if (IsObj(slot)) {
 			PyrObject *obj = slotRawObject(slot);
 			if (obj->gc_color == whiteColor) {
-				ToGrey2(obj);
+				/* used to be ToGrey2(obj), but rearranged for slightly better performance
+				 *
+				 * move obj from white to grey */
+
+				PyrObjectHdr * objPrev  = obj->prev;
+				PyrObjectHdr * objNext  = obj->next;
+
+				// remove from old set
+				objNext->prev = objPrev;
+				objPrev->next = objNext;
+
+				/* link in grey set */
+				obj->next = greyNext;
+				obj->prev = grey;
+				greyNext->prev = obj;
+				grey->next = obj;
+				greyNext = obj;
+
+				obj->gc_color = greyColor;
+				foundGreyObjects++;
 			}
 		}
-	}
-	mSlotsScanned += inNumToScan;
+		++slot;
+	} while (slot != endslot);
+	mNumGrey += foundGreyObjects;
 }
 
 void GCSet::Init(int inGCSet)
