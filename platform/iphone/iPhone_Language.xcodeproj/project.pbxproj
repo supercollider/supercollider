@@ -222,6 +222,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B1F3B2214C9C3B700DCE518 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SC_WorldOptions.h; path = server/SC_WorldOptions.h; sourceTree = "<group>"; };
 		7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneGUIPrimitives.mm; sourceTree = "<group>"; };
 		7709037F0F509FAA005C05DC /* iPhoneSCGraphView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneSCGraphView.mm; sourceTree = "<group>"; };
 		770903810F509FAA005C05DC /* iPhoneSCNSWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhoneSCNSWindow.h; sourceTree = "<group>"; };
@@ -341,7 +342,6 @@
 		772C0E9012DA0C86009C0126 /* SC_Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Unit.h; sourceTree = "<group>"; };
 		772C0E9112DA0C86009C0126 /* SC_Wire.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Wire.h; sourceTree = "<group>"; };
 		772C0E9212DA0C86009C0126 /* SC_World.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_World.h; sourceTree = "<group>"; };
-		772C0E9312DA0C86009C0126 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_WorldOptions.h; sourceTree = "<group>"; };
 		772C0E9412DA0C86009C0126 /* SCComplex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCComplex.h; sourceTree = "<group>"; };
 		772C0E9512DA0C86009C0126 /* Unroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unroll.h; sourceTree = "<group>"; };
 		772C0E9A12DA0CCA009C0126 /* SC_fftlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SC_fftlib.cpp; sourceTree = "<group>"; };
@@ -622,6 +622,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B1F3B2114C9C39100DCE518 /* server */ = {
+			isa = PBXGroup;
+			children = (
+				0B1F3B2214C9C3B700DCE518 /* SC_WorldOptions.h */,
+			);
+			name = server;
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -905,6 +913,7 @@
 				7751AA230EB36D890051CF38 /* common */,
 				7751AA460EB36D890051CF38 /* lang */,
 				7751AA7D0EB36D890051CF38 /* plugin_interface */,
+				0B1F3B2114C9C39100DCE518 /* server */,
 			);
 			name = include;
 			path = ../../include;
@@ -1079,7 +1088,6 @@
 				772C0E9012DA0C86009C0126 /* SC_Unit.h */,
 				772C0E9112DA0C86009C0126 /* SC_Wire.h */,
 				772C0E9212DA0C86009C0126 /* SC_World.h */,
-				772C0E9312DA0C86009C0126 /* SC_WorldOptions.h */,
 				772C0E9412DA0C86009C0126 /* SCComplex.h */,
 				772C0E9512DA0C86009C0126 /* Unroll.h */,
 			);

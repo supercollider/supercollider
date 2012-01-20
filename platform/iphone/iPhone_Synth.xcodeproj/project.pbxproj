@@ -155,6 +155,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B1F3B1514C9C2E900DCE518 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_WorldOptions.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* iscsynth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iscsynth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -185,7 +186,6 @@
 		772C0BEB12DA09E4009C0126 /* SC_Unit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Unit.h; sourceTree = "<group>"; };
 		772C0BEC12DA09E4009C0126 /* SC_Wire.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_Wire.h; sourceTree = "<group>"; };
 		772C0BED12DA09E4009C0126 /* SC_World.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_World.h; sourceTree = "<group>"; };
-		772C0BEE12DA09E4009C0126 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SC_WorldOptions.h; sourceTree = "<group>"; };
 		772C0BEF12DA09E4009C0126 /* SCComplex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCComplex.h; sourceTree = "<group>"; };
 		772C0BF012DA09E4009C0126 /* Unroll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Unroll.h; sourceTree = "<group>"; };
 		772C0BF112DA09F3009C0126 /* clz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clz.h; sourceTree = "<group>"; };
@@ -689,7 +689,6 @@
 				772C0BEB12DA09E4009C0126 /* SC_Unit.h */,
 				772C0BEC12DA09E4009C0126 /* SC_Wire.h */,
 				772C0BED12DA09E4009C0126 /* SC_World.h */,
-				772C0BEE12DA09E4009C0126 /* SC_WorldOptions.h */,
 				772C0BEF12DA09E4009C0126 /* SCComplex.h */,
 				772C0BF012DA09E4009C0126 /* Unroll.h */,
 			);
@@ -722,6 +721,7 @@
 				772C0C1E12DA0A03009C0126 /* SC_UnitDef.h */,
 				772C0C1F12DA0A03009C0126 /* SC_UnitSpec.h */,
 				772C0C2012DA0A03009C0126 /* SC_WireSpec.h */,
+				0B1F3B1514C9C2E900DCE518 /* SC_WorldOptions.h */,
 			);
 			path = server;
 			sourceTree = "<group>";
@@ -992,8 +992,8 @@
 				INFOPLIST_FILE = "iPhone Resources/iscsynth.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/iphone/lib\"",
-					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
+					"\"lib\"",
+					"\"../mac/lib\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SYMROOT = build_iphone;
@@ -1017,8 +1017,8 @@
 				INFOPLIST_FILE = "iPhone Resources/iscsynth.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/iphone/lib\"",
-					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
+					"\"lib\"",
+					"\"../mac/lib\"",
 				);
 				PRODUCT_NAME = iscsynth;
 				SYMROOT = build_iphone;
@@ -1044,8 +1044,8 @@
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
-					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/iphone/lib\"",
+					"\"../mac/lib\"",
+					"\"lib\"",
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = libscsynth;
@@ -1076,8 +1076,8 @@
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/mac/lib\"",
-					"\"$(SYSTEM_APPS_DIR)/SC3/git/platform/iphone/lib\"",
+					"\"../mac/lib\"",
+					"\"lib\"",
 				);
 				OBJROOT = "$(SYMROOT)";
 				PREBINDING = NO;
