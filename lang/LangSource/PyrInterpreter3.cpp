@@ -524,6 +524,14 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot * sp)
 #define dispatch_opcode break
 #endif
 
+#if defined(__GNUC__)
+#define LIKELY(x)       __builtin_expect((x),1)
+#define UNLIKELY(x)     __builtin_expect((x),0)
+#else
+#define LIKELY(x)   x
+#define UNLIKELY(x) x
+#endif
+
 
 HOT void Interpret(VMGlobals *g)
 {
@@ -2409,7 +2417,7 @@ HOT void Interpret(VMGlobals *g)
 			index = slotRawInt(&classobj->classIndex) + selector->u.index;
 			meth = gRowTable[index];
 
-			if (slotRawSymbol(&meth->name) != selector) {
+			if (UNLIKELY(slotRawSymbol(&meth->name) != selector)) {
 				g->sp = sp; g->ip = ip;
 				doesNotUnderstand(g, selector, numArgsPushed);
 				sp = g->sp; ip = g->ip;
@@ -2548,7 +2556,7 @@ HOT void Interpret(VMGlobals *g)
 			index = slotRawInt(&classobj->classIndex) + selector->u.index;
 			meth = gRowTable[index];
 
-			if (slotRawSymbol(&meth->name) != selector) {
+			if (UNLIKELY(slotRawSymbol(&meth->name) != selector)) {
 				g->sp = sp; g->ip = ip;
 				doesNotUnderstandWithKeys(g, selector, numArgsPushed, numKeyArgsPushed);
 				sp = g->sp; ip = g->ip;
