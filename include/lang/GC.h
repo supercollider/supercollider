@@ -30,6 +30,7 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include "PyrObject.h"
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
+#include "function_attributes.h"
 
 void DumpSimpleBackTrace(VMGlobals *g);
 
@@ -73,13 +74,13 @@ class PyrGC
 public:
 	PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long poolSize);
 
-	PyrObject* New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect);
-	PyrObject* NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount);
+	MALLOC PyrObject* New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect);
+	MALLOC PyrObject* NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount);
 
-	static PyrObject* NewPermanent(size_t inNumBytes,
+	MALLOC static PyrObject* NewPermanent(size_t inNumBytes,
 						long inFlags, long inFormat);
 
-	PyrObject* NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool inCollect);
+	MALLOC PyrObject* NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool inCollect);
 
 	bool IsBlack(PyrObjectHdr* inObj)  { return inObj->gc_color == mBlackColor; }
 	bool IsWhite(PyrObjectHdr* inObj)  { return inObj->gc_color == mWhiteColor; }

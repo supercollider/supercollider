@@ -147,7 +147,7 @@ void fatalerror(const char*str)
 
 inline int ScanSize(PyrObjectHdr *obj) { return obj->obj_format <= obj_slot ? obj->size : 0; }
 
-void PyrGC::ScanSlots(PyrSlot *inSlots, long inNumToScan)
+HOT void PyrGC::ScanSlots(PyrSlot *inSlots, long inNumToScan)
 {
 	unsigned char whiteColor = mWhiteColor;
 
@@ -314,7 +314,7 @@ void PyrGC::BecomeImmutable(PyrObject *inObject)
 
 void DumpBackTrace(VMGlobals *g);
 
-PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect)
+HOT PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCollect)
 {
 	PyrObject *obj = NULL;
 
@@ -355,7 +355,7 @@ PyrObject *PyrGC::New(size_t inNumBytes, long inFlags, long inFormat, bool inCol
 
 
 
-PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount)
+HOT PyrObject *PyrGC::NewFrame(size_t inNumBytes, long inFlags, long inFormat, bool inAccount)
 {
 	PyrObject *obj = NULL;
 
@@ -483,7 +483,7 @@ void PyrGC::CompletePartialScan(PyrObject *obj)
 	}
 }
 
-void PyrGC::DoPartialScan(int32 inObjSize)
+HOT void PyrGC::DoPartialScan(int32 inObjSize)
 {
 	int32 remain = inObjSize - mPartialScanSlot;
 	mNumPartialScans++;
@@ -508,7 +508,7 @@ void PyrGC::DoPartialScan(int32 inObjSize)
 	//post("partial %5d %2d %4d %2d %s\n", mScans, i, mNumToScan, mNumGrey, slotRawSymbol(&obj->classptr->name)->name);
 }
 
-bool PyrGC::ScanOneObj()
+HOT bool PyrGC::ScanOneObj()
 {
 	// Find a set that has a grey object
 	PyrObject* obj;

@@ -34,17 +34,11 @@
 #ifdef __clang__
 #undef HOT
 #undef FLATTEN
-
-#define HOT /*HOT*/
-#define FLATTEN /*FLATTEN*/
 #endif
 
 #ifdef __PATHCC__
 #undef HOT
 #undef FLATTEN
-
-#define HOT /*HOT*/
-#define FLATTEN /*FLATTEN*/
 #endif
 
 

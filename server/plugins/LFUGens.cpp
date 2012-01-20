@@ -29,11 +29,7 @@
 
 using nova::slope_argument;
 
-#if defined (__GNUC__) && !(defined(__clang__))
-#define inline_functions __attribute__ ((flatten))
-#else
-#define inline_functions
-#endif
+#include "function_attributes.h"
 
 #endif
 
@@ -1245,7 +1241,7 @@ void K2A_next(K2A *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-inline_functions void K2A_next_nova(K2A *unit, int inNumSamples)
+FLATTEN void K2A_next_nova(K2A *unit, int inNumSamples)
 {
 	float in = ZIN0(0);
 	float level = unit->mLevel;
@@ -1261,7 +1257,7 @@ inline_functions void K2A_next_nova(K2A *unit, int inNumSamples)
 	unit->mLevel = in;
 }
 
-inline_functions void K2A_next_nova_64(K2A *unit, int inNumSamples)
+FLATTEN void K2A_next_nova_64(K2A *unit, int inNumSamples)
 {
 	float in = ZIN0(0);
 	float level = unit->mLevel;
@@ -1348,7 +1344,7 @@ void T2A_next(T2A *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-inline_functions void T2A_next_nova(T2A *unit, int inNumSamples)
+FLATTEN void T2A_next_nova(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
 
@@ -1359,7 +1355,7 @@ inline_functions void T2A_next_nova(T2A *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-inline_functions void T2A_next_nova_64(T2A *unit, int inNumSamples)
+FLATTEN void T2A_next_nova_64(T2A *unit, int inNumSamples)
 {
 	float level = IN0(0);
 
@@ -1389,13 +1385,13 @@ void T2A_Ctor(T2A* unit)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef NOVA_SIMD
-inline_functions static void DC_next_nova(DC *unit, int inNumSamples)
+FLATTEN static void DC_next_nova(DC *unit, int inNumSamples)
 {
 	float val = unit->m_val;
 	nova::setvec_simd(OUT(0), val, inNumSamples);
 }
 
-inline_functions static void DC_next_nova_64(DC *unit, int inNumSamples)
+FLATTEN static void DC_next_nova_64(DC *unit, int inNumSamples)
 {
 	float val = unit->m_val;
 	nova::setvec_simd<64>(OUT(0), val);
@@ -1476,7 +1472,7 @@ void Line_next(Line *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-inline_functions void Line_next_nova(Line *unit, int inNumSamples)
+FLATTEN void Line_next_nova(Line *unit, int inNumSamples)
 {
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
@@ -1500,7 +1496,7 @@ inline_functions void Line_next_nova(Line *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-inline_functions void Line_next_nova_64(Line *unit, int inNumSamples)
+FLATTEN void Line_next_nova_64(Line *unit, int inNumSamples)
 {
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
@@ -1598,7 +1594,7 @@ void XLine_next(XLine *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
+FLATTEN void XLine_next_nova(XLine *unit, int inNumSamples)
 {
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
@@ -1620,7 +1616,7 @@ inline_functions void XLine_next_nova(XLine *unit, int inNumSamples)
 	unit->mLevel = level;
 }
 
-inline_functions void XLine_next_nova_64(XLine *unit, int inNumSamples)
+FLATTEN void XLine_next_nova_64(XLine *unit, int inNumSamples)
 {
 	double level = unit->mLevel;
 	int counter = unit->mCounter;
@@ -2455,7 +2451,7 @@ static inline void LinExp_next_nova_loop(float * out, const float * in, int inNu
 	} while (--unroll);
 }
 
-static inline_functions void LinExp_next_nova(LinExp *unit, int inNumSamples)
+FLATTEN static void LinExp_next_nova(LinExp *unit, int inNumSamples)
 {
 	float *out = OUT(0);
 	float *in   = IN(0);
@@ -2463,7 +2459,7 @@ static inline_functions void LinExp_next_nova(LinExp *unit, int inNumSamples)
 	LinExp_next_nova_loop(out, in, inNumSamples, unit->m_dstlo, unit->m_dstratio, unit->m_rsrcrange, unit->m_rrminuslo);
 }
 
-static inline_functions void LinExp_next_nova_kk(LinExp *unit, int inNumSamples)
+FLATTEN static void LinExp_next_nova_kk(LinExp *unit, int inNumSamples)
 {
 	float *out = OUT(0);
 	float *in  = IN(0);
@@ -3142,7 +3138,7 @@ void EnvGen_next_ak(EnvGen *unit, int inNumSamples)
 }
 
 #ifdef NOVA_SIMD
-inline_functions void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
+FLATTEN void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float gate = ZIN0(kEnvGen_gate);
