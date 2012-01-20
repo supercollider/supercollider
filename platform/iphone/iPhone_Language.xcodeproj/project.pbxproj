@@ -222,6 +222,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0B09F52314C9D5320048AB9A /* function_attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = function_attributes.h; sourceTree = "<group>"; };
 		0B1F3B2214C9C3B700DCE518 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SC_WorldOptions.h; path = server/SC_WorldOptions.h; sourceTree = "<group>"; };
 		7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneGUIPrimitives.mm; sourceTree = "<group>"; };
 		7709037F0F509FAA005C05DC /* iPhoneSCGraphView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneSCGraphView.mm; sourceTree = "<group>"; };
@@ -972,6 +973,7 @@
 		7751AA230EB36D890051CF38 /* common */ = {
 			isa = PBXGroup;
 			children = (
+				0B09F52314C9D5320048AB9A /* function_attributes.h */,
 				772C0E2E12DA0C69009C0126 /* clz.h */,
 				772C0E2F12DA0C69009C0126 /* dfftlib.h */,
 				772C0E3012DA0C69009C0126 /* fftlib.h */,
