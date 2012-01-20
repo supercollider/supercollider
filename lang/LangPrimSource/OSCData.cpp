@@ -1136,6 +1136,7 @@ static int disconnectSharedMem(VMGlobals *g, PyrObject * object)
 
 int prConnectSharedMem(VMGlobals *g, int numArgsPushed)
 {
+#if !defined(SC_IPHONE)
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 
@@ -1158,7 +1159,9 @@ int prConnectSharedMem(VMGlobals *g, int numArgsPushed)
 		postfl("Cannot connect to shared memory: %s\n", e.what());
 		return errFailed;
 	}
-
+#else
+	postfl("Warning: Shared memory server interface disabled on iphone\n");
+#endif
 	return errNone;
 }
 
