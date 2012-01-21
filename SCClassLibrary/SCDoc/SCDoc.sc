@@ -109,22 +109,22 @@ SCDoc {
             categories:parser.findNode(\categories).text
         );
 
-        doc.title = if(classname.notEmpty,classname,{parser.findNode(\title).text});
+        doc[\title] = if(classname.notEmpty,classname,{parser.findNode(\title).text});
 
-        if(doc.title.isEmpty) {
-            doc.title = "NO TITLE:"+path;
+        if(doc[\title].isEmpty) {
+            doc[\title] = "NO TITLE:"+path;
             warn("Document at"+path+"has no title:: or class::");
         };
-        if(doc.summary.isEmpty) {
+        if(doc[\summary].isEmpty) {
             warn("Document at"+path+"has no summary::");
         };
-        if(doc.categories.isEmpty) {
+        if(doc[\categories].isEmpty) {
             warn("Document at"+path+"has no categories::");
         };
 
         if(classname.notEmpty) {
-            if(path.basename != doc.title) {
-                warn("Document at"+path+"is not named according to class name:"+doc.title);
+            if(path.basename != doc[\title]) {
+                warn("Document at"+path+"is not named according to class name:"+doc[\title]);
             };
             if(folder != "Classes") {
                 warn("Document at"+path+"is a class doc but is not in Classes/ folder");
@@ -590,36 +590,36 @@ SCDoc {
                 //FIXME: if implementor class changed since last time, force a re-render.
                 //if doc.redirect && doc.implementor != class.tryPerform(doc.redirect.asSymbol).asSymbol
 
-                if(doc.isNil or: {mtime != doc.mtime}) {
+                if(doc.isNil or: {mtime != doc[\mtime]}) {
                     p.parseMetaData(path);
                     this.addToDocMap(p,subtarget);
                     doc = doc_map[subtarget];
                     if(dir.beginsWith(Platform.userExtensionDir +/+ "quarks")) {
                         x = "Quarks>"++dir.dirname.basename;
-                        if(doc.categories.notEmpty) { x = x ++ ", " ++ doc.categories };
-                        doc.categories = x;
+                        if(doc[\categories].notEmpty) { x = x ++ ", " ++ doc[\categories] };
+                        doc[\categories] = x;
                     };
-                    doc.methods = p.methodList;
-                    doc.keywords = p.keywordList;
-                    doc.mtime = mtime;
-                    doc.installed = if(ext){\extension}{\standard};
+                    doc[\methods] = p.methodList;
+                    doc[\keywords] = p.keywordList;
+                    doc[\mtime] = mtime;
+                    doc[\installed] = if(ext){\extension}{\standard};
                     if(sym.notNil) { // doc is a class-doc
                         if(class.notNil) { // class exists
-                            doc.superclasses = class.superclasses.collect(_.name).reject(_.isMetaClassName);
-                            doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
+                            doc[\superclasses] = class.superclasses.collect(_.name).reject(_.isMetaClassName);
+                            doc[\subclasses] = class.subclasses.collect(_.name).reject(_.isMetaClassName);
                             x = p.findNode(\redirect).text.stripWhiteSpace;
                             if(x.notEmpty) {
                                 x = try { class.perform(x.asSymbol) };
-                                x !? { doc.implementor = x.asSymbol };
+                                x !? { doc[\implementor] = x.asSymbol };
                             };
                         } {
-                            doc.installed = \missing;
+                            doc[\installed] = \missing;
                         };
                     };
                     update = true;
                     ndocs = ndocs + 1;
                 };
-                doc.keep = true;
+                doc[\keep] = true;
                 if(sym.notNil) {
                     classes.remove(sym);
                 };
@@ -636,13 +636,13 @@ SCDoc {
                 doc = doc_map[subtarget];
                 if(doc.notNil) {
                     // FIXME: if this doc adds a method to a non-class doc, it will not show up in doc.methods...
-                    old = doc.additions.copy;
-                    doc.additions = doc.additions.add(file).asSet;
+                    old = doc[\additions].copy;
+                    doc[\additions] = doc[\additions].add(file).asSet;
                     // filter out non-existing files in case helpsource moved..
                     // this is more a hackish workaround than a good solution.
                     // it will not work if a doc addition is removed instead of moved.
-                    doc.additions = doc.additions.select(File.exists(_));
-                    update = update or: {doc.additions != old};
+                    doc[\additions] = doc[\additions].select(File.exists(_));
+                    update = update or: {doc[\additions] != old};
                     ndocs = ndocs + 1;
                     this.postProgress("Addition for"+subtarget+":"+file);
                 } {
@@ -681,21 +681,21 @@ SCDoc {
                 ];
                 this.addToDocMap(p,subtarget);
                 doc = doc_map[subtarget];
-                doc.methods =
+                doc[\methods] =
                     (this.makeMethodList(class.class).collect{|m| "_*"++m}
                     ++ this.makeMethodList(class).collect{|m| "_-"++m});
 
-                doc.installed = if(class.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
+                doc[\installed] = if(class.filenameSymbol.asString.beginsWith(thisProcess.platform.classLibraryDir).not)
                     {\extension}
                     {\standard};
 
-                doc.superclasses = class.superclasses.collect(_.name).reject(_.isMetaClassName);
-                doc.subclasses = class.subclasses.collect(_.name).reject(_.isMetaClassName);
+                doc[\superclasses] = class.superclasses.collect(_.name).reject(_.isMetaClassName);
+                doc[\subclasses] = class.subclasses.collect(_.name).reject(_.isMetaClassName);
 
                 ndocs = ndocs + 1;
                 update = true;
             };
-            doc_map[subtarget].keep = true;
+            doc_map[subtarget][\keep] = true;
             this.maybeWait;
         };
         this.postProgress("Generated metadata for"+ndocs+"undocumented classes");
@@ -704,7 +704,7 @@ SCDoc {
 
         ndocs = 0;
         doc_map.pairsDo{|k,e|
-            if(e.keep!=true, {
+            if(e[\keep]!=true, {
                 doc_map.removeAt(k);
                 ndocs = ndocs + 1;
                 update = true;

@@ -488,7 +488,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         var name, doc, desc = "";
         name = c.name.asString;
         doc = SCDoc.docMap["Classes/"++name];
-        doc !? { desc = " - "++doc.summary };
+        doc !? { desc = " - "++doc[\summary] };
         if(c.name.isMetaClassName, {^this});
         f.write("<li> <a href='"++baseDir+/+"Classes/"++name++".html'>"++name++"</a>"++desc++"\n");
 
@@ -587,7 +587,7 @@ SCDocHTMLRenderer : SCDocRenderer {
         if(folder==".",{folder=""});
         f.write("<div class='header'>");
         f.write("<div id='label'>SuperCollider "++folder.asString.toUpper);
-        if(SCDoc.docMap[subtarget].installed==\extension) {
+        if(SCDoc.docMap[subtarget][\installed]==\extension) {
             f.write(" (extension)");
         };
         f.write("</div>");
@@ -683,7 +683,7 @@ SCDocHTMLRenderer : SCDocRenderer {
             if(f.size<1) { // no label
                 if(n.size>0) {
                     f = if(SCDoc.docMap[n].notNil)
-                        {SCDoc.docMap[n].title} // use doc title
+                        {SCDoc.docMap[n][\title]} // use doc title
                         {n.basename}; // use filename
                     if(m.size>0) {
                         f = f++":"+m;
