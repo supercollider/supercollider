@@ -1,6 +1,6 @@
 class:: MIDIIn
 summary:: receive MIDI messages
-related:: Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Reference/MIDI, Reference/UsingMIDI
+related:: Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Reference/MIDI, Guides/UsingMIDI
 categories:: MIDI
 
 description::
@@ -14,7 +14,7 @@ For general programming, strong::users should not use the MIDIIn class directly:
 
 Certain MIDI messages are supported only through MIDIIn. These are: sysex, sysrt, smpte.
 
-See the link::Reference/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
+See the link::Guides/UsingMIDI:: helpfile for practical considerations and techniques for using MIDI in SC.
 
 subsection::The MIDIIn class
 
