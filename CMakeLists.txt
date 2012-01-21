@@ -1,6 +1,10 @@
 cmake_minimum_required (VERSION 2.8)
 project (SuperCollider)
 
+include("SCVersion.txt")
+set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
+message(STATUS "SuperCollider Version: ${PROJECT_VERSION}")
+
 include(CTest)
 enable_testing()
 
@@ -26,14 +30,6 @@ CONFIGURE_FILE(
 
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-
-if(NOT WIN32)
-	ADD_CUSTOM_TARGET(setMainVersion ALL
-		sh ${CMAKE_CURRENT_SOURCE_DIR}/setMainVersion.sh
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-		VERBATIM
-		)
-endif()
 
 if(APPLE)
 	STRING(REGEX REPLACE "^.*MacOSX10.([0-9]+).*$" "\\1" MAC_OSX_SDK_VERSION  "${CMAKE_OSX_SYSROOT}")
@@ -350,6 +346,8 @@ else()
 	)
 endif()
 
+configure_file(platform/SCVersion.sc.in SCVersion.sc)
+install(FILES "${CMAKE_BINARY_DIR}/SCVersion.sc" DESTINATION "${auxresourcesdir}/SCClassLibrary")
 
 install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
@@ -424,9 +422,9 @@ endif()
 #############################################
 # CPack support
 
-set(CPACK_PACKAGE_VERSION_MAJOR 3)
-set(CPACK_PACKAGE_VERSION_MINOR 5)
-set(CPACK_PACKAGE_VERSION_PATCH dev)
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 
 if(APPLE)
 	set(CPACK_GENERATOR "DragNDrop")

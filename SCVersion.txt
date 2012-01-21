@@ -1,0 +1,7 @@
+# This file is included by CMakeLists.txt, and is the single place where SC version should be updated.
+# Note that you need to "make install" for this information to be copied into all places..
+
+set(PROJECT_VERSION_MAJOR 3)
+set(PROJECT_VERSION_MINOR 6)
+set(PROJECT_VERSION_PATCH dev)
+
