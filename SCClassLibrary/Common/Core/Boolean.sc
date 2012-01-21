@@ -8,6 +8,8 @@ Boolean {
 	and { ^this.subclassResponsibility(thisMethod) }
 	or { ^this.subclassResponsibility(thisMethod) }
 	nand { ^this.subclassResponsibility(thisMethod) }
+	asInteger { ^this.subclassResponsibility(thisMethod) }
+	binaryValue { ^this.subclassResponsibility(thisMethod) } // TODO: deprecate for asInteger
 
 	asBoolean    { ^this }
 	booleanValue { ^this } // TODO in the long-run, deprecate for asBoolean
