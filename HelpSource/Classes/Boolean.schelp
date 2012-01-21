@@ -49,12 +49,13 @@ method::if
 
 If the receiver is true, answer the evaluation of the trueFunc. If the receiver is false, answer the evaluation of the falseFunc.
 
+method::asInteger
 method::binaryValue
 
 returns:: 1 if the receiver is true, and 0 if the receiver is false.
 
+method::asBoolean
 method::booleanValue
-
 Returns:: The receiver. The same message is understood by link::Classes/SimpleNumber:: and can be used to convert it to boolean.
 
 method::keywordWarnings
