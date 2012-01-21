@@ -178,6 +178,11 @@ Process {
 	var schedulerQueue;
 	var <>nowExecutingPath;
 
+	// SCVersion.sc overrides these for Main
+	*scVersionMajor { ^123 }
+	*scVersionMinor { ^0 }
+	*scVersionPostfix { ^"unknown" }
+
 	startup {
 		var time;
 

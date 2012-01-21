@@ -1,9 +1,4 @@
 Main : Process {
-	// do not change the next lines manually:
-	//==== replace with new version from bash script ====
-classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="beta1";
-	//==== end replace ====
-
 	var <platform, argv;
 	var recvOSCfunc, prRecvOSCFunc;
 	var <customPorts;
@@ -140,21 +135,21 @@ classvar scVersionMajor=3, scVersionMinor=5, scVersionPostfix="beta1";
 		(class ? Object).browse;
 	}
 
-	*version {^[scVersionMajor, ".", scVersionMinor, scVersionPostfix].join}
+	*version {^[this.scVersionMajor, ".", this.scVersionMinor, this.scVersionPostfix].join}
 
 	*versionAtLeast { |maj, min|
-		^if((maj==scVersionMajor) and:{min.notNil}){
-			scVersionMinor >= min
+		^if((maj==this.scVersionMajor) and:{min.notNil}){
+			this.scVersionMinor >= min
 		}{
-			scVersionMajor >= maj
+			this.scVersionMajor >= maj
 		};
 	}
 
 	*versionAtMost { |maj, min|
-		^if((maj==scVersionMajor) and:{min.notNil}){
-			scVersionMinor <= min
+		^if((maj==this.scVersionMajor) and:{min.notNil}){
+			this.scVersionMinor <= min
 		}{
-			scVersionMajor <= maj
+			this.scVersionMajor <= maj
 		};
 	}
 
