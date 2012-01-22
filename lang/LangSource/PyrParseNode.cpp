@@ -806,7 +806,7 @@ void PyrClassNode::compile(PyrSlot *result)
 	indexType = getIndexType(this);
 	//postfl("%s %d\n", slotRawSymbol(&mClassName->mSlot)->name, indexType);
 
-	if ((long)superclassobj == -1) {
+	if ((size_t)superclassobj == -1) {
 		// redundant error message removed:
 		//error("Can't find superclass of '%s'\n", slotRawSymbol(&mClassName->mSlot)->name);
 		//nodePostErrorLine(node);

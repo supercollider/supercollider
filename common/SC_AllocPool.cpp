@@ -45,7 +45,7 @@
 #define garbage_fill(P)
 #endif
 
-#define aligned_OK(m)    ((((unsigned long)(m)) & kAlignMask) == 0)
+#define aligned_OK(m)    ((((size_t)(m)) & kAlignMask) == 0)
 
 /*
 void* allocmem(AllocPool *pool, int32 size);
@@ -205,8 +205,8 @@ AllocAreaPtr AllocPool::NewArea(size_t inAreaSize)
 		throw std::runtime_error(std::string("Could not allocate new area"));
 
 	// AllocAreaPtr area = (AllocAreaPtr)((unsigned long)ptr & ~kAlignMask);
-	AllocAreaPtr area = (AllocAreaPtr)(((unsigned long)ptr + kAlignMask) & ~kAlignMask);
-	assert((area >= ptr) && ((void*)((unsigned long)area & ~kAlignMask) == area));
+	AllocAreaPtr area = (AllocAreaPtr)(((size_t)ptr + kAlignMask) & ~kAlignMask);
+	assert((area >= ptr) && ((void*)((size_t)area & ~kAlignMask) == area));
 
 	area->mUnalignedPointerToThis = ptr;
 

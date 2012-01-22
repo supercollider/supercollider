@@ -205,7 +205,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		si.hStdInput = father_in_dup;
 
 		CloseHandle(child_in);
-		fno = _open_osfhandle((long)father_out, binary_mode);
+		fno = _open_osfhandle((size_t)father_out, binary_mode);
 		f = _fdopen(fno, mode);
 	}
 	/* Opening the pipe for reading */
@@ -225,7 +225,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		}
 		CloseHandle(child_out);
 		si.hStdOutput = father_out_dup;
-		fno = _open_osfhandle((long)father_in, binary_mode);
+		fno = _open_osfhandle((size_t)father_in, binary_mode);
 		f = _fdopen(fno, mode);
 	}
 	else {
