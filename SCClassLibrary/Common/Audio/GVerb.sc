@@ -11,6 +11,8 @@ GVerb : MultiOutUGen {
 		inputs = theInputs;
 		^this.initOutputs(2, rate);
 	}
+
+	checkInputs { ^this.checkNInputs(1); }
 }
 
 
