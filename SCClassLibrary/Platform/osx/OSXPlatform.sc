@@ -20,9 +20,11 @@ OSXPlatform : UnixPlatform
 	}
 
 	startup {
-		this.loadStartupFiles;
-		if(Platform.ideName == "scapp"){
+		if(Platform.ideName == "scapp") {
 			Document.implementationClass.startup;
+		};
+		this.loadStartupFiles;
+		if(Platform.ideName == "scapp") {
 			// make server window
 			Server.internal.makeWindow;
 			Server.local.makeWindow;
