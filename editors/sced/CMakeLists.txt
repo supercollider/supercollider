@@ -15,8 +15,10 @@ install(DIRECTORY sced
 		DESTINATION lib/gedit-2/plugins)
 
 # sced 3
+configure_file(sced3/supercollider.plugin.in sced3/supercollider.plugin)
+
 install(FILES data/supercollider.lang
 		DESTINATION share/gtksourceview-3.0/language-specs)
 
-install(FILES sced3/supercollider.plugin sced3/supercollider.py
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sced3/supercollider.plugin sced3/supercollider.py
 		DESTINATION lib/gedit/plugins)
