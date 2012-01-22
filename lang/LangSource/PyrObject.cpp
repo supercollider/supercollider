@@ -2737,7 +2737,7 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 
 static int hashPtr(void* ptr)
 {
-    int32 hashed_part = int32((long)ptr&0xffffffff);
+    int32 hashed_part = int32((size_t)ptr&0xffffffff);
     return Hash(hashed_part);
 }
 

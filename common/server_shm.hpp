@@ -38,7 +38,7 @@ using boost::ref;
 namespace bi = boost::interprocess;
 using bi::managed_shared_memory; using bi::shared_memory_object;
 
-static inline string make_shmem_name(uint port_number)
+static inline string make_shmem_name(unsigned int port_number)
 {
 	return string("SuperColliderServer_") + boost::lexical_cast<string>(port_number);
 }
@@ -85,7 +85,7 @@ struct server_shared_memory
 		return control_busses_.get();
 	}
 
-	scope_buffer * get_scope_buffer(uint index)
+	scope_buffer * get_scope_buffer(unsigned int index)
 	{
 		if (index < scope_buffers.size())
 			return scope_buffers[index].get();
@@ -103,7 +103,7 @@ private:
 class server_shared_memory_creator
 {
 public:
-	server_shared_memory_creator(uint port_number, uint control_busses):
+	server_shared_memory_creator(unsigned int port_number, unsigned int control_busses):
 		shmem_name(detail_server_shm::make_shmem_name(port_number)),
 		segment(bi::open_or_create, shmem_name.c_str(), 8192 * 1024)
 	{
@@ -118,7 +118,7 @@ public:
 																		  num_scope_buffers);
 	}
 
-	static void cleanup(uint port_number)
+	static void cleanup(unsigned int port_number)
 	{
 		shared_memory_object::remove(detail_server_shm::make_shmem_name(port_number).c_str());
 	}
@@ -135,7 +135,7 @@ public:
 		return shm->get_control_busses();
 	}
 
-	scope_buffer_writer get_scope_buffer_writer(uint index, uint channels, uint size)
+	scope_buffer_writer get_scope_buffer_writer(unsigned int index, unsigned int channels, unsigned int size)
 	{
 		scope_buffer *buf = shm->get_scope_buffer(index);
 		if (buf)
@@ -162,7 +162,7 @@ protected:
 class server_shared_memory_client
 {
 public:
-	server_shared_memory_client(uint port_number):
+	server_shared_memory_client(unsigned int port_number):
 		shmem_name(detail_server_shm::make_shmem_name(port_number)),
 		segment(bi::open_only, shmem_name.c_str())
 	{
@@ -177,7 +177,7 @@ public:
 		return shm->get_control_busses();
 	}
 
-	scope_buffer_reader get_scope_buffer_reader(uint index)
+	scope_buffer_reader get_scope_buffer_reader(unsigned int index)
 	{
 		scope_buffer *buf = shm->get_scope_buffer(index);
 		return scope_buffer_reader(buf);

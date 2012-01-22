@@ -1636,7 +1636,7 @@ void LocalIn_Ctor(LocalIn* unit)
 
 	// align the buffer to 256 bytes so that we can use avx instructions
 	unit->m_realData = (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int32) + 32 * sizeof(float));
-	size_t alignment = (unsigned long)unit->m_realData & 31;
+	size_t alignment = (size_t)unit->m_realData & 31;
 
 	unit->m_bus = alignment ? (float*)(size_t(unit->m_realData + 32) & ~31)
 	                        : unit->m_realData;
