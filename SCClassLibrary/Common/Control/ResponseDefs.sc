@@ -267,6 +267,9 @@ OSCFunc : AbstractResponderFunc {
 		path = path.asSymbol;
 		srcID = argsrcID ? srcID;
 		recvPort = argrecvPort ? recvPort;
+		if(recvPort.notNil and: {thisProcess.openUDPPort(recvPort).not}, {
+			Error("Could not open UDP port"+recvPort).throw;
+		});
 		argtemplate = argtemplate.collect({|oscArg|
 			if(oscArg.isKindOf(String), {oscArg.asSymbol}, {oscArg}); // match Symbols not Strings
 		});
@@ -290,15 +293,20 @@ OSCdef : OSCFunc {
 	}
 	
 	*new { arg key, func, path, srcID, recvPort, argTemplate, dispatcher;
-		var res = all.at(key);
+		var res = all.at(key), wasDisabled;
 		if(res.isNil) {
 			^super.new(func, path, srcID, recvPort, argTemplate, dispatcher).addToAll(key);
 		} {
 			if(func.notNil) {
-				if(res.enabled, {
-					res.disable;
+				wasDisabled = res.enabled.not;
+				res.disable;
+				try {
 					res.init(func, path, srcID, recvPort, argTemplate, dispatcher);
-				}, { res.init(func, path, srcID, recvPort, argTemplate, dispatcher).disable; });
+					if(wasDisabled, { res.disable; });
+				} {|err|
+					res.free;
+					err.throw;
+				}
 			}
 		}
 		^res

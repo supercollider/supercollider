@@ -128,6 +128,8 @@ A link::Classes/Function:: or similar object to be replace the one being removed
 method::openUDPPort
 Attempt to open a new UDP port for receiving OSC traffic. If another application has already bound to the requested port this will fail. Once opened, ports remain bound until SC is recompiled.
 
+If the port was already opened by SC it will return true directly without trying to open the port again.
+
 argument::portNum
 An link::Classes/Integer:: indicating the port to attempt to bind.
 
@@ -139,7 +141,7 @@ thisProcess.customPorts; // returns all working custom ports
 ::
 
 method::customPorts
-Get a collection of all active custom UDP ports.
+Get a collection of all active UDP ports, including the main sclang port code::NetAddr.langPort::.
 
 returns::An link::Classes/Array::.
 
