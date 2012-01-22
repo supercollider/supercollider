@@ -368,7 +368,7 @@ OSCArgsMatcher : AbstractMessageMatcher {
 	
 	init {|argArgTemplate, argFunc| argTemplate = argArgTemplate.asArray; func = argFunc; }
 	
-	value {|testMsg, time, addr, recvPort|Ê
+	value {|testMsg, time, addr, recvPort|
 		testMsg[1..].do({|item, i|
 			if(argTemplate[i].matchItem(item).not, {^this});
 		});
