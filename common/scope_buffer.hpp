@@ -77,8 +77,8 @@ class scope_buffer
 
 	atomic<int> _status;
 
-	uint _size;
-	uint _channels;
+	unsigned int _size;
+	unsigned int _channels;
 	sh_float_ptr _data;
 
 	/*
@@ -104,7 +104,7 @@ class scope_buffer
 	struct data_desc {
 		data_desc(): data(0), frames(0), changed(false) {}
 		sh_float_ptr data;
-		uint frames;
+		unsigned int frames;
 		atomic<bool> changed;
 	} _state [3];
 
@@ -121,7 +121,7 @@ private:
 
 	// writer interface
 
-	bool allocate( scope_buffer_pool & pool, uint channels, uint size )
+	bool allocate( scope_buffer_pool & pool, unsigned int channels, unsigned int size )
 	{
 		bool available = _status.load( boost::memory_order_relaxed ) == free;
 		if( !available ) return false;
@@ -129,7 +129,7 @@ private:
 		_size = size;
 		_channels = channels;
 
-		uint asset_size = channels * size;
+		unsigned int asset_size = channels * size;
 		_data = (float*)pool.allocate( asset_size * 3 * sizeof(float) );
 		if (_data == NULL)
 			return false;
@@ -155,7 +155,7 @@ private:
 
 	float * write_address() { return _state[_in].data.get(); }
 
-	void push( uint frames )
+	void push( unsigned int frames )
 	{
 		_state[_in].frames = frames;
 		_state[_in].changed.store( true, boost::memory_order_relaxed );
@@ -171,7 +171,7 @@ private:
 
 	float * read_address() { return _state[_out].data.get(); }
 
-	uint pull()
+	unsigned int pull()
 	{
 		int stage = _stage.load( boost::memory_order_relaxed );
 		bool changed = _state[stage].changed.load( boost::memory_order_relaxed );
@@ -194,7 +194,7 @@ struct scope_buffer_writer
 		buffer(buffer)
 	{}
 
-	scope_buffer_writer( scope_buffer *buf, scope_buffer_pool & pool, uint channels, uint size ):
+	scope_buffer_writer( scope_buffer *buf, scope_buffer_pool & pool, unsigned int channels, unsigned int size ):
 		buffer(buf)
 	{
 		if( !buffer->allocate( pool, channels, size ) )
@@ -211,12 +211,12 @@ struct scope_buffer_writer
 		return buffer->write_address();
 	}
 
-	uint max_size()
+	unsigned int max_size()
 	{
 		return buffer->_size;
 	}
 
-	void push( uint frames )
+	void push( unsigned int frames )
 	{
 		buffer->push( frames );
 	}
@@ -245,9 +245,9 @@ public:
 		return (buffer && buffer->valid());
 	}
 
-	bool pull( uint &frames )
+	bool pull( unsigned int &frames )
 	{
-		uint new_frames = buffer->pull();
+		unsigned int new_frames = buffer->pull();
 
 		if( new_frames )
 			frames = new_frames;
@@ -260,12 +260,12 @@ public:
 		return buffer->read_address();
 	}
 
-	uint max_frames()
+	unsigned int max_frames()
 	{
 		return buffer->_size;
 	}
 
-	uint channels()
+	unsigned int channels()
 	{
 		return buffer->_channels;
 	}
