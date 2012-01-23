@@ -79,12 +79,8 @@ QTreeView : QView {
   }
 */
 
-  background { ^this.palette.baseColor; }
-  background_ { arg color;
-    var p = this.palette;
-    p.baseColor = color;
-    this.palette = p;
-  }
+  background { ^this.palette.base; }
+  background_ { arg color; this.palette = this.palette.base_(color) }
 
 /////////// PRIVATE:
 

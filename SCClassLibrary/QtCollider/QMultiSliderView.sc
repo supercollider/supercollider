@@ -9,14 +9,6 @@ QMultiSliderView : QView {
 
   *qtClass { ^"QcMultiSlider" }
 
-  background {
-    ^this.palette.baseColor;
-  }
-
-  background_ { arg color;
-    this.setProperty( \palette, this.palette.baseColor_(color) );
-  }
-
   size { ^this.getProperty(\sliderCount) }
   size_ { arg int; this.setProperty( \sliderCount, int ) }
 
@@ -138,6 +130,14 @@ QMultiSliderView : QView {
 
   isFilled_ { arg aBool;
     this.setProperty( \isFilled, aBool );
+  }
+
+  background {
+    ^this.palette.base;
+  }
+
+  background_ { arg color;
+    this.palette = this.palette.base_(color);
   }
 
   fillColor_ { arg aColor;
