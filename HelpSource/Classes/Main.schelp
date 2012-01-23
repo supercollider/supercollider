@@ -137,13 +137,13 @@ returns::A link::Classes/Boolean:: indicating whether the attempt was successful
 
 code::
 thisProcess.openUDPPort(3000); // will return true or false.
-thisProcess.customPorts; // returns all working custom ports
+thisProcess.openPorts; // returns all open ports
 ::
 
-method::customPorts
+method::openPorts
 Get a collection of all active UDP ports, including the main sclang port code::NetAddr.langPort::.
 
-returns::An link::Classes/Array::.
+returns::An link::Classes/Set::.
 
 method::pid
 
