@@ -145,11 +145,11 @@ QEnvelopeView : QView
   }
 
   background {
-    ^this.palette.baseColor;
+    ^this.palette.base;
   }
 
   background_ { arg color;
-    this.palette = this.palette.baseColor_(color);
+    this.palette = this.palette.base_(color);
   }
 
   fillColor_ { arg aColor;
@@ -166,9 +166,8 @@ QEnvelopeView : QView
     this.fillColor_( fillColor );
   }
 
-  selectionColor_ { arg aColor;
-    selectionColor = aColor;
-    this.setProperty( \selectionColor, aColor );
+  selectionColor_ { arg color;
+    this.palette = this.palette.highlight_(color);
   }
 
   drawLines_ { arg aBool;
