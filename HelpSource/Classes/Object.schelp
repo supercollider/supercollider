@@ -424,22 +424,29 @@ a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performMsg([\value, 1, 2, 3]);
 ::
 
-method::performWithEnvir::
+method::performWithEnvir
 
-
-selector: A Symbol representing a method selector.
-envir: The remaining arguments derived from the environment and passed as arguments to the method named by the selector.
-
+argument:: selector
+A Symbol representing a method selector.
+argument:: envir
+The remaining arguments derived from the environment and passed as arguments to the method named by the selector.
+discussion::
+code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performWithEnvir(\value, (a: 1, c: 3, d: 4, b: 2));
+::
 
 method::performKeyValuePairs
 
-selector: A Symbol representing a method selector.
-pairs: Array or List with key-value pairs.
-
+argument:: selector
+A Symbol representing a method selector.
+argument:: pairs
+Array or List with key-value pairs.
+discussion::
+code::
 a = { |a, b, c| postf("% plus % plus % is %\n", a, b, c, a + b + c); "" };
 a.performKeyValuePairs(\value, [\a, 1, \b, 2, \c, 3, \d, 4]);
+::
 
 method::tryPerform
 
