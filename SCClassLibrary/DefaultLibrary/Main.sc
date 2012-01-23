@@ -1,7 +1,7 @@
 Main : Process {
 	var <platform, argv;
 	var recvOSCfunc, prRecvOSCFunc;
-	var customPorts;
+	var openPorts;
 
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
 		// should be nil most of the time
@@ -22,7 +22,7 @@ Main : Process {
 		GeneralHID.fromID( this.platform.defaultHIDScheme );
 		this.platform.startup;
 		StartUp.run;
-		customPorts = Set[NetAddr.langPort];
+		openPorts = Set[NetAddr.langPort];
 
 		("Welcome to SuperCollider" + Main.version
 			++ (Platform.ideName.switch(
@@ -91,13 +91,13 @@ Main : Process {
 
 	replaceOSCRecvFunc { |func, newFunc| prRecvOSCFunc = prRecvOSCFunc.replaceFunc(func, newFunc) }
 
-	customPorts { ^customPorts.copy } // don't allow the Set to be modified from the outside
+	openPorts { ^openPorts.copy } // don't allow the Set to be modified from the outside
 
 	openUDPPort {|portNum|
 		var result;
-		if(customPorts.includes(portNum), {^true});
+		if(openPorts.includes(portNum), {^true});
 		result = this.prOpenUDPPort(portNum);
-		if(result, { customPorts = customPorts.add(portNum); });
+		if(result, { openPorts = openPorts.add(portNum); });
 		^result;
 	}
 
