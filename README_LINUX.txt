@@ -76,13 +76,13 @@ build requirements (optional features)
    http://savannah.gnu.org/projects/readline
    provides convenient CLI interface for sclang
 
- * libhowl (obsolete)
-   http://www.porchdogsoft.com/products/howl/
-   zeroconf service dicovery implementation
-
  * libavahi-client
    http://www.avahi.org/
    a more powerful zeroconf service discovery implementation
+
+ * libcwiid
+   http://abstrakraft.org/cwiid/
+   library for wiimote support
 
  * linux kernel >= 2.6
    http://www.kernel.org/
@@ -108,7 +108,7 @@ for building supercollider:
    build-essential
    libqt4-dev
    libqtwebkit-dev
-   libjack-dev
+   libjack-dev or libjack-jackd2-dev
    libsndfile1-dev
    libasound2-dev
    libavahi-client-dev
@@ -116,9 +116,10 @@ for building supercollider:
    libreadline6-dev
    libfftw3-dev
    libxt-dev
+   libcwiid-dev (for wiimote support)
    pkg-config
    cmake
-   cmake-modules
+   subversion (required by the Quarks class at run-time)
 
 ------------------------------------------------------------------------
 building
