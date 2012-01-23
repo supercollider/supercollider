@@ -106,8 +106,13 @@ void Slot::setPalette( PyrSlot *slot, const QPalette &plt )
   PyrSlot *s = obj->slots;
 
   for( int i=0; i<8; ++i, ++s ) {
-    setColor( s, plt.color( paletteColorRoles[i] ) );
+    QPalette::ColorRole role = paletteColorRoles[i];
+    setColor( s, plt.color(role) );
     gc->GCWrite( obj, s );
+    if( plt.isBrushSet(QPalette::Normal, role) )
+      SetTrue(s+8);
+    else
+      SetFalse(s+8);
   }
 }
 
@@ -377,6 +382,7 @@ QPalette Slot::toPalette( PyrSlot *slot )
   QPalette palette;
 
   for( int i=0; i<8; ++i, ++slots ) {
+    if( !IsTrue(slots+8) ) continue;
     QColor c = Slot::toColor(slots);
     if( !c.isValid() ) continue;
     palette.setColor( paletteColorRoles[i], c );

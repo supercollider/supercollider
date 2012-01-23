@@ -88,11 +88,11 @@ QNumberBox : QAbstractStepValue {
   }
 
   stringColor {
-    ^this.palette.baseTextColor;
+    ^this.palette.baseText;
   }
 
   stringColor_ { arg color;
-    this.setProperty( \palette, this.palette.baseTextColor_(color) );
+    this.palette = this.palette.baseText_(color);
   }
 
   normalColor_ { arg aColor;
@@ -106,11 +106,11 @@ QNumberBox : QAbstractStepValue {
   }
 
   background {
-    ^this.palette.baseColor;
+    ^this.palette.base;
   }
 
   background_ { arg color;
-    this.setProperty( \palette, this.palette.baseColor_(color) )
+    this.palette = this.palette.base_(color);
   }
 
   buttonsVisible_ { arg aBool;

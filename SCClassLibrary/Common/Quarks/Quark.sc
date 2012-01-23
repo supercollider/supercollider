@@ -265,7 +265,7 @@ QuarkView {
 	}
 	updateButtonStates {
 		var palette = GUI.current.tryPerform(\palette);
-		var c = palette !? {palette.buttonColor};
+		var c = palette !? {palette.button};
 
 		isInstalled.if({
 			// Quark is currently installed
@@ -345,7 +345,7 @@ QuarkViewQt {
 
 	updateButtonStates {
 		var palette = GUI.current.tryPerform(\palette);
-		var c = palette !? {palette.buttonColor};
+		var c = palette !? {palette.button};
 
 		isInstalled.if({
 			// Quark is currently installed

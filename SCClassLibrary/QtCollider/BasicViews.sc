@@ -203,11 +203,11 @@ QStaticText : QTextViewBase {
   }
 
   stringColor {
-    ^this.palette.windowTextColor;
+    ^this.palette.windowText;
   }
 
   stringColor_ { arg color;
-    this.setProperty( \palette, this.palette.windowTextColor_(color) );
+    this.palette = this.palette.windowText_(color);
   }
 }
 
@@ -223,19 +223,19 @@ QTextField : QTextViewBase {
   }
 
   stringColor {
-    ^this.palette.baseTextColor;
+    ^this.palette.baseText;
   }
 
   stringColor_ { arg color;
-    this.setProperty( \palette, this.palette.baseTextColor_(color) );
+    this.palette = this.palette.baseText_(color);
   }
 
   background {
-    ^this.palette.baseColor;
+    ^this.palette.base;
   }
 
   background_ { arg color;
-    this.setProperty( \palette, this.palette.baseColor_(color) )
+    this.palette = this.palette.base_(color);
   }
 
   value {
@@ -361,11 +361,11 @@ QPopUpMenu : QItemViewBase {
   }
 
   stringColor {
-    ^this.palette.buttonTextColor;
+    ^this.palette.buttonText;
   }
 
   stringColor_ { arg color;
-    this.setProperty( \palette, this.palette.buttonTextColor_(color) );
+    this.palette = this.palette.buttonText_(color);
   }
 
   defaultGetDrag { ^this.value; }
