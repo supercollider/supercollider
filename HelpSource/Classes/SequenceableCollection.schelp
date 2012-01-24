@@ -217,6 +217,18 @@ code::
 [].flop; // result is always 2-d.
 ::
 
+method::flopWith
+Flop with a user defined function. Can be used to collect over several collections in parallel.
+code::
+[[1, 2, 3], [4, 5, 6]].flopWith(_+_);
+[[1, 2, 3], 1, [7, 8]].flopWith{ |a,b,c| a+b+c }; // shorter array wraps
+
+//typical use case
+[synths,buffers].flopWith{ |a,b| a.set(\buf,b) }
+::
+argument::func
+A function taking as many arguments as elements in the array.
+
 method::flopTogether
 Invert rows and colums in a an array of dimensional Collections (turn inside out), so that they all match up in size, but remain separated.
 code::
