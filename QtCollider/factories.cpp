@@ -36,6 +36,7 @@ void loadFactories () {
   QC_ADD_FACTORY( QcCustomPainted );
   QC_ADD_FACTORY( QcFileDialog );
   QC_ADD_FACTORY( QcGraph );
+  QC_ADD_FACTORY( QcKnob );
   QC_ADD_FACTORY( QcLevelIndicator );
   QC_ADD_FACTORY( QcMultiSlider );
   QC_ADD_FACTORY( QcNumberBox );

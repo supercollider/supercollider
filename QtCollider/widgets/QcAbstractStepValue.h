@@ -34,6 +34,9 @@ class QcAbstractStepValue
     void setShiftScale( float scale ) { _shiftScale = scale; }
     void setCtrlScale( float scale ) { _ctrlScale = scale; }
     void setAltScale( float scale ) { _altScale = scale; }
+    float shiftScale() { return _shiftScale; }
+    float ctrlScale() { return _ctrlScale; }
+    float altScale() { return _altScale; }
   private:
     float _shiftScale;
     float _ctrlScale;
