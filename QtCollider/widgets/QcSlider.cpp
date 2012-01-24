@@ -100,15 +100,15 @@ void QcSlider::setOrientation( int i )
 QSize QcSlider::sizeHint() const
 {
   if( orientation() == Qt::Horizontal )
-    return QSize(qMax(_hndLen + 10, 150), 26);
+    return QSize(qMax(_hndLen + 10, 150), 20);
   else
-    return QSize(26, qMax(_hndLen + 10, 150));
+    return QSize(20, qMax(_hndLen + 10, 150));
 }
 
 QSize QcSlider::minimumSizeHint() const
 {
   if( orientation() == Qt::Horizontal )
-    return QSize(_hndLen + 10, 10);
+    return QSize(_hndLen + 10, 20);
   else
-    return QSize(10, _hndLen + 10);
+    return QSize(20, _hndLen + 10);
 }
