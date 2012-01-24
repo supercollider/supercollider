@@ -96,6 +96,7 @@ void QcSlider2D::setValue( const QPointF val, bool doAction )
 
 void QcSlider2D::mouseMoveEvent ( QMouseEvent * ev )
 {
+  if( !ev->buttons() ) return;
   setValue( valueFromPos( ev->pos() ) );
 }
 
