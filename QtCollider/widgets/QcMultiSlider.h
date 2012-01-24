@@ -52,17 +52,25 @@ class QcMultiSlider : public QWidget, QcHelper
   Q_PROPERTY( bool editable READ dummyBool WRITE setEditable );
   Q_PROPERTY( int startIndex READ dummyInt WRITE setStartIndex );
 
-  public:
-    QcMultiSlider();
-    QSize sizeHint() const { return QSize( 500,300 ); }
-    QSize minimumSizeHint() const { return QSize( 50, 50 ); }
   Q_SIGNALS:
     void modified();
     void interacted();
     void action();
     void metaAction();
+
   public Q_SLOTS:
     void doAction();
+
+  public:
+    QcMultiSlider();
+    QSize sizeHint() const { return QSize( 500,300 ); }
+    QSize minimumSizeHint() const { return QSize( 50, 50 ); }
+
+  protected:
+    virtual void mousePressEvent( QMouseEvent * );
+    virtual void mouseMoveEvent( QMouseEvent * );
+    virtual void paintEvent( QPaintEvent * );
+
   private:
     Qt::Orientation orientation() const { return ort; }
     VariantList values() const;
@@ -94,9 +102,6 @@ class QcMultiSlider : public QWidget, QcHelper
 
     inline float valueFromPos( float pos, float range );
     inline void setValue( int index, float value );
-    void mousePressEvent( QMouseEvent * );
-    void mouseMoveEvent( QMouseEvent * );
-    void paintEvent( QPaintEvent * );
 
     // values
     QList<float> _values;

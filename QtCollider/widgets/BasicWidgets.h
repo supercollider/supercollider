@@ -152,11 +152,11 @@ class QcCustomPainted : public QcCanvas, QcHelper
       setLayout( new QcDefaultLayout() );
     }
     Q_INVOKABLE void addChild( QWidget* w ) { layout()->addWidget(w); }
-  private:
+  protected:
     // reimplement event handlers just so events don't propagate
-    void mousePressEvent( QMouseEvent * ) {}
-    void mouseReleaseEvent( QMouseEvent * ) {}
-    void mouseMoveEvent( QMouseEvent * ) {}
+    virtual void mousePressEvent( QMouseEvent * ) {}
+    virtual void mouseReleaseEvent( QMouseEvent * ) {}
+    virtual void mouseMoveEvent( QMouseEvent * ) {}
 };
 
 class QcCheckBox : public QCheckBox
