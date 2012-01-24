@@ -24,7 +24,7 @@ QPalette {
 
   window_ { arg color; window = color; hasWindow = color.notNil }
   windowText_ { arg color; windowText = color; hasWindowText = color.notNil }
-  button_ { arg color; button = color; hasButtonText = color.notNil }
+  button_ { arg color; button = color; hasButton = color.notNil }
   buttonText_ { arg color; buttonText = color; hasButtonText = color.notNil }
   base_ { arg color; base = color; hasBase = color.notNil }
   baseText_ { arg color; baseText = color; hasBaseText = color.notNil }
