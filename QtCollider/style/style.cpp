@@ -1,5 +1,7 @@
 #include "style.hpp"
 
+#include "../widgets/QcSlider.h"
+
 using namespace QtCollider::Style;
 
 
@@ -15,29 +17,17 @@ void StyleImpl::drawComplexControl ( QStyle::ComplexControl cc, const QStyleOpti
                                  QPainter *p, const QWidget *w ) const
 {
   switch( (int) cc ) {
-    case CC_Slider:
-      Slider::cc_draw( static_cast<const QStyleOptionSlider*>(option), p, w );
+    case CC_Slider: {
+      const QcSlider *slider = qobject_cast<const QcSlider*>(w);
+      if(!slider) break;
+      Slider::cc_draw( static_cast<const QStyleOptionSlider*>(option), p, slider );
       return;
+    }
     default:
-      ProxyStyle::drawComplexControl( cc, option, p, w );
+      break;
   }
-}
 
-int StyleImpl::pixelMetric ( QStyle::PixelMetric pm, const QStyleOption *option,
-                         const QWidget *w ) const
-{
-  int iPM = pm;
-  switch( (int) pm ) {
-    case PM_SliderThickness:
-    case PM_SliderControlThickness:
-      return Slider::pm_thickness(static_cast<const QStyleOptionSlider*>(option));
-    case PM_SliderLength:
-      return Slider::pm_length(static_cast<const QStyleOptionSlider*>(option));
-    case PM_SliderSpaceAvailable:
-      return Slider::pm_spaceAvailable( static_cast<const QStyleOptionSlider*>(option) );
-    default:
-      return QProxyStyle::pixelMetric( pm, option, w );
-  }
+  ProxyStyle::drawComplexControl( cc, option, p, w );
 }
 
 QRect StyleImpl::subControlRect ( QStyle::ComplexControl cc, const QStyleOptionComplex *option,
@@ -47,10 +37,12 @@ QRect StyleImpl::subControlRect ( QStyle::ComplexControl cc, const QStyleOptionC
   switch(iCC) {
     case CC_Slider:
     {
+      const QcSlider *slider = qobject_cast<const QcSlider*>(w);
+      if(!slider) break;
       const QStyleOptionSlider *opt = static_cast<const QStyleOptionSlider*>(option);
       switch( sc ) {
-        case SC_SliderHandle: return Slider::sc_handle( opt );
-        case SC_SliderGroove: return Slider::sc_groove( opt );
+        case SC_SliderHandle: return Slider::sc_handle( opt, slider );
+        case SC_SliderGroove: return Slider::sc_groove( opt, slider );
         default: ;
       }
       break;
