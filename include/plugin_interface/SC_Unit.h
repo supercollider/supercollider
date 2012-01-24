@@ -103,14 +103,12 @@ struct buffer_lock2
 	buffer_lock2(const SndBuf * buf1, const SndBuf * buf2):
 		buf1_(buf1), buf2_(buf2)
 	{
-		if (buf1 == buf2)
-		{
+		if (buf1 == buf2) {
 			lock1();
 			return;
 		}
 
-		for(;;)
-		{
+		for(;;) {
 			lock1();
 
 			if (lock2())
@@ -129,6 +127,9 @@ struct buffer_lock2
 private:
 	void lock1(void)
 	{
+		if (buf1_->isLocal)
+			return;
+
 		if (!shared1)
 			buf1_->lock.lock();
 		else
@@ -137,6 +138,9 @@ private:
 
 	bool lock2(void)
 	{
+		if (buf2_->isLocal)
+			return true;
+
 		if (!shared2)
 			return buf2_->lock.try_lock();
 		else
@@ -145,6 +149,9 @@ private:
 
 	void unlock1(void)
 	{
+		if (buf1_->isLocal)
+			return;
+
 		if (!shared1)
 			buf1_->lock.unlock();
 		else
@@ -153,6 +160,9 @@ private:
 
 	void unlock2(void)
 	{
+		if (buf2_->isLocal)
+			return;
+
 		if (!shared2)
 			buf2_->lock.unlock();
 		else
@@ -163,23 +173,50 @@ private:
 	const SndBuf * buf2_;
 };
 
+template <bool shared>
+struct buffer_lock
+{
+	buffer_lock(const SndBuf * buf):
+		buf_(buf)
+	{
+		if (!buf->isLocal) {
+			if (shared)
+				buf->lock.lock_shared();
+			else
+				buf->lock.lock();
+		}
+	}
+
+	~buffer_lock(void)
+	{
+		if (!buf_->isLocal) {
+			if (shared)
+				buf_->lock.unlock_shared();
+			else
+				buf_->lock.unlock();
+		}
+	}
+
+	const SndBuf * buf_;
+};
+
 #define ACQUIRE_BUS_AUDIO(index) unit->mWorld->mAudioBusLocks[index].lock()
 #define ACQUIRE_BUS_AUDIO_SHARED(index) unit->mWorld->mAudioBusLocks[index].lock_shared()
 #define RELEASE_BUS_AUDIO(index) unit->mWorld->mAudioBusLocks[index].unlock()
 #define RELEASE_BUS_AUDIO_SHARED(index) unit->mWorld->mAudioBusLocks[index].unlock_shared()
 
-#define LOCK_SNDBUF(buf) nova::rw_spinlock::scoped_lock lock_##buf(buf->lock)
-#define LOCK_SNDBUF_SHARED(buf) nova::rw_spinlock::shared_lock lock_##buf(buf->lock);
+#define LOCK_SNDBUF(buf) buffer_lock<false> lock_##buf(buf)
+#define LOCK_SNDBUF_SHARED(buf) buffer_lock<true> lock_##buf(buf);
 
 #define LOCK_SNDBUF2(buf1, buf2) buffer_lock2<false, false> lock_##buf1##_##buf2(buf1, buf2);
 #define LOCK_SNDBUF2_SHARED(buf1, buf2) buffer_lock2<true, true> lock_##buf1##_##buf2(buf1, buf2);
 #define LOCK_SNDBUF2_EXCLUSIVE_SHARED(buf1, buf2) buffer_lock2<false, true> lock_##buf1##_##buf2(buf1, buf2);
 #define LOCK_SNDBUF2_SHARED_EXCLUSIVE(buf1, buf2) buffer_lock2<true, false> lock_##buf1##_##buf2(buf1, buf2);
 
-#define ACQUIRE_SNDBUF(buf) buf->lock.lock()
-#define ACQUIRE_SNDBUF_SHARED(buf) buf->lock.lock_shared()
-#define RELEASE_SNDBUF(buf) buf->lock.unlock()
-#define RELEASE_SNDBUF_SHARED(buf) buf->lock.unlock_shared()
+#define ACQUIRE_SNDBUF(buf)        do { if (!buf->isLocal) buf->lock.lock();          } while (false)
+#define ACQUIRE_SNDBUF_SHARED(buf) do { if (!buf->isLocal) buf->lock.lock_shared();   } while (false)
+#define RELEASE_SNDBUF(buf)        do { if (!buf->isLocal) buf->lock.unlock();        } while (false)
+#define RELEASE_SNDBUF_SHARED(buf) do { if (!buf->isLocal) buf->lock.unlock_shared(); } while (false)
 
 
 #define ACQUIRE_BUS_CONTROL(index) unit->mWorld->mControlBusLock->lock()

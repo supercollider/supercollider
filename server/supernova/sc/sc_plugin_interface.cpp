@@ -769,6 +769,7 @@ inline void sndbuf_init(SndBuf * buf)
     buf->mask1 = 0;
     buf->coord = 0;
     buf->sndfile = 0;
+    buf->isLocal = false;
 }
 
 inline void sndbuf_copy(SndBuf * dest, const SndBuf * src)
@@ -783,6 +784,7 @@ inline void sndbuf_copy(SndBuf * dest, const SndBuf * src)
     dest->mask1 = src->mask1;
     dest->coord = src->coord;
     dest->sndfile = src->sndfile;
+    dest->isLocal = src->isLocal;
 }
 
 static inline size_t compute_remaining_samples(size_t frames_per_read, size_t already_read, size_t total_frames)
@@ -847,6 +849,7 @@ int sc_plugin_interface::allocate_buffer(SndBuf * buf, uint32_t frames, uint32_t
     buf->mask1 = buf->mask - 1;    /* for oscillators */
     buf->samplerate = samplerate;
     buf->sampledur = 1.0 / samplerate;
+    buf->isLocal = false;
     return kSCErr_None;
 }
 
