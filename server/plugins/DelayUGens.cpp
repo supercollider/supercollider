@@ -669,6 +669,9 @@ static void LocalBuf_allocBuffer(LocalBuf *unit, SndBuf *buf, int numChannels, i
 	buf->mask1    = buf->mask - 1;	// for oscillators
 	buf->samplerate = unit->mWorld->mSampleRate;
 	buf->sampledur = 1. / buf->samplerate;
+#if SUPERNOVA
+	buf->isLocal  = true;
+#endif
 }
 
 

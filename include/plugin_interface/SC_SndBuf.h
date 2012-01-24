@@ -43,6 +43,7 @@ struct SndBuf
 	SNDFILE *sndfile; // used by disk i/o
 	// SF_INFO fileinfo; // used by disk i/o
 #ifdef SUPERNOVA
+	bool isLocal;
 	mutable nova::rw_spinlock lock;
 #endif
 };
