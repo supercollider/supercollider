@@ -21,3 +21,7 @@ Size {
 		}
 	}
 }
+
++ SimpleNumber {
+	asSize { ^Size(this, this) }
+}
