@@ -37,6 +37,7 @@
 #include "SC_InlineBinaryOp.h"
 #include "PyrSched.h"
 #include "GC.h"
+#include "SC_LanguageClient.h"
 
 PyrSymbol* s_midiin;
 PyrSymbol* s_domidiaction;
@@ -147,7 +148,14 @@ static inline void SC_AlsaParseUID(int uid, int& clientID, int& portID)
 
 void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 {
-	pthread_mutex_lock (&gLangMutex);
+	int status = lockLanguageOrQuit(mShouldBeRunning);
+	if (status == EINTR)
+		return;
+	if (status) {
+		postfl("error when locking language (%d)\n", status);
+		return;
+	}
+
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		PyrInt8Array* sysexArray;

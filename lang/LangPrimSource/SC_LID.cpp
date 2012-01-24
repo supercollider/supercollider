@@ -40,6 +40,8 @@
 #include "SC_InlineBinaryOp.h"
 #include "PyrSched.h"
 #include "GC.h"
+#include <boost/atomic.hpp>
+#include "SC_LanguageClient.h"
 
 #if HAVE_LID
 #include <errno.h>
@@ -88,8 +90,8 @@ struct SC_LID
 	int setLedState( int evtCode, int evtValue, int evtType );
 
 	int grab(int flag);
-	void handleEvent(struct input_event& evt);
-	void readError();
+	void handleEvent(struct input_event& evt, boost::atomic<bool> const & shouldBeRunning);
+	void readError(boost::atomic<bool> const & shouldBeRunning);
 
 	static PyrObject* getObject(PyrSlot* slot)
 	{
@@ -154,7 +156,8 @@ private:
 
 	pthread_t		m_thread;
 	pthread_mutex_t		m_mutex;
-	bool			m_running;
+	boost::atomic<bool>	m_running;
+	boost::atomic<bool>	mShouldBeRunning;
 	int			m_cmdFifo[2];
 	int			m_nfds;
 	fd_set			m_fds;
@@ -295,10 +298,17 @@ int SC_LID::grab(int flag)
 	return errNone;
 }
 
-void SC_LID::handleEvent(struct input_event& evt)
+void SC_LID::handleEvent(struct input_event& evt, boost::atomic<bool> const & shouldBeRunning)
 {
 	if (evt.type != EV_SYN) {
-		pthread_mutex_lock(&gLangMutex);
+		int status = lockLanguageOrQuit(shouldBeRunning);
+		if (status == EINTR)
+			return;
+		if (status) {
+			postfl("error when locking language (%d)\n", status);
+			return;
+		}
+
 		if (compiledOK) {
 			VMGlobals* g = gMainVMGlobals;
 			g->canCallOS = false;
@@ -313,13 +323,20 @@ void SC_LID::handleEvent(struct input_event& evt)
 	}
 }
 
-void SC_LID::readError()
+void SC_LID::readError(boost::atomic<bool> const & shouldBeRunning)
 {
-	pthread_mutex_lock(&gLangMutex);
+	int status = lockLanguageOrQuit(shouldBeRunning);
+	if (status == EINTR)
+		return;
+	if (status) {
+		postfl("error when locking language (%d)\n", status);
+		return;
+	}
+
 	if (compiledOK) {
 		VMGlobals* g = gMainVMGlobals;
 		g->canCallOS = false;
- 		++g->sp; SetObject(g->sp, m_obj);
+		++g->sp; SetObject(g->sp, m_obj);
 		runInterpreter(g, s_readError, 1);
 		g->canCallOS = false;
 	}
@@ -353,8 +370,8 @@ SC_LIDManager::~SC_LIDManager()
 
 int SC_LIDManager::start()
 {
-	int err;
-	err = pthread_create(&m_thread, 0, &threadFunc, this);
+	mShouldBeRunning = true;
+	int err = pthread_create(&m_thread, 0, &threadFunc, this);
 	if (err != 0) return errFailed;
 	return errNone;
 }
@@ -370,6 +387,7 @@ int SC_LIDManager::stop()
 	int err = sendCommand(cmd);
 	if (err) return err;
 
+	mShouldBeRunning = false;
 	err = pthread_join(m_thread, 0);
 	if (err != 0) return errFailed;
 
@@ -506,12 +524,14 @@ void SC_LIDManager::loop()
 					if (FD_ISSET(fd, &fds)) {
 						struct input_event evt;
 						if (read(fd, &evt, sizeof(evt)) == sizeof(evt)) {
-							dev->handleEvent(evt);
+							dev->handleEvent(evt, mShouldBeRunning);
 						}
 						else {
-							dev->readError();
+							dev->readError(mShouldBeRunning);
 						}
 					}
+					if (!mShouldBeRunning)
+						goto quit;
 					dev = dev->m_next;
 				}
 			}
