@@ -30,7 +30,7 @@ Exception {
 		^this.errorString.tr($ , $_).tr($\n, $_);
 	}
 	postProtectedBacktrace {
-		var out, currentFrame, def, ownerClass, methodName, pos = 0;
+		var out, currentFrame, def, ownerClass, methodName, pos;
 		out = CollStream.new;
 		"\nPROTECTED CALL STACK:".postln;
 		currentFrame = protectedBacktrace;
@@ -57,7 +57,16 @@ Exception {
 		});
 		// lose everything after the last Function:protect
 		// it just duplicates the normal stack with less info
-		out.collection.copyFromStart(pos).postln;
+		// but, an Error in a routine in a Scheduler
+		// may not have a try/protect in the protectedBacktrace
+		// then, pos is nil and we should print everything
+		postln(
+			if(pos.notNil) {
+				out.collection.copyFromStart(pos)
+			} {
+				out.collection
+			}
+		);
 	}
 
 	isException { ^true }
