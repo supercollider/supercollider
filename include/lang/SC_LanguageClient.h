@@ -33,6 +33,7 @@
 #include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <errno.h>
 
 // =====================================================================
 // SC_LanguageClient - abstract sclang client.
@@ -45,6 +46,57 @@ extern bool compiledOK;
 
 extern pthread_mutex_t gLangMutex;
 extern VMGlobals* gMainVMGlobals;
+
+
+// lock language,
+// if shouldBeRunning == false, return EINTR
+// if language has been locked, return 0
+template <typename FlagType>
+static inline int lockLanguageOrQuit(FlagType const & shouldBeRunning)
+{
+#ifdef __linux__
+	// we have pthread_mutex_timedlock
+
+	int status = pthread_mutex_trylock(&gLangMutex);
+	if (status == 0) {
+		if (shouldBeRunning == false) {
+			pthread_mutex_unlock(&gLangMutex);
+			return EINTR;
+		}
+	} else if (status == EBUSY) {
+		do {
+			struct timespec now;
+			now.tv_sec + 1;
+			clock_gettime(CLOCK_REALTIME, &now);
+
+			status = pthread_mutex_timedlock(&gLangMutex, &now);
+			if (shouldBeRunning == false) {
+				if (status == 0)
+					pthread_mutex_unlock(&gLangMutex);
+				return EINTR;
+			}
+		} while (status == ETIMEDOUT);
+	}
+	return status;
+#else
+	int status;
+	do {
+		status = pthread_mutex_trylock (&gLangMutex);
+		if (shouldBeRunning == false) {
+			if (status == 0)
+				pthread_mutex_unlock(&gLangMutex);
+			return EINTR;
+		}
+		if (status == EBUSY) {
+			struct timespec sleepTime, remain;
+			sleepTime.tv_sec = 0;
+			sleepTime.tv_nsec = 100000;
+			nanosleep(&sleepTime, &remain);
+		}
+	} while (status);
+#endif
+}
+
 
 class SC_DLLEXPORT SC_LanguageClient
 {
