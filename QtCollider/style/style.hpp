@@ -6,6 +6,8 @@
 
 #include <QStyleOptionComplex>
 
+class QcSlider;
+
 namespace QtCollider {
 namespace Style {
 
@@ -28,9 +30,6 @@ public:
 
   virtual QRect subControlRect ( QStyle::ComplexControl, const QStyleOptionComplex *,
                                 QStyle::SubControl, const QWidget * = 0 ) const;
-
-  virtual int pixelMetric ( QStyle::PixelMetric, const QStyleOption * = 0,
-                            const QWidget * = 0 ) const;
 
   virtual void drawComplexControl ( QStyle::ComplexControl, const QStyleOptionComplex *,
                                     QPainter *, const QWidget * = 0 ) const;
@@ -77,14 +76,10 @@ private:
 
 namespace Slider
 {
-  int pm_spaceAvailable( const QStyleOptionSlider * );
-  int pm_length( const QStyleOptionSlider * );
-  int pm_thickness( const QStyleOptionSlider * );
+  QRect sc_groove ( const QStyleOption *opt, const QcSlider * );
+  QRect sc_handle ( const QStyleOptionSlider *opt, const QcSlider * );
 
-  QRect sc_groove ( const QStyleOption *opt );
-  QRect sc_handle ( const QStyleOptionSlider *opt );
-
-  void cc_draw ( const QStyleOptionSlider *, QPainter *, const QWidget * );
+  void cc_draw ( const QStyleOptionSlider *, QPainter *, const QcSlider * );
 };
 
 } // namespace QtCollider

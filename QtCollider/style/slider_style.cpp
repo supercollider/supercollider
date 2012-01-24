@@ -7,58 +7,39 @@
 namespace QtCollider {
 namespace Style {
 
-int Slider::pm_spaceAvailable( const QStyleOptionSlider *opt )
-{
-  QRect r( sunkenContentsRect(opt->rect) );
-  return opt->orientation == Qt::Horizontal ? r.width() : r.height();
-}
-
-int Slider::pm_thickness( const QStyleOptionSlider* opt )
-{
-  QRect r( sunkenContentsRect(opt->rect) );
-  return opt->orientation == Qt::Horizontal ? r.height() : r.width();
-}
-
-int Slider::pm_length( const QStyleOptionSlider* opt )
-{
-  QRect r( sunkenContentsRect(opt->rect) );
-  return qMin( 20, opt->orientation == Qt::Horizontal ? r.width() : r.height() );
-}
-
-QRect Slider::sc_groove ( const QStyleOption *opt )
+QRect Slider::sc_groove ( const QStyleOption *opt, const QcSlider * )
 {
     return sunkenContentsRect(opt->rect);
 }
 
-QRect Slider::sc_handle ( const QStyleOptionSlider *opt )
+QRect Slider::sc_handle ( const QStyleOptionSlider *opt, const QcSlider *s )
 {
   QRect contRect( sunkenContentsRect(opt->rect) );
-  int hndLen = pm_length(opt);
 
-  float valRange = opt->maximum - opt->minimum;
-  int pixVal = valRange > 0 ? (opt->sliderPosition - opt->minimum) / valRange : 0;
+  double valRange = opt->maximum - opt->minimum;
+  double val = valRange > 0.0 ? (opt->sliderPosition - opt->minimum) / valRange : 0.0;
+
+  int len = s->handleLength();
 
   QRect r;
   if( opt->orientation == Qt::Horizontal ) {
-    int pixVal = (opt->sliderPosition - opt->minimum) * (float)(contRect.width()-hndLen) / valRange;
-    r.setX( pixVal + contRect.left() );
+    int pos = val * (contRect.width() - len);
+    r.setX( pos + contRect.left() );
     r.setY( contRect.top() );
-    r.setSize( QSize( hndLen, contRect.height() ) );
+    r.setSize( QSize( len, contRect.height() ) );
   }
   else {
-    int pixVal = (opt->sliderPosition - opt->minimum) * (float)(contRect.height()-hndLen) / valRange;
+    int pos = val * (contRect.height() - len);
     r.setX( contRect.left() );
-    r.setY( contRect.bottom() - pixVal - hndLen + 1 );
-    r.setSize( QSize( contRect.width(), hndLen ) );
+    r.setY( contRect.bottom() - pos - len + 1 );
+    r.setSize( QSize( contRect.width(), len ) );
   }
   return r;
 }
 
-void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QWidget *w )
+void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QcSlider *slider )
 {
   const QPalette &plt = opt->palette;
-  static const int hndWidth = 15;
-  static const int radius = 3;
 
   p->save();
   p->setRenderHint( QPainter::Antialiasing, true );
@@ -68,17 +49,15 @@ void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QWidget
   // draw groove
   RoundRect shGroove( rGroove, 3 );
 
-  const QcSlider *slider = qobject_cast<const QcSlider*>(w);
-
   QColor baseColor( slider->grooveColor() );
   QColor focusColor;
-  if( opt->state & QStyle::State_HasFocus && slider )
+  if( opt->state & QStyle::State_HasFocus )
     focusColor = slider->focusColor();
 
   drawSunken( p, plt, shGroove, baseColor, focusColor );
 
   // geometry
-  QRect rHandle( sc_handle( opt ) );
+  QRect rHandle( sc_handle( opt, slider ) );
 
   // draw handle
   RoundRect shHandle( rHandle, 3 );

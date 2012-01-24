@@ -29,11 +29,17 @@ QC_DECLARE_QWIDGET_FACTORY(QcSlider);
 QcSlider::QcSlider() :
   QtCollider::Style::Client(this),
   lastVal(0),
-  bDoAction( false )
+  bDoAction( false ),
+  _hndLen(20)
 {
   setRange(0, 10000);
   setStep( 0.01 );
   lastVal = sliderPosition();
+
+  if(orientation() == Qt::Horizontal)
+    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+  else
+    setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 
   connect( this, SIGNAL(actionTriggered( int )),
            this, SLOT(action( int )));
@@ -75,4 +81,34 @@ void QcSlider::setStep( float fStep )
   int iStep = fStep * 10000;
   setSingleStep( iStep );
   setPageStep( iStep );
+}
+
+void QcSlider::setOrientation( int i )
+{
+  Qt::Orientation ort = (Qt::Orientation) i;
+
+  QSlider::setOrientation(ort);
+
+  if(orientation() == Qt::Horizontal)
+    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+  else
+    setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+
+  updateGeometry();
+}
+
+QSize QcSlider::sizeHint() const
+{
+  if( orientation() == Qt::Horizontal )
+    return QSize(qMax(_hndLen + 10, 150), 26);
+  else
+    return QSize(26, qMax(_hndLen + 10, 150));
+}
+
+QSize QcSlider::minimumSizeHint() const
+{
+  if( orientation() == Qt::Horizontal )
+    return QSize(_hndLen + 10, 10);
+  else
+    return QSize(10, _hndLen + 10);
 }
