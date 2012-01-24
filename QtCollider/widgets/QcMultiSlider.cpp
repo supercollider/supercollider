@@ -183,6 +183,8 @@ void QcMultiSlider::mousePressEvent( QMouseEvent *e )
 
 void QcMultiSlider::mouseMoveEvent( QMouseEvent *e )
 {
+  if( !e->buttons() ) return;
+
   int c = _values.count();
 
   QPoint pos = e->pos();

@@ -159,6 +159,8 @@ void QcRangeSlider::moveBy( float dif )
 
 void QcRangeSlider::mouseMoveEvent ( QMouseEvent * e )
 {
+  if( !e->buttons() ) return;
+
   if( mouseMode == Drag ) {
       QPoint pt = e->pos() + dragOffset;
       float dif;
