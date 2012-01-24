@@ -602,6 +602,8 @@ void QcWaveform::mouseDoubleClickEvent ( QMouseEvent * )
 
 void QcWaveform::mouseMoveEvent( QMouseEvent *ev )
 {
+  if( !ev->buttons() ) return;
+
   if( _dragAction == Scroll ) {
     double dpos = _dragPoint.x() - ev->pos().x();
     scrollTo( dpos * _fpp + _dragData );

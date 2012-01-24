@@ -836,6 +836,7 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
 
 void QcGraph::mouseMoveEvent( QMouseEvent *ev )
 {
+  if( !ev->buttons() ) return;
   if( !_editable || !_selection.shallMove || !_selection.size() ) return;
 
   if( !_selection.cached ) {
