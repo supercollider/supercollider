@@ -38,12 +38,19 @@ class QcSlider : public QSlider, QcHelper, QcAbstractStepValue, public QtCollide
   Q_PROPERTY( float value READ value WRITE setValue );
   Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
   Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
+  Q_PROPERTY( int orientation READ orientation WRITE setOrientation );
+  Q_PROPERTY( int handleLength READ handleLength WRITE setHandleLength );
 
   public:
     QcSlider();
     float value() { return QSlider::value() * 0.0001f; }
     void setStep( float );
     void setValue( float val ) { QSlider::setValue( val * 10000 ); }
+    void setOrientation( int );
+    int handleLength() const { return _hndLen; }
+    void setHandleLength( int i ) { _hndLen = i; updateGeometry(); update(); }
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
   public Q_SLOTS:
     void increment( double factor );
     void decrement( double factor );
@@ -54,6 +61,7 @@ class QcSlider : public QSlider, QcHelper, QcAbstractStepValue, public QtCollide
   private:
     int lastVal;
     bool bDoAction;
+    int _hndLen;
 };
 
 #endif
