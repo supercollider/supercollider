@@ -193,6 +193,20 @@ METHOD:: fixedSize
 	argument:: size
 		A Size.
 
+METHOD:: fixedWidth
+	note:: only in Qt GUI ::
+	Set both minimum and maximum allowed width of the view, thus making it non-resizable.
+
+	argument:: width
+		An Int.
+
+METHOD:: fixedHeight
+	note:: only in Qt GUI ::
+	Set both minimum and maximum allowed height of the view, thus making it non-resizable.
+
+	argument:: height
+		An Int.
+
 METHOD:: maxWidth
 	note:: only in Qt GUI ::
 	Set maximum allowed width of the view, the view will not be able to grow larger in width, neither by user interaction nor programmatically.
