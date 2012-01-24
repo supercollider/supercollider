@@ -125,6 +125,16 @@ QView : QObject {
     this.setProperty( \maximumSize, size );
   }
 
+  fixedWidth_ { arg width;
+    this.setProperty( \minimumWidth, width );
+    this.setProperty( \maximumWidth, width );
+   }
+
+  fixedHeight_ { arg height;
+    this.setProperty( \minimumHeight, height );
+    this.setProperty( \maximumHeight, height );
+  }
+
   maxWidth_ { arg width;
     this.setProperty( \maximumWidth, min( width, QLimits(\maxWidgetSize) ) );
   }
