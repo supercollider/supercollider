@@ -279,11 +279,8 @@ if(APPLE)
 	set(auxresourcesdir ${scappauxresourcesdir})
 
 	# Some aux files which go in the app's folder
-	install(FILES README.txt ChangeLog
-		DESTINATION ${auxresourcesdir}
-	)
-	install(FILES COPYING AUTHORS
-		DESTINATION ${auxresourcesdir}
+	install(FILES README.txt ChangeLog COPYING AUTHORS platform/mac/MOVED_STUFF.txt
+		DESTINATION ${scappbundlename}
 	)
 elseif (WIN32)
 	set(auxresourcesdir "SuperCollider")
@@ -357,6 +354,18 @@ install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
 )
 
+if(APPLE AND ("${standalone}" STREQUAL ""))
+	set(exampledir "${scappbundlename}")
+else()
+	set(exampledir "${auxresourcesdir}")
+endif()
+
+install(DIRECTORY examples
+	DESTINATION ${exampledir}
+	PATTERN "*~" EXCLUDE
+	PATTERN "*#" EXCLUDE
+)
+
 if(INSTALL_OLD_HELP)
 	install(DIRECTORY Help
 		DESTINATION ${auxresourcesdir}
@@ -369,11 +378,6 @@ if(INSTALL_HELP)
 		if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
 			message(FATAL_ERROR "Symlinking will fail ! HelpSource folder already exists, please delete it first." )
 		endif()
-		install(DIRECTORY examples
-			DESTINATION ${auxresourcesdir}
-			PATTERN "*~" EXCLUDE
-			PATTERN "*#" EXCLUDE
-		)
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
 	else()
@@ -386,7 +390,7 @@ if(INSTALL_HELP)
 				endif()
 			endif()
 		endif()
-		install(DIRECTORY examples HelpSource
+		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
 			PATTERN "*~" EXCLUDE
 			PATTERN "*#" EXCLUDE

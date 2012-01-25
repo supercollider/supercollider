@@ -14,7 +14,7 @@ The exact details of using the SuperCollider environment will depend on your pla
 
 1) SuperCollider is really two applications: a sound synthesiser (the Server), and a programming language (the Lang) with its own developer environment. You can use both of these or one or the other. When using SC (SuperCollider) from within the developer environment SC Lang, the SC Server is used automatically for sound synthesis as long as it's turned on! This is accomplished by pressing the 'Boot' button on a Server graphic or running the code s.boot. Further details are in the help tutorials; but we're just warning you now in case you're impatient and can't understand why you're not immediately getting sounds.
 
-2) The Main Help page in SuperCollider (Help/Help.html) gives some immediate key commands and should be enough to help you start navigating the help system. Please also check the different menu options available with the application on your system.
+2) The Main Help page in SuperCollider gives some immediate key commands and should be enough to help you start navigating the help system. Please also check the different menu options available with the application on your system.
 
 Platform specific comments:
 
@@ -26,13 +26,13 @@ And be careful you're not using TextEdit or a web browser instead of the SuperCo
 [Windows] The windows version of SuperCollider is called PsyCollider. Key commands differ from the Mac, but almost all code should work the same. The SwingOSC Java based GUI library is used here, however, for GUIs. You must use JMouseX/JMouseY in particular; PsyCollider does not support MouseX/MouseY UGens.
 
 
-[Linux] Most people use SuperCollider from emacs; there are some alternative editors available. For GUI building, the SwingOSC Java framework is a standard option. For more information on Linux specific issues, check the "platform/README LINUX" file included in the source package, and the README in the folder editors/scel for information on the emacs editor.
+[Linux] Most people use SuperCollider from emacs or gedit; there are some alternative editors available. For more information on Linux specific issues, check the "README_LINUX.txt" file included in the source package, and the README in the folder editors/scel for information on the emacs editor.
 
 
 Building the Source Code
 ========================
 
-Platform specific build and install instructions can be found in the README_${PLATOFORM}.txt files
+Platform specific build and install instructions can be found in the README_${PLATFORM}.txt files
 
 We hope you enjoy SuperCollider; please get involved in the active community!
 
