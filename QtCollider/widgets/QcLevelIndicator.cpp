@@ -26,8 +26,9 @@
 
 QC_DECLARE_QWIDGET_FACTORY(QcLevelIndicator);
 
-QcLevelIndicator::QcLevelIndicator()
-: _value( 0.f ), _warning(0.6), _critical(0.8),
+QcLevelIndicator::QcLevelIndicator() :
+  QtCollider::Style::Client(this),
+  _value( 0.f ), _warning(0.6), _critical(0.8),
   _peak( 0.f ), _drawPeak( false ),
   _ticks(0), _majorTicks(0),
   _clipped(false)
@@ -77,7 +78,7 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
     c = QColor( 0, 255, 0 );
 
   p.fillRect( vertical ? QRectF(0,0,groove,height()) : QRectF(0,0,width(),groove),
-              QColor( 130,130,130 ) );
+              grooveColor() );
 
   QRectF r;
 
@@ -137,15 +138,18 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
           + 2;
     QPen pen( QColor( 255, 200, 0 ) );
     pen.setWidth( 2 );
+    pen.setCapStyle( Qt::FlatCap );
     p.setPen( pen );
     if( vertical )
-      p.drawLine( 0.f, val, groove - 1, val );
+      p.drawLine( 0.f, val, groove, val );
     else
-      p.drawLine( val, 0.f, val, groove - 1 );
+      p.drawLine( val, 0.f, val, groove );
   }
 
   if( _ticks ) {
-    p.setPen( QColor( 170, 170, 170 ) );
+    QPen pen( plt.color(QPalette::WindowText) );
+    pen.setCapStyle( Qt::FlatCap );
+    p.setPen(pen);
     float dVal = ( _ticks > 1 ) ? ( length-1) / (float)(_ticks-1) : 0.f;
     float t = 0;
     while( t < _ticks ) {
@@ -159,7 +163,8 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
   }
 
   if( _majorTicks ) {
-    QPen pen ( QColor( 170, 170, 170 ) );
+    QPen pen ( plt.color(QPalette::WindowText) );
+    pen.setCapStyle( Qt::FlatCap );
     pen.setWidth( 3 );
     p.setPen( pen );
     float dVal = ( _majorTicks > 1 ) ? (length-3) / (float)(_majorTicks-1) : 0.f;
@@ -173,16 +178,4 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
       t++;
     }
   }
-
-  if( vertical ) {
-    r = rect().adjusted(0,0,0,-1);
-    r.setWidth( groove - 1 );
-  } else {
-    r = rect().adjusted(0,0,-1,0);
-    r.setHeight( groove - 1 );
-  }
-
-  p.setBrush( Qt::NoBrush );
-  p.setPen( plt.color( QPalette::Dark ) );
-  p.drawRect( r );
 }
