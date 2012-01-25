@@ -323,7 +323,7 @@ if(APPLE)
 			endif()
 		endforeach(onedirectory)
 	else()
-		message(STATUS "Will copy SCCLassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/${auxresourcesdir}")
+		message(STATUS "Will copy SCCLassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
 
 		#if directory contains symlinks, unlink them.
 		if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
@@ -377,7 +377,7 @@ if(INSTALL_HELP)
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
 	else()
-		message(STATUS "Will copy HelpSource to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/")
+		message(STATUS "Will copy HelpSource to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
 		if(APPLE)
 			if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
 				if(IS_SYMLINK "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
