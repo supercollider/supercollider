@@ -14,7 +14,7 @@ if(APPLE)
 	if ("${standalone}" STREQUAL "")
 		set(scappauxresourcesdir "${scappbundlename}")
 	else()
-		set(scappauxresourcesdir "${scappdir}/${scappbundlename}.app/Contents/Resources")
+		set(scappauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
 	endif()
 
 	###### Allow user to select a FHS-style install
