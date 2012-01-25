@@ -5,11 +5,11 @@ endif()
 # determines the app name and app install location (scappbundlename, scappdir):
 include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
 
-# On OSX, everything is installed in a folder named after ${scappauxresourcesdir},
+# On OSX, everything is installed in a folder named after ${scappbundlename},
 # which defaults to "SuperCollider". The folder is installed under ${CMAKE_INSTALL_PREFIX},
 # which defaults to <build directory>/Install/
 # This means the app will go in <build dir>/Install/SuperCollider/SuperCollider.app
-# and class lib in <build dir>/Install/SuperCollider/SCClassLibrary, etc..
+# Class lib and similar goes into .app/Contents/Resources, as well as the external sclang and scsynth binaries.
 # The contents of the install prefix folder will be packaged to a DMG with "make package"
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -199,20 +199,11 @@ add_definitions(-DYYSTACK_USE_ALLOCA -DHAVE_SPEECH)
 
 # set how it shows up in the Info.plist file
 SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns)
-# set where in the bundle to put the icns file
-SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns
-	PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-# include the icns file in the target
-SET(scapp_resources ${CMAKE_CURRENT_SOURCE_DIR}/Resources/SCcube.icns)
 
-file(COPY Resources
-	DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/${scappbundlename}.app/Contents
-	PATTERN Info.plist EXCLUDE
-)
+install(DIRECTORY Resources/ DESTINATION ${scappauxresourcesdir})
 
 add_executable(${scappbundlename} MACOSX_BUNDLE
 	${scapp_sources} ${scapp_parser_source}
-	${scapp_resources}
 	)
 
 if (SCLANG_SERVER)
@@ -272,6 +263,7 @@ if (NOT ("${standalone}" STREQUAL ""))
 	endif()
 	message(STATUS "Including standalone resources from folder named: " ${standaloneresourcesfrom})
     install(DIRECTORY ${standaloneresourcesfrom}/ DESTINATION ${scappauxresourcesdir})
+    add_definitions(-DSC_STANDALONE)
 endif()
 
 set(MACOSX_BUNDLE_BUNDLE_NAME "${scappbundlename}")
@@ -280,4 +272,3 @@ include(InstallRequiredSystemLibraries)
 
 include(DeployQt4)
 install_qt4_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
-

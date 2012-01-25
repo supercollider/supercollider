@@ -1,0 +1,37 @@
+SuperCollider class library, help files, sclang and scsynth
+HAS BEEN MOVED into SuperCollider.app/Contents/Resources.
+
+In previous versions of SuperCollider, these resources lived in the
+top folder next to SuperCollider.app. To make a standard self-contained
+app bundle with correct library linking, these have now been moved into
+the app bundle.
+
+If you need to access them from the Finder, ctrl-click SuperCollider.app
+and choose "Show package contents" from the context menu.
+
+To access them in the Terminal, simply:
+
+  $ cd path/to/SuperCollider.app/Contents/Resources
+
+To have sclang and scsynth available system-wide, you can put wrapper-
+scripts into a folder in your PATH, like /usr/local/bin
+For sclang:
+
+  #!/bin/sh
+  cd /full/path/to/SuperCollider.app/Contents/Resources
+  exec ./sclang $*
+
+And for scsynth:
+
+  #!/bin/sh
+  cd /full/path/to/SuperCollider.app/Contents/Resources
+  exec ./scsynth $*
+
+NOTE: Why not symlinking them instead? Because:
+- If you have Qt installed system-wide, sclang will complain that
+  Qt frameworks are loaded twice.
+- scsynth will not find the included "plugins", unless given explicitly
+  with the -U commandline flag.
+
+Happy supercolliding!
+
