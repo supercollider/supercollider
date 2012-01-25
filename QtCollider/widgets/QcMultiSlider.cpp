@@ -145,16 +145,26 @@ QRect QcMultiSlider::contentsRect()
   return QtCollider::Style::sunkenContentsRect(rect()).adjusted(2, 2,-2,-2);
 }
 
-QRectF QcMultiSlider::valueRect()
+QRect QcMultiSlider::valueRect( int count, qreal & spacing )
 {
-  QRectF r( QtCollider::Style::sunkenContentsRect(rect()).adjusted(2, 2,-2,-2) );
+  QRect r( contentsRect() );
+
+  bool horiz = ort == Qt::Horizontal;
+
+  spacing = elastic ? (qreal) (horiz ? r.height() : r.width()) / count : thumbSize.width() + gap;
+
   if( !isFilled ) {
-    double half_hnd = thumbSize.height() * 0.5;
-    if( ort == Qt::Horizontal )
-      return r.adjusted( half_hnd, 0, -half_hnd, 0 );
-    else
-      return r.adjusted( 0, half_hnd, 0, -half_hnd );
+    int hnd = thumbSize.height();
+    if( horiz ) {
+      r.setWidth( r.width() - hnd );
+      r.moveLeft( r.left() + hnd * 0.5 );
+    }
+    else {
+      r.setHeight( r.height() - hnd );
+      r.moveTop( r.top() + hnd * 0.5 );
+    }
   }
+
   return r;
 }
 
@@ -167,25 +177,26 @@ void QcMultiSlider::mousePressEvent( QMouseEvent *e )
 
   if( !c ) return;
 
-  QRectF r( valueRect() );
+  bool horiz = ort == Qt::Horizontal;
+  double spacing;
+
+  QRect r( valueRect( c - startIndex, spacing ) );
 
   int i;
   float val;
 
-  if( ort == Qt::Vertical ) {
-    float step = elastic ? (float) r.width() / c : thumbSize.width() + gap;
-    i = step > 0.f ? (moveOrigin.x() - r.x()) / step : 0;
-    val = yValue((qreal)moveOrigin.y(), r);
+  if( horiz ) {
+    i = spacing > 0.f ? floor((float)(moveOrigin.y() - r.y()) / spacing) : 0;
+    val = xValue((qreal)moveOrigin.x(), r);
   }
   else {
-    float step = elastic ? (float) height() / c : thumbSize.width() + gap;
-    i = step > 0.f ? (moveOrigin.y() - r.y()) / step : moveOrigin.y();
-    val = xValue((qreal)moveOrigin.x(), r);
+    i = spacing > 0.f ? floor((float)(moveOrigin.x() - r.x()) / spacing) : 0;
+    val = yValue((qreal)moveOrigin.y(), r);
   }
 
   i += startIndex;
 
-  if( i >= 0 && i < c ) {
+  if( i >= startIndex && i < c ) {
     _currentIndex = i;
     _selectionSize = 1;
 
@@ -211,71 +222,71 @@ void QcMultiSlider::mouseMoveEvent( QMouseEvent *e )
     return;
   }
 
-  QRectF r( valueRect() );
+  double xStep;
 
-  float xOrig, yOrig, xDest, yDest, xStep;
-  int i;
+  QRect r( valueRect( c - startIndex, xStep ) );
+
+  float xOrig, yOrig, xDest, yDest;
+  int xOffset, xRange;
+  int iOrig, iDest, iMax;
 
   if( ort == Qt::Vertical ) {
+    xOffset = r.left(); xRange = r.width();
     xOrig = moveOrigin.x();
     yOrig = yValue(moveOrigin.y(), r);
     xDest = pos.x();
     yDest = yValue(pos.y(), r);
-    xStep = elastic ? (float) r.width() / c : thumbSize.width() + gap;
-    i = floor( (xOrig - r.left()) / xStep );
   }
   else {
+    xOffset = r.top(); xRange = r.height();
     xOrig = moveOrigin.y();
     yOrig = xValue(moveOrigin.x(), r);
     xDest = pos.y();
     yDest = xValue(pos.x(), r);
-    xStep = elastic ? (float) r.height() / c : thumbSize.width() + gap;
-    i = floor( (xOrig - r.top()) / xStep );
   }
 
-  float x = (i * xStep) - xOrig;
-  float xDif = xDest - xOrig;
-  float k = xDif != 0.f ? ( yDest - yOrig ) / xDif : 0.f;
-  float yStep = xStep * k;
-
-  i += startIndex;
-
-  if( xDif > 0.f )
+  if( xStep > 0.0 ) {
+    iOrig = floor((xOrig - xOffset) / xStep); iOrig += startIndex;
+    iDest = floor((xDest - xOffset) / xStep); iDest += startIndex;
+    iMax = elastic ? c : qMin( c, int( (float)xRange / xStep) + startIndex + 1);
+  }
+  else
   {
-    x+=xStep;
-    float y = x * k + yOrig;
-    while( i < c && x < xDif ) {
-      if( i >= 0 && editable ) {
-        setValue( i, y );
+    iOrig = iDest = iMax = startIndex;
+  }
+
+  if( editable && (iOrig != iDest) ) {
+    float k = (yDest - yOrig) / (xDest - xOrig);
+    float n = yOrig - (xOrig - xOffset) * k;
+    int i = iOrig - startIndex;
+
+    while( iOrig < iDest ) {
+      ++i;
+      if( iOrig >= startIndex && iOrig < iMax  ) {
+        float y = (i * xStep) * k + n;
+        setValue( iOrig, y );
       }
-      y += yStep;
-      x+=xStep;
-      i++;
+      ++iOrig;
     }
-  }
-  else if( xDif < 0.f )
-  {
-    float y = x * k + yOrig;
-    while( i >= 0 && x > xDif ) {
-      if( i < c && editable ) {
-        setValue( i, y );
+    while( iOrig > iDest ) {
+      if( iOrig >= startIndex && iOrig < iMax ) {
+        float y = (i * xStep) * k + n;
+        setValue( iOrig, y );
       }
-      y -= yStep;
-      x-=xStep;
-      i--;
+      --iOrig; --i;
     }
   }
 
-  if( i < c && i >= 0 ) {
-    _currentIndex = i;
+  if( iDest >= startIndex && iDest < iMax ) {
+    if( editable ) setValue( iDest, yDest );
+
+    _currentIndex = iDest;
     _selectionSize = 1;
-
-    if( editable ) setValue( i, yDest );
-    if( editable || highlight ) Q_EMIT( modified() );
   }
 
   moveOrigin = pos;
 
+  Q_EMIT( modified() );
   Q_EMIT( interacted() );
 }
 
@@ -294,160 +305,133 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
 
   if( !_values.count() ) return;
 
-  QRect bounds( contentsRect() );
-  p.setClipRect( bounds.adjusted(1,1,-1,-1) );
+  p.setRenderHint( QPainter::Antialiasing, false );
+
+  bool horiz = ort == Qt::Horizontal;
 
   QColor fillColor =
     _fillColor.isValid() ? _fillColor : pal.color( QPalette::Text );
   QColor strokeColor =
     _strokeColor.isValid() ? _strokeColor : pal.color( QPalette::Text );
 
-  float iRange, vRange, iOrig, vOrig;
-  if( ort == Qt::Vertical ) {
-    iRange = bounds.width(); vRange = bounds.height();
-    iOrig = bounds.left(); vOrig = bounds.top();
-  } else {
-    iRange = bounds.height(); vRange = bounds.width();
-    iOrig = bounds.top(); vOrig = bounds.left();
-  }
+  QRect bounds( contentsRect() );
 
-  float spacing = elastic ?
-                  iRange / _values.count() :
-                  thumbSize.width() + gap;
+  p.setClipRect( bounds );
 
-  float iOffset = - startIndex * spacing + (ort == Qt::Horizontal ? bounds.x() : bounds.y());
-
-  float vOffset = isFilled ? 0.f : thumbSize.height() * 0.5f;
-  if( ort == Qt::Vertical ) vOffset = vRange - vOffset;
-  vOffset += vOrig;
-
-  float vScale = vRange;
-  if( !isFilled ) vScale -= thumbSize.height();
-  if( ort == Qt::Vertical ) vScale = -vScale;
-
-  float iPos;
-  float vPos;
-  float iSize;
-  float vSize;
-
-  float *x, *y, *w, *h;
-  if( ort == Qt::Vertical ) {
-    x = &iPos; y = &vPos; w = &iSize, h = &vSize;
+  if( horiz ) {
+    p.translate( bounds.topLeft() );
+    p.rotate(90);
+    p.scale(1.0, -1.0);
+    bounds.setSize( QSize( bounds.height(), bounds.width() ) );
   }
   else {
-    x = &vPos; y = &iPos; w = &vSize, h = &iSize;
+    p.translate( bounds.left(), bounds.top() + bounds.height() );
+    p.scale(1.0, -1.0);
   }
 
-  //highlight current index / selection
+  int count = _values.count() - startIndex;
+  double spacing, width, yscale;
+
+  spacing = elastic ? (double) bounds.width() / count : thumbSize.width() + gap;
+  width = elastic ? qMin( spacing, (double) thumbSize.width() ) : thumbSize.width();
+  yscale = bounds.height();
+  if( !isFilled ) yscale -= thumbSize.height();
+
+  // selection
 
   if( highlight ) {
-    iSize = _selectionSize * spacing;
-    vSize = vRange;
-    iPos =  _currentIndex * spacing + iOffset;
-    vPos = 0.f;
-    QRectF hlRect;
-    hlRect.setWidth( *w );
-    hlRect.setHeight( *h );
-    hlRect.translate( *x, *y );
+    int i = _currentIndex - startIndex;
+    int c = qMin( count - i, _selectionSize );
+    if(c) {
+      QRect r;
+      r.setHeight( bounds.height() );
+      r.setWidth( c * spacing );
+      r.moveLeft( i * spacing );
 
-    QColor hlColor = fillColor;
-    hlColor.setAlpha( 70 );
-    p.fillRect( hlRect, hlColor );
+      QColor hlColor = fillColor;
+      hlColor.setAlpha( 70 );
+      p.fillRect( r, hlColor );
+    }
   }
 
   p.setPen( strokeColor );
 
+  // lines
+
   if( drawLines ) {
     bool fill = isFilled & !drawRects;
 
+    p.save();
+
     p.setRenderHint( QPainter::Antialiasing, true );
+    p.translate( spacing * 0.5, isFilled ? 0.0 : thumbSize.height() * 0.5 );
+    p.scale( 1.0, (qreal) yscale );
     if( fill ) p.setBrush( fillColor );
 
     QPainterPath path;
 
-    // construct value line
-    iPos = spacing * 0.5 + iOffset;
-    vPos = ( _values[0] * vScale ) + vOffset;
-    path.moveTo( *x, *y );
+    // value line
 
-    int vc = _values.count();
-    for( int i = 1; i < vc; ++i ) {
-      iPos += spacing;
-      vPos = ( _values[i] * vScale ) + vOffset;
-      path.lineTo( *x, *y );
-    }
+    path.moveTo( 0, _values[startIndex] );
+    for( int i = 1; i < count; ++i )
+      path.lineTo( (qreal) i * spacing, _values[i + startIndex] );
 
-    // construct reference line
-    int rc = _ref.count();
-    if( ( rc || fill ) && vc) {
-      int i = vc - 1;
-      vPos = ( (i < rc ? _ref[i] : 0.f) * vScale ) + vOffset;
-      //NOTE re-use last iPos from value line;
+    // reference line
 
-      if( fill ) path.lineTo(*x,*y);
-      else path.moveTo(*x,*y);
+    int refcount = _ref.count() - startIndex;
+    if( refcount > 0 || fill ) {
+      qreal x, y;
+      int i = count - 1;
+
+      x = i * spacing;
+      y = i < refcount ? _ref[i + startIndex] : 0.f;
+      if( fill ) path.lineTo(x, y);
+      else path.moveTo(x, y);
 
       while( --i >= 0 ) {
-        iPos -= spacing;
-        vPos = ( (i < rc ? _ref[i] : 0.f) * vScale ) + vOffset;
-        path.lineTo(*x,*y);
+        x = i * spacing;
+        y = i < refcount ? _ref[i + startIndex] : 0.f;
+        path.lineTo(x, y);
       }
 
       if( fill ) path.closeSubpath();
     }
 
     p.drawPath( path );
+
+    p.restore();
   }
+
+  // rects
 
   if( drawRects ) {
     p.setRenderHint( QPainter::Antialiasing, false );
+    p.translate( (spacing - width) * 0.5, 0 );
     p.setBrush( fillColor );
 
     QRectF r;
-    // 1 pixel smaller because of stroke on right and bottom edge
-    //FIXME erm, doesn't work right in direction of value
-    iSize = elastic ?
-            qMin( (qreal)spacing, thumbSize.width() ) :
-            thumbSize.width();
-    iSize -= 1;
+    r.setWidth( width );
 
-    if( !isFilled ) {
-      vSize = thumbSize.height() - 1;
-      r.setSize( QSizeF( *w, *h ) );
+    if( isFilled ) {
+      int refcount = _ref.count() - startIndex;
+      for( int i = 0; i < count; ++i ) {
+        int ref = (i < refcount ? _ref[i + startIndex] : 0.f) * yscale;
+        int val = _values[i + startIndex] * yscale;
+        r.moveLeft( i * spacing );
+        r.moveTop( ref );
+        r.setHeight( val - ref );
+        if(horiz) p.drawRect(r.normalized().adjusted(0,0,-1,-1));
+        else p.drawRect(r.normalized().adjusted(0,1,-1,0));
+      }
     }
-
-    iPos = spacing * 0.5 + iOffset;
-
-    QPointF pt;
-    int vc = _values.count();
-    int rc = _ref.count();
-    for( int i = 0; i < vc; ++i ) {
-      if( isFilled ) {
-        float ref = i < rc ? _ref[i] : 0.f;
-        float val = _values[i];
-        vPos = ((ref + val) * 0.5 * vScale) + vOffset;
-        vSize = ( val - ref );
-        vSize *= vSize > 0.f ? vScale : -vScale;
-        r.setSize( QSizeF( *w, *h ) );
-        pt.setX(*x); pt.setY(*y);
-        r.moveCenter( pt );
-        p.drawRect( r );
+    else {
+      r.setHeight( thumbSize.height() );
+      for( int i = 0; i < count; ++i ) {
+        r.moveLeft( i * spacing );
+        r.moveTop( _values[i + startIndex] * yscale );
+        if(horiz) p.drawRect(r.adjusted(0,0,-1,-1));
+        else p.drawRect(r.adjusted(0,1,-1,0));
       }
-      else {
-        if( rc ) {
-          float ref = i < rc ? _ref[i] : 0.f;
-          vPos = ( ref * vScale ) + vOffset;
-          pt.setX(*x); pt.setY(*y);
-          r.moveCenter( pt );
-          p.drawRect( r );
-        }
-
-        vPos = ( _values[i] * vScale ) + vOffset;
-        pt.setX(*x); pt.setY(*y);
-        r.moveCenter( pt );
-        p.drawRect( r );
-      }
-      iPos += spacing;
     }
   }
 }
