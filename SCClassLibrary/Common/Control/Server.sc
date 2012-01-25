@@ -1015,6 +1015,8 @@ Server {
 		volume.unmute;
 	}
 
+	hasShmInterface { ^serverInterface.notNil }
+
 	reorder { arg nodeList, target, addAction=\addToHead;
 		target = target.asTarget;
 		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))); //"/n_order"
