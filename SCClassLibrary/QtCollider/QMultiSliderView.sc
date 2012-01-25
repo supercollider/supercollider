@@ -1,7 +1,7 @@
 QMultiSliderView : QView {
   var <editable=true, <step=0;
   var <reference;
-  var <indexIsHorizontal=true, <elasticMode=false;
+  var <elasticMode=false;
   var <indexThumbSize=12, <valueThumbSize=12, <gap=1;
   var <drawLines=false, <drawRects=true;
   var <metaAction;
@@ -12,13 +12,10 @@ QMultiSliderView : QView {
   size { ^this.getProperty(\sliderCount) }
   size_ { arg int; this.setProperty( \sliderCount, int ) }
 
+  indexIsHorizontal { ^this.getProperty(\orientation) == QOrientation(\vertical) }
+
   indexIsHorizontal_ { arg bool;
-    indexIsHorizontal = bool;
-    if( bool ) {
-      this.setProperty( \orientation, QOrientation(\horizontal) );
-    } {
-      this.setProperty( \orientation, QOrientation(\vertical) );
-    };
+    this.setProperty( \orientation, QOrientation(if(bool){\vertical}{\horizontal}) );
   }
 
   editable_ { arg aBool;

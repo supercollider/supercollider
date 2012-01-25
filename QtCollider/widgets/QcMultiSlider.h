@@ -100,10 +100,10 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
     void setFillColor( const QColor& c ) { _fillColor = c; update(); }
     void setStrokeColor( const QColor& c ) { _strokeColor = c; update(); }
     void setEditable( bool b ) { editable = b; }
-    void setStartIndex( int i ) { startIndex = i; update(); }
+    void setStartIndex( int i ) { startIndex = qBound(0, i, _values.count()-1); update(); }
 
     QRect contentsRect();
-    QRectF valueRect();
+    QRect valueRect( int count, double & spacing );
     inline float valueFromPos( float pos, float range );
     inline void setValue( int index, float value );
 
