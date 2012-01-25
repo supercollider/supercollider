@@ -190,9 +190,6 @@ b.plot;
 b.free;
 ::
 
-method:: readExample
-Read example sound file to buffer via code::read::.
-
 method:: readNoUpdate
 As link::#*read:: above, but without the automatic update of instance variables. Call code::updateInfo:: (see below) to update the vars.
 argument:: server
