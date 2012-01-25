@@ -612,6 +612,13 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
     sc_interface.fPrint = &print;
     sc_interface.fDoneAction = &done_action;
 
+    /* sndfile functions */
+#ifdef NO_LIBSNDFILE
+    sc_interface.fSndFileFormatInfoFromStrings = NULL;
+#else
+    sc_interface.fSndFileFormatInfoFromStrings = &sndfileFormatInfoFromStrings;
+#endif
+
     /* wave tables */
     sc_interface.mSine = gSine;
     sc_interface.mCosecant = gInvSine;
