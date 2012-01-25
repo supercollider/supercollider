@@ -86,12 +86,12 @@ void QcRangeSlider::setHiValue( float val )
 
 QSize QcRangeSlider::sizeHint() const
 {
-  return ( _ort == Qt::Horizontal ? QSize( 100, 20 ) : QSize( 20, 100 ) );
+  return ( _ort == Qt::Horizontal ? QSize( 150, 20 ) : QSize( 20, 150 ) );
 }
 
 QSize QcRangeSlider::minimumSizeHint() const
 {
-  return ( _ort == Qt::Horizontal ? QSize( 30, 10 ) : QSize( 10, 30 ) );
+  return ( _ort == Qt::Horizontal ? QSize( 30, 20 ) : QSize( 20, 30 ) );
 }
 
 void QcRangeSlider::increment( double factor )
