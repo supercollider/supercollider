@@ -320,7 +320,7 @@ void Balance2_Ctor(Balance2 *unit)
 	}
 	unit->m_pos = ZIN0(2);
 	unit->m_level = ZIN0(3);
-	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f);
+	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f + 0.5f);
 	ipos = sc_clip(ipos, 0, 2048);
 
 	unit->m_leftamp  = unit->m_level * ft->mSine[2048 - ipos];
@@ -340,7 +340,7 @@ void Balance2_next_ak(Balance2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -377,7 +377,7 @@ void Balance2_next_ak_nova(Balance2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -410,7 +410,7 @@ void Balance2_next_ak_nova_64(Balance2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -450,7 +450,7 @@ void Balance2_next_aa(Balance2 *unit, int inNumSamples)
 	if (level != nextlevel) {
 		float levelSlope = (nextlevel - level) * unit->mRate->mSlopeFactor;
 		LOOP1(inNumSamples,
-			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
+			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f + 0.5f);
 			ipos = sc_clip(ipos, 0, 2048);
 
 			float leftamp  = level * sineTable[2048 - ipos];
@@ -462,7 +462,7 @@ void Balance2_next_aa(Balance2 *unit, int inNumSamples)
 		unit->m_level = level;
 	} else {
 		LOOP1(inNumSamples,
-			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
+			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f + 0.5f);
 			ipos = sc_clip(ipos, 0, 2048);
 
 			float leftamp  = level * sineTable[2048 - ipos];
@@ -496,7 +496,7 @@ void XFade2_Ctor(XFade2 *unit)
 	}
 	unit->m_pos = ZIN0(2);
 	unit->m_level = ZIN0(3);
-	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f);
+	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f + 0.5f);
 	ipos = sc_clip(ipos, 0, 2048);
 
 	unit->m_leftamp  = unit->m_level * ft->mSine[2048 - ipos];
@@ -515,7 +515,7 @@ void XFade2_next_ak(XFade2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -550,7 +550,7 @@ void XFade2_next_ak_nova(XFade2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -579,7 +579,7 @@ void XFade2_next_ak_nova_64(XFade2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -615,7 +615,7 @@ void XFade2_next_aa(XFade2 *unit, int inNumSamples)
 	if (level != nextlevel) {
 		float levelSlope = (nextlevel - level) * unit->mRate->mSlopeFactor;
 		LOOP1(inNumSamples,
-			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
+			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f + 0.5f);
 			ipos = sc_clip(ipos, 0, 2048);
 
 			float leftamp  = level * sineTable[2048 - ipos];
@@ -626,7 +626,7 @@ void XFade2_next_aa(XFade2 *unit, int inNumSamples)
 		unit->m_level = level;
 	} else {
 		LOOP1(inNumSamples,
-			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
+			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f + 0.5f);
 			ipos = sc_clip(ipos, 0, 2048);
 
 			float leftamp  = level * sineTable[2048 - ipos];
@@ -715,7 +715,7 @@ void Pan2_next_ak(Pan2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -754,7 +754,7 @@ void Pan2_next_ak_nova(Pan2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -783,7 +783,7 @@ void Pan2_next_ak_nova_64(Pan2 *unit, int inNumSamples)
 	float rightamp = unit->m_rightamp;
 
 	if (pos != unit->m_pos || unit->m_level != level) {
-		int32 ipos = (int32)(1024.f * pos + 1024.f);
+		int32 ipos = (int32)(1024.f * pos + 1024.f + 0.5f);
 		ipos = sc_clip(ipos, 0, 2048);
 
 		float nextleftamp  = level * ft->mSine[2048 - ipos];
@@ -820,7 +820,7 @@ void Pan2_next_aa(Pan2 *unit, int inNumSamples)
 		float levelSlope = (nextlevel - level) * unit->mRate->mSlopeFactor;
 
 		LOOP1(inNumSamples,
-			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
+			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f + 0.5f);
 			ipos = sc_clip(ipos, 0, 2048);
 
 			float leftamp  = level * ft->mSine[2048 - ipos];
@@ -833,7 +833,7 @@ void Pan2_next_aa(Pan2 *unit, int inNumSamples)
 		unit->m_level = level;
 	} else {
 		LOOP1(inNumSamples,
-			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f);
+			int32 ipos = (int32)(1024.f * ZXP(pos) + 1024.f + 0.5f);
 			ipos = sc_clip(ipos, 0, 2048);
 
 			float leftamp  = level * ft->mSine[2048 - ipos];
@@ -864,7 +864,7 @@ void Pan2_Ctor(Pan2 *unit)
 
 	unit->m_pos = ZIN0(1);
 	unit->m_level = ZIN0(2);
-	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f);
+	int32 ipos = (int32)(1024.f * unit->m_pos + 1024.f + 0.5f);
 	ipos = sc_clip(ipos, 0, 2048);
 
 	unit->m_leftamp  = unit->m_level * ft->mSine[2048 - ipos];
@@ -906,12 +906,12 @@ void Pan4_Ctor(Pan4 *unit)
 		}
 	}
 
-	int32 ixpos = (int32)(1024.f * xpos + 1024.f);
+	int32 ixpos = (int32)(1024.f * xpos + 1024.f + 0.5f);
 	ixpos = sc_clip(ixpos, 0, 2048);
 	float leftamp  = ft->mSine[2048 - ixpos];
 	float rightamp = ft->mSine[ixpos];
 
-	int32 iypos = (int32)(1024.f * ypos + 1024.f);
+	int32 iypos = (int32)(1024.f * ypos + 1024.f + 0.5f);
 	iypos = sc_clip(iypos, 0, 2048);
 	float frontamp = ft->mSine[iypos];
 	float backamp  = ft->mSine[2048 - iypos];
@@ -973,12 +973,12 @@ void Pan4_next(Pan4 *unit, int inNumSamples)
 			}
 		}
 
-		int32 ixpos = (int32)(1024.f * xpos + 1024.f);
+		int32 ixpos = (int32)(1024.f * xpos + 1024.f + 0.5f);
 		ixpos = sc_clip(ixpos, 0, 2048);
 		float leftamp  = ft->mSine[2048 - ixpos];
 		float rightamp = ft->mSine[ixpos];
 
-		int32 iypos = (int32)(1024.f * ypos + 1024.f);
+		int32 iypos = (int32)(1024.f * ypos + 1024.f + 0.5f);
 		iypos = sc_clip(iypos, 0, 2048);
 		float frontamp = ft->mSine[iypos];
 		float backamp  = ft->mSine[2048 - iypos];
