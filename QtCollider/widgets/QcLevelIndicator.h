@@ -23,11 +23,12 @@
 #define QC_LEVEL_INDICATOR_H
 
 #include "../QcHelper.h"
+#include "../style/style.hpp"
 
 #include <QWidget>
 #include <QTimer>
 
-class QcLevelIndicator : public QWidget, public QcHelper
+class QcLevelIndicator : public QWidget, QcHelper, QtCollider::Style::Client
 {
   Q_OBJECT
   Q_PROPERTY( float value READ dummyFloat WRITE setValue );
