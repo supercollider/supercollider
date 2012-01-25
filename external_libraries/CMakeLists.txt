@@ -66,13 +66,7 @@ endif()
 
 
 if(APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
-	install(TARGETS supercollider_boost_thread
-			DESTINATION "${scappauxresourcesdir}"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-			COMPONENT app)
+    # on osx, install_qt4_executable copies the needed libs from the build dir into the installed .app
 elseif(WIN32)
 	install(TARGETS supercollider_boost_thread
 			DESTINATION "SuperCollider"

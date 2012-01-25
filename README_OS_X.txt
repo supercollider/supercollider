@@ -47,9 +47,11 @@ Then to run the build process run:
 
 	make install
 
-This will build the software, then "install" it to a folder "build/SuperCollider"
-with the finished products in. You might like to move the "build/SuperCollider"
-folder into your /Applications folder.
+This will build the software, then "install" it to a folder "SuperCollider" under
+CMAKE_INSTALL_PREFIX, which defaults to "<build-directory>/Install",
+with the finished products in. You might like to move the "SuperCollider"
+folder into your /Applications folder or install it there directly by
+passing "-D /Applications" to cmake.
 
 The build process can be configured using the cmake program, cmake
 frontends like "ccmake" or "cmake-gui", or by simply editing the
@@ -60,8 +62,8 @@ For example, by default cmake will create a "release" build, but if you want a
 
 	cmake -DCMAKE_BUILD_TYPE=Debug ..
 
-By default cmake will copy SCClassLibrary to the Application directory. There is a cmake option to create
-a symlink of the SCClassLibrary instead so that changes to code in the class library are reflected in git.
+By default the SCClassLibrary is copied into place. There is a cmake option to create
+symlinks of the SCClassLibrary instead so that changes to code in the class library are reflected in git.
 To turn on the symlinking do:
 
 	cmake -DSC_SYMLINK_CLASSLIB=ON ..
@@ -69,11 +71,11 @@ To turn on the symlinking do:
 For a 32bit build on a 64bit machine (i.e. recent Mac systems), you need to 
 configure cmake like this:
 
-	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS:STRING=-m32 -DCMAKE_C_FLAGS:STRING=-m32 ..
+	cmake -DCMAKE_OSX_ARCHITECTURES='i386' ..
 
 For the BIG universal binary (on 10.6), use:
 
-	cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='ppc;i386;x86_64' ..
+	cmake -DCMAKE_OSX_ARCHITECTURES='i386;x86_64' ..
 
 
 Qt GUI:
@@ -92,17 +94,17 @@ Standalones:
 To create a "standalone" app using cmake, you need to use the "standalone" flag.
 For example, to create a standalone whose name is MyFabApp:
 
-	cmake -D standalone:string=MyFabApp ..
+	cmake -D standalone="MyFabApp" ..
 
-This builds like normal but names the finished program "MyFabApp" and puts all
-resources into the app bundle, including any special resources you might have
-created in the folder "platform/mac/MyFabApp Resources" (or, if that doesn't
-exist, it just uses "platform/mac/Standalone Resources").
+This builds like normal but names the finished program "MyFabApp" and includes
+any special resources you might have created in the folder
+"platform/mac/MyFabApp Resources" (or, if that doesn't exist, it just uses
+"platform/mac/Standalone Resources").
 
 If you've built a standalone and want to go back to normal build mode, just
 set that value as an empty string:
 
-        cmake -D standalone:string= ..
+        cmake -D standalone="" ..
 
 
 ------------------------------------------------------------------------
@@ -121,6 +123,8 @@ universal binary. This UB contains ppc, i386 and x86_64 archs.
 ------------------------------------------------------------------------
 Building - 10.6 and 64-bit scsynth and plugins
 ------------------------------------------------------------------------
+
+*** THIS IS OUTDATED, cmake on 10.6 will build 64-bit by default ***
 
 You will need to do the following to build a 64-bit scsynth and plugins.
  * Open the XCode projects for Synth AND Plugins
@@ -151,6 +155,8 @@ have installed the optional 10.5 SDK, installed with the Apple Developer Tools.
 ------------------------------------------------------------------------
 Building SuperCollider THE OLD WAY (no cmake - just xcode required)
 ------------------------------------------------------------------------
+
+*** THIS IS OUTDATED, instructions below will not work, use cmake instead ***
 
 Requirements:
  * Mac OS X 10.4.9 or greater

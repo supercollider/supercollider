@@ -3,6 +3,8 @@
 #include <sys/param.h>
 #include <stdexcept>
 #include <cstring>  // for strncpy
+#include <mach-o/dyld.h> // for _NSGetExecutablePath
+#include <libgen.h>
 
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFBundle.h>
@@ -10,77 +12,51 @@
 
 #include "SC_StandAloneInfo_Darwin.h"
 
-bool SC_StandAloneInfo::sIsStandAlone;
 bool SC_StandAloneInfo::haveCheckedBundleStatus;
 char SC_StandAloneInfo::dirPath[PATH_MAX];
 
 void SC_StandAloneInfo::SC_StandAloneInfoInit() {
+	char relDir[PATH_MAX];
 	CFStringEncoding encoding = kCFStringEncodingASCII;
-
-	if ( !haveCheckedBundleStatus )
-	{
+	if(!haveCheckedBundleStatus) {
 		haveCheckedBundleStatus = true;
-		CFStringRef stringToFind = CFSTR("SCClassLibrary");
 		CFURLRef enablerURL = CFBundleCopyResourceURL (
 			CFBundleGetMainBundle(),
-			stringToFind,
+			CFSTR("SCClassLibrary"),
 			NULL,
 			NULL
 		);
-		if ( enablerURL )
-		{
-			CFStringRef string2ToFind = CFSTR(".app/");
-			CFRange findResult = CFStringFind(CFURLGetString(enablerURL), string2ToFind, kCFCompareCaseInsensitive);
-			if(findResult.length != 0)
-			{
-				// You'd think we could get an absolute path to the Resources directory. But
-				// we can't, we can only get a relative path, or an absolute path to a
-				// specific resource. Since we don't know the application name, we get the
-				// latter, and then hack off the resource name.
-
-				sIsStandAlone = true;
-				CFStringRef rawPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
-
-				CFRange discardRange = CFStringFind (
-				   CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle),
-				   stringToFind,
-				   0
-				);
-
-				CFRange validRange;
-				validRange.location = 0;
-				validRange.length = discardRange.location - 1;
-
-				CFStringRef dirPathCFString = CFStringCreateWithSubstring (
-					kCFAllocatorDefault,
-					rawPath,
-					validRange
-				);
-
-				CFStringGetCString (
-					dirPathCFString,
-					dirPath,
-					PATH_MAX,
-					encoding
-				);
-			}else
-			{
+		if ( enablerURL ) {
+			// If sclang or SuperCollider binary is run within the .app bundle,
+			// this is how we find the Resources path.
+			CFStringRef rawPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
+			rawPath = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/.."), rawPath);
+			CFStringGetCString(rawPath, relDir, PATH_MAX, encoding);
+		} else {
+			// when sclang is run from a symlink, the resource URL above will not be found,
+			// so we need to find the path of the executable.
+			uint32_t *bufsize;
+			*bufsize = PATH_MAX;
+			if(_NSGetExecutablePath(relDir, bufsize)==0) {
+				realpath(relDir, dirPath); // resolve symlink
+				char *dir = dirname(dirPath);
+				strcpy(dirPath, dir);
+				return;
+			} else {
+				// in case it failed, fall back to current directory
 				getcwd(dirPath, PATH_MAX);
 			}
 		}
-		else
-		{
-			getcwd(dirPath, PATH_MAX);
-		}
+		realpath(relDir, dirPath);
 	}
 }
 
 bool SC_StandAloneInfo::IsStandAlone() {
-	if ( !haveCheckedBundleStatus )
-	{
-		SC_StandAloneInfoInit();
-	}
-	return sIsStandAlone;
+#ifdef SC_STANDALONE
+    return true;
+#else
+    return false;
+#endif
 }
 
 void SC_StandAloneInfo::GetResourceDir(char* pathBuf, int length)
@@ -90,7 +66,6 @@ void SC_StandAloneInfo::GetResourceDir(char* pathBuf, int length)
 		SC_StandAloneInfoInit();
 	}
 	strncpy(pathBuf, dirPath, length);
-
 }
 
 #endif

@@ -10,12 +10,7 @@ if(APPLE)
 		message(STATUS "Building sc in STANDALONE mode. App name: " ${standalone})
 	endif()
 	
-	# For standalone, many things go into the bundle rather than beside it
-	if ("${standalone}" STREQUAL "")
-		set(scappauxresourcesdir "${scappbundlename}")
-	else()
-		set(scappauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
-	endif()
+	set(scappauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
 
 	###### Allow user to select a FHS-style install
 	# TODO not yet used
