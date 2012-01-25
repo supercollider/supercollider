@@ -61,10 +61,26 @@ Pen : GuiRedirect { *key { ^\pen }}
 Stethoscope : GuiRedirect {
 	*new {  arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
 		index = index.asControlInput;
-		^super.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
+		if(server.hasShmInterface and: { GUI.current.respondsTo(\stethoscope2) }) {
+			^Stethoscope2(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
+		} {
+			// if server has shared mem but current gui doesn't support,
+			// this should show the "scoping on internal server only" message
+			^super.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
+		};
 	}
 	*key { ^\stethoscope }
-
+}
+Stethoscope2 : GuiRedirect {
+	*new {  arg server, numChannels = 2, index, bufsize = 4096, zoom, rate, view, bufnum;
+		index = index.asControlInput;
+		if(server.hasShmInterface) {
+			^super.new(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
+		} {
+			^Stethoscope(server, numChannels, index, bufsize, zoom, rate, view, bufnum)
+		};
+	}
+	*key { ^\stethoscope2 }
 }
 ScopeView : ViewRedirect { *key { ^\scopeView }}
 FreqScopeView : ViewRedirect { *key { ^\freqScopeView }} // redirects to FreqScope
