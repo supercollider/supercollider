@@ -28,6 +28,7 @@
 #include "SC_Sem.h"
 #include "SC_DirUtils.h"
 #include "SC_StringParser.h"
+#include "../../common/SC_SndFileHelpers.hpp"
 
 #define GET_COMPLETION_MSG(msg) \
 	mMsgSize = msg.getbsize(); \
@@ -1019,12 +1020,6 @@ BufWriteCmd::BufWriteCmd(World *inWorld, ReplyAddress *inReplyAddress)
 #ifdef NO_LIBSNDFILE
 struct SF_INFO {};
 #endif
-
-
-extern "C" {
-int sndfileFormatInfoFromStrings(SF_INFO *info, const char *headerFormatString, const char *sampleFormatString);
-}
-
 
 int BufWriteCmd::Init(char *inData, int inSize)
 {
