@@ -27,6 +27,7 @@
 #include <QPlastiqueStyle>
 #include <QTimer>
 #include <QEventLoop>
+#include <QDir>
 
 #ifdef Q_WS_X11
 # include <X11/Xlib.h>
@@ -38,10 +39,14 @@ namespace QtCollider {
   void loadFactories ();
 }
 
+inline void initResources() { Q_INIT_RESOURCE(resources); }
+
 QC_PUBLIC
 void QtCollider::init() {
   if( !QApplication::instance() ) {
     qcDebugMsg( 1, "Initializing QtCollider" );
+
+    initResources();
 
     QtCollider::loadFactories();
 
