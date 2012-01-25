@@ -38,6 +38,7 @@ class QcLevelIndicator : public QWidget, QcHelper, QtCollider::Style::Client
   Q_PROPERTY( bool drawPeak READ dummyBool WRITE setDrawPeak );
   Q_PROPERTY( int ticks READ dummyInt WRITE setTicks );
   Q_PROPERTY( int majorTicks READ dummyInt WRITE setMajorTicks );
+  Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
 
 public:
   QcLevelIndicator();
