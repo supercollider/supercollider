@@ -266,7 +266,8 @@ Get number of loaded link::Classes/SynthDef::initions.
 method:: pid
 Get process ID of running server (if not internal).
 
-
+method:: hasShmInterface
+Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#synchronous_control_bus_methods#Synchronous Control Bus Methods::.
 
 subsection:: Automatic Message Bundling
 
