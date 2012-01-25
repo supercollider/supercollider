@@ -626,9 +626,9 @@ Server {
 			};
 
 			this.initTree;
-			(volume.volume != 0.0).if({
+			if(volume.volume != 0.0) {
 				volume.play;
-				});
+			};
 		});
 		if (remoteControlled.not, {
 			"You will have to manually boot remote server.".inform;
@@ -744,9 +744,9 @@ Server {
 		this.serverRunning = false;
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		RootNode(this).freeAll;
-		volume.isPlaying.if({
+		if(volume.isPlaying) {
 			volume.free
-			});
+		};
 		this.newAllocators;
 	}
 
@@ -1005,11 +1005,11 @@ Server {
 
 	volume_ {arg newVolume;
 		volume.volume_(newVolume);
-		}
+	}
 
 	mute {
 		volume.mute;
-		}
+	}
 
 	unmute {
 		volume.unmute;
