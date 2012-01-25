@@ -31,13 +31,10 @@
 
 #include <boost/scoped_array.hpp>
 #include <boost/thread/pthread/mutex.hpp>
+#include "../../common/SC_SndFileHelpers.hpp"
 
 namespace nova
 {
-
-int headerFormatFromString(const char *name);
-int sampleFormatFromString(const char* name);
-
 
 class sc_done_action_handler
 {

@@ -21,6 +21,7 @@
 #include "buffer_manager.hpp"
 #include "utilities/malloc_aligned.hpp"
 #include "utilities/sized_array.hpp"
+#include "../../common/SC_SndFileHelpers.hpp"
 
 
 namespace nova
@@ -104,9 +105,6 @@ void buffer_wrapper::read_file_channels(const char * file, size_t start_frame, s
             data_frame[c] = tmp_array[channels[c]];
     }
 }
-
-int headerFormatFromString(const char *name);
-int sampleFormatFromString(const char* name);
 
 void buffer_wrapper::write_file(const char * file, const char * header_format, const char * sample_format,
                                 size_t start_frame, size_t frames)
