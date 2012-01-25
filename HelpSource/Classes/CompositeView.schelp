@@ -12,6 +12,7 @@ subsection:: Some Important Issues Regarding CompositeView
 CompositeView is used for grouping widgets in a window. While it accepts key actions, it does not accept mouse clicks or drags.
 
 classmethods::
+private:: key
 
 method:: new
 argument:: parent
