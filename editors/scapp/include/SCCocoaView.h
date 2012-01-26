@@ -33,7 +33,7 @@
 #include <WebKit/WebView.h>
 #import <WebKit/WebEditingDelegate.h>
 
-@interface SCCocoaTextViewResponder : NSResponder
+@interface SCCocoaTextViewResponder : NSResponder <NSTextViewDelegate>
 {
     //struct PyrObject *mSCObject;
 	struct SCCocoaTextView *mSCViewObject;
@@ -62,7 +62,7 @@
 - (void)setActiveTextView:(SCTextView*)aTextView;
 @end
 
-@interface SCTextFieldResponder : NSTextField
+@interface SCTextFieldResponder : NSTextField <NSTextFieldDelegate>
 {
 	struct SCTextField *mSCViewObject;
 	BOOL mDragStarted;
