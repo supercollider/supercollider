@@ -18,12 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _WIN32
-# include "SC_ComPort.h"
-#else
-# include "../../include/server/SC_ComPort.h"
-#endif
-
 #include "SC_Endian.h"
 #include "SC_Lock.h"
 #include "SC_HiddenWorld.h"
@@ -32,6 +26,9 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
+
+#include <sys/types.h>
+#include "OSC_Packet.h"
 
 #ifdef _WIN32
 	# include <winsock2.h>
@@ -54,11 +51,121 @@
 	#include "Rendezvous.h"
 #endif
 
+bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
+
+namespace {
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SC_CmdPort
+{
+protected:
+	pthread_t mThread;
+	struct World *mWorld;
+
+	void Start();
+	virtual ReplyFunc GetReplyFunc()=0;
+public:
+	SC_CmdPort(struct World *inWorld);
+	virtual ~SC_CmdPort() {}
+
+	virtual void* Run()=0;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SC_ComPort : public SC_CmdPort
+{
+protected:
+	int mPortNum;
+	int mSocket;
+	struct sockaddr_in mBindSockAddr;
+
+	#ifdef USE_RENDEZVOUS
+	pthread_t mRendezvousThread;
+	#endif
+
+public:
+	SC_ComPort(struct World *inWorld, int inPortNum);
+	virtual ~SC_ComPort();
+
+	int Socket() { return mSocket; }
+
+	int PortNum() const { return mPortNum; }
+	#ifdef USE_RENDEZVOUS
+	// default implementation does nothing (this is correct for
+	// SC_TcpConnectionPort). Subclasses may override.
+	virtual void PublishToRendezvous() {  };
+	#endif
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const size_t kMaxUDPSize = 65535;
+
+class SC_UdpInPort : public SC_ComPort
+{
+protected:
+	struct sockaddr_in mReplySockAddr;
+	unsigned char mReadBuf[kMaxUDPSize];
+	virtual ReplyFunc GetReplyFunc();
+
+public:
+	SC_UdpInPort(struct World *inWorld, int inPortNum);
+	~SC_UdpInPort();
+
+	int PortNum() const { return mPortNum; }
+
+	void* Run();
+	#ifdef USE_RENDEZVOUS
+	virtual void PublishToRendezvous();
+	#endif
+
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SC_TcpInPort : public SC_ComPort
+{
+	SC_Semaphore mConnectionAvailable;
+	int mBacklog;
+
+protected:
+	virtual ReplyFunc GetReplyFunc();
+
+public:
+	SC_TcpInPort(struct World *inWorld, int inPortNum, int inMaxConnections, int inBacklog);
+
+	virtual void* Run();
+
+	void ConnectionTerminated();
+	#ifdef USE_RENDEZVOUS
+	virtual void PublishToRendezvous();
+	#endif
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SC_TcpConnectionPort : public SC_ComPort
+{
+	SC_TcpInPort *mParent;
+	unsigned char mReadBuf[kMaxUDPSize];
+
+protected:
+	virtual ReplyFunc GetReplyFunc();
+
+public:
+	SC_TcpConnectionPort(struct World *inWorld, SC_TcpInPort *inParent, int inSocket);
+	virtual ~SC_TcpConnectionPort();
+
+	virtual void* Run();
+};
+
+
+
 int recvall(int socket, void *msg, size_t len);
 int sendallto(int socket, const void *msg, size_t len, struct sockaddr *toaddr, int addrlen);
 int sendall(int socket, const void *msg, size_t len);
-
-bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 
 void dumpOSCmsg(int inSize, char* inData)
 {
@@ -185,6 +292,8 @@ void dumpOSC(int mode, int size, char* inData)
 	if (mode & 2) hexdump(size, inData);
 }
 
+}
+
 SC_DLLEXPORT_C bool World_SendPacketWithContext(World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext)
 {
 	bool result = false;
@@ -212,7 +321,57 @@ SC_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inData, R
 	return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, 0);
 }
 
+SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
+{
+	try {
+		new SC_UdpInPort(inWorld, inPort);
+		return true;
+	} catch (std::exception& exc) {
+		scprintf("Exception in World_OpenUDP: %s\n", exc.what());
+	} catch (...) {
+	}
+	return false;
+}
+
+SC_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
+{
+	try {
+		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
+		return true;
+	} catch (std::exception& exc) {
+		scprintf("Exception in World_OpenTCP: %s\n", exc.what());
+	} catch (...) {
+	}
+	return false;
+}
+
+void set_real_time_priority(pthread_t thread)
+{
+	int policy;
+	struct sched_param param;
+
+	pthread_getschedparam (thread, &policy, &param);
+#ifdef __linux__
+	policy = SCHED_FIFO;
+	const char* env = getenv("SC_SCHED_PRIO");
+	// jack uses a priority of 10 in realtime mode, so this is a good default
+	const int defprio = 5;
+	const int minprio = sched_get_priority_min(policy);
+	const int maxprio = sched_get_priority_max(policy);
+	const int prio = env ? atoi(env) : defprio;
+	param.sched_priority = sc_clip(prio, minprio, maxprio);
+#else
+	policy = SCHED_RR;         // round-robin, AKA real-time scheduling
+	param.sched_priority = 63; // you'll have to play with this to see what it does
+#endif
+	pthread_setschedparam (thread, policy, &param);
+}
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace {
 
 SC_CmdPort::SC_CmdPort(struct World *inWorld) : mWorld(inWorld)
 {
@@ -240,29 +399,6 @@ void* com_thread_func(void* arg)
     SC_CmdPort *thread = (SC_CmdPort*)arg;
     void* result = thread->Run();
     return result;
-}
-
-void set_real_time_priority(pthread_t thread);
-void set_real_time_priority(pthread_t thread)
-{
-	int policy;
-	struct sched_param param;
-
-	pthread_getschedparam (thread, &policy, &param);
-#ifdef __linux__
-	policy = SCHED_FIFO;
-	const char* env = getenv("SC_SCHED_PRIO");
-	// jack uses a priority of 10 in realtime mode, so this is a good default
-	const int defprio = 5;
-	const int minprio = sched_get_priority_min(policy);
-	const int maxprio = sched_get_priority_max(policy);
-	const int prio = env ? atoi(env) : defprio;
-	param.sched_priority = sc_clip(prio, minprio, maxprio);
-#else
-	policy = SCHED_RR;         // round-robin, AKA real-time scheduling
-	param.sched_priority = 63; // you'll have to play with this to see what it does
-#endif
-	pthread_setschedparam (thread, policy, &param);
 }
 
 void SC_CmdPort::Start()
@@ -342,9 +478,12 @@ SC_UdpInPort::~SC_UdpInPort()
 #endif
 }
 
+
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void DumpReplyAddress(ReplyAddress *inReplyAddress)
+static void DumpReplyAddress(ReplyAddress *inReplyAddress)
 {
 	scprintf("mSockAddrLen %d\n", inReplyAddress->mSockAddrLen);
 	scprintf("mSocket %d\n", inReplyAddress->mSocket);
@@ -375,18 +514,8 @@ ReplyAddress GetKey(ReplyAddress *inReplyAddress)
 }
 */
 
-bool operator==(const ReplyAddress& a, const ReplyAddress& b)
-{
-	return a.mSockAddr.sin_addr.s_addr == b.mSockAddr.sin_addr.s_addr
-		&& a.mSockAddr.sin_family == b.mSockAddr.sin_family
-		&& a.mSockAddr.sin_port == b.mSockAddr.sin_port
-#ifdef __APPLE__
-		&& a.mSockAddr.sin_len == b.mSockAddr.sin_len
-#endif
-		&& a.mSocket == b.mSocket;
-}
+namespace {
 
-void udp_reply_func(struct ReplyAddress *addr, char* msg, int size);
 void udp_reply_func(struct ReplyAddress *addr, char* msg, int size)
 {
 	int total = sendallto(addr->mSocket, msg, size, (sockaddr*)&addr->mSockAddr, addr->mSockAddrLen);
@@ -498,10 +627,6 @@ void* SC_TcpInPort::Run()
 void SC_TcpInPort::ConnectionTerminated()
 {
         mConnectionAvailable.Release();
-}
-
-void null_reply_func(struct ReplyAddress* /*addr*/, char* /*msg*/, int /*size*/)
-{
 }
 
 ReplyFunc SC_TcpInPort::GetReplyFunc()
@@ -673,4 +798,6 @@ int sendall(int socket, const void *msg, size_t len)
 		msg = (void*)((char*)msg + numbytes);
 	}
 	return total;
+}
+
 }

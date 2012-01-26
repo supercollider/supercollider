@@ -85,6 +85,7 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Sem.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
@@ -132,9 +133,9 @@ set (FINAL_BUILD 0) # disable final build for scsynth
 
 if (FINAL_BUILD)
 	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources})
-	add_library(libscsynth SHARED libscsynth_final.cpp)
+	add_library(libscsynth STATIC libscsynth_final.cpp)
 else()
-	add_library(libscsynth SHARED ${scsynth_sources})
+	add_library(libscsynth STATIC ${scsynth_sources})
 endif()
 
 set_property(TARGET libscsynth
@@ -216,17 +217,15 @@ endif()
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-	install(TARGETS scsynth libscsynth
+	install(TARGETS scsynth
 			RUNTIME DESTINATION "${scappauxresourcesdir}"
-			LIBRARY DESTINATION "${scappauxresourcesdir}/../MacOS"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
 elseif(WIN32)
-	install(TARGETS libscsynth scsynth
+	install(TARGETS scsynth
 			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 else()
-	install(TARGETS libscsynth scsynth
-			LIBRARY DESTINATION "lib"
+	install(TARGETS scsynth
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()

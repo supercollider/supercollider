@@ -21,7 +21,6 @@
 
 
 #include "SC_Lib_Cintf.h"
-#include "SC_ComPort.h"
 #include "SC_CoreAudio.h"
 #include "SC_UnitDef.h"
 #include "SC_BufGen.h"

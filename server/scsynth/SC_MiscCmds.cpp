@@ -20,7 +20,6 @@
 
 
 #include "SC_Lib.h"
-#include "SC_ComPort.h"
 #include "SC_CoreAudio.h"
 #include "SC_HiddenWorld.h"
 #include "SC_Graph.h"

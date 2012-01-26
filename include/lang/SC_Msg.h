@@ -37,7 +37,6 @@ enum { // Handler IDs
     kEitherTimeAction = 3
 };
 
-void DumpReplyAddress(ReplyAddress *inReplyAddress);
 int32 Hash(ReplyAddress *inReplyAddress);
 
 struct OSC_Packet

@@ -21,7 +21,6 @@
 
 #include "SC_Lib.h"
 #include "SC_Lib_Cintf.h"
-#include "SC_ComPort.h"
 #include "SC_SequencedCommand.h"
 #include "scsynthsend.h"
 #include <string.h>
