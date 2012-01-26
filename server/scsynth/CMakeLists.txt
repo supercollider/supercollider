@@ -216,9 +216,9 @@ endif()
 if(APPLE)
 	# determines the app name and app install location (scappbundlename, scappdir):
 	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-    # on osx, install_qt4_executable copies the needed libs from the build dir into the installed .app
-	install(TARGETS scsynth
-			DESTINATION "${scappauxresourcesdir}"
+	install(TARGETS scsynth libscsynth
+			RUNTIME DESTINATION "${scappauxresourcesdir}"
+			LIBRARY DESTINATION "${scappauxresourcesdir}/../MacOS"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE
 			COMPONENT app)
 elseif(WIN32)
