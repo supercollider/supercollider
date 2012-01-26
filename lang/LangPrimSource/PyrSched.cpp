@@ -218,7 +218,7 @@ const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years *
 const double fSECONDS_FROM_1900_to_1970 = 2208988800.; /* 17 leap years */
 
 #ifdef SC_DARWIN
-void syncOSCOffsetWithTimeOfDay();
+static void syncOSCOffsetWithTimeOfDay();
 void* resyncThread(void* arg);
 #else // !SC_DARWIN
 

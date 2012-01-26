@@ -36,12 +36,6 @@
 #include "SC_Samp.h"
 #include "SC_DirUtils.h"
 #include "../../common/SC_SndFileHelpers.hpp"
-#ifdef _WIN32
-# include "../../include/server/SC_ComPort.h"
-# include "SC_Win32Utils.h"
-#else
-# include "SC_ComPort.h"
-#endif
 #include "SC_StringParser.h"
 #ifdef _WIN32
 # include <direct.h>
@@ -171,22 +165,6 @@ void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line)
 #  define zalloc(n, size)		sc_zalloc((n), (size))
 # endif // SC_DEBUG_MEMORY
 
-#else // !__linux__
-
-// replacement for calloc.
-// calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
-void *zalloc(size_t n, size_t size)
-{
-	size *= n;
-	if (size) {
-		void* ptr = malloc(size);
-		if (ptr) {
-			memset(ptr, 0, size);
-			return ptr;
-		}
-	}
-	return 0;
-}
 #endif // __linux__
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -739,30 +717,6 @@ Bail:
 	World_Cleanup(world);
 }
 #endif   // !NO_LIBSNDFILE
-
-SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
-{
-	try {
-		new SC_UdpInPort(inWorld, inPort);
-		return true;
-	} catch (std::exception& exc) {
-		scprintf("Exception in World_OpenUDP: %s\n", exc.what());
-	} catch (...) {
-	}
-	return false;
-}
-
-SC_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
-{
-	try {
-		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
-		return true;
-	} catch (std::exception& exc) {
-		scprintf("Exception in World_OpenTCP: %s\n", exc.what());
-	} catch (...) {
-	}
-	return false;
-}
 
 SC_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld)
 {

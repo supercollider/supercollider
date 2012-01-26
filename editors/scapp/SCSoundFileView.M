@@ -38,6 +38,7 @@
 #include "SC_RGen.h"
 #include "SC_BoundsMacros.h"
 #include "SC_InlineBinaryOp.h"
+#include "SC_Prototypes.h"
 
 
 #include "SCSoundFileView.h"
@@ -52,29 +53,12 @@ int allocSlotStrVal(PyrSlot *slot, char **str);
 int slotGetSCRect(PyrSlot* a, SCRect *r);
 
 
-
-// replacement for calloc.
-// calloc lazily zeroes memory on first touch. This is good for most purposes, but bad for realtime audio.
-void *zalloc(size_t n, size_t size)
-{
-	size *= n;
-	if (size) {
-		void* ptr = malloc(size);
-		if (ptr) {
-			memset(ptr, 0, size);
-			return ptr;
-		}
-	}
-	return 0;
-}
-
 inline int32 BUFMASK(int32 x)
 {
 	return (1 << (31 - CLZ(x))) - 1;
 }
 
-int bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate);
-int bufAlloc(SndBuf* buf, int numChannels, int numFrames, double sampleRate)
+static int bufAllocLocal(SndBuf* buf, int numChannels, int numFrames, double sampleRate)
 {
 	long numSamples = numFrames * numChannels;
 	if(numSamples < 1) return errFailed;
@@ -175,7 +159,7 @@ int SCSoundFileView::readSndFile(SNDFILE *file, int startFrame, int frames, int 
 
 //	post("zoom.x: %f, frames: %d, resampleFactor: %f \n", mZoom.x, (int) frames, mResampleFactor);
 
-	int err = bufAlloc(&mSndBuf, info.channels, (int) (frames/mResampleFactor), info.samplerate);
+	int err = bufAllocLocal(&mSndBuf, info.channels, (int) (frames/mResampleFactor), info.samplerate);
 	mZoom.x =  ((frames/mResampleFactor)/(mBounds.width-2.f));
 
 	if(err) return err;
@@ -884,7 +868,7 @@ int SCSoundFileView::setProperty(PyrSymbol *symbol, PyrSlot *slot)
 			}
 		} else {
 			int frames = (int) ceil(size/channels);
-			int err = bufAlloc(&mSndBuf, channels, frames, samplerate);
+			int err = bufAllocLocal(&mSndBuf, channels, frames, samplerate);
 			if(err) return err;
 			PyrDoubleArray * arr;
 //			printf("frames:%i, size:%i, mSndBuf.samples:%i\n",frames, size, mSndBuf.samples);

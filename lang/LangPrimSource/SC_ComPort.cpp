@@ -21,7 +21,6 @@
 #include "SC_BoundsMacros.h"
 #include "SC_ComPort.h"
 #include "SC_Endian.h"
-//#include "SC_Lock.h"
 #include <ctype.h>
 #include <stdexcept>
 #include <stdarg.h>
@@ -67,7 +66,7 @@ int sendall(int socket, const void *msg, size_t len);
 
 void ProcessOSCPacket(OSC_Packet *inPacket, int inPortNum);
 
-void dumpOSCmsg(int inSize, char* inData)
+static void dumpOSCmsg(int inSize, char* inData)
 {
 	int size;
 	const char *data;
@@ -118,7 +117,7 @@ leave:
 	printf(" ]");
 }
 
-void hexdump(int size, char* data)
+static void hexdump(int size, char* data)
 {
 	char ascii[20];
 	int padsize = (size + 15) & -16;
@@ -274,7 +273,7 @@ SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
 	if ((mSocket = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
 		throw std::runtime_error("failed to create udp socket\n");
 	}
-	
+
 	{
 		int bufsize = 65536;
 #ifdef SC_WIN32
@@ -283,11 +282,11 @@ SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum)
 		setsockopt(mSocket, SOL_SOCKET, SO_SNDBUF, &bufsize, sizeof(bufsize));
 #endif
 	}
-	
+
 	bzero((char *)&mBindSockAddr, sizeof(mBindSockAddr));
 	mBindSockAddr.sin_family = AF_INET;
 	mBindSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	
+
 	bool bound = false;
 	mBindSockAddr.sin_port = htons(mPortNum);
 	if (bind(mSocket, (struct sockaddr *)&mBindSockAddr, sizeof(mBindSockAddr)) >= 0) {
@@ -306,12 +305,12 @@ SC_UdpCustomInPort::~SC_UdpCustomInPort()
 #else
 	if (mSocket != -1) close(mSocket);
 #endif
-	
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void DumpReplyAddress(ReplyAddress *inReplyAddress)
+static void DumpReplyAddress(ReplyAddress *inReplyAddress)
 {
 	printf("mSockAddrLen %d\n", inReplyAddress->mSockAddrLen);
 	printf("mSocket %d\n", inReplyAddress->mSocket);
@@ -395,21 +394,21 @@ void* SC_UdpCustomInPort::Run()
 {
 	char buf[kTextBufSize];
 	OSC_Packet *packet = 0;
-	
+
 	const int fd = mSocket;
 	const int max_fd = fd+1;
-	
+
 	mRunning.store(true);
 	while (mRunning.load(boost::memory_order_consume)) {
 		fd_set rfds;
-		
+
 		FD_ZERO(   &rfds);
 		FD_SET(fd, &rfds);
 
 		struct timeval timeout;
 		timeout.tv_sec = 0;
 		timeout.tv_usec = 500000;
-		
+
 		int n = select(max_fd, &rfds, 0, 0, &timeout);
 		if ((n > 0) && FD_ISSET(fd, &rfds)) {
 			if (!packet) {
@@ -418,11 +417,11 @@ void* SC_UdpCustomInPort::Run()
 			packet->mReplyAddr.mSockAddrLen = sizeof(sockaddr_in);
 			int size = recvfrom(mSocket, buf, kTextBufSize , 0,
 								(struct sockaddr *) &packet->mReplyAddr.mSockAddr, (socklen_t*)&packet->mReplyAddr.mSockAddrLen);
-			
+
 			if (size > 0 && mRunning.load(boost::memory_order_consume)) {
 				//dumpOSC(3, size, buf);
 				//fflush(stdout);
-				
+
 				char *data = (char*)malloc(size);
 				packet->mReplyAddr.mReplyFunc = udp_reply_func;
 				packet->mSize = size;
@@ -487,11 +486,6 @@ void* SC_TcpInPort::Run()
 void SC_TcpInPort::ConnectionTerminated()
 {
         mConnectionAvailable.Release();
-}
-
-void null_reply_func(struct ReplyAddress *addr, char* msg, int size);
-void null_reply_func(struct ReplyAddress *addr, char* msg, int size)
-{
 }
 
 ReplyFunc SC_TcpInPort::GetReplyFunc()

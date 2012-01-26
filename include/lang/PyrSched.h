@@ -40,7 +40,6 @@ int64 OSCTime();
 int64 ElapsedTimeToOSC(double elapsed);
 double OSCToElapsedTime(int64 oscTime);
 
-void syncOSCOffsetWithTimeOfDay();
 void doubleToTimespec(double secs, struct timespec *spec);
 
 
