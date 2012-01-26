@@ -350,8 +350,8 @@ else()
 	)
 endif()
 
-configure_file(platform/SCVersion.sc.in SCVersion.sc)
-install(FILES "${CMAKE_BINARY_DIR}/SCVersion.sc" DESTINATION "${auxresourcesdir}/SCClassLibrary")
+configure_file(platform/SCVersion.sc.in SCVersion/SCVersion.sc)
+install(DIRECTORY "${CMAKE_BINARY_DIR}/SCVersion" DESTINATION "${auxresourcesdir}/SCClassLibrary")
 
 install(DIRECTORY sounds
 	DESTINATION ${auxresourcesdir}
