@@ -33,7 +33,12 @@
 #include <WebKit/WebView.h>
 #import <WebKit/WebEditingDelegate.h>
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
 @interface SCCocoaTextViewResponder : NSResponder <NSTextViewDelegate>
+#else 
+@interface SCCocoaTextViewResponder : NSResponder
+#endif
+
 {
     //struct PyrObject *mSCObject;
 	struct SCCocoaTextView *mSCViewObject;
@@ -62,7 +67,11 @@
 - (void)setActiveTextView:(SCTextView*)aTextView;
 @end
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
 @interface SCTextFieldResponder : NSTextField <NSTextFieldDelegate>
+#else 
+@interface SCTextFieldResponder : NSTextField
+#endif
 {
 	struct SCTextField *mSCViewObject;
 	BOOL mDragStarted;
