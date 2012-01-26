@@ -56,6 +56,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/primitives/prim_QPen.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_misc.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QWidget.cpp
+  ${QT_COLLIDER_DIR}/primitives/prim_QPalette.cpp
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.cpp
   ${QT_COLLIDER_DIR}/widgets/QcTreeWidget.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScrollArea.cpp
