@@ -37,9 +37,9 @@ QcSlider::QcSlider() :
   lastVal = sliderPosition();
 
   if(orientation() == Qt::Horizontal)
-    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
   else
-    setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+    setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
 
   connect( this, SIGNAL(actionTriggered( int )),
            this, SLOT(action( int )));
