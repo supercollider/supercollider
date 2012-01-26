@@ -48,10 +48,10 @@ void QcRangeSlider::setOrientation( Qt::Orientation o )
   _ort = o;
 
   if( _ort == Qt::Horizontal ) {
-    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
+    setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
   }
   else {
-    setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
+    setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
   }
 
   updateGeometry();
