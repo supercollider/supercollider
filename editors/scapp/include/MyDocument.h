@@ -29,7 +29,12 @@
 extern pthread_mutex_t gLangMutex;
 extern PyrSymbol *s_closed;
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1060
 @interface MyDocument : NSDocument <NSOpenSavePanelDelegate, NSTextViewDelegate>
+#else 
+@interface MyDocument : NSDocument
+#endif
+
 {
     IBOutlet SCTextView* initTextView;
     IBOutlet SCTextView* textView;
