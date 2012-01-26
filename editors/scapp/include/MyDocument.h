@@ -29,7 +29,7 @@
 extern pthread_mutex_t gLangMutex;
 extern PyrSymbol *s_closed;
 
-@interface MyDocument : NSDocument
+@interface MyDocument : NSDocument <NSOpenSavePanelDelegate, NSTextViewDelegate>
 {
     IBOutlet SCTextView* initTextView;
     IBOutlet SCTextView* textView;

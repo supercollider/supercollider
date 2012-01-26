@@ -161,8 +161,7 @@ extern bool compiledOK;
 			character = [characters characterAtIndex: 0];
 		}
 		unsigned int keycode = [event keyCode];
-			
-		PyrObject * pobj = [[self delegate] getSCObject];
+		PyrObject * pobj = (PyrObject*)[[self delegate] getSCObject];
 		if (pobj) {
 			pthread_mutex_lock (&gLangMutex);
 			PyrSymbol *documentclass = getsym([langClassToCall cString]);
@@ -203,7 +202,7 @@ extern bool compiledOK;
 		}
 		unsigned int keycode = [event keyCode];
 			
-		PyrObject * pobj = [[self delegate] getSCObject];
+		PyrObject * pobj = (PyrObject*)[[self delegate] getSCObject];
 
 		if (pobj) {
 			pthread_mutex_lock (&gLangMutex);
@@ -374,7 +373,7 @@ extern PyrSymbol * s_mouseUp;
 	int clickCount = [theEvent clickCount];
 	int buttonNum = [theEvent buttonNumber];	
 	pthread_mutex_lock (&gLangMutex);
-	PyrObject * pobj = [[self delegate] getSCObject];
+	PyrObject * pobj = (PyrObject*)[[self delegate] getSCObject];
 	if (pobj) {
 		VMGlobals *g = gMainVMGlobals;
 		g->canCallOS = true;
