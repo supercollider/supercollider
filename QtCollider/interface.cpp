@@ -42,6 +42,9 @@ namespace QtCollider {
 
 inline void initResources() { Q_INIT_RESOURCE(resources); }
 
+static QPalette gSystemPalette;
+QPalette QtCollider::systemPalette() { return gSystemPalette; }
+
 QC_PUBLIC
 void QtCollider::init() {
   if( !QApplication::instance() ) {
@@ -71,6 +74,8 @@ void QtCollider::init() {
     // NOTE: Qt may tamper with the C language locale, affecting POSIX number-string conversions.
     // Revert the locale to default:
     setlocale( LC_NUMERIC, "C" );
+
+    gSystemPalette = qcApp->palette();
   }
 }
 

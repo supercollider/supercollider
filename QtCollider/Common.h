@@ -92,6 +92,8 @@ namespace QtCollider {
 
   int wrongThreadError ();
 
+  QPalette systemPalette();
+
   extern PyrSymbol *s_interpretCmdLine;
   extern PyrSymbol *s_interpretPrintCmdLine;
   extern PyrSymbol *s_doFunction;
