@@ -2387,9 +2387,19 @@ void handle_b_query(received_message const & msg, nova_endpoint const & endpoint
     cmd_dispatcher<realtime>::fire_io_callback(boost::bind(send_udp_message, message, endpoint));
 }
 
-void b_close_nrt_1(uint32_t index)
+template <bool realtime>
+void b_close_rt_2(completion_message & msg, nova_endpoint const & endpoint);
+
+template <bool realtime>
+void b_close_nrt_1(uint32_t index, completion_message & msg, nova_endpoint const & endpoint)
 {
     sc_factory->buffer_close(index);
+    cmd_dispatcher<realtime>::fire_rt_callback(boost::bind(b_close_rt_2<realtime>, msg, endpoint));
+}
+
+template <bool realtime>
+void b_close_rt_2(completion_message & msg, nova_endpoint const & endpoint)
+{
 }
 
 template <bool realtime>
@@ -2397,10 +2407,10 @@ void handle_b_close(received_message const & msg, nova_endpoint const & endpoint
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     osc::int32 index;
-
     args >> index;
 
-    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_close_nrt_1, index));
+    completion_message message = extract_completion_message(args);
+    cmd_dispatcher<realtime>::fire_system_callback(boost::bind(b_close_nrt_1<realtime>, index, message, endpoint));
 }
 
 template <bool realtime>
@@ -3089,6 +3099,10 @@ void sc_osc_handler::handle_message_int_address(received_message const & message
         handle_b_gen<realtime>(message, msg_size, endpoint);
         break;
 
+    case cmd_b_close:
+        handle_b_close<realtime>(message, endpoint);
+        break;
+
     case cmd_c_set:
         handle_c_set(message);
         break;
@@ -3335,6 +3349,11 @@ void dispatch_buffer_commands(const char * address, received_message const & mes
 
     if (strcmp(address+3, "gen") == 0) {
         handle_b_gen<realtime>(message, msg_size, endpoint);
+        return;
+    }
+
+    if (strcmp(address+3, "close") == 0) {
+        handle_b_close<realtime>(message, endpoint);
         return;
     }
 }
