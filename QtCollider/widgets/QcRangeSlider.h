@@ -46,7 +46,9 @@ class QcRangeSlider :
   public:
     enum MouseMode {
       None = 0,
-      Drag,
+      Move,
+      MoveHi,
+      MoveLo,
       SetLo,
       SetHi
     };
@@ -58,6 +60,7 @@ class QcRangeSlider :
     void setLoValue( float );
     float hiValue() const { return _hi; }
     void setHiValue( float );
+    void setRange( double val, double range );
     void setStep( float f ) { _step = f; }
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
@@ -86,7 +89,8 @@ class QcRangeSlider :
     float _lo;
     float _hi;
     float _step;
-    QPoint dragOffset;
+    QPoint dragOrigin;
+    double dragVal, dragRange;
     MouseMode mouseMode;
 };
 
