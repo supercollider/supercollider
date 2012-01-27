@@ -5,6 +5,7 @@
 #include <cstring>  // for strncpy
 #include <mach-o/dyld.h> // for _NSGetExecutablePath
 #include <libgen.h>
+#include <stdlib.h>
 
 #include <CoreFoundation/CFString.h>
 #include <CoreFoundation/CFBundle.h>
