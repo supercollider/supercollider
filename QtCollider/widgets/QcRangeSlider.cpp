@@ -28,7 +28,7 @@
 #include <QApplication>
 #include <QPainter>
 
-#define HND 20
+#define HND 10
 
 QC_DECLARE_QWIDGET_FACTORY(QcRangeSlider);
 
@@ -84,6 +84,14 @@ void QcRangeSlider::setHiValue( float val )
   update();
 }
 
+void QcRangeSlider::setRange( double val, double range )
+{
+  range = qBound( 0.0, range, 1.0 );
+  _lo = qBound( 0.0, val, 1.0 - range);
+  _hi = _lo + range;
+  update();
+}
+
 QSize QcRangeSlider::sizeHint() const
 {
   return ( _ort == Qt::Horizontal ? QSize( 150, 20 ) : QSize( 20, 150 ) );
@@ -118,29 +126,21 @@ void QcRangeSlider::decrement()
   moveBy( -step );
 }
 
-QRect QcRangeSlider::valueRect()
-{
-  int half_hnd = HND * 0.5;
-  if( _ort == Qt::Horizontal )
-    return thumbRect().adjusted( half_hnd, 1, -half_hnd, -1 );
-  else
-    return thumbRect().adjusted( 1, half_hnd, -1, -half_hnd);
-}
-
 QRect QcRangeSlider::thumbRect()
 {
   using namespace QtCollider::Style;
   QRect contRect( sunkenContentsRect(rect()) );
+  int hnd2 = HND * 2;
   if( _ort == Qt::Horizontal ) {
-    double valRange = contRect.width() - HND;
+    double valRange = contRect.width() - hnd2;
     double left = _lo * valRange;
-    double right = _hi * valRange;  + HND;
+    double right = _hi * valRange; right += hnd2;
     return QRect( left + contRect.x(), contRect.y(), right - left, contRect.height() );
   }
   else {
-    double valRange = contRect.height() - HND;
+    double valRange = contRect.height() - hnd2;
     int up = (1.0 - _hi) * valRange;
-    int down = (1.0 - _lo) * valRange; down += HND;
+    int down = (1.0 - _lo) * valRange; down += hnd2;
     return QRect( contRect.x(), contRect.y() + up, contRect.width(), down - up );
   }
 }
@@ -151,7 +151,7 @@ double QcRangeSlider::valueFromPos( const QPoint& pos )
 
   bool horiz = _ort == Qt::Horizontal;
 
-  QSize margins = horiz ? QSize(HND,0) : QSize(0,HND);
+  QSize margins = horiz ? QSize(HND*2, 0) : QSize(0, HND*2);
   QRect valBounds = marginsRect( sunkenContentsRect(rect()), margins );
 
   return horiz ? xValue( pos.x(), valBounds ) : yValue( pos.y(), valBounds );
@@ -176,22 +176,12 @@ void QcRangeSlider::moveBy( float dif )
 
 void QcRangeSlider::mouseMoveEvent ( QMouseEvent * e )
 {
+  using namespace QtCollider::Style;
+
   if( !e->buttons() ) return;
 
-  if( mouseMode == Drag ) {
-      QPoint pt = e->pos() + dragOffset;
-      float val = valueFromPos( pt );
-      float dif;
-      if( _ort == Qt::Horizontal )
-        dif = val - _lo;
-      else
-        dif = val - _hi;
-
-      if( dif == 0.f ) return;
-
-      moveBy( dif );
-  }
-  else {
+  if( mouseMode == SetHi || mouseMode == SetLo )
+  {
     float val = valueFromPos( e->pos() );
     if( mouseMode == SetLo ) {
       if( val > _hi ) mouseMode = SetHi;
@@ -202,6 +192,32 @@ void QcRangeSlider::mouseMoveEvent ( QMouseEvent * e )
       setHiValue( val );
     }
   }
+  else if( mouseMode != None )
+  {
+    QPoint pt = e->pos() - dragOrigin;
+    QRect contRect( sunkenContentsRect(rect()) );
+
+    double dif;
+    if( _ort == Qt::Horizontal ) {
+      double range = contRect.width() - HND*2;
+      dif = range > 0 ?  pt.x() / range : 0.0;
+    }
+    else {
+      double range = contRect.height() - HND*2;
+      dif = range > 0 ? - pt.y() / range : 0.0;
+    }
+
+    if( dif != 0.0 ) {
+      switch( mouseMode ) {
+        case Move:
+          setRange( dragVal + dif, dragRange ); break;
+        case MoveHi:
+          setHiValue( qMax(dragVal + dif, (double)_lo) ); break;
+        case MoveLo:
+          setLoValue( qMin(dragVal + dif, (double)_hi) ); break;
+      }
+    }
+  }
 
   Q_EMIT( action() );
 }
@@ -210,30 +226,45 @@ void QcRangeSlider::mousePressEvent ( QMouseEvent * e )
 {
   using namespace QtCollider::Style;
 
-  QRect r;
   if( e->modifiers() & Qt::ShiftModifier ) {
-    float center = (_hi + _lo) * 0.5;
-    float val = valueFromPos( e->pos() );
-    if( val < center ) {
-      mouseMode = SetLo;
-      setLoValue( val );
-    }
-    else {
-      mouseMode = SetHi;
-      setHiValue( val );
-    }
-    Q_EMIT( action() );
-  }
-  else if( (r = valueRect()).contains( e->pos() ) ){
-    mouseMode = Drag;
-    dragOffset = r.topLeft() - e->pos();
-  }
-  else {
     _lo = _hi = qBound(0.0, valueFromPos( e->pos() ), 1.0);
-    update();
     mouseMode = SetHi;
     Q_EMIT( action() );
   }
+  else {
+    QRect thumb( thumbRect() );
+
+    int len, pos;
+
+    if( _ort == Qt::Horizontal ) {
+      len = thumb.width();
+      pos = e->pos().x() - thumb.left();
+    }
+    else {
+      len = thumb.height();
+      pos = thumb.top() + len - e->pos().y();
+    }
+
+    if( pos < 0 || pos > len ) return;
+
+    dragOrigin = e->pos();
+
+    if( pos < HND ) {
+      mouseMode = MoveLo;
+      dragVal = _lo;
+    }
+    else if( pos >= len - HND ) {
+      mouseMode = MoveHi;
+      dragVal = _hi;
+    }
+    else {
+      mouseMode = Move;
+      dragVal = _lo;
+      dragRange = _hi - _lo;
+    }
+  }
+
+  update();
 }
 
 void QcRangeSlider::mouseReleaseEvent ( QMouseEvent * e )
@@ -324,22 +355,22 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
 
   QRect hndRect;
   QRect valRect;
-  int half_hnd = HND * 0.5;
+  int HND2 = HND * 2;
   bool horiz = _ort == Qt::Horizontal;
 
   if( horiz ) {
-    double valRange = contRect.width() - HND;
-    int left = _lo * valRange;
-    int right = _hi * valRange; right += HND;
-    hndRect = QRect( left + contRect.x(), contRect.y(), right - left, contRect.height() );
-    valRect = hndRect.adjusted( half_hnd, 1, -half_hnd, -1 );
+    double valRange = contRect.width() - HND2;
+    int lo = _lo * valRange;
+    int hi = _hi * valRange;
+    valRect = QRect( lo + HND + contRect.x(), contRect.y(), hi - lo, contRect.height() );
+    hndRect = valRect.adjusted( -HND, 0, HND, 0 );
   }
   else {
-    double valRange = contRect.height() - HND;
-    int up = (1.0 - _hi) * valRange;
-    int down = (1.0 - _lo) * valRange; down += HND;
-    hndRect = QRect( contRect.x(), contRect.y() + up, contRect.width(), down - up );
-    valRect = hndRect.adjusted( 1, half_hnd, -1, -half_hnd);
+    double valRange = contRect.height() - HND2;
+    int hi = _hi * valRange;
+    int lo = _lo * valRange;
+    valRect = QRect( contRect.x(), contRect.y() + contRect.height() - hi - HND, contRect.width(), hi - lo );
+    hndRect = valRect.adjusted( 0, -HND, 0, HND );
   }
 
   // handle
@@ -352,23 +383,23 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
   if( horiz ) {
     int mark_len = hndRect.height() - 4;
 
-    QPoint pt( hndRect.left() + half_hnd, hndRect.top() + 2 );
+    QPoint pt( hndRect.left() + HND, hndRect.top() + 2 );
     drawMarker( &p, plt, _ort, true, pt, mark_len );
 
-    pt.setX( hndRect.right() - half_hnd + 1 );
+    pt.setX( hndRect.right() - HND + 1 );
     drawMarker( &p, plt, _ort, false, pt, mark_len );
   } else {
     int mark_len = hndRect.width() - 4;
-    QPoint pt( hndRect.left() + 2, hndRect.top() + half_hnd );
+    QPoint pt( hndRect.left() + 2, hndRect.top() + HND );
     drawMarker( &p, plt, _ort, true, pt, mark_len );
 
-    pt.setY( hndRect.bottom() - half_hnd + 1 );
+    pt.setY( hndRect.bottom() - HND + 1 );
     drawMarker( &p, plt, _ort, false, pt, mark_len );
   }
 
   // value region
 
-  if( horiz ? valRect.width() > 2 : valRect.height() > 2 ) {
+  if( horiz ? valRect.width() > 4 : valRect.height() > 4 ) {
     p.setRenderHint( QPainter::Antialiasing, false );
 
     QColor c( plt.color(QPalette::ButtonText) );
@@ -376,6 +407,6 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
 
     p.setPen(Qt::NoPen);
     p.setBrush(c);
-    p.drawRect(valRect.adjusted( 1, 1, -1, -1 ));
+    p.drawRect(valRect.adjusted( 2, 2, -2, -2 ));
   }
 }
