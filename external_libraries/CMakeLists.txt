@@ -66,7 +66,10 @@ endif()
 
 
 if(APPLE)
-    # on osx, install_qt4_executable copies the needed libs from the build dir into the installed .app
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+	install(TARGETS supercollider_boost_thread
+			LIBRARY DESTINATION "${scappauxresourcesdir}/../MacOS"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(WIN32)
 	install(TARGETS supercollider_boost_thread
 			DESTINATION "SuperCollider"
