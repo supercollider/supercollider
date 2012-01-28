@@ -141,7 +141,7 @@ void QcSlider2D::paintEvent ( QPaintEvent *e )
   drawSunken( &p, plt, frame, baseColor, hasFocus() ? focusColor() : QColor() );
 
   Ellipse thumb(thumbRect());
-  drawRaised( &p, plt, thumb, plt.color(QPalette::Button).lighter(115) );
+  drawRaised( &p, plt, thumb, plt.color(QPalette::Button).lighter(105) );
 
   QRectF r( thumb._rect );
   qreal wdif = r.width() * 0.3;

@@ -141,7 +141,7 @@ void QcKnob::paintEvent( QPaintEvent * )
 
   r.adjust( 3, 3, -3, -3 );
   Ellipse shKnob(r);
-  drawRaised( &p, plt, shKnob, plt.color( QPalette::Button ).lighter(115) );
+  drawRaised( &p, plt, shKnob, plt.color( QPalette::Button ).lighter(105) );
 
   p.save(); // knob decoration scaling
 

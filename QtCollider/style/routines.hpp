@@ -99,8 +99,8 @@ template<typename ShapeT> void drawRaised (QPainter *p, const QPalette &plt, con
   shape.draw( p, shape._rect.adjusted(1,1,-1,-1) );
 
   QLinearGradient lgrad( shape._rect.topLeft(), shape._rect.bottomLeft() );
-  lgrad.setColorAt( 0, color.lighter(130) );
-  lgrad.setColorAt( 1, color.lighter(90) );
+  lgrad.setColorAt( 0, color.lighter(105) );
+  lgrad.setColorAt( 1, color.darker(115) );
 
   p->setPen(Qt::NoPen);
   p->setBrush( QBrush(lgrad) );
