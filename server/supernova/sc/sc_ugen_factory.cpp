@@ -236,8 +236,10 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
     using namespace std;
     void * handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
-    if (handle == NULL)
+    if (handle == NULL) {
+        cerr << "Cannot open plugin: " << dlerror() << endl;
         return;
+    }
 
     typedef int (*info_function)();
 
