@@ -740,8 +740,8 @@ void QcGraph::paintEvent( QPaintEvent * )
     p.setRenderHint( QPainter::Antialiasing, true );
 
     QFontMetrics fm( font() );
-    QColor thumbColor = plt.color(QPalette::Button).lighter(115); thumbColor.setAlpha(80);
-    QColor defFillColor = plt.color(QPalette::ButtonText);
+    QColor thumbColor = plt.color(QPalette::Button).lighter(105); thumbColor.setAlpha(70);
+    QColor defFillColor = plt.color(QPalette::Text);
     QRectF rect; rect.setSize( _thumbSize );
     QPointF pt;
     int i;
