@@ -47,7 +47,7 @@ void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QcSlide
   QRect rGroove = opt->rect;
 
   // draw groove
-  RoundRect shGroove( rGroove, 3 );
+  RoundRect shGroove( rGroove, 2 );
 
   QColor baseColor( slider->grooveColor() );
   QColor focusColor;
@@ -60,7 +60,7 @@ void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QcSlide
   QRect rHandle( sc_handle( opt, slider ) );
 
   // draw handle
-  RoundRect shHandle( rHandle, 3 );
+  RoundRect shHandle( rHandle, 2 );
   drawRaised( p, plt, shHandle, plt.color(QPalette::Button).lighter(105) );
 
   p->restore();
@@ -71,24 +71,15 @@ void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QcSlide
   pen.setCapStyle(Qt::FlatCap);
   p->setPen(pen);
   if(opt->orientation == Qt::Horizontal) {
-    qreal center = rHandle.center().x();
+    qreal center = rHandle.center().x() + 1;
     QLine line( center, rHandle.top()+2, center, rHandle.bottom() - 1 );
     p->drawLine(line);
     pen.setColor(plt.color(QPalette::Light));
-    pen.setWidth(1);
-    p->setPen(pen);
-    line.translate(1,0);
-    p->drawLine(line);
   } else {
-    qreal center = rHandle.center().y();
+    qreal center = rHandle.center().y() + 1;
     QLine line( rHandle.left()+2, center, rHandle.right() - 1, center );
     p->drawLine(line);
     pen.setColor(plt.color(QPalette::Light));
-    pen.setWidth(1);
-    p->setPen(pen);
-    line.translate(0,1);
-    p->drawLine(line);
-
   }
 }
 

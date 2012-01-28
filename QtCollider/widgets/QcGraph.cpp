@@ -643,7 +643,7 @@ void QcGraph::paintEvent( QPaintEvent * )
   QPalette plt( palette() );
 
   p.setRenderHint( QPainter::Antialiasing, true );
-  RoundRect frame(rect(), 3);
+  RoundRect frame(rect(), 2);
   drawSunken( &p, plt, frame, plt.color(QPalette::Base), hasFocus() ? focusColor() : QColor() );
   p.setRenderHint( QPainter::Antialiasing, false );
 

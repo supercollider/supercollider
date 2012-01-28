@@ -10,7 +10,7 @@ void StyleImpl::polish ( QPalette & p )
   ProxyStyle::polish( p );
 
   _colors[Focus] = p.color(QPalette::Highlight);
-  _colors[Groove] = p.color(QPalette::Window).darker(125);
+  _colors[Groove] = p.color(QPalette::Window).darker(120);
 }
 
 void StyleImpl::drawComplexControl ( QStyle::ComplexControl cc, const QStyleOptionComplex * option,
