@@ -410,15 +410,15 @@ SequenceableCollection : Collection {
 		maxsize = 0;
 		this.do({ arg sublist;
 			var sz;
-			sz = if (sublist.isSequenceableCollection, { sublist.size },{ 1 });
+			sz = if(sublist.isSequenceableCollection, { sublist.size }, { 1 });
 			if (sz > maxsize, { maxsize = sz });
 		});
 
 		list = this.species.fill(maxsize, { this.species.new(size) });
 		this.do({ arg isublist, i;
-			if (isublist.isSequenceableCollection, {
+			if(isublist.isSequenceableCollection, {
 				list.do({ arg jsublist, j;
-					jsublist.add( isublist.wrapAt(j); );
+					jsublist.add( isublist.wrapAt(j) );
 				});
 			},{
 				list.do({ arg jsublist, j;
@@ -430,19 +430,19 @@ SequenceableCollection : Collection {
 	}
 
 	flopWith { |func|
-		var maxsize = this.maxValue{ |sublist|
-			if(sublist.isSequenceableCollection){ sublist.size }{ 1 }
+		var maxsize = this.maxValue { |sublist|
+			if(sublist.isSequenceableCollection) { sublist.size } { 1 }
 		};
 
-		^this.species.fill(maxsize,{ |i|
-			func.value( *this.collect{ |sublist|
+		^this.species.fill(maxsize, { |i|
+			func.value( *this.collect { |sublist|
 				if(sublist.isSequenceableCollection) {
 					sublist.wrapAt(i)
 				} {
 					sublist
 				}
-			} )
-		} )
+			})
+		})
 	}
 
 	flopTogether { arg ... moreArrays;
