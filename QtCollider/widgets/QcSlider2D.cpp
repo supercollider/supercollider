@@ -136,7 +136,7 @@ void QcSlider2D::paintEvent ( QPaintEvent *e )
 
   QPalette plt = palette();
 
-  RoundRect frame(rect(), 3);
+  RoundRect frame(rect(), 2);
   QColor baseColor( grooveColor() );
   drawSunken( &p, plt, frame, baseColor, hasFocus() ? focusColor() : QColor() );
 

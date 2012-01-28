@@ -313,24 +313,12 @@ inline void drawMarker( QPainter *p, const QPalette &plt, Qt::Orientation ort, b
     pen.setWidth(2); p->setPen(pen);
     QLine line( pt, QPoint(pt.x() + len, pt.y()) );
     p->drawLine(line);
-
-    line.translate(0,1);
-    pen.setColor(plt.color(QPalette::Light));
-    pen.setWidth(1);
-    p->setPen(pen);
-    p->drawLine(line);
   } else {
     pen.setWidth(1); p->setPen(pen);
     p->drawPoint( QPoint( first ? pt.x() - 5 : pt.x() + 5, pt.y() + len * 0.5 ) );
 
     pen.setWidth(2); p->setPen(pen);
     QLine line( pt, QPoint(pt.x(), pt.y() + len));
-    p->drawLine(line);
-
-    line.translate(1,0);
-    pen.setColor(plt.color(QPalette::Light));
-    pen.setWidth(1);
-    p->setPen(pen);
     p->drawLine(line);
   }
   p->restore();
@@ -347,7 +335,7 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
 
   QPalette plt = palette();
 
-  RoundRect frame(rect(), 3);
+  RoundRect frame(rect(), 2);
   QColor baseColor( grooveColor() );
   drawSunken( &p, plt, frame, baseColor, hasFocus() ? focusColor() : QColor() );
 
@@ -399,7 +387,7 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
 
   // value region
 
-  if( horiz ? valRect.width() > 4 : valRect.height() > 4 ) {
+  if( horiz ? valRect.width() > 2 : valRect.height() > 2 ) {
     p.setRenderHint( QPainter::Antialiasing, false );
 
     QColor c( plt.color(QPalette::ButtonText) );
@@ -407,6 +395,9 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
 
     p.setPen(Qt::NoPen);
     p.setBrush(c);
-    p.drawRect(valRect.adjusted( 2, 2, -2, -2 ));
+    if( horiz )
+      p.drawRect(valRect.adjusted( 1, 2, -1, -2 ));
+    else
+      p.drawRect(valRect.adjusted( 2, 1, -2, -1 ));
   }
 }
