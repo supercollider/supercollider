@@ -80,11 +80,11 @@ QView : QObject {
   }
 
   background {
-    ^this.palette.windowColor;
+    ^this.palette.window;
   }
 
   background_ { arg color;
-    this.setProperty( \palette, this.palette.windowColor_(color) );
+    this.palette = this.palette.window_(color);
     this.setProperty( \autoFillBackground, true );
   }
 
@@ -197,13 +197,12 @@ QView : QObject {
     ^this.getProperty( \focus );
   }
 
-  focusColor_ {
-    this.nonimpl( "focusColor_" );
+  focusColor_ { arg color;
+    this.setProperty(\focusColor, color);
   }
 
   focusColor {
-    this.nonimpl( "focusColor" );
-    ^Color.new;
+    ^try { this.getProperty(\focusColor) } { Color() };
   }
 
   // ------------------ container stuff ----------------------------

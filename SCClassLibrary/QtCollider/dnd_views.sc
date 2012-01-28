@@ -4,7 +4,7 @@ QDragView : QTextField
 
   initQDragView {
     var plt = this.palette;
-    plt.baseColor = plt.windowColor;
+    plt.base = plt.window;
     this.palette = plt;
     this.setProperty(\readOnly, true);
   }

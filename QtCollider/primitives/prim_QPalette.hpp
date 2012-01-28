@@ -1,6 +1,6 @@
 /************************************************************************
 *
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+* Copyright 2012 Jakob Leben (jakob.leben@gmail.com)
 *
 * This file is part of SuperCollider Qt GUI.
 *
@@ -19,28 +19,20 @@
 *
 ************************************************************************/
 
-#ifndef QC_ABSTRACT_STEP_VALUE
-#define QC_ABSTRACT_STEP_VALUE
+#ifndef QC_PRIM_QPALETTE_HPP
+#define QC_PRIM_QPALETTE_HPP
 
-class QcAbstractStepValue
-{
-  protected:
-    QcAbstractStepValue()
-    : _shiftScale( 100.f ),
-      _ctrlScale( 10.f ),
-      _altScale( 0.1f )
-    {}
-    bool modifyStep( float *step );
-    void setShiftScale( float scale ) { _shiftScale = scale; }
-    void setCtrlScale( float scale ) { _ctrlScale = scale; }
-    void setAltScale( float scale ) { _altScale = scale; }
-    float shiftScale() { return _shiftScale; }
-    float ctrlScale() { return _ctrlScale; }
-    float altScale() { return _altScale; }
-  private:
-    float _shiftScale;
-    float _ctrlScale;
-    float _altScale;
-};
+#include <QPalette>
+
+struct PyrObject;
+struct VMGlobals;
+
+#define QPALETTE_FROM_OBJECT( OBJ ) reinterpret_cast<QPalette*>( slotRawPtr(OBJ->slots) );
+
+namespace QtCollider {
+
+void QPalette_Init( struct VMGlobals *g, struct PyrObject *obj, const QPalette & palette = QPalette() );
+
+}
 
 #endif

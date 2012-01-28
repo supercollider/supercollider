@@ -26,6 +26,9 @@ QLevelIndicator : QView {
     this.nonimpl("style");
   }
 
+  background { ^this.getProperty(\grooveColor) }
+  background_ { arg color; this.setProperty(\grooveColor, color) }
+
   numSteps_ {arg val;
     this.nonimpl("numSteps");
   }

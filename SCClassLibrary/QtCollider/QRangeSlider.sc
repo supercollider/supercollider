@@ -81,19 +81,19 @@ QRangeSlider : QAbstractStepValue {
   }
 
   knobColor {
-    ^this.palette.baseTextColor;
+    ^this.palette.buttonText;
   }
 
   knobColor_ { arg color;
-    this.setProperty( \palette, this.palette.baseTextColor_(color) );
+    this.palette = this.palette.buttonText_(color);
   }
 
   background {
-    ^this.palette.baseColor;
+    ^this.getProperty(\grooveColor);
   }
 
   background_ { arg color;
-    this.setProperty( \palette, this.palette.baseColor_(color) )
+    this.setProperty(\grooveColor, color);
   }
 
   defaultGetDrag { ^Point(this.lo,this.hi); }

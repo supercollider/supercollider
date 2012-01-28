@@ -1,7 +1,6 @@
 QSlider : QAbstractStepValue {
   //compatibility stuff:
   var <orientation;
-  var <> thumbSize;
 
   *qtClass { ^"QcSlider" }
 
@@ -22,12 +21,23 @@ QSlider : QAbstractStepValue {
     action.value(this);
   }
 
+  thumbSize { ^this.getProperty(\handleLength) }
+  thumbSize_ { arg pixels; this.setProperty(\handleLength, pixels) }
+
   knobColor {
-    ^this.palette.buttonColor;
+    ^this.palette.buttonText;
   }
 
   knobColor_ { arg color;
-    this.setProperty( \palette, this.palette.buttonColor_(color) );
+    this.palette = this.palette.buttonText_(color);
+  }
+
+  background {
+    ^this.getProperty(\grooveColor);
+  }
+
+  background_ { arg color;
+    this.setProperty(\grooveColor, color);
   }
 
   initQSlider { arg bounds;

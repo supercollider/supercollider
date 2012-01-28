@@ -22,6 +22,7 @@
 #include "Slot.h"
 #include "QObjectProxy.h"
 #include "Common.h"
+#include "primitives/prim_QPalette.hpp"
 
 #include <PyrObject.h>
 #include <PyrKernel.h>
@@ -103,12 +104,7 @@ void Slot::setPalette( PyrSlot *slot, const QPalette &plt )
   PyrObject *obj = instantiateObject( gc, class_QPalette, 0, true, true );
   SetObject( slot, obj );
 
-  PyrSlot *s = obj->slots;
-
-  for( int i=0; i<8; ++i, ++s ) {
-    setColor( s, plt.color( paletteColorRoles[i] ) );
-    gc->GCWrite( obj, s );
-  }
+  QPalette_Init( gMainVMGlobals, obj, plt );
 }
 
 void Slot::setQObject( PyrSlot *s, QObject *o )
@@ -373,16 +369,8 @@ QPalette Slot::toPalette( PyrSlot *slot )
   if( !isKindOfSlot( slot, class_QPalette ) )
     return QPalette();
 
-  PyrSlot *slots = slotRawObject( slot )->slots;
-  QPalette palette;
-
-  for( int i=0; i<8; ++i, ++slots ) {
-    QColor c = Slot::toColor(slots);
-    if( !c.isValid() ) continue;
-    palette.setColor( paletteColorRoles[i], c );
-  }
-
-  return palette;
+  QPalette *p = QPALETTE_FROM_OBJECT(slotRawObject(slot));
+  return *p;
 }
 
 VariantList Slot::toVariantList( PyrSlot *slot )

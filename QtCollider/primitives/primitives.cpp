@@ -50,6 +50,7 @@ void defineQObjectPrimitives();
 void defineQPenPrimitives();
 void defineMiscPrimitives();
 void defineQWidgetPrimitives();
+void defineQPalettePrimitives();
 
 QC_PUBLIC
 void initPrimitives () {
@@ -64,6 +65,7 @@ void initPrimitives () {
   defineQWidgetPrimitives();
   defineQPenPrimitives();
   defineMiscPrimitives();
+  defineQPalettePrimitives();
 
   s_interpretCmdLine = getsym("interpretCmdLine");
   s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");

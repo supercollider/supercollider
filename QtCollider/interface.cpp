@@ -23,6 +23,7 @@
 #include "QcApplication.h"
 #include "Common.h"
 #include "style/ProxyStyle.hpp"
+#include "style/style.hpp"
 
 #include <QPlastiqueStyle>
 #include <QTimer>
@@ -40,6 +41,9 @@ namespace QtCollider {
 }
 
 inline void initResources() { Q_INIT_RESOURCE(resources); }
+
+static QPalette gSystemPalette;
+QPalette QtCollider::systemPalette() { return gSystemPalette; }
 
 QC_PUBLIC
 void QtCollider::init() {
@@ -63,13 +67,15 @@ void QtCollider::init() {
     QcApplication *qcApp = new QcApplication( qcArgc, qcArgv );
     qcApp->setQuitOnLastWindowClosed( false );
 #ifdef Q_OS_MAC
-    qcApp->setStyle( new QtCollider::ProxyStyle( new QPlastiqueStyle ) );
+    qcApp->setStyle( new QtCollider::Style::StyleImpl( new QPlastiqueStyle ) );
 #else
-    qcApp->setStyle( new QtCollider::ProxyStyle() );
+    qcApp->setStyle( new QtCollider::Style::StyleImpl() );
 #endif
     // NOTE: Qt may tamper with the C language locale, affecting POSIX number-string conversions.
     // Revert the locale to default:
     setlocale( LC_NUMERIC, "C" );
+
+    gSystemPalette = qcApp->palette();
   }
 }
 

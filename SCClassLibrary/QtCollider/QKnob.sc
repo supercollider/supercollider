@@ -13,217 +13,47 @@
 //
 //  08.03.2010 - QKnob = SCKnob adjusted for GUI.qt scheme (by Jakob Leben)
 
-QKnob : QUserView {
-  classvar <>defaultMode, <>isSquare=false, <>compactRatio=0.87;
-  // The keyboard modifier used to engage vertical mode.
-  // We need to compute it according to platform.
-  classvar vertMod;
-  var size, widthDiv2, center, aw8, aw12, aw14, hit;
-  var <>color, <value, prevValue, <>step, <>keystep, <>mode, <centered = false;
-  var <skin;
-  var <>shift_scale = 100.0, <>ctrl_scale = 10.0, <>alt_scale = 0.1;
+QKnob : QAbstractStepValue {
+  classvar <>defaultMode = \round;
 
-  *initClass {
-    var version;
+  var <>keystep = 0.01;
 
-    defaultMode='round';
-
-    // To engage vertical mode, use a modifier that's not used for drag & drop
-    Platform.case (
-      \osx, { vertMod = \ctrl },
-      { vertMod = \shift }
-    );
-
-    StartUp.add({
-
-      GUI.skins.default.put('knob', (
-        default: (
-          scale:  Color.black.alpha_(0.3),
-          center: Color.blue(0.7, 0.5),
-          level:  Color.green(0.8, 0.8),
-          dial: Color.black.alpha_(0.7),
-          defaultMode: 'round'
-        )
-      ));
-
-    });
-  }
+  *qtClass {^"QcKnob"}
 
   *new { arg parent, bounds;
-    ^super.new( parent, bounds ).initQKnob( parent );
+    var me = super.new(parent,bounds);
+    me.mode = defaultMode;
+    ^me;
   }
 
-  initQKnob { arg argParent;
+  value { ^this.getProperty(\value) }
+  value_ { arg val; this.setProperty(\value, val) }
+  valueAction_ { arg val; this.value = val; this.doAction }
 
-    var argBounds = this.calcConsts( this.bounds );
-
-    this.bounds_( argBounds );
-
-    value = 0.0;
-    keystep = 0.01;
-    step = 0.01;
-    mode = defaultMode;
-
-    skin = GUI.skins.default.knob.default;
-
-    this.oldMethodsCompat(skin);
-
-    this.receiveDragHandler = { this.valueAction_(QView.currentDrag); };
-    this.beginDragAction = { value.asFloat; };
-    this.canReceiveDragHandler = { QView.currentDrag.isNumber };
-
-    this.drawFunc_( { this.drawKnob } );
+  mode {
+    var m = this.getProperty(\mode);
+    ^ #[\round, \horiz, \vert].at(m);
   }
 
-  calcConsts { arg rect;
-    if ( isSquare ) {
-      rect = rect.asRect.height_( rect.asRect.width );
-    }{
-      rect = rect.asRect.height_( (rect.asRect.width * compactRatio).ceil );
-    };
-    size = rect.width;
-    widthDiv2 = size * 0.5;
-    aw8  = widthDiv2 - (0.08 * size);
-    aw12 = widthDiv2 - (0.12 * size);
-    aw14 = widthDiv2 - (0.14 * size);
-    center = Point(widthDiv2, widthDiv2);
-
-    ^rect
-  }
-
-  *sizeHint {
-    ^Point(60,60);
-  }
-
-  bounds_ { arg rect;
-    rect = this.calcConsts(rect);
-    super.bounds_(rect);
-  }
-
-  drawKnob {
-    var startAngle, arcAngle;
-
-    QPen.color = color[2];
-    QPen.addAnnularWedge(
-      center,
-      aw8,
-      widthDiv2,
-      0.25pi,
-      -1.5pi
+  mode_ { arg inputMode;
+    var iMode;
+    switch ( inputMode,
+      \round, { iMode = 0},
+      \horiz, { iMode = 1},
+      \vert, { iMode = 2 },
+      { ^this }
     );
-    QPen.perform(\fill);
-
-    if (centered.not, {
-      startAngle = 0.75pi;
-      arcAngle = 1.5pi * value;
-    }, {
-      startAngle = -0.5pi;
-      arcAngle = 1.5pi * (value - 0.5);
-    });
-
-    QPen.color = color[1];
-    QPen.addAnnularWedge(
-      center,
-      aw12,
-      widthDiv2,
-      startAngle,
-      arcAngle
-    );
-    QPen.perform(\fill);
-
-    QPen.color = color[0];
-    QPen.addWedge(center, aw14, 0, 2pi);
-    QPen.perform(\fill);
-
-    QPen.color = color[3];
-    QPen.width = (0.08 * size);
-    QPen.moveTo(center);
-    QPen.lineTo(Polar.new(aw14, 0.75pi + (1.5pi * value)).asPoint + center);
-    QPen.stroke;
+    this.setProperty( \mode, iMode );
   }
 
-  mouseDown { arg x, y, modifiers, buttonNumber, clickCount;
-
-    hit =  x @ y;
-
-    mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount);
-
-    this.mouseMove(x, y, modifiers);
-
-  }
-
-  mouseMove { arg x, y, modifiers;
-    var mp, pt, angle, inc = 0;
-    var m; // mode used
-
-    if( modifiers != 0 ) {
-        case (
-          {modifiers.isAlt}, {m = \horiz},
-          {vertMod === \ctrl && modifiers.isCtrl}, {m = \vert},
-          {vertMod === \shift && modifiers.isShift}, {m = \vert},
-          {m = mode}
-        );
-    }{
-      m = mode;
-    };
-
-    //if (modifiers & 1048576 != 1048576) { // we are not dragging out - apple key
-      case
-        { (m === \vert) } {
-          if ( hit.y > y, {
-            inc = step;
-          }, {
-            if ( hit.y < y, {
-              inc = step.neg;
-            });
-          });
-          value = (value + inc).clip(0.0, 1.0);
-          hit = Point(x,y);
-          if (prevValue != value) {
-            action.value(this, x, y, modifiers);
-            prevValue = value;
-            this.refresh;
-          }
-        }
-        { m === \horiz } {
-          if ( hit.x > x, {
-            inc = step.neg;
-          }, {
-            if ( hit.x < x, {
-              inc = step;
-            });
-          });
-          value = (value + inc).clip(0.0, 1.0);
-          hit = Point(x,y);
-          if (prevValue != value) {
-            action.value(this, x, y, modifiers);
-            prevValue = value;
-            this.refresh;
-          }
-        }
-        { m === \round } {
-          pt = center - Point(x,y);
-          angle = Point(pt.y, pt.x.neg).theta;
-          if ((angle >= -0.80pi) and: { angle <= 0.80pi} , {
-            value = [-0.75pi, 0.75pi].asSpec.unmap(angle);
-            if (prevValue != value) {
-              action.value(this, x, y, modifiers);
-              prevValue = value;
-              this.refresh;
-            }
-          });
-
-        };
-    //};
-
-    mouseMoveAction.value(this, x, y, modifiers);
-  }
+  centered_ { arg bool; this.setProperty( \centered, bool ); }
+  centered { ^this.getProperty( \centered ); }
 
   getScale { |modifiers|
     ^case
-      { modifiers.isShift } { shift_scale }
-      { modifiers.isCtrl } { ctrl_scale }
-      { modifiers.isAlt } { alt_scale }
+      { modifiers.isShift } { this.shift_scale }
+      { modifiers.isCtrl } { this.ctrl_scale }
+      { modifiers.isAlt } { this.alt_scale }
       { 1 };
   }
 
@@ -245,55 +75,18 @@ QKnob : QUserView {
           16r1000014, { this.increment(zoom) },
           16r1000015, { this.decrement(zoom) },
           16r1000012, { this.decrement(zoom) },
-          {^this} // bubble if it's an invalid key
+          {^this} // propagate on if the key is a no-op
         )
       }
     );
     ^true;
   }
 
-  increment { |zoom=1| ^this.valueAction = (this.value + (keystep * zoom)).min(1) }
+  increment { |zoom=1| ^this.valueAction = (this.value + (keystep * zoom)) }
 
-  decrement { |zoom=1| ^this.valueAction = (this.value - (keystep * zoom)).max(0) }
+  decrement { |zoom=1| ^this.valueAction = (this.value - (keystep * zoom)) }
 
-  value_ { arg val;
-    value = val.clip(0.0, 1.0);
-    this.refresh;
-  }
-
-  valueAction_ { arg val;
-    value = val.clip(0.0, 1.0);
-    action.value(this);
-    this.refresh;
-  }
-
-  centered_ { arg bool;
-    centered = bool;
-    this.refresh;
-  }
-
-  skin_ { arg newskin;
-    if ( newskin.notNil ) {
-      skin = newskin;
-      newskin.proto_( GUI.skins.default.knob.default );
-      this.oldMethodsCompat;
-      this.refresh;
-    }{
-      format("%: skin not found.", this.class).inform;
-    };
-  }
-  oldMethodsCompat {
-    color = [
-      skin.center,
-      skin.level,
-      skin.scale,
-      skin.dial
-    ];
-    defaultMode = skin.defaultMode;
-  }
-
-  *paletteExample{arg parent, bounds;
-    ^this.new(parent, bounds.asRect.height@bounds.asRect.height);
-  }
-
+  defaultGetDrag { ^this.value }
+  defaultCanReceiveDrag { ^QView.currentDrag.isNumber }
+  defaultReceiveDrag { this.valueAction = QView.currentDrag }
 }

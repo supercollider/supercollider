@@ -14,7 +14,7 @@ ServerMeterView{
 	}
 
 	init { arg aserver, parent, leftUp, anumIns,anumOuts;
-		var innerView, viewWidth;
+		var innerView, viewWidth, levelIndic, palette;
 
 		numIns = anumIns ?? { server.options.numInputBusChannels };
 		numOuts = anumOuts ?? { server.options.numOutputBusChannels };
@@ -26,6 +26,7 @@ ServerMeterView{
 		server = aserver;
 
 		view = CompositeView(parent, Rect(leftUp.x,leftUp.y, viewWidth, height) );
+		try { view.palette = \QPalette.asClass.new.windowText_(Color.grey(0.6)) };
 		view.onClose_({ this.stop });
 		innerView = CompositeView(view, Rect(10,25, viewWidth, height) );
 		innerView.addFlowLayout(0@0, gapWidth@gapWidth);
@@ -51,10 +52,11 @@ ServerMeterView{
 					.font_(Font.sansSerif(9).boldVariant)
 					.stringColor_(Color.white)
 					.string_(i.asString);
-				LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+				levelIndic = LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
 					.drawsPeak_(true)
 					.numTicks_(9)
 					.numMajorTicks_(3);
+				try{ levelIndic.background = Color.grey(0.3) };
 			});
 		});
 
@@ -80,10 +82,11 @@ ServerMeterView{
 					.font_(Font.sansSerif(9).boldVariant)
 					.stringColor_(Color.white)
 					.string_(i.asString);
-				LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+				levelIndic = LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
 					.drawsPeak_(true)
 					.numTicks_(9)
 					.numMajorTicks_(3);
+				try{ levelIndic.background = Color.grey(0.3) }
 			});
 		});
 

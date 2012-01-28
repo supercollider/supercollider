@@ -24,6 +24,7 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/widgets/QcSlider2D.h
   ${QT_COLLIDER_DIR}/widgets/QcRangeSlider.h
   ${QT_COLLIDER_DIR}/widgets/QcMultiSlider.h
+  ${QT_COLLIDER_DIR}/widgets/QcKnob.hpp
   ${QT_COLLIDER_DIR}/widgets/QcTextEdit.h
   ${QT_COLLIDER_DIR}/widgets/QcScope.h
   ${QT_COLLIDER_DIR}/widgets/QcScopeShm.h
@@ -36,6 +37,7 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/widgets/QcWebView.h
   ${QT_COLLIDER_DIR}/widgets/QcWindow.h
   ${QT_COLLIDER_DIR}/layouts/layouts.hpp
+  ${QT_COLLIDER_DIR}/style/style.hpp
 )
 
 set( QT_COLLIDER_SRCS
@@ -54,6 +56,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/primitives/prim_QPen.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_misc.cpp
   ${QT_COLLIDER_DIR}/primitives/prim_QWidget.cpp
+  ${QT_COLLIDER_DIR}/primitives/prim_QPalette.cpp
   ${QT_COLLIDER_DIR}/widgets/BasicWidgets.cpp
   ${QT_COLLIDER_DIR}/widgets/QcTreeWidget.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScrollArea.cpp
@@ -63,6 +66,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/QcSlider2D.cpp
   ${QT_COLLIDER_DIR}/widgets/QcRangeSlider.cpp
   ${QT_COLLIDER_DIR}/widgets/QcMultiSlider.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcKnob.cpp
   ${QT_COLLIDER_DIR}/widgets/QcTextEdit.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScope.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScopeShm.cpp
@@ -77,6 +81,8 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/layouts/classic_layouts.cpp
   ${QT_COLLIDER_DIR}/layouts/layouts.cpp
   ${QT_COLLIDER_DIR}/style/ProxyStyle.cpp
+  ${QT_COLLIDER_DIR}/style/style.cpp
+  ${QT_COLLIDER_DIR}/style/slider_style.cpp
 )
 
 if(QT_COLLIDER_LANG_CLIENT)

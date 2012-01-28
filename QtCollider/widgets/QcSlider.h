@@ -24,10 +24,11 @@
 
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
+#include "../style/style.hpp"
 
 #include <QSlider>
 
-class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
+class QcSlider : public QSlider, QcHelper, QcAbstractStepValue, public QtCollider::Style::Client
 {
   Q_OBJECT
   Q_PROPERTY( float shiftScale READ dummyFloat WRITE setShiftScale );
@@ -35,12 +36,21 @@ class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
   Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
   Q_PROPERTY( float step READ dummyFloat WRITE setStep )
   Q_PROPERTY( float value READ value WRITE setValue );
+  Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
+  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
+  Q_PROPERTY( int orientation READ orientation WRITE setOrientation );
+  Q_PROPERTY( int handleLength READ handleLength WRITE setHandleLength );
 
   public:
     QcSlider();
     float value() { return QSlider::value() * 0.0001f; }
     void setStep( float );
     void setValue( float val ) { QSlider::setValue( val * 10000 ); }
+    void setOrientation( int );
+    int handleLength() const { return _hndLen; }
+    void setHandleLength( int i ) { _hndLen = i; updateGeometry(); update(); }
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
   public Q_SLOTS:
     void increment( double factor );
     void decrement( double factor );
@@ -51,6 +61,7 @@ class QcSlider : public QSlider, public QcHelper, public QcAbstractStepValue
   private:
     int lastVal;
     bool bDoAction;
+    int _hndLen;
 };
 
 #endif

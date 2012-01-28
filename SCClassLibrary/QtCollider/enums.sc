@@ -100,3 +100,39 @@ QCurve {
     ^ if (curve.isNumber) {curve.asFloat} {this.perform(curve).asInteger};
   }
 }
+
+QColorGroup {
+  classvar
+    <normal = 0,
+    <active = 0,
+    <disabled = 1,
+    <inactive = 2;
+
+  *new { arg name; ^this.perform(name) }
+}
+
+QColorRole {
+  classvar
+    <window = 10,
+    <windowText = 0,
+    <button = 1,
+    <buttonText = 8,
+    <brightText = 7,
+    <base = 9,
+    <baseText = 6,
+    <alternateBase = 16,
+    <toolTipBase = 18,
+    <toolTipText = 19,
+    <highlight = 12,
+    <highlightText = 13,
+    <link = 14,
+    <linkVisited = 15,
+
+    <light = 2,
+    <midlight = 3,
+    <middark = 5,
+    <dark = 4,
+    <shadow = 11;
+
+  *new { arg name; ^this.perform(name) }
+}
