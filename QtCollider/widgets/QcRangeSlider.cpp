@@ -376,7 +376,7 @@ void QcRangeSlider::paintEvent ( QPaintEvent *e )
   // handle
 
   RoundRect handle(hndRect, 2);
-  drawRaised( &p, plt, handle, plt.color(QPalette::Button).lighter(115) );
+  drawRaised( &p, plt, handle, plt.color(QPalette::Button).lighter(105) );
 
   // markers
 

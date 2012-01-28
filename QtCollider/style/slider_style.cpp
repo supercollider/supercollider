@@ -61,7 +61,7 @@ void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QcSlide
 
   // draw handle
   RoundRect shHandle( rHandle, 3 );
-  drawRaised( p, plt, shHandle, plt.color(QPalette::Button).lighter(115) );
+  drawRaised( p, plt, shHandle, plt.color(QPalette::Button).lighter(105) );
 
   p->restore();
 
