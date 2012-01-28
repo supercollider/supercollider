@@ -66,8 +66,8 @@ static inline int lockLanguageOrQuit(FlagType const & shouldBeRunning)
 	} else if (status == EBUSY) {
 		do {
 			struct timespec now;
-			now.tv_sec + 1;
 			clock_gettime(CLOCK_REALTIME, &now);
+			now.tv_sec += 1;
 
 			status = pthread_mutex_timedlock(&gLangMutex, &now);
 			if (shouldBeRunning == false) {
