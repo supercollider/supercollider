@@ -11,7 +11,7 @@ public:
   ProxyStyle ( QStyle *style = 0 ) : QProxyStyle(style) { }
 
 #ifdef Q_OS_MAC
-  void drawComplexControl ( ComplexControl, const QStyleOptionComplex *,
+  virtual void drawComplexControl ( ComplexControl, const QStyleOptionComplex *,
                             QPainter *, const QWidget * w = 0 ) const;
 #endif
 

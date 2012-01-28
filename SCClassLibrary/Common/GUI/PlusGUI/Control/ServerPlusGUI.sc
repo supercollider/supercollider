@@ -31,7 +31,7 @@
 		font = Font.sansSerif(10);
 
 		if (gui.id == \qt) {
-			buttonColor = gui.palette.buttonColor;
+			buttonColor = gui.palette.button;
 			faintGreen = buttonColor.blend(Color.green, 0.2);
 			faintRed = buttonColor.blend(Color.red, 0.25);
 		} {

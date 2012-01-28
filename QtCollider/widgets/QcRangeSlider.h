@@ -24,11 +24,12 @@
 
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
+#include "../style/style.hpp"
 
 #include <QWidget>
 
 class QcRangeSlider :
-  public QWidget, public QcHelper, public QcAbstractStepValue
+  public QWidget, QcHelper, QcAbstractStepValue, QtCollider::Style::Client
 {
   Q_OBJECT
   Q_PROPERTY( Qt::Orientation orientation
@@ -39,11 +40,15 @@ class QcRangeSlider :
   Q_PROPERTY( float ctrlScale READ dummyFloat WRITE setCtrlScale );
   Q_PROPERTY( float altScale READ dummyFloat WRITE setAltScale );
   Q_PROPERTY( float step READ dummyFloat WRITE setStep )
+  Q_PROPERTY( QColor grooveColor READ grooveColor WRITE setGrooveColor );
+  Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
 
   public:
     enum MouseMode {
       None = 0,
-      Drag,
+      Move,
+      MoveHi,
+      MoveLo,
       SetLo,
       SetHi
     };
@@ -55,6 +60,7 @@ class QcRangeSlider :
     void setLoValue( float );
     float hiValue() const { return _hi; }
     void setHiValue( float );
+    void setRange( double val, double range );
     void setStep( float f ) { _step = f; }
     QSize sizeHint() const;
     QSize minimumSizeHint() const;
@@ -68,7 +74,8 @@ class QcRangeSlider :
 
   private:
     QRect thumbRect();
-    float valueFromPos( const QPoint& pos );
+    QRect valueRect();
+    double valueFromPos( const QPoint& pos );
     void moveBy( float );
     void increment();
     void decrement();
@@ -82,7 +89,8 @@ class QcRangeSlider :
     float _lo;
     float _hi;
     float _step;
-    QPoint dragOffset;
+    QPoint dragOrigin;
+    double dragVal, dragRange;
     MouseMode mouseMode;
 };
 

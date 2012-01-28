@@ -478,12 +478,12 @@ QuarksViewQt {
 		};
 
 		msgWorking = { arg msg;
-			lblStatus.background = palette.buttonColor.blend(Color.yellow,0.2);
+			lblStatus.background = palette.button.blend(Color.yellow,0.2);
 			lblStatus.string = msg;
 		};
 
 		msgDone =  { arg msg;
-			lblStatus.background = palette.buttonColor.blend(Color.green,0.2);
+			lblStatus.background = palette.button.blend(Color.green,0.2);
 			lblStatus.string = msg;
 		};
 
@@ -543,7 +543,7 @@ QuarksViewQt {
 			.toolTip_("Clear the marked changes")
 			.action_({ arg butt; views.do(_.reset) });
 
-		btnApply = Button().states_([["Apply",nil,Color.blue.blend(palette.buttonColor,0.6)]])
+		btnApply = Button().states_([["Apply",nil,Color.blue.blend(palette.button,0.6)]])
 			.toolTip_("Apply the marked changes")
 			.action_({ arg butt;
 				quarksView.enabled = false;

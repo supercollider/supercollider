@@ -1,7 +1,7 @@
 QMultiSliderView : QView {
   var <editable=true, <step=0;
   var <reference;
-  var <indexIsHorizontal=true, <elasticMode=false;
+  var <elasticMode=false;
   var <indexThumbSize=12, <valueThumbSize=12, <gap=1;
   var <drawLines=false, <drawRects=true;
   var <metaAction;
@@ -9,24 +9,13 @@ QMultiSliderView : QView {
 
   *qtClass { ^"QcMultiSlider" }
 
-  background {
-    ^this.palette.baseColor;
-  }
-
-  background_ { arg color;
-    this.setProperty( \palette, this.palette.baseColor_(color) );
-  }
-
   size { ^this.getProperty(\sliderCount) }
   size_ { arg int; this.setProperty( \sliderCount, int ) }
 
+  indexIsHorizontal { ^this.getProperty(\orientation) == QOrientation(\vertical) }
+
   indexIsHorizontal_ { arg bool;
-    indexIsHorizontal = bool;
-    if( bool ) {
-      this.setProperty( \orientation, QOrientation(\horizontal) );
-    } {
-      this.setProperty( \orientation, QOrientation(\vertical) );
-    };
+    this.setProperty( \orientation, QOrientation(if(bool){\vertical}{\horizontal}) );
   }
 
   editable_ { arg aBool;
@@ -138,6 +127,14 @@ QMultiSliderView : QView {
 
   isFilled_ { arg aBool;
     this.setProperty( \isFilled, aBool );
+  }
+
+  background {
+    ^this.palette.base;
+  }
+
+  background_ { arg color;
+    this.palette = this.palette.base_(color);
   }
 
   fillColor_ { arg aColor;

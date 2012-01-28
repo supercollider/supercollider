@@ -25,7 +25,7 @@
 #include "../Slot.h"
 #include "../QcApplication.h"
 #include "../QObjectProxy.h"
-#include "../style/ProxyStyle.hpp"
+#include "../style/style.hpp"
 #include "QtCollider.h"
 
 #ifdef Q_WS_MAC
@@ -153,7 +153,7 @@ QC_LANG_PRIMITIVE( Qt_SetStyle, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QStyle *style = QStyleFactory::create( str );
   if( !style ) return errFailed;
 
-  QApplication::setStyle( new QtCollider::ProxyStyle( style ) );
+  QApplication::setStyle( new QtCollider::Style::StyleImpl( style ) );
   return errNone;
 }
 

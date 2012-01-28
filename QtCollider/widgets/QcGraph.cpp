@@ -21,6 +21,7 @@
 
 #include "QcGraph.h"
 #include "../QcWidgetFactory.h"
+#include "../style/routines.hpp"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -57,8 +58,8 @@ void QcGraphModel::removeAt( int i ) {
 
 
 QcGraph::QcGraph() :
-  _thumbSize( QSize( 8, 8 ) ),
-  _selColor( QColor(255,0,0) ),
+  QtCollider::Style::Client(this),
+  _thumbSize( QSize( 18, 18 ) ),
   _drawLines( true ),
   _drawRects( true ),
   _editable( true ),
@@ -69,8 +70,6 @@ QcGraph::QcGraph() :
   _curIndex( -1 )
 {
   QPalette plt( palette() );
-  _strokeColor = plt.color( QPalette::Text );
-  _gridColor = plt.color( QPalette::Midlight );
 
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
@@ -517,46 +516,6 @@ void QcGraph::moveSelected( const QPointF & dif, SelectionForm form, bool cached
   }
 }
 
-QPointF QcGraph::pos( const QPointF & value )
-{
-  float x, y, xRange, yRange;
-
-  xRange = width() - _thumbSize.width();
-  yRange = height() - _thumbSize.height();
-
-  if( xRange > 0 )
-    x = ( value.x() * xRange ) + ( _thumbSize.width() * 0.5f );
-  else
-    x = 0.f;
-
-  if( yRange > 0 )
-    y = ( value.y() * -yRange ) - ( _thumbSize.height() * 0.5f ) + height();
-  else
-    y = 0.f;
-
-  return QPointF( x, y );
-}
-
-QPointF QcGraph::value( const QPointF & pos )
-{
-  float x, y, xRange, yRange;
-
-  xRange = width() - _thumbSize.width();
-  yRange = height() - _thumbSize.height();
-
-  if( xRange > 0 )
-    x = ( pos.x() - ( _thumbSize.width() * 0.5f ) ) / xRange;
-  else
-    x = 0.f;
-
-  if( yRange > 0 )
-    y = ( pos.y() + ( _thumbSize.height() * 0.5f ) - height() ) / -yRange;
-  else
-    y = 0.f;
-
-  return QPointF( x, y );
-}
-
 void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *e2 )
 {
   QcGraphElement::CurveType type = e1->curveType;
@@ -663,22 +622,48 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
   }
 }
 
+QRectF QcGraph::labelRect( QcGraphElement *e, const QPointF &pt, const QRect &bounds, const QFontMetrics &fm )
+{
+  QRectF textRect( fm.boundingRect(e->text) );
+  qreal hnd_w_2 = _thumbSize.width() * 0.5;
+  qreal hnd_h_2 = _thumbSize.height() * 0.5;
+  textRect.moveBottomLeft( pt + QPointF(hnd_w_2, -hnd_h_2) );
+  if( textRect.y() < bounds.y() )
+    textRect.moveTop( pt.y() + hnd_h_2 );
+  if( textRect.right() > bounds.right() )
+    textRect.moveRight( pt.x() - hnd_w_2 );
+  return textRect;
+}
+
 void QcGraph::paintEvent( QPaintEvent * )
 {
+  using namespace QtCollider::Style;
+
   QPainter p( this );
   QPalette plt( palette() );
 
-  p.setPen( plt.color( QPalette::Mid ) );
-  p.setBrush( plt.color( QPalette::Base ) );
-  p.drawRect( rect().adjusted(0,0,-1,-1) );
+  p.setRenderHint( QPainter::Antialiasing, true );
+  RoundRect frame(rect(), 3);
+  drawSunken( &p, plt, frame, plt.color(QPalette::Base), hasFocus() ? focusColor() : QColor() );
+  p.setRenderHint( QPainter::Antialiasing, false );
 
-  QRect contentsRect( _thumbSize.width() * 0.5f, _thumbSize.height() * 0.5f,
-                      width() - _thumbSize.width(), height() - _thumbSize.height() );
-  p.setPen( _gridColor );
+  QRect contentsRect( marginsRect( sunkenContentsRect( rect() ), _thumbSize ) );
+
+  QColor strokeColor = _strokeColor.isValid() ? _strokeColor :  plt.color(QPalette::Text);
+  QColor gridColor;
+  if(_gridColor.isValid())
+    gridColor = _gridColor;
+  else {
+    gridColor = plt.color(QPalette::Text);
+    gridColor.setAlpha(40);
+  }
+
+  //draw grid;
+
+  p.setPen(gridColor);
   p.setBrush( Qt::NoBrush );
   p.drawRect( contentsRect );
 
-  //draw grid;
   if( _gridOn ) {
     float dx = _gridMetrics.x();
     float dy = _gridMetrics.y();
@@ -689,19 +674,21 @@ void QcGraph::paintEvent( QPaintEvent * )
 
     if( contentsRect.width() > 0.f && dx > 0.f && dx < 1.f ) {
       dx *= contentsRect.width();
-      float x = cl;
-      while( x < cr ) {
+      int i = 1;
+      float x;
+      while( (x = i * dx + cl) < cr ) {
         p.drawLine( x, ct, x, cb );
-        x += dx;
+        ++i;
       }
     }
 
     if( contentsRect.height() > 0.f && dy > 0.f && dy < 1.f ) {
       dy *= contentsRect.height();
-      float y = cb;
-      while( y > ct ) {
+      int i = 1;
+      float y;
+      while( (y = cb - i * dy) > ct ) {
         p.drawLine( cl, y, cr, y );
-        y -= dy;
+        ++i;
       }
     }
   }
@@ -711,7 +698,7 @@ void QcGraph::paintEvent( QPaintEvent * )
   int c = elems.count();
   if( !c ) return;
 
-  p.setPen( _strokeColor );
+  p.setPen( strokeColor );
 
   // draw lines;
   if( _drawLines ) {
@@ -750,7 +737,11 @@ void QcGraph::paintEvent( QPaintEvent * )
   // draw rects and strings
   if( _drawRects ) {
 
-    QColor defFillColor = plt.color( QPalette::Text );
+    p.setRenderHint( QPainter::Antialiasing, true );
+
+    QFontMetrics fm( font() );
+    QColor thumbColor = plt.color(QPalette::Button).lighter(105); thumbColor.setAlpha(70);
+    QColor defFillColor = plt.color(QPalette::Text);
     QRectF rect; rect.setSize( _thumbSize );
     QPointF pt;
     int i;
@@ -759,19 +750,34 @@ void QcGraph::paintEvent( QPaintEvent * )
 
       QcGraphElement *e = elems[i];
 
-      if( e->selected )
-        p.setBrush( _selColor );
-      else
-        p.setBrush( e->fillColor.isValid() ? e->fillColor : defFillColor );
+      pt = Style::pos( e->value, contentsRect );
+      rect.moveCenter( pt.toPoint() );
 
-      pt = pos( e->value );
+      // base
+      Ellipse thumb(rect);
+      drawRaised( &p, plt, thumb, thumbColor );
 
-      rect.moveCenter( pt );
-      p.drawRect( rect.adjusted(0,0,-1,-1) );
+      // marker
+      QRectF r( thumb._rect );
+      qreal wdif = r.width() * 0.3;
+      qreal hdif = r.height() * 0.3;
+      p.setPen( Qt::NoPen );
+      p.setBrush( e->fillColor.isValid() ? e->fillColor : defFillColor );
+      p.drawEllipse( r.adjusted( wdif, hdif, -wdif, -hdif ) );
 
+      // selection indicator
+      if( e->selected ) {
+        p.setBrush(Qt::NoBrush);
+        p.setPen( plt.color(QPalette::Highlight) );
+        p.drawEllipse( thumb._rect.adjusted(1,1,-1,-1) );
+      }
+
+      // label
+      p.setPen( strokeColor );
       QString text = e->text;
       if( !text.isEmpty() ) {
-        p.drawText( rect, Qt::AlignCenter, text );
+        QRectF lblRect( labelRect( e, pt, contentsRect, fm ) );
+        p.drawText( lblRect, 0, text );
       }
 
     }
@@ -781,11 +787,14 @@ void QcGraph::paintEvent( QPaintEvent * )
 
 void QcGraph::mousePressEvent( QMouseEvent *ev )
 {
+  using namespace QtCollider::Style;
+
   QList<QcGraphElement*> elems = _model.elements();
   int c = elems.count();
   if( !c ) return;
 
   QPointF mpos = ev->pos();
+  QRectF valueRect( marginsRect( sunkenContentsRect( rect() ), _thumbSize ) );
 
   QRectF r;
   r.setSize( _thumbSize );
@@ -793,7 +802,7 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
   int i;
   for( i = 0; i < c; ++i ) {
     QcGraphElement *e = elems[i];
-    QPointF pt = pos( e->value );
+    QPointF pt( Style::pos( e->value, valueRect ) );
     r.moveCenter( pt );
     if( r.contains( mpos ) ) {
       _curIndex = i;
@@ -813,7 +822,7 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
           // if the element that was hit ended up selected
           // prepare for moving
         _selection.shallMove = true;
-        _selection.moveOrigin = value(mpos);
+        _selection.moveOrigin = Style::value(mpos, valueRect);
       }
       else {
         _selection.shallMove = false;
@@ -836,7 +845,10 @@ void QcGraph::mousePressEvent( QMouseEvent *ev )
 
 void QcGraph::mouseMoveEvent( QMouseEvent *ev )
 {
+  using namespace QtCollider::Style;
+
   if( !ev->buttons() ) return;
+
   if( !_editable || !_selection.shallMove || !_selection.size() ) return;
 
   if( !_selection.cached ) {
@@ -848,7 +860,8 @@ void QcGraph::mouseMoveEvent( QMouseEvent *ev )
     _selection.cached = true;
   }
 
-  QPointF dValue( value( ev->pos() ) );
+  QRectF valueRect( marginsRect( sunkenContentsRect( rect() ), _thumbSize ) );
+  QPointF dValue( Style::value( ev->pos(), valueRect ) );
   dValue = dValue - _selection.moveOrigin;
 
   moveSelected( dValue, _selectionForm, true );
