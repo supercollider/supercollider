@@ -300,7 +300,7 @@ void QcMultiSlider::paintEvent( QPaintEvent *e )
 
   QPalette pal = palette();
 
-  RoundRect frame(rect(), 3);
+  RoundRect frame(rect(), 2);
   drawSunken( &p, pal, frame, pal.color(QPalette::Base), hasFocus() ? focusColor() : QColor() );
 
   if( !_values.count() ) return;
