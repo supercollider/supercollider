@@ -70,4 +70,7 @@
 #define COLD /*COLD*/
 #endif
 
+#ifndef FLATTEN
+#define FLATTEN /*FLATTEN*/
+#endif
 #endif /* FUNCTION_ATTRIBUTES_H */
