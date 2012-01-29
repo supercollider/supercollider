@@ -94,6 +94,7 @@ static inline int lockLanguageOrQuit(FlagType const & shouldBeRunning)
 			nanosleep(&sleepTime, &remain);
 		}
 	} while (status);
+	return 0;
 #endif
 }
 
