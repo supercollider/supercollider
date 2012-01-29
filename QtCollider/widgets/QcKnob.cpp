@@ -141,7 +141,9 @@ void QcKnob::paintEvent( QPaintEvent * )
 
   r.adjust( 3, 3, -3, -3 );
   Ellipse shKnob(r);
-  drawRaised( &p, plt, shKnob, plt.color( QPalette::Button ).lighter(105) );
+  drawRaised( &p, plt, shKnob,
+              plt.color( QPalette::Button ).lighter(105),
+              hasFocus() ? focusColor() : QColor() );
 
   p.save(); // knob decoration scaling
 
@@ -169,14 +171,6 @@ void QcKnob::paintEvent( QPaintEvent * )
   p.drawEllipse( QRectF( -4, -4, 8, 8 ) );
 
   p.restore(); // knob decoration scaling
-
-  if( hasFocus() ) {
-    QPen pen( focusColor() );
-    pen.setWidth(2);
-    p.setPen(pen);
-    p.setBrush(Qt::NoBrush);
-    p.drawEllipse(r.adjusted(1,1,-1,-1));
-  }
 
   p.restore(); // center coordinate system
 }
