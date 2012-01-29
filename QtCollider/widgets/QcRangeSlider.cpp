@@ -227,8 +227,16 @@ void QcRangeSlider::mousePressEvent ( QMouseEvent * e )
   using namespace QtCollider::Style;
 
   if( e->modifiers() & Qt::ShiftModifier ) {
-    _lo = _hi = qBound(0.0, valueFromPos( e->pos() ), 1.0);
-    mouseMode = SetHi;
+    double center = (_hi + _lo) * 0.5;
+    double val = valueFromPos( e->pos() );
+    if( val < center ) {
+      mouseMode = SetLo;
+      setLoValue( val );
+    }
+    else {
+      mouseMode = SetHi;
+      setHiValue( val );
+    }
     Q_EMIT( action() );
   }
   else {
