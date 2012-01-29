@@ -42,7 +42,6 @@ QScrollTopView : QScrollView {
 
 QTopView : QView {
   var >window;
-  var <background;
 
   *qtClass {^'QcWindow'}
 
@@ -65,9 +64,9 @@ QTopView : QView {
     this.setProperty( \geometry, rOld.resizeTo( rNew.width, rNew.height ) );
   }
 
-  background_ { arg aColor;
-    background = aColor;
-    this.setProperty( \background, aColor, true );
+  background_ { arg color;
+    // Do not autoFillBackground; the widget will paint it if necessary.
+    this.palette = this.palette.window_(color);
   }
 
   drawingEnabled_ { arg bool; this.setProperty( \drawingEnabled, bool ); }
@@ -161,7 +160,7 @@ QWindow
     view.setProperty(\geometry, r.resizeTo( w, h ); )
   }
 
-  background { ^view.backgroud; }
+  background { ^view.background; }
 
   background_ { arg aColor; view.background = aColor; }
 

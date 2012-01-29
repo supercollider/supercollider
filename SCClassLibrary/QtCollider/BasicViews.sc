@@ -127,11 +127,21 @@ QVLayoutView : QView {
 
 QScrollCanvas : QObject {
   *qtClass { ^'QcScrollWidget' }
+
+  background {
+    ^this.getProperty(\palette).window;
+  }
+
+  background_ { arg color;
+    // Do not autoFillBackground; the widget will paint it if necessary.
+    var p = this.getProperty(\palette);
+    this.setProperty( \palette, p.window_(color) );
+  }
 }
 
 QScrollView : QAbstractScroll {
   var <canvas;
-  var <background, <hasBorder=true;
+  var <hasBorder=true;
 
   *new { arg parent, bounds;
     ^super.new( parent, bounds ).initQScrollView;
@@ -143,10 +153,8 @@ QScrollView : QAbstractScroll {
     ^canvas.children( class );
   }
 
-  background_ { arg aColor;
-    background = aColor;
-    canvas.setProperty( \background, aColor, true );
-  }
+  background { ^canvas.background }
+  background_ { arg color; canvas.background = color }
 
   hasBorder_ { arg aBool;
     hasBorder = aBool;

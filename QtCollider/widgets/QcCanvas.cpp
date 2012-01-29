@@ -123,7 +123,11 @@ void QcCanvas::paintEvent( QPaintEvent * )
   }
 
   QPainter p(this);
-  if( _bkgColor.isValid() ) p.fillRect( rect(), _bkgColor );
+  QPalette plt(palette());
+
+  if( plt.isBrushSet(QPalette::Normal, QPalette::Window) )
+      p.fillRect( rect(), plt.color(QPalette::Window) );
+
   if( _paint ) p.drawPixmap( rect(), _pixmap );
 }
 
