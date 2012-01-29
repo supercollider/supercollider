@@ -468,7 +468,8 @@ QVariant Slot::toVariant( PyrSlot *slot )
         return QVariant::fromValue<QcTreeWidget::ItemPtr>( toTreeWidgetItem(slot) );
       }
       else {
-        qcErrorMsg("Could not interpret slot!");
+        QString className = Slot::toString( &slotRawObject(slot)->classptr->name );
+        qcWarningMsg(QString("WARNING: Do not know how to use an instance of class '%1'").arg(className));
         return QVariant();
       }
     }
@@ -546,7 +547,8 @@ void QtCollider::Variant::setData( PyrSlot *slot )
         _ptr = new QcTreeWidget::ItemPtr( toTreeWidgetItem(slot) );
       }
       else {
-        qcErrorMsg("Could not interpret slot!");
+        QString className = Slot::toString( &slotRawObject(slot)->classptr->name );
+        qcWarningMsg(QString("WARNING: Do not know how to use an instance of class '%1'").arg(className));
         _type = QMetaType::Void;
         _ptr = 0;
       }
