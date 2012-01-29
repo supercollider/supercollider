@@ -88,23 +88,53 @@ struct Ellipse
   QRectF _rect;
 };
 
-template<typename ShapeT> void drawRaised (QPainter *p, const QPalette &plt, const ShapeT &shape, const QColor &color)
+template<typename ShapeT> void drawRaised (QPainter *p, const QPalette &plt, const ShapeT &shape,
+                                           const QColor &color, const QColor &focusColor = QColor())
 {
   p->save();
 
-  QColor edgeClr( plt.color(QPalette::Dark) );
-  edgeClr.setAlpha(color.alpha());
-  p->setPen(edgeClr);
+  bool focus = focusColor.isValid();
+
+  QRectF r( shape._rect );
+
   p->setBrush(Qt::NoBrush);
-  shape.draw( p, shape._rect.adjusted(1,1,-1,-1) );
+
+  // focus indication
+
+  QPen pen;
+  pen.setWidth(2);
+  if( focus ) {
+    pen.setColor(focusColor);
+    p->setPen(pen);
+    shape.draw( p, r.adjusted(1,1,-1,-1) );
+    r.adjust(2,2,-2,-2);
+  }
+  else {
+    r.adjust(1,1,-1,-1);
+  }
+
+  // edge
+
+  QColor edgeClr( focus ? plt.color(QPalette::Light) : plt.color(QPalette::Dark) );
+  if(focus) edgeClr.setAlpha(100);
+  else edgeClr.setAlpha( color.alpha() );
+  pen.setColor(edgeClr);
+  p->setPen(pen);
+  shape.draw( p, r );
+
+  // center
+
+  double pos = shape._rect.height();
+  pos = (pos - 3) / pos;
 
   QLinearGradient lgrad( shape._rect.topLeft(), shape._rect.bottomLeft() );
-  lgrad.setColorAt( 0, color.lighter(105) );
+  lgrad.setColorAt( 0, color.lighter(110) );
+  lgrad.setColorAt( pos, color.darker(105) );
   lgrad.setColorAt( 1, color.darker(115) );
 
   p->setPen(Qt::NoPen);
   p->setBrush( QBrush(lgrad) );
-  shape.draw( p, shape._rect.adjusted(1,1,-1,-1) );
+  shape.draw( p, r );
 
   p->restore();
 }

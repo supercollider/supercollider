@@ -31,6 +31,9 @@ public:
   virtual QRect subControlRect ( QStyle::ComplexControl, const QStyleOptionComplex *,
                                 QStyle::SubControl, const QWidget * = 0 ) const;
 
+  virtual void drawControl ( ControlElement, const QStyleOption *,
+                             QPainter *, const QWidget * = 0 ) const;
+
   virtual void drawComplexControl ( QStyle::ComplexControl, const QStyleOptionComplex *,
                                     QPainter *, const QWidget * = 0 ) const;
 
