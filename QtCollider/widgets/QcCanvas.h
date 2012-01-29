@@ -31,14 +31,11 @@ class QcCanvas : public QWidget
 {
   Q_PROPERTY( bool clearOnRefresh READ clearOnRefresh WRITE setClearOnRefresh );
   Q_PROPERTY( bool drawingEnabled READ drawingEnabled WRITE setDrawingEnabled );
-  Q_PROPERTY( QColor background READ background WRITE setBackground );
   Q_PROPERTY( float frameRate READ frameRate WRITE setFrameRate );
   Q_PROPERTY( int frameCount READ frameCount );
   Q_OBJECT
 public:
   QcCanvas( QWidget *parent = 0 );
-  QColor background() const { return _bkgColor; }
-  void setBackground( const QColor & c ) { _bkgColor = c; update(); }
   bool drawingEnabled() const { return _paint; }
   void setDrawingEnabled( bool b ) { _paint = b; }
   bool clearOnRefresh() const { return _clearOnRefresh; }
@@ -60,7 +57,6 @@ protected:
 
 private:
   QPixmap _pixmap;
-  QColor _bkgColor;
   bool _paint;
   bool _repaintNeeded;
   bool _clearOnRefresh;
