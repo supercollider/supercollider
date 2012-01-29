@@ -13,19 +13,21 @@ QPalette {
   *system { ^super.new.prSystem }
 
   *light {
-    var p = QPalette.auto( Color.new255(160,160,165), Color.new255(175,175,170) );
-    var sys = QPalette.system;
-    p.highlight = sys.highlight;
-    p.highlightText = sys.highlightText;
+    var p;
+    p = QPalette.auto(Color.grey(0.92), Color.grey(0.86));
+    p.setColor(Color.grey(0.37), \shadow);
+    p.setColor(Color.grey(0.6), \dark);
+    p.setColor(Color.grey(0.7), \middark);
+    p.highlight = Color(0.3, 0.5, 0.75);
     ^p;
   }
 
   *dark {
-    var p = QPalette.auto( Color.new255(120,120,125), Color.new255(85,85,80) );
-    var sys = QPalette.system;
-    p.highlight = sys.highlight;
-    p.highlightText = sys.highlightText;
-    p.base = Color.new255(40,40,40);
+    var p;
+    p = QPalette.auto( Color.grey(0.43), Color.grey(0.3) );
+    p.base = Color.grey(0.18);
+    p.setColor(Color.grey(0.08), \shadow);
+    p.highlight = Color(0.25, 0.37, 0.57);
     ^p;
   }
 
