@@ -1,8 +1,11 @@
 QtGUI {
 
+  classvar <style;
+
   *initClass {
     Class.initClassTree( GUI );
     GUI.add( this );
+    this.style = "Plastique";
     this.palette = QPalette.light;
   }
 
@@ -94,8 +97,7 @@ QtGUI {
   }
 
   *style_ { arg styleName;
-    _Qt_SetStyle
-    ^this.primitiveFailed;
+    protect { this.prSetStyle(styleName) } { |err| if(err.isNil){style = styleName} };
   }
 
   *stringBounds { arg aString, aFont;
@@ -134,5 +136,10 @@ QtGUI {
   *prStringBounds { arg aString, aFont;
     _Qt_StringBounds
     ^this.primitiveFailed
+  }
+
+  *prSetStyle { arg name;
+    _Qt_SetStyle
+    ^this.primitiveFailed;
   }
 }
