@@ -3,6 +3,7 @@ QtGUI {
   *initClass {
     Class.initClassTree( GUI );
     GUI.add( this );
+    this.palette = QPalette.light;
   }
 
   *id { ^\qt }
