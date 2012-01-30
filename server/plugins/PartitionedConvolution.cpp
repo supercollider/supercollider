@@ -24,6 +24,7 @@
 
 #include "FFT_UGens.h"
 
+#include <stdio.h>
 
 struct PartConv : public Unit {
 	int m_counter;

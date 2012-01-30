@@ -283,7 +283,7 @@ static bool PlugIn_Load(const char *filename)
 		char *s;
 		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 				0, GetLastError(), 0, (char*)&s, 1, 0 );
-		scprintf("*** ERROR: GetProcAddress %s err '%s'\n", SC_PLUGIN_LOAD_SYM, s);
+		scprintf("*** ERROR: GetProcAddress err '%s'\n", s);
 		LocalFree( s );
 
 		FreeLibrary(hinstance);
