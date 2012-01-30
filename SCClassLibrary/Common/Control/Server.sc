@@ -468,13 +468,18 @@ Server {
 		}, responseName, addr).oneShot;
 	}
 
-	waitForBoot { arg onComplete, limit=100;
-		if(serverRunning.not) { this.boot };
-		this.doWhenBooted(onComplete, limit);
+	waitForBoot { arg onComplete, limit=100, onFailure;
+		// onFailure.true: why is this necessary?
+		// this.boot also calls doWhenBooted.
+		// doWhenBooted prints the normal boot failure message.
+		// if the server fails to boot, the failure error gets posted TWICE.
+		// So, we suppress one of them.
+		if(serverRunning.not) { this.boot(onFailure: true) };
+		this.doWhenBooted(onComplete, limit, onFailure);
 	}
 
-	doWhenBooted { arg onComplete, limit=100;
-		var mBootNotifyFirst = bootNotifyFirst;
+	doWhenBooted { arg onComplete, limit=100, onFailure;
+		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
 		^Routine({
@@ -488,8 +493,13 @@ Server {
 			});
 
 			if(serverRunning.not,{
-				"server failed to start".error;
-				"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
+				if(onFailure.notNil) {
+					postError = (onFailure.value == false);
+				};
+				if(postError) {
+					"server failed to start".error;
+					"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
+				};
 				serverBooting = false;
 				this.changed(\serverRunning);
 			}, onComplete);
@@ -603,7 +613,7 @@ Server {
 		});
 	}
 
-	boot { arg startAliveThread=true, recover=false;
+	boot { arg startAliveThread=true, recover=false, onFailure;
 		var resp;
 		if (serverRunning, { "server already running".inform; ^this });
 		if (serverBooting, { "server already booting".inform; ^this });
@@ -630,7 +640,7 @@ Server {
 			if(volume.volume != 0.0) {
 				volume.play;
 			};
-		});
+		}, onFailure: onFailure ? false);
 		if (remoteControlled.not, {
 			"You will have to manually boot remote server.".inform;
 		},{
