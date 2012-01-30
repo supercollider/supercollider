@@ -68,16 +68,15 @@ void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QcSlide
     // draw marker
   QPen pen(plt.color(QPalette::ButtonText));
   pen.setWidth(2);
-  pen.setCapStyle(Qt::FlatCap);
   p->setPen(pen);
   if(opt->orientation == Qt::Horizontal) {
     qreal center = rHandle.center().x() + 1;
-    QLine line( center, rHandle.top()+2, center, rHandle.bottom() - 1 );
+    QLine line( center, rHandle.top() + 3, center, rHandle.bottom() - 2 );
     p->drawLine(line);
     pen.setColor(plt.color(QPalette::Light));
   } else {
     qreal center = rHandle.center().y() + 1;
-    QLine line( rHandle.left()+2, center, rHandle.right() - 1, center );
+    QLine line( rHandle.left() + 3, center, rHandle.right() - 2, center );
     p->drawLine(line);
     pen.setColor(plt.color(QPalette::Light));
   }
