@@ -146,6 +146,11 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 to install the whole program, run:
 make install
 
+for the above step you will probably need super-user privileges,
+e.g. using "sudo".
+
+also, please run "sudo ldconfig" after installing for the first time.
+
 to uninstall:
 make uninstall
 
