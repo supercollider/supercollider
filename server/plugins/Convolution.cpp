@@ -29,6 +29,8 @@
 
 //#include "SC_fftlib.h"
 
+#include <stdio.h>
+
 
 //float *fftWindow[32];
 
