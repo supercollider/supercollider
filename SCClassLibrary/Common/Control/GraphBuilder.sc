@@ -108,6 +108,7 @@ NamedControl {
 	*new { arg name, values, rate, lags, fixedLag = false;
 		var res;
 
+		name = name.asSymbol;
 
 		this.initDict;
 		res = currentControls.at(name);
