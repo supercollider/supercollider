@@ -82,31 +82,32 @@ void QcKnob::paintEvent( QPaintEvent * )
   using namespace QtCollider::Style;
 
   QPainter p(this);
-
-  const QPalette &plt( palette() );
-  QRect bounds( rect() );
-
   p.setRenderHint( QPainter::Antialiasing, true );
 
+  const QPalette &plt( palette() );
+  QColor cGroove = plt.color( QPalette::Window ).lighter( 115 );
+  QColor cVal = plt.color( QPalette::ButtonText );
+
+  QRect bounds( rect() );
   int sz = qMin( bounds.width(), bounds.height() );
   float sz_2 = sz * 0.5f;
   QPointF center = QRectF(bounds).center();
 
-  //p.rotate( -250 );
-  p.save(); // center coordinate system
   p.translate( center );
 
-  QRectF r( -sz_2, -sz_2, sz, sz );
+  double rad = sz_2 * 0.75;
+  Ellipse shKnob(QRectF(-rad, -rad, rad*2, rad*2));
+  drawRaised( &p, plt, shKnob,
+              plt.color( QPalette::Button ).lighter(105),
+              hasFocus() ? focusColor() : QColor() );
 
-  p.setBrush( Qt::NoBrush );
+  p.scale( sz_2, sz_2 );
 
   QPen pen;
-  pen.setWidth( 2 );
+  pen.setWidthF( 0.1 );
+  p.setBrush( Qt::NoBrush );
 
-  r.adjust( 3, 3, -3, -3 );
-
-  QColor cGroove = plt.color( QPalette::Window ).lighter( 115 );
-  QColor cVal = plt.color( QPalette::ButtonText );
+  QRectF r( -0.95, -0.95, 1.9, 1.9 );
 
   p.save(); // groove & value indicator rotation
 
@@ -139,40 +140,14 @@ void QcKnob::paintEvent( QPaintEvent * )
 
   p.restore(); // groove & value indicator rotation
 
-  r.adjust( 3, 3, -3, -3 );
-  Ellipse shKnob(r);
-  drawRaised( &p, plt, shKnob,
-              plt.color( QPalette::Button ).lighter(105),
-              hasFocus() ? focusColor() : QColor() );
-
-  p.save(); // knob decoration scaling
-
-  float factor = r.width() * 0.05;
-  p.scale( factor, factor );
-
-  p.save(); // knob pos indicator rotation
-
   p.rotate( 20 - valAng );
 
-  QLineF line( 0, 0, 0, 9.9 );
-
+  QLineF line( 0, 0.05, 0, 0.55 );
   pen.setColor(cVal);
-  pen.setWidth( 1.5 );
-  pen.setCapStyle( Qt::FlatCap );
+  pen.setWidthF( 0.15 );
+  pen.setCapStyle( Qt::RoundCap );
   p.setPen( pen );
-
   p.drawLine( line );
-
-  p.restore(); // knob pos indicator rotation
-
-  p.setBrush(cVal);
-  p.setPen( Qt::NoPen );
-
-  p.drawEllipse( QRectF( -4, -4, 8, 8 ) );
-
-  p.restore(); // knob decoration scaling
-
-  p.restore(); // center coordinate system
 }
 
 float QcKnob::value( const QPoint &pt )
