@@ -491,6 +491,7 @@ Server {
 				"server failed to start".error;
 				"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
 				serverBooting = false;
+				this.changed(\serverRunning);
 			}, onComplete);
 		}).play(AppClock);
 	}
