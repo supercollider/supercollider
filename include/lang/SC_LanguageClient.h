@@ -29,6 +29,7 @@
 #include "SC_StringBuffer.h"
 #include "SC_Export.h"
 #include "SC_Lock.h"
+#include "SC_Win32Utils.h"
 
 #include <pthread.h>
 #include <stdarg.h>

@@ -177,7 +177,7 @@ endif()
 
 
 if (WIN32)
-	target_link_libraries(libscsynth wsock32 ws2_32)
+	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
 endif()
 
 
