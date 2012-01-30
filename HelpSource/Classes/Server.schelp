@@ -162,17 +162,33 @@ method:: wait
 this can be used within a link::Classes/Routine:: to wait for a server reply
 
 method:: waitForBoot
-evaluate the function code::func:: as soon as the server has booted. If it is running, it is evaluated immediately. If it is not running, boot the server and evaluate the function. code::limit:: indicates the maximum times to try. (5 times/sec)
+Evaluate "onComplete" as soon as the server has booted. This method will boot the server for you if it is not already running or booting. If the server is already running, "onComplete" is executed immediately.
+argument:: onComplete
+A function to evaluate after the server has booted successfully.
+argument:: limit
+The number of times to check for a successful boot. (5 times/sec)
+argument:: onFailure
+A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.waitForBoot(onFailure: { ... custom action...; false })::.
 
 method:: doWhenBooted
-evaluate the function as soon as the server has booted. If it is running, it is evaluated immediately. code::limit:: is the maximum number of times to try. (5 times/sec)
+Evaluate "onComplete" as soon as the server has booted. This method assumes the server is being booted explicitly through a separate code::boot:: call. If the server is already running, "onComplete" is executed immediately.
+argument:: onComplete
+A function to evaluate after the server has booted successfully.
+argument:: limit
+The number of times to check for a successful boot.
+argument:: onFailure
+A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.waitForBoot(onFailure: { ... custom action...; false })::.
 
 method:: boot
 boot the remote server, create new allocators.
 argument:: startAliveThread
-if set to false, the server is not queried to give information for the window.
+If true, start a Routine to send a /status message to the server every so often. The interval between the messages is set by code::theServer.aliveThreadPeriod = (seconds)::. The default period is 0.7. If false, /status will not be sent and the server's window will not update.
+argument:: recover
+If true, create a new node ID allocator for the server, but use the old buffer and bus allocators. This is useful if the server process did not actually stop. In normal use, the default value "false" should be used.
+argument:: onFailure
+In this method, the onFailure argument is for internal use only. If you wish to take specific actions when the server boots or fails to boot, it is recommended to use link::#-waitForBoot:: or link::#-doWhenBooted::.
 discussion::
-N.B. You cannot locally boot a server app on a remote machine.
+N.B. You cannot boot a server app on a remote machine.
 
 method:: quit
 quit the server application
