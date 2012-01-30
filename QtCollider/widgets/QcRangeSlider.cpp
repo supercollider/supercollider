@@ -310,7 +310,6 @@ inline void drawMarker( QPainter *p, const QPalette &plt, Qt::Orientation ort, b
   p->setRenderHint( QPainter::Antialiasing, false );
 
   QPen pen(plt.color(QPalette::ButtonText));
-  pen.setCapStyle(Qt::FlatCap);
 
   bool vert = ort == Qt::Vertical;
 
@@ -319,14 +318,14 @@ inline void drawMarker( QPainter *p, const QPalette &plt, Qt::Orientation ort, b
     p->drawPoint( QPoint( pt.x() + len * 0.5, first ? pt.y() - 5 : pt.y() + 5 ) );
 
     pen.setWidth(2); p->setPen(pen);
-    QLine line( pt, QPoint(pt.x() + len, pt.y()) );
+    QLine line( pt.x() + 1, pt.y(), pt.x() + len - 1, pt.y() );
     p->drawLine(line);
   } else {
     pen.setWidth(1); p->setPen(pen);
     p->drawPoint( QPoint( first ? pt.x() - 5 : pt.x() + 5, pt.y() + len * 0.5 ) );
 
     pen.setWidth(2); p->setPen(pen);
-    QLine line( pt, QPoint(pt.x(), pt.y() + len));
+    QLine line( pt.x(), pt.y() + 1, pt.x(), pt.y() + len - 1 );
     p->drawLine(line);
   }
   p->restore();
