@@ -265,7 +265,7 @@ String[char] : RawArray {
 	}
 
 	wrapExtend { arg size;
-		^this.dup(size div: this.size).join
+		^this.dup(size div: this.size).join ++ this.keep(size % this.size)
 	}
 
 	zeroPad {
