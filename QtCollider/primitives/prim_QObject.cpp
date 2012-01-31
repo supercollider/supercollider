@@ -316,7 +316,10 @@ QC_LANG_PRIMITIVE( QObject_GetProperty, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
   if( !proxy->compareThread() ) return QtCollider::wrongThreadError();
 
   QVariant val = proxy->property( symProp->name );
-  if( !val.isValid() ) return errFailed;
+  if( !val.isValid() ) {
+    qcErrorMsg(QString("Failed to get the value of property '%1'").arg(symProp->name));
+    return errFailed;
+  }
 
   if( Slot::setVariant(r, val) )
     return errNone;
