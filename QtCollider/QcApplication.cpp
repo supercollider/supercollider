@@ -64,6 +64,8 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _mutex.unlock();
   qRegisterMetaType<VariantList>();
   qRegisterMetaType<QcTreeWidget::ItemPtr>();
+  qRegisterMetaType< QVector<double> >();
+  qRegisterMetaType< QVector<int> >();
 
   if (QtColliderUseGui()) { // avoid a crash on linux, if x is not available
     QIcon icon;
