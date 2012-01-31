@@ -24,6 +24,7 @@
 
 #include "../QcHelper.h"
 #include "../style/style.hpp"
+#include "../Common.h"
 
 #include <QWidget>
 
@@ -31,11 +32,11 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
 {
   // TODO setting selection with mouse
   Q_OBJECT
-  Q_PROPERTY( VariantList values READ values WRITE setValues );
-  Q_PROPERTY( VariantList reference READ dummyVariantList WRITE setReference );
-  Q_PROPERTY( float value READ value WRITE setValue );
   Q_PROPERTY( int sliderCount READ sliderCount WRITE setSliderCount);
-  Q_PROPERTY( float stepSize READ dummyFloat WRITE setStepSize );
+  Q_PROPERTY( QVector<double> values READ values WRITE setValues );
+  Q_PROPERTY( QVector<double> reference READ reference WRITE setReference );
+  Q_PROPERTY( double value READ value WRITE setValue );
+  Q_PROPERTY( double step READ step WRITE setStep );
   Q_PROPERTY( int index READ index WRITE setIndex );
   Q_PROPERTY( int selectionSize READ selectionSize WRITE setSelectionSize );
   Q_PROPERTY( Qt::Orientation orientation
@@ -65,6 +66,18 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
 
   public:
     QcMultiSlider();
+
+    QVector<double> values() const;
+    void setValues( const QVector<double> & );
+    double value() const;
+    void setValue( double );
+
+    QVector<double> reference() const;
+    void setReference( const QVector<double> & );
+
+    double step() const { return roundStep; }
+    void setStep( double );
+
     QSize sizeHint() const { return QSize( 500,300 ); }
     QSize minimumSizeHint() const { return QSize( 50, 50 ); }
 
@@ -75,17 +88,10 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
 
   private:
     Qt::Orientation orientation() const { return ort; }
-    VariantList values() const;
-    float value() const;
     int index() const { return _currentIndex; }
     int selectionSize() const { return _selectionSize; }
-
     int sliderCount() const { return _values.size(); }
     void setSliderCount( int size );
-    void setValues( const VariantList & );
-    void setReference( const VariantList & );
-    void setValue( float f );
-    void setStepSize( float f );
     void setIndex( int i );
     void setSelectionSize( int i );
     void setOrientation( Qt::Orientation o ) { ort = o; update(); }
@@ -105,16 +111,17 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
     QRect contentsRect();
     QRect valueRect( int count, double & spacing );
     inline float valueFromPos( float pos, float range );
-    inline void setValue( int index, float value );
+    inline void setValue( int index, double value );
+    double rounded ( double value );
 
     // values
-    QList<float> _values;
-    QList<float> _ref;
+    QList<double> _values;
+    QList<double> _ref;
     int _currentIndex;
     int _selectionSize;
 
     // functional properties
-    float roundStep;
+    double roundStep;
     bool editable;
 
     // visual properties
