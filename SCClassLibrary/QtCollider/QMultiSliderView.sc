@@ -1,6 +1,5 @@
 QMultiSliderView : QView {
-  var <editable=true, <step=0;
-  var <reference;
+  var <editable=true;
   var <elasticMode=false;
   var <indexThumbSize=12, <valueThumbSize=12, <gap=1;
   var <drawLines=false, <drawRects=true;
@@ -31,17 +30,17 @@ QMultiSliderView : QView {
     this.editable_( bool.not );
   }
 
-  step_ { arg aFloat;
-    step = aFloat;
-    this.setProperty( \stepSize, aFloat );
-  }
+  step { ^this.getProperty(\step) }
+  step_ { arg val; this.setProperty( \step, val ) }
 
   value {
     ^this.getProperty( \values );
   }
 
-  value_ { arg floatArray;
-    this.setProperty( \values, floatArray );
+  value_ { arg array;
+    if( array.isKindOf(DoubleArray).not and: {array.isKindOf(FloatArray).not} )
+      { array = array.as(DoubleArray) };
+    this.setProperty( \values, array );
   }
 
   valueAction_ { arg val;
@@ -73,9 +72,12 @@ QMultiSliderView : QView {
     this.setProperty( \selectionSize, anInt );
   }
 
-  reference_ { arg aFloatArray;
-    reference = aFloatArray;
-    this.setProperty( \reference, aFloatArray );
+  reference { ^this.getProperty(\reference) }
+
+  reference_ { arg array;
+    if( array.isKindOf(DoubleArray).not and: {array.isKindOf(FloatArray).not} )
+      { array = array.as(DoubleArray) };
+    this.setProperty( \reference, array );
   }
 
   startIndex_ { arg anInt;
