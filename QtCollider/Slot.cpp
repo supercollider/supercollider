@@ -31,6 +31,7 @@
 
 #include <QPalette>
 #include <QWidget>
+#include <QVector>
 
 #include <qmath.h>
 
@@ -148,6 +149,40 @@ void Slot::setVariantList( PyrSlot *slot, const VariantList& varList )
   }
 }
 
+template<typename numeric_type>
+static void setNumeric( PyrSlot *, numeric_type );
+
+
+template<> inline
+void setNumeric<double>( PyrSlot *s, double val )
+{
+  SetFloat( s, val );
+}
+
+template<> inline
+void setNumeric<int>( PyrSlot *s, int val )
+{
+  SetInt( s, val );
+}
+
+template<typename numeric_type>
+static void setNumericVector( PyrSlot *slot, const QVector<numeric_type> & vec )
+{
+  VMGlobals *g = gMainVMGlobals;
+
+  int count = vec.count();
+
+  PyrObject *array = newPyrArray( g->gc, count, 0, true );
+  SetObject( slot, array );
+
+  PyrSlot *s = array->slots;
+  Q_FOREACH( numeric_type val, vec ) {
+    setNumeric<numeric_type>( s, val );
+    ++array->size;
+    ++s;
+  }
+}
+
 bool Slot::setVariant( PyrSlot *slot, const QVariant &val )
 {
   bool b_val;
@@ -214,6 +249,12 @@ bool Slot::setVariant( PyrSlot *slot, const QVariant &val )
         }
         else if( type == qMetaTypeId<VariantList>() ) {
           Slot::setVariantList( slot, val.value<VariantList>() );
+        }
+        else if( type == qMetaTypeId< QVector<double> >() ) {
+          setNumericVector( slot, val.value< QVector<double> >() );
+        }
+        else if( type == qMetaTypeId< QVector<int> >() ) {
+          setNumericVector( slot, val.value< QVector<int> >() );
         }
         else if( type == qMetaTypeId<QcTreeWidget::ItemPtr>() ) {
           Slot::setTreeWidgetItem( slot, val.value< QtCollider::SafePtr<QcTreeWidget::Item> >() );
@@ -397,6 +438,43 @@ VariantList Slot::toVariantList( PyrSlot *slot )
   return VariantList();
 }
 
+#define WRONG_OBJECT_FORMAT false
+
+template<typename DEST, typename ORIG>
+inline static void copy( QVector<DEST> & dest, PyrSlot *orig, int size )
+{
+  ORIG *array = (ORIG*) orig;
+  for( int i = 0; i < size; ++i )
+    dest << DEST(array[i]);
+}
+
+template<typename numeric_type>
+static QVector<numeric_type> toNumericVector( PyrObject *obj )
+{
+  int size = obj->size;
+  PyrSlot *slots = obj->slots;
+
+  QVector<numeric_type> vector;
+  vector.reserve(size);
+
+  switch (obj->obj_format) {
+    case obj_double:
+      copy<numeric_type, double>( vector, slots, size ); break;
+    case obj_float:
+      copy<numeric_type, float>( vector, slots, size ); break;
+    case obj_int32:
+      copy<numeric_type, int32>( vector, slots, size ); break;
+    case obj_int16:
+      copy<numeric_type, int16>( vector, slots, size ); break;
+    case obj_int8:
+      copy<numeric_type, int8>( vector, slots, size ); break;
+    default:
+      Q_ASSERT( WRONG_OBJECT_FORMAT );
+  }
+
+  return vector;
+}
+
 QObjectProxy* Slot::toObjectProxy( PyrSlot *slot )
 {
   if( !isKindOfSlot( slot, class_QObject ) ) return 0;
@@ -436,7 +514,16 @@ QVariant Slot::toVariant( PyrSlot *slot )
       return QVariant( true );
     case tagObj :
     {
-      if( isKindOfSlot( slot, class_String ) ) {
+      PyrObject *obj = slotRawObject(slot);
+      unsigned char format = obj->obj_format;
+
+      if( format == obj_double || format == obj_float )
+        return QVariant::fromValue< QVector<double> >( toNumericVector<double>(obj) );
+
+      else if( format == obj_int32 || format == obj_int16 || format == obj_int8 )
+        return QVariant::fromValue< QVector<int> >( toNumericVector<int>(obj) );
+
+      else if( isKindOfSlot( slot, class_String ) ) {
         return QVariant( toString(slot) );
       }
       else if( isKindOfSlot( slot, class_Point ) ) {
