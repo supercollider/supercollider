@@ -34,8 +34,7 @@ void StyleImpl::drawControl ( ControlElement elem, const QStyleOption * option,
     else
       drawRaised( p, plt, frame, color, focusColor );
 
-    if( !opt->text.isEmpty() )
-      drawItemText( p, opt->rect, Qt::AlignCenter, plt, opt->state & State_Enabled, opt->text, QPalette::ButtonText );
+    drawControl( CE_PushButtonLabel, option, p, w );
 
     p->restore();
   }
