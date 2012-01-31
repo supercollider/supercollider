@@ -62,58 +62,57 @@ void QcMultiSlider::setSliderCount( int newSize )
   update();
 }
 
-
-VariantList QcMultiSlider::values() const
+QVector<double> QcMultiSlider::values() const
 {
-  VariantList list;
-  Q_FOREACH( float val, _values )
-    list.data << QVariant( val );
-  return list;
+  return QVector<double>::fromList(_values);
 }
 
-void QcMultiSlider::setValues( const VariantList & newValues )
+void QcMultiSlider::setValues( const QVector<double> & vec )
 {
   _values.clear();
-  Q_FOREACH( QVariant var, newValues.data ) {
-    // FIXME Seems there is a crash in case _values are out of range and
-    // not clipped
-    float value = var.value<float>();
-    if( roundStep > 0.f )
-        value = round( value / roundStep ) * roundStep;
-    _values.append( qMax( 0.f, qMin( 1.f, value ) ) );
-  }
+
+  Q_FOREACH( double value, vec )
+    _values << qBound(0.0, rounded(value), 1.0);
+
   update();
 }
 
-void QcMultiSlider::setReference( const VariantList &reference )
-{
-  _ref.clear();
-  Q_FOREACH( QVariant var, reference.data ) {
-    _ref.append( qMax( 0.f, qMin( 1.f, var.value<float>() ) ) );
-  }
-  update();
-}
 
-float QcMultiSlider::value() const
+double QcMultiSlider::value() const
 {
   if( _currentIndex >= 0 && _currentIndex < _values.count() )
     return _values[_currentIndex];
   else
-    return 0.f;
+    return 0.0;
 }
 
-void QcMultiSlider::setValue( float f )
+void QcMultiSlider::setValue( double val )
 {
   if( _currentIndex >= 0 && _currentIndex < _values.count() )
-    setValue( _currentIndex, f );
+    setValue( _currentIndex, val );
 
   update();
 }
 
-void QcMultiSlider::setStepSize( float f ) {
-  if( roundStep == f ) return;
-  roundStep = f;
-  if( f == 0.f ) return;
+QVector<double> QcMultiSlider::reference() const
+{
+  return QVector<double>::fromList(_ref);
+}
+
+void QcMultiSlider::setReference( const QVector<double> & vec )
+{
+  _ref.clear();
+
+  Q_FOREACH( double value, vec )
+    _ref << qBound( 0.0, value, 1.0 );
+
+  update();
+}
+
+void QcMultiSlider::setStep( double step ) {
+  if( roundStep == step ) return;
+  roundStep = step;
+  if( step == 0.0 ) return;
   int c = _values.count();
   int i;
   for( i=0; i<c; ++i ) setValue( i, _values[i] );
@@ -133,11 +132,16 @@ void QcMultiSlider::setSelectionSize( int i ) {
   update();
 }
 
-inline void QcMultiSlider::setValue( int index, float value )
+inline void QcMultiSlider::setValue( int index, double value )
 {
-  if( roundStep > 0.f )
-      value = round( value / roundStep ) * roundStep;
-  _values.replace( index, qMax( 0.f, qMin( 1.f, value ) ) );
+  _values[index] = qBound( 0.0, rounded(value), 1.0 );
+}
+
+inline double QcMultiSlider::rounded ( double value )
+{
+  return roundStep > 0.0 ?
+    qRound( value / roundStep ) * roundStep :
+    value;
 }
 
 QRect QcMultiSlider::contentsRect()
