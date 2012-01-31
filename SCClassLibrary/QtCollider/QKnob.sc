@@ -49,6 +49,23 @@ QKnob : QAbstractStepValue {
   centered_ { arg bool; this.setProperty( \centered, bool ); }
   centered { ^this.getProperty( \centered ); }
 
+  // FIXME: find better alternatives to set colors separately.
+  color_ { arg colors;
+    var p;
+    p = this.palette;
+    p.button = colors[0];
+    p.windowText = colors[1];
+    p.window = colors[2];
+    p.buttonText = colors[3];
+    this.palette = p;
+  }
+
+  color {
+    var p;
+    p = this.palette;
+    ^[p.button, p.windowText, p.window, p.buttonText];
+  }
+
   getScale { |modifiers|
     ^case
       { modifiers.isShift } { this.shift_scale }
