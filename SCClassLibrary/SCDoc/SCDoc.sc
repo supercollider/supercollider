@@ -221,7 +221,7 @@ SCDoc {
         // hackish workaround: if a doc addition is removed, it is not detected
         // and removed from the 'additions' set in the docmap entry.
         // so here we check that the file exists..
-        doc_map[subtarget].additions.select(File.exists(_)).do {|ext|
+        doc_map[subtarget][\additions].select(File.exists(_)).do {|ext|
             p2 = p2 ?? {p.class.new};
             p2.parseFile(ext);
             p.merge(p2);
@@ -383,7 +383,7 @@ SCDoc {
                 };
             } {
                 cmd = {
-                    ("test" + ([src,verpath]++doc_map[subtarget].additions).collect {|x|
+                    ("test" + ([src,verpath]++doc_map[subtarget][\additions]).collect {|x|
                         x.shellQuote+"-nt"+path.shellQuote
                     }.join(" -o ")).systemCmd == 0
                 };
