@@ -129,7 +129,7 @@ SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyA
 	} catch (std::exception& exc) {
 		if(inWorld->mLocalErrorNotification <= 0 && inWorld->mErrorNotification) {
 			CallSendFailureCommand(inWorld, (char*)Name(), exc.what(), inReply);
-			scprintf("FAILURE %s %s\n", (char*)Name(), exc.what());
+			scprintf("FAILURE IN SERVER %s %s\n", (char*)Name(), exc.what());
 		}
 		return kSCErr_Failed;
 	} catch (...) {
@@ -139,7 +139,7 @@ SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyA
 		char errstr[25];
 		SC_ErrorString(err, errstr);
 		CallSendFailureCommand(inWorld, (char*)Name(), errstr, inReply);
-		scprintf("FAILURE %s %s\n", (char*)Name(), errstr);
+		scprintf("FAILURE IN SERVER %s %s\n", (char*)Name(), errstr);
 	}
 	return err;
 }
