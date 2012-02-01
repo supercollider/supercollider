@@ -451,6 +451,8 @@ EventStreamPlayer : PauseStream {
 		this.changed(\userStopped);
 	}
 
+	reset { routine.reset; super.reset }
+
 	mute { muteCount = muteCount + 1; }
 	unmute { muteCount = muteCount - 1; }
 	canPause { ^this.streamHasEnded.not and: { cleanup.functions.isEmpty } }
