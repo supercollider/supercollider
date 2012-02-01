@@ -755,7 +755,7 @@ int prFilePutChar(struct VMGlobals *g, int numArgsPushed)
 	if (file == NULL) return errFailed;
 	if (NotChar(b)) return errWrongType;
 
-	z = slotRawInt(b);
+	z = slotRawChar(b);
 
 	SC_IOStream<FILE*> scio(file);
 	scio.writeInt8(z);
