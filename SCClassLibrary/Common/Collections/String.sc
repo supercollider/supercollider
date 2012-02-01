@@ -250,7 +250,9 @@ String[char] : RawArray {
 	escapeChar { arg charToEscape; // $"
 		_String_EscapeChar
 	}
-
+	shellQuote {
+		^"'"++this.replace("'","'\\''")++"'"
+	}
 	quote {
 		^"\"" ++ this ++ "\""
 	}
