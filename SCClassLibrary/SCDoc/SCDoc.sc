@@ -174,7 +174,7 @@ SCDoc {
         var path = this.helpTargetDir +/+ "scdoc_cache";
         var verpath = this.helpTargetDir +/+ "version";
 
-        if(this.checkVersion or: {("test"+verpath.escapeChar($ )+"-nt"+path.escapeChar($ )).systemCmd==0}) {
+        if(this.checkVersion or: {("test"+verpath.shellQuote+"-nt"+path.shellQuote).systemCmd==0}) {
             this.postProgress("not reading scdoc_cache due to version timestamp update");
             doc_map = nil;
         } {
@@ -252,7 +252,7 @@ SCDoc {
             count = 0;
             this.postProgress("Updating all files");
             helpSourceDirs.do {|dir|
-                fileList[dir] = ("find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -not -name '*.ext.schelp'")
+                fileList[dir] = ("find -L"+dir.shellQuote+"-type f -name '*.schelp' -not -name '*.ext.schelp'")
                     .unixCmdGetStdOutLines.reject(_.isEmpty).asSet;
                 count = count + fileList[dir].size;
             };
@@ -268,7 +268,7 @@ SCDoc {
                         subtarget = path[dir.size+1 .. path.findBackwards(".")?path.size-1];
                         dest = helpTargetDir+/+subtarget++".html";
                         if(force
-                        or: {("test"+path.escapeChar($ )+"-nt"+dest.escapeChar($ )+"-o ! -e"+dest.escapeChar($ )).systemCmd==0}) {
+                        or: {("test"+path.shellQuote+"-nt"+dest.shellQuote+"-o ! -e"+dest.shellQuote).systemCmd==0}) {
                             this.parseAndRender(path,dest,subtarget);
                         } {
                             this.postProgress("Skipping"+dest);
@@ -302,7 +302,7 @@ SCDoc {
         if(noCache) {
             doWait = thisThread.isKindOf(Routine);
             this.syncNonHelpFiles; // ensure helpTargetDir exists
-            ("touch"+(helpTargetDir+/+"version").escapeChar($ )).systemCmd;
+            ("touch"+(helpTargetDir+/+"version").shellQuote).systemCmd;
         }
     }
 
@@ -384,7 +384,7 @@ SCDoc {
             } {
                 cmd = {
                     ("test" + ([src,verpath]++doc_map[subtarget].additions).collect {|x|
-                        x.escapeChar($ )+"-nt"+path.escapeChar($ )
+                        x.shellQuote+"-nt"+path.shellQuote
                     }.join(" -o ")).systemCmd == 0
                 };
 
@@ -411,7 +411,7 @@ SCDoc {
 
         if(class.notNil and: {path.isNil
             or: {
-                ("test"+(helpTargetDir+/+"version").escapeChar($ )+"-nt"+path.escapeChar($ )+"-o ! -e"+path.escapeChar($ )).systemCmd==0
+                ("test"+(helpTargetDir+/+"version").shellQuote+"-nt"+path.shellQuote+"-o ! -e"+path.shellQuote).systemCmd==0
             }
         }) {
             this.postProgress("Undocumented class:"+name+", generating stub and template");
@@ -525,7 +525,7 @@ SCDoc {
         this.checkSystemCmd("find");
         helpSourceDirs = Set[helpSourceDir];
         [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
-            helpSourceDirs = helpSourceDirs | ("find -L"+dir.escapeChar($ )+"-name 'HelpSource' -type d -prune")
+            helpSourceDirs = helpSourceDirs | ("find -L"+dir.shellQuote+"-name 'HelpSource' -type d -prune")
                 .unixCmdGetStdOutLines.asSet;
         };
         this.postProgress(helpSourceDirs.asString);
@@ -544,12 +544,12 @@ SCDoc {
         if(doWait) {
             c = Condition.new;
             helpSourceDirs.do {|dir|
-                cmd.format(dir.escapeChar($ ),helpTargetDir.escapeChar($ )).unixCmd({c.unhang},false);
+                cmd.format(dir.shellQuote,helpTargetDir.shellQuote).unixCmd({c.unhang},false);
                 c.hang;
             };
         } {
             helpSourceDirs.do {|dir|
-                cmd.format(dir.escapeChar($ ),helpTargetDir.escapeChar($ )).systemCmd;
+                cmd.format(dir.shellQuote,helpTargetDir.shellQuote).systemCmd;
             };
         };
         this.postProgress("Synchronizing non-schelp files: Done");
@@ -572,9 +572,8 @@ SCDoc {
             ext = (dir != helpSourceDir);
             this.postProgress("- Collecting from"+dir);
             Platform.case(
-//                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -printf '%p;%T@\n'"},
-                \linux, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -not -name '*.ext.schelp' -exec stat -c \"%n;%Z\" {} +"},
-                \osx, {"find -L"+dir.escapeChar($ )+"-type f -name '*.schelp' -not -name '*.ext.schelp' -exec stat -f \"%N;%m\" {} +"}
+                \linux, {"find -L"+dir.shellQuote+"-type f -name '*.schelp' -not -name '*.ext.schelp' -exec stat -c \"%n;%Z\" {} +"},
+                \osx, {"find -L"+dir.shellQuote+"-type f -name '*.schelp' -not -name '*.ext.schelp' -exec stat -f \"%N;%m\" {} +"}
             ).unixCmdGetStdOutLines.do {|line|
                 #path, mtime = line.split($;);
                 subtarget = path[dir.size+1 ..].drop(-7);
@@ -631,7 +630,7 @@ SCDoc {
         ndocs = 0;
         helpSourceDirs.do {|dir|
             var old;
-            ("find -L"+dir.escapeChar($ )+"-type f -name '*.ext.schelp'").unixCmdGetStdOutLines.do {|file|
+            ("find -L"+dir.shellQuote+"-type f -name '*.ext.schelp'").unixCmdGetStdOutLines.do {|file|
                 subtarget = file[dir.size+1 ..].drop(-11);
                 doc = doc_map[subtarget];
                 if(doc.notNil) {
