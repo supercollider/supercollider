@@ -265,9 +265,22 @@ method::icontainsStringAt
 Same as link::#-containsStringAt::, but case insensitive.
 
 method::escapeChar
-Add the escape character (\) at the location of your choice.
+Add the escape character (\) before any character of your choice.
 code::
+// escape spaces:
 "This will become a Unix friendly string".escapeChar($ ).postln;
+::
+
+method::shellQuote
+Return a new string suitable for use as a filename in a shell command, by enclosing it in single quotes ( teletype::':: ).
+If the string contains any single quotes they will be escaped.
+discussion::
+You should use this method on a path before embedding it in a string executed by link::#-unixCmd:: or link::#-systemCmd::.
+code::
+unixCmd("ls"+Platform.userExtensionDir.shellQuote)
+::
+note::
+This works well with shells such as strong::bash::, other shells might need different quotation/escaping.
 ::
 
 method::tr
