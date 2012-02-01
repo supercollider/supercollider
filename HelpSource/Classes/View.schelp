@@ -364,6 +364,39 @@ METHOD:: focusColor
 	argument::
 		A Color.
 
+METHOD:: palette
+	note:: Only available in Qt GUI ::
+
+	Get or set the palette to be used by the view.
+
+	When setting a palette, only those colors that have been set on the palette will take effect, other colors will be inherited from the parent view's palette, or QtGUI. See also link::Classes/QPalette#-hasColor::.
+
+	When getting a palette, it will return everytime a new copy of the view's palette. Therefore, if you wish to change the view's palette, you have to set the changed palette back on the view:
+
+code::
+	w = Window().front.layout_( HLayout( a = Slider() ) );
+	a.action = { |a|
+		a.palette = a.palette.buttonText_( if(a.value > 0.5){Color.red}{Color.green} );
+	};
+	a.valueAction = 0.0;
+::
+
+	To dynamically modify the view's palette, it is thus more efficient, if possible, to keep a palette instance to operate on. Note that this is also more efficient than using methods like link::Classes/Slider#-knobColor::, since internally they use the above approach:
+
+code::
+	w = Window().front.layout_( HLayout( a = Slider() ) );
+	p = QPalette();
+	a.action = { |a|
+		a.palette = p.buttonText_( if(a.value > 0.5){Color.red}{Color.green} );
+	};
+	a.valueAction = 0.0;
+::
+
+	See link::Classes/QPalette:: for detailed explanation of how palettes work.
+
+	argument::
+		A QPalette.
+
 METHOD:: refresh
 	Redraws the view and all its children.
 
