@@ -282,7 +282,7 @@ int PerformOSCMessage(World *inWorld, int inSize, char *inData, ReplyAddress *in
 	}
 	if (!cmdObj) {
 		CallSendFailureCommand(inWorld, inData, "Command not found", inReply);
-		scprintf("FAILURE %s Command not found\n", inData);
+		scprintf("FAILURE IN SERVER: %s Command not found\n", inData);
 		return kSCErr_NoSuchCommand;
 	}
 
