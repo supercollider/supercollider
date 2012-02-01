@@ -131,20 +131,51 @@ A typical color that can be customized is background color - a color of choice c
 
 Custom colors may be associated with different changing states of views or data they display, for example: Button allows to associate background and text colors with each one of its states, and will thus switch colors together with state when clicked; ListView allows to set a different background color for each of its items, as well as special background and text colors applied only to the item currently selected.
 
-Whenever you execute the following example, a random palette of colors will be applied to different aspects of the Window, the Button and the ListView:
+Whenever you execute the following example, random colors will be applied to different aspects of the views:
 
 code::
-w = Window.new("GUI Introduction").background_(Color.rand).front;
-b = Button.new(w,100@30).states_([
+(
+w = Window("GUI Introduction").background_(Color.rand).front;
+b = Button(w, Rect(10,10,100,30)).states_([
 	["One",Color.rand,Color.rand],
 	["Two",Color.rand,Color.rand],
 	["Three",Color.rand,Color.rand]
 ]);
-l = ListView.new(w,Rect(0,40,200,100))
+l = ListView.new(w, Rect(10,50,200,100))
 	.items_(["One","Two","Three"])
 	.colors_([Color.rand,Color.rand,Color.rand])
 	.hiliteColor_(Color.blue)
 	.selectedStringColor_(Color.white);
+s = Slider(w, Rect(10, 160, 200, 20))
+	.knobColor_(Color.rand)
+	.background_(Color.rand);
+)
+::
+
+subsection:: Palette
+
+In Qt GUI, the complete set of colors used to draw the views is represented by a palette (see the link::Classes/QPalette:: class). Using a palette, you can define (most of) the appearance of the whole GUI in one go.
+
+In the following example, clicking on the button will switch between two palettes. Note however, that the color assigned to the first Button state will beat the red color defined in the palette, and that colors of individual ListView items are not controlled by the palette.
+
+code::
+(
+x = QPalette.auto(Color.red(0.8), Color.red(0.5));
+y = QPalette.auto(Color.cyan(1.4), Color.cyan(1.8));
+p = QtGUI.palette;
+QtGUI.palette = x;
+w = Window.new("GUI Introduction").front;
+w.onClose = {QtGUI.palette = p};
+Button.new(w, Rect(10,10,100,30)).states_([
+	["Red", Color.black, Color.grey(0.7)],
+	["Cyan"]
+]).action_({ |b| QtGUI.palette = if(b.value == 0){x}{y} });
+ListView.new(w, Rect(10,50,200,100))
+	.items_(["One","Two","Three"])
+	.colors_([Color.grey(0.4),Color.grey(0.5),Color.grey(0.6)]);
+Slider(w, Rect(10, 160, 200, 20));
+RangeSlider(w, Rect(10, 190, 200, 20));
+)
 ::
 
 subsection:: Fonts

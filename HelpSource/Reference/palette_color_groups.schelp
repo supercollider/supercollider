@@ -1,0 +1,13 @@
+title:: Color groups
+categories:: GUI>Accessories
+summary:: A list of color groups within a palette, and their meaning
+
+A palette (see link::Classes/QPalette::) consists of colors assigned to various color roles (see  link::Reference/palette_color_roles::) within the three color groups. The following is a list of possible symbols to denote color groups, and their meanings.
+
+table::
+## strong::Group::      || strong::Meaning::
+## 'active'             || Containes colors used by views on the active window.
+## 'inactive'           || Containes colors used by views on inactive windows.
+## 'disabled'           || Containes colors used by disabled views.
+## 'normal'             || A synonym for 'active'.
+::
