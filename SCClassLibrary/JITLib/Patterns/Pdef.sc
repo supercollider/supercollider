@@ -186,7 +186,7 @@ PatternProxy : Pattern {
 	}
 
 	remove {
-		this.class.all.removeAt(this.key);
+		if(this.class.hasGlobalDictionary) { this.class.all.removeAt(this.key) };
 		this.clear;
 	}
 
@@ -198,12 +198,13 @@ PatternProxy : Pattern {
 	// global storage
 
 	*at { arg key;
-		^this.all.at(key)
+		^if(this.hasGlobalDictionary) { this.all.at(key) } { nil }
 	}
 
 	repositoryArgs { ^[this.key, this.source] }
 
 	*postRepository { arg keys, stream;
+		if(this.hasGlobalDictionary.not) { Error("This class has no global repository.").throw };
 		keys = keys ?? { this.all.keys };
 		stream = stream ? Post;
 		keys.do { arg key;
@@ -246,7 +247,7 @@ PatternProxy : Pattern {
 		^event
 	}
 
-	////////////////
+	*hasGlobalDictionary { ^false }
 
 }
 
@@ -279,6 +280,9 @@ Pdefn : PatternProxy {
 		key = argKey;
 		all.put(argKey, this);
 	}
+	
+	*hasGlobalDictionary { ^true }
+
 }
 
 
@@ -406,6 +410,9 @@ Tdef : TaskProxy {
 		key = argKey;
 		all.put(argKey, this);
 	}
+	
+	*hasGlobalDictionary { ^true }
+
 
 }
 
@@ -623,6 +630,8 @@ Pdef : EventPatternProxy {
 		key = argKey;
 		all.put(argKey, this);
 	}
+	
+	*hasGlobalDictionary { ^true }
 
 	*initClass {
 		var phraseEventFunc;
@@ -790,6 +799,10 @@ Pbindef : Pdef {
 	storeArgs { ^[key]++pattern.storeArgs }
 	repositoryArgs { ^this.storeArgs }
 	quant_ { arg val; super.quant = val; source.quant = val }
+	
+	*hasGlobalDictionary { ^true }
+
+
 }
 
 
