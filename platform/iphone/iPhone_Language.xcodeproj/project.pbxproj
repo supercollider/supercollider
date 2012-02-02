@@ -22,6 +22,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		39D745D514D4FFB1002A4E59 /* SC_CoreMIDI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7751A9860EB36D500051CF38 /* SC_CoreMIDI.cpp */; };
+		39D745D714D5004F002A4E59 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 39D745D614D5004F002A4E59 /* CoreMIDI.framework */; };
 		7709038C0F509FAA005C05DC /* iPhoneGUIPrimitives.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */; };
 		7709038D0F509FAA005C05DC /* iPhoneSCGraphView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7709037F0F509FAA005C05DC /* iPhoneSCGraphView.mm */; };
 		7709038F0F509FAA005C05DC /* iPhoneSCNSWindow.mm in Sources */ = {isa = PBXBuildFile; fileRef = 770903820F509FAA005C05DC /* iPhoneSCNSWindow.mm */; };
@@ -225,6 +227,7 @@
 		0B09F52314C9D5320048AB9A /* function_attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = function_attributes.h; sourceTree = "<group>"; };
 		0B1F3B2214C9C3B700DCE518 /* SC_WorldOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SC_WorldOptions.h; path = server/SC_WorldOptions.h; sourceTree = "<group>"; };
 		0B57438114D6DC5100EB191B /* SC_Errors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SC_Errors.h; path = server/SC_Errors.h; sourceTree = "<group>"; };
+		39D745D614D5004F002A4E59 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		7709037E0F509FAA005C05DC /* iPhoneGUIPrimitives.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneGUIPrimitives.mm; sourceTree = "<group>"; };
 		7709037F0F509FAA005C05DC /* iPhoneSCGraphView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iPhoneSCGraphView.mm; sourceTree = "<group>"; };
 		770903810F509FAA005C05DC /* iPhoneSCNSWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhoneSCNSWindow.h; sourceTree = "<group>"; };
@@ -618,6 +621,7 @@
 				772C0F3312DA126F009C0126 /* MediaPlayer.framework in Frameworks */,
 				7759955312FDE20A00603187 /* Accelerate.framework in Frameworks */,
 				775E79711475E2C2008CD702 /* libsndfile_iphone.a in Frameworks */,
+				39D745D714D5004F002A4E59 /* CoreMIDI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1112,6 +1116,7 @@
 			children = (
 				77597AEA1123320700D2A968 /* libsndfile_iphone.a */,
 				77597AEF1123323800D2A968 /* scUBlibsndfile.a */,
+				39D745D614D5004F002A4E59 /* CoreMIDI.framework */,
 				7759955212FDE20A00603187 /* Accelerate.framework */,
 				77BA5222129C371F00CE89DD /* CFNetwork.framework */,
 				77BA5233129C373400CE89DD /* CoreFoundation.framework */,
@@ -1620,6 +1625,7 @@
 				7796FFC8148D8E42003E89BB /* wc_regex_traits.cpp in Sources */,
 				7796FFC9148D8E42003E89BB /* wide_posix_api.cpp in Sources */,
 				7796FFCA148D8E42003E89BB /* winstances.cpp in Sources */,
+				39D745D514D4FFB1002A4E59 /* SC_CoreMIDI.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
