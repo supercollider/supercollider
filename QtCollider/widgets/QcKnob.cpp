@@ -82,6 +82,7 @@ void QcKnob::mouseMoveEvent( QMouseEvent *e )
 void QcKnob::paintEvent( QPaintEvent * )
 {
   using namespace QtCollider::Style;
+  using QtCollider::Style::Ellipse;
 
   QPainter p(this);
   p.setRenderHint( QPainter::Antialiasing, true );

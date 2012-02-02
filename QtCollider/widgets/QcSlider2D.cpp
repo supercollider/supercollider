@@ -128,6 +128,8 @@ void QcSlider2D::keyPressEvent ( QKeyEvent *e )
 void QcSlider2D::paintEvent ( QPaintEvent *e )
 {
   using namespace QtCollider::Style;
+  using QtCollider::Style::Ellipse;
+  using QtCollider::Style::RoundRect;
 
   Q_UNUSED(e);
 

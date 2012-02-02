@@ -297,6 +297,8 @@ void QcMultiSlider::mouseMoveEvent( QMouseEvent *e )
 void QcMultiSlider::paintEvent( QPaintEvent *e )
 {
   using namespace QtCollider::Style;
+  using QtCollider::Style::Ellipse;
+  using QtCollider::Style::RoundRect;
 
   Q_UNUSED(e);
   QPainter p(this);

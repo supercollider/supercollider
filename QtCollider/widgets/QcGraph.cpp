@@ -638,6 +638,8 @@ QRectF QcGraph::labelRect( QcGraphElement *e, const QPointF &pt, const QRect &bo
 void QcGraph::paintEvent( QPaintEvent * )
 {
   using namespace QtCollider::Style;
+  using QtCollider::Style::Ellipse;
+  using QtCollider::Style::RoundRect;
 
   QPainter p( this );
   QPalette plt( palette() );
