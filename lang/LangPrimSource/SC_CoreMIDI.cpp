@@ -28,8 +28,12 @@ added prRestartMIDI
 19/9 call different actions,disconnect midiInPort, midiout: sendmidi
 04/feb/03 prListMIDIEndpoints modification by Ron Kuivila added jt.
 */
+#if SC_IPHONE
+#include <mach/mach_time.h>
+#else
 #include <CoreAudio/HostTime.h>
 #include <Carbon/Carbon.h>
+#endif
 #include <CoreMIDI/CoreMIDI.h>
 #include <vector>
 #include "SCBase.h"
@@ -665,20 +669,45 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 	return ((MIDISendSysex(pk) == (OSStatus)0) ? errNone : errFailed);
 }
 
+#if SC_IPHONE
+
+static struct mach_timebase_info machTimebaseInfo() {
+    struct mach_timebase_info info;
+    mach_timebase_info(&info);
+    return info;
+}
+
+static MIDITimeStamp midiTime(float latencySeconds)
+{
+    // add the latency expressed in seconds, to the current host time base.
+    static struct mach_timebase_info info = machTimebaseInfo(); // cache the timebase info.
+    Float64 latencyNanos = 1000000000 * latencySeconds;
+    MIDITimeStamp latencyMIDI = (latencyNanos / (Float64)info.numer) * (Float64)info.denom;
+    return (MIDITimeStamp)mach_absolute_time() + latencyMIDI;
+}
+
+#else
+
+static MIDITimeStamp midiTime(float latencySeconds)
+{
+    // add the latency expressed in seconds, to the current host time base.
+    UInt64 latencyNanos =  1000000000 * latencySeconds ; //secs to nano
+    return (MIDITimeStamp)AudioGetCurrentHostTime() + AudioConvertNanosToHostTime(latencyNanos);
+}
+
+#endif
+
 void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late);
 void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late)
 {
 	MIDIPacketList mpktlist;
 	MIDIPacketList * pktlist = &mpktlist;
 	MIDIPacket * pk = MIDIPacketListInit(pktlist);
-	//lets add some latency
-	float  latency =  1000000000 * late ; //secs to nano
-	UInt64  utime = AudioConvertNanosToHostTime( AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) + (UInt64)latency);
 	ByteCount nData = (ByteCount) length;
 	pk->data[0] = (Byte) (hiStatus & 0xF0) | (loStatus & 0x0F);
 	pk->data[1] = (Byte) aval;
 	pk->data[2] = (Byte) bval;
-	pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk,(MIDITimeStamp) utime,nData,pk->data);
+	pk = MIDIPacketListAdd(pktlist, sizeof(struct MIDIPacketList) , pk, midiTime(late), nData, pk->data);
 	/*OSStatus error =*/ MIDISend(gMIDIOutPort[port],  dest, pktlist );
 }
 
