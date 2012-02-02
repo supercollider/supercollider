@@ -39,6 +39,9 @@ QRect Slider::sc_handle ( const QStyleOptionSlider *opt, const QcSlider *s )
 
 void Slider::cc_draw ( const QStyleOptionSlider *opt, QPainter *p, const QcSlider *slider )
 {
+  using QtCollider::Style::Ellipse;
+  using QtCollider::Style::RoundRect;
+
   const QPalette &plt = opt->palette;
 
   p->save();
