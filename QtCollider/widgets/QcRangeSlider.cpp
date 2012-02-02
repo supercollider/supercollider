@@ -334,6 +334,7 @@ inline void drawMarker( QPainter *p, const QPalette &plt, Qt::Orientation ort, b
 void QcRangeSlider::paintEvent ( QPaintEvent *e )
 {
   using namespace QtCollider::Style;
+  using QtCollider::Style::RoundRect;
 
   Q_UNUSED(e);
 
