@@ -51,6 +51,7 @@ Q_SIGNALS:
   void painting(QPainter*);
 protected:
   virtual void customEvent( QEvent * );
+  virtual void changeEvent ( QEvent * );
   virtual void resizeEvent( QResizeEvent * );
   virtual void paintEvent( QPaintEvent * );
   virtual void timerEvent( QTimerEvent * );
