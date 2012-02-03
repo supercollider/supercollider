@@ -643,6 +643,16 @@ METHOD:: endFrontAction
 
 	Sets or gets the object to be evaluated when the view becomes the active window. It is passed the view as an argument.
 
+METHOD:: onResize
+	note:: only in Qt GUI ::
+
+	Sets or gets the object to be evaluated when the view changes its size. It is passed the view as an argument.
+
+METHOD:: onMove
+	note:: only in Qt GUI ::
+
+	Sets or gets the object to be evaluated when the view changes position relatively to its parent. It is passed the view as an argument.
+
 METHOD:: onClose
 
 	Sets or gets the object to be evaluated when the view is destroyed (i.e. link::#-close#closed:: or link::#-remove#removed::). It is passed the view as an argument.
