@@ -175,6 +175,7 @@ QView : QObject {
   resize_ { arg anInt;
     this.setProperty(\_qc_hSizePolicy, hSizePolicy[anInt-1]);
     this.setProperty(\_qc_vSizePolicy, vSizePolicy[anInt-1]);
+    resize = anInt;
   }
 
   canFocus {
