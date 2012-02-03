@@ -1,9 +1,11 @@
-find_path(READLINE_INCLUDE_DIR readline/readline.h)
-find_library(READLINE_LIBRARY NAMES readline)
+if(NOT READLINE_INCLUDE_DIR OR NOT READLINE_LIBRARY)
+    find_path(READLINE_INCLUDE_DIR readline/readline.h)
+    find_library(READLINE_LIBRARY NAMES readline)
+endif()
 
 if (READLINE_INCLUDE_DIR AND READLINE_LIBRARY)
-  set (READLINE_FOUND TRUE)
-endif ()
+    set(READLINE_FOUND TRUE)
+endif()
 
 if (READLINE_INCLUDE_DIR AND EXISTS "${READLINE_INCLUDE_DIR}/readline/readline.h")
   file(STRINGS "${READLINE_INCLUDE_DIR}/readline/readline.h"
