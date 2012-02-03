@@ -12,10 +12,10 @@ More information can be found under link::Guides/Multichannel-Expansion::.
 
 note::
 
-Note that  code::Mix.ar::  and  code::Mix.kr::
-in SC2 are equivalent to  code::Mix.new::  in SC3,
-and that  code::Mix.arFill::  and  code::Mix.krFill::
-are equivalent to  code::Mix.fill:: .
+Note that  code::Mix.ar::  and  code::Mix.kr::  in
+SC2 are equivalent to  code::Mix.new::  in SC3,
+and that  code::Mix.arFill::  and  code::Mix.krFill::  are
+equivalent to  code::Mix.fill::.
 
 ::
 
