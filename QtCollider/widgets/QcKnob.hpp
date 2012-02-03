@@ -33,9 +33,9 @@ class QcKnob : public QWidget, QcAbstractStepValue, QtCollider::Style::Client
   Q_PROPERTY( float ctrlScale READ ctrlScale WRITE setCtrlScale );
   Q_PROPERTY( float altScale READ altScale WRITE setAltScale );
 
-  Q_PROPERTY( float value READ value WRITE setValue )
+  Q_PROPERTY( double value READ value WRITE setValue )
   Q_PROPERTY( int mode READ mode WRITE setMode )
-  Q_PROPERTY( float step READ step WRITE setStep )
+  Q_PROPERTY( double step READ step WRITE setStep )
   Q_PROPERTY( bool centered READ centered WRITE setCentered )
   Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
 
@@ -44,8 +44,8 @@ Q_SIGNALS:
 
 public:
   QcKnob();
-  void setValue( float );
-  float value() const { return _value; }
+  void setValue( double );
+  double value() const { return _value; }
   void setMode( int i ) { _mode = i; }
   int mode() const { return _mode; }
   void setStep( float step ) { _step = step; }
@@ -62,11 +62,11 @@ protected:
   virtual void paintEvent( QPaintEvent * );
 
 private:
-  float value( const QPoint & );
+  double value( const QPoint & );
 
-  float _value;
-  float _step;
-  float _mode;
+  double _value;
+  double _step;
+  int _mode;
   QPoint _prevPos;
   bool _centered;
 };
